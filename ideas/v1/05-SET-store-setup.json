@@ -3176,6 +3176,7 @@
   },
   "sources": {
    "mini_playbooks": [
+    "01",
     "02",
     "03",
     "05",
@@ -5348,6 +5349,7 @@
   "sources": {
    "mini_playbooks": [
     "01",
+    "02",
     "03",
     "05",
     "07",
@@ -10423,5 +10425,5763 @@
   },
   "confidence": "medium",
   "general_practice": false
+ },
+ {
+  "id": "SET-160",
+  "title": "Register matching domain TLDs beyond .com to block squatters",
+  "domain": "05-SET",
+  "bottleneck": [
+   "trust_brand"
+  ],
+  "lever": "domain defense",
+  "hypothesis": "If we register the store's brand name across a few extra common domain extensions when we buy the primary domain, then brand impersonation risk drops because a lookalike site cannot use an obvious near match of the real domain.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "The brand name's main domain is registered but common alternate extensions for the same name are still open to anyone.",
+   "metrics": [
+    "other:domain_squatting_risk"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:brand_trust",
+   "direction": "up",
+   "size": "unknown, no source measures it",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "founder"
+  },
+  "cost": "low",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Extra domains cost only renewal fees and can be dropped later if unused."
+  },
+  "prerequisites": [
+   "Primary domain already chosen and available"
+  ],
+  "steps": [
+   "Check availability of the brand name on 2 to 3 extra common extensions.",
+   "Register any that are available and affordable.",
+   "Redirect each extra domain to the primary site.",
+   "Renew alongside the primary domain each year."
+  ],
+  "test": {
+   "method": "Check yearly whether a lookalike domain using an open extension has appeared.",
+   "measure": "other:domain_squatting_risk",
+   "read_point": "Once a year at domain renewal"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "01"
+   ],
+   "cards": [
+    "b30915400ab6"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "SET-161",
+  "title": "Publish every page before linking it in a menu or footer",
+  "domain": "05-SET",
+  "bottleneck": [
+   "team_capacity"
+  ],
+  "lever": "page publish sequencing",
+  "hypothesis": "If we publish every policy or info page before linking it in a menu, then broken links drop because an unpublished page has no resolvable URL to link to.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "A menu or footer item points at a page that is still a draft, not published.",
+   "metrics": [
+    "other:broken_link_count"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:broken_link_count",
+   "direction": "down",
+   "size": "unknown, no source measures it",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Publishing a page early with placeholder text is easy to fix by editing it further."
+  },
+  "prerequisites": [
+   "Page content drafted"
+  ],
+  "steps": [
+   "Write and save the page.",
+   "Publish the page, not just save it as a draft.",
+   "Add the published page to the menu or footer.",
+   "Click the live link to confirm it resolves."
+  ],
+  "test": {
+   "method": "Click every footer and menu link on the live site.",
+   "measure": "other:broken_link_count",
+   "read_point": "Before launch and after adding any new page"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "01",
+    "03"
+   ],
+   "cards": [
+    "fe40994519f8",
+    "4a64696a8718"
+   ],
+   "rules": []
+  },
+  "confidence": "high",
+  "general_practice": true
+ },
+ {
+  "id": "SET-162",
+  "title": "Add social links to store settings before launch",
+  "domain": "05-SET",
+  "bottleneck": [
+   "trust_brand"
+  ],
+  "lever": "social proof links",
+  "hypothesis": "If we add the brand's social links, starting with the platform it is most active on, to store settings before launch, then first-time visitor trust improves because many shoppers check social proof before buying and a missing link reads as a less credible store.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "The store has active social accounts but no links to them anywhere on the site.",
+   "metrics": [
+    "other:trust_signal_coverage"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:trust_signal_coverage",
+   "direction": "up",
+   "size": "unknown, no source measures it",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Links can be added or removed at any time with no side effects."
+  },
+  "prerequisites": [
+   "At least one active social account"
+  ],
+  "steps": [
+   "List every active social account for the brand.",
+   "Add each profile link in the store's brand or social settings.",
+   "Confirm the icons or links appear in the header or footer.",
+   "Click each link to confirm it opens the right profile."
+  ],
+  "test": {
+   "method": "Compare trust related support questions or bounce rate before and after adding links.",
+   "measure": "other:trust_signal_coverage",
+   "read_point": "A few weeks after launch"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "01"
+   ],
+   "cards": [
+    "1513317a812c"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "SET-163",
+  "title": "Use theme or section level custom CSS instead of editing core files",
+  "domain": "05-SET",
+  "bottleneck": [
+   "team_capacity"
+  ],
+  "lever": "safe styling layer",
+  "hypothesis": "If we make small design tweaks with theme level or section level custom CSS instead of editing core theme files, then the risk of breaking the theme drops because the override sits in one safe layer that is easy to find and remove.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "A small visual tweak is about to be made by editing a core theme file directly.",
+   "metrics": [
+    "other:theme_edit_risk"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:theme_edit_risk",
+   "direction": "down",
+   "size": "unknown, no source measures it",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "dev"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "A CSS override can be deleted without touching the underlying theme code."
+  },
+  "prerequisites": [],
+  "steps": [
+   "Identify the specific visual change needed.",
+   "Open the theme's custom CSS field at the theme or section level.",
+   "Write the smallest CSS rule that achieves the change.",
+   "Preview and confirm nothing else on the page shifted."
+  ],
+  "test": {
+   "method": "Compare the page before and after the CSS change on desktop and mobile.",
+   "measure": "other:theme_edit_risk",
+   "read_point": "Immediately after adding the CSS"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "01"
+   ],
+   "cards": [
+    "cfa8eb8e67cf"
+   ],
+   "rules": []
+  },
+  "confidence": "medium",
+  "general_practice": true
+ },
+ {
+  "id": "SET-164",
+  "title": "Build the homepage in a fixed, conversion focused section order",
+  "domain": "05-SET",
+  "bottleneck": [
+   "conversion"
+  ],
+  "lever": "homepage section order",
+  "hypothesis": "If we build the homepage in a fixed order, hero then a trust or USP row then bestsellers then collections then about then testimonials, then new visitors reach proof and product faster because the layout follows a tested pattern instead of an arbitrary one.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "The homepage has no bestseller or trust section, or key sections sit far below the fold.",
+   "metrics": [
+    "cvr_overall",
+    "bounce_rate_pdp"
+   ]
+  },
+  "expected_effect": {
+   "metric": "cvr_overall",
+   "direction": "up",
+   "size": "unknown, no source measures it",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "M",
+   "owner": "designer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Sections can be reordered again with no data loss."
+  },
+  "prerequisites": [
+   "Hero image, at least one bestseller collection, and testimonials ready"
+  ],
+  "steps": [
+   "List the sections available for the homepage.",
+   "Order them hero, USP or trust row, bestsellers, collection list, about, testimonials.",
+   "Remove any leftover default sections not in this order.",
+   "Preview on mobile and desktop and adjust spacing."
+  ],
+  "test": {
+   "method": "Compare scroll depth and clicks to product pages before and after reordering.",
+   "measure": "cvr_overall",
+   "read_point": "2 to 4 weeks after the change"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "01"
+   ],
+   "cards": [
+    "c92800a72acd"
+   ],
+   "rules": []
+  },
+  "confidence": "medium",
+  "general_practice": true
+ },
+ {
+  "id": "SET-165",
+  "title": "Set a focal point on hero and banner images before publishing",
+  "domain": "05-SET",
+  "bottleneck": [
+   "conversion"
+  ],
+  "lever": "hero image focal point",
+  "hypothesis": "If we set a focal point on hero and banner images before publishing, then the key subject stays visible on every device because automatic cropping keeps that point in frame instead of cutting it off on mobile.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "A hero or banner image crops out the product or model on mobile preview.",
+   "metrics": [
+    "other:image_crop_quality"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:image_crop_quality",
+   "direction": "up",
+   "size": "unknown, no source measures it",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "designer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "The focal point can be adjusted again at any time."
+  },
+  "prerequisites": [
+   "Hero image uploaded"
+  ],
+  "steps": [
+   "Open the image editor on the hero or banner image.",
+   "Set the focal point to the key subject, such as a face or product.",
+   "Preview the crop on mobile, tablet and desktop.",
+   "Adjust the focal point if any view still cuts off the subject."
+  ],
+  "test": {
+   "method": "Review the hero image on 3 common screen widths after publishing.",
+   "measure": "other:image_crop_quality",
+   "read_point": "Immediately after publishing the hero"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "01"
+   ],
+   "cards": [
+    "72785e7b693e"
+   ],
+   "rules": []
+  },
+  "confidence": "medium",
+  "general_practice": true
+ },
+ {
+  "id": "SET-166",
+  "title": "Reserve a new page template for real layout differences only",
+  "domain": "05-SET",
+  "bottleneck": [
+   "team_capacity"
+  ],
+  "lever": "template vs metafield rule",
+  "hypothesis": "If we keep one shared default template per page type and only branch to a separate template when a record's layout truly differs, using a metafield when only the content differs, then build and upkeep time drops because most records never need a custom template at all.",
+  "applies_when": [
+   "catalogue"
+  ],
+  "signal": {
+   "check": "A new collection or product got its own full template just to show different text or an image, not a different layout.",
+   "metrics": [
+    "other:template_count"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:template_count",
+   "direction": "down",
+   "size": "unknown, no source measures it",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "M",
+   "owner": "dev"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Consolidating templates back to metafields is reversible page by page."
+  },
+  "prerequisites": [
+   "Default template exists"
+  ],
+  "steps": [
+   "List every custom template currently in use.",
+   "For each one, check if only content differs from the default.",
+   "Move content only differences to a metafield on the default template.",
+   "Delete the now unneeded custom template."
+  ],
+  "test": {
+   "method": "Count custom templates before and after the cleanup.",
+   "measure": "other:template_count",
+   "read_point": "After the cleanup pass"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "01"
+   ],
+   "cards": [
+    "7516ecaaead1",
+    "1b74e6a6d37e",
+    "79db08591c6b"
+   ],
+   "rules": []
+  },
+  "confidence": "medium",
+  "general_practice": true
+ },
+ {
+  "id": "SET-167",
+  "title": "Run a time boxed promotion in the announcement bar with a countdown",
+  "domain": "05-SET",
+  "bottleneck": [
+   "conversion"
+  ],
+  "lever": "announcement bar urgency",
+  "hypothesis": "If we run a time boxed promotion in the announcement bar with a visible countdown timer, then clicks to the promoted collection improve because a visible deadline adds urgency that plain text does not.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "A live promotion is announced in the bar with no end date or countdown shown.",
+   "metrics": [
+    "ctr"
+   ]
+  },
+  "expected_effect": {
+   "metric": "ctr",
+   "direction": "up",
+   "size": "unknown, no source measures it",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "The countdown and message can be removed as soon as the promotion ends."
+  },
+  "prerequisites": [
+   "An active, time boxed promotion"
+  ],
+  "steps": [
+   "Set the promotion's real end date and time.",
+   "Add the countdown timer block to the announcement bar.",
+   "Link the bar to the promoted collection or discount.",
+   "Remove the bar once the promotion ends."
+  ],
+  "test": {
+   "method": "Compare click through rate on the bar with and without a countdown, on similar promotions.",
+   "measure": "ctr",
+   "read_point": "Over one promotion cycle"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "01"
+   ],
+   "cards": [
+    "53605e79474b"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "SET-168",
+  "title": "Add a header country or region selector for multi market stores",
+  "domain": "05-SET",
+  "bottleneck": [
+   "conversion"
+  ],
+  "lever": "market selector visibility",
+  "hypothesis": "If we add a country or region selector to the header for a store selling into more than one market, then checkout drop off from wrong pricing or stock drops because shoppers can confirm they are seeing the right region before they browse.",
+  "applies_when": [
+   "any"
+  ],
+  "does_not_apply_when": [
+   "Store sells into only one country or region"
+  ],
+  "signal": {
+   "check": "The store sells into more than one market but shows only one default region with no way to switch.",
+   "metrics": [
+    "cvr_checkout_to_order"
+   ]
+  },
+  "expected_effect": {
+   "metric": "cvr_checkout_to_order",
+   "direction": "up",
+   "size": "unknown, no source measures it",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "dev"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Low risk change that can be reverted if it does not help."
+  },
+  "prerequisites": [
+   "More than one market or region configured"
+  ],
+  "steps": [
+   "Enable the country or region selector in header settings.",
+   "Confirm it lists every configured market.",
+   "Test that switching region updates price, currency and stock correctly.",
+   "Place the selector somewhere visible, not buried in a menu."
+  ],
+  "test": {
+   "method": "Compare checkout completion by region before and after adding the selector.",
+   "measure": "cvr_checkout_to_order",
+   "read_point": "A few weeks after enabling it"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "01"
+   ],
+   "cards": [
+    "53605e79474b"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "SET-169",
+  "title": "Turn on a sticky header so navigation and cart stay reachable",
+  "domain": "05-SET",
+  "bottleneck": [
+   "conversion"
+  ],
+  "lever": "sticky header navigation",
+  "hypothesis": "If we turn on a sticky header so navigation and cart stay visible while a shopper scrolls, then return to menu friction drops because shoppers do not have to scroll back to the top to search, browse categories or open the cart.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "The header disappears on scroll and shoppers must scroll up to reach navigation or the cart.",
+   "metrics": [
+    "cvr_pdp_to_cart"
+   ]
+  },
+  "expected_effect": {
+   "metric": "cvr_pdp_to_cart",
+   "direction": "up",
+   "size": "unknown, no source measures it",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "dev"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Sticky header can be turned off again if it causes layout problems on mobile."
+  },
+  "prerequisites": [],
+  "steps": [
+   "Enable the sticky header option in theme settings.",
+   "Check it does not overlap content on mobile.",
+   "Confirm the cart icon and search stay reachable while scrolling.",
+   "Test on the longest page in the catalog."
+  ],
+  "test": {
+   "method": "Compare cart and search usage before and after enabling sticky header.",
+   "measure": "cvr_pdp_to_cart",
+   "read_point": "2 to 4 weeks after the change"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "01"
+   ],
+   "cards": [
+    "53605e79474b"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "SET-170",
+  "title": "Test a cart drawer against a full cart page before assuming one wins",
+  "domain": "05-SET",
+  "bottleneck": [
+   "conversion"
+  ],
+  "lever": "cart drawer vs page test",
+  "hypothesis": "If we test a cart drawer against a full cart page instead of assuming one converts better, then the store keeps the format that actually performs for its own shoppers because the better choice varies by catalog and audience.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "The store picked cart drawer or cart page by preference alone, with no comparison run.",
+   "metrics": [
+    "cvr_cart_to_checkout"
+   ]
+  },
+  "expected_effect": {
+   "metric": "cvr_cart_to_checkout",
+   "direction": "up",
+   "size": "unknown, no source measures it",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "M",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Low risk change that can be reverted if it does not help."
+  },
+  "prerequisites": [
+   "Enough traffic to run a comparison"
+  ],
+  "steps": [
+   "Pick a test window and traffic split method.",
+   "Run the cart drawer for one segment and the cart page for another, or alternate by period.",
+   "Track add to cart through checkout start for each.",
+   "Keep the format with the higher cart to checkout rate."
+  ],
+  "test": {
+   "method": "Split test or sequential test comparing cart drawer against cart page.",
+   "measure": "cvr_cart_to_checkout",
+   "read_point": "After the test window closes"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "01"
+   ],
+   "cards": [
+    "ed834e77dbd7"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "SET-171",
+  "title": "Add a free shipping progress bar that updates live in the cart",
+  "domain": "05-SET",
+  "bottleneck": [
+   "aov"
+  ],
+  "lever": "free shipping progress bar",
+  "hypothesis": "If we add a free shipping progress bar to the cart drawer that updates as items are added, then average order value rises because shoppers can see exactly how much more to add instead of guessing at a static threshold message.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "The store has a free shipping threshold but the cart only shows it as static text, if at all.",
+   "metrics": [
+    "aov"
+   ]
+  },
+  "expected_effect": {
+   "metric": "aov",
+   "direction": "up",
+   "size": "unknown, no source measures it",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "M",
+   "owner": "dev"
+  },
+  "cost": "low",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Low risk change that can be reverted if it does not help."
+  },
+  "prerequisites": [
+   "A set free shipping threshold"
+  ],
+  "steps": [
+   "Confirm the free shipping threshold amount.",
+   "Add a progress bar app or block to the cart drawer.",
+   "Set it to update live as items are added or removed.",
+   "Test at values just under and over the threshold."
+  ],
+  "test": {
+   "method": "Compare AOV for carts that saw the progress bar against a prior period without it.",
+   "measure": "aov",
+   "read_point": "2 to 4 weeks after launch"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "01",
+    "03"
+   ],
+   "cards": [
+    "ed834e77dbd7",
+    "cb975a996a4d"
+   ],
+   "rules": []
+  },
+  "confidence": "medium",
+  "general_practice": true
+ },
+ {
+  "id": "SET-172",
+  "title": "Decide deliberately whether to preselect the first product variant",
+  "domain": "05-SET",
+  "bottleneck": [
+   "conversion"
+  ],
+  "lever": "variant preselection setting",
+  "hypothesis": "If we deliberately choose whether a product page preselects the first available variant, then wrong variant complaints and checkout friction move in a predictable direction because turning it on speeds up buying while turning it off forces a conscious size or color choice.",
+  "applies_when": [
+   "catalogue"
+  ],
+  "signal": {
+   "check": "The store has never reviewed whether this setting is on or off, or has support tickets about wrong variant orders.",
+   "metrics": [
+    "cvr_pdp_to_cart",
+    "return_rate"
+   ]
+  },
+  "expected_effect": {
+   "metric": "return_rate",
+   "direction": "down",
+   "size": "unknown, no source measures it",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "dev"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Low risk change that can be reverted if it does not help."
+  },
+  "prerequisites": [
+   "Product has more than one variant"
+  ],
+  "steps": [
+   "Check the current setting for variant preselection.",
+   "Review recent support tickets for wrong size or wrong color orders.",
+   "Decide on or off based on that evidence.",
+   "Re-check after a month to see if the complaint rate changed."
+  ],
+  "test": {
+   "method": "Compare return or exchange rate for wrong variant before and after changing the setting.",
+   "measure": "return_rate",
+   "read_point": "4 to 8 weeks after the change"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "01"
+   ],
+   "cards": [
+    "2efef89fb3bf"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "SET-173",
+  "title": "Keep add to cart sticky on mobile product pages",
+  "domain": "05-SET",
+  "bottleneck": [
+   "conversion"
+  ],
+  "lever": "sticky add to cart mobile",
+  "hypothesis": "If we keep the add to cart button sticky on mobile product pages, then add to cart rate improves because shoppers scrolling through long product content never lose access to the buy button.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "The add to cart button scrolls out of view on mobile product pages.",
+   "metrics": [
+    "cvr_pdp_to_cart"
+   ]
+  },
+  "expected_effect": {
+   "metric": "cvr_pdp_to_cart",
+   "direction": "up",
+   "size": "unknown, no source measures it",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "dev"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Low risk change that can be reverted if it does not help."
+  },
+  "prerequisites": [],
+  "steps": [
+   "Enable sticky add to cart in product page theme settings.",
+   "Check it does not overlap other mobile elements.",
+   "Test on the longest product page in the catalog.",
+   "Confirm it still works after any theme update."
+  ],
+  "test": {
+   "method": "Compare mobile add to cart rate before and after enabling it.",
+   "measure": "cvr_pdp_to_cart",
+   "read_point": "2 to 4 weeks after the change"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "01"
+   ],
+   "cards": [
+    "2efef89fb3bf"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "SET-174",
+  "title": "Keep breadcrumb navigation on across product and collection pages",
+  "domain": "05-SET",
+  "bottleneck": [
+   "conversion"
+  ],
+  "lever": "breadcrumb navigation",
+  "hypothesis": "If we keep breadcrumb navigation turned on across product and collection pages, then shoppers find their way back to a category more easily because breadcrumbs give a visible path without relying on the browser back button.",
+  "applies_when": [
+   "catalogue"
+  ],
+  "signal": {
+   "check": "Product or collection pages have no breadcrumb trail, especially in a multi level catalog.",
+   "metrics": [
+    "organic_clicks"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:navigation_ease",
+   "direction": "up",
+   "size": "unknown, no source measures it",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "dev"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Low risk change that can be reverted if it does not help."
+  },
+  "prerequisites": [
+   "Category structure with more than one level"
+  ],
+  "steps": [
+   "Check whether the theme supports breadcrumbs natively.",
+   "Turn breadcrumbs on in theme settings, or install a breadcrumb app if missing.",
+   "Confirm the trail matches the real category structure.",
+   "Check breadcrumbs render correctly on mobile."
+  ],
+  "test": {
+   "method": "Compare pages per session or return to category clicks before and after enabling breadcrumbs.",
+   "measure": "other:navigation_ease",
+   "read_point": "2 to 4 weeks after enabling"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "01"
+   ],
+   "cards": [
+    "2efef89fb3bf"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "SET-175",
+  "title": "Enable product image zoom only where photo resolution supports it",
+  "domain": "05-SET",
+  "bottleneck": [
+   "conversion"
+  ],
+  "lever": "product image zoom",
+  "hypothesis": "If we enable image zoom on product photos only when photo resolution actually supports it, then shoppers can inspect detail without seeing a blurry, low quality zoomed image that hurts trust.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "Image zoom is on but zooming reveals pixelation because source photos are low resolution.",
+   "metrics": [
+    "other:image_quality_perception"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:image_quality_perception",
+   "direction": "up",
+   "size": "unknown, no source measures it",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "designer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Low risk change that can be reverted if it does not help."
+  },
+  "prerequisites": [
+   "High resolution product photos"
+  ],
+  "steps": [
+   "Check the resolution of current product photos.",
+   "Turn on zoom only where photos are high enough resolution.",
+   "Re-shoot or upscale low resolution photos before enabling zoom on them.",
+   "Spot check zoom quality on a few products after enabling."
+  ],
+  "test": {
+   "method": "Review zoomed image quality across a sample of products.",
+   "measure": "other:image_quality_perception",
+   "read_point": "After enabling zoom"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "01"
+   ],
+   "cards": [
+    "2efef89fb3bf"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "SET-176",
+  "title": "Group product gallery images by the selected color variant",
+  "domain": "05-SET",
+  "bottleneck": [
+   "conversion"
+  ],
+  "lever": "variant image grouping",
+  "hypothesis": "If we group product gallery images by variant color so shoppers only see the photos for the color they picked, then confusion about what they are buying drops because the gallery always matches the selected option.",
+  "applies_when": [
+   "catalogue"
+  ],
+  "signal": {
+   "check": "Selecting a color variant leaves the gallery showing photos of every color instead of just the selected one.",
+   "metrics": [
+    "return_rate"
+   ]
+  },
+  "expected_effect": {
+   "metric": "return_rate",
+   "direction": "down",
+   "size": "unknown, no source measures it",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "M",
+   "owner": "dev"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Low risk change that can be reverted if it does not help."
+  },
+  "prerequisites": [
+   "Products with color variants and per-color photos"
+  ],
+  "steps": [
+   "Check if the theme has a native variant image grouping toggle.",
+   "Turn it on if available.",
+   "If not available, tag each image's alt text with the exact variant name and upload each color's photos together.",
+   "Test that switching color swaps the gallery correctly."
+  ],
+  "test": {
+   "method": "Compare wrong color return rate before and after grouping images.",
+   "measure": "return_rate",
+   "read_point": "4 to 8 weeks after the change"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "01"
+   ],
+   "cards": [
+    "08b36113927c"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "SET-177",
+  "title": "Add a size chart to every sized or apparel type product",
+  "domain": "05-SET",
+  "bottleneck": [
+   "conversion"
+  ],
+  "lever": "size chart availability",
+  "hypothesis": "If we add a size chart, either a shared page or a per product metafield, to apparel type products, then size related returns drop because shoppers have a clear reference before choosing a size.",
+  "applies_when": [
+   "catalogue"
+  ],
+  "signal": {
+   "check": "An apparel or sized product has no size chart linked from its product page.",
+   "metrics": [
+    "return_rate"
+   ]
+  },
+  "expected_effect": {
+   "metric": "return_rate",
+   "direction": "down",
+   "size": "unknown, no source measures it",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "M",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Low risk change that can be reverted if it does not help."
+  },
+  "prerequisites": [
+   "Real measurements for the product line"
+  ],
+  "steps": [
+   "Gather accurate measurements for each size.",
+   "Build a shared size chart page, or a per product metafield if charts vary by category.",
+   "Link the size chart from the product page's size guide option.",
+   "Publish and confirm the chart is selectable and displays correctly."
+  ],
+  "test": {
+   "method": "Compare size related return or exchange rate before and after adding the chart.",
+   "measure": "return_rate",
+   "read_point": "4 to 8 weeks after adding the chart"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "01"
+   ],
+   "cards": [
+    "99e2ef1ab894"
+   ],
+   "rules": []
+  },
+  "confidence": "medium",
+  "general_practice": true
+ },
+ {
+  "id": "SET-178",
+  "title": "Add collapsible FAQ style tabs to the product page",
+  "domain": "05-SET",
+  "bottleneck": [
+   "conversion"
+  ],
+  "lever": "PDP FAQ tabs",
+  "hypothesis": "If we add collapsible FAQ style tabs on the product page for shipping, returns, fit and care, each a short summary linking to the full policy, then support questions on those topics drop because shoppers can find answers without leaving the product page.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "Support tickets repeatedly ask shipping, return, fit or care questions that are only answered on a separate policy page.",
+   "metrics": [
+    "ticket_backlog"
+   ]
+  },
+  "expected_effect": {
+   "metric": "ticket_backlog",
+   "direction": "down",
+   "size": "unknown, no source measures it",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "M",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Low risk change that can be reverted if it does not help."
+  },
+  "prerequisites": [
+   "Published shipping, return and care policies"
+  ],
+  "steps": [
+   "Identify the most common product page related support questions.",
+   "Write a short summary for each, ending with a link to the full policy.",
+   "Add each summary as a collapsible tab on the product page.",
+   "Track whether related ticket volume drops after launch."
+  ],
+  "test": {
+   "method": "Compare volume of shipping, return, fit and care tickets before and after adding the tabs.",
+   "measure": "ticket_backlog",
+   "read_point": "4 to 8 weeks after launch"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "01"
+   ],
+   "cards": [
+    "922844ff8bf9"
+   ],
+   "rules": []
+  },
+  "confidence": "medium",
+  "general_practice": true
+ },
+ {
+  "id": "SET-179",
+  "title": "Add a fit or true to size rating block on apparel product pages",
+  "domain": "05-SET",
+  "bottleneck": [
+   "conversion"
+  ],
+  "lever": "fit rating block",
+  "hypothesis": "If we add a fit or true to size rating block on apparel product pages where the theme supports it, then size related returns drop because shoppers get a quick signal of whether an item runs small, true or large before buying.",
+  "applies_when": [
+   "catalogue"
+  ],
+  "signal": {
+   "check": "Apparel products have no fit rating shown, and size related returns are a known issue.",
+   "metrics": [
+    "return_rate"
+   ]
+  },
+  "expected_effect": {
+   "metric": "return_rate",
+   "direction": "down",
+   "size": "unknown, no source measures it",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "M",
+   "owner": "dev"
+  },
+  "cost": "low",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Low risk change that can be reverted if it does not help."
+  },
+  "prerequisites": [
+   "Theme or app support for a fit rating block",
+   "Enough reviews or fit feedback to populate it"
+  ],
+  "steps": [
+   "Confirm the theme or a review app supports a fit rating block.",
+   "Enable it on apparel product templates.",
+   "Seed it with feedback from early reviews or fit surveys.",
+   "Monitor size related returns after launch."
+  ],
+  "test": {
+   "method": "Compare size related return rate before and after the fit block goes live.",
+   "measure": "return_rate",
+   "read_point": "8 to 12 weeks after launch, once enough ratings exist"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "01"
+   ],
+   "cards": [
+    "6eff9d71aa70"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "SET-180",
+  "title": "Match one click buy buttons to real per order purchase patterns",
+  "domain": "05-SET",
+  "bottleneck": [
+   "conversion"
+  ],
+  "lever": "one click checkout placement",
+  "hypothesis": "If we show a one click buy button only for products usually bought one at a time, and hide it along with the quantity selector where multi unit purchases are common, then checkout matches real buying behavior because shoppers who need multiple units are routed through the cart instead of a single item shortcut.",
+  "applies_when": [
+   "catalogue"
+  ],
+  "signal": {
+   "check": "A product where most orders contain 2 or more units still shows a one click single item buy button.",
+   "metrics": [
+    "aov",
+    "cvr_pdp_to_cart"
+   ]
+  },
+  "expected_effect": {
+   "metric": "aov",
+   "direction": "up",
+   "size": "unknown, no source measures it",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "dev"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Low risk change that can be reverted if it does not help."
+  },
+  "prerequisites": [
+   "Order data on typical unit count per product"
+  ],
+  "steps": [
+   "Check average units per order for each product or category.",
+   "Hide the one click buy button and quantity shortcut on products usually bought in multiples.",
+   "Keep the one click button on single unit purchase products.",
+   "Recheck after a season if buying patterns shift."
+  ],
+  "test": {
+   "method": "Compare AOV and cart usage on affected products before and after the change.",
+   "measure": "aov",
+   "read_point": "4 to 8 weeks after the change"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "01"
+   ],
+   "cards": [
+    "fd255645fcbc"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "SET-181",
+  "title": "Use an AI section generator only to fill a genuine PDP gap, then QA it",
+  "domain": "05-SET",
+  "bottleneck": [
+   "team_capacity"
+  ],
+  "lever": "AI section generator fallback",
+  "hypothesis": "If we use an AI section generator to build a genuinely missing product page section only after checking no existing theme section covers it, then a real content gap gets filled fast without paying for custom development, as long as the output gets a manual QA pass before publishing.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "A needed product page section, such as a comparison table, does not exist in the current theme's section library.",
+   "metrics": [
+    "other:section_gap_count"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:section_gap_count",
+   "direction": "down",
+   "size": "unknown, no source measures it",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "dev"
+  },
+  "cost": "low",
+  "risk": {
+   "level": "medium",
+   "reversible": true,
+   "note": "Generated code can carry bugs and should be tested before publishing."
+  },
+  "prerequisites": [
+   "Confirmed no existing section covers the need"
+  ],
+  "steps": [
+   "Confirm no built in or app section already covers the need.",
+   "Describe the missing section clearly to the AI generator.",
+   "Review the generated section for bugs and refine with follow up prompts.",
+   "Manually QA the section on the live preview before publishing."
+  ],
+  "test": {
+   "method": "Click and test every interactive part of the generated section on the live preview.",
+   "measure": "other:section_gap_count",
+   "read_point": "Immediately after generation, before publishing"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "01"
+   ],
+   "cards": [
+    "82e21838aca5"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "SET-182",
+  "title": "Add a hotspot feature highlight section below the buy area",
+  "domain": "05-SET",
+  "bottleneck": [
+   "conversion"
+  ],
+  "lever": "hotspot feature highlights",
+  "hypothesis": "If we add a hotspot or feature highlight section with clickable callouts on a product image below the buy area, then time spent on the product page and feature awareness improve because shoppers can explore product features visually instead of only reading text.",
+  "applies_when": [
+   "catalogue"
+  ],
+  "signal": {
+   "check": "A product with several distinct features has no visual way to explore them beyond a text description.",
+   "metrics": [
+    "cvr_pdp_to_cart"
+   ]
+  },
+  "expected_effect": {
+   "metric": "cvr_pdp_to_cart",
+   "direction": "up",
+   "size": "unknown, no source measures it",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "M",
+   "owner": "designer"
+  },
+  "cost": "low",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Low risk change that can be reverted if it does not help."
+  },
+  "prerequisites": [
+   "Theme or app support for hotspot sections",
+   "A product with distinct visual features"
+  ],
+  "steps": [
+   "Confirm theme or app support for a hotspot section.",
+   "Pick a product image with clear, separable features.",
+   "Add callouts naming and briefly explaining each feature.",
+   "Preview and test that each hotspot opens correctly on mobile."
+  ],
+  "test": {
+   "method": "Compare add to cart rate on products with and without the hotspot section.",
+   "measure": "cvr_pdp_to_cart",
+   "read_point": "4 to 8 weeks after launch"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "01"
+   ],
+   "cards": [
+    "a9c942e14d9d"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "SET-183",
+  "title": "Reuse the homepage trust section on the product page below the buy area",
+  "domain": "05-SET",
+  "bottleneck": [
+   "conversion"
+  ],
+  "lever": "PDP trust section reuse",
+  "hypothesis": "If we copy the homepage's USP or trust section onto the product page below the buy area in a contrasting color scheme, then hesitation at the point of purchase drops because the same reassurance a shopper saw on the homepage reappears right where they decide to buy.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "The homepage shows trust or USP messaging that never reappears anywhere on the product page.",
+   "metrics": [
+    "cvr_pdp_to_cart"
+   ]
+  },
+  "expected_effect": {
+   "metric": "cvr_pdp_to_cart",
+   "direction": "up",
+   "size": "unknown, no source measures it",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "designer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Low risk change that can be reverted if it does not help."
+  },
+  "prerequisites": [
+   "An existing homepage USP or trust section"
+  ],
+  "steps": [
+   "Copy the homepage's USP or trust section.",
+   "Paste it onto the product page template below the buy area.",
+   "Assign a contrasting color scheme so it stands out from surrounding content.",
+   "Preview on mobile and desktop."
+  ],
+  "test": {
+   "method": "Compare add to cart rate before and after the section appears on product pages.",
+   "measure": "cvr_pdp_to_cart",
+   "read_point": "2 to 4 weeks after the change"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "01"
+   ],
+   "cards": [
+    "a9c942e14d9d"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "SET-184",
+  "title": "Place short benefit bullets and the description above the buy button",
+  "domain": "05-SET",
+  "bottleneck": [
+   "conversion"
+  ],
+  "lever": "PDP content order",
+  "hypothesis": "If we place a short benefit bullet list above the buy button as a metafield, and keep the short description above the buy buttons rather than below the media, then shoppers read the case for buying before they reach the button because the persuasive content sits ahead of the decision point, not after it.",
+  "applies_when": [
+   "catalogue"
+  ],
+  "signal": {
+   "check": "The short description or benefit bullets sit below the buy button or are missing entirely for a complex or solution type product.",
+   "metrics": [
+    "cvr_pdp_to_cart"
+   ]
+  },
+  "expected_effect": {
+   "metric": "cvr_pdp_to_cart",
+   "direction": "up",
+   "size": "unknown, no source measures it",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "M",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Low risk change that can be reverted if it does not help."
+  },
+  "prerequisites": [
+   "Clear list of the product's real benefits"
+  ],
+  "steps": [
+   "Write 3 to 4 short benefit bullets for the product.",
+   "Build them as a metafield so they can vary per product.",
+   "Place the short description and bullets above the buy buttons, not below the media.",
+   "Preview on mobile to confirm the order still reads well."
+  ],
+  "test": {
+   "method": "Compare add to cart rate before and after reordering content on a sample of products.",
+   "measure": "cvr_pdp_to_cart",
+   "read_point": "2 to 4 weeks after the change"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "01"
+   ],
+   "cards": [
+    "458ba19e94c4"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "SET-185",
+  "title": "Build a per market catalog that excludes products and absorbs duties into price",
+  "domain": "05-SET",
+  "bottleneck": [
+   "margin_cogs"
+  ],
+  "lever": "per market catalog control",
+  "hypothesis": "If we build a per market catalog to exclude products that cannot ship or sell into that market, and to override prices to absorb import duties into the shown price, then that market's margin and checkout accuracy both improve because the shopper never hits a surprise fee or an unsellable product at checkout.",
+  "applies_when": [
+   "any"
+  ],
+  "does_not_apply_when": [
+   "Store sells into only one market"
+  ],
+  "signal": {
+   "check": "A market shows products it cannot actually fulfil, or duties are charged as a checkout surprise instead of being priced in.",
+   "metrics": [
+    "gross_margin",
+    "cvr_checkout_to_order"
+   ]
+  },
+  "expected_effect": {
+   "metric": "gross_margin",
+   "direction": "up",
+   "size": "unknown, no source measures it",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "M",
+   "owner": "ops"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Low risk change that can be reverted if it does not help."
+  },
+  "prerequisites": [
+   "Markets feature configured",
+   "Known per market duty or fulfilment constraints"
+  ],
+  "steps": [
+   "List which products cannot ship or sell into a given market.",
+   "Build a catalog for that market excluding those products.",
+   "Calculate the duty amount to absorb into the shown price where wanted.",
+   "Override prices in that market's catalog and verify at checkout."
+  ],
+  "test": {
+   "method": "Check a test order from that market shows the right products and no duty surprise at checkout.",
+   "measure": "cvr_checkout_to_order",
+   "read_point": "Before launch in that market"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "01"
+   ],
+   "cards": [
+    "6474521ce75a"
+   ],
+   "rules": []
+  },
+  "confidence": "medium",
+  "general_practice": true
+ },
+ {
+  "id": "SET-186",
+  "title": "Use per market theme customization to swap market specific content",
+  "domain": "05-SET",
+  "bottleneck": [
+   "conversion"
+  ],
+  "lever": "per market theme override",
+  "hypothesis": "If we use per market theme customization to swap specific content, such as a hero banner, for one market only, then that market's relevance improves because local shoppers see content built for them without changing the default store or any other market.",
+  "applies_when": [
+   "any"
+  ],
+  "does_not_apply_when": [
+   "Store sells into only one market"
+  ],
+  "signal": {
+   "check": "A market specific promotion or holiday only applies to one country but the homepage shows the same content to every market.",
+   "metrics": [
+    "cvr_overall"
+   ]
+  },
+  "expected_effect": {
+   "metric": "cvr_overall",
+   "direction": "up",
+   "size": "unknown, no source measures it",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "M",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Low risk change that can be reverted if it does not help."
+  },
+  "prerequisites": [
+   "Markets feature configured"
+  ],
+  "steps": [
+   "Identify content that should differ for one specific market.",
+   "Open theme customization scoped to that market.",
+   "Swap the content for that market only.",
+   "Confirm the default store and other markets are unchanged."
+  ],
+  "test": {
+   "method": "Compare that market's homepage engagement before and after the market specific content goes live.",
+   "measure": "cvr_overall",
+   "read_point": "2 to 4 weeks after the change"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "01"
+   ],
+   "cards": [
+    "01109f418218"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "SET-187",
+  "title": "Nest a country as a sub market when tax and currency treatment match",
+  "domain": "05-SET",
+  "bottleneck": [
+   "team_capacity"
+  ],
+  "lever": "market hierarchy nesting",
+  "hypothesis": "If we nest a country as a sub market of a region when tax and currency treatment allow it, then market setup and upkeep time drops because the sub market can inherit the parent's shared settings instead of every country being configured separately.",
+  "applies_when": [
+   "any"
+  ],
+  "does_not_apply_when": [
+   "Store sells into only one market"
+  ],
+  "signal": {
+   "check": "Several countries in the same region share the same tax and currency treatment but are set up as fully separate markets.",
+   "metrics": [
+    "other:market_setup_time"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:market_setup_time",
+   "direction": "down",
+   "size": "unknown, no source measures it",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "ops"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Low risk change that can be reverted if it does not help."
+  },
+  "prerequisites": [
+   "Two or more markets with shared tax and currency treatment"
+  ],
+  "steps": [
+   "Identify markets that share tax and currency treatment.",
+   "Nest the narrower market as a sub market of the shared parent.",
+   "Confirm settings inherit correctly.",
+   "Adjust only the settings that genuinely differ for the sub market."
+  ],
+  "test": {
+   "method": "Compare setup time for the next new market added this way versus one set up fully separately.",
+   "measure": "other:market_setup_time",
+   "read_point": "When the next market is added"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "01"
+   ],
+   "cards": [
+    "8597c5d851d5"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "SET-188",
+  "title": "Round converted per market prices to a natural ending",
+  "domain": "05-SET",
+  "bottleneck": [
+   "conversion"
+  ],
+  "lever": "per market price rounding",
+  "hypothesis": "If we round converted per market prices to a natural looking ending, such as point nine five, instead of leaving the raw currency conversion, then price perception improves because a clean number reads as intentional pricing rather than an automatic conversion artifact.",
+  "applies_when": [
+   "any"
+  ],
+  "does_not_apply_when": [
+   "Store sells into only one currency"
+  ],
+  "signal": {
+   "check": "A converted price in a market shows an odd decimal instead of a natural ending.",
+   "metrics": [
+    "cvr_overall"
+   ]
+  },
+  "expected_effect": {
+   "metric": "cvr_overall",
+   "direction": "up",
+   "size": "unknown, no source measures it",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Low risk change that can be reverted if it does not help."
+  },
+  "prerequisites": [
+   "Per market currency and pricing enabled"
+  ],
+  "steps": [
+   "Review converted prices in each active market.",
+   "Set a rounding rule to a consistent natural ending.",
+   "Apply it across the market's catalog.",
+   "Spot check a sample of products after applying the rule."
+  ],
+  "test": {
+   "method": "Compare conversion rate in that market before and after rounding is applied.",
+   "measure": "cvr_overall",
+   "read_point": "4 to 8 weeks after the change"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "01"
+   ],
+   "cards": [
+    "8597c5d851d5"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "SET-189",
+  "title": "Decide checkout tipping deliberately and test its effect",
+  "domain": "05-SET",
+  "bottleneck": [
+   "margin_cogs"
+  ],
+  "lever": "checkout tipping decision",
+  "hypothesis": "If we decide deliberately whether to enable checkout tipping and test its effect on order value, then the store gains real evidence instead of leaving tipping at whatever the platform defaults to.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "Checkout tipping is on or off with no record of why, and no measurement of its effect.",
+   "metrics": [
+    "aov"
+   ]
+  },
+  "expected_effect": {
+   "metric": "aov",
+   "direction": "up",
+   "size": "unknown, no source measures it",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "finance"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Low risk change that can be reverted if it does not help."
+  },
+  "prerequisites": [],
+  "steps": [
+   "Check the current tipping setting.",
+   "Decide a test window with tipping on versus off, or with different suggested amounts.",
+   "Track average order value and any complaint volume during the test.",
+   "Keep the setting that performs better."
+  ],
+  "test": {
+   "method": "Compare AOV and checkout completion with tipping on versus off.",
+   "measure": "aov",
+   "read_point": "After the test window closes"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "01"
+   ],
+   "cards": [
+    "d96aa7966303"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "SET-190",
+  "title": "Add a promotion block inside the mega menu to spotlight a collection",
+  "domain": "05-SET",
+  "bottleneck": [
+   "aov"
+  ],
+  "lever": "mega menu promotion block",
+  "hypothesis": "If we add an image and call to action block inside a mega menu dropdown to spotlight a featured collection, then clicks to that collection rise because shoppers browsing the menu see the promotion before they even open a category page.",
+  "applies_when": [
+   "catalogue"
+  ],
+  "signal": {
+   "check": "The main navigation uses a mega menu with plain text links only, and no featured collection or promotion is surfaced there.",
+   "metrics": [
+    "ctr"
+   ]
+  },
+  "expected_effect": {
+   "metric": "ctr",
+   "direction": "up",
+   "size": "unknown, no source measures it",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Low risk change that can be reverted if it does not help."
+  },
+  "prerequisites": [
+   "A mega menu in the current theme"
+  ],
+  "steps": [
+   "Pick a collection or promotion to feature.",
+   "Add an image and call to action block to the relevant mega menu dropdown.",
+   "Link it to the target collection.",
+   "Rotate the featured collection periodically."
+  ],
+  "test": {
+   "method": "Compare clicks to the featured collection before and after adding the menu block.",
+   "measure": "ctr",
+   "read_point": "2 to 4 weeks after the change"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "01"
+   ],
+   "cards": [
+    "1eaac2268d09"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "SET-191",
+  "title": "Read sales by gross, net, discounts and channel as separate views",
+  "domain": "05-SET",
+  "bottleneck": [
+   "measurement_data"
+  ],
+  "lever": "sales breakdown reading",
+  "hypothesis": "If we read the sales breakdown by gross versus net versus discounts, and by sales channel, as separate views instead of only the top line total, then decisions about discounting and channel investment improve because each view answers a different question the total sales number cannot.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "Reporting only tracks total sales, with no separate view of discounts given or channel split.",
+   "metrics": [
+    "discount_rate"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:reporting_accuracy",
+   "direction": "up",
+   "size": "unknown, no source measures it",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "founder"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Low risk change that can be reverted if it does not help."
+  },
+  "prerequisites": [
+   "Analytics dashboard with breakdown views available"
+  ],
+  "steps": [
+   "Open the sales breakdown report by gross, net and discounts.",
+   "Open the sales by channel report separately.",
+   "Note where discounts are eating into margin most.",
+   "Review both views on a regular reporting cadence."
+  ],
+  "test": {
+   "method": "Compare decisions made with the breakdown views against decisions made from total sales alone.",
+   "measure": "discount_rate",
+   "read_point": "Each reporting cycle"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "01"
+   ],
+   "cards": [
+    "873a72ed8762"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "SET-192",
+  "title": "Use the analytics AI query tool for plain language questions",
+  "domain": "05-SET",
+  "bottleneck": [
+   "measurement_data"
+  ],
+  "lever": "AI analytics query tool",
+  "hypothesis": "If we use the analytics platform's AI query tool to ask plain language questions of store data, then time spent building manual reports drops because a founder can get a first pass answer without configuring filters by hand.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "Answering a simple data question, such as a trend over time, requires manually building a filtered report each time.",
+   "metrics": [
+    "other:reporting_time"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:reporting_time",
+   "direction": "down",
+   "size": "unknown, no source measures it",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "founder"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Low risk change that can be reverted if it does not help."
+  },
+  "prerequisites": [
+   "Platform has a built in AI query feature"
+  ],
+  "steps": [
+   "Open the analytics AI query tool.",
+   "Type the question in plain language.",
+   "Review the returned report for accuracy against a known number.",
+   "Refine the question if the first answer is too broad or narrow."
+  ],
+  "test": {
+   "method": "Time how long it takes to get an answer this way versus building the report manually.",
+   "measure": "other:reporting_time",
+   "read_point": "The next few times a data question comes up"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "01"
+   ],
+   "cards": [
+    "2232708393e1"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "SET-193",
+  "title": "On WooCommerce, set a price on every variation before publishing",
+  "domain": "05-SET",
+  "bottleneck": [
+   "conversion"
+  ],
+  "lever": "WooCommerce variation price check",
+  "hypothesis": "If we set a price on every WooCommerce product variation before publishing, then invisible add to cart failures drop because an unpriced variation looks normal in the interface but silently cannot be added to the cart.",
+  "applies_when": [
+   "catalogue",
+   "custom_platform"
+  ],
+  "signal": {
+   "check": "A variable product was just published or edited and at least one variation row has no price set.",
+   "metrics": [
+    "cvr_pdp_to_cart"
+   ]
+  },
+  "expected_effect": {
+   "metric": "cvr_pdp_to_cart",
+   "direction": "up",
+   "size": "unknown, no source measures it",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "dev"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Low risk change that can be reverted if it does not help."
+  },
+  "prerequisites": [],
+  "steps": [
+   "Open every variation row on a variable product before publishing.",
+   "Confirm a price is set on each row.",
+   "Publish, then test adding each variation combination to cart on the live page.",
+   "Repeat this check after any bulk variation edit."
+  ],
+  "test": {
+   "method": "Click through every variation combination on the live product page and confirm each can be added to cart.",
+   "measure": "cvr_pdp_to_cart",
+   "read_point": "Before publishing and after any bulk edit"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "02"
+   ],
+   "cards": [
+    "a8a1945fe798"
+   ],
+   "rules": []
+  },
+  "confidence": "high",
+  "general_practice": true
+ },
+ {
+  "id": "SET-194",
+  "title": "List an affiliate or reseller item as an external product, not a normal one",
+  "domain": "05-SET",
+  "bottleneck": [
+   "margin_cogs"
+  ],
+  "lever": "external product listing",
+  "hypothesis": "If we list an affiliate or reseller product using the platform's external or affiliate product type, with a comparison price and a link straight to the partner, then order and fulfilment errors drop because the product never enters the store's own checkout, inventory or shipping by mistake.",
+  "applies_when": [
+   "marketplace_heavy",
+   "catalogue"
+  ],
+  "signal": {
+   "check": "An affiliate or reseller item is listed as a normal purchasable product instead of the external or affiliate type.",
+   "metrics": [
+    "other:fulfilment_error_rate"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:fulfilment_error_rate",
+   "direction": "down",
+   "size": "unknown, no source measures it",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "dev"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Low risk change that can be reverted if it does not help."
+  },
+  "prerequisites": [
+   "An affiliate or reseller link for the product"
+  ],
+  "steps": [
+   "Set the product type to external or affiliate.",
+   "Paste the partner link and set the button label to match the destination.",
+   "Enter a comparison price for context, not a real checkout price.",
+   "Test the button to confirm it links to the correct destination."
+  ],
+  "test": {
+   "method": "Click the product on the live storefront and confirm it routes to the partner, not the store's own checkout.",
+   "measure": "other:fulfilment_error_rate",
+   "read_point": "Immediately after publishing"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "02"
+   ],
+   "cards": [
+    "5c9382dfb092"
+   ],
+   "rules": []
+  },
+  "confidence": "medium",
+  "general_practice": true
+ },
+ {
+  "id": "SET-195",
+  "title": "Disable shipping calculations entirely for a fully digital catalog",
+  "domain": "05-SET",
+  "bottleneck": [
+   "team_capacity"
+  ],
+  "lever": "digital catalog shipping",
+  "hypothesis": "If we disable shipping calculations entirely for a fully digital or virtual catalog, then setup time drops because there is no need to configure unused shipping zones and rates for products that never ship.",
+  "applies_when": [
+   "one_off",
+   "subscription"
+  ],
+  "does_not_apply_when": [
+   "Catalog includes any physical product"
+  ],
+  "signal": {
+   "check": "Every product in the catalog is virtual or downloadable, but shipping zones are still configured.",
+   "metrics": [
+    "other:setup_time"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:setup_time",
+   "direction": "down",
+   "size": "unknown, no source measures it",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "dev"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Low risk change that can be reverted if it does not help."
+  },
+  "prerequisites": [
+   "Confirmed the entire catalog is digital"
+  ],
+  "steps": [
+   "Confirm every current and planned product is virtual or downloadable.",
+   "Turn off shipping calculations in store settings.",
+   "Remove any leftover shipping zones.",
+   "Re-enable shipping if a physical product is ever added."
+  ],
+  "test": {
+   "method": "Place a test order and confirm no shipping step or shipping address appears at checkout.",
+   "measure": "other:setup_time",
+   "read_point": "Before launch"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "02"
+   ],
+   "cards": [
+    "ca2329868be7"
+   ],
+   "rules": []
+  },
+  "confidence": "medium",
+  "general_practice": true
+ },
+ {
+  "id": "SET-196",
+  "title": "Assign a static homepage before building it out on WordPress",
+  "domain": "05-SET",
+  "bottleneck": [
+   "team_capacity"
+  ],
+  "lever": "static homepage assignment",
+  "hypothesis": "If we assign a static home page as the site's homepage before building it out, then early design work is not wasted because a fresh WordPress install otherwise defaults to a blog post feed instead of the intended homepage.",
+  "applies_when": [
+   "custom_platform"
+  ],
+  "signal": {
+   "check": "The homepage shows a blog post feed instead of the designed homepage layout.",
+   "metrics": [
+    "other:setup_time"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:setup_time",
+   "direction": "down",
+   "size": "unknown, no source measures it",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "dev"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Low risk change that can be reverted if it does not help."
+  },
+  "prerequisites": [],
+  "steps": [
+   "Create the intended homepage as a page.",
+   "Go to reading settings and set the homepage display to a static page.",
+   "Select the created page as the homepage.",
+   "Confirm the live site shows it, not a post feed."
+  ],
+  "test": {
+   "method": "Visit the live domain and confirm the homepage shows the designed page.",
+   "measure": "other:setup_time",
+   "read_point": "Before any further homepage design work"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "02"
+   ],
+   "cards": [
+    "ef53f8ba81ec"
+   ],
+   "rules": []
+  },
+  "confidence": "high",
+  "general_practice": true
+ },
+ {
+  "id": "SET-197",
+  "title": "Add a wishlist so shoppers can save products for later",
+  "domain": "05-SET",
+  "bottleneck": [
+   "repeat_retention"
+  ],
+  "lever": "wishlist feature",
+  "hypothesis": "If we add a wishlist feature so shoppers can save products for later, then return visits and eventual conversion improve because a shopper who is not ready to buy has a way to keep the product in mind instead of leaving with nothing saved.",
+  "applies_when": [
+   "catalogue",
+   "high_aov"
+  ],
+  "signal": {
+   "check": "The store has no way for a shopper to save a product without adding it to the cart.",
+   "metrics": [
+    "repeat_rate_90d"
+   ]
+  },
+  "expected_effect": {
+   "metric": "repeat_rate_90d",
+   "direction": "up",
+   "size": "unknown, no source measures it",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "M",
+   "owner": "dev"
+  },
+  "cost": "low",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Low risk change that can be reverted if it does not help."
+  },
+  "prerequisites": [],
+  "steps": [
+   "Install a wishlist plugin or enable the theme's native wishlist feature.",
+   "Add the save to wishlist control on product cards and product pages.",
+   "Test saving and retrieving a wishlist as a shopper.",
+   "Track wishlist usage and its relationship to return visits."
+  ],
+  "test": {
+   "method": "Compare return visit rate and eventual purchase rate for shoppers who used the wishlist against those who did not.",
+   "measure": "repeat_rate_90d",
+   "read_point": "8 to 12 weeks after launch"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "02"
+   ],
+   "cards": [
+    "e91f80fe1721"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "SET-198",
+  "title": "On WooCommerce, install a swatches plugin for visual variant selection",
+  "domain": "05-SET",
+  "bottleneck": [
+   "conversion"
+  ],
+  "lever": "WooCommerce variant swatches",
+  "hypothesis": "If we install a variation swatches plugin on WooCommerce to show visual color or pattern swatches instead of a plain dropdown, then variant selection friction drops because WooCommerce has no native swatch display and a dropdown hides the actual look of each option.",
+  "applies_when": [
+   "catalogue",
+   "custom_platform"
+  ],
+  "signal": {
+   "check": "Variant selection on WooCommerce shows a text dropdown for color or pattern options instead of a visual swatch.",
+   "metrics": [
+    "cvr_pdp_to_cart"
+   ]
+  },
+  "expected_effect": {
+   "metric": "cvr_pdp_to_cart",
+   "direction": "up",
+   "size": "unknown, no source measures it",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "dev"
+  },
+  "cost": "low",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Low risk change that can be reverted if it does not help."
+  },
+  "prerequisites": [
+   "Color or pattern variant attributes already set up"
+  ],
+  "steps": [
+   "Install a variation swatches plugin.",
+   "Set swatch images or hex values for each color or pattern option.",
+   "Confirm the swatch renders correctly on the live product page.",
+   "Test on mobile for tap target size."
+  ],
+  "test": {
+   "method": "Compare variant selection completion rate before and after adding visual swatches.",
+   "measure": "cvr_pdp_to_cart",
+   "read_point": "2 to 4 weeks after the change"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "02"
+   ],
+   "cards": [
+    "e91f80fe1721"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "SET-199",
+  "title": "Add a consistent page header banner on every non-home page",
+  "domain": "05-SET",
+  "bottleneck": [
+   "conversion"
+  ],
+  "lever": "sitewide page header banner",
+  "hypothesis": "If we enable a page header banner with breadcrumbs on every non-home page, then the site feels more finished and navigable because shop, blog, cart and contact pages each get a consistent branded title band instead of starting abruptly with raw content.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "Non-home pages start directly with content and give no visual confirmation of which page or section the shopper is on.",
+   "metrics": [
+    "other:navigation_ease"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:navigation_ease",
+   "direction": "up",
+   "size": "unknown, no source measures it",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "designer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Low risk change that can be reverted if it does not help."
+  },
+  "prerequisites": [
+   "Theme support for a page header template part"
+  ],
+  "steps": [
+   "Confirm the theme supports a page header banner template part.",
+   "Enable it for shop, blog, cart and contact pages.",
+   "Set the banner style to match brand colors.",
+   "Preview each affected page on mobile and desktop."
+  ],
+  "test": {
+   "method": "Review each non-home page after enabling the banner for consistency and readability.",
+   "measure": "other:navigation_ease",
+   "read_point": "Immediately after enabling"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "02"
+   ],
+   "cards": [
+    "6eacc38f274b"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "SET-200",
+  "title": "Test express wallet button placement on the product page versus checkout only",
+  "domain": "05-SET",
+  "bottleneck": [
+   "conversion"
+  ],
+  "lever": "express wallet button placement",
+  "hypothesis": "If we deliberately choose whether Apple Pay and Google Pay buttons appear on the product page or only at checkout, and test the effect, then conversion improves because the product page button is a faster impulse path that can also bypass cart logic in ways worth measuring before committing to it.",
+  "applies_when": [
+   "impulse",
+   "one_off"
+  ],
+  "signal": {
+   "check": "Express wallet buttons are turned on or off on the product page with no test of the effect on conversion or average order value.",
+   "metrics": [
+    "cvr_pdp_to_cart",
+    "aov"
+   ]
+  },
+  "expected_effect": {
+   "metric": "cvr_pdp_to_cart",
+   "direction": "up",
+   "size": "unknown, no source measures it",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "dev"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Low risk change that can be reverted if it does not help."
+  },
+  "prerequisites": [
+   "Express wallets already connected"
+  ],
+  "steps": [
+   "Check current express wallet button placement.",
+   "Run a period with the button on the product page and a period with checkout only.",
+   "Track conversion rate and average order value for each period.",
+   "Keep the placement that performs better for the store."
+  ],
+  "test": {
+   "method": "Compare conversion rate and AOV between product page wallet buttons and checkout only wallet buttons.",
+   "measure": "cvr_pdp_to_cart",
+   "read_point": "After each test period"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "03"
+   ],
+   "cards": [
+    "5ef2e7c0343a"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "SET-201",
+  "title": "Cap single booking or single license products to one unit per order",
+  "domain": "05-SET",
+  "bottleneck": [
+   "conversion"
+  ],
+  "lever": "single unit per order cap",
+  "hypothesis": "If we cap a service, single booking or single license product to exactly one unit per order, then confusing or mistaken multi unit orders drop because the product logic itself, not stock scarcity, means more than one in an order never makes sense.",
+  "applies_when": [
+   "one_off"
+  ],
+  "signal": {
+   "check": "A service, appointment or single license product allows a quantity selector when only one unit per order ever makes sense.",
+   "metrics": [
+    "other:order_error_rate"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:order_error_rate",
+   "direction": "down",
+   "size": "unknown, no source measures it",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "dev"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Low risk change that can be reverted if it does not help."
+  },
+  "prerequisites": [],
+  "steps": [
+   "Identify products where more than one per order never makes sense.",
+   "Enable the sold individually or one per order setting on each.",
+   "Confirm the quantity selector is removed or capped on the live page.",
+   "Test that a second order can still be placed separately if genuinely needed."
+  ],
+  "test": {
+   "method": "Check order data for multi unit orders of a product meant to be single unit only.",
+   "measure": "other:order_error_rate",
+   "read_point": "4 to 8 weeks after the change"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "03"
+   ],
+   "cards": [
+    "8c5a95292bdc"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "SET-202",
+  "title": "Set the card statement descriptor to the store's real, recognizable name",
+  "domain": "05-SET",
+  "bottleneck": [
+   "trust_brand"
+  ],
+  "lever": "card statement descriptor",
+  "hypothesis": "If we set the card gateway's statement descriptor to the store's real, recognizable company name, then chargeback disputes drop because a buyer who does not recognize an unfamiliar descriptor on their bank statement is less likely to dispute a legitimate charge.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "The statement descriptor still shows the payment processor's default text or an unrelated internal name instead of the real brand name.",
+   "metrics": [
+    "other:chargeback_rate"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:chargeback_rate",
+   "direction": "down",
+   "size": "unknown, no source measures it",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "finance"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Low risk change that can be reverted if it does not help."
+  },
+  "prerequisites": [
+   "Card gateway connected"
+  ],
+  "steps": [
+   "Open the gateway's account or business settings.",
+   "Set the statement descriptor to the store's real, recognizable name.",
+   "Place a small test charge and check how it appears on a real bank statement.",
+   "Update again if the descriptor still reads as unfamiliar."
+  ],
+  "test": {
+   "method": "Compare chargeback and dispute rate before and after correcting the descriptor.",
+   "measure": "other:chargeback_rate",
+   "read_point": "8 to 12 weeks after the change"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "03"
+   ],
+   "cards": [
+    "6a3060c2e498"
+   ],
+   "rules": []
+  },
+  "confidence": "medium",
+  "general_practice": true
+ },
+ {
+  "id": "SET-203",
+  "title": "Add a purchase note pointing service buyers to their next step",
+  "domain": "05-SET",
+  "bottleneck": [
+   "fulfilment_cx"
+  ],
+  "lever": "PDP purchase note next step",
+  "hypothesis": "If we add a purchase note pointing to the next concrete step, such as a booking link, on service or appointment products, then post purchase confusion tickets drop because the buyer knows exactly what to do right after paying instead of waiting for a follow up email.",
+  "applies_when": [
+   "one_off"
+  ],
+  "signal": {
+   "check": "A service or appointment product gives the buyer no next step after checkout beyond a generic confirmation email.",
+   "metrics": [
+    "ticket_backlog"
+   ]
+  },
+  "expected_effect": {
+   "metric": "ticket_backlog",
+   "direction": "down",
+   "size": "unknown, no source measures it",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "ops"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Low risk change that can be reverted if it does not help."
+  },
+  "prerequisites": [
+   "A real booking or next step link"
+  ],
+  "steps": [
+   "Identify the concrete next step a buyer needs to take.",
+   "Add it as a purchase note on the product.",
+   "Confirm the note appears on the order confirmation the buyer sees.",
+   "Update the note if the booking process changes."
+  ],
+  "test": {
+   "method": "Compare post purchase confusion tickets before and after adding the note.",
+   "measure": "ticket_backlog",
+   "read_point": "4 to 8 weeks after the change"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "03"
+   ],
+   "cards": [
+    "8c5a95292bdc"
+   ],
+   "rules": []
+  },
+  "confidence": "medium",
+  "general_practice": true
+ },
+ {
+  "id": "SET-204",
+  "title": "Pick exactly one system to send the order confirmation email",
+  "domain": "05-SET",
+  "bottleneck": [
+   "trust_brand"
+  ],
+  "lever": "order confirmation email ownership",
+  "hypothesis": "If we pick exactly one system, either the platform's native email or a connected marketing tool, to send the order confirmation email, then buyer confusion drops because two different confirmation emails for the same order looks like a mistake or a duplicate charge.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "Both the platform's native order confirmation and a connected marketing tool's branded confirmation are active for the same order event.",
+   "metrics": [
+    "other:duplicate_notification_rate"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:duplicate_notification_rate",
+   "direction": "down",
+   "size": "unknown, no source measures it",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "ops"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Low risk change that can be reverted if it does not help."
+  },
+  "prerequisites": [
+   "A connected marketing or automation tool capable of sending order confirmations"
+  ],
+  "steps": [
+   "List every system capable of sending an order confirmation email.",
+   "Choose exactly one to own this notification.",
+   "Turn off the confirmation email in every other system.",
+   "Place a test order and confirm only one confirmation email arrives."
+  ],
+  "test": {
+   "method": "Place a test order and count how many order confirmation emails arrive.",
+   "measure": "other:duplicate_notification_rate",
+   "read_point": "Immediately after configuring, and after any new tool is connected"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "03"
+   ],
+   "cards": [
+    "bccbebbbfe5d"
+   ],
+   "rules": []
+  },
+  "confidence": "high",
+  "general_practice": true
+ },
+ {
+  "id": "SET-205",
+  "title": "Confirm accelerated checkout wallets are turned on, not just the card gateway",
+  "domain": "05-SET",
+  "bottleneck": [
+   "conversion"
+  ],
+  "lever": "checkout wallet activation check",
+  "hypothesis": "If we confirm accelerated checkout wallets such as the platform's own pay button, Apple Pay and Google Pay are turned on in payment settings, then checkout completion improves because shoppers who prefer a one tap wallet are not limited to typing in card details.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "Payment settings show the base card gateway active but one or more accelerated wallets are still off.",
+   "metrics": [
+    "cvr_checkout_to_order"
+   ]
+  },
+  "expected_effect": {
+   "metric": "cvr_checkout_to_order",
+   "direction": "up",
+   "size": "unknown, no source measures it",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "dev"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Low risk change that can be reverted if it does not help."
+  },
+  "prerequisites": [
+   "Base payment gateway already active"
+  ],
+  "steps": [
+   "Open payment method settings.",
+   "Check which accelerated wallets are supported in the store's region.",
+   "Turn on every supported wallet.",
+   "Test checkout with each wallet on a real device."
+  ],
+  "test": {
+   "method": "Compare checkout completion rate before and after enabling the missing wallets.",
+   "measure": "cvr_checkout_to_order",
+   "read_point": "2 to 4 weeks after the change"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "04"
+   ],
+   "cards": [
+    "cb2ff7113ded"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "SET-206",
+  "title": "Confirm the payout bank account matches the region's deposit type",
+  "domain": "05-SET",
+  "bottleneck": [
+   "cash_inventory"
+  ],
+  "lever": "payout deposit type check",
+  "hypothesis": "If we confirm the payout bank account can receive the deposit type used in our region, such as ACH, EFT, SWIFT or BECS, before activating the payment gateway, then payout failures after launch drop because a mismatched deposit type is caught before real money is waiting to be paid out.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "The payment gateway is being activated without checking whether the connected bank account supports the region's deposit type.",
+   "metrics": [
+    "other:payout_failure_rate"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:payout_failure_rate",
+   "direction": "down",
+   "size": "unknown, no source measures it",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "finance"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Low risk change that can be reverted if it does not help."
+  },
+  "prerequisites": [
+   "A business bank account chosen"
+  ],
+  "steps": [
+   "Identify the deposit type used in the store's payout region.",
+   "Confirm the connected bank account can receive that deposit type.",
+   "Activate the payment gateway only after this is confirmed.",
+   "Recheck if the store expands into a new payout region."
+  ],
+  "test": {
+   "method": "Confirm the first real payout arrives successfully in the connected account.",
+   "measure": "other:payout_failure_rate",
+   "read_point": "After the first payout cycle"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "04"
+   ],
+   "cards": [
+    "ae4e374138b3"
+   ],
+   "rules": []
+  },
+  "confidence": "medium",
+  "general_practice": true
+ },
+ {
+  "id": "SET-207",
+  "title": "Re-verify tracking, including checkout, after any theme or app change",
+  "domain": "05-SET",
+  "bottleneck": [
+   "measurement_data"
+  ],
+  "lever": "tracking re-verification cadence",
+  "hypothesis": "If we re-verify analytics and pixel tracking, including the checkout step, after any theme change or new app install, then silent data loss drops because either kind of change can drop a tracking snippet without any visible warning.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "A theme change or new app was installed and tracking has not been re-checked since.",
+   "metrics": [
+    "tracking_coverage"
+   ]
+  },
+  "expected_effect": {
+   "metric": "tracking_coverage",
+   "direction": "up",
+   "size": "unknown, no source measures it",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "dev"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Low risk change that can be reverted if it does not help."
+  },
+  "prerequisites": [
+   "Tracking already installed and previously verified"
+  ],
+  "steps": [
+   "After any theme change or new app install, open a real time analytics view.",
+   "Run a test session covering browsing, add to cart and checkout.",
+   "Confirm every expected event fires, including at checkout.",
+   "Fix and re-test immediately if any event is missing."
+  ],
+  "test": {
+   "method": "Run a real time test session after every theme or app change and confirm all events fire.",
+   "measure": "tracking_coverage",
+   "read_point": "Immediately after any theme or app change"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "04"
+   ],
+   "cards": [
+    "9921264a1167"
+   ],
+   "rules": []
+  },
+  "confidence": "high",
+  "general_practice": true
+ },
+ {
+  "id": "SET-208",
+  "title": "Match per market tax display to each market's own price expectation",
+  "domain": "05-SET",
+  "bottleneck": [
+   "trust_brand"
+  ],
+  "lever": "per market tax display",
+  "hypothesis": "If we use per market dynamic tax inclusive pricing so the displayed price matches each market's own shopper expectation, then price trust improves because a shopper in a tax inclusive market sees the real final price up front instead of a number that changes at checkout.",
+  "applies_when": [
+   "any"
+  ],
+  "does_not_apply_when": [
+   "Store sells into only one market"
+  ],
+  "signal": {
+   "check": "The same inclusive or exclusive tax display is shown to every market regardless of that market's own pricing norms.",
+   "metrics": [
+    "cvr_checkout_to_order"
+   ]
+  },
+  "expected_effect": {
+   "metric": "cvr_checkout_to_order",
+   "direction": "up",
+   "size": "unknown, no source measures it",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "M",
+   "owner": "dev"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Low risk change that can be reverted if it does not help."
+  },
+  "prerequisites": [
+   "Markets feature configured with per market tax settings"
+  ],
+  "steps": [
+   "List which markets expect tax inclusive pricing and which expect tax exclusive.",
+   "Turn on dynamic tax inclusive pricing for the markets that expect it.",
+   "Leave exclusive pricing for markets that expect that instead.",
+   "Test a price in each market to confirm the display matches expectation."
+  ],
+  "test": {
+   "method": "Compare checkout completion by market before and after matching each market's tax display expectation.",
+   "measure": "cvr_checkout_to_order",
+   "read_point": "4 to 8 weeks after the change"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "04"
+   ],
+   "cards": [
+    "9ab062ef593f"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "SET-209",
+  "title": "Use a dedicated label app where native shipping label purchase is unavailable",
+  "domain": "05-SET",
+  "bottleneck": [
+   "fulfilment_cx"
+  ],
+  "lever": "shipping label app fallback",
+  "hypothesis": "If we install a dedicated shipping label app where the platform's native label purchase is not available in our country, then fulfilment cost and tracking accuracy improve because the store still gets discounted, trackable labels instead of manual, unmanaged shipping.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "The store is in a country where native label purchase is unavailable and labels are being bought manually with no discount or tracking sync.",
+   "metrics": [
+    "fulfilment_days"
+   ]
+  },
+  "expected_effect": {
+   "metric": "fulfilment_days",
+   "direction": "down",
+   "size": "unknown, no source measures it",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "ops"
+  },
+  "cost": "low",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Low risk change that can be reverted if it does not help."
+  },
+  "prerequisites": [
+   "Confirmed native label purchase is unavailable in the store's country"
+  ],
+  "steps": [
+   "Confirm native label purchase is not available in the store's country.",
+   "Choose a label app that supports the needed carriers.",
+   "Install and connect it to the order fulfilment workflow.",
+   "Test a real label purchase and tracking sync end to end."
+  ],
+  "test": {
+   "method": "Compare label cost and tracking accuracy before and after adopting the app.",
+   "measure": "fulfilment_days",
+   "read_point": "4 to 8 weeks after adoption"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "04"
+   ],
+   "cards": [
+    "5c69503ff6eb"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "SET-210",
+  "title": "Decide deliberately whether reviews require a verified purchase",
+  "domain": "05-SET",
+  "bottleneck": [
+   "trust_brand"
+  ],
+  "lever": "review verified purchase policy",
+  "hypothesis": "If we decide deliberately whether product reviews require a verified purchase, then review trust and review volume are balanced on purpose because requiring verification raises trust but lowers volume, and leaving it unrequired does the opposite.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "The reviews app's verified purchase requirement is left at its default with no decision made either way.",
+   "metrics": [
+    "review_rating",
+    "review_count"
+   ]
+  },
+  "expected_effect": {
+   "metric": "review_count",
+   "direction": "up",
+   "size": "unknown, no source measures it",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Low risk change that can be reverted if it does not help."
+  },
+  "prerequisites": [
+   "A reviews app or feature installed"
+  ],
+  "steps": [
+   "Check the current verified purchase setting.",
+   "Weigh review volume needs against review trust needs for the brand's stage.",
+   "Set the requirement deliberately, on or off.",
+   "Revisit the decision once enough review volume exists to compare."
+  ],
+  "test": {
+   "method": "Compare review volume and review credibility signals with the setting on versus off, if tested.",
+   "measure": "review_count",
+   "read_point": "8 to 12 weeks after the decision"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "05"
+   ],
+   "cards": [
+    "be71d70a5e08"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "SET-211",
+  "title": "Turn off comment fields on a storefront that carries no blog",
+  "domain": "05-SET",
+  "bottleneck": [
+   "team_capacity"
+  ],
+  "lever": "comment spam reduction",
+  "hypothesis": "If we turn off comment fields and comment notification settings on a storefront that carries no blog, then spam volume and notification noise drop because comment spam has no legitimate purpose to serve on pages that are not meant for discussion.",
+  "applies_when": [
+   "custom_platform"
+  ],
+  "signal": {
+   "check": "Comment fields and email notifications for comments are still enabled on a store with no blog or discussion pages.",
+   "metrics": [
+    "other:spam_volume"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:spam_volume",
+   "direction": "down",
+   "size": "unknown, no source measures it",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "dev"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Low risk change that can be reverted if it does not help."
+  },
+  "prerequisites": [],
+  "steps": [
+   "Confirm the store has no blog or discussion content that needs comments.",
+   "Turn off comment allowance in discussion settings.",
+   "Turn off comment email notifications.",
+   "Re-enable only if a blog is added later."
+  ],
+  "test": {
+   "method": "Compare comment spam volume before and after disabling comments.",
+   "measure": "other:spam_volume",
+   "read_point": "2 to 4 weeks after the change"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "05"
+   ],
+   "cards": [],
+   "rules": []
+  },
+  "confidence": "medium",
+  "general_practice": true
+ },
+ {
+  "id": "SET-212",
+  "title": "Edit the existing code file when revising a custom section, never a new one",
+  "domain": "05-SET",
+  "bottleneck": [
+   "team_capacity"
+  ],
+  "lever": "code file edit hygiene",
+  "hypothesis": "If we edit the existing file in place when revising a custom code section, instead of creating a new file for the same content, then duplicate or conflicting sections drop because the theme never ends up with two versions of what should be one section.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "A revised section is about to be saved as a new file instead of overwriting the original.",
+   "metrics": [
+    "other:duplicate_section_count"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:duplicate_section_count",
+   "direction": "down",
+   "size": "unknown, no source measures it",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "dev"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Low risk change that can be reverted if it does not help."
+  },
+  "prerequisites": [],
+  "steps": [
+   "Locate the original file for the section being revised.",
+   "Paste the new code over the existing file's contents.",
+   "Save and hard refresh the live page to confirm the change.",
+   "Delete any accidental duplicate file created earlier."
+  ],
+  "test": {
+   "method": "Check the theme's file list for duplicate section files after any revision.",
+   "measure": "other:duplicate_section_count",
+   "read_point": "After every section revision"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "06"
+   ],
+   "cards": [
+    "a8e85e602df8"
+   ],
+   "rules": []
+  },
+  "confidence": "medium",
+  "general_practice": true
+ },
+ {
+  "id": "SET-213",
+  "title": "Verify every theme change on the live URL, not only the editor preview",
+  "domain": "05-SET",
+  "bottleneck": [
+   "team_capacity"
+  ],
+  "lever": "post-edit verification habit",
+  "hypothesis": "If we verify every theme code or content change on the live public URL with a hard refresh, not only the theme editor preview, then false confidence in an unpublished change drops because the editor preview can show a stale or unsaved state that never actually went live.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "A change was made and confirmed only in the theme editor preview, never checked on the live public URL.",
+   "metrics": [
+    "other:unverified_change_rate"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:unverified_change_rate",
+   "direction": "down",
+   "size": "unknown, no source measures it",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "dev"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Low risk change that can be reverted if it does not help."
+  },
+  "prerequisites": [],
+  "steps": [
+   "After any code or content change, open the live public URL in a new tab.",
+   "Hard refresh to bypass any cached version.",
+   "Confirm the change is actually visible.",
+   "Only mark the change as done once verified live."
+  ],
+  "test": {
+   "method": "Track whether any change believed to be live is later found missing on the public site.",
+   "measure": "other:unverified_change_rate",
+   "read_point": "After every change"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "06"
+   ],
+   "cards": [
+    "220bda0dd2e7",
+    "e5db2ba0cf5e"
+   ],
+   "rules": []
+  },
+  "confidence": "medium",
+  "general_practice": true
+ },
+ {
+  "id": "SET-214",
+  "title": "Do not show branded photos for a dropshipped item that ships unbranded",
+  "domain": "05-SET",
+  "bottleneck": [
+   "trust_brand"
+  ],
+  "lever": "branded photo honesty",
+  "hypothesis": "If we do not show branded product photography on a dropshipped item's page when the product actually ships unbranded, then return and complaint rates drop because the customer is not promised a branded item they never actually receive.",
+  "applies_when": [
+   "dtc_only"
+  ],
+  "signal": {
+   "check": "A dropshipped product's photos show custom branding or packaging that the actual shipped item does not have.",
+   "metrics": [
+    "return_rate"
+   ]
+  },
+  "expected_effect": {
+   "metric": "return_rate",
+   "direction": "down",
+   "size": "unknown, no source measures it",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Low risk change that can be reverted if it does not help."
+  },
+  "prerequisites": [
+   "Dropship or unbranded fulfilment model confirmed"
+  ],
+  "steps": [
+   "Check whether the actual shipped product carries real branding.",
+   "If not, remove branded mockup photos from the product page.",
+   "Keep branding on the website and brand pages instead.",
+   "Update photos again once real branded packaging exists."
+  ],
+  "test": {
+   "method": "Compare return and complaint rate mentioning packaging mismatch before and after removing branded mockups.",
+   "measure": "return_rate",
+   "read_point": "4 to 8 weeks after the change"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "06"
+   ],
+   "cards": [
+    "d175a55e4165"
+   ],
+   "rules": []
+  },
+  "confidence": "medium",
+  "general_practice": true
+ },
+ {
+  "id": "SET-215",
+  "title": "Check AI generated PDP claims against the real product and ad rules",
+  "domain": "05-SET",
+  "bottleneck": [
+   "risk_compliance"
+  ],
+  "lever": "AI copy claims review",
+  "hypothesis": "If we check AI generated product page copy for specific outcome, health or timeframe claims against the real product and advertising rules before publishing, then compliance risk and customer disappointment both drop because generated copy can invent a claim that sounds plausible but is not actually true of the product.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "AI generated copy includes a specific numeric, health, or timeframe claim that has not been checked against the real product.",
+   "metrics": [
+    "other:claims_risk"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:claims_risk",
+   "direction": "down",
+   "size": "unknown, no source measures it",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "medium",
+   "reversible": true,
+   "note": "An uncaught false claim can trigger a platform or regulatory complaint before it is caught."
+  },
+  "prerequisites": [],
+  "steps": [
+   "Read AI generated copy line by line before publishing.",
+   "Flag any specific outcome, health, or timeframe claim.",
+   "Check each flagged claim against the real product and applicable ad rules.",
+   "Remove or soften any claim that cannot be substantiated."
+  ],
+  "test": {
+   "method": "Audit a sample of published product copy for unverified claims.",
+   "measure": "other:claims_risk",
+   "read_point": "Before publishing, and periodically after"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "06"
+   ],
+   "cards": [
+    "3db5a6811648"
+   ],
+   "rules": []
+  },
+  "confidence": "medium",
+  "general_practice": true
+ },
+ {
+  "id": "SET-216",
+  "title": "Decide whether a coupon can combine with other active discounts",
+  "domain": "05-SET",
+  "bottleneck": [
+   "margin_cogs"
+  ],
+  "lever": "coupon combinability default",
+  "hypothesis": "If we decide deliberately whether a coupon can combine with other active discounts, and default new codes to non-stacking, then margin loss from stacked discounts drops because a shopper cannot silently combine two codes into a discount deeper than intended.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "A new coupon was created with no decision made about whether it can combine with other active discounts.",
+   "metrics": [
+    "discount_rate"
+   ]
+  },
+  "expected_effect": {
+   "metric": "discount_rate",
+   "direction": "down",
+   "size": "unknown, no source measures it",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Low risk change that can be reverted if it does not help."
+  },
+  "prerequisites": [],
+  "steps": [
+   "Check the combinability setting when creating any new coupon.",
+   "Default new codes to non-stacking unless there is a real reason to allow stacking.",
+   "Document the reason for any coupon that is deliberately allowed to stack.",
+   "Test that a stacking attempt on a non-stacking code is actually blocked."
+  ],
+  "test": {
+   "method": "Attempt to apply two active codes to the same order and confirm the non-stacking rule holds.",
+   "measure": "discount_rate",
+   "read_point": "Whenever a new coupon is created"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "07"
+   ],
+   "cards": [
+    "85bfef85b9bf"
+   ],
+   "rules": []
+  },
+  "confidence": "medium",
+  "general_practice": true
+ },
+ {
+  "id": "SET-217",
+  "title": "Use a native grouped product type for a simple multi product bundle",
+  "domain": "05-SET",
+  "bottleneck": [
+   "aov"
+  ],
+  "lever": "native grouped product type",
+  "hypothesis": "If we use the platform's native grouped product type to sell several standalone products together as one bundle listing, then bundle setup cost drops because the built in type covers simple bundling without paying for a separate bundling app.",
+  "applies_when": [
+   "catalogue"
+  ],
+  "signal": {
+   "check": "A simple multi product bundle is being built with a paid bundling app when the platform's native grouped product type would cover the need.",
+   "metrics": [
+    "other:app_cost"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:app_cost",
+   "direction": "down",
+   "size": "unknown, no source measures it",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "dev"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Low risk change that can be reverted if it does not help."
+  },
+  "prerequisites": [
+   "Standalone products already exist for the bundle"
+  ],
+  "steps": [
+   "Check whether the bundle need is simple enough for the native grouped product type.",
+   "Create a grouped product listing the standalone items together.",
+   "Test that the bundle displays and adds all items to cart correctly.",
+   "Fall back to a bundling app only if the native type cannot cover the case."
+  ],
+  "test": {
+   "method": "Test the grouped product listing end to end and compare against the cost of a paid bundling app.",
+   "measure": "other:app_cost",
+   "read_point": "Before choosing a bundling method"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "07"
+   ],
+   "cards": [
+    "37e739ed2006"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "SET-218",
+  "title": "Add every new product to its manual collection as a launch checklist step",
+  "domain": "05-SET",
+  "bottleneck": [
+   "team_capacity"
+  ],
+  "lever": "manual collection maintenance checklist",
+  "hypothesis": "If we add every new product to its manual collection by hand as a step in the product launch checklist, then missing products on category pages drop because manual collections do not auto-populate and a forgotten step leaves a product invisible where shoppers expect to find it.",
+  "applies_when": [
+   "catalogue"
+  ],
+  "signal": {
+   "check": "A newly published product does not appear in the manual collection it should belong to.",
+   "metrics": [
+    "other:missing_catalog_listing_rate"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:missing_catalog_listing_rate",
+   "direction": "down",
+   "size": "unknown, no source measures it",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Low risk change that can be reverted if it does not help."
+  },
+  "prerequisites": [
+   "Manual collections in use"
+  ],
+  "steps": [
+   "Add a step to the product launch checklist for manual collection assignment.",
+   "After publishing a product, add it to every relevant manual collection.",
+   "Spot check recent products against their expected collections monthly.",
+   "Fix any product missing from a collection it should be in."
+  ],
+  "test": {
+   "method": "Spot check a sample of recently published products against their intended manual collections.",
+   "measure": "other:missing_catalog_listing_rate",
+   "read_point": "Monthly"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "09"
+   ],
+   "cards": [
+    "343ec6b3bbe4"
+   ],
+   "rules": []
+  },
+  "confidence": "medium",
+  "general_practice": true
+ },
+ {
+  "id": "SET-219",
+  "title": "Consider a cryptocurrency payment option where the audience supports it",
+  "domain": "05-SET",
+  "bottleneck": [
+   "acquisition_efficiency"
+  ],
+  "lever": "cryptocurrency payment option",
+  "hypothesis": "If we add a cryptocurrency payment option alongside standard gateways where the brand's audience and region support it, then checkout completion may improve for a niche of buyers because a payment method they already hold is not otherwise available at checkout.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "The brand's audience includes crypto holding buyers, but no cryptocurrency payment method is offered at checkout.",
+   "metrics": [
+    "cvr_checkout_to_order"
+   ]
+  },
+  "expected_effect": {
+   "metric": "cvr_checkout_to_order",
+   "direction": "up",
+   "size": "unknown, no source measures it",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "M",
+   "owner": "finance"
+  },
+  "cost": "low",
+  "risk": {
+   "level": "medium",
+   "reversible": true,
+   "note": "Crypto payment processing can carry price volatility and regulatory considerations that need review before enabling."
+  },
+  "prerequisites": [
+   "Confirmed audience and regional support for crypto payments"
+  ],
+  "steps": [
+   "Check whether the brand's audience and region make crypto payment worth offering.",
+   "Add a crypto payment method through a supported gateway or app.",
+   "Test a small transaction end to end.",
+   "Monitor uptake before expanding support to more coins or regions."
+  ],
+  "test": {
+   "method": "Track the share of orders using the crypto payment option after launch.",
+   "measure": "cvr_checkout_to_order",
+   "read_point": "8 to 12 weeks after launch"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "09"
+   ],
+   "cards": [
+    "86354ef8e01e"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "SET-220",
+  "title": "Filter candidate domain names by concrete brandability rules",
+  "domain": "05-SET",
+  "bottleneck": [
+   "trust_brand"
+  ],
+  "lever": "domain brandability filter",
+  "hypothesis": "If we filter candidate domain names by concrete brandability rules, such as 1 to 2 words, no hyphens or numbers, and easy to spell and say, then domain quality improves because a clean, memorable domain builds more trust and is easier for a shopper to type or repeat than an over thought or awkward one.",
+  "applies_when": [
+   "new_store"
+  ],
+  "signal": {
+   "check": "The domain shortlist includes names with hyphens, numbers, or names that are hard to spell or pronounce out loud.",
+   "metrics": [
+    "other:domain_quality"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:domain_quality",
+   "direction": "up",
+   "size": "unknown, no source measures it",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "founder"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Choosing a domain is not fully reversible once the brand builds around it, so apply the filter before committing."
+  },
+  "prerequisites": [],
+  "steps": [
+   "Generate a shortlist of candidate domain names.",
+   "Filter out names with hyphens, numbers, or more than 2 words.",
+   "Say each remaining name aloud to check it is easy to pronounce and spell.",
+   "Pick the domain from what remains, and check availability."
+  ],
+  "test": {
+   "method": "Ask a few people outside the team to hear the name once and spell it back correctly.",
+   "measure": "other:domain_quality",
+   "read_point": "Before purchasing the domain"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "10"
+   ],
+   "cards": [
+    "8936916fd085"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "SET-221",
+  "title": "Match navigation menu style to catalog size and mobile traffic",
+  "domain": "05-SET",
+  "bottleneck": [
+   "conversion"
+  ],
+  "lever": "navigation menu style fit",
+  "hypothesis": "If we choose menu style, drawer, dropdown, or mega menu, to match catalog size and mobile traffic share, then navigation friction drops because a style built for a small catalog gets cramped on a large one, and a heavy style overwhelms a small catalog.",
+  "applies_when": [
+   "catalogue"
+  ],
+  "signal": {
+   "check": "The navigation menu style does not match the catalog's actual size or the store's mobile traffic share.",
+   "metrics": [
+    "cvr_pdp_to_cart"
+   ]
+  },
+  "expected_effect": {
+   "metric": "cvr_pdp_to_cart",
+   "direction": "up",
+   "size": "unknown, no source measures it",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "dev"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Low risk change that can be reverted if it does not help."
+  },
+  "prerequisites": [
+   "Known catalog size and mobile traffic share"
+  ],
+  "steps": [
+   "Check current catalog size and mobile traffic share.",
+   "Match menu style to that profile: drawer for heavy mobile traffic, dropdown for a small catalog, mega menu for a large one.",
+   "Update the navigation to the matching style.",
+   "Test on mobile for spacing and tap targets."
+  ],
+  "test": {
+   "method": "Compare navigation click through and bounce rate before and after matching menu style to catalog size.",
+   "measure": "cvr_pdp_to_cart",
+   "read_point": "2 to 4 weeks after the change"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "10"
+   ],
+   "cards": [
+    "f4d27950bf54"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "SET-222",
+  "title": "Weigh platform domain purchase against a neutral registrar for portability",
+  "domain": "05-SET",
+  "bottleneck": [
+   "team_capacity"
+  ],
+  "lever": "domain registrar choice tradeoff",
+  "hypothesis": "If we weigh buying the domain directly through the store platform against registering it with a neutral third party registrar, then a future platform migration is less disruptive because a domain held at a neutral registrar can be pointed at a new platform without a forced transfer.",
+  "applies_when": [
+   "new_store"
+  ],
+  "signal": {
+   "check": "The domain was bought through the store platform with no consideration of future migration risk.",
+   "metrics": [
+    "other:migration_risk"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:migration_risk",
+   "direction": "down",
+   "size": "unknown, no source measures it",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "founder"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "A domain can be transferred to a different registrar later, though the process takes time and has a small cost."
+  },
+  "prerequisites": [],
+  "steps": [
+   "Decide how likely a future platform change is for this brand.",
+   "If migration risk matters, register the domain with a neutral third party registrar instead of the platform.",
+   "Point the domain's DNS at the store platform as normal.",
+   "Document where the domain is registered for future reference."
+  ],
+  "test": {
+   "method": "Confirm the domain can be pointed at a different platform without a forced transfer, if ever needed.",
+   "measure": "other:migration_risk",
+   "read_point": "Before registering the domain"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "10"
+   ],
+   "cards": [
+    "7ad023a56f5a"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "SET-223",
+  "title": "Add a handling buffer on top of the base shipping rate",
+  "domain": "05-SET",
+  "bottleneck": [
+   "margin_cogs"
+  ],
+  "lever": "shipping handling buffer",
+  "hypothesis": "If we add a small handling buffer on top of the base or carrier calculated shipping rate, then margin per order improves because packaging materials and labor cost are covered instead of being absorbed silently into the shipping line.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "Shipping rates match the raw carrier or flat cost with no allowance for packaging materials or labor.",
+   "metrics": [
+    "contribution_margin"
+   ]
+  },
+  "expected_effect": {
+   "metric": "contribution_margin",
+   "direction": "up",
+   "size": "unknown, no source measures it",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "finance"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Low risk change that can be reverted if it does not help."
+  },
+  "prerequisites": [
+   "Known packaging and handling cost per order"
+  ],
+  "steps": [
+   "Calculate the real packaging and handling cost per order.",
+   "Add that amount as a buffer on top of the base shipping rate.",
+   "Confirm the combined rate still looks reasonable to a shopper.",
+   "Recheck the buffer if packaging or labor cost changes."
+  ],
+  "test": {
+   "method": "Compare per order shipping related margin before and after adding the buffer.",
+   "measure": "contribution_margin",
+   "read_point": "One full pricing or fulfilment cycle after the change"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "10"
+   ],
+   "cards": [
+    "6d62360a1568"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "SET-224",
+  "title": "Use honest early tester feedback as pre-launch placeholder testimonials",
+  "domain": "05-SET",
+  "bottleneck": [
+   "trust_brand"
+  ],
+  "lever": "pre-launch placeholder testimonials",
+  "hypothesis": "If we use honest early tester or friend feedback as pre-launch placeholder testimonials, clearly labeled as real, then the homepage carries some social proof before real customers exist because an honest early quote reads better than an empty testimonial section.",
+  "applies_when": [
+   "new_store"
+  ],
+  "signal": {
+   "check": "The homepage has a testimonial section with no content because the store has no customers yet.",
+   "metrics": [
+    "cvr_overall"
+   ]
+  },
+  "expected_effect": {
+   "metric": "cvr_overall",
+   "direction": "up",
+   "size": "unknown, no source measures it",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Testimonials must be genuine feedback, never fabricated, to avoid a trust and compliance risk."
+  },
+  "prerequisites": [
+   "A few early testers or friends who have tried the product"
+  ],
+  "steps": [
+   "Ask a few early testers or friends for honest feedback on the product.",
+   "Get permission to use their name or initials with the quote.",
+   "Add the quotes to the homepage testimonial section, clearly as real feedback.",
+   "Replace them with real customer reviews once enough exist."
+  ],
+  "test": {
+   "method": "Compare homepage engagement before and after adding placeholder testimonials.",
+   "measure": "cvr_overall",
+   "read_point": "2 to 4 weeks after launch"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "10"
+   ],
+   "cards": [
+    "c0d455504772"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "SET-225",
+  "title": "Know which theme changes autosave and which need an explicit save",
+  "domain": "05-SET",
+  "bottleneck": [
+   "team_capacity"
+  ],
+  "lever": "AI code edit save awareness",
+  "hypothesis": "If we know that AI written theme code saves automatically to the theme's files while manual in-editor content or setting changes still need an explicit save, then lost edits drop because a builder does not assume every kind of change is saved the same way.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "A manual content or setting change made in the theme editor was not explicitly saved and appears to have reverted.",
+   "metrics": [
+    "other:lost_edit_rate"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:lost_edit_rate",
+   "direction": "down",
+   "size": "unknown, no source measures it",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "dev"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Low risk change that can be reverted if it does not help."
+  },
+  "prerequisites": [],
+  "steps": [
+   "After an AI coding tool finishes a code change, confirm it is already saved to the theme files.",
+   "After any manual content or setting change in the editor, click save explicitly.",
+   "Refresh the page to confirm the manual change held.",
+   "Repeat the explicit save check after every manual edit session."
+  ],
+  "test": {
+   "method": "Refresh the live page after a manual edit session and confirm the change is still there.",
+   "measure": "other:lost_edit_rate",
+   "read_point": "After every manual edit session"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "11"
+   ],
+   "cards": [
+    "35ef5d4ea699"
+   ],
+   "rules": []
+  },
+  "confidence": "medium",
+  "general_practice": true
+ },
+ {
+  "id": "SET-226",
+  "title": "Duplicate the currently live theme at the start of each new edit round",
+  "domain": "05-SET",
+  "bottleneck": [
+   "team_capacity"
+  ],
+  "lever": "duplicate-the-live-theme discipline",
+  "hypothesis": "If we duplicate the theme that is currently live at the start of each new round of AI assisted edits, instead of reusing an old working copy, then edits always build on the most current published version because a stale copy can silently drop changes published since the last round.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "A new round of edits starts from a duplicate theme created before the last round was published, not from the current live theme.",
+   "metrics": [
+    "other:stale_edit_rate"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:stale_edit_rate",
+   "direction": "down",
+   "size": "unknown, no source measures it",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "dev"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Low risk change that can be reverted if it does not help."
+  },
+  "prerequisites": [
+   "A prior round of theme edits already published"
+  ],
+  "steps": [
+   "Before starting a new round of edits, check which theme is currently live.",
+   "Duplicate that live theme, not an older working copy.",
+   "Confirm the new duplicate includes every change from the last published round.",
+   "Work only on this fresh duplicate for the new round."
+  ],
+  "test": {
+   "method": "Compare the new duplicate's content against the currently live theme before starting new edits.",
+   "measure": "other:stale_edit_rate",
+   "read_point": "At the start of every new edit round"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "11"
+   ],
+   "cards": [
+    "35ef5d4ea699"
+   ],
+   "rules": []
+  },
+  "confidence": "medium",
+  "general_practice": true
+ },
+ {
+  "id": "SET-227",
+  "title": "Plan long AI coding sessions around a possible usage limit pause",
+  "domain": "05-SET",
+  "bottleneck": [
+   "team_capacity"
+  ],
+  "lever": "AI coding session usage planning",
+  "hypothesis": "If we plan for an AI coding tool to hit a usage or token limit during a long theme editing session, then work gets scheduled around the pause because the builder expects a cooldown instead of losing momentum mid-build.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "A long AI assisted theme editing session is planned with no allowance for a possible usage limit pause.",
+   "metrics": [
+    "other:session_planning_accuracy"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:session_planning_accuracy",
+   "direction": "up",
+   "size": "unknown, no source measures it",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "dev"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Low risk change that can be reverted if it does not help."
+  },
+  "prerequisites": [],
+  "steps": [
+   "Check the current plan's usage or token limits before a long session.",
+   "Break the planned work into chunks that fit comfortably within the limit.",
+   "If a limit warning appears, save progress and plan the pause into the schedule.",
+   "Resume once the cooldown period has passed."
+  ],
+  "test": {
+   "method": "Track how often a long session is interrupted by a usage limit without prior planning.",
+   "measure": "other:session_planning_accuracy",
+   "read_point": "After the next few long editing sessions"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "11"
+   ],
+   "cards": [
+    "af0b1c693102"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "SET-228",
+  "title": "Set brand colors and fonts once in global style settings, not per widget",
+  "domain": "05-SET",
+  "bottleneck": [
+   "team_capacity"
+  ],
+  "lever": "global style tokens",
+  "hypothesis": "If we set brand colors and fonts once in the page builder's global style settings and reuse them everywhere, then build time and visual drift both drop because a later brand color or font change cascades to every linked element instead of needing to be repeated by hand.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "A brand color or font is set individually on many separate widgets instead of once in a global style setting.",
+   "metrics": [
+    "other:build_time"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:build_time",
+   "direction": "down",
+   "size": "unknown, no source measures it",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "dev"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Low risk change that can be reverted if it does not help."
+  },
+  "prerequisites": [],
+  "steps": [
+   "Set the brand's colors and fonts once in the builder's global style panel.",
+   "Link new widgets and sections to those global values instead of typing new ones.",
+   "Replace any hardcoded color or font found on an existing page with the global value.",
+   "Test that a global color or font change now cascades everywhere it is used."
+  ],
+  "test": {
+   "method": "Time how long a brand color or font change takes site-wide before and after switching to global values.",
+   "measure": "other:build_time",
+   "read_point": "The next time a brand color or font changes"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "02"
+   ],
+   "cards": [
+    "72d6fb10ee6e"
+   ],
+   "rules": []
+  },
+  "confidence": "medium",
+  "general_practice": true
+ },
+ {
+  "id": "SET-229",
+  "title": "Import a prebuilt template section for a common block instead of building from scratch",
+  "domain": "05-SET",
+  "bottleneck": [
+   "team_capacity"
+  ],
+  "lever": "prebuilt section reuse",
+  "hypothesis": "If we import a prebuilt template section, such as a reviews layout, for a common page block instead of building it from scratch, then build time drops because a ready made, already styled block only needs brand content swapped in.",
+  "applies_when": [
+   "new_store"
+  ],
+  "signal": {
+   "check": "A common section, such as a reviews or FAQ block, is being built from individual elements when a prebuilt template section already covers it.",
+   "metrics": [
+    "other:build_time"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:build_time",
+   "direction": "down",
+   "size": "unknown, no source measures it",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "dev"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Low risk change that can be reverted if it does not help."
+  },
+  "prerequisites": [],
+  "steps": [
+   "Check the builder's template library for a section matching the need.",
+   "Import the closest matching prebuilt section.",
+   "Swap in the brand's own images, copy and colors.",
+   "Adjust spacing and remove any unused blocks left in the template."
+  ],
+  "test": {
+   "method": "Compare build time for this section against building the equivalent from scratch.",
+   "measure": "other:build_time",
+   "read_point": "The next time a similar section is needed"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "02"
+   ],
+   "cards": [
+    "720823a4c0fe"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "SET-230",
+  "title": "Enable SVG uploads and publish the page before bulk uploading icon sets",
+  "domain": "05-SET",
+  "bottleneck": [
+   "team_capacity"
+  ],
+  "lever": "SVG upload workaround",
+  "hypothesis": "If we confirm SVG uploads are enabled and publish the page before bulk uploading a set of SVG icons, then missing icons after a bulk upload drop because a known upload bug only shows the rest of the set once the page is published and the uploader is reopened.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "A bulk SVG icon upload shows only one icon in the media library right after uploading.",
+   "metrics": [
+    "other:upload_error_rate"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:upload_error_rate",
+   "direction": "down",
+   "size": "unknown, no source measures it",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "dev"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Low risk change that can be reverted if it does not help."
+  },
+  "prerequisites": [],
+  "steps": [
+   "Confirm SVG uploads are enabled on the site before uploading any icon set.",
+   "Publish the page first so in-progress design work is not lost.",
+   "Refresh the editor, then reopen the SVG uploader.",
+   "Confirm every icon in the set now appears."
+  ],
+  "test": {
+   "method": "Count how many icons from a bulk SVG upload are missing before and after this workaround.",
+   "measure": "other:upload_error_rate",
+   "read_point": "Immediately after any bulk SVG upload"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "02"
+   ],
+   "cards": [
+    "a2c806b07d12"
+   ],
+   "rules": []
+  },
+  "confidence": "medium",
+  "general_practice": true
+ },
+ {
+  "id": "SET-231",
+  "title": "Check for a per-device scope indicator before editing a responsive control",
+  "domain": "05-SET",
+  "bottleneck": [
+   "conversion"
+  ],
+  "lever": "responsive edit scoping",
+  "hypothesis": "If we check for a per-device scope indicator before editing a responsive control, such as padding or position, then broken layouts on other breakpoints drop because an edit intended for one device does not silently overwrite desktop or tablet as well.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "A control was just changed for one device view and another breakpoint's layout broke without an obvious cause.",
+   "metrics": [
+    "other:responsive_break_rate"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:responsive_break_rate",
+   "direction": "down",
+   "size": "unknown, no source measures it",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "dev"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Low risk change that can be reverted if it does not help."
+  },
+  "prerequisites": [],
+  "steps": [
+   "Before changing a responsive control, look for a device scope icon next to the field.",
+   "Set global values first, then add device specific overrides second.",
+   "After any change, preview every breakpoint, not just the one being edited.",
+   "Fix any breakpoint that shifted unexpectedly."
+  ],
+  "test": {
+   "method": "Preview desktop, tablet and mobile after every responsive edit and note any unintended change.",
+   "measure": "other:responsive_break_rate",
+   "read_point": "After every responsive control edit"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "02",
+    "07"
+   ],
+   "cards": [
+    "dd4deb9d6b86",
+    "a518d6e71675",
+    "9849b1ae9fc7",
+    "d34b4f9dd817"
+   ],
+   "rules": []
+  },
+  "confidence": "medium",
+  "general_practice": true
+ },
+ {
+  "id": "SET-232",
+  "title": "Gate the discount opt-in popup behind a trigger with a capped re-display",
+  "domain": "05-SET",
+  "bottleneck": [
+   "repeat_retention"
+  ],
+  "lever": "opt-in popup trigger gating",
+  "hypothesis": "If we gate an on-site discount opt-in popup behind a trigger, such as a time delay, scroll percentage, or exit intent, with a capped re-display frequency, then list growth improves without annoying visitors because the popup appears at a moment of real interest instead of interrupting every single page load.",
+  "applies_when": [
+   "new_store",
+   "any"
+  ],
+  "signal": {
+   "check": "An opt-in popup shows to every visitor immediately on page load with no trigger condition or re-display cap.",
+   "metrics": [
+    "list_size"
+   ]
+  },
+  "expected_effect": {
+   "metric": "list_size",
+   "direction": "up",
+   "size": "unknown, no source measures it",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Low risk change that can be reverted if it does not help."
+  },
+  "prerequisites": [
+   "An email capture form or app installed"
+  ],
+  "steps": [
+   "Set a trigger for the popup: a time delay, a scroll percentage, or exit intent.",
+   "Set a re-display frequency, such as once per day, for a visitor who dismisses it.",
+   "Style the popup to match the site.",
+   "Track signup rate and bounce rate before and after adding the trigger and cap."
+  ],
+  "test": {
+   "method": "Compare signup rate and bounce rate with the popup gated by a trigger versus showing instantly.",
+   "measure": "list_size",
+   "read_point": "2 to 4 weeks after the change"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "03"
+   ],
+   "cards": [
+    "05381758c277"
+   ],
+   "rules": []
+  },
+  "confidence": "medium",
+  "general_practice": true
+ },
+ {
+  "id": "SET-233",
+  "title": "Reuse one unique, single-use, time-limited code across a welcome sequence",
+  "domain": "05-SET",
+  "bottleneck": [
+   "repeat_retention"
+  ],
+  "lever": "welcome sequence discount code reuse",
+  "hypothesis": "If we build a welcome automation around one unique, single-use, time-limited discount code that is reused across the whole email sequence, then redemption tracking stays clean because the same trackable code follows one subscriber through every email instead of a new code appearing in each one.",
+  "applies_when": [
+   "new_store",
+   "any"
+  ],
+  "signal": {
+   "check": "A welcome email sequence generates a new discount code in each separate email instead of reusing one code per subscriber.",
+   "metrics": [
+    "cvr_checkout_to_order"
+   ]
+  },
+  "expected_effect": {
+   "metric": "cvr_checkout_to_order",
+   "direction": "up",
+   "size": "unknown, no source measures it",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Low risk change that can be reverted if it does not help."
+  },
+  "prerequisites": [
+   "An email automation platform with a unique discount code feature"
+  ],
+  "steps": [
+   "Build the welcome sequence with a unique discount code element in the first email.",
+   "Set the code's expiry once, and reuse the same code element in later emails in the sequence.",
+   "Do not regenerate or re-expire the code on later emails.",
+   "Test end to end that one signup receives one working code across the sequence."
+  ],
+  "test": {
+   "method": "Confirm in the coupon list that a single subscriber's code stays single use and consistent across the sequence.",
+   "measure": "cvr_checkout_to_order",
+   "read_point": "After the first full test signup"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "03"
+   ],
+   "cards": [
+    "996959f153ce",
+    "a0598dd568d9"
+   ],
+   "rules": []
+  },
+  "confidence": "medium",
+  "general_practice": true
+ },
+ {
+  "id": "SET-234",
+  "title": "Set the abandoned cart email trigger to a realistic production window",
+  "domain": "05-SET",
+  "bottleneck": [
+   "repeat_retention"
+  ],
+  "lever": "abandoned cart trigger timing",
+  "hypothesis": "If we set the abandoned cart email trigger to a realistic production inactivity window instead of a fast window used only for a demo, then recovered revenue improves because the email reaches a shopper at a natural point of reconsideration instead of while they may still be actively browsing.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "The abandoned cart automation is still set to a very short inactivity window left over from testing.",
+   "metrics": [
+    "cvr_checkout_to_order"
+   ]
+  },
+  "expected_effect": {
+   "metric": "cvr_checkout_to_order",
+   "direction": "up",
+   "size": "unknown, no source measures it",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Low risk change that can be reverted if it does not help."
+  },
+  "prerequisites": [
+   "An abandoned cart automation already built"
+  ],
+  "steps": [
+   "Check the current inactivity window on the abandoned cart trigger.",
+   "Reset it to a realistic production value, such as an hour or more.",
+   "Add a subject line and dynamic cart contents block if not already present.",
+   "Test by abandoning a cart and waiting past the real window."
+  ],
+  "test": {
+   "method": "Compare recovered checkout rate before and after correcting the trigger window.",
+   "measure": "cvr_checkout_to_order",
+   "read_point": "4 to 8 weeks after the change"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "03"
+   ],
+   "cards": [
+    "02c225352111"
+   ],
+   "rules": []
+  },
+  "confidence": "medium",
+  "general_practice": true
+ },
+ {
+  "id": "SET-235",
+  "title": "Segment subscribers by behavior and value instead of one blanket offer",
+  "domain": "05-SET",
+  "bottleneck": [
+   "repeat_retention"
+  ],
+  "lever": "behavior and value segmentation",
+  "hypothesis": "If we segment subscribers by behavior and value, such as inactive, high value, and recent buyers, and trigger a different offer per segment, then margin given away on discounts drops because a full price willing customer no longer receives the same deep discount aimed at winning back an inactive one.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "The same blanket discount or message goes to the entire subscriber list regardless of purchase history or engagement.",
+   "metrics": [
+    "discount_rate"
+   ]
+  },
+  "expected_effect": {
+   "metric": "discount_rate",
+   "direction": "down",
+   "size": "unknown, no source measures it",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "M",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Low risk change that can be reverted if it does not help."
+  },
+  "prerequisites": [
+   "An email platform with segmentation, and enough list history to build segments"
+  ],
+  "steps": [
+   "Build segments such as inactive, high value, recent buyers, and region.",
+   "Design a different offer or message for each segment.",
+   "Trigger the matching workflow when a contact enters a segment.",
+   "Review segment membership periodically to confirm it still matches intent."
+  ],
+  "test": {
+   "method": "Compare discount cost and response rate for segmented offers against the prior blanket offer.",
+   "measure": "discount_rate",
+   "read_point": "One full campaign cycle after the change"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "03"
+   ],
+   "cards": [
+    "0b1a8b07620f"
+   ],
+   "rules": []
+  },
+  "confidence": "medium",
+  "general_practice": true
+ },
+ {
+  "id": "SET-236",
+  "title": "Change one variable at a time when testing an email, over a long enough send",
+  "domain": "05-SET",
+  "bottleneck": [
+   "measurement_data"
+  ],
+  "lever": "single variable email testing",
+  "hypothesis": "If we change exactly one variable, such as the subject line, in an email split test and let it run over a long enough send, then the result is actually attributable because a short test or a multi variable change cannot tell us which change caused the difference.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "An email split test changes more than one thing at once, or is called after a very short run or a small sample.",
+   "metrics": [
+    "email_click_rate"
+   ]
+  },
+  "expected_effect": {
+   "metric": "email_click_rate",
+   "direction": "up",
+   "size": "unknown, no source measures it",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Low risk change that can be reverted if it does not help."
+  },
+  "prerequisites": [
+   "An email platform with split test support"
+  ],
+  "steps": [
+   "Duplicate the email into two branches.",
+   "Change exactly one variable, such as the subject line only.",
+   "Split the audience and let the test run long enough to be meaningful.",
+   "Compare open rate, then clicks and sales, before declaring a winner."
+  ],
+  "test": {
+   "method": "Compare the two branches' open rate, click rate and sales after the test window closes.",
+   "measure": "email_click_rate",
+   "read_point": "After the test window closes"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "03"
+   ],
+   "cards": [
+    "6d3a34466c86"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "SET-237",
+  "title": "Read email platform revenue attribution as directional, not exact",
+  "domain": "05-SET",
+  "bottleneck": [
+   "measurement_data"
+  ],
+  "lever": "email attribution interpretation",
+  "hypothesis": "If we read revenue attributed by an email or automation platform as a directional signal against total store revenue rather than an exact figure, then investment decisions between more automation and more list building improve because the comparison is used to guide direction, not treated as a precise profit and loss line.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "A platform's attributed revenue number is being treated as an exact, audited figure when deciding where to invest.",
+   "metrics": [
+    "flow_revenue_share"
+   ]
+  },
+  "expected_effect": {
+   "metric": "flow_revenue_share",
+   "direction": "up",
+   "size": "unknown, no source measures it",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "founder"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Low risk change that can be reverted if it does not help."
+  },
+  "prerequisites": [
+   "Email or automation platform with a revenue attribution report"
+  ],
+  "steps": [
+   "Pull total store revenue and platform-attributed revenue for the same period.",
+   "Compare the two as a rough share, not an exact split.",
+   "Use the direction of the split to decide between more automation or more list building.",
+   "Re-check the split each reporting cycle rather than acting on one snapshot."
+  ],
+  "test": {
+   "method": "Track whether the attributed revenue share trends up or down over several reporting cycles.",
+   "measure": "flow_revenue_share",
+   "read_point": "Each reporting cycle"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "03"
+   ],
+   "cards": [
+    "f836216a37bb"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "SET-238",
+  "title": "Set up UTM auto-match rules so campaign traffic attributes itself",
+  "domain": "05-SET",
+  "bottleneck": [
+   "measurement_data"
+  ],
+  "lever": "UTM auto-match attribution",
+  "hypothesis": "If we set up UTM auto-match rules so campaign traffic is attributed automatically, then reporting accuracy improves because links no longer depend on someone remembering to tag every single one by hand.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "Campaign links are tagged manually and inconsistently, so some traffic arrives with no attribution.",
+   "metrics": [
+    "attribution_gap"
+   ]
+  },
+  "expected_effect": {
+   "metric": "attribution_gap",
+   "direction": "down",
+   "size": "unknown, no source measures it",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Low risk change that can be reverted if it does not help."
+  },
+  "prerequisites": [
+   "Analytics or marketing platform with UTM auto-match support"
+  ],
+  "steps": [
+   "List the campaign types that regularly need UTM tags.",
+   "Build auto-match rules so those campaign types tag themselves.",
+   "Spot check recent campaign traffic for correctly attributed source and medium.",
+   "Fix any rule that is not matching as expected."
+  ],
+  "test": {
+   "method": "Compare the share of untagged or misattributed campaign traffic before and after adding auto-match rules.",
+   "measure": "attribution_gap",
+   "read_point": "2 to 4 weeks after the change"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "04"
+   ],
+   "cards": [
+    "8493c303ca6d"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "SET-239",
+  "title": "Choose an attribution model deliberately for the specific question being answered",
+  "domain": "05-SET",
+  "bottleneck": [
+   "measurement_data"
+  ],
+  "lever": "attribution model selection",
+  "hypothesis": "If we choose an attribution model deliberately based on the specific marketing question being answered, instead of using the platform default for every decision, then decisions about channel spend improve because different questions, such as first touch versus last touch, need different models to answer honestly.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "Every marketing decision is made from the same default attribution model regardless of the question being asked.",
+   "metrics": [
+    "roas_blended"
+   ]
+  },
+  "expected_effect": {
+   "metric": "roas_blended",
+   "direction": "up",
+   "size": "unknown, no source measures it",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "founder"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Low risk change that can be reverted if it does not help."
+  },
+  "prerequisites": [],
+  "steps": [
+   "Name the specific question a report needs to answer, such as which channel first introduces a buyer versus which one closes the sale.",
+   "Pick the attribution model that actually answers that question.",
+   "Note which model was used when sharing the result.",
+   "Switch models deliberately for a different question rather than reusing one model for everything."
+  ],
+  "test": {
+   "method": "Compare a channel investment decision made under the default model against the same decision under the deliberately chosen model.",
+   "measure": "roas_blended",
+   "read_point": "The next time a channel investment decision is made"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "04"
+   ],
+   "cards": [
+    "1e109800dd1b"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "SET-240",
+  "title": "Build a repeatable morning marketing report instead of checking scattered dashboards",
+  "domain": "05-SET",
+  "bottleneck": [
+   "team_capacity"
+  ],
+  "lever": "morning marketing report",
+  "hypothesis": "If we build a repeatable morning marketing report from campaign tracking activities, then time spent hunting for numbers drops because the same short set of metrics is pulled the same way every day instead of checking several separate dashboards from scratch.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "Checking yesterday's marketing performance means opening several different dashboards in no fixed order each day.",
+   "metrics": [
+    "other:reporting_time"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:reporting_time",
+   "direction": "down",
+   "size": "unknown, no source measures it",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "founder"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Low risk change that can be reverted if it does not help."
+  },
+  "prerequisites": [],
+  "steps": [
+   "List the handful of numbers that actually drive a same-day decision.",
+   "Build one saved report or view that pulls all of them together.",
+   "Check that saved report each morning instead of separate dashboards.",
+   "Adjust the report's metric list if it stops matching real decisions."
+  ],
+  "test": {
+   "method": "Time how long the morning check takes before and after building the single saved report.",
+   "measure": "other:reporting_time",
+   "read_point": "The next week of daily checks"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "04"
+   ],
+   "cards": [
+    "d458f58e2ffa"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "SET-241",
+  "title": "Build a lifecycle automation covering welcome, cart recovery and win-back",
+  "domain": "05-SET",
+  "bottleneck": [
+   "repeat_retention"
+  ],
+  "lever": "lifecycle automation coverage",
+  "hypothesis": "If we build a lifecycle automation covering welcome, cart recovery and win-back messages, then repeat purchase rate improves because each stage of the customer relationship gets a message built for it instead of relying on one-off, unplanned emails.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "The store sends occasional one-off emails with no structured welcome, cart recovery or win-back automation running.",
+   "metrics": [
+    "repeat_rate_90d"
+   ]
+  },
+  "expected_effect": {
+   "metric": "repeat_rate_90d",
+   "direction": "up",
+   "size": "unknown, no source measures it",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "M",
+   "owner": "marketer"
+  },
+  "cost": "low",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Low risk change that can be reverted if it does not help."
+  },
+  "prerequisites": [
+   "An email or SMS platform capable of automated flows"
+  ],
+  "steps": [
+   "Build a welcome flow for new subscribers or customers.",
+   "Build a cart recovery flow for abandoned checkouts.",
+   "Build a win-back flow for customers who have gone quiet.",
+   "Test each flow end to end before turning it on for everyone."
+  ],
+  "test": {
+   "method": "Compare repeat purchase rate before and after the full lifecycle automation is live.",
+   "measure": "repeat_rate_90d",
+   "read_point": "8 to 12 weeks after launch"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "04"
+   ],
+   "cards": [
+    "0cbef48284c3"
+   ],
+   "rules": []
+  },
+  "confidence": "medium",
+  "general_practice": true
+ },
+ {
+  "id": "SET-242",
+  "title": "Build targeted customer segments instead of one blanket email list",
+  "domain": "05-SET",
+  "bottleneck": [
+   "repeat_retention"
+  ],
+  "lever": "targeted segment building",
+  "hypothesis": "If we build targeted customer segments for email and offers instead of treating the whole list as one group, then response rate improves because a message matched to a segment's real behavior lands better than the same message sent to everyone.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "Every email or offer goes to the entire list with no segmentation by purchase history, engagement or interest.",
+   "metrics": [
+    "email_click_rate"
+   ]
+  },
+  "expected_effect": {
+   "metric": "email_click_rate",
+   "direction": "up",
+   "size": "unknown, no source measures it",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "M",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Low risk change that can be reverted if it does not help."
+  },
+  "prerequisites": [
+   "An email platform with segmentation support and enough list history"
+  ],
+  "steps": [
+   "Identify a few meaningful ways to split the list, such as by purchase history or engagement.",
+   "Build each segment in the email platform.",
+   "Send the next campaign to the most relevant segment instead of the whole list.",
+   "Compare response rate against a prior blanket send."
+  ],
+  "test": {
+   "method": "Compare click and purchase rate for a segmented send against a prior blanket send.",
+   "measure": "email_click_rate",
+   "read_point": "After the first segmented campaign"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "04"
+   ],
+   "cards": [
+    "241fe26f97c1"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "SET-243",
+  "title": "Run a consistent organic social mix with a clear path back to a purchase link",
+  "domain": "05-SET",
+  "bottleneck": [
+   "acquisition_volume"
+  ],
+  "lever": "organic social purchase path",
+  "hypothesis": "If we run a consistent organic social content mix with a clear path back to a purchase link, then organic traffic that actually converts improves because followers are given somewhere concrete to go instead of content that ends with no next step.",
+  "applies_when": [
+   "organic_led"
+  ],
+  "signal": {
+   "check": "Organic social posts go out with no consistent content mix and no clear link back to a product or collection.",
+   "metrics": [
+    "organic_sessions"
+   ]
+  },
+  "expected_effect": {
+   "metric": "organic_sessions",
+   "direction": "up",
+   "size": "unknown, no source measures it",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "M",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Low risk change that can be reverted if it does not help."
+  },
+  "prerequisites": [],
+  "steps": [
+   "Define a simple content mix, such as product, story, and social proof posts.",
+   "Add a clear path back to a purchase link in bio or in-post wherever the platform allows it.",
+   "Post on a consistent cadence.",
+   "Track organic traffic and conversion from social over time."
+  ],
+  "test": {
+   "method": "Compare organic traffic and conversion from social before and after adding a consistent mix and clear purchase path.",
+   "measure": "organic_sessions",
+   "read_point": "8 to 12 weeks after the change"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "04"
+   ],
+   "cards": [
+    "c2a9e36b5b45"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "SET-244",
+  "title": "Read the conversion-rate breakdown report to find the biggest funnel leak first",
+  "domain": "05-SET",
+  "bottleneck": [
+   "conversion"
+  ],
+  "lever": "funnel drop-off diagnosis",
+  "hypothesis": "If we read the conversion-rate breakdown report to find the single largest drop-off point in the funnel before deciding what to fix, then the next fix targets the real bottleneck because the biggest proportional leak, not a guess, decides where effort goes first.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "A conversion fix is chosen without first checking which funnel step actually loses the most visitors.",
+   "metrics": [
+    "cvr_pdp_to_cart",
+    "cvr_cart_to_checkout",
+    "cvr_checkout_to_order"
+   ]
+  },
+  "expected_effect": {
+   "metric": "cvr_overall",
+   "direction": "up",
+   "size": "unknown, no source measures it",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "founder"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Low risk change that can be reverted if it does not help."
+  },
+  "prerequisites": [
+   "Analytics with a conversion funnel breakdown report"
+  ],
+  "steps": [
+   "Open the conversion-rate breakdown report covering sessions through completed purchase.",
+   "Identify the step with the largest proportional drop.",
+   "Match that step to the likely cause, such as product page persuasion or checkout friction.",
+   "Fix that step first, then re-check the funnel before moving to the next one."
+  ],
+  "test": {
+   "method": "Re-run the funnel breakdown after the fix and confirm the targeted step's drop-off improved.",
+   "measure": "cvr_overall",
+   "read_point": "2 to 4 weeks after the fix"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "04"
+   ],
+   "cards": [
+    "a0544e91dab6"
+   ],
+   "rules": []
+  },
+  "confidence": "medium",
+  "general_practice": true
+ },
+ {
+  "id": "SET-245",
+  "title": "Improve site search with predictive text and synonym matching",
+  "domain": "05-SET",
+  "bottleneck": [
+   "conversion"
+  ],
+  "lever": "predictive search and synonyms",
+  "hypothesis": "If we improve site search with predictive text and synonym matching, then search-driven conversion improves because a shopper who misspells a product name or uses a different word for it still reaches a real result instead of a dead end.",
+  "applies_when": [
+   "catalogue"
+  ],
+  "signal": {
+   "check": "Site search returns no results for common misspellings or alternate names for products in the catalog.",
+   "metrics": [
+    "cvr_overall"
+   ]
+  },
+  "expected_effect": {
+   "metric": "cvr_overall",
+   "direction": "up",
+   "size": "unknown, no source measures it",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "M",
+   "owner": "dev"
+  },
+  "cost": "low",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Low risk change that can be reverted if it does not help."
+  },
+  "prerequisites": [
+   "A search app or feature supporting predictive text and synonyms"
+  ],
+  "steps": [
+   "List common misspellings and alternate terms shoppers use for key products.",
+   "Enable predictive text suggestions in site search.",
+   "Add synonym rules for the terms identified.",
+   "Test the affected search terms and confirm they now return real results."
+  ],
+  "test": {
+   "method": "Compare search result rate and search-to-purchase rate before and after adding synonyms and predictive text.",
+   "measure": "cvr_overall",
+   "read_point": "4 to 8 weeks after the change"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "04"
+   ],
+   "cards": [
+    "2feda79ef81c"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "SET-246",
+  "title": "Add checkout trust badges and a concrete delivery date estimate",
+  "domain": "05-SET",
+  "bottleneck": [
+   "trust_brand"
+  ],
+  "lever": "checkout trust signals",
+  "hypothesis": "If we add checkout trust badges and a concrete delivery date estimate at checkout, not only on the product page, then checkout completion improves because hesitation right before paying is answered at the exact moment it appears, not several screens earlier.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "Trust badges and delivery estimates appear on the product page but checkout itself carries none of that reassurance.",
+   "metrics": [
+    "cvr_checkout_to_order"
+   ]
+  },
+  "expected_effect": {
+   "metric": "cvr_checkout_to_order",
+   "direction": "up",
+   "size": "unknown, no source measures it",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "dev"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Low risk change that can be reverted if it does not help."
+  },
+  "prerequisites": [
+   "Real, honest delivery time estimates by destination"
+  ],
+  "steps": [
+   "Add security or payment trust badges to the checkout page where the platform allows it.",
+   "Add a real, destination specific delivery date estimate at checkout.",
+   "Confirm the estimate matches what is actually promised elsewhere on the site.",
+   "Test checkout on mobile to confirm the additions do not crowd the page."
+  ],
+  "test": {
+   "method": "Compare checkout completion rate before and after adding trust badges and a delivery estimate at checkout.",
+   "measure": "cvr_checkout_to_order",
+   "read_point": "2 to 4 weeks after the change"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "04"
+   ],
+   "cards": [
+    "a23f9e5da162"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "SET-247",
+  "title": "Test one page variable at a time and watch real behavior with a heat map",
+  "domain": "05-SET",
+  "bottleneck": [
+   "conversion"
+  ],
+  "lever": "single variable heat map testing",
+  "hypothesis": "If we test one page or checkout variable at a time and watch real shopper behavior with a heat map or session recording tool, then the store learns what actually happened instead of guessing, because a recording shows where shoppers hesitate, misclick or leave.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "A page change is made based on opinion alone, with no recording or heat map review of how shoppers actually used the page before or after.",
+   "metrics": [
+    "cvr_overall"
+   ]
+  },
+  "expected_effect": {
+   "metric": "cvr_overall",
+   "direction": "up",
+   "size": "unknown, no source measures it",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "M",
+   "owner": "marketer"
+  },
+  "cost": "low",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Low risk change that can be reverted if it does not help."
+  },
+  "prerequisites": [
+   "A heat map or session recording tool installed"
+  ],
+  "steps": [
+   "Install a heat map or session recording tool if not already present.",
+   "Record a baseline period on the page or step being tested.",
+   "Change exactly one variable and record a comparable period after.",
+   "Review the recordings for hesitation, misclicks or drop-off before and after."
+  ],
+  "test": {
+   "method": "Compare heat map and session recording patterns before and after the single variable change.",
+   "measure": "cvr_overall",
+   "read_point": "After each single-variable test period"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "04"
+   ],
+   "cards": [
+    "8f76661ea3a5"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "SET-248",
+  "title": "Keep a weekly marketing routine of one email, one post goal, one data change",
+  "domain": "05-SET",
+  "bottleneck": [
+   "team_capacity"
+  ],
+  "lever": "weekly marketing routine",
+  "hypothesis": "If we keep a weekly marketing routine of sending one email, working toward one organic post goal, and making one data driven change, then marketing actually happens consistently because a small, fixed weekly routine is easier to sustain than an unplanned, sporadic cadence.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "Marketing activity happens in bursts with no fixed weekly routine, then goes quiet for stretches.",
+   "metrics": [
+    "other:marketing_consistency"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:marketing_consistency",
+   "direction": "up",
+   "size": "unknown, no source measures it",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "founder"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Low risk change that can be reverted if it does not help."
+  },
+  "prerequisites": [],
+  "steps": [
+   "Set a fixed weekly slot for one email send.",
+   "Set a fixed weekly organic social posting goal.",
+   "Pick one data driven change to make each week based on the prior week's numbers.",
+   "Track whether the routine is actually kept for a full month."
+  ],
+  "test": {
+   "method": "Track how many weeks in a row the routine was actually completed.",
+   "measure": "other:marketing_consistency",
+   "read_point": "After 4 weeks of the routine"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "04"
+   ],
+   "cards": [
+    "caa00f2a301f"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "SET-249",
+  "title": "Run a VIP campaign to top spenders with a segment and an exclusive code",
+  "domain": "05-SET",
+  "bottleneck": [
+   "repeat_retention"
+  ],
+  "lever": "VIP top spender campaign",
+  "hypothesis": "If we run a VIP campaign to top spenders using a segment and an exclusive code, then repeat purchase from the highest value customers improves because they receive a distinct offer built for their spend level instead of the same treatment as a first time browser.",
+  "applies_when": [
+   "high_aov",
+   "any"
+  ],
+  "signal": {
+   "check": "Top spending customers receive the same generic offers as every other subscriber, with no distinct VIP treatment.",
+   "metrics": [
+    "ltv_180d"
+   ]
+  },
+  "expected_effect": {
+   "metric": "ltv_180d",
+   "direction": "up",
+   "size": "unknown, no source measures it",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "M",
+   "owner": "marketer"
+  },
+  "cost": "low",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Low risk change that can be reverted if it does not help."
+  },
+  "prerequisites": [
+   "Order history to identify top spenders"
+  ],
+  "steps": [
+   "Build a segment of top spenders by order count or total spend.",
+   "Create an exclusive code or offer just for that segment.",
+   "Send the campaign to the segment only.",
+   "Track repeat purchase rate for the segment after the campaign."
+  ],
+  "test": {
+   "method": "Compare repeat purchase rate for the VIP segment before and after the campaign.",
+   "measure": "ltv_180d",
+   "read_point": "8 to 12 weeks after the campaign"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "04"
+   ],
+   "cards": [
+    "1cb48ec66159"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "SET-250",
+  "title": "Treat a high bounce rate as a signal to check page speed, then confirm with a tool",
+  "domain": "05-SET",
+  "bottleneck": [
+   "site_speed"
+  ],
+  "lever": "bounce rate as speed signal",
+  "hypothesis": "If we treat a bounce rate above a set threshold as a signal to check page speed, confirmed with a page speed testing tool, then slow pages get found faster because bounce rate is watched as an early warning instead of assuming content or targeting is always the cause.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "Bounce rate is elevated on a page and no one has checked whether page speed is the cause.",
+   "metrics": [
+    "lcp_mobile_p75"
+   ]
+  },
+  "expected_effect": {
+   "metric": "lcp_mobile_p75",
+   "direction": "down",
+   "size": "unknown, no source measures it",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "dev"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Low risk change that can be reverted if it does not help."
+  },
+  "prerequisites": [
+   "Analytics with bounce rate by page, and a page speed testing tool"
+  ],
+  "steps": [
+   "Watch for a page with bounce rate meaningfully above the site average.",
+   "Run that page through a page speed testing tool.",
+   "If speed is poor, fix the biggest speed issue found before changing the page's content.",
+   "Recheck bounce rate after the speed fix."
+  ],
+  "test": {
+   "method": "Compare bounce rate for the page before and after the speed fix.",
+   "measure": "lcp_mobile_p75",
+   "read_point": "2 to 4 weeks after the fix"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "04"
+   ],
+   "cards": [
+    "14f8bc81657f"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "SET-251",
+  "title": "Show real shipping cost earlier in the funnel, not only at final checkout",
+  "domain": "05-SET",
+  "bottleneck": [
+   "conversion"
+  ],
+  "lever": "early shipping cost transparency",
+  "hypothesis": "If we show the real shipping cost earlier in the browsing or cart funnel instead of revealing it for the first time at the final checkout step, then checkout abandonment drops because a shopper is not surprised by an unexpected cost right before paying.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "Shipping cost is never mentioned until the final checkout step, with no earlier estimate shown in the cart or on product pages.",
+   "metrics": [
+    "cvr_cart_to_checkout"
+   ]
+  },
+  "expected_effect": {
+   "metric": "cvr_cart_to_checkout",
+   "direction": "up",
+   "size": "unknown, no source measures it",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "dev"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Low risk change that can be reverted if it does not help."
+  },
+  "prerequisites": [],
+  "steps": [
+   "Add a shipping cost or estimate range earlier in the funnel, such as on the product page or in the cart.",
+   "Keep the early estimate consistent with the real rate shown at checkout.",
+   "Test that the estimate updates correctly as the cart changes.",
+   "Track cart to checkout completion after the change."
+  ],
+  "test": {
+   "method": "Compare cart to checkout completion rate before and after showing shipping cost earlier.",
+   "measure": "cvr_cart_to_checkout",
+   "read_point": "2 to 4 weeks after the change"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "04"
+   ],
+   "cards": [
+    "8f9f02d8611d"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "SET-252",
+  "title": "Score a product idea for demand and ad fit before building a store around it",
+  "domain": "05-SET",
+  "bottleneck": [
+   "acquisition_volume"
+  ],
+  "lever": "pre-build product validation score",
+  "hypothesis": "If we score a product idea against demand, ad fit and competitive crowding before committing build time to a full store around it, then wasted build effort drops because a weak or over-saturated product idea is caught before pages, products and ads are all built around it.",
+  "applies_when": [
+   "new_store"
+  ],
+  "signal": {
+   "check": "A store or product page build starts before the underlying product idea has been checked against demand or competitive crowding.",
+   "metrics": [
+    "other:validation_score"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:validation_score",
+   "direction": "up",
+   "size": "unknown, no source measures it",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "founder"
+  },
+  "cost": "low",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Low risk change that can be reverted if it does not help."
+  },
+  "prerequisites": [
+   "A research tool or method for demand and competitive signals"
+  ],
+  "steps": [
+   "Research demand signals and ad activity for the product idea.",
+   "Check how crowded and how brand driven the competitive space already is.",
+   "Score the idea against these factors before committing build time.",
+   "Proceed, adjust the angle, or drop the idea based on the score."
+  ],
+  "test": {
+   "method": "Compare build effort spent on ideas that passed this check against ideas that skipped it.",
+   "measure": "other:validation_score",
+   "read_point": "Before starting the store or product build"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "06"
+   ],
+   "cards": [
+    "42a898b74a67"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "SET-253",
+  "title": "Score a new page against a conversion checklist and fill only the flagged gaps",
+  "domain": "05-SET",
+  "bottleneck": [
+   "conversion"
+  ],
+  "lever": "page score gap filling",
+  "hypothesis": "If we score a new or existing page against a conversion focused section checklist and add only the specific sections it flags as missing, then the page improves efficiently because effort goes to the real gaps, such as a missing guarantee or founder credibility section, instead of a general redesign.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "A page's conversion issues are being guessed at instead of checked against a specific missing-section checklist.",
+   "metrics": [
+    "cvr_overall"
+   ]
+  },
+  "expected_effect": {
+   "metric": "cvr_overall",
+   "direction": "up",
+   "size": "unknown, no source measures it",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "M",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Low risk change that can be reverted if it does not help."
+  },
+  "prerequisites": [
+   "A page scoring checklist or tool"
+  ],
+  "steps": [
+   "Score the page against a conversion focused section checklist.",
+   "List the specific sections the checklist flags as missing, such as a guarantee or founder section.",
+   "Add only those flagged sections rather than redesigning the whole page.",
+   "Re-score the page after the additions."
+  ],
+  "test": {
+   "method": "Compare the page's score and conversion rate before and after adding only the flagged sections.",
+   "measure": "cvr_overall",
+   "read_point": "2 to 4 weeks after the additions"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "06"
+   ],
+   "cards": [
+    "40f69bed15d7",
+    "005f75877ee9"
+   ],
+   "rules": []
+  },
+  "confidence": "medium",
+  "general_practice": true
+ },
+ {
+  "id": "SET-254",
+  "title": "Feed the copywriter real supplier specs and review language, not a bare product name",
+  "domain": "05-SET",
+  "bottleneck": [
+   "conversion"
+  ],
+  "lever": "copywriting input quality",
+  "hypothesis": "If we feed a copywriter or AI copywriting tool raw supplier specs, ingredients and genuine review language as input, instead of asking for copy from a bare product name alone, then product copy quality improves because specific, real detail produces specific, believable copy instead of generic filler.",
+  "applies_when": [
+   "catalogue"
+  ],
+  "signal": {
+   "check": "Product copy is requested from a bare product name with no supplier specs or real review language supplied as input.",
+   "metrics": [
+    "cvr_pdp_to_cart"
+   ]
+  },
+  "expected_effect": {
+   "metric": "cvr_pdp_to_cart",
+   "direction": "up",
+   "size": "unknown, no source measures it",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Low risk change that can be reverted if it does not help."
+  },
+  "prerequisites": [
+   "Real supplier specs or genuine customer review language"
+  ],
+  "steps": [
+   "Gather the product's real supplier specs and ingredients.",
+   "Gather genuine review language or customer feedback if any exists.",
+   "Paste this real detail into the copywriting brief or tool as input.",
+   "Edit the output against the real product before publishing."
+  ],
+  "test": {
+   "method": "Compare add to cart rate on pages rewritten with real input detail against pages written from a bare product name.",
+   "measure": "cvr_pdp_to_cart",
+   "read_point": "2 to 4 weeks after republishing the copy"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "06"
+   ],
+   "cards": [
+    "3db5a6811648"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "SET-255",
+  "title": "Add subtle entrance animations to homepage sections instead of an instant load",
+  "domain": "05-SET",
+  "bottleneck": [
+   "conversion"
+  ],
+  "lever": "homepage entrance animation polish",
+  "hypothesis": "If we add subtle entrance or scroll animations to homepage sections instead of having every element load in instantly, then first impression quality improves because a small amount of motion reads as a more finished, professional build than everything appearing at once.",
+  "applies_when": [
+   "new_store"
+  ],
+  "signal": {
+   "check": "Every homepage section and element loads in instantly with no transition, making the page feel unfinished.",
+   "metrics": [
+    "bounce_rate_pdp"
+   ]
+  },
+  "expected_effect": {
+   "metric": "bounce_rate_pdp",
+   "direction": "down",
+   "size": "unknown, no source measures it",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "designer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Overusing animation can slow perceived load time, so keep effects minimal and fast."
+  },
+  "prerequisites": [],
+  "steps": [
+   "Pick a subtle entrance effect, such as a fade or slight slide, for homepage sections.",
+   "Apply it consistently across sections rather than a different effect per section.",
+   "Check that the effect does not delay content becoming usable.",
+   "Test on mobile for smoothness and speed."
+  ],
+  "test": {
+   "method": "Compare bounce rate and time on homepage before and after adding the animation.",
+   "measure": "bounce_rate_pdp",
+   "read_point": "2 to 4 weeks after the change"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "08"
+   ],
+   "cards": [
+    "5fa9ccc816ec"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
  }
 ]
