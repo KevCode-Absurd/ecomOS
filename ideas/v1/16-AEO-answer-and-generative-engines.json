@@ -8845,5 +8845,937 @@
   },
   "confidence": "low",
   "general_practice": false
+ },
+ {
+  "id": "AEO-132",
+  "title": "Cite external authoritative sources for every factual claim",
+  "domain": "16-AEO",
+  "bottleneck": [
+   "trust_brand",
+   "conversion"
+  ],
+  "lever": "outbound source citation",
+  "hypothesis": "If every factual claim on a page links to a credible outside source, then engines trust and cite the page more because the brand backs its own numbers instead of asserting them alone.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "A buying guide or PDP states a fact, statistic or claim with no source, government link or study behind it.",
+   "metrics": [
+    "ai_citations"
+   ]
+  },
+  "expected_effect": {
+   "metric": "ai_citations",
+   "direction": "up",
+   "size": "unknown; source frames outbound citation as just as important as content quality itself",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Linking to a competitor's data by mistake is the main risk; check the source before linking."
+  },
+  "prerequisites": [
+   "A page with at least one unsupported factual claim"
+  ],
+  "steps": [
+   "List every factual claim, statistic or number on the page that has no source attached.",
+   "Find a credible outside source for each claim: a study, a government page, a manufacturer spec sheet.",
+   "Link the claim's exact phrase to that source instead of a generic homepage link.",
+   "Keep the link visible in the page text, not hidden in a footnote only a human would find."
+  ],
+  "test": {
+   "method": "Compare citation rate for pages with outbound source links against similar pages without them.",
+   "measure": "ai_citations",
+   "read_point": "Monthly, across a matched set of pages"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "01"
+   ],
+   "cards": [
+    "2b192a421dcf206a"
+   ],
+   "rules": []
+  },
+  "confidence": "medium",
+  "general_practice": true
+ },
+ {
+  "id": "AEO-133",
+  "title": "Add a sparing illustration to a dense passage in long content",
+  "domain": "16-AEO",
+  "bottleneck": [
+   "conversion",
+   "site_speed"
+  ],
+  "lever": "visual capsule for dense text",
+  "hypothesis": "If a long buying guide gets one illustration on its densest passage, exported as WEBP and used once or twice, then readers and engines both parse the section faster because a picture breaks up a wall of text without slowing the page.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "A buying guide or long comparison page has a dense passage with no visual break for several hundred words.",
+   "metrics": [
+    "ai_citations",
+    "page_weight_kb"
+   ]
+  },
+  "expected_effect": {
+   "metric": "ai_citations",
+   "direction": "up",
+   "size": "unknown; source frames this as a formatting aid, not a measured citation lift",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "designer"
+  },
+  "cost": "low",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Using too many illustrations dilutes the page; source caps it at once or twice per post."
+  },
+  "prerequisites": [
+   "A long-form page with a genuinely dense, hard-to-scan passage"
+  ],
+  "steps": [
+   "Find the single densest, hardest-to-scan passage in a long guide.",
+   "Turn that passage into one simple diagram, chart or annotated image.",
+   "Export the image as WEBP, not raw PNG, to keep page weight down.",
+   "Place it once in that section; do not repeat the tactic more than once or twice per post."
+  ],
+  "test": {
+   "method": "Compare read-through and citation rate on pages with one illustration against matched pages with none.",
+   "measure": "ai_citations",
+   "read_point": "Monthly"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "01"
+   ],
+   "cards": [
+    "ba67965b333264e6"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "AEO-134",
+  "title": "Verify a Reddit-mentions vendor's claimed influence before paying",
+  "domain": "16-AEO",
+  "bottleneck": [
+   "risk_compliance",
+   "measurement_data"
+  ],
+  "lever": "vendor claim verification",
+  "hypothesis": "If a Reddit-mentions vendor's claimed threads get checked for age, citation status and subreddit brand-mention rules before signing, then the store does not pay for a dead or banned tactic because a locked, years-old thread or a mention-hostile subreddit cannot produce a new citation.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "A vendor pitches a Reddit-mentions package and cites past results without naming the actual threads or subreddits.",
+   "metrics": [
+    "ai_citations"
+   ]
+  },
+  "expected_effect": {
+   "metric": "ai_citations",
+   "direction": "up",
+   "size": "unknown, a pass or fail check rather than a measured lift",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Skipping this check risks paying for a service that cannot deliver a new citation."
+  },
+  "prerequisites": [
+   "A vendor proposal naming specific threads or a Reddit-mentions package"
+  ],
+  "steps": [
+   "Ask the vendor for the exact thread URLs their claimed results came from.",
+   "Open each thread and check whether it is still live, recent and unlocked.",
+   "Check the subreddit's rules for whether brand mentions are tolerated at all.",
+   "Confirm the thread actually appears in an AI answer today, not just in the past.",
+   "Reject or renegotiate the package if the threads are stale, locked or in a mention-hostile subreddit."
+  ],
+  "test": {
+   "method": "Track whether new citations appear from the vendor's named threads within the contract period.",
+   "measure": "ai_citations",
+   "read_point": "Monthly during the contract"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "02"
+   ],
+   "cards": [
+    "28b9ca1fa2478ff92669f28b"
+   ],
+   "rules": []
+  },
+  "confidence": "medium",
+  "general_practice": true
+ },
+ {
+  "id": "AEO-135",
+  "title": "Retitle an existing category page for a best-of query",
+  "domain": "16-AEO",
+  "bottleneck": [
+   "acquisition_volume",
+   "team_capacity"
+  ],
+  "lever": "repurpose existing page for a buyer query",
+  "hypothesis": "If an existing product-grid category page gets a best-of style title and H1 for a bottom-of-funnel query, then the store can rank for that query without writing a new listicle because the page already has products, price and stock to back the claim.",
+  "applies_when": [
+   "catalogue",
+   "any"
+  ],
+  "signal": {
+   "check": "A best of category buyer query surfaces only competitor listicles, while the store already has an ordinary category page covering the same products.",
+   "metrics": [
+    "organic_clicks",
+    "ai_citations"
+   ]
+  },
+  "expected_effect": {
+   "metric": "ai_citations",
+   "direction": "up",
+   "size": "unknown, based on a single worked example",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Retitling an existing page is low risk and reversible; keep the old title as a fallback if rankings drop."
+  },
+  "prerequisites": [
+   "An existing category page covering the target query's products"
+  ],
+  "steps": [
+   "Find a best of or top X query buyers actually ask for a category you already sell.",
+   "Check whether only competitor listicles answer it today.",
+   "Rewrite the existing category page's title and H1 to match that exact query.",
+   "Keep the page as an ordinary product grid; do not turn it into a written article.",
+   "Recheck the target query on 2 to 3 AI platforms after the change."
+  ],
+  "test": {
+   "method": "Search the target query before and after the retitle on the same AI platforms.",
+   "measure": "ai_citations",
+   "read_point": "4 to 6 weeks after the change"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "02"
+   ],
+   "cards": [
+    "bff108ae1155"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": false
+ },
+ {
+  "id": "AEO-136",
+  "title": "Spread review collection across more than one platform",
+  "domain": "16-AEO",
+  "bottleneck": [
+   "trust_brand",
+   "risk_compliance"
+  ],
+  "lever": "review platform diversification",
+  "hypothesis": "If review collection runs across more than one platform instead of concentrating on a single site, then AI visibility survives a platform dropping out of an engine's citations because at least one other honest review source still remains.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "Nearly all of the store's collected reviews sit on one platform, and that platform is the only review source engines currently cite for the category.",
+   "metrics": [
+    "review_count",
+    "ai_citations"
+   ]
+  },
+  "expected_effect": {
+   "metric": "ai_citations",
+   "direction": "up",
+   "size": "unknown; based on one observed case of a platform temporarily disappearing from an engine's citations",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Spreading review requests thinner across platforms may lower volume on any one site; track total honest reviews, not just the leading platform's count."
+  },
+  "prerequisites": [
+   "A post-purchase review request flow already exists"
+  ],
+  "steps": [
+   "List every review platform an AI engine currently cites for the category.",
+   "Check what share of the store's reviews sit on a single platform.",
+   "Add a second and third platform to the post-purchase review request rotation.",
+   "Recheck which platforms an engine cites for the brand every few months, since this can shift."
+  ],
+  "test": {
+   "method": "Compare the brand's AI citation rate before and after adding platforms, and again if a platform drops out of an engine's index.",
+   "measure": "ai_citations",
+   "read_point": "Quarterly"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "02"
+   ],
+   "cards": [
+    "138fd5c7b44a"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "AEO-137",
+  "title": "Screen a candidate keyword with the BID formula first",
+  "domain": "16-AEO",
+  "bottleneck": [
+   "acquisition_efficiency",
+   "team_capacity"
+  ],
+  "lever": "keyword vetting gate",
+  "hypothesis": "If every candidate keyword passes a business potential, intent match and difficulty check before content gets written, then content budget stops going to terms that would not help the business even if the page ranked number 1.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "A content plan lists keywords with no note on whether ranking for them would help the business, whether the ranking page type matches the plan, or how hard the term is to win.",
+   "metrics": [
+    "organic_clicks"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:content_hours_wasted",
+   "direction": "down",
+   "size": "unknown, a screening gate rather than a measured lift",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "A screening step only; does not change any live page."
+  },
+  "prerequisites": [
+   "A raw keyword list from research"
+  ],
+  "steps": [
+   "For each keyword, ask whether ranking number 1 would actually help the business, not just draw traffic.",
+   "Search the term and check whether the ranking page type matches what you plan to build.",
+   "Check the difficulty: how many low-authority sites already sit in the top 10.",
+   "Drop or deprioritize any keyword that fails all three checks.",
+   "Only then apply the AI-overview filter to the surviving keywords."
+  ],
+  "test": {
+   "method": "Track content hours spent on keywords that passed the BID screen against hours spent on ones that did not, over a quarter.",
+   "measure": "other:content_hours_wasted",
+   "read_point": "Quarterly"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "03",
+    "07"
+   ],
+   "cards": [
+    "caec8fa7e6e5"
+   ],
+   "rules": []
+  },
+  "confidence": "medium",
+  "general_practice": true
+ },
+ {
+  "id": "AEO-138",
+  "title": "Cap schema investment at the level SEO already proved",
+  "domain": "16-AEO",
+  "bottleneck": [
+   "team_capacity",
+   "measurement_data"
+  ],
+  "lever": "schema investment discipline",
+  "hypothesis": "If schema markup stays at the level already justified by SEO and rich results, and does not expand further specifically to chase AI citation, then engineering hours go to fixes with real evidence because no source confirms extra schema improves AI citation.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "A team proposes adding schema types beyond what SEO or rich results already need, justified specifically as an AI-citation play.",
+   "metrics": [
+    "ai_citations"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:dev_hours_on_schema",
+   "direction": "down",
+   "size": "unknown, a resource-allocation call rather than a measured lift",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "dev"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Keeping existing SEO-justified schema is unaffected; this only caps new AEO-only schema work."
+  },
+  "prerequisites": [
+   "An existing schema implementation already serving SEO and rich results"
+  ],
+  "steps": [
+   "List the schema types already justified by SEO or rich-result requirements.",
+   "Flag any proposed new schema type whose only stated reason is AI citation.",
+   "Hold that work until a source or your own test confirms a citation effect.",
+   "Redirect the freed hours to a technical fix with confirmed evidence, such as crawler access or page speed."
+  ],
+  "test": {
+   "method": "Track whether pages with expanded AEO-only schema cite differently from matched pages without it.",
+   "measure": "ai_citations",
+   "read_point": "Quarterly"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "03"
+   ],
+   "cards": [
+    "ccbc5be4692f"
+   ],
+   "rules": []
+  },
+  "confidence": "medium",
+  "general_practice": true
+ },
+ {
+  "id": "AEO-139",
+  "title": "Track the AI-referral growth curve shape before scaling spend",
+  "domain": "16-AEO",
+  "bottleneck": [
+   "measurement_data",
+   "team_capacity"
+  ],
+  "lever": "trend-shape based investment timing",
+  "hypothesis": "If AI-referral traffic gets watched for its trend shape, flat versus a sharp inflection point, instead of judged only by its current size, then AEO budget scales up at the right moment because a small number can still be about to inflect.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "AI-referral traffic is small and a decision is being made on whether to add budget, using only the current volume.",
+   "metrics": [
+    "ai_referrals"
+   ]
+  },
+  "expected_effect": {
+   "metric": "ai_referrals",
+   "direction": "up",
+   "size": "unknown, one company's field observation of a flat-then-sharp-jump pattern",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "A measurement habit only; no site or budget change is required to start tracking it."
+  },
+  "prerequisites": [
+   "AI referral traffic already being tracked over time"
+  ],
+  "steps": [
+   "Plot AI-referral traffic and self-reported AI mentions monthly, not just the latest number.",
+   "Watch for a flat period followed by a sharp jump, not only the absolute size.",
+   "If the curve is still flat, keep AEO spend modest and keep watching.",
+   "If an inflection point appears, review budget within the next planning cycle rather than waiting for the annual review."
+  ],
+  "test": {
+   "method": "Compare the timing of a budget increase decision against the actual inflection point once it becomes visible in hindsight.",
+   "measure": "ai_referrals",
+   "read_point": "Monthly"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "04"
+   ],
+   "cards": [
+    "536f2c6edb07"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "AEO-140",
+  "title": "Add a community Q&A layer on top of the help center",
+  "domain": "16-AEO",
+  "bottleneck": [
+   "repeat_retention",
+   "acquisition_volume"
+  ],
+  "lever": "community-sourced tail questions",
+  "hypothesis": "If a community Q&A sits on top of the help center, then tail buyer questions surface that the team would not have anticipated, because real customers ask about obscure use cases and combinations nobody wrote a plain answer for yet.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "The help center only has articles for common, already-anticipated questions, and support keeps fielding the same obscure question with no public answer.",
+   "metrics": [
+    "ai_citations",
+    "ticket_backlog"
+   ]
+  },
+  "expected_effect": {
+   "metric": "ai_citations",
+   "direction": "up",
+   "size": "unknown, no source measures this specific effect",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "M",
+   "owner": "support"
+  },
+  "cost": "low",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Moderate the Q&A so answers stay accurate; an unmoderated public Q&A can spread a wrong answer."
+  },
+  "prerequisites": [
+   "An existing help center in a subdirectory of the main site"
+  ],
+  "steps": [
+   "Add a community Q&A section to the help center, open to real customer questions.",
+   "Moderate answers so at least one is confirmed correct by the team.",
+   "Turn a recurring community question into its own plain help-center article.",
+   "Review the Q&A monthly for questions worth promoting into a full article."
+  ],
+  "test": {
+   "method": "Track how many net-new help articles originate from the community Q&A each quarter.",
+   "measure": "other:qa_sourced_articles",
+   "read_point": "Quarterly"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "04"
+   ],
+   "cards": [
+    "6ed9256ad5d8"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "AEO-141",
+  "title": "Prepare product data for autonomous AI shopping agents",
+  "domain": "16-AEO",
+  "bottleneck": [
+   "acquisition_volume",
+   "measurement_data"
+  ],
+  "lever": "agentic-commerce data readiness",
+  "hypothesis": "If product data such as price, stock, size and spec stays accurate, structured and available through a feed or API, then an autonomous AI shopping agent can complete a purchase on a buyer's behalf, because an agent cannot buy from a page it cannot parse or a fact it cannot verify.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "The store's product feed or schema is missing, stale, or does not match the live price and stock a shopper sees on the page.",
+   "metrics": [
+    "tracking_coverage"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:feed_accuracy",
+   "direction": "up",
+   "size": "unknown, a preparatory step for an emerging channel with no measured store data yet",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "M",
+   "owner": "dev"
+  },
+  "cost": "low",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Improving feed and schema accuracy has no downside beyond engineering time; the risk is under-investing before agentic purchasing becomes common."
+  },
+  "prerequisites": [
+   "An existing merchant feed and Product or Offer schema"
+  ],
+  "steps": [
+   "Audit the merchant feed and Product or Offer schema against the live PDP for price and stock accuracy.",
+   "Fix any mismatch so a bot reading either source gets the same fact as a human on the page.",
+   "Confirm checkout-adjacent pages an agent might need, such as size guide or return policy, are crawlable and in plain HTML.",
+   "Recheck feed and schema accuracy on a fixed cadence, not only once."
+  ],
+  "test": {
+   "method": "Spot-check feed and schema accuracy against live PDPs on a sample of SKUs.",
+   "measure": "other:feed_accuracy",
+   "read_point": "Monthly"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "04"
+   ],
+   "cards": [
+    "ac75891ff0e4"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "AEO-142",
+  "title": "Post an interoperability angle in a community, not a pitch",
+  "domain": "16-AEO",
+  "bottleneck": [
+   "trust_brand",
+   "acquisition_volume"
+  ],
+  "lever": "interoperability wedge post",
+  "hypothesis": "If a community post leads with how the product works with or fits into what that community already uses, instead of promoting it directly or comparing it to a competitor, then the post earns a legitimate reason to be there because it reads as useful, not as an ad.",
+  "applies_when": [
+   "any"
+  ],
+  "does_not_apply_when": [
+   "The product has no real interoperability or fit story with anything the community already uses."
+  ],
+  "signal": {
+   "check": "A drafted community post promotes the brand directly or opens with a we are better than competitor claim.",
+   "metrics": [
+    "other:reddit_citation_rate"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:reddit_citation_rate",
+   "direction": "up",
+   "size": "unknown, one operator's stated tactic",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "medium",
+   "reversible": true,
+   "note": "A promotional-sounding post risks removal or a ban; the interoperability framing is the safer version of the same goal."
+  },
+  "prerequisites": [
+   "A real compatibility, import or fit story with something the community already uses"
+  ],
+  "steps": [
+   "Find a community built around a tool, platform or category your product genuinely works with or replaces a step of.",
+   "Draft a post that shows the interoperability or fit, not a pitch or a we are better than X comparison.",
+   "Post from a real, disclosed account, not an anonymous or brand-only account.",
+   "Skip the post if the product has no honest interoperability story with that community's tool."
+  ],
+  "test": {
+   "method": "Check whether the target question later cites the post or the thread on the relevant AI platform.",
+   "measure": "other:reddit_citation_rate",
+   "read_point": "6 to 8 weeks after posting"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "05"
+   ],
+   "cards": [
+    "9efc84d55e51"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": false
+ },
+ {
+  "id": "AEO-143",
+  "title": "Monitor cited community threads for negative sentiment fast",
+  "domain": "16-AEO",
+  "bottleneck": [
+   "trust_brand",
+   "risk_compliance"
+  ],
+  "lever": "sentiment monitoring on cited threads",
+  "hypothesis": "If threads already cited or likely to be cited get re-read periodically for negative sentiment, then a bad comment gets addressed while it is still fresh, because an indexed negative comment can persist for months once an engine has picked it up.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "A thread the brand has posted in, or that an engine cites for a target question, has not been re-read since it was first found.",
+   "metrics": [
+    "other:negative_sentiment_flags"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:negative_sentiment_flags",
+   "direction": "down",
+   "size": "unknown; one secondhand case took several months to resolve once indexed",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "support"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Reading threads is low risk; responding publicly to a negative comment should go through normal customer-response review first."
+  },
+  "prerequisites": [
+   "A log of cited or likely-to-be-cited threads"
+  ],
+  "steps": [
+   "Re-read each logged cited thread on a fixed cadence, not only when first found.",
+   "Flag any new negative comment with visible traction such as replies or upvotes.",
+   "Respond through the normal customer-response process as soon as a negative comment is found.",
+   "Note whether the response resolved the issue or whether the comment persisted despite a reply."
+  ],
+  "test": {
+   "method": "Track how long a flagged negative comment stays visible after a response, compared to one caught late.",
+   "measure": "other:negative_sentiment_flags",
+   "read_point": "Monthly"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "05"
+   ],
+   "cards": [
+    "9efc84d55e51"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "AEO-144",
+  "title": "Build and list a platform AI connector and tell customers",
+  "domain": "16-AEO",
+  "bottleneck": [
+   "repeat_retention",
+   "acquisition_volume"
+  ],
+  "lever": "AI assistant connector",
+  "hypothesis": "If the store builds and lists a connector for an AI assistant's ecosystem, such as an MCP server, and actively tells its own customers to connect it, then engaged customers get a faster path back to the store inside their AI workflow because the platform will not surface or promote the connector on its own.",
+  "applies_when": [
+   "scaling_store",
+   "subscription"
+  ],
+  "does_not_apply_when": [
+   "A new or small store with no engineering capacity to build and maintain a connector."
+  ],
+  "signal": {
+   "check": "The brand's category is one where buyers already work inside an AI assistant for related tasks, and no connector or plugin exists for the store yet.",
+   "metrics": [
+    "repeat_rate_90d"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:connector_installs",
+   "direction": "up",
+   "size": "unknown, described by one company as driving retention and engagement rather than net-new acquisition",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "L",
+   "owner": "dev"
+  },
+  "cost": "medium",
+  "risk": {
+   "level": "medium",
+   "reversible": true,
+   "note": "Building and maintaining a connector is real engineering cost for an uncertain acquisition return; treat it as a retention play, not a growth channel."
+  },
+  "prerequisites": [
+   "Engineering capacity to build and maintain an API-based connector",
+   "An existing base of engaged, repeat customers"
+  ],
+  "steps": [
+   "Check whether your product category already has buyers working inside a given AI assistant's ecosystem.",
+   "Build a connector exposing the store's relevant actions or data to that assistant.",
+   "Submit it for the platform's listing or approval process, and expect a slow review.",
+   "Tell your own customers directly that the connector exists and how to connect it; do not expect the platform to promote it.",
+   "Track connector installs and usage separately from web traffic."
+  ],
+  "test": {
+   "method": "Track connector installs and repeat purchase rate among customers who connect it versus those who do not.",
+   "measure": "repeat_rate_90d",
+   "read_point": "Quarterly"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "05"
+   ],
+   "cards": [
+    "dec3540c6b72"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": false
+ },
+ {
+  "id": "AEO-145",
+  "title": "Keep every owned channel positive since AI trains on it",
+  "domain": "16-AEO",
+  "bottleneck": [
+   "trust_brand"
+  ],
+  "lever": "owned-channel reputation hygiene",
+  "hypothesis": "If every owned channel, such as YouTube, a podcast, LinkedIn and any secondary domain, stays positive and topically relevant, then AI models describe the brand more favorably because these channels double as training examples an engine learns from, not just traffic sources.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "An owned channel carries an old negative post, an off-topic tangent, or content that contradicts the brand's current facts.",
+   "metrics": [
+    "other:owned_channel_sentiment"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:owned_channel_sentiment",
+   "direction": "up",
+   "size": "unknown, general reasoning rather than a measured effect",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Reviewing and cleaning up owned channels is low risk; deleting old content can also remove existing citations, so archive rather than delete where possible."
+  },
+  "prerequisites": [
+   "An inventory of the brand's owned channels: YouTube, podcast, LinkedIn, secondary domains"
+  ],
+  "steps": [
+   "List every owned channel: YouTube, podcast, LinkedIn, and any secondary domain.",
+   "Review each for outdated, negative or off-topic content.",
+   "Correct or archive content that contradicts current brand facts.",
+   "Keep new content on these channels topically relevant to the categories you want AI to associate with the brand."
+  ],
+  "test": {
+   "method": "Re-run the brand AI audit after a cleanup pass and compare sentiment and accuracy.",
+   "measure": "other:owned_channel_sentiment",
+   "read_point": "Quarterly"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "03"
+   ],
+   "cards": [
+    "de260c9bccd9"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "AEO-146",
+  "title": "Break down current citations by source type before planning",
+  "domain": "16-AEO",
+  "bottleneck": [
+   "measurement_data",
+   "team_capacity"
+  ],
+  "lever": "citation source-type breakdown",
+  "hypothesis": "If who currently gets cited for a target question gets sorted into source types, own site, video, UGC, tier-1 affiliate, tier-2 affiliate and blog, then the mention plan targets the right tactic per type because each source type needs a different play to win.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "A mention plan lists target sites without noting what type of source each one is.",
+   "metrics": [
+    "ai_citations"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:citation_source_type_coverage",
+   "direction": "up",
+   "size": "unknown, a planning framework rather than a measured lift",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "A classification step only; no site or outreach change required to start."
+  },
+  "prerequisites": [
+   "A list of who currently gets cited for the brand's target questions"
+  ],
+  "steps": [
+   "For each target question, note the platform, then classify who is cited: own site, video, UGC, tier-1 affiliate, tier-2 affiliate, or blog.",
+   "Total how many of each type currently appear across the question set.",
+   "Assign a distinct tactic per type instead of one generic mention plan.",
+   "Repeat this breakdown when the gap analysis is re-run."
+  ],
+  "test": {
+   "method": "Compare the source-type mix before and after running type-specific tactics for one quarter.",
+   "measure": "other:citation_source_type_coverage",
+   "read_point": "Quarterly"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "04"
+   ],
+   "cards": [
+    "77971a0d570d"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
  }
 ]
