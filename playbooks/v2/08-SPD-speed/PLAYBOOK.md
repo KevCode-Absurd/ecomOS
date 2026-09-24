@@ -11,7 +11,7 @@ version: 2.0-draft  |  date: 24 Sep 2026  |  sources: 9  |  cards: 226  |  built
 | Task | Load |
 |---|---|
 | First audit of a store | 0, 1, 2, 3 (groups A and B), 4 (P1 to P6), 5 (all), 6 |
-| Business case for speed work | 3 (A9), 4 (P6), 6, 7 (conflicts 7.2, 7.3, 7.9) |
+| Business case for speed work | 3 (R9), 4 (P6), 6, 7 (conflicts 7.2, 7.3, 7.9) |
 | Image audit and fixes | 3 (group C), 4 (P14 to P17), 5 (5.2), 6 |
 | Apps, scripts and third parties (Shopify) | 3 (group D), 4 (P7 to P12), 5 (5.3), 7 (7.7, 7.12) |
 | Plugins and assets (WordPress, WooCommerce) | 3 (group D, E), 4 (P7, P13), 5 (5.3, 5.4) |
@@ -23,7 +23,7 @@ version: 2.0-draft  |  date: 24 Sep 2026  |  sources: 9  |  cards: 226  |  built
 | Caching, CDN and hosting | 3 (groups J, K), 4 (P26 to P28), 5 (5.9, 5.10), 7 (7.4, 7.10) |
 | Video, embeds, redirects, checkout | 3 (groups L, M, N), 4 (P24, P25), 5 (5.11, 5.12) |
 | Prove a fix and report | 3 (group P), 4 (P30), 9 |
-| Peak sale readiness | 3 (K94), 4 (P31), 5 (5.13) |
+| Peak sale readiness | 3 (R94), 4 (P31), 5 (5.13) |
 | Deciding to call the host or a developer | 3 (group O), 4 (P28), 9 |
 
 **What the agent must fetch before acting.**
@@ -32,7 +32,7 @@ version: 2.0-draft  |  date: 24 Sep 2026  |  sources: 9  |  cards: 226  |  built
 - From the data layer: sessions and revenue by template (home, collection, product, cart, checkout); scroll and click maps if they exist; Search Console Core Web Vitals report if connected.
 - From the web: the current Core Web Vitals list and thresholds at web.dev/articles/vitals (sources are dated; 5 of 9 still name FID); current Shopify admin speed reporting; current Shopify image delivery behaviour (WebP and AVIF); current AVIF browser support; tool prices and plan limits (GTmetrix, WebPageTest, CDNs, hosting); whether named apps and plugins still exist. Section 10 lists every item.
 
-**Hard rules for this agent.** Read-only until a baseline is recorded. Work on a duplicate theme or staging. Change 1 thing at a time. Never remove a script whose function is unknown. Never touch pixels or consent banners without the tests in P10 step 9 and P30. Never clear caches or purge a CDN on a live store without the owner's go-ahead. Do arithmetic in code, not in the model.
+**Hard rules for this agent.** Read-only until a baseline is recorded. Work on a duplicate theme or staging. Change 1 thing at a time. Never remove a script whose function is unknown. Never touch pixels or consent banners without the tests in P10a step 7 and P30 step 4. Never clear caches or purge a CDN on a live store without the owner's go-ahead. Do arithmetic in code, not in the model.
 
 ## 1. Scope and outcomes
 
@@ -60,11 +60,11 @@ version: 2.0-draft  |  date: 24 Sep 2026  |  sources: 9  |  cards: 226  |  built
 | Mobile share of sessions and revenue | Data layer | Required | Decides mobile-first weighting (R10) and separate mobile targets |
 | Sessions and revenue by template (home, collection, product, cart, checkout) | Data layer | Required | Page priority (R3) |
 | Pages ads land on, and paid vs organic share | Brand record, data layer | Required | Ad landing page gets fixed first (R3); score weighting (R5) |
-| AOV, daily sessions, conversion rate, margin, monthly orders, cart abandonment | Data layer | Required for business case; optional for a fix | Revenue model (P6), hosting tier (R91) |
+| AOV, daily sessions, conversion rate, margin, monthly orders, cart abandonment | Data layer | Required for business case; optional for a fix | Revenue model (P6), hosting tier (R92) |
 | Baseline PSI averages per template, mobile and desktop, with dates | Agent produces in P1 | Required before any change | Proof of fix (R98) |
 | Visitor connection and device mix | Data layer (analytics device and network reports), or user | Optional | Picks the throttling profile (P2) and the test device (R10) |
 | Scroll and click heatmaps | Data layer (Hotjar or similar) | Optional | Quick View usage (R61), buy button reach (neighbour 09-CRO) |
-| Search Console Core Web Vitals report | Data layer | Optional | Field confirmation of CLS and LCP fixes (R98) |
+| Search Console Core Web Vitals report | Data layer | Optional | Field confirmation of CLS and LCP fixes (R102) |
 | Dynamic checkout button usage | Brand record, data layer | Optional | R56 |
 | Current CWV thresholds, Shopify image delivery, AVIF support, tool prices | Web | Required once per audit | Sources are dated; see sections 10 and 11 |
 | Staging or duplicate theme access, code editor access, host support contact | User | Required | Safe work and rollback (R14) |
@@ -1338,7 +1338,7 @@ Merged and deduplicated. Each with the fix.
 | P5 (Unlighthouse command and flags) | Open-source tool | Every 6 months |
 | P18 step 2 (Web Vitals extension) | Chrome extension and DevTools | Every 6 months |
 | R37, P18 step 7 (fetchpriority, preload) | Browser support | Yearly |
-| R63, R35 step 7 (media=print trick, lazysizes) | Browser behaviour | Yearly |
+| R63, P17 step 7 (media=print trick, lazysizes) | Browser behaviour | Yearly |
 | R97, P25 (Shopify Navigation redirects) | Shopify admin | Yearly |
 | R98 (Shop Pay availability and vendor figure) | Shopify | Yearly |
 | Section 6 conversion and behaviour statistics | Third-party studies, several undated | Before every client use; treat as direction only |
