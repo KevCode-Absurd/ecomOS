@@ -415,7 +415,7 @@ Checks: the idea passes all 3 tests; the appeal is one the product truly satisfi
 Goal: at least 10 headline candidates, ranked, with the 3 strongest marked. Preconditions: P2.
 
 1. Write the main promise in plain words (R26). Write who it selects (R3, R27). [56c0f6af65ab] [c1863a8437f7]
-2. Generate: 1 version per Caples quality (self-interest, news, curiosity, quick easy way); versions from the 22 starters that fit; a specific-number version (R28); a time-frame plus outcome plus ease version (01); a contrast version (R38); a feature-led version for spec-comparing buyers (R54). [935888c8c1f1] [db040c273327] [3b6b0416a303] [d5db0dddac4a]
+2. Generate: 1 version per Caples quality (self-interest, news, curiosity, quick easy way); versions from the 22 starters that fit; a specific-number version (R28); a time-frame plus outcome plus ease version (01); a contrast version (R38); a feature-led version for spec-comparing buyers (R54). [935888c8c1f1] [db040c273327] [3b6b0416a183] [d5db0dddac4a]
 3. Run the 3-question test on each (R60) and the "what is sold?" test (R27). Cut any headline a competitor could sign. [eb5614dd91ba] [0e09cddd6797]
 4. Prefer the shorter of 2 equal headlines; flag any over 12 words (R29). [87ab9b6867da]
 5. Check every specific against the brand record (R107).
@@ -599,3 +599,405 @@ Goal: hook candidates grounded in the brand's own winning copy, graded against a
 11. Rerun the rubric only when the data changes (more ads, a new product); reuse it otherwise. [728fcae3dec6]
 
 Checks: every chosen hook passes P4's checks and P9. Rollback: if fewer than 3 formats fit, write hooks by hand from P4.
+
+## 5. Diagnostic checklists
+
+Written so a worker can run each one on a draft and mark pass or fail per line.
+
+### 5.1 Pre-writing research checklist
+
+| Check | How | Good | Bad | Fix | Source |
+|---|---|---|---|---|---|
+| Compile document exists | Open it | Sayings, angles, hooks, offer, critique of alternatives, stories, proof lines, list join source | Writing from the brief alone | Run P1 steps 1 to 2 | 01 [b88d5fdf5214] |
+| Customer language captured | Count phrases from 5-star and 1-star reviews | 20 or more exact phrases for problem, result, doubt | Writer's own words only | Mine reviews; if none, analogous products | 05 [fb6ca632b8da] [a438dd94bf69] |
+| Feature and benefit table | Open the 5-column table | Every feature has a benefit or is cut; how-you-do-it rows present; ranked | Feature list with no benefits, or benefits with no feature | P1 step 4 | 06 [7f5165a57e7a] |
+| Numbers behind benefits | Trace each benefit to a fact | A number, count, time or process fact per benefit | "premium", "quality", "better" | Keystone and process hunt (P1 step 5) | 03 [975c891bc15a] 07 [48f2e992c7ce] |
+| Untold process facts | Ask "what do we do that we have never said?" | At least 3 process facts with numbers | "Everyone does this" and silence | Walk the process | 07 [48f2e992c7ce] |
+| Competitor audit | Table of messages and CTAs, max 10 sites | Baseline and white noise identified; layout notes only | Competitor sentences saved as copy | Delete text; keep structure notes | 06 [a3ddc92dd001] ecomOS |
+| Real rival named | 1 line | A habit, an old way or a brand, chosen from data | Assumed "other brands" | Canvass or review data | 03 [6959d40e0dc8] |
+| Segment and stage | 1 line each | The segment that visits and pays most; 1 of 5 awareness stages; list join source | "Everyone" | P1 step 8 | 06 [6c4ec380b27a] 05 [3912f9a679c0] |
+| Research read for surprises | Highlight pass | Surprising and repeated findings marked | Notes confirm what the team believed | Re-read for new information | 06 [7a372d0590a0] |
+| Past winners studied | Copy with results | Winners ranked by cost per purchase; single-idea check done | No look at history | P14 steps 1 to 4 | 08 [14df3bb700a0] 09 [491bae29b0be] |
+| Voice samples in hand | Count | 5 or more approved samples | None | Use provisional tone and say so | 01 [3f95809c1b82] v1.2 |
+
+### 5.2 Headline review
+
+| Check | How | Good | Bad | Fix | Source |
+|---|---|---|---|---|---|
+| Main promise present | Underline the benefit | The reader's gain is in the line | Company news, cute line, question with no promise | Rewrite from the top benefit | 02 [56c0f6af65ab] 07 [e2b526314c8d] |
+| Selects the audience | Ask who it is for | The target buyer would know it is for them | Could be for anything ("Brighten up your life") | Add the buyer or the need | 03 [c1863a8437f7] 02 [0e09cddd6797] |
+| What is sold | Show the headline alone | Reader names the product type and benefit | A pun or riddle | Rewrite with product, benefit, for whom | 02 [0e09cddd6797] |
+| Specific | Circle numbers and names | A true number, time, count or name | "Best", "fast", "quality" | Replace with a checked fact | 03 [975c891bc15a] 04 [d6f95f2facce] |
+| Visualise, falsify, own | 3 questions | 3 yes | 3 no | Zoom in; point; find a brand-only fact | 04 [eb5614dd91ba] |
+| Length | Count words | 12 or fewer, or every word earns its place | Over 12 with filler | Cut filler, keep the specific | 02 [87ab9b6867da] |
+| Truthful | Compare with brand record | Every claim sourced | Inferred count, invented ease or time | Cut or source | ecomOS; v1.2 |
+| Curiosity with payoff | Read headline then body | The body pays the curiosity off for the right buyer | Mystery that pulls the wrong reader | Add targeting or drop the tease | 02 [935888c8c1f1] 01 [ccb66d506164] |
+| Reads beside the image | Mock it up on a phone | Understood in 2 seconds | Needs the body to make sense | Rewrite or change the image brief | 04 [220e0eb8c1d5] v1.2 |
+| Distinct across variants | Compare the 3 | 3 different angles | Synonym swaps | Reassign angles | v1.2; 03 [fe816803de4e] |
+| Not a competitor's line | Paste on a rival page | It becomes false for them | Still true for them | Find the brand-only fact | 04 [954f8676cb20] |
+| Policy | Check claim type | No income, health, body or before-and-after claim without policy check | Any of those unchecked | P9 step 4 | 01 [f90f84d09846] `[web check]` |
+
+### 5.3 Full ad copy review (static ad)
+
+| Check | How | Good | Bad | Fix | Source |
+|---|---|---|---|---|---|
+| 1 idea | Say the argument in 1 sentence | A stranger can | 2 or more ideas | Tossed salad audit | 09 [1ee01d6bfef2] |
+| Angle | Name the situation, feature and benefit | 1 of each, connected | Component list | Rewrite from the table | v1.2; 02 [012ce7b91762] |
+| First line | Count words; look for throat-clearing | 14 words or fewer, payoff first | Greeting, "I hope", run-on | Cut the lead | 01 [f614c8ab3ac7] 08 [38a495e39205] |
+| Second line amplifies | Read lines 1 and 2 | Contrast, comparison or the untold fact | Restates line 1 | Add the amplifier | 08 [38a495e39205] 04 [988a4dabce09] |
+| Reader first | Scan sentence starts | "You" or the situation leads | I, we, our, brand, product | Flip syntax | 05 [a0589e4916be] |
+| Salesman test | Read each line as said to 1 buyer | Every line helps a half-sold buyer | Cleverness, boast, decoration | Cut | 03 [6ebd6afa8fcc] 07 [250834566833] |
+| Boast and selfish phrases | Scan | None | "We're the best", "insist on", "avoid imitations" | Turn into a buyer benefit or cut | 07 [39699efcd305] |
+| Specific and picturable | Circle adjectives | Each replaced by a fact or object | Adjective trail | Only-point rewrite | 04 [d6f95f2facce] 02 [4366c3a8be93] |
+| Proof present and sourced | List proof lines | Demonstration, testimonial with permission, or a brand-record fact | Bare claim, "studies show", model-written proof | Add sourced proof or cut | 02 [a9db8de6d903] 01 [792856b9a23c] ecomOS |
+| Claim size | Would a buyer believe it? | Small and specific | "Life-changing", income or miracle claims | Shrink; add examples | 04 [bf82611ee658] 06 [6b829c0c6b03] |
+| Frame | Positive or negative? | Positive result shown, or a negative the product fully removes | Vivid negative with the brand beside it; fear with no fix | Rewrite positive or hint | 03 [650b052b209a] 06 [2c6f4cda6b12] 02 [23a92b334a3e] |
+| Mechanism hint | Is there a why? | 1 line on how it works | "Click to find out" with nothing | Add the hint | 01 [0cf0f5e70b0b] |
+| Offer line | Read the offer | 1 concrete line: what, condition, scope | Vague amount or condition | Rewrite | 06 [690303793634] |
+| Urgency | Is it real? | Real date or limit with a reason, or none | Evergreen countdown, "selling fast" with no fact | Remove | 01 [8f116e83a3f3] 02 [61bd1ae6936b] |
+| CTA | Count asks | 1 action, positive, labelled with what happens | Several asks; "Start now" with no context | Cut to 1; label | 01 [b1fc36d11cab] 02 [d8e25cc5a2b0] |
+| Page match | Click through | First screen repeats the promise | Home page or unrelated page | Change the destination or the copy | 05 [dda3430eb956] |
+| Product identity | Cover the image | The ad still says what the product is | Could be any product | Add the identity | v1.2; 02 [0e09cddd6797] |
+| Paragraphs | Count sentences | 1 to 3 per paragraph | Blocks | Break | 05 [36b9e7b8a840] |
+| Reading grade | Score in code | Flesch 70 or higher; below the ecomOS floor | Above the floor | Shorten words and sentences | 02 [a2f59bfd45f7] ecomOS |
+| Voice | Compare with samples | Matches the brand's phrases and persona | Hype in a calm brand; emojis for a serious persona | Use compile phrases | 01 [3f95809c1b82] |
+| AI tells | Scan the list | None | "Revolutionize", "don't miss out", double dash | Cut | 01 [5f65d6e25e3c] |
+| Fits placement | Preview `[verify UI]` | Payoff before truncation; headline legible on phone | Cut mid-promise | Shorten by cutting filler | R102 |
+| Variants distinct | Compare 3 | 3 angles, 1 variable each | Synonyms | Reassign | v1.2 |
+| Internal notes | Read | Assumptions and missing facts listed; no drafting text in copy | Planning text in the copy | Move to notes | v1.2 |
+
+### 5.4 Email copy review
+
+| Check | How | Good | Bad | Fix | Source |
+|---|---|---|---|---|---|
+| 1 goal | Read the goal line | Value or sell, with a specific action | Both, or several | Split | 05 [c3c4e6142fe4] |
+| Structure chosen | Name it | PPAS, CJN, HSO or the outline block | Freeform | Rebuild on a structure | 01 [f95389e976bd] |
+| PPAS order | Check the order | Problem, promise, agitate, solution | Agitate before the promise | Reorder | 01 [a3f13080cb06] |
+| Subject | Count characters; read for ambiguity; check punctuation | 40 or fewer; tied to the angle; no period | Ambiguous, gives the email away, or over 40 | Rewrite; move the best line up | 01 [0622a180b998] [134e00efad90] 05 [676688759b08] |
+| Preview | Check it is set | Written by hand, adds to the subject | Auto-filled | Write it | 05 [c3c4e6142fe4] |
+| Lead | Count words in sentence 1 | 14 or fewer, ideally 7 to 10 | Greeting, "I hope", "what if I told you" | Cut | 01 [f614c8ab3ac7] |
+| No reference back to subject | Scan body | None | "As I said in the subject" | Cut | 01 [134e00efad90] |
+| WIIFM near top | Find it | Specific benefit in the first lines | Founder biography first | Add the WIIFM line | 01 [51f77f32f63c] |
+| Reader first | Sentence starts | "You" leads | I, we, our | Flip | 05 [a0589e4916be] |
+| Story test | If a story: goal, adversity, turn, lesson at end | All 4, relived | Timeline of numbers; lesson at the start | Rebuild the story | 01 [f6de27013260] |
+| Show vs tell | Each results claim | First person demonstration or named customer, with proof | "You can lose 20 lb" | Rewrite as shown conviction | 01 [e9741d568a97] |
+| Store list fit | Does it explain what the product is? | Assumes knowledge; answers work, how, why these | "What is X" opener to buyers | Rewrite | 01 [8a4864a0a123] |
+| 3 blockers | Look for risk, price, effectiveness | Each addressed where relevant | Only a discount | Add mechanism and risk reversal | 01 [8a4864a0a123] |
+| One idea, one CTA | Count | 1 idea; 1 CTA, repeated at most once or in a P.S. | Several asks; too much objection handling | Cut; move to another email | 01 [b1fc36d11cab] |
+| Deadline email | If a deadline: is it real? time left in digits? CTA doubled? | Yes to all | Fake or vague deadline | Remove or fix | 01 [3afc3ff48150] [8f116e83a3f3] |
+| Goodwill balance | Send history | Value sends since the last promo | Promo after promo | Add value emails first | 01 [520f11f16e90] `[needs brand data]` |
+| Length | Word count | 200 to 300 for story or value emails; shorter if 1 job | 800 words of 3 ideas | Cut to 1 idea | 01 [a81371537582] |
+| Pacing | Skim | Mixed line lengths, scroll-stopper lines | Wall of long lines or all one-liners | Add or merge lines | 01 [ce4adcb0c5bf] |
+| Emojis | Count | 0 to 2, persona permitting | Many, or any in a serious persona | Cut | 01 [d65a7b03c6a3] |
+| Format | Template and images | Text-led; images only where they carry the message | Heavy template with big images | Strip; see 7.11 for store grids | 05 [2bcad09a68e8] |
+| Read aloud | After a rest | No stumble | Any trip | Fix, restart | 05 [e76793749fc7] |
+| Claims | P9 | All sourced | Any unsourced | Cut | ecomOS |
+
+### 5.5 Claim and compliance check
+
+| Check | How | Good | Bad | Fix | Source |
+|---|---|---|---|---|---|
+| Claim list complete | Extract every number, comparison, outcome, quote, guarantee, deadline | Nothing missed | A number in the copy not on the list | Re-extract | 03 [975c891bc15a] |
+| Source per claim | Column filled | Brand record field, document, permitted testimonial, or a source the agent opened | "Google", "AI", "commonly known", a competitor's site | Cut or rewrite as plain fact | 06 [19bf368e3817] ecomOS |
+| Impressive claims verified | Document or test on file | Yes | Owner's long-held belief | Verify or remove | 03 [6959d40e0dc8] |
+| Inferred counts | Check kit or category counts | Exact count from the record | Pieces inferred from a set name | Remove the number | v1.2 |
+| Invented ease, time, tools, compatibility | Scan | None, or from the record | "Sets up in 5 minutes" with no source | Cut | v1.2 |
+| Reviews and counts | Scan "5-star", "10,000 customers" | From the data layer | Round-number guesses | Cut or source | ecomOS |
+| Statistics | Scan "% of", "studies" | Only from a checked source in the record | From 01's "stats from Google" or an LLM | Cut | ecomOS overrides 01 [574fd7aa2de4] |
+| Policy by claim type | Check current standards | Health, body, income, before-and-after, safety, personal attributes, "free", urgency, comparative each checked | Any unchecked | `[web check: Meta advertising standards]` | 01 [f90f84d09846] 02 [23a92b334a3e] |
+| Testimonials | Permission file; meaning unchanged; incentive disclosed | All 3 | Any missing | Remove until fixed | 02 [5ae1f82d7e99] `[web check]` |
+| Urgency | True at send time; expiry noted | Yes | Evergreen or vague | Remove | 02 [61bd1ae6936b] 01 [8f116e83a3f3] |
+| Guarantee wording | Compare with policy | Term, eligibility and claim path match the record | Broader than the policy | Match the record | 02 [83551014328e] v1.2 |
+| Comparative claims | Named rivals? Copied text? | None; charts with verified facts both sides | Named attack or borrowed sentence | Cut | 03 [650b052b209a] ecomOS |
+| Figurative lines | Reasonable-reader test | Not readable as a spec or outcome | "1,000 X in your pocket" style on a real number | Rewrite | 04 [fc16ebab7e1b] |
+| Arithmetic | Calculation attached | Computed in code | Mental math in copy | Recompute | ecomOS; 04's 22,000 error [bf82611ee658] |
+| Client-page words | Scan | No mention of GPT or .env | Present | Cut | ecomOS |
+
+### 5.6 Editing pass checklist
+
+| Check | How | Good | Bad | Fix | Source |
+|---|---|---|---|---|---|
+| Rested | Time since draft | 24 hours, or at least a walk | Edited the same minute | Wait | 05 [e76793749fc7] 04 [f98be7ed26de] |
+| Read aloud | Whole piece | No stumble | Any trip | Fix, restart from the top | 05 [e76793749fc7] 01 [28321b2f379b] |
+| Tossed salad | Claim list | All sub-points of 1 idea | Divergent claims | Cut or rewrite | 09 [1ee01d6bfef2] |
+| 3 questions per line | Visualise, falsify, own | 3 yes | 3 no | Rewrite | 04 [eb5614dd91ba] |
+| Lead cut | First 4 lines | Say something; best line first | Wind-up | Cut; move | 01 [610c9fac80ba] |
+| Modifiers | Scan very, really, almost, barely | None; numbers instead | Present | Cut or replace | 01 [7de71d52b34a] |
+| Doubles and repeats | Scan | None | "SMMA agency", repeated sentences | Cut | 01 [7de71d52b34a] |
+| AI tells | Scan the list | None | Present | Cut | 01 [5f65d6e25e3c] |
+| Burrito test | Pull 1 sentence per paragraph | Paragraph breaks | Still works | Cut the sentence | 04 [23276eda58ce] |
+| Paragraph length | Count | 2 lines (04) or 4 to 5 short sentences (02); 1 to 3 sentences in ads (05) | Blocks | Break or cut | 04 [23276eda58ce] 02 [d2d7d23b7635] |
+| Pronouns | Sentence starts | Reader leads | Writer leads | Flip | 05 [a0589e4916be] 02 [210eb332ef8f] |
+| Readability | Score in code | Flesch 70 or higher; under the ecomOS floor | Lower | Shorten | 02 [a2f59bfd45f7] |
+| Skim | Scroll without reading | Offer rebuilds from bold lines | Wall or all one-liners | Add stoppers; vary | 01 [ce4adcb0c5bf] |
+| Subject or headline match | Compare with body | Same angle | Mismatch | Rewrite from the body's angle | 01 [134e00efad90] |
+| Surface check | Preview in the tool | Wraps and truncation as intended | Line runs to 3 or 4 lines | Cut words | 04 [e93a8cf681bd] `[verify UI]` |
+| Versions and feedback | Count versions; time on task | 3 shown to a reviewer; outside eyes after 2 to 3 hours | 1 version, 6 hours alone | Get feedback | 04 [189a7e6d8231] [6914df3c2bd8] |
+| Done test | Add or remove a word | Nothing improves it; 9 of 10 | Words can go | Keep cutting | 04 [f98be7ed26de] |
+
+## 6. Thresholds and benchmarks
+
+One table for the folder. Confidence: how many mini playbooks state or support the value, and the evidence type. Dated values are marked. None is a promise; case results are examples.
+
+| Value | Condition | Source | Confidence |
+|---|---|---|---|
+| Headline change swings returns 5 to 10 times | Same body, different headline, keyed print ads | 03 [c1863a8437f7], 07 [55e663877849] | 2 sources, both Hopkins, no data shown; `[print 1920s]` |
+| Headline spread 19 to 1 | Ogilvy, as recalled by the host | 07 [55e663877849] | 1 source, recollection |
+| 1 word changed in a headline gave up to 25% more conversions | Presenter's experience | 05 [f27d97c52312] | 1 source, anecdote |
+| Nearly 2,000 headlines keyed on 1 product | Hopkins's records | 03 [c1863a8437f7] | 1 source |
+| One claim vs another in the headline: up to 10 times results | Tested claims | 03 [91b7cb943a89] | 1 source, "proved by many disappointments" |
+| 60% of readers read only the headline | Print ads | 02 [56c0f6af65ab] | 1 source, uncited `[web check]` |
+| "80 or 90%" read the headline | Host's paraphrase of Ogilvy | 07 [e2b526314c8d] | 1 source `[web check]` |
+| Headline read fully: 3 words or fewer 87.3%; 4 to 6 86.3%; 7 to 9 84%; 10 to 12 82.5%; 13 or more 77.9% | 2,500 Saturday Evening Post ads, 1939 to 1940 | 02 [87ab9b6867da] | 1 source, Rudolph study; `[print 1920s]` era |
+| Drop above 12 words | Same study | 02 [87ab9b6867da] | 1 source |
+| Headline in quotes "boosts reading 25%" | Checklist | 02 [037f584ed120] | 1 source, uncited; do not quote |
+| ALL CAPS only at 4 to 5 words; all caps slows reading 11.8% | Print | 02 [388f0c750aad] [14dcce0a0c2a] | 1 source, Paterson and Tinker 1956 |
+| First sentence at most 14 words, ideally 7 to 10 | Email lead | 01 [f614c8ab3ac7] [0666118ff844] | 1 source, heuristic |
+| Opening paragraph at most 11 words | Body copy | 02 [d2d7d23b7635] | 1 source, Ogilvy quote; agrees in spirit with 01 |
+| About 11 words per sentence; 70% to 80% one-syllable words; 14 people references per 100 words | Body copy | 02 [d2d7d23b7635] [210eb332ef8f] | 1 source, Flesch |
+| Flesch grade map: 90 to 100 5th grade; 80 to 90 6th; 70 to 80 7th; 60 to 70 8th to 9th; 50 to 60 10th to 12th; 30 to 50 college | English copy | 02 [a2f59bfd45f7] | 1 source, Flesch standard |
+| Reading level: third grade or below | All copy | 01 [495714e45312] | 1 source, opinion; 02, 04, 05 agree "simple" without a grade |
+| ecomOS floor: below tenth grade | All copy | ecomOS | Project rule |
+| Paragraphs: 2 lines or fewer | Newsletters | 04 [23276eda58ce] | 1 source, "idiosyncratic" |
+| Paragraphs: about 4 to 5 short sentences | Body copy | 02 [d2d7d23b7635] | 1 source |
+| Ad paragraphs: 1 sentence; 1 to 3 at most | Social ads | 05 [36b9e7b8a840] | 1 source, 2019 observation |
+| Bold lesson line about 7 to 8 words | Emails | 01 [0666118ff844] | 1 source, heuristic |
+| Subject line 40 characters or fewer | Emails | 01 [0622a180b998] | 1 source, heuristic |
+| No period at the end of a subject line | Emails | 05 [676688759b08] | 1 source, opinion |
+| Story and value emails 200 to 300 words | Emails | 01 [a81371537582] | 1 source, practice norm from info products |
+| PPAS proportions: problem 3 to 4 lines, promise 2 to 3, agitate 7 to 8, solution about 7 | Promo email | 01 [a3f13080cb06] | 1 source, heuristic |
+| Emojis 1 to 2 per email | Emails | 01 [d65a7b03c6a3] | 1 source, opinion |
+| Plain benefit emails about 80% of sends | An info-product list | 01 [99d753c33b55] | 1 source, own practice |
+| Show rather than tell "90% of the time" | Results claims | 01 [e9741d568a97] | 1 source, heuristic |
+| Write for 20% to 35% of visitors | Headlines and key pages | 06 [52564e4cb23c] | 1 source, heuristic |
+| 12 to 15 interviews surface about 80% of pains | Segment research | 06 [0c27d9b3a340] | 1 source citing 1 book (Pain Killer Marketing, 2008) |
+| At least 12 people surveyed before analysing | Segment research | 06 [7a372d0590a0] | 1 source, rule of thumb |
+| Competitor audit: max 10 sites, 5 items each, top 3 results per phrase | Content audit | 06 [a3ddc92dd001] | 1 source, method |
+| 91 of the top 100 offers centred on 1 idea | Masterson's review at 1 publisher | 09 [491bae29b0be] | 1 source, second hand |
+| Small claim example: 1% to 2% conversion, "twice as many" | Harry Dry's course ad | 04 [bf82611ee658] | 1 source, positioning choice |
+| 3-question test: 3 yes or 3 no | Every line | 04 [eb5614dd91ba] | 1 source, craft rule |
+| 2-second comprehension | Glance contexts | 04 [220e0eb8c1d5] | 1 source, heuristic |
+| About 25 rewrites over 2 days for 1 static ad | Harry Dry's own ad | 04 [6e39a617d9e1] | 1 source, own process |
+| Lose judgement after 2 to 3 hours on 1 ad; then get outside feedback | Writing | 04 [6914df3c2bd8] | 1 source, experience |
+| 4 to 5 versions of a line; show 3 to a reviewer | Editing | 04 [189a7e6d8231] | 1 source, habit |
+| Ship bar 9 of 10 | All work | 04 [f98be7ed26de] | 1 source, standard |
+| Review 3 pieces for every 1 you submit | Skill building | 01 [7fd437ffe114] | 1 source |
+| Draft rest 24 hours | Before editing | 05 [e76793749fc7] | 1 source; 01 says overnight |
+| Overwrite 2x (2,000 words for 1,000; 10x the information) | Drafting | 06 [753e79e5c3d8] | 1 source plus Caples quote |
+| Positive outpulls negative 4 to 1 | Keyed print tests | 03 [650b052b209a] | 1 source, "if you have our experience"; 06 disputes a general rule |
+| Agreement peaked at 3 exposures, fell at 5 | 1 argument, college students | 02 [17b39c491ef9] | 1 source, Petty and Cacioppo 1979; not a cap |
+| Reach cut on disliked ads in 24 to 48 hours; creative refresh every few days | Brands spending tens to hundreds of thousands a month, 2019 | 05 [f27174953be4] | 1 source, observation, dated `[web check]` |
+| Ads Library check once a week or twice a month | Competitor watch | 05 [f27174953be4] | 1 source, practice |
+| Screen out videos under about 2% engagement as paid | Organic creator channels | 08 [03d175f0d156] | 1 source, rule of thumb; no meaning for paid ads |
+| Winner break point after video 4 or 5 of 10; ideal run about 100 own videos | Organic hook analysis | 08 [ad297d96546e] [14df3bb700a0] | 1 source, 1 demo |
+| Episode branding without an outcome "sinks 50%"; audio-clip openers underperform "about 60%" | 1 channel each, 10 videos | 08 [38a495e39205] [cfa4e7c04581] | 1 source, model output, hypothesis |
+| Long guarantee (6 months to lifetime) beats 30, 60, 90 days for sales and returns | Products | 02 [83551014328e] | 1 source, "studies show", uncited `[web check]` |
+| Installments over $15 add 15% response; "Bill Me" adds 50% or more | Direct response | 02 [3d848b082e13] | 1 source, uncited; do not quote |
+| BOGO beats 50% off | Offer framing | 02 [d7cbcd4ec542] | 1 source, "testing showed", no data `[web check]` |
+| Fidelity: "No Fees If You Keep $400" quadrupled program customers in 4 months | 1 offer rewrite | 06 [690303793634] | 1 source, 1 case, no baseline |
+| Pay-in-a-week beat money-back "many times"; dealer's signed warrant "made a fortune" | 1920s mail order | 03 [652fd908ec22] [abac911ba2b0] | 1 source, cases |
+| Free sample on request; charging a dime costs 40 cents to $1 more per reply; 3 in 4 refuse to pay before conversion | 1920s | 03 [0e72ef7fa48e] | 1 source, cases |
+| Store pickup 4 times the mail response; 18 to 22 cents vs 70 cents per inquiry | 1920s | 03 [aa1335efee33] | 1 source, 1 line |
+| Deadline email: "only 48 hours left", double CTA | Launch close | 01 [3afc3ff48150] | 1 source, example |
+| Triple close: 3 sales emails on the last day; final day equalled all prior emails; third email added 15% to 25% of launch revenue | Info-product launches | 05 [8046e8352c3b] [8ccd32a8db57] | 1 source, anecdote; unsubscribes not measured; flow design is 14-EML's |
+| "Introducing" email opens about 15% vs a normal 25% to 30% | Info-product lists, about 2019 | 05 [2ac1adf98a07] | 1 source, dated (pre Apple MPP) `[web check]` |
+| "you up" subject about 32% opens on a 600,000 list | Late-night close, 2019 | 05 [ae22f03a0868] | 1 source, dated |
+| Launch: 10 emails; welcome: 7 daily emails | Defaults | 05 [2ac1adf98a07] [dfb61fe7d4a8] | 1 source; 01 says 3, 5 or 8 welcome emails all work [e326516d4bdb]; flow design is 14-EML's |
+| Revival trigger at 30 to 60 days of no opens | List hygiene | 01 [5e43074e0a7e] | 1 source, dated; opens unreliable since Apple MPP `[web check]` |
+| Email vs social: 15% to 25% opens vs 2% to 4% reach; ROI $36, $42 or $44 per $1; "40 times" acquisition | Channel argument | 01 [fbb591f5fa80] [e8ba196b022f] | 1 source, inconsistent, undated third-party figures `[web check]`; do not quote to clients |
+| Average email: 21.5% open, 2.5% click | Unnamed source | 01 | 1 source, no card, dated `[web check]` |
+| 69% average open rate for opt-in B2B e-zines; HTML 200% better; 60% could receive HTML | Early 2000s | 02 [5861e7fcfc77] | 1 source, obsolete; do not use |
+| Email clipping "about 2 MB" | Image-heavy HTML | 05 [2bcad09a68e8] | 1 source, guess `[web check: Gmail clip limit, usually cited as about 102 KB of HTML]` |
+| Test size for a letter or mailer: 500 vs 500; 25 letters x 1,000 before 5 million | Direct mail | 02 [1557d7445b77], 03 [c47b833d687e] | 2 sources, no success rule; not a copy-test standard |
+| Keep 1 method at least 1 month as a control | Any tracked process | 01 [07386e6caf36] | 1 source, opinion |
+| Meta character limits and truncation points | Primary text, headline, description | None | No source; `[verify UI]` `[web check]` |
+
+## 7. Where sources disagree
+
+Each conflict: what each side says, when each is right, what the agent should do.
+
+**7.1 Long copy vs short copy.** Hopkins: "the more you tell the more you sell", brief ads are never keyed, some winning ads ran 15,000 words [8946e9e66b01] [84d9f8424c4b]. Whitman: long outsells short "no qualifications, no disclaimers", with Sackheim's condition that short copy is for when there is little to say [bef86f46c5c6]. Copy Hackers: fact-packed messages work if interesting; write 2,000 then cut [753e79e5c3d8]. Against: Tyson's "TikTok brain", value per minute, 200 to 300 word emails [d65a7b03c6a3] [a81371537582]; Harry Dry's "shorter is better most of the time" and 2-line paragraphs [8e6c32baa35f] [23276eda58ce]; Jamie's 1 to 3 sentence paragraphs in ads [36b9e7b8a840]. When each is right: the long-copy evidence is from readers who chose to read a print ad or a page; the short-copy advice is for a cold feed and a phone. What the agent should do: in a feed ad, put the whole argument for the target buyer before the truncation point and let the page carry the complete story; on the page and in emails to interested readers, include every proven claim needed to decide (R48) and cut everything else (R93). Never pad to be long; never cut a claim to be short. Test length as a variable only with brand data `[needs brand data: results by copy length]`.
+
+**7.2 Lead with the benefit vs not always.** Whitman: biggest benefit in the headline "always, without exception" [56c0f6af65ab]; Hopkins and Founders: the main promise in the headline [c1863a8437f7] [e2b526314c8d]. Copy Hackers: no fixed rule; a feature headline beat a benefit headline; spec-comparing and benefit-distrusting shoppers do not want a benefit lead [d5db0dddac4a]. When each is right: benefit lead for problem-aware and solution-aware traffic; feature or specific lead for product-aware buyers who compare, and for categories where soft language reads as hype. What the agent should do: default to the benefit lead (4 sources); write 1 feature-led variant when the brief says the buyer compares specs; always pair the lead with its other half (R54).
+
+**7.3 One CTA vs many.** Tyson: 1 CTA, confusion kills action, double CTA or P.S. allowed [b1fc36d11cab]; Jamie: 1 function per asset [c3c4e6142fe4]; Whitman: 1 product at a time, except catalogue-style sellers [388f0c750aad]. Against: Tyson himself notes typical store emails are "20% off plus a product picture" with several links, and Jamie's Head Candy welcome email has a coupon plus a 3-column product grid with 3 buy links [60d5057bb3c2]. When each is right: 1 ask for any persuasive email or ad; a grid is fine when the email's single job is "shop the range" and every link serves that one job. What the agent should do: 1 kind of action per asset; a product grid counts as 1 action ("shop") only if the email has no other ask; never mix "read this", "follow us" and "buy" in one send.
+
+**7.4 Product name in the hero vs not.** Jamie: no product name in the sales page hero unless the brand is Mercedes or Apple [8ff8c1675824]. v1.2 and Whitman: the ad must carry enough product identity to stand alone and pass "what is sold?" [0e09cddd6797]. Common product page practice makes the product name the H1 (not from a source). When each is right: Jamie's rule is for long-form sales pages and advertorials to cold traffic; ads and product pages need identity. What the agent should do: ads and product pages name the product; long-form landing pages lead with the reader's problem or goal and name the product after the promise; the brief decides which page type it is.
+
+**7.5 Negative framing.** Hopkins: positive outpulled negative 4 to 1; before and after are follies; show the face as it will appear [650b052b209a]. Founders: never picture the afflicted; reward not prevention [6111749e4303]. v1.2: avoid fear. Copy Hackers: negative is not banned; people attend to "don't"; winners exist on both sides; do not attach the brand to a heavy negative picture; rewrite negative copy only if it converts poorly [19bf368e3817] [2c6f4cda6b12]. Whitman: fear works with all 4 parts and a product that truly resolves it [23a92b334a3e]. Tyson: PPAS agitates after the promise [a3f13080cb06]. When each is right: positive for cold ads and beauty, food, comfort categories; negative or problem-led when the buyer is already in pain and the product removes it fully. What the agent should do: positive by default; a problem-led variant is allowed as 1 of 3 when the product fully solves the problem, the frame is clear, and the brand is not placed inside the negative scene; no fear without a specific fix and proof; no before-and-after bodies or afflicted faces without a policy check `[web check]`.
+
+**7.6 Small claims vs bold hooks.** Harry Dry: small believable claims ("1% to 2%") [bf82611ee658]; Copy Hackers: nearly unbelievable is fine with examples, impossible never [6b829c0c6b03]; Tyson: attainable and hyper-specific promises, proof over promise [017ae2c141f9]. Against: Whitman's headline rewrites ("Boost your tips by 512%... or your money back") and Tyson's own VSL examples ("$20,000 a month extra") model big claims [56c0f6af65ab] [6194d941ef49]. When each is right: a bold claim only when it is true, specific and backed on the same surface. What the agent should do: the claim size is set by the brand record, not by the hook's appetite; write the biggest claim the record supports and no bigger; add the example or proof beside any claim a stranger would doubt.
+
+**7.7 Deadline on every ad.** Whitman: "always feature deadlines", most of the time one is appropriate [7181b1222823]. Hopkins: pay for prompt action; many successful letters expire on a date [e48273314166]. Tyson: only situational urgency; non-situational tactics only in promotions and sparingly; fake scarcity on infinite goods is absurd [8f116e83a3f3]. Whitman's own card: the limit must be real; fake countdowns can break consumer law [61bd1ae6936b]. When each is right: a real sale, batch, restock or season justifies a deadline; an evergreen ad has none. What the agent should do: no deadline unless the brand record has a real one; when it exists, state it in digits with its reason and repeat the CTA; never write "selling fast" or "limited" without a fact.
+
+**7.8 Question vs declarative openers.** Sandcastles' model finding: winners say things, losers ask questions (3 organic creator channels, 1 run) [38a495e39205]. Whitman: rhetorical-question research is split; Gayle, Preiss and Allen 1998 found no appreciable persuasion effect; questions may help memory; yet his letter method opens with "Do you want...?" [ecc5de375921] [6d882bfcd851]. Tyson: replace throat-clearing with a perplexing question [f0259cdd1faf]; his HSO hook example is a question. When each is right: a question earns its place when it names the buyer's exact situation and cannot be answered "no" by the target; a hedged or generic question ("Want to save money?") is weaker than a declarative payoff. What the agent should do: default to a declarative first line for cold feed hooks; allow 1 question variant that names the situation precisely; never a hedged question; test on brand data `[needs brand data]`.
+
+**7.9 One big idea vs the complete story.** Rule of One: 1 idea, everything else a sub-point; tossed salad copy weakens [491bae29b0be]; Tyson: 1 idea per email; Harry Dry: "and" is a red flag [867743b221ba]. Hopkins: tell a reasonably complete story; include every proven claim in every ad; no serials [8946e9e66b01]; Whitman: pile on benefits, restate from many angles [bef86f46c5c6]. When each is right: these agree more than they clash. The idea is 1; the claims that support it can be many. Hopkins's "all claims" refers to claims for 1 product to 1 buyer, not different ideas. What the agent should do: 1 idea per asset, chosen in P2; include every proven claim that serves that idea and the buyer's decision (more on a page, fewer in a feed ad); cut claims that pull toward a second idea; if a second idea is strong, it becomes a second variant, not a second paragraph.
+
+**7.10 Refresh winners vs keep them.** Hopkins: Mead would not change a word for $10,000; never change a proven tone [2ed6cf037222] [b5c60126fc0a]; Founders: keep the ad that works, the moving parade [a122da70017c]; Whitman: repetition builds familiarity; use redundancy (variations) rather than stopping; the 3-exposure study is not a cap [17b39c491ef9]. Jamie: big spenders refresh creative every few days because reach on a disliked ad is cut in 24 to 48 hours (2019) [f27174953be4]. When each is right: Hopkins wrote for a stream of new readers who had not seen the ad; a small retargeting audience does tire. What the agent should do: keep a winner running until its own numbers decline; when they do, keep the appeal, claim and offer and change the execution (image, format, first line); plan new angles as additions, not replacements. Frequency and fatigue reads belong to 24-DEP `[needs brand data: results over time, frequency]`.
+
+**7.11 Text-only emails vs store emails.** Jamie: all launch emails plain text; HTML templates land in Promotions and clip [2bcad09a68e8]; yet her own store welcome email 1 is a coupon plus a 3-column product image grid [60d5057bb3c2]. Tyson: typical store emails are a picture plus a discount, and he wants structured value emails instead [8a4864a0a123]. Whitman's HTML data is early 2000s and obsolete [5861e7fcfc77]. When each is right: text-led for story, belief-shift and launch emails; image-led when the product must be seen (a range, a colourway, a tutorial). What the agent should do: write every email so the words carry the message with images off; add images only where they carry meaning; the format decision and deliverability checks belong to 14-EML `[web check: current Gmail clipping and Promotions behaviour]`.
+
+**7.12 Free trial vs paid trial vs discount code.** Hopkins: free sample on request beats part-price; a free full-size package handed out failed and a maker-paid retail coupon won; pay-later beat money-back [0e72ef7fa48e] [dad9da2fb2e6] [652fd908ec22]. Founders: never sample people who did not ask [04185b470730]; the host's Estee Lauder story praises unrequested sampling. Tyson and Jamie describe 10% off or "10 off" for an email as standard store practice [58af3dd961fe] [60d5057bb3c2]. When each is right: Hopkins's cases are 1920s foods and proprietaries; no source tests a modern first-order code. What the agent should do: word the brand's existing offer as given (03-OFF owns offer design); frame any trial as requested and earned rather than pushed; do not write "half price to try it" as if it were proven; keep this as an open question for the brand's own tests.
+
+**7.13 Who writes: the maker or a writer, and the founder as the face.** Hopkins: no manufacturer should conduct his own advertising [ea531107827e]; Founders host: the founder should go direct and front the selling; Hopkins used a persona with a real person behind it [762657ec71d8]. Whitman: put your face on everything (service and founder brands) [4036507c46bc]. What the agent should do: the copy is written from the buyer's side (R9) whoever signs it; a real founder or expert can be the voice when the brand record has one; never an invented authority.
+
+**7.14 Entertain or not.** Hopkins: never entertain, never joke about business or home [6ebd6afa8fcc] [66ff32f28a57]; Whitman: don't be clever [0e09cddd6797]; Tyson: gimmicks in a minority of sends, after the plain emails work [99d753c33b55]. Harry Dry's model lines are funny through contrast (New Balance) and he strips a mascot from a serious promise [988a4dabce09] [6e8d1ddacee4]; the Founders host says entertain before you educate (his gloss). What the agent should do: no compulsory cleverness, rhyme or drama (v1.2); wit is allowed only when it comes from a true contrast and the persona supports it; never at the expense of the 2-second test or the salesman test.
+
+**7.15 Everyone must get it vs the in-crowd.** Harry Dry holds both the 2-second test and "if everyone gets it, you're possibly doing something wrong" [220e0eb8c1d5] [c78fe9d7b47e]. Hopkins: the headline should hail the right people only, so non-buyers not getting it is fine [c1863a8437f7]. What the agent should do: the target buyer must get it in 2 seconds; other people need not; decide who the target is before rejecting a line only they understand.
+
+**7.16 Guarantee style: long money-back vs pay-later vs neighbour's warrant.** Whitman: longest money-back in the industry, shown everywhere [83551014328e]; Hopkins: money-back guarantees had "ceased to be impressive"; pay-after-trial and a local dealer's signed promise won [652fd908ec22] [abac911ba2b0]. What the agent should do: write the guarantee the brand record allows, in plain terms, with the eligibility limits; a pay-later or try-first framing is a wording option only if the brand has that mechanism (03-OFF); do not promise what operations cannot honour.
+
+**7.17 Truth vs persuasion in the sources.** Tyson's CJN says the truth of the challenge is beside the point [930c67d53174]; Whitman says prospects "must remain unaware that you're attempting to influence them" and tells the Torpy's 200 story [952aca21b0fb]; Copy Hackers prints unsourced stats while telling you to back every claim [fb5fb47770a9]; Sandcastles' model invents proof [e9f81c60dc73]. ecomOS: no invented claims, ever. What the agent should do: use these sources' structures and drills, never their permission to invent.
+
+**7.18 Awareness ads.** Jamie: skip brand awareness ads unless you are a monopoly; aim every ad at purchase [f27174953be4]. Hopkins: advertising is not "to keep your name before the people" [6ebd6afa8fcc]. Whitman: repetition and familiarity build trust over time [17b39c491ef9]. The modern full-funnel view is not in these sources. What the agent should do: this playbook writes copy that asks for the next step; campaign objectives are 24-DEP's decision.
+
+**7.19 Sampling unrequested.** Hopkins and Founders: samples only to people who asked [0e72ef7fa48e] [04185b470730]; the Founders host praises Estee Lauder's street sampling; common seeding and PR boxes send unrequested product (not from a source). What the agent should do: when writing a sample or trial offer, make the buyer ask for it after reading the story; seeding strategy is not this folder's call.
+
+## 8. Common mistakes
+
+Merged from all 9 sources, deduplicated, with the fix.
+
+1. Writing about the company (factory, history, awards, staff, "we") instead of the buyer's gain. Fix: BIG DEAL drill; flip sentence starts to "you". (01, 02, 03, 05, 07)
+2. Listing features without benefits, or calling a feature's purpose its benefit. Fix: the 5-column table; "You benefit by...". (02, 06)
+3. Blind, clever, punny or curiosity-only headlines that pull the wrong readers. Fix: the "what is sold?" test; main promise in the headline. (02, 03, 07)
+4. Headlines that select no one ("Brighten up your life"). Fix: name the buyer or the need. (02, 06)
+5. Superlatives and platitudes ("best", "premium", "quality", "lowest price"). Fix: replace with a checked number or process fact. (02, 03, 04, 07)
+6. Abstract lines nobody can picture ("a better way", "seamless"). Fix: zoom in to an object, person, place or action. (04, 02)
+7. Lines any competitor could sign. Fix: find the brand-only fact. (04, 02)
+8. Invented or unsourced statistics, quotes, counts and "as seen in" claims; stats from Google or an LLM. Fix: source or cut; P9. (ecomOS; the failure is modelled in 01, 06, 08, 02)
+9. Long leads that say nothing; greetings; "I hope this finds you well"; "what if I told you". Fix: cut the lead; first sentence 14 words or fewer. (01, 02, 08)
+10. Giving the punchline too early, or withholding everything so clicks come without buyers. Fix: hint the mechanism; keep the reveal for the end. (01)
+11. Telling instead of showing; "you can lose 20 lb" instead of a demonstrated case. Fix: shown conviction or a permitted testimonial. (01, 07, 06)
+12. Correcting the reader ("wrong") or attacking a belief head on. Fix: understand first, change focus or importance. (01, 02)
+13. Chronology instead of story; the lesson at the start. Fix: goal, adversity, turn, lesson last, relived. (01, 04)
+14. Several CTAs, several ideas, or too much objection handling in 1 asset. Fix: 1 idea, 1 ask; move the rest to another asset. (01, 05, 09)
+15. Tossed salad copy: every good point stacked in case one works. Fix: the audit; cut what does not serve the idea. (09, 04)
+16. Vague promises ("3 key lessons") and vague offers ("reduced fees for a certain amount"). Fix: tangible specifics; 1 concrete offer line. (01, 06)
+17. Fake urgency: evergreen countdowns, "sells out" on infinite goods, "always feature deadlines" taken literally. Fix: real dates and limits only, with the reason. (01, 02 card)
+18. Fear with no fix, a new fear, or so much fear the reader freezes; picturing the afflicted; attaching the brand to a negative scene. Fix: positive default; 4-part fear only when the product truly resolves it. (02, 03, 06, 07)
+19. Naming or attacking a rival; "avoid imitations"; copying competitor text. Fix: contrast with the old way; verified facts only; never copy. (03, 07, ecomOS)
+20. Filler words (very, really, almost), doubled words, repeated sentences, long bullets, centred small text, reversed body type. Fix: modifier sweep; formatting rules. (01, 02)
+21. AI tells and secondhand phrases ("revolutionize", "don't miss out", "yellow taxis"). Fix: strip; write from observed fact. (01, 04)
+22. Pasting raw LLM copy; letting the model supply proof. Fix: write first; lift only better lines; strip invented proof. (01, 04, 08)
+23. Ad clicks landing on the home page or a page that does not repeat the promise. Fix: congruency; first screen reprises the ad. (05, 03)
+24. A bare button ("Start now") with no sense of what happens. Fix: label the outcome; headline gets the first look. (01, 02)
+25. Judging by clicks, opens or applause instead of purchases. Fix: cost per purchase; conversion. (01, 02, 03, 07)
+26. Judging demand or copy by the writer's or owner's taste. Fix: research; test; outside feedback. (03, 06, 07, 04)
+27. Changing a working ad because the team is bored. Fix: change on measured decline; keep the core. (03, 07)
+28. Endless identical repetition to a small audience without variations. Fix: redundancy; new executions of the same idea. (02, 05)
+29. Voice mismatch with the brand; emojis and hype in a calm persona; gimmicks in every send. Fix: compile document phrases; persona check. (01, 03, 05)
+30. Explaining the product to a list that already knows it. Fix: answer "do these work, how, why these"; the 3 blockers. (01)
+31. Promo after promo to a list with no value deposits. Fix: goodwill balance (flow design in 14-EML). (01)
+32. Subject lines that are ambiguous, give the email away, exceed 40 characters, or end in a period; referring back to the subject in the body; auto-filled preview text. Fix: subject from the body's angle; preview by hand. (01, 05)
+33. Writing in a doc and pasting into the surface, so lines wrap badly and truncation cuts the promise. Fix: write in the surface; preview. (04)
+34. Skipping research or using it to confirm assumptions; leaving small features off the list; never asking customers what they say. Fix: P1 in full. (03, 06, 07)
+35. Copying a viral hook from a distant niche, or pooling many competitors into 1 analysis. Fix: own winners first; reskin formats; 1 competitor per run. (08)
+36. Health, income, body or before-and-after claims without a policy check; "spammy" promises that risk the account. Fix: P9 step 4. (01, 02, 06)
+37. Offer stacks with invented values; savings computed in the head. Fix: real prices; arithmetic in code. (05 example; ecomOS)
+38. Guarantees written broader than the policy. Fix: match the brand record's eligibility limits. (02, v1.2)
+
+## 9. Deliverables
+
+What the agent produces for each task, and the format. Every deliverable carries an internal notes block with assumptions, missing facts and the cards used. Internal notes never appear in client-facing copy.
+
+**9.1 Static ad copy set.** 3 variants for 1 placement, 1 variable each. Per variant: `angle` (1 line: the situation, feature and benefit), `primary_text`, `headline`, `description` (if the placement has one), `cta`, `internal_notes`. Plus a set-level block: the 1 idea (P2), the buying question, the variable each variant tests, the control if a winner is live, the placement limits used and their fetch date `[verify UI]`, and a link to the claim audit. Format: JSON per v1.2 when the caller asks; otherwise a Markdown table with the same fields.
+
+**9.2 Email copy.** Per email: `goal` (value or sell, with the action), `structure` (PPAS, CJN, HSO or outline), `subject` (40 characters or fewer, character count shown), `preview`, `body` (word count shown), `cta`, `ps`, `internal_notes`. For a sequence: an outline block per email (number, goal, subject, preview, story, content, CTA, P.S.) before any body is written, and the sequence's single through-line. Flow timing, resends and segmentation go to 14-EML as notes, not decisions.
+
+**9.3 Page section copy.** Hero: `eyebrow`, `headline`, `deck`, `cta`. Then each block with `block_name`, `header`, `body`, `proof_used`, `cta` (if any). Plus: the header-only read (headers listed in order, as the through-line test), the awareness stage the depth was set for, the FAQ list with sources for each answer, and the claim audit link. Layout and build go to 07-LPG.
+
+**9.4 Headline bank.** At least 10 candidates. Per candidate: `headline`, `word_count`, `angle`, `caples_quality` (self-interest, news, curiosity, quick easy way), `specific_used` and its source, `3_question_result` (visualise, falsify, own: yes or no each), `what_is_sold_pass` (yes or no), `rank`, `note`. Top 3 marked with the variable they would test.
+
+**9.5 Claim audit.** A table per asset: `claim` (exact wording), `type` (number, comparison, outcome, time, count, certification, free, guarantee, deadline, quote, testimonial, superlative, figurative), `source` (brand record field, document, testimonial permission id, or the public source opened), `verified` (yes, no, removed), `policy_check` (claim category and the standard checked, with date) `[web check]`, `arithmetic` (calculation attached if any), `action` (kept, rewritten, removed). Plus a 1-line verdict: ready, or blocked on named claims.
+
+**9.6 Research pack (when P1 is the task).** The compile document, the customer-language list, the 5-column feature and benefit table, the process-fact list, the competitor message and CTA tables (structure only), the real-rival line, the segment and stage line, the 1-paragraph messaging strategy, and the past-winners note.
+
+**9.7 Variant plan and hand-off record.** Variable per variant, constants, success measure, control, the sizing note (from 09-CRO or `[needs brand data]`), and the record fields: brief, idea, angles, claims and sources, cards used, date, result placeholder.
+
+## 10. What needs live data or a web check
+
+**Needs brand data.**
+
+- Verified product facts with numbers: materials, counts, dimensions, times, process steps, sourcing, certifications (R12, R13, R28, R59).
+- Fixed prices, offers, bundles, eligibility limits; real component prices for any value stack (R69, R72, R114).
+- Guarantee and return policy; return rate, refund cost, margin (R70).
+- Approved and banned claims list (P9).
+- Voice samples: approved copy, packaging, support replies, founder posts (R86).
+- Avatar, segment, awareness stage; share of traffic new vs returning vs repeat; list join source (R16, R21, R23).
+- Reviews (5-star and 1-star), support tickets, chat logs (R11).
+- Which desire or pain buyers name in reviews and in past winning ads (R20).
+- Past ads with copy, spend and results; results by appeal, by copy length, by question vs declarative hook; results over time with frequency and reach (R118, R119, R121, 7.1, 7.8, 7.10).
+- Email results by send: opens (unreliable since Apple MPP), clicks, revenue, unsubscribes, complaints; send history for the goodwill balance; click to purchase rate for teaser emails (R40, P6).
+- Landing page for each ad and its first screen; page conversion, bounce and exit for framing decisions (R84, R87).
+- Verified competitor facts for any comparison (R24, R112).
+- Real segments for any group-limited offer (R73).
+- Traffic and conversions per variant for test sizing (R120).
+- Testimonials with written permission on file (R63, R110).
+
+**Web check.**
+
+- Current Meta character limits and truncation points for primary text, headline and description, per placement; Meta ad specs page (R102, P12) `[verify UI]`.
+- Current Meta advertising standards for: health, weight and body, income, before and after, safety, personal attributes, "free", urgency, comparative claims (R109).
+- Local consumer-protection rules on urgency, countdowns, "free" and "limited" (R71, R111).
+- Endorsement and review rules for the brand's country and each platform (R63, R110).
+- Current Gmail clipping limit and Promotions tab behaviour (R103, 7.11).
+- Current guidance on open-rate reliability and sunset windows after Apple Mail Privacy Protection (section 6 email rows).
+- Meta Ad Library URL and filters (P1 step 6) `[verify UI]`.
+- Readability tool and Flesch formula coefficients (R97; 02 omits them).
+- Every historical number before it is quoted to a client: Hopkins's and Whitman's case results, the 60% headline-only figure, Ogilvy's figures, the 25% quote-headline claim, BOGO vs 50% off, installment and "Bill Me" lifts, long-guarantee return claims, De Beers and Rolls-Royce figures, Masterson's 91 of 100, Sandcastles' tool details (section 6 and section 12).
+- Publication years: Scientific Advertising (1923 per the brief), Great Leads.
+
+## 11. Freshness and stale-risk notes
+
+| Rule area | Depends on | Re-verify | Note |
+|---|---|---|---|
+| Meta primary text, headline, description lengths and truncation (R102, P12) | Platform UI and specs | Before every launch-ready set | No source gives them; fetch live `[verify UI]` |
+| Claim policy by type (R109) | Meta advertising standards; national ad and consumer law | Before every launch-ready set; re-read the policy page monthly | Health, body, income and before-and-after rules move often |
+| Urgency and "free" wording (R71, R74, R111) | Consumer-protection law | Quarterly, and per new market | Fake-countdown enforcement has grown since the sources were written |
+| Testimonial and review rules (R63, R110) | Endorsement guidance per country; platform rules | Quarterly | Whitman's 2009 release wording is lay advice |
+| Email client behaviour (R103, 7.11) | Gmail and Yahoo bulk-sender rules, clipping, Promotions tab, Apple MPP | Quarterly | 01 and 05 predate current rules; 02's email data is early 2000s and obsolete |
+| Email benchmarks (section 6) | Client privacy changes | Do not use without a live check | All open-rate figures here are pre-MPP |
+| Ads Library research (P1 step 6) | Meta Ad Library UI | Each use | URL and filters change |
+| Readability scoring (R97) | Tool availability | Each use | Compute in code; do not trust the model's estimate |
+| LLM hook workflow (P14) | Claude Desktop, Cowork, Sandcastles tiers, credits, MCP tools | Each use | All 2026 tool details can change; the paid-ad adaptation is untested |
+| Creative refresh cadence (R118, 7.10) | Platform delivery behaviour | Per brand, from its own data | 05's 24 to 48 hour reach-cut claim is a 2019 observation |
+| Print-era formatting (R33 note) | None | Not applicable to screens | Use only for packaging, inserts and print |
+| Historical case numbers (sections 6, 12) | None | Before quoting to a client | Anecdotes, not benchmarks |
+
+## 12. Source index
+
+| No. | Title | Type | Credibility and bias | Contributed most |
+|---|---|---|---|---|
+| 01 | 8 Hour Copywriting Course For Beginners (Tyson 4D, July 2024) | YouTube course transcript, 117,790 words, 115 cards | Freelance copywriter since 2022 who sells a mentorship; clients are coaches and info products; evidence is screenshots, student claims and "stats from Google" with no study design. Ecommerce appears in 3 places. About 40% is freelance client-getting. Bias: promotes his funnel; permits unverified stats and contestable "challenge" hooks. | Email structures (PPAS, CJN, HSO), the edit checklist with dozens of worked cuts, attention formula, one CTA, situational urgency, story vs chronology, compile-first process, ecommerce list blockers, landing page block map, AI use rules |
+| 02 | Cashvertising (Drew Eric Whitman, 2009) | Book, 65,196 words, 109 cards | Direct-response copywriter and seminar seller; summarises academic persuasion research (years, no samples) and 1912 to 1991 print readership studies; shows no own test data; many uncited lifts. Bias: sells the seminar; "no qualifications" absolutism on long copy and deadlines. | LF8 and appeal choice, BIG DEAL drill, means-end chain, Flesch readability targets, headline rules and starters, 12 lead-ins, extreme specificity, VAKOG and PVAs, fear's 4 parts, inoculation and two-sided messages, guarantee and deadline wording, the 46-point checklist, make-it-easy rules |
+| 03 | Scientific Advertising (Claude Hopkins, about 1923) | Book, 21,292 words, 45 cards | Senior agency man selling agency service; evidence is keyed coupon returns on "thousands" of ads with no tables; about 60 cases, many anonymous; overclaims that small tests "always hold". Bias: agency pitch; 1920s US print and mail order only. | Salesman test, one buyer, headline selects, headline swings 5 to 10x, specific over superlative, untold process facts, cure over prevention, complete story, positive 4 to 1, never attack a rival, research before writing, keep proven winners, test before scale |
+| 04 | Learn Copywriting in 76 Minutes (Harry Dry, mid 2024) | Podcast transcript, 15,516 words, 29 cards | Runs Marketing Examples and sells a course; the worked ad is for that course; evidence is famous print ads and craft opinion; historical numbers from memory; an arithmetic error in his own ad (22,000 vs 36,000 hours). Bias: taste-led, no tests. | The 3-question line test, abstract-to-concrete zoom, only point, competitor-signable check, 2-second test, write in the surface, small believable claims, contrast and the implicit "but", rewrite simply, 2-line paragraphs, versions and outside feedback, 9 of 10 bar |
+| 05 | Copywriting 101: eCommerce copywriting course (Jamie Dorschuk, about 2019 to 2020) | Live talk transcript, 15,121 words, 34 cards | Solo consultant; sells a free course and community; clients mostly courses and memberships; 1 store case (Head Candy) where CRO and automation ran together so copy's share is unknown; open-rate numbers pre-MPP. Bias: launch-sequence heavy; text-only rule contradicted by her own store email. | Second-person discipline, one function per asset, outline before drafting, 24-hour rest and read-aloud, ad-to-page congruency, sentiment matching from 5-star and 1-star reviews, awareness scale and story length, sales page template and header through-line, price positioning, subject-line punctuation |
+| 06 | Copy Hackers Book 1 (Joanna Wiebe, 2011) | Ebook, 14,508 words, 28 cards | Professional copywriter selling a paid ebook series; written for software startups; evidence is practice plus a few cited claims and 2 single cases; her own example callouts carry unsourced stats. Bias: SaaS examples; dated tools. | Messages from customers, messaging strategy, segment choice and 20% to 35% targeting, pain vs motivation, feature and benefit table (5 columns), no fixed rule to lead with the benefit, keyword language, competitor content audit, messaging hierarchy, simple offers, believable claims, negative framing not banned, overwrite then cut |
+| 07 | How to Write Ads That Sell (Founders podcast on Hopkins, about Aug 2026) | Podcast transcript, 13,771 words, 29 cards | Host reads his highlights of Hopkins's 2 books and adds Ogilvy, Estee Lauder and others; sells nothing but carries 3 sponsor reads; all numbers from memory; the file's header describes a different (Hormozi CRO) talk and must not be cited. Bias: hero-worship of Hopkins; host glosses ("painkillers not vitamins", "entertain before educate") are not Hopkins. | Service not sale, boasts kill, tell the pains you take (Schlitz), reward not prevention (Pepsodent), demonstration beats argument, requested samples, keystone fact, human personality, keep the ad that works, framing levers (group, price, number) |
+| 08 | Claude + Sandcastles = Irresistible Hooks (Callaway, 2026) | YouTube walkthrough transcript, 7,190 words, 10 cards | Presenter sells the tool the workflow requires and wrote its rules; evidence is 1 demo on 4 organic creator channels (40 videos); model-generated findings unchecked; the model invented proof in a hook. Bias: product positioning; organic video, not paid ads. | Ground LLM hooks in own winners, winners vs losers, per-creator analysis, format-fit screen, reskin not clone, 4-bucket extraction, rubric then grade then rewrite, the observed patterns (specificity, 2-sentence amplifier, no throat-clearing, declaratives) |
+| 09 | The Copy Rule I Learned From The Best Copywriter I Know (unnamed presenter on Masterson's Great Leads) | YouTube transcript, 1,305 words, 3 cards | Sells nothing; retells Masterson second hand; 91 of 100 is a historical review at 1 info publisher; no own data. Bias: none visible beyond enthusiasm. | Rule of One, the 3 tests (understand, believe, unique), tossed salad audit, one USP |
+
+**Card errors the mini playbooks found (card text that differs from the source).** Do not cite these cards for the wrong claim.
+
+- 01: [b990935f853d] is not traceable to the transcript (a supplement-brand bundle that does not appear). [6ba3eae9a81e] names ActiveCampaign as the page builder shown; the transcript names no tool. [e326516d4bdb] says "3 to 8 emails"; the source says 3, 5 or 8 all work.
+- 02: [d7cbcd4ec542] says change the offer before the headline; the book says headline, then price, then offer. [58e43cf450ab] misdescribes Editorial Energizers and Survey Power. [91a62eefd6d6] describes the "Ogilvy Principle" as studying Ogilvy's views; the book means the 2/3 photo, 1/3 copy layout. [2f196d76cd7a] puts grabbers before the headline; grabbers are objects attached to letters. [db10ac89cee2] says length is situational; the book says long copy wins with no qualifications. [037f584ed120] lists "social proof" where the book says "comparison". Many cards add ecommerce translations the book never gives.
+- 03: [e9d818096148] says single-article mail-order sales cost "$2.50"; the text says $42.50. [3607962859be] inverts "five dollars to do what one dollar might do". [0e72ef7fa48e] says "price at full-size package rather than half-price" and "international circulation"; the text says give samples free rather than part-price, and "outside towns". [dad9da2fb2e6] adds "poorer-class buyers"; not in the text. [652fd908ec22] files the $1,000 Easter hat under cheapness; the text uses it for "people judge by price". [abac911ba2b0]'s title "Questionable Persona" has no basis in the text. Many cards add "For ecommerce" steps that are the card writers' analogies.
+- 04: [867743b221ba] ties the New Balance line to Hiut Denim. [e05c0ccdecf9] makes the Volkswagen ad an enemy type C example; the source uses it for layout. [6e39a617d9e1] says "several days"; the source says about 2 days. [6645e37e12f9], [6e8d1ddacee4], [6914df3c2bd8] and [188f4fe29d32] add details the transcript does not give. [bf82611ee658] repeats the 22,000-hour figure without noting the inputs give 36,000.
+- 05: [36b9e7b8a840] reads the "1, 1, 2, 1" rhythm as words; the transcript does not say. [2ac1adf98a07] says "at least one of each" format and a garbled revenue figure. [8ccd32a8db57] says closing emails are short; the transcript says "strong sales emails". [3912f9a679c0] mislabels stage 3 to 4. [60d5057bb3c2] says "$10 off"; the transcript says "10 off". [c7a79cc9ee3e] gives "$3.99"; likely $399. [ae22f03a0868] says write the subject last; not stated. [16254d1bf3e4] adds funnel steps the transcript does not list.
+- 06: [17b8f4f12a1d] says reviews are a language source; the book never mentions reviews. [2c6f4cda6b12] says negative framings "often capture attention more sharply"; the book says negative "can be very powerful" and is not always better. [ab79ca8e0db3] adds a demand-capture note the book does not make. [19bf368e3817] adds shopper-type matching for framing. Several cards add ecommerce translations (shipping thresholds, bundles, checkout ideas).
+- 07: the source file's header describes an Alex Hormozi CRO talk (07-LPG) with claims about above-the-fold views, weekly tests and an A/B calculator; none is in the body and no card covers them. Cards spell "Pepso dent" and "artisan wells". Many card steps (monthly re-audits, quizzes, UGC, prediction logs) are translations, not the source.
+- 08: the cards' paid-ad application is an inference; the demo is organic. The 8 universal principles and most of the 11 custom principles are never stated in the source.
+- 09: card [1ee01d6bfef2]'s "say it back in 1 sentence" check is the card's, not the presenter's; the presenter gives no research or tie-break method.
+
+**Neighbour folders and what lives there.**
+
+- 24-DEP ad deployment: Meta and TikTok account structure, budgets, bidding, scaling, algorithm, creative volume, frequency and fatigue reads, campaign objectives. This playbook hands it the variant plan (9.7).
+- 12-GAD Google Ads: search and shopping copy rules, ad strength, keyword-to-ad match.
+- 10-MCR paid social creative: images, video, UGC, formats, hook visuals, competitor creative analysis. The words in a video hook can follow group E here; the visual is 10-MCR's.
+- 07-LPG landing pages: layout, page build, above-the-fold design, heatmaps, product page structure. This playbook hands it page section copy (9.3).
+- 09-CRO testing: test design, sizing, validity, readouts. This playbook hands it the variable and the measure (R116, R120).
+- 14-EML email lifecycle: flow design, cadence, resends, welcome and launch sequences, revival windows, deliverability, ESP choice. This playbook hands it finished email copy (9.2) and the sources' flow sketches as notes.
+- 03-OFF offers: offer and price design, guarantees as mechanisms, trials, discount strategy. This playbook words what 03-OFF decides.
+- 02-AVT avatars and 04-BRD brand: research depth and brand voice. This playbook's P1 is the copy-specific slice.
