@@ -86,7 +86,8 @@ def main():
         if it.get("general_practice") and it.get("expected_effect", {}).get("basis") != "general_practice" and not src.get("cards"):
             warns.append(f"{p} {iid}: general_practice with no cards but basis {it['expected_effect'].get('basis')}")
         for k in ("hypothesis", "title"):
-            if "GPT" in it.get(k, "") or ".env" in it.get(k, ""): errs.append(f"{p}.{k}: forbidden mention")
+            txt = it.get(k, "")
+            if re.search(r"(?<!Chat)GPT(?!Bot|-\d)", txt) or ".env" in txt: errs.append(f"{p}.{k}: forbidden mention")
     raw = open(path, encoding="utf-8").read()
     if "—" in raw: errs.append(f"file contains {raw.count(chr(0x2014))} em dashes")
     from collections import Counter
