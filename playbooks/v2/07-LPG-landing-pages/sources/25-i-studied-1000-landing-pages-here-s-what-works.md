@@ -107,7 +107,7 @@ The source gives this order as "the basics" in lesson 7 and the formula in lesso
 | Hidden content | Open the page on a phone | Reviews and key info visible without taps or swipes | Reviews in a carousel or drop-down | Expose inline [4514239a3d5e] |
 | Scannability | Headline-only test | Benefit clear from headlines alone | "How it works", "Our services", "What makes us unique" | Rewrite per 3.5 [6ff63786e24d] |
 | Proof quality | Inspect logo bar and reviews | Logos with quotes; reviews with name, photo, platform | Repeated logos; anonymous reviews | Run 3.4 [8e94b675714d] |
-| Hierarchy | Squint or blur test is not in the source; source says "where should my eye go first?" | Clear flow headline to sub-headline to CTA | Everything competes; headline subdued; clashing colors | Run 3.6 [751c54e90cdc] |
+| Hierarchy | Ask the source's question: "where should my eye go first?" | Clear flow headline to sub-headline to CTA | Everything competes; headline subdued; clashing colors | Run 3.6 [751c54e90cdc] |
 | Choice load | Count buttons, links, CTAs on screen | 1 clear next action | Many options, analysis paralysis | Cut per 3.6 [751c54e90cdc] |
 | Familiar layout | Compare to baseline in 3.7 | Standard pattern | 2 headlines, no CTA, body far from headline | Revert or test [a556c62817f0] |
 

@@ -560,3 +560,196 @@ Goal: capture problem searches before product awareness. Preconditions: the prod
 6. Review search terms: remove clicks with no conversions; promote converters to exact; for the top term, point the keyword's final URL at a page written for that query. Ad group landing page rotation: duplicate the ad, ad 2 to page 2, read conversion rate over 30 to 60 days, keep the winner, add a challenger (source 04).
 7. Next phase: articles for the 4 or 5 winning terms.
 8. Rollback: pause.
+
+### 4.15 Full-asset Performance Max build
+
+Goal: a controlled PMax that acquires cold customers. Preconditions: R83 qualification (clean feed, 1 primary purchase action, $50 to $100 a day or $100 a day and 3x non-brand CPA, 30 to 50 conversions a month); brand list; product themes; creative for 15 to 20 images per group. Sources: 01, 02, 04, 06/09. Cards: [634ed94f1328] [69caeee85e5f] [8e3ee156ad91] [329599511dc8] [7a8f73110a88] [25eaf30834e2] [8e83ab723ce9] [c178b83767e8] [fd408fa56660] [903e91b5cc9d] [a8f7e2302cd3] [5858ab16c0d1]
+
+1. Decide campaign count: 1 per truly different audience or product line, 1 per country, optional efficiency vs scaling split (R86). 1 hero SKU: 1 PMax.
+2. New campaign > Sales > Purchases > Performance Max > add Merchant Center. Name "PMax | <country> | <line>". `[verify UI]`
+3. Bidding: Maximize Conversion Value, no target for the first 2 to 4 weeks (source 02) or until 50 conversions a month in the campaign; source 01 has seen tROAS at break-even ROAS work best once data exists. Customer acquisition: off. `[verify UI]` `[needs brand data: break-even ROAS]`
+4. Location: 1 country, Presence. Language. Ad schedule all day. Campaign URL options: UTMs for the attribution tool. Devices: tablets off, TV off; keep computers only if their data is good. `[verify UI]`
+5. Brand exclusions: add the brand list (every spelling); also add brand negatives on the campaign (4.17). Age exclusions if age-bound. Skip Google's asset generation. Auto-created assets and enhancements: off. Final URL expansion: off (or URL-contains rules plus exclusions for blog, about, size charts, shipping, contact, out-of-stock pages). Text customisation: off. Image enhancements and landing page images: source 01 leaves on. `[verify UI]`
+6. Asset groups: 1 per product type or tier (3 to 20; 2 to 5 for small to mid accounts); listing group filtered to that theme (item ID or category); at least about 15 products per group; never 1 product alone; underperformers in a "zombie" group with a small share. `[verify UI]`
+7. Per asset group: brand guidelines (name, logos, colours, fonts); headlines (6 to 15, conflict 7.6), 5 long headlines, 3 to 5 descriptions; 15 to 20 images in horizontal, square and vertical; videos only if strong (source 01 adds none; source 06/09 wants 5); final URL = the collection page for the group (or homepage to test routing); sitelinks, promotions, prices, callouts, structured snippets specific to the group; CTA "Shop now".
+8. Signals per group: customer list and top customers; converting search terms as search themes (source 02 says skip themes unless you want aggressive PMax search; source 04 says they matter only for the first 30 days); in-market or custom segments as specific as the group. Never invent themes.
+9. Budget: at least $50 a day, ideally $100 (source 01); 3x non-brand CPA floor (source 02). Publish.
+10. Check day 1 to 7: brand terms absent from search term insights; channel report shows most spend on Shopping for ecommerce; no unwanted landing pages in the placement report; product spend on the intended SKUs. Expect 4 to 6 weeks of learning; avoid changes that extend it.
+11. Rollback: pause the campaign; move budget back to Standard Shopping.
+
+### 4.16 Feed-only PMax (test, not a guarantee)
+
+Goal: push PMax spend toward Shopping and stop drift into YouTube, Gmail and Display. Preconditions: Merchant Center link, eligible products, correct prices and stock, tested purchase value tracking; 15 or more products (source 06/09). Sources: 03, 04, 07, 06/09. Cards: [70544247c36d] [0ac64f9f98bb] [d4571d60eeee] [08b3d9f85868] [5858ab16c0d1] [2fcfa24a9f1f]
+
+1. Use when: PMax drifts into placements you do not want; no strong video or lifestyle creative; you need to separate Shopping spend from video and display spend; an existing PMax overspends on low-value networks; or (source 03) as a layer beside non-brand Shopping.
+2. New campaign (source 07: "Create a campaign without guidance") > Performance Max > goal Purchases > select Merchant Center. Name "PMax | <country> | Feed only". `[verify UI]`
+3. Bidding: Maximize Conversion Value, no target at launch (source 03 generally does not add one; source 07 adds one only at a plateau after about 3 months). Customer acquisition off. Location Presence where offered. TV screens off. `[verify UI]`
+4. Auto-created assets, text, image and video enhancements: off. Asset generation screen: skip; ignore red warnings. Final URL expansion: off. `[verify UI]`
+5. 1 asset group "All products feed only" (or per theme) with the listing group set and every asset field empty: no final URL, headlines, descriptions, logos, images or videos. If a prefilled logo or URL remains, delete it; if any single asset remains Google asks for all. Source 07 workaround if the empty group will not publish: publish a filled group, duplicate it, empty the duplicate, publish, pause the original. `[verify UI]`
+6. Signals: blank (sources 03, 07). Brand exclusions and brand negatives on (4.17).
+7. Publish. Check weekly: channel delivery split (Shopping vs YouTube, Display, Gmail, Search), product results, new vs returning share, contribution and acquisition cost against the existing Shopping or full-asset campaign. Google Help (cited in the cards) says omitting assets does not guarantee Shopping-only delivery and Merchant Center data can generate assets, and low-conversion accounts drift anyway.
+8. Do not label it "remarketing only" in any report. Do not set the Standard Shopping priority to High expecting it to outrank PMax (R95).
+9. Rollback: pause; or add assets and convert it to a full-asset PMax.
+
+### 4.17 PMax and cold-campaign brand exclusion
+
+Goal: no brand queries in cold campaigns. Sources: 02, 03, 04, 06/09, 01. Cards: [8e83ab723ce9] [ae212dfcabdd] [903e91b5cc9d] [a2f5b3c20d44] [4eceae623d26] [a5827fbc8126]
+
+1. Build the brand list: brand, misspellings, no-space version, brand plus category, brand plus product phrases, from search term reports. `[needs brand data: brand variants]`
+2. PMax: campaign settings > Brand exclusions > add the brand list (Google indexes branded terms). Decide on purpose whether Shopping ads may still show on excluded-brand searches (source 06/09 names this option). `[verify UI]`
+3. PMax: also add the same terms as exact-match negative keywords on the campaign (a shared "Branded" list where the UI allows; source 03 recorded a support form workaround when it did not). `[verify UI]` `[web check: PMax negative keyword lists]`
+4. Non-brand Shopping, non-brand Search, DSA, Demand Gen prospecting: attach the "Branded" negative list; add the brand exclusion where the campaign type offers it.
+5. Check daily (new) then weekly: PMax search term insights (7 and 28 days) show no brand terms and no branded conversions; audience report does not skew to existing customers; PMax ROAS is not "unusually strong while the brand campaign starves".
+6. Re-check search terms monthly for new brand variants and add them.
+7. Rollback: none; removing exclusions re-creates the leak.
+
+### 4.18 Feeder strategy and PMax safety net
+
+Goal: cold reach at scale when PMax has plateaued. Preconditions: PMax plateau confirmed (budget or target changes no longer move backend revenue) or a warm-share finding; margin and cash to fund a low-ROAS cold leg; backend and new-customer reporting. Sources: 04, 10. Cards: [b390a3400b4f] [8ac98b834d71] [29bf1d1ed526] [56795ebc9766] [e2e3fde986ec]
+
+1. Confirm the plateau: 2 budget steps of about 20% with reported ROAS holding and backend revenue flat; or new vs returning shows most PMax conversions are returning. `[needs brand data: backend revenue, new vs returning by campaign]`
+2. Feeder (source 04): build a Standard Shopping campaign with broad product coverage and a very low target ROAS (example 50%); run PMax (brand excluded) at a high target ROAS (example 600%) as the warm converter. Or safety net (source 10): manual Shopping, Search and Demand Gen at about 300% to 400% targets, PMax at 600% to 700%.
+3. Set the budget split from margin and cash; the sources give none. Set a test length (60 to 90 days is not in the sources; pick one and write it down) and a stop rule (backend new-customer CPA above break-even for 4 weeks).
+4. Judge the pair together on backend revenue and new customers, not each campaign's ROAS; Shopping under-attributes beside PMax.
+5. Check monthly: PMax share of spend fell as intended; widen the target gap if PMax still dominates. `[web check: current serving rule between PMax and Standard Shopping]`
+6. Rollback: raise the feeder's target or pause it; restore PMax's earlier target.
+
+### 4.19 Remarketing lists, customer lists and Demand Gen remarketing
+
+Goal: warm-audience campaigns that answer objections and exclude buyers from prospecting. Sources: 02, 03, 10. Cards: [4bba31df42c6] [8573a3074cc2] [7b6b3c03be03] [061764977d03] [ce4012235cdc] [f2925b7ac7a4] [3f75b0b24b85] [bff4fce7c8df] [4cbf20c9e261] [06762ec1db15] [1010d231578b] [74a36fd11057] [cd21a20937c4] [146aa74746f4] [ffb75a5b8076] [e69a94e940ad] [0997a8f355eb]
+
+1. Sources first: Google Ads tag, the Shopify link, GA4 link through Data manager. Tools > Audience manager: check existing lists and sizes. `[verify UI]`
+2. Website visitors: Audience manager > Data segments > plus > Website visitors > "visited a web page" past 30 days (default; the agency normally uses 3 to 7 days), optional URL contains for product or collection; prefill 30 days; wait up to a day; check eligibility per network. `[verify UI]`
+3. Cart abandoners: GA4 Admin > Audiences > New: include add_to_cart, exclude purchase; 30 days (60 for low traffic); mark as key audience so it imports; needs GA4 linked. Source 02 example: 4.2K to 3.6K after excluding buyers. About 1,000 to 1,500 people to serve (not universal). `[verify UI]` `[web check: list-size minimums]`
+4. Customer list: Audience manager > Customer list; CSV with email, phone, first and last name, zip, country from Shopify or Klaviyo; name with definition and dates; types: all customers, top 5% by revenue or 3 or more purchases; allow a day. Refresh monthly. Consent and Customer Match policy apply. `[verify UI]` `[web check: Customer Match eligibility]`
+5. Custom segments: searched terms only (source 02's best-performing type in 2025), competitor sites, or in-market as a PMax or Demand Gen signal.
+6. Demand Gen remarketing: New campaign > Sales > Purchases > Demand Gen; product feed off (source 02) or on (source 03; conflict 7.11); Maximize Conversions, no target CPA at first; budget example £50 or $50 a day; country and language at ad group level; TV off; channels YouTube (in-stream, in-feed, Shorts), Discover, Gmail, Display off; audience = the segment as a custom audience, no other signals; optimised targeting off. `[verify UI]`
+7. Ad groups by audience: product viewers, add-to-cart non-buyers, checkout abandoners, category viewers, all visitors, past purchasers (upsell). Images and videos in the same campaign (source 10). No lookback windows or exclusions between segments are given.
+8. Ads: single image for a strong offer, carousel for range, video for story; up to 20 images, a couple of offer-led headlines, descriptions that close on trust or logistics; 1 objection per ad (complacency: offer plus urgency; price: unit price or comparison; trust: PR and third-party reviews; efficacy: customer photo and review; logistics: shipping, returns, warranty). No brand introduction. Frequency cap 3 a day on video remarketing (source 03).
+9. Check after 2 to 4 weeks: ROAS, spend and clicks by audience; segment by network; keep winners, cut losers; push the winning objection answer up-funnel and share with the Meta team.
+10. Display remarketing (optional, after video): Display campaign, $10 to $15 a day, Maximize Conversion Value (tROAS only later and low), audience = your data segments > website visitors > all users, optimised targeting off, 1 landscape and 1 square image, 1 to 2 headlines and descriptions, an offer code. `[verify UI]`
+11. Rollback: pause; lists stay.
+
+### 4.20 Demand Gen and YouTube prospecting
+
+Goal: create demand beyond search volume. Preconditions: R97 fit check passed; 3 to 5 videos per concept; a conversion mechanism (sales page, advertorial, quiz); customer list for exclusion. Sources: 01, 02, 03. Cards: [87c6c1776dbe] [a1e9a7459f53] [0a48fe8e9e6d] [6803e3b2bebe] [d2116e31fe30] [7d3bf600db06] [dc729c544305] [5d0be265e08e] [417de6079aa3] [2380ca9a554b] [15e16ca20a02] [2d25e7734ec7] [41602f39be64] [12168d012cf1] [9bfa186f1531] [b934c312198e]
+
+1. New campaign > Sales > Purchases only (1 primary action) > Demand Gen. Name "Demand Gen | <country> | <bestsellers or concept> | Conversions". `[verify UI]`
+2. Product feed: off (sources 01, 02) or on with bestsellers by item ID (source 03). Conflict 7.11: start off when the ad is a story and the landing page is a sales page; test on when the ad is a product demo.
+3. Bidding: Maximize Conversions, goal purchase, no target CPA. Budget: at least $100 a day (source 01) or about 3x AOV (source 02) or by AOV band (source 03). `[needs brand data: AOV]`
+4. Location: country. Language: set the market language explicitly (source 01: avoids Spanish-language traffic in the US). Devices: tablets off; TV off until scaling; mobile only when starting with Meta vertical creative; add computers and TV with 16:9 winners later. Ad schedule all day. Google video partners off. `[verify UI]`
+5. Ad group channels "Let me choose": YouTube in-stream and Shorts only (in-feed, Discover, Gmail, Display off). Shorts only for a 9:16-only test (source 02). Google requires at least 1 video that fits each chosen format. `[verify UI]`
+6. Audience: source 01 fully broad; source 02 three ad groups (search-term custom segment; competitor-site segment; lookalike of converters, reach narrow or balanced) with demographic refinement; source 03 open with at most 3 to 5 search themes and 1 to 2 in-market. Never in-market or affinity alone (source 02), never your own customer or remarketing lists in prospecting (source 03). Exclude the all-time customer list in every ad group. Optimised targeting off while testing; on when scaling (source 01).
+7. Ads: video URL from an unlisted YouTube upload; final URL a sales page, advertorial, listicle, quiz or VSL, never the homepage; up to 5 videos per ad group, 3 to 5 per concept; headlines up to 40 characters, long headlines and descriptions up to 90 (use the full length per source 01; 1 to 3 per field per source 03); CTA "Shop now"; business name; sitelinks off; asset optimisation and video enhancements off. Videos under about 60 seconds keep Shorts on; over 60, in-stream only. Change 1 variable between ads when testing.
+8. Structure: 1 campaign with a testing ad group and a winners ad group; move the winner to its own group and hook-test against it.
+9. Check from day 3: view rate (about 20% in-stream, 10% Shorts), played to 25/50/75/100%, CTR (over 1% in-stream, 0.6% to 1% Shorts), CPM, CPV, frequency; conversions lag 1 to 2 weeks; expect 4 to 6 choppy weeks. Traffic lights per ad (R102). New-customer CPA at campaign level in the attribution tool.
+10. After 2 to 4 weeks with a steady CPA over 3 to 5 days: optional target CPA at or slightly below current CPA (source 02), or stay on Maximize Conversions and raise budget to the natural ceiling (source 01). Then raise bids 5% to 10% every 5 to 7 days (source 06/09).
+11. Rollback: pause the ad group; keep the winners group.
+
+### 4.21 Bid strategy progression
+
+Goal: move each campaign through stages without starving delivery. Sources: 01, 02, 03, 04, 06/09, 07. Cards: [805871e8952b] [5da4b51eabe6] [5d9dd44f8d9a] [9edd4e9d7860] [a3bf86a930b0] [56cda9478c6f] [29bf1d1ed526] [283cece14dca] [4b56cb53eee4] [d4494776c11a] [3001e5a56d5d]
+
+1. Classify the campaign: new (no recent conversions), building, or mature. Count purchase conversions per campaign over the last 30 days and per account. `[needs brand data: conversions by campaign]`
+2. New Search or Shopping: manual CPC with a cap, or Maximize Clicks. Brand campaigns stay on manual or impression share for good.
+3. When conversions arrive (10 to 15 Search, 15 to 20 Shopping per source 03; about 30 a month per sources 01 and 02; conflict 7.9): Maximize Conversion Value (Maximize Conversions or tCPA only for fixed order values). New campaigns in an existing account start here, with budget about 3 to 4x AOV. `[verify UI]`
+4. At 30 to 50 conversions a month in the campaign (50 for PMax; source 06/09 about 50; source 07 about 3 months for PMax): read actual ROAS and CPA over 30 days; set Target ROAS at or 10% to 15% below actual; hold 2 to 3 weeks; check spend does not collapse. `[verify UI]`
+5. Stuck under 50 a month: expand budget or targeting instead of adding a target; consider a portfolio strategy across low-volume campaigns.
+6. Later: raise the target in steps of 15% to 20% no more than every 2 to 3 weeks (source 06/09), or hold it and scale budget (source 02). Watch impression share, conversion volume and new-customer share at each step. Add a Max CPC cap through a portfolio strategy if CPCs spike.
+7. If spend trails off after a ROAS dip: check stock-outs and seasonality; cut the target aggressively (source 04); consider a period back on Maximize Conversion Value.
+8. Rollback: return to the previous strategy; expect 2 to 4 weeks of relearning.
+
+### 4.22 Budget changes
+
+Goal: raise and cut budgets without resetting learning. Sources: 01, 04, 02. Cards: [4175eb319be4] [7003ff9f69ce] [96b95d8a8ec0] [a36358d5ff15] [d40cdd66a2bc]
+
+1. Weekly, per campaign: ROAS vs break-even (conversion-time columns, 7 and 28 days), spend vs budget, lost IS (budget), new-customer CPA.
+2. Spending 100% of budget and at or above KPI: raise 10% to 15% (source 01) or about 20% (source 04). ROAS consistently above break-even: raise 10% to 20% a week.
+3. Spending under 80% and underperforming: do not raise; loosen the target (lower tROAS, raise tCPA) or fix inputs.
+4. Below break-even: pause, adjust or optimise; cut budgets faster than you raise them.
+5. "Limited by budget" alone is not a reason (R122).
+6. Daily spend far above the daily budget: look for an outside cause (press, podcast); if it is real demand and the mechanism converts, raise hard and keep it while results hold (source 01 case: $1,000 to $20,000 a day).
+7. After any bid strategy change, no big budget moves for 2 to 4 weeks.
+8. Rollback: return to the last budget; cuts are safe at any speed.
+
+### 4.23 Scaling readiness and scale steps
+
+Goal: add budget or campaign types only when the account can use them. Sources: 06/09, 01, 04, 08. Cards: [abc2dfeeea38] [daa2070d28bf] [af051bd7984a] [8ac98b834d71] [4175eb319be4]
+
+1. Run checklist 5.6 (the 5 gates). Any fail: fix inputs, not budget.
+2. Confirm the campaign hits target ROAS at the current budget (source 08).
+3. Pick the lever in order: budget step (4.22); bestseller focus and SKU exclusions; new asset groups or creative; layer Standard Shopping beside a plateaued PMax (4.18); add non-brand Search on proven PMax terms; add Demand Gen or YouTube (4.20); cold Search and Display last.
+4. After each step wait 2 to 4 weeks; judge on backend revenue, new customers and MER, expecting ROAS to fall as spend rises.
+5. Rollback: step the budget back; pause the newest layer first.
+
+### 4.24 Daily, weekly and monthly routines
+
+Sources: 01, 02, 07, 04. Cards: [a5827fbc8126] [5ebe76f05300] [64c009e7bc50] [67af52d7623d] [b9ecdf07948a] [d40cdd66a2bc] [031ec7c8b2d2] [2bf868bfb28d] [12e5a4881580] [423e6a50781c]
+
+Daily (10 to 20 minutes):
+1. Spend vs budget per campaign; any spend anomaly gets an outside-cause check.
+2. PMax search term insights (7 and 28 days) and Shopping or Search search terms: exclude irrelevant terms; brand terms in cold campaigns mean a broken exclusion; note new keyword ideas. New campaigns daily; stable ones at least twice a week.
+3. Auction insights: impression share vs named competitors on Search and Shopping.
+4. Merchant Center: new disapprovals.
+
+Weekly (Sunday per source 07):
+1. Campaign read on conversion-time columns: cost, conversions, value, CPA, ROAS, CTR, impression share, lost IS (budget and rank), week over week, not day to day.
+2. PMax: Campaign > Products for SKU spend; exclude non-converting SKUs via listing groups; asset details per group, replace low or no-spend assets; landing page and placement reports, exclude bad URLs.
+3. Budget and target decisions per 4.22 and 4.21 (the only weekly levers: tROAS, budget, remove keywords, remove products).
+4. Merchant Center: fix new red and yellow items; feed updates for stock and price.
+5. Search ads: read asset performance; keep winners, cut losers, add 1 new angle.
+6. YouTube or Demand Gen: traffic lights per ad; move winners; refresh creative.
+
+Monthly:
+1. Replace non-converting PMax search themes with converting queries.
+2. Refresh the customer list upload; check exclusions still apply.
+3. Review Maximize Conversion Value vs Target ROAS per campaign; check for the death spiral pattern.
+4. Site vs Merchant Center policy check (4.8); promotions with correct end dates.
+5. Reconcile Google purchases with backend orders; MER by channel; brand vs non-brand split; new vs returning by campaign.
+6. Structure audit (5.3) every quarter or after any major change.
+
+### 4.25 Diagnose an underperforming account (fixed order)
+
+Goal: find the root cause before touching anything. Source: 05, with 01 and 02. Cards: [7c50191f8854] [62403f6f3b48] [7fe2bb1f5bff] [e2a87175fcd5] [26676d575992] [31ee29611482] [4e3675b7a020] [141c23b0306c] [2069300bf455] [6ff74a04932d] [86ca17cab286] [2795573cf2d6] [caf9cb9b298e] [5df8489778d1] [817f1a421116]
+
+Step 0, before anything: change history in Google Ads, Meta, TikTok and the site; ask the client what changed; extend the window (never 1 day); switch to conversion-time columns for the last 7 days. If a batch of your own changes just went in, wait. `[verify UI: change history; conversions by conversion time]`
+
+Level 1, business (about 5 minutes):
+1. Media mix by spend share. Google at 10% of spend (about half of it brand) is almost never the cause; at 65/35 check the bigger channel first; at 65% Google, Google first. `[needs brand data: spend by platform]`
+2. What changed outside Google: end of a sale, Meta creative refresh, offer change, site change, price change, stock.
+3. Revenue = conversion rate x AOV x sessions. Conversion rate down: the website. Sessions down: which source lost clicks. AOV down: product mix in ads or a site merchandising change; split new vs returning AOV, then units per order and average unit price.
+4. True KPI (revenue, profit, MER, aMER) vs attributed number. Platform down but business flat: suspect tracking or attribution.
+5. Seasonality vs forecast. Inside the forecast: stop.
+
+Level 2 and 3, account and campaign (about 5 minutes):
+6. Date range 90 to 180 days, weekly view, Overview tab; rotate cost, conversions, value, CPA, ROAS, CTR; find the inflection date.
+7. Campaigns sorted by cost; top 5 only; which changed after the date; then ad groups or asset groups.
+8. Record campaign type and the specific campaigns.
+
+Level 4, campaign-type checks:
+9. PMax: brand terms in search terms; audience report skew to existing customers; top-spend products out of stock, off or disapproved; Merchant Center errors; tROAS raised (new-customer ROAS by target level); product bloat and stock churn.
+10. Shopping: tROAS; Merchant Center (stock, changed titles or descriptions, errors, warnings); too many products; search partners spend.
+11. Search: search terms before vs after by spend; auction insights before vs after (new entrant); tROAS; Display Network on.
+
+Level 5, metric and sub-metric:
+12. Efficiency down, volume flat: CPA = CPC / conversion rate. CPC up: Quality Score columns (expected CTR, ad relevance, landing page experience) before vs after; new competitor; premium auctions from a bidding change (only a problem if conversion rate did not rise). Conversion rate down, in order: tracking; landing page (URL switch, page change, price, redirect, upsell, merchandising); audience (search terms, bidding change); learning reset from a structural change; offer (promo ended, shipping threshold).
+13. Volume down, efficiency flat: clicks = impressions x CTR. Impressions down: lost IS (budget) if the budget is hit; lost IS (rank) if clicks and impressions both fell on steady spend (fix quality, competition, aggressiveness). CTR down: stale seasonal copy; audience shift; competitor price cut on Shopping (check competitor prices; ad fatigue is rare on Google).
+
+Level 8, root cause and fix:
+14. Write the root-cause sentence. If you cannot, do not touch the account.
+15. Severity: dire allows many fixes at once; mild means 1 isolated fix.
+16. Estimate the fix's size honestly; a headline change does not fix a business decline.
+17. Apply a fix, not a rebuild; wait long enough for the conversion volume to show a read; rebuild only if fixes cannot close the gap.
+18. Deliverable: the diagnosis document in 9.1.
+
+### 4.26 Restructure an account toward consolidation
+
+Goal: fewer, fuller campaigns with a reason for each. Source: 04, with 01 and 02. Cards: [379b1f714127] [a715afa0c38a] [8d6cc6ef07b8] [329599511dc8] [4692423b2426] [2792071d2d2e]
+
+1. List every campaign with 30-day conversions, ROAS, spend and role. `[needs brand data: campaign-level data]`
+2. Flag same-product campaigns where ROAS falls with conversion volume; flag campaigns with no role; flag tiny campaigns.
+3. For each campaign write the reason it exists: brand vs non-brand, country, margin or efficiency tier, category or persona, clearance or new arrivals, hero SKU. No reason: merge into the highest-volume campaign of the same role.
+4. Where a split must stay but learning is thin, apply a portfolio bid strategy across the group.
+5. Fix the 7 common setup faults while there: GA4 as primary, 1 PMax asset group, broad match with Maximize Clicks, Display on Search, no negatives, auto-apply recommendations on, no naming convention.
+6. Change in stages: 1 merge at a time, 2 to 4 weeks apart; judge on backend revenue, not only in-platform ROAS.
+7. Rollback: re-enable the paused campaigns; history is intact if nothing was deleted.

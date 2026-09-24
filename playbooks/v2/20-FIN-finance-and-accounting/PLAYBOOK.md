@@ -624,3 +624,119 @@ Every gap is explained by a named cause (tax, timing, processed vs accrued retur
 
 **R52. Each new customer should be at least as profitable as the last; do not scale spend to fix bad unit economics.** 01's sub-optimal path: CAC 68 to 79 to 123 to 149 with flat CM and 1.2 to 1.8 lifetime orders, CM:CAC 0.58 to 0.6, funded by a $20M raise. "Should not be scaling until it can fix its unit economics." Condition: CAC rising with flat CM2 and flat repeat. Sources: 01, 03 (financing spiral). Cards: [e2eaed277a0d] [cd36c8b5eacc] [beb1703b3d17].
 
+### 3.7 First order vs lifetime: LTV, LTGP:CAC and payback
+
+**R53. Gate acquisition on the first order: CM2 per new order divided by CAC should be 1 or above, unless cohorts prove repeat.** 01 prefers break-even or better on order 1 because many ecommerce customers buy once, and later orders then carry no marketing. 03 says first-order GP under about $70 "is probably a problem" for paid acquisition at scale. Buy-once categories (much apparel, Black Friday buyers) must pass this gate. Condition: default for every brand; the exception is R57. Sources: 01, 03. Conflict C9. Cards: [a004a45541ef] [c160135c9bd3] [55599aea266f] [957cabf05b5f].
+
+**R54. LTV is lifetime profit (CM2 per order times orders), never lifetime revenue.** Many tools report LTV as revenue; in ecommerce revenue and gross profit are far apart. Condition: always. Sources: 01, 03. Cards: [613635831aff] [285ed6bb4705] [c1e5e9113ebe].
+
+**R55. Time-box LTV: LTGP at 30 and 90 days for efficiency targets, 90 or 180 days for customer value, 365 days only when acquisition is aggressive.** Open-ended LTV keeps rising as the window extends (03: $100 at 6 months, $110 at 12, $120 at 18) and leads to overspending on cash you may not see for years. 01's plateau rule: find where cumulative cohort revenue stops rising (about 12 months at 25% monthly churn) and do not use 60 to 90 days for products bought again months later. Condition: every LTV figure carries its window. Sources: 03, 01. Conflict C10. Cards: [55599aea266f] [285ed6bb4705] [8fcbcb2cd9ba].
+
+**R56. Cohorts are the only valid way to see retention and LTV.** Group by first-purchase month; divide by the original cohort size; read a calendar month diagonally; leave future cells empty. Aggregate totals and churn rates miss the shape of the curve (Dollar Shave Club lost about 25% in month 1 and about 10 points across all of year 2). Condition: any retention, LTV or payback claim. Sources: 01, 02, 03. Cards: [540b5bdda637] [9e1b24779308] [136827bb25c7] [5297f747603f] [c87f67f6310b].
+
+**R57. Spend above first-order profit only when a cohort with enough history proves the tail, and use the lifetime-orders figure from the cohort with the most history, not an extrapolation.** 01's T12 accepts $115 CAC against $33 first-order GP because cumulative GP passes CAC at purchase 4; T16 accepts $50 CAC on $15 first GP with a 4.5-month life. 03 hedges: most brands that lose on acquisition lack the retention to support it, and "if you think your retention is good, it's usually mediocre". Condition: a cohort of at least 6 months (01 uses 6-month and 12-month cohorts) with cumulative GP per customer above CAC, and cash to carry the payback (R104). Sources: 01, 03. Conflict C9. Cards: [8b747d69f620] [e564ae6200ef] [b6fb728dba04] [30261689958c].
+
+**R58. Read LTGP:CAC in a fixed window against the bands, and read "above 3" as a prompt to test marginal spend, not as proof of underspending.** 03: below 1 is losing money on acquisition (only a tiny share can run it); 1 to 2 generally not good (only CPG with excellent retention or funded growth); 2 to 3 optimal, scale; above 3 a mistake, under-using paid media. 01: 1.0 is not acceptable, 2 to 3 or above to grow a subscription box profitably, 5+ at late stage, 3 to 5x first-order CM:CAC for exceptional stores. Common advice: 3:1 healthy. Condition: 30-day and 90-day windows for the bands; a ratio above 3 triggers the marginal test in F44 before spend is raised. Conflict C3. Sources: 03, 01. Cards: [55599aea266f] [79a98ff8e618] [7eeee3aaceae] [e2eaed277a0d].
+
+**R59. Below 1 is usually poor acquisition efficiency or thin first-order GP, not a strategy.** Fix the first-order economics (price, offer, COD) before calling it a lifetime play. Condition: any LTGP:CAC below 1 in the 90-day window. Source: 03 only; 01 agrees that CM:CAC below 1 needs cohort proof. Cards: [55599aea266f] [613635831aff].
+
+**R60. Compute CAC payback from a cohort, never as CAC divided by monthly gross profit.** The naive figure assumes 0 churn; real payback is 20 to 100%, sometimes 200%, longer (01). 01's example: naive 3.2 months, cohort 8 months. Measure in months for monthly billing and in orders when customers skip or ship every 2 to 3 months. Condition: always. Source: 01 only. Cards: [9a3cda2fe90f].
+
+**R61. After payback, read the tail: how much profit accrues after break-even.** A cohort that barely pays back with no tail means pricing or fundamentals are wrong. Test CAC sensitivity ($125 breaks even month 5; $225 month 11 in 01's model). Condition: every payback read. Source: 01 only. Cards: [d78b5a172074] [9a3cda2fe90f].
+
+**R62. Agency and category practice runs a 3 to 6 month payback window; use it as the outer limit unless cash reserves justify longer.** 03 says agencies, CPG, fashion and retail run 3 to 6 months. 02 says match the payback horizon to the cash reserve. Condition: set the window with the owner `[needs brand data: cash reserve and owner's payback tolerance]`. Sources: 03, 02. Cards: [285ed6bb4705] [8d574ab5e9da].
+
+**R63. Most profit usually comes from returning customers, so report new and returning profit contribution separately.** 03's example: $140K new revenue at 50% GM minus $50K ad spend = $20K; $60K returning at 50% minus $2.5K retention tools = $27.5K. Condition: monthly. Sources: 03, 01, 02. Cards: [30261689958c] [db6a44e073b2] [ea7eb29c3679].
+
+**R64. Marketing as a percent of revenue depends on LTV and stage.** High-LTV brands that hold new-customer acquisition flat see marketing percent fall as repeat revenue builds; low-LTV hard goods stay near 40 to 50% because every month needs new buyers (02's Ridge example about 50%; legacy retailers about 10%). Condition: judge a brand's marketing percent against its own repeat curve, not a universal number. Source: 02 only. Cards: [ea7eb29c3679].
+
+**R65. Hold CAC flat for repeat orders only when nothing was spent to get them.** If repeat orders come through email or subscription, divide lifetime CM by the same CAC; if paid retargeting drove them, add that spend. Condition: any LTV:CAC. Source: 01 only. Cards: [a592b3f28c58].
+
+**R66. Retention is the biggest LTV lever; then AOV; then COGS renegotiation.** Cutting churn from 27% to 20% raised churn-based LTV 35% (01); renegotiated COGS lifted LTV from $69 to about $80 in the same case. Compete on value, not price: price-led buyers stay price sensitive. Condition: subscription and repeat businesses. Source: 01 only. Cards: [86fcb4012931] [ed010f896be7] [482dba787e59].
+
+### 3.8 Discounts, promos and the discount vs CAC pool
+
+**R67. A discount and CAC are the same money: add them together as the true cost of acquisition.** $100 to Facebook or $100 to the customer gives the same post-marketing CM if the discount cuts CAC by the same dollars. Condition: holds only when CAC falls by the same dollar amount as the discount; test the conversion lift, do not assume it. Source: 01 only. Conflict C12. Cards: [aa80d087ca61] [8723bc22dfe2] [1247e2cd031e].
+
+**R68. Set 1 pool for discounts and marketing, owned by whoever runs marketing, and pick the split that maximises total post-marketing CM at the same spend, not per-customer margin.** 01's grid: $100,000 spend, 0 discount gives $25,000 post-marketing CM; $60 off with a 3.8% conversion gives $63,000, with $25 per customer in every scenario. "It can go both ways": some brands win on volume with worse unit economics, others on a smaller, richer base. Condition: conversion lifts are assumptions until tested `[needs brand data: conversion rate by discount level]`. Source: 01 only. Cards: [1247e2cd031e] [993ecc7a19f0] [8acd81a0345e].
+
+**R69. Recalculate break-even ROAS and break-even CAC at the discounted price before any public discount.** 03's example: $100 price, $40 GM: break-even ROAS 2.5, break-even CAC $40. At 30% off with costs unchanged: GM $10, break-even CAC $10, break-even ROAS 7 (2.8x the original; the transcript's 10 is a slip). If the required efficiency has never been seen on paid, the discount "shouldn't go out publicly". Condition: every blanket discount. Sources: 03, 01. Cards: [c49b93d6bb68] [5425adb4473f].
+
+**R70. Percent off gives away revenue; BOGO, bundles and gift with purchase give away cost.** With 50% off, product and fulfillment cost do not fall, so CM after CAC can go negative (01's Black Friday model: CM $84 to $29, a $4 loss per customer at 20,000 orders; a brand 01 knew lost $500,000). BOGO: customer pays full AOV, product cost doubles, shipping rises a little, CM $69 and CM minus CAC $36. 03: a bundle of 2 raises fulfillment about 20%, not 100%; a $4 gift "valued" at $50 to $60 can double AOV. Condition: unit product cost low and the second unit ships in the same box; measure incremental conversion, a gift does not guarantee the sale. Sources: 01, 03. Cards: [5425adb4473f] [13df6c347b0e] [c49b93d6bb68].
+
+**R71. Make money on Black Friday customers on the first order.** They "are notorious for having really bad retention"; expect sale-period cohorts (November, BFCM) to be worth less over time. Condition: BFCM and any sitewide sale. Sources: 01, 02. Cards: [5425adb4473f] [fc4fd43c986c].
+
+**R72. Attach the best discounts to a loyalty or subscription on-ramp, not a flash sale; flat discounting is for grade C stock.** Flash-sale converters often will not buy again without a big discount; on-ramp joiners self-select into higher LTV. 03: a flat discount is for slow inventory, even at break-even, because it was not going to sell anyway. Condition: any discount plan. Sources: 01, 03. Cards: [8acd81a0345e] [c49b93d6bb68].
+
+**R73. Model a promo on the full stack: baseline conversion, CAC, gross AOV, net AOV after refunds, product COGS, fulfillment COGS, CM, CM minus CAC, monthly orders; then the promo variant; then multiply by expected promo volume.** Condition: every promo above a few percent of monthly revenue. Source: 01 only. Cards: [5425adb4473f] [1a6c983c0c2f].
+
+**R74. "No refunds or returns during a promo" is not a rule the agent may apply.** 01 calls it best practice; it ignores consumer law `[web check: statutory return rights in the brand's country]`. Condition: never. Source: 01 (rejected). Cards: [5425adb4473f].
+
+**R75. Do not model pre-orders, BNPL or try-before-you-buy without a cancellation and return rate; revenue cannot be recognised until fulfilled.** Condition: any such offer. Source: 02 only. Cards: [135d3773766f].
+
+**R76. A discount that lifts conversion enough is the cheaper way to buy customers; a discount that does not is pure margin loss. Test as a split before committing.** 01 names the test but does not design it; 09-CRO holds the design. Condition: always. Source: 01 only. Cards: [1247e2cd031e].
+
+### 3.9 Pricing waterfall
+
+**R77. Price bottom-up from the net target, never by keystone or an arbitrary markup.** Keystone (cost x 2) ignores fulfillment and marketing; IMU (cost x 3, 4, 5) has no link to elasticity, competitors or the real cost stack. 03 guesses 40% of startups price by keystone and calls it "probably the worst way". Condition: every new product and every price review. Source: 03 only. Conflict C16. Cards: [9ee62d2b55d0].
+
+**R78. The waterfall: net target + OPEX = CM3 target; add CAC estimate, return and discount allowance, shipping and fulfillment, landed cost; solve for price (F28); then check the market.** Example inputs: 10% net + 10% OPEX = 20% CM3; CAC $30; 3% returns + 3% discounts; shipping and fulfillment $11; COGS $6; price $63.51. Condition: `[needs brand data: CAC for comparable products, courier quote, landed cost]` `[web check: competitor prices]`. Source: 03 only. Cards: [9ee62d2b55d0].
+
+**R79. If the required price is far above market, position as premium where nobody sells a premium version, or do not sell the product.** 03's example: everyone at $30 to $40, required price above that. Condition: after the waterfall. Source: 03 only. Cards: [9ee62d2b55d0].
+
+**R80. After launch, stress-test the price with observed CAC, return rate and fulfillment cost; reprice or discontinue when the margin no longer covers CAC and an overhead share.** 06's closing test: get elements, timing and waste right, then decide make more, reprice, or discontinue. Pricing execution goes to 03-OFF. Condition: 60 to 90 days after launch and at every COGS change. Sources: 03, 06. Cards: [9ee62d2b55d0] [aacabc94746b] [e65733468333].
+
+**R81. Price SKUs, colours and sizes differently; 1 flat price leaves margin on the table.** 02's host found he could charge more with no velocity drop using a price-testing tool. Condition: multi-variant catalogues; test design in 09-CRO. Source: 02 only. Cards: [224e4db9b5c9].
+
+### 3.10 Forecasting
+
+**R82. Forecast new-customer revenue and returning revenue separately, from their own inputs.** New revenue is driven by ad spend and other acquisition actions; returning revenue by launches, promo periods, email and SMS sends and product, with ads adding only a little. 03 calls this the "number one rule" of DTC forecasting. Condition: every forecast. Sources: 03, 02. Cards: [db6a44e073b2] [4870955af64e] [fc4fd43c986c].
+
+**R83. The revenue forecast comes out of the marketing calendar, not a finance extrapolation.** Revenue comes from actions (an ad, a send, a launch, a promo, a PR hit). If last January had a launch and this January does not, do not copy last January. A plan with spend up 50% and CAC flat "is not real". When anyone asks for a higher number, ask which action will be added and what effect it will have. Condition: every plan and every re-forecast. Sources: 02, 03. Cards: [4d4d40fe1138] [15d4d04ea13a] [0d00eb5d6d39].
+
+**R84. Returning revenue: cohort size times repeat rate by age times returning AOV, summed across cohorts (F41); then a 3-year seasonality factor and planned events.** 03 claims about 10% accuracy from the cohort sum and 1 to 2% with seasonality and events (presenter's claim, no data). Condition: needs monthly new-customer counts back to the first data `[needs brand data: cohort repeat curve]`. Sources: 03, 02. Cards: [c87f67f6310b] [fc4fd43c986c].
+
+**R85. New-customer revenue: fit aMER against daily spend on about 1 year of data, excluding sale days, BFCM and days under a realistic minimum spend; read expected aMER at the planned spend; back-solve required spend from the target (F42).** Model what happens to efficiency at 2x spend instead of holding it flat. Condition: `[needs brand data: daily spend and new-customer revenue]`. Sources: 03, 02. Cards: [0d00eb5d6d39] [fc4fd43c986c].
+
+**R86. Regress outliers to the mean and give a range, not a point.** One brand's history is a weak base; 2020 to 2021 misleads; cut data before known structural breaks (iOS 14, tariffs); use comparable brands' curves where possible. Condition: short or broken history. Source: 02 only. Cards: [ac073be6ad16].
+
+**R87. Forecasting is about the gap between the realistic number and the target; name the inputs that close it.** Board wants $50M, model says $40M: list the event, product, channel or creative volume that adds $10M, or accept $40M. Condition: every plan review. Sources: 03, 02. Cards: [0d00eb5d6d39] [15d4d04ea13a].
+
+**R88. Category profits get competed away; do not expect past efficiency back.** With no barriers to entry, competitor supply grows faster than demand (02's supplement brand: alone on its term in 2022, 50 listings now). Growth must come from new products, channels or stories, not a lower CAC line. Condition: any plan that assumes efficiency returns to an earlier year. Source: 02 only. Cards: [15d4d04ea13a] [5e8fb784d881].
+
+**R89. In a planning model, everything flows from ad spend: new customers = spend / CAC; ad spend is the lever for burn, runway and revenue.** Keep inputs in 1 place (blue), formulas separate, a 48-month monthly horizon for an investor model, a catch-all opex line at 10% of revenue, and conservative churn and lifetime orders (upside is a bonus). Condition: any startup or raise model. Source: 01 only. Cards: [563870c81120] [939b20dbac4b] [7b2e56bcad5a] [50708132adc1] [b6fb728dba04].
+
+**R90. Past a scale point (03: about $30K to $40K a day of ad spend, or $20M to $30M revenue) performance returns diminish and brand needs its own P&L line; brand activations will not show direct ROI.** Condition: opinion and anecdote from 1 source; budget size never quantified. Source: 03 only. Cards: [e4043b0af395] [090525149bfe].
+
+### 3.11 OPEX and payroll
+
+**R91. Ecommerce is a low-OPEX game; 02's standard for a great brand is 10 to 12% (elsewhere "closer to 15%"), and the host says over 20% "can't win".** 03 uses 15 to 20% in examples and says the fix is to freeze non-revenue hires, software and office spend. No source gives evidence beyond portfolio opinion. Condition: use as a flag; back-solve the brand's own OPEX line from its net target (F27). Conflict C4. Sources: 02, 03. Cards: [434847dcd5bb] [7c524289c2d3] [4ca15f364bbb].
+
+**R92. Fixed OPEX dollars per day should fall every year, even while scaling, because AI raises output per person; track revenue per employee ($1M to $5M for lean brands, 02).** Condition: opinion from 1 source; a planning lens, not a rule. Source: 02 only. Cards: [434847dcd5bb].
+
+**R93. Size full-time payroll at 12% of the lowest revenue month and cover the rest with flex labour (agencies, freelancers, seasonal hires, offshore, AI).** Examples: lowest month $600,000 gives $72,000 a month. Skips legal, notice, quality and culture costs. Condition: seasonal brands; a planning lens `[needs brand data: monthly revenue and payroll]`. Source: 02 only. Cards: [798f1af7e866].
+
+**R94. Keep payroll models simple: salary / 12 x headcount by 3 to 4 buckets, plus on-costs (25% in the US; swap in the brand's country).** No 700-row payroll tabs. Condition: planning models. Source: 01 only. Cards: [f39ad32b21d7] [66d5d76e9b71].
+
+**R95. Delay heavy people spend until the business can attract and identify great hires; reinvest through marketing first.** 03 also says people are the biggest lever and set the revenue ceiling; the advice is to delay, not to never hire. Condition: 7-figure brands. Source: 03 only. Cards: [7c524289c2d3].
+
+**R96. Run 2 rhythms with 2 owners: 1 person plans the big moment months out, another manages tomorrow.** Daily CM tracking without a long-horizon owner drives short-term over-optimising. Condition: any team above a founder alone. Source: 02 only. Cards: [da68923c4cc5] [709862670eb2].
+
+### 3.12 Cash vs profit: the 3 statements and free cash flow
+
+**R97. Net income is often misleading; free cash flow shows what is really happening.** FCF answers 1 question: once the business has funded 100% of operations and needed investments, is any cash left. 05's model: net income positive all 6 months, FCF positive in only 2. Condition: every monthly close and before any big inventory buy, build or loan. Sources: 05, 01. Cards: [652ee8dcf710] [7404abfd63fa] [8187da83315e].
+
+**R98. The P&L hides 4 cash movements: inventory bought in chunks but expensed when sold; capitalised build cost (depreciated over 36 months for most software, 3 or 5 years for other assets); loan principal (only interest hits the P&L); tax accrued monthly but paid in lumps.** A profitable store losing cash is usually doing 1 of these 4. Condition: any month where profit and cash point different ways. Sources: 05, 01. Cards: [2ff9cc0805c2] [7d9e989e15be] [4f714af151a4] [416bbd9031ed] [cc661026f56a].
+
+**R99. Read the 3 statements together, in order: high-level metrics, income statement, balance sheet (assets = liabilities + equity or the model is wrong), cash flow (operating, investing, financing).** Start operating cash flow from net income and adjust for balance sheet movements (F37). Condition: monthly. Source: 05 only; 01 T5 is the same case. Cards: [6fab761526bc] [059ee049c6fc] [8c56490f81a2].
+
+**R100. Judge operations on free cash flow and solvency on net cash flow.** Whether the business has a loan is a financing choice unrelated to operations; net cash flow tells you whether it can pay its debts and run at the same time. Net cash flow is below FCF only when repaying principal; in a borrowing month it is above. Condition: every cash review. Source: 05 only. Cards: [4f714af151a4].
+
+**R101. Cash can be cut fast only on lines where cash equals expense (payroll, marketing, rent); cutting depreciation releases nothing.** Condition: any cash squeeze. Source: 05 only (card addition, standard accounting). Cards: [b4b11ba26397].
+
+**R102. Inventory on the balance sheet can make a profitable brand cash-negative; assets in ecommerce are mostly unsold stock and cash.** 03's example: $2M profit, $3M of unsold inventory bought, $1M down in cash. Even at $1M to $2M profit the founder may take nothing because it is all in stock. Condition: every close reports inventory value next to profit. Sources: 03, 05, 01. Cards: [69c220a278fc] [beb1703b3d17] [6a8332853dd6].
+
+**R103. Many ecommerce businesses die of liquidity, not unit economics.** "They run out of liquidity and have bad working capital dynamics" (01). Know runway early because raising takes a long time. Condition: any growth plan must carry a cash line and a lowest-cash month. Sources: 01, 03. Cards: [8187da83315e] [def705c265c2] [beb1703b3d17].
+
+**R104. P&L and cash are different games; trade margin for cash on purpose when cash is the priority.** Liquidation, discounts and paying more for longer terms all hurt the P&L and help cash. Growing the bank account is the top priority when funding and M&A are hard (02). Condition: the owner has said cash is the constraint; each trade is written down with its P&L cost. Sources: 02, 03. Cards: [20d195846808] [f2fc5286cc97] [c73b11cb714e] [4d29da5108ca].
+
