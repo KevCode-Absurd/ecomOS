@@ -7679,8 +7679,12 @@
    "read_point": "quarterly review"
   },
   "sources": {
-   "mini_playbooks": [],
-   "cards": [],
+   "mini_playbooks": [
+    "02"
+   ],
+   "cards": [
+    "d646f7ac02d3"
+   ],
    "rules": [
     "R76",
     "P14",
@@ -8662,6 +8666,654 @@
     "R65",
     "P12"
    ]
+  },
+  "confidence": "low",
+  "general_practice": false
+ },
+ {
+  "id": "PRD-133",
+  "title": "Screen a category for jargon it forces buyers to already know",
+  "domain": "01-PRD",
+  "bottleneck": [
+   "conversion",
+   "trust_brand"
+  ],
+  "lever": "category complexity screen",
+  "hypothesis": "If we screen a candidate category for jargon or forced technical explanation, then a simplified entrant converts better because buyers spend less effort feeling confident about the purchase.",
+  "applies_when": [
+   "new_store",
+   "hero_sku"
+  ],
+  "does_not_apply_when": [
+   "A category with no incumbent using jargon or forced technical explanation"
+  ],
+  "signal": {
+   "check": "Incumbent packaging, PDPs or ads force the buyer to already know a technical term, ingredient name or spec to understand what the product does or why it helps them.",
+   "metrics": [
+    "cvr_pdp_to_cart"
+   ]
+  },
+  "expected_effect": {
+   "metric": "cvr_pdp_to_cart",
+   "direction": "up",
+   "size": "unknown, source's own read, not measured",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "A category can be technical for a real reason, such as a regulated claim, that a simplified entrant still cannot skip."
+  },
+  "prerequisites": [
+   "A shortlist of candidate categories to scan"
+  ],
+  "steps": [
+   "List every incumbent's packaging, PDP or ad copy in the category.",
+   "Mark each place a buyer must already know a technical term to understand the benefit.",
+   "Score the category high on complexity if buyers need outside knowledge to evaluate the product with confidence.",
+   "Treat a high score as an opening to relabel the same benefit by outcome instead of ingredient or spec."
+  ],
+  "test": {
+   "method": "Compare PDP-to-cart conversion of outcome-led copy against the category's typical spec-led copy",
+   "measure": "cvr_pdp_to_cart",
+   "read_point": "after the brand's standard test window"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "01"
+   ],
+   "cards": [
+    "82c3c64bf61f"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": false
+ },
+ {
+  "id": "PRD-134",
+  "title": "Build a checkable origin story when the product itself cannot differ",
+  "domain": "01-PRD",
+  "bottleneck": [
+   "trust_brand",
+   "conversion"
+  ],
+  "lever": "origin story differentiation",
+  "hypothesis": "If we build the brand around a real, checkable origin or sourcing story instead of the physical product, then a commodity or white-labeled item converts and repeats better because buyers get a reason to feel good about the purchase the product alone cannot give them.",
+  "applies_when": [
+   "any"
+  ],
+  "does_not_apply_when": [
+   "An origin story that cannot be verified: a fictional or aesthetic-only account is a trust risk if discovered"
+  ],
+  "signal": {
+   "check": "The candidate is a commodity or white-labeled product where competitors sell a near-identical physical item, and no product-level differentiation is available.",
+   "metrics": [
+    "cvr_overall",
+    "repeat_rate_90d"
+   ]
+  },
+  "expected_effect": {
+   "metric": "repeat_rate_90d",
+   "direction": "up",
+   "size": "unknown",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "M",
+   "owner": "marketer"
+  },
+  "cost": "low",
+  "risk": {
+   "level": "medium",
+   "reversible": true,
+   "note": "A fictional or exaggerated origin story is constructed authenticity, a real trust risk if a buyer finds out."
+  },
+  "prerequisites": [
+   "A real, verifiable fact about the product's sourcing, maker or process"
+  ],
+  "steps": [
+   "Find a real, verifiable fact about where or how the product is made.",
+   "Write the origin story only from facts the brand can prove if asked.",
+   "Use the story on the PDP and in creative instead of claiming the product itself is different.",
+   "Flag internally that this is a trust lever, not a product fix, and never invent a detail."
+  ],
+  "test": {
+   "method": "A or B a PDP with the origin story against a PDP without it",
+   "measure": "cvr_pdp_to_cart",
+   "read_point": "after the brand's standard test window"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "01"
+   ],
+   "cards": [
+    "23a5988ebc8d"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": false
+ },
+ {
+  "id": "PRD-135",
+  "title": "Watch real shoppers in the aisle or on live search results",
+  "domain": "01-PRD",
+  "bottleneck": [
+   "conversion"
+  ],
+  "lever": "in-person shopper observation",
+  "hypothesis": "If we watch real shoppers in the physical aisle or scrolling live search results for a candidate category, then category and positioning picks improve because friction and confusion surface that a spy tool's data never shows.",
+  "applies_when": [
+   "new_store",
+   "hero_sku"
+  ],
+  "does_not_apply_when": [
+   "A category with no physical retail presence and no way to observe live shopping behavior"
+  ],
+  "signal": {
+   "check": "The team has only screened a candidate category through ad-spy tools or trend data and has never watched a real buyer shop it.",
+   "metrics": [
+    "other:category_sameness_score"
+   ]
+  },
+  "expected_effect": {
+   "metric": "cvr_overall",
+   "direction": "up",
+   "size": "unknown",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "A small number of observed shoppers can be a biased sample."
+  },
+  "prerequisites": [
+   "Access to a physical store or a live search results page for the category"
+  ],
+  "steps": [
+   "Stand in the aisle, or scroll the live search results, for the candidate category.",
+   "Watch for visible hesitation, comparison behavior or questions asked out loud.",
+   "Note the concrete friction: hard to shop, confusing labels, uninspiring options.",
+   "Translate the friction into a design or positioning question the brand could answer differently."
+  ],
+  "test": {
+   "method": "Log friction notes from 5 to 10 observed shopping sessions and check whether the resulting positioning change improves conversion after launch",
+   "measure": "cvr_overall",
+   "read_point": "first 90 days after launch"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "01"
+   ],
+   "cards": [
+    "b6a2e4437531"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": false
+ },
+ {
+  "id": "PRD-136",
+  "title": "Run a time-boxed research-to-concept sprint, not open browsing",
+  "domain": "01-PRD",
+  "bottleneck": [
+   "team_capacity"
+  ],
+  "lever": "research sprint cadence",
+  "hypothesis": "If we run a fixed, time-boxed research-to-concept sprint instead of open-ended browsing, then a testable concept ships faster because a deadline forces the team to narrow and commit instead of researching indefinitely.",
+  "applies_when": [
+   "new_store",
+   "scaling_store"
+  ],
+  "does_not_apply_when": [
+   "A team of 1 with no separate design or creative resource to hand a brief to overnight"
+  ],
+  "signal": {
+   "check": "Product research has run past a set window with no candidate concept committed to a decision.",
+   "metrics": [
+    "other:research_cycle_days"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:research_cycle_days",
+   "direction": "down",
+   "size": "unknown",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "M",
+   "owner": "marketer"
+  },
+  "cost": "low",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "A hard deadline can force a weaker pick if the research window was too short for the category."
+  },
+  "prerequisites": [
+   "A separate person or team who can turn a brief into a concept within the same day or overnight"
+  ],
+  "steps": [
+   "Set a fixed research window, for example one working day.",
+   "Assign each researcher a specific scouting task with a deadline.",
+   "At the end of the window, pick the strongest 1 to 3 ideas found and write a brief for each.",
+   "Hand the brief to design or creative to turn around a testable concept within 24 hours, then decide."
+  ],
+  "test": {
+   "method": "Compare time from research start to first live test between sprint-run candidates and open-ended ones",
+   "measure": "other:research_cycle_days",
+   "read_point": "after 3 to 5 candidates run each way"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "01"
+   ],
+   "cards": [
+    "487c752833f1"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": false
+ },
+ {
+  "id": "PRD-137",
+  "title": "State the single sharpest reason a candidate differs, not a list",
+  "domain": "01-PRD",
+  "bottleneck": [
+   "conversion"
+  ],
+  "lever": "single differentiation statement",
+  "hypothesis": "If a go or no-go memo states one concrete, provable reason the candidate differs instead of stacking several reasons, then reviewers and buyers act faster because a single clear reason is easier to repeat and believe than a list.",
+  "applies_when": [
+   "any"
+  ],
+  "does_not_apply_when": [
+   "A candidate with no single strong difference yet, where stacking weaker reasons would only hide that gap"
+  ],
+  "signal": {
+   "check": "The go or no-go memo or pitch lists several different reasons the product is better instead of naming the one difference that matters most.",
+   "metrics": [
+    "other:decision_cycle_days"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:decision_cycle_days",
+   "direction": "down",
+   "size": "unknown",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Forcing a single reason too early can hide a real multi-part advantage worth testing."
+  },
+  "prerequisites": [
+   "A completed validation pass with at least one proven point of difference"
+  ],
+  "steps": [
+   "List every claimed reason the candidate is different or better.",
+   "Pick the one reason backed by the strongest evidence.",
+   "Rewrite the memo or pitch around that single reason and a concrete before-to-after scenario.",
+   "Drop or footnote the other reasons instead of stacking them in the headline."
+  ],
+  "test": {
+   "method": "Compare reviewer or buyer decision time on memos using 1 stated reason against memos stacking several",
+   "measure": "other:decision_cycle_days",
+   "read_point": "next 5 to 10 go or no-go memos"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "01"
+   ],
+   "cards": [
+    "6e43ca7b1287"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": false
+ },
+ {
+  "id": "PRD-138",
+  "title": "Measure and cut the time to a customer's first moment of delight",
+  "domain": "01-PRD",
+  "bottleneck": [
+   "conversion",
+   "repeat_retention"
+  ],
+  "lever": "time to fun onboarding design",
+  "hypothesis": "If we measure and cut the time between a customer's first arrival and their first genuine moment of delight, then early engagement and conversion rise because friction before that moment loses buyers who would have loved the product if they had reached it.",
+  "applies_when": [
+   "any"
+  ],
+  "does_not_apply_when": [
+   "A purchase path with no meaningful onboarding, sampling or demo moment before checkout, such as a single-SKU impulse buy"
+  ],
+  "signal": {
+   "check": "The path from a customer's first arrival, landing page, unboxing or first use, to their first real moment of delight has never been mapped or timed.",
+   "metrics": [
+    "cvr_overall",
+    "bounce_rate_pdp"
+   ]
+  },
+  "expected_effect": {
+   "metric": "cvr_overall",
+   "direction": "up",
+   "size": "unknown, borrowed framework, not a tested ecommerce benchmark",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "M",
+   "owner": "designer"
+  },
+  "cost": "low",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Over-engineering the delight moment can make it feel gimmicky instead of shortening perceived time."
+  },
+  "prerequisites": [
+   "A mapped customer journey from first arrival to first real product experience"
+  ],
+  "steps": [
+   "Map every step between first arrival and the first moment the customer feels the product's core benefit.",
+   "Time or count the steps in that gap today.",
+   "Cut or combine steps that do not lead directly to that moment.",
+   "Re-measure the gap and watch early engagement or first-session conversion."
+  ],
+  "test": {
+   "method": "A or B a shortened first-experience path against the current one",
+   "measure": "cvr_overall",
+   "read_point": "after the brand's standard test window"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "01"
+   ],
+   "cards": [
+    "eedf2639799e"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": false
+ },
+ {
+  "id": "PRD-139",
+  "title": "Give a small immediate payoff during an unavoidable wait",
+  "domain": "01-PRD",
+  "bottleneck": [
+   "fulfilment_cx",
+   "conversion"
+  ],
+  "lever": "immediate payoff during wait",
+  "hypothesis": "If we give a small immediate sensory or content payoff during an unavoidable wait, such as checkout processing or the ship-to-delivery window, then customers perceive the wait as shorter and drop-off or complaints during that wait fall.",
+  "applies_when": [
+   "any"
+  ],
+  "does_not_apply_when": [
+   "A wait so short it is not noticed, where adding a payoff step would only slow things down"
+  ],
+  "signal": {
+   "check": "A checkout, quiz, order-confirmation or delivery wait has no small payoff, and customers show drop-off, complaints or support tickets during it.",
+   "metrics": [
+    "cvr_cart_to_checkout",
+    "ticket_backlog"
+   ]
+  },
+  "expected_effect": {
+   "metric": "cvr_cart_to_checkout",
+   "direction": "up",
+   "size": "unknown",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "designer"
+  },
+  "cost": "low",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "The payoff must stay small; over-engineering it can make a good moment feel forced."
+  },
+  "prerequisites": [
+   "An identified unavoidable wait in the customer journey"
+  ],
+  "steps": [
+   "Find a wait in the journey the customer cannot skip, such as checkout processing or delivery.",
+   "Design one small, immediate payoff for that wait, such as a short video, an early tip or a tracking update.",
+   "Keep the payoff small and fast, not a distraction from the main path.",
+   "Measure drop-off or complaint rate during that wait before and after."
+  ],
+  "test": {
+   "method": "Compare drop-off or support tickets during the wait before and after adding the payoff",
+   "measure": "cvr_cart_to_checkout",
+   "read_point": "after the brand's standard test window"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "01"
+   ],
+   "cards": [
+    "6607c0edcec2"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": false
+ },
+ {
+  "id": "PRD-140",
+  "title": "Name a brand from one emotional word, tested for instant recall",
+  "domain": "01-PRD",
+  "bottleneck": [
+   "trust_brand",
+   "conversion"
+  ],
+  "lever": "single-word naming method",
+  "hypothesis": "If we name a brand or product line from one emotional word tied to its outcome and test finalists for instant, no-debate recognition, then brand recall rises because the name is simple to say, remember and repeat.",
+  "applies_when": [
+   "new_store",
+   "hero_sku"
+  ],
+  "does_not_apply_when": [
+   "A market where the category name itself is the strongest signal, such as a generic or technical B2B product"
+  ],
+  "signal": {
+   "check": "A naming decision is being made from category vocabulary or a personal favorite list instead of a single word tied to the product's outcome.",
+   "metrics": [
+    "other:brand_recall_rate"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:brand_recall_rate",
+   "direction": "up",
+   "size": "unknown",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "founder"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "medium",
+   "reversible": false,
+   "note": "Changing a name after launch has real switching cost, so confirm trademark and domain availability before committing."
+  },
+  "prerequisites": [
+   "The product's ultimate emotional outcome or goal stated in one word"
+  ],
+  "steps": [
+   "Write the single word that captures the product's ultimate emotional outcome, not its category function.",
+   "Generate name candidates that start from that word, not from category vocabulary.",
+   "Test each finalist for an instant, no-debate reaction from the team.",
+   "Confirm trademark and domain availability before committing to the top choice."
+  ],
+  "test": {
+   "method": "Ask 5 to 10 target buyers to recall the name after a single exposure and compare finalists",
+   "measure": "other:brand_recall_rate",
+   "read_point": "before the final naming decision"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "01"
+   ],
+   "cards": [
+    "02b96200dbaa",
+    "cd499e712799",
+    "0ff786007456"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": false
+ },
+ {
+  "id": "PRD-141",
+  "title": "Confirm a new fulfillment app is a real shipping location pre-launch",
+  "domain": "01-PRD",
+  "bottleneck": [
+   "conversion",
+   "fulfilment_cx"
+  ],
+  "lever": "fulfillment location launch check",
+  "hypothesis": "If we verify a newly connected fulfillment or 3PL app is registered as an actual shipping location in the store platform before launch, then checkout failures on that product fall because the storefront can otherwise show out of stock or block add to cart even though the app is installed.",
+  "applies_when": [
+   "shopify",
+   "custom_platform"
+  ],
+  "does_not_apply_when": [
+   "A fulfillment method that ships from the store's own existing, already-configured location"
+  ],
+  "signal": {
+   "check": "A new fulfillment or 3PL app was just installed and connected for a product, but no one has confirmed it is added as a shipping location in the platform's settings.",
+   "metrics": [
+    "cvr_cart_to_checkout"
+   ]
+  },
+  "expected_effect": {
+   "metric": "cvr_cart_to_checkout",
+   "direction": "up",
+   "size": "unknown",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "dev"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "This is a launch checklist item, so risk is limited to the time spent checking."
+  },
+  "prerequisites": [
+   "A newly connected fulfillment or 3PL app for at least one product"
+  ],
+  "steps": [
+   "After installing a fulfillment or 3PL app, open the platform's shipping settings.",
+   "Confirm the app is added as an actual shipping location, not just installed.",
+   "Add a test product to cart and complete a test checkout before launch.",
+   "Fix and re-test immediately if the product shows out of stock or blocks add to cart."
+  ],
+  "test": {
+   "method": "Run a test checkout on every newly connected fulfillment app before its first live order",
+   "measure": "cvr_cart_to_checkout",
+   "read_point": "before launch and after any new fulfillment app connection"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "04"
+   ],
+   "cards": [
+    "7006bf8583c9"
+   ],
+   "rules": []
+  },
+  "confidence": "medium",
+  "general_practice": false
+ },
+ {
+  "id": "PRD-142",
+  "title": "Splice the brand's own validated hook into a longer new UGC body",
+  "domain": "01-PRD",
+  "bottleneck": [
+   "acquisition_efficiency",
+   "conversion"
+  ],
+  "lever": "hook-to-body creative splice",
+  "hypothesis": "If we cut the opening seconds of the brand's own validated organic video into a longer, newly shot UGC or creator body instead of reusing the full original clip, then paid creative converts better because a proven attention-grabbing open is paired with a more persuasive middle built for the paid platform.",
+  "applies_when": [
+   "paid_social_led"
+  ],
+  "does_not_apply_when": [
+   "No validated organic hook exists yet that the brand itself owns or can legally reuse"
+  ],
+  "signal": {
+   "check": "The brand has a validated, high-performing organic video, but the plan is either to invent a new hook from scratch or to reuse the full original clip untouched as a paid ad.",
+   "metrics": [
+    "hook_rate",
+    "ctr"
+   ]
+  },
+  "expected_effect": {
+   "metric": "hook_rate",
+   "direction": "up",
+   "size": "unknown",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "M",
+   "owner": "designer"
+  },
+  "cost": "low",
+  "risk": {
+   "level": "medium",
+   "reversible": true,
+   "note": "Only the brand's own validated content or an original creator body qualifies; never splice or reuse a competitor's video, text, logo or face."
+  },
+  "prerequisites": [
+   "A validated organic hook the brand owns or has full rights to reuse"
+  ],
+  "steps": [
+   "Identify the first few seconds of the brand's own validated, highest-performing organic video.",
+   "Brief a creator or editor to build a longer, original body picking up from that same opening idea.",
+   "Cut the validated hook into the new longer edit rather than reusing the full original clip.",
+   "Test the spliced version against a from-scratch creative on the same offer."
+  ],
+  "test": {
+   "method": "A or B the spliced creative against a from-scratch creative on the same offer",
+   "measure": "hook_rate",
+   "read_point": "after the brand's standard test window"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "02"
+   ],
+   "cards": [
+    "91b67f2898cb"
+   ],
+   "rules": []
   },
   "confidence": "low",
   "general_practice": false
