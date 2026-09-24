@@ -374,3 +374,189 @@ Format: rule, condition, sources by mini playbook number, cards. "Conflict" poin
 **R142. Be in the account daily for search terms, auction insights and spend anomalies; do product, asset and landing page work weekly; refresh search themes, customer lists and bid strategy review monthly; check site vs Merchant Center policies monthly.** Sources: 01, 02, 07 (Sunday: tROAS, budget, remove keywords, remove products; judge week over week). Cards: [a5827fbc8126] [5ebe76f05300] [64c009e7bc50] [67af52d7623d] [b9ecdf07948a] [d40cdd66a2bc] [031ec7c8b2d2] [36a8c46cb661]
 
 **R143. Nothing is set and forget: test search ads and feeds weekly against a control, keep several ads per ad group, replace low-rated PMax assets, refresh remarketing creative per objection.** Sources: 01, 02, 04. Cards: [e5912712faf6] [533ef4069e40] [2bf868bfb28d] [74a36fd11057]
+
+## 4. Procedures (implementation)
+
+Every step that names a menu, button, field or setting is `[verify UI]`. The recordings span late 2024 to September 2026. Where a source gives no step, the procedure says so. Rollback for every campaign build: pause the campaign; do not delete it, because history is lost.
+
+### 4.1 Connect Shopify to Google Ads with the Google and YouTube app (fast route)
+
+Goal: purchase, add to cart, begin checkout, page view, view item and search actions in Google Ads with enhanced conversions, plus product sync. Preconditions: 1 master Google account owns Google Ads, Merchant Center and GA4 (R20). Source: 02, 03. Cards: [93f8e8d57251] [52efc5146531] [a0825cabc944]
+
+1. Shopify admin > Sales channels > Google and YouTube. Install. Sign in with the master Google account. `[verify UI]`
+2. In app settings, pick the Google Ads account from the dropdown (name or number). Connect Google Ads first, then Merchant Center (existing or create). Choose to link products. `[verify UI]`
+3. Check: the app imports conversion actions; purchase ("Google Shopping App Purchase") is primary. Enhanced conversions on. `[verify UI]`
+4. Wait: the first purchase can take a couple of hours to fire; actions show in a day or 2. No sales means nothing fires.
+5. Check: Google Ads > Tools > Data manager > Connected products shows Merchant Center linked; Merchant Center > Products shows the catalog (source 03 example 131 products). `[verify UI]`
+6. If a GTM or GA4 purchase action already exists, go to 4.3 at once and leave 1 primary.
+7. Rollback: disconnect the app's Google Ads link; set its purchase action to secondary.
+
+### 4.2 Enhanced purchase tracking through GTM and a Shopify custom pixel (robust route)
+
+Goal: purchase (with real value), add to cart, begin checkout, product view tags, dynamic remarketing parameters, GA4. Preconditions: GTM container; Shopify Customer events access. Source 01 gives the click path (its container and pixel code sit behind its opt-in); source 06/09 gives the tag list. Cards: [fff2f5c0c47c] [535e56dd51f1] [80d2cbcc7a96] [24d517dd8fe0] [56853873c2c8] [f866b580a9ae]
+
+1. Google Ads > Goals > Settings: turn on enhanced conversions, method Google tag. (Source 06/09 says since June 2026 this is a single on/off switch.) `[verify UI]` `[web check: current enhanced conversions setting]`
+2. Goals > Conversions > Summary > Create > Website > enter domain > Scan > "Add a conversion action manually". `[verify UI]`
+3. Purchase action: category Purchase; in account default goals; primary; name "<brand> purchase"; value "use different values for each conversion"; count Every; click-through window 90 days, engaged view 30, view-through 30 (source 01's choice; R17 says match the purchase cycle); attribution data-driven; managed through the Google tag. `[verify UI]`
+4. Add to cart and begin checkout: same settings, removed from account default goals. Product view: category Page view. Save. Copy the conversion ID and the 4 labels into the brand's setup doc (never into chat output).
+5. GTM: Admin > Import container (source 01's container) or build by hand: Conversion Linker tag on All Pages; GA4 event tag for `purchase` on the thank-you page; Google Ads Conversion Tracking tag with ID and label, triggered by the purchase dataLayer event from Shopify's checkout thank_you page or Customer Events; pass product ID, category and value for dynamic remarketing; turn on "Include user-provided data" and map email, phone and address variables. `[verify UI]`
+6. Value = actual order revenue including discounts and shipping, never a fixed value (R15). Margin-adjusted values are ideal; no source says how to compute them.
+7. Submit > Publish. Copy the GTM container ID into the setup doc.
+8. Shopify > Settings > Customer events > Custom pixels > Add custom pixel > name "Google conversion pixel" > delete default code > paste the GTM customer-event code > set country code > paste the GTM ID > Save > Connect. `[verify UI]`
+9. Back in Google Ads: set add to cart, begin checkout and page view to Secondary (observe only). Purchase stays the only primary.
+10. Check: place a test order; the purchase fires once with the right value; Tag Assistant shows the tags; enhanced conversions diagnostics report is clean (source 06/09). Reconcile Google purchases with Shopify orders over the next 7 days on conversion-time columns. No source gives a match threshold. `[needs brand data: Shopify orders vs Google purchases]`
+11. Server-side (above about $50k a month, source 06/09): server container on Google Cloud or Stape, GA4 client, Ads Conversion Tracking tag and Conversion Linker in the server container; reconcile browser and server paths with backend orders; monitor the container. No source gives deduplication or consent steps. `[web check: consent mode requirements]`
+12. Rollback: pause the GTM tags; set the GTM purchase action to secondary; the app action becomes primary again.
+
+### 4.3 Set primary and secondary actions and link GA4
+
+Goal: exactly 1 primary purchase action; GA4 as backup. Source: 02. Cards: [30fdf39203d6] [a3831e8b2c64]
+
+1. GA4 > Admin > Property settings > Product links > Google Ads links > search the Google Ads ID > Link; enable personalised advertising and auto-tagging > Submit. `[verify UI]`
+2. Google Ads > Conversion actions > Purchase category: list every purchase action (app, GTM, GA4). Open each > Settings > Action optimization. Exactly 1 purchase action Primary; all others Secondary. `[verify UI]`
+3. Set add to cart, begin checkout, page view, view item, search to Secondary. Remove non-purchase actions from account default goals.
+4. Check: conversions and ROAS did not double after linking GA4 (source 02: a sudden doubling means 2 primaries).
+5. Every couple of weeks read 4 GA4 reports: user attributes, monetisation ecommerce purchases, landing pages (engagement time, bounce), first-user channel with UTMs on all paid traffic. [324a945cc6a5]
+
+### 4.4 New-customer conversion tag
+
+Goal: read new-customer CPA and ROAS without Google's customer acquisition setting. Source: 01 (no build steps given). Cards: [a336449b068e] [69caeee85e5f]
+
+1. Keep the all-purchase action.
+2. Add a second purchase event that fires only on a customer's first order (custom pixel logic or a tool such as Blotout). `[web check: how to detect first orders in Shopify customer events today]`
+3. Option A (source 01's 2025 method): first-order event primary, all-purchase secondary. Option B: keep all-purchase primary and read new-customer CPA in Triple Whale, Northbeam or Google's native new-customer columns. `[web check: native new-customer metrics]`
+4. Leave "customer acquisition" off in campaign settings (sources 01, 02, 03).
+5. Check: new-customer count in Google matches Shopify first orders within reason.
+
+### 4.5 Merchant Center setup
+
+Goal: an approved, policy-safe Merchant Center linked to Google Ads with the 4 add-ons. Source: 01 (phases), 02, 03. Cards: [5fa36e157a58] [bb3574f9e67a] [7255257382d0] [5157f5f5a687] [8a99ccae1285] [911db04602d6] [69bd2ba35622] [c9b580a81edf] [a0825cabc944]
+
+1. Create or select the Merchant Center in the Shopify app (4.1) or at merchants.google.com. Complete: business information, claim and verify the website, shipping and returns, tax, add products. `[verify UI]`
+2. Settings > Add-ons > Discover: enrol dynamic remarketing, Google customer reviews, product ratings, promotions. Check each is active, not only available. `[verify UI]`
+3. Business info: accurate name, address, phone, checkout link, payment methods; square and rectangular logo, main and accent colour; social profiles. Do not claim identity attributes that are not true (R29).
+4. Shopify app > product feed settings > shipping = Manual (set up in Merchant Center). `[verify UI]`
+5. Merchant Center > Shipping and returns: a shipping policy for every country by speed and method, named couriers, accurate ship-from; a returns policy that matches the site, linked to the returns page. Tax settings per country. `[web check: current Merchant Center tax settings]`
+6. Settings > Data sources: confirm the primary feed (Shopify Content API or a feed app such as Simprosys, DataFeedWatch, Channable) updates; note supplemental feeds and promotion sources. `[verify UI]`
+7. Link: Merchant Center settings cog > Apps and services > Add a service > Google Ads > pick the account > Confirm. Confirm in Google Ads Data manager. `[verify UI]`
+8. Product ratings: submit the interest form; choose Google Customer Reviews, an official aggregator (Trustpilot, Stamped) or Judge.me via Shopify; needs 50 reviews total and 3 per product; allow 2 to 4 weeks. `[verify UI]` `[web check: thresholds]`
+9. Promotions: add real promotions with exact details, dates and codes; test the code at checkout first.
+10. Shopping experience scorecard: fix shipping, returns, purchase, browsing and promotion items; aim for "exceptional". `[verify UI]`
+11. Check: Products status mostly approved (pending at first); Diagnostics has no red items; store quality shows a score. Setup takes about 20 minutes (source 02) plus approval time.
+12. Rollback: none needed; fix issues in place. Never delete and recreate the account (history and trust reset).
+
+### 4.6 Rewrite feed titles and roll them out
+
+Goal: titles that match converting queries without resetting learning. Sources: 04, 01, 02, 06/09, 07. Cards: [a1c3cff78bf2] [18d6b809b70b] [3cce923d11c9] [b5af5e150e67] [6126c42680a9] [9983e71e8efc] [76f0f732dbe5] [afd1fd903f18] [59d9f9d20e0c]
+
+1. Pull the search term report (Shopping and PMax) and list converting terms per product type. Add Keyword Planner terms for the core product. `[needs brand data: search terms with conversions]`
+2. Audit 20 or more current titles: brand or internal name first, attributes past 70 characters, mixed order, under 60 or over 150 characters, raw manufacturer titles.
+3. Draft per SKU: converting keyword plus product type (or unique name then keyword), variant attributes (colour, size, material, capacity, dosage, use case), second keyword or USP, brand last (brand first only for a known brand; conflict 7.3). First 70 characters carry the match; 60 to 150 total; 1 order across the catalog. An AI draft from the formula is fine; a human picks the 2 keywords and checks every attribute is true.
+4. Descriptions: front-load keywords, features, USPs, buyer objections, a plain CTA, no promotional text, no false attributes, no stuffing.
+5. Push through a supplemental feed (or the feed app) rather than editing the site or the primary feed; or edit in Merchant Center > Products > SKU > Edit for small catalogs. Never touch price, availability or ID. `[verify UI]`
+6. Record a baseline (impressions, CTR, CPC, conversions, value per changed SKU, 30 days).
+7. Roll out in batches, highest-opportunity products first. Never all titles at once.
+8. Check after 2 to 4 weeks per batch: CTR, CPC, conversion value on changed listings. No material change: test different keywords. Re-audit after adding categories or price tiers.
+9. Rollback: revert the supplemental feed row for the batch.
+
+### 4.7 Feed health triage
+
+Goal: zero disapprovals; warnings shrinking. Sources: 06/09, 01, 02. Cards: [82e55ef4dd25] [9972bf6ca8cf] [5157f5f5a687] [911db04602d6]
+
+1. Merchant Center > Products > Diagnostics (or Needs attention). Filter Disapproved first. `[verify UI]`
+2. For each disapproval find the cause: missing or wrong GTIN; price mismatch feed vs page; missing shipping; policy (restricted product, misrepresentation); formatting or missing required attribute (age group, gender, colour for apparel).
+3. Autofix only formatting and optional attributes ("Fix type" filter, select all, Autofix). Fix policy, price and required attributes by hand in Shopify or the feed tool. `[verify UI]`
+4. Then Warnings and Limited performance.
+5. If prices change often: feed refresh at least every 6 hours; automatic item updates on. `[verify UI]`
+6. Check weekly: no new red or yellow items; eligible product count stable. After a sudden drop in eligible products, run this at once.
+7. Rollback: revert the last feed change (Merchant Center UI changes are reversible within 30 days per source 06/09, unverified). `[web check: 30-day reversal claim]`
+
+### 4.8 Monthly policy and suspension check
+
+Goal: catch mismatches before Google does. Source: 01. Cards: [95550c2e178c] [eea0c9ae49af] [a9d854c2d98d] [173c252bafd5] [9de75b008814] [f7f63ab97480] [8ff6407379e3] [b9ecdf07948a]
+
+1. Shipping: site policy, couriers, cost and delivery time equal Merchant Center; update Merchant Center the same day a courier or cost changes.
+2. Returns: window, refund processing time, return address and instructions current on site and in Merchant Center; test the return links.
+3. Checkout: every listed payment method works; tax and shipping shown before payment; discount codes and live promotions work; SSL on checkout and sitewide.
+4. Listings: out of stock shows as sold out and syncs; page price = checkout price = feed price; no broken links from product page to listing; no exaggerated or unsupported claims; only real reviews.
+5. Contact and legal: physical address current; support phone works; branded email; same contact details across Merchant Center, Google Ads and all Google accounts; returns, shipping, terms, privacy, about, contact and subscription management in the footer.
+6. Store: no default theme, no dead apps, no broken navigation, load speed tested, images and copy congruent with the feed.
+7. Record each item as pass or fix in the brand's ops log. If suspended, assume 1 of these items; Google usually will not say which.
+
+### 4.9 Branded Search campaign
+
+Goal: own the brand SERP cheaply. Preconditions: decision per R55 (competitors bid, new account, or an offer worth showing); brand variants list. Sources: 01, 02, 03. Cards: [b62174aad487] [6319ccc026d9] [fe8bd2cdf490] [c769e50b230c] [4b1f9877b48b] [d28083dc2834] [19cb14a20c03]
+
+1. New campaign > Sales > conversion goal Purchase only > Search > website visits. Name "Search | <country> | Brand". Skip "ways to reach your goal" and AI keyword or asset suggestions. `[verify UI]`
+2. Bidding: Target impression share, absolute top, 95%, max CPC limit about $3 (source 01); or manual CPC (source 02). Never conversion-based smart bidding. Customer acquisition: off.
+3. Networks: Search Partners off, Display off. Location: country, Presence. Language: the market's. Audiences: customer lists, site visitors, GA audiences as Observation only. No ad schedule. No brand exclusion. `[verify UI]`
+4. Ad group "Brand": exact match [brand], [brand misspelling], [brandnospace], [brand reviews], [brand discount code], [brand + product word]. 4 to 6 keywords; do not go overboard.
+5. Ad: final URL homepage (or the matching page per variant: reviews query to reviews page). Headline 1 pinned: "<Brand> Official Site"; test headline 2 as the offer; trust headline. 3 to 9 headlines (conflict 7.6). Descriptions from the best landing page copy. Business name and logo (needs advertiser verification). Sitelinks: collections, best sellers, reviews, live promotions. Callouts, structured snippets.
+6. Budget: $25 a day (source 01) or $10 to $20 small brand, up to $50 large brand (source 03). Spending $5 to $10 of a $20 budget is normal.
+7. Publish. Check after 7 days: impression share at absolute top 90% to 95%; CPC 1 to 50 cents; no non-brand terms in search terms (add negatives); no "limited by budget" on brand-intent terms.
+8. Optimise: raise max CPC only if impression share is low; add phrase match of the brand to find new terms and promote converters to exact. Never move off impression-share or manual bidding.
+9. Rollback: pause. If testing incrementality, pause for a fixed window and compare branded organic clicks plus total brand conversions before and after. `[needs brand data: brand-off holdout]`
+
+### 4.10 Branded Shopping campaign
+
+Goal: product listings on brand searches at manual cost. Preconditions: Merchant Center linked; brand volume worth it. Sources: 01, 03. Cards: [2983e818cf87] [1e8b3f869526] [b69974ff92ac]
+
+1. New campaign > Sales > Purchases > Shopping > select Merchant Center > Standard Shopping (decline PMax). Name "Shopping | <country> | Brand". `[verify UI]`
+2. Bidding: Manual CPC. Budget: $50 a day (source 01) or about $20 a day (source 03). Priority: High (source 01) or Low with the split in 4.12 (source 02). Search Partners off. All devices. Location Presence.
+3. Ad group per product group; default bid $1. All products in 1 group unless products differ a lot and you want separate average CPCs.
+4. Tools > Bulk actions > Scripts: add a script that auto-excludes non-brand search terms (source 01 and 03 scripts are not in the text). `[verify UI]` `[web check: current brand-only Shopping script]`
+5. Audiences > Exclusions: upload the Shopify customer list and exclude it (source 01; optional, see R62).
+6. Check weekly: search terms are brand only; impression share; raise max CPC a little if share is low. Never move to automated bidding here.
+7. Rollback: pause.
+
+### 4.11 Non-brand Standard Shopping (bestsellers first)
+
+Goal: the main new-customer campaign in a new account. Preconditions: tracking works; Merchant Center linked; bestseller list. Sources: 02, 03, 01. Cards: [43c52017c399] [11a3baaf5810] [4b04bc3b1c75] [56cda9478c6f] [fbfe5ace84d4] [3280f3210b89] [dbf8b8785311] [258be064768c]
+
+1. New campaign > Sales > Purchases > Shopping > Merchant Center (pick the right feed) > Standard Shopping. Name "Shopping | <country> | Bestsellers | <bid strategy>". `[verify UI]`
+2. Bidding: Maximize Clicks (source 03) or manual CPC with a cap (source 02) while there are no conversions; Target ROAS only in a seasoned account (4.21). Bid equally for new and existing customers.
+3. Budget: the largest share of the account (source 03: 50% or more). Priority: Low while it is the only Shopping campaign; change per 4.12 later. Search Partners off. Devices all. Location country, Presence. `[verify UI]`
+4. Ad group "Bestsellers", default max CPC (example $1). Create.
+5. Product groups: All products > plus > Add subdivision > Item ID (or category if the feed is cleanly categorised) > select 5 to 10 bestsellers (usually under 10; no sales yet, pick about 5 predicted winners) > Save without changing bids > set "Everything else in All products" to Exclude. `[verify UI]`
+6. Negative keywords: add every brand variant in exact match (Campaigns > Audiences, keywords and content > Search keywords > Negative search keywords), ideally as a shared "Branded" list. `[verify UI]`
+7. Check: ads serve within a couple of hours; search terms daily for the first weeks; product-level spend concentrates on the bestsellers.
+8. After consistent sales and ROAS: switch bestsellers to Maximize Conversion Value (4.21), and add a second all-products campaign (same settings, no subdivision) to find new bestsellers; feed discovered winners back into the bestseller campaign; exclude products with real spend and clicks but weak ROAS.
+9. Rollback: pause the new campaign; keep the bestseller campaign.
+
+### 4.12 Brand and non-brand Shopping split by priority
+
+Goal: read true non-brand Shopping performance. Preconditions: 2 Shopping campaigns with identical products, audiences and locations. Source: 02. Cards: [f52ecc6c8839]
+
+1. Non-brand campaign: all (or bestseller) products; priority High; a moderate Target ROAS (source example 200% to 300%, set from KPIs) or the stage-appropriate strategy; attach the "Branded" negative keyword list. `[verify UI]`
+2. Brand campaign: same products; priority Low; a higher Target ROAS or manual CPC (the source's number is garbled; use brand economics). `[verify UI]`
+3. Routing: a query goes to the High campaign first; a brand query is blocked there by the brand negative and falls to the Low brand campaign.
+4. Guard weekly: non-brand is not "limited by budget" (otherwise brand-campaign search terms fill with non-brand queries); no product is missing from non-brand.
+5. This does not control PMax (R95, conflict 7.4).
+6. Rollback: remove the priority difference and the negative list; the 2 campaigns return to sharing queries.
+
+### 4.13 Non-brand Search campaign (STAGs)
+
+Goal: capture category and product intent with control. Preconditions: keyword research (R70, R71); category with real demand. Sources: 02, 03, 04, 10. Cards: [535fcd04bd8b] [b14c89dd124a] [96b95d8a8ec0] [8c0b85636322] [6bfe7d97b858] [c37ad85535b2] [1b793cd8bbb3] [de648eb98d87] [76be15912789] [61f688e47745] [c45d399b63a9] [23298f395683] [4a2c02a70a66]
+
+1. Research: 20 to 30 seed terms naming the core offer; expand each into long-tail; validate in Keyword Planner (volume, 3-month and year-on-year change, competition, top-of-page bid range); pull the PMax and Shopping search terms that already convert; filter by economics (expected CPC vs expected conversion rate vs target CPA or ROAS); cut to about 20 to 25 keywords to start. `[needs brand data: conversion rate, target CAC or ROAS]`
+2. Classify by intent (R71) and route: transactional to product pages, category to collection pages, problem-aware to advertorial or category pages, competitor to its own capped campaign or excluded.
+3. New campaign > Sales > Purchase only > Search > website visits. Name "Search | <country> | Non-brand | <theme>". Bidding: Maximize Clicks or manual CPC with no conversions; Maximize Conversion Value once conversions exist (4.21). Search Partners off, Display off, Presence, market language, audiences Observation only, AI Max skipped unless testing (R81), broad match setting off. Enter keywords by hand, not Google's URL suggestions. `[verify UI]`
+4. Ad groups: 1 theme each, 3 to 10 keywords; exact for known converters, about 80% exact plus a few core broad terms with smart bidding; 1 collection per ad group, never 2. Attach the "Branded" negative list and the universal list.
+5. Ads per ad group: at least 2. 7 to 9 headlines with distinct angles (conflict 7.6), 2 to 4 descriptions; keyword in a headline; offer in 1 or 2 headlines; pin only with a reason; DKI where the query language should echo. Final URL: the matching page; display path set. Business name, logo, images, sitelinks, callouts, structured snippets, promotion asset.
+6. Budget: $20 to $30 a day for a category test (source 03); about 3 to 4x AOV for a Maximize Conversion Value launch (source 02). Ignore Google's forecast.
+7. Publish. Check: serving within a day (if not after 1 to 2 days, check bidding, keyword volume, keyword choice); first clicks can be expensive; search terms daily in week 1 to 4; quality score components per keyword.
+8. Optimise: negatives per R126; promote converting broad terms to exact; fix quality components before raising bids; landing page rotation test (4.14 step 6); keep winners, cut losers, add 1 or 2 new angles monthly.
+9. Rollback: pause; if the category test is not profitable after enough data, drop it.
+
+### 4.14 Cold problem-aware Search
+
+Goal: capture problem searches before product awareness. Preconditions: the product solves a searched problem; an advertorial or educational page exists. Source: 01. Cards: [68c39167796f] [30a52da78077] [deb514cc9507]
+
+1. Settings as 4.13 step 3. Bidding: Maximize Conversions (Maximize Clicks while testing fit on broad investigative terms). AI Max: source 01 turns it on; treat as a test. Brand exclusion on. Countries you ship to, Presence.
+2. Keywords: many problem phrasings; exact plus broad; no phrase (source 01's choice).
+3. Ads: DKI in a pinned headline; price extensions, structured snippets, callouts, sitelinks, logo.
+4. Landing page: advertorial or educational sales letter, not a bare buy box.
+5. Budget: source 01 case ran £125 a day. `[needs brand data: break-even CPA to size the test]`
+6. Review search terms: remove clicks with no conversions; promote converters to exact; for the top term, point the keyword's final URL at a page written for that query. Ad group landing page rotation: duplicate the ad, ad 2 to page 2, read conversion rate over 30 to 60 days, keep the winner, add a challenger (source 04).
+7. Next phase: articles for the 4 or 5 winning terms.
+8. Rollback: pause.

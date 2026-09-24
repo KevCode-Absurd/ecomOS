@@ -19,7 +19,7 @@ It helps an operator design a long, personalised quiz funnel for cold paid traff
 
 3. **A long quiz builds commitment before the offer, so the offer matters a bit less.** He says if someone goes through "20, 30, 40 steps", they are "very committed" by the end and "trust you even before they reach this point", which is what you want with cold traffic. So the offer "falls a little bit in second place", though it is "still extremely important", and it is "even more important" in funnels that show the offer quickly. Condition: his opinion. The card calls long quizzes and commitment steps "hypotheses, not guaranteed retail improvements". [a7e987adb7a8]
 
-4. **You control the narrative through the answers.** A quiz is not just "click on a few buttons and get something". The brand steers what the shopper sees next from what they chose. He calls this "using their answers against them, quote unquote". Condition: his framing. The card limits it to real branching that the team can test and maintain. [4a5a01ce29d73681] [4a5a01ce29d7]
+4. **You control the narrative through the answers.** A quiz is not just "click on a few buttons and get something". The brand steers what the shopper sees next from what they chose. He calls this "using their answers against them, quote unquote". Condition: his framing. The card limits it to real branching that the team can test and maintain. [4a5a01ce29d7]
 
 ### 2.2 Question design
 
@@ -130,7 +130,7 @@ This is the order the presenter clicked through, with his reason for each step. 
 | 41 | Pop-up commitment | choice | "Yes, I'll do my first workout today" | Lock commitment before offer | [a7e987adb7a8] |
 | 42 | Results and sales page | long page | n/a | See 3.3 | [d20c2b44905c] |
 
-Counts from this walkthrough: about 27 question steps, 8 info screens, 3 capture steps, then summary, loader, pop-up and sales page. He calls it "like 30 steps". Info screens came after questions 7, 12, 17, 21, 23 area, 25, 30 and 32, so the gap between them is 2 to 6 questions, near his 3 to 5 rule.
+Counts from this walkthrough: about 28 question steps, 8 info screens, 3 capture steps, then summary, loader, pop-up and sales page. He calls it "like 30 steps". The runs of questions before each info screen were 7, 3, 4, 4, 0, 1, 4 and 1, then 3 before capture. So the example itself does not keep a strict 3 to 5 spacing: the first run is 7 and 2 info screens sit back to back (steps 22 and 23).
 
 ### 3.2 Build a quiz from this structure (the presenter's parts, in his order)
 
