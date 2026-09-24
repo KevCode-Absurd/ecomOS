@@ -71,6 +71,7 @@ Shape B, then D, with E for large reallocations. Score 19: Money 5, Frequency 5,
 - **Sub-agents.** Channel readers (Meta, TikTok, Pinterest, Snap) as workers. Fatigue and frequency worker. Audience overlap worker. Creative ranker (code plus vision model over own statics and videos). Incrementality reader (holdout and geo tests from the registry). Budget allocator (code: marginal contribution per channel and campaign). Hypothesis writer (model). Test ranker (model, reads registry).
 - **Inputs.** Data: ad metrics at ad level with attribution, blended MER and contribution by day, incrementality results, funnel by source. Brand brain: margin targets, cash limits, seasonality, launch calendar, excluded audiences. Intelligence: diagnostics playbooks per channel, scaling gates, fatigue rules. Inspiration: own winners for the creative ranker. Registry: past tests and decisions.
 - **Outputs.** Daily exception list. Weekly diagnosis memo with ranked causes. Budget proposal by campaign with expected contribution. Kill, keep, scale list for ads. Top 5 tests. Creative briefs handed to Rank 2. Landing issues handed to Rank 8.
+- **Sources across folders.** 10-MCR plus the Meta and TikTok deployment cards in 11-ADC (about 190), measurement cards from 06-MEA, contribution rules from 20-FIN.
 - **Playbooks.** `paid.diagnose-drop`, `paid.pace-budget`, `paid.scale-or-cut`, `paid.rank-tests`, `paid.incrementality-plan`.
 - **Autonomy target.** L2 for pausing above a CPA ceiling and negative keywords; L3 for pacing inside a cap; L1 forever for new campaigns and reallocations above a threshold.
 - **Quality gate.** Every number in the memo traces to a query. No recommendation without the contribution effect stated. Guardrail: never propose more than a set percent shift in one day.
@@ -84,6 +85,7 @@ Shape C. Score 18: Money 5, Frequency 5, AI leverage 4, Compounding 4.
 - **Sub-agents.** Winner analyst (vision model describes own top and bottom ads, code finds what the winners share). Inspiration matcher (embedding and field match over the library, own and competitor, competitor as layout and mood only). Concept writer (strong model, playbook). Copy writer (strong model, ad-copy playbook from v1.2). Script writer for video and UGC briefs. Static builder (image model with the real product locked as a layer). Claim and offer checker (code). Critic (cheap model, checklist: avatar fit, credible before and after, one clear benefit, no invented claims, voice). Variant planner (one variable per variant).
 - **Inputs.** Data: ad-level results, hook and hold rates for video, comment text. Brand brain: facts, claims and proof, offer rules, voice examples, liked and disliked outputs, product photos. Intelligence: copy, concept, hook, UGC and static-format playbooks. Inspiration: everything, with performance. Registry: which angles and formats were already tested.
 - **Outputs.** Concept board: 5 concepts, each with the winner pattern it draws on, 3 copy variants, format, reference match, static mockups, video script or UGC brief, and a claim audit. Test plan handed to Rank 3 or Rank 1.
+- **Sources across folders.** Copy cards from 11-ADC (about 400), creative cards from 10-MCR, avatar cards from 02-AVT, voice from 04-BRD.
 - **Playbooks.** `creative.analyse-winners`, `creative.concept-board`, `creative.static-copy`, `creative.video-script`, `creative.ugc-brief`, `creative.variant-plan`, `creative.hook-library`.
 - **Autonomy target.** L1 always for anything public. L2 for internal mockup generation.
 - **Quality gate.** Blind pairwise review by Kevin or the client for a rolling sample. Ship, edit or rewrite label feeds learned preferences back to the brand brain.
@@ -123,6 +125,7 @@ Shape B, then D.
 - Sub-agents: search-term worker, feed and Merchant Center worker, structure and bidding worker, brand-exclusion worker, PMax asset reader, budget allocator (shared with rank 1), hypothesis writer, test ranker.
 - Inputs: Google Ads and Merchant Center data at keyword, product and asset-group level; blended contribution from rank 4; brand brain margins, catalog and exclusions; Google playbooks; registry.
 - Outputs: weekly account diagnosis, negative and exclusion lists, structure and bidding proposals, feed fixes, budget proposal, tests.
+- Sources across folders: 12-GAD plus the Google Ads course and strategy cards in 11-ADC (about 140), conversion setup cards from 06-MEA.
 - Playbooks: `google.diagnose-account`, `google.search-term-hygiene`, `google.feed-health`, `google.shopping-vs-pmax`, `google.bidding-by-stage`, `google.scaling-gates`, `google.brand-and-competitor-exclusions`.
 - Autonomy target: L2 for negatives and exclusions; L3 for pacing inside a cap; L1 for structure changes.
 
@@ -389,9 +392,41 @@ With the layers assumed built, this is the interface the agents need from them. 
 
 **Approval gate.** `submit(action, level, evidence)`; returns approved, edited or rejected, and records the human's edit so the brand brain and playbooks can learn.
 
-## 6. Playbook backlog by rank
+## 6. Playbooks: two kinds per agent, decision and implementation
 
-About 115 playbooks across the 24 agents, listed under each agent above. The first 30, in the order the weekly loop needs them: the 7 paid social playbooks, the 7 ad copy and creative playbooks, the 6 experimentation playbooks, the 6 profit playbooks, the 7 Google Ads playbooks, and the first 3 lifecycle playbooks. Each is distilled from its folder, edited once by Kevin, linked to cards, versioned, and under 4,000 tokens.
+**The finding that forced this section.** Folder 11-ADC is named "ad copy and deployment" and holds 756 cards. About 400 are copywriting (8 Hour Copywriting Course, Cashvertising, Scientific Advertising, Copy Hackers, Harry Dry). About 350 are deployment and tactics: the Google Ads Free Course (100 cards), 2 TikTok Ads courses (73), 7 Meta Ads documents on the algorithm, structure for creative volume, scaling and top-of-funnel campaigns (115), an 8 and 9 figure account audit process (25), and Google Ads strategy documents (41). By keyword, 323 cards are deployment only, 214 are both, 144 are copy only. The 3 existing v1 workflows for this domain (`write-static-copy`, `revise-copy`, `objection-copy`) are all copy. The deployment half has no playbook.
+
+The same gap exists in most folders: the cards say how to set things up, and the plan so far only listed playbooks that decide what to do. So every agent gets two kinds.
+
+**Decision playbooks** say what to do and why: diagnose, choose, design, rank. 2,000 to 4,000 tokens. Model reads them with the numbers and the brand brain.
+
+**Implementation playbooks** say how to do it in the platform, step by step, with the settings, the order, the checks and the traps. Each step carries a "verify the current UI" flag where the platform changes, a rollback note, and the guardrail that applies. They are what an L2 or L3 action executes against, and what a human follows when the agent stays at L1. 1,500 to 3,000 tokens each, tighter than decision playbooks because they are procedures.
+
+**Folder contributions are many to many.** The map in section 3 is one agent per folder for ownership and ranking. But the cards in 11-ADC feed 3 agents: rank 2 takes the copy cards, rank 1 takes the Meta and TikTok deployment cards, rank 5 takes the Google deployment cards. Likewise 06-MEA feeds ranks 12, 1 and 5, and 03-OFF feeds ranks 7, 8 and 2. Distillation should pull by topic across folders, not by folder alone. First step: tag 11-ADC cards as `copy`, `deploy` or `both` in `metadata-overrides.json`, without regenerating anything.
+
+### Implementation playbooks for the top 8 agents
+
+**Rank 1, paid social.** `impl.meta.account-structure` (campaign, ad set and ad naming, CBO vs ABO, consolidation rules), `impl.meta.launch-campaign` (objective, optimisation event, attribution setting, placements, budget, creative slots, checks before publish), `impl.meta.structure-for-creative-volume`, `impl.meta.scale-tof` (budget step rules, duplication vs raise, when to reset learning), `impl.meta.audit-account` (the 8 and 9 figure audit process as a checklist), `impl.meta.retargeting-setup`, `impl.tiktok.launch-and-scale`, `impl.meta.pause-and-kill-rules`.
+
+**Rank 2, ad copy and creative.** `impl.copy.static-ad-formats` (primary text, headline, description lengths and rules per placement), `impl.copy.hook-writing-process` (the 8 Hour and Sandcastles methods as steps), `impl.copy.claim-check-and-compliance`, `impl.copy.variant-naming-and-handoff` (so rank 1 can read results by variable), `impl.creative.static-production-spec` (sizes, safe zones, product lock, text density), `impl.creative.video-script-format`.
+
+**Rank 3, experimentation.** `impl.exp.pre-register-test`, `impl.exp.set-up-ab-in-platform` (theme, app or server side), `impl.exp.qa-checklist`, `impl.exp.read-and-close`.
+
+**Rank 4, profit.** `impl.profit.cogs-table-build`, `impl.profit.weekly-close-steps`, `impl.profit.reconcile-platform-to-store`, `impl.profit.cash-and-inventory-sheet`.
+
+**Rank 5, Google Ads.** From the 100-card Google Ads course and the 12-GAD folder: `impl.google.account-and-conversion-setup`, `impl.google.merchant-center-and-feed`, `impl.google.shopping-campaign-build`, `impl.google.pmax-build-and-asset-groups`, `impl.google.search-campaign-build` (match types, RSAs, negatives), `impl.google.bidding-changes-by-stage`, `impl.google.brand-and-competitor-exclusions`, `impl.google.fix-underperforming-account` (the audit procedure).
+
+**Rank 6, lifecycle.** `impl.email.flow-build` (trigger, filters, timing, splits, exit rules), `impl.email.segment-build`, `impl.sms.compliance-and-quiet-hours`, `impl.email.deliverability-setup` (domains, warm-up, list hygiene), `impl.email.campaign-send-checklist`.
+
+**Rank 7, offers.** `impl.offer.bundle-setup-in-store`, `impl.offer.discount-and-guardrail-setup`, `impl.offer.subscription-setup`, `impl.offer.promotion-launch-checklist`.
+
+**Rank 8, landing pages.** `impl.page.build-in-theme-sections`, `impl.page.quiz-funnel-build`, `impl.page.advertorial-build`, `impl.page.qa-before-traffic` (speed, mobile, tracking, links, claims).
+
+Ranks 9 to 24 get the same treatment as they are built: at least 2 implementation playbooks each (store launch, tracking setup, SEO technical fixes, security settings, marketplace listing build, sample stages and purchase order, and so on). The 05-SET, 06-MEA, 12-GAD, 15-SEO and 22-AMZ folders are almost all implementation content already, so their decision playbooks will be short and their implementation playbooks long.
+
+### Backlog totals
+
+About 115 decision playbooks and about 90 implementation playbooks across the 24 agents. Build order for the first 40: the decision and implementation playbooks of ranks 1, 2, 4 and 5 (the weekly loop), then rank 3 and 6. Each is distilled from cards across folders by topic tag, edited once by Kevin, linked to card ids, versioned, and under its token cap.
 
 ## 7. Build order, given the full stack
 
