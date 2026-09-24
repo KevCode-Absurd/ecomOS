@@ -660,3 +660,177 @@ Sources 01, 02, 03, 04. [c049ecf47935] [516248e6ac94] [9720dfa509a1] [ff7571c5eb
 4. Exclusions: "Marked spam" (marked email as spam at least once over all time); "Bounced" (bounced at least once where type = hard, OR at least 4 times where type = soft); "Unengaged 180" (0 opens, 0 clicks, 0 site events in 180 days, received at least 6).
 5. Buyer stage: non-buyers, first-time, returning, VIP (4+ orders or spend at 3 to 4 times AOV), high potential (site activity 30 days, 0 orders 30 days), win-back potential (order in 180 days, none in 90), abandoners (cart or checkout 90 days, 0 orders 90 days), window shoppers, interested in X, cross-sell X to Y.
 6. Check each: AND and OR groups match intent; preview counts make sense (engaged under the list size; unengaged not larger than engaged unless the list is dead); clone rather than rebuild; unused segments go inactive after 45 days.
+
+### P13. Build and send a campaign
+
+Sources 01, 03, 04. [5b2cad894e44] [81300e87c081] [ba5c04225d61] [a891648996f4]
+
+1. Campaigns > create campaign. Name, date, channel email, tags (type and pillar) for later analysis. `[verify UI]`
+2. Send to: the engaged segment for the send (90 days evergreen; 365 days for Black Friday and big launches). Don't send to: marked spam, bounced, unengaged 180, and any dynamic exclusion (bought in the category in the last 3 days). Tick "determine recipients at send time".
+3. Smart sending on (off only for a launch where a flow email in the last 16 hours should not block it). UTM on.
+4. Content: subject (short, value first, curiosity), preview (adds a second reason), sender name, sender email. Template: saved template or new; drag in slices and live text (P18). Keep the unsubscribe block.
+5. Optional follow-up resend (P19). Optional A/B test (P15).
+6. Review screen: estimated recipients (included minus excluded), smart sending state, subject, preview, from and reply-to, unsubscribe link present, tracking on. Send a test to yourself; click every link on phone and desktop.
+7. Schedule: fixed time (example 9 AM in the brand's main time zone, or recipient local time). For a launch, at least 1 email the morning the product goes live.
+8. After 24 hours read placed orders and revenue per recipient, then clicks; log the result against the pillar.
+Rollback: cancel the scheduled send before send time; a sent campaign cannot be recalled.
+
+### P14. Monthly campaign calendar
+
+Sources 01, 02, 04, 10. [6a19f9f385b5] [e5552f0a655e] [7a4e669c2511] [3e4696a51c71] [9641bcb4fcd1] [85157d54ac6e] [9077e5d437cb]
+
+1. Tracker: Notion, Airtable, ClickUp, Monday or a Google Sheet. Fields: send date, campaign type and pillar, segment, status (idea, copy, design, build, review, scheduled, sent), owner, result. `[needs brand data: existing tracker]`
+2. Set the monthly count: cadence x weeks (example 3 a week, 12 to 14 a month) on fixed send days (example Tue, Thu, Sun).
+3. Lock fixed dates: launches, real restocks, planned sales (max 1 sales event a month; every other month is better), milestones. Add 2 to 3 supplementary sends per event (teaser, launch, reminder, last chance).
+4. Add 1 to 2 awareness days that fit (nationaltoday.com or checkiday.com). No discount needed. `[web check: dates for the month]`
+5. Map existing content to season (a summer skincare blog in May, not November): tease and link, or summarise and link to product.
+6. Fill the rest with micro-topics from R104 and R105. Optional: an AI prompt with the brand context, cadence, fixed dates, content placed and the idea list; expect about 80% usable; check every idea for fit, assets and claims.
+7. Mix check: per month 1 to 2 promo, 4 to 6 product, 4 to 6 education, 2 to 4 social proof, 2 to 4 brand; promo under one third; at least 5 non-discount per discount; no 2 consecutive of the same type; graphic to text about 3 or 4 to 1 with 1 to 3 plain-text sends.
+8. Stay 2 weeks ahead: emails 2 weeks out are written, designed and in Klaviyo for review.
+9. Month end, 20 to 30 minutes: top revenue, most clicks, lowest performers and why; feed patterns into next month (P25).
+
+### P15. Campaign A/B test and send-time test
+
+Sources 02, 03, 04. [ac370b420628] [4290660b631a] [659e9f913086] [eed1632440b9] [9211d9b5ff9c] [8cab23f94038]
+
+1. Content test: build A; "create A/B test" > test content; change 1 element (offer, products featured, lifestyle vs product image, 1-image vs 4-image hero, CTA copy, product blocks vs none, categories vs products, long vs short). Name variations descriptively. `[verify UI]`
+2. Winning metric: placed order rate. Test size 100% (50/50). Winning variation rollout 0%. No automatic winner.
+3. Send-time test: "test send time"; 2 far-apart times (7 AM vs 7 PM); winning metric placed order rate (03 uses click rate here); size 100%. Repeat over 5 to 10 campaigns, compare average revenue, then narrow (7 vs 11 AM, then 11 AM vs 2 PM). Do not adopt Klaviyo's Smart Send Time, which optimises opens.
+4. Read in the experiments section after 2 to 3 days: lift, win probability, significance. If Klaviyo warns the test-period winner differs from the overall winner, rerun longer and bigger. Small lists may accept a 98% win probability without significance as a judgement call (03).
+5. Apply the learning to future sends and to flows; retest before assuming it transfers.
+
+### P16. A/B test inside a flow
+
+Sources 01, 02, 03, 04. [74b2b4379cdb] [1c24d38d786b] [0528a2003316] [5f42a553bc22] [b5c1274e5d10] [e753b3fb98af]
+
+1. Timing test (manual split): before the first delay add a conditional split "random sample 50%". Yes path: delay A (30 minutes). No path: delay B (2 hours). Clone every email onto both paths; do not rejoin after email 1. Wait for 1,000 recipients per branch (500 if the gap is huge), about 2 weeks. Decide on placed order rate and revenue; watch spam complaints. Narrow next (if 4 hours beat 1, test 3 vs 4). `[verify UI]`
+2. Structure test: regular (1 email a day) vs aggressive (every 12 hours) on the same split.
+3. Content or subject test on 1 email: open the flow email > "create A/B test" > change 1 element in B > distribution manual 50/50 (turn off automatic, which can favour a variant too early; use automatic only if nobody can check) > winner by click rate (placed order rate is not offered at email level in 04's UI) > end by significance or manual > write the hypothesis in notes. `[verify UI]`
+4. Test order: email 1 of welcome, then cart, checkout and browse; delay first, then content; skip flows with about 20 recipients a month.
+
+### P17. Deliverability repair ladder
+
+Preconditions: opens on engaged sends (Apple opens excluded) under 30% to 40%, or a placement test showing spam or heavy promotions, or a new domain. Sources 01, 02, 03. [0f792188c5ee] [20fd44bca0dd] [df98522f016b] [98d43fdb4da1] [6dcb0bfce104] [75378f892825]
+
+1. Diagnose: last 5 campaigns > deliverability tab: open, click, bounce, unsubscribe, spam by inbox provider and by country. Run a GlockApps seed test (inbox vs promotions vs spam, blocklists, IP reputation). Confirm P2 is complete. `[verify UI]` `[web check: GlockApps]`
+2. Improve the emails first (R145): varied layouts and topics, 1 above-the-fold CTA, live text, category footer, plain-text sends, replies invited.
+3. Clean the list (R147): build the 5 cleaning segments and bulk suppress.
+4. Build engaged 14, 30, 60, 90 (P12). If spam problems are severe, use opened or clicked only.
+5. Weeks 1 to 2: turn off all flows except welcome, browse, cart, checkout, post-purchase (and site abandonment per 02). Send 3 strong campaigns a week to engaged 14 only.
+6. Gate: after 6 sends (2 weeks) or 3 straight sends at 50%+ opens, move to engaged 30. Below 50%: stay 2 more weeks; still below: remove site activity from the segment and recheck content.
+7. Repeat the gate at 30, then 60, then 90. At 90 make it the main audience and turn all flows back on. Widen to 120, 150 or 180 only while opens stay above 50% and only for some sends.
+8. From week 6 onward (01): 1 normal campaign a month to the wider list so anyone who opens rejoins the engaged segment (or none, per 03; see 7.10).
+9. Where 1 provider stays weak, build a tighter engaged segment for that provider (03).
+10. If a country is weak, send only a tighter engaged segment there for a while (02).
+Rollback: if opens fall at any stage, step back down 1 window and hold 2 weeks.
+
+### P18. Email build: Figma slices plus live text, into Klaviyo
+
+Sources 01, 03, 04, 07; live-text rules from 02, 04. [54eb9e4fd217] [1fa479fcc307] [8f1c460f5eed] [17b5705e3605] [046d714ac94c] [31b2f58bfc95] [8ae50e9df495] [2dabf0e92513] [acc8bc585d69]
+
+1. Copy first: lay out the email in a Google Doc as a table, 1 row per section (logo, headline, sub-headline, body, CTA, hero, bridge or infographic, products, closing CTA, footer). Write per R111 to R121.
+2. Figma: frame 600 px wide. Logo bar 600 x 100. Hero image 600 wide, cropped to about 600 x 500 so the next section shows soon; gradient overlay for text over faces. Button: rounded rectangle (radius 30 to 65), contrasting fill, text layer above. Bridge section with a shared background colour and gradients so sections do not look blocky; icons, not bullets. Product section: each product with its own Shop Now, rating and short descriptor; end with a general button. Us vs them block: brand left, competitor right, check and X icons, only true and provable points (no competitor names). Footer: category links, trust icons, social icons; legal and unsubscribe are added in Klaviyo. `[verify UI]`
+3. Leave short text (headline, code, offer bar, footer text) out of the slices; rebuild those as live text in Klaviyo (R130).
+4. Slice: 1 slice per link target (each product, each social icon, logo, hero, each button); never 1 giant image; export 2x JPEG or PNG.
+5. Compress all slices in a batch (tinypng, iLoveIMG or Squoosh; typical 50% to 75% smaller). Check quality.
+6. Klaviyo: create the email; delete default blocks except the unsubscribe footer. Add image blocks in order; padding 0 between stacked slices, about 20 px between sections; "full width on mobile" where needed. Add live text blocks for headline, code (bold before the CTA), offer bar; use native product blocks (static or a dynamic feed: bestsellers last 30 to 90 days, exclude low stock and items under a price floor) rather than image product grids where possible. Table block with image cells for side-by-side icons. `[verify UI]`
+7. Link each image and button to the most specific page (product or collection, never the homepage); use the discount URL pattern to auto-apply codes; alt text on every image, including the offer text.
+8. Text styles: 18 px desktop, at least 16 px mobile, line height 1.5, brand font with a web-safe fallback. Save the footer as a universal block.
+9. Check: email size small enough to avoid Gmail clipping (04's demo: 35 KB); view with images off, the offer, products and footer still read; preview on phone and desktop; test send; click every link.
+`[web check: Gmail clipping threshold]`
+
+### P19. Resend to non-openers
+
+Sources 01, 03. [d11a34c7dc7f] [6964a9fc308f]
+
+1. Klaviyo sequence builder: toggle the follow-up on the campaign; new subject line; narrow the audience (first send engaged 90, resend engaged 30); delay cannot be under 48 hours. `[verify UI]`
+2. Manual method (for sooner than 48 hours or Black Friday): copy the sent campaign's message ID from the URL; segment: received email at least once where message = ID AND opened email 0 times where message = ID; clone the campaign; change the subject and preview; send 1 to 2 days later. Rebuild the segment per campaign. On Black Friday do 2 to 3 manual resends.
+3. Use only for launches, big sales and big announcements.
+
+### P20. SMS setup in Klaviyo
+
+Sources 09, 11, 12. [af694ec3e7e4] [ef374a64ba7e] [aa2a2140c1a0]
+
+1. Decide the platform: Klaviyo if email is in Klaviyo; get a quote, take it to Attentive and Postscript, decide on price and ease, not AI features. `[web check: pricing and contract terms per country]`
+2. Klaviyo: company name > Settings > SMS > set up SMS. Sending countries (each country has its own credit cost and rules; India needs DLT registration and template approval). Fill the form; toll-free or short code verification follows. Sender name = brand. `[verify UI]` `[web check: number types, registration and verification per country]`
+3. Upload existing SMS subscribers only with consent records. `[needs brand data: consent records]`
+4. SMS message add-ons: opt-out language (keep STOP; do not shorten to "unsub" unless the platform and carrier accept it). Terms of service and privacy links. `[web check: required disclosures]`
+5. Sender preferences: SMS Smart Sending on (max 1 SMS campaign per person per 24 hours). SMS quiet hours on, set to the strictest legal window across send countries in recipient local time. `[web check: quiet hours per country and state]`
+6. Keyword responses: JOIN keyword with an optional discount.
+7. Check: send a test to a team phone; reply STOP and confirm the profile unsubscribes; confirm a send scheduled inside quiet hours is held.
+
+### P21. SMS phone-capture step
+
+Sources 09, 11, 12; P3 step 6 holds the form settings. [75893d2892aa] [9b9305f19394] [775acf1e29be]
+
+1. Email step first with the full offer ("You've got 20% off"). Button "Claim now".
+2. Phone step: "Finish signing up with text to activate your 20% off." Consent text with required disclosures, legible. Button "Claim now". No extra discount for the phone (09, 11); if the owner wants to test a bigger SMS offer or a VIP club (04), run it as an A/B test with the welcome flow revenue as the judge.
+3. Track email submit rate and phone submit rate separately by device. Target: phone submit near 15% of form viewers with a quiz-first form (09's brands, vendor tool).
+4. Check: a submitted phone lands in the SMS list with consent timestamp; the SMS welcome flow fires; the email welcome flow still fires for people who skip the phone step.
+
+### P22. SMS flows
+
+Sources 09, 11, 12, 05. [6c2a73b99726] [ee1a31c09fcc] [136997a1cb23] [586799a976b3] [c2903035a7f5] [71d9f81273f0] [c2cd726a16ab]
+
+1. Welcome (trigger: subscribed to SMS via the form): text 1 immediately: "Welcome to [brand]. [1 short remark]. Use code WELCOME20 for 20% off your first order. [link]". Wait 2 days. Text 2: 1 differentiator plus code reminder. Wait 2 days. Text 3: "Your 20% off expires soon. [link]" only if it truly expires. Optional last text: "Any questions I can answer?" (05). Filter: placed order 0 since starting this flow. `[verify UI]`
+2. Abandonment (4 flows or SMS steps inside the email flows): browse after 60 minutes; cart and checkout after 1 to 2 hours; site after 2 to 4 hours. Exactly 1 SMS per person per flow within 48 hours; Klaviyo enforces this on cart abandonment (09). Filters as in the email flows plus "has SMS consent". Split placed order at least once: non-buyers get "Looks like you forgot something. Finish your order [link]. Use code WELCOME20"; buyers get the reminder without a code. Test plain text vs 1 product image on net profit.
+3. Sequence with email: pick 1 pattern per 7.15 (same time; SMS first then email after 2 hours if no order; email first then SMS 5 to 6 hours later) and hold it for the test period.
+4. Post-purchase: 1 text on day 10 to 14: "Are you liking [product]? [cross-sell link]". Replenishment brands: text at days of supply plus delivery minus 2 to 3 days: "Running low? Reorder here". No offer at first.
+5. Win-back: at 60 to 90 days or 2 times the average interval: flash offer, 72 hours, unique code; wait 2 days; "last chance".
+6. Check every text in the segment counter (1 segment, GSM-7), with the opt-out text and link included; confirm quiet hours hold sends; confirm buyers exit.
+
+### P23. SMS campaign calendar and cost check
+
+Sources 09, 11, 12. [7eaef73fe8eb] [77dd2ea812e0] [3f1ec5d057e8] [ec74b2c055f2] [0228dbaf571e] [13f23c2e8c94]
+
+1. Base cadence: 1 a week (11, 12) to 2 a week (09). Never more than the level the holdout (P24) has proven. Active subscription customers: no campaign texts.
+2. Lock events: launch (teaser 1 to 2 days before, launch day, reminder 2 to 7 days later with real stock news), flash sale (day 1, last chance on the last day, sent by 6 to 7 PM with a real deadline), real restocks, SMS-exclusive offers, early access.
+3. Fill gaps over 1 week with 1 to 2 real news items (giveaway, hero product spotlight, 1 brand send). No nurture, no testimonials, no evergreen bestsellers.
+4. Pair key sends with that day's email (7.15). Send inside 11 AM to 3 PM local; never inside quiet hours.
+5. Cost check per send: characters (GSM-7, 160; Unicode, 70), segments, credits, MMS only where the image has a net-profit case; compute expected cost = recipients x segments x rate in code.
+6. After each send log revenue per message, clicks, unsubscribes and net profit.
+
+### P24. SMS holdout test for cadence
+
+Source 05. [651884bb18e3] [bb28c48148d6] [52f701ac2a63]
+
+1. Baseline: messages per subscriber per month, revenue per message, channel revenue, unsubscribe rate (and first-30-day unsubscribes).
+2. Randomise SMS subscribers into 3 cells: 50% current cadence, 25% no campaign texts, 25% double cadence (flows keep running for all).
+3. Run long enough to read revenue (05 gives no length; size it from weekly revenue per subscriber). `[needs brand data: list size, revenue per subscriber]`
+4. Compare revenue per subscriber in each cell against the no-message cell; subtract message cost from the extra revenue of the 2x cell. Compute in code.
+5. If 2x beats holdout with confidence and unsubscribes hold, adopt it as the new baseline; else keep the base. Step up by 1 message a week (or every 2 weeks) and repeat; stop at the first rise in unsubscribes. Change 1 lever at a time.
+
+### P25. Monthly review
+
+Sources 03, 02, 11. [5d6743fc3f40] [d66d62f1a9cd] [41d10e199bc4] [8183b1fcc7d0] [d2e68173f29a] [3dca25bfe545] [bd8384e14e34] [02f841a00c26]
+
+1. List growth: profiles > subscriber growth, 30 days: total, gained, lost, trend. Opt-in sources: checkout vs each pop-up. If checkout signups fell, compare with Shopify orders; only a gap means a broken sync. `[verify UI]`
+2. Each pop-up: views and submit rate vs the prior 30 days. Views down with rate flat = traffic, not the form. Views near 0 after a theme update = the embed is off. End or continue the running test; set next month's test.
+3. Campaigns: last 30 days sorted by revenue; then clicks and placed orders; then the lowest performers. Read order count with revenue. High-engagement, low-revenue newsletters get reformatted, not killed.
+4. Experiments: lift, win probability, significance; rerun any test with a period-vs-overall warning.
+5. Dashboards > business review: this month vs last (or last year if seasonal): Shopify revenue, attributed revenue, email share, campaign vs flow split. Walk the chain: recipients, unique opens, open rate, unique clicks, click rate, unique conversions, conversion rate, revenue, revenue per recipient, AOV. Under 5% is noise; explain anything over 10%.
+6. Flows: revenue vs site traffic first; then the chain; then top flows vs last month; open any flow with a big gap: per-email rates and skips. Skips by design are fine; skips by accident mean a filter or split is wrong.
+7. Deliverability tab: score and trend; bounce, spam, unsubscribe against R139 to R141; reports by inbox provider; flows flagged for high bounce or low click.
+8. Segments: sizes of engaged, unengaged, bounced and spam; run the monthly suppression (P11).
+9. SMS: cadence, clicks, unsubscribes, delivery, revenue per message, net profit; pick 1 lever for next month.
+10. Write the month's 3 findings and the next 3 tests into the tracker.
+
+### P26. Copy research routine before a new angle
+
+Source 08; 01 for brand voice. [4dac36087f55] [d4e3dc152180] [100c73502444] [94e80b540e5c] [3c8f273100f4]
+
+1. Baseline: GA4 or Meta audience demographics (age, gender, interests). `[verify UI]`
+2. Meta Ad Library: search the category, country = main market, media = video, note competitors with many ad versions, open Page transparency for history, note the lead angle. Search the problem keyword too, and note what people dislike about incumbent solutions. Competitor ads are signals, not proof.
+3. Amazon (target country): category and adjacent products, many reviews, filter Most Recent; log practical complaints, category-level objections, and what positive reviews praise (the buying barrier). Trustpilot and BBB for more. 30 to 60 minutes per category.
+4. Podcasts and thought leaders for the science; comment sections for objections. Verify any study before quoting it. `[web check]`
+5. The brand's own Instagram language, blog, support tickets and reviews tagged by objection.
+6. Research doc (Notion): angles, benefits with mechanism, perk vs insecurity anchor, pains and the insecurity under each, honest external causes, objections with the brand's proof for each. 2 to 4 hours total; then 10 to 20 minutes per email.
+7. Every claim that reaches a draft is checked against the brand record (R191).
+
+### P27. AI analysis of Klaviyo exports
+
+Source 02. [7dccf4216521] [87afe3ecbaf6] [a0d2e94690df]
+
+1. Campaigns > three dots > export analytics > last 90 days or year to date > email only > include all A/B variations > CSV. Flows > options > export analytics > same range > aggregate by day > CSV. `[verify UI]`
+2. Prompt: "You are an email marketing data specialist. Analyse this data set of email campaigns for [brand URL] and give me 10 observations with recommendations." Repeat for flows with 20 observations; then "focus on the welcome series and give me 10 findings".
+3. Treat every finding as a hypothesis; check it against the CSV in code (revenue per recipient by email, opens by day, send-time clusters); turn the survivors into P15 and P16 tests. Optimise placed order rate, not opens.
