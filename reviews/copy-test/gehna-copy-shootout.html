@@ -1,0 +1,1139 @@
+<title>Gehna Copy Shootout</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700&family=Source+Sans+3:ital,wght@0,400;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{--bg:#F5F4EF;--panel:#FFFFFF;--ink:#1E1C19;--muted:#6B665D;--line:#DAD6CC;--accent:#8E6A1C;--accent-ink:#FFFFFF;--r1:#2E5E6E;--r2:#7A3E5C;--good:#2F6B3A;--warn:#9A5A0A;--bad:#A03A2E;--code:#EFECE4;
+--display:'Sora',system-ui,sans-serif;--body:'Source Sans 3',system-ui,sans-serif;--mono:'IBM Plex Mono',ui-monospace,monospace}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#17161A;--panel:#211F24;--ink:#EDEAE3;--muted:#A49E92;--line:#3A373F;--accent:#D8AE52;--accent-ink:#1E1C19;--r1:#7FB7C8;--r2:#D28BB0;--good:#7CC48A;--warn:#E0A552;--bad:#E07A6E;--code:#2B2930;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#17161A;--panel:#211F24;--ink:#EDEAE3;--muted:#A49E92;--line:#3A373F;--accent:#D8AE52;--accent-ink:#1E1C19;--r1:#7FB7C8;--r2:#D28BB0;--good:#7CC48A;--warn:#E0A552;--bad:#E07A6E;--code:#2B2930;color-scheme:dark}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.5;padding-inline:16px;padding-block:0 48px}
+header.top{position:sticky;top:env(safe-area-inset-top,0px);background:var(--bg);z-index:5;border-bottom:1px solid var(--line);margin-inline:-16px;padding:12px 16px;display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center}
+header.top h1{font-family:var(--display);font-size:20px;font-weight:700;margin:0;letter-spacing:-.01em}
+nav.tabs{display:flex;gap:6px;flex-wrap:wrap}
+nav.tabs button{font:600 13px var(--display);letter-spacing:.02em;padding:7px 12px;border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:999px;cursor:pointer}
+nav.tabs button[aria-selected="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+nav.tabs button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+main{max-width:1400px;margin:0 auto}
+.intro{padding-block:22px 10px}
+.intro p{max-width:72ch}
+.intro p{margin:0 0 10px;color:var(--muted)}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px;margin:14px 0 6px;max-width:none}
+.kpi{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:10px 12px}
+.kpi .l{font:600 11px var(--display);letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.kpi .v{font:500 21px var(--mono);font-variant-numeric:tabular-nums;margin-top:2px;white-space:nowrap}
+.kpi .v.bad{color:var(--bad)} .kpi .v.good{color:var(--good)} .kpi .v.warn{color:var(--warn)}
+.kpi .s{font-size:12px;color:var(--muted)}
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:18px;align-items:start;margin-top:14px}
+@media (max-width:900px){.cols{grid-template-columns:1fr}}
+.report{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:18px 20px;min-width:0}
+.report .tag{display:inline-block;font:600 12px var(--display);letter-spacing:.05em;text-transform:uppercase;padding:4px 10px;border-radius:999px;color:#fff;margin-bottom:8px}
+.report.r1 .tag{background:var(--r1)} .report.r2 .tag{background:var(--r2)}
+.report .arm{font-size:13px;color:var(--muted);margin:0 0 10px}
+.report .arm b{color:var(--ink)}
+.md h1{font-family:var(--display);font-size:22px;margin:.2em 0 .5em;text-wrap:balance}
+.md h2{font-family:var(--display);font-size:17px;margin:1.4em 0 .5em;padding-top:.6em;border-top:1px solid var(--line);text-wrap:balance}
+.md h3{font-family:var(--display);font-size:15px;margin:1.1em 0 .4em}
+.md p,.md li{max-width:72ch}
+.md table{border-collapse:collapse;font-size:13px;display:block;overflow-x:auto;max-width:100%;font-variant-numeric:tabular-nums}
+.md th,.md td{border:1px solid var(--line);padding:5px 8px;text-align:left;vertical-align:top}
+.md th{background:var(--code);font-family:var(--display);font-weight:600;font-size:12px}
+.md code{font-family:var(--mono);font-size:.88em;background:var(--code);padding:1px 4px;border-radius:3px}
+.md pre{background:var(--code);padding:10px 12px;border-radius:6px;overflow-x:auto;font-family:var(--mono);font-size:12.5px}
+.md pre code{background:none;padding:0}
+.md blockquote{margin:0;padding-left:12px;border-left:3px solid var(--accent);color:var(--muted)}
+.md strong{font-weight:600}
+.single{max-width:78ch;margin:14px auto 0}
+.judge{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:18px 20px;margin-top:14px}
+.judge h2:first-child{border-top:0;padding-top:0;margin-top:0}
+.reveal{margin-top:14px;padding:14px 16px;border:1px dashed var(--accent);border-radius:10px;background:var(--panel)}
+.reveal summary{cursor:pointer;font:600 15px var(--display)}
+.reveal p{margin:8px 0 0}
+.pill{display:inline-block;padding:2px 8px;border-radius:999px;font:600 12px var(--display);color:#fff}
+.pill.r1{background:var(--r1)} .pill.r2{background:var(--r2)}
+[hidden]{display:none!important}
+</style>
+<header class="top">
+  <h1>Gehna Copy Shootout</h1>
+  <nav class="tabs" role="tablist" aria-label="Views">
+    <button role="tab" id="tab-side" aria-selected="true" data-view="side">Side by side</button>
+    <button role="tab" id="tab-r1" aria-selected="false" data-view="r1">Report 1</button>
+    <button role="tab" id="tab-r2" aria-selected="false" data-view="r2">Report 2</button>
+    <button role="tab" id="tab-judges" aria-selected="false" data-view="judges">Judges</button>
+    <button role="tab" id="tab-verdict" aria-selected="false" data-view="verdict">Verdict and reveal</button>
+  </nav>
+</header>
+<main>
+<section class="intro">
+  <p>Two AI copywriters got the same brief, the same 12 months of Meta ad data for Gehna (472 ads, spend, purchases and value per day) and the same live site. Each audited what the account runs today, then wrote 12 Meta ad sets across new buyers, site visitors and past customers, with a 4-week test plan. One worked from a general prompt. The other worked from the ecomOS ad copy playbook and its card library. Nothing else differed. The reports carry no arm labels; 3 independent judges checked 3 facts per report against the raw data, then scored them blind. The mapping is under "Verdict and reveal".</p>
+  <div class="kpis">
+    <div class="kpi"><div class="l">12-month spend</div><div class="v">₹1.30 cr</div><div class="s">23 Sep 2025 to 24 Sep 2026</div></div>
+    <div class="kpi"><div class="l">12-month ROAS</div><div class="v">3.28</div><div class="s">1,396 reported purchases, CPA ₹9,284</div></div>
+    <div class="kpi"><div class="l">Retargeting vs prospecting</div><div class="v good">6.5 vs 2.8</div><div class="s">ROAS, 12 months; retargeting is 9% of spend</div></div>
+    <div class="kpi"><div class="l">Past-customer campaign</div><div class="v bad">none</div><div class="s">both reports</div></div>
+    <div class="kpi"><div class="l">Ads with no copy captured</div><div class="v warn">139</div><div class="s">flexible format, 33% of spend</div></div>
+  </div>
+</section>
+<section id="view-side" class="cols">
+  <article class="report r1"><span class="tag">Report 1</span><p class="arm" data-arm="r1"></p><div class="md" data-src="src-r1"></div></article>
+  <article class="report r2"><span class="tag">Report 2</span><p class="arm" data-arm="r2"></p><div class="md" data-src="src-r2"></div></article>
+</section>
+<section id="view-r1" class="single" hidden><article class="report r1"><span class="tag">Report 1</span><p class="arm" data-arm="r1"></p><div class="md" data-src="src-r1"></div></article></section>
+<section id="view-r2" class="single" hidden><article class="report r2"><span class="tag">Report 2</span><p class="arm" data-arm="r2"></p><div class="md" data-src="src-r2"></div></article></section>
+<section id="view-judges" class="single" hidden>
+  <div class="judge"><div class="md" data-src="src-j1"></div></div>
+  <div class="judge"><div class="md" data-src="src-j2"></div></div>
+  <div class="judge"><div class="md" data-src="src-j3"></div></div>
+</section>
+<section id="view-verdict" class="single" hidden>
+  <div class="judge"><p style="margin:0 0 6px;font:600 15px var(--display)">Pick your report first.</p><p style="margin:0;color:var(--muted)">Read both reports and the 3 judges, decide which set of ads you would run, then open the reveal. The orchestrator's verdict and the arm mapping are inside.</p></div>
+  <details class="reveal" id="reveal"><summary>Reveal which report used the playbook, and the orchestrator's verdict</summary>
+    <p><span class="pill r1">Report 1</span> Arm A: general prompt, same ad account data and site, public web</p>
+    <p><span class="pill r2">Report 2</span> Arm B: ad copy playbook and card library, same ad account data and site, public web</p>
+    <div class="md" data-src="src-verdict" style="margin-top:14px"></div>
+  </details>
+</section>
+</main>
+<script type="text/plain" id="src-r1"># Gehna on Meta: what the copy is doing, and 12 ads to do better
+
+Prepared 24 Sep 2026 for the owner of Gehna (gehnaindia.com). It covers the last 12 months of the Meta ad account (23 Sep 2025 to 24 Sep 2026), what the website promises, and a 4-week plan with 12 new ads for 3 audiences.
+
+How to read the numbers. Currency is INR. ROAS is total purchase value divided by total spend for the period. CPA is spend divided by purchases. "12 months" is the whole window; "90 days" is 26 Jun to 23 Sep 2026. Where Meta gave no figure it is unavailable, never 0. Attribution is the ad set default. Age, gender and platform figures come from a separate breakdown and are not added to the totals.
+
+## Part 1. What the account is doing
+
+### The shape of the year
+
+| | 12 months | 90 days |
+|---|---|---|
+| Spend | ₹1,29,59,908 | ₹32,45,323 |
+| Purchases | 1,396 | 348 |
+| Purchase value | ₹4,24,86,365 | ₹1,22,21,710 |
+| ROAS | 3.28 | 3.77 |
+| CPA | ₹9,284 | ₹9,326 |
+| Average order | ₹30,434 | ₹35,120 |
+| CTR (all clicks) | 4.06% | 4.03% |
+| CPM | ₹38 | ₹33 |
+
+Monthly spend has sat at about ₹10 lakh: ₹10,06,127 in June, ₹10,19,234 in July, ₹13,10,492 in August with the End of Season Sale, and ₹7,99,454 for 1 to 23 September. Current monthly spend, taken as the last 90 days divided by 3, is ₹10,81,774. Monthly ROAS has ranged from 1.60 in March to 4.70 in September so far.
+
+89% of the year's spend went to prospecting on cold, interest, lookalike and "combo" audiences. Retargeting was 11% and returned 6.5 (cart and catalogue audiences) and 4.6 (engagers) against 2.9 for prospecting. Over the last 90 days retargeting is 15% of spend and still returns better (4.5 and 4.8 against 3.6). No campaign or ad set speaks to past customers, and there is no customer list audience.
+
+Only 33 of 472 ads are live. Live ads took 49% of the last 90 days' spend and returned 4.83; paused ads returned 2.87.
+
+Who is buying (breakdown view). Women take 71% of spend and return 3.98; men take 28% and return 1.53. Ages 35 to 54 return about 4; 18 to 24 take 12.6% of spend and return 1.17. Instagram is 50% of spend at 3.88; Facebook 48% at 2.63.
+
+### The words the account runs today
+
+Five texts carry most of the readable copy spend.
+
+1. ₹26,58,336 (20.5% of the year), 43 catalogue ads, ROAS 2.18. A customer quote, then "unmatched shine to your beauty", then Lifetime Exchange, Shop with EMI, 100% Handcrafted, Buyback. The default prospecting text, and the weakest of the 5.
+2. ₹13,87,998, 5 retargeting catalogue ads, ROAS 6.16. "Did something catch your eye?" then the 7-day return promise and "5000+ happy customers". The strongest text in the account, unchanged for 18 months, with a customer number now half the real one.
+3. ₹7,59,634, 8 earrings videos, ROAS 3.93. "When more than 8,500 people have lived the Gehna experience."
+4. ₹3,24,426, 7 earrings videos, ROAS 7.93. "Forget the guesswork. The best gift for her has always been jewellery she'll actually reach for."
+5. ₹3,11,658, 8 earrings videos, ROAS 5.65. "Buying fine gold online is not as scary as you think!"
+
+Headlines are few and generic: "Redesigning beauty" on ₹38,26,013 of spend and "Gehna" alone on ₹10,24,155. The two headlines that name a product and a proof, "Handcrafted 18K Gold | 4.8/5 on Google" (ROAS 4.43) and "Natural Gemstones | 18K Gold" (7.93), beat both. No ad uses the description field. One third of the year's spend (₹42,45,241) went to flexible-format ads whose text Meta does not expose, so those words cannot be judged.
+
+### What each angle, hook and product earned
+
+Angle, 12 months and 90 days:
+
+| Angle | 12m spend | 12m ROAS | 90d spend | 90d ROAS |
+|---|---|---|---|---|
+| Catalogue (Meta picks products) | ₹40,46,333 | 3.54 | ₹12,46,757 | 2.94 |
+| Product showcase | ₹23,14,725 | 2.95 | ₹2,28,981 | 1.12 |
+| Gifting and occasion | ₹15,70,738 | 3.55 | ₹3,70,870 | 6.83 |
+| UGC and unboxing | ₹15,53,005 | 2.84 | ₹2,01,964 | 5.17 |
+| Social proof and reviews | ₹12,89,949 | 4.01 | ₹5,43,457 | 4.16 |
+| Education and objections | ₹11,69,044 | 2.10 | ₹3,13,092 | 2.74 |
+| Offer and urgency | ₹5,21,288 | 5.02 | ₹2,55,160 | 5.66 |
+| Founder and brand story | ₹4,94,825 | 2.16 | ₹85,041 | 1.80 |
+
+Gifting, social proof and offers beat the account average in both windows. Showing the product with no argument took ₹23 lakh for 2.95 and has fallen to 1.12. Founder stories are below average both times.
+
+First line, 12 months: statements ₹55,90,871 at 2.70; questions ₹14,68,525 at 5.87; proof or a number ₹9,65,657 at 2.65; a price or offer ₹6,62,300 at 4.99. The question result is mostly one retargeting text, so part of that gap is the audience. Even so, statement openers carry 43% of spend and are the weakest readable group.
+
+Product, 12 months: mixed range ₹66,15,890 at 3.34; earrings ₹24,54,671 at 4.19; bracelets ₹22,30,398 at 2.91; chains ₹11,08,947 at 2.20; pendants ₹3,86,053 at 2.62; rings ₹1,63,948 at 0.87 (3 purchases from 45 ads). In the last 90 days earrings produced 46% of all purchase value from one campaign (₹10,48,883 spend, ₹54,15,340 value, ROAS 5.16). Bracelets fell to 1.11.
+
+Sale and countdown campaigns took 6% of the year's spend and returned 5.47; the August sale returned 5.88 on ₹3,78,502. Sales work for 2 weeks a year. The rest of the year has no standing reason to buy now.
+
+### Best and worst ads
+
+Spend floor: ₹30,000, which is 3 times the account CPA rounded. At that spend an average ad has bought about 3 orders, so a zero means something. 83 ads clear it over 12 months; 27 over 90 days. The median ROAS above the floor is 2.19 for the year and 3.09 for the last 90 days.
+
+Top 10 for the year (spend, purchases, ROAS): Trust overload earrings video "Buying fine gold online is not as scary as you think!" ₹45,463, 8, 12.55, live. End of Season Sale bestsellers carousel ₹41,726, 9, 9.40. Gifting earrings video "Forget the guesswork" ₹1,92,279, 43, 9.10, live. Cart retargeting catalogue "Did something catch your eye?" ₹5,56,626, 148, 7.31, live. Sale unboxing video ₹1,42,757, 22, 7.09. Chains image "Everyday elegance, reimagined" ₹63,238, 3, 6.38 (3 orders, treat as luck). Gifting earrings video, second placement, ₹1,27,042, 22, 6.02, live. Trust overload, April run, ₹1,90,750, 34, 5.95. Cart retargeting catalogue, March copy, ₹5,61,473, 123, 5.80, live. Sale chains carousel ₹1,00,160, 17, 5.76.
+
+Bottom 10 for the year: 2 bracelet flexible ads with 0 and 1 purchases on ₹31,755 and ₹64,670; the founder video "Thinking of Buying Jewellery Online?" with 0 on ₹32,030; a Trust overload placement and a chains image with 0 each; a broad catalogue ad at 0.40; the founder ad "From Our Hands to Yours" at 0.49 on ₹44,245; the Tennis Bracelet launch at 0.56; the bracelets carousel at 0.74 on ₹55,834.
+
+Last 90 days, the top 10 is the same earrings videos, the 3 sale ads, a broad catalogue ad, the earrings "Educational" ad at 5.43 and the engager catalogue ad at 5.11. The bottom 10 is 5 broad prospecting catalogue ads between 0.49 and 1.50 (about ₹3,70,000 together), the Tennis Bracelet, Bracelets May at 1.47 on ₹1,55,306, the Founder Gemstone Video at 1.59 and the sale earrings carousel at 1.80.
+
+What the lists say. The same creative appears in both (Trust overload, Educational, the catalogue): audience and timing move an ad more than words do. Outside sales, the winners share a shape: a plain first line that names the buyer's worry or the gift moment, a product-specific promise, then a proof stack. The losers share another: brand-first lines, launches with no reason to buy, and bracelets or rings shown without an argument.
+
+## Part 2. What the website promises
+
+Read on 24 Sep 2026: home, shipping and returns, FAQ, the rings, chains, bracelets, earrings, best-seller, under-₹20,000 earrings, under-₹30,000 and pendant collections, and 4 product pages.
+
+The home page leads with 30,000+ orders delivered, 20+ years, BIS hallmarked gold and a 4.8 Google rating, then 4 tiles: BIS Hallmarked, easy 7-day return and exchange, 10,000+ happy customers, 20+ years. Its reviews mention COD and EMI, a free ring sizer sent before the order, quick delivery, and buying online "exactly as advertised".
+
+Shipping and returns: free shipping and gift packing in India; transit insurance; 7-day return for a full refund or exchange within India; a limited lifetime exchange (gemstone pieces at 70% of prevailing value, diamond pieces at 80%, invoice required, silver excluded).
+
+FAQ: all gemstones natural; all jewellery BIS Hallmarked; most pieces hand-made at the Chennai workshop; 1-year workmanship warranty; 7-day return with the customer paying return shipping; one free resize within 15 days; in-stock pieces dispatched in 2 to 3 days, made-to-order in 10 to 14; COD and a monthly instalment plan with no documents, delivered within 4 working days of the last payment; prices move with the gold rate.
+
+Collections: rings 156 designs from ₹13,500; gemstone chains 148 from ₹10,120; bracelets 105 from ₹9,550; earrings 627 from ₹13,490; best sellers 46; earrings under ₹20,000, 34 designs; "Finer Jewellery Under 30,000 INR", 294 designs. Nearly everything is 18K yellow gold; 14K is an option on some chains and earrings.
+
+Product pages show a live price, an instalment table (20% down, 2 to 6 months), a delivery date 3 to 4 days out, a lifetime repair service and a 7-day no-questions return. The Verdant Whisper Emerald 18K Gold Ring is ₹24,850, new this season, made to order in sizes 7 to 18, with natural Zambian emeralds and a free sizer in its FAQ.
+
+## Part 3. Claims: what the ads say, and what is allowed
+
+The brand's approved claims are: BIS Hallmarked; 18K gold (14K on some chains); natural gemstones; handcrafted; 4.8 on Google; 10,000+ customers; free shipping; 7-day easy returns; 20+ years of craft.
+
+| Claim in the ads | Share of 12m spend | Allowed? | On the site? |
+|---|---|---|---|
+| BIS Hallmarked | 26% | Yes | Yes |
+| 18K gold | 27% | Yes | Yes |
+| Natural gemstones | 24% | Yes | Yes, FAQ |
+| Handcrafted, 100% handmade | 33% | "Handcrafted" yes | FAQ says most, not all. "100%" overstates. |
+| 4.8 on Google | 10% | Yes | Yes |
+| 10,000+ customers | 2% | Yes | Yes |
+| 5,000+, 8,500, 25,000+ orders, 15 years | 11% | No, out of date | No. 4 numbers for the same fact. |
+| Free shipping, 7-day returns, 20+ years | 10%, 13%, 0.5% | Yes | Yes |
+| Lifetime exchange | 31% | Not on the list | Yes, as a limited policy. Needs softer wording. |
+| EMI, Cash on Delivery | 27% | Not on the list | Yes, FAQ and product pages |
+| Buyback, IGI certified | in the main text | Not on the list | Not found |
+| Lightweight | 17% | Not on the list | Product FAQ says "lightweight yet durable" |
+| Discounts, % off | 29% | Only while running | 0% off on every page read |
+| India's largest collection, astrologically powerful | ₹4,78,416 | No | No. Cannot be proven. |
+
+The safe set for new copy is the approved list. Site-backed extras that the owner can approve, and that this plan uses with a confirmation flag: COD, instalments, free ring sizer and one free resize, insured transit, 2 to 3 day dispatch on in-stock pieces, free gift packing, the lifetime exchange terms, the lifetime repair service.
+
+## Part 4. What is missing or weak
+
+Audience. Cold and warm people see the same words because every prospecting campaign stacks all audiences together. Men take 28% of spend at 1.53 and are never addressed as gift-givers. Past customers get nothing, although the average order is ₹30,000 to ₹35,000 and the site's reviews are full of repeat buyers.
+
+Funnel and offer. Retargeting returns 4.5 to 6.5 on one text that still says 5,000+ customers. No cart copy answers why people leave: size, delivery time, money, trust. Sale copy returns 5 to 9 and runs 2 weeks a year; the rest of the year the ads carry no reason to buy now, while free shipping, COD, instalments, a free sizer, 7-day refunds and insured delivery sit in the FAQ.
+
+Proof and product. 6 different customer and order numbers are in use. The home page has 30 reviews that say what a doubtful first-time buyer needs to hear, and none is in an ad. Rings and chains have the most designs (156 and 148) and the fewest sales, and the ring copy never mentions the free sizer or resize. The emerald, ruby, pearl and navratna edits that lead the home page are not in any ad. Descriptions are empty on every ad and headlines repeat "Gehna" or "Redesigning beauty" on ₹48 lakh.
+
+## Part 5. The brief
+
+### Who buys
+
+An Indian woman, 25 to 54, best returns 35 to 54, buying for herself first and as a gift second. She wants real gold and real stones at a weight she can wear every day, and she is not sure it is safe to buy fine jewellery from a website. With a ₹35,000 average order, one doubt is enough to stop her. The second buyer is a gift-giver, often a man, who has never been spoken to.
+
+### The question and the idea, per audience
+
+| Audience | The question in her head | The one idea |
+|---|---|---|
+| New buyers | "Is this real gold and real stones, and what if it is wrong?" | Real gold, real stones, a real way out. Name the material, the hallmark and the 7-day refund, then show a product to start with. |
+| Visitors and cart abandoners | "I liked it. Why did I not buy?" | Answer the one reason she stopped: delivery, size, money or trust, in the first line. |
+| Past customers | "What next, and is it worth going back?" | Your next piece is easier than your first: complete the set, new arrivals in your size, gift the box you know, exchange the old piece. |
+
+### Voice rules and claims
+
+Warm, confident, short. Talk to one woman, one idea per line. Name the material. Open with a plain question, a real customer quote or a short rhythmic line, never the brand name. Stack proof at the end. Digits for numbers. No inflated words. 1 emoji at the end of a line, at most 4 in a caption, 1 in a headline. Concrete before-to-after: "wear it for 7 days, then decide", "pay 20% now", "order when it fits".
+
+Claims used freely: the approved list. Claims used with `[confirm before launch]` because they are prices, counts or policy details to check on launch day: full refund within 7 days; free gift packing; insured transit; dispatch times; COD; instalments; free sizer and resize; lifetime exchange terms; lifetime repair; every design count and price. Never used: discounts, sale dates, "largest", "astrologically powerful", "100% handcrafted", "buyback", "IGI", the old customer numbers, and diamond or lab-grown claims on pieces that do not have them.
+
+## Part 6. The 12 ads
+
+Line breaks in the primary text are the line breaks in the ad. Every first line is under 125 characters, every body under 300 words, every headline under 40 characters and every description under 30. Every count, price and policy detail marked `[confirm before launch]` in the text was true on the site on 24 Sep 2026 and must be checked on launch day.
+
+### New buyers
+
+**NB-1 First gold online, earrings.** Angle: is it safe to buy real gold online. Destination: gehnaindia.com/m/earrings.
+
+> Buying real gold online for the first time? Here is how Gehna makes it safe. ✨
+> Every pair is 18K gold, BIS Hallmarked, set with natural gemstones.
+> Free shipping across India.
+> Wear them for 7 days. Not in love? Send them back for a full refund.
+> 20+ years of craft. 10,000+ customers. 4.8 on Google.
+> 627 pairs to choose from. Start with the one you keep looking at. 💎
+
+Headline: Real 18K Gold. Real Gemstones. ✨ Description: BIS Hallmarked. 7-day return. Proof: hallmark, natural stones, 7-day refund, 20+ years, 10,000+ customers, 4.8 on Google. Claims: all approved; full refund from the shipping page; 627 pairs is the earrings page count.
+
+**NB-2 Gift earrings under 20k.** Angle: the gift she wears beats the gift she stores. Runs to women and to men. Destination: gehnaindia.com/m/gold-earrings-under-20k.
+
+> The gift she wears every day beats the gift she keeps in a box. 🎁
+> Real 18K gold earrings with natural pearls, peridot and opal.
+> All under ₹20,000. [confirm before launch]
+> Gift packed and shipped free, anywhere in India.
+> Wrong pick? She has 7 days to swap it for a pair she loves.
+> Handcrafted. BIS Hallmarked. 4.8 on Google. ✨
+
+Headline: Gold Earrings Under ₹20,000 🎁 Description: Gift packed. Free shipping. Proof: free gift packing and shipping, 7-day exchange, hallmark, rating. Claims: material and rating approved; the stones are product names on that page, 34 designs at ₹13,490 to ₹19,980 on 24 Sep; gift packing and exchange from the shipping page.
+
+**NB-3 Three things to check.** Angle: how to buy gold online without regret. Destination: gehnaindia.com/m/gold-jewellry-under-25k (titled "Finer Jewellery Under 30,000 INR").
+
+> Thinking of buying jewellery online? 🤔
+> 3 things to check before you pay.
+> 1. Is it hallmarked? Every Gehna piece is BIS Hallmarked 18K gold.
+> 2. Are the stones real? Ours are natural gemstones. Every one.
+> 3. What if I don't like it? Return it within 7 days for a full refund.
+> 294 pieces under ₹30,000, from pearl studs to navratna bracelets. [confirm before launch]
+> Free shipping. Cash on delivery. [confirm before launch]
+> That's how 10,000+ customers bought their first Gehna piece. ✨
+
+Headline: Fine Gold Under ₹30,000 ✨ Description: BIS Hallmarked. Ships free. Proof: hallmark, natural stones, refund, COD, 10,000+ customers. Claims: approved list; "all our gemstones are natural" and COD from the FAQ; 294 pieces at ₹10,100 to ₹29,990 on 24 Sep.
+
+**NB-4 Chains, quote first.** Angle: a real review plus colour. Destination: gehnaindia.com/m/gemstone-gold-chains.
+
+> "So beautiful. I got my chain in 3 grams. Not easy to make such a design in that weight." M. Nithyakumari, Google review
+> That's what 10,000+ Gehna customers sound like. 💬
+> Emerald, ruby, pearl or navratna. 148 gemstone chains in 18K gold.
+> Made for every day. Made to keep.
+> Every chain has a 1-inch adjustable loop, so an 18-inch chain also wears at 17.
+> BIS Hallmarked. Free shipping. 7-day easy returns. 💍
+
+Headline: Gemstone Chains | 18K Gold 💎 Description: Emerald, ruby, pearl, more. Proof: real review, 10,000+ customers, hallmark, adjustable loop, returns. Claims: the quote is a home page review with spelling tidied, name use to be confirmed; 148 chains on 24 Sep; the loop is in the chain product FAQ; the rest is approved.
+
+### Visitors and cart abandoners
+
+**RT-1 Cart, what happens next.** Angle: delivery, safety and returns. Destination: the product she viewed, through the catalogue; fallback gehnaindia.com/m/best-seller-gold-jewellery.
+
+> Still thinking about it? Good. Here is what happens after you tap Buy. ✨
+> In-stock pieces ship in 2 to 3 days. Made-to-order pieces take 10 to 14. [confirm before launch]
+> Your box is insured in transit and handed over with an ID check at your door. [confirm before launch]
+> Not right? Return it within 7 days for a full refund.
+> It's 18K gold, BIS Hallmarked, with natural gemstones. Same as it was for 10,000+ customers before you.
+> Free shipping. Cash on delivery. [confirm before launch] 💛
+
+Headline: Your piece is still here ✨ Description: 7-day returns. Free shipping. Proof: dispatch times, insured transit, refund, hallmark, 10,000+ customers. Claims: approved list; dispatch times, insurance, ID on delivery and COD from the shipping page and FAQ.
+
+**RT-2 Rings, free sizer.** Angle: fit. Destination: gehnaindia.com/m/rings.
+
+> Not sure of your ring size? We'll send a free sizer to your door. 💍 [confirm before launch]
+> Size is the hard part of buying a ring online. Here is how we make it easy.
+> Pick the ring. Ask for a sizer. Order when it fits.
+> Still wrong? One free resize within 15 days. [confirm before launch]
+> 156 rings in 18K gold with natural emerald, ruby, sapphire and tourmaline.
+> Made to order in your size. BIS Hallmarked. 7-day easy returns. ✨
+
+Headline: Free Ring Sizer. Free Resize. 💍 Description: 156 gemstone rings, 18K gold. Proof: free sizer, free resize, hallmark, returns. Claims: free sizer from the ring product FAQ and a home page review; free resize within 15 days from the FAQ; 156 rings and the stone names from the rings page on 24 Sep; the rest approved.
+
+**RT-3 Pay in parts.** Angle: a standing offer with no discount. Destination: gehnaindia.com/m/gold-jewellry-under-25k.
+
+> Love it, but not this month's budget? Split it into monthly parts. ✨
+> Pay 20% now and the rest over 2 to 6 months. No documents needed. [confirm before launch]
+> We ship within 4 working days of your last payment. [confirm before launch]
+> Or pay in full and choose cash on delivery. [confirm before launch]
+> Either way it's 18K gold, BIS Hallmarked, natural gemstones, free shipping and 7-day returns.
+> 294 pieces under ₹30,000 to start with. [confirm before launch] 💛
+
+Headline: Pay in Parts. No Documents. ✨ Description: Plans on every product page. Proof: the instalment table on product pages, COD, hallmark, returns. Claims: 20% down over 2 to 6 months from the product page tables; no documents, 4 working days and COD from the FAQ; 294 pieces on 24 Sep; the rest approved.
+
+**RT-4 Reviews, exactly as advertised.** Angle: the online doubt, answered by a buyer. Destination: gehnaindia.com/m/best-seller-gold-jewellery.
+
+> "Had a few reservations before ordering online. The product received was exactly as advertised." Jai Singh, Google review
+> That's what 10,000+ Gehna customers sound like. 💬
+> You looked. You didn't buy. That's fine. Look again at our 46 best sellers. [confirm before launch]
+> Every one is 18K gold, BIS Hallmarked, with natural gemstones or pearls.
+> Rated 4.8 on Google. 20+ years of craft.
+> Free shipping. 7-day easy returns. ✨
+
+Headline: Real Reviews. Real Gold. ✨ Description: 4.8 on Google. 10,000+ buyers. Proof: real review, 10,000+ customers, 4.8, 20+ years, hallmark. Claims: the quote is a home page review, name use to be confirmed; 46 best sellers on 24 Sep; the rest approved.
+
+### Past customers
+
+**PC-1 Add the chain.** Angle: complete the set. Destination: gehnaindia.com/m/gemstone-gold-chains.
+
+> You have the earrings. The chain is waiting. 💎
+> Match your stone or mix it. Emerald with pearl. Ruby with navratna.
+> 148 gemstone chains in 18K gold, each with a 1-inch adjustable loop. [confirm before launch]
+> Same hands. Same hallmark. Same 7-day returns you already know.
+> Free shipping, as always. ✨
+
+Headline: Your Next Gehna Piece 💎 Description: 148 chains in 18K gold. Proof: known experience, hallmark, returns, free shipping. Claims: approved list; 148 chains on 24 Sep; loop from the chain FAQ. Earrings is the most-bought category, so most of the list owns earrings; if the list can be split, the first line becomes "You have the bracelet" or "You have the ring".
+
+**PC-2 New this season, emerald ring.** Angle: new arrival, made in your size. Destination: gehnaindia.com/verdant-whisper-emerald-18k-gold-ring.
+
+> New this season. A row of pear-shaped emeralds, in your size. ✨
+> The Verdant Whisper ring. Natural Zambian emeralds, bezel set in 18K gold.
+> Made to order in sizes 7 to 18. [confirm before launch]
+> Dainty enough for every day. Ask us for a free sizer if it's been a while. [confirm before launch]
+> ₹24,850. [confirm before launch]
+> BIS Hallmarked. Free shipping. 7-day easy returns. 💚
+
+Headline: New: Emerald Eternity Ring 💚 Description: Natural emeralds. 18K gold. Proof: natural stones with a named origin, hallmark, free sizer, returns. Claims: name, stones, setting, "New Arrival" tag, origin, sizes, price and sizer from the product page and its FAQ on 24 Sep; the rest approved.
+
+**PC-3 Gift what you know.** Angle: gifting from a happy customer. Destination: gehnaindia.com/m/gold-earrings-under-20k.
+
+> You know how a Gehna box feels. Send one to someone. 🎁
+> 34 pairs of 18K gold earrings under ₹20,000. Pearl, peridot, opal. [confirm before launch]
+> Gift packed for free. Shipped free anywhere in India.
+> She gets 7 days to swap it if the pick is wrong. You already know it won't be.
+> BIS Hallmarked. Natural gemstones. ✨
+
+Headline: Gift a Gehna Box 🎁 Description: Earrings under ₹20,000. Proof: free gift packing, free shipping, 7-day exchange, hallmark. Claims: 34 pairs and stone names from that page on 24 Sep; gift packing and exchange from the shipping page; the rest approved.
+
+**PC-4 Exchange up.** Angle: a standing policy, exchange and repair. Destination: gehnaindia.com/m/best-seller-gold-jewellery.
+
+> Your old Gehna piece can pay for your next one. ✨
+> Bring back any Gehna gold piece with its invoice. We value it at today's rate and put that towards anything new. [confirm before launch]
+> Gemstone pieces count at 70% of today's value. Diamond pieces at 80%. Plain gold at the gold rate. [confirm before launch]
+> Snapped a chain or lost a stone? Our repair service across India fixes most pieces free. You pay only the pickup. [confirm before launch]
+> 20+ years of making jewellery. We plan to be here for your next piece too.
+> BIS Hallmarked. Free shipping. 💛
+
+Headline: Exchange Any Time ✨ Description: Lifetime exchange policy. Proof: the published exchange policy, the repair service, 20+ years. Claims: the exchange terms are on the shipping and returns page, section 3, with conditions (silver excluded, coupons reduce the value, the company sets the valuation); lifetime repair from the product page FAQ; the rest approved.
+
+## Part 7. The 4-week plan
+
+### Budget
+
+Current monthly spend is ₹10,81,774 (the last 90 days divided by 3). The plan keeps 70% on the existing campaigns, untouched, and uses 30% for the new ads.
+
+| Bucket | Share | 28 days | Per day | Per ad |
+|---|---|---|---|---|
+| Existing campaigns, untouched | 70% | ₹7,57,242 | ₹27,044 | as today |
+| New buyers, 4 ads | 14% | ₹1,51,448 | ₹5,409 | ₹37,862 over 28 days |
+| Visitors and carts, 4 ads | 9% | ₹97,360 | ₹3,477 | ₹24,340 over 28 days |
+| Past customers, 4 ads, 2 at a time | 7% | ₹75,724 | ₹2,704 | ₹18,931 over 14 days |
+| New ads total | 30% | ₹3,24,532 | ₹11,590 | |
+
+### Structure
+
+3 new campaigns, Sales objective, optimised for purchases, with ad set budgets so every ad gets an even spend. One ad per ad set, so inside each campaign the words are the only variable. Nothing existing is edited, paused or rebudgeted.
+
+New buyers: 4 ad sets at ₹1,352 a day. India, women 25 to 54, broad, excluding site visitors and purchasers 180 days and the customer list. NB-2 also runs to men, because it is the gift ad. Pictures: the live earrings video for NB-1 and NB-2, the live earrings educational assets for NB-3, the chains images for NB-4, so the picture is known and the words are new.
+
+Visitors and carts: 4 ad sets at ₹869 a day. Site visitors and add-to-cart 30 days, excluding purchasers 30 days. RT-2 narrows to ring page viewers if the pixel reports categories. RT-1 uses the product catalogue; the others use the best-seller carousel images.
+
+Past customers: 2 ad sets at a time at ₹1,352 a day. The customer list (order emails and phones, 365 days) plus pixel purchasers 180 days, excluding purchasers 14 days. Weeks 1 and 2: PC-1 and PC-4. Weeks 3 and 4: PC-2 and PC-3. Frequency cap 2 per 7 days.
+
+### Controls
+
+New-buyer ads are read beside the account's best live prospecting ads, in the earrings campaign of 25 June: Gifting (₹1,91,542, 43 purchases, ROAS 9.14 in 90 days), Trust overload (12.60) and Social proof (₹2,93,100, 30 purchases, 3.09); the campaign returned 5.16 at CPA ₹6,946. Visitor and cart ads are read beside the live cart catalogue ad "Did something catch your eye?" (₹2,69,597, 40 purchases, 4.46, CPA ₹6,740) and its engager copy (5.11). Past customers have no control; they are judged against the retargeting baseline and on whether they buy at all.
+
+### Baselines and rules
+
+From the last 90 days: account ROAS 3.77, CPA ₹9,326, CTR 4.03%; prospecting ROAS 3.63, CPA ₹9,983, CTR 4.09%; retargeting (cart, catalogue and engager campaigns together) ₹4,93,785 spend, 73 purchases, ₹22,58,272 value, ROAS 4.57, CPA ₹6,764. Among the 27 ads above the ₹30,000 floor, ROAS quartiles are 1.49, 3.09 and 5.49. Kill lines are 60% of the matching baseline, close to the bottom quarter of live ads. Scale lines are 120% and need at least 3 purchases, so a scale needs real orders, not one lucky ₹1 lakh sale.
+
+| Audience | Learning spend before any ROAS call | Kill | Hold | Scale |
+|---|---|---|---|---|
+| New buyers | ₹30,000 per ad | ROAS under 2.18, or CTR under 2.45% | 2.18 to 4.36 | Over 4.36 with 3+ purchases and CPA under ₹7,986 |
+| Visitors and carts | ₹20,000 per ad | ROAS under 2.74 | 2.74 to 5.49 | Over 5.49 with 3+ purchases and CPA under ₹5,411 |
+| Past customers | ₹15,000 per ad | 0 purchases at ₹15,000, or ROAS under 2.26 at ₹20,000 | 2.26 to 4.52 | Over 4.52 with 3+ purchases |
+
+Early stop for any ad: CTR under 2.0% after ₹10,000, half the account average; no top ad of the year sits below it. Scaling means raising that ad set by 20% every 3 days while it stays above the line, funded first from killed ads in the same campaign, never from the existing campaigns. If a campaign's ads are all killed, its budget goes back to the existing campaigns.
+
+The 4 weeks run into the festive season (Navratri from mid October, Diwali on 8 Nov 2026), which lifts everything. So the final call is made on the gap between each new ad and its control over the same weeks. The baseline rules are the floor; the control comparison is the verdict.
+
+### What is measured, and when
+
+Every ad, every day, read on Mondays: spend, impressions, CTR, CPM, frequency, add-to-cart count and cost, purchases, purchase value, ROAS and CPA, on the same attribution as the controls. For past customers, orders matched to the customer list in the store back end, which is the only honest read for that campaign.
+
+Week 1: audiences built and the customer list uploaded on the Friday before; every flagged item confirmed; the 3 campaigns launched on Monday. No ROAS calls; only the ₹10,000 CTR stop. Week 2: first kill and hold calls on ads past their learning spend; past customers switch to round 2 at the end of the week. Week 3: kill and scale calls; freed budget moves to the leader in the same campaign; one variant of each leading first line is written, ready but not launched. Week 4: final read, each audience's 4 ads ranked on ROAS with CPA and purchases, the control's same-week numbers in the same table, and a recommendation on which ads become permanent from week 5, which get a second round with a new picture, and which are retired.
+
+### What the owner receives each week
+
+A one-page sheet every Monday: the table for all 12 ads and the 5 control ads; the calls made, with the number that triggered each; spend against the ₹3,24,532 plan; any claim that needed changing; and 3 lines on what the first lines are teaching. At week 4, a short memo with the ranking, the ads to keep, the next 4 first lines, and the budget the winners get in month 2.
+
+## Part 8. Decisions for the owner
+
+1. Customer list. Can order emails and phone numbers for the last 365 days go into Meta as a custom audience? Without it, the past-customer campaign cannot run.
+2. Policy claims. Is it acceptable to advertise COD, instalments, the free ring sizer, the free resize, insured transit and the lifetime exchange terms? All are on the site; none is on the approved list. RT-3 and PC-4 depend on this.
+3. Named reviews. May the ads quote Google reviewers by name, or should they be initials or "verified buyer"?
+4. Counts and prices. The design counts, the "under ₹20,000" and "under ₹30,000" limits and the ₹24,850 ring price are true on 24 Sep 2026. Who confirms them on launch day, and should the counts become "hundreds" to avoid weekly edits?
+5. One customer number. The ads use 5,000+, 8,500, 10K+, 25,000+ orders and 30,000+ orders. This plan uses 10,000+ customers; the home page says 30,000+ orders. Pick one and use it everywhere.
+6. Men. Should NB-2 run to men? They are 28% of spend at 1.53 with no gift copy. This ad is the first honest read on whether they pay back.
+7. Age. Start new buyers at 25 or 18? Ages 18 to 24 returned 1.06 in the last 3 months. The plan says 25.
+8. Pictures. The plan reuses existing videos, images and the catalogue. New stills for the ring and chain ads should be real product photos.
+9. Pixel events. Does the site send a product category with page views, so RT-2 can reach ring viewers only?
+10. Festive overlap. Start now, or after Diwali? A sale during the 4 weeks would swamp the read. Is a Diwali sale planned, and when?
+11. Budget source. The 30% comes out of today's spend. If the owner prefers to add it on top, the total rises to about ₹14 lakh.
+12. Exchange wording. Is "Exchange Any Time" acceptable with the policy linked, or should PC-4 say "limited lifetime exchange"?
+13. Language. Should a first line be tried in Tamil or Hindi? Nothing in the account says either way.
+</script><script type="text/plain" id="src-r2"># Gehna on Meta: what the copy has done, and what to run next
+
+Prepared 24 September 2026 for the owners of Gehna (gehnaindia.com). Ad account data covers 23 September 2025 to 24 September 2026, 472 ads, in rupees. Site facts were read from gehnaindia.com on 24 September 2026. All arithmetic was done in code. Where Meta did not report a purchase for an ad, the figure is shown as unavailable, not as 0.
+
+## 1. The short version
+
+Over 12 months the account spent ₹1,29,59,908 and reported 1,396 purchases worth ₹4,24,86,365, a return of 3.28 times spend at ₹9,284 per purchase. The last 90 days were better: ₹32,24,679 spent, 347 purchases, ₹1,29,42,450 in value, 4.01 times spend. The last 30 days were the best of the year at 5.64.
+
+Three things drive the returns, and the copy plan below is built on them:
+
+1. Proof and occasion sell; mood does not. Ads that name a real reason to trust (4.8 on Google, hallmark, returns), a real occasion (a gift), or a real dated offer returned 4 to 12 times spend. Ads that showcase a product with mood words, tell the founder's story, or send the catalog cold returned 0.4 to 2.2.
+2. Earrings are the workhorse. They took 18.9% of spend and 22.1% of purchases, and returned 4.19 over the year and 4.85 over 90 days. Rings had 45 ads and 3 purchases. Chains, the highest ticket, returned 2.20 cold and 5.15 in the sale.
+3. The funnel is thin at both ends. 86% of spend is prospecting at 2.84. The whole bottom of the funnel is 3 catalog ads with 1 text, live for a year and slowing. There is no past-customer campaign, past buyers are not excluded from cold spend, and the 30-character description slot has never been used on any of the 472 ads.
+
+The plan: 12 new ad sets, 4 each for new buyers, site visitors and past customers, run for 4 weeks on 25% of current monthly spend (₹2,78,000), each judged against the account's own baselines, with a decision table written before launch.
+
+## 2. What the account runs today
+
+**Spend by month.** Between ₹9.4 lakh and ₹13.4 lakh every month. October 2025 was the largest (₹12,33,936, 3.48 times spend, ₹6,328 per purchase). March 2026 was the weakest (₹10,01,452, 1.60, ₹14,947 per purchase). August and September 2026 returned 4.27 and 4.70.
+
+**Copy.** 73 unique primary texts. 139 ads (₹42,45,241, 32.8% of spend) are flexible-format ads with no fixed text, so their copy cannot be read. The rest use 3 to 5 short lines, 3 to 8 emojis, and a proof stack at the end. The 2 texts that carried the most money:
+
+- A customer quote from Flora Prasad, then "Lifetime Exchange, Shop with EMI, 100% Handcrafted, Buyback available", under the headline "Redesigning beauty. ✨". 43 cold catalog ads, ₹26,58,336 spent, 2.18 times spend.
+- "Did something catch your eye?" with the 7-day return promise and "5000+ happy customers", same headline. 5 catalog ads on cart and site visitors, ₹13,87,998 spent, 6.16 times spend.
+
+Same format, same headline, 3 times the return. The audience did the work, not the words.
+
+**Spend and return by angle.**
+
+| Angle | 12-month spend | Share | Return | 90-day return |
+|---|---|---|---|---|
+| Catalog (Meta picks the product) | ₹40,46,333 | 31.2% | 3.54 | 2.95 |
+| Product showcase | ₹23,14,725 | 17.9% | 2.95 | 4.55 |
+| Gifting or occasion | ₹15,70,738 | 12.1% | 3.55 | 6.86 |
+| UGC or unboxing | ₹15,53,005 | 12.0% | 2.84 | 5.17 |
+| Social proof or reviews | ₹12,89,949 | 10.0% | 4.01 | 4.14 |
+| Education or objection handling | ₹11,69,044 | 9.0% | 2.10 | 2.76 |
+| Offer or urgency | ₹5,21,288 | 4.0% | 5.02 | 5.66 |
+| Founder or brand story | ₹4,94,825 | 3.8% | 2.16 | 1.82 |
+
+**By product.**
+
+| Product | 12-month spend | Share | Purchases | Return | 90-day return |
+|---|---|---|---|---|---|
+| Mixed range | ₹66,15,890 | 51.1% | 785 | 3.34 | 3.51 |
+| Earrings | ₹24,54,671 | 18.9% | 308 | 4.19 | 4.85 |
+| Bracelets | ₹22,30,398 | 17.2% | 185 | 2.91 | 4.21 |
+| Chains | ₹11,08,947 | 8.6% | 74 | 2.20 | 5.15 |
+| Pendants | ₹3,86,053 | 3.0% | 41 | 2.62 | unavailable |
+| Rings | ₹1,63,948 | 1.3% | 3 | 0.87 | 0.88 |
+
+**By stage.** Prospecting took ₹1,11,39,757 (86.0%) at 2.84 and ₹10,943 per purchase. Cart and site retargeting took ₹11,24,139 (8.7%) at 6.52 and ₹4,133 per purchase. The August sale took ₹3,78,502 at 5.88. Engager retargeting took ₹3,11,209 at 4.10. Ad set names show that ad sets called "MOF + BOF audiences" sit inside the prospecting campaigns and took ₹20,92,057 (16.1%) at 3.60, better than the broad (2.83) and lookalike (2.44) ad sets beside them. That is the pattern you see when warm buyers are counted as cold wins.
+
+**Who buys.** Women took 71.3% of spend and returned 3.98; men took 28.4% and returned 1.53 at ₹20,081 per purchase. Ages 35 to 54 returned 4.0 to 4.2; ages 18 to 24 took 12.6% of spend and returned 1.17. Instagram returned 3.88, Facebook 2.63, on near-equal spend.
+
+## 3. Best and worst ads
+
+Ads with at least ₹28,000 of spend in the window, which is 3 times the account's cost per purchase, so each has had the chance to report 3 purchases. 86 ads qualify over 12 months.
+
+**Best 10.** Earrings trust video, "Buying fine gold online is not as scary as you think!" (₹45,463, 8 purchases, ₹5,70,446, 12.55). Sale carousel, up to 15% off till 5 September (₹41,726, 9, ₹3,92,383, 9.40). Earrings gifting video, "Forget the guesswork", warm audience (₹1,92,279, 43, ₹17,49,829, 9.10). Cart catalog, "Did something catch your eye?" (₹5,56,626, 148, ₹40,69,362, 7.31). Sale unboxing video (₹1,42,757, 22, ₹10,12,256, 7.09). Chains image, "Everyday elegance, reimagined", December (₹63,238, 3, ₹4,03,685, 6.38). The same gifting video on an interest audience (₹1,27,042, 22, ₹7,65,178, 6.02). The April run of the trust video (₹1,90,750, 34, ₹11,35,682, 5.95). The second cart catalog ad (₹5,61,473, 123, ₹32,57,015, 5.80). Sale chains carousel (₹1,00,160, 17, ₹5,77,336, 5.76).
+
+**Worst 10.** Two earrings flexible videos with no fixed text, December (₹32,017 and ₹64,670, 1 and 2 purchases, 0.35 and 0.36). Cold catalog with the Flora Prasad quote, July (₹49,558, 2, 0.40). Founder video, "Real jewellery. Real trust." (₹44,245, 1, 0.49). Lab grown diamond tennis bracelet video (₹33,163, 1, 0.56). Bracelets carousel, "Discover our bestselling designs" (₹55,834, 3, 0.74). Chains image, "Everyday elegance, reimagined", September (₹35,809, 1, 0.80). Two more cold catalog ads with the Flora Prasad quote, March and September (0.86 and 0.97). A generic flexible ad from November (₹32,892, 1, 0.97). Six more ads passed ₹28,000 with no reported purchase at all, ₹1,93,451 together, among them the founder video "Thinking of buying jewellery online?" and the multi-gemstone pendant video.
+
+The same chains text sits in both lists, once at 6.38 and once at 0.80. The image and the audience decide more than the caption. What the best 10 share is a concrete reason: a rating, a hallmark, a return window, a gift, a date.
+
+## 4. What the site promises
+
+Home: 30,000+ orders delivered; 20+ years; BIS Hallmarked; 4.8 on Google; 10,000+ happy customers; 7-day return and exchange; named Google reviews; personal styling and custom design bookings. Shipping and returns: free shipping and gift packing in India; tamper-proof box; insured in transit; full refund or exchange within 7 days of delivery, India only, customer pays the return courier; a Limited Lifetime Exchange Policy (gemstone pieces at 70% of market value, diamond at 80%, plain gold at the gold rate, silver excluded, invoice required, coupons deducted). FAQ: most pieces hand-made in the Chennai workshop, some outsourced; 1-year workmanship warranty; in-stock pieces deliver in 2 to 3 days, made to order in 10 to 14; all gemstones natural; one free ring re-sizing within 15 days; cash on delivery, cards and net banking; prices move with gold and gem rates. Product pages: gold weight in grams, stone list, setting, 18K or 14K option, an EMI table with monthly amounts, delivery dates, free ring sizer, custom bracelet length, a 1-inch adjustable loop on chains, lifetime repair with pick-up paid by the customer. No discount was showing on any page read.
+
+## 5. Claims in the ads that need attention
+
+Approved for use: BIS Hallmarked; 18K gold (14K on some pieces); natural gemstones; handcrafted; 4.8/5 on Google; 10,000+ customers; free shipping; 7-day easy returns; 20+ years of craft. All of these are also on the site.
+
+Claims running in ads that are not on that list:
+
+| Claim | Where it stands | Action |
+|---|---|---|
+| Lifetime exchange (₹36 lakh+ of spend) | On the site as a limited policy at 70% to 80% of market value | Say "lifetime exchange policy" and name the limits; never imply full value |
+| Buyback available (₹26,58,336) | Not found on the site | Confirm or remove |
+| Shop with EMI; EMI above ₹10,000 (₹27 lakh+) | EMI tables are on product pages; the ₹10,000 floor was not found | "EMI available" is fine; confirm the floor |
+| 100% handcrafted or handmade (₹27 lakh+) | FAQ says most pieces, some outsourced | Drop "100%" |
+| Customer counts of 5,000, 8,000, 8,500, 500, 10K (₹35 lakh+) and 25,000+ orders | Site says 10,000+ customers and 30,000+ orders | Use one figure, 10,000+ customers, everywhere |
+| Natural and certified gemstones; certified diamonds; IGI certified (₹11 lakh+) | FAQ says natural gemstones and EF-VVS diamonds; no certificate named | Say "natural"; add "certified" only with the certificate named |
+| India's largest gemstone collection (₹2,10,732); India's first coloured lab-grown diamonds (₹24,822); astrologically powerful (₹2,67,684) | Not provable | Remove |
+| 5% OFF with code GEHNA5, as the headline on evergreen ads (about ₹3,80,000) | No offer showing on the site | Confirm the code is live or change the headline |
+| Shipped in 48 hours; video of your piece on WhatsApp; 450+ verified reviews; since 2003; 15 years; named customer quotes | FAQ says 2 to 3 days, a photo on request, 20+ years; review count not found; quote permissions not on record | Use the site wording; keep written permission on file |
+
+## 6. What is missing or weak
+
+- Audience. Past buyers are not excluded from cold spend, and warm audiences sit inside prospecting campaigns. Men take 28% of spend at 1.53; ages 18 to 24 take 13% at 1.17.
+- Funnel. Retargeting is 1 catalog text from September 2025; its return over the last 30 days is 2.78 against 4.50 over 90 days. There is no ad that answers a cart abandoner's objection, no past-customer campaign, and no ad about the after-sale promises the site already makes (warranty, re-sizing, repair). Attribution settings differ between campaigns, so returns are not comparable.
+- Offer. The only offers that ran are dated sales, which returned 5 to 9 times spend and then stopped. The site's standing offers (free shipping, gift packing, EMI, cash on delivery, free ring sizer) are stated inconsistently and never in the description slot.
+- Proof. The counts contradict each other. The product facts that convince a considered buyer (gold weight, stone, setting, delivery date, monthly EMI) sit on every product page and in no ad.
+- Product. Half of spend is "mixed range". Earrings, the best group, is the only one with both a proof-led and a gift-led ad. Rings never addressed the reason rings fail online, which the site already solves with a free sizer and free re-sizing.
+- Craft. The most-spent headline does not say what is sold. Eight texts use "Gehna" as the headline. Descriptions are empty on all 472 ads.
+
+## 7. The brief for the new copy
+
+**The buyer.** A woman in India, 25 to 54, buying real gold for herself or as a gift. She wants a weight and price she can wear daily, colour from natural stones, and a reason to trust a jeweller she has not touched.
+
+**The buying question and the one idea, per objective.**
+
+- New buyers ask "Is this real gold, and what if I don't like it?" Idea: real 18K gold you can wear every day, with 7 days to send it back.
+- Site visitors and cart abandoners ask "Is it worth the price, and is it safe to pay?" Idea: the piece you looked at is still there, and every reason not to buy has an answer.
+- Past customers ask "Why buy the next one here?" Idea: your next piece is easier than your first.
+
+**Voice.** Warm, confident, short. One woman, not "customers". Name the material. Proof at the end. 1 emoji at the end of a line, at most 4 per text and 1 in a headline. Digits. No luxury jargon. No discounts, prices or dates that are not confirmed on the day.
+
+**Claims used.** Only the approved list plus facts read on the site: free gift packing; insured transit; tamper-proof box; full refund or exchange within 7 days of delivery with the return courier paid by the customer; cash on delivery, cards and net banking; EMI shown on the product page; 2 to 3 day delivery for in-stock pieces and 10 to 14 days made to order; free ring sizer and one free re-sizing within 15 days; 1-year workmanship warranty; 1-inch adjustable loop on chains; the lifetime exchange policy with its exact limits; custom design and 1-on-1 styling. Anything that must be checked on launch day is marked [confirm before launch].
+
+## 8. The 12 ads
+
+Each ad: primary text (first line first), headline, description, proof, and a claim check.
+
+### For new buyers
+
+**NB-01. Earrings, real gold and 7 days to decide.** Landing page: the earrings collection.
+
+Real 18K gold. Natural stones. And 7 days to change your mind. ✨
+
+Buying gold online feels like a leap. Here is what comes with every pair of Gehna earrings.
+
+BIS Hallmarked 18K gold. Natural gemstones, never synthetic. Handcrafted.
+
+Free shipping and gift packing across India. Insured all the way to your door. Cash on delivery if you prefer to pay at the door.
+
+Not right for you? Return it within 7 days of delivery for a full refund or exchange. You pay only the return courier.
+
+That is how 10,000+ customers bought their first Gehna piece, and why we hold a 4.8 rating on Google. 💛
+
+Headline: 18K Gold Earrings | 7-Day Returns. Description: BIS Hallmarked. Free shipping.
+
+Claim check: hallmark, 18K, natural, handcrafted, 10,000+, 4.8, free shipping and 7-day returns are approved; gift packing, insurance, full refund or exchange within 7 days of delivery and the return courier are on the shipping page; cash on delivery is in the FAQ. Nothing to confirm.
+
+**NB-02. Celestial Navaratna bracelet, light enough to forget.** Landing page: the Celestial Navaratna 18K Gold Bracelet.
+
+Navaratna colour on 18K gold, light enough to forget it is on. 💎
+
+The Celestial Navaratna bracelet: multi-colour natural stones strung on 18K gold, 7 inches, about 0.7 g of gold. [confirm before launch: gold weight and price on the product page]
+
+Wear it with a kurta on Monday and a dress on Saturday. It is made to be worn daily, not saved for weddings.
+
+BIS Hallmarked. Natural gemstones. Handcrafted.
+
+In stock, so it delivers in 3 days across India. [confirm before launch: stock and the 3-day delivery tag]
+
+Free shipping, and 7 days to return it if it is not for you. 💛
+
+Headline: Navaratna Bracelet | 18K Gold. Description: 3-day delivery. 7-day returns
+
+Claim check: 18K, 7 inches, 0.708 g gold, Navratna stones and the 3-day tag were on the product page on 24 September (price ₹22,210 that day, not stated in the ad); the rest is approved. No stone count is given because the site's own descriptions disagree on counts.
+
+**NB-03. Gifts under ₹25,000 for Diwali.** Landing page: the under ₹25K edit.
+
+The gift she will wear on a Monday, not keep in a box. 🎁
+
+Real 18K gold and natural gemstones, in a price band that makes sense: the under ₹25,000 edit. [confirm before launch: every piece in the collection is under ₹25,000 that day]
+
+Earrings, bracelets, chains and pendants. Each one BIS Hallmarked.
+
+Gift packing is free. Shipping is free. It arrives insured, in a tamper-proof box.
+
+If she would rather have something else, she has 7 days from delivery to exchange it.
+
+Order by [date, confirm before launch] for delivery before Diwali.
+
+Headline: Gold Gifts Under ₹25,000. Description: Free gift packing. Insured.
+
+Claim check: all approved or on the shipping page; the price cap follows the collection name and must be checked on the day because prices move with gold rates; the order-by date comes from the owner.
+
+**NB-04. Eternity ring, the fit problem solved.** Landing page: the Tantalizing Tourmaline 18K Gold Eternity Ring.
+
+Worried the ring will not fit? We send a free ring sizer first. 💍
+
+Then you order your size. If it is still not right, we re-size it once, free, within 15 days. You pay only the courier.
+
+This is the Tantalizing Tourmaline eternity ring: natural tourmaline in a band of 18K gold, BIS Hallmarked, made to your size in 10 to 14 days. [confirm before launch: delivery time and price on the product page]
+
+Free shipping across India. 7-day return for a full refund.
+
+Headline: Eternity Ring | Free Ring Sizer. Description: Free re-sizing. 18K gold.
+
+Claim check: free sizer and free re-sizing are on the ring pages; one re-sizing within 15 days with shipping paid by the customer is in the FAQ; 10 to 14 days made to order is in the FAQ; the rest is approved.
+
+### For site visitors and cart abandoners
+
+**SV-01. Still here, and delivery is on us.** Runs on the catalog so she sees the piece she looked at.
+
+Still thinking about it? It is still here, and the delivery is on us. ✨
+
+Free shipping anywhere in India. Insured all the way to your door, in a tamper-proof box.
+
+Pay by card, net banking, or cash on delivery.
+
+If it is not what you hoped, return it within 7 days of delivery for a full refund or exchange.
+
+BIS Hallmarked 18K gold. Natural gemstones. 4.8 on Google. 💛
+
+Headline: Free Delivery | 7-Day Returns. Description: Cash on delivery available
+
+Claim check: every line is on the shipping page, in the FAQ, or approved. Nothing to confirm.
+
+**SV-02. Pay in parts, at today's gold price.** Runs on the catalog.
+
+You do not have to pay for it all today. ✨
+
+Gehna pieces can be paid in monthly EMIs. The EMI table sits under the price on the product page, so you see the exact monthly amount before you decide. [confirm before launch: which products carry EMI and any minimum order value]
+
+And the price you see is today's price. Gold and gem rates move, so it can change either way.
+
+Real 18K gold. BIS Hallmarked. 7-day return for a full refund.
+
+Headline: 18K Gold on Monthly EMIs. Description: See the EMI on the page
+
+Claim check: EMI tables were on all 6 product pages read; "prices go up and down with rates" is the FAQ's own wording; the rest is approved. The old ads' "EMI above ₹10,000" is not stated because it was not found on the site.
+
+**SV-03. A review from someone who had the same doubt.** Landing page: best sellers.
+
+"Had a few reservations before ordering online but the product received was exactly as advertised." Jai Singh ⭐ [confirm before launch: written permission to use the quote and name]
+
+That is a Google review. What you see on the page is what arrives in the box.
+
+Every piece is BIS Hallmarked 18K gold with natural gemstones. 10,000+ customers. 4.8 on Google.
+
+Still unsure? Order it, open it, decide. You have 7 days from delivery to return it for a full refund. 💛
+
+Headline: 18K Gold Jewellery | 4.8 on Google. Description: 10,000+ customers. Hallmarked
+
+Claim check: the quote is on the home page, unedited; permission for ad use is marked; the rest is approved.
+
+**SV-04. What happens after you buy.** Runs on the catalog.
+
+What happens after you buy? That part is covered too. ✨
+
+Every Gehna piece has a 1-year warranty on workmanship. If there is a making fault, we repair it free and pay the shipping.
+
+Rings: one free re-sizing within 15 days. Chains: a 1-inch adjustable loop, so 18 inches also wears at 17.
+
+Years later, a snapped chain or a loose stone can come back to us. Most repairs are free; you pay pick-up and drop. [confirm before launch: repair terms as the team applies them]
+
+And in the first 7 days, you can simply return it for a full refund. 💛
+
+Headline: 1-Year Warranty | 18K Gold. Description: Free re-sizing on rings
+
+Claim check: the warranty, free repair of making faults with shipping paid, and the 15-day re-sizing are in the FAQ; the adjustable loop is on the chain pages; lifetime repair with pick-up paid is on the product pages and marked to confirm; the return is approved.
+
+### For past customers
+
+**PC-01. The chain that finishes the set.** Landing page: gemstone gold chains.
+
+Your earrings have been waiting for this chain. ✨
+
+Same 18K gold. Same natural stones. Same hallmark. Our gemstone chains are made to sit with the earrings and bracelets you already wear, and each has a 1-inch adjustable loop so 18 inches also wears at 17.
+
+Emerald, ruby, pearl or Navaratna. Most are in stock and deliver in 3 days. [confirm before launch: stock and delivery tags on the collection page]
+
+As always: free shipping, insured delivery, 7-day return. 💛
+
+Headline: Gemstone Chains | 18K Gold. Description: Free shipping. 3-day delivery
+
+Claim check: the loop is on the chain pages; emerald, ruby, pearl and Navaratna chains with 3-day tags were on the collection page on 24 September; insurance is on the shipping page; the rest is approved.
+
+**PC-02. Gift the gold you already trust.** Landing page: best sellers.
+
+You already know how the gold looks in real life. Give it this Diwali. 🎁
+
+The same 18K gold and natural stones you chose for yourself, packed free as a gift and shipped insured to any address in India.
+
+Earrings, bracelets and pendants in stock deliver in 3 days. [confirm before launch: stock and delivery tags]
+
+If they would rather have something else, they have 7 days from delivery to exchange it.
+
+Order by [date, confirm before launch] to be safe for Diwali.
+
+Headline: Diwali Gifts in 18K Gold. Description: Free gift packing. Insured.
+
+Claim check: all on the shipping page, the collection page, or approved; the order-by date comes from the owner.
+
+**PC-03. Trade up under the lifetime exchange policy.** Landing pages: rings and gemstone chains.
+
+The piece you bought can help pay for the next one. ✨
+
+Under our lifetime exchange policy, you can return a gold piece you bought from us after the first 7 days and put its exchange value toward a new one. Gemstone jewellery is valued at 70% of the prevailing market value, diamond jewellery at 80%, plain gold at the day's gold rate. [confirm before launch: policy terms, how to claim, and that the team can process it]
+
+Bring the original invoice. Silver pieces are not covered. Any coupon used on the first order is deducted.
+
+Ready for a bigger stone or a longer chain? This is the way. 💛
+
+Headline: Lifetime Exchange | 18K Gold. Description: Policy terms on the site
+
+Claim check: every term is quoted from that page and nothing is broader than it.
+
+**PC-04. A design of your own.** Landing page: the custom design page and the 1-on-1 consultation booking.
+
+Have a design in your head? Our artisans can make it. ✨
+
+Custom pieces are made in 18K gold with natural stones, and BIS Hallmarked like everything else you own from us.
+
+Book a 1-on-1 styling consultation, share a sketch or a photo, and the team will come back with a design and a quote. [confirm before launch: the booking link and the reply time the team can hold]
+
+Trials for custom pieces are at the Chennai store. Delivery anywhere in India.
+
+Headline: Custom 18K Gold Jewellery. Description: Book a 1-on-1 consultation
+
+Claim check: custom design and 1-on-1 consultation are on the home page; trials at the Chennai boutique are in the FAQ; the rest is approved. No price, lead time or "free" is claimed.
+
+Every ad was scored in code: first lines run 42 to 111 characters, headlines 24 to 34, descriptions 23 to 30, primary texts 66 to 105 words, reading grade 2.5 to 5.0, at most 2 emojis per text and none in headlines.
+
+## 9. The 4-week plan
+
+**Structure.** Three campaigns, sales objective, 7-day click attribution on all three, ad set budgets, launched on a Monday so the weekly reads line up. The existing campaigns keep running unchanged.
+
+| Campaign | Ad sets | Audience | Exclusions |
+|---|---|---|---|
+| New buyers | NB-01 to NB-04, plus the control | Broad, India | Purchasers 730 days, customer list, site visitors 30 days |
+| Site visitors and cart | SV-01 to SV-04, plus the control | Site visitors 30 days plus add to cart 180 days | Purchasers 180 days |
+| Past customers | PC-01 to PC-04 | Customer list plus purchasers 730 days | None |
+
+Each new-buyer ad set launches its copy on 3 visuals the account already owns, so the read is about the concept rather than 1 file.
+
+**Budget.** Current monthly spend is ₹11,12,000 (the mean of June, July and August 2026; the last 30 days were ₹11,52,747). The plan takes 25% for 4 weeks: ₹2,78,000, about ₹9,929 a day.
+
+| Objective | Share of the ₹2,78,000 | Share of monthly spend | 4 weeks | Per ad set | Per ad set per day |
+|---|---|---|---|---|---|
+| New buyers | 60% | 15.0% | ₹1,66,800 | ₹41,700 | ₹1,489 |
+| Site visitors and cart | 25% | 6.25% | ₹69,500 | ₹17,375 | ₹621 |
+| Past customers | 15% | 3.75% | ₹41,700 | ₹10,425 | ₹372 |
+
+Past-customer spend is capped by frequency, not by share: customers × (CPM ÷ 1,000) × 6 impressions a month, at the account's warm CPM of ₹113.71. That is ₹6,823 a month at 10,000 customers, ₹13,645 at 20,000, ₹20,468 at 30,000. Whatever the customer file cannot absorb under 7 impressions per 30 days moves to the new-buyer campaign after the week-2 read.
+
+**Controls.**
+
+| New ad set | Control, kept running in its own ad set | Control's number |
+|---|---|---|
+| NB-01 | Earrings trust video, "Buying fine gold online is not as scary as you think!" | 12.62 over 90 days on 8 purchases; the family over 12 months returned 5.65 on ₹3,11,658 |
+| NB-02 | The bracelets flexible ads launched 16 September | Bracelets over 12 months: 2.91, ₹12,056 per purchase |
+| NB-03 | Earrings gifting video, "Forget the guesswork", interest audience | 6.10 over 90 days on 22 purchases |
+| NB-04 | The paused rings ads | 0.87 over 12 months on 3 purchases; the real bar is the cold baseline of 2.76 |
+| SV-01 to SV-04 | Cart catalog ad, "Did something catch your eye?" | 4.50 over 90 days, 2.78 over 30 |
+| PC-01 to PC-04 | None exists | ₹9,293 per purchase, the account's 90-day figure, until store data separates repeat orders |
+
+**Thresholds, from the account's own baselines.** Cold evergreen prospecting over the last 90 days returned 3.55 at ₹10,974 per purchase (12 months: 2.76 at ₹11,354). Cart and site retargeting over 90 days returned 4.56 at ₹6,814. Each ad set is read once it has spent 3 times its cost-per-purchase baseline, rounded to ₹1,000.
+
+| Ad set type | Read at | Keep | Yellow | Kill | Scale |
+|---|---|---|---|---|---|
+| New buyers | ₹33,000 or day 28 | 3+ purchases and return at or above 2.76 | 2 purchases: extend by ₹11,000 | 0 or 1 purchase | Return 3.55 or better with 3+ purchases: raise budget 20% a day, hold each step 7 days |
+| Site visitors | ₹20,000 or day 28 | 3+ purchases and return at or above 4.56 | 2 purchases | 0 or 1 purchase | Return 4.56 or better, frequency under 7 per 30 days |
+| Past customers | ₹10,000 or day 28 | Any purchase confirmed as a repeat order in store data | 0 purchases with frequency under 7: extend | Frequency over 7 with 0 purchases | Only if the customer file grows |
+
+Rules that go with the table: judge at the ad set level, never on 1 ad's return; never edit a winning ad set, add new creative beside it; never read fewer than 7 days; a stock-out or tracking gap makes a read inconclusive, not lost.
+
+**What to measure and when.** Every Monday, for the previous 7 days and to date: spend, purchases, value, return and cost per purchase per ad set on 7-day click; click-through rate as a selection check only; 30-day frequency by segment; store orders split new versus returning. Week 1: delivery and cost per click only, no decisions. Week 2: first yellow and kill calls where an ad set has hit its read spend; move unspent past-customer budget. Week 3: keep, kill and scale list; brief 2 new visuals per ad set at keep. Week 4: final list and the 3 concepts that move into the standing campaigns.
+
+**What you get each week.** A 1-page table with each ad set's spend, purchases, value, return, cost per purchase, frequency, and the call with the number that triggered it. The 2 ads taking the most spend inside any ad set at keep, as the brief for the next visuals. A claims log with the status of every item marked [confirm before launch]. Next week's changes written down before they are made.
+
+## 10. Decisions for the owner
+
+1. Customer file: can the customer list be synced to Meta, so past buyers can be excluded from cold spend and reached in their own campaign? Without it, the past-customer campaign runs on pixel purchasers only.
+2. Customer count: it sets the past-customer cap (₹6,823 a month at 10,000 customers, ₹13,645 at 20,000).
+3. Attribution: move every campaign to 7-day click for the 4 weeks, or keep the mixed settings and accept that old and new cannot be compared.
+4. GEHNA5: is the 5% code live? If not, the headline comes off the running Navratna and review ads.
+5. Lifetime exchange: confirm the team processes exchanges exactly as the shipping page states before PC-03 runs. If the policy has changed, PC-03 is cut.
+6. Buyback, IGI certification, "450+ verified reviews", "video of your piece on WhatsApp", "EMI above ₹10,000": each is in live copy and none is on the approved list or the site. Keep or remove.
+7. Review permission: written consent from Jai Singh for SV-03, and from any reviewer already quoted in live ads.
+8. Diwali order-by dates for NB-03 and PC-02, and confirmation that the hero products (Celestial Navaratna bracelet, Tantalizing Tourmaline ring) stay available for the 4 weeks; a stock-out ends that ad set's read.
+9. Gender and age: men return 1.53 and ages 18 to 24 return 1.17. Run the new-buyer campaign as women 25 and over, or stay broad and let the creative select.
+10. Rings: NB-04 is a small bet on a group with 3 purchases in a year. Run it, or move its ₹41,700 to a second earrings concept.
+11. Target margin: no gross margin or break-even return is in the data, so the thresholds use the account's own history. If the true break-even is above 2.76, the keep line moves up.
+12. PC-04 objective: custom design enquiries may need a lead or WhatsApp objective rather than purchase. Choose which, and who answers.
+13. Share of spend and overlap: 25% of monthly spend is the proposal, and a smaller share means fewer ad sets reach their read spend in 4 weeks. In the site-visitor campaign, 4 ad sets on the same warm audience will compete; accept that for a per-objection read, or run 1 ad set with 4 ads and read spend share only.
+</script><script type="text/plain" id="src-j1"># Judge 1: Gehna Meta copy audit, report-1 vs report-2
+
+Blind read on 24 Sep 2026. I read report-1 in full, then report-2. Evidence: `data/meta-gallery/brand.json`, `data/meta-gallery/cache/gallery.json` (recomputed in Python), `raw-1/` and `raw-2/`, and the live site (home, FAQ, shipping and returns, 7 collection pages, 3 product pages).
+
+## 1. Claim checks
+
+| Report | Claim | What I checked | Result |
+|---|---|---|---|
+| 1 | 12 months: spend ₹1,29,59,908, 1,396 purchases, ROAS 3.28. 90 days (26 Jun to 23 Sep): ₹32,45,323, 348 purchases, ROAS 3.77 | Summed `daily` rows for all 472 ads, both windows | Verified. Exact match. |
+| 1 | Retargeting is 11% of the year's spend at 6.5 (cart) and 4.6 (engagers) against 2.9 for prospecting. Current monthly spend ₹10,81,774 = last 90 days ÷ 3. Controls: Gifting ₹1,91,542, 43 purchases, 9.14; Trust overload 12.60; cart catalogue ₹2,69,597, 40 purchases, 4.46 | Campaign names BOF and MOF vs TOF; per-ad 90 day sums for the 3 live ads | Verified. BOF 8.7% + MOF 2.0%, ROAS 6.52, 4.64, 2.94. Per-ad figures match to the rupee. |
+| 1 | Site facts used in the ads: 627 earrings, 156 rings, 148 chains, 34 pairs under ₹20,000, 294 pieces under ₹30,000, 46 best sellers; Verdant Whisper ring ₹24,850, Zambian emeralds, bezel, sizes 7 to 18; free resize within 15 days; 20% down over 2 to 6 months; 4 working days after last instalment; no documents; COD; ID proof on delivery; insured transit | Live pages on 24 Sep | Verified, with 2 caveats. The Nithyakumari quote is reworded, not "spelling tidied": the site says "So beautiful ❤️.i got my chain in 3 gms which is not easier to make such a design in that gms". "New this season" for the ring: no New Arrival tag found on the live page. Could not check. |
+| 2 | 90 days: ₹32,24,679, 347 purchases, ₹1,29,42,450, ROAS 4.01. Last 30 days 5.64 | Summed `daily` for 27 Jun to 24 Sep and 26 Aug to 24 Sep | Verified for that window. But the window includes the partial day 24 Sep and the report does not say so. Its "product showcase 4.55" and "bracelets 4.21" over 90 days rest on 1 purchase worth ₹7,73,520 logged on 24 Sep against ₹39 of spend. Without that day they are 1.12 and 1.11, which is what report-1 shows. Report-2's own text says showcase ads returned "0.4 to 2.2", so its table and prose disagree. |
+| 2 | "MOF + BOF" ad sets inside prospecting campaigns took ₹20,92,057 (16.1%) at 3.60. Earrings 18.9% of spend and 22.1% of purchases. Rings: 45 ads, 3 purchases. Attribution settings differ across campaigns | Ad set names with "MOF + BOF" in TOF campaigns; product tags; `attribution_setting` values | Verified. My filter gives ₹20,81,325 at 3.56 (name spelling differences). 4 attribution settings are in use. |
+| 2 | Site facts: Celestial Navaratna bracelet 7 inches, 0.708 g gold, ₹22,210, in stock; Tantalizing Tourmaline eternity ring exists and is made to order; under ₹25,000 edit; warm CPM ₹113.71; GEHNA5 headline about ₹3,80,000; 1-year warranty with free repair and shipping paid | Live product pages, FAQ, headline spend from `ads` | Mixed. Bracelet and ring verified (ring ₹29,030, "Made to order" tag). Warm CPM verified (113.8). GEHNA5 headline spend is ₹3,33,474 to ₹3,67,407, so "about ₹3,80,000" is high but close. **Wrong:** the page it calls "the under ₹25,000 edit" is titled "Finer Jewellery Under 30,000 INR" and lists pieces up to ₹29,990 on 24 Sep. **Wrong:** the FAQ says damage is repaired "at a reasonable price". It does not say free repair with shipping paid. |
+
+Both reports say the description slot is empty on all 472 ads. The capture has no description field, so neither author could have read it. Could not check, for both.
+
+## 2. Claims in the 12 ads
+
+Report-1: 21 `[confirm before launch]` tags in the ads (23 in the file, 2 in prose). Claims not on the approved list and not on a site page: 3. "Natural pearls" (NB-2): the site sells cultured freshwater pearls. The Nithyakumari quote (NB-4) is reworded and presented as a Google review. "Exchange Any Time" (PC-4 headline) overstates a Limited Lifetime Exchange policy; the body states the terms and the report lists the wording as a decision. No invented prices, offers or statistics.
+
+Report-2: 14 `[confirm before launch]` tags in the ads (15 in the file, 1 in prose), including 2 empty date placeholders. Claims not on the approved list and not on a site page: 2 wrong, 1 unverified. "Gold Gifts Under ₹25,000" and "the under ₹25,000 edit" (NB-03) are false on the day the site was read. "We repair it free and pay the shipping" for warranty faults (SV-04) is not in the FAQ. "Share a sketch or a photo, and the team will come back with a design and a quote" (PC-04) is not on the pages I read; it is flagged. No invented statistics.
+
+## 3. Scores
+
+| Criterion | Report-1 | Report-2 |
+|---|---|---|
+| 1. Would the owner run these ads as written | 8 | 6 |
+| 2. Editing effort (10 = none) | 8 | 6 |
+| 3. Claim accuracy | 8 | 6 |
+| 4. Specificity to Gehna and ecommerce | 8 | 8 |
+| 5. Test plan quality | 8 | 6 |
+| Total | 40 | 32 |
+
+Notes on the scores.
+
+Usability. Report-1's ads are written as ad lines: short, one idea per line, proof stack at the end, 1 emoji at line end, a destination URL and a picture plan for each. They use the brand's own copy patterns from brand.json (quote first, then "That's what 10,000+ Gehna customers sound like"). Report-2's ads are clean and honest but read as paragraphs, 2 carry blank dates, 1 carries a wrong price cap, and PC-04 is a lead ad in a purchase campaign, which the report itself flags.
+
+Editing. Report-1 needs 3 small edits: "pearls" for "natural pearls", the quote verbatim or as initials, and a softer PC-4 headline. Report-2 needs the NB-03 headline and body rewritten, the SV-04 warranty line rewritten, 2 dates filled in, and a decision on PC-04's objective.
+
+Accuracy. Both did the arithmetic in code and both match the data. Report-2 loses points for the ₹25,000 error, the warranty claim, and a 90 day window that quietly includes a partial day and inflates 2 categories. Report-1 loses points for the reworded quote and the exchange headline.
+
+Specificity. Even. Report-2 has the sharper account diagnosis: warm audiences inside cold campaigns, 4 attribution settings, the GEHNA5 headline still running, hero-product ads with gold weight, a frequency-capped past-customer budget from the warm CPM. Report-1 has the sharper site and policy use: design counts, ID check at the door, 20% down over 2 to 6 months, free sizer and resize, and it caught that the "under 25k" URL is an under 30,000 page.
+
+Test plan. Report-1's plan is internally consistent: every ad's 28 day budget exceeds its learning spend (₹37,862 vs ₹30,000; ₹24,340 vs ₹20,000; ₹18,931 vs ₹15,000). Kill at 60% and scale at 120% of the funnel baseline with 3+ purchases and a CPA cap, an early CTR stop, live ads as controls, the festive overlap named, a Monday sheet, 13 decisions. Report-2 has good rules (read at 3 times CPA, yellow band, judge at ad set level, stock-out makes a read inconclusive, 7-day click on all 3 campaigns) but the budget does not reach its own read points: site-visitor ad sets get ₹17,375 over 4 weeks against a ₹20,000 read. 2 controls are paused ads or ads launched 8 days ago. "Raise budget 20% a day, hold each step 7 days" contradicts itself.
+
+## 4. Winner: report-1
+
+1. Claim accuracy where it costs money. Report-1 has no wrong price, offer or policy claim in its 12 ads. Report-2 puts a false price cap in a headline and invents a free-repair-with-shipping promise. Both would have to be caught by the owner.
+2. The ads are closer to launch. Report-1's ads follow the brand's line rhythm and patterns, carry destinations and a picture plan, and need 3 small edits. Report-2's need rewrites in 2 ads and dates in 2 more.
+3. The plan can actually be read. Report-1's budgets clear its learning spends and its controls are live ads with their numbers. Report-2's site-visitor budget cannot reach its own read spend in 4 weeks.
+
+## 5. Best 2 ads
+
+**Report-1, RT-2 (rings, free sizer).**
+
+> Not sure of your ring size? We'll send a free sizer to your door. 💍 [confirm before launch]
+> Size is the hard part of buying a ring online. Here is how we make it easy.
+> Pick the ring. Ask for a sizer. Order when it fits.
+> Still wrong? One free resize within 15 days. [confirm before launch]
+> 156 rings in 18K gold with natural emerald, ruby, sapphire and tourmaline.
+> Made to order in your size. BIS Hallmarked. 7-day easy returns. ✨
+
+Headline: Free Ring Sizer. Free Resize. 💍
+
+Why: rings have 156 designs and 3 purchases in a year. This ad names the one reason rings fail online and answers it with 2 real policies. Every line is on the site. Report-2's NB-04 has the same idea; this one is tighter.
+
+**Report-2, SV-01 (cart, delivery is on us).**
+
+> Still thinking about it? It is still here, and the delivery is on us. ✨
+> Free shipping anywhere in India. Insured all the way to your door, in a tamper-proof box.
+> Pay by card, net banking, or cash on delivery.
+> If it is not what you hoped, return it within 7 days of delivery for a full refund or exchange.
+> BIS Hallmarked 18K gold. Natural gemstones. 4.8 on Google. 💛
+
+Headline: Free Delivery | 7-Day Returns
+
+Why: 68 words, nothing to confirm, every line on the shipping page or FAQ, and it replaces a 12 month old cart text that still says 5,000+ customers. Ready to paste.
+
+## 6. Worst 2 ads
+
+**Report-2, NB-03 (gifts under ₹25,000 for Diwali).**
+
+> Real 18K gold and natural gemstones, in a price band that makes sense: the under ₹25,000 edit. [confirm before launch: every piece in the collection is under ₹25,000 that day]
+> ...
+> Order by [date, confirm before launch] for delivery before Diwali.
+
+Headline: Gold Gifts Under ₹25,000
+
+Why: the page is "Finer Jewellery Under 30,000 INR" with pieces to ₹29,990 on the day the author read it. The headline is a false price claim on a gift ad going to cold traffic. The order-by date is blank. Headline, body and date all need work before launch.
+
+**Report-1, PC-4 (exchange up).**
+
+> Your old Gehna piece can pay for your next one. ✨
+> Bring back any Gehna gold piece with its invoice. We value it at today's rate and put that towards anything new. [confirm before launch]
+> Gemstone pieces count at 70% of today's value. Diamond pieces at 80%. Plain gold at the gold rate. [confirm before launch]
+> Snapped a chain or lost a stone? Our repair service across India fixes most pieces free. You pay only the pickup. [confirm before launch]
+
+Headline: Exchange Any Time ✨
+
+Why: the terms are quoted correctly, but "Exchange Any Time" and "any Gehna gold piece" promise more than a Limited Lifetime Exchange policy where the company sets the valuation and coupons are deducted. It packs 2 policies and 3 confirm flags into 1 ad for a list that may not exist yet. Report-2's PC-03 handles the same policy more carefully, if less warmly.
+
+## 7. Which report used a specialist ecommerce playbook
+
+Report-1, with moderate confidence. Its brief is a filled template: the question in her head and the one idea per audience, voice rules, claims in 3 tiers (free, confirm, never), a fixed skeleton in all 12 ads (worry or moment, material, policy, proof stack, count and CTA), and kill and scale lines as fixed percentages of a funnel baseline. It reuses the brand's copy patterns word for word and the house phrase "concrete before-to-after". That is what a copy playbook with an operating contract produces.
+
+Report-2 reads like a strong media analyst working from the data and the site: ad set name forensics, an attribution audit, a CPM-based frequency cap, purchase-count reads with a yellow band. Those are buyer rules of thumb rather than a copy playbook, and the copy is less patterned.
+</script><script type="text/plain" id="src-j2"># Judge 2: blind review of report-1 and report-2
+
+Read in full on 24 Sep 2026, report-2 first. Evidence: `brand.json`, `gallery.json` (arithmetic in Python), `raw-1/`, `raw-2/`, and gehnaindia.com fetched live (home, FAQ, shipping, 7 collection pages, 4 product pages).
+
+## 1. Claim checks
+
+| Report | Claim | What I checked | Result |
+|---|---|---|---|
+| 1 | 90 days (26 Jun to 23 Sep): spend ₹32,45,323, 348 purchases, value ₹1,22,21,710, ROAS 3.77, CPA ₹9,326 | Summed `daily` for day 276 to 365 | Verified to the rupee. Monthly figures for Jun, Jul, Aug and Sep also match. |
+| 1 | 33 of 472 ads live; live ads took 49% of 90-day spend at 4.83, paused ads 2.87 | Status counts and 90-day sums by `effective_status` | 33 ACTIVE verified. Live share 49% and 4.83 verified. Paused computes to 2.74, not 2.87. Small slip. |
+| 1 | Site counts: 627 earrings, 156 rings, 148 chains, 34 under ₹20k, 294 in the under-30k edit, 46 best sellers; Verdant Whisper ring ₹24,850, sizes 7 to 18, bezel set, Zambian emeralds | `__NEXT_DATA__` totals on each collection page; product page JSON | All 6 counts verified live. Price ₹24,850, bezel setting and made-to-order sizes verified. Site says "most" emeralds are Zambian; the ad says "Natural Zambian emeralds", a slight stretch. |
+| 1 | Bottom 10: "2 bracelet flexible ads with 0 and 1 purchases on ₹31,755 and ₹64,670" | Per-ad sums and product tags | Wrong. ₹31,755 is a bracelets ad with 0 purchases; ₹64,670 is an earrings ad with 2 purchases. |
+| 1 | 27 ads above ₹30,000 in 90 days; ROAS quartiles 1.49, 3.09, 5.49 | Recomputed | Verified. |
+| 2 | 12 months ₹1,29,59,908, 1,396 purchases, ₹4,24,86,365, 3.28; 90 days (27 Jun to 24 Sep) ₹32,24,679, 347, ₹1,29,42,450, 4.01; 30 days 5.64 | Summed `daily` | Verified to the rupee. Note the window includes 24 Sep, a partial day with 1 order of ₹7,73,520. That 1 order lifts the 90-day ROAS from 3.77 to 4.01. |
+| 2 | Bracelets 90-day return 4.21; product showcase 90-day 4.55 | Recomputed with and without 24 Sep | Arithmetic is right but fragile. Without 24 Sep, bracelets are 1.11 and showcase 1.12. One order on a partial day is doing all the work, and the report does not say so. |
+| 2 | Celestial Navaratna bracelet: 18K, 7 inches, about 0.7 g gold, ₹22,210, in stock, 3-day delivery; Tantalizing Tourmaline ring exists, made to order in 10 to 14 days | Product page JSON, FAQ | Verified: 0.708 g, 7 inches, ₹22,210, InStock, delivery date 27 Sep. The ring exists at a different slug and is made to order at ₹29,030. FAQ says 10 to 14 days. |
+| 2 | Warm CPM ₹113.71 used for the past-customer cap; rings 45 ads and 3 purchases; earrings 18.9% of spend, 22.1% of purchases, 4.19 | Recomputed | Verified (BOF plus MOF CPM 113.81 in my run, rounding). |
+| 2 | Claims audit spend: buyback ₹26,58,336; EMI ₹27 lakh+; "100%" ₹27 lakh+; "largest" ₹2,10,732; astrological ₹2,67,684 | Keyword sums over primary text spend | All verified. |
+| both | "Descriptions are empty on all 472 ads" | `creative` keys in the cache | Could not check. The cache has no description field at all, so neither author could know this. Both state it as fact. |
+
+Site policy facts both reports lean on were all verified live: free shipping and gift packing; transit insurance; tamper-proof box; 7-day full refund or exchange with the customer paying return shipping; the limited lifetime exchange terms (70%, 80%, gold rate, silver excluded, invoice required); one free re-sizing within 15 days; 1-year workmanship warranty; 2 to 3 days in stock, 10 to 14 made to order; COD; EMI at 20% down over 2 to 6 months with no documents; ID proof on delivery; free ring sizer; the 1-inch chain loop and lifetime repair (chain product FAQ); 1-on-1 consultation, custom design and Chennai trials.
+
+## 2. Claims in the 12 ads
+
+Approved list: BIS Hallmarked, 18K gold, natural gemstones, handcrafted, 4.8 on Google, 10,000+ customers, free shipping, 7-day returns, 20+ years.
+
+**Report-1.** 23 items marked `[confirm before launch]`. Claims not on the approved list and not on a site page: 2. (a) PC-4 headline "Exchange Any Time" broadens a policy the site calls "Limited Lifetime Exchange" (the report flags this in decision 12). (b) PC-2 "Natural Zambian emeralds" where the page says most are Zambian. Two customer quotes are lightly tidied, and the edits are disclosed. Everything else traces to the approved list, the FAQ, the shipping page or a live product or collection page.
+
+**Report-2.** 15 items marked `[confirm before launch]` (13 plus 2 order-by dates). Claims not on the approved list and not on a site page: 1. NB-03 sells "Gold Gifts Under ₹25,000" and "the under ₹25,000 edit", but the landing page is titled "Finer Jewellery Under 30,000 INR" and report-1 read prices up to ₹29,990 on it. The report flags the cap, but the ad is wrong as written today. Every other line traces to the approved list or a site page. The Jai Singh quote is verbatim.
+
+Neither report invents a price, discount or statistic. Both drop buyback, IGI, "100% handcrafted" and the old customer counts.
+
+## 3. Scores
+
+| Criterion | Report-1 | Report-2 |
+|---|---|---|
+| 1. Would the owner run the ads as written | 8 | 7 |
+| 2. Editing effort before launch (10 = none) | 7 | 6 |
+| 3. Claim accuracy | 8 | 8 |
+| 4. Specificity to Gehna and ecommerce | 9 | 9 |
+| 5. Test plan quality | 8 | 9 |
+| Total | 40 | 39 |
+
+Why. Report-1's ads are 5 to 8 lines and follow the brand file closely: question or quote openers, proof stack at the end, 1 emoji per line, product plus proof headlines. The cost is live counts (627, 294, 148, 46) that change weekly; the report offers "hundreds" as the fix. Report-2's ads are 66 to 105 words and fully sourced, but 4 of the 12 (SV-04, PC-03, PC-04 and the second half of NB-04) read like policy pages, PC-03 tells a past customer her piece is worth 70% and that coupons are deducted, and NB-03 needs a new cap or a new landing page. Claim accuracy is a tie: report-1 mislabels 2 bottom-10 ads and misstates the paused ROAS; report-2 lets 1 partial-day order set its 90-day bracelet and showcase figures and states a ₹25,000 cap the page does not support. On the plan, report-2 is better: reads are triggered by spend equal to 3 CPAs and judged on purchase counts first, there is a yellow band, the past-customer budget is capped by list size times CPM times frequency, controls are named with their numbers, and its standing rules are the ones that stop bad calls. Report-1's plan is also sound: quartiles from the account, kill at 60% and scale at 120% of baseline, a CTR early stop, a festive-overlap warning, and the control comparison as the verdict. Its weak points: 4 warm ad sets on 1 audience (report-2 shares this and admits it) and a budget cut from current spend without saying what is cut.
+
+## 4. Winner: report-1, by a narrow margin
+
+1. The ads need less work. Report-1's copy is closer to the voice in the brand file and to the account's own winners. The owner could paste 9 or 10 of them after confirming the flags. Report-2 needs NB-03 rebuilt and 3 or 4 ads cut in half before they sound like an ad.
+2. Fewer errors in the ad copy itself. Report-1's slips are in the analysis (2 mislabeled ads, one ROAS). Report-2's slips reach the ads (the ₹25,000 cap) and the tables that justify them (bracelets 4.21 on 1 order).
+3. It speaks to buyers the account ignores. Report-1 sends the gift ad to men, who take 28% of spend at 1.53 with no gift copy, and treats it as the first honest read on them. Report-2 leaves men as a yes or no question.
+
+Report-2 wins the plan. Take its section 9 and run report-1's ads through it.
+
+## 5. Best 2 ads
+
+**Report-1, RT-2 (rings, free sizer).** "Not sure of your ring size? We'll send a free sizer to your door. 💍 / Size is the hard part of buying a ring online. Here is how we make it easy. / Pick the ring. Ask for a sizer. Order when it fits. / Still wrong? One free resize within 15 days. / 156 rings in 18K gold with natural emerald, ruby, sapphire and tourmaline. / Made to order in your size. BIS Hallmarked. 7-day easy returns. ✨" Headline: Free Ring Sizer. Free Resize. 💍. One objection, one answer, every line verified, aimed at the category with 156 designs and 3 purchases a year.
+
+**Report-2, SV-01 (still here, delivery on us).** "Still thinking about it? It is still here, and the delivery is on us. ✨ / Free shipping anywhere in India. Insured all the way to your door, in a tamper-proof box. / Pay by card, net banking, or cash on delivery. / If it is not what you hoped, return it within 7 days of delivery for a full refund or exchange. / BIS Hallmarked 18K gold. Natural gemstones. 4.8 on Google. 💛" Headline: Free Delivery | 7-Day Returns. Description: Cash on delivery available. Nothing to confirm, and it replaces a retargeting text that still says 5,000+ customers.
+
+## 6. Worst 2 ads
+
+**Report-2, NB-03 (gifts under ₹25,000).** "Real 18K gold and natural gemstones, in a price band that makes sense: the under ₹25,000 edit. [confirm before launch: every piece in the collection is under ₹25,000 that day] ... Order by [date, confirm before launch] for delivery before Diwali." Headline: Gold Gifts Under ₹25,000. The landing page is titled "Finer Jewellery Under 30,000 INR" and holds pieces up to ₹29,990. The headline is false today and the ad has 2 placeholders.
+
+**Report-1, PC-4 (exchange up).** "Your old Gehna piece can pay for your next one. ✨ / Bring back any Gehna gold piece with its invoice. We value it at today's rate and put that towards anything new. [confirm before launch] / Gemstone pieces count at 70% of today's value. Diamond pieces at 80%. Plain gold at the gold rate. [confirm before launch] / Snapped a chain or lost a stone? Our repair service across India fixes most pieces free. You pay only the pickup. [confirm before launch] ..." Headline: Exchange Any Time ✨. The headline broadens a limited policy, the body mixes exchange, repair and heritage in one ad, and it carries 4 flags. Report-2's PC-03 has the same problem in a duller form: it reads the T&C page to a past customer.
+
+## 7. Playbook guess
+
+Report-2 used the specialist playbook. The signs: a per-ad "Claim check" line in a fixed format; a code pass that reports first-line characters, headline and description lengths, word counts, reading grade and emoji counts; reads triggered at 3 CPAs of spend with a keep, yellow, kill and scale table; a frequency-based cap for the past-customer campaign; standing rules like "never read fewer than 7 days" and "a stock-out makes a read inconclusive"; and the objective split into buying question, one idea, voice, claims used. That is an operating contract, not a memo.
+
+Report-1 reads as an experienced buyer working from the brief and the brand file. Two openers come straight from `brand.json` copy patterns ("Thinking of buying jewellery online? 🤔" and "That's what 10,000+ Gehna customers sound like. 💬"), its rules are the common ones (60% and 120% of baseline, a CTR stop), and its judgement calls (3 orders is luck, festive overlap, men as a read) come from practice, not a checklist. That is also why its ads sound more like Gehna.
+</script><script type="text/plain" id="src-j3"># Judge 3: Gehna Meta copy audit, blind A/B
+
+Read in order: report-1.md, then report-2.md. Checked against brand.json, gallery.json (my own Python), raw-1 and raw-2, and gehnaindia.com on 24 Sep 2026. Day 0 in gallery.json is 23 Sep 2025; day 366 is 24 Sep 2026, a partial day captured at 09:18 IST.
+
+## 1. Claim checks
+
+| Report | Claim | What I checked | Result |
+|---|---|---|---|
+| 1 | 90 days (26 Jun to 23 Sep): spend ₹32,45,323, 348 purchases, ₹1,22,21,710, ROAS 3.77, CPA ₹9,326 | Summed daily rows for days 276 to 365 | Verified exactly. Retargeting 90d (₹4,93,785, 73, ₹22,58,272, 4.57, CPA ₹6,764) also exact. |
+| 1 | Only 33 of 472 ads live; the cart text "Did something catch your eye?" is 5 ads, ₹13,87,998, ROAS 6.16 and says "5000+ happy customers" | effective_status counts; grouped ads by primary_text | Verified. 33 ACTIVE. 5 ads, ₹13,87,998, 6.16. Text says 5000+. |
+| 1 | Site counts and prices used in the ads: 627 earrings, 156 rings from ₹13,500, 148 chains, 34 under ₹20,000 (₹13,490 to ₹19,980), 294 under ₹30,000, 46 best sellers, Verdant Whisper ring ₹24,850, sizes 7 to 18, Zambian emeralds, free sizer | Parsed the pages' Next.js data on 24 Sep | Verified, every figure. "New this season" tag: could not find on the page. |
+| 2 | 90 days: ₹32,24,679, 347 purchases, ₹1,29,42,450, ROAS 4.01; last 30 days 5.64; bracelets 4.21 and product showcase 4.55 over 90 days | Days 277 to 366 and 337 to 366 | Arithmetic verified, but the window includes the partial day 24 Sep, which holds 1 order of ₹7,73,520 on ₹39 of spend (a paused-campaign bracelet showcase ad). Without that day bracelets are 1.11 and showcase 1.12, which is what report 1 says. The 5.64 falls to about 5.2. |
+| 2 | Prospecting ₹1,11,39,757 at 2.84; cart and site retargeting ₹11,24,139 at 6.52, ₹4,133 per purchase; "MOF + BOF" ad sets ₹20,92,057 at 3.60; warm CPM ₹113.71 | Grouped by campaign and ad set names | Verified. My figures: prospecting 2.83, BOF exact, MOF + BOF exact, warm CPM ₹113.81. Engager ₹3,11,209 at 4.10 is close (my 2 campaigns give 4.64, 13 ads with review ads give 4.11). |
+| 2 | "EMI above ₹10,000: the ₹10,000 floor was not found on the site" (claims table, SV-02 and decision 6) | FAQ page, EMI section | Wrong. The FAQ says "the minimum cart value is 10000 INR to avail the EMI plan." The old ads were right. |
+
+Other checks. Empty descriptions on all 472 ads: gallery.json has no description field, so could not check (raw-1 shows blank for all 472). Missing customer list and exclusions: no targeting data in the cache, could not check. Attribution settings do differ (313 ads on one setting, 134 on another, 24 incrementality): report 2 verified. Both monthly spend figures are exact. Report 2's GEHNA5 spend is "about ₹3,80,000" in the text but ₹3,33,474 in its own raw table.
+
+## 2. Claims in the 12 ads
+
+Site facts that hurt both: the under ₹30,000 edit and the best-seller page both list "Synthetic Pearl" and "Lab Grown Diamond" filters, and best sellers include a 14K lab-grown pendant. The under ₹20,000 earrings page lists cultured and synthetic pearls. "Lifetime repair, most repairs free" is not on the FAQ, product pages I read, or the shipping page; the FAQ says damage repairs are "at a reasonable price" and only making faults are free under the 1-year warranty.
+
+Report 1. Claims not on the approved list and not backed by a site page: 5. "Natural pearls" for the under ₹20,000 page (NB-2, PC-3; that page has synthetic pearls). "Every one is 18K gold" on best sellers (RT-4; a 14K pendant is there). "Exchange Any Time" as a headline for a limited policy (PC-4). "Fixes most pieces free" (PC-4, flagged). The Jai Singh quote is shortened without saying so (RT-4). "Every chain has a 1-inch loop" is one product FAQ stretched to 148 chains (NB-4, PC-1). `[confirm before launch]` tags: 22 across 10 ads.
+
+Report 2. Claims not on the approved list and not backed by a site page: 4. "Under ₹25,000" headline and text landing on an edit priced up to ₹29,990 (NB-03; the flag asks to confirm a cap the page already fails), and "chains" in an edit that has no chains filter. "Every piece is BIS Hallmarked 18K gold with natural gemstones" on best sellers (SV-03, marked "Nothing to confirm"). "Most repairs are free" (SV-04, flagged). "A 1-inch adjustable loop" on all chains (SV-04, PC-01). `[confirm before launch]` tags: 11, plus 2 `[date, confirm before launch]` placeholders, so 13.
+
+Report 2 quotes the review verbatim and says so. Report 1's policy details (ID check at the door, 20% down over 2 to 6 months, 4 working days, no documents) all verified.
+
+## 3. Scores
+
+| Criterion | Report 1 | Report 2 |
+|---|---|---|
+| 1. Would the owner run these ads as written | 7 | 6 |
+| 2. Editing effort (10 = none) | 7 | 6 |
+| 3. Claim accuracy | 7 | 6 |
+| 4. Specificity to Gehna and ecommerce | 9 | 8 |
+| 5. Test plan quality | 8 | 7 |
+| Total | 38 | 33 |
+
+Notes on the scores. Report 1's ads follow brand.json's copy patterns (question or quote first, one idea per line, proof stack last, an emoji at the end of a line) and read like the account's best live texts. Report 2's ads are 3 to 6 paragraphs of 66 to 105 words with explanatory sentences ("Buying gold online feels like a leap. Here is what comes with every pair"); the brand file asks for short lines, so more trimming is needed before launch. Report 1 puts design counts and prices in 8 ads, so weekly edits (it says so in decision 4). Report 2 avoids counts but leaves 2 date placeholders and a wrong price cap.
+
+On the plan: report 1's budgets reach its own read points (new buyers ₹1,352 a day gets to ₹30,000 by day 23; visitors ₹869 a day gets to ₹20,000 by day 24). Report 2's site-visitor ad sets get ₹621 a day, ₹17,375 in 28 days, below its own ₹20,000 read spend, so 4 of 12 ad sets cannot be read on the plan's own rule. Its scale rule ("raise budget 20% a day, hold each step 7 days") contradicts itself. Report 2 does 3 things report 1 does not: it moves all 3 campaigns to 7-day click so old and new are comparable, it caps past-customer spend by list size and frequency (customers × CPM ÷ 1,000 × 6), and it runs each concept on 3 owned visuals so the read is about the idea. Report 1 does 3 things report 2 does not: quartiles of the 27 live ads above the floor so its kill and scale lines are placed against real spread, an early CTR stop that no top ad of the year would trip, and a festive-season caveat with the control comparison as the verdict.
+
+## 4. Winner: Report 1
+
+1. Less rewriting. The ads are already in the brand's shape and length. Report 2's ads need cutting into lines and the NB-03 headline needs a new number before anything can run.
+2. The numbers behind the recommendations are cleaner. Report 1 stopped at 23 Sep. Report 2 included the partial 24 Sep, and 1 order of ₹7,73,520 on ₹39 of spend turns bracelets from 1.11 to 4.21 and product showcase from 1.12 to 4.55. Report 2 then leads its plan with a bracelet showcase ad (NB-02). It also states the EMI floor is not on the site when the FAQ says ₹10,000.
+3. The test plan is executable as written. Every threshold is derived from the 90-day account, every ad set reaches its read spend inside 28 days, and the owner gets 13 concrete decisions. Report 2's plan has better structural ideas (attribution, frequency cap, concept over file) but its visitor budgets cannot reach its own read rule.
+
+## 5. Best 2 ads
+
+Report 1, RT-2. "Not sure of your ring size? We'll send a free sizer to your door. 💍 / Size is the hard part of buying a ring online. Here is how we make it easy. / Pick the ring. Ask for a sizer. Order when it fits. / Still wrong? One free resize within 15 days." Rings have 156 designs and 3 purchases in a year; this is the first ad in the account that answers why. Every fact is on the FAQ or ring page. Headline "Free Ring Sizer. Free Resize." is a real reason to click.
+
+Report 2, NB-01. "Real 18K gold. Natural stones. And 7 days to change your mind. ✨ ... Not right for you? Return it within 7 days of delivery for a full refund or exchange. You pay only the return courier. / That is how 10,000+ customers bought their first Gehna piece, and why we hold a 4.8 rating on Google. 💛" Nothing to confirm, the return-courier line is honest, and it sits on the account's best category with the trust video as control. It only needs its paragraphs shortened.
+
+## 6. Worst 2 ads
+
+Report 2, NB-03. "Real 18K gold and natural gemstones, in a price band that makes sense: the under ₹25,000 edit. ... Earrings, bracelets, chains and pendants. ... Order by [date, confirm before launch] for delivery before Diwali." Headline "Gold Gifts Under ₹25,000". The landing page is "Finer Jewellery Under 30,000 INR", priced ₹10,100 to ₹29,990, with no chains filter and with synthetic pearl and lab-grown items in it. The price promise fails on day 1 and the ad depends on a date the owner has not given.
+
+Report 1, PC-4. "Your old Gehna piece can pay for your next one. ✨ / Bring back any Gehna gold piece with its invoice. We value it at today's rate ... Gemstone pieces count at 70% of today's value. Diamond pieces at 80%. ... Our repair service across India fixes most pieces free. You pay only the pickup." Headline "Exchange Any Time". The policy is "limited", the company sets the valuation, coupons are deducted, and the free-repair line is not on the site. It puts a policy table into an ad and overstates it in the headline. Report 2's PC-03 has the same idea, states the limits more fully, and reads like terms and conditions; neither should run before the owner answers decision 12.
+
+## 7. Which report used the specialist playbook
+
+Both share one skeleton: the 3 objectives, "the question in her head and the one idea", `[confirm before launch]`, a ₹28,000 to ₹30,000 spend floor at 3 times CPA, and the same length limits (first line 125 characters, body 300 words, headline 40, description 30). That looks like a common brief.
+
+My guess is Report 2. Its plan carries rules that read as imported checklist items rather than things the data suggested: "never read fewer than 7 days", "judge at the ad set level, never on 1 ad's return", "never edit a winning ad set, add new creative beside it", "a stock-out or tracking gap makes a read inconclusive, not lost", a Keep, Yellow, Kill table, read spend at 3 times CPA "rounded to ₹1,000", the frequency-cap formula, a claims log, and reading-grade scoring of every ad "in code". Its ad format is also fixed: hook, explainer, proof, claim check, in the same order 12 times. Report 1 reads as an analyst working from the account: it computes quartiles, treats a 3-order winner as luck, and adjusts for the festive overlap. If the playbook is the source of Report 2's discipline, it also explains why its copy is longer and more uniform than the brand's own best texts.
+</script><script type="text/plain" id="src-verdict"># Verdict: copy test, 24 Sep 2026
+
+## Reveal
+
+- Report 1 = Arm A, the general arm: general prompt, same ad data and site, public web.
+- Report 2 = Arm B, the playbook arm: ad copy playbook (11-ADC) and deployment playbook (24-DEP) plus the card library, same ad data and site, public web.
+
+Reading order: judge 1 read 1 then 2, judge 2 read 2 then 1, judge 3 read 1 then 2.
+
+## Result
+
+The general arm won 3 judges to 0.
+
+| Judge | Report 1 (general) | Report 2 (playbook) | Winner | Guessed the playbook arm |
+|---|---|---|---|---|
+| 1 | 40 | 32 | Report 1 | Report 1 (wrong) |
+| 2 | 40 | 39 | Report 1 | Report 2 (right) |
+| 3 | 38 | 33 | Report 1 | Report 2 (right) |
+| Total | 118 | 104 | | |
+
+Scores are out of 50 (5 criteria, 1 to 10). Judge 2 called it a near tie and gave the playbook arm the better test plan.
+
+## What decided it
+
+Four things cost the playbook arm the test. None of them is a copywriting failure.
+
+1. A data window slip. Arm B's 90-day and 30-day windows included 24 Sep, a partial capture day. That day holds 1 order of ₹7,73,520 against ₹39 of spend on a paused bracelet showcase ad. It moved bracelets from 1.11 to 4.21 ROAS and product showcase from 1.12 to 4.55 in its tables, and lifted its 30-day ROAS to 5.64. Arm A stopped at 23 Sep. All 3 judges found this.
+2. One false price claim. Arm B's ad NB-03 headline said "Gold Gifts Under ₹25,000". The landing page it points to is titled "Finer Jewellery Under 30,000 INR" and holds pieces up to ₹29,990. Arm A had no wrong price, offer or policy claim in its 12 ads.
+3. Budget arithmetic. Arm B's site-visitor ad sets got ₹621 a day, ₹17,375 over 4 weeks, below its own ₹20,000 read spend, so 4 of its 12 ad sets could never be judged by its own rule. Its scale rule contradicted itself, and 2 of its controls were paused or 8 days old. Arm A's budgets reached every read point and its controls were live ads.
+4. Two blank date placeholders left in client copy.
+
+Arm A was not clean either. Judges found "natural pearls" on a page that lists cultured or synthetic pearls, an "Exchange Any Time" headline on a limited exchange policy, a reworded customer quote, and "most repairs free" with no page behind it. It carried 21 to 23 confirm-before-launch tags against 11 to 15 for Arm B.
+
+## Where the playbook arm was better
+
+- The audit: the finding that warm "MOF + BOF" ad sets sit inside prospecting campaigns (₹20.9 lakh, 16% of spend), the attribution audit (4 settings in use), and a claim-by-claim scan of live copy that surfaced buyback, IGI, "India's largest" and 5 different customer counts. Judges verified these.
+- The plan mechanics: 7-day click on every campaign, a frequency-based cap on past-customer spend computed from CPM, 3 visuals per concept, a keep, yellow, kill and scale table at a 3x CPA read point, and copy scored in code for length and reading grade.
+- Fewer confirm tags and per-ad claim-check lines, which 2 of 3 judges read as the mark of a specialist process.
+
+## What this says about the playbook
+
+Across 2 runs the playbook arm is 1 judge to 4. In run 1 (site speed) it split 2 judges. Here it lost all 3, and it lost on data hygiene, claim verification and budget arithmetic, not on the words. The 11-ADC playbook is a writing playbook. It did not stop a partial-day window, a wrong price cap or an unreadable ad set budget, because it has no rule that says: end the window on the last full day; quote the page title and price you read, with the date; show that every ad set's budget reaches its read spend.
+
+The brief did a lot of the work. Both arms got the same detailed brief (3 objectives, 12 ads, claim check per ad, baselines from the account, owner decisions), and judge 3 noted both reports share one skeleton. With a strong brief and the same model in both arms, the playbook's marginal value was procedure, and the procedure leaked in 4 places that a checklist could have caught.
+
+Kevin's own pick is the deciding signal. The judges' scores are close on 2 of 3 cards, and the ads themselves are what he would run or edit.
+
+## Changes made to the playbooks after this run
+
+- 11-ADC Group O, R132 and R133: a claim check line must quote the page title, the price or number seen, and the date read; a price-cap headline must match the landing page's own title or filter; no placeholders in client copy, use `[confirm before launch: what]`.
+- 24-DEP Group G R116 and 06-MEA Group A R103: end every analysis window on the last full captured day and state it; an ad set's 4-week budget must be at or above its read spend or the plan says the ad set is unreadable; a control must be a live ad with spend in the last 7 days.
+- 11-ADC section 11b: test learnings log for this run.
+
+## Changes for the next run
+
+- Give both arms a thin brief, not a full one, so the playbook has room to show what it adds.
+- Add a fourth judge: Kevin, with the same 5 criteria.
+- Have judges verify the same 3 pre-chosen facts per report plus 3 of their own, so scores are comparable across judges.
+- Consider a stage 3: 1 agent applies the 11-ADC checklist to both reports' ads and counts what it catches. That measures the checklist on its own.
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/12.0.2/marked.min.js"></script>
+<script>
+(function(){
+  var armText={r1:"Arm A: general prompt, same ad account data and site, public web",r2:"Arm B: ad copy playbook and card library, same ad account data and site, public web"};
+  document.querySelectorAll('.md[data-src]').forEach(function(el){
+    var src=document.getElementById(el.getAttribute('data-src'));
+    if(!src)return; var txt=src.textContent;
+    try{ el.innerHTML=marked.parse(txt,{mangle:false,headerIds:false}); }catch(e){ var p=document.createElement('pre'); p.textContent=txt; el.appendChild(p); }
+  });
+  var views=['side','r1','r2','judges','verdict'];
+  function show(v){
+    views.forEach(function(x){ document.getElementById('view-'+x).hidden=(x!==v); var b=document.getElementById('tab-'+x); b.setAttribute('aria-selected', x===v?'true':'false'); });
+    window.scrollTo({top:0});
+    try{localStorage.setItem('gehna-copy-view',v);}catch(e){}
+  }
+  document.querySelectorAll('nav.tabs button').forEach(function(b){ b.addEventListener('click',function(){show(b.getAttribute('data-view'));}); });
+  var revealed=false;
+  var rv=document.getElementById('reveal');
+  rv.addEventListener('toggle',function(){ if(rv.open&&!revealed){ revealed=true; document.querySelectorAll('.arm[data-arm]').forEach(function(p){ p.innerHTML='<b>'+armText[p.getAttribute('data-arm')]+'</b>'; }); } });
+  var h=(location.hash||'').replace('#','');
+  if(views.indexOf(h)>=0) show(h);
+})();
+</script>

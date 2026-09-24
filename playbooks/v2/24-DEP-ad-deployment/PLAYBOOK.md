@@ -202,6 +202,8 @@ Load this block first; the groups below are the detail.
 
 **R48. Rescue ads a CBO ignored only if you have high conviction, in a separate ad set with its own budget.** Condition: after the CBO has run; S09 says another 20% of such ads "typically" turn out to be winners. No budget, duration or conviction rule is given, so cap it and log it. This conflicts with trusting the algorithm's allocation (S02 R28 logic). Source S09 only. [841a1ded8706]
 
+**R116. An ad set's test budget must reach its own read spend inside the test window, or the plan says the ad set cannot be read.** Trigger: any test plan that sets a read point (for example 3x CPA) and a daily budget per ad set. Action: compute daily budget x days for every ad set and compare with its read spend in code; where it falls short, either merge ad sets, cut the number of variants, lengthen the window or mark the ad set "not readable in this window". A control must be a live ad with spend in the last 7 days, not a paused or 8-day-old ad. Check: a table with ad set, daily budget, days, total, read spend, readable yes or no. `[general practice]` No library source; added from the 24 Sep 2026 copy test, where 4 of 12 ad sets in one plan could not reach their read spend.
+
 ### Group H. Budget pacing and scaling mechanics
 
 **R49. Find each winner's spend equilibrium before moving it to a scaling campaign.** Condition: an ad set well above target (S02 example: above a 5x target) with strong soft metrics. Raise daily spend in steps; when ROAS drops to unprofitable, pull back; repeat until you find the level where results hold (example $300 a day). Record it as that creative's capacity. Source S02. [0e642b4c3a8c] [a95742238877]
@@ -933,6 +935,12 @@ All deliverables carry the brand name, the date range, the attribution setting u
 - **GP to CAC bands, frequency ceilings, retargeting share flags (R60, R71, R75).** Opinion-based and not UI-dependent, so they age slowly, but they assume the sources' 7 to 9 figure USD context. Re-fit to the brand's margin, currency and retention.
 - **ecomOS constraint.** Meta is read-only and TikTok has no connector. Any move to production access (META_GALLERY_STATUS.md next steps) changes how P4 to P6 hand off, not the rules.
 - 24 Sep 2026: ecommerce specificity pass applied from ECOM_REVIEW.md; priority block added, 15 rules reworded, 8 levers added, about 680 words moved to Appendix A.
+
+## 11b. Test learnings log
+
+Entries here come from ecomOS runs of this playbook, not from the library. Each names the test and the rules or procedures it changed.
+
+- 24 Sep 2026, Gehna Meta ad copy test (`reviews/copy-test/`). Added R116 (Group G): budgets must reach read spend, controls must be live. See 11-ADC section 11b for the run.
 
 ## 12. Source index
 

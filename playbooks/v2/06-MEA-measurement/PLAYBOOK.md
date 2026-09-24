@@ -107,6 +107,8 @@ Load this block first; the groups below are the detail.
 
 **R6. Match analytics effort to the size of the store's own ad spend tier, counting analyst and decision-maker time; a $5K a month Meta spender needs no $10M brand's data team.** Condition: any tool or headcount decision. Moved to Appendix A: S02's $1M/$100M decision-sizing illustration. Source S02 says this [11a74e34ca53].
 
+**R103. End every analysis window on the last full captured day, and say so.** Trigger: any ROAS, CPA or spend table built from an export or cache that includes the capture day. Action: drop the capture day (and any day the source marks partial) before computing, state the window as "from date to date, last full day", and flag any single row that moves a period figure by more than the reader would expect (one order on ₹39 of spend can turn a 1.1 ROAS into 4.2). Check: the window end is a full day and the table notes any row that dominates a total. `[general practice]` No library source; added from the 24 Sep 2026 copy test.
+
 ### Group B. GA4 account, property and stream structure
 
 **R7. 1 GA4 account per organization; 1 GTM account per organization.** Condition: 1 business. Set up another business in another account. An agency running several brands never merges 2 brands into 1 GA4 account to save setup time. Supports: S01 [a61d1986b945], S03 [5c923d97e1f7].
@@ -1072,6 +1074,12 @@ Purpose: the daily trust check (P22) and the audit and fix lists (9.1, 9.2) are 
 - **Slow-aging content.** S02's decision principles (1 top metric, S curve, HiPPO, data tiers), S06's revenue identity and return-timing warning, S05's "filter to purchase" rule, S04's dedup logic. These need no re-verification beyond the UI steps that implement them.
 - **Card additions.** Several rules note claims that exist only in a card, not the transcript (S01 section 9 list, S02 incrementality cards, S03 card differences, S06 card paths and lists, S07 stopgap framing). Treat each as the card writer's view until a `[web check]` or brand data confirms it.
 - **24 Sep 2026: ecommerce specificity pass applied from ECOM_REVIEW.md; priority block added, 15 rules reworded, 7 levers added, about 250 words moved to Appendix A.**
+
+## 11b. Test learnings log
+
+Entries here come from ecomOS runs of this playbook, not from the library. Each names the test and the rules or procedures it changed.
+
+- 24 Sep 2026, Gehna Meta ad copy test (`reviews/copy-test/`). Added R103 (Group A): windows end on the last full day; dominant single rows are flagged.
 
 ## 12. Source index
 

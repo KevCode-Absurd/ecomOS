@@ -391,6 +391,10 @@ Load this block first; the groups below are the detail.
 
 **R114. Guarantee and policy lines preserve eligibility limits exactly as the brand record states them.** Condition: any risk reversal. v1.2; Whitman: operations must honour it [83551014328e].
 
+**R132. Every claim check line quotes what was read: the page title, the price or number seen, and the date.** Trigger: any ad that names a price, a price cap, a count, a policy or a delivery promise. Action: the claim check line for that ad reads "page title as shown, value as shown, read on date". A price-cap headline ("under ₹25,000") must match the landing page's own title or filter, not a rounded or nearby number; if the page says "under 30,000", the headline says under ₹30,000 or the ad points to a filtered page that really caps at ₹25,000. Check: a reader can open the page and see the same words. `[general practice]` No library source; added from the 24 Sep 2026 copy test, where a wrong price cap cost the arm the round.
+
+**R133. No blank placeholders in client copy.** Trigger: a date, code, price or count that is not known when the copy is written. Action: write `[confirm before launch: what]` in place, never a blank or "XX". A client document with a blank is not finished. Check: grep for `[ ]`, `XX`, `TBD` and `__` before hand-off. `[general practice]` No library source; verify against brand data before use.
+
 ### Group P. Variant planning and testing
 
 **R115. Each variant carries 1 genuinely different angle: a different supported benefit, customer moment, objection or execution. Different opening synonyms are not different angles.** Condition: every ad set; default 3 variants. v1.2; Hopkins: run many appeals, and use different ads across overlapping audiences [fe816803de4e]; Founders: framing levers are the group addressed, a price shown, a specific number, the headline [ab5eef4de74a] [55e663877849]; Whitman: redundancy (variations of the same message) extends an ad's life [17b39c491ef9] [c38941fe0dbc]. Sources 02, 03, 07. `[print 1920s]` `[DR book 2009]`.
@@ -1006,6 +1010,12 @@ What the agent produces for each task, and the format. Every deliverable carries
 | Historical case numbers (sections 6, 12) | None | Before quoting to a client | Anecdotes, not benchmarks |
 
 24 Sep 2026: ecommerce specificity pass applied from ECOM_REVIEW.md; priority block added, 15 rules reworded, 8 levers added, about 1,490 words moved to Appendix A.
+
+## 11b. Test learnings log
+
+Entries here come from ecomOS runs of this playbook, not from the library. Each names the test and the rules or procedures it changed.
+
+- 24 Sep 2026, Gehna Meta ad copy, blind A/B against a general prompt with the same brief and data (`reviews/copy-test/`). The playbook arm lost 3 judges to 0 (118 to 104 points). Both arms wrote usable ads; the playbook arm lost on a partial-day data window, 1 wrong price-cap headline, ad set budgets below their own read spend, and 2 blank date placeholders. Added R132 and R133 (Group O). Window and budget rules went to 24-DEP R116 and R117 and 06-MEA R103. Next run: a thinner brief, 4 judges including the owner, 3 shared fact checks per report.
 
 ## 12. Source index
 
