@@ -1,37 +1,46 @@
 # Playbooks v2 build progress
 
-Started 24 Sep 2026. Method in `TEMPLATE.md`. Source list per folder in `_batch_plan.json`. Pass 1 runs one agent per source (256 runs); the batch grouping in that file is only a size guide. From 24 Sep, pass 1 runs on Sonnet (extraction into a fixed format); pass 2 merges stay on the stronger model.
+Started 24 Sep 2026. Method in `TEMPLATE.md`. Source list per folder in `_source_manifest.json` (one row per source, status todo or done). Pass 1 runs one agent per source; pass 2 runs one merge agent per folder.
 
-Pass 1 = mini playbook per source. Pass 2 = folder playbook. Status: todo, running, done, reviewed.
+Pass 1 = mini playbook per source (Sonnet from 24 Sep). Pass 2 = folder playbook (Fable). Status: todo, running, done.
 
-| Folder | Sources | Words | Cards | Sources to run | Pass 1 | Pass 2 |
-|---|---|---|---|---|---|---|
-| /01-PRD-product-research | 10 | 79,296 | 170 | 2 | todo | todo |
-| /02-AVT-avatars | 9 | 114,876 | 216 | 2 | todo | todo |
-| /03-OFF-offers | 10 | 140,348 | 270 | 3 | todo | todo |
-| /04-BRD-brand | 12 | 255,010 | 524 | 5 | todo | todo |
-| /05-SET-store-setup | 11 | 241,346 | 432 | 5 | todo | todo |
-| /06-MEA-measurement | 7 | 46,106 | 117 | 1 | todo | todo |
-| /07-LPG-landing-pages | 26 | 190,737 | 400 | 4 | todo | todo |
-| /08-SPD-speed | 9 | 89,794 | 226 | 2 | running | todo |
-| /09-CRO-testing | 7 | 78,699 | 177 | 2 | running | todo |
-| /10-MCR-paid-social-creative | 19 | 129,229 | 319 | 3 | todo | todo |
-| /11-ADC-ad-copy-deployment | 9 | 271,689 | 402 | 4 | todo | todo |
-| /12-GAD-google-ads | 10 | 205,137 | 362 | 4 | todo | todo |
-| /13-ORG-organic-and-content | 10 | 76,393 | 149 | 2 | todo | todo |
-| /14-EML-email-lifecycle | 13 | 327,983 | 578 | 5 | todo | todo |
-| /15-SEO-search | 16 | 231,986 | 420 | 5 | todo | todo |
-| /16-AEO-answer-and-generative-engines | 9 | 89,821 | 173 | 2 | todo | todo |
-| /17-CXP-post-purchase | 7 | 51,360 | 112 | 1 | todo | todo |
-| /18-COG-sourcing | 4 | 47,810 | 82 | 1 | todo | todo |
-| /19-WLD-wild-bets | 3 | 22,413 | 96 | 1 | todo | todo |
-| /20-FIN-finance-and-accounting | 6 | 132,584 | 203 | 3 | todo | todo |
-| /21-OPS-team-and-management | 7 | 154,983 | 258 | 3 | todo | todo |
-| /22-AMZ-amazon-marketplace | 4 | 173,534 | 284 | 2 | todo | todo |
-| /23-SEC-bot-and-agent-security | 6 | 288,805 | 412 | 2 | todo | todo |
-| /24-DEP-ad-deployment | 10 | 110,382 | 213 | 3 | todo | todo |
-| /99-multi | 22 | 549,961 | 1016 | 9 | todo | todo |
+| Folder | Sources | Source words | Cards | Pass 1 | Mini playbook words | Pass 2 | Folder playbook words |
+|---|---|---|---|---|---|---|---|
+| /01-PRD-product-research | 10 | 79,296 | 170 | done | 41,313 | done | 22,765 |
+| /02-AVT-avatars | 9 | 114,876 | 216 | done | 39,115 | done | 26,061 |
+| /03-OFF-offers | 10 | 140,348 | 270 | done | 72,025 | done | 29,627 |
+| /04-BRD-brand | 12 | 255,010 | 524 | done | 86,235 | done | 31,219 |
+| /05-SET-store-setup | 11 | 241,346 | 432 | done | 79,049 | done | 23,519 |
+| /06-MEA-measurement | 7 | 46,106 | 117 | done | 32,609 | done | 24,264 |
+| /07-LPG-landing-pages | 26 | 190,737 | 400 | done | 140,426 | done | 35,221 |
+| /08-SPD-speed | 9 | 89,794 | 226 | done | 33,838 | done | 29,052 |
+| /09-CRO-testing | 7 | 78,699 | 177 | done | 39,217 | done | 31,718 |
+| /10-MCR-paid-social-creative | 19 | 129,229 | 319 | done | 98,987 | done | 38,746 |
+| /11-ADC-ad-copy-deployment | 9 | 271,689 | 402 | done | 79,699 | done | 26,854 |
+| /12-GAD-google-ads | 10 | 205,137 | 362 | done | 80,897 | done | 31,564 |
+| /13-ORG-organic-and-content | 10 | 76,393 | 149 | done | 49,309 | done | 31,742 |
+| /14-EML-email-lifecycle | 13 | 327,983 | 578 | done | 96,790 | done | 29,857 |
+| /15-SEO-search | 16 | 231,986 | 420 | done | 90,077 | done | 27,688 |
+| /16-AEO-answer-and-generative-engines | 9 | 89,821 | 173 | done | 44,492 | done | 25,761 |
+| /17-CXP-post-purchase | 7 | 51,360 | 112 | done | 35,875 | done | 26,308 |
+| /18-COG-sourcing | 4 | 47,810 | 82 | done | 15,770 | done | 19,801 |
+| /19-WLD-wild-bets | 3 | 22,413 | 96 | done | 19,706 | done | 28,251 |
+| /20-FIN-finance-and-accounting | 6 | 132,584 | 203 | done | 42,154 | done | 30,565 |
+| /21-OPS-team-and-management | 7 | 154,983 | 258 | done | 34,865 | done | 20,806 |
+| /22-AMZ-amazon-marketplace | 4 | 173,534 | 284 | done | 38,070 | todo | 0 |
+| /23-SEC-bot-and-agent-security | 6 | 288,805 | 412 | done | 64,745 | todo | 0 |
+| /24-DEP-ad-deployment | 10 | 110,382 | 213 | done | 60,852 | done | 22,536 |
+| /99-multi | 22 | 549,961 | 1016 | done | 161,559 | todo | 0 |
 
-Totals: 256 sources, 4,100,282 words, 7,611 cards, 76 pass 1 batches, 25 folder playbooks.
+Totals: 256 sources, 4,100,282 source words, 7,611 cards. Mini playbook words so far: 1,577,674. Folder playbooks done: 22 of 25, 613,925 words.
 
-Pilot: 08-SPD and 09-CRO first, to prove the format before the fan-out.
+## Notes
+
+- Three sources were too long for one pass 1 agent and were split into equal text parts, one agent per part, with a short index file under the source's own number: /23-SEC 01 Site Security (273k words, 5 parts), /22-AMZ 01 Amazon FBA 12 hour course (155k words, 3 parts), /99-multi 01 Scale an eCommerce Brand Profitably (124k words, 2 parts). The parts stay as the mini playbook; the folder merge reads them directly. No re-compression pass.
+- /23-SEC 01 turned out to be a transcript of a university web security course (about 2019), not an ecommerce document. The folder's ecommerce fraud content comes from sources 02 to 06.
+- /01-PRD sources 02 and 10 are different videos, not two cuts of one talk; the folder playbook keeps them separate.
+- /99-multi 13 bundles two unrelated pieces (a Bloom Nutrition summary and a full Oodie founder podcast); the mini playbook flags both for routing.
+- Fable merge token log (subagent tokens per folder) is kept in the session scratchpad; about 6.1M for the first 20 folders, about 300k per folder on average.
+- A rate limit on 24 Sep cut 5 agents off mid-run. The SEO and operations folder playbooks and both multi 01 parts had finished writing and were kept; a check agent verified the multi 01 part 2 tail slice; the security merge was relaunched.
+- Two folder playbooks (10-MCR, 03-OFF) were briefly committed as partial drafts by a mid-write sweep and then overwritten by the finished file in a later commit. The committed versions are the finished ones.
+- Not done yet: agent overlays (`overlays/<agent>.md`), brand overlays (`brands/<brand>/overlays/<folder>.md`), spot-checks beyond 08-SPD.
