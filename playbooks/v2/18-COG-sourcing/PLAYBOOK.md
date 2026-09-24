@@ -123,7 +123,7 @@ This is ecomOS's own ranking for a store, not a source's ranking. Rule ids and f
 
 Load this block first; the groups below are the detail.
 
-### 3.0 Formula register
+### 3.0b Formula register
 
 Conventions for the developer. All money in the brand's reporting currency, tax exclusive. All percentages as decimals in code (0.10, not 10). Days are calendar days. Units are sellable units of 1 SKU unless stated. Missing inputs return "unavailable", never 0. Every output carries its input dates and the quote or invoice it came from.
 
