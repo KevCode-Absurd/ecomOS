@@ -4,6 +4,8 @@ version: 2.0-draft  |  date: 2026-09-24  |  sources: 10  |  cards: 170  |  built
 
 ## 0. How to use this playbook
 
+**Ecommerce first.** This playbook is for stores: DTC, marketplace or hybrid, not general business ideation. Section 3.0 is the ranking: load it before the numbered groups in section 3. Store-type conditions (hero SKU vs catalogue, low vs high AOV, subscription vs one-off, marketplace-heavy, luxury or considered purchase, mobile-first India vs US) decide which rules apply to the candidate in front of you.
+
 **Who runs it.** The product research agent. Its job ends at a go or no-go decision on a specific product, with a validation memo, a supplier brief and a launch sequence plan attached. Creative production, media buying, storefront build and fulfillment setup are other folders (see section 1).
 
 **Which sections to load for which task.**
@@ -68,6 +70,25 @@ version: 2.0-draft  |  date: 2026-09-24  |  sources: 10  |  cards: 170  |  built
 
 Format: rule, condition (when it applies and when it does not), sources by mini playbook number, conflicts, card ids. "Strict" means the merged rule keeps the tightest version any source gave.
 
+### 3.0 Ecommerce priority order
+
+Load this ranked list before the numbered groups below. Each lever points to the rule ids it draws on. Conditions by store type decide which side applies.
+
+1. **Margin and contribution gate (R76, P14, O4).** Nothing else matters if the product cannot pay for its own acquisition cost; the hard stop every source implies.
+2. **Regulatory and IP clearance (R84, R86).** A miss voids the SKU after money is spent on samples or ads; the other no-override stop.
+3. **Owned difference named (O2, R60).** Proven demand with no angle is a cash test (R56), not a bet for a brand holding inventory and reputation.
+4. **Demand read matched to the brand's own ad platform (R24, R44 to R49).** TikTok-Shop-heavy brands read video and live data directly (R15 to R21); Meta-only brands treat TikTok data as a lead, not proof.
+5. **Competition ladder, exact-product and niche level (R53, R54).** Amber or red with no angle routes to P12 first; green goes straight to economics.
+6. **Price band and margin floor from the store's own AOV (R75, R76, O4).** Impulse-price stores live or die on the dollar floor; a luxury or considered-purchase store should raise it and lean less on the 3x multiple. `[general practice]`
+7. **SKU strategy by store type (R59, R87, C5).** A hero-SKU launch opens at 1 SKU with a secondary-product plan; a catalogue brand checks gaps in its existing range instead, since R87 assumes no catalogue yet. `[general practice]`
+8. **Subscription or repeat fit from real usage (R72, R9).** Subscription stores gate on replenishment cadence; one-off or considered-purchase stores check LTV against AOV instead (R113; card 3b6e3ec9a71b).
+9. **Sourcing model by channel (R93, R50).** A no-inventory store compares agent vs marketplace-direct cost (R93); a store also on a third-party marketplace reads that marketplace's own density and fees separately (R110). `[general practice]`
+10. **Logistics and durability priced before sourcing (R81 to R83, R85).** A shippability gate, not a differentiator, but it still kills candidates that passed 1 to 9.
+11. **Supplier vetting and sample order (R89 to R92).** Only after the SKU clears 1 to 10, so cash and goodwill are not spent early.
+12. **Launch sequencing and expansion order (R99, R100).** A mobile-first India-vs-US move must re-price duty, payment friction (R115) and delivery days per market first. `[general practice]`
+
+Load this block first; the groups below are the detail.
+
 ### 3.1 Where product ideas come from
 
 **R1. Enter a large, existing, high-frequency category rather than inventing one.** You skip educating buyers on what the product is and only have to win on differentiation. Condition: choosing a category for a brand that will own its product for years. Does not apply to a short-window cash test on a trending item (R69). Sources: 01 (Method, Olly, Wellie were all decades-old categories). Conflict: 03 says chase a trending product, not a market, for speed to $10M; see section 7, conflict C2. Cards: [04109fbada87] [43675a4ef223].
@@ -76,7 +97,7 @@ Format: rule, condition (when it applies and when it does not), sources by mini 
 
 **R3. White space is a category where buyers cannot name a favorite brand.** Ask people to name their top 3 brands; if they cannot, or the label is just the generic name, there is a gap. 03 states the same idea as "problem-aware, product-aware, not brand-aware" buyers, who convert without warm-up. Condition: an opening hypothesis, not proof of demand. 01's own jewelry venture had strong consumer love and still failed on economics (R80). Sources: 01, 03. Cards: [1dbc0386d821] [fff4fa23ccb9].
 
-**R4. Find a cultural shift the category has missed.** The shift must already be visible elsewhere (01: "the future is here, it is just not evenly distributed"). 03 frames it as a habit: when you hear a throwaway comment about something new, ask for more instead of dismissing it. Condition: idea generation. Neither source gives a checklist beyond this. Sources: 01, 03. Cards: [82c3c64bf61f] [d8999078063c] [225664d8dac9].
+**R4. Watch for a shift in how people shop, pay or get delivery (buy-now-pay-later, TikTok Shop checkout, same-day delivery) that incumbents have not built for; it only counts once it changes what a buyer expects on a PDP or at checkout.** Condition: idea generation. Neither source gives a checklist beyond this. Sources: 01, 03. Cards: [82c3c64bf61f] [d8999078063c] [225664d8dac9].
 
 **R5. The product must solve a felt problem or serve a passionate community; daily pain ranks highest.** Merged from 6 sources. 10 requires a problem felt every day (foot pain on every step). 06 requires an emotional problem inside a market. 05 and 02 require a real problem or insecurity, and 02 warns beginners pick problems that are too small. 09 accepts pain or passion, or both. 08 accepts either a problem or a passionate community (its anime katana example passes on passion alone). Strict merge: require at least 1 of the 2, rank daily pain above occasional pain above passion, and reject "nice to have". Condition: every candidate from every method. Sources: 02, 05, 06, 08, 09, 10. Conflict: 10 would reject a passion-only product; 08 accepts it. Section 7, C9. Cards: [cccca902b389] [c9b651f1b77d] [9651e08d5907] [6be819f254f6] [ec2cf7075718] [178c6277a818].
 
@@ -84,19 +105,21 @@ Format: rule, condition (when it applies and when it does not), sources by mini 
 
 **R7. Pair demand with a quality gap.** High search or sales volume alone is not an opportunity if buyers are already satisfied. Look for volume plus a low average rating; 07's heuristic is about 3.8 or below on Amazon for the specific sub-niche. Condition: owned or private-label product where you can fix what reviews complain about. Does not help a dropshipper reselling the same item. Source: 07 only, from one demo. Cards: [d814f1dad676].
 
-**R8. Ground every pain point in a cited review or thread you have opened.** An AI summary of pain points is only as good as the sources it cites; open them and confirm they are specific. Condition: any AI-mined pain point list. Source: 07. Cards: [385b53666fdd].
+**R8. Ground a pain point in a review naming the product and a real complaint (a PDP review, a return reason, a support ticket), not a category-level post; confirm it is about the product, not the topic.** Condition: any AI-mined pain point list. Source: 07. Cards: [385b53666fdd].
 
 **R9. Choose the category to fit the business model you want.** 02: health products suit renewables and subscription revenue; beauty, apparel and underwear, home improvement and jewelry skew to one-off high-volume sales with fewer sellers hunting there. 09: consumable and disposable formats support repeat purchase. Condition: preference, not a gate; 02's own $1.5M store had 0 subscribers. Sources: 02, 09. Cards: [aa365bb09a4b] [b4379b7a96e8] [480136acffdb].
 
 **R10. Prefer products that are scarce offline and absent from big-box retail.** Easy local availability removes the reason to buy online and weakens margin protection. Condition: general screen; neither source gives a fallback if you proceed anyway. Sources: 09, 10. Cards: [5101fbb610a7] [cccca902b389].
 
-**R11. Selling what you personally like is not a research method.** 05: "if that worked I would be selling golf gear." 03: become passionate about cash flow first, pursue passion once financially free. Condition: beginner or new-brand selection. Conflict: 01 uses the founder's own excitement (the "energy test") as a selection signal between finished concepts. Section 7, C4. Sources: 03, 05. Cards: [4255b2303ee8] [0a9bbf43cada].
+**R11. A founder's own taste is not a demand signal; run the demand check (P9) or the store's conversion and repeat-purchase data before funding a candidate on preference.** Condition: beginner or new-brand selection. Conflict: 01 uses the founder's own excitement (the "energy test") as a selection signal between finished concepts. Section 7, C4. Sources: 03, 05. Cards: [4255b2303ee8] [0a9bbf43cada].
 
 **R12. Random, un-niched products are an optional beginner path.** `[dropshipping assumption]` They dodge the high CPMs of brand-heavy verticals (women's beauty, dog products) where an unbranded seller cannot compete on ad cost. 05 calls this "by no means a must-do". For a branded brand: not applicable; the brand's category is fixed, so use R60 (unserved avatar) instead. Source: 05. Cards: [c97ea08c9bfc].
 
 **R13. Customization is a demand signal with a fulfillment cost.** Personalized items (photo phone case, custom crystal frame) advertise well on TikTok per 08, but the source ignores the added handling, lead time and returns. Condition: treat as a plus in scoring only if the brand can fulfil custom orders. `[needs brand data: can the 3PL or supplier handle per-order customization]` Source: 08. Cards: [6cb10ef0ecb5].
 
-**R14. Trend newsletters, Twitter accounts, Exploding Topics and Trend Hunter are leads, not conclusions.** Every idea from them goes through the same demand, competition, revenue and sourcing checks as a scouted product. Condition: always. Sources: 08, 09, 03 (Exploding Topics named as a tool). Cards: [bdee2e77e91b] [2c09edad5b25] [b08de7f842b3].
+**R14. Trend tools are a source of SKU ideas only; every idea clears the same PDP-ready checks (platform demand, Ad Library count, landed-cost margin) as a product scouted from Meta or TikTok Shop before it reaches the shortlist.** Condition: always. Sources: 08, 09, 03 (Exploding Topics named as a tool). Cards: [bdee2e77e91b] [2c09edad5b25] [b08de7f842b3].
+
+**R110. A marketplace listing (Amazon, Flipkart, Meesho, Myntra, Etsy) is a separate channel with its own fees, search ranking and competitor set; a marketplace-heavy brand screens a candidate against that marketplace's own listing density and take rate, not only Meta or TikTok Shop data.** `[general practice]` No library source; verify against brand data before use.
 
 ### 3.2 Screening TikTok Shop data (Kalodata or Shop Plus) `[dropshipping assumption]`
 
@@ -150,9 +173,11 @@ All rules here come from source 02 alone, one operator's live screen-share. A br
 
 **R36. One viral video is not a candidate until the creator's profile shows at least 3 videos over 1,000,000 views.** Below that, treat it as a fluke and keep scrolling. High views can reflect the creator's personality, not the product. Condition: organic finds. Source: 08, personal heuristic. Cards: [056889323762].
 
-**R37. When a candidate appears, stop scrolling and start validating.** Discovery is not the work; 08 found a candidate in about 40 seconds and then spent the effort on checks. Source: 08. Cards: [ef25d34ce2bb].
+**R37. The moment a scouted post shows a sellable product with a visible price and offer, stop scrolling and log it; more scrolling delays validating it, it does not improve the shortlist.** Source: 08. Cards: [ef25d34ce2bb].
 
 **R38. Existing content must exist for the product, or skip it.** `[dropshipping assumption]` 05: with no TikTok or social footage you have nothing to build ads and pages from. Condition: before ad spend, for a seller who does not shoot its own content. For a branded brand: the gate becomes "can we demo the product on camera in under 15 seconds"; existing UGC is a plus, not a gate. Source: 05. Cards: [9651e08d5907] [cf56089fcd7c].
+
+**R111. Influencer or creator product seeding is a demand and content method distinct from burner-account scouting (R35, P6); track whether a seeded creator's post drives sales before treating the product as validated.** `[general practice]` No library source; verify against brand data before use.
 
 ### 3.5 AI-assisted research
 
@@ -162,21 +187,21 @@ All rules here come from source 02 alone, one operator's live screen-share. A br
 
 **R41. AI concepts and mockups are stimulus, not a spec.** Combine the generated concept with ranked, cited pain points to write the real specification; never send the mockup to a factory. Source: 07. Cards: [040c099795ea] [385b53666fdd].
 
-**R42. Ask explicitly for willingness-to-pay evidence.** Without it, an agent ranks pain points by urgency only. 07's agent ran a second targeted search for statements like "I would pay extra for". Source: 07. Cards: [385b53666fdd].
+**R42. Search reviews for a buyer naming a price they would pay, a competitor price they found too high, or a pre-order pledge; the closest proxy to price-band fit (R75) before a live listing exists.** Source: 07. Cards: [385b53666fdd].
 
 **R43. A brand that qualifies on active-ad volume is a candidate, not proof.** Run the revenue estimate (R49) before treating it as validation; ad volume can be budget or testing, not profit. Source: 06. Cards: [b09a0ce63306] [b37123cc93c7].
 
 ### 3.6 Demand validation
 
-**R44. Search volume and social mentions are a vote of confidence, not buyers.** Keyword Planner monthly volume and daily mention counts size interest; they do not prove purchase intent. Cross-check with Google Trends before calling demand real. Source: 09. Cards: [3b155508fd8a].
+**R44. Keyword volume and social mentions size interest; they do not confirm anyone will check out at your price.** Cross-check Google Trends and the Ad Library before shortlisting. Source: 09. Cards: [3b155508fd8a].
 
 **R45. Run Google Trends on the exact sub-niche term, on 12 months for direction and on several years for fad vs growth and seasonality.** 02: search "GLP-1 patches", not "GLP-1"; a parent term at all-time high can hide a format still on a fresh rise; 02 calls this optional and skips it when conviction is high. 09: classify growing, flat, fad or declining and plot multiple years for recurring spikes; 09 treats it as required. Strict merge: required. Sources: 02, 09. Cards: [c243c92a3b36] [989940333480] [2c09edad5b25] [52858475e05d].
 
 **R46. Read trend and competition together.** Crowded ad library plus rising trend line is the best combination. Crowded library plus fading trend is a late entry. Empty library plus rising trend is either early or unproven; use R61. Source: 02. Cards: [989940333480].
 
-**R47. A rising trend can still die.** 09: beauty rotates in new "breakthrough" ingredients, so today's leader has no guaranteed longevity. 03: the Udie hero product declined after competition rose and a COVID spike reversed. Condition: any trend-led pick; plan secondary products before the hero fades (R59). Sources: 03, 09. Cards: [2c09edad5b25] [a2e55b83f2ac].
+**R47. A rising trend can reverse before inventory sells through; do not commit an MOQ order to a hero SKU on trend data alone, plan a secondary evergreen SKU (R59) before ad spend starts.** Condition: any trend-led pick; plan secondary products before the hero fades (R59). Sources: 03, 09. Cards: [2c09edad5b25] [a2e55b83f2ac].
 
-**R48. A stable trend shows search volume and sales moving together and holding; a spike shows volume without matching sales or a sharp drop after a peak.** Deprioritize spike categories and look at sub-variations instead. Source: 07, from Axio's chart. Cards: [d814f1dad676].
+**R48. A stable read, where search volume and unit sales hold together, supports a permanent catalog SKU; a spike with no matching sales is a signal for one limited batch, not an MOQ order or a built-out PDP.** Source: 07, from Axio's chart. Cards: [d814f1dad676].
 
 **R49. Estimate competitor revenue before treating a competitor as proof, and apply a floor of roughly $200,000 to $300,000 a month.** 06's formula: monthly visits (SimilarWeb extension, about 3 free lookups a day) x conversion rate (baseline 2%, range 1.5 to 3.5%, lower for higher tickets) x conservative AOV from the visible offer stack. 06 states the floor 2 ways ($300K and "$200 to 300K"); use the range. 08 uses ShopHunter's estimate as directional confirmation only (example: about $90,000 in a month for a katana store), which would fail 06's floor. Condition: a single competitor used as validation. A lower estimate does not kill a product if 2 or more sellers confirm demand (R53). Sources: 06, 08. Conflict on the floor: section 7, C11. Cards: [b37123cc93c7] [c4db64af21f5].
 
@@ -230,6 +255,8 @@ All rules here come from source 02 alone, one operator's live screen-share. A br
 
 **R71. Speed into a spike is an advantage in the arbitrage model and a gamble in every model.** `[dropshipping assumption]` 02 believes early entry builds ad-account history on a product (unverified) and also calls a no-history spike a gamble that can collapse and take early advertisers with it. For a branded brand: never buy MOQ inventory against a spike with no 180-day history. Source: 02. Cards: [ae35f8af0cb0] [160628e26bfe].
 
+**R112. Map gifting and occasion demand (festivals, wedding season, Mother's Day) the same way as Christmas and Black Friday (R70); a product that spikes only on a gifting occasion needs the same cash and inventory plan as any other seasonal spike.** `[general practice]` No library source; verify against brand data before use.
+
 ### 3.10 Product attributes
 
 **R72. Prefer consumable or renewable products, but check the real replenishment rate before assuming a subscription.** 02: renewables support subscription revenue (one store: 33% subscribed, over $5,000 a month recurring) but a $1.5M store had 0 subscribers, so this is optional. 09: a hair mask used a couple of times a year cannot carry a monthly subscription. Sources: 02, 09. Cards: [0a701d80d125] [aa365bb09a4b] [494c8db9f8ce] [480136acffdb].
@@ -237,6 +264,8 @@ All rules here come from source 02 alone, one operator's live screen-share. A br
 **R73. Reject viral junk that rides novelty with no real value.** 05's junk: music projector, wall-mount gym bag. Winners relieve pain, hygiene, fitness or convenience problems. Source: 05. Cards: [9ffdbd6051d3].
 
 **R74. Ask whether the novelty creates a repeat-purchase annuity or a one-time purchase.** 01: a cheese-shape stamper is a durable toy, not a consumable. Condition: format innovation on a commodity. Source: 01. Cards: [978d4e988945].
+
+**R113. Weight lifetime value, not just AOV, when a product's repeat-purchase potential is unclear; a low-AOV item with strong repeat usage can clear the margin gate (R76) on LTV even where a single order would not.** `[general practice]` No library source; verify against brand data before use.
 
 ### 3.11 Price and unit economics
 
@@ -250,7 +279,9 @@ All rules here come from source 02 alone, one operator's live screen-share. A br
 
 **R79. Set price from about 2 dozen comparable products, not from 1 competitor.** Source: 09. Cards: [cbda8eff6638].
 
-**R80. Separate operational difficulty from structural economics before deciding a business is wrong.** 01's Cast: consumer love, a Nordstrom partnership and celebrity exposure could not beat gold and diamond price swings and luxury-lease competition; "a plane made of gold" never gets airborne. 03's early failures: 50 cents profit per Vietnamese roll after staff, glass vials breaking in transit. Condition: strong qualitative signals but a hard business. If the cost inputs are outside your control, stop rather than fund harder. Sources: 01, 03. Cards: [b86bba793279] [fff4fa23ccb9].
+**R80. Before scaling ad spend on strong early signal, separate a fixable operational problem (weak copy, a mispriced offer) from a structural cost problem ad spend cannot beat; scale the first, stop the category on the second.** Condition: strong qualitative signals but a hard business. If the cost inputs are outside your control, stop rather than fund harder. Sources: 01, 03. Cards: [b86bba793279] [fff4fa23ccb9].
+
+**R114. Treat payment-gateway friction as a margin input: COD collection fees, failed-payment retry cost and prepaid-discount cost all reduce the contribution margin the margin gate (R76) checks.** `[general practice]` No library source; verify against brand data before use.
 
 ### 3.12 Logistics, durability, perishability, regulatory
 
@@ -264,7 +295,11 @@ All rules here come from source 02 alone, one operator's live screen-share. A br
 
 **R85. Delivery window target of 6 to 10 days; 8 to 15 acceptable early; 10 to 15 (marketplace direct) raises chargebacks.** `[dropshipping assumption]` 04: a faster 5 to 8 day line added about $3 a unit on a $13 item and is overkill unless AOV absorbs it; refunds and chargebacks can escalate to withheld payouts. For a branded brand shipping from its own 3PL, use the brand's measured delivery times and refund rate instead. `[needs brand data: delivery days and refund rate per ship-to country]` Source: 04. Cards: [c9130a31f6bd] [cac61838f02d].
 
-**R86. Check IP and trademark exposure on fandom-adjacent or licensed-looking products before shortlisting.** 08's anime katana example never addresses it; no source gives a method. `[web check: trademark and licensing status of any character, brand or design element]` Source gap flagged from 08. Cards: [5be11a6e0db5].
+**R86. Before listing a fandom-adjacent or licensed-look product, check trademark exposure with the same rigor as the country regulatory check (R84); a takedown after launch costs the ad spend and the SKU.** `[web check: trademark and licensing status of any character, brand or design element]` Source gap flagged from 08. Cards: [5be11a6e0db5].
+
+**R115. For a mobile-first, cash-on-delivery market, price the RTO (return to origin) rate and COD collection cost into the margin gate (R76) before launch; a product with a high RTO rate can fail on delivery economics even after it clears every other check.** `[general practice]` No library source; verify against brand data before use.
+
+**R116. Some categories need a specific certification beyond the general regulatory check (R84): jewelry needs hallmarking, electronics and toys need BIS or the destination country's safety mark, cosmetics need per-country ingredient clearance.** One example exists: 07 cites GreenGuard Gold certification on a crib product, but gives no general method. `[general practice]` No library source for a general method; verify against brand data and per-country rules before use. Source: 07. Cards: [48b21947926b].
 
 ### 3.13 SKU count and range
 
@@ -280,15 +315,17 @@ All rules here come from source 02 alone, one operator's live screen-share. A br
 
 **R91. Vet a shortlisted supplier with 2 to 3 specific capability questions tied to the product's differentiation, by phone, regardless of platform rating.** A 4.7 rating is not proof of a good experience. Vague answers to a specific technical question mean do not scale. Source: 07. Cards: [7ce6e9e93939].
 
-**R92. Always order a sample or small trial before a volume order.** 07: about 50 units, not 5,000. 04: "optionally buy a sample". Strict merge: always. For an owned product the sample also feeds R82 (durability) and the content check (R38). Sources: 04, 07. Cards: [7ce6e9e93939] [d528b5e6c32f].
+**R92. Receive a sample through the store's own fulfillment chain, not only the factory, before committing to MOQ inventory or PDP photography; a sample that fails unboxing or shelf-life kills the SKU first.** Strict merge: always. For an owned product the sample also feeds R82 (durability) and the content check (R38). Sources: 04, 07. Cards: [7ce6e9e93939] [d528b5e6c32f].
 
 **R93. A private supplier or agent model beats marketplace-direct ordering for a no-inventory store; both are promoted by an interested party.** `[dropshipping assumption]` 04: an agent sources from 1688 and factories, stages 2 to 3 days in their warehouse, quotes from a photo or link on WhatsApp, bills per order from a pre-funded wallet, and offers branded packaging; 04 rejects AliExpress, Alibaba, CJ, AutoDS and Zendrop on cost, speed, branding and support, while earning referral bonuses from the platform he demos. 08 promotes ZenDrop on a 50% off affiliate link. Condition: no-inventory Shopify store. For a branded brand that holds stock this model does not apply; use R89 to R92 with Alibaba or a domestic manufacturer. `[web check: Team Drop, ZenDrop, AutoDS pricing and status]` Sources: 04, 08. Cards: [38cefaf4b56b] [5af9496ab626] [d528b5e6c32f] [a7e2993419b5].
 
 **R94. Add logo, custom mailer and inserts only after the product is proven to sell.** 04's rationale: cost and complexity before proof, and a defense against exact-offer copycats after. For a branded brand where packaging is part of the product (01's Olly jar), stage it: sample-run packaging for the test, full custom packaging after the first reorder. Sources: 04, 01. Cards: [e0ad963873bc] [4bc5544141c3].
 
-**R95. Re-quote as volume grows and ask; do not assume the price drops.** 04's $1.50 delta over 1,000 orders is about $5,000, his arithmetic. Source: 04. Cards: [2edf05052ea4].
+**R95. Set a reminder to re-quote every supplier once a SKU's order volume crosses a threshold (500 or 1,000 units); do not assume the landed cost in the margin gate (R76) still holds as it scales.** Source: 04. Cards: [2edf05052ea4].
 
 **R96. Confirm a supplier surfaced by an AI agent is actually reachable on the platform it names.** 07's first shortlist was not on Alibaba until a follow-up prompt verified it. Source: 07. Cards: [48b21947926b].
+
+**R117. For a considered-purchase category (electronics, jewelry, appliances), price warranty and after-sales support cost into the supplier brief (D3) before sourcing; a low landed cost can still fail once return and repair handling are added.** `[general practice]` No library source; verify against brand data before use.
 
 ### 3.15 Research cadence, launch sequencing and expansion order
 
@@ -312,13 +349,13 @@ All rules here come from source 02 alone, one operator's live screen-share. A br
 
 **R105. Every candidate goes through the full stack regardless of where it came from.** Competitors making money, problem or passion, demand proof, sourcing and margin, open angle, then build. 08's checklist is pass or fail with no ranking; section 9 adds a score. Source: 08. Cards: [178c6277a818] [bdee2e77e91b].
 
-**R106. The rules are a blueprint, not a bible; break one only when you can name the overriding signal, and log it.** 02 breaks its own concentration rule when recent revenue is very large and skips Google Trends when conviction is high. This makes 2 operators reach different picks from the same data. Condition: the agent may override a single amber check on a named signal; it may not override a red on R76 (margin), R84 (regulatory) or 3.17. Section 7, C12. Source: 02. Cards: [5c7c5df4a96e] [cc4b1af32e18] [c243c92a3b36].
+**R106. The agent may override one amber-level ecom check per product if it names the overriding number in the log; it may never override a red on the margin gate, the regulatory check, or the owned-difference requirement (O2).** Condition: the agent may override a single amber check on a named signal; it may not override a red on R76 (margin), R84 (regulatory) or 3.17. Section 7, C12. Source: 02. Cards: [5c7c5df4a96e] [cc4b1af32e18] [c243c92a3b36].
 
 **R107. After a short paid test fails, diagnose ads and funnel before blaming the product, and only after the process was actually followed.** 02: run a Meta test about 2 to 3 days, then move on if it underperforms. 06: the product is rarely the reason; check link CPC (about $1.50 target, $2 to $4+ elevated), then CTR (3% floor, about 4% ideal, below 3% is creative), then CPM (no fixed bar, above about $80 US is high); on the funnel, landing-to-ATC of 10% or more (8 to 9% for pricier items), ATC-to-purchase of 30% or more, AOV 20 to 40% above base. These are 06's targets for US Meta traffic and belong to 04-MED and 05-WEB for the fix. Condition: a validated product with one unprofitable test. `[needs brand data: the brand's own CPA and ROAS bar]` Sources: 02, 06. Cards: [1d273c71ce53] [2b0c86c59115] [f5d6e64a0e54] [3b6e3ec9a71b].
 
-**R108. Use "if it is hard, it is probably wrong" as a prompt to re-examine, not as a stop signal.** 01 states the rule and then describes 6 months of pushing uphill before a concept broke through. Effort does not equal value. Source: 01. Cards: [9f2a41b455b9].
+Moved to Appendix A: R108, "if it is hard, it is probably wrong" (founder-psychology aphorism, source 01, no store framing).
 
-**R109. Do not treat one early win as a repeatable formula for launching many more products.** 03 launched 10 to 12 follow-on businesses after 2 hits and says all failed on unbuilt skills (team, systems, brand, secondary products). Source: 03. Cards: [7820f678f67d] [ddbe3cee6657].
+Moved to Appendix A: R109, one early win is not a repeatable formula (founder-psychology aphorism, source 03, no store framing).
 
 ### 3.17 ecomOS overrides (apply above every rule in this section)
 
@@ -786,13 +823,14 @@ Confidence: "3 sources" means 3 mini playbooks state it independently; "1 operat
 | Shelf life example | About 3 years judged enough | Coconut oil | 09 | example |
 | One-iteration rule | Change exactly 1 variable | Owned product design | 01 | 1 founder |
 | Brand recall test | Top 3 brands named | Category white space | 01 | 1 founder |
-| Uphill phase before breakthrough | About 6 months | Counter-example to "if hard, wrong" | 01 | 1 founder |
 | Expansion order | AU, UK, EU, CA, US | Proven product, capital for sequence | 03 | 1 operator; result was UK largest, US smallest |
 | Trained eye for burner scouting | 3 to 6 months | Burner methods | 10 | 1 operator opinion |
 | Black Friday share of profit | About 80% across 2 months | 03's brand | 03 | 1 operator; 18-COG |
 | Net margin range | 20 to 30% | 03's brands | 03 | 1 operator, self-contradicted in the same breath |
 | Subscription attach example | 33%, over $5,000 a month recurring | One product | 02 | example |
 | Tool prices | Kalodata about $80 a month; Spy Crew Pro about $49; Team Drop $0; Axio free | At recording | 02, 04, 07 | `[web check]` all |
+
+One threshold row, "uphill phase before breakthrough" (about 6 months, source 01), moved to Appendix A with R108.
 
 ## 7. Where sources disagree
 
@@ -816,7 +854,7 @@ When each is right: inverse is right for an English-language product that travel
 What the agent does: default to the brand's home market for the first proof (R99 precondition: fit in 1 market before any sequence). Then score candidate next markets on: exact-product competitor count there (P10), delivery days and cost (R85), duty, VAT and compliance (R100), and localization cost. Enter the cheapest-to-win market next, whichever it is; the inverse order is one sourced answer to that scoring, not a rule. Set the "proven enough" gate yourself (P18 step 3) because no source gives one.
 
 **C4. Passion vs cash flow.**
-Cash flow: 03 (become passionate about success first, pursue passion when financially free), 05 (selling what you like is not research). Passion: 01's energy test (which direction excites you), "if it is hard it is probably wrong", and his warning that work should give energy back. 08 accepts a "passionate community" as a substitute for a problem.
+Cash flow: 03 (become passionate about success first, pursue passion when financially free), 05 (selling what you like is not research). Passion: 01's energy test (which direction excites you), "if it is hard it is probably wrong" (R108, moved to Appendix A), and his warning that work should give energy back. 08 accepts a "passionate community" as a substitute for a problem.
 When each is right: cash flow is right for selection (what to sell). 01's energy test is right for choosing between concepts that already passed the market checks, and as a founder-persistence signal, not a demand signal. 08's passionate-community rule is about the buyer's passion, not the founder's.
 What the agent does: never score a candidate on founder preference. Record founder excitement as a tiebreaker between candidates that pass P13 and P14 equally. Treat a buyer community's passion as a valid R5 input.
 
@@ -892,7 +930,7 @@ Merged from all 10 sources, deduplicated, each with the fix.
 28. Changing 2 or 3 product variables at once (01). Fix: R66.
 29. Over-complicating the pitch to signal sophistication (01). Fix: 1 concrete scenario and 1 difference.
 30. Funding a structurally capital-intensive business on consumer love alone (01). Fix: R80.
-31. Treating one early win as a repeatable formula and launching many follow-ons (03). Fix: R109.
+31. Treating one early win as a repeatable formula and launching many follow-ons (03). Fix: R109, moved to Appendix A.
 32. Assuming spillover from one country to the next (03). Fix: R99, validate each market alone.
 33. Skipping duty, VAT and localization when moving a product across markets (05, 03). Fix: R100.
 34. Not verifying a logistics partner's regional paperwork before peak (03; 18-COG owns the fix).
@@ -934,6 +972,9 @@ Product spec in manufacturing terms (R90); the 2 to 3 defining features and the 
 
 **D4. Launch sequence plan.** 1 page plus a table.
 Chosen sequence option and why (C3); first market and its independent validation summary; per-market table: market, competitor count, delivery days and cost, duty and VAT, compliance items, localization needed, entry gate metric, planned date, owner; SKU at launch (1) and the follow-on products with their trigger (C5); evergreen or trending class with the matching budget and patience (R69); test window and review owner.
+
+**D5. Offer ladder.** 1 page.
+Base price and the offer structure that lifts AOV without inventing claims (R63): bundle name, BOGO or multi-buy, free-gift threshold, a named ingredient or format only where provable (O1); the price-to-margin math from the margin gate (R76) at the offer's effective price, not the sticker price; the stage at which each rung is added (test, proven, scaled). Handed to 05-WEB as a page-ready pricing structure instead of extracted from the validation memo's prose.
 
 ## 10. What needs live data or a web check
 
@@ -982,6 +1023,8 @@ Source verification (does not change any rule): whether the 02 and 10 presenters
 | Source claims | All revenue figures and case results are self-reported at recording (2021 to 2026) and never verified; they do not go stale so much as they were never fresh | section 12 | Never used as targets |
 | Expansion order | 03's inverse sequence reflects 2019 to 2022 auction conditions and COVID growth; the US-last logic may not hold | R99, C3 | Score markets live each time (P18) |
 
+24 Sep 2026: ecommerce specificity pass applied from ECOM_REVIEW.md; priority block added, 14 rules reworded, 8 levers added, about 175 words moved to Appendix A.
+
 ## 12. Source index
 
 Credibility scale: A = operator with named, checkable brands and no tool to sell; B = operator with named results but a commercial pitch; C = anonymous or near-anonymous creator with self-reported results and a tool or course to sell; D = demo or teaching content with no results at all. Bias notes name what the source gains from you believing it.
@@ -1008,3 +1051,13 @@ Credibility scale: A = operator with named, checkable brands and no tool to sell
 - 20-FIN (finance): exit multiples and valuation (03).
 - 24-DEP (ad deployment) and 12-GAD (Google Ads): account audits and Google search demand tactics; Keyword Planner reads from P9 may inform 12-GAD.
 - Brand folders (`brands/<brand>/overlays/01-PRD-product-research.md`): the brand's margin target, markets, platform, supplier list and every `[needs brand data]` value above.
+
+## Appendix A. General background
+
+Demoted during the 24 Sep 2026 ecommerce specificity pass (ECOM_REVIEW.md section 5): founder-psychology aphorisms with no store framing, moved out of section 3.16 and section 6. Kept for reference only; not decision rules an agent runs.
+
+**R108 (moved from section 3.16).** Use "if it is hard, it is probably wrong" as a prompt to re-examine, not as a stop signal. 01 states the rule and then describes 6 months of pushing uphill before a concept broke through. Effort does not equal value. Source: 01. Cards: [9f2a41b455b9].
+
+**R109 (moved from section 3.16).** Do not treat one early win as a repeatable formula for launching many more products. 03 launched 10 to 12 follow-on businesses after 2 hits and says all failed on unbuilt skills (team, systems, brand, secondary products). Source: 03. Cards: [7820f678f67d] [ddbe3cee6657].
+
+**Uphill phase before breakthrough (moved from section 6, thresholds table).** About 6 months. Counter-example to "if hard, wrong". Source: 01, 1 founder.
