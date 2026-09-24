@@ -619,6 +619,40 @@ table.sheat td.heat { min-width: 58px; }
   #campaign { width: 100%; }
 }
 @media (prefers-reduced-motion: reduce) { .side, .card { transition: none; } .card:hover { transform: none; } }
+
+/* top 5 sellers builder */
+.pb { border-color: var(--gold-line); }
+.pb-bar { gap: 10px; align-items: center; flex-wrap: wrap; }
+.pb-list { display: grid; gap: 6px; }
+.pb-item { border: 1px solid var(--line); border-radius: 14px; background: var(--surface); }
+.pb-item.open { border-color: var(--gold); box-shadow: 0 0 0 3px var(--gold-soft); }
+.pb-row { display: grid; grid-template-columns: 26px minmax(0, 1fr) auto auto; gap: 10px; align-items: center; padding: 8px 10px; }
+.pb-nm { display: grid; min-width: 0; }
+.pb-nm .nm { font-weight: 600; overflow-wrap: anywhere; }
+.pb-nm .mt, .pb-num .mt { font-size: 12px; color: var(--muted); }
+.pb-num { display: grid; justify-items: end; font-variant-numeric: tabular-nums; }
+.pb-noad { color: var(--gold-deep); }
+.pb-build { border-top: 1px dashed var(--gold-line); padding: 12px; display: grid; gap: 12px; }
+.pb-sec { display: grid; gap: 6px; }
+.pb-sec h4 { margin: 0; font-size: 11px; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); }
+.pb-sec h4 .small { text-transform: none; letter-spacing: normal; }
+.pb-photos { display: flex; gap: 8px; flex-wrap: wrap; }
+.pb-ph { position: relative; width: 88px; height: 88px; border-radius: 12px; overflow: hidden; border: 2px solid var(--line); cursor: pointer; }
+.pb-ph.on { border-color: var(--gold); }
+.pb-ph img { width: 100%; height: 100%; object-fit: cover; display: block; border: 0; border-radius: 0; }
+.pb-ph input { position: absolute; top: 6px; left: 6px; margin: 0; }
+.pb-refads { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 8px; max-width: 620px; }
+.pb-refads .bc-th img { width: 100%; aspect-ratio: 1 / 1; object-fit: cover; border-radius: 10px; display: block; }
+.pb-opts { gap: 14px; flex-wrap: wrap; }
+.pb-opts label { display: grid; gap: 4px; font-size: 12px; color: var(--muted); }
+.pb-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(260px, 100%), 1fr)); gap: 10px; }
+.pb-ad figcaption { gap: 6px; }
+.pb-ad img { aspect-ratio: auto; }
+.pb-cp { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 2px 8px; align-items: start; }
+.pb-cp .small { grid-column: 1 / -1; }
+.pb-cp p { margin: 0; font-size: 13px; overflow-wrap: anywhere; }
+.bad-text { color: var(--bad); }
+@media (max-width: 560px) { .pb-row { grid-template-columns: 26px minmax(0, 1fr) auto; } .pb-row .btn { grid-column: 2 / -1; justify-self: start; } }
 </style>
 
 <div class="shell">
@@ -784,4 +818,5 @@ table.sheat td.heat { min-width: 58px; }
 <script src="studio.js"></script>
 <script src="sales.js"></script>
 <script src="testlab.js"></script>
+<script src="prodads.js"></script>
 <script src="app.js"></script>

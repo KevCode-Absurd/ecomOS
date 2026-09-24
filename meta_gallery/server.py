@@ -26,13 +26,14 @@ from pathlib import Path
 from urllib.parse import parse_qs, urlparse
 
 from . import ai
+from . import products
 from . import settings as settings_mod
 from .snapshot import DATA
 from .view import Engine, ViewError
 
 STATIC = Path(__file__).resolve().parent / 'static'
 WEB = Path(__file__).resolve().parent / 'web'
-WEB_FILES = ('engine.js', 'app.js', 'insights.js', 'overview.js', 'lab.js', 'studio.js', 'sales.js', 'testlab.js')
+WEB_FILES = ('engine.js', 'app.js', 'insights.js', 'overview.js', 'lab.js', 'studio.js', 'sales.js', 'testlab.js', 'prodads.js')
 COMPETITORS = DATA / 'competitors.json'
 COMP_MEDIA = DATA / 'comp_media.json'
 CACHE = DATA / 'cache' / 'gallery.json'
@@ -310,6 +311,21 @@ def make_handler(gallery):
                     if path:
                         return self.send_file(path, cache='max-age=86400')
                     return self.send_json({'error': 'not found'}, 404)
+                if parts == ['api', 'product']:
+                    name = (qs.get('name') or [''])[0][:200]
+                    code = (qs.get('code') or [''])[0][:60]
+                    try:
+                        meta = products.product(name, code, refresh=(qs.get('refresh') or [''])[0] == '1')
+                    except products.ProductError as e:
+                        return self.send_json({'error': str(e)}, 502)
+                    meta = dict(meta, photos=[dict(ph, src=f"/product-photo/{meta['slug']}/{ph['file']}") for ph in meta.get('photos', [])])
+                    return self.send_json({'product': meta, 'ads': ai.list_product_ads(meta['slug'])})
+                if len(parts) == 3 and parts[0] == 'product-photo':
+                    path = products.photo_path(parts[1], parts[2])
+                    return self.send_file(path, cache='max-age=86400') if path else self.send_json({'error': 'not found'}, 404)
+                if len(parts) == 3 and parts[0] == 'product-ads':
+                    path = ai.product_ad_path(parts[1], parts[2])
+                    return self.send_file(path, cache='max-age=86400') if path else self.send_json({'error': 'not found'}, 404)
                 if parts == ['old']:
                     return self.send_file(STATIC / 'index.html')
                 if parts == ['report']:
@@ -354,7 +370,8 @@ def make_handler(gallery):
                       '/api/breakdown': (self.ai_breakdown, MAX_AI_BODY),
                       '/api/variants': (self.ai_variants, MAX_REF_BODY),
                       '/api/ask': (self.ai_ask, MAX_REF_BODY),
-                      '/api/competitor-variants': (self.ai_competitor, MAX_REF_BODY)}
+                      '/api/competitor-variants': (self.ai_competitor, MAX_REF_BODY),
+                      '/api/product-ads': (self.ai_product_ads, MAX_REF_BODY)}
             for doc in DOCS:
                 savers['/api/save/' + doc] = ((lambda d: lambda body: save_doc(d, body))(doc), MAX_DOC)
             if url.path not in savers:
@@ -373,7 +390,7 @@ def make_handler(gallery):
             try:
                 body = json.loads(self.rfile.read(length).decode('utf-8'))
                 return self.send_json(save(body))
-            except ai.AIError as e:
+            except (ai.AIError, products.ProductError) as e:
                 return self.send_json({'error': str(e)}, 502)
             except (ValueError, UnicodeDecodeError, TypeError) as e:
                 return self.send_json({'error': str(e)}, 400)
@@ -427,6 +444,28 @@ def make_handler(gallery):
                                     media_type=kind or 'image/jpeg', ref_bytes=pasted_image(body.get('ref_image')),
                                     ref_role='product' if body.get('ref_role') == 'product' else 'layout')
             return {'made': made, 'all': ai.list_variants(ad_id)}
+
+        def ai_product_ads(self, body):
+            """body: {name, code, picks, n, size, quality, ref_image | ref_ad_id, sold, copy_only}.
+            Photos come from the product's page on gehnaindia.com. The style reference is a pasted image or one of the account's ads."""
+            name = str(body.get('name') or '')[:200]
+            if not name.strip():
+                raise ValueError('Pick a product.')
+            meta = products.product(name, str(body.get('code') or '')[:60])
+            picks = [int(x) for x in body.get('picks') or [] if isinstance(x, int) and 1 <= x <= products.MAX_PHOTOS]
+            photos = products.photo_bytes(meta['slug'], picks)
+            ref = pasted_image(body.get('ref_image'))
+            ref_id = str(body.get('ref_ad_id') or '')
+            if not ref and SAFE_ID.match(ref_id):
+                ref, _ = image_bytes(gallery.ad(ref_id))
+            p = dict(meta, sold=str(body.get('sold') or '')[:160])
+            n = max(1, min(5, int(body.get('n') or 4)))
+            size = body.get('size') if body.get('size') in ai.SIZES else 'square'
+            if body.get('copy_only'):
+                return {'copy': ai.product_copy(p, n, photos, ref, size), 'slug': meta['slug']}
+            made = ai.make_product_ads(p, photos, n, size, body.get('quality', 'medium'), ref,
+                                       extra={'ref_ad_id': ref_id if SAFE_ID.match(ref_id) and not body.get('ref_image') else ''})
+            return {'made': made, 'all': ai.list_product_ads(meta['slug']), 'slug': meta['slug']}
 
         def reject(self):
             self.send_json({'error': 'read-only'}, 405)

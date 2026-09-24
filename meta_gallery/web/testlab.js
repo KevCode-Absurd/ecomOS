@@ -195,8 +195,10 @@ function testsSectionHtml() {
   const list = TL.list || [];
   if (!list.length) return '';
   const w = tlWindow();
+  let top5 = '';
+  try { top5 = window.top5CardHtml ? window.top5CardHtml() : ''; } catch (e) { top5 = ''; }
   return `<section class="act-sec tl" id="act-tests"><div class="act-head"><h2>Tests to run this week</h2><span class="muted small">Ranked. Built from website sales ${esc(dateLabel(w.since))} to ${esc(dateLabel(w.until))} and Meta ads together.</span></div>
-    <div class="tl-grid">${list.map(testCard).join('')}</div>
+    <div class="tl-grid">${top5}${list.map((t, i) => testCard(t, i + (top5 ? 1 : 0))).join('')}</div>
     <p class="small muted">Each test changes 1 thing and says up front what counts as a win. Budgets are starting points. The page never changes the ad account.</p></section>`;
 }
 

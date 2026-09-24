@@ -402,12 +402,19 @@ def _multipart(fields, files):
     return b''.join(parts), f'multipart/form-data; boundary={boundary}'
 
 
+_EXT = {'image/jpeg': 'jpg', 'image/png': 'png', 'image/webp': 'webp'}
+
+
+def _kind(b):
+    return 'image/png' if b[:8] == b'\x89PNG\r\n\x1a\n' else 'image/webp' if b[8:12] == b'WEBP' else 'image/jpeg'
+
+
 def _edit(cfg, model, prompt, image_bytes, size, quality, fidelity=True):
     fields = {'model': model, 'prompt': prompt, 'size': size, 'quality': quality, 'n': '1', 'output_format': 'png'}
     if fidelity:
         fields['input_fidelity'] = 'high'
     images = image_bytes if isinstance(image_bytes, (list, tuple)) else [image_bytes]
-    body, ctype = _multipart(fields, [('image[]', f'reference{i + 1}.jpg', 'image/jpeg', b) for i, b in enumerate(images) if b])
+    body, ctype = _multipart(fields, [('image[]', f'reference{i + 1}.{_EXT[_kind(b)]}', _kind(b), b) for i, b in enumerate(images) if b])
     return _post('https://api.openai.com/v1/images/edits', {'Authorization': f"Bearer {cfg['openai_key']}", 'Content-Type': ctype}, body, cfg, timeout=300)
 
 
@@ -456,9 +463,14 @@ def make_variants(ad_id, ad, image_bytes, bd, n=3, size='square', quality='mediu
 
 
 def _render(cfg, ad_id, ad, bd, concepts, image_bytes, size, quality, out_dir, extra):
+    return _render_in(cfg, Path(out_dir or VARIANTS) / str(ad_id), concepts, image_bytes, size, quality, extra,
+                      lambda c: concept_prompt(ad, bd, c))
+
+
+def _render_in(cfg, folder, concepts, image_bytes, size, quality, extra, prompt_of, keep=()):
+    """Make one image per concept in parallel and save each with a .json note. keep: concept fields saved too."""
     size_px = SIZES.get(size, SIZES['square'])
     quality = quality if quality in QUALITIES else 'medium'
-    folder = Path(out_dir or VARIANTS) / str(ad_id)
     folder.mkdir(parents=True, exist_ok=True)
     stamp = time.strftime('%Y%m%d-%H%M%S')
 
@@ -466,13 +478,14 @@ def _render(cfg, ad_id, ad, bd, concepts, image_bytes, size, quality, out_dir, e
         i, c = i_c
         label = c.get('name') or f'Version {i + 1}'
         try:
-            png, model = make_variant(cfg, concept_prompt(ad, bd, c), image_bytes, size_px, quality)
+            png, model = make_variant(cfg, prompt_of(c), image_bytes, size_px, quality)
         except AIError as e:
-            return {'label': label, 'error': str(e)}
+            return {'label': label, 'error': str(e), **{k: c.get(k) or '' for k in keep}}
         name = f'{stamp}_{i + 1}.png'
         (folder / name).write_bytes(png)
         meta = {'label': label, 'closeness': c.get('closeness') or 'new', 'principle': c.get('principle') or '', 'idea': c.get('idea') or '',
-                'file': name, 'model': model, 'size': size_px, 'quality': quality, 'date': time.strftime('%Y-%m-%d %H:%M'), **extra}
+                'file': name, 'model': model, 'size': size_px, 'quality': quality, 'date': time.strftime('%Y-%m-%d %H:%M'), **extra,
+                **{k: c.get(k) or '' for k in keep}}
         (folder / (name + '.json')).write_text(json.dumps(meta), encoding='utf-8')
         return meta
 
@@ -499,4 +512,139 @@ def variant_path(ad_id, name, out_dir=None):
     if not SAFE_ID.match(str(ad_id)) or not SAFE_FILE.match(name):
         return None
     p = Path(out_dir or VARIANTS) / str(ad_id) / name
+    return p if p.is_file() else None
+
+
+# ---------- ads for a best-selling product, from its site photos ----------
+PRODUCT_ADS = DATA / 'product_ads'
+SAFE_SLUG = re.compile(r'^[a-z0-9][a-z0-9-]{1,120}$')
+COPY_FIELDS = ('primary_text', 'headline', 'description')
+PRODUCT_SHAPE = '''{"concepts": [
+  {"name": "2 to 4 word concept name",
+   "angle": "the selling angle in a few words, for example proof it sells, gifting, everyday wear, price, craft",
+   "idea": "the ad idea in 1 sentence",
+   "scene": "what the photo shows: setting, model or no model, props, light",
+   "layout": "where product, text and proof sit",
+   "text_on_image": "exact short text to print on the image, or empty",
+   "primary_text": "Meta primary text: 2 to 4 short lines",
+   "headline": "Meta headline, 40 characters or less",
+   "description": "Meta link description, 30 characters or less"}
+]}'''
+
+
+def _facts_line(p):
+    bits = [f"Product: {p.get('name', '')}"]
+    if p.get('code'):
+        bits.append(f"Code: {p['code']}")
+    if isinstance(p.get('price'), (int, float)):
+        bits.append(f"Price on the site: Rs {int(p['price']):,}")
+    if p.get('emi_months'):
+        bits.append(f"EMI on the site: up to {p['emi_months']} months")
+    if p.get('badge'):
+        bits.append(f"Site badge: {p['badge']}")
+    if p.get('sold'):
+        bits.append(f"Website sales: {p['sold']}")
+    return '\n'.join(bits)
+
+
+def product_prompt(p, n, n_photos, has_ref, fmt='square'):
+    """Plan n image ads plus Meta copy for one product. Also used, as text only, by the shared page."""
+    return (
+        "You are a creative director and copywriter for Meta ads at Gehna, an Indian fine jewellery brand. "
+        f"Write {n} ad concepts for 1 best-selling piece, each with its own Meta copy.\n\n"
+        + (f"Images 1 to {n_photos} are the site photos of the exact piece. " if n_photos else "No product photo is attached; describe the piece only from the facts. ")
+        + (f"Image {n_photos + 1} is a style reference: borrow its layout, framing, text style and mood only. Never copy its product, text, logo, models or faces.\n" if has_ref else "\n")
+        + f"Format: {fmt} ({SIZES.get(fmt, SIZES['square'])}).\n\n"
+        + _facts_line(p) + "\n"
+        + (f"Site description: {p.get('description')}\n" if p.get('description') else '')
+        + "\nMake each concept test a different angle: 1 close to a clean product ad, then gifting, worn on the body, proof that people buy it, "
+        "craft and stones, or price and EMI. Pick the best angles for this piece.\n"
+        "Rules: the piece shown is always this exact piece. Use only facts given here: never invent discounts, ratings, "
+        "certifications, stock claims or delivery promises. A price may be used only as given. Copy: plain short sentences, "
+        "digits for numbers, no em dashes, no hashtags, at most 1 emoji in primary text, and no words like elevate, timeless or stunning.\n\n"
+        f"Brand kit (JSON):\n{json.dumps(load_brand(), ensure_ascii=False)[:4000]}\n\n"
+        f"Reply with only this JSON:\n{PRODUCT_SHAPE}"
+    )
+
+
+def product_image_prompt(p, c, n_photos, has_ref):
+    text = c.get('text_on_image') or ''
+    return (
+        "Create a new Meta feed ad image for Gehna, an Indian fine jewellery brand.\n"
+        + (f"Images 1 to {n_photos} are site photos of the product: show exactly this piece. " if n_photos else '')
+        + (f"Image {n_photos + 1} is a style reference: use only its layout, framing, text style and mood. Never copy its product, text, logo, models or faces.\n" if has_ref else '\n')
+        + "The jewellery must stay exactly the same piece: same metal colour, stones, shape and proportions. Do not invent new pieces.\n"
+        + f"Product: {p.get('name', '')}.\n"
+        + f"Concept: {c.get('idea', '')}\n"
+        + (f"Scene: {c['scene']}\n" if c.get('scene') else '')
+        + (f"Layout: {c['layout']}\n" if c.get('layout') else '')
+        + (f"Text on the image, exactly: \"{text}\". No other text.\n" if text else "No text on the image.\n")
+        + "Never add discounts, ratings, certifications or claims. Spell text correctly. Photographic, premium, clear space near the edges, no watermarks.\n"
+        + brand_brief()
+    )
+
+
+def _product_concepts(text, n):
+    raw = _json_from(text).get('concepts') or []
+    out = []
+    for c in raw[:n]:
+        if isinstance(c, dict) and _txt(c.get('idea'), 400):
+            item = {k: _txt(c.get(k), 400) for k in ('name', 'angle', 'idea', 'scene', 'layout', 'text_on_image')}
+            lines = [re.sub(r'[ \t]+', ' ', x).strip() for x in str(c.get('primary_text') or '').splitlines()]
+            item.update({'primary_text': '\n'.join(x for x in lines if x)[:700], 'headline': _txt(c.get('headline'), 60), 'description': _txt(c.get('description'), 60)})
+            out.append(item)
+    return out
+
+
+def product_copy(p, n=4, photos=None, ref_bytes=None, fmt='square', env_path=None):
+    """Concepts and Meta copy only (no images)."""
+    cfg = settings(env_path)
+    n = max(1, min(5, int(n)))
+    photos = list(photos or [])
+    imgs = photos + ([(ref_bytes, _kind(ref_bytes))] if ref_bytes else [])
+    text, _, _ = _ask(cfg, product_prompt(p, n, len(photos), bool(ref_bytes), fmt), imgs, 'image/jpeg', max_tokens=4000)
+    out = _product_concepts(text, n)
+    if not out:
+        raise AIError('Could not write ideas for this product. Try again.')
+    return out
+
+
+def make_product_ads(p, photos, n=4, size='square', quality='medium', ref_bytes=None, env_path=None, out_dir=None, extra=None):
+    """Plan concepts with copy, then make 1 image per concept from the product photos (+ style reference)."""
+    cfg = settings(env_path)
+    if not cfg['openai_key']:
+        raise AIError('Image making is not set up on this computer yet.')
+    slug = str(p.get('slug') or '')
+    if not SAFE_SLUG.match(slug):
+        raise AIError('Bad product.')
+    photos = list(photos or [])
+    if not photos:
+        raise AIError('No site photo of this product could be loaded, so an image ad would show the wrong piece.')
+    concepts = product_copy(p, n, photos, ref_bytes, size, env_path)
+    images = [b for b, _ in photos] + ([ref_bytes] if ref_bytes else [])
+    info = {'source': 'product', 'product': _txt(p.get('name'), 160), 'product_code': _txt(p.get('code'), 40),
+            'with_reference': bool(ref_bytes), **(extra or {})}
+    return _render_in(cfg, Path(out_dir or PRODUCT_ADS) / slug, concepts, images, size, quality, info,
+                      lambda c: product_image_prompt(p, c, len(photos), bool(ref_bytes)), keep=('angle', 'text_on_image') + COPY_FIELDS)
+
+
+def list_product_ads(slug, out_dir=None):
+    if not SAFE_SLUG.match(str(slug)):
+        return []
+    folder = Path(out_dir or PRODUCT_ADS) / str(slug)
+    out = []
+    for meta in sorted(folder.glob('*.png.json'), reverse=True):
+        try:
+            m = json.loads(meta.read_text(encoding='utf-8'))
+            if SAFE_FILE.match(m.get('file', '')) and (folder / m['file']).exists():
+                out.append(m)
+        except ValueError:
+            continue
+    return out[:30]
+
+
+def product_ad_path(slug, name, out_dir=None):
+    if not SAFE_SLUG.match(str(slug)) or not SAFE_FILE.match(str(name)):
+        return None
+    p = Path(out_dir or PRODUCT_ADS) / str(slug) / name
     return p if p.is_file() else None

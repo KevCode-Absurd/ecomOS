@@ -149,6 +149,7 @@ function refLoad(file) {
   });
 }
 function refRerender() {
+  if (window.pbRerender) window.pbRerender();
   if (state.tab === 'studio' && window.renderStudio) window.renderStudio();
   const lab = $('lab');
   if (lab && lab.dataset.id && typeof labRender === 'function') labRender(lab.dataset.id);
