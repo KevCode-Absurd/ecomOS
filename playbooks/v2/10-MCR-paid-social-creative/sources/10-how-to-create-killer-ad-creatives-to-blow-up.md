@@ -26,12 +26,12 @@ It helps a creative strategist or media buyer run a creative round that teaches 
 12. **Repeated review themes are new angles.** Condition: a brand with 1 generic creative that wants more angles. Look for the same use case repeated across reviews, not one-off mentions. Build a separate creative per cluster. [320d499e601c]
 13. **Make variations of an angle, not random new ads.** Condition: once an angle looks promising. Keep the angle, product and argument; change 1 meaningful element (the source's example is format: UGC video versus carousel). If one "massively outperforms", you learned something. [1c4808b43997]
 14. **Match testing volume to budget.** Condition: every test launch. At $30, $50 or $100 a day you cannot feed an unlimited number of ads enough spend to learn. Launch a focused batch and give the platform room to spread spend and return a signal. [d13b3e03307b]
-15. **The ad with the most spend is not automatically the winner.** Condition: any test where 1 ad took most of the spend. It drives the most sales because it was "out in the market more than anything else". The platform snowballs spend onto ads with strong CTR, good link CTR and below-average CPM; that is the platform reacting to engagement, not proof of buying intent. Watch the ad and understand why it works. [cae81d0649c]
+15. **The ad with the most spend is not automatically the winner.** Condition: any test where 1 ad took most of the spend. It drives the most sales because it was "out in the market more than anything else". The platform snowballs spend onto ads with strong CTR, good link CTR and below-average CPM; that is the platform reacting to engagement, not proof of buying intent. Watch the ad and understand why it works. [cae81d0649c4]
 16. **High CTR can be empty attention.** Condition: reading test results. A visually stimulating ad can win clicks while viewers never learn what is sold or whether they are even a customer. Judge by the whole metric chain: CTR, the drop from CTR to link CTR, and post-click buying behaviour. [03cf444bb483]
-17. **Do not judge on CPA or ROAS alone.** Condition: all winner calls. "There's a lot more to the story than just return on ad spend and CPA." A good CPA may mean the ad only works at low spend, or would be a better retargeting ad. The card marks this as the source's stated position, not a platform rule. [cae81d0649c] [64b12f085516]
+17. **Do not judge on CPA or ROAS alone.** Condition: all winner calls. "There's a lot more to the story than just return on ad spend and CPA." A good CPA may mean the ad only works at low spend, or would be a better retargeting ad. The card marks this as the source's stated position, not a platform rule. [cae81d0649c4] [64b12f085516]
 18. **Change 1 variable at a time.** Condition: all tests after a winner is found. If hook, angle, audience, landing page, offer, campaign and creative all change at once, "what did we test? Nothing, really." Keep enough stable to isolate what you learn. [1c4808b43997]
 19. **Growth is a 2-piece puzzle: cost to get attention and conversion rate.** Condition: diagnosing profit. Illustration: sending 1 million people to a site that converts at 0.5% will "never be profitable". The 0.5% is an arithmetic illustration, not a threshold. [f6fbbab529e7]
-20. **Place each ad where its metrics say it belongs in the funnel.** Condition: after a test produces several usable ads. Combined metrics (CTR, link CTR, CPA, post-click behaviour, ability to hold spend at scale) tell you top, middle or bottom of funnel. No single metric assigns the role. The source gives no cutoffs. [64b12f085516] [cae81d0649c]
+20. **Place each ad where its metrics say it belongs in the funnel.** Condition: after a test produces several usable ads. Combined metrics (CTR, link CTR, CPA, post-click behaviour, ability to hold spend at scale) tell you top, middle or bottom of funnel. No single metric assigns the role. The source gives no cutoffs. [64b12f085516] [cae81d0649c4]
 21. **Every test is the next brief.** Condition: after each round. Read the result as a production instruction, not a score. "Let the result tell you what to make next." [01183c908919]
 
 ## 3. Procedures
@@ -62,15 +62,15 @@ It helps a creative strategist or media buyer run a creative round that teaches 
 2. Make variations of 1 angle, not unrelated ads. Example: version 1 a UGC video, version 2 a carousel whose slides tell the story; same angle, same product, same argument. [1c4808b43997]
 3. Run them "apples-to-apples" so each gets equal visibility. The source's example account: 13 ads at $30 a day, with a per-ad impression limit first set to 1,000, then lowered to 800 because CPMs averaged $50 to $70 (a newer account whose pixel had little data). [d13b3e03307b] [1c4808b43997] [verify UI: how to cap or equalize impressions per ad in Meta; the source does not say which setting, rule or tool he used]
 4. Aim to find winners within the first 1 to 2 weeks. [d13b3e03307b]
-5. Do not let the platform alone pick the winner. In the example, 1 ad took the most spend on day 1; left alone, source says the platform would have spent $150, $200 or $400 on it. [cae81d0649c]
-6. If most ads in a big batch never got spend, record the test as inconclusive, not as failures, and re-run fewer creatives with enough delivery (card instruction). [d13b3e03307b] [cae81d0649c]
+5. Do not let the platform alone pick the winner. In the example, 1 ad took the most spend on day 1; left alone, source says the platform would have spent $150, $200 or $400 on it. [cae81d0649c4]
+6. If most ads in a big batch never got spend, record the test as inconclusive, not as failures, and re-run fewer creatives with enough delivery (card instruction). [d13b3e03307b] [cae81d0649c4]
 
 ### 3.4 Read the result (attention-to-purchase chain)
 1. Did we get attention? If nobody stops: the hook may be weak or the visual not interesting. [f6fbbab529e7]
 2. Did they click to the site? Compare CTR with link CTR. If people watch or engage but do not click through: the ad may entertain but not explain the product or why they need it. [f6fbbab529e7] [03cf444bb483]
 3. What happened after the click? Check conversion rate, add to carts, checkouts, offer, pricing, shipping and site experience. If an ad sends many quality clicks and nobody buys, do not blame the creative first; the landing page may be slow or weak. [f6fbbab529e7] [needs brand data: post-click funnel by ad, landing page speed]
-4. Watch the ad to explain the numbers. Ask whether the reason it performs relates to the product and its value. [cae81d0649c] [03cf444bb483]
-5. Ask whether the ad can hold spend at larger budget. An ad that looks great at $30 a day can fall apart when scaled. [cae81d0649c] [64b12f085516]
+4. Watch the ad to explain the numbers. Ask whether the reason it performs relates to the product and its value. [cae81d0649c4] [03cf444bb483]
+5. Ask whether the ad can hold spend at larger budget. An ad that looks great at $30 a day can fall apart when scaled. [cae81d0649c4] [64b12f085516]
 6. Assign a funnel role from the combined pattern. A strong CPA that may only hold at low spend could be a retargeting ad. [64b12f085516]
 7. Cut the weakest ad. Keep what won. [1c4808b43997]
 
@@ -89,11 +89,11 @@ It helps a creative strategist or media buyer run a creative round that teaches 
 | rule | number or threshold | condition | source's basis | card id |
 |---|---|---|---|---|
 | Too many ads for the budget | $30, $50 or $100 a day cannot feed "an unlimited number" of ads | small budgets | agency experience; no ad count per budget given | [d13b3e03307b] |
-| Brands that launch too many | 30 new ads, 20 more next week, "doesn't work" 2 days later | small budgets | cautionary pattern he sees on calls | [cae81d0649c] |
+| Brands that launch too many | 30 new ads, 20 more next week, "doesn't work" 2 days later | small budgets | cautionary pattern he sees on calls | [cae81d0649c4] |
 | Example test size | 13 ads at $30 a day | new account, weak pixel data | 1 client account, example only | [d13b3e03307b] |
 | Per-ad impression limit | 1,000, lowered to 800 | CPMs of $50 to $70 | same account, example only | [d13b3e03307b] |
 | Time to find winners | first 1 to 2 weeks | test rounds | stated target | [d13b3e03307b] |
-| Platform snowball | $150, $200, $400 on 1 ad if left alone | ad with strong early engagement | presenter's prediction for that ad | [cae81d0649c] |
+| Platform snowball | $150, $200, $400 on 1 ad if left alone | ad with strong early engagement | presenter's prediction for that ad | [cae81d0649c4] |
 | High CTR example | 10.9% CTR, "very high for e-commerce", little buying | visually stimulating ad that did not explain the product | 1 ad, not a benchmark | [03cf444bb483] |
 | CTR to link CTR drop, weak ad | "over 3%" drop | the 10.9% CTR ad | 1 ad; unclear if points or relative | [03cf444bb483] |
 | Better ad | 6.3% CTR, drop "less than 2%", led to buying | ad showing routine, before-and-after, application | 1 ad, not a benchmark | [03cf444bb483] |
@@ -115,12 +115,12 @@ Arithmetic on the source's own test (done in code, not in the source): 13 ads x 
 | Is every claim proven on screen? | List claims; find the shot for each | each claim has a visual | adjectives with no demonstration; unsupported numbers | film the proof or drop the claim | [306f74067bdf] |
 | Is the angle rooted in customer language? | Trace the angle to a review, comment, ticket or survey | repeated theme, customer words | team's own feature list | redo research (3.1) | [e36ec3e6809d] [320d499e601c] |
 | Is the format right for the value? | Ask: can a still image show why it is worth buying? | static for plain value; video for motion or real use | static of a product that needs to be seen working | switch format | [e36ec3e6809d] |
-| Did every ad get delivery? | Spend and impressions per ad in the test | roughly equal visibility | 1 ad took almost all spend | treat as inconclusive; re-run a smaller batch with equal visibility | [cae81d0649c] [d13b3e03307b] |
-| Is the "winner" a volume artefact? | Compare its sales share with its spend share | wins on supporting metrics too | wins only because it got the spend | judge on the full chain | [cae81d0649c] |
+| Did every ad get delivery? | Spend and impressions per ad in the test | roughly equal visibility | 1 ad took almost all spend | treat as inconclusive; re-run a smaller batch with equal visibility | [cae81d0649c4] [d13b3e03307b] |
+| Is the "winner" a volume artefact? | Compare its sales share with its spend share | wins on supporting metrics too | wins only because it got the spend | judge on the full chain | [cae81d0649c4] |
 | Attention stage | Did people stop? (source names no metric here) [needs brand data: thumb-stop or hook metric the brand uses] | people stop | nobody stops | new hook or more interesting visual | [f6fbbab529e7] |
 | Click stage | CTR versus link CTR gap | small gap (example: under 2%) | big gap (example: over 3%) with high CTR | ad entertains but does not explain; show routine, before-and-after, what you buy | [03cf444bb483] |
 | Post-click stage | conversion rate, add to cart, checkout, drop-off by ad | quality clicks that buy | quality clicks, no buys | check landing page speed and quality, offer, price, shipping before changing the ad | [f6fbbab529e7] [needs brand data: on-site funnel by ad] |
-| Scale check | Watch metrics as budget rises | holds spend | falls apart above test budget | may be a low-spend or retargeting ad | [cae81d0649c] [64b12f085516] |
+| Scale check | Watch metrics as budget rises | holds spend | falls apart above test budget | may be a low-spend or retargeting ad | [cae81d0649c4] [64b12f085516] |
 | Test hygiene | Count variables changed versus the last round | 1 meaningful change | hook, angle, audience, page, offer, campaign changed together | redo with 1 variable | [1c4808b43997] |
 | Brief quality | Does the new brief cite last round's result? | yes, names what won and why | "make more statics with AI" | rewrite from results (3.5) | [01183c908919] |
 
@@ -138,7 +138,7 @@ All examples. None are promises.
 
 - Walking pad (made-up teaching example): 3 review quotes become 3 angles (no movement, no space, too loud for calls). Angle sentence, hook ("800 steps when your goal was 10,000"), solution line, shot list, and the call-then-zoom-out idea. [e36ec3e6809d] [13fa07bab746] [3921589ed44c] [306f74067bdf]
 - Blackout blinds (real client, no numbers): reviews showed nursery use, RV use, and truck drivers using them in their trucks. The brand first had only generic blackout-blind creative; the team built creative for each use case. No results given. [320d499e601c]
-- $30-a-day new account (real, product not named): 13 ads, impression limit 1,000 then 800, CPM $50 to $70. After "a handful of days": [d13b3e03307b] [03cf444bb483] [cae81d0649c]
+- $30-a-day new account (real, product not named): 13 ads, impression limit 1,000 then 800, CPM $50 to $70. After "a handful of days": [d13b3e03307b] [03cf444bb483] [cae81d0649c4]
   - Ad A: visually stimulating, calming "cutting-style" footage. Most spend on day 1, 10.9% CTR, good link CTR, below-average CPM, a drop of over 3% from CTR to link CTR, very little buying behaviour. Viewers did not know what was sold.
   - Ad B: 6.3% CTR, healthy link CTR, medium CPM, drop under 2%, led to buying behaviour. It showed the routine, before-and-after, how to apply the product, and what you buy.
   - Next step chosen: more before-and-after and routine footage. The test was still running; no final ROAS given. Goal stated: 3x or higher return. [1c4808b43997]
@@ -152,21 +152,21 @@ All examples. None are promises.
 4. Using a plain white-background product shot for cold traffic. [13fa07bab746]
 5. Trying to be clever or cinematic instead of clear. [3921589ed44c]
 6. Claims without visual proof; generic praise ("changed my life", "best walking pad ever"). [306f74067bdf]
-7. Launching 30 ads on a small budget and calling them failures after 2 days when they never got spend. [cae81d0649c] [d13b3e03307b]
-8. Crowning the ad that got the most spend. [cae81d0649c]
+7. Launching 30 ads on a small budget and calling them failures after 2 days when they never got spend. [cae81d0649c4] [d13b3e03307b]
+8. Crowning the ad that got the most spend. [cae81d0649c4]
 9. Trusting high CTR as proof of a winner. [03cf444bb483]
-10. Judging on CPA or ROAS alone. [cae81d0649c] [64b12f085516]
+10. Judging on CPA or ROAS alone. [cae81d0649c4] [64b12f085516]
 11. Blaming the creative when quality clicks do not convert; the landing page may be the problem. [f6fbbab529e7]
 12. Changing many variables at once. [1c4808b43997]
-13. Assuming an ad that works at $30 a day will hold at scale. [cae81d0649c]
+13. Assuming an ad that works at $30 a day will hold at scale. [cae81d0649c4]
 14. Making "random new ads" instead of variations of a working angle. [1c4808b43997]
 15. Weekly "make more AI statics" production with no link to last week's results. [01183c908919]
-16. Keeping ads that drag results down "even if it's 5 cent cost per click" worse; source says leave them behind. (source text only)
+16. Keeping whatever weighs results down. Source: after each test, leave behind the weaker option "even if it's a little bit, even if it's 5 cent cost per click". (source text only)
 
 ## 9. Caveats, conflicts and what is missing
 
-- **Single practitioner, agency pitch.** All rules come from 1 agency owner's experience; the video sells his service. Evidence is 1 account and 1 pair of ads. [cae81d0649c] [01183c908919]
-- **Forced equal delivery versus letting Meta choose.** The source wants apples-to-apples tests with equal visibility and distrusts the platform's spend allocation. Much common Meta advice says to let the algorithm allocate spend across many creatives and trust its choice. Both sides exist; the source does not address how its approach interacts with Meta's delivery system. [web check: current Meta guidance on creative testing and its A/B test tool] [cae81d0649c] [1c4808b43997]
+- **Single practitioner, agency pitch.** All rules come from 1 agency owner's experience; the video sells his service. Evidence is 1 account and 1 pair of ads. [cae81d0649c4] [01183c908919]
+- **Forced equal delivery versus letting Meta choose.** The source wants apples-to-apples tests with equal visibility and distrusts the platform's spend allocation. Much common Meta advice says to let the algorithm allocate spend across many creatives and trust its choice. Both sides exist; the source does not address how its approach interacts with Meta's delivery system. [web check: current Meta guidance on creative testing and its A/B test tool] [cae81d0649c4] [1c4808b43997]
 - **Offers and guarantees out of the ad.** The source says leave returns, warranty and guarantee to the landing page. Common ecommerce advice often puts an offer or risk reversal in the ad, and other sources in this library may disagree. Treat as this source's view for cold, value-first ads, not a rule. [13fa07bab746]
 - **CTR drop is unclear.** "Over 3%" and "less than 2%" drop from CTR to link CTR could mean percentage points or relative change; the source does not say. It also does not name which CTR (all clicks or link clicks) he means. [03cf444bb483] [verify UI: Meta CTR column definitions]
 - **Timeline does not add up.** The example test's own numbers imply about 17 to 24 days at $30 a day, beyond the stated 1 to 2 weeks (see section 4). The source does not explain.
@@ -185,7 +185,7 @@ All examples. None are promises.
 - [3921589ed44c] Write hooks directly from the stated customer problem
 - [320d499e601c] Generate more angles from consistently repeated review themes
 - [d13b3e03307b] Match creative testing volume to your daily ad spend
-- [cae81d0649c] Don't crown the ad the platform spent the most on
+- [cae81d0649c4] Don't crown the ad the platform spent the most on
 - [03cf444bb483] Read CTR and link CTR together to spot empty attention
 - [1c4808b43997] Run single-variable creative tests within the same angle
 - [f6fbbab529e7] Diagnose creative through the attention-to-purchase journey
