@@ -760,3 +760,383 @@ Cards: [88659194131b] [54e3673579e3] [9ffe9f981c57].
 5. Premium theme only when a specific feature is known to make money. Agency evidence for a lean theme: over 50% better home page bounce for new visitors after 1 switch (single observation). [01, 03]
 
 Cards: [637495534f7f] [943bdc967b80] [21280154cb29] [02c570556e30] [caf6d4c08b6d] [a459458a1b47] [d68b270990ab].
+
+## 5. Diagnostic checklists
+
+Written for a worker. Each row: what to check, how, what good looks like, what bad looks like, the fix (procedure), the source. Run 5.1 first, then the sub-topic tables, then the template tables in 5.14 to 5.18, then 5.19 for mobile vs desktop.
+
+### 5.1 Measurement setup
+
+| Check | How | Good | Bad | Fix | Source |
+|---|---|---|---|---|---|
+| Baseline exists | Change log has dated 3-run averages per template, mobile and desktop | Table complete | Nothing recorded, or 1 run | P1 | 08, 01 [6012d71fccb6] [c33439a2c9b9] |
+| Test freshness | Above-fold marker in PSI screenshot | Marker shows | Marker missing | P4 | 05 [f1a837edbfbe] |
+| Field vs lab | PSI top vs bottom section | Both read; lab used for fixes | Treating a mismatch as an error | P3 | 05 [085b91000740] |
+| URL data available | URL / Origin toggle | URL active | Greyed; only Origin | Use lab for the page | 05 [7d6d1e80db3c] |
+| Metric names in the report | CWV named | LCP, INP, CLS | FID, TTI, "fully loaded" as vitals | R18 | 05, 08 [dfde1d811af8] [a10a7445f2a3] |
+| Score stability | 3 runs | Within a few points | Swings of 10+ | Many apps loading; P7 | 01 [079f8ea11444] |
+| Second tool | GTmetrix or WebPageTest on same URL | Same problems flagged | Only 1 tool used | P1 step 10 | 09, 04 [b35da7f37105] [a4ded81551ca] |
+| Slow-connection look | Slow 4G, cache disabled, reload | Main content fast, no jumps, images pop in whole | Blank wait, jumps, images scan in | P2, then P18 to P20 | 02 [29d73beaf348] |
+| Outliers on big sites | Unlighthouse on staging | All pages similar | A few pages far worse | P5 | 07 [08cf33a0563a] |
+
+### 5.2 Images
+
+| Check | How | Good | Bad | Fix | Source |
+|---|---|---|---|---|---|
+| File weight per image | Network tab; Content > Files | Product under 100 KB, hero under 200 KB, LCP image under 250 KB, nothing over 500 KB | Multi-MB files | P14, P15 | 04, 05, 01 [8883db1cfb1d] [eb9525bda54a] [3a99be49f292] |
+| Intrinsic vs rendered | Inspect image, hover `src` | Intrinsic about 2x rendered, under 2,000 px | 5,000 px in a 700 px box | P16 | 01, 02 [036e673a5a05] [b783c30c2217] |
+| Responsive widths | Read section code; image URLs carry width parameter | srcset or several widths | Single `src` with `master` | P16 step 4 (developer if needed) | 01 [c5fb935a9b7d] |
+| Format | Extensions and delivered type | JPEG photos; PNG only transparent; MP4 motion; WebP or AVIF delivered by platform or CDN | PNG photos; GIFs; hand-uploaded WebP on Shopify | P14 step 3 | 01, 04, 02 [02dbd594ff18] [f50e2bf2a5c4] |
+| In-view images lazy? | Inspect hero, logo, first slide, main product image, first card | `loading="eager"`, no lazyload class | `loading="lazy"` or lazyload class | P17, P18 | 01, 02, 04 [7a213481a9d2] [eeb9c51fe0da] |
+| Below-fold images eager? | Network panel on load | Only in-view images download at once | Everything downloads at load | P17 | 01, 03 [51db910ccfc8] [4e8335051514] |
+| Dimensions set | Inspect `<img>` | `width` and `height` or `aspect-ratio` | Missing | P20 step 1 | 01, 02, 05, 07 [d16d1fcdd349] [f597983f8e66] |
+| Entrance effects | Watch throttled load; read section code | Plain image | Fade, slide, preloader, placeholder | P18 step 5 | 01 [d56347d58c66] |
+| Non-product images | Content > Files sorted by size | All under ceiling | 3 MB, 5 MB files | P15 | 01 [3a99be49f292] |
+| Duplicates in media library | Search file names | 1 file per image | Same name with gibberish suffix | R40 | 01 [23917da7d97a] |
+| Empty `src` | Search theme for `src=''` | None | Present | P23 step 6 | 03 [1c99225810ac] |
+| Slider weight | Count slides and sizes | 1 hero or 2 to 3 static slides | 4 to 5 auto-rotating | P23 step 4 | 03 [a459458a1b47] |
+| Bulk compressor coverage | Compare product vs section images after app run | Both compressed | Only product images | P15 step 1 | 01 [3a99be49f292] |
+| Compression history | Check original exists | Compressed once from original | Compressed several times | R33 | 04 [8883db1cfb1d] |
+
+### 5.3 Scripts, apps and third parties
+
+| Check | How | Good | Bad | Fix | Source |
+|---|---|---|---|---|---|
+| App count and revenue roles | List apps, embeds, plugins, scripts with a stated role | Every item has a role | Trials, unused, purely visual, no role | P7 | 01, 03, 08 [8dbbb42b9c2e] [efd7ec0cb6ce] [753859e92e44] |
+| Third-party service count | Count distinct third-party hosts on a page (waterfall) | 0 to 5 (median 74 mobile) | 21 to 30 (median 44) | P7 | 04 [c09e2fd0f0d7] |
+| Scripts at load (Shopify) | DevTools head > async load function; theme.liquid; App embeds | Only needed scripts; pixels once | Many app URLs; duplicates | P10, P11 | 01 [2a89f4e58923] [adc3ea59042a] |
+| Residual code | Search app and pixel names in theme files or the downloaded theme | No hits for removed apps | Leftover tags | P8 | 01 [3c6bd0cce957] [10d064e032f8] |
+| Bare script tags | theme.liquid scan; editor warning; PSI render-blocking | All non-critical scripts have defer or async | Plain `<script src>` in head | P9 | 01, 03 [1d1dca3e3cfb] [e42f2f04f259] |
+| JS execution time | PSI "reduce JavaScript execution", TBT | Low | Seconds of JS (2.7 s example) | P9, P10, P13 | 01 [81ac749043da] |
+| Unused JS and CSS | PSI opportunities per template | Assets load only where used | App CSS and JS on templates without the widget | P11 | 01 [adc3ea59042a] |
+| Delay snippet working | Console message on interaction; widget timing | Widgets appear after hover or scroll | Widgets at load, or never | P10 | 01 [d1007a68a9e0] |
+| App embeds | Customize > App embeds | Only used embeds on | Unused embeds on | P7 step 6 | 01 [d675d594782b] |
+| App still works | Exercise each delayed app | Full function | Anything broken | Revert that app; P10 | 01 [6427c0d96eec] |
+| Tracking intact | Page view, variant, add to cart, test purchase; consent on and off | Each event once | Missing or doubled events | R48; 06-MEA | 01 [ef51a42e0e16] |
+| Duplicate pixels | Waterfall per vendor | 1 load each | Facebook twice | P11 step 3 | 01 [81ac749043da] |
+| Libraries from outside CDNs | Waterfall hosts | Self-hosted or removed | jQuery from a third-party CDN | P12 | 01 [fdbc70a82f75] |
+| jQuery needed? (WP) | Waterfall on public page | Absent if unused | Loaded with Migrate for logged-out users | P13 step 3 | 02 [0d00d9d01688] |
+| WordPress bloat | Waterfall | No emoji, dashicons, pingback assets for logged-out | Present | P13 step 2 | 02 [83d6ff4a133c] |
+| WooCommerce files off-cart | Asset CleanUp metabox on a non-cart page | Only needed files | 13 WooCommerce files on a landing page | P13 step 4 | 02 [44c02380f01e] |
+| Speed or caching scripts | Identify unknown scripts | None, or proven useful | Unknown "speedy" scripts | Test by commenting out; R55 | 01 [cdc61c33e699] |
+| Dynamic checkout buttons | Product page under add to cart | Disabled if unused, or delayed | Loading at first paint unused | P10e | 01 [98a7bf9f5fb4] |
+| Tag manager | Waterfall per tag | Each tag justified | Many tracking scripts | R54 | 03 [78f603581ed4] |
+
+### 5.4 Theme code, CSS and JS
+
+| Check | How | Good | Bad | Fix | Source |
+|---|---|---|---|---|---|
+| Versioned asset URLs | View source; check URLs in CSS | `?v=` via `asset_url` | Hardcoded URLs in CSS | P23 step 1 | 03 [5748b07d6cda] |
+| Duplicate Liquid loops | Code review of templates and snippets | Each collection crawl once | Same loop several times | P23 step 2 | 03 [11d911ca0868] |
+| Quick View | Network on collection load; click map | No pre-loaded product data | Data for 20 to 30 tiles at load | P23 step 3 | 03 [6f05e9392e74] |
+| Critical CSS | Lighthouse trace first second | Styled from first paint | Unstyled flash then jump | P22 | 01 [cabcd2d4c66e] |
+| Non-critical CSS | Network panel; link tags | Below-fold CSS on media=print swap | All CSS render-blocking, or visible CSS delayed | P22 | 01 [b73d08e8603c] |
+| Minified JS and CSS | PSI "minify" opportunities | Minified | Unminified app or theme files | P13 step 5, R62 | 04, 05 [c067983b290a] |
+| Code per page type | Coverage of product vs category vs checkout | Split | Checkout code on product pages | R62 (developer) | 04 [c067983b290a] |
+| Render-blocking JS before main image | Waterfall order | Image before scripts | Scripts ahead of hero | P18 step 8 | 07 [cc2d433b9ede] |
+| Content in server HTML | View source or JS off | Main content present | Content waits on JS (SPA) | R66 (rebuild) | 07, 09 [cc2d433b9ede] [171da560af89] |
+| Late body styles | Inspect body tag | No inline layout styles | Page-width style in body | P20 step 8 | 01 [dbf103b05b0a] |
+| Pop-up trigger | Load a page fresh | No pop-up at load | Fires on load | P23 step 5 | 03 [a459458a1b47] |
+| API payload (headless) | Inspect a listing tile response | Only fields shown | Full product object | R69 (developer) | 09 [34052dbf559b] |
+
+### 5.5 Fonts
+
+| Check | How | Good | Bad | Fix | Source |
+|---|---|---|---|---|---|
+| `font-display: swap` | Search `@font-face` | On every rule | Missing | P21 step 2 | 01, 04 [027af5f63b68] |
+| Variations count | Count weights and italics loaded | About 3 or fewer | 5 to 10 | P21 step 1 | 01 [1eacf61a57a2] |
+| External font calls | Waterfall | Own domain or theme fonts | fonts.googleapis.com requests | P21 step 3 | 02 [731928d47c17] |
+| Font swap CLS | Throttled reload | Text keeps size on swap | Text resizes | P20 step 6 | 01 [14bc6ce5b8a6] |
+| Subset | Font file size | Small, needed characters | Full character sets | P21 step 4 | 04 [74fc1378fc6a] |
+
+### 5.6 Layout shift (CLS)
+
+| Check | How | Good | Bad | Fix | Source |
+|---|---|---|---|---|---|
+| CLS value | PSI, both devices | 0.1 or less | Over 0.1; over 0.25 poor | P19, P20 | 05, 04, 01 [883371c7111c] [2969a152a99d] |
+| Shifting element | PSI filmstrip and outline; Lighthouse trace; extension CLS log | None moves without input | Header, widget, banner, thumbnails push content | P19 | 01, 07 [f00068c50316] [11d184a954ab] |
+| Late widgets | Watch throttled load | Space reserved | Widget pushes content | P20 step 2 | 01 [ba43a0aaa747] |
+| Cookie banner | Throttled load | Reserved or delayed (with consent go-ahead) | Banner pushes page | P20 step 5 | 01 [b1f2c1da412b] |
+| Ads, embeds, iframes | Inspect containers | Fixed placeholder | No reserved size | P20 step 4 | 05 [883371c7111c] |
+| Contradicting CSS | Inspect computed styles | 1 rule | 2 heights for 1 element | P20 step 7 | 01 [24893ea78676] |
+| Desktop CLS | PSI desktop tab | Also 0.1 or less | Mobile 0, desktop large | P19 step 1 | 01 [f00068c50316] |
+| Field CLS trend | Search Console; PSI field | Falling after fix | Unchanged after 28 days | Re-run P19 | 01 [80a761efcb18] |
+
+### 5.7 Largest Contentful Paint (LCP)
+
+| Check | How | Good | Bad | Fix | Source |
+|---|---|---|---|---|---|
+| LCP value | PSI, both devices | 2.5 s or less | Over 4 s poor | P18 | 04, 05, 07 [2969a152a99d] [eb9525bda54a] |
+| LCP element known | PSI Diagnostics; extension log | Named per template | Unknown | P3 step 6 | 05, 07 [eb9525bda54a] [11d184a954ab] |
+| LCP element lazy or animated | Inspect | Eager, plain | Lazy, fade, preloader, in delayed carousel | P18 steps 4 and 5 | 01 [7a213481a9d2] |
+| LCP image weight | Network | Under 250 KB (05), under 200 KB hero (04) | Multi-MB | P18 step 6 | 05, 04 |
+| Preload and priority | View head | Preload plus fetchpriority high on LCP only | None, or many preloads | P18 step 7 | 01, 07 [958af3150188] [b4735bb55b51] |
+| Image downloaded but hidden | Throttled load | Shows on download | Hidden until plugin JS | P18 step 3 | 01 [1b9747314efd] |
+| Waterfall bottleneck | Network waterfall | No very wide bar before main content | Wide bars on hero or scripts | P18 | 07 [457e4a26802c] |
+| TTFB | PSI | 800 ms or less | Over 800 ms | P28 after front-end work | 08, 05 [a10a7445f2a3] |
+
+### 5.8 Interaction delay (INP, TBT)
+
+| Check | How | Good | Bad | Fix | Source |
+|---|---|---|---|---|---|
+| INP (field) | PSI field section | 200 ms or less | Over 200 ms; over 500 ms poor | P9, P10, P13 | 04, 05 [2969a152a99d] [dfde1d811af8] |
+| TBT (lab) | PSI lab | Low; no flagged long tasks | High: many long tasks over 50 ms | P13 step 5; P10 | 05 [8f0d567d9844] |
+| Add to cart response | Tap on a mid-range phone | Instant | Half-second nothing | Cut scripts; R84 | 04 [2969a152a99d] |
+| Variant and filter controls | Tap on collection and product | Instant | Lag | R84 | 04, 07 [717cf5ec82fd] |
+| Cart completion | Track separately from INP | Fast | Slow async cart request | Developer | 05 (card) [dfde1d811af8] |
+
+### 5.9 Caching and CDN
+
+| Check | How | Good | Bad | Fix | Source |
+|---|---|---|---|---|---|
+| Caching on | Document response headers | Cache hit header | None | P26 | 02 [55f9847e6f0a] |
+| Compression on | Response headers | `content-encoding: gzip` or equivalent | None | P26 | 02 [55f9847e6f0a] |
+| Cart, checkout, account | Load each; headers | Not cached | Cached | P26 step 4 | 04 [9490c0550ad4] |
+| Stale prices or stock | Change a price; reload | Updates fast; rest stays cached | Old price; or full purge each change | P26 step 6 | 04, 08 [ee4655c50df6] |
+| Static asset TTL | Headers on CSS, JS, images | Long, with versioned names | Short, or long without versioning | P26 step 3 | 04 [9490c0550ad4] |
+| CDN hit rate | CDN dashboard | 80%+ | Low | P27 step 5 | 04 [46127ea01ca7] |
+| Cache key fragmentation | CDN logs with UTM params | Tracking params ignored | Each UTM a new entry | P27 step 3 | 04 [46127ea01ca7] |
+| Caching scripts on Shopify | Theme scan | None | "Speedy" or cache scripts | Remove after test | 01 [cdc61c33e699] |
+| Session cookie on first hit | Response headers on anonymous load | No session until add to cart or login | Session created at once | P26 step 5 | 04 [9490c0550ad4] |
+
+### 5.10 Hosting and server
+
+| Check | How | Good | Bad | Fix | Source |
+|---|---|---|---|---|---|
+| TTFB per template | PSI | 800 ms or less | Over 800 ms after front-end work | P28 | 08 [a10a7445f2a3] |
+| Tier vs orders | Orders per month vs plan | VPS or cloud at 100+ orders | Shared hosting with real traffic | P28 step 1 | 04 [a063ce857916] |
+| PHP version | Ask host | 8.2+ | Older | P28 step 3 | 08 [0709d6cdeb98] |
+| Server cache | Ask host | Redis or Varnish full-page cache | None | P28 step 3 | 08 [0709d6cdeb98] |
+| Protocol | Ask host; DevTools protocol column | HTTP/3 | HTTP/1.1 | P28 step 3 | 08 [0709d6cdeb98] |
+| Heavy plugin queries | Ask developer; staging test | Cached | Complex queries every load | P28 step 6 | 08 [3d795cd17d4b] |
+| Database bloat (WP) | WP-Optimize report | Clean on schedule | Revisions, transients, orphans | P28 step 6 | 04 [74fc1378fc6a] |
+| Peak capacity | Host or platform check before events | Limits known; load tested | Unknown | P31 | 03, 06 [54e3673579e3] [88659194131b] |
+
+### 5.11 Video and embeds
+
+| Check | How | Good | Bad | Fix | Source |
+|---|---|---|---|---|---|
+| YouTube embeds | Network before clicking play | Thumbnail only | Player JS at load | P24 | 03, 09 [badac5a4a278] |
+| Mobile autoplay | Load on phone | Off; thumbnail and play button | Autoplays | P24 step 2 | 03 [badac5a4a278] |
+| Video file weight | Network | Compressed; `preload="none"` | Multi-MB, preloading | P24 step 3 | 01 [3dd6497a4d63] |
+| GIFs | Search for .gif | None; MP4 instead | Animated GIFs | P24 step 3 | 01 [5148a60eef22] |
+
+### 5.12 Redirects and links
+
+| Check | How | Good | Bad | Fix | Source |
+|---|---|---|---|---|---|
+| Redirect types | Redirect list or crawl | 301s | 302s for permanent moves | P25 | 03 [2cd7ecfea589] |
+| Chains | Crawl | None | Redirect to redirect | P25 | 03 |
+| Broken asset links | Broken link checker | None | 404 on images, CSS, JS | P25 | 03 |
+| 404 page | Visit a bad URL | Custom, links to top categories | Default | P25 step 4 | 03 |
+
+### 5.13 Peak readiness
+
+| Check | How | Good | Bad | Fix | Source |
+|---|---|---|---|---|---|
+| Dynamic steps under load | Load test add to cart, search, login, checkout | Stable | Slowdowns (PetSmart 7.7 to 13.84 s) | P31 | 06 [88659194131b] |
+| Change freeze | Calendar | No installs or theme changes in window | Changes during event | R8 | 04 [9ffe9f981c57] |
+| Waiting room decision | Limited inventory drop? | Decided in advance | Crash or error page | P31 step 5; 05-SET | 06 |
+
+### 5.14 Template: home page
+
+| Check | How | Good | Bad | Fix | Source |
+|---|---|---|---|---|---|
+| Hero (LCP) | Inspect first image | Eager, preloaded, under 200 KB, no effect, 1 hero or 2 to 3 static slides | Lazy, animated, multi-MB, 4 to 5 slides | P18, P23 step 4 | 01, 03, 04 |
+| Section images | Content > Files; inspect | Under ceiling; sized to box | 3 to 6 MB section images | P15, P16 | 01 [3a99be49f292] |
+| App widgets at load | Head async function; embeds | Only first-paint widgets | Chat, loyalty, social feed at load | P10 | 01 |
+| Announcement bar | Watch throttled load | Theme's own, no shift | App bar injected after load | P20 step 3 | 01 [f00068c50316] |
+| Below-fold sections | Network | Lazy | All eager | P17 | 01, 03 |
+| Score and vitals | PSI both devices | Mobile over 50 (source 01 client target), LCP under 2.5 s, CLS under 0.1 | Under 20 | Whole playbook | 01, 04 |
+| Traffic weight | Sessions by template | Effort proportional to traffic | Over-investing in a home page ads skip | R3 | 01, 04 |
+
+### 5.15 Template: collection (category) page
+
+| Check | How | Good | Bad | Fix | Source |
+|---|---|---|---|---|---|
+| First card eager, rest lazy | Inspect grid | Card 1 eager, others lazy | All lazy or all eager | P17 step 4 | 01 [b093ed3b4d75] |
+| Thumbnails | Inspect intrinsic size | Thumbnail widths | Full-size photos | P16 step 6 | 04 [8883db1cfb1d] |
+| Quick View | Network at load; click map | Removed or on click | Data pre-loaded for every tile | P23 step 3 | 03 [6f05e9392e74] |
+| Filters respond | Tap filters on phone | Instant | Lag (INP) | R84 | 04 |
+| Liquid loops | Code review | No full-collection crawls | Loops testing price or tag over all products | P23 step 2 | 03 |
+| Mixed aspect ratios | Look at grid | 1 ratio | Messy heights (also CLS risk) | Crop to ratio (P14 step 2) | 01 [c371cc94a060] |
+| Collection banner critical CSS | Trace first second, with and without banner | Styled | Unstyled then jump | P22 | 01 [cabcd2d4c66e] |
+| App assets not used here | PSI unused CSS/JS | Only review and subscription widgets that render here | Rewards or checkout code | P11 | 01 |
+
+### 5.16 Template: product page
+
+| Check | How | Good | Bad | Fix | Source |
+|---|---|---|---|---|---|
+| Main image (LCP) | Throttled load; inspect | Shows as soon as downloaded; eager; preloaded per product; under 250 KB | Hidden until carousel JS; lazy; multi-MB | P18 | 01, 05 [1b9747314efd] [eb9525bda54a] |
+| Gallery thumbnails | Trace | Space reserved | Thumbnails push content (CLS) | P20 | 01 [80a761efcb18] |
+| Payment and BNPL widgets | Trace | Reserved space; delayed if unused | Afterpay-type widget shifts layout | P20 step 2; P10e | 01 |
+| Reviews, upsells, related | Network at load | Load after main image and buy box | Load before | P10, R53 | 01, 04, 09 |
+| Add to cart response | Tap on phone | Instant | Half-second nothing | R84 | 04 |
+| Variant images | Click swatches | Gallery switches | Missing variant images | P14 step 9 | 01 [c4e17c272dd9] |
+| Dynamic checkout buttons | Under add to cart | Disabled if unused, or delayed | Heavy script at load | P10e | 01 |
+| Buy box reach (neighbour 09-CRO) | Scroll heatmap | Most reach add to cart | 20% reach it | 09-CRO-testing | 01 [bf8e6e41254e] |
+| Video | Network | Lite embed; no autoplay on mobile | Full player at load | P24 | 03 |
+| Tracking events | Variant, add to cart | Fire once | Missing or doubled | R48 | 01 |
+
+### 5.17 Template: cart
+
+| Check | How | Good | Bad | Fix | Source |
+|---|---|---|---|---|---|
+| Not cached | Headers | No cache | Cached user data | P26 step 4 | 04 [9490c0550ad4] |
+| Cart drawer and add to cart after changes | Add, change quantity, remove | Works, instant | Broken or slow after defer, delay, cache | P30 step 4 | 01, 08 |
+| Upsell and discount apps | Inventory | Earn their place; theme discount field used | App for a discount code box | P7 | 01 |
+| Layout shift on update | Change quantity | Stable | Content jumps (a shopper selected 56 items in Google's example) | P20 | 05 [883371c7111c] |
+| WooCommerce cart files elsewhere | Asset CleanUp | Only on cart | On landing pages | P13 step 4 | 02 |
+
+### 5.18 Template: checkout
+
+| Check | How | Good | Bad | Fix | Source |
+|---|---|---|---|---|---|
+| Tested separately | Run the flow on a phone | Address, payment, fraud scripts fast | Slow; site scores never showed it | R25, P1 | 04 [a4ded81551ca] |
+| Not cached | Headers | No cache | Cached | P26 step 4 | 04 |
+| Mobile form steps | Count fields and steps | Wallet or express option on (Shop Pay on Shopify) | Long forms | R98 | 03 [0bc2087de2a1] |
+| Injected content | Inspect | Reserved space | Shifts before tap | P20 | 05 |
+| Under peak load | Load test | Stable | Brownout | P31 | 06 |
+| Tracking | Test purchase | Purchase event once | Missing or doubled | R48; 06-MEA | 01 |
+
+### 5.19 Mobile vs desktop
+
+| Check | How | Good | Bad | Fix | Source |
+|---|---|---|---|---|---|
+| Both tabs tested | PSI mobile and desktop per template | Both recorded | Only 1 | P1 | 01, 09 [f00068c50316] [b35da7f37105] |
+| Gap size | Compare scores | Mobile close to desktop | Mobile far worse (average 87.8% longer) | Mobile-first fixes | 06, 04 [2bb637e027c0] |
+| Real device | Mid-range phone on mobile data | Matches lab | Emulation hid problems | P2 step 6 | 04 [a4ded81551ca] |
+| Desktop-only CLS | Desktop tab | 0.1 or less | Large on desktop only | P19 | 01 |
+| Desktop-only styles | Inspect media queries | Wrapped (min-width 767 px in 1 case) | Applied to mobile | P20 step 8 | 01 [dbf103b05b0a] |
+| Mobile layout | Device toolbar | Text on screen, images intact | Overflow, distortion | Theme fix | 01 [58bc1e28be27] |
+| Autoplay video | Phone | Off | On | P24 | 03 |
+
+## 6. Thresholds and benchmarks
+
+One table for the folder. Confidence = number of the 9 mini playbooks that state the value (agreeing sources / sources that speak to it). "1 (opinion)" means a single presenter's working number. Dated items carry `[web check]`. Current Core Web Vitals names are used: LCP, INP, CLS. FID and TTI are listed only as retired.
+
+| Metric or rule | Value | Condition | Sources | Confidence | Notes |
+|---|---|---|---|---|---|
+| **Core Web Vitals** | | | | | |
+| LCP good | 2.5 s or less | field and lab, 75th percentile | 04, 05, 07, 08 | 4 of 4 that give a number | [web check: web.dev/articles/vitals] |
+| LCP needs improvement | 2.5 to 4 s | | 05 | 1 (Google band) | |
+| LCP poor | over 4 s | | 04, 05, 07 | 3 of 3 | Source 01's "under 4" is the presenter's floor, not Google's good band [1b9747314efd] |
+| INP good | 200 ms or less | field; replaced FID in March 2024 | 04, 05, 08 | 3 of 3 that name INP | 5 sources still name FID [web check] |
+| INP needs improvement | 200 to 500 ms | | 05 | 1 | |
+| INP poor | over 500 ms | | 05 | 1 | |
+| CLS good | 0.1 or less | field and lab | 04, 05, 08, 01 (ideal) | 4 of 5 | Source 01 says "under 0.25, ideally 0.1 or 0" [80a761efcb18]; source 07 gives no number |
+| CLS needs improvement | 0.1 to 0.25 | | 05 | 1 | |
+| CLS poor | over 0.25 | | 05, 01 | 2 | |
+| FID (retired) | good 100 ms or less; poor over 300 ms | replaced by INP | 05, 06, 07 | 3 (all dated) | Do not report FID [web check] |
+| **Diagnostic metrics** | | | | | |
+| TTFB | 800 ms or less; should not exceed 1.8 s | diagnostic, not a CWV | 05, 06, 08 | 3 of 3 | Source 08 lists it as a CWV; card corrects. Averages reported by 06: 1.286 s desktop, 2.594 s mobile |
+| FCP | good under 1.8 s; 1.8 to 3 s needs improvement; poor over 3 s | diagnostic | 05, 06 | 2 of 2 | |
+| Long task | over 50 ms blocks the main thread | TBT adds them up | 05 | 1 | Source 09's TBT definition (FCP to TTI) is outdated |
+| TTI (retired) | no threshold | dropped from Lighthouse | 09 | 1 (dated) | [web check] |
+| Speed Index | defined only, no threshold | | 05 | 1 | |
+| **Scores** | | | | | |
+| PSI performance score bands | 90+ good; 50 to 89 needs improvement; under 50 poor | lab | 04, 05 | 2 of 2 | Coarse; CWV metrics are more stable (04 card) |
+| Mobile score alarm | 20 or lower | many shoppers struggle to load | 01 | 1 (opinion) | [74187c8d7e19] |
+| Mobile score working target | over 50 ("33 is not bad, over 50 is better") | client work | 01 | 1 (opinion) | [dca8734ae894] |
+| Major sites' typical score | about 90 | quick Lighthouse runs | 07 | 1 (observation) | Not a target for image-heavy catalogs |
+| Third-party services vs score | 0 to 5 services: median mobile 74; 21 to 30: median 44; r = -0.66 | 1,533 Shopify stores | 04 | 1 (vendor benchmark, method not given) | [c09e2fd0f0d7] |
+| **Load time targets (conflict 7.3)** | | | | | |
+| Page load target | 2 s or less | ecommerce page, attributed to Google | 03 | 1 | Dated attribution [web check] |
+| Page load target | under 3 s; 2 s or less for competitive stores | "industry research" | 04 | 1 | |
+| Page load target | 3 s ("Google recommended mobile") | mobile | 06 | 1 | Dated [web check] |
+| Page load target | under 3 s | whole store, "Google says" | 01 | 1 (opinion) | |
+| Shopper patience | leaves at 2 to 3 s; many at 3 to 4 s | mobile, from ads | 01 | 1 (opinion) | Unsourced |
+| Expect load in 3 s or less | 83% of users | | 06 | 1 (uncited) | |
+| Expect 2 s or less | 47% of shoppers | | 09 | 1 (uncited) | |
+| Leave after 3 s | 53% of mobile visitors | | 04, 06, 09 | 3 of 3 | Same Google figure cited 3 times |
+| Leave after 4 s | 63% | ecommerce | 04, 06 | 2 | Queue-it |
+| Abandon at 5 s | 74% | mobile | 06 | 1 | |
+| Leave at 6 s | 2 of 3 | | 06 | 1 | |
+| **Conversion effects (conflicts 7.2, 7.9)** | | | | | |
+| 0.1 s faster | up to +8.4% retail conversions; almost +10% spend per session; +9.1% add to basket | retail; upper bound | 03, 04, 06 | 3 of 3 | Deloitte via Google. 03 also writes "millisecond" in 2 places |
+| 1 s delay | about -7% conversions | | 04 (Cloudflare), 08 ("up to") | 2 | |
+| 100 ms delay | up to -7% conversions | | 09 (Akamai) | 1 | Same 7%, 10x different delay [web check: Akamai 2017 wording] |
+| 1 s faster | +5.6% conversion; nearly -12% bounce | | 06 | 1 (uncited) | Mobile version: +5.9%, nearly -9% bounce |
+| Per extra second | -0.3% conversion | average store | 03 | 1 (uncited) | |
+| Per 2 s | about -4% conversions | | 04 (Cloudflare) | 1 | |
+| 1 s site vs 5 s site | 2.5x conversions | | 03 (Portent) | 1 | Chart in 03 shows 3.05% at 1 s vs 1.68% at 2 s |
+| Under 1 s vs 5 s | up to 3x | | 08 | 1 (uncited) | |
+| 1 s vs 10 s | about 5x | | 04, 06 | 2 | 04 credits Cloudflare and Queue-it in different places |
+| Highest conversion band | average 3.05% at 1 to 2 s | | 06 | 1 | |
+| Bounce vs load | 9% at under 2 s vs 38% at 5 s; +32% from 1 to 3 s; +90% to 5 s; +123% to 10 s | | 06 | 1 (uncited, Google-style figures) | |
+| Pages per visit | 8.9 at 2 s vs 3.3 at 8 s | | 06 | 1 | |
+| CWV pass effect | users 24% less likely to abandon mid-load | | 03 | 1 (uncited) | |
+| CWV pass rate | about 50% of mobile sites | HTTP Archive 2025 | 04 | 1 | |
+| **Images (conflict 7.1)** | | | | | |
+| Product image file size | under 100 KB | | 04 | 1 | Strictest |
+| Hero image file size | under 200 KB | | 04 | 1 | |
+| LCP image file size | below 250 KB | when LCP is an image | 05 | 1 (opinion) | |
+| Image file ceiling | 500 KB max (prefer 100 to 200 KB) | Shopify images | 01 | 1 (opinion; 3 videos) | Strictest of source 01's own figures |
+| Image file ceiling | 500 to 600 KB, never over 600 KB | before upload | 01 | 1 (opinion) | |
+| Image file ceiling | under 1 MB ("1 MB is too much"); full HD JPEG under 1 MB | section and hero; mobile-majority | 01 | 1 (opinion) | Loosest |
+| Max long edge | about 2,000 px; 3,000 overkill | uploads | 01 | 1 (opinion) | |
+| Full-bleed hero width | up to about 3,000 px | full-bleed hero | 01 | 1 (opinion) | |
+| Export size vs box | box + 100 to 300 px | section images | 01 | 1 (opinion) | Conflict 7.13 |
+| Export size vs box | 2x rendered size | content images, retina | 02 | 1 (opinion) | |
+| Export size vs box | resize to display dimensions | | 04 | 1 | |
+| Image width for Google Discover | 1,200 px | eligibility, not speed | 05 | 1 | |
+| JPEG quality | about 80% | product photos | 04 | 1 | |
+| JPEG quality | about 70%; Squoosh from 75 down; 40 acceptable; 20 to 30 sometimes | photos | 01 | 1 (opinion) | |
+| AVIF quality | 50% | | 02 | 1 (opinion) | |
+| WebP vs JPEG | 25% to 35% smaller | equal quality | 04 | 1 | |
+| WebP or AVIF vs JPEG or PNG | 30% to 50% smaller | | 08 | 1 (uncited) | |
+| WebP conversion page weight | 40% to 60% less | "often" | 04 | 1 (author claim) | Different measure from the per-image figure |
+| Image share of page weight | 50% to 75% | typical | 03 | 1 | 08 says "more than 60% of data" |
+| Shopify built-in compression | 9.8 MB upload served at 6.1 MB | test store | 01 | 1 (demo) | |
+| Compression savings | free sites 50% to 70%; app over 80%; second pass 8% | examples | 01 | 1 (demo) | |
+| Pages that could save 250 KB or 1 MB by compression | 25% / 10% | | 06 | 1 | |
+| Product images per product | 3 to 5 minimum | merchandising | 01 | 1 (opinion) | Neighbour 09-CRO |
+| Hero slider | 2 to 3 slides max; 4 to 5 heavy | if required | 03 | 1 | |
+| Lite embed | thumbnail about 15 KB; saves almost 1 MB | YouTube | 03 | 1 | |
+| **Page weight and scripts** | | | | | |
+| Page weight | 2 to 3 MB ("entire store"); "a page can have like 2 MB" | budget | 01 | 1 (opinion; 2 versions) | Conflict 7.19 |
+| Third-party script cost | 34.1 ms each on average | | 06 | 1 | |
+| Third-party share of load time | more than 50% | "in many stores" | 08 | 1 (uncited) | |
+| App count warning | more than 20 apps | heuristic | 03 | 1 | |
+| Industry third-party load | beauty median 31 services (worst of 9), automotive 15 (best) | Shopify | 04 | 1 | |
+| Delay-snippet gain | 10 to 20%; 10 to 15%; 15 to 20% | apps are the bottleneck | 01 | 1 (3 versions) | Small when CLS or LCP dominate |
+| Apps' cost on a demo store | about 20% of initial score | 4 apps | 01 | 1 (demo) | |
+| Score decay | 60 to 80 new; 40 with apps; 20 or lower customized | illustration | 01 | 1 | |
+| JS minification | up to 80% smaller | maximum | 04 | 1 | |
+| Custom font variations | about 3 max | | 01 | 1 (opinion) | 07: fewest needed |
+| **Testing** | | | | | |
+| Runs per comparison | 3 (3 to 4 in 1 video) | averaged | 01, 02, 04 | 3 | |
+| Wait before retest | 1 to 2 minutes | after a change | 01 | 1 | |
+| CrUX field window | 28 days | PSI field data | 01, 04, 05 | 3 of 3 | |
+| Search Console lag after fix | "a couple of days" to about 28 days | | 01 | 1 (2 cases) | |
+| Shopify admin score refresh | 12 to 24 h, needs traffic | older admin UI | 01 | 1 | [web check] |
+| Test cadence | at least monthly; after app or theme changes; before sales | | 04 | 1 | |
+| Throttle profile | Slow 4G or 3G; custom about 20 kbps for CLS hunting | | 02, 01 | 2 | |
+| **Caching, CDN, hosting** | | | | | |
+| Static asset browser cache | up to 1 year | versioned file names | 04 | 1 | |
+| CDN hit rate | 80%+ | | 04 | 1 | |
+| CDN latency cut | 200 to 800 ms | distant visitors | 04 (Cloudflare) | 1 | |
+| Hosting upgrade point | 100+ orders a month | to VPS or cloud | 04 | 1 (heuristic) | |
+| Shared hosting price | $1 to $15 a month | 2026 | 04 | 1 | [web check] |
+| Managed VPS price | from $20 to $50 a month | 2026 | 04 | 1 | [web check] |
+| PHP version | 8.2+ | self-hosted PHP stores | 08 | 1 | [web check] |
+| Protocol | HTTP/3 | | 08 | 1 | |
+| Desktop-only breakpoint used | min-width 767 px | 1 client fix | 01 | 1 (case) | |
+| **Mobile** | | | | | |
+| Mobile share of traffic | 59% | | 06 | 1 | 03: m-commerce "10.4% of ecommerce by 2025" (dated) |
+| Mobile revenue share | 66% | smartphones and tablets | 08 | 1 (uncited) | |
+| Mobile load vs desktop | 87.8% longer | | 06 | 1 | |
+| Average mobile load | around 15 s; top 100 sites 8.6 s; US retail 6.3 s; fully loaded 27.3 s | different measures | 06 | 1 (internal conflict) | |
+| Retail pages per session | 5.01 desktop | | 06 | 1 | |
+| PDP plus category share of views | 72% | | 06 | 1 | |
+| **Vendor and case figures (examples only)** | | | | | |
+| Shop Pay | 1.91x mobile checkout-to-order | vs regular checkout | 03 (Shopify) | 1 (vendor) | |
+| Storefront Renderer | 2.5x to 5x faster server-side | | 03 (Shopify) | 1 (vendor) | |
+| Rhone after SFR | revenue +15%, conversion +17%, page load -12% | vs prior month | 03 | 1 (vendor case) | |
+| Vodafone | LCP -31%, sales +8% | A/B test | 04 | 1 (web.dev) | |
+| Rakuten 24 | conversion +33%, revenue per visitor +53% | after CWV work | 04 | 1 (web.dev) | |
+| WP Rocket demo page | 69 to 99 | 1 page | 05 | 1 (demo) | |
+| Source 02 demo page | GTmetrix 98%, LCP 1 s, CLS 0 before caching | 1 landing page | 02 | 1 (demo) | |
+| Source 01 client store | mobile 33 to 58, desktop to 93 | several changes together | 01 | 1 (case) | |
+| PetSmart Black Friday | 7.7 to 13.84 s | | 06 | 1 | |
+| Marketers prioritizing speed | 3% top priority; 81% know it matters but do not prioritize | survey | 06 | 1 (uncited) | |
