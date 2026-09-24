@@ -102,7 +102,7 @@ Definitions as the source gives them: defer = the script downloads and runs afte
 5. Hover the link in the code editor; the tooltip should say assets should be served from the Shopify CDN for better performance. [verify UI] [fdbc70a82f75]
 
 ### 3.8 Understand how apps reach the page (3 routes)
-1. **Async load function (via content_for_header).** In DevTools, expand the head, open the unnamed empty script tags until you find the "asyncLoad" function (usually the last one). It lists the URLs of every app script Shopify injects (example: several Trustpilot scripts). These load at the same time as the theme. [2a89f4e58923] [b7d4c6046a25]
+1. **Async load function (via content_for_header).** In DevTools, expand the head, open the unnamed empty script tags until you find the "async load" function (usually the last one). It lists the URLs of every app script Shopify injects (example: several Trustpilot scripts). These load at the same time as the theme. [2a89f4e58923] [b7d4c6046a25]
 2. **Hardcoded script tag.** Some apps ask you to paste a script into theme.liquid (example: a cookie banner). You can defer these yourself. [b1f2c1da412b] [1d1dca3e3cfb]
 3. **App embed toggle.** Theme > Customize > App embeds. When on, Shopify adds the app's scripts directly to the head, not through the async function, which is why they load early. [verify UI] [b711b4ded0ce]
 4. Diagnostic demo only: in theme.liquid, commenting out `{{ content_for_header }}` removes all Shopify-injected scripts (example: 80 to 100). Never do this on a live theme; the editor flags it as an error and apps and platform features break. [b7d4c6046a25]
@@ -170,7 +170,7 @@ Order: resize, crop, convert format, compress, rename, alt text, upload, order g
 10. Do the same for video: compress video files; oversized video is as damaging as oversized images. [3dd6497a4d63] [621e302f651f]
 
 ### 3.16 Find and fix heavy images already on the store
-1. Content > Files: scroll for large files (examples 3 MB, 5 MB). App compressors often touch only product images, so check section and home page images here. [verify UI] [3a99be49f292]
+1. Content > Files: scroll for large files (examples 3 MB, 5 MB). App compressors often touch only product images, so check section and home page images here. Reduce anything over your ceiling (one video flags every file over 500 KB). [verify UI] [3a99be49f292] [0c4e0163aff8]
 2. Find which section uses each heavy image. Download it. [3a99be49f292]
 3. Compress it on a free compression site (example cut about 70%). If still over budget (example: 1.7 MB), resize in Shopify's image editor (Resize, example width 1,500; aspect ratio is kept; it saves a copy), download again, compress again (example: about 400 KB). [verify UI] [3a99be49f292]
 4. Re-upload and place it back in the section. Keep the original if you may need higher resolution later. [3a99be49f292]
@@ -216,7 +216,7 @@ Order: resize, crop, convert format, compress, rename, alt text, upload, order g
 5. Aspect ratios: square for general grids; 4:5 for fashion. [c371cc94a060]
 
 ### 3.22 Lazy load below the fold
-1. Add loading="lazy" to every image not visible at first load. [51db910ccfc8] [0f413fcac223]
+1. Add loading="lazy" to every image not visible at first load. [51db910ccfc8] [0f413fcac223] [ff5edde57340]
 2. Add preload="none" to videos so they do not interrupt other downloads. [0f413fcac223] [70af8654d12d]
 3. Carousel: lazy load slides 2, 3 and on; never slide 1. [70af8654d12d] [7a213481a9d2]
 4. Optional lazysizes plugin ("bulletproof"): set src to an empty pixel, data-src to the real URL, add the lazyload class; the plugin swaps in the real src when needed. Grey placeholders show first (example: a side drawer). Source opinion: slightly better than native loading="lazy". Never on in-view images. [3c9bddfb47c1]
@@ -261,7 +261,7 @@ Order: resize, crop, convert format, compress, rename, alt text, upload, order g
 
 ### 3.26 Fonts
 1. Inventory custom font weights and styles actually used. Keep at most about 3 variations; 5 or 10 because of one occurrence is "not a great idea". [1eacf61a57a2]
-2. Edit code > search "@font-face". For each rule without it, add `font-display: swap;` (example: just under font-family). Check every weight and italic. [027af5f63b68] [3ef856fab3ae]
+2. Edit code > search "@font-face". For each rule without it, add `font-display: swap;` (example: just under font-family). Check every weight and italic. [027af5f63b68] [3ef856fab3ae] [3263b4728b85] [ea1d2a527d10]
 3. Test on throttled 3G: a standard browser font shows first, then the custom font swaps in. Without swap the whole document can wait for the font. [027af5f63b68]
 4. Match fallback metrics to limit CLS (3.25 step 5). [14bc6ce5b8a6]
 5. No real design reason for custom fonts: use Shopify's built-in theme fonts. [1eacf61a57a2]
@@ -347,7 +347,7 @@ Order: resize, crop, convert format, compress, rename, alt text, upload, order g
 | JPEG export quality | about 70% (lower if it holds) | Photopea export | presenter | 621e302f651f |
 | Compression savings | free sites 50 to 70%; compressjpeg.com 50 to 60%+; app over 80%; a second pass only 8% | examples | demos | 3a99be49f292, cce38d9369f2, 3bbbee3c2099, 621e302f651f |
 | Shopify built-in compression | 9.8 MB upload delivered at 6.1 MB | test store | presenter demo | 21698bb77d52 |
-| Formats | JPEG default; PNG only for transparency; no GIF; MP4 in video tag for motion; do not upload WebP | all images | presenter | 02dbd594ff18, 3dd6497a4d63 |
+| Formats | JPEG default; PNG only for transparency; no GIF; MP4 in video tag for motion; do not upload WebP | all images | presenter | 02dbd594ff18, 3dd6497a4d63, ff5edde57340, cf9d029b70aa |
 | Product images | 3 to 5 minimum (1 ok, 2 better) | per product | heuristic | 17019c2bec17 |
 | Aspect ratio | square; 4:5 for fashion | product grid | common practice per presenter | c371cc94a060 |
 | Custom font variations | about 3 max | custom fonts | presenter | 1eacf61a57a2 |
@@ -379,7 +379,7 @@ Order: resize, crop, convert format, compress, rename, alt text, upload, order g
 | Baseline score | PSI 3 runs per page type, averaged, mobile and desktop | stable average; mobile over 50 | 20 or lower; large swings | run 3.3 onward; swings suggest many apps [c33439a2c9b9] [74187c8d7e19] |
 | Vitals vs score | PSI on home, collection, product | vitals pass and score decent on all 3 | "vitals passed" but 18/38 | audit all 3 pages [5e79bed9130e] |
 | Blocking JS | PSI "reduce JavaScript execution" and "unused JavaScript"; Lighthouse render-blocking list | few app scripts at load | seconds of JS (example 2.7 s) from apps | 3.6 to 3.14 [81ac749043da] |
-| App scripts at load | DevTools head > asyncLoad function; theme.liquid scripts; App embeds | only needed scripts; pixels once | many app URLs; duplicates | delay, remove, dedupe [2a89f4e58923] [adc3ea59042a] |
+| App scripts at load | DevTools head > async load function; theme.liquid scripts; App embeds | only needed scripts; pixels once | many app URLs; duplicates | delay, remove, dedupe [2a89f4e58923] [adc3ea59042a] |
 | Residual code | search app names in theme files / downloaded theme | no hits for removed apps | leftover tags | remove after backup [3c6bd0cce957] [10d064e032f8] |
 | Scripts without defer/async | theme.liquid scan; editor warning | all non-critical have defer or async | bare script tags | 3.6 [1d1dca3e3cfb] |
 | Delay snippet working | Console message on mouse enter; widget appears after interaction | message and widget after hover | widget shows at load, or never | check comment/paste; test app [d1007a68a9e0] |
@@ -403,7 +403,7 @@ Order: resize, crop, convert format, compress, rename, alt text, upload, order g
 
 - **Google PageSpeed Insights:** main score, field data (28 days), filmstrip screenshots, CLS element outline, mobile and desktop tabs. [0d2d3621b19d] [f00068c50316]
 - **Chrome Lighthouse** (DevTools > Lighthouse): render-blocking list, View Original Trace for CLS timeline. [verify UI] [1dffb0dd47d1] [80a761efcb18]
-- **Chrome DevTools:** Elements (find asyncLoad, Edit as HTML), Network (Disable cache, Fast/Slow 3G, custom profiles), Console (snippet messages), Performance tab, Coverage tab (PSI suggests it for unused JS; presenter calls line-by-line cleanup simplistic), device toolbar. [verify UI] [a5d2c3aee970] [2a89f4e58923]
+- **Chrome DevTools:** Elements (find the async load function, Edit as HTML), Network (Disable cache, Fast/Slow 3G, custom profiles), Console (snippet messages), Performance tab, Coverage tab (PSI suggests it for unused JS; presenter calls line-by-line cleanup simplistic), device toolbar. [verify UI] [a5d2c3aee970] [2a89f4e58923]
 - **Safari:** Develop > Enter Responsive Design Mode. [verify UI] [58bc1e28be27]
 - **GTmetrix:** extra test when Google's list is exhausted. [9b3008487ad5]
 - **Unnamed GIF-capture site** for page-load recordings; **unnamed online critical CSS generator**. [a5d2c3aee970] [cabcd2d4c66e]
@@ -415,7 +415,7 @@ Order: resize, crop, convert format, compress, rename, alt text, upload, order g
 - **Shopify Theme File Search** Chrome extension; **Cursor** code editor (free, AI). [3c6bd0cce957] [10d064e032f8]
 - **Image tools:** macOS Preview, Squoosh, Photopea, Photoshop, TinyJPEG/tinyjpeg.com, compressjpeg.com, Canva (warned: PNG export is heavy), Tiny SEO Speed and Image Optimizer app (affiliate), SEOAnt (affiliate), ChatGPT for names and alt text, Gemini and Nano Banana for lifestyle images. [verify UI] [cfa3fe76f953] [621e302f651f] [3bbbee3c2099]
 - **Author's paid snippets:** "Shopio speed boost" (content_for_header delay), cookie banner lazy-load function. Not published in the source. [d1007a68a9e0] [b1f2c1da412b]
-- **Apps named as examples:** Loox, Yotpo, Stamped, Judge-type reviews via Trustpilot, Smile, Rebuy, Instafeed, Recharge, Swell, PostScript, Hotjar, Klaviyo (kept as an embed that makes money), Hexom free shipping bar, ILO cookie banner, VanChat, Afterpay widget, Swiper, jQuery, Website Speedy. [adc3ea59042a] [f00068c50316] [b711b4ded0ce]
+- **Apps named as examples:** Loox, Yotpo, Stamped, Trustpilot, Smile, Rebuy, Instafeed, Recharge, Swell, PostScript, Hotjar, Klaviyo (kept as an embed that makes money), Hexom free shipping bar, ILO cookie banner, VanChat, Afterpay widget, Swiper, jQuery, Website Speedy. [adc3ea59042a] [f00068c50316] [b711b4ded0ce]
 - **Themes:** Debut, Dawn, Horizon. [d68b270990ab]
 - **SEO tools:** Google Keyword Planner, Google Trends, Glimpse extension, Google autocomplete, Ahrefs, Semrush. [a8d01f5b91b6]
 
@@ -452,7 +452,7 @@ Order: resize, crop, convert format, compress, rename, alt text, upload, order g
 - Believing PNG is better than JPEG; exporting banners as PNG from Canva. [02dbd594ff18]
 - Believing more images always means a slower site. [8e4f0dac7e97]
 - Converting and uploading WebP yourself (non-supporting browsers would show nothing, per source). [21698bb77d52]
-- Using animated GIFs. [5148a60eef22] [68ca7da1a081]
+- Using animated GIFs. [5148a60eef22] [68ca7da1a081] [cf9d029b70aa]
 - Batch cropping. [08bb3d69ec5b]
 - Uploading the same image twice instead of reusing and using Replace. [23917da7d97a]
 - Mixed aspect ratios in one grid. [c371cc94a060]
@@ -491,7 +491,6 @@ Order: resize, crop, convert format, compress, rename, alt text, upload, order g
 
 **Card errors spotted against the transcript**
 - [fde546149035] names Yotpo as the uninstall example; in that video the example is the Loox review app ("logs"). The Yotpo leftover example is from the unused-JavaScript video [68699dfd59de].
-- [f00068c50316] says the free shipping bar CLS was worse on desktop; transcript says the desktop reading was "a little bit higher" for the same element.
 
 **Claims to verify on the live web**
 - [web check: current Google Core Web Vitals thresholds for LCP, CLS and INP] The source's "LCP under 4" and "CLS under 0.25" are the presenter's numbers. INP is never mentioned.
