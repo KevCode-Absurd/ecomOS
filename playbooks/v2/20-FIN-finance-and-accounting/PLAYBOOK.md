@@ -4,6 +4,8 @@ version: 2.0-draft  |  date: 24 Sep 2026  |  sources: 6 mini playbooks (5 indepe
 
 ## 0. How to use this playbook
 
+**Ecommerce first.** This playbook is written for ecommerce stores, not businesses in general. Section 3.0 is the ranking: it names the few rules that matter most this week, in order. A store's type (hero SKU or catalogue, low or high AOV, subscription or one-off, marketplace-heavy, luxury or considered purchase, mobile-first India or US) decides which of the rules below apply and how strictly.
+
 **Who runs it.** The profit and marketing efficiency agent (finance agent). It owns the definitions every other agent uses for revenue, cost, margin, CAC and LTV; the P&L ladder and the 4-bucket view; the daily and weekly contribution readouts; the COGS and landed-cost table; break-even ROAS and CAC for any offer; cohort LTV and payback; the cash, inventory and PO checks; scenario answers; and the reconciliation of platform numbers to the books. A worker can run the section 5 checklists alone.
 
 **All arithmetic is done in code, never by the model.** Every formula in section 3.0 is written so a developer can implement it: named variables, units, sign conventions and the source. The agent fetches inputs, calls the calculation, and reads the result. It never estimates a margin, a ratio or a cash balance in prose. If an input is missing, the output is "unavailable", not 0. Period ROAS and MER are total value divided by total spend for the period, never an average of daily ratios. Totals stay separate from breakdowns.
@@ -108,7 +110,28 @@ version: 2.0-draft  |  date: 24 Sep 2026  |  sources: 6 mini playbooks (5 indepe
 
 ## 3. Decision rules
 
-Every rule states the rule, when it applies, the mini playbooks that support it (by number), any conflict (by section 7 code), and card ids. Where only 1 source supports a rule, the rule says so. Where sources disagree, the strictest condition is kept here and the disagreement is written out in section 7. Section 3.0 is the formula register; rules cite formulas by F number.
+Every rule states the rule, when it applies, the mini playbooks that support it (by number), any conflict (by section 7 code), and card ids. Where only 1 source supports a rule, the rule says so. Where sources disagree, the strictest condition is kept here and the disagreement is written out in section 7. Section 3.0 opens with the ecommerce priority order, then the definitions and formula register; rules cite formulas by F number.
+
+### 3.0 Ecommerce priority order
+
+For any store, work the levers below in order before opening the detail groups. Each line names the rules and formulas it draws on.
+
+1. Check cash before profit: run the 13-week forecast and find the lowest projected cash month. Many ecom stores fail on liquidity, not unit economics. R103, R97 to R102, P19, P20.
+2. Get CM3 (post-marketing contribution) positive. Nothing below it fixes a business losing money after marketing. R7, F10.
+3. Gate acquisition on CM2 per new order vs CAC (break-even). Default for every store; only cohort-proven repeat businesses spend above it. R6, R53, F15.
+4. Split new vs returning revenue; manage to aMER, not MER, which hides new-customer efficiency. R37, F14.
+5. Get landed cost and COD right per SKU; a wrong COGS number breaks every rule above it. R5, R11 to R18, F4.
+6. Match ad spend to inventory position; do not buy CAC for a SKU about to stock out. R107, R108, R109.
+7. For repeat or subscription stores: read LTGP:CAC in a fixed window and cohort payback before spending past break-even. Higher priority for subscription and considered-purchase stores; buy-once categories stay on lever 3. R57, R58, R60 to R62.
+8. Treat any discount and CAC as 1 pool; recompute break-even at the discounted price before it goes public. R67, R68, R69.
+9. Price new SKUs bottom-up from the waterfall, not keystone. Matters most for catalogue stores; less for a hero-SKU store repricing rarely. R77, R78.
+10. Manage the cash conversion cycle and PO sizing; this, not ad efficiency, caps growth for stores carrying inventory. R115, R116, F34 to F36.
+11. Reconcile platform numbers to the books monthly. More urgent for marketplace-heavy stores with more gaps to close. R129, R130.
+12. For subscription stores only: run churn and prepaid as its own economics, separate from transactional CM. R134 to R142.
+
+Store-type notes, tagged `[general practice]` where the playbook gives no explicit condition: a catalogue store pulls SKU-level contribution (P7, 9.2) into lever 6 sooner than a hero-SKU store, which instead watches 1 stockout risk closely `[general practice]`. A luxury or considered-purchase store extends the LTV window toward 365 days or the plateau month (R55) and may miss the first-order gate at launch `[general practice]`. An India store keeps the same order but swaps every US or Australian rate for the local one (section 0).
+
+Load this block first; the groups below are the detail.
 
 ### 3.0 Definitions and formula register
 
@@ -530,9 +553,13 @@ Every gap is explained by a named cause (tax, timing, processed vs accrued retur
 
 **R10. Watch gross margin percent, not gross profit dollars, in and after a promo month.** In 05's model, orders nearly doubled in the sale month, margin percent fell because of the discount, then recovered. A dip explained by discount is fine; a dip from cost lines (air freight, higher pick and pack) is not. Condition: every month with a promo. Sources: 05, 01. Cards: [02bbff7623e0] [183999c47203].
 
+**R143. Track sales tax or GST nexus, registration thresholds and marketplace-facilitator remittance rules for every state or country the store sells into.** Condition: any store selling across states or countries `[general practice]`. No library source; verify against brand data before use `[web check: nexus thresholds and marketplace-facilitator rules by market]`.
+
+**R144. Book gift cards issued as a deferred-revenue liability, recognise the revenue only on redemption, and estimate breakage from redemption history.** Condition: any store selling gift cards `[general practice]`. No library source; verify against brand data before use.
+
 ### 3.2 COGS scope and landed cost
 
-**R11. Statutory COGS is "all in until it's in": every cost to get the product from the supplier's door onto your shelf ready to sell.** Purchase price net of supplier discounts, inbound freight including the container, duty actually paid, product packaging, and for a manufacturer direct labor and manufacturing overhead. Costs after that point are expenses in the statutory view. Backup test: would you have paid this cost if you had not bought these goods? Rent, yes (expense); the container, no (COGS). Condition: statutory and compliance accounts; confirm with the accountant. Sources: 04, 06. Cards: [a0e16cf2802e] [4b0ff6e78865] [1939dcb79b5d].
+**R11. For every SKU in the catalogue, COGS is the purchase price, inbound freight, duty paid and product packaging to get that unit onto the shelf ready to sell; apply the same backup test per SKU.** Purchase price net of supplier discounts, inbound freight including the container, duty actually paid, product packaging, and for a manufacturer direct labor and manufacturing overhead. Costs after that point are expenses in the statutory view. Backup test: would you have paid this cost if you had not bought these goods? Rent, yes (expense); the container, no (COGS). Condition: statutory and compliance accounts; confirm with the accountant. Sources: 04, 06. Cards: [a0e16cf2802e] [4b0ff6e78865] [1939dcb79b5d].
 
 **R12. Keep 2 cost views and label every margin with its view: statutory COGS (04, 06) and internal cost of delivery (01, 02, 03).** Internal COD adds outbound shipping, pick and pack, packing materials, 3PL storage, warehouse staff per order, payment fees and marketplace fees. The marketing decision uses COD (CM2). The statutory P&L uses the accounting policy. Never mix them in one table. Condition: always. Conflict C1. Sources: 01, 02, 03, 04, 06. Cards: [4b0ff6e78865] [db1cf398804d] [0f57ba17ebb2] [4e8e7fd6e6e4].
 
@@ -548,13 +575,15 @@ Every gap is explained by a named cause (tax, timing, processed vs accrued retur
 
 **R18. Warehouse staff who pick, pack and ship belong in cost of delivery, at daily cost divided by packages per day.** 03's example: $400 a day / 100 packages = $4 an order. Leaving them in OPEX overstates gross margin. Condition: internal view; the bookkeeper tags the staff and builds a custom P&L `[verify UI: Xero or QuickBooks tracking categories]`. Source: 03 only. Cards: [7c524289c2d3].
 
-**R19. Coupons reduce revenue; they are not COGS and not ad spend.** Supplier discounts reduce product cost; supplier credits generally sit against product cost but may carry a stock movement, so check. Condition: always. Source: 04 only. Cards: [4b0ff6e78865] [61551ff00944].
+**R19. A promo code, automatic discount or BOGO reduction at checkout reduces net revenue; never book it as ad spend or COGS, even when marketing owns the discount-and-CAC pool (R67).** Supplier discounts reduce product cost; supplier credits generally sit against product cost but may carry a stock movement, so check. Condition: always. Source: 04 only. Cards: [4b0ff6e78865] [61551ff00944].
 
-**R20. Advertising, Amazon PPC and marketing-only partner revenue share are never COGS.** A partner involved in delivering the product can be COGS; a partner that only markets it is marketing OPEX or variable marketing. Condition: always. Sources: 04, 06. Cards: [4b0ff6e78865] [0dad09bf5876].
+**R20. Meta and Google spend, influencer fees and affiliate commissions are never COGS; a partner that ships or picks the product can be COGS, one that only markets it cannot.** Condition: always. Sources: 04, 06. Cards: [4b0ff6e78865] [0dad09bf5876].
 
 **R21. Returns costs are split by type.** Return shipping back to you: overhead expense. Repackaging or a new box to make the item sellable again: can go into COGS. Bringing it back without making it sellable: not COGS. Apparel and other high-return categories track a returns-cost KPI and contribution margin next to gross margin. Condition: any brand with returns above a few percent. Source: 04 only. Cards: [bb8589d09789].
 
-**R22. Inventory is an asset until it sells; COGS is booked when the unit sells, not when the invoice arrives.** Purchase invoices dumped into the accounting system as expense with no stock adjustment is the most common failure 04 sees. Condition: always. Sources: 04, 05, 06. Cards: [a0e16cf2802e] [a490586f1272] [b4b11ba26397].
+**R22. Post every inbound shipment to inventory by SKU and receive date; move it to COGS only when the unit sells, or a big-PO month will show a false loss.** Purchase invoices dumped into the accounting system as expense with no stock adjustment is the most common failure 04 sees. Condition: always. Sources: 04, 05, 06. Cards: [a0e16cf2802e] [a490586f1272] [b4b11ba26397].
+
+**R145. Classify customer support and CX cost per order consistently: cost of delivery when it scales with order volume, OPEX when it is a fixed team cost.** Add it to the fulfillment cost formula (F6) and the cost-classification tree (P3) so it is not silently dropped from CM2. Condition: any store with a support team or outsourced CX. Source: 06. Cards: [332efa25ba89].
 
 ### 3.3 The P&L ladder and the 4-bucket view
 
@@ -564,19 +593,19 @@ Every gap is explained by a named cause (tax, timing, processed vs accrued retur
 
 **R25. A missed target is caused by a line above it (the fault rule).** Missed EBITDA: OPEX, marketing or COD. Missed CM3: marketing or COD. Missed CM2: COD or revenue (refunds, discounts, shipping collected). Trace before reacting; 01's T2 case traced a loss month to marketing going from 29% to 39% of revenue. Condition: every monthly review. Sources: 03, 01. Cards: [4ca15f364bbb] [7ca062ce13b6] [c160135c9bd3].
 
-**R26. Interest sits below EBITDA, never in OPEX.** EBITDA is the earning power with no loans; a buyer zeroes the loans. Net profit is what is left after interest, tax, depreciation and amortisation. Condition: always. Sources: 03, 05. Cards: [7c524289c2d3] [ff3c54a4afb8] [4f714af151a4].
+Moved to Appendix A: R26 (interest below EBITDA), referenced by P3 step 8 and mistake 19.
 
 **R27. Split marketing into variable (paid ads, influencers, events, agency and creative help that flexes with demand) and fixed (a permanent in-house creative team, retainers).** Variable goes above CM3; fixed goes in OPEX. Some brands put all creative above CM3 because it drives revenue; that is allowed if the convention is written down and never changed mid-year. Condition: always; the choice changes the CAC bucket (C2). Sources: 03, 02. Cards: [8cc010473338] [9a74113cfe78].
 
 **R28. OPEX is everything not in COD or marketing: people, software, office.** In ecommerce, the way to reinvest is marketing, not headcount, software or office, which "generally" do not drive revenue (03). What happens at most 7-figure brands: OPEX rises faster than marketing and COD, and profit stays flat in dollars for 3 to 4 years. Condition: any brand where OPEX percent is flat or rising while revenue grows. Sources: 03, 02. Cards: [7c524289c2d3] [434847dcd5bb].
 
-**R29. Put a percent-of-revenue column next to every line to read trajectory: revenue growing, margins predictable, efficiency improving.** Marketing percent will bounce while scaling; COD and OPEX percent should not. Condition: monthly. Sources: 01, 03. Cards: [c160135c9bd3] [4ca15f364bbb].
+**R29. Add the percent-of-revenue column to every ladder and 4-bucket line, so a rising marketing percent while scaling reads differently from a rising COD or OPEX percent, which should hold steady.** Condition: monthly. Sources: 01, 03. Cards: [c160135c9bd3] [4ca15f364bbb].
 
 **R30. Track net shipping cost (shipping collected minus shipping cost) every month.** Shipping should be about 10% of revenue or less; 20 to 30% is a red flag; product cost 10 to 20% of revenue for "most brands" (02). Parcels over 39.5 inches on a side cost more (host). Condition: monthly; price-test shipping charges (03-OFF). Source: 02 only. Cards: [1e5dad6d98ce].
 
 **R31. Revenue is not profit, and profit is not cash.** 03: a $10M business at 5% net makes $500K; a $5M business at 20% net makes $1M. Chasing revenue while expecting margin to expand later fails for many early-stage founders. Condition: any growth plan. Sources: 03, 05, 01, 02. Cards: [4ca15f364bbb] [ff3c54a4afb8] [652ee8dcf710].
 
-**R32. Reconcile the model to itself: rolled-up gross profit percent per segment must equal the unit-economics percent, and the roll-up tab must equal the monthly tab.** If they differ, a formula is wrong. Condition: every model build and every close. Source: 01 only. Cards: [f1bd2de486c0] [def705c265c2].
+Moved to Appendix A: R32 (reconcile the model to itself), referenced by the P1 checks.
 
 ### 3.4 Daily and weekly contribution readouts and the metric hierarchy
 
@@ -592,7 +621,7 @@ Every gap is explained by a named cause (tax, timing, processed vs accrued retur
 
 **R38. Track the active customer file, not the cumulative one.** About 80% of customers who will ever come back do so within 6 to 8 months (02's portfolio heuristic); after that treat them as lapsed. Growth of the active file is the best predictor of future returning revenue; set new-customer goals so you are not "squeezing the sponge". Condition: monthly; check the brand's own repurchase curve first `[needs brand data: repurchase curve]`. Source: 02 only. Cards: [5297f747603f].
 
-**R39. Show the numbers to everyone.** "You can't ask people to affect things they aren't looking at" (02). Align dashboards with pay and ownership. Condition: opinion from 1 source; apply where the owner agrees. Source: 02 only. Cards: [25d900c4c527] [83186e2addd5].
+Moved to Appendix A: R39 (show the numbers to everyone).
 
 **R40. Track actuals to a daily expectation so a miss is seen on day 5, not day 22.** The expectation is the 3-model forecast (F43). Condition: every month with a target. Source: 02 only. Cards: [4d4d40fe1138].
 
@@ -603,6 +632,8 @@ Every gap is explained by a named cause (tax, timing, processed vs accrued retur
 **R42. Never read Shopify's default "total sales" (today's revenue minus returns processed today) as the efficiency base.** A $500,000 January that processes $100,000 of December returns looks like a 20% return rate when the rate is still 10%, and the team pulls back spend. Condition: any January or post-peak read `[verify UI: Shopify default sales metric]`. Source: 02 only. Cards: [1d3d04198311].
 
 **R43. Put a refund and discount allowance into every per-basket margin and into the waterfall price.** 03's allowance in its t-shirt example: about 5% discounts plus about 10% refunds; fashion refund rates run 10% up to 80%. Condition: pricing, break-even and CAC ceilings. Source: 03 only; 01 uses 5 to 10% returns and 4 to 5% refunds as model inputs. Conflict C15 (accrual vs restatement). Cards: [db1cf398804d] [c9ccfa76430a] [1a6c983c0c2f].
+
+**R146. Track chargebacks and payment disputes as their own line, separate from processed refunds, and flag a rising dispute rate as a fraud signal.** Chargebacks already sit inside the net-revenue bridge (F2); give them their own count and rate so a payment-processor risk is caught early. Condition: any store taking card payments. Source: 03. Cards: [c9ccfa76430a].
 
 ### 3.6 CAC
 
@@ -623,6 +654,8 @@ Every gap is explained by a named cause (tax, timing, processed vs accrued retur
 **R51. Set the CAC or ROAS line from unit economics and payback, then do not move it.** A 2021 partner analysis 02 cites found 60% of media dollars "never paid back over any period". The most common failure is "capitulation to efficiency of acquisition": lowering the line each quarter. The team solves with story, peaks, creative, product and channels. Condition: the line must come from real marginal economics (F15, F44), not a wish. Source: 02 only. Cards: [75cf518af8d3] [09e7f0d32ea7] [35efd9091446].
 
 **R52. Each new customer should be at least as profitable as the last; do not scale spend to fix bad unit economics.** 01's sub-optimal path: CAC 68 to 79 to 123 to 149 with flat CM and 1.2 to 1.8 lifetime orders, CM:CAC 0.58 to 0.6, funded by a $20M raise. "Should not be scaling until it can fix its unit economics." Condition: CAC rising with flat CM2 and flat repeat. Sources: 01, 03 (financing spiral). Cards: [e2eaed277a0d] [cd36c8b5eacc] [beb1703b3d17].
+
+**R147. Screen new-customer counts for fraud, bot orders and duplicate accounts before they feed CAC (R44) and the cohort table.** Condition: any store with paid acquisition at volume `[general practice]`. No library source; verify against brand data before use.
 
 ### 3.7 First order vs lifetime: LTV, LTGP:CAC and payback
 
@@ -676,6 +709,8 @@ Every gap is explained by a named cause (tax, timing, processed vs accrued retur
 
 **R76. A discount that lifts conversion enough is the cheaper way to buy customers; a discount that does not is pure margin loss. Test as a split before committing.** 01 names the test but does not design it; 09-CRO holds the design. Condition: always. Source: 01 only. Cards: [1247e2cd031e].
 
+**R148. Carry unredeemed loyalty or reward points as a balance-sheet liability, and charge their margin cost to the order that redeems them, not to marketing.** Condition: any store running a points or rewards program `[general practice]`. No library source; verify against brand data before use.
+
 ### 3.9 Pricing waterfall
 
 **R77. Price bottom-up from the net target, never by keystone or an arbitrary markup.** Keystone (cost x 2) ignores fulfillment and marketing; IMU (cost x 3, 4, 5) has no link to elasticity, competitors or the real cost stack. 03 guesses 40% of startups price by keystone and calls it "probably the worst way". Condition: every new product and every price review. Source: 03 only. Conflict C16. Cards: [9ee62d2b55d0].
@@ -700,13 +735,15 @@ Every gap is explained by a named cause (tax, timing, processed vs accrued retur
 
 **R86. Regress outliers to the mean and give a range, not a point.** One brand's history is a weak base; 2020 to 2021 misleads; cut data before known structural breaks (iOS 14, tariffs); use comparable brands' curves where possible. Condition: short or broken history. Source: 02 only. Cards: [ac073be6ad16].
 
-**R87. Forecasting is about the gap between the realistic number and the target; name the inputs that close it.** Board wants $50M, model says $40M: list the event, product, channel or creative volume that adds $10M, or accept $40M. Condition: every plan review. Sources: 03, 02. Cards: [0d00eb5d6d39] [15d4d04ea13a].
+**R87. When the owner wants a higher number than the model gives, name the store action that closes the gap (a launch, a promo, a new channel, more spend at a stated aMER), not a generic stretch target.** Board wants $50M, model says $40M: list the event, product, channel or creative volume that adds $10M, or accept $40M. Condition: every plan review. Sources: 03, 02. Cards: [0d00eb5d6d39] [15d4d04ea13a].
 
 **R88. Category profits get competed away; do not expect past efficiency back.** With no barriers to entry, competitor supply grows faster than demand (02's supplement brand: alone on its term in 2022, 50 listings now). Growth must come from new products, channels or stories, not a lower CAC line. Condition: any plan that assumes efficiency returns to an earlier year. Source: 02 only. Cards: [15d4d04ea13a] [5e8fb784d881].
 
 **R89. In a planning model, everything flows from ad spend: new customers = spend / CAC; ad spend is the lever for burn, runway and revenue.** Keep inputs in 1 place (blue), formulas separate, a 48-month monthly horizon for an investor model, a catch-all opex line at 10% of revenue, and conservative churn and lifetime orders (upside is a bonus). Condition: any startup or raise model. Source: 01 only. Cards: [563870c81120] [939b20dbac4b] [7b2e56bcad5a] [50708132adc1] [b6fb728dba04].
 
 **R90. Past a scale point (03: about $30K to $40K a day of ad spend, or $20M to $30M revenue) performance returns diminish and brand needs its own P&L line; brand activations will not show direct ROI.** Condition: opinion and anecdote from 1 source; budget size never quantified. Source: 03 only. Cards: [e4043b0af395] [090525149bfe].
+
+**R149. Set an annual budget separate from the rolling forecast, and review budget vs actual on its own cadence.** Condition: any store with a board, investor or owner budget cycle `[general practice]`. No library source; verify against brand data before use.
 
 ### 3.11 OPEX and payroll
 
@@ -716,11 +753,11 @@ Every gap is explained by a named cause (tax, timing, processed vs accrued retur
 
 **R93. Size full-time payroll at 12% of the lowest revenue month and cover the rest with flex labour (agencies, freelancers, seasonal hires, offshore, AI).** Examples: lowest month $600,000 gives $72,000 a month. Skips legal, notice, quality and culture costs. Condition: seasonal brands; a planning lens `[needs brand data: monthly revenue and payroll]`. Source: 02 only. Cards: [798f1af7e866].
 
-**R94. Keep payroll models simple: salary / 12 x headcount by 3 to 4 buckets, plus on-costs (25% in the US; swap in the brand's country).** No 700-row payroll tabs. Condition: planning models. Source: 01 only. Cards: [f39ad32b21d7] [66d5d76e9b71].
+**R94. Build payroll in the store's own buckets (marketing and creative, warehouse and fulfilment, support, executive) plus on-costs (25% in the US; swap in the brand's country), not a 700-row tab, so it matches how a store staffs for peak.** Condition: planning models. Source: 01 only. Cards: [f39ad32b21d7] [66d5d76e9b71].
 
 **R95. Delay heavy people spend until the business can attract and identify great hires; reinvest through marketing first.** 03 also says people are the biggest lever and set the revenue ceiling; the advice is to delay, not to never hire. Condition: 7-figure brands. Source: 03 only. Cards: [7c524289c2d3].
 
-**R96. Run 2 rhythms with 2 owners: 1 person plans the big moment months out, another manages tomorrow.** Daily CM tracking without a long-horizon owner drives short-term over-optimising. Condition: any team above a founder alone. Source: 02 only. Cards: [da68923c4cc5] [709862670eb2].
+**R96. 1 owner tracks daily CM3 and ad pacing; another owns the marketing calendar and inventory plan months out, so a stockout or BFCM peak is not missed while someone is heads-down on today's spend.** Daily CM tracking without a long-horizon owner drives short-term over-optimising. Condition: any team above a founder alone. Source: 02 only. Cards: [da68923c4cc5] [709862670eb2].
 
 ### 3.12 Cash vs profit: the 3 statements and free cash flow
 
@@ -728,11 +765,7 @@ Every gap is explained by a named cause (tax, timing, processed vs accrued retur
 
 **R98. The P&L hides 4 cash movements: inventory bought in chunks but expensed when sold; capitalised build cost (depreciated over 36 months for most software, 3 or 5 years for other assets); loan principal (only interest hits the P&L); tax accrued monthly but paid in lumps.** A profitable store losing cash is usually doing 1 of these 4. Condition: any month where profit and cash point different ways. Sources: 05, 01. Cards: [2ff9cc0805c2] [7d9e989e15be] [4f714af151a4] [416bbd9031ed] [cc661026f56a].
 
-**R99. Read the 3 statements together, in order: high-level metrics, income statement, balance sheet (assets = liabilities + equity or the model is wrong), cash flow (operating, investing, financing).** Start operating cash flow from net income and adjust for balance sheet movements (F37). Condition: monthly. Source: 05 only; 01 T5 is the same case. Cards: [6fab761526bc] [059ee049c6fc] [8c56490f81a2].
-
-**R100. Judge operations on free cash flow and solvency on net cash flow.** Whether the business has a loan is a financing choice unrelated to operations; net cash flow tells you whether it can pay its debts and run at the same time. Net cash flow is below FCF only when repaying principal; in a borrowing month it is above. Condition: every cash review. Source: 05 only. Cards: [4f714af151a4].
-
-**R101. Cash can be cut fast only on lines where cash equals expense (payroll, marketing, rent); cutting depreciation releases nothing.** Condition: any cash squeeze. Source: 05 only (card addition, standard accounting). Cards: [b4b11ba26397].
+Moved to Appendix A: R99 (read the 3 statements in order), R100 (free cash flow vs net cash flow) and R101 (cash cuts fast only on cash-equal lines), referenced by mistake 56.
 
 **R102. Inventory on the balance sheet can make a profitable brand cash-negative; assets in ecommerce are mostly unsold stock and cash.** 03's example: $2M profit, $3M of unsold inventory bought, $1M down in cash. Even at $1M to $2M profit the founder may take nothing because it is all in stock. Condition: every close reports inventory value next to profit. Sources: 03, 05, 01. Cards: [69c220a278fc] [beb1703b3d17] [6a8332853dd6].
 
@@ -776,7 +809,7 @@ Every gap is explained by a named cause (tax, timing, processed vs accrued retur
 
 **R120. Do not sell permanent equity to fund 3 months of inventory.** 01 calls it "absurd" and points to revenue-based financing (Clearco for ecommerce, Pipe for SaaS); note the affiliate link and that terms are historical `[web check: current financing products and terms]`. Condition: short-term working capital needs. Source: 01 only. Cards: [a20812fa24c9].
 
-**R121. Cost-of-capital reference points: credit cards about 30%, merchant cash advance about 70%; Chinese suppliers often have cheaper, subsidised capital.** Use these to decide who should carry the float. Condition: 02's estimates, US context. Source: 02 only. Cards: [377b3fd122bf].
+**R121. Weigh a store's real borrowing options for a PO or peak-season buy (credit card float, a merchant cash advance, supplier terms) against these reference rates before deciding who carries the float: credit cards about 30%, merchant cash advance about 70%; Chinese suppliers often have cheaper, subsidised capital.** Condition: 02's estimates, US context. Source: 02 only. Cards: [377b3fd122bf].
 
 **R122. Keep inventory payments in the cash schedule when modelling financing; treat the financing as a cash inflow and repayments as outflows, never as revenue or as a deleted inventory row.** 01's own model deletes the inventory row and replaces it with a revenue-share repayment; the card's version is the correct accounting. Condition: any financing model. Source: 01 (card correction). Cards: [a20812fa24c9] [59714f58fac1].
 
@@ -805,6 +838,8 @@ Every gap is explained by a named cause (tax, timing, processed vs accrued retur
 **R132. Calibrate platform numbers with an incrementality factor before comparing them to break-even, and optimise on the platform setting with the tightest link to new-customer revenue (both sources prefer 7-day click without view-through).** Check the link with a daily correlation of 7-day-click ROAS and aMER (02 hopes for about 0.78). Condition: single-channel brands can trust the correlation; multi-channel brands need tests (06-MEA). Sources: 02, 03. Cards: [ccf3794cd11d] [3929ca774887] [de7656f52701].
 
 **R133. When distribution widens (Amazon, retail), widen measurement: 1 engine, 1 blended contribution, not rival .com and Amazon P&Ls.** Measured on .com only, Meta looks worse as Amazon grows and the team cuts spend. Condition: any brand with more than 1 sales channel. Source: 02 only. Cards: [e840728f10ad] [ab546c35c94e].
+
+**R150. Track FX exposure on multi-currency revenue separately from the landed-cost FX in F4, and name who absorbs a rate move between order and settlement.** Condition: any store pricing or settling in more than 1 currency `[general practice]`. 04 notes currency swings on supplier payments but gives no method for booking cross-border sales revenue; no library source for the revenue side. Verify against brand data and the accountant before use.
 
 ### 3.17 Subscriptions and churn
 
@@ -1299,7 +1334,6 @@ All values are flags, not targets, unless the brand's own data confirms them. Co
 | Cost of delivery | 30 to 40% of revenue | "Then it is not the biggest problem" | 02 | 1 source, opinion; conflicts with its own 58% average (C5) |
 | Industry gross margin | About 42% (COGS about 58%) | Industry average | 02 (Finaloop study) | 1 study cited, no method given |
 | CPG gross margin | 20 to 40% "typically"; baby food about 30% | Physical product makers | 06 | 1 source, rule of thumb; DTC often higher |
-| SaaS gross margin | 70 to 90% | Software | 06 | 1 source; not ecommerce |
 | Supplements gross margin | 50 to 70% | Supplements | 01 | 1 source, opinion |
 | Fulfillment share | 30 to 32% of revenue (T2 case); about 50% CM2 (T7 case) | Case examples | 01 | Examples only |
 | CAC bucket | 25 to 30% of revenue | Strong ecommerce business | 02 | 1 source |
@@ -1350,6 +1384,8 @@ All values are flags, not targets, unless the brand's own data confirms them. Co
 | Wasted spend 2021 | 60% of media dollars never paid back | One partner analysis | 02 | 1 analysis, no method |
 | Cash forecast | Rolling 13 weeks, owned by CEO or CFO | Always | 02 | 1 source, practice |
 | VC model horizon | 48 months, monthly | Investor model | 01 | 1 source |
+
+Moved to Appendix A: the SaaS gross margin row (06; not ecommerce, comparison only).
 
 ## 7. Where sources disagree
 
@@ -1589,11 +1625,11 @@ Columns: SKU, category, channel, units, orders, net revenue, AOV, landed cost pe
 
 ### 9.3 Scenario answer (from P27)
 
-Format: the question; the scenarios side by side in 1 table (spend, expected aMER, new customers, new-customer revenue, CM2, cm3_media, cm3_loaded, LTGP:CAC 90-day, cohort payback, lowest cash month); the marginal read per channel; the recommendation on total CM3 at equal spend and on lowest cash; the assumptions and error bars; what test would tighten the answer; the rejected scenarios and why.
+Format: the question; the scenarios side by side in 1 table (spend, expected aMER, new customers, new-customer revenue, CM2, cm3_media, cm3_loaded, LTGP:CAC 90-day, cohort payback, lowest cash month); the marginal read per channel; the recommendation on total CM3 at equal spend and on lowest cash; the assumptions and error bars; what test would tighten the answer; the rejected scenarios and why; and which levers in 3.0 the scenario touches, not only the individual rule ids.
 
 ### 9.4 Alerts
 
-Each alert: metric, threshold, period, what fired, the rule it comes from, the recommended action, the owner. Standard set:
+Each alert: metric, threshold, period, what fired, the rule it comes from, which lever in 3.0 it protects, the recommended action, the owner. Standard set:
 - cac_media above cm2 per new order for the month to date (R6).
 - aMER below break-even ROAS for 7 days (R37, F15).
 - LTGP:CAC 90-day below 1 (R59) or above 3 with no marginal test in the last quarter (R58).
@@ -1708,6 +1744,8 @@ Source identification
 | Discount, BOGO and grid conversion lifts (F18, F19) | Assumptions in every source; never measured | Per test; 09-CRO |
 | Churn benchmarks, category margins, lapse windows | No published source given by any presenter | Replace with brand cohorts within 6 months of data |
 
+**24 Sep 2026:** ecommerce specificity pass applied from ECOM_REVIEW.md; priority block added, 15 rules reworded, 8 levers added, 511 words moved to Appendix A.
+
 ## 12. Source index
 
 | no. | title | type | credibility | contributed most |
@@ -1730,3 +1768,28 @@ Source identification
 - 18-COG: supplier sourcing, freight negotiation, factory pricing; the negotiation behind R116.
 - 22-AMZ: Amazon launch, reviews, ranking, fee schedules; the FBA model in 01 T15.
 - 24-DEP: campaign structure, bid strategies, pausing rules; the execution behind R108, R128 and C7.
+
+## Appendix A. General background
+
+Content the ecommerce specificity review (`ECOM_REVIEW.md`) found correct but not store-specific enough to sit in the main decision rules. Moved here, not deleted; the original spot in section 3 or 6 carries a 1-line pointer.
+
+_Moved from 3.3, the P&L ladder and 4-bucket view; referenced by P3 step 8 and mistake 19._
+**R26. Interest on a PO loan or merchant cash advance stays below EBITDA, never OPEX, so the 4 buckets show fulfilment and acquisition health separate from how inventory was financed.** EBITDA is the earning power with no loans; a buyer zeroes the loans. Net profit is what is left after interest, tax, depreciation and amortisation. Condition: always. Sources: 03, 05. Cards: [7c524289c2d3] [ff3c54a4afb8] [4f714af151a4].
+
+_Moved from 3.3, the P&L ladder and 4-bucket view; referenced by the P1 checks._
+**R32. Reconcile the SKU roll-up (9.2) and the cohort roll-up (P9) to the monthly ladder (P1) every close; a mismatch is a formula error, not rounding.** Condition: every model build and every close. Source: 01 only. Cards: [f1bd2de486c0] [def705c265c2].
+
+_Moved from 3.4, daily and weekly contribution readouts and the metric hierarchy._
+**R39. Put daily CM3, aMER and the inventory position in front of marketing, creative and ops, not only finance, since those teams move the numbers that move CM3.** "You can't ask people to affect things they aren't looking at" (02). Align dashboards with pay and ownership. Condition: opinion from 1 source; apply where the owner agrees. Source: 02 only. Cards: [25d900c4c527] [83186e2addd5].
+
+_Moved from 3.12, cash vs profit: the 3 statements and free cash flow._
+**R99. Read the 3 statements together, in order, with the ecom lines in view: inventory on the balance sheet, marketplace payout lag in receivables, and PO deposits in cash, before checking assets equal liabilities plus equity.** Start operating cash flow from net income and adjust for balance sheet movements (F37). Condition: monthly. Source: 05 only; 01 T5 is the same case. Cards: [6fab761526bc] [059ee049c6fc] [8c56490f81a2].
+
+_Moved from 3.12, cash vs profit: the 3 statements and free cash flow; referenced by mistake 56._
+**R100. For a store with inventory financing or a PO loan, judge the business itself on free cash flow, and judge whether it survives its debt schedule (draws, PO financing, principal) on net cash flow.** Net cash flow is below FCF only when repaying principal; in a borrowing month it is above. Condition: every cash review. Source: 05 only. Cards: [4f714af151a4].
+
+_Moved from 3.12, cash vs profit: the 3 statements and free cash flow._
+**R101. In a cash squeeze, cash comes back fast only from ad spend, payroll and 3PL or warehouse fees; cutting warehouse depreciation releases nothing, and cutting spend below break-even worsens the squeeze.** Condition: any cash squeeze. Source: 05 only (card addition, standard accounting). Cards: [b4b11ba26397].
+
+_Moved from section 6, thresholds and benchmarks._
+**Threshold row.** SaaS gross margin: 70 to 90%, software, source 06, 1 source; not ecommerce. Kept only so a reader does not mistake it for an ecommerce benchmark; the CPG row in section 6 stays as the sanity anchor for physical-product brands.
