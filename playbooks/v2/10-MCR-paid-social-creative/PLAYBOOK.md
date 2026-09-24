@@ -1089,3 +1089,175 @@ One table for the folder. Confidence: how many independent sources agree (same-a
 | TikTok views vs sales: 34.5M views for 13,000 units; 78,000 views for 850 units | 7 public videos | 18 | example only |
 | Bundle: about $4.99 unit to $25 to $30 AOV via 3, 5, 6 packs | low-ticket consumables | 18 | low (inferred) |
 | Objection mix illustration: 20% each price, trust, quality doubt, not ready | BOF planning | 01 | illustration only |
+
+## 7. Where sources disagree
+
+Each conflict: what each side says, when each is right, what the agent should do. Codes are referenced from section 3.
+
+**C1. Show the product early vs hold the product back.**
+- Hold it back: 01 (introduce as late as possible in TOF video; a low-testosterone ad reveals at 1.5 minutes and "scales so well"), 04 (product awareness at 0 through the hook, slow rise), 13 (no product on screen, in the first words or at the top of primary text for TOF hooks), 11 (never bridge to the product right after the intro), 09 (a hard pitch at the bridge causes drop-off), 18 (product and CTA in the middle to back). 02 would cut the deodorant ad's product shot in the first 2 to 3 seconds and hold B-roll to about 20 seconds.
+- Show it early: common Meta guidance and many practitioners say show the product or brand in the first 3 seconds `[web check]`; 02 praises a dishwashing-sheet ad that shows the product working in the first 3 seconds; 09 allows a product-first opener as a partnership ad on the influencer's own page; 13 exempts product-aware ads; 10's winning ad showed the routine and what you buy.
+- When each is right: hold back for unaware, problem-aware and solution-aware education formats (story, VSL, founder argument). Show early for demo formats where the product working is the hook, for product-aware and retargeting ads, for creator-page partnership ads, and for urgency-led commodity offers.
+- Agent: tag each script by stage and format; default to product-late for cold education ads and product-early for demos and warm ads; run 1 early-vs-late pair per quarter in the brand's account and record hook rate, hold rate and CPA. `[needs brand data: results of that pair]`
+
+**C2. Hooks on a winner and iterations vs new concepts under Andromeda.**
+- Iterate the winner: 19 (new hooks with new footage revived a 6-to-7-month winner; "stop hook testing because of Andromeda" is terrible advice), 01 (hook testing works post-Andromeda; 50 hooks bought another $100K; replication is 50% to 60% of effort), 02 (reused scripts with new scenes work "even under Andromeda"; +$40,000 from a scene change), 12 (default bets build on winners; most people drop ideas before the market does), 17 and 15 (iterate winners, with a decent swing).
+- New concepts: 05 (variants of 1 winner are "the old way"; spend collapses into 1 to 4 creatives and the account tanks at fatigue; run 10 to 15 distinct formats), 03 (slight variants are grouped by Andromeda and wasted; only persona, angle or offer changes reach new people).
+- When each is right: the sides define "variant" differently. 03 and 05 attack tiny changes (colour, pose, new person in the same format). 19, 01 and 02 require the new hook or scene to change angle, offer, avatar or format, shot as new footage. Both agree net-new concepts must never be 0%.
+- Agent: when a winner fatigues, run P18 first (new hooks on the proven body, at least 2 levers changed, more than 3 hooks) because it is cheap; in parallel keep 20% to 30% of production net-new and keep several distinct formats live (R126, R130). Treat a 1-word or colour change as no test. Watch frequency and reach to see if the revival reached new people. `[web check: Meta's current statements on creative similarity grouping]`
+
+**C3. Statics vs video for cold traffic.**
+- Statics: 03 (lowest CPMs, "pretty much always beat videos unless there's a compliance issue", 4x cheaper, the testing ground for angles and offers), 01 (statics have held $500,000 lifetime spend; "images are BOF, video is TOF" is a skill issue; production economics favour images), 07 (1 static did the whole cold job for 2.5 years).
+- Video: 01 and 10 (less aware viewers need education; if the value must be seen moving, a static cannot show it), 11 and 13 (education-heavy products need VSLs), 02 and 19 (founder and testimonial video drive the largest single-ad revenue they have seen).
+- When each is right: statics when the value fits 1 frame or the primary text and lander can carry the education; video when the product needs a demo or a mechanism walk-through. 03's CPM claim has no data shown.
+- Agent: default to statics for angle and offer tests and to video for demo and education; decide the production mix by gross profit per ad (R24) once the account has per-format numbers. `[needs brand data: CPM, CTR, CPA and production cost by format]`
+
+**C4. How to weight the portfolio by stage.**
+- 01: 70% to 90% TOF, about 20% MOF, 5% to 10% BOF. 02: most in stages 1 to 3, about 20% in 4 and 5. 05: 5 top, 5 middle, 5 bottom. 08: only "tippy top" problem/solution and "very bottom" objection ads; nothing for the middle, because production mistakes fill the middle by "natural osmosis".
+- When each is right: 08's extremes-only fits short consideration cycles and small production teams; 05's thirds suits a brand that has no cold creative at all and needs a starter batch; 01 and 02 fit brands that already run bottom-funnel creative and need growth.
+- Agent: at least 70% of new assets serve unaware, problem-aware or solution-aware viewers; build bottom ads as 1-objection ads; build explicit middle creative (comparison, listicle, long-term testimonial) only for long consideration cycles. `[needs brand data: time from first visit to purchase]`
+
+**C4b. One ad set for all stages vs split by concept or avatar.**
+- One ad set: 05 (load all stages into 1 ad set; Andromeda "knows when to show the creative at the right time"; levelled spend across creatives is the sign it worked).
+- Split: 01 (1 ad set = 1 concept; mixed concepts cannot be read; never add to a winning ad set), 08 (1 avatar plus 1 angle per pack), 15 (1 avatar per pack; "new ads, new pack"), 17 (each batch its own pack, 4 to 8 ads).
+- When each is right: 05's structure is untested in its own source and has an internal tension (a cart-reminder ad in a broad cold ad set). The split structure is backed by 3 independent agencies and gives a readable test.
+- Agent: write test plans with 1 concept per pack; hand structure to 24-DEP. Do not treat evenly spread spend as success (R144, R149).
+
+**C5. Forced equal delivery vs letting Meta allocate.**
+- Force delivery: 15 and 17 (ad set daily minimum of 1x target CPA, capped at 20% of budget, 7 days max, because old ads "hog all the spend"), 10 (per-ad impression cap so 13 ads got apples-to-apples visibility; the platform "snowballs" onto early engagement, not buying intent), 05 (levelled spend as the health signal).
+- Let Meta allocate: 01 (do not touch an ad set hitting KPI; amount spent is the first ranking proxy; Meta optimises a sequence you cannot see, so "trust the system"); common practice reads the ads Meta favours and treats concentration as normal (Pareto: 4% of ads hold 64% of spend under CBO, 01).
+- When each is right: forced delivery helps new packs at small budgets and for a fixed, short window; letting Meta allocate is right once a pack has had its window and for any ad set that is hitting KPI. Spread alone is never success.
+- Agent: state the delivery option in every test plan; default to a 7-day floor removed on day 7 (or an impression cap at very small budgets), then hands off; never keep a floor past 7 days; never cut or add ads inside a KPI-hitting ad set. `[verify UI]` `[web check: Meta's creative testing guidance and A/B tool]`
+
+**C6. Soft CTA vs hard CTA.**
+- Soft: 09 (after heavy education and objection handling the buyer "should already be sold"; a hard pitch on a soft creator ad "would be very odd"; but a soft CTA on a weak script is just friction). 07 (a convincing native static may need no CTA in the image).
+- Hard and explicit: 11 (a simple clear CTA plus risk reversal; missing CTA is a listed VSL mistake; keep the CTA on a first VSL), 02 (CTA plus social proof, scarcity if true, closes the top founder structure), 04 (script the bridge into the CTA on purpose).
+- When each is right: soft closes fit creator-page partnership ads and long education ads; explicit CTA with risk reversal fits VSLs, founder arguments and any first version. Both sides agree the reason to buy must come before the ask.
+- Agent: always give a reason to move from learning to buying; match intensity to the format (R63); keep the CTA and a risk reversal on any first VSL; test no-CTA only as a hypothesis on native statics (R50); never test CTA variants before hooks (R94).
+
+**C7. Cut every 3 seconds vs lo-fi native UGC.**
+- Cut fast: 09 (a cut at least every 3 seconds, stressed for Instagram; an uncut talking-head back half is "very salesy"), 02 (never run an unedited talking head; 2 cameras and motion), 13 (a static talking head drops people; FU2's overlays make it "20 times more engaging"; the "every 3 seconds" line is a header note).
+- Lo-fi native: 18 (raw storytelling that does not look like an ad), 13 (a founder in his car reads as content; a 3-camera rig reads as an ad), 02 (low-fi opening footage is fine if the product is not in it), 19 (a plain EGC hook on a testimonial body).
+- When each is right: the sources agree on motion and change and disagree on polish. Fast cuts suit edited ad formats and Instagram; lo-fi suits creator-voice formats, but even those move (props, handheld, B-roll, on-screen text).
+- Agent: brief every video with a motion plan; polished formats cut every 3 seconds or faster; lo-fi formats keep a native setting and fewer cuts but never a still frame through a long script; test per placement. `[needs brand data: hold rate by format]`
+
+**C8. Curiosity click to a product page vs an education page.**
+- Education page: 03 (curiosity, native and advertorial statics must land on an educational page; sending them to a PDP is where "most people fall apart"), 04 (info-gap statics win CTR but bring junk clicks; send to a listicle or long educational page), 11 (each VSL to its own page with continuity; "won't work if you're just dropping to a product page"), 16 (an ad only needs to earn the click when a quiz, listicle or strong page finishes the sell).
+- Product page: 03 and 07 allow clear-offer statics for product-aware or most-aware buyers to go to a PDP; 07's presenter only says the page and retargeting "do the teaching" (the PDP claim in 07 is a curator header); common Meta guidance sends paid social to PDPs or collections.
+- When each is right: the destination follows the spectrum end and the stage. Curiosity and cold education need a page that continues the education; clarity-end and warm ads can go to a PDP.
+- Agent: state the destination on every brief (R30, R34); for curiosity statics with no educational page, either build one with 07-LPG or move the static to the clarity end; if a curiosity static underperforms on a PDP, test the page before dropping the static.
+
+**C9. Persona call-out vs problem agitation in the hook.**
+- Problem: 01 (call-outs are "super overrated"; people skip "agency owners, listen up" and watch a hook that agitates their exact problem).
+- Call-out: 04 (template opens with the persona; the speaker must match), 08 (call out the avatar and the problem; "whoever the ad talks about is who sees it"), 13 (a 3-condition call-out widens the market; the IM8 VSL 01 praises opens with one), 07 (persona plus problem in a few words).
+- When each is right: a call-out that carries the problem qualifies the viewer; a demographic label without a pain does not. 01's own praised example is a problem call-out.
+- Agent: open with the problem, and name who has it when that widens or sharpens relevance; never a bare demographic label. Check personal-attribute policy on call-outs (R175).
+
+**C10. Hooks per body: 2 to 4 vs 10.**
+- Few at launch: 02 (2 to 4 per body, up to 8; $1,000 a day across 3 beats 20 to 40; 10 to 40 per body spreads budget too thin to exit learning). 11 (3 to 6).
+- Many: 19 (3 is usually too few; target 10; the odds that 3 hooks hit are "pretty low"), 02 itself shoots 10 x 3, 01 records about 6 takes per hook and put 50 hooks on 1 fatigued ad, 04 multiplies 1 hook into 20 to 30.
+- When each is right: shoot volume is cheap; launch volume is limited by budget per ad set.
+- Agent: shoot 10 per body; launch 2 to 4 per body per wave (max 8), sized to the budget; hold the rest for later waves and revivals. `[needs brand data: daily budget per pack]`
+
+**C11. Founder ads: optional, essential, or capped.**
+- 02: optional (a $200M fashion brand does not need them) but "will perform better" when good; 05: essential trust pillar, "I totally disagree" with the no-founder camp; 09: founder-reliant ads cap at the founder's organic reach and would "100% not work" with another face. 02 also raises exit risk if founder ads hold a large share of spend.
+- When each is right: founder ads win when the argument, not the face, sells (02's own rule) and the founder can carry authority the brand lacks; they fail when they rely on fame or on a founder who does not match the buyer.
+- Agent: run founder ads where a true story, proof and a willing founder exist, built as arguments and passing the swap-the-face test; keep them one part of a portfolio with sales, statics and animation formats; do not force them on a brand whose founder does not fit the persona. `[needs brand data: founder fit and availability]`
+
+**C12. Amount spent as the winner proxy vs "the most spend is not the winner".**
+- Proxy: 01 (rank by spend first; a 1.7x ad with double the spend beats a 2.2x; Meta rewards what works and the opener causes sales elsewhere), 17 (sort by spend under incremental attribution).
+- Not the winner: 10 (the platform snowballs onto early CTR and CPM, not buying intent; a high-spend ad may be empty attention; watch the ad and check the chain).
+- When each is right: spend is the right first sort; it is not sufficient. 10's case was a $30-a-day account with a weak pixel, where early engagement can mislead; 01's rule assumes a mature account optimising on purchases.
+- Agent: sort by spend, then require the outcome threshold, the chain check (CTR to link CTR to purchase) and a concept-level reason (R144).
+
+**C13. Keep weak ads in a funnel slot vs kill the weakest.**
+- Keep: 05 ("you're not turning off necessarily the bad ads"; each has a place; no kill rule given).
+- Kill: 10 (cut the weakest after each test), 15 (losers fade after the floor; "you're going to pause things"), 08 (only winners count).
+- Also: 01 (never cut a low-ROAS ad inside an ad set that is hitting KPI, because it may be the opener).
+- Agent: keep an ad only when the brand's spend, purchases and margin across several windows justify it; never on stage coverage alone; never cut inside a KPI-hitting ad set; do not add spend to a confusing ad (07). `[needs brand data: per-ad economics over several windows]`
+
+**C14. Does a format change make a new concept?**
+- 03: format is optional in the concept and "fundamentally doesn't matter"; only persona, angle or offer changes reach new people; but format innovation gives temporary arbitrage. 01: format is a 4th, weaker lever with some new reach. 05: 10 to 15 distinct formats are the strategy. 12: formats trend and a winning concept in a winning format makes ads fast. 15: avatar plus template is the concept.
+- Agent: count format as a lever that adds reach and fatigue resistance, not as a substitute for a persona, angle or offer change; a batch of format variants of 1 concept is 1 concept in the tag library.
+
+**C15. AI-assisted research vs manual research.**
+- 03: AI scraping of large databases is "super helpful"; human concepting is the key intervention. 15: deep context in the AI tool is the difference maker. 16: research must be manual; a 5-minute ChatGPT deep research replaces nothing; AI cannot write niche humour. 01: LLM ideation "outputs the mean" even with rich context.
+- Agent: use AI to gather and aggregate, but a human reads raw quotes and writes the concepts; AI drafts briefs and scripts from human concepts; never paste a research doc into an LLM and ship its headlines.
+
+**C16. Does design matter on a static?**
+- 03: "the design of a static ad really doesn't matter"; ugly statics spend a quarter million. 03 and 07: bad spacing, random caps, a stray logo, an unreadable graph and tiny text "lose authority and trust".
+- Agent: design is not the performance lever; layout, hierarchy, spacing and legibility must not break clarity or trust (R38).
+
+**C17. "Nobody cares about specs" vs USP call-outs and expert precision.**
+- 16: ingredients, t-shirt weight and GSM are "news flash, nobody cares"; yet 16 lists "USP call out" as a creative type. 03: product-aware buyers respond to feature call-outs; 13: expert personas notice imprecise terms; 07: plain benefit first, science in brackets.
+- Agent: specs alone are not an ad for cold scrollers; specs behind a benefit build trust for product-aware and expert buyers.
+
+**C18. Invented numbers.**
+- 07 ("even if you've just made it up") and 03 ("suggests a study even if there wasn't") accept invented specificity. 04, 10, 13 and ecomOS require true, sourced numbers.
+- Agent: only true numbers, ever (override 2).
+
+**C19. Change 1 variable vs rotate several parts.**
+- 1 variable: 10 ("what did we test? Nothing"), 03 (change 1 concept element). Several: 12's rotation example changes angle, mechanism, hook and format together; 15 and 17 want "decent swings".
+- Agent: for tests meant to teach, change 1 meaningful variable and make it big; for iteration meant to produce volume from a winner, rotate several parts and tag the result as a new concept, not as an attribution test.
+
+**C20. Copy competitor ads vs treat them as signals.**
+- 05 ("copy and replicate any static ad creative"), 15 ("inspired by" competitor ads ranked by run time), 17 ("recreate this exact ad for every product"; competitors are "the single most important place"), 18 ("steal these"). 12 and 03 warn that copying gives no edge unless first and narrows ideas.
+- Agent: override 1 wins. Study structure, layout and mood; rebuild with the brand's own persona, angle, offer, words and assets; never copy text, products, faces or logos. Long run time is a research filter, not proof.
+
+## 8. Common mistakes
+
+Merged and deduplicated from all in-domain sources, with the fix. ecomOS overrides applied.
+
+1. Testing format first ("should we make UGC or a static?") and believing "UGC works" as a concept. Fix: concept first; format last (R1, R3, R108).
+2. Calling a new design, colour, pose or model a new concept, and filling the account with variants of 1 winner. Fix: change persona, angle or offer; decent swings only (R2).
+3. Broad personas ("busy professional") and asking an LLM for personas from 3 examples and a URL. Fix: problems, desires, triggers; 20 to 40 by hand, then expand (R11, R12).
+4. Skipping research, starting in Canva, or pasting Reddit into an LLM and shipping its headlines. Fix: P1 with raw quotes; humans write concepts (R13, C15).
+5. Leading with features, specs or ingredients instead of an argument; science before the plain benefit. Fix: benefit first, mechanism in brackets (R39, R60).
+6. Building only bottom-of-funnel creative (product shots, testimonials, offers) and wondering why it will not scale on cold. Fix: 70%+ of assets at colder stages (R20, R25).
+7. Serving a white-background product shot to cold traffic. Fix: paint the value or agitate the problem (R44).
+8. Mismatching stages: a curiosity hook into a feature tour; a product-aware image with solution-aware copy. Fix: 1 stage per ad (R21).
+9. Sitting in the middle of clarity vs curiosity; slogans that say nothing; brand-centred headlines ("We don't stop improving"). Fix: pick an end (R32, R33).
+10. Sending curiosity or native statics to a PDP, then concluding statics do not work. Fix: educational page, or move to the clarity end (R34).
+11. Putting the product category in the biggest text so the ad reads as a pitch. Fix: highest-awareness message first (R35).
+12. Image and headline that do not need each other; generic category shots. Fix: thumbnail-and-title pairing (R36).
+13. Ignoring primary text and headline on statics. Fix: equal weight; native statics sell in the text (R37).
+14. Layout faults that kill trust: spacing, random caps, stray logo, unreadable graph, text too small for a phone. Fix: fix craft; cut the graph (R38).
+15. Invented statistics, "clinical-sounding" percentages with no study, unsourced prevalence lines. Fix: sourced numbers only (R43, R170).
+16. Unattributed review lines, staged product shots, AI-redrawn products. Fix: legible proof and the real product (R42, R166).
+17. Bait hooks (memes, a knife in the product, a hammer on a table) that win attention from the wrong people; off-topic organic formats copied into paid. Fix: relevance first (R73, R74).
+18. Naming or showing the product in the hook of a cold ad; "I'm proud to announce"; product by word 3 and at the top of primary text. Fix: product awareness near 0 through the hook (R54, R81).
+19. Jumping from hook straight to the pitch ("the solution is our product"). Fix: "a solution exists", then education (R53).
+20. Claims without visible proof; subjective superlatives; a mechanism asserted with no why; a clinical term dropped and left. Fix: claim then proof; explain and prove the term (R55 to R57).
+21. Feature lists with no benefit; spending the whole ad on table-stakes features; hyper-specific pillars that shrink the market. Fix: benefit first, fast through table stakes, broad pillars (R16, R60).
+22. No objection handling; no risk reversal; a vague or missing offer; an ad that ends right after the bridge; a CTA that opens a new loop. Fix: R59, R62.
+23. A hard pitch bolted onto a soft creator ad, or a soft close on a weak script. Fix: match intensity (R63).
+24. Unedited talking heads; a still frame through a long script; a visible studio rig on a founder ad. Fix: motion and native settings (R65).
+25. AI-script tells: contrast negation, stock war analogies. Fix: standing prompt line; search and rewrite (R69).
+26. Imprecise terms in front of expert buyers. Fix: expert read (R70).
+27. Hooks that do not bridge into the body; 10 to 40 hooks per body on a modest budget; only 3 hooks on a revival; hooks re-cut from footage the market already rejected; wording-only variants. Fix: R90 to R93, P18.
+28. Testing CTAs before hooks. Fix: hooks first (R94).
+29. Stopping hook testing because "Andromeda groups variations"; or the reverse, calling a background colour a hook test. Fix: truly different hooks (R88, C2).
+30. Founder ads shot as raw monologues; stopping at "authenticity, authority, trust"; the founder's biography first; claims without proof; invented or altered stories; scripted reviews as real; deciding "founder ads don't work" from robotic first takes. Fix: P9 (R98 to R105).
+31. Running founder ads from a personal page with no relevant content, or expecting a 10x from partnership ads. Fix: company page unless the page qualifies; expect 5% to 30% (R106).
+32. One founder ad carrying the business, then more variants of the fatigued concept. Fix: portfolio (R126).
+33. Making a VSL for a product that needs no education; starting with a 60-minute script; a brand story as the VSL hook; a footage scramble that looks scammy; a VSL to a bare PDP. Fix: R120 to R124.
+34. Hero-ad dependence; stopping production; treating creative as a cost centre; 15 live ads on $350K a month. Fix: R126, R131.
+35. Volume without a quality bar: thousands of sloppy ads, "50 ads in an afternoon", 1,000 ads an hour, fake UGC. Fix: the 7-out-of-10 bar (R127).
+36. Launching 30 ads on a small budget and calling them failures after 2 days. Fix: budget-sized packs; inconclusive is not failure (R136, R140).
+37. Adding new ads to a winning ad set; turning a winner off to relaunch it elsewhere; cutting low-ROAS ads inside a KPI-hitting ad set; duplicating ad sets as a fatigue fix. Fix: R135, R141, R149, R154.
+38. Judging creative on ad-level last-click ROAS; killing TOF statics for ROAS below BOF statics; crowning the ad Meta spent most on; trusting a 10.9% CTR with no buying. Fix: R142 to R145.
+39. Judging on CPA or ROAS alone; running only the 10x ad and cutting a profitable 2x. Fix: R146, R147.
+40. Changing hook, angle, audience, page, offer and campaign at once. Fix: 1 meaningful variable (R139).
+41. Blaming the creative when quality clicks do not convert. Fix: check the page (R142, R71).
+42. Weekly "make more AI statics" with no link to last week's results. Fix: the test is the next brief (R132).
+43. Treating AI as the strategy, feeding it no context, believing every output is good, cloning competitor ads with it. Fix: R163 to R166.
+44. Copying competitor text, products, faces or claims; staging a rival's failure; naming rivals in comparisons. Fix: overrides 1 and 4; generic "old way" (R174).
+45. Health, weight, body-image and condition claims with no substantiation or policy check; "sneaking" before-and-afters past review; personal-attribute call-outs; a famous face without rights; found images. Fix: P19 (R169 to R176).
+46. Undisclosed whitelisting; brand-owned "review" sites presented as independent; fake interviews and whistleblowers. Fix: R172, R173.
+47. Scarcity that is not true; offers that do not match checkout. Fix: R177.
+48. Positioning a mass-market product to an elite niche; a single-condition call-out most viewers self-exclude from. Fix: R16, R41.
+49. Reading views, likes or run time as sales. Fix: purchases per view; own account data (R117, R148).
+50. Non-native accents for a market; creators who do not match the persona. Fix: R78, R110.
+51. Getting 1 video per sample and treating the creator army as a one-off; moving creator content into paid without rights. Fix: R112.
+52. Letting a squeezed winner cause stockouts for a 30-to-90-day case study; optimising the P&L while stock piles up. Fix: R133, R155.
+53. Treating trial reels or partnership ads as permanent arbitrage. Fix: re-check each quarter (section 11).
