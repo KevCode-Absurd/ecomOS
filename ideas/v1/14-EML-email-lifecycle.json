@@ -11970,7 +11970,9 @@
   "sources": {
    "mini_playbooks": [
     "01",
-    "04"
+    "04",
+    "09",
+    "12"
    ],
    "cards": [
     "7eaef73fe8eb",
@@ -12499,6 +12501,2948 @@
    ]
   },
   "confidence": "medium",
+  "general_practice": false
+ },
+ {
+  "id": "EML-186",
+  "title": "Test a predictive smart-trigger popup against fixed delay rules",
+  "domain": "14-EML",
+  "bottleneck": [
+   "conversion"
+  ],
+  "lever": "predictive popup trigger",
+  "hypothesis": "If a popup platform's predictive smart-trigger option, which fires once based on a visitor behaviour model instead of a fixed delay or scroll percent, is tested against the current fixed rule, then signup rate or total signups may rise because the model can time the offer to each visitor's own browsing pattern instead of 1 rule for everyone.",
+  "applies_when": [
+   "any"
+  ],
+  "does_not_apply_when": [
+   "The popup platform has no predictive or smart-trigger timing feature"
+  ],
+  "signal": {
+   "check": "The popup only uses a fixed time delay or scroll percent trigger, and the platform offers an unused predictive or smart-trigger timing option.",
+   "metrics": [
+    "other:signup_rate"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:signup_rate",
+   "direction": "up",
+   "size": "unknown, one vendor reports signup rate slightly lower but total signups higher in some accounts, reversed in others",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Only changes when the popup fires; easy to revert to the fixed rule."
+  },
+  "prerequisites": [
+   "A popup platform with a predictive or smart-trigger timing feature"
+  ],
+  "steps": [
+   "Note current signup rate and total signups under the fixed delay or scroll trigger.",
+   "Turn on the predictive smart-trigger option as an A/B test variant against the fixed rule.",
+   "Run until each side has enough impressions per the account's own test-size rule.",
+   "Compare signup rate and total signups together, not signup rate alone.",
+   "Keep whichever version wins on total signups and downstream welcome flow revenue."
+  ],
+  "test": {
+   "method": "A/B test: fixed delay or scroll trigger vs predictive smart trigger, 50/50 split.",
+   "measure": "signup rate and total signups",
+   "read_point": "After the platform's minimum test size is reached"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "02"
+   ],
+   "cards": [
+    "143e7458c1be",
+    "6f18ca80ca5c"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "EML-187",
+  "title": "Use popup quiz answers to find and target the best-converting segment",
+  "domain": "14-EML",
+  "bottleneck": [
+   "conversion",
+   "aov"
+  ],
+  "lever": "zero-party quiz targeting",
+  "hypothesis": "If a 1-question popup quiz's answers are stored as zero-party data and reviewed for purchase rate by answer, then the store can send extra targeted content to the highest-converting answer group because the quiz reveals intent the store did not have to guess at.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "A popup quiz or micro-commit question collects an answer that is stored on the profile but never reviewed for purchase rate by answer, and no follow-up content is built from it.",
+   "metrics": [
+    "cvr_overall",
+    "other:signup_rate"
+   ]
+  },
+  "expected_effect": {
+   "metric": "cvr_overall",
+   "direction": "up",
+   "size": "unknown",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "M",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Reporting and targeting change; no live disruption to the popup itself."
+  },
+  "prerequisites": [
+   "A popup quiz step that writes its answer to the subscriber profile",
+   "Enough order history to compute purchase rate by answer"
+  ],
+  "steps": [
+   "Confirm the quiz answer is saved as a profile property or tag.",
+   "Pull purchase rate and revenue per subscriber for each answer group.",
+   "Identify the answer group with the strongest purchase rate.",
+   "Build 1 to 2 extra emails or a short flow aimed only at that group.",
+   "Track whether the targeted group's conversion improves against its own baseline."
+  ],
+  "test": {
+   "method": "Not a split test; a segmentation and targeting analysis repeated each quarter.",
+   "measure": "cvr_overall by quiz answer group",
+   "read_point": "After enough orders accumulate per answer group, then quarterly"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "02"
+   ],
+   "cards": [
+    "b9635f9e2351"
+   ],
+   "rules": []
+  },
+  "confidence": "medium",
+  "general_practice": false
+ },
+ {
+  "id": "EML-188",
+  "title": "Run a seed-list inbox placement test alongside open rate",
+  "domain": "14-EML",
+  "bottleneck": [
+   "measurement_data",
+   "trust_brand"
+  ],
+  "lever": "inbox placement diagnostic",
+  "hypothesis": "If a monthly seed-list placement test and a per-inbox-provider and per-country breakdown are read alongside open rate, then deliverability problems get caught earlier because open rate alone cannot show whether mail is landing in the inbox, promotions or spam, or which provider is actually the weak point.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "Deliverability is judged only from the account's own open rate trend, with no seed-list placement test and no read of performance broken out by inbox provider or country.",
+   "metrics": [
+    "other:spam_rate",
+    "other:inbox_placement_rate"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:inbox_placement_rate",
+   "direction": "up",
+   "size": "unknown",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "low",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Diagnostic only; some placement-test tools charge a small monthly fee."
+  },
+  "prerequisites": [
+   "A seed-list placement testing tool",
+   "Access to the platform's deliverability tab by inbox provider and country"
+  ],
+  "steps": [
+   "Send a routine test campaign through a seed-list placement tool once a month.",
+   "Read the inbox vs promotions vs spam split, plus any blocklist or IP reputation flag.",
+   "Open the platform's deliverability report broken out by inbox provider and by country.",
+   "Flag any single provider or country far below the account average.",
+   "Build a tighter engaged segment for that provider or country before sending there again."
+  ],
+  "test": {
+   "method": "Not a split test; a recurring monthly diagnostic.",
+   "measure": "Inbox placement share, plus opens and clicks by provider and country",
+   "read_point": "Monthly"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "02"
+   ],
+   "cards": [
+    "75378f892825",
+    "e758ab334635"
+   ],
+   "rules": []
+  },
+  "confidence": "medium",
+  "general_practice": true
+ },
+ {
+  "id": "EML-189",
+  "title": "Send 1 to 3 plain-text-only campaigns a month as ongoing practice",
+  "domain": "14-EML",
+  "bottleneck": [
+   "trust_brand",
+   "measurement_data"
+  ],
+  "lever": "plain-text send cadence",
+  "hypothesis": "If 1 to 3 campaigns a month go out as plain text with no image blocks, on an ongoing basis rather than as a one-off test, then the account stays readable to AI-driven inbox filters because the content makes sense even when images and a designed layout are stripped away.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "Every campaign in the last month used a fully designed, image-heavy layout, with no plain-text sends on a recurring schedule.",
+   "metrics": [
+    "other:spam_rate"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:spam_rate",
+   "direction": "down",
+   "size": "unknown",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "A content-mix change, easy to adjust the ratio."
+  },
+  "prerequisites": [
+   "A monthly campaign calendar to schedule the plain-text slots into"
+  ],
+  "steps": [
+   "Pick 1 to 3 send slots a month to run as plain text with no images.",
+   "Write the same core message as a designed send would carry, in short paragraphs.",
+   "Keep the sender identity and reply-to the same as every other send.",
+   "Send to the normal engaged segment, not a special list.",
+   "Track opens, clicks and placement alongside designed sends over the following months."
+  ],
+  "test": {
+   "method": "Not a controlled test; an ongoing content-mix practice compared to prior months.",
+   "measure": "other:spam_rate and click rate trend after adding plain-text sends",
+   "read_point": "After 2 to 3 months of the new mix"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "02"
+   ],
+   "cards": [
+    "31b2f58bfc95",
+    "660cfc96df62"
+   ],
+   "rules": []
+  },
+  "confidence": "medium",
+  "general_practice": true
+ },
+ {
+  "id": "EML-190",
+  "title": "Suppress never-emailed and no-activity-in-a-year profiles",
+  "domain": "14-EML",
+  "bottleneck": [
+   "trust_brand",
+   "cash_inventory"
+  ],
+  "lever": "day-1 non-engager suppression",
+  "hypothesis": "If profiles that were never emailed, or that have shown no email or site activity in over a year since first joining, are suppressed as their own segment rather than folded into the recent-activity unengaged rule, then list cost and spam risk drop because these dead-on-arrival profiles never had a chance to become engaged and are not caught by a rolling recent-activity window.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "List cleaning only checks recent open and click windows, with no separate check for profiles that were added a year or more ago and have never opened, clicked or visited the site since.",
+   "metrics": [
+    "other:list_size",
+    "other:engaged_share"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:engaged_share",
+   "direction": "up",
+   "size": "unknown",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Suppression can be reversed for any profile if needed."
+  },
+  "prerequisites": [
+   "A platform that tracks first-active or created date on profiles"
+  ],
+  "steps": [
+   "Build a segment: first active or created at least 1 year ago AND received email 0 times over all time.",
+   "Build a second segment: first active or created at least 1 year ago AND received email 0 times AND no site activity in the last year.",
+   "Review both segments' size.",
+   "Suppress both segments alongside the normal monthly unengaged suppression.",
+   "Repeat the check monthly as new profiles age past 1 year."
+  ],
+  "test": {
+   "method": "Not a split test; a recurring list-hygiene action.",
+   "measure": "other:engaged_share before and after suppression",
+   "read_point": "Immediately after suppression, then monthly"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "02"
+   ],
+   "cards": [
+    "6dcb0bfce104"
+   ],
+   "rules": []
+  },
+  "confidence": "medium",
+  "general_practice": true
+ },
+ {
+  "id": "EML-191",
+  "title": "Invite replies in email campaigns to build a deliverability signal",
+  "domain": "14-EML",
+  "bottleneck": [
+   "trust_brand",
+   "measurement_data"
+  ],
+  "lever": "reply-inviting email campaigns",
+  "hypothesis": "If some campaigns end with a genuine question and an invitation to reply, such as ask us anything, and the reply inbox is staffed, then inbox placement improves because a reply is one of the strongest engagement signals AI-driven inboxes read, and it is a signal marketing email rarely earns.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "No recent campaign has invited a reply, and the sending address either cannot receive replies or nobody is watching it.",
+   "metrics": [
+    "other:spam_rate"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:spam_rate",
+   "direction": "down",
+   "size": "unknown",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Requires someone to monitor and answer the reply inbox."
+  },
+  "prerequisites": [
+   "A sending address that accepts replies",
+   "Someone assigned to read and answer replies"
+  ],
+  "steps": [
+   "Confirm the sender address accepts replies and someone checks it daily.",
+   "Pick 1 upcoming campaign to end with a direct, real question inviting a reply.",
+   "Send to the normal engaged segment.",
+   "Log reply volume and answer every reply within a stated window.",
+   "Repeat on a recurring basis and watch inbox placement and click rate over following sends."
+  ],
+  "test": {
+   "method": "Not a split test; an ongoing engagement practice tracked against placement over time.",
+   "measure": "Reply count and inbox placement rate before and after adding reply-inviting sends",
+   "read_point": "After 2 to 3 months of regular reply-inviting sends"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "02"
+   ],
+   "cards": [
+    "660cfc96df62"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "EML-192",
+  "title": "Test first-person CTA copy against second-person CTA copy",
+  "domain": "14-EML",
+  "bottleneck": [
+   "conversion"
+  ],
+  "lever": "CTA pronoun copy test",
+  "hypothesis": "If a popup or email CTA is tested in first person, such as claim my discount, against the same CTA in second person, such as claim your discount, then signup or click rate may rise because a first-person CTA can make the action feel like the reader's own choice rather than an instruction.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "Every CTA on the popup and in emails uses second-person wording, and first-person CTA copy has never been tested.",
+   "metrics": [
+    "other:signup_rate",
+    "cvr_pdp_to_cart"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:signup_rate",
+   "direction": "up",
+   "size": "unknown",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Copy-only change, reversible instantly."
+  },
+  "prerequisites": [
+   "An A/B testable popup or email CTA button"
+  ],
+  "steps": [
+   "Pick 1 CTA to test, on the popup or in a high-volume flow email.",
+   "Write a first-person version, such as claim my discount, keeping every other element the same.",
+   "Run a 50/50 test against the current second-person CTA.",
+   "Judge on signup rate or placed order rate, not clicks alone.",
+   "Roll out the winner and note the result for future CTA copy."
+  ],
+  "test": {
+   "method": "A/B test, first-person vs second-person CTA copy, 50/50 split.",
+   "measure": "signup rate or placed order rate",
+   "read_point": "After the account's normal test-size rule is met"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "02"
+   ],
+   "cards": [
+    "0590112c25d0"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "EML-193",
+  "title": "Test popup image hierarchy: pets, faces, then product-only shots",
+  "domain": "14-EML",
+  "bottleneck": [
+   "conversion"
+  ],
+  "lever": "popup image hierarchy test",
+  "hypothesis": "If a popup or hero image is tested across a pet image, a human face looking toward the headline, and a plain product shot, then signup or click rate differences show which image type actually earns attention for this brand, because reported image hierarchies do not generalise across brands.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "The popup or hero image type has never been split tested, and the current choice was picked by preference rather than a result.",
+   "metrics": [
+    "other:signup_rate"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:signup_rate",
+   "direction": "up",
+   "size": "unknown, one reported example moved from a no-image control to a large lift with a pet image, but the source warns not to generalise",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "designer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Image-only change, reversible instantly."
+  },
+  "prerequisites": [
+   "Usable images for at least 2 of the 3 image types"
+  ],
+  "steps": [
+   "Prepare a pet image, a human-face image looking toward the headline, and a plain product image, sized the same.",
+   "Run each as a popup or hero variant against the others, or against the current no-image control.",
+   "Hold the offer and copy constant across variants.",
+   "Judge on signup rate or click rate, not visual preference.",
+   "Keep the winner and re-test if the brand's imagery library changes."
+  ],
+  "test": {
+   "method": "A/B or multi-variant test across image types, 1 variable changed.",
+   "measure": "signup rate or click rate",
+   "read_point": "After the account's normal test-size rule is met"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "02"
+   ],
+   "cards": [
+    "4c956b5e96a1",
+    "ef89709e3516"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "EML-194",
+  "title": "Track click, spam complaint and unsubscribe rate, not open rate alone",
+  "domain": "14-EML",
+  "bottleneck": [
+   "measurement_data",
+   "trust_brand"
+  ],
+  "lever": "campaign KPI dashboard",
+  "hypothesis": "If every campaign is checked against click rate, spam complaint rate and unsubscribe rate targets, not only an open rate target, then declining sender health is caught earlier because open rate is inflated by Apple Mail privacy protection and can look healthy while clicks, complaints or unsubscribes are already moving the wrong way.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "Campaign health is reviewed on open rate alone, with no stated target or tracked trend for click rate, spam complaint rate or unsubscribe rate.",
+   "metrics": [
+    "other:spam_rate",
+    "other:unsubscribe_rate"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:spam_rate",
+   "direction": "down",
+   "size": "unknown",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Reporting change only."
+  },
+  "prerequisites": [
+   "Campaign-level reporting on click, spam complaint and unsubscribe rate"
+  ],
+  "steps": [
+   "Pull click rate, spam complaint rate and unsubscribe rate for the last 10 to 20 campaigns.",
+   "Set a working floor for each, informed by platform guidance and the brand's own history.",
+   "Add all 3 to the standard post-send or monthly review, alongside open rate.",
+   "Flag any campaign or trend that crosses a floor even if open rate looks fine.",
+   "Investigate content, audience or technical causes before the next send."
+  ],
+  "test": {
+   "method": "Not a split test; a recurring reporting and review practice.",
+   "measure": "click rate, spam complaint rate and unsubscribe rate trend",
+   "read_point": "Every send, reviewed monthly"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "02"
+   ],
+   "cards": [
+    "91d6fd433f58"
+   ],
+   "rules": []
+  },
+  "confidence": "medium",
+  "general_practice": true
+ },
+ {
+  "id": "EML-195",
+  "title": "Vary the popup discount by traffic source or cart value",
+  "domain": "14-EML",
+  "bottleneck": [
+   "margin_cogs",
+   "acquisition_efficiency"
+  ],
+  "lever": "traffic-aware popup offer",
+  "hypothesis": "If the popup shows a smaller discount to cheap or already-converting paid traffic and a special offer only above a cart value threshold, using UTM source or cart value rules, then margin improves because the same flat discount is no longer given to visitors who would have converted for less or who are already deep in the funnel.",
+  "applies_when": [
+   "paid_social_led",
+   "high_aov"
+  ],
+  "does_not_apply_when": [
+   "The popup platform cannot target by UTM source or cart value"
+  ],
+  "signal": {
+   "check": "Every visitor sees the same popup offer regardless of traffic source or current cart value, on a platform that supports UTM or cart-value targeting rules.",
+   "metrics": [
+    "discount_rate",
+    "gross_margin"
+   ]
+  },
+  "expected_effect": {
+   "metric": "discount_rate",
+   "direction": "down",
+   "size": "unknown",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "M",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "medium",
+   "reversible": true,
+   "note": "Different offers by visitor can look inconsistent if visitors compare notes; keep the logic simple and defensible."
+  },
+  "prerequisites": [
+   "Popup targeting rules by UTM parameter or cart value",
+   "Margin data by offer size"
+  ],
+  "steps": [
+   "Identify 1 or 2 traffic sources with the cheapest cost per click or highest existing conversion rate.",
+   "Set a smaller popup discount for those UTM sources, and the standard discount for everyone else.",
+   "Optionally add a cart-value rule offering a different incentive only above a set cart total.",
+   "Track signup rate, welcome flow conversion and margin per rule versus the flat-offer baseline.",
+   "Adjust or remove the rule if signup rate drops more than the margin gain justifies."
+  ],
+  "test": {
+   "method": "Before-and-after comparison of margin and signup rate by traffic source after adding the rule.",
+   "measure": "discount_rate and gross_margin by traffic source",
+   "read_point": "After 30 to 60 days of the rule running"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "03"
+   ],
+   "cards": [
+    "4d0639885e1a"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "EML-196",
+  "title": "Test sending abandonment email and SMS at nearly the same time",
+  "domain": "14-EML",
+  "bottleneck": [
+   "conversion"
+  ],
+  "lever": "simultaneous multichannel abandonment send",
+  "hypothesis": "If an abandonment flow sends email and SMS within minutes of each other instead of staggering SMS after a wait for email to fail, then recovered revenue may rise because the store cannot know in advance which channel a given shopper will act on first, and staggering delays the channel that would have converted.",
+  "applies_when": [
+   "any"
+  ],
+  "does_not_apply_when": [
+   "The brand has an SMS program",
+   "SMS consent is not yet collected"
+  ],
+  "signal": {
+   "check": "The abandonment flow always waits a fixed period after email before sending SMS, or vice versa, with no test of sending both close together.",
+   "metrics": [
+    "cvr_cart_to_checkout",
+    "other:recovered_revenue"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:recovered_revenue",
+   "direction": "up",
+   "size": "unknown",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "low",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Timing-only change within an existing flow."
+  },
+  "prerequisites": [
+   "Both email and SMS steps already built into the same abandonment flow"
+  ],
+  "steps": [
+   "Note current recovered revenue under the staggered email-then-SMS pattern.",
+   "Change the SMS delay to fire within a few minutes of the email instead of after a wait.",
+   "Keep both messages' content and offer identical to the staggered version.",
+   "Run for enough abandoners to compare recovered revenue and unsubscribe or opt-out rate.",
+   "Keep whichever pattern converts more without raising opt-outs."
+  ],
+  "test": {
+   "method": "Flow-level A/B test: staggered vs near-simultaneous email and SMS send.",
+   "measure": "other:recovered_revenue and SMS opt-out rate",
+   "read_point": "After enough abandoners pass through both branches"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "03"
+   ],
+   "cards": [
+    "4c7296971696"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": false
+ },
+ {
+  "id": "EML-197",
+  "title": "Flag sunset-flow completers with a persistent profile property",
+  "domain": "14-EML",
+  "bottleneck": [
+   "trust_brand",
+   "measurement_data"
+  ],
+  "lever": "persistent unengaged flag",
+  "hypothesis": "If the sunset flow writes a permanent unengaged property to a profile once someone completes it without engaging, and suppression runs off that property instead of a rolling activity window, then suppression stays stable and auditable because the flag does not change back and forth as the recent-activity window rolls forward.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "Suppression is computed only from a rolling opened or clicked window, so a profile can drop in and out of the unengaged segment as the window moves, with no permanent record of having completed the sunset flow.",
+   "metrics": [
+    "other:engaged_share"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:engaged_share",
+   "direction": "up",
+   "size": "unknown",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "dev"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "The property can be cleared manually if a profile re-engages later."
+  },
+  "prerequisites": [
+   "A sunset flow with a final no-engagement branch",
+   "The platform supports writable profile properties"
+  ],
+  "steps": [
+   "Add a boolean profile property, such as unengaged, defaulted to false.",
+   "At the end of the sunset flow, set the property to true for anyone who never opened or clicked during it.",
+   "Build the suppression segment on that property being true, alongside the can-receive-marketing condition.",
+   "Suppress that segment monthly, independent of the rolling engaged window.",
+   "Clear the property manually if a suppressed profile later opens or orders."
+  ],
+  "test": {
+   "method": "Not a split test; a suppression-mechanism change tracked for stability over following months.",
+   "measure": "other:engaged_share stability month to month",
+   "read_point": "After 2 to 3 monthly suppression cycles"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "03",
+    "04"
+   ],
+   "cards": [
+    "56d433c32a2b",
+    "c57d2fe2264a"
+   ],
+   "rules": []
+  },
+  "confidence": "medium",
+  "general_practice": true
+ },
+ {
+  "id": "EML-198",
+  "title": "Choose static or dynamic product blocks by catalogue turnover",
+  "domain": "14-EML",
+  "bottleneck": [
+   "conversion"
+  ],
+  "lever": "product feed mechanism choice",
+  "hypothesis": "If a brand with fast-turning inventory and frequent new styles uses a dynamic, rule-based product feed while a brand with a small, stable catalogue uses a static, hand-picked product block, then campaign and flow content stays relevant with less manual upkeep because the mechanism matches how often the catalogue actually changes.",
+  "applies_when": [
+   "catalogue",
+   "hero_sku"
+  ],
+  "signal": {
+   "check": "Every email uses the same block type, either always static or always dynamic, regardless of how often the catalogue's bestsellers or in-stock items actually change.",
+   "metrics": [
+    "cvr_pdp_to_cart"
+   ]
+  },
+  "expected_effect": {
+   "metric": "cvr_pdp_to_cart",
+   "direction": "up",
+   "size": "unknown",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Block-type change only."
+  },
+  "prerequisites": [
+   "Email platform support for both static and dynamic, rule-based product blocks"
+  ],
+  "steps": [
+   "Assess catalogue size and how often bestsellers or in-stock status change.",
+   "For a fast-turning or large catalogue, build a dynamic feed with rules such as bestselling in the last 90 days, excluding low stock.",
+   "For a small, stable catalogue, hand-pick 2 to 3 steady bestsellers as a static block.",
+   "Update the static block manually on a fixed schedule if items change.",
+   "Recheck the choice if the catalogue's turnover changes materially."
+  ],
+  "test": {
+   "method": "Not a split test; a fit-to-catalogue decision, reviewed if the catalogue changes.",
+   "measure": "cvr_pdp_to_cart and manual maintenance time on the block",
+   "read_point": "When the catalogue's size or turnover changes"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "03"
+   ],
+   "cards": [
+    "66bb08b24b5c"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "EML-199",
+  "title": "Use show/hide logic to personalise 1 email for several audiences",
+  "domain": "14-EML",
+  "bottleneck": [
+   "conversion",
+   "repeat_retention"
+  ],
+  "lever": "dynamic content personalisation block",
+  "hypothesis": "If a single email uses show/hide logic on a profile property, such as country, unused-offer status or loyalty points balance, then 1 build serves several audiences correctly because the content adapts per recipient instead of requiring a separate email for each version.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "The account builds separate near-duplicate emails for each audience variant, such as by country or loyalty status, when the platform supports show/hide logic on 1 email instead.",
+   "metrics": [
+    "other:build_time_per_campaign"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:build_time_per_campaign",
+   "direction": "down",
+   "size": "unknown",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "M",
+   "owner": "dev"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "medium",
+   "reversible": true,
+   "note": "Test each condition with a real profile per branch before sending; a wrong condition can show the wrong content to the wrong group."
+  },
+  "prerequisites": [
+   "Email platform support for show/hide logic on profile properties"
+  ],
+  "steps": [
+   "Pick 1 recurring email that currently exists in several near-duplicate versions, such as by country or loyalty status.",
+   "Add a text or content block with show/hide logic keyed to the relevant profile property.",
+   "Duplicate the block for each condition and its opposite or alternative value.",
+   "Preview and test with a real profile representing each condition before sending.",
+   "Retire the separate duplicate emails once the single dynamic version is confirmed correct."
+  ],
+  "test": {
+   "method": "Not a split test; a build-mechanism change verified by preview across profile conditions.",
+   "measure": "Correctness across preview profiles, and build time per send",
+   "read_point": "Before the first live send, then ongoing"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "03"
+   ],
+   "cards": [
+    "9ba42019fe30",
+    "03624b075480"
+   ],
+   "rules": []
+  },
+  "confidence": "medium",
+  "general_practice": true
+ },
+ {
+  "id": "EML-200",
+  "title": "Push high-engagement email segments to ad platforms for lookalikes",
+  "domain": "14-EML",
+  "bottleneck": [
+   "acquisition_efficiency",
+   "acquisition_volume"
+  ],
+  "lever": "cross-channel segment activation",
+  "hypothesis": "If a high-engagement or high-LTV email segment is pushed to Meta or Google through an integration for retargeting and lookalike audiences, then paid acquisition efficiency improves because the ad platform can find more people who resemble the store's own best customers instead of relying only on its own conversion data.",
+  "applies_when": [
+   "paid_social_led",
+   "scaling_store"
+  ],
+  "does_not_apply_when": [
+   "The email platform has no ads integration",
+   "The segment is too small for the ad platform's minimum audience size"
+  ],
+  "signal": {
+   "check": "High-value or highly engaged email segments exist but are never pushed to any ad platform for retargeting or lookalike audience building.",
+   "metrics": [
+    "roas_prospecting",
+    "ncpa"
+   ]
+  },
+  "expected_effect": {
+   "metric": "ncpa",
+   "direction": "down",
+   "size": "unknown",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "M",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Turning off the sync stops future pushes; it does not undo audiences already built by the ad platform."
+  },
+  "prerequisites": [
+   "An ads integration connected to the email or CRM platform",
+   "A defined high-engagement or high-LTV segment"
+  ],
+  "steps": [
+   "Pick 1 segment, such as VIPs or high predicted lifetime value, with enough profiles to meet the ad platform's minimum.",
+   "Connect the ads integration and push that segment as a custom audience.",
+   "Build a lookalike or similar audience from it in the ad platform.",
+   "Run it as a distinct campaign or ad set so its performance can be read on its own.",
+   "Compare its cost per acquisition and return against the account's other prospecting audiences."
+  ],
+  "test": {
+   "method": "Compare the lookalike audience's performance against the account's standard prospecting audience.",
+   "measure": "ncpa and roas_prospecting for the lookalike audience",
+   "read_point": "After the lookalike audience has enough spend to read a result"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "03"
+   ],
+   "cards": [
+    "9ca8e23a01f3"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "EML-201",
+  "title": "Build a win-the-pause-back flow off the subscription pause event",
+  "domain": "14-EML",
+  "bottleneck": [
+   "repeat_retention"
+  ],
+  "lever": "subscription pause recovery flow",
+  "hypothesis": "If a subscription pause event triggers its own short recovery flow, separate from the charge-reminder and failed-payment flows, then paused subscribers resume sooner because a paused customer gets a direct, timed nudge to unpause instead of only hearing from the brand again at the next skipped charge attempt.",
+  "applies_when": [
+   "subscription"
+  ],
+  "does_not_apply_when": [
+   "The subscription app does not expose a pause event to the email or SMS platform"
+  ],
+  "signal": {
+   "check": "Subscribers who pause get no dedicated message until the next charge attempt or a generic winback flow, with no flow triggered directly on the pause event.",
+   "metrics": [
+    "subscription_churn"
+   ]
+  },
+  "expected_effect": {
+   "metric": "subscription_churn",
+   "direction": "down",
+   "size": "unknown",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "M",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "New flow addition; does not change the pause mechanic itself."
+  },
+  "prerequisites": [
+   "A subscription app that exposes a pause event to the email platform"
+  ],
+  "steps": [
+   "Confirm the subscription app's pause event is available as a flow trigger.",
+   "Build a flow triggered on that event, exiting anyone who resumes or cancels.",
+   "Send a first email soon after the pause confirming the pause and offering a 1-click resume link.",
+   "Send a second message partway through the paused period asking what would bring them back.",
+   "Send a final message shortly before the pause would otherwise lapse into cancellation."
+  ],
+  "test": {
+   "method": "Compare resume rate for paused subscribers with the flow live against the prior resume rate without it.",
+   "measure": "subscription_churn and resume rate among paused subscribers",
+   "read_point": "After 1 to 2 typical pause cycles"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "03"
+   ],
+   "cards": [
+    "9ca8e23a01f3",
+    "9b7b4dd86442"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "EML-202",
+  "title": "Build a tighter engaged segment for an underperforming inbox provider",
+  "domain": "14-EML",
+  "bottleneck": [
+   "trust_brand"
+  ],
+  "lever": "per-provider engaged segment",
+  "hypothesis": "If deliverability data shows 1 inbox provider, such as Hotmail or Outlook, with materially lower opens and clicks or higher bounce than the account average, then building a tighter, more-engaged-only segment for that provider and sending there separately helps recover its reputation because a provider-wide problem needs a provider-specific fix, not a blanket account-wide change.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "Deliverability reporting by inbox provider shows 1 provider well below the account average on opens or clicks, or well above on bounce or spam complaints, with no separate segment or sending plan for that provider.",
+   "metrics": [
+    "other:spam_rate"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:spam_rate",
+   "direction": "down",
+   "size": "unknown",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "M",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Segment-level sending change, reversible at any time."
+  },
+  "prerequisites": [
+   "Deliverability reporting broken out by inbox provider"
+  ],
+  "steps": [
+   "Read the deliverability report by inbox provider and identify any clear underperformer.",
+   "Build an engaged segment scoped to that provider's domains with a shorter engagement window than the account default.",
+   "Send that provider's recipients only to this tighter segment for several sends.",
+   "Track that provider's open, click and bounce rate against the rest of the account.",
+   "Widen the window again once the provider's metrics recover toward the account average."
+  ],
+  "test": {
+   "method": "Before-and-after comparison of the provider's metrics after switching to the tighter segment.",
+   "measure": "Open, click and bounce rate for the affected provider",
+   "read_point": "After several sends to the tighter provider-specific segment"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "02",
+    "03"
+   ],
+   "cards": [
+    "75378f892825",
+    "3dca25bfe545"
+   ],
+   "rules": []
+  },
+  "confidence": "medium",
+  "general_practice": true
+ },
+ {
+  "id": "EML-203",
+  "title": "Send a pure-engagement newsletter with no selling",
+  "domain": "14-EML",
+  "bottleneck": [
+   "repeat_retention",
+   "trust_brand"
+  ],
+  "lever": "engagement-only newsletter",
+  "hypothesis": "If a regular newsletter carries no product pitch at all, curated or created content such as industry news, a playlist, or light brand-relevant humour, then open and click habits strengthen because a send built purely to be worth opening earns attention that pure product content cannot, and that habit carries over to product-focused sends.",
+  "applies_when": [
+   "organic_led",
+   "dtc_only"
+  ],
+  "signal": {
+   "check": "Every regular campaign includes a product pitch or CTA to buy, with no recurring send built purely for engagement.",
+   "metrics": [
+    "email_click_rate"
+   ]
+  },
+  "expected_effect": {
+   "metric": "email_click_rate",
+   "direction": "up",
+   "size": "unknown",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Content-mix change; does not touch flows or existing promo cadence."
+  },
+  "prerequisites": [
+   "A recurring campaign slot to dedicate to this format"
+  ],
+  "steps": [
+   "Pick a recurring slot, such as monthly or every other week, for a no-selling newsletter.",
+   "Curate or create content the audience would want regardless of purchase intent, matched to brand voice.",
+   "Include at most 1 soft, optional link, never a hard CTA to buy.",
+   "Send to the normal engaged segment and track opens and clicks against product-focused sends.",
+   "Keep the format only if it holds or lifts engagement over several sends."
+  ],
+  "test": {
+   "method": "Compare open and click rate of the newsletter format against the account's product-focused campaigns.",
+   "measure": "email_click_rate for newsletter sends vs product sends",
+   "read_point": "After 3 to 4 newsletter sends"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "03"
+   ],
+   "cards": [
+    "3c10a64f1966"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "EML-204",
+  "title": "Use a persistent in-flow flag to exclude campaigns for the whole flow",
+  "domain": "14-EML",
+  "bottleneck": [
+   "repeat_retention",
+   "trust_brand"
+  ],
+  "lever": "flow-duration campaign exclusion",
+  "hypothesis": "If a boolean profile property is set true when someone enters a long flow such as welcome and set false on exit, and every campaign excludes anyone with that property true, then unsubscribes and complaints drop compared to a rolling 24-hour exclusion window, because a multi-day flow can otherwise overlap a campaign well beyond 1 day.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "Campaign exclusions only cover a short rolling window, such as the last 24 hours, while flows such as welcome or cart and checkout run over several days to 2 weeks, leaving overlap for most of the flow's length.",
+   "metrics": [
+    "other:unsubscribe_rate"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:unsubscribe_rate",
+   "direction": "down",
+   "size": "unknown",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "M",
+   "owner": "dev"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Requires care that the flag is reliably cleared on flow exit, or people stay wrongly excluded."
+  },
+  "prerequisites": [
+   "Platform support for writable profile properties inside a flow"
+  ],
+  "steps": [
+   "Add a boolean profile property, such as in welcome flow, per flow that needs this.",
+   "Set the property true at flow entry and false at flow exit or completion.",
+   "Add a campaign exclusion for anyone with any of these properties true.",
+   "Tick the setting that determines recipients at send time so the exclusion reflects live status.",
+   "Audit periodically that the property clears correctly on every exit path."
+  ],
+  "test": {
+   "method": "Compare unsubscribe and complaint rate for campaigns before and after the flag-based exclusion replaces the rolling window.",
+   "measure": "other:unsubscribe_rate",
+   "read_point": "After several campaign sends with the flag-based exclusion live"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "04"
+   ],
+   "cards": [
+    "3247c58dc8b5"
+   ],
+   "rules": []
+  },
+  "confidence": "medium",
+  "general_practice": true
+ },
+ {
+  "id": "EML-205",
+  "title": "Judge popup or capture changes by full-site conversion, not opt-in alone",
+  "domain": "14-EML",
+  "bottleneck": [
+   "conversion"
+  ],
+  "lever": "full-site conversion guardrail",
+  "hypothesis": "If a popup or on-site capture change is tested against full-site conversion rate, not opt-in rate alone, then the store avoids shipping a change that raises signups while quietly hurting checkout, because a popup change can look great on its own metric and still tank overall site conversion.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "Popup or capture tests are judged only on signup or opt-in rate, with no check of full-site conversion rate before and after the change ships.",
+   "metrics": [
+    "cvr_overall",
+    "other:signup_rate"
+   ]
+  },
+  "expected_effect": {
+   "metric": "cvr_overall",
+   "direction": "up",
+   "size": "unknown, this is a guardrail against a hidden drop, not a claimed lift",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Adds a check; does not change the popup itself."
+  },
+  "prerequisites": [
+   "Site-wide conversion rate tracking separate from popup analytics"
+  ],
+  "steps": [
+   "Record full-site conversion rate for the period before any popup or capture change ships.",
+   "Ship the popup or capture change as usual, tracked as a full-site experiment where possible.",
+   "Record signup rate and full-site conversion rate for a matched period after the change.",
+   "If signup rate rose but full-site conversion fell, treat the change as a loss and revert or redesign it.",
+   "Only keep changes that hold or improve full-site conversion alongside signup rate."
+  ],
+  "test": {
+   "method": "Before-and-after, ideally a holdout, comparing full-site conversion rate around a popup or capture change.",
+   "measure": "cvr_overall and other:signup_rate together",
+   "read_point": "After the change has run long enough to read a stable conversion rate"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "05"
+   ],
+   "cards": [
+    "1282cefafb08"
+   ],
+   "rules": []
+  },
+  "confidence": "medium",
+  "general_practice": true
+ },
+ {
+  "id": "EML-206",
+  "title": "Add an RCS add-to-calendar action to launch and drop announcements",
+  "domain": "14-EML",
+  "bottleneck": [
+   "acquisition_volume",
+   "repeat_retention"
+  ],
+  "lever": "RCS add-to-calendar action",
+  "hypothesis": "If an RCS message sent about a week before a launch or drop includes a native add-to-calendar action button instead of a plain watch this space line, then more subscribers show up on launch day because the reminder is set on their phone without them having to remember or take a second step.",
+  "applies_when": [
+   "any"
+  ],
+  "does_not_apply_when": [
+   "The brand has no RCS-enabled sending platform",
+   "The market has no RCS availability"
+  ],
+  "signal": {
+   "check": "Launch or drop announcements go out as plain SMS or RCS text with no calendar action, and the platform supports an RCS calendar action button.",
+   "metrics": [
+    "other:launch_day_conversion"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:launch_day_conversion",
+   "direction": "up",
+   "size": "unknown",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "low",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "RCS falls back to plain SMS on phones that cannot receive it."
+  },
+  "prerequisites": [
+   "An RCS-capable messaging platform with SMS fallback",
+   "A confirmed launch or drop date"
+  ],
+  "steps": [
+   "Confirm the platform supports an RCS add-to-calendar action and SMS fallback for phones that cannot receive RCS.",
+   "About a week before the launch, send an RCS message naming the date and offering an add-to-calendar button.",
+   "Fall back to a plain date-and-reminder line for SMS-only recipients.",
+   "Track how many recipients added the event versus just received the message, if the platform reports it.",
+   "Compare launch-day conversion for this send against a prior launch that used no calendar action."
+  ],
+  "test": {
+   "method": "Before-and-after comparison of launch-day conversion with and without the calendar action.",
+   "measure": "other:launch_day_conversion",
+   "read_point": "On launch day"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "05"
+   ],
+   "cards": [
+    "30309dfff699",
+    "04f7be245280"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": false
+ },
+ {
+  "id": "EML-207",
+  "title": "Answer conversational product questions with an RCS recommendation carousel",
+  "domain": "14-EML",
+  "bottleneck": [
+   "conversion",
+   "aov"
+  ],
+  "lever": "conversational RCS carousel",
+  "hypothesis": "If a shopper's conversational question, such as asking what to buy for a certain person or use case, is answered with a native RCS carousel of a few recommended products opening a web view in the thread, instead of bare text links, then conversion rises because the shopper can browse and decide inside the same conversation instead of leaving it.",
+  "applies_when": [
+   "catalogue"
+  ],
+  "does_not_apply_when": [
+   "The brand runs no conversational SMS or RCS program",
+   "The messaging platform has no carousel format"
+  ],
+  "signal": {
+   "check": "Conversational replies to product-recommendation questions send plain text links, on a platform that supports an RCS carousel format.",
+   "metrics": [
+    "cvr_overall",
+    "aov"
+   ]
+  },
+  "expected_effect": {
+   "metric": "cvr_overall",
+   "direction": "up",
+   "size": "unknown, described by the source as a planned direction, not a proven result",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "M",
+   "owner": "marketer"
+  },
+  "cost": "low",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Falls back to plain text links on non-RCS phones."
+  },
+  "prerequisites": [
+   "A conversational SMS or RCS program with staffed or AI-assisted replies",
+   "RCS carousel support on the messaging platform"
+  ],
+  "steps": [
+   "Identify recurring conversational questions that ask for a recommendation.",
+   "Build a short carousel of 3 relevant products with images and prices for the most common request types.",
+   "Reply to a matching question with the carousel instead of plain links, opening a web view in-thread.",
+   "Fall back to plain text links for recipients whose phone cannot receive RCS.",
+   "Track conversion and average order value for carousel replies against plain-link replies."
+  ],
+  "test": {
+   "method": "Compare conversion and AOV for carousel replies versus plain-text-link replies to similar questions.",
+   "measure": "cvr_overall and aov by reply format",
+   "read_point": "After enough conversational replies of each type to compare"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "05"
+   ],
+   "cards": [
+    "d1d6ad0e082f"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": false
+ },
+ {
+  "id": "EML-208",
+  "title": "Turn conversation reply themes into static and ephemeral customer facts",
+  "domain": "14-EML",
+  "bottleneck": [
+   "repeat_retention",
+   "measurement_data"
+  ],
+  "lever": "conversational zero-party attribute capture",
+  "hypothesis": "If replies from conversational SMS or email are tagged as either static facts, such as a product bought or a stated use case, or ephemeral facts that change over time, such as a child's age or a seasonal location, and both are pushed to the CRM, then new flows can trigger on the ephemeral facts because the store now has real customer knowledge instead of only device and click data.",
+  "applies_when": [
+   "any"
+  ],
+  "does_not_apply_when": [
+   "The brand has no conversational reply volume worth mining",
+   "There is no CRM or CDP to receive the attributes"
+  ],
+  "signal": {
+   "check": "Conversational replies are read once and then discarded, with no distinction between facts that stay true and facts that will change, and no attribute pushed to the CRM to drive future messages.",
+   "metrics": [
+    "other:ltv_from_conversation"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:ltv_from_conversation",
+   "direction": "up",
+   "size": "unknown",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "L",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "medium",
+   "reversible": true,
+   "note": "Storing personal or health-adjacent details from replies raises data protection questions; check local rules before storing sensitive facts."
+  },
+  "prerequisites": [
+   "A way to query or tag conversational replies",
+   "A CRM or CDP field structure that can hold custom attributes"
+  ],
+  "steps": [
+   "Read a sample of recent conversational replies and note recurring fact types.",
+   "Classify each fact type as static, does not change, or ephemeral, expected to change over time.",
+   "Push static facts to the CRM as stable profile properties.",
+   "Push ephemeral facts with a review or refresh date attached, so stale facts get re-asked or expired.",
+   "Build 1 new flow or personalised message off an ephemeral fact, such as a seasonal or life-stage change."
+  ],
+  "test": {
+   "method": "Not a split test; a data-capture and flow-building process, evaluated by whether it produces a usable new trigger.",
+   "measure": "other:ltv_from_conversation for customers with captured attributes versus without",
+   "read_point": "After enough conversation volume to populate attributes and build at least 1 flow"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "05"
+   ],
+   "cards": [
+    "67b11f173f1a"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": false
+ },
+ {
+  "id": "EML-209",
+  "title": "Review or suppress long-tenure SMS subscribers who never bought",
+  "domain": "14-EML",
+  "bottleneck": [
+   "margin_cogs",
+   "cash_inventory"
+  ],
+  "lever": "long-tenure SMS non-buyer review",
+  "hypothesis": "If SMS subscribers who joined a year or more ago and have never placed an order are reviewed and either sent a direct objection-finding question or cut from routine sends, then per-message SMS fees drop because the store stops paying to text people who show every sign of never converting.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "The SMS list has never been reviewed for subscribers with long tenure and zero orders, and campaign sends go to the full list regardless of tenure or purchase history.",
+   "metrics": [
+    "other:sms_cost_per_order"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:sms_cost_per_order",
+   "direction": "down",
+   "size": "unknown",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Subscribers can be re-added to full sends if they respond or order."
+  },
+  "prerequisites": [
+   "Subscriber join date and full order history on the SMS platform"
+  ],
+  "steps": [
+   "Build a segment: joined 1 year or more ago AND placed order 0 times over all time.",
+   "Size the segment and estimate its monthly send cost.",
+   "Send that segment a direct objection-finding question instead of the routine campaign for 1 cycle.",
+   "Move non-responders in that segment to a reduced-frequency or excluded list.",
+   "Recheck the segment's size and cost quarterly."
+  ],
+  "test": {
+   "method": "Not a split test; a cost and response review repeated quarterly.",
+   "measure": "other:sms_cost_per_order before and after the review",
+   "read_point": "After 1 review cycle, then quarterly"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "05"
+   ],
+   "cards": [
+    "52f701ac2a63"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": false
+ },
+ {
+  "id": "EML-210",
+  "title": "Gate a bonus behind a reply-yes step in the welcome email",
+  "domain": "14-EML",
+  "bottleneck": [
+   "trust_brand",
+   "repeat_retention"
+  ],
+  "lever": "reply-gated welcome bonus",
+  "hypothesis": "If the welcome email promises an extra bonus that is delivered only after the subscriber replies yes, then inbox placement improves and engagement rises because a reply is a strong signal to inbox providers and it trains the relationship as 2-way from the first message, on top of whatever discount code the popup already promised.",
+  "applies_when": [
+   "organic_led",
+   "new_store"
+  ],
+  "does_not_apply_when": [
+   "The brand cannot reliably detect and act on a reply, such as auto-sending the bonus or routing it to a person"
+  ],
+  "signal": {
+   "check": "The welcome flow only delivers the promised discount and never asks for or rewards a reply, even though the platform could detect and act on one.",
+   "metrics": [
+    "email_click_rate"
+   ]
+  },
+  "expected_effect": {
+   "metric": "email_click_rate",
+   "direction": "up",
+   "size": "unknown",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "M",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "medium",
+   "reversible": true,
+   "note": "Gating a discount code behind a reply would add friction to the first purchase; gate only an extra, optional bonus, not the main offer."
+  },
+  "prerequisites": [
+   "A way to detect a reply and trigger delivery of the bonus, manually or automatically"
+  ],
+  "steps": [
+   "Pick a genuine extra bonus beyond the popup's main discount, such as a guide or checklist.",
+   "In 1 welcome email, describe the bonus with enough specifics to make it worth wanting.",
+   "Ask the subscriber to reply yes to receive it.",
+   "Set up a manual or automated process to deliver the bonus on reply within a stated time.",
+   "Track reply volume and whether replying correlates with higher opens on later sends."
+  ],
+  "test": {
+   "method": "Compare reply-gated welcome email against a standard welcome email with no reply step.",
+   "measure": "email_click_rate and reply count",
+   "read_point": "After enough new subscribers pass through the welcome flow to compare"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "06"
+   ],
+   "cards": [
+    "348db341f122"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "EML-211",
+  "title": "Keep one fixed format for a recurring value newsletter",
+  "domain": "14-EML",
+  "bottleneck": [
+   "repeat_retention",
+   "trust_brand"
+  ],
+  "lever": "consistent newsletter skeleton",
+  "hypothesis": "If a recurring value-first newsletter keeps the same fixed skeleton every send, such as a fixed subject prefix, 1 reward at the top, 1 tactic or story, then a CTA, then subscribers open more of it out of habit because they know what they will get, the same reason a recognisable format works for any recurring show.",
+  "applies_when": [
+   "organic_led"
+  ],
+  "does_not_apply_when": [
+   "The send is a one-off promotional or launch campaign, not a recurring value newsletter"
+  ],
+  "signal": {
+   "check": "A recurring newsletter changes its structure, length and subject style every send, with no fixed skeleton readers can learn to expect.",
+   "metrics": [
+    "email_click_rate"
+   ]
+  },
+  "expected_effect": {
+   "metric": "email_click_rate",
+   "direction": "up",
+   "size": "unknown",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "A fixed format can feel stale if never refreshed; revisit periodically."
+  },
+  "prerequisites": [
+   "A recurring newsletter slot separate from promotional campaigns"
+  ],
+  "steps": [
+   "Define a fixed skeleton: subject prefix, top reward, 1 tactic or story, a contextual close, and a P.S.",
+   "Use the same skeleton for every send in the series for at least several cycles.",
+   "Resist changing the structure send to send, only the content inside it.",
+   "Track open and click rate trend over the series.",
+   "Only change the skeleton after a deliberate, tracked test, not on a whim."
+  ],
+  "test": {
+   "method": "Track open and click rate trend across a series of sends using the same fixed skeleton.",
+   "measure": "email_click_rate trend over the series",
+   "read_point": "After 5 to 10 sends of the fixed format"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "06"
+   ],
+   "cards": [
+    "e8a55c972c52"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "EML-212",
+  "title": "Remove money words from value-first newsletter body copy",
+  "domain": "14-EML",
+  "bottleneck": [
+   "trust_brand"
+  ],
+  "lever": "money-word deliverability edit",
+  "hypothesis": "If a value-first, mostly non-promotional send removes financial or money-related words from its body copy, then inbox placement improves because inbox filters read heavy money language as a promotional signal even when the email is not actually selling.",
+  "applies_when": [
+   "organic_led"
+  ],
+  "does_not_apply_when": [
+   "The email is a promotional or product send that must state a price or offer"
+  ],
+  "signal": {
+   "check": "Value or educational sends still use money-related words and phrasing throughout, and inbox placement for those sends has never been checked against a stripped-down version.",
+   "metrics": [
+    "other:spam_rate"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:spam_rate",
+   "direction": "down",
+   "size": "unknown",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Copy-only change; does not apply to sends that must state a price."
+  },
+  "prerequisites": [
+   "A value or educational send type separate from promotional campaigns"
+  ],
+  "steps": [
+   "Pick a value or educational send that carries no offer.",
+   "Edit out money-related words and phrasing from the subject and body.",
+   "Send as usual to the normal engaged segment.",
+   "Compare inbox placement or spam rate against the same send type before the edit.",
+   "Keep the edit for value sends only; promotional sends still state price and offer normally."
+  ],
+  "test": {
+   "method": "Before-and-after comparison of placement or spam rate for value sends after removing money words.",
+   "measure": "other:spam_rate for value sends",
+   "read_point": "After several value sends with the edit"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "06"
+   ],
+   "cards": [
+    "84e6a958f0b2"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "EML-213",
+  "title": "Judge a value newsletter's health as deposits versus withdrawals",
+  "domain": "14-EML",
+  "bottleneck": [
+   "measurement_data",
+   "repeat_retention"
+  ],
+  "lever": "deposit-withdrawal send accounting",
+  "hypothesis": "If every send in a newsletter or lifecycle series is labelled a deposit, pure value, or a withdrawal, a real ask, and the program is judged over a rolling period on the balance of both rather than judging each email alone, then send strategy improves because a single ask lands better after several deposits than after another ask.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "Sends are reported and reviewed 1 at a time with no label for whether each was a value deposit or an ask, so a run of consecutive asks with no deposits goes unnoticed.",
+   "metrics": [
+    "other:unsubscribe_rate"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:unsubscribe_rate",
+   "direction": "down",
+   "size": "unknown",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Reporting and planning change only."
+  },
+  "prerequisites": [
+   "A send calendar or log that can carry a label per send"
+  ],
+  "steps": [
+   "Label each planned or sent campaign as a deposit or a withdrawal.",
+   "Count the ratio of deposits to withdrawals over a rolling 30-day window.",
+   "Set a working floor, such as at least 1 deposit before every withdrawal.",
+   "Review unsubscribe and complaint rate against the deposit-to-withdrawal ratio each month.",
+   "Add more deposits before the next withdrawal if the ratio has drifted too promotional."
+  ],
+  "test": {
+   "method": "Not a split test; a recurring planning and review label tracked against unsubscribe trend.",
+   "measure": "other:unsubscribe_rate against the deposit-to-withdrawal ratio",
+   "read_point": "Monthly"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "06"
+   ],
+   "cards": [
+    "f9275e23494a",
+    "c5f48c89de68"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "EML-214",
+  "title": "Batch-write a fixed set of emails in 1 sitting to protect quality",
+  "domain": "14-EML",
+  "bottleneck": [
+   "team_capacity"
+  ],
+  "lever": "batch email writing",
+  "hypothesis": "If a finite batch of newsletter or campaign emails, such as 12 or 24, is written in 1 or 2 focused sessions instead of piecemeal under a weekly deadline, then average email quality holds because the writer is not forced to publish a weak email just to hit that week's cadence.",
+  "applies_when": [
+   "organic_led",
+   "any"
+  ],
+  "does_not_apply_when": [
+   "The email type depends on real-time news, launches or time-bound promotions that cannot be pre-written"
+  ],
+  "signal": {
+   "check": "Emails are written 1 at a time just before each scheduled send, under deadline pressure, and at least 1 recent send was visibly weaker because of that pressure.",
+   "metrics": [
+    "email_click_rate"
+   ]
+  },
+  "effort": {
+   "size": "M",
+   "owner": "marketer"
+  },
+  "expected_effect": {
+   "metric": "email_click_rate",
+   "direction": "up",
+   "size": "unknown",
+   "basis": "general_practice"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Batch content can feel dated if events change; keep a few slots open for timely news."
+  },
+  "prerequisites": [
+   "A content type that does not depend on real-time events"
+  ],
+  "steps": [
+   "Pick a finite batch size, such as 12 emails for a monthly send or 24 for twice-monthly.",
+   "Block 1 or 2 sessions to write the whole batch with no other task competing.",
+   "Queue the batch into the send calendar, leaving a few slots open for timely news.",
+   "Ship the batch on schedule even if a later real-time item needs to be inserted.",
+   "Compare average click rate for batch-written sends against previously rushed, one-at-a-time sends."
+  ],
+  "test": {
+   "method": "Compare average click rate for batch-written sends against prior one-at-a-time sends.",
+   "measure": "email_click_rate average across the batch versus the prior period",
+   "read_point": "After the batch has fully sent"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "06"
+   ],
+   "cards": [
+    "e23b7d7d24b2"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "EML-215",
+  "title": "Restart a dormant sending program at a low cadence",
+  "domain": "14-EML",
+  "bottleneck": [
+   "trust_brand",
+   "repeat_retention"
+  ],
+  "lever": "dormant list reactivation cadence",
+  "hypothesis": "If a list that has not been mailed in 6 months or more restarts at once a month instead of jumping straight back to a normal cadence, and a one-time unsubscribe spike on the first send is expected and judged against list growth rather than treated as a failure, then the program recovers without the operator panicking and stopping again after the first send.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "A list has gone 6 months or more without a send, and there is no plan for how to restart, or the plan is to resume at the prior normal cadence immediately.",
+   "metrics": [
+    "other:unsubscribe_rate",
+    "other:list_growth_rate"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:unsubscribe_rate",
+   "direction": "down",
+   "size": "one-time spike expected on the first send back, then settling lower",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Cadence can be raised or lowered again based on the result."
+  },
+  "prerequisites": [
+   "A list that has gone 6 months or more without a regular send"
+  ],
+  "steps": [
+   "Confirm the list has been dormant for 6 months or more.",
+   "Send 1 email to restart, expecting a higher-than-normal unsubscribe rate on this first send.",
+   "Compare that unsubscribe count against new subscriber growth over the same period.",
+   "Continue at once a month while the program stabilises.",
+   "Raise frequency only while quality and unsubscribe trend both hold."
+  ],
+  "test": {
+   "method": "Not a split test; a restart protocol judged by unsubscribes versus list growth.",
+   "measure": "other:unsubscribe_rate versus other:list_growth_rate after the restart send",
+   "read_point": "Immediately after the first restart send, then monthly"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "06"
+   ],
+   "cards": [
+    "c1faaf881fc4",
+    "e23b7d7d24b2"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "EML-216",
+  "title": "Ask testimonial-givers for their worst moment, not their story",
+  "domain": "14-EML",
+  "bottleneck": [
+   "conversion",
+   "trust_brand"
+  ],
+  "lever": "testimonial-collection question",
+  "hypothesis": "If a testimonial or review request asks the customer for the worst moment before they found the product, instead of a general how was life before question, then the resulting quotes give sharper, more specific hooks for objection-led proof emails because a worst-moment answer surfaces a concrete detail instead of a vague, generic story.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "Review or testimonial requests ask an open, general question and mostly return vague praise with no specific, quotable moment to build proof copy around.",
+   "metrics": [
+    "review_rating",
+    "cvr_overall"
+   ]
+  },
+  "expected_effect": {
+   "metric": "cvr_overall",
+   "direction": "up",
+   "size": "unknown",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Copy-only change to the request question."
+  },
+  "prerequisites": [
+   "A review, testimonial or post-purchase survey step that can carry a custom question"
+  ],
+  "steps": [
+   "Add or change 1 question in the review or testimonial request: what was your worst moment before you found this.",
+   "Collect responses for several weeks alongside the normal review flow.",
+   "Pull out specific, concrete answers as candidate quotes.",
+   "Tag each usable quote by the objection or pain it answers.",
+   "Feed the sharpest quotes into welcome, abandonment and campaign proof emails."
+  ],
+  "test": {
+   "method": "Not a split test; compare the usable-quote rate from the new question against the prior general question.",
+   "measure": "Share of responses that yield a specific, quotable hook",
+   "read_point": "After several weeks of the new question running"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "06"
+   ],
+   "cards": [
+    "38bfd47e311d"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "EML-217",
+  "title": "Build an us-vs-them block with bold checkmarks and unbold X marks",
+  "domain": "14-EML",
+  "bottleneck": [
+   "conversion",
+   "trust_brand"
+  ],
+  "lever": "comparison block visual bias",
+  "hypothesis": "If an us-vs-them comparison block bolds only the brand's own points with a checkmark icon and leaves competitor points unbolded with an X icon, then the visual bias toward the brand reads faster than a plain 2-column table because the reader's eye is drawn to the bolded, checked side before reading any words.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "The email design includes a competitor comparison but formats both columns identically, with no visual weight difference between the brand's points and the competitor's.",
+   "metrics": [
+    "cvr_pdp_to_cart"
+   ]
+  },
+  "expected_effect": {
+   "metric": "cvr_pdp_to_cart",
+   "direction": "up",
+   "size": "unknown",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "designer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "medium",
+   "reversible": true,
+   "note": "Every comparison claim named must be substantiated; never name a competitor company directly without proof."
+  },
+  "prerequisites": [
+   "A substantiated, honest list of points that differ from the general market or a named category"
+  ],
+  "steps": [
+   "Write 1 strong claim as the block's sub-headline.",
+   "List the brand's points in 1 column, bolded, each with a checkmark icon.",
+   "List the comparison points in the other column, not bolded, each with an X icon.",
+   "Box each column with a light border so the contrast reads even without close reading.",
+   "Check every point named is true and provable before shipping."
+  ],
+  "test": {
+   "method": "A/B test the bold-and-icon comparison block against a plain, evenly formatted comparison table.",
+   "measure": "cvr_pdp_to_cart for the email containing the block",
+   "read_point": "After the account's normal test-size rule is met"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "07"
+   ],
+   "cards": [
+    "179e3a5ac735"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "EML-218",
+  "title": "Blend section backgrounds so the email scroll feels seamless",
+  "domain": "14-EML",
+  "bottleneck": [
+   "conversion"
+  ],
+  "lever": "seamless background scroll design",
+  "hypothesis": "If section backgrounds flow into each other through matched colours or a gradient instead of showing a hard-edged, blocky seam, then fewer readers drop off partway down the email because a visibly blocky, segmented layout reads as the end of a section, inviting the reader to stop scrolling.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "Scrolling through a recent email shows a visible hard colour seam between sections instead of a matched or gradient-blended background.",
+   "metrics": [
+    "cvr_pdp_to_cart"
+   ]
+  },
+  "effort": {
+   "size": "S",
+   "owner": "designer"
+  },
+  "expected_effect": {
+   "metric": "cvr_pdp_to_cart",
+   "direction": "up",
+   "size": "unknown",
+   "basis": "general_practice"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Design-only change."
+  },
+  "prerequisites": [
+   "A design tool that supports layered rectangles or gradient fills"
+  ],
+  "steps": [
+   "Scroll the current email top to bottom and mark any visible hard seam between sections.",
+   "Sample the dominant colour from the section above and below each seam.",
+   "Add a gradient rectangle blending the 2 colours across the seam, or set both sections to the same background colour.",
+   "Keep text and buttons layered above the background so nothing gets obscured.",
+   "Re-check on both desktop and mobile preview before sending."
+  ],
+  "test": {
+   "method": "Not a split test in itself; can be run as an A/B design test against the prior blocky layout.",
+   "measure": "cvr_pdp_to_cart for the redesigned email versus the prior blocky version",
+   "read_point": "After the redesigned version has sent enough volume to compare"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "07"
+   ],
+   "cards": [
+    "b974561edcc8"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "EML-219",
+  "title": "Reverse-engineer a strong reference email's structure with AI",
+  "domain": "14-EML",
+  "bottleneck": [
+   "team_capacity",
+   "conversion"
+  ],
+  "lever": "AI-assisted structure extraction",
+  "hypothesis": "If a strong reference email is fed to an AI with a prompt chain that transcribes it, extracts a reusable structural template, then rewrites it for the brand, then new emails get written faster because the writer starts from a proven skeleton, never the source's actual words, logos or claims.",
+  "applies_when": [
+   "any"
+  ],
+  "does_not_apply_when": [
+   "The result would copy a competitor's actual copy, logo, product or claims rather than only its structure"
+  ],
+  "signal": {
+   "check": "Every new email angle is written from a blank page with no structural template to start from, even when a strong reference email exists to learn the skeleton from.",
+   "metrics": [
+    "other:copy_time_per_email"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:copy_time_per_email",
+   "direction": "down",
+   "size": "unknown",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "medium",
+   "reversible": true,
+   "note": "Never copy a competitor's actual wording, logo, product or faces; extract structure only, and verify every claim before it ships."
+  },
+  "prerequisites": [
+   "An AI text tool",
+   "A strong reference email to learn from"
+  ],
+  "steps": [
+   "Pick a well-written reference email, the brand's own past winner or a competitor's for layout only.",
+   "Ask the AI to transcribe the email's copy.",
+   "Ask it to analyse the copy and produce a reusable structural template.",
+   "Give the brand's own details, angle and positioning, and ask it to rewrite the template for the brand.",
+   "Edit the output by hand, verifying every claim and removing any wording that echoes the source too closely."
+  ],
+  "test": {
+   "method": "Not a split test; track time to draft against the brand's normal copywriting process.",
+   "measure": "other:copy_time_per_email using the structure-extraction method versus writing from scratch",
+   "read_point": "After using the method on a few emails"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "07"
+   ],
+   "cards": [
+    "fab16f82f356"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "EML-220",
+  "title": "Diagnose an underperforming email by copy, structure or design layer",
+  "domain": "14-EML",
+  "bottleneck": [
+   "measurement_data"
+  ],
+  "lever": "layered email diagnosis",
+  "hypothesis": "If an underperforming email is diagnosed by where in the funnel it fails, readers never reach the offer points to a structure problem, readers reach it but do not click points to a copy or offer problem, and clicks convert poorly with a cheap or off-brand feel points to a design problem, then fixes target the actual cause instead of a generic rewrite or redesign.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "An underperforming email gets a full rewrite or redesign with no check of which specific layer, copy, structure or design, the drop-off actually happens at.",
+   "metrics": [
+    "other:revenue_per_recipient"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:revenue_per_recipient",
+   "direction": "up",
+   "size": "diagnostic accuracy, not a direct revenue claim",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Diagnostic method, not a live change."
+  },
+  "prerequisites": [
+   "Click-by-link or scroll-depth reporting where available"
+  ],
+  "steps": [
+   "Check whether readers reach the offer or CTA at all, using click-by-position or scroll data if available.",
+   "If few readers reach it, suspect structure: button placement, section order, length.",
+   "If readers reach it but do not click, suspect copy or offer: headline, benefit clarity, offer strength.",
+   "If clicks happen but convert poorly and feedback calls the email cheap or off-brand, suspect design.",
+   "Fix only the identified layer first, then re-measure before touching the others."
+  ],
+  "test": {
+   "method": "Not a split test; a diagnostic method applied before any rewrite or redesign.",
+   "measure": "other:revenue_per_recipient before and after the targeted fix",
+   "read_point": "After the next send following the targeted fix"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "07"
+   ],
+   "cards": [
+    "9fe5472706f8"
+   ],
+   "rules": []
+  },
+  "confidence": "medium",
+  "general_practice": true
+ },
+ {
+  "id": "EML-221",
+  "title": "Profile top Instagram followers to sharpen audience psychographics",
+  "domain": "14-EML",
+  "bottleneck": [
+   "conversion"
+  ],
+  "lever": "follower profile research",
+  "hypothesis": "If 50 to 75 of the brand's or a close competitor's top Instagram followers are reviewed for age range, gender and recurring interests, then copy angles fit the real audience better because inferred demographic and interest patterns from real profiles beat guessing from a persona document alone.",
+  "applies_when": [
+   "organic_led"
+  ],
+  "does_not_apply_when": [
+   "The brand already has strong first-party demographic data from analytics or surveys"
+  ],
+  "signal": {
+   "check": "Copy angles are written from a guessed or years-old persona document, with no recent check of the brand's or a close competitor's actual follower profiles.",
+   "metrics": [
+    "cvr_overall"
+   ]
+  },
+  "expected_effect": {
+   "metric": "cvr_overall",
+   "direction": "up",
+   "size": "unknown",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "This is inference from public profiles, not a valid statistical sample; treat findings as directional. Check platform terms before recording profile data."
+  },
+  "prerequisites": [
+   "Access to the brand's or a comparable competitor's public follower list"
+  ],
+  "steps": [
+   "Open the brand's, or for a new brand a close competitor's, Instagram followers list.",
+   "Review 50 to 75 profiles, prioritising ones that look like real engaged followers.",
+   "Note recurring age range signals, gender split and stated interests.",
+   "Add the pattern to the brand's research notes as a directional input, not a hard rule.",
+   "Use it to sharpen 1 or 2 new copy angles and check results against the account's existing customer data."
+  ],
+  "test": {
+   "method": "Not a split test; a research input checked against actual conversion by angle over time.",
+   "measure": "cvr_overall for angles informed by the profiling versus prior angles",
+   "read_point": "After a few campaigns using angles informed by the research"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "08"
+   ],
+   "cards": [
+    "94e80b540e5c"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "EML-222",
+  "title": "Classify benefits as perks or insecurity anchors, then chain the anchors",
+  "domain": "14-EML",
+  "bottleneck": [
+   "conversion"
+  ],
+  "lever": "benefit depth classification",
+  "hypothesis": "If every product benefit is first classified as a light perk or a deeper insecurity anchor, and each anchor benefit is chained down 2 to 3 levels to the social or identity stake underneath it, then benefit-highlight copy converts better because light perks get short icon treatment while anchor benefits get the deeper emotional copy that actually moves a reader who feels that insecurity.",
+  "applies_when": [
+   "any"
+  ],
+  "does_not_apply_when": [
+   "The category has no real insecurity-linked benefit and forcing one would misrepresent the product"
+  ],
+  "signal": {
+   "check": "Every benefit gets the same shallow icon-row treatment regardless of whether it is a light perk or a benefit tied to a real insecurity that could support deeper copy.",
+   "metrics": [
+    "cvr_pdp_to_cart"
+   ]
+  },
+  "expected_effect": {
+   "metric": "cvr_pdp_to_cart",
+   "direction": "up",
+   "size": "unknown",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "medium",
+   "reversible": true,
+   "note": "Any external cause named in the chain must be true and provable; never blame the customer, and keep within the brand's stated voice limits."
+  },
+  "prerequisites": [
+   "A list of the product's real benefits and mechanisms from research"
+  ],
+  "steps": [
+   "List every benefit the product delivers.",
+   "Mark each as a perk, light and standard, or an anchor, tied to a real insecurity.",
+   "For each anchor, write the immediate result, then what that result means socially, then the deeper identity stake.",
+   "Write anchor benefits as their own longer copy block, and group perks into a short icon row.",
+   "Check every step of the chain and any external cause named is true and provable before it ships."
+  ],
+  "test": {
+   "method": "A/B test an anchor-chained benefit block against a plain benefit statement for the same product.",
+   "measure": "cvr_pdp_to_cart for the email or block containing the benefit copy",
+   "read_point": "After the account's normal test-size rule is met"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "08"
+   ],
+   "cards": [
+    "14d83f5d3f3e",
+    "fac6b8c9debd"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "EML-223",
+  "title": "Write emails as a stack of named blocks with a combo per email job",
+  "domain": "14-EML",
+  "bottleneck": [
+   "team_capacity",
+   "conversion"
+  ],
+  "lever": "modular email block library",
+  "hypothesis": "If every email is assembled from a set of named, reusable blocks, such as banner, CTA, review, product display, benefit highlight, story, countdown, featured-on and guarantee, with a known block combo picked per email job, then production speeds up because building becomes choosing and filling known blocks, not inventing a new structure each time.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "Every email is built from a fresh, one-off structure with no shared library of named content blocks or known block combos for common email jobs.",
+   "metrics": [
+    "other:build_time_per_campaign"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:build_time_per_campaign",
+   "direction": "down",
+   "size": "unknown",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "M",
+   "owner": "designer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "A block library can start to feel repetitive; keep varying imagery and copy inside each block."
+  },
+  "prerequisites": [
+   "A shared file or template system to store reusable block designs"
+  ],
+  "steps": [
+   "List the block types the brand actually uses: banner, CTA, review, product display, benefit highlight, content or story, countdown, featured-on, guarantee.",
+   "Write a short copy and design spec for each block type.",
+   "Define 2 or 3 standard block combos for common email jobs, such as a launch, a story send, or a review-led send.",
+   "Build and save a reusable design for each block so future emails assemble rather than start from scratch.",
+   "Track build time per campaign before and after adopting the library."
+  ],
+  "test": {
+   "method": "Not a split test; compare build time per campaign before and after the block library is adopted.",
+   "measure": "other:build_time_per_campaign",
+   "read_point": "After several campaigns built from the library"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "08"
+   ],
+   "cards": [
+    "effdf39b2845"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "EML-224",
+  "title": "Search the problem, not the product, to map competing solutions",
+  "domain": "14-EML",
+  "bottleneck": [
+   "conversion"
+  ],
+  "lever": "problem-keyword competitive research",
+  "hypothesis": "If competitor and ad research starts from the problem the product solves, such as searching hair loss instead of the product category, then the brand can see and address the full set of alternative solutions and their known complaints, because a product-name search only shows direct category competitors and misses the incumbent solutions buyers are actually comparing against.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "Competitor research only searches the brand's own product category or exact competitors, never the underlying problem, so alternative or incumbent solutions and their complaints go unseen.",
+   "metrics": [
+    "cvr_overall"
+   ]
+  },
+  "expected_effect": {
+   "metric": "cvr_overall",
+   "direction": "up",
+   "size": "unknown",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Any side-effect or complaint claim about an incumbent solution must be checked before use in copy."
+  },
+  "prerequisites": [
+   "Access to an ad library or search tool"
+  ],
+  "steps": [
+   "Name the core problem the product solves in plain words.",
+   "Search that problem, not the product category, in an ad library or general search.",
+   "List every incumbent or alternative solution that shows up, including outside the brand's own category.",
+   "Read complaints or objections about each incumbent solution, cross-checked in reviews.",
+   "Position 1 new angle for the brand against a real, checked complaint about an incumbent solution."
+  ],
+  "test": {
+   "method": "Not a split test; a research technique feeding a new copy angle to be tested as usual.",
+   "measure": "cvr_overall for the resulting angle against the account's other angles",
+   "read_point": "After the resulting angle runs in a campaign or flow"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "08"
+   ],
+   "cards": [
+    "100c73502444"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "EML-225",
+  "title": "Use text-only reviews for sensitive or stigmatised objections",
+  "domain": "14-EML",
+  "bottleneck": [
+   "trust_brand",
+   "conversion"
+  ],
+  "lever": "sensitive-objection review format",
+  "hypothesis": "If a review used to answer a sensitive or stigmatised objection, such as a health condition someone would not want publicly tied to their face, runs as text only with no reviewer photo, while other reviews still use photos, then trust holds because the reader gets the proof without the discomfort of seeing a real identified person next to a private topic.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "Reviews answering a sensitive or stigmatised objection are shown with a reviewer photo, the same as reviews for ordinary benefits.",
+   "metrics": [
+    "cvr_pdp_to_cart"
+   ]
+  },
+  "expected_effect": {
+   "metric": "cvr_pdp_to_cart",
+   "direction": "up",
+   "size": "unknown",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Copy and formatting choice only."
+  },
+  "prerequisites": [
+   "A pool of reviews tagged by the objection each one answers"
+  ],
+  "steps": [
+   "Identify any review used to answer a sensitive or stigmatised objection.",
+   "Confirm the reviewer's consent covers the use, and remove any photo for that specific review.",
+   "Keep photos for reviews answering ordinary, non-sensitive objections.",
+   "Preview the mixed review block to confirm the sensitive review does not stand out awkwardly.",
+   "Note this rule in the brand's review-usage guide for future sends."
+  ],
+  "test": {
+   "method": "Not a split test; a formatting rule applied whenever a sensitive-objection review is used.",
+   "measure": "cvr_pdp_to_cart for emails using this rule",
+   "read_point": "Ongoing, whenever a sensitive-objection review is included"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "08"
+   ],
+   "cards": [
+    "6e5742c076f2"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "EML-226",
+  "title": "Set a graphic-to-text email ratio in the campaign calendar",
+  "domain": "14-EML",
+  "bottleneck": [
+   "repeat_retention",
+   "trust_brand"
+  ],
+  "lever": "graphic to text format ratio",
+  "hypothesis": "If the monthly campaign calendar assigns a target format, graphic or plain text, to every slot at about 3 to 4 graphic sends for every 1 text send, then the mix of educational infographics and personal founder or community notes stays deliberate because format gets planned alongside content pillar instead of being decided ad hoc per email.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "The campaign calendar assigns a content pillar to each slot but never a target format, and a count of the last month's sends shows no deliberate graphic-to-text ratio.",
+   "metrics": [
+    "email_click_rate"
+   ]
+  },
+  "expected_effect": {
+   "metric": "email_click_rate",
+   "direction": "up",
+   "size": "unknown",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Planning change only."
+  },
+  "prerequisites": [
+   "A monthly campaign calendar with a slot per planned send"
+  ],
+  "steps": [
+   "Count last month's sends by format, graphic versus plain text.",
+   "Set a target ratio, such as 3 to 4 graphic sends for every 1 text send, for the coming month.",
+   "Assign a format to every calendar slot alongside its content pillar.",
+   "Place text-format slots where a personal voice fits, such as founder or community sends.",
+   "Recount the actual ratio at month end and adjust the target if either format is clearly underperforming."
+  ],
+  "test": {
+   "method": "Not a split test; a planning ratio checked against the account's own click and revenue trend by format.",
+   "measure": "email_click_rate by format over the following month",
+   "read_point": "Monthly"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "10"
+   ],
+   "cards": [
+    "65281424ea63"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "EML-227",
+  "title": "Pair a campaign's email and SMS send a fixed gap apart, same day",
+  "domain": "14-EML",
+  "bottleneck": [
+   "conversion"
+  ],
+  "lever": "same-day cross-channel campaign pairing",
+  "hypothesis": "If a launch or offer campaign sends by email in the morning and the matching SMS a fixed gap later the same day, such as 5 to 6 hours, instead of the 2 channels going out on unrelated schedules, then more subscribers see the message on whichever device they are using that day because the second touch catches people the first one missed without stacking both at once.",
+  "applies_when": [
+   "any"
+  ],
+  "does_not_apply_when": [
+   "The brand has no SMS program or the subscriber has not given SMS consent"
+  ],
+  "signal": {
+   "check": "Email and SMS campaigns for the same launch or offer are scheduled independently, on different days or with no planned gap, rather than as a same-day paired send.",
+   "metrics": [
+    "other:campaign_conversion_rate"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:campaign_conversion_rate",
+   "direction": "up",
+   "size": "unknown",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "low",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Scheduling change only; watch for fatigue if used on every send."
+  },
+  "prerequisites": [
+   "An SMS program alongside email with a shared campaign calendar"
+  ],
+  "steps": [
+   "Pick a launch or time-sensitive offer campaign to pair across channels.",
+   "Schedule the email send for its normal best time.",
+   "Schedule the matching SMS 5 to 6 hours later the same day, inside legal and quiet-hour send windows.",
+   "Keep the SMS short and reference the same offer without repeating the email word for word.",
+   "Reserve this pairing for launches and offers, not every routine send, to avoid fatigue."
+  ],
+  "test": {
+   "method": "Compare conversion for paired same-day sends against unpaired sends of a similar campaign type.",
+   "measure": "other:campaign_conversion_rate for paired versus unpaired campaigns",
+   "read_point": "After a few paired campaigns"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "11"
+   ],
+   "cards": [
+    "a9df8fb1a06e"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "EML-228",
+  "title": "Delay the first conversational text a few minutes after opt-in",
+  "domain": "14-EML",
+  "bottleneck": [
+   "trust_brand",
+   "conversion"
+  ],
+  "lever": "human-feel welcome delay",
+  "hypothesis": "If the first conversational SMS text after a new opt-in waits a short delay, such as 5 minutes, instead of firing the instant someone submits, then reply rate may rise because a short delay reads as a real person having just seen the signup, while an instant automated reply reads as a bot.",
+  "applies_when": [
+   "any"
+  ],
+  "does_not_apply_when": [
+   "The brand promises an instant code and any delay would frustrate the shopper waiting to buy"
+  ],
+  "signal": {
+   "check": "The first conversational welcome text fires the instant someone opts in, with no test of a short delay against it.",
+   "metrics": [
+    "other:reply_rate"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:reply_rate",
+   "direction": "up",
+   "size": "unknown",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Delay-only change, easy to revert."
+  },
+  "prerequisites": [
+   "A conversational SMS welcome step separate from the instant discount-code delivery"
+  ],
+  "steps": [
+   "Confirm the discount code or other promised benefit is still delivered without delay.",
+   "Add a separate conversational message, delayed about 5 minutes, that opens with a name and a low-friction question.",
+   "Test the delay length, such as 5 versus 7 minutes, against reply rate.",
+   "Keep the delay inside any applicable quiet-hour or send-time rules.",
+   "Track reply rate and downstream purchases, not reply rate alone."
+  ],
+  "test": {
+   "method": "A/B test the delayed conversational message against an instant version.",
+   "measure": "other:reply_rate and downstream purchase rate",
+   "read_point": "After enough new opt-ins pass through both versions"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "13"
+   ],
+   "cards": [
+    "dc0288dd127b"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": false
+ },
+ {
+  "id": "EML-229",
+  "title": "Hand a conversational thread to a live person at the first reply",
+  "domain": "14-EML",
+  "bottleneck": [
+   "fulfilment_cx",
+   "conversion"
+  ],
+  "lever": "automation-to-human handoff",
+  "hypothesis": "If an automated conversational text sends the opening message but the thread is handed to a live person the moment a reply arrives, with the shopper's order and product context passed along so they never repeat themselves, then conversation quality and conversion rise because the shopper gets a real answer instead of another automated line.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "Replies to conversational texts are answered by more automated messages, or sit unanswered, with no defined point at which a live person takes over and no context passed to them.",
+   "metrics": [
+    "cvr_overall",
+    "csat"
+   ]
+  },
+  "expected_effect": {
+   "metric": "cvr_overall",
+   "direction": "up",
+   "size": "unknown",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "M",
+   "owner": "support"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "medium",
+   "reversible": true,
+   "note": "Requires staffing and a response-time target; an unstaffed handoff is worse than no conversational program at all."
+  },
+  "prerequisites": [
+   "A staffed reply queue with a stated response-time target",
+   "A way to surface order and product context to the responding agent"
+  ],
+  "steps": [
+   "Define the moment a thread hands off: the first inbound reply.",
+   "Route that thread to a live support or sales queue at once.",
+   "Pass the shopper's order and product context to the agent so they do not ask the shopper to repeat it.",
+   "Set and publish a response-time target for the team.",
+   "Track time from reply to human response, and whether shoppers repeat information."
+  ],
+  "test": {
+   "method": "Not a split test; an operational process tracked for response time and repeat-question rate.",
+   "measure": "csat and time from reply to human response",
+   "read_point": "Ongoing, reviewed monthly"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "13"
+   ],
+   "cards": [
+    "3e359a2bee9b"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "EML-230",
+  "title": "Answer long conversational questions with a voice note or short video",
+  "domain": "14-EML",
+  "bottleneck": [
+   "conversion",
+   "fulfilment_cx"
+  ],
+  "lever": "voice note and video replies",
+  "hypothesis": "If a conversational text reply that would run long, past a short, skimmable line, is instead sent as a short voice note or video with a text alternative, then the shopper gets a clearer answer and feels more familiarity with the brand because a spoken or shown explanation lands better than a wall of text on a phone screen.",
+  "applies_when": [
+   "any"
+  ],
+  "does_not_apply_when": [
+   "The channel or the shopper's device does not support voice or video messages"
+  ],
+  "signal": {
+   "check": "Long conversational answers go out as multi-part text messages with no voice note or video alternative ever tried.",
+   "metrics": [
+    "other:reply_rate",
+    "csat"
+   ]
+  },
+  "expected_effect": {
+   "metric": "csat",
+   "direction": "up",
+   "size": "unknown",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "M",
+   "owner": "support"
+  },
+  "cost": "low",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Always give a text alternative for anyone who cannot or prefers not to open audio or video."
+  },
+  "prerequisites": [
+   "A messaging channel and platform that supports voice notes or short video"
+  ],
+  "steps": [
+   "Identify recurring questions whose answer needs more than a short text reply.",
+   "Record a short voice note or video answering the question, showing the actual product where relevant.",
+   "Send it with a brief text summary as a fallback.",
+   "Track reply and satisfaction for these answers against the prior long-text version.",
+   "Build a small library of reusable voice or video answers for the most common questions."
+  ],
+  "test": {
+   "method": "Compare reply rate and satisfaction for voice or video answers against multi-part text answers to similar questions.",
+   "measure": "other:reply_rate and csat by answer format",
+   "read_point": "After enough of each answer type to compare"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "13"
+   ],
+   "cards": [
+    "bafced8b02e6"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": false
+ },
+ {
+  "id": "EML-231",
+  "title": "Use iMessage text effects for a small set of specific moments",
+  "domain": "14-EML",
+  "bottleneck": [
+   "repeat_retention"
+  ],
+  "lever": "channel-native text effects",
+  "hypothesis": "If iMessage's native text effects, such as a highlight animation for an important follow-up, a hidden reveal for a lapsed lead, or a celebratory animation for a signup or win, are used only for a small, defined set of moments rather than routinely, then those specific messages stand out in the thread because the effect signals genuine occasion instead of becoming background noise from overuse.",
+  "applies_when": [
+   "us"
+  ],
+  "does_not_apply_when": [
+   "Most of the audience is not on iMessage-capable devices",
+   "The brand has no iMessage business messaging channel"
+  ],
+  "signal": {
+   "check": "The brand has iMessage business messaging live but has never used its native text effects, or uses them on every message rather than a defined set of moments.",
+   "metrics": [
+    "other:reply_rate"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:reply_rate",
+   "direction": "up",
+   "size": "unknown",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "iMessage-only; falls back to plain text on other devices."
+  },
+  "prerequisites": [
+   "An iMessage business messaging channel",
+   "A mostly iPhone audience"
+  ],
+  "steps": [
+   "List a small set of moments worth marking, such as a key follow-up, a re-engagement attempt with a long-lapsed lead, or celebrating a signup.",
+   "Pick 1 effect per moment type and use it consistently for that moment only.",
+   "Track reply rate for effect-carrying messages against equivalent plain messages.",
+   "Stop using an effect for a moment type if it stops outperforming the plain version.",
+   "Never use an effect in a way that misrepresents who is sending the message."
+  ],
+  "test": {
+   "method": "Compare reply rate for messages with a text effect against equivalent plain messages for the same moment type.",
+   "measure": "other:reply_rate by message format",
+   "read_point": "After enough messages of each type to compare"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "13"
+   ],
+   "cards": [],
+   "rules": []
+  },
+  "confidence": "low",
   "general_practice": false
  }
 ]
