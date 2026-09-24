@@ -27,12 +27,12 @@ Pass 1 = mini playbook per source (Sonnet from 24 Sep). Pass 2 = folder playbook
 | /19-WLD-wild-bets | 3 | 22,413 | 96 | done | 19,706 | done | 28,251 |
 | /20-FIN-finance-and-accounting | 6 | 132,584 | 203 | done | 42,154 | done | 30,565 |
 | /21-OPS-team-and-management | 7 | 154,983 | 258 | done | 34,865 | done | 20,806 |
-| /22-AMZ-amazon-marketplace | 4 | 173,534 | 284 | done | 38,070 | todo | 0 |
-| /23-SEC-bot-and-agent-security | 6 | 288,805 | 412 | done | 64,745 | todo | 0 |
+| /22-AMZ-amazon-marketplace | 4 | 173,534 | 284 | done | 38,070 | done | 19,570 |
+| /23-SEC-bot-and-agent-security | 6 | 288,805 | 412 | done | 64,745 | done | 20,266 |
 | /24-DEP-ad-deployment | 10 | 110,382 | 213 | done | 60,852 | done | 22,536 |
-| /99-multi | 22 | 549,961 | 1016 | done | 161,559 | todo | 0 |
+| /99-multi | 22 | 549,961 | 1016 | done | 162,751 | done | 34,920 |
 
-Totals: 256 sources, 4,100,282 source words, 7,611 cards. Mini playbook words so far: 1,577,674. Folder playbooks done: 22 of 25, 613,925 words.
+Totals: 256 sources, 4,100,282 source words, 7,611 cards. Mini playbook words: 1,578,866. Folder playbooks done: 25 of 25, 688,681 words. Build finished 24 Sep 2026.
 
 ## Notes
 
@@ -40,7 +40,8 @@ Totals: 256 sources, 4,100,282 source words, 7,611 cards. Mini playbook words so
 - /23-SEC 01 turned out to be a transcript of a university web security course (about 2019), not an ecommerce document. The folder's ecommerce fraud content comes from sources 02 to 06.
 - /01-PRD sources 02 and 10 are different videos, not two cuts of one talk; the folder playbook keeps them separate.
 - /99-multi 13 bundles two unrelated pieces (a Bloom Nutrition summary and a full Oodie founder podcast); the mini playbook flags both for routing.
-- Fable merge token log (subagent tokens per folder) is kept in the session scratchpad; about 6.1M for the first 20 folders, about 300k per folder on average.
-- A rate limit on 24 Sep cut 5 agents off mid-run. The SEO and operations folder playbooks and both multi 01 parts had finished writing and were kept; a check agent verified the multi 01 part 2 tail slice; the security merge was relaunched.
+- Fable merge tokens (subagent tokens reported per folder): about 7.8M for the 25 folders, about 310k per folder; the multi folder was the largest at 638k. SEO and operations were cut off by a rate limit before reporting usage and are estimated at 300k each.
+- A rate limit on 24 Sep cut 5 agents off mid-run. The SEO and operations folder playbooks and both multi 01 parts had finished writing and were kept; a QA agent checked both playbooks (all sections, rules, procedures and card ids valid; 12 truncated card ids in SEO were expanded from cards.json); a check agent verified and extended the multi 01 part 2 tail slice; the security merge was relaunched.
 - Two folder playbooks (10-MCR, 03-OFF) were briefly committed as partial drafts by a mid-write sweep and then overwritten by the finished file in a later commit. The committed versions are the finished ones.
+- The /99-multi playbook carries a 166-row routing table mapping its domain findings to the folder that owns them, for a later overlay pass.
 - Not done yet: agent overlays (`overlays/<agent>.md`), brand overlays (`brands/<brand>/overlays/<folder>.md`), spot-checks beyond 08-SPD.
