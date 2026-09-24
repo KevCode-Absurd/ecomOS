@@ -292,3 +292,85 @@ Format: rule, condition, sources by mini playbook number, cards. "Conflict" poin
 **R106. Read Demand Gen by audience and by network; make more creative for the winning placement and cut or exclude the weak one.** Condition: segmented audiences set up. Source 10 example: Shorts winning, Display losing. Sources: 10, 01 (audience insights feed Demand Gen). Cards: [ffb75a5b8076] [146aa74746f4] [a5827fbc8126] `[web check: whether Demand Gen allows turning off single placements]`
 
 **R107. Conversion mechanism order for cold YouTube traffic: decked-out sales page, advertorial (story preferred), quiz funnel, listicle, VSL only at scale. Capture email on the page (source 01 case: 14.7% pop-up rate) and run welcome and post-purchase flows; count that retention revenue in the first-order math.** Source: 01 only. Cards: [7d3bf600db06] [4b1cf3a51f8d] [322026f452d6] [e2980a3a4e74]
+
+### 3.K Bidding by stage
+
+**R108. Stage 1, no conversion history: manual CPC (with a cap, source 02 example $2 per keyword) or Maximize Clicks (with an optional max CPC) on Search and Shopping. Trim by hand until conversions build.** Condition: new account, or an account with no recent conversions (paused 2 years counts as new). Source 02 uses manual CPC 70% to 80% of the time; source 03 uses Maximize Clicks; source 01 uses manual bidding in phase 1; source 04 says manual or Maximize Clicks belong only in new accounts (and never broad match with Maximize Clicks); source 07 launches PMax on Maximize Conversion Value with no target from day 1 and never uses a manual stage. Conflict 7.7. Sources: 01, 02, 03, 04. Cards: [4aee86b1351f] [805871e8952b] [5d9dd44f8d9a] [a3bf86a930b0] [56cda9478c6f] [9b1a4ac01c87]
+
+**R109. Stage 2, conversions arriving: move to Maximize Conversion Value (Maximize Conversions or tCPA only when order values are fixed, single SKU or subscription, or when you know break-even CPA and want volume, not value).** Switch points by source: 10 to 15 conversions (source 03, Search), 15 to 20 (source 03, Shopping), about 30 a month (source 02), 1 a day for 30 days (source 01), 15 to 30 (source 02 header only). Ecommerce bids for value about 90% of the time (source 04): conversion bidding funds the cheapest product. Conflict 7.9. Sources: 01, 02, 03, 04, 06/09. Cards: [805871e8952b] [a3bf86a930b0] [56cda9478c6f] [4aee86b1351f] [ed1a69221ddc] [07bdd8638a6a] [283cece14dca] [4b56cb53eee4]
+
+**R110. Stage 3, enough volume: add a Target ROAS set at or slightly below the trailing 30-day actual, and hold it at least 2 to 3 weeks.** Switch points: 30 to 50 conversions a month per Shopping campaign (source 02); over 50 (source 02 mind map); 50 a month in 1 PMax campaign (source 02); 30 or more a month with a steady ROAS (source 03); about 50 a month, more in competitive auctions (source 06/09); about 3 months and only at a plateau for PMax (source 07). First target: at or 10% to 15% below actual (sources 02, 04, 06/09; source 04 example trailing 420% to 430%, set 400%). Never set the target far above actual (a 700% target on a 200% campaign stops spend). Conflict 7.9. Sources: 01, 02, 03, 04, 06/09, 07. Cards: [5da4b51eabe6] [5d9dd44f8d9a] [9edd4e9d7860] [56cda9478c6f] [29bf1d1ed526] [283cece14dca] [4b56cb53eee4] [d4494776c11a] [7f0f4a47add4]
+
+**R111. Target ROAS trades swings for stability; it does not raise average performance, and raising it narrows the audience toward warm users.** Condition: any tROAS campaign. Source 04 illustration: target raised 400% to 500% moved a campaign from about 4x to about 6x at $1,000 a day, and the earlier position reached more cold traffic. Source 05: tROAS shows "how hard the campaign will go on retargeting warm people". Sources: 04, 05, 01. Cards: [29bf1d1ed526] [4e3675b7a020] [141c23b0306c] [4175eb319be4]
+
+**R112. Step the target gently: source 06/09 says 15% to 20% per step, 2 to 3 weeks apart, watching impression share and conversion volume; source 02 says raise gently or hold it and scale budget; source 01 says wait 2 to 4 weeks after any bid strategy change. Do not halve a target CPA or double a budget overnight (source 04).** Cards: [283cece14dca] [5da4b51eabe6] [4175eb319be4] [7003ff9f69ce]
+
+**R113. Break the target ROAS death spiral by cutting the target aggressively, not timidly.** Pattern: ROAS dips (seasonality, a hero product out of stock, 100 conversions falling to 80), the campaign misses target, shrinks its audience, models from a smaller 30 to 90 day sample, and spend trails off. Timid cuts fail. Also check stock-outs and seasonality first. Source: 04 only. Cards: [3001e5a56d5d] [29bf1d1ed526]
+
+**R114. Do not stay on a restrictive strategy forever; rotate expansive (Maximize Conversion Value) and restrictive (tROAS) periods, or run a feeder: cold Standard Shopping at a very low tROAS (source example 50%) beside a high-tROAS PMax (example 600%), judged together on backend revenue and new customers.** Condition: PMax plateaued or suspected of warm-traffic over-crediting; margin and cash can fund a deliberately low-ROAS cold leg. Source 04 gives no rotation length, budget split or stop rule. Source: 04 only (10 uses the same mechanism as the safety net, R94). Cards: [07bdd8638a6a] [b390a3400b4f] [56795ebc9766] `[needs brand data: margin and cash to fund the cold leg]`
+
+**R115. Portfolio bid strategies: pool campaigns that share 1 goal to merge learning, and use them to add a Max CPC cap or bid floor (source 06/09 case: spikes to $25, cap $9). Do not pool different goals (clearance vs new arrivals), campaigns needing manual bids, or tiny campaigns.** Sources: 04, 06/09. Cards: [8d6cc6ef07b8] [b664dd686d10] [e5678cb19768] `[web check: which strategies support portfolio bid limits]`
+
+**R116. Seasonality adjustments only for 1 to 7 day conversion rate jumps from unusual causes (a flash promotion), not for holidays or anything over 7 days.** Source: 06/09 only. Cards: [44615a608690]
+
+**R117. Smart bidding exploration (Search only) lets a tROAS campaign test auctions outside its target in 10%, 20% or 30% bands; consider it instead of loosening the target.** Source: 04 only, no results given. Cards: [97caffb37450] `[web check: name and availability]`
+
+**R118. After 17 Aug 2026 (source 06/09 claim), budget-limited tROAS and tCPA campaigns track closer to the stated target, so re-audit loose legacy targets that the budget cap used to hide.** Source: 06/09 only. Cards: [283cece14dca] `[web check: 17 Aug 2026 Target ROAS change]`
+
+### 3.L Budgets
+
+**R119. Size daily budgets from AOV and CPA: a new Maximize Conversion Value campaign at about 3 to 4x AOV per day (source 02); PMax at $100 a day and at least 3x non-brand CPA (source 02) or $50 to $100 a day (source 01); YouTube at about 3x AOV (source 02); a $1,000 product at $200 per conversion on $50 a day gives 1 conversion every 4 days (source 03 illustration). Start only with a budget you can lose.** Sources: 01, 02, 03. Cards: [805871e8952b] [c178b83767e8] [8e3ee156ad91] [dc729c544305] [56cda9478c6f] [d28083dc2834] [96b95d8a8ec0] `[needs brand data: AOV, non-brand CPA]`
+
+**R120. Budget shares are rules of thumb by stage, not 1 plan.** Cold traffic 80% to 90% of budget and brand 3% to 8% (source 01). Non-brand Shopping 50% or more; video remarketing 10% to 15%; Demand Gen about 30% to 40% when new customers are the focus (source 03). Shopping 80% to 90% (source 04). PMax 20% to 40% at scale (source 04) vs PMax 50% to 70% with Shopping 30% to 50% and Demand Gen 10% to 20% (source 06) vs PMax 70% to 80% with Shopping 20% to 30% (source 09). Meta-heavy DR brands: about 80% Demand Gen, 10% to 15% mid-funnel (up to 20% to 30% in big categories), 1% to 5% brand (source 01). Conflict 7.1. Cards: [f6230028c4ce] [e248a09cecef] [56cda9478c6f] [0997a8f355eb] [2380ca9a554b] [0faae8bbc52a] [8ac98b834d71] [013bd9d69456] [6a480c2ffb47] [78000b7f5684]
+
+**R121. Raise budgets in steps of about 10% to 20% per week when ROAS holds above break-even; cut faster.** Source 01: 10% to 20% weekly; spending 100% at KPI, raise 10% to 15%; spending under 80% and underperforming, loosen the target instead. Source 04: about 20% steps, cutting from high budgets fast is fine. Source 02 allows $50 to $60 to $70 to $100 or doubling "at any time" (the loosest). Exception (source 01): a real demand spike (a podcast) with a converting mechanism justifies a hard raise ($1,000 to $20,000 a day in its case) while results hold. Sources: 01, 02, 04. Cards: [4175eb319be4] [7003ff9f69ce] [96b95d8a8ec0] [d40cdd66a2bc]
+
+**R122. "Limited by budget" is a hint, not proof: test extra spend in steps and watch backend revenue.** Condition: any campaign; source 04 sees the flag at $5k to $10k a day in a small market. Raise budget only when lost IS (budget) is high and the campaign hits KPI. Sources: 04, 02, 05. Cards: [a36358d5ff15] [ffbb287b9903] [2795573cf2d6]
+
+**R123. Ignore Google's budget forecasts and "spend more" recommendations.** Sources: 02, 01, 04. Cards: [96b95d8a8ec0] [b8508808a53a] [18f7a08a224c]
+
+### 3.M Negatives and exclusions
+
+**R124. Keep an account-level universal negative list (jobs, careers, interns, hiring, salary, free, cheap where they signal no intent) so every new campaign inherits it; put terms irrelevant to the whole business at account level, terms irrelevant to some products at list, campaign or ad group level.** Sources: 04, 02, 06/09. Cards: [12e5a4881580] [25c967c6e637] [423e6a50781c] [07a456f35774]
+
+**R125. Negative match types mirror keywords: broad negatives block any order of all words (not singular or plural variants), phrase negatives block the words in order with extras allowed, exact negatives block only the exact query.** Source: 02 only. Cards: [2cd86d3bc065]
+
+**R126. Search term review cadence: daily in new campaigns, new products and high budgets, or every 48 to 72 hours for new PMax (source 02); weekly in month 1 for new Search at normal budgets (source 04); at least a couple of times a week once stable (source 02); less after month 1 and avoid over-editing because each change resets learning a little (source 04). Sources: 01, 02, 04, 07 (Sunday review).** Cards: [a5827fbc8126] [423e6a50781c] [2bf868bfb28d] [12e5a4881580] [031ec7c8b2d2]
+
+**R127. In cold Search, remove terms with clicks and no conversions and promote converting broad terms to exact; no source gives a minimum click count.** Sources: 01, 02. Cards: [68c39167796f] [deb514cc9507] [423e6a50781c]
+
+**R128. PMax exclusions: brand list plus brand negatives (R54); URL exclusions for blog, about, size charts, shipping, contact, high-bounce and out-of-stock pages when final URL expansion is on; SKU exclusions via listing groups; account-level placement exclusions; age exclusions where the product is age-bound; customer list exclusions on cold campaigns.** Sources: 01, 04, 06/09. Cards: [64c009e7bc50] [69caeee85e5f] [5ebe76f05300] [5858ab16c0d1] [2fcfa24a9f1f] [a2427f18e5fe] `[verify UI]`
+
+### 3.N Scaling gates
+
+**R129. Pass 5 gates before adding budget or campaign types: feed health (no disapprovals, warnings worked down); tracking validated end to end (enhanced conversions on, values equal real order revenue, reconciled with backend); brand and non-brand in separate campaigns, budgets and reports; creative supply (15 or more images and 5 or more videos per full PMax asset group refreshed every 4 to 6 weeks, continuous Demand Gen refresh); bid maturity (about 50 conversions a month before tROAS). A failed gate means invest in inputs, not budget.** Source: 06/09 for the gate list; the same conditions appear across 01, 02 and 04. Gate 2's "server-side tags firing" is stricter than the same source's $50k a month server-side heuristic; treat server-side as required only above that spend. Cards: [abc2dfeeea38] [daa2070d28bf] [634ed94f1328] [f6230028c4ce] [2792071d2d2e]
+
+**R130. Scale from strength: only a campaign that hits target ROAS at the current budget gets more budget; expect ROAS to fall as spend rises and judge on total profit and customer count (4x at $100k a month beats 6x at $10k).** Sources: 08, 01, 04. Cards: [af051bd7984a] [4175eb319be4] [8ac98b834d71]
+
+**R131. "Cut fast, scale slow" in steady state; scale a clear winner or a real demand spike fast.** Source 01 says both; the condition decides. Cards: [4175eb319be4] [9bfa186f1531] [d40cdd66a2bc]
+
+**R132. Scale order for YouTube: more (budget until the ceiling, more creatives), better (hook tests, 16:9 versions, new offers and CTAs, new mechanisms), new (in-feed long-form with a thumbnail).** Source: 01 only. Cards: [9bfa186f1531] [b934c312198e]
+
+**R133. When a product scales, plan stock and supply; stock churn on a high-spend product resets its learning.** Sources: 08, 05. Cards: [f08cac856543] [4e3675b7a020]
+
+**R134. Catalog breadth: under about 30 SKUs limits what Shopping and PMax can find at scale (source 06/09); a 1-hero-SKU account still works with 1 PMax plus brand campaigns (source 01). Do not add thin listings just to add breadth.** Cards: [9a7b30ebd79d] [6a480c2ffb47] [d5f436322917]
+
+### 3.O Diagnosis and operating cadence
+
+**R135. Investigate top-down: business KPIs, channel, campaign type, campaign, metric, sub-metric, trigger, root cause. Never start at the metric a client names.** Source: 05, with 01 on the health read order (impression share, CPC, CTR, conversion rate, conversions, session duration). Cards: [7c50191f8854] [7fe2bb1f5bff] [ae67680618f3] [b27fb4f22fa1]
+
+**R136. Before any change, apply 3 rules: read change history (yours, teammates, client, site); extend the window (90 to 180 days weekly for the account scan, never a 1-day read); read recent days on conversion time.** Source: 05, with 02 on latency. Cards: [62403f6f3b48] [31ee29611482] [d2bb52998ad7]
+
+**R137. Google is rarely the cause of a business dip when it is 20% to 30% of spend; diagnose the larger channel first, ask what changed outside Google (sale ended, Meta creative refresh, offer change, site change), split revenue into conversion rate x AOV x sessions, and rule out seasonality against a forecast.** Source: 05 only. Cards: [7fe2bb1f5bff] [e2a87175fcd5]
+
+**R138. Only the top 5 campaigns by spend can move the account; find the inflection date on the overview graph, then the 1 or 2 campaigns and ad or asset groups that changed after it.** Source: 05. Cards: [26676d575992] [31ee29611482]
+
+**R139. Failure modes by campaign type. PMax: warm and cold drift (brand terms in search terms, audience skew), feed disapprovals or stock-outs on top products, tROAS pushed too high, product bloat. Shopping: tROAS, Merchant Center (stock, changed titles, errors), too many products, search partners. Search: search term reallocation under broad match and smart bidding, a new competitor in auction insights, tROAS, Display left on.** Source: 05. Cards: [4e3675b7a020] [141c23b0306c]
+
+**R140. Split every KPI with 2 formulas: CPA = CPC / conversion rate; clicks = impressions x CTR. CPC up: quality score components, new competitor, premium auctions. Conversion rate down: tracking, landing page (the number 1 cause), audience shift, learning reset, offer change. Impressions down: lost IS (budget) if the budget is hit, lost IS (rank) if clicks and impressions both fall on steady spend. CTR down: stale seasonal copy, audience shift, competitor price cut on Shopping.** Source: 05, with 02 on impression share reading. Cards: [2069300bf455] [6ff74a04932d] [86ca17cab286] [2795573cf2d6] [caf9cb9b298e] [ffbb287b9903]
+
+**R141. Default to a fix, not a rebuild; isolate 1 fix when the dip is mild, allow the kitchen sink only when dire; do not touch the account until you can finish the root-cause sentence ("this campaign is underperforming because this metric dropped, driven by this sub-metric, caused by this trigger, which was the root cause").** Source: 05. Cards: [5df8489778d1] [817f1a421116] [7c50191f8854]
+
+**R142. Be in the account daily for search terms, auction insights and spend anomalies; do product, asset and landing page work weekly; refresh search themes, customer lists and bid strategy review monthly; check site vs Merchant Center policies monthly.** Sources: 01, 02, 07 (Sunday: tROAS, budget, remove keywords, remove products; judge week over week). Cards: [a5827fbc8126] [5ebe76f05300] [64c009e7bc50] [67af52d7623d] [b9ecdf07948a] [d40cdd66a2bc] [031ec7c8b2d2] [36a8c46cb661]
+
+**R143. Nothing is set and forget: test search ads and feeds weekly against a control, keep several ads per ad group, replace low-rated PMax assets, refresh remarketing creative per objection.** Sources: 01, 02, 04. Cards: [e5912712faf6] [533ef4069e40] [2bf868bfb28d] [74a36fd11057]
