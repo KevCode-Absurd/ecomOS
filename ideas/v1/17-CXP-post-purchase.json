@@ -9336,7 +9336,8 @@
     "0fe858c0c51f",
     "ff986b275489",
     "0372f28739d1",
-    "36baf5a5a8ad"
+    "36baf5a5a8ad",
+    "bdadd07890fc"
    ],
    "rules": [
     "P12",
@@ -9966,5 +9967,508 @@
   "does_not_apply_when": [
    "Durable, one-off products with no repeat usage cycle to time against"
   ]
+ },
+ {
+  "id": "CXP-151",
+  "title": "Score your store's CX maturity as random, intentional or differentiated",
+  "domain": "17-CXP",
+  "bottleneck": [
+   "trust_brand",
+   "team_capacity"
+  ],
+  "lever": "CX maturity diagnostic",
+  "hypothesis": "If leadership scores the store against 3 CX maturity stages using concrete inconsistency signals, then the team knows whether variable service quality is a symptom of an unmanaged system before funding any new CX project.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "No one has scored the store's CX maturity stage, or service quality, packaging and support answers visibly vary by who handles the interaction.",
+   "metrics": [
+    "csat",
+    "review_rating"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:cx_maturity_stage",
+   "direction": "up",
+   "size": "unknown, a diagnostic clarity gain",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "founder"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "A self-assessment exercise, not an operational change on its own."
+  },
+  "prerequisites": [
+   "Reply time, packaging consistency, and support-answer data across recent orders"
+  ],
+  "steps": [
+   "Check for inconsistent reply times, variable packaging quality, and support answers that depend on who handles the case.",
+   "Score the store as random (variable, unplanned), intentional (shared vision and cross-functional commitment), or differentiated (everyone acts in the customer's interest by default).",
+   "Set milestones over multiple years, not a single quarter, since moving stages takes years.",
+   "Re-score yearly and track which signs of a lower stage have gone away."
+  ],
+  "test": {
+   "method": "Re-run the same maturity scoring after 12 months and compare the signs found.",
+   "measure": "other:cx_maturity_stage",
+   "read_point": "12 months after the first scoring"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "02"
+   ],
+   "cards": [
+    "2d05c23909e5"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "CXP-152",
+  "title": "Give the customer a standing seat in leadership and merchandising decisions",
+  "domain": "17-CXP",
+  "bottleneck": [
+   "trust_brand",
+   "team_capacity"
+  ],
+  "lever": "customer-in-the-room practice",
+  "hypothesis": "If every leadership and merchandising decision is checked against a standing customer-impact agenda item or a literal empty seat for the customer, then decisions get tested against the customer before they ship, not after a complaint.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "Customer impact is not a standing item on the leadership or merchandising meeting agenda, and no decision is explicitly tested against whether the customer would like it.",
+   "metrics": [
+    "csat",
+    "review_rating"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:decision_quality",
+   "direction": "up",
+   "size": "unknown, a decision-discipline gain",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "founder"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "A meeting practice change, not a system change."
+  },
+  "prerequisites": [
+   "A standing leadership or merchandising meeting to attach the practice to"
+  ],
+  "steps": [
+   "Add customer impact as a standing agenda item, checked before revenue impact.",
+   "Keep an empty chair, real or symbolic, in decision meetings to represent the customer.",
+   "Test every major decision against 1 question: would our customer like this.",
+   "Track how often a decision changes because of the check."
+  ],
+  "test": {
+   "method": "Count decisions changed by the customer check over 90 days.",
+   "measure": "other:decision_quality",
+   "read_point": "90 days after adoption"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "02"
+   ],
+   "cards": [
+    "6edd7693ad4a"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "CXP-153",
+  "title": "Audit whether top search queries land the right item on page 1",
+  "domain": "17-CXP",
+  "bottleneck": [
+   "conversion"
+  ],
+  "lever": "search landing audit",
+  "hypothesis": "If the store's top and most ambiguous search queries are tested for whether they return the target item on page 1, then a buried result gets treated as a lost sale instead of a minor UX flaw, especially for considered or high-value purchases with many touchpoints.",
+  "applies_when": [
+   "catalogue"
+  ],
+  "signal": {
+   "check": "No one has tested whether the store's top or ambiguous search queries surface the target item on page 1, especially for high-value or multi-touchpoint purchases.",
+   "metrics": [
+    "cvr_pdp_to_cart",
+    "organic_clicks"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:search_landing_rate",
+   "direction": "up",
+   "size": "unknown, directional",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "dev"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "A testing exercise; fixing ranking or synonyms is a separate follow-up effort."
+  },
+  "prerequisites": [
+   "List of top and ambiguous search queries",
+   "Access to run test searches on the live site"
+  ],
+  "steps": [
+   "List the store's most-searched and most ambiguous queries.",
+   "Run each query and record whether the target item appears on page 1.",
+   "For a buried result, treat it as a lost-sale signal and expect a rise in phone or chat contacts asking for that item.",
+   "Test short or ambiguous terms in different browsing contexts to confirm results shift with context.",
+   "Fix ranking or synonym handling for any buried head query first."
+  ],
+  "test": {
+   "method": "Re-run the same query list after fixes and compare the page-1 landing rate.",
+   "measure": "other:search_landing_rate",
+   "read_point": "30 days after fixes ship"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "03"
+   ],
+   "cards": [
+    "6d5eea41344a"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "CXP-154",
+  "title": "Run a 3-part CX review across strategy, measurement and people",
+  "domain": "17-CXP",
+  "bottleneck": [
+   "trust_brand",
+   "team_capacity"
+  ],
+  "lever": "3-part CX framework review",
+  "hypothesis": "If strategy, measurement and people are reviewed together with a written experience strategy sitting above business strategy, then CX stops being 3 disconnected initiatives that silo thinking keeps apart.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "No written experience strategy exists above business strategy, or strategy, measurement and people are run as 3 separate, disconnected initiatives.",
+   "metrics": [
+    "csat",
+    "review_rating"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:cx_alignment",
+   "direction": "up",
+   "size": "unknown, an alignment gain",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "M",
+   "owner": "founder"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "A planning and documentation exercise."
+  },
+  "prerequisites": [
+   "Time from founder or leadership to run the review"
+  ],
+  "steps": [
+   "Write the experience strategy: the feeling you want customers to have, the principles you live by, and what each principle means in practice.",
+   "Answer 3 completeness questions: do you know who your customers are emotionally, do you know the experience you want them to have, does everyone know their part in delivering it.",
+   "Review measurement: is the journey measured from the customer's side, not only internally, and are improvement priorities clear.",
+   "Review people: do staff know the strategy, act as its ambassadors, and do processes let them deliver it.",
+   "Treat the 3 parts as linked and flag any part that is owned in a silo."
+  ],
+  "test": {
+   "method": "Re-run the 3 completeness questions after 6 months and check whether more of them are answered yes.",
+   "measure": "other:cx_alignment",
+   "read_point": "6 months after the first review"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "02"
+   ],
+   "cards": [
+    "fa4cf546d38a",
+    "0eea90f3c62d"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "CXP-155",
+  "title": "Judge every new customer-facing tool against a written experience standard",
+  "domain": "17-CXP",
+  "bottleneck": [
+   "trust_brand",
+   "team_capacity"
+  ],
+  "lever": "experience-standard adoption gate",
+  "hypothesis": "If a new customer-facing tool or tactic must be checked against a written, intended experience standard before adoption, then the store stops picking up tools just because a competitor has them and only adds what serves the intended experience.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "New customer-facing tools or tactics get adopted because a competitor or category leader uses them, with no check against a written experience standard.",
+   "metrics": [
+    "csat"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:tool_fit",
+   "direction": "up",
+   "size": "unknown, a decision-quality gain",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "founder"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "A decision-gate rule; does not touch existing tools."
+  },
+  "prerequisites": [
+   "A written statement of the intended customer experience"
+  ],
+  "steps": [
+   "Write down the intended customer experience in 1 paragraph, if not already done.",
+   "Before adopting a new customer-facing tool or tactic, check it against that paragraph.",
+   "Reject or delay a tool that does not clearly serve the written experience, even if a category leader uses it.",
+   "Log every adoption decision and the reason."
+  ],
+  "test": {
+   "method": "Review the adoption log after 6 months and check how many tools were rejected or delayed by the gate.",
+   "measure": "other:tool_fit",
+   "read_point": "6 months after the gate is adopted"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "02"
+   ],
+   "cards": [
+    "b4c441cd3922"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "CXP-156",
+  "title": "Give CX a dedicated cross-functional owner reporting to leadership",
+  "domain": "17-CXP",
+  "bottleneck": [
+   "team_capacity",
+   "trust_brand"
+  ],
+  "lever": "CX ownership structure",
+  "hypothesis": "If a named person owns CX across functions and reports to leadership, instead of CX sitting inside marketing alone or being called everyone's job, then cross-functional CX fixes actually ship instead of stalling in a silo.",
+  "applies_when": [
+   "scaling_store"
+  ],
+  "does_not_apply_when": [
+   "A solo-founder store with no separate functions to coordinate"
+  ],
+  "signal": {
+   "check": "CX ownership is not named, is treated as everyone's job with no accountable owner, or sits only inside marketing.",
+   "metrics": [
+    "ticket_backlog",
+    "csat"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:cx_alignment",
+   "direction": "up",
+   "size": "unknown, an execution-speed gain",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "M",
+   "owner": "founder"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "An org and reporting-line decision."
+  },
+  "prerequisites": [
+   "Enough team size to name a cross-functional CX owner"
+  ],
+  "steps": [
+   "Name 1 accountable owner for CX across functions, not just marketing.",
+   "Have that owner report into leadership instead of burying CX inside 1 department.",
+   "Give the owner authority to pull fixes from support, fulfilment, marketing and product.",
+   "Track whether cross-functional CX fixes ship faster after the change."
+  ],
+  "test": {
+   "method": "Compare the time to ship a cross-functional CX fix before and after naming the owner.",
+   "measure": "other:cx_alignment",
+   "read_point": "1 quarter after naming the owner"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "02"
+   ],
+   "cards": [
+    "8c2c0d954819"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "CXP-157",
+  "title": "Score repeat purchase rate against fixed bands before running a retention test",
+  "domain": "17-CXP",
+  "bottleneck": [
+   "repeat_retention",
+   "measurement_data"
+  ],
+  "lever": "repeat rate benchmarking",
+  "hypothesis": "If repeat purchase rate is scored against fixed bands before any retention test, then the team knows whether it is fixing a real problem or optimizing a number that is already healthy.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "Repeat purchase rate is reported with no health band attached, so the team cannot tell whether the current number is a problem or already good.",
+   "metrics": [
+    "repeat_rate_365d"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:reporting_accuracy",
+   "direction": "up",
+   "size": "cited bands: under 20 percent problem, 20 to 30 percent average, 30 to 40 percent good, over 40 percent excellent, healthy range 25 to 40 percent",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "finance"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "A benchmarking step added to existing reporting."
+  },
+  "prerequisites": [
+   "Repeat purchase rate already computed for a fixed cohort or period"
+  ],
+  "steps": [
+   "Compute repeat purchase rate for a clear cohort and window.",
+   "Score it against the bands: under 20 percent problem, 20 to 30 percent average, 30 to 40 percent good, over 40 percent excellent.",
+   "Flag the band on every report next to the raw number.",
+   "Prioritize retention tests only when the band shows a real problem, not a healthy number."
+  ],
+  "test": {
+   "method": "Check whether the band changes over 2 consecutive reporting cycles after a retention test ships.",
+   "measure": "other:reporting_accuracy",
+   "read_point": "Each reporting cycle"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "04"
+   ],
+   "cards": [
+    "7f71ff76f9b1"
+   ],
+   "rules": []
+  },
+  "confidence": "medium",
+  "general_practice": false
+ },
+ {
+  "id": "CXP-158",
+  "title": "Bundle a non-competing subscription perk into a loyalty tier gated by order frequency",
+  "domain": "17-CXP",
+  "bottleneck": [
+   "repeat_retention",
+   "aov"
+  ],
+  "lever": "subscription perk bundling",
+  "hypothesis": "If a loyalty tier unlocks a bundled perk from a non-competing subscription service after a set number of monthly orders, then customers get an extra, non-discount reason to hit that order frequency.",
+  "applies_when": [
+   "any"
+  ],
+  "does_not_apply_when": [
+   "One-off or durable-goods purchases with no realistic path to repeat monthly orders"
+  ],
+  "signal": {
+   "check": "The loyalty program only offers points or discounts, with no bundled non-competing subscription perk tied to order frequency.",
+   "metrics": [
+    "repeat_rate_90d",
+    "units_per_order"
+   ]
+  },
+  "expected_effect": {
+   "metric": "repeat_rate_90d",
+   "direction": "up",
+   "size": "unknown, no lift quantified in the source",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "L",
+   "owner": "founder"
+  },
+  "cost": "medium",
+  "risk": {
+   "level": "medium",
+   "reversible": true,
+   "note": "Requires a partner deal with a subscription provider; treat the perk cost as a negotiated cost, not a giveaway."
+  },
+  "prerequisites": [
+   "A partner subscription service willing to supply access at a bulk or wholesale rate",
+   "Order tracking to gate eligibility by monthly order count"
+  ],
+  "steps": [
+   "Pick a non-competing subscription service customers already value, such as streaming or delivery.",
+   "Negotiate a bulk or wholesale rate for short-term access as a loyalty perk.",
+   "Set an eligibility rule: a number of orders within a month unlocks the perk.",
+   "Communicate the perk as part of the loyalty tier, not a one-off promo.",
+   "Track the orders-per-month distribution before and after launch."
+  ],
+  "test": {
+   "method": "Compare the share of customers hitting the order threshold before and after the perk launches.",
+   "measure": "repeat_rate_90d",
+   "read_point": "90 days after launch"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "04"
+   ],
+   "cards": [],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": false
  }
 ]
