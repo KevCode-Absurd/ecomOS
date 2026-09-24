@@ -24,6 +24,8 @@ version: 2.0-draft  |  date: 24 Sep 2026  |  sources: 7 mini playbooks (7 indepe
 
 **Known source errors to carry forward.** Source 04's transcript says a $11,000 container split over 1,000 units costs "$1 per unit". The correct figure is $11 per unit; card [4cf8302e51b7] already corrects it, and this playbook uses $11. Source 03's team culture scale states both "below 60 of 100 is low team spirit" and "below 25 is low team spirit" without reconciling them; treat that instrument as a discussion prompt, not a measurement [50dadc5d2305]. Source 01 studied 144 leaders and rated 48 leadership practices; "48" is practices, never leaders [01bfefe3ebdb].
 
+**Ecommerce first.** This playbook is for stores, not general management. Section 3.0 is the ranking: load it first, since it says which levers matter most before the detail groups below. Store-type conditions (hero SKU vs catalogue, low vs high AOV, subscription vs one-off, marketplace-heavy, luxury or considered purchase, mobile-first India vs US) decide which rules in the sections below apply to a given brand; check the condition stated in each rule before applying it.
+
 ## 1. Scope and outcomes
 
 **Covers.** Org design by revenue stage (the 5 silos, founder-covers-until-volume-forces-a-hire, hiring order, span of control at the top). Hiring and vetting (the hiring bar, who interviews, the few interview questions the sources give, comp levers, onboarding through the team). Leadership practice (the 5 Multiplier disciplines and their Diminisher opposites, accidental diminisher checks, 30-day experiments, leadership style by information and time). Team health (the 5 dysfunctions chain, the 15-item assessment, the trust exercises, one overarching goal and a 5 to 7 line scoreboard, meeting cadence and ground rules, cascading messaging, the commit-check-close loop, stages of team development). Role and responsibility tools (Belbin roles, Role Analysis Technique, responsibility charting, role negotiation, force field analysis, process consultation). Operating process ownership (who owns the tech pack gate, the critical path, the forecast and reorder review, the PO tracker, the 3PL RFP, SLA and invoice audit, the CS tier split and capacity plan; the KPIs and cadences for each). Bottleneck diagnosis (traffic vs conversion, product-founder vs media-founder archetypes, utilisation before headcount).
@@ -64,6 +66,23 @@ version: 2.0-draft  |  date: 24 Sep 2026  |  sources: 7 mini playbooks (7 indepe
 
 Each rule: the rule, when it applies, the mini playbooks that support it (by number), conflicts (by section 7 code), card ids. When only 1 source supports a rule, it says so. Where sources disagree, the strictest condition is kept here and the disagreement is written out in section 7. `[pass 1 adaptation]` marks a mapping the pass 1 author added that the source never said.
 
+### 3.0 Ecommerce priority order
+
+1. Name 1 owner and cadence on every operating artefact and silo (tech pack, critical path, PO tracker, forecast, 3PL SLA, CS routing, scoreboard) first. An unowned process stalls a store faster than a missing person. R1, R86, C8.
+2. Fix demand planning and inventory ownership before any peak or demand surge. Stockout and over-order are both existential for cash. R7, R90, R91.
+3. Check utilisation and process ownership before adding headcount; do not hire to cover a process nobody owns. R4, P21, C8.
+4. Keep the PO tracker, critical path and 3PL SLA and invoice audit running as standing processes; these gate revenue timing and cash more than any leadership practice. R89, R92, R94 to R97.
+5. Diagnose the bottleneck (traffic vs conversion, segmented by source) before funding a hire or CRO project. R102, R103, P31.
+6. Hire against the founder's proven weak side (sourcing and product vs media buying), not a generic "A player" title. R5, R6, R104.
+7. Stage the org chart against the store's own revenue and order-volume numbers. R2, R3, P1.
+8. Staff customer service from the sales forecast curve, not current ticket volume, and track cost per ticket. R98, P30.
+9. Set 1 scoreboard on the store's own north-star metric (repeat rate, contribution margin, blended CAC), not a generic category list. `[general practice]`: the fable's own example is generic; a store version exists in the pass 1 mini playbook for source 02 but was dropped from this merge. R57, P9.
+10. Run leadership and team-health practice (Multipliers, Five Dysfunctions) once the artefacts above are owned. They raise output per person but do not by themselves stop a stockout or a missed peak. `[general practice]`, no source ranks this order. R25 to R73.
+11. Use compensation levers (equity, performance pay) only for scarce acquisition or ops roles once margin is checked, never as a first move. R21, P31 step 6.
+12. Apply role and responsibility tools (Belbin, responsibility charting, force field analysis) only when 1 specific role or decision is stuck. They are generic OD tools, not a default first step. `[general practice]`. R74 to R80.
+
+Load this block first; the groups below are the detail.
+
 ### 3.1 Org design by revenue stage
 
 **R1. Name the 5 silos before the first hire and give each 1 owner.** The 5: administrator (buying contracts, partnerships, reporting, strategy, brand image), customer service, order fulfilment, digital marketing, web development and design. A silo with no named owner (the founder counts) is a launch blocker. Applies to any ecommerce launch. Source 06 only, presenter's opinion with no data. [4c580913957e] [98fae764cd32]
@@ -72,7 +91,7 @@ Each rule: the rule, when it applies, the mini playbooks that support it (by num
 
 **R3. Add a person only when volume forces it, and name the trigger in the brand's own numbers before the hire.** 06 gives no number ("once you're settled"). 04 gives 2 revenue triggers: dedicated headcount to keep the shared PO and freight tracker reliable at about $5M to $10M revenue (past that 1 person cannot keep it current), and an ERP at about $30M to $50M. Strictest condition kept: write the trigger (orders per week, tickets per week, or revenue) into the hiring plan, and set it at or below the point where the current owner can no longer keep the process artefact current. Sources 06, 04. [4c580913957e] [5eb084517f52] [b835681136c8] `[needs brand data: order volume, ticket volume, revenue by month]`
 
-**R4. Check utilisation before adding headcount.** Source 01: answer a growth target with the logic of multiplication (get more from the people you have) before the logic of addition (more output needs more people). The logic of addition produces people who are "overworked and underutilized". Run the capability gap check (P21): if key people estimate their manager gets 50% or less of their capability, fix leadership before hiring. Applies whenever a growth target arrives with no budget, or a hire request is justified by "we are stretched". Source 01 only. Conflict C8 (04 says the missing ops role cost Oodie 30 to 40% of growth). [9417ffc8e0f0] [249b9719a074] [8abb782bbe28]
+**R4. Check whether the ops manager, media buyer or CS lead is the underused one before hiring a second person into that seat.** Source 01: answer a growth target with the logic of multiplication (get more from the people you have) before the logic of addition (more output needs more people). The logic of addition produces people who are "overworked and underutilized". Run the capability gap check (P21): if key people estimate their manager gets 50% or less of their capability, fix leadership before hiring. Applies whenever a growth target arrives with no budget, or a hire request is justified by "we are stretched". Source 01 only. Conflict C8 (04 says the missing ops role cost Oodie 30 to 40% of growth). [9417ffc8e0f0] [249b9719a074] [8abb782bbe28]
 
 **R5. Define the hire around the specific missing function, never as "an A player for management".** Source 07 [12805cde65c1]. Source 05's third failure mode (a goals talk that never becomes "who does what") supports it [12ad1d771f2c]. 2 sources.
 
@@ -82,11 +101,11 @@ Each rule: the rule, when it applies, the mini playbooks that support it (by num
 
 **R8. When a COO exists, the COO owns Product, Supply Chain, Fulfilment and Customer Service.** Source 04 names CEO, CFO, CMO, COO and gives the COO's 4 areas. No timing rule is given for when to create the role. Source 04 only. [0ff782611bef]
 
-**R9. As the company grows, the team at the top gets smaller.** Source 02: the trigger is staff meetings that no longer allow fluid, substantive discussion because too many people report to the top. The fable's numbers: past 250 employees, the CEO's 8 direct reports were regrouped to 5 under a COO and CFO. Judge the redesign by whether decisions and handoffs get faster, not by the chart looking cleaner. Numbers are illustration only. Source 02 only. [0fde892e7e47]
+**R9. For most ecomOS-scale brands this triggers well under 250 staff; the signal is a weekly trading meeting that stops surfacing real numbers, not headcount.** Source 02: the trigger is staff meetings that no longer allow fluid, substantive discussion because too many people report to the top. The fable's numbers: past 250 employees, the CEO's 8 direct reports were regrouped to 5 under a COO and CFO. Judge the redesign by whether decisions and handoffs get faster, not by the chart looking cleaner. Numbers are illustration only. Source 02 only. [0fde892e7e47]
 
-**R10. Give specialised, highly creative, or time-critical work to 1 person. Use a team only when the problem needs several perspectives or several kinds of expertise.** Source 05 [9f7764e0e51b]. Source 03 draws the same line between a group (common boss, separable work) and a team (shared goal, interdependence, collective accountability) [6fa65887a2ae] [41fe0f74c164]. 2 sources.
+**R10. Give a launch brief or creative concept to 1 person; use a team only for a multi-SKU seasonal drop needing merchandising, creative and ops together.** Source 05 [9f7764e0e51b]. Source 03 draws the same line between a group (common boss, separable work) and a team (shared goal, interdependence, collective accountability) [6fa65887a2ae] [41fe0f74c164]. 2 sources.
 
-**R11. Set team size as a design choice.** Source 03: a problem-solving team is 5 to 12 people from the same department; oversized teams suffer poor task division and friction, too-lean teams lack coverage [41fe0f74c164] [f9b3d93a12d9]. Source 02's model assumes roughly 5 to 9 direct reports around 1 leader [0fde892e7e47]. 2 sources, both conventions, no data.
+**R11. For a small brand, 5 to 12 people is the whole leadership team (merchandising, growth, retention, ops, finance), not 1 department.** Source 03: a problem-solving team is 5 to 12 people from the same department; oversized teams suffer poor task division and friction, too-lean teams lack coverage [41fe0f74c164] [f9b3d93a12d9]. Source 02's model assumes roughly 5 to 9 direct reports around 1 leader [0fde892e7e47]. 2 sources, both conventions, no data.
 
 **R12. Do not build the operation around 1 hero.** Source 05 calls the "great person theory" (over-relying on 1 dominant or visionary person) "almost always a big mistake" [12ad1d771f2c]. Source 01 names the leader-side version: Empire Builder (hoards talent), Know-It-All (caps the ceiling at what the leader knows) [d7ddc08248a1] [ec007ef36f5e] [9aef12c19ce2]. Source 01 also gives the antidotes: add backup without reducing ownership ("two in a box") [f78fe4052829], build leaders so you can step away [37aafeee291c], hand over leadership before it becomes a dependency [7216e54fa5f1]. 2 sources. Conflict C2 (few elite generalists vs redundancy).
 
@@ -94,69 +113,43 @@ Each rule: the rule, when it applies, the mini playbooks that support it (by num
 
 **R14. Agency vs in-house, contractors and pods: no source gives a rule.** What the sources do say: buy discrete tasks from freelancers below about $1M (04) [87a5258c4926]; for a scarce skill, either learn it yourself or bring in a "star" and pay with cash plus performance pay or equity when margin is thin (07) [826839431464]; look for talent beyond the org chart, including people you do not own (01) [dbbe8a2e0b3d] [d70f32fe72f8]. "Pods with P&Ls" appear in no source. The founder-plus-contractors and agency-pod mappings in mini playbooks 01 and 02 are `[pass 1 adaptation]`. Treat any pod or agency structure as `[needs brand data: current vendor list, scope, cost and who reviews their output]` and decide with the human.
 
+**R114. Set a cadence, async tooling and time-zone overlap for a founder-plus-contractors roster or an agency pod, the same way any team needs one (R63).** A full adaptation for this already exists in the pass 1 mini playbook for source 02 and was not carried into R14 above; do not treat contractor and pod structure as unsourced when it is only unmerged. Source 02 mini playbook, `sources/02-the-five-dysfunctions-of-a-team.md`. [ee63844c33b6] `[pass 1 adaptation]`
+
+**R115. Give marketplace channels (Amazon, Walmart, Meta Shop) their own named owner, separate from the 5 DTC silos in R1.** A marketplace listing, ad account and fulfilment method differ enough from DTC that folding them into an existing silo hides who owns them. `[general practice]` No library source; verify against brand data before use.
+
+**R116. Name a subscription retention owner (win-back, dunning, churn) as its own silo alongside R1's 5, when the store runs a subscription programme.** A subscription book decays without 1 named owner tracking churn and failed payments; folding it into CS or marketing hides the metric. `[general practice]` No library source; verify against brand data before use.
+
 ### 3.2 Hiring and vetting
 
-**R15. State the hiring bar in team-behaviour terms as well as skill terms.** Source 02: the candidate must be able to show vulnerability-based trust, engage in conflict about ideas, commit to group decisions, hold peers accountable, and put team results over ego [2ca0bcfdd550]. Source 06 adds drive toward a defined next level, and for a marketing hire, understanding of the company's objectives and ethics, not only channel skill [94576193b1cf] [a22920b70388]. 2 sources.
+**R15. Score a store hire on whether they will flag a bad creative brief or a weak launch plan out loud, not only on channel or platform skill.** Source 02: the candidate must be able to show vulnerability-based trust, engage in conflict about ideas, commit to group decisions, hold peers accountable, and put team results over ego [2ca0bcfdd550]. Source 06 adds drive toward a defined next level, and for a marketing hire, understanding of the company's objectives and ethics, not only channel skill [94576193b1cf] [a22920b70388]. 2 sources.
 
 **R16. 1 owner runs the search; the whole team meets the finalist; screen fast, then go deep.** Source 02: the whole team interviews, 1 person owns the process [2ca0bcfdd550]. Source 01's Hexal case: 3-minute first interviews for 8 candidates, then 3 hours with the finalist [de18b6e39887] [f7812fc26044]. Strictest condition kept: short first screens are allowed, but no offer without the deep finalist round and the team's input. Conflict C7. 2 sources, both single cases.
 
 **R17. Internal promotion vs external hire: debate it openly, invite last input, then the leader decides and states the criterion.** Source 02's criterion in the fable: can the candidate grow the function, and is any internal candidate close to ready. This is 1 situational choice; the source does not claim external beats internal. Source 02 only. [2ca0bcfdd550]
 
-**R18. Use only the interview questions the sources give; no source gives a script, a trial task or a scoring rubric.** The questions: "What is the next challenge for you?" and "What is getting in the way of your being successful?" (01, the Romney Talent Magnet questions) [d70f32fe72f8]; the native genius probe, "what do you do better than anything else you do, without effort, without being asked, without needing to be paid", asked 3 ways and checked for convergence (01) [c9002d8e9d33]; "how have you broken through a previous goal" as a proxy for drive (06, no rubric) [94576193b1cf]; "which core function do you own", watching for hedging (07, aimed at founders, usable on candidates only as `[pass 1 adaptation]`) [12805cde65c1]. Trial tasks and an "SOP as promotion gate" are not in any source; leave both as `[not sourced: human designs]`.
+**R18. Ask "which core function do you own" of an ops, media buying or merchandising candidate specifically; the answer maps to the silo they would fill.** The questions: "What is the next challenge for you?" and "What is getting in the way of your being successful?" (01, the Romney Talent Magnet questions) [d70f32fe72f8]; the native genius probe, "what do you do better than anything else you do, without effort, without being asked, without needing to be paid", asked 3 ways and checked for convergence (01) [c9002d8e9d33]; "how have you broken through a previous goal" as a proxy for drive (06, no rubric) [94576193b1cf]; "which core function do you own", watching for hedging (07, aimed at founders, usable on candidates only as `[pass 1 adaptation]`) [12805cde65c1]. Trial tasks and an "SOP as promotion gate" are not in any source; leave both as `[not sourced: human designs]`.
 
-**R19. Write the job ad honest and demanding.** Source 01's Shackleton ad ("Small wages, bitter cold... safe return doubtful") drew hundreds of well-suited applicants. 1 anecdote. Source 01 only. [d7ddc08248a1]
+**R19. Write the job ad honest and demanding.** Source 01: an honest, demanding ad draws well-suited applicants even when the work sounds hard. 1 anecdote. Source 01 only. [d7ddc08248a1] Shackleton ad text moved to Appendix A.
 
 **R20. Look for talent past the org chart: contractors, adjacent roles, the support rep with an unusual strength.** Source 01: a $9 per hour part-time CS rep with a "listening spike" was moved to coaching in 3 weeks and launched the company's highest-margin product a year later (1 example, "more than a tenfold increase in value", not typical) [56fb92416c2f] [dbbe8a2e0b3d]. Source 01 only.
 
 **R21. Compensation levers.** Source 07: when margin cannot support market cash pay for a scarce hire (its example: a top media buyer at "multiple hundreds of thousands of dollars a year", unverified), use equity, performance pay or other levers; equity is given up, not free [826839431464] `[web check: current market pay for senior ecommerce media buyers]`. Source 02: shift reward weight from individual to collective outcomes; tie rewards to results not effort; do not rely on money as the sole motivator; keep 360 feedback out of compensation [f865719ea5b4] [30d9d9379f95] [59329495c17e]. ecomOS: the human sets pay (R111). 2 sources.
 
-**R22. Onboard through the team, not a manual.** Source 02: each existing member teaches the newcomer 1 part of the operating model; cover each peer's role and the current collective goals; review the newcomer's working style against the team's; put them into a live debate the same day; let them watch peers hold each other accountable [1cab46c8ddf7]. Source 03's stage model says a new group forms, storms, norms, then performs; expect a short storming period and do not read normal friction as failure [98f70de504bd] (applying this to 1 new hire is `[pass 1 adaptation]`). 2 sources.
+**R22. Walk a new hire through the current PO tracker, forecast owner and CS routing rules, not only the team's interpersonal norms.** Source 02: each existing member teaches the newcomer 1 part of the operating model; cover each peer's role and the current collective goals; review the newcomer's working style against the team's; put them into a live debate the same day; let them watch peers hold each other accountable [1cab46c8ddf7]. Source 03's stage model says a new group forms, storms, norms, then performs; expect a short storming period and do not read normal friction as failure [98f70de504bd] (applying this to 1 new hire is `[pass 1 adaptation]`). 2 sources.
 
 **R23. Confirm role fit with an assignment change before adding headcount.** Source 02's fable moves a resentful COO to head of sales rather than hiring. Source 02 only. [9cffbb518f9e]
 
-**R24. Remove a destructive high performer, and count the cost of tolerating them.** Source 01: remove the "prima donna" who cannot collaborate; Bloom Energy fired a world-expert scientist 18 months before a beta and missed the deadline by 2 days; the book says waiting too long is the common error [770627149af5] [3c9e69b660b3]. Source 02's Fred story: promoting a talented but disliked analyst lost 3 of 7 staff in 2 weeks; after Fred left, performance recovered in about a month with 3 fewer people; the lesson stated is that the manager's tolerance, not Fred, was the failure [f9f956b15e91]. Condition: only after specific observed behaviour is named and a real choice to change is offered (P22). The human decides (R111). 2 sources, both anecdote.
+**R24. For a store, "destructive high performer" often means a media buyer or merchandiser who will not share test data or hits SKU targets by starving other channels.** Source 01: remove the "prima donna" who cannot collaborate; the book says waiting too long to remove one is the common error [770627149af5] [3c9e69b660b3]. Source 02: promoting a talented but disliked analyst can cost several staff quickly; the lesson stated is that the manager's tolerance, not the employee, was the failure [f9f956b15e91]. Condition: only after specific observed behaviour is named and a real choice to change is offered (P22). The human decides (R111). 2 sources, both anecdote. Bloom Energy and Fred story detail moved to Appendix A.
+
+**R117. Set comp bands for the common ecom roles (media buyer, CS lead, ops manager) before opening a search, not after a candidate asks.** Source 07's only figure, a senior media buyer at "multiple hundreds of thousands of dollars a year", is 1 unverified case [826839431464] `[web check: current market pay for senior ecommerce media buyers]`. No source gives a band for a CS lead or ops manager. `[general practice]` No library source; verify against brand data and current market pay before use. Feeds D3.
+
+**R118. Use a structured job description template for every store role, not a free-text ad.** Source 04 says it gives "almost no detail" on job descriptions; no source here gives a template. `[general practice]` No library source; verify against brand data before use. Feeds D2.
+
+**R119. Run an individual performance review and raise cadence tied to store KPIs, kept separate from the team-health assessment (P5) and out of pay per R60.** No source here gives a cadence or template. `[general practice]` No library source; verify against brand data before use. Feeds D4.
 
 ### 3.3 Leadership practice (Multipliers and Diminishers)
 
-**R25. Audit the assumption before copying a practice.** Source 01: Diminishers assume intelligence is scarce and fixed ("they will never figure it out without me"); Multipliers assume it is abundant and grows ("people are smart and will figure it out"). Behaviour follows assumption, so practices copied without the assumption do not hold. Source 01 only. [4fa842955f55] [603d1eea8a50]
-
-**R26. Rate yourself on the 5 disciplines and their opposites. Strong in 3 of 5 is enough; never sit in Diminisher range on any.** The pairs: Talent Magnet vs Empire Builder; Liberator vs Tyrant; Challenger vs Know-It-All; Debate Maker vs Decision Maker; Investor vs Micromanager. Source 01's own data: most studied Multipliers were strong in 3, some in 4 or 5, and rarely weak in any. Source 01 only. [d70f32fe72f8] [1dbed4a92007] [ec007ef36f5e] [d4847b17a26b] [a9866b2456b8] [0d9014408391] [3446271d07b3]
-
-**R27. Talent Magnet: find each person's native genius, label it publicly, use it at its highest point, remove blockers including yourself.** Native genius is what a person does easily and freely, narrower than a 360 strength; ask "why" about 3 times past a surface skill. Public labelling raises awareness and confidence (Jack Bossidy's staff meeting; the Hancock camp introductions). Source 01 only. [c9002d8e9d33] [a359bd6d6129] [56fb92416c2f] [770627149af5] [7edcea17b5cb] [675b8b35b46d]
-
-**R28. Liberator: create space, demand best work, run rapid learning cycles.** Create space: talk far less than you listen; operate predictably; give a dominant talker poker chips (a fixed number of talk turns); label your comments soft or hard opinion so a casual remark does not become policy. Demand best work: ask "is this your best work?" (Kissinger); hold people to effort and execution, never to outcomes outside their control (Sridhar: zero tolerance for not running the experiment, no penalty for the result). Learning cycles: admit your own mistakes first and publicly. Source 01 [40f7b4e398fb] [d4d1178321c5] [213b38f15546] [de0b8b082153] [7176608e359f] [16e8102cd5ec]. Source 02 agrees the leader is vulnerable first and cannot stage it [52a8c149b778]. Source 03 agrees: Wexner's "Hall of Shame", and yelling at a mistake in front of peers destroys trust [0de5f24898f1] [60f28329351e]. 3 sources.
-
-**R29. Intense, not tense. Assume people are withholding until the climate proves otherwise.** Source 01: after a hard meeting, ask whether people offered only safe, leader-agreeable ideas (tense) or bold ones and stayed engaged (intense) [6444ffb70c8e] [1dbed4a92007] [9fdf2daba130]. Source 05: "well over half the time" people do not share what they think (uncited research); psychological safety is the 1 thing Musa would pick [c94641818f5e]. Source 02: silence and calm agreement are the classic low-trust symptom; a prompt to check, not proof [0ae728a0b4ef]. 3 sources.
-
-**R30. Challenger: seed the need, lay down a concrete challenge, withhold your answer, make it believable, co-create the plan, stage 1 early visible win.** Seed by showing the need (the GE bus trip to a trade show), by challenging assumptions (Prahalad's fake bankruptcy article), or by reframing a bottleneck as an opportunity (P&G Pringles). Lay a specific stretch target and ask the hard questions. "Helicopter down" to a ground-level proof point, let the executors co-create the plan, orchestrate 1 small early win before the big one. Source 01 [9087c1c9126b] [277ce40b634b] [475ce7aec24c] [53e8883c06ff] [7d7a0e4359e1] [7d46fb99d397] [263531838555] [808359b68558] [bcb9bdd6f85f]. Source 03's 5-step commitment ladder (vision, expect doubt, leadership commits first, inclusion in small groups, teammates propose the tasks) is the same shape [9ed83f4b4706] [63cb980cc32a]. 2 sources.
-
-**R31. Control the pace of ambiguity: ask for a 30 percent answer in 2 days before deciding whether to invest in the 100 percent answer.** Source 01 only. [3d3c12db2fff]
-
-**R32. Investor: define ownership up front (51 percent of the vote, 100 percent of the responsibility), give the whole outcome not a slice, stretch the role 1 level up, coach with questions, add backup without removing ownership, hand the pen back, let natural consequences run, make the scoreboard visible.** Source 01 [d150234124c0] [bc22e9ec9c05] [cb138faa8112] [38f23ceae927] [f78fe4052829] [4c69b917bb9f] [f90b88789a93] [9c377403f19f] [f09a30ff919d] [5d38c10d11cb]. Source 02 agrees on publishing goals, owners and standards so nobody can quietly ignore them [401b22a4cb2f] [25f1e4a02461]. 2 sources.
-
-**R33. Never accept an AWK without a FIX, in either direction.** Do not hand a problem upward without a proposed fix, and when a delegated problem comes back, return it with "what would you like to do to fix this?" rather than solving it yourself. If you are doing most of the thinking on delegated work, you have taken it back. Source 01 only. [d7f2b6fe2bc3] [10e31326d248] [62673dab8487]
-
-**R34. Avoid the bungee boss and the morning directive.** Jumping in only when something is visible to senior people, and re-deciding the team's day each morning, both destroy ownership. Source 01 only. [62673dab8487]
-
-**R35. Directive leadership is allowed only as an extreme exception: a genuine crisis, the leader's insight verifiably greater, and no time for others to catch up.** Source 01's own FAQ [01bfefe3ebdb]. Source 03 agrees: choose authoritarian, participative or delegative by who holds the information and how much time there is; authoritarian rarely; yelling, demeaning language and threats have "no place"; delegating keeps responsibility with the leader and is not a way to shift blame [84d62308900c]. 2 sources.
-
-**R36. Develop by working the extremes: neutralise your 1 worst discipline to acceptable, push your 1 strongest to world-class. Do not work all 5 at once.** Source 01 cites Zenger and Folkman's 360 data on 8,000 leaders: no distinguishing strength puts a leader at the 34th percentile; 1 strength 64th; 2 at 72nd; 3 at 81st; 4 at 89th. Source 01 only. [f51995e58591] [0d9014408391]
-
-**R37. Change 1 practice for 30 days, then hold 1 question for a year.** Pick exactly 1 practice inside 1 discipline, run it 30 days, keep a journal. Then build layer by layer, commit to a year on 1 guiding question, and find a partner or peer group for accountability. The 30-day habit figure is the author's assertion with no study named. Source 01 only. [887d2303442c] [a49dc2d60271] [20942ff19843] [64aaf10b52e5] [a0c170241cea]
-
-**R38. Run the accidental diminisher check; most Diminishers do not know and can change with feedback.** Source 01: many were promoted for personal brilliance and assumed the boss's job is to be the smartest person; others "went native" under Diminisher bosses. The book's quiz (10 scenarios, "A.D. score", lower is better) sits on multipliersbook.com `[web check: still live]`. Source 01 only. [d6302d3157e7] [25c379ab794f]
-
-**R39. Multiply beyond the inner circle.** A leader can be rated a Multiplier by direct reports and a Diminisher by everyone else: "the farther removed people were from the leader, the more diminished they felt". Source 01 only. [3446271d07b3]
-
-**R40. You do not need a Multiplier boss to start; build 1 visible team and expand.** Source 01 only, anecdote. [4478f914f73b] [80ec8f28a9ab] [8e62a8e6d487]
-
-**R41. Do not hand these ideas to a "raging Diminisher" in a diminishing way.** "You can't diminish people into being Multipliers." Source 01 only. [0e3e89ef279a]
-
-**R42. Counteract hierarchy on purpose: reach past it for frontline insight, and separate criticism of an idea from criticism of the person.** Source 01: org charts and approval matrices skew power up and reward compliance [b96dc4113fbb] [85b352b6b189]. Source 03: teams that conflate idea criticism with personal attack suppress dissent, including dissent aimed at leadership [788f0cb90b86]. 2 sources.
-
-**R43. Set high expectations and model the vision; ask more than you tell.** Source 03 [d50bb3e8d0a0]. Source 01: questioning is the single highest-leverage leader habit [4c552fae77ce] [a41c5570c8d7]. 2 sources.
-
-**R44. Count the cost of a Diminisher in a key role before acting.** Estimate the team at about 50% under that person and what full use of the rest would be worth; on an 11-person team the book's arithmetic gives back "the equivalent of five full-time people". Illustrative maths on a self-reported finding. Source 01 only. [8abb782bbe28] [3c9e69b660b3]
+R25 to R44 moved to Appendix A: the 5 Multiplier disciplines and Diminisher opposites (Talent Magnet, Liberator, Challenger, Debate Maker, Investor), the accidental diminisher check, the 30-day practice change, and the cross-source agreement notes on vulnerability, hierarchy and expectations. General leadership content, no ecommerce case in the source text (see the ecommerce review's rule-count table). All rule ids and card ids kept with the moved text.
 
 ### 3.4 Team health
 
@@ -184,7 +177,7 @@ Each rule: the rule, when it applies, the mini playbooks that support it (by num
 
 **R56. Publish goals, owners and standards; run simple, regular progress reviews.** Source 02 [401b22a4cb2f] [14e6bb26ffbb]. Source 01's visible scoreboard (R32) and source 03's review mechanisms among the 10 team-building practices [36ba5d087ea6] agree. 3 sources.
 
-**R57. 1 overarching goal per period, quantified with a deadline, plus a scoreboard of 5 to 7 categories each with a named owner, reviewed monthly.** Source 02: argue the candidates out loud until 1 survives; reject renamed duplicates; the leader sets the final number after hearing everyone and says there is "no science here"; revenue or profit alone is not the scoreboard because it lags; monthly not quarterly because a quarter gives too few chances to correct; the owner must state target and result at every review [42e38198eea1] [f89975959127] [25f1e4a02461] [fcdcb7354b0c] [5e46d0e232dd]. Source 05: goals few and simple, or teams "get overwhelmed" [352063f0fa58] [712acd79637a]. 2 sources.
+**R57. Reject "revenue" as the scoreboard's own goal; use a 5 to 7 line set built from repeat rate, contribution margin, days of stock, ticket backlog and delivered-on-time, not the fable's software-company categories.** Source 02: argue the candidates out loud until 1 survives; reject renamed duplicates; the leader sets the final number after hearing everyone and says there is "no science here"; revenue or profit alone is not the scoreboard because it lags; monthly not quarterly because a quarter gives too few chances to correct; the owner must state target and result at every review [42e38198eea1] [f89975959127] [25f1e4a02461] [fcdcb7354b0c] [5e46d0e232dd]. Source 05: goals few and simple, or teams "get overwhelmed" [352063f0fa58] [712acd79637a]. 2 sources.
 
 **R58. Each leader's first team is the leadership team, not their department.** A "my department comes first" answer is not automatically wrong, but watch for go-betweens, bad news kept local, and company commitments traded for departmental goodwill. Source 02 only. [a5a2bf1b017e] [ee63844c33b6]
 
@@ -192,7 +185,7 @@ Each rule: the rule, when it applies, the mini playbooks that support it (by num
 
 **R60. Rewards lean toward collective results; 360 stays out of pay.** Source 02 [f865719ea5b4] [252c4066c43e] [30d9d9379f95] [59329495c17e]. Source 03: 360 without training becomes disguised criticism [60f28329351e]. 2 sources on 360. Human sets pay (R111).
 
-**R61. Expect drift and relapse; the work is a loop, not an event.** Source 02: a typical first response after an offsite is guarded regression; real change takes months [bf4fc35fbd0f] [d9382f94958b]. Source 05: drift from agreed goals, roles and norms is "natural" and "almost inevitable" because people sit on several teams [d35411c91008]. Source 03: teams move through forming, storming, norming, performing, adjourning [98f70de504bd]. 3 sources.
+**R61. Expect the guarded-regression relapse right after a peak season, when everyone reverts to firefighting.** Source 02: a typical first response after an offsite is guarded regression; real change takes months [bf4fc35fbd0f] [d9382f94958b]. Source 05: drift from agreed goals, roles and norms is "natural" and "almost inevitable" because people sit on several teams [d35411c91008]. Source 03: teams move through forming, storming, norming, performing, adjourning [98f70de504bd]. 3 sources.
 
 **R62. Run the 3x3 loop: commit explicitly to goals, roles and norms; check in; close the saying-doing gap with 1 small step and an environment change.** Source 05: the commit conversation must be explicit, not assumed; at check-in ask "are we still committed, does our working style still hold, how do we share information and decide"; close with a small specific step, engineer the surroundings to support it, and apply "realistic optimism" (think ahead about what will block it) [d35411c91008] [0396231dd3a9] [352063f0fa58]. Source 05 only for the loop; 02's re-run assessment (R47) and 03's review mechanisms agree on repetition.
 
@@ -206,11 +199,11 @@ Each rule: the rule, when it applies, the mini playbooks that support it (by num
 
 **R67. Handle moments of truth face to face, not by email.** Source 02 [f5195fd1f7a6]. Source 03: resolve a recurring interpersonal conflict by process consultation (define the problem with the person, develop options together, the person owns the recommendation) rather than a verdict [0b4cac182293]. 2 sources.
 
-**R68. Personality instruments are self-disclosure tools, not assessments; MBTI's standing is contested.** Source 02 prefers MBTI (minimum 4 hours) and says people identify their own type [d2ff2bd42550] [e3a83ce7c404] `[web check: current I-O psychology critique of MBTI reliability and validity, and licensing cost]`. Source 02 also names the Thomas-Kilmann instrument for conflict style [dd193a22adc1] [a1fdc9095aec]; source 03 says choose a conflict mode deliberately [059d6a41d014]. 2 sources on conflict-mode awareness. Do not recommend MBTI to a client as a serious diagnostic without the web check.
+**R68. Personality instruments are self-disclosure tools, not assessments; MBTI's standing is contested.** `[web check: current I-O psychology critique of MBTI reliability and validity, and licensing cost]` Source 03 says choose a conflict mode deliberately [059d6a41d014]. 2 sources on conflict-mode awareness. Do not recommend MBTI to a client as a serious diagnostic without the web check. MBTI and Thomas-Kilmann instrument description moved to Appendix A.
 
 **R69. Experiential and ropes-course exercises are not a standalone fix.** Source 02: they have "lost some of their luster... and deservedly so", and outdoor benefits "do not always translate" to work; use only on top of the fundamental tools [f0b5fc985510]. Source 03 lists outward-bound training and sensitivity training among workshop formats without judgement [e1daf5ed03eb]. Conflict C3.
 
-**R70. Audit meetings against the 12 characteristics of an effective team, and judge the team by output above the sum of individual output.** Source 03's 12: relaxed informal atmosphere; task understood and accepted; high listening; open expression; conflict on ideas not personalities; the group aware of its own process; consensus decisions with clear follow-up; clear purpose; frank interaction; participation at all levels; shared leadership; diversity of styles [1154b29c520f] [0a2959ee32d4]. Source 03 only.
+**R70. Judge a launch team by whether the drop shipped on time and sold through, not by the meeting's atmosphere alone.** Source 03's 12: relaxed informal atmosphere; task understood and accepted; high listening; open expression; conflict on ideas not personalities; the group aware of its own process; consensus decisions with clear follow-up; clear purpose; frank interaction; participation at all levels; shared leadership; diversity of styles [1154b29c520f] [0a2959ee32d4]. Source 03 only.
 
 **R71. When a team performs badly, check 3 categories and 2 layers before acting.** Categories: communication (listening, information sharing, interpretation, nonverbal), structural (size, turnover, participation, rewards, interdependence), personal (self-esteem, goals, values). Layers: internal process, and the external system (design, culture, selection, training, rewards) that existed before the team formed. Failure signs: resentment over resources, cost overruns, slipped schedules, members unclear on responsibilities, essential members losing focus. Source 03 only. [b5da25e5c81d] [aee0bbdc19b9]
 
@@ -218,25 +211,27 @@ Each rule: the rule, when it applies, the mini playbooks that support it (by num
 
 **R73. Free a dominated meeting.** Source 03: the leader steps out so the group can work [0bf329725971]. Source 01: poker chips for the dominant talker; hold silence so a quiet member fills it (Lokesh went from near zero to "50 percent or more" of a conversation) [d4d1178321c5] [adf7a15b25a4]. 2 sources.
 
+**R120. Build the scoreboard from ecom categories, not a software-company list: repeat rate, contribution margin, blended CAC, days of stock, ticket backlog and delivered-on-time.** The pass 1 mini playbook for source 02 sets out these categories; they were not carried into R57 or P9 before this pass. Source 02 mini playbook, `sources/02-the-five-dysfunctions-of-a-team.md`, line 281. [25f1e4a02461] `[pass 1 adaptation]` Feeds R57 and P9.
+
 ### 3.5 Roles and responsibility tools
 
-**R74. Use Belbin roles to balance a team, not to label people.** 9 roles: Co-ordinator, Shaper, Plant, Monitor Evaluator, Implementer, Team Worker, Resource Investigator, Completer Finisher, Specialist. 3 are essential: Co-ordinator, Plant, Monitor Evaluator. Map by observed behaviour, not title. Flag a team stacked with 1 type. Do not make an Implementer the leader (lacks vision, reacts badly to ambiguity). Match roles to task stage. Source 03 only [eeae888bdd37] [75f75373e390] [e9522d20d039] [158432c03eb2] [402ac024a0bf] [cc0dedea96db]. The mapping of Belbin roles to merchandising, creative, margin review and QA in mini playbook 03 is `[pass 1 adaptation]`. `[web check: the standard name is Completer Finisher; source shortens it]`
+**R74. Map Belbin roles to merchandising, creative, growth and ops when staffing a seasonal launch team; flag a team stacked with only Implementers.** Source 03 only [eeae888bdd37] [75f75373e390] [e9522d20d039] [158432c03eb2] [402ac024a0bf] [cc0dedea96db]. `[web check: the standard name is Completer Finisher; source shortens it]` Generic Belbin taxonomy (9 roles, the 3 essential, task-stage matching) moved to Appendix A.
 
 **R75. Staff both task roles and process roles; the leader does not hold every role because they are busy.** Source 03 only. [6dc36d7f5601]
 
-**R76. Clarify an ambiguous role with the Role Analysis Technique.** Pick the focal role, define it jointly with the incumbent and the team, the incumbent writes the role profile, the accepted profile becomes the role. Best for new teams or role confusion. Source 03 only. [ae9c30902c6c]
+**R76.** Moved to Appendix A: the Role Analysis Technique write-up (source 03). [ae9c30902c6c]
 
-**R77. Every decision type has exactly 1 R.** Responsibility charting: decisions down the side, actors across the top, each cell R (initiates and ensures it is done), A-V (approve or veto), S (support), I (inform, cannot influence). Source 03 [f684ff28794c]. Source 01: 1 owner with 51% of the vote [d150234124c0]. Source 02: 1 named owner per scoreboard category and per goal driver [25f1e4a02461] [78f85b7bed71]. Source 05: the roles conversation [12ad1d771f2c]. 4 sources on 1 named owner.
+**R77. Write the 1-R chart for price changes, promotions, site changes, PO releases, 3PL escalations, refund exceptions and hire requests.** Responsibility charting: decisions down the side, actors across the top, each cell R (initiates and ensures it is done), A-V (approve or veto), S (support), I (inform, cannot influence). Source 03 [f684ff28794c]. Source 01: 1 owner with 51% of the vote [d150234124c0]. Source 02: 1 named owner per scoreboard category and per goal driver [25f1e4a02461] [78f85b7bed71]. Source 05: the roles conversation [12ad1d771f2c]. 4 sources on 1 named owner.
 
-**R78. Use role negotiation only when resistance is power-based.** Contract on work behaviours, not feelings: each person states what to start, stop, continue; each fills a form per colleague (more, less, unchanged); pairs trade; a follow-up meeting checks the contract. Minimum 1 full day; 2 days plus a follow-up a month later is best. Source 03 only. [10b3930ea6dc]
+**R78.** Moved to Appendix A: the role negotiation write-up (source 03). [10b3930ea6dc]
 
-**R79. Unblock a stalled situation with force field analysis, and add a stabilising step at the end.** Describe current and desired states, list driving and restraining forces, split them by what you control, choose moves that raise driving and cut restraining forces, then plan how to hold the new state. Source 03 only. [6572b0c296da]
+**R79.** Moved to Appendix A: the force field analysis write-up (source 03). [6572b0c296da]
 
-**R80. Choose a conflict mode on purpose.** Source 03 [059d6a41d014]; source 02's TKI [dd193a22adc1]. 2 sources.
+**R80.** Moved to Appendix A: choose a conflict mode on purpose, detail (source 03, source 02's TKI). [059d6a41d014] [dd193a22adc1]
 
 ### 3.6 Decisions and debate
 
-**R81. Debate only the decisions that are high-stakes or hard to reverse; decide fast on everything else.** Source 01's own FAQ [7a618f532beb]. Source 05: go fast and skip process when speed matters; slow down when the decision needs several perspectives [ab649028be47]. Source 02: low-risk exposure therapy for over-studying teams [f6a0ee547b86]. 3 sources agree on the split; conflict C1 on where the line sits.
+**R81. For a store, high-stakes examples are a pricing or offer change, a platform migration, a 3PL switch, a repositioning, or a large PO; everything else is an everyday call.** Source 01's own FAQ [7a618f532beb]. Source 05: go fast and skip process when speed matters; slow down when the decision needs several perspectives [ab649028be47]. Source 02: low-risk exposure therapy for over-studying teams [f6a0ee547b86]. 3 sources agree on the split; conflict C1 on where the line sits.
 
 **R82. Frame before debating: the exact question, the right people (knowledge, stake, execution), data in advance, and who decides, said up front.** Source 01: Tim Cook expects data-backed positions; Jim Barksdale's "we'll just use my opinion" is the anti-pattern. Source 01 only. [112a27eb807d] [786432b573e1]
 
@@ -279,6 +274,8 @@ Each rule: the rule, when it applies, the mini playbooks that support it (by num
 **R100. Tooling by stage: spreadsheet plus accounting software until about $30M to $50M, then consider an ERP that absorbs about 90% of coordination; a dedicated tracker owner from about $5M to $10M.** ERP implementations the source quotes at "over $200 grand" and its own "upwards of half a million dollars". Source 04 only, single operator. [b835681136c8] [5eb084517f52] [e252e690a92c]
 
 **R101. Judge every operations change by the customer-facing output, cost and process load together, not by an internal metric alone.** Source 04 only. [0ff782611bef]
+
+**R121. Decide make-vs-buy for fulfilment (an in-house warehouse vs staying with a 3PL) before running the 3PL RFP (P28).** Source 04 only covers 3PL selection once outsourcing is already the decision; no source here compares in-house fulfilment against a 3PL. `[general practice]` No library source; verify against brand data before use.
 
 ### 3.8 Bottleneck diagnosis
 
@@ -366,11 +363,7 @@ Checks: after week 1 the newcomer can name the overarching goal, each peer's rol
 The 15 statements: (1) discussion is passionate and unguarded; (2) members call out each other's deficiencies or unproductive behaviour; (3) members know what peers work on and how it helps the team; (4) members apologise quickly and genuinely; (5) members sacrifice budget, turf or headcount for the team; (6) members admit weaknesses and mistakes; (7) meetings are compelling, not boring; (8) members leave meetings confident peers are committed even after disagreement; (9) morale is hit by missing team goals; (10) the most important and difficult issues are put on the table; (11) members are concerned about letting peers down; (12) members know about each other's personal lives and discuss them comfortably; (13) discussions end with clear resolutions and calls to action; (14) members challenge each other's plans and approaches; (15) members are slow to seek credit and quick to give it. [9df78b1b4685]
 Checks: every member answered; totals computed in code, not by eye. Rollback: none; results are development data, not pay data (R60).
 
-**P6. Personal histories exercise (low risk).** Goal: a first, small lift in trust. Preconditions: a meeting or offsite, at least 30 minutes. Steps (02): round-robin, leader included: siblings, hometown, a unique childhood challenge, hobbies, first job, worst job. Keep the boundary explicit ("your life as a child, not your inner child"). Move into real work while the group is still loose; the effect fades. Note who stays outside the warmth. [a50879793a42] [acbe5b2bf41c] Checks: the leader went first. Rollback: none.
-
-**P7. Team effectiveness exercise (higher risk, more useful).** Goal: peer feedback that turns into assignments. Preconditions: some baseline trust; at least 60 minutes. Steps (02): each member privately names, for each peer, the single most important contribution and the 1 thing to improve or stop. Report 1 person at a time, all peers giving input while that person listens without defending. Start with the leader. Follow up each development area in later one-on-ones. [1c7756fd2d21] Checks: every named development area has a follow-up date. Rollback: stop if it turns into personal attack; restate R48.
-
-**P8. Strengths and weaknesses round tied to business impact.** Goal: named gaps that become assignments, coaching or hires. Preconditions: P6 done. Steps (02): 5 minutes each to write 1 biggest strength and 1 biggest weakness framed as contribution to the team's success or failure; ban soft weaknesses and false modesty; leader first; let peers sharpen a shallow answer; do not force a defensive person deeper; stop a peer who lands a joke at someone's expense. Use the output for staffing. [242e9d4d282d] Checks: each gap has an action. Rollback: none.
+P6, P7 and P8 (personal histories exercise, team effectiveness exercise, strengths and weaknesses round) moved to Appendix A: generic HR trust-building scripts with no store tie. Run P5 and P9 for the store's own team health and scoreboard work; use P6 to P8 only if the human wants a deeper trust exercise.
 
 **P9. Set the scoreboard and the 1 overarching goal.** Goal: 5 to 7 owned categories and 1 quantified goal with a deadline. Preconditions: leadership team in a room; revenue and cost data on hand. Steps (02):
 1. Small groups propose result categories, not yet quantified.
@@ -403,15 +396,15 @@ Checks: every member answered; totals computed in code, not by eye. Rollback: no
 4. Return to step 2.
 For check-in conversations: name style differences (introvert and extrovert, comfort with conflict); build trust one-on-one; cap the agenda to a few topics. [d35411c91008] [0396231dd3a9] [352063f0fa58] [712acd79637a] Checks: a goals, roles, norms document exists `[needs brand data: the brand's own format; the source gives none]`. Rollback: none.
 
-**P13. Role Analysis Technique.** Goal: 1 written role profile for an ambiguous role. Steps (03): pick the focal role; the incumbent and team define its requirements together; the incumbent writes the role profile; the accepted profile becomes the role. [ae9c30902c6c] Checks: the profile names outputs, decision rights and handoffs. Rollback: re-run when the role changes.
+**P13.** Moved to Appendix A: the Role Analysis Technique procedure (source 03). [ae9c30902c6c]
 
 **P14. Responsibility charting.** Goal: every recurring decision has exactly 1 R. Steps (03): list decision types down the left (price change, promotion, site change, PO release, 3PL escalation, refund policy exception, hire request); list actors across the top; fill each cell R, A-V, S or I; any row with 0 or 2 R values is fixed in the meeting. [f684ff28794c] Checks: 1 R per row; the chart is published (R56). Rollback: none.
 
-**P15. Role negotiation (power-based resistance only).** Goal: a behaviour contract between people whose influence a change threatens. Preconditions: at least 1 full day; 2 days plus a follow-up 1 month later is best. Steps (03): contract on work behaviours not feelings (start, stop, continue); each person writes for every other what to do more, less, unchanged; pairs trade until both feel the return is fair; follow-up meeting checks the contract. [10b3930ea6dc] Checks: every trade is written and dated. Rollback: if resistance is doubt not power, use P32 instead.
+**P15.** Moved to Appendix A: the role negotiation procedure (source 03). [10b3930ea6dc]
 
-**P16. Force field analysis.** Goal: unblock a stalled change (a 3PL switch, a new meeting cadence, a tracker nobody updates). Steps (03): describe the current state and why change is needed; describe the desired state fully; list driving and restraining forces; split by what you control; pick moves that raise driving and cut restraining forces; once reached, plan how to hold it. [6572b0c296da] Checks: at least 1 restraining force removed, not only driving forces added. Rollback: none.
+**P16.** Moved to Appendix A: the force field analysis procedure (source 03). [6572b0c296da]
 
-**P17. Process consultation for a recurring interpersonal conflict.** Steps (03): define the problem with the conflicted person involved; develop options together; the final recommendation is owned by the person, not handed down. Counselling means listening and helping the person find their own way, advice only when needed. [0b4cac182293] Checks: the person states the recommendation in their own words. Rollback: escalate to P22 only after specific repeated behaviour.
+**P17.** Moved to Appendix A: the process consultation procedure (source 03). [0b4cac182293]
 
 ### 4.3 Leadership practice
 
@@ -786,7 +779,7 @@ Merged and deduplicated. Fix in brackets.
 
 **D3. Hiring plan.** Ordered list of hires with: trigger number, function, why an assignment change or contractor will not do, comp options within margin (cash, performance, equity) for the human, search owner, and the screen-then-deep interview plan. States that the human decides (R111). Built by P2, P3, P31.
 
-**D4. Team health report.** Assessment totals per dysfunction with bands and spread, the lowest broken layer, the 1 behaviour change for the quarter, the exercise plan (P6 to P9), the overarching goal and scoreboard with owners, the accountability read (who calls out a miss), first-team answers, and the next re-run date. Never linked to pay. Built by P5 to P10.
+**D4. Team health report.** Assessment totals per dysfunction with bands and spread, the lowest broken layer, the 1 behaviour change for the quarter, the exercise plan (P6 to P9), the overarching goal and scoreboard with owners, the accountability read (who calls out a miss), first-team answers, the next re-run date, and a required field: which store metric moved this quarter (repeat rate, ticket backlog, launch on-time percent). Never linked to pay. Built by P5 to P10.
 
 **D5. SOP index.** The 5.5 table filled in for the brand: each process document, its owner, cadence, last update, backup owner, and what is missing. Includes the 3PL SLA summary and the invoice audit status. Built by P1, P25 to P30.
 
@@ -794,9 +787,9 @@ Merged and deduplicated. Fix in brackets.
 
 **D7. Bottleneck diagnosis report.** The constraint named with the data that shows it (conversion by source, ticket themes, utilisation answers, margin, cash), the founder's archetype and evidence, and the recommended next move (targeting, site, hire, leadership practice, process ownership) with its source and confidence. Built by P31.
 
-**D8. Leadership 30-day plan.** The 5-discipline self-rating, the 1 weakness and 1 strength chosen, the single practice, the journal template, and the day-30 check question. Built by P20, P21.
+**D8. Founder or lead capacity plan.** The 5-discipline self-rating, the 1 weakness and 1 strength chosen, the single practice, the journal template, the day-30 check question, and which operating artefact or KPI the practice change is meant to move. Built by P20, P21.
 
-**D9. High-stakes decision brief.** For any P18 decision: the exact question, who decides, data required, the assigned opposing view, the deadline, the decision, the reasoning, and the cascading message. Built by P18.
+**D9. High-stakes decision brief.** For any P18 decision (a pricing or offer change, an inventory or PO commit, a platform or 3PL migration, a hire or no-hire): the exact question, who decides, data required, the assigned opposing view, the deadline, the decision, the reasoning, and the cascading message. Built by P18.
 
 ## 10. What needs live data or a web check
 
@@ -838,6 +831,8 @@ Merged and deduplicated. Fix in brackets.
 - **The 3PL SLA terms (24 to 48 hour pick, 2 cycle counts).** Market norms and carrier accounts change; re-shop at each RFP and re-read the SLA yearly.
 - **Nothing in 02, 03 or 05 references pricing or platforms**; only the named instruments above need a web check.
 
+- **24 Sep 2026: ecommerce specificity pass applied from ECOM_REVIEW.md.** Priority block 3.0 added, 13 rules reworded for store-specific wording, 8 store levers added (R114 to R121), and about 2,150 words of generic leadership, team-health and OD-technique detail moved to Appendix A.
+
 ## 12. Source index
 
 | no. | title | type | credibility and bias | contributed most |
@@ -851,3 +846,96 @@ Merged and deduplicated. Fix in brackets.
 | 07 | Helping a $3M/Year E-Commerce Brand Build a Team (unnamed advisor, acquisition.com pitch) | live coaching call transcript, undated, 8 cards | Unnamed advisor (affiliation implied by the closing lead-magnet pitch, `[web check]`); 1 founder's self-reported numbers ($3M, $400k, 1% conversion); no data pulled; growth claims ("3 to 6 in 60 days") are opinion; ends with a funnel pitch. Rating: a useful diagnostic script, zero evidence; every figure is this 1 business's self-report. | Traffic vs conversion split, segment before CRO, founder archetypes, hire the missing side, comp levers when margin is thin, cash before growth |
 
 **Neighbour folders.** 18-COG-sourcing: tech pack contents, supplier and MOQ negotiation, QC, freight forwarders. 20-FIN-finance-and-accounting: landed cost, duties vs tax, cost per item, ERP cost, cash flow, comp structure economics. 17-CXP-post-purchase: helpdesk tools, macros, ticket diagnostics, tracking and packaging. 09-CRO-testing and 06-MEA-measurement: conversion segmentation and funnel audits. 24-DEP-ad-deployment: traffic targeting fixes. 04-BRD-brand: brand values in marketing, brand sequencing. 03-OFF-offers: any pricing or offer decision that P18 debates.
+
+
+## Appendix A. General background
+
+Moved here during the 24 Sep 2026 ecommerce specificity pass (ECOM_REVIEW.md section 5). The text below is unchanged from the base layer; only its location moved, so the store-facing sections above stay short and store-specific. Every rule id and card id below is the same one cited from its original spot; a citation elsewhere in this playbook that names one of these ids still resolves here.
+
+### A.1 Leadership practice detail (moved from section 3.3, R25 to R44)
+
+General leadership content from source 01 (Multipliers), with agreement notes from sources 02, 03 and 05. None of it has an ecommerce case in the original text; the Cisco, GE, P&G, Kissinger and Sridhar examples are all general management, not store examples.
+
+**R25. Audit the assumption before copying a practice.** Source 01: Diminishers assume intelligence is scarce and fixed ("they will never figure it out without me"); Multipliers assume it is abundant and grows ("people are smart and will figure it out"). Behaviour follows assumption, so practices copied without the assumption do not hold. Source 01 only. [4fa842955f55] [603d1eea8a50]
+
+**R26. Rate yourself on the 5 disciplines and their opposites. Strong in 3 of 5 is enough; never sit in Diminisher range on any.** The pairs: Talent Magnet vs Empire Builder; Liberator vs Tyrant; Challenger vs Know-It-All; Debate Maker vs Decision Maker; Investor vs Micromanager. Source 01's own data: most studied Multipliers were strong in 3, some in 4 or 5, and rarely weak in any. Source 01 only. [d70f32fe72f8] [1dbed4a92007] [ec007ef36f5e] [d4847b17a26b] [a9866b2456b8] [0d9014408391] [3446271d07b3]
+
+**R27. Talent Magnet: find each person's native genius, label it publicly, use it at its highest point, remove blockers including yourself.** Native genius is what a person does easily and freely, narrower than a 360 strength; ask "why" about 3 times past a surface skill. Public labelling raises awareness and confidence (Jack Bossidy's staff meeting; the Hancock camp introductions). Source 01 only. [c9002d8e9d33] [a359bd6d6129] [56fb92416c2f] [770627149af5] [7edcea17b5cb] [675b8b35b46d]
+
+**R28. Liberator: create space, demand best work, run rapid learning cycles.** Create space: talk far less than you listen; operate predictably; give a dominant talker poker chips (a fixed number of talk turns); label your comments soft or hard opinion so a casual remark does not become policy. Demand best work: ask "is this your best work?" (Kissinger); hold people to effort and execution, never to outcomes outside their control (Sridhar: zero tolerance for not running the experiment, no penalty for the result). Learning cycles: admit your own mistakes first and publicly. Source 01 [40f7b4e398fb] [d4d1178321c5] [213b38f15546] [de0b8b082153] [7176608e359f] [16e8102cd5ec]. Source 02 agrees the leader is vulnerable first and cannot stage it [52a8c149b778]. Source 03 agrees: Wexner's "Hall of Shame", and yelling at a mistake in front of peers destroys trust [0de5f24898f1] [60f28329351e]. 3 sources.
+
+**R29. Intense, not tense. Assume people are withholding until the climate proves otherwise.** Source 01: after a hard meeting, ask whether people offered only safe, leader-agreeable ideas (tense) or bold ones and stayed engaged (intense) [6444ffb70c8e] [1dbed4a92007] [9fdf2daba130]. Source 05: "well over half the time" people do not share what they think (uncited research); psychological safety is the 1 thing Musa would pick [c94641818f5e]. Source 02: silence and calm agreement are the classic low-trust symptom; a prompt to check, not proof [0ae728a0b4ef]. 3 sources.
+
+**R30. Challenger: seed the need, lay down a concrete challenge, withhold your answer, make it believable, co-create the plan, stage 1 early visible win.** Seed by showing the need (the GE bus trip to a trade show), by challenging assumptions (Prahalad's fake bankruptcy article), or by reframing a bottleneck as an opportunity (P&G Pringles). Lay a specific stretch target and ask the hard questions. "Helicopter down" to a ground-level proof point, let the executors co-create the plan, orchestrate 1 small early win before the big one. Source 01 [9087c1c9126b] [277ce40b634b] [475ce7aec24c] [53e8883c06ff] [7d7a0e4359e1] [7d46fb99d397] [263531838555] [808359b68558] [bcb9bdd6f85f]. Source 03's 5-step commitment ladder (vision, expect doubt, leadership commits first, inclusion in small groups, teammates propose the tasks) is the same shape [9ed83f4b4706] [63cb980cc32a]. 2 sources.
+
+**R31. Control the pace of ambiguity: ask for a 30 percent answer in 2 days before deciding whether to invest in the 100 percent answer.** Source 01 only. [3d3c12db2fff]
+
+**R32. Investor: define ownership up front (51 percent of the vote, 100 percent of the responsibility), give the whole outcome not a slice, stretch the role 1 level up, coach with questions, add backup without removing ownership, hand the pen back, let natural consequences run, make the scoreboard visible.** Source 01 [d150234124c0] [bc22e9ec9c05] [cb138faa8112] [38f23ceae927] [f78fe4052829] [4c69b917bb9f] [f90b88789a93] [9c377403f19f] [f09a30ff919d] [5d38c10d11cb]. Source 02 agrees on publishing goals, owners and standards so nobody can quietly ignore them [401b22a4cb2f] [25f1e4a02461]. 2 sources.
+
+**R33. Never accept an AWK without a FIX, in either direction.** Do not hand a problem upward without a proposed fix, and when a delegated problem comes back, return it with "what would you like to do to fix this?" rather than solving it yourself. If you are doing most of the thinking on delegated work, you have taken it back. Source 01 only. [d7f2b6fe2bc3] [10e31326d248] [62673dab8487]
+
+**R34. Avoid the bungee boss and the morning directive.** Jumping in only when something is visible to senior people, and re-deciding the team's day each morning, both destroy ownership. Source 01 only. [62673dab8487]
+
+**R35. Directive leadership is allowed only as an extreme exception: a genuine crisis, the leader's insight verifiably greater, and no time for others to catch up.** Source 01's own FAQ [01bfefe3ebdb]. Source 03 agrees: choose authoritarian, participative or delegative by who holds the information and how much time there is; authoritarian rarely; yelling, demeaning language and threats have "no place"; delegating keeps responsibility with the leader and is not a way to shift blame [84d62308900c]. 2 sources.
+
+**R36. Develop by working the extremes: neutralise your 1 worst discipline to acceptable, push your 1 strongest to world-class. Do not work all 5 at once.** Source 01 cites Zenger and Folkman's 360 data on 8,000 leaders: no distinguishing strength puts a leader at the 34th percentile; 1 strength 64th; 2 at 72nd; 3 at 81st; 4 at 89th. Source 01 only. [f51995e58591] [0d9014408391]
+
+**R37. Change 1 practice for 30 days, then hold 1 question for a year.** Pick exactly 1 practice inside 1 discipline, run it 30 days, keep a journal. Then build layer by layer, commit to a year on 1 guiding question, and find a partner or peer group for accountability. The 30-day habit figure is the author's assertion with no study named. Source 01 only. [887d2303442c] [a49dc2d60271] [20942ff19843] [64aaf10b52e5] [a0c170241cea]
+
+**R38. Run the accidental diminisher check; most Diminishers do not know and can change with feedback.** Source 01: many were promoted for personal brilliance and assumed the boss's job is to be the smartest person; others "went native" under Diminisher bosses. The book's quiz (10 scenarios, "A.D. score", lower is better) sits on multipliersbook.com `[web check: still live]`. Source 01 only. [d6302d3157e7] [25c379ab794f]
+
+**R39. Multiply beyond the inner circle.** A leader can be rated a Multiplier by direct reports and a Diminisher by everyone else: "the farther removed people were from the leader, the more diminished they felt". Source 01 only. [3446271d07b3]
+
+**R40. You do not need a Multiplier boss to start; build 1 visible team and expand.** Source 01 only, anecdote. [4478f914f73b] [80ec8f28a9ab] [8e62a8e6d487]
+
+**R41. Do not hand these ideas to a "raging Diminisher" in a diminishing way.** "You can't diminish people into being Multipliers." Source 01 only. [0e3e89ef279a]
+
+**R42. Counteract hierarchy on purpose: reach past it for frontline insight, and separate criticism of an idea from criticism of the person.** Source 01: org charts and approval matrices skew power up and reward compliance [b96dc4113fbb] [85b352b6b189]. Source 03: teams that conflate idea criticism with personal attack suppress dissent, including dissent aimed at leadership [788f0cb90b86]. 2 sources.
+
+**R43. Set high expectations and model the vision; ask more than you tell.** Source 03 [d50bb3e8d0a0]. Source 01: questioning is the single highest-leverage leader habit [4c552fae77ce] [a41c5570c8d7]. 2 sources.
+
+**R44. Count the cost of a Diminisher in a key role before acting.** Estimate the team at about 50% under that person and what full use of the rest would be worth; on an 11-person team the book's arithmetic gives back "the equivalent of five full-time people". Illustrative maths on a self-reported finding. Source 01 only. [8abb782bbe28] [3c9e69b660b3]
+
+### A.2 Trust-building exercises (moved from section 4.2, P6 to P8)
+
+Generic HR scripts from source 02's fable with no store tie. Use P5 and P9 for the store's own team health and scoreboard work; run these only if the human wants a deeper trust exercise.
+
+**P6. Personal histories exercise (low risk).** Goal: a first, small lift in trust. Preconditions: a meeting or offsite, at least 30 minutes. Steps (02): round-robin, leader included: siblings, hometown, a unique childhood challenge, hobbies, first job, worst job. Keep the boundary explicit ("your life as a child, not your inner child"). Move into real work while the group is still loose; the effect fades. Note who stays outside the warmth. [a50879793a42] [acbe5b2bf41c] Checks: the leader went first. Rollback: none.
+
+**P7. Team effectiveness exercise (higher risk, more useful).** Goal: peer feedback that turns into assignments. Preconditions: some baseline trust; at least 60 minutes. Steps (02): each member privately names, for each peer, the single most important contribution and the 1 thing to improve or stop. Report 1 person at a time, all peers giving input while that person listens without defending. Start with the leader. Follow up each development area in later one-on-ones. [1c7756fd2d21] Checks: every named development area has a follow-up date. Rollback: stop if it turns into personal attack; restate R48.
+
+**P8. Strengths and weaknesses round tied to business impact.** Goal: named gaps that become assignments, coaching or hires. Preconditions: P6 done. Steps (02): 5 minutes each to write 1 biggest strength and 1 biggest weakness framed as contribution to the team's success or failure; ban soft weaknesses and false modesty; leader first; let peers sharpen a shallow answer; do not force a defensive person deeper; stop a peer who lands a joke at someone's expense. Use the output for staffing. [242e9d4d282d] Checks: each gap has an action. Rollback: none.
+
+### A.3 OD technique write-ups (moved from sections 3.5 and 4.2)
+
+Role Analysis Technique, role negotiation, force field analysis and process consultation, from the undated source 03 handbook. Keep P14's responsibility-charting decision list in the base layer (section 4.4); these are the generic technique mechanics behind the other role and responsibility rules.
+
+**R76. Clarify an ambiguous role with the Role Analysis Technique.** Pick the focal role, define it jointly with the incumbent and the team, the incumbent writes the role profile, the accepted profile becomes the role. Best for new teams or role confusion. Source 03 only. [ae9c30902c6c]
+
+**R78. Use role negotiation only when resistance is power-based.** Contract on work behaviours, not feelings: each person states what to start, stop, continue; each fills a form per colleague (more, less, unchanged); pairs trade; a follow-up meeting checks the contract. Minimum 1 full day; 2 days plus a follow-up a month later is best. Source 03 only. [10b3930ea6dc]
+
+**R79. Unblock a stalled situation with force field analysis, and add a stabilising step at the end.** Describe current and desired states, list driving and restraining forces, split them by what you control, choose moves that raise driving and cut restraining forces, then plan how to hold the new state. Source 03 only. [6572b0c296da]
+
+**R80. Choose a conflict mode on purpose.** Source 03 [059d6a41d014]; source 02's TKI [dd193a22adc1]. 2 sources.
+
+**P13. Role Analysis Technique.** Goal: 1 written role profile for an ambiguous role. Steps (03): pick the focal role; the incumbent and team define its requirements together; the incumbent writes the role profile; the accepted profile becomes the role. [ae9c30902c6c] Checks: the profile names outputs, decision rights and handoffs. Rollback: re-run when the role changes.
+
+**P15. Role negotiation (power-based resistance only).** Goal: a behaviour contract between people whose influence a change threatens. Preconditions: at least 1 full day; 2 days plus a follow-up 1 month later is best. Steps (03): contract on work behaviours not feelings (start, stop, continue); each person writes for every other what to do more, less, unchanged; pairs trade until both feel the return is fair; follow-up meeting checks the contract. [10b3930ea6dc] Checks: every trade is written and dated. Rollback: if resistance is doubt not power, use P32 instead.
+
+**P16. Force field analysis.** Goal: unblock a stalled change (a 3PL switch, a new meeting cadence, a tracker nobody updates). Steps (03): describe the current state and why change is needed; describe the desired state fully; list driving and restraining forces; split by what you control; pick moves that raise driving and cut restraining forces; once reached, plan how to hold it. [6572b0c296da] Checks: at least 1 restraining force removed, not only driving forces added. Rollback: none.
+
+**P17. Process consultation for a recurring interpersonal conflict.** Steps (03): define the problem with the conflicted person involved; develop options together; the final recommendation is owned by the person, not handed down. Counselling means listening and helping the person find their own way, advice only when needed. [0b4cac182293] Checks: the person states the recommendation in their own words. Rollback: escalate to P22 only after specific repeated behaviour.
+
+### A.4 Belbin role taxonomy detail (moved from R74)
+
+9 roles: Co-ordinator, Shaper, Plant, Monitor Evaluator, Implementer, Team Worker, Resource Investigator, Completer Finisher, Specialist. 3 are essential: Co-ordinator, Plant, Monitor Evaluator. Map by observed behaviour, not title. Flag a team stacked with 1 type. Do not make an Implementer the leader (lacks vision, reacts badly to ambiguity). Match roles to task stage. The mapping of Belbin roles to merchandising, creative, margin review and QA in mini playbook 03 is `[pass 1 adaptation]`.
+
+### A.5 MBTI and Thomas-Kilmann instrument description (moved from R68)
+
+Source 02 prefers MBTI (minimum 4 hours) and says people identify their own type [d2ff2bd42550] [e3a83ce7c404]. Source 02 also names the Thomas-Kilmann instrument for conflict style [dd193a22adc1] [a1fdc9095aec].
+
+### A.6 Illustrative anecdotes (moved from R19 and R24)
+
+Source 01's Shackleton ad: "Small wages, bitter cold... safe return doubtful"; it drew hundreds of well-suited applicants. [d7ddc08248a1]
+
+Source 01: Bloom Energy fired a world-expert scientist 18 months before a beta and missed the deadline by 2 days [770627149af5] [3c9e69b660b3]. Source 02's Fred story: promoting a talented but disliked analyst lost 3 of 7 staff in 2 weeks; after Fred left, performance recovered in about a month with 3 fewer people [f9f956b15e91].
