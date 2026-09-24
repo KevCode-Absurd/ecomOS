@@ -559,3 +559,204 @@ Cards: [3a99be49f292] [0c4e0163aff8] [7558889b0856] [3bbbee3c2099] [64042fc21a8b
 7. Re-check visually after each change; apply to hero, section images and repeated blocks, not only product images. [01]
 
 Cards: [036e673a5a05] [c9fcbc1b5513] [08b2e0e2f95d] [c5fb935a9b7d] [21698bb77d52] [b783c30c2217] [8883db1cfb1d].
+
+### P17. Lazy-load below the fold and keep the first item eager
+
+1. Add `loading="lazy"` to every image not visible at first load; footer logos included. [01, 02, 03]
+2. Set `loading="eager"` explicitly on hero, logo, first slide, main product image and first card, so a later plugin cannot flip them. [02, 01]
+3. Carousels: slide 1 eager, slides 2 and on lazy. [01]
+4. Loops (collection list, product grid), as source 01 describes it (adapt syntax to the theme): in the section's for loop, if `forloop.index == 1` assign `lazy = false`, else `lazy = true`; pass `lazy: lazy` into the card snippet; in the snippet output `loading="eager"` when lazy is false, else `loading="lazy"`. Inspect: card 1 eager, rest lazy. [01]
+5. If a hero section lazy-loads its first image by default, add logic to exempt it. [01]
+6. Videos: `preload="none"`. [01]
+7. Optional lazysizes plugin (src = empty pixel, data-src = real URL, class lazyload). Source 01 calls it slightly better than native; never on in-view images. [01] [web check: lazysizes in current browsers]
+8. Lazy-load supporting content too: user-generated content, social carousels, reviews, related products (P10). [03, 04]
+9. Verify in the Network panel: in-view images download at once; others only on scroll. [01]
+
+Cards: [51db910ccfc8] [0f413fcac223] [eeb9c51fe0da] [70af8654d12d] [b093ed3b4d75] [481d00497deb] [3c9bddfb47c1] [4e8335051514] [c067983b290a].
+
+### P18. Fix LCP
+
+Goal: the largest in-view element paints in under 2.5 s (lab and field). Preconditions: LCP element named (P3 step 6, or Web Vitals extension); throttled test done (P2).
+
+1. Name the element per template: hero or first grid (home, collection), main product image (product), a headline or video elsewhere. [04, 05, 01]
+2. Web Vitals Chrome extension (settings > console logging): the LCP log names the element and splits time into TTFB, load delay and render delay. Network waterfall: very wide bars before the main content are the bottleneck. [07] [verify UI] [web check: extension features vs DevTools]
+3. Throttled load of the ad landing page: does the main image show as soon as it downloads? If the file arrived but stayed hidden until a slideshow plugin's JS ran, the fix is the plugin, not the image: show the main image as a plain image outside the carousel path. [01]
+4. Remove `loading="lazy"`, lazyload classes and similar from the LCP image. Set eager. [01, 04, 02]
+5. Remove fade-in, slide-in, preloader bars and placeholders on it. [01, 07]
+6. Compress it: under 250 KB (05), under 200 KB for a hero (04); AVIF or WebP where you control delivery. [05, 04]
+7. Add `<link rel="preload">` for it with `fetchpriority="high"`; on product pages add Liquid logic that preloads the right image per product. Set `fetchpriority="low"` on images far down. Preload only this and critical fonts. [01, 07] [web check: syntax and support]
+8. Cut render-blocking scripts ahead of it (P9, P10) and check TBT; blocking time delays LCP too. [01, 07]
+9. Read TTFB. Under 800 ms: done here. Over 800 ms after the front-end work: hosting (P28). [08, 05]
+10. Retest 3 times. Source 01 expected a community store's PDP to move from about 5 s LCP and a score in the 30s to 43 to 50, or 50 to 60 with preload; example, not a promise. [01]
+
+Rollback: revert the section or snippet from the duplicate theme. Cards: [7a213481a9d2] [1b9747314efd] [d56347d58c66] [b4735bb55b51] [958af3150188] [457e4a26802c] [11d184a954ab] [cc2d433b9ede] [eb9525bda54a] [8883db1cfb1d] [a10a7445f2a3].
+
+### P19. Find the CLS source
+
+1. PSI filmstrip: compare frames for a new element that pushes content. GIF motion in frames is expected; the signal is a new element. Check the desktop tab. [01]
+2. PSI outlines the shifting element. Copy its id or classes, open the page, Inspect, Cmd/Ctrl+F, paste, Return to reach the tag. If the id looks like an app prefix, search that name in the App Store (a "hexom" id led to a free shipping bar app injecting an announcement bar after load). [01]
+3. Lighthouse > View Original Trace: watch from first paint for elements that appear late (header menu, Afterpay widget, product thumbnails). Zoom the page out and re-run to catch below-fold shifts. Lighthouse shows fewer issues than PSI; fix Lighthouse's first. [01] [verify UI]
+4. Web Vitals extension CLS log lists the shifted DOM elements. [07] [verify UI]
+5. Throttle and watch (P2); stop the load mid-way and inspect. Custom 20 kbps profile if needed. [01]
+6. Common causes to check in order: images without dimensions; late app widgets (announcement bars, review badges, payment widgets); cookie banner; font swap resizing text; late body or inline styles; lazy-loaded theme CSS with incomplete critical CSS; contradicting CSS rules; ads, embeds, iframes; entrance animations. [01, 04, 05, 07]
+7. Search Console > Core Web Vitals shows the field effect; Shopify admin "visual stability: poor" points at CLS. [01] [verify UI]
+
+Cards: [f00068c50316] [24893ea78676] [80a761efcb18] [cabcd2d4c66e] [ba43a0aaa747] [a5d2c3aee970] [11d184a954ab] [2969a152a99d] [883371c7111c] [3932af95de46].
+
+### P20. Fix CLS
+
+Goal: CLS under 0.1 on every template, both devices. Do each fix on the duplicate theme; retest between fixes.
+
+1. Images and videos without dimensions: add `width` and `height` (numbers, no unit; read the rendered size by hovering `src`). Or CSS `aspect-ratio`. Works only if CSS keeps the ratio; use `srcset` when the ratio changes by viewport. WordPress quick fix: WP Rocket "Add missing width and height attributes". [01, 02, 05, 07]
+2. Late widgets: measure the rendered size, add a CSS rule fixing the container's width and height, verify on each breakpoint (fixed size can clip responsive widgets). [01]
+3. App-only simple elements (announcement bar): replace with the theme's own. [01]
+4. Ads, embeds, iframes: placeholder with fixed space. [05, 07]
+5. Cookie banner: delay to interaction (P10d) only with a consent go-ahead. [01]
+6. Font swap: `font-display: swap` plus a fallback styled to the custom font's size and line height (P21). [01]
+7. Contradicting CSS: remove 1 rule instead of stacking overrides. [01]
+8. Late body styles: a page-width style in the body tag re-wrote base CSS after first render. Move it to the end of the head; wrap desktop-only rules in `@media (min-width: 767px)`; better, use the theme's layout width setting. Confirm the intended design first. [01]
+9. Body jump on Dawn: `display: block` on the body tag stopped the hero rendering low and jumping up in 1 store. [01]
+10. Lazy-loaded theme CSS: generate critical CSS per visually different template (online generator fed with the full theme CSS and the page URL), inline it via a snippet in theme.liquid, then add reserve rules for anything still moving (font-size changes included). If the theme has no critical CSS, create a snippet of CLS-preventing rules rendered only on the template being fixed. [01]
+11. Tone down animations that do too much. [07]
+12. Retest with Lighthouse original trace and PSI; then wait for field CLS (one case: 0.73, 0.66, 0.13, 0.1, 0 over about 28 days). [01]
+
+Rollback: revert the snippet or CSS rule. Cards: [d16d1fcdd349] [f597983f8e66] [883371c7111c] [3932af95de46] [24893ea78676] [ba43a0aaa747] [f00068c50316] [b1f2c1da412b] [14bc6ce5b8a6] [80a761efcb18] [dbf103b05b0a] [3b3894441e6c] [f21b8466aa36] [cabcd2d4c66e].
+
+### P21. Fonts
+
+1. Inventory the custom font weights and styles actually used. Keep about 3 at most. No design reason for a custom font: use the theme's built-in fonts. [01]
+2. Shopify: Edit code > search `@font-face`. Add `font-display: swap;` to every rule that lacks it (just under font-family), every weight and italic. [01] [verify UI]
+3. WordPress: find the fonts on fonts.google.com; get WOFF2 files (Google Web Fonts Helper recommended; Font Squirrel failed on some variable fonts); upload as custom fonts in the builder or theme (Oxygen: Preferences > Custom Fonts, set weight and style) or a custom-font plugin; name them clearly ("Inter Local"); switch the body and heading font variables to the local versions. [02] [verify UI]
+4. Subset to the characters you use. [04]
+5. Test on throttled 3G: a standard font shows first, then the custom font swaps in. [01]
+6. Style the fallback to match the custom font's metrics so the swap does not shift text (P20 step 6). [01]
+7. Rerun GTmetrix and confirm no requests to fonts.googleapis.com. [02]
+
+Cards: [1eacf61a57a2] [027af5f63b68] [3ef856fab3ae] [3263b4728b85] [ea1d2a527d10] [731928d47c17] [74fc1378fc6a] [14bc6ce5b8a6].
+
+### P22. Critical CSS and non-critical CSS
+
+1. Identify stylesheets that style only elements not visible at load (modals, drawers, below-fold sections). [01]
+2. Rewrite each as `<link rel="stylesheet" href="..." media="print" onload="this.media='all'">`. Never on in-view styles. [01]
+3. Confirm the swap in the rendered page and the Network panel; a failed onload leaves the sheet print-only. [01]
+4. Critical CSS: extract above-fold styles per template, inline them, load the rest async. Tools named: Critical, PurgeCSS; WP Rocket and similar plugins generate it. On Shopify, per-template snippets (P20 step 10). Developer task on complex themes. [04, 01]
+5. Minify CSS (CSSNano; plugin settings on WordPress). [04]
+6. Recheck the Lighthouse trace for the first second: styled from first paint, no unstyled flash. [01]
+
+Cards: [08d397da7d0d] [b73d08e8603c] [e9b7f4c3107e] [cabcd2d4c66e] [c067983b290a].
+
+### P23. Shopify theme code clean-up: asset_url, Liquid loops, Quick View, sliders, pop-ups
+
+1. `asset_url`: view page source; asset URLs should carry `?v=`. Find URLs typed directly inside CSS files and change them to the `asset_url` filter (card form: `{{ 'theme.css' | asset_url | stylesheet_tag }}`). Check the Shopify URL filter docs. [03] [verify UI]
+2. Liquid loops: review templates for `for` loops that crawl a whole collection to test price or tag, and for the same loop run in several snippets. Remove duplicates; use `product.options_with_values` where it fits. [03]
+3. Quick View: does the grid show it? Click map (Hotjar, Hindsight) to see if shoppers use it. Source: customizer toggle, then apps, then theme code (developer). Remove it; if it must stay, AJAX on click or data attributes plus JS. [03] [verify UI] [needs brand data: click map]
+4. Sliders: 1 hero image with a clear call to action; if required, 2 to 3 static slides, srcset, slide 1 eager (P17). [03, 01]
+5. Pop-ups: exit intent or time delay, never on load. [03]
+6. Empty `<img src=''>`: search and remove. Small icons: CSS sprite. [03]
+7. Entrance effects and effects libraries on in-view elements: remove (P18 step 5). [01]
+8. Re-test after each item.
+
+Cards: [5748b07d6cda] [11d911ca0868] [6f05e9392e74] [a459458a1b47] [1c99225810ac] [d56347d58c66].
+
+### P24. Video and embeds
+
+1. Network tab before clicking play: if the player JS loaded at page load, the embed is standard. Replace with a lite embed (thumbnail about 15 KB; player on click). No library is named; developer or a lite-embed component. [03, 09]
+2. Mobile: turn off autoplay; static thumbnail and a play button. [03]
+3. Compress video files; `preload="none"`; MP4 in a video tag replaces GIF (attributes such as autoplay, muted, loop, playsinline are not given by the sources; verify). [01]
+4. Re-test the template.
+
+Cards: [badac5a4a278] [0021f744e1e0] [3dd6497a4d63] [5148a60eef22] [0f413fcac223].
+
+### P25. Redirects and broken links
+
+1. Export the redirect list (Shopify Navigation) or crawl. Replace 302s that should be permanent with 301s. [03] [verify UI]
+2. Remove chains: never redirect to a URL that redirects. [03]
+3. Run a broken link checker for images, CSS and JS 404s; fix or remove. [03]
+4. Custom 404 pointing to the 2 biggest categories (Gymshark example). [03]
+
+Cards: [2cd7ecfea589].
+
+### P26. Caching: verify, set rules, protect dynamic pages
+
+Preconditions: fundamentals done (R91); owner's go-ahead for any purge.
+
+1. Verify current state (any platform): DevTools Network, Preserve log, no throttle, reload, click the document request, read response headers. Cache hit header present (name depends on host); `content-encoding: gzip` or the host's method. Do not read `cache-control` as proof. [02] [verify UI]
+2. WordPress: turn on compression and caching at the host and cache plugin (Breeze on Cloudways; WP Rocket, W3 Total Cache, Redis Object Cache named by source 04). Re-verify in incognito with Disable cache unticked. [02, 04] [verify UI]
+3. Rules: static assets (images, CSS, JS, fonts) up to 1 year only with versioned file names; HTML short; prices and stock either updated by JS on a cached page or short TTL with fast invalidation. [04]
+4. Exclusions: cart, checkout, account and any visitor-specific page. Load each and read the headers. [04]
+5. Defer session creation until first add to cart or login where the platform allows. [04]
+6. Invalidation: selective purge on price and stock changes, not a full purge. Test: change a price in admin, reload the product page and a category page listing it; the page updates and the rest stays cached. [08, 04]
+7. Full-page cache on self-hosted stores: Redis or Varnish via the host (P28). [08]
+8. Shopify: caching is managed; do not install caching scripts. [01, 04]
+9. After any change: test cart, add to cart and checkout end to end. [08]
+
+Cards: [55f9847e6f0a] [9490c0550ad4] [ee4655c50df6] [0709d6cdeb98] [cdc61c33e699] [9973ef4b38a5].
+
+### P27. CDN setup (self-hosted stores)
+
+1. Pick by geography: 1 region, a basic CDN; global, a wide edge network. Named: Cloudflare (DDoS, image optimization), Fastly, Akamai, AWS CloudFront, BunnyCDN. Shopify already uses Fastly. [04, 03] [web check: plans and prices]
+2. Start with static assets: images, CSS, JS, fonts. [04, 09]
+3. Cache keys: include query parameters that change content (page number); exclude tracking parameters (UTM) so they do not fragment the cache. [04]
+4. Automatic invalidation on image updates and deploys (API purge or URL invalidation). [04]
+5. Monitor hit rate in the CDN dashboard; target 80%+. Low means misconfiguration or too much dynamic content. [04]
+6. Optional: CDN image optimization for thousands of SKUs (Cloudflare, Imgix, Cloudinary). [04]
+7. A CDN does not fix rendering or API problems; those stay with the developer. [09]
+
+Cards: [46127ea01ca7] [9490c0550ad4] [6e2d4fa52ebe] [54e3673579e3] [8883db1cfb1d].
+
+### P28. Hosting: tier check and the host conversation
+
+Preconditions: images and plugins fixed and re-measured (R93); TTFB from PSI.
+
+1. Tier by volume: shared ($1 to $15 a month) only for a new store with little traffic and a plan to upgrade within the year; VPS or cloud (about $20 to $50 a month managed) at 100+ orders a month; auto-scaling cloud or managed WooCommerce hosting at high volume; CDN on top for international customers. Compute ROI with abandonment and AOV. [04] [needs brand data: orders, AOV, abandonment] [web check: prices]
+2. Read TTFB per template. Under 800 ms is the target; harder in ecommerce because of dynamic carts. [08]
+3. Contact the in-house admin or host support with: PHP version (want 8.2+)? Redis or Varnish active? Full-page cache serving pre-rendered HTML? HTTP/3 on? Ask them to confirm caching and compression headers (P26 step 1). [08]
+4. SaaS and cloud platforms: many settings are already tuned; read the documentation and ask only for what is missing. [08]
+5. Before a peak event: memory and bandwidth limits, projected peak load, what add to cart, search and login do under load; load test; waiting room for limited inventory (05-SET for the infrastructure). [03, 06]
+6. Database (WooCommerce): schedule clean-up of revisions, expired transients and orphaned metadata (WP-Optimize); remove or cache plugins that run heavy queries on every page load. [04, 08]
+7. Re-measure TTFB and LCP after changes; test cart and checkout. [08]
+
+Cards: [a063ce857916] [0709d6cdeb98] [d2e8efefa7f2] [a10a7445f2a3] [54e3673579e3] [88659194131b] [74fc1378fc6a] [3d795cd17d4b].
+
+### P29. Monitoring and performance budget
+
+1. Test at least monthly, after every app install, theme change or site-wide update, and before major sales. [04]
+2. Automate: PSI API on a schedule, GTmetrix monitoring, Lighthouse CI in deploys (free); DebugBear, SpeedCurve, Calibre (paid). [04] [web check: prices]
+3. Write the budget: max page weight (source 01 works to 2 to 3 MB per page; see 7.19), minimum mobile score per template, max third-party services per page, image ceilings (R31). [04, 01]
+4. Any change that breaks the budget is reviewed before approval; every new feature gets a speed review because most changes slow pages. [04, 06]
+5. Re-check delayed app URLs after app updates (P10c). [01]
+
+Cards: [9ffe9f981c57] [689b4ce4442e] [621e302f651f] [b711b4ded0ce].
+
+### P30. Prove a fix and report it
+
+1. For each change: page, device, tool, 3-run average before, 3-run average after, date, what changed, what else changed at the same time. [01, 08]
+2. Freshness confirmed (P4). Waited 1 to 2 minutes. [05, 01]
+3. Slow-connection visual test before and after, described in words. [02]
+4. Function tests: every affected app; page view, variant, add to cart, test purchase events with consent on and off; cart and checkout end to end. [01, 08]
+5. Field follow-up: note the date 28 days out to check PSI field data and Search Console. Shopify admin web performance report after 12 to 24 hours (older UI). [05, 01] [verify UI]
+6. Share the frozen PSI report link with the owner or developer. [05]
+7. Say what is an example and what is measured. Never present a source's case result as the store's forecast.
+
+Cards: [c33439a2c9b9] [dca8734ae894] [6012d71fccb6] [f1a837edbfbe] [15b41de4c239] [6427c0d96eec] [ef51a42e0e16] [085b91000740] [f338ed52ce8f].
+
+### P31. Peak-event readiness
+
+1. List the dynamic steps at risk: add to cart, checkout, login, site search. [06]
+2. Speed audit of the templates involved 2 to 4 weeks before (P1 to P20). [04]
+3. Capacity check with the platform or host (P28 step 5). [03]
+4. Load test the dynamic steps; decide what each does under load (queue, throttle, static fallback). Card suggestion, not in the source text. [06]
+5. Limited inventory: consider a virtual waiting room (source 06 sells them; 84% of surveyed shoppers preferred a queue to an error page). [06]
+6. Freeze app installs and theme changes for the event window (R8). [04]
+
+Cards: [88659194131b] [54e3673579e3] [9ffe9f981c57].
+
+### P32. Theme choice, migration and benchmark (Shopify)
+
+1. New store or beginner: Dawn or Horizon, not a complex premium theme (saves about $300 and the unused libraries). [01]
+2. The 23 free themes are 2 codebases: 13 Dawn-based, 10 Horizon-based; switching within a family changes design, not speed. [01] [web check: current Dawn and Horizon versions]
+3. Existing Dawn store with lots of work: keep Dawn, move to Horizon at the next redesign. New store: Horizon. Old slow custom theme: apply this playbook; if the cost exceeds a rebuild, rebuild on Dawn or Horizon with the redesign. [01]
+4. Benchmark 2 themes fairly: same store, identical content (hero and a few products), all app embeds off in both, PSI on each published theme, record mobile and desktop plus LCP and blocking time. Example: Horizon 71 mobile / 74 to 77 desktop vs Dawn 56 / 78, LCP from an oversized hero in both. [01]
+5. Premium theme only when a specific feature is known to make money. Agency evidence for a lean theme: over 50% better home page bounce for new visitors after 1 switch (single observation). [01, 03]
+
+Cards: [637495534f7f] [943bdc967b80] [21280154cb29] [02c570556e30] [caf6d4c08b6d] [a459458a1b47] [d68b270990ab].
