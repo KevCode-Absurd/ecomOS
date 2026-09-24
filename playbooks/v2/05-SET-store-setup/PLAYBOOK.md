@@ -4,6 +4,8 @@ version: 2.0-draft  |  date: 2026-09-24  |  sources: 11  |  cards: 432  |  built
 
 ## 0. How to use this playbook
 
+**Ecommerce first.** This playbook is for building and running an ecommerce store, not a generic website or app. Section 3.0 is the priority ranking: load it before the rule groups below, since it says which levers decide whether the store can sell anything at all. Store-type conditions (hero SKU vs catalogue, low vs high AOV, subscription vs one-off, marketplace-heavy, luxury or considered purchase, mobile-first India vs US) decide which rules in sections 3 and 4 apply and how much weight each carries; check the condition on a rule before running it.
+
 **Who runs it.** The store setup and platform operations agent. It builds a new Shopify or WooCommerce store from an empty account to a launched, sellable storefront, and it runs the platform-side operations after launch: products, collections, policies, payments, shipping, taxes, checkout settings, markets, apps, staff access, and the launch gate.
 
 **What the sources are.** All 11 mini playbooks are YouTube walkthroughs or Shopify's own content. 9 of 11 carry affiliate links (Hostinger hosting, Shopify trial deals, Elementor, Blocksy Pro, theme marketplaces, apps) or sell the presenter's own program (source 06 sells a white-label ecommerce course and tools; source 11 sells a product page framework). Source 04 is Shopify's own channel and favours Shopify-built tools. No source gives measured results. Every number in this playbook is a demo value or a presenter's claim unless marked otherwise. Section 12 rates each source.
@@ -88,6 +90,25 @@ version: 2.0-draft  |  date: 2026-09-24  |  sources: 11  |  cards: 432  |  built
 
 Each rule: the rule, when it applies, when it does not, supporting mini playbooks by number, conflicts, card ids. "Sources: 01, 04" means mini playbooks 01 and 04. Rules marked (opinion) rest on one presenter's judgment with no data.
 
+### 3.0 Ecommerce priority order
+
+Ranked by what decides whether the store can sell anything at all, not by which admin screen it lives on. Conditions by store type are given where they change the stakes.
+
+1. **Platform fit to the business model (R1-R4).** A wrong choice cascades into every later rule; stakes are highest for a brand with an existing WordPress site or a hard checkout-control need.
+2. **Payments live and verified (R64-R72).** No order can be taken until this clears, and verification runs hours to days, so start early. Matters most where card and COD both appear, as in mobile-first India (R66, R67).
+3. **Shipping rate coverage for every target country (R73-R85).** One unrated country is unshippable. A single hero SKU can run one flat rate (R74); a mixed-weight catalogue needs class or table rates (R78, R79).
+4. **Tax setup with human sign-off (R86-R94).** Wrong tax is a legal and refund cost found after launch. A marketplace-heavy or multi-country brand carries more of this, since each market in R104 adds its own tax questions.
+5. **Product data completeness and buyability (R32-R49).** A single-hero-SKU brand should put more depth into that one listing (routed to 07-LPG); a catalogue brand needs the tagging and bulk-edit discipline in R44, R45 to not drown.
+6. **Legal pages and policy content (R56-R63).** A thin shipping or return policy raises tickets and disputes (R59), and matters more for a considered or luxury purchase.
+7. **Checkout configuration and consent (R95-R103).** Regional norms differ: mobile-first India leans on COD and a required phone (R66, R96); a US store leans on wallets (R97).
+8. **Collections and navigation (R50-R55).** A catalogue store needs this; a single-hero-SKU brand needs almost none of it.
+9. **Lean, model-matched app stack (R108-R115).** A subscription app only pays off for consumables (R112); over-installing slows every store type (R108).
+10. **Markets, currency and language (R104-R107).** First-order only for a brand selling into several countries or marketplace-heavy; a single-market DTC brand can skip this at launch.
+11. **Staff roles, 2FA and backups (R116-R120).** Necessary hygiene, lower urgency than the money-moving steps above it.
+12. **Launch gate verification (R123-R128).** Always last, regardless of store type; it only confirms work already done. `[general practice]` for the ordering itself; each line's underlying rule is sourced as cited.
+
+Load this block first; the groups below are the detail.
+
 ### 3.1 Platform choice: Shopify vs WooCommerce
 
 **R1. Choose Shopify when the brand wants a hosted platform with payments, tax service, checkout and theme editor built in, and has no in-house WordPress skills.** Applies to new brands, solo founders, agencies building for clients who will self-manage. Does not apply when the brand already runs a WordPress site it must keep, or needs full control over every page element. Trade-offs the sources give: checkout customization is locked below Shopify Plus (01); plan fees plus a per-sale card rate of about 1.5% Basic, 1.3% Grow, 1.1% Advanced `[web check]` (01); currency per market needs Shopify Payments (01); apps inject code and slow the store (01, 04). Sources: 01, 04, 08, 09, 10. [8c79cd592233] [6f0629590ba6] [a14524485a10] [d082e7bbfa8a]
@@ -98,9 +119,11 @@ Each rule: the rule, when it applies, when it does not, supporting mini playbook
 
 **R4. On either platform, plan the store to live with the brand for years.** Theme and platform are multi-year choices. Source 01 says to plan a theme around catalog size 4 to 5 years out. Applies before shortlisting themes. (opinion, but all sources treat migration as costly). Sources: 01, 10. [0875899454b9] [d936f750ed9d] [6d9a16a8c9c4]
 
+**R144. When replatforming, migrate the product catalogue, order history, customer accounts and SEO redirects to the new store before pointing the domain at it.** Applies to a brand replacing an existing website or platform, not a first-time launch. `[general practice]` No library source; verify against brand data before use.
+
 ### 3.2 Account, plan and business identity
 
-**R5. Sign up with an email the business controls, never a contractor's or agency's.** Applies whenever someone other than the owner helps. Only the owner can change currency, delete the store and take other critical actions. Choose an address the business will keep long term. Sources: 01, 04. [63c65895f090] [2f5a7287fedc]
+**R5. Sign up with an email the business will still control when it changes currency, deletes the store, or needs a critical account action years on, never a contractor's or agency's.** Applies whenever someone other than the owner helps. Only the owner can change currency, delete the store and take other critical actions. Choose an address the business will keep long term. Sources: 01, 04. [63c65895f090] [2f5a7287fedc]
 
 **R6. Enter the exact legal business name and registered address before touching payments, tax or shipping.** These feed the defaults every later screen uses. Skipping means re-entry and mismatch risk in payments verification. Applies to every new store. Sources: 04, 01, 09, 10. [5a93770b958e] [e6e96ea93d37] [86354ef8e01e] [728fa86b4907]
 
@@ -116,25 +139,25 @@ Each rule: the rule, when it applies, when it does not, supporting mini playbook
 
 **R12. Use an order ID prefix or suffix if you do not want customers to infer order volume.** Optional. Keep the checkout confirmation step on. Sources: 01. [04689a1d2d66] [d57d8a18c963]
 
-**R13. On WordPress, clean the fresh install before any store work.** Deactivate then delete every host-bundled plugin (keep the caching plugin if the host supplies one, source 05), trash default pages and posts, delete all but one theme, set permalinks to Post name, set the new user default role to Subscriber, set timezone, disable comments on a non-blog storefront. Applies right after install, before importing any starter site (leftover plugins can conflict with the import, 05). Take a backup first (02 card caveat). Sources: 02, 03, 05, 07. [95ada3c41602] [b44de1f18767] [16eefae8f3dd] [f0ee1de989fe] [284bc4b17ed7] [f66e3a492886] [7eaa358a211d] [f94cf50f4191]
+**R13. Clean the fresh WordPress install before any product, collection or theme work, so a leftover plugin cannot break the store import or the storefront later.** Deactivate then delete every host-bundled plugin (keep the caching plugin if the host supplies one, source 05), trash default pages and posts, delete all but one theme, set permalinks to Post name, set the new user default role to Subscriber, set timezone, disable comments on a non-blog storefront. Applies right after install, before importing any starter site (leftover plugins can conflict with the import, 05). Take a backup first (02 card caveat). Sources: 02, 03, 05, 07. [95ada3c41602] [b44de1f18767] [16eefae8f3dd] [f0ee1de989fe] [284bc4b17ed7] [f66e3a492886] [7eaa358a211d] [f94cf50f4191]
 
-**R14. On WordPress, write a site title and tagline that name the product and market, not "my website".** Positioning copy, not an SEO tactic (02 overstates the ranking effect; see 15-SEO). Sources: 02, 03. [f7075c8cc183] [22fe54d9d081]
+**R14. On WordPress, write the site title and tagline to tell a shopper what they can buy and where you ship, not to rank higher; the first line of positioning, not an SEO field.** Positioning copy, not an SEO tactic (02 overstates the ranking effect; see 15-SEO). Sources: 02, 03. [f7075c8cc183] [22fe54d9d081]
 
 **R15. Keep WooCommerce in Coming soon (and Shopify password-protected) until the launch gate in 3.16 passes.** Every source that covers launch says this. Sources: 01, 02, 03, 04, 07, 09, 10. [c4521eb76468] [b8f482b2f3d9] [978ff56aaae8] [3a6ca3eb1bff] [86354ef8e01e] [f7d6a3b222e4]
 
 ### 3.3 Domain and DNS
 
-**R16. Check domain availability when the brand name is chosen, before it is final.** Prefer .com. Keep it to 1 or 2 words, no hyphens or numbers, easy to spell (opinion, 10). Consider buying other extensions defensively (01). Do not overthink it (10). Sources: 01, 02, 10. [b30915400ab6] [8936916fd085]
+Moved to Appendix A: R16, domain naming taste.
 
 **R17. Buy through the platform for the simplest connection; connect an existing domain when the brand already owns one or wants registrar independence.** Shopify-bought domains auto-connect with no DNS work (04, 09, 10). External domains need about 3 DNS records (type, name, value) copied into the registrar, or a nameserver change (01, 10). Sources note GoDaddy first-year promos ($0.01) with higher renewals, and Shopify at about $16 a year `[web check]`. No source discusses portability if the store later migrates; that trade-off is in 7.2. Sources: 01, 04, 08, 09, 10. [b30915400ab6] [4f9700a6e477] [f1fa31262a90] [7ad023a56f5a] [4ad69ffecb22]
 
-**R18. Set the custom domain as primary, wait for propagation, and test it in a browser before removing the password.** "Pending" for a few hours is normal (10); up to 24 hours is possible (03, 07). "Connected" in admin is not proof; the URL must resolve (04). Sources: 04, 10, 03, 07. [4f9700a6e477] [d6854b97be2c] [7ad023a56f5a] [359dabdafbc0]
+Moved to Appendix A: R18, domain propagation waiting.
 
-**R19. Do not launch on the default myshopify.com or a host's temporary domain.** Treated as a professionalism and trust liability by 3 sources (opinion). Sources: 08, 09, 10. [4ad69ffecb22] [8936916fd085]
+Moved to Appendix A: R19, avoiding a default URL.
 
 **R20. Reuse the DNS record workflow for sender-domain verification and branded customer-account domains.** Klaviyo or Omnisend sender verification and the Shopify customer accounts domain use the same registrar record steps. Domain authentication can take up to 48 hours (04). Sources: 01, 04. [b30915400ab6] [abc432db1669] [5ceb388ec702]
 
-**R21. On WordPress hosting, verify the account email and the domain email, and confirm Force HTTPS is on.** Source 05 says an unverified Hostinger account is refunded and closed after 30 days `[web check]`. HTTPS is the only security step the WooCommerce sources give; the rest routes to 23-SEC. Sources: 02, 05, 03. [2946d83f30cb] [359dabdafbc0]
+Moved to Appendix A: R21, Force HTTPS as general hygiene.
 
 ### 3.4 Theme selection and safe editing
 
@@ -216,21 +239,21 @@ Each rule: the rule, when it applies, when it does not, supporting mini playbook
 
 **R57. Insert the platform template, then edit every placeholder and every clause to match real practice, then publish. Never publish a template unmodified.** All 5 Shopify sources say this; source 08 found an unedited "[insert return address]". Shopify has no shipping policy template; write it from the real shipping rules (08, 09). Sources: 01, 04, 08, 09, 10. [fe40994519f8] [ecbee7e2499a] [dd3f3bb627c7] [f1706731ed68]
 
-**R58. AI-drafted policy text is a first draft, not legal advice. A human with legal knowledge signs off before publish.** Source 03's prompt pattern ("I sell [category] in [countries]. Which legal pages do I need? Create the content and tell me what info you need from my company.") is a usable starting point. Source 01 recommends legal review for the EU, UK and UAE. ecomOS rule: mandatory human check. Sources: 03, 01, 09, 10. [4a64696a8718] [fe40994519f8] [f1706731ed68]
+**R58. Treat AI-drafted shipping, return, privacy and terms text as a first pass only; a human with legal knowledge signs off before it governs a real order, refund or chargeback.** Source 03's prompt pattern ("I sell [category] in [countries]. Which legal pages do I need? Create the content and tell me what info you need from my company.") is a usable starting point. Source 01 recommends legal review for the EU, UK and UAE. ecomOS rule: mandatory human check. Sources: 03, 01, 09, 10. [4a64696a8718] [fe40994519f8] [f1706731ed68]
 
 **R59. Write real shipping terms: delivery windows, handling time, conditions, and for US or Canada bound cross-border orders a visible note that import duties may apply.** A thin shipping policy raises ticket volume (01) and disputes (10). The shipping policy text does not set checkout rates; those live in Shipping settings (01). Sources: 01, 10, 04. [fe40994519f8] [c7fe3611980d] [f1706731ed68] [9ab062ef593f]
 
 **R60. Configure return rules (window, who pays return shipping, restocking fee, final sale items) and enable self-serve returns after the policy is published.** Sources: 01, 04. [fe40994519f8] [ecbee7e2499a] [abc432db1669]
 
-**R61. On WooCommerce, never leave a borrowed page (for example Privacy) permanently assigned as Terms and Conditions; swap in the real page and link both to the checkout "read and agree" box.** Sources: 02, 03. [ce82c02fc4c6] [5ef2e7c0343a]
+**R61. On WooCommerce, never leave a borrowed page (for example Privacy) standing in for Terms and Conditions at the checkout agree-box; a shopper who agrees to the wrong terms has no enforceable return contract.** Swap in the real page and link both to the checkout "read and agree" box. Sources: 02, 03. [ce82c02fc4c6] [5ef2e7c0343a]
 
-**R62. Have a working contact email or form live at launch.** Expect emails on day one; slow replies damage reputation (01). Sources: 01, 10. [62f0dece472c]
+**R62. Have a working contact channel live before the first order; a new store gets support emails from day one about sizing, shipping and order status.** Expect emails on day one; slow replies damage reputation (01). Sources: 01, 10. [62f0dece472c]
 
 **R63. Gaps to fill from other folders: cookie consent, GDPR and CCPA data handling, accessibility.** No source covers them (10 flags the gap). Route to 23-SEC and 07-LPG. Human check required.
 
 ### 3.8 Payments
 
-**R64. Turn on two-step authentication before activating Shopify Payments; it is required.** Save recovery codes in the secret store, not a notes app. Sources: 04. [0949813570ce]
+**R64. Turn on 2FA before activating Shopify Payments, since the account it protects can move the store's payout money, not just its content.** Save recovery codes in the secret store, not a notes app. Sources: 04. [0949813570ce]
 
 **R65. Names, addresses and IDs in payments setup must match government ID and registration documents exactly ("Robert", not "Rob").** Stated top cause of verification holds. Choose Individual (no business number, includes sole proprietors) or Business (registered number). Confirm the payout bank account accepts the regional deposit type (ACH US, EFT Canada, SWIFT Europe Asia Africa, BECS Australia). Review takes hours to days; keep building meanwhile. Sources: 04, 09, 01. [d81e9a676d16] [ae4e374138b3] [86354ef8e01e] [6303d6cb8521]
 
@@ -244,9 +267,13 @@ Each rule: the rule, when it applies, when it does not, supporting mini playbook
 
 **R70. Connect every gateway in test or sandbox mode, place a full test order, then switch to live and place one small real order and refund it.** Keys pasted in the wrong mode fail silently (02). Source 07 re-checks that the connection test reads "Live" before saving. A gateway can also deactivate later if verification data is incomplete, which blocks all checkouts (01). Sources: 01, 02, 03, 04, 05, 07, 10. [780a428b8702] [6a3060c2e498] [5ef2e7c0343a] [e2b93597ab6b] [94700fd0e277] [bb0bfd9cf533] [728fa86b4907] [c7fe3611980d]
 
-**R71. Credentials stay out of files and prompts.** Stripe publishable and secret keys, PayPal client ID and secret, and test card numbers are entered by a human in the platform UI. The agent never stores or echoes them. ecomOS rule; supported by source 11's note that the AI cannot complete store authentication for you. [cf190b41088d]
+**R71. Keep Stripe, PayPal and gateway keys out of files, prompts and chat; a leaked key can move real customer payments or take checkout down.** Stripe publishable and secret keys, PayPal client ID and secret, and test card numbers are entered by a human in the platform UI. The agent never stores or echoes them. ecomOS rule; supported by source 11's note that the AI cannot complete store authentication for you. [cf190b41088d]
 
 **R72. Test mode off and password off are the last two steps, and not before the test order passes.** Both left on block real sales. Sources: 04, 03, 07, 10. [3a6ca3eb1bff] [94700fd0e277] [6a3060c2e498] [8408a99f2223]
+
+**R145. Turn on order risk scoring and address or card verification (AVS, CVV) at the gateway, and require 3D Secure or SCA for cards from markets that mandate it (for example the EU).** Applies to any store taking card payments; stakes rise with average order value. `[general practice]` No library source; verify against brand data before use.
+
+**R146. In a high-COD market, screen orders for fake-order patterns, verify the phone number, and offer a prepaid discount to pull volume off COD.** Applies where cash on delivery is a significant share of orders, most often mobile-first India (see R66, R67). Source 02 enables COD with no risk framing; the risk controls themselves are `[general practice]`. No library source for the controls; verify against brand data before use. [780a428b8702]
 
 ### 3.9 Shipping
 
@@ -275,6 +302,8 @@ Each rule: the rule, when it applies, when it does not, supporting mini playbook
 **R84. Configure local delivery, pickup and label purchase only where the business model needs them; check insurance terms per plan.** Insurance: up to $200 per eligible label on Grow and above with Shopify Payments; purchasable up to $5,000 on Basic `[web check]`. Sources: 04, 05, 07. [5c69503ff6eb] [61a98d182026] [83e072152c92]
 
 **R85. Test carts at every bracket edge and every zone, from at least one address per zone, before launch.** Sources: 03, 04, 05, 07. [6d28f39a903a] [3a6ca3eb1bff] [e56e3a1335af] [e0349a2e584a]
+
+**R147. Vet a 3PL on integration reliability, split-shipment cost and stock-sync speed, and sync inventory across every sales channel so two channels cannot both sell the last unit.** Applies to any brand using a fulfilment partner or selling on more than one channel. Source 01 verifies an integration end to end but gives no vetting or sync rule; the vetting and sync steps are `[general practice]`. No library source for them; verify against brand data before use. [c7fe3611980d]
 
 ### 3.10 Taxes
 
@@ -316,6 +345,8 @@ Each rule: the rule, when it applies, when it does not, supporting mini playbook
 
 **R103. Enable coupons in settings before building any discount; cap coupons with a per-user limit and a maximum spend where the discount is a percentage.** Shopify cannot natively cap the amount saved on a percentage discount; an app is needed at high AOV (01). Use a code when attribution matters, automatic otherwise (01). Mechanics only; offer strategy is elsewhere. Sources: 01, 02, 07. [bd76d7f8a46b] [447fe9aa14c2] [ba99780859ec] [85bfef85b9bf] [60a02cc9a78e]
 
+**R148. For B2B or wholesale, turn on the company field, build a separate price list or minimum order quantity, and route payment to net terms or a separate checkout.** Applies only where the brand sells to other businesses alongside or instead of consumers. Source 01 only turns on the company field for B2B; the price list, MOQ and net-terms steps are `[general practice]`. No library source for them; verify against brand data before use. [d96aa7966303]
+
 ### 3.12 Markets, currencies and languages
 
 **R104. Group countries into markets by shared tax and regulatory treatment, not geography.** Example: Italy and Germany together, Switzerland excluded as non-EU. The registered country becomes the default market. Sources: 01, 04. [8597c5d851d5] [b1cd95fe8167]
@@ -344,17 +375,23 @@ Each rule: the rule, when it applies, when it does not, supporting mini playbook
 
 **R115. Connect sales channel apps (Facebook and Instagram by Meta, TikTok) only with owner approval; the prerequisites are an established Facebook account, admin on the business manager, page and Instagram professional account.** Meta is read only under ecomOS rules; the Shopify-side connection is a platform write and an approval gate. Sources: 04. [08b80874b674]
 
+**R149. Choose subscriptions or bundles as a deliberate lever tied to the product, not just an app pick: subscriptions fit consumables that run out (supplements, food), not one-time or durable goods like electronics.** Applies when repeat purchase or basket-building is a real lever for the catalogue. Sources: 01. [a517b976f014]
+
+**R150. Add a loyalty or rewards program when repeat purchase rate matters to the brand's margin, not as a default app install.** It pays off more for a consumable or frequently repurchased catalogue than for a one-time purchase. Source 01 names Stamped for loyalty but only as "evaluate each," with no rule on when it pays off; the payoff condition is `[general practice]`. Sources: 01. [3f5560597133] [13d14684d9ef]
+
+**R151. List on a marketplace or another channel (Amazon, TikTok Shop, Google Shopping) as a deliberate multichannel decision, and treat inventory sync across channels as a launch requirement, not an afterthought.** Applies to a brand with production or stock capacity beyond its own store's demand. Source 02's only related feature is the External or Affiliate product type, which links out to someone else's listing rather than syncing your own; the multichannel rule itself is `[general practice]`. No further library source; verify against brand data before use. [5c9382dfb092]
+
 ### 3.14 Staff, permissions, security and backups
 
 **R116. Give staff custom roles with exact permissions; be deliberate about Orders access because it exposes sales figures.** Use collaborator access (code plus myshopify domain) for developers and agencies instead of a paid seat. Sources: 01. [b03f3e640118]
 
-**R117. Two-step authentication on the owner account before payments; recovery codes in the secret store.** Sources: 04. [0949813570ce]
+Moved to Appendix A: R117, 2FA as a general control.
 
-**R118. On WordPress, new user default role is Subscriber, never Editor or Administrator; delete unused plugins and themes; keep Force HTTPS on.** Sources: 02, 03, 05. [f66e3a492886] [16eefae8f3dd] [2946d83f30cb]
+Moved to Appendix A: R118, WordPress role hygiene.
 
-**R119. Keep a restore point: duplicate the theme before changes, use a versioned backup app if more is needed, and confirm host daily backups exist.** No source shows a restore drill. Route hardening (login limits, malware scanning, WAF) to 23-SEC. Sources: 01, 02, 11. [851254972d2b] [b44de1f18767] [de00dc0259ba]
+**R119. Duplicate the theme before every change and confirm host backups exist, so a bad edit or failed launch step can be undone without the storefront going dark.** Use a versioned backup app if more restore depth is needed. No source shows a restore drill. Route hardening (login limits, malware scanning, WAF) to 23-SEC. Sources: 01, 02, 11. [851254972d2b] [b44de1f18767] [de00dc0259ba]
 
-**R120. When an AI agent runs commands, read each permission prompt; do not blind-approve.** Sources: 08, 11. [13e82e14fdd0] [cf190b41088d]
+Moved to Appendix A: R120, reading AI agent permission prompts.
 
 ### 3.15 Analytics and pixel handoff
 
@@ -382,7 +419,7 @@ Each rule: the rule, when it applies, when it does not, supporting mini playbook
 
 **R130. Let the agent read the theme and interview you (direction, sections, fonts, preview method) and propose a plan before writing any section.** Sources: 08. [13e82e14fdd0]
 
-**R131. Build and review one section or one change at a time. Bundled prompts fail partially and silently.** Source 11's 4-part request landed 3 of 4. Re-issue the missing piece alone. Sources: 08, 11. [4d8bf77b16e5] [9e2078f63db9] [5c660bd33ab3]
+**R131. Ask the agent for one storefront change per prompt and verify it live before the next; a bundled request that lands 3 of 4 changes can leave a broken PDP element live to shoppers.** Source 11's 4-part request landed 3 of 4. Re-issue the missing piece alone. Sources: 08, 11. [4d8bf77b16e5] [9e2078f63db9] [5c660bd33ab3]
 
 **R132. Preview privately on a local dev server or an unpublished theme; the preview password is the store password, not the account password.** Sources: 08. [e27f52047618]
 
@@ -396,9 +433,9 @@ Each rule: the rule, when it applies, when it does not, supporting mini playbook
 
 **R137. Reusing one template across many SKUs or brands trades uniqueness for speed; differentiate copy and imagery or the store reads generic.** Conflict in 7.5. Sources: 06, 01. [309fee9d852d] [1b74e6a6d37e]
 
-**R138. Expect usage limits in long sessions (one presenter hit a 90% warning and waited about an hour `[web check]`); do not treat the agent's success report as proof, verify on the storefront.** Sources: 11. [af0b1c693102] [2068dc8e74a9]
+Moved to Appendix A: R138, distrusting the agent's own report.
 
-**R139. Sidekick vs Claude Code: source 11 says Sidekick only generates sections while Claude Code builds blocks and templates; source 04 and 01 use Sidekick for finding settings, drafts and data questions. Verify current capabilities before repeating the comparison `[web check]`.** Sources: 04, 01, 11. [d32ab6d8ae7a] [e431785d2758] [2068dc8e74a9]
+Moved to Appendix A: R139, Sidekick vs Claude Code comparison.
 
 ### 3.18 Post-launch platform operations
 
@@ -420,7 +457,7 @@ Preconditions: inputs from section 2 (existing site, budget, staff skills, targe
 Steps:
 1. Score the brand on R1 to R4: existing WordPress site (yes pushes WooCommerce), need for custom checkout (only Plus on Shopify), need for per-market currency (Shopify Payments availability in the brand's country `[web check]`), in-house WordPress skills, willingness to maintain hosting, plugins, SMTP, backups and security.
 2. Price both stacks for 12 months: Shopify plan plus card rate plus the 3 launch apps; hosting plus paid plugins (table-rate shipping, tax service, swatches, SMTP, security) plus developer hours. All numbers `[web check]`.
-3. Record the decision in the platform setup spec (9.1) with the 3 trade-offs the brand accepted.
+3. Record the decision in the store build brief (9.1) with the 3 trade-offs the brand accepted.
 Check: the user has approved the platform in writing.
 Rollback: none; this is a decision record.
 
@@ -623,7 +660,7 @@ Steps:
 2. Verify the account email and, after claiming the domain, the domain email (R21).
 3. Claim or connect the domain (.com preferred). Install WordPress through the host: create a blank site, set the admin username and password (secret store), pick the server region nearest the buyers.
 4. Wait for install and propagation (about 10 minutes typical, up to 24 hours). Confirm Force HTTPS is on in the host panel.
-5. Log in at `yourdomain.com/wp-admin`. Cleanup per R13: Screen Options off; Plugins > select all > Deactivate > then Delete (keep the host's caching plugin if present); Pages and Posts > trash and empty; Appearance > Themes > delete all but one; Settings > General: title, tagline, timezone, Anyone can register on, default role Subscriber; Settings > Permalinks > Post name; Settings > Discussion > disable comments if no blog; Users > Profile: display name.
+5. Log in at `yourdomain.com/wp-admin`. Cleanup per R13. Moved to Appendix A: WordPress fresh-install cleanup click list.
 Checks: padlock on the live domain; one theme installed; permalinks produce `domain.com/shop` style URLs (re-save permalinks if not).
 Rollback: host daily backup restore (confirm it exists); reinstall WordPress from the host panel.
 
@@ -1066,7 +1103,7 @@ Merged and deduplicated. Each with the fix.
 
 ## 9. Deliverables
 
-### 9.1 Platform setup spec
+### 9.1 Store build brief
 Format: one Markdown file per brand at `brands/<brand>/setup/platform-spec.md`. Sections: platform decision and 3 accepted trade-offs (4.1); account owner and email; plan tier and price `[web check]` with date; legal identity block (name, address, business number, payments account type); domain, registrar, DNS records added, primary domain date; theme name, version, duplicate naming rule, paid or free with reason; base currency, backup region, units, order prefix; markets list with currency, rounding, language; staff roles; approval log (who approved each platform write and when). Every value tagged `[needs brand data]` until filled.
 
 ### 9.2 Product import sheet spec
@@ -1135,6 +1172,8 @@ Format: table per brand. Columns: app or plugin name, publisher, job (reviews, e
 
 Rules least likely to go stale: R5 (owner email), R6 (identity first), R27 (duplicate first), R32 (product type discipline), R42 (price every variation), R57 (edit templates), R70 (test then live), R73 (rate per country), R86 (obligations first), R95 (guest checkout on), R124 (saved is not proven), R131 (one change at a time).
 
+24 Sep 2026: ecommerce specificity pass applied from ECOM_REVIEW.md; priority block added, 15 rules reworded, 8 levers added, about 380 words moved to Appendix A.
+
 ## 12. Source index
 
 | No. | Title | Type | Credibility and bias | Contributed most |
@@ -1163,3 +1202,27 @@ Rules least likely to go stale: R5 (owner email), R6 (identity first), R27 (dupl
 - 15-SEO: SEO beyond the baseline fields, blogs, Search Console (sources 01, 02, 03, 04).
 - 18-COG: sourcing, dropship vs private label, packaging (source 06).
 - 23-SEC: security hardening, backups and restore drills, cookie consent and data handling (gaps in 02, 05, 07, 10).
+
+## Appendix A. General background
+
+Moved here by the 24 Sep 2026 ecommerce specificity pass. This is generic account, hosting or AI-agent hygiene that reads the same for any web project, not a store-specific rule. Kept for completeness; the rule id stays live at its original spot as a pointer.
+
+**R16 (from 3.3 Domain and DNS).** Check domain availability when the brand name is chosen, before it is final. Prefer .com. Keep it to 1 or 2 words, no hyphens or numbers, easy to spell (opinion, 10). Consider buying other extensions defensively (01). Do not overthink it (10). Sources: 01, 02, 10. [b30915400ab6] [8936916fd085]
+
+**R18 (from 3.3 Domain and DNS).** Set the custom domain as primary, wait for propagation, and test it in a browser before removing the password. "Pending" for a few hours is normal (10); up to 24 hours is possible (03, 07). "Connected" in admin is not proof; the URL must resolve (04). Sources: 04, 10, 03, 07. [4f9700a6e477] [d6854b97be2c] [7ad023a56f5a] [359dabdafbc0]
+
+**R19 (from 3.3 Domain and DNS).** Do not launch on the default myshopify.com or a host's temporary domain. Treated as a professionalism and trust liability by 3 sources (opinion). Sources: 08, 09, 10. [4ad69ffecb22] [8936916fd085]
+
+**R21 (from 3.3 Domain and DNS).** On WordPress hosting, verify the account email and the domain email, and confirm Force HTTPS is on. Source 05 says an unverified Hostinger account is refunded and closed after 30 days `[web check]`. HTTPS is the only security step the WooCommerce sources give; the rest routes to 23-SEC. Sources: 02, 05, 03. [2946d83f30cb] [359dabdafbc0]
+
+**WordPress fresh-install cleanup click list (from procedure 4.14 step 5).** Screen Options off; Plugins > select all > Deactivate > then Delete (keep the host's caching plugin if present); Pages and Posts > trash and empty; Appearance > Themes > delete all but one; Settings > General: title, tagline, timezone, Anyone can register on, default role Subscriber; Settings > Permalinks > Post name; Settings > Discussion > disable comments if no blog; Users > Profile: display name. This is the mechanical click path behind R13; R13's own store-framed rewrite stays in section 3.2.
+
+**R117 (from 3.14 Staff, permissions, security and backups).** Two-step authentication on the owner account before payments; recovery codes in the secret store. Sources: 04. [0949813570ce]
+
+**R118 (from 3.14 Staff, permissions, security and backups).** On WordPress, new user default role is Subscriber, never Editor or Administrator; delete unused plugins and themes; keep Force HTTPS on. Sources: 02, 03, 05. [f66e3a492886] [16eefae8f3dd] [2946d83f30cb]
+
+**R120 (from 3.14 Staff, permissions, security and backups).** When an AI agent runs commands, read each permission prompt; do not blind-approve. Sources: 08, 11. [13e82e14fdd0] [cf190b41088d]
+
+**R138 (from 3.17 AI-assisted setup).** Expect usage limits in long sessions (one presenter hit a 90% warning and waited about an hour `[web check]`); do not treat the agent's success report as proof, verify on the storefront. Sources: 11. [af0b1c693102] [2068dc8e74a9]
+
+**R139 (from 3.17 AI-assisted setup).** Sidekick vs Claude Code: source 11 says Sidekick only generates sections while Claude Code builds blocks and templates; source 04 and 01 use Sidekick for finding settings, drafts and data questions. Verify current capabilities before repeating the comparison `[web check]`. Sources: 04, 01, 11. [d32ab6d8ae7a] [e431785d2758] [2068dc8e74a9]

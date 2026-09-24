@@ -6,6 +6,8 @@ version: 2.0-draft  |  date: 24 Sep 2026  |  sources: 10  |  cards: 149  |  buil
 
 **Who runs it.** The organic content and social agent: the role that plans a brand's organic social calendar, writes hooks, scripts and captions, builds series, sets up comment-to-DM lead capture, reads monthly results and decides what to make next. A writer, editor or reviewer worker can run any checklist in section 5 alone. Paid amplification of organic winners hands off to 10-MCR-paid-social-creative and 24-DEP-ad-deployment. Email sequences after a lead is captured hand off to 14-EML-email-lifecycle. Landing pages and lead-magnet pages hand off to 07-LPG-landing-pages. Ad copy fields hand off to 11-ADC-ad-copy-deployment.
 
+**Ecommerce first.** This playbook is for stores, not for personal brands, coaches or media accounts. Section 3.0 ranks the levers below by impact for a store; load it before the detail groups in section 3. Store-type conditions (hero SKU vs catalogue, low vs high AOV, subscription vs one-off, marketplace-heavy, luxury or considered purchase, mobile-first India vs US) decide which rules apply and in what order, and several rules in the sections below now carry a store-specific condition for this reason.
+
 **Which sections to load for which task.**
 
 | task | load |
@@ -104,9 +106,28 @@ version: 2.0-draft  |  date: 24 Sep 2026  |  sources: 10  |  cards: 149  |  buil
 
 Every rule states the rule, when it applies, the mini playbooks that support it (by number), any conflict (by section 7 code), and card ids. Where only 1 source supports a rule, the rule says so. Where 2 sources share a presenter (04 and 05; 03 and 10), the rule says so. Where sources disagree, the strictest condition is kept here and the disagreement is written out in section 7. Algorithm behaviour is grouped in 3.8 and every rule there is a claim, not a fact.
 
+### 3.0 Ecommerce priority order
+
+This block ranks the levers below by impact for a store. It is not source-backed as a ranking; it is built by ordering the rules in this playbook for store use. Load it first and branch by store type (hero SKU vs catalogue, low vs high AOV, subscription vs one-off, marketplace-heavy, luxury or considered purchase, mobile-first India vs US) before applying the detail sections.
+
+1. Fix the funnel: every post maps to top, mid or bottom funnel and reuses across the PDP, email and DM (R10, R131, R134). A missing funnel tag is the most common way a store account gets views with no sales.
+2. Set CTA and price-ladder routing before scaling reach: low-ticket in-app, high-ticket or considered purchase to a call, capacity confirmed first (R24, R127, R118, C4). Ranks above cadence for luxury or considered-purchase brands.
+3. Get the hook and first frame right; it gates everything downstream (R25, R26, R29), so it outranks writing-process polish.
+4. Move specs to the PDP, lead with story or demo (R65). For a wide catalogue, pick 1 hero SKU per post rather than a generic "our products" post. `[general practice]`
+5. Set the floor and pillar mix by catalogue size and capacity: a hero-SKU brand sustains fewer, deeper pillars than a wide catalogue (R2, R3, R13, R14). The catalogue-size branch is `[general practice]`.
+6. Pick the hero platform by where the store's actual customers are, checked with the sample in P22 step 2, not by presenter preference; a mobile-first India audience and a US audience can answer differently (R110, P22). `[general practice]` for the geography branch.
+7. Build the comment-to-DM and lead-magnet layer once the account has traction, tied to a lead magnet the store can fulfil (R119, R121, R122, R24).
+8. Run the compliance and claims check before publishing, especially for regulated or health-adjacent categories (R163, R167, P21).
+9. Sell founder or sourcing story for considered or handmade products; use expert-breakdown or ratings pillars for commodity products (R4, R76, R156). `[general practice]` for the product-type branch.
+10. Tie every month's read to sales, not views: spikes vs post dates, discount codes, week-on-week sales (R150, R95).
+11. Repurpose winners into paid tests once they move sales; route catalogue-wide creative decisions to 24-DEP and 10-MCR (R132, R150).
+12. Layer seasonal sales and launches on continuous lead-magnet content; timing matters more with real inventory and drop dates than for a media account (R130). `[general practice]` for the inventory-timing framing.
+
+Load this block first; the groups below are the detail.
+
 ### 3.1 Positioning, topic and pillars
 
-**R1. Write a positioning statement before planning any content.** Fill in: "I am [X]. I do [Y] for people who [Z]. Listen to me because [proof]." Each blank must be specific enough that a direct competitor could not paste in their own name and have it read true. The proof slot holds something a stranger can verify (years, volume, process, credential, guarantee), not a quality adjective. Use the statement to filter every hook, on-screen line and caption so the library reads as one voice. Condition: every account, before the first calendar; redo it when the account stalls. 01 adds the "personal monopoly" filter: own the topic the founder or brand is most specifically obsessed with, because nobody can compete there. 02 adds that association is built by writing about a narrow set of topics repeatedly, not by writing about everything. Sources: 07 (statement), 01, 02. `[needs brand data: the proof point]` Cards: [bab1ea1d6132] [4adfe40984ba] [712445a708f1].
+**R1. Write a positioning statement before planning any content.** Fill in: "I am [X]. I do [Y] for people who [Z]. Listen to me because [proof]." Each blank must be specific enough that a direct competitor could not paste in their own name and have it read true. Fill the proof slot with something a stranger can verify, and check it does not contradict the PDP: if the statement says "fastest" or "best," the product page must say the same thing. Use the statement to filter every hook, on-screen line and caption so the library reads as one voice. Condition: every account, before the first calendar; redo it when the account stalls. 01 adds the "personal monopoly" filter: own the topic the founder or brand is most specifically obsessed with, because nobody can compete there. 02 adds that association is built by writing about a narrow set of topics repeatedly, not by writing about everything. Sources: 07 (statement), 01, 02. `[needs brand data: the proof point]` Cards: [bab1ea1d6132] [4adfe40984ba] [712445a708f1].
 
 **R2. One account covers one topic area for one customer avatar.** Derive ideas from that avatar's pain points, not from industry trends. A brand with unrelated categories runs separate content lines or separate accounts rather than one mixed feed. Condition: split into satellite accounts only after a format has proven on the main account (09); never launch several accounts at once. 04 agrees the niche must be fixed before growth, though it can stay loose during the first exploratory posts. Sources: 08, 09, 04. Conflict: C15 (satellite accounts vs one feed). Cards: [d84a8df8c294] [5bb14404abb5] [13325d6dff66]. (Card adaptation: 08's cards add pet-supply and camping-gear examples the presenter never gave.)
 
@@ -114,7 +135,7 @@ Every rule states the rule, when it applies, the mini playbooks that support it 
 
 **R4. Choose the expert or the student stance honestly.** Lead with credentials and "look the part" only when the title or credential is real. Otherwise document the research or journey openly as a student. Both build trust by different routes. 03 calls expert-led content "the cheat code right now" but bounds it to roughly 9 months from the talk (late 2025), so treat it as a window, not a law. Condition: every on-camera person and every "we tested" claim. Source: 03 only. `[needs brand data: which credentials are real]` Cards: [4b03755b2896] [db75d5f43244].
 
-**R5. Design every post for a stranger, not a follower.** No inside jokes, product nicknames, references to earlier videos or assumed customer context. Lead with the clearest version of the idea, not the cleverest. The stated reason is the algorithm claim in R97 (a sample of non-followers sees the post first); the reason holds even if the mechanism is wrong, because most viewers of any post are new or infrequent. Condition: growth content; retention content for existing customers is a separate job. Sources: 04, 07, 08, 09 (4 independent presenters). Cards: [37ea3485764f] [e3a9ae26373a] [34a52f48158a] [e1440ddfb8b1].
+**R5. Design every post for a stranger who has never seen the PDP.** No inside jokes, no product nicknames, no assumed familiarity with SKUs, sizes or the catalogue, and no references to earlier videos. Lead with the clearest version of the idea, not the cleverest. The stated reason is the algorithm claim in R97 (a sample of non-followers sees the post first); the reason holds even if the mechanism is wrong, because most viewers of any post are new or infrequent. Condition: growth content; retention content for existing customers is a separate job. Sources: 04, 07, 08, 09 (4 independent presenters). Cards: [37ea3485764f] [e3a9ae26373a] [34a52f48158a] [e1440ddfb8b1].
 
 **R6. Aim for on-target reach inside the avatar slice, not the broadest possible hit.** A 10 million view video that pulls in tech people, architects and home buyers at once gives the platform a noisy signal about who to show the next post to and does little for sales. 06 says the same from the sales side: 90 million views with no story is worth less than 10 million views with the reason behind the visual. 10's lore principle narrows the audience on purpose to convert a smaller group intensely. Condition: a business account; a pure media account may want broad reach. Sources: 08, 06, 10. Cards: [d6fdd4b41759] [d37ea33564f1] [6cb62b6f330a].
 
@@ -132,7 +153,7 @@ Every rule states the rule, when it applies, the mini playbooks that support it 
 
 ### 3.2 Monthly operating plan, cadence and batching
 
-**R13. Starting plan for a new or restarted account: each chosen pillar twice a week, 4 to 6 posts a week, hold the exact mix for 1 full month.** Daily posting is not required at this stage. After about 4 iterations per pillar, read which pillar, topic and format pulls. Repeat the monthly cycle for about 3 months; some accounts take 1 to 3 months to show traction. Condition: this is the minimum plan; higher-capacity teams raise the floor under R14. Source: 03 only for the numbers. Conflict: C1. Cards: [aa78ae3a6fe1].
+**R13. Set the starting cadence by catalogue shape: a single hero SKU runs 2 pillars at the stated cadence; a wide catalogue needs a rotation so no SKU goes untouched for a month.** `[general practice]` for the catalogue-shape branch. The stated cadence for a new or restarted account is each chosen pillar twice a week, 4 to 6 posts a week, hold the exact mix for 1 full month. Daily posting is not required at this stage. After about 4 iterations per pillar, read which pillar, topic and format pulls. Repeat the monthly cycle for about 3 months; some accounts take 1 to 3 months to show traction. Condition: this is the minimum plan; higher-capacity teams raise the floor under R14. Source: 03 only for the numbers. Conflict: C1. Cards: [aa78ae3a6fe1].
 
 **R14. Set an explicit volume floor the team can hit every week for a month, and do not judge content below the floor.** The sources give very different floors: 02's agency floor is 5 pieces a day; 04 says "the more you post, the more you grow" and ran 4 posts a day; 06 says once a day is a starting point, not a ceiling, and to post more only when the data says it works; 07 says under-posting is what holds back 95% of the people he coaches; 03 says 4 to 6 a week. Strictest condition kept: the floor must be sustainable for 4 weeks in a row, and it is raised only when the monthly read (P15) shows the content works. Condition: every brand. `[needs brand data: team capacity and audience fatigue signals such as unfollows per post]` Sources: 02, 03, 04, 06, 07. Conflict: C1. Cards: [7d684acdc24b] [c318b8e45196] [8292e101004a] [868f6861da16] [aa78ae3a6fe1].
 
@@ -156,6 +177,8 @@ Every rule states the rule, when it applies, the mini playbooks that support it 
 
 **R24. Plan intake and fulfilment capacity before scaling reach.** A single post can bring more leads or orders than the team can serve; 07 closed a mentorship intake once for this reason. Condition: once a lead magnet or DM automation is live. Source: 07 only. Cards: [4a4a14bf5c74].
 
+**R175. Rotate which SKU gets a post by catalogue size.** A catalogue of 50 or more items needs a rotation plan so no SKU goes untouched for a month; a single-hero-SKU brand instead deepens angles on the one product rather than rotating. Condition: any catalogue larger than a handful of SKUs; ties to the catalogue-shape branch in R13. `[general practice]` No library source; verify against brand data before use.
+
 ### 3.3 Hook craft
 
 **R25. The hook is the gate. Put most of the planning effort into the first 3 seconds.** 04 and 05 (same presenter) say 80% of planning time and effort goes to the hook; 09's AI review asks whether the hook is clear and attention-grabbing in under 3 seconds; 04 names watch rate after 3 seconds as the foundational metric. Condition: every Reel, Short, TikTok and the first slide of every carousel. Sources: 04, 05 (1 presenter), 09. Cards: [c173b995a2f5] [8690e3531230] [8907bbacfafe] [3380206cba51].
@@ -164,15 +187,15 @@ Every rule states the rule, when it applies, the mini playbooks that support it 
 
 **R27. Hook line of 5 to 8 words; up to about 12 at most.** 05's own review of 1,300 viral Reels found top performers averaged 7.7 words, rarely under 4, with diminishing returns from 13 words up. The sample has no disclosed selection method. Condition: on-screen text and the spoken first line; captions can run longer. Source: 05 only. Cards: [c98d12e4ca71].
 
-**R28. Reading level: hook text at or below 5th grade; body copy 5th to 8th grade; never at or above 10th grade.** 05 scored its hook list at 5th grade with an undisclosed ChatGPT check; 01 targets 5th to 8th grade for consumer copy and accepts 4th; ecomOS caps everything below 10th grade. Strictest kept. Check with a readability tool (01 names the Hemingway app) `[verify UI]`. Condition: every hook, script and caption. Sources: 05, 01, ecomOS. Cards: [c98d12e4ca71] [a3cac5e01c5a] [d8fbcddae70a].
+**R28. Reading level: hook text at or below 5th grade; body copy 5th to 8th grade; never at or above 10th grade.** 05 scored its hook list at 5th grade with an undisclosed ChatGPT check; 01 targets 5th to 8th grade for consumer copy and accepts 4th; ecomOS caps everything below 10th grade. Strictest kept. Match the hook and caption reading grade to the PDP and checkout copy, so a viewer who clicks through meets the same voice and grade level. `[general practice]` Check with a readability tool (01 names the Hemingway app) `[verify UI]`. Condition: every hook, script and caption. Sources: 05, 01, ecomOS. Cards: [c98d12e4ca71] [a3cac5e01c5a] [d8fbcddae70a].
 
 **R29. The "drunk grandma" test: a stranger with zero context and zero effort must get the hook and the frame instantly.** Cut insider terms, acronyms and unexplained jargon. 09's AI review asks the same question in different words: would the target market immediately understand what this is about. Condition: every hook. Sources: 04, 05 (1 presenter), 09. Cards: [9fce1289b063] [c98d12e4ca71] [8907bbacfafe].
 
-**R30. Open a curiosity gap in the right width, then pay it off honestly.** Too small (the hook already gives the mechanism or ending) and there is no reason to watch; too wide ("this changed everything for me") and the viewer cannot tell the domain or stakes. Name the domain and the stakes, withhold the mechanism. 01's test: cover all but the first 2 sentences and ask whether an indifferent reader needs the next one; repeat to sentence 3 or 4, then let the piece breathe. 06 says open the loop in the first sentence and do not close it in the next one; hold it through the body and resolve it later. All 3 agree the payoff must be real: "it ain't bait if you deliver on the promise" (01); the dramatic thing must actually happen (04). Condition: curiosity, story and open-loop hooks; 05 says this type takes the most practice. Sources: 05, 01, 06, 04. Conflict: C6 (open loop vs clear benefit). Cards: [97e147c3e5a1] [26bc815a7b84] [0980397e62b4] [c1f05a1e6af3] [d686739bfd6c].
+**R30. Open a curiosity gap in the right width, then pay it off honestly.** Too small (the hook already gives the mechanism or ending) and there is no reason to watch; too wide ("this changed everything for me") and the viewer cannot tell the domain or stakes. Open the gap with the product's before-state; name the problem's stakes, withhold the specific result until the payoff. `[general practice]` 01's test: cover all but the first 2 sentences and ask whether an indifferent reader needs the next one; repeat to sentence 3 or 4, then let the piece breathe. 06 says open the loop in the first sentence and do not close it in the next one; hold it through the body and resolve it later. All 3 agree the payoff must be real: "it ain't bait if you deliver on the promise" (01); the dramatic thing must actually happen (04). Condition: curiosity, story and open-loop hooks; 05 says this type takes the most practice. Sources: 05, 01, 06, 04. Conflict: C6 (open loop vs clear benefit). Cards: [97e147c3e5a1] [26bc815a7b84] [0980397e62b4] [c1f05a1e6af3] [d686739bfd6c].
 
 **R31. Test negative framing against positive framing; do not assume either.** 05's sample found hooks with threat words (don't, stop, avoid, never, cancel, stay away from) outperformed their positive counterparts on average, and 05 itself says to keep testing positive hooks against the account's baseline. Benefit-forward framing is standard for paid conversion copy (11-ADC), so this is an organic-hook finding, not a copy rule. Condition: only within the brand's voice; a warm or luxury voice may exclude threat words. Source: 05 only. Conflict: C12. Cards: [5897c79754a5].
 
-**R32. Pick the hook type on purpose from the 15-type menu, and log it.** The types, each with 05's example: pattern interrupt ("Stop scrolling"); contrarian ("Post daily? Yes. Create daily? No."); curiosity gap ("This one thing changed everything about my Pokemon card collection, and after 4 years I finally finished"); outcome ("My client put on 12 pounds of muscle in 3 months"); direct address ("If you're a mom of 3 under 3, keep watching"); story ("I almost quit X last year"); hook swap (a borrowed viral clip with a match cut); authority or data-backed ("It took me 10 years to get 60,000 followers, then 1 month to get 60,000 more"); bold claim; relatable ("me when I spend 3 hours editing a Reel and it gets 7 likes"); POV ("POV: you just opened the box"); urgency or time-bound ("Before your head hits the pillow tonight"); list ("3 ways to fix your bench press"); comparison ("Me before walking 10K steps a day", split screen); identity ("Good snowboarders always do this"). Do not default to a habitual type. Condition: every hook in the hooks bank carries a type tag. Source: 05 only. Cards: [11f62e1913d1] [1ab0e11dcafa] [97e147c3e5a1] [01267ffe7cb0] [e679699e4817] [d22074737dfa] [6fbe7c8824cd] [9dd434350255] [9b17f7a80dfc].
+**R32. Pick the hook type on purpose from the 15-type menu, and log it.** The types, each with 05's example: pattern interrupt ("Stop scrolling"); contrarian ("Post daily? Yes. Create daily? No."); curiosity gap ("This one thing changed everything about my Pokemon card collection, and after 4 years I finally finished"); outcome ("My client put on 12 pounds of muscle in 3 months"); direct address ("If you're a mom of 3 under 3, keep watching"); story ("I almost quit X last year"); hook swap (a borrowed viral clip with a match cut); authority or data-backed ("It took me 10 years to get 60,000 followers, then 1 month to get 60,000 more"); bold claim; relatable ("me when I spend 3 hours editing a Reel and it gets 7 likes"); POV ("POV: you just opened the box"); urgency or time-bound ("Before your head hits the pillow tonight"); list ("3 ways to fix your bench press"); comparison ("Me before walking 10K steps a day", split screen); identity ("Good snowboarders always do this"). For the outcome hook type, use a real before-and-after tied to the product, backed by a customer or test result from the brand record, never a generic "results" claim. `[general practice]` Do not default to a habitual type. Condition: every hook in the hooks bank carries a type tag. Source: 05 only. Cards: [11f62e1913d1] [1ab0e11dcafa] [97e147c3e5a1] [01267ffe7cb0] [e679699e4817] [d22074737dfa] [6fbe7c8824cd] [9dd434350255] [9b17f7a80dfc].
 
 **R33. Prefer a conversational opener that still names a concrete payoff over a loud formula.** 07 says audiences discount "3 mistakes you're making" and "stop doing this" as recognised bait, and that "did you know if you add oats and chia seeds..." reads like a friend talking (1 example at 20,000 likes). 05 lists those same formulas as working types. Strictest condition kept: any formula hook must pass the read-aloud test ("would a friend say this") and still signal a specific payoff. Condition: every hook. Sources: 07 vs 05. Conflict: C6. Cards: [3a5f43d052ea] [9dd434350255] [11f62e1913d1].
 
@@ -202,21 +225,21 @@ Every rule states the rule, when it applies, the mini playbooks that support it 
 
 **R45. Before writing a word, decide the reaction, the action and the one line the reader should remember.** Reaction is an emotion (awe, outrage, warmth, curiosity). Action is what they do (comment the keyword, save, share, buy). The one line replaces the outline; for a headline-plus-subheadline format the subheadline (about 180 characters) is the stable thesis. 06 pairs the same first step with an emotional-trigger map (curiosity, moral outrage, belonging, confusion, visual shock) and a delivery technique (novelty, relatability, visual shock, trend relevance, credibility, controversy). 01 frames all of this as persuasion at scale, not self-expression: the writing exists to move a reader to act. Condition: any script, caption, carousel or founder story. Sources: 01, 06. Cards: [5286ee7f0f32] [797d8a7279aa] [6f735c911cc5] [1629164d5fc0].
 
-**R46. Run the 4-step process: copywork, dump draft, incubate, edit.** Copywork: hand-copy (or type) a piece of admired writing in the tone you want, word for word, for 10 to 15 minutes. Draft: write fast and badly, show no one. Incubate: step away for at least about 90 minutes doing something passive (walk, shower, cook); longer gaps up to a day or a week are fine. Edit: come back and cut hard; quality is made here, so budget more time for editing than drafting. Condition: any piece that matters; short captions can skip copywork but not the edit. Source: 01 only. Cards: [c807997f7db2] [ea8652fd50e8] [8c85d056f475].
+**R46.** Moved to Appendix A, section A.4: the 4-step writing process (copywork, dump draft, incubate, edit) as general writing craft, with no product or funnel tie; the how-to steps remain live in P6 steps 3 to 5.
 
 **R47. Punch with the first sentence; move the thesis, promise or most provocative true statement to the top and cut the background.** 01's model opener: "I spent the last 30 days eating nothing but Soylent. Why would I do something so stupid? I'll explain." 04 says lead with the clearest version, not the cleverest. Condition: every opener; add context only after the reader is invested (about sentence 3 or 4). Sources: 01, 04. Cards: [26bc815a7b84] [37ea3485764f].
 
 **R48. Readability edit pass: cut adverbs, jargon, thesaurus words and LinkedIn words ("utilize"); if you had to look a word up, it is the wrong word.** Target grade in R28. 01's evidence: Buffett's shareholder letters fell from 17 to 13 words per sentence and 10th to 4th grade over 1974 to 2013 while the subject got harder. Condition: every script and caption before publishing. Source: 01 only. Cards: [d8fbcddae70a] [a3cac5e01c5a].
 
-**R49. Say it out loud before you write it, and read it aloud before you publish it.** Ask the writer to explain the idea in plain speech; the spoken sentence often becomes the first line or all the copy needed. If it cannot be said plainly the thinking is not clear yet. 07 applies the same test to hooks ("does it sound like an ad or like a friend"). 09's AI review asks for captions "shorter and easier to read on a phone screen". Condition: every hook and script. Sources: 01, 07, 09. Cards: [4f3116aa30c6] [4f38d9d987ed] [3a5f43d052ea] [8907bbacfafe].
+**R49.** Moved to Appendix A, section A.4: say it out loud before writing, read aloud before publishing; general writing craft with no product or funnel tie; the how-to step remains live in P6 step 9.
 
-**R50. Vary sentence length for rhythm; default short.** "Any time you want to use a comma, use a period", then start the next sentence with "and" or "but" if needed. After a run of short sentences, add a medium one, then occasionally a long one. Use imagined reader lines ("you're asking yourself right now...") as pacing devices. Condition: any copy that reads flat on review. Source: 01 only. Cards: [056882fe4e22].
+**R50.** Moved to Appendix A, section A.4: vary sentence length for rhythm, comma to period; general writing craft with no product or funnel tie; the how-to step remains live in P6 step 6.
 
 **R51. Write to one person.** Pick one real or composite customer and write only to them; it is a coincidence that others read it. 08's avatar rule is the account-level version of the same idea. Condition: any copy that starts to sound corporate. Sources: 01, 08. Cards: [9783e7f32959] [d84a8df8c294].
 
 **R52. Run a redundancy pass: for every sentence ask "necessary, or already said?"** 04's bad example: "fit, lean, lose weight, healthy" is 4 ways to say 1 thing and makes viewers scroll. Condition: every script. Source: 04 only. Cards: [9fce1289b063] [37ea3485764f].
 
-**R53. Filter topics with a 60-second voice memo.** Record yourself telling a friend about the topic. If it would not come up naturally in that conversation, drop it. If it passes, transcribe the memo and lightly edit it into the draft. Condition: choosing story angles, blog topics and campaign angles. Source: 01 only. Cards: [16e4989b065a].
+**R53.** Moved to Appendix A, section A.4: filter topics with a 60-second voice memo; general writing craft with no product or funnel tie; the how-to step remains live in P6 step 4 and P8 step 3.
 
 **R54. Unlearn school writing.** No minimum word count, no fancy vocabulary, no formal outline; the one-line thesis (R45) replaces the outline. Condition: all consumer-facing internet copy; this does not override SEO depth needs, which no source here covers. Source: 01 only. Cards: [797d8a7279aa].
 
@@ -226,9 +249,9 @@ Every rule states the rule, when it applies, the mini playbooks that support it 
 
 **R56. AI repeats approved language; humans originate.** Human work: net-new thinking, the first articulation of an idea, taking a side on a category debate, specific founder or customer stories. AI work: remixing sentences already written, slicing long pieces into shorts, cross-format versions, 10 or more hook and caption variations of one human idea (09). 02 softens its own rule for non-writers: a brain dump into an LLM that drafts in the person's voice is "no different" from a human ghostwriter, so the operator decides which mode applies per piece. 06's use of ChatGPT to exaggerate falls under R44. Condition: every AI-assisted piece is tagged "remix" or "originated by [name]". Sources: 02, 09. Cards: [ad4c55b5d306] [4392aa839fe7] [8b3238183f67] [c5eaa02ce9d1].
 
-**R57. Record the brand's position on every recurring commodity debate in the brief.** AI writes generic copy because it does not know which side of a settled debate the brand holds ("buy heavy pans" vs "light pans done right"). Write the position, or mark it "deliberately neutral". Condition: before any AI draft; keep a running positions log in the brand record. Source: 02 only. `[needs brand data: the category's recurring debates and the brand's side]` Cards: [cbbb787360b8].
+**R57. Record the brand's side on debates that gate a purchase decision: material vs synthetic, price vs quality, in-house vs sourced, not abstract industry opinions.** AI writes generic copy because it does not know which side of a settled debate the brand holds ("buy heavy pans" vs "light pans done right"). Write the position, or mark it "deliberately neutral". Condition: before any AI draft; keep a running positions log in the brand record. Source: 02 only. `[needs brand data: the category's recurring debates and the brand's side]` Cards: [cbbb787360b8].
 
-**R58. Prescriptive "you should" copy reads as commodity; first-person experience reads as personality; reader-benefit "you" is fine.** Rewrite "you should test products before launch" as "I tested this for a month before ordering 500 units" (card adaptation: the knife example is the card writer's). Route "I" content to a named person's account (R8). 02's mini playbook flags that benefit-focused "you" ("you'll get X") is standard converting copy and is not what 02 attacks. 05's story hooks open with "I"; 06's breakout video opened "My name is Davey, this is my story". Condition: prescriptive advice lines; leave benefit lines alone. Sources: 02, 05, 06. Conflict: C8. Cards: [2b0c662e2dd0] [e679699e4817] [da155e10b870].
+**R58. Prescriptive "you should" copy reads as commodity; first-person experience reads as personality; reader-benefit "you" is fine.** Rewrite prescriptive lines as a first-person product test: "I used this for 30 days before we shipped it," not a general category claim (card adaptation: the knife example is the card writer's). Route "I" content to a named person's account (R8). 02's mini playbook flags that benefit-focused "you" ("you'll get X") is standard converting copy and is not what 02 attacks. 05's story hooks open with "I"; 06's breakout video opened "My name is Davey, this is my story". Condition: prescriptive advice lines; leave benefit lines alone. Sources: 02, 05, 06. Conflict: C8. Cards: [2b0c662e2dd0] [e679699e4817] [da155e10b870].
 
 **R59. Voice is a small bundle of variables: word choice (neutral, elevated or blunt), sentence length and structure, and stance (opinion-led or citation-led).** When a draft "doesn't sound like us", find the one variable that is off and make the smallest edit (02's case: 2 or 3 citation phrases, about 1% of the piece) instead of discarding the draft. Record the confirmed variables in the brand voice guide. ecomOS: the brand record's voice is the reference; the agent does not derive a new voice from a source's taste. Condition: every voice complaint on an AI or ghostwritten draft. Source: 02 only. Cards: [612587c6befe].
 
@@ -276,9 +299,11 @@ Every rule states the rule, when it applies, the mini playbooks that support it 
 
 **R80. Give away the playbook.** Full breakdowns do not stop qualified buyers; most viewers will not execute, and buyers are buying proof of expertise. 02 agrees basic commodity advice is the most useful thing for beginners even if it is low leverage for the writer. Condition: breakdown pillar; keep the offer for after traction (R118). Sources: 03, 02. Cards: [db75d5f43244] [bdf52e0f0da8].
 
+**R176. Turn verified reviews, ratings and customer photos into posts.** Pull a strong review line or a customer photo (with permission) and build a short post or carousel around it: the quote as the hook, the product in use as the visual. This folder only turns approved material into content; 07-LPG and 17-CXP collect the reviews and photos themselves. Condition: any store with a review or UGC pipeline. `[general practice]` No library source; verify against brand data before use.
+
 ### 3.7 Formats, series and production
 
-**R81. New account with few followers: about 80% of effort on Reels, keep carousels and photos, hold Stories until there are followers.** Reels reach non-followers most; Stories are seen almost only by followers, so early Story effort is wasted. Once followers exist, Stories become the home for clicks and CTAs. 03 says carousels can carry any pillar with no camera; 06's founder carousel drew 45,000 likes. Condition: the 80% split is a new-account rule; adjust after the first macro read. Source: 04 only for the split; 03 and 06 for carousels. Conflict: C13. Cards: [fa1ae83e8a27] [4c8610731e7c] [e96110e037ff] [2147e1a9ca59].
+**R81. New accounts split effort toward product demo and use-case Reels first; carousels carry spec comparisons and size or fit guides.** `[general practice]` About 80% of effort goes to Reels at this stage; hold Stories until there are followers. Reels reach non-followers most; Stories are seen almost only by followers, so early Story effort is wasted. Once followers exist, Stories become the home for clicks and CTAs. 03 says carousels can carry any pillar with no camera; 06's founder carousel drew 45,000 likes. Condition: the 80% split is a new-account rule; adjust after the first macro read. Source: 04 only for the split; 03 and 06 for carousels. Conflict: C13. Cards: [fa1ae83e8a27] [4c8610731e7c] [e96110e037ff] [2147e1a9ca59].
 
 **R82. Turn a proven concept into a named, repeatable series instead of chasing a new idea each time.** 09's B2B case: 5 formats tested, 1 ("rapid-fire common mistake") doubled engagement, was branded and run twice a week, and within 2 months drove over half of inbound leads (example). 04 predicts series and challenges will dominate 2026 and says a recognisable format is faster to make and easier for viewers to identify. 06: once a format wins, stay with it for a long period. Condition: needs 1 winner first; do not brand a format before the macro read. Sources: 09, 04, 06, 10 (card adaptation for series commitment). Cards: [3df74f892c3f] [a0a28a40b29f] [34c4c10786ba] [ada6b00c3e15].
 
@@ -290,7 +315,7 @@ Every rule states the rule, when it applies, the mini playbooks that support it 
 
 **R86. Compress the expected pace as a vehicle.** A 10-second apartment "speedrun", "30-second makeup", "1-minute recipes": the gap between expected and actual length is the hook. 10 frames this partly as an algorithm preference for fast content (claim, R106). Condition: content where the audience knows the normal pace. Source: 10 only. Cards: [bde55a0463de].
 
-**R87. Invest once in a signature prop or set rather than in monthly complex shoots.** 10's toy store bought a hydraulic press ("thousands of dollars", not the largest) and became "one of the more interesting toy stores on the internet". 03: a consistent set (a wall of product for a fragrance founder, scrubs and a dentist's chair, an apron and kitchen) compounds credibility but cannot rescue weak content; a student visibly displays what they have tested so far. 10's related card: demonstrate what the product makes possible (a skill or outcome shown in an impressive way) rather than describing it; 10's example is a copywriting agency bringing romance novels to life in 15-second videos, which has no card of its own. Condition: one-off content asset; expect the payoff in notoriety more than any single post. Sources: 10, 03 (same program). Cards: [7af226f4da5b] [3f6eca540367] [e95cfa96efe9].
+**R87. Invest the signature prop or set around the product itself (a wall of stock, a fitting room, a workbench) so the set doubles as merchandising,** rather than in monthly complex shoots. 10's toy store bought a hydraulic press ("thousands of dollars", not the largest) and became "one of the more interesting toy stores on the internet". 03: a consistent set (a wall of product for a fragrance founder, scrubs and a dentist's chair, an apron and kitchen) compounds credibility but cannot rescue weak content; a student visibly displays what they have tested so far. 10's related card: demonstrate what the product makes possible (a skill or outcome shown in an impressive way) rather than describing it; 10's example is a copywriting agency bringing romance novels to life in 15-second videos, which has no card of its own. Condition: one-off content asset; expect the payoff in notoriety more than any single post. Sources: 10, 03 (same program). Cards: [7af226f4da5b] [3f6eca540367] [e95cfa96efe9].
 
 **R88. Commit to the bit: raise production stakes a little so the content does not look like everyone else's.** Filming outdoors (a park, a front yard) instead of a static indoor setup adds variability; street interviews work because outcomes are unknown. No dangerous stunts. Condition: talking-head formats that have gone flat. Source: 04 only. Cards: [4289340e4d3b].
 
@@ -310,39 +335,17 @@ Every rule states the rule, when it applies, the mini playbooks that support it 
 
 **R96. Adapt length and cut per platform, keep the idea.** Condition: cross-posting a series. Source: 09 only (1 example, no stated reason). Cards: [3df74f892c3f].
 
+**R177. Film the unboxing or packaging reveal as its own format.** Show the box, the unwrap and the first look at the product; packaging becomes part of the story, not just a detail inside a founder story. Condition: any physical product with a considered unboxing moment. `[general practice]` No library source; verify against brand data before use.
+
 ### 3.8 Algorithm behaviour claims (every rule here is a claim)
 
 No source in this folder cites platform documentation. Every mechanism below is a presenter's explanation, stated as fact in the talk. The agent treats each as a hypothesis, records what it would look like in the brand's own data, and re-verifies on the cadence in section 11. `[web check: current Instagram and TikTok creator documentation on distribution]`
 
-**R97. Claim: new posts are shown to a small sample of strangers first; their reaction, not follower count, decides further reach.** 04 ("TikTokification", interest-based distribution), 07 (Instagram tests Reels and carousels with non-followers), 08 ("media matching" replaced the social graph since 2020), 09 ("content graph", "small test audience" with no size given). 4 independent presenters say a version of it; none show data. What it implies if true: R5 (stranger-first design), R23 (each post judged alone), R14 (volume is not punished). What to check: share of views from non-followers per post `[verify UI]`. Cards: [c318b8e45196] [e3a9ae26373a] [34a52f48158a] [e1440ddfb8b1].
-
-**R98. Claim: the platform reads a video's topic mainly from the auto-transcript and the caption, and needs about 30 to 50 consecutive same-topic videos to learn the avatar.** 08 only; the presenter says the number is his heuristic, not a platform figure. Implication: R55 (name topic and audience in speech and caption), R17 (commitment window). Cards: [34a52f48158a] [d84a8df8c294].
-
-**R99. Claim: a broad hit that pulls in unrelated groups makes the platform's next-post targeting noisier and hurts monetisation.** 08 only, illustrated with a hypothetical, not a case. Implication: R6. What to check: performance of the 3 posts after any unusually broad hit `[needs brand data]`. Cards: [d6fdd4b41759].
-
-**R100. Claim: under interest-based distribution, posting more does not punish the account; a weak post is simply shown less.** 04 only, backed by the presenter's own 2 half-years (2.5 posts a day gained 20,000 followers in 6 months with collaboration boosts; 4 posts a day gained 60,000 in the next 6 months without them). Single account, confounded, as the presenter admits. Implication: R14. What to check: unfollows and follower-share of views as cadence rises `[needs brand data]`. Conflict: C1. Cards: [c318b8e45196].
-
-**R101. Claim: scheduling tools, native or third party, reduce organic reach.** 03 only, from an internal Cut 30 comparison across "hundreds of videos" with no method shown. 03's own cards say to test manual vs scheduled on the brand's account before adopting it. Implication: R116. Conflict: C3. Cards: [7ff53d5768f7].
-
-**R102. Claim: TikTok Business accounts without a Shop are deprioritised; Creator accounts are the default; the account must be registered and posted from the target country.** 03 only. `[verify UI: current account types and any stated distribution difference]` `[needs brand data: where the account and phone number are registered]` Implication: R112, R113. Cards: [b22a54d48616].
-
-**R103. Claim: outbound links and cross-platform routing are throttled, and users resent being moved between platforms.** 08 only. The only allowed bridge is social to owned (email, community). 03 conflicts by cross-posting everywhere and linking to lead magnets. Implication: R129, R110. `[web check: current treatment of link stickers and outbound URLs per platform]` Conflict: C11. Cards: [03e0df5b81d9].
-
-**R104. Claim: an open DM thread makes the platform more likely to show the person your next post; comments are a rewarded engagement signal.** 04 (thank-you DM and comment-to-DM loop), 09 (comment spikes). `[web check: is any of this documented]` Implication: R119, R123. Cards: [b539e41f421e] [79467cee9f17] [00f161224b14].
-
-**R105. Claim: the platform prefers fast content, and exaggerated language changes algorithmic pickup.** 10 (speed), 06 (exaggeration). Neither shows data; 06's exaggeration advice is overridden by R44. Cards: [bde55a0463de] [d52d9eff6cd1].
-
-**R106. Claim: valuable short-form content keeps earning for months because Instagram content surfaces in Google search and seasonal topics re-spike.** 03 only, from his own channel. `[web check: current Instagram indexing in Google]` Implication: R132. Cards: [26f23bfd7ece].
-
-**R107. Claim: Meta wants brands to lead with entertainment, not education.** 04 attributes this to a private, unofficial conversation with an unnamed Meta employee who asked him not to promote it. Not citable. Conflict: C2. `[web check: any public Meta statement]` Cards: [9fce1289b063].
-
-**R108. Claim: platforms score new content against the patterns of top content in the category (visuals, transcript, captions, pacing).** 09 only, offered as a premise. Implication: R140 teardown research. Cards: [1445bdd3ed8e].
-
-**R109. Follower count is a weaker but real funnel step.** Followers are slightly more likely to see the post, more likely to become superfans, and viewers rarely go straight from stranger to customer. Stories are where followers pay off (clicks and CTAs). 04 only; no conversion rates given. Cards: [4c8610731e7c].
+**Moved to Appendix A, section A.1: R97 to R109**, the algorithm behaviour claims (stranger-first sampling; topic learned from transcript and caption; broad-hit targeting noise; posting-volume claims; the scheduler-penalty claim; TikTok account-type and country claims; outbound-link throttling; DM-thread and comment signals; fast-content and exaggeration claims; the search-surfacing claim; top-content scoring claim; follower count as a funnel step). None of these rules is store-specific; they are kept as background hypotheses, not decisions. See Appendix A.1 for the full text and section 11 for the re-verify cadence.
 
 ### 3.9 Platforms, accounts and cross-posting
 
-**R110. Pick 1 hero platform to judge the channel by; cross-post only where it adds no work and never route an audience between social platforms.** 08 says one platform plus email for 6 months; 03 says TikTok and Instagram as the base with cross-posts to LinkedIn, X, YouTube Shorts and Snapchat Spotlight because the same content performs on both base platforms. Strictest merge: the read (P15) is done on the hero platform; secondary platforms are manual cross-posts with zero expectation; no "watch my YouTube" call-outs. Condition: small teams starting from zero; 08 says an established multi-platform brand may not need the constraint. Sources: 08, 03. Conflict: C11. `[needs brand data: which platform holds the most customers]` Cards: [e46ef6c2491a] [03e0df5b81d9] [19bea8d6aaa6].
+**R110. Pick 1 hero platform by where the store's actual buyers spend time; a mobile-first India audience and a US audience can answer differently.** `[general practice]` for the geography check. Cross-post only where it adds no work and never route an audience between social platforms. 08 says one platform plus email for 6 months; 03 says TikTok and Instagram as the base with cross-posts to LinkedIn, X, YouTube Shorts and Snapchat Spotlight because the same content performs on both base platforms. Strictest merge: the read (P15) is done on the hero platform; secondary platforms are manual cross-posts with zero expectation; no "watch my YouTube" call-outs. Condition: small teams starting from zero; 08 says an established multi-platform brand may not need the constraint. Sources: 08, 03. Conflict: C11. `[needs brand data: which platform holds the most customers]` Cards: [e46ef6c2491a] [03e0df5b81d9] [19bea8d6aaa6].
 
 **R111. LinkedIn and X only if someone will show up to comment there; YouTube Shorts with zero business expectation.** 03: about 30,000 Shorts views "doesn't really do much"; a million "maybe does some stuff". Condition: cross-post destinations. Source: 03 only. Cards: [19bea8d6aaa6].
 
@@ -358,9 +361,11 @@ No source in this folder cites platform documentation. Every mechanism below is 
 
 **R117. Once followers exist, use Stories as the secondary format and the home for CTAs.** Sources: 04, 08. Cards: [4c8610731e7c] [fa1ae83e8a27] [e46ef6c2491a].
 
+**R178. Use shoppable posts and product tagging beyond TikTok Shop.** Tag products directly in Instagram and Facebook posts and Reels where the platform supports it, not only through a TikTok Shop tie-in (R112). `[verify UI: current shoppable tagging features per platform]` Condition: any platform that supports native product tags. Partial source: TikTok Shop only [b22a54d48616]; the wider claim is `[general practice]`. No further library source; verify against brand data before use.
+
 ### 3.10 CTA timing, comment-to-DM, lead magnets and the funnel
 
-**R118. On a new account, run the first month with no CTA at all; add soft CTAs once posts consistently reach the niche's view threshold.** 03 says no "buy", "join my list" or "go to my page" until posts consistently hit about 5,000 views (about 2,000 in very narrow niches such as construction or SEO), and calls early CTAs "shooting yourself in the foot". 09 says every piece needs one clear next step. 04 sells low-ticket items in-app continuously. 07 attaches a lead magnet to 1 or 2 Reels a week. Strictest kept as the default for a new account; section 7 (C4) gives the path for brands that need leads sooner. Condition: new or restarted accounts. Sources: 03 vs 09, 04, 07. Conflict: C4. Cards: [bf0b2be7f3cf] [5f22157f3977] [3dd25615d38b] [302840d96c34].
+**R118. Set the CTA-free window and view threshold by price point: a low-AOV store can add a soft CTA sooner than a high-AOV or considered-purchase store.** `[general practice]` for the price-point branch. On a new account, the default is to run the first month with no CTA at all, then add soft CTAs once posts consistently reach the niche's view threshold. 03 says no "buy", "join my list" or "go to my page" until posts consistently hit about 5,000 views (about 2,000 in very narrow niches such as construction or SEO), and calls early CTAs "shooting yourself in the foot". 09 says every piece needs one clear next step. 04 sells low-ticket items in-app continuously. 07 attaches a lead magnet to 1 or 2 Reels a week. Strictest kept as the default for a new account; section 7 (C4) gives the path for brands that need leads sooner. Condition: new or restarted accounts. Sources: 03 vs 09, 04, 07. Conflict: C4. Cards: [bf0b2be7f3cf] [5f22157f3977] [3dd25615d38b] [302840d96c34].
 
 **R119. Replace "link in bio" with a comment keyword that triggers a DM containing the link or asset.** "Link in bio" tells an engaged viewer to leave the post and walk a confusing path; a keyword keeps them on the post, raises comments, and lands a notification in their inbox. 4 sources name ManyChat; 04 calls it (per him) the only officially approved Instagram DM partner. Condition: any post with an offer, guide or link. `[verify UI: current comment-to-DM setup]` `[web check: current Meta messaging partner list and DM automation policy]` Sources: 04, 07, 09, 03. Cards: [79467cee9f17] [302840d96c34] [00f161224b14] [bf0b2be7f3cf].
 
@@ -388,6 +393,10 @@ No source in this folder cites platform documentation. Every mechanism below is 
 
 **R131. Reuse every content asset along the sales path.** Landing page, pre-call or pre-purchase email, in-DM answer, post-purchase follow-up; for no-call ecommerce, email and SMS take the call steps (route to 14-EML). Source: 03 only. Cards: [92f5abb59008].
 
+**R179. Turn stock status into content: restock alerts, low-stock or sold-out framing, and waitlist drops.** Post when a hero SKU is about to sell out or has just restocked; use a waitlist opener ahead of a drop. Condition: stores with real stock constraints or drop-based launches; pairs with the launch cadence in R130. `[general practice]` No library source; verify against brand data before use.
+
+**R180. Offer a bundle or a higher-AOV alternative in CTA content, not only "buy" or a lead magnet.** For a returning or engaged viewer, the next step can be a bundle, an upgrade or a higher-tier product, not always the entry item. Condition: stores with more than 1 price point; route the bundle logic itself to 03-OFF. `[general practice]` No library source; verify against brand data before use.
+
 ### 3.11 Repurposing and asset life
 
 **R132. Reuse a proven winner at least 4 times by changing the wrapper, not the story.** Change the hook, convert to an AI voiceover (disclosure check, R170), turn a video script into a text carousel, recheck impressions and sales after each version before making more. 05 shows "post everything 3 times; repost anything over 60 days old" in a caption montage with no explanation and no card, so it is thin. 03 says valuable content keeps earning for months (claim R106). Condition: the asset must have moved impressions and sales, not just views. Sources: 06, 05 (uncarded), 03. Cards: [4f527d2d3eb2] [26f23bfd7ece].
@@ -404,7 +413,7 @@ No source in this folder cites platform documentation. Every mechanism below is 
 
 ### 3.12 Teardown and swipe-file method
 
-**R138. Keep categorised swipe files and capture the moment something lands.** 01: separate files for openers, closers, phrases, headlines, connecting words; sources from podcasters, YouTubers, competitor and non-competitor sites, comedians, engineering posts; pull 2 or 3 entries before writing and riff on structure. 05: folders by the 15 hook types; record on-screen text, spoken words, audio and visual together, because the combination does the work. Condition: ongoing. Sources: 01, 05. Cards: [6ff9c1f9fc32] [9b17f7a80dfc].
+**R138. Keep categorised swipe files and capture the moment something lands.** 01: separate files for openers, closers, phrases, headlines, connecting words; sources from podcasters, YouTubers, competitor and non-competitor sites, comedians, engineering posts; pull 2 or 3 entries before writing and riff on structure. Split swipe files further by DTC competitor ads and non-competitor ads (banks, SaaS, media), so structure borrowed from a non-retail source never applies unchanged to a physical product's PDP. `[general practice]` 05: folders by the 15 hook types; record on-screen text, spoken words, audio and visual together, because the combination does the work. Condition: ongoing. Sources: 01, 05. Cards: [6ff9c1f9fc32] [9b17f7a80dfc].
 
 **R139. Never paste swiped wording into customer-facing copy.** 01's mini playbook adds this as a legal and brand risk; ecomOS makes it a rule (section 0). Sources: 01 (mini playbook addition), ecomOS. Cards: [6ff9c1f9fc32].
 
@@ -422,7 +431,7 @@ No source in this folder cites platform documentation. Every mechanism below is 
 
 **R145. Build 3 separate top lists (most views, most followers gained, most comments or deep engagement) plus a flop list.** Expect the lists to differ; expand the formats that recur across the first 2 lists; write a do-not-do list from the flops. Source: 07 only. Cards: [6bff3121b5a8].
 
-**R146. Always read retention and the watch rate after 3 seconds; then read shares in a growth phase and comments plus Story views in a selling phase.** Label each period growth or selling and judge posts against the matching metric only. Confirm which fields the analytics surface exposes `[verify UI]`. Source: 04 only. Cards: [3380206cba51].
+**R146. Read retention and the watch rate after 3 seconds per SKU featured, not just per post, so the read shows which products the content builds demand for.** `[general practice]` for reading by SKU. Then read shares in a growth phase and comments plus Story views in a selling phase. Label each period growth or selling and judge posts against the matching metric only. Confirm which fields the analytics surface exposes `[verify UI]`. Source: 04 only. Cards: [3380206cba51].
 
 **R147. For test rounds, measure completion rate, saves, comments, replays, CTR and cost per lead, not raw views or follower count.** Publish variations in a short window, ideally at the same time, to limit time-of-day effects. Source: 09 only. Cards: [c5eaa02ce9d1] [3df74f892c3f].
 
@@ -444,19 +453,21 @@ No source in this folder cites platform documentation. Every mechanism below is 
 
 ### 3.14 Monetisation
 
-**R156. Content is the attention engine; value is captured at the product layer, not the media layer.** 08's stack: platform, media (creators), offering. His own early AdSense: about $52 after 12 months and hundreds of hours; occasional $500 to $1,000 brand deals (his case, not a benchmark). Direct attention to owned products, services or affiliate deals with uncapped upside. Condition: every brand account; a pure creator account may differ. Source: 08 only. Cards: [0e331c158903].
+**R156. Route attention to the product page and cart, not a vague "product layer": every high-performing post gets a matching PDP or collection link ready before it goes live.** Content is the attention engine; value is captured at the product layer, not the media layer. 08's stack: platform, media (creators), offering. His own early AdSense: about $52 after 12 months and hundreds of hours; occasional $500 to $1,000 brand deals (his case, not a benchmark). Direct attention to owned products, services or affiliate deals with uncapped upside. Condition: every brand account; a pure creator account may differ. Source: 08 only. Cards: [0e331c158903].
 
 **R157. Build an owned list from organic reach; do not build the plan on sponsorships.** 07 stopped taking sponsors ("usually a pain") and attributes about $100,000 and $38,000 from 2 Reels to the email list and his mentorship, not to the Reels. 08 says brand deals sit at the layer with the least value. No source in this folder argues for sponsors; the conflict is with common creator practice. For an ecommerce brand the product is the offer, so sponsorships are a separate revenue decision, not the content model. Condition: any brand with something to sell. Sources: 07, 08. Conflict: C5. Cards: [4a4a14bf5c74] [302840d96c34] [0e331c158903].
 
 **R158. Reach without a monetisation layer is a vanity metric; route spikes to the mid-funnel asset, not a hard pitch.** Source: 09 only. Cards: [5f22157f3977].
 
-**R159. Funding 1 or 2 deep thinkers to build the original library is, per 02, the best marketing spend a company with budget can make, but only with the remix and distribution machinery in place.** Source: 02 only, stated as opinion. Cards: [320db8651bf5] [bda11c7340cf].
+**R159.** Moved to Appendix A, section A.3: funding deep thinkers to build the original library as a media-strategy opinion, with no store analogue.
 
-**R160. Expect owned media to be part of brand strategy.** 02 cites OpenAI buying the podcast TBPN `[web check]`; the small-brand version is owning the category narrative through an original library rather than only ads. Source: 02 only. Cards: [264a1b8b2dd8].
+**R160.** Moved to Appendix A, section A.3: owned media as brand strategy, illustrated with a B2B podcast acquisition, with no store analogue.
 
 **R161. Discount codes named only in content are the simplest attribution signal, not a discount strategy.** Source: 06 only. Cards: [8292e101004a].
 
-**R162. A distinct methodology is a moat for a product as much as for a content program.** 02's own SaaS is sold on a method, not features; a self-interested example. Source: 02 only. Cards: [687b8507e264].
+**R162.** Moved to Appendix A, section A.3: a distinct methodology as a moat, illustrated with a SaaS's own product, with no store analogue.
+
+**R181. Post a "time to reorder" reminder for consumable or replenishable products.** Time the post to the product's typical use-up window and route it to the repeat-purchase customer segment. Condition: consumable, wearable-out or subscription-adjacent products; ties to R157's owned-list point. `[general practice]` No library source; verify against brand data before use.
 
 ### 3.15 Brand safety, compliance and ecomOS overrides
 
@@ -483,6 +494,8 @@ No source in this folder cites platform documentation. Every mechanism below is 
 **R173. Hook swaps and borrowed footage: rights confirmed, source credited where required, and the teased event real (R34).** Sources: 04, 05 (event must happen), 05's mini playbook (rights), ecomOS. Cards: [d686739bfd6c] [d22074737dfa].
 
 **R174. Keep brands apart and keep public web research separate from private business data.** Gehna, Peach Bucket and TrailFold stories, hooks and results never mix. Source: ecomOS.
+
+**R182. Use shipping and returns policy clarity as pre-purchase trust content.** A short post or Story explaining free returns, delivery time or a guarantee can be the hook for a nervous first-time buyer. Condition: any store where checkout hesitation is a known drop-off point. `[general practice]` No library source; verify against brand data before use.
 
 ## 4. Procedures (implementation)
 
@@ -1277,7 +1290,7 @@ Merged from all sources, deduplicated, with the fix.
 What the agent produces for each task in this domain, and the format. Every deliverable names its brand, its sources by rule number, and any `[needs brand data]` or `[web check]` still open.
 
 ### 9.1 Monthly calendar
-Format: a table, 4 weeks, 1 row per post. Columns: date, platform (hero or cross-post), pillar, format (Reel, carousel, photo, Story), series name, hook type, framing (negative or positive), funnel stage, timely or timeless, CTA (none, keyword, Story link, hard), keyword, who is on camera, filming batch date, status. Header: floor, phase label (growth or selling), pillars chosen, open timely slots, inbox owner. Built by P3, reviewed by checklist 5.3.
+Format: a table, 4 weeks, 1 row per post. Columns: date, platform (hero or cross-post), pillar, format (Reel, carousel, photo, Story), series name, SKU or collection featured, hook type, framing (negative or positive), funnel stage, timely or timeless, CTA (none, keyword, Story link, hard), keyword, who is on camera, filming batch date, status. Header: floor, phase label (growth or selling), pillars chosen, open timely slots, inbox owner. The SKU or collection column ties the calendar to the catalogue, not only to pillar and format. Built by P3, reviewed by checklist 5.3.
 
 ### 9.2 Hooks bank
 Format: a table. Columns: hook line, word count, reading grade, hook type (1 of 15), framing, visual event, first-frame plan, domain and stakes named (yes or no), payoff location, claim check (brand record reference), rights check if borrowed, post id once published, phase metric result. Kept as a permanent file; the monthly read (P15 step 8) writes results back. Built by P5, reviewed by checklist 5.1.
@@ -1298,10 +1311,10 @@ Format: a table of candidate and live series. Columns: origin (which macro read)
 Format: per campaign. Tool and its policy status `[web check]`, keyword, lead magnet and its destination page (07-LPG), email or CRM destination (14-EML), flow steps, test log (2 accounts, date), posts it is attached to (1 to 2 a week), new-follow DM text, follow-up message for clicked-not-bought, capacity owner, backend metrics to export. Built by P12, reviewed by checklist 5.8.
 
 ### 9.8 Monthly performance read
-Format: a short report. Uploads vs floor; retention and 3-second watch rate trend; the phase metric; the 3 top lists and the flop list; pillar read after 4 iterations; follower share of views; last-20 topic audit; hook type and framing read; leads per post and keyword; the business tie computed in code with unavailable values shown as unavailable; the do-not-do list; the expand list; the next month's floor and mix decision; any scheduler or CTA test result written to the experiment log. Built by P15, reviewed by checklist 5.4.
+Format: a short report. Uploads vs floor; retention and 3-second watch rate trend; the phase metric; the 3 top lists and the flop list; pillar read after 4 iterations; follower share of views; last-20 topic audit; hook type and framing read; leads per post and keyword; the business tie computed in code with unavailable values shown as unavailable, including sales by SKU or collection, not only total sales; the do-not-do list; the expand list; the next month's floor and mix decision; any scheduler or CTA test result written to the experiment log. Built by P15, reviewed by checklist 5.4.
 
 ### 9.9 Account foundations document
-Format: the Creator DNA statement, avatar and pain points, stance (expert or student), pillars and formats, positions log, voice variables, hero platform and cross-post list, account setup per platform (type, country, access), timely vs timeless policy, compliance flags. Built by P1 and P22.
+Format: the Creator DNA statement, avatar and pain points, price ladder and catalogue shape, stance (expert or student), pillars and formats, positions log, voice variables, hero platform and cross-post list, account setup per platform (type, country, access), timely vs timeless policy, compliance flags. The price ladder and catalogue shape drive the ranking in section 3.0. Built by P1 and P22.
 
 ### 9.10 Story library entries
 Format: per story. Title, the founder question it answers, intention, obstacle, emotional trigger and technique, the approved telling (text), formats it has been used in, accounts it may appear on, permission status, claims referenced. Built by P8.
@@ -1373,7 +1386,63 @@ Format: the 3-by-6 grid (beginning, middle, end against location and visuals, pa
 | Hook-length and reading-level findings | 05's 1,300-Reel sample is one creator's undated collection | R27, R28 | keep as a starting point; the hooks bank read replaces it |
 | Expert-content window | 03 says expert-led content is "the cheat code right now" for about 9 months from the talk | R4 | re-read the brand's own pillar results each quarter |
 
+**24 Sep 2026:** ecommerce specificity pass applied from ECOM_REVIEW.md; priority block added (3.0), 15 rules reworded, 8 levers added (R175 to R182), about 2,300 words moved to Appendix A.
+
 ## 12. Source index
+
+Each mini playbook: number, title, type, credibility and bias, what it contributed most. Ratings: credibility 1 (opinion only) to 5 (measured, independent); bias 1 (no commercial interest) to 5 (selling the thing the advice justifies).
+
+**Full source credibility write-ups (01 to 10) moved to Appendix A, section A.2.** Each entry there names the presenter, what they sell, the credibility and bias ratings on the scale above, and what each source contributed most. This is background about the presenters, not about stores.
+
+**Independence note.** 10 files, 8 independent presenters: 04 and 05 are one coach; 03 and 10 are one program. No source is independent of a commercial interest except partly 06.
+
+**Neighbour folders and what lives there.**
+- 10-MCR-paid-social-creative: paid concepts, statics, video scripts for ads, UGC and founder ad briefs, creative testing. Organic winners go there to be run as paid tests (R150, 06's "run it as a Facebook ad").
+- 24-DEP-ad-deployment: account structure, budgets, bidding, boosting. Meta is read only from this playbook.
+- 11-ADC-ad-copy-deployment: primary text, headlines, descriptions; benefit-forward paid copy that C6 and C12 contrast with organic hooks.
+- 07-LPG-landing-pages: lead-magnet pages, founder-letter pages (R78), hard and soft CTA destinations (R128).
+- 14-EML-email-lifecycle: the email sequence after a DM capture (R125), plain-text founder emails (R78), welcome and post-purchase flows.
+- 06-MEA-measurement: attribution and measurement infrastructure behind the business read (R150).
+- 09-CRO-testing: test design and statistics; this folder's test loop (P16) has no sourced sample-size rule.
+- 01-PRD-product-research and 03-OFF-offers: what the product is and what the offer is; this folder assumes both exist.
+- 17-CXP-post-purchase: customer stories and reviews that feed the story library (R66).
+
+
+## Appendix A. General background
+
+Moved here by the ecommerce specificity pass (ECOM_REVIEW.md, applied 24 Sep 2026). This material is presenter opinion, unverified algorithm mechanism claims, source biographies and non-store examples. It is kept for reference and traceability, not for day-to-day decisions; the main sections above are.
+
+### A.1 Algorithm behaviour claims (moved from section 3.8)
+
+No source in this folder cites platform documentation. Every mechanism below is a presenter's explanation, stated as fact in the talk. The agent treats each as a hypothesis, records what it would look like in the brand's own data, and re-verifies on the cadence in section 11. `[web check: current Instagram and TikTok creator documentation on distribution]`
+
+**R97. Claim: new posts are shown to a small sample of strangers first; their reaction, not follower count, decides further reach.** 04 ("TikTokification", interest-based distribution), 07 (Instagram tests Reels and carousels with non-followers), 08 ("media matching" replaced the social graph since 2020), 09 ("content graph", "small test audience" with no size given). 4 independent presenters say a version of it; none show data. What it implies if true: R5 (stranger-first design), R23 (each post judged alone), R14 (volume is not punished). What to check: share of views from non-followers per post `[verify UI]`. Cards: [c318b8e45196] [e3a9ae26373a] [34a52f48158a] [e1440ddfb8b1].
+
+**R98. Claim: the platform reads a video's topic mainly from the auto-transcript and the caption, and needs about 30 to 50 consecutive same-topic videos to learn the avatar.** 08 only; the presenter says the number is his heuristic, not a platform figure. Implication: R55 (name topic and audience in speech and caption), R17 (commitment window). Cards: [34a52f48158a] [d84a8df8c294].
+
+**R99. Claim: a broad hit that pulls in unrelated groups makes the platform's next-post targeting noisier and hurts monetisation.** 08 only, illustrated with a hypothetical, not a case. Implication: R6. What to check: performance of the 3 posts after any unusually broad hit `[needs brand data]`. Cards: [d6fdd4b41759].
+
+**R100. Claim: under interest-based distribution, posting more does not punish the account; a weak post is simply shown less.** 04 only, backed by the presenter's own 2 half-years (2.5 posts a day gained 20,000 followers in 6 months with collaboration boosts; 4 posts a day gained 60,000 in the next 6 months without them). Single account, confounded, as the presenter admits. Implication: R14. What to check: unfollows and follower-share of views as cadence rises `[needs brand data]`. Conflict: C1. Cards: [c318b8e45196].
+
+**R101. Claim: scheduling tools, native or third party, reduce organic reach.** 03 only, from an internal Cut 30 comparison across "hundreds of videos" with no method shown. 03's own cards say to test manual vs scheduled on the brand's account before adopting it. Implication: R116. Conflict: C3. Cards: [7ff53d5768f7].
+
+**R102. Claim: TikTok Business accounts without a Shop are deprioritised; Creator accounts are the default; the account must be registered and posted from the target country.** 03 only. `[verify UI: current account types and any stated distribution difference]` `[needs brand data: where the account and phone number are registered]` Implication: R112, R113. Cards: [b22a54d48616].
+
+**R103. Claim: outbound links and cross-platform routing are throttled, and users resent being moved between platforms.** 08 only. The only allowed bridge is social to owned (email, community). 03 conflicts by cross-posting everywhere and linking to lead magnets. Implication: R129, R110. `[web check: current treatment of link stickers and outbound URLs per platform]` Conflict: C11. Cards: [03e0df5b81d9].
+
+**R104. Claim: an open DM thread makes the platform more likely to show the person your next post; comments are a rewarded engagement signal.** 04 (thank-you DM and comment-to-DM loop), 09 (comment spikes). `[web check: is any of this documented]` Implication: R119, R123. Cards: [b539e41f421e] [79467cee9f17] [00f161224b14].
+
+**R105. Claim: the platform prefers fast content, and exaggerated language changes algorithmic pickup.** 10 (speed), 06 (exaggeration). Neither shows data; 06's exaggeration advice is overridden by R44. Cards: [bde55a0463de] [d52d9eff6cd1].
+
+**R106. Claim: valuable short-form content keeps earning for months because Instagram content surfaces in Google search and seasonal topics re-spike.** 03 only, from his own channel. `[web check: current Instagram indexing in Google]` Implication: R132. Cards: [26f23bfd7ece].
+
+**R107. Claim: Meta wants brands to lead with entertainment, not education.** 04 attributes this to a private, unofficial conversation with an unnamed Meta employee who asked him not to promote it. Not citable. Conflict: C2. `[web check: any public Meta statement]` Cards: [9fce1289b063].
+
+**R108. Claim: platforms score new content against the patterns of top content in the category (visuals, transcript, captions, pacing).** 09 only, offered as a premise. Implication: R140 teardown research. Cards: [1445bdd3ed8e].
+
+**R109. Follower count is a weaker but real funnel step.** Followers are slightly more likely to see the post, more likely to become superfans, and viewers rarely go straight from stranger to customer. Stories are where followers pay off (clicks and CTAs). 04 only; no conversion rates given. Cards: [4c8610731e7c].
+
+### A.2 Source credibility write-ups (moved from section 12)
 
 Each mini playbook: number, title, type, credibility and bias, what it contributed most. Ratings: credibility 1 (opinion only) to 5 (measured, independent); bias 1 (no commercial interest) to 5 (selling the thing the advice justifies).
 
@@ -1397,15 +1466,20 @@ Each mini playbook: number, title, type, credibility and bias, what it contribut
 
 **10. How to Make Viral Content for ANY Business.** Video transcript by the Cut 30 presenter (same program as 03). Credibility 2: a menu of reframes with named anecdotes and no numbers except one self-contradicting follower multiple; strong absolute language. Bias 4: sells Cut 30; a Dropbox sponsor read. Contributed most: "no boring business", format shakeup, speed as a vehicle, the viral vehicle prop, attention hijacking, pop-culture riding, hot takes, the versus format with a verdict, embarrassed questions, lore and depth, tour-guide positioning, event reframing, the single distinctive visual element. Card adaptations (series commitment, calendars, legal screening, keeping a "what we make" pillar) are the card writer's. Cards: 13.
 
-**Independence note.** 10 files, 8 independent presenters: 04 and 05 are one coach; 03 and 10 are one program. No source is independent of a commercial interest except partly 06.
+### A.3 Owned-media and moat examples (moved from section 3.14)
 
-**Neighbour folders and what lives there.**
-- 10-MCR-paid-social-creative: paid concepts, statics, video scripts for ads, UGC and founder ad briefs, creative testing. Organic winners go there to be run as paid tests (R150, 06's "run it as a Facebook ad").
-- 24-DEP-ad-deployment: account structure, budgets, bidding, boosting. Meta is read only from this playbook.
-- 11-ADC-ad-copy-deployment: primary text, headlines, descriptions; benefit-forward paid copy that C6 and C12 contrast with organic hooks.
-- 07-LPG-landing-pages: lead-magnet pages, founder-letter pages (R78), hard and soft CTA destinations (R128).
-- 14-EML-email-lifecycle: the email sequence after a DM capture (R125), plain-text founder emails (R78), welcome and post-purchase flows.
-- 06-MEA-measurement: attribution and measurement infrastructure behind the business read (R150).
-- 09-CRO-testing: test design and statistics; this folder's test loop (P16) has no sourced sample-size rule.
-- 01-PRD-product-research and 03-OFF-offers: what the product is and what the offer is; this folder assumes both exist.
-- 17-CXP-post-purchase: customer stories and reviews that feed the story library (R66).
+**R159. Funding 1 or 2 deep thinkers to build the original library is, per 02, the best marketing spend a company with budget can make, but only with the remix and distribution machinery in place.** Source: 02 only, stated as opinion. Cards: [320db8651bf5] [bda11c7340cf].
+
+**R160. Expect owned media to be part of brand strategy.** 02 cites OpenAI buying the podcast TBPN `[web check]`; the small-brand version is owning the category narrative through an original library rather than only ads. Source: 02 only. Cards: [264a1b8b2dd8].
+
+**R162. A distinct methodology is a moat for a product as much as for a content program.** 02's own SaaS is sold on a method, not features; a self-interested example. Source: 02 only. Cards: [687b8507e264].
+
+### A.4 Writing-process mechanics (moved from section 3.4)
+
+**R46. Run the 4-step process: copywork, dump draft, incubate, edit.** Copywork: hand-copy (or type) a piece of admired writing in the tone you want, word for word, for 10 to 15 minutes. Draft: write fast and badly, show no one. Incubate: step away for at least about 90 minutes doing something passive (walk, shower, cook); longer gaps up to a day or a week are fine. Edit: come back and cut hard; quality is made here, so budget more time for editing than drafting. Condition: any piece that matters; short captions can skip copywork but not the edit. Source: 01 only. Cards: [c807997f7db2] [ea8652fd50e8] [8c85d056f475].
+
+**R49. Say it out loud before you write it, and read it aloud before you publish it.** Ask the writer to explain the idea in plain speech; the spoken sentence often becomes the first line or all the copy needed. If it cannot be said plainly the thinking is not clear yet. 07 applies the same test to hooks ("does it sound like an ad or like a friend"). 09's AI review asks for captions "shorter and easier to read on a phone screen". Condition: every hook and script. Sources: 01, 07, 09. Cards: [4f3116aa30c6] [4f38d9d987ed] [3a5f43d052ea] [8907bbacfafe].
+
+**R50. Vary sentence length for rhythm; default short.** "Any time you want to use a comma, use a period", then start the next sentence with "and" or "but" if needed. After a run of short sentences, add a medium one, then occasionally a long one. Use imagined reader lines ("you're asking yourself right now...") as pacing devices. Condition: any copy that reads flat on review. Source: 01 only. Cards: [056882fe4e22].
+
+**R53. Filter topics with a 60-second voice memo.** Record yourself telling a friend about the topic. If it would not come up naturally in that conversation, drop it. If it passes, transcribe the memo and lightly edit it into the draft. Condition: choosing story angles, blog topics and campaign angles. Source: 01 only. Cards: [16e4989b065a].
