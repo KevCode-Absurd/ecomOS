@@ -4,6 +4,8 @@ version: 2.0-draft  |  date: 24 Sep 2026  |  sources: 10 mini playbooks (8 indep
 
 ## 0. How to use this playbook
 
+**Ecommerce first.** This playbook is built for physical-product stores, not for services, B2B or SaaS. Section 3.0 is the ranking: an agent with no task named runs it top to bottom before opening any other group. Store-type conditions (hero SKU vs catalogue, low vs high AOV, subscription vs one-off, marketplace-heavy, luxury or considered purchase, mobile-first India vs US) decide which rules in the groups below apply to a given brand.
+
 **Who runs it.** The offer and pricing agent. It designs and costs offers for physical products: bundles, buy-more-save-more ladders, gifts with purchase, thresholds, subscriptions, guarantees, bonuses, credit and discount framing, promotions and pop-up offers. It also audits how a fixed offer is presented across ad, page and checkout. It hands page layout to 07-LPG, test design and significance to 09-CRO, email and SMS flows to 14-EML, cancel-flow build and portal UX to 17-CXP, landed cost and P&L definitions to 20-FIN, ad copy to 11-ADC and ad account work to 24-DEP.
 
 **Every offer is costed before it is proposed.** No bundle, discount, gift, guarantee, threshold or subscription rate leaves this agent without a contribution-per-order and contribution-per-visitor figure at the proposed structure, against the current structure. All arithmetic is done in code in ecomOS (`intelligence/` calculators, or a script the agent writes and runs), never in the model's prose. Missing inputs give "unavailable", not 0. Formulas are in section 3.0.
@@ -80,9 +82,30 @@ version: 2.0-draft  |  date: 24 Sep 2026  |  sources: 10 mini playbooks (8 indep
 
 ## 3. Decision rules
 
-Rules are numbered R1 to R151 and grouped by sub-topic. Each states the rule, its condition, the mini playbooks that support it (S01 to S10), conflicts (C numbers point to section 7) and card ids. "Voices" counts independent presenters (see section 12): S01 and S10 are 1 voice, S05 and S07 are 1 voice, S06 and S07 are never counted as 2.
+Rules are numbered R1 to R157 and grouped by sub-topic. Each states the rule, its condition, the mini playbooks that support it (S01 to S10), conflicts (C numbers point to section 7) and card ids. "Voices" counts independent presenters (see section 12): S01 and S10 are 1 voice, S05 and S07 are 1 voice, S06 and S07 are never counted as 2.
 
-### 3.0 Formulas
+### 3.0 Ecommerce priority order
+
+An agent with no task named runs this list top to bottom. It ranks levers by leverage, not by group order. Store type changes the order; the notes below say where.
+
+1. Cost the current offer in full (waterfall, CP per order and per visitor, break-even ROAS); every later lever is judged against this baseline. R13, R14, P1.
+2. For a single hero SKU at low AOV, fix basket structure before spending more on ads; a $14 to $25 CAC cannot sit on a $14 order. R21, R41, R44.
+3. Decide the new-versus-one-time-versus-subscription split; the subscriber LTV gap is the largest lever the sources measured. R23, R75.
+4. Build the subscription buy box (front-loaded discount, gated kit, pre-selected plan) for a consumable with proven repeat use. R76 to R82, P9.
+5. Build the quantity ladder for shelf-stable, multi-unit catalogue products; it is funded by shipping, not margin. R41 to R49, P5.
+6. Cost a gift or bonus before deepening a discount; a low-landed-cost item usually beats an equal percent off. R53, R54, P6.
+7. Set cart thresholds from the order-value distribution, not the mean. R62 to R64, P7.
+8. Fix the guarantee and risk reversal, especially for a considered or high-ticket purchase (jewellery is one). R101 to R104, P14. `[general practice]`: for luxury stores this should outrank rungs 2 and 5, since trust, not price, is the blocker.
+9. For a fixed-offer brand, run the presentation audit; it is the entire lever available once price is fixed. R133 to R137, P19.
+10. Fix the pop-up and first-order offer; cheap to change, often the weakest surface on the site. R125 to R130, P17.
+11. Score and place upsells, cross-sells and post-purchase offers; smaller lift, near-free once the core offer works. R68 to R74, P8.
+12. Add honest scarcity, urgency and cancel-flow save offers only once the above are in place; framing and retention, not a substitute for structure. R111, R94 to R98.
+
+Store-type notes: a marketplace-heavy brand inserts marketplace coupon and listing-title mechanics between rungs 5 and 9, since the platform controls layout `[general practice, see item 4]`. A mobile-first India store weighs rung 8 higher, since COD trust friction is common there `[general practice]`. A catalogue brand runs rung 1 per SKU family, not per SKU.
+
+Load this block first; the groups below are the detail.
+
+### 3.0b Formulas
 
 All arithmetic runs in code. Variables are per order unless stated. "GM" is gross margin after all variable costs, not product COGS alone.
 
@@ -287,6 +310,8 @@ F18 Cancel-flow save offer cost
 
 **R12. Market and product come before the offer.** If the category is shrinking or the product does not repeat, no offer fixes it; if the product is a daily ritual it will retain better than an occasion product, and retention benchmarks from other niches do not transfer. Condition: check before spending on offer tests. Voices: 3 (S01, S05, S04). [c6f5c92f4d60] [3e5ddfe3f852] [9d7f6e7eec35] [45e7a80365bc]
 
+**R152. Marketplace deal mechanics (coupons, Lightning Deals, Subscribe and Save, fee-adjusted margin) sit outside this playbook's sources.** Route an Amazon or Flipkart deal build to 12-GAD and 24-DEP; only the search-term naming step draws on a source here (`10-applying-100m-offers-to-e-commerce-i-m-pissed.md` [44778b53f7ea], via R138). Condition: marketplace-heavy brands. `[general practice]`. No library source for the deal mechanics; verify against brand data before use.
+
 ### Group B. Cost every offer before proposing it
 
 **R13. Know the full-price waterfall for every product before any offer.** Price, all-in COGS including shipping, fulfilment and payment fees, gross margin, break-even ROAS, target CPA, contribution per order (F1 to F3). Round costs up and revenue down. Condition: always; if the brand cannot supply all-in COGS, the offer output is "unavailable" and the agent requests it via 20-FIN. Voices: 4 (S04, S08, S06, S01 card). [0b43c974ae3c] [9fe82ea9bb52] [471fc0881800] [e311b1e255a4] [c8b36a7d028e]
@@ -315,9 +340,9 @@ F18 Cancel-flow save offer cost
 
 **R24. Widen the value-to-price gap by adding value first; cutting price is "most of the time the wrong decision".** Price can only fall to 0; value can rise without limit. Condition: S01's frame, applied to products by S10 and S04; not a ban on modelled markdowns (R31). Voices: 3 (S01+S10, S04, S07). [d1d1f8ddde9a] [582ef3d59a15] [a3756b7bf5f1] [82ae4d2b081b]
 
-**R25. Do not compete on price unless your costs are about 1/10th of competitors'.** Being second cheapest has no strategic benefit (S01 quoting Kennedy). Condition: S01 opinion; for marketplace and shopping-ad SKUs where price parity is enforced, route to 12-GAD. Voices: 1 (S01). [d1d1f8ddde9a]
+**R25. Match a competitor's price only if your landed cost per unit (F1) is close to 1/10th of theirs; check before matching a shopping-feed or marketplace price.** Moved to Appendix A: R25's Kennedy quote on price positioning. Condition: S01 opinion; for marketplace and shopping-ad SKUs where price parity is enforced, route to 12-GAD. Voices: 1 (S01). [d1d1f8ddde9a]
 
-**R26. Price signals positioning; the lower price often loses the test.** S02: a $79 software tool sold to neither consumers nor professionals; refocused on professionals at $129, sales rose. Condition: a repositioning result, not proof that raising price alone lifts sales; test price with positioning (P24). Voices: 2 (S02, S01). [608cbae96529] [60fcb07453d8] [50211f248483]
+**R26. A low headline price can read as low quality on a PDP; test a higher price with a positioning change (audience, hero image, bundle) on the product page, not the price line alone.** Moved to Appendix A: R26's software-tool pricing example. Condition: a repositioning result, not proof that raising price alone lifts sales; test price with positioning (P24). Voices: 2 (S02, S01). [608cbae96529] [60fcb07453d8] [50211f248483]
 
 **R27. Flat, frequent discounting re-anchors the price and trains buyers to wait.** S04: launch at 60% gross profit, end at 45% because every repeat order needs a discount. S07: 50% or 90% off sells but "is not going to last you very long". Condition: any brand; measure discount share of revenue and repeat buyers who only buy on sale `[needs brand data]`. Voices: 4 (S04, S07, S01, S06). [a3756b7bf5f1] [0c2ae5495d35] [8074b0c6c718] [82ae4d2b081b] [39853dac5920] [d5d7d14f51e0]
 
@@ -325,7 +350,7 @@ F18 Cancel-flow save offer cost
 
 **R29. Show the full price; never hide the total behind a first instalment or per-day figure.** Per-day and per-serving maths are allowed next to the total (R48), not instead of it. S02's "buyers react to the first payment" is a 2009 direct-mail tactic that conflicts with total-price and drip-pricing rules. Condition: always; `[web check: drip pricing and instalment disclosure rules per country]`. Voices: cards of S02 and S08; S02's text conflicts (C15). [43f3ba786866] [acb243537e19] [5f2ab9d96cc7]
 
-**R30. Tell the pipeline before a real price rise; never raise prices silently.** Condition: any price increase; the rise itself must be real and dated. Voices: 1 (S01). [676632fcde7f] [582ef3d59a15]
+**R30. Before a real price rise on a live SKU, notify active subscribers and cart abandoners, and update the price in every running ad and PDP so no channel shows a stale price at launch.** Condition: any price increase; the rise itself must be real and dated. Voices: 1 (S01). [676632fcde7f] [582ef3d59a15]
 
 ### Group D. Discounts: when, how deep, how framed
 
@@ -339,15 +364,17 @@ F18 Cancel-flow save offer cost
 
 **R35. Frame extra units as "free" rather than an equivalent percent, at the same total price.** "Buy 2, get 1 free" instead of "33% off 3"; S07 claims "free always works better" from its own tests (no numbers), S02 calls "free" the strongest word, S08 prefers it. Condition: the economics must be identical (a free unit is real COGS and freight); the correct equivalent of B2G1 is 33.3% off, not the "60%" S08 compares it with. Conflict C4b: S06's speaker calls BOGO "very hard to use unless it makes sense on your margin". Voices: 4 (S07, S08, S02, S06 header). [52bf7bcc54a4] [ae0a3d67b0b3] [9ee3a3ddedd2] [274578b3f2f5] [d5d7d14f51e0]
 
-**R36. Free usage units or product can beat an equal cash discount, and a premium can beat a cash discount, but not for B2B buyers.** S02: "30 free minutes" pulled about 2x "$5 off" (MCI); Benson's rule is that a premium beats a cash discount if you choose only 1; a business-gift firm found 25% off plus a clock radio did worse than 25% off alone. Condition: consumer offers; direct-mail evidence from 1992 to 2008, so test. Voices: 1 (S02). [7a9d0f1bb6c4] [60fcb07453d8] [eb0b5c5a0052]
+**R36. A free sample, extra unit or usage credit tied to the product can beat an equal cash discount at the same cost; test this in the pop-up or win-back flow (P17, P13), not the old mail-test result.** Moved to Appendix A: R36's direct-mail evidence (MCI, Benson's rule, the business-gift firm). Condition: consumer offers; direct-mail evidence from 1992 to 2008, so test. Voices: 1 (S02). [7a9d0f1bb6c4] [60fcb07453d8] [eb0b5c5a0052]
 
 **R37. Never make the buyer do mental math.** Show currency saved, per-unit or per-serving cost and per-tier saving; "67% off the 3rd unit" (which is only 22.3% off 3 units) is the pattern to avoid. Condition: all offer copy and tier badges. Voices: 3 (S08, S09, S07). [5f2ab9d96cc7] [4dc9316eaaf5] [61cf8d39f4bb]
 
-**R38. Odd percentages (17.5%, 18%) and price endings are framing tests, low priority.** S07 offers them as ideas with no result; S02's card on price endings is the card writer's, not Bly's. Condition: test only after structural offers are settled. Voices: 1 (S07). [51d44fdc7df5] [9ee3a3ddedd2]
+**R38. Treat odd-numbered discounts and price-ending changes ($X.99 versus a round figure, or the nearest round number in INR) as low-priority copy tests, run only after tier, gift and guarantee structure is settled.** S07 offers them as ideas with no result; S02's card on price endings is the card writer's, not Bly's. Condition: test only after structural offers are settled. Voices: 1 (S07). [51d44fdc7df5] [9ee3a3ddedd2]
 
 **R39. Discount depth tests (10% vs 20% vs 30%) are not offer tests.** Change structure (gift vs credit vs bundle vs subscription terms) before changing depth. Condition: S07 and S06 header. Voices: 2 (S07, S06 header). [82ae4d2b081b] [e311b1e255a4]
 
 **R40. New and returning customers get different offers.** New: first-purchase economics and entry. Returning: lock-in, subscription, larger packs. A retention discount shown to the whole site trains everyone. Condition: any brand with repeat purchase. Voices: 2 (S04, S03). [8290896c9a20] [8074b0c6c718] [35bed5b98d94]
+
+**R153. Offer a prepaid discount or a cash-on-delivery fee waiver above a basket size to shift a mobile-first, COD-heavy market toward prepaid checkout.** Condition: markets where COD is common, such as Gehna's India. `[general practice]`. No library source; verify against brand data before use.
 
 ### Group E. Bundles, multi-packs and buy-more-save-more ladders
 
@@ -393,7 +420,7 @@ F18 Cancel-flow save offer cost
 
 **R60. Stated bonus and kit values must be real prices, and the stack anchors to the core price.** S01: total bonus value should exceed the core offer's value; S02 (Bell): total premium value above the main price, as a hypothesis; S05 and S07 show kits with a value on the page (IM8 $89 or $100; AG1 $43 and $72). Condition: each value is a price the item sells at (R28) `[web check: reference-value claims per country]`. Voices: 4 (S01, S02, S05, S07). [7d21455c5598] [6c1eb9526af9] [7860f83f10e6] [494b95673d4f]
 
-**R61. Two premiums often beat one, but a choice of premiums seldom works.** Give each item a job; do not ask the buyer to pick (a decision deferred is a decision not made). Condition: S02's direct-mail evidence; test. Voices: 1 (S02). [6c1eb9526af9] [48c07a67fbf9]
+**R61. When a tier or welcome kit carries 2 gift items, give each a distinct job instead of making the buyer choose one on the PDP or at checkout.** Do not ask the buyer to pick (a decision deferred is a decision not made). Moved to Appendix A: R61's original direct-mail framing (two premiums). Condition: S02's direct-mail evidence; test. Voices: 1 (S02). [6c1eb9526af9] [48c07a67fbf9]
 
 ### Group G. Thresholds and cart-level offers
 
@@ -457,7 +484,7 @@ F18 Cancel-flow save offer cost
 
 **R89. Growth is capped by acquisition when the base nears new-per-month divided by churn (F12).** Then test budget goes to offers, hooks and personas, with retention work kept running. Condition: S03's frame; do not read it as "retention work has no value". Voices: 1 (S03); S05 argues the opposite priority (C13). [a84f21107a98] [a79ffdb8c9a0] [9d7f6e7eec35]
 
-**R90. Understand the customer's lived experience before offer testing.** Whole-team whiteboard of what customers like and hate; buy and live the full journey; call customers when small. Condition: before any subscription offer redesign. Voices: 2 (S03, S05). [cfdb1e2cd594] [1c5f9fce2bb2] [2762401ae2f2]
+**R90. Before redesigning a subscription buy box, walk the brand's own PDP, cart, checkout, confirmation email and first unboxing as a customer would, and call real subscribers or people who cancelled.** Whole-team whiteboard of what customers like and hate; buy and live the full journey; call customers when small. Condition: before any subscription offer redesign. Voices: 2 (S03, S05). [cfdb1e2cd594] [1c5f9fce2bb2] [2762401ae2f2]
 
 ### Group J. Subscription mechanics that change the offer (portal, skip, cancel, win-back, sales)
 
@@ -483,6 +510,8 @@ Build steps for these live in 17-CXP and 14-EML. The rules here set the offer lo
 
 **R100. Failed payments leak 5% to 10% of subscription revenue at a few million a year; recovery is an offer-adjacent lever.** Condition: S03's estimate; route the build to 17-CXP. Voices: 1 (S03). [9644aea14d42]
 
+**R154. In the cancel flow, show the loyalty or reward points the customer would lose by leaving, beside the founder video and matched save offers (P12).** Named but not modelled as its own lever by the sources: `05-the-100m-subscription-brand-playbook.md` [1ae7b0ed8e41], `06-i-studied-every-ecommerce-offer-so-you-don-t.md` [d5d7d14f51e0] list it among "cheaper but weak" levers. Condition: only where the brand runs a points or loyalty program. `[general practice]`. No library source for this as its own lever; verify against brand data before use.
+
 ### Group K. Guarantees and risk reversal
 
 **R101. Cost the guarantee before proposing it (F8).** Compare net contribution, not net orders, across versions; include refund, return shipping, handling and lost resale value. S01's 95 versus 117 example omits the refund cost; do not. Condition: every guarantee change; `[needs brand data: refund and return rate, return cost per order, resale rate]`. Voices: 3 (S01, S02, S04). [4d72bb91baae] [264e18c4c7be] [729e71de2194] [322b4dd8abd3] [0afa90fbaa08]
@@ -495,7 +524,7 @@ Build steps for these live in 17-CXP and 14-EML. The rules here set the offer lo
 
 **R105. Make the guarantee visible near the price and at checkout, in plain type.** Not an 8-point footnote; S09 shows it under the buy box with the delivery date. Condition: the short version near add-to-cart, the full policy linked. Voices: 3 (S02, S09, S10). [7e4c3385639c] [d7f2ba51f82c] [f106bb47354d]
 
-**R106. Guarantees are enhancers, not a cover for a weak product or checkout.** Refunds from a bad product make the guarantee a liability; tie conditions to actions that make customers succeed where results depend on use. Condition: S01; consumable outcomes (creatine, skincare) need a use period before judging (R86). Voices: 2 (S01, S02). [eaf3e7847805] [7a9d0f1bb6c4]
+**R106. A guarantee does not fix a PDP that overclaims or a checkout that loses orders to friction; if refund rate is high, check the product page and reviews first.** Refunds from a bad product make the guarantee a liability; tie conditions to actions that make customers succeed where results depend on use. Condition: S01; consumable outcomes (creatine, skincare) need a use period before judging (R86). Voices: 2 (S01, S02). [eaf3e7847805] [7a9d0f1bb6c4]
 
 **R107. Name the guarantee for clarity and brand fit, not boilerplate and not shock.** "30 Day Money Back Satisfaction Guarantee" is weak (S01); S01's shock names are style, not required. Condition: on-brand, clear, no invented claims. Voices: 1 (S01). [1890fdd95d42]
 
@@ -503,7 +532,9 @@ Build steps for these live in 17-CXP and 14-EML. The rules here set the offer lo
 
 **R109. Trials and samples fail through inertia, not only fear; add a decide-by incentive and reminders.** "Free use" beat "free trial" by 15% in S02's test; sample on the buyer's own need where possible. Condition: trial and sample offers; measure activation and return rate, not sign-ups. Voices: 1 (S02). [7a9d0f1bb6c4] [4e2954e81935]
 
-**R110. Broad guarantees suit lower-ticket B2C; specific, conditional ones suit higher ticket.** Condition: S01 opinion; for jewellery-grade tickets the guarantee terms interact with statutory rights and resale, so the returns-cost model decides. Voices: 1 (S01). [da1973ba6fc3] [7b7abfbdcab4]
+**R110. A short, broad guarantee suits a low-ticket, one-off purchase; for jewellery-grade or high-ticket items, size length and conditions from the store's own return-cost model (F8) and statutory rights.** Condition: S01 opinion; for jewellery-grade tickets the guarantee terms interact with statutory rights and resale, so the returns-cost model decides. Voices: 1 (S01). [da1973ba6fc3] [7b7abfbdcab4]
+
+**R155. Offer a store-credit bonus (exchange value plus a small top-up) as an alternative to a cash refund.** Store credit appears in the sources only as pop-up framing (`07-i-studied-every-100m-ecommerce-offer-so-you-don.md` [db90a9c32f90] [e54276a5821f]), never as a returns lever. Condition: exchanges and returns handling. `[general practice]`. No library source for this as a returns lever; verify against brand data before use.
 
 ### Group L. Scarcity, urgency and drops (honest only)
 
@@ -535,7 +566,9 @@ Build steps for these live in 17-CXP and 14-EML. The rules here set the offer lo
 
 **R123. Refresh a fatigued offer in this order: creative, body copy, headline or wrapper, duration, enhancer, then monetisation and price.** Each step down is more operationally heavy; do not call an offer fatigued because the audience saw it once; once an offer is monetised, rarely change it. Condition: `[needs brand data: reach, frequency, CTR and CVR trend by creative]`. Voices: 1 (S01). [b261bc411259] [1874fa3ba153]
 
-**R124. A loss leader is allowed only with a planned attachment path and a capped loss.** Profit comes from later sales; plan the back end (bundle, replenishment, email) before traffic arrives and judge on cohort contribution. Condition: S02's direct-mail rule, translated by its cards. Voices: 1 (S02). [b1e72aa6f5b2] [ab07ca65bb72]
+**R124. A loss-leader SKU is allowed only when the store already has the next purchase built (a bundle upsell, subscription offer or 14-EML flow) to route the buyer into, with the loss capped against cohort contribution.** Profit comes from later sales; plan the back end before traffic arrives and judge on cohort contribution. Condition: S02's direct-mail rule, translated by its cards. Voices: 1 (S02). [b1e72aa6f5b2] [ab07ca65bb72]
+
+**R156. Plan offers against a peak-demand calendar (BFCM, Diwali, EOSS, Republic Day for an India store), not only ad hoc sales.** BFCM and subscriber-sale collision are sourced: `03-the-most-valuable-subscription-video-you-ll.md` [35bed5b98d94] (see R91 to R93). Condition: extend P16 with a calendar table. The India festival dates are `[general practice]`. No library source for the India calendar; verify against brand data and the current calendar before use.
 
 ### Group N. Pop-up and first-order offers
 
@@ -555,6 +588,8 @@ Build steps for these live in 17-CXP and 14-EML. The rules here set the offer lo
 
 **R132. Keep a low-commitment path beside the buy button for considered purchases.** A buying guide, fit quiz or "remind me" capture draws out buyers who are not ready (S02's soft offer); a "why not today" exit question routed by reason (price, fit, timing) tells the brand why. Condition: high-consideration or gifting categories (jewellery is one); the ecommerce translation is the cards', not Bly's. Voices: 1 (S02). [1944526d2b8a] [207cd91b5fae] [c2720146fa16] [b4af036c7d67]
 
+**R157. Run a give-X-get-X customer referral offer, separate from the affiliate or partner idea in P22 step 4.** Condition: any brand with a repeat-buyer base to draw referrers from. `[general practice]`. No library source; verify against brand data before use.
+
 ### Group O. Fixed-offer presentation and congruence
 
 **R133. Fixed-offer brands get presentation fixes, not new discounts.** When the owner has fixed the offer (Peach Bucket is one), the agent's whole scope is: state the offer in the 5 variables, make the value visible, remove friction, show proof, delivery and guarantee near the price, frame the existing price (per-unit, per-day, versus the alternative), and make every surface agree. Condition: ecomOS override; no new price point, code or gift unless the owner asks in writing. Voices: ecomOS rule; supported by S08 (offer as whole package), S10 (out-offer with the same product), S09 (presentation is as hard as structure). [0a570cacb952] [f106bb47354d] [01902b9597c7]
@@ -565,15 +600,15 @@ Build steps for these live in 17-CXP and 14-EML. The rules here set the offer lo
 
 **R136. Never copy another brand's claims, counts or discounts.** "Over 150,000 customers", "67% off", "safe and effective" are that brand's; each claim must be true for this brand. Condition: competitor pages are layout and mood inspiration only (ecomOS rule). Voices: 1 (S09) plus ecomOS. [b7975111e758] [d7f2ba51f82c]
 
-**R137. Cut checkout effort as part of the offer: express wallets, guest checkout, saved details, BNPL where available, minimal fields.** Condition: `[verify UI]` `[web check: wallet and BNPL availability and fees per country]`; the S02 figure of about 20% abandonment per form field is 2008 data and stale. Voices: 4 (S10, S08, S06 header, S02). [bdf993c3765b] [4cc6038f44bf] [7bd7a76b5ba7] [7fdcaf1b88c1] [435dd5f2cbb1]
+**R137. Cut checkout effort as part of the offer: express wallets, guest checkout, saved details, BNPL where available, minimal fields.** Moved to Appendix A: R137's 2008 web-design stat (form-field abandonment). Condition: `[verify UI]` `[web check: wallet and BNPL availability and fees per country]`. Voices: 4 (S10, S08, S06 header, S02). [bdf993c3765b] [4cc6038f44bf] [7bd7a76b5ba7] [7fdcaf1b88c1] [435dd5f2cbb1]
 
 ### Group P. Naming and framing the offer
 
-**R138. Name the offer and its parts for the outcome and the buyer, using 3 to 5 of Magnet, Avatar, Goal, Interval, Container.** "Warm" words for warmth buyers, "light fashion jacket" for style buyers (S10); on marketplaces use the terms buyers search. Condition: an outcome plus a time interval implies a guarantee and may be refused by ad platforms `[web check: Meta and Google policy on outcome-plus-timeframe claims]`. Voices: 2 voices (S01+S10, S06 header). [f2d527d24cc0] [966feb3ae826] [a354c944e694] [44778b53f7ea] [b82349684f51]
+**R138. Name the offer using the buyer's outcome and, on a marketplace listing, the exact terms buyers search for; test names in the PDP title, ad headline and pop-up, not only in ads.** "Warm" words for warmth buyers, "light fashion jacket" for style buyers (S10); on marketplaces use the terms buyers search. Condition: an outcome plus a time interval implies a guarantee and may be refused by ad platforms `[web check: Meta and Google policy on outcome-plus-timeframe claims]`. Voices: 2 voices (S01+S10, S06 header). [f2d527d24cc0] [966feb3ae826] [a354c944e694] [44778b53f7ea] [b82349684f51]
 
-**R139. Test 2 to 3 names in ads, keep the winner as control.** Nobody can predict which name wins. Condition: 24-DEP runs the ad test. Voices: 1 (S01). [f2d527d24cc0]
+**R139. Run a candidate name as the PDP title at the same time as the ad-headline test; a name buyers never see on the page will not be helped by an ad test alone.** Nobody can predict which name wins. Condition: 24-DEP runs the ad test. Voices: 1 (S01). [f2d527d24cc0]
 
-**R140. Build value before the price appears, with real comparisons.** Compare to a real alternative that solves the same problem (a consultation, a salon visit, replacing the item yearly), state higher-priced alternatives first, and divide by the period of use, never by an arbitrary unit. Condition: every comparison must be substantiated `[needs brand data: real alternative costs]`; S02's compounding-calculator tactic and false close are rejected. Voices: 2 (S02, S08). [51cc47d99259] [baa9c811749e] [d6f9d5596273] [4cc6038f44bf]
+**R140. Build the value comparison on the PDP itself (per-unit or per-day cost against a real alternative the buyer already spends on) before the price appears, not only in ad copy.** Compare to a real alternative that solves the same problem (a consultation, a salon visit, replacing the item yearly), state higher-priced alternatives first, and divide by the period of use, never by an arbitrary unit. Condition: every comparison must be substantiated `[needs brand data: real alternative costs]`; S02's compounding-calculator tactic and false close are rejected. Voices: 2 (S02, S08). [51cc47d99259] [baa9c811749e] [d6f9d5596273] [4cc6038f44bf]
 
 **R141. Match the claim to the buyer's awareness stage and carry it from ad to page.** Problem aware, solution aware, product aware get different headline claims for the same product (S08's humidifier). Condition: stage research in 02-AVT. Voices: 1 (S08). [f3e0c5293ed8]
 
@@ -583,11 +618,11 @@ Build steps for these live in 17-CXP and 14-EML. The rules here set the offer lo
 
 **R143. Preselect the metric: contribution per visitor (profit per session) for purchase tests, gross profit after gift or discount cost, then LTV at the repeat-cycle window.** Condition: decide which costs count in "net profit" before the test and write it down. Voices: 4 (S08, S07, S02 card, S04). [1cda5c627ada] [89fd70abc2ef] [3ab744029b93] [52ef4486583d]
 
-**R144. Isolate the offer when you need to credit it; test offers and creatives in parallel only when you want combinations.** S08's presenter says test both at once; its cards and 09-CRO say hold creative constant to attribute. Both are kept (C19). Voices: 1 (S08). [1cda5c627ada] [90e80c5c7974]
+**R144. Hold ad creative and landing page fixed while testing an offer change on the same SKU so any lift can be credited to the offer; test both together only when hunting a new combination.** S08's presenter says test both at once; its cards and 09-CRO say hold creative constant to attribute. Both are kept (C19). Voices: 1 (S08). [1cda5c627ada] [90e80c5c7974]
 
 **R145. Start by testing 1 element (unit price display, variant order, a gift tier) unless a full offer overhaul is the hypothesis.** Condition: S09. Voices: 1 (S09). [58e1159fc052]
 
-**R146. Expect losing tests and keep a backlog; do not judge a product on 1 promotion.** S02: if 1 test in 2 to 5 wins you can make a lot of money; offer testing has moved response by 10% to 900% in his experience (a claim, not a benchmark). Voices: 2 (S02, S04). [3ab744029b93] [c7ccc30477c8] [39335b89c471]
+**R146. Expect most offer tests on a store's own traffic to lose or tie; keep a backlog of untested ideas per SKU so the team is not stalled on one.** S02: if 1 test in 2 to 5 wins you can make a lot of money; offer testing has moved response by 10% to 900% in his experience (a claim, not a benchmark). Voices: 2 (S02, S04). [3ab744029b93] [c7ccc30477c8] [39335b89c471]
 
 **R147. Re-test after a change in traffic source or creative; a new audience shifts AOV and conversion.** Voices: 1 (S08 card). [90e80c5c7974]
 
@@ -1248,6 +1283,16 @@ Format: 1 page.
 - Rollback plan.
 - Registry record fields: brand, date, offer before and after, result, decision.
 
+### 9.6 PDP offer block
+Format: a ready-to-paste copy block for 07-LPG. Closes the gap left by P19 and P20, which audit the PDP but do not produce the words.
+- Price line, with the per-unit or per-day figure next to it (F7, R48).
+- Tier labels and savings, the larger of dollars or percent (R34), each with its reason (R46).
+- Guarantee line, short form, matching the written promise from P14 (R102, R105).
+- Delivery promise: an exact date or ship-by that matches fulfilment data (R135).
+- Subscription gate and cadence text where a subscription default is shown (R78, R82).
+- `[needs brand data]` and `[web check]` flags carried over from P19 and P20.
+- Handed to 07-LPG for placement; this deliverable writes the words, not the layout.
+
 ## 10. What needs live data or a web check
 
 ### 10.1 `[needs brand data]`
@@ -1301,6 +1346,8 @@ Format: 1 page.
 | CPM and reach cost (S01) | Ad markets | Do not use | 2021 figure |
 | Take-rate and RPV ranges from S04 | His market and clients | Replace with brand data | Never benchmarks |
 
+**Change log.** 24 Sep 2026: ecommerce specificity pass applied from ECOM_REVIEW.md; priority block added, 15 rules reworded, 6 levers added, about 95 words moved to Appendix A.
+
 ## 12. Source index
 
 Confidence tallies in this playbook count independent voices, not files. S01 and S10 are the same author (Hormozi). S05 and S07 are the same agency (WellCopy: same community name, same "custom Claude skill", same IM8, AG1, Armra and Everyday Dose walk-throughs). The brief said S06 and S07 look like the same talk; on reading, S06 is a different presenter (a DTC agency owner with the $14 sock model, Garden Alchemy and Giggly examples), but S06 and S07 share brand examples and the front-loaded subscription formula, so they are never counted as 2 voices for the same claim. Net: 8 voices across 10 files.
@@ -1332,3 +1379,17 @@ Confidence tallies in this playbook count independent voices, not files. S01 and
 - S02: the Copywriter's Toolkit is $79 in one place and $39 in two others; the Marlins at 23-14 lost about 38%, rounded to "4 in 10"; software premium value is $49 to $499 in one chapter and $49 to $300+ in another.
 
 **Neighbour folders and what lives there.** 07-LPG: page layout, buy-box and cart UI, listicles, progress bars. 09-CRO: test sizing, significance, stopping rules, holdouts. 14-EML: onboarding, billing reminders, order confirmations, subscriber campaigns, win-back and welcome flows. 17-CXP: cancel-flow build, portal UX, dunning, unboxing and inserts. 20-FIN: landed cost, P&L ladder, cash, inventory grades, LTGP definitions. 18-COG: kit and gift sourcing and unit economics. 11-ADC: ad copy for the offer. 24-DEP: Meta and TikTok account work and name tests. 12-GAD: Google Ads and price parity on Shopping. 02-AVT: avatar and awareness-stage research. 06-MEA: attribution and analytics.
+
+## Appendix A. General background
+
+Raw evidence and examples moved out of the numbered rules during the 24 Sep 2026 ecommerce specificity pass. Kept for traceability, none of it is load-bearing: the rewritten rule in section 3 stands on its own without this text.
+
+**From R25 (Group C, pricing).** Being second cheapest has no strategic benefit (S01 quoting Kennedy). General positioning advice, no store mechanism beyond the rewritten rule.
+
+**From R26 (Group C, pricing).** S02: a $79 software tool sold to neither consumers nor professionals; refocused on professionals at $129, sales rose. A software case, not a physical product; the rewritten PDP rule stands without it.
+
+**From R36 (Group D, discounts).** S02: "30 free minutes" pulled about 2x "$5 off" (MCI); Benson's rule is that a premium beats a cash discount if you choose only 1; a business-gift firm found 25% off plus a clock radio did worse than 25% off alone. Old B2B and consumer direct-mail results (1992 to 2008), no ecommerce translation beyond "test it".
+
+**From R61 (Group F, gifts and bonuses).** Two premiums often beat one, but a choice of premiums seldom works. Bly's direct-mail evidence; no store example.
+
+**From R137 (Group O, fixed-offer presentation).** The S02 figure of about 20% abandonment per form field is 2008 data and stale. Already flagged stale; kept here as a record, not a working benchmark.
