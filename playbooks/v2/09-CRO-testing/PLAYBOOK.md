@@ -425,3 +425,153 @@ These rules tell the agent what to look for on each page type. Design and copy e
 
 **R137. Research-prequalified programmes show higher win rates; unresearched ones lower.** 05 cites DRIP's 36.3% win rate against its pre-qualification. Condition: any programme review where the win rate is low; check the evidence gate (R20) before blaming the ideas. Source: 05. Cards: [f856d689f3d8] [8dc46d4893e1].
 
+## 4. Procedures (implementation)
+
+Each procedure names its goal, preconditions, steps with settings, checks, and rollback. Platform steps carry `[verify UI]`.
+
+### P1. Build correct conversion and RPV numbers (02)
+
+Goal: a baseline the agent can trust. Preconditions: Shopify analytics and GA4 access.
+1. Revenue: pull Net sales + Shipping collected for the period, or Total sales minus tax. Do not use Total sales raw. `[verify UI]`
+2. AOV: revenue from step 1 divided by orders. Shopify's AOV excludes shipping collected, so it will differ. `[verify UI]`
+3. Sessions: pull GA4 sessions for the same period. Note the gap to Shopify sessions. `[needs brand data: GA4 vs Shopify session gap]`
+4. Conversion rate = orders / GA4 sessions.
+5. RPV = conversion rate x AOV. Contribution per visitor = RPV x gross margin %. Do not subtract CAC.
+6. Repeat by device and by traffic temperature (cold paid, warm, returning).
+7. Write RPV as a trend, not a point (02's agency uses about 2.5 years).
+Check: the corrected RPV is higher than Shopify's naive figure (shipping added back) and the conversion rate is higher than Shopify's (fewer bot sessions). If not, a step is wrong. Rollback: none; this is a read. Cards: [91d639e7e2e2] [b9f3fede007a].
+
+### P2. Read the funnel and find the biggest drop (03, 06, 07)
+
+Goal: name the stage to work on. Preconditions: tracking confirmed (R17); P1 done.
+1. In GA4, open Explore and build a funnel: product view, add to cart, begin checkout, purchase (07). Add checkout completion if the events exist. `[verify UI]` Funnel configuration itself is 06-MEA.
+2. For paid traffic, extend the map: ad, landing page, PDP, cart, checkout, thank-you page, post-purchase upsell (03).
+3. Read each stage rate by device and channel.
+4. Compare with 06's bands (R13) as a directional check only.
+5. Weight each drop by the sessions and revenue that pass through it. A 10-point drop on the hero PDP outranks a 30-point drop on a page with 200 sessions a month.
+6. Compare event counts with orders in the store backend. If they do not match, stop and route to 06-MEA.
+7. Write the funnel memo: stage rates, the biggest weighted leak, device and channel splits, what is unknown.
+Check: the leak is stated with the traffic behind it, not only as a percentage. Rollback: none. Cards: [382d08d3f6aa] [bbe716a39c74] [9568c40e1d88] [25f9d85cd8e3].
+
+### P3. Diagnose a conversion-rate change before touching the page (02)
+
+Goal: rule out mix effects before a redesign. Preconditions: P1 by segment.
+1. Split conversion by traffic temperature: cold paid, warm, returning.
+2. Check whether cold share rose. If yes, the blend can fall with no page change (02: blended 2.8%, cold 1%, warm 4%).
+3. Check returning-customer share; high returning share inflates conversion rate and AOV.
+4. Check category, price point, AOV, creative and offer changes in the period.
+5. If a segment's own rate fell with steady creative, audit the page (section 5). If only the blend moved, report a mix effect and stop.
+6. If clarity, offer and proof are already strong, look at product quality, first-order contribution, launches and repeat purchase before another redesign.
+7. Judge on RPV or contribution per visitor.
+Check: the memo names which segment moved. Rollback: none. Cards: [953e03390b0d] [372439a05cbd].
+
+### P4. Set up a behaviour review in Clarity (04) `[verify UI]`
+
+Goal: a list of friction patterns by page and device. Preconditions: Clarity installed with at least 90 days of data. Interface as of July 2024; names may have moved.
+1. Set the date range to the longest representative period (about 6 months; 90 days if newer).
+2. Skim top-line metrics for context only.
+3. Open the Insights block. Note the rates for rage clicks, dead clicks, excessive scrolling, quick backs.
+4. For each Insight, click the camera icon to open the matching recordings.
+5. Start with the most valuable and most visited journeys: homepage or campaign landing page, collection, PDP, cart, checkout.
+6. For each recurring pattern, record page, device, the apparent blocker, and whether it blocks the purchase path.
+7. Classify each pattern by R26 (blocked exit, useful missing action, buried information, false click).
+Check: every pattern has at least 1 recording reference. Rollback: none. Cards: [e053644d5707] [9d9871ee324b] [0eae610ddc62] [5b9da7dd1967].
+
+### P5. Read a heatmap page and turn an Area map into a test (04, 07) `[verify UI]`
+
+Goal: placement and reach hypotheses for 1 page. Preconditions: P4 or a known page to inspect.
+1. Open Heatmaps. Pick the page. Check the screenshot shows the real page; if a popup or broken layout was captured, use Change screenshot and pick another version.
+2. Filter by the device with the most traffic first. `[needs brand data: device split]`
+3. Name the page's core action (R23).
+4. Click map: add up the clicks on and around the core CTA (04's heuristic: 5 to 7% preferred, 4 to 5% "in and around the average", under 1 to 3% weak). Note clicks on non-clickable elements and in empty space.
+5. Scroll map: read reach at the top, the average fold, 75%, 50%, 25%. Find the exact section where reach falls sharply. Note the reach of reviews, guarantee, price and add to cart.
+6. Area map: Edit areas, draw regions around navigation, filters, sticky controls, banners, menu toggles, product cards, key modules. Read each region's share of clicks.
+7. Flag modules with high click share and low reach (07: 10.41% of clicks, 30 to 35% reach). Flag highly visible modules with few clicks. Flag a static element with a high click share (04: a banner that looked like a button took 46% of clicks).
+8. Open recordings for the flagged elements to separate intent from confusion.
+9. Write each finding as a narrow hypothesis (R42). For a placement finding, test the move alone: same module design, same destination, new position; primary metric purchase conversion with collection and PDP behaviour as support.
+Check: every hypothesis names page, device, evidence and metric. Rollback: none. Cards: [09583734387e] [edd07a1a15f6] [de4dfe536e94] [3043da84ee0c] [bc5a8130eee9].
+
+### P6. Pick and watch recordings (04) `[verify UI]`
+
+Goal: the main friction pattern for a page or step. Preconditions: P4 flagged a page, or P2 found a drop.
+1. Open Recordings. Filter: time frame, device, user action (dead clicks, rage clicks, excessive scrolling), scroll depth, landing page, performance (slow vs fast), page duration.
+2. Sort by clicks high to low, then pages high to low: the most active visitors. Reverse the sort: the least active. Compare the 2 groups on the same page type.
+3. Turn on skip inactivity and raise speed (04 used 4x for a 1-hour session, 1.5x for another). If hesitation may matter, leave inactivity visible.
+4. Block 1 to 2 hours with no distractions. Take notes on every key finding.
+5. Watch for: clicks on non-clickable elements; repeated navigation loops (back to the top for a filter); rapid clicking, excessive scrolling, skimming; how people move from home to product; which sections get time.
+6. Ask "why" about every action.
+7. Stop when new sessions repeat patterns you already have (04: about 100 for some clients, 400 to 450 for others).
+8. After a fix ships, repeat with fresh recordings of the new version.
+Check: the pattern is seen across several sessions and at least 2 devices before it becomes a hypothesis (1 return-to-top is not a pattern). Rollback: none. Cards: [0b8d2f6cc4d1] [a1a3e1f62713] [11e64288067b].
+
+### P7. Set up surveys (03, 07) `[verify UI]`
+
+Goal: objections and motivations in customer words.
+1. Post-purchase survey on the thank-you page (KnoCommerce or Okendo on Shopify; Zipify is 03's host's product). Ask at least: "What made you purchase today?" and "What made you almost not purchase today?" Keep attribution questions ("how did you hear about us") in a separate 06-MEA survey or clearly separated.
+2. Exit-intent survey (Hotjar Surveys paid add-on, or Okendo): "What stopped you from buying?", "What almost stopped you from converting today?", "What's the reason you're exiting the site?"
+3. If no post-purchase survey exists yet: email customers and VIPs a one-time Typeform with the same questions; 03's incentive example is a $250 Amazon gift card draw. `[web check: prize-draw and data-privacy rules]`
+4. After 2 to 4 weeks (or 100+ answers, whichever first; no source gives a count), group answers into themes: product uncertainty, quality, time to results, fit, price, shipping, returns, guarantee, how to use, trust gaps, missing info, comparison needs.
+5. For each theme, check whether it is answered near the decision on the PDP, cart and checkout. Unanswered themes become hypotheses (R107).
+6. Cross-check each theme with the funnel step and recordings (R43).
+7. Re-survey after the fix ships and see whether the theme declines.
+Check: buyer answers are not used to explain non-buyers; exit survey and user tests cover non-buyers. Rollback: remove the survey app. Cards: [b4505f6c4061] [91410aaad2c8] [b3b265cf22f6] [f89dbadb9131].
+
+### P8. Mine reviews (03, 02)
+
+Goal: objections, tone, buzzwords and unique feedback. Preconditions: review export; 03 says 500 to 1,000+ reviews for this to be non-negotiable.
+1. Export all reviews to CSV from the review app. `[verify UI]` `[needs brand data: review export]`
+2. Upload to an LLM (03: GPT; 02: Claude or ChatGPT) and prompt for: commonalities, tone of voice, buzzwords, key phrases, friction points, objections, and unique feedback that differentiates the product from alternatives.
+3. Read the source reviews behind each claimed theme to confirm; the model can over-generalise.
+4. Objections go to the FAQ and hero (R107). Unique feedback goes to positioning (02's one-of-one angle: "the first retinol that didn't make me peel"); claim it only if competitors cannot honestly say the same.
+5. Include verbatims in the hypothesis rationale.
+Check: every theme has at least 3 verbatim reviews behind it. Rollback: none. Cards: [fc9b05411697] [cf0bc0f31721] [79bdf741dfc4].
+
+### P9. User tests, interviews and the self-purchase audit (03, 05, 07, 01)
+
+Goal: what heatmaps cannot show.
+1. Self-purchase: buy from the store on mobile, desktop and tablet within the last 4 weeks. Hand a phone to a 70-year-old and watch. Note popups and cookie bars covering the PDP CTA or cart button, and bugs. These are repairs (R50).
+2. Remote user test (Userbrain at $40 per tester at 07's recording time, or Hotjar interviews): recruit 5 to 8 people per task (05). First prompt: first impressions on landing. Tasks: find a suitable product, add it to cart, check out. Note missed navigation, misread details, missed key info, hesitation at cart, checkout doubts.
+3. Impartial first-impression check (01): ask people who have never seen the site what they expect about quality, service and legitimacy from the page alone.
+4. Customer interviews (03): call recent buyers; why did you buy, was it easy, was anything unclear, what words do you use for the product.
+5. Turn repeated patterns into hypotheses. These are qualitative samples, never conversion estimates.
+Check: each pattern seen in at least 2 testers or interviews. Rollback: none. Cards: [a2d5c573076a] [f375f7ffb264] [f856d689f3d8] [c0690a74d2de] [9398191fe1b4].
+
+### P10. Write the hypothesis and the test brief (05, 03, 06)
+
+Goal: a pre-registered brief that a reader can run and audit. Preconditions: at least 2 points of evidence.
+1. Hypothesis: "Because we observed [evidence], we believe [change] will cause [effect] for [segment], measured by [primary metric]. We will know it worked if [metric moves by at least MDE]."
+2. Page, device scope, audience (all, cold paid only, new only).
+3. One primary decision metric (conversion rate, RPV or gross profit per visitor per R6). State why.
+4. Guardrails with thresholds: AOV, margin, return rate, refund rate, page load, add to cart, downstream purchase. 05 gives no threshold values; set and pre-register them per brand. `[needs brand data: guardrail baselines]`
+5. MDE (relative and absolute), planned sample per variant, number of arms, planned dates.
+6. Pre-registered segments: device, paid vs organic, new vs returning.
+7. Tails (two-sided default; one-sided only with the R64 justification) and stopping method (fixed horizon, or which sequential engine).
+8. Runtime: at least 1 full week, in practice 2, covering each weekday twice, plus time to reach the sample.
+9. Contamination plan: exclude retention traffic, or run on a cold-only landing page (R65).
+10. Validity plan: SRM check, tracking QA, flicker check, bot filter, marketing calendar check.
+11. Action for win, loss and inconclusive, written before launch.
+12. Expected-value estimate and ceiling (R44).
+Check: a colleague can compute the same sample from the brief. Rollback: not applicable. Cards: [1b7725e0ff57] [1f26cd618e2d] [a6c0f42b99a3] [300b03fc0354].
+
+### P11. Prioritise the backlog (05, 03, 02, 06)
+
+Goal: a ranked leaderboard. Preconditions: hypotheses in R42 form.
+1. Gate entry: no idea enters without 2 points of evidence (analytics plus replay, survey, user test or interview).
+2. Score with a frame to organise: PXL-style criteria (above the fold; noticeable within 5 seconds; high-traffic page; backed by heatmap, user test, survey or analytics; build difficulty), or ICE 1 to 10 x 3 multiplied (02) for a small team. Do not let the idea's owner be the only scorer.
+3. Compute expected value: P(win) x expected lift x gross profit per conversion x traffic exposed, minus build cost. Add the ceiling (most it could be worth). `[needs brand data: SKU margin, page traffic]`
+4. Keep P(win) honest: 05's anchor is 10 to 20% for well-run tests; raise it only for strong evidence.
+5. Sort by expected value. Break ties with the frame score.
+6. Check the calendar: no 2 tests on the same page area at once (R58).
+7. Repairs and clarity fixes skip the queue and ship (R50, R51).
+Check: the top 5 all have named evidence and a computed sample. Rollback: none. Cards: [aad25dea9ed9] [4a2e3d77d68e] [a6c0f42b99a3] [a56c27356031] [300b03fc0354].
+
+### P12. Decide repair, ship or test (05, 02, 04)
+
+Goal: the right path for each backlog item.
+1. Is the current state objectively defective (errors, rejected valid input, browser failure, double tracking, blocked CTA, silent cart wipe, false-click element)? Yes: repair now, log it, verify with fresh recordings. Stop.
+2. Is it an obvious clarity fix, or proven checkout or landing-page practice, and the store is under 30 orders a month, or the change cannot plausibly hurt? Yes: ship, log it, watch the funnel step and recordings, treat any before-and-after shift as weak evidence.
+3. Are both versions plausibly viable and the better one unknown? Compute the sample (P13). If reachable in 2 to 4 weeks: test.
+4. If not reachable: raise the MDE (bolder change), move to a higher-traffic page, switch to a micro-conversion primary with purchase guardrail, or ship as a bold change with research backing and a later holdout.
+5. Record the decision and the reason in the registry.
+Check: nothing defective is queued for a test. Rollback: for a shipped change, keep the previous theme version or section so it can be restored in 1 step. Cards: [3eca46fe9ba3] [6503bc821ea6] [0bda3b4d7e04] [0b8d2f6cc4d1].
+
