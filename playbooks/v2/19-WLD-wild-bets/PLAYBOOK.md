@@ -4,6 +4,8 @@ version: 2.0-draft  |  date: 24 Sep 2026  |  sources: 3  |  cards: 96  |  built 
 
 ## 0. How to use this playbook
 
+**Ecommerce first.** This playbook is for ecommerce stores, not general marketing or startup audiences. Section 3.0 is the priority order: a ranked list of the levers below by what matters most for a store right now. Load 3.0 first. Store-type conditions (single hero SKU vs catalogue, low vs high AOV, subscription vs one-off, marketplace-heavy, luxury or considered purchase, mobile-first India vs US) decide which rules in section 3 apply to the brand at hand.
+
 **Who runs it.** The wild bets agent. It designs, bounds and reads out unconventional offer, retention and customer experience plays that sit outside the paid auction: handwritten notes, founder videos, surprise gifts and artifacts, programmatic direct mail, keep-it refunds, lifetime warranties, outcome guarantees, VIP tiers and invite-only access, limited drops, referral waitlists, expiring loyalty value, proactive subscription pauses, no-ads weeks, guerrilla and mystery launches, brand stunts, values plays and hedged promotions. It does not run paid media, email flows, standard post-purchase or SEO.
 
 **Autonomy level: L1, draft for approval.** Every play in this playbook is L1 in ecomOS. The agent drafts the bet brief, the economics sheet, the control design, the customer-facing wording, the approval request and the readout. A human approves and executes. The agent sends no note, ships no gift, issues no refund, changes no policy, edits no loyalty program, places no hedge and contacts no customer. Meta stays read-only. This is an ecomOS rule, not a source rule. Where a step below says "send", "issue" or "launch", read it as "draft for a human to send, issue or launch".
@@ -18,7 +20,7 @@ version: 2.0-draft  |  date: 24 Sep 2026  |  sources: 3  |  cards: 96  |  built 
 
 | Task | Load |
 |---|---|
-| Decide whether a wild bet is right for this brand now | 0, 1, 2, 3 groups A and B, 5.5, 7 |
+| Decide whether a wild bet is right for this brand now | 0, 3.0, 1, 2, 3 groups A and B, 5.5, 7 |
 | Design and bound 1 bet | 3 groups C and D, 4 (P1), 5.1, 5.2, 5.3, 9.2 |
 | Build the quarterly plan (3 bounded bets) | 3 group A, 4 (P1, P3), 6, 9.1 |
 | Stage 1: notes, founder videos, keep-it refunds | 3 groups E, F, J, 4 (P3, P4, P5, P11), 5.6, 5.10 |
@@ -80,15 +82,32 @@ version: 2.0-draft  |  date: 24 Sep 2026  |  sources: 3  |  cards: 96  |  built 
 
 Numbering: letter is the group, number is the rule. "Sources" names the mini playbooks (01, 02, 03) that state the rule. Source 03 is a folder brief that repeats several cases from 01 and 02 (Paul Graham, Chewy, Eleven Madison Park, Cards Against Humanity, Liquid Death); where 03 only repeats a case, it counts as the same source, not as independent agreement. "Card addition" means the card writer added a step or caveat the source text does not state. "Playbook addition" means this document added it to make the rule runnable; it is marked so a reader can strip it.
 
+### 3.0 Ecommerce priority order
+
+1. Fix effort before delight (B1 to B4). Every store; no wild bet on a slow return process.
+2. Run the faucet test (A2). Every store; shows whether the domain matters yet.
+3. Handwritten note or founder video to the top 50 or top 10 (F1). Cheap entry point for hero-SKU and catalogue stores alike.
+4. Keep-it refunds under a price threshold (J1 to J3). Best where return cost is real on low-value, perishable or hard-to-resell SKUs; skip for luxury catalogues with few returns.
+5. VIP tier for the top 1% (M1, E1). Needs a repeat-purchase base; ranks higher for catalogue and subscription stores than a single hero SKU.
+6. Subscription plays: proactive pause, price lock (K1, K2, J7). Fires only for subscription businesses. `[general practice]` on the ranking.
+7. Loyalty mechanics: expiring value, non-purchase rewards (L1, L7). Needs an existing program; low priority for a single hero SKU or a rarely-repurchased item.
+8. Programmatic direct mail (G1 to G14). Ranks higher for higher-AOV catalogues (home, jewelry, apparel); the vendor list is EU, UK and US only, so rank lower for India stores until confirmed `[web check: PDM vendors in India]`.
+9. Limited drop with real scarcity (M3 to M9). Best for single hero SKU or narrow-catalogue, higher-AOV brands with an audience already built.
+10. Tiered referral waitlist (N1). Fits a launch or drop moment for any store type.
+11. Lifetime warranty or outcome guarantee (J4, J5). Best for durable, higher-AOV, considered-purchase SKUs.
+12. Stunt or values play (O1 to O13, P1). Last, only after earlier stages pass. `[general practice]` that it sits last.
+
+`[general practice]` covers the ranking order and store-type conditions above; the rule ids are the playbook's own. Load this block first; the groups below are the detail.
+
 ### Group A. What counts as a wild bet, and how to pick one
 
 **A1. A wild bet is a deliberate break of a category norm, run outside the paid auction, that is cheap to run and hard to copy.** Condition: the brand can name the norm it breaks, the adjacent industry it borrows from, and the cash cap. Does not apply to standard tactics (10% off, BOGO, free-shipping thresholds, points programs, abandoned-cart emails); source 03 says skip them "unless there is a genuine twist", and none of the 3 sources says how to pick the twist. Norms the sources list as breakable: "you must spend on paid ads to grow", "never link off your site", "loyalty points should never expire", "discounts are the only way to drive urgency", "you can't sell big-ticket items online", "you need a physical store to build community". Sources: 01 [a7b8a9aa106c] [68c4bfa88afe]; 02 [b5a1ffc627e1] [ab3039ede71f]; 03 [24e7dd3a3012].
 
 **A2. Run the faucet test before picking a bet.** Ask: if paid ads stop tomorrow, does revenue vanish? Measure organic vs paid revenue share, or run the bounded no-ads week (P20). Condition: source 01's framing (Last Crumb founder Derek Jaeger). Card caveat: a brand with strong paid economics may stay ad-led on purpose; the test sizes the dependence, it does not condemn it. Sources: 01 [9b43d5332e59] [56c8c219238a] [3043fc9b1846]. `[needs brand data: organic vs paid revenue share, by week]`
 
-**A3. Pick 1 lever and resource it heavily. Pilot 1 or 2 tactics, never the whole matrix.** Condition: 1 play per cohort per test window so the control stays clean (see C3). Sources: 01, as the card's reading of the cases, not a stated rule [9b43d5332e59]; 02, card addition [246d16432222]. Strictest condition kept: 1 play per cohort at a time.
+**A3. Fund 1 wild bet lever per quarter from the shared cash cap; do not split it across the discount ladder, the loyalty program and a drop at once.** Condition: 1 play per cohort per test window so the control stays clean (see C3). Sources: 01, as the card's reading of the cases, not a stated rule [9b43d5332e59]; 02, card addition [246d16432222]. Strictest condition kept: 1 play per cohort at a time.
 
-**A4. Most wild bets fail. Size each so failure is affordable.** Source 01 says "limited downside, unlimited upside" and asks: what is the worst case, can I hedge it, can I test it on a small segment first? Card a7b8 rewrites this as: write a cash and labor cap and a stop condition, and limit the downside rather than assume it can be hedged. Condition: applies before every launch. The source does not say how to size a portfolio of small bets; the quarterly plan (9.1) uses 3 bets under 1 shared cash cap as a playbook addition. Sources: 01 [a7b8a9aa106c].
+**A4. Size the quarter's 3 bets so all 3 failing stays under a share of quarterly contribution margin, not revenue.** Source 01 says "limited downside, unlimited upside" and asks: what is the worst case, can I hedge it, can I test it on a small segment first? Card a7b8 rewrites this as: write a cash and labor cap and a stop condition, and limit the downside rather than assume it can be hedged. Condition: applies before every launch. The source does not say how to size a portfolio of small bets; the quarterly plan (9.1) uses 3 bets under 1 shared cash cap as a playbook addition. Sources: 01 [a7b8a9aa106c].
 
 **A5. Borrow the model from an adjacent industry.** Luxury fashion (drops), gaming (FOMO, prop hunts), hospitality (Ritz-Carlton, Eleven Madison Park), live events, collectibles, financial markets (prediction market hedges). Condition: the model must survive the brand's margin and voice checks (A6, C1). Sources: 01 [a7b8a9aa106c] [f76f1da8af54]; 02 hospitality [22e369c1edc4]; 03 hospitality [ad5810cd8a68] [7ae163d5a82f].
 
@@ -100,7 +119,7 @@ Numbering: letter is the group, number is the rule. "Sources" names the mini pla
 
 **A9. Keep the human moments manual; automate only the rule-based work.** What does not scale cannot be copied cheaply. Recruit 1 by 1, over-deliver, ask for referrals in person, do by hand what will be automated later because manual work gives insight no dashboard gives. AI or automation may handle repetitive service replies and content so the founder has time for judgment calls; it must not replace personal follow-ups, referral asks and over-delivery. Condition: early stage, or a standing tier for high-LTV cohorts later. Graduate a play into a system once it outgrows manual effort; no source gives the trigger, the card on 02 says "once the manual motion repeatedly produces reorders and referrals". Sources: 01 [68c4bfa88afe] [7ccc9fc1a3f2]; 02 [f7bb6a108f71]; 03 [aa796ddf08a2]. Tension inside 01 (human touch vs "AI Gothpreneur"): card 7ccc reconciles it as above; the source does not.
 
-**A10. Ignore the "numbers are too small" objection, but treat the compounding math as an illustration.** Source 02: grow a truly loyal base 10% a week and 100 become about 14,000 in 1 year and about 2 million in 2 years (100 x 1.1^52 = 14,204; 100 x 1.1^104 = 2,017,619; the arithmetic checks). Condition: illustration only; no ecommerce brand in the sources sustained it. Sources: 02 [f7bb6a108f71].
+**A10. Ignore the "numbers are too small" objection, but treat the compounding math as an illustration.** Condition: illustration only; no ecommerce brand in the sources sustained it. Moved to Appendix A: the 10%-a-week compounding math example. Sources: 02 [f7bb6a108f71].
 
 **A11. Narrow on purpose.** The goal is not to please a million customers a little but to make a small group feel the purchase was one of their best choices. Condition: run manual acts as a founding-stage tactic or as a standing tier for the top cohort, not as a mass program. Sources: 02 [f7bb6a108f71]; 03 [8fc70ea68011] [2984f2673be5].
 
@@ -108,7 +127,7 @@ Numbering: letter is the group, number is the rule. "Sources" names the mini pla
 
 ### Group B. Sequence: fix effort first, then delight
 
-**B1. Fix effort before delight.** In a failure (late shipment, broken item, billing error) the customer wants the easiest path to a fix. Exceeding expectations then (a free gift or discount after a long hold) gives "negligible" loyalty gain. Loyalty plateaus once expectations are met. High effort is 4 times more likely to create disloyalty than low effort is to create loyalty. Condition: applies to every operational failure, before and during any wild bet. Basis: Matthew Dixon's Effortless Experience study, 97,000+ service interactions, quoted through summaries; the only research-grade claim in the folder. Sources: 02 [9f47b7d4326c] [76193c44f7e8] [702bc45b5b83]. Conflict with source 03's "solve the problem, then add a surprise" and Chewy's bereavement gestures: see 7.2.
+**B1. Give the customer the fastest refund, replacement or exchange before any gift; a wild bet on a slow return process will not move repeat-purchase rate.** In a failure (late shipment, broken item, billing error) the customer wants the easiest path to a fix. Exceeding expectations then (a free gift or discount after a long hold) gives "negligible" loyalty gain. Loyalty plateaus once expectations are met. High effort is 4 times more likely to create disloyalty than low effort is to create loyalty. Condition: applies to every operational failure, before and during any wild bet. Basis: Matthew Dixon's Effortless Experience study, 97,000+ service interactions, quoted through summaries; the only research-grade claim in the folder. Sources: 02 [9f47b7d4326c] [76193c44f7e8] [702bc45b5b83]. Conflict with source 03's "solve the problem, then add a surprise" and Chewy's bereavement gestures: see 7.2.
 
 **B2. No delight play reaches a customer with an unresolved failure.** Check each week that nobody who had a failure last week is receiving a gift this week without the failure being fixed first. Condition: the exclusion list (section 2) is refreshed before every send. Sources: 02, card addition [76193c44f7e8]. Playbook addition: the exclusion list is a required attachment to every approval request (9.2).
 
@@ -118,15 +137,17 @@ Numbering: letter is the group, number is the rule. "Sources" names the mini pla
 
 **B5. Delight only customers in a neutral or positive state.** Failure state: fix fast, no gift. Neutral or positive: wild bet allowed. Exception: hardship the customer volunteers, handled under K3 (optional, welcomed, no delay to the customer's request). Sources: 02 [702bc45b5b83] [dee4592d0973]; 03's frontline rule [ad5810cd8a68] disagrees (7.2).
 
-**B6. Split every touchpoint into Operational Support or Brand Elevation and give each its own metric.** Operational Support (routine questions, product failures, shipping, returns, billing): streamline, stop channel switching, first-contact resolution; measure CES, FCR, resolution time; do not try to delight. Brand Elevation (high-LTV cohorts, unexpected touchpoints, relationship building, life events): measure LTV, earned media value, NPS, repurchase rate. Raise the frontline "Control Quotient" so reps resolve without escalating. Sources: 02 [702bc45b5b83] [aebda9584fe6].
+**B6. Split tickets into order/shipping problems (measure CES, first-contact resolution, resolution time) vs high-LTV relationship touches (measure repurchase rate, AOV, referral rate); a returns ticket is never a brand-elevation win.** Operational Support (routine questions, product failures, shipping, returns, billing): streamline, stop channel switching, first-contact resolution; measure CES, FCR, resolution time; do not try to delight. Brand Elevation (high-LTV cohorts, unexpected touchpoints, relationship building, life events): measure LTV, earned media value, NPS, repurchase rate. Raise the frontline "Control Quotient" so reps resolve without escalating. Sources: 02 [702bc45b5b83] [aebda9584fe6].
 
 **B7. Follow the staged rollout and do not skip a stage.** Stage 1 (this month, low cost, low risk): notes or founder videos to the top 50, keep-it refunds under $20, a control group. Stage 2 (next 90 days): named invite-only VIP tier for the top 1%. Stage 3 (next 6 months): tiered referral waitlist and a limited drop. Stage 4 (ongoing): 1 big stunt or values play. Each stage has a pass mark before the next (P3). Condition: source 03's plan; the pass marks are its heuristics, card [24e7dd3a3012] says so. Source 02's rule B1 comes before Stage 1; neither source states the other's step, and they do not conflict, so this playbook runs B3 as "Stage 0" (playbook addition). Sources: 03 [24e7dd3a3012] [42d04b3223ba] [8fc70ea68011] [f58ea6021437] [f42a03d72af2] [f3d618345541].
 
 **B8. Adjust the plan to margin, product and voice.** Thin margins: delay lifetime warranties, keep price locks narrow. Product does not win a head-to-head test: skip proof-in-the-box. Serious brand voice: skip punk stunts. Sources: 03 [24e7dd3a3012] [04f54549fb37] [36d5dbe4d17c] [574b9d94f465] [f3d618345541]. `[needs brand data: gross margin by SKU]`
 
+**B9. Treat a high cash-on-delivery share and a high return-to-origin rate as a base-effort problem, not a wild bet target: size and fix them at Stage 0 before any delight play launches.** `[general practice]`. No library source; verify against brand data before use. Extends Stage 0 (P2) and 5.2.
+
 ### Group C. Bounding every bet
 
-**C1. No launch without a written bound.** The bound has 8 fields: hypothesis, cohort, budget cap (cash and labor), metric, control, duration with a review date, stop rule, registry entry. Condition: every play, including "free" ones like a founder video; labor is a cost. Basis: card additions to 01 (target segment, hypothesis, total cash and labor cap, duration, baseline or holdout, stop condition) and 03's control group and benchmark per stage. None of the 3 sources gives cohort sizes, budget ranges or durations for most plays; where a source gives one it is in section 6. Sources: 01 [a7b8a9aa106c] [49b0963cfe85]; 03 [24e7dd3a3012]; 02, card [89bcc55e9cc4]. `[needs brand data: margin, cash available, baseline conversion and repeat rate for the chosen segment]`
+**C1. No launch without a written bound.** The bound has 8 fields: hypothesis, cohort (a segment from the customer order file, Shopify or Metabase), budget cap (cash and labor, checked against gross margin on that segment's orders), metric, control, duration with a review date, stop rule, registry entry. Condition: every play, including "free" ones like a founder video; labor is a cost. Basis: card additions to 01 (target segment, hypothesis, total cash and labor cap, duration, baseline or holdout, stop condition) and 03's control group and benchmark per stage. None of the 3 sources gives cohort sizes, budget ranges or durations for most plays; where a source gives one it is in section 6. Sources: 01 [a7b8a9aa106c] [49b0963cfe85]; 03 [24e7dd3a3012]; 02, card [89bcc55e9cc4]. `[needs brand data: margin, cash available, baseline conversion and repeat rate for the chosen segment]`
 
 **C2. Hold out a control drawn from the same eligible cohort before the treatment list is final.** Source 01: an email-only control (Fressnapf design) and, as a card addition, a randomized no-mail holdout to test whether mail itself is incremental. Source 03: a control group at Stage 1, for keep-it refunds and for letters, but it does not say how to pick it or how big. Source 02: cards say "measure incrementality" with no method. Strictest version kept: randomized holdout from the same ranked list, drawn before anyone is treated, large enough that the pass-mark metric can move (5.3). Condition: a play with no control is filed as an "observation", not a test, and cannot pass a stage gate. Sources: 01 [70a71f09d8c2] [e890000fa7eb]; 03 [24e7dd3a3012] [42d04b3223ba] [1a706b82583a]; 02 [ab3039ede71f] [89bcc55e9cc4]. `[needs brand data: matched or randomized control of similar customers]`
 
@@ -136,7 +157,7 @@ Numbering: letter is the group, number is the rule. "Sources" names the mini pla
 
 **C5. Never count an unverified hedge, an earned-media estimate or expected virality as funding or return.** Fund the maximum liability in cash. Earned media value is an estimate and stays outside the incremental contribution line. One viral outcome is not proof. Sources: 01 [49b0963cfe85] [a7b8a9aa106c]; 02 [89bcc55e9cc4]; 03 [f3d618345541].
 
-**C6. Write the stop rule before launch.** Source 01 says "double down or kill" with no definition of "doesn't work". Playbook addition, built from the sources' own diagnostics: stop when the cash or labor cap is hit; when the control shows no lift at the planned review; when keep-it or referral fraud signals appear (repeat claimers, fake signups); when refunds rise after a guarantee; when a stunt draws backlash; when customers start expecting or asking for the surprise; when drop frequency stops tracking repeat visits. Sources: 01 [a7b8a9aa106c]; 03 [1a706b82583a] [f58ea6021437] [3a74574fff82] [f3d618345541] [e29188eb0294] [b7edaaaeed23].
+**C6. Write the stop rule before launch.** Source 01 says "double down or kill" with no definition of "doesn't work". Playbook addition, built from the sources' own diagnostics: stop when the cash or labor cap is hit; when the control shows no lift at the planned review; when keep-it or referral fraud signals appear (repeat claimers, fake signups); when refunds rise after a guarantee; when a stunt draws backlash; when customers start expecting or asking for the surprise; when drop frequency stops tracking repeat visits; when return rate rises after a keep-it pilot; when drop sell-through falls below full price; when checkout conversion falls during a stunt spike. Sources: 01 [a7b8a9aa106c]; 03 [1a706b82583a] [f58ea6021437] [3a74574fff82] [f3d618345541] [e29188eb0294] [b7edaaaeed23].
 
 **C7. Legal, consent and platform review before any play that promises, refunds, mails, texts, uses third-party data, gates access, runs a contest or pays customers.** No source gives legal steps; the cards add warnings. Items: promotion terms and risk transfer for hedged refunds; GDPR and local privacy for address data; SMS consent for reminders and drop alerts; venue permits for guerrilla; gambling-style rules for mystery boxes and live auctions; warranty and consumer-protection law; contest and paid-internship rules; creator disclosure; platform DM and giveaway policy. Sources: 01 [49b0963cfe85] [49715f3b64de] [07497417cc0a] [8f0ac696045b] [85c5e90b4fff] [4c2cd1cec3bf]; 02 [147b7a92331e] [4b114e40b69d]; 03 [04f54549fb37] [3a74574fff82]. `[web check: consumer protection, contest, warranty, SMS consent, privacy and prediction market rules in the selling market]`
 
@@ -144,7 +165,7 @@ Numbering: letter is the group, number is the rule. "Sources" names the mini pla
 
 ### Group D. Measurement
 
-**D1. Every case number is an example, not a benchmark.** No case in the 3 sources gives sample size, duration, cost per piece, margin or how "ROI", "conversion" or "return rate" was defined. Vendor cases (optilyz, PebblePost, Paperplanes, Lob, Dotdigital, Experian, Webmart) are marketing and carry survivorship bias. Condition: a case number may be quoted in a brief only with its source and the words "reported, unaudited". Sources: 01 section 9; 02 section 9; 03 section 9 (all 3 mini playbooks say so).
+**D1. A reported repeat-purchase lift, ROAS or conversion lift from another brand is not a benchmark for this store's PDP, AOV or margin; it is an idea to test on this store's own cohort.** No case in the 3 sources gives sample size, duration, cost per piece, margin or how "ROI", "conversion" or "return rate" was defined. Vendor cases (optilyz, PebblePost, Paperplanes, Lob, Dotdigital, Experian, Webmart) are marketing and carry survivorship bias. Condition: a case number may be quoted in a brief only with its source and the words "reported, unaudited". Sources: 01 section 9; 02 section 9; 03 section 9 (all 3 mini playbooks say so).
 
 **D2. Judge wild bets on relationship metrics, with incremental contribution after all program costs as the decision line.** Source metrics: unprompted word of mouth, LTV of engaged customers, referral rate, retention lift, repeat-purchase rate, 90-day reorder rate, NPS, incremental revenue. Card additions: incremental contribution after all program costs decides double down or kill; attention metrics are kept as separate signals; "not a licence to never measure". Condition: the readout (P22) reports both lines and never lets one stand in for the other. Sources: 01 [a7b8a9aa106c] [ce5b3f63afcc]; 02 [aebda9584fe6] [89bcc55e9cc4]; 03 [24e7dd3a3012] [f3d618345541]. Conflict with performance-marketing practice (engaged-customer LTV vs ROAS): 7.6.
 
@@ -174,6 +195,8 @@ Numbering: letter is the group, number is the rule. "Sources" names the mini pla
 
 **E6. Flash sales go only to loyalty segments, never the full list.** Targeting makes the sale read as a reward, not desperation; blanket discounts erode brand value. Needs clean segment data so the offer does not leak. Sources: 01 [184e447721a2].
 
+**E7. Condition every cohort size and stage gate in this playbook on single-hero-SKU vs catalogue: a single-SKU store cannot build the top 50, top 200 or top 1% repeat-purchase cohorts the same way a catalogue business can, and needs a waitlist- or launch-based version of the same stages instead.** `[general practice]`. No library source; verify against brand data before use.
+
 ### Group F. Handwritten notes, founder videos, founder time
 
 **F1. The first play is a handwritten note or a 60-second founder video to the top cohort, with a control.** Cost: about $1 to $3 per note plus time (source 03 estimate); a founder video costs time only. Track reorder and referral for recipients vs control. Source 01's version: top 10 customers from last quarter, handwritten note plus a small unexpected gift. Source 02's version: Wufoo wrote a handwritten thank-you to every new user "for as long as it was physically possible". Condition: repeat buyers (E2), neutral or positive state (B5). Sources: 03 [24e7dd3a3012] [42d04b3223ba] [aa796ddf08a2] [2984f2673be5]; 01 [2d99a5dbeda9]; 02 [f7bb6a108f71].
@@ -186,9 +209,11 @@ Numbering: letter is the group, number is the rule. "Sources" names the mini pla
 
 **F5. Never send costly mail to the whole list.** Cost scales with list size; keep it to proven repeat buyers. Sources: 03 [42d04b3223ba].
 
-**F6. Founder's inbox for 1 month, only while support volume is low.** Forward every service email to the founder, who replies personally. Source 01 claims you learn more in 30 days than in a year of surveys (claim, no data). Related: personally onboard or call first or best customers, fix their problems yourself, treat long untimed support as marketing spend (Zappos, 10-hour-43-minute call). Sources: 01 [2d99a5dbeda9]; 03 [aa796ddf08a2].
+**F6. Forward every post-purchase, shipping and return email to the founder for 1 month while volume is low, to map checkout and delivery pain before any wild bet.** Forward every service email to the founder, who replies personally. Source 01 claims you learn more in 30 days than in a year of surveys (claim, no data). Related: personally onboard or call first or best customers, fix their problems yourself, treat long untimed support as marketing spend (Zappos, 10-hour-43-minute call). Sources: 01 [2d99a5dbeda9]; 03 [aa796ddf08a2].
 
-**F7. Run the 20-customers exercise before designing any touch program.** "If you could only have 20 customers, what would you do to make each feel like the only customer?" Write every touchpoint from discovery to post-purchase and mark where a manual, human touch fits. Sources: 01 [2d99a5dbeda9].
+**F7. Map the path from ad or search to PDP to cart to checkout to repeat purchase for 20 real customers, and mark where a human touch fits.** "If you could only have 20 customers, what would you do to make each feel like the only customer?" Write every touchpoint from discovery to post-purchase and mark where a manual, human touch fits. Sources: 01 [2d99a5dbeda9].
+
+**F8. Where a local messaging channel such as WhatsApp is how the customer base actually talks, use it for notes, drop alerts and reminders, instead of or alongside mail and email.** `[general practice]`. No library source; verify against brand data before use. Extends F1, G1, M5.
 
 ### Group G. Programmatic direct mail (PDM)
 
@@ -216,7 +241,7 @@ Numbering: letter is the group, number is the rule. "Sources" names the mini pla
 
 **G12. Treat mail like a digital channel: A/B test offer, creative, timing and format; roll winners forward; re-test.** thredUP with Lob reported ROI up 128% from A/B-tested personalized mail (vendor case, ROI undefined). Sources: 01 [e890000fa7eb] [a9e802c5098a].
 
-**G13. B2B, wholesale and corporate gifting: a small persona set and a short high-value list inside a multi-touch ABM sequence.** M&S Corporate Gifts: 3 personas, 100 prospects, HubSpot, personalized mail as 1 touch; "sales skyrocketing", no number. Sources: 01 [f53e738ee3e7]. `[verify UI: ABM sequencing in the CRM]`
+**G13.** Moved to Appendix A: the B2B, wholesale and corporate-gifting ABM rule (out of scope for a DTC store).
 
 **G14. Physical welcome for new club or loyalty members: a personal note, a small gift, a clear list of member benefits; track reorder and referral.** GOLDNER: 3.4% to 13.6% conversion across 7 countries, a 4x spread (vendor case). Sources: 01 [898e3d534adb]; 03's surprise insert on VIP orders [2984f2673be5] [9a0245f0095a] is the low-cost version of the same idea.
 
@@ -230,19 +255,21 @@ Numbering: letter is the group, number is the rule. "Sources" names the mini pla
 
 **H4. Emotional art or a personal physical gift: pick a personal artifact the product touches, choose a small weekly set of loyal repeat buyers, commission cheap custom art at $20 to $40 a piece (source 03 estimate), do not announce it.** Track whether recipients post, share or buy again vs non-recipients before scaling (card adaptation). Sources: 03 [e29188eb0294] [63f18883754c]. `[needs brand data: repeat rate of recipients vs non-recipients]`
 
-**H5. Secure the supply before any signature gift program is announced or scaled.** Chewy uses hundreds of independent artists. Note: card dee4592d0973 wrongly attaches the 1,000-a-week figure to the bereavement play; portraits are a separate program. Sources: 02, card addition [ca8e2e37165b].
+**H5. Before scaling a gift-with-order program, secure enough vendor supply for expected weekly order volume, so gifts do not delay shipping.** Chewy uses hundreds of independent artists. Note: card dee4592d0973 wrongly attaches the 1,000-a-week figure to the bereavement play; portraits are a separate program. Sources: 02, card addition [ca8e2e37165b].
 
 **H6. Expect negative direct ROI on a signature gift; judge on UGC, referrals, advocacy and repeat, tracked before scaling.** Sources: 02 [ca8e2e37165b] [89bcc55e9cc4]; 03 [e29188eb0294].
 
-**H7. Inner-circle gifts (spouse, children, assistant) only where the buyer volunteered a relevant household preference, delivered through the buyer, optional, with no review, referral or purchase obligation.** Never infer family ties from unrelated data. The source's evidence is 1 B2B relationship case (Ruhlin and a Brooks Brothers showroom in a hotel room). Sources: 02, card adaptation, stricter than the text [4b114e40b69d].
+**H7. Inner-circle gifts (spouse, children, assistant) only where the buyer volunteered a relevant household preference, delivered through the buyer, optional, with no review, referral or purchase obligation.** Never infer family ties from unrelated data. Moved to Appendix A: the source's single B2B case behind this rule. Sources: 02, card adaptation, stricter than the text [4b114e40b69d].
 
-**H8. "One size fits one": the value is being heard, not the gift's price.** Eleven Madison Park's $2 street hot dog, plated by the chef, moved guests more than the tasting menu. A fine-dining anecdote, not an ecommerce result. Sources: 02 [22e369c1edc4]; 03 [ad5810cd8a68] (same case).
+**H8.** Moved to Appendix A: the Eleven Madison Park $2 hot dog story (a fine-dining anecdote, not an ecommerce result).
 
-**H9. Gifts are an investment in the relationship and are budgeted as a fixed small activity, not as direct response.** From Giftology (Ruhlin); opinion-grade. Sources: 02 [0f05cded3cb1] [05b6ed77af75].
+**H9. Budget gifts to the top 1% repeat-buyer cohort as a fixed quarterly cost against gross margin, not a per-order spend to optimize.** From Giftology (Ruhlin); opinion-grade. Sources: 02 [0f05cded3cb1] [05b6ed77af75].
 
 **H10. Surprise inserts: a low-cost item (sticker, sample, small gift) in first orders or VIP orders, at cents to a few dollars, paired with a handwritten thank-you, personal not generic, tied to a tracked action (referral code, VIP invite, tracked reorder offer).** Generic filler adds cost without delight. Sources: 03 [9a0245f0095a] [2984f2673be5]; 01's GOLDNER welcome kit [898e3d534adb] is the fuller version.
 
 **H11. Widen the relationship radius only with consent; keep gifts free of strings.** Sources: 02 [4b114e40b69d] [eb580823eb04].
+
+**H12. For jewelry and other considered-purchase categories, the gift or artifact can be a considered-purchase feature: free engraving, a certification or appraisal guarantee, or a tie-in to a gifting occasion.** `[general practice]`. No library source; verify against brand data before use. Sits in J and H.
 
 ### Group I. Frontline discretionary budget
 
@@ -250,11 +277,11 @@ Numbering: letter is the group, number is the rule. "Sources" names the mini pla
 
 **I2. Spend it on a specific item tied to something the customer said.** A customer mentions a hiking trip: a trail map or hiking socks. A vacation mentioned in chat: a small local treat in the order box. Capture cues in tickets, chats and calls. Sources: 02 [22e369c1edc4] [246d16432222]; 03 [ad5810cd8a68].
 
-**I3. Guardrails are required and no source gives them.** Logging of every spend, a per-rep monthly cap, a per-customer cap, a review of spend by cue, and an abuse check. Card 02 says "set guardrails to control abuse"; source 03 says it is thin on logging, limits and review. Playbook addition: the approval request names the caps and the log location. Sources: 02 [22e369c1edc4]; 03 [7ae163d5a82f].
+**I3. Set a per-incident cap, a per-rep monthly cap and a per-customer cap on frontline spend, sized to the order's gross margin, logged against the order id.** Logging of every spend, a per-rep monthly cap, a per-customer cap, a review of spend by cue, and an abuse check. Card 02 says "set guardrails to control abuse"; source 03 says it is thin on logging, limits and review. Playbook addition: the approval request names the caps and the log location. Sources: 02 [22e369c1edc4]; 03 [7ae163d5a82f].
 
 **I4. Use the budget for customers in a neutral or positive state; in a failure, fix first.** Source 02 says delight after a failure adds negligible loyalty. Source 03 says "solve the problem, then add a surprise". What the agent should do is in 7.2: fix first, confirm the fix, and only then allow a small surprise that is not templated. Sources: 02 [702bc45b5b83] [9f47b7d4326c]; 03 [7ae163d5a82f] [ad5810cd8a68].
 
-**I5. Make it a standing everyday policy, not a one-off heroic.** Sources: 03 [7ae163d5a82f].
+**I5. Write the frontline gesture into support macros as a standing rule, not a one-off, so every eligible order gets the same treatment.** Sources: 03 [7ae163d5a82f].
 
 **I6. Raise the frontline Control Quotient: let reps resolve without escalating.** Named in source 02 without a method. Sources: 02 [702bc45b5b83].
 
@@ -276,6 +303,10 @@ Numbering: letter is the group, number is the rule. "Sources" names the mini pla
 
 **J8. Proof in the box only if the product truly wins the test, the test is safe and readable by a customer, and the comparison is not selective.** Country Delight's milk-adulteration kit in the first order; its FY24 revenue does not show the kit caused growth. Measure conversion or repeat vs control before scaling. Sources: 03 [574b9d94f465].
 
+**J9. Track damaged-in-transit reports and packaging quality as a return-cost driver next to the keep-it break-even (J2): a packaging fix can lower cost per return more cheaply than a keep-it or warranty policy.** `[general practice]`. No library source; verify against brand data before use. Sits next to J2 and H, P16.
+
+**J10. For cross-border or diaspora buyers, offer a customs or duty transparency guarantee (landed cost shown at checkout, or a promise to cover surprise duties) as a trust lever alongside the other guarantees in this group.** `[general practice]`. No library source; verify against brand data before use. Sits near J and S4.
+
 ### Group K. Subscriptions, cancellation, first 100 days
 
 **K1. Flexibility beats cancel friction: easy pause, credit rollover, cadence control.** ClassPass (pause and rollover, "massive retention gains", no number); Yankee Candle (custom cadence, 90% subscriber retention, via a blog with no method). Trust is the claimed payback, not a measured one. Sources: 02 [c58b965fe70a] [6812a43572e9]. `[verify UI: subscription tool supports pause, skip, rollover]`
@@ -287,6 +318,8 @@ Numbering: letter is the group, number is the rule. "Sources" names the mini pla
 **K4. Bundles and subscription SKUs can carry the wild bet inside the offer: an unbranded artifact in the first shipment, a surprise upgrade or a discretionary treat, with cadence control, pause and rollover, and any paid tier about access, not only discount.** Check COGS impact of added items. Condition: this is the card writer's synthesis; source 02 has no bundle section. Offer architecture belongs to 03-OFF. Sources: 02, card synthesis [6812a43572e9]. `[needs brand data: margin per bundle]`
 
 **K5. Treat days 0 to 100 after first purchase as the main churn window; do not jump to cross-sell or review requests; plan an emotional journey; measure repurchase and early churn.** Source 02 cites Joey Coleman's 8-phase model but does not list the phases. Options named: a customized welcome kit by expedited mail before the product arrives, sequential founder videos, surprise mailers, surprise digital upgrades. The matrix row says it keeps "dopamine high while waiting for the product", which is a confusion: 100 days is far longer than delivery. Sources: 02 [7615a4af9401].
+
+**K6. Add a proactive post-delivery check-in (did it arrive, does it fit) timed to the expected delivery date, separate from the 100-day churn window.** `[general practice]`. No library source; verify against brand data before use. Extends K5.
 
 ### Group L. Loyalty mechanics and time-limited value
 
@@ -310,7 +343,7 @@ Numbering: letter is the group, number is the rule. "Sources" names the mini pla
 
 **M1. VIP tier: named, invite-only, top 1% by lifetime spend, with early access to drops, a direct founder channel and a surprise insert in every VIP order; formalize and add a second tier only when VIP retention and AOV beat non-VIP.** A 60-second founder video to new VIPs or after a big order. Sources: 03 [8fc70ea68011] [2984f2673be5] [11a4bf90d117] [6cb0a48f51d6]. `[needs brand data: retention and AOV by tier]`
 
-**M2. Gate only when the reward inside is worth the friction, and keep benefits clearly tied to loyalty so they do not look unfair if they leak.** Gating shrinks the funnel. CRED (credit score 750+, 13 million+ monthly actives, reported) and Harry's are the source's cases. Sources: 03 [11a4bf90d117] [8fc70ea68011].
+**M2. Gate only when the reward inside is worth the friction, and keep benefits clearly tied to loyalty so they do not look unfair if they leak.** Gating shrinks the funnel. Harry's is the source's ecommerce case. Moved to Appendix A: the CRED (fintech app) example. Sources: 03 [11a4bf90d117] [8fc70ea68011].
 
 **M3. Scarcity must be real: fixed inventory, fixed release time, numbered batches, no fake countdown timers, no restock promises you will not keep, full price.** Last Crumb: $120 per dozen, weekly drops, "sold out in seconds". L'Occitane: "true scarcity, not just a countdown timer". MSCHF: numbered drops by SMS on set Tuesdays, no paid ads. Sources: 01 [56c8c219238a] [67ba6fcee11e] [f76f1da8af54]; 03 [f42a03d72af2].
 
@@ -327,6 +360,8 @@ Numbering: letter is the group, number is the rule. "Sources" names the mini pla
 **M9. Sell access, not price.** The feeling of having what others don't is the product (the Michelin reservation comparison). Sources: 01 [56c8c219238a].
 
 **M10. Livestream selling works through compressed buy windows (timed listings, drops, auctions) with checkout in the stream, for products that reward demonstration, storytelling or collector appeal.** eBay Live Australia; Instagram, TikTok or YouTube Live as substitutes. Sources: 01 [72d41c0813d1]. `[verify UI: live shopping features per platform and country]`
+
+**M11. For a catalogue store that never runs scheduled drops, give a genuine per-SKU low-stock indicator (a real remaining-count or low-stock flag) as the scarcity signal, distinct from M3's drop-specific scarcity.** `[general practice]`. No library source; verify against brand data before use. Sits next to M3.
 
 ### Group N. Referral, community, co-creation, content
 
@@ -350,7 +385,7 @@ Numbering: letter is the group, number is the rule. "Sources" names the mini pla
 
 **O2. Anti-marketing fits a Millennial or Gen Z audience, or a commoditized category where the brand cannot outspend big retailers at peak events; design it as a filter and an inside joke, not for reach; make sure site and operations can take a viral spike.** Participants buy membership in something, not a product. Sources: 02 [0874da44648a].
 
-**O3. Budget a stunt as a marketing cost and judge it on earned media vs spend; pass only if coverage or shares are worth more than the spend.** No source gives a valuation method. Liquid Death's founder claims a $50,000 stunt can earn the reach of a $50 million TV buy (founder claim). Patagonia's "Don't Buy This Jacket" cost $57,000 and drew "tens of millions" in free publicity; 2012 sales up almost a third to $543 million (secondary, source says treat with mild caution). Sources: 03 [f3d618345541] [d2474fde6f0e] [24e7dd3a3012]; 02 [0874da44648a].
+**O3. Budget the stunt against the marketing line; compare earned media value to incremental orders and contribution margin, not site traffic alone, and pass only if that value is worth more than the spend.** No source gives a valuation method. Liquid Death's founder claims a $50,000 stunt can earn the reach of a $50 million TV buy (founder claim). Patagonia's "Don't Buy This Jacket" cost $57,000 and drew "tens of millions" in free publicity; 2012 sales up almost a third to $543 million (secondary, source says treat with mild caution). Sources: 03 [f3d618345541] [d2474fde6f0e] [24e7dd3a3012]; 02 [0874da44648a].
 
 **O4. Stunt frequency: 1 or 2 a year, no more.** Source 03's text; its cards say "1 per season" (up to 4 a year). The agent follows the text unless the owner decides otherwise. See 7.1. Sources: 03 [f3d618345541] [24e7dd3a3012].
 
@@ -362,9 +397,9 @@ Numbering: letter is the group, number is the rule. "Sources" names the mini pla
 
 **O8. Guerrilla launch: go where the exact target customers gather, bring something tangible and surprising or solve an attendee pain (mud, heat, lines), sell on the spot if possible, make the moment worth photographing, carry it to digital afterwards, get venue permissions first.** Benjie at Coachella sold out its full inventory within a week (size not given); Privalia's truck at Lollapalooza (no numbers). Attribution is weak; do not expect clean ROAS. Sources: 01 [8f0ac696045b] [f16baa315a9f].
 
-**O9. Mystery-first launch: anonymous placement, then the real message, then full reveal with distribution ready; each phase has a next step; the payoff must be worth the curiosity.** Future Farm "Mars Awaits": 395 clicks to Sainsbury's, 17,000 likes. Lazada "haunted CCTV". Weak payoffs annoy people and can draw platform penalties (card). Suits playful or daring brands only. Sources: 01 [3062c8c8c22a] [d1f0d1622744].
+**O9. Mystery-first launch: anonymous placement, then the real message, then full reveal with distribution ready; each phase has a next step; the payoff must be worth the curiosity. Confirm inventory and fulfillment capacity before the reveal date; a weak payoff risks a stockout the store cannot fill.** Future Farm "Mars Awaits": 395 clicks to Sainsbury's, 17,000 likes. Lazada "haunted CCTV". Weak payoffs annoy people and can draw platform penalties (card). Suits playful or daring brands only. Sources: 01 [3062c8c8c22a] [d1f0d1622744].
 
-**O10. Native placements that hand out real value beat interruptions, but platform-scale budgets do not transfer to a small store.** Mercado Livre "Call of Discounts": 420+ products hidden in Call of Duty maps, over R$7 million in sales, 5.2 million views (agency case, Cannes Grand Prix). Sources: 01 [8f2e2350741b].
+**O10.** Moved to Appendix A: the Mercado Livre in-game native-placement case (platform-scale budget, not transferable to a small store).
 
 **O11. Own an avoided topic in the category, with authenticity and sensitivity, on the platform where that audience already talks; measure CPA against other channels.** Maxfem (feminine intimate health, Brazil, TikTok Shop): CPA 40% lower than other media, qualified leads up 42%, and a revenue figure that is ambiguous (see 6, "Maxfem"). Health-adjacent claims face platform policy limits (card). Sources: 01 [e4ec9650b8d9].
 
@@ -1069,16 +1104,16 @@ Confidence: "high" = 2 or more sources state it independently; "medium" = 1 sour
 | HOG | 1 million+ members; members spend 30% more on clothing and events | Brand-reported | 03 [e6ea8581c19b] | example |
 | boAt community | 800,000 (2018) to 3 million+ (2020) | Reported | 03 [e6ea8581c19b] | example |
 | CRED | Credit score 750+; 13 million+ MAU | Reported | 03 [11a4bf90d117] | example |
-| Mercado Livre Call of Discounts | 420+ products; over R$7 million sales; 5.2 million views | Platform scale | 01 [8f2e2350741b] | example, not transferable |
 | Future Farm | 395 clicks to Sainsbury's; 17,000 likes | Example | 01 [3062c8c8c22a] | example |
 | Maxfem | CPA 40% lower than other media; qualified leads up 42%; revenue "exceeded target by 170%" (source text, 2.7x) or "170% of target" (card caveat, 1.7x); card steps say "170% above target" | Ambiguous | 01 [e4ec9650b8d9] | example, ambiguous; quote only as "beat target, figure unclear" `[web check]` |
 | GIZMART | ¥100 million GMV in 12 hours; over ¥300 million total | Crowdfunding | 01 [63777fd226ea] | example |
 | Miss Amara | $26 million business | Trust-barrier content | 01 [fc9236aec38b] | example |
 | Kogan | "$10 billion business" | Measure unclear | 01 [53352d5eca9e] | unsourced `[web check]` |
 | Province of Canada | No ads for 5 years; revenue sentence garbled | Do not quote the figure | 01 [3043fc9b1846] | unsourced |
-| Zappos | 10 hour 43 minute call (June 2016); 365-day returns; $1.2 billion exit | Example | 03 [aa796ddf08a2] | example, correlation |
 | Liquid Death | $1.4 billion valuation by 2025 | Reported | 03 [f3d618345541] | example `[web check]` |
 | Indian D2C birthday-gifting ROI | Named in 03's caveats, never in its body | None | 03 section 9 | unsourced |
+
+Two rows were moved to Appendix A because they are not ecommerce-specific: the Mercado Livre in-game placement case (also moved from O10) and the Zappos 10-hour-43-minute call with its $1.2 billion exit line.
 
 ## 7. Where sources disagree
 
@@ -1203,7 +1238,7 @@ Default first-quarter set when the brand is at Stage 0 or 1 (source 03's plan, s
 
 ### 9.2 Approval request (per bet)
 
-Half a page. Play, cohort size, cash and labor cap, control, review date, stop rule, the exact customer-facing text, the exclusion list attached, legal items and status, what the human must do to execute (send, ship, switch on, pause paid), and the line "L1: nothing is executed by the agent".
+Half a page. Play, cohort size, cash and labor cap, control, review date, stop rule, a link to the matching On-site and lifecycle copy pack (9.7) rather than the wording drafted inline, the exclusion list attached, legal items and status, what the human must do to execute (send, ship, switch on, pause paid), and the line "L1: nothing is executed by the agent".
 
 ### 9.3 Readout memo (per bet, at the review date)
 
@@ -1220,6 +1255,14 @@ For any play in section 4: conditions, cost (source range or `[needs brand data]
 ### 9.6 Stage 0 audit report
 
 The 5.5 table filled with brand numbers, the 3 walked paths with findings, the fix list for 17-CXP, and the exclusion list definition.
+
+### 9.7 On-site and lifecycle copy pack (per bet, where customer-facing wording is used)
+
+All customer-facing wording for the bet in one place: the note or founder-video script, emails, SMS, terms, and any claims-page copy. Written to the playbook's writing rules (short sentences, digits, no invented claims, no "secret" or "exclusive" unless true). Attached to the approval request (9.2) rather than drafted inside it.
+
+### 9.8 Packing and fulfillment instruction sheet (per bet that adds a physical item to an order)
+
+For any play that adds a gift, insert, welcome kit or artifact to an order (H, P7, P16 and similar): the item, the trigger that adds it, the cohort and exclusion list, and packing or shipping instructions, so the ops or packing team can run it without reading the full bet brief.
 
 ## 10. What needs live data or a web check
 
@@ -1318,6 +1361,8 @@ All 3 sources are compilations of second-hand cases dated 2013 to 2026 and were 
 | Source 03's routing | It says paid media goes to 06-MEA; in ecomOS paid media is 24-DEP and measurement is 06-MEA | section 1 | Fixed here; do not copy the source's routing |
 | Cost ranges | $1 to $3 notes, $1 to $5 letters, $20 to $40 art, $50 to $200 rep budget are 2025 to 2026 estimates in USD | F1, F3, H4, I1, section 6 | Convert and re-quote per brand and currency before each plan |
 
+**Changelog.** 24 Sep 2026: ecommerce specificity pass applied from ECOM_REVIEW.md; priority block added, 15 rules reworded, 8 levers added, about 270 words moved to Appendix A.
+
 ## 12. Source index
 
 **01. Wild bets (The Wild Bets Playbook: A Curated Research Document for E-commerce Founders, Global Edition).** source_id 15PcVPV3ufX8eVaTyXqlfry-_jTfPXTX3. Type: curated research digest, 11,679 words, 47 cards. Credibility: no named author; 55 short case entries retold from trade press, platform case pages and LinkedIn posts; 15 of 55 entries are direct mail and most of those come from vendor case studies (optilyz, PebblePost, Paperplanes, Lob, Dotdigital, Experian, Webmart), which publish their best results and define none of their metrics. No sample sizes, durations, costs or margins anywhere. Internal errors: Fressnapf filed under reactivation with second-purchase numbers; the 48-hour cart trigger appears only in the header; Maxfem's "170%" is ambiguous; Province of Canada's revenue line is garbled. Bias: vendor marketing, survivorship, and platform-scale cases (Mercado Livre, Lazada, Snap) that do not transfer to a small store. Contributed most: the 7-step bet design method, the faucet test, the 5 "doesn't scale" tests, the whole programmatic direct mail group, scarcity and expiring-value mechanics, the hedged promotion rules (via card 49b0), and the measurement stance (engaged LTV over ROAS, with the card's incremental-contribution correction).
@@ -1336,3 +1381,37 @@ All 3 sources are compilations of second-hand cases dated 2013 to 2026 and were 
 - 13-ORG-organic-and-content: content programs behind the newsletter and content-as-store plays.
 - 01-PRD-product-research and 22-AMZ-amazon-marketplace: product bets and marketplace or cross-border expansion recorded in group S.
 - 15-SEO-search and 16-AEO-answer-and-generative-engines: out of scope per all 3 source headers.
+
+## Appendix A. General background
+
+Content moved here from the main body because it is not ecommerce-specific or not a DTC store result (ECOM_REVIEW.md, section 5, 24 Sep 2026). Moved, not deleted, so card ids and rule ids stay traceable. None of this is a ranked (3.0) or applied decision rule.
+
+### A.1 H8: Eleven Madison Park's $2 hot dog (moved from Group H)
+
+**H8. "One size fits one": the value is being heard, not the gift's price.** Eleven Madison Park's $2 street hot dog, plated by the chef, moved guests more than the tasting menu. A fine-dining anecdote, not an ecommerce result. Sources: 02 [22e369c1edc4]; 03 [ad5810cd8a68] (same case).
+
+### A.2 H7's B2B case (moved from Group H, rule H7)
+
+The source's evidence for H7 is 1 B2B relationship case (Ruhlin and a Brooks Brothers showroom in a hotel room). [4b114e40b69d]
+
+### A.3 G13: B2B, wholesale and corporate gifting ABM (moved from Group G)
+
+**G13. B2B, wholesale and corporate gifting: a small persona set and a short high-value list inside a multi-touch ABM sequence.** M&S Corporate Gifts: 3 personas, 100 prospects, HubSpot, personalized mail as 1 touch; "sales skyrocketing", no number. Sources: 01 [f53e738ee3e7]. `[verify UI: ABM sequencing in the CRM]`
+
+### A.4 M2's CRED example (moved from Group M, rule M2)
+
+CRED (credit score 750+, 13 million+ monthly actives, reported) was the source's other gating case, alongside Harry's. [11a4bf90d117]
+
+### A.5 A10: compounding growth-math illustration (moved from Group A, rule A10)
+
+Source 02: grow a truly loyal base 10% a week and 100 become about 14,000 in 1 year and about 2 million in 2 years (100 x 1.1^52 = 14,204; 100 x 1.1^104 = 2,017,619; the arithmetic checks). [f7bb6a108f71]
+
+### A.6 O10: Mercado Livre in-game native placement (moved from Group O and section 6)
+
+**O10. Native placements that hand out real value beat interruptions, but platform-scale budgets do not transfer to a small store.** Mercado Livre "Call of Discounts": 420+ products hidden in Call of Duty maps, over R$7 million in sales, 5.2 million views (agency case, Cannes Grand Prix). Sources: 01 [8f2e2350741b].
+
+Section 6 benchmark row: Mercado Livre Call of Discounts, 420+ products, over R$7 million sales, 5.2 million views, platform scale, example, not transferable. [8f2e2350741b]
+
+### A.7 Zappos call and exit figure (moved from section 6)
+
+Zappos: 10 hour 43 minute call (June 2016); 365-day returns; $1.2 billion exit. Example, correlation, general startup lore, not a store metric. Sources: 03 [aa796ddf08a2].
