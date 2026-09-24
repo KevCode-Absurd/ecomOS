@@ -33,3 +33,21 @@ Ranked from most work needed to least.
 | 25 | 01-PRD | 5 | 109 | 81 (74%) | 22 | 6 (5%) | 0 | 175 |
 
 Totals: 3279 rules; 1451 store-specific (44%), 1204 generic with no store framing (36%), 19 out of scope.
+
+## Wave 2: edits applied (24 Sep 2026)
+
+Every one of the 25 playbooks received the structural fix its review asked for, applied by one Sonnet agent per folder using exact text replacement (no rewriting from memory). Rule ids, conditions, sources and card ids are unchanged; cards.json is untouched.
+
+What each playbook now has:
+
+- `### 3.0 Ecommerce priority order`: 12 ranked levers at the top of section 3, with store-type conditions (hero SKU vs catalogue, AOV band, subscription, marketplace-heavy, luxury, mobile-first India vs US). Items that no library source covers are tagged `[general practice]`.
+- Reworded rules: the review's list of generic rules, restated in store terms (product page, cart, PDP images, SKU, AOV, returns, marketplace). Typically 10 to 15 per playbook.
+- New store levers: 5 to 8 new rules per playbook for gaps the review found, tagged `[general practice]` with "No library source; verify against brand data before use" where no card supports them.
+- `## Appendix A. General background`: demoted material (leadership theory, generic SaaS or agency content, textbook definitions) moved after section 12, with one-line pointers left in place so ids still resolve.
+- Section 0 gained an "Ecommerce first." paragraph; section 11 gained a dated changelog line.
+
+Checks passed on all 25: zero em dashes, exactly one `### 3.0` heading (formula sub-sections in 03-OFF, 17-CXP, 18-COG and 20-FIN were renamed `3.0b`), Appendix A present, all original card ids present.
+
+Declined by the apply agents (kept as is because a rewrite would have deleted rule content): 21-OPS R65. Others noted in each folder's commit.
+
+Still generic after wave 2: the four lowest-ranked playbooks (18-COG, 13-ORG, 16-AEO, 21-OPS) were fixed at the structure level only. Their rule bodies are still 56% to 79% generic because the sources are books and creator content, not store material. A deeper pass would need a Fable rewrite of section 3 per playbook, using the priority block as the spine and the library cards for evidence, about 300k tokens each.
