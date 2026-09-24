@@ -51,3 +51,16 @@ Checks passed on all 25: zero em dashes, exactly one `### 3.0` heading (formula 
 Declined by the apply agents (kept as is because a rewrite would have deleted rule content): 21-OPS R65. Others noted in each folder's commit.
 
 Still generic after wave 2: the four lowest-ranked playbooks (18-COG, 13-ORG, 16-AEO, 21-OPS) were fixed at the structure level only. Their rule bodies are still 56% to 79% generic because the sources are books and creator content, not store material. A deeper pass would need a Fable rewrite of section 3 per playbook, using the priority block as the spine and the library cards for evidence, about 300k tokens each.
+
+## Wave 3: deep rewrite of section 3 for the 4 weakest playbooks (24 Sep 2026)
+
+One Fable agent per playbook rewrote every rule body in section 3 for store use: first sentence is the store trigger, then the action on a named store surface, then a check. Rule ids, order, group numbers, conditions, source numbers, conflict codes and card ids are unchanged (verified by script: `deep_verify.py` in the session scratchpad, logic recorded here: old rule ids and card ids must all appear, one `### 3.0` heading, no em dashes, length 0.9x to 1.3x). Examples from outside ecommerce (B2B software, SaaS, corporate leadership fables, named executives, creator-economy cases) were removed or replaced with store examples tagged `[general practice]`. Versions bumped to 2.1-draft with a changelog line in section 11.
+
+| Playbook | Section 3 words before | after | Rules | Non-store examples removed | Notes |
+|---|---|---|---|---|---|
+| 21-OPS | 6,863 | 8,775 | 101 | 12 | Named executives and fable numbers out; Oodie and Lands' End cases kept as source brands |
+| 18-COG | 7,854 | 10,097 | 78 | 1 | Already store material; every rule gained trigger and check; `[general practice]` tags 20 to 57 |
+| 13-ORG | 12,422 | 15,974 | 169 | 28 places, about 40 examples | Creator hooks and B2B lead cases replaced with store hooks; source-brand cases kept |
+| 16-AEO | 11,451 | 14,727 | 118 (1 new, R118) | 9 | SaaS review sites and sign-up figures moved to Appendix A; 4 wrong cross-references fixed |
+
+Known follow-ups: parenthetical store glosses inside source sentences in 21-OPS carry `[general practice]` by a blanket note in the section 3 intro rather than per sentence. 13-ORG R14 adds "through order peaks" to a cadence condition the sources do not mention. Both are flagged in the agents' reports and can be tightened by hand.
