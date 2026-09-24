@@ -195,7 +195,7 @@ Click Comment (bottom corner), click the spot, write the change with the new tex
 | Lift from testing the fold | upwards of 130% | some clients | client results | f226437ce140, fe0b0cc42e76 |
 | Social proof above fold | 2 forms (beat 1 in their tests) | above the fold and closer | "A/B tested a lot", no data | 79b4db61ba63 |
 | Form-above-fold layout | 1 headline, 3 to 4 bullets, 1 CTA + risk reducer | high-awareness search traffic | agency practice | 0c22726bae24 |
-| Visual hierarchy sizes | headline 32 to 33 px, body 16 px | one client example | example | 2917 see 2877b10aa93f |
+| Visual hierarchy sizes | headline 32 to 33 px, body 16 px | one client example | example | 2877b10aa93f |
 | Read versus scan | read 20%, scan 80% | all pages | unsourced | 2877b10aa93f |
 | Value props | 3 to 4 minimum, up to 8 to 10 | by offer complexity | agency practice | 90790635ecd5 |
 | Extra selling points section | 3 to 6 | after second proof block | template | e296505d973c |
@@ -218,8 +218,6 @@ Click Comment (bottom corner), click the spot, write the change with the new tex
 | A/B test threshold | 25,000 to 30,000 visitors a month per single landing page | before any A/B test | heuristic, not a calculation | 5b56dd4acd81, fe0b0cc42e76 |
 | Split URL traffic split | 50/50 default; custom weights possible | FigPii | tool behaviour | de130801d763 |
 | Free audit result | average 64% lift | clients applying some audit changes | agency sales claim | (transcript only) |
-
-(Correction to one row: the visual hierarchy row cites card 2877b10aa93f only.)
 
 ## 5. Diagnostics and checks
 
