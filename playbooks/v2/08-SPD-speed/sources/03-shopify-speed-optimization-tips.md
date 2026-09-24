@@ -85,7 +85,7 @@ Use it to plan speed work on a Shopify store and to make the money case for it. 
 ### 3.10 Lazy loading
 1. Load above-fold content at once: on a product page, title, images, description.
 2. Lazy-load supporting content: user-generated content, social carousels, reviews.
-3. Reason: browsers download every image on a page at once, visible or not, unless lazy loading is used. [4e833505151474]
+3. Reason: browsers download every image on a page at once, visible or not, unless lazy loading is used. [4e8335051514]
 4. Check that first-view content is not delayed.
 
 ### 3.11 Parser-blocking scripts
