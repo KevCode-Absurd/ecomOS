@@ -25,7 +25,7 @@ Two tracks share this repo.
 - Benchmarks (fictional TrailFold, Peach Bucket, ad-copy rounds) gave mixed results. Retrieval is not a proven win, and AI reviewer scores were unstable. Owner preference and editing effort are the better signal.
 
 **2. Meta gallery for Gehna (built with Claude)**
-- `meta_gallery/`: Gehna's Meta ad gallery (ad account 577226564072364). Run `python -m meta_gallery.server`, then open http://127.0.0.1:8765. The page is in `meta_gallery/web/` (app.js, engine.js, overview.js, insights.js, lab.js, studio.js, sales.js, testlab.js, prodads.js, index.html).
+- `meta_gallery/`: Gehna's Meta ad gallery (ad account 577226564072364). Run `python -m meta_gallery.server`, then open http://127.0.0.1:8765. The page is in `meta_gallery/web/` (app.js, engine.js, overview.js, insights.js, lab.js, studio.js, sales.js, testlab.js, prodads.js, report.js, index.html).
 - The same page is published at https://claude.ai/artifact/PYtCXf5norsr9vhSw4ZFVT (shared as "anyone with the link").
 - Tabs: overview, action plan with ranked tests to run, brand sales (Metabase, months and days), ad gallery, campaigns, insights, creative studio (paste a reference image to build variants), competitors (7 brands with pills), client report.
 - Data in `data/meta-gallery/`: `cache/gallery.json` (1 year of Meta), `sales.json` (monthly plus `daily` from 1 Aug 2026), `competitors.json` and `comp_media.json`, `brand.json`. Meta and Metabase were refreshed to 23 Sep 2026 on 24 Sep.

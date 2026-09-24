@@ -33,7 +33,7 @@ from .view import Engine, ViewError
 
 STATIC = Path(__file__).resolve().parent / 'static'
 WEB = Path(__file__).resolve().parent / 'web'
-WEB_FILES = ('engine.js', 'app.js', 'insights.js', 'overview.js', 'lab.js', 'studio.js', 'sales.js', 'testlab.js', 'prodads.js')
+WEB_FILES = ('engine.js', 'app.js', 'insights.js', 'overview.js', 'lab.js', 'studio.js', 'sales.js', 'testlab.js', 'prodads.js', 'report.js')
 COMPETITORS = DATA / 'competitors.json'
 COMP_MEDIA = DATA / 'comp_media.json'
 CACHE = DATA / 'cache' / 'gallery.json'
