@@ -209,7 +209,7 @@ It helps an operator build a lead-generation landing page with an AI coding agen
 
 ### 4.2 His conversion tier checklist
 - **S tier (non-negotiable):** video testimonials; form on the landing page; video of yourself talking (founder video); speed to lead; offer plus risk reversal.
-- **Tiers A, B and C:** shown on screen only ("pause the video to read"). The transcript does not list them. From the order and weight he gives in the talk, likely lower-tier items include portfolio, case studies, FAQ, click-to-call, logos, review badges and trust stats, but the tier each sits in is not stated. Do not assign tiers the source did not state.
+- **Tiers A, B and C:** shown on screen only ("pause the video to read more"). The transcript does not list them. Do not assign tiers the source did not state.
 
 ## 5. Diagnostics and checks
 
@@ -259,7 +259,7 @@ Merchant checks from adaptation cards: purchase conversion is measured on purcha
 ## 7. Examples and case results
 
 All are the presenter's own single cases or illustrations. Not promises.
-- **DJ business turnaround:** started with $10,000, spent down to about $2,000 over months of failed marketing, then closed 10 deals and made the first $10,000 from Google Ads. Later grew to seven figures and sold. Example of persistence, not a method.
+- **DJ business turnaround:** started with $10,000, spent down to about $2,000 and was "2 weeks away from being completely broke", then closed 10 deals and made the first $10,000 from Google Ads. Later grew to seven figures and sold. Example of persistence, not a method.
 - **20% conversion page:** a wedding DJ lead page; "10 times higher" than his quoted 2% to 4% average. Not a store benchmark. [cb722cd52538] [e4ed90b85412]
 - **Founder video:** page conversion 10% to 15% right after adding it. He frames it as "$10,000 a month becomes $13,333". [cbc6126cdb67]
 - **9 video testimonials:** Google Ads cost per conversion $200 to $30 on a separate photo/video account. [4435f3fae23c]
