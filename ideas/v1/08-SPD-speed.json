@@ -630,7 +630,8 @@
     "77da7bd48ab8",
     "fa57997432c4",
     "f8bdb58727f9",
-    "af5fd5b1745b"
+    "af5fd5b1745b",
+    "d6ae849bc093"
    ],
    "rules": [
     "R9",
@@ -913,7 +914,8 @@
     "637495534f7f",
     "02c570556e30",
     "a459458a1b47",
-    "21280154cb29"
+    "21280154cb29",
+    "caf6d4c08b6d"
    ],
    "rules": [
     "R13",
@@ -1632,8 +1634,8 @@
   },
   "sources": {
    "mini_playbooks": [
-    "02",
     "01",
+    "02",
     "05"
    ],
    "cards": [
@@ -1641,7 +1643,8 @@
     "d16d1fcdd349",
     "a5d2c3aee970",
     "74187c8d7e19",
-    "085b91000740"
+    "085b91000740",
+    "15b41de4c239"
    ],
    "rules": [
     "R19",
@@ -1763,11 +1766,11 @@
   },
   "sources": {
    "mini_playbooks": [
-    "09",
+    "01",
+    "02",
     "03",
     "04",
-    "01",
-    "02"
+    "09"
    ],
    "cards": [
     "b35da7f37105",
@@ -2766,7 +2769,9 @@
     "b093ed3b4d75",
     "eeb9c51fe0da",
     "4e8335051514",
-    "8883db1cfb1d"
+    "8883db1cfb1d",
+    "8e4f0dac7e97",
+    "ff5edde57340"
    ],
    "rules": [
     "R35",
@@ -3676,8 +3681,8 @@
   "sources": {
    "mini_playbooks": [
     "01",
-    "04",
-    "03"
+    "03",
+    "04"
    ],
    "cards": [
     "8dbbb42b9c2e",
@@ -4477,9 +4482,9 @@
   },
   "sources": {
    "mini_playbooks": [
-    "09",
     "01",
-    "03"
+    "03",
+    "09"
    ],
    "cards": [
     "dc6cd41ae52d",
@@ -4603,6 +4608,7 @@
   "sources": {
    "mini_playbooks": [
     "01",
+    "03",
     "04",
     "05"
    ],
@@ -4611,7 +4617,9 @@
     "cdc61c33e699",
     "23a3f294b81c",
     "c067983b290a",
-    "8f0d567d9844"
+    "8f0d567d9844",
+    "efd7ec0cb6ce",
+    "c09e2fd0f0d7"
    ],
    "rules": [
     "R55"
@@ -4975,8 +4983,12 @@
    "read_point": "After deployment"
   },
   "sources": {
-   "mini_playbooks": [],
-   "cards": [],
+   "mini_playbooks": [
+    "09"
+   ],
+   "cards": [
+    "171da560af89"
+   ],
    "rules": [
     "R60"
    ]
@@ -5467,9 +5479,9 @@
   },
   "sources": {
    "mini_playbooks": [
+    "01",
     "07",
-    "09",
-    "01"
+    "09"
    ],
    "cards": [
     "cc2d433b9ede",
@@ -5845,9 +5857,9 @@
   },
   "sources": {
    "mini_playbooks": [
+    "01",
     "02",
-    "04",
-    "01"
+    "04"
    ],
    "cards": [
     "731928d47c17",
@@ -6050,9 +6062,9 @@
   "sources": {
    "mini_playbooks": [
     "01",
+    "04",
     "05",
-    "07",
-    "04"
+    "07"
    ],
    "cards": [
     "24893ea78676",
@@ -7086,8 +7098,8 @@
   },
   "sources": {
    "mini_playbooks": [
-    "04",
     "03",
+    "04",
     "09"
    ],
    "cards": [
@@ -7095,7 +7107,8 @@
     "9490c0550ad4",
     "cc2d433b9ede",
     "6e2d4fa52ebe",
-    "54e3673579e3"
+    "54e3673579e3",
+    "9973ef4b38a5"
    ],
    "rules": [
     "R90",
@@ -7607,9 +7620,9 @@
   },
   "sources": {
    "mini_playbooks": [
+    "01",
     "03",
-    "09",
-    "01"
+    "09"
    ],
    "cards": [
     "badac5a4a278",
@@ -8699,6 +8712,912 @@
    "rules": [
     "P3"
    ]
+  },
+  "confidence": "medium",
+  "general_practice": false
+ },
+ {
+  "id": "SPD-134",
+  "title": "Follow a fixed image-prep order to avoid redoing earlier steps",
+  "domain": "08-SPD",
+  "bottleneck": [
+   "site_speed"
+  ],
+  "lever": "image workflow sequencing",
+  "hypothesis": "If we always resize, crop, convert format, compress, then name and add alt text, in that order, before uploading a batch of images, then we avoid redoing earlier steps, because doing them out of order, such as compressing before resizing, creates rework.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "A team preps product or content images in an ad-hoc order and keeps redoing earlier steps, or resizes an image again after it was already compressed and named.",
+   "metrics": [
+    "page_weight_kb"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:image_prep_rework",
+   "direction": "down",
+   "size": "unknown",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "designer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "A process change only; nothing on the live site changes."
+  },
+  "prerequisites": [],
+  "steps": [
+   "Resize each image to its target dimensions first.",
+   "Crop one image at a time to match its final aspect ratio; never crop in bulk.",
+   "Convert to the final format: JPEG for photos, PNG only for transparency.",
+   "Compress once, from the resized and converted file, not from the original a second time.",
+   "Rename the file and write alt text last, right before upload.",
+   "Upload once to the media library and reuse the same file everywhere it is needed."
+  ],
+  "test": {
+   "method": "Compare a batch prepped in this fixed order against a prior ad-hoc batch for repeated steps and total prep time.",
+   "measure": "other:image_prep_rework",
+   "read_point": "After the first batch run in this order"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "01"
+   ],
+   "cards": [
+    "08bb3d69ec5b",
+    "dc287d5fb7e6"
+   ],
+   "rules": []
+  },
+  "confidence": "medium",
+  "general_practice": true
+ },
+ {
+  "id": "SPD-135",
+  "title": "Decide per image whether to resize, compress, or both before fixing it",
+  "domain": "08-SPD",
+  "bottleneck": [
+   "site_speed"
+  ],
+  "lever": "image fix decision framework",
+  "hypothesis": "If we check each flagged image's dimensions against its display box and its file size against our ceiling before touching it, then we resize only oversized images and compress only heavy ones, because treating every flagged image the same way wastes time on ones that do not need that fix.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "A speed report flags several images and the team is about to resize or compress all of them the same way without checking which fix each one actually needs.",
+   "metrics": [
+    "page_weight_kb"
+   ]
+  },
+  "expected_effect": {
+   "metric": "page_weight_kb",
+   "direction": "down",
+   "size": "unknown",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "dev"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "A diagnosis step before any change."
+  },
+  "prerequisites": [],
+  "steps": [
+   "Inspect each flagged image's intrinsic size versus its rendered display box.",
+   "Check its file size against the store's ceiling.",
+   "Oversized in dimensions: resize first, then check if it still needs compression.",
+   "Right-sized but heavy: compress only.",
+   "Small and already under the ceiling: leave it alone.",
+   "Record the decision so the next audit does not repeat the check on the same image."
+  ],
+  "test": {
+   "method": "Compare total time spent and bytes saved against fixing every flagged image the same way regardless of cause.",
+   "measure": "page_weight_kb",
+   "read_point": "After clearing one batch of flagged images"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "01"
+   ],
+   "cards": [
+    "08b2e0e2f95d"
+   ],
+   "rules": []
+  },
+  "confidence": "medium",
+  "general_practice": true
+ },
+ {
+  "id": "SPD-136",
+  "title": "Use a lazysizes-style JS library for finer control than native lazy loading",
+  "domain": "08-SPD",
+  "bottleneck": [
+   "site_speed"
+  ],
+  "lever": "JS-based lazy loading",
+  "hypothesis": "If we swap native loading=lazy for a small JS library such as lazysizes on below-fold images, then we get a placeholder and finer control over the load trigger, because native lazy loading has no placeholder and little trigger tuning.",
+  "applies_when": [
+   "any"
+  ],
+  "does_not_apply_when": [
+   "Any in-view image, which must never be lazy loaded by any method"
+  ],
+  "signal": {
+   "check": "Below-fold images use native loading=lazy and the team wants a placeholder or finer control over when images swap in, or native lazy loading is not behaving consistently across older devices.",
+   "metrics": [
+    "page_weight_kb"
+   ]
+  },
+  "expected_effect": {
+   "metric": "page_weight_kb",
+   "direction": "down",
+   "size": "one presenter's opinion: slightly better than native lazy loading",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "M",
+   "owner": "dev"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "medium",
+   "reversible": true,
+   "note": "Adds a JS dependency; verify it does not itself delay the images it should speed up."
+  },
+  "prerequisites": [
+   "Below-fold images identified"
+  ],
+  "steps": [
+   "Add the lazysizes script, or an equivalent small library, to the theme.",
+   "Set each below-fold image's src to a placeholder pixel and its real URL in data-src.",
+   "Add the library's lazy-load class to each of those images.",
+   "Never apply this to the hero, logo, first slide or any other in-view image.",
+   "Verify in the Network panel that in-view images still download at once and others only on scroll."
+  ],
+  "test": {
+   "method": "Compare page weight and perceived load on a throttled connection with native lazy loading versus the library.",
+   "measure": "page_weight_kb",
+   "read_point": "After swapping a template's below-fold images"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "01"
+   ],
+   "cards": [
+    "3c9bddfb47c1"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": false
+ },
+ {
+  "id": "SPD-137",
+  "title": "Ask an app's support team to fix an uncompressed asset, or drop the app",
+  "domain": "08-SPD",
+  "bottleneck": [
+   "site_speed"
+  ],
+  "lever": "app asset escalation",
+  "hypothesis": "If we contact an app's support team about an asset we cannot minify or compress ourselves, such as a file served from the app's own server, then the app either fixes it or we get a clear reason to drop it, because some blocking assets live outside our own code and are not ours to edit directly.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "A speed report flags an app's script or asset as unminified or uncompressed, and the file is served from the app's own domain, not the store's theme.",
+   "metrics": [
+    "third_party_kb"
+   ]
+  },
+  "expected_effect": {
+   "metric": "third_party_kb",
+   "direction": "down",
+   "size": "unknown",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "ops"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "An outreach step; no change to the store until the app responds."
+  },
+  "prerequisites": [
+   "App identified as the owner of the flagged asset"
+  ],
+  "steps": [
+   "Confirm the flagged asset is served by an app, not the store's own theme.",
+   "Contact the app's support team with the specific finding: file, size, and the flag it triggered.",
+   "If they fix it, re-test to confirm the gain.",
+   "If they cannot or will not, weigh the app's value against its speed cost and consider dropping it."
+  ],
+  "test": {
+   "method": "Re-run the speed report after the app's fix, or after removing the app.",
+   "measure": "third_party_kb",
+   "read_point": "After the app responds, or after removal"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "01"
+   ],
+   "cards": [
+    "81ac749043da"
+   ],
+   "rules": []
+  },
+  "confidence": "medium",
+  "general_practice": true
+ },
+ {
+  "id": "SPD-138",
+  "title": "Turn off default platform bloat features that ship on by default",
+  "domain": "08-SPD",
+  "bottleneck": [
+   "site_speed"
+  ],
+  "lever": "platform default cleanup",
+  "hypothesis": "If we disable default platform features nobody uses, such as an emoji-detection script, dashicons for logged-out visitors, pingbacks and unused block-editor CSS, then logged-out pages carry less dead weight, because these ship turned on by default whether or not the store uses them.",
+  "applies_when": [
+   "custom_platform"
+  ],
+  "signal": {
+   "check": "A waterfall or asset audit on WordPress or a similar platform shows requests for an emoji script, dashicons, pingback endpoints or block-editor CSS on pages that do not use those features.",
+   "metrics": [
+    "page_weight_kb"
+   ]
+  },
+  "expected_effect": {
+   "metric": "page_weight_kb",
+   "direction": "down",
+   "size": "unknown",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "dev"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Only disable features confirmed unused, and re-test after."
+  },
+  "prerequisites": [],
+  "steps": [
+   "Open the platform or builder's performance settings.",
+   "Tick off each feature the store does not use: emoji script, dashicons for logged-out visitors, pingbacks, unused block-editor CSS.",
+   "Skip any toggle tied to a feature the store actually uses.",
+   "Save and re-check the waterfall for the removed requests."
+  ],
+  "test": {
+   "method": "Compare waterfall requests before and after disabling each toggle.",
+   "measure": "page_weight_kb",
+   "read_point": "Immediately after saving"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "02"
+   ],
+   "cards": [
+    "83d6ff4a133c"
+   ],
+   "rules": []
+  },
+  "confidence": "medium",
+  "general_practice": true
+ },
+ {
+  "id": "SPD-139",
+  "title": "Reference theme CSS and JS through a cache-busting asset filter, not a typed URL",
+  "domain": "08-SPD",
+  "bottleneck": [
+   "site_speed"
+  ],
+  "lever": "CDN cache invalidation for theme assets",
+  "hypothesis": "If we reference theme CSS and JS through the platform's versioned asset filter instead of typing a static CDN URL, then an edit actually reaches shoppers, because a hardcoded URL carries no version marker and the CDN keeps serving the old cached file.",
+  "applies_when": [
+   "shopify"
+  ],
+  "does_not_apply_when": [
+   "Platforms without an equivalent versioned asset filter"
+  ],
+  "signal": {
+   "check": "A CSS or JS edit does not show on the live site after a normal cache wait, and the file is referenced by a typed-out URL inside a stylesheet instead of the platform's asset filter.",
+   "metrics": [
+    "other:stale_asset_incidents"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:stale_asset_incidents",
+   "direction": "down",
+   "size": "unknown",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "dev"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "A reference-only change; no visual change if done correctly."
+  },
+  "prerequisites": [
+   "Developer access to theme code"
+  ],
+  "steps": [
+   "Search theme CSS and JS for hardcoded asset URLs instead of the platform's versioned asset filter.",
+   "Replace each one with the versioned filter, such as Shopify's asset_url.",
+   "Confirm the rendered URL now carries a version parameter that changes on edit.",
+   "Make an edit to the file and confirm it shows live without a manual cache purge."
+  ],
+  "test": {
+   "method": "Edit the asset and reload the live page to confirm the new version shows immediately.",
+   "measure": "other:stale_asset_incidents",
+   "read_point": "Right after the next asset edit"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "03"
+   ],
+   "cards": [
+    "5748b07d6cda"
+   ],
+   "rules": []
+  },
+  "confidence": "medium",
+  "general_practice": false
+ },
+ {
+  "id": "SPD-140",
+  "title": "Find and merge template loops that crawl the same product data twice",
+  "domain": "08-SPD",
+  "bottleneck": [
+   "site_speed"
+  ],
+  "lever": "template loop deduplication",
+  "hypothesis": "If we find template loops that crawl the same collection or product list more than once to check different conditions, and merge them into one pass, then the server does less repeated work per page render, because running the same loop twice over the same data wastes render time for no extra output.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "A code review of theme templates finds two or more loops crawling the same collection or product list, often left behind when several developers worked on the theme.",
+   "metrics": [
+    "ttfb"
+   ]
+  },
+  "expected_effect": {
+   "metric": "ttfb",
+   "direction": "down",
+   "size": "unknown",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "M",
+   "owner": "dev"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "medium",
+   "reversible": true,
+   "note": "Confirm the merged loop still outputs every condition the separate loops checked."
+  },
+  "prerequisites": [
+   "Developer access to theme templates"
+  ],
+  "steps": [
+   "Review theme templates for loops that crawl the same collection or product list more than once.",
+   "Confirm each loop's purpose and condition, such as price or tag.",
+   "Merge them into a single loop that checks all conditions in one pass.",
+   "Use a simpler built-in loop helper where one exists instead of a manual crawl.",
+   "Re-test the page and confirm every original condition still works."
+  ],
+  "test": {
+   "method": "Compare TTFB and server response time on the affected template before and after the merge.",
+   "measure": "ttfb",
+   "read_point": "After the merge"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "03"
+   ],
+   "cards": [
+    "11d911ca0868"
+   ],
+   "rules": []
+  },
+  "confidence": "medium",
+  "general_practice": false
+ },
+ {
+  "id": "SPD-141",
+  "title": "Remove or defer Quick View so it stops pre-loading every thumbnail's data",
+  "domain": "08-SPD",
+  "bottleneck": [
+   "site_speed"
+  ],
+  "lever": "collection page feature cost",
+  "hypothesis": "If we remove Quick View from collection pages, or load its product data only on click instead of pre-loading it for every thumbnail, then collection pages stop fetching full product data most shoppers never open, because Quick View by default pre-loads data for every tile on the grid.",
+  "applies_when": [
+   "catalogue"
+  ],
+  "signal": {
+   "check": "A collection page's network requests show full product data loading for every thumbnail before any Quick View button is clicked.",
+   "metrics": [
+    "page_weight_kb"
+   ]
+  },
+  "expected_effect": {
+   "metric": "page_weight_kb",
+   "direction": "down",
+   "size": "pre-loads data for 20 to 30 thumbnails per collection page in the source's example",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "M",
+   "owner": "dev"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "medium",
+   "reversible": true,
+   "note": "Check click-map data first, since some shoppers do use Quick View."
+  },
+  "prerequisites": [
+   "Click-map or analytics data on Quick View usage"
+  ],
+  "steps": [
+   "Check a click map or analytics for how often shoppers actually use Quick View.",
+   "If rarely used, remove it and rely on the full product page.",
+   "If it must stay, switch it to load product data only on click, or store a small data set as data attributes and build the popup with JavaScript.",
+   "Confirm the popup still works after the change.",
+   "Re-test the collection page's network weight."
+  ],
+  "test": {
+   "method": "Compare network requests and page weight on a collection page before and after.",
+   "measure": "page_weight_kb",
+   "read_point": "After the change"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "03"
+   ],
+   "cards": [
+    "6f05e9392e74"
+   ],
+   "rules": []
+  },
+  "confidence": "medium",
+  "general_practice": false
+ },
+ {
+  "id": "SPD-142",
+  "title": "Automate speed testing in the deploy pipeline or on a schedule",
+  "domain": "08-SPD",
+  "bottleneck": [
+   "site_speed",
+   "team_capacity"
+  ],
+  "lever": "automated speed monitoring",
+  "hypothesis": "If we run PageSpeed Insights or Lighthouse automatically on every deploy or on a schedule, then a regression gets caught before the next manual audit, because a manual monthly check can miss a slowdown introduced between checks.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "Speed testing happens only when someone remembers to run it by hand, with no automated check tied to deploys or a schedule.",
+   "metrics": [
+    "other:psi_score"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:psi_score",
+   "direction": "up",
+   "size": "unknown",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "M",
+   "owner": "dev"
+  },
+  "cost": "low",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "A monitoring addition; does not change the live site."
+  },
+  "prerequisites": [
+   "A deploy pipeline or a place to run a scheduled job"
+  ],
+  "steps": [
+   "Pick a free automation option: the PageSpeed Insights API on a schedule, a GTmetrix monitoring account, or Lighthouse CI in the deploy pipeline.",
+   "Set it to test the store's key templates: home, top product, category, cart and checkout.",
+   "Set an alert or a failing threshold tied to the store's performance budget.",
+   "Review any automated alert the same way as a manual finding."
+  ],
+  "test": {
+   "method": "Compare how quickly a deliberately introduced regression is caught with automation on versus the prior manual-only cadence.",
+   "measure": "other:psi_score",
+   "read_point": "After the first automated run catches or misses a real change"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "04"
+   ],
+   "cards": [
+    "9ffe9f981c57"
+   ],
+   "rules": []
+  },
+  "confidence": "medium",
+  "general_practice": true
+ },
+ {
+  "id": "SPD-143",
+  "title": "Design the above-the-fold section so the largest element is text, not an image",
+  "domain": "08-SPD",
+  "bottleneck": [
+   "site_speed"
+  ],
+  "lever": "LCP element design choice",
+  "hypothesis": "If the largest visible element above the fold is a text block instead of an image or video, then LCP is faster by design, because text paints as soon as its font is ready while an image or video must first download.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "A template's LCP element is consistently a hero image or video, and a text-led layout could carry the same message.",
+   "metrics": [
+    "lcp_mobile_p75"
+   ]
+  },
+  "expected_effect": {
+   "metric": "lcp_mobile_p75",
+   "direction": "down",
+   "size": "unknown",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "M",
+   "owner": "designer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "A design change; confirm it does not weaken the page's persuasive job before shipping it."
+  },
+  "prerequisites": [],
+  "steps": [
+   "Check PageSpeed's named LCP element for each key template.",
+   "Where the LCP element is an image or video and a text-led design could carry the same message, mock up a text-first version of that section.",
+   "Confirm the text-first version still meets the page's conversion job before shipping it.",
+   "Re-test LCP after the change ships."
+  ],
+  "test": {
+   "method": "Compare LCP before and after switching the section's largest element to text.",
+   "measure": "lcp_mobile_p75",
+   "read_point": "After the redesign ships"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "05"
+   ],
+   "cards": [
+    "eb9525bda54a"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": false
+ },
+ {
+  "id": "SPD-144",
+  "title": "Share the PageSpeed report's own link instead of relaying findings by hand",
+  "domain": "08-SPD",
+  "bottleneck": [
+   "site_speed",
+   "team_capacity"
+  ],
+  "lever": "developer handoff",
+  "hypothesis": "If we send PageSpeed Insights' own share link instead of describing the findings in writing, then the developer sees the exact same report, because the link opens the frozen result instead of a fresh re-run that could read differently.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "A speed finding is being relayed to a developer or agency by a written description or screenshot instead of the tool's own share link.",
+   "metrics": [
+    "other:handoff_accuracy"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:handoff_accuracy",
+   "direction": "up",
+   "size": "unknown",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "A communication habit; no site change."
+  },
+  "prerequisites": [],
+  "steps": [
+   "Run the PageSpeed Insights test on the page in question.",
+   "Use the report's copy-link control to get its share link.",
+   "Send that link to the developer or agency instead of a written summary alone.",
+   "Ask them to confirm they see the same score and flagged items before starting work."
+  ],
+  "test": {
+   "method": "Confirm the developer's report matches the shared link's findings before work begins.",
+   "measure": "other:handoff_accuracy",
+   "read_point": "At handoff"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "05"
+   ],
+   "cards": [
+    "f338ed52ce8f"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "SPD-145",
+  "title": "Run a speed check on any new feature or app before it ships, not only at the next audit",
+  "domain": "08-SPD",
+  "bottleneck": [
+   "site_speed"
+  ],
+  "lever": "pre-launch speed gate",
+  "hypothesis": "If every new feature, animation or app gets a before-and-after speed test before it goes live, then a slowdown is caught at the moment it is added, because most site changes add weight and a periodic audit can miss the change for weeks.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "A new feature, animation or app is about to ship, or just shipped, with no speed test run specifically for that change.",
+   "metrics": [
+    "other:psi_score"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:psi_score",
+   "direction": "up",
+   "size": "unknown",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "dev"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "A gating step, not a change to the site itself."
+  },
+  "prerequisites": [
+   "SPD-001 baseline exists"
+  ],
+  "steps": [
+   "Before approving a new feature, animation or app for launch, run a speed test on the page it touches.",
+   "Ship the change.",
+   "Run the same speed test again right after launch.",
+   "If it fails the store's performance budget, fix it or hold the launch instead of waiting for the next scheduled audit."
+  ],
+  "test": {
+   "method": "Compare the before and after speed test for the specific page the change touches.",
+   "measure": "other:psi_score",
+   "read_point": "Immediately before and after the change ships"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "06"
+   ],
+   "cards": [
+    "689b4ce4442e"
+   ],
+   "rules": []
+  },
+  "confidence": "medium",
+  "general_practice": true
+ },
+ {
+  "id": "SPD-146",
+  "title": "Set fetchpriority=low on non-critical images so they stop competing with the LCP image",
+  "domain": "08-SPD",
+  "bottleneck": [
+   "site_speed"
+  ],
+  "lever": "resource priority hints",
+  "hypothesis": "If we mark non-critical, far-down-the-page images with fetchpriority=low, then the browser fetches the LCP image first instead of splitting bandwidth with images the shopper has not scrolled to, because a priority hint tells the browser which requests matter less.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "The LCP image is competing for bandwidth with several other images loading at the same time, and none of them carry a fetchpriority hint.",
+   "metrics": [
+    "lcp_mobile_p75"
+   ]
+  },
+  "expected_effect": {
+   "metric": "lcp_mobile_p75",
+   "direction": "down",
+   "size": "unknown",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "dev"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Only mark true outliers low; do not mark everything high or low."
+  },
+  "prerequisites": [],
+  "steps": [
+   "Identify the LCP image and confirm it already has fetchpriority=high or a preload tag.",
+   "Identify images far down the page that are not the LCP element.",
+   "Add fetchpriority=low to those images.",
+   "Re-test LCP to confirm the browser now loads the LCP image first."
+  ],
+  "test": {
+   "method": "Compare LCP timing before and after setting fetchpriority=low on the non-critical images.",
+   "measure": "lcp_mobile_p75",
+   "read_point": "After the change"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "07"
+   ],
+   "cards": [
+    "958af3150188"
+   ],
+   "rules": []
+  },
+  "confidence": "medium",
+  "general_practice": false
+ },
+ {
+  "id": "SPD-147",
+  "title": "On a framework storefront, code-split and lazy-load non-critical UI components",
+  "domain": "08-SPD",
+  "bottleneck": [
+   "site_speed"
+  ],
+  "lever": "first-party component code-splitting",
+  "hypothesis": "If non-critical first-party UI components, such as a filter panel, a size guide or a secondary carousel, are code-split and lazy-loaded, then their JavaScript downloads only when needed, because a framework's dynamic import lets the browser skip code for parts of the page the shopper has not reached yet.",
+  "applies_when": [
+   "custom_platform"
+  ],
+  "signal": {
+   "check": "A framework storefront's main JavaScript bundle includes code for components not visible or not needed on first load, such as filters, modals or secondary carousels.",
+   "metrics": [
+    "page_weight_kb"
+   ]
+  },
+  "expected_effect": {
+   "metric": "page_weight_kb",
+   "direction": "down",
+   "size": "unknown",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "M",
+   "owner": "dev"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "medium",
+   "reversible": true,
+   "note": "Verify the lazy-loaded component still renders correctly and quickly enough when it is needed."
+  },
+  "prerequisites": [
+   "Developer access to the framework's bundler configuration"
+  ],
+  "steps": [
+   "List first-party UI components not needed for the first paint: filters, modals, secondary carousels, size guides.",
+   "Split each into its own bundle using the framework's dynamic import or lazy-loading feature.",
+   "Load each bundle only when its component becomes visible or is interacted with.",
+   "Test that each component still renders correctly and quickly when triggered.",
+   "Re-test the main bundle's weight after the split."
+  ],
+  "test": {
+   "method": "Compare the initial JavaScript bundle size and page weight before and after code-splitting.",
+   "measure": "page_weight_kb",
+   "read_point": "After deployment"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "07"
+   ],
+   "cards": [
+    "717cf5ec82fd"
+   ],
+   "rules": []
+  },
+  "confidence": "medium",
+  "general_practice": false
+ },
+ {
+  "id": "SPD-148",
+  "title": "Audit plugins for expensive, uncached database queries on every page load",
+  "domain": "08-SPD",
+  "bottleneck": [
+   "site_speed"
+  ],
+  "lever": "backend query audit",
+  "hypothesis": "If we check each plugin for database queries it runs on every page load without caching, then we catch a backend slowdown that front-end fixes cannot touch, because a plugin's own uncached query can dominate server response time regardless of how light the page's images and scripts are.",
+  "applies_when": [
+   "custom_platform"
+  ],
+  "signal": {
+   "check": "TTFB is high, or a page feels slow even after images and scripts are optimized, and no one has checked which plugins run queries on every page load.",
+   "metrics": [
+    "ttfb"
+   ]
+  },
+  "expected_effect": {
+   "metric": "ttfb",
+   "direction": "down",
+   "size": "unknown",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "M",
+   "owner": "dev"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "medium",
+   "reversible": true,
+   "note": "Confirm the plugin still works correctly after adding caching around its query or removing it."
+  },
+  "prerequisites": [
+   "Developer or hosting access to profile database queries"
+  ],
+  "steps": [
+   "Ask the developer or host to profile database queries on a slow page.",
+   "Identify which plugin or extension triggers each expensive, uncached query.",
+   "For a plugin still needed, add caching around its query, or ask the vendor to.",
+   "For a plugin not clearly needed, remove it and re-test.",
+   "Re-check TTFB after each change."
+  ],
+  "test": {
+   "method": "Compare TTFB before and after addressing each flagged plugin.",
+   "measure": "ttfb",
+   "read_point": "After each fix"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "08"
+   ],
+   "cards": [
+    "3d795cd17d4b"
+   ],
+   "rules": []
   },
   "confidence": "medium",
   "general_practice": false
