@@ -625,9 +625,10 @@ function sparkChart(points, { kind = 'line', color = 'var(--spend)', fmtY = (v) 
     const bw = Math.max(1, (W - L - R) / n - 1);
     body = points.map((p, i) => (p.y ? `<rect x="${(x(i) - bw / 2).toFixed(1)}" y="${y(p.y).toFixed(1)}" width="${bw.toFixed(1)}" height="${(H - B - y(p.y)).toFixed(1)}" style="fill:${color}"><title>${esc(p.x)}: ${esc(fmtY(p.y))}</title></rect>` : '')).join('');
   } else {
-    let d = '', pen = false;
-    points.forEach((p, i) => { if (p.y === null || !Number.isFinite(p.y)) { pen = false; return; } d += `${pen ? 'L' : 'M'}${x(i).toFixed(1)},${y(p.y).toFixed(1)}`; pen = true; });
-    body = `<path d="${d}" style="fill:none;stroke:${color}" stroke-width="2" stroke-linejoin="round"/>` + points.map((p, i) => (p.y === null ? '' : `<circle cx="${x(i).toFixed(1)}" cy="${y(p.y).toFixed(1)}" r="6" style="fill:transparent"><title>${esc(p.x)}: ${esc(fmtY(p.y))}</title></circle>`)).join('');
+    const pts = points.map((p, i) => (p.y === null || !Number.isFinite(p.y) ? null : [x(i), y(p.y)]));
+    const d = segmentsOf(pts).map((s) => s.map((q, j) => `${j ? 'L' : 'M'}${q[0].toFixed(1)},${q[1].toFixed(1)}${s.length === 1 ? 'l0.01,0' : ''}`).join('')).join('');
+    const br = bridgePath(pts);
+    body = (br ? `<path d="${br}" style="fill:none;stroke:${color};opacity:.4" stroke-width="1.5" stroke-dasharray="2 4"/>` : '') + `<path d="${d}" style="fill:none;stroke:${color}" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>` + points.map((p, i) => (p.y === null ? '' : `<circle cx="${x(i).toFixed(1)}" cy="${y(p.y).toFixed(1)}" r="6" style="fill:transparent"><title>${esc(p.x)}: ${esc(fmtY(p.y))}</title></circle>`)).join('');
   }
   const grid = [0, 0.5, 1].map((f) => `<line x1="${L}" x2="${W - R}" y1="${y(max * f).toFixed(1)}" y2="${y(max * f).toFixed(1)}" class="gl"/><text x="${L - 4}" y="${(y(max * f) + 3).toFixed(1)}" text-anchor="end" class="tl">${esc(fmtY(max * f))}</text>`).join('');
   const xl = `<text x="${L}" y="${H - 4}" class="tl">${esc(points[0].x)}</text><text x="${W - R}" y="${H - 4}" text-anchor="end" class="tl">${esc(points[n - 1].x)}</text>`;

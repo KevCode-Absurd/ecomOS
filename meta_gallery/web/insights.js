@@ -66,8 +66,8 @@ function weeklyRoasChart(weeks, a, b) {
   const y = (v) => T + (H - T - B) * (1 - v / max);
   const cx = (i) => L + i * bw + bw / 2;
   const band = weeks.map((w, i) => (w.b >= a && w.a <= b ? `<rect class="band" x="${(L + i * bw).toFixed(1)}" y="${T}" width="${bw.toFixed(1)}" height="${H - T - B}"/>` : '')).join('');
-  let d = '', pen = false;
-  weeks.forEach((w, i) => { if (w.roas === null) { pen = false; return; } d += `${pen ? 'L' : 'M'}${cx(i).toFixed(1)},${y(w.roas).toFixed(1)}`; pen = true; });
+  const wpts = weeks.map((w, i) => (w.roas === null ? null : [cx(i), y(w.roas)]));
+  const d = segmentsOf(wpts).map((s) => s.map((q, j) => `${j ? 'L' : 'M'}${q[0].toFixed(1)},${q[1].toFixed(1)}${s.length === 1 ? 'l0.01,0' : ''}`).join('')).join('') + bridgePath(wpts);
   const dots = weeks.map((w, i) => (w.roas === null ? '' : `<circle cx="${cx(i).toFixed(1)}" cy="${y(w.roas).toFixed(1)}" r="3" style="fill:var(--roas)"><title>Week of ${esc(shortDate(w.start))}: ${w.roas.toFixed(2)}x</title></circle>`)).join('');
   const grid = [0, 0.5, 1].map((f) => `<line x1="${L}" x2="${W - R}" y1="${y(max * f).toFixed(1)}" y2="${y(max * f).toFixed(1)}" class="gl"/><text x="${L - 5}" y="${(y(max * f) + 3).toFixed(1)}" text-anchor="end" class="tl">${(max * f).toFixed(1)}x</text>`).join('');
   const ticks = weeks.map((w, i) => (i % 4 === 0 ? `<text x="${(L + i * bw).toFixed(1)}" y="${H - 6}" class="tl">${esc(shortDate(w.start))}</text>` : '')).join('');

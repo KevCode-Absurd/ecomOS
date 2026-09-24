@@ -37,11 +37,13 @@ const sumK = (rows, k) => rows.reduce((t, r) => t + (r[k] || 0), 0);
 const roas7 = (rows) => { const sp = sumK(rows, 'spend'); return sp > 0 && rows.some((r) => r.reported) ? sumK(rows, 'value') / sp : null; };
 
 // Smooth path through points (Catmull-Rom to Bezier). Breaks at nulls.
+// A lone point becomes a tiny stroke, so with a round cap it shows as a dot instead of vanishing.
 function smoothPath(pts) {
   let d = '', seg = [];
   const flush = () => {
     if (!seg.length) return;
     d += `M${seg[0][0].toFixed(1)},${seg[0][1].toFixed(1)}`;
+    if (seg.length === 1) { d += 'l0.01,0'; seg = []; return; }
     for (let i = 0; i < seg.length - 1; i++) {
       const p0 = seg[i - 1] || seg[i], p1 = seg[i], p2 = seg[i + 1], p3 = seg[i + 2] || p2;
       const c1 = [p1[0] + (p2[0] - p0[0]) / 6, p1[1] + (p2[1] - p0[1]) / 6], c2 = [p2[0] - (p3[0] - p1[0]) / 6, p2[1] - (p3[1] - p1[1]) / 6];
@@ -53,6 +55,29 @@ function smoothPath(pts) {
   flush();
   return d;
 }
+// Solid runs of points (no nulls), as [[x,y], ...] lists.
+function segmentsOf(pts) {
+  const out = [];
+  let cur = [];
+  for (const p of pts) { if (p === null) { if (cur.length) out.push(cur); cur = []; } else cur.push(p); }
+  if (cur.length) out.push(cur);
+  return out;
+}
+// Straight dotted links across gaps: last point before a gap to the first point after it.
+function bridgePath(pts) {
+  const segs = segmentsOf(pts);
+  let d = '';
+  for (let i = 0; i < segs.length - 1; i++) {
+    const a = segs[i][segs[i].length - 1], b = segs[i + 1][0];
+    d += `M${a[0].toFixed(1)},${a[1].toFixed(1)}L${b[0].toFixed(1)},${b[1].toFixed(1)}`;
+  }
+  return d;
+}
+// Area under each solid run, down to baseY.
+function areaPath(pts, baseY) {
+  return segmentsOf(pts).filter((s) => s.length > 1).map((s) => `${smoothPath(s)} L${s[s.length - 1][0].toFixed(1)},${baseY} L${s[0][0].toFixed(1)},${baseY} Z`).join(' ');
+}
+
 // Small area sparkline (no axes). vals: numbers or null.
 function sparkSvg(vals, { color = 'var(--ink)', W = 240, H = 48, fill = true, id = '' } = {}) {
   const ok = vals.filter((v) => v !== null && Number.isFinite(v));
@@ -60,10 +85,10 @@ function sparkSvg(vals, { color = 'var(--ink)', W = 240, H = 48, fill = true, id
   const max = Math.max(...ok), min = Math.min(...ok, 0), n = vals.length;
   const x = (i) => 3 + i * (W - 6) / (n - 1), y = (v) => 4 + (H - 8) * (1 - (v - min) / ((max - min) || 1));
   const pts = vals.map((v, i) => (v === null || !Number.isFinite(v) ? null : [x(i), y(v)]));
-  const line = smoothPath(pts);
-  const lastI = vals.map((v, i) => (v === null ? -1 : i)).filter((i) => i >= 0).pop();
-  const area = fill ? `<path d="${line} L${x(lastI).toFixed(1)},${H} L${x(vals.findIndex((v) => v !== null)).toFixed(1)},${H} Z" style="fill:${color};opacity:.1"/>` : '';
-  return `<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" aria-hidden="true"${id ? ` id="${id}"` : ''}>${area}<path d="${line}" style="fill:none;stroke:${color}" stroke-width="2" stroke-linecap="round" vector-effect="non-scaling-stroke"/><circle cx="${x(lastI).toFixed(1)}" cy="${y(vals[lastI]).toFixed(1)}" r="3.5" style="fill:${color}"/></svg>`;
+  const line = smoothPath(pts), bridge = bridgePath(pts);
+  const lastI = vals.map((v, i) => (v === null || !Number.isFinite(v) ? -1 : i)).filter((i) => i >= 0).pop();
+  const area = fill ? `<path d="${areaPath(pts, H)}" style="fill:${color};opacity:.1"/>` : '';
+  return `<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" aria-hidden="true"${id ? ` id="${id}"` : ''}>${area}${bridge ? `<path d="${bridge}" style="fill:none;stroke:${color};opacity:.45" stroke-width="1.5" stroke-dasharray="2 4" vector-effect="non-scaling-stroke"/>` : ''}<path d="${line}" style="fill:none;stroke:${color}" stroke-width="2" stroke-linecap="round" vector-effect="non-scaling-stroke"/><circle cx="${x(lastI).toFixed(1)}" cy="${y(vals[lastI]).toFixed(1)}" r="3.5" style="fill:${color}"/></svg>`;
 }
 // Group days into buckets for tile sparklines: 7-day buckets when the range is long.
 function buckets(rows) {
@@ -157,16 +182,17 @@ function flowTile(R) {
   const step = Math.max(1, Math.ceil(n / 7));
   const ticks = R.cur.map((r, i) => (i % step === 0 || i === n - 1 ? `<text x="${x(i).toFixed(1)}" y="${H - 8}" text-anchor="${i === 0 ? 'start' : i === n - 1 ? 'end' : 'middle'}" class="tl">${esc(shortDate(r.date))}</text>` : '')).join('');
   const ptsC = cur.map((v, i) => (v === null || !Number.isFinite(v) ? null : [x(i), y(v)]));
-  const line = smoothPath(ptsC);
-  const firstI = cur.findIndex((v) => v !== null), lastI = cur.length - 1 - [...cur].reverse().findIndex((v) => v !== null);
-  const area = firstI >= 0 ? `<path d="${line} L${x(lastI).toFixed(1)},${H - B} L${x(firstI).toFixed(1)},${H - B} Z" style="fill:var(--ink);opacity:.06"/>` : '';
-  const prevLine = prev ? `<path d="${smoothPath(prev.map((v, i) => (v === null || !Number.isFinite(v) ? null : [x(i), y(v)])))}" style="fill:none;stroke:var(--faint)" stroke-width="2" stroke-dasharray="5 5"/>` : '';
+  const line = smoothPath(ptsC), bridge = bridgePath(ptsC);
+  const area = `<path d="${areaPath(ptsC, H - B)}" style="fill:var(--ink);opacity:.06"/>`;
+  const ptsP = prev ? prev.map((v, i) => (v === null || !Number.isFinite(v) ? null : [x(i), y(v)])) : null;
+  const prevLine = prev ? `<path d="${smoothPath(ptsP)}${bridgePath(ptsP)}" style="fill:none;stroke:var(--faint)" stroke-width="2" stroke-dasharray="5 5" stroke-linecap="round"/>` : '';
+  const gapNote = ptsC.some((p) => p === null) ? `<path d="${bridge}" style="fill:none;stroke:var(--ink);opacity:.35" stroke-width="1.5" stroke-dasharray="2 5"/>` : '';
   const label = { spend: 'Daily spend', value: 'Daily purchase value', roas: 'ROAS, rolling 7 days' }[OV.metric];
   return `<section class="tile flow c-8" aria-label="Money flow">
-    <div class="tile-head"><div><h2>Money flow</h2><div class="sub">${label}${OV.metric === 'value' ? '. Gaps are days with no reported value.' : ''}</div></div>
+    <div class="tile-head"><div><h2>Money flow</h2><div class="sub">${label}${OV.metric !== 'spend' ? '. Dotted stretches are days with no reported value.' : ''}</div></div>
       <div class="seg" role="group" aria-label="Metric">${[['spend', 'Spend'], ['value', 'Value'], ['roas', 'ROAS']].map(([k, l]) => `<button type="button" data-metric="${k}" aria-pressed="${OV.metric === k}">${l}</button>`).join('')}</div></div>
     <div class="legend"><span><i style="background:var(--ink)"></i>This period</span>${prev ? '<span><i style="background:var(--faint)"></i>Previous period (dashed)</span>' : ''}</div>
-    <svg id="flowSvg" viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(label)} for the selected dates">${grid}${area}${prevLine}<path d="${line}" style="fill:none;stroke:var(--ink)" stroke-width="2.5" stroke-linecap="round"/>${ticks}
+    <svg id="flowSvg" viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(label)} for the selected dates">${grid}${area}${prevLine}${gapNote}<path d="${line}" style="fill:none;stroke:var(--ink)" stroke-width="2.5" stroke-linecap="round"/>${ticks}
       <line id="flowX" x1="0" x2="0" y1="${T}" y2="${H - B}" style="stroke:var(--muted)" stroke-dasharray="3 3" visibility="hidden"/><circle id="flowDot" r="5" style="fill:var(--surface);stroke:var(--ink)" stroke-width="2.5" visibility="hidden"/>
       <rect x="${L}" y="${T}" width="${W - L - Rt}" height="${H - T - B}" style="fill:transparent" id="flowHit"/></svg>
   </section>`;
