@@ -143,12 +143,33 @@ function rpHero(P) {
     ${tile('Money refunded', rpMoney(c.refund), c.refund, p.refund, -1, '', 'Returns and refunds in these days.')}
   </div>`;
 }
+// Days with an unusually large sale: at least 3 times a normal day and ₹3 L or more.
+// A normal day is the median day in the period. Returns [{ d, sales, orders, times }], biggest first.
+function rpBigDays(c) {
+  const got = c.days.filter((r) => r.x && r.x.sales !== null).map((r) => r.x.sales).sort((a, b) => a - b);
+  if (got.length < 7) return [];
+  const med = got[Math.floor(got.length / 2)] || 1;
+  return c.days.filter((r) => r.x && r.x.sales !== null && r.x.sales >= Math.max(3 * med, 3e5))
+    .map((r) => ({ d: r.d, sales: r.x.sales, orders: r.x.orders, times: r.x.sales / med, med })).sort((a, b) => b.sales - a.sales).slice(0, 3);
+}
+// Meta days where 1 ad counted a very large sale (₹3 L or more from 1 or 2 purchases).
+function rpBigMeta(since, until) {
+  const a = ENGINE.idx(since), b = ENGINE.idx(until), out = [];
+  for (const [id, rows] of Object.entries(DATA.daily)) for (const r of rows) {
+    if (r[0] < a || r[0] > b || !r[3] || r[3] < 3e5 || !r[2] || r[2] > 2) continue;
+    out.push({ id, d: dayIso(r[0]), value: r[3], purchases: r[2], name: (DATA.ads[id] || {}).name || 'An ad' });
+  }
+  return out.sort((x, y) => y.value - x.value).slice(0, 3);
+}
+const rpDays = (l) => l.map((x) => shortDate(x.d)).join(', ').replace(/, ([^,]*)$/, ' and $1');
 function rpSummary(P, t) {
   const c = P.cur, p = P.prev, s = rpChange(c.sales, p.sales), per = c.sales && c.spend ? c.sales / c.spend : null;
   const bits = [];
   if (c.sales !== null) bits.push(`You sold <b>${esc(compact(c.sales))}</b> on your website in these ${c.n} days${s.ch !== null ? `, <b>${esc(s.txt.replace(' from before', ''))}</b> from the ${c.n} days before` : ''}.`);
   if (t.spend) bits.push(`You spent <b>${esc(compact(t.spend))}</b> on Meta ads.`);
   if (per) bits.push(`For every ₹1 spent on ads, your website made <b>₹${per.toFixed(1)}</b> in sales.`);
+  const big = rpBigDays(c);
+  if (big.length) bits.push(`This includes ${big.length === 1 ? '1 unusually big day' : big.length + ' unusually big days'} (${esc(rpDays(big))}).`);
   return bits.join(' ');
 }
 function rpSalesTrend(P) {
@@ -162,11 +183,26 @@ function rpSalesTrend(P) {
   for (const r of c.days) if (r.x && r.x.sales !== null) { const k = weekday(r.d); const o = byWd[k] || (byWd[k] = { s: 0, n: 0 }); o.s += r.x.sales; o.n += 1; }
   const wd = Object.entries(byWd).map(([k, o]) => [k, o.s / o.n]).sort((a, b) => b[1] - a[1]);
   const hasPrev = prev.some((v) => v !== null);
+  const big = rpBigDays(c), bigSet = new Set(big.map((x) => x.d));
+  const marks = bc.map((b) => (b.rows.some((r) => bigSet.has(r.d)) ? 'Big day' : ''));
+  let bigBox = '';
+  if (big.length) {
+    const bigSum = big.reduce((t, x) => t + x.sales, 0), rest = c.sales - bigSum, other = c.covered - big.length;
+    // Why the day was big: 1 large order that Meta counted, or many orders on the same day.
+    const metaBig = {};
+    for (const m of rpBigMeta(c.since, c.until)) if (!metaBig[m.d] || metaBig[m.d].value < m.value) metaBig[m.d] = m;
+    const ords = c.days.filter((r) => r.x && r.x.sales !== null).map((r) => r.x.orders).sort((a, b) => a - b), medOrd = ords[Math.floor(ords.length / 2)] || 1;
+    const why = (x) => (metaBig[x.d] ? `includes 1 very large order of ${compact(metaBig[x.d].value)}` : x.orders >= 3 * medOrd ? `${x.orders} orders, about ${Math.round(x.orders / medOrd)} times a typical day` : 'a few large orders');
+    bigBox = `<div class="rp-big"><b>${big.length === 1 ? 'An unusually big day' : 'Unusually big days'}</b>
+      <ul>${big.map((x) => `<li>${esc(weekday(x.d))} ${esc(shortDate(x.d))}: ${esc(compact(x.sales))}, about ${Math.round(x.times)} times a typical day (${esc(compact(x.med))}). ${esc(why(x).charAt(0).toUpperCase() + why(x).slice(1))}.</li>`).join('')}</ul>
+      <p>These are real sales, but they do not happen every week. The other ${other} days made <b>${esc(compact(rest))}</b>, about ${esc(compact(rest / Math.max(1, other)))} a day. Use that as the normal pace.</p></div>`;
+  }
   return `<section class="rp-sec"><h2>How your sales moved</h2>
     <p class="rp-lead">Each bar is 1 ${unit} of website sales.${hasPrev ? ' The faded bar next to it is the same ' + unit + ' in the period before, so you can compare.' : ''}</p>
     ${rpLegend([['var(--gold)', `Website sales, this period`], ...(hasPrev ? [['var(--faint)', 'Same ' + unit + ', period before']] : [])])}
     ${rpBars({ labels: bc.map((b) => b.label), series: [{ name: 'This period', color: 'var(--gold)', vals: cur }, ...(hasPrev ? [{ name: 'Period before', color: 'var(--faint)', vals: prev }] : [])],
-      tips: (i) => [`${unit === 'week' ? 'Week of ' : ''}${bc[i].label}`, 'Website sales', cur[i] === null ? 'Not available' : compact(cur[i]), ...(hasPrev ? ['Period before', prev[i] === null ? 'Not available' : compact(prev[i])] : [])].join('|') })}
+      marks, tips: (i) => [`${unit === 'week' ? 'Week of ' : ''}${bc[i].label}`, 'Website sales', cur[i] === null ? 'Not available' : compact(cur[i]), ...(hasPrev ? ['Period before', prev[i] === null ? 'Not available' : compact(prev[i])] : []), ...(marks[i] ? ['Note', 'Unusually big day, see below'] : [])].join('|') })}
+    ${bigBox}
     <div class="rp-facts">
       ${best ? `<div><span class="muted small">Best day</span><b>${esc(weekday(best.d))} ${esc(shortDate(best.d))}</b><span>${esc(compact(best.x.sales))} from ${best.x.orders} order${best.x.orders === 1 ? '' : 's'}</span></div>` : ''}
       ${wd.length >= 5 ? `<div><span class="muted small">Strongest weekday</span><b>${esc(wd[0][0])}</b><span>about ${esc(compact(wd[0][1]))} a day</span></div><div><span class="muted small">Slowest weekday</span><b>${esc(wd[wd.length - 1][0])}</b><span>about ${esc(compact(wd[wd.length - 1][1]))} a day</span></div>` : ''}
@@ -211,6 +247,7 @@ function rpMeta(P) {
       ${tile('Cost for 1 order from ads', rpMoney(t.cpa), t.cpa, pt.cpa, -1, 'Ad money divided by the orders Meta counts.')}
       ${tile('Times your ads were seen', t.impressions === null || t.impressions === undefined ? '<span class="na">Not available</span>' : (t.impressions >= 1e7 ? (t.impressions / 1e7).toFixed(2) + ' crore' : t.impressions >= 1e5 ? (t.impressions / 1e5).toFixed(1) + ' lakh' : Number(t.impressions).toLocaleString('en-IN')), t.impressions, pt.impressions, 1, 'On Facebook and Instagram. 1 person can see an ad more than once.')}
     </div>
+    ${rpBigMetaHtml(c, t)}
     <h3>Ad money and the sales Meta counted, by ${unit}</h3>
     ${rpLegend([['var(--spend)', 'Ad money spent'], ['var(--ink)', 'Sales Meta counted']])}
     ${rpBars({ labels: b.map((x) => x.label), series: [{ name: 'Ad money spent', color: 'var(--spend)', vals: spend }, { name: 'Sales Meta counted', color: 'var(--ink)', vals: claimed }], H: 200 })}
@@ -219,6 +256,14 @@ function rpMeta(P) {
       ${rpLegend([['var(--ink)', 'Meta says its ads brought these sales'], ['var(--gold)', 'The rest: repeat buyers, Google, word of mouth, store visits and sales Meta did not track']])}
       <p class="rp-note">Meta counts a sale if the buyer saw or clicked an ad before buying. Some of those people would have bought anyway, so the true share is usually lower.</p>` : ''}
   </section>`;
+}
+function rpBigMetaHtml(c, t) {
+  const big = rpBigMeta(c.since, c.until);
+  if (!big.length || !t.spend || t.purchase_value === null) return '';
+  const sum = big.reduce((s, x) => s + x.value, 0), without = (t.purchase_value - sum) / t.spend;
+  return `<div class="rp-big"><b>${big.length === 1 ? '1 very large order' : big.length + ' very large orders'} counted by Meta</b>
+    <ul>${big.map((x) => `<li>${esc(shortDate(x.d))}: ${esc(compact(x.value))} from ${x.purchases} order${x.purchases === 1 ? '' : 's'}, through "${esc(x.name)}".</li>`).join('')}</ul>
+    <p>${big.length === 1 ? 'This order lifts' : 'These orders lift'} the return on ad money for the whole period. Without ${big.length === 1 ? 'it' : 'them'}, Meta counted <b>₹${without.toFixed(2)}</b> for every ₹1, instead of ₹${t.roas.toFixed(2)}.</p></div>`;
 }
 function rpAdCard(ad, why) {
   const m = ad.view.metrics;
