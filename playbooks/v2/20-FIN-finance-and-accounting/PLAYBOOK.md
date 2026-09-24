@@ -508,3 +508,119 @@ gap_attrib   = sum(platform_attributed_revenue) - net_revenue        (expected >
 ```
 Every gap is explained by a named cause (tax, timing, processed vs accrued returns, shipping income, fee coding, currency) or it is an error. Sources: 02, 03, 04. [1d3d04198311] [c9ccfa76430a] [4b0ff6e78865]
 
+### 3.1 Revenue and margin definitions
+
+**R1. Read gross to net every month, not net alone.** Net revenue moves for 4 reasons: gross demand, refunds, discounts, shipping collected. Accounting software usually shows only net or cash; the store platform shows the bridge. 03's example: net 100K then 110K with gross 120K both months; the growth was refunds falling from 20K to 10K, not demand. Condition: every monthly close and every "revenue is up" claim. Sources: 03, 01. Cards: [c9ccfa76430a] [895584eaf5b7].
+
+**R2. Exclude pass-through sales tax, VAT or GST from revenue before any margin.** 01 (T7) counts taxes collected in gross revenue; 03 removes them. Keep them out. The 24% vs 26.4% gap in 03's t-shirt example is exactly this convention (C14). Condition: always. Sources: 03; 01 conflicts. Cards: [db1cf398804d] [957cabf05b5f].
+
+**R3. Treat refunds, discounts and shipping collected as profit levers, and test them as offers.** Lower refunds, fewer discounts and more shipping collected raise net revenue with no extra traffic; 03 says most brands under-collect shipping. Raising a shipping charge is an offer change: test conversion first (03-OFF). Condition: any brand where refunds or discounts exceed 5% of gross. Sources: 03, 02 (net shipping). Cards: [c9ccfa76430a] [1e5dad6d98ce].
+
+**R4. Keep 3 margins apart and name them on every number: CM1 (product margin), CM2 (gross margin after cost of delivery), CM3 (contribution after marketing).** 01 and 03 both warn that people say "gross margin" or "contribution margin" and mean different things; 01 itself uses the words 3 ways (C11). A number without its scope label is unusable. Condition: every report, dashboard and formula output. Sources: 01, 03. Cards: [68431c491a0c] [7ca062ce13b6] [ca717cbf0593].
+
+**R5. Never quote product margin as gross margin, and never set a marketing budget off product margin.** 03's t-shirt: 70% product margin became 24% gross margin once shipping, pick and pack, fees, freight and a refund and discount allowance were subtracted. A budget set off 70% is unprofitable at 24%. Condition: always; check with checklist 5.3 before any CAC target is set. Sources: 03, 01, 06. Cards: [db1cf398804d] [e8db824002f5] [aacabc94746b].
+
+**R6. CM2 per new order is the ceiling on CAC (F15).** "Your CAC should be $83 or less" when CM per order is $83 (01). Break-even CAC = gross margin dollars per new order (03). The operating ceiling sits below break-even by the contribution the business needs for OPEX and profit. Condition: always for first-order acquisition; the lifetime exception is R57. Sources: 01, 03. Cards: [ca717cbf0593] [c49b93d6bb68] [68431c491a0c].
+
+**R7. Post-marketing contribution (CM3) is the core profitability gauge.** If CM3 is not positive, no OPEX cut can make the business profitable; nothing is left for payroll (01). CM3 minus OPEX is profit (02, 03). Condition: every month; every daily dashboard (as cm3_media). Sources: 01, 02, 03. Cards: [bf82ba8e8bc2] [25d900c4c527] [4ca15f364bbb].
+
+**R8. Compute unit economics per basket, not per unit, and say which count a metric uses.** Baskets carry 1.1 to 1.3 units (01) or 1.5 to 1.7 (03). A per-unit margin overstates fulfillment cost per item sold and understates CAC per order. Condition: any per-order or per-customer metric. Sources: 01, 03. Cards: [49110942deea] [9a77dac5a3ba].
+
+**R9. Small per-order savings decide profit at volume.** A couple of dollars off freight, pick and pack or fees across thousands of orders is "the difference between tens of thousands of dollars of losses or profit" (01). Divide each fulfillment line by revenue monthly to see which one moved. Condition: only matters at volume; at 50 orders a month the lever is elsewhere. Source: 01 only. Cards: [2978d63684ea] [4e8e7fd6e6e4].
+
+**R10. Watch gross margin percent, not gross profit dollars, in and after a promo month.** In 05's model, orders nearly doubled in the sale month, margin percent fell because of the discount, then recovered. A dip explained by discount is fine; a dip from cost lines (air freight, higher pick and pack) is not. Condition: every month with a promo. Sources: 05, 01. Cards: [02bbff7623e0] [183999c47203].
+
+### 3.2 COGS scope and landed cost
+
+**R11. Statutory COGS is "all in until it's in": every cost to get the product from the supplier's door onto your shelf ready to sell.** Purchase price net of supplier discounts, inbound freight including the container, duty actually paid, product packaging, and for a manufacturer direct labor and manufacturing overhead. Costs after that point are expenses in the statutory view. Backup test: would you have paid this cost if you had not bought these goods? Rent, yes (expense); the container, no (COGS). Condition: statutory and compliance accounts; confirm with the accountant. Sources: 04, 06. Cards: [a0e16cf2802e] [4b0ff6e78865] [1939dcb79b5d].
+
+**R12. Keep 2 cost views and label every margin with its view: statutory COGS (04, 06) and internal cost of delivery (01, 02, 03).** Internal COD adds outbound shipping, pick and pack, packing materials, 3PL storage, warehouse staff per order, payment fees and marketplace fees. The marketing decision uses COD (CM2). The statutory P&L uses the accounting policy. Never mix them in one table. Condition: always. Conflict C1. Sources: 01, 02, 03, 04, 06. Cards: [4b0ff6e78865] [db1cf398804d] [0f57ba17ebb2] [4e8e7fd6e6e4].
+
+**R13. Split product cost from fulfillment on the internal P&L so each line can be tracked and cut.** Product cost = manufacturing, import freight, duties, packaging, inbound freight. Fulfillment = pick and pack, packing materials, 3PL, storage, shipping to customer, merchant fees. A single COGS line hides which cost moved. Condition: internal P&L; per-order and percent-of-revenue reads. Sources: 01, 03. Cards: [4e8e7fd6e6e4] [1a6c983c0c2f] [7c524289c2d3].
+
+**R14. Land freight and duty per unit, per SKU, at the time the invoice arrives, with 1 documented allocation basis.** Freight and duty come as lump-sum invoices from different parties; attach each to its PO when it arrives, weight it across the SKUs in the shipment (weight, volume, value or units; the sources name none), and recompute landed cost when supplier price, exchange rate or freight changes. Never file freight invoices "to sort out later". Condition: every inbound shipment. Sources: 04, 06. `[needs brand data: allocation basis in the accounting policy]`. Cards: [427dd537598d] [366fbbf40de6] [a490586f1272].
+
+**R15. Product packaging is COGS; shipping packaging is a fulfillment expense.** The retail box the customer sees is part of the product (04's "Apple box"); the brown carton is delivery. Split mixed packaging invoices by line. Condition: always. Sources: 04, 06. Cards: [df753e79eb2d] [1939dcb79b5d].
+
+**R16. Inbound freight is COGS; outbound shipping to the customer is not statutory COGS by default.** 06 sees freight-out booked to COGS "often". 04 allows 2 exceptions (free shipping built into the price, and dropship freight charged by the supplier) but hedges with "could". Whatever the statutory treatment, outbound shipping is always in internal COD and always counted before a CAC ceiling is set. Condition: statutory books follow the written policy; internal view always includes it. Conflict C1 and C17. Sources: 04, 06, 01, 02, 03. Cards: [79cf39d0f59a] [0f57ba17ebb2] [957cabf05b5f].
+
+**R17. Payment fees and marketplace fees are variable delivery costs in the internal view; in the statutory view they are expenses below gross profit.** 03 calls putting transaction fees in OPEX "a mistake" because they vary with revenue; 04 keeps Amazon and Shopify fees out of COGS. Both are right in their own view. Condition: internal COD includes them; statutory follows policy. Sources: 03, 04, 01. Cards: [db1cf398804d] [4b0ff6e78865] [2978d63684ea].
+
+**R18. Warehouse staff who pick, pack and ship belong in cost of delivery, at daily cost divided by packages per day.** 03's example: $400 a day / 100 packages = $4 an order. Leaving them in OPEX overstates gross margin. Condition: internal view; the bookkeeper tags the staff and builds a custom P&L `[verify UI: Xero or QuickBooks tracking categories]`. Source: 03 only. Cards: [7c524289c2d3].
+
+**R19. Coupons reduce revenue; they are not COGS and not ad spend.** Supplier discounts reduce product cost; supplier credits generally sit against product cost but may carry a stock movement, so check. Condition: always. Source: 04 only. Cards: [4b0ff6e78865] [61551ff00944].
+
+**R20. Advertising, Amazon PPC and marketing-only partner revenue share are never COGS.** A partner involved in delivering the product can be COGS; a partner that only markets it is marketing OPEX or variable marketing. Condition: always. Sources: 04, 06. Cards: [4b0ff6e78865] [0dad09bf5876].
+
+**R21. Returns costs are split by type.** Return shipping back to you: overhead expense. Repackaging or a new box to make the item sellable again: can go into COGS. Bringing it back without making it sellable: not COGS. Apparel and other high-return categories track a returns-cost KPI and contribution margin next to gross margin. Condition: any brand with returns above a few percent. Source: 04 only. Cards: [bb8589d09789].
+
+**R22. Inventory is an asset until it sells; COGS is booked when the unit sells, not when the invoice arrives.** Purchase invoices dumped into the accounting system as expense with no stock adjustment is the most common failure 04 sees. Condition: always. Sources: 04, 05, 06. Cards: [a0e16cf2802e] [a490586f1272] [b4b11ba26397].
+
+### 3.3 The P&L ladder and the 4-bucket view
+
+**R23. Use 1 ladder for the whole company: gross revenue, discounts, refunds, chargebacks, shipping collected, net revenue, product COGS, CM1, fulfillment and variable delivery, CM2, variable marketing, CM3, OPEX, EBITDA, interest, tax and D&A, net profit.** Every line in dollars and as a percent of net revenue, month by month, with a target per line `[needs brand data: targets]`. Sources: 03, 01, 02. Cards: [4ca15f364bbb] [c160135c9bd3] [957cabf05b5f].
+
+**R24. The 4-bucket view: cost of delivery, CAC (variable media), OPEX, profit. Find the bucket that eats profit and fix that one.** 02's teaching picture is 25% each; its reference mix for a strong brand is COD 30 to 40%, CAC 25 to 30%, OPEX 10 to 12% (or 10 to 15%), profit 15 to 20%. 02 also cites an industry average gross margin of 42% (COGS 58%), so 30 to 40% COD is not typical (C5). Condition: monthly, next to the ladder; buckets are flags, not targets. Source: 02 only for the framing; 03 uses the same 3 expense buckets. Cards: [9a74113cfe78] [1e5dad6d98ce] [434847dcd5bb].
+
+**R25. A missed target is caused by a line above it (the fault rule).** Missed EBITDA: OPEX, marketing or COD. Missed CM3: marketing or COD. Missed CM2: COD or revenue (refunds, discounts, shipping collected). Trace before reacting; 01's T2 case traced a loss month to marketing going from 29% to 39% of revenue. Condition: every monthly review. Sources: 03, 01. Cards: [4ca15f364bbb] [7ca062ce13b6] [c160135c9bd3].
+
+**R26. Interest sits below EBITDA, never in OPEX.** EBITDA is the earning power with no loans; a buyer zeroes the loans. Net profit is what is left after interest, tax, depreciation and amortisation. Condition: always. Sources: 03, 05. Cards: [7c524289c2d3] [ff3c54a4afb8] [4f714af151a4].
+
+**R27. Split marketing into variable (paid ads, influencers, events, agency and creative help that flexes with demand) and fixed (a permanent in-house creative team, retainers).** Variable goes above CM3; fixed goes in OPEX. Some brands put all creative above CM3 because it drives revenue; that is allowed if the convention is written down and never changed mid-year. Condition: always; the choice changes the CAC bucket (C2). Sources: 03, 02. Cards: [8cc010473338] [9a74113cfe78].
+
+**R28. OPEX is everything not in COD or marketing: people, software, office.** In ecommerce, the way to reinvest is marketing, not headcount, software or office, which "generally" do not drive revenue (03). What happens at most 7-figure brands: OPEX rises faster than marketing and COD, and profit stays flat in dollars for 3 to 4 years. Condition: any brand where OPEX percent is flat or rising while revenue grows. Sources: 03, 02. Cards: [7c524289c2d3] [434847dcd5bb].
+
+**R29. Put a percent-of-revenue column next to every line to read trajectory: revenue growing, margins predictable, efficiency improving.** Marketing percent will bounce while scaling; COD and OPEX percent should not. Condition: monthly. Sources: 01, 03. Cards: [c160135c9bd3] [4ca15f364bbb].
+
+**R30. Track net shipping cost (shipping collected minus shipping cost) every month.** Shipping should be about 10% of revenue or less; 20 to 30% is a red flag; product cost 10 to 20% of revenue for "most brands" (02). Parcels over 39.5 inches on a side cost more (host). Condition: monthly; price-test shipping charges (03-OFF). Source: 02 only. Cards: [1e5dad6d98ce].
+
+**R31. Revenue is not profit, and profit is not cash.** 03: a $10M business at 5% net makes $500K; a $5M business at 20% net makes $1M. Chasing revenue while expecting margin to expand later fails for many early-stage founders. Condition: any growth plan. Sources: 03, 05, 01, 02. Cards: [4ca15f364bbb] [ff3c54a4afb8] [652ee8dcf710].
+
+**R32. Reconcile the model to itself: rolled-up gross profit percent per segment must equal the unit-economics percent, and the roll-up tab must equal the monthly tab.** If they differ, a formula is wrong. Condition: every model build and every close. Source: 01 only. Cards: [f1bd2de486c0] [def705c265c2].
+
+### 3.4 Daily and weekly contribution readouts and the metric hierarchy
+
+**R33. Daily contribution margin (cm3_media) is the scoreboard for the whole team; cash flow is the CEO's.** Report CM daily against a monthly CM goal sized to cover fixed costs (profit = CM minus OPEX). Everyone manages daily CM; the CEO or CFO keeps a separate rolling 13-week cash flow forecast because cash has human timing choices in it. Condition: every brand with daily ad spend. Source: 02 only. Cards: [25d900c4c527].
+
+**R34. Keep fixed costs out of the daily view.** Spreading rent and payroll per day creates a false "cut spend" signal on ordinary days. Fixed costs fall as a percent of revenue as volume rises, so if media makes positive incremental CM the fix may be to spend more. Condition: daily dashboards; the monthly view carries OPEX. Source: 02 only. Cards: [25d900c4c527].
+
+**R35. Metric hierarchy: cash flow (CEO) above contribution margin (team) above business metrics (revenue, spend, MER, AOV) above customer metrics (new-customer revenue, aMER, new-customer CM, ad spend) above channel metrics (Meta ROAS, MTA ROAS).** Read the dashboard top down. No single metric shows health: you can win CM in a month while the new-customer file shrinks. Condition: every dashboard layout and every alert. Sources: 02, 03 (measurement pyramid). Conflict C8. Cards: [25d900c4c527] [5297f747603f] [d5c2a3d880d9].
+
+**R36. Daily or weekly ROAS reports are not the core decision tool.** Keep live dashboards of aMER, profit contribution and, ideally, LTGP:CAC in a fixed window; use platform ROAS only for directional campaign reads inside 1 platform. Condition: always. Sources: 03, 02. Cards: [8d570963a07c] [d5c2a3d880d9] [25d900c4c527].
+
+**R37. Always split finance-grade metrics into new-customer versions: new-customer revenue, aMER, new-customer CM, new-customer cohort size, first-order GP.** MER is contaminated by returning revenue that would have returned anyway; 03's example is MER 2 with aMER "might be" 1.4. Condition: every readout. Sources: 03, 02, 01. Cards: [8aab49e8f65e] [30261689958c] [fc4fd43c986c].
+
+**R38. Track the active customer file, not the cumulative one.** About 80% of customers who will ever come back do so within 6 to 8 months (02's portfolio heuristic); after that treat them as lapsed. Growth of the active file is the best predictor of future returning revenue; set new-customer goals so you are not "squeezing the sponge". Condition: monthly; check the brand's own repurchase curve first `[needs brand data: repurchase curve]`. Source: 02 only. Cards: [5297f747603f].
+
+**R39. Show the numbers to everyone.** "You can't ask people to affect things they aren't looking at" (02). Align dashboards with pay and ownership. Condition: opinion from 1 source; apply where the owner agrees. Source: 02 only. Cards: [25d900c4c527] [83186e2addd5].
+
+**R40. Track actuals to a daily expectation so a miss is seen on day 5, not day 22.** The expectation is the 3-model forecast (F43). Condition: every month with a target. Source: 02 only. Cards: [4d4d40fe1138].
+
+### 3.5 Returns accrual
+
+**R41. Apply a returns accrual to daily and monthly revenue, not processed returns.** Set the rate from history (02's example 10%); subtract rate times the day's revenue; true up to actual returns at month end. 02's example: a $1M December accrues $100,000, about $3,333 a day. Condition: every brand with a return rate above a few percent; category rates where they differ `[needs brand data: return rate by month and category]`. Source: 02 only. Cards: [1d3d04198311].
+
+**R42. Never read Shopify's default "total sales" (today's revenue minus returns processed today) as the efficiency base.** A $500,000 January that processes $100,000 of December returns looks like a 20% return rate when the rate is still 10%, and the team pulls back spend. Condition: any January or post-peak read `[verify UI: Shopify default sales metric]`. Source: 02 only. Cards: [1d3d04198311].
+
+**R43. Put a refund and discount allowance into every per-basket margin and into the waterfall price.** 03's allowance in its t-shirt example: about 5% discounts plus about 10% refunds; fashion refund rates run 10% up to 80%. Condition: pricing, break-even and CAC ceilings. Source: 03 only; 01 uses 5 to 10% returns and 4 to 5% refunds as model inputs. Conflict C15 (accrual vs restatement). Cards: [db1cf398804d] [c9ccfa76430a] [1a6c983c0c2f].
+
+### 3.6 CAC
+
+**R44. CAC = marketing spent in the period / customers whose first order fell in the period, from the store's own data.** Returning customers are excluded; including them "gives you a CAC that makes no sense" (01). Platform CPA runs on attributed numbers and shows a better number than reality (03). Condition: always. Sources: 01, 03, 02. Cards: [6fe6a3b41072] [9a77dac5a3ba] [8cab64f326b9].
+
+**R45. Report 4 CACs and label them: blended, media-only, paid, fully loaded (F16).** 02 and 03 use media-only for the CAC bucket and put agencies, contractors and fixed creative in OPEX. 01 adds influencers, agencies and the first-order discount. Use media CAC for daily platform steering and the aMER curve; use fully loaded CAC for payback, LTV:CAC and the pricing waterfall. Condition: every CAC in a report carries its label. Conflict C2. Sources: 01, 02, 03. Cards: [9a74113cfe78] [6fe6a3b41072] [1247e2cd031e] [8cc010473338].
+
+**R46. Channel-level CAC is an attribution estimate, not a finance number.** 03 calls it "impossible" without attribution; 01 says map the funnel by stage and channel but gives no method. Use `cac_from_funnel = cpc / conversion_rate` as a planning estimate only, and calibrate with incrementality factors (06-MEA). Condition: planning and channel comparisons; never in the P&L. Sources: 01, 03, 02. Cards: [6fe6a3b41072] [9a77dac5a3ba] [e9dcc756a117] [ccf3794cd11d].
+
+**R47. Paid CAC is what constrains growth; blended CAC is directional.** Paid channels can scale 20x in a month; organic may be friends and family and cannot. 01's live-stream case: blended LTV:CAC 1.4 but paid LTV:CAC 1.08. Condition: any scaling decision. Source: 01 only. Cards: [8cab64f326b9] [79a98ff8e618].
+
+**R48. "What is a good CAC?" is the wrong question; pair CAC with first-order gross profit of new customers.** $100 CAC against $10,000 first-order GP (furniture) is excellent; against $20 GP (sweets) it loses $80. Use new-customer AOV and first-order GP, never blended AOV times blended margin, because returning customers raise blended AOV and new customers buy on discounted front-end offers. 03's example: blended $100 x 70% = $70 GP and a $35 CAC target, when new-customer AOV was $90 and first-order GP about $50. Condition: every CAC target. Sources: 03, 01. Cards: [9a77dac5a3ba] [a592b3f28c58].
+
+**R49. CAC is a function of conversion rate; a discount that lifts conversion lowers CAC, and the discount cost must be added back (R67).** Condition: any promo or landing page change. Sources: 01, 03. Cards: [5425adb4473f] [1247e2cd031e] [9a77dac5a3ba].
+
+**R50. CAC is unknowable before launch; put in a placeholder, replace with observed CAC, and re-forecast.** New categories get wide error bars. Condition: pre-launch models and new-category demand plans. Sources: 01, 02. Cards: [563870c81120] [1b23d41ee499] [20338553ad10].
+
+**R51. Set the CAC or ROAS line from unit economics and payback, then do not move it.** A 2021 partner analysis 02 cites found 60% of media dollars "never paid back over any period". The most common failure is "capitulation to efficiency of acquisition": lowering the line each quarter. The team solves with story, peaks, creative, product and channels. Condition: the line must come from real marginal economics (F15, F44), not a wish. Source: 02 only. Cards: [75cf518af8d3] [09e7f0d32ea7] [35efd9091446].
+
+**R52. Each new customer should be at least as profitable as the last; do not scale spend to fix bad unit economics.** 01's sub-optimal path: CAC 68 to 79 to 123 to 149 with flat CM and 1.2 to 1.8 lifetime orders, CM:CAC 0.58 to 0.6, funded by a $20M raise. "Should not be scaling until it can fix its unit economics." Condition: CAC rising with flat CM2 and flat repeat. Sources: 01, 03 (financing spiral). Cards: [e2eaed277a0d] [cd36c8b5eacc] [beb1703b3d17].
+
