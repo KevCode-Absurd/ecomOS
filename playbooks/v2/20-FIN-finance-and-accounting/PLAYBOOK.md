@@ -1351,3 +1351,220 @@ All values are flags, not targets, unless the brand's own data confirms them. Co
 | Cash forecast | Rolling 13 weeks, owned by CEO or CFO | Always | 02 | 1 source, practice |
 | VC model horizon | 48 months, monthly | Investor model | 01 | 1 source |
 
+## 7. Where sources disagree
+
+Each conflict: what each side says, when each is right, what the agent should do.
+
+**C1. What belongs in COGS: outbound shipping, payment and marketplace fees, pick and pack, 3PL storage.**
+- 04 and 06 (accountants): statutory COGS is only the cost to get goods onto the shelf. Outbound shipping, the shipping carton, Amazon and Shopify fees, PPC, 3PL storage and shipping charges are expenses below gross profit. 04 allows 2 hedged exceptions: free shipping built into the price, and dropship freight charged by the supplier. 06 sees freight-out in COGS "often" and calls it a mistake.
+- 01, 02 and 03 (operators and agencies): cost of delivery includes outbound shipping, pick and pack, packing materials, 3PL, storage, payment fees (03 calls fees in OPEX "a mistake"), and 03 adds warehouse staff per order. The margin after all of these is the one that sets the CAC ceiling.
+- When each is right: 04 and 06 for statutory and compliance accounts and for period-to-period comparability of gross profit. 01 to 03 for every marketing, pricing and CAC decision, because those costs vary with every order.
+- What the agent does: keep 2 views (R12). Statutory COGS follows the written policy (P3). Internal COD always includes every variable delivery cost (F6, F7). Every margin carries its scope label. The CAC ceiling uses CM2 on the internal view, never statutory gross profit. `[web check: US GAAP ASC 606 shipping and handling election; IAS 2; Ind AS 2 for Indian brands]`
+
+**C2. CAC: media-only or fully loaded.**
+- 02: the CAC bucket is pure variable media; agencies, contractors and fixed creative go to OPEX. 03: CAC = total ad spend / new customers; variable creative and agency help sit in variable marketing but its CAC formula uses ad spend.
+- 01: blended CAC = total marketing (paid ads, influencers, agencies, other marketing) / new customer orders, and the first-order discount is the same money as CAC.
+- When each is right: media-only for daily steering and the spend-vs-aMER curve, because only media moves daily and its efficiency is what the curve models. Fully loaded for payback, LTGP:CAC, the pricing waterfall and any "did this customer pay back" question, because the customer had to cover all of it.
+- What the agent does: compute and label 4 CACs (F16, R45). Reports show cac_media and cac_loaded side by side. The 4-bucket CAC share uses whatever the written convention says and states it (F12).
+
+**C3. LTV:CAC bands: 3:1, first-order GP:CAC, or "above 3 means underspending".**
+- 01: first-order CM:CAC at or above 1 is the main gate; LTV:CAC 1.0 is not acceptable; 2 to 3 or above to grow profitably (subscription box); 5+ (6.7) at late stage on the optimal path; exceptional stores 3 to 5x on the first order.
+- 03: LTGP:CAC in a fixed 30 or 90 day window; below 1 losing; 1 to 2 generally not good; 2 to 3 optimal; above 3 a mistake, under-using paid media; the bottom of the optimal band is first-order GP / 2.
+- Common advice (named by both): 3:1 healthy, with an open-ended LTV.
+- When each is right: 03's "above 3 is a mistake" holds when the marginal dollar still returns above break-even and the brand has cash to carry payback; 01's 5+ holds when growth is limited by supply, brand or category saturation (02's R88) and forcing spend would buy negative marginal customers. The 3:1 rule of thumb is only meaningful with a stated window.
+- What the agent does: gate on first-order CM2:CAC (R53); scale on windowed LTGP:CAC in the 2 to 3 band; when the ratio is above 3, run the marginal test (F44, P27) and raise spend only if incremental aMER stays above break-even and the 13-week cash forecast carries the payback; never report an open-ended ratio (R58).
+
+**C4. OPEX targets.**
+- 02: 10 to 12% now (was 25, 20, 15), "closer to 15%" in another passage; host: over 20% "can't win", heading to 3%.
+- 03: examples at 10 to 20%; no universal target; reinvest through marketing, not headcount; people are also the biggest lever, so delay rather than never hire.
+- 01: no target; OPEX is a plan (payroll buckets, software, a 10% unknown bucket) and the P&L must clear it.
+- When each is right: 02's band describes lean US Meta-first brands in 2025 to 2026; a brand with owned fulfilment, retail or a large creative team will sit higher and may be right to.
+- What the agent does: back-solve the brand's OPEX line from its net target (F27); flag OPEX above 15% and rising as a percent while revenue grows (R28, R91); never call 10 to 12% a target without the owner's agreement.
+
+**C5. Cost of delivery percentages.**
+- 02: 30 to 40% of revenue for a strong brand; product cost 10 to 20%; shipping about 10% or less. The same speaker cites an industry average gross margin of about 42% (COGS 58%) and says "COGS are probably 60% or 40%".
+- 01 cases: T2 product 18% plus fulfillment 30 to 32% = about 50%; T7 CM2 a little under 50%. 06: CPG gross margin 20 to 40% (COD 60 to 80%). 03 examples: COD 30 to 40%.
+- When each is right: category decides. Jewellery, supplements and perfume have low value-to-weight cost; coolers and art have high shipping share.
+- What the agent does: report the brand's COD share against its own history and category `[web check: gross margin ranges by category]`; use 30 to 40% as a flag that COD "is not the biggest problem", never as a target (R24).
+
+**C6. Raise ad spend in a cash squeeze.**
+- 03: when November stock is unsold in February and the CFO proposes a 40% media cut, raise marketing from 30% to 35% of revenue short term, with the extra 5% only for clearing C and D stock; cutting media drops revenue and starts a spiral.
+- 02: liquidate aged stock through its own funnel at 1.0 or 0.8 ROAS, cut spend on SKUs about to run out, hold the CAC line, and prioritise the bank account. 01: do not scale spend to fix bad unit economics; know runway. 05: judge on free cash flow.
+- When each is right: 03's move works only when media demonstrably drives revenue and the extra spend converts C and D stock into cash faster than it burns cash. 01 and 02 are right when the problem is unit economics or when the cash forecast cannot fund the spend before the cash comes back.
+- What the agent does: allow a spend increase in a squeeze only if all 5 hold: media drives revenue (aMER above break-even on the clearance funnel), the stock is grade C or D, the spend is ring-fenced in its own funnel line at break-even or a stated slight loss, success is judged on cash recovered per week, and the 13-week cash forecast shows the brand can fund the spend until the cash returns. Otherwise, hold or cut. Write the P&L cost of the trade down (R104).
+
+**C7. "Never turn off an ad."**
+- 02: a one-line quick answer with no reasoning.
+- 02 itself: pause ads on a hero SKU about to stock out; cut spend past the marginal frontier. 03: stop paying to advertise a product that sells without ads (validate with a holdout); pull spend from products with low contribution per sale.
+- What the agent does: ignore the one-liner. Pause or cut when the SKU will stock out before restock, when the marginal dollar is below break-even, or when a holdout shows the sales were not incremental. Creative-level pausing rules live in 24-DEP.
+
+**C8. Judge health by free cash flow, profit or ROAS.**
+- 05 and 01: net income misleads; free cash flow is the check; a profitable store can run out of cash.
+- 02: cash flow at the top for the CEO, daily contribution margin for the team, channel ROAS at the bottom. 03: contribution margin (CM3) is the best index over time; ROAS is a within-platform read only; know whether you are in a cash play or a P&L play.
+- No source says ROAS measures health; all 3 that mention it warn against it.
+- What the agent does: 1 hierarchy (R35): cash (13-week forecast, FCF, lowest cash month) for the owner; cm3 daily for the team; net profit and the ladder monthly; aMER and LTGP:CAC for acquisition; platform ROAS only as a directional within-platform read, calibrated by an incrementality factor where one exists. Alerts fire on divergence (9.4): profit up and cash down, or CM up and new-customer file down.
+
+**C9. Break even on the first order, or lose early and earn later.**
+- 01 (T3, T4, T7): break even or better on order 1; Black Friday buyers especially. 01 (T12, T14, T16): accepts CAC well above first-order GP when the cohort tail repays it. 03: first-order GP is the anchor; most brands that lose on acquisition lack the retention to support it; CPG can run a 3 to 6 month payback.
+- When each is right: the repeat rate decides. Buy-once categories must pass the first-order gate; consumables with a proven cohort tail may not.
+- What the agent does: R53 as the default; R57 as the exception, only with a cohort of at least 6 months showing cumulative GP above CAC and cash to carry the payback window.
+
+**C10. LTV window.**
+- 03: 90 or 180 days for customer value; 30 and 90 days for LTGP:CAC; 365 only when aggressive. 01: find the plateau in cumulative cohort revenue (about 12 months at 25% monthly churn); 60 to 90 days understates long-cycle and gifting products.
+- Not a method conflict. What the agent does: every LTV figure carries its window; efficiency targets use 30 and 90 days; the brand's plateau month sets the longest window used; long-cycle products extend the window and say so (R55).
+
+**C11. Margin names.**
+- 01 T7: gross margin = revenue minus product cost; contribution margin = minus fulfillment too. 01 T8 to T10: gross profit, gross margin and contribution margin "all mean the same thing" and already include fulfillment. 03: CM1 product margin, CM2 gross margin (after all COD), CM3 contribution after marketing. 02: CM = net sales minus product cost minus variable expense minus ad spend (03's CM3 with media only).
+- What the agent does: the ecomOS names are CM1, CM2, CM3 media-only, CM3 loaded (F8 to F10). When reading any source number, check which costs it subtracts before using it.
+
+**C12. Discounts are CAC vs discounts erode margin and brand.**
+- 01: a discount and CAC are the same money; the biggest discount can produce the most total profit (grid: $25,000 to $63,000 post-marketing CM at equal spend); the brand caveat is stated.
+- 03: recalculate break-even before any public discount; a 30% discount can make the required ROAS impossible; prefer bundles and gifts; flat discounts are for grade C stock. 01 (T3) agrees on the promo shapes. 02: liquidation discounts hurt the P&L and help cash, on purpose.
+- Not a real conflict once the condition is stated. What the agent does: model every discount through both lenses: the pool (F18) for total CM3 at equal spend, and break-even (F15) at the discounted price. A discount passes only if total CM3 rises and the required efficiency has been observed on paid before. Conversion lift is a test, not an assumption (R76).
+
+**C13. Annual to monthly churn.**
+- 01's presenter: 40% annual = 2.5 years = 30 months (lifetime = 1 / annual churn, in years). Card [602ada5d7d4a]: monthly = 1 minus (1 minus annual) ^ (1/12) = 4.17%, lifetime about 24 months.
+- What the agent does: use the survival conversion (F26) in code, state it, and show the simple version only for comparison with the source.
+
+**C14. Tax in the gross margin example.**
+- 03's transcript: $100 price, $76 of costs including $9 tax, margin 24%. Card: tax removed from revenue, $91 revenue, $24 contribution, 26.4%.
+- What the agent does: remove pass-through tax from revenue (R2), so 26.4% is the ecomOS answer; never count tax as a cost.
+
+**C15. Returns: accrue monthly or restate later.**
+- 02's guest: a daily accrual at the historical rate with a month-end true-up. 02's host: restate December about 6 weeks later when the return window closes.
+- What the agent does: accrue daily (F31) for management reads and true up at month end; restate the prior month in the close pack when the return window is longer than a month `[needs brand data: return window by category]`.
+
+**C16. Keystone pricing.**
+- 03: keystone is "probably the worst way you could ever price". Many retail guides teach keystone as a floor.
+- What the agent does: price with the waterfall (P17); keystone may appear only as a sanity floor for wholesale, never as the DTC method.
+
+**C17. Free shipping as COGS.**
+- 04: outbound shipping "could be considered" COGS when shipping is built into the price, or under dropship. Its own card and 06 say classification follows policy, not whether the customer paid a shipping line.
+- What the agent does: statutory treatment follows the written policy and the accountant `[web check: standard]`; the internal view includes outbound shipping in every case.
+
+**C18. Who owns the forecast.**
+- 02: marketing should own the consumer forecast because revenue comes from marketing actions; a finance extrapolation "is not real". 03: forecasting is finance-grade work from cohort curves and spend regressions.
+- Not a real conflict: both build from inputs, not from last year's line. What the agent does: build the forecast from the cohort curve, the spend curve and the dated calendar (P18); the owner names the accountable person.
+
+**C19. Statutory vs internal COGS for KPIs.**
+- 04: statutory COGS and internal KPIs (contribution margin, returns cost) can differ, especially in apparel; do not force every internal view into 1 COGS number. 01 to 03 run the business on the internal view.
+- What the agent does: as C1; the close pack shows both and the bridge between them.
+
+**C20. Free cash flow sign convention.**
+- 05's transcript: "operating cash flow minus investing cash flow". Investing cash flow is usually negative, so the literal arithmetic adds it back.
+- What the agent does: FCF = operating cash flow minus capex as a positive number (F37), definition stated in every report.
+
+**C21. Payback windows.**
+- 03: agencies and CPG, fashion and retail run 3 to 6 months. 01: cohort payback took 8 months in its box example and 9 months in the SaaS example, and real payback runs far longer than the naive figure. 02: match the payback horizon to the cash reserve.
+- What the agent does: compute cohort payback (P11); set the acceptable window with the owner from the cash reserve, with 3 to 6 months as the default outer limit (R62).
+
+## 8. Common mistakes
+
+Merged from all 6 sources, deduplicated, with the fix.
+
+**Definitions and margins**
+1. Quoting product margin (CM1) as gross margin and setting marketing budgets off it. Fix: P5, R5. (03, 06)
+2. Using "gross margin" and "contribution margin" without saying which costs are subtracted. Fix: R4, F8 to F10. (01, 03)
+3. Counting pass-through sales tax in revenue or as a cost. Fix: R2. (03)
+4. Reading only net revenue and missing refund, discount and shipping-collected levers. Fix: R1, R3. (03)
+5. Computing unit economics per unit when baskets carry more than 1 unit. Fix: R8. (01, 03)
+6. Lumping product and fulfillment into 1 COGS line so nobody sees which cost moved. Fix: R13. (01)
+
+**COGS and classification**
+7. Purchase invoices posted as expense with no stock adjustment; no COGS at all. Fix: R22, P4 step 7. (04)
+8. Freight and duty never allocated to units; a pile of unmatched invoices. Fix: R14, P4. (04, 06)
+9. Inbound freight expensed separately while outbound shipping sits in statutory COGS. Fix: R16, P3. (04, 06)
+10. Amazon fees, Shopify fees, PPC or marketing-only revenue share in statutory COGS. Fix: R17, R20. (04, 06)
+11. Payment fees in OPEX (they vary with revenue). Fix: R17. (03)
+12. Warehouse staff left in OPEX, overstating gross margin. Fix: P6. (03)
+13. Mixed packaging invoices coded to 1 account. Fix: R15. (04)
+14. Coupons coded as ad spend or COGS. Fix: R19. (04)
+15. All returns costs treated the same way. Fix: R21. (04)
+16. Supplier invoice price never checked against the PO price. Fix: P4 step 2. (04)
+17. Accepting "close enough" COGS; treating margin bands as targets. Fix: checklist 5.3. (04, 06)
+18. Expired or stolen stock with no rotation, logs or counts. Fix: R113. (06)
+
+**P&L structure**
+19. Interest inside OPEX. Fix: R26. (03, 05)
+20. Fixed creative or retainers moved in and out of variable marketing mid-year. Fix: R27. (03, 02)
+21. Growing OPEX (people, software, office) faster than revenue as "reinvestment"; profit flat for years. Fix: R28, R91. (03, 02)
+22. Chasing revenue while expecting margin to expand later. Fix: R31. (03)
+23. Reacting to a missed line before tracing the line above it. Fix: R25, P15. (03, 01)
+24. Spreading fixed costs into the daily view and then cutting spend that makes positive incremental CM. Fix: R34. (02)
+25. Running the company on channel ROAS (Meta, MTA tools) and then asking why there is no cash. Fix: R35, R36. (02, 03)
+
+**Revenue, returns and reconciliation**
+26. Reading January efficiency on Shopify total sales that include December's processed returns, then pulling back spend. Fix: R41, R42. (02)
+27. Summing platform-attributed revenue into the P&L; comparing ROAS across platforms; moving money to the highest-ROAS bottom-of-funnel line and then wondering why growth stops. Fix: R130, R131. (03, 02)
+28. Measuring media only on .com after adding Amazon or retail, and cutting spend; separate .com and Amazon P&Ls. Fix: R133. (02)
+29. Measuring in one tool while Meta optimises on another signal. Fix: R132. (02)
+
+**CAC and LTV**
+30. Dividing marketing by all orders, or using platform CPA as CAC, or computing CAC per channel in the P&L. Fix: R44, R46. (01, 03)
+31. Setting CAC targets from blended AOV and a wrong margin. Fix: R48. (03)
+32. Using blended CAC alone when organic buyers are friends and family. Fix: R47. (01)
+33. Ignoring the first-order discount as part of acquisition cost. Fix: R67. (01)
+34. Open-ended or revenue-based LTV. Fix: R54, R55. (03, 01)
+35. Accepting LTGP:CAC below 1 as "a strategy"; also sitting far above 3 without testing marginal spend. Fix: R58, R59. (03)
+36. Running CM:CAC below 1 in a buy-once category; or judging a repeat business on the first order alone. Fix: C9. (01)
+37. Payback as CAC / monthly GP (assumes 0 churn); payback in months when customers skip. Fix: R60. (01)
+38. Reading retention from aggregate totals or a churn rate instead of cohorts; reading a calendar month across a row instead of diagonally; treating NRR above 100% as an error. Fix: R56, F22. (01)
+39. Churn without a period; churn divided by the current total or applied to new signups; asking for churn in a non-subscription store. Fix: R134, R135. (01)
+40. Lowering the CAC or ROAS line whenever the team says it cannot be hit. Fix: R51. (02)
+41. Scaling spend (often with raised money) while CAC rises and CM and repeat stay flat. Fix: R52. (01)
+42. Letting maximize conversions pour spend into the cheapest-CPA product; paying to advertise products that sell anyway. Fix: R128. (03)
+
+**Discounts and pricing**
+43. 50% off sitewide: volume soars while CM after CAC goes negative. Fix: R70, P16. (01)
+44. Public discounts without recomputing break-even ROAS and CAC. Fix: R69. (03)
+45. Treating discounts and marketing as separate budgets; assuming the biggest discount always wins; putting the deepest discounts on flash sales instead of on-ramps. Fix: R68, R72. (01)
+46. Planning "no returns during the promo". Fix: R74. (01)
+47. Keystone or arbitrary markup pricing; 1 flat price across variants. Fix: R77, R81. (03, 02)
+48. Pre-orders or BNPL modelled without cancellation or return rates. Fix: R75. (02)
+
+**Forecasting**
+49. Forecasting total revenue in 1 line; copying last year's month that had a launch; spend up 50% with CAC flat. Fix: R82, R83, R125. (03, 02)
+50. Forecasting from an outlier year with no regression to the mean. Fix: R86. (02)
+51. Leaving sale periods and BFCM in the spend-efficiency regression. Fix: R85. (03)
+52. Assuming the customer file compounds forever. Fix: R38. (02)
+53. Expecting a saturated category's old efficiency to return. Fix: R88. (02)
+
+**Cash and inventory**
+54. Judging health on net income alone; treating profit as cash; ignoring inventory on the balance sheet. Fix: R97, R102. (05, 03, 01)
+55. Treating depreciation as cash spent, or per-unit COGS as the month's cash spent on stock. Fix: R98, R106. (05, 01)
+56. Treating borrowing as improved cash health; treating debt as an operating issue. Fix: R100. (05)
+57. Planning tax without the payment calendar or accumulated losses. Fix: F39. (05, 01)
+58. Letting projected inventory go negative; placing a PO with no media plan (the $20M SKU). Fix: R105, R110. (01, 02)
+59. A media buyer on a ROAS target with no inventory view, selling out hero SKUs at high CAC; a stock-out killing a winning ad. Fix: R108. (02)
+60. Holding aged stock to prop up the balance sheet; paying storage on stock with no ads or emails planned; agencies KPI'd only on profit starving B, C and D stock. Fix: R112. (02, 03)
+61. Launching products without rationalising SKUs. Fix: R114. (03)
+62. Cutting media by reflex when stock is stuck, or raising it without the 5 conditions in C6. Fix: C6. (03, 02)
+63. Scaling ad spend with no view of the CCC and financing; lowering efficiency to grow faster while debt rises; trying to triple in a year on borrowed money. Fix: R115, R119. (03)
+64. Selling permanent equity to fund 3 months of inventory. Fix: R120. (01)
+65. Full-time payroll sized to peak months; long-payback investments when cash is tight. Fix: R93, R62. (02)
+66. Over-formatted models and 700-row payroll tabs. Fix: R94. (01)
+
+**Arithmetic slips in the sources (use the corrected numbers).**
+67. 03 discount example: break-even ROAS at 30% off is 7 (10 / 70 = 14.3% margin; 1 / 0.143), not 10; the rise is 2.8x, not 5x. Break-even CAC $10 is right.
+68. 03 LTGP:CAC example: 100 / 33 = 3.03, not 3.33.
+69. 03 cohort forecast example: 100 x 0.1% x $100 = $10, not $1.
+70. 03 waterfall example: the exact price for its inputs is $63.51, not "about $70"; at $70 the contribution is $18.80 (26.9%), above the 20% target.
+71. 03 existing-customer budget: the formula needs "/ 1,000" for CPM; the $2,250 result is right.
+72. 03 brand example: $300M vs $8M is about 37.5x, not 20x.
+73. 03 t-shirt margin: 24% counts tax as a cost; 26.4% on $91 is the tax-excluded answer (C14).
+74. 03 frequency: "under 8" is over 7 days (the Meta column), not per month; regression cut-off is likely $1,000 a day, not a month; "over $10 million a month" for incrementality may mean a year.
+75. 01 T2 first-order AOV is $238, not $138 (card [a592b3f28c58] repeats 138).
+76. 01 T4 fulfillment in the $175 example is $45, not $40 (card [ca717cbf0593]).
+77. 01 T9 subscription fulfillment is about $15.50, not $5.50, to give the stated 59% and $33.40 (card [17cd13e806d9]).
+78. 01 T14 shipping is $7.25, not $0.30 (8.64 + 4.50 + 7.25 = 20.39) (cards [31dce846c93c] [482dba787e59]).
+79. 01 T10 first inventory purchase is about $17,700 (2,400 x $7.20), not $177,000.
+80. 01 T5 and 05: "net income only 140" is $140,000 (card [8c56490f81a2]).
+81. 01 T3: CM after CAC at baseline is $45,000 (5,000 x $9), not $50,000; BOGO at 20,000 orders is $720,000 (20,000 x $36).
+82. 01 T8 grid: 66,667 x 2.2% = 1,467 and x 3.8% = 2,533; the source's 1,433 and 2,500 buyers are rounded assumptions.
+83. 01 T2: product cost 17.7 to 19% of revenue does not fit "73% to product gross profit"; use the line values.
+84. 01 T14: paid LTV:CAC is $69 / $64 = 1.08, far thinner than the blended 1.4 (card [79a98ff8e618] garbles it).
+85. 01 churn conversion: 40% annual is 30 months by the presenter's simple method and about 24 months by survival (C13).
+86. 02: the hoped correlation is 0.78, not "7.8".
+87. 05: FCF is operating cash flow minus capex as a positive number; "net cash flow slightly lower than FCF" holds only in a month that repays principal (C20).
+88. 03 card [8aab49e8f65e]: the 1.4 aMER is hypothetical; $100 / $50 is the blended MER of 2. Card [ac6ec12672a6]: "$15 to $27" means +$15, from $12 to $27.
+

@@ -503,3 +503,160 @@ Each rule states the rule, the condition, the supporting mini playbooks, conflic
 **R194. ecomOS: competitor emails are for layout and mood only.** Never copy their text, logos, products or faces. Reverse-engineering structure with AI (07) is allowed; verbatim reuse is not. [fab16f82f356]
 
 **R195. ecomOS: arithmetic in code, not in the model.** Revenue per recipient, net profit per SMS, opt-in rate and segment counts are computed from exports, never estimated. Missing values show as unavailable, not zero.
+
+## 4. Procedures (implementation)
+
+Every Klaviyo, Shopify, Figma, Aaliyah, Alia, Omnisend and DNS step below is `[verify UI]`. Menu names are as the sources spoke them in 2024 to 2026. Rollback for any flow change: set the flow's emails back to draft or manual with "update action statuses"; for any campaign, cancel the schedule before send time; for any segment, keep the old segment until the new one's preview count is checked.
+
+### P1. Account, tracking and attribution setup
+
+Goal: clean data before any build. Preconditions: Klaviyo account connected to Shopify. Sources 03, 04. [8796c9f1ffa6] [1ce671434e00] [fc0425a31c0f]
+
+1. Shopify integration: turn on the Shopify app embed in the theme; tick "sync Shopify email subscribers to Klaviyo" into the master email list; do the same for SMS into the SMS list; leave "sync profiles to Shopify" off. `[verify UI]`
+2. Sender name: brand, or founder plus brand. Sender email on the brand domain. Reply-to: the support inbox.
+3. Email > sender preferences: Smart Sending on, 16 hours (campaigns use it; flows turn it off per email). `[verify UI]`
+4. Attribution: 5-day open and click, last interacted; exclude Apple Mail Privacy Protection opens; exclude transactional messages; exclude bot clicks for email and SMS. SMS window 1 day. Shorter than 5 days only for impulse products; longer only for long consideration. Save. Expect reported revenue to fall if the old setup was inflated. `[verify UI]` `[web check: current Klaviyo defaults]`
+5. Data: anonymous visitor tracking on. UTM tracking on with source, medium, campaign, id and term; "automatically add UTM parameters to links" on. `[verify UI]`
+6. Brand library: logo, colours, primary web-safe font, custom fonts with a fallback (example: Geist with Tahoma), social links checked. `[verify UI]`
+7. Consent pages: brand the preference, unsubscribe and (if double opt-in) confirmation pages. Add a thank-you line on the unsubscribe page. `[verify UI]`
+8. Check: send a test campaign to 1 profile and confirm UTM parameters appear in the link and the profile shows the open and click.
+Rollback: attribution changes only affect reporting; note the old values before changing them so a before-and-after comparison is possible.
+
+### P2. Domain authentication and DMARC
+
+Goal: branded sending domain live, SPF, DKIM and DMARC passing. Sources 02, 03, 04. [a192f5312b82] [e758ab334635] [fc0425a31c0f]
+
+1. Settings > Account > Domains > add domain. Enter the root domain. Choose the sending subdomain (default "send"). Keep routing on dynamic. `[verify UI]`
+2. Pick the DNS provider or "other". Copy each record Klaviyo lists (04 saw 4 NS records on host "send" plus 1 TXT on "@"; the header notes CNAME may now be used) into the DNS host. `[web check: current Klaviyo record types]`
+3. Wait until the status shows "Active" (up to 48 hours). Do not send from the domain before that.
+4. Tick Klaviyo's acknowledgement that sends may need to be limited to engaged recipients for 2 to 4 weeks. Then run P17 as a warm-up: engaged 14 or 30 days only, steady volume, widen weekly.
+5. Set the default sender address on the new domain.
+6. DMARC: add a TXT record at host `_dmarc`. Start with `v=DMARC1; p=none; rua=mailto:dmarc@yourdomain` (04's generator route) so reports flow. Read reports for 2 to 4 weeks. When every legitimate source aligns, move to `p=quarantine` (04's own record is quarantine with pct=90), then `p=reject`. Do not follow 03's "never quarantine or reject" (see 7.6). `[web check: Gmail and Yahoo DMARC minimums and current guidance]`
+7. Check: run a DMARC checker (GlockApps free tool per 02) and a placement test. Confirm SPF and DKIM pass and align.
+Rollback: if mail fails after a policy step up, return the policy to the previous value and read the aggregate reports for the unaligned source.
+
+### P3. Build the pop-up (Klaviyo forms)
+
+Goal: an 8% to 12% opt-in form per device. Preconditions: offer chosen per R9 and R10; master email list and SMS list exist. Sources 01, 02, 03, 04. [2a3063dcd723] [c5e1f30dd58d] [4be0db20360f] [d124c18b882e]
+
+1. Sign-up forms > create form > template with a micro-yes step or a multi-step email and SMS template. Name it "Sitewide pop-up desktop". Email list: master list. SMS: the SMS list. Teaser on. `[verify UI]`
+2. Form type: pop-up (beats fly-out; full page converts more but hurts experience).
+3. Targeting and behaviour > timing: "based on rules". Desktop: time delay 6 seconds (test 4 vs 12), scroll 60% (test 30 to 90), exit intent on. "All conditions must be met" off. Frequency: after close, show again after 3 to 5 days; never after submit. Devices: desktop only. "Don't show to existing Klaviyo profiles" on. Exclude URLs: cart, checkout, wholesale. Location: ship-to countries only. Untick "click outside form to close" if it causes accidental closes (03), but keep the X visible (R189). `[verify UI]`
+4. Step 1, micro-yes: headline "Do you want 10% off your first order?" with the offer number large (about size 55 to 60). Buttons: "Yes please" (action: show next step) and "No thanks" (action: close form). No image on this step is fine (03).
+5. Step 2, email: headline "Unlock 10% off your first order". Delete the default sub-headline. Email field label "Enter your email here", light grey field on white. CTA "Claim my discount" (height 54 to 70 px). Consent text present and legible (R187). Secondary "No thanks, I'd rather pay full price" as a button, about 10 px below. Action: submit to the master list, then show next step.
+6. Step 3, SMS: headline "Almost there. Finish signing up with text to activate your 10% off". Phone field; SMS consent text with required disclosures, legible; button "Claim now" (not "Continue"). Action: subscribe via text to the SMS list, then show next step. People who skip still enter the email welcome flow. `[web check: SMS consent wording per country]`
+7. Step 4, success: same logo and fonts. "Your code is on its way. Check your inbox (and phone). Not there in 5 minutes? Check spam." Button "Start shopping" that closes the form (or "go to inbox"). Do not show the code (R21; 01 differs).
+8. Brand every step: fonts, colours, buttons, input fields. Compress the logo and any image (tinypng or iLoveIMG).
+9. Clone for mobile: three dots > clone > "Sitewide pop-up mobile". Devices: mobile only. Untick exit intent. Remove images. Sizes: CTA height 70 to 80, CTA text 24 to 30, offer number 60, input height 70, input text 20, "No thanks" 18 to 20, success text 22 to 24. Teaser as a small circle or corner. `[verify UI]`
+10. Check: preview each step on an iPhone and a 4K desktop preview and on the live site; confirm the offer reads in 3 seconds, every step has a visible close, nothing overlaps chat or loyalty widgets, the SMS consent text is readable, the form loads with no lag.
+11. Publish both forms. Confirm the welcome flow trigger (P5) points at the same list.
+12. Amped, Aaliyah or Alia route (01, 02, 09): same structure; quiz or scratch-off first step; connect the tool to the Klaviyo list; static code must exist in Shopify; target new visitors (not signed up); re-show and popup-overlap rules; single opt-in for Klaviyo. Vendor claims of 15% to 20% come from presenters with affiliate ties. `[verify UI]` `[web check: pricing]`
+Rollback: unpublish the new forms and republish the previous version; Klaviyo keeps the old form.
+
+### P4. Pop-up A/B test
+
+Goal: 1 clean test at a time, decided on total signups and welcome revenue. Sources 02, 03, 04. [00de729163a8] [e8e1adc8fefe] [ea0cb89619eb]
+
+1. Open the form > "Create A/B test". Name it after the variable ("offer test"). A = current. B = challenger. Edit every element of B that carries the offer (micro-yes, email step, teaser). `[verify UI]`
+2. Weight: manual 50/50. Winner selection: manual. Do not let Klaviyo pick on low volume.
+3. Run for at least 3,000 to 5,000 impressions per variant or 15 days, whichever is longer. Test desktop and mobile separately.
+4. Decide on total signups, welcome flow placed order rate and welcome revenue, plus site conversion rate (05). Not on opt-in rate alone.
+5. Log the result and the next test from the leverage list (R23). Run 1 test at a time, monthly.
+Rollback: end the test and keep A.
+
+### P5. Welcome flow
+
+Goal: deliver the code and convert 10% to 20% of entrants inside 72 hours. Sources 01, 02, 03, 04. [4d6f11a9f443] [f2c3f6895ad4] [ef1cb30f5c95] [6e89698da8b5]
+
+1. Flows > create flow > build your own, or the template with a returning vs non-buyer split (delete that branch). Name "Welcome series". `[verify UI]`
+2. Trigger: added to list = the pop-up's list. Re-entry off.
+3. Profile filter: placed order 0 times over all time. Optional: exclude B2B tags. Save (the trigger cannot change after this; clone to change it).
+4. Structure: Email 1A (0 delay) > wait 8 hours > Email 1B > wait 16 hours > Email 2 > wait 1 day > Email 3 > wait 1 day > Email 4 > wait 1 day > Email 5 > wait 1 day > Email 6 > wait 1 day > Email 7. Adjust to 2-day gaps late in the flow for high AOV (04).
+5. Each email: subject, preview, sender name (test founder vs brand), sender email on the authenticated domain, smart sending OFF ("skip recently emailed profiles" unticked), UTM on. Name emails "Welcome email 1A" and so on.
+6. Content per R44. Email 1A: code and CTA above the fold, 1 to 3 bestsellers, trust marks, code again at the bottom. 1B: plain text "just making sure you saw your code". 2: founder story with substance and a real face. 3: bestsellers with 1 reason each. 4: objections and us vs them, "code expires in 48 hours" only if it truly does. 5: reviews that name objections, "24 hours left". 6: last chance. 7: plain-text founder "extended 24 hours" only if the code was truly extended (use a unique code, R37).
+7. Check: preview each email with a real profile; click every link; confirm the discount URL auto-applies (`/discount/CODE?redirect=/collections/handle` on Shopify); confirm a profile that orders after 1A does not get 1B.
+8. Set emails live one by one with "update action statuses". After 30 days read revenue by email; if emails 5 to 7 earn nothing, reposition or cut them.
+Rollback: set new emails to draft; the old flow stays untouched until the new one has run 2 weeks.
+
+### P6. Site abandonment flow
+
+Sources 01, 04. [75b807a7abce] [b0f7b82a2bb3]
+
+1. Flows > build your own > "Site abandonment". Trigger: Active on Site (API metric). `[verify UI]`
+2. Profile filters: viewed product 0, added to cart 0, checkout started 0, placed order 0, all since starting this flow; has not been in this flow in the last 30 days.
+3. Delay 2 hours (test 1 vs 4 hours with a random-sample split, P16).
+4. 1 email: "Lost in choices? Let us point you the right way", collections or bestsellers, light social proof, shop by category. Smart sending off, UTM on.
+5. Check: preview with a profile that has no product view; confirm a profile that viewed a product is skipped.
+
+### P7. Browse abandonment flow
+
+Sources 01, 02, 03, 04. [5ad3da1bdb3a] [c83fa5e0d0d6] [909e75c1eb8d] [5aad4467fa44]
+
+1. Flows > create flow > Essentials > browse abandonment template. Trigger: Viewed Product. `[verify UI]`
+2. Filters: added to cart 0 (add this; the template lacks it; on Shopify use the Shopify metric), checkout started 0, placed order 0, all since starting this flow. Re-entry: not in this flow in the last 30 days.
+3. Delay 1 hour (test 45 minutes vs 2 hours). Email 1 > 1 day > Email 2 > 1 day > Email 3 > 1 day > Email 4 (> 1 day > Email 5 optional).
+4. Save the template's dynamic product block as universal content and restyle it. Fix the "shop now" link: preview, open event properties, copy the product URL property, paste it as the link (03).
+5. Content per R53. Email 1 light reminder with viewed item and 4 related products; 2 risk reversal and objections; 3 product reviews; 4 small discount 48 hours or subscribe-and-save; 5 plain-text 24-hour closer.
+6. Smart sending off, UTM on. Check: preview with 2 profiles that viewed different items and confirm the block and link change.
+
+### P8. Cart and checkout abandonment flows
+
+Goal: 2 flows that never overlap. Sources 01, 02, 03, 04. [d962429e9e36] [34204d0c3ce5] [d94eb68e5e18] [85117c7d0910] [fac642b0957b] [393737091e3e] [c42f60fa5fca]
+
+1. Audit: open every flow named "abandoned cart" and read the trigger. If it is Checkout Started, rename it "Abandoned checkout". `[verify UI]`
+2. Confirm Added to Cart fires: Analytics > Metrics, look for the Shopify "Added to Cart" metric with recent events. If absent, install Klaviyo's onsite snippet (01): theme editor > product template > add Custom Liquid block > paste > save; or theme code under the body tag wrapped in `{% if product %}` and `{% endif %}`. Test: open the store with a UTM carrying a test email, add to cart, find the profile, confirm an Added to Cart event. `[web check: whether the integration now sends it natively]`
+3. Cart flow: create flow > search "cart" > the template whose trigger is Added to Cart (Shopify version, not API or manual). Filters: checkout started 0 since starting this flow; placed order 0 since starting this flow; not in this flow in the last 14 to 30 days (7 or less for weekly consumables). Remove the template's SMS branch unless SMS is live (then see P22).
+4. Delay 30 minutes (test 15 minutes vs 1 hour, later 2 vs 4 hours). Email 1 > 1 day > Email 2 > 1 day > Email 3 > 1 day > Email 4 > 1 day > Email 5 > conditional split "placed order at least once over all time". Yes: Email 6A founder support, no discount (or a smaller one plus a final reminder 1 day later). No: Email 6B discount with 48 hours > 1 day > Email 7 plain-text 24 hours left.
+5. Dynamic item block: split block, event image variable left, item name and price right, linked to the cart page or item. Content per R60. Product-specific proof in emails 3 and 4 via a collection split where the catalogue has a few main collections.
+6. Checkout flow: clone the cart flow > name "Abandoned checkout" > trigger Checkout Started in the clone dialog. Delete the "checkout started 0" filter. Replace the dynamic block with the checkout table block (variables differ; never copy the cart block). Link every image and button to `{{ event.extra.checkout_url }}`. Rewrite for checkout objections (shipping fee, payment, delivery time); offer free shipping rather than a percentage where shipping is the objection (04).
+7. Smart sending off and UTM on for every email in both flows; the clone resets nothing, so check each.
+8. Check: preview each email with 3 profiles; confirm images, names, prices and links; add an item with a test profile and confirm entry into cart but not checkout; start checkout and confirm the cart flow exits and the checkout flow enters.
+Rollback: set new emails to manual; the old checkout flow keeps running.
+
+### P9. Post-purchase flow
+
+Sources 01, 02, 03, 04. [58bdfe185e63] [5956a124a134] [55898f20e161] [0a935c9bd091] [9f9c84a1b824]
+
+1. Flows > template "Post purchase follow-up order count split" or "Customer thank you" (04), or build your own. Trigger: Placed Order. `[verify UI]`
+2. Filters: placed order 0 since starting this flow; cancelled order 0 since starting this flow. Optional: route subscription or B2B customers to their own flow.
+3. Delay 10 to 30 minutes (Shopify's confirmation fires at once). Conditional split: placed order equals 1 over all time. Yes: first-time track. No: returning track (same shape, loyalty wording, no acquisition offer).
+4. First-time track per R68: (1) founder thank-you, plain text, PS add-on within 24 hours; wait 1 to 2 days; (2) "on its way" with add-ons or a product feed; wait until expected delivery; (3) how-to, split by product or category; wait 3 days; (4) follow 1 social channel; wait 3 days; (5) loyalty program benefit; wait 3 days; (6) review request (or hand this to the reviews app's flow); wait 4 to 7 days; (7) founder check-in "how did everything go?"; optional (8) cross-sell with 48 hours then a 24-hour plain-text closer.
+5. Do not fix a time of day; send relative to the order.
+6. Smart sending off, UTM on. Check: preview with a first-time and a returning profile; confirm a cancelled order exits.
+`[needs brand data: delivery times per region to set delays]`
+
+### P10. Win-back flows (data-driven and predictive)
+
+Sources 01, 03, 04, 09. [021057848a4f] [4bfa7e9cadf3] [61b12124e33c] [109f8c9de246]
+
+1. Pull days between order 1 and order 2 from Shopify or Metabase; compute median and mean in code. Pick a point between them (03) or 2 times the average (01, 09); sanity check against days of supply plus shipping. `[needs brand data]`
+2. Flows > Klaviyo "standard winback" template or build your own. Trigger: Placed Order. Filter: placed order 0 since starting this flow. First delay: the number from step 1 (not the template's 75 days). `[verify UI]`
+3. Emails: (1) "It's been a while", new arrivals, no discount; wait 3 to 7 days; (2) reminder; wait 7 days; (3) unique dynamic code, 48 hours; wait 1 day; (4) plain-text 24 hours; optional wait 14 days; (5) bigger offer, 48 hours; (6) 24 hours plain text.
+4. Optional split: historic or predicted CLV at least $1,000 gets a stronger, more personal offer.
+5. Manage flow > add past profiles > "throughout the flow" so the first sends do not wait; this needs a static code, so use one in the first run.
+6. Predictive version (03): flows > create manually > trigger date property "expected date of next order" > start on the date, 12 PM recipient local time, repeat never > filter placed order 0 since starting this flow > delay 5 days > first win-back email. Needs enough order history for predictions to populate.
+7. Check: preview counts of entrants per week; confirm no active subscriber enters (filter on subscription tag).
+
+### P11. Sunset flow and monthly suppression
+
+Sources 02, 03, 04. [56d433c32a2b] [c57d2fe2264a] [171bd57ff251] [6dcb0bfce104]
+
+1. Segment "Sunset trigger": can receive email marketing AND opened email 0 times in the last 120 (or 180) days AND clicked email 0 times in the last 120 (or 180) days AND received email at least 6 times in the window (04). Decide whether past buyers are excluded (02 keeps them; see 7.9). `[verify UI]`
+2. Flows > build your own > "Sunset". Trigger: added to segment = Sunset trigger.
+3. Profile filters: opened email 0 times since starting this flow AND clicked email 0 times since starting this flow (AND, not OR).
+4. Email 1 immediately, plain text: "You haven't opened our emails in a while. Still interested? If not, unsubscribe here." Wait 5 days. Email 2: strongest offer, unique code. Wait 5 days. Email 3: "we'll remove you unless you click below to keep receiving updates". Wait 5 days. Update profile property: unengaged = true.
+5. Segment "To suppress": unengaged = true AND can receive email marketing.
+6. Monthly: segment three dots > suppress current members (04) or export CSV and import to suppressed profiles (03). Also suppress marked-as-spam, hard bounces and 4+ soft bounces. Takes 1 to 2 hours to update.
+7. Check: preview count before suppressing; confirm the count is not most of the list (if it is, run P17 first).
+Rollback: unsuppression rules differ; check Klaviyo before suppressing. `[web check: Klaviyo unsuppress rules]`
+
+### P12. Core segments
+
+Sources 01, 02, 03, 04. [c049ecf47935] [516248e6ac94] [9720dfa509a1] [ff7571c5eb99] [951b0132a90b] [171bd57ff251]
+
+1. Audience > lists and segments > create segment. Build "Engaged 90": condition group 1 (OR): opened email at least once in the last 90 days (where Apple privacy open is false, if available); clicked email at least once in the last 90 days (bot click false); placed order at least once in the last 90 days; checkout started at least once in the last 90 days; active on site at least once in the last 90 days; subscribed to list at least once in the last 14 days. AND group 2: can receive email marketing (EU: because person subscribed). AND group 3: bounced email 0 times over all time; marked email as spam 0 times over all time. Check the preview count. `[verify UI]`
+2. Clone for 14, 30, 60, 120, 180 and 365 days by changing the windows.
+3. Clone Engaged 90 into "Engaged 90 prospects" (AND placed order 0 over all time) and "Engaged 90 customers" (AND placed order at least 1).
+4. Exclusions: "Marked spam" (marked email as spam at least once over all time); "Bounced" (bounced at least once where type = hard, OR at least 4 times where type = soft); "Unengaged 180" (0 opens, 0 clicks, 0 site events in 180 days, received at least 6).
+5. Buyer stage: non-buyers, first-time, returning, VIP (4+ orders or spend at 3 to 4 times AOV), high potential (site activity 30 days, 0 orders 30 days), win-back potential (order in 180 days, none in 90), abandoners (cart or checkout 90 days, 0 orders 90 days), window shoppers, interested in X, cross-sell X to Y.
+6. Check each: AND and OR groups match intent; preview counts make sense (engaged under the list size; unengaged not larger than engaged unless the list is dead); clone rather than rebuild; unused segments go inactive after 45 days.
