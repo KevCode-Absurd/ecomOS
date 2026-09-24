@@ -17,7 +17,7 @@ Gives a fast, high-level 3-stage checklist (Found, Matched, Chosen) for making a
 3. **Being discoverable requires no extra setup beyond not blocking it.** Pages just get crawled like regular web pages; there is no AI-specific sitemap or "AI Search Console" step named. The only way to break this is blocking agents via robots.txt, or password-protecting pages. Evidence: presenter's stated claim about how Shopify stores are crawled by default. [9ccea10d00bf]
 4. **Shopify auto-generates robots.txt and normally does not block AI agents**, unless a merchant or an installed app has modified it. Evidence: presenter's stated claim about Shopify's default behavior. [9ccea10d00bf]
 5. **Most crawlers only see HTML present at page load; content injected later by JavaScript (e.g., review or FAQ widgets that render after the page appears) is invisible to them.** Gemini is called out as the one named exception. Evidence: presenter's stated technical claim, not independently tested per crawler in the source. [f8f8462498cb]
-6. **Schema markup (structured product data — name, price, etc.) is not new** — it was already a good-SEO requirement, which is why AI-SEO and technical SEO overlap here. Evidence: presenter's stated claim. [29f83e9997d]
+6. **Schema markup (structured product data — name, price, etc.) is not new** — it was already a good-SEO requirement, which is why AI-SEO and technical SEO overlap here. Evidence: presenter's stated claim. [29f83e9997d5]
 7. **The open web (page crawling) and Shopify's global product catalog are two separate distribution channels**, and a store should be checked on both. The catalog is back-end data only (title, description, price, some meta fields) — the crawler-visible product page content does not feed it. Evidence: presenter's stated architecture claim. [c0a13e75f012]
 8. **AI builds a shortlist (the presenter's examples: top 5, top 10, or up to top 100) out of millions of indexed products before making a final recommendation; you can control landing in the shortlist (Matched) but full control ends there.** Getting to the single final "Chosen" answer is explicitly called a stage the store "can't fully control," since it depends on session context and per-user AI judgment. Evidence: presenter's stated model, not measured. [2a7d0c66c403]
 9. **Explicit, factual product copy beats vague marketing copy for AI keyword matching**, because AI relies on exact data points (size, color, use case) to build the shortlist, the same as traditional SEO keyword matching. Evidence: presenter's worked example contrast (see section 7). [43284bf0e6dd]
@@ -44,7 +44,7 @@ Gives a fast, high-level 3-stage checklist (Found, Matched, Chosen) for making a
 ### C. Check and add schema markup
 1. Confirm the page carries structured data (schema) describing the product: name, price, and other structured fields, rendered in the page markup.
 2. Use a free schema validator app/tool (source does not name a specific one — "you can just Google for free validator apps, schema validators") to check what is working and what isn't. `[web check: which validator]`
-[card 29f83e9997d]
+[card 29f83e9997d5]
 
 ### D. Check Shopify global product catalog eligibility
 1. Confirm the "Agentyc storefront" requirement is enabled on the Shopify store — this is described as the eligibility gate for inclusion in the global product catalog, which independent AI shopping tools and chatbots can read. `[verify UI: exact setting name/location]`
@@ -58,7 +58,7 @@ Gives a fast, high-level 3-stage checklist (Found, Matched, Chosen) for making a
 2. Replace vague marketing phrasing with these explicit facts in the product title, description, variant fields and metafields.
 3. Keep titles, descriptions, variant fields and metafields internally consistent with each other.
 4. Map a specific example shopper query to the product's on-page attributes and confirm each implied match is actually supported by real product data (not a marketing claim without a fact behind it).
-[cards 43284bf0e6dd][29f83e9997d]
+[cards 43284bf0e6dd][29f83e9997d5]
 
 ### F. Build reputation ("Chosen" stage)
 1. Recognize this stage cannot be fully engineered — the source gives no step-by-step tactic beyond "get outside reputation."
@@ -85,7 +85,7 @@ No numeric SEO score, traffic figure, ranking position, or before/after result i
 - **Robots.txt check**: visit `/robots.txt` on the domain; confirm no rule disallows major AI agents; re-check after installing any app, since apps can silently modify the auto-generated file. `[verify UI]` [9ccea10d00bf]
 - **Crawler-access check**: run `curl -A ClaudeBot yourwebsite.com` (or ask an AI assistant directly) and read whether the response shows real content or a block. A spoofed user-agent fetch does not by itself prove a real crawler can access the site or that the page is indexed — treat it as a diagnostic signal, not final proof. [9ccea10d00bf]
 - **JavaScript-off check**: disable JS in the browser, reload the page, and look for missing reviews/FAQs/specs or leftover placeholder stubs where content should be. Retest after any theme or app change, since rendering behavior can change. Gemini is named as the one exception that can still read JS-rendered content; other engines' current behavior should be verified rather than assumed constant. [f8f8462498cb]
-- **Schema validator check**: run a free schema/structured-data validator against the product page; it reports what is and is not correctly structured. `[web check: which validator to use]` [29f83e9997d]
+- **Schema validator check**: run a free schema/structured-data validator against the product page; it reports what is and is not correctly structured. `[web check: which validator to use]` [29f83e9997d5]
 - **Global catalog eligibility check**: ask Shopify Sidekick whether the store is eligible/included; separately compare official Shopify catalog requirements against actual product data (title, image, price, ToS compliance). `[verify UI]` [c0a13e75f012]
 - **Metafield audit**: review all product metafields for staleness, specifically checking for leftover fields from uninstalled apps (source's example: an old review app's metafields lingering after removal). [c0a13e75f012]
 - **Query-to-attribute check**: take a specific realistic shopper query and confirm the product page's title/description/variants/metafields actually contain the matching facts the query would need (not just adjacent marketing language). [43284bf0e6dd]
@@ -138,4 +138,4 @@ No numeric SEO score, traffic figure, ranking position, or before/after result i
 - [f8f8462498cb] See your product page the way a JS-blind crawler sees it
 - [43284bf0e6dd] Publish factual product attributes for specific shopper queries
 - [c0a13e75f012] Audit Shopify catalog readiness alongside storefront SEO
-- [29f83e9997d] Validate product structured data against visible store facts
+- [29f83e9997d5] Validate product structured data against visible store facts
