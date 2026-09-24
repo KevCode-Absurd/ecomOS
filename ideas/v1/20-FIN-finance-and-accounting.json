@@ -10717,5 +10717,1444 @@
   },
   "confidence": "medium",
   "general_practice": false
+ },
+ {
+  "id": "FIN-162",
+  "title": "Reconcile a model's rolled-up gross profit percent against its unit-economics percent",
+  "domain": "20-FIN",
+  "bottleneck": [
+   "measurement_data"
+  ],
+  "lever": "model integrity check",
+  "hypothesis": "If a monthly model's rolled-up gross profit percent for each segment is checked against the same segment's unit-economics gross profit percent, then a formula error gets caught before it drives a spend or pricing decision.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "A financial model reports segment-level gross profit percent with no check against the unit-economics percent computed the same way.",
+   "metrics": [
+    "gross_margin",
+    "other:model_integrity"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:model_integrity",
+   "direction": "up",
+   "size": "unknown",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "finance"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Reporting check only; changes no live spend."
+  },
+  "prerequisites": [
+   "A monthly model with both a segment unit-economics tab and a rolled-up consolidated tab"
+  ],
+  "steps": [
+   "Compute gross profit percent from the unit-economics tab for each segment.",
+   "Compute gross profit percent from the rolled-up consolidated tab for the same segment and period.",
+   "Compare the two; they should be equal.",
+   "If they differ, trace the formula error before trusting any number downstream of it."
+  ],
+  "test": {
+   "method": "Run the check every month the model updates.",
+   "measure": "gross_margin",
+   "read_point": "Every monthly close"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "01"
+   ],
+   "cards": [
+    "f1bd2de486c0"
+   ],
+   "rules": []
+  },
+  "confidence": "medium",
+  "general_practice": false
+ },
+ {
+  "id": "FIN-163",
+  "title": "Track net revenue retention separately from customer-count retention",
+  "domain": "20-FIN",
+  "bottleneck": [
+   "repeat_retention",
+   "measurement_data"
+  ],
+  "lever": "net revenue retention",
+  "hypothesis": "If cohort revenue in month N is divided by that cohort's revenue in month 0 to get net revenue retention, then revenue-based retention is tracked apart from customer-count retention, and a reading above 100 percent is read as expansion, not an error.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "The store tracks how many customers return but has no net revenue retention figure, or treats a reading above 100 percent as a mistake.",
+   "metrics": [
+    "repeat_rate_90d",
+    "other:net_revenue_retention"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:net_revenue_retention",
+   "direction": "up",
+   "size": "unknown; a reading above 100 percent in a strong subscription business is normal, not a target for every store",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "finance"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Reporting addition only."
+  },
+  "prerequisites": [
+   "Cohort revenue table by month since first purchase"
+  ],
+  "steps": [
+   "Build the same cohort grid used for customer retention, but with revenue instead of customer count.",
+   "Net revenue retention for month N equals that cohort's revenue in month N divided by its revenue in month 0.",
+   "Track it alongside, not instead of, customer-count retention.",
+   "If net revenue retention passes 100 percent, read it as upsell or repeat-order expansion, not a data error."
+  ],
+  "test": {
+   "method": "Compare net revenue retention against customer-count retention for the same cohorts each month.",
+   "measure": "other:net_revenue_retention",
+   "read_point": "Monthly cohort review"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "01"
+   ],
+   "cards": [
+    "20b50a304d0f"
+   ],
+   "rules": []
+  },
+  "confidence": "medium",
+  "general_practice": false
+ },
+ {
+  "id": "FIN-164",
+  "title": "Put wide error bars on organic follow-on sales when launching on a new marketplace",
+  "domain": "20-FIN",
+  "bottleneck": [
+   "acquisition_efficiency",
+   "conversion"
+  ],
+  "lever": "marketplace launch forecasting",
+  "hypothesis": "If a new marketplace or channel launch models paid orders explicitly and treats organic follow-on sales as uncertain until enough reviews or history accumulate, then the launch forecast is not built on organic ranking that has not been earned yet.",
+  "applies_when": [
+   "new_store",
+   "marketplace_heavy",
+   "scaling_store"
+  ],
+  "signal": {
+   "check": "A launch forecast for a new marketplace or channel assumes organic sales will scale up with no stated basis or review count.",
+   "metrics": [
+    "review_count",
+    "other:organic_share_of_orders"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:organic_share_of_orders",
+   "direction": "up",
+   "size": "unknown; one anecdote used about 100 reviews as a rough marker before organic ranking improved",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "low",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Forecasting and budget-sizing change only."
+  },
+  "prerequisites": [
+   "Planned paid budget for the new marketplace or channel",
+   "A way to track review count and organic order share over time"
+  ],
+  "steps": [
+   "Model expected orders from paid spend and CAC on the new channel explicitly, separate from any organic assumption.",
+   "Treat organic follow-on orders as near zero until a review count and order history build up.",
+   "Track review count and organic order share weekly after launch.",
+   "Only raise the organic assumption in the forecast once real organic orders appear."
+  ],
+  "test": {
+   "method": "Compare forecast organic share against actual organic share weekly for the first quarter after launch.",
+   "measure": "other:organic_share_of_orders",
+   "read_point": "Weekly for the first 3 months after launch"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "01"
+   ],
+   "cards": [
+    "14761dd09c81"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": false
+ },
+ {
+  "id": "FIN-165",
+  "title": "Benchmark subscription cohort retention against a known strong reference curve",
+  "domain": "20-FIN",
+  "bottleneck": [
+   "repeat_retention"
+  ],
+  "lever": "retention benchmarking",
+  "hypothesis": "If a subscription's cohort retention curve is compared against a known strong reference curve for the category, then a normal-looking decay is not mistaken for a serious retention problem, or a genuinely weak curve is not excused as typical.",
+  "applies_when": [
+   "subscription"
+  ],
+  "signal": {
+   "check": "Subscription retention is judged only against the brand's own past cohorts, with no outside reference point for what a strong curve looks like.",
+   "metrics": [
+    "subscription_churn",
+    "repeat_rate_365d"
+   ]
+  },
+  "expected_effect": {
+   "metric": "subscription_churn",
+   "direction": "down",
+   "size": "unknown; one referenced consumer subscription box example held about 76 percent at month 1 and about 37 to 41 percent at 20 to 24 months, described as rare",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "finance"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Comparison exercise only."
+  },
+  "prerequisites": [
+   "The brand's own cohort retention table by month"
+  ],
+  "steps": [
+   "Build the brand's cohort retention curve by month since first subscription.",
+   "Find 1 or 2 published or researched reference curves for comparable subscription categories.",
+   "Plot the brand's curve against the reference curve at the same ages.",
+   "If the brand sits far below the reference, prioritize retention work; if it sits near or above it, treat the current curve as a reasonable baseline."
+  ],
+  "test": {
+   "method": "Recheck the comparison every 2 quarters as more cohort history accumulates.",
+   "measure": "subscription_churn",
+   "read_point": "Every 2 quarters"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "01"
+   ],
+   "cards": [
+    "1fafdae1c561"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "FIN-166",
+  "title": "Measure subscription CAC payback in orders, not months, when customers can skip shipments",
+  "domain": "20-FIN",
+  "bottleneck": [
+   "repeat_retention",
+   "acquisition_efficiency"
+  ],
+  "lever": "payback measurement unit",
+  "hypothesis": "If CAC payback for a skip-friendly or flexible-cadence subscription is measured in number of orders instead of calendar months, then payback is not understated for customers who space out or skip shipments.",
+  "applies_when": [
+   "subscription"
+  ],
+  "does_not_apply_when": [
+   "The subscription bills and ships on a fixed monthly cadence with no skip or pause option"
+  ],
+  "signal": {
+   "check": "CAC payback is reported in calendar months for a subscription that allows skipping, pausing, or shipping every 2 to 3 months.",
+   "metrics": [
+    "other:cac_payback_orders"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:cac_payback_orders",
+   "direction": "up",
+   "size": "unknown",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "finance"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Reporting unit change only."
+  },
+  "prerequisites": [
+   "Cohort table with orders, not just calendar months, per customer"
+  ],
+  "steps": [
+   "Check whether the subscription allows customers to skip, pause, or space out shipments.",
+   "If it does, rebuild the payback calculation using order number as the period, not calendar month.",
+   "Report payback as pays back by order N alongside or instead of pays back by month N.",
+   "Compare the 2 readings once to confirm the order-based figure is the more honest one."
+  ],
+  "test": {
+   "method": "Compute payback both ways for 1 cohort and compare.",
+   "measure": "other:cac_payback_orders",
+   "read_point": "Each cohort with enough order history"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "01"
+   ],
+   "cards": [
+    "9a3cda2fe90f"
+   ],
+   "rules": []
+  },
+  "confidence": "medium",
+  "general_practice": false
+ },
+ {
+  "id": "FIN-167",
+  "title": "Renegotiate supplier and fulfillment pricing once volume passes small-batch minimums",
+  "domain": "20-FIN",
+  "bottleneck": [
+   "margin_cogs"
+  ],
+  "lever": "volume-based renegotiation",
+  "hypothesis": "If supplier, fulfillment and shipping pricing gets renegotiated once monthly order volume passes the point where small-batch or minimum-order pricing applied, then COGS falls instead of staying stuck at early-stage rates.",
+  "applies_when": [
+   "scaling_store"
+  ],
+  "signal": {
+   "check": "Order volume has grown well past the store's early months, but supplier and 3PL pricing has never been renegotiated.",
+   "metrics": [
+    "cogs_per_unit",
+    "landed_cost"
+   ]
+  },
+  "expected_effect": {
+   "metric": "cogs_per_unit",
+   "direction": "down",
+   "size": "unknown; one source example put the worst pricing around 50 orders a month, before wholesale and renegotiated fulfillment rates kick in",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "M",
+   "owner": "sourcing"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "A renegotiation request; existing terms stay in place until a new rate is agreed."
+  },
+  "prerequisites": [
+   "Current order volume and current supplier and 3PL pricing"
+  ],
+  "steps": [
+   "Check current monthly order volume against the volume level at which current pricing was set.",
+   "List every supplier, 3PL, and shipping partner whose rate has not been revisited since volume grew.",
+   "Request updated pricing or wholesale terms from each, citing the higher volume.",
+   "Recompute landed cost and cost of delivery once new rates are confirmed."
+  ],
+  "test": {
+   "method": "Compare cost per unit before and after each renegotiation.",
+   "measure": "cogs_per_unit",
+   "read_point": "After each renegotiation, and again every 2 quarters"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "01"
+   ],
+   "cards": [
+    "482dba787e59"
+   ],
+   "rules": []
+  },
+  "confidence": "medium",
+  "general_practice": false
+ },
+ {
+  "id": "FIN-168",
+  "title": "Build 4 owned brand peaks a year beyond BFCM to arbitrage flat ad inventory",
+  "domain": "20-FIN",
+  "bottleneck": [
+   "acquisition_efficiency"
+  ],
+  "lever": "owned peak calendar",
+  "hypothesis": "If a store builds 4 owned peaks a year, 1 per quarter, on cultural or brand moments the audience cares about, then it can raise its own conversion rate on those days without paying the higher CPM that a shared sale event like BFCM brings for everyone.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "BFCM is the only planned peak on the marketing calendar; the other 3 quarters have no owned moment.",
+   "metrics": [
+    "cvr_overall",
+    "cpm"
+   ]
+  },
+  "expected_effect": {
+   "metric": "cvr_overall",
+   "direction": "up",
+   "size": "unknown; source frames the mechanism as raising conversion rate while CPM stays flat, since a brand-owned moment does not raise the whole market's bidding",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "M",
+   "owner": "marketer"
+  },
+  "cost": "low",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "A marketing calendar and creative investment, not a store or pricing change."
+  },
+  "prerequisites": [
+   "A stated ideal customer profile to find cultural moments that fit it",
+   "6 to 12 months of planning lead time"
+  ],
+  "steps": [
+   "List existing peaks: BFCM and any built-in launches or holidays already run.",
+   "For each empty quarter, list cultural or brand-relevant moments the audience cares about.",
+   "Pick 1 moment per empty quarter the brand can credibly own.",
+   "Build a story, a limited SKU or drop, and content around it, with an owner separate from daily operations.",
+   "Compare conversion rate and CPM on the peak day against a normal week."
+  ],
+  "test": {
+   "method": "Compare conversion rate and CPM for the peak day against the trailing 4-week average.",
+   "measure": "cvr_overall",
+   "read_point": "The peak day and the week after"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "02"
+   ],
+   "cards": [
+    "da68923c4cc5"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": false
+ },
+ {
+  "id": "FIN-169",
+  "title": "Schedule a new-customer acquisition peak 3 to 8 weeks before BFCM",
+  "domain": "20-FIN",
+  "bottleneck": [
+   "acquisition_efficiency",
+   "repeat_retention"
+  ],
+  "lever": "progressive peaking",
+  "hypothesis": "If a large new-customer acquisition moment runs 3 to 8 weeks before BFCM, then that cohort is already warm by BFCM and over-delivers on it, instead of BFCM doing all the acquisition work at once.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "The marketing calendar has no acquisition-focused moment scheduled between early September and early November, ahead of BFCM.",
+   "metrics": [
+    "other:new_customers",
+    "cvr_overall"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:new_customers",
+   "direction": "up",
+   "size": "unknown",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "M",
+   "owner": "marketer"
+  },
+  "cost": "medium",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "A calendar and budget decision; can be skipped in a future year if it does not work."
+  },
+  "prerequisites": [
+   "A planned BFCM offer and budget",
+   "Lead time of at least 2 months before BFCM"
+  ],
+  "steps": [
+   "Pick a date 3 to 8 weeks ahead of BFCM for a new-customer-focused moment.",
+   "Fund it with new-customer acquisition budget, not the BFCM budget.",
+   "Track the resulting cohort's BFCM performance against past cohorts acquired without a pre-peak.",
+   "Repeat or adjust the timing the following year based on the result."
+  ],
+  "test": {
+   "method": "Compare BFCM order rate and revenue from the pre-peak cohort against cohorts acquired at other times of year.",
+   "measure": "other:new_customers",
+   "read_point": "During BFCM, split by acquisition cohort"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "02"
+   ],
+   "cards": [
+    "7c84039e1b24"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": false
+ },
+ {
+  "id": "FIN-170",
+  "title": "Build a cause or charity-tied peak as a new-customer acquisition engine",
+  "domain": "20-FIN",
+  "bottleneck": [
+   "acquisition_efficiency",
+   "trust_brand"
+  ],
+  "lever": "cause-marketing peak",
+  "hypothesis": "If a store builds a cause or charity-tied moment, such as a giving goal or a percent of sales donated, as one of its owned peaks, then it can draw new-customer attention and press coverage that a discount-led peak does not get.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "Every planned peak on the calendar is discount-led, with no cause or charity-tied moment tested.",
+   "metrics": [
+    "other:new_customers",
+    "other:press_mentions"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:new_customers",
+   "direction": "up",
+   "size": "unknown; source examples describe outsized single-day results and press coverage, with margin sometimes sacrificed on purpose for the moment",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "L",
+   "owner": "marketer"
+  },
+  "cost": "medium",
+  "risk": {
+   "level": "medium",
+   "reversible": true,
+   "note": "Choose a cause that fits the brand honestly; a mismatched or opportunistic-looking cause tie can damage trust instead of building it."
+  },
+  "prerequisites": [
+   "A cause that credibly fits the brand and its customers",
+   "Leadership sign-off on the margin or dollar amount at stake"
+  ],
+  "steps": [
+   "Pick a cause that fits the brand's story and audience, not a generic or trending one.",
+   "Set a public, specific goal: a dollar amount raised, a percent of sales donated, or units given.",
+   "Plan the SKU, content, and outreach such as press, influencers, and partners around the goal.",
+   "Run it as a time-boxed moment, then report the result publicly and measure new customers acquired."
+  ],
+  "test": {
+   "method": "Compare new customers, press mentions, and CM3 impact from the cause moment against a discount-led peak of similar size.",
+   "measure": "other:new_customers",
+   "read_point": "During and 30 days after the moment"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "02"
+   ],
+   "cards": [
+    "fd83b3a498e8"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": false
+ },
+ {
+  "id": "FIN-171",
+  "title": "Add new ad channels 1 at a time to keep each one's incrementality measurable",
+  "domain": "20-FIN",
+  "bottleneck": [
+   "measurement_data",
+   "acquisition_efficiency"
+  ],
+  "lever": "sequential channel rollout",
+  "hypothesis": "If a store adds only 1 new ad channel at a time and waits to measure its incrementality before adding the next, then each channel's true contribution stays measurable, instead of becoming a mix that is almost impossible to untangle later.",
+  "applies_when": [
+   "scaling_store"
+  ],
+  "signal": {
+   "check": "2 or more new channels launched in the same period, with no incrementality read on either before the next one started.",
+   "metrics": [
+    "other:incrementality_factor"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:incrementality_factor",
+   "direction": "up",
+   "size": "unknown",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "A sequencing decision; does not restrict which channels are eventually used."
+  },
+  "prerequisites": [
+   "A queue of candidate channels to test",
+   "A way to run an incrementality read on each, such as a geo holdout or a documented substitute"
+  ],
+  "steps": [
+   "Rank candidate new channels by expected size of opportunity.",
+   "Launch only the top channel first, at a stated budget.",
+   "Run an incrementality read on that channel before launching the next one.",
+   "Only add the next channel once the current one's factor is known and stable."
+  ],
+  "test": {
+   "method": "Track how many channels are running with an unmeasured incrementality factor at any time.",
+   "measure": "other:incrementality_factor",
+   "read_point": "Before adding each new channel"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "02"
+   ],
+   "cards": [
+    "ccf3794cd11d"
+   ],
+   "rules": []
+  },
+  "confidence": "medium",
+  "general_practice": true
+ },
+ {
+  "id": "FIN-172",
+  "title": "Stage-gate new acquisition channels by revenue level instead of adding them early",
+  "domain": "20-FIN",
+  "bottleneck": [
+   "acquisition_efficiency",
+   "team_capacity"
+  ],
+  "lever": "channel stage-gating",
+  "hypothesis": "If a store stays on a single primary paid channel plus basic search below roughly 10 million in revenue, then adds Amazon, then YouTube and TikTok Shop as revenue scales toward 100 million, then team and measurement capacity is not spread across channels before there is enough scale to manage them well.",
+  "applies_when": [
+   "new_store",
+   "scaling_store"
+  ],
+  "does_not_apply_when": [
+   "The brand's category is already concentrated on a channel outside this order, such as marketplace-first"
+  ],
+  "signal": {
+   "check": "A store under about 10 million in revenue is already running 3 or more paid acquisition channels with a small or part-time team.",
+   "metrics": [
+    "other:active_channel_count"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:active_channel_count",
+   "direction": "down",
+   "size": "unknown; the source's own stage bands are opinion, not measured",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "M",
+   "owner": "founder"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "A prioritization choice; a channel can still be tested small before committing a team to it."
+  },
+  "prerequisites": [
+   "Current revenue level and current list of active paid channels"
+  ],
+  "steps": [
+   "Check current revenue against the roughly 10 million and 100 million stage bands.",
+   "Below the first band, consolidate spend and team attention on 1 primary channel plus basic search.",
+   "Between the bands, add Amazon first, then YouTube and TikTok Shop, one at a time.",
+   "Revisit the channel list each time revenue crosses a stage band."
+  ],
+  "test": {
+   "method": "Review the active channel list against current revenue and team size each quarter.",
+   "measure": "other:active_channel_count",
+   "read_point": "Quarterly"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "02"
+   ],
+   "cards": [
+    "af8e8975be22",
+    "fb29afeb843e"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "FIN-173",
+  "title": "Budget Amazon ads and branded search as a defensive cost, not a growth line",
+  "domain": "20-FIN",
+  "bottleneck": [
+   "margin_cogs",
+   "acquisition_efficiency"
+  ],
+  "lever": "defensive spend budgeting",
+  "hypothesis": "If Amazon ads and branded search spend are budgeted and reported as a defensive cost that protects existing demand, separate from new-customer growth spend, then a rising defensive bill does not get read as successful growth marketing.",
+  "applies_when": [
+   "marketplace_heavy",
+   "any"
+  ],
+  "signal": {
+   "check": "Amazon ads or branded search spend sits in the same budget line and report as new-customer growth marketing, with no separate defensive-spend view.",
+   "metrics": [
+    "spend",
+    "ncpa"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:defensive_spend_share",
+   "direction": "up",
+   "size": "unknown",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "finance"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Reporting and budgeting split only."
+  },
+  "prerequisites": [
+   "Spend broken out by campaign type, including Amazon ads and branded search"
+  ],
+  "steps": [
+   "Separate Amazon ads and branded search spend from new-customer growth spend in the budget and report.",
+   "Run a pause test periodically to check whether sales hold without that spend.",
+   "Track the defensive line's growth over time as competitors start bidding on the brand's terms.",
+   "Do not credit rising defensive spend as new-customer growth in team or agency scorecards."
+  ],
+  "test": {
+   "method": "Run a pause test on Amazon ads or branded search and measure the sales change.",
+   "measure": "spend",
+   "read_point": "Each time competitor bidding on brand terms is suspected to have changed"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "02"
+   ],
+   "cards": [
+    "cb05725b572a"
+   ],
+   "rules": []
+  },
+  "confidence": "medium",
+  "general_practice": false
+ },
+ {
+  "id": "FIN-174",
+  "title": "Set aside a fixed share of creative output for new stories, not only iteration on winners",
+  "domain": "20-FIN",
+  "bottleneck": [
+   "team_capacity",
+   "conversion"
+  ],
+  "lever": "creative story allocation",
+  "hypothesis": "If a fixed share of creative time or budget is reserved for new stories and new customer cohorts, separate from iterating on existing winning ads, then the creative program does not settle into a local maximum of small hook changes on the same idea.",
+  "applies_when": [
+   "paid_social_led"
+  ],
+  "signal": {
+   "check": "Nearly all new creative output is a variant of an existing winning ad, such as a new hook on the same body, with no stated share going to genuinely new concepts.",
+   "metrics": [
+    "hook_rate",
+    "ctr"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:new_concept_share",
+   "direction": "up",
+   "size": "unknown",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "M",
+   "owner": "marketer"
+  },
+  "cost": "low",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "A creative production allocation choice."
+  },
+  "prerequisites": [
+   "A count of current creative output by type: iteration versus new concept"
+  ],
+  "steps": [
+   "Tag each new ad produced as either an iteration on an existing winner or a new story or concept.",
+   "Set a target share, for example a third, of output that must be new concepts, not iterations.",
+   "Review the split monthly against the target.",
+   "Compare performance of new-concept ads against iteration ads over a quarter."
+  ],
+  "test": {
+   "method": "Track the share of new creative output that is a genuinely new concept each month.",
+   "measure": "other:new_concept_share",
+   "read_point": "Monthly creative review"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "02"
+   ],
+   "cards": [
+    "ab2ae93189de"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "FIN-175",
+  "title": "Run 3 competing creative-production workflows as a live test before choosing one",
+  "domain": "20-FIN",
+  "bottleneck": [
+   "team_capacity",
+   "margin_cogs"
+  ],
+  "lever": "creative workflow test",
+  "hypothesis": "If the same product and goal are run through 3 workflows, humans alone, humans briefing AI, and AI alone, as live ads under the same budget and optimization rules, then the store picks its creative-production approach on measured sales results instead of a guess about which is better.",
+  "applies_when": [
+   "paid_social_led"
+  ],
+  "signal": {
+   "check": "The store has picked a creative-production workflow, all-human or AI-assisted, without testing it against an alternative on live ads.",
+   "metrics": [
+    "ctr",
+    "hook_rate",
+    "cpa"
+   ]
+  },
+  "expected_effect": {
+   "metric": "cpa",
+   "direction": "down",
+   "size": "unknown; second-hand claim only, not independently verified",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "M",
+   "owner": "marketer"
+  },
+  "cost": "medium",
+  "risk": {
+   "level": "medium",
+   "reversible": true,
+   "note": "Run all 3 workflows' output through a human check for brand, legal, and product-accuracy claims before any of it goes live."
+  },
+  "prerequisites": [
+   "1 product and 1 optimization goal to test all 3 workflows against",
+   "A human reviewer for brand, legal, and accuracy before launch"
+  ],
+  "steps": [
+   "Pick 1 product and 1 campaign goal to test all 3 workflows against.",
+   "Produce creative through humans alone, humans briefing AI, and AI alone, for the same goal.",
+   "Have a human check every asset for brand, legal, and product-accuracy issues before any of it launches.",
+   "Run all 3 as live ads with the same budget and optimization event.",
+   "Let the sales results, not a guess, decide which workflow to scale."
+  ],
+  "test": {
+   "method": "Compare CPA, CTR, and hook rate across the 3 workflows for the same test period.",
+   "measure": "cpa",
+   "read_point": "After the test period reaches a stable sample size"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "02"
+   ],
+   "cards": [
+    "edca726509d9",
+    "f3146559c16b"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": false
+ },
+ {
+  "id": "FIN-176",
+  "title": "Track AI or LLM-sourced revenue share as its own measurement line",
+  "domain": "20-FIN",
+  "bottleneck": [
+   "measurement_data"
+  ],
+  "lever": "AI referral tracking",
+  "hypothesis": "If revenue that comes from or through AI assistants and LLM-based shopping is tracked as its own line, then the store notices this channel early instead of missing it inside generic organic or direct traffic.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "The store's traffic and revenue reporting has no way to separate orders that came from an AI assistant or LLM referral from generic organic or direct traffic.",
+   "metrics": [
+    "ai_citations",
+    "ai_referrals"
+   ]
+  },
+  "expected_effect": {
+   "metric": "ai_referrals",
+   "direction": "up",
+   "size": "unknown; source frames it as up to a meaningful share for some businesses, with no method given",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "M",
+   "owner": "dev"
+  },
+  "cost": "low",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "A tracking and reporting addition."
+  },
+  "prerequisites": [
+   "Analytics or server logs that can flag AI-assistant or LLM referral traffic"
+  ],
+  "steps": [
+   "Check the analytics platform and server logs for a way to tag AI-assistant or LLM referral traffic.",
+   "Add an AI or LLM referral line to the traffic and revenue report, even if it starts near zero.",
+   "Track its share of orders over time.",
+   "Revisit product feed and structured-data setup if this share starts to matter, as a separate technical task."
+  ],
+  "test": {
+   "method": "Track AI or LLM referral share of orders each month.",
+   "measure": "ai_referrals",
+   "read_point": "Monthly"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "02"
+   ],
+   "cards": [
+    "1e9a211ffece"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "FIN-177",
+  "title": "Build a media arm that offsets marketing cost through sponsorships or content",
+  "domain": "20-FIN",
+  "bottleneck": [
+   "margin_cogs",
+   "acquisition_efficiency"
+  ],
+  "lever": "negative CAC media arm",
+  "hypothesis": "If a store builds its own media property, such as a podcast, newsletter, or content channel, and sells sponsorships or ads on it, then the income can offset the store's own marketing cost, lowering effective CAC and raising operating margin.",
+  "applies_when": [
+   "dtc_only",
+   "scaling_store"
+  ],
+  "signal": {
+   "check": "The store has an audience or content channel with real reach but no monetization, while marketing spend is booked at full cost with no offsetting revenue.",
+   "metrics": [
+    "other:media_arm_revenue",
+    "ncpa"
+   ]
+  },
+  "expected_effect": {
+   "metric": "ncpa",
+   "direction": "down",
+   "size": "unknown; one agency's own claim of 30 percent-plus operating margin from this structure, no independent data",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "L",
+   "owner": "marketer"
+  },
+  "cost": "medium",
+  "risk": {
+   "level": "medium",
+   "reversible": true,
+   "note": "Requires building real audience and content value before sponsors will pay; a weak content property will not generate offsetting revenue."
+  },
+  "prerequisites": [
+   "An owned content channel with a real, engaged audience",
+   "A sales process for sponsorships or ad placements"
+  ],
+  "steps": [
+   "Assess whether the store already has, or could build, a content channel with real audience reach.",
+   "Package sponsorship or ad inventory on that channel and sell it to relevant advertisers.",
+   "Book the sponsorship income against the marketing budget, not as unrelated revenue.",
+   "Track effective CAC, spend minus media-arm income divided by new customers, against CAC without the offset."
+  ],
+  "test": {
+   "method": "Compare effective CAC with and without the media-arm income offset each quarter.",
+   "measure": "ncpa",
+   "read_point": "Quarterly"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "02"
+   ],
+   "cards": [
+    "d0687511193f"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": false
+ },
+ {
+  "id": "FIN-178",
+  "title": "Align team compensation with the metrics shown on the daily dashboard",
+  "domain": "20-FIN",
+  "bottleneck": [
+   "team_capacity"
+  ],
+  "lever": "incentive alignment",
+  "hypothesis": "If bonus or incentive structures are tied to the same metrics shown on the daily or monthly dashboard, such as contribution margin or cash, then the team is asked to affect only what it can see, instead of being judged on numbers it never watches.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "The team's bonus or review criteria use different metrics than the ones shown on the daily or monthly dashboard, or no dashboard metric is tied to pay at all.",
+   "metrics": [
+    "other:incentive_alignment"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:incentive_alignment",
+   "direction": "up",
+   "size": "unknown",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "M",
+   "owner": "founder"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "A compensation-structure change; introduce it with notice, not retroactively."
+  },
+  "prerequisites": [
+   "A stated dashboard with a small number of core metrics",
+   "Authority to set or adjust bonus structures"
+  ],
+  "steps": [
+   "List the core metrics already shown on the daily or monthly dashboard.",
+   "Check whether any team bonus, commission, or review criteria use different metrics.",
+   "Where they differ, realign the incentive to 1 or more dashboard metrics the person can actually affect.",
+   "Communicate the link between the dashboard and pay so the team knows why the numbers matter."
+  ],
+  "test": {
+   "method": "Ask the team whether they know which dashboard metric affects their pay, before and after the change.",
+   "measure": "other:incentive_alignment",
+   "read_point": "Before and 1 quarter after the change"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "02"
+   ],
+   "cards": [
+    "83186e2addd5"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "FIN-179",
+  "title": "Track weekly ad frequency to repeat customers as an overspend signal",
+  "domain": "20-FIN",
+  "bottleneck": [
+   "acquisition_efficiency"
+  ],
+  "lever": "frequency ceiling check",
+  "hypothesis": "If ad frequency delivered to existing or repeat customers is tracked weekly and flagged above a set ceiling, then spend on people who would likely buy anyway gets caught even when the existing-customer budget was sized correctly at the start.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "Existing-customer ad frequency over the trailing 7 days has never been checked against a ceiling, even though a retargeting or existing-customer budget is set.",
+   "metrics": [
+    "frequency"
+   ]
+  },
+  "expected_effect": {
+   "metric": "frequency",
+   "direction": "down",
+   "size": "one source's ceiling: under 8 over a trailing 7 days on Meta; a brand's own ceiling may differ",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "A monitoring check; catching an overage only pauses or caps spend already planned to be cut back."
+  },
+  "prerequisites": [
+   "Access to the ad platform's audience-segment and frequency reporting"
+  ],
+  "steps": [
+   "Pull the existing-customer or retargeting audience's frequency over the trailing 7 days.",
+   "Set a ceiling for that frequency, using the source's under-8 figure as a starting point to test.",
+   "Check it weekly alongside the existing-customer budget review.",
+   "When frequency crosses the ceiling, cap or pause that audience's spend rather than raising the budget further."
+  ],
+  "test": {
+   "method": "Track weekly frequency against the ceiling for 2 months.",
+   "measure": "frequency",
+   "read_point": "Weekly"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "03"
+   ],
+   "cards": [
+    "de7656f52701"
+   ],
+   "rules": []
+  },
+  "confidence": "medium",
+  "general_practice": false
+ },
+ {
+  "id": "FIN-180",
+  "title": "Raise marketing spend temporarily and only to clear stuck inventory, instead of a blanket cut",
+  "domain": "20-FIN",
+  "bottleneck": [
+   "cash_inventory"
+  ],
+  "lever": "targeted spend increase",
+  "hypothesis": "If cash is tight because of stuck grade C and D inventory, and the fix is a temporary, ring-fenced increase in marketing spend aimed only at that stock, then the store avoids the cut-then-cut-again spiral that a blanket spend reduction can start when media is actually driving revenue.",
+  "applies_when": [
+   "any"
+  ],
+  "does_not_apply_when": [
+   "Media is confirmed not to be driving revenue for this store, such as when a holdout test shows no effect"
+  ],
+  "signal": {
+   "check": "Cash is tight, a large share of stock is grade C or D, and the proposed fix is an across-the-board media spend cut.",
+   "metrics": [
+    "days_of_stock",
+    "spend"
+   ]
+  },
+  "expected_effect": {
+   "metric": "days_of_stock",
+   "direction": "down",
+   "size": "unknown; source example raises marketing as a percent of revenue by about 5 points, ring-fenced to clearance",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "M",
+   "owner": "finance"
+  },
+  "cost": "medium",
+  "risk": {
+   "level": "medium",
+   "reversible": true,
+   "note": "Only appropriate when media is confirmed to drive revenue; ring-fence the extra spend to clearance so it does not blend into core acquisition reporting."
+  },
+  "prerequisites": [
+   "Inventory graded A to D with days-of-stock by SKU",
+   "Confirmation that media drives revenue for this store, not already ruled out by a holdout test"
+  ],
+  "steps": [
+   "Confirm media is driving revenue here before doing anything counter to instinct.",
+   "Size a temporary, stated increase in total marketing spend, ring-fenced to clearing grade C and D stock.",
+   "Run that extra spend through a liquidation funnel or clearance campaign, separate from core acquisition reporting.",
+   "Judge the extra spend by cash and inventory recovered, not by its ROAS.",
+   "Return to the normal spend level once the stuck stock clears."
+  ],
+  "test": {
+   "method": "Track days-of-stock and cash recovered from the ring-fenced clearance spend against the extra dollars spent.",
+   "measure": "days_of_stock",
+   "read_point": "Weekly during the clearance period"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "03"
+   ],
+   "cards": [
+    "0c1ff48b0d7b"
+   ],
+   "rules": []
+  },
+  "confidence": "medium",
+  "general_practice": false
+ },
+ {
+  "id": "FIN-181",
+  "title": "Offer a voucher, alternate item or upsell at the return step before processing a plain refund",
+  "domain": "20-FIN",
+  "bottleneck": [
+   "repeat_retention",
+   "aov"
+  ],
+  "lever": "return-step save offer",
+  "hypothesis": "If a customer starting a return is offered a voucher, a discount, an alternate item, a trade-up or an upsell before the refund is finalized, then some of those orders convert into a kept or replacement sale instead of a straight loss.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "The return flow goes straight to a refund with no offer step, even though the customer often wanted something, just not the item they are returning.",
+   "metrics": [
+    "return_rate",
+    "refund_rate"
+   ]
+  },
+  "expected_effect": {
+   "metric": "refund_rate",
+   "direction": "down",
+   "size": "unknown; source reports great success with no numbers",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "M",
+   "owner": "support"
+  },
+  "cost": "low",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "The customer can still get a full refund if they decline the offer; track the margin impact of any discount used to save the sale."
+  },
+  "prerequisites": [
+   "A returns flow or support process that can present an offer before finalizing a refund",
+   "A small set of alternate items or a voucher to offer"
+  ],
+  "steps": [
+   "Build a decision point in the return flow, before the refund is finalized, that offers a voucher, alternate item, trade-up or upsell.",
+   "Train support staff or configure the returns tool to present the offer for eligible return reasons, such as size, color, or changed mind.",
+   "Track what share of return-starters accept an offer instead of a refund.",
+   "Track the margin after any voucher or discount used, since it changes what the resulting sale is worth."
+  ],
+  "test": {
+   "method": "Compare the save rate and post-offer margin against a plain-refund baseline for a set period.",
+   "measure": "refund_rate",
+   "read_point": "Monthly, for returns started"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "04"
+   ],
+   "cards": [
+    "bb8589d09789"
+   ],
+   "rules": []
+  },
+  "confidence": "medium",
+  "general_practice": false
+ },
+ {
+  "id": "FIN-182",
+  "title": "Check the supplier invoice price against the purchase order price before posting it",
+  "domain": "20-FIN",
+  "bottleneck": [
+   "margin_cogs"
+  ],
+  "lever": "invoice-to-PO price check",
+  "hypothesis": "If every supplier invoice's price is checked against its purchase order price before it is posted to the books, then price drift from commodity or currency moves gets caught and resolved before it silently distorts landed cost.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "Supplier invoices are posted to the accounting system with no check against the agreed purchase order price.",
+   "metrics": [
+    "landed_cost",
+    "cogs_per_unit"
+   ]
+  },
+  "expected_effect": {
+   "metric": "landed_cost",
+   "direction": "down",
+   "size": "unknown",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "finance"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "A bookkeeping control; catches errors before they compound, and does not change supplier relationships by itself."
+  },
+  "prerequisites": [
+   "Purchase order price recorded at the time each PO is raised"
+  ],
+  "steps": [
+   "Record the agreed unit price on every purchase order when it is raised.",
+   "When the supplier invoice arrives, compare its price line by line against the PO price.",
+   "Resolve any difference with the supplier before the invoice is posted to the financials.",
+   "Log confirmed price changes so landed cost gets recalculated with the new number."
+  ],
+  "test": {
+   "method": "Track how many invoices needed a price correction before posting, over a quarter.",
+   "measure": "landed_cost",
+   "read_point": "Every invoice, reviewed monthly in aggregate"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "04"
+   ],
+   "cards": [
+    "366fbbf40de6"
+   ],
+   "rules": []
+  },
+  "confidence": "medium",
+  "general_practice": false
+ },
+ {
+  "id": "FIN-183",
+  "title": "Redo the COGS classification audit whenever the fulfillment or infrastructure model changes",
+  "domain": "20-FIN",
+  "bottleneck": [
+   "margin_cogs",
+   "measurement_data"
+  ],
+  "lever": "trigger-based cost audit",
+  "hypothesis": "If the full cost-classification audit is redone whenever the fulfillment or infrastructure model changes, such as self-fulfillment to a 3PL, owned to rented servers, or a new supplier or country of manufacture, then COGS and gross margin stay accurate through the change instead of drifting on stale assumptions.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "The store changed how it fulfills, hosts, or sources in the last year, but the cost-classification and landed-cost audit has not been redone since.",
+   "metrics": [
+    "gross_margin",
+    "cogs_per_unit"
+   ]
+  },
+  "expected_effect": {
+   "metric": "gross_margin",
+   "direction": "up",
+   "size": "unknown",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "M",
+   "owner": "finance"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "An audit and reclassification exercise."
+  },
+  "prerequisites": [
+   "A documented cost-classification policy to redo the audit against"
+  ],
+  "steps": [
+   "Watch for any change in fulfillment, such as self to 3PL or the reverse, infrastructure, such as owned to rented, or supplier or manufacturing country.",
+   "When one happens, rerun the cost-classification decision tree on every affected cost line.",
+   "Rebuild landed cost and cost of delivery with the new cost structure.",
+   "Compare gross margin before and after the change to confirm it reflects reality, not a stale model."
+  ],
+  "test": {
+   "method": "Compare gross margin computed under the old and new cost structure for the same sales volume.",
+   "measure": "gross_margin",
+   "read_point": "At the time of the operational change, and again 1 quarter later"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "04",
+    "06"
+   ],
+   "cards": [],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "FIN-184",
+  "title": "Cut cash-equal expense lines first when cash needs to be freed quickly",
+  "domain": "20-FIN",
+  "bottleneck": [
+   "cash_inventory"
+  ],
+  "lever": "cash-equal cost cutting",
+  "hypothesis": "If a cash squeeze is addressed by cutting lines where cash paid equals the reported expense, such as payroll, marketing, or discretionary spend, then cash is actually freed, instead of cutting a paper item like depreciation that releases no real cash.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "A cash-cutting plan targets a non-cash or already-committed line, such as depreciation, a signed lease, or sunk inventory cost, expecting it to free cash.",
+   "metrics": [
+    "other:cash_freed"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:cash_freed",
+   "direction": "up",
+   "size": "unknown",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "finance"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "medium",
+   "reversible": true,
+   "note": "Cutting payroll or marketing has real operational consequences; weigh against the cash need before acting."
+  },
+  "prerequisites": [
+   "A P&L with lines marked as cash-equal or non-cash"
+  ],
+  "steps": [
+   "Mark every expense line as cash-equal, such as payroll, ads, rent, and software, or non-cash or already committed, such as depreciation or sunk inventory.",
+   "When cash needs to be freed fast, list only the cash-equal lines as candidates for cutting.",
+   "Rule out non-cash lines from the plan, since cutting them frees nothing this month.",
+   "Confirm the actual cash freed after the cut matches the plan."
+  ],
+  "test": {
+   "method": "Compare planned cash freed against actual cash freed the following month.",
+   "measure": "other:cash_freed",
+   "read_point": "The month after the cut"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "05"
+   ],
+   "cards": [
+    "b4b11ba26397"
+   ],
+   "rules": []
+  },
+  "confidence": "medium",
+  "general_practice": false
  }
 ]
