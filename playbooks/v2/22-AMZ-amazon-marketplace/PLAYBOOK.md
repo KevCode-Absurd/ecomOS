@@ -4,6 +4,8 @@ version: 2.0-draft  |  2026-09-24  |  sources: 4 (source 01 is split into 3 part
 
 ## 0. How to use this playbook
 
+**Ecommerce first.** This playbook is for a brand that sells its own product, not a general Amazon course. Section 3.0 is the ranking: it says what to check first. Store type decides which rules apply and in what order: a hero SKU vs a wide catalogue, low vs high AOV, subscription vs one-off, marketplace-heavy vs one channel among several, a luxury or considered purchase vs an impulse buy, and mobile-first India vs US all change which rule in section 3 matters most for a given brand.
+
 **Who runs it.** The Amazon marketplace agent for a brand that owns its product (private label or original product). It covers whether to add Amazon as a channel, account setup, Brand Registry, product research screens, the fee stack and margin model, Amazon-specific sourcing steps, listing build, FBA inbound shipments, launch, PPC, reviews and policy, inventory, and failure patterns.
 
 **What it is not for.** Retail arbitrage, online arbitrage and wholesale reselling of other brands' products are out of scope for ecomOS brands. Sources 01p1, 02 and 03 carry that content. It is walled off in section 7, conflict 1, and never turned into a rule here. Two of the sources' own curation headers say so: source 02's export header says to skip "Retail Arbitrage (RA), Online Arbitrage (OA)... library poison" and the "BSR < 100k and 30% ROI" formulas; source 03's header says "DO NOT CAPTURE... exclusively Retail and Online Arbitrage reselling, which violates the 22-AMZ skip rules... Source should be discarded." Cards for both exist anyway. This playbook keeps only the model-agnostic mechanics from them (account documents, box limits, UK VAT, inventory breakdown statuses, carrier pickup) and marks each one.
@@ -85,6 +87,23 @@ version: 2.0-draft  |  2026-09-24  |  sources: 4 (source 01 is split into 3 part
 
 Each rule: the rule, the condition, supporting mini playbooks (01p1, 01p2, 01p3, 02, 03, 04), conflicts, card ids. Where only one source says it, the rule says so. Where sources disagree, the rule keeps the strictest condition and points to section 7.
 
+### 3.0 Ecommerce priority order
+
+1. Net margin gate, 30% or more after landed cost and every fee (R35, R3). Nothing else matters if this fails.
+2. Price at $25 or more and 3x unit cost (R24, R36, conflict 8). Sets whether PPC and referral fees leave any margin; matters most for a low-AOV SKU.
+3. Real differentiation, not a generic clone (R7, R25 to R27, R30). Competes on a fixable gap in reviews, not on price.
+4. Inventory sizing: cover enough to avoid a stockout without paying long-term storage (R90, R91, conflict 2). The sources' biggest reported losses; matters most for a single hero SKU with no backup stock.
+5. Listing SEO: title, bullets, keyword buckets (R52 to R54). Cheapest acquisition channel once live, and it compounds; PPC does not.
+6. Main and secondary images (R55, R56). Biggest conversion lever at the search grid; a bad image loses the click before copy is read.
+7. Launch concentration: stock live, PPC on, audience ready the same week (R71, R72, R77, R78). Matters most for a single hero SKU launch; less for adding a SKU to a proven catalogue.
+8. PPC discipline: negatives from day 1, judged on net profit not sales (R81, R82). Largest controllable variable cost after fees.
+9. Brand Registry and trademark timing (R17, R19, R20). Unlocks A+, Vine, Sponsored Brands and hijacker protection; start early since approval lags months. `[general practice: ranked here for lead time]`
+10. Ongoing fee-stack and storage modelling, including the long-term storage window (R37 to R39, R92). Protects the margin gate after launch.
+11. Review compliance path (R84 to R86). A compliance floor, not a growth lever, but non-negotiable.
+12. Account health monitoring (R88, R89). Losing the account erases every other lever. `[general practice: monitoring backstop, not ranked by any source]`
+
+Load this block first; the groups below are the detail.
+
 ### 3A. Channel fit: whether and when to add Amazon
 
 **R1. Decide the fulfilment model and the business model before opening an account.** Condition: any brand adding Amazon. FBA (Amazon picks, packs, ships, handles service) or FBM (brand ships) changes every fee line. The model is "own brand, own product"; arbitrage and wholesale are out of scope (section 7, conflict 1). Sources: 02 (FBA vs FBM before signup), 01p2, 01p3. `[79cb4207ec95]` `[a4f91430f890]` `[a4c6fdf106db]`
@@ -97,9 +116,11 @@ Each rule: the rule, the condition, supporting mini playbooks (01p1, 01p2, 01p3,
 
 **R5. Match the target revenue band to the cash available.** Condition: choosing which product or SKU to launch first. Source 04: a $30,000 a month product needs about 3 months of inventory plus heavy ad spend; $1,500 to $3,000 a month products can still be viable. Source 01 says a first run should cover 3 to 6 months of sales. Sources: 04, 01p2. `[b640794fea47]` `[1b37755b2ef8]` `[needs brand data: cash for inventory and ads]`
 
-**R6. Do not delay a launch to keep researching once the screens pass.** Condition: product passes 3D and 3E and a supplier is acceptable. Source 01 frames analysis paralysis as its students' most repeated and costliest mistake (AJ estimated about $30,000 from a 3-month delay; Brent estimated $20,000 to $30,000 a month from a 2-year delay). One case (Jeremy) shows delay can be supply-chain-driven; the fix there is a different manufacturer, not more speed. This is one source's opinion, repeated across its cases. Sources: 01p1, 01p3. `[b35c0005507d]` `[22226777874a]` `[734c8c132f]`
+**R6. Once the product clears the price, margin and differentiation gates (R23 to R35), set a launch date: every extra month of research after that is unrecovered fee-stack and carrying cost, not new information.** Condition: product passes 3D and 3E and a supplier is acceptable. Source 01 frames analysis paralysis as its students' most repeated and costliest mistake (AJ estimated about $30,000 from a 3-month delay; Brent estimated $20,000 to $30,000 a month from a 2-year delay). One case (Jeremy) shows delay can be supply-chain-driven; the fix there is a different manufacturer, not more speed. This is one source's opinion, repeated across its cases. Sources: 01p1, 01p3. `[b35c0005507d]` `[22226777874a]` `[734c8c132f]`
 
-**R7. Prefer a differentiated product over a generic private-label clone.** Condition: choosing what to sell on Amazon. Source 01 attributes its 2 failure cases (Cam's leash plateau, Cam's prong collar bankruptcy) partly to generic private label and says a first-to-market product "grows the pie" when competitors enter. Its card notes private label can still work in some categories. Source 04 says to solve a real customer problem. Sources: 01p1, 01p3, 04. `[56fc5dcf9ebc]` `[58de052ddcc1]` `[78d7c95b1453]` `[7327612c90dc]`
+**R7. Reject a clone that cannot win a page-1 price or review fight against the top 10 Amazon listings (R25 to R27); if it cannot name one fixable gap from competitor 1 to 3 star reviews, do not list it.** Condition: choosing what to sell on Amazon. Source 01 attributes its 2 failure cases (Cam's leash plateau, Cam's prong collar bankruptcy) partly to generic private label and says a first-to-market product "grows the pie" when competitors enter. Its card notes private label can still work in some categories. Source 04 says to solve a real customer problem. Sources: 01p1, 01p3, 04. `[56fc5dcf9ebc]` `[58de052ddcc1]` `[78d7c95b1453]` `[7327612c90dc]`
+
+**R98. Model Seller Fulfilled Prime as a real FBM alternative before defaulting to FBA, when the brand can meet Prime delivery and cancellation standards itself.** Condition: brand has its own fast, reliable fulfilment and wants to keep control of a heavy, fragile or low-volume SKU while still carrying the Prime badge. Source 01's card notes SFP may exist for qualifying merchants; no source gives the enrolment steps or standards. `[e94ff8c9c6e7]` `[general practice]` No library source beyond the card aside; verify against brand data before use.
 
 ### 3B. Account setup and verification
 
@@ -115,7 +136,7 @@ Each rule: the rule, the condition, supporting mini playbooks (01p1, 01p2, 01p3,
 
 **R13. Add payout bank details and pass verification before sourcing or shipping any stock.** Condition: every new account. Source 02 only. `[3f1b8c4c6147]`
 
-**R14. Use a real EIN, seller's permit and a separate business bank account; never mix personal and business spend.** Condition: US brand. EIN is free at irs.gov; seller's permit is free from the state .gov site; anyone charging for either is flagged as a scam by source 01. Mixing spend is an IRS flag and can pierce an LLC shield. Entity choice (DBA, LLC, LLC with S-corp election) is lay opinion in source 01; route to 20-FIN. Sources: 01p1, 01p2, 01p3. `[5922aa6e05a8]` `[89eb3eba5f62]` `[56008befb8c7]` `[0cd745664a]` `[web check: sales tax nexus and marketplace facilitator rules; consult a tax professional]`
+**R14. Open the Amazon account under a business entity with its own EIN and bank account before the first sale, so a personal-account mismatch never blocks payout verification; route entity choice to 20-FIN.** Condition: US brand. Moved to Appendix A: EIN, seller's permit and entity-choice detail. Sources: 01p1, 01p2, 01p3. `[5922aa6e05a8]` `[89eb3eba5f62]` `[56008befb8c7]` `[0cd745664a]` `[web check: sales tax nexus and marketplace facilitator rules; consult a tax professional]`
 
 **R15. Buy UPCs from GS1, not gray-market resellers.** Condition: any new ASIN. Source 01 quotes about $30 for a single GS1 code (a 10-pack was about $250 historically) and warns reseller codes "sometimes work" but risk listing or account problems. Figures across cases range $20 to $250. Sources: 01p1, 01p2, 01p3. `[608f261d2998]` `[web check: current GS1 pricing]`
 
@@ -125,7 +146,7 @@ Each rule: the rule, the condition, supporting mini playbooks (01p1, 01p2, 01p3,
 
 **R17. File a trademark before or at listing creation; the application number is enough to enrol in Brand Registry, approval is not required.** Condition: brand selling its own branded product. Source 01: approval takes 6 to 18 months; enrolment needs the application. DIY filing cost is quoted as $250, $275 and $225 to 275 in different places (section 7, conflict 5); Calvin paid $650 via LegalZoom. Sources: 01p1, 01p2, 01p3. `[9ea0db787b78]` `[c3d8bb5dbf28]` `[f0afeac35357]` `[62ee9d521629]` `[web check: current USPTO and UK IPO fees and Brand Registry trademark requirements]`
 
-**R18. Prefer a design (logo) mark when the name is generic or crowded; file a word mark only when the name is distinctive.** Condition: choosing mark type before filing. Source 01: logo marks are easier to win; a rushed, denied word mark forced Juliana into a rebrand with an estimated $100,000+ opportunity cost. Source 01 only. `[bcaa11727f52]` `[9ea0db787b78]` `[847aa6549bbc]`
+**R18. Choose a design (logo) mark over a word mark when the brand name sits on the listing image and packaging, since a denied word mark stalls Brand Registry, A+, Sponsored Brands and hijacker protection on that ASIN, not just the trademark.** Condition: choosing mark type before filing. A rushed, denied word mark forced Juliana into a rebrand with an estimated $100,000+ opportunity cost. Moved to Appendix A: general logo-vs-word-mark trademark strategy. Source 01 only. `[bcaa11727f52]` `[9ea0db787b78]` `[847aa6549bbc]`
 
 **R19. Create the product listing (even imperfect) before applying for Brand Registry.** Condition: enrolment requires an ASIN. Source 01 only. `[c3d8bb5dbf28]` `[62ee9d521629]` `[verify UI: brandservices.amazon.com flow]`
 
@@ -133,7 +154,11 @@ Each rule: the rule, the condition, supporting mini playbooks (01p1, 01p2, 01p3,
 
 **R21. Model Brand Referral Bonus as a credit on qualifying external sales, not as "15% becomes 5%".** Condition: sending off-Amazon traffic (email, social, ads) to the listing. Source 01 gives 2 framings, 15% to 5% and "about 10% back"; its card `[0665136f41d7]` says do not assume the 15% becomes 5%. Use tracked Attribution links; reconcile credited amounts. Sources: 01p2, 01p3. `[b70faf4d0983]` `[0665136f41d7]` `[web check: current Brand Referral Bonus mechanics]`
 
-**R22. Use a Chinese manufacturer NNN agreement, not a Western NDA, and consider a provisional patent for a novel product.** Condition: novel product sourced overseas. Source 01 opinion only: NDAs are "unenforceable" in China; provisional patent about $75; utility patent about $1,090 in DIY fees or about $10,000 with a lawyer, and Jeremy's DIY filing took years. Legal advice is required. `[web check: current USPTO fees; verify NNN claim with counsel]` `[needs brand data: counsel]`
+**R22. Before a production PO to an overseas factory for an Amazon-bound SKU, get a lawyer-reviewed NNN agreement, not a Western NDA, since it protects the SKU that will carry the brand's Amazon listing and reviews; put a provisional patent in the launch budget (P5), not aside.** Condition: novel product sourced overseas. Legal advice is required. Moved to Appendix A: NNN vs NDA reasoning and patent cost figures. Source 01 opinion only. `[web check: current USPTO fees; verify NNN claim with counsel]` `[needs brand data: counsel]`
+
+**R99. Enrol a repeat-purchase SKU in Subscribe & Save once Brand Registered, and model the subscriber discount into the margin gate (R35) before turning it on.** Condition: consumable or repeat-purchase product with steady demand. Source 01 names Subscribe & Save once in a Brand Registry benefits list, with no enrolment steps or discount rule. Sources: 01p2. `[049d4d03504b]` No source on mechanics beyond the name; verify against brand data before use.
+
+**R100. Build a Storefront once Brand Registered, as a destination for off-Amazon traffic and Sponsored Brands clicks, not as a substitute for the listing itself.** Condition: every Brand Registered seller with more than one ASIN or a story to tell. Source 01 names Storefront once in the same benefits list, with no structure or use case given. Sources: 01p2. `[049d4d03504b]` No source on structure; verify against brand data before use.
 
 ### 3D. Product research and validation thresholds
 
@@ -179,19 +204,21 @@ Each rule: the rule, the condition, supporting mini playbooks (01p1, 01p2, 01p3,
 
 **R42. Set the PPC budget from cost per click, conversion rate and margin, and keep at least about $1,000 for launch PPC.** Condition: launch budget. The $1,000 is source 01's rule of thumb. Sources: 01p3. `[12b47e3bd2]` `[needs brand data: margin per unit]`
 
+**R101. Keep Amazon price at or above the brand's own DTC price, unless the fee stack (R37) is modelled into a deliberately different price.** Condition: brand sells the same SKU on Amazon and its own site. Undercutting the brand's own site on Amazon erodes both channels' margin and trains buyers to wait for the cheaper channel. `[general practice]` No library source; verify against brand data before use.
+
 ### 3F. Sourcing and samples (Amazon-specific only; the rest is 18-COG)
 
-**R43. Ask for maximum monthly production capacity, not only MOQ, before the first order.** Condition: every manufacturer. Source 01: Calvin never asked, outgrew his manufacturer and estimated a $20,000+ loss. Source 01 only. `[458ab7dcf449]` `[05aad4186d69]` `[30cfab7b2654]`
+**R43. Confirm the factory's maximum monthly output before setting a launch date, so a fast PPC ramp or rank jump does not outrun supply and trigger the stockout failure mode (R91).** Condition: every manufacturer. Source 01: Calvin never asked, outgrew his manufacturer and estimated a $20,000+ loss. Source 01 only. `[458ab7dcf449]` `[05aad4186d69]` `[30cfab7b2654]`
 
-**R44. Always get a sample, and pay for the printed or custom sample when one is offered.** Condition: before any production run. Source 01: Veno Cards skipped a $200 to $300 printed sample and shipped defects; off-the-shelf samples usually cost only shipping ($25 to $45 international). Source 01 only. `[6f30eee6c39c]` `[05c3449a22]`
+**R44. Pay for the printed sample and approve it against the fixes in the product brief from review mining (P4 step G) before ordering the FBA-bound run; a defect that reaches FBA becomes a bad review, not a private return.** Condition: before any production run. Source 01: Veno Cards skipped a $200 to $300 printed sample and shipped defects; off-the-shelf samples usually cost only shipping ($25 to $45 international). Source 01 only. `[6f30eee6c39c]` `[05c3449a22]`
 
-**R45. A passed sample does not certify the bulk run; inspect before releasing the balance and before the stock reaches FBA.** Condition: every bulk order. Source 01: pay 30% upfront and 70% after a third-party inspection (about $100; Alibaba's service about $118 a day); inspectors must confirm barcodes scan; Calvin's uninspected run cost about $10,000 in returns and bad reviews. For a first shipment, ship to yourself first when feasible. Source 01 only. `[00605a61c7e0]` `[5001ae00f465]` `[1dada9a298]`
+**R45. Run the third-party inspection, including a barcode scan of the FNSKU and UPC, before releasing the balance and before the stock ships to FBA; an uninspected defect becomes a review problem, not just a wasted purchase.** Condition: every bulk order. Source 01: pay 30% upfront and 70% after a third-party inspection (about $100; Alibaba's service about $118 a day); inspectors must confirm barcodes scan; Calvin's uninspected run cost about $10,000 in returns and bad reviews. For a first shipment, ship to yourself first when feasible. Source 01 only. `[00605a61c7e0]` `[5001ae00f465]` `[1dada9a298]`
 
-**R46. Use a reversible payment method (credit card, PayPal, Alipay) for early orders; move to wire only once trust exists.** Condition: new manufacturer relationship. Source 01 only; reversible methods carry about 3% fee. `[00605a61c7e0]`
+**R46. Pay new Amazon-bound suppliers by a reversible method until trust is established: a dispute over a bad FBA-bound run has no recourse once the goods are checked into Amazon's warehouse.** Condition: new manufacturer relationship. Source 01 only; reversible methods carry about 3% fee. `[00605a61c7e0]`
 
 **R47. Print the FNSKU on the packaging at the factory, or label yourself; never let Amazon label.** Condition: every FBA unit. Source 01 quotes $0.50 and $0.30 per unit for Amazon labelling; source 02 quotes 38p. For a private label product the FNSKU printed on the box avoids stickers and labour. Sources: 01p2, 01p3, 02, 03. `[a5c9b2ba33c2]` `[996e5b8cd15d]` `[d9137e094ae3]` `[03f3588ec184]`
 
-**R48. Choose freight mode by urgency and weight; sea is about a third of air cost but 4 to 6 weeks plus customs.** Condition: every inbound from overseas. Source 01p2 recommends air for a first shipment (5 to 10 days, lower customs risk); source 01p1's AJ calls full air "throwing money down the drain" when not urgent and split half and half. Section 7, conflict 7. Landed cost example: about $11 per unit air vs about $7.50 sea for the same product. Use a freight forwarder for sea. Sources: 01p1, 01p2, 01p3. `[dd5ab39da4c6]` `[0e36997070ce]` `[982d07654f]` `[962618d3768f]` `[2e76599ac49d]`
+**R48. Choose air or sea freight against the launch date and the PPC budget already committed, not cost alone; a late sea shipment means a live, advertised listing burning cash with no stock.** Condition: every inbound from overseas. Source 01p2 recommends air for a first shipment (5 to 10 days, lower customs risk); source 01p1's AJ calls full air "throwing money down the drain" when not urgent and split half and half. Section 7, conflict 7. Landed cost example: about $11 per unit air vs about $7.50 sea for the same product. Use a freight forwarder for sea. Sources: 01p1, 01p2, 01p3. `[dd5ab39da4c6]` `[0e36997070ce]` `[982d07654f]` `[962618d3768f]` `[2e76599ac49d]`
 
 **R49. Source consumables domestically unless the overseas regulatory path is confirmed.** Condition: food, supplements, anything ingested. Source 01's cases (electrolytes, caffeinated gum, caffeinated tea) used US manufacturers; the source does not explain the regulatory reasoning. Source 01 only. `[8e7b2048c3]` `[409cdd9f62e7]` `[web check: FDA and import labelling rules for the product]`
 
@@ -233,7 +260,7 @@ Each rule: the rule, the condition, supporting mini playbooks (01p1, 01p2, 01p3,
 
 **R66. Small parcel through Amazon's partnered UPS rate for boxes; LTL pallets for large volumes.** Condition: shipment size. Source 01: LTL can roughly halve freight versus repeated small parcel sends; LTL needs a trucking company, palletising, wrapping and a Bill of Lading; the small-parcel example (9 cases, 336 lb) is quoted as $26.62 in the part 2 mini playbook and about $266 in the card (conflict 5). Source 02: UPS partnered is cheaper than DPD in the UK; never drop off at a fulfilment centre. Sources: 01p2, 02. `[3232a9886a40]` `[962618d3768f]` `[03f3588ec184]` `[f2e93ddb9b51]`
 
-**R67. Keep every carrier receipt and Bill of Lading; Amazon may not pay for lost inventory without your proof.** Condition: every shipment, especially pallets. Source 01: a misplaced BOL nearly cost $10,000. Source 01 only. `[bc218f44de6b]` `[77a1ff7d9047]`
+**R67. Keep every carrier receipt and Bill of Lading before handover: it is the only proof Amazon accepts for shipped-vs-received reconciliation (P12) and reimbursement claims (R41).** Condition: every shipment, especially pallets. Source 01: a misplaced BOL nearly cost $10,000. Source 01 only. `[bc218f44de6b]` `[77a1ff7d9047]`
 
 **R68. A shipment is not done when a tracking number appears; book the carrier collection.** Condition: UK small parcel via UPS. Source 02 only. `[f2e93ddb9b51]`
 
@@ -253,7 +280,9 @@ Each rule: the rule, the condition, supporting mini playbooks (01p1, 01p2, 01p3,
 
 **R75. Use price as an inventory throttle when selling faster than you can restock.** Condition: stockout risk with weeks to the next delivery. Source 01: Carnivore Electrolytes went $24.99 to $29.99 to $34.99 and "sales stayed the same"; Juliana did the same. Two cases, one source. A price change is an account write and needs a human.
 
-**R76. Recover a stalled launch with data and traffic, not a relaunch of the same listing.** Condition: launch that did not take. Source 01 only, thin on how. `[ff442ba83825]` `[2e469b7e6c]`
+**R76. Recover a stalled launch by reading sessions and unit session percentage (R95) and the search term report, then re-testing images and price; do not relaunch or edit the same ASIN blind.** Condition: launch that did not take. Source 01 only, thin on how. `[ff442ba83825]` `[2e469b7e6c]`
+
+**R102. Route Amazon buyers to email or DTC with a packaging insert or QR code, worded to stay clear of any review ask or incentive.** Condition: every FBA shipment once the brand has somewhere to send the buyer (email list, DTC site). Ties to the Attribution-link rule (R21) for tracking off-Amazon traffic sent the other way, and to 17-CXP for the insert design itself. `[general practice]` No library source; verify against brand data before use.
 
 ### 3J. PPC
 
@@ -270,6 +299,8 @@ Each rule: the rule, the condition, supporting mini playbooks (01p1, 01p2, 01p3,
 **R82. Judge PPC on net profit, not sales; test switching it down once organic momentum exists.** Condition: listing with organic sales. Source 01: Carnivore Electrolytes turned PPC off in month 6, sales dipped slightly, profit rose; Cynthia's overspend drove her loss. Source 01 only. `[abf98f0a62]` `[cbf54bbe6b]` `[4e2dab02af]` `[2dfb813269]`
 
 **R83. If a listing cannot advertise, isolate the trigger: strip the description, then remove images one by one.** Condition: "controversial product" or ineligibility flag. Source 01's diagnostic, not guaranteed. `[web check: current ad policy for the category]`
+
+**R103. Add Sponsored Display or Amazon DSP retargeting once Sponsored Products is proven, to recapture shoppers who viewed the listing but did not buy.** Condition: listing has enough traffic for a retargeting pool; note it needs separate access (DSP) beyond standard Seller Central. `[general practice]` No library source; verify against brand data before use.
 
 ### 3K. Reviews and policy compliance
 
@@ -304,6 +335,14 @@ Each rule: the rule, the condition, supporting mini playbooks (01p1, 01p2, 01p3,
 **R96. Track off-Amazon ad attribution before trusting it.** Condition: any external traffic. Source 01: Juliana's Facebook spend was mostly wasted until tracking existed. `[d650da94a314]`
 
 **R97. Map revenue by month for a full year before calling a product failed.** Condition: apparent decline. Source 01: AJ's January dip was seasonal. `[2e76599ac49d]`
+
+### 3N. Promotions
+
+**R104. Use Amazon's own coupons, Lightning Deals and Prime Day participation as launch or clearance levers, never as a substitute for the margin gate (R35).** Condition: any live listing considering a promotion. No source in this folder covers these tools. `[general practice]` No library source; verify against brand data before use.
+
+### 3O. Portfolio growth
+
+**R105. Add a second ASIN only once the first hero SKU has proven sell-through and cleared the margin gate (R35) on its own, and size the second launch's cash and PPC separately (R4, R5).** Condition: brand with one proven Amazon SKU considering a second. Source 01's R73 only says launch one SKU for the first listing; no source covers sequencing a second ASIN once it is proven. `[general practice]` No library source beyond R73; verify against brand data before use.
 
 ## 4. Procedures (implementation)
 
@@ -803,9 +842,7 @@ Each conflict: what each side says, when each is right, what the agent should do
 - Source 01 claims 4 to 5x sales from FBA over FBM on its own and students' products. Its card `[e94ff8c9c6e7]` says compare actual costs and test conversion; Seller Fulfilled Prime may exist for qualifying merchants. Source 02 gives FBM exceptions.
 - What the agent should do: default to FBA for standard-size goods but model both and never quote a multiplier.
 
-**Conflict 11. When to form an LLC.**
-- Source 01 recommends an LLC (with S-corp election) before selling; source 01p3 says skip it unless real lawsuit risk exists; source 03 formed hers in month 6 after $10,000 a month.
-- What the agent should do: route to 20-FIN; none of the sources is legal or tax advice.
+**Conflict 11. When to form an LLC.** Moved to Appendix A: the source positions on LLC timing. What the agent should do: route to 20-FIN; none of the sources is legal or tax advice.
 
 **Conflict 12. Individual plan and the Buy Box.**
 - Source 03 says the Individual plan cannot win the Buy Box. No other source says this, and for a single-seller own-brand listing the Buy Box contest does not apply in the same way.
@@ -888,6 +925,8 @@ Merged from all sources, deduplicated, with the fix.
 
 **9.7 Monthly Amazon report.** Revenue, units, sessions, unit session percentage, organic vs paid orders, PPC spend and ACOS, P&L by fee line, net margin, returns, stock cover and stockout days, inventory age, storage fees, fee claims filed, account health, reviews and rating, Brand Registry and hijacker status, actions needing a human. Missing values shown as unavailable, never zero. Period ROAS as total value divided by total spend. Format: Markdown with tables; client version follows the writing rules and never mentions tools or credentials.
 
+**9.8 Replenishment plan.** Reorder trigger date (remaining cover plus full lead time); order size (months of cover for a proven SKU, smaller batch for a new one); cash needed; lead time (manufacture plus freight plus check-in, longer in Q4); inventory age against the live long-term storage threshold. Format: short table, one row per SKU, refreshed from P17.
+
 ## 10. What needs live data or a web check
 
 **`[needs brand data]`**
@@ -942,6 +981,8 @@ Merged from all sources, deduplicated, with the fix.
 | Case study figures | Self-reported, undated, inconsistent | Never use as benchmarks; keep as examples only |
 | Amazon Live, AI listing drafts, Trendy Hunter | Features the sources call "new" are not; some may be gone | On first use |
 
+24 Sep 2026: ecommerce specificity pass applied from ECOM_REVIEW.md; priority block added, 12 rules reworded, 8 levers added, 252 words moved to Appendix A.
+
 ## 12. Source index
 
 | No. | Title | Type | Credibility and bias | Contributed most |
@@ -961,3 +1002,15 @@ Merged from all sources, deduplicated, with the fix.
 - `11-ADC-ad-copy-deployment`: copy craft for bullets, A+ and ads.
 - `06-MEA-measurement`: attribution and reporting standards the monthly report follows.
 - `17-CXP-post-purchase`: inserts, follow-up and support that must stay independent of review behaviour.
+
+## Appendix A. General background
+
+General business, legal and entity content pulled out of sections 3 and 7 on the 24 Sep 2026 ecommerce specificity pass, because it reads the same for any company and is not Amazon-specific. Kept here for reference. Each note says which rule or conflict it came from and which folder owns the topic now.
+
+**From R14 (3B, account setup and verification).** EIN is free at irs.gov; a seller's permit is free from the state .gov site; anyone charging for either is flagged as a scam by source 01. Mixing personal and business spend is an IRS flag and can pierce an LLC shield. Entity choice (DBA, LLC, or LLC with an S-corp election) is lay opinion in source 01. Route entity questions to 20-FIN.
+
+**From R18 (3C, Brand Registry and brand protection).** Source 01 says a design (logo) mark is generally easier to win than a word mark in trademark filing. This is a general trademark-strategy point, not an Amazon mechanic. 04-BRD owns trademark strategy.
+
+**From R22 (3F, sourcing and samples).** Source 01 opinion only: a Western NDA is "unenforceable" in China, so use an NNN agreement with an overseas factory instead. A provisional patent costs about $75; a utility patent about $1,090 in DIY fees or about $10,000 with a lawyer; Jeremy's DIY utility patent filing took years. This is general overseas-manufacturing legal advice for any importer, not Amazon mechanics. Route general sourcing legal questions to 18-COG, and always to counsel for the specific filing.
+
+**From section 7, conflict 11 (when to form an LLC).** Source 01 recommends an LLC, with an S-corp election, before selling. Source 01p3 says skip it unless a real lawsuit risk exists. Source 03 formed hers in month 6, after reaching $10,000 a month in sales. None of the sources is legal or tax advice. Route this question to 20-FIN.
