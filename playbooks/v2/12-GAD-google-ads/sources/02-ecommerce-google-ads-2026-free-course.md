@@ -59,13 +59,14 @@ It gives an operator a full build order for an ecommerce Google Ads account: tra
 
 All UI paths below are as shown in the lessons (mid-2025). `[verify UI]` applies to every step that names a menu, button or field.
 
-### 3.1 Choose campaign types and launch order [b7bf73d92363]
+### 3.1 Choose campaign types and launch order [b7bf73d92363] [f7488633c50a] [ff9f8a5e523b] [4bb6cbc0d837]
 
 1. Know the 6 types Google offers at campaign creation: Performance Max, Search, Demand Gen, Video, Display, Shopping. `[verify UI]`
-2. Split Search and Shopping each into branded and non-branded.
-3. Launch Search and Shopping first. Put most early effort into Shopping.
-4. Add remarketing (Demand Gen) and PMax once Search and Shopping work.
-5. Add YouTube prospecting (Demand Gen, Shorts) last, only if the fit checks in 3.28 are met.
+2. What each serves: Search = keyword text ads at the top and bottom of the results page. Shopping = product cards from Merchant Center (image, title, price, ratings, delivery), not keyword-led. Display = image banners on over 3 million sites and apps; "less popular than they once were"; best for remarketing the exact products a visitor viewed or carted (needs tags). Demand Gen = image and video on YouTube (incl. Shorts), Discover (feed below the search box in mobile Chrome) and Gmail Promotions; cold (interests, life events, in-market) or remarketing; creates demand. Video = Shorts (vertical), bumpers (6 seconds), skippable in-stream (skip after 5 seconds), non-skippable in-stream (the lesson says 30 seconds), in-feed (YouTube home and "watch next"). PMax = all of these in 1 campaign. Source says Shorts cost less to serve than Instagram Reels because competition is lower. [web check: current format lengths and placements]
+3. Split Search and Shopping each into branded and non-branded.
+4. Launch Search and Shopping first. Put most early effort into Shopping.
+5. Add remarketing (Demand Gen) and PMax once Search and Shopping work.
+6. Add YouTube prospecting (Demand Gen, Shorts) last, only if the fit checks in 3.28 are met.
 
 ### 3.2 Connect Shopify to Google Ads (beginner tracking route) [93f8e8d57251] [52efc5146531] [2b368492270c]
 
@@ -606,7 +607,7 @@ All are the source's examples, not promises.
 - **Header-only claims.** The document header describes a "feed-only Performance Max" (PMax with all text, image and video assets removed, used for product remarketing) and a switch from Maximize Clicks at "15 to 30 conversions per month". Neither appears in the lesson text. Card [eb5d63ad4917] (feed-only PMax) carries an editorial correction: PMax audience signals do not restrict targeting, removing assets does not isolate placements, and Merchant Center data can auto-generate assets. Card [c0c56417dfbd] (15 to 30) repeats the header. Treat both as unsupported by this transcript. [web check: current PMax asset and placement behaviour]
 - **Thresholds disagree across lessons.** Shopping: Target ROAS at 30 to 50 conversions a month. Bid lesson: value bidding at 30, Target ROAS above 50 (mind map) or at 30 to 50 (text). DSA: automated at 30+. PMax: Target ROAS at 50 in one campaign. Header: 15 to 30. Keep each figure tied to its campaign type; do not average.
 - **PMax first-stage bidding.** The setup lesson says "focus on conversion value" and then "run it on maximize conversions" for 2 to 4 weeks. The optimisation lesson says start on Maximize Conversion Value. Card [8e83ab723ce9] copies "maximize conversions". Likely a slip; confirm with the account's own goal.
-- **Demand Gen remarketing and product feed.** The source says it performs better without the product feed. Card [bff4fce7c8df] says "serve dynamic remarketing creative", which conflicts with the setup lesson. Follow the lesson text. The earlier Display lesson says Display can show exact products viewed [4bb6cbc0d838]; the later lesson says Demand Gen "far outperforms display" for remarketing.
+- **Demand Gen remarketing and product feed.** The source says it performs better without the product feed. Card [bff4fce7c8df] says "serve dynamic remarketing creative", which conflicts with the setup lesson. Follow the lesson text. The earlier Display lesson says Display can show exact products viewed [4bb6cbc0d837]; the later lesson says Demand Gen "far outperforms display" for remarketing.
 - **Demand Gen channels differ by use.** Remarketing: YouTube (in-stream, in-feed, Shorts), Discover, Gmail, no Display. Prospecting: Shorts only. Both from the same source, for different jobs.
 - **Bidding objective for Demand Gen remarketing** is "optimize for conversions" with purchases, not conversion value. The source does not explain why.
 - **Branded Shopping target ROAS** is garbled in the transcript ("15, 16, 17, 100%"). No usable number.
