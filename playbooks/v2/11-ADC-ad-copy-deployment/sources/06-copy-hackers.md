@@ -72,7 +72,7 @@ It helps an operator build the message before writing any copy: a short messagin
 
 28. **Feed information logically so the visitor can decide emotionally.** Condition: every page. Copy reads best when messages are clearly organized, drawing visitors toward the primary call to action ("Learn More", "Buy Now", "Sign Up", "Get Started"), and positioned logically. Decisions are more emotional than logical, but "the only way to help them get emotional is to feed them information in a logical way that prevents them from thinking". [e374cf034894]
 
-28a. **The book's "8 small tips" (chapter 8), tips 1 to 6.** Condition: drafting and editing any copy. Evidence: author's opinion plus 2 single cases.
+29. **The book's "8 small tips" (chapter 8), tips 1 to 6.** Condition: drafting and editing any copy. Evidence: author's opinion plus 2 single cases.
    - Tip 1, overwrite then cut: start with 10x more info than you need. Caples: "Fact-packed messages carry a wallop. Don't be afraid of long copy. If your ad is interesting, people will be hungry for all the copy you can give them. If the ad is dull, short copy won't save it." [753e79e5c3d8]
    - Tip 2, do not give your audience too much credit: people make "100s of 1000s" of decisions a day without thinking and accept things because questioning is exhausting, so you do not need to explain every statement. [10a92744aa71]
    - Tip 3, keep offers simple: 1 concrete condition beats a vague one (Fidelity case, section 7). "Getting succinct and sharp sells." [690303793634]
@@ -80,9 +80,9 @@ It helps an operator build the message before writing any copy: a short messagin
    - Tip 5, customers want a magic button: people keep believing there are miracle cures, that they deserve them, and that they take little effort and save time; they will buy anything that makes them younger, sexier, more powerful or richer. "Don't take advantage of this." But if the product truly delivers, do not hold back. [6b829c0c6b03]
    - Tip 6, use related news if you can do it "in a non-nasty way" (competitor blunder case, section 7). [d225b0070e78]
 
-29. **Positioning is the most important decision.** Condition: before writing a word. First recognize that you must position the product, then do research: talk to customers, business contacts, anyone who will answer. You can change later, but start right. Examples: Ogilvy & Mather positioned Merrill Lynch as a total financial services centre, not just a stockbroker, and American Express Travelers Cheques for domestic travel, not only foreign. [0e8918a800e5]
+30. **Positioning is the most important decision.** Condition: before writing a word. First recognize that you must position the product, then do research: talk to customers, business contacts, anyone who will answer. You can change later, but start right. Examples: Ogilvy & Mather positioned Merrill Lynch as a total financial services centre, not just a stockbroker, and American Express Travelers Cheques for domestic travel, not only foreign. [0e8918a800e5]
 
-30. **Hard writing is a good sign.** Condition: when writing feels easy. Thomas Mann: "A writer is a person for whom writing is more difficult than it is for other people." Easy writing may mean you are not choosing the right word, cutting enough, or positioning for a niche. "Fluff is easy." Note: no card covers this tip. [no card]
+31. **Hard writing is a good sign.** Condition: when writing feels easy. Thomas Mann: "A writer is a person for whom writing is more difficult than it is for other people." Easy writing may mean you are not choosing the right word, cutting enough, or positioning for a niche. "Fluff is easy." Note: no card covers this tip. [no card]
 
 ## 3. Procedures
 
