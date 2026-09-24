@@ -71,7 +71,7 @@ Shape B, then D, with E for large reallocations. Score 19: Money 5, Frequency 5,
 - **Sub-agents.** Channel readers (Meta, TikTok, Pinterest, Snap) as workers. Fatigue and frequency worker. Audience overlap worker. Creative ranker (code plus vision model over own statics and videos). Incrementality reader (holdout and geo tests from the registry). Budget allocator (code: marginal contribution per channel and campaign). Hypothesis writer (model). Test ranker (model, reads registry).
 - **Inputs.** Data: ad metrics at ad level with attribution, blended MER and contribution by day, incrementality results, funnel by source. Brand brain: margin targets, cash limits, seasonality, launch calendar, excluded audiences. Intelligence: diagnostics playbooks per channel, scaling gates, fatigue rules. Inspiration: own winners for the creative ranker. Registry: past tests and decisions.
 - **Outputs.** Daily exception list. Weekly diagnosis memo with ranked causes. Budget proposal by campaign with expected contribution. Kill, keep, scale list for ads. Top 5 tests. Creative briefs handed to Rank 2. Landing issues handed to Rank 8.
-- **Sources across folders.** 10-MCR plus the Meta and TikTok deployment cards in 11-ADC (about 190), measurement cards from 06-MEA, contribution rules from 20-FIN.
+- **Sources across folders.** 24-DEP (213 deployment cards, moved from 11 on 24 Sep), creative-testing cards from 10-MCR, measurement cards from 06-MEA, contribution rules from 20-FIN.
 - **Playbooks.** `paid.diagnose-drop`, `paid.pace-budget`, `paid.scale-or-cut`, `paid.rank-tests`, `paid.incrementality-plan`.
 - **Autonomy target.** L2 for pausing above a CPA ceiling and negative keywords; L3 for pacing inside a cap; L1 forever for new campaigns and reallocations above a threshold.
 - **Quality gate.** Every number in the memo traces to a query. No recommendation without the contribution effect stated. Guardrail: never propose more than a set percent shift in one day.
@@ -85,7 +85,7 @@ Shape C. Score 18: Money 5, Frequency 5, AI leverage 4, Compounding 4.
 - **Sub-agents.** Winner analyst (vision model describes own top and bottom ads, code finds what the winners share). Inspiration matcher (embedding and field match over the library, own and competitor, competitor as layout and mood only). Concept writer (strong model, playbook). Copy writer (strong model, ad-copy playbook from v1.2). Script writer for video and UGC briefs. Static builder (image model with the real product locked as a layer). Claim and offer checker (code). Critic (cheap model, checklist: avatar fit, credible before and after, one clear benefit, no invented claims, voice). Variant planner (one variable per variant).
 - **Inputs.** Data: ad-level results, hook and hold rates for video, comment text. Brand brain: facts, claims and proof, offer rules, voice examples, liked and disliked outputs, product photos. Intelligence: copy, concept, hook, UGC and static-format playbooks. Inspiration: everything, with performance. Registry: which angles and formats were already tested.
 - **Outputs.** Concept board: 5 concepts, each with the winner pattern it draws on, 3 copy variants, format, reference match, static mockups, video script or UGC brief, and a claim audit. Test plan handed to Rank 3 or Rank 1.
-- **Sources across folders.** Copy cards from 11-ADC (about 400), creative cards from 10-MCR, avatar cards from 02-AVT, voice from 04-BRD.
+- **Sources across folders.** 11-ADC (402 copywriting cards after the split), 10-MCR creative concept and format cards, avatar cards from 02-AVT, voice from 04-BRD.
 - **Playbooks.** `creative.analyse-winners`, `creative.concept-board`, `creative.static-copy`, `creative.video-script`, `creative.ugc-brief`, `creative.variant-plan`, `creative.hook-library`.
 - **Autonomy target.** L1 always for anything public. L2 for internal mockup generation.
 - **Quality gate.** Blind pairwise review by Kevin or the client for a rolling sample. Ship, edit or rewrite label feeds learned preferences back to the brand brain.
@@ -125,7 +125,7 @@ Shape B, then D.
 - Sub-agents: search-term worker, feed and Merchant Center worker, structure and bidding worker, brand-exclusion worker, PMax asset reader, budget allocator (shared with rank 1), hypothesis writer, test ranker.
 - Inputs: Google Ads and Merchant Center data at keyword, product and asset-group level; blended contribution from rank 4; brand brain margins, catalog and exclusions; Google playbooks; registry.
 - Outputs: weekly account diagnosis, negative and exclusion lists, structure and bidding proposals, feed fixes, budget proposal, tests.
-- Sources across folders: 12-GAD plus the Google Ads course and strategy cards in 11-ADC (about 140), conversion setup cards from 06-MEA.
+- Sources across folders: 12-GAD, now including the 4 Google Ads documents moved from 11 on 24 Sep (141 cards), plus conversion setup cards from 06-MEA.
 - Playbooks: `google.diagnose-account`, `google.search-term-hygiene`, `google.feed-health`, `google.shopping-vs-pmax`, `google.bidding-by-stage`, `google.scaling-gates`, `google.brand-and-competitor-exclusions`.
 - Autonomy target: L2 for negatives and exclusions; L3 for pacing inside a cap; L1 for structure changes.
 
@@ -332,12 +332,12 @@ Shape C. Score 9: Money 2, Frequency 4, AI leverage 3, Compounding 1.
 
 ### Folder-to-agent map: all 24 folders, ranked
 
-Every source folder gets its own agent. Nothing is merged away. This table summarises the 24 cards above. Where two folders share a shape and data, the agents are siblings that hand work to each other, not one agent. Scores use the method in section 2.
+Every source folder gets its own agent. Nothing is merged away. This table summarises the cards above. On 24 Sep 2026 folder 11 was split: 10 Meta, TikTok and account-audit documents (213 cards) moved to a new Drive folder `24-DEP-ad-deployment`, and 4 Google Ads documents (141 cards) moved to `12-GAD`. Folder 11 now holds copywriting only (9 documents, 402 cards). The repo records this in `data/library-v3/folder-overrides.json` without changing cards.json; card ids do not depend on folder. Where two folders share a shape and data, the agents are siblings that hand work to each other, not one agent. Scores use the method in section 2.
 
 | Rank | Folder | Agent | Shape | Money | Freq | AI lev. | Comp. | Score |
 |---|---|---|---|---|---|---|---|---|
-| 1 | 10-MCR paid social creative | Paid media performance and budget (Meta, TikTok, other social) | B, D, E | 5 | 5 | 5 | 4 | 19 |
-| 2 | 11-ADC ad copy and deployment | Ad copy and creative production | C | 5 | 5 | 4 | 4 | 18 |
+| 1 | 24-DEP ad deployment (new, split from 11 on 24 Sep) | Paid media performance and budget (Meta, TikTok, other social) | B, D, E | 5 | 5 | 5 | 4 | 19 |
+| 2 | 11-ADC ad copy (copy only after the split) and 10-MCR paid social creative | Ad copy and creative production, 2 sibling agents: copy (11) and creative concepts and formats (10) | C | 5 | 5 | 4 | 4 | 18 |
 | 3 | 09-CRO testing | Growth experimentation (CRO) | D | 4 | 4 | 4 | 5 | 17 |
 | 4 | 20-FIN finance and accounting | Profit and marketing efficiency | B, E | 5 | 4 | 5 | 3 | 17 |
 | 5 | 12-GAD google ads | Google Ads performance (Search, Shopping, PMax, YouTube) | B, D | 5 | 5 | 4 | 3 | 17 |
@@ -402,7 +402,7 @@ The same gap exists in most folders: the cards say how to set things up, and the
 
 **Implementation playbooks** say how to do it in the platform, step by step, with the settings, the order, the checks and the traps. Each step carries a "verify the current UI" flag where the platform changes, a rollback note, and the guardrail that applies. They are what an L2 or L3 action executes against, and what a human follows when the agent stays at L1. 1,500 to 3,000 tokens each, tighter than decision playbooks because they are procedures.
 
-**Folder contributions are many to many.** The map in section 3 is one agent per folder for ownership and ranking. But the cards in 11-ADC feed 3 agents: rank 2 takes the copy cards, rank 1 takes the Meta and TikTok deployment cards, rank 5 takes the Google deployment cards. Likewise 06-MEA feeds ranks 12, 1 and 5, and 03-OFF feeds ranks 7, 8 and 2. Distillation should pull by topic across folders, not by folder alone. First step: tag 11-ADC cards as `copy`, `deploy` or `both` in `metadata-overrides.json`, without regenerating anything.
+**Folder contributions are many to many.** The map in section 3 is one agent per folder for ownership and ranking. But the cards in 11-ADC feed 3 agents: rank 2 takes the copy cards, rank 1 takes the Meta and TikTok deployment cards, rank 5 takes the Google deployment cards. Likewise 06-MEA feeds ranks 12, 1 and 5, and 03-OFF feeds ranks 7, 8 and 2. Distillation should pull by topic across folders, not by folder alone. Done on 24 Sep 2026 at the document level: the deployment documents moved to `24-DEP-ad-deployment` (Meta, TikTok, account audit) and `12-GAD` (Google Ads) in Drive, recorded in `data/library-v3/folder-overrides.json`. Readers should apply the overrides on load; cards.json is unchanged. The 214 cards that are both copy and deployment sit with their document, which is the right home for distillation.
 
 ### Implementation playbooks for the top 8 agents
 

@@ -19,6 +19,7 @@ Two tracks share this repo.
 
 **1. Intelligence library (built with Codex)**
 - `data/library-v3/cards.json`: 7,611 task-sized cards from 256 source documents, 23 topic folders plus 1 mixed folder. This is the canonical library. Do not restart ingestion or regenerate cards.
+- On 24 Sep 2026 Kevin split folder 11 (ad copy and deployment) by document: 10 Meta, TikTok and account-audit documents moved to a new Drive folder `24-DEP-ad-deployment`, 4 Google Ads documents moved to `12-GAD`, and 11 keeps copywriting only. cards.json still carries the old folder; `data/library-v3/folder-overrides.json` maps the 14 source ids to their new folder and domain. Apply it when reading folders. Card ids do not change with folder.
 - Search: `scripts/search_knowledge.py` (engine `intelligence/knowledge_search.py`). Keyword (SQLite FTS, `search.sqlite`) plus semantic (`vectors.json`, text-embedding-3-small, 512 dims), labels in `metadata.json`. Defaults: 8,000 tokens and 16 cards for focused tasks. Use `--keyword-only` to avoid an embedding call.
 - Creative routing: `intelligence/creative_retrieval.py`.
 - Playbooks: `playbooks/v1` has 23 domains x 3 workflows = 69 drafts. For ad copy, `playbooks/ad-copy-v1.2` is the strongest tested version; v1.3 and v1.4 did not replace it. Do not overwrite manual versions with `scripts/build_playbooks.py`.
