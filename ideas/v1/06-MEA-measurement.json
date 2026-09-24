@@ -6283,12 +6283,15 @@
   },
   "sources": {
    "mini_playbooks": [
+    "01",
     "05",
     "06"
    ],
    "cards": [
     "000e5a39ddc8",
-    "c8e57ed1cd0a"
+    "c8e57ed1cd0a",
+    "ae2ed547485e",
+    "2cac3e89ff27"
    ],
    "rules": [
     "R86",
@@ -7209,5 +7212,1505 @@
   },
   "confidence": "low",
   "general_practice": true
+ },
+ {
+  "id": "MEA-113",
+  "title": "Mine site search terms to find gaps between demand and catalogue",
+  "domain": "06-MEA",
+  "bottleneck": [
+   "conversion"
+  ],
+  "lever": "site search gap mining",
+  "hypothesis": "If the top terms in on-site search are checked against the catalogue, then products people search for but cannot find turn into a list of items or content to add or fix.",
+  "applies_when": [
+   "any"
+  ],
+  "does_not_apply_when": [
+   "Site search is not implemented or not tracked as a GA4 event"
+  ],
+  "signal": {
+   "check": "A free-form exploration of the site search event's search term, filtered to that event, shows repeated terms that do not match anything in the catalogue or its naming.",
+   "metrics": [
+    "other:site_search_terms"
+   ]
+  },
+  "expected_effect": {
+   "metric": "cvr_overall",
+   "direction": "up",
+   "size": "unknown",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Only a reporting exercise; no site change until a gap is confirmed and actioned separately."
+  },
+  "prerequisites": [
+   "Site search implemented on the storefront and captured as a GA4 event with a search term parameter"
+  ],
+  "steps": [
+   "Build a free-form exploration with Search term as rows and Event count as values.",
+   "Filter Event name to the site search event so the row list is not blank.",
+   "List the terms with real volume that have no matching product, collection or clear content on the site.",
+   "Bring the list to the merchandising or content owner as candidate SKUs, bundles or landing pages.",
+   "Re-run the search after any catalogue or content change to see if the term now finds a match."
+  ],
+  "test": {
+   "method": "Compare the volume of an unmatched search term before and after a matching product or page is added",
+   "measure": "search-to-purchase or search-to-page-view rate for that term",
+   "read_point": "30 days after the catalogue or content change ships"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "01"
+   ],
+   "cards": [
+    "0c84e8cf0da8"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": false
+ },
+ {
+  "id": "MEA-114",
+  "title": "Trace a path exploration backward from purchase to find a checkout loop",
+  "domain": "06-MEA",
+  "bottleneck": [
+   "conversion"
+  ],
+  "lever": "backward path exploration",
+  "hypothesis": "If a path exploration is built backward from purchase or begin_checkout, then a shopper looping between checkout and another page, like account login, turns into a fixable friction point instead of an invisible drop.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "A path exploration starting from purchase or begin_checkout and expanded backward shows a real share of sessions bouncing between the checkout page and a non-checkout page, such as account or login, before completing.",
+   "metrics": [
+    "cvr_cart_to_checkout",
+    "cvr_checkout_to_order"
+   ]
+  },
+  "expected_effect": {
+   "metric": "cvr_checkout_to_order",
+   "direction": "up",
+   "size": "unknown",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Building the exploration changes nothing on the site; only a follow-up fix carries risk."
+  },
+  "prerequisites": [
+   "begin_checkout and purchase events tracked in GA4",
+   "Account or login page views tracked as page_view events"
+  ],
+  "steps": [
+   "Open a path exploration and start over from the ending point: search and select the purchase event, or begin_checkout.",
+   "Switch the node dimension to Page path and expand backward past the checkout pages.",
+   "Look for a repeating loop between a checkout step and a non-checkout page such as account or login.",
+   "Read a real loop as a hypothesis about confusing checkout flow, not a proven cause.",
+   "Hand the finding to whoever owns the checkout page as a UX item to test, such as a persistent login prompt or an unclear next step."
+  ],
+  "test": {
+   "method": "Re-run the same backward path exploration after the checkout flow change ships",
+   "measure": "share of checkout sessions showing the loop, before vs after",
+   "read_point": "30 days after the fix ships"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "01"
+   ],
+   "cards": [
+    "85c9ae567054",
+    "663dee00fd8e"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": false
+ },
+ {
+  "id": "MEA-115",
+  "title": "Break purchase revenue by country and device to find a device-specific gap",
+  "domain": "06-MEA",
+  "bottleneck": [
+   "conversion"
+  ],
+  "lever": "device-level revenue breakdown",
+  "hypothesis": "If purchase revenue is read by country and device category in one free-form table, then a device that underperforms in a market with real traffic gets flagged for a mobile or tablet fix instead of hiding inside a blended total.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "A free-form table of purchase revenue by country and device category shows one device far below the others in a country with meaningful session volume.",
+   "metrics": [
+    "aov"
+   ]
+  },
+  "expected_effect": {
+   "metric": "cvr_overall",
+   "direction": "up",
+   "size": "unknown",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Reporting only; any resulting site fix is a separate, later decision."
+  },
+  "prerequisites": [
+   "Purchase revenue and device category available in GA4 for the reporting period"
+  ],
+  "steps": [
+   "Open a free-form exploration and add Country and Device category as dimensions, Purchase revenue as the metric.",
+   "Put Country in rows and Device category in columns.",
+   "Switch to a heat map view to spot a device that is darker or lighter than the rest in a given country.",
+   "For a flagged country and device, pull sessions and conversion rate for that pair to confirm it is a rate problem, not a volume problem.",
+   "Route a confirmed device-specific gap to a mobile or tablet page review."
+  ],
+  "test": {
+   "method": "Compare conversion rate for the flagged country and device pair before and after the page review ships a fix",
+   "measure": "cvr_overall for that country and device pair",
+   "read_point": "30 days after the fix ships"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "01"
+   ],
+   "cards": [
+    "20d5752ed796"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": false
+ },
+ {
+  "id": "MEA-116",
+  "title": "Compute cost per acquired customer before the first paid ad ever runs",
+  "domain": "06-MEA",
+  "bottleneck": [
+   "measurement_data",
+   "acquisition_efficiency"
+  ],
+  "lever": "pre-paid CAC baseline",
+  "hypothesis": "If a cost-per-new-customer number is computed from organic, referral, influencer and content costs before any paid ad spend starts, then a paid channel's real marginal cost can be judged against a true baseline instead of against zero.",
+  "applies_when": [
+   "any",
+   "new_store"
+  ],
+  "signal": {
+   "check": "The store has never run paid ads, or is about to start, and has no cost-per-new-customer figure covering its existing organic, referral, influencer, sampling or content spend.",
+   "metrics": [
+    "cpa",
+    "ncpa"
+   ]
+  },
+  "expected_effect": {
+   "metric": "tracking_coverage",
+   "direction": "up",
+   "size": "unknown",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "finance"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "None; this is a calculation exercise using historical costs."
+  },
+  "prerequisites": [
+   "needs brand data: acquisition costs before paid ads (influencer, content, samples, discounts) and new customers over that window"
+  ],
+  "steps": [
+   "List every cost that brought a first-time customer before paid ads started: influencer fees, content production, samples, launch discounts, referral payouts.",
+   "Count new customers acquired over the same window.",
+   "Divide total pre-ad acquisition cost by new customers to get a baseline cost per acquired customer.",
+   "Record the baseline with its date range so it can be compared against paid CAC later.",
+   "Recompute it whenever a new pre-paid acquisition cost line starts, such as a new influencer program."
+  ],
+  "test": {
+   "method": "Compare the paid CAC once ads launch against this pre-paid baseline for the same customer count",
+   "measure": "cpa (paid) vs the pre-paid baseline cpa",
+   "read_point": "after the first full month of paid spend"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "02"
+   ],
+   "cards": [
+    "776e59649374",
+    "11a74e34ca53"
+   ],
+   "rules": []
+  },
+  "confidence": "medium",
+  "general_practice": false
+ },
+ {
+  "id": "MEA-117",
+  "title": "Classify every data source as zero, first or third party before buying more",
+  "domain": "06-MEA",
+  "bottleneck": [
+   "measurement_data"
+  ],
+  "lever": "data tier classification",
+  "hypothesis": "If every data source the store uses is labelled zero-party, first-party or third-party, and zero and first-party sources are built out before buying third-party data, then spend goes to the data closest to the customer first.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "The store is considering or already buying third-party or aggregated data, such as household or demographic data, while zero-party sources like a post-purchase survey and first-party behavioral tracking are thin or missing.",
+   "metrics": [
+    "tracking_coverage"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:zero_party_coverage",
+   "direction": "up",
+   "size": "unknown",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Classification only; no data is deleted or purchased as part of this idea."
+  },
+  "prerequisites": [],
+  "steps": [
+   "List every data source the store uses or is considering: surveys, quizzes, on-site behavior, purchase history, third-party household or demographic data.",
+   "Label each one zero-party, customer told you, first-party, you tracked it, or third-party, bought or aggregated.",
+   "Check whether zero and first-party sources are built out before adding a third-party source.",
+   "If zero or first-party gaps exist, prioritize closing them before a third-party data purchase."
+  ],
+  "test": {
+   "method": "Review the data source list every quarter and recount the zero, first and third-party split",
+   "measure": "share of decisions that could be made from zero and first-party data alone",
+   "read_point": "quarterly"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "02"
+   ],
+   "cards": [
+    "9c479169d7e9",
+    "e11ec2148e14"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": false
+ },
+ {
+  "id": "MEA-118",
+  "title": "Use third-party life-event data to time a retention or acquisition message",
+  "domain": "06-MEA",
+  "bottleneck": [
+   "repeat_retention"
+  ],
+  "lever": "life-event triggered messaging",
+  "hypothesis": "If third-party data flags a life event relevant to the product, like becoming a homeowner or a birthday, then a message timed to that event reaches the customer when the product is most relevant instead of on a generic broadcast schedule.",
+  "applies_when": [
+   "any"
+  ],
+  "does_not_apply_when": [
+   "The store cannot access or afford third-party household or life-event data",
+   "Consent or privacy rules in the store's markets restrict using this data for targeting"
+  ],
+  "signal": {
+   "check": "A relevant life event for the product category, such as home ownership, marriage or a birthday, is available as a third-party or zero-party signal but is not used to time any message.",
+   "metrics": [
+    "email_click_rate",
+    "repeat_rate_90d"
+   ]
+  },
+  "expected_effect": {
+   "metric": "email_click_rate",
+   "direction": "up",
+   "size": "unknown",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "M",
+   "owner": "marketer"
+  },
+  "cost": "medium",
+  "risk": {
+   "level": "medium",
+   "reversible": true,
+   "note": "Third-party data has a cost and a privacy and consent burden; check applicable rules before buying or using it."
+  },
+  "prerequisites": [
+   "needs brand data: a life event plausibly linked to purchase intent for this product",
+   "web check: privacy and consent rules for buying or using third-party household data in the store's selling countries"
+  ],
+  "steps": [
+   "Name the life event most linked to needing the product, such as a new home, a new baby or a birthday.",
+   "Check whether that signal is available as zero-party, already asked, or needs a third-party source.",
+   "Confirm the consent and privacy rules for using it in the store's markets.",
+   "Build a message triggered on that signal instead of on a generic send schedule.",
+   "Compare response rate for the triggered send against a generic send to a similar segment."
+  ],
+  "test": {
+   "method": "A/B the life-event triggered message against the standard broadcast to a comparable segment",
+   "measure": "email_click_rate and order rate within 14 days of send",
+   "read_point": "after the test segment reaches a usable size"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "02"
+   ],
+   "cards": [
+    "e11ec2148e14"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": false
+ },
+ {
+  "id": "MEA-119",
+  "title": "Run a voice-of-customer program across five lifecycle stages",
+  "domain": "06-MEA",
+  "bottleneck": [
+   "measurement_data",
+   "conversion"
+  ],
+  "lever": "lifecycle voice-of-customer program",
+  "hypothesis": "If the store asks customers a question at each of five stages, before awareness, after awareness, on-site before purchase, after purchase and after churn, then qualitative reasons for behavior are collected continuously instead of only when a number already looks wrong.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "The store collects customer feedback at only one or two of the five stages, before awareness, after awareness, on-site pre-purchase, post-purchase, post-churn, or only in reaction to a metric drop.",
+   "metrics": [
+    "other:voc_stage_coverage"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:voc_stage_coverage",
+   "direction": "up",
+   "size": "unknown",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "M",
+   "owner": "marketer"
+  },
+  "cost": "low",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "None; adding a feedback touchpoint does not remove any existing one."
+  },
+  "prerequisites": [
+   "A survey or on-site poll tool",
+   "A defined churn window for this product, for example no purchase in 1 year"
+  ],
+  "steps": [
+   "Map the 5 stages: before the customer has heard of the brand, after they have heard of it, on-site before purchase, after purchase, and after a defined period with no repeat purchase.",
+   "Pick 1 question and 1 collection method for each stage that does not yet have one, such as an on-site poll for pre-purchase or a churn-window email for lapsed customers.",
+   "Route every answer into the CRM or email platform, not a standalone tool.",
+   "Review answers by stage on a fixed cadence, for example monthly."
+  ],
+  "test": {
+   "method": "Count stages with a live feedback method after the rollout",
+   "measure": "number of the 5 stages with an active question and a CRM-linked answer",
+   "read_point": "60 days after rollout"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "02"
+   ],
+   "cards": [
+    "7e8ec204ea88"
+   ],
+   "rules": []
+  },
+  "confidence": "medium",
+  "general_practice": false
+ },
+ {
+  "id": "MEA-120",
+  "title": "Prioritize deep listening with the most loyal and most dissatisfied customers",
+  "domain": "06-MEA",
+  "bottleneck": [
+   "repeat_retention"
+  ],
+  "lever": "loyal and hater interview targeting",
+  "hypothesis": "If the store's limited time for customer interviews goes first to the most loyal repeat buyers and the most dissatisfied customers, then the interview list surfaces what to keep doing and what to stop doing, instead of spreading thin across the middle group who moves the needle less.",
+  "applies_when": [
+   "any"
+  ],
+  "does_not_apply_when": [
+   "Customer list is too small to identify a meaningful top and bottom group"
+  ],
+  "signal": {
+   "check": "Customer interviews or deep-dive calls are picked at random or by convenience, with no attempt to separate the top repeat buyers or highest-LTV customers from the customers with refunds, complaints or bad reviews.",
+   "metrics": [
+    "review_rating",
+    "repeat_rate_90d"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:qual_signal_quality",
+   "direction": "up",
+   "size": "unknown",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "None; this changes who gets interviewed, not any live system."
+  },
+  "prerequisites": [
+   "Customer list rankable by order count or LTV",
+   "Refund, complaint and review records"
+  ],
+  "steps": [
+   "Rank the customer list by order count or LTV; take the top slice as the loyal group.",
+   "Pull customers with refunds, complaints or the lowest review scores as the dissatisfied group.",
+   "Size each group so there are enough people to get a real read, not just 1 or 2 calls.",
+   "Interview or survey both groups on what the store does well and what it should stop doing.",
+   "Route findings into the same reporting cadence as other qualitative checks."
+  ],
+  "test": {
+   "method": "Compare themes raised by the loyal and dissatisfied groups against themes from a random sample of customers",
+   "measure": "number of distinct, actionable themes surfaced per group",
+   "read_point": "after the first round of interviews"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "02"
+   ],
+   "cards": [
+    "375f45ad5513",
+    "338914784a95"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": false
+ },
+ {
+  "id": "MEA-121",
+  "title": "Build a word board from qualitative answers and test it in page copy",
+  "domain": "06-MEA",
+  "bottleneck": [
+   "conversion",
+   "trust_brand"
+  ],
+  "lever": "qualitative-to-copy pipeline",
+  "hypothesis": "If long-form survey and quiz answers about why customers bought are collected into a word board, then a headline or product description rewritten to match those words can be tested against the current copy instead of guessing at language.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "The store has open-ended survey or quiz answers about why customers bought, but current headline or product description copy was not built from that language.",
+   "metrics": [
+    "cvr_pdp_to_cart"
+   ]
+  },
+  "expected_effect": {
+   "metric": "cvr_pdp_to_cart",
+   "direction": "up",
+   "size": "unknown",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "M",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Revert to the prior copy if the test does not win; keep the losing version documented."
+  },
+  "prerequisites": [
+   "A survey or quiz that asks an open-ended why-did-you-buy or what-problem-did-this-solve question",
+   "A way to run an A/B or before-after test on the page copy"
+  ],
+  "steps": [
+   "Pull long-form answers from post-purchase surveys or quizzes about why the customer bought or what problem it solved.",
+   "Group repeated words and phrases into a word board.",
+   "Rewrite 1 headline or product description to use the customer's own words instead of the brand's original phrasing.",
+   "Test the new copy against the current copy on the same page.",
+   "Keep the word board updated as new answers come in."
+  ],
+  "test": {
+   "method": "Run an A/B test of the reworded copy against the current copy",
+   "measure": "cvr_pdp_to_cart for the page",
+   "read_point": "after the test reaches a readable sample"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "02"
+   ],
+   "cards": [
+    "e11ec2148e14",
+    "e2f188649f8f"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": false
+ },
+ {
+  "id": "MEA-122",
+  "title": "Have the founder call at least one customer a week in the early stage",
+  "domain": "06-MEA",
+  "bottleneck": [
+   "measurement_data",
+   "team_capacity"
+  ],
+  "lever": "founder customer contact cadence",
+  "hypothesis": "If the founder talks to at least 1 customer a week in the store's first years, then product and message decisions are informed by direct customer contact instead of secondhand reports alone.",
+  "applies_when": [
+   "new_store"
+  ],
+  "does_not_apply_when": [
+   "The store has outgrown founder-led customer contact and has handed this to support or marketing"
+  ],
+  "signal": {
+   "check": "The founder has gone a full week with no direct customer call, and no one else has taken over that contact.",
+   "metrics": [
+    "other:founder_customer_contact_rate"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:founder_customer_contact_rate",
+   "direction": "up",
+   "size": "unknown",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "founder"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "None; this is a time commitment, not a system change."
+  },
+  "prerequisites": [],
+  "steps": [
+   "Book at least 1 customer call a week on the founder's calendar.",
+   "Pick the customer from a mix: a recent buyer, a loyal repeat buyer, or someone who almost bought and did not.",
+   "Write down 1 thing learned from each call.",
+   "Once call volume outgrows the founder's time, hand the cadence to support or marketing and keep the weekly minimum."
+  ],
+  "test": {
+   "method": "Count completed calls per week over a month",
+   "measure": "weeks with at least 1 completed customer call",
+   "read_point": "monthly"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "02"
+   ],
+   "cards": [
+    "7e8ec204ea88"
+   ],
+   "rules": []
+  },
+  "confidence": "medium",
+  "general_practice": false
+ },
+ {
+  "id": "MEA-123",
+  "title": "Add a one-question on-site poll asking what a page is missing",
+  "domain": "06-MEA",
+  "bottleneck": [
+   "conversion"
+  ],
+  "lever": "on-site open-ended poll",
+  "hypothesis": "If an open-ended poll asks visitors what a page is missing, then answers like cannot find the price or cannot tell if this fits me surface specific page fixes that a bounce rate number alone cannot name.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "A page with real traffic and a real drop-off has no on-site poll or feedback widget asking visitors what they were looking for or what is missing.",
+   "metrics": [
+    "bounce_rate_pdp",
+    "cvr_pdp_to_cart"
+   ]
+  },
+  "expected_effect": {
+   "metric": "cvr_pdp_to_cart",
+   "direction": "up",
+   "size": "unknown",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "low",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "A small on-page widget; remove it if it hurts page speed or looks intrusive."
+  },
+  "prerequisites": [
+   "An on-site poll or feedback widget tool"
+  ],
+  "steps": [
+   "Pick a page with real traffic and a known drop-off, such as a top product page or the cart page.",
+   "Add a 1-question open-ended poll: what is this page missing.",
+   "Let it run for a set period and collect enough responses to read for patterns.",
+   "Group answers into themes: price not visible, fit or sizing unclear, trust or shipping questions, and so on.",
+   "Route the top theme to whoever owns that page as a fix candidate."
+  ],
+  "test": {
+   "method": "Compare the page's conversion rate before and after the top theme is fixed",
+   "measure": "cvr_pdp_to_cart for the page",
+   "read_point": "30 days after the fix ships"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "02"
+   ],
+   "cards": [
+    "7e8ec204ea88"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": false
+ },
+ {
+  "id": "MEA-124",
+  "title": "Aim every analysis at an open question, not a metric already understood",
+  "domain": "06-MEA",
+  "bottleneck": [
+   "measurement_data",
+   "team_capacity"
+  ],
+  "lever": "analysis targeting",
+  "hypothesis": "If every analysis or report is scoped to a question nobody can yet answer, then analyst time stops going into restating numbers the team already understands.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "A requested or recurring analysis restates a metric the team already tracks and agrees on, with no open question or unknown attached to it.",
+   "metrics": [
+    "other:analysis_question_rate"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:analysis_question_rate",
+   "direction": "up",
+   "size": "unknown",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "None; this is a scoping rule for requests, not a system change."
+  },
+  "prerequisites": [],
+  "steps": [
+   "Before starting an analysis, write down the specific unknown it is meant to resolve.",
+   "If the unknown is already answered by an existing report, point to that report instead of rebuilding it.",
+   "If no real unknown can be named, decline or postpone the analysis.",
+   "Pair this with the report-ends-in-a-decision rule so each analysis has a stated question going in and a stated decision coming out."
+  ],
+  "test": {
+   "method": "Review the last 10 analysis requests for a named unknown at the start",
+   "measure": "share of requests with a stated open question before work began",
+   "read_point": "after the next 10 requests"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "02"
+   ],
+   "cards": [
+    "11a74e34ca53"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": false
+ },
+ {
+  "id": "MEA-125",
+  "title": "Build a has-not-converted audience for reporting and remarketing",
+  "domain": "06-MEA",
+  "bottleneck": [
+   "repeat_retention",
+   "acquisition_efficiency"
+  ],
+  "lever": "non-converter audience",
+  "hypothesis": "If an audience of users who have not completed the store's key event is built in GA4, then that group can be studied on its own and used for a linked remarketing push instead of being invisible inside the all-users total.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "The store has a key event, like purchase or lead form completion, but no audience defined for users who have not yet completed it.",
+   "metrics": [
+    "cvr_overall"
+   ]
+  },
+  "expected_effect": {
+   "metric": "cvr_overall",
+   "direction": "up",
+   "size": "unknown",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Building the audience alone has no effect; using it for remarketing is a separate, later decision with its own cost."
+  },
+  "prerequisites": [
+   "The store's key event tracked in GA4",
+   "Google Ads linked, if the audience will be used for remarketing"
+  ],
+  "steps": [
+   "In Admin, Audiences, create a custom audience.",
+   "Add an exclude group on the store's key event, such as purchase or generate_lead.",
+   "Name it clearly, for example has not purchased.",
+   "Use it in a standard report to size the non-converter group.",
+   "If linked to Google Ads, use it for a remarketing campaign; if not, use it for reporting only."
+  ],
+  "test": {
+   "method": "Track the audience size and its later conversion rate for a held-out period",
+   "measure": "share of the audience that later completes the key event, with and without remarketing",
+   "read_point": "30 days after the audience is built"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "03"
+   ],
+   "cards": [
+    "7425cd2ae91c"
+   ],
+   "rules": []
+  },
+  "confidence": "medium",
+  "general_practice": false
+ },
+ {
+  "id": "MEA-126",
+  "title": "Check a remarketing list meets the platform minimum before using it",
+  "domain": "06-MEA",
+  "bottleneck": [
+   "acquisition_efficiency"
+  ],
+  "lever": "audience size gate",
+  "hypothesis": "If a remarketing or lookalike audience is checked against the ad platform's minimum size before a campaign is planned on it, then budget is not committed to a list too small to serve or optimize.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "A campaign is being planned or already running on an audience whose size against the ad platform's stated minimum has not been checked.",
+   "metrics": [
+    "other:audience_size_vs_minimum"
+   ]
+  },
+  "expected_effect": {
+   "metric": "cpa",
+   "direction": "down",
+   "size": "unknown",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "A check only; no spend risk from the check itself."
+  },
+  "prerequisites": [
+   "web check: current minimum audience sizes for the ad platform in use"
+  ],
+  "steps": [
+   "Open the Advertising or audience section for the ad platform and find the list's current size.",
+   "Compare it against the platform's stated minimum for that use, such as remarketing or a lookalike seed.",
+   "If below minimum, hold the campaign and either widen the audience definition or wait for it to grow.",
+   "Re-check size before every campaign that leans on a narrow, event-based audience."
+  ],
+  "test": {
+   "method": "Log audience size against the stated minimum for every campaign brief before launch",
+   "measure": "share of launched campaigns whose audience met the minimum at launch",
+   "read_point": "at every campaign launch"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "03"
+   ],
+   "cards": [
+    "510ee3226e4d"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": false
+ },
+ {
+  "id": "MEA-127",
+  "title": "Use the ad platform's budget scenario planner before a spend change",
+  "domain": "06-MEA",
+  "bottleneck": [
+   "acquisition_efficiency"
+  ],
+  "lever": "budget scenario forecasting",
+  "hypothesis": "If a budget change is run through the ad platform's own scenario or projection tool first, then the likely effect on conversions and spend is checked against a forecast instead of only found out after the change ships.",
+  "applies_when": [
+   "any"
+  ],
+  "does_not_apply_when": [
+   "Ads is not linked to GA4, or the store has too little conversion history for the forecast to be meaningful"
+  ],
+  "signal": {
+   "check": "A budget increase or decrease is being planned with no check of the linked ad platform's own budget projection or scenario planner tool.",
+   "metrics": [
+    "spend",
+    "roas_blended"
+   ]
+  },
+  "expected_effect": {
+   "metric": "roas_blended",
+   "direction": "up",
+   "size": "unknown; the tool is unverified for accuracy, treat its output as a lead not a promise",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Checking a forecast has no cost; only the resulting budget change carries spend risk."
+  },
+  "prerequisites": [
+   "Google Ads linked to GA4",
+   "Enough historical conversion data for the platform to forecast from"
+  ],
+  "steps": [
+   "Before changing a budget, open the Advertising, Budgeting section and its projection or scenario planner.",
+   "Enter the planned spend change and read the forecast conversions, spend and cost impact.",
+   "Treat the forecast as a lead to check, not a guaranteed outcome.",
+   "Compare the actual result after the change ships against the forecast to learn how reliable the tool is for this account."
+  ],
+  "test": {
+   "method": "Compare the platform's forecast conversions and spend against the actual result after the change",
+   "measure": "forecast vs actual gap for conversions and spend",
+   "read_point": "30 days after the budget change ships"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "03"
+   ],
+   "cards": [
+    "510ee3226e4d"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "MEA-128",
+  "title": "Flag a landing page with high entrances but few key events for review",
+  "domain": "06-MEA",
+  "bottleneck": [
+   "conversion"
+  ],
+  "lever": "landing page merchandising flag",
+  "hypothesis": "If landing pages are ranked by entrances against key events instead of by entrances alone, then a high-traffic page converting far below its peers turns into a named content or merchandising review instead of staying hidden in a big traffic number.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "The Landing page report is being read for traffic volume alone, with no comparison of entrances to key events per page to find pages that draw traffic but do not convert it.",
+   "metrics": [
+    "other:entrance_to_key_event_ratio"
+   ]
+  },
+  "expected_effect": {
+   "metric": "cvr_overall",
+   "direction": "up",
+   "size": "unknown",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "A reporting exercise; any resulting content change is a separate, later decision."
+  },
+  "prerequisites": [
+   "Key events marked in GA4",
+   "Enough entrances per landing page to make the ratio meaningful"
+  ],
+  "steps": [
+   "Open the Landing page report with entrances and key events as columns.",
+   "Sort by entrances, then compare each page's key-event share to the store average.",
+   "Flag any high-entrance page whose key-event share sits well below the average.",
+   "Route the flagged page to a content or merchandising review before assuming the traffic itself is the problem.",
+   "Rule out a traffic mix mismatch for that page first, since a redesign will not fix wrong traffic."
+  ],
+  "test": {
+   "method": "Compare the flagged page's key-event share before and after the content review ships a change",
+   "measure": "cvr_overall for that landing page",
+   "read_point": "30 days after the change ships"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "03"
+   ],
+   "cards": [
+    "90bd1b325921"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "MEA-129",
+  "title": "View a funnel as a trend over time to catch when a drop-off began",
+  "domain": "06-MEA",
+  "bottleneck": [
+   "measurement_data",
+   "conversion"
+  ],
+  "lever": "trended funnel view",
+  "hypothesis": "If a funnel exploration is read as a trend over the date range instead of a single snapshot, then a drop-off that started on a specific day gets tied to a launch, a change or an outage instead of being read as a constant, unexplained rate.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "A funnel exploration is being read only as a single-period snapshot, with no trended view to see whether the drop-off is constant or started on a specific date.",
+   "metrics": [
+    "other:funnel_trend_visibility"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:funnel_trend_visibility",
+   "direction": "up",
+   "size": "unknown",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "A reporting view change only."
+  },
+  "prerequisites": [
+   "A working funnel exploration with the store's checkout events"
+  ],
+  "steps": [
+   "Open the existing funnel exploration and switch it to Trended Funnel.",
+   "Read each step's completion rate across the date range instead of as one number.",
+   "If a step's rate drops on a specific date, cross-check that date against a known launch, price change, site change or outage.",
+   "If the rate has been flat the whole period, treat it as a standing rate to benchmark against history, not a recent event."
+  ],
+  "test": {
+   "method": "Log the date a trended funnel drop is found to start and check it against the store's change log",
+   "measure": "share of funnel drops matched to a known change within 3 days",
+   "read_point": "next time a funnel step rate drops"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "03"
+   ],
+   "cards": [
+    "ac9071a3bbdd"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "MEA-130",
+  "title": "Treat a large session-to-product-view drop as a findability problem",
+  "domain": "06-MEA",
+  "bottleneck": [
+   "conversion"
+  ],
+  "lever": "browse-stage diagnosis",
+  "hypothesis": "If an unusually large drop from session start to product view is checked for collection layout, navigation and search findability first, then the store stops writing this drop off as a normal step and misses a real browse-stage problem.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "The funnel's session-to-product-view step drop is much larger than the store's own history or comparable periods, and nobody has checked collection navigation or on-site search for that period.",
+   "metrics": [
+    "cvr_pdp_to_cart",
+    "other:session_to_product_view_rate"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:session_to_product_view_rate",
+   "direction": "up",
+   "size": "unknown",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "A diagnostic check; any resulting navigation change is a separate decision."
+  },
+  "prerequisites": [
+   "view_item and session_start, or an equivalent proxy, tracked in GA4",
+   "needs brand data: the store's own historical session-to-product-view rate to judge unusual"
+  ],
+  "steps": [
+   "Compare the current session-to-product-view rate against the store's own recent history, not a general benchmark.",
+   "If it sits well below history, check collection page layout, main navigation and search results for the same period.",
+   "Mine site search terms for the same window for signs shoppers cannot find what they want.",
+   "Only read the drop as normal customer behavior once navigation and search have been ruled out."
+  ],
+  "test": {
+   "method": "Compare the session-to-product-view rate before and after a navigation or search fix ships",
+   "measure": "other:session_to_product_view_rate",
+   "read_point": "30 days after the fix ships"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "05"
+   ],
+   "cards": [
+    "000e5a39ddc8"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": false
+ },
+ {
+  "id": "MEA-131",
+  "title": "Set a minimum session count before comparing landing page conversion rates",
+  "domain": "06-MEA",
+  "bottleneck": [
+   "conversion",
+   "measurement_data"
+  ],
+  "lever": "sample-size gate for page comparison",
+  "hypothesis": "If a landing page's purchase conversion rate is only compared against peers once it has a minimum number of sessions, then a page with a handful of visits does not get flagged as a big winner or big loser on noise alone.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "Landing pages are being ranked or singled out by purchase conversion rate with no minimum session count applied, so a page with very few sessions sits at the top or bottom of the list.",
+   "metrics": [
+    "other:page_comparison_min_sessions"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:page_comparison_min_sessions",
+   "direction": "up",
+   "size": "unknown",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "A reporting rule only."
+  },
+  "prerequisites": [
+   "needs brand data: a reasonable minimum session count for this store's typical page traffic and conversion rate"
+  ],
+  "steps": [
+   "Set a minimum session count per landing page below which its conversion rate is not compared to other pages.",
+   "Apply the filter before ranking or flagging any page as a standout, high or low.",
+   "For pages under the minimum, wait for more traffic or pool them with similar pages before reading a rate.",
+   "Revisit the minimum as the store's average traffic per page changes."
+  ],
+  "test": {
+   "method": "Review a sample of past page-level conclusions and flag ones drawn below the new minimum",
+   "measure": "share of past comparisons that would have failed the minimum",
+   "read_point": "at rule rollout, once"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "05"
+   ],
+   "cards": [
+    "b700e12faf0c"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "MEA-132",
+  "title": "Read AOV by its distribution and by new versus returning customer",
+  "domain": "06-MEA",
+  "bottleneck": [
+   "aov"
+  ],
+  "lever": "AOV distribution read",
+  "hypothesis": "If AOV is read as a distribution and split by new versus returning customer instead of one blended mean, then an AOV change is traced to a real shift in order mix or customer type instead of read as one flat number moving for no clear reason.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "AOV is being reported and acted on as a single mean, with no view of its distribution or a split between new and returning customer AOV.",
+   "metrics": [
+    "aov",
+    "units_per_order"
+   ]
+  },
+  "expected_effect": {
+   "metric": "aov",
+   "direction": "up",
+   "size": "unknown",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "A reporting change only."
+  },
+  "prerequisites": [
+   "Order-level data with a new-vs-returning customer flag"
+  ],
+  "steps": [
+   "Pull order value distribution for the period, not just the mean.",
+   "Split AOV into new-customer AOV and returning-customer AOV.",
+   "Check which product pathways lead to each AOV band.",
+   "When AOV moves, check whether the shift is in the distribution's shape or in the new-vs-returning mix before naming a cause."
+  ],
+  "test": {
+   "method": "Track new-customer AOV and returning-customer AOV separately for 3 periods",
+   "measure": "aov by customer type, period over period",
+   "read_point": "every reporting period"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "06"
+   ],
+   "cards": [
+    "9b3f534de0a2"
+   ],
+   "rules": []
+  },
+  "confidence": "medium",
+  "general_practice": false
+ },
+ {
+  "id": "MEA-133",
+  "title": "Track sell-through rate by product and category for inventory planning",
+  "domain": "06-MEA",
+  "bottleneck": [
+   "cash_inventory"
+  ],
+  "lever": "sell-through tracking",
+  "hypothesis": "If sell-through rate is tracked by product and category, then buying and stocking decisions are informed by how fast inventory actually moves instead of by revenue or unit sales alone.",
+  "applies_when": [
+   "catalogue",
+   "hero_sku"
+  ],
+  "signal": {
+   "check": "The store reorders or plans inventory using revenue or units sold alone, with no sell-through rate, units sold divided by units received, tracked by product or category.",
+   "metrics": [
+    "inventory_turns",
+    "days_of_stock"
+   ]
+  },
+  "expected_effect": {
+   "metric": "inventory_turns",
+   "direction": "up",
+   "size": "unknown",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "M",
+   "owner": "ops"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "A reporting addition; no inventory action is taken by this idea alone."
+  },
+  "prerequisites": [
+   "Units received and units sold data by product or SKU"
+  ],
+  "steps": [
+   "For each product or category, compute sell-through rate as units sold divided by units received for the period.",
+   "Rank products by sell-through rate alongside days of stock.",
+   "Flag slow sell-through, high-stock items for a markdown or bundling review.",
+   "Flag fast sell-through, low-stock items for a reorder review.",
+   "Feed sell-through rate into the regular inventory or buying meeting."
+  ],
+  "test": {
+   "method": "Track stockout days and aged inventory value before and after sell-through rate is added to buying decisions",
+   "measure": "stockout_days and days_of_stock trend",
+   "read_point": "after 2 buying cycles"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "06"
+   ],
+   "cards": [
+    "37f16297a48e"
+   ],
+   "rules": []
+  },
+  "confidence": "medium",
+  "general_practice": false
+ },
+ {
+  "id": "MEA-134",
+  "title": "Triangulate channel credit from several signals, not one attribution view",
+  "domain": "06-MEA",
+  "bottleneck": [
+   "acquisition_efficiency"
+  ],
+  "lever": "multi-signal channel attribution",
+  "hypothesis": "If a channel's real contribution is checked across several signals, attribution window, channel definition, consent coverage, UTM accuracy and an incrementality read where feasible, then a budget call rests on more than any single platform's attribution report.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "A channel budget decision is being made from one attribution view, such as a platform's own claimed conversions or Shopify's referral cards, with no cross-check against GA4, UTM accuracy, consent coverage or an incrementality signal.",
+   "metrics": [
+    "attribution_gap",
+    "roas_blended"
+   ]
+  },
+  "expected_effect": {
+   "metric": "attribution_gap",
+   "direction": "down",
+   "size": "unknown",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "M",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "medium",
+   "reversible": true,
+   "note": "The risk is in the resulting budget move, not in the triangulation check itself."
+  },
+  "prerequisites": [
+   "GA4 and the ad platform both reporting for the same channel and window",
+   "needs brand data: UTM convention and consent coverage for the channel in question"
+  ],
+  "steps": [
+   "For the channel in question, pull its claimed result from the platform, from GA4, and from Shopify or store orders for the same window.",
+   "Check the attribution window and reporting model each source uses.",
+   "Check UTM tagging accuracy and consent coverage for that channel.",
+   "Where feasible, run or reference a holdout or incrementality read for that channel.",
+   "Write the range across sources instead of a single number, and note which reads agree or disagree, before recommending a budget move."
+  ],
+  "test": {
+   "method": "Run a holdout or geo test on the channel and compare its lift against the range of attribution signals",
+   "measure": "lift from the holdout vs the spread of platform, GA4 and store-order claims",
+   "read_point": "after the holdout test completes"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "06"
+   ],
+   "cards": [
+    "561513b3e85e"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "MEA-135",
+  "title": "Report gross and return-adjusted revenue as two separate lines",
+  "domain": "06-MEA",
+  "bottleneck": [
+   "measurement_data"
+  ],
+  "lever": "dual revenue reporting",
+  "hypothesis": "If the store reports gross revenue and return-adjusted revenue as two separate, labelled lines instead of picking one, then a delayed batch of returns does not get read as a demand or ad-performance drop, and the true cash position is not lost either.",
+  "applies_when": [
+   "any"
+  ],
+  "does_not_apply_when": [
+   "Return rate is negligible and reporting both lines adds more overhead than value"
+  ],
+  "signal": {
+   "check": "The store's revenue report shows only 1 figure, either gross of returns or net of them, with no separate line or note showing refund timing by original order month.",
+   "metrics": [
+    "return_rate"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:revenue_reporting_basis",
+   "direction": "up",
+   "size": "unknown",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "finance"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "A reporting format change only."
+  },
+  "prerequisites": [
+   "Refund data with both the refund date and the original order date"
+  ],
+  "steps": [
+   "Report top-line revenue for marketing math as net sales plus shipping, tax out, on its usual basis.",
+   "Add a second line showing revenue by original order date with refunds mapped back to that order date, not the refund date.",
+   "Label each line clearly so nobody reads one as the other.",
+   "When the return-adjusted line dips, check whether it is return timing before touching ad spend."
+  ],
+  "test": {
+   "method": "Track how often each of the two lines is cited in a decision over a quarter",
+   "measure": "count of decisions citing the correctly labelled line for the question asked",
+   "read_point": "quarterly"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "06"
+   ],
+   "cards": [
+    "a3ae4e9e2a00"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": false
+ },
+ {
+  "id": "MEA-136",
+  "title": "Remove unreliable cards from the Shopify dashboard and add ones that matter",
+  "domain": "06-MEA",
+  "bottleneck": [
+   "measurement_data"
+  ],
+  "lever": "dashboard customization",
+  "hypothesis": "If the default Shopify Analytics dashboard is customized to drop attribution, social referral and returning customer rate cards and add net sales, shipping, sessions, conversion rate, AOV and the funnel, then whoever opens the dashboard sees the numbers worth acting on first, not the ones the store has already agreed to ignore.",
+  "applies_when": [
+   "shopify"
+  ],
+  "signal": {
+   "check": "The default Shopify Analytics dashboard still shows attribution, social referral or returning customer rate cards that the team has agreed not to use for decisions.",
+   "metrics": [
+    "other:dashboard_card_relevance"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:dashboard_card_relevance",
+   "direction": "up",
+   "size": "unknown",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "marketer"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "The Customize button only changes layout; no data is deleted."
+  },
+  "prerequisites": [
+   "Shopify plan that allows dashboard customization"
+  ],
+  "steps": [
+   "Open Shopify Analytics and click Customize in the top right.",
+   "Remove the attribution, social referral, and returning customer rate cards.",
+   "Add net sales, shipping charges, sessions, conversion rate, AOV and the funnel card.",
+   "Save the layout and confirm it is what loads by default for the team."
+  ],
+  "test": {
+   "method": "Ask the team which cards they check first, before and after the customization",
+   "measure": "share of team citing a decision-relevant card as their first read",
+   "read_point": "1 month after the change"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "06"
+   ],
+   "cards": [
+    "bcb81bfb6f41"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": false
  }
 ]
