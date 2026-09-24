@@ -128,9 +128,9 @@ function spotlightTile() {
   </button>`;
 }
 function healthTile() {
-  const top = VIEW.collections.all.ad_ids.map((id) => VIEW.ads[id]);
+  const top = (VIEW.collections.health || VIEW.collections.all).ad_ids.map((id) => VIEW.ads[id]);
   const total = top.reduce((s, a) => s + a.view.metrics.spend, 0) || 1;
-  const groups = [['scale', 'Scale', 'seg-scale'], ['watch', 'Watch', 'seg-watch'], ['cut', 'Cut', 'seg-cut'], ['not_enough_data', 'Too new', 'seg-ned']];
+  const groups = [['scale', 'Scale', 'seg-scale'], ['cut', 'Cut', 'seg-cut'], ['watch', 'Watch', 'seg-watch'], ['not_enough_data', 'Too little spend', 'seg-ned']];
   const g = groups.map(([code, label, cls]) => {
     const list = top.filter((a) => a.view.verdict.code === code);
     return { code, label, cls, n: list.length, spend: list.reduce((s, a) => s + a.view.metrics.spend, 0) };
@@ -139,11 +139,11 @@ function healthTile() {
   const tired = top.filter((a) => FATIGUED.includes(a.view.fatigue.code)).length;
   const noted = top.filter((a) => (NOTES[a.id] || []).length).length;
   const tg = VIEW.targets;
-  return `<section class="tile health c-4" aria-label="Top 30 health">
-    <div class="tile-head"><div><h2>Top 30 health</h2><div class="sub">Share of spend on ads beating ${tg.roas ? tg.roas.toFixed(2) + 'x' : 'the target'} ROAS</div></div><button class="go" type="button" data-goto="gallery" aria-label="Open the gallery">${ARROW}</button></div>
+  return `<section class="tile health c-4" aria-label="Ad health">
+    <div class="tile-head"><div><h2>Ad health, all ${top.length} ads</h2><div class="sub">Share of spend on ads beating ${tg.roas ? tg.roas.toFixed(2) + 'x' : 'the target'} ROAS</div></div><button class="go" type="button" data-health="all" aria-label="See every ad grouped by verdict">${ARROW}</button></div>
     <div class="big">${scaleShare.toFixed(0)}%</div>
-    <div class="segbar" role="img" aria-label="Spend by verdict">${g.filter((x) => x.spend > 0).map((x) => `<span class="${x.cls}" style="flex:${x.spend}" data-tip="${esc(`${x.label}|Ads|${x.n}|Spend|${money(x.spend)}|Share|${(x.spend / total * 100).toFixed(1)}%`)}">${x.spend / total > 0.12 ? (x.spend / total * 100).toFixed(0) + '%' : ''}</span>`).join('')}</div>
-    <div class="seg-legend">${g.map((x) => `<div><span><i class="${x.cls}"></i>${x.label}</span><b>${x.n} ads</b></div>`).join('')}</div>
+    <div class="segbar" role="img" aria-label="Spend by verdict">${g.filter((x) => x.spend > 0).map((x) => `<span class="${x.cls}" style="flex:${x.spend}" data-health="${x.code}" data-tip=""${esc(`${x.label}|Ads|${x.n}|Spend|${money(x.spend)}|Share|${(x.spend / total * 100).toFixed(1)}%`)}">${x.spend / total > 0.12 ? (x.spend / total * 100).toFixed(0) + '%' : ''}</span>`).join('')}</div>
+    <div class="seg-legend">${g.map((x) => `<button type="button" data-health="${x.code}" aria-label="See the ${x.n} ${x.label} ads"><span><i class="${x.cls}"></i>${x.label}</span><b>${x.n} ads</b></button>`).join('')}</div>
     <div class="meter"><div style="display:flex;justify-content:space-between"><span>Showing fatigue</span><b>${tired} of ${top.length}</b></div><div class="bar"><i style="width:${top.length ? tired / top.length * 100 : 0}%"></i></div></div>
     <div class="meter"><div style="display:flex;justify-content:space-between"><span>With team notes</span><b>${noted} of ${top.length}</b></div><div class="bar"><i style="width:${top.length ? noted / top.length * 100 : 0}%"></i></div></div>
   </section>`;
@@ -342,6 +342,16 @@ window.renderOverview = function renderOverview() {
 document.addEventListener('click', (e) => {
   const view = $('overviewView');
   if (!view || view.hidden || !view.contains(e.target)) return;
+  const hv = e.target.closest('[data-health]');
+  if (hv) {
+    // Open the gallery on every ad, grouped Scale, Cut, Watch, and jump to the group clicked.
+    $('rankSet').value = 'health'; $('format').value = 'all'; $('sort').value = 'spend'; $('verdict').value = '';
+    for (const id of ['minSpend', 'minRoas']) $(id).value = '';
+    setTab('gallery'); fillFilters(); renderGrid(); remember();
+    const code = hv.dataset.health;
+    setTimeout(() => { const el = code === 'all' ? $('collectionLabel') : $('grp-' + code); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 250);
+    return;
+  }
   const go = e.target.closest('[data-goto]');
   if (go) { setTab(go.dataset.goto); window.scrollTo(0, 0); return; }
   const open = e.target.closest('[data-open]');

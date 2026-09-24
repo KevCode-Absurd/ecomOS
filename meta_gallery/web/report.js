@@ -272,10 +272,10 @@ function rpAdCard(ad, why) {
     <p class="small">${why}</p></div></div>`;
 }
 function rpAds() {
-  const v = VIEW, pool = [...new Set([...(v.collections['roas2:all'] || { ad_ids: [] }).ad_ids, ...v.collections.all.ad_ids])].map((id) => v.ads[id]).filter(Boolean);
+  const v = VIEW, pool = (v.collections.health || v.collections.all).ad_ids.map((id) => v.ads[id]).filter(Boolean);
   const T = v.targets.roas || v.totals.roas || 0;
   const good = pool.filter((a) => a.view.metrics.roas !== null && a.view.metrics.purchases >= 2).sort((a, b) => b.view.metrics.roas - a.view.metrics.roas).slice(0, 4);
-  const bad = v.collections.all.ad_ids.map((id) => v.ads[id]).filter((a) => a.view.verdict.code === 'cut').sort((a, b) => b.view.metrics.spend - a.view.metrics.spend).slice(0, 3);
+  const bad = (v.collections.health || v.collections.all).ad_ids.map((id) => v.ads[id]).filter((a) => a.view.verdict.code === 'cut').sort((a, b) => b.view.metrics.spend - a.view.metrics.spend).slice(0, 3);
   const tagWhy = (a) => { const tg = a.tags || {}; const bits = []; if (tg.angle && tg.angle.code !== 'other') bits.push(`the message is about ${tg.angle.label.toLowerCase()}`); if (tg.product && tg.product.label && !/mixed|other/i.test(tg.product.label)) bits.push(`it shows ${tg.product.label.toLowerCase()}`); return bits.length ? ' T' + bits.join(' and ').slice(1) + '.' : ''; };
   return `<section class="rp-sec"><h2>Ads that worked, and ads that did not</h2>
     <div class="rp-two"><div><h3 class="good">Worked best</h3>${good.map((a) => rpAdCard(a, `Made ₹${a.view.metrics.roas.toFixed(2)} for every ₹1${T ? `, ${(a.view.metrics.roas / T).toFixed(1)} times the account's usual` : ''}.${esc(tagWhy(a))}`)).join('') || '<p class="muted">No ad had 2 or more orders in these days.</p>'}</div>

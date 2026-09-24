@@ -182,6 +182,8 @@
         roasPool['extra' + fl] = extraImg.length;
         for (const f of FORMATS) picks[`roas${fl}:${f}`] = roasPool[fl].filter(([id]) => ads[id].creative.type === f).slice(0, ROAS_SET_SIZE);
       }
+      // Every ad that spent in these dates, for the health view (verdicts cover all ads, not only the top 30).
+      picks.health = cands.slice();
       const rank = {};
       cands.forEach(([id], i) => { rank[id] = i + 1; });
       const media = {};
@@ -205,9 +207,9 @@
       }
       const collections = {};
       for (const [key, grp] of Object.entries(picks)) {
-        const rm = /^roas(\d):(.+)$/.exec(key), f = rm ? rm[2] : key, fl = rm ? Number(rm[1]) : 0;
-        collections[key] = { label: this.labels[f] || f, ad_ids: grp.map((x) => x[0]), size: grp.length, by: rm ? 'roas' : 'spend',
-          limit: rm ? ROAS_SET_SIZE : COLLECTION_SIZE, min_purchases: fl, extra_images: rm && f === 'all' ? roasPool['extra' + fl] : 0,
+        const rm = /^roas(\d):(.+)$/.exec(key), f = key === 'health' ? 'all' : rm ? rm[2] : key, fl = rm ? Number(rm[1]) : 0;
+        collections[key] = { label: this.labels[f] || f, ad_ids: grp.map((x) => x[0]), size: grp.length, by: key === 'health' ? 'verdict' : rm ? 'roas' : 'spend',
+          limit: key === 'health' ? grp.length : rm ? ROAS_SET_SIZE : COLLECTION_SIZE, min_purchases: fl, extra_images: rm && f === 'all' ? roasPool['extra' + fl] : 0,
           available: rm ? (f === 'all' ? roasPool[fl].length : roasPool[fl].filter(([id]) => ads[id].creative.type === f).length) : f === 'all' ? cands.length : (byType[f] || []).length,
           totals: Engine.addUp(grp.map((x) => x[1])) };
       }

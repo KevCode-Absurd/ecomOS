@@ -100,6 +100,7 @@ async function boot() {
     $('preset').value = saved.preset && $('preset').querySelector(`option[value="${saved.preset}"]`) ? saved.preset : 'custom';
     if (saved.fmt && m.formats.includes(saved.fmt)) $('format').value = saved.fmt;
     if (/^roas[012]$/.test(saved.set || '')) { $('rankSet').value = saved.set; $('sort').value = 'roas'; }
+    if (saved.set === 'health') $('rankSet').value = 'health';
     $('compare').checked = saved.compare !== false;
     if (['7', '14', '30', '90', '180', '365', 'this_month', 'last_month'].includes($('preset').value)) applyPreset($('preset').value);
   } else {
@@ -160,7 +161,7 @@ function wire() {
   $('format').addEventListener('change', () => { fillFilters(); renderGrid(); remember(); });
   $('rankSet').addEventListener('change', () => {
     // The ROAS list is mostly used to find image ads to learn from, so start it on single images.
-    $('sort').value = $('rankSet').value === 'spend' ? 'spend' : 'roas';
+    $('sort').value = ['spend', 'health'].includes($('rankSet').value) ? 'spend' : 'roas';
     fillFilters(); renderGrid(); remember();
   });
   $('sortNote').addEventListener('click', (e) => { if (e.target.closest('[data-year]')) { $('preset').value = '365'; applyPreset('365'); refresh(); } });
@@ -449,6 +450,10 @@ function demoBlock(demos, note) {
 // ---------- grid ----------
 const collection = () => {
   const set = $('rankSet') ? $('rankSet').value : 'spend', f = $('format').value;
+  if (set === 'health') {
+    const h = VIEW.collections.health, ids = f === 'all' ? h.ad_ids : h.ad_ids.filter((id) => VIEW.ads[id].creative.type === f);
+    return { ...h, label: f === 'all' ? h.label : (VIEW.collections[f] || {}).label || f, ad_ids: ids, size: ids.length, available: ids.length, totals: ENGINE.constructor.addUp ? ENGINE.constructor.addUp(ids.map((id) => VIEW.ads[id].view.metrics)) : h.totals };
+  }
   return (set !== 'spend' ? VIEW.collections[`${set}:${f}`] || VIEW.collections[`${set}:all`] : VIEW.collections[f]) || VIEW.collections.all;
 };
 const items = () => collection().ad_ids.map((id) => VIEW.ads[id]);
@@ -483,8 +488,8 @@ function renderGrid() {
   else if (sort === 'change') list.sort((a, b) => chg(b) - chg(a));
   else list.sort((a, b) => b.view.metrics.spend - a.view.metrics.spend);
   const scope = fmtKey === 'all' ? 'across all formats' : `${col.label.toLowerCase()} ads only`;
-  const byRoas = col.by === 'roas';
-  $('collectionLabel').textContent = byRoas
+  const byRoas = col.by === 'roas', byVerdict = col.by === 'verdict';
+  $('collectionLabel').textContent = byVerdict ? `All ${col.size} ads that spent in these dates, ${scope}, grouped by verdict · showing ${list.length}` : byRoas
     ? `Top ${col.limit} by ROAS, ${scope}${col.min_purchases ? `, ${col.min_purchases}+ purchase${col.min_purchases > 1 ? 's' : ''}` : ''}` + (col.extra_images ? ` + ${col.extra_images} more image ad${col.extra_images === 1 ? '' : 's'}` : '')
       + (col.size - col.extra_images < col.limit ? ` · ${col.size} qualify in these dates` : ` · ${col.available} qualify`) + ` · showing ${list.length} of ${col.size}`
     : `Top 30 by spend, ${scope}` + (col.size < 30 ? ` · only ${col.size} spent in these dates` : '') + ` · showing ${list.length} of ${col.size}`;
@@ -502,7 +507,17 @@ function renderGrid() {
   for (const ad of items()) vc[ad.view.verdict.code] = (vc[ad.view.verdict.code] || 0) + 1;
   $('totals').innerHTML = `This set (all ${col.size} ads, filters ignored): spend ${fmt(t.spend, 'money')} · purchase value ${fmt(t.purchase_value, 'money')} · ROAS ${fmt(t.roas, 'x')} · Verdicts: ${vc.scale || 0} scale, ${vc.watch || 0} watch, ${vc.cut || 0} cut, ${vc.not_enough_data || 0} not enough data`;
   $('demo').innerHTML = demoBlock(list.map((ad) => ad.view.demographics), bucketNote(VIEW.demographics_buckets, VIEW.demographics_exact, VIEW.range) + ` Follows the format and filters: ${list.length} ads shown below.`);
-  $('grid').innerHTML = list.map(card).join('');
+  if (byVerdict) {
+    // Scale first, then Cut, then Watch, then Too new. Biggest spend first inside each group.
+    const G = [['scale', 'Scale', 'Beating the ROAS target. Give these more budget, slowly.'], ['cut', 'Cut', 'More than 30% below target, or no sale after 2x target cost per purchase. Pause or fix.'],
+      ['watch', 'Watch', 'Close to target, or still early. Leave them and check again in a few days.'], ['not_enough_data', 'Too little spend', 'Not enough spend or sales yet to judge. Most are small or old tests.']];
+    $('grid').innerHTML = G.map(([code, label, note]) => {
+      const g = list.filter((a) => a.view.verdict.code === code).sort((a, b) => b.view.metrics.spend - a.view.metrics.spend);
+      if (!g.length) return '';
+      const sp = g.reduce((s, a) => s + a.view.metrics.spend, 0);
+      return `<h3 class="grid-group v-${code}" id="grp-${code}"><span class="chip ${VCLASS[code] || ''}">${esc(label)}</span> ${g.length} ad${g.length === 1 ? '' : 's'} · ${money(sp)} spent <span class="muted small">${esc(note)}</span></h3>` + g.map(card).join('');
+    }).join('');
+  } else $('grid').innerHTML = list.map(card).join('');
   $('empty').hidden = list.length > 0;
   CURRENT_LIST = list;
   document.querySelectorAll('.more').forEach((b) => b.addEventListener('click', () => openSide(b.dataset.id)));
@@ -623,7 +638,8 @@ function card(ad) {
   const picked = state.compare.includes(ad.id);
   const badge = c.type === 'video' ? `<span class="play">▶ ${secs(c.video && c.video.length)}</span>` : c.type === 'carousel' ? `<span class="play">${c.cards.length} cards</span>` : '';
   const d = (cur, prev, good) => (p ? delta(cur, prev, good) : '');
-  return `<article class="card"><div class="thumb"><span class="rank">#${v.rank_by_spend} by spend</span>${badge}${thumbHtml(ad.id, c.headline || ad.name)}</div>
+  const vt = { scale: 'Scale', cut: 'Cut', watch: 'Watch' }[v.verdict.code];
+  return `<article class="card${vt ? ' vc-' + v.verdict.code : ''}"><div class="thumb"><span class="rank">#${v.rank_by_spend} by spend</span>${vt ? `<span class="vtag vt-${v.verdict.code}" title="${esc(v.verdict.reason)}">${vt}</span>` : ''}${badge}${thumbHtml(ad.id, c.headline || ad.name)}</div>
     <div class="body"><div class="name" title="${esc(ad.name)}">${esc(ad.name)}</div><div class="chips">${chips.join('')}</div>
       <dl class="stats"><div><dt>Spend</dt><dd>${fmt(m.spend, 'money')} ${d(m.spend, p && p.spend, 0)}</dd></div><div><dt>Purchases</dt><dd>${fmt(m.purchases, 'int')}</dd></div>
       <div><dt>CPA</dt><dd>${fmt(m.cpa, 'money')} ${d(m.cpa, p && p.cpa, -1)}</dd></div><div><dt>Purchase ROAS</dt><dd>${fmt(m.roas, 'x')} ${d(m.roas, p && p.roas, 1)}</dd></div></dl>

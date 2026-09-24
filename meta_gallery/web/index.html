@@ -730,6 +730,14 @@ table.sheat td.heat { min-width: 58px; }
 .rp-work { margin: 0; padding: 0; list-style: none; display: grid; gap: 6px; font-size: 13.5px; } .rp-work .chip { margin-right: 8px; }
 .rp-words dl { margin: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(220px, 100%), 1fr)); gap: 8px 16px; }
 .rp-words dt { font-weight: 700; font-size: 13px; } .rp-words dd { margin: 0; font-size: 13px; color: var(--muted); }
+.vtag { position: absolute; top: 10px; right: 10px; z-index: 2; font: 700 12px var(--display); padding: 4px 10px; border-radius: 999px; box-shadow: 0 1px 4px rgba(0,0,0,.2); }
+.vt-scale { background: var(--gold); color: var(--on-gold); } .vt-cut { background: var(--bad); color: #fff; } .vt-watch { background: var(--ink); color: var(--surface); }
+.card.vc-scale { box-shadow: inset 0 3px 0 var(--gold); } .card.vc-cut { box-shadow: inset 0 3px 0 var(--bad); } .card.vc-watch { box-shadow: inset 0 3px 0 var(--ink); }
+.grid-group { grid-column: 1 / -1; margin: 14px 0 0; font: 700 15px var(--display); text-transform: none; letter-spacing: normal; display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: baseline; scroll-margin-top: 170px; border-top: 1px solid var(--line); padding-top: 12px; }
+.grid-group:first-child { border-top: 0; margin-top: 0; padding-top: 0; }
+.seg-legend button { all: unset; cursor: pointer; display: flex; justify-content: space-between; gap: 8px; width: 100%; border-radius: 6px; }
+.seg-legend button:hover, .seg-legend button:focus-visible { background: var(--gold-soft); outline: none; }
+.segbar span[data-health] { cursor: pointer; }
 .rp-big { background: var(--warn-soft); border: 1px solid var(--line); border-left: 4px solid var(--warn); border-radius: var(--r-md); padding: 10px 14px; font-size: 13.5px; }
 .rp-big ul { margin: 6px 0; padding-left: 18px; display: grid; gap: 3px; } .rp-big p { margin: 0; }
 .rp-teamnotes { background: var(--warn-soft); border-radius: var(--r-md); padding: 12px 14px; } .rp-teamnotes ul { margin: 0; padding-left: 18px; font-size: 13px; display: grid; gap: 4px; }
@@ -831,7 +839,7 @@ table.sheat td.heat { min-width: 58px; }
           <section id="demo" class="panel-box" aria-label="Spend and ROAS by age and gender"></section>
           <section class="gridhead">
             <div class="controls">
-              <label>Show <select id="rankSet"><option value="spend">Top 30 by spend</option><option value="roas2">Top 100 by ROAS, 2+ purchases</option><option value="roas1">Top 100 by ROAS, 1+ purchase</option><option value="roas0">Top 100 by ROAS, any spend</option></select></label>
+              <label>Show <select id="rankSet"><option value="spend">Top 30 by spend</option><option value="health">All ads, by verdict</option><option value="roas2">Top 100 by ROAS, 2+ purchases</option><option value="roas1">Top 100 by ROAS, 1+ purchase</option><option value="roas0">Top 100 by ROAS, any spend</option></select></label>
               <label>Format <select id="format"></select></label>
               <label>Sort
                 <select id="sort">
