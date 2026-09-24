@@ -923,3 +923,180 @@ Written for a worker. Columns: what to check, how, good, bad, fix, source. "Fix"
 | Platform sanity | A/A test | No difference | Significant A/A | Fix platform | 05 [0bda3b4d7e04] |
 | Case study claim | Baseline, sample, runtime, validity stated | Stated | Not stated | Hypothesis only | 05 [370ed8c02e34], 06 |
 
+## 6. Thresholds and benchmarks
+
+One table for the folder. Confidence: how many sources agree and what kind of evidence sits behind the number. "Self-contradiction" marks a number the same source states 2 ways. Every case figure is an example.
+
+| topic | value | condition | source(s) | confidence |
+|---|---|---|---|---|
+| **Traffic gates** | | | | |
+| Comprehensive CRO vs big swings | about 300,000 sessions a month; also needs "good enough" conversion and orders (undefined) | 2025 internal agency update | 03 | 1 source, agency heuristic |
+| Micro-tweak testing worthwhile | about $40M+ online revenue for ~0.1% lifts | opinion | 02 | 1 source, opinion |
+| Bold changes only | under about 100,000 visitors a month, aim at 10 to 20%+ effects | heuristic | 05 | 1 source, cites aiformarketing.news and VWO |
+| Holdout designs (user-level, geo, switchback) | over about 100,000 visitors a month | rough | 06 | 1 source; different meaning from 05's 100,000 (C7) |
+| Order bands | under 30: research only; 30 to 300: one bold A/B at 20%+; 300 to 3,000: A/B at 10 to 20%; 3,000 to 20,000: A/B/n, bandits, 5 to 10%; 20,000+: full programme, 2 to 5% | DTC, 2 to 3% conversion, anonymous traffic | 05 | 1 source, author synthesis; not eligibility gates |
+| A/B/n and routine bandits | 3,000+ orders a month | lower only for short regret-minimising campaigns | 05 | 1 source |
+| Test velocity | 4 to 8 tests a month | over 300,000 sessions | 03 | 1 source, agency practice; 05 says cadence follows power (C11) |
+| Research gathering time | about 1 to 2 weeks | under 300,000 sessions | 03 | 1 source |
+| Comprehensive audit | 2 to 3 weeks, about 100 pages | agency clients | 03 | 1 source |
+| **Sample size** | | | | |
+| Formula | n = 16 x p(1-p) / delta^2 per variant | alpha 0.05 two-sided, power 0.80, delta absolute | 05 (Evan Miller) | 1 source, published method |
+| Conversions per variant | about 3,830 (5%), 1,000 (10%), 260 (20%), 120 (30%) | 80% power, 95% confidence | 05; 02 agrees on ~1,000 for 10 to 20% | 2 sources agree on the 1,000 anchor |
+| Sessions per variant | about 40,000 at 2.5% conversion (80,000 total) for a 10 to 20% lift | illustrative | 02 | 1 source; consistent with 05's table between 10% and 20% |
+| Sessions per test | 50,000 to 100,000 "through a test" | unclear per variant or total | 03 | 1 source, ambiguous (C3) |
+| Sample table | 2% baseline: 315,206 (5%), 80,682 (10%), 21,109 (20%), 9,798 (30%), 3,826 (50%) per variant; other rows in P13 | 95% / 80% two-sided | 05 | 1 source, published calculator |
+| Halving the MDE | 4x sample | always | 05 | formula |
+| "400 conversions a month" | powers only about 30 to 40% lift in a month | rejected as a rule | 05 | 1 source |
+| "200 per variant for 20%" | roughly right; 250 to 260 safer | 80% power | 05 | 1 source |
+| RPV sample penalty | about 6x traffic; about 175,000 vs 28,000 per variant | 3% baseline, same relative MDE | 05 (Atticus Li 2026) | 1 source |
+| RPV skew | 97% of visitors spend $0; CV about 750% | typical case | 05 | 1 source |
+| User test size | 5 to 8 people per task | task-based | 05 | 1 source, origin not given |
+| Backlog entry | at least 2 points of evidence | every idea | 05, 03 (data non-negotiable) | 2 sources |
+| **Duration and stopping** | | | | |
+| Minimum runtime | at least 1 full week, in practice 2, plus planned sample | all tests | 05, 03, 06 | 3 sources |
+| Typical runtime | 2 to 4 weeks | agency practice; 05 band 30 to 300 | 03, 05 | 2 sources |
+| Weekday coverage | each weekday twice | avoid one-day shocks | 03 | 1 source |
+| Delivery-time display test | 7 to 10 days | slow-delivery stores | 02 | 1 source; self-contradiction with 02's own sample math |
+| Peeking, worst case | 5% false positive becomes 26.1% | check after every observation, stop at first p < 0.05 | 05 (Evan Miller) | 1 source, published |
+| Peeking after 2 weeks | 5% becomes about 17% | daily checks for 2 more weeks | 05 (Kohavi/Sonnet) | 1 source, published |
+| Bayesian peeking | about 80% false positive | peek every 100 observations, stop at P > 0.95 | 05 (Molas 2025) | 1 source, simulation |
+| Reported p needed for true 5% | 2.9% (1 peek), 2.2% (2), 1.8% (3), 1.4% (5), 1.0% (10) | fixed number of looks | 05 | 1 source |
+| SRM flag | p < 0.001 (chi-square on users) | every test | 05 (Kameleoon) | 1 source |
+| SRM frequency | about 6% of experiments | Microsoft | 05 (Kohavi) | 1 source |
+| Anti-flicker cost | page hidden up to 3 to 4 s by default | client-side snippets | 05 (DebugBear) | 1 source |
+| Multiple metrics error | 1 metric 5%, 2 about 10%, 3 about 14% | alpha 0.05 each | 05 | 1 source |
+| False wins among significant results | about 1 in 5 | 10% of ideas true, 80% power | 05 | 1 source, derived |
+| CUPED sample reduction claim | 30 to 50% | metrics tied to past behaviour, identified users | 05 (Optimizely); 06 "essentially free" | 2 sources disagree on applicability (C5) |
+| CUPED ceiling on revenue | 15.91% variance reduction | n = 400,000, volatile revenue | 05 (LinkedIn) | 1 source, published |
+| Switchback precision | 40 to 60% lower standard errors | marketplaces vs item randomisation | 06 | 1 source, unsourced |
+| **Win rates and lift sizes** | | | | |
+| Win rate anchor | about 10 to 20% significant winners | well-run programmes | 05 (Microsoft 33%, Bing 15%, Google/Booking/Netflix 10%, Airbnb 8%, Optimizely 12%, VWO 14%, CXL 20%) | 1 source compiling many published figures |
+| "Very good" win rate | 30 to 35% | agency view | 03 | 1 source; self-contradiction: own showcase 13 of 135 (9.6%) |
+| Decisive rates | DRIP 36.3% win / 41.6% inconclusive, decisive 62.1%; ConversionTeam 19.1% significant, 61.1% decisive | looser definitions | 05 | 1 source with definitions |
+| "60%+ win rate" | cited as a target; 61.1% for one 2025 programme | definition not stated | 06 | 1 source; conflicts with 05 (C4) |
+| Realistic lift | 1 to 5% mature pages; 10 to 20%+ unoptimised; 50%+ suspect | planning | 05 | 1 source |
+| Median winner RPV | +2.77%; top quartile +5.21%+ | DRIP database | 05 | 1 source |
+| Programme holdout illustration | 5% holdout, 90 days; 2.5% vs 2.9% (+16% relative) | illustration | 06 | illustration, not data |
+| **Conversion benchmarks** | | | | |
+| Overall conversion bands | under 1% poor; 1 to 2% average; 2 to 3% above average; 3 to 4.5% strong; 4.5%+ top 10%; 5 to 8%+ best | ecommerce | 06 | 1 source, unsourced |
+| Global ecommerce average | about 2.5 to 3% | average | 06 | 1 source, unsourced |
+| Average site conversion | "maybe 1 to 2%, probably 0.5% to 1%"; weak sites 0.5% or lower; agency-built 2 to 10% | 2020, mostly lead-gen | 01 | 1 source, presenter estimate |
+| Funnel stage bands | ATC under 5 / 8 to 12 / 12 to 18 / over 18; cart to checkout under 30 / 50 to 60 / 60 to 70 / over 70; checkout completion under 50 / 60 to 70 / 70 to 80 / over 80 (poor / average / good / excellent) | ecommerce | 06 | 1 source, unsourced |
+| PDP conversion by vertical | beauty 2.5 to 4%; apparel 1.8 to 3%; electronics 1.2 to 2%; home 1.5 to 2.5%; SaaS 3 to 7% | | 06 | 1 source, unsourced |
+| Blended vs segment example | blended 2.8%, cold Meta 1%, warm 4% | illustration | 02 | illustration |
+| Store comparison | 9% conversion at $45 to $55 AOV vs 1% at $200M and 50% contribution margin: the 1% store is better | anonymised real stores | 02 | 1 source |
+| Cart abandonment | 70.22% (50 studies; 69 to 71% since 2014); 02 quotes 70% | global | 05, 06 (Baymard), 02 | 3 sources, same origin |
+| Mobile cart abandonment | about 85% | mobile | 06 | 1 source, unsourced |
+| Abandonment reasons | extra costs 39%; slow delivery 21%; card trust 19%; forced account 19% (06: 16 to 24%); checkout too long 18%; returns 15%; total not shown 14%; 43% of abandoners just browsing | Baymard as cited | 02, 06 | 2 sources, cited from memory; `[web check]` |
+| Guest checkout not prominent | 62% of sites | Baymard | 06 | 1 source |
+| Checkout UX mediocre or worse | 65% of sites (also 64% desktop, 63% mobile); 2% good; 15% poor | Baymard 2025 | 06 | 1 source; self-contradiction (rounding) |
+| Checkout improvements available | about 32 per large site; about 35% checkout uplift | Baymard | 05, 06 | 2 sources, same origin |
+| Checkout fields average | 11.3 | Baymard | 05 | 1 source |
+| Checkout extras cap | under about 10% of AOV | all extras | 02 | 1 source, agency finding |
+| Shipping collected with no material effect | up to about 10% of AOV, also stated as "10% of total revenue" | 2019 to 2020 own tests | 02 | 1 source; self-contradiction |
+| High-impact tests before checkout | about 80% | ecommerce | 05 | 1 source, vendor-derived |
+| **Behaviour heuristics** | | | | |
+| Rage click rate "good" | under about 1 to 2% (demo 0.2%) | directional | 04 | 1 source, heuristic |
+| Excessive scrolling "not a concern" | under 0.01% | demo | 04 | 1 source |
+| Popup timing that causes rage clicks | within the first 5 s (screenshot issue 3 to 5 s) | | 04 | 1 source |
+| Core CTA click share | 5 to 7% preferred; 4 to 5% average; under 1 to 3% weak | click map sum | 04 | 1 source, heuristic |
+| Never scroll past the top section | 60% | unsourced "statistically" | 04 | 1 source, unsourced; check own data |
+| Hero reach on a healthy page | 93 to 95% (demo 96% then 87%) | | 04 | 1 source, demo |
+| Testimonial reach signalling placement problem | about 30% | example | 04 | 1 source |
+| Key point seen above footer | about 6% of visitors | 1 case | 03 | 1 source |
+| High-click low-reach example | 10.41% of clicks, 30 to 35% reach; reported +18% conversion | 1 case, no stats | 07 | 1 source, no statistics |
+| Recordings to watch | no quota; about 100 to 450 | stop when repetitive | 04 | 1 source |
+| Recording block | 1 to 2 hours | per session | 04 | 1 source |
+| Review window | about 6 months; 90 days if newer | | 04 | 1 source |
+| Self-purchase cadence | every 4 weeks | | 03 | 1 source |
+| Review mining threshold | 500 to 1,000+ reviews | non-negotiable above | 03 | 1 source; 02 uses at any count |
+| Post-purchase questions | at least 2 | | 03 | 1 source; 07 agrees on the questions |
+| One-time survey incentive | $250 gift card draw | example | 03 | example |
+| **Page heuristics** | | | | |
+| Reviews effect | 0 to about 100 roughly doubles conversion; jump mostly 0 to 80; beyond immeasurable | own brands 2019 to 2020 | 02 | 1 source, no method |
+| Proof relevance | 5 relevant reviews beat 400 generic | opinion | 02 | 1 source |
+| Rating believability | 4.8 more believable than 5.0; mix of 4 and 5 stars | opinion | 02, 06 | 2 sources, opinion |
+| Trust gap | 14% trust brand claims | consumers | 06 | 1 source, unsourced |
+| Category test win rates | benefit communication 54.5%; shipping and returns 41.8%; payment trust 40.5% | | 06 | 1 source, unsourced |
+| Inline trust icons | +18% revenue per session after 3 weeks | 1 DTC brand | 06 | 1 case, no stats |
+| Homepage curation | broad assortment: ATC −6.07%, CTR −10.4%; bestsellers to new visitors +23.01% CTR; personalised +136% CTR | single experiments | 06 | 1 source, unsourced |
+| Hero test | 3 seconds (06); 5 seconds or less (04) | homepage hero | 06, 04 | 2 sources, different numbers |
+| Mobile share | 60 to 95% by brand (80% in hero section) (02); about 60% (06) | | 02, 06 | 2 sources |
+| Mobile conversion | about half desktop | | 06 | 1 source |
+| Effort split | 90% mobile, 10% desktop | | 02 | 1 source, opinion |
+| Mobile grid above the fold | 2 x 2, 4 products | | 03 | 1 source |
+| Hero banner share of first view | 30 to 40% max | mobile collection | 06 | 1 source |
+| Tap targets | at least 44px | | 06 | guideline |
+| Mobile filter abandonment | 75% if they cannot refine quickly | | 06 | 1 source, unsourced |
+| Mobile LCP target | under 2 s | | 06 | 1 source |
+| Image weights | hero under 100KB; grid under 60KB | | 06 | 1 source |
+| Speed elasticities | 100ms = 3.5% lower conversion; 100ms = 7% drop; 1 s = up to 7%; LCP 2.5 s vs 1.5 s about 30% lower; 0.1 s faster = 8.4% higher | | 06 | 1 source; self-contradiction; investigate, do not forecast |
+| Form fields | 4 or fewer "sweet point"; drop at 3rd or 4th field (04, B2B); falls from 3 to 10, also lower at 1 to 2 (01, HubSpot, lead gen) | lead forms | 04, 01 | 2 sources, lead gen; adaptation |
+| Menu options | past about 6 people forget the first | phone-menu analogy | 01 | 1 source, analogy |
+| Free-shipping threshold examples | $66 (offer), $75 (checkout mockup) | examples | 02 | illustration |
+| Bundle funded by fulfilment | $136 value, $122 price, $14 saved fulfilment | example | 02 | illustration |
+| Gift with purchase | $30 perceived, $4 to $5 COGS, orders over $60 | example | 02 | illustration |
+| Post-purchase upsell | $19 "usually $35 to $40", 50% off for 5 minutes | example | 02 | illustration |
+| Multi-buy fit | $30 to $40 items people own several of | sunglasses | 03 | 1 case |
+| Cart recovery timing | first contact within 1 hour; escalate over 72 hours | framework to test | 06 | 1 source |
+| **Holdouts** | | | | |
+| Programme holdout | 5% traffic, 90 days | illustrative | 06 | illustration |
+| Popup holdout | 90% exposed / 10% holdout | illustrative | 06 | illustration |
+| Recommendation holdout | 5% | illustrative | 06 | illustration |
+| Email holdout | 10% of list; lift = 3.8% − 2.1% = 1.7 points | illustrative | 06 | illustration |
+| Retargeting holdout | 80/20, 14 days, 30-day non-buyers; holdout at 70% of exposed rate = 30% incremental | illustrative | 06 | illustration; 11-ADC |
+| Geo holdout | 10 DMAs, 6 weeks, correlations 0.96 to 0.99; incremental CPA $130 (10.4% lift, 99% confidence) | Hourglass 2025 | 06 | 1 real case; 11-ADC |
+| **Tool prices (dated)** | | | | |
+| Clarity | free, no data limit | at 07's recording | 07, 04 | `[web check]` |
+| Hotjar Plus | $32 a month for 100 daily sessions; surveys paid separately | at recording | 07 | `[web check]` |
+| Userbrain | $40 per tester | at recording | 07 | `[web check]` |
+| VWO free tier | up to 50,000 tested users a month | time-sensitive | 05 | `[web check]` |
+| Statsig free tier | up to 1M events a month | time-sensitive | 05 | `[web check]` |
+| ResponseTap | about £250 a month | 2020 | 01 | `[web check]` |
+| Live Call | $49 a month annual, $59 monthly | 2020 | 01 | `[web check]` |
+| Leadpages | about £60 a month | 2020 | 01 | `[web check]` |
+
+## 7. Where sources disagree
+
+Each conflict: what each side says, when each is right, and what the agent should do.
+
+**C1. Trust badges.** 02: generic footer security seals "do absolutely nothing to close anyone"; remove them; guarantees and returns are table stakes but useful as risk reversal after the proof. 03: winning designs include a "trust policy bar" in cart (easy returns, support, satisfaction guarantee, money-back guarantee) and seals by the CTA (money-back guarantee, "over 10,000 happy customers", vegan-friendly, made in the US, "featured in" logos, only if true). 06: one DTC brand moved trust icons inline next to Add to Cart and reported +18% revenue per session after 3 weeks (no stats); payment trust signals win 40.5% of tests (unsourced). 01: secure-checkout logos, awards and Trustpilot as credibility (lead gen). The sides are partly about different things: 02 attacks generic security seals; 03 and 06 are mostly policy and proof statements. Nothing was tested head to head in any source. What the agent should do: remove generic security seals from hero and PDP unless a brand test says otherwise; treat specific policy and proof statements beside the CTA and in cart (returns, guarantee, customer count, press, made-in) as a hypothesis worth testing; keep payment logos in checkout; never invent a count or a press mention.
+
+**C2. When micro-testing pays, and which traffic gate to use.** 02: micro-tweaks for about 0.1% lifts pay only at about $40M+ online revenue; most "CRO wins" are noise; test only big swings. 03: comprehensive testing (4 to 8 isolated tests a month) above about 300,000 monthly sessions with enough orders; big swings below. 05: bands by orders per month (2 to 5% MDE only at 20,000+ orders; 5 to 10% at 3,000 to 20,000; 10 to 20% at 300 to 3,000; 20%+ at 30 to 300; nothing under 30) and "under about 100,000 visitors a month, bold changes only". The gates measure different things (revenue, sessions, visitors, orders) and none is derived from the sample formula. What the agent should do: compute conversions per variant for the chosen MDE from the brand's own baseline (P13); use 05's order bands as the primary map because they tie to conversions; use 03's 300,000 sessions and 02's $40M as sanity checks; never run a tweak test that needs months to power.
+
+**C3. Sample size per variant versus total.** 02: about 1,000 conversions per variant for a 10 to 20% lift, about 40,000 sessions per variant at 2.5%, 80,000 total for an A/B. 03: 50,000 to 100,000 sessions "through a test", without saying per variant or total. 05: per-variant table by baseline and MDE; 1,000 conversions per variant powers a 10% lift, 260 a 20% lift. 02 and 05 agree once "per variant" is explicit; 03 is ambiguous and, read as a total, would under-power a 10% lift at 2% baseline (80,682 per variant needed). What the agent should do: always state sample per variant and multiply by arms; use 05's table; treat 03's range as an agency habit, not a rule.
+
+**C4. Win-rate targets.** 05: about 10 to 20% of well-run tests produce a significant winner; higher figures use looser definitions (DRIP 36.3% with research pre-qualification; ConversionTeam 61.1% "decisive" = wins over wins plus losses). 03: 30 to 35% is "very, very well", while its showcase client won 13 of 135 (about 9.6%). 06: "a disciplined testing program with 60%+ win rate generates compounding returns", citing 61.1% for one 2025 programme without a definition. What the agent should do: plan for 10 to 20% significant winners; report any win rate with its definition (significant winner per test, decisive rate, or raw) and sample; never set 60% as a target; if a programme reports above 35%, audit the definition and the stopping rules before believing it.
+
+**C5. CUPED.** 06: "essentially free sensitivity" for any A/B test with pre-experiment user data; cuts variance and sample. 05: vendors claim 30 to 50% lower sample needs, but the method needs logged-in users or stable device IDs; on mostly new, anonymous DTC checkout traffic the covariate is missing or weak; LinkedIn saw only 15.91% variance reduction on 400,000 members for volatile revenue. What the agent should do: turn CUPED on if the platform offers it and the tested audience has returning identified users; do not lower the planned sample on the strength of a vendor claim; prefer simpler aids (proportion metrics instead of raw revenue means, winsorized orders); record the actual variance reduction after the test.
+
+**C6. Number of CTAs.** 01: many repeated CTAs are fine if they all do the same thing (7 or more "get in touch" access points on one page, including a sticky bar; lead gen). 03: "one clear call to action" on a sales-page hero, with what happens on click explained. 06: one clear conversion offer on the homepage. What the agent should do: one action per page, repeated as often as reach data justifies (hero, sticky, after proof, end); never stack different offers or destinations; treat a multi-offer hero as a hypothesis to simplify.
+
+**C7. The 2 meanings of 100,000 monthly visitors.** 05: under about 100,000 visitors a month, run bold-change A/B tests only (10 to 20%+ effects). 06: over about 100,000 visitors a month, user-level holdouts, geo holdouts and switchbacks become possible; below, use longer holdouts or causal methods. Same number, different rules; neither is reconciled with 05's order bands or with the sample formula. What the agent should do: never quote "100,000" as a single gate; state which rule is meant; compute detectability for the specific design (P13 for tests, P19 step 1 for holdouts).
+
+**C8. Conversion rate as "the only metric that matters" versus RPV.** 01: "the only metric that matters though is conversion rate" (lead gen, 2020; never discusses AOV, margin or RPV). 02, 03, 05, 06: RPV or contribution per visitor; conversion rate can be gamed by price cuts, traffic mix and dark patterns. What the agent should do: follow R1 and R2; use conversion rate as a stage diagnostic and as the statistical primary only when RPV cannot be powered (R6); when using 01's CLOSER audit, add AOV and margin checks the source does not have.
+
+**C9. RPV "9 times out of 10" versus the RPV traffic penalty.** 03: optimise RPV "9 times out of 10". 02: judge tests on RPV or contribution per visitor. 05: RPV needs about 6x the traffic of conversion rate; RPV as primary is not valid at 30 to 300 orders a month and borderline at 300 to 3,000. What the agent should do: RPV is the decision lens for every readout; as the statistical primary metric use it only when powered (3,000+ orders a month, winsorized) and otherwise pre-register conversion rate primary with RPV, AOV and margin as guardrails.
+
+**C10. Prioritisation frameworks.** 06: PIE, ICE or CIE as equals, no scales. 02: ICE, 1 to 10 x 3, multiplied. 03: PXL as described (3 of its criteria named, credited to others). 05: ICE lets idea owners inflate scores; PXL-style evidence gating plus profit-weighted expected value is preferred. What the agent should do: gate on 2 points of evidence, score with PXL-style criteria, rank by expected gross profit (R44); use ICE only for a small team building the habit and never with the idea's owner as the only scorer.
+
+**C11. Testing cadence.** 06: "test relentlessly", at least 1 test a week (ShopClues); 03: 4 to 8 a month above 300,000 sessions. 05: below the A/B threshold, "test bigger, not more"; one bold test at a time at 30 to 300 orders. What the agent should do: cadence is an output of power and page-area overlap rules, never a target; at low volume most months are research months.
+
+**C12. Two meanings of "sequential".** 06: "sequential A/B tests" means running tests one after another instead of multivariate. 05: "sequential" means sequential statistics (mSPRT, GAVI, group sequential) and, in a warning, sequential before-and-after comparisons that are biased. What the agent should do: write "one after another", "sequential engine" or "before-and-after" in every brief; never the bare word.
+
+**C13. Price testing.** 03: test price points monthly with a price-testing tool (the presenter's conference sponsor; likely Intelligems). 05: never show different prices for the same SKU to different users at the same time; legal issues, disclosure rules in the EU, and brand risk (Amazon 2000); test presentation, framing, tiers, bundles and different offerings instead. What the agent should do: follow 05; run 03's offer tests (bundles, thresholds, multi-buy, gifts) through P21; if a price-test tool is used, check how it assigns and discloses prices and get legal review.
+
+**C14. Add to cart on collection pages.** 06: Add to Cart buttons on browsing-focused category pages create decision conflict and are a listed pitfall. 03: for consumable repeat-buy products, price on the card button and add to cart from the grid was part of a $30,000-a-month winning test; "doesn't work with every single product or niche". What the agent should do: decide the page's job first (R98); test grid add-to-cart only for repeat-buy consumables with meaningful returning traffic, and read new versus returning separately.
+
+**C15. One-page versus multi-step checkout.** 02: one-page converts "a little" better in the agency's data (not shared). 06: a marketplace switchback (12 days, hourly rotation) found the 3-page checkout raised AOV 2.1% at 98% significance and improved RPV. What the agent should do: treat it as a test, on Shopify Plus or server-side only; primary metric RPV where powered; do not change checkout structure on opinion.
+
+**C16. Hiding delivery times.** 02: consider a 7 to 10 day split test of hiding delivery times for slow-delivery stores, noting ambiguity lowers conversion. 05 and the cards: transparency; consumer disclosure rules; 7 to 10 days is short against 02's own sample math. What the agent should do: fix delivery speed or offer fast options first; only test hiding dates with legal review and a properly sized runtime.
+
+**C17. Deliberate form friction.** 01: adding fields to filter serious leads is valid when the free step is costly to deliver, after selling it hard (lead gen). 02, 06: cut checkout fields to essentials; every field is a chance to abandon. What the agent should do: for ecommerce checkout, cut fields (R119); 01's rule applies only to consultation, quote or sample requests that cost the brand money to fulfil.
+
+**C18. Review volume versus relevance.** 01: volume often beats average rating (seminar exercise); build volume. 02: going from 0 to about 100 reviews roughly doubled conversion, beyond that "immeasurable"; 5 hyper-relevant reviews beat 400 generic ones. What the agent should do: below about 100 reviews, work on volume; above it, work on relevance, media and claim match; both are 1-source claims with no method.
+
+**C19. Self-contradictions inside one source.** 02: 4 above-the-fold questions in the body, "core five" in the recap; shipping threshold stated as "10% of AOV" and "10% of total revenue"; "most CRO wins are noise" yet recommends testing shipping thresholds, delivery-time display, one-page checkout and hero framing; a 7 to 10 day test against its own 40,000-sessions-per-variant math. 03: 30 to 35% win rate is "very good" versus 13 of 135 shown. 06: speed elasticities (3.5%, 7%, "up to 7%") that cannot all be true; Baymard 65% versus 64% desktop and 63% mobile. 04: title says 2026, recording says 29 July 2024. What the agent should do: quote the stricter or better-evidenced version and note the other; never present these as settled numbers.
+
+**C20. Ecommerce transfer of 01.** 01 is a lead-generation course; its ecommerce uses (CLOSER audit of PDPs, email-capture lures, quiz order, form-field rules, "cocktail stick" permission cues, sticky CTAs) are card-writer translations. 02, 03, 05, 06 are ecommerce-native. What the agent should do: when a rule rests on 01 alone, label it an adaptation and treat it as a hypothesis; when 01 agrees with an ecommerce source (proof beside the CTA, say what happens after the click, familiar UI), the ecommerce source carries the weight.
+

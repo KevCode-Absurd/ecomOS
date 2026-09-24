@@ -558,7 +558,7 @@ What is missing or thin:
 - [b8c17a6d4d2d] Win the Honeymoon Phase: Prioritize New Subscriber Capture
 - [3d97f72a2969] Deploy the Four List-Growth Methods and Know Their Roles
 - [0de6758fd7b5] Balance Flows vs Campaigns at ~50/50 of Email Revenue
-- [dfbf925e6f5d] Run 3–4 Non-Discount Campaigns Weekly Using Microtopics
+- [dfbf925e6f5d] Run 3 to 4 Non-Discount Campaigns Weekly Using Microtopics
 - [9641bcb4fcd1] Build a Monthly Campaign Calendar from Key Dates Outward
 - [7ea9228eeda8] Diagnose the 9 Common Pop-Up Mistakes Killing Cost Per Acquisition
 - [60f8b169fd9a] Choose the Right Pop-Up Offer Based on Average Order Value
@@ -618,7 +618,7 @@ What is missing or thin:
 - [e7a5c9132999] Email 2: second reminder with expanded social proof
 - [962de4f96ab5] Emails 3-4: split by product for specific info, then specific testimonials
 - [e99b377f856f] Email 5: last-chance urgency email
-- [2fd76c2c2442] Email 6A: buyer branch — founder support email, no discount
+- [2fd76c2c2442] Email 6A: buyer branch: founder support email, no discount
 - [b9c909970c5b] Email 6B: discount opener for first-time buyers, then a discount last-chance
 - [34204d0c3ce5] Install the added-to-cart metric and trigger in Klaviyo
 - [c42f60fa5fca] Set up dynamic abandoned-item content (careful: cart and checkout variables differ)
@@ -646,7 +646,7 @@ What is missing or thin:
 - [dac289376b1c] 'What's Inside' Email for Bundles and Consumables
 - [532cdab329e6] How-It's-Made and How-To-Use Emails
 - [a1e654a1f091] Back-in-Stock Email Leveraging Popularity and Urgency
-- [4e7b9fc24619] Trending Product Email — Frame Future, Not Past
+- [4e7b9fc24619] Trending Product Email: Frame Future, Not Past
 - [78a2320e9eca] Reviews and Testimonials Email for Social Proof
 - [50ed5320f524] Us vs Them Comparison Email
 - [255dda5b5409] Myth vs Fact Email
@@ -676,7 +676,7 @@ What is missing or thin:
 - [b88c44dec23c] Prioritize basics before advanced segmentation and copy tricks
 - [9569a09dc9cc] Write email copy with an AI prompt + real email outline
 - [5143f6e2959a] Treat subject lines as frames, and test them on revenue
-- [966ff3299f67] Subject line framework: 2–5 words, title case, curiosity loop
+- [966ff3299f67] Subject line framework: 2 to 5 words, title case, curiosity loop
 - [d97f313a3c32] Preview text framework: support the headline, end with an ellipsis
 - [32434c0d9bd2] Build urgency and holidays into seasonal campaign angles
 - [7a64062e31d6] Diagnose and fix weak inbox subject lines
