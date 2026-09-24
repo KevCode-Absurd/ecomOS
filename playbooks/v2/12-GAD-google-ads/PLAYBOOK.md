@@ -4,6 +4,8 @@ version: 2.0-draft  |  date: 24 Sep 2026  |  sources: 10 mini playbooks (9 indep
 
 ## 0. How to use this playbook
 
+Ecommerce first. This playbook is for ecommerce stores, not lead-gen or SaaS accounts. Section 3.0 is the ranking: it orders the 12 sub-topics below by what a store must get right first, so an agent does not treat all 143-plus rules as equally urgent. Store-type conditions (hero SKU vs catalogue, low vs high AOV, subscription vs one-off, marketplace-heavy, luxury or considered purchase, mobile-first India vs US) decide which rules in section 3 apply to a given store; read 3.0 before loading any other group.
+
 Who runs it: the Google Ads performance agent. It recommends; a human applies every write to Google Ads, Merchant Center, GTM or the site. Meta rules in CLAUDE.md apply here too: no ad-account writes without a human, no credentials in output, arithmetic in code.
 
 Load by task:
@@ -59,6 +61,27 @@ Business measures it moves: new-customer revenue and new-customer CPA; blended M
 
 Format: rule, condition, sources by mini playbook number, cards. "Conflict" points to section 7. Where only 1 source says it, the rule says so. 06 and 09 are cited as "06/09" and count as 1 weak source.
 
+### 3.0 Ecommerce priority order
+
+Ranked for a store deciding where to spend attention first. Each item points to the rules it draws on; conditions by store type are given where the source material supports them.
+
+1. Tracking is correct: 1 primary purchase action, real order value, reconciled with backend orders (R11 to R21, gate 1). Nothing below is measurable without it.
+2. Break-even ROAS and CPA known from contribution margin, not gross margin or a benchmark (R3, R4, R68). Every bid, budget and brand call reads off this.
+3. Merchant Center and feed are clean: no disapprovals, accurate titles, price and stock synced (R22 to R40, gate 1). Catalogue stores add margin and bestseller labels (R37, R66); a single hero SKU needs 1 clean listing and a correct GTIN (R36).
+4. Brand and non-brand split, brand excluded from cold campaigns (R53, R54, gate 3). Skipping this inflates every ROAS number above.
+5. Launch order fits store shape: bestsellers-only Shopping first for a catalogue (R47, R65), 1 PMax plus brand campaigns for a single hero SKU (R86, conflict 7.1).
+6. Bid strategy matches conversion volume, not the calendar: manual or Maximize Clicks with no data, value bidding near 30 conversions a month, tROAS near 50 (R108 to R110, conflict 7.9). A subscription or fixed-price SKU can move to tCPA sooner (R109, R146).
+7. Budget sized from AOV and margin: about 3 to 4x AOV a day to start (R119), cold traffic 80% to 90% once brand is split (R120). Low-AOV stores (under about $100) fix AOV first (R6).
+8. PMax runs on inputs, not trust: brand exclusion, themed asset groups, feed-only tested on purpose (R84, R90, R92).
+9. Search and Demand Gen layer in after Shopping and brand work: non-brand Search from converting search terms (R70), YouTube only after an AOV fit check and proven Meta creative (R96, R97). A Meta-heavy DR brand can bring Demand Gen in earlier (R42 exception).
+10. Retention data lowers how far below first-order break-even the store may buy (R5); without it, stay at or above break-even.
+11. Scaling passes 5 gates before more budget: feed, tracking, brand split, creative supply, bid maturity (R129, R130). A marketplace-heavy, mobile-first or cross-border store adds its own gates (R144, R147, R148).
+12. Diagnosis on a dip checks the bigger channel and outside changes first, in fixed order (R135 to R141, procedure 4.25).
+
+Marketplace-heavy, luxury or considered-purchase, and mobile-first India stores are covered only where R144, R145, R147 and R148 say so; those are `[general practice]`, not sourced from the 10 mini playbooks.
+
+Load this block first; the groups below are the detail.
+
 ### 3.A Readiness and unit economics
 
 **R1. Do not scale Google until the offer, the page and the message are proven.** Condition: no product-market fit, no converting page, or no proven angle. Then set up only tracking, Merchant Center, brand campaigns and 1 Shopping campaign; test the offer elsewhere (source 01 says on Meta). Google captures demand; it does not create it (except YouTube). Sources: 01, 08 (a campaign that fails at low budget fails on offer or ads, not budget). Cards: [447589198c09] [f4ea91fcade1] [af051bd7984a]
@@ -81,6 +104,10 @@ Format: rule, condition, sources by mini playbook number, cards. "Conflict" poin
 
 **R10. Mine reviews for ad copy and feed copy angles.** Condition: any brand with reviews; with none, read competitor reviews and use only claims true for your product. Sources: 08, 01 (AI research workflow). Cards: [082b2980e92f] [a9aae4ff1aef] [52816ff36204]
 
+**R144. Where the store also sells on a marketplace (Amazon, Flipkart) alongside its own site, treat marketplace revenue as separate from Google-driven site revenue, and keep Shopping bids and brand-defence spend tied to the store's own site economics only, not marketplace price competition.** Condition: marketplace-heavy stores selling the same SKUs on Amazon or Flipkart and their own site. `[general practice]` No library source; verify against brand data before use.
+
+**R145. For a luxury or considered-purchase product, expect a longer research cycle: weight view-through conversions more than click-through, and add an informational YouTube or Demand Gen stage before Search captures the decision.** Condition: high-AOV, low-frequency or luxury purchase categories. Source 08 covers luxury only for discount policy (R9), not funnel design. `[general practice]` No library source for the funnel build; verify against brand data before use. Cards: [38b728817a44]
+
 ### 3.B Conversion tracking
 
 **R11. Fix conversion tracking before anything else.** Condition: always. Without it the advertiser and Smart Bidding "fly blind". Sources: 01, 02, 03, 04, 06/09, 08. Cards: [fff2f5c0c47c] [2b368492270c] [d9dc799b0bcb] [2792071d2d2e] [535e56dd51f1] [d7752a494148]
@@ -99,11 +126,13 @@ Format: rule, condition, sources by mini playbook number, cards. "Conflict" poin
 
 **R18. Track new customers separately: a first-order conversion event, or a third-party new-customer CPA, not Google's customer acquisition bid setting.** Condition: any account that reports new-customer growth. Source 01 keeps the all-purchase action, adds a first-order event as primary (or keeps it secondary and reads new-customer CPA in Triple Whale or Northbeam), and leaves the "customer acquisition" setting off. Source 05 reads new-customer ROAS natively or in Triple Whale. Sources 02 and 03 leave the customer acquisition setting at default or off. Sources: 01, 05, 02, 03. Cards: [a336449b068e] [69caeee85e5f] [4e3675b7a020] [8e83ab723ce9] [4b15db679fc4] `[web check: native new-customer metrics and how to detect first orders in Shopify customer events]`
 
-**R19. Read recent days on "conversions by conversion time", not default columns.** Condition: any read of the last 3 to 7 days. Google credits a conversion to the click date, so the last 3 to 4 days (often 7) always look bad on default columns. Add the ROAS-by-time custom column (conversion value by conversion time / cost). Sources: 02, 05. Cards: [d2bb52998ad7] [0cdf0df9c538] [62403f6f3b48] `[verify UI]`
+**R19. Read the last 3 to 7 days on conversion-time columns, not click-date columns; Google still credits the click date, so a store's own MER read will look worse than backend orders show.** Condition: any read of the last 3 to 7 days. Add the ROAS-by-time custom column (conversion value by conversion time / cost). Sources: 02, 05. Cards: [d2bb52998ad7] [0cdf0df9c538] [62403f6f3b48] `[verify UI]`
 
-**R20. Use 1 master Google account that owns Google Ads, Merchant Center and Analytics.** Condition: new setup. Source: 02 only. Cards: [52efc5146531]
+**R20. Put Google Ads, Merchant Center and GA4 under 1 master login so the store's Shopify feed, ratings and purchase data reconcile under 1 account.** Condition: new setup. Source: 02 only. Cards: [52efc5146531]
 
 **R21. Reconcile Google-reported purchases with backend orders.** Condition: after setup and monthly. No source gives a numeric match threshold. Sources: 01, 06/09, 08. Cards: [fff2f5c0c47c] [56853873c2c8] [d7752a494148] `[needs brand data: Shopify orders vs Google Ads purchases for the same days]`
+
+**R146. For a subscription or repeat-box product, track first-order value and subscription LTV as separate conversion signals, not 1 blended purchase value, so tCPA or Maximize Conversion Value does not chase the wrong number.** Condition: subscription or fixed-cadence repeat-purchase model. Source 02 allows tCPA for "a subscription where order values are equal" but gives no tracking build. `[general practice]` No library source for the tracking build; verify against brand data before use. Cards: [ed1a69221ddc]
 
 ### 3.C Merchant Center setup and suspension avoidance
 
@@ -147,6 +176,10 @@ Format: rule, condition, sources by mini playbook number, cards. "Conflict" poin
 
 **R40. Negatives are a plaster; the feed is the cure.** Condition: a product shows for poor queries. Add the negative, then fix the title and description that caused the match. Sources: 02, 01. Cards: [25c967c6e637] [a223f5b65ca8]
 
+**R147. For a mobile-first, non-US market (for example India), set Merchant Center payment methods, language and currency to local defaults, and favour lighter, data-cost-aware creative over heavy video.** Condition: store selling into a mobile-first, non-US market. No source in this folder mentions India, INR or any non-US, non-UK market. `[general practice]` No library source; verify against brand data before use.
+
+**R148. Show shipping cost and any import duty in the feed and in ads for cross-border orders, matching what the checkout actually charges, so Merchant Center price and buyer expectation never mismatch.** Condition: store ships across borders with duties or extra shipping cost. Same gap as R147; no source in this folder. `[general practice]` No library source; verify against brand data before use.
+
 ### 3.E Account architecture and launch order
 
 **R41. Google is 4 ad surfaces: Search, Shopping, YouTube (Demand Gen), Display. Shopping is the core for ecommerce and gets the largest share.** Condition: consumer ecommerce. Source 01: Shopping is 60% to 80% of ecommerce Google ads; source 04: 80% to 90% of spend in Shopping, Search only after Shopping saturates; source 02: Shopping is "the bread winner"; source 03: Shopping is the core and non-brand Search is secondary; source 10: Shopping gets "the lion's share"; source 07: Search plus Shopping make 99% of revenue, most from Shopping. Exception (source 04): ecommerce with a B2B or bulk component, where Search can beat Shopping. Sources: 01, 02, 03, 04, 07, 10. Cards: [c38dea49205d] [911db04602d6] [bca4ccb4fceb] [0faae8bbc52a] [30bbbd9532ea] [08b3d9f85868] [cc19e5a055f2]
@@ -169,7 +202,7 @@ Format: rule, condition, sources by mini playbook number, cards. "Conflict" poin
 
 **R50. Kill tiny orphan campaigns and roll spend up.** Condition: campaigns with no role and little spend (source 04 example $400 a month). Only the top 5 campaigns by spend can move the account (source 05). Sources: 04, 05. Cards: [2792071d2d2e] [26676d575992]
 
-**R51. Turn off Google's auto-apply recommendations, AI-generated keywords and assets, auto-created assets, video enhancements and (in remarketing) optimised targeting.** Condition: every campaign, unless testing on purpose. Sources: 01, 03, 04, 07. Cards: [b8508808a53a] [bdfbb0a5fb12] [f06749b19e9b] [18f7a08a224c] [08b3d9f85868]
+**R51. Turn off Google's auto-apply recommendations, AI-generated keywords and assets, auto-created assets, video enhancements and (in remarketing) optimised targeting, so Google cannot quietly spend on non-bestseller SKUs or undo a brand exclusion the store set on purpose.** Condition: every campaign, unless testing on purpose. Sources: 01, 03, 04, 07. Cards: [b8508808a53a] [bdfbb0a5fb12] [f06749b19e9b] [18f7a08a224c] [08b3d9f85868]
 
 **R52. Default campaign settings for ecommerce: Sales objective, purchase goal only, Search Partners off, Display Network off on Search, location option Presence (not Presence or interest), tablets and TV screens off unless device data says otherwise.** Condition: every Search, Shopping, PMax and Demand Gen build. Presence is not available on Video or PMax in some UIs (source 03). Tablets off is source 01's preference; check your own device data. Sources: 01, 02, 03, 04, 07. Cards: [b62174aad487] [535fcd04bd8b] [43c52017c399] [7640dc7d9a25] [35e595666320] [fbfe5ace84d4] [18f7a08a224c] [08b3d9f85868] [4184750845e0] `[verify UI]`
 
@@ -211,23 +244,25 @@ Format: rule, condition, sources by mini playbook number, cards. "Conflict" poin
 
 **R69. When a competitor discounts a shared product 20% to 30%, pull or de-prioritise the product rather than match into near-zero margin; reintroduce when the gap closes.** Condition: resellers or shared SKUs. Source 05 client used a price-monitoring script. For own-brand products this is less clear. Source: 05 only. Cards: [caf9cb9b298e] `[web check: Merchant Center price competitiveness report]`
 
+**R149. Launch 1 new SKU into a live account on its own small budget and its own listing group, separate from the bestseller cold-start process, until it earns its own spend and conversion data.** Condition: adding 1 product to an already-running account, not a new-account cold start. Source 06/09 names "new-arrival SKUs" as a label with no launch procedure. `[general practice]` No library source for the procedure; verify against brand data before use. Cards: [59d9f9d20e0c]
+
 ### 3.H Search campaigns
 
 **R70. Let converting data pick keywords: run Shopping and PMax broad, read search terms daily, move converting queries into Search as exact match, then into titles, assets and landing pages.** Condition: any account with Shopping or PMax data. Traditional research (Keyword Planner, Semrush, Ahrefs, SpyFu) supplies the first rung and extra terms but has no purchase data. Sources: 01, 02, 10, 06/09. Cards: [a223f5b65ca8] [287eff9e6167] [8c0b85636322] [6bfe7d97b858] [4a2c02a70a66] [4c09826249af]
 
 **R71. Classify keywords by intent before bidding: transactional (highest bids, product page), commercial or comparison (own ad groups, comparison pages), problem-aware (lowest bids, tightest negatives, advertorial or category page, not product page), navigational or brand (brand campaign), competitor (own capped campaign).** Condition: non-brand Search build. Sources: 02, 06/09, 01. Cards: [4691ad952431] [4c09826249af] [e8f1dbe974c5] [68c39167796f]
 
-**R72. Build single-theme ad groups (STAGs), never SKAGs.** Condition: every Search campaign. Keywords per group: 2 to 3, up to 5 to 8 (source 02); 10 to 20 (source 04); 3 to 5, max 10 (source 03). Merged: 3 to 10 per theme; a keyword that does not fit starts a new group. RSAs have about 2,700 combinations and need about 250,000 impressions to learn, so 1 keyword per group never exits learning. Sources: 02, 03, 04, 10. Cards: [1b793cd8bbb3] [de648eb98d87] [76be15912789] [61f688e47745] [fd776d0fc197] [bca4ccb4fceb] [4a2c02a70a66]
+**R72. Group Search keywords into single-theme ad groups by product or collection, never 1 keyword per SKU, so each collection page gets enough volume to leave learning.** Condition: every Search campaign. Keywords per group: 2 to 3, up to 5 to 8 (source 02); 10 to 20 (source 04); 3 to 5, max 10 (source 03). Merged: 3 to 10 per theme; a keyword that does not fit starts a new group. RSAs have about 2,700 combinations and need about 250,000 impressions to learn, so 1 keyword per group never exits learning. Sources: 02, 03, 04, 10. Cards: [1b793cd8bbb3] [de648eb98d87] [76be15912789] [61f688e47745] [fd776d0fc197] [bca4ccb4fceb] [4a2c02a70a66]
 
-**R73. Match types: exact for proven converters; broad only with smart bidding and lots of data, or as a deliberate test; phrase rarely (it has become broader).** Condition: new account or efficiency focus, exact on known converters (about 80% exact plus core broad terms is source 02's middle ground). Source 01 cold-search case ran exact plus broad with AI Max and "never phrase"; source 03 uses 3 to 5 phrase-match keywords for a category test; source 04 says never broad match with Maximize Clicks. Sources: 01, 02, 03, 04. Cards: [a223f5b65ca8] [c37ad85535b2] [68c39167796f] [c45d399b63a9] [18f7a08a224c] `[web check: current exact and phrase match definitions]`
+**R73. Use exact match on keywords the store's own search terms already proved converted; broad match only with smart bidding and proof, never to guess demand for a new SKU.** Condition: new account or efficiency focus, exact on known converters (about 80% exact plus core broad terms is source 02's middle ground). Source 01 cold-search case ran exact plus broad with AI Max and "never phrase"; source 03 uses 3 to 5 phrase-match keywords for a category test; source 04 says never broad match with Maximize Clicks. Sources: 01, 02, 03, 04. Cards: [a223f5b65ca8] [c37ad85535b2] [68c39167796f] [c45d399b63a9] [18f7a08a224c] `[web check: current exact and phrase match definitions]`
 
-**R74. Search ads: 7 to 9 headlines and 2 to 4 descriptions with distinct angles, not 15 near-duplicates; pin only with a reason (brand authority in headline 1 on brand ads, a promotion that must show, dynamic keyword insertion on problem-aware terms).** Source 02: 7 to 9; source 10: 8 headlines and 2 descriptions; source 03: 3 to 5 headlines, pin brand to position 1; source 01: fill all 15 in PMax and pin DKI in cold search. Ad strength is not ad rank. Conflict 7.6. Sources: 01, 02, 03, 10. Cards: [bfa79d563469] [533ef4069e40] [b14c89dd124a] [966d6939f047] [4b1f9877b48b] [68c39167796f] `[web check: RSA asset limits]`
+**R74. Write 7 to 9 headlines and 2 to 4 descriptions built from the store's own offer, price point and bestseller angle, not 15 near-duplicates chasing an ad-strength score. Pin only with a reason (brand authority in headline 1 on brand ads, a promotion that must show, dynamic keyword insertion on problem-aware terms).** Source 02: 7 to 9; source 10: 8 headlines and 2 descriptions; source 03: 3 to 5 headlines, pin brand to position 1; source 01: fill all 15 in PMax and pin DKI in cold search. Ad strength is not ad rank. Conflict 7.6. Sources: 01, 02, 03, 10. Cards: [bfa79d563469] [533ef4069e40] [b14c89dd124a] [966d6939f047] [4b1f9877b48b] [68c39167796f] `[web check: RSA asset limits]`
 
 **R75. Fill the assets: sitelinks (collections, best sellers, reviews, promotions), callouts (25 characters, up to 10), structured snippets, promotion asset, price assets (rarely), business name and logo (needs advertiser verification), images. Skip calls and messages for ecommerce.** Condition: Search and PMax. Per asset group, not account-wide ("account-wide is lazy", source 01). Sources: 01, 02, 03, 04. Cards: [850683161175] [19cb14a20c03] [8e3ee156ad91] [2792071d2d2e]
 
-**R76. Headlines grab, match intent and drive action; descriptions handle objections, add trust and urgency; use the searcher's words.** Condition: all RSAs. Tactics: imperative verbs, numbers, "you", the offer in 1 or 2 headlines, title case headlines, sentence case descriptions. Sources: 02, 03. Cards: [089beecb4466] [195e55ecd55d] [4b1f9877b48b]
+**R76. Lead headlines with the product, price break or live offer; use descriptions to answer the shopper's real objection (shipping cost, fit, return window), not generic urgency copy.** Condition: all RSAs. Moved to Appendix A: generic RSA copywriting tactics. Sources: 02, 03. Cards: [089beecb4466] [195e55ecd55d] [4b1f9877b48b]
 
-**R77. Fix quality before paying more: expected CTR (ad copy, assets, match), ad relevance (tighter themes, keyword-to-copy match), landing page experience (speed, mobile, message match). Raise bids only when quality is maxed.** Condition: Search keywords. Source 02 case: one keyword's CPC fell from $5.84 to $2.38 after ad and page fixes. Landing page experience recovers slowly (weeks to months, source 05). Sources: 02, 05, 06/09, 07, 10. Cards: [be07dfd74db8] [4d0a3e281799] [76be15912789] [6ff74a04932d] [1267e0489b18] [2d82081ef51f] [11dd9a205267] [8beaa7445948]
+**R77. Fix quality before paying more: expected CTR (ad copy, assets, match), ad relevance (tighter themes, keyword-to-copy match), landing page experience (load speed, mobile checkout friction, whether the page matches the ad's promise). Raise bids only when quality is maxed; before raising a Search bid, fix the PDP or collection page it lands on.** Condition: Search keywords. Source 02 case: one keyword's CPC fell from $5.84 to $2.38 after ad and page fixes. Landing page experience recovers slowly (weeks to months, source 05). Sources: 02, 05, 06/09, 07, 10. Cards: [be07dfd74db8] [4d0a3e281799] [76be15912789] [6ff74a04932d] [1267e0489b18] [2d82081ef51f] [11dd9a205267] [8beaa7445948]
 
 **R78. Cold problem-aware Search: only when the product solves a searched problem; send to an advertorial or educational page, not a bare buy box; Maximize Conversions (or Maximize Clicks while testing fit); brand excluded; exact plus broad; DKI pinned.** Condition: real category or problem demand (blood pressure, methylene blue). Skip Search for unique low-volume products. Source 01 case: £3,500 spend, 2.18 Google ROAS, 8.32% CTR, 3.82% conversion rate over about 3 weeks (example). Source: 01, with 06/09 on problem-aware routing. Cards: [68c39167796f] [30a52da78077] [deb514cc9507] [e0e3cef53d9f] [4c09826249af]
 
@@ -235,9 +270,9 @@ Format: rule, condition, sources by mini playbook number, cards. "Conflict" poin
 
 **R80. DSA: only with a large content site across many categories, after RSAs run, to mine keywords and preview how PMax search may behave; negative ad targets on policy, blog and returns pages.** Condition: not a 1-page funnel. Source 04 notes DSA is being deprecated. Sources: 02, 01, 04. Cards: [aa122d012f28] [be76f13238a4] [2977af57de2c] [e0e3cef53d9f] [8ac98b834d71] `[web check: DSA status]`
 
-**R81. AI Max for Search: source 01 turns it on for cold search (opinion, "new features tend to do well"); source 02 skips it to keep control; source 06/09 assigns it long-tail and conversational queries in large accounts.** Condition: treat as a test in 1 campaign with brand excluded. Sources: 01, 02, 06/09. Cards: [68c39167796f] [535fcd04bd8b] [61d89a7caa36] `[web check: AI Max for Search behaviour and controls]`
+**R81. AI Max for Search: source 01 turns it on for cold search (opinion, "new features tend to do well"); source 02 skips it to keep control; source 06/09 assigns it long-tail and conversational queries in large accounts.** Condition: test AI Max only on a cold, brand-excluded campaign, so a bad match cannot burn spend on a competitor's line or a discontinued SKU. Sources: 01, 02, 06/09. Cards: [68c39167796f] [535fcd04bd8b] [61d89a7caa36] `[web check: AI Max for Search behaviour and controls]`
 
-**R82. CPC is a vanity metric except at the extremes (about $100 never profitable; about 10 cents probably junk). CPC up with conversion rate up is fine; CPC up with conversion rate flat is the problem.** Condition: any read of CPC. Sources: 04, 05. Cards: [087445947ca9] [6ff74a04932d]
+**R82. Judge CPC against the store's break-even CPA and AOV, not alone; a CPC can be profitable at $150 AOV and unprofitable at $30 AOV.** Condition: any read of CPC. CPC up with conversion rate up is fine; CPC up with conversion rate flat is the problem. Moved to Appendix A: general CPC benchmark line. Sources: 04, 05. Cards: [087445947ca9] [6ff74a04932d]
 
 ### 3.I Performance Max mechanics
 
@@ -295,13 +330,13 @@ Format: rule, condition, sources by mini playbook number, cards. "Conflict" poin
 
 ### 3.K Bidding by stage
 
-**R108. Stage 1, no conversion history: manual CPC (with a cap, source 02 example $2 per keyword) or Maximize Clicks (with an optional max CPC) on Search and Shopping. Trim by hand until conversions build.** Condition: new account, or an account with no recent conversions (paused 2 years counts as new). Source 02 uses manual CPC 70% to 80% of the time; source 03 uses Maximize Clicks; source 01 uses manual bidding in phase 1; source 04 says manual or Maximize Clicks belong only in new accounts (and never broad match with Maximize Clicks); source 07 launches PMax on Maximize Conversion Value with no target from day 1 and never uses a manual stage. Conflict 7.7. Sources: 01, 02, 03, 04. Cards: [4aee86b1351f] [805871e8952b] [5d9dd44f8d9a] [a3bf86a930b0] [56cda9478c6f] [9b1a4ac01c87]
+**R108. Cap manual CPC or Maximize Clicks bids at break-even CPA divided by an assumed conversion rate, so a new account cannot buy clicks it cannot afford once a sale happens (source 02 example: a manual cap of about $2 per keyword). Trim by hand until conversions build.** Condition: new account, or an account with no recent conversions (paused 2 years counts as new). Source 02 uses manual CPC 70% to 80% of the time; source 03 uses Maximize Clicks; source 01 uses manual bidding in phase 1; source 04 says manual or Maximize Clicks belong only in new accounts (and never broad match with Maximize Clicks); source 07 launches PMax on Maximize Conversion Value with no target from day 1 and never uses a manual stage. Conflict 7.7. Sources: 01, 02, 03, 04. Cards: [4aee86b1351f] [805871e8952b] [5d9dd44f8d9a] [a3bf86a930b0] [56cda9478c6f] [9b1a4ac01c87]
 
 **R109. Stage 2, conversions arriving: move to Maximize Conversion Value (Maximize Conversions or tCPA only when order values are fixed, single SKU or subscription, or when you know break-even CPA and want volume, not value).** Switch points by source: 10 to 15 conversions (source 03, Search), 15 to 20 (source 03, Shopping), about 30 a month (source 02), 1 a day for 30 days (source 01), 15 to 30 (source 02 header only). Ecommerce bids for value about 90% of the time (source 04): conversion bidding funds the cheapest product. Conflict 7.9. Sources: 01, 02, 03, 04, 06/09. Cards: [805871e8952b] [a3bf86a930b0] [56cda9478c6f] [4aee86b1351f] [ed1a69221ddc] [07bdd8638a6a] [283cece14dca] [4b56cb53eee4]
 
 **R110. Stage 3, enough volume: add a Target ROAS set at or slightly below the trailing 30-day actual, and hold it at least 2 to 3 weeks.** Switch points: 30 to 50 conversions a month per Shopping campaign (source 02); over 50 (source 02 mind map); 50 a month in 1 PMax campaign (source 02); 30 or more a month with a steady ROAS (source 03); about 50 a month, more in competitive auctions (source 06/09); about 3 months and only at a plateau for PMax (source 07). First target: at or 10% to 15% below actual (sources 02, 04, 06/09; source 04 example trailing 420% to 430%, set 400%). Never set the target far above actual (a 700% target on a 200% campaign stops spend). Conflict 7.9. Sources: 01, 02, 03, 04, 06/09, 07. Cards: [5da4b51eabe6] [5d9dd44f8d9a] [9edd4e9d7860] [56cda9478c6f] [29bf1d1ed526] [283cece14dca] [4b56cb53eee4] [d4494776c11a] [7f0f4a47add4]
 
-**R111. Target ROAS trades swings for stability; it does not raise average performance, and raising it narrows the audience toward warm users.** Condition: any tROAS campaign. Source 04 illustration: target raised 400% to 500% moved a campaign from about 4x to about 6x at $1,000 a day, and the earlier position reached more cold traffic. Source 05: tROAS shows "how hard the campaign will go on retargeting warm people". Sources: 04, 05, 01. Cards: [29bf1d1ed526] [4e3675b7a020] [141c23b0306c] [4175eb319be4]
+**R111. A tighter tROAS shrinks the campaign toward the store's own past buyers; watch new-customer share before tightening further.** Condition: any tROAS campaign. Moved to Appendix A: how Target ROAS trades swings for stability. Source 04 illustration: target raised 400% to 500% moved a campaign from about 4x to about 6x at $1,000 a day, and the earlier position reached more cold traffic. Source 05: tROAS shows "how hard the campaign will go on retargeting warm people". Sources: 04, 05, 01. Cards: [29bf1d1ed526] [4e3675b7a020] [141c23b0306c] [4175eb319be4]
 
 **R112. Step the target gently: source 06/09 says 15% to 20% per step, 2 to 3 weeks apart, watching impression share and conversion volume; source 02 says raise gently or hold it and scale budget; source 01 says wait 2 to 4 weeks after any bid strategy change. Do not halve a target CPA or double a budget overnight (source 04).** Cards: [283cece14dca] [5da4b51eabe6] [4175eb319be4] [7003ff9f69ce]
 
@@ -309,11 +344,11 @@ Format: rule, condition, sources by mini playbook number, cards. "Conflict" poin
 
 **R114. Do not stay on a restrictive strategy forever; rotate expansive (Maximize Conversion Value) and restrictive (tROAS) periods, or run a feeder: cold Standard Shopping at a very low tROAS (source example 50%) beside a high-tROAS PMax (example 600%), judged together on backend revenue and new customers.** Condition: PMax plateaued or suspected of warm-traffic over-crediting; margin and cash can fund a deliberately low-ROAS cold leg. Source 04 gives no rotation length, budget split or stop rule. Source: 04 only (10 uses the same mechanism as the safety net, R94). Cards: [07bdd8638a6a] [b390a3400b4f] [56795ebc9766] `[needs brand data: margin and cash to fund the cold leg]`
 
-**R115. Portfolio bid strategies: pool campaigns that share 1 goal to merge learning, and use them to add a Max CPC cap or bid floor (source 06/09 case: spikes to $25, cap $9). Do not pool different goals (clearance vs new arrivals), campaigns needing manual bids, or tiny campaigns.** Sources: 04, 06/09. Cards: [8d6cc6ef07b8] [b664dd686d10] [e5678cb19768] `[web check: which strategies support portfolio bid limits]`
+**R115. Use portfolio bid strategies to add a Max CPC cap or bid floor across campaigns that share 1 goal (source 06/09 case: spikes to $25, cap $9). Moved to Appendix A: how portfolio bidding merges learning. Do not pool different goals (clearance vs new arrivals), campaigns needing manual bids, or tiny campaigns.** Sources: 04, 06/09. Cards: [8d6cc6ef07b8] [b664dd686d10] [e5678cb19768] `[web check: which strategies support portfolio bid limits]`
 
-**R116. Seasonality adjustments only for 1 to 7 day conversion rate jumps from unusual causes (a flash promotion), not for holidays or anything over 7 days.** Source: 06/09 only. Cards: [44615a608690]
+**R116. Use a seasonality adjustment only for a short, store-caused spike lasting 1 to 7 days (a flash sale, an influencer post), never a recurring calendar event like a holiday or anything over 7 days.** Source: 06/09 only. Cards: [44615a608690]
 
-**R117. Smart bidding exploration (Search only) lets a tROAS campaign test auctions outside its target in 10%, 20% or 30% bands; consider it instead of loosening the target.** Source: 04 only, no results given. Cards: [97caffb37450] `[web check: name and availability]`
+**R117. Consider smart bidding exploration instead of loosening the target, when a tROAS Search campaign needs more auction room.** Moved to Appendix A: how smart bidding exploration works. Source: 04 only, no results given. Cards: [97caffb37450] `[web check: name and availability]`
 
 **R118. After 17 Aug 2026 (source 06/09 claim), budget-limited tROAS and tCPA campaigns track closer to the stated target, so re-audit loose legacy targets that the budget cap used to hide.** Source: 06/09 only. Cards: [283cece14dca] `[web check: 17 Aug 2026 Target ROAS change]`
 
@@ -331,9 +366,9 @@ Format: rule, condition, sources by mini playbook number, cards. "Conflict" poin
 
 ### 3.M Negatives and exclusions
 
-**R124. Keep an account-level universal negative list (jobs, careers, interns, hiring, salary, free, cheap where they signal no intent) so every new campaign inherits it; put terms irrelevant to the whole business at account level, terms irrelevant to some products at list, campaign or ad group level.** Sources: 04, 02, 06/09. Cards: [12e5a4881580] [25c967c6e637] [423e6a50781c] [07a456f35774]
+**R124. Build the account negative list from terms that never belong on this catalogue (jobs, free, wholesale, repair parts) without blocking real product searches. Put terms irrelevant to the whole business at account level, terms irrelevant to some products at list, campaign or ad group level.** Sources: 04, 02, 06/09. Cards: [12e5a4881580] [25c967c6e637] [423e6a50781c] [07a456f35774]
 
-**R125. Negative match types mirror keywords: broad negatives block any order of all words (not singular or plural variants), phrase negatives block the words in order with extras allowed, exact negatives block only the exact query.** Source: 02 only. Cards: [2cd86d3bc065]
+**R125.** Moved to Appendix A: negative match type mechanics. Source: 02 only. Cards: [2cd86d3bc065]
 
 **R126. Search term review cadence: daily in new campaigns, new products and high budgets, or every 48 to 72 hours for new PMax (source 02); weekly in month 1 for new Search at normal budgets (source 04); at least a couple of times a week once stable (source 02); less after month 1 and avoid over-editing because each change resets learning a little (source 04). Sources: 01, 02, 04, 07 (Sunday review).** Cards: [a5827fbc8126] [423e6a50781c] [2bf868bfb28d] [12e5a4881580] [031ec7c8b2d2]
 
@@ -355,9 +390,11 @@ Format: rule, condition, sources by mini playbook number, cards. "Conflict" poin
 
 **R134. Catalog breadth: under about 30 SKUs limits what Shopping and PMax can find at scale (source 06/09); a 1-hero-SKU account still works with 1 PMax plus brand campaigns (source 01). Do not add thin listings just to add breadth.** Cards: [9a7b30ebd79d] [6a480c2ffb47] [d5f436322917]
 
+**R150. Throttle spend on a SKU ahead of a predicted stockout, using the store's own inventory forecast, instead of waiting for the stockout to hit the ad account.** Condition: a store with inventory forecasting data (days of stock left) available before the item runs out. Sources 05 and 08 cover reacting after a stockout already happens (R91, R133); nothing here acts ahead of one. `[general practice]` No library source for acting ahead of a stockout; verify against brand data before use. Cards: [4e3675b7a020] [f08cac856543]
+
 ### 3.O Diagnosis and operating cadence
 
-**R135. Investigate top-down: business KPIs, channel, campaign type, campaign, metric, sub-metric, trigger, root cause. Never start at the metric a client names.** Source: 05, with 01 on the health read order (impression share, CPC, CTR, conversion rate, conversions, session duration). Cards: [7c50191f8854] [7fe2bb1f5bff] [ae67680618f3] [b27fb4f22fa1]
+**R135.** Moved to Appendix A: top-down investigation order (business KPIs, channel, campaign type, campaign, metric, sub-metric, trigger, root cause). See procedure 4.25 for the applied, store-tied version. Source: 05, with 01 on the health read order (impression share, CPC, CTR, conversion rate, conversions, session duration). Cards: [7c50191f8854] [7fe2bb1f5bff] [ae67680618f3] [b27fb4f22fa1]
 
 **R136. Before any change, apply 3 rules: read change history (yours, teammates, client, site); extend the window (90 to 180 days weekly for the account scan, never a 1-day read); read recent days on conversion time.** Source: 05, with 02 on latency. Cards: [62403f6f3b48] [31ee29611482] [d2bb52998ad7]
 
@@ -369,11 +406,13 @@ Format: rule, condition, sources by mini playbook number, cards. "Conflict" poin
 
 **R140. Split every KPI with 2 formulas: CPA = CPC / conversion rate; clicks = impressions x CTR. CPC up: quality score components, new competitor, premium auctions. Conversion rate down: tracking, landing page (the number 1 cause), audience shift, learning reset, offer change. Impressions down: lost IS (budget) if the budget is hit, lost IS (rank) if clicks and impressions both fall on steady spend. CTR down: stale seasonal copy, audience shift, competitor price cut on Shopping.** Source: 05, with 02 on impression share reading. Cards: [2069300bf455] [6ff74a04932d] [86ca17cab286] [2795573cf2d6] [caf9cb9b298e] [ffbb287b9903]
 
-**R141. Default to a fix, not a rebuild; isolate 1 fix when the dip is mild, allow the kitchen sink only when dire; do not touch the account until you can finish the root-cause sentence ("this campaign is underperforming because this metric dropped, driven by this sub-metric, caused by this trigger, which was the root cause").** Source: 05. Cards: [5df8489778d1] [817f1a421116] [7c50191f8854]
+**R141. Before changing anything, finish the sentence: this campaign's backend revenue dropped because this metric fell, driven by this sub-metric, caused by this trigger; a fix that cannot complete that sentence will not fix revenue.** Condition: default to a fix, not a rebuild; isolate 1 fix when the dip is mild, allow the kitchen sink only when dire. Moved to Appendix A: the original root-cause sentence wording. Source: 05. Cards: [5df8489778d1] [817f1a421116] [7c50191f8854]
 
 **R142. Be in the account daily for search terms, auction insights and spend anomalies; do product, asset and landing page work weekly; refresh search themes, customer lists and bid strategy review monthly; check site vs Merchant Center policies monthly.** Sources: 01, 02, 07 (Sunday: tROAS, budget, remove keywords, remove products; judge week over week). Cards: [a5827fbc8126] [5ebe76f05300] [64c009e7bc50] [67af52d7623d] [b9ecdf07948a] [d40cdd66a2bc] [031ec7c8b2d2] [36a8c46cb661]
 
 **R143. Nothing is set and forget: test search ads and feeds weekly against a control, keep several ads per ad group, replace low-rated PMax assets, refresh remarketing creative per objection.** Sources: 01, 02, 04. Cards: [e5912712faf6] [533ef4069e40] [2bf868bfb28d] [74a36fd11057]
+
+**R151. Before a known sale period, raise budgets ahead of the date, refresh feed and promotions, and pre-brief creative on the sale calendar, rather than reacting once the sale has started.** Condition: any store with a fixed sale calendar (BFCM, festival sales, anniversary sales). Source 03 has BFCM headline examples only; source 06/09 warns against seasonality bid adjustments for holidays (R116), which is a different lever from readiness. No checklist exists in this folder. `[general practice]` No library source for a readiness checklist; verify against brand data before use. Cards: [4b1f9877b48b] [44615a608690]
 
 ## 4. Procedures (implementation)
 
@@ -1170,7 +1209,7 @@ Diagnosis and operations
 
 Every deliverable is a Markdown document for a human to act on. Plain English, short sentences, digits. Each recommendation carries the rule number, the sources and the data it used. Nothing is written to Google Ads or Merchant Center by the agent.
 
-### 9.1 Account diagnosis
+### 9.1 Google Ads root-cause report
 - Header: brand, date range (90 to 180 days), spend share by platform, MER trend, conversion-time caveat.
 - Level 1 findings: outside changes, revenue equation split, seasonality vs forecast, decision "Google issue: yes or no".
 - Level 2 to 5 findings: inflection date, top 5 campaigns table (spend, conversions, value, ROAS, CTR before vs after), campaign-type failure checks with evidence, metric and sub-metric split.
@@ -1208,6 +1247,12 @@ Every deliverable is a Markdown document for a human to act on. Plain English, s
 - Each test: hypothesis, the conflict or rule it resolves (for example 7.2 brand pause, 7.5 feed-only channel split, 7.11 Demand Gen feed on vs off, title batch, landing page rotation), design (what changes, what stays), metric, minimum window (30 to 60 days for landing pages; 2 to 4 weeks after bid changes), stop rule, owner.
 - A register entry for the experiment memory once it exists (see CLAUDE.md next steps).
 
+### 9.7 Peak-season readiness plan
+- Budget pre-raise schedule ahead of the sale date, tied to the store's own sale calendar (BFCM, festival sales, anniversary sales).
+- Feed and promotion checklist to run before the sale starts (4.5, 4.7, 4.8), so disapprovals and promo mismatches do not hit during the peak window.
+- Creative refresh briefed against the sale calendar, not built after the sale opens (R151).
+- Marked `[general practice]`: this deliverable has no sourced procedure yet in this folder; state that in the document and verify every step against brand data before use.
+
 ## 10. What needs live data or a web check
 
 ### 10.1 `[needs brand data]`
@@ -1244,6 +1289,8 @@ Evidence: Optmyzr 2024 PMax study; DOJ trial exhibits on Google's ad score; YouT
 | Benchmarks (CPC, ROAS, CTR by type, conversion lag) | Move yearly and by market; sources are US and UK, one Australian | Never use as targets; refresh context yearly |
 | Tool names and pricing (Simprosys, DataFeedWatch, Channable, Feedonomics, Feed Army, Hyros, Triple Whale, Northbeam, Blotout) | Commercial products change | When recommending a tool |
 
+24 Sep 2026: ecommerce specificity pass applied from ECOM_REVIEW.md; priority block added, 15 rules reworded, 8 levers added, 191 words moved to Appendix A.
+
 ## 12. Source index
 
 Credibility scale: primary practitioner with click paths and own account screenshots; primary practitioner with logic but few settings; secondary compilation.
@@ -1264,3 +1311,23 @@ Credibility scale: primary practitioner with click paths and own account screens
 Independent sources for confidence tallies: 01, 02, 03, 04, 05, 07, 08, 10 (8 primary) plus 06/09 as 1 weak secondary. Sources 04 and 05 share an agency; they are counted as 2 because they cover different topics with different presenters, but their agreement on tROAS narrowing is 1 agency view.
 
 Neighbour folders: 24-DEP-ad-deployment (Meta, TikTok, account audits, multi-platform structure, brand holdout tests); 10-MCR (video and static creative craft, UGC briefs); 11-ADC (ad copywriting, ad-copy-v1.2 playbook); 06-MEA (measurement, MER, attribution, incrementality design, GA4 reporting); 07-LPG and 09-CRO (landing pages, CRO tests, page speed); 08-SPD (site speed); 15-SEO (organic titles, product data outside the feed); offer and pricing folders (discount strategy, bundles, LTV programmes); retention folder (email and SMS flows named in R107).
+
+## Appendix A. General background
+
+Moved here on 24 Sep 2026 during the ecommerce specificity pass (`ECOM_REVIEW.md` section 5). Each entry below is text cut from a numbered rule because it describes a Google Ads mechanic or a general method that reads the same for any advertiser, not just a store. The rule id it came from stays in section 3, with a pointer to here and, where the rule survived with a store-tied rewording, the store version in place of this text.
+
+1. From R76 (section 3.H, Search campaigns): generic RSA copywriting tactics. "Tactics: imperative verbs, numbers, 'you', the offer in 1 or 2 headlines, title case headlines, sentence case descriptions." Ad-copy 101, no store content.
+
+2. From R82 (section 3.H, Search campaigns): general CPC benchmark line. "CPC is a vanity metric except at the extremes (about $100 never profitable; about 10 cents probably junk)." True for any paid channel on its own; R82's store-tied rewrite (judge CPC against break-even CPA and AOV) replaced it as the operating rule.
+
+3. From R111 (section 3.K, Bidding by stage): how Target ROAS works as a feature. "Target ROAS trades swings for stability; it does not raise average performance." A plain description of the bid strategy, true for any advertiser.
+
+4. From R115 (section 3.K, Bidding by stage): how portfolio bidding works as a feature. "Portfolio bid strategies pool campaigns that share 1 goal to merge learning." A plain description of the feature, true for any advertiser.
+
+5. From R117 (section 3.K, Bidding by stage): how smart bidding exploration works as a feature. "Smart bidding exploration (Search only) lets a tROAS campaign test auctions outside its target in 10%, 20% or 30% bands." A plain description of the feature, true for any advertiser.
+
+6. From R125 (section 3.M, Negatives and exclusions): negative match type mechanics. "Negative match types mirror keywords: broad negatives block any order of all words (not singular or plural variants), phrase negatives block the words in order with extras allowed, exact negatives block only the exact query." Pure syntax, same for any advertiser. Source: 02 only. Cards: [2cd86d3bc065]
+
+7. From R135 (section 3.O, Diagnosis and operating cadence): the top-down investigation order. "Investigate top-down: business KPIs, channel, campaign type, campaign, metric, sub-metric, trigger, root cause. Never start at the metric a client names." A general diagnostic method, reusable outside Google Ads; the applied, store-tied version lives in procedure 4.25. Source: 05, with 01 on the health read order (impression share, CPC, CTR, conversion rate, conversions, session duration). Cards: [7c50191f8854] [7fe2bb1f5bff] [ae67680618f3] [b27fb4f22fa1]
+
+8. From R141 (section 3.O, Diagnosis and operating cadence): the original root-cause sentence template. "Default to a fix, not a rebuild; isolate 1 fix when the dip is mild, allow the kitchen sink only when dire; do not touch the account until you can finish the root-cause sentence ('this campaign is underperforming because this metric dropped, driven by this sub-metric, caused by this trigger, which was the root cause')." A general diagnostic method, reusable outside Google Ads; R141 now carries the store-tied wording (backend revenue) in section 3. Source: 05. Cards: [5df8489778d1] [817f1a421116] [7c50191f8854]

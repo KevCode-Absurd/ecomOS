@@ -4,6 +4,8 @@ version: 2.0-draft  |  date: 2026-09-24  |  sources: 7 (5 independent, see 0.2) 
 
 ## 0. How to use this playbook
 
+**Ecommerce first.** This playbook is for ecommerce stores, not a general customer-experience guide. Section 3.0 is the ranking: work its 12 levers top to bottom before opening any other rule. Store-type conditions (hero SKU vs catalogue, low vs high AOV, subscription vs one-off, marketplace-heavy, luxury or considered purchase, mobile-first India vs US) decide which rules in the sections below actually apply to the brand in front of the agent.
+
 ### 0.1 Who runs it
 
 This is the base layer for the retention and customer experience agent. It covers the money side of retention (LTGP, CAC, ratio bands, payback, floor and ceiling), how to read cohorts, how to structure the first, second and third purchase, the segments that retention runs on, and every touchpoint after "Buy": confirmation, tracking, the wait, delivery, unboxing, returns, refunds, reviews, support and recovery. It also holds the CX strategy layer (maturity, ownership, measurement method) and the trend forecasts, with a clear line where a forecast stops being a rule.
@@ -38,16 +40,16 @@ About 70% of source 01 is Klaviyo flow, segmentation, campaign and RFM content t
 | Post-purchase journey audit (confirmation to review) | 3.9 to 3.14, 4.P12 to 4.P19, 5.2, 9.2 |
 | Returns, refunds, support, recovery | 3.14 to 3.16, 4.P20 to 4.P23, 5.3, 9.4 |
 | Loyalty, VIP experience, win-back | 3.17, 3.18, 4.P24, 4.P25 |
-| Prioritise experience fixes and delight spend | 3.9, 4.P12, 4.P26, 4.P27, 5.4, 9.2 |
+| Prioritise experience fixes and delight spend | 3.0, 3.9, 4.P12, 4.P26, 4.P27, 5.4, 9.2, 9.7 |
 | Retention play with test design | 3.4, 3.19, 4.P30, 5.5, 9.3 |
-| CX strategy, maturity, ownership, voice of customer | 3.21, 4.P28, 4.P29, 7.C1 |
+| CX strategy, maturity, ownership, voice of customer | 4.P29, 7.C1, Appendix A (general theory, moved from 3.21 and P28) |
 | Search tech, buy vs build, margin per visitor | 3.22, 4.P31, 7.C4 |
 | AI, trends, brand agents, AI visibility | 3.16, 3.23, 4.P32, 11 |
 | Any conflict between sources | 7 |
 
 ### 0.4 What the agent must fetch before acting
 
-1. From the brand record: category and repeat cycle (consumable, durable, fashion), AOV for new customers, gross margin, COGS per SKU, delivery cost per order, transaction fee rate, refund rate, discount policy, ship-to countries, returns policy and law per market, carrier lanes and handling time, brand promise in one line, voice guide, approved claims, product usage cadence per SKU, packaging spec and 3PL capabilities.
+1. From the brand record: category and repeat cycle (consumable, durable, fashion), AOV for new customers, gross margin, COGS per SKU, delivery cost per order, transaction fee rate, refund rate, discount policy, ship-to countries, returns policy and law per market, carrier lanes and handling time, brand promise in one line, voice guide, approved claims, product usage cadence per SKU, packaging spec and 3PL capabilities, and the share of orders that are marketplace-fulfilled and so out of scope for this playbook (R158).
 2. From the data layer (Shopify, Klaviyo, helpdesk, returns app, Metabase): order-level revenue and refunds by customer with first-order date, media spend by period, new customers by period, discount code per order, ticket log tagged by type (WISMO, returns, product, other), delivery promise and delivered timestamps per order, return request and refund timestamps, review request and review counts, list size and engaged segment size, RFM output.
 3. From the web, tagged `[web check]`: tracking-page and returns vendors and prices, refund and returns law per ship-to market, AI support tool capabilities, the statistics quoted by sources before any client use. Section 10 lists all of them.
 
@@ -58,6 +60,8 @@ All arithmetic runs in code in ecomOS, never in the model. Every formula in 3.0 
 ## 1. Scope and outcomes
 
 Covers: retention economics (LTGP by window, CAC, LTGP to CAC bands, CAC payback, CAC floor and ceiling); cohort reading (period returning rate vs cohort repeat rate, RPR bands, top-20% share); the first, second and third purchase structure (F1, F2, F3); engaged-audience, RFM, VIP and lifecycle segments; the existing-customer ad budget; discount-cohort and acquisition-quality audits; the post-purchase journey (order confirmation, the wait, delivery promise, branded tracking, WISMO, delivery and unboxing, education, review request, replenishment and second-purchase nudges, returns and refunds); effort reduction in service moments and engineered peaks in discretionary moments (peak-end, Kano, delight decay, expectancy disconfirmation); service recovery; support as a profit centre; loyalty tiers and experiential rewards; win-back; CX strategy, ownership, maturity and voice of customer; where the AI and CX trend forecasts stop being rules.
+
+**R158.** This playbook covers the brand's own site and app checkout only. Marketplace-fulfilled orders (Amazon or Flipkart-fulfilled, where the brand does not control tracking, packaging or support) sit outside this scope; do not apply the branded-tracking, unboxing or support rules here to an order the brand cannot touch after the sale. `[general practice]`. No source in this folder found this lever (only an unrelated SAP Store mention in 03); verify against brand data before use.
 
 Does not cover (go to the neighbour folder):
 
@@ -107,7 +111,26 @@ Business measures this domain moves:
 
 Every rule states the rule, when it applies, the mini playbooks that support it, any conflict (by section 7 code), and card ids. Where only 1 source supports a rule, the rule says so. Where sources disagree, the strictest condition is kept here and the disagreement is written out in section 7. Section 3.0 is the formula register; rules cite formulas by F number.
 
-### 3.0 Definitions and formula register
+### 3.0 Ecommerce priority order
+
+Work this list top to bottom on any post-purchase job. It is the triage order, not a replacement for the detail below.
+
+1. Fix product and portfolio before any CX spend. A broken reason to return outranks every touchpoint fix. R23, R24, R25.
+2. Get delivery date accuracy and proactive tracking above 90%. Cheapest, most universal WISMO and trust fix. R69, R70, R126 step 1.
+3. Fix returns and refunds friction. Weight highest for catalogue and apparel brands with high return rates, lower for single-SKU low-return consumables. R96, R97, R102.
+4. Build the 3-message post-purchase sequence and cut WISMO under 5%. Universal, low cost, high leverage. R67, R68, R71.
+5. Design the unboxing peak. Weight highest for single-hero-SKU DTC brands with a strong physical identity, lower for commodity or marketplace-heavy catalogues. `[general practice]` on the marketplace weighting; R80, R83.
+6. Time replenishment and the second-purchase nudge to the usage cycle. High priority for consumable and subscription brands, low for durable one-off categories. R34, R92.
+7. Track CAC payback day for subscription or CPG brands only; one-off and durable brands skip to first-order profitability. R7, R11.
+8. Set the LTGP window and CAC ceiling by capital and category. Bootstrapped or sub-15 to 20 million brands default 30-day; funded or high-repeat brands go 90-day or further. R7, R8.
+9. Build engaged-audience and RFM segmentation, only after steps 1 to 4 are healthy. R23, R37, R40, R41.
+10. Choose the update channel by audience and geography: SMS for older or US bases, WhatsApp for opted-in Indian D2C. The clearest store-by-geography rule the playbook already has. R75.
+11. Build loyalty and VIP tiers only once delivery, returns and support are reliable, and only where VIP revenue is the constraint, roughly above 10 to 20 million a year. R43, R115.
+12. Spend on existing-customer ads only in the fashion or frequent-drop exception. Every other store type skips this lever. R49.
+
+Load this block first; the groups below are the detail.
+
+### 3.0b Definitions and formula register
 
 Conventions for the developer. All money in the brand's reporting currency, tax excluded. All rates as decimals in code (0.30, not 30). A cohort is the set of customers whose first order falls in one acquisition period (week or month). A window W is measured in days from each customer's first order, not from a calendar date. Every ratio over a period uses period totals (sum over sum), never an average of daily ratios. Missing inputs return "unavailable", never 0. Every output carries its definition label (for example "90-day LTGP, refunds included, cohort June 2026").
 
@@ -336,7 +359,7 @@ send_size_next     = engaged + sample_size
 
 **R18. The core retention dashboard holds: 90 and 365 day LTGP mapped across the 30 to 365 day cohorts with refunds included, first-to-second conversion (F10), and revenue from the top 20% of customers (F11).** Attribution submetrics sit under it: campaign revenue, pop-up conversion (not opt-in rate), flow revenue used to find gaps, and year-on-year owned-media growth relative to business growth. 01's soft indicator of 30% to 50% of revenue from email is "not a hard science". Source 01. [2df157249026] [b4ff45d77f83]
 
-**R19. Track experience metrics alongside CSAT and NPS, because CSAT and NPS measure the absence of dissatisfaction, not the presence of connection.** 04's list: CLV by delight-touchpoint cohort, WISMO volume, unboxing UGC count, return-to-repurchase rate, tracking-page engagement, loyalty-redeemer repeat rate. 06 adds a customer retention rate (F15) and cites NPS benchmarks of about 50 average and 70 plus "world class" (cited industry figures, unverified). 05 gates roadmap steps on WISMO under 5% of orders and stable post-purchase NPS. Delight cluster (1 source). Conflict C1 on whether to survey at all. [7f71ff76f9b1] [bc11d5300f1f] [d6e5e929396b]
+**R19. Do not stop at CSAT and NPS: track CLV by delight-touchpoint cohort, WISMO volume, unboxing UGC count, return-to-repurchase rate, tracking-page engagement and loyalty-redeemer repeat rate too, since CSAT and NPS only catch dissatisfaction, not a customer quietly drifting.** 04's list: CLV by delight-touchpoint cohort, WISMO volume, unboxing UGC count, return-to-repurchase rate, tracking-page engagement, loyalty-redeemer repeat rate. 06 adds a customer retention rate (F15) and cites NPS benchmarks of about 50 average and 70 plus "world class" (cited industry figures, unverified). 05 gates roadmap steps on WISMO under 5% of orders and stable post-purchase NPS. Delight cluster (1 source). Conflict C1 on whether to survey at all. [7f71ff76f9b1] [bc11d5300f1f] [d6e5e929396b]
 
 **R20. Every vendor or brand case number in this playbook is a claim to size an opportunity, not a target.** 05 treats only Kahneman's peak-end research and the 2010 HBR effort study as strong anchors; everything else (WISMO ranges, repeat-rate ranges, conversion lifts, loyalty ROI, Indian D2C figures) is vendor or self-reported. 04 says the same of its 40 brand cases. 03's 72% margin claim and 06's Bare Anatomy 35% CAC claim are single cases. Sources 03, delight cluster (2 sources agree on the caution). [4530efe6348a] [7f71ff76f9b1] [0272f48ebf68] [6bda120ef375]
 
@@ -426,9 +449,9 @@ These rules define the segments retention runs on. Klaviyo build steps, sunset a
 
 ### 3.9 Effort vs delight: where to reduce friction and where to build a peak
 
-**R56. Decide the feeling and behaviour you want first, then design the touchpoint; emotion drives what the customer does next.** Applies to every post-purchase touchpoint. Consider rational and emotional needs together. Business-metric tactics (urgency, "only 1 left") that override the felt experience are a trust risk. Source 02 (general CX theory, no ecommerce data); 06 agrees that purchase and loyalty run on emotion first. 2 sources. [30663f02bf6d] [66a49b885b12]
+**R56. Before writing a confirmation email, a tracking page or a return flow, decide the feeling you want the shopper to have there (reassured after checkout, informed during the wait, delighted at unboxing) and design copy and timing around it, not around urgency tactics like "only 1 left."** Applies to every post-purchase touchpoint. Consider rational and emotional needs together. Business-metric tactics (urgency, "only 1 left") that override the felt experience are a trust risk. Source 02 (general CX theory, no ecommerce data); 06 agrees that purchase and loyalty run on emotion first. 2 sources. [30663f02bf6d] [66a49b885b12]
 
-**R57. Meeting expectations exactly leaves the customer neutral and poachable; aim for a small positive disconfirmation on the cheap, visible moments.** Expectancy disconfirmation (Oliver): expectation set by copy, price, brand and competitors vs perceived performance gives confirmation (neutral), negative disconfirmation (regret, churn) or positive disconfirmation (delight, advocacy). Source 06 (delight cluster). [9eb0da75866c]
+**R57. A delivery that lands exactly on the quoted date, or a refund that takes exactly as long as policy says, both leave the customer neutral and free to try a competitor next time. Beat the quoted date or refund window on cheap, visible steps to earn a small positive surprise instead.** Expectancy disconfirmation (Oliver): expectation set by copy, price, brand and competitors vs perceived performance gives confirmation (neutral), negative disconfirmation (regret, churn) or positive disconfirmation (delight, advocacy). Source 06 (delight cluster). [9eb0da75866c]
 
 **R58. Fix effort and broken promises before adding any delight.** A note or gift on top of a late delivery, a hard return or a slow refund creates "cognitive dissonance", not loyalty, and "makes the failure more memorable". Evidence 05 rates as strong: the 2010 HBR study of 75,000 plus service interactions found 96% of customers with a high-effort interaction became more disloyal vs 9% of low-effort ones. 04 cites 87% of brands believing they deliver exceptional CX vs 11% of shoppers agreeing (unattributed). Delight cluster (04, 05, 06 all state it); 01's hierarchy is the same order. 2 sources. Conflict C3. [b233a6d834e6] [36baf5a5a8ad] [ff986b275489] [290bef9daa56]
 
@@ -444,7 +467,7 @@ These rules define the segments retention runs on. Klaviyo build steps, sunset a
 
 **R64. Under-promise slightly and over-deliver where it is cheap and visible; over-promising is the most frequent source of negative disconfirmation and churn.** 06's example: quote 5 days, arrive in 3. The under-promise must still be competitive. Source 06 (delight cluster); 05's delivery-promise rule (R69) is the operational form. [9eb0da75866c] [6177983af652]
 
-**R65. The service recovery paradox is real but rare; never engineer failures to create recovery moments.** 05 cites Michel and Meuter's banking study (11,000 plus interviews): 5.4% of customers with a problem rated the recovery "much better than expected", and error-free service still beat recovery on satisfaction. When a failure happens anyway, over-recover (R104). Source 05; 04's Bloom & Wild quote ("over-fix turns them into a stronger advocate") is one CEO's observation, not a law. Delight cluster. Conflict C12. [df383902e95d] [284b8c726776]
+**R65. Never manufacture a stockout, a slow refund or a shipping delay to trigger a recovery moment. When a real failure happens (wrong item, late parcel, damaged box), over-recover it; do not treat failures as a marketing tactic.** 05 cites Michel and Meuter's banking study (11,000 plus interviews): 5.4% of customers with a problem rated the recovery "much better than expected", and error-free service still beat recovery on satisfaction. When a failure happens anyway, over-recover (R104). Source 05; 04's Bloom & Wild quote ("over-fix turns them into a stronger advocate") is one CEO's observation, not a law. Delight cluster. Conflict C12. [df383902e95d] [284b8c726776]
 
 **R66. Treat surprise gifts, handwritten notes at scale and community as brand and word-of-mouth plays until F20 proves them on brand data.** 05 says the evidence that delight alone drives loyalty is weaker and contested; 06 says to set the per-order delight budget from payback math, not packaging taste. Delight cluster. [4530efe6348a] [8db0ffa97875]
 
@@ -468,6 +491,10 @@ These rules define the segments retention runs on. Klaviyo build steps, sunset a
 
 **R75. Choose the update channel by audience: SMS for older or less digital bases (Crystal Classics' senior-skewed luxury customers), WhatsApp journeys for Indian D2C where opt-in is in place.** 05 cites a GoKwik dataset (26 billion messages, 1,800 plus brands, vendor-reported): automated WhatsApp journeys 11.12% CTR vs 2.6% for broadcasts. `[web check: WhatsApp Business opt-in rules for transactional vs marketing messages in India]`. Sources 04, 05 (delight cluster). [73abfaadbe4c] [ce139d4913b8]
 
+**R151. For a multi-item order, tell the customer up front when items will ship separately, and send a tracking update per parcel, not one status for the whole order.** `[general practice]`. No source in this folder; verify against brand data before use.
+
+**R152. Give the customer a self-service way to edit the delivery address or cancel the order in the short window before it ships, and state that window in the confirmation message.** `[general practice]`. No source in this folder; verify against brand data before use.
+
 ### 3.11 Branded tracking page
 
 **R76. Point the tracking link to a page on the brand's own domain, never the carrier's page.** The carrier page is generic, may show competitor ads, and hands the highest-frequency post-purchase visit (04 cites 4.6 tracking visits per order, unattributed) to someone else. 04's aggregate claims for branded tracking: 23% to 31% higher repeat purchase, 9 to 12x ROI, 40% to 60% WISMO reduction (vendor frameworks, claims). Sources 04, 05 (delight cluster). [73abfaadbe4c] [6177983af652]
@@ -477,6 +504,8 @@ These rules define the segments retention runs on. Klaviyo build steps, sunset a
 **R78. Instrument recommendation clicks and linked purchases separately from raw page visits; visits are not revenue.** True Classic's plus 29% revenue per email, Crystal Classics' 50% to 60% call drop and Bokksu's 90% plus open rate are single vendor cases. Source 04 (delight cluster). [af9547313e6f] [73abfaadbe4c]
 
 **R79. Map the top 10 pre-purchase objections and answer them on the product page, then route unanswered chat and support questions back into PDP content as a standing loop.** 04's examples: skincare (irritation, results timeline, price vs drugstore), furniture (fits through the door, assembly, colour accuracy). This is pre-purchase work that cuts post-purchase tickets and returns. Source 04 (delight cluster). `[needs brand data: top objections from tickets, reviews and chat]` [d2d7139dff02]
+
+**R153. For cross-border orders, show landed cost (duties, taxes, customs fees) before checkout, not as a surprise on delivery, and put the customs status on the tracking page.** `[general practice]`. No source in this folder; verify against brand data before use.
 
 ### 3.12 Delivery and unboxing
 
@@ -498,6 +527,8 @@ These rules define the segments retention runs on. Klaviyo build steps, sunset a
 
 **R88. Treat packaging as a creative asset designed to be filmed, capture and repost the UGC, and count unboxing UGC volume as the metric for this spend.** Source 04 (delight cluster). [26ca8fa814e1] [7f71ff76f9b1]
 
+**R154. Offer gift wrap and a gift receipt with the price hidden on packing slip and box, at checkout for any order marked as a gift.** `[general practice]`. No source in this folder; verify against brand data before use.
+
 ### 3.13 After delivery: education, reassurance, reviews, replenishment
 
 **R89. Trigger a product education sequence about 48 hours after delivery confirmation (sooner for complex products): quick-start guide, video tutorial, common mistakes.** Include a tip not on the PDP. Build for the top 3 product categories first. 04 cites post-purchase emails opening "almost 17% higher" than average automations and a Freshly Cosmetics educational flow at 44.5% open, 2.81% click and over 10,000 euro (vendor cases). Source 04; 05 agrees education across the journey drives repeat (Beardbrand, Patagonia examples). Delight cluster. `[needs brand data: genuine post-purchase tips per product]` [862c6466d9cf] [491dd6d4221a] [55f0042df14c]
@@ -513,6 +544,8 @@ These rules define the segments retention runs on. Klaviyo build steps, sunset a
 **R94. A post-checkout upsell (larger size or adjacent item) is a separate, low-friction AOV lever; frame it as completing the purchase, not new selling.** No lift is quantified in the source (Yotpo guidance). Source 04 (delight cluster). [bd18309bf03e]
 
 **R95. Where the brand holds genuine repeat-need expertise, education can extend into an always-on assistant tied to setup, usage, troubleshooting and replenishment; measure it by retention and repeat, not chat volume.** Source 07 (forecast, 1 source, no performance data on the L'Oreal example). Conflict C2. [52869049dbd3]
+
+**R155. At the subscription cancel step, show a pause, skip or discount offer before the cancellation completes, alongside the flexibility R93 already requires; never make cancellation itself hard to find or complete.** Applies with R39's "cancelled" cohort as the retarget list if the save offer is declined. Sources warn only against a hard-to-cancel flow (05); no material on a proactive save offer. `[general practice]`. No source in this folder for the save-offer step; verify against brand data before use.
 
 ### 3.14 Returns and refunds
 
@@ -530,6 +563,10 @@ These rules define the segments retention runs on. Klaviyo build steps, sunset a
 
 **R102. Gate returns work on returners' repeat rate: move on when it matches or beats non-returners (F18).** Source 05 (delight cluster). [33d6b517ecb9] [d6e5e929396b]
 
+**R156. For cash-on-delivery orders, track return-to-origin (RTO) rate as its own cost line next to refund cycle time (F18); confirm the order by call or WhatsApp before dispatch on high-RTO lanes or first-time COD customers.** Central to India D2C economics. `[general practice]`. No source in this folder; verify against brand data before use.
+
+**R157. Track chargebacks and payment disputes as a cost line separate from returns and refunds, with their own count and dollar total, and report both alongside F19.** Source 05 lists cancellations and chargebacks as a mistake, with no card id and no procedure; `[general practice]` for the rest. No source in this folder beyond that one line; verify against brand data before use.
+
 ### 3.15 Service recovery and support
 
 **R103. In service moments, reduce effort: one-touch resolution, no repeat explanations, no dark patterns, refunds without escalation.** Evidence: the HBR 96% vs 9% effort finding (R58). Source 05 (delight cluster); 06 cites the same 96% figure. [df383902e95d] [bc11d5300f1f]
@@ -538,11 +575,11 @@ These rules define the segments retention runs on. Klaviyo build steps, sunset a
 
 **R105. Give frontline agents authority for one-time exceptions beyond policy for sympathetic cases (Flipkart's smartwatch exception, Chewy's 2,500 plus empowered reps).** Sources 04, 05 (delight cluster). [284b8c726776] [df383902e95d]
 
-**R106. Prepare "what if" scenarios and staff checklists during journey mapping, even for cases that may never occur, instead of over-scripting the front line.** Source 02 (1 source). [feb07cfa31b9] [41d67b919c4c]
+**R106. Build a staff checklist for the store's own edge cases before they happen: an order stuck in customs, a mis-shipped item, a stockout after the order confirms, a subscription payment failure. Do this during journey mapping, not live on a ticket.** Source 02 (1 source). [feb07cfa31b9] [41d67b919c4c]
 
 **R107. Track first-contact resolution, CSAT and repeat rate among customers who had a failure, as a separate cohort.** Source 05 (delight cluster). [df383902e95d]
 
-**R108. Rank "helpful when there is a problem" high in what customers value.** In 02's live poll it ranked third, behind corporate attitude and ease of doing business, and ahead of product (sixth). This is one webinar audience, not a study; 02 says the order varies by category. Source 02. [fe0fd05d0bc2]
+**R108. Shoppers rank "helped me when something went wrong" above generic friendliness and close to ease of checkout; treat a bad return or refund experience as a bigger trust hit than slow live chat.** In 02's live poll it ranked third, behind corporate attitude and ease of doing business, and ahead of product (sixth). This is one webinar audience, not a study; 02 says the order varies by category. Source 02. [fe0fd05d0bc2]
 
 ### 3.16 Support as a profit centre, AI agents and brand voice
 
@@ -552,11 +589,11 @@ These rules define the segments retention runs on. Klaviyo build steps, sunset a
 
 **R111. Automate high-volume, low-complexity contacts (order status first) and keep humans for emotional or complex cases.** 05 notes Gorgias as Shopify-native with brands reporting 64% to 95% AI resolution on order-status queries (vendor-reported). Sources 07, 05 (2 sources). `[web check: current AI support tool capabilities and pricing]` [298b23ff39c4] [6390a69c8430]
 
-**R112. Any customer-facing AI agent carries the brand's specific voice: define tone, vocabulary, pacing and what it never says before writing flows, have people who know the brand judge transcripts blind, and review for drift after every update.** Generic bots flatten differentiation. Source 07 (opinion, 1 source). [7de1741d6532]
+**R112. Before turning on an order-status bot, a return-authorization flow or a WISMO auto-reply, write down the brand's tone, the words it never uses, and how it should sound different from a generic support bot.** Have people who know the brand judge transcripts blind, and review for drift after every update. Generic bots flatten differentiation. Source 07 (opinion, 1 source). [7de1741d6532]
 
-**R113. On trust-sensitive touchpoints (founder notes, support replies, recovery messages), prefer human-textured writing over polished AI text, and test it.** 07's claim that audiences lose attention when they notice AI polish has no test data. Source 07 (1 source). [a06a3fc0aa46]
+**R113. On handwritten notes, recovery emails and VIP messages, write in a human voice on purpose; do not let AI polish flatten the one moment meant to feel personal.** Test it. 07's claim that audiences lose attention when they notice AI polish has no test data. Source 07 (1 source). [a06a3fc0aa46]
 
-**R114. Give AI roadmap budget to emotional value (help, companionship, coaching) as well as efficiency, only where the brand has the expertise to deliver it.** 07 cites an unnamed study; treat as a forecast. Source 07 (1 source). `[web check: locate the study 07 cites on why people use generative AI]` [27961d818a69]
+**R114. Give AI budget to genuine post-purchase help (setup, troubleshooting, replenishment advice), not just ticket deflection, only in categories where the brand has real expertise to hand to the bot.** 07 cites an unnamed study; treat as a forecast. Source 07 (1 source). `[web check: locate the study 07 cites on why people use generative AI]` [27961d818a69]
 
 ### 3.17 Loyalty and VIP experience
 
@@ -570,7 +607,7 @@ These rules define the segments retention runs on. Klaviyo build steps, sunset a
 
 **R119. Re-engage lapsed customers with valuable content and segmented offers before generic discounts.** Matas case (04): 29-point retention lift in 30 days, plus 20% orders (vendor claim). Source 04 (delight cluster). [e13b48c6a15a]
 
-**R120. Community is a differentiator that AI cannot commoditise: run it where the brand has a real shared activity (Lululemon, Nike Run Club in 07; Glossier's Slack for top shoppers in 05; LeMieux's app in 04).** No measured outcome attached in any source. Sources 07 (forecast), 05 and 04 (examples). 2 sources, both thin. [6893cdd6a985] [90c580a2402c]
+**R120. Where the brand has a real shared activity (a run club, a restock alert group, a top-spender chat), build community around it as a retention channel AI cannot copy; do not launch a generic "community" tab with no activity behind it.** Examples: Lululemon, Nike Run Club in 07; Glossier's Slack for top shoppers in 05; LeMieux's app in 04. No measured outcome attached in any source. Sources 07 (forecast), 05 and 04 (examples). 2 sources, both thin. [6893cdd6a985] [90c580a2402c]
 
 ### 3.18 Win-back
 
@@ -590,7 +627,7 @@ These rules define the segments retention runs on. Klaviyo build steps, sunset a
 
 **R127. Run the delight payback test (F20) with matched or randomised cohorts before scaling any packaging, note or gift program.** Source 06 (delight cluster). [8db0ffa97875]
 
-**R128. A journey map only pays off if it changes a specific touchpoint; keep it as a living management tool, not a workshop deliverable.** Sources 02, 06 (2 sources). [feb07cfa31b9] [0fe858c0c51f]
+**R128. A journey map of the post-purchase funnel (confirmation, tracking, wait, delivery, unboxing, support, return, repeat) only earns its keep if it changes one of those touchpoints; if nothing ships, it was a workshop exercise, not CX work.** Keep it as a living management tool, not a workshop deliverable. Sources 02, 06 (2 sources). [feb07cfa31b9] [0fe858c0c51f]
 
 ### 3.20 Personalisation, quizzes and zero-party data
 
@@ -606,29 +643,11 @@ These rules define the segments retention runs on. Klaviyo build steps, sunset a
 
 ### 3.21 CX strategy, ownership, maturity and voice of customer
 
-**R134. Write a CX strategy as an umbrella over the store: the feeling you want customers to have, the customer principles, what each means in practice, and who does what.** Three completeness questions: do you know who your customers are emotionally, do you know what experience you want them to have, does everyone know their part. Source 02 (1 source, general theory). [0eea90f3c62d] [fa4cf546d38a] [bdadd07890fc]
-
-**R135. Place the brand on the maturity line (random, intentional, differentiated) and set milestones in years, not quarters.** Random: outcomes depend on who handles the contact. Intentional: shared vision and cross-functional commitment; 02 says profitability starts here. Differentiated: everyone acts in the customer's interest all the time. 02's 80/15/5 split and 8-year timeline are unsourced assertions. Source 02. [2d05c23909e5]
-
-**R136. Run the 3-part framework (strategy, measurement, people) as linked pieces; silo thinking is the single biggest thing that breaks a CX strategy.** Source 02 (framework credited to an unnamed partner). [fa4cf546d38a]
-
-**R137. Map the journey from the outside in, 1 high-value persona at a time, and push every insight from descriptive ("wants fast shipping") to emotional ("anxiety from no order acknowledgement").** "If they cannot feel it, hear it, see it, touch it, it is not a journey, it is a process." Mapping all customers at once creates noise. Sources 02, 06 (2 sources). [feb07cfa31b9] [0fe858c0c51f]
-
-**R138. Give CX a dedicated cross-functional owner, with the CEO accountable, and put customer impact on the leadership agenda ahead of revenue items.** Marketing covers only part of CX. 02's check: ask for the last leadership meeting protocol and look for the customer on it. Source 02. [8c2c0d954819] [6edd7693ad4a]
-
-**R139. Link employee experience to CX delivery in 1 shared strategy; how staff are treated shows in how customers are treated, down to packing.** Source 02 (ABB anecdote: shift from "helping the product" to "helping the customer with the product"). [41d67b919c4c]
-
-**R140. Voice of customer: do your own homework first (data you already hold, ticket text, reviews), ask employees what customers think (only with a plan to act), and talk to customers directly; run a satisfaction survey only when there is budget and commitment to act on it.** 02 holds the contrarian position that surveys annoy customers and mostly serve ego or staff pressure; 01, 04, 05 and 06 use surveys, NPS and CSAT as inputs. Conflict C1 gives the reconciled procedure (P29). Sources 02 vs 01 and the delight cluster. [b24643e22b8c] [290bef9daa56] [7f71ff76f9b1] [bc11d5300f1f]
-
-**R141. Apply the same CX rules to B2B and wholesale storefronts; buyers expect consumer-grade search and checkout even on 70-line, 500,000 orders.** Sources 02, 03 (2 sources agree). [e984e2fe9282] [6d5eea41344a]
-
-**R142. Experience is a design choice; experience leaders in any category (02 names Amazon, Airbnb, Uber) set the bar for what the customer expects next, so judge every new tool against the intended experience before adopting it.** Source 02. [b4c441cd3922]
-
-**R143. Differentiate on experience and word of mouth where product, price and quality are copied fast; word of mouth spreads only when the experience is good enough on its own.** 02's 92% trust and 78% "doing good" figures are unsourced. Source 02. `[web check: sources for 02's 78%, 85%, 92% and 80/15/5 figures]` [ff0c754a9777]
+Moved to Appendix A: general CX strategy theory (R134 to R143, source 02, plus B2B rule R141). R137, R138, R139 and R141 are still cited by id elsewhere in this playbook (P12, 5.4, section 8); look them up in Appendix A.
 
 ### 3.22 Search, discovery and buy vs build (from 03, a vendor interview)
 
-**R144. Buy or partner for search, recommendation and merchandising AI unless building it is a core competency; keep assortment, layout, supplier choice and brand persona in-house.** 03's argument: retailers cannot out-hire big tech for engineering, and a gifting-company executive found self-built infrastructure ate the P&L and attention ("are we in the data centre business or the business of selling gifts?"). This is also Coveo's commercial position. Source 03 (1 source). Conflict C4. [ee1d80f4de9d]
+**R144. Buy or use a Shopify-ecosystem app for search, ranking and merchandising unless the brand's edge genuinely is that engine; keep assortment, layout, supplier choice and merchandising judgment in-house.** 03's argument: retailers cannot out-hire big tech for engineering, and a gifting-company executive found self-built infrastructure ate the P&L and attention ("are we in the data centre business or the business of selling gifts?"). This is also Coveo's commercial position. Source 03 (1 source). Conflict C4. [ee1d80f4de9d]
 
 **R145. Write the business objective and the allowed signals before any AI deployment, and pick the outcome metric in advance (margin per visitor, conversion, AOV).** No "AI for AI's sake". Treat any ranking model as probabilistic and monitor and correct it. Source 03. [800f306a36a5] [86cba9e8253e]
 
@@ -638,7 +657,7 @@ These rules define the segments retention runs on. Klaviyo build steps, sunset a
 
 **R148. Free merchandisers from manual monitoring (dead search terms, layout policing) so they work on assortment, supplier and persona strategy.** Source 03. [ee1d80f4de9d] [800f306a36a5]
 
-**R149. Treat selling below cost to defend share as a conscious, costed choice, not a default.** Source 03. [31f92baa2ab2]
+**R149. Treat any markdown or clearance pricing used to defend share as a costed decision against the discount-cohort penalty (F24), not a default reflex in a slow week.** Source 03. [31f92baa2ab2]
 
 **R150. Checkout is a pit to smooth, not a peak to build: show total cost including shipping and tax before the final step, offer guest checkout, add express pay for returning buyers, cut form fields toward the 7 to 8 strictly necessary (06 cites Baymard's roughly 15 average), and remove dark patterns (hidden subscriptions, pre-checked add-ons, fake urgency, hard-to-cancel flows).** 05 cites Baymard's 70.22% average abandonment (September 2025) with extra costs cited by 39% and forced account creation by 24% to 26% of abandoners. Watch failed orders and support contacts after cutting fields, not only abandonment. Sources 05, 06 (delight cluster); 02 agrees fake urgency erodes trust. Testing method in 09-CRO. [c7561c93445f] [1d8f5cd1000c] [30663f02bf6d]
 
@@ -1000,15 +1019,7 @@ Goal: the ordered build plan with exit gates. Source 05; consistent with 01. [d6
 4. Do not start a later step while an earlier gate is unmet, unless the user overrides in writing.
 5. Review the gates monthly.
 
-### P28. CX maturity assessment and ownership
-
-Goal: a maturity placement and an ownership decision. Source 02. [2d05c23909e5] [8c2c0d954819] [6edd7693ad4a] [fa4cf546d38a]
-
-1. Look for signs of "random": reply times, packaging and service quality that vary by who handles the contact.
-2. Ask for the last leadership meeting agenda; check whether the customer appears.
-3. Run the 3-part question sequence: strategy (who, what feeling, who does what), measurement (journey mapped, measured from the customer's side, priorities known), people (know the strategy, ambassadors, enabled).
-4. Name the phase and 1 milestone per year toward the next.
-5. Recommend a cross-functional CX owner reporting to leadership; not marketing alone.
+### P28. Moved to Appendix A: CX maturity assessment and ownership.
 
 ### P29. Voice of customer without annoying customers (reconciled C1)
 
@@ -1255,9 +1266,7 @@ All values are flags, not targets, unless brand data confirms them. Confidence c
 | NPS and repeat | NPS above 50 gives repeat 15 to 20 points higher than NPS below 30 | Directional | D (05) | Vendor |
 | WhatsApp journeys (India) | 11.12% CTR, opens up to 73.9%; broadcasts 2.6%; 83% of festive orders from first-time buyers | India | D (05) | GoKwik, 26 billion messages, vendor |
 | AI support resolution | 64% to 95% on order status | Some brands | D (05) | Vendor-reported (Gorgias) |
-| CX maturity split | 80% random, 15% intentional, 5% differentiated; 8 years to move | General | 02 | 1 source, unsourced |
-| Consumer stats | 78% advocacy for "doing good"; 85% employee obligation; 92% trust friends over marketing | General | 02 | 1 source, unsourced |
-| Favourite-brand drivers | Attitude, ease, helpful with problems, people, personalisation, product, consistency | 1 webinar poll | 02 | 1 source, informal |
+| CX maturity split, Consumer stats, Favourite-brand drivers | Moved to Appendix A (general CX theory, source 02) | | | |
 | Digital interactions | About 1,400 a day, 5,000 by 2025 | 2022 research | 03 | 1 source, unlinked |
 | Retail margin | About 6% falling toward about 2% by 2024 to 2025 | Forecast | 03 | 1 source, forecast |
 | B2B order profile | About 70 lines, about 500,000; 5 to 10 plus touchpoints | Guest's clients | 03 | 1 source, anecdote |
@@ -1397,6 +1406,16 @@ Format: the 5.2 and 5.3 tables filled in, with the current value per row, a red 
 
 Format: the F20 inputs and result for 1 program, with treated and control cohort sizes, window, program cost per customer, incremental contribution, pass or fail, and the decision.
 
+### 9.7 Post-purchase roadmap with exit gates
+
+Format: 1 page for leadership. Built by P27.
+
+1. The 8 steps in payoff order (R126): delivery promise and tracking, returns, unboxing, replenishment and nudges, quiz personalisation, loyalty and VIP, gifts and community, win-back.
+2. Per step: the exit gate metric, its current value, and whether the gate is met.
+3. The step in progress and the next step blocked behind it.
+4. Dates: when each completed step passed its gate, and the target date for the next one.
+5. A 1-line ask per step still blocked: what the brand needs to unblock it (data, budget, a decision).
+
 ## 10. What needs live data or a web check
 
 ### 10.1 `[needs brand data]`
@@ -1438,6 +1457,8 @@ People and claims: 01's presenters and the "biggest email agency in Australia" c
 | 03's margin forecast | 6% to 2% retail margin by 2024 to 2025 is a 2022 forecast, now past its date | Replace with the brand's own margin trajectory; do not quote |
 | 07's forecasts | All are "for 2026 and beyond" | Re-read section 3.23 each quarter; move a row to a rule only when the trigger is observed |
 
+24 Sep 2026: ecommerce specificity pass applied from ECOM_REVIEW.md; priority block added, 13 rules reworded, 8 levers added, about 720 words moved to Appendix A.
+
 ## 12. Source index
 
 | Number | Title | Type | Credibility and bias | Contributed most |
@@ -1461,3 +1482,47 @@ Neighbour folders and what lives there:
 - 16-AEO-answer-and-generative-engines: the unbranded LLM prompt audit and AI visibility work pointed to from 3.23 and P32.
 - 21-OPS-team-and-management: warehouse, picking, packing and 3PL operations behind P16.
 - 10-MCR-paid-social-creative: angle and creative changes from the zero-party audit (P11).
+
+## Appendix A. General background
+
+General corporate CX strategy theory, moved out of the main body on the 24 Sep 2026 ecommerce specificity pass. Source 02 has almost no ecommerce mechanics of its own; the playbook's own credibility note calls it "general CX theory with no ecommerce content of her own." Kept here for reference and because R137, R138, R139 and R141 are still cited by id elsewhere in this playbook (P12, section 5.4, section 8).
+
+### A.1 CX strategy, ownership, maturity and voice of customer (moved from section 3.21)
+
+**R134. Write a CX strategy as an umbrella over the store: the feeling you want customers to have, the customer principles, what each means in practice, and who does what.** Three completeness questions: do you know who your customers are emotionally, do you know what experience you want them to have, does everyone know their part. Source 02 (1 source, general theory). [0eea90f3c62d] [fa4cf546d38a] [bdadd07890fc]
+
+**R135. Place the brand on the maturity line (random, intentional, differentiated) and set milestones in years, not quarters.** Random: outcomes depend on who handles the contact. Intentional: shared vision and cross-functional commitment; 02 says profitability starts here. Differentiated: everyone acts in the customer's interest all the time. 02's 80/15/5 split and 8-year timeline are unsourced assertions. Source 02. [2d05c23909e5]
+
+**R136. Run the 3-part framework (strategy, measurement, people) as linked pieces; silo thinking is the single biggest thing that breaks a CX strategy.** Source 02 (framework credited to an unnamed partner). [fa4cf546d38a]
+
+**R137. Map the journey from the outside in, 1 high-value persona at a time, and push every insight from descriptive ("wants fast shipping") to emotional ("anxiety from no order acknowledgement").** "If they cannot feel it, hear it, see it, touch it, it is not a journey, it is a process." Mapping all customers at once creates noise. Sources 02, 06 (2 sources). [feb07cfa31b9] [0fe858c0c51f]
+
+**R138. Give CX a dedicated cross-functional owner, with the CEO accountable, and put customer impact on the leadership agenda ahead of revenue items.** Marketing covers only part of CX. 02's check: ask for the last leadership meeting protocol and look for the customer on it. Source 02. [8c2c0d954819] [6edd7693ad4a]
+
+**R139. Link employee experience to CX delivery in 1 shared strategy; how staff are treated shows in how customers are treated, down to packing.** Source 02 (ABB anecdote: shift from "helping the product" to "helping the customer with the product"). [41d67b919c4c]
+
+**R140. Voice of customer: do your own homework first (data you already hold, ticket text, reviews), ask employees what customers think (only with a plan to act), and talk to customers directly; run a satisfaction survey only when there is budget and commitment to act on it.** 02 holds the contrarian position that surveys annoy customers and mostly serve ego or staff pressure; 01, 04, 05 and 06 use surveys, NPS and CSAT as inputs. Conflict C1 gives the reconciled procedure (P29). Sources 02 vs 01 and the delight cluster. [b24643e22b8c] [290bef9daa56] [7f71ff76f9b1] [bc11d5300f1f]
+
+**R141. Apply the same CX rules to B2B and wholesale storefronts; buyers expect consumer-grade search and checkout even on 70-line, 500,000 orders.** Sources 02, 03 (2 sources agree). Out of scope for a store: this playbook covers consumer ecommerce; B2B and wholesale storefronts are a different domain. [e984e2fe9282] [6d5eea41344a]
+
+**R142. Experience is a design choice; experience leaders in any category (02 names Amazon, Airbnb, Uber) set the bar for what the customer expects next, so judge every new tool against the intended experience before adopting it.** Source 02. [b4c441cd3922]
+
+**R143. Differentiate on experience and word of mouth where product, price and quality are copied fast; word of mouth spreads only when the experience is good enough on its own.** 02's 92% trust and 78% "doing good" figures are unsourced. Source 02. `[web check: sources for 02's 78%, 85%, 92% and 80/15/5 figures]` [ff0c754a9777]
+
+### A.2 CX maturity assessment and ownership (moved from procedure P28)
+
+Goal: a maturity placement and an ownership decision. Source 02. [2d05c23909e5] [8c2c0d954819] [6edd7693ad4a] [fa4cf546d38a]
+
+1. Look for signs of "random": reply times, packaging and service quality that vary by who handles the contact.
+2. Ask for the last leadership meeting agenda; check whether the customer appears.
+3. Run the 3-part question sequence: strategy (who, what feeling, who does what), measurement (journey mapped, measured from the customer's side, priorities known), people (know the strategy, ambassadors, enabled).
+4. Name the phase and 1 milestone per year toward the next.
+5. Recommend a cross-functional CX owner reporting to leadership; not marketing alone.
+
+### A.3 General CX benchmarks (moved from section 6)
+
+| Metric | Value | Condition | Source | Confidence |
+|---|---|---|---|---|
+| CX maturity split | 80% random, 15% intentional, 5% differentiated; 8 years to move | General | 02 | 1 source, unsourced |
+| Consumer stats | 78% advocacy for "doing good"; 85% employee obligation; 92% trust friends over marketing | General | 02 | 1 source, unsourced |
+| Favourite-brand drivers | Attitude, ease, helpful with problems, people, personalisation, product, consistency | 1 webinar poll | 02 | 1 source, informal |
