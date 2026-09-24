@@ -651,7 +651,7 @@ def list_product_ads(slug, out_dir=None):
                 out.append(m)
         except ValueError:
             continue
-    return out[:30]
+    return out[:60]
 
 
 def product_ad_path(slug, name, out_dir=None):

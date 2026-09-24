@@ -5,7 +5,7 @@
 // On the shared page, Claude writes the copy and image briefs (no image making there).
 // Uses sales.js (SL, baseCode, cleanName, typeCat, inAds, dailyDays, addDays, dateLabel), lab.js (askAI, REF, refSlotHtml, thumbBlob, aiErr) and studio.js (baseAds).
 
-const PB = { days: 30, by: 'n', open: null, info: {}, opt: {}, busy: {}, res: {}, msg: {} };
+const PB = { days: 30, by: 'n', showHidden: {}, closed: {}, open: null, info: {}, opt: {}, busy: {}, res: {}, msg: {} };
 const PB_SIZES = [['square', 'Square 1:1'], ['portrait', 'Portrait 4:5'], ['story', 'Story 9:16']];
 const PB_Q = [['low', 'Low (fast)'], ['medium', 'Medium'], ['high', 'High']];
 const PB_SITE = 'https://www.gehnaindia.com/';
@@ -57,6 +57,29 @@ function pbOpt(p) {
 }
 function pbFind(code) { const t = topProducts(PB.days); return t ? t.list.find((p) => p.code === code) : null; }
 function soldLine(p) { return `${p.n} sold in the last ${PB.days} days on the website (${compact(p.v)}), number ${PB.top ? PB.top.list.findIndex((q) => q.code === p.code) + 1 : 1} by ${PB.by === 'n' ? 'pieces sold' : 'sales value'}`; }
+
+// ---------- batches and hidden ads ----------
+// Each result carries a batch id and a key. New batches go on top; older ones stay below.
+// Hidden ads are remembered in this browser only (they are not deleted).
+const PB_HIDE_KEY = 'ecomos.pb.hidden';
+let PB_HIDDEN = new Set();
+try { PB_HIDDEN = new Set(JSON.parse(localStorage.getItem(PB_HIDE_KEY) || '[]')); } catch (e) { PB_HIDDEN = new Set(); }
+function pbSaveHidden() { try { localStorage.setItem(PB_HIDE_KEY, JSON.stringify([...PB_HIDDEN].slice(-2000))); } catch (e) { /* private mode */ } }
+function pbStamp() { const d = new Date(), z = (n) => String(n).padStart(2, '0'); return `${d.getFullYear()}${z(d.getMonth() + 1)}${z(d.getDate())}-${z(d.getHours())}${z(d.getMinutes())}${z(d.getSeconds())}`; }
+function pbBatchLabel(id) {
+  const m = /^(?:copy-)?(\d{4})(\d{2})(\d{2})-(\d{2})(\d{2})/.exec(id || '');
+  if (!m) return 'Earlier';
+  const d = new Date(Date.UTC(+m[1], +m[2] - 1, +m[3]));
+  return `${d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', timeZone: 'UTC' })}, ${m[4]}:${m[5]}`;
+}
+// Tag results with batch and key. Server images: batch = file name stamp, key = code + file.
+function pbTag(p, list, batch) {
+  return (list || []).map((c, i) => {
+    const b = c.file ? c.file.split('_')[0] : batch;
+    return { ...c, batch: b, key: `${p.code}|${c.file || `${b}_${i}`}` };
+  });
+}
+function pbAdd(p, list) { PB.res[p.code] = [...list, ...(PB.res[p.code] || []).filter((c) => !list.some((n) => n.key === c.key))]; PB.closed[p.code] = false; }
 
 // ---------- the card ----------
 window.top5CardHtml = function top5CardHtml() {
@@ -161,21 +184,38 @@ function pbCopyBlock(c) {
   return row('Primary text', c.primary_text) + alts('Primary text', c.primary_alt) + row('Headline', c.headline) + alts('Headline', c.headline_alt) + row('Description', c.description);
 }
 function pbResultsHtml(p) {
-  const list = PB.res[p.code] || [];
-  if (!list.length) return '';
-  return `<div class="pb-grid">${list.map((c, i) => {
-    if (c.error && !c.headline) return `<figure class="vcard err"><b>${esc(c.label || c.name || 'Ad ' + (i + 1))}</b><span>${esc(c.error)}</span></figure>`;
+  const all = PB.res[p.code] || [];
+  if (!all.length) return '';
+  const hidden = all.filter((c) => PB_HIDDEN.has(c.key)).length, show = PB.showHidden[p.code];
+  const list = all.filter((c) => show || !PB_HIDDEN.has(c.key));
+  const batches = [...new Set(list.map((c) => c.batch))];
+  const bar = `<div class="row pb-resbar"><b>${all.length - hidden} ad${all.length - hidden === 1 ? '' : 's'} for this piece</b>${batches.length > 1 ? `<span class="muted small">in ${batches.length} batches, newest first</span>` : ''}
+    <button class="linkbtn" type="button" data-pbclose>${PB.closed[p.code] ? 'Show ads' : 'Close ads'}</button>
+    ${hidden ? `<button class="linkbtn" type="button" data-pbshowhidden>${show ? 'Leave hidden ads out' : `Show ${hidden} hidden`}</button>` : ''}</div>`;
+  if (PB.closed[p.code]) return bar;
+  return bar + batches.map((bt) => {
+    const items = list.map((c, i) => [c, all.indexOf(c)]).filter(([c]) => c.batch === bt);
+    const open = items.filter(([c]) => !PB_HIDDEN.has(c.key));
+    return `<section class="pb-batch"><div class="row pb-bhead"><span class="small"><b>${bt && bt.startsWith('copy-') ? 'Copy' : 'Batch'}</b> · ${esc(pbBatchLabel(bt))} · ${items.length} ad${items.length === 1 ? '' : 's'}</span>${open.length ? `<button class="linkbtn" type="button" data-pbhidebatch="${esc(bt)}">Hide this batch</button>` : ''}</div>
+      <div class="pb-grid">${items.map(([c, i]) => pbAdHtml(c, i)).join('')}</div></section>`;
+  }).join('') + '<p class="small muted">Check each image against the real piece before launch. Launch them yourself in Ads Manager. This page never changes the ad account. Hidden ads stay saved; they are only hidden in this browser.</p>';
+}
+function pbAdHtml(c, i) {
+  const isHidden = PB_HIDDEN.has(c.key);
+  const x = `<button class="pb-x" type="button" data-pbhide="${esc(c.key)}" aria-label="${isHidden ? 'Show this ad again' : 'Hide this ad'}" title="${isHidden ? 'Show again' : 'Hide'}">${isHidden ? '↺' : '×'}</button>`;
+  return (() => {
+    if (c.error && !c.headline) return `<figure class="vcard err pb-ad${isHidden ? ' is-hidden' : ''}">${x}<b>${esc(c.label || c.name || 'Ad ' + (i + 1))}</b><span>${esc(c.error)}</span></figure>`;
     const img = c.src ? `<a href="${esc(c.src)}" target="_blank" rel="noopener" download><img src="${esc(c.src)}" alt="${esc(c.label || c.name)}"></a>` : '';
     const all = [c.primary_text, ...(c.primary_alt || []).map((v, j) => `\nPrimary text ${j + 2}:\n${v}`), '', 'Headline: ' + (c.headline || ''),
       ...(c.headline_alt || []).map((v, j) => `Headline ${j + 2}: ${v}`), 'Description: ' + (c.description || '')].join('\n');
-    return `<figure class="vcard pb-ad">${img}<figcaption><div class="row" style="gap:6px"><b>${esc(c.label || c.name || 'Ad ' + (i + 1))}</b>${c.angle ? `<span class="chip fmt">${esc(c.angle)}</span>` : ''}</div>
+    return `<figure class="vcard pb-ad${isHidden ? ' is-hidden' : ''}">${x}${img}<figcaption><div class="row" style="gap:6px"><b>${esc(c.label || c.name || 'Ad ' + (i + 1))}</b>${c.angle ? `<span class="chip fmt">${esc(c.angle)}</span>` : ''}</div>
       ${c.error ? `<span class="small bad-text">Image failed: ${esc(c.error)}</span>` : ''}
       ${!c.src ? `<p class="small"><b>Image brief:</b> ${esc([c.idea, c.scene, c.layout].filter(Boolean).join(' '))}</p>` : `<p class="small muted">${esc(c.idea || '')}</p>`}
       ${c.text_on_image ? `<p class="small"><b>On the image:</b> ${esc(c.text_on_image)}</p>` : ''}
       ${Array.isArray(c.uses) && c.uses.length ? `<p class="small pb-uses"><b>Built on:</b> ${c.uses.map((u) => `<span class="chip">${esc(u)}</span>`).join(' ')}</p>` : ''}
       ${pbCopyBlock(c)}
       <div class="act-btns"><button class="btn ghost small-btn" type="button" data-pbcopy="${esc(all)}">Copy all</button><button class="btn ghost small-btn" type="button" data-pbtrack="${i}">Add to tests</button></div></figcaption></figure>`;
-  }).join('')}</div><p class="small muted">Check each image against the real piece before launch. Launch them yourself in Ads Manager. This page never changes the ad account.</p>`;
+  })();
 }
 
 // Keep in sync with product_prompt in meta_gallery/ai.py (shared page only; the local server builds its own).
@@ -237,7 +277,7 @@ async function pbLoadInfo(p, refresh) {
     const o = pbOpt(p);
     o.picks = o.picks.filter((i) => i <= j.product.photos.length);
     if (!o.picks.length && j.product.photos.length) o.picks = [1];
-    if (!PB.res[p.code] || !PB.res[p.code].length) PB.res[p.code] = (j.ads || []).slice(0, 10).map((m) => ({ ...m, name: m.label, src: `/product-ads/${j.product.slug}/${m.file}` }));
+    if (!PB.res[p.code] || !PB.res[p.code].length) PB.res[p.code] = pbTag(p, (j.ads || []).map((m) => ({ ...m, name: m.label, src: `/product-ads/${j.product.slug}/${m.file}` })));
   } catch (e) { PB.info[p.code] = { status: 'error', error: e.message }; }
   pbRerender();
 }
@@ -253,18 +293,19 @@ async function pbRun(p, mode) {
       const caps = await LABST.sample.limits().catch(() => null);
       const img = caps && caps.images ? (refB64 ? refBlob() : refAd ? thumbBlob(refAd) : null) : null;
       const out = await LABST.sample.json(pbPrompt(p, o, !!img), { modelTier: 'default', cache: false, ...(img ? { images: img } : {}) });
-      PB.res[p.code] = pbClean(out && out.concepts, o.n);
-      PB.msg[p.code] = PB.res[p.code].length ? `${PB.res[p.code].length} ideas with copy. Make the images in the local gallery, or brief a designer.` : 'No ideas came back. Try again.';
+      const got = pbTag(p, pbClean(out && out.concepts, o.n), 'copy-' + pbStamp());
+      pbAdd(p, got);
+      PB.msg[p.code] = got.length ? `${got.length} ideas with copy added on top. Make the images in the local gallery, or brief a designer.` : 'No ideas came back. Try again.';
     } else {
       const body = { name: p.name, code: p.fullCode || p.code, picks: o.picks, facts: pbFacts(p).length ? pbChosenFacts(p) : null, n: o.n, size: o.size, quality: o.quality, ref_image: refB64, ref_ad_id: refAd, sold: soldLine(p), copy_only: mode === 'copy' };
       const r = await fetch('/api/product-ads', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
       const j = await r.json().catch(() => ({}));
       if (!r.ok) throw new Error(j.error || 'Something went wrong. Try again.');
-      if (mode === 'copy') { PB.res[p.code] = j.copy; PB.msg[p.code] = `${j.copy.length} ideas with copy.`; }
+      if (mode === 'copy') { pbAdd(p, pbTag(p, j.copy, 'copy-' + pbStamp())); PB.msg[p.code] = `${j.copy.length} ideas with copy added on top.`; }
       else {
-        PB.res[p.code] = j.made.map((m) => ({ ...m, name: m.label, src: m.file ? `/product-ads/${j.slug}/${m.file}` : '' }));
+        pbAdd(p, pbTag(p, j.made.map((m) => ({ ...m, name: m.label, src: m.file ? `/product-ads/${j.slug}/${m.file}` : '' })), pbStamp()));
         const bad = j.made.filter((m) => m.error);
-        PB.msg[p.code] = bad.length ? `${j.made.length - bad.length} of ${j.made.length} images made. ${bad[0].error}` : `${j.made.length} ads made. Click an image to download it.`;
+        PB.msg[p.code] = bad.length ? `${j.made.length - bad.length} of ${j.made.length} images made. ${bad[0].error}` : `${j.made.length} ads made and added on top. Click an image to download it.`;
       }
     }
   } catch (e) { PB.msg[p.code] = aiErr(e); }
@@ -300,6 +341,10 @@ document.addEventListener('click', async (e) => {
   if ((x = b('[data-pbref]'))) { o.ref = x.dataset.pbref; pbRerender(); return; }
   if ((x = b('[data-pbrefad]'))) { o.refAd = x.dataset.pbrefad; pbRerender(); return; }
   if ((x = b('[data-pbgo]'))) { pbRun(p, x.dataset.pbgo); return; }
+  if ((x = b('[data-pbhide]'))) { const k = x.dataset.pbhide; if (PB_HIDDEN.has(k)) PB_HIDDEN.delete(k); else PB_HIDDEN.add(k); pbSaveHidden(); pbRerender(); return; }
+  if ((x = b('[data-pbhidebatch]'))) { (PB.res[p.code] || []).filter((c) => c.batch === x.dataset.pbhidebatch).forEach((c) => PB_HIDDEN.add(c.key)); pbSaveHidden(); pbRerender(); return; }
+  if ((x = b('[data-pbshowhidden]'))) { PB.showHidden[p.code] = !PB.showHidden[p.code]; pbRerender(); return; }
+  if (b('[data-pbclose]')) { PB.closed[p.code] = !PB.closed[p.code]; pbRerender(); return; }
   if ((x = b('[data-pbfacts]'))) {
     const how = x.dataset.pbfacts;
     if (how === 'refresh') { pbLoadInfo(p, true); return; }
