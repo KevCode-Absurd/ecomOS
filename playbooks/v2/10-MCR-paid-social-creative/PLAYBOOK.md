@@ -500,3 +500,360 @@ Every rule states the rule, when it applies, the mini playbooks that support it 
 **R177. Scarcity, offers and prices in the creative must match the live store on the day it runs.** "Before stock runs out" that runs for 20 weeks and "up to 16% off today" are checked against checkout and dates. Condition: every offer line. Sources: 09, 13. `[needs brand data: current offer and dates]`. Cards: [129eda6e1e3a] [ee8baa9c8041].
 
 **R178. Consent and legality for research calls to checkout abandoners.** 08's method needs contact consent and staff time. Condition: objection research by phone. Source: 08. `[web check: consent rules for calling customers in the market]`. Cards: [8e3f775ece26].
+
+## 4. Procedures (implementation)
+
+Each procedure names its goal, preconditions, steps, checks, and rollback. Steps that touch a platform UI carry `[verify UI]`. Sources are given by mini playbook number after the title. Nothing here writes to an ad account; where a step is executed in Ads Manager, the creative agent writes the instruction into the test plan (section 9.6) and 24-DEP executes it.
+
+### P1. Research sprint: from customer language to an angle list (03, 08, 10, 11, 12, 16)
+
+Goal: a research document and a ranked list of angles in the customer's words.
+Preconditions: access to reviews, support tickets, post-purchase surveys, ad comments; the product list; competitor names.
+1. Block time in proportion to how unfamiliar the niche is; 16 uses 3 to 4 days in a row for a new niche. `[needs brand data: all review, ticket, survey and comment exports]`
+2. Read in this order and paste raw quotes with screenshots into 1 document: the brand's reviews (all star levels, 1-star included), support tickets, post-purchase survey answers, comments on the brand's ads and posts, Reddit and forum threads, Amazon reviews for the category, competitor reviews and comments under competitor ads. `[web check: competitor reviews and ad comments]`
+3. Sort every statement into 3 buckets: what they want, what stops them, what they already tried.
+4. Cluster by repetition. A use case or complaint that repeats across many customers is an angle; a one-off is not. Count occurrences per cluster and record the count.
+5. From competitor reviews, list what rivals do badly. Each is an objection to counter (R26, R59) and a reason to differ, expressed as a generic "old way", not a named rival (R174).
+6. For each cluster write the angle in 1 sentence for 1 persona: who, the product, why it solves their problem, the proof (R4). Keep the customer's wording.
+7. Mark next to each angle: the awareness stage it serves (R19), the proof the brand actually has (R57), and any claim that needs a compliance check (P19).
+8. Rank by count, by proof available and by fit with the portfolio gaps (P25).
+Checks: every angle traces to at least 2 quotes; every number in an angle has a source; no angle is the team's own feature list dressed up.
+Rollback: if the document is only an AI summary with no raw quotes, redo step 2 by hand (16). If clusters are thin, widen to competitor reviews and forums before writing angles.
+
+### P2. Build and expand the persona list (01, 12)
+
+Goal: 20 to 40 sharp personas defined by problems, desires and triggers.
+Preconditions: P1 document; any existing persona work from 02-AVT.
+1. Spend about 20 minutes listing who buys and what problems the product solves for each.
+2. List 2 to 4 core personas, then drill each into problem variants (acne at 20 to 25, hormonal acne at 30 to 35, 40 to 45 are 3 personas). Write each as outcome x demographic x facet where facets are states, events or conditions (12).
+3. For each persona write pain points, language, and the proof they need (age- and gender-matched studies or reviews).
+4. Aim for 20 to 40 by hand.
+5. Give the full list plus wide business and customer context (not 3 personas and a URL) to an LLM. Ask for 20 to 30 more. Keep only the 4 to 5 good ones. Feed those back as "these were good" and ask for 10 to 20 more. Stop when the list has roughly doubled.
+6. Flag any persona defined by a personal attribute that needs a policy check before it appears in copy (R175).
+Checks: no persona reads as a demographic label alone; each persona could tell a writer the script, the talent and the proof.
+Rollback: if the LLM returns generic archetypes ("busy professional"), the context was thin; add P1 quotes and rerun.
+
+### P3. Build the concept board (01, 02, 03, 08, 12, 15)
+
+Goal: a board of concepts (persona x angle x offer, plus format and stage) sized to the volume target.
+Preconditions: P1, P2, the offers the brand can run, the volume target from P12.
+1. For each candidate concept fill the row: persona, angle (1 sentence), mechanism (problem cause, solution cause), offer (product plus value framing), awareness stage, proof available, destination page, candidate formats, creative type, hypothesis.
+2. Check each row against R1: at least 1 of persona, angle or offer differs from every other row. Rows that differ only in format or design are variants of a parent concept, not concepts; mark them as such.
+3. Weight the board to the less aware stages: at least 70% of rows serve unaware, problem aware or solution aware viewers (R20). Fill bottom-of-funnel rows only with 1-objection ads (R26).
+4. Add rows from the gap matrix (P25): a segment that repeats in comments but has no ad, a format competitors run that the brand never tested.
+5. For a founder brand, add 02's matrix variables: proof type and founder role (protagonist, witness, interviewer, reader), changing 1 variable per new row.
+6. Order the board by the testing priority when a concept has already failed: angle, then offer, then persona, then format (R7). For a new brand, start with the angles that have the most quotes and the strongest proof.
+7. Write the offer test as a static first when possible (R23): statics test angles and offers fastest and cheapest.
+Checks: run checklist 5.3.
+Rollback: if fewer than 10 ads can be made for the lead concept (R136), either the concept is too narrow or the budget is; cut the board, do not thin the ads per concept.
+
+### P4. Choose the format for a concept (01, 03, 10)
+
+Goal: the cheapest format that can carry the concept to its stage.
+Preconditions: a concept row from P3; per-format economics if they exist.
+1. Ask 01's 5 questions: what is the concept; does it need education (yes: VSL, long video or long-copy static); can the value fit in 1 frame (yes: static or carousel); does the product need a demo (yes: video); what stage (less aware: longer, educational; product or most aware: images, offers, catalog).
+2. Ask 10's question: must the value be seen moving or in real use? If yes, video.
+3. Where per-ad economics exist, compare expected gross profit per ad by format (R24) and lean to the format that returns more profit per ad, not the one that "performs better".
+4. Produce a static whenever the concept allows, and plan to turn a winning static angle into video later (R23).
+5. Record the format and the reason on the concept row.
+Checks: the format is chosen after the concept, not before (R3).
+Rollback: if a static fails on an angle that needs a demo, do not conclude the angle failed; retest in video.
+
+### P5. Build a static ad (03, 07)
+
+Goal: a static that sits at one end of the clarity vs curiosity spectrum, reads in the right order and matches its destination.
+Preconditions: a concept row; real product photos; the destination page; claims cleared.
+1. Decide the end. Clarity: a 3-to-4-second look tells product, angle, who and offer. Curiosity: the viewer cannot tell what is sold or that it is an ad; withhold or blur the product; 1 open loop. Write the choice on the brief.
+2. Decide the destination from the end (R34): curiosity, native and advertorial statics to an educational page (advertorial, listicle, quiz, long-form); clear offer statics for product or most aware buyers to a PDP.
+3. Write the headline and choose the image as 1 unit (R36). Run the substitution test: with a generic image, does the headline still make sense? If yes, the pair is too loose.
+4. Set the first eye stop to the highest-awareness message (problem, persona call-out, "new technology"), never the product category (R35).
+5. Plan 3 to 4 eye stops: hook element, the bold line that answers the question it raised, 1 or 2 short supporting facts, proof (legible review with stars or name, or a true-to-life product shot).
+6. Use size, contrast and whitespace to enforce the order. Fix spacing, alignment and case. Drop the corner logo when the page name shows the brand (R48).
+7. Benefit first, mechanism in brackets or smaller type. Cut call-outs that repeat the headline. Sub-headlines readable on a phone; if not, enlarge about 30% and move up (R38, R39).
+8. On a clean product-shot static, keep the headline to about 5 to 6 words and make it answer "why this instead of what they use now" (R40).
+9. For an unaware or problem-aware static, write the long primary text (R45; wording is 11-ADC) and the persona or problem call-out in the first line.
+10. If the topic is sensitive, use an illustration instead of a graphic photo (R46) and run P19.
+11. Keep the real product photo; AI may build the scene only (R166).
+12. Build the template so the next angle swaps only the words and the picture (R47).
+Checks: run checklist 5.1 with someone outside the team.
+Rollback: an ad that lands in the middle of the spectrum is pushed to one end or dropped; do not add spend to a confusing static (07).
+
+### P6. Write the primary text structure and the destination match for a native or curiosity static (03, 04, 07)
+
+Goal: a text block and a page that finish what the image started. (Word-level copy is 11-ADC; page build is 07-LPG.)
+1. First line: persona or problem call-out ("Read this if you're always bloated by 3 p.m.").
+2. First-person story that the persona has lived; disqualify others on purpose.
+3. Move through the stages: why the problem happens, how it happened to the narrator, the solution.
+4. Social proof and timelines, only true ones.
+5. Reveal the product late ("here's where I actually got it from"), name the offer, and put the product name and code here rather than in the image on a native static.
+6. Destination: a custom page that continues the angle and states an offer congruent with the ad ("less shedding in 26 days or less"). Do not sell hard on the page for the curiosity direction.
+7. Click the live ad after launch and confirm the page loads and holds the promise (R71).
+Checks: image stage and copy stage match (R21); primary text carries the education the image withheld.
+Rollback: if a curiosity static underperforms on a PDP, test the educational page before concluding statics do not work (03).
+
+### P7. Write a cold video script (04, 09, 11, 13)
+
+Goal: a script whose hook filters, whose bridge educates, whose product arrives late and whose close gives a reason to buy.
+Preconditions: concept row with mechanism and proof; objections from P1; the stage the ad serves.
+1. Set the stage the whole ad serves and hold hook and body to it (R21).
+2. Hook (first seconds): name the viewer's problem, persona or a known industry narrative; no product name, no product on screen, no offer (R81). Write 2 to 4 hooks per body for the first wave (P8).
+3. Bridge: state a solution exists, then teach why the problem happens. No product pitch here (R53). Keep a visual cue moving (a prop, B-roll) through the bridge.
+4. Problem and mechanism: in the customer's words; the biological, material or design cause; each term explained and, where true, a sourced prevalence line (R55, R56).
+5. Failed alternatives: what they tried and why it did not work, from customer data (R59).
+6. Product reveal, blended in as the thing that combines the mechanism; a research or supplier story before the name if the bridge feels abrupt (13).
+7. Benefits before features, table-stakes features in 1 line, expert terms exact (R60, R70).
+8. Proof stack: tests, customer count, testimonials from people who look like the viewer (R61). Every claim has a shot that proves it (R57).
+9. Objection handled out loud, then a reason to move from learning to buying, risk reversal, clear CTA at the intensity the ad earned (R62, R63). No open loops in the CTA.
+10. Script QA: search for "isn't ... it's" and stock analogies; check every number, every offer date, every health term (R69, R177).
+11. Mark shot-level motion: cuts, overlays, B-roll, handheld moves; native setting over studio rig (R65).
+Checks: run checklist 5.2 and P19.
+Rollback: if the retention curve later drops right after the hook or right before the CTA, the bridge is the fault (R95); rewrite that segment only (R64).
+
+### P8. Write, grade and multiply hooks (01, 04, 12, 19)
+
+Goal: a graded set of hooks per body, shot at volume and launched in waves.
+Preconditions: the body script; the persona; the speaker options.
+1. Decide the hook's job: which viewer must stop, and what they must know by the end of the hook.
+2. Draft with 2 methods: the template (Persona + Problem + Pattern interrupt + Promise) for volume, and 12's 4 steps (isolate the idea, commit, deep fry with contrast, surprise, novelty, nuance, stakes, make it bang with trigger words, simple language, best information first, open loops) for novelty.
+3. Pick hook types from R77; avoid "the number 1 mistake" style; skip "tactical promise" for ecommerce.
+4. Plan all 3 layers for each hook: audio line, on-screen copy (a bold headline, not just captions), visual (B-roll, props, a supermarket sweep, a whiteboard reveal, a 3-second static or motion intro).
+5. Grade each hook: clarity, relevance, novelty, then specificity and credibility (R76). Drop any with low clarity and low relevance. Fix the weakest layer on the rest.
+6. Cast a speaker who plausibly is the persona; for authority, a person the persona trusts (a runner, a doctor), with rights cleared (R86).
+7. Spread hooks across 19's levers (angle, offer, avatar, format) so they are not near-duplicates (R91).
+8. Check every hook bridges naturally into its body (R93); cut the ones that do not.
+9. Shoot: record each hook about 6 times; 10 hooks per body is a normal shoot (R90). Shoot a 3-second static or GIF intro version too.
+10. Launch in waves of 2 to 4 hooks per body (up to 8), sized to the budget (R90); hold the rest for wave 2 and for revival (P18).
+11. Optional before paid: post about 20 hook variants as trial reels, keep the best, launch about 5 (P21).
+Checks: checklist 5.6.
+Rollback: if hook rate is low against the account average, swap the hook and keep the body; if hold rate is low, the bridge is at fault (R95).
+
+### P9. Founder ad: story, structure, batch shoot (02)
+
+Goal: a batch of founder ads built as arguments, shot in one short session.
+Preconditions: a founder willing to appear (or a chosen involvement level); true origin facts; lab, supplier or test proof; the review and inbox feed.
+1. Write the founder story's 3 owned elements: origin (why the business started, true), mechanism (why the product works, said by the founder or a credentialed expert), adversarial angle (what the category does wrong, with proof). Legal check on every adversarial or health claim (P19).
+2. Check the story through the viewer's eyes: which problem or desire in it does the buyer already have? If none, rework (R101).
+3. Split story elements into static (must stay consistent) and renewable (reviews, emails, supplier news, complaints).
+4. Write 3 bodies with materially different stories using the top structure: claim (adversarial, doubles as hook), proof at once, mechanism tied to the story, proof of mechanism, CTA plus social proof (R99).
+5. Write 10 hooks per body that bridge naturally; launch 2 to 4 per body per wave (R90).
+6. Pick the involvement level per variant: protagonist, voice over B-roll or animation, evidence (lab photos, certificates), proxy (dietitian, supplier), absent (animation). Pick the script role per variant: protagonist, witness (real customer email, with permission), interviewer (cut to the lab or team), reader (a real review, never scripted) (R102, R103).
+7. Shoot-day rules: teleprompter or memorised script while walking; a sentence outline for weak readers; 2 cameras for talking heads; move locations during the session; expect robotic takes in the first about 10 hours on camera. About 4 to 5 minutes of camera time covers 30 ads once scripts exist.
+8. Edit: fast, dynamic, overlays and B-roll; low-fi opening is fine for a premium brand if the product appears only in high-end shots (R66); hold the product to about 20 seconds in story formats unless it is a demo format (R54).
+9. Decide the page: founder handle as a partnership ad only if it posts often and relevantly; otherwise the company page (R106). `[verify UI: partnership ads]`
+10. Set the monthly founder target inside the wider mix and the collection pipeline: reviews to a database, inbox to a weekly pull, supplier calls noted; shoot the founder about quarterly (R104).
+Checks: checklist 5.2 plus the founder rows in 02's diagnostics: argument not monologue; viewer-first; claim proved; hook fits body; story true; curiosity loops closed.
+Rollback: if founder ads fatigue, change scene first (cheap), then move down the involvement spectrum, then change offer, angle, persona in that order; if the concept is fatigued, stop making variants and move budget to other formats (R103).
+
+### P10. VSL: decide, script, test, destination (11, 13)
+
+Goal: a VSL only where needed, with a matched page and a hook test plan.
+1. Decide: does the buyer need education to convert (complicated product, low-trust category, new category or ingredient, cold conversion capped by misunderstanding)? If no, stop; do not make a VSL (R120).
+2. Decide where education lives: ad, page, or both (both preferred).
+3. Script the 7 parts (R121) at a short length first; 13's first-30-to-40-seconds model for the opening; large on-screen text and quick pacing for an older skew (R123).
+4. Pull objection handling from customer data (P1); include risk reversal and a clear CTA on the first VSL (R124).
+5. Visuals: mix real UGC, AI B-roll and animation but lean one way; no found images without rights (R119, R176).
+6. Finish body and CTA, then produce 3 to 6 hooks (R89, R90).
+7. Plan modular variants: mechanism before problem, objections earlier, agitation pulled forward, a faster mechanism section; cut a 2-to-3-minute and a 45-second version as extra variants (R58, R122).
+8. Build a custom page per VSL that continues the mechanism and story; never a bare PDP (R71).
+9. Read economics on repeat purchase where the brand has it, not first-order ROAS alone (R123). `[needs brand data: repeat rate, 12-month value]`
+Checks: 11's VSL review table (hook not a brand story; bridge after mechanism; every claim has a why; objections present; proof visible; risk reversal; clear offer; pacing and text; visual consistency; page continuity).
+Rollback: if the VSL underperforms, fix proof placement first ("a really common and easy way to fix an underperforming VSL"), then the bridge, then hooks.
+
+### P11. UGC brief, creator vetting and creator seeding (01, 05, 18)
+
+Goal: creator content that carries a concept, from creators who match the persona and the market, with rights secured.
+1. Vet: ask each creator for past work and the brief behind each piece; match your brief's depth to what produced their best work; default to the most detailed brief you can write (R109).
+2. Cast native-accent creators per market and creators who plausibly are the persona (R110, R78).
+3. Write the brief (section 9.4): concept row, awareness stage, hook options, body beats, claims allowed and forbidden, proof to show, the real product footage to include, format from R116 where TikTok-native, 2 takes (1 to script, 1 natural), deliverables and rights.
+4. Choose brief width: wide for discovery (product only, creator's own story), specific to multiply winners (show the top ads with their real numbers).
+5. Seeding at volume (05): mass invites, approve, ship samples (about 7 days), ask for 2 to 3 videos per sample, expect 1 to 4 weeks and non-posters; run a creator community that learns what wins; reuse the army for each launch. `[web check: seeding tools, platform rules]`
+6. Secure usage rights and affiliate terms before any organic-to-paid move (R112). `[needs brand data: rights per asset]`
+7. When a creator angle wins, tell the community, derive statics, and make in-house and AI versions (R111).
+Checks: every UGC brief has a concept (R108); every asset has rights on file; claims in creator scripts pass P19.
+Rollback: a review-style UGC that loses to a product demonstration means more demonstrations next round, not more review UGC (10).
+
+### P12. Size monthly volume and production budget (01, 03, 08)
+
+Goal: a monthly ad count, concept count and production budget in code, from the brand's own numbers.
+1. Pull 12 months: ads launched, spend, new customer revenue, winners (by the account's definition, R146), winners that churned this month. `[needs brand data]`
+2. Compute mean spend per ad, average return per ad (7-day click ROAS or aMER), expected revenue per ad, hit rate (winners / ads launched), churn (churned winners / live winners).
+3. Ads needed, method A: new customer revenue target / expected revenue per ad. Method B: churned winners to replace / hit rate. Report both. Flex with the revenue forecast.
+4. Fallback with no history: 1 new ad per $1,000 of monthly spend.
+5. Set tier defaults from R129 (active concepts 3, 5 to 6, 8 to 10; production 25% then about 10% of media; testing 60% to 80% of budget at small spend). Replace with R24 economics once per-ad production costs exist.
+6. Split effort: replication 50% to 60%, iteration 20% to 30%, net new 20% to 30% (R130).
+7. Split supply: in-house, UGC, AI, near 1/3 each as a starting point (R111), adjusted by what wins.
+8. Apply the quality bar: define the 7-out-of-10 ad for this brand and count only ads above it toward the target (R127).
+Checks: the count is achievable at 4 to 8 ads per pack and 10+ ads per concept (R136).
+Rollback: if hit rate falls as volume rises, quality is diluting; cut volume and raise the bar (08).
+
+### P13. Build the test plan and the pack (01, 08, 10, 15, 17)
+
+Goal: a complete test plan that 24-DEP can execute without questions.
+1. Hypothesis: the concept, the 1 variable under test, expected spend, conversions and return (R134).
+2. Pack contents: 4 to 8 ads, 1 concept (1 persona plus 1 angle), 2 to 4 hooks per body for video (R136). New ads never join a winning ad set (R135).
+3. Naming: pack number, persona, angle, stage label ("problem + solution" or "bottom of funnel"), so the concept is filterable. `[verify UI: naming only]`
+4. Audience: cold, existing customers excluded (R141). Placements open. (deployment, 24-DEP)
+5. Delivery guarantee: state the option and the reason. Default in this playbook: an ad set daily minimum of 1x target CPA, capped at 20% of the campaign daily budget, removed on day 7 (15, 17). Alternative at very small budgets: a per-ad impression cap so every ad gets equal visibility (10). Alternative: no floor, let Meta allocate, and read the ads it favours (common practice; 05). Check that the number of packs with floors x floor fits inside the daily budget. `[needs brand data: target CPA, daily budget]` `[verify UI: ad set spending limits]`
+6. Winner definition before launch (R146): spend share, CPA or incremental ROAS threshold, minimum days.
+7. Read date: day 7 first read; day 14 decision (R138).
+8. Destination per ad, checked live (R71).
+9. Compliance sign-off attached (P19).
+Checks: every ad in the pack calls out the same persona and angle (08); no near-duplicates (R2); claims cleared.
+Rollback: if the budget cannot fund the floors, cut packs, not ads per pack below 4.
+
+### P14. Run the 7-day read (10, 15, 17)
+
+Goal: a first read that separates winners, losers and inconclusive ads.
+1. On day 7, confirm the floor was removed (deployment) and note spend per ad.
+2. Ads with little or no delivery: inconclusive, not failures (R140). Plan a smaller rerun.
+3. Ads that spent: compare with the winner definition (R146). Mark winner, at threshold (leave alone), loser.
+4. Pull diagnostics for each: hook rate and hold rate vs account average, CTR vs link CTR gap, on-site conversion and add-to-cart by ad (R142, R143, R95).
+5. Watch every winner and the worst loser and write why (R157).
+6. Decide by day 14: scale (raise budget, more ads for the concept in a new pack), iterate (P17), or drop.
+Checks: no decision rests on ad-level last-click ROAS alone (R145); no ad inside a KPI-hitting ad set is cut (R149).
+Rollback: if the read window had a promo, stock-out or tracking fault, extend the window rather than call winners.
+
+### P15. Read results across the chain and pick winners (01, 08, 10, 17)
+
+Goal: winners chosen on outcome plus concept sense, and each ad placed in the funnel.
+1. Sort ads by amount spent (R144).
+2. Switch the read to incremental attribution where available, 7-day click otherwise, at ad set or campaign level, existing customers excluded (R145). (deployment, 24-DEP) `[verify UI]`
+3. Flag high spend plus above the brand's threshold plus outsized results. Leave at-threshold ads alone. Group by product or category where that matters.
+4. For each flagged ad: does the reason it performs relate to the product's value (10)? Can it hold spend at a larger budget?
+5. Assign a funnel role from combined metrics: high spend, lower ROAS, holds scale = opener; converts well, spends less = closer or retargeting (R150).
+6. Judge top-of-funnel statics and openers on account-level new customer revenue and MER, not their own ROAS (R49). `[needs brand data: blended and new customer metrics]`
+7. Record the winner in the DNA sheet (P16) and hand it to iteration (P17).
+Checks: portfolio profit, not top ROAS, drives the scale list (R147).
+Rollback: if incremental and reported results disagree sharply, hold the scale decision and check the attribution setup with 24-DEP and 06-MEA.
+
+### P16. Winner analysis: the DNA sheet (09, 10, 12, 13)
+
+Goal: a written hypothesis of what drove each winner and the worst loser, in a shared grammar.
+1. Fill for each ad: segment (outcome x demographic x facet), concept in 1 sentence, angle, mechanism (problem cause, solution cause), the 6 copy blocks (pain, promise, proof, curiosity, constraints, conditions) marked strong, weak or missing, the hook quoted, the format, and for video CAST (conceit or none, actor, style, terrain, setup).
+2. For video, split hook, bridge, body and grade each; note where the product first appears and the cut pace.
+3. Compare winners with losers on the same fields. Write the hypothesis: 1 element, or a combination?
+4. Feed the hypothesis into the iteration plan (P17) and the next brief (P13).
+5. Add the ad to the tagged library (R168) and update the gap matrix (P25).
+Checks: checklist 5.5.
+Rollback: "it just works" is not a hypothesis; if none can be written, iterate on 2 candidate elements in separate packs.
+
+### P17. Iterate a winner and decide iteration vs new concept (01, 03, 12, 15, 17)
+
+Goal: the next batch built mostly on winners, with real swings, plus a net-new share.
+1. From the DNA hypothesis, keep the active element (concept, actor, format) and rotate the rest: new hooks on the body (P8), a new persona or facet, a new offer, a new format or conceit (podcast, street interview, slice of life), a new style.
+2. Make each iteration a decent swing (R2, R139): what old-school Facebook would call a new ad. No 1-word headline changes, no background colours.
+3. For a winning static format, keep the format and messaging and swap 1 concept element (R47).
+4. Merge 2 proven concepts into a 3rd (17).
+5. Keep net-new concepts at 20% to 30% of the batch (R130); pull them from the gap matrix and STORMING sources (R18).
+6. Launch iterations as a new pack (P13); never into the winning ad set.
+7. Do not drop a winning idea before the market does (12); watch frequency and reach (R151) to see when it has.
+Checks: no 2 ads in the batch are near-identical (R156).
+Rollback: if iterations of 1 winner start taking all spend (05's pattern), shift the next batch to distinct formats and new concepts.
+
+### P18. Revive a fatigued winner (01, 02, 19)
+
+Goal: another run of spend from a proven body before new concept spend.
+1. Confirm fatigue: months of running, most of the spend, results falling at steady spend, cold frequency above 2 (R151). `[needs brand data: ad-level trend]`
+2. Keep the proven body. Do not start with new testimonials or a full rework.
+3. Shoot new hooks as new footage with a different person (an employee or brand-side presenter on a customer testimonial body: EGC hook, CGC body). Do not re-cut hooks from the old footage.
+4. Vary hooks on angle (seasonal or contextual), offer (in primary text and headline), avatar, format (a 3-second static or motion intro). Change 2 levers at least.
+5. Produce more than 3 hooks; target 10; launch in budget-sized waves (R90).
+6. Cheap add-on: reshoot the same script in a new scene with the same edit (02's $40,000 case).
+7. Judge against the ad's pre-fatigue level: same daily spend, same or better CPA. `[needs brand data: pre-fatigue baseline]`
+8. If the first set fails, raise volume and move more levers before concluding the body is dead; then rotate format (R154).
+Checks: hooks differ on at least 1 lever from each other and from the old hook.
+Rollback: if the revival holds only briefly, accept the body has reached capacity and move budget to other concepts (portfolio, R126).
+
+### P19. Compliance check before launch (all sources' risks; ecomOS overrides)
+
+Goal: a signed record that the asset carries no invented, unprovable or disallowed claim and no impersonation.
+1. List every claim, number, study, customer count, prevalence line and offer in the asset (copy, overlay, voiceover, primary text, headline, page).
+2. For each: the source document or data behind it. No source, no claim (R43, R170).
+3. Category flags: health, weight, body image, fertility, appearance, medical condition, supplement, nicotine-adjacent. If flagged, check the platform policy and the market's rules. `[web check: Meta and TikTok policies; ASCI, TGA, FTC as relevant]`
+4. Before-and-after imagery: policy check; prefer illustration or "what life could look like" framing (R171).
+5. Personal attributes implied in copy (race, condition, sexual function): rewrite or clear (R175).
+6. Format honesty: no fake interview, whistleblower, news style, invented person, scripted review presented as real (R172). Founder story facts confirmed true (R102).
+7. Disclosure: partnership label on creator or founder handles; any brand-owned education page presented as the brand's (R173).
+8. Competitors: no rival names, logos, packaging, faces or text; generic "old way" only; no staged problems (R174, override 1).
+9. Rights: every face, image and clip licensed; no found images; no public figure without permission (R176).
+10. Product accuracy: the product in every frame is the real photo or footage (R166).
+11. Offer, price, dates and scarcity match the live store on launch day (R177).
+12. Record pass, fix or reject per item; attach to the test plan.
+Rollback: a fix that removes the ad's core claim means the concept lacked proof; return it to P1 for a provable angle.
+
+### P20. Use AI in the pipeline (01, 03, 15, 16)
+
+Goal: faster briefs, scripts and production without slop or copied competitors.
+1. Keep ideation and analysis human (01). Use AI for research aggregation only with a human reading raw quotes (16, 03).
+2. Load context before any generation: brand book, products, allowed and forbidden claims, personas, the brand's own winners, brand voice; connect account data read-only if the tool supports it (R164). `[needs brand data]`
+3. Generate briefs and scripts from a brand-specific skill or prompt library; add the standing line "do not use contrast negation" (R69).
+4. Review every output: angle named, avatar fit, claims true, product accurate, not a competitor clone; expect about half to be usable (R163, R165).
+5. For images: AI builds scene, illustration and layout; the real product photo is composited in (R166).
+6. For video: AI B-roll and animation with a consistent style (R119); human editor finishes with a winning reference (R167).
+7. Never treat AI as the strategy or as a reason to stop producing the brand's own creative (15).
+Checks: P19 on every AI asset; tag the asset's source pillar as AI (R168).
+Rollback: if AI batches are all slop, the context was thin; rebuild the brand book and the winners file before generating again.
+
+### P21. Validate creative with trial reels before paid (01) `[verify UI]`
+
+Goal: a cheap read on reach and retention before spend.
+1. Cut the CTA off the ad.
+2. Post it as a trial reel on the page the ad will run through (business or personal).
+3. Read reach against other posts and the retention graph: weak hook, bridge or body?
+4. Feed the read into the V2 edit within 24 hours.
+5. For hooks: post about 20 variants, keep the best, launch about 5 as ads.
+Checks: the page has enough baseline posts to compare against. Organic mechanics live in 13-ORG.
+Rollback: if the page has no history, skip this step; read in paid with a small pack instead.
+
+### P22. Build bottom-of-funnel objection ads (01, 08, 09)
+
+Goal: 1 ad per objection with 1 proof point, for product-aware and retargeting audiences.
+1. List objections from surveys, tickets, reviews, and (with consent) calls to checkout abandoners (R178). Estimate the mix; 01's illustrative split is 20% each for price, trust, quality doubt, not ready.
+2. Price: value anchoring, cost per use ("half the price of a coffee"), a true bundle. Trust: customer and review counts, UGC testimonials. Quality doubt: the product in use, demos, compliant before-and-afters. Not ready: educational or lifestyle content. Warranty or lifespan: the guarantee. Efficacy: 1 substantiated claim.
+3. 1 objection and 1 proof per ad; no benefit lists (08).
+4. Load into a bottom-of-funnel pack, separate from top packs; expect it to convert well and spend less (R150).
+Checks: each proof is true and current; the ad would make no sense to a cold viewer (that is fine).
+Rollback: a bottom ad that spends like a top ad is mislabelled; move it.
+
+### P23. Frame-by-frame teardown of a live video ad (09, 13)
+
+Goal: a ranked fix list for an own or competitor video (competitor: structure only).
+1. Watch once, then step through in 3-second chunks.
+2. Hook: name the type; what does the viewer know after 3 to 5 seconds; is there a visual hook; would only the target buyer stop?
+3. Bridge: does it say a solution exists and teach, or name the product and list benefits?
+4. Body: when does education start; when does the value proposition appear (7 to 10 seconds in is late); features tied to benefits, benefit first; table-stakes passed fast.
+5. Objections: at least 1 answered before the CTA.
+6. Proof: every claim backed on screen; subjective superlatives flagged.
+7. Pace and look: any stretch over 3 seconds with no visual change in a polished format; long talking head with no overlays; studio rig vs native setting.
+8. CTA: soft or hard, fits the tone; scarcity true; loops closed.
+9. Swap-the-face test for founder or creator ads.
+10. Click the destination.
+11. Score against the brand's 7-out-of-10 bar; rank fixes; do not predict ROAS from the review.
+Rollback: none; this is a read.
+
+### P24. Brief a native short-form format for TikTok or Reels (18)
+
+Goal: a creator brief for 1 of the 7 native formats, chosen by product trait.
+1. Pick the format from R116 by product trait; skip reaction if the product gives no strong first-use response.
+2. Write the relatable first line in the buyer's words (habit, annoyance, restriction).
+3. Structure: hook first, raw story or demo in the middle, product and CTA at the back.
+4. For comparisons: a generic "old way" shown failing honestly; no rival brands; no exaggerated staging (R174).
+5. For misconception videos: cite only a source the team has checked (R56, R170).
+6. For transformation teasers: tease or show the result; body-image claims cleared (P19).
+7. Plan comment-reply follow-ups for the questions the video draws (R118).
+8. Rights: organic, affiliate and paid use written into the agreement (R112).
+9. Judge on purchases per view, not views (R117). `[needs brand data: views, orders per video]`
+Rollback: high views and low sales means the demonstration is weak; improve the demo, not the reach.
+
+### P25. Portfolio and gap audit (01, 02, 05, 12)
+
+Goal: a monthly view of coverage, concentration and sameness.
+1. Tag every live ad: concept, persona, angle, offer, format, stage, source pillar, creative type (R168).
+2. Concentration: spend share of the top 1 to 3 ads this month and the trend (R126). Bad: a few ads hold most spend with no new winners behind them.
+3. Stage coverage: share of assets and spend by stage; bad: mostly product aware (R20).
+4. Format and pillar coverage: any pillar or format family with nothing live (R27, R111).
+5. Sameness: cold frequency above 2 at ad level over 30 and 60 days; ask for the Creative Similarity Score (R151). `[verify UI]`
+6. Desire vs pain tag on each ad; target 60/40 to 70/30 pain-led for shoot-heavy brands (R29).
+7. Gap matrix: segments in comments and reviews with no ad; formats and styles competitors run that the brand has not tested (R158).
+8. Output: the gaps and concentration risks feed the next concept board (P3) and volume plan (P12).
+Rollback: none; this is a read. Act 6 to 8 months before a hero-ad decline would bite (01).

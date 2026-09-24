@@ -409,3 +409,97 @@ Each rule states the rule, the condition, the supporting mini playbooks, conflic
 **R150. Optional: BIMI (logo and Gmail blue check) at about $1,500 a year, for 8 and 9 figure brands.** Source 02. [e758ab334635] `[web check: BIMI cost and requirements]`
 
 **R151. Never use invisible text to pad an image-heavy email.** 01 and 07's header describe it; ecomOS forbids it (R198). [bc0f81f5c30a] [9efe76ee1d22]
+
+### 3.19 SMS (and RCS, iMessage)
+
+**R152. SMS is high urgency and low frequency; nurture goes to email.** Send launches, drops, restocks (real), sales, flash sales, exclusive offers, trend alerts and big news. Testimonials, brand stories and evergreen bestsellers by SMS raised unsubscribes and gave poor ROI in 09 and 12. SMS unsubscribe runs 3% to 5% per send vs about 0.3% on email (09). Sources 02, 09, 11, 12. [b9130f4f4dca] [e6323f097649] [7eaef73fe8eb] [db06cdf5cc52] [bcc0f86cebc6] [bf9cd4297ad9]
+
+**R153. Explicit SMS consent before any text; confirm the segment holds only SMS opt-ins; keep opt-out handling (STOP) on every program, including iMessage.** Source 13 says iMessage frees you from "reply STOP"; do not act on that. Sources 09, 11, 12; against 13. [ccceb9ed6344] [ee1a31c09fcc] [9e19056dd462] [59e016b15ca2] `[web check: TCPA, CTIA, state mini-TCPA, TRAI DLT for India, PECR for UK, consent and opt-out rules per country]`
+
+**R154. Quiet hours: never send outside the legal window for the recipient's country and state, in recipient local time; keep Klaviyo quiet hours on.** 11: not before 8:00 a.m. or after 9:00 p.m. ("fines"). 12: not before 10:00 a.m. or after 7:30 p.m. (preference). Neither names a law. Sources 11, 12. [ccceb9ed6344] [a9df8fb1a06e] [5a21fae6ffd5] `[web check: legal quiet hours per country and US state; India TRAI promotional window]`
+
+**R155. Best send window to start: 11:00 a.m. to 2:00 or 3:00 p.m.; test 4:00 to 5:00 p.m.; last-chance texts by 6:00 to 7:00 p.m.** Test on the brand's own clicks and revenue by hour. Sources 11, 12. [a9df8fb1a06e] [5a21fae6ffd5]
+
+**R156. Campaign frequency is the biggest SMS disagreement.** 11: about 1 a week, test 2 only above 8 figures, more than 2 is "overkill". 12: 1 a week, 2 "every now and again". 09: about 2 a week, minimum 1, daily to non-buyers for heavy acquisition brands, 1 to 2 a day in a sale push. 05 (Postscript): 8 to 10 texts per subscriber per month with no unsub impact, step up by 1 a week until unsubscribes tick up, and a holdout where 2 a week beat 1 a week at 98% certainty. 02: launches, restocks and sales only. Safe start: 1 a week, then step up with a holdout (P24). See 7.8. [6f21ea67f481] [bf9cd4297ad9] [ec74b2c055f2] [52f701ac2a63] [bb28c48148d6] [651884bb18e3] [b9130f4f4dca]
+
+**R157. Adjust frequency by purchase cycle and buyer state.** Apparel about quarterly, furniture about every 18 months (11). Past buyers of one-time products get less; active subscription customers get no campaign texts (09). Sources 09, 11. [77dd2ea812e0] [ec74b2c055f2] `[needs brand data: repeat purchase interval, subscription status]`
+
+**R158. Keep each SMS to 1 segment: 160 GSM-7 characters, 70 if any emoji or Unicode character is present; read the platform's segment counter before sending.** The sources' emoji figures (35 to 70 characters each) are wrong; the cards correct them. Cost 1 to 3 cents per segment, typically about 1.5 cents (09). Sources 09, 11, 12. [0228dbaf571e] [fa8b517af050] [54ec55400d45] [ccceb9ed6344] `[needs brand data: per-segment rate on the brand's plan]`
+
+**R159. MMS costs 2 to 3 times SMS; use images only where the image earns it, judged on net profit (revenue minus send cost), not on clicks or revenue alone.** 09 tests: image versions made more revenue with fewer clicks; net profit was positive but small. Reserve images for launches, new flavours, the welcome infographic and the abandonment text (Grüns example). Sources 09, 11, 12. [13f23c2e8c94] [f89925ebf6ad] [db06cdf5cc52]
+
+**R160. Phone capture: email step first with the full offer, then a phone step that "activates" the same offer.** Button "Claim now", not "Continue". Copy: "Finish signing up with text to activate your 20% off." No extra discount for the phone number (09, 11). Conflict: 04 tests a bigger SMS offer (15%) or a VIP club; 02 mentions 10% email and 20% SMS. Target phone submit about 15% with a quiz-first form (09). Sources 09, 11, 12 against 04, 02. [75893d2892aa] [9b9305f19394] [775acf1e29be] [1bad712bca98] [8bb0c8c613c5]
+
+**R161. SMS welcome: 2 to 3 texts inside about 5 days.** Day 1 immediate code with 1 short brand remark, day 3 reminder with 1 differentiator, day 5 last chance. 11: 2 texts, second 2 to 3 days later. 05 (Ridge): a 6-message welcome ending in a question. Aggressive daily onboarding (Grüns, 23 texts in 30 days) is a subscription-brand exception, not a default. Sources 05, 09, 11, 12. [6c2a73b99726] [136997a1cb23] [71d9f81273f0] [c2cd726a16ab] [52f701ac2a63]
+
+**R162. Abandonment texts: 1 SMS per recipient per abandonment flow, sent within 48 hours of the event, browse after about 60 minutes, cart and checkout after 1 to 2 hours.** 09 calls more than 1 "illegal in the US" and shows Klaviyo enforcing it; 11 calls more than 1 "non-compliant" (welcome may hold 2). Neither names the rule. Split by buyer status: non-buyers get the welcome code, buyers a plain reminder. Sources 09, 11, 12. [ee1a31c09fcc] [136997a1cb23] [71d9f81273f0] `[web check: whether the 1-text-per-48-hours limit is law, CTIA guidance or Klaviyo policy; state rules]`
+
+**R163. Post-purchase SMS: 1 text on day 10 to 14 (a few days after delivery), "are you liking it?" plus a soft cross-sell, no offer; replenishment text at supply plus delivery minus a few days; nothing more at first because buyers also get campaigns.** Source 09. [586799a976b3]
+
+**R164. SMS win-back at 60 to 90 days or 2 times the average interval: a flash offer with 72 hours, then a last chance 2 days later.** Sources 09, 12. [c2903035a7f5] [71d9f81273f0]
+
+**R165. SMS audience: a disagreement.** 09: broadcast to all SMS subscribers and exclude only people with 15+ texts and 0 clicks ever; people who never click still buy. 11: tighten to an engaged SMS segment when clicks fall under 5% or unsubscribes exceed 1%. 05: watch unsubscribes in each subscriber's first 30 days. See 7.9 SMS note. [74853693497f] [02f841a00c26] [52f701ac2a63]
+
+**R166. SMS metrics: click rate 5% to 15%, unsubscribe under 1% (under 0.5% excellent), delivery over 90% (over 95% excellent), revenue per message, net profit per send.** Open rate is a vanity metric for SMS; "98% open rate" is uncited. Sources 11, 12, 05. [02f841a00c26] [bb9581c6a1d8] [76ea7acfff13]
+
+**R167. Prove SMS incrementality with a holdout once the bill passes about $10K a month.** 3 cells: 50% normal, 25% no messages, 25% double cadence; compare revenue per subscriber to the no-message cell and subtract message cost. Source 05. [651884bb18e3] [9a17b76595cd]
+
+**R168. Email and SMS together: a disagreement.** 03 (checkout section): send email and SMS at the same time or very close, because you cannot know which converts. 03 (multichannel section): SMS first, wait 2 hours, then email if no order. 11: email at 9:00 a.m., SMS 5 to 6 hours later for the same message. 02: SMS follow-up only to non-clickers where SMS revenue per recipient is strong (example 1.70 EUR). See 7.15. [fbfeb91636ec] [4c7296971696] [a9df8fb1a06e] [af644216425f]
+
+**R169. Add a question to 1 existing flow to start conversational SMS, then staff the replies and tag objections into flows, PDPs and ads.** Start with the last welcome or abandonment text: "Do you have any questions I can answer?" Go conversation-first only for long-consideration or high-ticket products. Sources 05, 13. [c2cd726a16ab] [5bd6379a40ae] [d0012f077a0d] [324169289900] [3e359a2bee9b] `[needs brand data: who answers replies and how fast]`
+
+**R170. RCS is a separate channel with SMS fallback; pilot it with a holdout and creative held constant; expect a novelty lift that fades; judge after the higher cost.** US-only claims in 05. iMessage (13) is a vendor pitch for iPhone-heavy North American lists; treat as test ideas only, and not for Android-heavy markets such as India. Sources 05, 13. [30309dfff699] [04f7be245280] [80442f6087a2] [3f1fb0650452] `[web check: RCS availability, fees and verification per country; Apple rules on business iMessage]` `[needs brand data: iPhone share of list]`
+
+**R171. Platform choice matters little; consolidate with the email platform and price-shop Attentive and Postscript; ignore AI feature pitches.** Sources 09, 11, 12. [ef374a64ba7e] [af694ec3e7e4] [aa2a2140c1a0]
+
+**R172. Push notifications need the brand's own app; add push steps to flows the same way as SMS.** Source 03 only. [4c7296971696] `[verify UI]`
+
+### 3.20 Testing and metrics
+
+**R173. Revenue per recipient and placed order rate decide tests; clicks second; opens last.** 02: revenue decides "95% of tests". 03: placed order rate for content tests, click rate for send-time tests, never open rate. 04: placed order rate, then click, then open. 06: CTR as main metric. 01: placed orders and revenue. See 7.14. Sources 01, 02, 03, 04, 06. [59ae581e3e7f] [659e9f913086] [5d7c84dc41ce] [c4cf02ddd233] [c5f48c89de68]
+
+**R174. Test with a written hypothesis, 1 variable, manual 50/50 at 100% of the audience, manual winner.** Klaviyo's automatic 20/20/60 after 4 hours picks winners too early and sends the majority at a worse time. Sources 02, 03, 04. [ac370b420628] [659e9f913086] [e753b3fb98af]
+
+**R175. Sample floors: 1,000 recipients per branch (500 if the gap is huge), about 2 weeks for flows; 3,000 to 5,000 impressions or 15 days for forms; 5 to 10 campaigns per send-time pair.** Do not call winners at 50 to 100 recipients. Sources 02, 04. [e8e1adc8fefe] [eed1632440b9] [9211d9b5ff9c]
+
+**R176. Test priority: flow delay of email 1 in the biggest flows; content and offer; product vs collection; long vs short; text vs designed; send time; then subject lines; CTA colour last (skip under about $100k a month).** Sources 01, 02, 03, 04. [e846a075130e] [700ad4cccb44] [db47183f351f] [8cab23f94038] [97bfd09fd8e1]
+
+**R177. Winners do not transfer between flows or campaigns; retest.** Sources 01, 02. [8b488b1b15d3] [2176f28aa94d]
+
+**R178. In flow timing tests, duplicate every email onto both branches; do not rejoin after email 1.** Source 04. [5f42a553bc22]
+
+**R179. Attribution settings: exclude transactional messages, bot clicks and Apple privacy opens; keep the window near 5 days (shorter for impulse, longer for long consideration); SMS window 1 day.** Expect reported revenue to drop. Sources 03, 04. [1ce671434e00] [fc0425a31c0f] `[web check: current Klaviyo default attribution window]`
+
+**R180. Turn on anonymous visitor tracking so pre-signup views and carts backfill and feed browse and cart flows.** Sources 03, 04. [8796c9f1ffa6] [fc0425a31c0f]
+
+**R181. Optimise unique counts, not rates.** Open rate down 10% with unique opens up 40% is a win. Source 03. [489a0deaff01]
+
+**R182. Read the metric chain, not the headline: recipients, unique opens, open rate, unique clicks, click rate, unique conversions, conversion rate, revenue, revenue per recipient, AOV.** Opens down: deliverability. Clicks down: content. Conversions down with clicks steady: merchandising or offer. Under 5% change is noise; look for over 10%. Read revenue and order count together to catch AOV distortion. Source 03. [8183b1fcc7d0] [dccf91db3e0a] [7b7bba687f4a] [ea472261103e]
+
+**R183. Flow revenue follows site traffic; a drop is only a red flag if traffic held.** Then check skips, filters and dynamic blocks. Source 03. [d2e68173f29a] [ac6fccd77bd7]
+
+**R184. Monthly review is mandatory to catch silent breakage: a theme update that hides the pop-up, a cart flow that stopped, a broken integration that throws no error.** Sources 03, 11. [5d6743fc3f40] [059f73755fa8] [02f841a00c26]
+
+**R185. AI analysis of Klaviyo exports gives hypotheses, not findings; verify against the CSV, then test.** Source 02. [7dccf4216521] [87afe3ecbaf6]
+
+### 3.21 ecomOS rules that override any source
+
+**R186. ecomOS: no fake restock, no fake sell-out, no fake "running low", no fake deadline.** Sources 09 and 12 send restock texts for items that did not restock; 01 says "do not fake sell-outs". Only real inventory events and real expiry dates. [7eaef73fe8eb] [3f1ec5d057e8] [a1e654a1f091] [cefa2905adfd]
+
+**R187. ecomOS: no hidden unsubscribe, no pre-checked marketing consent, no shrunken consent text, no consent text removed.** 01 says the checkout checkbox "can be automatically checked" and shrinks SMS consent to size 8; 02 and 04 delete the disclaimer for US stores. Consent text stays legible on every form and every market. [3d97f72a2969] [397f14a8dca9] [39aa68c94680]
+
+**R188. ecomOS: no invisible text.** The size 5, background-colour "About Us" block in 01 and the 07 header is a spam signal and a deception. Fix image-heavy emails with live text instead (R130). [bc0f81f5c30a] [9efe76ee1d22]
+
+**R189. ecomOS: keep a visible close on every pop-up step.** 01, 02 and 04 hide the X (opacity 0, 1 px, size 5). A clear "No thanks" button plus a visible X is the floor. Owner may test a smaller X but never a hidden one. [397f14a8dca9] [9622afcc8844] [72945bee8a3a] `[web check: accessibility rules and Google interstitial guidance]`
+
+**R190. ecomOS: gamified pop-ups must only show prizes that can be won.** No decoy wheel slices or fake scratch results. [7da3ea843dc6] [0419dcd84c79]
+
+**R191. ecomOS: every claim, review count, guarantee, shipping time and "as seen on" logo must match the brand record.** Regulated claims are never implied to dodge the rule (08). AI-drafted claims are checked before send (10). [4dac36087f55] [f0580c1b1e80] [8e823019286f]
+
+**R192. ecomOS: consent, quiet hours and sender registration follow the recipient's country, checked live.** No US number in this playbook applies to India, the UK or the EU without a `[web check]`. For Gehna (India) check TRAI DLT registration, header and template approval and the promotional time window before any SMS. [ccceb9ed6344] [5a21fae6ffd5]
+
+**R193. ecomOS: no deliberate typos, no pretending an automated message is a person, and no "forget about email".** Source 13's tactics stay out of client work. The store is always identified as the sender. [324169289900] [dc0288dd127b]
+
+**R194. ecomOS: competitor emails are for layout and mood only.** Never copy their text, logos, products or faces. Reverse-engineering structure with AI (07) is allowed; verbatim reuse is not. [fab16f82f356]
+
+**R195. ecomOS: arithmetic in code, not in the model.** Revenue per recipient, net profit per SMS, opt-in rate and segment counts are computed from exports, never estimated. Missing values show as unavailable, not zero.

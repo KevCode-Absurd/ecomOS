@@ -1143,3 +1143,211 @@ Steps:
 Checks: net revenue in the ladder equals books net revenue after named adjustments; the daily dashboard month-to-date ties to the close within the accrual difference.
 `[verify UI: Shopify reports, Meta Ads Manager export, Amazon settlement reports, Metabase card definitions]`
 
+## 5. Diagnostic checklists
+
+Written so a worker can run them. Each row: what to check | how | good | bad | fix | source.
+
+### 5.1 Monthly close
+
+| what to check | how | good | bad | fix | source |
+|---|---|---|---|---|---|
+| Gross-to-net bridge complete | Gross, discounts, refunds, chargebacks, shipping collected, tax all present by day | Net revenue derived, tax excluded | Only net from the accounting system | Pull the platform bridge; P1 step 1 | 03, 01 |
+| Refunds trued up | Accrued vs processed for the month's sales | Difference posted and explained | Processed refunds used as the month's returns | Post the true-up; recompute rate | 02 |
+| COGS booked when sold | Inventory movement vs COGS posted | Units sold x landed cost equals COGS | Purchases posted straight to expense | Stock adjustment; P4 step 7 | 04, 06, 05 |
+| Margin labels | Every margin in the pack | CM1, CM2, CM3 named with scope | "Gross margin" with no scope | Relabel; R4 | 01, 03 |
+| Variable vs fixed marketing | Marketing accounts vs the written convention | Same as last month | Creative or agency moved buckets | Restore the convention; note any change | 03, 02 |
+| Interest placement | Where loan interest sits | Below EBITDA | Inside OPEX | Move it | 03, 05 |
+| Warehouse staff | Where fulfilment staff sit | In COD (internal view) | In OPEX | P6 | 03 |
+| Fault rule applied | For each missed line, the line above named | 1 constraint, 1 lever, 1 owner | Budget cut with no trace | P15 | 03, 01 |
+| 4 buckets | Shares sum to 100% | Yes | No | Fix mapping | 02 |
+| Model integrity | Rolled-up CM2 percent vs unit economics; roll-up vs monthly | Equal | Differ | Find the formula error | 01 |
+| 3 statements | Assets = liabilities + equity; net cash flow = change in cash | Balances | Does not | Fix before any conclusion | 05 |
+| Profit vs cash | Net income, FCF, cash balance side by side | Gaps explained by inventory, capex, tax, principal | Unexplained gap | P19 | 05, 01 |
+| Inventory value | Inventory on hand at cost next to profit | Sell-through plan exists | Profit up, cash down, stock up | P20, P23 | 03, 05 |
+| New vs returning profit | Contribution by segment | Both positive | New losing with no cohort proof | R53, R57 | 03, 01 |
+| Active file | Customers active in the last 6 to 8 months | Growing | Revenue up, new customers down | New-customer goals | 02 |
+| Reconciliation | 5 gaps sized and named | All explained | Unexplained revenue gap | P28; alert | 02, 03, 04 |
+
+### 5.2 Weekly contribution readout
+
+| what to check | how | good | bad | fix | source |
+|---|---|---|---|---|---|
+| Daily CM vs goal | cm3_media month to date vs pacing line | On or above | Behind by day 5 | Adjust spend, sends, promos; P18 step 5 | 02 |
+| Returns base | Daily revenue uses accrued returns | Yes | Processed returns (January crash) | F31 | 02 |
+| Fixed costs in daily view | Look for daily rent or payroll allocation | None | Negative daily "profit" from spread fixed costs | Remove; monthly view carries OPEX | 02 |
+| New vs returning | aMER, new-customer CM, first-order GP, new-customer count | Reported and vs goal | Only MER and ROAS | R37 | 03, 02 |
+| CAC vs ceiling | cac_media vs cm2 per new order and the operating ceiling | Below ceiling | Above CM2 per new order | Loss month on acquisition; hold the line, fix creative, offer or COD | 01, 03 |
+| MER vs aMER | Same period | aMER above break-even ROAS | MER fine, aMER below break-even | Manage to aMER | 03 |
+| Marginal spend | Last spend step's incremental aMER | Above break-even | Below | Cut that step | 03, 02 |
+| Frequency on existing customers | Meta 7-day frequency, audience segment spend `[verify UI]` | Under 8; spend near F32 | Over 8; tens of thousands on a small base | P25 | 03 |
+| Stock vs spend | Days of stock on top SKUs vs lead time | Spend follows stock | Hero SKU at 30 days stock, 80-day lead, full spend | Raise ROAS target or pause; shift spend | 02 |
+| Liquidation line | C and D funnel cash recovered | Rising, separate from core | Mixed into acquisition CAC | Separate line | 02, 03 |
+| Cash next 13 weeks | Lowest point, tax and PO dates | Above buffer | Below buffer | P20, P24 | 02, 01 |
+| CAC line stability | Was the CAC or ROAS target lowered this week | No | Yes, again | Owner decision only; R51 | 02 |
+
+### 5.3 COGS table audit
+
+| what to check | how | good | bad | fix | source |
+|---|---|---|---|---|---|
+| Is "gross margin" really product margin | Ask how it was computed | Landed cost, shipping, pick and pack, fees, allowance, tax removed | PO cost only | Rebuild with P5; reset CAC targets | 03, 06 |
+| Landed cost per SKU exists | Pick a SKU, ask for the breakdown | Purchase price + freight share + duty share + product packaging | Supplier price only, or a blended guess | P4 | 04 |
+| Freight and duty attached | Each freight and duty invoice linked to a PO | All linked | A pile of unmatched invoices | Match now; capture at arrival | 04 |
+| Allocation basis consistent | Compare last 3 shipments | Same documented basis | Changes | Fix 1 basis; restate if material | 04 |
+| Software ties to invoices | Sum allocated freight and duty vs invoice totals | Match | Gap | Find unallocated or doubled invoices | 04 |
+| Packaging split | Packaging invoices | Retail box in COGS, carton in fulfillment | 1 account | Split lines | 04, 06 |
+| Fees, ads, outbound shipping, 3PL storage in statutory COGS | Review accounts above gross profit | Only product, freight-in, duty, packaging (plus policy exceptions) | Fees or PPC in COGS | Reclassify per policy | 04, 06 |
+| Outbound shipping counted in internal COD | Check F6 | Yes | Missing | Add | 01, 02, 03 |
+| Coupons coded as ad spend | Where coupon value lands | Reduces revenue | In advertising or COGS | Reclassify | 04 |
+| Returns costs split | Return shipping vs repackaging | Overhead vs COGS by policy | 1 bucket | Split | 04 |
+| PO vs invoice price | Compare before posting | Match or explained | Unchecked | Resolve with supplier | 04 |
+| Supplier discounts and credits | Where they land | Against product cost; credits checked for stock returns | In other income | Reclassify | 04 |
+| Waste and shrink | Expiry list; counts vs logs | Nearest date ships first; counts match | Long-dated ships first; gaps | Rotate; count; investigate | 06 |
+| Margin band sanity | CM1 and CM2 vs the bands in section 6 | Inside or explained | Far outside | Look for misclassification or a low price; not a target | 06, 02 |
+| Recalculated on change | Last landed cost effective date vs last price, FX or freight change | Current | Stale | Recalculate; version | 04 |
+
+### 5.4 Platform-to-P&L reconciliation
+
+| what to check | how | good | bad | fix | source |
+|---|---|---|---|---|---|
+| Revenue basis | Platform "total sales" vs order revenue vs books | Order revenue, tax excluded, accrued returns for management | Total sales with processed returns as the efficiency base | F31; P28 step 1 `[verify UI]` | 02 |
+| Same dates and timezone | Export settings | Match | Off by a day at month end | Align; re-export | 02, 03 |
+| Refund timing | Accrued vs processed | True-up posted | December returns in January's rate | F31 | 02 |
+| Shipping income | Where shipping collected sits | In the gross-to-net bridge | Missing or in other income | Reclassify | 03, 04 |
+| Fees | Platform fee report vs books | Equal, in COD internally | Fees missing or in OPEX | Reclassify; C1 | 03, 04 |
+| Spend | Platform spend vs marketing in books | Equal after billing lag | Unexplained gap | Trace invoices and credits | 02 |
+| Attribution overlap | Sum of attributed revenue / actual revenue | Reported as a ratio | Treated as revenue | Never sum platform revenue into the P&L | 02, 03 |
+| CAC source | New customers from the store | Yes | Platform CPA | R44 | 03, 01 |
+| Attribution setting | Meta setting used for reporting | 7-day click, no view-through | 7-day click 1-day view or wider | R132 `[verify UI]` | 02, 03 |
+| Cross-channel effects | Trend of .com efficiency vs Amazon or retail growth | Both measured | .com falls while Amazon grows, spend cut | Holdout on .com plus Amazon before cutting; R133 | 02 |
+| COGS tie | Units sold x landed cost vs COGS posted | Equal | Differ | Stock adjustment or cost table error | 04, 06 |
+
+### 5.5 Cash and inventory check
+
+| what to check | how | good | bad | fix | source |
+|---|---|---|---|---|---|
+| FCF vs net income | 6+ months side by side | Move together or gaps explained | Profit positive, cash falling, unexplained | P19 | 05, 01 |
+| Inventory swing | Month-on-month inventory balance | Build matches a sell-through plan | Repeated builds, no plan | P20, P22 | 05, 03 |
+| Hidden investment | Capitalised assets vs depreciation | Spend budgeted as cash | Cash far above depreciation, unbudgeted | Budget on cash | 05 |
+| Tax lumps | Tax liability build and payment dates | Cash reserved | Payment month surprises | Reserve monthly `[web check: calendar]` | 05, 01 |
+| Debt | Interest line, loan balance, financing section | Repayments fit inside FCF | Net cash flow negative because principal exceeds FCF | Model principal before drawing more | 05 |
+| Runway | Cash by month | Lowest point above buffer | Negative before next raise or facility | Raise earlier, finance inventory, or slow the PO | 01 |
+| Inventory cover | Projected inventory by month | Never negative | A negative month | Move or enlarge the PO | 01 |
+| Days of inventory | Per SKU vs lead time | Near lead time | Hundreds or 1,000 days | Grade; liquidate C and D | 02, 03 |
+| CCC | DIO + DSO minus DPO; supplier terms | Shrinking or negative | 90-day up-front payment and stockouts | P24 | 03, 02 |
+| Cash play or P&L play | Owner's stated constraint; inventory vs profit; debt trend | Named and consistent | Profit on paper, cash falling, interest rising while MER falls | Slow growth to a better MER; P24 | 03 |
+| Cutting media in a squeeze | Does media drive revenue; share of C and D stock | Ring-fenced clearance spend at break-even, judged on cash | Reflex 40% cut, revenue falls, more cuts | C6 rule in section 7 | 03, 02 |
+| Financing stress test | Slower sales and lower efficiency case | Net margin above floor | Near 0 | Do not borrow; P24 | 03 |
+
+### 5.6 Pre-PO demand check
+
+| what to check | how | good | bad | fix | source |
+|---|---|---|---|---|---|
+| Demand plan written | Units by channel with efficiency and error bars | Yes | Revenue target only | P22 | 02 |
+| Media dollars for the paid share | Units x CAC / conversion to units | Budget exists and is approved | "No idea" of media needed | Size or shrink the PO | 02 |
+| New category error bars | Range on CAC estimate | Wide, stated | Point estimate | Widen; small first bet | 02 |
+| Demand tested | Small batch or pre-order result | Sell-through signal set and met | None | Test first; R111 | 02 |
+| Inventory roll | Arrivals lagged by lead time; no negative month | Yes | Stockout or overbuild | F35 | 01 |
+| Days of inventory after arrival | Units on hand plus PO / daily sales | Near lead time | Far above | Cut the PO | 02 |
+| Cash at deposit and balance dates | 13-week and monthly cash | Above buffer | Below | Terms, split PO, or delay; P24 | 01, 03 |
+| CCC effect | DIO after the PO; supplier terms | Terms longer than production plus sell-through | Full payment up front | Negotiate deposit and terms | 02, 03 |
+| Problem solved | Margin, volume or cash named | Yes | "Cool product" | Score against the problem; R117 | 02 |
+| SKU rationalisation | Which SKU leaves when this one lands | Named | None | R114 | 03 |
+| Landed cost known | P4 for the new SKU including freight, duty, packaging | Yes | Supplier price only | P4; P17 | 04, 03 |
+| Price passes the waterfall | F28 vs market | Yes | Required price far above market and no premium story | Do not sell; R79 | 03 |
+
+### 5.7 CAC honesty check
+
+| what to check | how | good | bad | fix | source |
+|---|---|---|---|---|---|
+| Denominator | New customers from the store | Yes | All orders, or platform CPA | R44 | 01, 03 |
+| Label | Which of the 4 CACs | Stated | "CAC" alone | R45 | 01, 02, 03 |
+| Paired with | First-order GP of new customers | Yes | Blended AOV x blended margin | R48 | 03 |
+| Paid vs blended | Both reported | Yes | Blended only while organic is friends and family | R47 | 01 |
+| Discount cost | First-order discounts in the loaded CAC | Yes | Ignored | F16, R67 | 01 |
+| Channel CAC in the P&L | Search for per-channel CAC lines | None | Present | Move to planning estimates | 03 |
+| LTV window | Every LTV or LTGP carries its window | Yes | Open-ended | R55 | 03, 01 |
+| Payback method | Cohort | Yes | CAC / monthly GP | R60 | 01 |
+
+## 6. Thresholds and benchmarks
+
+All values are flags, not targets, unless the brand's own data confirms them. Confidence: how many independent sources agree and on what basis. US and Australian context unless noted.
+
+| metric | value | condition | source | confidence |
+|---|---|---|---|---|
+| CAC denominator | New customers only, from the store | Always | 01, 02, 03 | 3 sources agree, definition |
+| LTV base | Lifetime gross profit or CM2, never revenue | Always | 01, 03 | 2 sources agree |
+| First-order CM:CAC | At or above 1 | Default gate; buy-once categories must | 01, 03 | 2 sources, opinion; exception with cohort proof |
+| First-order CM:CAC, exceptional stores | 3 to 5x | Late stage, high margin | 01 | 1 source, opinion |
+| First-order GP | Under about $70 "probably a problem" | Paid acquisition at scale | 03 | 1 source, opinion |
+| LTGP:CAC below 1 | Losing on acquisition | 30 or 90 day | 03; 01 agrees below 1 is "upside down" | 2 sources agree |
+| LTGP:CAC 1 to 2 | Generally not good | Only CPG with excellent retention or funded growth | 03 | 1 source; 01 accepted 1.09 as a start with a path to 2 |
+| LTGP:CAC or LTV:CAC 2 to 3 | Optimal, scale | 30 or 90 day (03); subscription box (01) | 03, 01 | 2 sources agree on the band |
+| LTGP:CAC above 3 | 03: mistake, underspending; 01: 5+ late stage is healthy; common advice: 3:1 healthy | See C3 | 03 vs 01 | Conflict; 1 source each |
+| CAC for the bottom of the optimal band | First-order GP / 2 | Example | 03 | 1 source, arithmetic |
+| LTV and LTGP windows | 30 and 90 days for efficiency; 90 or 180 for value; 365 when aggressive; plateau month as the ceiling | Every LTV figure | 03, 01 | 2 sources, compatible (C10) |
+| Short LTV window | 60 to 90 days understates long-cycle products | Gifting, long repurchase cycles | 01 | 1 source |
+| CAC payback window | 3 to 6 months (agency, CPG, fashion, retail) | Outer limit unless cash allows | 03; 02 says match the cash reserve | 2 sources, opinion |
+| Payback error | Naive payback understates by 20 to 100%, sometimes 200% | Not cohortised | 01 | 1 source, experience |
+| Lapse window | 80% of returners come back within 6 to 8 months | Most brands | 02 | 1 source, portfolio |
+| Returns and refunds | 5 to 10% of gross revenue | Many verticals | 01 | 1 source, opinion |
+| Refund model inputs | 4 to 5% of order revenue | Model inputs | 01 | 1 source |
+| Fashion refund rate | About 10% standard; 10% up to 80% seen | Fashion | 03 | 1 source, agency experience |
+| Returns accrual example | 10% | Example only | 02 | 1 source |
+| Payment fees | About 3% (US); 2.75% in models | US card processing | 01, 03 (3% in example) | 2 sources, US |
+| Product cost | 10 to 20% of revenue | "Most brands" | 02 | 1 source, observation |
+| Shipping | About 10% of revenue or less; 10 to 20% seen; 20 to 30% red flag | Any | 02 | 1 source |
+| Cost of delivery | 30 to 40% of revenue | "Then it is not the biggest problem" | 02 | 1 source, opinion; conflicts with its own 58% average (C5) |
+| Industry gross margin | About 42% (COGS about 58%) | Industry average | 02 (Finaloop study) | 1 study cited, no method given |
+| CPG gross margin | 20 to 40% "typically"; baby food about 30% | Physical product makers | 06 | 1 source, rule of thumb; DTC often higher |
+| SaaS gross margin | 70 to 90% | Software | 06 | 1 source; not ecommerce |
+| Supplements gross margin | 50 to 70% | Supplements | 01 | 1 source, opinion |
+| Fulfillment share | 30 to 32% of revenue (T2 case); about 50% CM2 (T7 case) | Case examples | 01 | Examples only |
+| CAC bucket | 25 to 30% of revenue | Strong ecommerce business | 02 | 1 source |
+| Marketing % of revenue | 40 to 50% low-LTV hard goods; about 50% Ridge; about 10% legacy retailers | Depends on LTV and stage | 02 | 1 source, portfolio |
+| Marketing % at a true 70% CM2 | 20 to 25% | Only if 70% is real gross margin | 03 | 1 source, opinion |
+| Median new-customer Meta ROAS | About 1.7 (acquisition cost about 55 to 60% of new-customer revenue) | CTC portfolio, US, 2025 to 2026 | 02 | 1 source, portfolio |
+| OPEX | 10 to 12% (also "closer to 15%"); host: over 20% "can't win" | Great ecommerce business | 02 | 1 source, opinion (C4) |
+| OPEX in examples | 10 to 20% | Worked examples | 03 | Examples |
+| Profit | 15 to 20% "killing it"; 20% net "healthy" | Ecommerce | 02, 03 | 2 sources, opinion |
+| Payroll baseline | 12% of the lowest revenue month | Seasonal brands | 02 | 1 source, heuristic |
+| Payroll on-costs | 25% of salary | US: healthcare, payroll tax, 401k | 01 | 1 source, US |
+| Revenue per employee | $1M to $5M | Lean AI-enabled brands | 02 | 1 source |
+| Unknown opex bucket | 10% of revenue | Planning model | 01 | 1 source |
+| Units per transaction | 1.1 to 1.3 (01); 1.5 to 1.7 (03) | DTC baskets | 01, 03 | 2 sources, different ranges |
+| Existing-customer frequency | 3 to 6 a month target; over 8 in 7 days is overspending | Meta | 03 | 1 source (unit slip noted) |
+| Existing-customer spend | About $10K, up to $30K to $40K a month | Brands with millions of customers | 03 | 1 source |
+| Meta attribution for reporting | 7-day click, no view-through | Optimisation and reporting | 02, 03 | 2 sources agree |
+| ROAS to aMER correlation | About 0.78 hoped | Single-channel Meta brand | 02 | 1 source (transcript "7.8") |
+| Break-even ROAS | 1 / CM2 percent | Excludes OPEX and profit | 03; 01 equivalent | 2 sources, arithmetic |
+| Discount example | 30% off took break-even ROAS 2.5 to 7 | Costs unchanged | 03 (corrected) | Arithmetic |
+| Bundle of 2 fulfillment lift | About 20% | General | 03 | 1 source, opinion |
+| Black Friday conversion | 4 to 5% from 1.75% | Big list, promo | 01 | 1 source, "normal" |
+| Days of inventory target | Equal to production lead time | Just in time | 02 | 1 source |
+| Aged stock flags | 400 days (failed launch), 1,000 days | Examples | 03, 02 | Examples |
+| Liquidation efficiency | 1.0 or 0.8 ROAS vs 2.0 core; break-even or slight loss | Grade C and D stock | 02, 03 | 2 sources agree on direction |
+| Failed launch pattern | 30 to 40% sell-through then stall | Typical failed launch | 03 | 1 source, opinion |
+| Stock-out rule | 30 days of stock vs 80-day reorder: raise ROAS target or pause | Best SKUs | 02 | 1 source, example |
+| Small batch test | About 100 units; live in 72 hours | Test chain | 02 (ColourPop) | 1 source, example |
+| Supplier deposit | 20% up front, rest on shipment | Negotiation example | 03 | 1 source, example |
+| Terms target | Terms longer than production plus sell-through (90-day make, 120-day terms) | Negative CCC | 02 | 1 source, example |
+| Cost of capital | Credit cards about 30%; MCA about 70% | Small brands, US | 02 | 1 source, estimate |
+| Software useful life | 36 months "for most software"; other assets 3 or 5 years | Depends on policy | 05, 01 (same presenter) | 1 presenter |
+| Tax rate in models | 25%, paid quarterly | Illustrative, US | 05, 01 | Illustrative only `[web check]` |
+| Subscription churn | 25% monthly "common"; use it to be conservative | Subscription box models | 01 | 1 source, opinion |
+| Churn lifetime bands | 25% = 4 months; 20% = 5; 15% = 6.7; 10% = 10; 5% = 20; 40% annual = 30 months (or 24 by survival) | Constant churn | 01 | Arithmetic; C13 |
+| Transactional return rate | 3 to 5% of trailing-6-month customers per month | Non-subscription repeat | 01 | 1 source, experience |
+| One-time buyer retention | About 10% reach order 2, 5% order 3, 3% order 4; 1.2 orders in year 1 | Vendor example | 01 (Ordergroove) | Vendor claim |
+| Subscriptions vs one-time | 3 to 5x revenue per customer | Usual | 01 | 1 source, opinion |
+| Default cart to subscription | +60 to 70% signups | Vendor data, no sample | 01 | Vendor claim |
+| Prepaid vs flat 20% subscribe and save | About 2.5x lifetime spend; 50% roll off per term | Vendor data | 01 | Vendor claim |
+| Amazon FBA fees | About 20 to 25% of revenue (referral fee omitted) | Depends on size and weight | 01 | 1 source `[web check]` |
+| Regression data | About 1 year of daily points, minus sale days, BFCM, days under $1,000 spend | New-customer forecast | 03 | 1 source (unit slip noted) |
+| Returning forecast accuracy | About 10%; 1 to 2% with seasonality and events | Cohort method | 03 | 1 source, claim |
+| Forecast accuracy (agency) | $3B within 4% of target | CTC portfolio | 02 | Own claim |
+| Detect a miss | By day 5, not day 22 | Monthly targets | 02 | 1 source, opinion |
+| Performance-only growth range | About $1M to $20M revenue; plateau at $30K to $40K a day | Opinion | 03 | 1 source |
+| Incrementality testing needed | Top 20% of brands, "over $10M a month" (may mean a year), multi-market or omnichannel | Heuristic | 03 | 1 source; unit unclear |
+| Wasted spend 2021 | 60% of media dollars never paid back | One partner analysis | 02 | 1 analysis, no method |
+| Cash forecast | Rolling 13 weeks, owned by CEO or CFO | Always | 02 | 1 source, practice |
+| VC model horizon | 48 months, monthly | Investor model | 01 | 1 source |
+
