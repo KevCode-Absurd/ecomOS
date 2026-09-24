@@ -6452,5 +6452,1781 @@
   },
   "confidence": "low",
   "general_practice": false
+ },
+ {
+  "id": "COG-101",
+  "title": "Automate purchase orders from weekly to daily at high SKU count",
+  "domain": "18-COG",
+  "bottleneck": [
+   "cash_inventory",
+   "team_capacity"
+  ],
+  "lever": "PO cadence automation",
+  "hypothesis": "If a catalogue with thousands of SKUs moves purchase order placement from a weekly manual cycle to a daily rules-based one, then replenishment reacts to real sell-through faster, because a weekly cycle cannot keep up with SKU-level demand swings at that scale.",
+  "applies_when": [
+   "catalogue",
+   "scaling_store"
+  ],
+  "does_not_apply_when": [
+   "A SKU count small enough that one person can review every reorder point weekly without falling behind."
+  ],
+  "signal": {
+   "check": "The SKU count is large enough that the weekly PO review is late or skips SKUs, and a below-reorder-point SKU sits unordered for days before the next weekly cycle runs.",
+   "metrics": [
+    "stockout_days",
+    "days_of_stock"
+   ]
+  },
+  "expected_effect": {
+   "metric": "stockout_days",
+   "direction": "down",
+   "size": "unknown, the source describes the switch but gives no measured stockout change",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "L",
+   "owner": "dev"
+  },
+  "cost": "medium",
+  "risk": {
+   "level": "medium",
+   "reversible": true,
+   "note": "A wrong rule can over-order or under-order many SKUs at once; keep human approval on early runs."
+  },
+  "prerequisites": [
+   "A computed reorder point per SKU from velocity, lead time and safety stock",
+   "A catalogue large enough that weekly manual review is the actual bottleneck",
+   "Someone who can write or commission the daily replenishment logic"
+  ],
+  "steps": [
+   "List every SKU's reorder point, lead time and MOQ so the daily logic has real inputs.",
+   "Write the rule the system should follow: draft a PO when on hand plus on order falls to the reorder point.",
+   "Build or commission software that checks this rule daily instead of waiting for the weekly cycle.",
+   "Route each daily draft PO to a person for approval before it sends, at least at first.",
+   "Compare stockouts and excess stock in the first month against the prior weekly-cycle baseline.",
+   "Widen the rule to more SKUs once daily drafts match what a manual review would have ordered."
+  ],
+  "test": {
+   "method": "Run daily automated PO drafts alongside the existing weekly process for one full replenishment cycle before switching over.",
+   "measure": "Stockout days per SKU, excess stock value, hours spent on manual PO review",
+   "read_point": "After one full lead-time cycle on daily POs"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "01"
+   ],
+   "cards": [
+    "cf0394bf6e"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": false
+ },
+ {
+  "id": "COG-102",
+  "title": "Base a sourcing operator near key suppliers to build terms faster",
+  "domain": "18-COG",
+  "bottleneck": [
+   "margin_cogs",
+   "team_capacity"
+  ],
+  "lever": "supplier proximity",
+  "hypothesis": "If the person who owns supplier relationships is based near the manufacturing hub instead of visiting occasionally, then face time with the factory rises, because more interaction frequency is the mechanism a near-supplier base gives you for building trust and negotiating terms.",
+  "applies_when": [
+   "scaling_store"
+  ],
+  "does_not_apply_when": [
+   "A brand with one or two annual orders where the travel cost is not worth the relationship gain."
+  ],
+  "signal": {
+   "check": "Supplier visits happen less than once a year, terms have not moved in years, and every negotiation is done remotely by chat or email.",
+   "metrics": [
+    "cogs_per_unit",
+    "supplier_lead_days"
+   ]
+  },
+  "expected_effect": {
+   "metric": "cogs_per_unit",
+   "direction": "down",
+   "size": "unknown, the source claims a relationship advantage from proximity but gives no measured cost change",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "L",
+   "owner": "founder"
+  },
+  "cost": "high",
+  "risk": {
+   "level": "medium",
+   "reversible": true,
+   "note": "Relocating a person is a real cost and lifestyle decision; treat it as a considered move, not a quick test."
+  },
+  "prerequisites": [
+   "A core supplier concentrated in one region worth the relationship investment",
+   "A team member willing and able to relocate near that hub"
+  ],
+  "steps": [
+   "Identify the single hub where the core supplier or the category's best factories sit.",
+   "Weigh relocating a sourcing owner there against the cost of frequent trips instead.",
+   "If relocating, set a visit cadence with the factory that a remote relationship could not sustain.",
+   "Use the face time to build the relationship before asking for a price break, not only during a negotiation.",
+   "Track whether visit frequency correlates with faster sample turnaround or better terms over the following year."
+  ],
+  "test": {
+   "method": "Compare sample turnaround time, response time and any price or term movement in the 12 months after the move against the 12 months before.",
+   "measure": "Sample turnaround days, cogs_per_unit change, supplier_lead_days",
+   "read_point": "12 months after relocation or after the new visit cadence starts"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "01"
+   ],
+   "cards": [
+    "18fe817181"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": false
+ },
+ {
+  "id": "COG-103",
+  "title": "Open a new market with one cross-border 3PL hub and one global ad set",
+  "domain": "18-COG",
+  "bottleneck": [
+   "acquisition_volume",
+   "fulfilment_cx"
+  ],
+  "lever": "light-goods international launch",
+  "hypothesis": "If a light, small product is stocked in one cross-border 3PL hub and one Meta ad set carries the best-performing creatives to every shippable country, then international sales can start without building country-by-country fulfilment first, because the fulfilment side of expansion is solved once, before any localization work.",
+  "applies_when": [
+   "dtc_only",
+   "paid_social_led"
+  ],
+  "does_not_apply_when": [
+   "A heavy or bulky product where cross-border shipping cost erases the margin.",
+   "A store not yet profitable in its home market."
+  ],
+  "signal": {
+   "check": "The product is small and light enough to ship affordably from one hub, the home market is already profitable, and no international campaign exists yet.",
+   "metrics": [
+    "sessions",
+    "roas_blended"
+   ]
+  },
+  "expected_effect": {
+   "metric": "sessions",
+   "direction": "up",
+   "size": "unknown, the source frames this as a simple first step, not a measured lift",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "M",
+   "owner": "marketer"
+  },
+  "cost": "low",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "One ad set and one 3PL contract can be paused or ended if the countries do not perform."
+  },
+  "prerequisites": [
+   "A light, low-cost-to-ship product",
+   "A profitable home-market campaign with proven creatives",
+   "A cross-border 3PL that can hold and ship light inventory internationally"
+  ],
+  "steps": [
+   "Confirm the product is light enough to ship affordably from a single international hub.",
+   "Place a small batch of inventory with a cross-border 3PL in that hub.",
+   "Build one new global campaign with one ad set loaded with the best-performing home-market creatives.",
+   "Add every country you can ship to at a reasonable landed cost to that one ad set.",
+   "Run in the home market's language first; leave localization for a later phase.",
+   "Read results by country after enough spend to judge them, then cut or scale each one."
+  ],
+  "test": {
+   "method": "Run the single global ad set for at least 2 to 4 weeks and read results split by country.",
+   "measure": "roas_blended and sessions by country, landed shipping cost per order",
+   "read_point": "After the first 2 to 4 weeks of the global ad set"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "01"
+   ],
+   "cards": [
+    "ef4169a542a0"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": false
+ },
+ {
+  "id": "COG-104",
+  "title": "Re-quote competing factories on a schedule even for a happy supplier",
+  "domain": "18-COG",
+  "bottleneck": [
+   "margin_cogs"
+  ],
+  "lever": "scheduled competitive re-quote",
+  "hypothesis": "If competing quotes are pulled on a fixed schedule even when the current supplier relationship is good, then pricing stays honest over time, because a long, quiet relationship with no outside comparison is exactly when a factory is most likely to let its price drift.",
+  "applies_when": [
+   "any"
+  ],
+  "does_not_apply_when": [
+   "A supplier already re-quoted this year through a separate cost-down or BOM review."
+  ],
+  "signal": {
+   "check": "No competing quote has been pulled for a core SKU's supplier in the last 12 months, even though the relationship is stable and happy.",
+   "metrics": [
+    "cogs_per_unit"
+   ]
+  },
+  "expected_effect": {
+   "metric": "cogs_per_unit",
+   "direction": "down",
+   "size": "unknown, source gives no measured saving for this specific practice",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "sourcing"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Getting a quote does not commit you to switching; frame it to the current supplier as market checking, not a threat."
+  },
+  "prerequisites": [
+   "A list of core suppliers and the date each was last re-quoted"
+  ],
+  "steps": [
+   "Set a fixed cadence, such as once or twice a year, to re-quote every core supplier.",
+   "Request quotes from 2 to 3 alternate factories on the same spec, quantity and terms.",
+   "Tell the current supplier directly that you are getting outside quotes, framed as routine, not a threat.",
+   "Compare the outside quotes against the current price and terms.",
+   "Bring any real gap to the current supplier as a chance to match, before switching anything.",
+   "Log the result and the next scheduled re-quote date regardless of outcome."
+  ],
+  "test": {
+   "method": "Track whether a scheduled re-quote round finds a price or term gap versus the current supplier.",
+   "measure": "cogs_per_unit before and after the round, number of rounds that found a gap",
+   "read_point": "At each scheduled re-quote date"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "02"
+   ],
+   "cards": [
+    "3d269be19e27"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "COG-105",
+  "title": "Check IP and trademark exposure before reverse engineering a reference sample",
+  "domain": "18-COG",
+  "bottleneck": [
+   "risk_compliance",
+   "trust_brand"
+  ],
+  "lever": "reference sample IP check",
+  "hypothesis": "If a reference item is checked for trademark or IP ownership before it is sent to a factory to be reverse engineered, then the store avoids building a product spec on something it has no right to copy, because sending someone else's branded product to a factory as a copy target is itself the exposure.",
+  "applies_when": [
+   "any"
+  ],
+  "does_not_apply_when": [
+   "The reference item is the brand's own prior product or one it has clear rights to copy."
+  ],
+  "signal": {
+   "check": "A reference sample used to brief a factory is a competitor's or another brand's branded product, and no one has checked whether copying it creates trademark or design risk.",
+   "metrics": [
+    "other:legal_risk_flags"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:legal_risk_flags",
+   "direction": "down",
+   "size": "unknown, source flags the risk but gives no measured outcome",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "founder"
+  },
+  "cost": "low",
+  "risk": {
+   "level": "medium",
+   "reversible": false,
+   "note": "Once a spec built on a copied branded item reaches production and sale, the exposure cannot be undone by stopping the check later."
+  },
+  "prerequisites": [
+   "The reference sample in hand",
+   "Someone able to check the item's brand, patents or registered design"
+  ],
+  "steps": [
+   "Identify the brand or origin of every reference sample before it is sent to a factory.",
+   "If the item carries a visible brand, logo or known design, flag it before using it as a copy target.",
+   "Ask whether the factory brief can specify materials and construction without literally copying a branded design.",
+   "Get a quick legal read on real risk when the item is a well-known branded product.",
+   "Keep a record of which reference samples were checked and the outcome."
+  ],
+  "test": {
+   "method": "Review every reference sample against this check before it is sent to a factory, and log the review.",
+   "measure": "Share of reference samples with a documented IP check before use",
+   "read_point": "At each new product brief"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "02"
+   ],
+   "cards": [
+    "3fe60e173a5f"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": false
+ },
+ {
+  "id": "COG-106",
+  "title": "Use an easy-iteration location to test, then move scaled production to a hub",
+  "domain": "18-COG",
+  "bottleneck": [
+   "margin_cogs",
+   "fulfilment_cx"
+  ],
+  "lever": "test-location versus scale-location split",
+  "hypothesis": "If early product testing and small runs happen in a location chosen for easy access and fast iteration, while scaled production moves to an established manufacturing hub, then the store gets fast early testing without carrying that location's higher scale cost, because a location good for testing small batches is not necessarily good for scaled cost or lead time.",
+  "applies_when": [
+   "new_store"
+  ],
+  "does_not_apply_when": [
+   "A brand whose test location is already an established, low-cost manufacturing hub for its category."
+  ],
+  "signal": {
+   "check": "Production is still running in a location chosen for early convenience even though most raw material is imported from elsewhere, labor cost is relatively high, or holidays and downtime slow output.",
+   "metrics": [
+    "cogs_per_unit",
+    "supplier_lead_days"
+   ]
+  },
+  "expected_effect": {
+   "metric": "cogs_per_unit",
+   "direction": "down",
+   "size": "unknown, source gives no measured comparison, only a stated intent to move production out",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "L",
+   "owner": "sourcing"
+  },
+  "cost": "medium",
+  "risk": {
+   "level": "medium",
+   "reversible": true,
+   "note": "Moving scaled production is a real transition; keep the test location's supplier as a backup during the move."
+  },
+  "prerequisites": [
+   "A test location already used for small runs",
+   "A shortlisted established hub for the category"
+  ],
+  "steps": [
+   "List what the current test location is actually good for: fast iteration, fabric or material access, small runs.",
+   "List where its costs work against scale: import reliance, relative labor cost, holiday or downtime patterns.",
+   "Identify an established manufacturing hub for the category with lower scale cost or better lead time.",
+   "Move production for any SKU that has passed testing to the established hub, keeping the test location for new development.",
+   "Compare landed cost and lead time on the moved SKU before and after."
+  ],
+  "test": {
+   "method": "Run the same SKU's landed cost and lead time from both locations before fully moving scaled volume.",
+   "measure": "cogs_per_unit, supplier_lead_days",
+   "read_point": "After the first production run from the new hub"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "02"
+   ],
+   "cards": [],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": false
+ },
+ {
+  "id": "COG-107",
+  "title": "Hire a freelance designer to build the tech pack when design skill is missing",
+  "domain": "18-COG",
+  "bottleneck": [
+   "team_capacity"
+  ],
+  "lever": "outsourced tech pack design",
+  "hypothesis": "If a store without in-house design skill hires a freelance product designer to build the tech pack instead of skipping or writing it in-house, then a complete, professional spec reaches the factory, because a missing design skill should not be the reason a spec ships with open points.",
+  "applies_when": [
+   "any"
+  ],
+  "does_not_apply_when": [
+   "A team that already has a designer capable of producing a complete tech pack in-house."
+  ],
+  "signal": {
+   "check": "No one on the team can produce drawings, measurements and colourways to spec, and the current tech pack is thin or missing.",
+   "metrics": [
+    "other:tech_pack_completeness"
+   ]
+  },
+  "expected_effect": {
+   "metric": "return_rate",
+   "direction": "down",
+   "size": "unknown, source gives a cost example for the hire, not a measured return-rate change",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "sourcing"
+  },
+  "cost": "low",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "A single freelance project with a clear brief and reference photos is low commitment."
+  },
+  "prerequisites": [
+   "Product drawings, reference photos or a physical sample to brief the designer",
+   "A freelance marketplace or referral to find a product designer"
+  ],
+  "steps": [
+   "Gather reference photos, a physical sample if one exists, and any known measurements.",
+   "Post the tech pack brief on a freelance marketplace, naming the required sections: drawings, materials, measurements, colourways, packaging.",
+   "Review candidates for prior tech pack or product-design work, not general graphic design.",
+   "Have the designer build the full pack, then review it against the physical sample or reference photos line by line.",
+   "Store the finished tech pack in the brand's own system as the versioned reference for every future quote and sample."
+  ],
+  "test": {
+   "method": "Send the freelance-built tech pack to the next new or candidate factory and track spec mismatches on the returned sample.",
+   "measure": "Spec mismatches per sample, cost of the freelance hire",
+   "read_point": "On the first sample built from the new tech pack"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "03"
+   ],
+   "cards": [
+    "b760f0e0abc2"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": false
+ },
+ {
+  "id": "COG-108",
+  "title": "Order pre-production samples across the size range to confirm grading",
+  "domain": "18-COG",
+  "bottleneck": [
+   "fulfilment_cx",
+   "trust_brand"
+  ],
+  "lever": "size grading check",
+  "hypothesis": "If a SKU sold in multiple sizes gets pre-production samples made across the size range instead of only one size, then a proportion error in the size grading is caught before bulk, because checking one size only shows whether that size is right, not whether the grading between sizes is right.",
+  "applies_when": [
+   "catalogue"
+  ],
+  "does_not_apply_when": [
+   "A SKU sold in one size only."
+  ],
+  "signal": {
+   "check": "A multi-size SKU's sample sign-off has only checked one size, or size-related returns or fit complaints are rising.",
+   "metrics": [
+    "return_rate",
+    "review_rating"
+   ]
+  },
+  "expected_effect": {
+   "metric": "return_rate",
+   "direction": "down",
+   "size": "unknown, source recommends the practice but gives no measured return-rate change",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "sourcing"
+  },
+  "cost": "low",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Extra sample units cost a little more and add a short delay before bulk, but catch a size problem before it reaches customers."
+  },
+  "prerequisites": [
+   "A tech pack with measurements for every size or variant",
+   "A factory able to produce pre-production samples in more than one size"
+  ],
+  "steps": [
+   "List every size or variant the SKU will ship in.",
+   "Request a pre-production sample in at least the smallest, a middle and the largest size.",
+   "Measure each sample against the tech pack's per-size measurements.",
+   "Compare the proportions between sizes, not only each size against its own target.",
+   "Flag and correct any size whose grading is off before approving the run for bulk."
+  ],
+  "test": {
+   "method": "Check multi-size pre-production samples against the tech pack's grading before every bulk approval.",
+   "measure": "Size-related return rate, review mentions of fit",
+   "read_point": "After the first bulk shipment following the multi-size check"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "03"
+   ],
+   "cards": [
+    "8254bc7180c2"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": false
+ },
+ {
+  "id": "COG-109",
+  "title": "Use a general AI chatbot to draft the landed cost category checklist",
+  "domain": "18-COG",
+  "bottleneck": [
+   "margin_cogs"
+  ],
+  "lever": "AI-assisted cost checklist",
+  "hypothesis": "If a general AI chatbot is prompted to list the hidden landed-cost categories for a product before a landed-cost spreadsheet is built, then fewer cost lines get missed on the first draft, because a chatbot's generic list is a faster starting point than building the checklist from memory.",
+  "applies_when": [
+   "any"
+  ],
+  "does_not_apply_when": [
+   "A brand that already has a complete, tested landed-cost template it reuses."
+  ],
+  "signal": {
+   "check": "No landed-cost template exists yet, or the current one has missed a real cost line before (freight, duty, insurance, warehousing, fulfilment, platform or transaction fees).",
+   "metrics": [
+    "other:landed_cost_accuracy"
+   ]
+  },
+  "expected_effect": {
+   "metric": "gross_margin",
+   "direction": "up",
+   "size": "unknown, source presents this as a drafting shortcut, not a measured margin change",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "sourcing"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "The chatbot output is a starting checklist only; every category must still be verified against real invoices."
+  },
+  "prerequisites": [
+   "Access to a general AI chatbot",
+   "A set of real invoices to verify each suggested cost line against"
+  ],
+  "steps": [
+   "Prompt a general AI chatbot to list the typical hidden landed-cost categories for the product type.",
+   "Turn the resulting list into a spreadsheet template with one row per category.",
+   "Check every suggested category against real invoices and drop or rename any that do not apply.",
+   "Add any category the chatbot missed that the brand's own invoices show.",
+   "Reuse the verified template for every SKU going forward."
+  ],
+  "test": {
+   "method": "Compare the chatbot-drafted checklist against the categories that actually appear on the next full set of invoices for a shipment.",
+   "measure": "Number of real cost categories missing from the first draft",
+   "read_point": "After reconciling the first shipment's invoices against the draft checklist"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "03"
+   ],
+   "cards": [
+    "c52be45b5fec"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "COG-110",
+  "title": "Ask an established supplier for a premium courier upgrade on a large order",
+  "domain": "18-COG",
+  "bottleneck": [
+   "fulfilment_cx"
+  ],
+  "lever": "courier upgrade ask",
+  "hypothesis": "If a large order with an established, good supplier relationship comes with a direct ask for a premium courier upgrade instead of the default slower shipping method, then transit time can drop without a separate freight negotiation, because a supplier with a good relationship and a big order has room to offer this that a small or new order would not get.",
+  "applies_when": [
+   "any"
+  ],
+  "does_not_apply_when": [
+   "A new or unproven supplier relationship, or an order too small to justify the ask."
+  ],
+  "signal": {
+   "check": "An order is large and the supplier relationship is established, but the default shipping method is still the slow standard option and no one has asked about an upgrade.",
+   "metrics": [
+    "fulfilment_days"
+   ]
+  },
+  "expected_effect": {
+   "metric": "fulfilment_days",
+   "direction": "down",
+   "size": "one case went from 10 to 14 days on the default method to 4 to 5 days on the upgrade",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "sourcing"
+  },
+  "cost": "low",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Asking costs nothing; a refusal simply keeps the default shipping method."
+  },
+  "prerequisites": [
+   "An established supplier relationship",
+   "An order large enough to justify the ask"
+  ],
+  "steps": [
+   "Confirm the order qualifies: a large quantity with a supplier that already has a track record with the brand.",
+   "Ask the supplier directly whether they can upgrade this shipment to a premium courier instead of the default method.",
+   "Get the revised transit time and any added cost in writing before confirming.",
+   "Weigh the added cost against the value of the faster stock arrival for this specific launch or restock.",
+   "Record whether the upgrade was granted and the resulting transit time for future orders."
+  ],
+  "test": {
+   "method": "Compare transit time and added cost on the upgraded shipment against the default method's historical transit time.",
+   "measure": "fulfilment_days, added shipping cost per unit",
+   "read_point": "On arrival of the upgraded shipment"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "04"
+   ],
+   "cards": [
+    "e3609fde578c"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": false
+ },
+ {
+  "id": "COG-111",
+  "title": "Run a five-step hiring sequence from scorecard to reference-checked offer",
+  "domain": "18-COG",
+  "bottleneck": [
+   "team_capacity"
+  ],
+  "lever": "structured hiring funnel",
+  "hypothesis": "If every hire goes through scorecard, screening, topgrading, a competency and culture case study, then a reference-checked offer in that order, then hiring becomes comparable across candidates and roles, because a standardized sequence catches gaps that an ad hoc interview process misses.",
+  "applies_when": [
+   "scaling_store"
+  ],
+  "does_not_apply_when": [
+   "A very small team hiring a single low-stakes role where the full sequence costs more time than the hire is worth."
+  ],
+  "signal": {
+   "check": "Hiring decisions are made from an unstructured conversation, past hires have had inflated titles or scope revealed only after starting, and no consistent process runs across candidates for the same role.",
+   "metrics": [
+    "other:mis_hire_rate"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:mis_hire_rate",
+   "direction": "down",
+   "size": "unknown, source credits this method as central to its own growth from about $50M to $200M but gives no controlled comparison",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "M",
+   "owner": "founder"
+  },
+  "cost": "low",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "The sequence adds time per hire; scale it down for low-stakes roles rather than skipping structure entirely."
+  },
+  "prerequisites": [
+   "A written scorecard for the role",
+   "Someone able to run topgrading interviews and check references"
+  ],
+  "steps": [
+   "Write the role scorecard first, naming outcomes, real competencies and explicitly irrelevant traits.",
+   "Run a short standardized screen against the scorecard for every applicant.",
+   "Topgrade candidates who pass screening with a chronological, role-by-role interview.",
+   "Give finalists a domain case study with deliberate traps plus a culture-fit questionnaire.",
+   "Make any senior offer conditional on 2 to 3 standardized reference calls.",
+   "Keep the whole record consistent so every stage reconciles with the last."
+  ],
+  "test": {
+   "method": "Track hires made through the full sequence against prior hires made without it, over the following 6 to 12 months.",
+   "measure": "90-day and 1-year retention, manager-rated performance, time to productivity",
+   "read_point": "At 90 days and again at 12 months per hire"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "01"
+   ],
+   "cards": [
+    "157acd4a61c0",
+    "02931813d19e"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": false
+ },
+ {
+  "id": "COG-112",
+  "title": "Write a role scorecard that names required outcomes and irrelevant traits",
+  "domain": "18-COG",
+  "bottleneck": [
+   "team_capacity"
+  ],
+  "lever": "hiring scorecard",
+  "hypothesis": "If a role scorecard names the outcomes the hire must deliver, the real competencies needed and the traits that do not matter, then interviewers judge candidates on the same criteria, because naming what is irrelevant removes the bias of liking a candidate for reasons the role does not need.",
+  "applies_when": [
+   "any"
+  ],
+  "does_not_apply_when": [
+   "A role already filled by someone with a proven track record where no new hire is planned."
+  ],
+  "signal": {
+   "check": "A role is being hired for with no written outcomes or competency list, and past interviewers for that role disagreed on what made a good candidate.",
+   "metrics": [
+    "other:mis_hire_rate"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:mis_hire_rate",
+   "direction": "down",
+   "size": "unknown, source gives no measured outcome for the scorecard alone",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "founder"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "A written document only; no commitment to a candidate yet."
+  },
+  "prerequisites": [
+   "Agreement from everyone involved in hiring on what the role must deliver"
+  ],
+  "steps": [
+   "List the concrete outcomes the role must produce in its first year.",
+   "List the specific competencies needed to produce those outcomes.",
+   "Name traits that do not matter for this role, even ones interviewers might personally value.",
+   "Share the scorecard with everyone involved in hiring before any interview happens.",
+   "Test each candidate's stated career goals against the role's actual growth path."
+  ],
+  "test": {
+   "method": "Compare interviewer agreement and hire outcomes for roles hired with a scorecard against roles hired without one.",
+   "measure": "Interviewer score agreement, 90-day retention, manager rating",
+   "read_point": "At 90 days after each hire"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "01"
+   ],
+   "cards": [
+    "f1b81b7d07ff"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "COG-113",
+  "title": "Use standardized screening questions to pre-filter and flag deep-dive topics",
+  "domain": "18-COG",
+  "bottleneck": [
+   "team_capacity"
+  ],
+  "lever": "structured screening",
+  "hypothesis": "If every candidate gets the same short set of probing questions, such as career goals, self-rated manager feedback and role-specific deal-breakers, then weak fits are filtered early and real concerns are flagged for the deeper interview, because a standardized screen surfaces the same signal for every candidate instead of whatever comes up in casual conversation.",
+  "applies_when": [
+   "any"
+  ],
+  "does_not_apply_when": [
+   "A role filled through direct referral where a full screening step would slow down a known, trusted candidate."
+  ],
+  "signal": {
+   "check": "Candidates move to a full interview with no consistent early screen, and screeners report the same weak fits reaching later stages repeatedly.",
+   "metrics": [
+    "other:mis_hire_rate"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:mis_hire_rate",
+   "direction": "down",
+   "size": "unknown, source gives no measured outcome for the screen alone",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "founder"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "A 15 to 20 minute call; low cost per candidate."
+  },
+  "prerequisites": [
+   "A written scorecard so the screening questions map to what the role needs"
+  ],
+  "steps": [
+   "Write one question per core area: career goals, top strength, top weakness, past-manager rating, and why this company.",
+   "Ask the manager-rating question as if calling the manager directly, then push past the first polite answer.",
+   "Name role-specific deal-breakers up front, such as disliking a task the role cannot avoid.",
+   "Note red flags without resolving them; carry them forward to the deeper interview.",
+   "Leave time for the candidate's own questions and leave them with a positive impression regardless of outcome."
+  ],
+  "test": {
+   "method": "Track how many screened-out candidates would have failed later stages anyway, and how many flagged concerns proved real at topgrading.",
+   "measure": "Screen-to-later-stage drop rate, flagged-concern hit rate",
+   "read_point": "After each hiring round"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "01"
+   ],
+   "cards": [
+    "34c98a6419"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "COG-114",
+  "title": "Run a chronological topgrading interview to catch inflated titles",
+  "domain": "18-COG",
+  "bottleneck": [
+   "team_capacity"
+  ],
+  "lever": "topgrading interview",
+  "hypothesis": "If a finalist candidate is walked chronologically through every role on their resume, asking what they were actually hired to do versus their final title and probing any timeline gap, then an inflated title or a hidden gap surfaces before an offer, because a summary-level interview lets both slide by unquestioned.",
+  "applies_when": [
+   "scaling_store"
+  ],
+  "does_not_apply_when": [
+   "A candidate for a short-term or low-stakes role where a bad hire is cheap to reverse."
+  ],
+  "signal": {
+   "check": "Interviews accept the resume's stated titles and summary at face value, and a past hire's actual scope turned out different from what the title implied.",
+   "metrics": [
+    "other:mis_hire_rate"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:mis_hire_rate",
+   "direction": "down",
+   "size": "unknown, source gives no measured outcome for this step alone",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "founder"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "An extended interview only, reserved for candidates who already passed screening."
+  },
+  "prerequisites": [
+   "A candidate who passed initial screening",
+   "30 to 60 minutes of interview time",
+   "Someone with enough domain knowledge to judge the answers"
+  ],
+  "steps": [
+   "List every role on the resume in chronological order before the interview.",
+   "For each role, ask what they were hired to do, what they actually did, and what results they drove.",
+   "Ask about the difference between the title they were hired into and the title they left with.",
+   "Probe any gap between roles directly.",
+   "Ask who they reported to, their biggest point of pride and their lowest point in each role."
+  ],
+  "test": {
+   "method": "Compare hires who went through this interview against past hires who did not, on scope match and early performance.",
+   "measure": "Scope-match rate at 90 days, manager rating",
+   "read_point": "At 90 days after the hire starts"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "01"
+   ],
+   "cards": [
+    "ac926858efc6",
+    "55596ff0076f"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": false
+ },
+ {
+  "id": "COG-115",
+  "title": "Test finalist hires with a trapped case study plus a culture questionnaire",
+  "domain": "18-COG",
+  "bottleneck": [
+   "team_capacity"
+  ],
+  "lever": "case study and culture fit test",
+  "hypothesis": "If a finalist candidate works a realistic, role-specific case study with deliberate traps using dummy data, then answers a direct culture-fit questionnaire about how the team actually operates, then both competence and fit are tested before an offer, because a general impression from conversation misses both.",
+  "applies_when": [
+   "scaling_store"
+  ],
+  "does_not_apply_when": [
+   "A role defined mostly by relationships or judgment calls that a case study cannot simulate."
+  ],
+  "signal": {
+   "check": "Offers are made on interview impression alone, with no exercise that tests the candidate's actual domain skill or their fit with the team's real operating norms.",
+   "metrics": [
+    "other:mis_hire_rate"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:mis_hire_rate",
+   "direction": "down",
+   "size": "unknown, source gives no measured outcome for this step alone",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "M",
+   "owner": "founder"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Use dummy data and a mutual NDA if real materials are shared, so no sensitive data is exposed."
+  },
+  "prerequisites": [
+   "A role-specific case study built with dummy data",
+   "A written, honest description of the team's actual operating norms"
+  ],
+  "steps": [
+   "Build a case study specific to the role, with deliberate traps that test attention to detail and judgment.",
+   "Use dummy or fake data so real business information is never exposed.",
+   "Have the candidate sign a mutual NDA if any real materials are shared.",
+   "Follow the case study with a culture questionnaire that describes your actual daily operating norms, not an idealized version.",
+   "Weigh the case study result and the culture answers together before making an offer."
+  ],
+  "test": {
+   "method": "Compare hires who passed this stage against past hires who did not go through it, on early performance and early attrition.",
+   "measure": "90-day performance rating, early attrition rate",
+   "read_point": "At 90 days after the hire starts"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "01"
+   ],
+   "cards": [
+    "65e73c167d"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": false
+ },
+ {
+  "id": "COG-116",
+  "title": "Hire a specialized role in a lower-cost hub instead of a local generalist",
+  "domain": "18-COG",
+  "bottleneck": [
+   "margin_cogs",
+   "team_capacity"
+  ],
+  "lever": "specialist offshore hiring",
+  "hypothesis": "If a specialized role that does not need broad cross-functional context, such as procurement, analytics or paid media, is hired in a lower-cost hub instead of as a local generalist, then the store gets comparable output at a lower fixed cost, because the arbitrage works for narrow specialist roles more reliably than for broad generalist ones.",
+  "applies_when": [
+   "scaling_store"
+  ],
+  "does_not_apply_when": [
+   "A role that needs broad, in-person, cross-functional context that a remote specialist hire would miss."
+  ],
+  "signal": {
+   "check": "A specialized, narrowly scoped role is currently filled or planned as a high-cost local generalist hire, with no comparison made against a specialist in a lower-cost hub.",
+   "metrics": [
+    "other:opex_per_role"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:opex_per_role",
+   "direction": "down",
+   "size": "source cites roughly $100k US versus $20,000 to $30,000 in Shenzhen and about $10,000 in the Philippines for comparable specialist work, as the source's own examples, not a current benchmark",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "M",
+   "owner": "founder"
+  },
+  "cost": "low",
+  "risk": {
+   "level": "medium",
+   "reversible": true,
+   "note": "Verify current wage levels, visa and hiring realities for the target hub before committing; figures move over time."
+  },
+  "prerequisites": [
+   "A role clearly scoped as specialist rather than generalist",
+   "A hiring channel into the target lower-cost hub"
+  ],
+  "steps": [
+   "Map the open role as specialist or generalist based on how narrow its scope is.",
+   "If specialist, shortlist one or more lower-cost hubs with known talent in that specialty.",
+   "Benchmark current wage levels in the target hub against the local generalist hire cost.",
+   "Verify hiring, visa and time-zone realities before extending an offer.",
+   "Track output quality against the local-hire baseline for the first few months."
+  ],
+  "test": {
+   "method": "Compare output quality and cost per role for the offshore specialist hire against the local generalist alternative over the first quarter.",
+   "measure": "Cost per role, output quality against the role's scorecard",
+   "read_point": "At the end of the first quarter after the hire starts"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "01"
+   ],
+   "cards": [
+    "af837ba5764"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": false
+ },
+ {
+  "id": "COG-117",
+  "title": "Keep the store's proven marketing edge in-house below a revenue threshold",
+  "domain": "18-COG",
+  "bottleneck": [
+   "team_capacity"
+  ],
+  "lever": "in-house versus agency",
+  "hypothesis": "If a store below a set revenue size is winning specifically because of its own marketing skill, then keeping marketing in-house instead of outsourcing it to an agency protects that edge, because the source has rarely seen a founder who is genuinely good at marketing successfully delegate it before reaching very large scale.",
+  "applies_when": [
+   "scaling_store"
+  ],
+  "does_not_apply_when": [
+   "A store whose edge is product, not marketing skill, or one already past the scale where the source claims this holds."
+  ],
+  "signal": {
+   "check": "The store is winning mainly through marketing savviness, is below roughly $50 million in revenue, and is considering or already using an agency for its core marketing.",
+   "metrics": [
+    "roas_blended",
+    "cpa"
+   ]
+  },
+  "expected_effect": {
+   "metric": "roas_blended",
+   "direction": "up",
+   "size": "unknown, source states this as its own opinion and practice, not a measured comparison",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "M",
+   "owner": "founder"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "A staffing and structure decision, not a one-way commitment; an agency relationship can still be tested in parallel."
+  },
+  "prerequisites": [
+   "A clear, honest read on whether the store's edge is really marketing skill or product"
+  ],
+  "steps": [
+   "Diagnose honestly why the store is winning: a unique product, marketing skill, or both.",
+   "If marketing is the edge, keep the core marketing function in-house rather than handing it to an agency.",
+   "Give the in-house marketing lead direct control over the budget, since it is usually the largest controllable cost line.",
+   "If the edge is product rather than marketing, invest the same attention in product differentiation instead.",
+   "Revisit the decision as revenue scale changes, since the source ties this stance to a size range, not a permanent rule."
+  ],
+  "test": {
+   "method": "Compare performance on the same budget between the in-house team and an agency test on a limited slice of spend.",
+   "measure": "roas_blended, cpa, time to iterate on creative or offers",
+   "read_point": "After a full test cycle of at least one month per side"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "01"
+   ],
+   "cards": [
+    "a8b32165f1"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": false
+ },
+ {
+  "id": "COG-118",
+  "title": "Run a deliberately lean headcount and add a role only at capacity",
+  "domain": "18-COG",
+  "bottleneck": [
+   "team_capacity",
+   "margin_cogs"
+  ],
+  "lever": "lean headcount policy",
+  "hypothesis": "If the team stays deliberately lean and a new role is only added once the current team is visibly at capacity, then fixed cost stays lower and the resulting margin of error funds people and paid media instead of idle overhead, because hiring ahead of a proven need is what the source says erodes that margin.",
+  "applies_when": [
+   "scaling_store"
+  ],
+  "does_not_apply_when": [
+   "A team already understaffed to the point that delivery or service quality is visibly slipping."
+  ],
+  "signal": {
+   "check": "Headcount has been added ahead of a proven workload increase, or utilization across the team is consistently low.",
+   "metrics": [
+    "other:opex_per_role"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:opex_per_role",
+   "direction": "down",
+   "size": "unknown, source states this as its own opex-first policy, not a measured saving",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "founder"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "medium",
+   "reversible": true,
+   "note": "Pushed too far, a lean policy can hurt delivery, service levels or retention; watch for the seams the policy is meant to trigger on."
+  },
+  "prerequisites": [
+   "A way to see utilization across the current team"
+  ],
+  "steps": [
+   "Set a policy of not hiring ahead of a proven workload increase.",
+   "Watch for visible seams, such as missed deadlines or a role's owner consistently overloaded, as the hiring trigger.",
+   "Add specialist roles with clear utilization before adding broad generalist headcount.",
+   "Review the policy against delivery quality and team retention, not only against opex.",
+   "Adjust the threshold if the lean policy starts costing more in missed work than it saves in payroll."
+  ],
+  "test": {
+   "method": "Track opex per role and delivery or service metrics over two consecutive quarters under the lean-hiring policy.",
+   "measure": "Opex per role, on-time delivery or SLA metrics, team retention",
+   "read_point": "At the end of each quarter"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "01"
+   ],
+   "cards": [
+    "bea9ce9bde4"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": false
+ },
+ {
+  "id": "COG-119",
+  "title": "Pre-brief top performers individually before a round of layoffs",
+  "domain": "18-COG",
+  "bottleneck": [
+   "team_capacity"
+  ],
+  "lever": "layoff sequencing",
+  "hypothesis": "If top performers are told individually, before a round of layoffs, that they are safe and the plan behind the cuts, then the layoff does not read to them as a signal to leave, because the source's own worst mistake was mass-cutting underperformers first and losing top people to the resulting panic.",
+  "applies_when": [
+   "scaling_store"
+  ],
+  "does_not_apply_when": [
+   "A single-person or very small team where individual pre-briefing and a formal layoff round are the same conversation."
+  ],
+  "signal": {
+   "check": "A round of layoffs or cuts is planned and no individual conversation with top performers has happened before the news becomes general.",
+   "metrics": [
+    "other:regretted_attrition"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:regretted_attrition",
+   "direction": "down",
+   "size": "unknown, source describes this as the fix for its own past mistake, not a measured result",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "founder"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": false,
+   "note": "Once a layoff round is announced without this step, the trust cost of the surprise cannot be undone after the fact."
+  },
+  "prerequisites": [
+   "A clear list of who the top performers are",
+   "A firm plan for the cuts before any conversation happens"
+  ],
+  "steps": [
+   "Identify the team's top performers before finalizing who will be let go.",
+   "Meet each one individually, ahead of the general announcement.",
+   "Tell them plainly what is happening, why, and that they are safe.",
+   "Only after these conversations, carry out the planned cuts.",
+   "Follow through on any support promised to the people who stayed."
+  ],
+  "test": {
+   "method": "Track whether any top performer resigns in the 90 days after a layoff round where this step was used.",
+   "measure": "Regretted attrition among top performers in the 90 days after the cuts",
+   "read_point": "90 days after the layoff round"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "01"
+   ],
+   "cards": [
+    "eda5e22ad4"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": false
+ },
+ {
+  "id": "COG-120",
+  "title": "Run continuous retention check-ins so a top performer never resigns as a surprise",
+  "domain": "18-COG",
+  "bottleneck": [
+   "team_capacity"
+  ],
+  "lever": "continuous retention",
+  "hypothesis": "If top performers get regular check-ins and are told about coming changes before they leak, not only during a crisis, then a resignation from a top performer stops being a surprise, because the source's own rule is that being blindsided by an A player leaving is itself evidence the retention work was not being done.",
+  "applies_when": [
+   "scaling_store"
+  ],
+  "does_not_apply_when": [
+   "A team small enough that daily contact with every person already covers this."
+  ],
+  "signal": {
+   "check": "A top performer's resignation has caught the store by surprise in the past, or no regular check-in rhythm exists with the people the store most needs to keep.",
+   "metrics": [
+    "other:regretted_attrition"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:regretted_attrition",
+   "direction": "down",
+   "size": "unknown, source states this as an ongoing discipline, not a measured result",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "founder"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "A recurring conversation habit; low cost, no downside if done honestly."
+  },
+  "prerequisites": [
+   "A named list of the team's top performers"
+  ],
+  "steps": [
+   "Identify who the store's top performers actually are.",
+   "Set a recurring check-in cadence with each of them, not only during a crisis.",
+   "Share coming changes with them before they become general news.",
+   "Ask directly how they are doing and whether anything is pulling them elsewhere.",
+   "Treat any surprise resignation from a top performer as a signal the check-in rhythm failed, and adjust it."
+  ],
+  "test": {
+   "method": "Track whether any top-performer resignation in a quarter was preceded by a recent check-in that missed the signal.",
+   "measure": "Regretted attrition rate among top performers, check-in completion rate",
+   "read_point": "Each quarter"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "01"
+   ],
+   "cards": [
+    "5b9e7feae1"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "COG-121",
+  "title": "Build a daily color-coded P&L digest with a required miss explanation",
+  "domain": "18-COG",
+  "bottleneck": [
+   "measurement_data",
+   "team_capacity"
+  ],
+  "lever": "daily automated reporting",
+  "hypothesis": "If a daily automated digest shows budget versus actual for revenue, spend and key metrics with a color for miss, beat and off-forecast, and the responsible owner must explain every miss in-thread, then problems surface and get owned the same day, because a weekly or monthly report leaves a miss unexplained for too long.",
+  "applies_when": [
+   "scaling_store"
+  ],
+  "does_not_apply_when": [
+   "A team too small for named metric owners to make the in-thread explanation step meaningful."
+  ],
+  "signal": {
+   "check": "Budget-versus-actual misses on revenue, spend or key metrics are only reviewed weekly or monthly, and no one is required to explain a miss when it happens.",
+   "metrics": [
+    "other:time_to_flag_miss"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:time_to_flag_miss",
+   "direction": "down",
+   "size": "unknown, source frames this as a compounding daily-improvement habit, not a measured result",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "M",
+   "owner": "dev"
+  },
+  "cost": "low",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "A reporting build only; does not itself change any budget or spend decision."
+  },
+  "prerequisites": [
+   "A budget or forecast per metric to compare actuals against",
+   "Named owners for each metric line"
+  ],
+  "steps": [
+   "List the P&L lines to track daily: revenue, ad spend, ROAS, repeat rate and any other key metric.",
+   "Set a budgeted or forecast value for each line to compare the actual against.",
+   "Build or automate a daily digest posted somewhere the whole team can see.",
+   "Color-code each line as a miss, a beat, or off-forecast.",
+   "Require the accountable owner to reply in-thread on any red line with the reason and the fix.",
+   "Flag any line that stays off-forecast for several days running and ask why the original forecast was wrong."
+  ],
+  "test": {
+   "method": "Track the time between a metric missing budget and the responsible owner posting an explanation, before and after the digest.",
+   "measure": "Time to flag and explain a miss, number of misses with no logged explanation",
+   "read_point": "After 4 weeks of the daily digest running"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "01"
+   ],
+   "cards": [
+    "989150c994"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": false
+ },
+ {
+  "id": "COG-122",
+  "title": "Run a daily task and time-log channel with every direct report",
+  "domain": "18-COG",
+  "bottleneck": [
+   "team_capacity"
+  ],
+  "lever": "daily task visibility",
+  "hypothesis": "If every direct report posts their morning plan and an evening log of what got done and how time was spent, then a leader can spot overload or misplaced effort early, because a weekly or monthly check-in only shows the pattern after weeks of it have already happened.",
+  "applies_when": [
+   "scaling_store"
+  ],
+  "does_not_apply_when": [
+   "A team allergic to daily reporting overhead, where the logging itself becomes the biggest source of lost time."
+  ],
+  "signal": {
+   "check": "A team member's output looks off against a metric the daily P&L tracks, but there is no record of how their time was actually spent that week.",
+   "metrics": [
+    "other:hours_on_impactful_work"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:hours_on_impactful_work",
+   "direction": "up",
+   "size": "unknown, source gives no measured result, only its own operating practice",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "founder"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "medium",
+   "reversible": true,
+   "note": "This is a high-intensity, hands-on management style; it can read as micromanagement if not run consistently and predictably."
+  },
+  "prerequisites": [
+   "A messaging channel per direct report",
+   "Team buy-in that this is a support tool, not surveillance"
+  ],
+  "steps": [
+   "Create a personal channel for each direct report.",
+   "Have each person post their top 3 goals for the day each morning, plus the rest of their to-do list.",
+   "Have each person post what got done and a rough time breakdown each evening.",
+   "Cross-reference the time logs against the metrics that are off in the daily P&L digest.",
+   "Use the logs to decide who needs support, is overloaded, or is spending time on low-impact work.",
+   "Use the accumulated logs as a factual basis for periodic reviews instead of relying on memory."
+  ],
+  "test": {
+   "method": "Compare hours logged against impactful work versus low-impact work before and after adopting the channel.",
+   "measure": "Share of logged hours on high-impact tasks, manager time spent identifying overload",
+   "read_point": "After 4 to 6 weeks of daily logging"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "01"
+   ],
+   "cards": [
+    "2b3205ce6a"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": false
+ },
+ {
+  "id": "COG-123",
+  "title": "Give management feedback on a predictable daily cadence, not at random",
+  "domain": "18-COG",
+  "bottleneck": [
+   "team_capacity"
+  ],
+  "lever": "structured feedback cadence",
+  "hypothesis": "If feedback to a junior team member is given on a predictable, daily cadence tied to a known system rather than randomly, then it trains faster without reading as micromanagement, because the source argues unstructured, unprompted feedback is what makes close oversight feel bad, not the frequency itself.",
+  "applies_when": [
+   "scaling_store"
+  ],
+  "does_not_apply_when": [
+   "A senior hire who needs autonomy more than a daily feedback loop."
+  ],
+  "signal": {
+   "check": "Feedback to junior team members is given only when something goes wrong and at unpredictable times, and it is read as micromanagement rather than coaching.",
+   "metrics": [
+    "other:time_to_productivity"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:time_to_productivity",
+   "direction": "down",
+   "size": "unknown, source presents this as its own contrarian management stance, not a measured result",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "founder"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "A management habit change; reversible at any time."
+  },
+  "prerequisites": [
+   "A daily reporting system, such as the P&L digest or task channel, to pair feedback against"
+  ],
+  "steps": [
+   "Set a fixed, known point in the day when feedback will be given, tied to an existing daily system.",
+   "Make the feedback specific to that day's numbers or task log, not a general critique.",
+   "Give it consistently, even when there is nothing negative to say.",
+   "Solicit feedback in the other direction too, so it is not one-way.",
+   "Hire and coach for a self-deprecating, gift-not-attack attitude toward feedback."
+  ],
+  "test": {
+   "method": "Track time to productivity and self-reported comfort with feedback for junior hires under this cadence versus prior ad hoc feedback.",
+   "measure": "Time to productivity, junior team member retention",
+   "read_point": "At 90 days for each new junior hire"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "01"
+   ],
+   "cards": [
+    "91adcf3c816"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": false
+ },
+ {
+  "id": "COG-124",
+  "title": "Close the books monthly and dividend from free cash, not EBITDA",
+  "domain": "18-COG",
+  "bottleneck": [
+   "cash_inventory"
+  ],
+  "lever": "monthly close and cash discipline",
+  "hypothesis": "If the books close monthly, free cash flow is tracked separately from EBITDA, and working capital for planned growth is reserved before any distribution, then the owner takes out only cash that is genuinely free, because profit on paper is not the same as cash that can safely leave the business.",
+  "applies_when": [
+   "scaling_store"
+  ],
+  "does_not_apply_when": [
+   "A store with no management accounts yet; build that cadence first before this becomes possible."
+  ],
+  "signal": {
+   "check": "Distributions or owner draws are sized off EBITDA or a general profit feeling, with no monthly close and no working-capital reserve set aside first.",
+   "metrics": [
+    "cash_conversion_days"
+   ]
+  },
+  "expected_effect": {
+   "metric": "cash_conversion_days",
+   "direction": "down",
+   "size": "source projects taking about 65 to 75% of free cash flow out as distributions once the reserve is set, its own projection, not a benchmark",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "M",
+   "owner": "finance"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "medium",
+   "reversible": true,
+   "note": "Distributing before reserving working capital can starve the next order or ad push; get the reserve step right before automating anything."
+  },
+  "prerequisites": [
+   "Monthly management accounts covering revenue, COGS, opex and profit"
+  ],
+  "steps": [
+   "Close the books for the prior month by a fixed date, such as the 15th.",
+   "Calculate free cash flow separately from EBITDA for that month.",
+   "Estimate the working capital the coming months need for planned growth.",
+   "Only distribute what remains after that reserve.",
+   "Automate or pre-derive the process so the monthly distribution decision becomes routine."
+  ],
+  "test": {
+   "method": "Run the reserve-then-distribute process for 2 to 3 months and compare against prior EBITDA-based draws.",
+   "measure": "cash_conversion_days, any cash shortfall in the following month's operations",
+   "read_point": "After each monthly close"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "01"
+   ],
+   "cards": [
+    "43a500ef77"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": false
+ },
+ {
+  "id": "COG-125",
+  "title": "Use a five-slide accountability deck to negotiate a way out of a cash hole",
+  "domain": "18-COG",
+  "bottleneck": [
+   "cash_inventory"
+  ],
+  "lever": "recovery negotiation deck",
+  "hypothesis": "If a short deck states the mistake plainly, explains the cause, lays out the recovery plan, gives a timeline and payback, then makes a specific ask, then a lender, partner or personal contact can price the risk and say yes faster, because the source's own experience is that a credible, short recovery story worked better than a long pitch.",
+  "applies_when": [
+   "any"
+  ],
+  "does_not_apply_when": [
+   "A situation needing a full investment process with a data room, not a personal or relationship-based ask."
+  ],
+  "signal": {
+   "check": "The store or its owner is trying to raise capital or renegotiate out of a cash shortfall and has no short, honest account of what happened and the plan to fix it.",
+   "metrics": [
+    "cash_conversion_days"
+   ]
+  },
+  "expected_effect": {
+   "metric": "cash_conversion_days",
+   "direction": "down",
+   "size": "unknown, source presents this as a personal turnaround story, not a measured outcome",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "founder"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Building the deck itself carries no risk; the risk is in whatever deal it supports."
+  },
+  "prerequisites": [
+   "An honest account of what caused the shortfall",
+   "A specific, credible recovery plan and timeline"
+  ],
+  "steps": [
+   "State plainly, on one slide, that the mistake was made and own it without spinning it.",
+   "Explain in plain terms exactly what happened and what led to the hole.",
+   "Lay out the specific plan to get out of it.",
+   "Give a recovery timeline and payback window the other side can price.",
+   "State the specific amount needed and exactly what is offered in return.",
+   "Keep it to five slides; the goal is a credible plan, not a full data room."
+  ],
+  "test": {
+   "method": "Track response rate and terms offered when this deck is used versus a longer or less structured pitch.",
+   "measure": "Response rate, terms secured, time to close the ask",
+   "read_point": "After each use of the deck"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "01"
+   ],
+   "cards": [
+    "e9548f8dcf6"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": false
+ },
+ {
+  "id": "COG-126",
+  "title": "Screen a founder's character with mutual reference calls before a deal",
+  "domain": "18-COG",
+  "bottleneck": [
+   "risk_compliance",
+   "team_capacity"
+  ],
+  "lever": "founder character screen",
+  "hypothesis": "If both sides of an acquisition run reference calls on each other's past partners before closing, then a deal with someone hard to work with gets caught before signing, because the source argues a great deal cannot survive a bad person on the other side of it.",
+  "applies_when": [
+   "scaling_store"
+  ],
+  "does_not_apply_when": [
+   "A deal with no ongoing working relationship after close, where character fit matters less than terms alone."
+  ],
+  "signal": {
+   "check": "An acquisition, partnership or takeover is being evaluated mainly on terms and numbers, with no character check run in either direction.",
+   "metrics": [
+    "other:deal_failure_rate"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:deal_failure_rate",
+   "direction": "down",
+   "size": "unknown, source states this as its own strong filter, not a measured result",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "founder"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "A reference-call step only; it can surface a reason to walk away before any commitment is made."
+  },
+  "prerequisites": [
+   "Contact details for past partners or counterparties of the person on the other side of the deal"
+  ],
+  "steps": [
+   "Before closing, ask the other side for reference calls with their past partners or counterparties.",
+   "Offer the same on your own side, so the check runs both ways.",
+   "Ask direct questions about how the person behaves under pressure and whether the referee would work with them again.",
+   "Treat a clear character red flag as a reason to walk away, even on otherwise strong terms.",
+   "When forced to choose between a strong asset with a weak counterpart and a weaker asset with a strong one, weigh the counterpart heavily."
+  ],
+  "test": {
+   "method": "Track deal outcomes for acquisitions or partnerships that ran this check against ones that did not.",
+   "measure": "Post-close dispute rate, deal_failure_rate",
+   "read_point": "12 months after each deal closes"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "01"
+   ],
+   "cards": [
+    "7ed716c8f1a3"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": false
+ },
+ {
+  "id": "COG-127",
+  "title": "Evaluate an internal capability as a picks-and-shovels product for other brands",
+  "domain": "18-COG",
+  "bottleneck": [
+   "margin_cogs",
+   "team_capacity"
+  ],
+  "lever": "capability spin-off evaluation",
+  "hypothesis": "If a capability built for the store's own use, such as packaging sourcing, cross-border logistics or a procurement system, is tested as a paid service for other brands, then a proven internal advantage can turn into its own revenue line, because the same cost-saving the store already gets can be sold to a brand that has not built it.",
+  "applies_when": [
+   "scaling_store"
+  ],
+  "does_not_apply_when": [
+   "A capability that is still a working advantage over competitors and would lose value if shared with other brands."
+  ],
+  "signal": {
+   "check": "The store has a sourcing, logistics or procurement capability that peers and mentees repeatedly ask about or overpay for elsewhere, and it has never been tested as its own offer.",
+   "metrics": [
+    "other:new_revenue_line_interest"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:new_revenue_line_interest",
+   "direction": "up",
+   "size": "unknown, source's own pipeline figure is interest generated by content, not booked revenue",
+   "basis": "source_claim"
+  },
+  "effort": {
+   "size": "L",
+   "owner": "founder"
+  },
+  "cost": "medium",
+  "risk": {
+   "level": "medium",
+   "reversible": true,
+   "note": "Productizing an internal tool too early can pull attention from the core store while it still creates more value staying internal."
+  },
+  "prerequisites": [
+   "A capability that is genuinely proven internally, not just planned",
+   "A way to validate demand from peers before investing further"
+  ],
+  "steps": [
+   "List internal capabilities that solve a problem other brands are known to struggle with.",
+   "Validate real demand by talking to peers or mentees before building anything new.",
+   "Design the offer so the value to the other brand is concrete, such as a clear cost saving.",
+   "Test the offer with one or two outside brands before treating it as a real product line.",
+   "Use content or direct outreach to generate interest and track it as a pipeline, not as booked revenue until it closes."
+  ],
+  "test": {
+   "method": "Run a small pilot of the capability as a paid service with 1 to 2 outside brands before any further investment.",
+   "measure": "Pilot conversion rate, outside-brand cost saving delivered, hours diverted from the core store",
+   "read_point": "After the pilot period with the first outside brands"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "01"
+   ],
+   "cards": [
+    "9558d01ce049"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": false
  }
 ]
