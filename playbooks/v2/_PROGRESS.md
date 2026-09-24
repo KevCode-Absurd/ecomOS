@@ -44,4 +44,5 @@ Totals: 256 sources, 4,100,282 source words, 7,611 cards. Mini playbook words: 1
 - A rate limit on 24 Sep cut 5 agents off mid-run. The SEO and operations folder playbooks and both multi 01 parts had finished writing and were kept; a QA agent checked both playbooks (all sections, rules, procedures and card ids valid; 12 truncated card ids in SEO were expanded from cards.json); a check agent verified and extended the multi 01 part 2 tail slice; the security merge was relaunched.
 - Two folder playbooks (10-MCR, 03-OFF) were briefly committed as partial drafts by a mid-write sweep and then overwritten by the finished file in a later commit. The committed versions are the finished ones.
 - The /99-multi playbook carries a 166-row routing table mapping its domain findings to the folder that owns them, for a later overlay pass.
+- 08-SPD was updated on 24 Sep 2026 from the first blind A/B test (`reviews/speed-test/`): P1 steps 12 and 13, R59 to R61, checklist rows, and a test learnings log in section 11b.
 - Not done yet: agent overlays (`overlays/<agent>.md`), brand overlays (`brands/<brand>/overlays/<folder>.md`), spot-checks beyond 08-SPD.

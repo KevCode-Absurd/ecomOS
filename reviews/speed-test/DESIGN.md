@@ -25,3 +25,10 @@ Reports are copied to `blind/report-1.md` and `blind/report-2.md` in random orde
 
 ## Rules
 No paid calls. Meta read only. No credentials. Public web research is kept separate from private Metabase data in the reports. Competitor content is not copied.
+
+## Changes for the next run (from the 24 Sep result)
+- Give the control arm the same 2-stage pipeline (audit, then plan) so the test isolates the playbook, not the pipeline.
+- Add a third judge and randomise reading order across all 3; 2 judges split 1 point each way.
+- Have judges verify 2 or 3 factual claims against the raw evidence instead of judging from the report text alone.
+- Run the next round on a judgement-heavy domain (03-OFF or 11-ADC), where decision rules should matter more than measurement.
+- Playbook updated: 08-SPD P1 steps 12 and 13, R59 to R61, checklist rows, section 11b log.

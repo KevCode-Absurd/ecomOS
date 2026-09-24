@@ -25,6 +25,7 @@ version: 2.0-draft  |  date: 24 Sep 2026  |  sources: 9  |  cards: 226  |  built
 | Prove a fix and report | 3 (group P), 4 (P30), 9 |
 | Peak sale readiness | 3 (R94), 4 (P31), 5 (5.13) |
 | Deciding to call the host or a developer | 3 (group O), 4 (P28), 9 |
+| Custom or framework storefront (Next.js, custom app) | 3 (groups D, E, F, H, and R59 to R61), 4 (P1, P18, P21, P30), 5 (5.3, 5.5, 5.7), 6 |
 
 **What the agent must fetch before acting.**
 
@@ -198,6 +199,12 @@ Numbering runs across all groups. Each rule gives the rule, its condition, the m
 
 **R58. Moving third-party scripts to a web worker (Partytown) is a developer task and needs per-tool testing.** Condition: rebuild or framework storefront; not every script is compatible. Sources: 07. Cards: [717cf5ec82fd].
 
+**R59. When first-party JavaScript only runs after the load event, check the CDN's script rewriting before the code.** Condition: any store behind Cloudflare or a similar CDN, where the app's data calls or hydration start after `load` even though the chunks arrived earlier. Cloudflare Rocket Loader rewrites every `<script>` to `type="text/javascript"` with a `data-cfasync` marker and runs them itself after load; Email Address Obfuscation and Auto Minify rewrite HTML and can break React hydration. Evidence to look for: `rocket-loader.min.js` in the waterfall, chunk requests initiated by it, rewritten script types in view-source. Fix: Cloudflare > Speed > Optimization > Content Optimization, Rocket Loader off; Scrape Shield, Email Obfuscation off; purge cache; re-test. Cost: 15 minutes, no code. Found on the 24 Sep 2026 Gehna audit; the general-prompt arm caught it first and the playbook arm treated it as a late test, so check it in the first pass. [test: speed-test-2026-09-24] [verify UI]
+
+**R60. On a custom or framework storefront (Next.js, Nuxt, custom React), apply the platform-neutral rules through the framework's own primitives, and say so in the report.** Condition: the platform is not Shopify or WordPress. Equivalents: fonts via `next/font/google` with `subsets: ['latin']` or a `pyftsubset` WOFF2 subset that keeps the rupee sign U+20B9 (never ship a full CJK TTF; the Gehna site shipped 1.9 MB of Korean serif on every page); `priority` on the one LCP image only and `sizes` on every small image so the optimiser does not serve 640 px icons; server-render the buy box (main image, name, price, add to cart) and the first collection tiles with `getStaticProps` and `revalidate` or `getServerSideProps`, keep only personal state client-side; fixed-height containers or skeletons for late content; `images.minimumCacheTTL` of 30 days and CDN cache keys that include `Accept` so AVIF is not pinned as PNG at the edge (Cloudflare needs a Vary for Images rule or a cache bypass for `/_next/image`; CloudFront honours `Vary: Accept`). A developer executes these; the agent writes the brief with the file, prop and config names. [test: speed-test-2026-09-24]
+
+**R61. Every fix in the plan carries a pass threshold, a rollback and its dependencies; a fix list without them is a diagnosis, not a plan.** Condition: every execution plan this agent writes. The 24 Sep 2026 blind test found that this structure, not the diagnosis, was the difference between the playbook output and a general audit: both found the same problems, only the playbook plan could be run on Monday. Format per fix: problem and evidence, gain and the arithmetic, effort, owner, steps, what to measure before and after and the number that counts as done (P30), risk and rollback, depends on. [test: speed-test-2026-09-24]
+
 ### Group E. Theme code, CSS and JavaScript
 
 **R59. Reference theme CSS and JS through `asset_url` so the Shopify CDN serves the current version; fix URLs typed directly inside CSS.** Condition: Shopify themes with edits that do not show, or static URLs in CSS. `asset_url` adds a version (`?v=...`) that tells the CDN to pull the new file. Hovering an asset link in the code editor should say assets should be served from the Shopify CDN. Sources: 03, 01. Cards: [5748b07d6cda] [fdbc70a82f75]. [verify UI: Shopify URL filters]
@@ -333,8 +340,10 @@ Goal: numbers you can compare. Preconditions: list of templates and the ad landi
 9. After each batch of changes: wait 1 to 2 minutes, confirm freshness (P4), run 3 more tests, average, compare averages. Treat differences of a few points as noise. [01]
 10. Optional cross-check: GTmetrix (waterfall, Top Issues) or WebPageTest (filmstrip) on the same URL. Do not compare scores across tools. [04, 09, 03]
 11. Lighthouse in Chrome for the render-blocking list: right-click > Inspect > Lighthouse > Analyze page load. [01] [verify UI]
+12. If PageSpeed Insights is unavailable (API quota, network block), run the lab test yourself in headless Chromium (Playwright) with the Lighthouse mobile profile: 1.6 Mbps down, 750 Kbps up, 150 ms RTT, 4x CPU slowdown, cold cache, phone viewport, 3 runs per page, report the median. Record TTFB, FCP, LCP and its element, CLS and its sources, long tasks, load event, requests and bytes by type. Say in the report that it is a lab run and not a Lighthouse score. [test: speed-test-2026-09-24]
+13. Third-party bytes: never take them from the browser's Resource Timing API. It reports 0 bytes for most cross-origin files (no Timing-Allow-Origin header), so totals come out 4x too low; decoded sizes come out 2x too high. Get compressed sizes from the response headers in DevTools or the CDP log, or fetch each third-party script directly with `Accept-Encoding: br, gzip` and sum. On the 24 Sep 2026 Gehna audit the true figure was 470 KB where the two methods gave 110 KB and 1.05 MB. [test: speed-test-2026-09-24]
 
-Checks: baseline table complete for every template on both devices; change log started. Rollback: none needed.
+Checks: baseline table complete for every template on both devices; change log started; third-party bytes come from headers or direct fetch. Rollback: none needed.
 Cards: [c33439a2c9b9] [079f8ea11444] [9b3008487ad5] [6012d71fccb6] [085b91000740] [693051f7daf7] [21b1708d102a] [a4ded81551ca].
 
 ### P2. See the store the way a slow-connection shopper does
@@ -821,6 +830,8 @@ Written for a worker. Each row: what to check, how, what good looks like, what b
 | Speed or caching scripts | Identify unknown scripts | None, or proven useful | Unknown "speedy" scripts | Test by commenting out; R55 | 01 [cdc61c33e699] |
 | Dynamic checkout buttons | Product page under add to cart | Disabled if unused, or delayed | Loading at first paint unused | P10e | 01 [98a7bf9f5fb4] |
 | Tag manager | Waterfall per tag | Each tag justified | Many tracking scripts | R54 | 03 [78f603581ed4] |
+| CDN script rewriting | View-source script types; waterfall for `rocket-loader.min.js`; when first-party JS starts vs load event | App code runs when its chunks arrive | JS waits for load; Rocket Loader or Email Obfuscation on | R59 | test 2026-09-24 |
+| Third-party bytes measured right | Sum compressed sizes from response headers or direct fetch | Figure matches a direct fetch | Figure from Resource Timing (zeros) or decoded sizes | P1 step 13 | test 2026-09-24 |
 
 ### 5.4 Theme code, CSS and JS
 
@@ -848,6 +859,7 @@ Written for a worker. Each row: what to check, how, what good looks like, what b
 | External font calls | Waterfall | Own domain or theme fonts | fonts.googleapis.com requests | P21 step 3 | 02 [731928d47c17] |
 | Font swap CLS | Throttled reload | Text keeps size on swap | Text resizes | P20 step 6 | 01 [14bc6ce5b8a6] |
 | Subset | Font file size | Small, needed characters | Full character sets | P21 step 4 | 04 [74fc1378fc6a] |
+| Font format and subset | Waterfall: font file names, sizes, format | WOFF2, Latin subset, under 30 KB each, rupee sign present | TTF or OTF, full CJK set, hundreds of KB per file | P21; R60 | test 2026-09-24 |
 
 ### 5.6 Layout shift (CLS)
 
@@ -1343,6 +1355,12 @@ Merged and deduplicated. Each with the fix.
 | R98 (Shop Pay availability and vendor figure) | Shopify | Yearly |
 | Section 6 conversion and behaviour statistics | Third-party studies, several undated | Before every client use; treat as direction only |
 | Ecomhint 1,533-store benchmark (R7, R57) | Vendor dataset, method unpublished | Check for a newer edition yearly |
+
+## 11b. Test learnings log
+
+Entries here come from ecomOS runs of this playbook, not from the library. Each names the test and the rules or procedures it changed.
+
+- 2026-09-24, Gehna speed audit, blind A/B against a general prompt (`reviews/speed-test/`). Added P1 steps 12 and 13, R59 to R61, 2 rows in 5.3, 1 row in 5.5, 1 row in the section 0 table. Findings: the playbook did not improve the diagnosis (both arms found the same problems with the same instrument) but it made the output operable (thresholds, rollbacks, sequencing, budget, business case). It cost one finding (Rocket Loader) because checklist coverage crowded out following the evidence; R59 fixes that. Both arms mis-measured third-party bytes; P1 step 13 fixes that. Shopify-only procedures needed on-the-fly adaptation for a Next.js store; R60 gives the equivalents.
 
 ## 12. Source index
 
