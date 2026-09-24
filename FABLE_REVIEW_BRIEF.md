@@ -74,4 +74,4 @@ Write `reviews/INTELLIGENCE_REVIEW.md`, in plain English: short sentences, simpl
 8. **Task list for Opus 5.5**: numbered, each with scope, files, acceptance check and suggested effort (low, medium or high).
 9. **Questions for Kevin**: only the ones that change the plan.
 
-When done, tell Kevin the verdict and the top 3 recommendations in the chat. The memo holds the detail.
+When done, commit only `reviews/INTELLIGENCE_REVIEW.md` to your session branch (in a cloud session, that is the branch the session created), then tell Kevin the verdict and the top 3 recommendations in the chat. The memo holds the detail.
