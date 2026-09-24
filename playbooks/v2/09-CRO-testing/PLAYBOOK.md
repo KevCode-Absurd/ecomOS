@@ -1100,3 +1100,222 @@ Each conflict: what each side says, when each is right, and what the agent shoul
 
 **C20. Ecommerce transfer of 01.** 01 is a lead-generation course; its ecommerce uses (CLOSER audit of PDPs, email-capture lures, quiz order, form-field rules, "cocktail stick" permission cues, sticky CTAs) are card-writer translations. 02, 03, 05, 06 are ecommerce-native. What the agent should do: when a rule rests on 01 alone, label it an adaptation and treat it as a hypothesis; when 01 agrees with an ecommerce source (proof beside the CTA, say what happens after the click, familiar UI), the ecommerce source carries the weight.
 
+## 8. Common mistakes
+
+Merged from all 7 sources, deduplicated, each with the fix.
+
+**Metrics and diagnosis**
+1. Chasing conversion rate as the north star, or comparing it across brands. Fix: RPV or contribution per visitor as the lens (R1, R2). [b9f3fede007a] [83db79dbdb65]
+2. Using Shopify total sales (with tax), AOV without shipping collected, and bot-heavy Shopify sessions. Fix: P1. [91d639e7e2e2]
+3. Redesigning a page because blended conversion fell, when cold share rose. Fix: P3. [953e03390b0d]
+4. Judging on one metric when AOV, margin, returns or LTV can move. Fix: guardrails in every brief (R7). [c076b110d253] [dad9c85ea261]
+5. Adding up individual test wins to claim programme value. Fix: programme holdout (R88, P19). [f671352f5b6e]
+6. Crediting a channel with all attributed conversions. Fix: incrementality question routed to 11-ADC (P23). [ddbbe8061d10]
+7. Judging popups on opt-ins alone. Fix: feature holdout on RPV (P20). [c076b110d253]
+8. Fixing the PDP again when checkout completion is the leak. Fix: funnel read first (R12, R16). [25f9d85cd8e3]
+
+**Research**
+9. Testing without research, or with opinion as the only evidence. Fix: 2-point evidence gate (R20). [f856d689f3d8] [300b03fc0354]
+10. No post-purchase survey. Fix: P7. [b4505f6c4061]
+11. Relying on Clarity's top-line metrics that GA4 already gives. Fix: Insights block and recordings (R24). [e053644d5707]
+12. Acting on an Insight percentage without watching its recordings, or ignoring a real defect because its rate is low. Fix: R25. [9d9871ee324b] [5b9da7dd1967]
+13. Reading a heatmap captured behind a popup. Fix: Change screenshot (R30). [09583734387e]
+14. Treating every high-click element as demand; some are confusion. Fix: recordings before moving it (R27). [3043da84ee0c]
+15. Setting a recording quota, watching with distractions, or stopping review after one round. Fix: R29. [0b8d2f6cc4d1]
+16. Using buyer surveys to explain non-buyers. Fix: exit survey and user tests (R31, R32). [f89dbadb9131]
+17. Never buying from your own store; missing popups and cookie bars over CTAs. Fix: R36. [a2d5c573076a]
+18. Paying Hotjar prices at high traffic for heatmaps Clarity gives free; paying for bundled features nobody uses. Fix: R38. [3728f5d4ae33] [6e48c0e74fe7]
+19. Mixing attribution surveys with CRO research surveys. Fix: separate them (R31). [f89dbadb9131]
+
+**Deciding what to do**
+20. Testing whether to fix a bug. Fix: repair and log (R50). [3eca46fe9ba3]
+21. Treating button colours, one hero image or a text snippet as CRO at low volume. Fix: big swings (R53, R54). [365c9ff30a24] [e02ace8044e5] [67f74e89d43e]
+22. Testing low-traffic category pages. Fix: highest-traffic pages first. [67f74e89d43e]
+23. Sending paid traffic straight to a PDP, homepage or collection; ad creative that does not match the page; all angles on one generic PDP. Fix: message-matched pre-sell page (R108). [2d977920a505] [6695665021f2] [a5cf6ee34972]
+24. Letting the idea's owner score it 9/9/9; ranking by lift instead of profit; weighting by revenue instead of gross profit. Fix: R44, R45. [aad25dea9ed9]
+25. Adding arms to test more ideas at once; multivariate below the traffic threshold. Fix: R56. [3b20905bfc58] [300b03fc0354]
+26. Using bandits where a clean causal read is needed. Fix: R57. [3b20905bfc58]
+27. Treating before-and-after as proof, or calling its problem "wider error bars". Fix: R55. [062507c94ee4]
+28. Running conflicting tests on the same PDP area. Fix: R58. [4d0785cdcf2b]
+
+**Test design and validity**
+29. Using "400 conversions a month" or any magic number instead of MDE math; confusing relative and absolute lift. Fix: P13. [00c82f0de25d]
+30. One-tailed tests to reach significance faster. Fix: R64. [517a8bce6324]
+31. Peeking and stopping at first significance; believing Bayesian tools are immune; calling a test after 2 weeks and 100 conversions. Fix: R67, R68, P14. [e3ee87a025c5] [699a7cd5ac4c]
+32. Relying on significance without power. Fix: R70. [c54652571336]
+33. Stopping before a full week or before the planned sample; killing a test after one bad day; split weeks. Fix: R63, R76. [5fae1beab1ba] [7d481c590b57]
+34. Launching without QA; tracking that breaks mid-test. Fix: R72, P15. [4d0785cdcf2b] [3eca46fe9ba3]
+35. Ignoring SRM, flicker, bots, promo overlap. Fix: R71, R73, R74. [370ed8c02e34]
+36. Letting Klaviyo or retention traffic into a test; ignoring multi-click exposure. Fix: R65. [699a7cd5ac4c]
+37. Reading many metrics or slicing segments after the fact. Fix: R75. [1f26cd618e2d]
+38. RPV as primary at low volume. Fix: R6. [7eeb62d20124]
+39. Reading early cumulative noise as novelty or primacy. Fix: R78. [5fae1beab1ba]
+40. Planning client-side checkout tests on standard Shopify. Fix: P22. [7c932a3b4986]
+41. Same-SKU price tests. Fix: R129, P21. [34fa165a64fe]
+
+**Reading and closing**
+42. Reading p < 0.05 as "95% likely real". Fix: R80. [70db51ffb976]
+43. Extending an inconclusive test hoping for significance. Fix: R81. [70db51ffb976]
+44. Banking a micro-conversion lift without a purchase guardrail. Fix: R8. [67f74e89d43e]
+45. Trusting vendor case studies, "+364%" lifts, or any number without sample, duration and baseline. Fix: P16. [370ed8c02e34]
+46. Comparing win rates without their definitions. Fix: R86. [8dc46d4893e1]
+47. Letting new teams or theme changes overwrite past winners. Fix: R85. [f09cfbc3ef44]
+48. Shipping a blended win that hides a mobile loss. Fix: R83. [1f26cd618e2d]
+49. Scaling an angle that lifts conversion and destroys LTV; dark patterns; over-claiming. Fix: R84. [dad9c85ea261]
+50. Not re-checking recordings, the funnel step and surveys after shipping. Fix: R89. [0b8d2f6cc4d1]
+
+**Page-level (hypothesis material; execution in 07-LPG)**
+51. Default Shopify PDP that fails the 4 hero questions; generic title; no scroll cue; pickers in the hero. Fix: R101. [bb761687ad68]
+52. Feature-led copy; table stakes in the hero; generic FAQs; big blocks of feature text before add to cart. Fix: R106, R107. [790f6b3372c2] [499b4e67252a] [edd07a1a15f6] [116d1016fa3b]
+53. No reviews; text-only review walls; wall of 5.0; reviews bunched on the same dates; hidden proof on About pages. Fix: R104. [a507cc86ec03] [e18bae3af3dd] [e24c4415d85e] [ba8350548af5]
+54. Generic trust badges as the only proof (see C1). [cdd5df001439]
+55. Hero that does not say who, what, why in 3 to 5 seconds; vague headline; quirky navigation; directory-style menus. Fix: R96, R97. [bc5a8130eee9] [d4484bf96e29] [f5942adec72b]
+56. Key selling points, guarantee or reviews placed where 6 to 30% of visitors reach. Fix: R27. [9568c40e1d88] [bc5a8130eee9]
+57. Elements styled like buttons that do nothing; logo that does not go home; images that do not open. Fix: repair (R26). [9568c40e1d88] [0eae610ddc62]
+58. Popups in the first 5 seconds; chat widgets over add to cart; cookie bars over the cart button. Fix: repair (R111). [9d9871ee324b] [a2d5c573076a]
+59. Carousel dots instead of thumbnails; a gallery that does not sell; a collapsed guarantee for a risk-averse audience. Fix: R102. [116d1016fa3b]
+60. Discount box in cart with no live promo. Fix: R112. [19e8c5c27387]
+61. Collection hero banners that push products below the fold; labelling every product; filters only at the top; Add to Cart on browsing pages (C14). Fix: R98, R99. [6f635b9d003d] [1e03a58f6fe1] [11e64288067b]
+62. Surprise checkout costs; drip pricing; forced accounts; long forms; no express pay; hidden returns; unlabelled tax. Fix: R116 to R120. [3163cc34fa79] [d4104b13110f] [8b2d9df04dfb]
+63. Rushing into free returns in fashion. Fix: R120. [1e401776f34b]
+64. Lazy blanket discounting; free shipping with no threshold or too low a threshold. Fix: R131. [1e7c5456a957] [23f840cd83b0]
+65. Optimising desktop first; desktop grids on mobile; filters hidden in a hamburger. Fix: R124. [a56c27356031] [1e03a58f6fe1]
+66. Slow mobile pages left unmeasured. Fix: R125, 08-SPD. [9461d45dfbe7]
+67. Generic pages for AI-referred visitors who arrive pre-sold. Fix: 5.4 row. [86c233f0eb39]
+68. Promo messaging that changes between collection and PDP. Fix: R100. [1e03a58f6fe1]
+69. "Contact us" or "Subscribe" CTAs with no lure; asking for fields you will not use; contact details before the diagnostic questions; leaving the after-click process unexplained (01, lead-gen adaptations). Fix: R126 to R128. [ea8b1b83867d] [4ae56138baa5] [9ed6a0a32b9f] [16c2667cb67c]
+70. False scarcity and inflated social proof ("only Y left") not backed by real data. Fix: real data only. [e18bae3af3dd]
+
+## 9. Deliverables
+
+What the agent produces, and the format.
+
+1. **Funnel diagnosis memo.** Corrected metrics (P1), stage rates by device and channel against the 06 bands, the biggest weighted leak, mix-effect check (P3), tracking health, what is unknown. 1 page plus a table. `[needs brand data]` items listed at the end.
+2. **Research findings log.** One row per finding: source (recording, heatmap, survey, review mining, user test, self-purchase), page, device, what was seen, how many sessions or answers, classification (R26), evidence strength. Links or ids to recordings.
+3. **Page audit report.** The section 5 checklist for the page type, filled in with good, bad, fix, and the evidence behind each bad row. Repairs separated from hypotheses.
+4. **Hypothesis backlog (leaderboard).** Spreadsheet: id, hypothesis in R42 form, page, device, evidence points, PXL-style criteria, P(win), expected lift, gross profit per conversion, traffic exposed, build cost, expected value, ceiling, status. Sorted by expected value.
+5. **Repair list.** What is broken, evidence, fix, owner, verification plan. Logged in the registry.
+6. **Test brief (pre-registration).** The P10 fields, including MDE, sample per variant, arms, dates, engine and stopping rule, guardrails with thresholds, segments, contamination plan, validity plan, and pre-written actions for win, loss and inconclusive.
+7. **QA and launch checklist.** P15 steps with pass or fail and dates; SRM values per look.
+8. **Test readout.** Effect with confidence interval per metric and pre-registered segment, guardrail results, daily plot note, validity audit (P16) outcome, decision, learning, next hypothesis.
+9. **Registry record.** The P18 fields, one per test, repair, holdout or causal analysis, in one log shared with 06-MEA and 11-ADC.
+10. **Live-winner register.** Shipped winners, ship date, last verified live, any reversion.
+11. **Holdout plan and readout.** Question, design (P19 or P20), groups and shares, detectability calculation, period, net lift with interval, decision, ethics note on what was not withheld.
+12. **Measurement design recommendation.** For any question that is not an on-site test: the route from P23 and the folder that owns it.
+13. **Programme review.** Tests run, win rate with definition, net lift from holdout if one exists, winners still live, learnings, what needs brand data or a web check next.
+
+Format rules for all deliverables: short sentences, digits, no em dashes, no invented claims; every number carries its source or "brand data"; case figures from the sources are labelled examples; nothing that mentions GPT or .env on client-facing pages.
+
+## 10. What needs live data or a web check
+
+### 10.1 Needs brand data
+
+Metrics and baselines
+- `[needs brand data: current conversion rate, CPC, AOV and margin by channel]` (01, R11)
+- `[needs brand data: RPV and contribution per visitor by channel and device]` (02, R1)
+- `[needs brand data: GA4 vs Shopify session gap]` (02, R3, P1)
+- `[needs brand data: cold vs warm conversion rates]` (02, R15, P3)
+- `[needs brand data: monthly sessions and orders]` (03, R53)
+- `[needs brand data: orders per month, conversion rate, traffic per page]` (05, R53)
+- `[needs brand data: baseline conversion rate per page and device]` (05, R59, P13)
+- `[needs brand data: weekly sessions on the tested page]` (05, R62, P13)
+- `[needs brand data: stage conversion rates by device and channel]` (06, R12, P2)
+- `[needs brand data: funnel step drop-off]` (03, R12)
+- `[needs brand data: guardrail baselines: AOV, margin, return and refund rate, page load, add to cart]` (05, P10)
+- `[needs brand data: SKU margin, page traffic]` (05, R44, P11)
+- `[needs brand data: device split]` (04, R30, R124)
+- `[needs brand data: monthly visitors, logged-in share, geo split]` (06, R91, P19)
+- `[needs brand data: daily sessions, normal and peak]` (07, R38)
+
+Research inputs
+- `[needs brand data: scroll reach per section from the scroll map]` and `[needs brand data: own scroll reach and CTA click share by page and device]` (04, R27, P5)
+- `[needs brand data: PDP scroll depth and rage clicks]` (03, R21)
+- `[needs brand data: post-purchase survey answers]` (03, R31, P7)
+- `[needs brand data: review export]` and `[needs brand data: review count, media-review share]` (03, 02, R34, R104, P8)
+- `[needs brand data: top 3 first-step fears from support tickets and reviews]` (01, R107)
+- `[needs brand data: credibility asset inventory]` (01, section 2)
+- `[needs brand data: which pages get direct entrances]` (01, R19)
+- `[needs brand data: AI referral sessions]` (06, 5.4)
+
+Offers, checkout and acquisition
+- `[needs brand data: checkout extra costs as % of AOV]` (02, R116)
+- `[needs brand data: fulfilment cost per order for bundle pricing]` and `[needs brand data: typical cart value]` (02, R114)
+- `[needs brand data: active ad concepts by persona, offer, angle]` (02, R108)
+- `[needs brand data: returns and LTV by acquisition angle]` (02, R84)
+
+Programme memory
+- `[needs brand data: past test log and which winners are still live]` (03, R85, R87)
+- Repair log (05, R50)
+
+### 10.2 Web checks
+
+Platform and tools
+- `[web check: current Shopify checkout extensibility and A/B testing options, yearly]` and `[web check: Shopify Rollouts availability, plan tier, checkout A/B options]` (05, R123, R132, R133, P22)
+- `[web check: vendor stats engine docs]` for VWO, AB Tasty, Convert, Kameleoon, Optimizely, GrowthBook, Statsig, Eppo (05, R68, R69, P14)
+- `[web check: current VWO free tier]` and `[web check: current Statsig free tier]` (05, R134)
+- `[web check: current Clarity, Hotjar, Userbrain and Okendo pricing and limits]` (07, R38)
+- `[web check: Clarity current terms]`, `[web check: current Clarity install, consent and data retention terms]` (04, 07)
+- `[web check: Okendo plan and limits]`, `[web check: Userbrain pricing]`, `[web check: Hotjar pricing]` (07)
+- `[web check: heatmap.com current features and pricing]` (03, R28)
+- `[web check: tool name]` for the price-testing tool 03 calls "Intelligence" (likely Intelligems) (03, P21)
+- `[web check: PXL framework criteria]` (03, 05, R45)
+- `[web check: current status of ResponseTap, Live Call, Tawk.to, Leadpages, Delighted]` and their pricing (01; call tracking and chat tools are outside this folder's core)
+- `[web check: original HubSpot form-field study and conditions]` (01, R119)
+
+Benchmarks and research
+- `[web check: current Baymard abandonment figures]` (02, 06, R16, R116)
+- `[web check: current AI referral share and behaviour]` (06, 5.4)
+
+Legal and compliance
+- `[web check: incentivised-review rules in the brand's markets]` (02, R104)
+- `[web check: review and endorsement rules for the brand's market]` (01, R104)
+- `[web check: prize-draw and data-privacy rules]` (03, R33, P7)
+- `[web check: jurisdiction rules on personalised pricing and disclosure]` (05, R129, P21)
+- `[web check: delivery disclosure rules]` (02, R122)
+- `[web check: consent and data-retention terms]` for behaviour tools (07)
+
+### 10.3 Verify UI
+
+Every step marked `[verify UI]`: Clarity dashboard, Insights, Heatmaps (Change screenshot, Clicks, Scroll, Area, Edit areas), Recordings (Filters, Sort, Skip inactivity, speed) (04, interface of July 2024); Hotjar Engagement zones, Surveys, User interviews, Funnels (07); GA4 Explore funnels (07); Shopify analytics fields, customer-account setting, express checkout placement, checkout extensibility, Rollouts (02, 05); review app media-first sorting (02); survey apps (KnoCommerce, Okendo, Typeform) (03, 07); Klaviyo flows and campaign exclusion (02); Meta ad-set or campaign split (02, 11-ADC); speed tools (Chrome UX Report, Shopify Web Performance, PageSpeed Insights) (06, 08-SPD).
+
+## 11. Freshness and stale-risk notes
+
+| item | why it goes stale | re-verify | rules affected |
+|---|---|---|---|
+| Microsoft Clarity interface | 04's walkthrough was recorded 29 July 2024 despite a 2026 title; Insights, Smart events, Area maps, Change screenshot, Edit areas, Skip inactivity, sort options may have moved or been renamed | before each P4 to P6 run; at least every 6 months | R24, R29, R30, P4, P5, P6 |
+| Clarity "free, no data limit" | stated "at the time of this recording" (07, undated) | before any tool decision | R38 |
+| Hotjar pricing | Plus at $32 a month for 100 daily sessions; surveys paid separately; user interviews "newer feature" (07, undated) | before any budget; yearly | R38, P7 |
+| Userbrain $40 per tester; Okendo unlimited responses | undated vendor quotes (07) | before any budget | R35, R38, P7, P9 |
+| Shopify checkout A/B limits | 05 flags the position "as of late 2025" and says re-verify yearly; checkout extensibility rolled out August 2024; Rollouts plan tier and features | yearly, and before any checkout test plan | R123, R132, R133, P22 |
+| Testing vendor engines and free tiers | VWO 50,000 tested users a month; Statsig 1M events a month; Optimizely CUPED default; Kameleoon SRM threshold (05, 2025 to 2026) | before each brief; yearly | R68, R69, R134, P14 |
+| Google Optimize | sunset 30 September 2023; do not plan on it | none | R134 |
+| Baymard figures | 70.22% updated 22 Sep 2025; abandonment reasons quoted from memory by 02 and 06 | yearly | R16, R116 |
+| 03's 300,000-session line | described as a recent internal update driven by iOS 14 tracking loss and rising CPMs "in the last 6 to 12 months" (2025) | yearly | R53 |
+| 05's order bands | author synthesis on 2 to 3% conversion and anonymous traffic; not eligibility gates | recompute per brand each time | R53 |
+| 01's tools and prices | ResponseTap about £250 a month, Live Call $49 or $59, Tawk.to free, Leadpages about £60, Delighted; all 2020; Skype named | before any use; likely changed or closed | none core to this folder |
+| AI-referred traffic figures | +4,700% year over year Jul 2024 to Jul 2025; Shopify conversion and spend claims (06) | quarterly | 5.4 row |
+| Review-incentive, prize-draw, personalised-pricing and delivery-disclosure rules | vary by market and change | before each affected test | R33, R104, R122, R129 |
+| Speed metrics | INP replaced FID in 2024; elasticities in 06 are unsourced | 08-SPD owns | R125 |
+| Case results | all monthly revenue and lift figures are agency or vendor claims from 2019 to 2025 with no sample, duration or confidence | never treat as current or transferable | R77, P16 |
+
+## 12. Source index
+
+| no. | title | type | credibility and bias | contributed most |
+|---|---|---|---|---|
+| 01 | COMPLETE Revenue-increasing CRO Course (Exposure Ninja) | course, video transcript, 2020, 38 cards | UK marketing agency lead selling done-for-you marketing and a free review. Evidence: own client sites (PPI claims, exhibition stands, surveys company), 1 third-party split test (ADT, no sample), 1 HubSpot form study, seminar exercises. No sample sizes, durations or significance anywhere. Built for lead generation and service businesses; ecommerce is asides and 1 teardown (Shark Proof). Ecommerce uses in the cards are the card writers' adaptations. Calls conversion rate "the only metric that matters". Credibility: low for ecommerce testing; moderate as a qualitative audit frame. | CLOSER audit frame (credibility, lure, objection handling, social proof, ease, result); objections to the first step; say what happens after the click; proof beside the CTA; familiar UI; menu as guide; form-field trade-offs; email-capture lures; quiz order. |
+| 02 | eCommerce CRO Masterclass 2026: The Full System | talk, whiteboard and screen share, 47 cards | Unnamed performance-marketing agency lead auditing DTC brands (pitch: free audit for brands over $10M). Evidence: client data, "internal model", own 2019 to 2020 store tests (shipping, reviews), Baymard as cited, mockups. No sample sizes for own findings. Openly sceptical of CRO agencies and micro-testing, which is also a positioning. Some self-contradictions (C19). Credibility: moderate; strongest on metric framing, message match and checkout economics; thin on statistics. | RPV and contribution per visitor; conversion rate as output; CAC leverage; mix diagnosis before redesign; clarity, copy, offer, proof, friction order; 4 hero questions; message match; reviews 0 to 100; trust badges do nothing; checkout extras under 10% of AOV; contamination from Klaviyo and multi-click; ~1,000 conversions per variant; test only big swings; LTV guardrail. |
+| 03 | Conversion Rate Optimization Framework Revealed (Conversion Wise, hosted by Ezra Firestone) | talk, live webinar, 2025, 35 cards | Co-founder of a Shopify CRO agency (3,500+ brands, "thousands" of tests claimed). Host is a paying client who sells Zipify; partner (heatmap.com) and sponsor (price-testing tool) disclosed. Evidence: client cases with monthly revenue claims, no sample, duration or confidence; combined-change results. Win-rate claim (30 to 35%) contradicts its own showcase (13 of 135). Credibility: moderate on research method and test hygiene; low on case numbers; commercial bias high. | 300,000-session model split; big-swings list; non-negotiables (funnel, PDP heatmap, false clicks, post-purchase survey, review mining); "what almost stopped you"; hypothesis = change, outcome, rationale; PXL as described; 2 to 4 weeks, each weekday twice; no conflicting tests; QA 2 to 3 times; protect winners; mega menu, PDP, cart coupon, collection, listicle, cart gamification, multi-buy cases. |
+| 04 | Microsoft Clarity COMPLETE Tutorial in 2026 | transcript, YouTube tutorial, recorded July 2024, 11 cards | Unnamed CRO agency presenter selling a free audit. Evidence: client audits and Clarity's demo account; no results, no statistics. Benchmarks (1 to 2% rage clicks, 5 to 7% CTA click share, 60% never scroll past the top) are unsourced heuristics. Many examples are SaaS or B2B. Credibility: moderate as a tool method; low for any number. | Insights block method; rage, dead, excessive scroll, quick back classification; click, scroll and Area map reading; scroll checkpoints; recording selection, sorting, stopping rule and 1 to 2 hour blocks; core-action-first principle; turn a finding into a hypothesis; post-ship recheck. |
+| 05 | CRO as testing and experimentation for DTC ecommerce | article, synthesised research brief with tiered sources, 2025 to 2026, 19 cards | Unnamed author; not first-hand practice; sells nothing. Almost every statistical claim ties to a named primary source (Kohavi, Tang and Xu 2020; Evan Miller 2010, 2015; Johari et al.; Spotify, Etsy, LinkedIn engineering; CUPED paper; Baymard; vendor docs). Rejects unsourced win rates and vendor case studies. Order-volume bands are the author's own synthesis. Credibility: highest in the folder for statistics and discipline; moderate for the bands; some 2026 SEO posts used only for tooling facts. | Repair vs test; MDE formula and sample table; conversions per variant; two-tailed default; peeking and sequential engines; Bayesian caveat; runtime rule; novelty; before-and-after bias; SRM, flicker, bots, promo overlap; Twyman's law; metric choice and RPV penalty; guardrails and pre-registered segments; CI over p-values; inconclusive as a result; experiment log; win-rate benchmarks with definitions; Shopify checkout limits; price-test ethics; order bands; prioritisation frames and expected value. |
+| 06 | CRO fundamentals (holdouts, incrementality, causal inference; ecommerce CRO deep research) | article, 2 AI-style deep-research reports, 2025 to 2026, 19 cards | No author; reads as an LLM research output. Most numbers name a source loosely (Baymard, IAB, Shopify, Columbia) with no links, samples or dates; several illustrations presented next to real cases; case table is vendor and agency claims. Internal contradictions (speed elasticities, Baymard percentages). "60%+ win rate" and "CUPED is free sensitivity" conflict with 05. Credibility: low to moderate; useful as a checklist and a map of measurement designs; every benchmark directional. Header labels it 06-MEA; speed, recovery flows and channel incrementality belong to neighbours. | Measurement design picker; programme and feature holdouts; winners do not add up; net revenue over engagement; funnel stage bands; page-type checklists (home, category, PDP, cart, checkout, mobile); checkout priorities; guest checkout; local payment methods; mobile targets (44px, LCP under 2 s); AI-referred visitors; causal-learning log. |
+| 07 | HotJar vs Microsoft Clarity: Which is Better For Your Website? | transcript, YouTube comparison, undated, 8 cards | Unnamed CRO and web design firm (clients 300,000 to 400,000 visitors a month) migrating clients to Clarity for cost; sells services, not tools. Evidence: 1 Area map finding and 1 test result (18% lift) with no statistics; vendor prices at recording time. Credibility: moderate for tool comparison; low for the result. | Clarity vs Hotjar feature comparison; cost at real traffic; unbundled stack (Clarity, Okendo, Userbrain, GA4 Explore); high-click low-reach pattern; exit and post-purchase survey questions; task-based user tests; GA4 Explore funnels. |
+
+**Neighbour folders and what lives there**
+
+- 06-MEA (measurement): GA4 event setup, funnel configuration, tracking QA, attribution, attribution-style post-purchase surveys, difference-in-differences, BSTS, synthetic control, propensity matching, instrumental variables, regression discontinuity. 05 and 06 carry this header label.
+- 07-LPG (landing pages): page design, copy rewrites, hero and gallery builds, landing-page formats (listicle, advertorial, VSL page), offer construction detail, FAQ writing. 02 was originally tagged for 07-LPG. This folder's 3.10 rules seed hypotheses only.
+- 08-SPD (speed): LCP, INP, image and script work, real-user monitoring. 06's speed section belongs there.
+- 11-ADC (ad channels): Meta ad-set or campaign splits for page tests, retargeting and geo holdouts, platform lift studies, on/off tests, ad metrics.
+- 14-EML (email and retention): cart-recovery email and SMS flows, list holdouts, campaign incrementality. 06's recovery section belongs there.
+- 20-FIN (finance): contribution margin definitions, LTGP:CAC, unit economics beyond gross margin.
+- 24-DEP (ad deployment) and 12-GAD (Google Ads): not referenced by these sources.
