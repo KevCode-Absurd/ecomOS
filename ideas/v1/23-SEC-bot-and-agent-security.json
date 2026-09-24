@@ -2737,7 +2737,8 @@
     "0393d1e220fb",
     "1ffc9074018e",
     "825a61a6a5f9",
-    "99dad989b12b"
+    "99dad989b12b",
+    "95fe4dae8743"
    ],
    "rules": [
     "R61",
@@ -2878,7 +2879,8 @@
     "ef4261b02222",
     "f4b6df714ffd",
     "45a137425080",
-    "3a100f8d7140"
+    "3a100f8d7140",
+    "d5c07946bb53"
    ],
    "rules": [
     "R64",
@@ -8122,7 +8124,9 @@
    "read_point": "right after the model is built, then refreshed yearly"
   },
   "sources": {
-   "mini_playbooks": [],
+   "mini_playbooks": [
+    "01"
+   ],
    "cards": [
     "91d7cee32897",
     "a1aa08fcea08",
@@ -8752,5 +8756,764 @@
   },
   "confidence": "medium",
   "general_practice": false
+ },
+ {
+  "id": "SEC-135",
+  "domain": "23-SEC",
+  "title": "Check both sides of any postMessage call before trusting the data",
+  "bottleneck": [
+   "risk_compliance"
+  ],
+  "lever": "postMessage origin validation",
+  "hypothesis": "If every postMessage sender names the exact target origin and every receiver checks event.origin before using event.data, then a widget or iframe cannot leak account details to any embedding site or accept a forged message from an attacker.",
+  "applies_when": [
+   "any"
+  ],
+  "does_not_apply_when": [
+   "No cross-origin postMessage calls exist in the storefront code"
+  ],
+  "signal": {
+   "check": "A postMessage call uses a wildcard target origin, or a message listener reads event.data before checking event.origin.",
+   "metrics": [
+    "other:postmessage_incident_count"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:postmessage_incident_count",
+   "direction": "down",
+   "size": "unknown",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "dev"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "None; this only adds a check."
+  },
+  "prerequisites": [
+   "A list of every postMessage sender and listener in the storefront and any embedded widgets"
+  ],
+  "steps": [
+   "List every place the storefront sends or listens for postMessage.",
+   "For each sender, pass the exact destination origin, never a wildcard.",
+   "For each listener, check event.origin against the expected value before using event.data.",
+   "Test with a page from a different origin to confirm a forged message is rejected."
+  ],
+  "test": {
+   "method": "Send a test message from an unrelated origin to each listener",
+   "measure": "whether the forged message is rejected",
+   "read_point": "right after the fix ships"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "01"
+   ],
+   "cards": [
+    "35429981841411264488edb3"
+   ],
+   "rules": []
+  },
+  "confidence": "medium",
+  "general_practice": true
+ },
+ {
+  "id": "SEC-136",
+  "domain": "23-SEC",
+  "title": "Replace JSONP with a CORS endpoint or server-side proxy for partner data",
+  "bottleneck": [
+   "risk_compliance"
+  ],
+  "lever": "JSONP removal",
+  "hypothesis": "If a JSONP call to a partner or marketplace API is replaced with a CORS-enabled endpoint or a server-side proxy, then a compromised partner API can no longer run arbitrary script on the storefront page.",
+  "applies_when": [
+   "marketplace_heavy",
+   "any"
+  ],
+  "does_not_apply_when": [
+   "No JSONP calls exist anywhere in the storefront or theme code"
+  ],
+  "signal": {
+   "check": "A storefront page loads a script tag with a callback query parameter to read data from a partner or affiliate API.",
+   "metrics": [
+    "other:jsonp_call_count"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:jsonp_call_count",
+   "direction": "down",
+   "size": "unknown",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "M",
+   "owner": "dev"
+  },
+  "cost": "low",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "Removing JSONP does not change the data shown once the replacement call works."
+  },
+  "prerequisites": [
+   "A list of every JSONP call in theme, app or custom code"
+  ],
+  "steps": [
+   "Grep theme and app code for callback query parameters and script tags built from a partner URL.",
+   "Ask the partner for a CORS-enabled JSON endpoint or existing API key access.",
+   "If no CORS endpoint exists, fetch the data server-side and re-serve it from the store's own origin.",
+   "Remove the JSONP script tag once the replacement call is confirmed working."
+  ],
+  "test": {
+   "method": "Compare the data shown before and after the switch on a staging page",
+   "measure": "page renders the same data with no JSONP script tag present",
+   "read_point": "right after the change ships"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "01"
+   ],
+   "cards": [
+    "4b7cd675a290a92feac0cbf0"
+   ],
+   "rules": []
+  },
+  "confidence": "medium",
+  "general_practice": true
+ },
+ {
+  "id": "SEC-137",
+  "domain": "23-SEC",
+  "title": "Add rel=noopener to every outbound target=_blank link",
+  "bottleneck": [
+   "risk_compliance",
+   "trust_brand"
+  ],
+  "lever": "tab-nabbing defense",
+  "hypothesis": "If every outbound link that opens a new tab carries rel=noopener, then the new tab cannot silently redirect the original storefront or blog tab to a fake login page.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "An outbound link to an external site uses target=_blank with no rel=noopener or rel=noreferrer attribute.",
+   "metrics": [
+    "other:tabnabbing_risk_count"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:tabnabbing_risk_count",
+   "direction": "down",
+   "size": "unknown",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "dev"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "None; this only removes a back-reference the new tab does not need."
+  },
+  "prerequisites": [
+   "Access to the theme, blog and email templates that render outbound links"
+  ],
+  "steps": [
+   "Grep templates and content for target=_blank links to external domains.",
+   "Add rel=noopener and rel=noreferrer to each one, or set it in the shared link-rendering component.",
+   "Cover blog posts, reviews, help articles and any user-generated content with outbound links.",
+   "Recheck after any theme or CMS update, since a new template can reintroduce the gap."
+  ],
+  "test": {
+   "method": "Open an outbound link and confirm the new tab has no window.opener reference back",
+   "measure": "share of outbound target=_blank links carrying rel=noopener",
+   "read_point": "right after the fix ships, then after each theme update"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "01"
+   ],
+   "cards": [
+    "d749fee9fe72804830c44e54"
+   ],
+   "rules": []
+  },
+  "confidence": "medium",
+  "general_practice": true
+ },
+ {
+  "id": "SEC-138",
+  "domain": "23-SEC",
+  "title": "Hex-encode or use a template tag for data inside inline script blocks",
+  "bottleneck": [
+   "risk_compliance"
+  ],
+  "lever": "inline script escaping",
+  "hypothesis": "If untrusted data placed inside an inline script block is hex-encoded and decoded at runtime, or moved into an inert template tag instead, then a literal closing script tag in the data cannot break out and inject a new script block.",
+  "applies_when": [
+   "any"
+  ],
+  "does_not_apply_when": [
+   "No untrusted data is ever written directly into an inline script block"
+  ],
+  "signal": {
+   "check": "Server-rendered code writes a user-controlled value directly into an inline script block using only quote or backslash escaping.",
+   "metrics": [
+    "other:xss_incident_count"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:xss_incident_count",
+   "direction": "down",
+   "size": "unknown",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "M",
+   "owner": "dev"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "None; this changes how a value is encoded, not what it displays."
+  },
+  "prerequisites": [
+   "A list of every place untrusted data is written into an inline script block"
+  ],
+  "steps": [
+   "Find every inline script block that includes a user-controlled or request-derived value.",
+   "Hex-encode the value before embedding it, and decode it back to the real value at runtime in JS.",
+   "Where practical, move the value into an inert template tag instead and read it via the DOM at runtime.",
+   "Test with a payload containing a literal closing script tag and confirm it cannot start a new script block."
+  ],
+  "test": {
+   "method": "Submit a value containing a closing script tag to each affected field and inspect the rendered page source",
+   "measure": "whether the literal closing tag breaks out of the script block",
+   "read_point": "right after the fix ships"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "01"
+   ],
+   "cards": [
+    "c9669d9997786ccae97c5212",
+    "48e61c95a937f72e2f78d16a"
+   ],
+   "rules": []
+  },
+  "confidence": "medium",
+  "general_practice": true
+ },
+ {
+  "id": "SEC-139",
+  "domain": "23-SEC",
+  "title": "Monitor Safe Browsing status for the storefront domain",
+  "bottleneck": [
+   "risk_compliance",
+   "trust_brand"
+  ],
+  "lever": "malware and phishing blocklist monitoring",
+  "hypothesis": "If the store registers for Safe Browsing or search-console alerts on its own domain, then a malware or phishing flag on the storefront is caught and fixed within hours instead of being found later through lost traffic and a support backlog.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "No one has registered the storefront domain for Safe Browsing or search-console security alerts, so a flag would only be found when a customer or browser warning is reported.",
+   "metrics": [
+    "other:blocklist_flag_count"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:blocklist_flag_count",
+   "direction": "down",
+   "size": "unknown",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "dev"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "None; this is monitoring, not a live change."
+  },
+  "prerequisites": [
+   "Ownership verification of the storefront domain with the search console or webmaster tool used"
+  ],
+  "steps": [
+   "Verify domain ownership in a search console or webmaster tool that reports Safe Browsing status.",
+   "Turn on security-issue email alerts for the domain.",
+   "Assign a named person to act on any alert the same day it arrives.",
+   "Test the alert path once, then review quarterly that alerts are still delivered."
+  ],
+  "test": {
+   "method": "Confirm the alert email address is current and receives a test notification",
+   "measure": "time from a flag being raised to a person acting on it",
+   "read_point": "right after setup, then quarterly"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "01"
+   ],
+   "cards": [
+    "a6e67bdd604d"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "SEC-140",
+  "domain": "23-SEC",
+  "title": "Allow password paste and recommend a password manager to customers",
+  "bottleneck": [
+   "risk_compliance",
+   "trust_brand"
+  ],
+  "lever": "customer password manager support",
+  "hypothesis": "If login and password fields allow paste and autofill, and the store points customers to a password manager, then customers can use long unique passwords instead of weak reused ones, and phishing succeeds less often because a password manager only fills on the real origin.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "The password or confirm-password field blocks paste, or autofill does not work, on the login, registration or checkout account fields.",
+   "metrics": [
+    "other:ato_count"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:ato_count",
+   "direction": "down",
+   "size": "unknown",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "dev"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "None; removing a paste block does not weaken any other control."
+  },
+  "prerequisites": [
+   "Access to the login, registration and checkout account form code"
+  ],
+  "steps": [
+   "Test whether paste and autofill work on every password field: login, registration, checkout, password reset.",
+   "Remove any JavaScript that blocks paste into a password field.",
+   "Add a short help-center note recommending a password manager for the store account.",
+   "Confirm autofill still works after any theme or checkout update."
+  ],
+  "test": {
+   "method": "Copy a generated password and paste it into each password field on staging",
+   "measure": "share of password fields that accept paste and autofill",
+   "read_point": "right after the fix ships"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "01"
+   ],
+   "cards": [],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "SEC-141",
+  "domain": "23-SEC",
+  "title": "Offer passwordless passkey login as an option for customer accounts",
+  "bottleneck": [
+   "risk_compliance",
+   "conversion"
+  ],
+  "lever": "customer passwordless login",
+  "hypothesis": "If customer accounts can sign in with a WebAuthn passkey instead of a password, then account takeover from phishing and credential stuffing drops for customers who enroll, because a passkey only works on the real origin and never leaves the device.",
+  "applies_when": [
+   "custom_platform",
+   "shopify"
+  ],
+  "does_not_apply_when": [
+   "The platform gives no way to add passkey or WebAuthn login to customer accounts"
+  ],
+  "signal": {
+   "check": "Customer accounts can only sign in with a password, and the platform or a plugin supports passkey login that is not turned on.",
+   "metrics": [
+    "other:ato_count",
+    "cvr_checkout_to_order"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:ato_count",
+   "direction": "down",
+   "size": "unknown",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "M",
+   "owner": "dev"
+  },
+  "cost": "low",
+  "risk": {
+   "level": "medium",
+   "reversible": true,
+   "note": "Decide the account recovery path before rollout, since a lost device with no fallback locks the customer out."
+  },
+  "prerequisites": [
+   "Platform or plugin support for WebAuthn or passkey customer login",
+   "A decided account recovery path"
+  ],
+  "steps": [
+   "Confirm whether the platform or an app supports passkey login for customer accounts.",
+   "Decide the recovery path for a customer who loses their passkey device before turning it on.",
+   "Offer the passkey as an option alongside the password, not a forced replacement, at first.",
+   "Track enrollment and login success rate for passkey versus password customers.",
+   "Promote the option on the account page once it is confirmed working end to end."
+  ],
+  "test": {
+   "method": "Enroll a test account with a passkey and complete a full login and checkout",
+   "measure": "passkey enrollment rate and login success rate versus password login",
+   "read_point": "30 days after launch"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "01"
+   ],
+   "cards": [
+    "a55298b2b401",
+    "cb2bba93c89d"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "SEC-142",
+  "domain": "23-SEC",
+  "title": "Run automated dependency vulnerability scanning on every build",
+  "bottleneck": [
+   "risk_compliance"
+  ],
+  "lever": "automated CVE scanning",
+  "hypothesis": "If every build runs an automated dependency vulnerability scan, then a package with a known security flaw is caught before release instead of relying only on someone reading changelogs or security bulletins.",
+  "applies_when": [
+   "custom_platform"
+  ],
+  "does_not_apply_when": [
+   "The store has no custom codebase or build pipeline to scan"
+  ],
+  "signal": {
+   "check": "No automated tool checks installed dependencies against known-vulnerability data; the only check is manual changelog reading.",
+   "metrics": [
+    "other:known_cve_dependency_count"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:known_cve_dependency_count",
+   "direction": "down",
+   "size": "unknown",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "dev"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "None; scanning does not change running code by itself."
+  },
+  "prerequisites": [
+   "A build or CI pipeline the scanning tool can run in"
+  ],
+  "steps": [
+   "Add an automated dependency vulnerability scan, for example npm audit or a Dependabot-style tool, to the build pipeline.",
+   "Set the pipeline to fail or flag the build on a high-severity known vulnerability.",
+   "Assign a named person to triage and fix or accept each flagged finding.",
+   "Review the scan's findings history monthly to confirm alerts are being acted on."
+  ],
+  "test": {
+   "method": "Introduce a dependency with a known flaw on a test branch and confirm the scan flags it",
+   "measure": "whether the scan catches the planted vulnerability",
+   "read_point": "right after the scan is added"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "01"
+   ],
+   "cards": [],
+   "rules": []
+  },
+  "confidence": "medium",
+  "general_practice": true
+ },
+ {
+  "id": "SEC-143",
+  "domain": "23-SEC",
+  "title": "Change default credentials and update firmware on store network devices",
+  "bottleneck": [
+   "risk_compliance"
+  ],
+  "lever": "IoT and network device hardening",
+  "hypothesis": "If routers, POS terminals, cameras and printers on the store network get their default admin credentials changed, are kept off the open internet, and run current firmware, then they stop being an easy target for botnets and local network attackers.",
+  "applies_when": [
+   "any"
+  ],
+  "signal": {
+   "check": "A router, POS terminal, camera or printer on the store network still uses its default admin password, is reachable directly from the internet, or has not been updated in over a year.",
+   "metrics": [
+    "other:device_hardening_score"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:device_hardening_score",
+   "direction": "up",
+   "size": "unknown",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "S",
+   "owner": "ops"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "None; this only removes default access and closes exposure."
+  },
+  "prerequisites": [
+   "A list of every network device at the store or warehouse"
+  ],
+  "steps": [
+   "List every router, POS terminal, camera, printer and other networked device the store operates.",
+   "Change every device's admin password from its factory default.",
+   "Confirm none of these devices is reachable directly from the open internet.",
+   "Check each device's firmware version and update it, or replace devices no longer supported.",
+   "Repeat the check yearly or after adding any new device."
+  ],
+  "test": {
+   "method": "Scan the store network for default-credential logins and any device reachable from outside",
+   "measure": "count of devices still on default credentials or open to the internet",
+   "read_point": "right after the fix, then yearly"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "01"
+   ],
+   "cards": [
+    "94f2b6b91c876288807a8d6d",
+    "9ff2f352f40f41df418904fd",
+    "10ca40764a04813e3ee1abb7"
+   ],
+   "rules": []
+  },
+  "confidence": "medium",
+  "general_practice": true
+ },
+ {
+  "id": "SEC-144",
+  "domain": "23-SEC",
+  "title": "Remove document.domain relaxation and use postMessage instead",
+  "bottleneck": [
+   "risk_compliance"
+  ],
+  "lever": "same-origin policy hardening",
+  "hypothesis": "If any use of document.domain to relax the Same-Origin Policy is removed and replaced with explicit postMessage communication, then a compromise of one subdomain can no longer silently reach into every other subdomain that opted into the same relaxed domain.",
+  "applies_when": [
+   "custom_platform"
+  ],
+  "does_not_apply_when": [
+   "No code sets document.domain anywhere in the storefront or its subdomains"
+  ],
+  "signal": {
+   "check": "Any page under the store's domain sets document.domain to relax the Same-Origin Policy for cross-subdomain access.",
+   "metrics": [
+    "other:sop_relaxation_count"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:sop_relaxation_count",
+   "direction": "down",
+   "size": "unknown",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "M",
+   "owner": "dev"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "None; this removes a legacy pattern and replaces it with an equivalent one."
+  },
+  "prerequisites": [
+   "Access to the source of every subdomain under the store's main domain"
+  ],
+  "steps": [
+   "Grep every subdomain's codebase for document.domain.",
+   "Treat any match as a finding to fix, not a pattern to keep.",
+   "Replace the cross-subdomain communication it enabled with postMessage, checking origin on both sides.",
+   "Confirm the replaced flow still works end to end after the change."
+  ],
+  "test": {
+   "method": "Grep production code for document.domain after the change",
+   "measure": "count of remaining document.domain occurrences",
+   "read_point": "right after the fix ships"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "01"
+   ],
+   "cards": [
+    "bb7586c2f74e",
+    "d284c7bd19428954559fd700"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "SEC-145",
+  "domain": "23-SEC",
+  "title": "Strip CORS access-control headers from endpoints that should not share data",
+  "bottleneck": [
+   "risk_compliance"
+  ],
+  "lever": "CORS response header audit",
+  "hypothesis": "If a broad cross-origin sharing header is removed from any API endpoint that was never meant to share its response with another site's script, then a different origin can no longer read customer or order data through a permissive CORS header.",
+  "applies_when": [
+   "custom_platform"
+  ],
+  "does_not_apply_when": [
+   "No custom API endpoints set CORS headers"
+  ],
+  "signal": {
+   "check": "An endpoint returning customer, order or account data sets a wildcard or broad cross-origin sharing header with no real cross-origin need.",
+   "metrics": [
+    "other:cors_exposure_count"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:cors_exposure_count",
+   "direction": "down",
+   "size": "unknown",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "M",
+   "owner": "dev"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "medium",
+   "reversible": true,
+   "note": "Removing a CORS header can break a legitimate integration that relies on it; confirm nothing needs it first."
+  },
+  "prerequisites": [
+   "A list of every API endpoint and its current CORS response headers"
+  ],
+  "steps": [
+   "List every endpoint and check its cross-origin sharing response header, if any.",
+   "For each one, confirm whether a real, named cross-origin caller needs it.",
+   "Remove the header from any endpoint with no confirmed cross-origin need, especially ones returning customer or order data.",
+   "Narrow any remaining header from a wildcard to the exact origin that needs it."
+  ],
+  "test": {
+   "method": "Fetch each sensitive endpoint from a test page on a different origin before and after the change",
+   "measure": "whether the cross-origin fetch can read the response",
+   "read_point": "right after the fix ships"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "01"
+   ],
+   "cards": [
+    "8764cd07524b998029c71190",
+    "40f9a5454ce6c953349bc4f9",
+    "f844ddaf929484dd697579c9"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
+ },
+ {
+  "id": "SEC-146",
+  "domain": "23-SEC",
+  "title": "Stream large file downloads instead of buffering them in memory",
+  "bottleneck": [
+   "risk_compliance",
+   "site_speed"
+  ],
+  "lever": "large file streaming",
+  "hypothesis": "If large downloads such as order exports, invoices and media files are streamed to the client instead of loaded fully into server memory first, then a burst of large-file requests cannot exhaust server memory and take down the store.",
+  "applies_when": [
+   "catalogue",
+   "scaling_store"
+  ],
+  "does_not_apply_when": [
+   "The store serves no large files itself; all media and exports are served from a CDN or third-party storage"
+  ],
+  "signal": {
+   "check": "A download or export endpoint reads the whole file into memory before sending it, instead of streaming it to the response.",
+   "metrics": [
+    "other:memory_exhaustion_incident_count"
+   ]
+  },
+  "expected_effect": {
+   "metric": "other:memory_exhaustion_incident_count",
+   "direction": "down",
+   "size": "unknown",
+   "basis": "general_practice"
+  },
+  "effort": {
+   "size": "M",
+   "owner": "dev"
+  },
+  "cost": "none",
+  "risk": {
+   "level": "low",
+   "reversible": true,
+   "note": "None; streaming produces the same file to the client."
+  },
+  "prerequisites": [
+   "A list of every endpoint that serves a large file: exports, invoices, media, backups"
+  ],
+  "steps": [
+   "List every endpoint that serves a large file: exports, invoices, media, backups.",
+   "For each one, confirm whether the code buffers the whole file before sending it.",
+   "Switch any buffering endpoint to a streaming response.",
+   "Load-test the endpoint with concurrent large-file requests and watch server memory."
+  ],
+  "test": {
+   "method": "Request several large files concurrently on staging and watch server memory usage",
+   "measure": "peak server memory during concurrent large-file requests, before and after the change",
+   "read_point": "right after the fix ships"
+  },
+  "sources": {
+   "mini_playbooks": [
+    "01"
+   ],
+   "cards": [
+    "30411f850269439713dc634f"
+   ],
+   "rules": []
+  },
+  "confidence": "low",
+  "general_practice": true
  }
 ]
