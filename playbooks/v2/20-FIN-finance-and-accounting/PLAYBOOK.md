@@ -1005,3 +1005,141 @@ Steps:
 7. Alerts fired (9.4) and the recommended action for each, with the CAC line unchanged unless the owner changes it (R51).
 Checks: every number carries its definition label and period.
 
+### P15. Monthly P&L review and constraint diagnosis (03, 01, 02)
+
+Goal: name the 1 constraint the business should work on this month.
+Preconditions: P1, P2, targets per line.
+Steps:
+1. Compare each line's percent to last month, to the trailing 3 months and to target.
+2. For any missed line, look only above it (R25): missed EBITDA means OPEX, marketing or COD; missed CM3 means marketing or COD; missed CM2 means COD or revenue (refunds, discounts, shipping collected).
+3. Within the failing bucket, find the lever: refund causes by product and cohort, discount code use, shipping pricing, landed cost, pick and pack, fees, media efficiency (aMER), OPEX creep.
+4. Check the promo month margin dip is explained by discount, not by cost lines (R10).
+5. Read new vs returning profit contribution (R63) and the active customer file (R38).
+6. Write the constraint, the lever and the owner in the close pack. Do not cut budgets by reflex.
+Checks: 1 constraint named; the recommendation traces to a line above the miss.
+
+### P16. Break-even for any offer: percent off, BOGO, bundle, gift, discount vs CAC grid (03, 01)
+
+Goal: a go or no-go for a discount before it is public.
+Preconditions: CM2 percent at the offer price (P5), conversion assumptions by discount level, CPC, ad spend.
+Steps:
+1. Break-even ROAS and CAC at full price (F15).
+2. Repeat at the discounted price with costs unchanged. If break-even ROAS jumps to a level never seen on paid (03: 2.5 to 7), or break-even CAC falls below any observed CAC (03: $10), do not run it publicly (R69).
+3. Model the alternative shapes (F19, F20): BOGO or bundle (cost doubles, fulfillment rises about 20%, revenue held), gift with purchase (gift cost vs AOV lift). Compare CM2 and CM3 per order, then multiply by expected promo volume (R70).
+4. Run the discount vs CAC grid (F18) at equal spend across 3 discount levels; pick the highest total CM3 within brand limits (R68). Mark the conversion lifts as assumptions and hand the test to 09-CRO (R76).
+5. For sitewide sales, add expected cannibalisation of full-price buyers and the lower retention of sale cohorts (R71) `[needs brand data: sale cohort retention]`.
+6. Prefer attaching the deepest discount to a loyalty or subscription on-ramp; reserve flat discounts for grade C stock (R72).
+7. Never plan "no returns during the promo" (R74).
+Checks: every scenario shows CM3 per order and total CM3; the rejected scenarios are kept in the answer.
+
+### P17. Waterfall price for a product (03)
+
+Goal: a price that hits the CM3 target, checked against the market.
+Steps: 1. CM3 target percent = net target + OPEX percent (F27). 2. CAC estimate from comparable products `[needs brand data]`. 3. Return and discount allowance percent. 4. Shipping and fulfillment per order from the courier or 3PL quote. 5. Landed cost per unit times expected units per basket. 6. Payment fee rate. 7. Solve price (F28); the denominator must be positive. 8. Check competitor prices `[web check]`. 9. If far above market: premium positioning or do not sell (R79). 10. After launch, re-run with observed CAC, returns and fulfillment (R80).
+Checks: contribution at the solved price equals the target within rounding (03's inputs give $63.51 and 20%).
+
+### P18. Forecast: returning revenue, new-customer revenue, daily expectation (03, 02)
+
+Goal: a daily expected revenue line for the month and a monthly plan the team can execute.
+Preconditions: P9 cohort curve, 1 year of daily spend and new-customer revenue, dated marketing calendar (launches, promos, sends, seeding, PR).
+Steps:
+1. Returning revenue by month (F41): cohort size x repeat rate by age x returning AOV, summed; apply the 3-year seasonality factor; add planned events that differ from last year.
+2. New-customer revenue (F42): plot aMER vs daily spend, drop sale days, BFCM and days under the minimum spend; fit log or linear; read expected aMER at planned spend; back-solve the spend needed for the target; if that spend is not possible at that efficiency, name the input that beats last year's average (R87).
+3. Event effects: overlay every past action on revenue (annotations); measure each event type's effect on efficiency, returning revenue and organic demand; add planned events (02, no maths given).
+4. Add the email and SMS send calendar explicitly; returning revenue rises on send days.
+5. Sum into a daily expectation (F43). Track actuals daily; act by day 5 (R40).
+6. For short or broken history: regress to comparable brands, cut before structural breaks, give a range (R86).
+7. Re-forecast when observed CAC or aMER replaces a placeholder (R50).
+Checks: new plus returning plus events ties to the monthly plan; every uplift has a named action.
+`[needs brand data: 24+ months of monthly spend, new-customer revenue, AOV, cohort revenue by month, dated calendar]`
+
+### P19. Read the 3 statements and reconcile profit to free cash flow (05, 01)
+
+Goal: explain every month where profit and cash point different ways.
+Preconditions: monthly P&L, balance sheet and cash flow for at least 6 months.
+Steps:
+1. Side by side: revenue, net income, FCF, cash balance. Mark months where net income and FCF diverge.
+2. Income statement: mark cash-equal lines (payroll, ads, rent, software) and non-cash or mistimed lines (depreciation, product cost, tax accrual). Rising depreciation means asset purchases; an interest line means debt.
+3. Balance sheet: assets = liabilities + equity; movements in cash, inventory, receivables, payables, capitalised assets, tax liability, loans.
+4. Operating cash flow from net income with the working-capital adjustments (F37); investing (capex, build); FCF; financing; net cash flow equals the change in cash.
+5. For each divergent month, rank the drivers by size: inventory build, capitalised development, tax payment, principal repayment. Confirm a planned inventory build has a sell-through timeline; an unplanned one is fixed before the spend repeats. Look at several months, not 1.
+6. Confirm FCF definition and capitalisation policy with the accountant `[web check: capitalisation rules and useful-life norms]`.
+Checks: net cash flow ties to the bank; FCF sign convention stated (C20).
+
+### P20. Mini cash flow, inventory roll and runway; the 13-week cash forecast (01, 05, 02)
+
+Goal: the lowest cash month and runway, monthly for planning and weekly for the next 13 weeks.
+Preconditions: opening cash, forecast orders (P18), landed costs, supplier deposit and balance terms, lead times, OPEX, loan schedule, tax calendar.
+Steps:
+1. Inventory roll (F35): starting units, forecast units sold, arrivals lagged by lead time; PO sized to cover lead time plus cycle; no negative month.
+2. PO cash = units x weighted landed cost, placed on deposit and balance dates.
+3. Mini cash flow (F38): opening cash + net income minus inventory paid + product COGS of units sold minus other capex minus principal minus tax paid = closing cash.
+4. Find the lowest cash point and runway; test raise or facility timing (01: a $500,000 raise at month 6 was not enough; about $1.5M needed).
+5. 13-week version by week: receipts by channel (card payouts, marketplace payout lags), payroll dates, ad platform billing, PO deposits and balances, tax dates, loan dates, rent. Owner: CEO or CFO. The sources give no template; build it from F38 by week.
+6. Reserve cash for upcoming tax payments out of spending decisions.
+Checks: closing cash of month m equals opening cash of month m+1; inventory never negative; the 13-week and monthly views agree in the overlap.
+Rollback: if a PO would push the lowest cash below the buffer, move or split it, or seek terms (P24) before financing.
+
+### P21. Inventory grading, days of inventory and the weekly inventory-media meeting (02, 03)
+
+Goal: spend follows stock.
+Steps: 1. Days of inventory per SKU (F34); grade A to D by sell-through or days outstanding `[needs brand data: cut-offs]`; Shopify's inventory ranking can help `[verify UI: Shopify ABC inventory report]`. 2. Compare days of stock with lead time per SKU. 3. Top SKU selling out before restock (30 days of stock, 80-day reorder): raise its ROAS target or pause its ads; move spend to SKUs with stock (R108). 4. C and D stock: open a liquidation funnel (P23). 5. Check whether a winning ad died when a size or colour sold out; relaunch on restock. 6. Update the SKU matrix (R118) monthly. 7. Rationalise SKUs after each launch review (R114).
+Checks: no SKU with spend and under lead-time days of stock without a decision; every C or D SKU has a plan.
+
+### P22. Demand plan before a PO (02, 01)
+
+Goal: a PO backed by named demand and the media dollars to create it.
+Steps: 1. Units by channel: existing customers (email and SMS), influencer seeding, paid at a stated efficiency (F36). 2. Media dollars for the paid share = units x CAC estimate / conversion to units; wide error bars for a new category. 3. Model PO timing against the cash cycle (P20). 4. Start with a small bet that scales; test demand first where possible (R111). 5. Score the product against the named business problem (R117). 6. Sign-off: owner confirms the media budget exists before the PO is placed.
+Checks: the plan states units, dollars, efficiency and error bars; the PO does not exceed inventory the cash plan can carry.
+
+### P23. Liquidation funnel for C and D stock (02, 03)
+
+Goal: turn aged stock into cash without harming core acquisition.
+Steps: 1. List SKUs with days outstanding far above lead time. 2. Build an unlisted PDP or whitelisted creator page, not in site navigation. 3. Run ads to it excluding existing customers. 4. Choose: deep discount on that page only, or full price at a lower efficiency target (02: 1.0 or 0.8 ROAS vs 2.0 core; 03: break-even or a slight loss). 5. Other outlets in parallel: a discount email with a narrative if brand-safe; a bulk liquidator; a new country. 6. Report cash recovered, not ROAS; keep the spend in its own line so core aMER is not polluted. 7. Put the cash into a better bet.
+Checks: no liquidation spend counted in the acquisition CAC; the SKU's days of inventory falls week over week.
+
+### P24. Fix a cash conversion cycle squeeze and evaluate financing (03, 02, 01)
+
+Goal: shorten the CCC before borrowing; borrow only with a stress test.
+Steps: 1. Map lead time, MOQ, deposit and payment terms per supplier; compute CCC (F34). 2. Negotiate a smaller deposit (03: 20% up front, balance on shipment). 3. Find a shorter lead time (90 to 30 days). 4. Ask for terms longer than production plus sell-through (02: 90-day make, 120-day terms), trading a slightly higher unit cost, a longer contract or a bigger commitment; aim at consignment over time. 5. Pre-orders where demand is strong and suppliers will not move. 6. If financing is still needed: compare real quotes, collateral (usually personal), fees; model repayments as cash outflows with inventory payments kept in the schedule (R122); stress-test slower sales and lower efficiency (R119); never fund 3 months of stock with permanent equity (R120) `[web check: current inventory financing terms]`.
+Checks: CCC in days before and after; net margin at the stressed case stays above the owner's floor.
+
+### P25. Existing-customer ad budget (03)
+
+Goal: a retargeting budget from customer count, not a percent of spend.
+Steps: 1. Count existing customers. 2. Frequency 3 to 6 a month. 3. Existing-customer CPM from the platform's audience segment breakdown `[verify UI: Meta audience segments]`. 4. Budget = customers x frequency x CPM / 1000 (F32). 5. Sanity: 03 says even brands with millions of customers are usually fine at about $10K, up to $30K to $40K a month. 6. Check 7-day frequency on Meta; above 8 means overspending. 7. Report on 7-day click without view-through (R132).
+Checks: existing-customer spend is separated from acquisition spend in CAC (R44).
+
+### P26. Payroll sizing by the 12% rule (02, 01)
+
+Goal: a full-time payroll baseline the low month can carry.
+Steps: 1. Lowest revenue month of the year. 2. Baseline = 12% of it (F33). 3. Compare to current payroll and on-costs. 4. Move the excess to flex labour (agencies, freelancers, seasonal, offshore, AI). 5. Model payroll as salary / 12 x headcount by 3 to 4 buckets plus on-costs (01). 6. Note the costs the rule skips: legal, notice, quality, culture.
+Checks: OPEX percent after the move against the 10 to 15% flag (C4).
+
+### P27. Scenario answer: the next $10,000, spend up 50%, CAC sensitivity, the marginal test (03, 02, 01)
+
+Goal: a written scenario answer (deliverable 9.3) with totals, not per-customer margins.
+Steps:
+1. State the question and the scenarios (for example: +$10,000 to Meta, to Google, to TikTok; spend +50%; CAC +25%).
+2. For each scenario compute: expected aMER from the curve (F42), new customers, new-customer revenue, CM2, cm3_media and cm3_loaded totals, lowest cash month (F38), LTGP:CAC 90-day, payback.
+3. Marginal read (F44): incremental new-customer revenue / incremental spend per channel; stop where it hits break-even ROAS; move dollars from the lowest marginal aMER to the highest while both stay above break-even.
+4. Where the curve is thin, say so and recommend a +delta test or incrementality test (06-MEA).
+5. Compare on total CM3 at equal spend and on lowest cash month (R127); never on revenue alone.
+6. Keep the CAC line fixed in the answer unless the owner changes it (R51).
+Checks: every scenario carries the same definitions; the rejected scenarios are shown.
+
+### P28. Reconcile platform numbers to the books (02, 03, 04)
+
+Goal: every gap between Shopify, Meta, Google, Amazon, Metabase and the accounting system named and sized.
+Preconditions: month closed in the accounting system; platform exports for the same dates and timezone.
+Steps:
+1. Revenue: platform gross, discounts, refunds processed, shipping collected, tax; books net revenue. Gap causes: tax included, timezone, processed vs accrued refunds, shipping income coded elsewhere, currency, gift cards.
+2. Refunds: accrued (F31) vs processed; post the true-up; recompute the return rate.
+3. Fees: payment gateway and marketplace fees reported by the platform vs fees in the books; fees must sit in COD internally and follow policy in the statutory view.
+4. Marketing: platform spend by channel vs marketing in the books; billing lag and credits are named.
+5. Attribution: sum of platform-attributed revenue vs actual revenue; overlap is expected and is reported as a ratio, never as an error.
+6. COGS: units sold x landed cost vs COGS posted; inventory movement vs stock adjustments.
+7. Write each gap with its cause and whether it recurs; unexplained gaps go to the alert list (9.4).
+Checks: net revenue in the ladder equals books net revenue after named adjustments; the daily dashboard month-to-date ties to the close within the accrual difference.
+`[verify UI: Shopify reports, Meta Ads Manager export, Amazon settlement reports, Metabase card definitions]`
+
