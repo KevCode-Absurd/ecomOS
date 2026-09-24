@@ -197,3 +197,119 @@ Numbering runs across all groups. Each rule gives the rule, its condition, the m
 **R57. Count third-party services per page as a leading metric and hold it in the budget.** Condition: every audit and every app request. Each third-party script adds 34.1 ms on average (source 06); in many stores scripts are over 50% of load time (source 08); the count correlates with score at r = -0.66 (source 04). Beauty stores average 31 services per page, automotive 15 (source 04). Sources: 04, 06, 08. Cards: [c09e2fd0f0d7] [a62896aba3d8] [3d795cd17d4b].
 
 **R58. Moving third-party scripts to a web worker (Partytown) is a developer task and needs per-tool testing.** Condition: rebuild or framework storefront; not every script is compatible. Sources: 07. Cards: [717cf5ec82fd].
+
+### Group E. Theme code, CSS and JavaScript
+
+**R59. Reference theme CSS and JS through `asset_url` so the Shopify CDN serves the current version; fix URLs typed directly inside CSS.** Condition: Shopify themes with edits that do not show, or static URLs in CSS. `asset_url` adds a version (`?v=...`) that tells the CDN to pull the new file. Hovering an asset link in the code editor should say assets should be served from the Shopify CDN. Sources: 03, 01. Cards: [5748b07d6cda] [fdbc70a82f75]. [verify UI: Shopify URL filters]
+
+**R60. Remove Liquid loops that crawl a whole collection to find a condition, and loops run more than once for the same data.** Condition: themes worked on by several developers; large collections. Loops are fine for outputting images or variants and on small collections; repetition is the problem. Use `product.options_with_values` where it fits. No gain figure is given. Sources: 03. Cards: [11d911ca0868].
+
+**R61. Remove Quick View on collection pages; if it must stay, fetch product data on click.** Condition: any grid that pre-loads data for 20 to 30 tiles. Check click maps first to see if shoppers use it. Find the source: customizer toggle, then apps, then theme code (developer). Removing beats AJAX on click, which beats data attributes. Sources: 03. Cards: [6f05e9392e74]. [needs brand data: Quick View click usage]
+
+**R62. Minify CSS and JS, split code by page type, inline critical CSS and load the rest async, but only after images, scripts and hosting are done.** Condition: all platforms; developer task on custom themes. Product pages do not need checkout code; category pages do not need zoom. JS can shrink up to 80% with minification (a maximum, not typical). Assets you cannot minify or compress (served from an app's own host): ask the app's support or drop the app. Sources: 04, 01, 05. Cards: [c067983b290a] [c35b62b83860] [81ac749043da] [8f0d567d9844].
+
+**R63. Delay non-critical CSS with `media="print" onload="this.media='all'"` only for stylesheets that style nothing in view; never for critical CSS.** Condition: modal, drawer and below-fold section styles. Applying it to in-view styles causes unstyled content, CLS and a worse LCP. Confirm the swap happened in the Network panel; a failed onload leaves the sheet print-only. Sources: 01. Cards: [08d397da7d0d] [b73d08e8603c] [e9b7f4c3107e]. [web check: behaviour of the media=print trick in current browsers]
+
+**R64. If the theme lazy-loads its main CSS, the inlined critical CSS must be complete for each visually different template.** Condition: elements show unstyled for about 1 second then jump. Generate critical CSS per template (collection with banner vs without), serve it inline from theme.liquid via a snippet, then add reserve rules for anything still moving. Sources: 01, 04. Cards: [cabcd2d4c66e] [c067983b290a].
+
+**R65. Remove default WordPress bloat and unload page-specific assets.** Condition: WordPress and WooCommerce, logged-out visitors. Toggle off Gutenberg block CSS (only if unused), emojis, dashicons for logged-out users, pingbacks. Unload WooCommerce cart files, block styles and similar on pages that have no cart (13 files in 1 group on the demo). Keep global assets. Sources: 02. Cards: [83d6ff4a133c] [44c02380f01e] [701c087d0917]. [verify UI: builder and plugin settings]
+
+**R66. Render-blocking JavaScript before the main image is the pattern to avoid "at all cost"; server-side or hybrid rendering beats a client-rendered single-page app, but that is a rebuild.** Condition: headless or framework storefronts, or when a carousel plugin hides an already-downloaded image until its JS runs. Size server capacity before moving rendering to the server. Sources: 07, 09, 01. Cards: [cc2d433b9ede] [171da560af89] [1b9747314efd].
+
+**R67. Remove entrance effects, fade-ins, slide-ins, preloader bars and placeholders on in-view elements.** Condition: hero, first slide, main product image, header. Effects need a library to download first and delay display. Sources: 01, 07. Cards: [d56347d58c66] [7a213481a9d2] [3932af95de46].
+
+**R68. Pop-ups do not fire on page load; use exit intent or a time delay.** Condition: any pop-up app. Sources: 03. Cards: [a459458a1b47].
+
+**R69. APIs behind a storefront return only the fields a tile or page needs; caching should not be used to hide slow or unstructured APIs.** Condition: headless or custom front ends; a developer task coordinated between API and front end. Sources: 09. Cards: [34052dbf559b] [9973ef4b38a5].
+
+### Group F. Fonts
+
+**R70. Every `@font-face` rule carries `font-display: swap`, on every weight and italic.** Condition: any custom font. Without it the text can wait for the font on slow connections (invisible text). Sources: 01, 04. Cards: [027af5f63b68] [3ef856fab3ae] [3263b4728b85] [ea1d2a527d10] [74fc1378fc6a].
+
+**R71. Keep about 3 font variations at most, load only the fonts a page needs, and subset them.** Condition: custom fonts. 5 or 10 weights because of 1 occurrence is not worth it (source 01). Fonts are assets too (source 07). Sources: 01, 07, 04. Cards: [1eacf61a57a2] [cc2d433b9ede] [74fc1378fc6a].
+
+**R72. Self-host fonts as WOFF2 (WordPress) or use the platform's built-in theme fonts (Shopify) instead of calling Google Fonts.** Condition: fonts loading from a third-party server; no strong design reason for a custom font. Source 02 gives no number for the font step alone. Sources: 02, 04, 01. Cards: [731928d47c17] [74fc1378fc6a] [1eacf61a57a2].
+
+**R73. Style the fallback font to match the custom font's size and line height so the swap does not move text.** Condition: any swapped font causing CLS. Sources: 01. Cards: [14bc6ce5b8a6] [cce38d9369f2].
+
+### Group G. Layout shift (CLS)
+
+**R74. A CLS Google reports is real. CLS is unexpected movement without user input, during load and during scroll; a change after a click is not CLS.** Condition: reading any CLS figure. Check the desktop tab too. In source 01's experience most CLS is either a CSS issue or an app widget without reserved space, and apps are the main source. Sources: 01, 04, 05. Cards: [d16d1fcdd349] [24893ea78676] [f00068c50316] [2969a152a99d] [883371c7111c].
+
+**R75. Reserve space for everything that arrives late: app widgets, ads, embeds, iframes, cookie and consent banners, announcement bars.** Condition: any element injected after first paint. Measure the rendered size and fix the container's width and height in CSS; verify on the breakpoints you care about, since a fixed size can clip responsive widgets. Replace an app announcement bar with the theme's own. Sources: 01, 05, 07, 04. Cards: [24893ea78676] [ba43a0aaa747] [883371c7111c] [3932af95de46] [2969a152a99d] [f00068c50316].
+
+**R76. Delaying a consent banner removes its CLS and blocking, but check the consent rules for the store's markets first.** Condition: cookie banner causes CLS. Source 01 delays it to first interaction (example: CLS gone, score 48 to 57). The card caveat says this can have legal consequences. Merged: do not delay a consent banner without a documented go-ahead from whoever owns compliance. Sources: 01. Cards: [b1f2c1da412b] [867a3ac29ede]. [needs brand data: consent rules by market]
+
+**R77. Remove contradicting CSS instead of stacking overrides; move late body styles into the head; wrap desktop-only rules in a media query.** Condition: 2 stylesheets set different sizes for 1 element; a style in the body tag (example: page width 70%) rewrites base CSS after first render. One client fix used `min-width: 767px` so mobile stays full width. Prefer the theme's own layout width setting. Confirm the intended design with the owner first. Sources: 01. Cards: [24893ea78676] [80a761efcb18] [dbf103b05b0a] [3b3894441e6c] [f21b8466aa36].
+
+**R78. Fix CLS before the app delay snippet, because the snippet removes blocking time, not layout problems.** Condition: Shopify stores with both large CLS and many apps. Source 01 says the snippet is "not as effective" while CLS or LCP is large. Sources: 01. Cards: [4e05290f17d5] [37d2f02ad647]. See 7.4.
+
+### Group H. Largest Contentful Paint (LCP)
+
+**R79. Name the LCP element per template before fixing anything.** Condition: every template. Home and collection: hero or first product grid. Product: main product image. It can also be a headline (text is the fastest LCP, source 05's opinion) or a video (compress it). Tools: PSI Diagnostics > "Largest Contentful Paint element"; the Web Vitals extension console log (element plus subparts: TTFB, load delay, render delay); the Network waterfall (very wide bars). Sources: 04, 05, 07, 01. Cards: [2969a152a99d] [eb9525bda54a] [11d184a954ab] [457e4a26802c] [1b9747314efd].
+
+**R80. LCP fix order: un-lazy it, de-animate it, compress it, preload it, then cut blocking scripts ahead of it.** Condition: the LCP element is an image. Remove `loading="lazy"` and lazysizes classes; set eager; remove fade or slide effects and preloaders; keep it out of a delayed carousel path; compress as far as looks allow (under 250 KB per source 05, under 200 KB per source 04); add a preload with high fetch priority; then check blocking time, which also delays LCP. Sources: 01, 07, 05, 04. Cards: [7a213481a9d2] [d56347d58c66] [b4735bb55b51] [958af3150188] [cc2d433b9ede] [eb9525bda54a] [8883db1cfb1d].
+
+**R81. A poor LCP with a fast image download means a script is hiding the image; find the script, not the image.** Condition: throttled test shows the image file downloaded but not shown (a slideshow plugin in source 01's case). Fix by showing the main image as a plain image outside the carousel. Sources: 01, 07. Cards: [1b9747314efd] [cc2d433b9ede].
+
+**R82. Slow server response can also cause a poor LCP; check TTFB before blaming the image.** Condition: TTFB over 800 ms in PSI. Source 08 says poor TTFB is hosting or an overloaded database; source 05 says poor FCP is usually the theme and plugins, not the server. Merged: read TTFB; if it is under 800 ms, work the front end; if over, do the front end anyway (R4) and then take TTFB to the host (P28). See 7.10. Sources: 08, 05, 04. Cards: [a10a7445f2a3] [dfde1d811af8] [2969a152a99d].
+
+### Group I. Interaction delay (INP, TBT)
+
+**R83. Long tasks over 50 ms block the main thread; TBT adds them up; a failing TBT means a lot of complex JavaScript.** Condition: lab report shows high TBT. Fastest fixes: minify, defer and delay JS (R46, R47, P13). Source 09's definition of TBT ("time between FCP and TTI") is outdated; use source 05's. Sources: 05, 09. Cards: [8f0d567d9844] [0e11008fda40].
+
+**R84. INP maps to add to cart, variant pickers and category filters; the only fix is less JavaScript running on the main thread.** Condition: field INP over 200 ms, or the symptom "Add to Cart does nothing for half a second". Cut, defer or delay app and tracking scripts (source 04 says this helps INP but gives no data); lazy-load non-critical components; move third parties to a worker at rebuild time. INP may not include an async cart request finishing, so track cart completion separately (card editorial). Sources: 04, 07, 05. Cards: [2969a152a99d] [717cf5ec82fd] [dfde1d811af8].
+
+### Group J. Caching and CDN
+
+**R85. Verify caching and compression from response headers, not from a plugin's settings page.** Condition: WordPress and any self-hosted store. DevTools Network, Preserve log, reload, click the document request: a cache hit header (example `x-cache: hit`; the name depends on the host) and `content-encoding: gzip` (or the host's method). Do not read `cache-control` as proof (demo showed `no-cache, must-revalidate` with caching on). Re-verify in incognito with Disable cache unticked. Sources: 02. Cards: [55f9847e6f0a]. [verify UI]
+
+**R86. Never cache cart, checkout or account pages, or any page with visitor-specific data.** Condition: every cache layer. Load each after a change and check the headers. Sources: 04, 08 (card). Cards: [9490c0550ad4] [0709d6cdeb98].
+
+**R87. Static assets cache up to 1 year only when file names or versions change on update; HTML caches briefly; prices and stock get short TTLs with fast invalidation or a JavaScript update.** Condition: any store you control headers for. Selective ("intelligent") invalidation clears only the pages a price or stock change touched; a full purge on every change throws the gain away. Sources: 04, 08, 09. Cards: [9490c0550ad4] [ee4655c50df6] [9973ef4b38a5].
+
+**R88. Defer session creation until first add to cart or login so anonymous browsing stays cacheable.** Condition: platforms that start a session on first hit (Salesforce guidance cited by source 04). Sources: 04. Cards: [9490c0550ad4].
+
+**R89. Full-page caching serves pre-rendered HTML; ask for it by name (Redis, Varnish, integrated HTTP cache) on self-hosted stores, and test cart and checkout afterwards.** Condition: WooCommerce, Shopware and similar; not Shopify. Sources: 08, 04. Cards: [0709d6cdeb98] [ee4655c50df6] [9490c0550ad4].
+
+**R90. CDN: start with static assets; pick by traffic geography; cache keys include content-changing parameters (page number) and exclude tracking parameters; purge automatically on image updates and deploys; target 80%+ hit rate.** Condition: self-hosted stores with customers in several regions or heavy image traffic. Shopify already serves through Fastly; hosts like Vercel and Firebase do it automatically. A low hit rate means misconfiguration or too much dynamic content. CDN latency cut 200 to 800 ms for distant visitors (Cloudflare, cited by source 04). Sources: 04, 07, 09, 03. Cards: [46127ea01ca7] [9490c0550ad4] [cc2d433b9ede] [6e2d4fa52ebe] [54e3673579e3]. [web check: CDN plans and prices]
+
+**R91. Caching, compression and CDN come after the fundamentals; they hide problems on repeat visits and do nothing for a first-time shopper on a heavy page.** Condition: sequencing. A demo page reached GTmetrix 98%, LCP 1 s and CLS 0 with no gzip, no cache and no CDN (source 02). Sources: 02, 08, 09. Cards: [1b50d0611dc3] [0709d6cdeb98] [9973ef4b38a5]. See 7.4.
+
+### Group K. Hosting, server and platform
+
+**R92. Match the hosting tier to order volume, and leave shared hosting within the first year.** Condition: self-hosted stores. Shared ($1 to $15 a month in 2026) for a new store with little traffic; VPS or cloud (managed from about $20 to $50 a month) at 100+ orders a month; auto-scaling cloud or managed hosting at high volume; a CDN on top for international customers. The 100-order line is a heuristic. Compute ROI with cart abandonment and AOV. Sources: 04. Cards: [a063ce857916]. [web check: hosting prices] [needs brand data: monthly orders, AOV, cart abandonment]
+
+**R93. Call the host or IT admin only after images and plugins are fixed and re-measured, and arrive with 4 questions.** Condition: self-hosted stores. Ask: which PHP version (want 8.2+)? Is server-side caching (Redis or Varnish) active? Is full-page caching serving pre-rendered HTML? Is HTTP/3 on? In SaaS and cloud setups many of these are already tuned; read the documentation anyway. Re-measure TTFB and LCP after. Sources: 08. Cards: [0709d6cdeb98] [d2e8efefa7f2]. [web check: current PHP and HTTP/3 recommendations]
+
+**R94. Plan capacity for peak events; slowdowns in add to cart, search and login ("brownouts") are more common than crashes.** Condition: before BFCM-type sales, drops and limited-inventory launches. Check memory and bandwidth limits and projected peak load with the platform; load test the dynamic steps; decide what each step does under load; consider a virtual waiting room for limited inventory (source 06 sells them). Infrastructure work belongs to 05-SET. PetSmart's Black Friday pages took 7.7 to 13.84 s. Sources: 03, 06, 04. Cards: [54e3673579e3] [88659194131b] [9ffe9f981c57].
+
+**R95. Clean the WooCommerce database on a schedule.** Condition: WordPress stores: old revisions, expired transients, orphaned metadata (WP-Optimize). Plugins that run heavy queries on every page load without caching get removed or cached. Sources: 04, 08. Cards: [74fc1378fc6a] [3d795cd17d4b].
+
+### Group L. Video and embeds
+
+**R96. Replace standard YouTube embeds with lite embeds; turn off autoplay on mobile; compress video files; set `preload="none"` on video tags; replace GIFs with MP4.** Condition: any video on a template. A standard embed costs almost 1 MB and a fixed-size iframe; a lite embed loads a 15 KB thumbnail and the player on click. Oversized video hurts as much as oversized images. Sources: 03, 09, 01. Cards: [badac5a4a278] [0021f744e1e0] [3dd6497a4d63] [0f413fcac223] [70af8654d12d] [5148a60eef22].
+
+### Group M. Redirects and links
+
+**R97. Permanent moves use 301, never 302; no redirect chains; remove broken links to images, CSS and JS; build a custom 404 that points to top categories.** Condition: every store. Shopify's Navigation redirects are 301 by default. Sources: 03. Cards: [2cd7ecfea589]. [verify UI: Shopify redirects]
+
+### Group N. Cart, checkout and mobile buying
+
+**R98. Checkout is in scope; on mobile, remove form steps where the platform allows (Shop Pay is Shopify's vendor-claimed 1.91x mobile checkout-to-order rate) and test the flow separately.** Condition: every audit, especially mobile-heavy stores. Delay at checkout loses impulse buyers. Sources: 03, 04. Cards: [0bc2087de2a1] [a4ded81551ca]. [verify UI: Shop Pay availability] Vendor claim; treat as an example.
+
+**R99. Test cart drawer, add to cart and checkout after every cache, protocol, script or app change.** Condition: always. Sources: 08 (card), 01, 04. Cards: [0709d6cdeb98] [6427c0d96eec] [9490c0550ad4].
+
+### Group O. When to call a developer or the host
+
+**R100. Hand to a developer when the fix needs theme logic or code the operator cannot safely write.** Condition: any of: adding srcset or width variants to a custom section; first-item-eager logic in a loop; capturing and filtering `content_for_header`; conditional app loading per template; critical CSS generation and per-template inlining; Quick View removal in theme code; Liquid loop clean-up; lite embed markup; AJAX Quick View; SSR or hybrid rendering; API field selection; Partytown; cache header values beyond the defaults. Write the brief with the page, the element, the measured before state and the target. Sources: 01, 03, 07, 09, 04. Cards: [c5fb935a9b7d] [b093ed3b4d75] [56315833a352] [cabcd2d4c66e] [6f05e9392e74] [11d911ca0868] [171da560af89] [34052dbf559b] [717cf5ec82fd] [9490c0550ad4].
+
+**R101. Hand to the host when TTFB stays over 800 ms after front-end work, when caching or compression headers are missing, or before a peak event.** Condition: self-hosted stores. Use the 4 questions in R93. Sources: 08, 02, 03. Cards: [0709d6cdeb98] [55f9847e6f0a] [54e3673579e3].
+
+### Group P. Proving a fix
+
+**R102. A fix is proven only by averaged before and after lab runs on the same page, same device tab and same tool, plus the field metric moving in the expected direction after 28 days.** Condition: every change the agent reports. Keep the dated change log; note which changes were made together (several at once means no single step gets the credit). Sources: 01, 05, 08, 02. Cards: [c33439a2c9b9] [dca8734ae894] [6012d71fccb6] [085b91000740] [21b1708d102a].
+
+**R103. After any loading change, exercise every affected app's full function and every tracking event before calling it done.** Condition: defer, delay, unload, remove, cache. Reviews, upsells, loyalty, forms, chat, pixels, consent. Re-check after app updates, since script URLs change. Sources: 01. Cards: [6427c0d96eec] [b711b4ded0ce] [ef51a42e0e16].
+
+**R104. Rollback is part of the change: keep the original theme or the pre-change setting, and revert the single change that broke something rather than the whole batch.** Condition: always. Sources: 01, 05, 02. Cards: [58c5589c135f] [8f0d567d9844] [44c02380f01e].
