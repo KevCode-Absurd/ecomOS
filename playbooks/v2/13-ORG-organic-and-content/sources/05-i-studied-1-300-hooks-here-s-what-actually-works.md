@@ -52,7 +52,7 @@ Gives a working definition of what makes a Reels hook stop the scroll, backed by
 
 **A. Diagnose an underperforming Reel (implied troubleshooting order from the source)**
 1. Check the hook first: on-screen text, spoken line, audio and visual together, before touching the body, the offer or blaming the algorithm. [8690e3531230]
-2. Screenshot the video at roughly half a second in. Ask whether a stranger with no context (the "drunk grandma" test) understands what the video is about from that single frame. If not, fix the visual before the text. [cee2da009c53] [cae01621800940bd8ae6b950 -> cae016218009]
+2. Screenshot the video at roughly half a second in. Ask whether a stranger with no context (the "drunk grandma" test) understands what the video is about from that single frame. If not, fix the visual before the text. [cee2da009c53] [cae016218009]
 3. Read the on-screen text or spoken line aloud. Check it is 5-8 words (up to about 12 at most) and at or below a fifth-grade reading level. Cut insider terms, acronyms and unexplained jargon. [c98d12e4ca71]
 4. Check whether the opening frame relates directly to the subject of the video (a fitness creator should be shown exercising, not sitting at a desk; a food creator should be shown eating, not typing). Replace generic B-roll (writing in a notebook, typing at a computer) with subject-matched footage. [cee2da009c53]
 5. Check for wasted opening time: a hesitation beat ("millennial pause"), dead air, or a cluttered first frame. Cut straight to the hook. [cae016218009]
