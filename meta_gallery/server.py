@@ -419,7 +419,8 @@ def make_handler(gallery):
                     path = catalog_image(parts[1])
                     return self.send_file(path, cache='max-age=3600') if path else self.send_json({'error': 'image unavailable'}, 404)
                 if parts == ['api', 'catalog-refresh']:
-                    return self.send_json({'made': ai.list_catalog_images(), 'approved': load_approved(), 'default_prompt': ai.CATALOG_PROMPT})
+                    return self.send_json({'made': ai.list_catalog_images(), 'approved': load_approved(), 'default_prompt': ai.CATALOG_PROMPT,
+                                           'styles': {k: {'name': v[0], 'prompt': v[1]} for k, v in ai.CATALOG_STYLES.items()}})
                 if len(parts) == 3 and parts[0] == 'catalog-refresh':
                     path = ai.catalog_image_path(parts[1], parts[2])
                     return self.send_file(path, cache='max-age=86400') if path else self.send_json({'error': 'not found'}, 404)
@@ -578,12 +579,13 @@ def make_handler(gallery):
             return {'made': made, 'all': ai.list_product_ads(meta['slug']), 'slug': meta['slug']}
 
         def ai_catalog_premium(self, body):
-            """body: {code, prompt, quality}. Makes 1 premium version of the product's current catalog image."""
+            """body: {code, prompt, quality, size}. Makes 1 premium version of the product's current catalog image."""
             code = str(body.get('code') or '')
             path = catalog_image(code)
             if not path:
                 raise ValueError('The catalog image for this product could not be loaded.')
-            made = ai.make_catalog_image(code, path.read_bytes(), str(body.get('prompt') or ''), body.get('quality', 'high'))
+            made = ai.make_catalog_image(code, path.read_bytes(), str(body.get('prompt') or ''), body.get('quality', 'high'),
+                                           size=str(body.get('size') or 'square'))
             return {'made': made, 'all': ai.list_catalog_images().get(code, [])}
 
         def ai_product_story(self, body):

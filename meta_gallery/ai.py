@@ -665,15 +665,36 @@ def product_ad_path(slug, name, out_dir=None):
 CATALOG_REFRESH = DATA / 'catalog_refresh'
 PRODUCT_STORY = DATA / 'product_story'
 SAFE_CODE = re.compile(r'^[A-Za-z0-9._-]{3,40}$')
-CATALOG_PROMPT = ("Retouch this jewellery product photo for an online catalog. Make it look premium: a clean seamless off-white "
-                  "or soft warm background, soft studio light, crisp focus, true-to-life gold tone, a gentle natural shadow, "
-                  "the piece centred with even margins. No text, no props, no hands, no watermark.")
+_STUDIO_END = (" Razor sharp focus across the whole piece, clean edges, no dust, no scratches, no colour cast. "
+               "The piece is the clear hero, centred, filling about 65 to 70% of the frame, with even margins. "
+               "No text, no logo, no hands, no model, no other jewellery, no watermark.")
+# Background styles for the premium photo. Ivory is the plain catalog look; the rest are for the feed.
+CATALOG_STYLES = {
+    'ivory': ("Ivory studio", "Premium studio photo of this jewellery piece for a luxury online catalog. Seamless warm ivory "
+              "background with a very soft gradient, a touch lighter behind the piece. Large soft light from the top left and a "
+              "gentle fill, so the gold glows with warm, true-to-life highlights and the stones catch small crisp sparkles. "
+              "A soft natural contact shadow under the piece." + _STUDIO_END),
+    'silk': ("Champagne silk", "Luxury campaign photo of this jewellery piece resting on softly draped champagne silk with "
+             "gentle folds. Warm low side light, so the gold glows and the stones sparkle. Shallow depth of field: the silk "
+             "falls into a creamy blur behind the piece. Rich, warm and calm, like a high-end jewellery brand ad." + _STUDIO_END),
+    'stone': ("Stone plinth", "Editorial photo of this jewellery piece placed on a small honed ivory travertine block, with a "
+              "warm beige plaster wall behind. Soft window light from one side and a long soft shadow. Calm, minimal and "
+              "expensive, like a luxury brand's website. The block is simple and plain; the piece stays true to its real size."
+              + _STUDIO_END),
+    'sunlit': ("Sunlit shadows", "Golden hour photo of this jewellery piece on a warm sand-coloured surface. Soft dappled "
+               "sunlight with a blurred leaf shadow falling across the background, but the piece itself in clear, even light. "
+               "Warm, fresh and natural, made to stop the scroll in a social feed." + _STUDIO_END),
+    'velvet': ("Deep velvet", "Dramatic luxury photo of this jewellery piece on deep emerald green velvet. Dark, rich "
+               "background with a focused soft spotlight on the piece and a thin rim light, so the gold edges glow and the "
+               "stones sparkle. High contrast but true colours for the metal and stones." + _STUDIO_END),
+}
+CATALOG_PROMPT = CATALOG_STYLES['ivory'][1]
 # Always added after the team's prompt, so no prompt can change the piece itself.
 KEEP_PIECE = ("\nThis must stay the exact same piece: same metal colour, stones, stone colours, shape, size, proportions, "
-              "clasp and every detail. Do not add, remove, straighten or redesign any part of the jewellery.")
+              "clasp and every detail, at its real size. Do not add, remove, straighten or redesign any part of the jewellery.")
 
 
-def make_catalog_image(code, image_bytes, prompt='', quality='high', out_dir=None, env_path=None):
+def make_catalog_image(code, image_bytes, prompt='', quality='high', out_dir=None, env_path=None, size='square'):
     """1 premium catalog photo from the current catalog image. Returns the saved note (or an error)."""
     cfg = settings(env_path)
     if not cfg['openai_key']:
@@ -684,7 +705,7 @@ def make_catalog_image(code, image_bytes, prompt='', quality='high', out_dir=Non
         raise AIError('The catalog image could not be loaded.')
     text = (str(prompt or '').strip()[:2000] or CATALOG_PROMPT) + KEEP_PIECE
     made = _render_in(cfg, Path(out_dir or CATALOG_REFRESH) / str(code), [{'name': 'Premium catalog photo', 'prompt': text}], [image_bytes],
-                      'square', quality, {'source': 'catalog', 'code': str(code)}, lambda c: c['prompt'], keep=('prompt',))
+                      size if size in SIZES else 'square', quality, {'source': 'catalog', 'code': str(code)}, lambda c: c['prompt'], keep=('prompt',))
     return made[0]
 
 

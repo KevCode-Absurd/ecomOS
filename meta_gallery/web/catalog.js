@@ -3,8 +3,31 @@
 // for the catalog and a 5 to 15 image product story. Read-only on Meta: images are made and saved in the
 // local gallery; the team uploads them. Uses catalog.json (a read-only copy of the Meta catalog for the top 100).
 
-const CT = { data: null, made: {}, approved: {}, prompt: '', defPrompt: '', top: 50, quality: 'high', storyN: 10, storySize: 'square', busy: {}, msg: {}, story: {}, open: {} };
-const CT_DEFAULT_PROMPT = 'Retouch this jewellery product photo for an online catalog. Make it look premium: a clean seamless off-white or soft warm background, soft studio light, crisp focus, true-to-life gold tone, a gentle natural shadow, the piece centred with even margins. No text, no props, no hands, no watermark.';
+const CT = { data: null, made: {}, approved: {}, prompt: '', defPrompt: '', top: 50, quality: 'high', size: 'square', style: '', styles: null, storyN: 10, storySize: 'square', busy: {}, msg: {}, story: {}, open: {} };
+// Same text as CATALOG_STYLES in ai.py (the local server sends its own copy).
+const CT_STYLES = {
+ "ivory": {
+  "name": "Ivory studio",
+  "prompt": "Premium studio photo of this jewellery piece for a luxury online catalog. Seamless warm ivory background with a very soft gradient, a touch lighter behind the piece. Large soft light from the top left and a gentle fill, so the gold glows with warm, true-to-life highlights and the stones catch small crisp sparkles. A soft natural contact shadow under the piece. Razor sharp focus across the whole piece, clean edges, no dust, no scratches, no colour cast. The piece is the clear hero, centred, filling about 65 to 70% of the frame, with even margins. No text, no logo, no hands, no model, no other jewellery, no watermark."
+ },
+ "silk": {
+  "name": "Champagne silk",
+  "prompt": "Luxury campaign photo of this jewellery piece resting on softly draped champagne silk with gentle folds. Warm low side light, so the gold glows and the stones sparkle. Shallow depth of field: the silk falls into a creamy blur behind the piece. Rich, warm and calm, like a high-end jewellery brand ad. Razor sharp focus across the whole piece, clean edges, no dust, no scratches, no colour cast. The piece is the clear hero, centred, filling about 65 to 70% of the frame, with even margins. No text, no logo, no hands, no model, no other jewellery, no watermark."
+ },
+ "stone": {
+  "name": "Stone plinth",
+  "prompt": "Editorial photo of this jewellery piece placed on a small honed ivory travertine block, with a warm beige plaster wall behind. Soft window light from one side and a long soft shadow. Calm, minimal and expensive, like a luxury brand's website. The block is simple and plain; the piece stays true to its real size. Razor sharp focus across the whole piece, clean edges, no dust, no scratches, no colour cast. The piece is the clear hero, centred, filling about 65 to 70% of the frame, with even margins. No text, no logo, no hands, no model, no other jewellery, no watermark."
+ },
+ "sunlit": {
+  "name": "Sunlit shadows",
+  "prompt": "Golden hour photo of this jewellery piece on a warm sand-coloured surface. Soft dappled sunlight with a blurred leaf shadow falling across the background, but the piece itself in clear, even light. Warm, fresh and natural, made to stop the scroll in a social feed. Razor sharp focus across the whole piece, clean edges, no dust, no scratches, no colour cast. The piece is the clear hero, centred, filling about 65 to 70% of the frame, with even margins. No text, no logo, no hands, no model, no other jewellery, no watermark."
+ },
+ "velvet": {
+  "name": "Deep velvet",
+  "prompt": "Dramatic luxury photo of this jewellery piece on deep emerald green velvet. Dark, rich background with a focused soft spotlight on the piece and a thin rim light, so the gold edges glow and the stones sparkle. High contrast but true colours for the metal and stones. Razor sharp focus across the whole piece, clean edges, no dust, no scratches, no colour cast. The piece is the clear hero, centred, filling about 65 to 70% of the frame, with even margins. No text, no logo, no hands, no model, no other jewellery, no watermark."
+ }
+};
+const CT_DEFAULT_PROMPT = CT_STYLES.ivory.prompt;
 const ctSlug = (p) => (p.url ? p.url.replace(/\/+$/, '').split('/').pop() : '');
 
 async function ctBoot() {
@@ -14,9 +37,10 @@ async function ctBoot() {
   }
   if (!IS_CLAUDE) {
     await labBoot();
-    try { const r = await fetch('/api/catalog-refresh'); if (r.ok) { const j = await r.json(); CT.made = j.made || {}; CT.approved = j.approved || {}; CT.defPrompt = j.default_prompt || ''; } } catch (e) { /* offline */ }
+    try { const r = await fetch('/api/catalog-refresh'); if (r.ok) { const j = await r.json(); CT.made = j.made || {}; CT.approved = j.approved || {}; CT.defPrompt = j.default_prompt || ''; CT.styles = j.styles || null; } } catch (e) { /* offline */ }
   }
   CT.defPrompt = CT.defPrompt || CT_DEFAULT_PROMPT;
+  CT.styles = CT.styles || CT_STYLES;
   if (!CT.prompt) CT.prompt = CT.defPrompt;
 }
 function ctCanMake() { return !IS_CLAUDE && LABST.status && LABST.status.variants; }
@@ -40,11 +64,15 @@ function ctSummary(d) {
     <p class="small muted">${esc(d.source)} Catalog read ${esc(d.pulled_at)}. This page cannot change the catalog; the team makes the change.</p></section>`;
 }
 function ctPromptHtml() {
+  const st = CT.styles || CT_STYLES, cur = CT.style || (Object.keys(st).find((k) => st[k].prompt === CT.prompt) || '');
   return `<section class="panel-box"><h2>Premium photo prompt</h2>
     <p class="lead">Used for every "Make premium photo". The piece itself is always kept exactly the same; this only changes the light, background and finish.</p>
+    <div class="ct-styles" role="group" aria-label="Background style">${Object.entries(st).map(([k, v]) => `<button type="button" class="ct-st${cur === k ? ' on' : ''}" data-ctstyle="${esc(k)}">${esc(v.name)}</button>`).join('')}${cur ? '' : '<span class="ct-st on">Your own prompt</span>'}</div>
+    <p class="small muted">Use Ivory studio for the main catalog photo. Use the other looks for feed ads and extra photos. Portrait 4:5 fills more of the feed.</p>
     <textarea class="pb-paste" data-ctprompt rows="4">${esc(CT.prompt)}</textarea>
     <div class="row" style="gap:10px;align-items:center;flex-wrap:wrap"><button class="btn ghost small-btn" type="button" data-ctsaveprompt>Save for the team</button><button class="linkbtn" type="button" data-ctresetprompt>Back to the default</button>
       <label class="small muted">Quality <select data-ctset="quality">${[['high', 'High'], ['medium', 'Medium'], ['low', 'Low']].map(([v, l]) => `<option value="${v}"${CT.quality === v ? ' selected' : ''}>${l}</option>`).join('')}</select></label>
+      <label class="small muted">Photo size <select data-ctset="size">${[['square', 'Square 1:1'], ['portrait', 'Portrait 4:5']].map(([v, l]) => `<option value="${v}"${CT.size === v ? ' selected' : ''}>${l}</option>`).join('')}</select></label>
       <label class="small muted">Story images <select data-ctset="storyN">${[5, 10, 15].map((v) => `<option value="${v}"${CT.storyN === v ? ' selected' : ''}>${v}</option>`).join('')}</select></label>
       <label class="small muted">Story size <select data-ctset="storySize">${[['square', 'Square 1:1'], ['portrait', 'Portrait 4:5'], ['story', 'Story 9:16']].map(([v, l]) => `<option value="${v}"${CT.storySize === v ? ' selected' : ''}>${l}</option>`).join('')}</select></label>
       <span class="small muted" id="ctPromptMsg"></span></div></section>`;
@@ -100,7 +128,7 @@ async function ctRun(code, what) {
   ctRerender(code);
   try {
     const url = what === 'photo' ? '/api/catalog-premium' : '/api/product-story';
-    const body = what === 'photo' ? { code, prompt: CT.prompt, quality: CT.quality } : { code, n: CT.storyN, size: CT.storySize, quality: CT.quality === 'high' ? 'medium' : CT.quality };
+    const body = what === 'photo' ? { code, prompt: CT.prompt, quality: CT.quality, size: CT.size } : { code, n: CT.storyN, size: CT.storySize, quality: CT.quality === 'high' ? 'medium' : CT.quality };
     const r = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
     const j = await r.json().catch(() => ({}));
     if (!r.ok) throw new Error(j.error || 'Something went wrong.');
@@ -124,10 +152,12 @@ document.addEventListener('click', async (e) => {
     ctRerender(code); return;
   }
   if ((x = b('[data-ctcopy]'))) { try { await navigator.clipboard.writeText(x.dataset.ctcopy === 'all' ? CT.copyAll : CT.copyMissing); x.textContent = 'Copied'; } catch (err) { x.textContent = 'Copy blocked here'; } return; }
-  if (b('[data-ctresetprompt]')) { CT.prompt = CT.defPrompt; const t = v.querySelector('[data-ctprompt]'); if (t) t.value = CT.prompt; return; }
+  const sb = b('[data-ctstyle]');
+  if (sb) { const st = CT.styles || CT_STYLES, k = sb.dataset.ctstyle; if (st[k]) { CT.style = k; CT.prompt = st[k].prompt; renderCatalog(); } return; }
+  if (b('[data-ctresetprompt]')) { CT.style = ''; CT.prompt = CT.defPrompt; const t = v.querySelector('[data-ctprompt]'); if (t) t.value = CT.prompt; return; }
   if (b('[data-ctsaveprompt]')) { await docsBoot(); const m = await saveDoc('catalog_prompt.json', { prompt: CT.prompt, updated: new Date().toISOString().slice(0, 10) }); const el = $('ctPromptMsg'); if (el) el.textContent = m; }
 });
-document.addEventListener('input', (e) => { if (e.target.matches && e.target.matches('[data-ctprompt]')) CT.prompt = e.target.value.slice(0, 2000); });
+document.addEventListener('input', (e) => { if (e.target.matches && e.target.matches('[data-ctprompt]')) { CT.prompt = e.target.value.slice(0, 2000); CT.style = ''; } });
 document.addEventListener('change', (e) => {
   const s = e.target.closest && e.target.closest('[data-ctset]');
   if (!s) return;
