@@ -98,6 +98,30 @@ h3 { font-size: 11.5px; text-transform: uppercase; letter-spacing: .07em; color:
 .hl-thumbs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; }
 .hl-th { padding: 0; border: 0; background: none; cursor: pointer; aspect-ratio: 1; overflow: hidden; border-radius: 6px; }
 .hl-th img, .hl-th .noimg { width: 100%; height: 100%; object-fit: cover; display: block; font-size: 10px; }
+/* festive plan */
+.fs { display: grid; gap: 14px; }
+.fs-next { background: var(--accent-soft, #fff4d6); border-radius: 12px; padding: 12px 16px; font-size: 15px; }
+.fs-next b { font-size: 20px; margin-right: 6px; }
+.fs-cal { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 8px; }
+.fs-win { border: 1px solid var(--line); background: var(--surface); border-radius: 12px; padding: 10px 12px; display: grid; gap: 3px; min-width: 0; }
+.fs-win.on { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent) inset; }
+.fs-win span { font-size: 13px; } .fs-win em { font-style: normal; font-size: 12px; color: var(--muted); }
+.fs-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(230px, 100%), 1fr)); gap: 14px; }
+.fs-cr { margin: 0; border: 1px solid var(--line); border-radius: 12px; overflow: hidden; background: var(--surface); display: grid; }
+.fs-cr img { width: 100%; aspect-ratio: 4 / 5; object-fit: cover; display: block; background: var(--sunken); }
+.fs-cr figcaption { padding: 10px 12px; display: grid; gap: 6px; font-size: 13px; }
+.fs-cr figcaption span { color: var(--muted); }
+.fs-two { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr)); gap: 16px; }
+.fs-list { margin: 0; padding-left: 20px; display: grid; gap: 6px; font-size: 14px; }
+.bd-table td.bad { color: var(--bad); font-weight: 700; }
+.hl-spec { border-top: 1px solid var(--line); padding: 10px 0; }
+.hl-spec summary { cursor: pointer; font-size: 14.5px; }
+.hl-spec p { margin: 8px 0; font-size: 13.5px; }
+.hl-spec pre { margin: 0; background: var(--sunken); border-radius: 10px; padding: 12px 14px; overflow-x: auto; font-size: 12px; line-height: 1.5; max-width: 100%; }
+.hl-steps { display: grid; gap: 8px; }
+.hl-step { display: grid; grid-template-columns: minmax(120px, 190px) 1fr 70px; gap: 2px 12px; align-items: center; font-size: 13.5px; }
+.hl-step i { display: block; height: 14px; background: var(--accent); border-radius: 4px; }
+.hl-step b { text-align: right; } .hl-step em { grid-column: 2 / -1; font-style: normal; font-size: 12px; color: var(--muted); }
 .chip.sale { background: var(--warn-soft); color: var(--warn); border: 1px dashed var(--warn); }
 .pillbox label.check { padding: 0 10px 0 6px; color: var(--ink); font-size: 13px; }
 .iconbtn { display: inline-flex; align-items: center; gap: 7px; border: 1px solid var(--line); background: var(--surface); border-radius: 999px; padding: 8px 14px; cursor: pointer; font-weight: 600; }
@@ -944,6 +968,7 @@ table.sheat td.heat { min-width: 58px; }
     <div class="acct-card"><strong id="navAcct">Gehna</strong><span id="navSub">Meta ads</span></div>
     <div class="navlist" role="tablist" aria-label="Page">
       <button id="tab-overview" role="tab" aria-selected="true" type="button"><svg viewBox="0 0 24 24"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h5v-6h4v6h5V10"/></svg>Overview</button>
+      <button id="tab-festive" role="tab" aria-selected="false" type="button"><svg viewBox="0 0 24 24"><path d="M12 3c1.6 2 2 3.4 0 5.2C10 6.4 10.4 5 12 3z"/><path d="M4 11h16c-.6 4.4-3.6 7-8 7s-7.4-2.6-8-7z"/><path d="M8 21h8"/></svg>Festive plan</button>
       <button id="tab-actions" role="tab" aria-selected="false" type="button"><svg viewBox="0 0 24 24"><rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4V3h6v1"/><path d="M9 12l2 2 4-4M9 17h6"/></svg>Action plan</button>
       <button id="tab-moves" role="tab" aria-selected="false" type="button"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M15.5 8.5l-2 5-5 2 2-5z"/></svg>Next moves</button>
       <button id="tab-buyer" role="tab" aria-selected="false" type="button"><svg viewBox="0 0 24 24"><path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12"/><circle cx="16" cy="6" r="2"/><circle cx="10" cy="12" r="2"/><circle cx="18" cy="18" r="2"/></svg>Buyer desk</button>
@@ -1078,6 +1103,7 @@ table.sheat td.heat { min-width: 58px; }
       <div id="buyerView" hidden></div>
       <div id="movesView" hidden></div>
       <div id="healthView" hidden></div>
+      <div id="festiveView" hidden></div>
       <div id="catalogView" hidden></div>
       <div id="reportView" hidden>
         <div style="display: grid; gap: 14px">
@@ -1119,4 +1145,5 @@ table.sheat td.heat { min-width: 58px; }
 <script src="buyer.js"></script>
 <script src="moves.js"></script>
 <script src="health.js"></script>
+<script src="festive.js"></script>
 <script src="catalog.js"></script>

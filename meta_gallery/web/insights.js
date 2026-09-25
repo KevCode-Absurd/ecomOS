@@ -286,6 +286,23 @@ function compBrandHtml(p, b) {
     <div class="act-stats">${tile('Active ads', p.active ?? '–', `${p.sampled} sampled here`)}${tile('Median days live', p.median ?? '–', `Longest ${p.longest ?? '–'} days`)}${tile('New in 14 days', p.newN, `of ${p.sampled} sampled`)}${tile('Push an offer', pct0(p.offers), 'of sampled ads')}</div>
     <p class="small">Formats: ${pct0(p.img)} image, ${pct0(p.car)} carousel, ${pct0(p.cat)} catalog, ${pct0(p.vid)} video. Main button: ${esc(p.cta || 'none')}.</p></section>`;
 }
+// Gap and festive watch: what rivals push now that Gehna does not (compwatch.json).
+let COMPWATCH;
+function compWatchHtml() {
+  if (COMPWATCH === undefined) {
+    COMPWATCH = null;
+    fetch('compwatch.json').then((r) => (r.ok ? r.json() : null)).then((j) => { COMPWATCH = j && Array.isArray(j.gaps) ? j : null; if (COMPWATCH && state.tab === 'competitors') window.renderCompetitors(); }).catch(() => {});
+    return '';
+  }
+  const w = COMPWATCH;
+  if (!w) return '';
+  const text = ['Competitor gap and festive watch', ...w.gaps.map((g) => `- ${g.title}: ${g.text}`), '', 'Offers live now:', ...w.brands.filter((b) => b.offers.length).map((b) => `- ${b.name}: ${b.offers.join('; ')}`)].join('\n');
+  return `<section class="panel-box"><div class="row" style="justify-content: space-between"><h2>Gaps and festive watch</h2>${copyBtn(text)}</div>
+    <p class="small muted">Active ads in India on ${esc(dateLabel(w.captured_at))}. Ad Library shows no spend or results.</p>
+    <ul class="hl-find">${w.gaps.map((g) => `<li><b>${esc(g.title)}.</b> ${esc(g.text)}</li>`).join('')}</ul>
+    <div class="scroll"><table class="bd-table"><tr><th>Brand</th><th class="n">Live ads</th><th>Offers now</th><th>Themes</th></tr>
+    ${w.brands.map((b) => `<tr><td>${esc(b.name)}</td><td class="n">${b.active}</td><td class="small">${esc(b.offers.join('; ') || 'No offer')}</td><td class="small">${esc(b.themes.join('; '))}</td></tr>`).join('')}</table></div></section>`;
+}
 window.renderCompetitors = function renderCompetitors() {
   const c = COMPETITORS;
   if (!c || !c.brands) { $('competitorsView').innerHTML = '<p class="muted">No competitor snapshot loaded.</p>'; return; }
@@ -307,6 +324,7 @@ window.renderCompetitors = function renderCompetitors() {
   $('competitorsView').innerHTML = `<div class="ins">
     <div class="bpills" role="group" aria-label="Pick a competitor">${pill('', c.brands.length)}${c.brands.map((b) => pill(b.name, b.active_ads_estimate ?? '–')).join('')}</div>
     <div class="note">${esc(c.note)} Snapshot of ${esc(c.status)} ads in ${esc(c.country)}, taken ${esc(dateLabel(c.captured_at))}.</div>
+    ${compWatchHtml()}
     ${cur ? compBrandHtml(profiles.find((p) => p.name === cur.name), cur) : compTableHtml(profiles)}
     ${compTopHtml(items, cur ? cur.name : '')}
     <div class="cfilters" role="group" aria-label="Filter by format"><span class="small muted">Format</span>${chip('cfmt', '', COMPV.fmt, 'All')}${chip('cfmt', 'image', COMPV.fmt, 'Image')}${chip('cfmt', 'carousel', COMPV.fmt, 'Carousel')}${chip('cfmt', 'catalog', COMPV.fmt, 'Catalog')}${chip('cfmt', 'video', COMPV.fmt, 'Video')}</div>

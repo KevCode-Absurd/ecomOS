@@ -12,7 +12,7 @@
 
 const HL = { sec: 'tracking', files: null, chKind: 'all', chShow: 30, dnaSale: false };
 try { const s = localStorage.getItem('health-sec'); if (s) HL.sec = s; } catch (e) { /* storage unavailable */ }
-const HL_SECS = [['tracking', 'Tracking'], ['fatigue', 'Ad fatigue'], ['changes', 'Changes'], ['structure', 'Structure'], ['dna', 'Creative DNA']];
+const HL_SECS = [['tracking', 'Tracking'], ['checkout', 'Checkout and pages'], ['fatigue', 'Ad fatigue'], ['changes', 'Changes'], ['structure', 'Structure'], ['dna', 'Creative DNA']];
 const hlX = (v) => (v === null || v === undefined || !Number.isFinite(v) ? 'no sales' : v.toFixed(2) + 'x');
 const hlPct = (v, d = 0) => (v === null || v === undefined || !Number.isFinite(v) ? 'unavailable' : (v * 100).toFixed(d) + '%');
 const hlNum = (v) => (v === null || v === undefined || !Number.isFinite(v) ? 'unavailable' : Number(v).toLocaleString('en-IN'));
@@ -22,7 +22,7 @@ const hlChip = (tone, text) => `<span class="hl-chip hl-${tone}">${esc(text)}</s
 async function hlBoot() {
   if (HL.files) return;
   const get = async (f) => { try { const r = await fetch(f); return r.ok ? await r.json() : null; } catch (e) { return null; } };
-  const names = ['tracking', 'freq', 'changes', 'structure', 'creativedna', 'metainsights'];
+  const names = ['tracking', 'freq', 'changes', 'structure', 'creativedna', 'metainsights', 'checkout', 'creativepack'];
   const got = await Promise.all(names.map((n) => get(n + '.json')));
   const F = {};
   names.forEach((n, i) => { F[n] = got[i]; });
@@ -33,6 +33,8 @@ async function hlBoot() {
   if (!(F.structure && Array.isArray(F.structure.adsets))) F.structure = null;
   if (!(F.creativedna && F.creativedna.tags)) F.creativedna = null;
   if (!(F.metainsights && (F.metainsights.dataset || F.metainsights.opportunity))) F.metainsights = null;
+  if (!(F.checkout && Array.isArray(F.checkout.funnel_users))) F.checkout = null;
+  if (!(F.creativepack && Array.isArray(F.creativepack.items))) F.creativepack = null;
   HL.files = F;
 }
 
@@ -121,7 +123,95 @@ function hlTracking() {
     ${alerts.length ? `<section class="panel-box hl-sec"><h3>Days to check (${alerts.length})</h3><ul class="bd-alerts">${alerts.slice(0, 8).map((a) => `<li class="sev${a.sev}">${esc(a.text)}</li>`).join('')}</ul></section>` : ''}
     ${funnel}
     <section class="panel-box hl-sec"><div class="bd-head"><h3>Fix list for the web developer</h3>${copyBtn(fixText)}</div><ol class="mv-do">${fixes.map((f) => `<li>${esc(f)}</li>`).join('')}</ol>
-      <p class="small muted">Pixel counts from Meta Events Manager, checked ${esc(shortDate(T.captured_at))}. Orders from website sales. Better tracking lowers cost per sale because Meta learns from more real buyers.</p></section>`;
+      <p class="small muted">Pixel counts from Meta Events Manager, checked ${esc(shortDate(T.captured_at))}. Orders from website sales. Better tracking lowers cost per sale because Meta learns from more real buyers.</p></section>
+    ${hlSpec()}`;
+}
+// Step by step spec for the web developer, with code. Plain enough to forward as is.
+const HL_SPEC = [
+  ['Send Purchase from the server when the order is created, for every payment method', 'Today about a third of orders never reach Meta, and Google Analytics misses a similar share, so the thank you page is not loading for some orders (payment redirects, cash on delivery, EMI). Fire the server event from the order created or payment captured webhook, not from the page.',
+    `// Node example: call when an order is confirmed (Razorpay webhook, COD confirm, EMI approve)
+await fetch(\`https://graph.facebook.com/v23.0/\${PIXEL_ID}/events?access_token=\${CAPI_TOKEN}\`, {
+  method: 'POST', headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({ data: [{
+    event_name: 'Purchase', event_time: Math.floor(Date.now() / 1000), action_source: 'website',
+    event_id: 'order_' + order.id,                 // same id as the browser event
+    event_source_url: 'https://www.gehnaindia.com/checkout',
+    user_data: { em: [sha256(email)], ph: [sha256('91' + phone)], external_id: [sha256(String(customer.id))],
+                 fbc: order.fbc, fbp: order.fbp, client_ip_address: order.ip, client_user_agent: order.ua },
+    custom_data: { currency: 'INR', value: order.total, content_type: 'product',
+                   content_ids: order.items.map((i) => i.code), num_items: order.items.length }
+  }] })
+});`],
+  ['Use the same event ID in the browser and the server', 'Meta then counts each order once. Without it, Meta either double counts or drops one copy.',
+    `fbq('track', 'Purchase', { currency: 'INR', value: order.total, content_type: 'product',
+  content_ids: order.items.map((i) => i.code) }, { eventID: 'order_' + order.id });`],
+  ['Keep the Meta click ID (fbc) and send it with every server event', 'Only 1 in 5 purchases carries it now. Save it when someone lands from an ad, and store it on the order.',
+    `// On every page load
+const id = new URLSearchParams(location.search).get('fbclid');
+if (id && !document.cookie.includes('_fbc=')) {
+  document.cookie = \`_fbc=fb.1.\${Date.now()}.\${id}; path=/; max-age=7776000; SameSite=Lax\`;
+}
+// At checkout, copy the _fbc and _fbp cookies onto the order so the server event can send them.`],
+  ['Send hashed email and phone', 'No event sends email today. Email and phone are the strongest ways for Meta to match a buyer.',
+    `// Lowercase, trim, then SHA-256. Phone with country code, digits only.
+const sha256 = (v) => require('crypto').createHash('sha256').update(String(v).trim().toLowerCase()).digest('hex');
+// Browser: fbq('init', PIXEL_ID, { em: email, ph: '91' + phone }) hashes these for you.`],
+  ['Fire ViewContent once per product page, with the catalog ID', 'Product views fire 2.4 times per page view now, and 350 product IDs do not match the catalog. Fire it once when the product page loads, using the same ID as the catalog feed.',
+    `// Product page only, once per page load
+useEffect(() => {
+  fbq('track', 'ViewContent', { content_type: 'product', content_ids: [product.code],
+    value: product.price, currency: 'INR' });
+}, [product.code]);
+// AddToCart and InitiateCheckout: same content_ids (product codes), never empty.`],
+  ['Tag every ad link the same way', 'Meta traffic shows up under 12 different names in Google Analytics, and 1 link still sends the literal text {{campaign.name}}. Put this in the ad\'s URL parameters box, not inside the link:',
+    `utm_source=meta&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}`],
+  ['Check it worked', 'In Events Manager, open Test events and place a test order with each payment method. Each Purchase should show "Deduplicated". After 7 days, purchase match quality should rise from 7.6 toward 8+, and Meta should see 85% or more of website orders on this page.', ''],
+];
+function hlSpec() {
+  const text = ['Tracking fix spec (Meta pixel and Conversions API)', '', ...HL_SPEC.flatMap(([t, why, code], i) => [`${i + 1}. ${t}`, why, ...(code ? ['', code] : []), ''])].join('\n');
+  return `<section class="panel-box hl-sec"><div class="bd-head"><h3>Developer spec, step by step</h3>${copyBtn(text)}</div>
+    ${HL_SPEC.map(([t, why, code], i) => `<details class="hl-spec"${i === 0 ? ' open' : ''}><summary><b>${i + 1}.</b> ${esc(t)}</summary><p>${esc(why)}</p>${code ? `<pre><code>${esc(code)}</code></pre>` : ''}</details>`).join('')}
+    <p class="small muted">Copy sends the whole spec, ready to forward. The access token stays on the server; never put it in the browser.</p></section>`;
+}
+
+// =============== CHECKOUT AND PAGES ===============
+function hlCheckout() {
+  const K = HL.files.checkout;
+  if (!K) return '<p class="muted">Checkout data is not available yet.</p>';
+  const f = K.funnel_users, max = f[0][1];
+  let orders = null;
+  if (SL.data) { let o = 0, n = 0; for (let d = K.window.since; d <= K.window.until; d = addDays(d, 1)) { const x = rpDay(d); if (x && x.orders !== null && x.orders !== undefined) { o += x.orders; n += 1; } } orders = n ? o : null; }
+  const paid = f[f.length - 1][1], cart = f[1][1], start = f[2][1];
+  const E = K.events || {}, L = K.landing || {};
+  const fixes = [
+    `Only ${hlPct(start / cart)} of shoppers with a cart start checkout. Show the final price, delivery date and "7-day easy return" right in the cart, next to the checkout button.`,
+    `${hlPct(1 - f[3][1] / start)} of people who start checkout never add an address. Let people check out as a guest, and fill the city and state from the pincode.`,
+    E.coupon_users ? `${hlNum(E.coupon_users)} people tried a coupon code in these 3 weeks, about ${hlPct(E.coupon_users / cart)} of cart users. If no public code exists, they leave to hunt for one. Show the current offer on the cart, or hide the coupon box behind a small link.` : null,
+    E.emi_plan_views ? `${hlNum(E.emi_plan_views)} people opened the EMI plans. Mention EMI in ads and on product pages for pieces above ₹20,000.` : null,
+    E.whatsapp_clicks_users ? `${hlNum(E.whatsapp_clicks_users)} people clicked WhatsApp. Test a click-to-WhatsApp ad for high-value pieces and answer within 5 minutes in working hours.` : null,
+  ].filter(Boolean);
+  const pageFix = [
+    E.purchase_events && E.purchase_users && E.purchase_events / E.purchase_users > 1.5 ? `In Google Analytics the purchase event fires about ${(E.purchase_events / E.purchase_users).toFixed(1)} times per buyer (${hlNum(E.purchase_events)} events, ${hlNum(E.purchase_users)} buyers). Fire it once per order, with the order ID as the transaction ID.` : null,
+    L.meta_homepage_landings ? `${hlNum(L.meta_homepage_landings)} Meta visits landed on the home page. Send product ads to the product page and category ads to the category page: fewer taps to buy.` : null,
+    L.meta_labels ? `Meta traffic appears under ${L.meta_labels.length} different source names in Google Analytics (${L.meta_labels.slice(0, 5).join(', ')} and more). Use 1 URL parameter set on every ad (see the Tracking spec).` : null,
+    L.broken_macro ? 'One ad link has the parameters typed into the link itself, so Google Analytics records the literal text {{campaign.name}}.' : null,
+    L.old_sale_pages ? `Old sale pages still get visits: ${L.old_sale_pages.map((p) => `${p[0]} (${p[1]})`).join(', ')}. Point those links and ads to live pages.` : null,
+    L.paid_pages ? `EOSS ad links now bounce ${L.paid_pages.map((p) => hlPct(p[2])).join(', ')} of visitors. Retire them with the sale.` : null,
+  ].filter(Boolean);
+  const text = ['Checkout and landing page fixes', ...fixes.map((x, i) => `${i + 1}. ${x}`), '', ...pageFix.map((x, i) => `${fixes.length + i + 1}. ${x}`)].join('\n');
+  return `<div class="hl-kpis">
+      <div class="hl-kpi"><span>Cart to checkout</span><b>${hlPct(start / cart)}</b><em>${hlNum(start)} of ${hlNum(cart)} cart users</em>${hlChip(start / cart < 0.3 ? 'bad' : 'warn', start / cart < 0.3 ? 'Leak' : 'Watch')}</div>
+      <div class="hl-kpi"><span>Checkout to paid</span><b>${hlPct(paid / start)}</b><em>${hlNum(paid)} of ${hlNum(start)} who started</em></div>
+      <div class="hl-kpi"><span>Google Analytics sees</span><b>${orders ? hlPct(Math.min(1, paid / orders)) : 'unavailable'}</b><em>${hlNum(paid)} buyers vs ${orders !== null ? hlNum(orders) : 'unavailable'} website orders</em>${orders ? hlChip(paid / orders < 0.8 ? 'bad' : 'good', paid / orders < 0.8 ? 'Also missing orders' : 'OK') : ''}</div>
+    </div>
+    <section class="panel-box hl-sec"><h3>Checkout funnel <span class="muted small">${esc(shortDate(K.window.since))} to ${esc(shortDate(K.window.until))}, people</span></h3>
+      <div class="hl-steps">${f.map(([l, n], i) => `<div class="hl-step"><span>${esc(l)}</span><i style="width:${Math.max(2, (n / max) * 100).toFixed(1)}%"></i><b>${hlNum(n)}</b><em>${i ? hlPct(n / f[i - 1][1]) + ' of the step before' : ''}</em></div>`).join('')}</div>
+      <p class="small muted">${esc(K.funnel_note || '')} Google Analytics, like Meta, only counts buyers who reach the confirmation page, so both undercount paid orders.</p></section>
+    <section class="panel-box hl-sec"><div class="bd-head"><h3>Fixes, biggest leak first</h3>${copyBtn(text)}</div><ol class="mv-do">${fixes.map((x) => `<li>${esc(x)}</li>`).join('')}</ol></section>
+    ${pageFix.length ? `<section class="panel-box hl-sec"><h3>Landing pages</h3><ol class="mv-do">${pageFix.map((x) => `<li>${esc(x)}</li>`).join('')}</ol>
+      ${L.top_pages ? `<div class="scroll"><table class="bd-table"><tr><th>Top landing pages, all traffic</th><th class="n">Landings</th><th class="n">Bounce</th></tr>${L.top_pages.map((r) => `<tr><td>${esc(r[0])}</td><td class="n">${hlNum(r[1])}</td><td class="n">${hlPct(r[2])}</td></tr>`).join('')}</table></div>` : ''}
+      ${L.ga_purchases_by_source ? `<p class="small">Purchases by source in Google Analytics (last click): ${esc(L.ga_purchases_by_source.map((r) => `${r[0]} ${r[1]}`).join(', '))}. Google Analytics gives Meta little credit because people often come back later by search or direct.</p>` : ''}</section>` : ''}
+    <p class="small muted">From Google Analytics through Metabase, read only. Per page purchase numbers are not in the reports we can read, so pages are judged by bounce and by where the links point.</p>`;
 }
 function rpLegendSafe(items) { return typeof rpLegend === 'function' ? rpLegend(items) : `<p class="small">${items.map(([c, l]) => `<span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:${c};margin-right:4px"></span>${esc(l)}`).join(' &nbsp; ')}</p>`; }
 
@@ -177,6 +267,7 @@ function hlFatigue() {
     ${queue.length ? `<section class="panel-box hl-sec"><div class="bd-head"><h3>Backup queue for the creative team</h3>${copyBtn(queue.map(brief).join('\n\n'))}</div>
       <ol class="hl-queue">${queue.map((r) => `<li><button class="linkbtn" type="button" data-open="${esc(r.id)}">${esc(r.ad.name)}</button> ${hlChip(tone(r), r.status)} <span class="muted small">${compact(r.m14.spend)} in 14 days · ${esc(r.ad.creative.type_label || '')}</span> ${copyBtn(brief(r))}</li>`).join('')}</ol>
       <p class="small muted">Sale ads are left out: they stop with the sale.</p></section>` : ''}
+    ${hlBackups(rows)}
     <section class="panel-box hl-sec"><h3>Every live ad with real spend</h3><div class="scroll"><table class="bd-table">
       <tr><th>Ad</th><th>Forecast</th><th class="n">Spend 14 days</th><th class="n">ROAS</th><th>Click rate, 4 weeks</th><th class="n">Now vs best</th><th class="n">Seen per person last week</th></tr>
       ${rows.map((r) => `<tr><td><button class="linkbtn" type="button" data-open="${esc(r.id)}">${esc(r.ad.name)}</button>${r.retarget ? ' <span class="muted small">past visitors</span>' : ''}${r.sale ? ' <span class="chip sale">Sale</span>' : ''}</td>
@@ -184,6 +275,20 @@ function hlFatigue() {
         <td class="n">${r.drop > 0.005 ? '−' + hlPct(r.drop) : 'at best'}</td><td class="n">${r.frLast !== null ? r.frLast.toFixed(1) : 'unavailable'}</td></tr>`).join('')}
     </table></div>
     <p class="small muted">An ad counts as tired when its click rate is 30% below its best week, or people see it more than ${3.5} times a week (6 for past visitor ads). The forecast extends the last week's trend. Click rate needs 2,000 views a week to count.</p></section>`;
+}
+
+function hlBackups(rows) {
+  const P = HL.files.creativepack;
+  if (!P) return '';
+  const items = P.items.filter((i) => i.group === 'backup' || i.group === 'frame');
+  if (!items.length) return '';
+  const by = {};
+  for (const i of items) (by[i.for] || (by[i.for] = [])).push(i);
+  const status = (name) => { const r = rows.find((x) => x.ad.name === name); return r ? hlChip(r.days === 0 ? 'bad' : r.days !== null && r.days <= 21 ? 'warn' : 'good', r.status) : ''; };
+  return `<section class="panel-box hl-sec"><h3>Backup designs, ready to upload</h3>
+    <p class="small">New versions for the ads that are tiring: same product and promise, a new first look. Built on the Creative DNA winners (designed graphic, question hook, trust strip). Full size files are in the creative_pack folder.</p>
+    ${Object.entries(by).map(([name, list]) => `<h4>${esc(name)} ${status(name)}</h4><div class="fs-grid">${list.map((it) => `<figure class="fs-cr"><img loading="lazy" src="${esc(it.preview)}" alt="${esc(it.headline)}"><figcaption><b>${esc(it.headline)}</b><span>${esc(it.text)}</span><span class="muted small">${esc(it.size)}</span><span class="act-btns">${copyBtn([it.headline, it.text, `File: ${it.file}`].join('\n'))}</span></figcaption></figure>`).join('')}</div>`).join('')}
+    <p class="small muted">Catalog frames go on the catalogue ad as an overlay (Ads Manager: catalogue ad, creative options, frame). Launch backups next to the tired ad at 10 to 15% of its budget, and switch when a backup matches it for 5 days.</p></section>`;
 }
 
 // =============== 3. CHANGES ===============
@@ -295,6 +400,7 @@ function hlStructure() {
     </div>
     ${findings.length ? `<section class="panel-box hl-sec"><h3>What to fix</h3><ul class="hl-find">${findings.map((f) => `<li>${hlChip(f.tone, f.tone === 'bad' ? 'Fix' : f.tone === 'warn' ? 'Watch' : 'Note')} ${esc(f.text)}${f.who.length ? `<br><span class="muted small">${esc(f.who.slice(0, 6).join('; '))}${f.who.length > 6 ? ' and more' : ''}</span>` : ''}</li>`).join('')}</ul></section>` : ''}
     <section class="panel-box hl-sec"><div class="bd-head"><h3>Suggested setup</h3>${copyBtn(planText)}</div><ol class="mv-do">${plan.map((p) => `<li>${esc(p)}</li>`).join('')}</ol></section>
+    ${hlRestructure(A)}
     <section class="panel-box hl-sec"><h3>Live ad sets by campaign <span class="muted small">${esc(S.window || '')}</span></h3>
       ${[...camps.entries()].map(([k, l]) => `<div class="hl-camp"><h4>${esc(k)} ${isSaleCampaign(k) ? '<span class="chip sale">Sale</span>' : ''}</h4><div class="scroll"><table class="bd-table">
         <tr><th>Ad set</th><th>Who</th><th>Goal</th><th>Learning</th><th class="n">Spend</th><th class="n">Sales</th><th class="n">ROAS</th><th class="n">Seen per person</th></tr>
@@ -303,6 +409,58 @@ function hlStructure() {
           <td class="n">${compact(a.spend)}</td><td class="n">${a.purchases}</td><td class="n">${hlX(a.spend && a.value ? a.value / a.spend : null)}</td><td class="n">${a.frequency ? a.frequency.toFixed(1) : 'unavailable'}</td></tr>`).join('')}
       </table></div></div>`).join('')}
       <p class="small muted">Live ad sets from Ads Manager, checked ${esc(shortDate(S.captured_at))}. Learning status is Meta's.</p></section>`;
+}
+
+// Ad set by ad set: keep, merge or pause, where the money goes, and in what order.
+function hlRestructure(A) {
+  // Spend a day: over the days an ad set actually ran in the last 14 (new ad sets would look tiny otherwise).
+  const end = ENGINE.idx(bdLastFull()), active = {};
+  for (const [id, ad] of Object.entries(DATA.ads)) for (const r of DATA.daily[id] || []) if (r[0] > end - 14 && r[0] <= end && r[1] > 0) (active[ad.adset_id] || (active[ad.adset_id] = new Set())).add(r[0]);
+  const daily = (a) => a.spend / Math.max(1, Math.min(14, (active[a.id] && active[a.id].size) || 14)), roas = (a) => (a.spend && a.value ? a.value / a.spend : null);
+  const tot = A.reduce((t, a) => t + a.spend, 0), totV = A.reduce((t, a) => t + a.value, 0), R = tot ? totV / tot : 0;
+  const sale = (a) => a.campaign && isSaleCampaign(a.campaign);
+  const cap = new Date(HL.files.structure.captured_at), fresh = (a) => a.last_edit && (cap - new Date(a.last_edit)) / 864e5 < 7 && a.learning === 'Learning';
+  const byCamp = {};
+  for (const a of A) (byCamp[a.campaign || '?'] || (byCamp[a.campaign || '?'] = [])).push(a);
+  const pros = A.filter((a) => a.audience !== 'Past visitors' && !sale(a)), past = A.filter((a) => a.audience === 'Past visitors' && !sale(a));
+  const proven = (a) => a.purchases >= 3 && roas(a) !== null;
+  // Homes: the proven ad set with the most sales value; learned status breaks ties for past visitors.
+  const home = pros.filter((a) => a.advantage_audience && proven(a)).sort((p, q) => q.value - p.value)[0] || pros.filter((a) => a.audience === 'Broad').sort((p, q) => q.spend - p.spend)[0] || pros[0];
+  const phome = past.filter(proven).sort((p, q) => (q.learning === 'Active (learned)') - (p.learning === 'Active (learned)') || q.value - p.value)[0] || past[0];
+  const rows = A.map((a) => {
+    let act, why, to = null;
+    const r = roas(a);
+    if (sale(a)) { act = 'Pause'; why = 'Sale ended. Keep it for the next sale.'; }
+    else if (a === home) { act = 'Keep: prospecting home'; why = `Most sales value among broad-reach ad sets (${hlX(r)} on ${hlSales(a.purchases)}). New and winning ads go here.`; }
+    else if (a === phome) { act = 'Keep: past visitors home'; why = a.learning === 'Active (learned)' ? 'Out of learning with the most past-visitor sales. Do not edit it.' : `Most sales value among past visitor ad sets (${hlX(r)}).`; }
+    else if (a.learning === 'Active (learned)') { act = 'Keep for now'; why = 'Out of learning with steady delivery. Merging would restart learning.'; }
+    else if (fresh(a)) { act = 'Keep for now'; why = 'New and still learning. Judge it after 7 days.'; }
+    else if (r !== null && r >= R * 1.5 && a.purchases >= 3) { act = 'Keep for now'; why = `Returns ${hlX(r)} on ${hlSales(a.purchases)}. Merge later if it slips below the account.`; }
+    else if (a.audience === 'Past visitors') { act = 'Merge'; to = phome; why = 'Same people as the past visitors home, bidding against it.'; }
+    else { act = 'Merge'; to = home; why = (byCamp[a.campaign || '?'] || []).length >= 3 ? 'One of several audience splits running the same ads.' : a.learning === 'Learning limited' ? 'Learning limited: too few sales alone.' : 'Fold into the prospecting home so it learns faster.'; }
+    return { a, act, why, to };
+  });
+  const into = (h) => rows.filter((r) => r.to === h);
+  const addP = into(home).reduce((t, r) => t + daily(r.a), 0), addR = into(phome).reduce((t, r) => t + daily(r.a), 0);
+  const steps = [
+    ...(rows.some((r) => r.act === 'Pause') ? ['Day 1: pause the sale ad set.'] : []),
+    home ? `Day 1: in "${home.name}" (${home.campaign || 'new campaign'}), add the 2 or 3 best ads from each ad set being merged. Use the existing post IDs so likes and comments carry over.` : null,
+    home ? `Day 1: raise its budget (or its campaign budget, if the campaign uses Advantage campaign budget) by about ${compact(addP / 2)} a day, half of what the merged ad sets spend. Day 4: add the other ${compact(addP / 2)}.` : null,
+    home ? 'Day 1: in the same edit, switch the prospecting home to the most value goal and add the value rules from Next moves, so learning restarts only once.' : null,
+    phome && addR ? `Day 1: move the best past visitor ads into "${phome.name}" and add about ${compact(addR)} a day to it, in 2 steps.` : null,
+    'Day 4: pause the merged ad sets, once the homes are spending their new budgets.',
+    'Days 4 to 11: no edits. Let learning finish; judge on 7 days, not 1.',
+  ].filter(Boolean);
+  const tone = { Pause: 'bad', Merge: 'warn' };
+  const text = ['Account restructure map', '', ...rows.map((r) => `- ${r.a.name} (${r.a.campaign || 'new'}): ${r.act}${r.to ? ` into "${r.to.name}"` : ''}. ${r.why} Now about ${compact(daily(r.a))} a day.`), '', 'Steps:', ...steps.map((x, i) => `${i + 1}. ${x}`)].join('\n');
+  return `<section class="panel-box hl-sec"><div class="bd-head"><h3>Restructure map</h3>${copyBtn(text)}</div>
+    <p class="small">From ${A.length} live ad sets to 2 homes plus the few that earn their own place. Total spend stays the same: budgets move with the ad sets that merge.</p>
+    <div class="scroll"><table class="bd-table"><tr><th>Ad set</th><th>Action</th><th>Why</th><th class="n">Spend a day now</th><th class="n">ROAS 14 days</th></tr>
+    ${rows.sort((p, q) => ['Keep: prospecting home', 'Keep: past visitors home', 'Keep for now', 'Merge', 'Pause'].indexOf(p.act) - ['Keep: prospecting home', 'Keep: past visitors home', 'Keep for now', 'Merge', 'Pause'].indexOf(q.act)).map((r) => `<tr><td>${esc(r.a.name)}<br><span class="muted small">${esc(r.a.campaign || 'new campaign')}</span></td>
+      <td>${hlChip(tone[r.act] || 'good', r.act)}${r.to ? `<br><span class="small">into ${esc(r.to.name)}</span>` : ''}</td><td class="small">${esc(r.why)}</td><td class="n">${compact(daily(r.a))}</td><td class="n">${r.a.purchases ? hlX(roas(r.a)) : 'no sales'}</td></tr>`).join('')}
+    </table></div>
+    <h4>Order of steps</h4><ol class="mv-do">${steps.map((x) => `<li>${esc(x)}</li>`).join('')}</ol>
+    <p class="small muted">This page cannot change the account; the media buyer makes each step in Ads Manager. Check each merged ad set's best ads in the gallery before moving them.</p></section>`;
 }
 
 // =============== 5. CREATIVE DNA ===============
@@ -373,6 +531,7 @@ function hlStatus() {
     st.tracking = c === null ? ['grey', 'Unavailable'] : c >= 0.9 ? ['good', 'Good'] : c >= 0.7 ? ['warn', 'Watch'] : ['bad', `${Math.round(c * 100)}% of orders seen`];
   }
   try { const r = hlFatigueRows(), n = r.filter((x) => x.days === 0).length; st.fatigue = n ? ['bad', `${n} tired`] : r.some((x) => x.days && x.days <= 14) ? ['warn', 'Backups due'] : ['good', 'Fresh']; } catch (e) { st.fatigue = ['grey', 'Unavailable']; }
+  if (F.checkout) { const f = F.checkout.funnel_users; st.checkout = f[2][1] / f[1][1] < 0.3 ? ['bad', `${Math.round(f[2][1] / f[1][1] * 100)}% of carts check out`] : ['warn', 'Watch']; }
   if (F.changes) st.changes = ['grey', `${F.changes.changes.filter((c) => c.by === 'Team').length} changes`];
   if (F.structure) { const n = F.structure.adsets.filter((a) => a.learning === 'Learning limited').length; st.structure = n ? ['bad', `${n} limited`] : ['good', 'Clean']; }
   if (F.creativedna) st.dna = ['grey', `${Object.keys(F.creativedna.tags).length} tagged`];
@@ -385,14 +544,14 @@ window.renderHealth = async function renderHealth() {
   await hlBoot();
   if (!SL.data && !SL.err) await loadSales();
   const st = hlStatus();
-  const avail = HL_SECS.filter(([k]) => ({ tracking: HL.files.tracking, fatigue: true, changes: HL.files.changes, structure: HL.files.structure, dna: HL.files.creativedna })[k]);
+  const avail = HL_SECS.filter(([k]) => ({ tracking: HL.files.tracking, checkout: HL.files.checkout, fatigue: true, changes: HL.files.changes, structure: HL.files.structure, dna: HL.files.creativedna })[k]);
   if (!avail.some(([k]) => k === HL.sec)) HL.sec = avail[0][0];
   let body = '';
   try {
-    body = { tracking: hlTracking, fatigue: hlFatigue, changes: hlChanges, structure: hlStructure, dna: hlDna }[HL.sec]();
+    body = { tracking: hlTracking, checkout: hlCheckout, fatigue: hlFatigue, changes: hlChanges, structure: hlStructure, dna: hlDna }[HL.sec]();
   } catch (e) { console.error(e); body = '<p class="muted">This check could not run on these dates. Try the last 90 days.</p>'; }
   v.innerHTML = `<div class="hl">
-    <div class="mv-head"><div><h2>Account health</h2><p class="lead">5 checks for the media buyer: is tracking complete, which ads are tiring, what past changes did, is the setup clean, and what the best designs share.</p></div></div>
+    <div class="mv-head"><div><h2>Account health</h2><p class="lead">6 checks for the media buyer: is tracking complete, where the checkout leaks, which ads are tiring, what past changes did, is the setup clean, and what the best designs share.</p></div></div>
     <div class="hl-tiles" role="tablist">${avail.map(([k, l]) => { const s = st[k] || ['grey', '']; return `<button type="button" role="tab" data-hlsec="${k}" aria-selected="${HL.sec === k}"><span>${esc(l)}</span>${s[1] ? hlChip(s[0], s[1]) : ''}</button>`; }).join('')}</div>
     <div class="hl-body">${body}</div></div>`;
 };
