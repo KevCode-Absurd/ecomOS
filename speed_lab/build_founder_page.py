@@ -153,13 +153,13 @@ button:focus-visible,input:focus-visible{{outline:2px solid var(--accent);outlin
 <div class="now" id="tiles"></div>
 <div class="ctl"><button class="primary" id="watch">Watch it load: before and after</button></div>
 <section id="film" class="film" hidden>
-  <div class="filmhead"><div><strong>Same phone, same slow connection.</strong> Left is your homepage today. Right is with all 8 fixes. The clock runs at real speed.</div><div class="row"><button id="fplay" class="primary">Play</button><button id="frestart">Restart</button><span class="clock" id="fclock">0.0 s</span></div></div>
-  <input id="fscrub" type="range" min="0" max="180" value="0" aria-label="Time in tenths of a second">
+  <div class="filmhead"><div><strong>Same phone, same slow connection, same scrolling.</strong> Left is your homepage today. Right is with all 8 fixes. A shopper starts scrolling down at 2.5 seconds on both sides, at the same pace. The clock runs at real speed.</div><div class="row"><button id="fplay" class="primary">Play</button><button id="frestart">Restart</button><span class="clock" id="fclock">0.0 s</span></div></div>
+  <input id="fscrub" type="range" min="0" max="280" value="0" aria-label="Time in tenths of a second">
   <div class="filmcols">
     <figure><img id="fbefore" alt="Homepage loading today"><figcaption><span id="fbstate">Before: waiting</span></figcaption></figure>
     <figure><img id="fafter" alt="Homepage loading with all fixes"><figcaption><span id="fastate">After: waiting</span></figcaption></figure>
   </div>
-  <p class="small">What to watch: the first picture shows up at about the same time on both sides. The difference is how long the page keeps working after that. Today the search box, the chat button and the menu scripts arrive around 15 seconds in. With the fixes the page is ready to use in about 5 seconds. Recorded on a Pixel 5 profile over slow 4G, filmed by the browser itself. The numbers above the fixes, measured separately, are the record.</p>
+  <p class="small">What to watch: the first picture shows up at about the same time on both sides. Then look at what fills in as the shopper scrolls. Today the search box, the chat button and the menu scripts arrive around 16 seconds in, and sections below the top keep showing spinners for longer. With the fixes the page is ready to use in about 5 seconds. Recorded on a Pixel 5 profile over slow 4G, filmed by the browser itself, with the same scroll script on both sides. The numbers above the fixes, measured separately and without scrolling, are the record.</p>
 </section>
 <div class="ctl"><button class="primary" id="next">Show the next fix</button><button id="back">Go back one</button><button id="all">Show all 8</button><button id="reset">Start over</button></div>
 <div class="shots"><figure><img src="{data["base_shot"]}" alt="Homepage today, above the fold"><figcaption>Today</figcaption></figure><figure><img id="afterimg" src="{data["base_shot"]}" alt="Homepage after the fixes shown"><figcaption id="aftercap">No fix shown yet</figcaption></figure></div>
@@ -249,9 +249,9 @@ function drawFilm(){{
   document.getElementById('fclock').textContent = ft.toFixed(1) + ' s';
   document.getElementById('fscrub').value = Math.round(ft * 10);
 }}
-function tick(now){{ if (!playing) return; if (last != null) ft = Math.min(18, ft + (now - last) / 1000); last = now; drawFilm(); if (ft >= 18) {{ playing = false; document.getElementById('fplay').textContent = 'Play again'; return; }} raf = requestAnimationFrame(tick); }}
+function tick(now){{ if (!playing) return; if (last != null) ft = Math.min(28, ft + (now - last) / 1000); last = now; drawFilm(); if (ft >= 28) {{ playing = false; document.getElementById('fplay').textContent = 'Play again'; return; }} raf = requestAnimationFrame(tick); }}
 document.getElementById('watch').onclick = () => {{ const sec = document.getElementById('film'); sec.hidden = !sec.hidden; if (!sec.hidden) {{ drawFilm(); sec.scrollIntoView({{behavior: 'smooth', block: 'start'}}); }} }};
-document.getElementById('fplay').onclick = () => {{ if (playing) {{ playing = false; document.getElementById('fplay').textContent = 'Play'; return; }} if (ft >= 18) ft = 0; playing = true; last = null; document.getElementById('fplay').textContent = 'Pause'; raf = requestAnimationFrame(tick); }};
+document.getElementById('fplay').onclick = () => {{ if (playing) {{ playing = false; document.getElementById('fplay').textContent = 'Play'; return; }} if (ft >= 28) ft = 0; playing = true; last = null; document.getElementById('fplay').textContent = 'Pause'; raf = requestAnimationFrame(tick); }};
 document.getElementById('frestart').onclick = () => {{ ft = 0; playing = false; last = null; document.getElementById('fplay').textContent = 'Play'; drawFilm(); }};
 document.getElementById('fscrub').oninput = (e) => {{ ft = parseInt(e.target.value, 10) / 10; playing = false; document.getElementById('fplay').textContent = 'Play'; drawFilm(); }};
 document.getElementById('next').onclick=()=>{{n=Math.min(n+1,D.steps.length);renderTiles();renderList();}};

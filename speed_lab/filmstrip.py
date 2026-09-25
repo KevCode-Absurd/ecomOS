@@ -7,6 +7,12 @@ moment the load event fired. Same browser profile as measure.py (Pixel 5, 2.75x,
 Frames come from a CDP screencast, which streams a picture whenever the page repaints and never
 blocks the page or the navigation. Identical repaints are dropped and frames closer than MIN_GAP
 seconds to the last kept one are skipped. Illustrative: the harness numbers are the record.
+
+A shopper scroll is simulated with scroll gestures (Input.synthesizeScrollGesture, mouse source: the touch
+source does not move the page in this headless build),
+so a busy main thread shows up as real jank. The schedule is identical for every recording: the first
+swipe at SCROLL_START seconds after navigation begins, then one every SWIPE_EVERY seconds, each
+SWIPE_PX pixels. Pass --no-scroll to record a static viewport.
 """
 import argparse, asyncio, base64, fcntl, hashlib, io, json, os, sys, time
 from PIL import Image
@@ -17,7 +23,8 @@ from lab import ROOT, set_active
 CHROME = "/opt/pw-browsers/chromium-1194/chrome-linux/chrome"
 UA = "Mozilla/5.0 (Linux; Android 12; Pixel 5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36"
 W, H = 260, 520          # stored frame size (CSS px 393x851 scaled to 260 wide, top 520 kept)
-MIN_GAP = 0.2            # seconds between kept frames
+MIN_GAP = 0.25           # seconds between kept frames
+SCROLL_START, SWIPE_EVERY, SWIPE_PX = 2.5, 1.6, 420
 
 
 def shrink(jpeg_b64):
@@ -27,7 +34,7 @@ def shrink(jpeg_b64):
     return b.getvalue()
 
 
-async def run(label, variant, seconds, url="https://www.gehnaindia.com/"):
+async def run(label, variant, seconds, scroll=True, url="https://www.gehnaindia.com/"):
     lock = open(os.path.join(ROOT, ".measure.lock"), "w"); fcntl.flock(lock, fcntl.LOCK_EX)
     set_active(variant)
     open(os.path.join(ROOT, "ACTIVE_RUN"), "w").write(f"film-{label}")
@@ -50,7 +57,15 @@ async def run(label, variant, seconds, url="https://www.gehnaindia.com/"):
         loads = []
         page.on("load", lambda: loads.append(time.time() - t0))
         nav = asyncio.ensure_future(page.goto(url, wait_until="load", timeout=int(seconds * 1000) + 60000))
-        await asyncio.sleep(seconds)
+        swipes = []
+        if scroll:
+            t = SCROLL_START
+            while t < seconds:
+                await asyncio.sleep(max(0.0, t0 + t - time.time()))
+                swipes.append(round(time.time() - t0, 2))
+                asyncio.ensure_future(cdp.send("Input.synthesizeScrollGesture", {"x": 200, "y": 600, "yDistance": -SWIPE_PX, "speed": 1400, "gestureSourceType": "mouse"}))
+                t += SWIPE_EVERY
+        await asyncio.sleep(max(0.0, t0 + seconds - time.time()))
         try: await cdp.send("Page.stopScreencast")
         except Exception: pass
         try: await nav
@@ -68,11 +83,12 @@ async def run(label, variant, seconds, url="https://www.gehnaindia.com/"):
         small = shrink(data)
         frames.append({"t": round(t, 2), "src": "data:image/jpeg;base64," + base64.b64encode(small).decode()})
         last_t, last_hash = t, h
-    out = {"label": label, "variant": variant or "base", "seconds": seconds, "loaded_at": loaded_at, "frames": frames}
+    out = {"label": label, "variant": variant or "base", "seconds": seconds, "loaded_at": loaded_at,
+           "scroll": {"start": SCROLL_START, "every": SWIPE_EVERY, "px": SWIPE_PX, "swipes": swipes} if scroll else None, "frames": frames}
     json.dump(out, open(os.path.join(ROOT, "results", f"film-{label}.json"), "w"))
     print(label, len(raw), "screencast frames,", len(frames), "kept, load at", loaded_at)
 
 
 if __name__ == "__main__":
-    ap = argparse.ArgumentParser(); ap.add_argument("label"); ap.add_argument("--variant", default=None); ap.add_argument("--seconds", type=float, default=16)
-    a = ap.parse_args(); asyncio.run(run(a.label, a.variant, a.seconds))
+    ap = argparse.ArgumentParser(); ap.add_argument("label"); ap.add_argument("--variant", default=None); ap.add_argument("--seconds", type=float, default=28); ap.add_argument("--no-scroll", action="store_true")
+    a = ap.parse_args(); asyncio.run(run(a.label, a.variant, a.seconds, scroll=not a.no_scroll))
