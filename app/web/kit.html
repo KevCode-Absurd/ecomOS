@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>UI kit demo</title>
+<link rel="stylesheet" href="/web/ui-kit.css">
+</head>
+<body data-screen="00-today">
+<div class="screen">
+  <div id="badge"></div>
+  <div class="screen-head"><h1>UI kit demo</h1><p>Every component in contracts/ui-kit.md, drawn from plain arrays. Screens compose these. Numbers here are made up for the demo.</p></div>
+  <div id="note"></div>
+  <section class="section"><h3>Tiles</h3><div class="grid tiles" id="tiles"></div></section>
+  <section class="section"><h3>Insights with the decision row</h3><div class="grid" id="insights"></div></section>
+  <section class="section"><h3>Charts</h3><div class="grid two" id="charts"></div></section>
+  <section class="section"><h3>Table</h3><div id="table"></div></section>
+  <section class="section"><h3>Filmstrip</h3><div id="film"></div></section>
+  <section class="section"><h3>Empty state</h3><div id="empty"></div></section>
+</div>
+<script src="/web/ui-kit.js"></script>
+<script src="/web/charts.js"></script>
+<script>
+(async () => {
+  UI.mount('#badge', UI.sampleBadge());
+  UI.mount('#note', UI.founderNote(['This page proves the kit renders. Each block below is one call. Copy the call, not the markup.']));
+  UI.mount('#tiles',
+    UI.tile({ name: 'Sessions', plain: 'visits to the store', value: 41230, unit: 'n', window: 'last 28 days', freshness: '2026-09-24', delta: 0.062 }),
+    UI.tile({ name: 'Add to cart rate', value: 0.071, unit: '%', window: 'last 28 days', delta: -0.14, tone: 'bad' }),
+    UI.tile({ name: 'AOV', value: 86.4, unit: '$', window: 'last 28 days', delta: 0.003 }),
+    UI.tile({ name: 'Period ROAS', value: 2.31, unit: 'x', window: 'last 28 days', freshness: '2026-09-24' }),
+    UI.tile({ name: 'Repeat rate 90d', value: null, unit: '%', unavailable_reason: 'orders table missing', fix: 'Shopify', window: 'cohorts' }),
+    UI.tile({ name: 'LCP', value: 3120, unit: 'ms', window: 'last run', delta: -0.21, higher_is_better: false }));
+  UI.mount('#insights',
+    UI.insight({ severity: 'high', sentence: 'Add to cart rate fell 14% versus the prior 28 days while product views held. The break is on the product page.', rule: 'add_to_cart_rate < 0.9 * trailing_median(add_to_cart_rate, 4 windows) and product_view_rate within 5%', capability: 'CRO.pdp.diagnose', autonomy: 'founder_gate', evidence: '7.1% now, 8.3% median of the 4 prior windows. About $18,400 at stake this month.' }),
+    UI.insight({ severity: 'medium', sentence: 'Chargeback rate is 0.6%, under the 0.9% line but up for 3 windows in a row.', rule: 'chargeback_rate rising 3 windows and < 0.009', capability: 'CX.chargebacks.review', autonomy: 'agent' }),
+    UI.insight({ severity: 'info', sentence: 'Repeat rate is unavailable until orders load. Nothing to act on.', rule: 'repeat_rate_90d is unavailable', capability: 'DATA.connect.shopify', autonomy: 'human_assist' }));
+  const weeks = ['w1','w2','w3','w4','w5','w6','w7','w8','w9','w10','w11','w12'];
+  UI.mount('#charts',
+    Charts.bar({ title: 'Net revenue by week', unit: '$', labels: weeks, series: [{ name: 'Revenue', values: [21000, 23400, 19800, 25100, null, 27900, 30200, 28800, 26500, 31000, 33900, 36100] }], benchmark: 28000, benchmark_label: 'target', values: false }),
+    Charts.line({ title: 'Add to cart rate, 4 windows back', unit: '%', labels: weeks, series: [{ name: 'Rate', values: [0.081, 0.083, 0.084, 0.082, 0.085, 0.083, 0.08, 0.079, null, 0.074, 0.072, 0.071] }, { name: 'Peer band', values: weeks.map(() => 0.08) }], benchmark: 0.083, benchmark_label: 'own median' }),
+    Charts.step({ title: 'Free shipping threshold changes', unit: '$', labels: weeks, series: [{ name: 'Threshold', values: [60, 60, 60, 75, 75, 75, 75, 75, 75, 85, 85, 85] }] }),
+    Charts.bar({ title: 'Spend by campaign, stacked', unit: '$', stacked: true, labels: ['Sep 1', 'Sep 8', 'Sep 15', 'Sep 22'], series: [{ name: 'Prospecting', values: [4200, 4600, 5100, 4900] }, { name: 'Retargeting', values: [1100, 1200, 1150, 1300] }, { name: 'Brand', values: [400, 380, 420, 410] }] }),
+    Charts.funnel({ title: 'Pipeline, last 28 days', stages: [{ label: 'Sessions', value: 41230 }, { label: 'Product view', value: 24738, benchmark: 0.62 }, { label: 'Add to cart', value: 2927, benchmark: 0.10 }, { label: 'Checkout', value: 1610, benchmark: 0.55 }, { label: 'Orders', value: 902, benchmark: 0.55 }], note: 'Benchmarks are peer bands for DTC home goods. The red stage is the worst against its benchmark.' }),
+    Charts.cohort({ title: 'Repeat purchase by cohort', unit: '%', columns: ['m0', 'm1', 'm2', 'm3', 'm4', 'm5'], rows: [{ label: 'Apr', values: [1, 0.12, 0.18, 0.22, 0.25, 0.27] }, { label: 'May', values: [1, 0.11, 0.17, 0.21, 0.24, null] }, { label: 'Jun', values: [1, 0.13, 0.19, 0.23, null, null] }, { label: 'Jul', values: [1, 0.1, 0.16, null, null, null] }, { label: 'Aug', values: [1, 0.12, null, null, null, null] }] }));
+  UI.mount('#table', UI.table({ columns: [{ key: 'ad', label: 'Ad' }, { key: 'spend', label: 'Spend', unit: '$' }, { key: 'purchases', label: 'Purchases', unit: 'n' }, { key: 'roas', label: 'ROAS', unit: 'x' }, { key: 'cpa', label: 'CPA', unit: '$' }],
+    rows: [{ ad: 'Skillet hero, UGC', spend: 4210, purchases: 62, roas: 2.9, cpa: 67.9 }, { ad: 'Linen set, flat lay', spend: 2880, purchases: 31, roas: 2.1, cpa: 92.9 }, { ad: 'Gift set, carousel', spend: 1990, purchases: null, roas: null, cpa: null }, { ad: 'Board care, video', spend: 760, purchases: 9, roas: 1.6, cpa: 84.4 }], sort: { key: 'spend', dir: 'desc' } }));
+  const frame = (c) => 'data:image/svg+xml;utf8,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="180" height="320"><rect width="180" height="320" fill="' + c + '"/></svg>');
+  UI.mount('#film', UI.filmstrip({ caption: 'Same phone, same slow connection. Left is today, right is with the fixes. Demo frames.', seconds: 8,
+    before: { loaded_at: 6.4, frames: [{ t: 0, src: frame('#dddad0') }, { t: 2.1, src: frame('#c9c5b8') }, { t: 4.5, src: frame('#a9a598') }, { t: 6.4, src: frame('#6f8f7e') }] },
+    after: { loaded_at: 2.9, frames: [{ t: 0, src: frame('#dddad0') }, { t: 1.2, src: frame('#a9a598') }, { t: 2.9, src: frame('#6f8f7e') }] },
+    markers: [{ t: 1.2, label: 'first paint (after)' }] }));
+  UI.mount('#empty', UI.emptyState({ screen: '14-email-messaging', title: 'Email and messaging has no data yet', text: 'Connect Klaviyo in read-only mode. Flows and campaigns then fill this screen without any change to it.', missing: ['Klaviyo', 'orders'], action: { label: 'Open connectors', href: '#' } }));
+})();
+</script>
+</body>
+</html>
