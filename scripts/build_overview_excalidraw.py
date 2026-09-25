@@ -154,14 +154,14 @@ for i in range(len(steps)):
     t = min(70 / abs(ux) if ux else 1e9, 30 / abs(uy) if uy else 1e9) + 6
     arrow(ax + ux * t, ay + uy * t, bx_ - ux * t, by_ - uy * t, MUTED, 2, start=a, end=b)
 text(cx - 110, cy - 24, "numbers first, web last,\nsource carries no weight", 12, MUTED, align="center", w=220)
-text(BX, BY + 500, "Proof it works: the speed lab on Gehna's homepage. 8 fixes measured on a copy of the live page.", 13)
-rect(BX, BY + 526, 200, 46, ROSE, "Before: 15.4 s fully loaded", 12, sw=1)
-arrow(BX + 204, BY + 549, BX + 246, BY + 549, MUTED, 2)
-rect(BX + 250, BY + 526, 200, 46, GREEN, "After: 5.2 s, LCP 1.70 to 1.22 s", 12, sw=1)
-text(BX + 470, BY + 534, "4.34 MB to 1.98 MB. Founder page with 3 decisions per fix, filmstrip before and after.", 12, MUTED, w=380)
+text(BX, BY + 590, "Proof it works: the speed lab on Gehna's homepage. 8 fixes measured on a copy of the live page.", 13)
+rect(BX, BY + 616, 200, 46, ROSE, "Before: 15.4 s fully loaded", 12, sw=1)
+arrow(BX + 204, BY + 639, BX + 246, BY + 639, MUTED, 2)
+rect(BX + 250, BY + 616, 200, 46, GREEN, "After: 5.2 s, LCP 1.70 to 1.22 s", 12, sw=1)
+text(BX + 470, BY + 624, "4.34 MB to 1.98 MB. Founder page with 3 decisions per fix, filmstrip before and after.", 12, MUTED, w=380)
 
 # ---------------- Section C: the build timeline (bottom right) ----------------
-CX, CY = 1020, 790
+CX, CY = 1020, 880
 text(CX, CY, "THE BUILD, IN ORDER", 13, "#0e6b60")
 tl_x = CX + 14
 line(tl_x, CY + 34, tl_x, CY + 34 + 8 * 62, MUTED, 2)
@@ -183,7 +183,7 @@ for i, (when, what, fill) in enumerate(events):
 text(CX + 100, CY + 34 + 8 * 62 + 4, "4 pages published: Blueprint, Agent catalogue, Rooms, Workflows. All in the repo under agents/ and reviews/.", 12, MUTED, w=740)
 
 # ---------------- Section D: one job end to end (bottom) ----------------
-DX, DY = 60, 1400
+DX, DY = 60, 1480
 text(DX, DY, "ONE JOB AS A NEW HIRE DOES IT: launch a paid creative test (CREA-W01, 14 steps, shown as 7)", 13, "#0e6b60")
 job = [("1 Objection map\nand format scan", "crea/research/\nobjection-and-format-scan"), ("2 Competitor signal\nlayout and mood only", "crea/research/\ncompetitor-signal-pull"), ("3 Angles and\ntest plan", "crea/angle-and-test/\nangle-builder"), ("4 Audience spec\nhanded to Media", "crea/angle-and-test/\naudience-spec"), ("5 Hooks, scripts,\nbriefs per format", "crea/make-creatives/\nugc-video | static"), ("6 Claim check and\nScout references", "shared/claim-check\nreference-scout"), ("7 Launch checklist,\nread, registry", "shared/registry-entry\nfirst-read")]
 line(DX, DY + 70, DX + 7 * 280 - 60, DY + 70, MUTED, 2)
