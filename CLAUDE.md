@@ -28,7 +28,7 @@ Two tracks share this repo.
 - `meta_gallery/`: Gehna's Meta ad gallery (ad account 577226564072364). Run `python -m meta_gallery.server`, then open http://127.0.0.1:8765. The page is in `meta_gallery/web/` (app.js, engine.js, overview.js, insights.js, lab.js, studio.js, sales.js, testlab.js, prodads.js, report.js, buyer.js, catalog.js, index.html).
 - The same page is published at https://claude.ai/artifact/PYtCXf5norsr9vhSw4ZFVT (shared as "anyone with the link").
 - Tabs: overview, action plan with ranked tests to run, brand sales (Metabase, months and days), ad gallery, campaigns, insights, creative studio (paste a reference image to build variants), competitors (7 brands with pills), client report.
-- Data in `data/meta-gallery/`: `cache/gallery.json` (1 year of Meta), `sales.json` (monthly plus `daily` from 1 Aug 2026), `competitors.json` and `comp_media.json`, `brand.json`. Meta and Metabase were refreshed to 23 Sep 2026 on 24 Sep.
+- Data in `data/meta-gallery/`: `cache/gallery.json` (1 year of Meta), `sales.json` (monthly plus `daily` from 1 Aug 2026), `competitors.json` and `comp_media.json`, `brand.json`. Meta and Metabase were refreshed to 24 Sep 2026 (full day) on 25 Sep.
 - Refresh: `python -m meta_gallery.refresh meta ...` (merges a read-only MCP re-pull into a new raw capture) and `python -m meta_gallery.refresh sales FILE` (applies a pull made by `meta_gallery/metabase_pull.js` in a signed-in Metabase tab). Steps are in `META_GALLERY_STATUS.md`, Update 9.
 
 Not built yet: a general brand brain, a general reference library, an experiment registry, hosting with auth, and autonomous execution.

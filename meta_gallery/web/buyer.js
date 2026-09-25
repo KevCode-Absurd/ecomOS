@@ -14,7 +14,8 @@ const BD_FEST = {
   2026: [['2026-10-29', 'Karwa Chauth'], ['2026-11-06', 'Dhanteras'], ['2026-11-08', 'Diwali']],
 };
 const bdPct = (v) => (v === null || !Number.isFinite(v) ? '–' : Math.round(v * 100) + '%');
-const bdX = (v) => (v === null || v === undefined || !Number.isFinite(v) ? 'no sales' : '₹' + v.toFixed(2));
+const bdX = (v) => (v === null || v === undefined || !Number.isFinite(v) ? 'no sales' : v.toFixed(2) + 'x');
+const bdBack = (v) => (v === null || v === undefined || !Number.isFinite(v) ? 'no sales' : '₹' + v.toFixed(2));
 const bdDay = (iso) => new Date(iso + 'T00:00:00Z').toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short', timeZone: 'UTC' });
 
 // ---------- shared numbers ----------
@@ -36,8 +37,10 @@ function bdSum(days, a, b) {
 }
 // The last complete day: the capture day is partial, so step back 1 day when the capture is on the last day.
 function bdLastFull() {
-  const until = DATA.meta.window.until, cap = String(DATA.meta.captured_at || '').slice(0, 10);
-  return cap >= until ? addDays(until, -1) : until;
+  // The last day is full only when the capture was taken after that day ended (India time).
+  const until = DATA.meta.window.until, at = new Date(DATA.meta.captured_at || 0);
+  const cap = isNaN(at) ? '' : new Date(at.getTime() + 330 * 60000).toISOString().slice(0, 10);
+  return cap > until ? until : addDays(until, -1);
 }
 function bdAdSums(id, a, b) { return ENGINE.sums(id, a, b); }
 const bdLive = () => Object.keys(DATA.ads).filter((id) => DATA.ads[id].effective_status === 'ACTIVE');
@@ -220,10 +223,10 @@ function bdAudience() {
   const cuts = rows.filter((r) => r.share >= 0.05 && (r.roas === null || r.roas < T * 0.5)).sort((a, b) => b.spend - a.spend);
   const lean = rows.filter((r) => r.share >= 0.03 && r.roas !== null && r.roas >= T * 1.3).sort((a, b) => b.roas - a.roas);
   const perMonth = (s) => s / days * 30;
-  const line = (r, kind) => `<li><b>${esc(label[r.dim])} ${esc(r.k)}</b>: ${bdPct(r.share)} of money, ${bdX(r.roas)} back for ₹1 (account ${bdX(T)}). ${kind === 'cut'
+  const line = (r, kind) => `<li><b>${esc(label[r.dim])} ${esc(r.k)}</b>: ${bdPct(r.share)} of money, ${bdBack(r.roas)} back for ₹1 (account ${bdBack(T)}). ${kind === 'cut'
     ? `Exclude it, or cap it with a separate ad set. Frees about <b>${compact(perMonth(r.spend))} a month</b>.` : 'Give it its own ad set or more of the budget.'}</li>`;
   const bars = (dim) => rpHbar(rows.filter((r) => r.dim === dim).map((r) => ({ label: r.k, a: r.roas || 0, colorA: r.roas !== null && r.roas < T * 0.5 ? 'var(--bad)' : r.roas !== null && r.roas >= T * 1.3 ? 'var(--good)' : 'var(--roas)',
-    valTxt: `${bdX(r.roas)} back · ${bdPct(r.share)} of money`, tip: [r.k, 'Ad money', compact(r.spend), 'Back for ₹1', bdX(r.roas)].join('|') })));
+    valTxt: `${bdBack(r.roas)} back · ${bdPct(r.share)} of money`, tip: [r.k, 'Ad money', compact(r.spend), 'Back for ₹1', bdBack(r.roas)].join('|') })));
   return `<section class="panel-box bd-sec" id="bd-audience"><h2>Audience and placement cuts</h2>
     <p class="lead">Every ad in these dates, split by age, gender and platform. Red: under half the account return on 5% or more of the money. Green: 30% or more above it.</p>
     <div class="bd-two"><div><h3 class="bad">Cut or cap (${cuts.length})</h3>${cuts.length ? `<ul class="bd-list">${cuts.map((r) => line(r, 'cut')).join('')}</ul>` : '<p class="muted">No big leak.</p>'}</div>
