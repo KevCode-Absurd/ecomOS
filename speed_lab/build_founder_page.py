@@ -51,6 +51,19 @@ def shot(label, width=300):
     return "data:image/jpeg;base64," + base64.b64encode(b.getvalue()).decode()
 
 
+BRIEFS = {
+"rocket-loader": "Change: turn off Cloudflare Rocket Loader for www.gehnaindia.com.\nWhere: Cloudflare dashboard > the gehnaindia.com zone > Speed > Optimization > Content Optimization > Rocket Loader: Off.\nWhy: Rocket Loader rewrites all 31 Next.js script tags to type=\"text/rocketscript\" and runs them one at a time after the load event. The browser's preload scanner cannot see them, and when fonts get faster it re-fetches about 20 scripts one by one, so the product carousel appears late.\nShip with: the font subset change (fix 2) in the same release. Rocket Loader off on its own made the page slower in our test (load 15.4 s to 22.4 s) until the fonts were fixed too.\nCheck: view-source of the homepage must show <script src=\"/_next/static/chunks/...\" defer> with no type=\"text/rocketscript\" and no rocket-loader.min.js. On a throttled mobile profile (slow 4G, 4x CPU) the first GraphQL call should move from about 17 s to about 5 s after navigation.\nRollback: switch Rocket Loader back on in the same dashboard setting. Takes effect within minutes.",
+"korean-fonts": "Change: replace the two NanumMyeongjo font files (weights 400 and 700, /_next/static/media/14a3fceaeabbcb56-s.p.ttf and ae1a48c074c123e8-s.p.ttf, about 3 MB each) with Latin subsets in WOFF2, and preload the subsets instead of the TTFs.\nHow: with next/font/google use subsets: ['latin'] and display: 'swap' (Next.js then emits WOFF2 subsets and the preload). If the font is local, build the subset with fontTools:\n  pyftsubset NanumMyeongjo-Regular.ttf --unicodes=\"U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+2000-206F,U+2074,U+20AC,U+20B9,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD\" --flavor=woff2 --layout-features=\"*\" --output-file=nanum-400-latin.woff2\n  Repeat for the 700 weight. Keep U+20B9 (the rupee sign) in the range.\nAlso: keep a second @font-face per weight for the remaining code points with a unicode-range, so any non-Latin glyph still loads on demand. Our test did this and glyph coverage was unchanged.\nCheck: the two font requests on the homepage drop from about 1.1 MB each on the wire to under 50 KB each. Body text renders in the same face (compare a screenshot). Total page weight falls by about 2 MB.\nRollback: restore the previous font config and redeploy.",
+"tags-later": "Change: load the third-party tags after the page load event instead of right after hydration.\nWhere: pages/_app (the file that renders the next/script tags). For these Script elements change strategy=\"afterInteractive\" to strategy=\"lazyOnload\": Google Tag Manager (GTM-PK4C6HK), Klaviyo, the Meta pixel, Clarity, Google Ads, CustomerLabs. Leave any consent script as it is.\nAlso add, as the first inline script in <head>: window.dataLayer = window.dataLayer || []; window.gtag = window.gtag || function(){ dataLayer.push(arguments); };  This queues any gtag() event fired before the tags arrive, so events are delayed rather than lost.\nTrade-off to confirm with marketing: a visitor who leaves within about 5 seconds on a slow connection will not be counted by GA4, Ads, Meta, Klaviyo or Clarity. Test every key event (page view, add to cart, purchase) with consent on and off after the change.\nCheck: on a throttled mobile profile the load event fires at about 6 s instead of about 14 s, and the tag requests start after it. All tag endpoints still fire within a few seconds of load.\nRollback: change the strategies back to afterInteractive and remove the stub.",
+"icons": "Change: request smaller files for the 7 category icons in the first screen.\nWhere: the category icon component uses next/image with width={200}. They render at 60 x 60 CSS px. Set width={128} height={128} (or sizes=\"60px\"), so the srcset becomes w=128 1x and w=256 2x instead of w=256 and w=640.\nCheck: on a phone the icon requests should fetch the 256 px files, about 60 KB total for the 7 icons instead of about 229 KB. The icons must look the same at 60 px (compare a screenshot at 2x or 3x device pixel ratio).\nRollback: restore width={200}.",
+"lato-font": "Change: serve Lato 400 and 700 as Latin WOFF2 subsets instead of TTF (/_next/static/media/2c00c297d3cdabf8-s.p.ttf and 4291f48c2ea51320-s.p.ttf, about 75 KB each).\nHow: same method as the NanumMyeongjo change. With next/font/google use Lato with subsets: ['latin']; if local, run pyftsubset with the same unicode range and --flavor=woff2, and keep a unicode-range fallback face for the remaining code points.\nCheck: the two Lato requests drop to about 20 KB each and are WOFF2. Text renders in the same face. On a throttled profile the banner (LCP) should show about 200 ms sooner because the preloaded fonts stop competing with the banner image.\nRollback: restore the previous font files and preload links.",
+"hero-preload": "Change: preload the first hero banner image so the browser fetches it before the scripts and fonts.\nWhere: the hero slider component. Give the first slide's next/image priority={true}. Next.js then emits, in <head>, <link rel=\"preload\" as=\"image\" fetchpriority=\"high\" imagesrcset=\"...\" imagesizes=\"...\"> for it. Only the first slide gets priority; the other slides stay lazy.\nCheck: view-source shows the preload link before the font preloads. On a throttled mobile profile LCP improves by about 130 ms; the banner request starts within the first 100 ms of the load.\nRollback: remove priority from the first slide.",
+"inline-css": "Change: inline the two render-blocking stylesheets (the global CSS and the page CSS, about 8 KB gzipped together) into the HTML instead of linking them.\nHow: enable experimental.optimizeCss (Critters) in next.config.js, or inline them in a custom _document. If inlining by hand, keep the page stylesheet in a <style data-n-href=\"/_next/static/css/<hash>.css\"> element, because Next.js uses that element to swap page CSS on client-side navigation. Remove the matching <link rel=\"preload\" as=\"style\"> and <link rel=\"stylesheet\"> tags.\nCheck: first contentful paint on a throttled mobile profile improves by about 200 ms (740 ms to about 520 ms). Client-side navigation to a product page must still be styled correctly. The banner can get about 100 ms later because scripts start sooner; that is expected and the net effect is positive.\nRollback: disable the setting or restore the link tags.",
+"old-analytics": "Change: remove the Universal Analytics tag.\nWhere: in pages/_app, delete the next/script element with id=\"ga-global-script\" that loads https://www.googletagmanager.com/gtag/js?id=UA-41818105-2, and the line gtag('config', 'UA-41818105-2', {...}). Keep the inline dataLayer and gtag() definition and gtag('js', new Date()), since other calls use them. If the UA tag is also configured inside Google Tag Manager, pause it there too.\nWhy: Google stopped processing hits for standard Universal Analytics properties on 1 July 2023. The tag still costs about 133 KB per visit and about 50 ms of script time on a slow phone. GA4 (G-FT109JXEC7) and Google Ads (AW-982480202) are not affected.\nCheck: no request to gtag/js?id=UA-41818105-2 on any page. GA4 real-time report still shows visits.\nRollback: restore the two lines."
+}
+for f in FIXES:
+    f["brief"] = BRIEFS[f["id"]]
+
 base = med("baseline")
 steps = [dict(f, m=med(f["var"]), shot=shot(f["var"])) for f in FIXES]
 final = steps[-1]["m"]
@@ -99,6 +112,15 @@ p{{max-width:66ch;margin:0 0 10px}} .muted{{color:var(--muted)}}
 .card button.hold{{border-color:var(--warn);color:var(--warn)}} .card button.hold.sel{{background:var(--warn);color:#fff}}
 .card input{{font:15px var(--body);padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);min-width:220px;flex:1}}
 .card .saved{{font-size:13px;color:var(--muted)}}
+.card button.dev{{border-color:var(--accent);color:var(--accent)}} .card button.dev.sel{{background:var(--accent);color:var(--accent-ink)}}
+.modal[hidden]{{display:none}}
+.modal{{position:fixed;inset:0;background:rgba(20,18,14,.55);display:flex;align-items:center;justify-content:center;padding:16px;z-index:20}}
+.mbox{{background:var(--panel);color:var(--ink);border:1px solid var(--line);border-radius:12px;max-width:760px;width:100%;max-height:90vh;overflow:auto;padding:16px 18px}}
+.mhead{{display:flex;justify-content:space-between;align-items:center;gap:10px}} .mhead h3{{font-family:var(--display);font-size:18px;margin:0}}
+.mhead button,#mcopy{{font:600 14px var(--display);padding:8px 14px;border-radius:999px;border:1px solid var(--line);background:var(--panel);color:var(--ink);cursor:pointer}}
+#mcopy{{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}}
+#mbody{{white-space:pre-wrap;font:14px/1.5 var(--body);background:var(--code);padding:12px;border-radius:8px;margin:10px 0}}
+.modal .row{{display:flex;gap:10px;align-items:center;flex-wrap:wrap}}
 .shots{{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:14px 0}}
 .shots figure{{margin:0;min-width:0}} .shots img{{width:100%;border:1px solid var(--line);border-radius:8px;display:block}} .shots figcaption{{font-size:13px;color:var(--muted);margin-top:4px}}
 .box{{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:10px;padding:14px 18px;max-width:72ch}}
@@ -123,9 +145,10 @@ button:focus-visible,input:focus-visible{{outline:2px solid var(--accent);outlin
 <div class="box"><p>After the page arrives, its code keeps the phone busy for about 2.4 seconds building the page. None of the 8 fixes change that. It needs your developers to rework the app itself, which is a bigger project. Worth doing after the 8 fixes above are live.</p></div>
 
 <h2>What happens next</h2>
-<p>Every fix you approve goes to your developer as a written brief with the exact change, how to check it worked, and how to undo it. Fixes 1 and 2 go live together. Fix 3 waits for your marketing team's yes. The rest can ship any time.</p>
+<p>"Let the agent do it" asks ecomOS to prepare the change on a copy of the site for you to review; nothing changes on the live site until you say so. "Send to developer" opens the exact instructions to copy and send. Fixes 1 and 2 go live together. Fix 3 waits for your marketing team's yes. The rest can ship any time.</p>
 <p class="small">How we measured: a Pixel 5 phone profile on a slow 4G connection, 3 loads per version, the middle result. "Fully loaded" is when everything on the page has arrived. "Banner shows" is when the big top image is on screen. Real visits will be slower than these numbers because they also include your server and network, but the savings carry over.</p>
 </main>
+<div id="modal" class="modal" hidden><div class="mbox" role="dialog" aria-modal="true" aria-labelledby="mtitle"><div class="mhead"><h3 id="mtitle">Instructions</h3><button id="mclose" aria-label="Close">Close</button></div><p class="small">Copy this and send it to your developer as it is. It says what to change, where, how to check it worked, and how to undo it.</p><pre id="mbody"></pre><div class="row"><button id="mcopy" class="primary">Copy instructions</button><span class="saved" id="mcopied"></span></div></div></div>
 <script>
 const D = {json.dumps(data)};
 let n = 0; let db = null; const decisions = {{}};
@@ -154,11 +177,30 @@ function renderList(){{
     const card=document.createElement('div'); card.className='card'+(i<n?' on':''); card.innerHTML=`<div class="n">${{i+1}}</div><div>
       <h3>${{s.title}}</h3><p class="what">${{s.what}}</p>${{gain}} ${{warn}}
       <dl><dt>Needs</dt><dd>${{s.needs}}</dd><dt>Who and how long</dt><dd>${{s.who}}</dd>${{warn?'':'<dt>Trade-off</dt><dd>'+s.tradeoff+'</dd>'}}</dl>
-      <div class="row"><button class="approve ${{dec.decision==='approve'?'sel':''}}" data-id="${{s.id}}" data-d="approve">Approve</button><button class="hold ${{dec.decision==='hold'?'sel':''}}" data-id="${{s.id}}" data-d="hold">Not now</button><input id="r-${{s.id}}" placeholder="A short reason (optional)" value="${{(dec.reason||'').replace(/"/g,'&quot;')}}"><span class="saved" id="s-${{s.id}}">${{dec.at?('saved '+new Date(dec.at).toLocaleDateString()):(db?'':'')}}</span></div></div>`;
+      <div class="row"><button class="approve ${{dec.decision==='agent'?'sel':''}}" data-id="${{s.id}}" data-d="agent">Let the agent do it</button><button class="dev ${{dec.decision==='developer'?'sel':''}}" data-id="${{s.id}}" data-d="developer">Send to developer</button><button class="hold ${{dec.decision==='hold'?'sel':''}}" data-id="${{s.id}}" data-d="hold">Not now</button></div>
+      <div class="row" style="margin-top:6px"><input id="r-${{s.id}}" placeholder="A short reason or note (optional)" value="${{(dec.reason||'').replace(/"/g,'&quot;')}}"><span class="saved" id="s-${{s.id}}">${{dec.at?('saved: '+({{agent:'agent will do it',developer:'sent to developer',hold:'not now'}}[dec.decision]||dec.decision)+', '+new Date(dec.at).toLocaleDateString()):''}}</span></div></div>`;
     el.appendChild(card);
   }});
-  el.querySelectorAll('button[data-id]').forEach(b=>b.addEventListener('click',()=>save(b.dataset.id,b.dataset.d)));
+  el.querySelectorAll('button[data-id]').forEach(b=>b.addEventListener('click',()=>{{ if(b.dataset.d==='developer') openBrief(b.dataset.id); save(b.dataset.id,b.dataset.d); }}));
 }}
+function openBrief(id){{
+  const s=D.steps.find(x=>x.id===id); const i=D.steps.indexOf(s)+1;
+  const text = 'Gehna homepage speed fix '+i+' of 8: '+s.title+'\\n\\n'+s.brief+'\\n\\nMeasured on a copy of the live homepage, 25 Sep 2026, Pixel 5 profile on slow 4G. Questions: reply to this message.';
+  document.getElementById('mtitle').textContent = 'Fix '+i+': '+s.title;
+  document.getElementById('mbody').textContent = text;
+  document.getElementById('mcopied').textContent='';
+  document.getElementById('modal').hidden=false; document.body.style.overflow='hidden';
+  document.getElementById('mcopy').focus();
+}}
+function closeBrief(){{ document.getElementById('modal').hidden=true; document.body.style.overflow=''; }}
+document.getElementById('mclose').onclick=closeBrief;
+document.getElementById('modal').addEventListener('click',e=>{{ if(e.target.id==='modal') closeBrief(); }});
+document.addEventListener('keydown',e=>{{ if(e.key==='Escape') closeBrief(); }});
+document.getElementById('mcopy').onclick=async()=>{{
+  const t=document.getElementById('mbody').textContent; const st=document.getElementById('mcopied');
+  try{{ await navigator.clipboard.writeText(t); st.textContent='Copied. Paste it into a message to your developer.'; }}
+  catch(e){{ const r=document.createRange(); r.selectNodeContents(document.getElementById('mbody')); const sel=getSelection(); sel.removeAllRanges(); sel.addRange(r); st.textContent='Select all is done. Press Ctrl+C or Cmd+C to copy.'; }}
+}};
 async function save(id,decision){{
   const reason=(document.getElementById('r-'+id).value||'').slice(0,300); const body={{decision,reason,at:new Date().toISOString(),fix:id}};
   decisions[id]=body; renderList();
