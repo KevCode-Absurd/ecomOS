@@ -1,0 +1,3998 @@
+[
+ {
+  "id": "SITE-W01",
+  "name": "Choose the platform, stand up the account and secure the domain",
+  "capabilities": [
+   "SITE-C01",
+   "SITE-C02",
+   "SITE-C03"
+  ],
+  "trigger": "on demand",
+  "human_role": "New store setup lead",
+  "inputs_required": [
+   "brand brain: budget and team capacity",
+   "brand brain: catalogue size and SKU complexity",
+   "brand brain: legal entity",
+   "founder decision log"
+  ],
+  "steps": [
+   {
+    "n": 1,
+    "name": "List required features before comparing platforms",
+    "does": "Reads catalogue size, SKU complexity, budget and design needs and turns them into a written feature list before looking at any platform.",
+    "inputs": [
+     "brand brain: catalogue",
+     "brand brain: budget"
+    ],
+    "tools": [
+     "script: scripts/ideas.py"
+    ],
+    "skill": "site/store-setup-checklist",
+    "output": "feature requirement list",
+    "check": "Every item on the list ties to a real product or catalogue fact, not a guess."
+   },
+   {
+    "n": 2,
+    "name": "Score total cost of ownership",
+    "does": "Scores hosting, apps, transaction fees and developer time as one true yearly cost per platform (Shopify, WooCommerce, custom), not the sticker price.",
+    "inputs": [],
+    "tools": [
+     "web search"
+    ],
+    "skill": "site/store-setup-checklist",
+    "output": "cost comparison table",
+    "check": "Every cost line carries a source and a date."
+   },
+   {
+    "n": 3,
+    "name": "Recommend platform and plan tier",
+    "does": "Picks the platform and plan tier with the lowest true cost, and names the exact trigger (order volume, feature need) that should force an upgrade.",
+    "inputs": [],
+    "tools": [],
+    "skill": "site/store-setup-checklist",
+    "output": "platform recommendation memo",
+    "check": "The memo states a numeric upgrade trigger, not a vague 'when you grow'.",
+    "ask_founder_if": "budget or catalogue size has not been confirmed with the founder"
+   },
+   {
+    "n": 4,
+    "name": "Register the account and enter legal identity",
+    "does": "Registers under an email the business permanently controls and enters the exact legal identity before any payment or tax setting is touched.",
+    "inputs": [],
+    "tools": [
+     "mcp: shopify",
+     "connector: woocommerce admin"
+    ],
+    "skill": "site/store-setup-checklist",
+    "output": "setup checklist entries",
+    "check": "Account email is a business domain address, not a personal inbox."
+   },
+   {
+    "n": 5,
+    "name": "Set defaults and turn on account security",
+    "does": "Sets currency, region and unit defaults once, before any price is entered, and turns on two-factor authentication before payments are activated.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "security configuration report",
+    "check": "2FA confirmed on before any gateway is touched, checked live not from a settings screenshot."
+   },
+   {
+    "n": 6,
+    "name": "Set staff roles and time-bound agency access",
+    "does": "Creates custom staff roles and gives any agency collaborator access that expires on a set date rather than standing forever.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "security configuration report",
+    "check": "No collaborator has owner-level access without an end date.",
+    "ask_founder_if": "an agency needs standing access beyond the current project"
+   },
+   {
+    "n": 7,
+    "name": "Buy the domain and avoid the platform default",
+    "does": "Filters candidate names by brandability, buys the real domain and never launches on the platform's default subdomain.",
+    "inputs": [],
+    "tools": [
+     "connector: dns",
+     "web search"
+    ],
+    "skill": null,
+    "output": "DNS change list",
+    "check": "The live storefront never resolves to a *.myshopify.com or platform default URL."
+   },
+   {
+    "n": 8,
+    "name": "Point DNS for the platform and for sender authentication",
+    "does": "Points DNS at the platform and reuses the same DNS workflow to add SPF, DKIM and DMARC records for sender domain authentication.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "DNS change list",
+    "check": "Every DNS record is verified resolving live, not just saved in the registrar panel."
+   },
+   {
+    "n": 9,
+    "name": "Register near-miss domains and matching TLDs",
+    "does": "Registers the near-miss spellings and additional TLDs a squatter would use to imitate the brand.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "domain readiness report",
+    "check": "Registrar choice favors portability over convenience unless there is a real reason not to.",
+    "ask_founder_if": "budget is tight and squatting risk is genuinely low for this category"
+   }
+  ],
+  "outputs": [
+   "platform recommendation memo",
+   "cost comparison table",
+   "setup checklist",
+   "security configuration report",
+   "DNS change list",
+   "domain readiness report"
+  ],
+  "qa": [
+   "Every claim and number traces to the brand record or a dated web source.",
+   "2FA is on before payments are touched.",
+   "No leftover agency access without an end date.",
+   "DNS verified live, not just saved."
+  ],
+  "read_point": "Kevin reviews the memo and checklist before any payment is set live; DNS re-checked 24-48h after propagation.",
+  "typical_duration": "agent: 2-3 hours across the three capabilities; waiting: up to 48 hours for DNS propagation and domain registration confirmation.",
+  "subagents": [
+   "store-setup-auditor: runs the cost comparison and setup checklist while domain registration is in progress"
+  ]
+ },
+ {
+  "id": "SITE-W02",
+  "name": "Select the theme and put safe engineering practice behind it",
+  "capabilities": [
+   "SITE-C04",
+   "SITE-C05",
+   "SITE-C62",
+   "SITE-C69",
+   "SITE-C70"
+  ],
+  "trigger": "on demand | store setup, or after a near-miss where a live edit could not be traced or reverted",
+  "human_role": "Theme developer / engineering lead",
+  "inputs_required": [
+   "brand brain: required PDP/collection features",
+   "founder decision log",
+   "GitHub repo access or Shopify CLI"
+  ],
+  "steps": [
+   {
+    "n": 1,
+    "name": "List required sections and features",
+    "does": "Writes the list of sections and features a theme must have before browsing any theme store.",
+    "inputs": [],
+    "tools": [],
+    "skill": "site/theme-engineering",
+    "output": "feature requirement list",
+    "check": "List is written before a single theme is opened."
+   },
+   {
+    "n": 2,
+    "name": "Vet 2-3 candidate themes",
+    "does": "Vets each candidate on PDP quality, mobile behaviour and code quality, not the homepage demo, and scores each against the feature list.",
+    "inputs": [],
+    "tools": [
+     "browser: headless chromium",
+     "mcp: shopify"
+    ],
+    "skill": "site/theme-engineering",
+    "output": "theme shortlist with scores",
+    "check": "Every theme is checked on a real PDP and a real mobile width, not the marketplace preview."
+   },
+   {
+    "n": 3,
+    "name": "Decide free vs paid and pick one",
+    "does": "Picks the theme with the best fit-to-cost, not the best looking demo.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "theme decision memo",
+    "check": "Decision states the runner-up and why it lost.",
+    "ask_founder_if": "two themes score within 5% and cost differs materially"
+   },
+   {
+    "n": 4,
+    "name": "Duplicate the theme before any edit round",
+    "does": "Never edits the live theme directly; every change round starts on a duplicate or a branch.",
+    "inputs": [],
+    "tools": [],
+    "skill": "site/theme-pr-diff",
+    "output": "duplicate theme / branch",
+    "check": "The live theme's edit history shows zero direct edits."
+   },
+   {
+    "n": 5,
+    "name": "Stand up git, CI and a staging theme",
+    "does": "Connects the theme repo to GitHub, adds Shopify CLI for local development, runs theme-check linting on every commit, and builds a staging theme URL that auto-deploys from a branch.",
+    "inputs": [],
+    "tools": [
+     "mcp: github"
+    ],
+    "skill": "site/theme-engineering/git-ci-pipeline",
+    "output": "git repo with commit history, CI config, staging theme URL",
+    "check": "A commit with a hard theme-check error is blocked from merging."
+   },
+   {
+    "n": 6,
+    "name": "Write the AI build brief before any AI agent touches the storefront",
+    "does": "Gives the build agent real brand inputs (products, policy, voice), lets it propose a plan first, and asks for exactly one storefront change per prompt.",
+    "inputs": [],
+    "tools": [],
+    "skill": "site/theme-engineering/ai-build-guardrail",
+    "output": "AI build brief",
+    "check": "The brief is written and approved before the agent makes its first live edit."
+   },
+   {
+    "n": 7,
+    "name": "Preview privately and QA every AI-authored section",
+    "does": "Previews every AI-built section privately, never on the public URL, and treats the output as a draft needing manual QA and a claims check.",
+    "inputs": [],
+    "tools": [
+     "browser: headless chromium"
+    ],
+    "skill": "shared/claim-check",
+    "output": "QA pass report",
+    "check": "No AI-authored copy ships without a claim-check pass."
+   },
+   {
+    "n": 8,
+    "name": "Require review before merge and keep a tested rollback",
+    "does": "Requires a second reviewer or the founder gate before merging staging to the live theme, and keeps a one-command rollback to the previous release.",
+    "inputs": [],
+    "tools": [],
+    "skill": "site/theme-engineering/git-ci-pipeline",
+    "output": "change log, rollback runbook",
+    "check": "Rollback has actually been run once in a drill, not just documented."
+   },
+   {
+    "n": 9,
+    "name": "Document design tokens and check new sections against them",
+    "does": "Documents color, spacing, typography and component tokens from the live theme, then checks every new section against them and flags drift.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "design token doc, drift flags",
+    "check": "A new section that doesn't match a token is flagged before it ships, not after."
+   },
+   {
+    "n": 10,
+    "name": "Maintain a staging environment with real-looking data",
+    "does": "Keeps a staging copy of the store, theme and a recent product/price snapshot in sync with production, refreshed on a schedule, for every risky change or app trial.",
+    "inputs": [],
+    "tools": [
+     "store_sync.mirror"
+    ],
+    "skill": null,
+    "output": "staging store, refresh schedule",
+    "check": "Every app trial and AI build-agent session runs against staging, never production."
+   }
+  ],
+  "outputs": [
+   "theme shortlist with scores",
+   "git repo with commit history + CI config",
+   "AI build brief",
+   "QA pass report",
+   "design token doc",
+   "staging store + refresh schedule",
+   "rollback runbook"
+  ],
+  "qa": [
+   "No edit ever lands on the live theme without a duplicate/branch and a reviewed PR.",
+   "Rollback command tested, not assumed.",
+   "AI-authored copy passed claim-check before merge.",
+   "New sections checked against the design token doc."
+  ],
+  "read_point": "Founder reviews the PR before merge; token drift checked at every new section's QA.",
+  "typical_duration": "agent: 1-2 days for initial engineering setup; ongoing: 30-60 minutes per theme change afterward.",
+  "subagents": [
+   "store-setup-auditor for theme vetting",
+   "page-builder for AI-build-agent sessions"
+  ]
+ },
+ {
+  "id": "SITE-W03",
+  "name": "Build the product catalogue and site architecture",
+  "capabilities": [
+   "SITE-C06",
+   "SITE-C07"
+  ],
+  "trigger": "on demand",
+  "human_role": "Catalogue and information-architecture builder",
+  "inputs_required": [
+   "brand brain: products (prices, weights, stock, images)",
+   "brand brain: audience",
+   "connector: shopify admin | woocommerce admin"
+  ],
+  "steps": [
+   {
+    "n": 1,
+    "name": "Match product type to real fulfilment",
+    "does": "Sets each product's type to match how it is actually sold and fulfilled, since this drives tax, shipping and reporting behaviour.",
+    "inputs": [],
+    "tools": [
+     "mcp: shopify"
+    ],
+    "skill": "site/store-setup-checklist",
+    "output": "catalogue completeness report",
+    "check": "Every product type matches a real fulfilment path, not a default guess."
+   },
+   {
+    "n": 2,
+    "name": "Turn on inventory tracking and assign SKUs",
+    "does": "Turns on inventory tracking and gives every product a real SKU.",
+    "inputs": [],
+    "tools": [],
+    "skill": "site/store-setup-checklist",
+    "output": "field-by-field fix list",
+    "check": "No product ships without a SKU."
+   },
+   {
+    "n": 3,
+    "name": "Enter cost per item",
+    "does": "Enters a real cost per item on every product so margin reporting works from day one.",
+    "inputs": [],
+    "tools": [],
+    "skill": "site/store-setup-checklist",
+    "output": "field-by-field fix list",
+    "check": "Cost field is populated with a real number, not left at zero or the platform default."
+   },
+   {
+    "n": 4,
+    "name": "Build variants and verify swatches",
+    "does": "Builds variant options, prices every row, and verifies swatch colors against real hex values.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "field-by-field fix list",
+    "check": "Every variant row has a price; every swatch matches the real product color."
+   },
+   {
+    "n": 5,
+    "name": "Group gallery images by variant",
+    "does": "Groups product images by variant so the gallery updates correctly when a shopper changes a selection.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "catalogue completeness report",
+    "check": "No product ships with 0 or 1 image."
+   },
+   {
+    "n": 6,
+    "name": "Decide manual vs smart collections",
+    "does": "Decides collections deliberately, manual for curated sets and smart (rule-based) for anything that should update itself, and deletes unused default demo collections.",
+    "inputs": [],
+    "tools": [],
+    "skill": "site/page-spec-and-copy/homepage-collection-ux",
+    "output": "navigation and collection spec",
+    "check": "No leftover demo collection remains live."
+   },
+   {
+    "n": 7,
+    "name": "Set tag discipline",
+    "does": "Builds a tag taxonomy so every filter a shopper can select actually returns matching products.",
+    "inputs": [],
+    "tools": [],
+    "skill": "site/page-spec-and-copy/homepage-collection-ux",
+    "output": "tag taxonomy",
+    "check": "Every filter tested live returns at least one correct result."
+   },
+   {
+    "n": 8,
+    "name": "Build navigation around how shoppers think",
+    "does": "Builds the menu from the shopper's own mental model, capped at 7 top-level items, reachable in 2-3 clicks.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "navigation and collection spec",
+    "check": "A fresh pair of eyes reaches any product in 2-3 clicks.",
+    "ask_founder_if": "the catalogue does not cleanly fit into 7 or fewer top categories"
+   },
+   {
+    "n": 9,
+    "name": "Turn on and QA breadcrumbs",
+    "does": "Turns on breadcrumb navigation across PDP and collection pages and verifies it live.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "navigation and collection spec",
+    "check": "Breadcrumbs are correct on every template, checked live not in the editor."
+   }
+  ],
+  "outputs": [
+   "catalogue completeness report",
+   "field-by-field fix list",
+   "navigation and collection spec",
+   "tag taxonomy"
+  ],
+  "qa": [
+   "Every product has a SKU, a real cost, and at least 2 images.",
+   "Every filter tag actually returns matching products when clicked live.",
+   "Navigation tested in 2-3 clicks by someone unfamiliar with the site."
+  ],
+  "read_point": "Checked again at pre-launch QA (SITE-W08) and whenever the catalogue changes materially.",
+  "typical_duration": "agent: 4-8 hours depending on catalogue size; human: spot-checks on the live storefront.",
+  "subagents": [
+   "store-setup-auditor"
+  ]
+ },
+ {
+  "id": "SITE-W04",
+  "name": "Draft legal pages and configure the checkout base",
+  "capabilities": [
+   "SITE-C08",
+   "SITE-C18"
+  ],
+  "trigger": "on demand",
+  "human_role": "Store compliance and checkout configuration lead",
+  "inputs_required": [
+   "brand brain: shipping and returns practice",
+   "brand brain: policies",
+   "connector: shopify admin"
+  ],
+  "steps": [
+   {
+    "n": 1,
+    "name": "Draft policy pages from real practice",
+    "does": "Drafts shipping, returns, privacy and terms pages from the brand's real practice, never a bare template with placeholders left in.",
+    "inputs": [],
+    "tools": [
+     "mcp: shopify",
+     "web search"
+    ],
+    "skill": "site/page-spec-and-copy",
+    "output": "draft policy pages",
+    "check": "No placeholder text remains anywhere in a policy page."
+   },
+   {
+    "n": 2,
+    "name": "Write real shipping terms with a duty disclosure",
+    "does": "Writes shipping terms that match reality, including a cross-border duties disclosure for any market where it applies.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "draft policy pages",
+    "check": "Duty disclosure present for every cross-border market the brand actually ships to."
+   },
+   {
+    "n": 3,
+    "name": "Route to a human for legal sign-off",
+    "does": "Sends every AI-drafted policy page to a person for legal sign-off before it publishes.",
+    "inputs": [],
+    "tools": [],
+    "skill": "shared/claim-check",
+    "output": "legal review request",
+    "check": "No policy page auto-publishes without a human sign-off.",
+    "ask_founder_if": "no lawyer is available to sign off"
+   },
+   {
+    "n": 4,
+    "name": "Point checkout's agree-box at the real terms page",
+    "does": "Wires the checkout's terms checkbox to the actual published terms page, not a draft or an old version.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "checkout configuration",
+    "check": "The link in the live checkout resolves to the current, signed-off terms page."
+   },
+   {
+    "n": 5,
+    "name": "Keep guest checkout on",
+    "does": "Confirms guest checkout is on and stays on; account creation is never forced.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "checkout configuration",
+    "check": "A test purchase completes without creating an account."
+   },
+   {
+    "n": 6,
+    "name": "Minimize checkout fields and separate consent",
+    "does": "Sets checkout fields to the minimum needed and separates transactional consent from marketing consent so a shopper is never opted into marketing by finishing a purchase.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "checkout configuration",
+    "check": "Marketing consent checkbox is unchecked by default."
+   },
+   {
+    "n": 7,
+    "name": "Brand the checkout",
+    "does": "Applies the brand's logo and colors to checkout within the plan's real branding limits.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "checkout configuration",
+    "check": "Checkout visually matches the brand, within what the plan tier allows."
+   },
+   {
+    "n": 8,
+    "name": "Cap coupons and order quantity",
+    "does": "Enables coupons with a per-user limit and a maximum spend cap, and sets a per-order quantity cap when stock is scarce.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "settings change list",
+    "check": "A coupon cannot be reused past its cap in a live test."
+   },
+   {
+    "n": 9,
+    "name": "Set one abandoned-checkout email owner",
+    "does": "Turns on exactly one system (site platform or lifecycle platform, not both) to own the abandoned-checkout email.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "settings change list",
+    "check": "A real abandoned cart triggers exactly one recovery email, confirmed by test."
+   }
+  ],
+  "outputs": [
+   "draft policy pages",
+   "legal review request",
+   "checkout configuration",
+   "settings change list"
+  ],
+  "qa": [
+   "No placeholder text left in a policy page.",
+   "Guest checkout confirmed on, tested live.",
+   "Exactly one system owns the abandoned-checkout email."
+  ],
+  "read_point": "Before launch (feeds SITE-W08); re-checked whenever shipping or return practice changes.",
+  "typical_duration": "agent: 3-5 hours; human: lawyer sign-off turnaround varies, days to weeks.",
+  "subagents": []
+ },
+ {
+  "id": "SITE-W05",
+  "name": "Configure payments, shipping and tax",
+  "capabilities": [
+   "SITE-C09",
+   "SITE-C10",
+   "SITE-C11"
+  ],
+  "trigger": "on demand",
+  "human_role": "Finance operations setup lead",
+  "inputs_required": [
+   "brand brain: markets and currencies",
+   "brand brain: margin and AOV",
+   "brand brain: fulfilment locations",
+   "brand brain: registered tax jurisdictions",
+   "a real tax professional's confirmation of obligations"
+  ],
+  "steps": [
+   {
+    "n": 1,
+    "name": "Verify identity documents for gateway activation",
+    "does": "Verifies the exact identity documents each payment gateway needs before activation, since a mismatch delays go-live by days.",
+    "inputs": [],
+    "tools": [
+     "mcp: shopify"
+    ],
+    "skill": "site/store-setup-checklist/payments-shipping-tax",
+    "output": "payment setup checklist",
+    "check": "Documents match the gateway's stated requirements exactly."
+   },
+   {
+    "n": 2,
+    "name": "Add a second gateway and regional methods",
+    "does": "Adds a primary and a second payment gateway plus the regional payment methods that matter in each key market.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "payment setup checklist",
+    "check": "Every key market has at least one locally trusted payment method.",
+    "ask_founder_if": "a market's dominant local payment method is not yet supported"
+   },
+   {
+    "n": 3,
+    "name": "Set capture timing and fraud screening",
+    "does": "Sets capture timing and turns on fraud screening, including a screen for fake COD orders where COD is offered.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "payment setup checklist",
+    "check": "Fraud screening confirmed active with a test transaction."
+   },
+   {
+    "n": 4,
+    "name": "Run the sandbox-then-real go-live test",
+    "does": "Tests every gateway in sandbox, then places one real order and refunds it before the storefront password comes off.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "go-live test log",
+    "check": "A real refunded order appears in the gateway dashboard, not assumed from settings alone."
+   },
+   {
+    "n": 5,
+    "name": "Build shipping zones and assign fulfilment locations",
+    "does": "Gives every target country an explicit shipping zone and rate, and assigns a fulfilment location to each zone.",
+    "inputs": [],
+    "tools": [],
+    "skill": "site/store-setup-checklist/payments-shipping-tax",
+    "output": "shipping configuration",
+    "check": "No country is left in the platform's undefined 'rest of world' bucket by accident."
+   },
+   {
+    "n": 6,
+    "name": "Set the free-shipping threshold from real numbers",
+    "does": "Sets the free-shipping threshold from the brand's real margin and AOV, and shows the threshold live in cart.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "shipping configuration",
+    "check": "Threshold is computed from real margin data, not copied from a competitor."
+   },
+   {
+    "n": 7,
+    "name": "Test every rate bracket edge",
+    "does": "Tests carts at every weight or value bracket boundary before launch, since edge cases are where shipping math breaks.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "rate QA log",
+    "check": "Every bracket boundary tested with a real cart, not just the middle of each bracket."
+   },
+   {
+    "n": 8,
+    "name": "Confirm real tax obligations before configuring",
+    "does": "Confirms the brand's real tax obligations with a professional before enabling any calculation, and turns on the platform tax service per registered region.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "tax configuration",
+    "check": "No jurisdiction is configured without a professional's confirmation on file.",
+    "ask_founder_if": "no tax professional has confirmed obligations yet"
+   },
+   {
+    "n": 9,
+    "name": "Decide display and basis rules per jurisdiction",
+    "does": "Decides inclusive vs exclusive tax display once, consistently, and sets the tax basis (origin/destination) and shipping taxability per jurisdiction's real rule.",
+    "inputs": [],
+    "tools": [],
+    "skill": "site/store-setup-checklist/payments-shipping-tax",
+    "output": "tax configuration",
+    "check": "Rules match each jurisdiction's actual law, not a single global default."
+   },
+   {
+    "n": 10,
+    "name": "Test one product per tax class in 2+ regions",
+    "does": "Tests one product per tax class in at least two regions before trusting the setup.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "tax QA log",
+    "check": "Every tax class produces the expected tax amount in a live cart test in 2 regions."
+   }
+  ],
+  "outputs": [
+   "payment setup checklist",
+   "go-live test log",
+   "shipping configuration",
+   "rate QA log",
+   "tax configuration",
+   "tax QA log"
+  ],
+  "qa": [
+   "A real refunded order proves payment end to end.",
+   "Every shipping rate bracket tested at its edge.",
+   "Tax obligations confirmed by a professional, not assumed.",
+   "Statement descriptor matches the real brand name."
+  ],
+  "read_point": "Immediately before launch; re-run tax QA whenever catalogue, zones or nexus changes.",
+  "typical_duration": "agent: about 1 day of configuration; human: a few days waiting on gateway verification and tax sign-off.",
+  "subagents": [
+   "store-setup-auditor"
+  ]
+ },
+ {
+  "id": "SITE-W06",
+  "name": "Set up multi-market localization and consent-based tag gating",
+  "capabilities": [
+   "SITE-C12",
+   "SITE-C78"
+  ],
+  "trigger": "on demand | store setup for an India or EU-facing brand, or a compliance audit finding",
+  "human_role": "Global setup and compliance lead",
+  "inputs_required": [
+   "brand brain: target markets",
+   "founder decision log",
+   "current tag/tracking-script list"
+  ],
+  "steps": [
+   {
+    "n": 1,
+    "name": "Group countries by tax treatment",
+    "does": "Groups target countries into markets by shared tax treatment, not by geography.",
+    "inputs": [],
+    "tools": [],
+    "skill": "site/store-setup-checklist",
+    "output": "market plan",
+    "check": "Every market group shares one real tax treatment, verified against SITE-W05's tax setup."
+   },
+   {
+    "n": 2,
+    "name": "Verify the plan tier supports the plan",
+    "does": "Checks the plan tier actually supports per-market theme customization before promising it to the founder.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "market plan",
+    "check": "No market feature is promised that the current plan tier cannot deliver.",
+    "ask_founder_if": "the plan does not support the localization the founder wants"
+   },
+   {
+    "n": 3,
+    "name": "Add languages with human review",
+    "does": "Adds languages with auto-translate plus a human review pass, never machine translation shipped unchecked.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "localization configuration",
+    "check": "Every translated page has had at least one human review pass."
+   },
+   {
+    "n": 4,
+    "name": "Build a per-market catalogue",
+    "does": "Builds a catalogue per market, excluding products that cannot ship or are not compliant there.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "localization configuration",
+    "check": "No non-compliant or unshippable product is visible in a market's catalogue."
+   },
+   {
+    "n": 5,
+    "name": "Round converted prices naturally",
+    "does": "Rounds converted per-market prices to a natural local ending instead of a raw currency conversion.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "localization configuration",
+    "check": "Prices read naturally in the local currency, not as an odd conversion artifact."
+   },
+   {
+    "n": 6,
+    "name": "Inventory every firing tag and script",
+    "does": "Inventories every tracking pixel, tag and script currently firing on first page load before gating any of them.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "gated tag list",
+    "check": "The inventory is built from a real network trace, not the tag manager's own list."
+   },
+   {
+    "n": 7,
+    "name": "Route tags behind consent, keyed to region",
+    "does": "Routes each tracking tag behind a consent-management layer keyed to the visitor's region and choice, with the correct default: opt-in for GDPR regions, DPDP's stricter default for India.",
+    "inputs": [],
+    "tools": [],
+    "skill": "site/store-setup-checklist",
+    "output": "configured consent layer",
+    "check": "Default state matches the visitor's region's actual law."
+   },
+   {
+    "n": 8,
+    "name": "Confirm rejection actually blocks the script",
+    "does": "Confirms a rejected-consent visitor genuinely does not fire the gated scripts, checked in network requests, not the banner's own claim.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "consent log",
+    "check": "A live network trace after rejection shows zero gated requests fired."
+   },
+   {
+    "n": 9,
+    "name": "Keep essential scripts ungated",
+    "does": "Keeps cart, checkout and payment scripts ungated so a consent choice never breaks a core function, and logs every consent choice for audit.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "consent log",
+    "check": "Cart and checkout function identically regardless of the visitor's consent choice."
+   }
+  ],
+  "outputs": [
+   "market plan",
+   "localization configuration",
+   "configured consent layer",
+   "gated tag list",
+   "consent log"
+  ],
+  "qa": [
+   "Consent rejection actually blocks the network request, verified live.",
+   "Default consent state matches the visitor's region's law.",
+   "Cart/checkout scripts never blocked by a consent choice."
+  ],
+  "read_point": "Founder reviews the market plan before go-live in a new country; consent audit re-run after any tag change.",
+  "typical_duration": "agent: 1-2 days; human: translation review and legal confirmation, days.",
+  "subagents": []
+ },
+ {
+  "id": "SITE-W07",
+  "name": "Govern the platform: apps, integrations, automations, releases and the mobile app",
+  "capabilities": [
+   "SITE-C13",
+   "SITE-C63",
+   "SITE-C71",
+   "SITE-C68",
+   "SITE-G03"
+  ],
+  "trigger": "monthly | a manual double-entry process is found | a repetitive manual task is found | a platform release lands | per app release",
+  "human_role": "Platform engineering lead",
+  "inputs_required": [
+   "connector: shopify admin apps list",
+   "brand brain: app inventory",
+   "external system's API docs when building an integration"
+  ],
+  "steps": [
+   {
+    "n": 1,
+    "name": "Vet any new app before install",
+    "does": "Vets a candidate app against ratings and a real before/after speed test, and consolidates apps doing the same job.",
+    "inputs": [],
+    "tools": [
+     "script: speed_lab.measure"
+    ],
+    "skill": "site/platform-integrations",
+    "output": "app audit report",
+    "check": "No app installed without a before/after speed measurement."
+   },
+   {
+    "n": 2,
+    "name": "Remove residual code after uninstall",
+    "does": "Searches for and removes residual theme code left behind after every app uninstall.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "install/removal recommendation list",
+    "check": "A search of the theme code shows zero references to an uninstalled app."
+   },
+   {
+    "n": 3,
+    "name": "Map the integration's data contract",
+    "does": "Maps every field that must sync both ways (inventory, order status, tracking, loyalty points) before writing any integration code.",
+    "inputs": [],
+    "tools": [],
+    "skill": "site/platform-integrations/custom-integration-build",
+    "output": "data contract doc",
+    "check": "The data contract is written and reviewed before the first line of integration code."
+   },
+   {
+    "n": 4,
+    "name": "Build the integration or Flow automation",
+    "does": "Builds the custom app or platform Flow automation and registers the needed webhooks, storing API keys only in the platform's secure settings.",
+    "inputs": [],
+    "tools": [
+     "shopify_admin_api",
+     "shopify_flow"
+    ],
+    "skill": "site/platform-integrations/custom-integration-build",
+    "output": "working integration or Flow",
+    "check": "No API key appears in theme code, a prompt or a chat log."
+   },
+   {
+    "n": 5,
+    "name": "Add retry logic and a sync-gap alert",
+    "does": "Adds retry-with-backoff on failed webhook deliveries and alerts a human the moment a sync gap is detected, instead of failing silently.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "webhook retry log",
+    "check": "A deliberately failed test webhook triggers a human alert within the target window."
+   },
+   {
+    "n": 6,
+    "name": "Wire no-code automation rules",
+    "does": "Lists recurring manual if-this-then-that actions and wires each into the platform's native automation layer instead of custom code.",
+    "inputs": [],
+    "tools": [],
+    "skill": "site/platform-integrations",
+    "output": "working automation rules",
+    "check": "Each rule tested against a real historical order before going live."
+   },
+   {
+    "n": 7,
+    "name": "Log every automated action",
+    "does": "Logs every action an automation rule takes so a human can audit what fired and why, and avoids stacking rules that touch the same object.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "action audit log",
+    "check": "Every fired rule is traceable to a logged reason."
+   },
+   {
+    "n": 8,
+    "name": "Track platform releases on schedule",
+    "does": "Reads each Shopify Editions release, WooCommerce/WordPress core update, app deprecation notice and API sunset date on its own schedule.",
+    "inputs": [],
+    "tools": [],
+    "skill": "site/platform-integrations",
+    "output": "adopt-or-ignore memo per release",
+    "check": "Every release relevant to the brand's stack gets a memo within a week of landing."
+   },
+   {
+    "n": 9,
+    "name": "Flag app-retirement opportunities and breaking changes",
+    "does": "Matches new native features against the current paid app list to flag one worth retiring, and flags any breaking change against code the store actually uses.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "deprecation deadline calendar",
+    "check": "Every API the store depends on has a tracked sunset date."
+   },
+   {
+    "n": 10,
+    "name": "QA a mobile app release, if the brand has one",
+    "does": "Checks the app store listing, screenshots, deep links from ads and email, the push opt-in prompt and app-only offers before each release.",
+    "inputs": [],
+    "tools": [],
+    "skill": "site/platform-integrations",
+    "output": "app release QA report",
+    "check": "Deep links tested from a real ad and a real email, not assumed.",
+    "ask_founder_if": "the brand does not have or is not launching a mobile app"
+   },
+   {
+    "n": 11,
+    "name": "Report the adopt-or-ignore call",
+    "does": "Writes a short adopt-or-ignore recommendation per release instead of a full changelog dump.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "adopt-or-ignore memo",
+    "check": "The memo is short enough to read in under 2 minutes."
+   }
+  ],
+  "outputs": [
+   "app audit report",
+   "working integration or Flow",
+   "webhook retry log",
+   "working automation rules + audit log",
+   "adopt-or-ignore memo",
+   "deprecation deadline calendar",
+   "app release QA report"
+  ],
+  "qa": [
+   "No API key ever appears in theme code, a prompt or a chat log.",
+   "Every automation rule tested against a real order before going live.",
+   "Sync gaps alert a human; nothing fails silently."
+  ],
+  "read_point": "Monthly app/script review; immediately when a release or deprecation notice lands.",
+  "typical_duration": "agent: 3-5 hours monthly; integration builds: 1-3 days depending on the external system.",
+  "subagents": [
+   "store-setup-auditor for the app audit"
+  ]
+ },
+ {
+  "id": "SITE-W08",
+  "name": "Run pre-launch QA and launch sequencing",
+  "capabilities": [
+   "SITE-C14"
+  ],
+  "trigger": "event: pre-launch",
+  "human_role": "Launch manager",
+  "inputs_required": [
+   "brand brain: full setup record",
+   "founder decision log",
+   "results from SITE-W01 through SITE-W07"
+  ],
+  "steps": [
+   {
+    "n": 1,
+    "name": "Assemble the dependency-ordered checklist",
+    "does": "Pulls every prior setup workflow's result into one dependency-ordered launch checklist.",
+    "inputs": [],
+    "tools": [],
+    "skill": "site/store-setup-checklist/launch-sequencing",
+    "output": "launch checklist skeleton",
+    "check": "Every prior setup workflow's output is represented as a checklist line."
+   },
+   {
+    "n": 2,
+    "name": "Buy something end to end",
+    "does": "Verifies every product is buyable end to end: browse, add to cart, checkout, pay, confirm.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "launch checklist with pass/fail",
+    "check": "A real test purchase completes on at least one product per category."
+   },
+   {
+    "n": 3,
+    "name": "Confirm emails actually arrive",
+    "does": "Confirms confirmation and shipping emails arrive in a real inbox, not just show as 'configured' in settings.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "launch checklist with pass/fail",
+    "check": "A real email is seen landing in an inbox, not assumed from a settings toggle."
+   },
+   {
+    "n": 4,
+    "name": "Run a full mobile QA pass",
+    "does": "Runs a full mobile QA pass on the live, password-protected storefront across the brand's real device split.",
+    "inputs": [],
+    "tools": [
+     "browser: headless chromium"
+    ],
+    "skill": "site/store-setup-checklist/launch-sequencing",
+    "output": "launch checklist with pass/fail",
+    "check": "Tested on the brand's actual top 2-3 devices, not a generic phone."
+   },
+   {
+    "n": 5,
+    "name": "Verify the logged-out storefront in incognito",
+    "does": "Opens an incognito window and clicks every visible element once to catch anything gated behind a stale session.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "launch checklist with pass/fail",
+    "check": "Every visible element was clicked at least once."
+   },
+   {
+    "n": 6,
+    "name": "Close every step with a real customer action",
+    "does": "Closes every checklist step with the action a real customer would take, never a settings-page glance.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "launch checklist with pass/fail",
+    "check": "No checklist line is marked pass from a settings screen alone."
+   },
+   {
+    "n": 7,
+    "name": "Compile the pass/fail table and go/no-go call",
+    "does": "Compiles the full pass/fail table and gives a clear go or no-go recommendation.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "go/no-go recommendation",
+    "check": "The recommendation is a single clear call, not a hedge.",
+    "ask_founder_if": "any step fails and the fix needs more than a small brief"
+   },
+   {
+    "n": 8,
+    "name": "Remove the password only at 100% pass",
+    "does": "Removes the storefront password only once every checklist step passes.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "go/no-go recommendation",
+    "check": "Password removal timestamp is logged against the final checklist pass."
+   },
+   {
+    "n": 9,
+    "name": "Schedule the first hygiene sweep",
+    "does": "Schedules the first post-launch hygiene sweep for the end of week one.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "go/no-go recommendation",
+    "check": "SITE-W09's first run is scheduled before this workflow closes."
+   }
+  ],
+  "outputs": [
+   "launch checklist with pass/fail",
+   "go/no-go recommendation"
+  ],
+  "qa": [
+   "Every checklist item closed with a real customer action, not an admin-panel check.",
+   "No password removed until 100% pass."
+  ],
+  "read_point": "The go/no-go call, made once, right before removing the password.",
+  "typical_duration": "agent: 4-6 hours; human: final go/no-go decision, same day.",
+  "subagents": [
+   "store-setup-auditor"
+  ]
+ },
+ {
+  "id": "SITE-W09",
+  "name": "Monitor post-launch hygiene, uptime and automated regression",
+  "capabilities": [
+   "SITE-C15",
+   "SITE-C64",
+   "SITE-C65"
+  ],
+  "trigger": "weekly | every theme or app deploy, and nightly | store setup completion",
+  "human_role": "Site reliability and hygiene monitor",
+  "inputs_required": [
+   "connector: shopify admin",
+   "connector: support desk",
+   "staging theme URL",
+   "store URLs by page type"
+  ],
+  "steps": [
+   {
+    "n": 1,
+    "name": "Reconcile inventory weekly in month one",
+    "does": "Reconciles platform inventory against real stock weekly for the first month after launch.",
+    "inputs": [],
+    "tools": [],
+    "skill": "site/store-setup-checklist/post-launch-hygiene",
+    "output": "hygiene report",
+    "check": "Any mismatch is logged with the real stock count next to the platform count."
+   },
+   {
+    "n": 2,
+    "name": "Classify support tickets by root cause",
+    "does": "Classifies support tickets weekly by root cause to find a thin page or an unclear policy, and hands off anything outside Site's 4 folders.",
+    "inputs": [],
+    "tools": [],
+    "skill": "site/handoff-note",
+    "output": "fix list",
+    "check": "Every ticket cluster of 3+ maps to a named root cause or is handed off."
+   },
+   {
+    "n": 3,
+    "name": "Re-run shipping and tax checks on change",
+    "does": "Re-runs shipping and tax checks whenever a product, zone or app changes, instead of waiting for the next scheduled sweep.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "hygiene report",
+    "check": "A changed zone or product triggers a same-week re-check."
+   },
+   {
+    "n": 4,
+    "name": "Confirm automations are actually sending",
+    "does": "Confirms review-request automation is actually sending on a real order, and the payout bank account matches the region's deposit type.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "hygiene report",
+    "check": "A real recent order's timeline shows the review request fired."
+   },
+   {
+    "n": 5,
+    "name": "Sweep for broken links and redirect chains",
+    "does": "Sweeps for broken links to images, CSS and JS, and collapses any redirect chain to a single 301.",
+    "inputs": [],
+    "tools": [],
+    "skill": "site/store-setup-checklist/post-launch-hygiene",
+    "output": "fix list",
+    "check": "No redirect chain longer than one hop remains."
+   },
+   {
+    "n": 6,
+    "name": "Map critical paths into test cases",
+    "does": "Maps the store's critical paths (home, PDP, filter, cart, discount code, checkout, login) into automated test cases.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "test coverage map",
+    "check": "Every critical path has at least one scripted test."
+   },
+   {
+    "n": 7,
+    "name": "Run the regression suite on every deploy and nightly",
+    "does": "Runs the suite before and after every theme or app deploy and nightly, with visual diffs across breakpoints and self-healing for cosmetic selector changes.",
+    "inputs": [],
+    "tools": [
+     "regression_suite.run",
+     "visual_diff.compare"
+    ],
+    "skill": "site/reliability-monitoring",
+    "output": "pass/fail report, visual diff set",
+    "check": "A deploy never ships without a green regression run."
+   },
+   {
+    "n": 8,
+    "name": "Write a bug report with replay on failure",
+    "does": "Captures video replay, console errors and a network trace on any failure and writes a bug report a developer can act on without re-running it.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "bug reports with replay",
+    "check": "The bug report is actionable without the developer re-running the test."
+   },
+   {
+    "n": 9,
+    "name": "Run synthetic uptime checks",
+    "does": "Runs synthetic checks every few minutes on home, PDP, cart, checkout and search from more than one region, plus a full transaction walk on a schedule.",
+    "inputs": [],
+    "tools": [
+     "uptime_monitor.check"
+    ],
+    "skill": "site/reliability-monitoring",
+    "output": "uptime dashboard",
+    "check": "A full add-to-cart-to-confirmation walk runs on its own schedule, not just a page-200 check."
+   },
+   {
+    "n": 10,
+    "name": "Track SSL, DNS and real-user load",
+    "does": "Tracks SSL certificate expiry and DNS resolution separately from page uptime, and pulls real-user page-load data to catch slow-but-not-down degradation.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "uptime dashboard",
+    "check": "SSL expiry has its own alert, separate from the uptime check."
+   },
+   {
+    "n": 11,
+    "name": "Route alerts with escalation",
+    "does": "Routes any failure or degradation to a human with an escalation path if unacknowledged, and logs time-to-detect and time-to-fix.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "incident log",
+    "check": "Every incident has a logged detect time and fix time."
+   }
+  ],
+  "outputs": [
+   "hygiene report",
+   "fix list",
+   "pass/fail regression report",
+   "bug reports with replay",
+   "uptime dashboard",
+   "incident log"
+  ],
+  "qa": [
+   "Every fail has a concrete fix, not a vague warning.",
+   "A theme/app deploy never ships without a green regression run.",
+   "An outage or degradation reaches a human within the alert routing's target time."
+  ],
+  "read_point": "Weekly hygiene report; regression on every deploy and nightly; uptime continuous.",
+  "typical_duration": "agent: continuous/automated; human: reviews the weekly report, 15-30 minutes.",
+  "subagents": [
+   "speed-lab-runner for regression and uptime",
+   "store-setup-auditor for hygiene"
+  ]
+ },
+ {
+  "id": "SITE-W10",
+  "name": "Build repeat-purchase, wholesale and demand-capture features",
+  "capabilities": [
+   "SITE-C16",
+   "SITE-C72",
+   "SITE-C79"
+  ],
+  "trigger": "on demand | a high return or exchange volume is found | a top SKU stocks out or a drop is planned",
+  "human_role": "Feature builder for subscriptions, loyalty, B2B, returns and waitlists",
+  "inputs_required": [
+   "brand brain: repeat purchase rate",
+   "brand brain: wholesale demand",
+   "margin data",
+   "returns app options"
+  ],
+  "steps": [
+   {
+    "n": 1,
+    "name": "Check product-market fit for repeat purchase",
+    "does": "Checks the product and margin genuinely fit repeat purchase or bundling before proposing a subscription.",
+    "inputs": [],
+    "tools": [],
+    "skill": "site/feature-build",
+    "output": "feature setup spec",
+    "check": "Repeat-purchase or bundle fit is backed by a real repurchase-rate number.",
+    "ask_founder_if": "repeat-purchase data is thin or unavailable"
+   },
+   {
+    "n": 2,
+    "name": "Add loyalty and wishlist deliberately",
+    "does": "Adds loyalty only when repeat purchase genuinely matters to margin, and adds a wishlist regardless since it costs little.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "feature setup spec",
+    "check": "Loyalty is justified with a margin number, not added by default."
+   },
+   {
+    "n": 3,
+    "name": "Build a separate B2B path",
+    "does": "Builds a distinct B2B path with a price list and a minimum-order or net-terms rule where wholesale demand is real.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "flow diagram",
+    "check": "B2B pricing never leaks into the consumer-facing price."
+   },
+   {
+    "n": 4,
+    "name": "Never pre-select a subscription option",
+    "does": "Never pre-selects a subscription option in a quiz or at checkout, and builds distinct pause, skip, swap and cancel flows.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "flow diagram",
+    "check": "A subscription checkbox defaults to unchecked in a live test."
+   },
+   {
+    "n": 5,
+    "name": "Configure the returns portal against real policy",
+    "does": "Selects and configures a returns app or native flow against the brand's real return window and condition rules.",
+    "inputs": [],
+    "tools": [],
+    "skill": "site/feature-build",
+    "output": "configured returns portal",
+    "check": "Portal rules match the published return window exactly."
+   },
+   {
+    "n": 6,
+    "name": "Set a real exchange-for-credit incentive",
+    "does": "Sets an exchange-for-store-credit incentive sized against real margin, with copy matched word-for-word to the published returns policy.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "exchange-credit rule",
+    "check": "Incentive amount is computed from real margin, not a round guess."
+   },
+   {
+    "n": 7,
+    "name": "Capture structured return reasons",
+    "does": "Surfaces return reasons in structured form so the data feeds product and copy fixes, and hands restocking/refund-timing rules to operations.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "structured return-reason data feed",
+    "check": "Return reasons are queryable, not free text only."
+   },
+   {
+    "n": 8,
+    "name": "Build the restock notify-me capture",
+    "does": "Adds a notify-me capture on any out-of-stock PDP, firing an automatic notification the moment the SKU restocks, ranked by signup order.",
+    "inputs": [],
+    "tools": [],
+    "skill": "site/feature-build",
+    "output": "notify-me widget",
+    "check": "A test signup receives the restock notification automatically."
+   },
+   {
+    "n": 9,
+    "name": "Build a password-protected coming-soon page",
+    "does": "Builds a password-protected coming-soon page for a pre-launch or drop, kept out of search indexes.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "coming-soon page",
+    "check": "The page is confirmed excluded from search indexing."
+   },
+   {
+    "n": 10,
+    "name": "Own the signup list and report conversion",
+    "does": "Captures every signup into the brand's own list, never a third party's, and reports waitlist size and back-in-stock conversion per SKU.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "waitlist size and conversion report",
+    "check": "Signups land in the brand's own list, verified by export."
+   }
+  ],
+  "outputs": [
+   "feature setup spec",
+   "flow diagram",
+   "configured returns portal",
+   "exchange-credit rule",
+   "notify-me widget",
+   "coming-soon page",
+   "waitlist size and conversion report"
+  ],
+  "qa": [
+   "No subscription option pre-selected anywhere.",
+   "Returns portal copy matches the published policy word for word.",
+   "Waitlist signups land only in the brand's own list."
+  ],
+  "read_point": "Founder gate before any feature goes live; waitlist conversion reviewed at the next reorder decision.",
+  "typical_duration": "agent: 1-2 days per feature; human: app configuration and legal wording check.",
+  "subagents": [
+   "page-builder"
+  ]
+ },
+ {
+  "id": "SITE-W11",
+  "name": "Design and build homepage, PDP and collection layout",
+  "capabilities": [
+   "SITE-C19",
+   "SITE-C55"
+  ],
+  "trigger": "on demand",
+  "human_role": "Theme section and information-architecture designer",
+  "inputs_required": [
+   "brand brain: products",
+   "brand brain: proof (reviews, press)",
+   "click/scroll map data"
+  ],
+  "steps": [
+   {
+    "n": 1,
+    "name": "Build the homepage in a fixed, orienting order",
+    "does": "Builds the homepage in a fixed, conversion-supportive section order designed to orient and route shoppers fast, not convert directly.",
+    "inputs": [],
+    "tools": [],
+    "skill": "site/page-spec-and-copy/homepage-collection-ux",
+    "output": "theme section spec",
+    "check": "Section order matches the brand's approved template, not an ad hoc arrangement."
+   },
+   {
+    "n": 2,
+    "name": "Set focal points on hero and banner images",
+    "does": "Sets a focal point on every hero and banner image so mobile cropping never cuts off the subject.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "theme section spec",
+    "check": "Mobile crop checked on the brand's real device width."
+   },
+   {
+    "n": 3,
+    "name": "Add size charts and real FAQ tabs",
+    "does": "Adds a size chart to every sized product and collapsible FAQ tabs built from real tickets and reviews.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "theme section spec",
+    "check": "FAQ content is sourced from real tickets, not invented."
+   },
+   {
+    "n": 4,
+    "name": "Keep add-to-cart sticky and reuse the trust block",
+    "does": "Keeps add-to-cart sticky on mobile and reuses the trust block below the PDP buy area.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "theme section spec",
+    "check": "Sticky add-to-cart verified on a real mobile scroll test."
+   },
+   {
+    "n": 5,
+    "name": "Add a live free-shipping progress bar",
+    "does": "Adds a free-shipping progress bar that updates live in the cart drawer as items are added.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "theme section spec",
+    "check": "Bar updates correctly in a live cart test at 2 different cart values."
+   },
+   {
+    "n": 6,
+    "name": "Rebuild the mega menu as a guide",
+    "does": "Rebuilds the mega menu as a guide with bestsellers and proof at the top, not a bare category list.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "navigation redesign",
+    "check": "Menu surfaces at least one bestseller and one proof element."
+   },
+   {
+    "n": 7,
+    "name": "Decide each collection page's job",
+    "does": "Decides, per collection, whether its job is browsing, deciding or buying, and lays it out accordingly.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "homepage/collection UX spec",
+    "check": "Every collection page's layout matches its stated job."
+   },
+   {
+    "n": 8,
+    "name": "Redesign the mobile collection grid",
+    "does": "Redesigns the mobile collection grid for the thumb zone above the fold.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "homepage/collection UX spec",
+    "check": "Thumb-zone reach tested on the brand's real device."
+   },
+   {
+    "n": 9,
+    "name": "Move modules by real click data",
+    "does": "Moves a high-click, low-reach module higher on the page, and restyles or removes a module that is visible but rarely clicked, using real click-map data.",
+    "inputs": [],
+    "tools": [
+     "connector: ga4"
+    ],
+    "skill": null,
+    "output": "homepage/collection UX spec",
+    "check": "Every move is backed by a real click or scroll number, not a guess."
+   },
+   {
+    "n": 10,
+    "name": "Keep patterns conventional",
+    "does": "Keeps navigation and CTA patterns conventional, never novel for its own sake.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "homepage/collection UX spec",
+    "check": "No pattern deviates from shopper expectation without a tested reason."
+   }
+  ],
+  "outputs": [
+   "theme section spec",
+   "pull request (custom site)",
+   "homepage/collection UX spec",
+   "navigation redesign"
+  ],
+  "qa": [
+   "Every module's placement backed by a real click or scroll number, not a guess.",
+   "Mobile thumb-zone checked on the brand's real device.",
+   "FAQ content sourced from real tickets, not invented."
+  ],
+  "read_point": "Founder reviews the spec before build; re-checked in the next quarterly CRO cycle.",
+  "typical_duration": "agent: 1-2 days; human: theme implementation, 2-5 days depending on scope.",
+  "subagents": [
+   "page-builder"
+  ]
+ },
+ {
+  "id": "SITE-W12",
+  "name": "Capture a speed baseline and fix Core Web Vitals",
+  "capabilities": [
+   "SITE-C21",
+   "SITE-C25",
+   "SITE-C26",
+   "SITE-C27"
+  ],
+  "trigger": "monthly | on demand",
+  "human_role": "Speed engineer, diagnosis",
+  "inputs_required": [
+   "brand brain: top paid landing page and PDP URLs",
+   "connector: pagespeed insights api"
+  ],
+  "steps": [
+   {
+    "n": 1,
+    "name": "Record the real page before touching anything",
+    "does": "Records every response of the real ad-landing page and top PDP with speed_lab.record before changing a single byte.",
+    "inputs": [],
+    "tools": [
+     "script: speed_lab.record"
+    ],
+    "skill": "site/speed-audit",
+    "output": "recorded page capture",
+    "check": "Recording is fresh, taken today, not reused from last month."
+   },
+   {
+    "n": 2,
+    "name": "Measure 3 runs on a throttled mobile profile",
+    "does": "Replays and measures 3 runs on a Pixel 5 profile, slow 4G, 4x CPU, and takes the median.",
+    "inputs": [],
+    "tools": [
+     "script: speed_lab.measure"
+    ],
+    "skill": "site/speed-audit",
+    "output": "baseline measurement (results/*.json)",
+    "check": "3 runs recorded and averaged, never 1."
+   },
+   {
+    "n": 3,
+    "name": "Cross-check against field data",
+    "does": "Cross-checks a suspicious lab result against PageSpeed Insights field data before trusting it.",
+    "inputs": [],
+    "tools": [
+     "connector: pagespeed insights api"
+    ],
+    "skill": null,
+    "output": "baseline measurement",
+    "check": "Lab and field numbers are compared, not just the lab number alone."
+   },
+   {
+    "n": 4,
+    "name": "Confirm the fix the page paid ads land on first",
+    "does": "Confirms the measurement actually saw the latest change, and fixes the page paid ads land on before any other page.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "root-cause diagnosis",
+    "check": "The paid landing page is the first template diagnosed, not the homepage."
+   },
+   {
+    "n": 5,
+    "name": "Diagnose the exact CLS element",
+    "does": "Names the exact element causing layout shift per template and reserves space for anything arriving after first paint.",
+    "inputs": [],
+    "tools": [],
+    "skill": "site/speed-audit/core-web-vitals-fix",
+    "output": "CLS diagnosis per template",
+    "check": "The shifting element is named, not described as 'the page feels jumpy'."
+   },
+   {
+    "n": 6,
+    "name": "Fix conflicting CSS and remove fade-ins",
+    "does": "Fixes contradicting CSS rules, moves late inline styles into the head, and removes fade-in entrance effects on in-view elements.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "CLS diagnosis per template",
+    "check": "CLS re-measured after the fix, not assumed fixed."
+   },
+   {
+    "n": 7,
+    "name": "Name the LCP element and run the fix order",
+    "does": "Names the LCP element per template and runs the fix order: un-lazy, de-animate, compress, preload, then cut the blocking script hiding it.",
+    "inputs": [],
+    "tools": [],
+    "skill": "site/speed-audit/core-web-vitals-fix",
+    "output": "LCP diagnosis and fix sequence",
+    "check": "Fix order followed in sequence, not skipped to preloading first."
+   },
+   {
+    "n": 8,
+    "name": "Check TTFB before blaming the image",
+    "does": "Checks time-to-first-byte before blaming the image, and preloads only the true LCP image with high fetch priority.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "LCP diagnosis and fix sequence",
+    "check": "TTFB checked and ruled out or fixed before an image fix is proposed."
+   },
+   {
+    "n": 9,
+    "name": "Cut main-thread JS blocking key interactions",
+    "does": "Cuts main-thread JavaScript blocking add-to-cart, variant pickers, filters and search autocomplete.",
+    "inputs": [],
+    "tools": [],
+    "skill": "site/speed-audit/core-web-vitals-fix",
+    "output": "INP diagnosis",
+    "check": "Autocomplete lag treated as a real INP issue, not ignored."
+   },
+   {
+    "n": 10,
+    "name": "Confirm with a real tap test and fidelity check",
+    "does": "Confirms every fix with a real tap test on Add to Cart, not just a lab score, and runs check_fidelity before trusting a variant.",
+    "inputs": [],
+    "tools": [
+     "script: speed_lab.check_fidelity"
+    ],
+    "skill": null,
+    "output": "root-cause diagnosis",
+    "check": "Fidelity check passed before any number is trusted."
+   }
+  ],
+  "outputs": [
+   "baseline measurement (results/*.json)",
+   "root-cause diagnosis",
+   "CLS diagnosis per template",
+   "LCP diagnosis and fix sequence",
+   "INP diagnosis"
+  ],
+  "qa": [
+   "3 runs averaged, never 1.",
+   "Fidelity check passed before any number is trusted.",
+   "A real tap test confirms the INP fix, not the score alone."
+  ],
+  "read_point": "Immediately after each fix, and again after about 28 days of field data.",
+  "typical_duration": "agent: 3-5 hours; measurement runs: minutes each, parallelizable.",
+  "subagents": [
+   "speed-lab-runner"
+  ]
+ },
+ {
+  "id": "SITE-W13",
+  "name": "Cut image, font and code weight",
+  "capabilities": [
+   "SITE-C22",
+   "SITE-C24",
+   "SITE-C30"
+  ],
+  "trigger": "monthly | on demand",
+  "human_role": "Speed engineer, asset optimization",
+  "inputs_required": [
+   "connector: shopify admin | woocommerce media library",
+   "brand brain: brand fonts",
+   "results/*.json history"
+  ],
+  "steps": [
+   {
+    "n": 1,
+    "name": "Check images directly",
+    "does": "Checks images directly rather than trusting automatic platform compression alone.",
+    "inputs": [],
+    "tools": [],
+    "skill": "site/speed-audit/asset-weight",
+    "output": "image fix list with before/after sizes",
+    "check": "Before/after byte counts shown for every flagged image."
+   },
+   {
+    "n": 2,
+    "name": "Resize and pick the right format",
+    "does": "Resizes to about 2,000px before upload, uses JPEG for photos and PNG only for transparency, never GIF.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "image fix list",
+    "check": "No GIF remains in the product media library."
+   },
+   {
+    "n": 3,
+    "name": "Confirm modern format delivery and lazy-load rules",
+    "does": "Confirms the platform/CDN delivers WebP or AVIF, and lazy-loads below the fold while eager-loading the hero and first-card images.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "image fix list",
+    "check": "Hero image confirmed eager-loaded, below-fold images confirmed lazy."
+   },
+   {
+    "n": 4,
+    "name": "Reserve space and sweep stray heavy images",
+    "does": "Adds width/height or aspect-ratio to every image to prevent shift, and sweeps the media library for stray multi-MB non-product images.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "image fix list",
+    "check": "No image over the brand's size ceiling remains in the live media library."
+   },
+   {
+    "n": 5,
+    "name": "Cap font variations and self-host",
+    "does": "Keeps to about 3 font variations and self-hosts fonts as WOFF2 instead of calling Google Fonts.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "font fix list",
+    "check": "Font requests confirmed served from the brand's own domain."
+   },
+   {
+    "n": 6,
+    "name": "Add font-display: swap and match fallback metrics",
+    "does": "Adds font-display: swap to every @font-face rule and styles the fallback font to match size and line height.",
+    "inputs": [],
+    "tools": [
+     "script: speed_lab.filmstrip"
+    ],
+    "skill": null,
+    "output": "font fix list",
+    "check": "No visible text jump on font swap, confirmed with a filmstrip."
+   },
+   {
+    "n": 7,
+    "name": "Subset fonts on a framework storefront",
+    "does": "Subsets fonts to the characters actually used on a headless or framework storefront.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "font fix list",
+    "check": "Font file size reduced and confirmed with a before/after byte count."
+   },
+   {
+    "n": 8,
+    "name": "Minify and split code by page type",
+    "does": "Minifies and splits CSS/JS by page type, only after images and scripts are already fixed.",
+    "inputs": [],
+    "tools": [],
+    "skill": "site/speed-audit/asset-weight",
+    "output": "code-splitting plan",
+    "check": "Splitting happens after, never before, image and script fixes are measured."
+   },
+   {
+    "n": 9,
+    "name": "Delay non-critical CSS and complete critical CSS",
+    "does": "Delays non-critical CSS (modals, drawers, filters) with the media=print trick, and makes inlined critical CSS complete per visually distinct template.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "developer brief",
+    "check": "Every visually distinct template has its own complete critical CSS block."
+   },
+   {
+    "n": 10,
+    "name": "Unload unused styles on WooCommerce",
+    "does": "Unloads cart/checkout/block styles from pages without a cart on WooCommerce.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "developer brief",
+    "check": "Pages without a cart no longer load cart-related CSS."
+   }
+  ],
+  "outputs": [
+   "image fix list with before/after sizes",
+   "font fix list",
+   "code-splitting plan",
+   "developer brief"
+  ],
+  "qa": [
+   "Before/after byte counts shown for every image fix, not just a claim.",
+   "Font swap tested visually, not just by rule.",
+   "No critical CSS missing for any visually different template."
+  ],
+  "read_point": "Measured before/after with speed_lab.measure; re-checked at the next monthly regression pass.",
+  "typical_duration": "agent: 2-4 hours diagnosis; developer: 1-2 days to implement.",
+  "subagents": [
+   "speed-lab-runner"
+  ]
+ },
+ {
+  "id": "SITE-W14",
+  "name": "Govern scripts and tune caching, CDN and headless performance",
+  "capabilities": [
+   "SITE-C23",
+   "SITE-C28",
+   "SITE-C31"
+  ],
+  "trigger": "monthly | on demand",
+  "human_role": "Speed engineer, infrastructure",
+  "inputs_required": [
+   "connector: shopify admin",
+   "connector: hosting provider",
+   "results/serve.log",
+   "custom site repo (if headless)"
+  ],
+  "steps": [
+   {
+    "n": 1,
+    "name": "Inventory every script route",
+    "does": "Inventories every script route (theme, app embed, tag manager, hardcoded) before touching any of them.",
+    "inputs": [],
+    "tools": [],
+    "skill": "site/speed-audit/infra-and-scripts",
+    "output": "script inventory",
+    "check": "The inventory is built from a real page load trace, not a memory of what's installed."
+   },
+   {
+    "n": 2,
+    "name": "Defer blocking scripts and delay widgets",
+    "does": "Adds defer to blocking scripts and tests the exact feature each one powers; delays non-critical widget scripts until first interaction.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "delay/removal plan",
+    "check": "Every deferred script's feature was tested working after the change."
+   },
+   {
+    "n": 3,
+    "name": "Use the platform's own delay mechanism",
+    "does": "On Shopify, uses the content_for_header delay override rather than commenting a script out; never changes pixel loading without testing every event on and off.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "delay/removal plan",
+    "check": "Every tracking event tested on and off before shipping."
+   },
+   {
+    "n": 4,
+    "name": "Scope app assets to the right templates",
+    "does": "Loads app assets only on the templates where the widget appears, and turns off unused app embeds.",
+    "inputs": [],
+    "tools": [],
+    "skill": "site/speed-audit/infra-and-scripts",
+    "output": "developer brief",
+    "check": "No app script loads on a template that doesn't use it."
+   },
+   {
+    "n": 5,
+    "name": "Verify caching from response headers",
+    "does": "Verifies caching and compression directly from response headers, not a plugin's settings page.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "caching configuration",
+    "check": "Headers checked directly with a real request, not read from an admin screen."
+   },
+   {
+    "n": 6,
+    "name": "Confirm visitor-specific pages are never cached",
+    "does": "Confirms cart, checkout, account and any visitor-specific page are never cached.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "caching configuration",
+    "check": "A live check confirms no cache header on a visitor-specific page."
+   },
+   {
+    "n": 7,
+    "name": "Cache static assets and target CDN hit rate",
+    "does": "Caches static assets long-term with versioned filenames and sets up a CDN targeting an 80%+ hit rate.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "caching configuration",
+    "check": "CDN hit rate measured and reported, not assumed."
+   },
+   {
+    "n": 8,
+    "name": "Write the host brief after front-end fixes are measured",
+    "does": "Writes a host brief with the 4 key questions only after front-end fixes are already measured, and matches hosting tier to real order volume.",
+    "inputs": [],
+    "tools": [],
+    "skill": "shared/developer-brief",
+    "output": "host brief with 4 questions",
+    "check": "Brief is written after, not before, front-end fixes are measured."
+   },
+   {
+    "n": 9,
+    "name": "Prioritize the true LCP image and server-render the buy box",
+    "does": "On a headless or framework storefront, marks only the true LCP image as priority and server-renders the buy box and top collection tiles.",
+    "inputs": [],
+    "tools": [],
+    "skill": "site/speed-audit/infra-and-scripts",
+    "output": "framework performance plan",
+    "check": "Only one image per template is marked priority."
+   },
+   {
+    "n": 10,
+    "name": "Trim API payloads and code-split UI",
+    "does": "Returns only the fields a tile or page actually needs from the API, and code-splits/lazy-loads non-critical UI components.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "pull request",
+    "check": "API payload size measured before and after the trim."
+   }
+  ],
+  "outputs": [
+   "script inventory",
+   "delay/removal plan",
+   "caching configuration",
+   "host brief with 4 questions",
+   "framework performance plan",
+   "pull request"
+  ],
+  "qa": [
+   "Every tracking event tested on and off before shipping a script change.",
+   "No visitor-specific page ever cached.",
+   "Host brief asks real questions, not guesses at server settings."
+  ],
+  "read_point": "Re-measured after each change; host brief reviewed at the next hosting renewal or when speed budget is missed.",
+  "typical_duration": "agent: 3-4 hours; developer: 1-2 days for headless-specific fixes.",
+  "subagents": [
+   "speed-lab-runner"
+  ]
+ },
+ {
+  "id": "SITE-W15",
+  "name": "Write speed briefs, run regression monitoring and prepare for peak load",
+  "capabilities": [
+   "SITE-C32",
+   "SITE-C33",
+   "SITE-C29"
+  ],
+  "trigger": "on demand | monthly | event: upcoming sale",
+  "human_role": "Speed programme manager",
+  "inputs_required": [
+   "diagnosed fixes from SITE-W12 through SITE-W14",
+   "results/*.json history",
+   "brand brain: upcoming sale calendar"
+  ],
+  "steps": [
+   {
+    "n": 1,
+    "name": "Turn each diagnosed fix into a brief",
+    "does": "Turns every diagnosed fix into a brief with what/needs/tradeoff/who, a pass threshold tied to a real metric, and a one-step rollback.",
+    "inputs": [],
+    "tools": [],
+    "skill": "shared/developer-brief",
+    "output": "developer brief (per fix)",
+    "check": "Every threshold is a number, not a feeling."
+   },
+   {
+    "n": 2,
+    "name": "Share the report link and sequence fixes",
+    "does": "Shares the PageSpeed report's own link instead of relaying findings by hand, and sequences fixes content-before-infrastructure.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "developer brief (per fix)",
+    "check": "Sequencing places content fixes before infrastructure fixes."
+   },
+   {
+    "n": 3,
+    "name": "Write the founder decision page",
+    "does": "Writes a founder decision page bundling every fix, using speed_lab.build_founder_page's format.",
+    "inputs": [],
+    "tools": [
+     "script: speed_lab.build_founder_page"
+    ],
+    "skill": "site/speed-audit",
+    "output": "founder decision page",
+    "check": "Page uses the standard build_founder_page shape, not an ad hoc format."
+   },
+   {
+    "n": 4,
+    "name": "Re-audit monthly against a budget",
+    "does": "Re-audits speed on a monthly schedule, holding a page-weight and script-count budget as its own tracked number.",
+    "inputs": [],
+    "tools": [],
+    "skill": "site/speed-audit",
+    "output": "monthly speed trend report",
+    "check": "Script count is tracked as its own number, separate from page weight."
+   },
+   {
+    "n": 5,
+    "name": "Gate new features on a speed check",
+    "does": "Runs a speed check on any new feature or app before it ships, gated into the deploy pipeline.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "regression alert",
+    "check": "No new feature ships without a pre-ship speed check."
+   },
+   {
+    "n": 6,
+    "name": "Wait for field data before judging",
+    "does": "Waits about 28 days of field data before judging a fix worked, reading field (CrUX) and lab data as separate things.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "monthly speed trend report",
+    "check": "A fix is not called a win before 28 days of field data exist."
+   },
+   {
+    "n": 7,
+    "name": "Flag a regression the moment it appears",
+    "does": "Flags a regression the moment page weight or script count crosses budget, and logs the monthly trend.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "regression alert",
+    "check": "Alert fires within the same monthly cycle the budget is crossed, not the next one."
+   },
+   {
+    "n": 8,
+    "name": "List at-risk dynamic steps before a sale",
+    "does": "Lists every dynamic step (search, filters, cart, checkout, quiz) at risk of a peak-event spike ahead of a scheduled sale.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "peak readiness report",
+    "check": "Every dynamic step on the funnel is represented on the list."
+   },
+   {
+    "n": 9,
+    "name": "Load-test and consider a waiting room",
+    "does": "Load-tests the at-risk steps before the event, and considers a virtual waiting room for a limited-inventory drop.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "peak readiness report",
+    "check": "Load test run at a multiple of expected peak traffic, not just current traffic.",
+    "ask_founder_if": "the drop's expected traffic is unknown or unprecedented"
+   },
+   {
+    "n": 10,
+    "name": "Freeze changes during the peak window",
+    "does": "Freezes app installs and theme changes during the peak window, with a tested rollback path kept ready.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "change freeze notice",
+    "check": "Freeze window covers the entire sale, confirmed with the founder."
+   }
+  ],
+  "outputs": [
+   "developer brief (per fix)",
+   "founder decision page",
+   "monthly speed trend report",
+   "regression alert",
+   "peak readiness report",
+   "change freeze notice"
+  ],
+  "qa": [
+   "Every brief's threshold is a number, not a feeling.",
+   "Regression alert fires the moment a budget is crossed, not weeks later.",
+   "Freeze window covers the entire sale, confirmed with the founder."
+  ],
+  "read_point": "Monthly trend; immediate alert on regression; readiness confirmed 1-2 weeks before a known sale.",
+  "typical_duration": "agent: 2-3 hours monthly; load-test runs: hours, scheduled ahead of the event.",
+  "subagents": [
+   "speed-lab-runner"
+  ]
+ },
+ {
+  "id": "SITE-W16",
+  "name": "Design traffic routing, funnel architecture and new-channel readiness",
+  "capabilities": [
+   "SITE-C35",
+   "SITE-C61",
+   "SITE-C73"
+  ],
+  "trigger": "event: new campaign or SKU launch | new landing page requested, or a page-builder app named as a speed-audit root cause | agent-driven orders start appearing in order source data",
+  "human_role": "Funnel architect",
+  "inputs_required": [
+   "brand brain: avatar and awareness stage",
+   "brand brain: ad performance (read-only)",
+   "page inventory",
+   "current app list"
+  ],
+  "steps": [
+   {
+    "n": 1,
+    "name": "Classify awareness stage and price point",
+    "does": "Classifies the SKU's traffic awareness stage and price point before picking a page type.",
+    "inputs": [],
+    "tools": [],
+    "skill": "site/funnel-architecture",
+    "output": "page-type recommendation per campaign",
+    "check": "Classification is stated with the evidence behind it, not asserted."
+   },
+   {
+    "n": 2,
+    "name": "Route by intent and skepticism",
+    "does": "Sends high-intent or simple-product traffic straight to the PDP, and puts an educating page between the ad and PDP for cold or skeptical traffic.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "funnel architecture diagram",
+    "check": "Routing choice matches the traffic source's real intent signal, not a default."
+   },
+   {
+    "n": 3,
+    "name": "Build advertorials and campaign pages only when earned",
+    "does": "Builds the advertorial only after a winning ad or written research already exists, and builds a dedicated single-product campaign page for paid traffic.",
+    "inputs": [],
+    "tools": [],
+    "skill": "site/funnel-architecture",
+    "output": "funnel architecture diagram",
+    "check": "No advertorial commissioned without a prior winning ad or research base."
+   },
+   {
+    "n": 4,
+    "name": "Decide the build method by speed budget and skill",
+    "does": "Decides how the page gets built: native theme Liquid, an AI page-builder app, or a headless page, driven by the page's speed budget and the team's coding skill.",
+    "inputs": [],
+    "tools": [
+     "speed_lab.measure"
+    ],
+    "skill": null,
+    "output": "builder decision memo",
+    "check": "Decision states the speed cost of each option, not just feature lists."
+   },
+   {
+    "n": 5,
+    "name": "Weigh builder app weight against buying another app",
+    "does": "Lists the JS/CSS weight each candidate builder adds, measured on the brand's own speed profile, and weighs built-in features (A/B testing, analytics, personalization) against buying a separate app.",
+    "inputs": [],
+    "tools": [
+     "app_weight.scan"
+    ],
+    "skill": "site/funnel-architecture",
+    "output": "app weight comparison table",
+    "check": "Weight numbers come from the brand's own speed profile, not a vendor's claim."
+   },
+   {
+    "n": 6,
+    "name": "Flag and migrate a heavy-builder page",
+    "does": "Flags when a page already built in a heavy builder is the diagnosed cause of a speed regression, and writes the migration brief to native code.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "migration brief for flagged pages",
+    "check": "Migration only proposed when a builder is a proven, measured root cause."
+   },
+   {
+    "n": 7,
+    "name": "Verify the AI-agent-readable product feed",
+    "does": "Verifies the product feed and structured data a third-party AI shopping assistant would read (price, stock, variant, shipping) are accurate and current.",
+    "inputs": [],
+    "tools": [],
+    "skill": "site/funnel-architecture/synthetic-validation",
+    "output": "agentic-checkout readiness report",
+    "check": "Feed data checked against the live PDP, not assumed synced."
+   },
+   {
+    "n": 8,
+    "name": "Check the checkout completes an agent-initiated purchase",
+    "does": "Checks the checkout can complete an agent-initiated purchase without a broken step, and confirms order attribution correctly tags it.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "attribution tag fix",
+    "check": "An agent-tagged order is never miscounted as organic or paid."
+   },
+   {
+    "n": 9,
+    "name": "Flag blocking steps for the founder",
+    "does": "Flags any step (CAPTCHA, mandatory account) blocking an agent purchase and decides with the founder whether to relax it.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "blocked-step list",
+    "check": "Every flagged step includes the fraud tradeoff of relaxing it.",
+    "ask_founder_if": "relaxing a checkout gate has a real fraud tradeoff"
+   }
+  ],
+  "outputs": [
+   "funnel architecture diagram",
+   "page-type recommendation per campaign",
+   "builder decision memo",
+   "app weight comparison table",
+   "migration brief for flagged pages",
+   "agentic-checkout readiness report"
+  ],
+  "qa": [
+   "Page-type choice matches the SKU's real awareness stage, not a default.",
+   "Builder choice backed by a measured JS/CSS weight number.",
+   "Agentic-checkout readiness kept as read-only measurement until real orders are seen."
+  ],
+  "read_point": "At every new campaign or SKU launch; agentic-checkout revisited when order-source data shows agent-driven orders.",
+  "typical_duration": "agent: half a day per campaign; builder migration: 1-3 days if flagged.",
+  "subagents": [
+   "page-builder"
+  ]
+ },
+ {
+  "id": "SITE-W17",
+  "name": "Run pre-build research, message-match audit and shopper simulation",
+  "capabilities": [
+   "SITE-C48",
+   "SITE-C36",
+   "SITE-C66"
+  ],
+  "trigger": "event: before any new page build | event: ad creative changes | before a redesign goes to a real A/B test",
+  "human_role": "Page researcher",
+  "inputs_required": [
+   "connector: ga4",
+   "connector: session recording tool",
+   "connector: reviews platform",
+   "mcp: meta ads (read-only)"
+  ],
+  "steps": [
+   {
+    "n": 1,
+    "name": "Pull the SKU's own funnel data",
+    "does": "Pulls that SKU's own funnel data, not a site average, and finds the weakest funnel stage to fix first.",
+    "inputs": [],
+    "tools": [
+     "connector: ga4"
+    ],
+    "skill": "site/funnel-architecture/pre-build-research",
+    "output": "research brief",
+    "check": "Data pulled is specific to this SKU, not a blended site number."
+   },
+   {
+    "n": 2,
+    "name": "Read scroll maps and watch converted sessions",
+    "does": "Reads scroll maps mobile-first at the fold, 75%, 50% and 25% lines, and watches converted-session recordings first, then rage clicks.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "research brief",
+    "check": "Recordings watched are converted sessions first, not a random sample."
+   },
+   {
+    "n": 3,
+    "name": "Mine reviews and read the awareness signal",
+    "does": "Mines reviews and surveys into ranked topics, and reads the market's awareness stage from search-trend data.",
+    "inputs": [],
+    "tools": [
+     "web search"
+    ],
+    "skill": null,
+    "output": "research brief",
+    "check": "Topics are ranked, not just listed."
+   },
+   {
+    "n": 4,
+    "name": "Write the 1-page brief",
+    "does": "Writes the 1-page brief: audience, pain, outcome, awareness stage, page type, triggering event.",
+    "inputs": [],
+    "tools": [],
+    "skill": "site/funnel-architecture/pre-build-research",
+    "output": "1-page build brief",
+    "check": "The brief fits on one page and names a triggering event."
+   },
+   {
+    "n": 5,
+    "name": "Mirror the ad's exact promise in the hero",
+    "does": "Mirrors the live ad's exact promise in the page's hero headline and continues its story rather than starting a new one.",
+    "inputs": [],
+    "tools": [
+     "mcp: meta ads (read-only)"
+    ],
+    "skill": "site/funnel-architecture/message-match-audit",
+    "output": "message-match audit report",
+    "check": "Headline wording traces directly to the specific ad's promise."
+   },
+   {
+    "n": 6,
+    "name": "Keep persona, price and guarantee identical end to end",
+    "does": "Keeps one persona and matches price, discount, guarantee and shipping identically from ad to page to cart to checkout.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "mismatch fix list",
+    "check": "Every mismatch found is listed with the exact page location."
+   },
+   {
+    "n": 7,
+    "name": "Re-run the check on every ad change",
+    "does": "Re-runs the message-match check the moment ad creative changes.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "message-match audit report",
+    "check": "Re-run happens the same day a live ad is changed, confirmed by timestamp."
+   },
+   {
+    "n": 8,
+    "name": "Define personas and run them in a sandbox",
+    "does": "Before an expensive redesign, defines 3-6 synthetic shopper personas matching the brand's real segments and runs them through the current site and the candidate design in a private sandbox.",
+    "inputs": [],
+    "tools": [
+     "shopper_sim.run"
+    ],
+    "skill": "site/funnel-architecture/synthetic-validation",
+    "output": "persona run report",
+    "check": "Personas map to real customer segments, not invented archetypes."
+   },
+   {
+    "n": 9,
+    "name": "Record friction and compare designs",
+    "does": "Records add-to-cart rate, click-path length and the exact abandonment step per persona, and compares two designs head to head.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "friction points list, design comparison summary",
+    "check": "Every persona's abandonment step is named, not summarized as 'some friction'."
+   },
+   {
+    "n": 10,
+    "name": "Label the simulation as a prediction",
+    "does": "States plainly that the simulation is a prediction, not a measured result, and should not replace a real A/B test where real money is at stake.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "design comparison summary",
+    "check": "The report explicitly says 'prediction' and names the real test it should still go through."
+   }
+  ],
+  "outputs": [
+   "research brief",
+   "1-page build brief",
+   "message-match audit report",
+   "mismatch fix list",
+   "persona run report",
+   "friction points list",
+   "design comparison summary"
+  ],
+  "qa": [
+   "Brief built from that SKU's own data, not a site average.",
+   "Message-match re-run every time the feeding ad changes.",
+   "Persona simulation labelled as prediction, never presented as a real result."
+  ],
+  "read_point": "Before every new page build; on every ad creative change; before a redesign is committed to build.",
+  "typical_duration": "agent: half a day research; simulation run: 1-2 hours in sandbox.",
+  "subagents": [
+   "page-builder"
+  ]
+ },
+ {
+  "id": "SITE-W18",
+  "name": "Build and score the hero, optimize the PDP buy box",
+  "capabilities": [
+   "SITE-C37",
+   "SITE-C38"
+  ],
+  "trigger": "on demand",
+  "human_role": "Hero and PDP builder",
+  "inputs_required": [
+   "brand brain: products",
+   "brand brain: proof file",
+   "brand brain: delivery data",
+   "approved idea record"
+  ],
+  "steps": [
+   {
+    "n": 1,
+    "name": "Build the hero in the fixed 6-part order",
+    "does": "Builds the hero in the fixed order: proof, headline, subhead, CTA, FUD, image.",
+    "inputs": [],
+    "tools": [],
+    "skill": "site/page-spec-and-copy/hero-and-buybox",
+    "output": "hero layout spec",
+    "check": "All 6 parts present in the specified order."
+   },
+   {
+    "n": 2,
+    "name": "Write and score the headline",
+    "does": "Writes the headline as the outcome this SKU delivers, never a category label, and scores it against a tested specificity formula.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "hero copy draft",
+    "check": "Headline names an outcome, not a category, and carries a specificity score."
+   },
+   {
+    "n": 3,
+    "name": "Write the subhead and cap the body",
+    "does": "Writes the subhead to explain how, never repeating the headline, and keeps hero body to 2-3 sentences or 3-4 bullets.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "hero copy draft",
+    "check": "Subhead adds new information, does not restate the headline."
+   },
+   {
+    "n": 4,
+    "name": "Show 2 proof forms and real FUD reducers",
+    "does": "Shows 2 verifiable proof forms above the fold and places real FUD reducers next to every CTA.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "hero copy draft",
+    "check": "Every FUD reducer traces to a real policy, not an invented reassurance."
+   },
+   {
+    "n": 5,
+    "name": "Choose an image that shows the promise",
+    "does": "Chooses a hero image or video that shows the promise itself, not a generic lifestyle shot.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "hero layout spec",
+    "check": "Image or video directly depicts the promised outcome."
+   },
+   {
+    "n": 6,
+    "name": "Fit the first screen on the brand's real device",
+    "does": "Fits the PDP's fixed first-screen elements (price, proof, CTA, variant picker, delivery info) on the brand's real mobile device.",
+    "inputs": [],
+    "tools": [],
+    "skill": "site/page-spec-and-copy/hero-and-buybox",
+    "output": "PDP buy-box spec",
+    "check": "Fit checked on the brand's actual top device, not a generic simulator."
+   },
+   {
+    "n": 7,
+    "name": "Place controls next to what they change",
+    "does": "Places every control next to the element it changes, and adds a subscribe-and-save selector for consumable SKUs.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "PDP buy-box spec",
+    "check": "Subscribe-and-save only appears on genuinely consumable SKUs."
+   },
+   {
+    "n": 8,
+    "name": "Show delivery ETA and local payment trust",
+    "does": "Shows delivery ETA or a pincode serviceability check near the buy box, and local payment methods beside the FUD reducers.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "PDP buy-box spec",
+    "check": "Delivery ETA is computed from real courier data, not a flat promise."
+   },
+   {
+    "n": 9,
+    "name": "Answer the 4 above-the-fold questions",
+    "does": "Answers what, why this one, why now and why trust you above the fold, with reviews and gallery placed next to the buy box.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "before/after mock",
+    "check": "All 4 questions are answerable from the above-the-fold content alone."
+   }
+  ],
+  "outputs": [
+   "hero copy draft",
+   "hero layout spec",
+   "PDP buy-box spec",
+   "before/after mock"
+  ],
+  "qa": [
+   "Headline names the outcome, not the category.",
+   "First-screen fits on the brand's actual mobile device, tested not assumed.",
+   "Every claim in the hero traces to the proof file."
+  ],
+  "read_point": "Founder approves before build; re-scored if the feeding ad or offer changes.",
+  "typical_duration": "agent: half a day per page.",
+  "subagents": [
+   "page-builder"
+  ]
+ },
+ {
+  "id": "SITE-W19",
+  "name": "Write persuasion copy, proof and urgency, and keep price claims honest",
+  "capabilities": [
+   "SITE-C39",
+   "SITE-C40",
+   "SITE-C42",
+   "SITE-C80"
+  ],
+  "trigger": "on demand | a competitor price change is detected, or a scheduled weekly check",
+  "human_role": "Page copywriter",
+  "inputs_required": [
+   "brand brain: reviews and tickets",
+   "brand brain: press mentions",
+   "brand brain: live inventory",
+   "brand brain: policies",
+   "competitor price signal feed"
+  ],
+  "steps": [
+   {
+    "n": 1,
+    "name": "Write value props in the customer's own words",
+    "does": "Writes each value prop as a benefit heading with the feature as support, mined from real reviews and tickets.",
+    "inputs": [],
+    "tools": [],
+    "skill": "site/page-spec-and-copy/body-copy-and-proof",
+    "output": "page copy draft",
+    "check": "Wording traces to a real review or ticket quote."
+   },
+   {
+    "n": 2,
+    "name": "Show how it works and build an honest comparison",
+    "does": "Shows how the product works in 3-4 steps ending at the outcome, and builds an honest comparison against 2-3 real alternatives.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "page copy draft",
+    "check": "Every named alternative is real, checkable and currently on the market."
+   },
+   {
+    "n": 3,
+    "name": "Build the FAQ from real tickets",
+    "does": "Builds the FAQ from that SKU's own tickets and negative reviews, and quantifies claims with a true number wherever one exists.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "FAQ block",
+    "check": "Every FAQ answer traces to a real ticket or review pattern."
+   },
+   {
+    "n": 4,
+    "name": "Map proof to objections and scatter it",
+    "does": "Maps every testimonial, badge and press quote to the one objection it answers, and scatters proof through the page instead of stacking it once.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "proof placement map",
+    "check": "Every proof element is tagged to one named objection."
+   },
+   {
+    "n": 5,
+    "name": "Add UGC and check review-date clustering",
+    "does": "Adds phone-shot UGC and a short founder video for trust-led SKUs, and checks review dates for suspicious clustering before trusting them.",
+    "inputs": [],
+    "tools": [],
+    "skill": "site/page-spec-and-copy/body-copy-and-proof",
+    "output": "proof placement map",
+    "check": "Any suspicious date cluster is flagged before the reviews are used as proof."
+   },
+   {
+    "n": 6,
+    "name": "Build a post-purchase proof survey",
+    "does": "Builds a short post-purchase survey to keep collecting proof on purpose instead of waiting for it to arrive.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "post-purchase survey questions",
+    "check": "Survey questions map to the objections the page still needs proof for."
+   },
+   {
+    "n": 7,
+    "name": "Write true, risk-framed urgency",
+    "does": "Uses urgency and scarcity only when true and phrased as risk, never a fake count, and wires a real-time low-stock display to live inventory.",
+    "inputs": [],
+    "tools": [],
+    "skill": "site/page-spec-and-copy/body-copy-and-proof",
+    "output": "urgency/scarcity copy",
+    "check": "Low-stock number matches live inventory, checked at write time."
+   },
+   {
+    "n": 8,
+    "name": "Present the guarantee word-for-word",
+    "does": "Presents the guarantee as confidence, matched word-for-word to policy, and closes long pages with 2 honest options: leave, or try risk-free.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "guarantee copy block",
+    "check": "Guarantee wording matches the policy page exactly."
+   },
+   {
+    "n": 9,
+    "name": "Match anchor-price claims to a current source",
+    "does": "Reads only publicly listed competitor prices already used as signal elsewhere, and matches each PDP anchor-price claim to the specific price it cites.",
+    "inputs": [],
+    "tools": [],
+    "skill": "site/pricing-integrity",
+    "output": "stale-claim flags",
+    "check": "Every comparison claim has a current, dated source attached.",
+    "ask_founder_if": "a comparison claim has no current, dated source"
+   },
+   {
+    "n": 10,
+    "name": "Flag and propose the corrected number",
+    "does": "Flags a claim as stale the moment the cited competitor price moves enough to make the comparison inaccurate, and proposes the corrected number for a human to approve.",
+    "inputs": [],
+    "tools": [],
+    "skill": "shared/claim-check",
+    "output": "proposed corrected comparison copy",
+    "check": "No comparison copy changes without human approval."
+   }
+  ],
+  "outputs": [
+   "page copy draft",
+   "FAQ block",
+   "proof placement map",
+   "post-purchase survey questions",
+   "urgency/scarcity copy",
+   "guarantee copy block",
+   "stale-claim flags",
+   "proposed corrected comparison copy"
+  ],
+  "qa": [
+   "No urgency or scarcity claim without a true, current basis.",
+   "Guarantee copy matches policy word-for-word.",
+   "No comparison claim ships without a current, dated competitor source."
+  ],
+  "read_point": "Before page publish (feeds the QA Gate); competitor price check runs weekly.",
+  "typical_duration": "agent: half a day for a full copy pass; price watch: 15 minutes weekly.",
+  "subagents": [
+   "page-builder"
+  ]
+ },
+ {
+  "id": "SITE-W20",
+  "name": "Remove friction, QA pages mobile-first and audit accessibility",
+  "capabilities": [
+   "SITE-C43",
+   "SITE-C44",
+   "SITE-C59"
+  ],
+  "trigger": "on demand | event: before any page launch | quarterly",
+  "human_role": "Page friction, mobile and accessibility QA lead",
+  "inputs_required": [
+   "brand brain: device split (from GA4)",
+   "theme code",
+   "key templates (home, PDP, collection, cart, checkout)"
+  ],
+  "steps": [
+   {
+    "n": 1,
+    "name": "Strip navigation on single-offer pages",
+    "does": "Strips navigation to logo, cart and one CTA on single-offer campaign pages.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "friction fix list",
+    "check": "No competing link remains on a single-offer page."
+   },
+   {
+    "n": 2,
+    "name": "Open a cart drawer, not a reload",
+    "does": "Opens a cart drawer on add-to-cart instead of reloading, and fires pop-ups only on real intent signals, never in the first 3-5 seconds.",
+    "inputs": [],
+    "tools": [],
+    "skill": "site/mobile-first-qa",
+    "output": "friction fix list",
+    "check": "Pop-up timing tested against an intent signal, not a flat timer."
+   },
+   {
+    "n": 3,
+    "name": "Fix dead controls and remove unused promo boxes",
+    "does": "Fixes or removes false affordances and dead controls, and removes the cart discount-code box when no promotion is live.",
+    "inputs": [],
+    "tools": [
+     "browser: headless chromium"
+    ],
+    "skill": null,
+    "output": "friction fix list",
+    "check": "Every visible control does something when clicked, tested live."
+   },
+   {
+    "n": 4,
+    "name": "Repair blockers and stage form fields",
+    "does": "Repairs popups, chat widgets or cookie bars covering add-to-cart, and reveals extra form fields only after the first is filled.",
+    "inputs": [],
+    "tools": [],
+    "skill": "site/mobile-first-qa",
+    "output": "developer brief",
+    "check": "Add-to-cart never visually obstructed on a real device screenshot."
+   },
+   {
+    "n": 5,
+    "name": "Build and review every page mobile-first",
+    "does": "Builds and reviews every page mobile-first, on the brand's own real device split, checking every screen width in responsive mode.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "mobile QA report",
+    "check": "Reviewed on the brand's real device split, not a generic phone size."
+   },
+   {
+    "n": 6,
+    "name": "Pin the CTA and never hide content in a carousel",
+    "does": "Pins the PDP CTA on mobile with live price without covering the variant selector, and never hides reviews or content behind a mobile-only carousel.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "screenshot set per width",
+    "check": "No content that appears on desktop is hidden behind a carousel on mobile."
+   },
+   {
+    "n": 7,
+    "name": "Cap mobile forms and prioritize mobile effort",
+    "does": "Cuts mobile forms to 4 fields or fewer with visible labels, and puts about 90% of CRO effort on mobile.",
+    "inputs": [],
+    "tools": [],
+    "skill": "site/mobile-first-qa",
+    "output": "mobile QA report",
+    "check": "No mobile form exceeds 4 fields without a stated reason."
+   },
+   {
+    "n": 8,
+    "name": "Run an automated WCAG scan",
+    "does": "Runs an automated WCAG scan on home, PDP, collection, cart and checkout templates.",
+    "inputs": [],
+    "tools": [
+     "web search"
+    ],
+    "skill": "site/mobile-first-qa",
+    "output": "accessibility audit report",
+    "check": "All 5 key templates scanned, not just the homepage."
+   },
+   {
+    "n": 9,
+    "name": "Manually test with keyboard and screen reader",
+    "does": "Manually tests forms, navigation and dynamic states with a keyboard and a screen reader, separating real failures from automated false positives.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "accessibility audit report",
+    "check": "Manual pass included, not the automated scan alone."
+   },
+   {
+    "n": 10,
+    "name": "Scope remediation to the theme codebase",
+    "does": "Closes cookie-consent and data-privacy gaps alongside accessibility ones, and scopes every remediation to the theme codebase so fixes survive updates.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "developer brief",
+    "check": "Remediation lives in the theme codebase, re-scanned after the next theme change."
+   }
+  ],
+  "outputs": [
+   "friction fix list",
+   "developer brief",
+   "mobile QA report",
+   "screenshot set per width",
+   "accessibility audit report"
+  ],
+  "qa": [
+   "Every friction fix tested live, not assumed from a screenshot.",
+   "Mobile QA run on the brand's own device split, not a generic phone.",
+   "Accessibility remediation lives in the theme codebase, re-scanned after the next theme change."
+  ],
+  "read_point": "Before every page launch; accessibility re-audited quarterly and after any theme change.",
+  "typical_duration": "agent: half a day for friction/mobile QA; accessibility: 1 day including manual testing.",
+  "subagents": []
+ },
+ {
+  "id": "SITE-W21",
+  "name": "Run the advertorial research and drafting pipeline",
+  "capabilities": [
+   "SITE-C45"
+  ],
+  "trigger": "on demand",
+  "human_role": "Advertorial writer",
+  "inputs_required": [
+   "brand brain: reviews and VoC",
+   "reference scout: swipe structures (mood/structure only)"
+  ],
+  "steps": [
+   {
+    "n": 1,
+    "name": "Gather the full research base",
+    "does": "Gathers reviews, tickets, the competitor set and prior ad performance into one research base before drafting a word.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "research base document",
+    "check": "Research base compiled before any copy is written."
+   },
+   {
+    "n": 2,
+    "name": "Rank candidate pains",
+    "does": "Ranks candidate pains by urgency, scale and relevance to this SKU.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "research base document",
+    "check": "Pains are ranked, not just listed."
+   },
+   {
+    "n": 3,
+    "name": "Test the big idea's uniqueness",
+    "does": "Tests the big idea against the competitor set before committing to it.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "research base document",
+    "check": "Big idea checked against every real competitor claim it might overlap.",
+    "ask_founder_if": "the big idea overlaps closely with a live competitor claim"
+   },
+   {
+    "n": 4,
+    "name": "Name the mechanism honestly",
+    "does": "Names the mechanism honestly with a causal chain a skeptical reader could check.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "advertorial draft",
+    "check": "The causal chain is checkable, not a black-box claim."
+   },
+   {
+    "n": 5,
+    "name": "Order in the proven 14-block sequence",
+    "does": "Orders the advertorial in the proven 14-block sequence.",
+    "inputs": [],
+    "tools": [],
+    "skill": "site/page-spec-and-copy/long-form-funnel",
+    "output": "advertorial draft",
+    "check": "All 14 blocks present in sequence."
+   },
+   {
+    "n": 6,
+    "name": "Write the why-nothing-else-worked block",
+    "does": "Writes a why-nothing-else-worked block naming real alternatives, not straw men.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "advertorial draft",
+    "check": "Every named alternative genuinely exists and is fairly described."
+   },
+   {
+    "n": 7,
+    "name": "Draft with AI, then scrub every fact",
+    "does": "Drafts with AI from the research base, then scrubs every invented fact by hand against the brand record.",
+    "inputs": [],
+    "tools": [],
+    "skill": "site/page-spec-and-copy/long-form-funnel",
+    "output": "advertorial draft",
+    "check": "Every factual claim traces to the research base, none invented."
+   },
+   {
+    "n": 8,
+    "name": "Run a structured tighten pass",
+    "does": "Runs a structured tighten pass (cut, don't add) before handing to design.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "advertorial draft",
+    "check": "Draft is shorter after the tighten pass, not longer."
+   },
+   {
+    "n": 9,
+    "name": "Run the compliance claims check",
+    "does": "Runs the compliance claims check before this leaves Site's hands.",
+    "inputs": [],
+    "tools": [],
+    "skill": "shared/claim-check",
+    "output": "advertorial draft",
+    "check": "No forbidden-tier claim reaches the design handoff."
+   }
+  ],
+  "outputs": [
+   "advertorial draft",
+   "research base document"
+  ],
+  "qa": [
+   "No invented spokesperson, testimonial or study anywhere in the draft.",
+   "Every alternative named in the why-nothing-else-worked block is real.",
+   "Disclosure label present if required by the channel."
+  ],
+  "read_point": "Founder reviews the draft before it goes to design and paid traffic.",
+  "typical_duration": "agent: 1 day research plus drafting; human: review and sign-off, same day.",
+  "subagents": [
+   "page-builder"
+  ]
+ },
+ {
+  "id": "SITE-W22",
+  "name": "Design, build and route a quiz funnel",
+  "capabilities": [
+   "SITE-C46"
+  ],
+  "trigger": "on demand",
+  "human_role": "Quiz funnel builder",
+  "inputs_required": [
+   "brand brain: products",
+   "brand brain: sizing/consumption data"
+  ],
+  "steps": [
+   {
+    "n": 1,
+    "name": "Cut questions with no clear job",
+    "does": "Cuts every candidate question that has no clear job in routing or personalizing the result.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "quiz spec (questions, branching, tracking)",
+    "check": "Every remaining question can be justified by its downstream use."
+   },
+   {
+    "n": 2,
+    "name": "Open with the least invasive question",
+    "does": "Opens with the least invasive, most important question, and starts length at 8-12 questions total.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "quiz spec",
+    "check": "Question count starts in the 8-12 range."
+   },
+   {
+    "n": 3,
+    "name": "Test the first 3 hook questions",
+    "does": "Tests the first 3 hook questions before building the rest of the flow.",
+    "inputs": [],
+    "tools": [],
+    "skill": "site/page-spec-and-copy/long-form-funnel",
+    "output": "quiz spec",
+    "check": "Hook questions tested separately before the full build."
+   },
+   {
+    "n": 4,
+    "name": "Insert real information screens",
+    "does": "Inserts a real information screen about every 3-5 questions, never a filler screen.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "quiz spec",
+    "check": "Every info screen carries real, useful content."
+   },
+   {
+    "n": 5,
+    "name": "Build the results page from real answers",
+    "does": "Builds the results page to show the shopper's own answers reflected back, with exactly one CTA.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "results page spec",
+    "check": "Results page content changes based on the shopper's actual answers."
+   },
+   {
+    "n": 6,
+    "name": "Route each answer to its offer",
+    "does": "Routes each answer combination to its matching page or offer.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "results page spec",
+    "check": "No answer combination is left without a mapped destination."
+   },
+   {
+    "n": 7,
+    "name": "Track completion and purchase together",
+    "does": "Wires tracking so completion rate and downstream purchase are both measured, and judges the quiz on both together.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "quiz spec",
+    "check": "Both metrics are tracked, not completion alone."
+   },
+   {
+    "n": 8,
+    "name": "QA every branching path",
+    "does": "QAs the branching logic end to end for every realistic answer path.",
+    "inputs": [],
+    "tools": [
+     "browser: headless chromium"
+    ],
+    "skill": null,
+    "output": "quiz spec",
+    "check": "Every realistic path tested at least once."
+   }
+  ],
+  "outputs": [
+   "quiz spec (questions, branching, tracking)",
+   "results page spec"
+  ],
+  "qa": [
+   "No dead-end branch with no matching offer.",
+   "Completion rate and purchase rate both tracked, not just completion.",
+   "No question included without a clear job."
+  ],
+  "read_point": "Founder reviews the full spec before build; completion and purchase rates read 2 weeks after launch.",
+  "typical_duration": "agent: 1 day for spec; build: 2-4 days depending on the quiz app.",
+  "subagents": [
+   "page-builder"
+  ]
+ },
+ {
+  "id": "SITE-W23",
+  "name": "Build the sales-page, order-page and post-purchase upsell funnel",
+  "capabilities": [
+   "SITE-C47"
+  ],
+  "trigger": "on demand",
+  "human_role": "Funnel page builder",
+  "inputs_required": [
+   "brand brain: products",
+   "brand brain: margin"
+  ],
+  "steps": [
+   {
+    "n": 1,
+    "name": "Build the sales page's 8 must-haves",
+    "does": "Builds the sales page with its 8 must-haves, from a scored headline to a credibility section.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "sales page spec",
+    "check": "All 8 must-haves present and each traceable to a real brand fact."
+   },
+   {
+    "n": 2,
+    "name": "Let copy and proof carry the sale",
+    "does": "Lets copy and proof carry the sale; design removes friction only, it never replaces an argument.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "sales page spec",
+    "check": "No design element is asked to substitute for a missing argument."
+   },
+   {
+    "n": 3,
+    "name": "Build a low-friction order page with a real bump",
+    "does": "Builds a low-friction order page with obviously labelled fields and a real order bump, not a generic one.",
+    "inputs": [],
+    "tools": [],
+    "skill": "site/page-spec-and-copy/long-form-funnel",
+    "output": "order page spec",
+    "check": "Order bump matches what a buyer of this product would actually want."
+   },
+   {
+    "n": 4,
+    "name": "Use a soft first ask for cold store traffic",
+    "does": "Uses a soft first ask for cold traffic arriving at a store rather than a hard sales page.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "sales page spec",
+    "check": "Cold-traffic variant confirmed softer than the warm-traffic version."
+   },
+   {
+    "n": 5,
+    "name": "Design the upsell for peak emotion",
+    "does": "Designs a post-purchase upsell timed at peak post-purchase emotion.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "upsell spec",
+    "check": "Upsell placement matches the moment right after order confirmation."
+   },
+   {
+    "n": 6,
+    "name": "Price the upsell by contribution",
+    "does": "Prices the upsell by contribution per buyer, not by take rate alone.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "upsell spec",
+    "check": "Price is computed from real contribution margin, in code."
+   },
+   {
+    "n": 7,
+    "name": "Pick the upsell by more-of-same or next-problem logic",
+    "does": "Picks the upsell by more-of-same or next-problem logic, matched to what was just bought.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "upsell spec",
+    "check": "Upsell logically follows from the purchased item, not a generic bestseller."
+   },
+   {
+    "n": 8,
+    "name": "QA the full path as a real buyer",
+    "does": "QAs the full sales-to-order-to-upsell path as a real buyer would experience it.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "order page spec",
+    "check": "Full path completed end to end in a real test purchase."
+   }
+  ],
+  "outputs": [
+   "sales page spec",
+   "order page spec",
+   "upsell spec"
+  ],
+  "qa": [
+   "Upsell priced from real contribution margin, computed in code.",
+   "Order bump matches what a buyer of this product would actually want.",
+   "Full path QA'd end to end before launch."
+  ],
+  "read_point": "Founder gate before launch; contribution-per-buyer checked again after the first 2 weeks of orders.",
+  "typical_duration": "agent: 1-2 days for the full spec.",
+  "subagents": [
+   "page-builder"
+  ]
+ },
+ {
+  "id": "SITE-W24",
+  "name": "Run the CRO test lifecycle: design, launch, read, roll out and protect",
+  "capabilities": [
+   "SITE-C50",
+   "SITE-C51",
+   "SITE-C52",
+   "SITE-C53",
+   "SITE-C54"
+  ],
+  "trigger": "on demand | event: before test launch | event: test reaches read point | quarterly",
+  "human_role": "CRO analyst",
+  "inputs_required": [
+   "ranked backlog (from Propose/registry)",
+   "traffic and order volume",
+   "metric contract",
+   "registry: prior test results on this brand"
+  ],
+  "steps": [
+   {
+    "n": 1,
+    "name": "Check the traffic gate",
+    "does": "Checks the traffic gate: below the sample-size threshold, plans a bigger change instead of running more small tests.",
+    "inputs": [],
+    "tools": [],
+    "skill": "site/cro-test-lifecycle",
+    "output": "test design spec",
+    "check": "Traffic gate check happens before any test is designed, not after it underperforms."
+   },
+   {
+    "n": 2,
+    "name": "Size the test from the minimum detectable effect",
+    "does": "Sizes the test from the minimum detectable effect, stated as orders per variant, and computes runtime from arms x sample / weekly traffic, at least 2 full weeks covering each weekday twice.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "test design spec",
+    "check": "Sample size is stated as orders per variant, never a flat magic number."
+   },
+   {
+    "n": 3,
+    "name": "Set the stopping rule before launch",
+    "does": "Picks a stopping rule before launch and never peeks outside planned looks; randomizes by user with sticky bucketing and isolates returning-visitor traffic.",
+    "inputs": [],
+    "tools": [],
+    "skill": "site/cro-test-lifecycle/stats-design",
+    "output": "test design spec",
+    "check": "Stopping rule is written down before the test goes live."
+   },
+   {
+    "n": 4,
+    "name": "QA the test on real devices",
+    "does": "QAs the test 2-3 times on real devices, confirms tracking fires in both arms, and checks for flicker on a slow connection.",
+    "inputs": [],
+    "tools": [
+     "browser: headless chromium"
+    ],
+    "skill": "site/cro-test-lifecycle/launch-qa",
+    "output": "launch QA checklist",
+    "check": "Tracking confirmed firing in both arms before launch."
+   },
+   {
+    "n": 5,
+    "name": "Check the promo calendar and run an A/A if needed",
+    "does": "Checks the promo calendar for overlap, and runs an A/A test when starting a new programme or switching tools.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "go/no-go",
+    "check": "No test launches into an unnoticed promo overlap.",
+    "ask_founder_if": "a promo overlaps the planned test window"
+   },
+   {
+    "n": 6,
+    "name": "Count conversions on a confirmation event",
+    "does": "At the read point, counts conversions on a confirmation event, never clicks, and never calls a test on one good or bad day.",
+    "inputs": [],
+    "tools": [
+     "connector: metabase"
+    ],
+    "skill": "site/cro-test-lifecycle/result-read",
+    "output": "result read report",
+    "check": "Conversion counted on a real confirmation event, not a click proxy."
+   },
+   {
+    "n": 7,
+    "name": "Check SRM, novelty and device splits",
+    "does": "Checks sample ratio mismatch, novelty/primacy with a daily plot, and the mobile-only and desktop-only splits before trusting the average.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "result read report",
+    "check": "SRM checked and cleared before any result is trusted."
+   },
+   {
+    "n": 8,
+    "name": "Decide from the interval and business value",
+    "does": "Applies Twyman's law to any surprising win, and decides from the confidence interval and business value together, never p<0.05 alone.",
+    "inputs": [],
+    "tools": [],
+    "skill": "site/cro-test-lifecycle/result-read",
+    "output": "ship/hold/kill recommendation",
+    "check": "Decision cites both the interval and the business value, not a p-value alone."
+   },
+   {
+    "n": 9,
+    "name": "Ship the winner and re-verify",
+    "does": "Ships the winner as the new control, re-verifies it with fresh recordings and funnel data after shipping, and runs an LTV/returns check before scaling any angle- or claim-driven win.",
+    "inputs": [],
+    "tools": [],
+    "skill": "site/cro-test-lifecycle/rollout-and-protect",
+    "output": "winner register entry",
+    "check": "Re-verification happens after shipping, not assumed from the test result alone."
+   },
+   {
+    "n": 10,
+    "name": "Maintain the live-winner register",
+    "does": "Keeps a live-winner register and re-checks quarterly that every shipped winner is still live, setting founder expectations at a 10-20% win rate for PDP/cart/checkout tests.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "quarterly protection check report",
+    "check": "Every past winner is re-checked live at least once a quarter."
+   },
+   {
+    "n": 11,
+    "name": "Report programme value from a holdout",
+    "does": "When measuring a feature, popup or the whole programme, reports value from a holdout instead of its own engagement metric or the sum of test lifts.",
+    "inputs": [],
+    "tools": [],
+    "skill": "site/cro-test-lifecycle/holdout-incrementality",
+    "output": "programme value report",
+    "check": "Programme value is never reported as the sum of individual test lifts."
+   },
+   {
+    "n": 12,
+    "name": "State and challenge the identifying assumption",
+    "does": "States and challenges the identifying assumption before trusting any causal method, and checks the traffic gate before choosing a holdout design.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "holdout design",
+    "check": "The identifying assumption is written down and challenged, not assumed."
+   },
+   {
+    "n": 13,
+    "name": "Steady noisy revenue tests",
+    "does": "Turns on CUPED only for returning, identified users, and winsorizes outlier orders or uses a proportion metric to steady a noisy revenue test.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "holdout design",
+    "check": "A noisy revenue metric is steadied with a named technique, not ignored."
+   },
+   {
+    "n": 14,
+    "name": "Log the full chain to the registry",
+    "does": "Logs the full test-to-result-to-protection chain to the registry for the next backlog cycle.",
+    "inputs": [],
+    "tools": [],
+    "skill": "shared/registry-entry",
+    "output": "registry entry",
+    "check": "Every test's full lifecycle is retrievable from the registry."
+   }
+  ],
+  "outputs": [
+   "test design spec",
+   "launch QA checklist",
+   "result read report",
+   "ship/hold/kill recommendation",
+   "winner register entry",
+   "quarterly protection check report",
+   "holdout design",
+   "programme value report"
+  ],
+  "qa": [
+   "No verdict from a p-value alone.",
+   "No peeking outside the planned looks.",
+   "A shipped winner re-verified quarterly, not assumed permanent.",
+   "Holdout design states its identifying assumption in writing."
+  ],
+  "read_point": "At the pre-set read point (never earlier); quarterly for winner protection and holdout measurement.",
+  "typical_duration": "agent: design and QA, half a day; test runtime: 2+ weeks; read and rollout, half a day.",
+  "subagents": [
+   "cro-analyst"
+  ]
+ },
+ {
+  "id": "SITE-W25",
+  "name": "Optimize on-site search and build visual search",
+  "capabilities": [
+   "SITE-C56",
+   "SITE-C76"
+  ],
+  "trigger": "on demand | on-site search bottleneck diagnosed and the catalogue is visually distinct enough to benefit",
+  "human_role": "Search and discovery optimizer",
+  "inputs_required": [
+   "connector: shopify admin | woocommerce",
+   "search app (Klevu/Searchanise-class)",
+   "product photo catalogue"
+  ],
+  "steps": [
+   {
+    "n": 1,
+    "name": "Fill filter fields and turn filters on",
+    "does": "Fills every field a filter needs and turns on search and discovery filters wired to real product fields.",
+    "inputs": [],
+    "tools": [],
+    "skill": "site/discovery-and-personalization",
+    "output": "search configuration spec",
+    "check": "Every filter tested returns matching products live."
+   },
+   {
+    "n": 2,
+    "name": "Add predictive text and synonyms",
+    "does": "Improves search with predictive text and synonym matching.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "search configuration spec",
+    "check": "A misspelled or synonym query still returns the right product."
+   },
+   {
+    "n": 3,
+    "name": "Audit search as its own funnel",
+    "does": "Audits search as its own funnel: query volume, no-results rate, and autocomplete lag treated as an everyday interactivity issue.",
+    "inputs": [],
+    "tools": [],
+    "skill": "site/discovery-and-personalization",
+    "output": "no-results report",
+    "check": "No-results rate is tracked as its own number, not folded into overall bounce rate."
+   },
+   {
+    "n": 4,
+    "name": "Build and maintain the visual similarity index",
+    "does": "Embeds every live product's real photos once and keeps the similarity index current as the catalogue changes.",
+    "inputs": [],
+    "tools": [
+     "image_embed.build"
+    ],
+    "skill": null,
+    "output": "similarity index",
+    "check": "Index refresh runs whenever the catalogue changes, not on a stale one-time build."
+   },
+   {
+    "n": 5,
+    "name": "Return real SKUs from an uploaded photo",
+    "does": "Accepts a shopper-uploaded photo, embeds it the same way, and returns the nearest real SKUs, never a generated or redrawn product.",
+    "inputs": [],
+    "tools": [
+     "visual_search.query"
+    ],
+    "skill": "site/discovery-and-personalization/visual-search",
+    "output": "visual search widget",
+    "check": "Every returned result is a real, current SKU photo."
+   },
+   {
+    "n": 6,
+    "name": "Cap claims and fall back cleanly",
+    "does": "Caps the feature to product discovery only, never claims a visual match is exact, and falls back cleanly to text search when no close match exists.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "visual search widget",
+    "check": "No visual match is ever labelled 'exact'.",
+    "ask_founder_if": "the catalogue is not visually distinct enough to expect a real lift"
+   },
+   {
+    "n": 7,
+    "name": "Protect uploaded shopper photos",
+    "does": "Keeps uploaded shopper photos private and short-lived, never stored as training or competitor data.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "similarity index",
+    "check": "No uploaded shopper photo persists past the session."
+   }
+  ],
+  "outputs": [
+   "search configuration spec",
+   "no-results report",
+   "visual search widget",
+   "similarity index"
+  ],
+  "qa": [
+   "Every filter tested to confirm it returns matching products live.",
+   "Visual search never claims an exact match.",
+   "No shopper-uploaded photo retained beyond the session."
+  ],
+  "read_point": "Search funnel numbers reviewed monthly; visual search usage reviewed after the first month live.",
+  "typical_duration": "agent: 1 day for search audit; visual search build: several days, external model dependent.",
+  "subagents": []
+ },
+ {
+  "id": "SITE-W26",
+  "name": "Design on-site personalization and real-time computed offers",
+  "capabilities": [
+   "SITE-C57",
+   "SITE-C74",
+   "SITE-C75"
+  ],
+  "trigger": "on demand | a PDP has enough session volume and an unresolved add-to-cart drop-off | an exit-intent offer is underperforming",
+  "human_role": "Personalization and CRO data designer",
+  "inputs_required": [
+   "brand brain: quiz/behavioural data",
+   "click-map or session-replay data per PDP",
+   "landed cost per SKU",
+   "founder's margin floor"
+  ],
+  "steps": [
+   {
+    "n": 1,
+    "name": "Show the shopper's own answers back",
+    "does": "Shows the shopper's own quiz answers as a personalized progress visual, and recommends a starter pack size from quiz or consumption answers.",
+    "inputs": [],
+    "tools": [],
+    "skill": "site/discovery-and-personalization/personalization-rules",
+    "output": "personalization rule set",
+    "check": "Every personalized element is sourced from that shopper's own real answers."
+   },
+   {
+    "n": 2,
+    "name": "Match imagery to the selected variant",
+    "does": "Updates the product image to match the selected variant, and branches the post-quiz email sequence by the shopper's own answers.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "personalization rule set",
+    "check": "Image updates correctly for every variant option in a live test."
+   },
+   {
+    "n": 3,
+    "name": "Layer real-time intent signals honestly",
+    "does": "Layers real-time intent signals into reassurance copy, not only past-browsing history, and tailors PDP facts for AI-referred visitors so they do not re-browse.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "developer brief",
+    "check": "No personalization rule invents a signal the site does not actually have."
+   },
+   {
+    "n": 4,
+    "name": "Pull real zoom and dwell data",
+    "does": "Pulls per-image zoom, dwell and skip events from the site's own click-map or session-replay data, never a generic benchmark.",
+    "inputs": [],
+    "tools": [
+     "session_replay.pull"
+    ],
+    "skill": "site/discovery-and-personalization/computed-in-code-offers",
+    "output": "proposed image order with reasoning",
+    "check": "Data pulled is this PDP's own, not an industry benchmark."
+   },
+   {
+    "n": 5,
+    "name": "Rank images by real attention",
+    "does": "Ranks the existing image set by which images hold attention longest before a scroll-away or an add-to-cart.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "proposed image order with reasoning",
+    "check": "Ranking is computed from real events, not a stylistic guess."
+   },
+   {
+    "n": 6,
+    "name": "Propose the re-sequenced gallery for approval",
+    "does": "Proposes a re-sequenced gallery order with the reasoning shown per swap, flagging when session volume is too thin to trust the ranking.",
+    "inputs": [],
+    "tools": [
+     "image_rank.propose"
+    ],
+    "skill": null,
+    "output": "confidence flag per SKU",
+    "check": "Proposal goes to the founder gate, never ships automatically.",
+    "ask_founder_if": "session volume on this SKU is too thin to trust a ranking"
+   },
+   {
+    "n": 7,
+    "name": "Read real cost data at the moment of exit intent",
+    "does": "Reads landed cost, shipping cost and any already-applied promo for the exact cart at the moment of exit intent.",
+    "inputs": [],
+    "tools": [],
+    "skill": "site/discovery-and-personalization/computed-in-code-offers",
+    "output": "per-cart discount ceiling",
+    "check": "Cost inputs read at the moment of the cart, not a stale average."
+   },
+   {
+    "n": 8,
+    "name": "Compute the discount ceiling in code",
+    "does": "Computes, in code, the maximum discount that cart can take and still clear the founder's margin floor; never lets the model estimate the number.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "exit-intent offer config",
+    "check": "The number is produced by code from real cost data, never a model guess."
+   },
+   {
+    "n": 9,
+    "name": "Show the ceiling logic and fail safe",
+    "does": "Shows the founder the ceiling logic before turning the offer live, and falls back to no discount, not a guessed one, when a cost input is missing.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "exit-intent offer config",
+    "check": "Missing-cost carts get no discount, never a guessed one."
+   }
+  ],
+  "outputs": [
+   "personalization rule set",
+   "developer brief",
+   "proposed image order with reasoning",
+   "confidence flag per SKU",
+   "per-cart discount ceiling",
+   "exit-intent offer config"
+  ],
+  "qa": [
+   "Every personalization rule sourced from real shopper data, never invented.",
+   "Discount ceiling always computed in code from real cost data, never guessed.",
+   "Image re-sequencing proposal goes to the founder gate, never ships automatically."
+  ],
+  "read_point": "Founder gate before any rule or offer goes live; re-checked when session volume or margin floor changes.",
+  "typical_duration": "agent: half a day per feature; discount ceiling logic is reusable once built.",
+  "subagents": [
+   "cro-analyst"
+  ]
+ },
+ {
+  "id": "SITE-W27",
+  "name": "Design reviews and UGC display strategy",
+  "capabilities": [
+   "SITE-C58"
+  ],
+  "trigger": "on demand",
+  "human_role": "Reviews and proof strategist",
+  "inputs_required": [
+   "brand brain: reviews platform",
+   "connector: reviews app"
+  ],
+  "steps": [
+   {
+    "n": 1,
+    "name": "Pick a reviews app and request past reviews",
+    "does": "Picks a reviews app and requests reviews from past customers before launch if none exist yet.",
+    "inputs": [],
+    "tools": [],
+    "skill": "site/reviews-ugc-strategy",
+    "output": "reviews configuration",
+    "check": "A real request has gone out to past customers, not just the app installed."
+   },
+   {
+    "n": 2,
+    "name": "Decide the verified-purchase policy",
+    "does": "Decides deliberately whether reviews require a verified purchase, and documents the reason.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "display strategy spec",
+    "check": "The decision and its reason are written down, not left implicit."
+   },
+   {
+    "n": 3,
+    "name": "Build volume, then shift sort order",
+    "does": "Builds review volume first below 100 reviews per product, then shifts sort order to relevance and media-first once past that.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "display strategy spec",
+    "check": "Sort order strategy matches the product's actual review count."
+   },
+   {
+    "n": 4,
+    "name": "Check for suspicious date clustering",
+    "does": "Checks review dates for suspicious clustering before trusting a spike as real.",
+    "inputs": [],
+    "tools": [],
+    "skill": "site/reviews-ugc-strategy",
+    "output": "display strategy spec",
+    "check": "Any suspicious cluster is flagged before the reviews are used as proof."
+   },
+   {
+    "n": 5,
+    "name": "Show repeat-buyer reviews as continuity proof",
+    "does": "Shows reviews from repeat buyers as continuity proof specifically for consumable products.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "display strategy spec",
+    "check": "Repeat-buyer status is verified, not assumed from review text."
+   },
+   {
+    "n": 6,
+    "name": "Confirm the request automation is sending",
+    "does": "Confirms review-request automation is actually sending by checking a real recent order's timeline.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "reviews configuration",
+    "check": "A real order's timeline shows the review request actually fired."
+   }
+  ],
+  "outputs": [
+   "reviews configuration",
+   "display strategy spec"
+  ],
+  "qa": [
+   "Verified-purchase policy stated and consistent, not ad hoc.",
+   "A suspicious review-date cluster is checked before it is trusted as proof.",
+   "Review-request automation confirmed sending on a real order."
+  ],
+  "read_point": "Reviewed quarterly alongside the accessibility and hygiene cadence.",
+  "typical_duration": "agent: half a day.",
+  "subagents": []
+ },
+ {
+  "id": "SITE-W28",
+  "name": "Reduce COD return-to-origin and add a WhatsApp buy flow for India",
+  "capabilities": [
+   "SITE-C67",
+   "SITE-C77"
+  ],
+  "trigger": "COD share and RTO rate identified as a bottleneck in the metric contract | India market COD or trust-driven checkout hesitation diagnosed as a bottleneck",
+  "human_role": "India operations lead, COD and WhatsApp",
+  "inputs_required": [
+   "courier serviceability API",
+   "WhatsApp business API access",
+   "brand's historical RTO data"
+  ],
+  "steps": [
+   {
+    "n": 1,
+    "name": "Show real-time PIN serviceability",
+    "does": "Shows real-time PIN code serviceability on the PDP, using the courier or aggregator API, before the shopper adds to cart.",
+    "inputs": [],
+    "tools": [],
+    "skill": "site/india-ops",
+    "output": "PDP serviceability widget",
+    "check": "Serviceability check reflects the live courier API, not a static list."
+   },
+   {
+    "n": 2,
+    "name": "Add OTP verification on high-value COD",
+    "does": "Adds address auto-fill and phone OTP verification at checkout for COD orders above a set value.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "checkout OTP flow",
+    "check": "OTP is required only above the set value threshold, confirmed live."
+   },
+   {
+    "n": 3,
+    "name": "Add a visible, sized COD fee",
+    "does": "Adds a visible COD handling fee as a checkout line item, sized to filter impulse orders without losing genuine buyers.",
+    "inputs": [],
+    "tools": [],
+    "skill": "site/india-ops",
+    "output": "COD fee config",
+    "check": "Fee amount is backed by real impulse-order data, not a round guess."
+   },
+   {
+    "n": 4,
+    "name": "Surface a prepaid incentive at the right moment",
+    "does": "Surfaces a prepaid discount or free-shipping incentive at the exact checkout step where COD is selected.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "checkout OTP flow",
+    "check": "Incentive appears at the COD-selection step, not buried earlier."
+   },
+   {
+    "n": 5,
+    "name": "Trigger a WhatsApp confirmation with auto-cancel",
+    "does": "Triggers an automated WhatsApp order-confirmation message after COD checkout, with an auto-cancel rule if unconfirmed within a set window.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "WhatsApp confirmation flow",
+    "check": "Auto-cancel window is enforced and logged."
+   },
+   {
+    "n": 6,
+    "name": "Replace tracking with a branded page",
+    "does": "Replaces the generic courier tracking link with a branded tracking page that also carries post-purchase upsell content.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "branded tracking page",
+    "check": "Tracking page renders correctly on the brand's own domain."
+   },
+   {
+    "n": 7,
+    "name": "Pass a risk score to fulfilment",
+    "does": "Passes a buyer risk score (first order, high COD value, prior RTO history) to the fulfilment system for a manual check, without running the logistics NDR process itself.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "RTO dashboard",
+    "check": "Risk score reaches the fulfilment system without Site running the logistics process.",
+    "ask_founder_if": "no fulfilment system is ready to receive the risk score"
+   },
+   {
+    "n": 8,
+    "name": "Build the RTO analytics view",
+    "does": "Builds an RTO analytics view by courier, PIN code, product and payment method.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "RTO dashboard",
+    "check": "Dashboard breaks RTO down by all 4 dimensions, not just an overall rate."
+   },
+   {
+    "n": 9,
+    "name": "Sync the catalogue to WhatsApp",
+    "does": "Syncs the live catalogue (price, stock, variant) to the brand's WhatsApp Business catalog on a schedule.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "synced catalog",
+    "check": "Catalog sync runs on a schedule and matches the live PDP."
+   },
+   {
+    "n": 10,
+    "name": "Add the click-to-WhatsApp button",
+    "does": "Adds a click-to-WhatsApp button on the PDP that pre-fills the exact SKU, variant and a template question, confirmed to appear only where WhatsApp commerce is legal and common.",
+    "inputs": [],
+    "tools": [],
+    "skill": "site/india-ops/whatsapp-buy-flow",
+    "output": "click-to-WhatsApp button",
+    "check": "Button appears only in markets where it is confirmed legal and common."
+   },
+   {
+    "n": 11,
+    "name": "Measure clicks separately and hand off the conversation",
+    "does": "Measures PDP-to-WhatsApp clicks separately from normal add-to-cart so they are never double-counted, and hands the conversation flow itself to Lifecycle.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "click-to-order attribution",
+    "check": "WhatsApp-originated orders never double-count against add-to-cart."
+   }
+  ],
+  "outputs": [
+   "PDP serviceability widget",
+   "checkout OTP flow",
+   "COD fee config",
+   "WhatsApp confirmation flow",
+   "branded tracking page",
+   "RTO dashboard",
+   "click-to-WhatsApp button",
+   "synced catalog",
+   "click-to-order attribution"
+  ],
+  "qa": [
+   "RTO levers measured against the brand's own PIN-code and payment-method data, never a generic industry number.",
+   "WhatsApp click-to-order never double-counted with add-to-cart.",
+   "COD fee sized from real impulse-order data, not a guess."
+  ],
+  "read_point": "RTO dashboard reviewed monthly; WhatsApp conversion checked at the same cadence.",
+  "typical_duration": "agent: 2-3 days build across both features; ongoing: automated once live.",
+  "subagents": []
+ },
+ {
+  "id": "SITE-W29",
+  "name": "Run the on-site AI shopping assistant",
+  "capabilities": [
+   "SITE-G01"
+  ],
+  "trigger": "event: founder approves; weekly transcript and claims review",
+  "human_role": "On-site assistant programme owner",
+  "inputs_required": [
+   "brand brain: claims tiers (approved/site-backed/forbidden)",
+   "catalogue, stock and delivery data",
+   "founder approval to turn the assistant on"
+  ],
+  "steps": [
+   {
+    "n": 1,
+    "name": "Confirm approval and current claims tiers",
+    "does": "Confirms the founder has approved turning the assistant on, and confirms the claims tiers are current before go-live.",
+    "inputs": [],
+    "tools": [],
+    "skill": "site/ai-shopping-assistant",
+    "output": "go-live confirmation",
+    "check": "Claims tiers reviewed within the last 30 days before go-live.",
+    "ask_founder_if": "claims tiers have not been reviewed in the last 30 days"
+   },
+   {
+    "n": 2,
+    "name": "Restrict answers to approved data",
+    "does": "Configures the assistant to answer only from the catalogue, stock and claims-tier data, never from open web knowledge about the brand.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "assistant configuration",
+    "check": "A test question outside the catalogue returns a hand-off, not a guess."
+   },
+   {
+    "n": 3,
+    "name": "Set the hand-off rule",
+    "does": "Sets the rule that any question the assistant cannot answer from approved data routes to a person, never a guess.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "assistant configuration",
+    "check": "Hand-off triggers correctly on an out-of-scope test question."
+   },
+   {
+    "n": 4,
+    "name": "Keep this surface scoped",
+    "does": "Keeps this pre-purchase chat distinct from the reporting or CRO assistant surfaces so its scope stays fixed.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "assistant configuration",
+    "check": "Assistant never answers a reporting or CRO-analysis question."
+   },
+   {
+    "n": 5,
+    "name": "Log conversations and flag forbidden-tier touches",
+    "does": "Logs every conversation and flags any answer that touched a forbidden-tier claim.",
+    "inputs": [],
+    "tools": [],
+    "skill": "shared/claim-check",
+    "output": "conversation log",
+    "check": "Every forbidden-tier touch is flagged automatically, not found by manual search."
+   },
+   {
+    "n": 6,
+    "name": "Run the weekly transcript and claims review",
+    "does": "Runs the weekly transcript and claims review, checking a sample of conversations against the claims tiers.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "weekly transcript and claims review report",
+    "check": "A real sample of conversations is checked every week, not skipped."
+   },
+   {
+    "n": 7,
+    "name": "Report hand-off rate and unanswered questions",
+    "does": "Reports hand-off rate, common unanswered questions and any claims-tier miss to the founder each week.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "hand-off rate report",
+    "check": "Report is delivered weekly without fail."
+   },
+   {
+    "n": 8,
+    "name": "Feed unanswered questions into page copy",
+    "does": "Feeds unanswered-question patterns back as candidate FAQ content for the page-copy workflow.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "candidate FAQ list",
+    "check": "Candidate FAQ items are handed to SITE-W19, not left unused."
+   },
+   {
+    "n": 9,
+    "name": "Pause immediately on a violation",
+    "does": "Pauses the assistant and notifies the founder immediately if a claims-tier violation is found, rather than waiting for the weekly review.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "go-live confirmation",
+    "check": "A found violation pauses the assistant same-day, not at the next weekly review."
+   }
+  ],
+  "outputs": [
+   "weekly transcript and claims review report",
+   "hand-off rate report",
+   "candidate FAQ list"
+  ],
+  "qa": [
+   "No answer given outside the catalogue, stock and claims-tier data.",
+   "Every claims-tier miss surfaced immediately, not held for the weekly review.",
+   "Hand-off to a person happens on any question outside approved data."
+  ],
+  "read_point": "Weekly transcript review; immediate pause on any violation.",
+  "typical_duration": "agent: continuous; human: weekly review, 30-45 minutes.",
+  "subagents": []
+ },
+ {
+  "id": "SITE-W30",
+  "name": "Run festive gifting operations",
+  "capabilities": [
+   "SITE-G02"
+  ],
+  "trigger": "event: 60 days before each gifting window (Diwali, Rakhi, wedding season)",
+  "human_role": "Festive gifting operations lead",
+  "inputs_required": [
+   "gifting calendar (shared with Lifecycle)",
+   "brand brain: shipping cutoffs by pincode",
+   "brand brain: catalogue"
+  ],
+  "steps": [
+   {
+    "n": 1,
+    "name": "Confirm the window and cutoff dates",
+    "does": "Confirms the gifting window and its cutoff dates from the shared gifting calendar 60 days out.",
+    "inputs": [],
+    "tools": [],
+    "skill": "site/festive-gifting-ops",
+    "output": "pincode delivery cutoff map",
+    "check": "Cutoff dates confirmed against the shared calendar, not assumed from last year."
+   },
+   {
+    "n": 2,
+    "name": "Turn on gift wrap and gift messages",
+    "does": "Turns on gift wrap and a gift-message option on the relevant products.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "gift wrap/message configuration",
+    "check": "Option appears only on products the founder wants it on."
+   },
+   {
+    "n": 3,
+    "name": "Build a price-hidden gift invoice",
+    "does": "Builds a price-hidden gift invoice path so a gift recipient never sees the price paid.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "hidden-price invoice flow",
+    "check": "A test gift order's packing slip shows no price."
+   },
+   {
+    "n": 4,
+    "name": "Set delivery cutoffs per pincode",
+    "does": "Sets delivery-by-date cutoffs per pincode so a shopper is never sold a promise the courier cannot keep.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "pincode delivery cutoff map",
+    "check": "Cutoff dates match real courier data by pincode.",
+    "ask_founder_if": "courier cutoff data by pincode is not available or stale"
+   },
+   {
+    "n": 5,
+    "name": "Build gift guides from real data",
+    "does": "Builds gift guides grouping the catalogue by recipient and occasion, using real product and price data only.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "gift guide pages",
+    "check": "No product or price in a gift guide is invented or stale."
+   },
+   {
+    "n": 6,
+    "name": "Switch to gifting-mode messaging",
+    "does": "Switches relevant PDPs and the homepage to gifting-mode messaging for the window's duration.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "gift guide pages",
+    "check": "Messaging switch confirmed live on the first day of the window."
+   },
+   {
+    "n": 7,
+    "name": "QA the full gift path",
+    "does": "QAs the full gift-wrap-to-hidden-price-to-delivery-cutoff path as a real gift buyer would experience it.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "gifting-mode QA report",
+    "check": "A real test order completes the full gift path without a broken step."
+   },
+   {
+    "n": 8,
+    "name": "Switch back after the window",
+    "does": "Switches everything back to normal mode the day after the window closes.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "gifting-mode QA report",
+    "check": "Normal mode confirmed restored the day after close."
+   },
+   {
+    "n": 9,
+    "name": "Log results for next year",
+    "does": "Logs what worked and the cutoff accuracy for next year's window.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "gifting-mode QA report",
+    "check": "Cutoff accuracy and any missed promise are logged for next year's setup."
+   }
+  ],
+  "outputs": [
+   "gift wrap/message configuration",
+   "hidden-price invoice flow",
+   "pincode delivery cutoff map",
+   "gift guide pages",
+   "gifting-mode QA report"
+  ],
+  "qa": [
+   "No gift order promises a delivery date the pincode cutoff cannot support.",
+   "Hidden-price invoice tested with a real order.",
+   "Gifting mode switched off cleanly after the window."
+  ],
+  "read_point": "60 days before the window (setup); day after close (teardown and log).",
+  "typical_duration": "agent: 1-2 days setup; automated switch-on/off at the scheduled dates.",
+  "subagents": [
+   "page-builder"
+  ]
+ }
+]

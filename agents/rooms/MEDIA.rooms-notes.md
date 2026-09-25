@@ -8,7 +8,7 @@ Meta Ads Manager, TikTok Ads Manager, Revealbot and Optmyzr already do rule-base
 
 ## Google Ads
 
-The job here is control, not reporting Google already gives free. It flags Performance Max defaults that hide control (URL expansion, auto assets) in one view, checks feed titles against the brand's real converting search terms, and gates any scale call behind a fixed 5-gate checklist plus a blended-MER reconciliation, none of which Google's recommendations page does. Hardest data: everything, since the Google Ads API is not connected yet (only Meta is read-only today) — this room is unavailable until that connector lands.
+The job here is control, not reporting Google already gives free. It flags Performance Max defaults that hide control (URL expansion, auto assets) in one view, checks feed titles against the brand's real converting search terms, and gates any scale call behind a fixed 5-gate checklist plus a blended-MER reconciliation, none of which Google's recommendations page does. Hardest data: everything, since the Google Ads API is not connected yet (only Meta is read-only today): this room is unavailable until that connector lands.
 
 ## Affiliate, marketplace and retail media
 

@@ -1,0 +1,1528 @@
+[
+  {
+    "id": "org/organic-channel-strategy",
+    "name": "Organic channel and platform strategy",
+    "parent": null,
+    "invoke_when": "a brand has no organic strategy on file, or the founder asks to add, drop or reweight a platform",
+    "select_by": {
+      "task": "strategy"
+    },
+    "inputs_required": [
+      "brand brain: avatars, category, region, voice",
+      "current platform list and account health",
+      "competitor teardown notes"
+    ],
+    "steps": [
+      "1. Read the avatar, category, region and voice sections of the brand brain. Note age band, language and where the avatar already spends time online.",
+      "2. Pull the competitive teardown (org/competitive-teardown) for the 3-5 closest competitors: which platforms they run, cadence, format mix.",
+      "3. Score each candidate platform on avatar fit, content cost to produce, and a stated success bar for a 2-week fixed-cost trial.",
+      "4. Set content pillars (3-5) tied to named objections and named SKUs, not generic themes.",
+      "5. Set the visual world: colour, type, logo lockup, caption style, so every account looks like one brand.",
+      "6. Write the account setup checklist (bio, link-in-bio, contact, category tag, WhatsApp Business link) and a compliance check per platform's ad-content and disclosure policy.",
+      "7. Draft the positioning brief and platform plan as a card (shared/plain-english-card) for founder decision on any new account or platform drop."
+    ],
+    "checks": [
+      "Every pillar names a SKU and an objection it answers",
+      "No platform added without a stated trial success bar and kill date",
+      "Visual world spec matches the brand's approved palette and logo files"
+    ],
+    "output": "{positioning_brief, platform_plan[{platform, status, pillars[], trial_bar, kill_date}], visual_world_spec, account_setup_checklist}",
+    "used_by": [
+      "ORG-W01"
+    ],
+    "shared_with": [],
+    "skill_md": "---\nname: organic-channel-strategy\nowner: ORG\nversion: 1\ninvoke_when: a brand has no organic strategy on file, or the founder asks to add, drop or reweight a platform\ninputs: brand brain (avatars, category, region, voice), competitor teardown, current account list\noutputs: positioning brief, platform plan with trial bars, visual world spec, account setup checklist\n---\n# Organic channel and platform strategy\n\n## Purpose\nDecide which platforms a brand organically runs, with a reason tied to the avatar and a fixed test window for anything new, not a copy of what competitors do.\n\n## Steps\n1. Read the avatar, category, region and voice from the brand brain. India-specific: note whether the avatar buys on WhatsApp, whether Hindi or a regional language outperforms English captions, and mobile-only browsing.\n2. Pull the competitive teardown for structure and cadence only, never text or footage.\n3. Score each platform: avatar fit, cost to produce one week of content, a 2-week trial success bar.\n4. Set 3-5 content pillars, each naming a SKU and the objection it answers.\n5. Lock the visual world (palette, type, caption style) so every account reads as one brand.\n6. Write the account setup checklist and a platform-policy compliance check.\n7. Package as a plain-English card for the founder to approve any new account, platform drop, or account-type change.\n\n## Checks\n- Every pillar names a SKU and an objection.\n- No platform runs past its trial date without a founder decision.\n- Visual spec matches approved brand assets.\n\n## Output\n{positioning_brief, platform_plan[], visual_world_spec, account_setup_checklist}\n\n## Example\nPillar \"Why it does not wobble on Indian roads\" ties to the SKU \"stroller-v2\" and the objection \"will it survive potholes\", scheduled 2x a week on Instagram and YouTube Shorts only, with Pinterest on a 2-week trial ending 15 Oct."
+  },
+  {
+    "id": "org/buyer-question-mapping",
+    "name": "Buyer and avatar question mapping",
+    "parent": null,
+    "invoke_when": "the monthly content calendar or a keyword/page-brief cycle starts and needs a fresh list of real buyer questions",
+    "select_by": {
+      "task": "question-mining"
+    },
+    "inputs_required": [
+      "support tickets and DM/comment export",
+      "Amazon/Flipkart/Google reviews",
+      "Search Console query list (when available)",
+      "brand brain: avatars, objections"
+    ],
+    "steps": [
+      "1. Pull the last 90 days of support tickets, comments and DMs tagged with a product question.",
+      "2. Pull review text (Amazon, Flipkart, Google, site reviews) for the same SKUs; extract recurring questions and objections, with a quote and source for each.",
+      "3. Pull Search Console query data when connected; keep 'People Also Ask' and autocomplete pulls labelled as web, not brand data.",
+      "4. Cluster questions by SKU and by funnel stage (awareness objection vs decision-stage spec question vs post-purchase how-to).",
+      "5. Tag each question with a suggested channel: short video (emotional/visual objection), page copy (spec/comparison question), or facts page (trust/authority question).",
+      "6. Return the ranked question bank with source counts, for the calendar builder and the keyword researcher to both draw from."
+    ],
+    "checks": [
+      "Every question has at least one quoted source and a date",
+      "No question invented without a source",
+      "Clusters map to a real SKU, not a generic category"
+    ],
+    "output": "{questions[{text, sku, funnel_stage, suggested_channel, sources[{quote, source, date}], count}]}",
+    "used_by": [
+      "ORG-W02",
+      "ORG-W18"
+    ],
+    "shared_with": [
+      "CREA",
+      "MEDIA"
+    ],
+    "skill_md": "---\nname: buyer-question-mapping\nowner: ORG\nversion: 1\ninvoke_when: the content calendar or a keyword/page-brief cycle needs a fresh list of real buyer questions\ninputs: support tickets, comments/DMs, marketplace and site reviews, Search Console queries, brand brain avatars\noutputs: ranked question bank tagged by SKU, funnel stage and suggested channel\n---\n# Buyer and avatar question mapping\n\n## Purpose\nOne shared source of real buyer language feeds both the content calendar (org/make-content) and the SEO page-brief pipeline (org/page-brief-build), so scripts and pages answer the same questions buyers actually ask, not guessed ones.\n\n## Steps\n1. Pull 90 days of support tickets, comments and DMs tagged with a product question.\n2. Pull review text from Amazon, Flipkart, Google and the site for the same SKUs. Quote the exact line and note the source and date.\n3. Pull Search Console queries where connected; label People Also Ask and autocomplete pulls as web research, kept apart from private data.\n4. Cluster by SKU and funnel stage: awareness objection, decision-stage spec question, post-purchase how-to.\n5. Tag each cluster with a suggested channel: an objection with strong emotion or visual proof suits short video; a spec or comparison question suits a page; a trust or authority question suits the facts page.\n6. Rank by how often the question appears and how close it sits to a stuck SKU.\n\n## Checks\n- Every question carries a quoted source and a date.\n- No invented question.\n- Each cluster names a real SKU.\n\n## Output\n{questions[{text, sku, funnel_stage, suggested_channel, sources[], count}]}\n\n## Example\n\"Will the folding hinge rust in Mumbai's monsoon?\" - stroller-v2, decision-stage, suggested_channel: page + video, 14 mentions across reviews and DMs since June."
+  },
+  {
+    "id": "org/make-content",
+    "name": "Make organic content (dispatcher)",
+    "parent": null,
+    "invoke_when": "a calendar slot, an approved idea, or a repurposing job needs an actual script, pin, post or issue written",
+    "select_by": {
+      "format": "any",
+      "platform": "any"
+    },
+    "inputs_required": [
+      "calendar slot or idea",
+      "brand voice file",
+      "claims tiers",
+      "one named SKU",
+      "one named buyer"
+    ],
+    "steps": [
+      "1. Read the slot's format and platform fields (short video, carousel, YouTube long, Pinterest pin, newsletter).",
+      "2. Dispatch to the matching child skill by format: short-video, carousel, youtube-long, pinterest-pin, or newsletter.",
+      "3. Pass through the one named SKU, one named buyer, the objection or question it answers, and any references from the Scout.",
+      "4. Collect the child skill's output and attach the shared claims-compliance pass before returning."
+    ],
+    "checks": [
+      "Every dispatch names exactly one child skill",
+      "No format is drafted without a named SKU and buyer"
+    ],
+    "output": "whatever the matched child skill returns, plus a claims-check verdict",
+    "used_by": [
+      "ORG-W02",
+      "ORG-W06",
+      "ORG-W16"
+    ],
+    "shared_with": [
+      "CREA"
+    ],
+    "skill_md": "---\nname: make-content (dispatcher)\nowner: ORG\nversion: 1\ninvoke_when: a calendar slot, approved idea or repurposing job needs a real draft written\ninputs: calendar slot or idea, format, platform, brand voice file, claims tiers, one named SKU, one named buyer\noutputs: the matched child skill's draft plus a claims-check verdict\n---\n# Make organic content (dispatcher)\n\n## Purpose\nRoute a content task to the one child skill built for its format, instead of one generic writer trying to do video, carousel, long-form, Pinterest and email equally well. This is the parent node of the make-content family; it holds no drafting logic itself.\n\n## Steps\n1. Read the task's format and platform fields.\n2. Match to exactly one child: org/make-content/short-video, /carousel, /youtube-long, /pinterest-pin, or /newsletter.\n3. Pass the named SKU, named buyer, the objection or question the piece answers, brand voice file, claims tiers, and any Scout references straight through unchanged.\n4. Take the child's draft and run shared/claim-check before returning it to the calling workflow.\n5. If the task names a format with no child (a new platform), stop and hand a workflow proposal to a person instead of guessing a format.\n\n## Checks\n- Exactly one child skill is invoked per task.\n- No draft returns without a claims-check verdict attached.\n- A format with no matching child stops the run rather than improvising.\n\n## Output\nWhatever the matched child returns, wrapped with {claims_check_verdict}.\n\n## Example\nA calendar slot marked format: \"reel\", platform: \"instagram\" routes to org/make-content/short-video; a slot marked format: \"pin\" routes to org/make-content/pinterest-pin."
+  },
+  {
+    "id": "org/make-content/short-video",
+    "name": "Short-video script and shot list",
+    "parent": "org/make-content",
+    "invoke_when": "the calendar slot's format is a short vertical video (Reel, Short, TikTok-style)",
+    "select_by": {
+      "format": "short_video",
+      "platform": [
+        "instagram",
+        "youtube_shorts",
+        "facebook"
+      ]
+    },
+    "inputs_required": [
+      "brand voice file",
+      "claims tiers",
+      "one named SKU",
+      "one named buyer",
+      "references from the Scout (structure/mood only)"
+    ],
+    "steps": [
+      "1. Name the reaction, action or one-line takeaway the video proves in the first 3 seconds.",
+      "2. Write the hook (5-8 words, works with sound off, on screen by second 1).",
+      "3. Write the body: cut jargon, no stacked synonyms, one claim per line, each tier-checked.",
+      "4. Write the caption addressed to one named buyer, plus the CTA and destination link.",
+      "5. Build the shot list: shot number, framing, location, prop/SKU, on-screen text, estimated seconds, so it can be filmed without a second conversation.",
+      "6. Flag anything that needs the founder on camera, a specific location, or a prop not yet in stock."
+    ],
+    "checks": [
+      "Hook stands alone with sound off",
+      "Every factual line has a claims tier",
+      "Shot list totals match the target run time",
+      "Reading level under grade 10"
+    ],
+    "output": "{hook, body, caption, cta, claims_used[], shot_list[{shot_no, framing, location, prop, on_screen_text, seconds}], flags[]}",
+    "used_by": [
+      "ORG-W02",
+      "ORG-W06",
+      "ORG-W16"
+    ],
+    "shared_with": [
+      "CREA"
+    ],
+    "skill_md": "---\nname: make-content/short-video\nowner: ORG\nversion: 1\ninvoke_when: the task's format is a short vertical video (Reel, Short, TikTok-style)\ninputs: brand voice file, claims tiers, one named SKU, one named buyer, Scout references (structure/mood only)\noutputs: hook, body, caption, CTA, claims list, a filmable shot list\n---\n# Short-video script and shot list\n\n## Purpose\nTurn one SKU and one buyer into a script a camera-phone crew can film without asking a follow-up question, sized for 15-45 seconds.\n\n## Steps\n1. Name the one reaction, action or takeaway the video proves in its first 3 seconds.\n2. Write the hook: 5-8 words, must work with sound off, appears on screen inside the first second.\n3. Write the body cutting jargon and repeated synonyms; one claim per line, each checked against the claims tiers.\n4. Write a caption addressed to one named buyer (never \"you guys\"), then the CTA and where it points.\n5. Build a shot list: shot number, framing (close/mid/wide), location, which SKU or prop, on-screen text, seconds per shot, totalling the target run time.\n6. Flag anything blocking a film day: founder availability, a location not yet scouted, a prop out of stock.\n\n## Checks\n- Hook works muted.\n- Every factual line traces to a claims tier.\n- Shot list seconds sum to the target length.\n- Below tenth-grade reading level.\n\n## Output\n{hook, body, caption, cta, claims_used[], shot_list[], flags[]}\n\n## Example\nHook: \"This stroller survived my building's broken lift.\" Shot 1: mid shot, lobby, stroller-v2, on-screen text \"Day 40\", 3s."
+  },
+  {
+    "id": "org/make-content/carousel",
+    "name": "Carousel script and slide list",
+    "parent": "org/make-content",
+    "invoke_when": "the calendar slot's format is a multi-slide image or text carousel (Instagram, LinkedIn)",
+    "select_by": {
+      "format": "carousel",
+      "platform": [
+        "instagram",
+        "linkedin"
+      ]
+    },
+    "inputs_required": [
+      "brand voice file",
+      "claims tiers",
+      "one named SKU or topic",
+      "one named buyer"
+    ],
+    "steps": [
+      "1. Pick the carousel's single argument (one comparison, one myth-bust, one how-to) so every slide serves one point.",
+      "2. Write slide 1 as a hook that states the argument's stakes, readable in under 2 seconds.",
+      "3. Write slides 2 to 7-9: one idea per slide, short lines, a consistent visual frame per slide (heading + supporting line).",
+      "4. Write the closing slide: recap plus one CTA (save, share, or a link in bio).",
+      "5. Write the caption expanding the argument for people who read captions, with the same claims applied.",
+      "6. Build the slide list for design: slide number, heading text, supporting text, image/icon direction."
+    ],
+    "checks": [
+      "Every slide has exactly one idea",
+      "Claims tiers checked per slide",
+      "Slide count stays between 5 and 9 for completion rate"
+    ],
+    "output": "{hook_slide, slides[{n, heading, supporting_text, image_direction}], closing_slide, caption, cta, claims_used[]}",
+    "used_by": [
+      "ORG-W02",
+      "ORG-W06"
+    ],
+    "shared_with": [
+      "CREA"
+    ],
+    "skill_md": "---\nname: make-content/carousel\nowner: ORG\nversion: 1\ninvoke_when: the task's format is a multi-slide carousel (Instagram or LinkedIn)\ninputs: brand voice file, claims tiers, one named SKU or topic, one named buyer\noutputs: hook slide, body slides, closing slide, caption, CTA, claims list, a design-ready slide list\n---\n# Carousel script and slide list\n\n## Purpose\nGive design a slide-by-slide brief for one argument (a comparison, a myth-bust, a how-to), sized to finish in 5-9 slides so swipe-through does not drop off.\n\n## Steps\n1. Pick the single argument the carousel makes. One carousel, one point.\n2. Write slide 1: the hook, readable in under 2 seconds, stating the stakes.\n3. Write slides 2 through 7-9: one idea per slide, short lines, one heading plus one supporting line each.\n4. Write the closing slide: a one-line recap and one CTA.\n5. Write the caption for readers who read captions before swiping; apply the same claims tiers.\n6. List every slide's heading, supporting text and image direction for the designer.\n\n## Checks\n- One idea per slide, no slide carrying two arguments.\n- Every factual line is claims-tier checked.\n- Total slides between 5 and 9.\n\n## Output\n{hook_slide, slides[], closing_slide, caption, cta, claims_used[]}\n\n## Example\nArgument: \"Why our hinge outlasts the ₹2,000 stroller.\" Slide 3 heading: \"200,000 fold cycles tested\", supporting: \"our lab number, dated March 2026\"."
+  },
+  {
+    "id": "org/make-content/youtube-long",
+    "name": "YouTube long-form script and structure",
+    "parent": "org/make-content",
+    "invoke_when": "the calendar slot or channel plan calls for a long-form YouTube video (over 3 minutes)",
+    "select_by": {
+      "format": "youtube_long",
+      "platform": "youtube"
+    },
+    "inputs_required": [
+      "brand voice file",
+      "claims tiers",
+      "topic or SKU",
+      "target watch-time goal",
+      "keyword/question map for the title"
+    ],
+    "steps": [
+      "1. Pick the one search or watch intent this video serves (a how-to, a comparison, a founder story), from org/buyer-question-mapping.",
+      "2. Write the first 15 seconds: state what the viewer gets and why it is worth the runtime, no slow intro.",
+      "3. Outline chapters (3-6) with a timestamp label each, so the structure survives editing.",
+      "4. Write the script body per chapter, one claim per line, tier-checked.",
+      "5. Write the title (keyword-forward, under 60 characters) and description (first 2 lines carry the hook and keyword, links below).",
+      "6. Write tag suggestions and an end-screen/CTA plan (subscribe, next video, or site link)."
+    ],
+    "checks": [
+      "First 15 seconds states the payoff",
+      "Chapters cover the full runtime with no gap",
+      "Title and first description line both carry the target keyword"
+    ],
+    "output": "{title, description, chapters[{timestamp_label, heading}], script_by_chapter[], tags[], end_screen_plan, claims_used[]}",
+    "used_by": [
+      "ORG-W02",
+      "ORG-W15",
+      "ORG-W16"
+    ],
+    "shared_with": [
+      "CREA"
+    ],
+    "skill_md": "---\nname: make-content/youtube-long\nowner: ORG\nversion: 1\ninvoke_when: the task calls for a long-form YouTube video (over 3 minutes)\ninputs: brand voice file, claims tiers, topic or SKU, watch-time goal, buyer-question map\noutputs: title, description, chaptered script, tags, end-screen plan\n---\n# YouTube long-form script and structure\n\n## Purpose\nLong-form succeeds or fails on retention curve, not hook alone; this skill forces a payoff-first open and a chapter structure that survives the edit, distinct from a short-video hook script.\n\n## Steps\n1. Pick the single search or watch intent the video serves, sourced from org/buyer-question-mapping (a how-to, a comparison, a founder story).\n2. Write the first 15 seconds stating exactly what the viewer gets and why the runtime is worth it.\n3. Outline 3-6 chapters with a timestamp label each.\n4. Write the script per chapter, one claim per line, tier-checked.\n5. Write the title (keyword-forward, under 60 characters) and description, keyword in the first two lines, links after.\n6. Suggest tags and an end-screen plan (subscribe, next video, or a site link).\n\n## Checks\n- The payoff is stated in the first 15 seconds.\n- Chapters cover the whole runtime without a gap.\n- Title and first description line both carry the target keyword.\n\n## Output\n{title, description, chapters[], script_by_chapter[], tags[], end_screen_plan, claims_used[]}\n\n## Example\nTitle: \"Stroller hinge test: 6 months, 3 Indian cities\" - chapter 2 \"0:45 The pothole test\" with its own script block and one tiered claim."
+  },
+  {
+    "id": "org/make-content/pinterest-pin",
+    "name": "Pinterest pin and board strategy",
+    "parent": "org/make-content",
+    "invoke_when": "the calendar slot's format is a Pinterest pin, or a monthly board and trend review is due",
+    "select_by": {
+      "format": "pinterest_pin",
+      "platform": "pinterest",
+      "scope": [
+        "pin",
+        "board"
+      ]
+    },
+    "inputs_required": [
+      "approved image or short video for the pin",
+      "keyword/question map",
+      "board architecture",
+      "brand voice file"
+    ],
+    "steps": [
+      "1. Treat the task as search content: pick the exact search phrase a buyer would type (not a caption line).",
+      "2. Write the pin title (under 100 characters, keyword-first) and description (keyword-rich, natural sentence, not a keyword stack).",
+      "3. Pick or create the destination board matching the search intent; keep board titles keyword-matched to buyer search terms, not internal jargon.",
+      "4. Set the destination link to a live, matching page (product or guide), never the homepage.",
+      "5. For scope=board (monthly): review board performance, retire or merge boards with no impressions, and add one new board for a rising search term."
+    ],
+    "checks": [
+      "Pin title and description both carry the target search phrase",
+      "Destination link is live and matches the pin's promise",
+      "No board created without a matching search-volume signal"
+    ],
+    "output": "{scope, pin: {title, description, board, destination_url}, board_review: {boards[], retire[], add[]}}",
+    "used_by": [
+      "ORG-W02",
+      "ORG-W12"
+    ],
+    "shared_with": [],
+    "skill_md": "---\nname: make-content/pinterest-pin\nowner: ORG\nversion: 1\ninvoke_when: a task needs a single pin drafted, or the monthly board and trend review is due\ninputs: approved image/video, keyword and question map, current board architecture, brand voice file\noutputs: pin title/description/board/destination, or a board review with retire/add list\n---\n# Pinterest pin and board strategy\n\n## Purpose\nPinterest is a visual search engine, not a feed; this skill writes for the search box first, and separately keeps the board architecture matched to how buyers actually search, reviewed monthly.\n\n## Steps\n1. Identify the exact phrase a buyer would type into Pinterest search for this image or topic.\n2. Write the pin title (under 100 characters, keyword first) and a natural-sentence, keyword-rich description, never a keyword stack.\n3. Pick or create the matching board; board titles use buyer search terms, not internal category names.\n4. Set the destination link to a live page that matches the pin's promise; never the homepage.\n5. Monthly (scope: board): pull board-level impressions, retire or merge boards with none, and add one board for a rising search term found in the keyword map.\n\n## Checks\n- Title and description both carry the target search phrase.\n- Destination link is live and on-topic.\n- No board created without a supporting search-volume signal.\n\n## Output\n{scope, pin{}, board_review{}}\n\n## Example\nPin title: \"Foldable baby stroller for Indian apartments\" -> board \"Small-space baby gear ideas\", linking to the collection page, not the homepage."
+  },
+  {
+    "id": "org/make-content/newsletter",
+    "name": "Newsletter issue draft",
+    "parent": "org/make-content",
+    "invoke_when": "the calendar slot or the newsletter's publishing cadence calls for one issue",
+    "select_by": {
+      "format": "newsletter",
+      "platform": "email_public"
+    },
+    "inputs_required": [
+      "editorial calendar slot",
+      "brand voice file",
+      "claims tiers",
+      "prior issue performance"
+    ],
+    "steps": [
+      "1. Confirm this is the public organic/thought-leadership newsletter, not lifecycle CRM email (Life's domain); stop and hand off if the task is a promo or flow email.",
+      "2. Pick the issue's single editorial idea (a story, a teardown, a founder note), not a grab-bag of links.",
+      "3. Write the subject line (under 50 characters, curiosity or benefit, no clickbait that the body cannot pay off).",
+      "4. Write the body in short sections with one idea each, a first-hand fact from the founder or team, and claims tier-checked.",
+      "5. Write one clear CTA (reply, read more, or a single product mention), never more than one competing CTA.",
+      "6. Note the send day/time against the prior 4 issues' open pattern."
+    ],
+    "checks": [
+      "Task confirmed as public newsletter, not lifecycle email",
+      "Subject line matches what the body delivers",
+      "Exactly one CTA"
+    ],
+    "output": "{subject, preview_text, body_sections[], cta, claims_used[], send_recommendation}",
+    "used_by": [
+      "ORG-W02",
+      "ORG-W15"
+    ],
+    "shared_with": [
+      "LIFE"
+    ],
+    "skill_md": "---\nname: make-content/newsletter\nowner: ORG\nversion: 1\ninvoke_when: the public organic newsletter's cadence calls for one issue\ninputs: editorial calendar slot, brand voice file, claims tiers, prior issue performance\noutputs: subject, preview text, body sections, one CTA, claims list, send recommendation\n---\n# Newsletter issue draft\n\n## Purpose\nDraft one issue of the brand's own public newsletter (Substack/Beehiiv style thought-leadership or editorial content), kept distinct from Life's lifecycle CRM email, which runs on triggers and flows rather than editorial cadence.\n\n## Steps\n1. Confirm the task is the public newsletter. If it is a promotional or flow email, stop and route it to the Lifecycle specialist instead.\n2. Pick one editorial idea for the issue: a story, a teardown, a founder note. Never a grab-bag of unrelated links.\n3. Write the subject line, under 50 characters, that the body actually pays off.\n4. Write short body sections, one idea per section, with at least one first-hand fact the founder or team supplied, every factual line tier-checked.\n5. Write exactly one CTA; a second competing CTA is cut.\n6. Recommend a send day/time based on the last 4 issues' open pattern.\n\n## Checks\n- Confirmed as public newsletter, not CRM email.\n- Subject line matches the body.\n- One CTA only.\n\n## Output\n{subject, preview_text, body_sections[], cta, claims_used[], send_recommendation}\n\n## Example\nSubject: \"The hinge that broke, and what we changed\" - one CTA: reply with your own pothole story."
+  },
+  {
+    "id": "org/production-planning",
+    "name": "Production planning: founder camera time and batching",
+    "parent": null,
+    "invoke_when": "the monthly calendar is built and needs a real shoot schedule, or the founder's on-camera capacity for the month is unknown",
+    "select_by": {
+      "task": "production-plan"
+    },
+    "inputs_required": [
+      "draft calendar",
+      "founder's stated available days",
+      "current lighting/location setup"
+    ],
+    "steps": [
+      "1. Read the draft calendar's slots needing the founder on camera vs slots a team member can film alone.",
+      "2. Confirm the founder's available shoot days for the month; if none confirmed, ask before scheduling founder-dependent slots.",
+      "3. Set fixed batching days (same days each week/month) so filming does not depend on finding a free hour.",
+      "4. Set the standard lighting/backdrop setup for routine posts, and flag which slots justify raising production stakes (a real location change) based on which format historically outperformed.",
+      "5. Build fast-turnaround formats (phone, one location, under 20 minutes) for days the founder is the only person who can film.",
+      "6. Return the shoot schedule mapped to calendar slots, with what to bring/wear/say per session."
+    ],
+    "checks": [
+      "Every founder-dependent slot has a confirmed date",
+      "Batching days repeat on a fixed cadence",
+      "No shoot day lacks a lighting/location note"
+    ],
+    "output": "{shoot_schedule[{date, slots[], location, lighting, needs_founder}], fast_turnaround_formats[]}",
+    "used_by": [
+      "ORG-W02"
+    ],
+    "shared_with": [],
+    "skill_md": "---\nname: production-planning\nowner: ORG\nversion: 1\ninvoke_when: the monthly calendar needs a real shoot schedule, or founder camera capacity is unconfirmed\ninputs: draft calendar, founder's stated available days, current lighting/location setup\noutputs: shoot schedule mapped to calendar slots, fast-turnaround formats for founder-only days\n---\n# Production planning: founder camera time and batching\n\n## Purpose\nCombine two practical constraints into one plan: how much the founder can be on camera this month, and fixed batching days the team can hold without chasing a free hour, so the calendar does not stall on logistics.\n\n## Steps\n1. Split calendar slots into founder-dependent and team-filmable.\n2. Confirm the founder's available days for the month; a founder-dependent slot with no confirmed date is flagged, not scheduled.\n3. Set fixed batching days on a repeating cadence.\n4. Set the default lighting/backdrop for routine posts; flag any slot where raising production stakes (a real location) is justified by past performance of that format.\n5. Build a fast-turnaround format (single phone, one location, under 20 minutes) for days only the founder can film.\n6. Map each slot to a date, location and lighting note.\n\n## Checks\n- Every founder-dependent slot has a confirmed date or is flagged, not silently scheduled.\n- Batching days repeat on a fixed pattern.\n- Every shoot day has a lighting/location note.\n\n## Output\n{shoot_schedule[], fast_turnaround_formats[]}\n\n## Example\nBatching day: first Tuesday of the month, 4 slots, standard kitchen-counter lighting; founder-only slot on the 14th uses the fast-turnaround format because no team member is free that day."
+  },
+  {
+    "id": "org/format-design",
+    "name": "Idea supply and repeatable format design",
+    "parent": null,
+    "invoke_when": "the idea bank is running low, or a one-off post clearly outperformed and could repeat, or weekly story/teardown mining is due",
+    "select_by": {
+      "task": [
+        "idea-mining",
+        "teardown",
+        "format-design"
+      ]
+    },
+    "inputs_required": [
+      "comment/DM export",
+      "product facts sheet",
+      "founder story log",
+      "recent post performance",
+      "competitor/category posts (public)"
+    ],
+    "steps": [
+      "1. Mine comments and DMs for recurring questions, jokes, or requests that could become a post.",
+      "2. Mine product facts (specs, sourcing, factory stories) and the founder story log for first-hand material no competitor can copy.",
+      "3. Tear down 5-10 competitor or category posts/videos for structure only (pacing, hook type, shot count) - never their words, logos or faces.",
+      "4. Check recent post performance for a one-off that beat the account's baseline by a clear margin.",
+      "5. If found, name the format, write its repeatable template (fixed structure, variable SKU/buyer), and note what makes it runnable without the founder.",
+      "6. Add every new idea and format to the idea bank with its source and tags."
+    ],
+    "checks": [
+      "Every teardown entry names structure only, no copied words/logos/faces",
+      "A new format names what makes it repeatable without the founder",
+      "Idea bank entries carry a source and date"
+    ],
+    "output": "{idea_bank_additions[{idea, source, tags}], teardown_notes[{post, structure, mood, why_it_fits}], new_format: {name, template, repeatable_without_founder}}",
+    "used_by": [
+      "ORG-W03"
+    ],
+    "shared_with": [],
+    "skill_md": "---\nname: format-design\nowner: ORG\nversion: 1\ninvoke_when: the idea bank runs low, a one-off post clearly outperforms, or weekly mining/teardown is due\ninputs: comment/DM export, product facts sheet, founder story log, recent post performance, public competitor posts\noutputs: idea bank additions, structure-only teardown notes, a new repeatable format when one qualifies\n---\n# Idea supply and repeatable format design\n\n## Purpose\nKeep the content pipeline fed from three sources the brand actually owns (comments, product facts, founder stories) plus structure-only competitor signal, and turn a proven one-off into a named series the team can run without the founder.\n\n## Steps\n1. Mine comments and DMs for recurring questions, jokes or requests.\n2. Mine product facts and the founder story log for first-hand material.\n3. Tear down 5-10 competitor or category posts for pacing, hook type and shot count only; never copy their words, logos, products or faces.\n4. Check recent performance for a post that clearly beat the account baseline.\n5. If one qualifies, name the format and write a fixed template with a variable SKU/buyer slot, noting exactly what a team member (not the founder) needs to run it.\n6. Log every new idea and format with its source and date.\n\n## Checks\n- Teardown notes carry structure and mood only, never copied material.\n- A new format states what makes it runnable without the founder.\n- Every idea has a source and date.\n\n## Output\n{idea_bank_additions[], teardown_notes[], new_format{}}\n\n## Example\nFormat \"60-second unboxing reaction\": fixed structure (box open, first reaction, one spec called out, CTA), any team member can film it; sourced from a founder post that beat baseline reach by 4x on 2 Sep."
+  },
+  {
+    "id": "org/community-response-drafting",
+    "name": "Community comment and DM response drafting",
+    "parent": null,
+    "invoke_when": "a new batch of comments or DMs is waiting, daily",
+    "select_by": {
+      "task": "community-reply"
+    },
+    "inputs_required": [
+      "comment/DM queue",
+      "brand voice file",
+      "policy/FAQ answers",
+      "current stock and shipping status"
+    ],
+    "steps": [
+      "1. Pull the queue and sort by type: product question, complaint, praise, spam/bot, sales-ready lead.",
+      "2. For each product question, draft a specific reply (not a generic thanks) with the real answer and, where relevant, a link to the matching page.",
+      "3. For each complaint, draft a reply that acknowledges specifically and offers a real next step (DM, order lookup, replacement policy), never a scripted apology alone.",
+      "4. For a sales-ready lead, draft the reply plus the DM hand-off line into any comment-to-DM funnel already approved.",
+      "5. Check any DM automation in use against the current platform policy (Meta, Instagram) for rate limits and disclosure rules before it sends.",
+      "6. Queue drafts for human send (human_assist); flag anything needing a founder decision (PR risk, refund exception, legal threat)."
+    ],
+    "checks": [
+      "No generic templated reply on a specific product question",
+      "Every complaint reply names a concrete next step",
+      "DM automation checked against current platform policy before use"
+    ],
+    "output": "{drafts[{comment_id, type, draft_reply, next_step}], flagged_for_founder[]}",
+    "used_by": [
+      "ORG-W04"
+    ],
+    "shared_with": [],
+    "skill_md": "---\nname: community-response-drafting\nowner: ORG\nversion: 1\ninvoke_when: a new batch of comments or DMs is waiting, daily\ninputs: comment/DM queue, brand voice file, policy/FAQ answers, current stock and shipping status\noutputs: drafted replies with a concrete next step, flagged items for the founder\n---\n# Community comment and DM response drafting\n\n## Purpose\nDraft fast, specific replies so a human sends within the hour, not a generic \"thanks so much!\" that answers nothing, while keeping any DM automation inside current platform rules.\n\n## Steps\n1. Sort the queue: product question, complaint, praise, spam/bot, sales-ready lead.\n2. Draft a specific answer to every product question, linking to the matching page where relevant.\n3. Draft complaint replies that acknowledge the specific issue and give a real next step (order lookup, replacement policy, DM), not a scripted apology.\n4. Draft the reply plus DM hand-off line for sales-ready leads, using any already-approved comment-to-DM funnel.\n5. Check DM automation in use against the current platform's rate-limit and disclosure policy before it fires again.\n6. Queue every draft for a human to send; flag PR risk, refund exceptions or legal threats for the founder instead of drafting a reply.\n\n## Checks\n- No generic reply on a specific question.\n- Every complaint reply names a next step.\n- DM automation policy checked, not assumed.\n\n## Output\n{drafts[], flagged_for_founder[]}\n\n## Example\nComment \"does this fit a Maruti Swift boot?\" gets a specific reply with the folded dimensions and a link to the size guide, not \"thanks for reaching out!\"."
+  },
+  {
+    "id": "org/funnel-design",
+    "name": "Comment-to-DM and lead-magnet funnel design",
+    "parent": null,
+    "invoke_when": "the founder wants a way to turn strangers into owned contacts, or a post is going viral and needs a route into an owned list",
+    "select_by": {
+      "task": "funnel-design"
+    },
+    "inputs_required": [
+      "offer or lead magnet candidate",
+      "pillar/content map",
+      "platform DM-automation policy",
+      "brand brain: what the buyer actually wants"
+    ],
+    "steps": [
+      "1. Confirm the lead magnet matches something the avatar has actually asked for (from org/buyer-question-mapping), not a generic discount code.",
+      "2. Design the comment-keyword-to-DM flow: trigger keyword, auto-reply copy, hand-off point to a human or a link.",
+      "3. Check the flow against current Meta/Instagram DM-automation policy for rate limits and required disclosure.",
+      "4. Design the routing plan for a viral spike: at what comment/view velocity the DM flow needs a human on standby, and the overflow message if volume exceeds capacity.",
+      "5. Map where the captured contact lands (WhatsApp list, email list, CRM) and hand off to Lifecycle for what happens after capture.",
+      "6. Package as a founder_gate card: what it automates, what it costs, and the platform-policy risk if any."
+    ],
+    "checks": [
+      "Lead magnet traces to a real, evidenced buyer want",
+      "DM automation checked against current platform policy",
+      "Overflow plan exists for a viral spike"
+    ],
+    "output": "{lead_magnet, flow: {trigger_keyword, auto_reply, handoff_point}, policy_check, overflow_plan, destination_handoff}",
+    "used_by": [
+      "ORG-W05"
+    ],
+    "shared_with": [
+      "LIFE"
+    ],
+    "skill_md": "---\nname: funnel-design\nowner: ORG\nversion: 1\ninvoke_when: the founder wants strangers turned into owned contacts, or a post risks going viral without a capture path\ninputs: offer/lead-magnet candidate, pillar map, current DM-automation policy, buyer-question map\noutputs: comment-to-DM flow spec, policy check, viral-spike overflow plan, destination handoff\n---\n# Comment-to-DM and lead-magnet funnel design\n\n## Purpose\nDesign how a post turns a stranger into an owned contact without breaking platform policy or overwhelming a human at the moment a post goes viral.\n\n## Steps\n1. Confirm the lead magnet answers something the avatar has actually asked for, sourced from org/buyer-question-mapping, not a generic percent-off code.\n2. Design the comment-keyword-to-DM flow: the trigger keyword, the auto-reply text, and where it hands off to a human or a link.\n3. Check the flow against current Meta/Instagram DM-automation policy for rate limits and disclosure requirements.\n4. Design an overflow plan: the comment/view velocity that needs a human on standby, and what the flow says if volume exceeds capacity.\n5. Map where the captured contact lands and hand the after-capture sequence to the Lifecycle specialist.\n6. Package the whole design as a founder-gate card naming cost and platform-policy risk.\n\n## Checks\n- Lead magnet traces to an evidenced buyer want.\n- Automation checked against current policy, not last year's.\n- An overflow plan exists before launch.\n\n## Output\n{lead_magnet, flow{}, policy_check, overflow_plan, destination_handoff}\n\n## Example\nTrigger keyword \"SIZE\" auto-DMs the size guide link and asks one qualifying question, with a human handoff after 2 replies; overflow message queues a reply within 4 hours past 200 comments/hour."
+  },
+  {
+    "id": "org/ugc-repurposing",
+    "name": "UGC and review repurposing",
+    "parent": null,
+    "invoke_when": "weekly, when new verified reviews, photos or unboxing moments are available",
+    "select_by": {
+      "task": "ugc-repurpose"
+    },
+    "inputs_required": [
+      "verified review/photo export",
+      "creator content from seeding program",
+      "usage-rights confirmation",
+      "claims tiers"
+    ],
+    "steps": [
+      "1. Pull new verified reviews, photos and unboxing videos since the last run, filtered to those with a star rating and real text, not just a star.",
+      "2. Check usage rights: only repurpose content the buyer or creator agreement covers; flag anything without confirmed rights for founder permission.",
+      "3. Pick the strongest quotes and images per SKU (specific detail beats generic praise).",
+      "4. Turn each into a postable draft: a quote-card, a stitched unboxing reel, or a before/after image set, crediting the source per the agreement.",
+      "5. Run the claims-compliance check on any restated customer claim (a customer's opinion is not automatically an approved brand claim).",
+      "6. Add each finished draft to the calendar and the asset library, tagged by SKU and funnel stage."
+    ],
+    "checks": [
+      "No content repurposed without confirmed usage rights",
+      "Customer claims re-stated as brand claims are tier-checked, not assumed true",
+      "Every draft tagged by SKU and funnel stage"
+    ],
+    "output": "{drafts[{type, sku, source_credit, content}], flagged_rights_issues[]}",
+    "used_by": [
+      "ORG-W06"
+    ],
+    "shared_with": [
+      "CREA"
+    ],
+    "skill_md": "---\nname: ugc-repurposing\nowner: ORG\nversion: 1\ninvoke_when: weekly, when new verified reviews, photos or unboxing moments are available\ninputs: verified review/photo export, creator seeding output, usage-rights confirmation, claims tiers\noutputs: postable drafts (quote cards, stitched reels, before/after sets) tagged by SKU\n---\n# UGC and review repurposing\n\n## Purpose\nTurn real customer proof into content without ever posting something the brand does not have the right to use, and without letting a customer's opinion slip through as an unchecked brand claim.\n\n## Steps\n1. Pull new verified reviews, photos and unboxing videos since the last run; require real text or footage, not a bare star rating.\n2. Check usage rights against the buyer or creator agreement; anything unconfirmed goes to the founder before use, not into a draft.\n3. Pick the strongest, most specific quotes and images per SKU.\n4. Build the draft (quote card, stitched reel, before/after set) with correct source credit.\n5. Run the claims-compliance gate on any restated customer claim; a customer's opinion is not automatically an approved brand claim.\n6. Add the finished draft to the calendar and asset library, tagged by SKU and funnel stage.\n\n## Checks\n- Usage rights confirmed before use.\n- Restated customer claims pass the claims gate.\n- Every draft tagged by SKU and funnel stage.\n\n## Output\n{drafts[], flagged_rights_issues[]}\n\n## Example\nA 5-star review quoting \"survived 3 monsoons\" becomes a quote card credited \"verified buyer, Pune, Aug 2026\", checked because \"survived 3 monsoons\" is a durability claim needing a tier match."
+  },
+  {
+    "id": "org/destination-qa",
+    "name": "Pre-publish destination and funnel-stage QA",
+    "parent": null,
+    "invoke_when": "every time a post is scheduled, before it goes live",
+    "select_by": {
+      "task": "destination-qa"
+    },
+    "inputs_required": [
+      "scheduled post",
+      "its destination link or Story tag",
+      "live site status for that page"
+    ],
+    "steps": [
+      "1. Open the post's destination link or Story product tag.",
+      "2. Confirm the page is live (not 404, not a placeholder), matches the product or offer the post promises, and is in stock or shows an honest waitlist state.",
+      "3. Confirm price and any claimed offer on the post match the live page exactly.",
+      "4. Tag the post by funnel stage (awareness, consideration, decision, retention) for later reuse tracking.",
+      "5. If the destination fails any check, hold the post and flag the specific mismatch rather than publishing anyway."
+    ],
+    "checks": [
+      "Destination page confirmed live at the moment of check, not from a cached assumption",
+      "Price/offer match is exact, not approximate",
+      "Every post carries a funnel-stage tag before it can go live"
+    ],
+    "output": "{post_id, destination_status: pass|hold, mismatch_reason, funnel_stage_tag}",
+    "used_by": [
+      "ORG-W07"
+    ],
+    "shared_with": [
+      "CREA",
+      "MEDIA"
+    ],
+    "skill_md": "---\nname: destination-qa\nowner: ORG\nversion: 1\ninvoke_when: every time a post is scheduled, before it goes live\ninputs: the scheduled post, its destination link or Story tag, live site status for that page\noutputs: pass/hold verdict with the mismatch reason, and a funnel-stage tag\n---\n# Pre-publish destination and funnel-stage QA\n\n## Purpose\nStop a post from publishing to a dead link, an out-of-stock page shown as in-stock, or a price that no longer matches, and tag every post by funnel stage so it can be tracked and reused later.\n\n## Steps\n1. Open the post's destination link or Story product tag directly; never assume it still works from when it was set up.\n2. Confirm the page is live, matches the promised product or offer, and shows an honest stock or waitlist state.\n3. Confirm the price or offer named in the post matches the live page exactly.\n4. Tag the post's funnel stage: awareness, consideration, decision, or retention.\n5. Hold any post that fails a check and name the exact mismatch; never publish on a guess that it is probably still fine.\n\n## Checks\n- Destination checked live at the moment, not cached.\n- Price/offer match is exact.\n- Every passing post carries a funnel-stage tag.\n\n## Output\n{post_id, destination_status, mismatch_reason, funnel_stage_tag}\n\n## Example\nA post promising \"20% off, link in bio\" is held because the linked collection page shows the discount ended 2 days ago."
+  },
+  {
+    "id": "org/content-lifecycle",
+    "name": "Content reuse and retirement tracking",
+    "parent": null,
+    "invoke_when": "weekly, to review the content library's shelf life",
+    "select_by": {
+      "task": "content-lifecycle"
+    },
+    "inputs_required": [
+      "content/asset library with tags and publish dates",
+      "cross-channel usage log (PDP, email, DM, post-purchase)"
+    ],
+    "steps": [
+      "1. Pull every asset with its original publish date, SKU tag, and format.",
+      "2. Check each asset's shelf-life rule (seasonal content, price-specific content, stock-dependent content expire faster than evergreen how-tos).",
+      "3. For assets still valid, find unused reuse slots: PDP gallery, email, DM auto-reply, post-purchase flow.",
+      "4. For assets past shelf life, mark for retirement and note where they are still live (so retirement removes them everywhere, not just the original post).",
+      "5. Return the reuse list and the retirement list together, so no asset is retired from one place while still wrongly live in another."
+    ],
+    "checks": [
+      "Every asset has a shelf-life rule applied, not a default",
+      "Retirement list includes every surface the asset appears on",
+      "Price- or stock-specific content is never left live past its accuracy window"
+    ],
+    "output": "{reuse_candidates[{asset_id, suggested_surface}], retire_list[{asset_id, live_surfaces[], reason}]}",
+    "used_by": [
+      "ORG-W08"
+    ],
+    "shared_with": [
+      "LIFE",
+      "SITE"
+    ],
+    "skill_md": "---\nname: content-lifecycle\nowner: ORG\nversion: 1\ninvoke_when: weekly, to review the content library's shelf life\ninputs: content/asset library with tags and dates, cross-channel usage log\noutputs: reuse candidates by surface, a retirement list naming every surface an asset still lives on\n---\n# Content reuse and retirement tracking\n\n## Purpose\nGet more use out of content that already works (PDP, email, DM, post-purchase) before it is created new, and pull down content that has gone stale (a since-changed price, an ended season, a discontinued SKU) from every surface it reached, not just the original post.\n\n## Steps\n1. Pull every library asset with publish date, SKU tag and format.\n2. Apply the right shelf-life rule: seasonal and price-specific content expires fast, evergreen how-tos last.\n3. For still-valid assets, find an unused reuse slot: PDP gallery, email, DM auto-reply, post-purchase flow.\n4. For expired assets, mark for retirement and list every surface it currently appears on.\n5. Return both lists together so retirement is complete, not partial.\n\n## Checks\n- Every asset has a shelf-life rule applied, never a default guess.\n- Retirement covers every live surface, not just the origin post.\n- Price- or stock-specific content never stays live past its accuracy window.\n\n## Output\n{reuse_candidates[], retire_list[]}\n\n## Example\nA Diwali gifting reel from last year is retired from the PDP gallery and the post-purchase flow, both places it had been reused, not just the original Instagram post."
+  },
+  {
+    "id": "org/creator-seeding-and-discovery",
+    "name": "Creator discovery, seeding and UGC briefs",
+    "parent": null,
+    "invoke_when": "monthly for the seeding batch, continuously for discovery scanning",
+    "select_by": {
+      "task": [
+        "seeding",
+        "discovery"
+      ]
+    },
+    "inputs_required": [
+      "product inventory available for gifting",
+      "claims tiers",
+      "past creator performance",
+      "founder budget/scope for seeding"
+    ],
+    "steps": [
+      "1. (discovery) Scan public posts on Instagram, YouTube and Pinterest for creators already discussing the category or named competitors without mentioning this brand.",
+      "2. Score each candidate on category fit, audience size, engagement rate, and whether their existing content style matches the brand's visual world.",
+      "3. Draft a personalized outreach note per candidate referencing their actual content, never a copy-paste template; batch for founder approval weekly.",
+      "4. (seeding) For approved creators, build the gifting/sampling brief: SKU, quantity, what to show, deadline, usage-rights ask, disclosure requirement.",
+      "5. Track shipment, content received, and usage-rights capture per creator; flag any creator who received product and did not deliver content past the deadline.",
+      "6. Feed delivered content into the UGC library (org/ugc-repurposing) with rights status attached."
+    ],
+    "checks": [
+      "No outreach note is a copy-paste template",
+      "Every seeded creator has a usage-rights ask on file before shipment",
+      "Non-delivery is tracked and flagged, not silently dropped"
+    ],
+    "output": "{discovery_candidates[{handle, platform, fit_score, outreach_draft}], seeding_briefs[{creator, sku, deadline, rights_ask}], delivery_status[]}",
+    "used_by": [
+      "ORG-W09"
+    ],
+    "shared_with": [
+      "MEDIA"
+    ],
+    "skill_md": "---\nname: creator-seeding-and-discovery\nowner: ORG\nversion: 1\ninvoke_when: monthly for the seeding batch, continuously for discovery scanning\ninputs: gifting inventory, claims tiers, past creator performance, founder seeding budget/scope\noutputs: scored discovery candidates with personalized outreach drafts, seeding briefs, delivery tracking\n---\n# Creator discovery, seeding and UGC briefs\n\n## Purpose\nKeep the organic (unpaid or product-only) creator pipeline running: find creators already talking about the category who have not mentioned the brand, and manage gifting through to delivered content, distinct from any paid influencer deal.\n\n## Steps\n1. Scan public Instagram, YouTube and Pinterest posts for creators discussing the category or named competitors without mentioning this brand.\n2. Score each on category fit, audience size, engagement rate and visual-world match.\n3. Draft a personalized outreach note referencing their actual content; batch every candidate for founder approval, never send without it.\n4. For approved creators, build the seeding brief: SKU, quantity, what to show, deadline, usage-rights ask, disclosure requirement.\n5. Track shipment and delivered content per creator; flag anyone who received product and missed the deadline.\n6. Hand delivered content to org/ugc-repurposing with its rights status attached.\n\n## Checks\n- No template outreach; every note references real content.\n- Usage rights asked for before shipment, every time.\n- Non-delivery is tracked and flagged, not dropped silently.\n\n## Output\n{discovery_candidates[], seeding_briefs[], delivery_status[]}\n\n## Example\nCreator @city_parent_diaries posted about strollers generally without naming any brand; outreach references their specific pothole-test post and offers stroller-v2 for an honest review, disclosure required."
+  },
+  {
+    "id": "org/organic-performance-read",
+    "name": "Organic content performance read",
+    "parent": null,
+    "invoke_when": "monthly",
+    "select_by": {
+      "task": "performance-read"
+    },
+    "inputs_required": [
+      "platform analytics export per account",
+      "metric contract fields: organic_sessions, cvr_pdp_to_cart, hook_rate, hold_rate",
+      "content calendar with SKU/hook tags"
+    ],
+    "steps": [
+      "1. Pull SKU- and hook-level performance from the metric contract, not raw platform totals.",
+      "2. Compute the store's own baseline (median reach/engagement over the trailing 90 days) in code; compare each post against it, never against a generic benchmark.",
+      "3. Flag 'stranger-blind' content: high reach with no lift in organic_sessions or cvr_pdp_to_cart, meaning it entertained but did not sell.",
+      "4. Flag broad low-value hits: high view count concentrated outside the avatar's stated demographic, if platform data allows.",
+      "5. Identify the top 3 hooks/formats by the store's own conversion signal, not by raw engagement.",
+      "6. Write the monthly report (shared/report-section): what we posted, what it did, what is next."
+    ],
+    "checks": [
+      "Every comparison uses the store's own baseline, not an industry number",
+      "Missing metric fields show as unavailable",
+      "Report never leads with a vanity total"
+    ],
+    "output": "{report: {did[], did_it[], next[]}, stranger_blind_flags[], top_hooks[]}",
+    "used_by": [
+      "ORG-W10"
+    ],
+    "shared_with": [],
+    "skill_md": "---\nname: organic-performance-read\nowner: ORG\nversion: 1\ninvoke_when: monthly\ninputs: platform analytics export, metric contract (organic_sessions, cvr_pdp_to_cart, hook_rate, hold_rate), tagged calendar\noutputs: monthly report against the store's own baseline, stranger-blind flags, top hooks by conversion\n---\n# Organic content performance read\n\n## Purpose\nJudge organic content against what this store's own account normally does and whether it moved a buyer, not against industry benchmarks or raw view counts.\n\n## Steps\n1. Pull SKU- and hook-level numbers from the metric contract.\n2. Compute this account's own trailing-90-day baseline in code; every post is judged against it.\n3. Flag stranger-blind content: high reach with no lift in sessions or cart adds, meaning it entertained without selling.\n4. Flag broad low-value hits landing outside the avatar's demographic where platform data allows the check.\n5. Rank the top 3 hooks or formats by the store's own conversion signal, not raw engagement.\n6. Write the report in the shared report-section shape: what we did, what it did, what is next.\n\n## Checks\n- Comparisons use the store's own baseline.\n- Missing fields read as unavailable, never 0.\n- No vanity total leads the report.\n\n## Output\n{report{}, stranger_blind_flags[], top_hooks[]}\n\n## Example\nA reel with 500k views but no lift in organic_sessions for its tagged SKU is flagged stranger-blind; a lower-view post that doubled cvr_pdp_to_cart on its SKU ranks in the top 3."
+  },
+  {
+    "id": "org/social-listening-digest",
+    "name": "Social listening for brand, competitor and category trends",
+    "parent": null,
+    "invoke_when": "continuous monitoring, rolled into a weekly digest",
+    "select_by": {
+      "task": "social-listening"
+    },
+    "inputs_required": [
+      "brand and competitor name list",
+      "category keyword list",
+      "public social/review/forum sources"
+    ],
+    "steps": [
+      "1. Monitor mentions of the brand, named competitors and category terms across public social platforms, review sites and forums.",
+      "2. Classify each mention: sentiment, topic (product, price, service, comparison), and whether it is a postable idea or a risk signal.",
+      "3. Track week-over-week trend shifts, not single mentions, to avoid reacting to noise.",
+      "4. Draft the weekly digest: top trends, notable sentiment shifts, and 3-5 postable ideas sourced from real conversation.",
+      "5. Route anything reading as a PR or reputation risk straight to the founder, separate from the digest."
+    ],
+    "checks": [
+      "Trend claims are based on a week-over-week count, not one post",
+      "Every postable idea traces to a quoted, dated mention",
+      "Risk signals are routed same-day, not held for the weekly digest"
+    ],
+    "output": "{digest: {trends[], sentiment_shift, postable_ideas[]}, risk_flags[]}",
+    "used_by": [
+      "ORG-W11"
+    ],
+    "shared_with": [
+      "BRAND",
+      "MEDIA"
+    ],
+    "skill_md": "---\nname: social-listening-digest\nowner: ORG\nversion: 1\ninvoke_when: continuous monitoring, rolled into a weekly digest\ninputs: brand and competitor name list, category keyword list, public social/review/forum sources\noutputs: weekly digest of trends and sentiment shifts, postable ideas, same-day risk flags\n---\n# Social listening for brand, competitor and category trends\n\n## Purpose\nSpot a real trend or sentiment shift before it becomes a problem or a missed opportunity, using conversation the brand does not own (public social, reviews, forums), kept separate from AI-answer-engine monitoring.\n\n## Steps\n1. Monitor mentions of the brand, named competitors and category terms across public sources.\n2. Classify each: sentiment, topic, and whether it is a postable idea or a risk signal.\n3. Track shifts week over week; a single post is noise, not a trend.\n4. Draft the weekly digest with 3-5 postable ideas, each sourced from a quoted, dated mention.\n5. Send anything reading as PR or reputation risk to the founder immediately, not folded into the weekly digest.\n\n## Checks\n- Trend claims need a week-over-week pattern, not one post.\n- Every idea traces to a real quoted mention.\n- Risk flags go out same-day.\n\n## Output\n{digest{}, risk_flags[]}\n\n## Example\nThree unrelated posts this week compare the brand's price unfavourably to a named competitor's new launch: flagged as a sentiment shift, with a same-day risk note if a fourth appears with high engagement."
+  },
+  {
+    "id": "org/founder-and-employer-brand-writing",
+    "name": "Founder LinkedIn and employer-brand content",
+    "parent": null,
+    "invoke_when": "the founder's LinkedIn cadence calls for a post, or an open role/culture moment needs recruiting content",
+    "select_by": {
+      "task": [
+        "linkedin-thought-leadership",
+        "employer-brand"
+      ]
+    },
+    "inputs_required": [
+      "founder's actual opinion/experience note",
+      "open role details or culture milestone",
+      "brand voice file"
+    ],
+    "steps": [
+      "1. (LinkedIn) Get the founder's actual opinion or first-hand experience on the topic; never invent a take on their behalf.",
+      "2. Draft as text or carousel, B2B tone, aimed at trust and industry credibility, distinct from buyer-facing organic content.",
+      "3. Run the claims gate on any business number or milestone claimed.",
+      "4. (Employer brand) For an open role, draft the role post with real day-to-day detail, not a generic template.",
+      "5. For a culture or milestone moment, draft the post crediting real team members by name (with their consent on file) and a real detail, not a stock photo caption.",
+      "6. Route both content streams to the founder or hiring manager for the personal-voice pass before publish."
+    ],
+    "checks": [
+      "Every LinkedIn opinion traces to a founder-supplied note, not an invented take",
+      "Team member names used only with consent on file",
+      "Business numbers pass the claims gate"
+    ],
+    "output": "{linkedin_drafts[{format, body, claims_used}], employer_brand_drafts[{type, body, consent_confirmed}]}",
+    "used_by": [
+      "ORG-W13"
+    ],
+    "shared_with": [
+      "BRAND"
+    ],
+    "skill_md": "---\nname: founder-and-employer-brand-writing\nowner: ORG\nversion: 1\ninvoke_when: the founder's LinkedIn cadence calls for a post, or a hiring/culture moment needs recruiting content\ninputs: founder's real opinion/experience note, open role details or culture milestone, brand voice file\noutputs: LinkedIn drafts (text/carousel) and employer-brand drafts, both needing a personal-voice pass\n---\n# Founder LinkedIn and employer-brand content\n\n## Purpose\nGhostwrite two related but distinct B2B-facing streams: the founder's own LinkedIn thought leadership, and the brand's employer-brand and recruiting content, both aimed at trust rather than buyer conversion, and kept separate from founder-on-camera buyer content.\n\n## Steps\n1. Start every LinkedIn draft from a real opinion or experience the founder actually holds; never invent a take.\n2. Draft as text or carousel in a B2B tone.\n3. Run the claims gate on any business number or milestone mentioned.\n4. For an open role, draft with real day-to-day detail, not a generic job-ad template.\n5. For a culture or milestone post, name real team members only with their consent already on file.\n6. Send both streams back for the founder's or hiring manager's own-voice pass before anything publishes.\n\n## Checks\n- Every opinion traces to a founder-supplied note.\n- Team members named only with consent on file.\n- Business numbers pass the claims gate.\n\n## Output\n{linkedin_drafts[], employer_brand_drafts[]}\n\n## Example\nFounder note: \"we nearly lost a shipment to a customs delay in July\" becomes a LinkedIn post about supply-chain resilience, not a generic \"leadership lessons\" post with no real event behind it."
+  },
+  {
+    "id": "org/community-feedback-mining",
+    "name": "Community and support feedback mining for product and ops",
+    "parent": null,
+    "invoke_when": "monthly, or on a volume spike in one theme",
+    "select_by": {
+      "task": "feedback-mining"
+    },
+    "inputs_required": [
+      "comments/DMs/reviews export",
+      "community-space conversations",
+      "prior feedback report for trend comparison"
+    ],
+    "steps": [
+      "1. Pull comments, DMs, reviews and community-space conversations for the period.",
+      "2. Cluster by theme (a specific product defect, a sizing issue, a delivery complaint, a feature request), with a quote and count per theme.",
+      "3. Compare this period's theme volumes against the prior report to catch a spike, not just a running list.",
+      "4. Separate content-adjacent feedback (what to post about) from operational feedback (what to fix), routing operational themes to Product and Operations specifically.",
+      "5. Write the themed report with quoted evidence per theme, routed to the right team."
+    ],
+    "checks": [
+      "Every theme has a quoted source and a count, not an impression",
+      "A volume spike is flagged against the prior period's number, not asserted",
+      "Operational feedback is routed out, not left for content team only"
+    ],
+    "output": "{themes[{theme, count, quotes[], trend_vs_prior, routed_to}]}",
+    "used_by": [
+      "ORG-W14"
+    ],
+    "shared_with": [
+      "PROD"
+    ],
+    "skill_md": "---\nname: community-feedback-mining\nowner: ORG\nversion: 1\ninvoke_when: monthly, or on a volume spike in one theme\ninputs: comments/DMs/reviews export, community-space conversations, prior feedback report\noutputs: themed report with quoted counts, trend vs prior period, routed to product/ops\n---\n# Community and support feedback mining for product and ops\n\n## Purpose\nTurn owned conversation into a report Product and Operations can act on, separate from social listening's outward-facing trend digest, and catch a spike in one theme against a real prior number.\n\n## Steps\n1. Pull comments, DMs, reviews and community-space conversations for the period.\n2. Cluster into themes (a defect, a sizing issue, a delivery complaint, a feature request), each with a quote and a count.\n3. Compare each theme's volume against the prior report to catch a real spike.\n4. Split content-relevant feedback from operational feedback; route operational themes to Product and Operations, not just into a content idea pile.\n5. Write the report with quoted evidence per theme and its routing.\n\n## Checks\n- Every theme has a quote and a count.\n- A spike claim compares to the prior period's real number.\n- Operational themes are actually routed, not left unaddressed.\n\n## Output\n{themes[]}\n\n## Example\n\"Zipper stuck after 2 weeks\" appears 14 times this month vs 3 last month, a 4.7x jump, routed to Product with 5 verbatim quotes attached."
+  },
+  {
+    "id": "org/channel-ops",
+    "name": "Owned long-form channel operations (dispatcher)",
+    "parent": null,
+    "invoke_when": "a video is uploaded, a podcast episode is due, or a newsletter send is due on its own owned-channel cadence",
+    "select_by": {
+      "channel": "any"
+    },
+    "inputs_required": [
+      "channel-specific asset (video file, recorded episode, or drafted issue)",
+      "channel operating checklist"
+    ],
+    "steps": [
+      "1. Read which owned long-form channel the task is for: YouTube, or podcast+newsletter operations.",
+      "2. Dispatch to org/channel-ops/youtube or org/channel-ops/audio-and-newsletter.",
+      "3. Collect the child's checklist output and confirm nothing on the standing cadence was skipped."
+    ],
+    "checks": [
+      "Exactly one child channel is invoked per task",
+      "The standing cadence item for that channel is confirmed done, not assumed"
+    ],
+    "output": "whatever the matched child returns",
+    "used_by": [
+      "ORG-W15"
+    ],
+    "shared_with": [],
+    "skill_md": "---\nname: channel-ops (dispatcher)\nowner: ORG\nversion: 1\ninvoke_when: a video is uploaded, a podcast episode is due, or a newsletter send is due\ninputs: the channel-specific asset, the channel's operating checklist\noutputs: whichever child skill's checklist and output\n---\n# Owned long-form channel operations (dispatcher)\n\n## Purpose\nRoute a channel-operations task to the procedure built for that channel's own mechanics, since YouTube, podcast and newsletter each run on a different cadence and a different checklist.\n\n## Steps\n1. Read which channel the task names.\n2. Dispatch to org/channel-ops/youtube for a video upload, or org/channel-ops/audio-and-newsletter for a podcast episode or newsletter send.\n3. Confirm the child skill's standing cadence item (Shorts posting, guest booking, list-health check) was actually done this cycle, not assumed carried over from last time.\n\n## Checks\n- Exactly one child is invoked.\n- The standing cadence item is confirmed, not assumed.\n\n## Output\nWhatever the matched child skill returns.\n\n## Example\nA new podcast episode recording routes to org/channel-ops/audio-and-newsletter; a new long-form video routes to org/channel-ops/youtube."
+  },
+  {
+    "id": "org/channel-ops/youtube",
+    "name": "YouTube channel operations and video SEO",
+    "parent": "org/channel-ops",
+    "invoke_when": "on every video upload, plus a standing Shorts cadence and monthly reporting",
+    "select_by": {
+      "channel": "youtube"
+    },
+    "inputs_required": [
+      "uploaded video file",
+      "the video script/chapters",
+      "channel Shorts cadence target",
+      "keyword/question map"
+    ],
+    "steps": [
+      "1. Set the title and description from org/make-content/youtube-long's output; do not rewrite ad hoc at upload time.",
+      "2. Add tags, chapters, and an end screen linking to the next video or the site.",
+      "3. Set or upload a custom thumbnail; check it reads correctly at small size on mobile.",
+      "4. Add the video to the matching playlist(s).",
+      "5. Confirm the standing Shorts cadence is on track for the period; if behind, flag it rather than silently skip a week.",
+      "6. Monthly: pull channel-level watch time, subscriber change and top videos for the report."
+    ],
+    "checks": [
+      "Title/description match the approved script output, not a rewrite",
+      "Thumbnail legible at mobile thumbnail size",
+      "Shorts cadence tracked against target, not assumed on schedule"
+    ],
+    "output": "{upload_checklist_status, playlists_added[], thumbnail_status, shorts_cadence_status, monthly_metrics}",
+    "used_by": [
+      "ORG-W15"
+    ],
+    "shared_with": [],
+    "skill_md": "---\nname: channel-ops/youtube\nowner: ORG\nversion: 1\ninvoke_when: on every video upload, plus a standing Shorts cadence and monthly reporting\ninputs: uploaded video, script/chapters from make-content/youtube-long, Shorts cadence target, keyword map\noutputs: completed upload checklist, thumbnail and playlist status, Shorts cadence status, monthly metrics\n---\n# YouTube channel operations and video SEO\n\n## Purpose\nOwn YouTube as a distinct surface with its own mechanics (thumbnails, chapters, playlists, Shorts cadence), applying the already-written script's title and description rather than rewriting them at upload time.\n\n## Steps\n1. Apply the title and description already written by make-content/youtube-long.\n2. Add tags, chapters and an end screen pointing to the next video or the site.\n3. Set a custom thumbnail and check it reads at mobile thumbnail size.\n4. Add the video to its matching playlist.\n5. Confirm the standing Shorts cadence is on track for the period; flag it if behind instead of letting a week slip silently.\n6. Monthly, pull watch time, subscriber change and top videos into the report.\n\n## Checks\n- Title/description match the approved script, not an ad hoc rewrite.\n- Thumbnail legible at small size.\n- Shorts cadence tracked against target explicitly.\n\n## Output\n{upload_checklist_status, playlists_added[], thumbnail_status, shorts_cadence_status, monthly_metrics}\n\n## Example\nVideo uploaded with chapters at 0:00, 0:45, 3:10 exactly matching the script's chapter list; Shorts cadence flagged one short behind target for the week."
+  },
+  {
+    "id": "org/channel-ops/audio-and-newsletter",
+    "name": "Podcast and newsletter channel operations",
+    "parent": "org/channel-ops",
+    "invoke_when": "on the podcast's publishing cadence, or the newsletter's send cadence",
+    "select_by": {
+      "channel": [
+        "podcast",
+        "newsletter"
+      ]
+    },
+    "inputs_required": [
+      "recorded episode or drafted newsletter issue",
+      "guest/topic pipeline",
+      "distribution checklist",
+      "list health metrics"
+    ],
+    "steps": [
+      "1. (podcast) Confirm the next 2 episodes have a booked guest or topic; flag a gap in the pipeline rather than let an episode slip.",
+      "2. Check recording logistics (mic check, backup recording) before the session.",
+      "3. Write show notes with keywords, and cut 2-3 short clips for cross-platform distribution, or hand off to org/video-repurposing-pipeline.",
+      "4. Publish to every listed platform (Spotify, Apple, YouTube) and confirm each shows the correct episode.",
+      "5. (newsletter) Check list health (bounce rate, unsubscribe rate, spam complaints) before every send; hold the send if any metric is outside the normal range.",
+      "6. Confirm the issue from org/make-content/newsletter is queued at the recommended send time and platform-compliant (unsubscribe link, sender identity)."
+    ],
+    "checks": [
+      "Guest/topic pipeline covers at least 2 episodes ahead",
+      "List health checked before every send, not assumed fine",
+      "Every distribution platform confirmed showing the correct episode"
+    ],
+    "output": "{podcast_status: {pipeline_gap, recording_check, published_platforms[], clips[]}, newsletter_status: {list_health, send_confirmed}}",
+    "used_by": [
+      "ORG-W15"
+    ],
+    "shared_with": [
+      "LIFE"
+    ],
+    "skill_md": "---\nname: channel-ops/audio-and-newsletter\nowner: ORG\nversion: 1\ninvoke_when: on the podcast's publishing cadence, or the newsletter's send cadence\ninputs: recorded episode or drafted issue, guest/topic pipeline, distribution checklist, list health metrics\noutputs: podcast pipeline/recording/distribution status, newsletter list-health and send confirmation\n---\n# Podcast and newsletter channel operations\n\n## Purpose\nRun the practical production and distribution mechanics for two owned channels smaller brands often under-operate: a podcast's guest pipeline and multi-platform publish, and a newsletter's list health before every send.\n\n## Steps\n1. Confirm the next 2 podcast episodes have a booked guest or topic; flag a pipeline gap rather than let a slot go empty.\n2. Check recording logistics before the session: mic check, a backup recording running.\n3. Write keyworded show notes and cut 2-3 short clips, or hand the recording to org/video-repurposing-pipeline.\n4. Publish to every listed platform and confirm each shows the correct episode.\n5. Before every newsletter send, check bounce rate, unsubscribe rate and spam complaints; hold the send if any is outside the normal range.\n6. Confirm the drafted issue is queued at its recommended time with a working unsubscribe link and correct sender identity.\n\n## Checks\n- Guest pipeline covers 2 episodes ahead.\n- List health checked before every send.\n- Every platform confirmed showing the right episode.\n\n## Output\n{podcast_status{}, newsletter_status{}}\n\n## Example\nEpisode 14 has no guest booked with 9 days to air: flagged as a pipeline gap; newsletter send held because spam complaints ticked up past the normal range this week."
+  },
+  {
+    "id": "org/video-repurposing-pipeline",
+    "name": "Long-form to short-form video repurposing",
+    "parent": null,
+    "invoke_when": "on every new long-form recording (podcast episode, founder talk, livestream)",
+    "select_by": {
+      "task": "repurpose-video"
+    },
+    "inputs_required": [
+      "long-form video/audio file",
+      "transcript (generated or provided)",
+      "target short-form platforms and aspect ratios"
+    ],
+    "steps": [
+      "1. Get or generate a transcript of the full recording.",
+      "2. Identify candidate moments: a standalone claim, a strong reaction, a quotable line, each with a timestamp.",
+      "3. Rank candidates by likely stand-alone watchability (works without the rest of the episode's context).",
+      "4. Cut, caption and resize each selected clip for its target platform (9:16 for Reels/Shorts, 1:1 or 16:9 as needed).",
+      "5. Write a short caption and hook text overlay per clip, tier-checking any claim restated from the source recording.",
+      "6. Route finished clips into the content calendar as fillable slots, tagged by source episode."
+    ],
+    "checks": [
+      "Every clip stands alone without needing the full episode's context",
+      "Captions are burned in and accurate to the spoken audio",
+      "Any claim in a clip is tier-checked, even if the source recording already said it"
+    ],
+    "output": "{clips[{timestamp, platform, aspect_ratio, caption, claims_used}], source_episode_id}",
+    "used_by": [
+      "ORG-W16"
+    ],
+    "shared_with": [
+      "CREA"
+    ],
+    "skill_md": "---\nname: video-repurposing-pipeline\nowner: ORG\nversion: 1\ninvoke_when: on every new long-form recording (podcast episode, founder talk, livestream)\ninputs: long-form file, transcript, target short-form platforms and aspect ratios\noutputs: ranked, captioned, correctly-sized clips tagged by source episode\n---\n# Long-form to short-form video repurposing\n\n## Purpose\nAutomatically produce a set of ranked short clips from any long recording, so one podcast episode or livestream also feeds the Reels/Shorts calendar without a separate shoot.\n\n## Steps\n1. Get or generate a full transcript.\n2. Identify candidate moments: a standalone claim, a strong reaction, a quotable line, each with a timestamp.\n3. Rank by whether the moment works without the rest of the episode's context.\n4. Cut, caption and resize each selected clip for its target platform.\n5. Write a short caption and on-screen hook, tier-checking any claim even if the source recording already said it.\n6. Route finished clips into the content calendar as fillable slots, tagged by their source episode.\n\n## Checks\n- Every clip stands alone.\n- Captions are burned in and accurate.\n- Claims are tier-checked again at the clip level.\n\n## Output\n{clips[], source_episode_id}\n\n## Example\nFrom a 40-minute podcast episode, a 22-second clip at 14:05 where the founder explains the hinge redesign is cut, captioned, resized to 9:16, and queued for the calendar."
+  },
+  {
+    "id": "org/seo-aeo-roadmap",
+    "name": "SEO and AEO roadmap and prioritization",
+    "parent": null,
+    "invoke_when": "on demand, when the founder asks whether and where to spend SEO/AEO effort",
+    "select_by": {
+      "task": "roadmap"
+    },
+    "inputs_required": [
+      "category demand signal",
+      "margin per SKU",
+      "current technical floor status",
+      "idea bank filtered by bottleneck"
+    ],
+    "steps": [
+      "1. Check category demand (search volume trend, category growth) and margin per SKU before recommending any spend at all; a low-demand or low-margin category does not get an SEO push.",
+      "2. Sequence the work: technical floor first (indexing, crawlability), then money pages (product/collection), then one content cluster at a time, then AEO.",
+      "3. Filter the idea bank by the brand's current bottleneck and store tags (scripts/ideas.py) to fill each sequence stage with ranked candidates.",
+      "4. Set an expectation memo: what a realistic timeline looks like for organic results (months, not weeks), so the founder does not expect a paid-media speed of return.",
+      "5. Package the sequence and expectation memo as a founder_gate card, with a founder-question round for anything unresolved."
+    ],
+    "checks": [
+      "No content-cluster work recommended before the technical floor passes",
+      "Every recommendation ties to a demand or margin number",
+      "Expectation memo states a realistic timeline, not an inflated one"
+    ],
+    "output": "{roadmap: {sequence[], demand_check, margin_check}, expectation_memo, open_questions[]}",
+    "used_by": [
+      "ORG-W17"
+    ],
+    "shared_with": [],
+    "skill_md": "---\nname: seo-aeo-roadmap\nowner: ORG\nversion: 1\ninvoke_when: on demand, when the founder asks whether and where to spend SEO/AEO effort\ninputs: category demand signal, SKU margin, technical floor status, idea bank filtered by bottleneck\noutputs: sequenced roadmap, expectation memo on realistic timeline, open questions for the founder\n---\n# SEO and AEO roadmap and prioritization\n\n## Purpose\nDecide whether SEO/AEO is worth the spend at all before sequencing any work, since organic work is slow and can be wasted on a low-demand or thin-margin category.\n\n## Steps\n1. Check category demand trend and per-SKU margin first; a category failing either does not get recommended spend.\n2. Sequence work: technical floor first, then money pages, then one content cluster at a time, then AEO.\n3. Filter the idea bank by the brand's current bottleneck and store tags to fill each stage with ranked candidates.\n4. Write an expectation memo stating a realistic timeline in months, not weeks, so the founder does not compare it to paid media's speed.\n5. Package as a founder-gate card, running a founder-question round on anything the data cannot settle.\n\n## Checks\n- No content-cluster work proposed before the technical floor passes.\n- Every recommendation ties to a demand or margin number.\n- Timeline expectation is realistic, not inflated.\n\n## Output\n{roadmap{}, expectation_memo, open_questions[]}\n\n## Example\nCategory \"premium baby strollers\" shows rising search volume and healthy margin: roadmap opens with the technical floor fix, then the stroller-v2 product page, before any blog cluster."
+  },
+  {
+    "id": "org/page-brief-build",
+    "name": "Keyword research and page-brief build",
+    "parent": null,
+    "invoke_when": "monthly, and before any page is written",
+    "select_by": {
+      "task": "page-brief"
+    },
+    "inputs_required": [
+      "buyer-question map (org/buyer-question-mapping)",
+      "Search Console query data when connected",
+      "web pass for search volume/intent",
+      "existing site architecture"
+    ],
+    "steps": [
+      "1. Merge org/buyer-question-mapping output with a web pass (shared/web-research-budgeted) for search volume and intent signal per target.",
+      "2. Classify each target's intent (informational, comparison, transactional) and matching page type (collection, product, guide, blog).",
+      "3. Build the keyword-and-question map: target term, intent, page type, priority.",
+      "4. For each priority target, write the page brief: outline, buyer questions to answer, internal links to add, schema to add.",
+      "5. Check the target does not already have a ranking page that should be refreshed instead (hand off to org/content-refresh-audit if so, rather than duplicating).",
+      "6. Hand the brief to the matching org/seo-page child skill."
+    ],
+    "checks": [
+      "No brief written for a page type the store does not sell/serve",
+      "Every target checked against existing content before a new page is briefed",
+      "Brief names buyer questions from real sources, not assumption"
+    ],
+    "output": "{keyword_question_map[{term, intent, page_type, priority}], page_briefs[{target, page_type, outline, buyer_questions[], internal_links[], schema[]}]}",
+    "used_by": [
+      "ORG-W18"
+    ],
+    "shared_with": [],
+    "skill_md": "---\nname: page-brief-build\nowner: ORG\nversion: 1\ninvoke_when: monthly, and before any page is written\ninputs: buyer-question map, Search Console data, budgeted web pass, existing site architecture\noutputs: keyword-and-question map, structured page briefs by target and page type\n---\n# Keyword research and page-brief build\n\n## Purpose\nBuild the target list the whole content program runs from, then turn each target into a structured brief before anyone writes a word, so no page gets built on a guess at intent.\n\n## Steps\n1. Merge the buyer-question map with a budgeted web pass for search volume and intent.\n2. Classify each target's intent and the page type it fits: collection, product, guide, or blog.\n3. Build the ranked keyword-and-question map.\n4. Write each priority target's page brief: outline, buyer questions to answer, internal links to add, schema to add.\n5. Check whether a ranking page already exists for the target; if so, hand it to org/content-refresh-audit instead of briefing a duplicate.\n6. Hand the finished brief to the matching org/seo-page child.\n\n## Checks\n- No brief for a page type the store does not actually sell or serve.\n- Every target checked against existing content first.\n- Buyer questions come from real sources.\n\n## Output\n{keyword_question_map[], page_briefs[]}\n\n## Example\nTarget \"foldable stroller for small apartments India\" classified as informational/guide intent, briefed as a new buying guide rather than added to the existing product page, which already covers transactional intent."
+  },
+  {
+    "id": "org/technical-crawl-audit",
+    "name": "Technical SEO and AI-crawlability audit",
+    "parent": null,
+    "invoke_when": "quarterly",
+    "select_by": {
+      "task": "technical-audit"
+    },
+    "inputs_required": [
+      "live site URL",
+      "prior audit baseline",
+      "robots.txt and CDN settings",
+      "speed baseline from the Site specialist"
+    ],
+    "steps": [
+      "1. Crawl the whole site with mobile and JavaScript rendering (shared/surface-audit) to find indexing, canonical, sitemap, robots.txt, redirect and heading-structure problems.",
+      "2. Check AI-bot access explicitly: GPTBot, PerplexityBot, Google-Extended and others against robots.txt and any CDN bot-management rule.",
+      "3. Log a speed baseline from the existing Chromium instrument, but do not diagnose or fix speed here; that is the Site specialist's mandate.",
+      "4. Order every finding by the technical floor first (indexing and crawlability), then everything else.",
+      "5. For each finding, attach evidence (URL, response code, screenshot or quoted setting).",
+      "6. Split findings into: fixes this agent can brief directly (schema, headings, redirects) vs speed items that hand off to Site (shared/developer-brief with a note).",
+      "7. Package the prioritized fix list plus the Site hand-off note."
+    ],
+    "checks": [
+      "Every finding has verifiable evidence",
+      "AI-crawler access checked explicitly, not assumed from classic crawl results",
+      "Speed items are handed off, never fixed or re-diagnosed here"
+    ],
+    "output": "{fix_list[{finding, evidence, priority, fix}], ai_crawler_access_report, speed_handoff_note}",
+    "used_by": [
+      "ORG-W19"
+    ],
+    "shared_with": [
+      "SITE"
+    ],
+    "skill_md": "---\nname: technical-crawl-audit\nowner: ORG\nversion: 1\ninvoke_when: quarterly\ninputs: live site URL, prior audit baseline, robots.txt/CDN settings, Site's speed baseline\noutputs: prioritized fix list with evidence, an AI-crawler access report, a speed hand-off note to Site\n---\n# Technical SEO and AI-crawlability audit\n\n## Purpose\nFind and prioritize the technical floor a site needs before any content work matters: indexing, canonicals, sitemap, robots.txt, redirects, heading structure, and whether AI crawlers can even read the site, while handing anything speed-related to the Site specialist rather than re-doing that work here.\n\n## Steps\n1. Crawl the whole site with mobile and JS rendering for indexing, canonical, sitemap, robots and heading-structure problems.\n2. Check AI-bot access explicitly (GPTBot, PerplexityBot, Google-Extended) against robots.txt and CDN bot rules; this is not covered by a classic crawl.\n3. Log a speed baseline from the existing instrument without diagnosing or fixing it here.\n4. Order findings with the technical floor first.\n5. Attach verifiable evidence to every finding: URL, response code, screenshot or quoted setting.\n6. Split findings into ones this agent can brief directly and speed items that go to Site with a developer-brief hand-off note.\n7. Package the prioritized fix list and hand-off note.\n\n## Checks\n- Every finding has verifiable evidence.\n- AI-crawler access checked explicitly.\n- Speed items only handed off, never fixed here.\n\n## Output\n{fix_list[], ai_crawler_access_report, speed_handoff_note}\n\n## Example\nFinding: \"12 product pages return a soft-404 with 200 status\", evidence: 12 URLs with screenshot, priority: technical floor, fixed by a canonical/redirect brief; a slow LCP finding is handed to Site instead of diagnosed further here."
+  },
+  {
+    "id": "org/seo-page",
+    "name": "SEO page build (dispatcher)",
+    "parent": null,
+    "invoke_when": "a page brief is ready to become a structured, written page",
+    "select_by": {
+      "page_type": "any"
+    },
+    "inputs_required": [
+      "page brief",
+      "brand facts and claims tiers",
+      "site architecture"
+    ],
+    "steps": [
+      "1. Read the brief's page_type field.",
+      "2. Dispatch to org/seo-page/collection, /product, /guide, or /blog.",
+      "3. Collect the child's output and run the claims-compliance check before returning."
+    ],
+    "checks": [
+      "Exactly one child skill invoked per brief",
+      "No page type invented outside the 4 supported types"
+    ],
+    "output": "whatever the matched child returns, plus a claims-check verdict",
+    "used_by": [
+      "ORG-W20",
+      "ORG-W22"
+    ],
+    "shared_with": [],
+    "skill_md": "---\nname: seo-page (dispatcher)\nowner: ORG\nversion: 1\ninvoke_when: a page brief is ready to become a structured, written page\ninputs: page brief, brand facts and claims tiers, site architecture\noutputs: the matched child skill's page spec plus a claims-check verdict\n---\n# SEO page build (dispatcher)\n\n## Purpose\nRoute a page brief to the procedure built for its page type, since a collection page, a product page, a buying guide and a blog post each carry different structural rules and a different job to do for the buyer.\n\n## Steps\n1. Read the brief's page_type field: collection, product, guide, or blog.\n2. Dispatch to the matching child skill.\n3. Run shared/claim-check on the child's output before returning it.\n4. If the brief names a page type the store's architecture does not support, stop and hand a proposal to a person instead of forcing a fit.\n\n## Checks\n- Exactly one child invoked per brief.\n- No page type used outside the 4 supported ones.\n\n## Output\nWhatever the matched child returns, wrapped with {claims_check_verdict}.\n\n## Example\nA brief with page_type \"guide\" and a comparison subtype dispatches to org/seo-page/guide, which handles both buying guides and comparison/alternatives content."
+  },
+  {
+    "id": "org/seo-page/collection",
+    "name": "Collection page SEO",
+    "parent": "org/seo-page",
+    "invoke_when": "the brief's page_type is collection",
+    "select_by": {
+      "page_type": "collection"
+    },
+    "inputs_required": [
+      "page brief",
+      "product grid rules",
+      "review data for the collection's SKUs",
+      "FAQ candidates from org/buyer-question-mapping"
+    ],
+    "steps": [
+      "1. Write the collection title and meta description covering the target term and its real buying decision (not just a keyword stuff).",
+      "2. Write the on-page description as a genuine buying-decision aid: how to choose within this collection, not filler above a product grid.",
+      "3. Set grid rules: sort default, filter set, and how out-of-stock items display (never hidden without a substitute shown).",
+      "4. Write an FAQ section from real buyer questions tagged to this collection.",
+      "5. Confirm review data displays at the collection level where available.",
+      "6. Add the internal links the brief specifies, to and from matching product pages."
+    ],
+    "checks": [
+      "Description helps a buyer choose, not just describes the category",
+      "Out-of-stock handling never hides an item without a clear reason shown",
+      "FAQ questions trace to real buyer sources"
+    ],
+    "output": "{title, meta_description, on_page_copy, grid_rules, faq[], internal_links[]}",
+    "used_by": [
+      "ORG-W20"
+    ],
+    "shared_with": [],
+    "skill_md": "---\nname: seo-page/collection\nowner: ORG\nversion: 1\ninvoke_when: the page brief's page_type is collection\ninputs: page brief, product grid rules, review data, buyer-question map\noutputs: title, meta description, on-page copy, grid rules, FAQ, internal links\n---\n# Collection page SEO\n\n## Purpose\nWrite and structure a collection page so it both ranks and genuinely helps a buyer choose between the products it lists, not just a keyword-stuffed header above a grid.\n\n## Steps\n1. Write the title and meta description covering the target term and the real buying decision it represents.\n2. Write on-page copy as a buying-decision aid: how to choose within this set, not filler.\n3. Set grid rules: default sort, filters, and an honest out-of-stock display that never hides an item without showing why or offering a substitute.\n4. Write an FAQ from real buyer questions tagged to this collection.\n5. Confirm collection-level review data displays where available.\n6. Add the internal links the brief specifies.\n\n## Checks\n- Copy helps a buyer choose, not just describes.\n- Out-of-stock items are never silently hidden.\n- FAQ traces to real sources.\n\n## Output\n{title, meta_description, on_page_copy, grid_rules, faq[], internal_links[]}\n\n## Example\nCollection \"foldable strollers\" FAQ includes \"does folded size matter for a hatchback boot?\", sourced from 9 real customer questions, not invented."
+  },
+  {
+    "id": "org/seo-page/product",
+    "name": "Product page SEO",
+    "parent": "org/seo-page",
+    "invoke_when": "the brief's page_type is product",
+    "select_by": {
+      "page_type": "product"
+    },
+    "inputs_required": [
+      "page brief",
+      "product record (specs, price, policies)",
+      "review data",
+      "image assets",
+      "subscription/variant status if any"
+    ],
+    "steps": [
+      "1. Write the real title (not a truncated SKU code) and meta description covering the target term.",
+      "2. Build the full fact-based content stack: specs, materials, care, shipping and return policy, warranty, in the buyer's real question order.",
+      "3. Write image alt text describing the actual product shown, for image SEO.",
+      "4. For a subscription or variant product, apply the dedicated template (subscription terms, variant-specific specs) rather than the single-product default.",
+      "5. Add review data and Q&A section from real buyer questions.",
+      "6. Add internal links to the matching collection and any relevant guide."
+    ],
+    "checks": [
+      "Title is a real, readable name, not a SKU code",
+      "Every spec/claim on the page is site-backed",
+      "Subscription/variant products use the correct template, not the default"
+    ],
+    "output": "{title, meta_description, content_stack{}, image_alt_text[], template_used, internal_links[]}",
+    "used_by": [
+      "ORG-W20"
+    ],
+    "shared_with": [],
+    "skill_md": "---\nname: seo-page/product\nowner: ORG\nversion: 1\ninvoke_when: the page brief's page_type is product\ninputs: page brief, product record, review data, image assets, subscription/variant status\noutputs: title, meta description, full content stack, image alt text, template used, internal links\n---\n# Product page SEO\n\n## Purpose\nWrite and structure a product page with a real title and a complete, fact-based content stack in the order a buyer actually asks questions, using the correct dedicated template for subscription or variant products instead of forcing the single-product default.\n\n## Steps\n1. Write a real, readable title and a meta description covering the target term.\n2. Build the content stack: specs, materials, care, shipping, returns, warranty, ordered by real buyer question priority.\n3. Write image alt text describing the actual product in each image.\n4. Apply the subscription or variant template when the product needs it, not the single-product default.\n5. Add review data and a Q&A section from real buyer questions.\n6. Add internal links to the matching collection and any relevant guide.\n\n## Checks\n- Title is readable, not a SKU code.\n- Every claim is site-backed.\n- Subscription/variant products use their own template.\n\n## Output\n{title, meta_description, content_stack{}, image_alt_text[], template_used, internal_links[]}\n\n## Example\nA subscription refill SKU uses the subscription template, surfacing cadence and cancellation terms above the fold, instead of the plain one-time-purchase layout."
+  },
+  {
+    "id": "org/seo-page/guide",
+    "name": "Buying guide and comparison page SEO",
+    "parent": "org/seo-page",
+    "invoke_when": "the brief's page_type is guide (buying guide or comparison/alternatives content)",
+    "select_by": {
+      "page_type": "guide",
+      "subtype": [
+        "buying_guide",
+        "comparison"
+      ]
+    },
+    "inputs_required": [
+      "page brief",
+      "moat data (proprietary facts, test results)",
+      "public competitor facts for a comparison subtype",
+      "season/timing target"
+    ],
+    "steps": [
+      "1. Confirm the subtype: buying_guide (helps choose within a need) or comparison (names a competitor or alternative directly).",
+      "2. Build ahead of the season it targets, sequenced against the content calendar.",
+      "3. For buying_guide: structure by decision criteria, using the brand's own proprietary facts or test data where available, tier-checked.",
+      "4. For comparison: state only public, verifiable facts about the named competitor, sourced and dated; never invented or private information.",
+      "5. Link the guide to the one real money page it supports; a guide with no matching money page is not built.",
+      "6. Add the FAQ from real buyer questions and internal links."
+    ],
+    "checks": [
+      "Comparison facts about a competitor are public, sourced and dated",
+      "Guide supports a real, named money page",
+      "Built ahead of its target season, not after"
+    ],
+    "output": "{subtype, title, outline, body_sections[], competitor_facts_sourced[], linked_money_page, faq[]}",
+    "used_by": [
+      "ORG-W22"
+    ],
+    "shared_with": [],
+    "skill_md": "---\nname: seo-page/guide\nowner: ORG\nversion: 1\ninvoke_when: the page brief's page_type is guide, covering both buying guides and comparison/alternatives pages\ninputs: page brief, proprietary moat data, public competitor facts, season/timing target\noutputs: subtype, title, outline, body, sourced competitor facts where relevant, linked money page, FAQ\n---\n# Buying guide and comparison page SEO\n\n## Purpose\nBuild guide-format content ahead of the season it targets, always in support of one real money page, using either the brand's own proprietary facts (buying guide) or public, sourced facts about a named competitor (comparison) since these formats are what search and AI answers cite most for considered purchases.\n\n## Steps\n1. Confirm the subtype: buying_guide or comparison.\n2. Schedule the build ahead of its target season against the content calendar.\n3. For a buying guide, structure by real decision criteria using the brand's own tier-checked data.\n4. For a comparison, state only public, sourced, dated facts about the named competitor; never invent or use private information about them.\n5. Link the page to the one real money page it supports; skip building if none exists.\n6. Add an FAQ from real buyer questions and internal links.\n\n## Checks\n- Every competitor fact is public, sourced and dated.\n- The page links to a real money page.\n- Built ahead of season, not after it has passed.\n\n## Output\n{subtype, title, outline, body_sections[], competitor_facts_sourced[], linked_money_page, faq[]}\n\n## Example\nComparison page \"Brand X vs [Competitor]\" states the competitor's publicly listed weight and price with a source URL and date, links to the stroller-v2 product page as its money page."
+  },
+  {
+    "id": "org/seo-page/blog",
+    "name": "Blog and content-cluster SEO",
+    "parent": "org/seo-page",
+    "invoke_when": "the brief's page_type is blog, as part of a content cluster",
+    "select_by": {
+      "page_type": "blog"
+    },
+    "inputs_required": [
+      "page brief",
+      "the cluster's pillar page",
+      "buyer questions for this cluster node"
+    ],
+    "steps": [
+      "1. Confirm which pillar page this blog post's cluster belongs to; a blog post with no pillar link is not built standalone.",
+      "2. Write the post answering one real buyer question in depth, not a shallow restate of the pillar.",
+      "3. Add internal links up to the pillar and sideways to sibling cluster posts.",
+      "4. Add an FAQ or summary block answering the same question in a short, quotable form for both search and AI answers.",
+      "5. Add author/date and update it into the content-refresh cycle once published (it now has a shelf life to track)."
+    ],
+    "checks": [
+      "Every post links to its pillar",
+      "One real buyer question is fully answered, not skimmed",
+      "New post enters the refresh-audit tracking list on publish"
+    ],
+    "output": "{title, body, pillar_link, sibling_links[], faq_block, publish_date}",
+    "used_by": [
+      "ORG-W22"
+    ],
+    "shared_with": [],
+    "skill_md": "---\nname: seo-page/blog\nowner: ORG\nversion: 1\ninvoke_when: the page brief's page_type is blog, as one node in a content cluster\ninputs: page brief, the cluster's pillar page, buyer questions for this node\noutputs: title, body, pillar and sibling links, a quotable FAQ/summary block, publish date\n---\n# Blog and content-cluster SEO\n\n## Purpose\nWrite one cluster node that answers a single buyer question in real depth and links back to its pillar, one cluster at a time, ahead of the season it targets, rather than a standalone blog post with nowhere to link.\n\n## Steps\n1. Confirm the pillar page this post belongs to; do not build a standalone post with no cluster.\n2. Answer one real buyer question in depth.\n3. Link up to the pillar and sideways to sibling posts in the same cluster.\n4. Add a short, quotable FAQ or summary block that both search and AI answers can lift.\n5. Record the publish date and enter the post into the content-refresh tracking list, since it now has a shelf life.\n\n## Checks\n- Links to its pillar exist.\n- The buyer question is answered in depth, not skimmed.\n- Enters refresh tracking on publish.\n\n## Output\n{title, body, pillar_link, sibling_links[], faq_block, publish_date}\n\n## Example\nPost \"How to measure your hallway before buying a foldable stroller\" links up to the pillar \"Complete guide to foldable strollers in India\" and sideways to \"Stroller weight limits explained\"."
+  },
+  {
+    "id": "org/schema-implementation",
+    "name": "Structured data implementation and validation",
+    "parent": null,
+    "invoke_when": "on demand, for any money page missing or carrying stale structured data",
+    "select_by": {
+      "task": "schema"
+    },
+    "inputs_required": [
+      "page content",
+      "product/review/FAQ/price data",
+      "deployment method (theme access or GTM)"
+    ],
+    "steps": [
+      "1. Pick the schema types the page needs: Product, Review, FAQ, Breadcrumb, Offer.",
+      "2. Populate each field from the live page content and product record exactly, never a placeholder value.",
+      "3. Validate the markup with a structured-data testing tool before it ships.",
+      "4. If there is no direct theme access, package the deployment through Google Tag Manager instead, with the exact trigger and tag spec.",
+      "5. Write the developer brief (shared/developer-brief) naming the change, where, why, the validation check, and rollback.",
+      "6. After deployment (human-applied), re-validate on the live page and log the result."
+    ],
+    "checks": [
+      "No placeholder value in any schema field",
+      "Validated before and confirmed after deployment",
+      "GTM path used whenever direct theme access is unavailable"
+    ],
+    "output": "{schema_spec[{type, fields{}}], validation_result_pre, deployment_method, developer_brief, validation_result_post}",
+    "used_by": [
+      "ORG-W21"
+    ],
+    "shared_with": [
+      "SITE"
+    ],
+    "skill_md": "---\nname: schema-implementation\nowner: ORG\nversion: 1\ninvoke_when: on demand, for any money page missing or carrying stale structured data\ninputs: page content, product/review/FAQ/price data, deployment method\noutputs: schema spec, pre- and post-deployment validation results, a developer brief\n---\n# Structured data implementation and validation\n\n## Purpose\nAdd and validate Product, Review, FAQ, Breadcrumb and Offer schema on every money page, using real page data only, deploying through Google Tag Manager when there is no direct theme access.\n\n## Steps\n1. Pick the schema types the page needs.\n2. Populate every field from the live page and product record; no placeholder values.\n3. Validate the markup with a structured-data testing tool before shipping.\n4. When theme access is unavailable, package the deployment as a GTM tag and trigger spec instead.\n5. Write the developer brief naming the change, location, reason, validation check and rollback.\n6. After a human applies it, re-validate on the live page and log the result.\n\n## Checks\n- No placeholder field values.\n- Validated before and after deployment.\n- GTM used whenever theme access is unavailable.\n\n## Output\n{schema_spec[], validation_result_pre, deployment_method, developer_brief, validation_result_post}\n\n## Example\nProduct schema for stroller-v2 populated with the live price (₹8,999) and current stock status; validated, then re-validated after the GTM tag went live, both passing."
+  },
+  {
+    "id": "org/content-refresh-audit",
+    "name": "Content refresh, redirect and pruning audit",
+    "parent": null,
+    "invoke_when": "monthly",
+    "select_by": {
+      "task": "refresh-audit"
+    },
+    "inputs_required": [
+      "Search Console export",
+      "page-level revenue history",
+      "product feed (for discontinued/out-of-stock pages)",
+      "duplicate/cannibalization check"
+    ],
+    "steps": [
+      "1. Pull page-level organic sessions and, where the store's order-to-session join exists, page-level revenue history.",
+      "2. Rank the refresh backlog by revenue at risk (a falling page that used to earn) first, then traffic-only drops.",
+      "3. Check every discontinued or out-of-stock product page against the feed; route to a redirect or an honest out-of-stock state, never a silent 404.",
+      "4. Find duplicate or cannibalizing pages competing for the same target; recommend a merge or a canonical, using shared/rank-candidates for prioritization.",
+      "5. For each refresh candidate, name the specific problem (stale facts, thin content, broken internal links, outdated price) before recommending a rewrite.",
+      "6. Package the prioritized refresh, redirect and prune list."
+    ],
+    "checks": [
+      "Backlog ranked by revenue at risk, not traffic alone",
+      "Every discontinued page has a redirect or honest state, never a silent 404",
+      "Each refresh candidate names its specific problem"
+    ],
+    "output": "{refresh_list[{page, revenue_at_risk, problem}], redirect_list[{page, target}], prune_list[{page, reason, canonical_or_merge_target}]}",
+    "used_by": [
+      "ORG-W23"
+    ],
+    "shared_with": [],
+    "skill_md": "---\nname: content-refresh-audit\nowner: ORG\nversion: 1\ninvoke_when: monthly\ninputs: Search Console export, page-level revenue history, product feed, duplicate/cannibalization check\noutputs: refresh list ranked by revenue at risk, redirect list, prune list\n---\n# Content refresh, redirect and pruning audit\n\n## Purpose\nKeep existing pages healthy before writing anything new: refresh what is falling, ranked by the revenue it puts at risk rather than traffic alone, handle discontinued pages properly, and remove pages competing against each other for the same target.\n\n## Steps\n1. Pull page-level sessions and, where the order-to-session join exists, page-level revenue history.\n2. Rank the refresh backlog by revenue at risk first, then traffic-only drops.\n3. Check every discontinued or out-of-stock page against the feed; route to a redirect or an honest out-of-stock state, never a silent 404.\n4. Find duplicate or cannibalizing pages and recommend a merge or canonical, ranked with shared/rank-candidates.\n5. Name the specific problem behind each refresh candidate before recommending a rewrite.\n6. Package the refresh, redirect and prune lists.\n\n## Checks\n- Ranked by revenue at risk where the data exists.\n- No page silently 404s.\n- Every candidate names its specific problem.\n\n## Output\n{refresh_list[], redirect_list[], prune_list[]}\n\n## Example\nPage \"toddler-safety-gate\" ranks first in the refresh list because it lost 40% of its page-level revenue in 90 days, with the problem named as \"price section 6 months stale\"."
+  },
+  {
+    "id": "org/internal-linking",
+    "name": "Internal linking program",
+    "parent": null,
+    "invoke_when": "monthly",
+    "select_by": {
+      "task": "internal-linking"
+    },
+    "inputs_required": [
+      "site architecture",
+      "content inventory",
+      "orphan-page check",
+      "money-page list"
+    ],
+    "steps": [
+      "1. Run an orphan-page check: any page with zero internal links pointing to it.",
+      "2. Build links from content pages (guides, blog) to the money pages they support, and back from money pages to relevant guides.",
+      "3. Add navigational links on product and collection pages to related products/collections.",
+      "4. Fix every orphan page found, either with a new link or a decision to prune it (hand off to org/content-refresh-audit).",
+      "5. Return the linking map: what was added, what remains orphaned and why."
+    ],
+    "checks": [
+      "Every content page links to at least one real money page",
+      "No orphan page left unaddressed without a stated reason",
+      "Links point to live, matching pages, checked at build time"
+    ],
+    "output": "{links_added[{from, to, anchor_context}], orphans_remaining[{page, reason}]}",
+    "used_by": [
+      "ORG-W24"
+    ],
+    "shared_with": [],
+    "skill_md": "---\nname: internal-linking\nowner: ORG\nversion: 1\ninvoke_when: monthly\ninputs: site architecture, content inventory, orphan-page check, money-page list\noutputs: linking map of links added, remaining orphans with a stated reason\n---\n# Internal linking program\n\n## Purpose\nBuild and maintain links from content pages to money pages and back, fix orphan pages, and add navigational links on product and collection pages, so link equity and buyer paths both flow to where the store makes money.\n\n## Steps\n1. Run an orphan-page check for pages with zero internal links pointing to them.\n2. Link content pages to the money pages they support, and money pages back to relevant guides.\n3. Add navigational links between related products and collections.\n4. Fix every orphan found, either with a new link or a decision to prune, handed to org/content-refresh-audit.\n5. Return the linking map with what changed and what remains unaddressed and why.\n\n## Checks\n- Every content page links to a real money page.\n- No orphan left without a stated reason.\n- Links checked live at build time, not assumed valid.\n\n## Output\n{links_added[], orphans_remaining[]}\n\n## Example\nGuide \"Foldable stroller buying guide\" gets 3 new links to product pages it mentions; an orphaned old blog post is flagged for pruning instead of a forced link."
+  },
+  {
+    "id": "org/digital-pr-outreach",
+    "name": "Backlink and digital PR outreach",
+    "parent": null,
+    "invoke_when": "monthly",
+    "select_by": {
+      "task": "digital-pr"
+    },
+    "inputs_required": [
+      "prospect list (journalists, guest-post sites, broken-link targets, review sites)",
+      "a real content asset or story to pitch",
+      "outreach log"
+    ],
+    "steps": [
+      "1. Build the prospect list: relevant journalists, guest-post sites, broken-link targets, listicle and review-site editors.",
+      "2. Match each prospect to a real, disclosed pitch: a data story, a guest post idea, a broken-link replacement, or a product for a listicle.",
+      "3. Draft a personalized pitch per prospect, referencing their actual past coverage, never a mail-merge blast.",
+      "4. Log every outreach with date, prospect, pitch type and status.",
+      "5. Track responses and hand off any placement needing a live link check back to org/content-refresh-audit's orphan/link tracking.",
+      "6. Flag anything that reads as undisclosed or manipulative link building for the founder before it goes out."
+    ],
+    "checks": [
+      "Every pitch is personalized, not templated",
+      "Outreach is disclosed, never presented as organic when it is a paid or reciprocal arrangement",
+      "Every sent pitch is logged with a status"
+    ],
+    "output": "{prospect_list[], pitches[{prospect, pitch_type, draft, status}], outreach_log[]}",
+    "used_by": [
+      "ORG-W25"
+    ],
+    "shared_with": [
+      "BRAND"
+    ],
+    "skill_md": "---\nname: digital-pr-outreach\nowner: ORG\nversion: 1\ninvoke_when: monthly\ninputs: prospect list, a real content asset or story to pitch, outreach log\noutputs: prospect list, personalized pitch drafts by type, a logged outreach record\n---\n# Backlink and digital PR outreach\n\n## Purpose\nEarn links and mentions through disclosed, relevant outreach: journalist queries, guest posts, broken-link and content-upgrade pitches, and review-site or listicle placements, never a templated blast or an undisclosed paid link.\n\n## Steps\n1. Build the prospect list from journalists, guest-post sites, broken-link targets and listicle/review editors relevant to the category.\n2. Match each prospect to a real, disclosed pitch type.\n3. Draft a personalized pitch referencing the prospect's actual past coverage.\n4. Log every outreach with date, prospect, pitch type and status.\n5. Track responses and hand a confirmed placement's link check to org/content-refresh-audit's tracking.\n6. Flag anything reading as undisclosed or manipulative link building for the founder before sending.\n\n## Checks\n- Every pitch is personalized.\n- All outreach is disclosed.\n- Every send is logged with a status.\n\n## Output\n{prospect_list[], pitches[], outreach_log[]}\n\n## Example\nA broken-link pitch to a parenting blog references the exact dead link on their existing \"best strollers\" post and offers the buying guide as its replacement."
+  },
+  {
+    "id": "org/local-seo-and-reviews",
+    "name": "Local SEO and reputation program",
+    "parent": null,
+    "invoke_when": "weekly, for any brand with a physical location",
+    "select_by": {
+      "task": "local-seo"
+    },
+    "inputs_required": [
+      "Google Business Profile access",
+      "store location list",
+      "NAP data across directories",
+      "review inflow"
+    ],
+    "steps": [
+      "1. Confirm the brand has a physical location; if not, stop, this workflow does not apply.",
+      "2. Check Google Business Profile for accuracy: hours, category, photos, posts, Q&A.",
+      "3. Check NAP (name, address, phone) consistency across major directories; flag mismatches for correction.",
+      "4. Run the unincentivized review-collection program: draft a request sent after a verified purchase, never offering payment or a discount for a review.",
+      "5. Draft responses to new reviews, especially negative ones, with a real next step.",
+      "6. Return the weekly local-SEO and reputation status."
+    ],
+    "checks": [
+      "No incentivized review request drafted",
+      "NAP mismatches are flagged with the exact directory and current wrong value",
+      "Confirmed the brand actually has a physical location before running any of this"
+    ],
+    "output": "{gbp_status, nap_mismatches[], review_requests_drafted[], review_response_drafts[]}",
+    "used_by": [
+      "ORG-W26"
+    ],
+    "shared_with": [],
+    "skill_md": "---\nname: local-seo-and-reviews\nowner: ORG\nversion: 1\ninvoke_when: weekly, for any brand with a physical location\ninputs: Google Business Profile access, store location list, NAP data, review inflow\noutputs: GBP accuracy status, NAP mismatch list, unincentivized review requests, response drafts\n---\n# Local SEO and reputation program\n\n## Purpose\nRun Google Business Profile, local citations and NAP consistency, plus a review-collection program that never pays for a review, since incentivized reviews break platform policy and trust.\n\n## Steps\n1. Confirm the brand actually has a physical location before running anything here.\n2. Check Google Business Profile accuracy: hours, category, photos, posts, Q&A.\n3. Check NAP consistency across directories and flag exact mismatches.\n4. Draft unincentivized review requests sent after a verified purchase; never offer payment or a discount for a review.\n5. Draft responses to new reviews, especially negative ones, with a real next step.\n6. Return the weekly status.\n\n## Checks\n- No incentivized review request.\n- NAP mismatches named exactly, with the wrong value and the directory.\n- Confirmed a physical location exists before running.\n\n## Output\n{gbp_status, nap_mismatches[], review_requests_drafted[], review_response_drafts[]}\n\n## Example\nDirectory \"Justdial\" shows the old store address; flagged with the exact wrong text and the correct address to submit."
+  },
+  {
+    "id": "org/seo-reporting-and-diagnosis",
+    "name": "SEO reporting and diagnosis",
+    "parent": null,
+    "invoke_when": "monthly, fixed cadence",
+    "select_by": {
+      "task": "seo-report"
+    },
+    "inputs_required": [
+      "Search Console export",
+      "GA4 export",
+      "metric contract: organic_sessions, organic_revenue",
+      "prior month's report"
+    ],
+    "steps": [
+      "1. Pull organic sessions, clicks, impressions, CTR, position and organic revenue from the contract, computed in code.",
+      "2. Lead the report with organic revenue, not raw traffic or ranking counts.",
+      "3. Diagnose any drop: check CTR change (titles/snippets), device mismatch (mobile vs desktop performance), bounce/engagement change, and a ranking-position change, in that order.",
+      "4. Compare against the prior month using shared/report-section's three-list format: what we did, what it did, what is next.",
+      "5. Flag any metric marked unavailable rather than guessing a number."
+    ],
+    "checks": [
+      "Report leads with revenue, not vanity traffic",
+      "Every diagnosis names the specific mechanism (CTR, device, engagement, position), not a vague 'algorithm change'",
+      "Unavailable metrics shown as unavailable"
+    ],
+    "output": "{report: {did[], did_it[], next[]}, diagnosis[{drop, likely_mechanism, evidence}]}",
+    "used_by": [
+      "ORG-W27"
+    ],
+    "shared_with": [],
+    "skill_md": "---\nname: seo-reporting-and-diagnosis\nowner: ORG\nversion: 1\ninvoke_when: monthly, fixed cadence\ninputs: Search Console export, GA4 export, metric contract (organic_sessions, organic_revenue), prior report\noutputs: revenue-led monthly report, diagnosis naming the specific mechanism behind any drop\n---\n# SEO reporting and diagnosis\n\n## Purpose\nRun the fixed-cadence Search Console and GA4 read leading with organic revenue, and diagnose a drop by its actual mechanism instead of a vague \"the algorithm changed\".\n\n## Steps\n1. Pull sessions, clicks, impressions, CTR, position and organic revenue from the contract, computed in code.\n2. Lead the report with organic revenue.\n3. For any drop, check in order: CTR change, device mismatch, bounce/engagement change, ranking-position change.\n4. Format the report as what we did, what it did, what is next, compared to the prior month.\n5. Show any missing metric as unavailable, never a guess.\n\n## Checks\n- Revenue leads, not traffic.\n- Diagnosis names a specific mechanism with evidence.\n- Missing data marked unavailable.\n\n## Output\n{report{}, diagnosis[]}\n\n## Example\nOrganic revenue fell 8% while sessions held steady: diagnosed as a CTR drop on the top 3 pages after a title change, not \"seasonal\", with the before/after CTR numbers shown."
+  },
+  {
+    "id": "org/vendor-vetting",
+    "name": "SEO, link and AEO vendor vetting",
+    "parent": null,
+    "invoke_when": "on demand, before the founder signs any vendor",
+    "select_by": {
+      "task": "vendor-vetting"
+    },
+    "inputs_required": [
+      "vendor pitch/proposal",
+      "vendor's claimed case studies",
+      "vendor's proposed tactics"
+    ],
+    "steps": [
+      "1. List every claim the vendor makes (ranking guarantee, traffic promise, link count, AI-visibility score) and check each against known red flags (guaranteed rankings, PBNs, link farms, fake case studies).",
+      "2. Verify at least 2 claimed case studies independently where possible (shared/web-research-budgeted); treat any vendor statistic as a snapshot, not a guarantee.",
+      "3. Check proposed tactics against platform guidelines (Google spam policies) for anything that risks a penalty.",
+      "4. For a GEO/AEO vendor specifically, check whether their method is a real, repeatable audit or a one-off scan sold as ongoing monitoring.",
+      "5. Score the vendor: recommend or reject, with the specific reason.",
+      "6. Package as a founder_gate scorecard before any contract is signed."
+    ],
+    "checks": [
+      "Every red flag is checked, not assumed absent",
+      "Case studies verified where possible, not taken at face value",
+      "Recommendation states a specific reason, not a gut feel"
+    ],
+    "output": "{scorecard: {claims_checked[], red_flags_found[], case_studies_verified[], recommendation, reason}}",
+    "used_by": [
+      "ORG-W28"
+    ],
+    "shared_with": [],
+    "skill_md": "---\nname: vendor-vetting\nowner: ORG\nversion: 1\ninvoke_when: on demand, before the founder signs any SEO, link or AEO vendor\ninputs: vendor pitch, claimed case studies, proposed tactics\noutputs: a scorecard: claims checked, red flags found, case studies verified, recommend/reject with reason\n---\n# SEO, link and AEO vendor vetting\n\n## Purpose\nScreen any SEO agency, freelancer, link vendor or GEO/AEO vendor pitch for red flags before the founder signs anything, treating every vendor statistic as a snapshot rather than a guarantee.\n\n## Steps\n1. List every claim the vendor makes and check each against known red flags: guaranteed rankings, PBNs, link farms, fabricated case studies.\n2. Verify at least 2 claimed case studies independently where possible.\n3. Check proposed tactics against current platform spam policies for penalty risk.\n4. For an AEO/GEO vendor, check whether their method is a real repeatable audit or a one-off scan resold as ongoing monitoring.\n5. Score the vendor with a specific recommend/reject reason.\n6. Package as a founder-gate scorecard before any signature.\n\n## Checks\n- Every red flag actually checked.\n- Case studies verified, not taken at face value.\n- Reason is specific, not a gut feel.\n\n## Output\n{scorecard{}}\n\n## Example\nVendor claims \"we guarantee page 1 in 30 days\": flagged as a red flag no legitimate SEO vendor can back, recommendation: reject."
+  },
+  {
+    "id": "org/ai-visibility-probe",
+    "name": "AI-visibility probe and gap classification",
+    "parent": null,
+    "invoke_when": "monthly",
+    "select_by": {
+      "task": "ai-visibility"
+    },
+    "inputs_required": [
+      "frozen prompt set",
+      "entity list (brand, SKUs, founder)",
+      "competitor list",
+      "prior month's citation log"
+    ],
+    "steps": [
+      "1. Run each prompt in the frozen set on the prioritized platforms (ChatGPT, Gemini, Perplexity, Google AI) via manual browser prompting.",
+      "2. Classify each result: named, cited with a link, cited without a link, or absent; note whether named alongside a competitor.",
+      "3. Check whether the answer came from live retrieval (a citation shown) or the model's own memory (no citation, possibly stale).",
+      "4. Recheck last month's citations for persistence: did a previously-cited page stay cited.",
+      "5. Classify each gap: missing fact, wrong fact, outdated fact, no coverage at all.",
+      "6. Return raw per-prompt results for the top-3-gaps report."
+    ],
+    "checks": [
+      "Never reduce the result to a single rank number",
+      "Every citation verified directly by opening the result, not inferred",
+      "Persistence check actually re-runs last month's prompts, not assumed stable"
+    ],
+    "output": "{per_prompt_results[{prompt, platform, classification, source_type, competitor_named}], persistence_check[], gaps[{type, evidence}]}",
+    "used_by": [
+      "ORG-W29"
+    ],
+    "shared_with": [],
+    "skill_md": "---\nname: ai-visibility-probe\nowner: ORG\nversion: 1\ninvoke_when: monthly\ninputs: frozen prompt set, entity list, competitor list, prior month's citation log\noutputs: per-prompt classified results, a persistence check, classified gaps\n---\n# AI-visibility probe and gap classification\n\n## Purpose\nRun the recurring, repeatable check of how ChatGPT, Gemini, Perplexity and Google AI describe the brand on a frozen prompt set, since there is no shared monitoring API today, and never collapse the result into a single deterministic rank.\n\n## Steps\n1. Run every frozen prompt on each prioritized platform, by hand.\n2. Classify each result: named, cited with link, cited without link, or absent, and whether a competitor was named instead or alongside.\n3. Check whether the answer came from live retrieval (a shown citation) or model memory with no citation.\n4. Recheck last month's citations to confirm they persisted.\n5. Classify each gap: missing fact, wrong fact, outdated fact, no coverage.\n6. Return the raw results for the reporting skill to turn into the monthly report.\n\n## Checks\n- No single rank number reported.\n- Every citation opened and verified directly.\n- Persistence actually re-run, not assumed.\n\n## Output\n{per_prompt_results[], persistence_check[], gaps[]}\n\n## Example\nPrompt \"best foldable stroller for small Indian homes\" on Perplexity cites a competitor's blog by link, and does not mention this brand at all: classified as \"no coverage\"."
+  },
+  {
+    "id": "org/fact-consistency-management",
+    "name": "Brand fact consistency: facts page build and correction",
+    "parent": null,
+    "invoke_when": "monthly to build/refresh the facts page, or on a wrong fact found event",
+    "select_by": {
+      "mode": [
+        "build",
+        "correct"
+      ]
+    },
+    "inputs_required": [
+      "ai-visibility probe gaps",
+      "brand facts (approved tier)",
+      "everywhere a fact appears: site, schema, feed, directories, reviews"
+    ],
+    "steps": [
+      "1. (build) Take every gap the probe found and check whether the brand facts page already answers it; if not, draft the missing fact block.",
+      "2. Write each fact as an atomic, standalone block: entity named directly, one fact, a source if external.",
+      "3. Check the same fact for consistency everywhere an engine can read it: site copy, schema, product feed, directory listings, review platform profiles.",
+      "4. (correct) When a wrong fact is found, fix the site source first, since that is the one surface the brand controls outright.",
+      "5. Identify the likely publisher source of the wrong fact (a directory, a syndicated review, an old press mention) and draft correction outreach to them second.",
+      "6. If the wrong fact has spread wider (forums, aggregators), draft a wider correction plan third, in that priority order.",
+      "7. Schedule a recheck of the engines after the fix to confirm the correction was picked up, not just sent."
+    ],
+    "checks": [
+      "Every fact block is atomic and tier-checked",
+      "The same fact reads identically everywhere it appears",
+      "Correction always follows site-first, then publisher, then wider web order",
+      "A recheck is scheduled, not assumed to have worked"
+    ],
+    "output": "{facts_page_blocks[{fact, source}], consistency_check[{surface, matches}], correction_plan[{step, target, status}], recheck_date}",
+    "used_by": [
+      "ORG-W29"
+    ],
+    "shared_with": [],
+    "skill_md": "---\nname: fact-consistency-management\nowner: ORG\nversion: 1\ninvoke_when: monthly to build/refresh the facts page, or on a wrong-fact-found event\ninputs: AI-visibility probe gaps, approved-tier brand facts, every surface a fact appears on\noutputs: facts page blocks, a cross-surface consistency check, a priority correction plan, a recheck date\n---\n# Brand fact consistency: facts page build and correction\n\n## Purpose\nPublish a facts page that answers every gap the probe finds, keep the same fact identical everywhere an engine can read it, and when an AI states something wrong, fix it in the right order: the site first, the likely publisher second, the wider web third.\n\n## Steps\n1. Check each probe gap against the current facts page; draft any missing fact block.\n2. Write each block atomically: the entity named directly, one fact, a source if external.\n3. Check the same fact across site copy, schema, product feed, directory listings and review profiles for consistency.\n4. On a wrong fact found, fix the site source first.\n5. Identify the likely publisher source and draft correction outreach to them second.\n6. If the fact has spread wider, draft a wider correction plan third.\n7. Schedule a recheck of the engines to confirm the fix was actually picked up.\n\n## Checks\n- Facts are atomic and tier-checked.\n- The same fact matches on every surface.\n- Correction follows site-then-publisher-then-web order, always.\n- A recheck is scheduled.\n\n## Output\n{facts_page_blocks[], consistency_check[], correction_plan[], recheck_date}\n\n## Example\nAn AI answer states the wrong warranty length; the site's own warranty page is corrected first, then outreach goes to the directory listing that likely fed the wrong figure, with a recheck scheduled for 30 days out."
+  },
+  {
+    "id": "org/aeo-page-rewrite",
+    "name": "Answer-engine page rewrite",
+    "parent": null,
+    "invoke_when": "on demand, for an existing high-value page an AI answer should be able to cite but currently cannot",
+    "select_by": {
+      "task": "aeo-rewrite"
+    },
+    "inputs_required": [
+      "page brief",
+      "prompt-audit gaps naming this page's topic",
+      "brand facts"
+    ],
+    "steps": [
+      "1. Open with an answer-first section under a question-style heading, stating the direct answer in the first sentence.",
+      "2. Break supporting content into atomic fact blocks, each standing alone if quoted out of context.",
+      "3. Name the entity directly throughout (the brand, the SKU), never 'this item' or 'our product'.",
+      "4. Add one first-hand fact a competitor could not simply restate.",
+      "5. Cap the FAQ section length so it reads as real answers, not a padded list.",
+      "6. Add an outbound citation for any claim sourced externally.",
+      "7. Score the page's readiness (answer-first present, atomic blocks present, entity named, first-hand fact present) before returning."
+    ],
+    "checks": [
+      "Every fact block stands alone out of context",
+      "Page still reads naturally, not as a list of disconnected fragments",
+      "Readiness score covers all 4 criteria"
+    ],
+    "output": "{rewritten_page, page_readiness_score: {answer_first, atomic_blocks, entity_named, first_hand_fact}}",
+    "used_by": [
+      "ORG-W29"
+    ],
+    "shared_with": [],
+    "skill_md": "---\nname: aeo-page-rewrite\nowner: ORG\nversion: 1\ninvoke_when: on demand, for an existing high-value page an AI answer engine should cite but cannot yet\ninputs: page brief, prompt-audit gaps naming this page's topic, brand facts\noutputs: rewritten page draft with a page-readiness score\n---\n# Answer-engine page rewrite\n\n## Purpose\nRestructure and rewrite an existing page so an AI answer engine can lift a direct, accurate answer from it: answer-first sections, atomic fact blocks, entity-rich sentences, while the page still reads naturally to a human.\n\n## Steps\n1. Open with an answer-first section under a question heading, the direct answer in sentence one.\n2. Break the rest into atomic fact blocks that stand alone if quoted out of context.\n3. Name the entity directly throughout, never a vague \"this item\".\n4. Add one first-hand fact a competitor could not simply copy.\n5. Cap FAQ length so it reads as real answers, not padding.\n6. Add an outbound citation for any externally sourced claim.\n7. Score readiness against all 4 criteria before returning.\n\n## Checks\n- Every fact block stands alone.\n- The page still reads naturally.\n- All 4 readiness criteria scored.\n\n## Output\n{rewritten_page, page_readiness_score{}}\n\n## Example\n\"How long does the stroller-v2 warranty last?\" heading followed immediately by \"2 years from the purchase date, covering the frame and hinge,\" before any supporting detail."
+  },
+  {
+    "id": "org/agentic-shopping-audit",
+    "name": "Agentic storefront claims audit",
+    "parent": null,
+    "invoke_when": "weekly",
+    "select_by": {
+      "task": "agentic-audit"
+    },
+    "inputs_required": [
+      "Shopify Admin Knowledge Base app data (or equivalent)",
+      "claims tiers",
+      "live product feed",
+      "frozen agentic prompt set"
+    ],
+    "steps": [
+      "1. Query the Agentic Storefront surfaces (ChatGPT, Microsoft Copilot, Google AI Mode, Gemini shopping) with the frozen prompt set for this brand's products.",
+      "2. Record exactly what each agent states about price, stock, shipping and product claims.",
+      "3. Check each stated fact against the claims tiers and the live product feed, not against what the brand intended to say.",
+      "4. Flag any mismatch: wrong price, wrong stock status, an unbacked or forbidden claim stated as fact.",
+      "5. Route pricing/stock mismatches to org/fact-consistency-management for a feed/source-of-truth fix; route claim mismatches to the facts page and correction workflow.",
+      "6. Log the week's audit for trend tracking (is the agentic surface getting more or less accurate over time)."
+    ],
+    "checks": [
+      "Every stated fact checked against the live feed, not a cached assumption",
+      "Mismatches routed to the correct fix path (feed vs facts page)",
+      "Weekly log kept for a trend view, not a one-off snapshot"
+    ],
+    "output": "{audit_log[{agent, prompt, stated_fact, live_value, mismatch_type}], routed_fixes[]}",
+    "used_by": [
+      "ORG-W30"
+    ],
+    "shared_with": [
+      "PROD"
+    ],
+    "skill_md": "---\nname: agentic-shopping-audit\nowner: ORG\nversion: 1\ninvoke_when: weekly\ninputs: Agentic Storefront query access, claims tiers, live product feed, frozen agentic prompt set\noutputs: audit log of stated facts vs live values, mismatches routed to the right fix path\n---\n# Agentic storefront claims audit\n\n## Purpose\nAs merchants now sell through Agentic Storefronts inside ChatGPT, Copilot, Google AI Mode and Gemini (managed from the Shopify Admin Knowledge Base app), check what these shopping agents actually tell a buyer against the claims tiers and the live feed, weekly, since a wrong price or stock status here costs a sale or a refund directly.\n\n## Steps\n1. Query each agentic shopping surface with the frozen prompt set for this brand's products.\n2. Record exactly what each agent states: price, stock, shipping, product claims.\n3. Check every stated fact against the claims tiers and the live feed, not brand intent.\n4. Flag mismatches: wrong price, wrong stock, an unbacked or forbidden claim stated as fact.\n5. Route price/stock mismatches to the feed fix path; route claim mismatches to the facts-page and correction workflow.\n6. Log the week's results for a trend view over time.\n\n## Checks\n- Checked against the live feed, not a cached value.\n- Mismatches routed correctly.\n- Logged weekly for trend, not a one-off check.\n\n## Output\n{audit_log[], routed_fixes[]}\n\n## Example\nChatGPT's shopping surface states stroller-v2 is \"in stock, ₹7,999\" when the live feed shows out of stock at ₹8,999: both a stock and a price mismatch, routed to the feed source-of-truth fix."
+  }
+]

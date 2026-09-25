@@ -16,8 +16,27 @@ agents/
     ORCHESTRATOR.md  DIAGNOSE.md  PROPOSE.md  REGISTRAR.md  QA-GATE.md  BRAIN-KEEPER.md  REFERENCE-SCOUT.md
   specialists/         the 8 agents that do the work
     SITE.md  CREA.md  MEDIA.md  LIFE.md  ORG.md  PROD.md  MONEY.md  BRAND.md
-  skills/              SKILL.md files for the shared skills every agent may call
+  skills/              SKILL.md files: shared skills at the top level, then one folder per agent
+                       holding its skill tree (agents/skills/<agent>/<skill>/<sub-skill>/SKILL.md)
+  SKILL-TREE.md        index of every skill and sub-skill with its invoke-when line and select-by switches
+  WORKFLOWS.md         every workflow as a numbered procedure (also agents/workflows/workflows.json)
+  ROUTING.md           how the Orchestrator turns a break into work: break to specialists, decision to dispatch,
+                       context package, sub-skill selection, scheduled work, hand-offs
+  REVIEW.json          the overlap and gap review the builder applies; id_aliases.json maps dropped ids
+  rooms/               the founder-facing screens per domain (rooms.json, ROOMS.md, one spec per agent)
+  DATA-LAYER.md        the tables every room needs, grouped by source, most-shared first
+  specialists/<CODE>.workflows.json, .skills.json, .selection-rules.md   wave 4 sources per specialist
 ```
+
+Builders: `scripts/build_agent_catalogue.py` (catalogue, indexes, catalogue page), `scripts/build_rooms.py` (rooms, data layer, rooms page), `scripts/build_workflows.py` (workflows, skill files, skill tree, workflows page). Pages land in `reviews/agents/`, `reviews/rooms/` and `reviews/workflows/`.
+
+## How the four waves were built
+
+1. Wave 1: web pass first, then every idea in the agent's folders mapped to a capability. All 3,700 folder ideas and the 421 multi ideas routed.
+2. Wave 2: role-first research. What people in each role do today (job descriptions, agency menus, tool features, gigs, agent products, India practice) and what is possible but not sold yet.
+3. Review: one pass for duplicates, wrong owners, gaps and autonomy errors, applied as an overlay with reasons.
+4. Wave 3: rooms. Jobs, metrics with formulas, insights as rules, visuals, actions, honest not-elsewhere claims, data needs.
+5. Wave 4: the employee view. Predetermined workflows per job, a nested skill tree with a SKILL.md per skill, selection rules per agent, and the routing table.
 
 Each agent file has the same shape: front matter, identity and scope, the system prompt skeleton, tools, skills, sub-agents, capability index, gaps.
 

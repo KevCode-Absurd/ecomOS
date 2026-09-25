@@ -1,0 +1,3626 @@
+[
+  {
+    "id": "MONEY-W01",
+    "name": "Month-end close: settlement reconciliation and management accounts",
+    "capabilities": [
+      "MONEY-C01",
+      "MONEY-C15",
+      "MONEY-C51",
+      "MONEY-C52",
+      "MONEY-C56",
+      "MONEY-C60",
+      "MONEY-G01",
+      "MONEY-G05"
+    ],
+    "trigger": "monthly, on the close calendar date | event: a settlement cycle ends",
+    "human_role": "the bookkeeper closing the month",
+    "inputs_required": [
+      "brand brain: chart of accounts and cost classification tree",
+      "accounting export for the month",
+      "gateway settlement files",
+      "marketplace settlement files",
+      "COD courier remittance files",
+      "open dispute list",
+      "fixed asset register",
+      "last month's P&L ladder"
+    ],
+    "steps": [
+      {
+        "n": 1,
+        "name": "Pull the month's raw exports",
+        "does": "Pull Shopify and marketplace orders, gateway settlement files, courier COD remittance files and the accounting export for the close month.",
+        "inputs": [
+          "brand brain: connector list"
+        ],
+        "tools": [
+          "connector: shopify orders (read)",
+          "connector: accounting export (read)",
+          "connector: marketplace settlement (read)",
+          "connector: courier COD remittance (read)"
+        ],
+        "skill": null,
+        "output": "raw export set with row counts per source",
+        "check": "every source file is present and dated inside the close month",
+        "ask_founder_if": "a source connector has no read access yet"
+      },
+      {
+        "n": 2,
+        "name": "Reconcile the gateway settlement",
+        "does": "Unbundle each gateway payout into gross sale, fee, refund, GST on the fee and net, then match it to the bank credit.",
+        "inputs": [
+          "gateway settlement files",
+          "bank statement"
+        ],
+        "tools": [
+          "script: money.reconciliation"
+        ],
+        "skill": "money/reconcile/gateway",
+        "output": "gateway reconciliation table with a named cause per gap",
+        "check": "every payout ties to a bank credit within 2 days or is flagged aged"
+      },
+      {
+        "n": 3,
+        "name": "Reconcile marketplace settlements",
+        "does": "Unbundle commission, fixed fee, shipping fee, TCS under Section 52, GST on fees and refunds for each marketplace payout.",
+        "inputs": [
+          "marketplace settlement files"
+        ],
+        "tools": [
+          "script: money.reconciliation"
+        ],
+        "skill": "money/reconcile/marketplace",
+        "output": "marketplace reconciliation table, one row per payout",
+        "check": "TCS and GST on fees are broken out on their own lines, never netted into one number"
+      },
+      {
+        "n": 4,
+        "name": "Reconcile COD cash and courier remittance",
+        "does": "Age cash on delivery collected by each courier against what has actually reached the bank, by courier.",
+        "inputs": [
+          "COD courier remittance files",
+          "courier SLA terms"
+        ],
+        "tools": [
+          "script: money.reconciliation"
+        ],
+        "skill": "money/reconcile/cod-courier",
+        "output": "COD aging table by courier",
+        "check": "every remittance stuck past the courier's own SLA cycle is flagged with an escalation note and a named contact"
+      },
+      {
+        "n": 5,
+        "name": "Reconcile ad platform invoices to logged spend",
+        "does": "Match the Meta and Google invoice amounts for the month to the spend the dashboards report.",
+        "inputs": [
+          "ad platform invoices",
+          "spend dashboard export"
+        ],
+        "tools": [
+          "script: money.reconciliation",
+          "mcp: Meta_MCP ads_get_dataset_stats"
+        ],
+        "skill": "money/reconcile/ad-platform-invoices",
+        "output": "ad spend reconciliation line with variance",
+        "check": "any gap over 1 percent has a named cause, never left as rounding"
+      },
+      {
+        "n": 6,
+        "name": "Build the evidence pack for each open dispute",
+        "does": "Assemble the order record, delivery proof, OTP log and support chat for each open gateway chargeback or UPI dispute, and check its filing deadline.",
+        "inputs": [
+          "open dispute list",
+          "order records"
+        ],
+        "tools": [
+          "script: money.reconciliation",
+          "connector: shopify orders (read)"
+        ],
+        "skill": null,
+        "output": "one evidence pack per open dispute, with a filing deadline",
+        "check": "no dispute is missing its filing deadline",
+        "ask_founder_if": "a dispute needs a person to submit it through the gateway's own portal"
+      },
+      {
+        "n": 7,
+        "name": "Update the fixed asset register",
+        "does": "Log any new capital purchase this month (equipment, fixtures, website build cost, packaging dies) and run the depreciation schedule.",
+        "inputs": [
+          "fixed asset register",
+          "capital purchase invoices"
+        ],
+        "tools": [
+          "script: money.fixed_asset_depreciation"
+        ],
+        "skill": "money/fixed-asset-register",
+        "output": "updated register with this month's depreciation line",
+        "check": "every asset carries purchase date, useful life and a running balance"
+      },
+      {
+        "n": 8,
+        "name": "Run the cost classification and P&L ladder",
+        "does": "Apply the fixed decision tree for COGS, cost of delivery, marketing cost and OPEX, and build the ladder from gross revenue to net profit.",
+        "inputs": [
+          "chart of accounts",
+          "cost classification tree",
+          "reconciled settlement lines"
+        ],
+        "tools": [
+          "script: money.pnl_ladder"
+        ],
+        "skill": "money/pnl-close-checklist",
+        "output": "P&L ladder for the month",
+        "check": "every line traces to a source; no line is double-counted between COGS and OPEX"
+      },
+      {
+        "n": 9,
+        "name": "Draft the settlement journal entries",
+        "does": "Draft one journal entry per settlement from the unbundled lines, instead of one lump bank deposit.",
+        "inputs": [
+          "reconciliation tables from steps 2 to 5"
+        ],
+        "tools": [
+          "script: money.reconciliation",
+          "connector: accounting export (read)"
+        ],
+        "skill": "money/reconcile/gateway",
+        "output": "draft journal entries for the accountant to post",
+        "check": "each entry's lines sum exactly to its bank credit"
+      },
+      {
+        "n": 10,
+        "name": "Run the close checklist",
+        "does": "Run bank reconciliations, accrual review, inventory valuation and deferred revenue checks.",
+        "inputs": [
+          "accounting export",
+          "inventory valuation"
+        ],
+        "tools": [
+          "script: money.pnl_ladder"
+        ],
+        "skill": "money/pnl-close-checklist",
+        "output": "close checklist, pass or fail per item",
+        "check": "no open item is left without an owner and a target date"
+      },
+      {
+        "n": 11,
+        "name": "Diff against last month",
+        "does": "Compare the ladder and every reconciliation line to the prior month and name the single biggest change.",
+        "inputs": [
+          "this month's ladder",
+          "last month's ladder"
+        ],
+        "tools": [
+          "script: money.pnl_ladder"
+        ],
+        "skill": "shared/metric-read",
+        "output": "one paragraph naming the biggest change and its cause",
+        "check": "the paragraph names a cause, not only a number"
+      },
+      {
+        "n": 12,
+        "name": "Publish the management accounts",
+        "does": "Package the ladder, the reconciliation bridge and dispute status into the monthly management accounts report.",
+        "inputs": [
+          "all prior step outputs"
+        ],
+        "tools": [
+          "script: money.pnl_ladder"
+        ],
+        "skill": "shared/report-section",
+        "output": "management accounts report",
+        "check": "every number carries a source and a freshness stamp"
+      },
+      {
+        "n": 13,
+        "name": "Route unresolved items",
+        "does": "Send anything needing a signature, a gateway portal action or a judgment call outside the cost tree to the founder or bookkeeper.",
+        "inputs": [
+          "close checklist",
+          "evidence packs"
+        ],
+        "tools": [],
+        "skill": "shared/plain-english-card",
+        "output": "routed action list with owners",
+        "check": "every unresolved item has a named owner and a date",
+        "ask_founder_if": "an accrual judgment call is not covered by the current cost classification tree"
+      }
+    ],
+    "outputs": [
+      "P&L ladder",
+      "reconciliation bridge (gateway, marketplace, COD, ad invoices)",
+      "dispute evidence packs",
+      "fixed asset register update",
+      "management accounts report",
+      "close checklist"
+    ],
+    "qa": [
+      "every number sourced and freshness stamped",
+      "no missing value shown as zero",
+      "no ad account write attempted",
+      "GST and TCS never netted into one line"
+    ],
+    "read_point": "on publish, against last month's ladder and the annual budget",
+    "typical_duration": "agent: 2 to 3 hours across the steps; waiting: up to 2 days for settlement files and accountant sign-off",
+    "subagents": []
+  },
+  {
+    "id": "MONEY-W02",
+    "name": "Weekly contribution margin, SKU and customer profitability",
+    "capabilities": [
+      "MONEY-C02",
+      "MONEY-C17",
+      "LIFE-C62"
+    ],
+    "trigger": "weekly (margin, SKU) | quarterly (customer profitability, or before a loyalty tier redesign)",
+    "human_role": "the finance analyst running the margin report",
+    "inputs_required": [
+      "brand brain: SKU cost lines, product/SKU list",
+      "order export with channel and basket detail",
+      "support ticket cost per contact",
+      "return and refund log",
+      "discount ledger",
+      "prior period's margin table"
+    ],
+    "steps": [
+      {
+        "n": 1,
+        "name": "Pull orders, costs and support cost",
+        "does": "Pull the week's orders with SKU, basket and channel detail, landed cost per SKU, support ticket cost, return cost and discount cost.",
+        "inputs": [
+          "order export",
+          "SKU cost lines",
+          "support ticket log",
+          "return log"
+        ],
+        "tools": [
+          "connector: shopify orders (read)",
+          "connector: accounting export (read)"
+        ],
+        "skill": null,
+        "output": "joined order-cost dataset",
+        "check": "every order has a channel tag and every SKU has a landed cost"
+      },
+      {
+        "n": 2,
+        "name": "Compute CM1, CM2 and CM3",
+        "does": "Compute CM1 (after COGS), CM2 (after delivery cost) and CM3 (after marketing cost), each labeled by scope.",
+        "inputs": [
+          "joined order-cost dataset"
+        ],
+        "tools": [
+          "script: money.contribution_margin"
+        ],
+        "skill": "money/margin",
+        "output": "CM1/CM2/CM3 by basket, SKU and channel",
+        "check": "no margin number is shown without its scope label"
+      },
+      {
+        "n": 3,
+        "name": "Classify each SKU",
+        "does": "Classify every SKU as champion, hidden gem, growth driver or underperformer on contribution and cash tied up.",
+        "inputs": [
+          "CM table",
+          "inventory-on-hand value"
+        ],
+        "tools": [
+          "script: money.sku_matrix"
+        ],
+        "skill": "money/margin",
+        "output": "ranked SKU contribution table with a classification tag",
+        "check": "every SKU has exactly one classification"
+      },
+      {
+        "n": 4,
+        "name": "Flag rationalization candidates",
+        "does": "Flag SKUs that are both cash-heavy and low-contribution for rationalization review.",
+        "inputs": [
+          "SKU contribution table"
+        ],
+        "tools": [
+          "script: money.sku_matrix"
+        ],
+        "skill": "money/margin",
+        "output": "rationalization candidate list",
+        "check": "each candidate lists its contribution, cash tied up and last-90-day sell-through"
+      },
+      {
+        "n": 5,
+        "name": "Add support, return and discount cost per customer",
+        "does": "Add support-ticket cost, return and refund cost, shipping cost and discount cost against each customer's revenue, in code.",
+        "inputs": [
+          "order-cost dataset",
+          "support ticket cost",
+          "return log",
+          "discount ledger"
+        ],
+        "tools": [
+          "script: money.customer_profitability"
+        ],
+        "skill": "money/margin/customer-profitability",
+        "output": "true customer profitability table",
+        "check": "no cost bucket is estimated; a missing bucket shows as unavailable"
+      },
+      {
+        "n": 6,
+        "name": "Feed loyalty tiering",
+        "does": "Rank customers by true profitability, not revenue, and flag mismatches against the current loyalty tier.",
+        "inputs": [
+          "customer profitability table",
+          "current loyalty tier list"
+        ],
+        "tools": [
+          "script: money.customer_profitability"
+        ],
+        "skill": "money/margin/customer-profitability",
+        "output": "tier-mismatch list",
+        "check": "every flagged customer shows the gap between tier and true profitability",
+        "ask_founder_if": "a tier redesign would move a named VIP customer down"
+      },
+      {
+        "n": 7,
+        "name": "Diff against the prior period",
+        "does": "Compare this period's CM, SKU classifications and customer profitability to the last run.",
+        "inputs": [
+          "this period's outputs",
+          "prior period's outputs"
+        ],
+        "tools": [
+          "script: money.contribution_margin"
+        ],
+        "skill": "shared/metric-read",
+        "output": "change list since last run",
+        "check": "every named change states the driver, not just the delta"
+      },
+      {
+        "n": 8,
+        "name": "Publish the standing report",
+        "does": "Publish the CM, SKU and customer profitability report so nobody guesses what a margin number includes.",
+        "inputs": [
+          "all prior step outputs"
+        ],
+        "tools": [],
+        "skill": "shared/report-section",
+        "output": "contribution margin and profitability report",
+        "check": "every figure states CM1, CM2 or CM3 explicitly"
+      }
+    ],
+    "outputs": [
+      "CM1/CM2/CM3 report",
+      "SKU contribution and classification table",
+      "customer profitability table",
+      "rationalization candidate list"
+    ],
+    "qa": [
+      "margin scope always labeled",
+      "no revenue shown where profit was asked for",
+      "missing cost bucket shown as unavailable, not zero"
+    ],
+    "read_point": "weekly for CM and SKU; quarterly for customer profitability, against the prior run",
+    "typical_duration": "agent: 45 to 90 minutes; no material waiting time",
+    "subagents": []
+  },
+  {
+    "id": "MONEY-W03",
+    "name": "Price and promo economics gate",
+    "capabilities": [
+      "MONEY-C04",
+      "MONEY-C05"
+    ],
+    "trigger": "event: new SKU or cost change | event: a promo is proposed",
+    "human_role": "the founder's pricing and promotions check",
+    "inputs_required": [
+      "brand brain: net-profit target, landed cost",
+      "proposed price or promo terms",
+      "90-day sales history for the SKU",
+      "metric contract: current CM by SKU"
+    ],
+    "steps": [
+      {
+        "n": 1,
+        "name": "Take the net-profit target",
+        "does": "Read the brand's net-profit target for the SKU or line, never a keystone rule of thumb.",
+        "inputs": [
+          "brand brain: profit target"
+        ],
+        "tools": [],
+        "skill": null,
+        "output": "target net-profit percent",
+        "check": "the target came from the brand brain, not an assumed default"
+      },
+      {
+        "n": 2,
+        "name": "Solve the price waterfall",
+        "does": "Solve bottom-up from landed cost through fees, shipping, returns and marketing cost to the shelf price that hits the target.",
+        "inputs": [
+          "landed cost",
+          "fee schedule",
+          "return rate",
+          "target"
+        ],
+        "tools": [
+          "script: money.pricing_waterfall"
+        ],
+        "skill": "money/pricing-waterfall",
+        "output": "proposed shelf price with full waterfall",
+        "check": "the waterfall shows every line between cost and price, none skipped"
+      },
+      {
+        "n": 3,
+        "name": "Or model the promo economics",
+        "does": "For a proposed promo (percent-off, BOGO, gift-with-purchase, flash sale), model its real cost shape through the same waterfall.",
+        "inputs": [
+          "promo terms",
+          "SKU cost lines"
+        ],
+        "tools": [
+          "script: money.promo_breakeven"
+        ],
+        "skill": "money/pricing-waterfall",
+        "output": "promo cost model",
+        "check": "the model uses the promo's real mechanic, not a flat percent-off assumption"
+      },
+      {
+        "n": 4,
+        "name": "Run the break-even check",
+        "does": "Run a break-even go/no-go check on the promo, or a margin stress-test on the new price.",
+        "inputs": [
+          "promo cost model or price waterfall"
+        ],
+        "tools": [
+          "script: money.promo_breakeven"
+        ],
+        "skill": "money/pricing-waterfall",
+        "output": "go/no-go recommendation with the break-even volume",
+        "check": "the recommendation states the exact volume or margin needed to break even"
+      },
+      {
+        "n": 5,
+        "name": "Stress-test 60 to 90 days out",
+        "does": "For a new price, stress-test it against 60 to 90 days of actual sell-through once live.",
+        "inputs": [
+          "sales history since launch"
+        ],
+        "tools": [
+          "script: money.pricing_waterfall"
+        ],
+        "skill": "money/pricing-waterfall",
+        "output": "stress-test note",
+        "check": "the stress-test uses real sell-through, not the launch-day forecast"
+      },
+      {
+        "n": 6,
+        "name": "Write the founder brief",
+        "does": "Write the recommendation, the numbers behind it and the risk, with an explicit approve, reject or park line.",
+        "inputs": [
+          "waterfall or promo model",
+          "break-even check"
+        ],
+        "tools": [],
+        "skill": "shared/developer-brief",
+        "output": "founder brief with approve/reject/park line",
+        "check": "the brief states the number the founder is approving, not just a description"
+      },
+      {
+        "n": 7,
+        "name": "Stop for approval",
+        "does": "Stop before the price or promo goes public. Do not draft the site or ad copy change until approved.",
+        "inputs": [
+          "founder brief"
+        ],
+        "tools": [],
+        "skill": "shared/founder-question-round",
+        "output": "approval record",
+        "check": "no downstream artefact is drafted before this step returns approved",
+        "ask_founder_if": "always: this capability is founder_gate"
+      }
+    ],
+    "outputs": [
+      "price waterfall",
+      "promo break-even model",
+      "founder brief with approve/reject/park line"
+    ],
+    "qa": [
+      "profit target never replaced by keystone",
+      "TCS, GST and fee lines all present in the waterfall",
+      "no live change without recorded approval"
+    ],
+    "read_point": "60 to 90 days after a price goes live, or the day after a promo ends",
+    "typical_duration": "agent: 30 to 60 minutes; waiting: founder decision turnaround",
+    "subagents": []
+  },
+  {
+    "id": "MONEY-W04",
+    "name": "Cash forecast, inventory planning and financing evaluation",
+    "capabilities": [
+      "MONEY-C06",
+      "MONEY-C07",
+      "MONEY-C08",
+      "PROD-C42"
+    ],
+    "trigger": "weekly (forecast, inventory) | on demand (financing evaluation)",
+    "human_role": "the person planning cash for the next quarter",
+    "inputs_required": [
+      "brand brain: bank balance, payroll calendar, supplier lead times",
+      "ad spend plan",
+      "inventory on order",
+      "current financing terms if any"
+    ],
+    "steps": [
+      {
+        "n": 1,
+        "name": "Pull cash inputs",
+        "does": "Pull the bank balance, payroll calendar, supplier lead times, inventory on order and the ad spend plan.",
+        "inputs": [
+          "brand brain sections"
+        ],
+        "tools": [
+          "connector: accounting export (read)"
+        ],
+        "skill": null,
+        "output": "cash input set",
+        "check": "all five inputs present or named as unavailable"
+      },
+      {
+        "n": 2,
+        "name": "Build the 13-week forecast",
+        "does": "Build a rolling 13-week cash forecast from the inputs.",
+        "inputs": [
+          "cash input set"
+        ],
+        "tools": [
+          "script: money.cash_forecast_13wk"
+        ],
+        "skill": "money/cash-forecast-13wk",
+        "output": "13-week cash table",
+        "check": "the forecast never lets inventory cash go negative"
+      },
+      {
+        "n": 3,
+        "name": "Reconcile profit to free cash flow",
+        "does": "Reconcile this month's profit to free cash flow and name the gap.",
+        "inputs": [
+          "P&L ladder",
+          "cash table"
+        ],
+        "tools": [
+          "script: money.cash_forecast_13wk"
+        ],
+        "skill": "money/cash-forecast-13wk",
+        "output": "profit-to-cash bridge",
+        "check": "the bridge names each of the 4 hidden cash traps checked"
+      },
+      {
+        "n": 4,
+        "name": "Flag the lowest cash point",
+        "does": "Flag the lowest projected cash week before it happens, with a sensitivity range.",
+        "inputs": [
+          "cash table"
+        ],
+        "tools": [
+          "script: money.cash_forecast_13wk"
+        ],
+        "skill": "money/cash-forecast-13wk",
+        "output": "lowest-cash-week flag with sensitivity note",
+        "check": "the flag fires at least 3 weeks before the low point"
+      },
+      {
+        "n": 5,
+        "name": "Roll inventory cash forward",
+        "does": "Roll inventory forward with lead time to plan cash, targeting days-of-inventory to supplier lead time.",
+        "inputs": [
+          "inventory on order",
+          "supplier lead times"
+        ],
+        "tools": [
+          "script: money.cash_forecast_13wk"
+        ],
+        "skill": "money/cash-forecast-13wk",
+        "output": "inventory cash plan",
+        "check": "days-of-inventory is compared to lead time explicitly, not left implicit"
+      },
+      {
+        "n": 6,
+        "name": "Manage the cash conversion cycle",
+        "does": "Track days inventory, days payable and days receivable together as the cash conversion cycle.",
+        "inputs": [
+          "inventory cash plan",
+          "AP and AR aging"
+        ],
+        "tools": [
+          "script: money.cash_forecast_13wk"
+        ],
+        "skill": "money/cash-forecast-13wk",
+        "output": "cash conversion cycle number with trend",
+        "check": "the cycle is shown as one number with its 3 parts, not only the parts"
+      },
+      {
+        "n": 7,
+        "name": "Compare financing options",
+        "does": "When cash runs low or a hard-to-source launch needs funding, compare real borrowing options (line of credit, inventory financing, revenue-based) and, for a hard-to-fund launch, crowdfunding, private capital or manufacturer referrals, against reference cost-of-capital rates.",
+        "inputs": [
+          "lowest-cash flag",
+          "financing terms available"
+        ],
+        "tools": [
+          "web: search (public, budgeted)"
+        ],
+        "skill": "money/financing-comparison",
+        "output": "financing option comparison",
+        "check": "every option shows its real cost of capital, not the advertised rate"
+      },
+      {
+        "n": 8,
+        "name": "Stress-test repayments",
+        "does": "Stress-test any financing option's repayment schedule against a slower-sales scenario.",
+        "inputs": [
+          "financing option comparison",
+          "cash forecast"
+        ],
+        "tools": [
+          "script: money.cash_forecast_13wk"
+        ],
+        "skill": "money/financing-comparison",
+        "output": "repayment stress-test",
+        "check": "the stress case uses the brand's own slow-month history, not a generic haircut"
+      },
+      {
+        "n": 9,
+        "name": "Write the founder brief and stop",
+        "does": "Write the recommendation and stop for approval before any financing commitment or launch spend is signed.",
+        "inputs": [
+          "all prior outputs"
+        ],
+        "tools": [],
+        "skill": "shared/developer-brief",
+        "output": "founder brief with approve/reject/park line",
+        "check": "no financing or sourcing commitment is treated as decided by this agent",
+        "ask_founder_if": "always: financing evaluation and sourcing decisions are human_assist"
+      }
+    ],
+    "outputs": [
+      "13-week cash forecast",
+      "inventory cash plan",
+      "financing option comparison",
+      "founder brief"
+    ],
+    "qa": [
+      "inventory never modeled negative",
+      "profit and cash reconciled monthly",
+      "financing cost shown at its real rate"
+    ],
+    "read_point": "weekly against the rolling forecast; on demand when financing is evaluated",
+    "typical_duration": "agent: 1 to 2 hours; waiting: lender or manufacturer response time for financing evaluation",
+    "subagents": []
+  },
+  {
+    "id": "MONEY-W05",
+    "name": "Capital raising, investor and lender reporting, and insurance",
+    "capabilities": [
+      "MONEY-C58",
+      "MONEY-C59",
+      "MONEY-G02"
+    ],
+    "trigger": "on demand (raise or loan process) | monthly (reporting) | quarterly (board deck) | annually (insurance renewal) | event: insured loss",
+    "human_role": "the person assembling the data room and the cover",
+    "inputs_required": [
+      "brand brain: cap table, prior raises, insurance policies",
+      "P&L ladder",
+      "cash forecast",
+      "CAC/LTV report",
+      "loss or claim event details"
+    ],
+    "steps": [
+      {
+        "n": 1,
+        "name": "Assemble the data room",
+        "does": "Assemble the recurring documents a lender or investor asks for: financials, cohort economics, cap table, contracts.",
+        "inputs": [
+          "P&L ladder",
+          "cash forecast",
+          "CAC/LTV report",
+          "cap table"
+        ],
+        "tools": [
+          "script: money.pnl_ladder"
+        ],
+        "skill": "money/capital-and-investor-reporting",
+        "output": "current data room",
+        "check": "every document in the room has a version date"
+      },
+      {
+        "n": 2,
+        "name": "Produce the recurring reporting pack",
+        "does": "Produce the monthly update, covenant compliance check and quarterly board deck financials from existing outputs.",
+        "inputs": [
+          "data room",
+          "loan covenant terms"
+        ],
+        "tools": [
+          "script: money.cash_forecast_13wk"
+        ],
+        "skill": "money/capital-and-investor-reporting",
+        "output": "reporting pack",
+        "check": "covenant compliance is stated as met or breached, never implied"
+      },
+      {
+        "n": 3,
+        "name": "Identify required insurance coverage",
+        "does": "Identify the coverage an e-commerce brand needs: product liability, cyber, business owner's policy, and D&O once there are outside investors.",
+        "inputs": [
+          "brand brain: business profile"
+        ],
+        "tools": [
+          "web: search (public, budgeted)"
+        ],
+        "skill": "money/insurance-cover-and-claims",
+        "output": "coverage checklist by type",
+        "check": "each coverage type states why it applies to this brand"
+      },
+      {
+        "n": 4,
+        "name": "Compare quotes",
+        "does": "Compare insurance quotes against the coverage checklist and the brand's own risk profile.",
+        "inputs": [
+          "coverage checklist",
+          "broker quotes"
+        ],
+        "tools": [
+          "web: search (public, budgeted)"
+        ],
+        "skill": "money/insurance-cover-and-claims",
+        "output": "quote comparison table",
+        "check": "premium, deductible and exclusions are shown side by side, not just premium"
+      },
+      {
+        "n": 5,
+        "name": "Track the renewal date",
+        "does": "Track the renewal date for every active policy and flag it before the window closes.",
+        "inputs": [
+          "insurance policy list"
+        ],
+        "tools": [],
+        "skill": "money/insurance-cover-and-claims",
+        "output": "renewal calendar",
+        "check": "no policy renews without a flag at least 30 days ahead"
+      },
+      {
+        "n": 6,
+        "name": "Prepare a claim on a loss event",
+        "does": "When a loss occurs, prepare the claim with the evidence the insurer asks for (transit, stock, cyber or product liability) and track it to resolution.",
+        "inputs": [
+          "loss event details",
+          "policy terms"
+        ],
+        "tools": [],
+        "skill": "money/insurance-cover-and-claims",
+        "output": "claim file with tracked status",
+        "check": "the claim cites the exact policy clause it is filed under",
+        "ask_founder_if": "the loss involves a customer injury or a data breach needing legal review"
+      },
+      {
+        "n": 7,
+        "name": "Write the founder brief and stop",
+        "does": "Write the recommendation on financing, coverage or a claim outcome and stop for approval before any commitment.",
+        "inputs": [
+          "all prior outputs"
+        ],
+        "tools": [],
+        "skill": "shared/developer-brief",
+        "output": "founder brief with approve/reject/park line",
+        "check": "no financing, coverage or claim decision is treated as final by this agent",
+        "ask_founder_if": "always: these are founder_gate or human_assist capabilities"
+      }
+    ],
+    "outputs": [
+      "data room",
+      "investor/lender reporting pack",
+      "insurance coverage checklist",
+      "claim file"
+    ],
+    "qa": [
+      "every document version-dated",
+      "covenant status stated plainly",
+      "claim evidence matches the exact policy clause"
+    ],
+    "read_point": "monthly for reporting; annually for renewal; on the claim's resolution date",
+    "typical_duration": "agent: 1 to 2 hours per cycle; waiting: lender, investor or insurer turnaround",
+    "subagents": []
+  },
+  {
+    "id": "MONEY-W06",
+    "name": "Report unit economics and plan the growth budget",
+    "capabilities": [
+      "MONEY-C09",
+      "MONEY-C10",
+      "MONEY-C11",
+      "MONEY-C18",
+      "MONEY-C63"
+    ],
+    "trigger": "weekly (CAC, LTV, revenue forecast) | monthly (OPEX budget, MMM refresh)",
+    "human_role": "the growth finance lead",
+    "inputs_required": [
+      "metric contract: CAC bands",
+      "orders with cohort and channel tags",
+      "ad spend by channel",
+      "marketing calendar",
+      "subscription plan terms if any",
+      "prior period's forecast"
+    ],
+    "steps": [
+      {
+        "n": 1,
+        "name": "Screen orders for fraud and bots",
+        "does": "Screen the order set for fraud and bot-driven orders before computing any cohort number.",
+        "inputs": [
+          "order export"
+        ],
+        "tools": [
+          "script: money.cac_ltv_cohorts"
+        ],
+        "skill": "money/growth-economics-stack",
+        "output": "clean order set",
+        "check": "flagged orders are excluded and counted, not silently dropped"
+      },
+      {
+        "n": 2,
+        "name": "Compute the 4 labeled CACs",
+        "does": "Compute blended, media-only, paid and fully loaded CAC from spend and orders.",
+        "inputs": [
+          "clean order set",
+          "ad spend by channel"
+        ],
+        "tools": [
+          "script: money.cac_ltv_cohorts"
+        ],
+        "skill": "money/growth-economics-stack",
+        "output": "4 labeled CAC figures",
+        "check": "no CAC is shown without its label"
+      },
+      {
+        "n": 3,
+        "name": "Build cohorts and LTGP:CAC",
+        "does": "Build first-order cohorts, compute CAC payback and LTGP:CAC against the metric contract's fixed bands.",
+        "inputs": [
+          "clean order set"
+        ],
+        "tools": [
+          "script: money.cac_ltv_cohorts"
+        ],
+        "skill": "money/growth-economics-stack",
+        "output": "cohort table with payback and LTGP:CAC",
+        "check": "LTV is gross profit, never revenue"
+      },
+      {
+        "n": 4,
+        "name": "Gate acquisition scale-up",
+        "does": "Gate any acquisition scale-up recommendation on first-order economics, not blended averages.",
+        "inputs": [
+          "cohort table"
+        ],
+        "tools": [
+          "script: money.cac_ltv_cohorts"
+        ],
+        "skill": "money/growth-economics-stack",
+        "output": "scale/hold recommendation",
+        "check": "the recommendation names the cohort it is based on"
+      },
+      {
+        "n": 5,
+        "name": "Forecast revenue from separate inputs",
+        "does": "Forecast new-customer and returning revenue separately from the spend-efficiency curve, cohort repeat rate and the dated marketing calendar.",
+        "inputs": [
+          "cohort table",
+          "marketing calendar",
+          "spend-efficiency curve"
+        ],
+        "tools": [
+          "script: money.revenue_forecast"
+        ],
+        "skill": "money/growth-economics-stack",
+        "output": "revenue forecast with error bars",
+        "check": "short histories are regressed to the mean, never extrapolated straight-line"
+      },
+      {
+        "n": 6,
+        "name": "Build subscription unit economics",
+        "does": "If the brand has subscriptions, build churn against the correct prior-period base, conservative lifetime estimates, and prepaid-plan economics.",
+        "inputs": [
+          "subscription order history"
+        ],
+        "tools": [
+          "script: money.subscription_economics"
+        ],
+        "skill": "money/growth-economics-stack",
+        "output": "subscription unit economics report",
+        "check": "churn denominator is the correct prior-period base, not total customers"
+      },
+      {
+        "n": 7,
+        "name": "Build the annual budget",
+        "does": "Build the annual budget separate from the rolling forecast, sizing OPEX and payroll to the brand's own profit target.",
+        "inputs": [
+          "P&L ladder",
+          "profit target"
+        ],
+        "tools": [
+          "script: money.scenario_ranker"
+        ],
+        "skill": "money/growth-economics-stack",
+        "output": "annual budget",
+        "check": "OPEX is sized to the profit target, not last year's spend plus a percent"
+      },
+      {
+        "n": 8,
+        "name": "Answer the marginal spend question",
+        "does": "Answer marginal spend questions (the next 10,000 dollars) by ranking channels on CM3 and CAC payback.",
+        "inputs": [
+          "annual budget",
+          "CAC and CM data"
+        ],
+        "tools": [
+          "script: money.scenario_ranker"
+        ],
+        "skill": "money/growth-economics-stack",
+        "output": "ranked marginal spend answer",
+        "check": "the ranking is computed in code, never asserted in prose"
+      },
+      {
+        "n": 9,
+        "name": "Cross-check with an MMM read where relevant",
+        "does": "Where blended MER and platform ROAS keep disagreeing, cross-check the scenario ranking against a marketing mix read.",
+        "inputs": [
+          "scenario ranking",
+          "blended MER history"
+        ],
+        "tools": [
+          "script: money.scenario_ranker"
+        ],
+        "skill": "money/mmm-stack-evaluate",
+        "output": "MMM cross-check note",
+        "check": "the note states agreement or the size of the gap, never silently picks one number"
+      },
+      {
+        "n": 10,
+        "name": "Publish the weekly and monthly outputs",
+        "does": "Publish CAC/LTV and revenue forecast weekly, and the OPEX budget and subscription economics monthly.",
+        "inputs": [
+          "all prior outputs"
+        ],
+        "tools": [],
+        "skill": "shared/report-section",
+        "output": "unit economics and budget report",
+        "check": "every figure states its window and freshness"
+      }
+    ],
+    "outputs": [
+      "CAC/LTV dashboard",
+      "revenue forecast",
+      "annual OPEX budget",
+      "subscription unit economics report",
+      "marginal spend ranking"
+    ],
+    "qa": [
+      "LTV always gross profit",
+      "no channel-level CAC presented as a finance number",
+      "scale gate based on first-order cohort, not blended"
+    ],
+    "read_point": "weekly for CAC/LTV/forecast; monthly for budget, against the annual target",
+    "typical_duration": "agent: 1.5 to 2.5 hours per full run",
+    "subagents": []
+  },
+  {
+    "id": "MONEY-W07",
+    "name": "GST, HSN and tax compliance tracking",
+    "capabilities": [
+      "MONEY-C12",
+      "MONEY-G04",
+      "LIFE-C55",
+      "PROD-C60"
+    ],
+    "trigger": "monthly, before GST return filing | event: new SKU or B2B dispatch",
+    "human_role": "the person tracking GST and tax compliance",
+    "inputs_required": [
+      "brand brain: selling markets, SKU list",
+      "GSTR-2B",
+      "return and refund log",
+      "credit note register",
+      "stock transfer and B2B dispatch log",
+      "gift card and loyalty point ledger"
+    ],
+    "steps": [
+      {
+        "n": 1,
+        "name": "Assign and validate HSN or SAC codes",
+        "does": "Build and keep the SKU-to-HSN/SAC map correct for every SKU, since a wrong or too-short code is a common cause of e-invoice portal rejections.",
+        "inputs": [
+          "SKU list",
+          "product category"
+        ],
+        "tools": [
+          "script: money.hsn_map_validate"
+        ],
+        "skill": "money/gst-tax-compliance",
+        "output": "SKU-to-HSN/SAC map",
+        "check": "no SKU ships without a validated code"
+      },
+      {
+        "n": 2,
+        "name": "Track GST nexus and registration thresholds",
+        "does": "Track GST or sales-tax nexus and registration thresholds per market the brand sells into.",
+        "inputs": [
+          "brand brain: selling markets",
+          "sales by state or country"
+        ],
+        "tools": [
+          "script: money.compliance_tracker"
+        ],
+        "skill": "money/gst-tax-compliance",
+        "output": "nexus and threshold status by market",
+        "check": "a market crossing a threshold is flagged before the filing deadline, not after"
+      },
+      {
+        "n": 3,
+        "name": "Prepare GSTR-1 and 3B inputs",
+        "does": "Prepare the sales and input-credit data GSTR-1 and 3B need, and match input credit against GSTR-2B.",
+        "inputs": [
+          "sales ledger",
+          "GSTR-2B"
+        ],
+        "tools": [
+          "script: money.compliance_tracker"
+        ],
+        "skill": "money/gst-tax-compliance",
+        "output": "GSTR-1/3B input pack",
+        "check": "every mismatch between claimed and GSTR-2B credit is listed, not netted away"
+      },
+      {
+        "n": 4,
+        "name": "Claim marketplace TCS and TDS credit",
+        "does": "Reconcile TCS collected by marketplaces under Section 52 and TDS deducted against the credit actually available.",
+        "inputs": [
+          "marketplace settlement TCS lines"
+        ],
+        "tools": [
+          "script: money.compliance_tracker"
+        ],
+        "skill": "money/gst-tax-compliance",
+        "output": "TCS/TDS credit reconciliation",
+        "check": "credit claimed never exceeds what the marketplace's own statement supports"
+      },
+      {
+        "n": 5,
+        "name": "Raise e-way bills",
+        "does": "Raise e-way bills for B2B dispatch and stock transfer above the threshold value.",
+        "inputs": [
+          "stock transfer log",
+          "B2B dispatch log"
+        ],
+        "tools": [
+          "script: money.compliance_tracker"
+        ],
+        "skill": "money/gst-tax-compliance",
+        "output": "e-way bill log",
+        "check": "every dispatch above threshold has a matching e-way bill number"
+      },
+      {
+        "n": 6,
+        "name": "Reconcile GST credit notes against returns",
+        "does": "Check that every completed return or refund has a matching GST credit note issued and filed on time.",
+        "inputs": [
+          "return and refund log",
+          "credit note register"
+        ],
+        "tools": [
+          "script: money.compliance_tracker"
+        ],
+        "skill": "money/gst-tax-compliance",
+        "output": "credit note reconciliation",
+        "check": "a refund without a matching credit note is flagged before the return period closes"
+      },
+      {
+        "n": 7,
+        "name": "Book liabilities correctly",
+        "does": "Book gift cards and loyalty points as liabilities recognized on redemption, and track FX exposure separately from GST.",
+        "inputs": [
+          "gift card ledger",
+          "loyalty point ledger",
+          "FX exposure log"
+        ],
+        "tools": [
+          "script: money.compliance_tracker"
+        ],
+        "skill": "money/gst-tax-compliance",
+        "output": "liability ledger entries",
+        "check": "gift cards are never recognized as revenue at sale"
+      },
+      {
+        "n": 8,
+        "name": "Hand off filing to the accountant",
+        "does": "Package GSTR-1, 3B inputs, credit reconciliation and e-way bill log for the brand's accountant to file.",
+        "inputs": [
+          "all prior outputs"
+        ],
+        "tools": [],
+        "skill": "shared/developer-brief",
+        "output": "filing handoff package",
+        "check": "the package states what this agent tracked versus what filing itself still needs a person",
+        "ask_founder_if": "always: actual GST return filing stays with the brand's accountant"
+      }
+    ],
+    "outputs": [
+      "SKU-to-HSN/SAC map",
+      "GST nexus status",
+      "GSTR-1/3B input pack",
+      "e-way bill log",
+      "credit note reconciliation"
+    ],
+    "qa": [
+      "no SKU without a validated HSN/SAC code",
+      "TCS and GST on fees never netted",
+      "filing itself stays human, tracking is agent_does"
+    ],
+    "read_point": "monthly, ahead of the filing deadline",
+    "typical_duration": "agent: 1 to 1.5 hours; waiting: accountant filing turnaround",
+    "subagents": []
+  },
+  {
+    "id": "MONEY-W08",
+    "name": "Run the cash operations cycle: payables, receivables, payroll and expense",
+    "capabilities": [
+      "MONEY-C53",
+      "MONEY-C54",
+      "MONEY-C55",
+      "MONEY-C57"
+    ],
+    "trigger": "on bill receipt and weekly aging (AP) | on invoice due date and weekly aging (AR) | monthly payroll cycle | monthly card cycle (expense)",
+    "human_role": "the accounts operations person",
+    "inputs_required": [
+      "brand brain: approval chain by amount and vendor",
+      "purchase orders and receipts",
+      "B2B and wholesale invoice terms",
+      "payroll roster and statutory rates",
+      "travel-and-expense policy",
+      "corporate card statement"
+    ],
+    "steps": [
+      {
+        "n": 1,
+        "name": "Capture every vendor bill",
+        "does": "Capture every incoming vendor bill and match it to its purchase order and goods receipt.",
+        "inputs": [
+          "vendor bills",
+          "purchase orders",
+          "receipts"
+        ],
+        "tools": [
+          "script: money.ap_capture_match"
+        ],
+        "skill": "money/cash-ops-cycle",
+        "output": "matched bill set",
+        "check": "every bill has a matching PO and receipt or is flagged unmatched"
+      },
+      {
+        "n": 2,
+        "name": "Route AP approval",
+        "does": "Route each matched bill through the approval chain by amount and vendor, and schedule payment on the agreed terms.",
+        "inputs": [
+          "matched bill set",
+          "approval chain rules"
+        ],
+        "tools": [
+          "script: money.ap_capture_match"
+        ],
+        "skill": "money/cash-ops-cycle",
+        "output": "AP approval queue and payment schedule",
+        "check": "no bill is scheduled for payment without its approval step complete"
+      },
+      {
+        "n": 3,
+        "name": "Run the AP aging review",
+        "does": "Run the weekly aging review on unpaid bills and flag anything approaching a late-payment penalty.",
+        "inputs": [
+          "AP approval queue"
+        ],
+        "tools": [
+          "script: money.ap_capture_match"
+        ],
+        "skill": "money/cash-ops-cycle",
+        "output": "AP aging report",
+        "check": "every bill nearing its due date is flagged at least 3 days ahead"
+      },
+      {
+        "n": 4,
+        "name": "Invoice wholesale and B2B buyers",
+        "does": "Invoice wholesale and B2B buyers on their agreed terms.",
+        "inputs": [
+          "B2B order and terms data"
+        ],
+        "tools": [
+          "script: money.ar_dunning"
+        ],
+        "skill": "money/cash-ops-cycle",
+        "output": "issued invoices",
+        "check": "every invoice states its due date from the agreed terms, never a default"
+      },
+      {
+        "n": 5,
+        "name": "Track AR to collection",
+        "does": "Track every invoice from issue to collection and run a structured dunning sequence on anything overdue.",
+        "inputs": [
+          "issued invoices",
+          "payment receipts"
+        ],
+        "tools": [
+          "script: money.ar_dunning"
+        ],
+        "skill": "money/cash-ops-cycle",
+        "output": "AR aging and dunning log",
+        "check": "the dunning sequence follows a fixed schedule, not an ad hoc reminder"
+      },
+      {
+        "n": 6,
+        "name": "Process payroll",
+        "does": "Process payroll for the cycle from the roster and hours or salary data.",
+        "inputs": [
+          "payroll roster",
+          "hours or salary data"
+        ],
+        "tools": [
+          "script: money.payroll_statutory"
+        ],
+        "skill": "money/cash-ops-cycle",
+        "output": "payroll run",
+        "check": "every employee's gross-to-net calculation is shown, not just the net figure"
+      },
+      {
+        "n": 7,
+        "name": "Prepare statutory filings",
+        "does": "Prepare the statutory filings that go with payroll: PF, ESI, professional tax and TDS, plus Form 16 at year end.",
+        "inputs": [
+          "payroll run"
+        ],
+        "tools": [
+          "script: money.payroll_statutory"
+        ],
+        "skill": "money/cash-ops-cycle",
+        "output": "statutory filing pack",
+        "check": "every filing amount ties back to the payroll run it came from",
+        "ask_founder_if": "a filing needs a person's digital signature to submit"
+      },
+      {
+        "n": 8,
+        "name": "Collect and apply the expense policy",
+        "does": "Collect receipts for every reimbursable expense and corporate card charge and apply the travel-and-expense policy.",
+        "inputs": [
+          "receipts",
+          "corporate card statement",
+          "expense policy"
+        ],
+        "tools": [
+          "script: money.expense_card_reconcile"
+        ],
+        "skill": "money/cash-ops-cycle",
+        "output": "policy-checked expense list",
+        "check": "every line is marked compliant or flagged against the written policy"
+      },
+      {
+        "n": 9,
+        "name": "Reconcile the card statement",
+        "does": "Reconcile the corporate card statement to the ledger.",
+        "inputs": [
+          "policy-checked expense list",
+          "card statement"
+        ],
+        "tools": [
+          "script: money.expense_card_reconcile"
+        ],
+        "skill": "money/cash-ops-cycle",
+        "output": "card-to-ledger reconciliation",
+        "check": "every statement line matches a ledger entry or is flagged"
+      },
+      {
+        "n": 10,
+        "name": "Publish the cash operations summary",
+        "does": "Publish one summary of AP aging, AR aging, payroll cost and expense compliance for the cycle.",
+        "inputs": [
+          "all prior outputs"
+        ],
+        "tools": [],
+        "skill": "shared/report-section",
+        "output": "cash operations summary",
+        "check": "every number states its cycle and freshness"
+      }
+    ],
+    "outputs": [
+      "AP approval queue and aging",
+      "issued B2B invoices and AR aging",
+      "payroll run and statutory filing pack",
+      "expense and card reconciliation"
+    ],
+    "qa": [
+      "approval chain enforced by amount and vendor",
+      "payroll gross-to-net always shown, not only net",
+      "expense policy applied line by line"
+    ],
+    "read_point": "weekly for AP/AR aging; monthly for payroll and card cycle",
+    "typical_duration": "agent: 1.5 to 2 hours per cycle; waiting: bank payment runs and card statement date",
+    "subagents": []
+  },
+  {
+    "id": "MONEY-W09",
+    "name": "Set and reconcile partner, affiliate and creator commercial terms",
+    "capabilities": [
+      "MEDIA-C51",
+      "MONEY-G03"
+    ],
+    "trigger": "each payout cycle | event: a commission tier change is proposed | event: creator deal agreed | weekly check of live posts",
+    "human_role": "the partnerships finance lead",
+    "inputs_required": [
+      "brand brain: partner tiers, product category margins, customer status rules",
+      "affiliate network payout statement",
+      "creator agreement template",
+      "live creator and affiliate post list"
+    ],
+    "steps": [
+      {
+        "n": 1,
+        "name": "Set commission rates",
+        "does": "Set commission rates by partner type, product category and customer status (new versus returning), so margin is protected on every payout.",
+        "inputs": [
+          "product category margins",
+          "customer status rules"
+        ],
+        "tools": [
+          "script: money.affiliate_commission_calc"
+        ],
+        "skill": "money/partner-commercial-terms",
+        "output": "commission rate table",
+        "check": "no commission rate is set without checking the category's own CM"
+      },
+      {
+        "n": 2,
+        "name": "Reconcile the affiliate network statement",
+        "does": "Reconcile what the affiliate network says is owed against actual delivered, non-returned orders.",
+        "inputs": [
+          "affiliate network statement",
+          "order and return data"
+        ],
+        "tools": [
+          "script: money.affiliate_commission_calc"
+        ],
+        "skill": "money/partner-commercial-terms",
+        "output": "affiliate payout reconciliation",
+        "check": "a returned or cancelled order never carries a paid commission"
+      },
+      {
+        "n": 3,
+        "name": "Approve the payout",
+        "does": "Approve the reconciled payout amount before it is sent.",
+        "inputs": [
+          "affiliate payout reconciliation"
+        ],
+        "tools": [],
+        "skill": "shared/founder-question-round",
+        "output": "approved payout amount",
+        "check": "the payout amount matches the reconciliation exactly",
+        "ask_founder_if": "always: commission tiers and payouts are founder_gate"
+      },
+      {
+        "n": 4,
+        "name": "Keep the creator agreement template current",
+        "does": "Keep one creator agreement template current: deliverables, usage rights, exclusivity, payment terms and the disclosure clause.",
+        "inputs": [
+          "past agreements",
+          "brand brain: creator policy"
+        ],
+        "tools": [],
+        "skill": "money/partner-commercial-terms",
+        "output": "current agreement template",
+        "check": "the disclosure clause matches the current ASCI guideline"
+      },
+      {
+        "n": 5,
+        "name": "Check live posts for disclosure",
+        "does": "Check live creator and affiliate posts weekly for the ASCI and platform disclosure tags the agreement requires.",
+        "inputs": [
+          "live post list"
+        ],
+        "tools": [
+          "browser: headless chromium (read)"
+        ],
+        "skill": "money/partner-commercial-terms",
+        "output": "disclosure compliance check",
+        "check": "every non-compliant post is listed with the platform and the missing tag"
+      },
+      {
+        "n": 6,
+        "name": "Flag non-compliance",
+        "does": "Flag any creator or affiliate post missing disclosure to the founder for a takedown or correction request.",
+        "inputs": [
+          "disclosure compliance check"
+        ],
+        "tools": [],
+        "skill": "shared/plain-english-card",
+        "output": "flagged post list",
+        "check": "each flag names the specific rule the post breaks",
+        "ask_founder_if": "a repeat offender needs the agreement itself reviewed"
+      }
+    ],
+    "outputs": [
+      "commission rate table",
+      "affiliate payout reconciliation",
+      "creator agreement template",
+      "disclosure compliance check"
+    ],
+    "qa": [
+      "commission never paid on a returned order",
+      "disclosure checked against the current ASCI rule",
+      "payout never sent without approval"
+    ],
+    "read_point": "each payout cycle, against the reconciliation; weekly for disclosure checks",
+    "typical_duration": "agent: 45 minutes to 1.5 hours per cycle",
+    "subagents": []
+  },
+  {
+    "id": "MONEY-W10",
+    "name": "Audit tracking across a surface",
+    "capabilities": [
+      "MONEY-C20",
+      "MONEY-C21",
+      "MEDIA-C04",
+      "MONEY-C65"
+    ],
+    "trigger": "monthly, rotating by surface | event: new account, quarterly recheck, or after a major site or app change",
+    "human_role": "the analytics engineer running the tracking audit",
+    "inputs_required": [
+      "metric contract: current key events",
+      "GA4 property/stream config",
+      "GTM container export",
+      "Meta pixel/CAPI config",
+      "Google Ads conversion action list",
+      "consent management config"
+    ],
+    "steps": [
+      {
+        "n": 1,
+        "name": "Pick the surface",
+        "does": "Pick the surface to audit this run: GA4, Meta pixel and CAPI, Google Ads, or server events, by trigger or by the standing rotation.",
+        "inputs": [
+          "rotation schedule",
+          "trigger event"
+        ],
+        "tools": [],
+        "skill": "money/audit-tracking",
+        "output": "chosen surface",
+        "check": "the surface picked matches the trigger, not a guess"
+      },
+      {
+        "n": 2,
+        "name": "Pull the surface's live config",
+        "does": "Pull the live configuration for the chosen surface: GA4 property/stream settings, or the Meta pixel/CAPI setup, or Google Ads conversion actions, or the server-side tag container.",
+        "inputs": [
+          "chosen surface"
+        ],
+        "tools": [
+          "connector: GA4 (read)",
+          "connector: GTM (read)",
+          "mcp: Meta_MCP ads_pixel_event_read",
+          "mcp: Meta_MCP ads_get_dataset_quality"
+        ],
+        "skill": null,
+        "output": "live config export",
+        "check": "the export is dated and matches the currently published version"
+      },
+      {
+        "n": 3,
+        "name": "Run the surface-specific audit",
+        "does": "Run the fixed checklist for that surface: GA4 property/stream structure, timezone, retention, consent and key events; or Meta dedup, event match quality and consent gating; or Google Ads primary conversion action and enhanced conversions; or server-side container structure and duplicate tags.",
+        "inputs": [
+          "live config export"
+        ],
+        "tools": [
+          "script: money.ga4_audit",
+          "script: money.capi_audit"
+        ],
+        "skill": "money/audit-tracking",
+        "output": "surface audit result",
+        "check": "every checklist item is marked pass, fail or unavailable, none skipped"
+      },
+      {
+        "n": 4,
+        "name": "Verify event-to-standard-event mapping",
+        "does": "Verify every store event maps to the surface's own standard event or key event, with value passed through.",
+        "inputs": [
+          "surface audit result",
+          "metric contract: key events"
+        ],
+        "tools": [
+          "script: money.capi_audit"
+        ],
+        "skill": "money/audit-tracking",
+        "output": "event mapping table",
+        "check": "every store event has a mapped standard event or is flagged unmapped"
+      },
+      {
+        "n": 5,
+        "name": "Test in the surface's own debug tool",
+        "does": "Test the live setup in DebugView, Meta's Test Events tool, or the Google Ads diagnostics tab as the surface requires.",
+        "inputs": [
+          "event mapping table"
+        ],
+        "tools": [
+          "browser: headless chromium (read)"
+        ],
+        "skill": "money/audit-tracking",
+        "output": "debug test result",
+        "check": "the test uses a real test transaction, not only a config read"
+      },
+      {
+        "n": 6,
+        "name": "Build the ranked fix list",
+        "does": "Build a ranked fix list: the exact current setting, the exact proposed setting, and whether it needs founder approval or a person to apply it.",
+        "inputs": [
+          "surface audit result",
+          "debug test result"
+        ],
+        "tools": [],
+        "skill": "shared/surface-audit",
+        "output": "ranked fix list",
+        "check": "every fix row names the surface it touches"
+      },
+      {
+        "n": 7,
+        "name": "Compare to the last audit",
+        "does": "Compare this audit to the last one run on the same surface and flag anything that regressed.",
+        "inputs": [
+          "ranked fix list",
+          "prior audit result"
+        ],
+        "tools": [
+          "script: money.metric_contract"
+        ],
+        "skill": "shared/metric-read",
+        "output": "regression flag list",
+        "check": "a regression is flagged even if the current state still passes"
+      },
+      {
+        "n": 8,
+        "name": "Hand off the fix list",
+        "does": "Hand the fix list to a developer or the founder, since this agent never applies a tracking change itself.",
+        "inputs": [
+          "ranked fix list"
+        ],
+        "tools": [],
+        "skill": "shared/developer-brief",
+        "output": "fix list handoff",
+        "check": "no tracking configuration was changed by this agent",
+        "ask_founder_if": "a fix needs a person with admin access to the ad account or the tag manager"
+      }
+    ],
+    "outputs": [
+      "surface audit report",
+      "event mapping table",
+      "ranked fix list"
+    ],
+    "qa": [
+      "one property or pixel per journey confirmed",
+      "internal traffic filtered",
+      "no page_view marked as a key event"
+    ],
+    "read_point": "monthly per surface; immediately after any major site or app change",
+    "typical_duration": "agent: 45 to 75 minutes per surface",
+    "subagents": [
+      "money-security-scanner shares log access for the server-events surface only"
+    ]
+  },
+  {
+    "id": "MONEY-W11",
+    "name": "Enforce UTM discipline and reconcile attribution models",
+    "capabilities": [
+      "MONEY-C22",
+      "MONEY-C23",
+      "MONEY-C24",
+      "MEDIA-C56"
+    ],
+    "trigger": "monthly | trigger: platform ROAS and blended MER keep disagreeing, or a budget review",
+    "human_role": "the analytics engineer keeping attribution honest",
+    "inputs_required": [
+      "one written UTM convention",
+      "every existing paid and owned link",
+      "GA4, Meta, Shopify and marketplace order counts",
+      "last-click and data-driven attribution reports"
+    ],
+    "steps": [
+      {
+        "n": 1,
+        "name": "Write or confirm the UTM convention",
+        "does": "Write one UTM convention (source, medium, campaign, content, term) or confirm the existing one is still followed.",
+        "inputs": [
+          "brand brain: channel list"
+        ],
+        "tools": [],
+        "skill": "money/utm-link-hygiene",
+        "output": "UTM convention document",
+        "check": "every parameter has a fixed, documented value set"
+      },
+      {
+        "n": 2,
+        "name": "Audit every existing link",
+        "does": "Audit every existing paid and owned link against the convention.",
+        "inputs": [
+          "UTM convention",
+          "campaign link export"
+        ],
+        "tools": [
+          "script: money.utm_audit"
+        ],
+        "skill": "money/utm-link-hygiene",
+        "output": "link audit table",
+        "check": "every non-conforming link is listed with its exact fix"
+      },
+      {
+        "n": 3,
+        "name": "Clean fake organic and direct rows",
+        "does": "Clean fake organic or direct rows out of campaign tables caused by missing or broken UTMs before anyone reads them.",
+        "inputs": [
+          "link audit table",
+          "GA4 channel report"
+        ],
+        "tools": [
+          "script: money.utm_audit"
+        ],
+        "skill": "money/utm-link-hygiene",
+        "output": "cleaned channel table",
+        "check": "no channel table is published with a known UTM leak still in it"
+      },
+      {
+        "n": 4,
+        "name": "Cross-check order counts",
+        "does": "Cross-check GA4, Meta, Shopify and marketplace order counts against each other and against store orders for the period.",
+        "inputs": [
+          "order counts by source"
+        ],
+        "tools": [
+          "script: money.cross_platform_reconcile"
+        ],
+        "skill": "money/attribution-model-reconcile",
+        "output": "order count cross-check table",
+        "check": "every gap over 2 percent has a named cause"
+      },
+      {
+        "n": 5,
+        "name": "Flag bot-driven spikes",
+        "does": "Flag any spike in one platform's order or session count that does not match store orders, as a possible bot signal.",
+        "inputs": [
+          "order count cross-check table"
+        ],
+        "tools": [
+          "script: money.cross_platform_reconcile"
+        ],
+        "skill": "money/attribution-model-reconcile",
+        "output": "bot spike flag list",
+        "check": "a flagged spike is handed to the security scan before anyone reacts to it"
+      },
+      {
+        "n": 6,
+        "name": "Report the attribution model gap",
+        "does": "Report the gap between attribution models (last-click versus data-driven, platform versus GA4) per channel.",
+        "inputs": [
+          "attribution reports by model"
+        ],
+        "tools": [
+          "script: money.attribution_reconcile"
+        ],
+        "skill": "money/attribution-model-reconcile",
+        "output": "attribution gap report",
+        "check": "the gap is shown per channel, never as one blended number"
+      },
+      {
+        "n": 7,
+        "name": "Run or schedule a holdout test",
+        "does": "Before a big reallocation call, run or schedule a holdout test rather than trust the attribution gap alone.",
+        "inputs": [
+          "attribution gap report"
+        ],
+        "tools": [
+          "mcp: Meta_MCP ads_experiment_lift_get_test"
+        ],
+        "skill": "money/attribution-model-reconcile",
+        "output": "holdout test plan or read",
+        "check": "the test result, once available, is cited by its own confidence interval"
+      },
+      {
+        "n": 8,
+        "name": "Evaluate a third-party attribution stack if warranted",
+        "does": "When platform ROAS and blended MER keep disagreeing after reconciliation, decide whether a paid attribution or MMM tool is worth its cost against the brand's own blended-MER and lift-test approach.",
+        "inputs": [
+          "attribution gap report",
+          "tool cost and feature comparison"
+        ],
+        "tools": [
+          "web: search (public, budgeted)"
+        ],
+        "skill": "money/mmm-stack-evaluate",
+        "output": "MMM stack evaluation with a recommendation",
+        "check": "the recommendation compares tool cost to the brand's own current accuracy, not vendor claims alone",
+        "ask_founder_if": "the decision commits to a recurring paid subscription"
+      },
+      {
+        "n": 9,
+        "name": "Document the attribution convention",
+        "does": "Document which model the brand uses for which decision, so nobody reads a number without knowing its source model.",
+        "inputs": [
+          "all prior outputs"
+        ],
+        "tools": [],
+        "skill": "shared/registry-entry",
+        "output": "documented attribution convention",
+        "check": "the convention states which model governs budget decisions"
+      }
+    ],
+    "outputs": [
+      "UTM convention and link audit",
+      "order count cross-check",
+      "attribution gap report",
+      "MMM stack evaluation"
+    ],
+    "qa": [
+      "no channel table published with a known UTM leak",
+      "bot spikes flagged before anyone reacts",
+      "MMM tool judged against the brand's own lift tests"
+    ],
+    "read_point": "monthly for UTM and cross-check; on the trigger for MMM evaluation",
+    "typical_duration": "agent: 1 to 1.5 hours; waiting: holdout test read window if one is run",
+    "subagents": []
+  },
+  {
+    "id": "MONEY-W12",
+    "name": "Build the post-purchase attribution survey",
+    "capabilities": [
+      "LIFE-C50"
+    ],
+    "trigger": "event: building or refreshing the attribution model | event: a new high-spend channel needs proof it works",
+    "human_role": "the analytics engineer adding a zero-party data source",
+    "inputs_required": [
+      "brand brain: product lines, customer types",
+      "current attribution gap report",
+      "thank-you page template"
+    ],
+    "steps": [
+      {
+        "n": 1,
+        "name": "Draft the one question",
+        "does": "Draft the one-question, thank-you-page survey: how did you hear about us.",
+        "inputs": [
+          "attribution gap report"
+        ],
+        "tools": [],
+        "skill": "money/attribution-survey-build",
+        "output": "draft survey question",
+        "check": "the question is one sentence, plain language"
+      },
+      {
+        "n": 2,
+        "name": "Branch the answer options",
+        "does": "Branch the answer options by product or customer type where the channel mix differs.",
+        "inputs": [
+          "brand brain: product lines"
+        ],
+        "tools": [],
+        "skill": "money/attribution-survey-build",
+        "output": "branched answer set",
+        "check": "every branch maps to a channel the brand actually runs"
+      },
+      {
+        "n": 3,
+        "name": "Place it on the thank-you page",
+        "does": "Prepare the placement spec for the thank-you page as a developer brief, since this agent does not write site code.",
+        "inputs": [
+          "draft survey question",
+          "branched answer set"
+        ],
+        "tools": [],
+        "skill": "shared/developer-brief",
+        "output": "placement spec",
+        "check": "the spec names the exact page and does not touch checkout"
+      },
+      {
+        "n": 4,
+        "name": "Set the sample and response window",
+        "does": "Set the sample size and response window needed for the answers to be usable.",
+        "inputs": [
+          "order volume"
+        ],
+        "tools": [
+          "script: money.attribution_survey_build"
+        ],
+        "skill": "money/attribution-survey-build",
+        "output": "sample and window plan",
+        "check": "the plan states the minimum responses before a channel share number is trusted"
+      },
+      {
+        "n": 5,
+        "name": "Turn answers into a channel-share number",
+        "does": "Turn the collected answers into a channel-share number, in code.",
+        "inputs": [
+          "survey responses"
+        ],
+        "tools": [
+          "script: money.attribution_survey_build"
+        ],
+        "skill": "money/attribution-survey-build",
+        "output": "channel-share table",
+        "check": "the table states its sample size next to every percentage"
+      },
+      {
+        "n": 6,
+        "name": "Compare to platform attribution",
+        "does": "Compare the survey's channel share to the platform and GA4 attribution reports.",
+        "inputs": [
+          "channel-share table",
+          "attribution gap report"
+        ],
+        "tools": [
+          "script: money.attribution_reconcile"
+        ],
+        "skill": "money/attribution-model-reconcile",
+        "output": "comparison note",
+        "check": "the comparison states agreement or the size of the gap, never picks one silently"
+      },
+      {
+        "n": 7,
+        "name": "Publish and refresh on a cadence",
+        "does": "Publish the result and set a refresh cadence tied to when a new high-spend channel is added.",
+        "inputs": [
+          "comparison note"
+        ],
+        "tools": [],
+        "skill": "shared/report-section",
+        "output": "published survey read with refresh date",
+        "check": "the refresh date is tied to an event, not left open-ended"
+      }
+    ],
+    "outputs": [
+      "survey question and branching spec",
+      "channel-share table",
+      "comparison to platform attribution"
+    ],
+    "qa": [
+      "sample size always shown next to a percentage",
+      "survey never conflated with platform-reported attribution without a labeled comparison"
+    ],
+    "read_point": "at the refresh cadence, or when a new channel needs proof",
+    "typical_duration": "agent: 30 to 45 minutes to build; waiting: weeks to collect enough responses",
+    "subagents": []
+  },
+  {
+    "id": "MONEY-W13",
+    "name": "Publish and maintain reporting dashboards",
+    "capabilities": [
+      "MONEY-C14",
+      "MONEY-C30"
+    ],
+    "trigger": "daily (finance scoreboard) | monthly (dashboard maintenance)",
+    "human_role": "the person keeping the numbers everyone reads current",
+    "inputs_required": [
+      "metric contract",
+      "P&L ladder",
+      "CM report",
+      "GA4 saved reports",
+      "Shopify home cards",
+      "budget scenario views"
+    ],
+    "steps": [
+      {
+        "n": 1,
+        "name": "Pull the day's or period's numbers",
+        "does": "Pull revenue, profit and cash as three separate reads for the dashboard.",
+        "inputs": [
+          "P&L ladder",
+          "cash forecast",
+          "CM report"
+        ],
+        "tools": [
+          "script: money.daily_dashboard"
+        ],
+        "skill": "money/dashboard-build",
+        "output": "raw dashboard inputs",
+        "check": "revenue, profit and cash are never blended into one figure"
+      },
+      {
+        "n": 2,
+        "name": "Compute the daily contribution-margin scoreboard",
+        "does": "Compute the daily CM scoreboard.",
+        "inputs": [
+          "raw dashboard inputs"
+        ],
+        "tools": [
+          "script: money.daily_dashboard"
+        ],
+        "skill": "money/dashboard-build",
+        "output": "daily scoreboard",
+        "check": "the scoreboard states its window ends on the last full day"
+      },
+      {
+        "n": 3,
+        "name": "Compute the weekly profit memo inputs",
+        "does": "Compute CM, new versus returning split, variance and inventory risk for the weekly profit memo.",
+        "inputs": [
+          "raw dashboard inputs",
+          "CAC/LTV report"
+        ],
+        "tools": [
+          "script: money.daily_dashboard"
+        ],
+        "skill": "money/dashboard-build",
+        "output": "weekly profit memo inputs",
+        "check": "new versus returning is split from cohort data, not guessed"
+      },
+      {
+        "n": 4,
+        "name": "Audit existing dashboard cards",
+        "does": "Audit the brand's standard dashboards (Shopify home cards, GA4 saved reports, budget scenario views) for cards that no longer read correctly.",
+        "inputs": [
+          "existing dashboard export"
+        ],
+        "tools": [
+          "script: money.dashboard_build"
+        ],
+        "skill": "money/dashboard-build",
+        "output": "dashboard audit list",
+        "check": "every unreliable card is named with the reason it is unreliable"
+      },
+      {
+        "n": 5,
+        "name": "Remove unreliable cards",
+        "does": "Remove or flag cards found unreliable in the audit.",
+        "inputs": [
+          "dashboard audit list"
+        ],
+        "tools": [],
+        "skill": "money/dashboard-build",
+        "output": "cleaned dashboard set",
+        "check": "no removed card leaves a silent gap; a replacement is proposed"
+      },
+      {
+        "n": 6,
+        "name": "Add cards that answer a real question",
+        "does": "Add cards that answer a real, currently asked question, never a vanity metric.",
+        "inputs": [
+          "founder's recent questions",
+          "cleaned dashboard set"
+        ],
+        "tools": [],
+        "skill": "money/dashboard-build",
+        "output": "updated dashboard set",
+        "check": "every new card traces to a question someone actually asked"
+      },
+      {
+        "n": 7,
+        "name": "Publish the scoreboard and memo",
+        "does": "Publish the daily scoreboard and the weekly profit memo.",
+        "inputs": [
+          "daily scoreboard",
+          "weekly profit memo inputs"
+        ],
+        "tools": [],
+        "skill": "shared/report-section",
+        "output": "published scoreboard and memo",
+        "check": "the memo reads as plain, decision-focused writing a founder will actually read"
+      }
+    ],
+    "outputs": [
+      "daily CM scoreboard",
+      "weekly profit memo",
+      "maintained dashboard set"
+    ],
+    "qa": [
+      "revenue, profit and cash kept as separate reads",
+      "every card traces to a real question",
+      "windows end on the last full day"
+    ],
+    "read_point": "daily for the scoreboard; monthly for dashboard maintenance, against what changed",
+    "typical_duration": "agent: 20 to 30 minutes daily; 1 hour monthly for maintenance",
+    "subagents": []
+  },
+  {
+    "id": "MONEY-W14",
+    "name": "Org design and structured hiring, scorecard to offer",
+    "capabilities": [
+      "MONEY-C31",
+      "MONEY-C32"
+    ],
+    "trigger": "quarterly (org review) | event: a hire trigger fires",
+    "human_role": "the person running hiring like a hiring manager, not a favor",
+    "inputs_required": [
+      "brand brain: org chart, revenue stage, current roster",
+      "silo revenue and workload data",
+      "role library and comp bands",
+      "candidate applications or referrals"
+    ],
+    "steps": [
+      {
+        "n": 1,
+        "name": "Name one owner per silo",
+        "does": "Name one owner for each core store silo (site, creative, media, lifecycle, ops, finance) so nothing has two owners or none.",
+        "inputs": [
+          "brand brain: org chart"
+        ],
+        "tools": [
+          "script: money.org_design"
+        ],
+        "skill": "money/hiring-scorecard-to-offer",
+        "output": "silo ownership map",
+        "check": "every silo has exactly one named owner"
+      },
+      {
+        "n": 2,
+        "name": "Set the next-hire trigger as a number",
+        "does": "Write the next-hire trigger as a number (revenue per employee, ticket backlog, hours over capacity), never a feeling.",
+        "inputs": [
+          "silo revenue and workload data"
+        ],
+        "tools": [
+          "script: money.org_design"
+        ],
+        "skill": "money/hiring-scorecard-to-offer",
+        "output": "hire trigger definitions",
+        "check": "each trigger is a stated number and threshold, not a description"
+      },
+      {
+        "n": 3,
+        "name": "Run the quarterly org-chart-vs-revenue review",
+        "does": "Run the quarterly review of org chart against revenue stage, flagging key-person risk where one person is the only owner of a silo.",
+        "inputs": [
+          "silo ownership map",
+          "revenue stage"
+        ],
+        "tools": [
+          "script: money.org_design"
+        ],
+        "skill": "money/hiring-scorecard-to-offer",
+        "output": "org review with key-person flags",
+        "check": "every flag names the silo and the single point of failure"
+      },
+      {
+        "n": 4,
+        "name": "Check whether a trigger has fired",
+        "does": "Check the current numbers against the hire trigger thresholds.",
+        "inputs": [
+          "hire trigger definitions",
+          "current numbers"
+        ],
+        "tools": [
+          "script: money.org_design"
+        ],
+        "skill": "money/hiring-scorecard-to-offer",
+        "output": "trigger status",
+        "check": "a fired trigger states the exact number that crossed the threshold"
+      },
+      {
+        "n": 5,
+        "name": "Build the job description and scorecard",
+        "does": "Build a structured job description naming the silo, the artefacts the role owns and the one metric it is judged on.",
+        "inputs": [
+          "role library",
+          "silo ownership map"
+        ],
+        "tools": [
+          "script: money.hiring_scorecard_build"
+        ],
+        "skill": "money/hiring-scorecard-to-offer",
+        "output": "job description and scorecard",
+        "check": "the scorecard names one metric, never a list of vague traits"
+      },
+      {
+        "n": 6,
+        "name": "Write the honest job ad",
+        "does": "Write a job ad that states the real scope and the real metric, not an inflated title.",
+        "inputs": [
+          "job description and scorecard"
+        ],
+        "tools": [],
+        "skill": "money/hiring-scorecard-to-offer",
+        "output": "job ad",
+        "check": "the ad matches the scorecard exactly"
+      },
+      {
+        "n": 7,
+        "name": "Set comp bands",
+        "does": "Set comp bands from the role library and the brand's own budget before the search opens.",
+        "inputs": [
+          "role library",
+          "annual budget"
+        ],
+        "tools": [
+          "script: money.hiring_scorecard_build"
+        ],
+        "skill": "money/hiring-scorecard-to-offer",
+        "output": "comp band",
+        "check": "the band fits inside the OPEX budget for this hire"
+      },
+      {
+        "n": 8,
+        "name": "Build the sourced interview question set",
+        "does": "Build a structured, sourced interview question set tied to the scorecard's one metric.",
+        "inputs": [
+          "job description and scorecard"
+        ],
+        "tools": [
+          "script: money.hiring_scorecard_build"
+        ],
+        "skill": "money/hiring-scorecard-to-offer",
+        "output": "interview question set",
+        "check": "every question maps to a scorecard item"
+      },
+      {
+        "n": 9,
+        "name": "Score candidates",
+        "does": "Score each candidate against the scorecard, not against gut feel.",
+        "inputs": [
+          "interview question set",
+          "candidate answers"
+        ],
+        "tools": [
+          "script: money.hiring_scorecard_build"
+        ],
+        "skill": "money/hiring-scorecard-to-offer",
+        "output": "scored candidate table",
+        "check": "every score cites the specific answer it came from"
+      },
+      {
+        "n": 10,
+        "name": "Recommend an offer",
+        "does": "Recommend the top-scored candidate and the comp band position for the offer.",
+        "inputs": [
+          "scored candidate table",
+          "comp band"
+        ],
+        "tools": [],
+        "skill": "shared/rank-candidates",
+        "output": "offer recommendation",
+        "check": "the recommendation states the score gap to the next candidate"
+      },
+      {
+        "n": 11,
+        "name": "Stop for the founder to make the offer",
+        "does": "Stop before any offer, comp discussion or rejection reaches a candidate.",
+        "inputs": [
+          "offer recommendation"
+        ],
+        "tools": [],
+        "skill": "shared/founder-question-round",
+        "output": "approval record",
+        "check": "no candidate is contacted with an offer or rejection by this agent",
+        "ask_founder_if": "always: hiring decisions and conversations are human_assist"
+      }
+    ],
+    "outputs": [
+      "silo ownership map",
+      "hire trigger definitions",
+      "job description and scorecard",
+      "job ad",
+      "interview question set",
+      "scored candidate table"
+    ],
+    "qa": [
+      "hire trigger is always a number",
+      "scorecard has exactly one governing metric",
+      "no candidate contacted by the agent"
+    ],
+    "read_point": "quarterly for org review; on the trigger firing for a live search",
+    "typical_duration": "agent: 2 to 3 hours across a full search; waiting: candidate pipeline time",
+    "subagents": []
+  },
+  {
+    "id": "MONEY-W15",
+    "name": "Write SOPs, onboarding, the handbook and offboarding",
+    "capabilities": [
+      "MONEY-C33",
+      "MONEY-C68",
+      "MONEY-C69"
+    ],
+    "trigger": "event: new hire or a repeated procedure | annually or on a hire growth milestone (handbook) | event: resignation or termination notice",
+    "human_role": "the person keeping operating knowledge out of people's heads",
+    "inputs_required": [
+      "brand brain: role library, procedure list",
+      "current SOP set",
+      "current handbook",
+      "exit checklist template"
+    ],
+    "steps": [
+      {
+        "n": 1,
+        "name": "Spot a repeated procedure",
+        "does": "Spot when the same procedure has been asked for a third time without a written SOP.",
+        "inputs": [
+          "registry of past requests"
+        ],
+        "tools": [],
+        "skill": "money/sop-and-hr-docs",
+        "output": "candidate procedure for an SOP",
+        "check": "the procedure has been repeated at least 3 times"
+      },
+      {
+        "n": 2,
+        "name": "Write the SOP",
+        "does": "Write the SOP as a live operating artefact: purpose, steps, the tool used at each step, and the check before it counts as done.",
+        "inputs": [
+          "candidate procedure"
+        ],
+        "tools": [],
+        "skill": "money/sop-and-hr-docs",
+        "output": "draft SOP",
+        "check": "every step names its tool"
+      },
+      {
+        "n": 3,
+        "name": "Name one owner",
+        "does": "Give the SOP one named owner with a freshness date.",
+        "inputs": [
+          "draft SOP",
+          "role library"
+        ],
+        "tools": [],
+        "skill": "money/sop-and-hr-docs",
+        "output": "owned SOP",
+        "check": "the owner is a person, not a team name"
+      },
+      {
+        "n": 4,
+        "name": "Assemble the week-1 onboarding set",
+        "does": "Assemble the SOPs a new hire needs in week 1 for their specific role.",
+        "inputs": [
+          "owned SOP set",
+          "new hire's role"
+        ],
+        "tools": [],
+        "skill": "money/sop-and-hr-docs",
+        "output": "week-1 onboarding pack",
+        "check": "every pack item is an SOP that exists and is current"
+      },
+      {
+        "n": 5,
+        "name": "Keep the handbook current",
+        "does": "Keep one current handbook covering leave, work-from-home, code of conduct and India-specific requirements including the POSH policy.",
+        "inputs": [
+          "current handbook",
+          "law or policy changes"
+        ],
+        "tools": [],
+        "skill": "money/sop-and-hr-docs",
+        "output": "updated handbook",
+        "check": "the POSH policy section is present and current"
+      },
+      {
+        "n": 6,
+        "name": "Confirm acknowledgement",
+        "does": "Confirm every employee has acknowledged the current handbook.",
+        "inputs": [
+          "updated handbook",
+          "staff roster"
+        ],
+        "tools": [],
+        "skill": "money/sop-and-hr-docs",
+        "output": "acknowledgement log",
+        "check": "no staff member is missing from the log"
+      },
+      {
+        "n": 7,
+        "name": "Run the offboarding checklist",
+        "does": "On a resignation or termination notice, run one checklist: same-day access revocation, asset return, knowledge transfer, exit interview, final settlement.",
+        "inputs": [
+          "exit checklist template",
+          "exiting employee's access list"
+        ],
+        "tools": [],
+        "skill": "money/sop-and-hr-docs",
+        "output": "completed offboarding checklist",
+        "check": "access revocation is same-day, not same-week",
+        "ask_founder_if": "the exit involves a dispute needing legal review"
+      },
+      {
+        "n": 8,
+        "name": "Update SOP ownership after an exit",
+        "does": "Reassign SOP ownership for anything the exiting employee owned.",
+        "inputs": [
+          "owned SOP set",
+          "offboarding checklist"
+        ],
+        "tools": [],
+        "skill": "money/sop-and-hr-docs",
+        "output": "reassigned ownership list",
+        "check": "no SOP is left with an owner who no longer has access"
+      }
+    ],
+    "outputs": [
+      "week-1 onboarding pack",
+      "current handbook with acknowledgement log",
+      "offboarding checklist"
+    ],
+    "qa": [
+      "every SOP has one owner and a freshness date",
+      "access revoked same-day on exit",
+      "handbook includes the POSH policy"
+    ],
+    "read_point": "on the triggering event, checked against the SOP and handbook freshness dates",
+    "typical_duration": "agent: 30 to 90 minutes per SOP or checklist run",
+    "subagents": []
+  },
+  {
+    "id": "MONEY-W16",
+    "name": "Design the management rhythm and team facilitation guides",
+    "capabilities": [
+      "MONEY-C34",
+      "MONEY-C35"
+    ],
+    "trigger": "quarterly",
+    "human_role": "the person designing how the team actually talks to each other",
+    "inputs_required": [
+      "brand brain: team size, current meeting calendar",
+      "scoreboard metrics",
+      "past facilitation session notes"
+    ],
+    "steps": [
+      {
+        "n": 1,
+        "name": "Design the meeting cadence",
+        "does": "Design the store's meeting cadence: annual reset, quarterly deep dive, weekly trading review, ad hoc, sized to the team's actual size.",
+        "inputs": [
+          "brand brain: team size"
+        ],
+        "tools": [],
+        "skill": "money/mgmt-rhythm-and-facilitation",
+        "output": "meeting cadence design",
+        "check": "no meeting is added without a stated purpose and a metric it reviews"
+      },
+      {
+        "n": 2,
+        "name": "Build the visible scoreboard",
+        "does": "Build the visible scoreboard the weekly trading review runs against.",
+        "inputs": [
+          "scoreboard metrics"
+        ],
+        "tools": [
+          "script: money.daily_dashboard"
+        ],
+        "skill": "money/mgmt-rhythm-and-facilitation",
+        "output": "scoreboard for the review",
+        "check": "the scoreboard uses the same metric contract numbers as the finance dashboard"
+      },
+      {
+        "n": 3,
+        "name": "Design cascading messaging",
+        "does": "Design how a decision from the quarterly deep dive cascades down to the weekly review and to individual owners.",
+        "inputs": [
+          "meeting cadence design"
+        ],
+        "tools": [],
+        "skill": "money/mgmt-rhythm-and-facilitation",
+        "output": "cascade messaging design",
+        "check": "every cascade step names who tells whom, by when"
+      },
+      {
+        "n": 4,
+        "name": "Prepare a trust or dysfunction assessment",
+        "does": "Prepare a structured team dysfunction assessment or trust exercise for the founder to run.",
+        "inputs": [
+          "past facilitation session notes"
+        ],
+        "tools": [],
+        "skill": "money/mgmt-rhythm-and-facilitation",
+        "output": "assessment guide",
+        "check": "the guide is a run sheet, not a theory summary"
+      },
+      {
+        "n": 5,
+        "name": "Prepare conflict and accountability tools",
+        "does": "Prepare conflict and accountability facilitation tools tied to a real recent incident, not a generic template.",
+        "inputs": [
+          "past facilitation session notes",
+          "recent incident"
+        ],
+        "tools": [],
+        "skill": "money/mgmt-rhythm-and-facilitation",
+        "output": "facilitation tool set",
+        "check": "each tool ties to a metric the session should move"
+      },
+      {
+        "n": 6,
+        "name": "Tie every guide to one metric",
+        "does": "Tie every facilitation guide to the one metric the session is meant to move.",
+        "inputs": [
+          "assessment guide",
+          "facilitation tool set"
+        ],
+        "tools": [],
+        "skill": "money/mgmt-rhythm-and-facilitation",
+        "output": "metric-tied guide set",
+        "check": "no guide is handed over without its metric named"
+      },
+      {
+        "n": 7,
+        "name": "Hand the guides to the founder",
+        "does": "Hand the run sheets to the founder to run directly in the meeting; this agent never facilitates a live session itself.",
+        "inputs": [
+          "metric-tied guide set"
+        ],
+        "tools": [],
+        "skill": "shared/developer-brief",
+        "output": "handoff package",
+        "check": "the handoff states this agent prepared the guide, not the outcome"
+      }
+    ],
+    "outputs": [
+      "meeting cadence design",
+      "visible scoreboard",
+      "trust and facilitation guides"
+    ],
+    "qa": [
+      "every meeting has a stated purpose and a metric",
+      "facilitation guides are run sheets, not theory",
+      "founder runs the session, agent does not"
+    ],
+    "read_point": "quarterly, against whether the last cadence change stuck",
+    "typical_duration": "agent: 1 to 2 hours per quarter",
+    "subagents": []
+  },
+  {
+    "id": "MONEY-W17",
+    "name": "Evaluate and manage vendors, 3PLs and agencies",
+    "capabilities": [
+      "MONEY-C36"
+    ],
+    "trigger": "monthly | event: an RFP is warranted",
+    "human_role": "the ops manager running vendor selection like a real procurement process",
+    "inputs_required": [
+      "brand brain: current vendor list and contracts",
+      "candidate vendor list",
+      "invoice history",
+      "SLA terms"
+    ],
+    "steps": [
+      {
+        "n": 1,
+        "name": "Run competitive RFP",
+        "does": "Run vendor and 3PL selection by a competitive RFP, never a single quote.",
+        "inputs": [
+          "candidate vendor list"
+        ],
+        "tools": [
+          "web: search (public, budgeted)"
+        ],
+        "skill": "money/vendor-rfp-evaluation",
+        "output": "RFP responses",
+        "check": "at least 3 vendors respond before a selection is made"
+      },
+      {
+        "n": 2,
+        "name": "Run a facility visit or reference check",
+        "does": "Run a facility visit for a 3PL, or a reference check for an agency.",
+        "inputs": [
+          "RFP responses"
+        ],
+        "tools": [],
+        "skill": "money/vendor-rfp-evaluation",
+        "output": "visit or reference notes",
+        "check": "the notes name what was seen or confirmed, not a vendor's own claim"
+      },
+      {
+        "n": 3,
+        "name": "Put SLAs in writing",
+        "does": "Put SLAs in writing with a stated consequence for a miss.",
+        "inputs": [
+          "visit or reference notes"
+        ],
+        "tools": [],
+        "skill": "money/vendor-rfp-evaluation",
+        "output": "written SLA",
+        "check": "every SLA line has a numeric target and a stated consequence"
+      },
+      {
+        "n": 4,
+        "name": "Audit every invoice against the SLA",
+        "does": "Audit every incoming invoice against the SLA terms and the RFP-agreed rate.",
+        "inputs": [
+          "invoice history",
+          "written SLA"
+        ],
+        "tools": [
+          "script: money.vendor_scorecard"
+        ],
+        "skill": "money/vendor-rfp-evaluation",
+        "output": "invoice audit result",
+        "check": "every overcharge or SLA miss is listed with the exact invoice line"
+      },
+      {
+        "n": 5,
+        "name": "Score the vendor",
+        "does": "Score the vendor on delivery, quality and responsiveness against the SLA, on a fixed scorecard.",
+        "inputs": [
+          "invoice audit result",
+          "delivery data"
+        ],
+        "tools": [
+          "script: money.vendor_scorecard"
+        ],
+        "skill": "money/vendor-rfp-evaluation",
+        "output": "vendor scorecard",
+        "check": "the score is computed from the SLA data, not a subjective rating"
+      },
+      {
+        "n": 6,
+        "name": "Flag a miss for renegotiation or exit",
+        "does": "Flag a vendor scoring below the threshold for renegotiation or replacement.",
+        "inputs": [
+          "vendor scorecard"
+        ],
+        "tools": [],
+        "skill": "money/vendor-rfp-evaluation",
+        "output": "renegotiation or exit flag",
+        "check": "the flag states which SLA line triggered it"
+      },
+      {
+        "n": 7,
+        "name": "Publish the standing vendor scorecard",
+        "does": "Publish the standing vendor scorecard monthly so nobody re-litigates the same vendor from memory.",
+        "inputs": [
+          "vendor scorecard"
+        ],
+        "tools": [],
+        "skill": "shared/report-section",
+        "output": "published vendor scorecard",
+        "check": "every vendor has a current score and its trend"
+      }
+    ],
+    "outputs": [
+      "RFP comparison",
+      "written SLA",
+      "invoice audit result",
+      "vendor scorecard"
+    ],
+    "qa": [
+      "at least 3 vendors compared before selection",
+      "every SLA has a numeric target and consequence",
+      "invoice audit checks the actual agreed rate"
+    ],
+    "read_point": "monthly against the scorecard trend; on RFP completion",
+    "typical_duration": "agent: 1 to 2 hours per RFP cycle; 30 minutes monthly for the scorecard",
+    "subagents": []
+  },
+  {
+    "id": "MONEY-W18",
+    "name": "Govern tooling, SaaS renewals, contracts and freelancer engagements",
+    "capabilities": [
+      "MONEY-C39",
+      "MONEY-C67",
+      "MONEY-C77",
+      "MONEY-C78",
+      "MONEY-C66"
+    ],
+    "trigger": "quarterly (tooling audit) | on every contract | before onboarding and on renewal (vendor risk) | on approaching notice-period deadline (SaaS renewal) | on engagement start, milestone, end (freelancer)",
+    "human_role": "the person keeping tool spend and contracts from drifting",
+    "inputs_required": [
+      "brand brain: software and tooling list, revenue stage",
+      "SaaS usage data and renewal dates",
+      "contract templates",
+      "vendor risk questionnaire",
+      "freelancer scope of work"
+    ],
+    "steps": [
+      {
+        "n": 1,
+        "name": "Audit tooling against revenue stage",
+        "does": "Audit the store's software and tooling spend against its revenue stage, never adding an ERP or a tool too early.",
+        "inputs": [
+          "software and tooling list",
+          "revenue stage"
+        ],
+        "tools": [
+          "script: money.tooling_audit"
+        ],
+        "skill": "money/vendor-saas-contract-governance",
+        "output": "tooling audit",
+        "check": "every tool is judged against the current revenue stage, not a wish list"
+      },
+      {
+        "n": 2,
+        "name": "Name a tracker owner before adding a system",
+        "does": "Name a tracker owner before any new system is added.",
+        "inputs": [
+          "tooling audit"
+        ],
+        "tools": [],
+        "skill": "money/vendor-saas-contract-governance",
+        "output": "owner assignment",
+        "check": "no new system is proposed without a named owner"
+      },
+      {
+        "n": 3,
+        "name": "Watch SaaS renewal dates and usage",
+        "does": "Watch every SaaS contract's auto-renew date and usage data.",
+        "inputs": [
+          "SaaS usage data",
+          "renewal dates"
+        ],
+        "tools": [
+          "script: money.tooling_audit"
+        ],
+        "skill": "money/vendor-saas-contract-governance",
+        "output": "renewal watch list",
+        "check": "every contract's notice-period deadline is tracked, not just the renewal date"
+      },
+      {
+        "n": 4,
+        "name": "Draft the renegotiation or cancellation email",
+        "does": "Draft a renegotiation or cancellation email with the brand's own usage numbers, before the notice window closes.",
+        "inputs": [
+          "renewal watch list",
+          "usage numbers"
+        ],
+        "tools": [],
+        "skill": "money/vendor-saas-contract-governance",
+        "output": "draft email",
+        "check": "the draft cites the brand's own usage, not a generic ask",
+        "ask_founder_if": "always: sending the email needs founder approval"
+      },
+      {
+        "n": 5,
+        "name": "Run a vendor risk assessment",
+        "does": "Before a new SaaS tool, ESP, 3PL or agency gets access to customer or payment data, run a standard risk questionnaire.",
+        "inputs": [
+          "vendor risk questionnaire",
+          "candidate vendor"
+        ],
+        "tools": [],
+        "skill": "money/vendor-saas-contract-governance",
+        "output": "risk assessment result",
+        "check": "the assessment confirms a data-processing agreement is signed before access is granted"
+      },
+      {
+        "n": 6,
+        "name": "Redline incoming contracts",
+        "does": "Run every incoming contract (NDA, MSA, vendor agreement, employment agreement) through a redline checklist before it goes to the founder.",
+        "inputs": [
+          "contract templates",
+          "incoming contract"
+        ],
+        "tools": [],
+        "skill": "money/vendor-saas-contract-governance",
+        "output": "redlined contract with notes",
+        "check": "every deviation from the template is flagged with its risk",
+        "ask_founder_if": "a clause needs legal review beyond the standard checklist"
+      },
+      {
+        "n": 7,
+        "name": "Run the freelancer engagement lifecycle",
+        "does": "Run the scope of work, IP assignment, rate agreement and invoicing against milestones for a freelance or contractor engagement.",
+        "inputs": [
+          "freelancer scope of work"
+        ],
+        "tools": [],
+        "skill": "money/vendor-saas-contract-governance",
+        "output": "freelancer engagement record",
+        "check": "IP assignment is explicit in every engagement"
+      },
+      {
+        "n": 8,
+        "name": "Handle renewal or offboarding",
+        "does": "At engagement end, run renewal or offboarding for the freelancer the same way an employee exit is run.",
+        "inputs": [
+          "freelancer engagement record"
+        ],
+        "tools": [],
+        "skill": "money/vendor-saas-contract-governance",
+        "output": "renewal or offboarding record",
+        "check": "access is revoked same-day if the engagement is not renewed"
+      },
+      {
+        "n": 9,
+        "name": "Stop for the founder on any commitment",
+        "does": "Stop before any contract is signed, any SaaS renewal is cancelled, or any freelancer is engaged.",
+        "inputs": [
+          "all prior outputs"
+        ],
+        "tools": [],
+        "skill": "shared/founder-question-round",
+        "output": "approval record",
+        "check": "no contract or engagement commitment is made by this agent",
+        "ask_founder_if": "always: contract, vendor and engagement decisions are founder_gate or human_assist"
+      }
+    ],
+    "outputs": [
+      "tooling audit",
+      "SaaS renewal watch list and draft emails",
+      "vendor risk assessments",
+      "redlined contracts",
+      "freelancer engagement records"
+    ],
+    "qa": [
+      "every new system has a named owner",
+      "no vendor gets data access without a signed DPA",
+      "IP assignment explicit in every freelance engagement"
+    ],
+    "read_point": "quarterly for tooling; continuous for renewal and contract triggers",
+    "typical_duration": "agent: 1 to 2 hours per audit cycle; ongoing for contract and renewal events",
+    "subagents": []
+  },
+  {
+    "id": "MONEY-W19",
+    "name": "Plan customer-service capacity and handle DPDP data-subject requests",
+    "capabilities": [
+      "MONEY-C38",
+      "LIFE-C66"
+    ],
+    "trigger": "monthly (CS capacity) | event: a customer submits an access or erasure request",
+    "human_role": "the ops manager sizing support and protecting customer data rights",
+    "inputs_required": [
+      "sales forecast curve",
+      "current ticket volume and cost per ticket",
+      "system map (ESP, helpdesk, loyalty, subscription, order data)"
+    ],
+    "steps": [
+      {
+        "n": 1,
+        "name": "Staff CS tiers from the forecast curve",
+        "does": "Staff CS tiers from the sales forecast curve, not last month's headcount.",
+        "inputs": [
+          "sales forecast curve"
+        ],
+        "tools": [
+          "script: money.cs_capacity_plan"
+        ],
+        "skill": "money/cs-capacity-and-dpdp",
+        "output": "CS staffing plan",
+        "check": "staffing scales with the forecast curve, not a flat headcount"
+      },
+      {
+        "n": 2,
+        "name": "Track cost per ticket",
+        "does": "Track cost per ticket by tier.",
+        "inputs": [
+          "ticket volume",
+          "CS payroll cost"
+        ],
+        "tools": [
+          "script: money.cs_capacity_plan"
+        ],
+        "skill": "money/cs-capacity-and-dpdp",
+        "output": "cost per ticket by tier",
+        "check": "the cost is computed from real payroll cost, not an assumed rate"
+      },
+      {
+        "n": 3,
+        "name": "Define a complex ticket before routing",
+        "does": "Define what counts as a complex ticket before routing it to a higher tier.",
+        "inputs": [
+          "ticket taxonomy"
+        ],
+        "tools": [],
+        "skill": "money/cs-capacity-and-dpdp",
+        "output": "complex-ticket definition",
+        "check": "the definition is a checklist, not a judgment call per ticket"
+      },
+      {
+        "n": 4,
+        "name": "Trace a rising resolution time upstream",
+        "does": "When resolution time rises, trace the cause upstream (a product defect, a policy change, a staffing gap) rather than just re-staffing.",
+        "inputs": [
+          "resolution time trend"
+        ],
+        "tools": [
+          "script: money.cs_capacity_plan"
+        ],
+        "skill": "money/cs-capacity-and-dpdp",
+        "output": "root-cause note",
+        "check": "the note names the upstream cause, not only the symptom"
+      },
+      {
+        "n": 5,
+        "name": "Find every system holding the requester's data",
+        "does": "On a DPDP access or erasure request, find every system that holds that person's data: ESP, helpdesk, loyalty, subscription, order records.",
+        "inputs": [
+          "system map",
+          "request details"
+        ],
+        "tools": [],
+        "skill": "money/cs-capacity-and-dpdp",
+        "output": "data location map",
+        "check": "every connected system is checked, none skipped"
+      },
+      {
+        "n": 6,
+        "name": "Assemble or erase the data",
+        "does": "Assemble the data for an access request, or prepare the erasure across every located system for an erasure request.",
+        "inputs": [
+          "data location map"
+        ],
+        "tools": [],
+        "skill": "money/cs-capacity-and-dpdp",
+        "output": "assembled data or erasure plan",
+        "check": "an erasure plan lists every system by name",
+        "ask_founder_if": "an erasure would remove data needed for an open legal or tax obligation"
+      },
+      {
+        "n": 7,
+        "name": "Respond within the statutory window",
+        "does": "Track the DPDP response deadline and confirm the response goes out inside it.",
+        "inputs": [
+          "request received date"
+        ],
+        "tools": [],
+        "skill": "money/cs-capacity-and-dpdp",
+        "output": "response confirmation",
+        "check": "the response date is logged against the statutory deadline"
+      },
+      {
+        "n": 8,
+        "name": "Log the request",
+        "does": "Log every DPDP request and its resolution for audit purposes.",
+        "inputs": [
+          "response confirmation"
+        ],
+        "tools": [],
+        "skill": "shared/registry-entry",
+        "output": "DPDP request log",
+        "check": "the log is queryable by requester and by date"
+      }
+    ],
+    "outputs": [
+      "CS staffing plan",
+      "cost per ticket by tier",
+      "DPDP request log with responses"
+    ],
+    "qa": [
+      "staffing follows the forecast curve",
+      "every DPDP request checked against every connected system",
+      "erasure never breaks a legal retention obligation"
+    ],
+    "read_point": "monthly for CS capacity; against the statutory deadline for each DPDP request",
+    "typical_duration": "agent: 1 hour monthly for capacity; 30 to 60 minutes per DPDP request",
+    "subagents": []
+  },
+  {
+    "id": "MONEY-W20",
+    "name": "Run the weekly fraud, bot and abuse scan",
+    "capabilities": [
+      "MONEY-C41",
+      "MONEY-C42",
+      "MONEY-C48",
+      "MONEY-C76"
+    ],
+    "trigger": "weekly",
+    "human_role": "the security owner running the weekly scan",
+    "inputs_required": [
+      "server/CDN logs",
+      "endpoint list",
+      "order and payment data",
+      "chargeback log",
+      "COD refusal log",
+      "current bot and WAF policy",
+      "domain and DNS records"
+    ],
+    "steps": [
+      {
+        "n": 1,
+        "name": "Rebuild the bot and agent traffic baseline",
+        "does": "Rebuild the bot and AI-agent traffic baseline by agent, endpoint and intent.",
+        "inputs": [
+          "server/CDN logs"
+        ],
+        "tools": [
+          "script: money.bot_traffic_baseline"
+        ],
+        "skill": "money/security-scan-weekly",
+        "output": "traffic baseline",
+        "check": "the baseline never relies on User-Agent alone"
+      },
+      {
+        "n": 2,
+        "name": "Re-score risk tiers",
+        "does": "Re-score risk tiers per endpoint with continuous tiering, not a one-time label.",
+        "inputs": [
+          "traffic baseline"
+        ],
+        "tools": [
+          "script: money.bot_traffic_baseline"
+        ],
+        "skill": "money/security-scan-weekly",
+        "output": "risk tier table",
+        "check": "friction is placed at checkout and account changes, not at browsing"
+      },
+      {
+        "n": 3,
+        "name": "Check for new reseller, scalper or card-testing patterns",
+        "does": "Check for new reseller or scalper patterns and card-testing bursts.",
+        "inputs": [
+          "risk tier table",
+          "order data"
+        ],
+        "tools": [
+          "script: money.fraud_control_audit"
+        ],
+        "skill": "money/security-scan-weekly",
+        "output": "pattern flag list",
+        "check": "a card-testing burst is flagged by its cluster of small failed authorizations"
+      },
+      {
+        "n": 4,
+        "name": "Review AVS, CVV and 3DS settings",
+        "does": "Review AVS/CVV/3DS settings against the false-decline rate.",
+        "inputs": [
+          "payment gateway settings",
+          "false-decline data"
+        ],
+        "tools": [
+          "script: money.fraud_control_audit"
+        ],
+        "skill": "money/security-scan-weekly",
+        "output": "AVS/3DS review",
+        "check": "fraud caught is tracked alongside the false-decline rate, never fraud alone"
+      },
+      {
+        "n": 5,
+        "name": "Set the chargeback alert threshold",
+        "does": "Set the chargeback alert threshold below the processor's own flag level.",
+        "inputs": [
+          "chargeback log"
+        ],
+        "tools": [
+          "script: money.fraud_control_audit"
+        ],
+        "skill": "money/security-scan-weekly",
+        "output": "chargeback threshold setting",
+        "check": "the threshold sits below the processor's own flag point"
+      },
+      {
+        "n": 6,
+        "name": "Control COD refusal and prepayment triggers",
+        "does": "Control COD refusal rate and set prepayment triggers for repeat refusers.",
+        "inputs": [
+          "COD refusal log"
+        ],
+        "tools": [
+          "script: money.fraud_control_audit"
+        ],
+        "skill": "money/security-scan-weekly",
+        "output": "COD control list",
+        "check": "a repeat refuser is flagged by name before the next order, not after"
+      },
+      {
+        "n": 7,
+        "name": "Detect return and refund abuse",
+        "does": "Find wardrobing, serial high-return-rate customers, and refunds issued without a matching return.",
+        "inputs": [
+          "return and refund log"
+        ],
+        "tools": [
+          "script: money.return_abuse_detect"
+        ],
+        "skill": "money/security-scan-weekly",
+        "output": "return abuse flag list",
+        "check": "a flagged customer shows their return rate against the store average"
+      },
+      {
+        "n": 8,
+        "name": "Watch domain, DNS and impersonation risk",
+        "does": "Lock-check the domain registrar account, audit DNS for dangling records, and watch for lookalike domains, counterfeit listings and Safe Browsing flags.",
+        "inputs": [
+          "domain and DNS records"
+        ],
+        "tools": [
+          "web: search (public, budgeted)"
+        ],
+        "skill": "money/security-scan-weekly",
+        "output": "domain and impersonation watch result",
+        "check": "a lookalike domain or counterfeit listing is reported with its URL and date found"
+      },
+      {
+        "n": 9,
+        "name": "Retest after any recent WAF change",
+        "does": "If the WAF or bot policy changed this week, retest the baseline against it.",
+        "inputs": [
+          "risk tier table",
+          "recent WAF change log"
+        ],
+        "tools": [
+          "script: money.bot_traffic_baseline"
+        ],
+        "skill": "money/security-scan-weekly",
+        "output": "retest result",
+        "check": "the retest confirms the change did not silently block a legitimate agent"
+      },
+      {
+        "n": 10,
+        "name": "Build the weekly fix list",
+        "does": "Roll every finding into one ranked fix list for a human to apply to the WAF or payment settings.",
+        "inputs": [
+          "all prior outputs"
+        ],
+        "tools": [],
+        "skill": "shared/surface-audit",
+        "output": "weekly fix list",
+        "check": "every accepted agent keeps scoped authorization, never standing payment access"
+      }
+    ],
+    "outputs": [
+      "bot traffic baseline",
+      "fraud control review",
+      "return abuse flags",
+      "domain and impersonation watch",
+      "weekly fix list"
+    ],
+    "qa": [
+      "no rule relies on User-Agent alone",
+      "false-decline rate tracked alongside fraud caught",
+      "no live WAF or gateway change made by this agent"
+    ],
+    "read_point": "weekly, against last week's baseline and fix list",
+    "typical_duration": "agent: 1.5 to 2 hours",
+    "subagents": [
+      "money-security-scanner runs this workflow on its own weekly clock and hands the fix list to the main agent for QA Gate handoff"
+    ]
+  },
+  {
+    "id": "MONEY-W21",
+    "name": "Run the monthly authentication, web application and backup audit",
+    "capabilities": [
+      "MONEY-C43",
+      "MONEY-C44",
+      "MONEY-C47"
+    ],
+    "trigger": "monthly",
+    "human_role": "the security owner running the monthly technical audit",
+    "inputs_required": [
+      "admin login and session config",
+      "storefront and checkout code access",
+      "backup schedule and last restore test",
+      "incident runbook"
+    ],
+    "steps": [
+      {
+        "n": 1,
+        "name": "Audit login and session design",
+        "does": "Audit login, session and multi-factor authentication design: 2FA or passkeys for admins, session-cookie attributes, password hashing and rate limiting.",
+        "inputs": [
+          "admin login config"
+        ],
+        "tools": [
+          "script: money.auth_hardening_audit"
+        ],
+        "skill": "money/security-audit-monthly",
+        "output": "auth design audit",
+        "check": "every admin account has 2FA or a passkey confirmed, not assumed"
+      },
+      {
+        "n": 2,
+        "name": "Check enumeration prevention",
+        "does": "Check that login and password-reset flows do not leak whether an email exists.",
+        "inputs": [
+          "login flow config"
+        ],
+        "tools": [
+          "browser: headless chromium (read)"
+        ],
+        "skill": "money/security-audit-monthly",
+        "output": "enumeration check result",
+        "check": "the check is tested against the live flow, not the settings page alone"
+      },
+      {
+        "n": 3,
+        "name": "Audit storefront and checkout code",
+        "does": "Audit storefront and checkout code for XSS, injection, CSRF, clickjacking, CORS and postMessage defects.",
+        "inputs": [
+          "storefront and checkout code access"
+        ],
+        "tools": [
+          "browser: headless chromium (read)"
+        ],
+        "skill": "money/security-audit-monthly",
+        "output": "web app defect list",
+        "check": "every defect requires parameterised queries or the equivalent fix named exactly"
+      },
+      {
+        "n": 4,
+        "name": "Produce the developer fix list",
+        "does": "Produce a developer fix list from the defect audit.",
+        "inputs": [
+          "web app defect list"
+        ],
+        "tools": [],
+        "skill": "shared/developer-brief",
+        "output": "developer fix list",
+        "check": "each fix names the exact file or endpoint where possible"
+      },
+      {
+        "n": 5,
+        "name": "Run daily versioned backups check",
+        "does": "Confirm daily versioned backups exist in 3 separated locations with a ransomware-safe copy.",
+        "inputs": [
+          "backup schedule"
+        ],
+        "tools": [
+          "script: money.backup_incident_check"
+        ],
+        "skill": "money/security-audit-monthly",
+        "output": "backup coverage check",
+        "check": "a ransomware-safe, offline copy is confirmed, not assumed from the vendor's claim"
+      },
+      {
+        "n": 6,
+        "name": "Test restores end to end",
+        "does": "Test a restore end to end this month, not just confirm the backup exists.",
+        "inputs": [
+          "backup coverage check"
+        ],
+        "tools": [
+          "script: money.backup_incident_check"
+        ],
+        "skill": "money/security-audit-monthly",
+        "output": "restore test result",
+        "check": "the test restores a real file and confirms it opens correctly"
+      },
+      {
+        "n": 7,
+        "name": "Maintain the incident runbook",
+        "does": "Maintain one unified incident runbook covering breach, skimmer and ransomware scenarios.",
+        "inputs": [
+          "incident runbook",
+          "recent incident learnings"
+        ],
+        "tools": [
+          "script: money.backup_incident_check"
+        ],
+        "skill": "money/security-audit-monthly",
+        "output": "updated incident runbook",
+        "check": "the runbook names who does what in the first hour of each scenario"
+      },
+      {
+        "n": 8,
+        "name": "Publish the monthly audit result",
+        "does": "Publish the auth, web app and backup audit as one ranked fix list.",
+        "inputs": [
+          "all prior outputs"
+        ],
+        "tools": [],
+        "skill": "shared/surface-audit",
+        "output": "monthly audit fix list",
+        "check": "every fix states whether it needs a developer or a founder decision"
+      }
+    ],
+    "outputs": [
+      "auth design audit",
+      "web app defect list and developer fix list",
+      "backup coverage and restore test result",
+      "updated incident runbook"
+    ],
+    "qa": [
+      "2FA confirmed live, not assumed",
+      "restore tested end to end, not just scheduled",
+      "no code change applied by this agent"
+    ],
+    "read_point": "monthly, against last month's fix list",
+    "typical_duration": "agent: 1.5 to 2.5 hours",
+    "subagents": [
+      "money-security-scanner shares the headless-browser probing across this and the weekly scan"
+    ]
+  },
+  {
+    "id": "MONEY-W22",
+    "name": "Run the quarterly security audit program",
+    "capabilities": [
+      "MONEY-C46",
+      "MONEY-C49",
+      "MONEY-C50",
+      "MONEY-C72",
+      "MONEY-C73",
+      "MONEY-C75"
+    ],
+    "trigger": "quarterly",
+    "human_role": "the security owner running the four-pillar quarterly program",
+    "inputs_required": [
+      "staff roster and admin role map",
+      "privacy policy and consent banner",
+      "sending domains",
+      "API key and credential inventory",
+      "staff admin-access list",
+      "prior quarter's audit"
+    ],
+    "steps": [
+      {
+        "n": 1,
+        "name": "Map roles to admin areas",
+        "does": "Map every staff role to only the admin areas it needs, least-privilege by default.",
+        "inputs": [
+          "staff roster",
+          "admin role map"
+        ],
+        "tools": [
+          "script: money.access_review"
+        ],
+        "skill": "money/security-audit-quarterly",
+        "output": "least-privilege map",
+        "check": "no role has an admin area it does not use"
+      },
+      {
+        "n": 2,
+        "name": "Run the full staff access audit",
+        "does": "Run a full staff access audit with same-day offboarding confirmed for any exits since the last audit.",
+        "inputs": [
+          "least-privilege map",
+          "recent offboarding log"
+        ],
+        "tools": [
+          "script: money.access_review"
+        ],
+        "skill": "money/security-audit-quarterly",
+        "output": "access audit result",
+        "check": "every exited staff member's access is confirmed revoked, not assumed"
+      },
+      {
+        "n": 3,
+        "name": "Monitor admin logins",
+        "does": "Monitor admin logins for new locations or devices since the last audit.",
+        "inputs": [
+          "admin login logs"
+        ],
+        "tools": [
+          "script: money.access_review"
+        ],
+        "skill": "money/security-audit-quarterly",
+        "output": "login anomaly list",
+        "check": "a new location or device is flagged even if the login succeeded"
+      },
+      {
+        "n": 4,
+        "name": "Confirm GDPR and CCPA exposure",
+        "does": "Confirm GDPR/CCPA exposure by customer location and publish a privacy policy covering AI-agent interactions with a compliant consent banner.",
+        "inputs": [
+          "customer location data",
+          "privacy policy"
+        ],
+        "tools": [
+          "script: money.privacy_consent_audit"
+        ],
+        "skill": "money/security-audit-quarterly",
+        "output": "privacy compliance check",
+        "check": "AI-agent interactions are named explicitly in the policy"
+      },
+      {
+        "n": 5,
+        "name": "Remove non-payment third-party scripts before consent",
+        "does": "Remove any non-payment third-party script that fires before consent is given.",
+        "inputs": [
+          "site script inventory"
+        ],
+        "tools": [
+          "browser: headless chromium (read)"
+        ],
+        "skill": "money/security-audit-quarterly",
+        "output": "script removal list",
+        "check": "every removed script is confirmed by a live page check, not the settings page alone"
+      },
+      {
+        "n": 6,
+        "name": "Check email authentication",
+        "does": "Check SPF, DKIM, DMARC and BIMI on every domain the brand sends email from (transactional, marketing, support) and move DMARC from monitor-only to enforced where safe.",
+        "inputs": [
+          "sending domains"
+        ],
+        "tools": [
+          "script: money.email_auth_check"
+        ],
+        "skill": "money/security-audit-quarterly",
+        "output": "email auth status by domain",
+        "check": "every sending domain is checked, none skipped because it seems minor"
+      },
+      {
+        "n": 7,
+        "name": "Rotate API keys and credentials",
+        "does": "Rotate API keys, tokens and service credentials on schedule and immediately on any staff exit.",
+        "inputs": [
+          "API key and credential inventory"
+        ],
+        "tools": [
+          "script: money.credential_rotation_tracker"
+        ],
+        "skill": "money/security-audit-quarterly",
+        "output": "rotation log",
+        "check": "every credential shows who or what holds it and its last rotation date"
+      },
+      {
+        "n": 8,
+        "name": "Confirm platform SOC and PCI claims",
+        "does": "Confirm any platform's SOC or PCI claim before it is repeated in a brand document.",
+        "inputs": [
+          "platform vendor claims"
+        ],
+        "tools": [
+          "web: search (public, budgeted)"
+        ],
+        "skill": "money/security-audit-quarterly",
+        "output": "confirmed claim list",
+        "check": "a claim is only repeated if the certificate or report was actually checked"
+      },
+      {
+        "n": 9,
+        "name": "Run phishing simulation and training",
+        "does": "Run a recurring phishing simulation and short security training for every staff member with admin access, and track who clicks, who reports, and who needs a repeat.",
+        "inputs": [
+          "staff admin-access list"
+        ],
+        "tools": [
+          "script: money.security_training_tracker"
+        ],
+        "skill": "money/security-audit-quarterly",
+        "output": "training and simulation result",
+        "check": "every admin-access staff member has a tracked result, not a blanket pass"
+      },
+      {
+        "n": 10,
+        "name": "Maintain the hosted-vs-self-hosted responsibility map",
+        "does": "Maintain the map of which security responsibility sits with the hosting platform and which sits with the brand.",
+        "inputs": [
+          "platform documentation"
+        ],
+        "tools": [],
+        "skill": "money/security-audit-quarterly",
+        "output": "responsibility map",
+        "check": "every control is assigned to exactly one side, never left ambiguous"
+      },
+      {
+        "n": 11,
+        "name": "Assign a pillar owner and publish the scorecard",
+        "does": "Assign a named owner per pillar (access, privacy, email/credentials, training) and publish the quarterly security scorecard.",
+        "inputs": [
+          "all prior outputs"
+        ],
+        "tools": [],
+        "skill": "shared/report-section",
+        "output": "quarterly security scorecard",
+        "check": "every pillar has a named owner and a score"
+      }
+    ],
+    "outputs": [
+      "least-privilege access audit",
+      "privacy and consent compliance check",
+      "email authentication status",
+      "credential rotation log",
+      "training and phishing simulation result",
+      "quarterly security scorecard"
+    ],
+    "qa": [
+      "same-day offboarding confirmed, not assumed",
+      "DMARC policy state stated exactly",
+      "every control assigned to one named side"
+    ],
+    "read_point": "quarterly, against the prior quarter's scorecard",
+    "typical_duration": "agent: 3 to 4 hours across the program",
+    "subagents": [
+      "money-security-scanner runs the technical checks and hands results to the main agent for the scorecard"
+    ]
+  },
+  {
+    "id": "MONEY-W23",
+    "name": "Confirm PCI DSS scope and complete the SAQ",
+    "capabilities": [
+      "MONEY-C74"
+    ],
+    "trigger": "annually | event: any checkout payment-flow change",
+    "human_role": "the security owner keeping the brand out of card-data scope",
+    "inputs_required": [
+      "checkout payment flow diagram",
+      "payment gateway integration method",
+      "prior SAQ if any"
+    ],
+    "steps": [
+      {
+        "n": 1,
+        "name": "Map the payment flow",
+        "does": "Map exactly how the checkout takes payment: hosted field, redirect, or direct API.",
+        "inputs": [
+          "checkout payment flow diagram"
+        ],
+        "tools": [
+          "browser: headless chromium (read)"
+        ],
+        "skill": "money/pci-saq-scope",
+        "output": "payment flow map",
+        "check": "the map states whether raw card data ever touches the brand's own servers"
+      },
+      {
+        "n": 2,
+        "name": "Determine the applicable SAQ",
+        "does": "Determine which PCI DSS self-assessment questionnaire type applies given the payment flow.",
+        "inputs": [
+          "payment flow map"
+        ],
+        "tools": [
+          "web: search (public, budgeted)"
+        ],
+        "skill": "money/pci-saq-scope",
+        "output": "applicable SAQ type",
+        "check": "the SAQ type is justified by the exact flow mapped, not assumed from the gateway's marketing"
+      },
+      {
+        "n": 3,
+        "name": "Confirm the checkout stays out of scope",
+        "does": "Confirm the checkout does not touch raw card data outside the confirmed scope.",
+        "inputs": [
+          "payment flow map"
+        ],
+        "tools": [
+          "browser: headless chromium (read)"
+        ],
+        "skill": "money/pci-saq-scope",
+        "output": "scope confirmation",
+        "check": "the confirmation is based on a live checkout trace, not a config read alone"
+      },
+      {
+        "n": 4,
+        "name": "Complete the SAQ questions",
+        "does": "Complete the SAQ questionnaire's factual items from the confirmed scope and flow.",
+        "inputs": [
+          "applicable SAQ type",
+          "scope confirmation"
+        ],
+        "tools": [],
+        "skill": "money/pci-saq-scope",
+        "output": "completed SAQ draft",
+        "check": "every answer traces to a checked fact, none guessed"
+      },
+      {
+        "n": 5,
+        "name": "Flag any item needing a person",
+        "does": "Flag any SAQ item needing a signature or a third-party attestation.",
+        "inputs": [
+          "completed SAQ draft"
+        ],
+        "tools": [],
+        "skill": "money/pci-saq-scope",
+        "output": "flagged item list",
+        "check": "no signature or attestation is provided by this agent",
+        "ask_founder_if": "always: submitting the signed SAQ needs a person"
+      },
+      {
+        "n": 6,
+        "name": "Recheck on any payment-flow change",
+        "does": "Recheck scope immediately after any change to how checkout takes payment.",
+        "inputs": [
+          "change log"
+        ],
+        "tools": [],
+        "skill": "money/pci-saq-scope",
+        "output": "recheck result",
+        "check": "a flow change always triggers a fresh scope check, never reuses the old SAQ silently"
+      }
+    ],
+    "outputs": [
+      "payment flow map",
+      "applicable SAQ type",
+      "completed SAQ draft"
+    ],
+    "qa": [
+      "scope confirmed by a live trace, not settings alone",
+      "no card data claim made without a checked fact",
+      "signature step always left to a person"
+    ],
+    "read_point": "annually, and immediately on a payment-flow change",
+    "typical_duration": "agent: 1 to 1.5 hours; waiting: gateway documentation confirmation",
+    "subagents": []
+  },
+  {
+    "id": "MONEY-W24",
+    "name": "Correlate account-takeover signals across connected systems",
+    "capabilities": [
+      "MONEY-C81"
+    ],
+    "trigger": "continuous, reviewed daily",
+    "human_role": "the security owner watching what no single tool sees alone",
+    "inputs_required": [
+      "Shopify admin login logs",
+      "ad account login logs",
+      "ESP login logs",
+      "payment processor login logs"
+    ],
+    "steps": [
+      {
+        "n": 1,
+        "name": "Pull login events from every system",
+        "does": "Pull login geography, device and time for Shopify admin, the ad accounts, the ESP and the payment processor.",
+        "inputs": [
+          "login logs across systems"
+        ],
+        "tools": [
+          "connector: accounting export (read)",
+          "mcp: Meta_MCP ads_get_dataset_quality"
+        ],
+        "skill": "money/account-takeover-correlate",
+        "output": "cross-system login event set",
+        "check": "every connected system's events are pulled, none skipped"
+      },
+      {
+        "n": 2,
+        "name": "Match by person and time window",
+        "does": "Match login events by the same admin person across systems within a short time window.",
+        "inputs": [
+          "cross-system login event set"
+        ],
+        "tools": [
+          "script: money.account_takeover_correlate"
+        ],
+        "skill": "money/account-takeover-correlate",
+        "output": "matched login sequence",
+        "check": "a match requires the same person's account across at least 2 systems"
+      },
+      {
+        "n": 3,
+        "name": "Flag geography or device mismatches",
+        "does": "Flag a login sequence where geography or device differs from that person's normal pattern across systems.",
+        "inputs": [
+          "matched login sequence"
+        ],
+        "tools": [
+          "script: money.account_takeover_correlate"
+        ],
+        "skill": "money/account-takeover-correlate",
+        "output": "anomaly flag list",
+        "check": "an anomaly is flagged even if each single system's own alert stayed quiet"
+      },
+      {
+        "n": 4,
+        "name": "Rank flags by exposure",
+        "does": "Rank flags by what that account could touch: payment settings, ad budget, or customer data export.",
+        "inputs": [
+          "anomaly flag list"
+        ],
+        "tools": [
+          "script: money.account_takeover_correlate"
+        ],
+        "skill": "money/account-takeover-correlate",
+        "output": "ranked exposure list",
+        "check": "the ranking states the worst action that account could take, not just the login itself"
+      },
+      {
+        "n": 5,
+        "name": "Escalate the top-ranked flag same day",
+        "does": "Escalate any high-exposure flag to the founder the same day it is found.",
+        "inputs": [
+          "ranked exposure list"
+        ],
+        "tools": [],
+        "skill": "shared/plain-english-card",
+        "output": "same-day escalation",
+        "check": "the escalation names the exact systems and the exact anomaly",
+        "ask_founder_if": "the flag suggests an account is currently compromised"
+      },
+      {
+        "n": 6,
+        "name": "Log the daily review",
+        "does": "Log the daily review even when no anomaly is found, so the absence of a signal is itself recorded.",
+        "inputs": [
+          "daily review result"
+        ],
+        "tools": [],
+        "skill": "shared/registry-entry",
+        "output": "daily review log",
+        "check": "every day has a logged review, not only the days with a finding"
+      }
+    ],
+    "outputs": [
+      "cross-system login anomaly list",
+      "ranked exposure list",
+      "daily review log"
+    ],
+    "qa": [
+      "never relies on one system's own alert alone",
+      "every anomaly ranked by what the account could touch",
+      "every day logged, found or not"
+    ],
+    "read_point": "daily, reviewed same day for any high-exposure flag",
+    "typical_duration": "agent: 15 to 25 minutes daily",
+    "subagents": [
+      "money-security-scanner runs the daily pull; escalation still goes through the main agent"
+    ]
+  }
+]

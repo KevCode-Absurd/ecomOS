@@ -1,0 +1,3632 @@
+[
+  {
+    "id": "MEDIA-W01",
+    "name": "Audit the Meta ad account",
+    "capabilities": [
+      "MEDIA-C01"
+    ],
+    "trigger": "monthly",
+    "human_role": "media buyer running the monthly account health check",
+    "inputs_required": [
+      "brand brain: products and margin",
+      "connector: meta ads read (gallery cache + MCP re-pull)",
+      "metric contract: cpa, roas_blended, spend"
+    ],
+    "steps": [
+      {
+        "n": 1,
+        "name": "Pull 12 months of account data",
+        "does": "Refresh the gallery cache and pull account, campaign, ad set and ad level data for the trailing 12 months.",
+        "inputs": [
+          "gallery cache",
+          "meta ads read"
+        ],
+        "tools": [
+          "mcp: meta ads read (ads_get_ad_entities, ads_get_ad_accounts)",
+          "script: meta_gallery.refresh"
+        ],
+        "skill": "media/account-ops/audit-meta",
+        "output": "12-month account dataset",
+        "check": "data covers all 12 months with no platform gap unmarked"
+      },
+      {
+        "n": 2,
+        "name": "Run the structure checklist",
+        "does": "Check campaign purpose lines, ad set count against spend tier, naming consistency, CBO vs ABO use.",
+        "inputs": [
+          "account dataset"
+        ],
+        "tools": [
+          "gallery: campaigns tab"
+        ],
+        "skill": "media/account-ops/audit-meta",
+        "output": "structure checklist result",
+        "check": "every campaign has a stated purpose or is flagged"
+      },
+      {
+        "n": 3,
+        "name": "Run the creative review in fixed order",
+        "does": "Score creative volume, then diversity, then quality, in that order, never skipping ahead to quality.",
+        "inputs": [
+          "ad-level dataset"
+        ],
+        "tools": [
+          "gallery: gallery tab"
+        ],
+        "skill": "media/account-ops/audit-meta",
+        "output": "creative review scorecard",
+        "check": "volume was scored before diversity, diversity before quality"
+      },
+      {
+        "n": 4,
+        "name": "Score readable-data and commercial-alignment tests",
+        "does": "Check whether results can be read without guessing, and whether spend matches the business's real priorities.",
+        "inputs": [
+          "structure checklist",
+          "creative scorecard"
+        ],
+        "tools": [],
+        "skill": "media/account-ops/audit-meta",
+        "output": "two test scores",
+        "check": "both tests have a pass/fail, not a vague impression"
+      },
+      {
+        "n": 5,
+        "name": "Validate proposed structure changes",
+        "does": "Run any candidate structure change through the 4 fixed validation questions before it can enter the roadmap.",
+        "inputs": [
+          "candidate changes"
+        ],
+        "tools": [],
+        "skill": "media/account-ops/audit-meta",
+        "output": "validated change list",
+        "check": "no change entered the roadmap without passing all 4 questions"
+      },
+      {
+        "n": 6,
+        "name": "Rank findings by money at stake",
+        "does": "Order every finding by estimated spend or revenue impact, not by ease of fix.",
+        "inputs": [
+          "all findings"
+        ],
+        "tools": [
+          "script: meta_gallery.metrics"
+        ],
+        "skill": "shared/rank-candidates",
+        "output": "ranked finding list",
+        "check": "the top finding has the largest number behind it, verified in code"
+      },
+      {
+        "n": 7,
+        "name": "Write the 90-day roadmap",
+        "does": "Turn the ranked list into dated actions, each naming the metric it should move.",
+        "inputs": [
+          "ranked findings"
+        ],
+        "tools": [],
+        "skill": "shared/report-section",
+        "output": "ranked 90-day roadmap",
+        "check": "the roadmap names one single biggest constraint, not ten equal items"
+      },
+      {
+        "n": 8,
+        "name": "Package the founder brief",
+        "does": "Write the one-paragraph plain-English summary and attach the full audit and change list.",
+        "inputs": [
+          "roadmap",
+          "change list"
+        ],
+        "tools": [],
+        "skill": "shared/plain-english-card",
+        "output": "founder-facing audit summary",
+        "check": "summary uses short sentences, digits, no jargon"
+      }
+    ],
+    "outputs": [
+      "audit report",
+      "ranked 90-day roadmap",
+      "change list for structure fixes"
+    ],
+    "qa": [
+      "every number in the output came from code, not the model's own arithmetic",
+      "no metric shows a computed 0 where the source was actually missing",
+      "no write is proposed on a surface the founder has not switched on; the output is a change list instead",
+      "no competitor text, logo, product or face appears anywhere in the output",
+      "reading level and sentence length match house style",
+      "the roadmap names the single biggest constraint, not a list of equal findings"
+    ],
+    "read_point": "read at hand-off: founder reviews the roadmap; each named fix is re-measured at the next monthly audit",
+    "typical_duration": "agent time: about 45 minutes; waiting time: none, all data is already connected"
+  },
+  {
+    "id": "MEDIA-W02",
+    "name": "Design Meta account structure and naming",
+    "capabilities": [
+      "MEDIA-C09",
+      "MEDIA-C10"
+    ],
+    "trigger": "event: spend tier change, after an audit, or on demand",
+    "human_role": "media buyer restructuring the account to match current spend",
+    "inputs_required": [
+      "brand brain: catalogue, personas",
+      "metric contract: spend, cpa",
+      "MEDIA-W01 audit output"
+    ],
+    "steps": [
+      {
+        "n": 1,
+        "name": "Place the account in its spend tier",
+        "does": "Compute trailing 30-day spend and classify it small, mid or large.",
+        "inputs": [
+          "metric contract: spend"
+        ],
+        "tools": [
+          "script: meta_gallery.metrics"
+        ],
+        "skill": "media/build-campaign/meta-structure",
+        "output": "spend tier label",
+        "check": "tier matches the fixed dollar bands, not a guess"
+      },
+      {
+        "n": 2,
+        "name": "Pick the matching structure template",
+        "does": "Apply the small, mid or large template exactly as defined.",
+        "inputs": [
+          "spend tier"
+        ],
+        "tools": [],
+        "skill": "media/build-campaign/meta-structure",
+        "output": "template selection",
+        "check": "the chosen template matches the tier's written rule"
+      },
+      {
+        "n": 3,
+        "name": "Check for campaigns to merge or consolidate",
+        "does": "Flag campaigns too thin on conversions to optimise alone; check for full consolidation eligibility.",
+        "inputs": [
+          "campaign-level data"
+        ],
+        "tools": [
+          "mcp: meta ads read (ads_get_ad_entities)"
+        ],
+        "skill": "media/build-campaign/meta-structure",
+        "output": "merge/consolidate list",
+        "check": "no live campaign is left below the thin-data threshold unflagged"
+      },
+      {
+        "n": 4,
+        "name": "Write one purpose line per campaign",
+        "does": "Draft a one-line, defendable purpose for every existing and new campaign.",
+        "inputs": [
+          "campaign list"
+        ],
+        "tools": [],
+        "skill": "media/build-campaign/meta-structure",
+        "output": "purpose line per campaign",
+        "check": "every campaign has exactly one purpose line, not two competing ones"
+      },
+      {
+        "n": 5,
+        "name": "Set the ad set naming pattern",
+        "does": "Define persona, angle, offer, content type, launch date as the fixed naming fields.",
+        "inputs": [
+          "personas",
+          "offers"
+        ],
+        "tools": [],
+        "skill": "media/build-campaign/meta-structure",
+        "output": "naming convention doc",
+        "check": "the pattern applies to every existing ad set without exception, or exceptions are listed"
+      },
+      {
+        "n": 6,
+        "name": "Draft the rename and restructure change list",
+        "does": "List every campaign or ad set that needs a rename, merge or split, with the exact before and after.",
+        "inputs": [
+          "purpose lines",
+          "naming pattern",
+          "merge list"
+        ],
+        "tools": [],
+        "skill": "media/build-campaign/meta-structure",
+        "output": "change list",
+        "check": "every row has a current value and a proposed value"
+      },
+      {
+        "n": 7,
+        "name": "Run pre-launch QA on any new structural element",
+        "does": "Check any newly created campaign or ad set against the trafficking checklist before it is marked ready.",
+        "inputs": [
+          "change list"
+        ],
+        "tools": [],
+        "skill": "media/account-ops/trafficking-qa",
+        "output": "QA pass/fail",
+        "check": "every new element passed or is held with a reason"
+      }
+    ],
+    "outputs": [
+      "structure diagram",
+      "naming convention doc",
+      "change list for campaign consolidation, split or rename"
+    ],
+    "qa": [
+      "every number in the output came from code, not the model's own arithmetic",
+      "no metric shows a computed 0 where the source was actually missing",
+      "no write is proposed on a surface the founder has not switched on; the output is a change list instead",
+      "no competitor text, logo, product or face appears anywhere in the output",
+      "reading level and sentence length match house style",
+      "every campaign has a purpose line and every ad set follows the naming pattern"
+    ],
+    "read_point": "read point: re-checked at the next monthly audit or the next spend-tier change",
+    "typical_duration": "agent time: about 30 minutes; waiting time: none"
+  },
+  {
+    "id": "MEDIA-W03",
+    "name": "Launch a new Meta concept ad set",
+    "capabilities": [
+      "MEDIA-C11",
+      "MEDIA-C12",
+      "MEDIA-C13",
+      "MEDIA-C14",
+      "MEDIA-C15",
+      "MEDIA-C59"
+    ],
+    "trigger": "event: a new concept (SKU + pain point + offer) is ready to test",
+    "human_role": "media buyer launching a new creative test, the founder's own worked example",
+    "inputs_required": [
+      "brand brain: personas, offers, SKUs",
+      "reference scout: creative references",
+      "approved creative from CREA/ADC",
+      "MEDIA-W01 audit output"
+    ],
+    "steps": [
+      {
+        "n": 1,
+        "name": "Pull the objection map and references",
+        "does": "Read the objection map and creative references the paid creative specialist built for this concept.",
+        "inputs": [
+          "CREA objection map",
+          "reference scout output"
+        ],
+        "tools": [],
+        "skill": null,
+        "output": "objection map and references on hand",
+        "check": "every objection has at least 2 quoted sources"
+      },
+      {
+        "n": 2,
+        "name": "Define the concept",
+        "does": "Fix the concept as one SKU, one pain point, one offer; confirm no persona overlap with a live ad set.",
+        "inputs": [
+          "personas",
+          "offers",
+          "SKUs"
+        ],
+        "tools": [],
+        "skill": "media/build-campaign/meta-concept",
+        "output": "concept definition",
+        "check": "a change to SKU, pain point or offer would start a new ad set, confirmed"
+      },
+      {
+        "n": 3,
+        "name": "Size the test",
+        "does": "Compute the test budget (target conversions x CPA / test days) and the kill-rule threshold (3-5x target CPA).",
+        "inputs": [
+          "metric contract: cpa, spend",
+          "brand brain: purchase cycle"
+        ],
+        "tools": [
+          "script: meta_gallery.metrics"
+        ],
+        "skill": "media/pace-budget/meta",
+        "output": "test brief with budget and read window",
+        "check": "the ad set's planned budget can reach the read-spend threshold inside the window"
+      },
+      {
+        "n": 4,
+        "name": "Build the audience",
+        "does": "Go broad in cold targeting; exclude existing customers sized to the repurchase cycle; cap any interest test as a labelled sandbox.",
+        "inputs": [
+          "brand brain: customer list, repurchase cycle"
+        ],
+        "tools": [
+          "mcp: meta ads read (ads_get_ad_account_custom_audiences)"
+        ],
+        "skill": "media/build-campaign/meta-concept",
+        "output": "audience plan",
+        "check": "existing customers are excluded and cold targeting is broad"
+      },
+      {
+        "n": 5,
+        "name": "Set placement and creative-edit controls",
+        "does": "Remove weak placements and turn off Advantage+ creative edits and dynamic crop.",
+        "inputs": [],
+        "tools": [],
+        "skill": "media/build-campaign/meta-concept",
+        "output": "placement and creative-edit change list",
+        "check": "every product ad has automatic edits turned off"
+      },
+      {
+        "n": 6,
+        "name": "Choose bid strategy",
+        "does": "Default to CBO; switch to ABO only at high AOV with low daily order volume; set any cap at ad-set level.",
+        "inputs": [
+          "metric contract: cpa, roas_blended, cpm"
+        ],
+        "tools": [],
+        "skill": "media/build-campaign/meta-concept",
+        "output": "bid strategy setting",
+        "check": "no cap is set at ad level"
+      },
+      {
+        "n": 7,
+        "name": "Brief and receive the ad set",
+        "does": "Send the concept, audience and offer to CREA/ADC for scripts and creative; receive back the concept ad plus 3 hook variations.",
+        "inputs": [
+          "objection map",
+          "concept definition"
+        ],
+        "tools": [],
+        "skill": null,
+        "output": "concept ad + 3 hooks ready",
+        "check": "the ad set has enough ads for 2-6 exposures, minimum 3"
+      },
+      {
+        "n": 8,
+        "name": "Run a feedback and reference round",
+        "does": "Check the creative against the brand's references and the founder's past likes/dislikes before it is called final.",
+        "inputs": [
+          "creative from CREA/ADC",
+          "founder reference history"
+        ],
+        "tools": [],
+        "skill": "shared/claim-check",
+        "output": "feedback notes or approval",
+        "check": "every claim in the ad traces to an approved source"
+      },
+      {
+        "n": 9,
+        "name": "Run the pre-launch trafficking QA",
+        "does": "Confirm pixel fires on the landing page, targeting matches the plan, UTM is correct, and creative meets spec.",
+        "inputs": [
+          "built ad set"
+        ],
+        "tools": [
+          "mcp: meta ads read (read-only checks)"
+        ],
+        "skill": "media/account-ops/trafficking-qa",
+        "output": "QA pass/fail",
+        "check": "every check passed or the launch is held"
+      },
+      {
+        "n": 10,
+        "name": "Hand off the launch checklist",
+        "does": "Package the full build (concept, audience, placement, bid, creative, QA result) as a change list for a human to apply in Ads Manager.",
+        "inputs": [
+          "all prior outputs"
+        ],
+        "tools": [],
+        "skill": "shared/plain-english-card",
+        "output": "launch checklist / change list",
+        "check": "the checklist has every setting a person needs, nothing left implicit",
+        "ask_founder_if": "Meta writes are switched on and the launch itself could be applied directly instead of handed off"
+      },
+      {
+        "n": 11,
+        "name": "Set the read point",
+        "does": "Confirm the date and metric at which this test will first be judged, per the test brief.",
+        "inputs": [
+          "test brief"
+        ],
+        "tools": [],
+        "skill": "media/read-results/meta",
+        "output": "scheduled read date",
+        "check": "the read date matches the sized window, not an arbitrary check-in"
+      }
+    ],
+    "outputs": [
+      "ad set build plan",
+      "test brief with budget and read window",
+      "launch checklist / change list",
+      "kill-rule sheet"
+    ],
+    "qa": [
+      "every number in the output came from code, not the model's own arithmetic",
+      "no metric shows a computed 0 where the source was actually missing",
+      "no write is proposed on a surface the founder has not switched on; the output is a change list instead",
+      "no competitor text, logo, product or face appears anywhere in the output",
+      "reading level and sentence length match house style",
+      "the ad set has one SKU, one pain point, one offer",
+      "the trafficking QA checklist passed before hand-off"
+    ],
+    "read_point": "read point: at the test brief's read window (never under 5 days below $50k/month spend), first on the kill-rule threshold, not before",
+    "typical_duration": "agent time: about 1.5 hours across research, build and QA; waiting time: 1-2 days for creative from CREA/ADC",
+    "subagents": [
+      "paid creative and copy specialist (CREA/ADC) writes scripts and delivers the concept ad and hooks"
+    ]
+  },
+  {
+    "id": "MEDIA-W04",
+    "name": "Run the daily Meta read and kill/keep/scale calls",
+    "capabilities": [
+      "MEDIA-C45",
+      "MEDIA-C46",
+      "MEDIA-C17"
+    ],
+    "trigger": "daily",
+    "human_role": "media buyer doing the morning account check",
+    "inputs_required": [
+      "metric contract: full",
+      "connector: meta ads read, gallery cache"
+    ],
+    "steps": [
+      {
+        "n": 1,
+        "name": "Pull yesterday's full-day numbers",
+        "does": "Blend spend, orders and revenue into MER in code for the last full day and the trailing 14 days.",
+        "inputs": [
+          "metric contract: full"
+        ],
+        "tools": [
+          "script: meta_gallery.metrics"
+        ],
+        "skill": "media/read-results/meta",
+        "output": "daily numbers",
+        "check": "the window ends on the last full day, never a partial day"
+      },
+      {
+        "n": 2,
+        "name": "Check for anomalies",
+        "does": "Compute the trailing 14-day median for spend and ROAS; flag any day 50% or more off it.",
+        "inputs": [
+          "daily numbers"
+        ],
+        "tools": [
+          "gallery: insights tab"
+        ],
+        "skill": "media/read-results/meta",
+        "output": "anomaly flag list",
+        "check": "swings under about $1,000/day are treated as noise, not flagged"
+      },
+      {
+        "n": 3,
+        "name": "Diagnose a flagged anomaly",
+        "does": "For any flagged day, check pixel/CAPI/feed health first, then name the 3 ads most responsible.",
+        "inputs": [
+          "anomaly flag"
+        ],
+        "tools": [
+          "mcp: meta ads read (ads_pixel_event_read)"
+        ],
+        "skill": "media/read-results/meta",
+        "output": "anomaly root-cause note",
+        "check": "tracking health was checked before bidding was blamed"
+      },
+      {
+        "n": 4,
+        "name": "Read the ad-set-level table",
+        "does": "Apply the keep/yellow/kill table at 3-5x target CPA, at ad-set level, never on one ad's own number.",
+        "inputs": [
+          "ad-set metrics"
+        ],
+        "tools": [
+          "mcp: meta ads read (ads_insights_performance_trend)"
+        ],
+        "skill": "media/kill-scale/meta",
+        "output": "keep/kill/scale call list",
+        "check": "every call was made at ad-set level"
+      },
+      {
+        "n": 5,
+        "name": "Step or fork winners, never edit in place",
+        "does": "For an ad set past its threshold, step its budget or fork new creative beside it; never edit the winner directly.",
+        "inputs": [
+          "call list"
+        ],
+        "tools": [],
+        "skill": "media/kill-scale/meta",
+        "output": "budget step or fork change list",
+        "check": "no winning ad set was edited directly"
+      },
+      {
+        "n": 6,
+        "name": "Write the daily read",
+        "does": "Assemble pacing, anomalies and the day's calls into the one-page daily read.",
+        "inputs": [
+          "all prior outputs"
+        ],
+        "tools": [],
+        "skill": "shared/report-section",
+        "output": "daily read",
+        "check": "the read fits one page and names what needs a decision today",
+        "ask_founder_if": "any kill/keep/scale call would require a write on a surface without writes switched on"
+      }
+    ],
+    "outputs": [
+      "daily read with keep/kill/scale calls",
+      "change list for budget moves",
+      "daily anomaly alert"
+    ],
+    "qa": [
+      "every number in the output came from code, not the model's own arithmetic",
+      "no metric shows a computed 0 where the source was actually missing",
+      "no write is proposed on a surface the founder has not switched on; the output is a change list instead",
+      "no competitor text, logo, product or face appears anywhere in the output",
+      "reading level and sentence length match house style",
+      "no call was made on one ad's number inside a larger ad set",
+      "no winner was edited in place, only forked or stepped"
+    ],
+    "read_point": "read point: every morning, on the prior full day's data",
+    "typical_duration": "agent time: about 20 minutes; waiting time: none"
+  },
+  {
+    "id": "MEDIA-W05",
+    "name": "Weekly cross-platform housekeeping: suggestions and pacing forecast",
+    "capabilities": [
+      "MEDIA-C07",
+      "MEDIA-C47"
+    ],
+    "trigger": "weekly",
+    "human_role": "media buyer's Monday routine",
+    "inputs_required": [
+      "connector: meta ads read, google ads (manual)",
+      "registry: past suggestion outcomes",
+      "brand brain: monthly budget targets"
+    ],
+    "steps": [
+      {
+        "n": 1,
+        "name": "Pull this week's platform suggestions",
+        "does": "Log every Ads Manager or Google Ads suggestion with its stated expected effect.",
+        "inputs": [
+          "meta ads read",
+          "google ads manual export"
+        ],
+        "tools": [
+          "mcp: meta ads read (ads_get_errors, ads_get_field_context)"
+        ],
+        "skill": "media/account-ops/suggestion-filter",
+        "output": "suggestion log",
+        "check": "every suggestion is logged, not just the ones acted on"
+      },
+      {
+        "n": 2,
+        "name": "Check auto-apply and AI asset settings are off",
+        "does": "Confirm auto-apply recommendations and AI-generated assets are off by default on every surface.",
+        "inputs": [],
+        "tools": [],
+        "skill": "media/account-ops/suggestion-filter",
+        "output": "settings check result",
+        "check": "auto-apply is off unless the founder explicitly turned it on"
+      },
+      {
+        "n": 3,
+        "name": "Sandbox-test any testable suggestion",
+        "does": "Where a suggestion can be tested in isolation, size a small sandbox test instead of applying it account-wide.",
+        "inputs": [
+          "suggestion log"
+        ],
+        "tools": [],
+        "skill": "media/account-ops/suggestion-filter",
+        "output": "sandbox test brief (if any)",
+        "check": "the test is isolated, not blended into the main account read"
+      },
+      {
+        "n": 4,
+        "name": "Record past suggestion outcomes",
+        "does": "Check the registry for any suggestion applied before; record its real effect against the platform's claim.",
+        "inputs": [
+          "registry"
+        ],
+        "tools": [],
+        "skill": "shared/registry-entry",
+        "output": "apply/reject change list with reason",
+        "check": "every applied suggestion in the log has a recorded actual effect"
+      },
+      {
+        "n": 5,
+        "name": "Project month-end spend and MER",
+        "does": "Compute the month-end spend and blended MER forecast from the trailing daily pace, per platform.",
+        "inputs": [
+          "metric contract: spend, roas_blended"
+        ],
+        "tools": [
+          "script: meta_gallery.metrics"
+        ],
+        "skill": "media/read-results/meta",
+        "output": "spend forecast",
+        "check": "the forecast is shown next to the actual, never in place of it"
+      },
+      {
+        "n": 6,
+        "name": "Flag pacing risk",
+        "does": "Flag any platform pacing to miss its budget or margin target, early enough in the month to act.",
+        "inputs": [
+          "forecast",
+          "brand brain: monthly budget targets"
+        ],
+        "tools": [],
+        "skill": "media/read-results/meta",
+        "output": "pacing risk flag",
+        "check": "the flag arrives with enough of the month left to actually change course"
+      },
+      {
+        "n": 7,
+        "name": "Write the weekly housekeeping note",
+        "does": "Combine the suggestion decisions and the pacing flag into one short note for the founder.",
+        "inputs": [
+          "suggestion log",
+          "pacing flag"
+        ],
+        "tools": [],
+        "skill": "shared/plain-english-card",
+        "output": "weekly housekeeping note",
+        "check": "the note is short, plain and names anything needing a decision"
+      }
+    ],
+    "outputs": [
+      "suggestion log",
+      "apply/reject change list",
+      "spend forecast",
+      "pacing risk flag"
+    ],
+    "qa": [
+      "every number in the output came from code, not the model's own arithmetic",
+      "no metric shows a computed 0 where the source was actually missing",
+      "no write is proposed on a surface the founder has not switched on; the output is a change list instead",
+      "no competitor text, logo, product or face appears anywhere in the output",
+      "reading level and sentence length match house style"
+    ],
+    "read_point": "read point: every Monday, on the prior week's suggestions and the current month's pace",
+    "typical_duration": "agent time: about 25 minutes; waiting time: none"
+  },
+  {
+    "id": "MEDIA-W06",
+    "name": "Run existing-customer and retargeting campaigns",
+    "capabilities": [
+      "MEDIA-C19",
+      "LIFE-C32"
+    ],
+    "trigger": "event: after an audit or a quarterly review",
+    "human_role": "media buyer setting up or resizing warm-traffic spend",
+    "inputs_required": [
+      "brand brain: repurchase cycle, customer segments",
+      "LIFE-C32: existing-customer budget and CPA ceiling memo"
+    ],
+    "steps": [
+      {
+        "n": 1,
+        "name": "Read the existing-customer policy",
+        "does": "Pull the budget dollar figure and CPA ceiling the Lifecycle specialist set.",
+        "inputs": [
+          "LIFE-C32 memo"
+        ],
+        "tools": [],
+        "skill": "media/build-campaign/meta-retargeting",
+        "output": "policy numbers on hand",
+        "check": "the numbers came from LIFE-C32, not a media-buyer guess",
+        "ask_founder_if": "LIFE-C32 has not set a policy yet"
+      },
+      {
+        "n": 2,
+        "name": "Confirm or build the dedicated campaign",
+        "does": "Hold all existing-customer spend in one campaign so it cannot bleed into cold.",
+        "inputs": [
+          "policy numbers"
+        ],
+        "tools": [
+          "mcp: meta ads read (ads_get_ad_entities)"
+        ],
+        "skill": "media/build-campaign/meta-retargeting",
+        "output": "dedicated campaign confirmed or built",
+        "check": "no existing-customer ad set lives inside a cold campaign"
+      },
+      {
+        "n": 3,
+        "name": "Size the budget in dollars and frequency",
+        "does": "Set the campaign budget to the LIFE-C32 dollar figure and a target frequency, never a percent of spend.",
+        "inputs": [
+          "policy numbers"
+        ],
+        "tools": [],
+        "skill": "media/build-campaign/meta-retargeting",
+        "output": "budget setting",
+        "check": "budget is a dollar figure, not a percentage"
+      },
+      {
+        "n": 4,
+        "name": "Decide on a visitor-retargeting layer",
+        "does": "Check whether the engaged (site-visitor) segment is spend-starved before adding a separate campaign for it.",
+        "inputs": [
+          "engagement data"
+        ],
+        "tools": [],
+        "skill": "media/build-campaign/meta-retargeting",
+        "output": "decision: add or skip",
+        "check": "a visitor campaign is skipped unless the segment is actually starved"
+      },
+      {
+        "n": 5,
+        "name": "Brief non-buyer creative on a different objection",
+        "does": "Ask CREA/ADC for retargeting copy built on a different offer or proof point than the cold ad.",
+        "inputs": [
+          "objection map"
+        ],
+        "tools": [],
+        "skill": null,
+        "output": "creative brief to CREA/ADC",
+        "check": "the brief names a different objection than the live cold ad"
+      },
+      {
+        "n": 6,
+        "name": "Time win-back and lapsed-customer messaging",
+        "does": "Set win-back ad timing to land just before the typical reorder date; confirm a lapsed-customer campaign exists with its own strategy.",
+        "inputs": [
+          "repurchase cycle"
+        ],
+        "tools": [],
+        "skill": "media/build-campaign/meta-retargeting",
+        "output": "timing plan and lapsed-campaign check",
+        "check": "timing is tied to the reorder date, not a fixed day count"
+      },
+      {
+        "n": 7,
+        "name": "Run trafficking QA and hand off",
+        "does": "Check the built campaign against the QA checklist, then package the change list.",
+        "inputs": [
+          "built campaign"
+        ],
+        "tools": [],
+        "skill": "media/account-ops/trafficking-qa",
+        "output": "change list",
+        "check": "QA passed before hand-off"
+      }
+    ],
+    "outputs": [
+      "retargeting campaign plan",
+      "change list"
+    ],
+    "qa": [
+      "every number in the output came from code, not the model's own arithmetic",
+      "no metric shows a computed 0 where the source was actually missing",
+      "no write is proposed on a surface the founder has not switched on; the output is a change list instead",
+      "no competitor text, logo, product or face appears anywhere in the output",
+      "reading level and sentence length match house style",
+      "all existing-customer spend sits in one campaign",
+      "budget and CPA match LIFE-C32, not a guess"
+    ],
+    "read_point": "read point: at the next quarterly review, or sooner if LIFE-C32's policy changes",
+    "typical_duration": "agent time: about 40 minutes; waiting time: 1-2 days for creative from CREA/ADC",
+    "subagents": [
+      "lifecycle specialist (LIFE) sets the budget and CPA ceiling this workflow executes",
+      "paid creative and copy specialist (CREA/ADC) writes the non-buyer creative"
+    ]
+  },
+  {
+    "id": "MEDIA-W07",
+    "name": "Manage dynamic product ads and catalogue feed health",
+    "capabilities": [
+      "MEDIA-C20"
+    ],
+    "trigger": "weekly",
+    "human_role": "media buyer keeping DPA trustworthy",
+    "inputs_required": [
+      "brand brain: product catalogue",
+      "connector: meta ads read (catalogue diagnostics, dynamic-ads health)"
+    ],
+    "steps": [
+      {
+        "n": 1,
+        "name": "Pull catalogue diagnostics",
+        "does": "Read feed diagnostics and dynamic-ads health from Meta.",
+        "inputs": [],
+        "tools": [
+          "mcp: meta ads read (ads_catalog_get_diagnostics, ads_catalog_get_dynamic_ads_health)"
+        ],
+        "skill": "media/build-campaign/meta-catalogue",
+        "output": "diagnostics report",
+        "check": "every active SKU in the feed is checked"
+      },
+      {
+        "n": 2,
+        "name": "Check for missing images, prices or availability",
+        "does": "Flag any SKU with a feed gap before it gets more DPA spend.",
+        "inputs": [
+          "diagnostics report"
+        ],
+        "tools": [],
+        "skill": "media/build-campaign/meta-catalogue",
+        "output": "gap list",
+        "check": "no SKU with a gap is left unflagged"
+      },
+      {
+        "n": 3,
+        "name": "Confirm sync is current",
+        "does": "Check the product and customer sync into the catalogue ran on schedule and matches current order data.",
+        "inputs": [],
+        "tools": [
+          "mcp: meta ads read (ads_catalog_list_products)"
+        ],
+        "skill": "media/build-campaign/meta-catalogue",
+        "output": "sync status",
+        "check": "sync date is within the expected schedule"
+      },
+      {
+        "n": 4,
+        "name": "Confirm DPA isolation and cap",
+        "does": "Check DPA lives in its own ad set outside the cold CBO campaign, capped as a share of total spend.",
+        "inputs": [],
+        "tools": [],
+        "skill": "media/build-campaign/meta-catalogue",
+        "output": "isolation check",
+        "check": "DPA never shares an ad set with cold prospecting"
+      },
+      {
+        "n": 5,
+        "name": "Confirm the read window",
+        "does": "Check DPA is being read on 7-day click or incremental attribution, never blended platform ROAS.",
+        "inputs": [],
+        "tools": [],
+        "skill": "media/build-campaign/meta-catalogue",
+        "output": "read-window check",
+        "check": "the reporting view used for DPA is not the blended ROAS column"
+      },
+      {
+        "n": 6,
+        "name": "Write the DPA health report and change list",
+        "does": "Package the findings and any fixes needed.",
+        "inputs": [
+          "all prior outputs"
+        ],
+        "tools": [],
+        "skill": "shared/report-section",
+        "output": "DPA health report + change list",
+        "check": "every fix has a named owner (media buyer or developer)"
+      }
+    ],
+    "outputs": [
+      "DPA health report",
+      "change list"
+    ],
+    "qa": [
+      "every number in the output came from code, not the model's own arithmetic",
+      "no metric shows a computed 0 where the source was actually missing",
+      "no write is proposed on a surface the founder has not switched on; the output is a change list instead",
+      "no competitor text, logo, product or face appears anywhere in the output",
+      "reading level and sentence length match house style"
+    ],
+    "read_point": "read point: weekly, before any DPA budget change is considered",
+    "typical_duration": "agent time: about 15 minutes; waiting time: none"
+  },
+  {
+    "id": "MEDIA-W08",
+    "name": "Pace ad spend against live stock",
+    "capabilities": [
+      "MEDIA-C42"
+    ],
+    "trigger": "daily",
+    "human_role": "media buyer checking stock before touching any budget",
+    "inputs_required": [
+      "brand brain: live stock, days_of_stock",
+      "metric contract: days_of_stock, stockout_days"
+    ],
+    "steps": [
+      {
+        "n": 1,
+        "name": "Pull live stock for every SKU in play",
+        "does": "Read current stock and days_of_stock for every SKU with active or scaling ads.",
+        "inputs": [
+          "metric contract: days_of_stock"
+        ],
+        "tools": [],
+        "skill": "media/pace-budget/stock-check",
+        "output": "stock snapshot",
+        "check": "every active SKU has a days_of_stock figure or is marked unavailable"
+      },
+      {
+        "n": 2,
+        "name": "Check against any pending budget or scaling move",
+        "does": "Compare planned budget raises or scale-ups against the stock snapshot.",
+        "inputs": [
+          "stock snapshot",
+          "pending moves from MEDIA-W04/W16"
+        ],
+        "tools": [],
+        "skill": "media/pace-budget/stock-check",
+        "output": "pass/fail per pending move",
+        "check": "no raise is approved for a SKU that would stock out inside the read window"
+      },
+      {
+        "n": 3,
+        "name": "Throttle spend ahead of a predicted stockout",
+        "does": "For a SKU trending toward stockout, propose a spend throttle before it happens.",
+        "inputs": [
+          "stock snapshot"
+        ],
+        "tools": [],
+        "skill": "media/pace-budget/stock-check",
+        "output": "throttle recommendation",
+        "check": "the throttle is proposed before the stockout, not after"
+      },
+      {
+        "n": 4,
+        "name": "Flag stock-ahead opportunities",
+        "does": "For a product just starting to scale, flag the need to order more stock ahead of the ramp.",
+        "inputs": [
+          "stock snapshot"
+        ],
+        "tools": [],
+        "skill": "media/pace-budget/stock-check",
+        "output": "stock-ahead flag",
+        "check": "flagged early enough for a reorder to land in time"
+      },
+      {
+        "n": 5,
+        "name": "Suggest clearance or new-arrivals campaigns",
+        "does": "Flag aged or grade-C inventory for a small clearance campaign, and fresh SKUs for a new-arrivals push.",
+        "inputs": [
+          "stock snapshot"
+        ],
+        "tools": [],
+        "skill": "media/pace-budget/stock-check",
+        "output": "campaign suggestions",
+        "check": "suggestions are based on actual stock age, not a guess"
+      },
+      {
+        "n": 6,
+        "name": "Write the pacing report",
+        "does": "Package the stock snapshot, throttle recommendations and campaign suggestions into one report for the day.",
+        "inputs": [
+          "all prior outputs"
+        ],
+        "tools": [],
+        "skill": "shared/report-section",
+        "output": "stock-aware pacing report",
+        "check": "the report names every SKU with a stock action needed today"
+      }
+    ],
+    "outputs": [
+      "stock-aware pacing report",
+      "change list"
+    ],
+    "qa": [
+      "every number in the output came from code, not the model's own arithmetic",
+      "no metric shows a computed 0 where the source was actually missing",
+      "no write is proposed on a surface the founder has not switched on; the output is a change list instead",
+      "no competitor text, logo, product or face appears anywhere in the output",
+      "reading level and sentence length match house style"
+    ],
+    "read_point": "read point: daily, before any budget increase or scale-up elsewhere in the day's work",
+    "typical_duration": "agent time: about 10 minutes; waiting time: none"
+  },
+  {
+    "id": "MEDIA-W09",
+    "name": "Plan the peak sale ramp and wind-down",
+    "capabilities": [
+      "MEDIA-C21"
+    ],
+    "trigger": "event: 3-4 weeks before a known sale",
+    "human_role": "media buyer preparing for a major sale window",
+    "inputs_required": [
+      "brand brain: sale calendar, stock levels",
+      "metric contract: spend, cpm"
+    ],
+    "steps": [
+      {
+        "n": 1,
+        "name": "Confirm the sale date and duration",
+        "does": "Pull the sale calendar entry and confirm start, end and any known promo mechanics.",
+        "inputs": [
+          "brand brain: sale calendar"
+        ],
+        "tools": [],
+        "skill": "media/account-ops/peak-sale-ramp",
+        "output": "confirmed sale window",
+        "check": "the date is confirmed, not assumed from last year"
+      },
+      {
+        "n": 2,
+        "name": "Check stock against the planned ramp",
+        "does": "Cross-check planned ramp SKUs against current stock and incoming inventory.",
+        "inputs": [
+          "stock levels"
+        ],
+        "tools": [],
+        "skill": "media/pace-budget/stock-check",
+        "output": "stock-ready SKU list",
+        "check": "no SKU is ramped without stock to support it"
+      },
+      {
+        "n": 3,
+        "name": "Set the budget-step schedule",
+        "does": "Plan the weekly or daily budget steps from now through the sale peak.",
+        "inputs": [
+          "metric contract: spend"
+        ],
+        "tools": [
+          "script: meta_gallery.metrics"
+        ],
+        "skill": "media/account-ops/peak-sale-ramp",
+        "output": "budget ramp schedule",
+        "check": "steps are sized, not a single jump on sale day"
+      },
+      {
+        "n": 4,
+        "name": "Brief new creative for the sale",
+        "does": "Request sale-specific creative and copy from CREA/ADC ahead of the ramp.",
+        "inputs": [
+          "sale offer details"
+        ],
+        "tools": [],
+        "skill": null,
+        "output": "creative brief to CREA/ADC",
+        "check": "the brief goes out early enough for creative to be ready before ramp starts"
+      },
+      {
+        "n": 5,
+        "name": "Prepare Google Search, Shopping and brand for the date",
+        "does": "Set up sale-specific assets and budget plans on the Google side in advance.",
+        "inputs": [
+          "Google account state"
+        ],
+        "tools": [],
+        "skill": "media/build-campaign/google-shopping",
+        "output": "Google sale-readiness checklist",
+        "check": "Google is prepared before the sale opens, not during it"
+      },
+      {
+        "n": 6,
+        "name": "Fix the wind-down date",
+        "does": "Set the exact date and budget step-down schedule for after the sale, before the sale starts.",
+        "inputs": [
+          "sale window"
+        ],
+        "tools": [],
+        "skill": "media/account-ops/peak-sale-ramp",
+        "output": "wind-down schedule",
+        "check": "the wind-down date is fixed in writing before the sale opens"
+      },
+      {
+        "n": 7,
+        "name": "Write the post-sale review template",
+        "does": "Prepare the checklist and read point that will be used right after the sale ends.",
+        "inputs": [],
+        "tools": [],
+        "skill": "shared/report-section",
+        "output": "post-sale review template",
+        "check": "the template names the metric and the date it will be read"
+      }
+    ],
+    "outputs": [
+      "peak sale media plan",
+      "change list",
+      "post-sale review template"
+    ],
+    "qa": [
+      "every number in the output came from code, not the model's own arithmetic",
+      "no metric shows a computed 0 where the source was actually missing",
+      "no write is proposed on a surface the founder has not switched on; the output is a change list instead",
+      "no competitor text, logo, product or face appears anywhere in the output",
+      "reading level and sentence length match house style",
+      "a wind-down date exists before the sale starts"
+    ],
+    "read_point": "read point: at the fixed wind-down date, then again at the post-sale review",
+    "typical_duration": "agent time: about 1 hour; waiting time: 2-4 days for sale creative from CREA/ADC",
+    "subagents": [
+      "google-ads-buyer prepares the Google side of the ramp in parallel"
+    ]
+  },
+  {
+    "id": "MEDIA-W10",
+    "name": "Set up cross-border and multi-market ad delivery",
+    "capabilities": [
+      "MEDIA-C22"
+    ],
+    "trigger": "event: new market launch",
+    "human_role": "media buyer opening ads in a new country",
+    "inputs_required": [
+      "brand brain: markets served, shipping policy",
+      "connector: meta ads read, google merchant center (manual)"
+    ],
+    "steps": [
+      {
+        "n": 1,
+        "name": "Confirm the new market's shipping and duty policy",
+        "does": "Pull the brand's shipping policy and duty terms for the new market.",
+        "inputs": [
+          "brand brain: shipping policy"
+        ],
+        "tools": [],
+        "skill": "media/account-ops/cross-border-setup",
+        "output": "policy summary for the market",
+        "check": "policy is confirmed with the brand, not assumed from the home market"
+      },
+      {
+        "n": 2,
+        "name": "Set local currency and payment defaults",
+        "does": "Set currency, language and local payment method defaults for the new, typically mobile-first market.",
+        "inputs": [],
+        "tools": [],
+        "skill": "media/account-ops/cross-border-setup",
+        "output": "market delivery settings",
+        "check": "settings are local to the market, not copied from the home market"
+      },
+      {
+        "n": 3,
+        "name": "Write duty and delivery-time ad messaging",
+        "does": "Draft the specific delivery-time and import-duty message for ad copy in this market.",
+        "inputs": [
+          "policy summary"
+        ],
+        "tools": [],
+        "skill": "media/account-ops/cross-border-setup",
+        "output": "ad copy messaging brief",
+        "check": "the message states real duty and delivery time for this market"
+      },
+      {
+        "n": 4,
+        "name": "Set up the market-specific Google feed",
+        "does": "Show shipping cost and duty in a dedicated feed for this currency; never mix currencies in one feed.",
+        "inputs": [
+          "google merchant center"
+        ],
+        "tools": [],
+        "skill": "media/account-ops/cross-border-setup",
+        "output": "feed setup checklist",
+        "check": "the new market has its own feed, not a shared one"
+      },
+      {
+        "n": 5,
+        "name": "Write the market setup checklist and change list",
+        "does": "Package every setting and message into one checklist for a human to apply.",
+        "inputs": [
+          "all prior outputs"
+        ],
+        "tools": [],
+        "skill": "shared/developer-brief",
+        "output": "market setup checklist + change list",
+        "check": "the checklist covers currency, payment, language, feed and ad copy"
+      },
+      {
+        "n": 6,
+        "name": "Run trafficking QA on the market's first campaign",
+        "does": "Check the first campaign built for this market against the pre-launch QA checklist before it goes live.",
+        "inputs": [
+          "market setup checklist"
+        ],
+        "tools": [],
+        "skill": "media/account-ops/trafficking-qa",
+        "output": "QA pass/fail",
+        "check": "the first campaign in the new market passed QA before launch"
+      }
+    ],
+    "outputs": [
+      "market setup checklist",
+      "change list"
+    ],
+    "qa": [
+      "every number in the output came from code, not the model's own arithmetic",
+      "no metric shows a computed 0 where the source was actually missing",
+      "no write is proposed on a surface the founder has not switched on; the output is a change list instead",
+      "no competitor text, logo, product or face appears anywhere in the output",
+      "reading level and sentence length match house style"
+    ],
+    "read_point": "read point: at the market's first monthly review after launch",
+    "typical_duration": "agent time: about 45 minutes; waiting time: none",
+    "subagents": [
+      "google-ads-buyer sets up the market-specific Google feed"
+    ]
+  },
+  {
+    "id": "MEDIA-W11",
+    "name": "Manage ad account access and multi-account scaling",
+    "capabilities": [
+      "MEDIA-C23"
+    ],
+    "trigger": "quarterly",
+    "human_role": "media buyer running the quarterly access review",
+    "inputs_required": [
+      "brand brain: account inventory"
+    ],
+    "steps": [
+      {
+        "n": 1,
+        "name": "List every connected account",
+        "does": "Pull the ad account, Merchant Center, analytics and Business Center inventory.",
+        "inputs": [
+          "brand brain: account inventory"
+        ],
+        "tools": [],
+        "skill": "media/account-ops/access-audit",
+        "output": "account inventory list",
+        "check": "every connected surface is on the list"
+      },
+      {
+        "n": 2,
+        "name": "Confirm one master login",
+        "does": "Check the ad account, Merchant Center and analytics sit under one master login.",
+        "inputs": [
+          "account inventory"
+        ],
+        "tools": [],
+        "skill": "media/account-ops/access-audit",
+        "output": "login consolidation check",
+        "check": "no surface sits under a separate, undocumented login"
+      },
+      {
+        "n": 3,
+        "name": "Audit access levels",
+        "does": "List who has admin, employee or partner access on every connected account.",
+        "inputs": [
+          "account inventory"
+        ],
+        "tools": [],
+        "skill": "media/account-ops/access-audit",
+        "output": "access list",
+        "check": "every person with access is named, with their level"
+      },
+      {
+        "n": 4,
+        "name": "Check the second-account threshold",
+        "does": "Compare current spend to the roughly $250k/month threshold before any second-account request.",
+        "inputs": [
+          "metric contract: spend"
+        ],
+        "tools": [],
+        "skill": "media/account-ops/access-audit",
+        "output": "threshold check",
+        "check": "a second account is not recommended below the threshold"
+      },
+      {
+        "n": 5,
+        "name": "Check for unjustified country splits",
+        "does": "Confirm no ad account is split by country except for local-currency billing.",
+        "inputs": [
+          "account inventory"
+        ],
+        "tools": [],
+        "skill": "media/account-ops/access-audit",
+        "output": "country-split check",
+        "check": "every split has a stated currency reason or is flagged"
+      },
+      {
+        "n": 6,
+        "name": "Write the access audit and change list",
+        "does": "Package findings into an audit for the founder, with a change list for any access fix.",
+        "inputs": [
+          "all prior outputs"
+        ],
+        "tools": [],
+        "skill": "shared/report-section",
+        "output": "access audit + change list",
+        "check": "every flagged access issue has a proposed fix"
+      }
+    ],
+    "outputs": [
+      "access audit",
+      "change list (access changes)"
+    ],
+    "qa": [
+      "every number in the output came from code, not the model's own arithmetic",
+      "no metric shows a computed 0 where the source was actually missing",
+      "no write is proposed on a surface the founder has not switched on; the output is a change list instead",
+      "no competitor text, logo, product or face appears anywhere in the output",
+      "reading level and sentence length match house style"
+    ],
+    "read_point": "read point: next quarterly review, or immediately if a team change happens",
+    "typical_duration": "agent time: about 30 minutes; waiting time: none"
+  },
+  {
+    "id": "MEDIA-W12",
+    "name": "Design and read an incrementality or lift test",
+    "capabilities": [
+      "MEDIA-C06"
+    ],
+    "trigger": "event: platform ROAS and blended MER still disagree after attribution is tightened",
+    "human_role": "media buyer settling an attribution dispute with a real test",
+    "inputs_required": [
+      "metric contract: roas_blended, spend",
+      "connector: meta ads read (lift test tools)",
+      "brand brain: geographic sales spread"
+    ],
+    "steps": [
+      {
+        "n": 1,
+        "name": "Confirm reconciliation already happened",
+        "does": "Check that attribution has already been tightened and platform ROAS reconciled against store data.",
+        "inputs": [
+          "metric contract: roas_blended"
+        ],
+        "tools": [],
+        "skill": "media/account-ops/incrementality-test",
+        "output": "reconciliation confirmation",
+        "check": "a lift test is not proposed as a first resort",
+        "ask_founder_if": "reconciliation has not actually been completed yet"
+      },
+      {
+        "n": 2,
+        "name": "Pick the test type",
+        "does": "Choose between Meta Conversion Lift, a geo holdout, or a matched-market geo test.",
+        "inputs": [
+          "brand brain: geographic sales spread"
+        ],
+        "tools": [
+          "mcp: meta ads read (ads_experiment_check_eligibility)"
+        ],
+        "skill": "media/account-ops/incrementality-test",
+        "output": "test type decision",
+        "check": "eligibility was checked before the type was chosen"
+      },
+      {
+        "n": 3,
+        "name": "Size the test",
+        "does": "Set the market or audience split, minimum spend and read window.",
+        "inputs": [
+          "metric contract: spend"
+        ],
+        "tools": [],
+        "skill": "media/account-ops/incrementality-test",
+        "output": "test sizing",
+        "check": "the split is large enough to produce a usable read"
+      },
+      {
+        "n": 4,
+        "name": "Write the test brief",
+        "does": "Document the hypothesis, holdout design, read point and what counts as proof.",
+        "inputs": [
+          "test sizing"
+        ],
+        "tools": [],
+        "skill": "media/account-ops/incrementality-test",
+        "output": "test brief",
+        "check": "proof criteria are stated before the test starts"
+      },
+      {
+        "n": 5,
+        "name": "Route for founder approval",
+        "does": "This capability is founder_gate; present the brief and the spend it needs before anything runs.",
+        "inputs": [
+          "test brief"
+        ],
+        "tools": [],
+        "skill": "shared/founder-question-round",
+        "output": "founder decision",
+        "check": "the founder decided before any test spend committed",
+        "ask_founder_if": "always, this step always asks the founder"
+      },
+      {
+        "n": 6,
+        "name": "Read the result",
+        "does": "At the read point, read the lift result and compare it against the platform's own reported ROAS.",
+        "inputs": [
+          "mcp: meta ads read (ads_experiment_lift_get_test)"
+        ],
+        "tools": [],
+        "skill": "media/account-ops/incrementality-test",
+        "output": "result writeup",
+        "check": "the result never changed bidding directly, only fed budget decisions"
+      },
+      {
+        "n": 7,
+        "name": "Update the brand's effect prior",
+        "does": "Log the result to the registry so the next budget conversation at this spend level starts from real data.",
+        "inputs": [
+          "result writeup"
+        ],
+        "tools": [],
+        "skill": "shared/registry-entry",
+        "output": "registry entry",
+        "check": "the effect prior is dated and tied to this spend level"
+      }
+    ],
+    "outputs": [
+      "test brief",
+      "read point and result writeup",
+      "registry entry"
+    ],
+    "qa": [
+      "every number in the output came from code, not the model's own arithmetic",
+      "no metric shows a computed 0 where the source was actually missing",
+      "no write is proposed on a surface the founder has not switched on; the output is a change list instead",
+      "no competitor text, logo, product or face appears anywhere in the output",
+      "reading level and sentence length match house style"
+    ],
+    "read_point": "read point: at the test brief's stated read date",
+    "typical_duration": "agent time: about 1 hour to design; waiting time: the test's full read window (days to weeks)"
+  },
+  {
+    "id": "MEDIA-W13",
+    "name": "Launch and structure the first TikTok campaigns",
+    "capabilities": [
+      "MEDIA-C24"
+    ],
+    "trigger": "event: new TikTok account or relaunch",
+    "human_role": "media buyer opening TikTok for the brand",
+    "inputs_required": [
+      "brand brain: catalogue, creative library",
+      "connector: none yet (manual TikTok Ads Manager)"
+    ],
+    "steps": [
+      {
+        "n": 1,
+        "name": "Complete account readiness",
+        "does": "Confirm Business Center, pixel and catalog connection (if used) are fully set up.",
+        "inputs": [
+          "TikTok account state"
+        ],
+        "tools": [
+          "web: TikTok Ads Manager (no connector yet)"
+        ],
+        "skill": "media/build-campaign/tiktok-launch",
+        "output": "readiness checklist",
+        "check": "every readiness item is checked before spend"
+      },
+      {
+        "n": 2,
+        "name": "Test every pixel event",
+        "does": "Fire a test event for Purchase, Add to Cart and any other tracked event; confirm each registers correctly.",
+        "inputs": [
+          "pixel setup"
+        ],
+        "tools": [],
+        "skill": "media/build-campaign/tiktok-launch",
+        "output": "pixel test result",
+        "check": "Purchase and Add to Cart both confirmed firing before launch",
+        "ask_founder_if": "Purchase or Add to Cart does not fire"
+      },
+      {
+        "n": 3,
+        "name": "Build the manual Sales campaign",
+        "does": "Set up the first campaign as a manual Sales campaign with the catalog off.",
+        "inputs": [
+          "campaign structure rules"
+        ],
+        "tools": [],
+        "skill": "media/build-campaign/tiktok-launch",
+        "output": "campaign build",
+        "check": "catalog is off for this first test"
+      },
+      {
+        "n": 4,
+        "name": "Set the first ad group",
+        "does": "Set broad targeting, Complete Payment optimisation, no target CPA, interests capped at 2-5 parent categories.",
+        "inputs": [],
+        "tools": [],
+        "skill": "media/build-campaign/tiktok-launch",
+        "output": "ad group settings",
+        "check": "no more than 5 stacked interests"
+      },
+      {
+        "n": 5,
+        "name": "Size the daily budget",
+        "does": "Set daily budget at the greater of $50 or 2x current CPA per ad group.",
+        "inputs": [
+          "current CPA"
+        ],
+        "tools": [],
+        "skill": "media/pace-budget/tiktok",
+        "output": "budget setting",
+        "check": "budget is never below the $50/2xCPA floor"
+      },
+      {
+        "n": 6,
+        "name": "Load the test matrix",
+        "does": "Build 2 ad groups by 3 creatives at $50/day for 3-4 days.",
+        "inputs": [
+          "creative library"
+        ],
+        "tools": [],
+        "skill": "media/build-campaign/tiktok-launch",
+        "output": "test matrix",
+        "check": "the matrix matches 2x3 at the sized budget"
+      },
+      {
+        "n": 7,
+        "name": "Run trafficking QA",
+        "does": "Check pixel, targeting, UTM and creative spec before the campaign goes live.",
+        "inputs": [
+          "campaign build"
+        ],
+        "tools": [],
+        "skill": "media/account-ops/trafficking-qa",
+        "output": "QA pass/fail",
+        "check": "every check passed or the launch is held"
+      },
+      {
+        "n": 8,
+        "name": "Read at 24 hours and 3 days",
+        "does": "Read soft metrics at 24 hours; read cost metrics at 3 days and cut the bottom half.",
+        "inputs": [
+          "campaign metrics"
+        ],
+        "tools": [],
+        "skill": "media/read-results/tiktok",
+        "output": "staged read result",
+        "check": "no cut happened before the 3-day cost read"
+      }
+    ],
+    "outputs": [
+      "launch checklist",
+      "change list",
+      "first test read"
+    ],
+    "qa": [
+      "every number in the output came from code, not the model's own arithmetic",
+      "no metric shows a computed 0 where the source was actually missing",
+      "no write is proposed on a surface the founder has not switched on; the output is a change list instead",
+      "no competitor text, logo, product or face appears anywhere in the output",
+      "reading level and sentence length match house style",
+      "pixel events confirmed firing before spend started"
+    ],
+    "read_point": "read point: 24 hours (soft metrics), 3 days (cost metrics and first cut)",
+    "typical_duration": "agent time: about 1 hour to build; waiting time: 3-4 days for the first read",
+    "subagents": [
+      "tiktok-buyer owns this workflow end to end"
+    ]
+  },
+  {
+    "id": "MEDIA-W14",
+    "name": "Scale TikTok winners and build lookalike/retargeting audiences",
+    "capabilities": [
+      "MEDIA-C25"
+    ],
+    "trigger": "weekly",
+    "human_role": "media buyer moving a proven TikTok creative into a real scaling lane",
+    "inputs_required": [
+      "brand brain: catalogue",
+      "connector: none yet (manual TikTok Ads Manager)"
+    ],
+    "steps": [
+      {
+        "n": 1,
+        "name": "Read the week's test results",
+        "does": "Pull ad group metrics for every live test and apply the staged 3-day cost read.",
+        "inputs": [
+          "ad group metrics"
+        ],
+        "tools": [],
+        "skill": "media/read-results/tiktok",
+        "output": "staged read result",
+        "check": "the read used cost metrics, not soft metrics alone"
+      },
+      {
+        "n": 2,
+        "name": "Identify winners and losers",
+        "does": "Cut the bottom half; identify any ad group or creative that cleared its kill-rule threshold.",
+        "inputs": [
+          "staged read"
+        ],
+        "tools": [],
+        "skill": "media/kill-scale/tiktok",
+        "output": "winner/loser list",
+        "check": "the cut followed the 3-day cost read, not an earlier soft-metric read"
+      },
+      {
+        "n": 3,
+        "name": "Move a winner into its own CBO scaling campaign",
+        "does": "Build the scaling campaign and move the winning creative into it, keeping the manual campaign testing.",
+        "inputs": [
+          "winner list"
+        ],
+        "tools": [],
+        "skill": "media/kill-scale/tiktok",
+        "output": "scaling campaign build",
+        "check": "testing continues in the manual campaign after the move"
+      },
+      {
+        "n": 4,
+        "name": "Seed lookalikes",
+        "does": "Build lookalikes from purchasers, video engagement or Shop activity, never by targeting them directly.",
+        "inputs": [
+          "purchaser/engagement data"
+        ],
+        "tools": [],
+        "skill": "media/build-campaign/tiktok-launch",
+        "output": "lookalike audience build",
+        "check": "lookalikes are seeded, not directly targeted"
+      },
+      {
+        "n": 5,
+        "name": "Build retargeting audiences",
+        "does": "Build retargeting from site visitors and product viewers, excluding recent buyers; build one directly from Shop activity.",
+        "inputs": [
+          "visitor and Shop data"
+        ],
+        "tools": [],
+        "skill": "media/build-campaign/tiktok-launch",
+        "output": "retargeting audience build",
+        "check": "recent buyers are excluded from the retargeting pool"
+      },
+      {
+        "n": 6,
+        "name": "Give product-specific search keywords their own ad group",
+        "does": "Move proven TikTok Search keywords for a specific product into their own ad group.",
+        "inputs": [
+          "search term data"
+        ],
+        "tools": [],
+        "skill": "media/build-campaign/tiktok-launch",
+        "output": "search ad group",
+        "check": "the ad group is product-specific, not blended"
+      },
+      {
+        "n": 7,
+        "name": "Write the scaling and audience-build plan",
+        "does": "Package the scaling move and new audiences into a change list.",
+        "inputs": [
+          "all prior outputs"
+        ],
+        "tools": [],
+        "skill": "shared/report-section",
+        "output": "scaling plan + audience build list + change list",
+        "check": "every new audience has a stated seed source"
+      }
+    ],
+    "outputs": [
+      "scaling plan",
+      "audience build list",
+      "change list"
+    ],
+    "qa": [
+      "every number in the output came from code, not the model's own arithmetic",
+      "no metric shows a computed 0 where the source was actually missing",
+      "no write is proposed on a surface the founder has not switched on; the output is a change list instead",
+      "no competitor text, logo, product or face appears anywhere in the output",
+      "reading level and sentence length match house style",
+      "testing continued in the manual campaign even after a winner moved to scaling"
+    ],
+    "read_point": "read point: weekly, after the staged 3-day reads for the week are in",
+    "typical_duration": "agent time: about 40 minutes; waiting time: none beyond the daily test reads",
+    "subagents": [
+      "tiktok-buyer owns this workflow end to end"
+    ]
+  },
+  {
+    "id": "MEDIA-W15",
+    "name": "Run the TikTok organic-to-Spark loop and creator authorization",
+    "capabilities": [
+      "MEDIA-C26",
+      "CREA-C38"
+    ],
+    "trigger": "weekly",
+    "human_role": "media buyer running the organic-to-paid creator loop",
+    "inputs_required": [
+      "brand brain: creator relationships",
+      "CREA-C38: creator authorization code log"
+    ],
+    "steps": [
+      {
+        "n": 1,
+        "name": "Review the week's organic posts",
+        "does": "Pull engagement data for organic posts posted 5-7 days ago.",
+        "inputs": [
+          "organic post data"
+        ],
+        "tools": [
+          "web: TikTok Ads Manager (no connector yet)"
+        ],
+        "skill": "media/build-campaign/tiktok-spark-loop",
+        "output": "organic engagement report",
+        "check": "only posts at least 5-7 days old are considered"
+      },
+      {
+        "n": 2,
+        "name": "Pick winners by real engagement",
+        "does": "Rank posts by engagement, not brand preference, to shortlist Spark candidates.",
+        "inputs": [
+          "engagement report"
+        ],
+        "tools": [],
+        "skill": "media/build-campaign/tiktok-spark-loop",
+        "output": "Spark shortlist",
+        "check": "the shortlist is ranked by data, not opinion"
+      },
+      {
+        "n": 3,
+        "name": "Check authorization status",
+        "does": "For each shortlisted post, check CREA-C38's log for a valid, unexpired 365-day authorization code.",
+        "inputs": [
+          "CREA-C38 authorization log"
+        ],
+        "tools": [],
+        "skill": "media/build-campaign/tiktok-spark-loop",
+        "output": "authorization check per post",
+        "check": "no post proceeds without a logged, unexpired code",
+        "ask_founder_if": "a post is a strong candidate but has no authorization code yet"
+      },
+      {
+        "n": 4,
+        "name": "Route unauthorized posts to CREA",
+        "does": "For any post missing authorization, send a request to CREA to obtain the code before proceeding.",
+        "inputs": [
+          "authorization gaps"
+        ],
+        "tools": [],
+        "skill": null,
+        "output": "handoff request to CREA",
+        "check": "the request names the exact post and creator"
+      },
+      {
+        "n": 5,
+        "name": "Schedule the Spark push",
+        "does": "For authorized posts, schedule the Spark ad using the exact creative and copy CREA approved.",
+        "inputs": [
+          "authorized posts"
+        ],
+        "tools": [],
+        "skill": "media/build-campaign/tiktok-spark-loop",
+        "output": "Spark schedule",
+        "check": "the Sparked post matches the authorized cut exactly, no substitution"
+      },
+      {
+        "n": 6,
+        "name": "Structure commissions",
+        "does": "Set open-collab terms for volume creators and targeted-collab terms for key partners.",
+        "inputs": [
+          "creator relationships"
+        ],
+        "tools": [],
+        "skill": "media/build-campaign/tiktok-spark-loop",
+        "output": "commission structure",
+        "check": "terms match the creator's tier"
+      },
+      {
+        "n": 7,
+        "name": "Flag codes nearing expiry",
+        "does": "Check the authorization log for any code close to its 365-day expiry and flag it for renewal.",
+        "inputs": [
+          "CREA-C38 log"
+        ],
+        "tools": [],
+        "skill": "media/build-campaign/tiktok-spark-loop",
+        "output": "expiry flag list",
+        "check": "a code is flagged before it lapses, not after"
+      }
+    ],
+    "outputs": [
+      "Spark loop schedule",
+      "creator authorization checklist",
+      "change list"
+    ],
+    "qa": [
+      "every number in the output came from code, not the model's own arithmetic",
+      "no metric shows a computed 0 where the source was actually missing",
+      "no write is proposed on a surface the founder has not switched on; the output is a change list instead",
+      "no competitor text, logo, product or face appears anywhere in the output",
+      "reading level and sentence length match house style",
+      "no post is Sparked without a logged, unexpired authorization code"
+    ],
+    "read_point": "read point: weekly, tied to the 5-7 day organic-to-Spark gap",
+    "typical_duration": "agent time: about 30 minutes; waiting time: 5-7 days of organic posting before Spark eligibility",
+    "subagents": [
+      "tiktok-buyer runs this workflow",
+      "paid creative and copy specialist (CREA) owns and logs the authorization codes"
+    ]
+  },
+  {
+    "id": "MEDIA-W16",
+    "name": "Set up TikTok Shop, Search and GMV Max",
+    "capabilities": [
+      "MEDIA-C27"
+    ],
+    "trigger": "event: TikTok Shop launch or quarterly SKU review",
+    "human_role": "media buyer setting up TikTok's commerce surfaces",
+    "inputs_required": [
+      "brand brain: catalogue, margin by SKU",
+      "connector: none yet (manual TikTok Seller Center)"
+    ],
+    "steps": [
+      {
+        "n": 1,
+        "name": "Verify the Shopify-TikTok connector",
+        "does": "Confirm the app connecting Shopify to TikTok Shop is the official one before linking.",
+        "inputs": [],
+        "tools": [
+          "web: TikTok Seller Center (no connector yet)"
+        ],
+        "skill": "media/build-campaign/tiktok-shop-gmvmax",
+        "output": "connector verification",
+        "check": "only the official app is used"
+      },
+      {
+        "n": 2,
+        "name": "Complete Shop listings",
+        "does": "Check every listing has complete images, descriptions and pricing before selling through Shop.",
+        "inputs": [
+          "catalogue"
+        ],
+        "tools": [],
+        "skill": "media/build-campaign/tiktok-shop-gmvmax",
+        "output": "listing completeness checklist",
+        "check": "no listing goes live incomplete"
+      },
+      {
+        "n": 3,
+        "name": "Build TikTok Search",
+        "does": "Set up 20-50 keywords on phrase match; establish a negative-keyword review cadence.",
+        "inputs": [
+          "catalogue"
+        ],
+        "tools": [],
+        "skill": "media/build-campaign/tiktok-shop-gmvmax",
+        "output": "Search keyword plan",
+        "check": "keyword count is within the 20-50 band"
+      },
+      {
+        "n": 4,
+        "name": "Rank SKUs by margin",
+        "does": "Compute margin by SKU and identify the top 20 percent.",
+        "inputs": [
+          "margin by SKU"
+        ],
+        "tools": [
+          "python calc"
+        ],
+        "skill": "media/build-campaign/tiktok-shop-gmvmax",
+        "output": "ranked SKU list",
+        "check": "the ranking is by margin, not unit volume"
+      },
+      {
+        "n": 5,
+        "name": "Launch GMV Max on qualifying SKUs only",
+        "does": "Set GMV Max live only on the top-20-percent SKUs with an ROI target above break-even.",
+        "inputs": [
+          "ranked SKU list"
+        ],
+        "tools": [],
+        "skill": "media/build-campaign/tiktok-shop-gmvmax",
+        "output": "GMV Max SKU list",
+        "check": "every SKU in GMV Max clears the top-20-percent and break-even bar"
+      },
+      {
+        "n": 6,
+        "name": "Test storefront templates",
+        "does": "Set up an alternate storefront template test against the current one.",
+        "inputs": [],
+        "tools": [],
+        "skill": "media/build-campaign/tiktok-shop-gmvmax",
+        "output": "storefront test plan",
+        "check": "the test compares two named templates, not a vague redesign"
+      },
+      {
+        "n": 7,
+        "name": "Run trafficking QA and package the change list",
+        "does": "Check the setup against the QA checklist and prepare the change list.",
+        "inputs": [
+          "all prior outputs"
+        ],
+        "tools": [],
+        "skill": "media/account-ops/trafficking-qa",
+        "output": "change list",
+        "check": "QA passed before hand-off"
+      }
+    ],
+    "outputs": [
+      "TikTok Shop setup checklist",
+      "GMV Max SKU list",
+      "change list"
+    ],
+    "qa": [
+      "every number in the output came from code, not the model's own arithmetic",
+      "no metric shows a computed 0 where the source was actually missing",
+      "no write is proposed on a surface the founder has not switched on; the output is a change list instead",
+      "no competitor text, logo, product or face appears anywhere in the output",
+      "reading level and sentence length match house style",
+      "no SKU below the top 20 percent by margin sits in GMV Max"
+    ],
+    "read_point": "read point: at launch, then the next quarterly SKU review",
+    "typical_duration": "agent time: about 45 minutes; waiting time: none",
+    "subagents": [
+      "tiktok-buyer owns this workflow end to end"
+    ]
+  },
+  {
+    "id": "MEDIA-W17",
+    "name": "Run the TikTok targeting ladder and placement optimisation",
+    "capabilities": [
+      "MEDIA-C29"
+    ],
+    "trigger": "weekly",
+    "human_role": "media buyer running the controlled TikTok targeting expansion",
+    "inputs_required": [
+      "connector: none yet (manual TikTok Ads Manager)"
+    ],
+    "steps": [
+      {
+        "n": 1,
+        "name": "Check the current ladder week",
+        "does": "Read which week of the 4-week targeting ladder the account is on.",
+        "inputs": [
+          "ladder state"
+        ],
+        "tools": [],
+        "skill": "media/pace-budget/tiktok",
+        "output": "current ladder week",
+        "check": "the week number matches the ladder's own log, not a guess"
+      },
+      {
+        "n": 2,
+        "name": "Read last week's layer result",
+        "does": "Pull the isolated performance of the layer added last week.",
+        "inputs": [
+          "ad group metrics"
+        ],
+        "tools": [],
+        "skill": "media/read-results/tiktok",
+        "output": "ladder-week read",
+        "check": "the read is isolated to that layer's own week"
+      },
+      {
+        "n": 3,
+        "name": "Decide keep or drop",
+        "does": "Apply the kill-scale table to the layer; drop a layer that did not earn its week before adding another.",
+        "inputs": [
+          "ladder-week read"
+        ],
+        "tools": [],
+        "skill": "media/kill-scale/tiktok",
+        "output": "keep/drop decision",
+        "check": "no layer survives past its proving week without a result"
+      },
+      {
+        "n": 4,
+        "name": "Add the next layer, one at a time",
+        "does": "If the current layer passed, add exactly one new layer for the coming week.",
+        "inputs": [
+          "keep/drop decision"
+        ],
+        "tools": [],
+        "skill": "media/pace-budget/tiktok",
+        "output": "next-layer plan",
+        "check": "only one new layer is added"
+      },
+      {
+        "n": 5,
+        "name": "Run the broad-vs-stack check before any full drop",
+        "does": "Before dropping interests or lookalikes entirely, run one controlled 7-day broad-vs-stacked test.",
+        "inputs": [],
+        "tools": [],
+        "skill": "media/kill-scale/tiktok",
+        "output": "broad-vs-stack test brief",
+        "check": "the test runs before, not instead of, a final drop decision"
+      },
+      {
+        "n": 6,
+        "name": "Read and act on placements",
+        "does": "After the fixed placement-read period, opt weak automatic placements out.",
+        "inputs": [
+          "placement data"
+        ],
+        "tools": [],
+        "skill": "media/read-results/tiktok",
+        "output": "placement decision",
+        "check": "placements are read for a fixed period before any opt-out"
+      },
+      {
+        "n": 7,
+        "name": "Write the ladder and placement plan",
+        "does": "Package the week's decisions into a change list.",
+        "inputs": [
+          "all prior outputs"
+        ],
+        "tools": [],
+        "skill": "shared/report-section",
+        "output": "targeting ladder plan + placement read + change list",
+        "check": "the plan states exactly which week and layer is next"
+      }
+    ],
+    "outputs": [
+      "targeting ladder plan",
+      "placement read",
+      "change list"
+    ],
+    "qa": [
+      "every number in the output came from code, not the model's own arithmetic",
+      "no metric shows a computed 0 where the source was actually missing",
+      "no write is proposed on a surface the founder has not switched on; the output is a change list instead",
+      "no competitor text, logo, product or face appears anywhere in the output",
+      "reading level and sentence length match house style"
+    ],
+    "read_point": "read point: weekly, on the current ladder layer's isolated result",
+    "typical_duration": "agent time: about 25 minutes; waiting time: the week's run before the next read",
+    "subagents": [
+      "tiktok-buyer owns this workflow end to end"
+    ]
+  },
+  {
+    "id": "MEDIA-W18",
+    "name": "Audit the Google Ads account",
+    "capabilities": [
+      "MEDIA-C02"
+    ],
+    "trigger": "monthly",
+    "human_role": "google ads specialist running the monthly diagnosis",
+    "inputs_required": [
+      "brand brain: products and margin",
+      "connector: google ads (manual export)",
+      "metric contract: cpa, roas_blended, spend"
+    ],
+    "steps": [
+      {
+        "n": 1,
+        "name": "Pull account and campaign data",
+        "does": "Export account and campaign structure, spend and conversions from Google Ads.",
+        "inputs": [],
+        "tools": [
+          "web: Google Ads UI export (no connector yet)"
+        ],
+        "skill": "media/account-ops/audit-google",
+        "output": "exported dataset",
+        "check": "the export covers the full trailing period needed for diagnosis"
+      },
+      {
+        "n": 2,
+        "name": "Apply the 3 pre-diagnosis rules",
+        "does": "Run the fixed pre-diagnosis checks before touching any setting.",
+        "inputs": [
+          "exported dataset"
+        ],
+        "tools": [],
+        "skill": "media/account-ops/audit-google",
+        "output": "pre-diagnosis result",
+        "check": "all 3 rules were applied before any change was considered"
+      },
+      {
+        "n": 3,
+        "name": "Diagnose top down",
+        "does": "Work business level, then channel share, then campaign, then metric, then root cause.",
+        "inputs": [
+          "pre-diagnosis result"
+        ],
+        "tools": [
+          "script: scripts/ideas.py --bottleneck acquisition_efficiency"
+        ],
+        "skill": "media/account-ops/audit-google",
+        "output": "top-down diagnosis",
+        "check": "the diagnosis followed the fixed order, not a jump to a favorite fix"
+      },
+      {
+        "n": 4,
+        "name": "Find the inflection date",
+        "does": "Locate the date any dip began; check only the top 5 campaigns by spend around that date.",
+        "inputs": [
+          "diagnosis"
+        ],
+        "tools": [],
+        "skill": "media/account-ops/audit-google",
+        "output": "inflection date and top-5 campaign check",
+        "check": "only the top 5 campaigns by spend were checked, not the whole account"
+      },
+      {
+        "n": 5,
+        "name": "Match the failure-mode checklist",
+        "does": "Apply the checklist for the campaign type that dipped (Search, Shopping, PMax, Demand Gen).",
+        "inputs": [
+          "inflection finding"
+        ],
+        "tools": [],
+        "skill": "media/account-ops/audit-google",
+        "output": "failure-mode match",
+        "check": "the checklist used matches the actual campaign type"
+      },
+      {
+        "n": 6,
+        "name": "Split the metric into its formula parts",
+        "does": "Break CPA and clicks into impressions, CTR and CVR to isolate the real cause.",
+        "inputs": [
+          "campaign data"
+        ],
+        "tools": [
+          "python calc"
+        ],
+        "skill": "media/account-ops/audit-google",
+        "output": "formula breakdown",
+        "check": "the real cause is isolated to one formula part, not a vague summary"
+      },
+      {
+        "n": 7,
+        "name": "Prefer the isolated fix",
+        "does": "Propose the smallest isolated fix; only propose a rebuild if an isolated fix has already failed.",
+        "inputs": [
+          "formula breakdown"
+        ],
+        "tools": [],
+        "skill": "media/account-ops/audit-google",
+        "output": "fix recommendation",
+        "check": "a rebuild is not proposed unless an isolated fix already failed"
+      },
+      {
+        "n": 8,
+        "name": "Write the audit and diagnosis report",
+        "does": "Package findings, root cause and the change list for the founder.",
+        "inputs": [
+          "all prior outputs"
+        ],
+        "tools": [],
+        "skill": "shared/report-section",
+        "output": "audit report + diagnosis writeup + change list",
+        "check": "the report states the root cause plainly, in the order the problem happened"
+      }
+    ],
+    "outputs": [
+      "audit report",
+      "diagnosis writeup with root cause",
+      "change list"
+    ],
+    "qa": [
+      "every number in the output came from code, not the model's own arithmetic",
+      "no metric shows a computed 0 where the source was actually missing",
+      "no write is proposed on a surface the founder has not switched on; the output is a change list instead",
+      "no competitor text, logo, product or face appears anywhere in the output",
+      "reading level and sentence length match house style"
+    ],
+    "read_point": "read point: at hand-off; re-checked at the next monthly audit",
+    "typical_duration": "agent time: about 1 hour; waiting time: none beyond the manual export",
+    "subagents": [
+      "google-ads-buyer owns this workflow end to end"
+    ]
+  },
+  {
+    "id": "MEDIA-W19",
+    "name": "Set up and maintain Google Merchant Center and feed",
+    "capabilities": [
+      "MEDIA-C30",
+      "MEDIA-C31"
+    ],
+    "trigger": "weekly",
+    "human_role": "google ads specialist keeping the feed eligible and search-matchable",
+    "inputs_required": [
+      "brand brain: policies, product catalogue, reviews",
+      "connector: google merchant center (manual)"
+    ],
+    "steps": [
+      {
+        "n": 1,
+        "name": "Check business info matches the live site",
+        "does": "Compare Merchant Center's business info against the live site.",
+        "inputs": [],
+        "tools": [
+          "web: Google Merchant Center (no connector yet)"
+        ],
+        "skill": "media/build-campaign/google-merchant-feed",
+        "output": "match check",
+        "check": "every field matches exactly, no stale info"
+      },
+      {
+        "n": 2,
+        "name": "Check the 4 add-ons are enrolled",
+        "does": "Confirm remarketing, reviews, ratings and promotions add-ons are active.",
+        "inputs": [],
+        "tools": [],
+        "skill": "media/build-campaign/google-merchant-feed",
+        "output": "add-on enrollment check",
+        "check": "all 4 add-ons are enrolled or a reason is given for any that are not"
+      },
+      {
+        "n": 3,
+        "name": "Fix disapprovals first",
+        "does": "Pull current disapprovals and fix them before any other feed work.",
+        "inputs": [],
+        "tools": [],
+        "skill": "media/build-campaign/google-merchant-feed",
+        "output": "disapproval fix list",
+        "check": "disapprovals are addressed before title or image work starts"
+      },
+      {
+        "n": 4,
+        "name": "Rewrite titles in a batch",
+        "does": "Put the converting search term and product type first, inside 70 characters, no stuffing; roll out in a batch against a recorded baseline.",
+        "inputs": [
+          "product catalogue",
+          "reviews"
+        ],
+        "tools": [],
+        "skill": "media/build-campaign/google-merchant-feed",
+        "output": "title rewrite batch",
+        "check": "a baseline was recorded before the batch went out"
+      },
+      {
+        "n": 5,
+        "name": "Check GTIN and pricing integrity",
+        "does": "Confirm every variant has its own GTIN and no product is duplicated at multiple prices.",
+        "inputs": [],
+        "tools": [],
+        "skill": "media/build-campaign/google-merchant-feed",
+        "output": "integrity check",
+        "check": "no duplicate GTIN or duplicate product at two prices"
+      },
+      {
+        "n": 6,
+        "name": "Confirm feed refresh cadence",
+        "does": "Check the feed refreshes at least every 6 hours, with automatic updates on for frequent price changes.",
+        "inputs": [],
+        "tools": [],
+        "skill": "media/build-campaign/google-merchant-feed",
+        "output": "refresh cadence check",
+        "check": "refresh interval is 6 hours or less"
+      },
+      {
+        "n": 7,
+        "name": "Set custom labels",
+        "does": "Tag margin, bestseller status and stock priority into custom labels for campaign structure to use.",
+        "inputs": [
+          "margin data"
+        ],
+        "tools": [],
+        "skill": "media/build-campaign/google-merchant-feed",
+        "output": "custom label plan",
+        "check": "every active SKU has its labels set"
+      },
+      {
+        "n": 8,
+        "name": "Write the feed audit and rewrite batch",
+        "does": "Package findings and the rewrite batch into a report and change list.",
+        "inputs": [
+          "all prior outputs"
+        ],
+        "tools": [],
+        "skill": "shared/report-section",
+        "output": "Merchant Center setup checklist + feed audit + change list",
+        "check": "every finding has a fix and an owner"
+      }
+    ],
+    "outputs": [
+      "Merchant Center setup checklist",
+      "disapproval fix list",
+      "feed audit report",
+      "title/description rewrite batch",
+      "change list"
+    ],
+    "qa": [
+      "every number in the output came from code, not the model's own arithmetic",
+      "no metric shows a computed 0 where the source was actually missing",
+      "no write is proposed on a surface the founder has not switched on; the output is a change list instead",
+      "no competitor text, logo, product or face appears anywhere in the output",
+      "reading level and sentence length match house style"
+    ],
+    "read_point": "read point: weekly, before any Shopping or PMax budget decision that depends on the feed",
+    "typical_duration": "agent time: about 40 minutes; waiting time: none",
+    "subagents": [
+      "google-ads-buyer owns this workflow end to end"
+    ]
+  },
+  {
+    "id": "MEDIA-W20",
+    "name": "Design Google campaign architecture and brand/non-brand split",
+    "capabilities": [
+      "MEDIA-C32",
+      "MEDIA-C33"
+    ],
+    "trigger": "event: new account or after an audit; monthly for the brand-split check",
+    "human_role": "google ads specialist structuring the account",
+    "inputs_required": [
+      "brand brain: catalogue, margin, brand terms",
+      "MEDIA-W18 audit output"
+    ],
+    "steps": [
+      {
+        "n": 1,
+        "name": "Map every campaign to one funnel job",
+        "does": "List each campaign and the one job it should own; flag overlaps.",
+        "inputs": [
+          "campaign list"
+        ],
+        "tools": [],
+        "skill": "media/build-campaign/google-architecture",
+        "output": "funnel-job map",
+        "check": "every campaign has exactly one stated job or is flagged"
+      },
+      {
+        "n": 2,
+        "name": "Apply the one-campaign-per-job default",
+        "does": "Require a written reason for any extra split; check one campaign per country.",
+        "inputs": [
+          "funnel-job map"
+        ],
+        "tools": [],
+        "skill": "media/build-campaign/google-architecture",
+        "output": "split justification list",
+        "check": "every extra campaign has a written reason"
+      },
+      {
+        "n": 3,
+        "name": "Set the safe defaults",
+        "does": "Apply Sales objective, Purchase-only goal, Search Partners and Display off, Presence targeting, tablets/TV off, on every campaign.",
+        "inputs": [],
+        "tools": [],
+        "skill": "media/build-campaign/google-architecture",
+        "output": "defaults checklist",
+        "check": "every new campaign matches the safe defaults or has a stated exception"
+      },
+      {
+        "n": 4,
+        "name": "Split brand from non-brand everywhere",
+        "does": "Separate brand from non-brand across Search, Shopping and PMax.",
+        "inputs": [
+          "brand terms"
+        ],
+        "tools": [],
+        "skill": "media/build-campaign/google-architecture",
+        "output": "brand split plan",
+        "check": "brand and non-brand never share one campaign"
+      },
+      {
+        "n": 5,
+        "name": "Exclude brand from every cold campaign",
+        "does": "Add both a negative-keyword list and a brand-audience exclusion to every cold campaign.",
+        "inputs": [
+          "brand terms"
+        ],
+        "tools": [],
+        "skill": "media/build-campaign/google-architecture",
+        "output": "exclusion set",
+        "check": "both the negative list and the audience exclusion are present"
+      },
+      {
+        "n": 6,
+        "name": "Set brand's own bid strategy and target",
+        "does": "Put brand on manual bidding or impression share, never conversion-based smart bidding, at a higher ROAS target.",
+        "inputs": [],
+        "tools": [],
+        "skill": "media/build-campaign/google-architecture",
+        "output": "brand bid setting",
+        "check": "brand's bidding is manual or impression-share based"
+      },
+      {
+        "n": 7,
+        "name": "Scan for brand leakage",
+        "does": "Check cold-campaign search terms monthly for brand-term leakage.",
+        "inputs": [
+          "search term data"
+        ],
+        "tools": [],
+        "skill": "media/build-campaign/google-architecture",
+        "output": "leakage scan result",
+        "check": "any leaked brand term is added to the negative list immediately"
+      },
+      {
+        "n": 8,
+        "name": "Write the architecture and split plan",
+        "does": "Package the map, defaults and split into a diagram and change list.",
+        "inputs": [
+          "all prior outputs"
+        ],
+        "tools": [],
+        "skill": "shared/report-section",
+        "output": "campaign architecture diagram + split plan + change list",
+        "check": "non-brand growth is reported separately from brand"
+      }
+    ],
+    "outputs": [
+      "campaign architecture diagram",
+      "brand/non-brand split plan",
+      "change list"
+    ],
+    "qa": [
+      "every number in the output came from code, not the model's own arithmetic",
+      "no metric shows a computed 0 where the source was actually missing",
+      "no write is proposed on a surface the founder has not switched on; the output is a change list instead",
+      "no competitor text, logo, product or face appears anywhere in the output",
+      "reading level and sentence length match house style"
+    ],
+    "read_point": "read point: monthly for the brand-leakage scan; on demand after a restructure",
+    "typical_duration": "agent time: about 50 minutes; waiting time: none",
+    "subagents": [
+      "google-ads-buyer owns this workflow end to end"
+    ]
+  },
+  {
+    "id": "MEDIA-W21",
+    "name": "Run Google Shopping, Search and remarketing",
+    "capabilities": [
+      "MEDIA-C34",
+      "MEDIA-C35",
+      "MEDIA-C38"
+    ],
+    "trigger": "weekly",
+    "human_role": "google ads specialist running the weekly optimisation loop",
+    "inputs_required": [
+      "brand brain: offers, catalogue, margin",
+      "connector: google ads / GA4 (manual)"
+    ],
+    "steps": [
+      {
+        "n": 1,
+        "name": "Run the Shopping structure and bidding loop",
+        "does": "Check structure, bidding, negatives and products for every active Shopping campaign.",
+        "inputs": [
+          "catalogue",
+          "margin"
+        ],
+        "tools": [],
+        "skill": "media/build-campaign/google-shopping",
+        "output": "Shopping loop result",
+        "check": "all four areas were checked, not just bidding"
+      },
+      {
+        "n": 2,
+        "name": "Prune losing Shopping products",
+        "does": "Identify products that spend and click but drag ROAS down; propose pruning or de-prioritising them.",
+        "inputs": [
+          "Shopping loop result"
+        ],
+        "tools": [],
+        "skill": "media/build-campaign/google-shopping",
+        "output": "prune list",
+        "check": "every pruned product has a stated ROAS reason"
+      },
+      {
+        "n": 3,
+        "name": "Classify and group Search keywords",
+        "does": "Classify keywords by intent and confirm single-theme ad groups.",
+        "inputs": [
+          "search term data"
+        ],
+        "tools": [],
+        "skill": "media/build-campaign/google-search",
+        "output": "keyword classification",
+        "check": "no ad group mixes more than one intent"
+      },
+      {
+        "n": 4,
+        "name": "Write or refresh RSAs",
+        "does": "Write 7-9 headlines from the brand's own offer, leading with product, price or offer.",
+        "inputs": [
+          "offers"
+        ],
+        "tools": [],
+        "skill": "media/build-campaign/google-search",
+        "output": "RSA set",
+        "check": "descriptions answer a real objection, not just a product description"
+      },
+      {
+        "n": 5,
+        "name": "Clean search terms",
+        "does": "Review search terms on the tighten-then-loosen cadence; promote converting broad terms to exact, remove non-converters.",
+        "inputs": [
+          "search term data"
+        ],
+        "tools": [],
+        "skill": "media/build-campaign/google-search",
+        "output": "search term cleanup log",
+        "check": "no clicked, non-converting term is left un-reviewed"
+      },
+      {
+        "n": 6,
+        "name": "Build or refresh remarketing lists",
+        "does": "Build the cart-abandoner list; check size before launching; exclude existing customers from prospecting.",
+        "inputs": [
+          "GA4 events",
+          "order history"
+        ],
+        "tools": [],
+        "skill": "media/build-campaign/google-remarketing",
+        "output": "remarketing list plan",
+        "check": "no list launched before it reached usable size"
+      },
+      {
+        "n": 7,
+        "name": "Map remarketing ads to real objections",
+        "does": "Confirm cart-abandonment ads map to one of the brand's 5 real objections.",
+        "inputs": [
+          "objections list"
+        ],
+        "tools": [],
+        "skill": "media/build-campaign/google-remarketing",
+        "output": "objection-mapped ad plan",
+        "check": "every abandonment ad names its objection"
+      },
+      {
+        "n": 8,
+        "name": "Write the weekly optimisation log",
+        "does": "Package the Shopping, Search and remarketing work into one weekly log and change list.",
+        "inputs": [
+          "all prior outputs"
+        ],
+        "tools": [],
+        "skill": "shared/report-section",
+        "output": "weekly optimisation log + change list",
+        "check": "the log covers all three areas for the week"
+      }
+    ],
+    "outputs": [
+      "Shopping structure plan",
+      "weekly optimisation log",
+      "keyword/RSA plan",
+      "search term cleanup log",
+      "remarketing list plan",
+      "change list"
+    ],
+    "qa": [
+      "every number in the output came from code, not the model's own arithmetic",
+      "no metric shows a computed 0 where the source was actually missing",
+      "no write is proposed on a surface the founder has not switched on; the output is a change list instead",
+      "no competitor text, logo, product or face appears anywhere in the output",
+      "reading level and sentence length match house style"
+    ],
+    "read_point": "read point: weekly, on the trailing week's Shopping, Search and remarketing data",
+    "typical_duration": "agent time: about 1 hour; waiting time: none",
+    "subagents": [
+      "google-ads-buyer owns this workflow end to end"
+    ]
+  },
+  {
+    "id": "MEDIA-W22",
+    "name": "Build and control Performance Max",
+    "capabilities": [
+      "MEDIA-C36"
+    ],
+    "trigger": "weekly",
+    "human_role": "google ads specialist keeping PMax under real control",
+    "inputs_required": [
+      "brand brain: catalogue, margin",
+      "connector: google ads (manual)"
+    ],
+    "steps": [
+      {
+        "n": 1,
+        "name": "Qualify the account for PMax",
+        "does": "Confirm proven feed, tracking and existing Search/Shopping data before any PMax work continues.",
+        "inputs": [],
+        "tools": [],
+        "skill": "media/build-campaign/google-pmax",
+        "output": "qualification check",
+        "check": "PMax is not the account's first campaign type"
+      },
+      {
+        "n": 2,
+        "name": "Audit current PMax defaults",
+        "does": "Check final URL expansion, auto-created assets and automatic enhancements.",
+        "inputs": [],
+        "tools": [],
+        "skill": "media/build-campaign/google-pmax",
+        "output": "defaults audit",
+        "check": "every default is either turned off or has a written reason to stay on"
+      },
+      {
+        "n": 3,
+        "name": "Check asset group structure",
+        "does": "Confirm asset groups are theme-based, 2-20 groups, never single-product.",
+        "inputs": [],
+        "tools": [],
+        "skill": "media/build-campaign/google-pmax",
+        "output": "asset group check",
+        "check": "no group is single-product"
+      },
+      {
+        "n": 4,
+        "name": "Build the full exclusion set",
+        "does": "Confirm brand, URL, SKU, placement, age and customer-list exclusions are all present.",
+        "inputs": [
+          "brand terms"
+        ],
+        "tools": [],
+        "skill": "media/build-campaign/google-pmax",
+        "output": "exclusion set check",
+        "check": "all 6 exclusion types are present"
+      },
+      {
+        "n": 5,
+        "name": "Fix inputs in the right order",
+        "does": "Work feed, then brand exclusion, then structure, then bidding, then signals.",
+        "inputs": [
+          "prior checks"
+        ],
+        "tools": [],
+        "skill": "media/build-campaign/google-pmax",
+        "output": "input fix order log",
+        "check": "fixes were applied in the stated order, not bidding first"
+      },
+      {
+        "n": 6,
+        "name": "Refresh assets and signals",
+        "does": "Refresh asset counts on the 4-6 week cadence; feed proven Search terms and first-party lists as signals.",
+        "inputs": [
+          "Search term data"
+        ],
+        "tools": [],
+        "skill": "media/build-campaign/google-pmax",
+        "output": "refresh log",
+        "check": "assets were refreshed within the 4-6 week window"
+      },
+      {
+        "n": 7,
+        "name": "Check for warm-traffic over-crediting",
+        "does": "Compare PMax's own reported converters against branded-search overlap before raising target ROAS.",
+        "inputs": [],
+        "tools": [],
+        "skill": "media/kill-scale/google",
+        "output": "over-crediting check",
+        "check": "target ROAS is not raised while over-crediting is unresolved"
+      },
+      {
+        "n": 8,
+        "name": "Write the control checklist and asset group plan",
+        "does": "Package the audit into a checklist and change list.",
+        "inputs": [
+          "all prior outputs"
+        ],
+        "tools": [],
+        "skill": "shared/report-section",
+        "output": "PMax control checklist + asset group plan + change list",
+        "check": "every default has a stated on/off decision"
+      }
+    ],
+    "outputs": [
+      "PMax control checklist",
+      "asset group plan",
+      "change list"
+    ],
+    "qa": [
+      "every number in the output came from code, not the model's own arithmetic",
+      "no metric shows a computed 0 where the source was actually missing",
+      "no write is proposed on a surface the founder has not switched on; the output is a change list instead",
+      "no competitor text, logo, product or face appears anywhere in the output",
+      "reading level and sentence length match house style"
+    ],
+    "read_point": "read point: weekly for the control checklist; every 4-6 weeks for asset refresh",
+    "typical_duration": "agent time: about 45 minutes; waiting time: none",
+    "subagents": [
+      "google-ads-buyer owns this workflow end to end"
+    ]
+  },
+  {
+    "id": "MEDIA-W23",
+    "name": "Plan and run YouTube and Demand Gen",
+    "capabilities": [
+      "MEDIA-C37"
+    ],
+    "trigger": "event: after Search and Shopping are stable, or proven Meta creative exists",
+    "human_role": "google ads specialist evaluating and scripting a video funnel layer",
+    "inputs_required": [
+      "brand brain: AOV, creative library",
+      "reference scout: video references"
+    ],
+    "steps": [
+      {
+        "n": 1,
+        "name": "Check readiness",
+        "does": "Confirm Search and Shopping are stable, or proven Meta creative exists to reuse.",
+        "inputs": [
+          "MEDIA-W18, W21 outputs"
+        ],
+        "tools": [],
+        "skill": "media/build-campaign/google-youtube-demandgen",
+        "output": "readiness check",
+        "check": "one of the two readiness conditions is actually met"
+      },
+      {
+        "n": 2,
+        "name": "Run the fit checklist",
+        "does": "Check AOV, whether the product demos visually, and whether creative/budget can survive 4-6 choppy weeks.",
+        "inputs": [
+          "AOV",
+          "creative library"
+        ],
+        "tools": [],
+        "skill": "media/build-campaign/google-youtube-demandgen",
+        "output": "fit checklist result",
+        "check": "all three fit conditions are checked, not assumed"
+      },
+      {
+        "n": 3,
+        "name": "Size the budget",
+        "does": "Size Demand Gen budget from AOV, not a flat small test amount.",
+        "inputs": [
+          "AOV"
+        ],
+        "tools": [
+          "python calc"
+        ],
+        "skill": "media/pace-budget/google",
+        "output": "budget size",
+        "check": "the number traces to AOV, not a round guess"
+      },
+      {
+        "n": 4,
+        "name": "Set placement and audience restrictions",
+        "does": "Restrict cold prospecting to in-stream and Shorts; never target the store's own customer list in cold prospecting.",
+        "inputs": [],
+        "tools": [],
+        "skill": "media/build-campaign/google-youtube-demandgen",
+        "output": "placement and audience settings",
+        "check": "cold prospecting never touches the customer list"
+      },
+      {
+        "n": 5,
+        "name": "Script the creative",
+        "does": "Script hook, then demo, then prove, then ask; use the real founder or a disclosed spokesperson for founder-style ads.",
+        "inputs": [
+          "video references"
+        ],
+        "tools": [],
+        "skill": "media/build-campaign/google-youtube-demandgen",
+        "output": "creative script brief",
+        "check": "the script follows hook-demo-prove-ask in order",
+        "ask_founder_if": "the script uses the founder's own story or likeness"
+      },
+      {
+        "n": 6,
+        "name": "Set the conversion mechanism",
+        "does": "Route cold traffic to a real conversion mechanism and capture email on the page.",
+        "inputs": [],
+        "tools": [],
+        "skill": "media/build-campaign/google-youtube-demandgen",
+        "output": "conversion mechanism check",
+        "check": "email capture exists on the landing page"
+      },
+      {
+        "n": 7,
+        "name": "Write the launch plan",
+        "does": "Package readiness, budget, placements and script brief into one launch plan.",
+        "inputs": [
+          "all prior outputs"
+        ],
+        "tools": [],
+        "skill": "shared/report-section",
+        "output": "launch plan + creative script brief + change list",
+        "check": "the plan states the traffic-light KPIs it will be judged on"
+      }
+    ],
+    "outputs": [
+      "YouTube/Demand Gen launch plan",
+      "creative script brief",
+      "change list"
+    ],
+    "qa": [
+      "every number in the output came from code, not the model's own arithmetic",
+      "no metric shows a computed 0 where the source was actually missing",
+      "no write is proposed on a surface the founder has not switched on; the output is a change list instead",
+      "no competitor text, logo, product or face appears anywhere in the output",
+      "reading level and sentence length match house style"
+    ],
+    "read_point": "read point: traffic-light KPIs read at the campaign level after 4-6 weeks",
+    "typical_duration": "agent time: about 1 hour; waiting time: 4-6 weeks for a steady read",
+    "subagents": [
+      "google-ads-buyer owns this workflow",
+      "paid creative and copy specialist (CREA) may script the video"
+    ]
+  },
+  {
+    "id": "MEDIA-W24",
+    "name": "Manage Google bid strategy, budget pacing and scaling gates",
+    "capabilities": [
+      "MEDIA-C39",
+      "MEDIA-C40",
+      "MEDIA-C41"
+    ],
+    "trigger": "weekly",
+    "human_role": "google ads specialist moving budget and bids forward carefully",
+    "inputs_required": [
+      "metric contract: cpc, roas_blended, cpa, spend, aov",
+      "connector: google ads (manual)"
+    ],
+    "steps": [
+      {
+        "n": 1,
+        "name": "Read current bid stage",
+        "does": "Confirm which bid stage each campaign is on: capped, Maximize Conversion Value, or Target ROAS.",
+        "inputs": [
+          "campaign bid settings"
+        ],
+        "tools": [],
+        "skill": "media/pace-budget/google",
+        "output": "bid stage read",
+        "check": "every campaign's stage is confirmed, not assumed"
+      },
+      {
+        "n": 2,
+        "name": "Check break-even math",
+        "does": "Recompute break-even CPA / conversion rate in code for any campaign near a bid change.",
+        "inputs": [
+          "metric contract: cpc, cpa"
+        ],
+        "tools": [
+          "python calc"
+        ],
+        "skill": "media/pace-budget/google",
+        "output": "break-even calculation",
+        "check": "the bid cap traces to this calculation, not a platform default"
+      },
+      {
+        "n": 3,
+        "name": "Step bids and budgets gently",
+        "does": "Move any bid or budget in small weekly steps; cut faster than any raise.",
+        "inputs": [
+          "break-even calculation"
+        ],
+        "tools": [],
+        "skill": "media/pace-budget/google",
+        "output": "stepped bid/budget plan",
+        "check": "no budget doubled or target halved in one step"
+      },
+      {
+        "n": 4,
+        "name": "Check the 5 scaling gates",
+        "does": "Before approving any increase, run the campaign through the 5 fixed scaling gates.",
+        "inputs": [
+          "campaign metrics"
+        ],
+        "tools": [],
+        "skill": "media/kill-scale/google",
+        "output": "scaling gate result",
+        "check": "all 5 gates have a recorded pass/fail"
+      },
+      {
+        "n": 5,
+        "name": "Treat 'limited by budget' as a hint, not proof",
+        "does": "For any campaign flagged limited by budget, treat it as a signal to test, not an automatic raise.",
+        "inputs": [
+          "campaign flags"
+        ],
+        "tools": [],
+        "skill": "media/pace-budget/google",
+        "output": "budget-limited response",
+        "check": "no raise happened on this flag alone"
+      },
+      {
+        "n": 6,
+        "name": "Scale a clear winner or demand spike fast",
+        "does": "For a campaign that already hits target ROAS and passes all gates, move faster than the usual small step.",
+        "inputs": [
+          "scaling gate result"
+        ],
+        "tools": [],
+        "skill": "media/kill-scale/google",
+        "output": "fast-scale decision",
+        "check": "fast scaling only happened after all gates passed"
+      },
+      {
+        "n": 7,
+        "name": "Write the bid stage and budget plan",
+        "does": "Package the week's bid, budget and gate decisions into one plan.",
+        "inputs": [
+          "all prior outputs"
+        ],
+        "tools": [],
+        "skill": "shared/report-section",
+        "output": "bid stage plan + budget plan + pacing log",
+        "check": "every change traces to a gate result or break-even math"
+      }
+    ],
+    "outputs": [
+      "bid stage plan",
+      "budget plan",
+      "pacing log",
+      "scaling gate checklist result",
+      "change list"
+    ],
+    "qa": [
+      "every number in the output came from code, not the model's own arithmetic",
+      "no metric shows a computed 0 where the source was actually missing",
+      "no write is proposed on a surface the founder has not switched on; the output is a change list instead",
+      "no competitor text, logo, product or face appears anywhere in the output",
+      "reading level and sentence length match house style"
+    ],
+    "read_point": "read point: weekly, on the trailing week's CPC, CPA and ROAS",
+    "typical_duration": "agent time: about 40 minutes; waiting time: none",
+    "subagents": [
+      "google-ads-buyer owns this workflow end to end"
+    ]
+  },
+  {
+    "id": "MEDIA-W25",
+    "name": "Run and protect the affiliate and creator partner program",
+    "capabilities": [
+      "MEDIA-C49",
+      "MEDIA-C50"
+    ],
+    "trigger": "new application, or a weekly program health check",
+    "human_role": "affiliate manager (a job this agent stands in for until one is hired)",
+    "inputs_required": [
+      "applicant profile and traffic source",
+      "brand's affiliate policy and commission terms",
+      "affiliate network data"
+    ],
+    "steps": [
+      {
+        "n": 1,
+        "name": "Screen inbound applications",
+        "does": "Check each applicant against site quality, traffic source, category fit and prior brand mentions.",
+        "inputs": [
+          "applicant profiles"
+        ],
+        "tools": [
+          "affiliate network API or export (none connected yet)"
+        ],
+        "skill": "media/partnerships/affiliate-program",
+        "output": "screening result per applicant",
+        "check": "every applicant has a pass, fail or borderline result"
+      },
+      {
+        "n": 2,
+        "name": "Auto-approve or auto-reject clear cases",
+        "does": "Approve a clear pass and reject clear spam automatically; route only borderline cases to the founder.",
+        "inputs": [
+          "screening results"
+        ],
+        "tools": [],
+        "skill": "media/partnerships/affiliate-program",
+        "output": "approve/reject decisions",
+        "check": "only borderline cases reached the founder",
+        "ask_founder_if": "an applicant is genuinely borderline"
+      },
+      {
+        "n": 3,
+        "name": "Generate onboarding assets",
+        "does": "Build the approved affiliate's tracking link, coupon code and starter asset kit.",
+        "inputs": [
+          "approved applicant"
+        ],
+        "tools": [],
+        "skill": "media/partnerships/affiliate-program",
+        "output": "onboarding kit",
+        "check": "every approved affiliate has a link, code and kit"
+      },
+      {
+        "n": 4,
+        "name": "Scan for dormant affiliates",
+        "does": "Flag any affiliate with no clicks or sales in 60 days.",
+        "inputs": [
+          "network click/conversion logs"
+        ],
+        "tools": [],
+        "skill": "media/partnerships/affiliate-program",
+        "output": "dormant-affiliate list",
+        "check": "the 60-day threshold is applied consistently"
+      },
+      {
+        "n": 5,
+        "name": "Update the leaderboard",
+        "does": "Rank active affiliates by revenue and conversion rate.",
+        "inputs": [
+          "network data"
+        ],
+        "tools": [],
+        "skill": "media/partnerships/affiliate-program",
+        "output": "leaderboard",
+        "check": "the leaderboard reflects the current period, dated"
+      },
+      {
+        "n": 6,
+        "name": "Scan for fraud signatures",
+        "does": "Check for too-fast click-to-conversion, data-centre/proxy ISP traffic, leaked coupon codes on public sites, and brand-name bidding.",
+        "inputs": [
+          "network click and conversion logs",
+          "public coupon-site scan",
+          "paid search auction data"
+        ],
+        "tools": [
+          "WebSearch for coupon-site scan"
+        ],
+        "skill": "media/partnerships/affiliate-program",
+        "output": "fraud flag list with evidence",
+        "check": "every flag carries evidence, not a suspicion"
+      },
+      {
+        "n": 7,
+        "name": "Hold flagged commission for founder review",
+        "does": "Hold commission on any flagged conversion instead of auto-paying it.",
+        "inputs": [
+          "fraud flag list"
+        ],
+        "tools": [],
+        "skill": "media/partnerships/affiliate-program",
+        "output": "held-commission list",
+        "check": "no flagged commission is paid before review",
+        "ask_founder_if": "always, on every fraud flag before commission is released or the affiliate is suspended"
+      }
+    ],
+    "outputs": [
+      "approve/reject decisions with reasons",
+      "onboarding kit per affiliate",
+      "dormant-affiliate list",
+      "leaderboard",
+      "fraud flag list",
+      "held-commission list"
+    ],
+    "qa": [
+      "every number in the output came from code, not the model's own arithmetic",
+      "no metric shows a computed 0 where the source was actually missing",
+      "no write is proposed on a surface the founder has not switched on; the output is a change list instead",
+      "no competitor text, logo, product or face appears anywhere in the output",
+      "reading level and sentence length match house style",
+      "every held commission has evidence attached, not a hunch"
+    ],
+    "read_point": "read point: weekly health check, plus immediately on any new application or fraud signal",
+    "typical_duration": "agent time: about 30 minutes for the weekly check, 10 minutes per new application; waiting time: none"
+  },
+  {
+    "id": "MEDIA-W26",
+    "name": "Prepare Amazon and Flipkart marketplace ad briefs",
+    "capabilities": [
+      "MEDIA-C52"
+    ],
+    "trigger": "before a marketplace ad launch, or a quarterly marketplace ads review",
+    "human_role": "media buyer briefing marketplace ads for a human or agency to execute",
+    "inputs_required": [
+      "marketplace catalogue and listing data",
+      "SKU margin data",
+      "brand's own Google Search converting terms"
+    ],
+    "steps": [
+      {
+        "n": 1,
+        "name": "Pull bestseller and margin data",
+        "does": "Rank SKUs by margin and sales velocity to pick sponsorship priority.",
+        "inputs": [
+          "SKU margin data"
+        ],
+        "tools": [],
+        "skill": "media/build-campaign/marketplace-amazon-flipkart",
+        "output": "ranked SKU list",
+        "check": "the ranking uses real margin, not a guess"
+      },
+      {
+        "n": 2,
+        "name": "Seed keyword targets",
+        "does": "Combine the brand's converting Google Search terms with the marketplace's own search suggestions.",
+        "inputs": [
+          "Google Search converting terms"
+        ],
+        "tools": [],
+        "skill": "media/build-campaign/marketplace-amazon-flipkart",
+        "output": "keyword target list",
+        "check": "every keyword either converted on Google or is a marketplace suggestion"
+      },
+      {
+        "n": 3,
+        "name": "Build the negative keyword list",
+        "does": "Exclude irrelevant marketplace searches from the plan.",
+        "inputs": [
+          "keyword target list"
+        ],
+        "tools": [],
+        "skill": "media/build-campaign/marketplace-amazon-flipkart",
+        "output": "negative keyword list",
+        "check": "the list excludes clearly irrelevant searches"
+      },
+      {
+        "n": 4,
+        "name": "Set ACOS or TACOS targets",
+        "does": "Compute targets from each SKU's own margin, never a category benchmark.",
+        "inputs": [
+          "SKU margin data"
+        ],
+        "tools": [
+          "python calc"
+        ],
+        "skill": "media/build-campaign/marketplace-amazon-flipkart",
+        "output": "ACOS/TACOS targets",
+        "check": "every target traces to that SKU's margin"
+      },
+      {
+        "n": 5,
+        "name": "Propose the budget split",
+        "does": "Split proposed budget across search, product-page and brand-store placements.",
+        "inputs": [
+          "ranked SKU list"
+        ],
+        "tools": [],
+        "skill": "media/build-campaign/marketplace-amazon-flipkart",
+        "output": "budget split proposal",
+        "check": "the split names a reason for each placement's share"
+      },
+      {
+        "n": 6,
+        "name": "Flag listing issues before spend",
+        "does": "Check listings for missing bullets, weak images or thin A+ content; flag anything that will cap performance.",
+        "inputs": [
+          "listing data"
+        ],
+        "tools": [],
+        "skill": "media/build-campaign/marketplace-amazon-flipkart",
+        "output": "listing issue flag list",
+        "check": "a weak listing is flagged before ads are briefed for it"
+      },
+      {
+        "n": 7,
+        "name": "Write the marketplace ad brief",
+        "does": "Package everything into a brief ready for a human or agency to build in Seller Central or Flipkart Ads Manager.",
+        "inputs": [
+          "all prior outputs"
+        ],
+        "tools": [],
+        "skill": "shared/developer-brief",
+        "output": "marketplace ad campaign brief",
+        "check": "the brief is complete enough to build without further questions"
+      }
+    ],
+    "outputs": [
+      "marketplace ad campaign brief"
+    ],
+    "qa": [
+      "every number in the output came from code, not the model's own arithmetic",
+      "no metric shows a computed 0 where the source was actually missing",
+      "no write is proposed on a surface the founder has not switched on; the output is a change list instead",
+      "no competitor text, logo, product or face appears anywhere in the output",
+      "reading level and sentence length match house style"
+    ],
+    "read_point": "read point: at the founder's review of the brief, before it is handed to whoever executes it",
+    "typical_duration": "agent time: about 1 hour; waiting time: none"
+  },
+  {
+    "id": "MEDIA-W27",
+    "name": "Prepare quick-commerce retail media briefs",
+    "capabilities": [
+      "MEDIA-C53",
+      "PROD-C49"
+    ],
+    "trigger": "before a quick-commerce ad push, or when the brand adds a new quick-commerce listing",
+    "human_role": "media buyer briefing Blinkit, Zepto and Instamart ads",
+    "inputs_required": [
+      "quick-commerce listing and stock status per dark store or city",
+      "category CPC/ROAS benchmarks",
+      "SKU margin",
+      "PROD-C49: per-SKU per-dark-store contribution margin report"
+    ],
+    "steps": [
+      {
+        "n": 1,
+        "name": "Confirm listing and stock status",
+        "does": "Check which platforms the SKU is actually listed and in-stock on.",
+        "inputs": [
+          "listing and stock status"
+        ],
+        "tools": [],
+        "skill": "media/build-campaign/marketplace-quick-commerce",
+        "output": "listing/stock confirmation",
+        "check": "no platform is briefed for a SKU that is out of stock there"
+      },
+      {
+        "n": 2,
+        "name": "Read the true contribution margin",
+        "does": "Pull PROD-C49's per-SKU per-dark-store margin, recomputed on transaction value net of commission, GST and fees.",
+        "inputs": [
+          "PROD-C49 report"
+        ],
+        "tools": [
+          "script: scripts/qc_roas_recompute.py"
+        ],
+        "skill": "media/read-results/marketplace",
+        "output": "true margin read",
+        "check": "the margin used is transaction-value based, never the platform's MRP-based ROAS"
+      },
+      {
+        "n": 3,
+        "name": "Apply the 3-week margin gate",
+        "does": "Require 3 consecutive positive-margin weeks before proposing spend on a SKU at that dark store.",
+        "inputs": [
+          "true margin read"
+        ],
+        "tools": [],
+        "skill": "media/kill-scale/marketplace",
+        "output": "gate pass/fail per SKU",
+        "check": "no SKU passes without 3 consecutive positive weeks"
+      },
+      {
+        "n": 4,
+        "name": "Pick SKUs to sponsor",
+        "does": "Select SKUs by category search volume and current margin among those that passed the gate.",
+        "inputs": [
+          "gate results"
+        ],
+        "tools": [],
+        "skill": "media/build-campaign/marketplace-quick-commerce",
+        "output": "sponsored SKU list",
+        "check": "every sponsored SKU passed the margin gate"
+      },
+      {
+        "n": 5,
+        "name": "Size the budget to platform benchmarks",
+        "does": "Size proposed spend against the platform's own category CPC/ROAS benchmark, not a Meta or Google number.",
+        "inputs": [
+          "category benchmarks"
+        ],
+        "tools": [],
+        "skill": "media/pace-budget/tiktok",
+        "output": "budget size proposal",
+        "check": "the number traces to this platform's own benchmark"
+      },
+      {
+        "n": 6,
+        "name": "Flag stockout risk before scaling",
+        "does": "Check dark-store inventory against the proposed spend; flag any risk of ad delivery outpacing stock.",
+        "inputs": [
+          "stock status"
+        ],
+        "tools": [],
+        "skill": "media/kill-scale/marketplace",
+        "output": "stockout risk flag",
+        "check": "the flag exists before any scale-up is proposed"
+      },
+      {
+        "n": 7,
+        "name": "Write the retail media brief",
+        "does": "Package everything into a platform-specific brief for a human to execute in the brand console.",
+        "inputs": [
+          "all prior outputs"
+        ],
+        "tools": [],
+        "skill": "shared/developer-brief",
+        "output": "retail media brief per platform",
+        "check": "the brief keeps quick-commerce reporting separate from Meta/Google"
+      }
+    ],
+    "outputs": [
+      "retail media brief per platform"
+    ],
+    "qa": [
+      "every number in the output came from code, not the model's own arithmetic",
+      "no metric shows a computed 0 where the source was actually missing",
+      "no write is proposed on a surface the founder has not switched on; the output is a change list instead",
+      "no competitor text, logo, product or face appears anywhere in the output",
+      "reading level and sentence length match house style",
+      "no SKU with a negative or unproven contribution margin is briefed for spend"
+    ],
+    "read_point": "read point: before any spend, and at the founder's review of the brief",
+    "typical_duration": "agent time: about 1 hour; waiting time: none",
+    "subagents": [
+      "product and supply specialist (PROD) owns the contribution-margin recompute this workflow reads"
+    ]
+  },
+  {
+    "id": "MEDIA-W28",
+    "name": "Evaluate and pilot a new ad surface or DSP",
+    "capabilities": [
+      "MEDIA-C54",
+      "MEDIA-C62"
+    ],
+    "trigger": "when retargeting frequency/reach flatten, or existing channels are past their scaling gates, or a quarterly channel review",
+    "human_role": "growth marketer evaluating channel expansion",
+    "inputs_required": [
+      "current retargeting pool size and frequency",
+      "current channel saturation state",
+      "a shortlist of candidate surfaces or DSPs",
+      "brand CAC/ROAS targets"
+    ],
+    "steps": [
+      {
+        "n": 1,
+        "name": "Confirm saturation with data",
+        "does": "Check frequency and reach data to confirm existing channels are actually saturated, not assumed to be.",
+        "inputs": [
+          "frequency and reach data"
+        ],
+        "tools": [],
+        "skill": "media/partnerships/channel-pilot",
+        "output": "saturation confirmation",
+        "check": "saturation is shown with data, not assumed"
+      },
+      {
+        "n": 2,
+        "name": "Shortlist candidate surfaces or DSPs",
+        "does": "Compare options by data-source fit against the brand's category (shopping data vs streaming vs marketplace-native).",
+        "inputs": [
+          "candidate list"
+        ],
+        "tools": [
+          "WebSearch"
+        ],
+        "skill": "media/partnerships/channel-pilot",
+        "output": "shortlist with fit rationale",
+        "check": "every shortlisted option has a stated fit reason"
+      },
+      {
+        "n": 3,
+        "name": "Estimate cost against incremental reach",
+        "does": "Estimate minimum spend and management fee against expected incremental reach for each shortlisted option.",
+        "inputs": [
+          "shortlist"
+        ],
+        "tools": [],
+        "skill": "media/partnerships/channel-pilot",
+        "output": "cost/reach estimate",
+        "check": "every option has a cost estimate, not just a feature list"
+      },
+      {
+        "n": 4,
+        "name": "Size the smallest usable pilot",
+        "does": "Size the pilot budget as the smallest spend that can produce a statistically usable read.",
+        "inputs": [
+          "cost/reach estimate"
+        ],
+        "tools": [],
+        "skill": "media/partnerships/channel-pilot",
+        "output": "pilot budget size",
+        "check": "the budget is sized to produce a read, not a token amount"
+      },
+      {
+        "n": 5,
+        "name": "Set stop and scale thresholds",
+        "does": "Set the pilot's stop and scale thresholds before it starts, matching the existing creative kill-rule discipline.",
+        "inputs": [
+          "pilot budget size"
+        ],
+        "tools": [],
+        "skill": "media/partnerships/channel-pilot",
+        "output": "stop/scale thresholds",
+        "check": "thresholds exist before any spend starts"
+      },
+      {
+        "n": 6,
+        "name": "Build minimum viable creative and tracking",
+        "does": "Specify the creative sizes and tracking the pilot needs without diverting the main creative pipeline.",
+        "inputs": [
+          "creative specs"
+        ],
+        "tools": [],
+        "skill": "media/partnerships/channel-pilot",
+        "output": "creative-spec brief",
+        "check": "the brief does not pull resources from the main pipeline"
+      },
+      {
+        "n": 7,
+        "name": "Route for founder approval",
+        "does": "Present the full pilot plan and cost before any spend commits.",
+        "inputs": [
+          "pilot plan"
+        ],
+        "tools": [],
+        "skill": "shared/founder-question-round",
+        "output": "founder decision",
+        "check": "the founder approved before any spend started",
+        "ask_founder_if": "always, this capability is founder_gate"
+      },
+      {
+        "n": 8,
+        "name": "Read the pilot against brand targets",
+        "does": "At the stop/scale point, read the pilot against the brand's own CAC/ROAS targets, not the new platform's benchmarks.",
+        "inputs": [
+          "pilot data"
+        ],
+        "tools": [],
+        "skill": "media/read-results/marketplace",
+        "output": "pilot read",
+        "check": "the read used the brand's own targets"
+      },
+      {
+        "n": 9,
+        "name": "Log the result",
+        "does": "Write the learning to the experiment registry whether the pilot won or failed.",
+        "inputs": [
+          "pilot read"
+        ],
+        "tools": [],
+        "skill": "shared/registry-entry",
+        "output": "registry entry",
+        "check": "the result is logged regardless of outcome"
+      }
+    ],
+    "outputs": [
+      "go/no-go recommendation with DSP shortlist and creative-spec brief",
+      "pilot test plan",
+      "registry entry"
+    ],
+    "qa": [
+      "every number in the output came from code, not the model's own arithmetic",
+      "no metric shows a computed 0 where the source was actually missing",
+      "no write is proposed on a surface the founder has not switched on; the output is a change list instead",
+      "no competitor text, logo, product or face appears anywhere in the output",
+      "reading level and sentence length match house style"
+    ],
+    "read_point": "read point: at the pilot's pre-set stop/scale threshold",
+    "typical_duration": "agent time: about 1.5 hours to evaluate and plan; waiting time: the pilot's full read window"
+  },
+  {
+    "id": "MEDIA-W29",
+    "name": "Track and resolve ad policy rejections and account quality",
+    "capabilities": [
+      "MEDIA-C55"
+    ],
+    "trigger": "any new ad disapproval, or a daily account-quality check",
+    "human_role": "ad ops specialist keeping the account in good standing",
+    "inputs_required": [
+      "platform disapproval reasons and account-quality dashboards",
+      "the brand's claim tiers"
+    ],
+    "steps": [
+      {
+        "n": 1,
+        "name": "Pull today's disapprovals",
+        "does": "Check Meta, Google and TikTok for any new ad disapproval and its stated reason.",
+        "inputs": [],
+        "tools": [
+          "Meta Ads MCP (read-only)"
+        ],
+        "skill": "media/partnerships/policy-appeals",
+        "output": "disapproval list",
+        "check": "every disapproval from every connected platform is captured"
+      },
+      {
+        "n": 2,
+        "name": "Map the reason to the real cause",
+        "does": "Match the stated reason to the specific policy clause and the likely real cause: claim, image text ratio, restricted wording, or landing page mismatch.",
+        "inputs": [
+          "disapproval list"
+        ],
+        "tools": [],
+        "skill": "media/partnerships/policy-appeals",
+        "output": "cause mapping",
+        "check": "every disapproval has a named clause, not a guess"
+      },
+      {
+        "n": 3,
+        "name": "Propose the smallest fix",
+        "does": "Draft the smallest edit that clears the violation without changing the offer or claim tier.",
+        "inputs": [
+          "cause mapping"
+        ],
+        "tools": [],
+        "skill": "shared/claim-check",
+        "output": "fix proposal",
+        "check": "the fix does not change the claim tier without founder sign-off"
+      },
+      {
+        "n": 4,
+        "name": "Draft an appeal where warranted",
+        "does": "For a rejection believed wrongly applied, draft the appeal text for a human to submit.",
+        "inputs": [
+          "cause mapping"
+        ],
+        "tools": [],
+        "skill": "media/partnerships/policy-appeals",
+        "output": "appeal draft",
+        "check": "the draft is ready for a human to review and submit, never auto-submitted",
+        "ask_founder_if": "always, before an appeal is submitted"
+      },
+      {
+        "n": 5,
+        "name": "Watch the account-quality trend",
+        "does": "Check the account-quality or account-health score for a downward trend.",
+        "inputs": [],
+        "tools": [],
+        "skill": "media/partnerships/policy-appeals",
+        "output": "account-quality trend flag",
+        "check": "a downward trend is flagged before it causes a restriction"
+      },
+      {
+        "n": 6,
+        "name": "Log the pattern",
+        "does": "Add the rejection to the running log by category to catch a repeating pattern.",
+        "inputs": [
+          "cause mapping"
+        ],
+        "tools": [],
+        "skill": "shared/registry-entry",
+        "output": "rejection pattern log",
+        "check": "a repeating pattern across ads is flagged, not treated as separate incidents"
+      }
+    ],
+    "outputs": [
+      "daily rejection log with cause and fix",
+      "appeal drafts",
+      "account-quality trend flag"
+    ],
+    "qa": [
+      "every number in the output came from code, not the model's own arithmetic",
+      "no metric shows a computed 0 where the source was actually missing",
+      "no write is proposed on a surface the founder has not switched on; the output is a change list instead",
+      "no competitor text, logo, product or face appears anywhere in the output",
+      "reading level and sentence length match house style",
+      "every rejection has a named clause and a proposed fix"
+    ],
+    "read_point": "read point: daily",
+    "typical_duration": "agent time: about 15 minutes on a normal day; more on a day with a new disapproval"
+  },
+  {
+    "id": "MEDIA-W30",
+    "name": "Build and maintain automated bid, budget and pause rules",
+    "capabilities": [
+      "MEDIA-C63"
+    ],
+    "trigger": "once thresholds are established, then continuously",
+    "human_role": "performance marketing manager standing up rule-based automation",
+    "inputs_required": [
+      "existing kill/keep/scale thresholds",
+      "platform automation/rule-engine capability"
+    ],
+    "steps": [
+      {
+        "n": 1,
+        "name": "Pull the brand's existing thresholds",
+        "does": "Read the kill/keep/scale thresholds already in use by hand on each platform.",
+        "inputs": [
+          "existing thresholds"
+        ],
+        "tools": [],
+        "skill": "media/partnerships/rule-automation",
+        "output": "threshold list",
+        "check": "every threshold traces to an already-approved rule, not a new invention"
+      },
+      {
+        "n": 2,
+        "name": "Translate thresholds into if-then rules",
+        "does": "Write explicit if-then rules per platform: pause at 3-5x target CPA, cut budget X% on Y-day underperformance, alert on frequency threshold.",
+        "inputs": [
+          "threshold list"
+        ],
+        "tools": [],
+        "skill": "media/partnerships/rule-automation",
+        "output": "draft rule set",
+        "check": "every rule maps one-to-one to an existing threshold"
+      },
+      {
+        "n": 3,
+        "name": "Keep the rule set consistent across platforms",
+        "does": "Adapt each rule to Meta, Google and TikTok's own automation options while keeping the underlying logic identical.",
+        "inputs": [
+          "draft rule set"
+        ],
+        "tools": [],
+        "skill": "media/partnerships/rule-automation",
+        "output": "cross-platform rule set",
+        "check": "the same underlying logic applies on every platform"
+      },
+      {
+        "n": 4,
+        "name": "Route for founder approval",
+        "does": "Present the full rule set before it goes live on any surface.",
+        "inputs": [
+          "cross-platform rule set"
+        ],
+        "tools": [],
+        "skill": "shared/founder-question-round",
+        "output": "founder decision",
+        "check": "the founder approved the rule set before activation",
+        "ask_founder_if": "always, this capability is founder_gate"
+      },
+      {
+        "n": 5,
+        "name": "Hold every rule inactive until writes are on",
+        "does": "Confirm no rule can apply a live change on a surface where the founder has not switched writes on.",
+        "inputs": [
+          "write permissions"
+        ],
+        "tools": [],
+        "skill": "media/partnerships/rule-automation",
+        "output": "activation gate check",
+        "check": "a rule cannot fire live on a surface without writes switched on"
+      },
+      {
+        "n": 6,
+        "name": "Log every firing",
+        "does": "Record the before/after state for every rule firing once active.",
+        "inputs": [
+          "live rule activity"
+        ],
+        "tools": [],
+        "skill": "media/partnerships/rule-automation",
+        "output": "firing log",
+        "check": "every firing has a before and after state recorded"
+      },
+      {
+        "n": 7,
+        "name": "Watch for over-firing",
+        "does": "Auto-pause a rule that fires far more than expected, since that usually means tracking broke.",
+        "inputs": [
+          "firing log"
+        ],
+        "tools": [],
+        "skill": "media/partnerships/rule-automation",
+        "output": "over-firing pause",
+        "check": "an over-firing rule is paused, not left running"
+      }
+    ],
+    "outputs": [
+      "documented rule set per platform",
+      "firing log"
+    ],
+    "qa": [
+      "every number in the output came from code, not the model's own arithmetic",
+      "no metric shows a computed 0 where the source was actually missing",
+      "no write is proposed on a surface the founder has not switched on; the output is a change list instead",
+      "no competitor text, logo, product or face appears anywhere in the output",
+      "reading level and sentence length match house style",
+      "no rule applies a live change on a surface without writes switched on"
+    ],
+    "read_point": "read point: continuous once live; founder review at setup and at any rule change",
+    "typical_duration": "agent time: about 2 hours to set up; waiting time: none once live, ongoing log review daily"
+  }
+]

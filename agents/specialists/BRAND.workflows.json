@@ -1,0 +1,3929 @@
+[
+ {
+  "id": "BRAND-W01",
+  "name": "Run the customer research sweep",
+  "capabilities": [
+   "BRAND-C01",
+   "BRAND-C02",
+   "BRAND-C03",
+   "BRAND-C04",
+   "BRAND-C08",
+   "BRAND-C14"
+  ],
+  "trigger": "scheduled monthly | on demand before an avatar or positioning refresh",
+  "human_role": "what a customer insights analyst does at the start of every research cycle",
+  "inputs_required": [
+   "brand brain: product list and SKUs",
+   "connector: reviews export (site + marketplace)",
+   "connector: support desk export (tickets, returns, calls)",
+   "connector: GA4 / on-site search log",
+   "budget ledger: remaining balance for any paid deep-research pass"
+  ],
+  "steps": [
+   {
+    "n": 1,
+    "name": "Pull and tag reviews by star band",
+    "does": "Export every review per SKU with rating and date. Read 1-2 star for the real objection under the surface complaint. Read 4-5 star for the job the product actually did. Flag Hinglish and regional-language phrasing as-is, do not translate away the voice.",
+    "inputs": [
+     "connector: reviews export"
+    ],
+    "tools": [
+     "script: review_export",
+     "script: text_clustering"
+    ],
+    "skill": "brand/research-customers/reviews",
+    "output": "tagged quote set by star band, objection frequency list",
+    "check": "every quote has SKU, star, source and date; reviewer full name stripped",
+    "subagent": "Avatar Research Miner"
+   },
+   {
+    "n": 2,
+    "name": "Pull and tag support signal",
+    "does": "Export tickets, return reasons and call transcripts for the period. Tag by the underlying failure, not the customer's stated request. Flag sizing, fit or delivery-delay anxieties (India-relevant: COD refusal reasons, pincode delay complaints).",
+    "inputs": [
+     "connector: support desk export",
+     "connector: returns log"
+    ],
+    "tools": [
+     "script: text_clustering"
+    ],
+    "skill": "brand/research-customers/tickets",
+    "output": "struggle theme list, quote set with consent flag",
+    "check": "consent status logged before any quote leaves the ticket system",
+    "subagent": "Avatar Research Miner"
+   },
+   {
+    "n": 3,
+    "name": "Run forum and social listening",
+    "does": "Search Reddit, Quora, Instagram comments and relevant WhatsApp-forwarded review threads in the avatar's own words for language, objections and sub-avatars a review file misses.",
+    "inputs": [
+     "public web"
+    ],
+    "tools": [
+     "web search",
+     "script: text_clustering"
+    ],
+    "skill": "brand/research-customers/social",
+    "output": "language bank additions, sub-avatar candidate notes",
+    "check": "every source has a URL and date; nothing from a private group is quoted",
+    "subagent": "Avatar Research Miner"
+   },
+   {
+    "n": 4,
+    "name": "Mine on-site search and browse-without-buy",
+    "does": "Read the brand's own on-site search terms and sessions that browsed a category or PDP without adding to cart, for what shoppers were actually trying to find.",
+    "inputs": [
+     "connector: GA4 / site search log"
+    ],
+    "tools": [
+     "script: text_clustering"
+    ],
+    "skill": "brand/research-customers/onsite-behavior",
+    "output": "unmet-search-term list, job clue notes",
+    "check": "terms are deduplicated and volume-ranked before being called a pattern",
+    "subagent": "Avatar Research Miner"
+   },
+   {
+    "n": 5,
+    "name": "Cross-check patterns across sources",
+    "does": "Line up review, ticket, social and search findings. Keep only patterns that show up in 2 or more independent sources. Drop single contradictory outliers.",
+    "inputs": [
+     "outputs of steps 1-4"
+    ],
+    "tools": [],
+    "skill": null,
+    "output": "cross-verified pattern list",
+    "check": "every pattern kept lists which 2+ sources it came from"
+   },
+   {
+    "n": 6,
+    "name": "Verify one prioritized claim with AI deep research, if needed",
+    "does": "If a pattern is high-stakes (would change the primary avatar or a positioning claim) and thin on quotes, run one AI deep-research pass on that single candidate and verify every returned quote at its original source before it is used.",
+    "inputs": [
+     "cross-verified pattern list",
+     "budget ledger"
+    ],
+    "tools": [
+     "script: budget.py",
+     "web search"
+    ],
+    "skill": "shared/web-research-budgeted",
+    "output": "verified addendum with original-source links",
+    "check": "budget.py checked before the call; every quote traced back to its live source page",
+    "ask_founder_if": "the verification would push the run over the working stop ($160)"
+   },
+   {
+    "n": 7,
+    "name": "Update the verbatim language bank",
+    "does": "Append new exact-quoted phrases to the per-avatar language bank, tagged by source and repetition count, anonymized.",
+    "inputs": [
+     "all tagged quote sets"
+    ],
+    "tools": [],
+    "skill": null,
+    "output": "updated language bank file",
+    "check": "no full name or contact detail is stored with a quote"
+   },
+   {
+    "n": 8,
+    "name": "Hand off findings for avatar work",
+    "does": "Package the cross-verified patterns, quote sets and language bank update as the input packet for the avatar-record or positioning workflow that runs next.",
+    "inputs": [
+     "all prior outputs"
+    ],
+    "tools": [],
+    "skill": "shared/registry-entry",
+    "output": "research packet, logged in the registry",
+    "check": "packet lists every source type used and what was not available"
+   }
+  ],
+  "outputs": [
+   "tagged quote set by star band",
+   "struggle theme list",
+   "language bank update",
+   "sub-avatar candidate notes",
+   "cross-verified pattern list"
+  ],
+  "qa": [
+   "every quote has a source and date",
+   "no full name kept",
+   "a pattern is only real with 2+ independent sources",
+   "nothing from a private support conversation left without a consent flag"
+  ],
+  "read_point": "not a metric read. Freshness re-checked at the next monthly cycle; a pattern older than one quarter is re-verified before reuse.",
+  "typical_duration": "agent time 2-4 hours across sources; add 1-2 days wait if a support desk or GA4 export has to be requested.",
+  "subagents": [
+   "Avatar Research Miner runs steps 1-4 so bulk raw text never enters the main agent's context"
+  ]
+ },
+ {
+  "id": "BRAND-W02",
+  "name": "Design and run a customer interview program",
+  "capabilities": [
+   "BRAND-C05"
+  ],
+  "trigger": "on demand | event: a research packet has a gap no passive source can fill",
+  "human_role": "what a founder or researcher does to hear the job in the customer's own words",
+  "inputs_required": [
+   "research packet from BRAND-W01",
+   "customer list or panel access",
+   "founder availability for the incentive decision"
+  ],
+  "steps": [
+   {
+    "n": 1,
+    "name": "Name the open question",
+    "does": "State exactly what the interview must learn that reviews, tickets and social could not (a trigger moment, a fired alternative, a hidden social dimension).",
+    "inputs": [
+     "research packet"
+    ],
+    "tools": [],
+    "skill": null,
+    "output": "one-line research question",
+    "check": "the question cannot already be answered from BRAND-W01 output"
+   },
+   {
+    "n": 2,
+    "name": "Write the interview guide",
+    "does": "Draft 8-12 open questions in job-to-be-done order: the trigger, the struggle, the alternatives tried, the moment of choosing, the after-state. No leading or feature-fishing questions.",
+    "inputs": [
+     "research question",
+     "voice sheet if one exists"
+    ],
+    "tools": [
+     "script: jtbd_template"
+    ],
+    "skill": "brand/research-customers/interviews",
+    "output": "interview guide",
+    "check": "no question can be answered yes/no; no question names the brand's own feature first"
+   },
+   {
+    "n": 3,
+    "name": "Pick channel and incentive",
+    "does": "Recommend a channel (call, WhatsApp voice note thread, video) and a proportionate incentive (a discount code or small gift, not cash that could bias answers) sized to the brand's own economics.",
+    "inputs": [
+     "contribution margin"
+    ],
+    "tools": [
+     "script: market_sizing"
+    ],
+    "skill": null,
+    "output": "channel and incentive recommendation",
+    "check": "incentive cost is computed against contribution margin, not guessed",
+    "ask_founder_if": "the incentive plan needs a founder-approved budget line"
+   },
+   {
+    "n": 4,
+    "name": "Recruit the sample",
+    "does": "Pull 8-12 candidates across at least 2 purchase recency bands (recent buyer, lapsed buyer) from the customer list.",
+    "inputs": [
+     "customer list"
+    ],
+    "tools": [],
+    "skill": null,
+    "output": "recruit list with recency tag",
+    "check": "no single cohort is more than 70% of the sample"
+   },
+   {
+    "n": 5,
+    "name": "Hand off or run the conversations",
+    "does": "If the founder or team runs the calls, hand off the guide and a note-taking template. If a person the agent can't be, stop here and mark this a human_assist step.",
+    "inputs": [
+     "interview guide",
+     "recruit list"
+    ],
+    "tools": [],
+    "skill": null,
+    "output": "scheduled interviews or handoff note",
+    "check": "every scheduled interview has a guide attached",
+    "ask_founder_if": "no one is available to run the conversations this cycle"
+   },
+   {
+    "n": 6,
+    "name": "Log transcripts",
+    "does": "File each transcript or note set with date, respondent recency band, and consent status.",
+    "inputs": [
+     "completed interviews"
+    ],
+    "tools": [],
+    "skill": null,
+    "output": "transcript log",
+    "check": "every transcript has a consent flag before any quote is reused"
+   },
+   {
+    "n": 7,
+    "name": "Extract patterns",
+    "does": "Pull job statement material, forces (push, pull, anxiety, habit) and fired alternatives from the transcripts. Cross-check against BRAND-W01 patterns.",
+    "inputs": [
+     "transcript log"
+    ],
+    "tools": [
+     "script: text_clustering"
+    ],
+    "skill": "brand/research-customers/interviews",
+    "output": "interview findings packet",
+    "check": "every finding cites which transcript it came from"
+   },
+   {
+    "n": 8,
+    "name": "Route to avatar work",
+    "does": "Hand the findings packet to BRAND-W05 (avatar record) with a note on what changed from the passive-data picture.",
+    "inputs": [
+     "interview findings packet"
+    ],
+    "tools": [],
+    "skill": "shared/registry-entry",
+    "output": "registry entry, findings routed",
+    "check": "the note names any avatar assumption the interviews overturned"
+   }
+  ],
+  "outputs": [
+   "interview guide",
+   "transcript log",
+   "interview findings packet"
+  ],
+  "qa": [
+   "every question is open, not leading",
+   "every transcript has a consent flag",
+   "incentive cost computed, not guessed"
+  ],
+  "read_point": "not a metric read; a qualitative evidence build feeding the next avatar cycle.",
+  "typical_duration": "agent time 3-5 hours to prepare and synthesize; 1-3 weeks wait for scheduling and running 8-12 conversations.",
+  "subagents": []
+ },
+ {
+  "id": "BRAND-W03",
+  "name": "Design and field a customer survey",
+  "capabilities": [
+   "BRAND-C06"
+  ],
+  "trigger": "quarterly | on demand to confirm a research finding at scale",
+  "human_role": "what a researcher does to check a finding against the wider customer base, never to discover a new job",
+  "inputs_required": [
+   "a specific finding from BRAND-W01 or BRAND-W02 to confirm",
+   "connector: email/SMS platform (draft only)",
+   "customer list segmented by recency or tier"
+  ],
+  "steps": [
+   {
+    "n": 1,
+    "name": "State the confirm-or-deny question",
+    "does": "Write the one claim the survey exists to test (for example, 'gifting is the #1 purchase occasion for tier 2 buyers'). Reject any survey brief that instead asks 'what do you want.'",
+    "inputs": [
+     "prior finding"
+    ],
+    "tools": [],
+    "skill": null,
+    "output": "survey hypothesis line",
+    "check": "the hypothesis already has qualitative evidence behind it from W01/W02"
+   },
+   {
+    "n": 2,
+    "name": "Pick the survey type",
+    "does": "Choose identity, post-purchase, or NPS/relationship format to match the question. Keep it under 6 questions.",
+    "inputs": [
+     "survey hypothesis line"
+    ],
+    "tools": [],
+    "skill": "brand/research-customers/surveys",
+    "output": "survey type and question set",
+    "check": "6 questions or fewer; no double-barreled question"
+   },
+   {
+    "n": 3,
+    "name": "Draft the send, do not send it",
+    "does": "Draft the survey invite in the email/SMS platform (connector is read + draft only, no send permission).",
+    "inputs": [
+     "survey question set"
+    ],
+    "tools": [
+     "connector: email/SMS platform"
+    ],
+    "skill": null,
+    "output": "drafted survey send",
+    "check": "draft only; no send action taken",
+    "ask_founder_if": "always, before send: this connector cannot send without approval"
+   },
+   {
+    "n": 4,
+    "name": "Founder approves and sends",
+    "does": "Founder reviews the draft and either sends it themselves or approves the send.",
+    "inputs": [
+     "drafted survey send"
+    ],
+    "tools": [],
+    "skill": null,
+    "output": "founder decision",
+    "check": "send is logged as founder-approved, not agent-executed"
+   },
+   {
+    "n": 5,
+    "name": "Collect and clean responses",
+    "does": "Pull responses once the window closes. Drop straight-line and under-10-second responses.",
+    "inputs": [
+     "survey platform export"
+    ],
+    "tools": [
+     "script: text_clustering"
+    ],
+    "skill": null,
+    "output": "cleaned response set",
+    "check": "junk-response rate reported, not hidden"
+   },
+   {
+    "n": 6,
+    "name": "Score against the hypothesis",
+    "does": "Compute the confirm/deny rate in code against the original hypothesis line.",
+    "inputs": [
+     "cleaned response set"
+    ],
+    "tools": [
+     "script: market_sizing"
+    ],
+    "skill": null,
+    "output": "confirm/deny result with sample size",
+    "check": "result reported with n, never as a vague 'most customers'"
+   },
+   {
+    "n": 7,
+    "name": "Route the result",
+    "does": "File the result to the brand brain and the workflow that raised the original finding.",
+    "inputs": [
+     "confirm/deny result"
+    ],
+    "tools": [],
+    "skill": "shared/registry-entry",
+    "output": "registry entry",
+    "check": "result changes or confirms a specific record, named explicitly"
+   }
+  ],
+  "outputs": [
+   "survey question set",
+   "cleaned response set",
+   "confirm/deny result"
+  ],
+  "qa": [
+   "6 questions or fewer",
+   "survey confirms an existing finding, never fishes for a new one",
+   "send only after founder approval"
+  ],
+  "read_point": "scored the day the response window closes, with sample size reported.",
+  "typical_duration": "agent time 2-3 hours to design and score; 1-2 weeks wait for the response window.",
+  "subagents": []
+ },
+ {
+  "id": "BRAND-W04",
+  "name": "Research competitors and public benchmarks",
+  "capabilities": [
+   "BRAND-C07"
+  ],
+  "trigger": "scheduled monthly | on demand before a positioning or naming cycle",
+  "human_role": "what a competitive-intelligence analyst does before any positioning claim is written",
+  "inputs_required": [
+   "named competitor set (direct and adjacent)",
+   "brand brain: category and price tier",
+   "budget ledger"
+  ],
+  "steps": [
+   {
+    "n": 1,
+    "name": "Confirm the competitive set",
+    "does": "List direct rivals plus real alternatives a shopper would compare against, including doing nothing and the generic marketplace listing (Amazon/Flipkart/Meesho equivalents).",
+    "inputs": [
+     "brand brain: category"
+    ],
+    "tools": [],
+    "skill": null,
+    "output": "competitive set list",
+    "check": "list includes at least one non-obvious adjacent alternative"
+   },
+   {
+    "n": 2,
+    "name": "Pull public ad signal",
+    "does": "Search the Meta Ad Library for each competitor's live ads: formats, hooks, offer structure. Public library only, never the brand's own ad account data.",
+    "inputs": [
+     "competitive set list"
+    ],
+    "tools": [
+     "mcp: ads_library_search"
+    ],
+    "skill": null,
+    "output": "competitor ad signal notes with dates",
+    "check": "every note is labeled 'signal, not proof' per the competitor-material rule"
+   },
+   {
+    "n": 3,
+    "name": "Pull public page, review and Q&A signal",
+    "does": "Read each competitor's PDP, About page, and public reviews/Q&A for claims made, price anchors, and unmet complaints.",
+    "inputs": [
+     "competitive set list"
+    ],
+    "tools": [
+     "browser: headless chromium",
+     "web search"
+    ],
+    "skill": null,
+    "output": "competitor page and review notes",
+    "check": "every claim quoted carries a URL and date"
+   },
+   {
+    "n": 4,
+    "name": "Check budget before any paid lookup",
+    "does": "If any step needs a paid API or tool call, check the ledger first.",
+    "inputs": [
+     "budget ledger"
+    ],
+    "tools": [
+     "script: budget.py"
+    ],
+    "skill": null,
+    "output": "budget clearance",
+    "check": "no paid call proceeds without a logged check",
+    "ask_founder_if": "the pull would exceed the working stop"
+   },
+   {
+    "n": 5,
+    "name": "Map the mainstream avatar per competitor",
+    "does": "Infer who each competitor is obviously talking to, from their imagery, copy and price point.",
+    "inputs": [
+     "ad and page notes"
+    ],
+    "tools": [],
+    "skill": "shared/web-research-budgeted",
+    "output": "per-competitor avatar read",
+    "check": "inference is labeled inference, not fact"
+   },
+   {
+    "n": 6,
+    "name": "Check market health signals",
+    "does": "Note category growth or decline signals: new entrants, price compression, review-volume trend.",
+    "inputs": [
+     "page and review notes"
+    ],
+    "tools": [],
+    "skill": null,
+    "output": "market health note",
+    "check": "every signal dated within the last 12 months or flagged stale"
+   },
+   {
+    "n": 7,
+    "name": "File the competitor packet",
+    "does": "Package ad signal, page signal, avatar reads and market health into one dated packet for positioning and naming work.",
+    "inputs": [
+     "all prior outputs"
+    ],
+    "tools": [],
+    "skill": "shared/registry-entry",
+    "output": "competitor research packet",
+    "check": "packet carries no competitor text, logo, product photo or face copied in"
+   }
+  ],
+  "outputs": [
+   "competitor ad signal notes",
+   "competitor page and review notes",
+   "per-competitor avatar read",
+   "market health note",
+   "competitor research packet"
+  ],
+  "qa": [
+   "every source has a URL and date",
+   "nothing copied, only described",
+   "labeled signal not proof throughout"
+  ],
+  "read_point": "refreshed monthly; a packet older than 60 days is re-pulled before it feeds a positioning statement.",
+  "typical_duration": "agent time 3-5 hours for a 5-8 competitor set.",
+  "subagents": [
+   "Avatar Research Miner can run steps 2-3 at scale across a large competitive set"
+  ]
+ },
+ {
+  "id": "BRAND-W05",
+  "name": "Build and gate a new avatar record",
+  "capabilities": [
+   "BRAND-C09",
+   "BRAND-C13",
+   "BRAND-C11"
+  ],
+  "trigger": "event: a new avatar is needed, or the quarterly recheck finds the current one stale",
+  "human_role": "what a brand strategist does to turn scattered research into one usable customer record",
+  "inputs_required": [
+   "research packet from BRAND-W01 (and W02/W03 if run)",
+   "competitor packet from BRAND-W04 if positioning-relevant",
+   "founder sign-off on which candidate to build"
+  ],
+  "steps": [
+   {
+    "n": 1,
+    "name": "Draft the job-to-be-done statement",
+    "does": "Write the job in a situation: 'when [situation], I want to [motivation], so I can [outcome].' Cover functional, emotional and social sides.",
+    "inputs": [
+     "research packet"
+    ],
+    "tools": [
+     "script: jtbd_template"
+    ],
+    "skill": "brand/jtbd-writer",
+    "output": "draft job statement",
+    "check": "passes the verb-noun test and the cross-category test (the job exists outside this exact product too)"
+   },
+   {
+    "n": 2,
+    "name": "Name the 4 forces",
+    "does": "Identify the push (problem), pull (attraction to a solution), anxiety (what could go wrong), and habit (inertia keeping them with the status quo).",
+    "inputs": [
+     "quote sets"
+    ],
+    "tools": [],
+    "skill": "brand/jtbd-writer",
+    "output": "4-forces record",
+    "check": "each force has at least one verbatim quote"
+   },
+   {
+    "n": 3,
+    "name": "Name the fired alternative",
+    "does": "State what the customer was doing, or considering, before this product (a competitor, a DIY fix, or doing nothing).",
+    "inputs": [
+     "quote sets, competitor packet"
+    ],
+    "tools": [],
+    "skill": null,
+    "output": "fired-alternative line",
+    "check": "traces to a specific quote or competitor data point, not assumed"
+   },
+   {
+    "n": 4,
+    "name": "Build the objection map",
+    "does": "Pair every named objection with the real thing that removed it for a real customer (a review, a support reply, a product change). Where relevant, turn a pattern into a fit or size-confidence angle and a support macro draft.",
+    "inputs": [
+     "research packet"
+    ],
+    "tools": [
+     "script: text_clustering"
+    ],
+    "skill": "brand/objection-map-builder",
+    "output": "objection-remover pairs, macro drafts",
+    "check": "every objection has 2+ quoted sources; every remover is something that actually happened, not a hoped-for fix"
+   },
+   {
+    "n": 5,
+    "name": "Build the 5W profile and trigger moment",
+    "does": "Who, what, when, where, why, plus the specific moment that starts the buying process (a wedding date set, a monsoon starting, a festival approaching).",
+    "inputs": [
+     "quote sets"
+    ],
+    "tools": [],
+    "skill": "brand/avatar-record-builder",
+    "output": "5W profile, trigger moment",
+    "check": "trigger moment is a specific event, not a vague season"
+   },
+   {
+    "n": 6,
+    "name": "Assemble the full record",
+    "does": "Pull job, forces, fired alternative, objection map, 5W, trigger and quote set into one avatar record.",
+    "inputs": [
+     "all prior step outputs"
+    ],
+    "tools": [
+     "script: avatar_record_builder"
+    ],
+    "skill": "brand/avatar-record-builder",
+    "output": "assembled avatar record",
+    "check": "every required field is present or explicitly marked missing"
+   },
+   {
+    "n": 7,
+    "name": "Set the status flag",
+    "does": "Mark the record 'confirmed' only if built from 2+ independent source types with at least one first-party source (for an existing brand). Otherwise mark 'provisional.'",
+    "inputs": [
+     "assembled avatar record"
+    ],
+    "tools": [],
+    "skill": "brand/avatar-record-builder",
+    "output": "status-flagged record",
+    "check": "status flag matches the actual source count, not optimism"
+   },
+   {
+    "n": 8,
+    "name": "Founder gate",
+    "does": "Present the record with its sources for founder approval before it becomes the record other specialists cite.",
+    "inputs": [
+     "status-flagged record"
+    ],
+    "tools": [
+     "shared/plain-english-card"
+    ],
+    "skill": "shared/founder-question-round",
+    "output": "founder decision",
+    "check": "card shows sources and the provisional/confirmed flag plainly",
+    "ask_founder_if": "always: this is a founder_gate capability"
+   },
+   {
+    "n": 9,
+    "name": "Write to the registry and brand brain",
+    "does": "Log the decision and, if approved, write the avatar record into the brand brain customer section.",
+    "inputs": [
+     "founder decision"
+    ],
+    "tools": [
+     "script: brand_brain_writer"
+    ],
+    "skill": "shared/registry-entry",
+    "output": "registry entry, brand brain update",
+    "check": "a rejected record is logged with the founder's reason, not silently dropped"
+   }
+  ],
+  "outputs": [
+   "job statement",
+   "objection map",
+   "5W profile",
+   "full avatar record",
+   "registry entry"
+  ],
+  "qa": [
+   "every field traces to a quote or is marked missing",
+   "status flag matches real source count",
+   "founder decision logged either way"
+  ],
+  "read_point": "revisited every quarter (BRAND-W07) or when a brief citing it stops converting.",
+  "typical_duration": "agent time 4-6 hours once research is in hand; founder review adds 1-3 days.",
+  "subagents": [
+   "Avatar Research Miner can pre-cluster the quote sets before this workflow starts"
+  ]
+ },
+ {
+  "id": "BRAND-W06",
+  "name": "Discover, rank and prioritize avatar candidates",
+  "capabilities": [
+   "BRAND-C10"
+  ],
+  "trigger": "scheduled quarterly",
+  "human_role": "what a strategist does before picking which customer to build the next cycle's work around",
+  "inputs_required": [
+   "all avatar candidates surfaced this quarter (from W01, W02, W04, W08)",
+   "current primary avatar record",
+   "metric contract: revenue and repeat-rate by known segment where trackable"
+  ],
+  "steps": [
+   {
+    "n": 1,
+    "name": "List every candidate",
+    "does": "Pull every avatar candidate surfaced across this quarter's research, including sub-avatars flagged in social listening.",
+    "inputs": [
+     "research packets"
+    ],
+    "tools": [],
+    "skill": "brand/avatar-ranking",
+    "output": "candidate list",
+    "check": "every candidate names which run surfaced it"
+   },
+   {
+    "n": 2,
+    "name": "Require a cross-source pattern",
+    "does": "Drop any candidate that appears in only one source type.",
+    "inputs": [
+     "candidate list"
+    ],
+    "tools": [],
+    "skill": "brand/avatar-ranking",
+    "output": "filtered candidate list",
+    "check": "remaining candidates each cite 2+ source types"
+   },
+   {
+    "n": 3,
+    "name": "Score reach and fit",
+    "does": "Estimate each candidate's addressable size against the brand's own customer and traffic data, and its fit to current product and margin.",
+    "inputs": [
+     "metric contract fields"
+    ],
+    "tools": [
+     "script: market_sizing"
+    ],
+    "skill": "shared/rank-candidates",
+    "output": "scored candidate list",
+    "check": "scores computed in code from real fields, not estimated in prose"
+   },
+   {
+    "n": 4,
+    "name": "Rank and pick the primary",
+    "does": "Rank by reach x fit x evidence strength. Recommend a primary avatar for the cycle and note runner-ups.",
+    "inputs": [
+     "scored candidate list"
+    ],
+    "tools": [
+     "script: avatar_ranker"
+    ],
+    "skill": "brand/avatar-ranking",
+    "output": "ranked list, recommended primary",
+    "check": "the current primary is not kept by default without being re-scored"
+   },
+   {
+    "n": 5,
+    "name": "Founder gate",
+    "does": "Present the ranked list and recommendation for the founder to confirm, override, or ask for another cycle of evidence.",
+    "inputs": [
+     "ranked list"
+    ],
+    "tools": [
+     "shared/plain-english-card"
+    ],
+    "skill": "shared/founder-question-round",
+    "output": "founder decision",
+    "check": "card shows why each runner-up ranked below the pick",
+    "ask_founder_if": "always"
+   },
+   {
+    "n": 6,
+    "name": "Route the pick",
+    "does": "If the primary changed, trigger BRAND-W05 to build or refresh that avatar's full record.",
+    "inputs": [
+     "founder decision"
+    ],
+    "tools": [],
+    "skill": "shared/registry-entry",
+    "output": "registry entry, routed follow-up",
+    "check": "a changed primary always triggers a fresh record build, never reuses an old provisional one"
+   }
+  ],
+  "outputs": [
+   "ranked candidate list",
+   "founder decision",
+   "registry entry"
+  ],
+  "qa": [
+   "every candidate has 2+ source types",
+   "scores computed in code",
+   "decision logged either way"
+  ],
+  "read_point": "quarterly, alongside the general avatar audit (BRAND-W07).",
+  "typical_duration": "agent time 2-3 hours; founder review 1-3 days.",
+  "subagents": []
+ },
+ {
+  "id": "BRAND-W07",
+  "name": "Segment and maintain avatars on a cadence",
+  "capabilities": [
+   "BRAND-C12",
+   "BRAND-C15"
+  ],
+  "trigger": "quarterly | event: new price tier, channel or subscription line",
+  "human_role": "what a strategist does to keep the customer record honest and correctly split over time",
+  "inputs_required": [
+   "current avatar record(s)",
+   "brand brain: pricing tiers, channels, B2B or subscription lines",
+   "briefs written since the last audit, to check citation"
+  ],
+  "steps": [
+   {
+    "n": 1,
+    "name": "Check for a split trigger",
+    "does": "Check whether a new price tier, buyer-versus-user split (for example, a gifting buyer versus the person who wears the piece), B2B line, or subscription churn pattern has changed the underlying job.",
+    "inputs": [
+     "brand brain"
+    ],
+    "tools": [],
+    "skill": "brand/avatar-segmentation",
+    "output": "split-needed flag",
+    "check": "a split is only proposed when the job itself differs, not just the SKU"
+   },
+   {
+    "n": 2,
+    "name": "Split the record if warranted",
+    "does": "Create a separate avatar record for the new segment, reusing shared quotes but writing a distinct job statement and objection map where they differ.",
+    "inputs": [
+     "current avatar record"
+    ],
+    "tools": [
+     "script: avatar_record_builder"
+    ],
+    "skill": "brand/avatar-segmentation",
+    "output": "new segment record(s)",
+    "check": "each split record stands on its own evidence, not copy-pasted from the parent"
+   },
+   {
+    "n": 3,
+    "name": "Audit citation",
+    "does": "Check which briefs and pages have cited the current avatar record since the last audit, and whether product still earns the win described in it.",
+    "inputs": [
+     "brief log"
+    ],
+    "tools": [],
+    "skill": "brand/avatar-record-builder",
+    "output": "citation and fit audit note",
+    "check": "note names any brief that cited a stale or wrong field"
+   },
+   {
+    "n": 4,
+    "name": "Re-check the dominant avatar",
+    "does": "Re-run the source-count and freshness check on the primary avatar; flag if evidence is older than 2 quarters.",
+    "inputs": [
+     "primary avatar record"
+    ],
+    "tools": [],
+    "skill": "brand/avatar-record-builder",
+    "output": "freshness verdict",
+    "check": "verdict is date-stamped, not assumed current"
+   },
+   {
+    "n": 5,
+    "name": "Refresh what's stale",
+    "does": "If evidence is stale, route back to BRAND-W01 for a fresh research pass before editing the record.",
+    "inputs": [
+     "freshness verdict"
+    ],
+    "tools": [],
+    "skill": null,
+    "output": "refresh trigger or 'still current' note",
+    "check": "never edits a record from memory without new evidence"
+   },
+   {
+    "n": 6,
+    "name": "Founder gate on any material change",
+    "does": "Any split, merge or material rewrite of a live avatar record goes to the founder before it replaces what specialists are citing.",
+    "inputs": [
+     "proposed changes"
+    ],
+    "tools": [
+     "shared/plain-english-card"
+    ],
+    "skill": "shared/founder-question-round",
+    "output": "founder decision",
+    "check": "a live record is never silently overwritten",
+    "ask_founder_if": "always for a material change"
+   },
+   {
+    "n": 7,
+    "name": "Log and publish",
+    "does": "Write the approved version to the brand brain and note the audit date for the next cycle.",
+    "inputs": [
+     "founder decision"
+    ],
+    "tools": [
+     "script: brand_brain_writer"
+    ],
+    "skill": "shared/registry-entry",
+    "output": "updated brand brain, registry entry",
+    "check": "prior version is kept in history, not deleted"
+   }
+  ],
+  "outputs": [
+   "segment records",
+   "citation and fit audit note",
+   "freshness verdict",
+   "registry entry"
+  ],
+  "qa": [
+   "a split needs a real job difference, not just a SKU difference",
+   "no record edited without new evidence",
+   "material change always founder-gated"
+  ],
+  "read_point": "quarterly, or immediately on a triggering event (new tier, channel, subscription line).",
+  "typical_duration": "agent time 2-4 hours; founder review 1-3 days if a change is proposed.",
+  "subagents": []
+ },
+ {
+  "id": "BRAND-W08",
+  "name": "Run the untapped avatar discovery pipeline",
+  "capabilities": [
+   "BRAND-C16"
+  ],
+  "trigger": "on demand, when the category is saturated and the product has no real point of difference left to claim",
+  "human_role": "what a strategist does to find a customer competitors have not claimed, instead of fighting for the same one",
+  "inputs_required": [
+   "competitor packet (BRAND-W04) covering who every rival obviously targets",
+   "current avatar record",
+   "brand brain: product capabilities"
+  ],
+  "steps": [
+   {
+    "n": 1,
+    "name": "Map who is already claimed",
+    "does": "List the avatar every visible competitor is obviously serving, from BRAND-W04's per-competitor avatar reads.",
+    "inputs": [
+     "competitor packet"
+    ],
+    "tools": [],
+    "skill": "brand/untapped-avatar-pipeline",
+    "output": "claimed-avatar map",
+    "check": "map covers every competitor in the set, not just the top 2"
+   },
+   {
+    "n": 2,
+    "name": "List adjacent jobs the product could also do",
+    "does": "From the product's real capabilities, list jobs it could serve beyond the claimed avatar's job (a gifting job, a professional-use job, a different life stage).",
+    "inputs": [
+     "brand brain: product capabilities"
+    ],
+    "tools": [],
+    "skill": "brand/untapped-avatar-pipeline",
+    "output": "adjacent job candidate list",
+    "check": "every candidate job is something the product can actually do today, not a roadmap wish"
+   },
+   {
+    "n": 3,
+    "name": "Search for evidence the adjacent job is real",
+    "does": "Search reviews, forums and search terms (own and public) for signs someone already uses or wants the product for that adjacent job.",
+    "inputs": [
+     "adjacent job candidate list"
+    ],
+    "tools": [
+     "web search",
+     "script: text_clustering"
+    ],
+    "skill": "brand/untapped-avatar-pipeline",
+    "output": "evidence-checked candidate list",
+    "check": "a candidate with zero found evidence is dropped, not carried forward on hope"
+   },
+   {
+    "n": 4,
+    "name": "Size the candidate",
+    "does": "Run a lightweight market-sizing pass on the strongest 1-2 candidates.",
+    "inputs": [
+     "evidence-checked candidate list"
+    ],
+    "tools": [
+     "script: market_sizing"
+    ],
+    "skill": "brand/market-sizing",
+    "output": "sizing note per candidate",
+    "check": "sizing uses the brand's own AOV and margin, not an assumed one"
+   },
+   {
+    "n": 5,
+    "name": "Founder gate",
+    "does": "Present the untapped-avatar candidates with evidence and sizing for a founder decision on whether to pursue.",
+    "inputs": [
+     "sizing note"
+    ],
+    "tools": [
+     "shared/plain-english-card"
+    ],
+    "skill": "shared/founder-question-round",
+    "output": "founder decision",
+    "check": "recommendation names the evidence and the size, not just the idea",
+    "ask_founder_if": "always"
+   },
+   {
+    "n": 6,
+    "name": "Route to avatar build",
+    "does": "If approved, hand off to BRAND-W05 to build the full avatar record for the new candidate.",
+    "inputs": [
+     "founder decision"
+    ],
+    "tools": [],
+    "skill": "shared/registry-entry",
+    "output": "registry entry, routed follow-up",
+    "check": "a rejected candidate is logged with the reason so it is not re-proposed unchanged"
+   }
+  ],
+  "outputs": [
+   "claimed-avatar map",
+   "adjacent job candidate list",
+   "evidence-checked candidate list",
+   "sizing note"
+  ],
+  "qa": [
+   "every candidate checked against real evidence",
+   "sizing done in code from the brand's own numbers"
+  ],
+  "read_point": "not a metric read; re-run whenever the category feels saturated again.",
+  "typical_duration": "agent time 4-6 hours.",
+  "subagents": []
+ },
+ {
+  "id": "BRAND-W09",
+  "name": "Map the category ladder and the XY positioning map",
+  "capabilities": [
+   "BRAND-C18",
+   "BRAND-C19"
+  ],
+  "trigger": "event: a new positioning cycle starts, or the competitive set materially changes",
+  "human_role": "what a strategist does before any positioning claim gets written",
+  "inputs_required": [
+   "competitor packet (BRAND-W04)",
+   "brand brain: category, price tier, product facts"
+  ],
+  "steps": [
+   {
+    "n": 1,
+    "name": "List every rung of the category ladder",
+    "does": "List the category itself, the sub-category, every real product alternative, and doing nothing, as rungs a shopper could pick instead of this brand.",
+    "inputs": [
+     "competitor packet"
+    ],
+    "tools": [],
+    "skill": "brand/category-ladder-and-xy-map",
+    "output": "category ladder",
+    "check": "ladder includes 'doing nothing' as a rung"
+   },
+   {
+    "n": 2,
+    "name": "List the real competitive set",
+    "does": "List every brand or option a shopper would actually compare against, not only the obvious direct rivals.",
+    "inputs": [
+     "competitor packet"
+    ],
+    "tools": [],
+    "skill": "brand/category-ladder-and-xy-map",
+    "output": "competitive set list",
+    "check": "list includes at least one indirect or adjacent-category alternative"
+   },
+   {
+    "n": 3,
+    "name": "Choose the two axes",
+    "does": "Pick two axes that matter to the avatar's actual decision (for example, price versus trust-signal, or craft versus convenience), not two axes that flatter this brand.",
+    "inputs": [
+     "avatar record",
+     "category ladder"
+    ],
+    "tools": [],
+    "skill": "brand/category-ladder-and-xy-map",
+    "output": "axis choice with reasoning",
+    "check": "axes are drawn from what the avatar record says they weigh, not picked to make an empty corner appear"
+   },
+   {
+    "n": 4,
+    "name": "Plot every alternative",
+    "does": "Plot the brand and every real alternative from the competitive set on the two axes, using facts from the competitor packet.",
+    "inputs": [
+     "competitive set list",
+     "axis choice"
+    ],
+    "tools": [
+     "script: xy_map_builder"
+    ],
+    "skill": "brand/category-ladder-and-xy-map",
+    "output": "XY positioning map",
+    "check": "every plotted point cites the fact that placed it there"
+   },
+   {
+    "n": 5,
+    "name": "Identify open corners",
+    "does": "Mark which corners of the map have no occupant, and whether that emptiness means opportunity or means no one wants that combination.",
+    "inputs": [
+     "XY positioning map"
+    ],
+    "tools": [],
+    "skill": "brand/category-ladder-and-xy-map",
+    "output": "open-corner note",
+    "check": "an empty corner is checked against demand evidence before being called an opportunity"
+   },
+   {
+    "n": 6,
+    "name": "File for positioning work",
+    "does": "Hand the ladder and map to BRAND-W10 for the positioning statement.",
+    "inputs": [
+     "category ladder",
+     "XY positioning map",
+     "open-corner note"
+    ],
+    "tools": [],
+    "skill": "shared/registry-entry",
+    "output": "registry entry",
+    "check": "nothing is claimed as positioning yet; this step only maps the field"
+   }
+  ],
+  "outputs": [
+   "category ladder",
+   "competitive set list",
+   "XY positioning map",
+   "open-corner note"
+  ],
+  "qa": [
+   "every plotted point cites a fact",
+   "axes reflect what the avatar actually weighs",
+   "doing nothing is on the ladder"
+  ],
+  "read_point": "refreshed whenever the competitive set changes materially, at minimum once a year.",
+  "typical_duration": "agent time 3-5 hours.",
+  "subagents": []
+ },
+ {
+  "id": "BRAND-W10",
+  "name": "Draft, audit and test the positioning statement",
+  "capabilities": [
+   "BRAND-C20",
+   "BRAND-C21"
+  ],
+  "trigger": "event: new or refreshed positioning, following BRAND-W09",
+  "human_role": "what a strategist does to turn a mapped field into one line a shopper reads and believes",
+  "inputs_required": [
+   "category ladder and XY map (BRAND-W09)",
+   "avatar record",
+   "voice sheet if one exists",
+   "claims tiers (approved / site-backed / forbidden)"
+  ],
+  "steps": [
+   {
+    "n": 1,
+    "name": "Answer the 6 positioning questions in writing",
+    "does": "Write out: for whom, for what category, against what alternative, what benefit, why believe it, why now. No skipping to the tagline first.",
+    "inputs": [
+     "avatar record",
+     "category ladder"
+    ],
+    "tools": [],
+    "skill": "brand/positioning-statement",
+    "output": "written answers to the 6 questions",
+    "check": "every answer traces to the avatar record or a verified fact, not an assertion"
+   },
+   {
+    "n": 2,
+    "name": "Draft the 3-sentence promise",
+    "does": "Write the promise in 3 sentences: the change, the mechanism, the proof.",
+    "inputs": [
+     "written answers"
+    ],
+    "tools": [],
+    "skill": "brand/positioning-statement",
+    "output": "3-sentence promise",
+    "check": "every claim in it passes shared/claim-check against the claims tiers"
+   },
+   {
+    "n": 3,
+    "name": "Cut to the one line",
+    "does": "Cut the promise to the single line a scrolling shopper would actually read and remember.",
+    "inputs": [
+     "3-sentence promise"
+    ],
+    "tools": [],
+    "skill": "brand/positioning-statement",
+    "output": "differentiation line",
+    "check": "line passes the strip test: it fails if a competitor's name could replace this brand's and it would still read true"
+   },
+   {
+    "n": 4,
+    "name": "Run the positioning checklist",
+    "does": "Check the statement against the fixed checklist (clear, ownable, provable, durable, not a disputed stat).",
+    "inputs": [
+     "differentiation line",
+     "promise"
+    ],
+    "tools": [
+     "script: positioning_checklist"
+    ],
+    "skill": "brand/positioning-statement",
+    "output": "checklist pass/fail with notes",
+    "check": "a fail on any item blocks moving forward until fixed"
+   },
+   {
+    "n": 5,
+    "name": "If no open slot exists, search for a creneau or reframe",
+    "does": "When the XY map shows every corner already occupied, search for an unclaimed dimension, take the deliberate against-position, or reframe the category around a shared frustration the avatar already voices.",
+    "inputs": [
+     "XY positioning map",
+     "open-corner note"
+    ],
+    "tools": [
+     "web search"
+    ],
+    "skill": "brand/positioning-statement",
+    "output": "creneau or reframe candidate",
+    "check": "the reframe is grounded in a frustration the avatar record already documents, not invented"
+   },
+   {
+    "n": 6,
+    "name": "Test 2 frames against each other",
+    "does": "Where two credible framings exist, design a small test (message test in an ad, a landing headline split, or an AI-persona pretest) to see which the avatar responds to before committing.",
+    "inputs": [
+     "candidate framings"
+    ],
+    "tools": [],
+    "skill": "brand/ai-persona-pretest",
+    "output": "test design and, once run, a result",
+    "check": "test has a stated read point before it starts"
+   },
+   {
+    "n": 7,
+    "name": "Founder gate",
+    "does": "Present the statement, promise, checklist result and any test result to the founder.",
+    "inputs": [
+     "all prior outputs"
+    ],
+    "tools": [
+     "shared/plain-english-card"
+    ],
+    "skill": "shared/founder-question-round",
+    "output": "founder decision",
+    "check": "card shows the checklist result plainly, pass or fail",
+    "ask_founder_if": "always"
+   },
+   {
+    "n": 8,
+    "name": "Publish",
+    "does": "Write the approved positioning statement to the brand brain identity section.",
+    "inputs": [
+     "founder decision"
+    ],
+    "tools": [
+     "script: brand_brain_writer"
+    ],
+    "skill": "shared/registry-entry",
+    "output": "brand brain update, registry entry",
+    "check": "old positioning is versioned, not deleted"
+   }
+  ],
+  "outputs": [
+   "3-sentence promise",
+   "differentiation line",
+   "checklist result",
+   "positioning statement"
+  ],
+  "qa": [
+   "every claim passes claim-check",
+   "strip test passed",
+   "checklist failures blocked from shipping"
+  ],
+  "read_point": "revisited whenever the competitive set or avatar changes materially.",
+  "typical_duration": "agent time 4-6 hours; founder review 1-3 days; a message test adds 1-2 weeks if run.",
+  "subagents": []
+ },
+ {
+  "id": "BRAND-W11",
+  "name": "Size the market and audit pricing position",
+  "capabilities": [
+   "BRAND-C23",
+   "BRAND-C24"
+  ],
+  "trigger": "event: new niche or product idea | quarterly pricing audit",
+  "human_role": "what an operator does before believing a niche is worth building, and before a price drifts out of position",
+  "inputs_required": [
+   "metric contract: AOV, gross margin, contribution margin, repeat_rate_90d/365d",
+   "candidate niche or product idea, if sizing one",
+   "competitor packet: category price range"
+  ],
+  "steps": [
+   {
+    "n": 1,
+    "name": "Compute repeat buyers needed to sustain the business",
+    "does": "From this store's own AOV and margin, compute how many repeat buyers at what frequency would sustain the business or the candidate line.",
+    "inputs": [
+     "metric contract fields"
+    ],
+    "tools": [
+     "script: market_sizing"
+    ],
+    "skill": "brand/market-sizing",
+    "output": "sustaining-buyer-count figure",
+    "check": "computed in code from real fields; missing fields show as unavailable, not assumed"
+   },
+   {
+    "n": 2,
+    "name": "Check parent market and sub-niche size",
+    "does": "Look for an independent size signal for the category and the specific niche (search volume, subreddit size, marketplace listing count, review-count proxy).",
+    "inputs": [
+     "candidate niche"
+    ],
+    "tools": [
+     "web search"
+    ],
+    "skill": "brand/market-sizing",
+    "output": "independent size signal with source",
+    "check": "signal has a URL and date; a niche with no findable signal is flagged 'unproven,' not sized anyway"
+   },
+   {
+    "n": 3,
+    "name": "Place on the price-by-customer-count matrix",
+    "does": "Place the candidate on a matrix of price point against needed customer count, to see if it is a volume play or a margin play.",
+    "inputs": [
+     "sustaining-buyer-count figure",
+     "size signal"
+    ],
+    "tools": [
+     "script: market_sizing"
+    ],
+    "skill": "brand/market-sizing",
+    "output": "matrix placement",
+    "check": "placement stated as a range, not a false-precise single number"
+   },
+   {
+    "n": 4,
+    "name": "Check current price against the category's learned range",
+    "does": "Compare the brand's live price to the category range found in the competitor packet.",
+    "inputs": [
+     "competitor packet"
+    ],
+    "tools": [
+     "script: pricing_audit"
+    ],
+    "skill": "brand/pricing-audit",
+    "output": "in-range or out-of-range verdict",
+    "check": "verdict states which competitors set the range boundaries"
+   },
+   {
+    "n": 5,
+    "name": "Audit premium signals",
+    "does": "Check whether packaging, page copy, and current discount cadence still support a premium story, if one is claimed.",
+    "inputs": [
+     "brand guidelines, if built",
+     "discount rate from metric contract"
+    ],
+    "tools": [
+     "script: pricing_audit"
+    ],
+    "skill": "brand/pricing-audit",
+    "output": "premium-signal audit note",
+    "check": "a high discount_rate next to a premium claim is flagged explicitly, not smoothed over"
+   },
+   {
+    "n": 6,
+    "name": "Founder gate",
+    "does": "Present sizing and pricing findings together; both are founder_gate decisions.",
+    "inputs": [
+     "all prior outputs"
+    ],
+    "tools": [
+     "shared/plain-english-card"
+    ],
+    "skill": "shared/founder-question-round",
+    "output": "founder decision",
+    "check": "card separates the sizing question from the pricing question clearly",
+    "ask_founder_if": "always"
+   },
+   {
+    "n": 7,
+    "name": "Log the result",
+    "does": "Write the decision and figures to the registry.",
+    "inputs": [
+     "founder decision"
+    ],
+    "tools": [],
+    "skill": "shared/registry-entry",
+    "output": "registry entry",
+    "check": "figures kept alongside the decision for the next quarter's comparison"
+   }
+  ],
+  "outputs": [
+   "sustaining-buyer-count figure",
+   "market sizing memo",
+   "pricing position verdict",
+   "premium-signal audit note"
+  ],
+  "qa": [
+   "all arithmetic in code",
+   "missing inputs marked unavailable, never assumed",
+   "a sizing claim always cites its independent signal"
+  ],
+  "read_point": "market sizing at idea time; pricing audit every quarter.",
+  "typical_duration": "agent time 2-3 hours.",
+  "subagents": []
+ },
+ {
+  "id": "BRAND-W12",
+  "name": "Run a naming project, brand or product",
+  "capabilities": [
+   "BRAND-C25",
+   "BRAND-C26",
+   "BRAND-C27",
+   "BRAND-C28",
+   "BRAND-C29"
+  ],
+  "trigger": "on demand | event: new SKU or collection needs a name",
+  "human_role": "what a naming consultant does from a blank page to a cleared, presentable name",
+  "inputs_required": [
+   "brand brain: category, product facts, target avatar",
+   "target markets and languages for clearance",
+   "scope: full brand name or a lighter product/SKU/collection name"
+  ],
+  "steps": [
+   {
+    "n": 1,
+    "name": "Set the scope",
+    "does": "Decide whether this is a full brand-naming project or a lighter product, SKU or collection name screen. Default to a descriptive, benefit-first title for search where a brand name is not needed.",
+    "inputs": [
+     "request"
+    ],
+    "tools": [],
+    "skill": "brand/name-screening-and-packaging",
+    "output": "scope decision",
+    "check": "scope decision stated before generation starts, so effort matches the stakes"
+   },
+   {
+    "n": 2,
+    "name": "Run the category, product and buyer audit",
+    "does": "Review the category's naming conventions, the product's real attributes, and the avatar's language, so generated names are grounded, not generic.",
+    "inputs": [
+     "brand brain",
+     "avatar record"
+    ],
+    "tools": [],
+    "skill": "brand/naming-candidate-generation",
+    "output": "naming brief",
+    "check": "brief lists what the name must NOT do (no forbidden claim, no confusable-with-competitor sound)"
+   },
+   {
+    "n": 3,
+    "name": "Generate far more candidates than feels necessary",
+    "does": "Generate candidates across all naming types (descriptive, suggestive, invented, founder, evocative) using AI for volume, human judgment applied at review, not at generation.",
+    "inputs": [
+     "naming brief"
+    ],
+    "tools": [
+     "script: name_generator"
+    ],
+    "skill": "brand/naming-candidate-generation",
+    "output": "raw candidate list (50-100+)",
+    "check": "list spans multiple naming types, not one flavor repeated"
+   },
+   {
+    "n": 4,
+    "name": "Screen on the 7 core qualities",
+    "does": "Score every candidate: distinctive, meaningful, memorable, brief, positive, extendable, protectable. Test sound and syllable count out loud. Avoid acronym and generic-name traps.",
+    "inputs": [
+     "raw candidate list"
+    ],
+    "tools": [
+     "script: name_screen"
+    ],
+    "skill": "brand/name-screening-and-packaging",
+    "output": "scored shortlist",
+    "check": "each finalist has all 7 scores shown, not a single overall number"
+   },
+   {
+    "n": 5,
+    "name": "Clear finalists for trademark, domain and language risk",
+    "does": "Search the trademark database and international equivalents, check name + industry-term collisions, check domain and social handle availability, and check meaning and sound in relevant languages (Hindi, and any export-market language).",
+    "inputs": [
+     "scored shortlist"
+    ],
+    "tools": [
+     "script: domain_checker",
+     "web search"
+    ],
+    "skill": "brand/trademark-domain-check",
+    "output": "clearance report per finalist",
+    "check": "every finalist has a status: clear, risk, or needs-legal",
+    "ask_founder_if": "a finalist needs a paid legal opinion or filing"
+   },
+   {
+    "n": 6,
+    "name": "Mock up the finalists",
+    "does": "Present the top 2-3 cleared names in realistic mock-ups (packaging, PDP title, a spoken-aloud test) rather than as a bare word list.",
+    "inputs": [
+     "clearance report"
+    ],
+    "tools": [],
+    "skill": "brand/name-screening-and-packaging",
+    "output": "finalist mock-ups",
+    "check": "mock-ups use the real product photo, not an invented render, where accuracy matters"
+   },
+   {
+    "n": 7,
+    "name": "Write the short story and tagline (full brand names only)",
+    "does": "For a full brand-naming project, write nomenclature notes, a short brand story, and a tagline that passes the strip test.",
+    "inputs": [
+     "finalist choice"
+    ],
+    "tools": [
+     "script: naming_deliverable_builder",
+     "script: strip_test"
+    ],
+    "skill": "brand/name-screening-and-packaging",
+    "output": "naming deliverable",
+    "check": "tagline fails the strip test if a competitor's name could swap in and it would still read true"
+   },
+   {
+    "n": 8,
+    "name": "Founder gate",
+    "does": "Present the finalized name package for founder decision.",
+    "inputs": [
+     "naming deliverable or scored SKU shortlist"
+    ],
+    "tools": [
+     "shared/plain-english-card"
+    ],
+    "skill": "shared/founder-question-round",
+    "output": "founder decision",
+    "check": "card shows clearance status plainly next to the name",
+    "ask_founder_if": "always"
+   },
+   {
+    "n": 9,
+    "name": "Publish",
+    "does": "Log the decision; if approved, write the name into the brand brain or product catalogue as applicable.",
+    "inputs": [
+     "founder decision"
+    ],
+    "tools": [
+     "script: brand_brain_writer"
+    ],
+    "skill": "shared/registry-entry",
+    "output": "registry entry, brand brain or catalogue update",
+    "check": "a rejected name is logged with the reason, not silently reused later"
+   }
+  ],
+  "outputs": [
+   "raw candidate list",
+   "scored shortlist",
+   "clearance report",
+   "naming deliverable or SKU name"
+  ],
+  "qa": [
+   "candidates span multiple naming types",
+   "every finalist has a real clearance status",
+   "tagline passes the strip test"
+  ],
+  "read_point": "not a metric read; naming is a one-time deliverable per project.",
+  "typical_duration": "agent time 1-2 days for a full brand name; 1-2 hours for a SKU/collection name; legal clearance can add 1-2 weeks if a paid opinion is needed.",
+  "subagents": []
+ },
+ {
+  "id": "BRAND-W13",
+  "name": "Decide brand architecture for a new line or market",
+  "capabilities": [
+   "BRAND-C30"
+  ],
+  "trigger": "event: a new product line, category extension or market entry is proposed",
+  "human_role": "what a brand architect decides before a new line ships under a name",
+  "inputs_required": [
+   "proposed new line or market",
+   "current brand equity and guidelines",
+   "avatar overlap between current brand and the new line's likely buyer"
+  ],
+  "steps": [
+   {
+    "n": 1,
+    "name": "Run the teeter-totter test",
+    "does": "Check whether the new line would pull equity away from the parent brand's core meaning if given the master brand name (does adding this make the master brand mean less, not more).",
+    "inputs": [
+     "current positioning statement",
+     "proposed line"
+    ],
+    "tools": [],
+    "skill": null,
+    "output": "teeter-totter verdict",
+    "check": "verdict is written as a specific mechanism, not a feeling"
+   },
+   {
+    "n": 2,
+    "name": "Run the shopping-list test",
+    "does": "Check whether a shopper would naturally put the new line on the same mental shopping list as the current brand, or whether it reads as a different errand entirely.",
+    "inputs": [
+     "avatar record",
+     "proposed line"
+    ],
+    "tools": [],
+    "skill": null,
+    "output": "shopping-list verdict",
+    "check": "verdict names the specific shopper behavior it is based on"
+   },
+   {
+    "n": 3,
+    "name": "Check avatar overlap",
+    "does": "Compare the new line's likely buyer against the current primary avatar for real overlap, not assumed overlap.",
+    "inputs": [
+     "avatar records"
+    ],
+    "tools": [],
+    "skill": null,
+    "output": "overlap read",
+    "check": "overlap stated as high, partial or low, with the evidence"
+   },
+   {
+    "n": 4,
+    "name": "Default to one master brand for a small brand",
+    "does": "Unless a real reason surfaces in steps 1-3 (equity dilution risk, no shopping-list overlap, real reputational separation needed), recommend the master-brand name over a new name, since a small brand cannot afford to build two names.",
+    "inputs": [
+     "all prior verdicts"
+    ],
+    "tools": [
+     "script: brand_architecture_checklist"
+    ],
+    "skill": null,
+    "output": "architecture recommendation (master brand vs new name)",
+    "check": "a 'new name' recommendation must name the specific reason the default was overridden"
+   },
+   {
+    "n": 5,
+    "name": "Route naming if a new name is warranted",
+    "does": "If a new name is recommended, hand off to BRAND-W12 for the naming project.",
+    "inputs": [
+     "architecture recommendation"
+    ],
+    "tools": [],
+    "skill": null,
+    "output": "routing note",
+    "check": "routing happens only after the architecture decision, never before it"
+   },
+   {
+    "n": 6,
+    "name": "Founder gate",
+    "does": "Present the recommendation and reasoning to the founder.",
+    "inputs": [
+     "architecture recommendation"
+    ],
+    "tools": [
+     "shared/plain-english-card"
+    ],
+    "skill": "shared/founder-question-round",
+    "output": "founder decision",
+    "check": "card states the default and why it was or was not overridden",
+    "ask_founder_if": "always"
+   },
+   {
+    "n": 7,
+    "name": "Log the decision",
+    "does": "Write the decision and reasoning to the registry and brand brain.",
+    "inputs": [
+     "founder decision"
+    ],
+    "tools": [
+     "script: brand_brain_writer"
+    ],
+    "skill": "shared/registry-entry",
+    "output": "registry entry, brand brain update",
+    "check": "reasoning is kept, not just the yes/no outcome"
+   }
+  ],
+  "outputs": [
+   "teeter-totter verdict",
+   "shopping-list verdict",
+   "architecture recommendation",
+   "registry entry"
+  ],
+  "qa": [
+   "default to one master brand unless a named reason overrides it",
+   "every verdict is a specific mechanism, not a feeling"
+  ],
+  "read_point": "not a metric read; a one-time architecture decision per new line or market.",
+  "typical_duration": "agent time 2-3 hours; founder review 1-3 days.",
+  "subagents": []
+ },
+ {
+  "id": "BRAND-W14",
+  "name": "Draft the brand story, voice sheet and promise",
+  "capabilities": [
+   "BRAND-C31",
+   "BRAND-C32",
+   "BRAND-C34"
+  ],
+  "trigger": "on demand | event: new brand, voice drift found, or a new promise/tagline is needed",
+  "human_role": "what a brand writer does to give every future writer and model a stable voice to sound like",
+  "inputs_required": [
+   "founder's vision and values, in their own words",
+   "real customer understanding (avatar record)",
+   "Kevin's liked and disliked copy examples"
+  ],
+  "steps": [
+   {
+    "n": 1,
+    "name": "Draft the founder or brand story",
+    "does": "Write the story in a self, us, now structure: who the founder is, what the shared struggle with the customer is, why this matters right now. Keep it stable for years, not campaign-specific.",
+    "inputs": [
+     "founder's own account",
+     "avatar record"
+    ],
+    "tools": [
+     "script: story_structure_template"
+    ],
+    "skill": "brand/brand-story-and-promise",
+    "output": "draft brand story",
+    "check": "story contains no invented biographical fact; founder confirms every detail"
+   },
+   {
+    "n": 2,
+    "name": "Set a default voice if none exists",
+    "does": "If no voice sheet exists yet, set a plain, direct default voice (short sentences, no jargon, digits not words) so copy work is not blocked while the real sheet is built.",
+    "inputs": [
+     "writing rules"
+    ],
+    "tools": [],
+    "skill": "brand/voice-sheet-builder",
+    "output": "default voice note",
+    "check": "clearly marked 'default, not final'"
+   },
+   {
+    "n": 3,
+    "name": "Collect liked and disliked examples",
+    "does": "Gather Kevin's liked and disliked copy examples from past work, real or reference.",
+    "inputs": [
+     "past copy, founder notes"
+    ],
+    "tools": [],
+    "skill": "brand/voice-sheet-builder",
+    "output": "example set",
+    "check": "every example is real, sourced copy, not invented for the exercise"
+   },
+   {
+    "n": 4,
+    "name": "Derive 4-8 voice traits",
+    "does": "From the examples, derive 4-8 traits, each with a liked example, a disliked example, and a one-line rule.",
+    "inputs": [
+     "example set"
+    ],
+    "tools": [
+     "script: voice_sheet_builder"
+    ],
+    "skill": "brand/voice-sheet-builder",
+    "output": "voice and tone sheet (short + full versions)",
+    "check": "every trait has both a real liked and a real disliked example"
+   },
+   {
+    "n": 5,
+    "name": "Draft the 3-sentence promise and tagline candidates",
+    "does": "Write the promise (change, mechanism, proof) and 3-5 tagline candidates.",
+    "inputs": [
+     "positioning statement if one exists",
+     "brand story"
+    ],
+    "tools": [],
+    "skill": "brand/brand-story-and-promise",
+    "output": "promise, tagline candidates",
+    "check": "every claim in the promise passes shared/claim-check"
+   },
+   {
+    "n": 6,
+    "name": "Run the strip test",
+    "does": "Cut candidates that would still read true with a competitor's name swapped in.",
+    "inputs": [
+     "tagline candidates"
+    ],
+    "tools": [
+     "script: strip_test"
+    ],
+    "skill": "brand/brand-story-and-promise",
+    "output": "surviving tagline candidates",
+    "check": "at least one candidate is ownable and specific to this brand"
+   },
+   {
+    "n": 7,
+    "name": "Design a recall test, if a signature line is being chosen",
+    "does": "For a candidate meant to become a signature line, design a small recall-based test (does the shopper remember it after seeing an ad or page once).",
+    "inputs": [
+     "surviving candidates"
+    ],
+    "tools": [],
+    "skill": "brand/ai-persona-pretest",
+    "output": "test design and, once run, a recall result",
+    "check": "test has a stated read point before it runs"
+   },
+   {
+    "n": 8,
+    "name": "Founder gate",
+    "does": "Present story, voice sheet and promise/tagline together for founder approval.",
+    "inputs": [
+     "all prior outputs"
+    ],
+    "tools": [
+     "shared/plain-english-card"
+    ],
+    "skill": "shared/founder-question-round",
+    "output": "founder decision",
+    "check": "card separates the three deliverables so each can be approved or sent back independently",
+    "ask_founder_if": "always"
+   },
+   {
+    "n": 9,
+    "name": "Publish",
+    "does": "Write approved pieces to the brand brain identity section.",
+    "inputs": [
+     "founder decision"
+    ],
+    "tools": [
+     "script: brand_brain_writer"
+    ],
+    "skill": "shared/registry-entry",
+    "output": "brand brain update, registry entry",
+    "check": "a default voice is replaced, not left stacked alongside the real one"
+   }
+  ],
+  "outputs": [
+   "brand story",
+   "voice and tone sheet",
+   "promise",
+   "tagline"
+  ],
+  "qa": [
+   "every voice trait has real liked/disliked examples",
+   "every promise claim passes claim-check",
+   "tagline passes the strip test"
+  ],
+  "read_point": "voice sheet re-checked whenever drift is found in the consistency audit (BRAND-W17).",
+  "typical_duration": "agent time 4-8 hours; founder review 2-4 days.",
+  "subagents": []
+ },
+ {
+  "id": "BRAND-W15",
+  "name": "Build a messaging hierarchy for a page or channel",
+  "capabilities": [
+   "BRAND-C33"
+  ],
+  "trigger": "event: new campaign, page, or channel needs a message stack",
+  "human_role": "what a messaging strategist writes so every asset on a page or channel leads with the same one idea",
+  "inputs_required": [
+   "positioning statement",
+   "avatar record and objection map",
+   "the specific page or channel type (homepage, PDP, email, ads)"
+  ],
+  "steps": [
+   {
+    "n": 1,
+    "name": "Name the one big idea",
+    "does": "State the single idea this page or channel must lead with, drawn from the positioning statement, not invented fresh.",
+    "inputs": [
+     "positioning statement"
+    ],
+    "tools": [],
+    "skill": "brand/messaging-hierarchy-builder",
+    "output": "big idea line",
+    "check": "big idea traces directly to the approved positioning statement"
+   },
+   {
+    "n": 2,
+    "name": "Rank up to 3 supporting messages",
+    "does": "Pull the strongest supporting messages from the objection map and avatar record, ranked by how much friction each removes.",
+    "inputs": [
+     "objection map"
+    ],
+    "tools": [],
+    "skill": "brand/messaging-hierarchy-builder",
+    "output": "ranked supporting messages",
+    "check": "each supporting message maps to a specific objection or force"
+   },
+   {
+    "n": 3,
+    "name": "Fit the stack to the page type",
+    "does": "Adjust order and depth for the page or channel: homepage leads broad, PDP leads with the objection most likely at that SKU's price point, email leads with the relationship stage, ads lead with the hook.",
+    "inputs": [
+     "page/channel type"
+    ],
+    "tools": [],
+    "skill": "brand/messaging-hierarchy-builder",
+    "output": "page-fitted message stack",
+    "check": "stack respects the writing rules: short sentences, digits, no em dashes"
+   },
+   {
+    "n": 4,
+    "name": "Claim-check the stack",
+    "does": "Run every message through claim-check against the claims tiers.",
+    "inputs": [
+     "page-fitted message stack"
+    ],
+    "tools": [],
+    "skill": "shared/claim-check",
+    "output": "pass/fail per message with fixes",
+    "check": "no message ships with an untraced or forbidden claim"
+   },
+   {
+    "n": 5,
+    "name": "Hand off to the executing specialist",
+    "does": "Route the finished hierarchy to the Site specialist (page) or Paid Creative/Copy specialist (ad, email) to execute; this agent never writes the final page or ad itself.",
+    "inputs": [
+     "claim-checked stack"
+    ],
+    "tools": [],
+    "skill": null,
+    "output": "handoff packet",
+    "check": "packet is a message stack, not a finished draft, respecting the ownership boundary"
+   },
+   {
+    "n": 6,
+    "name": "Log the hierarchy",
+    "does": "File the approved hierarchy to the registry so future briefs for this page/channel reuse it instead of drifting.",
+    "inputs": [
+     "handoff packet"
+    ],
+    "tools": [],
+    "skill": "shared/registry-entry",
+    "output": "registry entry",
+    "check": "hierarchy is retrievable by page/channel type for reuse"
+   }
+  ],
+  "outputs": [
+   "big idea line",
+   "ranked supporting messages",
+   "page-fitted message stack"
+  ],
+  "qa": [
+   "big idea traces to positioning",
+   "every message passes claim-check",
+   "stack respects the writing rules"
+  ],
+  "read_point": "not a metric read; re-run when positioning or the avatar changes, or a page underperforms.",
+  "typical_duration": "agent time 1-2 hours per page/channel.",
+  "subagents": []
+ },
+ {
+  "id": "BRAND-W16",
+  "name": "Brief visual identity and assemble the brand guidelines document",
+  "capabilities": [
+   "BRAND-C35",
+   "BRAND-C36"
+  ],
+  "trigger": "event: new brand or a major identity refresh",
+  "human_role": "what a brand designer's creative director briefs before a designer ever opens a file",
+  "inputs_required": [
+   "positioning statement",
+   "voice and tone sheet",
+   "avatar record (aesthetic preferences, price-tier expectations)"
+  ],
+  "steps": [
+   {
+    "n": 1,
+    "name": "Write the mood and reference direction",
+    "does": "Describe the intended mood, palette, typography and photography direction in words and referenced mood only. This agent never generates the final visual assets.",
+    "inputs": [
+     "positioning statement",
+     "avatar record"
+    ],
+    "tools": [],
+    "skill": "brand/identity-brief-builder",
+    "output": "identity direction brief",
+    "check": "brief is words and mood references, no invented final logo or asset"
+   },
+   {
+    "n": 2,
+    "name": "Hand the reference pull to the Reference Scout",
+    "does": "Route the mood brief to the Reference Scout for real, mood-only visual references, never competitor logos or product photos to copy.",
+    "inputs": [
+     "identity direction brief"
+    ],
+    "tools": [],
+    "skill": null,
+    "output": "reference set",
+    "check": "references are for layout and mood only, never copied",
+    "subagent": "Reference Scout"
+   },
+   {
+    "n": 3,
+    "name": "Draft logo and mark rules",
+    "does": "Write the rules for logo clear space, minimum size, and misuse examples, once a mark exists.",
+    "inputs": [
+     "identity direction brief",
+     "reference set"
+    ],
+    "tools": [],
+    "skill": "brand/brand-guidelines-builder",
+    "output": "logo and mark rules section",
+    "check": "rules include at least 3 concrete misuse examples"
+   },
+   {
+    "n": 4,
+    "name": "Assemble visual language section",
+    "does": "Package palette, typography and photography direction into the visual language section.",
+    "inputs": [
+     "identity direction brief",
+     "reference set"
+    ],
+    "tools": [
+     "script: identity_brief_builder"
+    ],
+    "skill": "brand/brand-guidelines-builder",
+    "output": "visual language section",
+    "check": "every color and font choice ties back to the mood brief's reasoning"
+   },
+   {
+    "n": 5,
+    "name": "Assemble language rules section",
+    "does": "Fold in the voice and tone sheet as the language rules section.",
+    "inputs": [
+     "voice and tone sheet"
+    ],
+    "tools": [],
+    "skill": "brand/brand-guidelines-builder",
+    "output": "language rules section",
+    "check": "section is the actual voice sheet, not a rewritten summary of it"
+   },
+   {
+    "n": 6,
+    "name": "Build the expressions section",
+    "does": "Show 3-5 applied examples (a PDP header, an email, an ad) demonstrating the rules together.",
+    "inputs": [
+     "language rules",
+     "visual language"
+    ],
+    "tools": [
+     "script: brand_guidelines_builder"
+    ],
+    "skill": "brand/brand-guidelines-builder",
+    "output": "expressions section",
+    "check": "every applied example passes claim-check and the writing rules"
+   },
+   {
+    "n": 7,
+    "name": "Run the completeness checklist",
+    "does": "Check the 4 parts (mark rules, visual language, language rules, expressions) are all present before calling the document done.",
+    "inputs": [
+     "all sections"
+    ],
+    "tools": [
+     "script: brand_guidelines_builder"
+    ],
+    "skill": "brand/brand-guidelines-builder",
+    "output": "completeness checklist result",
+    "check": "a missing part blocks publishing, it does not ship as 'to be added later'"
+   },
+   {
+    "n": 8,
+    "name": "Founder gate",
+    "does": "Present the assembled guidelines document for founder approval.",
+    "inputs": [
+     "completeness checklist result"
+    ],
+    "tools": [
+     "shared/plain-english-card"
+    ],
+    "skill": "shared/founder-question-round",
+    "output": "founder decision",
+    "check": "card shows the checklist result plainly",
+    "ask_founder_if": "always"
+   },
+   {
+    "n": 9,
+    "name": "Publish",
+    "does": "Write the approved guidelines to the brand brain and file the document.",
+    "inputs": [
+     "founder decision"
+    ],
+    "tools": [
+     "script: brand_brain_writer"
+    ],
+    "skill": "shared/registry-entry",
+    "output": "brand brain update, registry entry",
+    "check": "prior guidelines version is kept in history"
+   }
+  ],
+  "outputs": [
+   "identity direction brief",
+   "reference set",
+   "brand guidelines document"
+  ],
+  "qa": [
+   "mood only, nothing copied",
+   "all 4 parts present before publishing",
+   "every applied example passes claim-check"
+  ],
+  "read_point": "revisited at a major refresh; drift is caught monthly by BRAND-W17 in between.",
+  "typical_duration": "agent time 1-2 days; Reference Scout turnaround adds hours; founder review 2-5 days.",
+  "subagents": [
+   "Reference Scout pulls mood-only visual references"
+  ]
+ },
+ {
+  "id": "BRAND-W17",
+  "name": "Audit brand consistency and diagnose the perception gap",
+  "capabilities": [
+   "BRAND-C37",
+   "BRAND-C59"
+  ],
+  "trigger": "scheduled monthly (consistency) | quarterly, run together with the perception-gap pass",
+  "human_role": "what a brand manager does walking the live brand against its own rulebook, then checking the rulebook against reality",
+  "inputs_required": [
+   "brand guidelines document",
+   "voice and tone sheet",
+   "live site, ad and email surfaces",
+   "recent reviews, social mentions and survey results"
+  ],
+  "steps": [
+   {
+    "n": 1,
+    "name": "Walk the site against guidelines",
+    "does": "Crawl key site pages (home, PDP, checkout) and check against logo rules, visual language and voice.",
+    "inputs": [
+     "brand guidelines"
+    ],
+    "tools": [
+     "browser: headless chromium"
+    ],
+    "skill": "brand/brand-consistency-audit",
+    "output": "site drift list",
+    "check": "every drift item cites the specific rule it breaks"
+   },
+   {
+    "n": 2,
+    "name": "Walk live ads and email against guidelines",
+    "does": "Check current live ad creative and recent email/SMS sends against the same rules.",
+    "inputs": [
+     "brand guidelines"
+    ],
+    "tools": [
+     "mcp: ads_library_search"
+    ],
+    "skill": "brand/brand-consistency-audit",
+    "output": "ads/email drift list",
+    "check": "read-only check; no ad account write attempted"
+   },
+   {
+    "n": 3,
+    "name": "Score drift severity",
+    "does": "Rank each drift item by how visible and how far from the rule it is.",
+    "inputs": [
+     "drift lists"
+    ],
+    "tools": [],
+    "skill": "brand/brand-consistency-audit",
+    "output": "ranked drift list",
+    "check": "ranking is computed from visibility and distance, not gut feel"
+   },
+   {
+    "n": 4,
+    "name": "Compare stated identity to what customers actually say",
+    "does": "Compare the positioning statement, voice sheet and claims against what reviews, social mentions and survey results actually say about the brand.",
+    "inputs": [
+     "positioning statement",
+     "recent reviews and mentions"
+    ],
+    "tools": [
+     "script: text_clustering"
+    ],
+    "skill": "brand/brand-consistency-audit",
+    "output": "perception-gap note",
+    "check": "gap note quotes real customer language, not a paraphrase"
+   },
+   {
+    "n": 5,
+    "name": "Name the gap type",
+    "does": "Classify each gap as the brand under-claiming (customers already believe more than the brand says) or over-claiming (customers do not believe what the brand says).",
+    "inputs": [
+     "perception-gap note"
+    ],
+    "tools": [],
+    "skill": "brand/brand-consistency-audit",
+    "output": "classified gap list",
+    "check": "an over-claim gap is flagged as higher priority than an under-claim"
+   },
+   {
+    "n": 6,
+    "name": "Draft fixes",
+    "does": "For each drift or gap item, draft a specific fix (a page change, an ad note, a wording change) sized to what can actually be done.",
+    "inputs": [
+     "ranked drift list",
+     "classified gap list"
+    ],
+    "tools": [],
+    "skill": "brand/brand-consistency-audit",
+    "output": "fix list",
+    "check": "every fix names the owning specialist (Site, Media, Creative) for execution"
+   },
+   {
+    "n": 7,
+    "name": "Founder gate on any identity-level fix",
+    "does": "A fix that changes the voice sheet, positioning or guidelines themselves needs founder approval; a fix that is just correcting a live asset to match existing rules does not.",
+    "inputs": [
+     "fix list"
+    ],
+    "tools": [
+     "shared/plain-english-card"
+    ],
+    "skill": "shared/founder-question-round",
+    "output": "founder decision where needed",
+    "check": "only identity-level fixes are gated; routine corrections are not held up",
+    "ask_founder_if": "a fix would change the guidelines or positioning themselves"
+   },
+   {
+    "n": 8,
+    "name": "Route and log",
+    "does": "Send routine fixes directly to the owning specialist; log identity-level fixes to the registry with the founder's decision.",
+    "inputs": [
+     "founder decision or fix list"
+    ],
+    "tools": [],
+    "skill": "shared/registry-entry",
+    "output": "registry entry, routed fixes",
+    "check": "every fix is tracked to a closing status next month, not dropped"
+   }
+  ],
+  "outputs": [
+   "site drift list",
+   "ads/email drift list",
+   "perception-gap note",
+   "fix list"
+  ],
+  "qa": [
+   "every drift cites the specific rule broken",
+   "gap note quotes real customer language",
+   "over-claim gaps prioritized over under-claim"
+  ],
+  "read_point": "monthly for drift; quarterly for the perception-gap comparison.",
+  "typical_duration": "agent time 3-5 hours.",
+  "subagents": []
+ },
+ {
+  "id": "BRAND-W18",
+  "name": "Track brand health signals",
+  "capabilities": [
+   "BRAND-C48"
+  ],
+  "trigger": "scheduled monthly",
+  "human_role": "what a brand manager tracks separately from any single campaign's performance",
+  "inputs_required": [
+   "connector: Google Search Console (branded search volume)",
+   "review rating and count over time",
+   "social mention data, where collectable"
+  ],
+  "steps": [
+   {
+    "n": 1,
+    "name": "Pull branded search volume",
+    "does": "Pull branded search query volume and trend from Search Console.",
+    "inputs": [
+     "connector: Google Search Console"
+    ],
+    "tools": [
+     "connector: Google Search Console"
+    ],
+    "skill": "brand/brand-health-tracking",
+    "output": "branded search trend",
+    "check": "trend covers a rolling 12 months where available; missing months marked unavailable"
+   },
+   {
+    "n": 2,
+    "name": "Pull review rating and count trend",
+    "does": "Track review_rating and review_count over time from the metric contract.",
+    "inputs": [
+     "metric contract"
+    ],
+    "tools": [
+     "script: metric_read"
+    ],
+    "skill": "brand/brand-health-tracking",
+    "output": "review trend line",
+    "check": "computed in code from the contract, not estimated"
+   },
+   {
+    "n": 3,
+    "name": "Pull mention and sentiment signal, where available",
+    "does": "Check for any collectable public mention or sentiment data; if no source exists yet, mark this field unavailable rather than guessing a sentiment score.",
+    "inputs": [
+     "public web, if a source exists"
+    ],
+    "tools": [
+     "web search"
+    ],
+    "skill": "brand/brand-health-tracking",
+    "output": "mention/sentiment note or 'unavailable' flag",
+    "check": "never fabricates a sentiment score with no real source behind it"
+   },
+   {
+    "n": 4,
+    "name": "Track repeat behavior trend",
+    "does": "Pull repeat_rate_90d and repeat_rate_365d trend from the metric contract as a brand-strength proxy, separate from any one campaign.",
+    "inputs": [
+     "metric contract"
+    ],
+    "tools": [
+     "script: metric_read"
+    ],
+    "skill": "brand/brand-health-tracking",
+    "output": "repeat behavior trend",
+    "check": "kept separate from campaign-level ROAS reporting"
+   },
+   {
+    "n": 5,
+    "name": "Assemble the brand health line",
+    "does": "Combine branded search, review trend, mention signal and repeat trend into one dated brand health line.",
+    "inputs": [
+     "all prior outputs"
+    ],
+    "tools": [
+     "script: report_section"
+    ],
+    "skill": "brand/brand-health-tracking",
+    "output": "brand health report",
+    "check": "each series shows its own freshness date, not one blended 'as of' date"
+   },
+   {
+    "n": 6,
+    "name": "Flag material moves",
+    "does": "Flag any series that moved more than a set threshold since last month for founder attention.",
+    "inputs": [
+     "brand health report"
+    ],
+    "tools": [],
+    "skill": "brand/brand-health-tracking",
+    "output": "flagged moves list",
+    "check": "threshold is stated, not a subjective 'looks different'"
+   },
+   {
+    "n": 7,
+    "name": "File the report",
+    "does": "Log the report to the registry and the monthly review.",
+    "inputs": [
+     "brand health report"
+    ],
+    "tools": [],
+    "skill": "shared/report-section",
+    "output": "registry entry",
+    "check": "report is retrievable month over month for trend comparison"
+   }
+  ],
+  "outputs": [
+   "branded search trend",
+   "review trend line",
+   "brand health report"
+  ],
+  "qa": [
+   "missing data marked unavailable, never zero",
+   "every series dated",
+   "no fabricated sentiment score"
+  ],
+  "read_point": "monthly, trend read over a rolling 12 months where data exists.",
+  "typical_duration": "agent time 1-2 hours.",
+  "subagents": []
+ },
+ {
+  "id": "BRAND-W19",
+  "name": "Design community and loyalty cohorts for advocacy",
+  "capabilities": [
+   "BRAND-C39"
+  ],
+  "trigger": "on demand",
+  "human_role": "what a community lead designs before inviting anyone into an exclusive group",
+  "inputs_required": [
+   "avatar record",
+   "current top advocates (from reviews, repeat purchase, social mentions)",
+   "brand brain: values and story"
+  ],
+  "steps": [
+   {
+    "n": 1,
+    "name": "Define who counts as 'us' precisely",
+    "does": "Write the specific, checkable criteria for belonging to the cohort (a purchase count, a referral made, a value shared publicly), not a vague 'our best customers.'",
+    "inputs": [
+     "avatar record"
+    ],
+    "tools": [],
+    "skill": "brand/community-cohort-design",
+    "output": "membership criteria",
+    "check": "criteria are checkable against real data, not self-declared"
+   },
+   {
+    "n": 2,
+    "name": "Identify who already advocates",
+    "does": "Pull customers who already advocate unprompted (unsolicited reviews, repeat referrals, organic social mentions) as the seed group.",
+    "inputs": [
+     "reviews, social mentions, referral data"
+    ],
+    "tools": [
+     "script: text_clustering"
+    ],
+    "skill": "brand/community-cohort-design",
+    "output": "seed advocate list",
+    "check": "list is built from real behavior, not assumed loyalty"
+   },
+   {
+    "n": 3,
+    "name": "Design what the group controls",
+    "does": "Design one real thing the cohort controls or gets first (early access, a say in a product decision, a named recognition), sized to what the brand can actually deliver.",
+    "inputs": [
+     "brand capacity"
+    ],
+    "tools": [],
+    "skill": "brand/community-cohort-design",
+    "output": "cohort privilege design",
+    "check": "privilege is something the brand can sustain past the launch month"
+   },
+   {
+    "n": 4,
+    "name": "Draft the invitation and rules",
+    "does": "Draft how members are invited, what is expected of them, and how membership could be lost.",
+    "inputs": [
+     "membership criteria",
+     "cohort privilege design"
+    ],
+    "tools": [],
+    "skill": "brand/community-cohort-design",
+    "output": "invitation and rules draft",
+    "check": "rules for losing membership are as clear as rules for gaining it"
+   },
+   {
+    "n": 5,
+    "name": "Founder gate",
+    "does": "Present the cohort design for founder approval before any invitation goes out.",
+    "inputs": [
+     "invitation and rules draft"
+    ],
+    "tools": [
+     "shared/plain-english-card"
+    ],
+    "skill": "shared/founder-question-round",
+    "output": "founder decision",
+    "check": "card states the ongoing cost of running this cohort, not just the launch cost",
+    "ask_founder_if": "always"
+   },
+   {
+    "n": 6,
+    "name": "Route execution",
+    "does": "Hand approved invitation copy to the email/SMS platform for the founder or Lifecycle specialist to send.",
+    "inputs": [
+     "founder decision"
+    ],
+    "tools": [
+     "connector: email/SMS platform"
+    ],
+    "skill": null,
+    "output": "handoff packet",
+    "check": "this agent drafts only; it does not send"
+   },
+   {
+    "n": 7,
+    "name": "Log for scale-up tracking",
+    "does": "Log the cohort design to the registry so a proven cohort can be handed to the Lifecycle specialist to run at scale.",
+    "inputs": [
+     "founder decision"
+    ],
+    "tools": [],
+    "skill": "shared/registry-entry",
+    "output": "registry entry",
+    "check": "handoff point to Lifecycle is named explicitly"
+   }
+  ],
+  "outputs": [
+   "membership criteria",
+   "seed advocate list",
+   "cohort privilege design",
+   "invitation and rules draft"
+  ],
+  "qa": [
+   "membership criteria checkable, not self-declared",
+   "losing-membership rules as clear as gaining them"
+  ],
+  "read_point": "not a metric read; reviewed once the cohort is live for whether the design is sustainable.",
+  "typical_duration": "agent time 3-5 hours; founder review 2-4 days.",
+  "subagents": []
+ },
+ {
+  "id": "BRAND-W20",
+  "name": "Operate the ambassador and community advocacy program",
+  "capabilities": [
+   "BRAND-C55"
+  ],
+  "trigger": "scheduled weekly, once a program is approved",
+  "human_role": "what a community manager does every week to run an approved ambassador program",
+  "inputs_required": [
+   "approved ambassador program design (from BRAND-W19 or an earlier program)",
+   "applicant list",
+   "brand guidelines and voice sheet"
+  ],
+  "steps": [
+   {
+    "n": 1,
+    "name": "Screen new applicants",
+    "does": "Check new applicants against the program's membership criteria.",
+    "inputs": [
+     "applicant list",
+     "membership criteria"
+    ],
+    "tools": [],
+    "skill": "brand/ambassador-program-ops",
+    "output": "screened applicant list",
+    "check": "screening applies the same criteria to every applicant, no exceptions without a founder note"
+   },
+   {
+    "n": 2,
+    "name": "Run a reputation check on new ambassadors",
+    "does": "Run a public reputation and controversy check on any new ambassador before onboarding.",
+    "inputs": [
+     "screened applicant list"
+    ],
+    "tools": [
+     "web search"
+    ],
+    "skill": "brand/partnership-screen",
+    "output": "reputation check result",
+    "check": "a flagged applicant is routed to founder review before onboarding",
+    "ask_founder_if": "a reputation flag is found"
+   },
+   {
+    "n": 3,
+    "name": "Assign tasks",
+    "does": "Assign this week's content or advocacy tasks to active ambassadors, matched to what each one does well.",
+    "inputs": [
+     "active ambassador list"
+    ],
+    "tools": [],
+    "skill": "brand/ambassador-program-ops",
+    "output": "task assignments",
+    "check": "no ambassador is assigned a task requiring a claim outside the approved tiers"
+   },
+   {
+    "n": 4,
+    "name": "Check submitted content against guidelines",
+    "does": "Review submitted content against the brand guidelines and voice sheet before it is approved for reward or reposting.",
+    "inputs": [
+     "submitted content"
+    ],
+    "tools": [
+     "shared/claim-check"
+    ],
+    "skill": "brand/ambassador-program-ops",
+    "output": "approved/rejected content list",
+    "check": "rejected content gets a specific, usable reason"
+   },
+   {
+    "n": 5,
+    "name": "Track rewards owed",
+    "does": "Track what each ambassador is owed (discount, product, payment) against what they delivered.",
+    "inputs": [
+     "approved content list",
+     "reward schedule"
+    ],
+    "tools": [
+     "script: market_sizing"
+    ],
+    "skill": "brand/ambassador-program-ops",
+    "output": "rewards ledger",
+    "check": "ledger computed in code, checked against the program's budget cap"
+   },
+   {
+    "n": 6,
+    "name": "Flag budget or capacity issues",
+    "does": "Flag if the program is approaching its budget cap or if the team cannot keep up with volume.",
+    "inputs": [
+     "rewards ledger"
+    ],
+    "tools": [
+     "script: budget.py"
+    ],
+    "skill": "brand/ambassador-program-ops",
+    "output": "capacity flag",
+    "check": "flag raised before the cap is hit, not after",
+    "ask_founder_if": "the program is within 10% of its budget cap"
+   },
+   {
+    "n": 7,
+    "name": "Weekly log",
+    "does": "Log the week's activity, approvals, rejections and rewards to the registry.",
+    "inputs": [
+     "all prior outputs"
+    ],
+    "tools": [],
+    "skill": "shared/registry-entry",
+    "output": "registry entry",
+    "check": "log is retrievable week over week for a program health trend"
+   }
+  ],
+  "outputs": [
+   "screened applicant list",
+   "task assignments",
+   "approved content list",
+   "rewards ledger"
+  ],
+  "qa": [
+   "screening criteria applied consistently",
+   "rewards computed in code against a real budget cap",
+   "reputation check run on every new ambassador"
+  ],
+  "read_point": "weekly operational log; program health reviewed monthly against BRAND-W19's original design.",
+  "typical_duration": "agent time 2-4 hours per week.",
+  "subagents": []
+ },
+ {
+  "id": "BRAND-W21",
+  "name": "Develop a PR angle, build the media list and source earned media",
+  "capabilities": [
+   "BRAND-C40",
+   "BRAND-C53",
+   "BRAND-C60",
+   "BRAND-C61"
+  ],
+  "trigger": "event: a launch or newsworthy moment | monthly sweep for thought-leadership and awards",
+  "human_role": "what a PR manager does from a brand fact to a pitched, placed story",
+  "inputs_required": [
+   "brand story and positioning",
+   "a specific launch, newsworthy moment, or founder expertise area",
+   "target media tier (trade press, mainstream, niche community)"
+  ],
+  "steps": [
+   {
+    "n": 1,
+    "name": "Find the pitchable angle",
+    "does": "Turn the brand story, a category frustration, or an origin fact into a pitchable press angle, not a product announcement.",
+    "inputs": [
+     "brand story",
+     "positioning statement"
+    ],
+    "tools": [],
+    "skill": "brand/pr-angle-builder",
+    "output": "pitch angle",
+    "check": "angle is newsworthy to a journalist, not just interesting to the founder"
+   },
+   {
+    "n": 2,
+    "name": "Decide the earned-media lane",
+    "does": "Decide whether this moment fits a press pitch, a founder thought-leadership placement, or an awards/best-of submission, since each needs a different list and pitch.",
+    "inputs": [
+     "pitch angle"
+    ],
+    "tools": [],
+    "skill": "brand/earned-media-sourcing",
+    "output": "lane decision",
+    "check": "lane decision states why the other two lanes do not fit better this time"
+   },
+   {
+    "n": 3,
+    "name": "Build the media list (press lane)",
+    "does": "Search for journalists and outlets whose beat matches this specific angle, verified as currently active on that beat.",
+    "inputs": [
+     "pitch angle"
+    ],
+    "tools": [
+     "web search"
+    ],
+    "skill": "brand/media-list-builder",
+    "output": "verified, beat-matched media list",
+    "check": "every contact's beat match is checked against their recent bylines, not an old media database entry"
+   },
+   {
+    "n": 4,
+    "name": "Source thought-leadership slots (if that lane)",
+    "does": "Find podcasts, panels, and bylined-article slots that fit the founder's actual expertise and the brand's story.",
+    "inputs": [
+     "founder expertise notes"
+    ],
+    "tools": [
+     "web search"
+    ],
+    "skill": "brand/earned-media-sourcing",
+    "output": "thought-leadership opportunity list",
+    "check": "every opportunity matches a real, demonstrable area of founder expertise"
+   },
+   {
+    "n": 5,
+    "name": "Track award and best-of calls (if that lane)",
+    "does": "Track industry awards and best-of list calls the brand qualifies for.",
+    "inputs": [
+     "category, brand facts"
+    ],
+    "tools": [
+     "web search"
+    ],
+    "skill": "brand/earned-media-sourcing",
+    "output": "award call tracker",
+    "check": "only calls the brand actually qualifies for are shortlisted"
+   },
+   {
+    "n": 6,
+    "name": "Seed through a few respected insiders, if applicable",
+    "does": "For a launch, consider seeding through a few respected insiders in a high-trust community before a broad press push.",
+    "inputs": [
+     "media list"
+    ],
+    "tools": [],
+    "skill": "brand/pr-angle-builder",
+    "output": "seed-list note",
+    "check": "insiders are chosen for real relevance to the avatar's community, not just follower count"
+   },
+   {
+    "n": 7,
+    "name": "Draft the pitch or submission",
+    "does": "Draft the pitch email, thought-leadership pitch, or award submission copy, claim-checked and in brand voice.",
+    "inputs": [
+     "angle",
+     "list or tracker"
+    ],
+    "tools": [
+     "shared/claim-check"
+    ],
+    "skill": "brand/pr-angle-builder",
+    "output": "drafted pitch or submission",
+    "check": "every claim in the draft passes claim-check"
+   },
+   {
+    "n": 8,
+    "name": "Founder or human sends",
+    "does": "This is human_assist: the founder or a person sends the actual pitch. The agent prepares everything up to the send.",
+    "inputs": [
+     "drafted pitch"
+    ],
+    "tools": [],
+    "skill": null,
+    "output": "handoff packet",
+    "check": "packet is ready to send with no missing field"
+   },
+   {
+    "n": 9,
+    "name": "Log outcomes",
+    "does": "Log which pitches placed, which did not, and why, so future angles improve.",
+    "inputs": [
+     "outcome, once known"
+    ],
+    "tools": [],
+    "skill": "shared/registry-entry",
+    "output": "registry entry",
+    "check": "a non-placement is logged with the reason given, not left blank"
+   }
+  ],
+  "outputs": [
+   "pitch angle",
+   "verified media list",
+   "thought-leadership opportunity list",
+   "award call tracker",
+   "drafted pitch or submission"
+  ],
+  "qa": [
+   "media list beat-matched and freshly verified",
+   "every claim in a pitch passes claim-check",
+   "non-placements logged with reasons"
+  ],
+  "read_point": "tracked per pitch: placed, declined, or no response, reviewed monthly.",
+  "typical_duration": "agent time 3-6 hours per angle; media outreach and response time adds 1-4 weeks.",
+  "subagents": []
+ },
+ {
+  "id": "BRAND-W22",
+  "name": "Monitor reputation risk and draft a crisis holding statement",
+  "capabilities": [
+   "BRAND-C54"
+  ],
+  "trigger": "alert-driven: a spike in complaints, viral criticism, or a factual attack is detected | on demand",
+  "human_role": "what a PR manager does the moment something starts going wrong publicly",
+  "inputs_required": [
+   "public mention and review monitoring signal",
+   "brand facts to verify or refute a claim",
+   "founder availability for rapid review"
+  ],
+  "steps": [
+   {
+    "n": 1,
+    "name": "Detect the spike",
+    "does": "Watch public mentions and reviews for a sudden spike in complaint volume, a viral criticism, or a specific factual attack.",
+    "inputs": [
+     "review and social monitoring"
+    ],
+    "tools": [
+     "web search"
+    ],
+    "skill": "brand/reputation-risk-monitor",
+    "output": "spike alert",
+    "check": "spike is measured against a baseline, not a single loud post"
+   },
+   {
+    "n": 2,
+    "name": "Verify the underlying claim",
+    "does": "Check whether the criticism is factually accurate against the brand's own records before drafting any response.",
+    "inputs": [
+     "spike alert",
+     "brand records"
+    ],
+    "tools": [],
+    "skill": "brand/reputation-risk-monitor",
+    "output": "fact verification note",
+    "check": "note states true, false, or partially true, with the evidence"
+   },
+   {
+    "n": 3,
+    "name": "Assess severity and reach",
+    "does": "Estimate how far the criticism has spread and how much brand or revenue risk it carries.",
+    "inputs": [
+     "spike alert"
+    ],
+    "tools": [],
+    "skill": "brand/reputation-risk-monitor",
+    "output": "severity read",
+    "check": "severity uses actual reach numbers where available, not a gut call"
+   },
+   {
+    "n": 4,
+    "name": "Draft a holding statement",
+    "does": "Draft a short holding statement acknowledging the issue and stating what happens next, without over-promising or admitting an unverified fault.",
+    "inputs": [
+     "fact verification note"
+    ],
+    "tools": [
+     "shared/claim-check"
+    ],
+    "skill": "brand/reputation-risk-monitor",
+    "output": "draft holding statement",
+    "check": "statement makes no claim the fact verification note does not support"
+   },
+   {
+    "n": 5,
+    "name": "Draft the escalation note",
+    "does": "Write who inside the brand needs to see this now and what decision they need to make.",
+    "inputs": [
+     "severity read"
+    ],
+    "tools": [],
+    "skill": "brand/reputation-risk-monitor",
+    "output": "escalation note",
+    "check": "escalation note names a specific person and a specific decision, not 'someone should look at this'"
+   },
+   {
+    "n": 6,
+    "name": "Founder gate before anything is posted",
+    "does": "This is always founder_gate: nothing is posted, replied to, or sent publicly without founder review.",
+    "inputs": [
+     "draft holding statement",
+     "escalation note"
+    ],
+    "tools": [
+     "shared/plain-english-card"
+    ],
+    "skill": "shared/founder-question-round",
+    "output": "founder decision",
+    "check": "no public response goes out without this step",
+    "ask_founder_if": "always, immediately"
+   },
+   {
+    "n": 7,
+    "name": "Log and monitor after response",
+    "does": "Log what was said and continue monitoring for 48-72 hours to see if the issue is resolving.",
+    "inputs": [
+     "founder decision"
+    ],
+    "tools": [
+     "web search"
+    ],
+    "skill": "brand/reputation-risk-monitor",
+    "output": "post-response monitoring note, registry entry",
+    "check": "monitoring continues past the first response, not a one-time check"
+   }
+  ],
+  "outputs": [
+   "spike alert",
+   "fact verification note",
+   "draft holding statement",
+   "escalation note"
+  ],
+  "qa": [
+   "nothing posted without founder review",
+   "statement makes no unverified claim",
+   "monitoring continues after the response"
+  ],
+  "read_point": "immediate at detection; re-checked at 48-72 hours after response.",
+  "typical_duration": "agent time 1-3 hours to prepare; founder decision needed within hours for a live crisis.",
+  "subagents": []
+ },
+ {
+  "id": "BRAND-W23",
+  "name": "Run the partnership pipeline: source, screen and clear",
+  "capabilities": [
+   "BRAND-C70",
+   "BRAND-C41",
+   "BRAND-C71"
+  ],
+  "trigger": "twice yearly sourcing sweep | on demand when a specific collaboration is proposed",
+  "human_role": "what a partnerships lead does from a cold sourcing sweep to a cleared, briefed collaboration",
+  "inputs_required": [
+   "avatar record (who the partner should also serve)",
+   "current category and non-competitive adjacent categories",
+   "a specific proposal, if screening one rather than sourcing"
+  ],
+  "steps": [
+   {
+    "n": 1,
+    "name": "Source candidates (sweep)",
+    "does": "Proactively search for non-competitive brands serving the same avatar, twice a year, before any specific proposal exists.",
+    "inputs": [
+     "avatar record"
+    ],
+    "tools": [
+     "web search"
+    ],
+    "skill": "brand/partnership-sourcing-sweep",
+    "output": "candidate partner list",
+    "check": "every candidate serves the same avatar without competing in the same category"
+   },
+   {
+    "n": 2,
+    "name": "Screen for category overlap",
+    "does": "Check a candidate or a proposed partner for direct category overlap; default to non-competitive brands.",
+    "inputs": [
+     "candidate or proposed partner"
+    ],
+    "tools": [],
+    "skill": "brand/partnership-screen",
+    "output": "overlap verdict",
+    "check": "overlap verdict is explicit: none, adjacent, or competing"
+   },
+   {
+    "n": 3,
+    "name": "Screen for narrative fit",
+    "does": "Check whether the collaboration tells a story either brand's customer would actually want, not just a co-marketing convenience.",
+    "inputs": [
+     "candidate",
+     "brand story"
+    ],
+    "tools": [],
+    "skill": "brand/partnership-screen",
+    "output": "narrative fit verdict",
+    "check": "verdict names the specific shared story, not 'it could work'"
+   },
+   {
+    "n": 4,
+    "name": "Run the reputation check",
+    "does": "Run a public reputation and controversy check on the other party before any agreement moves forward.",
+    "inputs": [
+     "candidate or proposed partner"
+    ],
+    "tools": [
+     "web search"
+    ],
+    "skill": "brand/partnership-screen",
+    "output": "reputation check result",
+    "check": "a flag here stops the process until the founder reviews it",
+    "ask_founder_if": "a reputation flag is found"
+   },
+   {
+    "n": 5,
+    "name": "Draft the brief, if screened favorably",
+    "does": "Draft what the collaboration would look like: format, duration, what each side contributes, and rough terms.",
+    "inputs": [
+     "overlap verdict",
+     "narrative fit verdict",
+     "reputation check result"
+    ],
+    "tools": [],
+    "skill": "brand/partnership-screen",
+    "output": "collaboration brief",
+    "check": "brief states the specific customer value, not just brand exposure"
+   },
+   {
+    "n": 6,
+    "name": "Founder gate",
+    "does": "Present the screened candidate and brief for founder approval before any outreach is made.",
+    "inputs": [
+     "collaboration brief"
+    ],
+    "tools": [
+     "shared/plain-english-card"
+    ],
+    "skill": "shared/founder-question-round",
+    "output": "founder decision",
+    "check": "card shows all 3 screen results (overlap, narrative fit, reputation) together",
+    "ask_founder_if": "always"
+   },
+   {
+    "n": 7,
+    "name": "Re-check yearly for ongoing relationships",
+    "does": "For an approved, ongoing partnership, re-run the reputation check yearly.",
+    "inputs": [
+     "ongoing partnership list"
+    ],
+    "tools": [
+     "web search"
+    ],
+    "skill": "brand/partnership-screen",
+    "output": "annual reputation re-check",
+    "check": "re-check happens on schedule, not only when a problem is already visible"
+   },
+   {
+    "n": 8,
+    "name": "Log the pipeline",
+    "does": "Log sourced candidates, screening outcomes and founder decisions to the registry.",
+    "inputs": [
+     "all prior outputs"
+    ],
+    "tools": [],
+    "skill": "shared/registry-entry",
+    "output": "registry entry",
+    "check": "a rejected candidate's reason is kept so the same pitch is not repeated unchanged"
+   }
+  ],
+  "outputs": [
+   "candidate partner list",
+   "overlap verdict",
+   "narrative fit verdict",
+   "reputation check result",
+   "collaboration brief"
+  ],
+  "qa": [
+   "default to non-competitive brands",
+   "reputation check always run before agreement",
+   "annual re-check on ongoing partnerships"
+  ],
+  "read_point": "sourcing sweep twice yearly; screening as proposals arrive; reputation re-check yearly on live partnerships.",
+  "typical_duration": "agent time 2-4 hours per candidate; founder review 2-5 days.",
+  "subagents": []
+ },
+ {
+  "id": "BRAND-W24",
+  "name": "Design an event or pop-up",
+  "capabilities": [
+   "BRAND-C42"
+  ],
+  "trigger": "on demand",
+  "human_role": "what an events lead designs when the exact target customer already gathers somewhere real",
+  "inputs_required": [
+   "avatar record: where this customer actually gathers in person",
+   "team capacity (who can staff it)",
+   "budget ledger"
+  ],
+  "steps": [
+   {
+    "n": 1,
+    "name": "Name where the avatar already gathers",
+    "does": "Identify a real place or occasion the target avatar already gathers (a wedding expo, a college fest, a farmers' market, a festival pop-up), not a generic venue.",
+    "inputs": [
+     "avatar record"
+    ],
+    "tools": [],
+    "skill": "brand/event-popup-design",
+    "output": "venue/occasion candidate list",
+    "check": "each candidate names a real, checkable gathering, not an assumed one"
+   },
+   {
+    "n": 2,
+    "name": "Size to team capacity",
+    "does": "Size the activation to what the team can actually run by hand, not a scaled-up fantasy version.",
+    "inputs": [
+     "team capacity"
+    ],
+    "tools": [],
+    "skill": "brand/event-popup-design",
+    "output": "sized activation concept",
+    "check": "concept states exactly how many people are needed to staff it"
+   },
+   {
+    "n": 3,
+    "name": "Design the guerrilla or pop-up format",
+    "does": "Design the specific format: a sampling booth, a pop-up shop-in-shop, a small guerrilla activation, matched to the occasion.",
+    "inputs": [
+     "venue candidate",
+     "sized concept"
+    ],
+    "tools": [],
+    "skill": "brand/event-popup-design",
+    "output": "activation format design",
+    "check": "format matches the venue's real constraints (footfall, permission needed, timing)"
+   },
+   {
+    "n": 4,
+    "name": "Budget the activation",
+    "does": "Cost the activation (space, staff, materials, any permit or vendor fee) against the ledger.",
+    "inputs": [
+     "activation format design"
+    ],
+    "tools": [
+     "script: budget.py",
+     "script: market_sizing"
+    ],
+    "skill": "brand/event-popup-design",
+    "output": "activation budget",
+    "check": "budget checked against the ledger before proceeding",
+    "ask_founder_if": "the budget would exceed the working stop"
+   },
+   {
+    "n": 5,
+    "name": "Plan the read",
+    "does": "Define what success looks like and how it will be measured (footfall, samples given, codes redeemed, follow-on online sales in the following days).",
+    "inputs": [
+     "activation format design"
+    ],
+    "tools": [],
+    "skill": "brand/event-popup-design",
+    "output": "read plan",
+    "check": "read plan has a specific metric and a specific measurement date"
+   },
+   {
+    "n": 6,
+    "name": "Founder gate",
+    "does": "Present the full plan and budget for founder approval before any booking or spend commitment.",
+    "inputs": [
+     "all prior outputs"
+    ],
+    "tools": [
+     "shared/plain-english-card"
+    ],
+    "skill": "shared/founder-question-round",
+    "output": "founder decision",
+    "check": "card shows budget and read plan together",
+    "ask_founder_if": "always"
+   },
+   {
+    "n": 7,
+    "name": "Log and route execution",
+    "does": "Log the approved plan; hand logistics execution to the founder or team since this agent does not book vendors or handle cash.",
+    "inputs": [
+     "founder decision"
+    ],
+    "tools": [],
+    "skill": "shared/registry-entry",
+    "output": "registry entry, execution handoff",
+    "check": "handoff packet has every logistics detail the plan specified"
+   }
+  ],
+  "outputs": [
+   "venue/occasion candidate list",
+   "sized activation concept",
+   "activation budget",
+   "read plan"
+  ],
+  "qa": [
+   "venue is real and checkable",
+   "budget checked against the ledger before commitment",
+   "read plan has a specific metric and date"
+  ],
+  "read_point": "on the date set in the read plan, against the specific metric named there.",
+  "typical_duration": "agent time 3-5 hours to plan; lead time to execute varies by venue, typically 2-6 weeks.",
+  "subagents": []
+ },
+ {
+  "id": "BRAND-W25",
+  "name": "Run competitive intelligence: win-loss and battlecards",
+  "capabilities": [
+   "BRAND-C57",
+   "BRAND-C58"
+  ],
+  "trigger": "quarterly win-loss research | on demand battlecard build, or when a named competitor materially changes",
+  "human_role": "what a competitive-intelligence lead does to arm support and the founder with real comparison language",
+  "inputs_required": [
+   "named competitor",
+   "recent near-miss and win customers, if running win-loss",
+   "competitor packet (BRAND-W04)"
+  ],
+  "steps": [
+   {
+    "n": 1,
+    "name": "Sample near-miss and win customers",
+    "does": "Pull a small sample of people who almost bought and instead bought the named competitor, or who chose this brand over it.",
+    "inputs": [
+     "customer list, order data"
+    ],
+    "tools": [],
+    "skill": "brand/competitive-intelligence",
+    "output": "win-loss sample list",
+    "check": "sample includes both directions (near-miss and win), not just one"
+   },
+   {
+    "n": 2,
+    "name": "Ask why, in their own words",
+    "does": "Ask the sample why they chose as they did, without leading toward a feature the brand wants to hear about.",
+    "inputs": [
+     "win-loss sample list"
+    ],
+    "tools": [],
+    "skill": "brand/competitive-intelligence",
+    "output": "win-loss transcripts",
+    "check": "questions are open, matching the interview-guide standard"
+   },
+   {
+    "n": 3,
+    "name": "Verify the differences named",
+    "does": "Check every difference customers name against what is actually true today (price, feature, delivery time, policy), not what used to be true.",
+    "inputs": [
+     "win-loss transcripts",
+     "competitor packet"
+    ],
+    "tools": [
+     "web search"
+    ],
+    "skill": "brand/competitive-intelligence",
+    "output": "verified difference list",
+    "check": "every difference is checked against a current, dated source"
+   },
+   {
+    "n": 4,
+    "name": "Build the battlecard",
+    "does": "Turn verified differences into a short internal battlecard support or the founder can use in a real conversation.",
+    "inputs": [
+     "verified difference list"
+    ],
+    "tools": [],
+    "skill": "brand/competitive-intelligence",
+    "output": "internal battlecard",
+    "check": "battlecard is internal-facing only, never published externally as a comparison page without a separate legal check"
+   },
+   {
+    "n": 5,
+    "name": "Check for a public-claim boundary",
+    "does": "Confirm nothing in the battlecard copies competitor text, logos, or makes an unverifiable claim, since a battlecard can leak into public-facing use.",
+    "inputs": [
+     "internal battlecard"
+    ],
+    "tools": [
+     "shared/claim-check"
+    ],
+    "skill": null,
+    "output": "boundary check result",
+    "check": "every comparison claim traces to the verified difference list"
+   },
+   {
+    "n": 6,
+    "name": "Distribute to support",
+    "does": "Hand the battlecard to the support team or macro system for use in real conversations.",
+    "inputs": [
+     "internal battlecard"
+    ],
+    "tools": [],
+    "skill": null,
+    "output": "distributed battlecard",
+    "check": "distribution is logged with a version number"
+   },
+   {
+    "n": 7,
+    "name": "Refresh on trigger",
+    "does": "Refresh the battlecard when a named competitor materially changes price, feature set, or policy.",
+    "inputs": [
+     "ongoing competitor monitoring"
+    ],
+    "tools": [],
+    "skill": "brand/competitive-intelligence",
+    "output": "refresh trigger note",
+    "check": "refresh trigger names the specific change detected"
+   }
+  ],
+  "outputs": [
+   "win-loss transcripts",
+   "verified difference list",
+   "internal battlecard"
+  ],
+  "qa": [
+   "differences verified against current, dated sources",
+   "battlecard stays internal unless separately cleared",
+   "win-loss questions open, not leading"
+  ],
+  "read_point": "quarterly for win-loss; on demand for battlecard refresh.",
+  "typical_duration": "agent time 3-5 hours; win-loss interviews add 1-2 weeks for scheduling.",
+  "subagents": []
+ },
+ {
+  "id": "BRAND-W26",
+  "name": "Run a wild bet from idea to stage gate to execution brief",
+  "capabilities": [
+   "BRAND-C44",
+   "BRAND-C45",
+   "BRAND-C46",
+   "BRAND-C51",
+   "BRAND-C62",
+   "BRAND-C63",
+   "BRAND-C64"
+  ],
+  "trigger": "monthly backlog sourcing | event: a specific wild bet is proposed or approved",
+  "human_role": "what a new-ventures lead does from a raw idea to a bounded, briefed bet the team can actually run",
+  "inputs_required": [
+   "contribution margin and team capacity from the metric contract",
+   "brand brain: values and category norms",
+   "the wild bet's type: new line, new market, licensing, wholesale, or retail pop-up"
+  ],
+  "steps": [
+   {
+    "n": 1,
+    "name": "Source and log backlog ideas",
+    "does": "Continuously source wild bet candidates from adjacent industries, category norms worth breaking, and gaps the brand's own research has surfaced. Keep a dated backlog.",
+    "inputs": [
+     "idea bank, folder 19-WLD",
+     "adjacent-industry scan"
+    ],
+    "tools": [
+     "script: ideas.py",
+     "web search"
+    ],
+    "skill": "brand/wild-bet",
+    "output": "dated backlog entry",
+    "check": "every entry names the category norm it would break or the gap it fills"
+   },
+   {
+    "n": 2,
+    "name": "Screen a proposed bet against the backlog and brand fit",
+    "does": "When a bet is proposed (by the founder, or pulled from the backlog), check it against brand values and current capacity before bounding it.",
+    "inputs": [
+     "backlog",
+     "brand brain values"
+    ],
+    "tools": [],
+    "skill": "brand/wild-bet",
+    "output": "screen verdict",
+    "check": "a bet that conflicts with a stated brand value is flagged, not silently bounded anyway"
+   },
+   {
+    "n": 3,
+    "name": "Decide the bet type",
+    "does": "Classify the bet as a new product line, a new market, a licensing deal, a wholesale/retail entry, or a retail pop-up, since each routes to a different feasibility check.",
+    "inputs": [
+     "screened bet"
+    ],
+    "tools": [],
+    "skill": "brand/wild-bet",
+    "output": "bet type classification",
+    "check": "classification determines exactly one routing path below"
+   },
+   {
+    "n": 4,
+    "name": "Run the type-specific feasibility pass",
+    "does": "New line: size against BRAND-W11 market sizing. New market: check regulatory, tax, competitor and logistics feasibility for the target country or region. Licensing: check royalty norms, score the licensee, draft deal-memo terms. Wholesale/retail: build the line sheet and buyer pitch kit, and check channel/packaging fit against DTC, marketplace and retail formats.",
+    "inputs": [
+     "bet type classification"
+    ],
+    "tools": [
+     "web search",
+     "script: market_sizing"
+    ],
+    "skill": "brand/wild-bet/new-line",
+    "output": "feasibility packet, shaped to the bet type",
+    "check": "packet names the specific constraint each type check found, not a generic 'looks feasible'"
+   },
+   {
+    "n": 5,
+    "name": "Write the 8-field bound",
+    "does": "Write the hypothesis, category norm broken, budget cap, downside cap (as a share of contribution margin, computed in code), cohort and size, control design, stop rule, read-point date, and legal/consent flag.",
+    "inputs": [
+     "feasibility packet",
+     "contribution margin"
+    ],
+    "tools": [
+     "script: wild_bet_bound_builder"
+    ],
+    "skill": "brand/wild-bet",
+    "output": "8-field bound",
+    "check": "all 8 fields present and specific; downside cap computed in code, not estimated"
+   },
+   {
+    "n": 6,
+    "name": "Flag legal review if warranted",
+    "does": "Flag for legal review if the bet promises something, mails or texts people, or gates access in a way that carries legal exposure.",
+    "inputs": [
+     "8-field bound"
+    ],
+    "tools": [],
+    "skill": "brand/wild-bet",
+    "output": "legal-review flag",
+    "check": "flag defaults to 'needs review' when uncertain, never defaults to 'clear'"
+   },
+   {
+    "n": 7,
+    "name": "Founder gate on the bound",
+    "does": "Present the bound for founder approval before anything launches. No wild bet runs on the bound alone without this step.",
+    "inputs": [
+     "8-field bound",
+     "legal-review flag"
+    ],
+    "tools": [
+     "shared/plain-english-card"
+    ],
+    "skill": "shared/founder-question-round",
+    "output": "founder decision on the bound",
+    "check": "a bound with no read point or stop rule is never presented as ready",
+    "ask_founder_if": "always"
+   },
+   {
+    "n": 8,
+    "name": "Write the type-specific execution brief",
+    "does": "Turn the approved bound into an execution brief sized to the smallest group the team can serve by hand, sequenced through the checks the bet's type requires (for example: retail pop-up sequences packaging and channel fit before a buyer pitch; licensing sequences the deal memo before any product ships).",
+    "inputs": [
+     "approved bound",
+     "feasibility packet"
+    ],
+    "tools": [
+     "script: wild_bet_brief_builder"
+    ],
+    "skill": "brand/wild-bet/retail-popup",
+    "output": "execution brief",
+    "check": "brief names every check completed before launch, in order"
+   },
+   {
+    "n": 9,
+    "name": "Founder gate on the brief",
+    "does": "Present the execution brief for a final founder go/no-go before work starts.",
+    "inputs": [
+     "execution brief"
+    ],
+    "tools": [
+     "shared/plain-english-card"
+    ],
+    "skill": "shared/founder-question-round",
+    "output": "founder decision on the brief",
+    "check": "go/no-go is explicit, not implied by silence",
+    "ask_founder_if": "always"
+   },
+   {
+    "n": 10,
+    "name": "Log and set the read reminder",
+    "does": "Log the bound and brief to the registry, and set a reminder for the stated read-point date so the bet is judged on schedule, not forgotten.",
+    "inputs": [
+     "founder decisions"
+    ],
+    "tools": [],
+    "skill": "shared/registry-entry",
+    "output": "registry entry with a scheduled read-point check",
+    "check": "read point is a specific date, not 'later'"
+   }
+  ],
+  "outputs": [
+   "dated backlog entry",
+   "feasibility packet",
+   "8-field bound",
+   "execution brief"
+  ],
+  "qa": [
+   "downside cap computed in code as a share of contribution margin",
+   "all 8 bound fields present and specific",
+   "legal-review flag defaults to caution",
+   "read-point date is scheduled, not left open-ended"
+  ],
+  "read_point": "set explicitly in the bound at approval time; this workflow does not itself score the outcome, it schedules that check.",
+  "typical_duration": "agent time 1-3 days depending on bet type; founder review 3-7 days across the two gates; a new-market feasibility pass can add 1-2 weeks.",
+  "subagents": []
+ },
+ {
+  "id": "BRAND-W27",
+  "name": "Run an AI-persona pretest before a real research round",
+  "capabilities": [
+   "BRAND-C66"
+  ],
+  "trigger": "on demand, before spending on a real survey, interview round, or paid message test",
+  "human_role": "what a researcher does to catch an obvious miss cheaply before paying for a real round",
+  "inputs_required": [
+   "messaging, naming or concept shortlist to pretest",
+   "avatar record to build the persona from",
+   "budget ledger"
+  ],
+  "steps": [
+   {
+    "n": 1,
+    "name": "Check the budget",
+    "does": "Confirm the ledger has room before running any paid AI-persona pass.",
+    "inputs": [
+     "budget ledger"
+    ],
+    "tools": [
+     "script: budget.py"
+    ],
+    "skill": null,
+    "output": "budget clearance",
+    "check": "checked before the call, not after",
+    "ask_founder_if": "this would exceed the working stop"
+   },
+   {
+    "n": 2,
+    "name": "Build the persona from real evidence",
+    "does": "Build the simulated persona strictly from the existing avatar record's job, forces and quotes, not from a generic stereotype.",
+    "inputs": [
+     "avatar record"
+    ],
+    "tools": [],
+    "skill": "brand/ai-persona-pretest",
+    "output": "persona brief",
+    "check": "every trait in the persona brief traces to the avatar record"
+   },
+   {
+    "n": 3,
+    "name": "Run the pass on the shortlist",
+    "does": "Run the simulated persona against the messaging, naming or concept shortlist and record its reactions.",
+    "inputs": [
+     "shortlist",
+     "persona brief"
+    ],
+    "tools": [],
+    "skill": "brand/ai-persona-pretest",
+    "output": "simulated reaction notes",
+    "check": "notes are labeled 'simulated, not a real customer' everywhere they are shown"
+   },
+   {
+    "n": 4,
+    "name": "Flag obvious misses only",
+    "does": "Use the pass only to catch obvious misses (confusing wording, an unintended reading, a flat concept), never to declare a winner.",
+    "inputs": [
+     "simulated reaction notes"
+    ],
+    "tools": [],
+    "skill": "brand/ai-persona-pretest",
+    "output": "flagged misses list",
+    "check": "output never ranks candidates as if this were real customer data"
+   },
+   {
+    "n": 5,
+    "name": "Decide whether a real round is still needed",
+    "does": "State plainly that this pretest does not replace the planned real survey or interview round; it only trims the shortlist first.",
+    "inputs": [
+     "flagged misses list"
+    ],
+    "tools": [],
+    "skill": "brand/ai-persona-pretest",
+    "output": "trimmed shortlist",
+    "check": "trimmed shortlist still goes to the real research round, not treated as final"
+   },
+   {
+    "n": 6,
+    "name": "Log the pretest",
+    "does": "Log the pretest and its cost to the registry and budget ledger.",
+    "inputs": [
+     "trimmed shortlist"
+    ],
+    "tools": [],
+    "skill": "shared/registry-entry",
+    "output": "registry entry",
+    "check": "cost logged against the ledger, not left untracked"
+   }
+  ],
+  "outputs": [
+   "persona brief",
+   "simulated reaction notes",
+   "trimmed shortlist"
+  ],
+  "qa": [
+   "persona built from real avatar evidence, not stereotype",
+   "output never presented as if it were real customer data",
+   "budget checked before the call"
+  ],
+  "read_point": "not a metric read; this is a cheap filter before the real read comes from the survey, interview or test that follows.",
+  "typical_duration": "agent time 1-2 hours.",
+  "subagents": []
+ },
+ {
+  "id": "BRAND-W28",
+  "name": "Advise the founder on brand-building operating practices",
+  "capabilities": [
+   "BRAND-C52"
+  ],
+  "trigger": "on demand",
+  "human_role": "what an operating advisor does to turn recurring patterns into short, reusable guidance",
+  "inputs_required": [
+   "registry history of past brand decisions and their outcomes",
+   "founder's stated operating question (hiring sequence, ideation method, decision speed, readiness checks)"
+  ],
+  "steps": [
+   {
+    "n": 1,
+    "name": "Name the operating question",
+    "does": "State the specific recurring pattern the founder is asking about (when to hire for a brand role, how fast to decide on a name, when a brand is ready for a wild bet).",
+    "inputs": [
+     "founder's question"
+    ],
+    "tools": [],
+    "skill": null,
+    "output": "operating question line",
+    "check": "question is specific enough to answer with a checklist, not a philosophy"
+   },
+   {
+    "n": 2,
+    "name": "Pull the registry history",
+    "does": "Pull past decisions and outcomes on this pattern from the registry (past naming timelines, past wild bet readiness, past hire timing).",
+    "inputs": [
+     "registry"
+    ],
+    "tools": [],
+    "skill": null,
+    "output": "history pull",
+    "check": "history pull uses this brand's real past decisions, not general theory alone"
+   },
+   {
+    "n": 3,
+    "name": "Draw the pattern",
+    "does": "State what actually correlated with a good outcome versus a bad one in this brand's own history.",
+    "inputs": [
+     "history pull"
+    ],
+    "tools": [],
+    "skill": null,
+    "output": "pattern statement",
+    "check": "pattern is stated with the evidence count behind it (how many past cases)"
+   },
+   {
+    "n": 4,
+    "name": "Write short, reusable guidance",
+    "does": "Turn the pattern into a short checklist or rule of thumb the founder can reuse without re-deriving it each time.",
+    "inputs": [
+     "pattern statement"
+    ],
+    "tools": [],
+    "skill": null,
+    "output": "guidance note",
+    "check": "guidance fits on one page and gives a clear yes/no test"
+   },
+   {
+    "n": 5,
+    "name": "Founder review",
+    "does": "Present the guidance for the founder to confirm it matches their own read of what has worked.",
+    "inputs": [
+     "guidance note"
+    ],
+    "tools": [
+     "shared/plain-english-card"
+    ],
+    "skill": "shared/founder-question-round",
+    "output": "founder decision",
+    "check": "founder can accept, edit or reject the guidance",
+    "ask_founder_if": "always"
+   },
+   {
+    "n": 6,
+    "name": "Log for reuse",
+    "does": "File the accepted guidance where future runs of this agent (or the founder) can find it again.",
+    "inputs": [
+     "founder decision"
+    ],
+    "tools": [],
+    "skill": "shared/registry-entry",
+    "output": "registry entry",
+    "check": "guidance is retrievable by the operating question it answers"
+   }
+  ],
+  "outputs": [
+   "operating question line",
+   "pattern statement",
+   "guidance note"
+  ],
+  "qa": [
+   "pattern grounded in this brand's real history, not generic advice",
+   "guidance gives a clear yes/no test"
+  ],
+  "read_point": "not a metric read; revisited if a later decision contradicts the guidance.",
+  "typical_duration": "agent time 1-2 hours.",
+  "subagents": []
+ },
+ {
+  "id": "BRAND-W29",
+  "name": "Brief packaging artwork and mandatory label placement",
+  "capabilities": [
+   "BRAND-G01"
+  ],
+  "trigger": "event: new SKU, new channel, or a packaging change",
+  "human_role": "what a packaging coordinator briefs before artwork goes to print",
+  "inputs_required": [
+   "product spec from the Product and Supply specialist (PROD-C13)",
+   "target channel(s): DTC, marketplace, retail",
+   "brand guidelines (visual language section)"
+  ],
+  "steps": [
+   {
+    "n": 1,
+    "name": "Pull the product spec",
+    "does": "Pull the dieline, net quantity, and any per-channel packaging constraint from the Product and Supply specialist's spec.",
+    "inputs": [
+     "PROD-C13 spec"
+    ],
+    "tools": [],
+    "skill": "brand/packaging-label-brief",
+    "output": "spec pull",
+    "check": "spec is pulled, never re-derived from guesswork"
+   },
+   {
+    "n": 2,
+    "name": "Apply the visual language",
+    "does": "Apply the brand guidelines' palette, typography and logo rules to the dieline layout.",
+    "inputs": [
+     "brand guidelines"
+    ],
+    "tools": [],
+    "skill": "brand/packaging-label-brief",
+    "output": "layout draft",
+    "check": "layout follows the logo clear-space and minimum-size rules"
+   },
+   {
+    "n": 3,
+    "name": "Place mandatory declarations",
+    "does": "Place every legally required declaration for the target market: MRP, Legal Metrology details (net quantity, manufacturer/packer/importer name and address, month and year of manufacture, consumer care contact), BIS or hallmark mark where the product category requires it, and the EPR mark where applicable.",
+    "inputs": [
+     "target channel",
+     "product category"
+    ],
+    "tools": [
+     "script: packaging_label_checker"
+    ],
+    "skill": "brand/packaging-label-brief",
+    "output": "declaration-placed layout",
+    "check": "every mandatory field for this product category is present and legible at the required minimum size"
+   },
+   {
+    "n": 4,
+    "name": "Check channel-specific rules",
+    "does": "Check any marketplace-specific packaging or labeling rule (for example, marketplace return-label or barcode placement requirements) beyond the general legal requirements.",
+    "inputs": [
+     "target channel list"
+    ],
+    "tools": [
+     "web search"
+    ],
+    "skill": "brand/packaging-label-brief",
+    "output": "channel rule check",
+    "check": "each target channel's specific rule is checked, not assumed same as DTC"
+   },
+   {
+    "n": 5,
+    "name": "Run the completeness check",
+    "does": "Run the full checklist of mandatory declarations against the layout before it is called ready.",
+    "inputs": [
+     "declaration-placed layout"
+    ],
+    "tools": [
+     "script: packaging_label_checker"
+    ],
+    "skill": "brand/packaging-label-brief",
+    "output": "completeness checklist result",
+    "check": "a missing mandatory field blocks sign-off, it does not go to print with a note to 'fix later'"
+   },
+   {
+    "n": 6,
+    "name": "Founder gate",
+    "does": "Present the brief and checklist result for founder sign-off before it goes to a designer or printer.",
+    "inputs": [
+     "completeness checklist result"
+    ],
+    "tools": [
+     "shared/plain-english-card"
+    ],
+    "skill": "shared/founder-question-round",
+    "output": "founder decision",
+    "check": "card shows the checklist result plainly",
+    "ask_founder_if": "always"
+   },
+   {
+    "n": 7,
+    "name": "Hand off and log",
+    "does": "Hand the approved brief to the designer or print vendor; log the version to the registry.",
+    "inputs": [
+     "founder decision"
+    ],
+    "tools": [],
+    "skill": "shared/registry-entry",
+    "output": "registry entry, handoff packet",
+    "check": "version is tracked so a later channel addition updates from the current approved version, not an old one"
+   }
+  ],
+  "outputs": [
+   "layout draft",
+   "declaration-placed layout",
+   "completeness checklist result",
+   "packaging brief"
+  ],
+  "qa": [
+   "every mandatory declaration present and legible",
+   "channel-specific rules checked, not assumed",
+   "missing field blocks sign-off"
+  ],
+  "read_point": "not a metric read; a one-time brief per SKU/channel/packaging change, re-checked if the law or channel changes.",
+  "typical_duration": "agent time 2-4 hours; founder review 1-2 days; print lead time is separate.",
+  "subagents": []
+ },
+ {
+  "id": "BRAND-W30",
+  "name": "Manage a rebrand or repositioning program",
+  "capabilities": [
+   "BRAND-C49"
+  ],
+  "trigger": "on demand, when a rebrand or repositioning is warranted",
+  "human_role": "what a brand lead runs when the identity itself, not just a campaign, needs to change",
+  "inputs_required": [
+   "evidence the current brand is failing to win (from BRAND-W17 perception-gap audit, BRAND-W18 brand health, or a founder call)",
+   "current brand guidelines, positioning, and catalogue"
+  ],
+  "steps": [
+   {
+    "n": 1,
+    "name": "Audit brand equity",
+    "does": "Assess what the current brand actually owns in the customer's mind (from BRAND-W17's perception-gap findings and BRAND-W18's health trend), separate from what the founder wishes it owned.",
+    "inputs": [
+     "perception-gap note",
+     "brand health report"
+    ],
+    "tools": [],
+    "skill": null,
+    "output": "equity audit",
+    "check": "audit is grounded in the last 2 quarters of real findings, not a fresh guess"
+   },
+   {
+    "n": 2,
+    "name": "Decide what to keep",
+    "does": "Name what survives the rebrand (an equity asset, a color, a customer relationship) versus what changes.",
+    "inputs": [
+     "equity audit"
+    ],
+    "tools": [],
+    "skill": null,
+    "output": "keep/change list",
+    "check": "every 'keep' item names the equity reason it survives"
+   },
+   {
+    "n": 3,
+    "name": "Expect and plan catalogue pruning",
+    "does": "Flag that a rebrand usually forces catalogue pruning (SKUs that only made sense under the old story) and name likely candidates.",
+    "inputs": [
+     "keep/change list",
+     "product catalogue"
+    ],
+    "tools": [],
+    "skill": null,
+    "output": "pruning candidate list",
+    "check": "a pruning candidate names the specific story mismatch, not just low sales"
+   },
+   {
+    "n": 4,
+    "name": "Sequence the program",
+    "does": "Sequence the actual work: positioning (BRAND-W10), naming if needed (BRAND-W12), voice and story (BRAND-W14), visual identity and guidelines (BRAND-W16), then a phased rollout across site, ads and packaging.",
+    "inputs": [
+     "keep/change list"
+    ],
+    "tools": [
+     "script: rebrand_planner"
+    ],
+    "skill": null,
+    "output": "phased program plan",
+    "check": "plan sequences dependencies correctly (positioning before voice, voice before guidelines)"
+   },
+   {
+    "n": 5,
+    "name": "Set the real trigger metric",
+    "does": "Set the metric the rebrand is meant to move (brand health trend, repeat rate, or a stated perception-gap closing), not vanity attention.",
+    "inputs": [
+     "phased program plan"
+    ],
+    "tools": [
+     "script: metric_read"
+    ],
+    "skill": null,
+    "output": "trigger metric and target",
+    "check": "metric already exists in the metric contract; nothing invented for this program"
+   },
+   {
+    "n": 6,
+    "name": "Founder gate",
+    "does": "Present the full program, sequencing and trigger metric for founder approval before any phase starts, since this touches every other brand workflow.",
+    "inputs": [
+     "phased program plan",
+     "trigger metric"
+    ],
+    "tools": [
+     "shared/plain-english-card"
+    ],
+    "skill": "shared/founder-question-round",
+    "output": "founder decision",
+    "check": "founder approves the sequence, not just the idea of rebranding",
+    "ask_founder_if": "always"
+   },
+   {
+    "n": 7,
+    "name": "Run the sequenced phases",
+    "does": "Execute each phase workflow in order, routing to BRAND-W10, W12, W14 and W16 as sequenced, each with its own founder gate.",
+    "inputs": [
+     "founder decision"
+    ],
+    "tools": [],
+    "skill": null,
+    "output": "phase completion log",
+    "check": "no phase starts before its dependency phase is founder-approved"
+   },
+   {
+    "n": 8,
+    "name": "Measure by shipped artifacts against the real trigger",
+    "does": "Measure the program's success by what actually shipped and moved the trigger metric, against a real prior trend, not a launch-week spike.",
+    "inputs": [
+     "trigger metric",
+     "phase completion log"
+    ],
+    "tools": [
+     "script: metric_read"
+    ],
+    "skill": null,
+    "output": "program readout",
+    "check": "readout compares to the pre-rebrand trend, not just a single before/after point"
+   },
+   {
+    "n": 9,
+    "name": "Log the program",
+    "does": "Log the full program, decisions and readout to the registry.",
+    "inputs": [
+     "program readout"
+    ],
+    "tools": [],
+    "skill": "shared/registry-entry",
+    "output": "registry entry",
+    "check": "readout is honest about what did not move, not only what did"
+   }
+  ],
+  "outputs": [
+   "equity audit",
+   "keep/change list",
+   "phased program plan",
+   "program readout"
+  ],
+  "qa": [
+   "equity audit grounded in real recent findings",
+   "dependencies sequenced correctly",
+   "readout compared to a real prior trend, not a spike"
+  ],
+  "read_point": "set at program approval, measured against the pre-rebrand trend after the full sequence ships.",
+  "typical_duration": "agent time spans the full program (weeks to months); each phase carries its own workflow's duration.",
+  "subagents": []
+ }
+]

@@ -1,0 +1,1217 @@
+[
+  {
+    "id": "money/reconcile",
+    "name": "Reconcile a settlement source",
+    "parent": null,
+    "invoke_when": "any recurring payout, remittance or invoice from an outside source needs matching to the books",
+    "select_by": {
+      "source": "gateway | marketplace | cod-courier | ad-platform-invoices"
+    },
+    "inputs_required": [
+      "source statement or invoice for the period",
+      "bank statement or spend dashboard to match against",
+      "chart of accounts"
+    ],
+    "steps": [
+      "Pull the source's raw statement for the period.",
+      "Pick the source's own sub-skill by the select_by source switch.",
+      "Run money.reconciliation with that source's unbundling rule.",
+      "Name a cause for every gap, never leave one as rounding.",
+      "Return the reconciliation table and any journal entry draft."
+    ],
+    "checks": [
+      "every gap has a named cause",
+      "GST and TCS lines are never netted into one number",
+      "the reconciliation ties to a real bank credit or spend record, not an assumption"
+    ],
+    "output": "{source, period, matched_total, gap_total, gap_causes[], journal_entries[]}",
+    "used_by": [
+      "MONEY-W01"
+    ],
+    "shared_with": [],
+    "skill_md": "---\nname: money/reconcile\nowner: MONEY\nversion: 1\ninvoke_when: a payout, remittance or invoice from outside the brand needs matching to the books\ninputs: source statement, bank statement or spend dashboard, chart of accounts\noutputs: reconciliation table, gap causes, draft journal entries\n---\n# Reconcile a settlement source\n\n## Purpose\nEvery outside source (a gateway, a marketplace, a COD courier, an ad platform) pays or bills the brand on its own schedule and its own math. This skill is the dispatcher: it picks the right sub-skill by source and never lets a gap get filed away as rounding.\n\n## Steps\n1. Pull the source's statement for the period.\n2. Match `select_by.source` to gateway, marketplace, cod-courier or ad-platform-invoices and hand off to that child skill.\n3. Run `money.reconciliation` with the source's own unbundling rule (fee, commission, TCS, GST on fee, refund, shipping fee as separate lines).\n4. Match the unbundled total to the actual bank credit or the actual ad spend logged.\n5. Name a cause for every gap over a small tolerance.\n6. Draft the journal entry from the unbundled lines, one entry per settlement.\n\n## Checks\n- No gap is left unexplained.\n- TCS and GST on fees are always their own lines.\n- The matched total ties to a real bank credit, not an assumption.\n\n## Output\nA reconciliation table with source, period, matched total, gap total, named gap causes and draft journal entries.\n\n## Example\nA Meta invoice of 42,300 rupees for the month is matched against 41,850 rupees logged in the spend dashboard. The 450 rupee gap is named: a late-arriving GST correction from the prior invoice, not rounding."
+  },
+  {
+    "id": "money/reconcile/gateway",
+    "name": "Reconcile payment gateway settlement",
+    "parent": "money/reconcile",
+    "invoke_when": "a payment gateway (Razorpay, Cashfree, PayU or similar) pays out for the period",
+    "select_by": {
+      "source": "gateway"
+    },
+    "inputs_required": [
+      "gateway settlement file",
+      "bank statement",
+      "fee schedule"
+    ],
+    "steps": [
+      "Unbundle each payout into gross sale, fee, refund, GST on the fee and net.",
+      "Match the net figure to the bank credit within 2 days.",
+      "Flag any payout not credited inside the gateway's own settlement SLA.",
+      "For cross-currency payouts, apply the same-day conversion rate and separate FX gain or loss from the fee line."
+    ],
+    "checks": [
+      "fee and GST on fee are separate lines",
+      "FX gain or loss is never blended into the fee line",
+      "an uncredited payout is aged, not silently carried forward"
+    ],
+    "output": "{payout_id, gross, fee, gst_on_fee, refund, fx_adjustment, net, bank_match, age_days}",
+    "used_by": [
+      "MONEY-W01"
+    ],
+    "shared_with": [],
+    "skill_md": "---\nname: money/reconcile/gateway\nowner: MONEY\nversion: 1\ninvoke_when: a payment gateway settles a batch of orders to the bank\ninputs: gateway settlement file, bank statement, fee schedule\noutputs: per-payout reconciliation with bank match\n---\n# Reconcile payment gateway settlement\n\n## Purpose\nA gateway payout is never the same as gross sales. This skill unbundles every payout into its real parts so the books never show one lump deposit.\n\n## Steps\n1. Pull the settlement file for the period and the matching bank statement.\n2. For each payout, unbundle gross sale, gateway fee, refund, GST charged on the fee, and any FX adjustment for cross-border payments.\n3. Match the net figure to the actual bank credit.\n4. Age any payout not credited inside the gateway's stated settlement window (typically T+1 to T+3).\n5. Draft the journal entry with each unbundled line as its own account.\n\n## Checks\n- Fee and GST on fee never merge into one line.\n- FX adjustment is separated from the fee, never hidden inside it.\n- An aged payout carries a day count, not a vague 'pending' label.\n\n## Output\nOne row per payout: gross, fee, GST on fee, refund, FX adjustment, net, bank match status, age in days.\n\n## Example\nA payout of 118,000 rupees unbundles to 122,500 gross sale, minus 2,100 fee, minus 378 GST on the fee, minus 2,022 refunds, net 118,000, matched to the bank credit dated 2 days later."
+  },
+  {
+    "id": "money/reconcile/marketplace",
+    "name": "Reconcile marketplace settlement",
+    "parent": "money/reconcile",
+    "invoke_when": "a marketplace (Amazon, Flipkart, Myntra or similar) pays out a settlement cycle",
+    "select_by": {
+      "source": "marketplace"
+    },
+    "inputs_required": [
+      "marketplace settlement report",
+      "TCS certificate",
+      "order and return data"
+    ],
+    "steps": [
+      "Unbundle commission, fixed fee, shipping fee, TCS under Section 52, GST on fees and refunds per payout.",
+      "Match TCS deducted to the marketplace's own TCS certificate.",
+      "Match refunds in the settlement to actual returns in the order data.",
+      "Flag any commission rate that does not match the agreed rate card."
+    ],
+    "checks": [
+      "TCS is matched to the certificate, never assumed",
+      "commission rate is checked against the agreed card, not accepted as stated",
+      "a refund in the settlement without a matching return is flagged"
+    ],
+    "output": "{payout_id, gross, commission, fixed_fee, shipping_fee, tcs, gst_on_fees, refunds, net, rate_card_check}",
+    "used_by": [
+      "MONEY-W01"
+    ],
+    "shared_with": [],
+    "skill_md": "---\nname: money/reconcile/marketplace\nowner: MONEY\nversion: 1\ninvoke_when: a marketplace settles a payout cycle\ninputs: marketplace settlement report, TCS certificate, order and return data\noutputs: per-payout reconciliation with a rate-card check\n---\n# Reconcile marketplace settlement\n\n## Purpose\nMarketplace settlements bury commission, fees, TCS and refunds inside one payout figure. This skill pulls them apart and checks the marketplace charged what it agreed to.\n\n## Steps\n1. Pull the settlement report and the marketplace's TCS certificate for the period.\n2. Unbundle commission, fixed fee, shipping fee, TCS under Section 52, GST on fees and refunds.\n3. Match TCS deducted in the settlement to the certificate the marketplace issues.\n4. Match every refund line in the settlement to an actual return in the order data.\n5. Check the commission rate charged against the brand's agreed rate card by category.\n6. Flag any mismatch with the exact order or SKU it came from.\n\n## Checks\n- TCS is never assumed correct; it is matched to the certificate.\n- A refund with no matching return is flagged, not silently accepted.\n- The commission rate check is per category, since rates vary by category.\n\n## Output\nOne row per payout with gross, commission, fixed fee, shipping fee, TCS, GST on fees, refunds, net and a rate-card check result.\n\n## Example\nA Flipkart payout shows 8.5 percent commission on a category the rate card sets at 7.2 percent; the 1.3 point gap is flagged against the specific SKU category before the settlement is booked."
+  },
+  {
+    "id": "money/reconcile/cod-courier",
+    "name": "Reconcile COD cash and courier remittance",
+    "parent": "money/reconcile",
+    "invoke_when": "cash on delivery is collected by a courier and remitted to the bank on its own cycle",
+    "select_by": {
+      "source": "cod-courier"
+    },
+    "inputs_required": [
+      "courier COD collection report",
+      "courier remittance report",
+      "courier SLA cycle",
+      "bank statement"
+    ],
+    "steps": [
+      "Track cash collected per courier per order.",
+      "Age the gap between collection and remittance by courier.",
+      "Escalate any remittance stuck past the courier's stated SLA cycle with the order IDs and SLA clause.",
+      "Roll the aged gap into the cash forecast as a receivable, not as cash in hand."
+    ],
+    "checks": [
+      "aging is by courier, never blended across couriers",
+      "an escalation names the exact orders and the exact SLA clause",
+      "unremitted COD is treated as a receivable in the cash forecast, not as cash on hand"
+    ],
+    "output": "{courier, period, collected, remitted, gap, age_days, sla_cycle_days, escalation_needed, order_ids[]}",
+    "used_by": [
+      "MONEY-W01"
+    ],
+    "shared_with": [],
+    "skill_md": "---\nname: money/reconcile/cod-courier\nowner: MONEY\nversion: 1\ninvoke_when: cash on delivery is collected by a courier and needs matching to what actually reached the bank\ninputs: courier COD collection report, courier remittance report, courier SLA cycle, bank statement\noutputs: aged COD gap table by courier with escalation notes\n---\n# Reconcile COD cash and courier remittance\n\n## Purpose\nCOD cash sits with the courier until it is remitted. This skill ages that gap by courier so a slow remittance is caught before it becomes a cash problem instead of an accounting afterthought.\n\n## Steps\n1. Pull the courier's own collection report and remittance report for the period.\n2. Match collected cash per order to the remittance that eventually lands in the bank.\n3. Age every gap in days, by courier, against that courier's own stated SLA cycle.\n4. For any remittance stuck past the SLA, build the escalation note: the order IDs, the amount, and the SLA clause it breaches.\n5. Feed the unremitted total into the cash forecast as a receivable, never as cash in hand.\n\n## Checks\n- Aging never blends couriers together; each courier has its own SLA cycle.\n- An escalation cites the SLA clause by name, not a general complaint.\n- Unremitted COD lowers the cash forecast's available cash, it does not inflate it.\n\n## Output\nA table by courier: collected, remitted, gap, age in days, SLA cycle days, and an escalation flag with order IDs where the gap exceeds the SLA.\n\n## Example\nCourier X's SLA is a 7-day remittance cycle; an 82,000 rupee batch sits at 11 days. The escalation names the 34 order IDs and cites the 7-day clause in the courier's own service agreement."
+  },
+  {
+    "id": "money/reconcile/ad-platform-invoices",
+    "name": "Reconcile ad platform invoices to logged spend",
+    "parent": "money/reconcile",
+    "invoke_when": "an ad platform (Meta, Google) invoices the brand and the invoice needs matching to the spend dashboard",
+    "select_by": {
+      "source": "ad-platform-invoices"
+    },
+    "inputs_required": [
+      "platform invoice",
+      "spend dashboard export",
+      "payment method used for the ad account"
+    ],
+    "steps": [
+      "Pull the platform's invoice for the period.",
+      "Pull the spend the dashboard reports for the same period, using period totals not daily averages.",
+      "Match invoice total to dashboard total.",
+      "Name the cause of any gap: a billing-cycle mismatch, a currency conversion, or a credit applied."
+    ],
+    "checks": [
+      "totals compared, never daily figures averaged",
+      "a currency conversion difference is named as such, not left as unexplained variance"
+    ],
+    "output": "{platform, period, invoiced, logged, gap, gap_cause}",
+    "used_by": [
+      "MONEY-W01"
+    ],
+    "shared_with": [],
+    "skill_md": "---\nname: money/reconcile/ad-platform-invoices\nowner: MONEY\nversion: 1\ninvoke_when: an ad platform's invoice needs matching to what the spend dashboard reports\ninputs: platform invoice, spend dashboard export, ad account payment method\noutputs: invoice-to-dashboard reconciliation line\n---\n# Reconcile ad platform invoices to logged spend\n\n## Purpose\nAd platforms bill on their own cycle, which rarely lines up cleanly with a calendar month or with the currency the dashboard reports in. This skill catches the gap before it distorts the P&L's marketing cost line.\n\n## Steps\n1. Pull the platform's invoice for the billing period.\n2. Pull the dashboard's logged spend for the matching period, as a period total, never an average of daily figures.\n3. Compare the two totals directly.\n4. If they differ, check for a billing-cycle boundary mismatch, a currency conversion difference, or a credit or refund applied by the platform.\n5. Name the exact cause; never file the gap as unexplained variance.\n\n## Checks\n- Comparison always uses period totals, never daily averages.\n- A currency conversion gap states the rate used on each side.\n- The gap becomes a line in the platform-to-books reconciliation, not a silent write-off.\n\n## Output\nOne line per platform per period: invoiced amount, logged amount, gap, and the named cause.\n\n## Example\nMeta's invoice covers the 3rd to the 2nd of the next month, while the dashboard reports calendar months; the resulting 6,200 rupee shift is named as a billing-cycle boundary, not a spend discrepancy."
+  },
+  {
+    "id": "money/audit-tracking",
+    "name": "Audit a tracking surface",
+    "parent": null,
+    "invoke_when": "a tracking surface needs its recurring settings and event-quality audit run",
+    "select_by": {
+      "surface": "ga4 | meta-capi | google-ads | server-events"
+    },
+    "inputs_required": [
+      "metric contract: key events",
+      "the surface's live configuration export",
+      "consent management config"
+    ],
+    "steps": [
+      "Pick the surface's child skill by the select_by surface switch.",
+      "Pull the surface's live configuration.",
+      "Run the surface's fixed checklist.",
+      "Verify every store event maps to that surface's own standard or key event.",
+      "Test in the surface's debug tool before returning a result."
+    ],
+    "checks": [
+      "every checklist item is pass, fail or unavailable, never skipped",
+      "no live tracking configuration is changed by this skill, only audited"
+    ],
+    "output": "{surface, checklist_result[], event_mapping[], debug_test_result, fix_list[]}",
+    "used_by": [
+      "MONEY-W10"
+    ],
+    "shared_with": [],
+    "skill_md": "---\nname: money/audit-tracking\nowner: MONEY\nversion: 1\ninvoke_when: a tracking surface needs its recurring configuration and event-quality audit\ninputs: metric contract key events, the surface's live config, consent config\noutputs: checklist result, event mapping, debug test result, ranked fix list\n---\n# Audit a tracking surface\n\n# Purpose\nGA4, Meta pixel and CAPI, Google Ads and server-side tagging each drift on their own schedule. This skill is the dispatcher that sends the audit to the right surface-specific checklist and never applies a fix itself.\n\n## Steps\n1. Match `select_by.surface` to ga4, meta-capi, google-ads or server-events and hand off to that child skill.\n2. Pull the surface's current live configuration, dated.\n3. Run the fixed checklist for that surface.\n4. Verify every store event (purchase, add to cart, lead) maps to that surface's own standard or key event, with value passed through.\n5. Test the live setup in the surface's own debug tool (DebugView, Test Events, or the Google Ads diagnostics tab).\n6. Build the ranked fix list: current setting, proposed setting, and who applies it.\n\n## Checks\n- Every checklist item returns pass, fail or unavailable, never skipped.\n- No tracking configuration is changed; only the fix list is produced.\n- A fix names the surface it touches.\n\n## Output\nSurface, checklist result, event mapping table, debug test result and a ranked fix list.\n\n## Example\nA GA4 audit finds `page_view` still marked as a key event, inflating the key-event count; the fix list names the exact setting to unmark, for a person with GA4 admin access to apply."
+  },
+  {
+    "id": "money/audit-tracking/ga4",
+    "name": "Audit GA4 tracking",
+    "parent": "money/audit-tracking",
+    "invoke_when": "the surface picked is GA4",
+    "select_by": {
+      "surface": "ga4"
+    },
+    "inputs_required": [
+      "GA4 property/stream config",
+      "GTM container export",
+      "sample event log"
+    ],
+    "steps": [
+      "Check property and stream structure: one property per journey.",
+      "Check timezone, data retention and internal traffic filtering.",
+      "Confirm consent mode gating matches the consent banner.",
+      "Confirm enhanced measurement and ecommerce parameters are set (item, value, currency).",
+      "Confirm key events are marked correctly; page_view is never a key event.",
+      "Test in DebugView with a real session."
+    ],
+    "checks": [
+      "one property per journey confirmed",
+      "internal traffic filtered",
+      "no page_view marked as a key event"
+    ],
+    "output": "{property_check, stream_check, consent_check, ecommerce_params_check, key_event_check, debugview_result}",
+    "used_by": [
+      "MONEY-W10"
+    ],
+    "shared_with": [],
+    "skill_md": "---\nname: money/audit-tracking/ga4\nowner: MONEY\nversion: 1\ninvoke_when: the tracking audit's surface is GA4\ninputs: GA4 property/stream config, GTM container export, sample event log\noutputs: GA4-specific checklist result and DebugView test\n---\n# Audit GA4 tracking\n\n## Purpose\nCatch broken or misconfigured GA4 settings before they corrupt a report someone reads with confidence.\n\n## Steps\n1. Confirm one property exists per customer journey, not one property doing double duty.\n2. Check timezone, data retention window, and that internal and staff traffic is filtered out.\n3. Confirm consent mode gating matches the live consent banner's states.\n4. Confirm enhanced measurement is on and ecommerce parameters (item, value, currency) are present on purchase events.\n5. Confirm key events are the real conversion actions; `page_view` is never marked as one.\n6. Fire a real test session and confirm it appears correctly in DebugView.\n\n## Checks\n- One property per journey.\n- Internal traffic is filtered, confirmed by a live check.\n- No `page_view` marked as a key event.\n\n## Output\nA checklist result per item plus the DebugView test outcome.\n\n## Example\nDebugView shows a purchase event firing with `value: 0` because the ecommerce parameter was not mapped from the checkout's order total; the fix list names the exact parameter to map."
+  },
+  {
+    "id": "money/audit-tracking/meta-capi",
+    "name": "Audit Meta pixel and CAPI",
+    "parent": "money/audit-tracking",
+    "invoke_when": "the surface picked is Meta pixel and Conversions API",
+    "select_by": {
+      "surface": "meta-capi"
+    },
+    "inputs_required": [
+      "Meta pixel and CAPI configuration",
+      "dataset quality read",
+      "consent management config"
+    ],
+    "steps": [
+      "Pull dataset quality and event match quality using read-only Meta MCP tools.",
+      "Check deduplication between pixel and CAPI events by event ID.",
+      "Confirm every store event maps to a Meta standard event with value and currency.",
+      "Check consent gating fires before any event sends.",
+      "Test in Meta's Test Events tool."
+    ],
+    "checks": [
+      "dedup confirmed by event ID, not assumed",
+      "event match quality read from the platform, never estimated",
+      "no write tool used; only ads_pixel_event_read, ads_get_dataset_quality, ads_get_dataset_stats"
+    ],
+    "output": "{dedup_check, event_match_quality, standard_event_mapping[], consent_gating_check, test_events_result}",
+    "used_by": [
+      "MONEY-W10"
+    ],
+    "shared_with": [],
+    "skill_md": "---\nname: money/audit-tracking/meta-capi\nowner: MONEY\nversion: 1\ninvoke_when: the tracking audit's surface is Meta pixel and CAPI\ninputs: Meta pixel/CAPI config, dataset quality read, consent config\noutputs: dedup, event match quality and standard-event mapping result\n---\n# Audit Meta pixel and CAPI\n\n## Purpose\nA browser pixel and a server-side CAPI event for the same purchase must dedup correctly, or Meta double-counts conversions and the reported ROAS is wrong.\n\n## Steps\n1. Read dataset quality and event match quality with the read-only Meta MCP tools (`ads_pixel_event_read`, `ads_get_dataset_quality`, `ads_get_dataset_stats`). Never call a write tool.\n2. Check that pixel and CAPI events for the same action share the same event ID for deduplication.\n3. Confirm every store event maps to a Meta standard event (Purchase, AddToCart, Lead) with value and currency passed.\n4. Confirm consent gating blocks the event until consent is given, matching the banner.\n5. Fire a real test event and confirm it appears in Meta's Test Events tool.\n\n## Checks\n- Dedup is confirmed by matching event IDs, never assumed from setup screenshots.\n- Event match quality is read from the platform, never estimated.\n- Only read tools are used; this skill never creates, updates or activates anything.\n\n## Output\nDedup check, event match quality score, standard-event mapping table, consent gating check and test event result.\n\n## Example\nEvent match quality reads low because the CAPI event sends no phone or email hash; the fix list names the exact hashed parameter to add server-side."
+  },
+  {
+    "id": "money/audit-tracking/google-ads",
+    "name": "Audit Google Ads conversion tracking",
+    "parent": "money/audit-tracking",
+    "invoke_when": "the surface picked is Google Ads",
+    "select_by": {
+      "surface": "google-ads"
+    },
+    "inputs_required": [
+      "Google Ads conversion action list",
+      "enhanced conversions config",
+      "GTM container export"
+    ],
+    "steps": [
+      "Confirm one primary purchase conversion action is set.",
+      "Confirm enhanced conversions pass real order value, not an estimated one.",
+      "Pick the tracking route (app, GTM, server-side) by the brand's spend level.",
+      "Check for duplicate or conflicting conversion actions.",
+      "Test in the Google Ads diagnostics tab."
+    ],
+    "checks": [
+      "one primary purchase action confirmed",
+      "order value is the real order total, never an estimate",
+      "tracking route matches the brand's spend level, not a default"
+    ],
+    "output": "{primary_action_check, enhanced_conversions_check, tracking_route, duplicate_action_check, diagnostics_result}",
+    "used_by": [
+      "MONEY-W10"
+    ],
+    "shared_with": [],
+    "skill_md": "---\nname: money/audit-tracking/google-ads\nowner: MONEY\nversion: 1\ninvoke_when: the tracking audit's surface is Google Ads\ninputs: Google Ads conversion action list, enhanced conversions config, GTM container export\noutputs: conversion action and enhanced-conversions checklist result\n---\n# Audit Google Ads conversion tracking\n\n## Purpose\nA wrong or duplicated primary conversion action skews every bid strategy built on it.\n\n## Steps\n1. Confirm exactly one primary purchase conversion action is set; flag any duplicate or secondary action miscounted as primary.\n2. Confirm enhanced conversions pass the real order value through, not an estimated average order value.\n3. Pick the tracking route (native app SDK, GTM, or server-side container) that matches the brand's current spend level; a small brand rarely needs full server-side tagging yet.\n4. Check for conflicting or overlapping conversion actions counting the same purchase twice.\n5. Confirm the setup in the Google Ads diagnostics tab with a live test conversion.\n\n## Checks\n- One primary purchase action, confirmed live.\n- Order value is the real total, never an estimate.\n- The tracking route is justified by the brand's spend level, not left as whatever was set up first.\n\n## Output\nPrimary action check, enhanced conversions check, chosen tracking route with justification, duplicate action check and diagnostics result.\n\n## Example\nTwo conversion actions are both marked primary after a past migration; the fix list names which one to demote so bidding does not double-count purchases."
+  },
+  {
+    "id": "money/audit-tracking/server-events",
+    "name": "Audit server-side tag management",
+    "parent": "money/audit-tracking",
+    "invoke_when": "the surface picked is server-side or tag-management infrastructure itself",
+    "select_by": {
+      "surface": "server-events"
+    },
+    "inputs_required": [
+      "tag management container structure",
+      "server-side tagging config",
+      "consent mode config"
+    ],
+    "steps": [
+      "Audit the container structure itself, not just GA4 or Meta individually.",
+      "Check server-side tagging setup and its consent mode gating.",
+      "Find duplicate or dead tags firing without a live destination.",
+      "Confirm the container change history matches the last known-good state after any site change."
+    ],
+    "checks": [
+      "container audited as a whole, not tag by tag in isolation",
+      "dead tags are found and named, not left firing silently"
+    ],
+    "output": "{container_structure_check, server_side_check, consent_gating_check, dead_tag_list[]}",
+    "used_by": [
+      "MONEY-W10"
+    ],
+    "shared_with": [],
+    "skill_md": "---\nname: money/audit-tracking/server-events\nowner: MONEY\nversion: 1\ninvoke_when: the tracking audit's surface is server-side tagging or the tag manager itself\ninputs: tag management container structure, server-side tagging config, consent mode config\noutputs: container-level checklist result and dead-tag list\n---\n# Audit server-side tag management\n\n## Purpose\nGA4 and Meta audits check their own tags. This skill checks the container that fires them, since a broken container structure breaks every tag inside it at once.\n\n## Steps\n1. Map the full container structure: triggers, variables, and every tag firing from it.\n2. Check the server-side tagging setup specifically: which events route through a server container versus the browser, and whether that split still matches the brand's spend level.\n3. Confirm consent mode gating is applied at the container level, not per tag inconsistently.\n4. Find duplicate tags firing the same event twice, and dead tags pointing at a destination that no longer exists.\n5. Confirm the container's last change matches the last known-good state after any recent site or app change.\n\n## Checks\n- The container is audited as a whole, not tag by tag with no view of the structure.\n- Dead tags are named specifically, not left firing silently and wasting event quota.\n- Consent gating is checked at the container level.\n\n## Output\nContainer structure check, server-side routing check, consent gating check and a named dead-tag list.\n\n## Example\nA tag left over from a discontinued email platform still fires on every checkout page; it is named in the dead-tag list for removal."
+  },
+  {
+    "id": "money/pnl-close-checklist",
+    "name": "Build the P&L ladder and run the close checklist",
+    "parent": null,
+    "invoke_when": "the monthly close needs the cost classification tree applied and the ladder built",
+    "select_by": {
+      "mode": "classify | ladder | close-checklist"
+    },
+    "inputs_required": [
+      "chart of accounts",
+      "order and cost export",
+      "reconciled settlement lines",
+      "prior month's ladder"
+    ],
+    "steps": [
+      "Apply the fixed decision tree for COGS, cost of delivery, marketing cost and OPEX.",
+      "Build the ladder from gross revenue to net profit.",
+      "Run the close checklist: bank recs, accruals, inventory valuation, deferred revenue.",
+      "Diff against the prior month and name the biggest change."
+    ],
+    "checks": [
+      "every line traces to a source",
+      "no line double-counted between COGS and OPEX",
+      "percent-of-revenue column present"
+    ],
+    "output": "{ladder[], close_checklist_result[], biggest_change_note}",
+    "used_by": [
+      "MONEY-W01"
+    ],
+    "shared_with": [],
+    "skill_md": "---\nname: money/pnl-close-checklist\nowner: MONEY\nversion: 1\ninvoke_when: the monthly close needs a P&L ladder and a close checklist run\ninputs: chart of accounts, order and cost export, reconciled settlement lines, prior ladder\noutputs: P&L ladder, close checklist result, change note\n---\n# Build the P&L ladder and run the close checklist\n\n## Purpose\nTurn raw order and cost exports into a labeled, comparable P&L ladder, and confirm the close is actually complete before anyone reads the numbers.\n\n## Steps\n1. Apply the brand's fixed decision tree for what counts as COGS, cost of delivery, marketing cost and OPEX.\n2. Build the ladder line by line from gross revenue down to net profit.\n3. Run the close checklist: bank reconciliations complete, accruals booked, inventory valuation current, deferred revenue correctly held.\n4. Diff this month's ladder against last month's and name the single biggest driver of change.\n\n## Checks\n- Every ladder line traces to a source document or a reconciliation output.\n- No cost appears in both COGS and OPEX.\n- A percent-of-revenue column sits next to every ladder line.\n\n## Output\nThe P&L ladder, the close checklist with a pass or fail per item, and one paragraph naming the biggest change.\n\n## Example\nNet profit percent drops 3 points month over month; the diff names the driver as a spike in COD courier fees, not a vague 'costs went up'."
+  },
+  {
+    "id": "money/margin",
+    "name": "Compute contribution margin by scope",
+    "parent": null,
+    "invoke_when": "a margin number is needed by SKU, basket or channel",
+    "select_by": {
+      "scope": "sku | basket | channel"
+    },
+    "inputs_required": [
+      "order export with SKU, basket and channel detail",
+      "landed cost per SKU",
+      "delivery and marketing cost"
+    ],
+    "steps": [
+      "Compute CM1 after COGS.",
+      "Compute CM2 after delivery cost.",
+      "Compute CM3 after marketing cost.",
+      "Label every figure with its scope.",
+      "Classify each SKU as champion, hidden gem, growth driver or underperformer."
+    ],
+    "checks": [
+      "every figure labeled CM1, CM2 or CM3",
+      "no revenue shown where margin was asked for"
+    ],
+    "output": "{scope, cm1, cm2, cm3, classification}",
+    "used_by": [
+      "MONEY-W02"
+    ],
+    "shared_with": [],
+    "skill_md": "---\nname: money/margin\nowner: MONEY\nversion: 1\ninvoke_when: a margin or SKU-classification number is needed for a basket, SKU or channel\ninputs: order export, landed cost per SKU, delivery and marketing cost\noutputs: CM1/CM2/CM3 by scope, SKU classification\n---\n# Compute contribution margin by scope\n\n## Purpose\nNobody should guess what a margin number includes. This skill always states which layer of cost it has subtracted.\n\n## Steps\n1. Compute CM1: revenue minus COGS.\n2. Compute CM2: CM1 minus delivery and fulfillment cost.\n3. Compute CM3: CM2 minus the marketing cost attributed to that scope.\n4. Attach the scope label (SKU, basket or channel) to every figure.\n5. Rank SKUs and classify each as champion, hidden gem, growth driver or underperformer, using contribution and cash tied up in inventory.\n\n## Checks\n- Every number states CM1, CM2 or CM3 explicitly.\n- Classification uses both contribution and cash tied up, never contribution alone.\n\n## Output\nCM1, CM2, CM3 for the requested scope, plus a SKU classification tag where the scope is SKU.\n\n## Example\nA best-selling SKU shows strong CM1 but is classified underperformer once CM3 accounts for the paid spend driving most of its sales."
+  },
+  {
+    "id": "money/margin/customer-profitability",
+    "name": "Compute true customer profitability",
+    "parent": "money/margin",
+    "invoke_when": "loyalty tiering or VIP segmentation needs true profit, not revenue",
+    "select_by": {
+      "scope": "customer"
+    },
+    "inputs_required": [
+      "order-cost dataset",
+      "support ticket cost per contact",
+      "return and refund log",
+      "discount ledger",
+      "current loyalty tiers"
+    ],
+    "steps": [
+      "Add support-ticket cost, return and refund cost, shipping cost and discount cost against each customer's revenue.",
+      "Compute true profitability per customer, in code.",
+      "Compare against the current loyalty tier.",
+      "Flag any tier mismatch."
+    ],
+    "checks": [
+      "no cost bucket estimated; a missing one shows unavailable",
+      "loyalty tiering is checked against profit, never revenue alone"
+    ],
+    "output": "{customer_id, revenue, support_cost, return_cost, discount_cost, true_profit, current_tier, tier_mismatch}",
+    "used_by": [
+      "MONEY-W02"
+    ],
+    "shared_with": [],
+    "skill_md": "---\nname: money/margin/customer-profitability\nowner: MONEY\nversion: 1\ninvoke_when: a loyalty tier design or VIP segmentation needs true profit per customer\ninputs: order-cost dataset, support ticket cost, return log, discount ledger, current tiers\noutputs: true customer profitability table with tier-mismatch flags\n---\n# Compute true customer profitability\n\n## Purpose\nA customer who buys often but returns often, or costs a lot in support tickets, may be worth less than a quieter customer. This skill puts every real cost against revenue before anyone calls someone a VIP.\n\n## Steps\n1. Pull support-ticket cost per contact, return and refund cost, shipping cost and discount cost for each customer.\n2. Subtract all four from revenue, in code, to get true profitability.\n3. Compare true profitability to the customer's current loyalty tier.\n4. Flag any customer whose tier does not match their true profitability rank.\n\n## Checks\n- No cost bucket is estimated; a missing one is marked unavailable, never zero.\n- The comparison to loyalty tier uses true profit, never raw revenue.\n\n## Output\nA table per customer: revenue, each cost bucket, true profit, current tier, and a mismatch flag.\n\n## Example\nA customer with the highest revenue this year is flagged for a tier downgrade once true profit accounts for an 18 percent return rate and 6 support tickets."
+  },
+  {
+    "id": "money/pricing-waterfall",
+    "name": "Price or promo from a profit target",
+    "parent": null,
+    "invoke_when": "a price needs setting bottom-up, or a promo needs a break-even check",
+    "select_by": {
+      "mode": "reprice | promo-gate"
+    },
+    "inputs_required": [
+      "landed cost",
+      "fee schedule",
+      "return rate",
+      "net-profit target",
+      "promo terms if applicable"
+    ],
+    "steps": [
+      "Take the net-profit target, never a keystone rule.",
+      "Solve the waterfall from cost to shelf price, or model the promo's real cost shape.",
+      "Run the break-even or margin stress-test.",
+      "Stress-test 60 to 90 days after launch against real sell-through."
+    ],
+    "checks": [
+      "target always comes from the brand record, never assumed",
+      "waterfall shows every line, none skipped"
+    ],
+    "output": "{mode, waterfall_lines[], recommended_price_or_gate, breakeven_volume}",
+    "used_by": [
+      "MONEY-W03"
+    ],
+    "shared_with": [],
+    "skill_md": "---\nname: money/pricing-waterfall\nowner: MONEY\nversion: 1\ninvoke_when: a product needs pricing from a profit target, or a promo needs a break-even check\ninputs: landed cost, fee schedule, return rate, net-profit target, promo terms\noutputs: price waterfall or promo cost model with a break-even result\n---\n# Price or promo from a profit target\n\n## Purpose\nPrice bottom-up from a real profit target, never top-down from a keystone guess, and never let a promo go live without knowing its true break-even.\n\n## Steps\n1. Read the brand's stated net-profit target for the SKU or line.\n2. For a price: solve the waterfall from landed cost through fees, shipping, returns and marketing cost to the shelf price that hits the target.\n3. For a promo: model the real cost shape of the specific mechanic (percent-off, BOGO, gift-with-purchase, flash sale), not a flat assumption.\n4. Run a break-even go/no-go check, or a margin stress-test for a new price.\n5. Once live, stress-test the price against 60 to 90 days of real sell-through.\n\n## Checks\n- The profit target always comes from the brand record.\n- Every waterfall line between cost and price is shown, none skipped or merged.\n\n## Output\nThe full waterfall or promo cost model, the recommended price or the break-even volume, and the stress-test result once available.\n\n## Example\nA proposed BOGO on a 40 percent margin SKU breaks even only above a 22 percent lift in units; the gate returns no-go until a lift test confirms that volume is realistic."
+  },
+  {
+    "id": "money/cash-forecast-13wk",
+    "name": "Build and monitor the 13-week cash forecast",
+    "parent": null,
+    "invoke_when": "cash needs forecasting, or inventory cash and the cash conversion cycle need planning",
+    "select_by": {
+      "mode": "forecast | inventory-plan | ccc"
+    },
+    "inputs_required": [
+      "bank balance",
+      "payroll calendar",
+      "ad spend plan",
+      "inventory on order",
+      "supplier lead times",
+      "AP and AR aging"
+    ],
+    "steps": [
+      "Build the rolling 13-week forecast.",
+      "Reconcile profit to free cash flow monthly.",
+      "Flag the lowest cash point before it happens.",
+      "Roll inventory forward with lead time, never letting it go negative.",
+      "Track the cash conversion cycle as one number with its 3 parts."
+    ],
+    "checks": [
+      "inventory never modeled negative",
+      "profit and cash reconciled explicitly",
+      "lowest point flagged with lead time to react"
+    ],
+    "output": "{weekly_cash[], lowest_week, profit_to_cash_bridge, inventory_cash_plan, ccc_days}",
+    "used_by": [
+      "MONEY-W04"
+    ],
+    "shared_with": [],
+    "skill_md": "---\nname: money/cash-forecast-13wk\nowner: MONEY\nversion: 1\ninvoke_when: cash needs forecasting or inventory cash and the cash conversion cycle need planning\ninputs: bank balance, payroll calendar, ad spend plan, inventory on order, supplier lead times, AP/AR aging\noutputs: 13-week cash table, lowest-cash flag, inventory cash plan, cash conversion cycle\n---\n# Build and monitor the 13-week cash forecast\n\n## Purpose\nFind the lowest cash point before it happens, and never let an inventory plan assume cash that will not be there.\n\n## Steps\n1. Pull bank balance, payroll calendar, ad spend plan, inventory on order and supplier lead times.\n2. Build the rolling 13-week forecast week by week.\n3. Reconcile this month's profit to free cash flow and check the 4 known cash traps (inventory build, tax timing, prepaid deposits, return timing).\n4. Flag the lowest projected week at least 3 weeks ahead, with a sensitivity range.\n5. Roll inventory forward against supplier lead time, targeting days-of-inventory to that lead time.\n6. Track the cash conversion cycle (days inventory plus days receivable minus days payable) as one number with its 3 parts shown.\n\n## Checks\n- Inventory is never modeled to go negative.\n- Profit and cash are reconciled explicitly, not assumed equal.\n- The lowest point is flagged with enough lead time to act.\n\n## Output\nThe 13-week table, the lowest-cash-week flag with sensitivity, the inventory cash plan and the cash conversion cycle.\n\n## Example\nWeek 9 is flagged as the lowest point due to a supplier deposit and GST payment landing the same week; the flag fires in week 5, giving 4 weeks to arrange a bridge."
+  },
+  {
+    "id": "money/financing-comparison",
+    "name": "Compare financing options against the cash forecast",
+    "parent": null,
+    "invoke_when": "cash is running low, or a hard-to-source launch needs funding",
+    "select_by": {
+      "purpose": "working-capital | launch-funding"
+    },
+    "inputs_required": [
+      "cash forecast",
+      "current financing terms",
+      "reference cost-of-capital rates",
+      "brand's slow-month sales history"
+    ],
+    "steps": [
+      "Compare real borrowing options (line of credit, inventory financing, revenue-based) against reference cost-of-capital rates.",
+      "For a hard-to-source launch, widen to crowdfunding, private capital and manufacturer referrals, and prototype cheaply before commit.",
+      "Stress-test repayment against the brand's own slower-sales scenario."
+    ],
+    "checks": [
+      "every option shown at its real cost of capital, not the advertised headline rate",
+      "repayment stress-test uses real slow-month history"
+    ],
+    "output": "{options[], real_cost_of_capital, repayment_stress_result}",
+    "used_by": [
+      "MONEY-W04"
+    ],
+    "shared_with": [],
+    "skill_md": "---\nname: money/financing-comparison\nowner: MONEY\nversion: 1\ninvoke_when: cash is running low or a hard-to-source launch needs funding\ninputs: cash forecast, current financing terms, reference cost-of-capital rates, slow-month sales history\noutputs: financing option comparison with a repayment stress-test\n---\n# Compare financing options against the cash forecast\n\n## Purpose\nA financing decision made against the actual 13-week forecast, at the real cost of capital, not the advertised rate.\n\n## Steps\n1. Pull the current cash forecast and the lowest-cash flag if one exists.\n2. Compare a line of credit, inventory financing and revenue-based financing against reference cost-of-capital rates for each.\n3. For a hard-to-source or hard-to-fund launch, widen the search to crowdfunding, private capital and manufacturer referrals, and look for a cheap way to prototype before any commitment.\n4. Stress-test the repayment schedule of the leading option against the brand's own slowest historical month, not a generic haircut.\n\n## Checks\n- Every option is shown at its real annualized cost of capital.\n- The stress test uses the brand's own sales history, not an assumed decline.\n\n## Output\nA comparison table of options with real cost of capital, and a repayment stress-test result for the leading option.\n\n## Example\nA revenue-based advance's headline '8 percent fee' works out to a 34 percent annualized cost once the repayment period is short; the comparison states the annualized figure next to the headline one."
+  },
+  {
+    "id": "money/capital-and-investor-reporting",
+    "name": "Assemble the data room and investor/lender reporting pack",
+    "parent": null,
+    "invoke_when": "a raise, a loan process, or recurring investor/lender reporting is underway",
+    "select_by": {
+      "mode": "data-room | recurring-report | board-deck"
+    },
+    "inputs_required": [
+      "P&L ladder",
+      "cash forecast",
+      "CAC/LTV report",
+      "cap table",
+      "loan covenant terms"
+    ],
+    "steps": [
+      "Assemble the recurring documents a lender or investor asks for.",
+      "Produce the monthly update and covenant compliance check.",
+      "Produce the quarterly board deck financials.",
+      "Keep every document version-dated."
+    ],
+    "checks": [
+      "every document version-dated",
+      "covenant status stated as met or breached, never implied"
+    ],
+    "output": "{data_room_docs[], covenant_status, board_deck_financials}",
+    "used_by": [
+      "MONEY-W05"
+    ],
+    "shared_with": [],
+    "skill_md": "---\nname: money/capital-and-investor-reporting\nowner: MONEY\nversion: 1\ninvoke_when: a raise, loan process, or recurring investor or lender reporting is underway\ninputs: P&L ladder, cash forecast, CAC/LTV report, cap table, loan covenant terms\noutputs: data room, covenant status, board deck financials\n---\n# Assemble the data room and investor/lender reporting pack\n\n## Purpose\nPackage the numbers that already exist (P&L, cash, cohort economics) into the shape a lender or investor asks for, without inventing a new deliverable.\n\n## Steps\n1. Pull the current P&L ladder, cash forecast, CAC/LTV report and cap table.\n2. Assemble the data room with every document dated.\n3. Produce the monthly update and check loan covenants explicitly as met or breached.\n4. Produce the quarterly board deck's financial section from the same source numbers, never a separate estimate.\n\n## Checks\n- Every document in the room carries a version date.\n- Covenant status is stated plainly, never implied by a number sitting near a threshold.\n\n## Output\nThe current data room, the covenant compliance status, and the board deck's financial pages.\n\n## Example\nA loan covenant requires a minimum current ratio of 1.2; this month's ratio of 1.15 is stated as breached, with the cash forecast page showing the path back above 1.2."
+  },
+  {
+    "id": "money/insurance-cover-and-claims",
+    "name": "Procure insurance cover and file claims",
+    "parent": null,
+    "invoke_when": "coverage needs identifying or comparing, or a loss event needs a claim filed",
+    "select_by": {
+      "mode": "procure | claim"
+    },
+    "inputs_required": [
+      "brand business profile",
+      "broker quotes",
+      "insurance policy list",
+      "loss event details"
+    ],
+    "steps": [
+      "Identify the coverage an e-commerce brand needs by its own risk profile.",
+      "Compare quotes on premium, deductible and exclusions, not premium alone.",
+      "Track every policy's renewal date.",
+      "On a loss, prepare the claim with the evidence the insurer asks for and track it to resolution."
+    ],
+    "checks": [
+      "quotes compared on more than premium",
+      "renewal tracked ahead of the window",
+      "claim cites the exact policy clause"
+    ],
+    "output": "{mode, coverage_checklist, quote_comparison, renewal_calendar, claim_file}",
+    "used_by": [
+      "MONEY-W05"
+    ],
+    "shared_with": [],
+    "skill_md": "---\nname: money/insurance-cover-and-claims\nowner: MONEY\nversion: 1\ninvoke_when: insurance coverage needs identifying or comparing, or a loss event needs a claim\ninputs: brand business profile, broker quotes, policy list, loss event details\noutputs: coverage checklist, quote comparison, renewal calendar, or claim file\n---\n# Procure insurance cover and file claims\n\n## Purpose\nMatch real coverage to the brand's real risk, and never let a claim slip past the insurer's evidence requirements or the filing deadline.\n\n## Steps\n1. Identify the coverage types that apply: product liability, cyber, business owner's policy, and D&O once outside investors are involved.\n2. Compare quotes on premium, deductible and exclusions together, never premium in isolation.\n3. Track every active policy's renewal date and flag it at least 30 days ahead.\n4. On a loss (transit, stock, cyber, product liability), assemble the claim with the exact evidence that insurer requires and track it through to resolution.\n\n## Checks\n- The quote comparison always shows deductible and exclusions next to premium.\n- A claim always cites the specific policy clause it is filed under.\n\n## Output\nA coverage checklist, a quote comparison table, a renewal calendar, or a tracked claim file.\n\n## Example\nA cheaper cyber policy excludes ransomware payment cost; the comparison flags that exclusion even though its premium looks like the better deal."
+  },
+  {
+    "id": "money/growth-economics-stack",
+    "name": "Report CAC, LTV, revenue forecast and the budget",
+    "parent": null,
+    "invoke_when": "unit economics, a revenue forecast, an OPEX budget, or subscription economics is needed",
+    "select_by": {
+      "module": "cac-ltv | revenue-forecast | opex-budget | subscription-economics"
+    },
+    "inputs_required": [
+      "clean order set (fraud and bot screened)",
+      "ad spend by channel",
+      "marketing calendar",
+      "subscription order history",
+      "profit target"
+    ],
+    "steps": [
+      "Screen orders for fraud and bots before computing anything.",
+      "Compute the 4 labeled CACs and build cohorts.",
+      "Compute LTGP:CAC and payback against fixed bands.",
+      "Forecast revenue from separate inputs, never one blended curve.",
+      "Build subscription unit economics if the brand has subscriptions.",
+      "Build the annual OPEX budget sized to the profit target."
+    ],
+    "checks": [
+      "LTV is always gross profit, never revenue",
+      "no channel-level CAC presented as a finance number",
+      "short histories regressed to the mean, never extrapolated straight-line"
+    ],
+    "output": "{module, result}",
+    "used_by": [
+      "MONEY-W06"
+    ],
+    "shared_with": [],
+    "skill_md": "---\nname: money/growth-economics-stack\nowner: MONEY\nversion: 1\ninvoke_when: CAC, LTV, revenue forecast, subscription economics or the OPEX budget needs computing\ninputs: clean order set, ad spend by channel, marketing calendar, subscription history, profit target\noutputs: the requested module's report\n---\n# Report CAC, LTV, revenue forecast and the budget\n\n## Purpose\nOne engine for the numbers that decide whether to spend the next marketing dollar, so every module uses the same screened order data and the same cohort definitions.\n\n## Steps\n1. Screen the order set for fraud and bot-driven orders before any cohort math runs.\n2. Compute blended, media-only, paid and fully loaded CAC, each labeled.\n3. Build first-order cohorts and compute CAC payback and LTGP:CAC against the metric contract's fixed bands.\n4. Forecast new-customer and returning revenue from the spend-efficiency curve, cohort repeat rate and the dated marketing calendar as separate inputs.\n5. For a subscription brand, build churn against the correct prior-period base and conservative lifetime estimates.\n6. Build the annual OPEX budget sized to the brand's own profit target, separate from the rolling forecast.\n\n## Checks\n- LTV is gross profit, never revenue.\n- No channel-level CAC substitutes for the blended finance number.\n- A short sales history is regressed to the mean, never extrapolated in a straight line.\n\n## Output\nThe requested module's report: CAC/LTV dashboard, revenue forecast with error bars, subscription unit economics, or the OPEX budget.\n\n## Example\nA channel with a great platform-reported ROAS shows a payback period of 11 months once fully loaded CAC and true cohort repeat rate are applied; the scale recommendation holds at current spend, not more."
+  },
+  {
+    "id": "money/mmm-stack-evaluate",
+    "name": "Evaluate a third-party attribution or MMM stack",
+    "parent": null,
+    "invoke_when": "platform ROAS and blended MER keep disagreeing after reconciliation, or a paid attribution tool is proposed",
+    "select_by": {
+      "decision": "adopt | reject | park"
+    },
+    "inputs_required": [
+      "attribution gap report",
+      "tool cost and feature comparison",
+      "brand's own blended-MER and lift-test track record"
+    ],
+    "steps": [
+      "Compare a paid attribution or MMM tool's cost against the brand's own blended-MER and lift-test approach.",
+      "Weigh the tool's claimed accuracy against the brand's own current lift-test accuracy.",
+      "Recommend adopt, reject or park with the cost and the accuracy gap stated plainly."
+    ],
+    "checks": [
+      "the recommendation compares real cost to the brand's own current accuracy, never accepts a vendor claim unchecked"
+    ],
+    "output": "{tool_name, cost, claimed_accuracy_gain, brand_current_accuracy, recommendation}",
+    "used_by": [
+      "MONEY-W06",
+      "MONEY-W11"
+    ],
+    "shared_with": [],
+    "skill_md": "---\nname: money/mmm-stack-evaluate\nowner: MONEY\nversion: 1\ninvoke_when: platform ROAS and blended MER keep disagreeing, or a paid attribution/MMM tool is proposed\ninputs: attribution gap report, tool cost and feature comparison, brand's own lift-test track record\noutputs: adopt, reject or park recommendation with cost and accuracy stated\n---\n# Evaluate a third-party attribution or MMM stack\n\n## Purpose\nDecide whether a paid tool (Triple Whale, Northbeam, Rockerbox or similar) earns its subscription cost against what the brand can already do with its own blended MER and lift tests.\n\n## Steps\n1. Pull the current attribution gap report showing where platform and GA4 or blended numbers disagree.\n2. Pull the tool's real cost and its claimed accuracy improvement, cited to its own source and date.\n3. Compare that claim against the brand's own current lift-test accuracy and blended-MER track record.\n4. Recommend adopt, reject or park, stating the cost and the accuracy gap side by side.\n\n## Checks\n- A vendor's accuracy claim is never repeated as fact; it is labeled as a vendor claim to verify.\n- The recommendation states the real cost against the brand's own current accuracy, not against a competitor's case study.\n\n## Output\nTool name, cost, claimed accuracy gain, the brand's own current accuracy, and a recommendation.\n\n## Example\nA tool costing 2,400 dollars a month claims a 15 percent accuracy gain; the brand's own recent holdout tests already track within 8 percent of platform-reported ROAS, so the recommendation is park until the gap widens."
+  },
+  {
+    "id": "money/gst-tax-compliance",
+    "name": "Track GST, HSN and tax compliance",
+    "parent": null,
+    "invoke_when": "GST nexus, HSN codes, e-way bills or credit notes need tracking ahead of filing",
+    "select_by": {
+      "scope": "hsn-map | nexus-tracking | filing-prep | eway-bill | credit-note"
+    },
+    "inputs_required": [
+      "SKU list",
+      "GSTR-2B",
+      "marketplace TCS lines",
+      "stock transfer and B2B dispatch log",
+      "return and refund log"
+    ],
+    "steps": [
+      "Build and validate the SKU-to-HSN/SAC map.",
+      "Track nexus and registration thresholds per market.",
+      "Prepare GSTR-1/3B inputs and match input credit against GSTR-2B.",
+      "Claim marketplace TCS and TDS credit.",
+      "Raise e-way bills for B2B dispatch and stock transfer.",
+      "Reconcile GST credit notes against returns and refunds."
+    ],
+    "checks": [
+      "no SKU ships without a validated HSN/SAC code",
+      "TCS and GST never netted into one line",
+      "a refund without a matching credit note is flagged before the return period closes"
+    ],
+    "output": "{scope, result}",
+    "used_by": [
+      "MONEY-W07"
+    ],
+    "shared_with": [],
+    "skill_md": "---\nname: money/gst-tax-compliance\nowner: MONEY\nversion: 1\ninvoke_when: GST nexus, HSN codes, e-way bills or credit notes need tracking ahead of a filing\ninputs: SKU list, GSTR-2B, marketplace TCS lines, dispatch log, return log\noutputs: HSN map, nexus status, filing input pack, e-way bill log, credit note reconciliation\n---\n# Track GST, HSN and tax compliance\n\n## Purpose\nTrack the mechanics that feed a GST filing so the brand's own accountant files correctly and on time; this skill tracks, it does not file.\n\n## Steps\n1. Build the SKU-to-HSN/SAC map and validate every code length and category match, since a wrong or short code is a common cause of e-invoice portal rejections.\n2. Track GST or sales-tax nexus and registration thresholds per market the brand sells into.\n3. Prepare the sales and credit data GSTR-1 and 3B need, matching input credit claimed against GSTR-2B.\n4. Reconcile TCS collected under Section 52 and TDS deducted by marketplaces against the credit actually available.\n5. Raise e-way bills for B2B dispatch and stock transfer above the threshold.\n6. Check that every completed return or refund has a matching GST credit note issued and filed on time.\n\n## Checks\n- No SKU ships without a validated HSN/SAC code.\n- TCS and GST on fees are always separate lines.\n- A refund without a matching credit note is flagged before the filing period closes.\n\n## Output\nThe requested scope's result: HSN map, nexus status, GSTR-1/3B input pack, e-way bill log, or credit note reconciliation.\n\n## Example\nA new SKU is caught before its first B2B dispatch: its assigned HSN code is only 4 digits where the brand's turnover requires 6, avoiding an e-invoice portal rejection."
+  },
+  {
+    "id": "money/fixed-asset-register",
+    "name": "Maintain the fixed asset register and depreciation schedule",
+    "parent": null,
+    "invoke_when": "a capital purchase happens, or the monthly depreciation schedule needs running",
+    "select_by": {},
+    "inputs_required": [
+      "capital purchase invoices",
+      "current asset register",
+      "useful life policy"
+    ],
+    "steps": [
+      "Log every asset the brand owns with purchase date and useful life.",
+      "Run the depreciation schedule monthly.",
+      "Keep a running balance per asset."
+    ],
+    "checks": [
+      "every asset has purchase date, useful life and running balance",
+      "no asset is missing from the register after a capital purchase"
+    ],
+    "output": "{asset_id, purchase_date, useful_life, monthly_depreciation, running_balance}",
+    "used_by": [
+      "MONEY-W01"
+    ],
+    "shared_with": [],
+    "skill_md": "---\nname: money/fixed-asset-register\nowner: MONEY\nversion: 1\ninvoke_when: a capital purchase happens or the monthly depreciation schedule needs running\ninputs: capital purchase invoices, current asset register, useful life policy\noutputs: updated register with running depreciation balance\n---\n# Maintain the fixed asset register and depreciation schedule\n\n## Purpose\nKeep one register of every asset the brand owns (equipment, fixtures, website build cost, packaging dies) so depreciation never gets estimated at year end.\n\n## Steps\n1. Log any new capital purchase with its date, cost and category.\n2. Assign useful life from the brand's stated policy, not a one-off guess.\n3. Run the month's depreciation for every asset in the register.\n4. Update each asset's running balance.\n\n## Checks\n- Every asset carries purchase date, useful life and a running balance.\n- No capital purchase this month is missing from the register.\n\n## Output\nThe updated register with this month's depreciation line per asset.\n\n## Example\nA new packaging die purchased for 180,000 rupees with a 3-year useful life adds 5,000 rupees of depreciation to this month's P&L ladder automatically."
+  },
+  {
+    "id": "money/cash-ops-cycle",
+    "name": "Run accounts payable, receivable, payroll and expense",
+    "parent": null,
+    "invoke_when": "a vendor bill, a B2B invoice, a payroll cycle, or an expense statement needs processing",
+    "select_by": {
+      "process": "payable | receivable | payroll | expense"
+    },
+    "inputs_required": [
+      "vendor bills and POs",
+      "B2B invoice terms",
+      "payroll roster",
+      "expense policy",
+      "corporate card statement"
+    ],
+    "steps": [
+      "Capture and match vendor bills to POs and receipts, then route approval by amount and vendor.",
+      "Invoice B2B buyers on agreed terms and run dunning on overdue accounts.",
+      "Process payroll and prepare PF, ESI, professional tax and TDS filings.",
+      "Apply the expense policy and reconcile the corporate card to the ledger."
+    ],
+    "checks": [
+      "no bill paid without its approval step",
+      "gross-to-net shown for every payroll line, not only net",
+      "every expense line marked compliant or flagged"
+    ],
+    "output": "{process, result}",
+    "used_by": [
+      "MONEY-W08"
+    ],
+    "shared_with": [],
+    "skill_md": "---\nname: money/cash-ops-cycle\nowner: MONEY\nversion: 1\ninvoke_when: a vendor bill, B2B invoice, payroll cycle or expense statement needs processing\ninputs: vendor bills and POs, B2B invoice terms, payroll roster, expense policy, card statement\noutputs: AP queue, AR aging, payroll run, or expense reconciliation, by process\n---\n# Run accounts payable, receivable, payroll and expense\n\n## Purpose\nOne engine for the recurring cash-movement processes, so approval chains, payment terms and policy checks are applied the same way every cycle.\n\n## Steps\n1. For payable: capture every bill, match it to its PO and receipt, and route it through the approval chain by amount and vendor.\n2. For receivable: invoice B2B and wholesale buyers on their agreed terms and run a structured dunning sequence on overdue accounts.\n3. For payroll: process the cycle from the roster, then prepare PF, ESI, professional tax and TDS filings, plus Form 16 at year end.\n4. For expense: apply the travel-and-expense policy to every receipt and card charge, then reconcile the card statement to the ledger.\n\n## Checks\n- No bill is scheduled for payment without completing its approval step.\n- Payroll always shows the gross-to-net calculation, not the net figure alone.\n- Every expense line is marked compliant or flagged against the written policy.\n\n## Output\nThe requested process's result: AP approval queue and aging, AR aging and dunning log, payroll run and filing pack, or expense and card reconciliation.\n\n## Example\nA vendor bill routed for approval sits 4 days past the brand's own 3-day SLA for its amount tier; the aging report flags it by name before the vendor calls asking about it."
+  },
+  {
+    "id": "money/partner-commercial-terms",
+    "name": "Set and reconcile affiliate and creator commercial terms",
+    "parent": null,
+    "invoke_when": "commission tiers need setting, a payout needs reconciling, or a creator agreement needs a disclosure check",
+    "select_by": {
+      "party": "affiliate | creator"
+    },
+    "inputs_required": [
+      "product category margins",
+      "customer status rules",
+      "affiliate network statement",
+      "creator agreement template",
+      "live post list"
+    ],
+    "steps": [
+      "Set commission rates by partner type, category and customer status.",
+      "Reconcile the network's payout claim against actual delivered, non-returned orders.",
+      "Keep the creator agreement template current with the disclosure clause.",
+      "Check live posts for ASCI and platform disclosure tags."
+    ],
+    "checks": [
+      "commission never paid on a returned order",
+      "disclosure clause matches the current ASCI guideline"
+    ],
+    "output": "{party, result}",
+    "used_by": [
+      "MONEY-W09"
+    ],
+    "shared_with": [],
+    "skill_md": "---\nname: money/partner-commercial-terms\nowner: MONEY\nversion: 1\ninvoke_when: commission tiers need setting, a payout needs reconciling, or a creator post needs a disclosure check\ninputs: category margins, customer status rules, affiliate statement, agreement template, live post list\noutputs: commission rate table, payout reconciliation, agreement template, or disclosure check\n---\n# Set and reconcile affiliate and creator commercial terms\n\n## Purpose\nProtect margin on every partner payout and keep creator content inside India's disclosure rules.\n\n## Steps\n1. Set commission rates by partner type, product category margin and customer status (new versus returning).\n2. Reconcile what the affiliate network claims is owed against actual delivered, non-returned orders.\n3. Keep the creator agreement template current: deliverables, usage rights, exclusivity, payment terms and the disclosure clause matching the current ASCI guideline.\n4. Check live creator and affiliate posts weekly for the required disclosure tag on each platform.\n\n## Checks\n- A returned or cancelled order never carries a paid commission.\n- The disclosure clause is checked against the current ASCI guideline, not an old template.\n\n## Output\nThe requested result: commission rate table, payout reconciliation, current agreement template, or a disclosure compliance check.\n\n## Example\nAn affiliate statement claims commission on 40 orders; 3 were returned within the window, so the reconciled payout excludes those 3 before approval."
+  },
+  {
+    "id": "money/utm-link-hygiene",
+    "name": "Write and audit the UTM convention",
+    "parent": null,
+    "invoke_when": "campaign links need a fixed convention or an audit against it",
+    "select_by": {},
+    "inputs_required": [
+      "brand's channel list",
+      "existing campaign link export",
+      "GA4 channel report"
+    ],
+    "steps": [
+      "Write one UTM convention covering source, medium, campaign, content and term.",
+      "Audit every existing link against it.",
+      "Clean fake organic or direct rows caused by missing UTMs before anyone reads the channel table."
+    ],
+    "checks": [
+      "every parameter has a fixed, documented value set",
+      "no channel table published with a known UTM leak"
+    ],
+    "output": "{convention, link_audit_table, cleaned_channel_table}",
+    "used_by": [
+      "MONEY-W11"
+    ],
+    "shared_with": [],
+    "skill_md": "---\nname: money/utm-link-hygiene\nowner: MONEY\nversion: 1\ninvoke_when: campaign links need a fixed convention or an audit against it\ninputs: brand channel list, campaign link export, GA4 channel report\noutputs: UTM convention, link audit table, cleaned channel table\n---\n# Write and audit the UTM convention\n\n## Purpose\nA missing or inconsistent UTM turns paid traffic into fake organic or direct traffic in every report downstream. This skill keeps the convention fixed and the links clean.\n\n## Steps\n1. Write one convention for source, medium, campaign, content and term, with a fixed value set for each.\n2. Audit every existing paid and owned link against that convention.\n3. List every non-conforming link with its exact fix.\n4. Clean the channel table of fake organic or direct rows traced to a broken UTM, before it is published.\n\n## Checks\n- Every UTM parameter has a documented, fixed set of allowed values.\n- No channel report goes out with a known UTM leak still unflagged.\n\n## Output\nThe convention document, the link audit table, and the cleaned channel table.\n\n## Example\nA large chunk of 'direct' traffic in GA4 traces to an email campaign sent without any UTM; the cleaned table reclassifies it and the audit flags the sending tool's default settings as the cause."
+  },
+  {
+    "id": "money/attribution-model-reconcile",
+    "name": "Reconcile attribution models and order counts",
+    "parent": null,
+    "invoke_when": "attribution models disagree, or order counts across platforms need cross-checking",
+    "select_by": {
+      "check": "order-count | model-gap | holdout"
+    },
+    "inputs_required": [
+      "order counts by source",
+      "attribution reports by model",
+      "blended MER history"
+    ],
+    "steps": [
+      "Cross-check GA4, Meta, Shopify and marketplace order counts against store orders.",
+      "Flag bot-driven spikes before anyone reacts to them.",
+      "Report the gap between attribution models per channel, never blended.",
+      "Run or schedule a holdout test before a big reallocation call."
+    ],
+    "checks": [
+      "every order-count gap over 2 percent has a named cause",
+      "model gap shown per channel, never as one blended number"
+    ],
+    "output": "{check, result}",
+    "used_by": [
+      "MONEY-W11",
+      "MONEY-W12"
+    ],
+    "shared_with": [],
+    "skill_md": "---\nname: money/attribution-model-reconcile\nowner: MONEY\nversion: 1\ninvoke_when: attribution models disagree or platform order counts need cross-checking against store orders\ninputs: order counts by source, attribution reports by model, blended MER history\noutputs: order-count cross-check, bot spike flags, or a per-channel attribution gap report\n---\n# Reconcile attribution models and order counts\n\n## Purpose\nCatch a bot-inflated session spike and a platform-versus-GA4 attribution disagreement before either one drives a budget decision.\n\n## Steps\n1. Cross-check GA4, Meta, Shopify and marketplace order counts against actual store orders for the period.\n2. Flag any spike in one source's count that does not match store orders as a possible bot signal, and hand it to the security scan.\n3. Report the gap between last-click and data-driven models, and between platform-reported and GA4-reported numbers, per channel.\n4. Before a large reallocation, run or schedule a holdout test rather than trust the attribution gap alone.\n\n## Checks\n- Every order-count gap over 2 percent carries a named cause.\n- The model gap is reported per channel, never collapsed into one number.\n\n## Output\nOrder-count cross-check table, bot spike flag list, and the per-channel attribution gap report.\n\n## Example\nMeta reports 30 percent more sessions than GA4 for one campaign in a single week; the spike is flagged as a likely bot pattern and handed to the weekly security scan instead of being read as real interest."
+  },
+  {
+    "id": "money/attribution-survey-build",
+    "name": "Build the post-purchase attribution survey",
+    "parent": null,
+    "invoke_when": "the attribution model needs a zero-party data source, or a new channel needs proof it works",
+    "select_by": {},
+    "inputs_required": [
+      "attribution gap report",
+      "brand's product lines",
+      "order volume"
+    ],
+    "steps": [
+      "Draft the one-question, thank-you-page survey.",
+      "Branch answer options by product or customer type.",
+      "Set the sample size and response window needed for a usable read.",
+      "Turn answers into a channel-share number, in code."
+    ],
+    "checks": [
+      "the question is one sentence, plain language",
+      "sample size always shown next to a resulting percentage"
+    ],
+    "output": "{question, branches[], sample_plan, channel_share_table}",
+    "used_by": [
+      "MONEY-W12"
+    ],
+    "shared_with": [],
+    "skill_md": "---\nname: money/attribution-survey-build\nowner: MONEY\nversion: 1\ninvoke_when: the attribution model needs a zero-party data source or a new channel needs proof it drives sales\ninputs: attribution gap report, product lines, order volume\noutputs: survey question and branching, sample plan, channel-share table\n---\n# Build the post-purchase attribution survey\n\n## Purpose\nAsk the customer directly when platform attribution and GA4 keep disagreeing, and turn the answer into a real number instead of an anecdote.\n\n## Steps\n1. Draft the one question: how did you hear about us, in plain language.\n2. Branch the answer options by product or customer type where the channel mix genuinely differs.\n3. Set the minimum sample size and response window before any channel-share number is trusted.\n4. Turn the collected answers into a channel-share percentage, computed in code.\n\n## Checks\n- The question stays one sentence.\n- Every channel-share percentage is shown with its sample size.\n\n## Output\nThe survey question and branching, the sample and window plan, and the resulting channel-share table.\n\n## Example\nA new influencer channel claims a large share of new customers on the platform's own dashboard; the survey after 400 responses shows only 9 percent of customers cite it, prompting a closer look at the platform's attribution window."
+  },
+  {
+    "id": "money/dashboard-build",
+    "name": "Build and maintain the reporting dashboard set",
+    "parent": null,
+    "invoke_when": "the daily scoreboard, weekly memo, or the standing dashboard set needs building or cleanup",
+    "select_by": {
+      "mode": "daily | weekly-memo | maintenance"
+    },
+    "inputs_required": [
+      "P&L ladder",
+      "cash forecast",
+      "CM report",
+      "existing dashboard export",
+      "founder's recent questions"
+    ],
+    "steps": [
+      "Compute the daily contribution-margin scoreboard.",
+      "Compute CM, new versus returning split, variance and inventory risk for the weekly memo.",
+      "Audit existing cards and remove unreliable ones.",
+      "Add cards that answer a real, currently asked question."
+    ],
+    "checks": [
+      "revenue, profit and cash always kept as separate reads",
+      "every card traces to a real question, never a vanity metric"
+    ],
+    "output": "{mode, result}",
+    "used_by": [
+      "MONEY-W13"
+    ],
+    "shared_with": [],
+    "skill_md": "---\nname: money/dashboard-build\nowner: MONEY\nversion: 1\ninvoke_when: the daily scoreboard, weekly memo, or standing dashboard set needs building or cleanup\ninputs: P&L ladder, cash forecast, CM report, existing dashboard export, founder's recent questions\noutputs: daily scoreboard, weekly memo inputs, or a cleaned and updated dashboard set\n---\n# Build and maintain the reporting dashboard set\n\n## Purpose\nKeep the numbers everyone reads trustworthy and current, and stop a dashboard from accumulating cards nobody trusts anymore.\n\n## Steps\n1. Compute the daily CM scoreboard, with the window ending on the last full day.\n2. Compute the weekly profit memo inputs: CM, new versus returning revenue split from cohort data, variance against last week, and inventory risk.\n3. Audit the standing dashboards (Shopify home cards, GA4 saved reports, budget scenario views) and name any card that no longer reads correctly.\n4. Remove or flag unreliable cards, and add a card only when it answers a question someone actually asked recently.\n\n## Checks\n- Revenue, profit and cash never blend into one figure.\n- Every card on the dashboard traces to a real question asked.\n\n## Output\nThe daily scoreboard, the weekly memo inputs, or the cleaned dashboard set.\n\n## Example\nA GA4 card showing 'sessions by device' gets removed after nobody has referenced it in 3 months, replaced by a card the founder asked for twice: CM3 by channel this week versus last."
+  },
+  {
+    "id": "money/hiring-scorecard-to-offer",
+    "name": "Run structured hiring from scorecard to offer",
+    "parent": null,
+    "invoke_when": "a hire trigger fires and a search needs to run start to finish",
+    "select_by": {
+      "stage": "trigger | scorecard | interview | offer"
+    },
+    "inputs_required": [
+      "silo ownership map",
+      "role library",
+      "annual budget",
+      "candidate applications"
+    ],
+    "steps": [
+      "Name the trigger as a number and check whether it fired.",
+      "Build the job description, scorecard and comp band.",
+      "Write the honest job ad and the sourced interview question set.",
+      "Score candidates against the scorecard.",
+      "Recommend the top candidate and stop for the founder to make the offer."
+    ],
+    "checks": [
+      "the trigger is always a number, never a feeling",
+      "the scorecard has exactly one governing metric",
+      "no candidate is contacted with an offer or rejection by this skill"
+    ],
+    "output": "{stage, result}",
+    "used_by": [
+      "MONEY-W14"
+    ],
+    "shared_with": [],
+    "skill_md": "---\nname: money/hiring-scorecard-to-offer\nowner: MONEY\nversion: 1\ninvoke_when: a hire trigger fires and a structured search needs to run\ninputs: silo ownership map, role library, annual budget, candidate applications\noutputs: job description, scorecard, job ad, interview questions, or scored candidate table, by stage\n---\n# Run structured hiring from scorecard to offer\n\n## Purpose\nTurn a hiring decision into a repeatable process with one governing metric per role, so a hire is never made on gut feel alone.\n\n## Steps\n1. Confirm the hire trigger fired: a stated number crossing a stated threshold.\n2. Build the job description naming the silo, the artefacts owned, and one metric the role is judged on.\n3. Set the comp band from the role library and the current OPEX budget.\n4. Write an honest job ad matching the scorecard exactly, and a sourced interview question set tied to that one metric.\n5. Score every candidate against the scorecard, citing the specific answer behind each score.\n6. Recommend the top-scored candidate with the score gap to the next candidate, then stop.\n\n## Checks\n- The hire trigger is always a number.\n- The scorecard names exactly one governing metric.\n- No candidate is contacted by this skill; the founder makes every offer and rejection.\n\n## Output\nThe stage's artefact: job description and scorecard, job ad, interview question set, or scored candidate table with a recommendation.\n\n## Example\nTwo candidates score close on the interview set; the recommendation states the 4-point gap and which specific answer drove it, leaving the final call to the founder."
+  },
+  {
+    "id": "money/sop-and-hr-docs",
+    "name": "Write SOPs, the handbook and offboarding checklists",
+    "parent": null,
+    "invoke_when": "a repeated procedure needs an SOP, or the handbook or offboarding needs updating",
+    "select_by": {
+      "doc": "sop | handbook | offboarding"
+    },
+    "inputs_required": [
+      "registry of past requests",
+      "role library",
+      "current handbook",
+      "exit checklist template"
+    ],
+    "steps": [
+      "Spot a procedure repeated 3 times without a written SOP.",
+      "Write the SOP with a named owner and a freshness date.",
+      "Keep the handbook current, including the POSH policy section.",
+      "Run the offboarding checklist with same-day access revocation."
+    ],
+    "checks": [
+      "every SOP has one named owner, never a team",
+      "access revocation is same-day on exit, not same-week"
+    ],
+    "output": "{doc, result}",
+    "used_by": [
+      "MONEY-W15"
+    ],
+    "shared_with": [],
+    "skill_md": "---\nname: money/sop-and-hr-docs\nowner: MONEY\nversion: 1\ninvoke_when: a repeated procedure needs an SOP, or the handbook or an exit needs a checklist\ninputs: registry of past requests, role library, current handbook, exit checklist template\noutputs: SOP, updated handbook, or completed offboarding checklist\n---\n# Write SOPs, the handbook and offboarding checklists\n\n## Purpose\nKeep operating knowledge in a live document with a named owner, not in one person's head, and never leave an exit half-done.\n\n## Steps\n1. Spot when a procedure has been asked for a third time without a written SOP.\n2. Write the SOP: purpose, numbered steps with the tool used at each, and the check before it counts as done.\n3. Assign one named owner and a freshness date.\n4. Keep the handbook current: leave, work-from-home, code of conduct, and the POSH policy section, and confirm every employee has acknowledged it.\n5. On a resignation or termination notice, run the offboarding checklist: same-day access revocation, asset return, knowledge transfer, exit interview, final settlement.\n\n## Checks\n- Every SOP has exactly one named owner, never a team name.\n- Access revocation on exit happens the same day, not the same week.\n\n## Output\nThe requested document: a new SOP, the updated handbook with an acknowledgement log, or a completed offboarding checklist.\n\n## Example\nA third support agent asks how to handle a wrong-size return in the same week; the pattern triggers a written SOP instead of a fourth verbal explanation."
+  },
+  {
+    "id": "money/mgmt-rhythm-and-facilitation",
+    "name": "Design the meeting rhythm and facilitation guides",
+    "parent": null,
+    "invoke_when": "the team's meeting cadence or a trust and accountability session needs designing",
+    "select_by": {
+      "mode": "rhythm | facilitation"
+    },
+    "inputs_required": [
+      "team size",
+      "scoreboard metrics",
+      "past facilitation session notes"
+    ],
+    "steps": [
+      "Design the meeting cadence sized to the team's actual size.",
+      "Build the visible scoreboard the weekly review runs against.",
+      "Prepare a facilitation guide tied to one real metric."
+    ],
+    "checks": [
+      "every meeting has a stated purpose and a metric",
+      "every guide is a run sheet, not a theory summary"
+    ],
+    "output": "{mode, result}",
+    "used_by": [
+      "MONEY-W16"
+    ],
+    "shared_with": [],
+    "skill_md": "---\nname: money/mgmt-rhythm-and-facilitation\nowner: MONEY\nversion: 1\ninvoke_when: the meeting cadence or a team facilitation guide needs designing\ninputs: team size, scoreboard metrics, past facilitation notes\noutputs: meeting cadence design, visible scoreboard, or a facilitation run sheet\n---\n# Design the meeting rhythm and facilitation guides\n\n## Purpose\nSize the meeting calendar to the team that actually exists, and hand the founder a run sheet instead of a theory of team dynamics.\n\n## Steps\n1. Design the cadence: annual reset, quarterly deep dive, weekly trading review, ad hoc, each with a stated purpose.\n2. Build the visible scoreboard the weekly review runs against, using the same metric contract numbers as the finance dashboard.\n3. Design how a decision cascades from the quarterly deep dive down to individual owners.\n4. Prepare a structured trust, dysfunction or accountability facilitation guide as a run sheet, tied to one metric the session should move.\n\n## Checks\n- Every meeting on the cadence has a stated purpose and a metric.\n- A facilitation guide is a run sheet the founder can use directly, not a summary of a framework.\n\n## Output\nThe meeting cadence design, the visible scoreboard, or a facilitation run sheet.\n\n## Example\nA weekly trading review is added only after the scoreboard shows CM3 swinging more than 15 percent week to week; the cadence design states that exact trigger for why the meeting exists."
+  },
+  {
+    "id": "money/vendor-rfp-evaluation",
+    "name": "Run a competitive vendor or 3PL RFP",
+    "parent": null,
+    "invoke_when": "a vendor, 3PL or agency needs selecting or its SLA needs auditing",
+    "select_by": {},
+    "inputs_required": [
+      "candidate vendor list",
+      "invoice history",
+      "SLA terms"
+    ],
+    "steps": [
+      "Run the RFP against at least 3 vendors.",
+      "Run a facility visit or reference check.",
+      "Put SLAs in writing with a stated consequence for a miss.",
+      "Audit every invoice against the SLA and score the vendor on a fixed scorecard."
+    ],
+    "checks": [
+      "at least 3 vendors compared",
+      "every SLA line has a numeric target and a consequence"
+    ],
+    "output": "{rfp_responses, sla, invoice_audit, vendor_score}",
+    "used_by": [
+      "MONEY-W17"
+    ],
+    "shared_with": [],
+    "skill_md": "---\nname: money/vendor-rfp-evaluation\nowner: MONEY\nversion: 1\ninvoke_when: a vendor, 3PL or agency needs selecting, or an existing one needs an SLA audit\ninputs: candidate vendor list, invoice history, SLA terms\noutputs: RFP comparison, written SLA, invoice audit, vendor scorecard\n---\n# Run a competitive vendor or 3PL RFP\n\n## Purpose\nSelect and hold vendors to a real, written standard instead of a single quote and a handshake.\n\n## Steps\n1. Run the RFP against at least 3 candidate vendors.\n2. Run a facility visit for a 3PL, or a reference check for an agency.\n3. Put the SLA in writing with a numeric target and a stated consequence for a miss.\n4. Audit every incoming invoice against the SLA and the RFP-agreed rate.\n5. Score the vendor on a fixed scorecard computed from the SLA data.\n\n## Checks\n- At least 3 vendors are compared before a selection.\n- Every SLA line has a numeric target and a named consequence.\n\n## Output\nThe RFP comparison, the written SLA, the invoice audit result, and the vendor scorecard.\n\n## Example\nA 3PL's invoice bills a pick-and-pack fee 12 percent above the RFP-agreed rate for 6 straight weeks; the audit flags the exact line before it becomes a pattern nobody caught."
+  },
+  {
+    "id": "money/vendor-saas-contract-governance",
+    "name": "Govern SaaS renewals, contracts, vendor risk and freelancers",
+    "parent": null,
+    "invoke_when": "tooling spend, a contract, a SaaS renewal, a vendor risk check, or a freelancer engagement needs governing",
+    "select_by": {
+      "scope": "tooling | renewal | risk | contract | freelancer"
+    },
+    "inputs_required": [
+      "software and tooling list",
+      "SaaS usage data",
+      "contract templates",
+      "vendor risk questionnaire",
+      "freelancer scope of work"
+    ],
+    "steps": [
+      "Audit tooling against revenue stage; never add an ERP too early.",
+      "Watch SaaS renewal dates and draft the renegotiation email from real usage.",
+      "Run the vendor risk questionnaire and confirm a signed DPA before data access.",
+      "Redline incoming contracts against the standard checklist.",
+      "Run the freelancer engagement lifecycle from scope to offboarding."
+    ],
+    "checks": [
+      "no new system added without a named owner",
+      "no vendor gets data access without a signed DPA"
+    ],
+    "output": "{scope, result}",
+    "used_by": [
+      "MONEY-W18"
+    ],
+    "shared_with": [],
+    "skill_md": "---\nname: money/vendor-saas-contract-governance\nowner: MONEY\nversion: 1\ninvoke_when: tooling spend, a SaaS renewal, a contract, a vendor risk check, or a freelancer engagement needs governing\ninputs: tooling list, SaaS usage data, contract templates, vendor risk questionnaire, freelancer scope\noutputs: tooling audit, renewal draft, risk assessment, redlined contract, or freelancer record, by scope\n---\n# Govern SaaS renewals, contracts, vendor risk and freelancers\n\n## Purpose\nKeep tool spend matched to revenue stage, stop a bad clause from getting signed, and never let a vendor touch customer data without a signed agreement.\n\n## Steps\n1. Audit the store's software spend against its current revenue stage; flag anything added too early, like an ERP for a brand that does not need one yet.\n2. Watch every SaaS contract's auto-renew date and usage data, and draft a renegotiation or cancellation email citing the brand's own usage before the notice window closes.\n3. Before a new SaaS tool, ESP, 3PL or agency gets data access, run the standard risk questionnaire and confirm a data-processing agreement is signed.\n4. Run every incoming contract (NDA, MSA, vendor agreement, employment agreement) through the redline checklist.\n5. Run a freelancer or contractor engagement's full lifecycle: scope of work, IP assignment, rate agreement, milestone invoicing, and renewal or offboarding.\n\n## Checks\n- No new system is proposed without a named owner.\n- No vendor gets customer or payment data access without a signed DPA confirmed.\n- IP assignment is explicit in every freelance engagement.\n\n## Output\nThe requested scope's result: tooling audit, renewal watch and draft email, risk assessment, redlined contract, or freelancer engagement record.\n\n## Example\nA SaaS tool's usage drops to 20 percent of licensed seats 3 months before renewal; the draft cancellation email cites that exact usage number rather than a general request to lower the price."
+  },
+  {
+    "id": "money/cs-capacity-and-dpdp",
+    "name": "Plan CS capacity and handle DPDP data-subject requests",
+    "parent": null,
+    "invoke_when": "CS staffing needs sizing, or a customer submits a DPDP access or erasure request",
+    "select_by": {
+      "task": "capacity-plan | dpdp-request"
+    },
+    "inputs_required": [
+      "sales forecast curve",
+      "ticket volume and cost",
+      "system map",
+      "request details"
+    ],
+    "steps": [
+      "Staff CS tiers from the forecast curve and track cost per ticket.",
+      "Define a complex ticket before routing it.",
+      "Find every system holding a requester's data and assemble or erase it inside the statutory window."
+    ],
+    "checks": [
+      "staffing follows the forecast curve, not last month's headcount",
+      "every connected system checked for a DPDP request, none skipped"
+    ],
+    "output": "{task, result}",
+    "used_by": [
+      "MONEY-W19"
+    ],
+    "shared_with": [],
+    "skill_md": "---\nname: money/cs-capacity-and-dpdp\nowner: MONEY\nversion: 1\ninvoke_when: CS staffing needs sizing or a DPDP data-subject request arrives\ninputs: sales forecast curve, ticket volume and cost, system map, request details\noutputs: CS staffing plan and cost per ticket, or a DPDP response with a system-by-system data map\n---\n# Plan CS capacity and handle DPDP data-subject requests\n\n## Purpose\nSize support to the forecast, not the last headcount, and protect a customer's DPDP rights across every system that holds their data.\n\n## Steps\n1. Staff CS tiers from the sales forecast curve and track cost per ticket by tier.\n2. Define what counts as a complex ticket before it gets routed to a higher tier.\n3. When resolution time rises, trace the cause upstream instead of just adding headcount.\n4. On a DPDP access or erasure request, find every system holding that person's data: ESP, helpdesk, loyalty, subscription, order records.\n5. Assemble the data for an access request, or prepare the erasure plan across every located system, respecting any legal retention obligation.\n6. Confirm the response goes out inside the statutory deadline and log the request.\n\n## Checks\n- Staffing scales with the forecast curve.\n- Every connected system is checked for a DPDP request; none are skipped.\n- An erasure never removes data needed for an open legal or tax obligation.\n\n## Output\nThe requested task's result: a CS staffing plan with cost per ticket, or a completed DPDP response with its system-by-system data map.\n\n## Example\nAn erasure request would delete an order record still needed for a live GST audit trail; the plan erases the customer's marketing and support data while retaining the order record with a stated legal reason."
+  },
+  {
+    "id": "money/security-scan-weekly",
+    "name": "Run the weekly fraud, bot and abuse scan",
+    "parent": null,
+    "invoke_when": "the weekly security scan needs running across bot traffic, fraud, domain risk and return abuse",
+    "select_by": {},
+    "inputs_required": [
+      "server/CDN logs",
+      "order and payment data",
+      "chargeback log",
+      "COD refusal log",
+      "return log",
+      "domain and DNS records"
+    ],
+    "steps": [
+      "Rebuild the bot and agent traffic baseline and re-score risk tiers.",
+      "Check for card-testing bursts and review AVS/CVV/3DS against false-decline rate.",
+      "Set the chargeback alert threshold and control COD refusal triggers.",
+      "Detect return and refund abuse patterns.",
+      "Watch domain, DNS and impersonation risk."
+    ],
+    "checks": [
+      "no rule relies on User-Agent alone",
+      "false-decline rate always tracked alongside fraud caught"
+    ],
+    "output": "{traffic_baseline, fraud_flags[], return_abuse_flags[], domain_watch_result, fix_list[]}",
+    "used_by": [
+      "MONEY-W20"
+    ],
+    "shared_with": [],
+    "skill_md": "---\nname: money/security-scan-weekly\nowner: MONEY\nversion: 1\ninvoke_when: the weekly fraud, bot and abuse scan needs running\ninputs: server/CDN logs, order and payment data, chargeback log, COD refusal log, return log, domain records\noutputs: traffic baseline, fraud and abuse flags, domain watch result, weekly fix list\n---\n# Run the weekly fraud, bot and abuse scan\n\n## Purpose\nCatch card-testing, bot traffic, return abuse and domain impersonation early, with friction placed at checkout and account changes, never at ordinary browsing.\n\n## Steps\n1. Rebuild the bot and AI-agent traffic baseline by agent, endpoint and intent, and re-score risk tiers continuously.\n2. Check for card-testing bursts (clusters of small failed authorizations) and review AVS/CVV/3DS settings against the false-decline rate.\n3. Set the chargeback alert threshold below the processor's own flag level, and set prepayment triggers for repeat COD refusers.\n4. Detect return and refund abuse: wardrobing, serial high-return customers, refunds without a matching return.\n5. Watch the domain registrar lock status, DNS for dangling records, and lookalike domains or counterfeit listings.\n\n## Checks\n- No rule relies on User-Agent alone.\n- Fraud caught is always tracked alongside the false-decline rate.\n\n## Output\nThe traffic baseline, fraud and return-abuse flags, the domain watch result, and a ranked weekly fix list.\n\n## Example\nA burst of 40 small authorizations under 50 rupees each from the same IP range is flagged as card-testing before any of them succeed at a full-value order."
+  },
+  {
+    "id": "money/security-audit-monthly",
+    "name": "Run the monthly auth, web-app and backup audit",
+    "parent": null,
+    "invoke_when": "the monthly technical security audit needs running",
+    "select_by": {},
+    "inputs_required": [
+      "admin login config",
+      "storefront and checkout code access",
+      "backup schedule",
+      "incident runbook"
+    ],
+    "steps": [
+      "Audit login, session and MFA design.",
+      "Audit storefront and checkout code for common web defects.",
+      "Confirm backups are versioned, in 3 locations, with a ransomware-safe copy, and test a restore.",
+      "Maintain the incident runbook."
+    ],
+    "checks": [
+      "2FA confirmed live, not assumed",
+      "a restore is tested end to end, not just scheduled"
+    ],
+    "output": "{auth_audit, webapp_defects[], backup_check, restore_test_result, runbook}",
+    "used_by": [
+      "MONEY-W21"
+    ],
+    "shared_with": [],
+    "skill_md": "---\nname: money/security-audit-monthly\nowner: MONEY\nversion: 1\ninvoke_when: the monthly authentication, web-app and backup audit needs running\ninputs: admin login config, checkout code access, backup schedule, incident runbook\noutputs: auth audit, web-app defect and fix list, backup and restore test result, updated runbook\n---\n# Run the monthly auth, web-app and backup audit\n\n## Purpose\nConfirm the controls that stop an account takeover or a site defect from becoming a real incident, and prove a backup actually restores.\n\n## Steps\n1. Audit login, session and MFA design: 2FA or passkeys for every admin, session-cookie attributes, password hashing and rate limiting, and enumeration prevention on login and reset flows.\n2. Audit storefront and checkout code for XSS, injection, CSRF, clickjacking, CORS and postMessage defects.\n3. Confirm daily versioned backups exist in 3 separated locations with a ransomware-safe, offline copy.\n4. Test a restore end to end this month, not just confirm the backup exists.\n5. Update the unified incident runbook covering breach, skimmer and ransomware scenarios.\n\n## Checks\n- 2FA is confirmed by a live check, not assumed from a settings screenshot.\n- A restore test actually opens a restored file; it is not just a scheduled job that ran.\n\n## Output\nThe auth audit, the web-app defect list with a developer fix list, the backup and restore test result, and the updated runbook.\n\n## Example\nA scheduled backup has run every night for 6 months but the restore test this month fails silently on a corrupted archive; the audit catches it before an actual incident would have."
+  },
+  {
+    "id": "money/security-audit-quarterly",
+    "name": "Run the quarterly four-pillar security audit",
+    "parent": null,
+    "invoke_when": "the quarterly access, privacy, email-authentication, credential and training audit needs running",
+    "select_by": {
+      "pillar": "access | privacy | email-auth | credentials | training"
+    },
+    "inputs_required": [
+      "staff roster and admin role map",
+      "privacy policy",
+      "sending domains",
+      "API key inventory",
+      "staff admin-access list"
+    ],
+    "steps": [
+      "Map roles to least-privilege admin areas and run the full staff access audit.",
+      "Confirm GDPR/CCPA exposure and the AI-agent-aware privacy policy and consent banner.",
+      "Check SPF, DKIM, DMARC and BIMI and move DMARC toward enforced.",
+      "Rotate API keys and credentials on schedule and on exit.",
+      "Run phishing simulation and security training, tracking who clicks and who reports."
+    ],
+    "checks": [
+      "same-day offboarding confirmed, not assumed",
+      "DMARC policy state stated exactly",
+      "every admin-access staff member has a tracked training result"
+    ],
+    "output": "{pillar, result}",
+    "used_by": [
+      "MONEY-W22"
+    ],
+    "shared_with": [],
+    "skill_md": "---\nname: money/security-audit-quarterly\nowner: MONEY\nversion: 1\ninvoke_when: the quarterly four-pillar security audit needs running\ninputs: staff roster, admin role map, privacy policy, sending domains, API key inventory, admin-access list\noutputs: access audit, privacy compliance check, email-auth status, credential rotation log, training result, by pillar\n---\n# Run the quarterly four-pillar security audit\n\n## Purpose\nRun the recurring program with a named owner per pillar, so nothing waits for an incident to get checked.\n\n## Steps\n1. Map every staff role to only the admin areas it needs, run the full access audit, and confirm same-day offboarding for any recent exits.\n2. Confirm GDPR/CCPA exposure by customer location and publish a privacy policy and consent banner covering AI-agent interactions.\n3. Check SPF, DKIM, DMARC and BIMI on every sending domain and move DMARC from monitor-only toward enforced where safe.\n4. Rotate API keys, tokens and service credentials on schedule and immediately on any staff exit.\n5. Run a phishing simulation and short security training for every staff member with admin access, tracking who clicks, who reports, and who needs a repeat.\n6. Confirm any platform SOC or PCI claim before it is repeated, and maintain the hosted-versus-self-hosted responsibility map.\n\n## Checks\n- Offboarding is confirmed, never assumed complete.\n- DMARC's exact policy state (none, quarantine, reject) is stated, not summarized as 'set up'.\n- Every admin-access staff member has a tracked training result.\n\n## Output\nThe requested pillar's result, rolled into the quarterly security scorecard with a named owner per pillar.\n\n## Example\nA staff member who left 2 months ago still has an active API key; the credential rotation check catches it and the fix list names the exact key to revoke today, not at the next scheduled rotation."
+  },
+  {
+    "id": "money/pci-saq-scope",
+    "name": "Confirm PCI DSS scope and complete the SAQ",
+    "parent": null,
+    "invoke_when": "checkout payment flow changes, or the annual PCI self-assessment is due",
+    "select_by": {},
+    "inputs_required": [
+      "checkout payment flow diagram",
+      "payment gateway integration method",
+      "prior SAQ"
+    ],
+    "steps": [
+      "Map the exact payment flow: hosted field, redirect, or direct API.",
+      "Determine the applicable SAQ type from that flow.",
+      "Confirm the checkout never touches raw card data outside that scope.",
+      "Complete the SAQ's factual items and flag anything needing a signature."
+    ],
+    "checks": [
+      "scope confirmed by a live checkout trace, not a config read alone",
+      "no signature or attestation provided by this skill"
+    ],
+    "output": "{payment_flow_map, saq_type, scope_confirmation, saq_draft, flagged_items[]}",
+    "used_by": [
+      "MONEY-W23"
+    ],
+    "shared_with": [],
+    "skill_md": "---\nname: money/pci-saq-scope\nowner: MONEY\nversion: 1\ninvoke_when: checkout payment flow changes or the annual PCI self-assessment is due\ninputs: checkout payment flow diagram, gateway integration method, prior SAQ\noutputs: payment flow map, applicable SAQ type, scope confirmation, completed SAQ draft\n---\n# Confirm PCI DSS scope and complete the SAQ\n\n## Purpose\nKeep raw card data out of the brand's own systems and complete the right self-assessment questionnaire for the flow that actually exists.\n\n## Steps\n1. Map exactly how checkout takes payment: a gateway-hosted field, a redirect, or a direct API integration.\n2. Determine which SAQ type applies to that exact flow, not the type the gateway's marketing suggests.\n3. Confirm with a live checkout trace that raw card data never touches the brand's own servers outside the confirmed scope.\n4. Complete the SAQ's factual items from the confirmed scope and flow.\n5. Flag any item needing a signature or a third-party attestation for a person to complete.\n\n## Checks\n- Scope is confirmed by tracing a live checkout, not by reading settings alone.\n- No signature or attestation is provided by this skill; submission stays with a person.\n\n## Output\nThe payment flow map, the applicable SAQ type, the scope confirmation, and the completed SAQ draft.\n\n## Example\nA checkout believed to be fully hosted by the gateway is found, on a live trace, to pass a card's last 4 digits through the brand's own order confirmation email template; the scope confirmation flags this before the SAQ is finalized."
+  },
+  {
+    "id": "money/account-takeover-correlate",
+    "name": "Correlate account-takeover signals across systems",
+    "parent": null,
+    "invoke_when": "login events across admin systems need correlating for a takeover signal no single tool would see",
+    "select_by": {},
+    "inputs_required": [
+      "Shopify admin login logs",
+      "ad account login logs",
+      "ESP login logs",
+      "payment processor login logs"
+    ],
+    "steps": [
+      "Pull login geography, device and time from every connected admin system.",
+      "Match events by the same person across systems within a short window.",
+      "Flag a geography or device mismatch against that person's normal pattern.",
+      "Rank flags by what the account could touch."
+    ],
+    "checks": [
+      "a match requires the same person's account across at least 2 systems",
+      "ranking states the worst action that account could take"
+    ],
+    "output": "{login_event_set, matched_sequences[], anomaly_flags[], ranked_exposure[]}",
+    "used_by": [
+      "MONEY-W24"
+    ],
+    "shared_with": [],
+    "skill_md": "---\nname: money/account-takeover-correlate\nowner: MONEY\nversion: 1\ninvoke_when: login events across admin systems need correlating for a signal no single tool sees alone\ninputs: Shopify admin, ad account, ESP and payment processor login logs\noutputs: matched login sequences, anomaly flags, ranked exposure list\n---\n# Correlate account-takeover signals across systems\n\n## Purpose\nA single system's own alert stays quiet when a login looks normal to it; this skill compares the same person's logins across every admin-level system at once.\n\n## Steps\n1. Pull login geography, device and time from Shopify admin, the ad accounts, the ESP and the payment processor.\n2. Match login events for the same person across at least 2 systems within a short time window.\n3. Flag any sequence where geography or device differs from that person's normal pattern, even if each individual system's own alert stayed quiet.\n4. Rank the flag by the worst action that account could take: change payment settings, move ad budget, or export customer data.\n\n## Checks\n- A match requires the same person's account across at least 2 systems, not one system's activity alone.\n- The ranking states the specific worst action available to that account, not just that a login looked unusual.\n\n## Output\nMatched login sequences, anomaly flags, and a ranked exposure list.\n\n## Example\nAn admin logs into Shopify from a new city at 2am, then into the ad account from the same new city 40 minutes later; the correlation flags it as high exposure because that admin account can move ad budget."
+  }
+]
