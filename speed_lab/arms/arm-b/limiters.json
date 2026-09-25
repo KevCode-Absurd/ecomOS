@@ -1,0 +1,122 @@
+[
+ {
+  "rank": 1,
+  "id": "L01",
+  "title": "Two full Korean serif font files (NanumMyeongjo 400 and 700) on every page load",
+  "evidence": "Baseline run 1: 14a3fceaeabbcb56-s.p.ttf (1,043,710 B wire, 3,056,912 B raw) and ae1a48c074c123e8-s.p.ttf (1,120,642 B wire, 3,073,144 B raw). Together 2,164,352 B, 49% of all 4,419,544 wire bytes. Both are preloaded at 182 ms and finish at 14,950 and 15,356 ms, so they set the load event (15,436 ms median). Each file holds 11,172 Hangul glyphs; the page uses only Latin text and a few symbols. They also share the 1.6 Mbps link with the hero image and every JS chunk.",
+  "fix": "Subset both files to Latin, Latin Extended, punctuation, currency, arrows, shapes and dingbats (356 code points the font has) and ship WOFF2 (50,620 and 50,996 B). Point @font-face and the preload links at the new files. Developer fix: subset once with pyftsubset and use the WOFF2 in next/font/local, or use next/font/google with subsets: ['latin'].",
+  "expected_effect": "Wire bytes about minus 2.06 MB. Load event from about 15.4 s to about 3 to 6 s (then bound by JS and images). Frees bandwidth for the hero image and JS.",
+  "basis": "Store sizes and baseline resource timing: the two files end within 500 ms of the load event and are 49% of bytes. At 1.6 Mbps, 2.06 MB is about 10 s of transfer.",
+  "effort": "S (one font build step)",
+  "risk": "Low. Glyphs outside the kept ranges fall back to Arial. The page uses no Korean text. Checked: all page symbols the font has (stars, bullets, quotes, hearts) are kept.",
+  "source": "SPD-073 (idea bank) plus audit; card cc2d433b9ede (reduce fonts to the bare minimum)"
+ },
+ {
+  "rank": 2,
+  "id": "L02",
+  "title": "Cloudflare Rocket Loader delays and serialises all 31 Next.js scripts",
+  "evidence": "All 31 <script defer> tags carry type=\"2ac945fd2ac69580976d0ac0-text/javascript\" and rocket-loader.min.js re-inserts them. Baseline: the first Next.js chunk request starts at 2,696 ms (after rocket-loader.min.js ends at 2,684 ms) and the app mounts (first api.gehnaindia.com/graphql call) at 16,751 ms median, after the load event. With only the font fix (arm-b-f01), Rocket Loader fetched the chunks one by one: at load plus 6 s the app had still not hydrated and 1,199 characters of product carousel text were missing (fidelity FAIL).",
+  "fix": "Serve the tags Next.js emits: drop the type rewrite and the rocket-loader.min.js tag, so the 31 scripts are plain defer scripts. Developer fix: turn Rocket Loader off in Cloudflare (Speed, Optimization, Content Optimization).",
+  "expected_effect": "App mount from about 16.8 s to about 6 s once L01 is fixed. DOMContentLoaded gets later, because native defer scripts now run before it (Rocket Loader fired it early while scripts still waited).",
+  "basis": "Resource timing in baseline and arm-b-f01, plus the diag text diff (speed_lab/arms/arm-b/diag.py).",
+  "effort": "S (one CDN toggle)",
+  "risk": "Low for the page. On its own it pulls the afterInteractive tags before the load event (see L03), so ship it with L03.",
+  "source": "SPD-072 (idea bank) plus audit"
+ },
+ {
+  "rank": 3,
+  "id": "L03",
+  "title": "Seven third-party tags load with next/script afterInteractive",
+  "evidence": "_app registers GTM, CustomerLabs, the UA gtag loader and config, Klaviyo, Tagalys and the Meta pixel with strategy \"afterInteractive\". Third-party wire bytes 957 KB (baseline) to 1,087 KB (arm-b-f02). Once hydration moved to about 6 s (arm-b-f02) the tags ran before the load event: load went from 3,089 ms (f01) to 14,046 ms and TBT from 1,210 to 3,309 ms.",
+  "fix": "Change the strategy string to \"lazyOnload\" for the 7 tags. Next.js then waits for the load event and then for browser idle before it inserts each tag. Every tag still loads on every view.",
+  "expected_effect": "Load event back to about 6 s with hydration kept early. Main-thread work from tags moves after load.",
+  "basis": "arm-b-f02 measurement and the trace attribution (fbevents.js 255 ms task, Klaviyo 95 ms) from diag.py --trace.",
+  "effort": "S (7 prop changes)",
+  "risk": "Medium for tracking. Tags start about 2 s after load (fbevents.js started at 8,218 ms median in arm-b-f08). A visitor who leaves before then is not counted by GA4, Ads, Meta, Klaviyo or Clarity. Code that calls window.gtag or fbq before the tags load must guard for them. Test every event with consent on and off (SPD-062).",
+  "source": "audit; risk rule from SPD-062"
+ },
+ {
+  "rank": 4,
+  "id": "L04",
+  "title": "Category icons ship 640 x 640 files for 60 x 60 CSS px slots",
+  "evidence": "7 icons (best-sellers, earrings, chains, rings, bracelets, nosepins, pendants) render at 60 x 60 CSS px (165 device px at DPR 2.75). srcset is w=256 1x and w=640 2x, so the phone takes w=640: 228,928 B wire. They load between 710 and 4,150 ms, next to the hero image and all JS chunks.",
+  "fix": "Serve w=128 (1x) and w=256 (2x) AVIFs at q=75, resized from the recorded 640 px files, and point the srcset at them. Developer fix: width={60} or sizes=\"60px\" on the next/image.",
+  "expected_effect": "About minus 148 KB before the load event; DCL and load about 0.5 to 0.7 s earlier.",
+  "basis": "Store sizes; 148 KB at 1.6 Mbps is about 0.7 s of transfer on a link that is busy until load.",
+  "effort": "S",
+  "risk": "Low. 256 px for 165 device px keeps the icons sharp.",
+  "source": "audit; card 8883db1cfb1d (resize to display size)"
+ },
+ {
+  "rank": 5,
+  "id": "L05",
+  "title": "The LCP hero image waits behind 4 font preloads on 6 HTTP/1.1 sockets",
+  "evidence": "LCP element: new-arrivals-mobile.png w=1200 AVIF, 40,309 B, fetchpriority=high. It is requested at 225 ms but ends at 1,603 ms (arm-b-f04) because 4 font preloads and 2 stylesheets hold the first 6 sockets and share the link. A text walk of the rendered page shows no NanumMyeongjo text in the first viewport, yet both Nanum weights are preloaded.",
+  "fix": "Add <link rel=preload as=image fetchpriority=high> with the same imagesrcset and imagesizes as the hero, first in <head>. Drop the preload for the 2 Nanum files (the @font-face rules stay).",
+  "expected_effect": "LCP about 0.3 s faster.",
+  "basis": "Resource timing of arm-b-f04; about 100 KB of font preloads compete with a 40 KB image.",
+  "effort": "S",
+  "risk": "Low. Nanum headings below the fold may swap a little later (font-display: swap). CLS stayed 0.0001.",
+  "source": "SPD-043 (idea bank); card 958af3150188 (preload and fetchpriority for the LCP element, do not over-apply)"
+ },
+ {
+  "rank": 6,
+  "id": "L06",
+  "title": "Lato 400 and 700 ship as TTF",
+  "evidence": "4291f48c2ea51320-s.p.ttf and 2c00c297d3cdabf8-s.p.ttf: 36,517 and 35,784 B wire (gzip of 75,152 and 73,332 B TTF). Preloaded and the only web font in the first viewport.",
+  "fix": "Lossless TTF to WOFF2 conversion (28,432 and 27,812 B), same glyphs. Update @font-face and the 2 preloads.",
+  "expected_effect": "About minus 16 KB in the LCP window; LCP a few tens of ms faster.",
+  "basis": "Store sizes.",
+  "effort": "S",
+  "risk": "Low.",
+  "source": "SPD-089 WOFF2 step (idea bank); card 731928d47c17 (self-host fonts as WOFF2)"
+ },
+ {
+  "rank": 7,
+  "id": "L07",
+  "title": "Dead Universal Analytics tag still loads",
+  "evidence": "gtag/js?id=UA-41818105-2 (133,440 B wire) plus google-analytics.com/analytics.js (20,770 B) pulled by gtag('config','UA-41818105-2'). Standard UA properties stopped processing hits on 1 July 2023 (web_log.md #1). GA4 (G-FT109JXEC7) and Ads (AW-982480202) load through GTM and stay.",
+  "fix": "Remove the UA loader element and the UA config call in _app. Keep the snippet that defines window.dataLayer and window.gtag, which the app uses for gtag('set','user_data').",
+  "expected_effect": "Third-party bytes about minus 154 KB, some script parse time after load.",
+  "basis": "Store sizes, served log.",
+  "effort": "S",
+  "risk": "Low. Nothing reads the UA property. Confirm in the GA admin that UA-41818105-2 is not a 360 property with an extension (it would have ended on 1 July 2024 anyway).",
+  "source": "audit plus web (web_log.md #1)"
+ },
+ {
+  "rank": 8,
+  "id": "L08",
+  "title": "Parser-blocking Cloudflare email-decode script in the body",
+  "evidence": "email-decode.min.js (656 B wire) is a classic blocking <script> before __NEXT_DATA__ (render-blocking status \"blocking\" in baseline, 275 to 660 ms).",
+  "fix": "Move it into <head> as a defer script ahead of the Next.js scripts, so it still runs before hydration and still decodes the e-mail link. Email Obfuscation stays on.",
+  "expected_effect": "Small: tens of ms on parsing, maybe nothing measurable.",
+  "basis": "Baseline resource timing; the file is tiny and the parser had most of the HTML by then.",
+  "effort": "S",
+  "risk": "Low. Checked: careers@gehnaindia.com still decodes and the page text matches the baseline.",
+  "source": "SPD-056 (idea bank), SPD-072 step 3"
+ },
+ {
+  "rank": 9,
+  "id": "L09",
+  "title": "Hydration and app JavaScript cost (out of reach without a rebuild)",
+  "evidence": "First-party JS 621,423 B wire in baseline run 1; _app-dce0792d73ac490d.js alone is 155,390 B wire (501,268 B raw). Trace of arm-b-f03: framework.js hydration tasks of 764 ms and 632 ms, _app evaluate 166 ms, Cloudflare challenge script 254 ms. TBT stays about 2.3 to 2.5 s in every variant; it was 2,468 ms in baseline.",
+  "fix": "Needs the app: split _app (auth, One Tap, analytics helpers) into route or idle chunks, lazy-hydrate below-fold sections, drop one of the two CSS-in-JS systems (JSS and Emotion both ship), cut the 1,840 DOM nodes.",
+  "expected_effect": "The largest remaining lever for TBT and DOMContentLoaded, size unknown until the app is profiled.",
+  "basis": "Trace attribution with diag.py --trace.",
+  "effort": "L",
+  "risk": "Medium (code change).",
+  "source": "audit"
+ },
+ {
+  "rank": 10,
+  "id": "L10",
+  "title": "Repeated post-hydration work: 3 identical GraphQL calls, 16 below-fold images marked priority, double chunk downloads (out of reach)",
+  "evidence": "3 POSTs to api.gehnaindia.com/graphql per load (7,904 B each). 16 product carousel images (top 1,052 px, below the 851 px viewport) carry fetchpriority=high and a React preload. The /m/[category] prefetch downloads chunks 558, 3251, 8726, 6421 and 221 as link prefetch and again as script.",
+  "fix": "Needs the app: share one query, drop priority on carousel images, check the prefetch path.",
+  "expected_effect": "About 16 KB of API bytes and some re-render time; bandwidth after load.",
+  "basis": "Served log and resource timing.",
+  "effort": "M",
+  "risk": "Low to medium (code change).",
+  "source": "audit; SPD-146 idea (fetchpriority low on non-critical images) fits the carousel part"
+ }
+]
