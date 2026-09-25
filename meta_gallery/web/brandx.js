@@ -264,7 +264,11 @@ async function bxBoot() {
   if (BX.loaded) return;
   BX.loaded = true;
   const get = (n) => fetch(n).then((r) => (r.ok ? r.json() : null)).catch(() => null);
-  [BX.geo, BX.traffic, BX.stock] = await Promise.all([get('geo.json'), get('traffic.json'), get('stock.json')]);
+  const [g, t, st] = await Promise.all([get('geo.json'), get('traffic.json'), get('stock.json')]);
+  // The local server answers {} for a file that does not exist yet, so check the shape before using it.
+  BX.geo = g && g.periods && g.city_state ? g : null;
+  BX.traffic = t && Array.isArray(t.weeks) ? t : null;
+  BX.stock = st && st.products && typeof st.products === 'object' ? st : null;
 }
 
 // ---------- visits lost ----------
@@ -429,7 +433,7 @@ async function runStockCheck() {
   try {
     const r = await fetch('/api/stock-check', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ limit: 150 }) });
     const j = await r.json();
-    if (!r.ok || j.error) throw new Error(j.error || 'Check failed');
+    if (!r.ok || j.error || !j.products) throw new Error(j.error || 'Check failed');
     BX.stock = j; BX.stockMsg = stockCheckedLine();
   } catch (e) { BX.stockMsg = 'Could not check stock: ' + e.message; }
   BX.stockBusy = false;

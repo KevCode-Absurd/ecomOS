@@ -100,15 +100,16 @@ function buckets(rows) {
 
 // ---------- tiles ----------
 function heroTile(R) {
+  // Revenue first: the sales Meta counts, then what it cost.
   const t = VIEW.totals, p = VIEW.previous_totals || {};
-  const spark = R.cur.map((r, i) => rollAt(R.cur, i, (s) => sumK(s, 'spend') / s.length));
-  return `<section class="tile hero lite c-5" aria-label="Meta spend">
-    <div class="label">Meta spend · ${esc(shortDate(VIEW.range.since))} to ${esc(shortDate(VIEW.range.until))} · ${VIEW.range.days} days</div>
-    <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><div class="big">${money(t.spend)}</div>${dchip(t.spend, p.spend, 0)}</div>
-    <div class="spark-wrap">${sparkSvg(spark, { color: '#16140f', W: 600, H: 96 })}<div class="spark-cap"><span>${esc(shortDate(VIEW.range.since))}</span><span>Spend a day, 7-day average</span><span>${esc(shortDate(VIEW.range.until))}</span></div></div>
+  const spark = R.cur.map((r, i) => rollAt(R.cur, i, (s) => (s.some((x) => x.reported) ? sumK(s, 'value') / s.length : null)));
+  return `<section class="tile hero lite c-5" aria-label="Revenue from Meta">
+    <div class="label">Revenue from Meta · ${esc(shortDate(VIEW.range.since))} to ${esc(shortDate(VIEW.range.until))} · ${VIEW.range.days} days</div>
+    <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><div class="big">${t.purchase_value !== null ? compact(t.purchase_value) : 'Not available'}</div>${dchip(t.purchase_value, p.purchase_value, 1)}</div>
+    <div class="spark-wrap">${sparkSvg(spark, { color: '#16140f', W: 600, H: 96 })}<div class="spark-cap"><span>${esc(shortDate(VIEW.range.since))}</span><span>Sales Meta counts a day, 7-day average</span><span>${esc(shortDate(VIEW.range.until))}</span></div></div>
     <div class="trio">
-      <div><span>Purchase value</span><b>${t.purchase_value !== null ? compact(t.purchase_value) : 'Unavailable'}</b></div>
-      <div><span>ROAS</span><b>${t.roas !== null ? t.roas.toFixed(2) + 'x' : 'Unavailable'}</b></div>
+      <div><span>Meta spend</span><b>${compact(t.spend)}</b></div>
+      <div><span>ROAS</span><b>${t.roas !== null ? t.roas.toFixed(2) + 'x' : 'Not available'}</b></div>
       <div><span>Ads live</span><b>${t.ads}</b></div>
     </div>
     <div class="actions"><button class="btn" type="button" data-goto="gallery">Open ad gallery</button><button class="btn ghost" type="button" data-goto="campaigns">Campaigns</button></div>
@@ -398,7 +399,7 @@ function channelsTile(B) {
   const share = claimed !== null && c.sales ? claimed / c.sales : null;
   const rest = claimed !== null && c.sales !== null ? Math.max(0, c.sales - claimed) : null;
   const row = (ch) => ch.key === 'meta'
-    ? `<button class="chrow" type="button" data-goto-meta="1"><span class="chn"><i style="background:var(--spend)"></i>${esc(ch.name)}</span><span class="chv"><b>${compact(c.spend)}</b> spent</span><span class="chv"><b>${claimed !== null ? compact(claimed) : 'Not available'}</b> sales Meta counts${share !== null ? ` · ${(share * 100).toFixed(0)}%` : ''}</span></button>`
+    ? `<button class="chrow" type="button" data-goto-meta="1"><span class="chn"><i style="background:var(--spend)"></i>${esc(ch.name)}</span><span class="chv"><b>${claimed !== null ? compact(claimed) : 'Not available'}</b> sales Meta counts${share !== null ? ` · ${(share * 100).toFixed(0)}% of website sales` : ''}</span><span class="chv muted"><b>${compact(c.spend)}</b> spent${claimed !== null && c.spend ? ` · ${(claimed / c.spend).toFixed(2)}x` : ''}</span></button>`
     : `<div class="chrow off"><span class="chn"><i></i>${esc(ch.name)}</span><span class="chv muted">Not connected yet</span></div>`;
   return `<section class="tile c-4" aria-label="Sales by channel">
     <div class="tile-head"><div><h2>Where sales come from</h2><div class="sub">Each channel's own count of website sales</div></div></div>
@@ -493,7 +494,9 @@ function topPiecesTile(B) {
   </section>`;
 }
 function metaHeader() {
-  return `<div class="ov-section ov-meta-h c-12"><div><h2>Meta ads</h2><p>1 of your ad channels. Google and email will sit next to it once connected.</p></div></div>`;
+  // Ad channels sit under the brand. Only Meta is connected today; the others show so the gap is clear.
+  return `<div class="ov-section ov-meta-h c-12"><div><h2>Ad channels</h2><p>What each channel brings in, then what it costs.</p></div>
+    <div class="ch-tabs" role="tablist" aria-label="Ad channel">${OV_CHANNELS.map((c) => `<button type="button" role="tab" aria-selected="${c.key === 'meta'}" ${c.live ? '' : 'disabled title="Not connected yet"'}>${esc(c.name)}${c.live ? '' : ' <span>Not connected</span>'}</button>`).join('')}</div></div>`;
 }
 function brandBlock() {
   if (!SL.data) return `<section class="tile c-12"><p class="muted">${SL.err ? 'Website sales could not be loaded.' : 'Loading website sales…'}</p></section>`;

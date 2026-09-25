@@ -300,6 +300,12 @@ b.down { color: var(--bad); } b.up { color: var(--good); }
 .ov-section:first-child { border-top: 0; padding-top: 0; }
 .ov-section h2 { font: 700 20px var(--display); margin: 0; letter-spacing: -.01em; }
 .ov-section p { margin: 2px 0 0; color: var(--muted); font-size: 13px; }
+.ch-tabs { display: flex; flex-wrap: wrap; gap: 6px; }
+.ch-tabs button { font: inherit; font-size: 13px; font-weight: 600; padding: 7px 14px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); }
+.ch-tabs button[aria-selected="true"] { background: var(--ink); border-color: var(--ink); color: #fff; }
+.ch-tabs button:disabled { color: var(--faint); border-style: dashed; cursor: not-allowed; }
+.ch-tabs button span { font-weight: 400; font-size: 11.5px; }
+.ov-section { flex-wrap: wrap; }
 .ov-meta-h { margin-top: 14px; scroll-margin-top: 150px; }
 .hero.lite { background: var(--surface); border-color: var(--line); color: var(--ink); }
 .hero.lite .label, .hero.lite .trio span { color: var(--muted); }
@@ -629,6 +635,8 @@ table.tests td { vertical-align: middle; }
 .sortbtn.on { color: var(--ink); text-decoration: underline; }
 .sales { display: grid; gap: 14px; }
 .sl-head { display: flex; justify-content: space-between; align-items: end; gap: 12px; flex-wrap: wrap; }
+.sl-head > * { min-width: 0; max-width: 100%; }
+.seg { flex-wrap: wrap; max-width: 100%; }
 .sl-head h2 { font: 700 22px var(--display); margin: 0; letter-spacing: -.02em; }
 .sl-head p { margin: 4px 0 0; max-width: 80ch; }
 .sl-months { flex-wrap: wrap; }
@@ -691,7 +699,8 @@ table.sheat td.heat { min-width: 58px; }
 .pb-nm .mt, .pb-num .mt { font-size: 12px; color: var(--muted); }
 .pb-num { display: grid; justify-items: end; font-variant-numeric: tabular-nums; }
 .pb-noad { color: var(--gold-deep); }
-.pb-build { border-top: 1px dashed var(--gold-line); padding: 12px; display: grid; gap: 12px; }
+.pb-build { border-top: 1px dashed var(--gold-line); padding: 12px; display: grid; gap: 12px; grid-template-columns: minmax(0, 1fr); }
+.pb-build > *, .pb-sec > * { min-width: 0; max-width: 100%; }
 .pb-sec { display: grid; gap: 6px; }
 .pb-sec h4 { margin: 0; font-size: 11px; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); }
 .pb-sec h4 .small { text-transform: none; letter-spacing: normal; }
