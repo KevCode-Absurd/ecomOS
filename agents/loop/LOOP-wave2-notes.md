@@ -9,7 +9,7 @@
 - SaaS feature lists: AI knowledge base tools (permissions, freshness) gave the brain permission map; ERP/WMS integration guides gave the tool-vendor vetting check and contract/SLA tracker; OKR and decision-log tools gave the decision-handoff extension.
 - Freelance marketplace gigs: thin on distinct findings beyond confirming VA/EA task shape; mainly backed the invoice/SOW check.
 - AI agent products already doing this: "AI employee" and Shopify AI agent articles gave the agentic-storefront claims audit and new-channel detection, both dated to the January 2026 Shopify/Microsoft Copilot Checkout rollout, a live, current surface nothing else in the loop checks.
-- India-specific: RTO/COD/WhatsApp research gave the net-of-RTO funnel read, the WhatsApp metric channel, the courier rate renegotiation (possible), and the India legal-disclosure gate (grievance officer, GST, country of origin).
+- Market-specific: the reversed-orders read (returns, chargebacks, and RTO as a COD subset for IN brands), the messaging metric channel, the carrier rate renegotiation (possible), and the legal-disclosure gate (FTC, CAN-SPAM, CCPA; grievance officer and GST for IN officer, GST, country of origin).
 
 ## What wave 1 missed most
 

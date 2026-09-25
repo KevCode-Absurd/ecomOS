@@ -36,7 +36,7 @@ Five searches (fractional CMOs, growth OKR practice, crisis playbooks, investor 
 
 ## Doubts
 
-- **Seasonal calendar is a real gap.** The bank's peak ideas are generic Western Q4. Nothing names Diwali, wedding season or India sale dates; that has to come from the brand brain and web research. Flagged on LOOP-C05.
+- **Seasonal calendar is a real gap.** The bank's peak ideas are generic Western Q4. Category peaks and any non-US calendar have to come from the brand brain and web research. Flagged on LOOP-C05.
 - **MONEY vs LOOP on diagnosis.** Financial constructs ("walk the P&L waterfall") went to MONEY; cross-domain "which lever next" ideas stayed in Diagnose. Worth a second look with whoever builds both.
 - **MEDIA vs CREA.** The creative asset (hooks, scripts, casting, format) went to CREA; account, bidding, budget and creator terms went to MEDIA. A few cadence and pacing ideas could go either way.
 - **Team and culture ideas went to MONEY, not LOOP**, since 21-OPS already covers hiring and founder archetype. Exit, succession and M&A ideas went to LOOP, since no specialist owns that surface.

@@ -12,4 +12,4 @@ Four rooms: Today, Brand brain, Experiments and memory, Reviews and reports.
 
 ## Hardest data to get
 
-Per-brand hour estimates for portfolio capacity, scope-of-work terms from contracts, WhatsApp Business API access for the confirmation-to-RTO correlation, SKU-level marketplace snapshots, and the founder's own review hours for the cadence check. Each needs a new connector grant or a manual first entry; none flow from data already in the metric contract.
+Per-brand hour estimates for portfolio capacity, scope-of-work terms from contracts, messaging platform access for the channel metrics, SKU-level marketplace snapshots, and the founder's own review hours for the cadence check. Each needs a new connector grant or a manual first entry; none flow from data already in the metric contract.

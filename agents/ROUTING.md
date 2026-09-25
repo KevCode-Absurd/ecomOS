@@ -11,12 +11,12 @@ Diagnose names the break by pipeline stage. Propose builds the top 10 with the s
 | Ad reach and cost | acquisition_volume, acquisition_efficiency | ad accounts, creatives, landing pages | MEDIA, CREA, SITE | MEDIA account audit, CREA creative test, SITE landing page |
 | Page loads | site_speed | key pages on the speed lab | SITE | SITE speed audit and fix chain |
 | Product views to add to cart | conversion | product and collection pages, search, reviews | SITE, CREA (copy), BRAND (avatar fit) | SITE CRO test, SITE page rebuild |
-| Checkout to order | conversion, trust_brand | checkout, payments, COD controls, policies | SITE, LIFE (offer), MONEY (payment ops) | SITE checkout audit, LIFE offer redesign |
+| Checkout to order | conversion, trust_brand | checkout, payment methods, address validation, policies | SITE, LIFE (offer), MONEY (payment ops) | SITE checkout audit, LIFE offer redesign |
 | Order value | aov | offers, bundles, pricing, free shipping threshold | LIFE, PROD (bundle supply) | LIFE offer design |
 | Repeat and retention | repeat_retention | flows, segments, CX, support reasons | LIFE, BRAND (voice) | LIFE flow build, LIFE win-back |
-| Margin | margin_cogs | landed cost, discounting, shipping cost, RTO | PROD, MONEY, LIFE (discount policy) | PROD landed cost, MONEY contribution margin |
+| Margin | margin_cogs | landed cost, discounting, shipping cost, returns and chargebacks | PROD, MONEY, LIFE (discount policy) | PROD landed cost, MONEY contribution margin |
 | Cash and stock | cash_inventory | stock cover, reorder, settlements, payables | PROD, MONEY | PROD reorder, MONEY cash forecast |
-| Fulfilment and CX | fulfilment_cx | couriers, NDR, returns, support | PROD, LIFE | PROD courier scorecard, LIFE returns handling |
+| Fulfilment and CX | fulfilment_cx | carriers, failed deliveries, returns, chargebacks, support | PROD, LIFE | PROD courier scorecard, LIFE returns handling |
 | Trust and brand | trust_brand | claims, reviews, positioning, answer engines | BRAND, ORG (AEO), QA | BRAND consistency audit, ORG facts page |
 | Organic demand | acquisition_volume (organic) | content, SEO, answer engines | ORG, BRAND | ORG calendar, ORG SEO page briefs |
 | Measurement | measurement_data | tracking, contract freshness, attribution | MONEY, BRN | MONEY tracking audit, BRN collector fix |
