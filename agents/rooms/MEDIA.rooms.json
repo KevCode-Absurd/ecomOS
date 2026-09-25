@@ -1,0 +1,2260 @@
+[
+  {
+    "room": "Paid social",
+    "agent": "MEDIA",
+    "who_uses": [
+      "founder",
+      "media buyer",
+      "agency account manager"
+    ],
+    "jobs": [
+      {
+        "job": "know if today's spend and pacing are safe or a problem",
+        "question": "are we pacing to hit the month's budget and margin target",
+        "capabilities": [
+          "MEDIA-C46",
+          "MEDIA-C47",
+          "MEDIA-C42"
+        ]
+      },
+      {
+        "job": "find the single biggest constraint in the Meta account before spending more",
+        "question": "what is actually holding this account back",
+        "capabilities": [
+          "MEDIA-C01"
+        ]
+      },
+      {
+        "job": "know if platform ROAS can be trusted before a scale call",
+        "question": "does Meta's own ROAS agree with what the brand actually made",
+        "capabilities": [
+          "MEDIA-C05",
+          "MEDIA-C06",
+          "MEDIA-C56"
+        ]
+      },
+      {
+        "job": "decide what to kill, keep or scale right now",
+        "question": "which ad sets do I touch today and by how much",
+        "capabilities": [
+          "MEDIA-C17",
+          "MEDIA-C15",
+          "MEDIA-C18"
+        ]
+      },
+      {
+        "job": "check the account structure and naming match the brand's spend tier",
+        "question": "is the account built the way it should be for our spend",
+        "capabilities": [
+          "MEDIA-C09",
+          "MEDIA-C10",
+          "MEDIA-C11"
+        ]
+      },
+      {
+        "job": "check audiences, placements and bid strategy are set right",
+        "question": "are we wasting reach on bad placements or a bid strategy that fits the wrong stage",
+        "capabilities": [
+          "MEDIA-C12",
+          "MEDIA-C13",
+          "MEDIA-C14"
+        ]
+      },
+      {
+        "job": "protect existing-customer spend and catalogue ads from the cold budget",
+        "question": "is retargeting eating cold budget, and is DPA read the right way",
+        "capabilities": [
+          "MEDIA-C19",
+          "MEDIA-C20"
+        ]
+      },
+      {
+        "job": "catch a spend or ROAS anomaly and find the cause fast",
+        "question": "why did yesterday's numbers move so much, and is it us or the market",
+        "capabilities": [
+          "MEDIA-C45",
+          "MEDIA-C68",
+          "MEDIA-C44",
+          "MEDIA-C43"
+        ]
+      },
+      {
+        "job": "check pixel, CAPI and platform-suggestion health",
+        "question": "is our tracking clean and are we accepting Meta's suggestions blindly",
+        "capabilities": [
+          "MEDIA-C03",
+          "MEDIA-C07"
+        ]
+      },
+      {
+        "job": "run a TikTok launch, scale and Shop motion the right way",
+        "question": "is TikTok set up, scaling and Shop-ready the way the playbook says",
+        "capabilities": [
+          "MEDIA-C24",
+          "MEDIA-C25",
+          "MEDIA-C26",
+          "MEDIA-C27",
+          "MEDIA-C28",
+          "MEDIA-C29"
+        ]
+      },
+      {
+        "job": "plan a peak sale ramp, wind-down and cross-border delivery",
+        "question": "are we ready for the sale date and for buyers outside India",
+        "capabilities": [
+          "MEDIA-C21",
+          "MEDIA-C22"
+        ]
+      },
+      {
+        "job": "keep account access, pre-launch QA and policy risk clean",
+        "question": "is anything about to get an ad rejected or a login lost",
+        "capabilities": [
+          "MEDIA-C23",
+          "MEDIA-C59",
+          "MEDIA-C55",
+          "MEDIA-C65"
+        ]
+      },
+      {
+        "job": "see which decisions need the founder, not the agent",
+        "question": "what is waiting on me right now and why",
+        "capabilities": [
+          "MEDIA-C48",
+          "MEDIA-C58",
+          "MEDIA-C60",
+          "MEDIA-C61",
+          "MEDIA-C62",
+          "MEDIA-C63",
+          "MEDIA-C64"
+        ]
+      }
+    ],
+    "metrics": [
+      {
+        "name": "blended_mer",
+        "plain": "Total new-customer revenue for every rupee of ad spend, across all channels",
+        "formula": "total new customer revenue / total spend (Meta + TikTok + Google)",
+        "source": "brand brain revenue ledger + ad platform spend",
+        "window": "trailing 30 days, updated daily",
+        "freshness_rule": "stale after 48 hours without a new order pull",
+        "unavailable_when": "brand brain revenue ledger not connected",
+        "benchmark": "brand's own target, set from contribution margin (source: MEDIA-C08)"
+      },
+      {
+        "name": "meta_platform_roas",
+        "plain": "What Meta itself says it returned",
+        "formula": "purchase value / spend, period totals only",
+        "source": "Meta ad account (MCP, read-only)",
+        "window": "selected date range",
+        "freshness_rule": "stale after 24 hours",
+        "unavailable_when": "no reported purchase value in range",
+        "benchmark": "brand's saved target ROAS"
+      },
+      {
+        "name": "tiktok_platform_roas",
+        "plain": "What TikTok itself says it returned",
+        "formula": "attributed revenue / spend, period totals only",
+        "source": "TikTok Ads Manager",
+        "window": "selected date range",
+        "freshness_rule": "stale after 24 hours",
+        "unavailable_when": "TikTok account not connected or no spend in range",
+        "benchmark": "brand's saved target ROAS"
+      },
+      {
+        "name": "new_customer_cac",
+        "plain": "What it costs to win one new customer",
+        "formula": "total spend / new customers acquired",
+        "source": "brand brain + ad platforms",
+        "window": "monthly",
+        "freshness_rule": "stale after 7 days",
+        "unavailable_when": "new-vs-existing customer flag missing on orders",
+        "benchmark": "gross profit on first order (GP-to-CAC target from MEDIA-C08)"
+      },
+      {
+        "name": "frequency_by_segment_30d",
+        "plain": "How many times the same person saw an ad in 30 days, by audience, not blended",
+        "formula": "impressions / reach per audience segment, 30-day window",
+        "source": "Meta ad account breakdowns",
+        "window": "rolling 30 days",
+        "freshness_rule": "stale after 48 hours",
+        "unavailable_when": "segment has under 1,000 reach",
+        "benchmark": "rising frequency with flat cold reach flags fatigue"
+      },
+      {
+        "name": "spend_pace_vs_budget",
+        "plain": "Are we on track to land on this month's budget",
+        "formula": "(spend to date / days elapsed) x days in month, vs planned monthly budget",
+        "source": "ad platform daily spend + brand's stated monthly budget",
+        "window": "month to date",
+        "freshness_rule": "stale after 24 hours",
+        "unavailable_when": "monthly budget not set by founder",
+        "benchmark": "within 10% of plan"
+      },
+      {
+        "name": "month_end_mer_forecast",
+        "plain": "Where blended MER is heading if nothing changes",
+        "formula": "trailing 7-day MER projected across remaining days, weighted by trailing pace",
+        "source": "computed from blended_mer series",
+        "window": "to month end",
+        "freshness_rule": "stale after 24 hours",
+        "unavailable_when": "fewer than 7 days of MER history",
+        "benchmark": "brand's monthly MER floor"
+      },
+      {
+        "name": "adset_verdict",
+        "plain": "Keep, watch or kill, read at the ad set level",
+        "formula": "ROAS vs target read at 3x to 5x target CPA spent (rule set in MEDIA-C17)",
+        "source": "ad platform ad set metrics + brand's target CPA",
+        "window": "selected date range",
+        "freshness_rule": "recomputed on every load",
+        "unavailable_when": "ad set has spent under 1x target CPA (not enough data)",
+        "benchmark": "n/a, this is the rule itself"
+      },
+      {
+        "name": "creative_volume_ratio",
+        "plain": "New ads launched against the $1,000-of-spend benchmark",
+        "formula": "new ads launched in period / (monthly spend / 1000)",
+        "source": "ad platform creative list + spend",
+        "window": "trailing 30 days",
+        "freshness_rule": "stale after 7 days",
+        "unavailable_when": "spend under $1,000 in period",
+        "benchmark": "about 1 new ad per $1,000 monthly spend (MEDIA-C16)"
+      },
+      {
+        "name": "concept_count_vs_band",
+        "plain": "Number of live concepts against the band for this spend tier",
+        "formula": "count of distinct SKU + pain-point + offer concepts currently live",
+        "source": "ad set and ad naming (parsed)",
+        "window": "current",
+        "freshness_rule": "stale after 7 days",
+        "unavailable_when": "naming convention not followed (cannot parse concepts)",
+        "benchmark": "spend-tier band from MEDIA-C09"
+      },
+      {
+        "name": "existing_customer_spend_share",
+        "plain": "Share of spend protecting existing customers vs winning new ones",
+        "formula": "spend in the dedicated existing-customer campaign / total spend",
+        "source": "campaign-level spend, tagged by campaign purpose",
+        "window": "trailing 30 days",
+        "freshness_rule": "stale after 7 days",
+        "unavailable_when": "no campaign tagged as existing-customer",
+        "benchmark": "cold spend share should be growing period over period"
+      },
+      {
+        "name": "dpa_7day_click_roas",
+        "plain": "Dynamic product ad return, read the way it should be read",
+        "formula": "attributed value on 7-day click window / DPA ad set spend",
+        "source": "Meta ad account, DPA ad sets only",
+        "window": "trailing 7 days",
+        "freshness_rule": "stale after 24 hours",
+        "unavailable_when": "no DPA ad set running",
+        "benchmark": "never compared to blended platform ROAS"
+      },
+      {
+        "name": "pixel_capi_match_quality",
+        "plain": "How well orders and their value are passing through to Meta",
+        "formula": "event match quality score + share of purchase events with value populated",
+        "source": "Meta events manager (via MCP)",
+        "window": "trailing 7 days",
+        "freshness_rule": "stale after 48 hours",
+        "unavailable_when": "events manager read not available",
+        "benchmark": "above 6.0 match quality, 100% of purchases carry value"
+      },
+      {
+        "name": "suggestion_log_status",
+        "plain": "How many platform suggestions were applied without a logged test",
+        "formula": "count of applied Advantage+/automated suggestions with no before/after entry",
+        "source": "suggestion log (brand record) + platform change history",
+        "window": "trailing 30 days",
+        "freshness_rule": "stale after 7 days",
+        "unavailable_when": "no suggestion log kept yet",
+        "benchmark": "0 unlogged suggestions"
+      },
+      {
+        "name": "tiktok_spark_authorization_days_left",
+        "plain": "Days left on a creator's Spark authorization",
+        "formula": "365 - days since authorization code granted, per active Sparked post",
+        "source": "TikTok creator authorization record (brand record)",
+        "window": "current",
+        "freshness_rule": "recomputed daily",
+        "unavailable_when": "no Spark authorization on file for an active post",
+        "benchmark": "renew before 0 days left"
+      },
+      {
+        "name": "account_quality_flags",
+        "plain": "Open policy rejections or account-quality warnings across Meta and TikTok",
+        "formula": "count of open disapprovals / quality flags",
+        "source": "Meta and TikTok account activity logs",
+        "window": "current",
+        "freshness_rule": "stale after 24 hours",
+        "unavailable_when": "activity log read not available",
+        "benchmark": "0 open flags"
+      },
+      {
+        "name": "message_match_lag_days",
+        "plain": "Days since the best-performing ad's headline last matched the landing page",
+        "formula": "days since landing page headline was updated to mirror the current top ad's headline",
+        "source": "ad creative text + landing page snapshot",
+        "window": "current",
+        "freshness_rule": "stale after 7 days",
+        "unavailable_when": "landing page not connected for snapshotting",
+        "benchmark": "under 1 day (MEDIA-C44)"
+      },
+      {
+        "name": "stock_pace_risk",
+        "plain": "Whether a scaling ad set is about to sell out its product",
+        "formula": "days of stock left at current sales pace, for products in ad sets tagged Scale",
+        "source": "brand's stock feed + ad set product tags",
+        "window": "current",
+        "freshness_rule": "stale after 24 hours",
+        "unavailable_when": "stock feed not connected",
+        "benchmark": "flag under 14 days of stock left"
+      },
+      {
+        "name": "competitor_discount_overlap",
+        "plain": "Shared products a competitor is discounting 20% or more",
+        "formula": "count of the brand's ad-featured products also seen discounted 20-30%+ in competitor ad library snapshot",
+        "source": "competitor ad library data + brand product ad tags",
+        "window": "latest snapshot",
+        "freshness_rule": "stale after 14 days (snapshot cadence)",
+        "unavailable_when": "no competitor snapshot taken",
+        "benchmark": "n/a, informational flag"
+      },
+      {
+        "name": "marginal_roas_by_channel",
+        "plain": "What the next rupee of spend would likely return, by channel",
+        "formula": "change in value / change in spend over the last 2 comparable budget steps, per channel",
+        "source": "ad platform spend/value history",
+        "window": "trailing 60 days",
+        "freshness_rule": "stale after 14 days",
+        "unavailable_when": "fewer than 2 budget steps to compare",
+        "benchmark": "used only for founder-gate allocation calls (MEDIA-C58)"
+      }
+    ],
+    "insights": [
+      {
+        "name": "MER disagrees with platform ROAS",
+        "rule": "blended MER is 20% or more below Meta or TikTok's own reported ROAS for the same period",
+        "computed_from": [
+          "blended_mer",
+          "meta_platform_roas",
+          "tiktok_platform_roas"
+        ],
+        "sentence": "Meta says {platform_roas}x but the brand's own numbers say {blended_mer}x. Check attribution before scaling.",
+        "severity": "high, blocks a scale recommendation",
+        "action_capability": "MEDIA-C05"
+      },
+      {
+        "name": "kill/keep/scale table",
+        "rule": "at 3x to 5x target CPA spent with ROAS more than 30% below target and no purchases, mark Kill; within 30% of target, mark Watch; at or above target, mark Scale",
+        "computed_from": [
+          "adset_verdict"
+        ],
+        "sentence": "{n} ad sets are ready to kill, {n} to scale.",
+        "severity": "ranked by spend at risk",
+        "action_capability": "MEDIA-C17"
+      },
+      {
+        "name": "frequency rising, reach flat",
+        "rule": "30-day frequency for a segment up 20% or more while cold reach for that segment is flat or falling",
+        "computed_from": [
+          "frequency_by_segment_30d"
+        ],
+        "sentence": "{segment} frequency hit {freq}x with reach flat. Creative is wearing out, not the audience.",
+        "severity": "medium, rises with spend at risk",
+        "action_capability": "MEDIA-C18"
+      },
+      {
+        "name": "spend or ROAS anomaly",
+        "rule": "a day's spend or ROAS moved 50% or more against the trailing 14-day median",
+        "computed_from": [
+          "spend_pace_vs_budget",
+          "meta_platform_roas"
+        ],
+        "sentence": "{date} spend moved {pct}% against the last 14 days. {ad_names} caused most of it.",
+        "severity": "high on the day it happens",
+        "action_capability": "MEDIA-C45"
+      },
+      {
+        "name": "anomaly root cause fan-out",
+        "rule": "when an anomaly fires, pull same-day site speed, stock level and competitor activity automatically",
+        "computed_from": [
+          "spend or ROAS anomaly",
+          "stock_pace_risk",
+          "competitor_discount_overlap"
+        ],
+        "sentence": "The {date} drop lines up with {cause} on the same day.",
+        "severity": "attached to the anomaly it explains",
+        "action_capability": "MEDIA-C68"
+      },
+      {
+        "name": "creative volume below benchmark",
+        "rule": "new ads launched in 30 days is under 70% of (monthly spend / 1000)",
+        "computed_from": [
+          "creative_volume_ratio"
+        ],
+        "sentence": "Only {n} new ads launched this month against a benchmark of {target}.",
+        "severity": "medium, compounds over months",
+        "action_capability": "MEDIA-C16"
+      },
+      {
+        "name": "DPA in the wrong bucket",
+        "rule": "a dynamic product ad set is inside the main cold CBO instead of its own capped ad set",
+        "computed_from": [
+          "dpa_7day_click_roas"
+        ],
+        "sentence": "DPA is sharing budget with cold prospecting. Give it its own capped ad set.",
+        "severity": "medium",
+        "action_capability": "MEDIA-C20"
+      },
+      {
+        "name": "naming or purpose gap",
+        "rule": "a live campaign has no one-line purpose on file or its ad sets do not follow the fixed naming pattern",
+        "computed_from": [
+          "concept_count_vs_band"
+        ],
+        "sentence": "{n} campaigns have no purpose line on file.",
+        "severity": "low, fixes reporting confusion",
+        "action_capability": "MEDIA-C10"
+      },
+      {
+        "name": "scaling into a stockout",
+        "rule": "an ad set marked Scale features a product with under 14 days of stock left",
+        "computed_from": [
+          "stock_pace_risk",
+          "adset_verdict"
+        ],
+        "sentence": "{ad_set} is scaling {product}, which has {days} days of stock left.",
+        "severity": "high, wastes scaled spend",
+        "action_capability": "MEDIA-C42"
+      },
+      {
+        "name": "competitor discount on a shared product",
+        "rule": "a competitor is discounting a product the brand also runs ads for by 20% or more",
+        "computed_from": [
+          "competitor_discount_overlap"
+        ],
+        "sentence": "{competitor} cut {product} by {pct}%. Consider pulling or de-prioritising it.",
+        "severity": "medium",
+        "action_capability": "MEDIA-C43"
+      },
+      {
+        "name": "message mismatch",
+        "rule": "the current top ad's headline has not appeared on the landing page within 1 day of becoming the top ad",
+        "computed_from": [
+          "message_match_lag_days"
+        ],
+        "sentence": "The top ad says '{headline}' but the landing page still says something else, {days} days on.",
+        "severity": "medium",
+        "action_capability": "MEDIA-C44"
+      },
+      {
+        "name": "unlogged platform suggestion",
+        "rule": "a platform-applied Advantage+ or automated suggestion has no before/after entry in the suggestion log",
+        "computed_from": [
+          "suggestion_log_status"
+        ],
+        "sentence": "{n} suggestions were applied with no test on record.",
+        "severity": "medium",
+        "action_capability": "MEDIA-C07"
+      },
+      {
+        "name": "Spark authorization expiring",
+        "rule": "an active Sparked post's creator authorization has 30 days or fewer left",
+        "computed_from": [
+          "tiktok_spark_authorization_days_left"
+        ],
+        "sentence": "{creator}'s Spark authorization expires in {days} days.",
+        "severity": "high, ad stops delivering if it lapses",
+        "action_capability": "MEDIA-C26"
+      },
+      {
+        "name": "policy rejection pattern",
+        "rule": "2 or more rejections in 30 days cite the same policy clause",
+        "computed_from": [
+          "account_quality_flags"
+        ],
+        "sentence": "{n} ads were rejected for {clause} this month. Fix the pattern, not just the ad.",
+        "severity": "medium",
+        "action_capability": "MEDIA-C55"
+      },
+      {
+        "name": "founder-gate queue non-empty",
+        "rule": "any decision the idea bank or catalogue marks founder_gate is open and unresolved",
+        "computed_from": [
+          "founder-gate list"
+        ],
+        "sentence": "{n} decisions are waiting on you: {labels}.",
+        "severity": "always shown first",
+        "action_capability": "MEDIA-C48"
+      }
+    ],
+    "visuals": [
+      {
+        "name": "pacing gauge",
+        "type": "gauge plus line",
+        "shows": "month-to-date spend vs planned budget, with a projected end-of-month line",
+        "why_this_chart": "founder sees in one glance if the month is on track",
+        "exists_today": true
+      },
+      {
+        "name": "kill/keep/scale table",
+        "type": "table with verdict chips",
+        "shows": "every live ad set, its ROAS, spend and verdict, ranked by spend at risk",
+        "why_this_chart": "matches the existing ads gallery verdict pattern (insights.js verdictChip), extended to ad-set level",
+        "exists_today": false
+      },
+      {
+        "name": "frequency by segment small multiples",
+        "type": "small line charts, one per audience segment",
+        "shows": "30-day frequency trend per segment against cold reach",
+        "why_this_chart": "a blended frequency number hides which segment is actually fatigued",
+        "exists_today": false
+      },
+      {
+        "name": "anomaly strip",
+        "type": "calendar heat strip",
+        "shows": "every day in the range shaded by how far spend or ROAS moved from the 14-day median",
+        "why_this_chart": "founder spots the bad day without reading a table",
+        "exists_today": false
+      },
+      {
+        "name": "MER bridge",
+        "type": "waterfall",
+        "shows": "Meta ROAS, TikTok ROAS and blended MER side by side with the gap labelled",
+        "why_this_chart": "makes the attribution gap visible instead of buried in two separate numbers",
+        "exists_today": false
+      },
+      {
+        "name": "change log timeline",
+        "type": "vertical timeline",
+        "shows": "every structure, bid or targeting change with who made it and the before/after read",
+        "why_this_chart": "founder can see what changed and whether it worked, not just that it changed",
+        "exists_today": false
+      },
+      {
+        "name": "TikTok organic-to-Spark timeline",
+        "type": "step timeline",
+        "shows": "post date, 5 to 7 day organic read, Spark date, authorization expiry",
+        "why_this_chart": "the loop only works if the timing is followed; visualising it catches a skipped step",
+        "exists_today": false
+      },
+      {
+        "name": "marginal ROAS bars",
+        "type": "bar chart",
+        "shows": "the next-dollar return estimate per channel, side by side",
+        "why_this_chart": "founder allocates the next rupee by comparing bars, not spreadsheets",
+        "exists_today": false
+      }
+    ],
+    "actions": [
+      {
+        "label": "Run full account audit",
+        "capability": "MEDIA-C01",
+        "autonomy": "agent_does"
+      },
+      {
+        "label": "Check pixel and CAPI health",
+        "capability": "MEDIA-C03",
+        "autonomy": "agent_does"
+      },
+      {
+        "label": "Reconcile ROAS against MER",
+        "capability": "MEDIA-C05",
+        "autonomy": "agent_does"
+      },
+      {
+        "label": "Design a lift test",
+        "capability": "MEDIA-C06",
+        "autonomy": "founder_gate"
+      },
+      {
+        "label": "Log this suggestion for a test",
+        "capability": "MEDIA-C07",
+        "autonomy": "agent_does"
+      },
+      {
+        "label": "Update ROAS/CAC targets from margin",
+        "capability": "MEDIA-C08",
+        "autonomy": "agent_does"
+      },
+      {
+        "label": "Propose account structure change",
+        "capability": "MEDIA-C09",
+        "autonomy": "human_assist"
+      },
+      {
+        "label": "Fix naming and purpose lines",
+        "capability": "MEDIA-C10",
+        "autonomy": "human_assist"
+      },
+      {
+        "label": "Rebuild ad set architecture",
+        "capability": "MEDIA-C11",
+        "autonomy": "human_assist"
+      },
+      {
+        "label": "Rebuild audiences and exclusions",
+        "capability": "MEDIA-C12",
+        "autonomy": "human_assist"
+      },
+      {
+        "label": "Fix placements and turn off Advantage+ crop",
+        "capability": "MEDIA-C13",
+        "autonomy": "human_assist"
+      },
+      {
+        "label": "Change bid strategy",
+        "capability": "MEDIA-C14",
+        "autonomy": "human_assist"
+      },
+      {
+        "label": "Size a creative test",
+        "capability": "MEDIA-C15",
+        "autonomy": "agent_does"
+      },
+      {
+        "label": "Set creative volume target",
+        "capability": "MEDIA-C16",
+        "autonomy": "agent_does"
+      },
+      {
+        "label": "Apply kill/keep/scale",
+        "capability": "MEDIA-C17",
+        "autonomy": "human_assist"
+      },
+      {
+        "label": "Read fatigue by segment",
+        "capability": "MEDIA-C18",
+        "autonomy": "agent_does"
+      },
+      {
+        "label": "Set up existing-customer campaign",
+        "capability": "MEDIA-C19",
+        "autonomy": "human_assist"
+      },
+      {
+        "label": "Move DPA into its own ad set",
+        "capability": "MEDIA-C20",
+        "autonomy": "agent_does"
+      },
+      {
+        "label": "Plan peak sale ramp",
+        "capability": "MEDIA-C21",
+        "autonomy": "human_assist"
+      },
+      {
+        "label": "Set up cross-border delivery",
+        "capability": "MEDIA-C22",
+        "autonomy": "human_assist"
+      },
+      {
+        "label": "Review account access",
+        "capability": "MEDIA-C23",
+        "autonomy": "human_assist"
+      },
+      {
+        "label": "Launch first TikTok campaign",
+        "capability": "MEDIA-C24",
+        "autonomy": "human_assist"
+      },
+      {
+        "label": "Scale TikTok winner",
+        "capability": "MEDIA-C25",
+        "autonomy": "human_assist"
+      },
+      {
+        "label": "Run organic-to-Spark loop",
+        "capability": "MEDIA-C26",
+        "autonomy": "human_assist"
+      },
+      {
+        "label": "Set up TikTok Shop/Search/GMV Max",
+        "capability": "MEDIA-C27",
+        "autonomy": "human_assist"
+      },
+      {
+        "label": "Check TikTok video spec",
+        "capability": "MEDIA-C28",
+        "autonomy": "agent_does"
+      },
+      {
+        "label": "Run TikTok targeting ladder test",
+        "capability": "MEDIA-C29",
+        "autonomy": "human_assist"
+      },
+      {
+        "label": "Check stock before scaling",
+        "capability": "MEDIA-C42",
+        "autonomy": "agent_does"
+      },
+      {
+        "label": "Pull competitor snapshot",
+        "capability": "MEDIA-C43",
+        "autonomy": "agent_does"
+      },
+      {
+        "label": "Sync ad headline to landing page",
+        "capability": "MEDIA-C44",
+        "autonomy": "agent_does"
+      },
+      {
+        "label": "Investigate today's anomaly",
+        "capability": "MEDIA-C45",
+        "autonomy": "agent_does"
+      },
+      {
+        "label": "Send today's read",
+        "capability": "MEDIA-C46",
+        "autonomy": "agent_does"
+      },
+      {
+        "label": "Refresh spend forecast",
+        "capability": "MEDIA-C47",
+        "autonomy": "agent_does"
+      },
+      {
+        "label": "Open founder decision queue",
+        "capability": "MEDIA-C48",
+        "autonomy": "founder_gate"
+      },
+      {
+        "label": "Evaluate an attribution/MMM tool",
+        "capability": "MEDIA-C56",
+        "autonomy": "founder_gate"
+      },
+      {
+        "label": "Allocate budget by marginal ROAS",
+        "capability": "MEDIA-C58",
+        "autonomy": "founder_gate"
+      },
+      {
+        "label": "Run pre-launch QA",
+        "capability": "MEDIA-C59",
+        "autonomy": "agent_does"
+      },
+      {
+        "label": "Set up Click-to-WhatsApp COD flow",
+        "capability": "MEDIA-C60",
+        "autonomy": "founder_gate"
+      },
+      {
+        "label": "Set agentic-bidding guardrails",
+        "capability": "MEDIA-C61",
+        "autonomy": "founder_gate"
+      },
+      {
+        "label": "Approve a capped pilot on a new surface",
+        "capability": "MEDIA-C62",
+        "autonomy": "founder_gate"
+      },
+      {
+        "label": "Turn on a standing kill/keep/scale rule",
+        "capability": "MEDIA-C63",
+        "autonomy": "founder_gate"
+      },
+      {
+        "label": "Approve autonomous budget orchestration",
+        "capability": "MEDIA-C64",
+        "autonomy": "founder_gate"
+      },
+      {
+        "label": "Run policy pre-check on a draft ad",
+        "capability": "MEDIA-C65",
+        "autonomy": "human_assist"
+      },
+      {
+        "label": "Fan out this anomaly to site/stock/competitor",
+        "capability": "MEDIA-C68",
+        "autonomy": "agent_does"
+      }
+    ],
+    "not_elsewhere": [
+      {
+        "claim": "puts ad-set kill/keep/scale verdicts next to same-day stock level and competitor discount data, not performance numbers alone",
+        "vs": "Meta Ads Manager and rule tools like Revealbot judge only spend, ROAS and frequency inside the ad account; they do not see stock or competitor moves"
+      },
+      {
+        "claim": "computes blended MER from the brand's own contribution margin and reconciles it against Meta's and TikTok's own reported ROAS every time before a scale call",
+        "vs": "Meta Ads Manager and TikTok Ads Manager report only their own platform ROAS; also in Triple Whale for a blended revenue number, but Triple Whale's number is not tied back to the brand's own margin ledger"
+      },
+      {
+        "claim": "logs every Advantage+ or automated suggestion applied, with a persisted before/after read attached to it",
+        "vs": "Ads Manager shows a suggestion feed but keeps no lasting before/after test log once a suggestion is applied"
+      },
+      {
+        "claim": "fans one spend or ROAS anomaly out to the brand's own site speed, stock level and competitor snapshot from the same day, automatically",
+        "vs": "Meta Ads Manager and TikTok Ads Manager flag the anomaly inside the ad account but never look outside it for the cause"
+      },
+      {
+        "claim": "tracks each TikTok Spark creator's 365-day authorization next to the organic post that earned it, with the expiry clock visible",
+        "vs": "TikTok Ads Manager shows Spark ads live but not the organic-to-paid loop timing or authorization expiry in one place"
+      },
+      {
+        "claim": "routes every founder-gate call (scale ceiling, WhatsApp COD rollout, new-surface pilot, agentic-bidding guardrail) into one queue instead of leaving it split across ad account settings",
+        "vs": "no platform separates its own automation's suggestions from the calls only the founder should make"
+      }
+    ],
+    "data_needs": [
+      {
+        "table": "meta_ad_daily",
+        "fields": [
+          "ad_id",
+          "adset_id",
+          "campaign_id",
+          "date",
+          "spend",
+          "purchases",
+          "purchase_value",
+          "impressions",
+          "link_clicks",
+          "frequency"
+        ],
+        "connector_or_script": "Meta MCP (read-only) + meta_gallery.refresh",
+        "refresh": "daily"
+      },
+      {
+        "table": "tiktok_ad_daily",
+        "fields": [
+          "ad_id",
+          "adgroup_id",
+          "campaign_id",
+          "date",
+          "spend",
+          "conversions",
+          "attributed_revenue",
+          "impressions",
+          "clicks"
+        ],
+        "connector_or_script": "TikTok Ads Manager API (not yet connected)",
+        "refresh": "daily, once connected"
+      },
+      {
+        "table": "brand_revenue_ledger",
+        "fields": [
+          "date",
+          "order_id",
+          "new_or_existing_customer",
+          "revenue",
+          "gross_profit"
+        ],
+        "connector_or_script": "brand brain (not yet built)",
+        "refresh": "daily"
+      },
+      {
+        "table": "creator_authorizations",
+        "fields": [
+          "creator",
+          "post_id",
+          "authorized_at",
+          "expires_at",
+          "sparked"
+        ],
+        "connector_or_script": "brand record, manual entry today",
+        "refresh": "on each new authorization"
+      },
+      {
+        "table": "suggestion_log",
+        "fields": [
+          "date",
+          "platform",
+          "suggestion",
+          "applied_by",
+          "before_metric",
+          "after_metric"
+        ],
+        "connector_or_script": "brand record, manual entry today",
+        "refresh": "on each suggestion"
+      },
+      {
+        "table": "stock_feed",
+        "fields": [
+          "sku",
+          "on_hand",
+          "daily_sales_rate",
+          "days_of_stock"
+        ],
+        "connector_or_script": "brand's inventory system (not yet connected)",
+        "refresh": "daily"
+      },
+      {
+        "table": "competitor_snapshot",
+        "fields": [
+          "brand",
+          "ad_id",
+          "product",
+          "discount_pct",
+          "captured_at"
+        ],
+        "connector_or_script": "Meta Ad Library snapshot (manual pull)",
+        "refresh": "every 14 days"
+      },
+      {
+        "table": "landing_page_snapshot",
+        "fields": [
+          "page",
+          "headline",
+          "captured_at"
+        ],
+        "connector_or_script": "site crawl (not yet built)",
+        "refresh": "daily"
+      },
+      {
+        "table": "account_activity_log",
+        "fields": [
+          "platform",
+          "date",
+          "type",
+          "entity",
+          "clause",
+          "status"
+        ],
+        "connector_or_script": "Meta and TikTok activity log APIs",
+        "refresh": "daily"
+      },
+      {
+        "table": "founder_decision_queue",
+        "fields": [
+          "id",
+          "capability",
+          "label",
+          "opened_at",
+          "status"
+        ],
+        "connector_or_script": "brand record (not yet built)",
+        "refresh": "real time"
+      }
+    ],
+    "founder_view_note": "Before any connector is live, the room shows Meta-only numbers (already flowing through the existing gallery) and marks blended MER, TikTok ROAS, stock risk and competitor overlap as unavailable with a one-line reason each. The first thing that lands once the brand brain and stock feed connect is the MER bridge and the stock-pace risk flag, since those two catch the costliest mistakes (scaling on a wrong number, scaling into a stockout)."
+  },
+  {
+    "room": "Google Ads",
+    "agent": "MEDIA",
+    "who_uses": [
+      "founder",
+      "media buyer",
+      "agency account manager"
+    ],
+    "jobs": [
+      {
+        "job": "diagnose the account top down before changing anything",
+        "question": "where does this account actually break: business, channel, campaign or metric",
+        "capabilities": [
+          "MEDIA-C02"
+        ]
+      },
+      {
+        "job": "confirm conversion tracking is actually right",
+        "question": "is real order value passing through cleanly to Google",
+        "capabilities": [
+          "MEDIA-C04"
+        ]
+      },
+      {
+        "job": "check Merchant Center is set up and healthy",
+        "question": "is Merchant Center compliant and are the free add-ons enrolled",
+        "capabilities": [
+          "MEDIA-C30"
+        ]
+      },
+      {
+        "job": "check the feed's title and content quality",
+        "question": "do our titles lead with what people actually search",
+        "capabilities": [
+          "MEDIA-C31"
+        ]
+      },
+      {
+        "job": "check the campaign architecture has a defendable reason for every split",
+        "question": "does every campaign have one funnel job and a written reason",
+        "capabilities": [
+          "MEDIA-C32"
+        ]
+      },
+      {
+        "job": "check brand is split from non-brand everywhere",
+        "question": "is brand spend inflating the numbers we use to judge non-brand",
+        "capabilities": [
+          "MEDIA-C33"
+        ]
+      },
+      {
+        "job": "read and run Shopping the right way for our catalogue size",
+        "question": "is our Shopping structure right for our catalogue and margin spread",
+        "capabilities": [
+          "MEDIA-C34"
+        ]
+      },
+      {
+        "job": "read and run Search the right way",
+        "question": "which keywords are wasting spend and which are ready for more",
+        "capabilities": [
+          "MEDIA-C35"
+        ]
+      },
+      {
+        "job": "control Performance Max instead of letting it run blind",
+        "question": "which PMax defaults are hiding control from us right now",
+        "capabilities": [
+          "MEDIA-C36"
+        ]
+      },
+      {
+        "job": "decide if YouTube or Demand Gen is ready to add",
+        "question": "are Search and Shopping dialled in enough to add YouTube",
+        "capabilities": [
+          "MEDIA-C37"
+        ]
+      },
+      {
+        "job": "check remarketing and exclusion lists are built and sized right",
+        "question": "are our lists big enough to use and are customers excluded from cold",
+        "capabilities": [
+          "MEDIA-C38"
+        ]
+      },
+      {
+        "job": "know what bid strategy stage we are in and if we are ready to move",
+        "question": "should we still be on Maximize Conversion Value or move to Target ROAS",
+        "capabilities": [
+          "MEDIA-C39"
+        ]
+      },
+      {
+        "job": "size and pace budgets for our stage",
+        "question": "is our daily budget too small or too big for our AOV and stage",
+        "capabilities": [
+          "MEDIA-C40"
+        ]
+      },
+      {
+        "job": "pass the scaling gates before adding budget",
+        "question": "have we actually earned the right to add budget or a new campaign type",
+        "capabilities": [
+          "MEDIA-C41"
+        ]
+      }
+    ],
+    "metrics": [
+      {
+        "name": "conversion_tracking_coverage",
+        "plain": "Share of purchases where Google gets the real order value",
+        "formula": "purchases with enhanced conversion value populated / total tracked purchases",
+        "source": "Google Ads conversion actions (API, read-only)",
+        "window": "trailing 7 days",
+        "freshness_rule": "stale after 48 hours",
+        "unavailable_when": "Google Ads read access not connected",
+        "benchmark": "100%"
+      },
+      {
+        "name": "merchant_center_health",
+        "plain": "Whether Merchant Center is approved and add-ons are on",
+        "formula": "count of open disapprovals + count of the 4 add-ons not enrolled",
+        "source": "Merchant Center diagnostics",
+        "window": "current",
+        "freshness_rule": "stale after 24 hours",
+        "unavailable_when": "Merchant Center not connected",
+        "benchmark": "0 disapprovals, 4 of 4 add-ons enrolled"
+      },
+      {
+        "name": "feed_title_quality",
+        "plain": "Share of titles that lead with the actual converting search term",
+        "formula": "titles starting with a top-20 converting search term / total live titles",
+        "source": "product feed + Search terms report",
+        "window": "current, recomputed weekly",
+        "freshness_rule": "stale after 7 days",
+        "unavailable_when": "search terms report has under 20 terms with conversions",
+        "benchmark": "rising toward 100% in batches"
+      },
+      {
+        "name": "brand_nonbrand_split",
+        "plain": "Spend and ROAS split between brand and non-brand",
+        "formula": "spend and value summed separately for campaigns tagged brand vs non-brand",
+        "source": "campaign tags + Google Ads metrics",
+        "window": "selected date range",
+        "freshness_rule": "stale after 24 hours",
+        "unavailable_when": "campaigns not tagged brand/non-brand",
+        "benchmark": "brand excluded from every cold campaign by negative list and exclusion"
+      },
+      {
+        "name": "nonbrand_cpa_vs_breakeven",
+        "plain": "Is non-brand Search costing more than it can afford to",
+        "formula": "non-brand CPA / break-even CPA (from margin)",
+        "source": "Google Ads metrics + brand margin data",
+        "window": "trailing 30 days",
+        "freshness_rule": "stale after 7 days",
+        "unavailable_when": "break-even CPA not set",
+        "benchmark": "at or under 1.0"
+      },
+      {
+        "name": "pmax_control_flags",
+        "plain": "How many control-hiding defaults are still switched on in PMax",
+        "formula": "count of: URL expansion on, auto assets on, final URL expansion on, across active PMax campaigns",
+        "source": "Google Ads campaign settings",
+        "window": "current",
+        "freshness_rule": "stale after 7 days",
+        "unavailable_when": "no PMax campaign running",
+        "benchmark": "0"
+      },
+      {
+        "name": "pmax_search_terms_coverage",
+        "plain": "Share of PMax spend with a visible search term behind it",
+        "formula": "spend on search terms shown in the PMax insights report / total PMax search spend",
+        "source": "PMax search terms report",
+        "window": "trailing 30 days",
+        "freshness_rule": "stale after 7 days",
+        "unavailable_when": "PMax insights report not available for the account",
+        "benchmark": "as high as Google will show; flag when this falls, not a fixed target"
+      },
+      {
+        "name": "search_term_waste",
+        "plain": "Spend on search terms with no conversions over the waste threshold",
+        "formula": "sum of spend on terms with 0 conversions and spend over 2x average CPA",
+        "source": "Search terms report",
+        "window": "trailing 30 days",
+        "freshness_rule": "stale after 7 days",
+        "unavailable_when": "fewer than 30 days of search term data",
+        "benchmark": "trending down after negatives are added"
+      },
+      {
+        "name": "bid_strategy_stage",
+        "plain": "Where the account sits on the bidding ladder",
+        "formula": "current strategy (Maximize Conversion Value, or Target ROAS with X% of conversions from that strategy)",
+        "source": "Google Ads bid strategy settings + conversion volume",
+        "window": "current",
+        "freshness_rule": "stale after 7 days",
+        "unavailable_when": "n/a",
+        "benchmark": "move to Target ROAS only once volume supports it (MEDIA-C39)"
+      },
+      {
+        "name": "remarketing_list_size",
+        "plain": "How big each remarketing list actually is",
+        "formula": "member count per list",
+        "source": "Google Ads audience manager",
+        "window": "current",
+        "freshness_rule": "stale after 24 hours",
+        "unavailable_when": "audience manager not connected",
+        "benchmark": "above the platform's minimum size to serve"
+      },
+      {
+        "name": "cart_abandoner_list_size",
+        "plain": "Size of the add-to-cart-minus-purchase list",
+        "formula": "add-to-cart audience minus purchaser audience, member count",
+        "source": "Google Ads audience manager",
+        "window": "current",
+        "freshness_rule": "stale after 24 hours",
+        "unavailable_when": "add-to-cart tag not firing",
+        "benchmark": "above minimum size to serve"
+      },
+      {
+        "name": "budget_vs_sizing_formula",
+        "plain": "Is today's budget in the recommended range for our stage",
+        "formula": "daily budget / (3 to 4x AOV for Search and Shopping, or $50-100 and 3x non-brand CPA for PMax)",
+        "source": "Google Ads budget settings + brand AOV",
+        "window": "current",
+        "freshness_rule": "stale after 7 days",
+        "unavailable_when": "AOV not set",
+        "benchmark": "within the formula's range"
+      },
+      {
+        "name": "scaling_gates_passed",
+        "plain": "How many of the 5 scaling gates the account currently passes",
+        "formula": "count of gates passed out of 5 (fixed gate list from MEDIA-C41)",
+        "source": "computed from the metrics above",
+        "window": "current",
+        "freshness_rule": "recomputed on load",
+        "unavailable_when": "n/a",
+        "benchmark": "5 of 5 before adding budget or a new campaign type"
+      },
+      {
+        "name": "youtube_demand_gen_readiness",
+        "plain": "Whether Search and Shopping are dialled in enough to add video",
+        "formula": "checklist score: Search/Shopping hitting target ROAS + proven Meta creative available + AOV fits video funnel",
+        "source": "computed from campaign metrics + creative library",
+        "window": "current",
+        "freshness_rule": "stale after 7 days",
+        "unavailable_when": "Search/Shopping have not run 30 days at target",
+        "benchmark": "all 3 checklist items true"
+      },
+      {
+        "name": "google_blended_mer_gap",
+        "plain": "Gap between Google's own ROAS and the brand's blended MER",
+        "formula": "Google-reported ROAS minus blended MER, as a percentage of Google's ROAS",
+        "source": "Google Ads metrics + brand revenue ledger",
+        "window": "trailing 30 days",
+        "freshness_rule": "stale after 48 hours",
+        "unavailable_when": "brand revenue ledger not connected",
+        "benchmark": "under 20% gap"
+      },
+      {
+        "name": "disapproval_resolution_days",
+        "plain": "How long a disapproved ad or product stays down",
+        "formula": "days between disapproval flagged and resolved",
+        "source": "Merchant Center + Ads policy center",
+        "window": "trailing 30 days",
+        "freshness_rule": "stale after 24 hours",
+        "unavailable_when": "no disapprovals in range",
+        "benchmark": "under 2 days"
+      },
+      {
+        "name": "spend_pace_vs_budget_google",
+        "plain": "Month-to-date spend against plan, Google only",
+        "formula": "(spend to date / days elapsed) x days in month vs planned monthly budget",
+        "source": "Google Ads daily spend",
+        "window": "month to date",
+        "freshness_rule": "stale after 24 hours",
+        "unavailable_when": "monthly budget not set",
+        "benchmark": "within 10% of plan"
+      },
+      {
+        "name": "new_customer_cac_google",
+        "plain": "Cost to win one new customer through Google",
+        "formula": "Google spend / new customers attributed to Google",
+        "source": "Google Ads + brand revenue ledger",
+        "window": "monthly",
+        "freshness_rule": "stale after 7 days",
+        "unavailable_when": "new-customer tagging missing",
+        "benchmark": "GP-to-CAC target from MEDIA-C08"
+      },
+      {
+        "name": "addon_enrollment_status",
+        "plain": "Which of the 4 Merchant Center add-ons are live",
+        "formula": "count enrolled out of 4",
+        "source": "Merchant Center settings",
+        "window": "current",
+        "freshness_rule": "stale after 7 days",
+        "unavailable_when": "Merchant Center not connected",
+        "benchmark": "4 of 4"
+      },
+      {
+        "name": "campaign_purpose_coverage",
+        "plain": "Share of live campaigns with a written one-line purpose",
+        "formula": "campaigns with a purpose note on file / total live campaigns",
+        "source": "brand record + Google Ads campaign list",
+        "window": "current",
+        "freshness_rule": "stale after 30 days",
+        "unavailable_when": "no purpose notes kept yet",
+        "benchmark": "100%"
+      }
+    ],
+    "insights": [
+      {
+        "name": "title missing the converting term",
+        "rule": "a live product title does not start with a top-20 converting search term for that product type",
+        "computed_from": [
+          "feed_title_quality"
+        ],
+        "sentence": "{n} titles do not lead with the term that actually converts.",
+        "severity": "medium, fixes over weeks not days",
+        "action_capability": "MEDIA-C31"
+      },
+      {
+        "name": "PMax hiding control",
+        "rule": "URL expansion, auto assets or final URL expansion is still on for an active PMax campaign",
+        "computed_from": [
+          "pmax_control_flags"
+        ],
+        "sentence": "{campaign} still has {setting} on. Turn it off to see and control what runs.",
+        "severity": "high",
+        "action_capability": "MEDIA-C36"
+      },
+      {
+        "name": "brand not excluded from cold",
+        "rule": "a non-brand or PMax campaign has no brand negative list or exclusion applied",
+        "computed_from": [
+          "brand_nonbrand_split"
+        ],
+        "sentence": "{campaign} has no brand exclusion. Brand searches may be inflating its ROAS.",
+        "severity": "high",
+        "action_capability": "MEDIA-C33"
+      },
+      {
+        "name": "search term wasting spend",
+        "rule": "a search term has spent over 2x average CPA with 0 conversions in 30 days",
+        "computed_from": [
+          "search_term_waste"
+        ],
+        "sentence": "'{term}' spent {amount} with 0 conversions. Add it as a negative.",
+        "severity": "medium, compounds",
+        "action_capability": "MEDIA-C35"
+      },
+      {
+        "name": "remarketing list too small",
+        "rule": "a remarketing or cart-abandoner list is below the platform's minimum serving size",
+        "computed_from": [
+          "remarketing_list_size",
+          "cart_abandoner_list_size"
+        ],
+        "sentence": "{list} has {n} members, below the size Google needs to serve it. Wait before launching.",
+        "severity": "low",
+        "action_capability": "MEDIA-C38"
+      },
+      {
+        "name": "ready to progress bid strategy",
+        "rule": "conversion volume has held above the platform's Target ROAS threshold for 4 straight weeks on Maximize Conversion Value",
+        "computed_from": [
+          "bid_strategy_stage"
+        ],
+        "sentence": "Volume has supported Target ROAS for 4 weeks. Consider moving up a stage.",
+        "severity": "low, an opportunity not a risk",
+        "action_capability": "MEDIA-C39"
+      },
+      {
+        "name": "budget outside the sizing formula",
+        "rule": "daily budget falls outside the AOV or CPA-based sizing range for the campaign's stage",
+        "computed_from": [
+          "budget_vs_sizing_formula"
+        ],
+        "sentence": "{campaign}'s budget is {pct}% outside the recommended range for its stage.",
+        "severity": "medium",
+        "action_capability": "MEDIA-C40"
+      },
+      {
+        "name": "scaling gate failed",
+        "rule": "fewer than 5 of 5 scaling gates pass",
+        "computed_from": [
+          "scaling_gates_passed"
+        ],
+        "sentence": "Only {n} of 5 scaling gates pass. Hold budget until the rest clear.",
+        "severity": "high, blocks a scale recommendation",
+        "action_capability": "MEDIA-C41"
+      },
+      {
+        "name": "Merchant Center disapproval spike",
+        "rule": "open disapprovals rose 25% or more week over week",
+        "computed_from": [
+          "merchant_center_health"
+        ],
+        "sentence": "Disapprovals rose to {n} this week, up from {prev}.",
+        "severity": "high",
+        "action_capability": "MEDIA-C30"
+      },
+      {
+        "name": "YouTube added too early",
+        "rule": "a YouTube or Demand Gen campaign is live while youtube_demand_gen_readiness has an unmet checklist item",
+        "computed_from": [
+          "youtube_demand_gen_readiness"
+        ],
+        "sentence": "YouTube is spending before {unmet_item} is in place.",
+        "severity": "medium",
+        "action_capability": "MEDIA-C37"
+      },
+      {
+        "name": "conversion value gap",
+        "rule": "conversion_tracking_coverage is under 95%",
+        "computed_from": [
+          "conversion_tracking_coverage"
+        ],
+        "sentence": "{pct}% of purchases are passing real order value. The rest look like $0 conversions to Google.",
+        "severity": "high, distorts every bid strategy",
+        "action_capability": "MEDIA-C04"
+      },
+      {
+        "name": "Google vs blended MER gap",
+        "rule": "google_blended_mer_gap is 20% or more",
+        "computed_from": [
+          "google_blended_mer_gap"
+        ],
+        "sentence": "Google reports {google_roas}x but the brand's own numbers say {mer}x.",
+        "severity": "high, blocks a scale call",
+        "action_capability": "MEDIA-C05"
+      },
+      {
+        "name": "non-brand above break-even",
+        "rule": "nonbrand_cpa_vs_breakeven is over 1.0",
+        "computed_from": [
+          "nonbrand_cpa_vs_breakeven"
+        ],
+        "sentence": "Non-brand CPA is {pct}% over break-even. Cut before adding budget.",
+        "severity": "high",
+        "action_capability": "MEDIA-C08"
+      },
+      {
+        "name": "campaign with no purpose on file",
+        "rule": "a live campaign has no one-line purpose note",
+        "computed_from": [
+          "campaign_purpose_coverage"
+        ],
+        "sentence": "{campaign} has no written purpose. Reporting confusion usually starts here.",
+        "severity": "low",
+        "action_capability": "MEDIA-C32"
+      }
+    ],
+    "visuals": [
+      {
+        "name": "channel-type funnel",
+        "type": "grouped bar",
+        "shows": "spend and ROAS for Search, Shopping, PMax and YouTube side by side",
+        "why_this_chart": "founder compares channel types the way the budget gets split",
+        "exists_today": false
+      },
+      {
+        "name": "scaling gate checklist",
+        "type": "5-light checklist",
+        "shows": "each of the 5 scaling gates as pass or fail",
+        "why_this_chart": "matches the speed lab's fixed-checklist pattern; a founder reads pass/fail in seconds",
+        "exists_today": false
+      },
+      {
+        "name": "feed quality scorecard",
+        "type": "scorecard tiles",
+        "shows": "title quality %, open disapprovals, add-ons enrolled",
+        "why_this_chart": "one glance replaces three separate Merchant Center tabs",
+        "exists_today": false
+      },
+      {
+        "name": "bid strategy ladder",
+        "type": "step progress bar",
+        "shows": "current stage on the Maximize Conversion Value to Target ROAS ladder, with the volume needed for the next step",
+        "why_this_chart": "prevents moving up before volume supports it",
+        "exists_today": false
+      },
+      {
+        "name": "search terms waste table",
+        "type": "sortable table",
+        "shows": "search terms ranked by wasted spend, with a one-click negative-keyword action",
+        "why_this_chart": "founder acts on the worst offenders first",
+        "exists_today": false
+      },
+      {
+        "name": "budget sizing gauge",
+        "type": "gauge",
+        "shows": "today's budget against the formula's recommended range",
+        "why_this_chart": "catches under- and over-sizing at a glance",
+        "exists_today": false
+      },
+      {
+        "name": "brand vs non-brand split",
+        "type": "stacked bar",
+        "shows": "spend and ROAS for brand vs non-brand over time",
+        "why_this_chart": "shows whether brand is inflating the numbers used to judge non-brand",
+        "exists_today": false
+      }
+    ],
+    "actions": [
+      {
+        "label": "Run top-down account diagnosis",
+        "capability": "MEDIA-C02",
+        "autonomy": "human_assist"
+      },
+      {
+        "label": "Fix conversion tracking",
+        "capability": "MEDIA-C04",
+        "autonomy": "human_assist"
+      },
+      {
+        "label": "Fix Merchant Center setup",
+        "capability": "MEDIA-C30",
+        "autonomy": "human_assist"
+      },
+      {
+        "label": "Roll out a feed title batch",
+        "capability": "MEDIA-C31",
+        "autonomy": "human_assist"
+      },
+      {
+        "label": "Rebuild campaign architecture",
+        "capability": "MEDIA-C32",
+        "autonomy": "human_assist"
+      },
+      {
+        "label": "Fix brand/non-brand split",
+        "capability": "MEDIA-C33",
+        "autonomy": "human_assist"
+      },
+      {
+        "label": "Restructure Shopping",
+        "capability": "MEDIA-C34",
+        "autonomy": "human_assist"
+      },
+      {
+        "label": "Restructure Search",
+        "capability": "MEDIA-C35",
+        "autonomy": "human_assist"
+      },
+      {
+        "label": "Turn off a PMax default",
+        "capability": "MEDIA-C36",
+        "autonomy": "human_assist"
+      },
+      {
+        "label": "Plan a YouTube/Demand Gen add",
+        "capability": "MEDIA-C37",
+        "autonomy": "human_assist"
+      },
+      {
+        "label": "Build a remarketing list",
+        "capability": "MEDIA-C38",
+        "autonomy": "human_assist"
+      },
+      {
+        "label": "Move to the next bid strategy stage",
+        "capability": "MEDIA-C39",
+        "autonomy": "human_assist"
+      },
+      {
+        "label": "Resize a budget",
+        "capability": "MEDIA-C40",
+        "autonomy": "human_assist"
+      },
+      {
+        "label": "Re-check scaling gates",
+        "capability": "MEDIA-C41",
+        "autonomy": "human_assist"
+      }
+    ],
+    "not_elsewhere": [
+      {
+        "claim": "shows the 5 scaling gates as one pass/fail checklist before a scale recommendation is allowed through",
+        "vs": "the Google Ads recommendations page scores a generic optimization score, not the brand's own gate rules"
+      },
+      {
+        "claim": "sizes budgets to the brand's own AOV and non-brand break-even CPA, not a generic recommended-budget number",
+        "vs": "Google Ads' own budget suggestions are volume-based, not tied to the brand's margin"
+      },
+      {
+        "claim": "flags every Performance Max default that hides control (URL expansion, auto assets, final URL expansion) in one view",
+        "vs": "these settings live in separate tabs inside Google Ads with no single audit view; also in Optmyzr's PMax audit for the same checks, at a subscription cost"
+      },
+      {
+        "claim": "reconciles Google's own reported ROAS against the brand's blended MER before any scale call, using the brand's own margin data",
+        "vs": "Google Ads reports its own ROAS only and has no blended, cross-channel or margin-based view"
+      },
+      {
+        "claim": "checks feed titles against the brand's own converting search terms, not a generic title-length or keyword-stuffing checklist",
+        "vs": "Merchant Center diagnostics flag policy violations, not title-to-search-term match"
+      },
+      {
+        "claim": "reads the PMax search terms report next to a bid-strategy-stage gate, so a brand does not move to Target ROAS before it has volume",
+        "vs": "Google Ads shows the search terms report and the bid strategy recommendation in separate places with no combined readiness check"
+      }
+    ],
+    "data_needs": [
+      {
+        "table": "google_ads_campaign_daily",
+        "fields": [
+          "campaign_id",
+          "campaign_type",
+          "date",
+          "spend",
+          "conversions",
+          "conversion_value",
+          "impressions",
+          "clicks"
+        ],
+        "connector_or_script": "Google Ads API (not yet connected)",
+        "refresh": "daily"
+      },
+      {
+        "table": "google_search_terms",
+        "fields": [
+          "campaign_id",
+          "term",
+          "spend",
+          "conversions",
+          "conversion_value",
+          "date"
+        ],
+        "connector_or_script": "Google Ads Search terms report",
+        "refresh": "weekly"
+      },
+      {
+        "table": "merchant_center_feed",
+        "fields": [
+          "product_id",
+          "title",
+          "status",
+          "disapproval_reason",
+          "addon_enrolled"
+        ],
+        "connector_or_script": "Merchant Center API",
+        "refresh": "daily"
+      },
+      {
+        "table": "google_audience_lists",
+        "fields": [
+          "list_id",
+          "type",
+          "member_count",
+          "created_at"
+        ],
+        "connector_or_script": "Google Ads Audience Manager API",
+        "refresh": "weekly"
+      },
+      {
+        "table": "brand_revenue_ledger",
+        "fields": [
+          "date",
+          "order_id",
+          "channel",
+          "new_or_existing_customer",
+          "revenue",
+          "gross_profit"
+        ],
+        "connector_or_script": "brand brain (not yet built)",
+        "refresh": "daily"
+      },
+      {
+        "table": "campaign_purpose_notes",
+        "fields": [
+          "campaign_id",
+          "purpose",
+          "written_by",
+          "written_at"
+        ],
+        "connector_or_script": "brand record, manual entry today",
+        "refresh": "on change"
+      }
+    ],
+    "founder_view_note": "Before Google Ads is connected, the room shows nothing but a clear 'not connected' state on every metric, since the direct Marketing API is not active yet (only Meta is read-only connected today). The first thing to show once it connects is conversion_tracking_coverage and the scaling gate checklist, since a tracking gap or a failed gate protects against the worst decision (scaling on fake data or before the account has earned it)."
+  },
+  {
+    "room": "Affiliate, marketplace and retail media",
+    "agent": "MEDIA",
+    "who_uses": [
+      "founder",
+      "affiliate manager",
+      "agency account manager"
+    ],
+    "jobs": [
+      {
+        "job": "recruit, vet and approve or reject affiliate applicants",
+        "question": "who is asking to join and who should get in",
+        "capabilities": [
+          "MEDIA-C49"
+        ]
+      },
+      {
+        "job": "ship assets and terms, and watch active partners",
+        "question": "are our active affiliates doing what they agreed to",
+        "capabilities": [
+          "MEDIA-C49"
+        ]
+      },
+      {
+        "job": "catch affiliate or coupon fraud before it costs margin",
+        "question": "is anyone gaming commission without earning it",
+        "capabilities": [
+          "MEDIA-C50"
+        ]
+      },
+      {
+        "job": "set commission tiers by partner type, category and customer status",
+        "question": "are we paying the right rate to the right partner",
+        "capabilities": [
+          "MEDIA-C51"
+        ]
+      },
+      {
+        "job": "reconcile what the affiliate network says is owed against real sales",
+        "question": "does the payout the network wants match what actually sold and stayed sold",
+        "capabilities": [
+          "MEDIA-C51"
+        ]
+      },
+      {
+        "job": "prepare an Amazon Sponsored Products/Brands brief for handoff",
+        "question": "what should whoever runs our Amazon ads actually do this month",
+        "capabilities": [
+          "MEDIA-C52"
+        ]
+      },
+      {
+        "job": "prepare a Flipkart sponsored placement brief for handoff",
+        "question": "what should whoever runs our Flipkart ads actually do this month",
+        "capabilities": [
+          "MEDIA-C52"
+        ]
+      },
+      {
+        "job": "prepare a quick commerce retail media plan for Blinkit, Zepto and Instamart",
+        "question": "is quick commerce worth a self-serve ad budget and how much",
+        "capabilities": [
+          "MEDIA-C53"
+        ]
+      },
+      {
+        "job": "evaluate whether a DSP is worth adding",
+        "question": "are Meta and Google retargeting pools saturated enough to justify a DSP",
+        "capabilities": [
+          "MEDIA-C54"
+        ]
+      },
+      {
+        "job": "reconcile ad platform billing against the budget ledger",
+        "question": "does what Meta, Google and TikTok actually billed match what they reported and what we budgeted",
+        "capabilities": [
+          "MEDIA-C57"
+        ]
+      },
+      {
+        "job": "keep a standing invoice-to-ledger reconciliation running",
+        "question": "is every new invoice matched automatically or sitting unresolved",
+        "capabilities": [
+          "MEDIA-C66"
+        ]
+      },
+      {
+        "job": "find organic creators already using the product and whitelist them",
+        "question": "who is already talking about us for free, before we pay anyone",
+        "capabilities": [
+          "MEDIA-C67"
+        ]
+      }
+    ],
+    "metrics": [
+      {
+        "name": "affiliate_pipeline",
+        "plain": "How many applicants are waiting, approved or rejected",
+        "formula": "count of applications by status (pending, approved, rejected)",
+        "source": "affiliate network (Refersion-style) or brand record",
+        "window": "current",
+        "freshness_rule": "stale after 24 hours",
+        "unavailable_when": "affiliate network not connected",
+        "benchmark": "pending under 3 days old"
+      },
+      {
+        "name": "active_partner_count",
+        "plain": "How many affiliates and creators are actively earning",
+        "formula": "count of partners with at least 1 sale in trailing 30 days",
+        "source": "affiliate network",
+        "window": "trailing 30 days",
+        "freshness_rule": "stale after 24 hours",
+        "unavailable_when": "affiliate network not connected",
+        "benchmark": "growing period over period"
+      },
+      {
+        "name": "commission_owed_vs_paid",
+        "plain": "Gap between what the network says is owed and what was actually paid",
+        "formula": "network-reported commission owed minus verified paid amount",
+        "source": "affiliate network payout report + brand payment record",
+        "window": "current payout cycle",
+        "freshness_rule": "stale after payout cycle closes",
+        "unavailable_when": "payout report not available",
+        "benchmark": "0 gap"
+      },
+      {
+        "name": "fraud_flag_count",
+        "plain": "Number of open suspected-fraud flags",
+        "formula": "count of affiliates matching fast click-to-conversion, suspect ISP, brand-bidding or big-ticket-early-order patterns",
+        "source": "affiliate network click/order logs",
+        "window": "trailing 30 days",
+        "freshness_rule": "stale after 24 hours",
+        "unavailable_when": "click-level data not available",
+        "benchmark": "0 unresolved"
+      },
+      {
+        "name": "commission_rate_coverage",
+        "plain": "Share of partners with a set commission tier on file",
+        "formula": "partners with an assigned tier / total active partners",
+        "source": "brand's commission tier record",
+        "window": "current",
+        "freshness_rule": "stale after 30 days",
+        "unavailable_when": "tier record not kept",
+        "benchmark": "100%"
+      },
+      {
+        "name": "amazon_brief_status",
+        "plain": "Where the Amazon ads brief stands",
+        "formula": "status flag: drafted, sent, acknowledged, live (manually updated)",
+        "source": "brand record (Amazon Ads console not connected)",
+        "window": "current",
+        "freshness_rule": "stale after 30 days",
+        "unavailable_when": "no brief created yet",
+        "benchmark": "n/a, status only"
+      },
+      {
+        "name": "amazon_acos_reported",
+        "plain": "Amazon's own ACOS, as last reported to us",
+        "formula": "ad spend / ad-attributed sales, taken from whoever runs the account",
+        "source": "manually entered from Amazon Ads console (not connected)",
+        "window": "as last reported",
+        "freshness_rule": "unavailable until manually updated",
+        "unavailable_when": "no connector to Amazon Ads exists",
+        "benchmark": "brand's target ACOS"
+      },
+      {
+        "name": "flipkart_brief_status",
+        "plain": "Where the Flipkart ads brief stands",
+        "formula": "status flag: drafted, sent, acknowledged, live",
+        "source": "brand record (Flipkart Ads not connected)",
+        "window": "current",
+        "freshness_rule": "stale after 30 days",
+        "unavailable_when": "no brief created yet",
+        "benchmark": "n/a, status only"
+      },
+      {
+        "name": "quick_commerce_plan_status",
+        "plain": "Where the Blinkit/Zepto/Instamart plan stands, per platform",
+        "formula": "status flag per platform: drafted, sent, live",
+        "source": "brand record (no connector)",
+        "window": "current",
+        "freshness_rule": "stale after 30 days",
+        "unavailable_when": "no plan created yet",
+        "benchmark": "n/a, status only"
+      },
+      {
+        "name": "quick_commerce_roas_benchmark_gap",
+        "plain": "How reported quick-commerce ROAS compares to the category benchmark",
+        "formula": "reported ROAS (manually entered) minus benchmark (4-8x established SKUs, 1.5-3x new launches)",
+        "source": "manually entered from platform dashboards",
+        "window": "as last reported",
+        "freshness_rule": "unavailable until manually updated",
+        "unavailable_when": "no number reported yet",
+        "benchmark": "see formula"
+      },
+      {
+        "name": "retargeting_saturation_signal",
+        "plain": "Whether Meta and Google retargeting pools are maxed out",
+        "formula": "retargeting frequency at or above cap with flat reach, on both Meta and Google, for 14+ days",
+        "source": "Meta and Google ad metrics",
+        "window": "trailing 14 days",
+        "freshness_rule": "stale after 7 days",
+        "unavailable_when": "Google not connected",
+        "benchmark": "used only to trigger a DSP evaluation (MEDIA-C54)"
+      },
+      {
+        "name": "invoice_vs_reported_variance",
+        "plain": "Gap between a platform's invoice and its own reported spend",
+        "formula": "invoiced amount minus platform-reported spend for the same period",
+        "source": "platform invoices (Meta, Google, TikTok) + platform reporting",
+        "window": "monthly, per invoice",
+        "freshness_rule": "stale once a new invoice lands unmatched",
+        "unavailable_when": "invoice not yet received",
+        "benchmark": "under 1% variance"
+      },
+      {
+        "name": "invoice_vs_ledger_variance",
+        "plain": "Gap between an invoice and the brand's own budget ledger",
+        "formula": "invoiced amount minus ledger-recorded spend for the same period",
+        "source": "platform invoices + intelligence/budget.py ledger",
+        "window": "monthly, per invoice",
+        "freshness_rule": "stale once unmatched",
+        "unavailable_when": "ledger entry missing for the period",
+        "benchmark": "0 variance"
+      },
+      {
+        "name": "gst_rcm_reconciliation_status",
+        "plain": "Whether GST and reverse-charge credits on ad invoices are reconciled",
+        "formula": "count of invoices with GST/RCM matched to the credit ledger / total invoices",
+        "source": "invoices + accounting record",
+        "window": "monthly",
+        "freshness_rule": "stale after 30 days",
+        "unavailable_when": "accounting record not connected",
+        "benchmark": "100%"
+      },
+      {
+        "name": "billing_dispute_count",
+        "plain": "Open disputes with a platform over billing",
+        "formula": "count of open disputes",
+        "source": "platform billing support tickets (brand record)",
+        "window": "current",
+        "freshness_rule": "stale after 7 days",
+        "unavailable_when": "no dispute tracker kept",
+        "benchmark": "0 open"
+      },
+      {
+        "name": "organic_mentions_found",
+        "plain": "Creators found organically using or reviewing the product",
+        "formula": "count of public posts matching the brand or close competitor, found this scan",
+        "source": "public social scan (brand's own or a close competitor's product)",
+        "window": "per scan",
+        "freshness_rule": "stale after 30 days (scan cadence)",
+        "unavailable_when": "no scan run yet",
+        "benchmark": "n/a, discovery count"
+      },
+      {
+        "name": "whitelist_outreach_conversion",
+        "plain": "Share of discovered creators who became paid partners",
+        "formula": "creators who signed on / creators contacted",
+        "source": "brand outreach record",
+        "window": "trailing 90 days",
+        "freshness_rule": "stale after 30 days",
+        "unavailable_when": "no outreach record kept",
+        "benchmark": "n/a, track for its own trend"
+      },
+      {
+        "name": "affiliate_share_of_new_customers",
+        "plain": "Share of new customers coming through the affiliate program",
+        "formula": "new customers with an affiliate attribution / total new customers",
+        "source": "affiliate network + brand revenue ledger",
+        "window": "monthly",
+        "freshness_rule": "stale after 7 days",
+        "unavailable_when": "affiliate attribution not tagged on orders",
+        "benchmark": "n/a, track for its own trend"
+      },
+      {
+        "name": "coupon_abuse_rate",
+        "plain": "Share of coupon redemptions that look abusive",
+        "formula": "redemptions flagged (reused past limit, resold, or from a flagged affiliate) / total redemptions",
+        "source": "coupon system + fraud flags",
+        "window": "trailing 30 days",
+        "freshness_rule": "stale after 7 days",
+        "unavailable_when": "coupon system not connected",
+        "benchmark": "under 2%"
+      }
+    ],
+    "insights": [
+      {
+        "name": "fast click-to-conversion fraud pattern",
+        "rule": "a new affiliate's clicks convert in under the platform's normal minimum browse time, repeatedly",
+        "computed_from": [
+          "fraud_flag_count"
+        ],
+        "sentence": "{affiliate} converts clicks in under {seconds}s, {n} times this week. Check for cookie stuffing.",
+        "severity": "high, blocks payout",
+        "action_capability": "MEDIA-C50"
+      },
+      {
+        "name": "big-ticket order right after signup",
+        "rule": "a new affiliate generates an order for a top-price-band item within 48 hours of joining",
+        "computed_from": [
+          "fraud_flag_count"
+        ],
+        "sentence": "{affiliate} placed a {amount} order {hours}h after joining. Hold this payout for review.",
+        "severity": "high",
+        "action_capability": "MEDIA-C50"
+      },
+      {
+        "name": "unusual orders-to-clicks ratio",
+        "rule": "an affiliate's orders-to-clicks ratio is 3x or more the program average",
+        "computed_from": [
+          "fraud_flag_count"
+        ],
+        "sentence": "{affiliate}'s conversion rate is {x} the program average.",
+        "severity": "medium",
+        "action_capability": "MEDIA-C50"
+      },
+      {
+        "name": "commission mismatch",
+        "rule": "commission_owed_vs_paid variance exceeds 2% of the payout cycle total",
+        "computed_from": [
+          "commission_owed_vs_paid"
+        ],
+        "sentence": "The network wants {amount} more than verified sales support. Reconcile before paying.",
+        "severity": "high",
+        "action_capability": "MEDIA-C51"
+      },
+      {
+        "name": "brand-bidding affiliate",
+        "rule": "an affiliate is found bidding on the brand's own name in paid search",
+        "computed_from": [
+          "fraud_flag_count"
+        ],
+        "sentence": "{affiliate} is bidding on '{brand_term}' in search. This usually breaks program terms.",
+        "severity": "high",
+        "action_capability": "MEDIA-C50"
+      },
+      {
+        "name": "invoice does not match platform report",
+        "rule": "invoice_vs_reported_variance exceeds 1%",
+        "computed_from": [
+          "invoice_vs_reported_variance"
+        ],
+        "sentence": "{platform}'s invoice is {pct}% off its own reported spend for {period}.",
+        "severity": "high",
+        "action_capability": "MEDIA-C57"
+      },
+      {
+        "name": "invoice does not match ledger",
+        "rule": "invoice_vs_ledger_variance is non-zero",
+        "computed_from": [
+          "invoice_vs_ledger_variance"
+        ],
+        "sentence": "{platform}'s invoice is {amount} off the budget ledger for {period}.",
+        "severity": "high",
+        "action_capability": "MEDIA-C66"
+      },
+      {
+        "name": "GST credit unreconciled",
+        "rule": "an invoice's GST/RCM has not been matched to the accounting credit ledger",
+        "computed_from": [
+          "gst_rcm_reconciliation_status"
+        ],
+        "sentence": "{n} invoices have GST credits not yet matched.",
+        "severity": "medium",
+        "action_capability": "MEDIA-C57"
+      },
+      {
+        "name": "retargeting pool saturated",
+        "rule": "retargeting_saturation_signal is true on both Meta and Google",
+        "computed_from": [
+          "retargeting_saturation_signal"
+        ],
+        "sentence": "Both Meta and Google retargeting are capped with flat reach. Worth a DSP pilot.",
+        "severity": "medium, an opportunity not a risk",
+        "action_capability": "MEDIA-C54"
+      },
+      {
+        "name": "quick commerce underperforming benchmark",
+        "rule": "quick_commerce_roas_benchmark_gap is negative by more than 20%",
+        "computed_from": [
+          "quick_commerce_roas_benchmark_gap"
+        ],
+        "sentence": "{platform} ROAS is {pct}% below the category benchmark.",
+        "severity": "medium",
+        "action_capability": "MEDIA-C53"
+      },
+      {
+        "name": "organic mention worth whitelisting",
+        "rule": "a discovered organic mention has engagement above the brand's set threshold and is not already a paid partner",
+        "computed_from": [
+          "organic_mentions_found"
+        ],
+        "sentence": "{creator} is already showing your product organically with {engagement} engagement. Reach out before offering payment.",
+        "severity": "low, an opportunity",
+        "action_capability": "MEDIA-C67"
+      },
+      {
+        "name": "coupon abuse rising",
+        "rule": "coupon_abuse_rate rose 1 point or more week over week",
+        "computed_from": [
+          "coupon_abuse_rate"
+        ],
+        "sentence": "Coupon abuse rose to {pct}% this week.",
+        "severity": "medium",
+        "action_capability": "MEDIA-C50"
+      }
+    ],
+    "visuals": [
+      {
+        "name": "affiliate funnel",
+        "type": "funnel chart",
+        "shows": "applied, approved, active, flagged counts",
+        "why_this_chart": "founder sees where the program is leaking or growing in one shape",
+        "exists_today": false
+      },
+      {
+        "name": "commission reconciliation table",
+        "type": "table",
+        "shows": "owed vs paid vs variance, per payout cycle, per affiliate above a threshold",
+        "why_this_chart": "makes a payout dispute visible before money moves",
+        "exists_today": false
+      },
+      {
+        "name": "billing reconciliation waterfall",
+        "type": "waterfall",
+        "shows": "platform-reported spend, invoiced amount and ledger amount for the period, with the gaps labelled",
+        "why_this_chart": "three numbers that should match rarely do; the waterfall shows exactly where they diverge",
+        "exists_today": false
+      },
+      {
+        "name": "marketplace brief status board",
+        "type": "kanban-style status board",
+        "shows": "Amazon, Flipkart, Blinkit, Zepto and Instamart briefs by status (drafted, sent, live)",
+        "why_this_chart": "founder tracks handoff work with no live connector, without losing track of what was sent where",
+        "exists_today": false
+      },
+      {
+        "name": "creator mention feed",
+        "type": "card feed",
+        "shows": "discovered organic mentions with engagement and whitelist status",
+        "why_this_chart": "a feed matches how discovery naturally arrives, newest first",
+        "exists_today": false
+      },
+      {
+        "name": "DSP readiness gauge",
+        "type": "gauge",
+        "shows": "days of sustained retargeting saturation against the threshold that triggers a DSP evaluation",
+        "why_this_chart": "prevents a DSP pilot before saturation is proven, not just assumed",
+        "exists_today": false
+      }
+    ],
+    "actions": [
+      {
+        "label": "Approve or reject an applicant",
+        "capability": "MEDIA-C49",
+        "autonomy": "founder_gate"
+      },
+      {
+        "label": "Ship assets and terms to a partner",
+        "capability": "MEDIA-C49",
+        "autonomy": "founder_gate"
+      },
+      {
+        "label": "Review a fraud flag",
+        "capability": "MEDIA-C50",
+        "autonomy": "founder_gate"
+      },
+      {
+        "label": "Set or change a commission tier",
+        "capability": "MEDIA-C51",
+        "autonomy": "founder_gate"
+      },
+      {
+        "label": "Approve a payout reconciliation",
+        "capability": "MEDIA-C51",
+        "autonomy": "founder_gate"
+      },
+      {
+        "label": "Send the Amazon brief for handoff",
+        "capability": "MEDIA-C52",
+        "autonomy": "human_assist"
+      },
+      {
+        "label": "Send the Flipkart brief for handoff",
+        "capability": "MEDIA-C52",
+        "autonomy": "human_assist"
+      },
+      {
+        "label": "Send the quick-commerce plan",
+        "capability": "MEDIA-C53",
+        "autonomy": "human_assist"
+      },
+      {
+        "label": "Approve a DSP evaluation",
+        "capability": "MEDIA-C54",
+        "autonomy": "founder_gate"
+      },
+      {
+        "label": "Approve a policy pre-check pass on a draft ad",
+        "capability": "MEDIA-C65",
+        "autonomy": "human_assist"
+      },
+      {
+        "label": "Reconcile this invoice",
+        "capability": "MEDIA-C57",
+        "autonomy": "founder_gate"
+      },
+      {
+        "label": "Turn on standing invoice reconciliation",
+        "capability": "MEDIA-C66",
+        "autonomy": "founder_gate"
+      },
+      {
+        "label": "Send a whitelisting outreach",
+        "capability": "MEDIA-C67",
+        "autonomy": "human_assist"
+      }
+    ],
+    "not_elsewhere": [
+      {
+        "claim": "flags affiliate fraud using fast click-to-conversion, suspect ISP, big-ticket-early-order and brand-bidding rules together, tied back to the exact commission owed",
+        "vs": "also in Refersion for the vetting checks themselves, but Refersion flags fraud inside its own tracker and does not tie the flag to the brand's separate commission ledger"
+      },
+      {
+        "claim": "reconciles what an affiliate network says is owed against verified sales and refunds before a payout is approved",
+        "vs": "Refersion auto-verifies and auto-approves commissions from its own tracker; this room checks that number against the brand's order data first"
+      },
+      {
+        "claim": "turns Amazon, Flipkart and quick-commerce plans into a handoff brief with targeting, budget and a category ROAS benchmark, and says plainly that live performance stays unavailable until those accounts are connected",
+        "vs": "no dashboard here claims to read Amazon, Flipkart or quick-commerce ad performance; the room is honest about the gap instead of guessing"
+      },
+      {
+        "claim": "matches each platform's invoice, including GST and reverse-charge credits, against both its own reported spend and the brand's budget ledger in one reconciliation",
+        "vs": "Meta, Google and TikTok billing centers show an invoice against their own reported spend only, not the brand's ledger or its GST credits"
+      },
+      {
+        "claim": "surfaces creators already wearing or reviewing the product organically as whitelist candidates before any outreach cost is paid",
+        "vs": "affiliate and influencer platforms track creators already inside the program, not organic mentions found outside it"
+      },
+      {
+        "claim": "keeps founder-gate calls (fraud holds, payout disputes, DSP spend, commission tier changes) in one queue instead of split across the affiliate network's UI, each platform's billing page, and email",
+        "vs": "no single tool spans affiliate, marketplace ad and platform billing decisions in one founder queue"
+      }
+    ],
+    "data_needs": [
+      {
+        "table": "affiliate_applications",
+        "fields": [
+          "applicant_id",
+          "status",
+          "applied_at",
+          "reviewed_at",
+          "reviewer_note"
+        ],
+        "connector_or_script": "affiliate network API or brand record",
+        "refresh": "daily"
+      },
+      {
+        "table": "affiliate_clicks_orders",
+        "fields": [
+          "affiliate_id",
+          "click_at",
+          "order_at",
+          "order_id",
+          "amount",
+          "ip_or_isp"
+        ],
+        "connector_or_script": "affiliate network API",
+        "refresh": "daily"
+      },
+      {
+        "table": "commission_tiers",
+        "fields": [
+          "affiliate_id",
+          "partner_type",
+          "category",
+          "customer_status",
+          "rate"
+        ],
+        "connector_or_script": "brand record",
+        "refresh": "on change"
+      },
+      {
+        "table": "affiliate_payout_cycles",
+        "fields": [
+          "cycle_id",
+          "network_owed",
+          "verified_owed",
+          "paid",
+          "variance"
+        ],
+        "connector_or_script": "affiliate network payout report + brand order data",
+        "refresh": "per payout cycle"
+      },
+      {
+        "table": "marketplace_briefs",
+        "fields": [
+          "platform",
+          "brief_id",
+          "status",
+          "sent_at",
+          "acknowledged_at"
+        ],
+        "connector_or_script": "brand record (no connector to Amazon/Flipkart/quick-commerce yet)",
+        "refresh": "on change"
+      },
+      {
+        "table": "platform_invoices",
+        "fields": [
+          "platform",
+          "invoice_id",
+          "period",
+          "invoiced_amount",
+          "gst_rcm",
+          "reported_spend",
+          "ledger_spend"
+        ],
+        "connector_or_script": "platform billing portals (manual pull) + intelligence/budget.py",
+        "refresh": "monthly, per invoice"
+      },
+      {
+        "table": "organic_mentions",
+        "fields": [
+          "creator_handle",
+          "platform",
+          "post_url",
+          "found_at",
+          "engagement",
+          "whitelist_status"
+        ],
+        "connector_or_script": "public social scan (not yet built)",
+        "refresh": "monthly"
+      },
+      {
+        "table": "coupon_redemptions",
+        "fields": [
+          "code",
+          "affiliate_id",
+          "redeemed_at",
+          "flagged"
+        ],
+        "connector_or_script": "coupon system (not yet connected)",
+        "refresh": "daily"
+      }
+    ],
+    "founder_view_note": "Before any connector is live, the room shows the marketplace brief status board (Amazon, Flipkart, quick commerce) as the one part that works today, since those briefs are handoff documents, not live reads, and marks every performance metric for those channels as unavailable with 'no connector yet' rather than a blank or a zero. Once the affiliate network and billing pulls connect, the first things to show are open fraud flags and invoice variance, since those two protect real money before anything else in this room does."
+  }
+]

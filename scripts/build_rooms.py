@@ -1,0 +1,196 @@
+"""Merge room specs into rooms.json, the data layer schema and the rooms page.
+
+Inputs:  agents/rooms/*.rooms.json, agents/catalogue.json, agents/id_aliases.json
+Outputs: agents/rooms/rooms.json, agents/rooms/ROOMS.md, agents/DATA-LAYER.md, reviews/rooms/ecomos-rooms.html
+Usage:   python3 scripts/build_rooms.py
+"""
+import collections, glob, html, json, os, re
+
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+A = os.path.join(ROOT, "agents")
+ORDER = ["LOOP", "SITE", "CREA", "MEDIA", "LIFE", "ORG", "PROD", "MONEY", "BRAND"]
+NAMES = {"LOOP": "Across the stack", "SITE": "Site", "CREA": "Creative and copy", "MEDIA": "Media buying", "LIFE": "Lifecycle and customers",
+         "ORG": "Organic and search", "PROD": "Product and supply", "MONEY": "Money and ops", "BRAND": "Brand"}
+CONNECTOR_GROUPS = [
+    ("Store and orders", r"shopify|woo|order|cart|checkout|customer|product|sku|catalog|inventory|stock|refund|return"),
+    ("Ads and creative", r"meta|ads|campaign|adset|creative|tiktok|google_ads|pmax|affiliate|influencer|creator"),
+    ("Site and pages", r"speed|page|crawl|theme|app_|script|uptime|lighthouse|test|experiment|variant|schema|accessib"),
+    ("Email, messaging and support", r"email|sms|whatsapp|flow|campaign_send|klaviyo|ticket|support|review|nps|survey|community"),
+    ("Analytics and attribution", r"ga4|session|event|attribution|utm|pixel|capi|funnel|metric|contract|kpi"),
+    ("Search and content", r"seo|rank|keyword|gsc|search_console|backlink|content|post|video|youtube|answer|ai_|llm|citation"),
+    ("Supply, logistics and marketplaces", r"supplier|rfq|landed|po_|purchase|courier|shipment|ndr|rto|cod|3pl|warehouse|marketplace|amazon|flipkart|blinkit|zepto|settlement"),
+    ("Finance, team and security", r"ledger|invoice|gst|tax|payout|bank|cash|pnl|p_l|budget|payroll|vendor|contract|hiring|sop|security|bot|fraud|access|backup|scan"),
+    ("Brand, competitors and research", r"brand|avatar|claim|voice|competitor|mention|sentiment|pr_|press|partner|event|bet|research|interview|language"),
+    ("Registry and decisions", r"registry|decision|read|prior|learning|queue|card|approval"),
+]
+
+
+def load_rooms():
+    alias = json.load(open(os.path.join(A, "id_aliases.json"))) if os.path.exists(os.path.join(A, "id_aliases.json")) else {}
+    caps = {c["id"]: c for c in json.load(open(os.path.join(A, "catalogue.json"), encoding="utf-8"))}
+    rooms = []
+    for f in sorted(glob.glob(os.path.join(A, "rooms", "*.rooms.json"))):
+        for r in json.load(open(f, encoding="utf-8")):
+            r["agent"] = r.get("agent") or os.path.basename(f).split(".")[0]
+            if isinstance(r.get("who_uses"), str):
+                r["who_uses"] = [r["who_uses"]]
+            unknown = set()
+            def fix(cid):
+                cid = re.sub(r"-C(\d)$", r"-C0\1", str(cid).strip())
+                cid = alias.get(cid, cid)
+                if cid not in caps:
+                    unknown.add(cid)
+                return cid
+            for j in r.get("jobs", []):
+                j["capabilities"] = [fix(c) for c in j.get("capabilities", [])]
+            for i in r.get("insights", []):
+                if i.get("action_capability"):
+                    i["action_capability"] = fix(i["action_capability"])
+            for a in r.get("actions", []):
+                if a.get("capability"):
+                    a["capability"] = fix(a["capability"]); a["autonomy"] = caps.get(a["capability"], {}).get("autonomy", a.get("autonomy"))
+            r["unknown_capabilities"] = sorted(unknown)
+            rooms.append(r)
+    rooms.sort(key=lambda r: (ORDER.index(r["agent"]) if r["agent"] in ORDER else 99))
+    return rooms
+
+
+def data_layer(rooms):
+    tables = {}
+    for r in rooms:
+        for d in r.get("data_needs", []):
+            t = re.sub(r"[^a-z0-9_]+", "_", (d.get("table") or "").strip().lower()).strip("_")
+            if not t:
+                continue
+            e = tables.setdefault(t, {"fields": [], "connectors": set(), "refresh": set(), "rooms": set()})
+            for f in d.get("fields", []) or []:
+                if f not in e["fields"]:
+                    e["fields"].append(f)
+            if d.get("connector_or_script"):
+                e["connectors"].add(d["connector_or_script"])
+            if d.get("refresh"):
+                e["refresh"].add(d["refresh"])
+            e["rooms"].add(r["room"])
+    groups = collections.OrderedDict((g, []) for g, _ in CONNECTOR_GROUPS); groups["Other"] = []
+    for t, e in sorted(tables.items(), key=lambda kv: (-len(kv[1]["rooms"]), kv[0])):
+        for g, pat in CONNECTOR_GROUPS:
+            if re.search(pat, t):
+                groups[g].append((t, e)); break
+        else:
+            groups["Other"].append((t, e))
+    return tables, groups
+
+
+def render_data_layer_md(tables, groups):
+    L = ["# ecomOS data layer", "", f"Union of every table the 28 rooms ask for: {len(tables)} tables, grouped by source. Generated by `scripts/build_rooms.py` from `agents/rooms/*.rooms.json`. Tables used by several rooms come first in each group; they are the ones to build first.", "",
+         "Rules that apply to every table: one row per brand per entity, a `brand` key, a `captured_at` or `computed_at` stamp, a `source` field naming the connector or script, and windows that end on the last full day. Missing values stay null and surface as unavailable, never 0.", ""]
+    for g, items in groups.items():
+        if not items:
+            continue
+        L.append(f"## {g} ({len(items)} tables)\n")
+        L.append("| Table | Rooms | Fields | Source | Refresh |\n|---|---|---|---|---|")
+        for t, e in items:
+            L.append(f"| `{t}` | {len(e['rooms'])} | {', '.join(e['fields'][:18])}{' …' if len(e['fields']) > 18 else ''} | {'; '.join(sorted(e['connectors']))[:120]} | {'; '.join(sorted(e['refresh']))[:80]} |")
+        L.append("")
+    return "\n".join(L)
+
+
+def render_rooms_md(rooms):
+    L = ["# ecomOS rooms", "", f"{len(rooms)} rooms. Each is a screen a founder, an agency person or a team member uses to see one part of the business and act. Generated by `scripts/build_rooms.py`.", ""]
+    L.append("| Room | Agent | Who | Jobs | Metrics | Insights | Visuals | Actions | Not elsewhere | Tables |\n|---|---|---|---|---|---|---|---|---|---|")
+    for r in rooms:
+        L.append(f"| {r['room']} | {r['agent']} | {', '.join(r.get('who_uses', []))} | {len(r.get('jobs', []))} | {len(r.get('metrics', []))} | {len(r.get('insights', []))} | {len(r.get('visuals', []))} | {len(r.get('actions', []))} | {len(r.get('not_elsewhere', []))} | {len(r.get('data_needs', []))} |")
+    L.append("")
+    for r in rooms:
+        L.append(f"## {r['room']} ({r['agent']})\n")
+        L.append("**Jobs**\n")
+        for j in r.get("jobs", []):
+            L.append(f"- {j.get('job')}. Founder asks: \"{j.get('question')}\". Capabilities: {', '.join(j.get('capabilities', []))}")
+        L.append("\n**Insights, as rules**\n")
+        for i in r.get("insights", []):
+            L.append(f"- {i.get('name')}: {i.get('rule')} → \"{i.get('sentence')}\" (action {i.get('action_capability')})")
+        L.append("\n**Not elsewhere**\n")
+        for n in r.get("not_elsewhere", []):
+            L.append(f"- {n.get('claim')} (vs {n.get('vs')})")
+        if r.get("unknown_capabilities"):
+            L.append(f"\nUnknown capability ids: {', '.join(r['unknown_capabilities'])}")
+        L.append("")
+    return "\n".join(L)
+
+
+E = lambda s: html.escape(str(s if s is not None else ""))
+
+
+def room_screen(r):
+    mets = r.get("metrics", [])[:8]
+    tiles = "".join(f"<div class='tile'><b>{E(m.get('benchmark') and 'unavailable' or 'unavailable')}</b><span>{E(m.get('plain') or m.get('name'))}</span></div>" for m in mets)
+    ins = "".join(f"<div class='ins'><div class='s'>{E(i.get('sentence'))}</div><div class='r'>rule: {E(i.get('rule'))}</div><div class='btns'>{action_btns(r, i.get('action_capability'))}</div></div>" for i in r.get("insights", [])[:6])
+    vis = "".join(f"<li><b>{E(v.get('name'))}</b> <span class='muted'>{E(v.get('type'))}</span>: {E(v.get('shows'))}{' <span class=pill>exists today</span>' if v.get('exists_today') else ''}</li>" for v in r.get("visuals", []))
+    jobs = "".join(f"<li><b>{E(j.get('question'))}</b><br><span class='muted'>{E(j.get('job'))} · {E(', '.join(j.get('capabilities', [])))}</span></li>" for j in r.get("jobs", []))
+    ne = "".join(f"<li><b>{E(n.get('claim'))}</b><br><span class='muted'>vs {E(n.get('vs'))}</span></li>" for n in r.get("not_elsewhere", []))
+    mt = "".join(f"<tr><td><code>{E(m.get('name'))}</code><br><span class='muted'>{E(m.get('plain'))}</span></td><td>{E(m.get('formula'))}</td><td>{E(m.get('source'))}</td><td>{E(m.get('window'))}<br><span class='muted'>{E(m.get('unavailable_when'))}</span></td><td>{E(m.get('benchmark'))}</td></tr>" for m in r.get("metrics", []))
+    dn = "".join(f"<li><code>{E(d.get('table'))}</code> <span class='muted'>{E(', '.join((d.get('fields') or [])[:10]))}{' …' if len(d.get('fields') or []) > 10 else ''} · {E(d.get('connector_or_script'))} · {E(d.get('refresh'))}</span></li>" for d in r.get("data_needs", []))
+    rid = re.sub(r"[^a-z0-9]+", "-", r["room"].lower()).strip("-")
+    return f"""<section class='room' id='room-{rid}'>
+  <div class='rhead'><span class='eyebrow'>{E(NAMES.get(r['agent'], r['agent']))} · {E(r['agent'])}</span><h2>{E(r['room'])}</h2><p class='muted'>Used by {E(', '.join(r.get('who_uses', [])))}. {len(r.get('jobs', []))} jobs, {len(r.get('metrics', []))} metrics, {len(r.get('insights', []))} insights computed in code, {len(r.get('actions', []))} actions.</p></div>
+  <div class='scr'><div class='scr-top'><span class='dots'><i></i><i></i><i></i></span>ecomOS<span class='url'>{E(r['room'].lower())} · gehna · before data connects</span></div>
+    <div class='smain'>
+      <div class='sh'>{E(r['room'])} <span class='pill amber'>connect to see numbers</span></div>
+      <div class='tiles'>{tiles}</div>
+      <div class='sh' style='margin-top:6px'>What the room would say <span class='pill'>insights are rules, not opinions</span></div>
+      {ins}
+      <p class='muted small'>{E(r.get('founder_view_note'))}</p>
+    </div></div>
+  <div class='cols'>
+    <div class='card'><h4>Questions this room answers</h4><ul>{jobs}</ul></div>
+    <div class='card'><h4>How it is drawn</h4><ul>{vis}</ul></div>
+    <div class='card'><h4>Not in the usual tools</h4><ul>{ne}</ul></div>
+  </div>
+  <details class='more'><summary>All {len(r.get('metrics', []))} metrics with formulas</summary><div class='tw'><table><tr><th>Metric</th><th>Formula</th><th>Source</th><th>Window, unavailable when</th><th>Benchmark</th></tr>{mt}</table></div></details>
+  <details class='more'><summary>Data this room needs ({len(r.get('data_needs', []))} tables)</summary><ul class='dn'>{dn}</ul></details>
+</section>"""
+
+
+def action_btns(r, cap):
+    if not cap:
+        return ""
+    acts = [a for a in r.get("actions", []) if a.get("capability") == cap]
+    if not acts:
+        acts = [{"label": "Let the agent do it", "autonomy": "founder_gate"}]
+    out = []
+    for a in acts[:3]:
+        cls = "p" if a.get("autonomy") == "agent_does" else "a" if a.get("autonomy") == "human_assist" else "p"
+        out.append(f"<span class='btn {cls}'>{E(a.get('label') or 'Let the agent do it')}</span>")
+    out.append("<span class='btn'>Not now</span>")
+    return "".join(out) + f"<span class='muted small' style='margin-left:6px'>{E(cap)}</span>"
+
+
+def render_page(rooms, tables, groups):
+    nav = ""
+    for ag in ORDER:
+        rs = [r for r in rooms if r["agent"] == ag]
+        if not rs:
+            continue
+        nav += f"<div class='navg'><b>{E(NAMES[ag])}</b>" + "".join(f"<a href='#room-{re.sub(r'[^a-z0-9]+', '-', r['room'].lower()).strip('-')}'>{E(r['room'])}</a>" for r in rs) + "</div>"
+    body = "".join(room_screen(r) for r in rooms)
+    dl = ""
+    for g, items in groups.items():
+        if not items:
+            continue
+        dl += f"<h3>{E(g)} <small class='muted'>{len(items)} tables</small></h3><div class='tw'><table><tr><th>Table</th><th>Rooms</th><th>Fields</th><th>Source</th></tr>" + "".join(f"<tr><td><code>{E(t)}</code></td><td class='num'>{len(e['rooms'])}</td><td>{E(', '.join(e['fields'][:14]))}{' …' if len(e['fields']) > 14 else ''}</td><td>{E('; '.join(sorted(e['connectors']))[:100])}</td></tr>" for t, e in items) + "</table></div>"
+    tpl = open(os.path.join(ROOT, "scripts", "rooms_page.html"), encoding="utf-8").read()
+    stats = {"rooms": len(rooms), "jobs": sum(len(r.get("jobs", [])) for r in rooms), "metrics": sum(len(r.get("metrics", [])) for r in rooms), "insights": sum(len(r.get("insights", [])) for r in rooms), "visuals": sum(len(r.get("visuals", [])) for r in rooms), "not_elsewhere": sum(len(r.get("not_elsewhere", [])) for r in rooms), "tables": len(tables)}
+    return tpl.replace("<!--NAV-->", nav).replace("<!--ROOMS-->", body).replace("<!--DATALAYER-->", dl).replace("/*STATS*/", json.dumps(stats))
+
+
+if __name__ == "__main__":
+    rooms = load_rooms()
+    tables, groups = data_layer(rooms)
+    json.dump(rooms, open(os.path.join(A, "rooms", "rooms.json"), "w", encoding="utf-8"), indent=1, ensure_ascii=False)
+    open(os.path.join(A, "rooms", "ROOMS.md"), "w", encoding="utf-8").write(render_rooms_md(rooms))
+    open(os.path.join(A, "DATA-LAYER.md"), "w", encoding="utf-8").write(render_data_layer_md(tables, groups))
+    os.makedirs(os.path.join(ROOT, "reviews", "rooms"), exist_ok=True)
+    out = os.path.join(ROOT, "reviews", "rooms", "ecomos-rooms.html")
+    open(out, "w", encoding="utf-8").write(render_page(rooms, tables, groups))
+    unk = {r["room"]: r["unknown_capabilities"] for r in rooms if r["unknown_capabilities"]}
+    print(len(rooms), "rooms;", len(tables), "tables;", out, os.path.getsize(out) // 1024, "KB; unknown ids:", unk)

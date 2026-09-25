@@ -1,0 +1,2090 @@
+[
+ {
+  "room": "Site and speed",
+  "agent": "SITE",
+  "who_uses": [
+   "founder",
+   "developer",
+   "agency account manager"
+  ],
+  "jobs": [
+   {
+    "job": "find why a page is slow and what it is costing in rupees",
+    "question": "why is my page slow and what is it costing me",
+    "capabilities": [
+     "SITE-C21"
+    ]
+   },
+   {
+    "job": "cut image weight without hurting quality",
+    "question": "which images are too big and how do I fix them",
+    "capabilities": [
+     "SITE-C22"
+    ]
+   },
+   {
+    "job": "defer or remove scripts that block the page",
+    "question": "which scripts are slowing this page down and can they wait",
+    "capabilities": [
+     "SITE-C23"
+    ]
+   },
+   {
+    "job": "fix font loading",
+    "question": "why do fonts delay the page and how much do they weigh",
+    "capabilities": [
+     "SITE-C24"
+    ]
+   },
+   {
+    "job": "stop the page jumping while it loads",
+    "question": "what is causing layout shift and on which template",
+    "capabilities": [
+     "SITE-C25"
+    ]
+   },
+   {
+    "job": "fix the largest paint element",
+    "question": "what is the LCP element on each template and what fixes it",
+    "capabilities": [
+     "SITE-C26"
+    ]
+   },
+   {
+    "job": "make add-to-cart, filters and search feel instant",
+    "question": "which tap or click feels slow and why",
+    "capabilities": [
+     "SITE-C27"
+    ]
+   },
+   {
+    "job": "confirm caching and CDN are actually working",
+    "question": "are my pages cached and served from the CDN or not",
+    "capabilities": [
+     "SITE-C28"
+    ]
+   },
+   {
+    "job": "get ready for a sale-day traffic spike",
+    "question": "will the site hold up on the festive sale day",
+    "capabilities": [
+     "SITE-C29"
+    ]
+   },
+   {
+    "job": "cut and reorganize code weight",
+    "question": "how much CSS and JS can be removed, split or inlined",
+    "capabilities": [
+     "SITE-C30"
+    ]
+   },
+   {
+    "job": "speed-tune a headless or custom storefront",
+    "question": "what is slow in our own framework code, not the platform's",
+    "capabilities": [
+     "SITE-C31"
+    ]
+   },
+   {
+    "job": "hand a developer a brief they can execute without guessing",
+    "question": "what exactly should the developer change, and how do we know it worked",
+    "capabilities": [
+     "SITE-C32"
+    ]
+   },
+   {
+    "job": "catch a speed regression before it reaches customers",
+    "question": "did the last deploy or app install make the site slower",
+    "capabilities": [
+     "SITE-C33"
+    ]
+   },
+   {
+    "job": "pick a landing-page build method that will not wreck speed",
+    "question": "will this new page-builder page load fast enough to run ads to",
+    "capabilities": [
+     "SITE-C61"
+    ]
+   }
+  ],
+  "metrics": [
+   {
+    "name": "fully_loaded_mobile",
+    "plain": "how long the page takes to be usable on a slow phone",
+    "formula": "median load_ms of 3 throttled runs (slow 4G, 4x CPU, Pixel 5 profile)",
+    "source": "speed_lab.measure run table",
+    "window": "latest run per page and variant",
+    "freshness_rule": "stale after 7 days",
+    "unavailable_when": "no run recorded for that page in 7 days",
+    "benchmark": "under 5 s on slow 4G (Google's own mobile guidance)"
+   },
+   {
+    "name": "lcp_ms",
+    "plain": "when the biggest visible thing on the page shows up",
+    "formula": "median LCP from the PerformanceObserver, largest-contentful-paint entry",
+    "source": "speed_lab.measure run table",
+    "window": "latest run",
+    "freshness_rule": "stale after 7 days",
+    "unavailable_when": "no run in 7 days, or LCP entry never fired",
+    "benchmark": "under 2.5 s (Core Web Vitals 'good')"
+   },
+   {
+    "name": "fcp_ms",
+    "plain": "when the first bit of the page appears",
+    "formula": "median first-contentful-paint entry across 3 runs",
+    "source": "speed_lab.measure run table",
+    "window": "latest run",
+    "freshness_rule": "stale after 7 days",
+    "unavailable_when": "no run in 7 days",
+    "benchmark": "under 1.8 s"
+   },
+   {
+    "name": "cls",
+    "plain": "how much the page jumps while loading",
+    "formula": "sum of layout-shift entry values with no recent input, median of 3 runs",
+    "source": "speed_lab.measure run table",
+    "window": "latest run",
+    "freshness_rule": "stale after 7 days",
+    "unavailable_when": "no run in 7 days",
+    "benchmark": "under 0.1 (Core Web Vitals 'good')"
+   },
+   {
+    "name": "tbt_est_ms",
+    "plain": "how long the page ignores taps and clicks while it loads",
+    "formula": "sum of (long task duration minus 50 ms) for long tasks over 50 ms, median of 3 runs",
+    "source": "speed_lab.measure run table",
+    "window": "latest run",
+    "freshness_rule": "stale after 7 days",
+    "unavailable_when": "no run in 7 days",
+    "benchmark": "under 200 ms"
+   },
+   {
+    "name": "wire_bytes",
+    "plain": "total data the page sends on one visit",
+    "formula": "sum of transferSize across every resource, median of 3 runs",
+    "source": "speed_lab.measure run table",
+    "window": "latest run",
+    "freshness_rule": "stale after 7 days",
+    "unavailable_when": "no run in 7 days",
+    "benchmark": "under 1.5 MB mobile"
+   },
+   {
+    "name": "first_party_vs_third_party_bytes",
+    "plain": "how much weight is the brand's own code versus outside scripts",
+    "formula": "split wire_bytes by request host: brand domain and CDN of record versus everything else",
+    "source": "speed_lab.measure request log",
+    "window": "latest run",
+    "freshness_rule": "stale after 7 days",
+    "unavailable_when": "no run in 7 days",
+    "benchmark": "no fixed number; watched as a trend"
+   },
+   {
+    "name": "requests_served",
+    "plain": "how many separate files the page has to fetch",
+    "formula": "count of resource timing entries",
+    "source": "speed_lab.measure run table",
+    "window": "latest run",
+    "freshness_rule": "stale after 7 days",
+    "unavailable_when": "no run in 7 days",
+    "benchmark": "under 80 requests"
+   },
+   {
+    "name": "console_errors_count",
+    "plain": "how many script errors happen while the page loads",
+    "formula": "count of console error and page error events during the run",
+    "source": "speed_lab.measure browser log",
+    "window": "latest run",
+    "freshness_rule": "stale after 7 days",
+    "unavailable_when": "no run in 7 days",
+    "benchmark": "zero"
+   },
+   {
+    "name": "script_count_by_route",
+    "plain": "how many scripts load from theme code, apps, tag manager and hardcoded tags",
+    "formula": "count distinct script src grouped by known route (theme bundle, app embed, GTM container, inline)",
+    "source": "speed_lab.measure request log plus app inventory",
+    "window": "latest run",
+    "freshness_rule": "stale after 7 days",
+    "unavailable_when": "no run in 7 days",
+    "benchmark": "no fixed number; watched against the brand's own baseline"
+   },
+   {
+    "name": "page_weight_budget_status",
+    "plain": "pass or fail against the weight and script-count ceiling the brand agreed to",
+    "formula": "compare wire_bytes and requests_served on the latest run against the stored budget for that page type",
+    "source": "regression monitor (SITE-C33) run log",
+    "window": "every deploy and monthly schedule",
+    "freshness_rule": "stale after 30 days with no check",
+    "unavailable_when": "no budget has been set for that page type yet",
+    "benchmark": "brand's own agreed budget, not an industry number"
+   },
+   {
+    "name": "cost_of_slowness_inr_per_month",
+    "plain": "how much money the current load time is estimated to cost every month",
+    "formula": "(current LCP minus target LCP in seconds) x brand's own measured conversion-loss-per-second x monthly sessions on that page x average order value",
+    "source": "speed run LCP joined with the brand's own sales and traffic data",
+    "window": "rolling 30 days",
+    "freshness_rule": "stale after 30 days or if the underlying speed run is stale",
+    "unavailable_when": "no brand-specific conversion-per-second figure has been measured yet, or sales/traffic data is missing",
+    "benchmark": "none; this is the brand's own number, shown as a range, not a point estimate"
+   },
+   {
+    "name": "regression_delta_pct",
+    "plain": "how much slower or faster the site got since the last shipped baseline",
+    "formula": "(latest run load_ms minus last-shipped baseline load_ms) divided by baseline load_ms",
+    "source": "regression monitor run log",
+    "window": "each scheduled or pre-deploy check",
+    "freshness_rule": "stale after 30 days with no check",
+    "unavailable_when": "no baseline has been recorded yet",
+    "benchmark": "flag anything over 10 percent worse"
+   },
+   {
+    "name": "days_since_last_speed_run",
+    "plain": "how old the numbers on this page are",
+    "formula": "today minus the measured_at date of the latest run for that page",
+    "source": "speed_lab.measure run table",
+    "window": "always current",
+    "freshness_rule": "this metric defines freshness for the others",
+    "unavailable_when": "never; shows a large number if there has never been a run",
+    "benchmark": "under 7 days"
+   }
+  ],
+  "insights": [
+   {
+    "name": "unused fonts",
+    "rule": "a font file is requested but 0 glyphs from it render on the page",
+    "computed_from": [
+     "speed_lab.measure request log",
+     "document.fonts rendered list"
+    ],
+    "sentence": "{n} font files nobody sees cost {kb} KB on every visit",
+    "severity": "ranked by KB saved",
+    "action_capability": "SITE-C24"
+   },
+   {
+    "name": "third-party scripts over budget",
+    "rule": "script_count_by_route for third-party routes exceeds the page's stored script budget",
+    "computed_from": [
+     "speed_lab.measure request log",
+     "page_weight_budget_status"
+    ],
+    "sentence": "{n} outside scripts add {ms} ms and {kb} KB, over your budget of {budget}",
+    "severity": "ranked by ms added",
+    "action_capability": "SITE-C23"
+   },
+   {
+    "name": "speed regression since last ship",
+    "rule": "regression_delta_pct worse than 10 percent since the last recorded baseline",
+    "computed_from": [
+     "regression monitor run log"
+    ],
+    "sentence": "the page got {pct}% slower since the last check on {date}, likely from {suspect_change}",
+    "severity": "ranked by pct worse",
+    "action_capability": "SITE-C33"
+   },
+   {
+    "name": "LCP element still un-lazied or animated",
+    "rule": "the element flagged as the LCP source has loading=lazy, an active CSS animation, or is not preloaded",
+    "computed_from": [
+     "speed_lab.measure LCP entry",
+     "image and script attributes captured in the run"
+    ],
+    "sentence": "the {element} that decides how fast the page feels is still {problem}",
+    "severity": "ranked by ms of LCP delay estimated from the fix",
+    "action_capability": "SITE-C26"
+   },
+   {
+    "name": "layout shift culprit",
+    "rule": "a single element accounts for over half of total CLS on a template",
+    "computed_from": [
+     "speed_lab.measure layout-shift entries with element reference"
+    ],
+    "sentence": "{element} on the {template} page causes most of the jumping; it has no reserved space",
+    "severity": "ranked by share of total CLS",
+    "action_capability": "SITE-C25"
+   },
+   {
+    "name": "render-blocking code still present",
+    "rule": "a CSS or JS resource has renderBlockingStatus blocking and is not marked async or deferred",
+    "computed_from": [
+     "speed_lab.measure request log renderBlockingStatus field"
+    ],
+    "sentence": "{n} files still block the page from showing anything until they arrive",
+    "severity": "ranked by their combined delay to first paint",
+    "action_capability": "SITE-C30"
+   },
+   {
+    "name": "dead analytics tag still firing",
+    "rule": "a request matches a known sunset tracking endpoint (for example old Universal Analytics)",
+    "computed_from": [
+     "speed_lab.measure request log",
+     "known-sunset endpoint list"
+    ],
+    "sentence": "a tag that stopped working on {sunset_date} still loads and costs {kb} KB",
+    "severity": "always flagged, low urgency",
+    "action_capability": "SITE-C23"
+   },
+   {
+    "name": "app adds weight with no clear revenue link",
+    "rule": "an app's script bytes rank in the top 5 by weight and the app inventory (SITE-C13) shows no attributed revenue",
+    "computed_from": [
+     "speed_lab.measure request log",
+     "app inventory revenue_attributed field"
+    ],
+    "sentence": "{app} adds {kb} KB on every page and nothing in your sales data ties back to it",
+    "severity": "ranked by KB with no revenue link",
+    "action_capability": "SITE-C13"
+   },
+   {
+    "name": "font variation count too high",
+    "rule": "more than 2 weights or styles of the same font family are loaded",
+    "computed_from": [
+     "document.fonts list captured in the run"
+    ],
+    "sentence": "{n} versions of {family} load when the page only uses {used}",
+    "severity": "ranked by extra KB",
+    "action_capability": "SITE-C24"
+   },
+   {
+    "name": "cache headers missing on static assets",
+    "rule": "a static asset (image, font, script, css) returns a cache-control max-age under 1 week or no cache-control header",
+    "computed_from": [
+     "response headers captured in the run"
+    ],
+    "sentence": "{n} static files are re-downloaded on every visit because caching is not set",
+    "severity": "ranked by how often that asset repeats across pages",
+    "action_capability": "SITE-C28"
+   },
+   {
+    "name": "no CDN detected on a key page",
+    "rule": "response headers show no CDN-identifying header (for example cf-ray, x-served-by) on a page expected to run through one",
+    "computed_from": [
+     "response headers captured in the run"
+    ],
+    "sentence": "{page} is not being served through the CDN; every visit hits the origin",
+    "severity": "high, flagged whenever seen",
+    "action_capability": "SITE-C28"
+   },
+   {
+    "name": "dynamic step untested for peak load",
+    "rule": "a page depends on search, personalization or a live stock check and has no load-test result on file within 60 days of the next known sale date",
+    "computed_from": [
+     "load-test log",
+     "sale calendar"
+    ],
+    "sentence": "{feature} has never been tested under sale-day traffic and the next big sale is in {days} days",
+    "severity": "ranked by proximity to the sale date",
+    "action_capability": "SITE-C29"
+   },
+   {
+    "name": "main-thread block on a key interaction",
+    "rule": "a long task over 200 ms overlaps the time window of a tap test on add-to-cart, variant picker, filter or search",
+    "computed_from": [
+     "speed_lab.measure longtask entries",
+     "tap-test timestamps"
+    ],
+    "sentence": "tapping {interaction} freezes the page for about {ms} ms",
+    "severity": "ranked by ms frozen",
+    "action_capability": "SITE-C27"
+   },
+   {
+    "name": "page-weight budget breached by latest deploy",
+    "rule": "page_weight_budget_status is fail on the most recent scheduled or pre-deploy check",
+    "computed_from": [
+     "regression monitor run log"
+    ],
+    "sentence": "the last deploy pushed {page} to {kb} KB, over its {budget} KB budget",
+    "severity": "always flagged when it happens",
+    "action_capability": "SITE-C33"
+   },
+   {
+    "name": "new page-builder page is heavy before it ships",
+    "rule": "a page built with an app page-builder measures over the page-type budget on its own pre-launch run",
+    "computed_from": [
+     "speed_lab.measure run on the draft page"
+    ],
+    "sentence": "the new {page} page weighs {kb} KB before it even goes live, {pct}% over budget",
+    "severity": "ranked by pct over budget",
+    "action_capability": "SITE-C61"
+   }
+  ],
+  "visuals": [
+   {
+    "name": "fix chain",
+    "type": "step chart",
+    "shows": "load time after each fix, cumulative, in shipping order",
+    "why_this_chart": "a founder sees which single fix moved the number and can stop trusting a vague overall score",
+    "exists_today": true
+   },
+   {
+    "name": "before and after filmstrip",
+    "type": "frame strip",
+    "shows": "screenshots at fixed time steps, baseline versus the fixed page",
+    "why_this_chart": "shows what the shopper actually sees, not just a millisecond number",
+    "exists_today": true
+   },
+   {
+    "name": "request waterfall by party",
+    "type": "waterfall chart",
+    "shows": "every request, colored first-party versus third-party, ordered by start time",
+    "why_this_chart": "makes it obvious which outside scripts are blocking the page's own code",
+    "exists_today": false
+   },
+   {
+    "name": "page-weight budget trend",
+    "type": "line chart with a budget line",
+    "shows": "page weight and script count at every deploy or scheduled check against the stored budget",
+    "why_this_chart": "a founder sees the moment a deploy or app install crossed the line, not just today's number",
+    "exists_today": false
+   },
+   {
+    "name": "script inventory table",
+    "type": "sortable table",
+    "shows": "every script, its route, weight, blocking status and whether revenue ties back to it",
+    "why_this_chart": "turns a vague slowness complaint into a ranked list a developer can act on line by line",
+    "exists_today": false
+   },
+   {
+    "name": "cost of slowness bar",
+    "type": "bar chart",
+    "shows": "estimated monthly rupees lost at current LCP versus at target LCP, for the pages that carry the most traffic",
+    "why_this_chart": "translates milliseconds into the number a founder actually decides on",
+    "exists_today": false
+   },
+   {
+    "name": "sale-readiness checklist",
+    "type": "step chart or checklist with pass/fail dots",
+    "shows": "each dynamic feature, its last load-test result and days left to the next sale",
+    "why_this_chart": "a founder sees exactly what is untested before a big sale, not a general confidence score",
+    "exists_today": false
+   }
+  ],
+  "actions": [
+   {
+    "label": "Let the agent do it",
+    "capability": "SITE-C21",
+    "autonomy": "agent_does"
+   },
+   {
+    "label": "Let the agent do it",
+    "capability": "SITE-C33",
+    "autonomy": "agent_does"
+   },
+   {
+    "label": "Send to developer",
+    "capability": "SITE-C22",
+    "autonomy": "human_assist"
+   },
+   {
+    "label": "Send to developer",
+    "capability": "SITE-C23",
+    "autonomy": "human_assist"
+   },
+   {
+    "label": "Send to developer",
+    "capability": "SITE-C24",
+    "autonomy": "human_assist"
+   },
+   {
+    "label": "Send to developer",
+    "capability": "SITE-C25",
+    "autonomy": "human_assist"
+   },
+   {
+    "label": "Send to developer",
+    "capability": "SITE-C26",
+    "autonomy": "human_assist"
+   },
+   {
+    "label": "Send to developer",
+    "capability": "SITE-C27",
+    "autonomy": "human_assist"
+   },
+   {
+    "label": "Send to developer",
+    "capability": "SITE-C28",
+    "autonomy": "human_assist"
+   },
+   {
+    "label": "Send to developer",
+    "capability": "SITE-C30",
+    "autonomy": "human_assist"
+   },
+   {
+    "label": "Send to developer",
+    "capability": "SITE-C31",
+    "autonomy": "human_assist"
+   },
+   {
+    "label": "Write the developer brief",
+    "capability": "SITE-C32",
+    "autonomy": "founder_gate"
+   },
+   {
+    "label": "Approve the sale-readiness plan",
+    "capability": "SITE-C29",
+    "autonomy": "founder_gate"
+   },
+   {
+    "label": "Approve the page-build method",
+    "capability": "SITE-C61",
+    "autonomy": "founder_gate"
+   },
+   {
+    "label": "Not now",
+    "capability": null,
+    "autonomy": "human_assist"
+   }
+  ],
+  "not_elsewhere": [
+   {
+    "claim": "measures a real before-and-after per fix on a mirrored copy of the live page, with a filmstrip",
+    "vs": "Google PageSpeed Insights gives a lab score and generic advice on today's page only, with no isolated fix chain"
+   },
+   {
+    "claim": "one Lighthouse-style score is replaced with a fix-by-fix chain a founder can stop trusting or not, item by item",
+    "vs": "Shopify's Online Store Speed report is a single weighted score across the top 3 pages, not a per-fix breakdown"
+   },
+   {
+    "claim": "cross-references every heavy script against the brand's own revenue attribution before calling it dead weight",
+    "vs": "also in Thunder and similar Shopify speed-and-app audits, which rank apps by measured weight but do not check revenue"
+   },
+   {
+    "claim": "turns a diagnosed fix straight into a brief with a pass threshold and a rollback plan, ready for a developer",
+    "vs": "PageSpeed Insights and Lighthouse CI report the problem; they do not write the fix instructions or the rollback plan"
+   },
+   {
+    "claim": "prices slowness in the brand's own rupees per month, not a generic industry percentage",
+    "vs": "no common speed tool ties LCP to the brand's own conversion rate and average order value"
+   },
+   {
+    "claim": "regression checks point back to the exact fix chain and filmstrip already on file, so a regression names its own cause",
+    "vs": "also in Lighthouse CI and SpeedCurve for budget-based regression alerts, without the same fix-level history to compare against"
+   }
+  ],
+  "data_needs": [
+   {
+    "table": "speed_runs",
+    "fields": [
+     "brand",
+     "page",
+     "variant",
+     "run",
+     "load_ms",
+     "lcp_ms",
+     "fcp_ms",
+     "cls",
+     "tbt_est_ms",
+     "bytes",
+     "requests",
+     "console_errors",
+     "measured_at"
+    ],
+    "connector_or_script": "speed_lab.measure",
+    "refresh": "weekly and on demand, plus before any deploy"
+   },
+   {
+    "table": "speed_request_log",
+    "fields": [
+     "run_id",
+     "url",
+     "host",
+     "party",
+     "type",
+     "transfer_size",
+     "render_blocking_status",
+     "cache_control"
+    ],
+    "connector_or_script": "speed_lab.measure",
+    "refresh": "every run"
+   },
+   {
+    "table": "app_inventory",
+    "fields": [
+     "app_id",
+     "name",
+     "monthly_cost",
+     "revenue_attributed",
+     "script_bytes",
+     "install_date",
+     "owner"
+    ],
+    "connector_or_script": "SITE-C13 app audit (manual entry until a platform API is connected)",
+    "refresh": "monthly"
+   },
+   {
+    "table": "page_weight_budgets",
+    "fields": [
+     "page_type",
+     "max_bytes",
+     "max_requests",
+     "set_by",
+     "set_at"
+    ],
+    "connector_or_script": "founder-set, stored by the regression monitor",
+    "refresh": "on change only"
+   },
+   {
+    "table": "sale_calendar",
+    "fields": [
+     "event_name",
+     "start_date",
+     "end_date",
+     "expected_traffic_multiple"
+    ],
+    "connector_or_script": "manual entry from the brand's marketing calendar",
+    "refresh": "quarterly"
+   },
+   {
+    "table": "brand_economics",
+    "fields": [
+     "page",
+     "sessions_30d",
+     "conversion_rate",
+     "average_order_value",
+     "measured_conversion_loss_per_second"
+    ],
+    "connector_or_script": "Metabase pull plus a one-time speed-versus-conversion study per brand",
+    "refresh": "monthly"
+   }
+  ],
+  "founder_view_note": "Before any run, every metric shows unavailable and the room says 'no speed run on file yet, ask the agent to capture a baseline'. The moment the first baseline lands, the room shows the baseline load time, the LCP element, and the top 3 insights ranked by KB or ms saved, even before any fix has shipped. The fix chain and filmstrip only appear once a fix has actually been measured, not proposed."
+ },
+ {
+  "room": "Landing pages and CRO",
+  "agent": "SITE",
+  "who_uses": [
+   "founder",
+   "agency account manager",
+   "copywriter",
+   "media buyer"
+  ],
+  "jobs": [
+   {
+    "job": "decide where an ad or search click should land",
+    "question": "should this click go to a PDP, an advertorial, a quiz or a sales page",
+    "capabilities": [
+     "SITE-C35"
+    ]
+   },
+   {
+    "job": "check the ad's promise survives to the page and the cart",
+    "question": "does the price, guarantee and offer on the ad still match at checkout",
+    "capabilities": [
+     "SITE-C36"
+    ]
+   },
+   {
+    "job": "build and score the hero section",
+    "question": "is the hero specific enough to stop the scroll",
+    "capabilities": [
+     "SITE-C37"
+    ]
+   },
+   {
+    "job": "fix the PDP first screen",
+    "question": "does the buy box have everything a phone shopper needs without scrolling",
+    "capabilities": [
+     "SITE-C38"
+    ]
+   },
+   {
+    "job": "write on-page copy in the customer's own words",
+    "question": "does the copy sound like our reviews and tickets, or like a template",
+    "capabilities": [
+     "SITE-C39"
+    ]
+   },
+   {
+    "job": "place proof next to the objection it answers",
+    "question": "is our proof actually next to the doubt it is meant to remove",
+    "capabilities": [
+     "SITE-C40"
+    ]
+   },
+   {
+    "job": "build bundle and offer pricing with real anchors",
+    "question": "does the bundle show a real saving in rupees, not just a percent",
+    "capabilities": [
+     "SITE-C41"
+    ]
+   },
+   {
+    "job": "write urgency and scarcity that is true",
+    "question": "is our low-stock message wired to real inventory or just typed in",
+    "capabilities": [
+     "SITE-C42"
+    ]
+   },
+   {
+    "job": "strip friction off a single-offer page",
+    "question": "what on this page distracts from the one thing we want the shopper to do",
+    "capabilities": [
+     "SITE-C43"
+    ]
+   },
+   {
+    "job": "build and QA a page mobile-first",
+    "question": "does this page actually work on our own customers' phones",
+    "capabilities": [
+     "SITE-C44"
+    ]
+   },
+   {
+    "job": "score and rank the test backlog",
+    "question": "which test is worth running next, and why",
+    "capabilities": [
+     "SITE-C49"
+    ]
+   },
+   {
+    "job": "QA a test before it goes live",
+    "question": "will this test track correctly and not flicker on a slow connection",
+    "capabilities": [
+     "SITE-C51"
+    ]
+   },
+   {
+    "job": "read a finished test's results",
+    "question": "did this test actually win, and is it safe to trust",
+    "capabilities": [
+     "SITE-C52"
+    ]
+   },
+   {
+    "job": "decide whether to scale a winner",
+    "question": "does this winner still look good once returns and repeat orders are in",
+    "capabilities": [
+     "SITE-C53"
+    ]
+   }
+  ],
+  "metrics": [
+   {
+    "name": "message_match_score",
+    "plain": "how much of the ad's promise still shows on the page and at checkout",
+    "formula": "matched elements (price, persona, guarantee, CTA wording) divided by total tracked elements from the ad, for the ad's own landing path",
+    "source": "SITE-C36 audit, ad copy plus page and checkout scrape",
+    "window": "current live pages, refreshed weekly or on any ad or page change",
+    "freshness_rule": "stale after 7 days or the next time either the ad or the page changes",
+    "unavailable_when": "the ad's landing page has not been scraped yet",
+    "benchmark": "100 percent; any gap is a named mismatch, not a score to average"
+   },
+   {
+    "name": "hero_headline_specificity",
+    "plain": "how concrete the hero headline is about the outcome",
+    "formula": "rule-based check: contains a number, a timeframe or a named result versus a vague claim, scored 0 to 3",
+    "source": "SITE-C37 hero builder",
+    "window": "current live hero per page",
+    "freshness_rule": "stale when the hero copy changes",
+    "unavailable_when": "no hero has been scored for that page yet",
+    "benchmark": "score of 3; any page under 2 is flagged"
+   },
+   {
+    "name": "pdp_first_screen_completeness",
+    "plain": "how many of the 5 required buy-box elements show without scrolling on the brand's own phone",
+    "formula": "count of (price, proof, CTA, variant picker, delivery info) visible above the fold on the brand's stated device, divided by 5",
+    "source": "SITE-C38 audit, screenshot on the brand's real device viewport",
+    "window": "current live PDP template",
+    "freshness_rule": "stale after any theme or PDP change",
+    "unavailable_when": "no device screenshot on file for that template",
+    "benchmark": "5 of 5"
+   },
+   {
+    "name": "mobile_form_field_count",
+    "plain": "how many fields a shopper fills before they can act, on mobile",
+    "formula": "count of required input fields on the page's primary form (checkout, quiz start, or capture)",
+    "source": "SITE-C44 mobile QA pass",
+    "window": "current live page",
+    "freshness_rule": "stale after any form change",
+    "unavailable_when": "page has no form",
+    "benchmark": "4 fields or fewer"
+   },
+   {
+    "name": "funnel_step_conversion",
+    "plain": "what share of visitors move from one step to the next",
+    "formula": "sessions reaching step N+1 divided by sessions reaching step N, for landing page to PDP to cart to checkout to purchase",
+    "source": "analytics events (GA4 or the brand's pixel) joined to page_registry",
+    "window": "rolling 30 days per page",
+    "freshness_rule": "stale after 7 days with no new events",
+    "unavailable_when": "analytics is not connected for that page",
+    "benchmark": "the brand's own trailing 90-day median per step, not an industry number"
+   },
+   {
+    "name": "test_expected_profit_ceiling",
+    "plain": "the most this test could realistically be worth if it wins",
+    "formula": "estimated lift range x affected traffic x average order value x margin, capped at a stated ceiling assumption",
+    "source": "SITE-C49 backlog scoring",
+    "window": "at the time the hypothesis is scored",
+    "freshness_rule": "re-score if traffic or AOV moves more than 20 percent",
+    "unavailable_when": "the hypothesis has fewer than 2 pieces of supporting evidence, which the rule requires before scoring",
+    "benchmark": "none; used to rank the backlog, not compared to an external number"
+   },
+   {
+    "name": "test_sample_size_required",
+    "plain": "how many visitors this test needs before its result can be trusted",
+    "formula": "computed from the chosen minimum detectable effect, baseline conversion rate and the test's statistical engine",
+    "source": "SITE-C50 test design",
+    "window": "set once at test design",
+    "freshness_rule": "does not go stale; recomputed only if the MDE changes",
+    "unavailable_when": "no minimum detectable effect has been set",
+    "benchmark": "none; a design input, not a pass or fail number"
+   },
+   {
+    "name": "days_to_significance_at_current_traffic",
+    "plain": "how many more days this test needs at today's traffic",
+    "formula": "(sample_size_required minus visitors so far) divided by average daily visitors to the test",
+    "source": "live test traffic joined with test_sample_size_required",
+    "window": "updated daily while a test is running",
+    "freshness_rule": "stale after 3 days with no new traffic data",
+    "unavailable_when": "the test has not launched yet",
+    "benchmark": "none; a planning number"
+   },
+   {
+    "name": "sample_ratio_mismatch_flag",
+    "plain": "whether traffic split evenly between the test arms the way it was set up to",
+    "formula": "chi-square check of visitor counts per arm against the configured split",
+    "source": "test platform export or SITE-C52 read",
+    "window": "checked at every read of results",
+    "freshness_rule": "recompute on every results read",
+    "unavailable_when": "fewer than 100 visitors per arm",
+    "benchmark": "pass at p over 0.01; anything tighter is flagged before any result is trusted"
+   },
+   {
+    "name": "device_split_of_test_traffic",
+    "plain": "how the test's visitors split between mobile and desktop",
+    "formula": "count of test sessions grouped by device type",
+    "source": "test platform export",
+    "window": "while a test is running and at its final read",
+    "freshness_rule": "stale after 3 days with no new traffic",
+    "unavailable_when": "test has not launched",
+    "benchmark": "should roughly track the page's normal device split; a big gap is flagged"
+   },
+   {
+    "name": "novelty_decay_pct",
+    "plain": "how much of the lift was just people noticing something new",
+    "formula": "lift in week 1 of the test minus lift in the weeks after, divided by week 1 lift",
+    "source": "test platform export, weekly cohort read",
+    "window": "computed once a test has run 3 or more weeks",
+    "freshness_rule": "unavailable before 3 weeks of data",
+    "unavailable_when": "test has run fewer than 3 weeks or has under 100 conversions per arm",
+    "benchmark": "under 20 percent decay is treated as a real, durable win"
+   },
+   {
+    "name": "winner_ltv_return_check",
+    "plain": "whether a scaled winner still looks good after returns and repeat orders are counted",
+    "formula": "compare 30 and 60 day return rate and repeat-purchase rate of the winner cohort against the control cohort",
+    "source": "SITE-C53, sales data joined to the test's order list",
+    "window": "30 and 60 days after a winner ships to 100 percent",
+    "freshness_rule": "stale until 60 days have passed since full rollout",
+    "unavailable_when": "fewer than 60 days have passed since rollout, or order-level attribution to the test is missing",
+    "benchmark": "no worse than the control's return and repeat rate"
+   },
+   {
+    "name": "landing_page_load_status",
+    "plain": "whether the page this room is scoring is also fast enough to run traffic to",
+    "formula": "pulled from the Site and speed room's fully_loaded_mobile and page_weight_budget_status for the same page",
+    "source": "speed_lab.measure run table (shared with Site and speed)",
+    "window": "latest speed run for that page",
+    "freshness_rule": "stale after 7 days, same rule as the speed room",
+    "unavailable_when": "no speed run recorded for that page",
+    "benchmark": "under 5 s on slow 4G"
+   },
+   {
+    "name": "urgency_claim_truth_status",
+    "plain": "whether a displayed stock count or countdown is wired to a real number",
+    "formula": "compare the displayed value against the live inventory or promo end-date feed at the same timestamp",
+    "source": "page scrape joined to inventory feed",
+    "window": "checked daily on live pages carrying an urgency element",
+    "freshness_rule": "stale after 24 hours",
+    "unavailable_when": "the page has no urgency element, or no inventory feed is connected",
+    "benchmark": "match; any mismatch is flagged, not scored"
+   },
+   {
+    "name": "proof_placement_coverage",
+    "plain": "how many of the page's objections have proof placed next to them",
+    "formula": "count of objections with a mapped proof element within the same page section, divided by total objections on the brand's objection list",
+    "source": "SITE-C40 proof map",
+    "window": "current live page",
+    "freshness_rule": "stale after any page or objection-list change",
+    "unavailable_when": "no objection list exists yet for that SKU",
+    "benchmark": "every objection covered"
+   }
+  ],
+  "insights": [
+   {
+    "name": "message-match break",
+    "rule": "message_match_score for an ad's landing path is under 100 percent",
+    "computed_from": [
+     "ad copy fields",
+     "page scrape",
+     "checkout scrape"
+    ],
+    "sentence": "the ad promises {promise} but the page says {page_text}, a mismatch on {element}",
+    "severity": "ranked by the ad's own spend",
+    "action_capability": "SITE-C36"
+   },
+   {
+    "name": "hero missing a FUD reducer",
+    "rule": "no risk-reversal element (guarantee, free returns, security badge) sits within the hero's first viewport",
+    "computed_from": [
+     "hero section structure"
+    ],
+    "sentence": "the hero on {page} has no reassurance next to the button",
+    "severity": "ranked by the page's traffic",
+    "action_capability": "SITE-C37"
+   },
+   {
+    "name": "PDP first screen incomplete",
+    "rule": "pdp_first_screen_completeness is under 5 of 5 on the brand's stated device",
+    "computed_from": [
+     "SITE-C38 device screenshot"
+    ],
+    "sentence": "{missing_element} does not show without scrolling on {device}",
+    "severity": "ranked by which element is missing (price and CTA rank highest)",
+    "action_capability": "SITE-C38"
+   },
+   {
+    "name": "mobile form too long",
+    "rule": "mobile_form_field_count is over 4",
+    "computed_from": [
+     "SITE-C44 mobile QA"
+    ],
+    "sentence": "{page}'s form asks for {n} fields on a phone; the guideline is 4",
+    "severity": "ranked by field count over 4",
+    "action_capability": "SITE-C44"
+   },
+   {
+    "name": "popup fires on load not on intent",
+    "rule": "a popup's trigger event fires on page load or a fixed timer instead of exit intent or scroll depth",
+    "computed_from": [
+     "page trigger configuration"
+    ],
+    "sentence": "the popup on {page} interrupts before the shopper has shown any intent to leave",
+    "severity": "flagged whenever seen",
+    "action_capability": "SITE-C43"
+   },
+   {
+    "name": "fake urgency detected",
+    "rule": "urgency_claim_truth_status is mismatch",
+    "computed_from": [
+     "urgency_claim_truth_status"
+    ],
+    "sentence": "{page} shows '{displayed_text}' but the real number is {actual_value}",
+    "severity": "always high, a trust and compliance issue",
+    "action_capability": "SITE-C42"
+   },
+   {
+    "name": "sample ratio mismatch on a live test",
+    "rule": "sample_ratio_mismatch_flag fails",
+    "computed_from": [
+     "sample_ratio_mismatch_flag"
+    ],
+    "sentence": "test {test_name} is splitting traffic unevenly; its result cannot be trusted yet",
+    "severity": "always high; blocks trusting any result from that test",
+    "action_capability": "SITE-C51"
+   },
+   {
+    "name": "win driven by novelty",
+    "rule": "novelty_decay_pct over 40 percent",
+    "computed_from": [
+     "novelty_decay_pct"
+    ],
+    "sentence": "{test_name}'s lift fell {pct}% after week 1; the early win may not hold",
+    "severity": "ranked by pct of decay",
+    "action_capability": "SITE-C52"
+   },
+   {
+    "name": "winner scaled without an LTV check",
+    "rule": "a test's status is shipped_to_100 and winner_ltv_return_check is unavailable more than 60 days after rollout",
+    "computed_from": [
+     "test status",
+     "winner_ltv_return_check"
+    ],
+    "sentence": "{test_name} shipped {days} days ago with no return or repeat check run yet",
+    "severity": "ranked by days since rollout with no check",
+    "action_capability": "SITE-C53"
+   },
+   {
+    "name": "high-value backlog item stalled",
+    "rule": "a backlog hypothesis in the top quartile of test_expected_profit_ceiling has been sitting untested for over 45 days",
+    "computed_from": [
+     "backlog list",
+     "test_expected_profit_ceiling"
+    ],
+    "sentence": "{hypothesis} could be worth {ceiling} and has waited {days} days untested",
+    "severity": "ranked by expected profit ceiling",
+    "action_capability": "SITE-C49"
+   },
+   {
+    "name": "broken interactive control",
+    "rule": "a button, tab or accordion on a QA pass returns no visible change on click",
+    "computed_from": [
+     "SITE-C44 mobile QA pass"
+    ],
+    "sentence": "{control} on {page} does nothing when tapped",
+    "severity": "always high on a conversion surface",
+    "action_capability": "SITE-C43"
+   },
+   {
+    "name": "bundle savings shown only as a percent",
+    "rule": "a bundle or offer block shows a percent-off with no rupee amount saved",
+    "computed_from": [
+     "SITE-C41 offer builder output"
+    ],
+    "sentence": "{offer} shows {pct}% off with no rupee saving stated",
+    "severity": "ranked by the offer's traffic",
+    "action_capability": "SITE-C41"
+   },
+   {
+    "name": "proof stacked once instead of scattered",
+    "rule": "over 70 percent of a page's proof elements sit in a single section instead of distributed to their matched objection",
+    "computed_from": [
+     "proof_placement_coverage"
+    ],
+    "sentence": "{page} has most of its proof in one place; {n} objections have none nearby",
+    "severity": "ranked by number of uncovered objections",
+    "action_capability": "SITE-C40"
+   },
+   {
+    "name": "traffic routed to the wrong page type",
+    "rule": "a SKU's assigned awareness stage does not match the page type its ads currently point to (for example a cold, unaware audience sent straight to a bare PDP)",
+    "computed_from": [
+     "SITE-C35 routing rules",
+     "ad targeting metadata"
+    ],
+    "sentence": "{sku}'s ads target a cold audience but land on a bare PDP with no story",
+    "severity": "ranked by the SKU's ad spend",
+    "action_capability": "SITE-C35"
+   },
+   {
+    "name": "test flicker on a slow connection",
+    "rule": "the QA pass on a throttled connection shows the original page for over 300 ms before the variant renders",
+    "computed_from": [
+     "SITE-C51 QA pass"
+    ],
+    "sentence": "{test_name} flashes the original page for {ms} ms before the variant loads, on a slow connection",
+    "severity": "always high; blocks launch",
+    "action_capability": "SITE-C51"
+   }
+  ],
+  "visuals": [
+   {
+    "name": "funnel by page",
+    "type": "step or sankey chart",
+    "shows": "sessions moving from landing page to PDP to cart to checkout to purchase, for the current page set",
+    "why_this_chart": "a founder sees exactly which step leaks the most, not a single conversion rate",
+    "exists_today": false
+   },
+   {
+    "name": "test backlog ranked list",
+    "type": "horizontal bar list",
+    "shows": "each hypothesis with its expected profit ceiling and evidence count",
+    "why_this_chart": "ranks the backlog by money at stake instead of whoever argues loudest",
+    "exists_today": false
+   },
+   {
+    "name": "message-match trace",
+    "type": "flow diagram",
+    "shows": "the ad's promise elements carried across to the page and checkout, with breaks marked in red",
+    "why_this_chart": "makes an invisible drop-off (price or guarantee changing mid-funnel) visible in one glance",
+    "exists_today": false
+   },
+   {
+    "name": "hero score card",
+    "type": "scorecard with sub-scores",
+    "shows": "the hero's proof, headline, subhead, CTA and FUD scored against the fixed 6-part order",
+    "why_this_chart": "turns a subjective 'does this feel strong' into named, fixable parts",
+    "exists_today": false
+   },
+   {
+    "name": "test result chart",
+    "type": "bar chart with confidence interval",
+    "shows": "conversion rate per arm with its confidence interval and sample ratio check",
+    "why_this_chart": "shows whether a win is real before anyone celebrates it",
+    "exists_today": false
+   },
+   {
+    "name": "winner LTV check",
+    "type": "line chart, two cohorts",
+    "shows": "return rate and repeat-purchase rate for the winner cohort versus control, day 0 to day 60",
+    "why_this_chart": "catches a short-term win that quietly costs more in returns",
+    "exists_today": false
+   },
+   {
+    "name": "PDP first-screen map",
+    "type": "annotated screenshot",
+    "shows": "the brand's real PDP screenshot on its own device with the 5 required elements marked present or missing",
+    "why_this_chart": "grounds the completeness score in what the phone actually shows",
+    "exists_today": false
+   }
+  ],
+  "actions": [
+   {
+    "label": "Let the agent audit message match",
+    "capability": "SITE-C36",
+    "autonomy": "agent_does"
+   },
+   {
+    "label": "Let the agent QA the mobile build",
+    "capability": "SITE-C44",
+    "autonomy": "agent_does"
+   },
+   {
+    "label": "Let the agent roll out and re-verify a winner",
+    "capability": "SITE-C53",
+    "autonomy": "agent_does"
+   },
+   {
+    "label": "Build or fix with the agent",
+    "capability": "SITE-C37",
+    "autonomy": "human_assist"
+   },
+   {
+    "label": "Build or fix with the agent",
+    "capability": "SITE-C38",
+    "autonomy": "human_assist"
+   },
+   {
+    "label": "Build or fix with the agent",
+    "capability": "SITE-C39",
+    "autonomy": "human_assist"
+   },
+   {
+    "label": "Build or fix with the agent",
+    "capability": "SITE-C40",
+    "autonomy": "human_assist"
+   },
+   {
+    "label": "Build or fix with the agent",
+    "capability": "SITE-C42",
+    "autonomy": "human_assist"
+   },
+   {
+    "label": "Build or fix with the agent",
+    "capability": "SITE-C43",
+    "autonomy": "human_assist"
+   },
+   {
+    "label": "Approve the page-routing plan",
+    "capability": "SITE-C35",
+    "autonomy": "founder_gate"
+   },
+   {
+    "label": "Approve the offer and pricing design",
+    "capability": "SITE-C41",
+    "autonomy": "founder_gate"
+   },
+   {
+    "label": "Approve and rank the test backlog",
+    "capability": "SITE-C49",
+    "autonomy": "founder_gate"
+   },
+   {
+    "label": "Approve the test to launch",
+    "capability": "SITE-C51",
+    "autonomy": "founder_gate"
+   },
+   {
+    "label": "Read and decide the test result",
+    "capability": "SITE-C52",
+    "autonomy": "founder_gate"
+   },
+   {
+    "label": "Not now",
+    "capability": null,
+    "autonomy": "human_assist"
+   }
+  ],
+  "not_elsewhere": [
+   {
+    "claim": "audits whether the ad's exact promise, price, guarantee and CTA wording survives unbroken from the ad to the page to checkout",
+    "vs": "VWO and Convert.com report test statistics well but do not check message continuity from the ad itself"
+   },
+   {
+    "claim": "ranks the test backlog by an expected-profit ceiling built from at least 2 pieces of evidence per hypothesis, before anything launches",
+    "vs": "also in VWO's and Convert's own prioritization frameworks (PIE, ICE style scores), which score persuasion and ease but not a rupee ceiling tied to the brand's own traffic and AOV"
+   },
+   {
+    "claim": "checks a scaled winner's return rate and repeat-purchase rate before calling it a lasting win",
+    "vs": "test platforms report the conversion lift at the moment of the test; none of the common tools re-check returns and repeat orders 60 days later"
+   },
+   {
+    "claim": "flags an urgency or scarcity claim as false the moment its displayed number stops matching real inventory or a real promo end date",
+    "vs": "no common CRO or page-builder tool checks a countdown or stock count against the brand's own live feed"
+   },
+   {
+    "claim": "ties funnel drop-off to the page-routing decision (PDP versus advertorial versus quiz versus sales page) for that SKU's awareness stage",
+    "vs": "also in GA4's funnel exploration for the raw drop-off numbers, which does not connect the drop to a routing rule or recommend a different page type"
+   }
+  ],
+  "data_needs": [
+   {
+    "table": "page_registry",
+    "fields": [
+     "page_id",
+     "page_type",
+     "sku",
+     "awareness_stage",
+     "url",
+     "device_screenshot_ref"
+    ],
+    "connector_or_script": "manual entry plus SITE-C35 routing rules",
+    "refresh": "on every new or changed page"
+   },
+   {
+    "table": "ad_page_checkout_trace",
+    "fields": [
+     "ad_id",
+     "page_id",
+     "promise_elements",
+     "match_status",
+     "checked_at"
+    ],
+    "connector_or_script": "SITE-C36 audit script",
+    "refresh": "weekly and on any ad or page change"
+   },
+   {
+    "table": "funnel_events",
+    "fields": [
+     "session_id",
+     "step",
+     "page_id",
+     "device",
+     "timestamp"
+    ],
+    "connector_or_script": "GA4 or the brand's own pixel export",
+    "refresh": "daily"
+   },
+   {
+    "table": "cro_test_registry",
+    "fields": [
+     "test_id",
+     "hypothesis",
+     "evidence_count",
+     "expected_profit_ceiling",
+     "mde",
+     "sample_size_required",
+     "stopping_rule",
+     "status",
+     "launched_at"
+    ],
+    "connector_or_script": "SITE-C49 and SITE-C50 design output",
+    "refresh": "on creation and status change"
+   },
+   {
+    "table": "cro_test_results",
+    "fields": [
+     "test_id",
+     "arm",
+     "visitors",
+     "conversions",
+     "revenue",
+     "device",
+     "week"
+    ],
+    "connector_or_script": "test platform export (VWO, Convert or native)",
+    "refresh": "daily while a test runs"
+   },
+   {
+    "table": "winner_ltv_followup",
+    "fields": [
+     "test_id",
+     "cohort",
+     "day30_return_rate",
+     "day60_return_rate",
+     "day30_repeat_rate",
+     "day60_repeat_rate"
+    ],
+    "connector_or_script": "sales data joined to the test's order list",
+    "refresh": "at day 30 and day 60 after full rollout"
+   },
+   {
+    "table": "inventory_feed",
+    "fields": [
+     "sku",
+     "stock_count",
+     "updated_at"
+    ],
+    "connector_or_script": "platform inventory API",
+    "refresh": "hourly"
+   },
+   {
+    "table": "objection_proof_map",
+    "fields": [
+     "sku",
+     "objection",
+     "proof_element",
+     "page_section"
+    ],
+    "connector_or_script": "SITE-C40 proof map, built from reviews and tickets",
+    "refresh": "when the objection list or proof library changes"
+   }
+  ],
+  "founder_view_note": "Before any page has been audited, the room shows unavailable on every metric and a single line: 'no page has been scored yet, ask the agent to audit the top 3 ad landing pages first'. Once the first audit lands, the room leads with the message-match trace for the highest-spend ad, since a broken promise is the costliest and fastest thing to fix. The test backlog and results charts only populate once a test has been designed or launched; until then that panel says how many hypotheses are waiting to be scored."
+ },
+ {
+  "room": "Store health",
+  "agent": "SITE",
+  "who_uses": [
+   "founder",
+   "developer",
+   "agency account manager",
+   "operations lead"
+  ],
+  "jobs": [
+   {
+    "job": "set up the store foundation and account security",
+    "question": "is the account, staff access and 2FA set up the way it should be",
+    "capabilities": [
+     "SITE-C02"
+    ]
+   },
+   {
+    "job": "configure and go-live-test payment gateways",
+    "question": "does every payment method actually complete a real order",
+    "capabilities": [
+     "SITE-C09"
+    ]
+   },
+   {
+    "job": "audit and govern the app and script stack",
+    "question": "which apps are we paying for and running that earn nothing back",
+    "capabilities": [
+     "SITE-C13"
+    ]
+   },
+   {
+    "job": "run pre-launch QA and launch sequencing",
+    "question": "is every launch step actually verified, not just checked off",
+    "capabilities": [
+     "SITE-C14"
+    ]
+   },
+   {
+    "job": "monitor post-launch store hygiene",
+    "question": "what quietly broke since the last time someone looked",
+    "capabilities": [
+     "SITE-C15"
+    ]
+   },
+   {
+    "job": "configure cart and checkout base settings",
+    "question": "is checkout fast, safe and free of settings that cost sales",
+    "capabilities": [
+     "SITE-C18"
+    ]
+   },
+   {
+    "job": "route out-of-scope findings to the right specialist",
+    "question": "which of these findings are not actually a site problem",
+    "capabilities": [
+     "SITE-C20"
+    ]
+   },
+   {
+    "job": "audit and remediate accessibility",
+    "question": "can a keyboard or screen-reader shopper actually buy something here",
+    "capabilities": [
+     "SITE-C59"
+    ]
+   },
+   {
+    "job": "implement structured data and schema markup",
+    "question": "can search and AI answer engines actually read our product pages",
+    "capabilities": [
+     "SITE-C60"
+    ]
+   },
+   {
+    "job": "run continuous regression testing on theme and app changes",
+    "question": "did the last change break browsing, cart or a discount code",
+    "capabilities": [
+     "SITE-C64"
+    ]
+   },
+   {
+    "job": "run real-time uptime and transaction monitoring",
+    "question": "is the store up and can someone actually complete an order right now",
+    "capabilities": [
+     "SITE-C65"
+    ]
+   },
+   {
+    "job": "reduce COD return-to-origin with checkout-side controls",
+    "question": "which COD orders are likely to bounce back before we ship them",
+    "capabilities": [
+     "SITE-C67"
+    ]
+   },
+   {
+    "job": "keep a staging environment in sync with production",
+    "question": "is what we are testing on staging actually what is live",
+    "capabilities": [
+     "SITE-C70"
+    ]
+   },
+   {
+    "job": "gate tracking scripts by consent for DPDP and GDPR",
+    "question": "do our tracking scripts actually wait for consent, not just show a banner",
+    "capabilities": [
+     "SITE-C78"
+    ]
+   }
+  ],
+  "metrics": [
+   {
+    "name": "launch_checklist_completion_pct",
+    "plain": "how much of the launch checklist is done and verified",
+    "formula": "items marked verified (not just checked) divided by total checklist items",
+    "source": "SITE-C14 launch checklist table",
+    "window": "current, until launch; then frozen as a record",
+    "freshness_rule": "always current pre-launch",
+    "unavailable_when": "no checklist has been started",
+    "benchmark": "100 percent before the store password comes off"
+   },
+   {
+    "name": "uptime_pct_30d",
+    "plain": "how often the store was reachable over the last 30 days",
+    "formula": "successful synthetic checks divided by total checks, rolling 30 days",
+    "source": "SITE-C65 synthetic monitor log",
+    "window": "rolling 30 days",
+    "freshness_rule": "stale if no check has run in the last hour",
+    "unavailable_when": "monitoring has not been set up yet",
+    "benchmark": "99.9 percent"
+   },
+   {
+    "name": "checkout_transaction_success_rate",
+    "plain": "how often a real end-to-end test order completes",
+    "formula": "successful synthetic checkout completions divided by attempts, across the store's active payment methods",
+    "source": "SITE-C65 synthetic transaction monitor",
+    "window": "rolling 7 days",
+    "freshness_rule": "stale if no test has run in 24 hours",
+    "unavailable_when": "no synthetic checkout test is configured",
+    "benchmark": "100 percent; any failure is treated as a live incident"
+   },
+   {
+    "name": "payment_method_coverage",
+    "plain": "how many of the planned payment methods actually work",
+    "formula": "payment methods that pass a live go-live test divided by payment methods the brand intended to offer",
+    "source": "SITE-C09 go-live test log",
+    "window": "current",
+    "freshness_rule": "re-check after any gateway or region change",
+    "unavailable_when": "go-live testing has not been run",
+    "benchmark": "all planned methods pass"
+   },
+   {
+    "name": "app_count_no_revenue_link",
+    "plain": "how many installed apps have no sales tied back to them",
+    "formula": "count of active apps where revenue_attributed is null or zero over the last 90 days",
+    "source": "SITE-C13 app inventory joined to sales attribution",
+    "window": "rolling 90 days",
+    "freshness_rule": "stale after 30 days with no re-check",
+    "unavailable_when": "app inventory has not been built yet",
+    "benchmark": "zero, or each one has a named non-revenue reason (legal, support)"
+   },
+   {
+    "name": "script_count_key_pages",
+    "plain": "how many third-party scripts load on the home, PDP, cart and checkout pages",
+    "formula": "count of distinct third-party script hosts across those 4 templates",
+    "source": "speed_lab.measure request log, shared with Site and speed",
+    "window": "latest run",
+    "freshness_rule": "stale after 7 days",
+    "unavailable_when": "no run recorded",
+    "benchmark": "brand's own baseline; industry median is 21 to 30 per homepage, which is itself treated as a warning zone, not a target"
+   },
+   {
+    "name": "residual_code_after_uninstall_count",
+    "plain": "how many leftover snippets remain from apps that were removed",
+    "formula": "count of theme code blocks or script tags referencing an app no longer in the active app list",
+    "source": "SITE-C13 code sweep",
+    "window": "checked at each app audit",
+    "freshness_rule": "stale after 30 days",
+    "unavailable_when": "no code sweep has been run",
+    "benchmark": "zero"
+   },
+   {
+    "name": "accessibility_critical_issue_count",
+    "plain": "how many serious accessibility problems the automated scan found",
+    "formula": "count of WCAG 2.1 A and AA violations flagged critical or serious, across home, PDP, collection, cart and checkout templates",
+    "source": "SITE-C59 automated scan",
+    "window": "latest scan",
+    "freshness_rule": "stale after 90 days or any template change",
+    "unavailable_when": "no scan has been run",
+    "benchmark": "zero critical issues"
+   },
+   {
+    "name": "accessibility_manual_flag_count",
+    "plain": "how many issues only a real keyboard or screen-reader test found",
+    "formula": "count of findings logged during a manual pass on dynamic elements (variant picker, cart drawer, filters)",
+    "source": "SITE-C59 manual test log",
+    "window": "latest manual pass",
+    "freshness_rule": "stale after 90 days",
+    "unavailable_when": "no manual pass has been done",
+    "benchmark": "zero"
+   },
+   {
+    "name": "structured_data_coverage_pct",
+    "plain": "how many eligible pages carry valid structured data",
+    "formula": "pages with at least one valid schema block (Product, Offer, Review, BreadcrumbList or FAQPage) divided by pages eligible for that schema type",
+    "source": "SITE-C60 schema audit",
+    "window": "latest crawl",
+    "freshness_rule": "stale after 30 days or a template change",
+    "unavailable_when": "no crawl has been run",
+    "benchmark": "100 percent of eligible pages"
+   },
+   {
+    "name": "structured_data_error_count",
+    "plain": "how many schema blocks exist but have errors",
+    "formula": "count of schema blocks failing validation",
+    "source": "SITE-C60 schema audit, validator output",
+    "window": "latest crawl",
+    "freshness_rule": "stale after 30 days",
+    "unavailable_when": "no crawl has been run",
+    "benchmark": "zero"
+   },
+   {
+    "name": "cod_pincode_coverage_pct",
+    "plain": "how much of the brand's order footprint has a working COD serviceability check",
+    "formula": "orders from pincodes with a serviceability rule configured divided by all orders in the window",
+    "source": "SITE-C67 serviceability configuration joined to order data",
+    "window": "rolling 30 days",
+    "freshness_rule": "stale after 30 days",
+    "unavailable_when": "no serviceability rule set exists",
+    "benchmark": "100 percent of served pincodes classified"
+   },
+   {
+    "name": "rto_rate_pct",
+    "plain": "what share of COD orders come back undelivered",
+    "formula": "COD orders marked returned-to-origin divided by total COD orders, in the window",
+    "source": "order and logistics data",
+    "window": "rolling 30 and 90 days",
+    "freshness_rule": "stale after 30 days",
+    "unavailable_when": "logistics status is not fed back into order data",
+    "benchmark": "the brand's own trailing baseline; India COD RTO commonly runs 15 to 30 percent industry-wide, shown only as context, not a target"
+   },
+   {
+    "name": "cod_confirmation_rate",
+    "plain": "how many COD orders get an OTP or WhatsApp confirmation before dispatch",
+    "formula": "COD orders with a recorded confirmation event divided by total COD orders",
+    "source": "SITE-C67 confirmation flow log",
+    "window": "rolling 30 days",
+    "freshness_rule": "stale after 30 days",
+    "unavailable_when": "no confirmation flow is configured",
+    "benchmark": "close to 100 percent of COD orders confirmed"
+   },
+   {
+    "name": "broken_link_count",
+    "plain": "how many dead links or redirect loops the last sweep found",
+    "formula": "count of URLs returning a 404 or a redirect loop from an internal link or sitemap crawl",
+    "source": "SITE-C15 hygiene sweep",
+    "window": "latest sweep",
+    "freshness_rule": "stale after 30 days",
+    "unavailable_when": "no sweep has run",
+    "benchmark": "zero"
+   },
+   {
+    "name": "inventory_reconciliation_variance_pct",
+    "plain": "how far the store's stock count drifts from the real count",
+    "formula": "absolute difference between store-recorded stock and a physical or warehouse count, divided by warehouse count, averaged across checked SKUs",
+    "source": "SITE-C15 reconciliation run",
+    "window": "latest reconciliation",
+    "freshness_rule": "stale after 30 days",
+    "unavailable_when": "no reconciliation has run",
+    "benchmark": "under 2 percent variance"
+   },
+   {
+    "name": "staging_drift_days",
+    "plain": "how long since staging last matched production",
+    "formula": "today minus the last successful staging sync date",
+    "source": "SITE-C70 sync log",
+    "window": "always current",
+    "freshness_rule": "this metric is its own freshness signal",
+    "unavailable_when": "no staging environment exists yet",
+    "benchmark": "under 14 days"
+   },
+   {
+    "name": "consent_gate_pass_rate",
+    "plain": "how often a tracking script actually waits for consent before firing",
+    "formula": "test page loads where the tagged scripts fired only after a recorded consent event, divided by total test loads, per region",
+    "source": "SITE-C78 consent test log",
+    "window": "latest test pass",
+    "freshness_rule": "stale after 30 days or any tag change",
+    "unavailable_when": "no consent test has run",
+    "benchmark": "100 percent"
+   },
+   {
+    "name": "regression_test_pass_rate",
+    "plain": "how often the automated flow tests pass after a change",
+    "formula": "passed scripted flows (browse, cart, discount, checkout) divided by total flows run, for the latest change",
+    "source": "SITE-C64 regression run log",
+    "window": "each pre-deploy or scheduled run",
+    "freshness_rule": "stale after 30 days with no run",
+    "unavailable_when": "no regression suite has been set up",
+    "benchmark": "100 percent"
+   },
+   {
+    "name": "release_notes_backlog_count",
+    "plain": "how many platform updates or deprecations have not been reviewed yet",
+    "formula": "count of release-note items logged as unreviewed, across the platform, installed apps and API versions",
+    "source": "SITE-C68 release-note tracking",
+    "window": "current",
+    "freshness_rule": "always current",
+    "unavailable_when": "no tracking has been set up",
+    "benchmark": "zero unreviewed items past their own deadline"
+   }
+  ],
+  "insights": [
+   {
+    "name": "checklist item done but not verified",
+    "rule": "a launch checklist item is marked done but its own verification step (the action a real customer would take) has not been logged as passed",
+    "computed_from": [
+     "launch_checklist table"
+    ],
+    "sentence": "{item} is marked done but was never actually tested the way a customer would use it",
+    "severity": "always high before launch",
+    "action_capability": "SITE-C14"
+   },
+   {
+    "name": "app with no revenue link",
+    "rule": "app_count_no_revenue_link includes an app with a real monthly cost",
+    "computed_from": [
+     "app_inventory",
+     "sales attribution"
+    ],
+    "sentence": "{app} costs {inr} a month and nothing in your sales data ties back to it",
+    "severity": "ranked by monthly cost",
+    "action_capability": "SITE-C13"
+   },
+   {
+    "name": "leftover code after an uninstall",
+    "rule": "residual_code_after_uninstall_count is over 0",
+    "computed_from": [
+     "code sweep"
+    ],
+    "sentence": "{app} was removed but its code is still loading on {n} pages",
+    "severity": "ranked by pages affected",
+    "action_capability": "SITE-C13"
+   },
+   {
+    "name": "uptime or checkout incident",
+    "rule": "a synthetic check fails 2 checks in a row on any monitored endpoint",
+    "computed_from": [
+     "uptime_pct_30d",
+     "checkout_transaction_success_rate"
+    ],
+    "sentence": "{endpoint} failed {n} checks in a row starting at {time}, likely {suspected_cause}",
+    "severity": "always urgent",
+    "action_capability": "SITE-C65"
+   },
+   {
+    "name": "repeated accessibility violation across templates",
+    "rule": "the same WCAG rule fails on 3 or more of the 5 checked templates",
+    "computed_from": [
+     "accessibility scan results"
+    ],
+    "sentence": "{rule} fails on {n} of your 5 key templates, most often {example}",
+    "severity": "ranked by number of templates affected",
+    "action_capability": "SITE-C59"
+   },
+   {
+    "name": "missing alt text above threshold",
+    "rule": "over 10 percent of product images on a template have no alt text",
+    "computed_from": [
+     "accessibility scan results"
+    ],
+    "sentence": "{pct}% of images on {template} have no alt text",
+    "severity": "ranked by pct of images missing alt text",
+    "action_capability": "SITE-C59"
+   },
+   {
+    "name": "structured data errors block rich results",
+    "rule": "structured_data_error_count is over 0 on a PDP template",
+    "computed_from": [
+     "schema audit"
+    ],
+    "sentence": "{n} PDP pages have a broken {schema_type} block and cannot show rich results",
+    "severity": "ranked by number of PDPs affected",
+    "action_capability": "SITE-C60"
+   },
+   {
+    "name": "RTO rate above the brand's own baseline",
+    "rule": "rto_rate_pct for the last 30 days is more than 20 percent above the brand's trailing 90-day average",
+    "computed_from": [
+     "rto_rate_pct"
+    ],
+    "sentence": "COD returns are running at {pct}%, up from your usual {baseline}%",
+    "severity": "ranked by pct above baseline",
+    "action_capability": "SITE-C67"
+   },
+   {
+    "name": "unconfirmed COD with high RTO",
+    "rule": "a pincode cluster has cod_confirmation_rate under 50 percent and rto_rate_pct over double the brand average",
+    "computed_from": [
+     "cod_confirmation_rate",
+     "rto_rate_pct",
+     "order pincode"
+    ],
+    "sentence": "{cluster} has almost no COD confirmation and returns {x} times more often than average",
+    "severity": "ranked by RTO multiple versus average",
+    "action_capability": "SITE-C67"
+   },
+   {
+    "name": "staging out of sync",
+    "rule": "staging_drift_days is over 30",
+    "computed_from": [
+     "staging_drift_days"
+    ],
+    "sentence": "staging has not matched production in {n} days; a change tested there is not safe to trust",
+    "severity": "ranked by days of drift",
+    "action_capability": "SITE-C70"
+   },
+   {
+    "name": "consent gate not actually blocking a script",
+    "rule": "consent_gate_pass_rate for a named script is under 100 percent",
+    "computed_from": [
+     "consent test log"
+    ],
+    "sentence": "{script} fires before consent is given on {pct}% of test loads",
+    "severity": "always high, a compliance issue",
+    "action_capability": "SITE-C78"
+   },
+   {
+    "name": "broken link or redirect loop",
+    "rule": "broken_link_count is over 0 on a page linked from navigation or a sitemap",
+    "computed_from": [
+     "hygiene sweep"
+    ],
+    "sentence": "{n} links are broken, including {example} linked from your main menu",
+    "severity": "ranked by whether the link sits in navigation or a sitemap",
+    "action_capability": "SITE-C15"
+   },
+   {
+    "name": "inventory mismatch",
+    "rule": "inventory_reconciliation_variance_pct is over 2 percent for a SKU",
+    "computed_from": [
+     "reconciliation run"
+    ],
+    "sentence": "{sku} shows {store_count} in the store but {warehouse_count} in the warehouse",
+    "severity": "ranked by variance pct",
+    "action_capability": "SITE-C15"
+   },
+   {
+    "name": "unreviewed platform update past its deadline",
+    "rule": "a release-note item's own sunset or deprecation date has passed and it is still marked unreviewed",
+    "computed_from": [
+     "release_notes_backlog"
+    ],
+    "sentence": "{item} was deprecated on {date} and has not been reviewed yet",
+    "severity": "ranked by days past the sunset date",
+    "action_capability": "SITE-C68"
+   },
+   {
+    "name": "new regression after a change",
+    "rule": "regression_test_pass_rate is under 100 percent on the run right after a theme or app change",
+    "computed_from": [
+     "regression_test_pass_rate"
+    ],
+    "sentence": "{flow} broke after the latest {change_type} change",
+    "severity": "always high; blocks shipping the change",
+    "action_capability": "SITE-C64"
+   }
+  ],
+  "visuals": [
+   {
+    "name": "launch checklist tree",
+    "type": "checklist with pass/fail per item",
+    "shows": "every launch item, whether it is done and whether it is verified",
+    "why_this_chart": "separates 'someone clicked done' from 'a customer action actually proved it works'",
+    "exists_today": false
+   },
+   {
+    "name": "uptime and incident timeline",
+    "type": "timeline with incident markers",
+    "shows": "uptime and checkout success over the last 30 days with incidents marked and their duration",
+    "why_this_chart": "a founder sees not just today's status but how often and how long things break",
+    "exists_today": false
+   },
+   {
+    "name": "app and script inventory table",
+    "type": "sortable table, color-coded",
+    "shows": "every app with cost, weight and revenue link, red flagged when it has none",
+    "why_this_chart": "turns 'we have too many apps' into a specific list to act on",
+    "exists_today": false
+   },
+   {
+    "name": "accessibility issue heatmap",
+    "type": "table heatmap, templates by rule",
+    "shows": "which WCAG rule fails on which template",
+    "why_this_chart": "shows whether a problem is a one-off or a pattern worth fixing at the theme level",
+    "exists_today": false
+   },
+   {
+    "name": "structured data coverage bar",
+    "type": "stacked bar by page type",
+    "shows": "share of eligible pages with valid, invalid or missing structured data, per page type",
+    "why_this_chart": "shows exactly where search and AI engines can and cannot read the store",
+    "exists_today": false
+   },
+   {
+    "name": "RTO funnel by pincode tier",
+    "type": "funnel or stacked bar",
+    "shows": "COD orders placed, confirmed, delivered and returned to origin, split by pincode tier",
+    "why_this_chart": "shows where in the COD journey money is actually being lost, not just a single RTO percent",
+    "exists_today": false
+   },
+   {
+    "name": "staging drift indicator",
+    "type": "single stat with a trend line",
+    "shows": "days since staging last matched production, over time",
+    "why_this_chart": "a stale staging environment is invisible until something breaks in production; this makes the risk visible before that happens",
+    "exists_today": false
+   }
+  ],
+  "actions": [
+   {
+    "label": "Let the agent run post-launch hygiene",
+    "capability": "SITE-C15",
+    "autonomy": "agent_does"
+   },
+   {
+    "label": "Let the agent route this finding",
+    "capability": "SITE-C20",
+    "autonomy": "agent_does"
+   },
+   {
+    "label": "Let the agent run regression tests",
+    "capability": "SITE-C64",
+    "autonomy": "agent_does"
+   },
+   {
+    "label": "Let the agent monitor uptime and transactions",
+    "capability": "SITE-C65",
+    "autonomy": "agent_does"
+   },
+   {
+    "label": "Send to developer",
+    "capability": "SITE-C13",
+    "autonomy": "human_assist"
+   },
+   {
+    "label": "Send to developer",
+    "capability": "SITE-C18",
+    "autonomy": "human_assist"
+   },
+   {
+    "label": "Send to developer",
+    "capability": "SITE-C59",
+    "autonomy": "human_assist"
+   },
+   {
+    "label": "Send to developer",
+    "capability": "SITE-C60",
+    "autonomy": "human_assist"
+   },
+   {
+    "label": "Approve store foundation and security setup",
+    "capability": "SITE-C02",
+    "autonomy": "founder_gate"
+   },
+   {
+    "label": "Approve payment go-live test",
+    "capability": "SITE-C09",
+    "autonomy": "founder_gate"
+   },
+   {
+    "label": "Approve pre-launch QA and go-live",
+    "capability": "SITE-C14",
+    "autonomy": "founder_gate"
+   },
+   {
+    "label": "Approve the RTO control plan",
+    "capability": "SITE-C67",
+    "autonomy": "founder_gate"
+   },
+   {
+    "label": "Approve the staging refresh",
+    "capability": "SITE-C70",
+    "autonomy": "founder_gate"
+   },
+   {
+    "label": "Approve the consent gating plan",
+    "capability": "SITE-C78",
+    "autonomy": "founder_gate"
+   },
+   {
+    "label": "Not now",
+    "capability": null,
+    "autonomy": "human_assist"
+   }
+  ],
+  "not_elsewhere": [
+   {
+    "claim": "checks a real transaction path end to end (add to cart through payment) from several regions, not just whether the homepage returns a 200",
+    "vs": "UptimeRobot and StatusCake ping a URL and report status; they do not run a synthetic checkout"
+   },
+   {
+    "claim": "ties every accessibility violation to the template it repeats on and routes it straight to a developer brief",
+    "vs": "also in axe DevTools and WAVE for the automated scan itself, which report a flat issue list without grouping by template or assigning it anywhere"
+   },
+   {
+    "claim": "tracks structured data coverage as one rolling percentage across every eligible page type, not one URL at a time",
+    "vs": "also in Google's Rich Results Test and Search Console for validating a single page; neither gives a store-wide coverage number"
+   },
+   {
+    "claim": "reads the RTO outcome back against the brand's own delivered-order history to say which COD control actually reduced returns",
+    "vs": "also in COD Guard, Level and RTO Shield for running the checkout-side block or confirmation; they report that the control ran, not whether it worked for this brand"
+   },
+   {
+    "claim": "cross-references every installed app against the brand's own revenue attribution before calling it dead weight",
+    "vs": "also in Thunder's and similar Shopify app-and-speed audits for counting and weighing apps; they do not check revenue"
+   },
+   {
+    "claim": "verifies each pre-launch checklist item with the action a real customer would take, not a box someone ticks from memory",
+    "vs": "a manual launch checklist (a spreadsheet or a platform's own launch guide) records that a step was done, not that it was proven"
+   }
+  ],
+  "data_needs": [
+   {
+    "table": "launch_checklist",
+    "fields": [
+     "item",
+     "capability",
+     "status",
+     "verified_by_action",
+     "verified_at"
+    ],
+    "connector_or_script": "SITE-C14 launch sequencing",
+    "refresh": "continuous until launch"
+   },
+   {
+    "table": "app_inventory",
+    "fields": [
+     "app_id",
+     "name",
+     "monthly_cost",
+     "revenue_attributed",
+     "script_bytes",
+     "install_date",
+     "owner"
+    ],
+    "connector_or_script": "SITE-C13 app audit (manual entry until a platform API is connected), shared with Site and speed",
+    "refresh": "monthly"
+   },
+   {
+    "table": "uptime_checks",
+    "fields": [
+     "endpoint",
+     "region",
+     "timestamp",
+     "status",
+     "latency_ms"
+    ],
+    "connector_or_script": "SITE-C65 synthetic monitor",
+    "refresh": "every few minutes"
+   },
+   {
+    "table": "checkout_synthetic_tests",
+    "fields": [
+     "timestamp",
+     "gateway",
+     "region",
+     "result",
+     "error_detail"
+    ],
+    "connector_or_script": "SITE-C65 synthetic transaction monitor",
+    "refresh": "hourly"
+   },
+   {
+    "table": "accessibility_scan",
+    "fields": [
+     "template",
+     "rule",
+     "wcag_criterion",
+     "severity",
+     "element",
+     "status",
+     "scanned_at"
+    ],
+    "connector_or_script": "SITE-C59 automated plus manual scan",
+    "refresh": "quarterly or after a template change"
+   },
+   {
+    "table": "structured_data_audit",
+    "fields": [
+     "page_id",
+     "page_type",
+     "schema_type",
+     "valid",
+     "errors",
+     "crawled_at"
+    ],
+    "connector_or_script": "SITE-C60 schema audit",
+    "refresh": "monthly or after a template change"
+   },
+   {
+    "table": "cod_orders",
+    "fields": [
+     "order_id",
+     "pincode",
+     "pincode_tier",
+     "confirmed_channel",
+     "confirmed_at",
+     "delivered",
+     "rto",
+     "order_date"
+    ],
+    "connector_or_script": "order and logistics data, SITE-C67",
+    "refresh": "daily"
+   },
+   {
+    "table": "staging_sync_log",
+    "fields": [
+     "last_synced_at",
+     "drift_days",
+     "diff_summary"
+    ],
+    "connector_or_script": "SITE-C70 staging sync",
+    "refresh": "on each sync"
+   },
+   {
+    "table": "consent_test_log",
+    "fields": [
+     "script_name",
+     "region",
+     "fired_before_consent",
+     "tested_at"
+    ],
+    "connector_or_script": "SITE-C78 consent test",
+    "refresh": "monthly or after a tag change"
+   },
+   {
+    "table": "regression_test_runs",
+    "fields": [
+     "run_id",
+     "trigger",
+     "flow",
+     "pass",
+     "diff_pct",
+     "run_at"
+    ],
+    "connector_or_script": "SITE-C64 regression suite",
+    "refresh": "every deploy and monthly schedule"
+   },
+   {
+    "table": "release_notes_feed",
+    "fields": [
+     "platform",
+     "item",
+     "date",
+     "sunset_date",
+     "reviewed",
+     "action_needed"
+    ],
+    "connector_or_script": "SITE-C68 release tracking",
+    "refresh": "as platforms publish"
+   }
+  ],
+  "founder_view_note": "Before anything is connected, the room shows unavailable across the board and one line: 'no monitoring set up yet; ask the agent to run pre-launch QA or set up uptime checks first'. The first things to populate are the launch checklist (if the store has not launched) or the uptime and checkout status (if it has), since a down store or a broken checkout outranks every other finding here. COD and RTO metrics only appear once order-level logistics status is fed in; until then that panel says what data is missing to turn it on."
+ }
+]

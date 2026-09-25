@@ -1,0 +1,2096 @@
+[
+  {
+    "room": "Organic and content",
+    "agent": "ORG",
+    "who_uses": [
+      "founder",
+      "content or social manager",
+      "agency account manager",
+      "community manager"
+    ],
+    "jobs": [
+      {
+        "job": "know if this week's content plan held the posting floor and covers the next festival",
+        "question": "did we post what we planned and is the next festival slot covered",
+        "capabilities": [
+          "ORG-C02"
+        ]
+      },
+      {
+        "job": "decide how much the founder needs to be on camera this month",
+        "question": "how much of what worked needed the founder's face, and are we over that budget",
+        "capabilities": [
+          "ORG-C03"
+        ]
+      },
+      {
+        "job": "turn today's idea into a shootable script with a named SKU and buyer",
+        "question": "what do we say, to whom, and in which language variant",
+        "capabilities": [
+          "ORG-C04"
+        ]
+      },
+      {
+        "job": "spot a one-off winner worth turning into a named repeatable series",
+        "question": "which post should become a format the team can run without the founder",
+        "capabilities": [
+          "ORG-C05"
+        ]
+      },
+      {
+        "job": "plan the next shoot day without new gear or a new location",
+        "question": "what do we need to film this batch and when do we raise production stakes",
+        "capabilities": [
+          "ORG-C06"
+        ]
+      },
+      {
+        "job": "keep the idea pipeline full without starting from zero every week",
+        "question": "what should we post about next, and what are named competitors doing",
+        "capabilities": [
+          "ORG-C07"
+        ]
+      },
+      {
+        "job": "get an AI-assisted first draft that a human must rewrite and clear before it can publish",
+        "question": "is this draft ready for a human rewrite, and does it clear the claims and safety gate",
+        "capabilities": [
+          "ORG-C08",
+          "ORG-C15"
+        ]
+      },
+      {
+        "job": "answer comments and DMs fast and turn a stranger into an owned contact",
+        "question": "which messages need a human right now, and does this post's funnel actually capture a lead",
+        "capabilities": [
+          "ORG-C09",
+          "ORG-C10"
+        ]
+      },
+      {
+        "job": "turn a verified review or unboxing into a post, and keep the library tagged and reused before it expires",
+        "question": "what UGC is sitting unused, and what is about to retire without being reused anywhere",
+        "capabilities": [
+          "ORG-C11",
+          "ORG-C13"
+        ]
+      },
+      {
+        "job": "stop a post from linking to a dead, mismatched or untagged commerce page",
+        "question": "does every live post's link work, match, and carry the right product tag",
+        "capabilities": [
+          "ORG-C12"
+        ]
+      },
+      {
+        "job": "decide which creators to seed this month and confirm gifting, rights and fraud checks ran",
+        "question": "who should get product for content, and did we get usage rights back",
+        "capabilities": [
+          "ORG-C14"
+        ]
+      },
+      {
+        "job": "see which SKU and hook actually sold, not just which post got views",
+        "question": "which content made money, and which viral post reached strangers who never bought",
+        "capabilities": [
+          "ORG-C16"
+        ]
+      },
+      {
+        "job": "run the YouTube channel as its own surface with its own search mechanics",
+        "question": "are our videos titled, thumbnailed and chaptered to be found in YouTube search",
+        "capabilities": [
+          "ORG-C38"
+        ]
+      },
+      {
+        "job": "know if the owned community (WhatsApp or Discord) is worth the moderation time",
+        "question": "is the community active, and do active members actually buy",
+        "capabilities": [
+          "ORG-C39"
+        ]
+      }
+    ],
+    "metrics": [
+      {
+        "name": "posting_floor_adherence",
+        "plain": "Share of this week's planned posts that actually went out",
+        "formula": "posts_published_this_week / posts_planned_at_floor_this_week",
+        "source": "content calendar table",
+        "window": "weekly",
+        "freshness_rule": "recomputed daily",
+        "unavailable_when": "no calendar connected or no floor set",
+        "benchmark": "not applicable, compares to the brand's own set floor"
+      },
+      {
+        "name": "festive_slot_coverage",
+        "plain": "Share of festivals in the next 30 days that already have a script assigned",
+        "formula": "festival_slots_with_script / festival_slots_in_next_30_days",
+        "source": "calendar festive layer",
+        "window": "rolling 30 days",
+        "freshness_rule": "recomputed daily",
+        "unavailable_when": "no festive calendar layer loaded"
+      },
+      {
+        "name": "founder_camera_share",
+        "plain": "Share of published posts that feature the founder on camera",
+        "formula": "founder_posts / total_posts, trailing 30 days",
+        "source": "post tags",
+        "window": "trailing 30 days",
+        "freshness_rule": "recomputed on each new post",
+        "unavailable_when": "posts are not tagged for on-camera presence"
+      },
+      {
+        "name": "revenue_from_tagged_content",
+        "plain": "Orders that came from a specific post, tracked by its own link tag or promo code",
+        "formula": "sum(order_value) where session utm_content or promo code matches a post id, within its view-through window",
+        "source": "store orders joined to analytics UTM/promo-code table",
+        "window": "trailing 30 days",
+        "freshness_rule": "recomputed daily",
+        "unavailable_when": "the post's link carries no UTM tag or promo code"
+      },
+      {
+        "name": "content_pillar_revenue_share",
+        "plain": "Share of tagged content revenue coming from each pillar",
+        "formula": "revenue_from_tagged_content grouped by pillar / total tagged revenue",
+        "source": "orders join + calendar pillar tag",
+        "window": "trailing 30 days",
+        "freshness_rule": "recomputed daily",
+        "unavailable_when": "fewer than 5 tagged orders in the window"
+      },
+      {
+        "name": "link_destination_pass_rate",
+        "plain": "Share of live posts whose link opens a working page that matches the post",
+        "formula": "posts_with_verified_live_matching_link / posts_checked",
+        "source": "automated link-check crawl",
+        "window": "checked daily on all posts from the last 90 days",
+        "freshness_rule": "stale after 48 hours without a check",
+        "unavailable_when": "no link-check run in 48 hours"
+      },
+      {
+        "name": "shoppable_tag_coverage",
+        "plain": "Share of eligible posts with correct product tags attached",
+        "formula": "posts_with_correct_product_tag / posts_eligible_for_tagging",
+        "source": "platform catalog tagging API + calendar plan",
+        "window": "weekly",
+        "freshness_rule": "stale after 7 days",
+        "unavailable_when": "catalog tagging API not connected"
+      },
+      {
+        "name": "comment_response_time_median",
+        "plain": "Typical time to the first reply on a comment or DM that needs one",
+        "formula": "median(first_reply_time - message_time) for messages flagged as needing a reply",
+        "source": "unified inbox log",
+        "window": "trailing 7 days",
+        "freshness_rule": "recomputed daily",
+        "unavailable_when": "no inbox log connected",
+        "benchmark": "under 1 hour on the hero platform"
+      },
+      {
+        "name": "dm_to_owned_contact_rate",
+        "plain": "Share of DM conversations that end with an email, WhatsApp opt-in or phone number captured",
+        "formula": "dm_threads_with_captured_contact / dm_threads_total",
+        "source": "DM funnel log + CRM/lead table",
+        "window": "trailing 30 days",
+        "freshness_rule": "recomputed daily",
+        "unavailable_when": "no DM funnel or CRM link"
+      },
+      {
+        "name": "ugc_pipeline_depth",
+        "plain": "Verified reviews and UGC assets ready to post, by SKU",
+        "formula": "count(verified_ugc_assets) where posted = false, grouped by sku",
+        "source": "UGC intake table",
+        "window": "as of now",
+        "freshness_rule": "recomputed on each new review import",
+        "unavailable_when": "no UGC intake table"
+      },
+      {
+        "name": "asset_reuse_rate",
+        "plain": "Share of assets past their reuse checkpoint that got reused on at least one other surface",
+        "formula": "assets_reused_before_shelf_life_end / assets_past_reuse_checkpoint",
+        "source": "tagged asset library",
+        "window": "monthly",
+        "freshness_rule": "recomputed monthly",
+        "unavailable_when": "assets are not tagged with a shelf-life date"
+      },
+      {
+        "name": "creator_seeding_active_count",
+        "plain": "Creators currently seeded with product this month, and total product cost sent",
+        "formula": "count(distinct creator) and sum(product_cost) where seeding_status = active",
+        "source": "creator seeding tracker",
+        "window": "monthly",
+        "freshness_rule": "recomputed weekly",
+        "unavailable_when": "no seeding tracker"
+      },
+      {
+        "name": "creator_content_yield",
+        "plain": "Content pieces delivered per 10 creators seeded",
+        "formula": "10 * count(content_delivered) / count(distinct creator seeded)",
+        "source": "seeding tracker + asset library tags",
+        "window": "trailing 60 days",
+        "freshness_rule": "recomputed weekly",
+        "unavailable_when": "fewer than 5 creators seeded in the window"
+      },
+      {
+        "name": "claims_gate_hold_count",
+        "plain": "Posts the safety gate held before publish this month, and the most common rule triggered",
+        "formula": "count(posts) where gate_result = held, grouped by rule",
+        "source": "claims gate log",
+        "window": "trailing 30 days",
+        "freshness_rule": "recomputed on each gate run",
+        "unavailable_when": "claims gate not running on this account"
+      },
+      {
+        "name": "stranger_blind_share",
+        "plain": "Share of the top 10 posts by reach that name no product and give no next step",
+        "formula": "count(top_10_reach_posts where no_named_sku and no_cta) / 10",
+        "source": "platform reach data + post tags",
+        "window": "trailing 30 days",
+        "freshness_rule": "recomputed weekly",
+        "unavailable_when": "posts are not tagged for SKU or CTA"
+      },
+      {
+        "name": "broad_low_value_hit_share",
+        "plain": "Share of top-quartile-reach posts whose matched orders fall below the brand's set floor",
+        "formula": "count(top_quartile_reach posts where matched_orders < floor) / count(top_quartile_reach posts)",
+        "source": "platform reach data + revenue_from_tagged_content",
+        "window": "trailing 30 days",
+        "freshness_rule": "recomputed weekly",
+        "unavailable_when": "fewer than 10 posts in the top quartile"
+      },
+      {
+        "name": "youtube_search_traffic_share",
+        "plain": "Share of channel views coming from YouTube search rather than suggested or browse",
+        "formula": "search_views / total_views",
+        "source": "YouTube Studio export",
+        "window": "trailing 28 days",
+        "freshness_rule": "stale after 7 days",
+        "unavailable_when": "YouTube Studio not connected"
+      },
+      {
+        "name": "community_active_member_rate",
+        "plain": "Share of community members who sent at least one message in the last 30 days",
+        "formula": "active_members_30d / total_members",
+        "source": "community platform export (WhatsApp/Discord)",
+        "window": "trailing 30 days",
+        "freshness_rule": "stale after 14 days",
+        "unavailable_when": "no community roster export"
+      },
+      {
+        "name": "community_to_order_rate",
+        "plain": "Share of community members who also placed an order in the same window, matched by phone or email",
+        "formula": "members_with_matching_order / total_members",
+        "source": "community roster matched to orders (phone match for WhatsApp)",
+        "window": "trailing 90 days",
+        "freshness_rule": "recomputed monthly",
+        "unavailable_when": "roster cannot be matched to orders (no shared phone/email field)"
+      }
+    ],
+    "insights": [
+      {
+        "name": "posting floor missed",
+        "rule": "posts_published this week < posts_planned at floor",
+        "computed_from": [
+          "content calendar table"
+        ],
+        "sentence": "{n} of {planned} planned posts did not go out this week",
+        "severity": "high if 2+ weeks running, else medium",
+        "action_capability": "ORG-C02"
+      },
+      {
+        "name": "festive gap",
+        "rule": "a festival is within 14 days and has zero assigned script",
+        "computed_from": [
+          "calendar festive layer"
+        ],
+        "sentence": "{festival} is in {d} days and has no script yet",
+        "severity": "high if under 7 days",
+        "action_capability": "ORG-C02"
+      },
+      {
+        "name": "stranger-blind viral post",
+        "rule": "a post is in the top 3 by reach in the last 30 days and carries no named SKU or CTA tag",
+        "computed_from": [
+          "platform reach data",
+          "post tags"
+        ],
+        "sentence": "{title} got {reach} views but named no product and gave no next step",
+        "severity": "medium, watch not stop",
+        "action_capability": "ORG-C16"
+      },
+      {
+        "name": "broad low-value hit",
+        "rule": "a post is in the top reach quartile and its matched orders fall below the set floor",
+        "computed_from": [
+          "platform reach data",
+          "revenue_from_tagged_content"
+        ],
+        "sentence": "{title} reached {n} people but sold {k} pieces, below the {floor} floor",
+        "severity": "medium",
+        "action_capability": "ORG-C16"
+      },
+      {
+        "name": "unused UGC",
+        "rule": "a verified review or photo asset has sat unposted for more than 21 days",
+        "computed_from": [
+          "UGC intake table"
+        ],
+        "sentence": "{n} verified reviews are unused for over {d} days",
+        "severity": "low",
+        "action_capability": "ORG-C11"
+      },
+      {
+        "name": "asset expiring unused",
+        "rule": "an asset's shelf-life end date is within 7 days and its reuse count is 0",
+        "computed_from": [
+          "tagged asset library"
+        ],
+        "sentence": "{n} assets retire this week without being reused anywhere",
+        "severity": "medium",
+        "action_capability": "ORG-C13"
+      },
+      {
+        "name": "claims gate catching a real pattern",
+        "rule": "the same claims rule triggers 3 or more times in a month",
+        "computed_from": [
+          "claims gate log"
+        ],
+        "sentence": "{n} posts were held this month for {top_rule}, more than any other rule",
+        "severity": "medium",
+        "action_capability": "ORG-C15"
+      },
+      {
+        "name": "creator seeding, no yield",
+        "rule": "a creator was seeded more than 21 days ago and has delivered zero content",
+        "computed_from": [
+          "creator seeding tracker",
+          "asset library"
+        ],
+        "sentence": "{n} of {seeded} creators sent product but delivered nothing in 3 weeks",
+        "severity": "medium",
+        "action_capability": "ORG-C14"
+      },
+      {
+        "name": "DM funnel leak",
+        "rule": "the share of DM threads ending with no captured contact exceeds 70%",
+        "computed_from": [
+          "DM funnel log",
+          "CRM"
+        ],
+        "sentence": "{pct}% of DM conversations end without an email, WhatsApp opt-in or phone number",
+        "severity": "medium",
+        "action_capability": "ORG-C10"
+      },
+      {
+        "name": "dead or mismatched link",
+        "rule": "a live post's link fails the check or does not match the intended page",
+        "computed_from": [
+          "automated link-check crawl"
+        ],
+        "sentence": "{n} live posts point to a page that is down or does not match",
+        "severity": "high",
+        "action_capability": "ORG-C12"
+      },
+      {
+        "name": "comment response lag",
+        "rule": "a comment or DM needing a reply has waited more than 24 hours",
+        "computed_from": [
+          "unified inbox log"
+        ],
+        "sentence": "{n} messages have waited over {h} hours for a reply",
+        "severity": "high",
+        "action_capability": "ORG-C09"
+      },
+      {
+        "name": "community going quiet",
+        "rule": "active member rate falls 10 percentage points or more month over month",
+        "computed_from": [
+          "community platform export"
+        ],
+        "sentence": "community activity fell {pct} points this month",
+        "severity": "medium",
+        "action_capability": "ORG-C39"
+      },
+      {
+        "name": "YouTube search share falling",
+        "rule": "search-traffic share this period is lower than the prior period",
+        "computed_from": [
+          "YouTube Studio export"
+        ],
+        "sentence": "{pct}% of views now come from search, down from {prev}%",
+        "severity": "medium",
+        "action_capability": "ORG-C38"
+      },
+      {
+        "name": "founder over budget",
+        "rule": "founder_camera_share exceeds the target set when the on-camera plan was made",
+        "computed_from": [
+          "post tags",
+          "on-camera plan"
+        ],
+        "sentence": "{pct}% of posts need the founder on camera, above the {target}% plan",
+        "severity": "medium",
+        "action_capability": "ORG-C03"
+      }
+    ],
+    "visuals": [
+      {
+        "name": "calendar heatmap",
+        "type": "calendar grid",
+        "shows": "planned vs published posts per day, with festival flags",
+        "why_this_chart": "founder sees the whole month's cadence and gaps at a glance",
+        "exists_today": false
+      },
+      {
+        "name": "SKU by hook revenue grid",
+        "type": "heatmap table",
+        "shows": "matched revenue for each SKU by hook type",
+        "why_this_chart": "shows exactly where content made money, not just where it got views",
+        "exists_today": false
+      },
+      {
+        "name": "comment to order funnel",
+        "type": "stepped funnel chart",
+        "shows": "comments to DMs to owned contacts to orders",
+        "why_this_chart": "shows where the funnel actually leaks",
+        "exists_today": false
+      },
+      {
+        "name": "creator seeding scorecard",
+        "type": "table with bars",
+        "shows": "creators seeded, cost sent, content delivered, yield",
+        "why_this_chart": "one view of whether seeding spend is producing usable content",
+        "exists_today": false
+      },
+      {
+        "name": "asset lifecycle timeline",
+        "type": "gantt-style bar per asset",
+        "shows": "shelf-life window and reuse events across PDP, email, DM and post-purchase",
+        "why_this_chart": "shows what is about to expire unused before it happens",
+        "exists_today": false
+      },
+      {
+        "name": "community health line",
+        "type": "line chart with overlay",
+        "shows": "weekly active member rate with matched-order rate overlaid",
+        "why_this_chart": "ties community moderation effort to whether it is paying back",
+        "exists_today": false
+      }
+    ],
+    "actions": [
+      {
+        "label": "Review platform and pillar strategy",
+        "capability": "ORG-C01",
+        "autonomy": "founder_gate"
+      },
+      {
+        "label": "Update the calendar",
+        "capability": "ORG-C02",
+        "autonomy": "agent_does"
+      },
+      {
+        "label": "Add the festive layer",
+        "capability": "ORG-C02",
+        "autonomy": "agent_does"
+      },
+      {
+        "label": "Review founder on-camera plan",
+        "capability": "ORG-C03",
+        "autonomy": "human_assist"
+      },
+      {
+        "label": "Draft the script and hooks",
+        "capability": "ORG-C04",
+        "autonomy": "human_assist"
+      },
+      {
+        "label": "Localize this script",
+        "capability": "ORG-C04",
+        "autonomy": "human_assist"
+      },
+      {
+        "label": "Turn this into a series",
+        "capability": "ORG-C05",
+        "autonomy": "human_assist"
+      },
+      {
+        "label": "Plan the next shoot day",
+        "capability": "ORG-C06",
+        "autonomy": "human_assist"
+      },
+      {
+        "label": "Refill the idea bank",
+        "capability": "ORG-C07",
+        "autonomy": "agent_does"
+      },
+      {
+        "label": "Run an AI first draft",
+        "capability": "ORG-C08",
+        "autonomy": "agent_does"
+      },
+      {
+        "label": "Send to the claims and safety gate",
+        "capability": "ORG-C15",
+        "autonomy": "agent_does"
+      },
+      {
+        "label": "Draft replies now",
+        "capability": "ORG-C09",
+        "autonomy": "human_assist"
+      },
+      {
+        "label": "Turn on the unified inbox auto-tier",
+        "capability": "ORG-C09",
+        "autonomy": "founder_gate"
+      },
+      {
+        "label": "Review the comment-to-DM funnel",
+        "capability": "ORG-C10",
+        "autonomy": "founder_gate"
+      },
+      {
+        "label": "Pull this UGC into a draft",
+        "capability": "ORG-C11",
+        "autonomy": "agent_does"
+      },
+      {
+        "label": "Fix this link or destination",
+        "capability": "ORG-C12",
+        "autonomy": "agent_does"
+      },
+      {
+        "label": "Check shoppable tags",
+        "capability": "ORG-C12",
+        "autonomy": "human_assist"
+      },
+      {
+        "label": "Reuse this asset now",
+        "capability": "ORG-C13",
+        "autonomy": "agent_does"
+      },
+      {
+        "label": "Approve this month's creator seeding list",
+        "capability": "ORG-C14",
+        "autonomy": "founder_gate"
+      },
+      {
+        "label": "Automate gifting fulfillment and rights checks",
+        "capability": "ORG-C14",
+        "autonomy": "founder_gate"
+      },
+      {
+        "label": "See revenue by SKU and hook",
+        "capability": "ORG-C16",
+        "autonomy": "agent_does"
+      },
+      {
+        "label": "Open YouTube ops checklist",
+        "capability": "ORG-C38",
+        "autonomy": "human_assist"
+      },
+      {
+        "label": "Open community setup and moderation",
+        "capability": "ORG-C39",
+        "autonomy": "human_assist"
+      },
+      {
+        "label": "Open podcast ops",
+        "capability": "ORG-C40",
+        "autonomy": "human_assist"
+      },
+      {
+        "label": "Open newsletter ops",
+        "capability": "ORG-C41",
+        "autonomy": "human_assist"
+      },
+      {
+        "label": "Run the long-form to short-form pipeline on this video",
+        "capability": "ORG-C42",
+        "autonomy": "agent_does"
+      },
+      {
+        "label": "Open the crisis response plan",
+        "capability": "ORG-C43",
+        "autonomy": "founder_gate"
+      },
+      {
+        "label": "Run a social listening scan",
+        "capability": "ORG-C44",
+        "autonomy": "agent_does"
+      },
+      {
+        "label": "Open the Pinterest program",
+        "capability": "ORG-C45",
+        "autonomy": "human_assist"
+      },
+      {
+        "label": "Draft a LinkedIn post",
+        "capability": "ORG-C46",
+        "autonomy": "human_assist"
+      },
+      {
+        "label": "Run the feedback mining report",
+        "capability": "ORG-C47",
+        "autonomy": "agent_does"
+      },
+      {
+        "label": "Open employer-branding content",
+        "capability": "ORG-C48",
+        "autonomy": "human_assist"
+      },
+      {
+        "label": "Start the creator discovery agent",
+        "capability": "ORG-C49",
+        "autonomy": "founder_gate"
+      },
+      {
+        "label": "Send this feedback to a fix ticket",
+        "capability": "ORG-C51",
+        "autonomy": "founder_gate"
+      }
+    ],
+    "not_elsewhere": [
+      {
+        "claim": "ties each post to the order it produced, by SKU and hook, using the post's own link tag or promo code",
+        "vs": "Metricool, Later, Hootsuite and Sprout Social show reach, engagement and (Hootsuite/Sprout) social listening, but none join a post to a matched order"
+      },
+      {
+        "claim": "runs a fixed claims and safety gate against the brand's own claim tiers before a post can publish",
+        "vs": "scheduler approval flows (Hootsuite, Sprout Social) check for human sign-off, not a rule-based claims-risk check"
+      },
+      {
+        "claim": "tracks creator seeding cost, fulfillment and content yield against the same tagged asset library the calendar draws from",
+        "vs": "creator/UGC platforms track shipments and creators, but do not connect yield to the brand's own content library or calendar"
+      },
+      {
+        "claim": "flags a stranger-blind viral post and a broad-reach, low-order hit by a fixed rule tied to the store's own orders",
+        "vs": "platform analytics report reach and engagement; none of the mainstream schedulers flag a post as viral-but-not-selling against the brand's own order floor"
+      },
+      {
+        "claim": "tracks an asset's shelf life and reuse across PDP, email, DM and post-purchase flow before retiring it",
+        "vs": "social schedulers manage the posting calendar only; they do not track reuse of the same asset across owned commerce surfaces"
+      },
+      {
+        "claim": "reads the owned WhatsApp or Discord community's active-member rate against matched store orders",
+        "vs": "Later has no social listening at all; Hootsuite and Sprout Social track engagement inside the platform, not matched to the brand's own order data"
+      }
+    ],
+    "data_needs": [
+      {
+        "table": "content_calendar",
+        "fields": [
+          "brand",
+          "date",
+          "platform",
+          "pillar",
+          "status",
+          "festival_tag",
+          "language_variant"
+        ],
+        "connector_or_script": "calendar tool export or ORG-C02 output",
+        "refresh": "daily"
+      },
+      {
+        "table": "post_performance",
+        "fields": [
+          "post_id",
+          "platform",
+          "date",
+          "reach",
+          "views",
+          "engagement",
+          "follower_share_of_views",
+          "sku_tag",
+          "hook_tag",
+          "cta_tag"
+        ],
+        "connector_or_script": "platform insights API (Instagram, TikTok, YouTube)",
+        "refresh": "daily"
+      },
+      {
+        "table": "utm_promo_orders",
+        "fields": [
+          "order_id",
+          "order_value",
+          "utm_content",
+          "promo_code",
+          "session_time",
+          "order_time"
+        ],
+        "connector_or_script": "store analytics joined to orders",
+        "refresh": "daily"
+      },
+      {
+        "table": "ugc_assets",
+        "fields": [
+          "asset_id",
+          "sku",
+          "source",
+          "verified",
+          "posted",
+          "intake_date"
+        ],
+        "connector_or_script": "review platform export + manual intake",
+        "refresh": "weekly"
+      },
+      {
+        "table": "asset_library",
+        "fields": [
+          "asset_id",
+          "surfaces_used",
+          "shelf_life_end",
+          "reuse_count",
+          "retired"
+        ],
+        "connector_or_script": "asset tagging tool",
+        "refresh": "weekly"
+      },
+      {
+        "table": "creator_seeding",
+        "fields": [
+          "creator_id",
+          "platform",
+          "product_cost",
+          "seeded_date",
+          "content_delivered",
+          "rights_confirmed",
+          "fraud_flag"
+        ],
+        "connector_or_script": "seeding tracker (spreadsheet or CRM)",
+        "refresh": "weekly"
+      },
+      {
+        "table": "inbox_log",
+        "fields": [
+          "message_id",
+          "platform",
+          "type",
+          "received_at",
+          "first_reply_at",
+          "needs_reply",
+          "auto_sent"
+        ],
+        "connector_or_script": "unified inbox tool export",
+        "refresh": "daily"
+      },
+      {
+        "table": "dm_funnel",
+        "fields": [
+          "thread_id",
+          "entry_post_id",
+          "captured_contact",
+          "contact_type",
+          "lead_magnet"
+        ],
+        "connector_or_script": "DM automation tool + CRM",
+        "refresh": "daily"
+      },
+      {
+        "table": "claims_gate_log",
+        "fields": [
+          "post_id",
+          "rule_triggered",
+          "result",
+          "checked_at"
+        ],
+        "connector_or_script": "ORG-C15 gate script",
+        "refresh": "on every draft"
+      },
+      {
+        "table": "link_check_log",
+        "fields": [
+          "post_id",
+          "url",
+          "status_code",
+          "matches_intent",
+          "checked_at"
+        ],
+        "connector_or_script": "automated crawler",
+        "refresh": "daily"
+      },
+      {
+        "table": "youtube_studio_export",
+        "fields": [
+          "video_id",
+          "title",
+          "views",
+          "search_views",
+          "suggested_views",
+          "avg_view_duration",
+          "date"
+        ],
+        "connector_or_script": "YouTube Studio API",
+        "refresh": "weekly"
+      },
+      {
+        "table": "community_roster",
+        "fields": [
+          "member_id",
+          "platform",
+          "phone_or_email",
+          "joined_at",
+          "last_active_at",
+          "message_count"
+        ],
+        "connector_or_script": "WhatsApp Business API export or Discord export",
+        "refresh": "weekly"
+      }
+    ],
+    "founder_view_note": "With nothing connected yet, every metric shows unavailable and the room shows only the calendar plan and a checklist of what to connect (platform insights, UTM/promo tracking, the claims gate log, the seeding tracker, the community roster). The first thing that lands once platform insights connect is posting_floor_adherence and the calendar heatmap; revenue_from_tagged_content only appears once posts carry a UTM tag or promo code, which the room should prompt the team to add before the first campaign."
+  },
+  {
+    "room": "SEO",
+    "agent": "ORG",
+    "who_uses": [
+      "founder",
+      "SEO or content lead",
+      "agency SEO manager",
+      "developer"
+    ],
+    "jobs": [
+      {
+        "job": "decide whether SEO is worth the spend this quarter, before committing to a program",
+        "question": "does this category have enough demand and margin to justify SEO work at all",
+        "capabilities": [
+          "ORG-C17"
+        ]
+      },
+      {
+        "job": "know what buyers are actually asking before a page is written",
+        "question": "what keywords and buyer questions should this page answer",
+        "capabilities": [
+          "ORG-C18"
+        ]
+      },
+      {
+        "job": "make sure the site's structure will carry the content plan",
+        "question": "does the collection tree, URL type and menu support the money pages we need",
+        "capabilities": [
+          "ORG-C19"
+        ]
+      },
+      {
+        "job": "find what's technically broken, including for AI crawlers, before writing anything new",
+        "question": "what indexing, canonical, redirect or crawl error needs fixing, and can AI crawlers even reach our pages",
+        "capabilities": [
+          "ORG-C20"
+        ]
+      },
+      {
+        "job": "know which product pages are missing the SEO basics",
+        "question": "which product pages have thin titles, no real content stack or bad image SEO",
+        "capabilities": [
+          "ORG-C21"
+        ]
+      },
+      {
+        "job": "know which collection pages give no real buying help",
+        "question": "which collection pages have no FAQ, no reviews and no grid logic",
+        "capabilities": [
+          "ORG-C22"
+        ]
+      },
+      {
+        "job": "confirm the structured data on money pages actually validates",
+        "question": "which product, review, FAQ or breadcrumb schema is missing or breaking",
+        "capabilities": [
+          "ORG-C23"
+        ]
+      },
+      {
+        "job": "sequence the refresh backlog before writing anything new",
+        "question": "which pages are falling and need fixing first, ranked by revenue at risk",
+        "capabilities": [
+          "ORG-C26"
+        ]
+      },
+      {
+        "job": "build buyer-intent content that supports a real money page",
+        "question": "which cluster or comparison page should we write next, and ahead of which season",
+        "capabilities": [
+          "ORG-C24",
+          "ORG-C25"
+        ]
+      },
+      {
+        "job": "keep money pages linked to and from content pages",
+        "question": "which money pages get no internal links, and which content pages are orphaned",
+        "capabilities": [
+          "ORG-C27"
+        ]
+      },
+      {
+        "job": "know if outreach and local presence are earning real links, not vanity mentions",
+        "question": "are backlink, PR and local-listing efforts landing links and reviews that move rankings",
+        "capabilities": [
+          "ORG-C28",
+          "ORG-C29"
+        ]
+      },
+      {
+        "job": "confirm analytics and tag tracking aren't the reason numbers look wrong",
+        "question": "is GA4, Search Console and Tag Manager tracking what they should",
+        "capabilities": [
+          "ORG-C31"
+        ]
+      },
+      {
+        "job": "get a plain, revenue-first read on organic performance this month",
+        "question": "is organic growing, and where exactly is a drop coming from",
+        "capabilities": [
+          "ORG-C32"
+        ]
+      },
+      {
+        "job": "screen an SEO, link or AEO vendor pitch before signing",
+        "question": "does this vendor's own stat hold up against our own analytics",
+        "capabilities": [
+          "ORG-C33"
+        ]
+      }
+    ],
+    "metrics": [
+      {
+        "name": "organic_sessions",
+        "plain": "Visits that came from unpaid search",
+        "formula": "GA4 sessions where default channel group = Organic Search",
+        "source": "GA4 export",
+        "window": "trailing 28 days vs prior 28 days",
+        "freshness_rule": "stale after 3 days",
+        "unavailable_when": "GA4 not connected"
+      },
+      {
+        "name": "organic_revenue",
+        "plain": "Store revenue from orders that started with an unpaid search visit",
+        "formula": "sum(order_value) where first-touch session channel = organic search, joined by session id or converted client id",
+        "source": "GA4 sessions joined to store orders",
+        "window": "trailing 28 days",
+        "freshness_rule": "stale after 3 days",
+        "unavailable_when": "GA4-to-orders join is not configured"
+      },
+      {
+        "name": "organic_revenue_share",
+        "plain": "Share of total store revenue that organic search brought in",
+        "formula": "organic_revenue / total_store_revenue, same window",
+        "source": "organic_revenue + orders table",
+        "window": "trailing 28 days",
+        "freshness_rule": "stale after 3 days",
+        "unavailable_when": "organic_revenue is unavailable"
+      },
+      {
+        "name": "keyword_coverage",
+        "plain": "Share of the buyer-question map that has a live page ranking in the top 20",
+        "formula": "keywords_with_page_rank_le_20 / keywords_in_map",
+        "source": "keyword/question map + rank tracker",
+        "window": "weekly",
+        "freshness_rule": "stale after 7 days",
+        "unavailable_when": "no rank tracker connected"
+      },
+      {
+        "name": "page1_keyword_count",
+        "plain": "Number of mapped keywords ranking in the top 10, and the change from last month",
+        "formula": "count(keywords where rank <= 10), delta vs 30 days ago",
+        "source": "rank tracker",
+        "window": "weekly",
+        "freshness_rule": "stale after 7 days",
+        "unavailable_when": "no rank tracker connected"
+      },
+      {
+        "name": "ctr_by_query_group",
+        "plain": "Click-through rate for branded vs non-branded search queries",
+        "formula": "clicks / impressions, grouped by branded vs non-branded query classification",
+        "source": "Search Console performance report",
+        "window": "trailing 28 days",
+        "freshness_rule": "stale after 3 days (Search Console lag)",
+        "unavailable_when": "Search Console not connected",
+        "benchmark": "non-branded CTR at position 1 typically 25 to 35%"
+      },
+      {
+        "name": "indexed_page_ratio",
+        "plain": "Share of submitted sitemap pages that Google has actually indexed",
+        "formula": "indexed_pages / submitted_pages",
+        "source": "Search Console coverage/indexing report",
+        "window": "current snapshot, checked weekly",
+        "freshness_rule": "stale after 7 days",
+        "unavailable_when": "Search Console not connected",
+        "benchmark": "over 95% for a catalog this size"
+      },
+      {
+        "name": "crawl_error_count",
+        "plain": "Pages returning a broken status, a bad redirect or a redirect chain, on the latest crawl",
+        "formula": "count(pages) where status in (4xx, 5xx) or redirect_hops >= 3",
+        "source": "JS-rendered site crawl",
+        "window": "latest crawl, weekly",
+        "freshness_rule": "stale after 7 days",
+        "unavailable_when": "no crawl run in 7 days"
+      },
+      {
+        "name": "orphan_page_count",
+        "plain": "Pages with zero internal links pointing to them",
+        "formula": "count(pages) where internal_inlinks = 0",
+        "source": "site crawl link graph",
+        "window": "latest crawl, weekly",
+        "freshness_rule": "stale after 7 days",
+        "unavailable_when": "no crawl run in 7 days"
+      },
+      {
+        "name": "schema_validation_pass_rate",
+        "plain": "Share of product and collection pages with valid, error-free schema",
+        "formula": "pages_with_valid_schema / money_pages_checked",
+        "source": "structured-data validator run against money pages",
+        "window": "weekly",
+        "freshness_rule": "stale after 7 days",
+        "unavailable_when": "no validator run in 7 days"
+      },
+      {
+        "name": "content_refresh_backlog_value",
+        "plain": "Total revenue-at-risk sitting in pages flagged for refresh, ranked",
+        "formula": "sum(page_trailing_90d_revenue) for pages where clicks fell 20%+ over 90 days and not refreshed",
+        "source": "GSC clicks history + organic_revenue by page",
+        "window": "trailing 90 days",
+        "freshness_rule": "recomputed weekly",
+        "unavailable_when": "page-level revenue join not configured"
+      },
+      {
+        "name": "referring_domains_new",
+        "plain": "New unique domains linking to the site this month",
+        "formula": "count(distinct referring_domain) first seen this month",
+        "source": "backlink index pull",
+        "window": "monthly",
+        "freshness_rule": "stale after 30 days",
+        "unavailable_when": "no backlink index connected"
+      },
+      {
+        "name": "link_velocity_by_source",
+        "plain": "New links split by tactic: PR, guest post, broken-link, review-site",
+        "formula": "count(new_links) grouped by outreach_tactic tag",
+        "source": "outreach tracker + backlink index",
+        "window": "monthly",
+        "freshness_rule": "stale after 30 days",
+        "unavailable_when": "outreach tactic not tagged on the link"
+      },
+      {
+        "name": "gbp_review_rate",
+        "plain": "New Google Business Profile reviews this month and the average rating",
+        "formula": "count(new_reviews), avg(rating)",
+        "source": "Google Business Profile export",
+        "window": "monthly",
+        "freshness_rule": "stale after 30 days",
+        "unavailable_when": "no physical location or GBP not connected"
+      },
+      {
+        "name": "tag_health_score",
+        "plain": "Share of key events (page view, add to cart, purchase) firing correctly on the last audit",
+        "formula": "events_firing_correctly / key_events_checked",
+        "source": "GA4/GTM tag audit",
+        "window": "monthly, checked on demand after any theme change",
+        "freshness_rule": "stale after 30 days",
+        "unavailable_when": "no tag audit run this cycle"
+      },
+      {
+        "name": "cwv_pass_rate",
+        "plain": "Share of the top page templates passing Core Web Vitals",
+        "formula": "templates_passing / templates_checked, using field or lab data",
+        "source": "SITE room speed_runs table",
+        "window": "latest run, weekly",
+        "freshness_rule": "stale after 7 days",
+        "unavailable_when": "no speed run in 7 days"
+      },
+      {
+        "name": "discontinued_page_handling_rate",
+        "plain": "Share of out-of-stock or discontinued product pages that redirect properly instead of 404ing",
+        "formula": "pages_redirected_or_kept_with_alternatives / discontinued_pages",
+        "source": "product feed status + redirect map",
+        "window": "weekly",
+        "freshness_rule": "stale after 7 days",
+        "unavailable_when": "no redirect map maintained"
+      }
+    ],
+    "insights": [
+      {
+        "name": "unexplained traffic drop",
+        "rule": "organic_sessions falls 15% or more week over week with no logged algorithm update or seasonal cause",
+        "computed_from": [
+          "GA4 export"
+        ],
+        "sentence": "organic visits fell {pct}% this week with no known cause logged",
+        "severity": "high",
+        "action_capability": "ORG-C32"
+      },
+      {
+        "name": "CTR mismatch",
+        "rule": "a page's impressions rank in the top 20% and its CTR sits 30% or more below the branded/non-branded benchmark for its position",
+        "computed_from": [
+          "Search Console performance report"
+        ],
+        "sentence": "{page} gets {impressions} impressions but a CTR of only {ctr}%, well under what position {pos} should get",
+        "severity": "medium",
+        "action_capability": "ORG-C21"
+      },
+      {
+        "name": "keyword cannibalization",
+        "rule": "2 or more pages rank for the same primary keyword within 5 positions of each other",
+        "computed_from": [
+          "rank tracker"
+        ],
+        "sentence": "{n} pages compete for '{keyword}', splitting the ranking signal",
+        "severity": "medium",
+        "action_capability": "ORG-C27"
+      },
+      {
+        "name": "orphan money page",
+        "rule": "a page in the keyword map has zero internal inlinks",
+        "computed_from": [
+          "site crawl link graph",
+          "keyword map"
+        ],
+        "sentence": "{page} targets '{keyword}' but gets no internal links from anywhere on the site",
+        "severity": "high",
+        "action_capability": "ORG-C27"
+      },
+      {
+        "name": "stale high-value page",
+        "rule": "a page in the top 20% of pages by organic_revenue has clicks down 20% or more over 90 days and has not been refreshed in 180 days",
+        "computed_from": [
+          "GSC clicks history",
+          "organic_revenue by page"
+        ],
+        "sentence": "{page} makes {revenue} a month but clicks fell {pct}% and it has not been touched in {days} days",
+        "severity": "high",
+        "action_capability": "ORG-C26"
+      },
+      {
+        "name": "broken schema on a money page",
+        "rule": "a product or collection page's schema fails validation",
+        "computed_from": [
+          "structured-data validator"
+        ],
+        "sentence": "{n} product pages have broken {schema_type} schema",
+        "severity": "medium",
+        "action_capability": "ORG-C23"
+      },
+      {
+        "name": "long redirect chain",
+        "rule": "a URL has 3 or more redirect hops before landing",
+        "computed_from": [
+          "site crawl"
+        ],
+        "sentence": "{n} URLs take {hops} redirects to load, slowing crawl and the visitor",
+        "severity": "low",
+        "action_capability": "ORG-C20"
+      },
+      {
+        "name": "discontinued page 404ing",
+        "rule": "an out-of-stock or discontinued product page returns a 404 or soft-404 instead of a redirect to a live alternative",
+        "computed_from": [
+          "product feed status",
+          "site crawl"
+        ],
+        "sentence": "{n} discontinued product pages 404 instead of pointing buyers somewhere live",
+        "severity": "high",
+        "action_capability": "ORG-C26"
+      },
+      {
+        "name": "outreach not landing links",
+        "rule": "60 or more outreach pitches sent in 60 days produced zero new referring domains",
+        "computed_from": [
+          "outreach tracker",
+          "backlink index"
+        ],
+        "sentence": "no new links from {n} pitches sent in the last {days} days",
+        "severity": "medium",
+        "action_capability": "ORG-C28"
+      },
+      {
+        "name": "unanswered reviews",
+        "rule": "a Google Business Profile review has gone unanswered for more than 7 days",
+        "computed_from": [
+          "Google Business Profile export"
+        ],
+        "sentence": "{n} reviews have waited over a week for a reply",
+        "severity": "medium",
+        "action_capability": "ORG-C29"
+      },
+      {
+        "name": "tag stopped firing",
+        "rule": "a key GA4 event's daily count drops to zero for 2 or more consecutive days",
+        "computed_from": [
+          "GA4/GTM tag audit"
+        ],
+        "sentence": "the {event} tag stopped firing on {date}",
+        "severity": "high",
+        "action_capability": "ORG-C31"
+      },
+      {
+        "name": "AI crawler blocked on a money page",
+        "rule": "robots.txt disallows a known AI crawler (GPTBot, PerplexityBot, Google-Extended) on a page in the keyword map",
+        "computed_from": [
+          "robots.txt snapshot",
+          "keyword map"
+        ],
+        "sentence": "{n} money pages block {crawler} from reading them",
+        "severity": "medium",
+        "action_capability": "ORG-C20"
+      },
+      {
+        "name": "vendor claim does not hold up",
+        "rule": "a vendor-cited stat about the site differs from the brand's own analytics by 20% or more",
+        "computed_from": [
+          "vendor pitch data",
+          "GA4/GSC export"
+        ],
+        "sentence": "the vendor claims {vendor_stat} but our own data shows {actual_stat}",
+        "severity": "medium",
+        "action_capability": "ORG-C33"
+      }
+    ],
+    "visuals": [
+      {
+        "name": "keyword rank movement",
+        "type": "line chart",
+        "shows": "count of page-1 keywords over time",
+        "why_this_chart": "one line shows whether SEO work is compounding",
+        "exists_today": true
+      },
+      {
+        "name": "crawl health treemap",
+        "type": "treemap",
+        "shows": "pages sized by traffic, colored by health status (healthy, warning, broken)",
+        "why_this_chart": "founder sees which broken pages actually matter",
+        "exists_today": false
+      },
+      {
+        "name": "content refresh priority table",
+        "type": "sortable table",
+        "shows": "pages ranked by revenue at risk, with the reason flagged",
+        "why_this_chart": "turns a vague backlog into a ranked to-do list",
+        "exists_today": false
+      },
+      {
+        "name": "internal link graph snippet",
+        "type": "node graph",
+        "shows": "money pages and their inlink count, orphans highlighted",
+        "why_this_chart": "makes an invisible problem (orphan pages) visible in one glance",
+        "exists_today": false
+      },
+      {
+        "name": "organic revenue vs total revenue",
+        "type": "stacked area chart",
+        "shows": "organic revenue against total store revenue over time",
+        "why_this_chart": "ties SEO directly to the number the founder actually cares about",
+        "exists_today": false
+      },
+      {
+        "name": "backlink velocity by tactic",
+        "type": "stacked bar chart",
+        "shows": "new referring domains per month, split by outreach tactic",
+        "why_this_chart": "shows which link-building tactic is actually working",
+        "exists_today": false
+      }
+    ],
+    "actions": [
+      {
+        "label": "Set the SEO and AEO roadmap",
+        "capability": "ORG-C17",
+        "autonomy": "founder_gate"
+      },
+      {
+        "label": "Build the next page brief",
+        "capability": "ORG-C18",
+        "autonomy": "agent_does"
+      },
+      {
+        "label": "Review site architecture and URLs",
+        "capability": "ORG-C19",
+        "autonomy": "human_assist"
+      },
+      {
+        "label": "Run the technical and AI-crawlability audit",
+        "capability": "ORG-C20",
+        "autonomy": "human_assist"
+      },
+      {
+        "label": "Write and maintain AI-crawler access rules",
+        "capability": "ORG-C20",
+        "autonomy": "founder_gate"
+      },
+      {
+        "label": "Fix this product page",
+        "capability": "ORG-C21",
+        "autonomy": "human_assist"
+      },
+      {
+        "label": "Fix this collection page",
+        "capability": "ORG-C22",
+        "autonomy": "human_assist"
+      },
+      {
+        "label": "Fix this page's schema",
+        "capability": "ORG-C23",
+        "autonomy": "human_assist"
+      },
+      {
+        "label": "Add to the content cluster plan",
+        "capability": "ORG-C24",
+        "autonomy": "human_assist"
+      },
+      {
+        "label": "Draft a comparison page",
+        "capability": "ORG-C25",
+        "autonomy": "human_assist"
+      },
+      {
+        "label": "Send this page to refresh",
+        "capability": "ORG-C26",
+        "autonomy": "agent_does"
+      },
+      {
+        "label": "Fix these internal links",
+        "capability": "ORG-C27",
+        "autonomy": "agent_does"
+      },
+      {
+        "label": "Open the outreach tracker",
+        "capability": "ORG-C28",
+        "autonomy": "human_assist"
+      },
+      {
+        "label": "Open local SEO and reputation program",
+        "capability": "ORG-C29",
+        "autonomy": "human_assist"
+      },
+      {
+        "label": "Check analytics and tag tracking",
+        "capability": "ORG-C31",
+        "autonomy": "human_assist"
+      },
+      {
+        "label": "Open this month's organic report",
+        "capability": "ORG-C32",
+        "autonomy": "agent_does"
+      },
+      {
+        "label": "Screen this vendor pitch",
+        "capability": "ORG-C33",
+        "autonomy": "founder_gate"
+      }
+    ],
+    "not_elsewhere": [
+      {
+        "claim": "computes organic revenue from the store's own order ledger, not from GA4's own attribution model",
+        "vs": "Search Console reports clicks, impressions, CTR and position only; GA4's channel reports do not reconcile to the store's own revenue number"
+      },
+      {
+        "claim": "sequences the refresh backlog by revenue at risk from the store's own order data, ahead of writing anything new",
+        "vs": "Semrush and Ahrefs content-audit tools flag declining pages by traffic or backlinks, not by the brand's own order value per page"
+      },
+      {
+        "claim": "checks AI-crawler-specific access rules (GPTBot, PerplexityBot, Google-Extended) in the same audit as classic crawl health",
+        "vs": "Screaming Frog crawls like a browser but does not evaluate AI-crawler access, and has a known blind spot versus how Googlebot itself renders JavaScript"
+      },
+      {
+        "claim": "flags a discontinued or out-of-stock page that 404s instead of redirecting, tied to the store's own product feed",
+        "vs": "generic site crawlers flag 404s as a status code; they have no way to know which ones are the brand's own discontinued SKUs"
+      },
+      {
+        "claim": "screens a vendor's own pitch numbers against the brand's own analytics before the founder signs anything",
+        "vs": "no SEO platform performs vendor due diligence; every tool here assumes the brand already hired the vendor"
+      }
+    ],
+    "data_needs": [
+      {
+        "table": "gsc_performance",
+        "fields": [
+          "date",
+          "page",
+          "query",
+          "clicks",
+          "impressions",
+          "ctr",
+          "position"
+        ],
+        "connector_or_script": "Search Console API export",
+        "refresh": "daily"
+      },
+      {
+        "table": "ga4_orders_join",
+        "fields": [
+          "session_id",
+          "channel_group",
+          "landing_page",
+          "order_id",
+          "order_value"
+        ],
+        "connector_or_script": "GA4 export joined to store orders",
+        "refresh": "daily"
+      },
+      {
+        "table": "keyword_question_map",
+        "fields": [
+          "keyword",
+          "buyer_question",
+          "target_page",
+          "priority",
+          "season"
+        ],
+        "connector_or_script": "ORG-C18 output",
+        "refresh": "monthly"
+      },
+      {
+        "table": "rank_tracker",
+        "fields": [
+          "keyword",
+          "page",
+          "rank",
+          "date"
+        ],
+        "connector_or_script": "rank tracking tool export",
+        "refresh": "weekly"
+      },
+      {
+        "table": "crawl_snapshot",
+        "fields": [
+          "url",
+          "status_code",
+          "redirect_hops",
+          "canonical",
+          "internal_inlinks",
+          "indexable",
+          "rendered_with_js"
+        ],
+        "connector_or_script": "JS-rendered site crawl (Screaming Frog-style)",
+        "refresh": "weekly"
+      },
+      {
+        "table": "schema_validation_log",
+        "fields": [
+          "page",
+          "schema_type",
+          "valid",
+          "errors",
+          "checked_at"
+        ],
+        "connector_or_script": "structured-data validator",
+        "refresh": "weekly"
+      },
+      {
+        "table": "robots_txt_snapshot",
+        "fields": [
+          "user_agent",
+          "disallow_paths",
+          "checked_at"
+        ],
+        "connector_or_script": "robots.txt fetch",
+        "refresh": "weekly"
+      },
+      {
+        "table": "backlink_index",
+        "fields": [
+          "referring_domain",
+          "target_url",
+          "first_seen",
+          "outreach_tactic"
+        ],
+        "connector_or_script": "backlink index pull (Ahrefs/Semrush-class tool)",
+        "refresh": "monthly"
+      },
+      {
+        "table": "gbp_reviews",
+        "fields": [
+          "review_id",
+          "rating",
+          "text",
+          "date",
+          "replied"
+        ],
+        "connector_or_script": "Google Business Profile export",
+        "refresh": "monthly"
+      },
+      {
+        "table": "ga4_tag_audit",
+        "fields": [
+          "event_name",
+          "expected_daily_count",
+          "actual_daily_count",
+          "checked_at"
+        ],
+        "connector_or_script": "GA4/GTM tag audit script",
+        "refresh": "monthly or after any theme change"
+      },
+      {
+        "table": "product_feed_status",
+        "fields": [
+          "sku",
+          "status",
+          "redirect_target",
+          "page_url"
+        ],
+        "connector_or_script": "merchant feed + Shopify export",
+        "refresh": "daily"
+      },
+      {
+        "table": "festive_calendar_india",
+        "fields": [
+          "festival",
+          "date",
+          "category_relevance",
+          "shipping_cutoff"
+        ],
+        "connector_or_script": "shared with Organic room's festive layer",
+        "refresh": "yearly, checked monthly"
+      }
+    ],
+    "founder_view_note": "With nothing connected, the room shows the roadmap decision and a checklist (connect Search Console, GA4, a rank tracker and a crawl tool) instead of metrics marked unavailable everywhere. Once Search Console and GA4 land, organic_sessions and organic_revenue appear first; crawl_error_count, orphan_page_count and the AI-crawler check only appear after the first full site crawl runs."
+  },
+  {
+    "room": "Answer engines",
+    "agent": "ORG",
+    "who_uses": [
+      "founder",
+      "SEO or AEO lead",
+      "PR or comms lead",
+      "agency account manager"
+    ],
+    "jobs": [
+      {
+        "job": "run a fixed prompt set and see how each AI engine describes and recommends us",
+        "question": "what does ChatGPT, Gemini, Perplexity and Google AI say about us today",
+        "capabilities": [
+          "ORG-C37"
+        ]
+      },
+      {
+        "job": "know whether an engine's answer is a real gap and how bad it is",
+        "question": "which of the 6 gap types are we in for each named engine",
+        "capabilities": [
+          "ORG-C37"
+        ]
+      },
+      {
+        "job": "publish one facts page that closes every gap the audit finds",
+        "question": "what facts are missing that a buyer prompt keeps needing",
+        "capabilities": [
+          "ORG-C35"
+        ]
+      },
+      {
+        "job": "keep the same facts identical everywhere an engine can read them",
+        "question": "does the price, return window, warranty and COD answer match on the site, schema, feed and directories",
+        "capabilities": [
+          "ORG-C35"
+        ]
+      },
+      {
+        "job": "make an existing high-value page easy for an engine to lift a direct answer from",
+        "question": "which pages are citable and which still bury the answer",
+        "capabilities": [
+          "ORG-C34"
+        ]
+      },
+      {
+        "job": "fix a wrong AI-stated fact at the source first, then the likely publisher",
+        "question": "what is an engine getting wrong about us right now, and where did it likely learn it",
+        "capabilities": [
+          "ORG-C36"
+        ]
+      },
+      {
+        "job": "know if a correction actually landed after fixing it",
+        "question": "did the engine's answer change after we fixed it, and how long did that take",
+        "capabilities": [
+          "ORG-C36"
+        ]
+      },
+      {
+        "job": "check what a shopping agent would tell a buyer about us right now",
+        "question": "would an AI shopping agent get our price, stock and delivery estimate right",
+        "capabilities": [
+          "ORG-C30"
+        ]
+      },
+      {
+        "job": "get a short weekly read on what changed for us and named competitors",
+        "question": "did an engine change how it describes a named competitor, or did they make a new claim",
+        "capabilities": [
+          "ORG-C50"
+        ]
+      }
+    ],
+    "metrics": [
+      {
+        "name": "ai_mention_rate",
+        "plain": "Share of the frozen prompt set where the brand is mentioned at all, per engine",
+        "formula": "prompts_mentioning_brand / prompts_in_set, grouped by engine",
+        "source": "monthly prompt-run log",
+        "window": "monthly, per engine (ChatGPT, Gemini, Perplexity, Google AI Overviews/AI Mode)",
+        "freshness_rule": "stale after 35 days",
+        "unavailable_when": "the prompt set has not run this cycle for that engine"
+      },
+      {
+        "name": "ai_recommend_rate",
+        "plain": "Share of prompts where the brand is named as a recommended option, not just mentioned",
+        "formula": "prompts_recommending_brand / prompts_in_set, grouped by engine",
+        "source": "monthly prompt-run log",
+        "window": "monthly, per engine",
+        "freshness_rule": "stale after 35 days",
+        "unavailable_when": "prompt set has not run this cycle"
+      },
+      {
+        "name": "ai_share_of_voice",
+        "plain": "Brand mentions as a share of all named-brand mentions (brand plus named competitors) in the same prompt set",
+        "formula": "brand_mentions / (brand_mentions + competitor_mentions)",
+        "source": "monthly prompt-run log",
+        "window": "monthly",
+        "freshness_rule": "stale after 35 days",
+        "unavailable_when": "no competitor prompt runs to compare against"
+      },
+      {
+        "name": "ai_sentiment_score",
+        "plain": "Share of brand mentions classified positive under a fixed rubric",
+        "formula": "positive_mentions / total_mentions",
+        "source": "monthly prompt-run log, rubric-classified",
+        "window": "monthly",
+        "freshness_rule": "stale after 35 days",
+        "unavailable_when": "mentions not yet classified"
+      },
+      {
+        "name": "fact_gap_count",
+        "plain": "Gaps found in the last prompt audit, by category (price, materials, returns, shipping, COD, warranty)",
+        "formula": "count(gaps) from the last audit, grouped by category",
+        "source": "prompt audit output",
+        "window": "latest audit, monthly",
+        "freshness_rule": "stale after 35 days",
+        "unavailable_when": "no audit run this cycle"
+      },
+      {
+        "name": "fact_gap_closed_rate",
+        "plain": "Share of the last audit's gaps that now have a published fix",
+        "formula": "gaps_with_published_fix / gaps_found",
+        "source": "prompt audit output + facts registry",
+        "window": "since last audit",
+        "freshness_rule": "recomputed weekly",
+        "unavailable_when": "no audit to compare against"
+      },
+      {
+        "name": "fact_consistency_score",
+        "plain": "Share of core facts that read identically across site, schema, feed and tracked directories",
+        "formula": "facts_matching_everywhere / facts_checked",
+        "source": "facts registry cross-checked across surfaces",
+        "window": "weekly",
+        "freshness_rule": "stale after 14 days",
+        "unavailable_when": "fewer than 2 surfaces are tracked for a fact"
+      },
+      {
+        "name": "citation_source_share",
+        "plain": "Of the sources an engine cites when it answers about the brand, the share that are brand-owned",
+        "formula": "brand_owned_citations / total_citations",
+        "source": "monthly prompt-run log (cited sources)",
+        "window": "monthly",
+        "freshness_rule": "stale after 35 days",
+        "unavailable_when": "the engine's answer includes no visible citations"
+      },
+      {
+        "name": "wrong_fact_count_open",
+        "plain": "Confirmed wrong AI-stated facts not yet corrected at any level",
+        "formula": "count(corrections) where status = open",
+        "source": "corrections log",
+        "window": "as of now",
+        "freshness_rule": "recomputed on each audit",
+        "unavailable_when": "no corrections log"
+      },
+      {
+        "name": "correction_landed_rate",
+        "plain": "Share of corrections confirmed fixed on re-check after the set cadence",
+        "formula": "corrections_confirmed_on_recheck / corrections_rechecked",
+        "source": "corrections log re-check runs",
+        "window": "since correction shipped, checked at 14 and 30 days",
+        "freshness_rule": "recomputed on each re-check",
+        "unavailable_when": "no re-check has run yet for that correction"
+      },
+      {
+        "name": "correction_lag_days",
+        "plain": "Typical days from a wrong fact confirmed to the site-level fix published",
+        "formula": "median(site_fix_date - confirmed_date)",
+        "source": "corrections log",
+        "window": "trailing 6 months",
+        "freshness_rule": "recomputed monthly",
+        "unavailable_when": "fewer than 3 closed corrections"
+      },
+      {
+        "name": "citable_page_count",
+        "plain": "Pages rewritten to the answer-first, atomic-fact format, out of the priority list",
+        "formula": "pages_rewritten / pages_on_priority_list",
+        "source": "page rewrite backlog",
+        "window": "as of now",
+        "freshness_rule": "recomputed weekly",
+        "unavailable_when": "no priority list set"
+      },
+      {
+        "name": "agentic_listing_accuracy",
+        "plain": "Share of checked fields (price, stock, variant, delivery estimate) a shopping-agent-style query returns correctly",
+        "formula": "fields_matching_live_feed / fields_checked",
+        "source": "agentic listing spot-check against the live product feed",
+        "window": "weekly",
+        "freshness_rule": "stale after 7 days",
+        "unavailable_when": "no spot-check run in 7 days"
+      },
+      {
+        "name": "competitor_ai_narrative_change_count",
+        "plain": "Detected changes this week in how an engine describes a named competitor",
+        "formula": "count(narrative_changes) from the weekly competitor prompt slice",
+        "source": "weekly competitor brief run",
+        "window": "weekly",
+        "freshness_rule": "stale after 10 days",
+        "unavailable_when": "weekly brief did not run"
+      },
+      {
+        "name": "engine_coverage",
+        "plain": "Which engines are currently in the monitored set",
+        "formula": "list of engines with a successful run in the last 35 days",
+        "source": "monthly prompt-run log",
+        "window": "current",
+        "freshness_rule": "flag any engine missing for 35+ days",
+        "unavailable_when": "no engine has run successfully"
+      }
+    ],
+    "insights": [
+      {
+        "name": "engine invents a fact",
+        "rule": "an engine's answer states a specific number or claim that does not match the facts registry",
+        "computed_from": [
+          "monthly prompt-run log",
+          "facts registry"
+        ],
+        "sentence": "{engine} told a buyer {claim}, which is not on our facts page",
+        "severity": "high",
+        "action_capability": "ORG-C36"
+      },
+      {
+        "name": "recommend gap versus a competitor",
+        "rule": "an engine mentions the brand but recommends a named competitor for the same prompt",
+        "computed_from": [
+          "monthly prompt-run log"
+        ],
+        "sentence": "{engine} named {competitor} instead of us for '{prompt}'",
+        "severity": "high",
+        "action_capability": "ORG-C34"
+      },
+      {
+        "name": "fact drift across surfaces",
+        "rule": "the same fact reads with a different value on two tracked surfaces",
+        "computed_from": [
+          "facts registry cross-check"
+        ],
+        "sentence": "{fact} says {value_a} on the site and {value_b} on the feed",
+        "severity": "high",
+        "action_capability": "ORG-C35"
+      },
+      {
+        "name": "correction did not land",
+        "rule": "a correction shipped N days ago and the re-check still returns the old fact",
+        "computed_from": [
+          "corrections log re-check runs"
+        ],
+        "sentence": "{n} days after we fixed it, {engine} still says the old {fact}",
+        "severity": "high",
+        "action_capability": "ORG-C36"
+      },
+      {
+        "name": "no brand-owned citation",
+        "rule": "an engine's answers about the brand cite zero brand-owned sources across the last audit",
+        "computed_from": [
+          "monthly prompt-run log (cited sources)"
+        ],
+        "sentence": "{engine} never cites our own site when it answers about us",
+        "severity": "medium",
+        "action_capability": "ORG-C34"
+      },
+      {
+        "name": "shopping agent gets it wrong",
+        "rule": "an agentic listing spot-check returns a price or stock value that does not match the live feed",
+        "computed_from": [
+          "agentic listing spot-check"
+        ],
+        "sentence": "{n} products show the wrong {field} to a shopping agent",
+        "severity": "high",
+        "action_capability": "ORG-C30"
+      },
+      {
+        "name": "sentiment slide",
+        "rule": "ai_sentiment_score for an engine falls versus the prior month",
+        "computed_from": [
+          "monthly prompt-run log"
+        ],
+        "sentence": "{engine}'s positive mentions fell {pct} points this month",
+        "severity": "medium",
+        "action_capability": "ORG-C37"
+      },
+      {
+        "name": "competitor narrative shift",
+        "rule": "a named competitor's described strengths changed between this week's and last week's prompt slice",
+        "computed_from": [
+          "weekly competitor brief run"
+        ],
+        "sentence": "{engine} now says {competitor} is {new_claim}, it did not say that last week",
+        "severity": "medium",
+        "action_capability": "ORG-C50"
+      },
+      {
+        "name": "stale prompt set",
+        "rule": "the prompt set has not run for an engine in more than 35 days",
+        "computed_from": [
+          "monthly prompt-run log"
+        ],
+        "sentence": "the AI-visibility check has not run on {engine} in {d} days",
+        "severity": "medium",
+        "action_capability": "ORG-C37"
+      },
+      {
+        "name": "citable rewrite backlog stalling",
+        "rule": "a page on the priority rewrite list has sat unrewritten for more than 4 weeks",
+        "computed_from": [
+          "page rewrite backlog"
+        ],
+        "sentence": "{n} priority pages are still not rewritten for citation after {weeks} weeks",
+        "severity": "low",
+        "action_capability": "ORG-C34"
+      },
+      {
+        "name": "known but not recommended",
+        "rule": "ai_mention_rate is high (over 60%) while ai_recommend_rate is low (under 20%) for the same engine",
+        "computed_from": [
+          "monthly prompt-run log"
+        ],
+        "sentence": "{engine} knows us in {pct}% of prompts but recommends us in only {rec_pct}%",
+        "severity": "medium",
+        "action_capability": "ORG-C35"
+      }
+    ],
+    "visuals": [
+      {
+        "name": "share of voice by engine",
+        "type": "stacked bar chart",
+        "shows": "brand vs named competitor mentions, one bar per engine",
+        "why_this_chart": "founder sees at a glance who wins each engine",
+        "exists_today": true
+      },
+      {
+        "name": "fact consistency matrix",
+        "type": "grid, facts by surface",
+        "shows": "each core fact against each tracked surface, matched or mismatched",
+        "why_this_chart": "makes a silent inconsistency visible before an engine repeats it",
+        "exists_today": false
+      },
+      {
+        "name": "correction lifecycle timeline",
+        "type": "step timeline",
+        "shows": "confirmed wrong fact, site fix, publisher fix, re-check pass or fail",
+        "why_this_chart": "shows whether a fix actually closed the loop, not just that it shipped",
+        "exists_today": false
+      },
+      {
+        "name": "agentic listing spot-check table",
+        "type": "table",
+        "shows": "field, expected value, what the agent returned, match or mismatch",
+        "why_this_chart": "turns an abstract worry into a concrete, fixable list",
+        "exists_today": false
+      },
+      {
+        "name": "weekly change ticker",
+        "type": "diff list",
+        "shows": "what changed this week for the brand and named competitors",
+        "why_this_chart": "founder reads one short list instead of opening each source",
+        "exists_today": false
+      },
+      {
+        "name": "sentiment trend by engine",
+        "type": "line chart",
+        "shows": "monthly sentiment score per engine",
+        "why_this_chart": "shows whether tone is improving or sliding over time",
+        "exists_today": true
+      }
+    ],
+    "actions": [
+      {
+        "label": "Run the prompt set now",
+        "capability": "ORG-C37",
+        "autonomy": "agent_does"
+      },
+      {
+        "label": "Open the share-of-voice report",
+        "capability": "ORG-C37",
+        "autonomy": "agent_does"
+      },
+      {
+        "label": "Publish or update the facts page",
+        "capability": "ORG-C35",
+        "autonomy": "human_assist"
+      },
+      {
+        "label": "Check fact consistency across surfaces",
+        "capability": "ORG-C35",
+        "autonomy": "human_assist"
+      },
+      {
+        "label": "Rewrite this page for citation",
+        "capability": "ORG-C34",
+        "autonomy": "human_assist"
+      },
+      {
+        "label": "Fix this wrong fact at the source",
+        "capability": "ORG-C36",
+        "autonomy": "human_assist"
+      },
+      {
+        "label": "Schedule a re-check",
+        "capability": "ORG-C36",
+        "autonomy": "founder_gate"
+      },
+      {
+        "label": "Run the agentic listing check",
+        "capability": "ORG-C30",
+        "autonomy": "agent_does"
+      },
+      {
+        "label": "Send this feed issue to Product and supply",
+        "capability": "ORG-C30",
+        "autonomy": "agent_does"
+      },
+      {
+        "label": "Open this week's competitor and AI-answer brief",
+        "capability": "ORG-C50",
+        "autonomy": "agent_does"
+      }
+    ],
+    "not_elsewhere": [
+      {
+        "claim": "ties the facts page to a fixed re-check cadence that confirms a correction actually landed in the engine's answer",
+        "vs": "Semrush's AI Visibility Toolkit and Ahrefs Brand Radar report current mentions, share of voice and sentiment; neither tracks whether a specific correction you shipped later landed in the engine's answer"
+      },
+      {
+        "claim": "checks what a shopping agent would tell a buyer about price, stock and delivery against the brand's own live feed",
+        "vs": "Profound, Otterly and the Semrush/Ahrefs AI-visibility products track how engines describe the brand in conversational answers; none of them check an agentic shopping flow against the brand's own feed"
+      },
+      {
+        "claim": "scores fact consistency across site, schema, feed and directories side by side, before an engine ever asks",
+        "vs": "AI-visibility tools check what an engine says; none of them cross-check the brand's own published facts against each other first"
+      },
+      {
+        "claim": "sequences page rewrites by the gaps a real, frozen prompt audit found for this brand",
+        "vs": "Semrush's AI Search Optimizer gives prioritized content recommendations from crawled content and general AI-visibility data, not from a frozen prompt audit tied to this brand's own confirmed gaps"
+      },
+      {
+        "claim": "bundles a named competitor's changing AI narrative with their social and PR activity in one short weekly brief",
+        "vs": "Ahrefs Brand Radar and Semrush track competitor share of voice as a running number; they do not produce a founder-readable weekly brief of what changed, combining PR, social and AI narrative together"
+      }
+    ],
+    "data_needs": [
+      {
+        "table": "ai_prompt_runs",
+        "fields": [
+          "engine",
+          "prompt",
+          "run_date",
+          "response_text",
+          "mentions_brand",
+          "recommends_brand",
+          "sentiment",
+          "cited_sources"
+        ],
+        "connector_or_script": "frozen prompt set run against each engine (API or manual capture)",
+        "refresh": "monthly, deeper pass quarterly"
+      },
+      {
+        "table": "competitor_prompt_runs",
+        "fields": [
+          "engine",
+          "competitor",
+          "prompt",
+          "run_date",
+          "response_text",
+          "narrative_tags"
+        ],
+        "connector_or_script": "same prompt-run script, competitor slice, weekly subset",
+        "refresh": "weekly"
+      },
+      {
+        "table": "facts_registry",
+        "fields": [
+          "fact_id",
+          "category",
+          "value",
+          "surface",
+          "last_checked"
+        ],
+        "connector_or_script": "ORG-C35 output, one row per fact per surface",
+        "refresh": "weekly"
+      },
+      {
+        "table": "corrections_log",
+        "fields": [
+          "fact_id",
+          "wrong_claim",
+          "confirmed_date",
+          "site_fix_date",
+          "publisher_fix_date",
+          "recheck_dates",
+          "recheck_result",
+          "status"
+        ],
+        "connector_or_script": "ORG-C36 workflow output",
+        "refresh": "on each correction event"
+      },
+      {
+        "table": "product_feed_snapshot",
+        "fields": [
+          "sku",
+          "price",
+          "stock",
+          "variant",
+          "delivery_estimate",
+          "last_updated"
+        ],
+        "connector_or_script": "merchant feed export",
+        "refresh": "daily"
+      },
+      {
+        "table": "agentic_listing_checks",
+        "fields": [
+          "sku",
+          "field",
+          "expected_value",
+          "agent_returned_value",
+          "match",
+          "checked_at"
+        ],
+        "connector_or_script": "agentic spot-check script against product_feed_snapshot",
+        "refresh": "weekly"
+      },
+      {
+        "table": "page_rewrite_backlog",
+        "fields": [
+          "page",
+          "priority",
+          "gap_category",
+          "status",
+          "flagged_at",
+          "rewritten_at"
+        ],
+        "connector_or_script": "ORG-C34 priority list",
+        "refresh": "weekly"
+      },
+      {
+        "table": "directories_tracked",
+        "fields": [
+          "directory",
+          "region",
+          "last_checked",
+          "facts_match"
+        ],
+        "connector_or_script": "manual or scraped check of JustDial, IndiaMart, Google Business Profile and named marketplaces",
+        "refresh": "monthly"
+      }
+    ],
+    "founder_view_note": "With no prompt runs yet, the room shows the facts page draft status and a checklist to run the first frozen prompt set, instead of a share-of-voice number. The first thing to land is ai_mention_rate once the first audit runs; fact_consistency_score needs at least 2 tracked surfaces, and agentic_listing_accuracy needs the product feed connected before it can show anything but unavailable."
+  }
+]
