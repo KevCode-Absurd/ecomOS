@@ -1,0 +1,1216 @@
+<title>ecomOS Blueprint</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  --paper:#F3F5F2;--panel:#FFFFFF;--ink:#172019;--muted:#5D6862;--line:#D8DED9;--line2:#E9EDEA;
+  --accent:#0E6B60;--accent-ink:#FFFFFF;--accent-soft:#DCEDE9;
+  --amber:#9A600C;--amber-soft:#F7EBD2;--good:#2C7A4B;--good-soft:#DFF0E4;--bad:#B23A2D;--bad-soft:#F6DFDB;--warn:#9A600C;
+  --display:"Bricolage Grotesque","IBM Plex Sans",system-ui,sans-serif;--body:"IBM Plex Sans",system-ui,sans-serif;--mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+  --shadow:0 1px 2px rgba(20,30,25,.06),0 6px 20px rgba(20,30,25,.05);
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark;
+  --paper:#0F1513;--panel:#171E1B;--ink:#E6EBE7;--muted:#9AA59E;--line:#2A332E;--line2:#222A26;
+  --accent:#5CB9AA;--accent-ink:#0B1512;--accent-soft:#16302B;
+  --amber:#E2A84F;--amber-soft:#3A2B11;--good:#6CC08A;--good-soft:#173A25;--bad:#E1786B;--bad-soft:#40201B;--warn:#E2A84F;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 6px 20px rgba(0,0,0,.3)}}
+:root[data-theme="dark"]{color-scheme:dark;
+  --paper:#0F1513;--panel:#171E1B;--ink:#E6EBE7;--muted:#9AA59E;--line:#2A332E;--line2:#222A26;
+  --accent:#5CB9AA;--accent-ink:#0B1512;--accent-soft:#16302B;
+  --amber:#E2A84F;--amber-soft:#3A2B11;--good:#6CC08A;--good-soft:#173A25;--bad:#E1786B;--bad-soft:#40201B;--warn:#E2A84F;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 6px 20px rgba(0,0,0,.3)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font:15px/1.55 var(--body)}
+a{color:var(--accent)}
+h1,h2,h3,h4{font-family:var(--display);text-wrap:balance;margin:0;line-height:1.15}
+h1{font-size:clamp(30px,4.5vw,46px);font-weight:700;letter-spacing:-.01em}
+h2{font-size:clamp(22px,3vw,30px);font-weight:700}
+h3{font-size:19px;font-weight:600}
+h4{font-size:15px;font-weight:600}
+p{margin:0}
+.wrap{max-width:1140px;margin:0 auto;padding-inline:20px;padding-block:0}
+.eyebrow{font:500 11.5px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
+.muted{color:var(--muted)}
+.small{font-size:13px}
+.lede{font-size:17px;max-width:62ch}
+.prose{max-width:66ch}
+.prose p+p{margin-top:10px}
+ul{margin:8px 0 0;padding-left:18px} li{margin:3px 0}
+code{font:12.5px var(--mono);background:var(--line2);padding:1px 5px;border-radius:4px}
+
+/* top bar and tabs */
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--paper);border-bottom:1px solid var(--line)}
+.top .wrap{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding-block:10px}
+.brand{font:700 18px var(--display);display:flex;align-items:center;gap:8px}
+.brand i{width:12px;height:12px;border-radius:3px;background:var(--accent);display:inline-block;transform:rotate(45deg)}
+.tabs{display:flex;gap:4px;flex-wrap:wrap;margin-left:auto}
+.tabs button{font:600 13.5px var(--body);padding:7px 12px;border-radius:999px;border:1px solid transparent;background:transparent;color:var(--muted);cursor:pointer}
+.tabs button:hover{color:var(--ink)}
+.tabs button.on{background:var(--panel);border-color:var(--line);color:var(--ink);box-shadow:var(--shadow)}
+.tabs button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.view{display:none;padding-block:36px 72px} .view.on{display:block}
+
+/* hero */
+.hero{display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);gap:32px;align-items:start;padding-block:44px 28px}
+.hero .stack{display:grid;gap:14px}
+.doors{display:grid;gap:10px}
+.door{border:1px solid var(--line);background:var(--panel);border-radius:12px;padding:14px 16px;display:grid;gap:4px;box-shadow:var(--shadow)}
+.door b{font:600 16px var(--display)} .door span{color:var(--muted);font-size:13.5px}
+.door.b{border-color:var(--accent)}
+section{margin-top:44px}
+.sechead{display:grid;gap:6px;margin-bottom:18px}
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 18px}
+.card h4{margin-bottom:6px}
+.callout{border-left:3px solid var(--amber);background:var(--amber-soft);padding:12px 16px;border-radius:0 10px 10px 0}
+.callout.t{border-color:var(--accent);background:var(--accent-soft)}
+table{border-collapse:collapse;width:100%;font-size:13.5px} th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top} th{font:600 11.5px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:10px;background:var(--panel)}
+.tablewrap table{min-width:640px}
+.num{font-variant-numeric:tabular-nums}
+
+/* loop diagram */
+.loop{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;counter-reset:st}
+.loop div{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px 12px;position:relative;font-size:13.5px}
+.loop div::before{counter-increment:st;content:counter(st);font:600 11px var(--mono);color:var(--accent);display:block;margin-bottom:2px}
+.loop div b{display:block;font:600 14px var(--display)}
+.loop div.gate{border-color:var(--amber);background:var(--amber-soft)}
+
+/* journey map */
+.map{display:flex;gap:6px;overflow-x:auto;padding-block:6px 10px;scrollbar-width:thin}
+.map a{flex:0 0 auto;text-decoration:none;color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:6px 10px;font-size:12.5px;display:grid;gap:1px;min-width:118px}
+.map a small{font:500 10.5px var(--mono);color:var(--accent)}
+.map a.later{opacity:.75;border-style:dashed}
+.map a:hover{border-color:var(--accent)}
+
+/* stage rows */
+.stage{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:24px;align-items:start;padding-block:28px;border-top:1px solid var(--line)}
+.stage .txt{display:grid;gap:10px}
+.stage .txt h3{display:flex;gap:10px;align-items:baseline}
+.stage .txt h3 small{font:500 11.5px var(--mono);color:var(--accent);letter-spacing:.06em}
+.kv{display:grid;grid-template-columns:96px 1fr;gap:4px 10px;font-size:13.5px}
+.kv dt{font:600 11px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);padding-top:3px}
+.kv dd{margin:0}
+.gatecap{font-size:12.5px;color:var(--amber);font-weight:600}
+
+/* mock screens */
+.scr{border:1px solid var(--line);border-radius:12px;background:var(--panel);overflow:hidden;box-shadow:var(--shadow);font-size:12px;line-height:1.35;color:var(--ink)}
+.scr-top{display:flex;align-items:center;gap:8px;padding:7px 10px;border-bottom:1px solid var(--line);background:var(--paper);font:11px var(--mono);color:var(--muted)}
+.dots{display:flex;gap:4px} .dots i{width:8px;height:8px;border-radius:50%;background:var(--line);display:block}
+.scr-top .url{margin-left:auto}
+.shell{display:grid;grid-template-columns:128px minmax(0,1fr);min-height:200px}
+.snav{border-right:1px solid var(--line);padding:8px 6px;background:var(--paper);display:grid;gap:2px;align-content:start}
+.snav div{padding:4px 7px;border-radius:5px;color:var(--muted);font-size:11.5px}
+.snav div.on{background:var(--accent-soft);color:var(--accent);font-weight:600}
+.snav .h{font:500 9.5px var(--mono);letter-spacing:.06em;text-transform:uppercase;padding-top:8px;color:var(--muted)}
+.smain{padding:12px;display:grid;gap:10px;align-content:start;min-width:0}
+.sh{font:600 13.5px var(--display);display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.sh .pill{margin-left:auto}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(92px,1fr));gap:6px}
+.tile{border:1px solid var(--line);border-radius:7px;padding:7px 9px;min-width:0}
+.tile b{display:block;font:600 16px var(--display);font-variant-numeric:tabular-nums}
+.tile span{color:var(--muted);font-size:10.5px}
+.pill{display:inline-block;padding:1px 8px;border-radius:999px;font-size:10.5px;font-weight:600;background:var(--accent-soft);color:var(--accent);white-space:nowrap}
+.pill.amber{background:var(--amber-soft);color:var(--amber)} .pill.good{background:var(--good-soft);color:var(--good)} .pill.bad{background:var(--bad-soft);color:var(--bad)} .pill.grey{background:var(--line2);color:var(--muted)}
+.btn{display:inline-block;padding:4px 10px;border-radius:6px;border:1px solid var(--line);font-weight:600;font-size:11px;background:var(--panel);white-space:nowrap}
+.btn.p{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.btn.a{background:var(--amber-soft);border-color:var(--amber-soft);color:var(--amber)}
+.btns{display:flex;gap:6px;flex-wrap:wrap}
+.qcard{border:1px solid var(--line);border-radius:8px;padding:8px 10px;display:grid;gap:4px}
+.qcard b{font-weight:600}
+.chips{display:flex;flex-wrap:wrap;gap:4px}
+.chip{border:1px solid var(--line);border-radius:999px;padding:2px 9px;font-size:11px}
+.chip.sel{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.rows{display:grid}
+.row{display:flex;justify-content:space-between;gap:10px;padding:6px 0;border-bottom:1px solid var(--line2);align-items:center}
+.row:last-child{border-bottom:0}
+.row .l{min-width:0} .row .l b{display:block;font-weight:600} .row .l span{color:var(--muted);font-size:11px}
+.prog{height:6px;background:var(--line2);border-radius:3px;overflow:hidden}
+.prog i{display:block;height:100%;background:var(--accent);border-radius:3px}
+.pri{border:1px solid var(--line);border-radius:9px;padding:9px 11px;display:grid;gap:5px}
+.pri .h{display:flex;gap:8px;align-items:baseline} .pri .h b{font:600 13px var(--display)} .pri .h em{font:500 10.5px var(--mono);color:var(--muted);font-style:normal;margin-left:auto}
+.pri p{font-size:11.5px;color:var(--muted)}
+.pri .meta{display:flex;gap:6px;flex-wrap:wrap}
+.chat{display:grid;gap:8px}
+.msg{max-width:88%;padding:8px 11px;border-radius:12px;background:var(--line2)}
+.msg.me{background:var(--accent-soft);justify-self:end;border-bottom-right-radius:3px}
+.msg.bot{border-bottom-left-radius:3px}
+.src{display:flex;gap:4px;flex-wrap:wrap;margin-top:4px}
+.src span{font:500 10px var(--mono);border:1px solid var(--line);border-radius:4px;padding:0 5px;color:var(--muted)}
+.input{border:1px solid var(--line);border-radius:999px;padding:6px 12px;color:var(--muted);display:flex;justify-content:space-between}
+.opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:6px}
+.opt{border:1px solid var(--line);border-radius:8px;padding:8px 10px;display:grid;gap:3px}
+.opt.sel{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+.opt b{font:600 12.5px var(--display)} .opt span{color:var(--muted);font-size:11px}
+.check{display:grid;gap:5px}
+.check div{display:flex;gap:8px;align-items:center}
+.check i{width:14px;height:14px;border-radius:4px;border:1px solid var(--line);display:inline-block;flex:0 0 auto;position:relative}
+.check i.d{background:var(--good);border-color:var(--good)} .check i.d::after{content:"";position:absolute;left:4px;top:1px;width:4px;height:8px;border:solid var(--panel);border-width:0 2px 2px 0;transform:rotate(45deg)}
+.check i.w{border-color:var(--amber);background:var(--amber-soft)}
+.brainsec{border:1px solid var(--line);border-radius:8px;padding:8px 10px;display:grid;gap:3px}
+.brainsec b{font:600 12.5px var(--display);display:flex;gap:6px;align-items:center} .brainsec b .pill{margin-left:auto}
+.brainsec span{color:var(--muted);font-size:11px}
+.timeline{display:grid;gap:0}
+.timeline div{display:grid;grid-template-columns:52px 1fr;gap:8px;padding:5px 0;border-bottom:1px solid var(--line2);font-size:11.5px}
+.timeline div small{font:500 10.5px var(--mono);color:var(--muted)}
+.phone{width:100%;max-width:260px;margin:0 auto;border:1px solid var(--line);border-radius:22px;padding:8px;background:var(--panel)}
+.phone .in{border-radius:16px;background:var(--paper);padding:12px 10px;display:grid;gap:8px;min-height:300px}
+
+/* architecture */
+.layers{display:grid;gap:8px}
+.layer{display:grid;grid-template-columns:150px minmax(0,1fr);gap:14px;border:1px solid var(--line);border-radius:12px;background:var(--panel);padding:14px 16px;align-items:start}
+.layer .name{font:600 16px var(--display);display:grid;gap:3px} .layer .name small{font:500 10.5px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--accent)}
+.layer.gate{background:var(--amber-soft);border-color:var(--amber)} .layer.gate .name small{color:var(--amber)}
+.layer .items{display:flex;flex-wrap:wrap;gap:6px}
+.layer .items span{border:1px solid var(--line);background:var(--paper);border-radius:7px;padding:4px 9px;font-size:12.5px}
+.layer .items span.built{border-color:var(--good);background:var(--good-soft)}
+.layer .items span.agent{border-color:var(--accent);background:var(--accent-soft);font-weight:600}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12.5px;color:var(--muted)}
+.legend i{display:inline-block;width:12px;height:12px;border-radius:3px;border:1px solid var(--line);vertical-align:-2px;margin-right:5px;background:var(--paper)}
+.legend i.built{border-color:var(--good);background:var(--good-soft)} .legend i.agent{border-color:var(--accent);background:var(--accent-soft)}
+.seq{display:grid;gap:0;border:1px solid var(--line);border-radius:10px;background:var(--panel);overflow:hidden}
+.seq div{display:grid;grid-template-columns:36px 150px minmax(0,1fr);gap:10px;padding:9px 12px;border-bottom:1px solid var(--line2);font-size:13.5px;align-items:start}
+.seq div:last-child{border-bottom:0}
+.seq small{font:600 11px var(--mono);color:var(--muted)}
+.seq .who{font-weight:600}
+.seq .who.f{color:var(--amber)} .seq .who.c{color:var(--muted)}
+.svgwrap{overflow-x:auto;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px}
+svg text{font-family:var(--body)}
+.foot{margin-top:56px;padding-top:18px;border-top:1px solid var(--line);font-size:13px;color:var(--muted)}
+
+@media (max-width:900px){.hero,.stage,.grid3,.grid2{grid-template-columns:1fr}.layer{grid-template-columns:1fr}.seq div{grid-template-columns:30px 1fr;grid-template-rows:auto auto}.seq div span:last-child{grid-column:2}}
+@media (max-width:560px){.shell{grid-template-columns:1fr}.snav{display:flex;flex-wrap:wrap;border-right:0;border-bottom:1px solid var(--line)}.snav .h{display:none}.kv{grid-template-columns:1fr}}
+@media (prefers-reduced-motion:no-preference){.view.on{animation:fade .25s ease}} @keyframes fade{from{opacity:.4}to{opacity:1}}
+</style>
+
+<div class="top"><div class="wrap">
+  <div class="brand"><i></i>ecomOS Blueprint</div>
+  <nav class="tabs" aria-label="Views">
+    <button class="on" data-v="big">Big picture</button>
+    <button data-v="new">New founder</button>
+    <button data-v="existing">Existing brand</button>
+    <button data-v="arch">Architecture</button>
+  </nav>
+</div></div>
+
+<!-- ================= BIG PICTURE ================= -->
+<div class="view on" id="v-big"><div class="wrap">
+  <div class="hero">
+    <div class="stack">
+      <span class="eyebrow">Draft for Kevin, 25 Sep 2026</span>
+      <h1>An operating system that builds and runs an e-commerce brand, with the founder deciding.</h1>
+      <p class="lede">A founder connects a brand, or starts one from nothing. ecomOS reads the brand's own data, works out where money is leaking, ranks what to do next, and puts a short list in front of the founder. The founder approves. Agents do the work, measure it, and learn. Every day the list is fresh.</p>
+      <p class="muted small">This page has 4 views. The big picture, the journey for a founder starting from zero, the journey for an existing brand, and the machinery underneath. Screens are drawn as the product would look. Numbers on screens are real where we have them (the Gehna speed lab) and marked illustrative where we do not.</p>
+    </div>
+    <div class="doors">
+      <div class="door"><b>Door A: I want to start a brand</b><span>No product, no store. ecomOS runs the research, picks with you, sets up the store, launches the channels, then runs the daily loop.</span></div>
+      <div class="door b"><b>Door B: I already run a brand</b><span>Add the website, connect the data, answer some questions. ecomOS builds the brand brain, finds the break in the pipeline, and hands you today's top 10.</span></div>
+      <div class="door"><b>Door C: I run brands for clients</b><span>Same system, one workspace per brand, team seats per domain. Not drawn in this draft.</span></div>
+    </div>
+  </div>
+
+  <section>
+    <div class="sechead"><span class="eyebrow">The problem</span><h2>Running a brand well needs about 25 specialist skills. Founders have 2 or 3.</h2></div>
+    <div class="grid3">
+      <div class="card"><h4>Advice is generic</h4><p class="small">Agencies, courses and AI chat give the same answer to every brand. None of them look at this brand's orders, ads, emails and site before speaking.</p></div>
+      <div class="card"><h4>Data sits in silos</h4><p class="small">Shopify, Meta, Google, Klaviyo, support, the bank. Nobody joins them, so nobody can say where the leak is or what a fix was worth.</p></div>
+      <div class="card"><h4>Nothing is measured</h4><p class="small">Changes ship without a read point. Wins and losses are forgotten. The same mistake is made again by the next hire.</p></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sechead"><span class="eyebrow">The product</span><h2>One loop, run every day, on the brand's own numbers.</h2></div>
+    <div class="loop">
+      <div><b>Connect</b>Site, store, ads, email, support, analytics, documents.</div>
+      <div><b>Brand brain</b>Facts, claims, voice, products, customers, competitors, decisions. Kept fresh.</div>
+      <div><b>Diagnose</b>Where the pipeline breaks, with money at stake computed in code.</div>
+      <div><b>Propose</b>Ideas from the bank, the audit and the web, ranked by marginal improvement.</div>
+      <div class="gate"><b>Founder gate</b>Approve, send to team, or not now. Reasons are remembered.</div>
+      <div><b>Execute</b>Specialist agents produce the artefact. QA gate checks it.</div>
+      <div><b>Measure</b>Read point, result, learning. The brand's own priors update.</div>
+    </div>
+    <p class="muted small" style="margin-top:10px">Founder gate in amber: nothing runs on an idea the founder has not approved. External writes (ad accounts, the live site) stay off until the founder switches them on per surface.</p>
+  </section>
+
+  <section>
+    <div class="sechead"><span class="eyebrow">What makes it different</span><h2>Four things together, not one of them.</h2></div>
+    <div class="grid2">
+      <div class="card"><h4>The brand's own data first</h4><p class="small">Diagnosis comes from the metric contract, never from what is fashionable. Missing data shows as unavailable, never as 0. Windows end on the last full day.</p></div>
+      <div class="card"><h4>An expert corpus turned into ideas</h4><p class="small">7,611 cards from 256 expert documents, distilled into 4,650 structured ideas across 25 domains. Each idea carries its signal, expected effect, effort, risk and test. Filtered and scored in code.</p></div>
+      <div class="card"><h4>The founder decides, in plain English</h4><p class="small">Every proposal is a heading plus a short explanation. Three buttons: let the agent do it, send to a person, not now. This is the control surface of the whole system.</p></div>
+      <div class="card"><h4>Everything is measured</h4><p class="small">Every approved idea gets a registry entry, a read point, a kill and scale rule. Results feed back into ranking. The system gets better for this brand over time.</p></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sechead"><span class="eyebrow">The 25 domains</span><h2>Everything a brand has to get right, filed in 25 folders.</h2></div>
+    <div class="grid3">
+      <div class="card"><h4>Build</h4><p class="small">01 Product research · 02 Avatars · 03 Offers · 04 Brand · 05 Store setup · 06 Measurement · 07 Landing pages · 08 Speed · 09 CRO testing</p></div>
+      <div class="card"><h4>Grow</h4><p class="small">10 Paid social creative · 11 Ad copy · 24 Ad deployment · 12 Google Ads · 13 Organic and content · 14 Email lifecycle · 15 SEO · 16 AEO (answer engines) · 22 Amazon</p></div>
+      <div class="card"><h4>Run</h4><p class="small">17 Post-purchase and CX · 18 Sourcing and COGS · 19 Wild bets · 20 Finance · 21 Team and ops · 23 Bot and agent security</p></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sechead"><span class="eyebrow">Proof so far</span><h2>What is already built and what it showed.</h2></div>
+    <div class="tablewrap"><table>
+      <tr><th>Piece</th><th>State</th><th>What we learned</th></tr>
+      <tr><td>Card library and search</td><td>Built. 7,611 cards, keyword and semantic search.</td><td>Retrieval alone is not a proven win for copy. The corpus is the raw material, not the product.</td></tr>
+      <tr><td>Playbooks v2, 25 domains</td><td>Built, now frozen reference.</td><td>2 blind tests: agents loaded with the playbooks did not write better copy or find better speed fixes. Loaded prose makes output rigid.</td></tr>
+      <tr><td>Idea bank</td><td>Built. 4,650 ideas, schema, validator, ranker v0.</td><td>Ideas as structured records can be filtered and scored in code, which prose cannot.</td></tr>
+      <tr><td>Speed lab on Gehna's homepage</td><td>Built. Replay server, throttled phone profile, 3 runs per variant, fidelity check.</td><td>8 fixes, each measured. Load 15.4 s to 5.2 s, LCP 1.70 s to 1.22 s, page weight 4.34 MB to 1.98 MB. Founder page with 3 decisions per fix is live.</td></tr>
+      <tr><td>Meta gallery for Gehna</td><td>Built. 1 year of ads, sales, 7 competitors, creative studio.</td><td>The pattern for a per-domain tool: data on the left, ranked tests on the right, founder acts on the page.</td></tr>
+      <tr><td>Brand brain, metric contract, registry, agent loop</td><td>Not built.</td><td>Designed in the Architecture view. Build order is there too.</td></tr>
+    </table></div>
+  </section>
+
+  <section>
+    <div class="sechead"><span class="eyebrow">Business model</span><h2>Open decision. Three shapes fit the product.</h2></div>
+    <div class="grid3">
+      <div class="card"><h4>Per brand, monthly</h4><p class="small">One workspace per brand. Priced by tier: brain plus daily priorities, then execution agents, then team seats. Simple, fits Door B.</p></div>
+      <div class="card"><h4>Build plus run</h4><p class="small">Door A founders pay for the build journey as a package, then move to the monthly plan when the store launches.</p></div>
+      <div class="card"><h4>Agency licence</h4><p class="small">Door C. Agencies run many brands in one account. Priced per active brand, with domain tools for their specialists.</p></div>
+    </div>
+    <div class="callout" style="margin-top:14px"><b>Not decided:</b> prices, tiers, whether execution is metered by run. No numbers are proposed here on purpose. The first paying shape should follow the first brand that pays, which today is Gehna through Door B.</div>
+  </section>
+
+  <section>
+    <div class="sechead"><span class="eyebrow">Rules that hold everywhere</span><h2>Guardrails the whole system obeys.</h2></div>
+    <ul class="prose small">
+      <li>Meta is read-only until the founder switches writes on per surface. Until then every execution is a brief, a draft, a change list or a pull request.</li>
+      <li>Arithmetic in code, never in the model. Period ROAS is total value over total spend. Totals stay separate from breakdowns.</li>
+      <li>Public web research stays separate from private brand data, and every fetched fact carries its URL and date.</li>
+      <li>Competitor ads are signals. Layout and mood only. Never their text, logos, products or faces.</li>
+      <li>No invented claims or numbers. Every claim traces to the brand record, in 3 tiers: approved, site-backed, forbidden.</li>
+      <li>Writing on every founder surface: short sentences, digits, no jargon, below tenth-grade reading level.</li>
+    </ul>
+  </section>
+</div></div>
+<!-- ================= NEW FOUNDER ================= -->
+<div class="view" id="v-new"><div class="wrap">
+  <div class="sechead">
+    <span class="eyebrow">Door A</span>
+    <h2>A founder with no product and no store, from first click to a running brand.</h2>
+    <p class="lede">Each stage is a gate. Agents do the research and the building. The founder makes the decisions that are theirs to make, and the brand brain fills up as they go. The example brand on these screens is TrailFold, a fictional outdoor brand used for testing. Nothing here is a real founder's data.</p>
+  </div>
+
+  <div class="map" id="mapA">
+    <a href="#a0"><small>Start</small>Interview</a>
+    <a href="#a1"><small>01 PRD</small>Product research</a>
+    <a href="#a2"><small>02 AVT</small>Avatars</a>
+    <a href="#a3"><small>03 OFF</small>Offer</a>
+    <a href="#a4"><small>04 BRD</small>Brand</a>
+    <a href="#a5"><small>05 SET</small>Store setup</a>
+    <a href="#a6"><small>06 MEA</small>Measurement</a>
+    <a href="#a7"><small>07 LPG</small>Landing pages</a>
+    <a href="#a8"><small>08 SPD</small>Speed</a>
+    <a href="#a9"><small>09 CRO</small>CRO tests</a>
+    <a href="#a10"><small>10 · 11 · 24</small>Paid social</a>
+    <a href="#a11"><small>12 GAD</small>Google Ads</a>
+    <a href="#a12"><small>13 · 14 · 15 · 16</small>Organic, email, SEO, AEO</a>
+    <a href="#a13"><small>17 CXP</small>Customer experience</a>
+    <a href="#a14" class="later"><small>18 · 19 · 20 · 21 · 23</small>Back office</a>
+    <a href="#a15"><small>Daily</small>Operating loop</a>
+  </div>
+
+  <!-- stage 0 -->
+  <div class="stage" id="a0">
+    <div class="txt">
+      <h3><small>START</small>The interview</h3>
+      <p>The founder clicks "Start a brand". Before any research, ecomOS asks. Goals, money, time, what they care about, what they refuse to do. Each answer is a fact in the brand brain from day 1, so no agent has to guess it later.</p>
+      <dl class="kv">
+        <dt>Agent does</dt><dd>Asks in rounds, 4 to 6 questions at a time, with a recommended answer where one exists. Stops when the assumptions that matter are gone.</dd>
+        <dt>Founder decides</dt><dd>Everything on this screen. Budget, category interest, time per week, country, whether they want to be the face of the brand.</dd>
+        <dt>Brain gets</dt><dd>Founder profile: goals, budget, constraints, taste, risk appetite. Stored once, quoted forever.</dd>
+      </dl>
+    </div>
+    <div class="scr">
+      <div class="scr-top"><span class="dots"><i></i><i></i><i></i></span>ecomOS<span class="url">start / interview · round 1 of 4</span></div>
+      <div class="smain">
+        <div class="sh">Let's get the facts that shape everything else <span class="pill">6 questions</span></div>
+        <div class="qcard"><b>What do you want this brand to do for you in 12 months?</b><div class="chips"><span class="chip sel">Replace my salary</span><span class="chip">A side income</span><span class="chip">Build something to sell later</span><span class="chip">Test an idea cheaply</span></div></div>
+        <div class="qcard"><b>How much can you put in before the first sale, without stress?</b><div class="chips"><span class="chip">Under 2 lakh</span><span class="chip sel">2 to 5 lakh</span><span class="chip">5 to 15 lakh</span><span class="chip">More</span></div><span class="muted">This sets the product and channel options. It is never shown to anyone else.</span></div>
+        <div class="qcard"><b>Hours a week you will give it, honestly?</b><div class="chips"><span class="chip">Under 5</span><span class="chip sel">5 to 15</span><span class="chip">15 to 30</span><span class="chip">Full time</span></div></div>
+        <div class="qcard"><b>Categories you would be happy to talk about for 3 years</b><div class="chips"><span class="chip sel">Outdoor and travel</span><span class="chip">Home</span><span class="chip">Beauty</span><span class="chip">Food</span><span class="chip">Jewellery</span><span class="chip">Pets</span><span class="chip">Other</span></div></div>
+        <div class="qcard"><b>Will you show your face in content?</b><div class="chips"><span class="chip sel">Yes</span><span class="chip">Sometimes</span><span class="chip">No</span></div></div>
+        <div class="btns"><span class="btn p">Next round</span><span class="btn">Save and come back</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- stage 1 -->
+  <div class="stage" id="a1">
+    <div class="txt">
+      <h3><small>01 PRD</small>Market and product research</h3>
+      <p>The Product and supply specialist scans the categories the founder picked. Demand, competition, price bands, margins, shipping weight, returns risk, what marketplaces already own. It comes back with 3 directions, each with evidence and a landed cost model, and says which one it would pick and why.</p>
+      <dl class="kv">
+        <dt>Agent does</dt><dd>Web research within a fixed budget, marketplace scans, supplier price checks, a landed cost sheet per direction. Every fact carries its source and date.</dd>
+        <dt>Founder decides</dt><dd>Which direction. Or asks for 3 more.</dd>
+        <dt>Brain gets</dt><dd>Category facts, competitor list, price band, target margin, product direction and the reason it was chosen.</dd>
+      </dl>
+    </div>
+    <div class="scr">
+      <div class="scr-top"><span class="dots"><i></i><i></i><i></i></span>ecomOS<span class="url">build / product research</span></div>
+      <div class="smain">
+        <div class="sh">3 product directions in outdoor and travel <span class="pill amber">Your pick</span></div>
+        <div class="opts">
+          <div class="opt sel"><b>Packable day bags</b><span>Light, low returns, ships flat. Crowded on marketplaces, open in DTC with a story.</span><span class="pill good">Recommended</span></div>
+          <div class="opt"><b>Trekking meal kits</b><span>Strong repeat rate. Food licence, shelf life and cold chain add cost and risk.</span></div>
+          <div class="opt"><b>Camp lighting</b><span>Good margins. Electronics returns and warranty load are high for a first brand.</span></div>
+        </div>
+        <div class="rows">
+          <div class="row"><div class="l"><b>Why packable bags</b><span>Fits 2 to 5 lakh, 5 to 15 hours a week, founder on camera. Landed cost model attached, 2 supplier quotes pending.</span></div></div>
+          <div class="row"><div class="l"><b>Evidence</b><span>14 sources, dated. 6 competitor stores read by script. Marketplace price band captured.</span></div><span class="btn">Open</span></div>
+        </div>
+        <div class="btns"><span class="btn p">Go with packable bags</span><span class="btn">Show 3 more</span><span class="btn">Ask a question</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- stage 2 -->
+  <div class="stage" id="a2">
+    <div class="txt">
+      <h3><small>02 AVT</small>Avatars</h3>
+      <p>The Brand strategist writes 2 or 3 customer avatars from the research: who buys, why now, what they fear, where they spend time, what they say in reviews of competing products. The founder confirms or corrects from their own knowledge of the people.</p>
+      <dl class="kv">
+        <dt>Agent does</dt><dd>Reads competitor reviews and forums, drafts avatars with quoted language, marks each claim as observed or assumed.</dd>
+        <dt>Founder decides</dt><dd>Which avatar is primary. Corrections in their own words.</dd>
+        <dt>Brain gets</dt><dd>Avatars with jobs, objections, triggers and channels. The primary avatar drives the hero, the offer and the first ads.</dd>
+      </dl>
+    </div>
+    <div class="scr">
+      <div class="scr-top"><span class="dots"><i></i><i></i><i></i></span>ecomOS<span class="url">build / avatars</span></div>
+      <div class="smain">
+        <div class="sh">Who we are building for <span class="pill amber">Confirm primary</span></div>
+        <div class="opts">
+          <div class="opt sel"><b>Weekend trekker, 25 to 38</b><span>Buys before a trip. Fears the bag failing on day 2. Reads reviews, watches trail videos.</span><span class="pill">Primary</span></div>
+          <div class="opt"><b>Daily commuter who hikes twice a year</b><span>Wants one bag for both. Price-sensitive, gift-prone.</span></div>
+          <div class="opt"><b>Gift buyer</b><span>Partner or parent. Needs a safe choice and a returns promise.</span></div>
+        </div>
+        <div class="qcard"><b>Anything wrong here? Say it in your words.</b><div class="input"><span>They care more about rain than weight, in my experience...</span></div></div>
+        <div class="rows"><div class="row"><div class="l"><b>Language bank</b><span>41 quoted phrases from reviews and forums, tagged by avatar. Used in copy later, never invented.</span></div><span class="btn">View</span></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- stage 3 -->
+  <div class="stage" id="a3">
+    <div class="txt">
+      <h3><small>03 OFF</small>Offer</h3>
+      <p>Price, bundle, guarantee, shipping promise, launch mechanic. The Lifecycle specialist builds 3 offers from the landed cost, the target margin and the primary avatar's objections, and ranks them. The free shipping threshold is calculated from margin and expected order value, not copied from a template.</p>
+      <dl class="kv">
+        <dt>Agent does</dt><dd>Unit economics per offer in code. Objection to guarantee mapping. Checks each promise is one the founder can keep.</dd>
+        <dt>Founder decides</dt><dd>The offer. The guarantee they are willing to honour.</dd>
+        <dt>Brain gets</dt><dd>Price list, bundles, guarantee text (approved claim), shipping threshold and the maths behind it.</dd>
+      </dl>
+    </div>
+    <div class="scr">
+      <div class="scr-top"><span class="dots"><i></i><i></i><i></i></span>ecomOS<span class="url">build / offer</span></div>
+      <div class="smain">
+        <div class="sh">3 offers, ranked by margin after returns <span class="pill amber">Your pick</span></div>
+        <div class="tablewrap" style="border:0"><table style="min-width:0;font-size:11.5px">
+          <tr><th>Offer</th><th>Promise</th><th>Margin after returns</th><th></th></tr>
+          <tr><td><b>Bag + rain cover bundle</b></td><td>30-day trail test, free return</td><td class="num">computed from landed cost sheet</td><td><span class="pill good">Ranked 1</span></td></tr>
+          <tr><td>Bag alone</td><td>7-day return</td><td class="num">computed</td><td><span class="pill grey">Ranked 2</span></td></tr>
+          <tr><td>Bag + 2-year repair</td><td>Repair or replace</td><td class="num">computed, repair cost assumed</td><td><span class="pill grey">Ranked 3</span></td></tr>
+        </table></div>
+        <div class="callout small" style="padding:8px 12px">The 30-day trail test answers the primary avatar's top fear, "it fails on day 2". You have to be willing to take bags back muddy. Are you?</div>
+        <div class="btns"><span class="btn p">Yes, take the bundle</span><span class="btn">Change the guarantee</span><span class="btn">Not now</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- stage 4 -->
+  <div class="stage" id="a4">
+    <div class="txt">
+      <h3><small>04 BRD</small>Brand</h3>
+      <p>Name, positioning, voice, visual direction. The Brand strategist proposes names with domain and handle availability already checked, a one-line position that names the primary shopper, a voice with liked and disliked example sentences, and a mood direction from the Reference Scout (structure and mood only, never another brand's assets).</p>
+      <dl class="kv">
+        <dt>Agent does</dt><dd>Name generation and checks, positioning options, voice sheet, 3 mood boards from references.</dd>
+        <dt>Founder decides</dt><dd>Name, position, voice examples to keep and to cut, mood.</dd>
+        <dt>Brain gets</dt><dd>Brand record: name, position, voice with examples, visual rules, forbidden words and claims.</dd>
+      </dl>
+    </div>
+    <div class="scr">
+      <div class="scr-top"><span class="dots"><i></i><i></i><i></i></span>ecomOS<span class="url">build / brand</span></div>
+      <div class="smain">
+        <div class="sh">Name and position <span class="pill amber">Your pick</span></div>
+        <div class="opts">
+          <div class="opt sel"><b>TrailFold</b><span>trailfold.in free · @trailfold free on 3 networks</span><span class="pill good">Available</span></div>
+          <div class="opt"><b>Packlight</b><span>.in taken · handle taken on 2 networks</span><span class="pill bad">Conflicts</span></div>
+          <div class="opt"><b>Ridgeway</b><span>.in free · trademark in class 18 found</span><span class="pill bad">Risk</span></div>
+        </div>
+        <div class="qcard"><b>Position, one line</b><span>The day bag for weekend trekkers who have been let down by a strap before.</span><span class="muted">Names the primary shopper. Everyone else is routed to a secondary collection.</span></div>
+        <div class="qcard"><b>Voice: keep or cut</b><div class="chips"><span class="chip sel">"Packs to the size of a fist. Carries 18 litres."</span><span class="chip">"Premium quality for discerning adventurers."</span></div><span class="muted">Kept sentences become the voice examples. Cut sentences become forbidden patterns.</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- stage 5 -->
+  <div class="stage" id="a5">
+    <div class="txt">
+      <h3><small>05 SET</small>Store setup</h3>
+      <p>Domain registration, the platform (Shopify or WooCommerce), theme, policies, payments, shipping zones, tax. The Site specialist turns this into a checklist. Some steps it can do, some need the founder's card or identity, some go to a developer as a brief. Nothing is marked done until it is checked on the live store.</p>
+      <dl class="kv">
+        <dt>Agent does</dt><dd>Writes the policy pages from the approved offer, configures what it is allowed to, writes developer briefs for the rest, verifies each step on the live site.</dd>
+        <dt>Founder decides</dt><dd>Platform. Pays for the domain and the plan. Signs off on policies.</dd>
+        <dt>Brain gets</dt><dd>Platform, domain, policy text as quoted from the live page, payment and shipping setup.</dd>
+      </dl>
+    </div>
+    <div class="scr">
+      <div class="scr-top"><span class="dots"><i></i><i></i><i></i></span>ecomOS<span class="url">build / store setup</span></div>
+      <div class="smain">
+        <div class="sh">Store setup, 14 steps <span class="pill">9 done</span></div>
+        <div class="prog"><i style="width:64%"></i></div>
+        <div class="check">
+          <div><i class="d"></i>Register trailfold.in <span class="pill grey">you paid, we checked DNS</span></div>
+          <div><i class="d"></i>Shopify store created, plan chosen</div>
+          <div><i class="d"></i>Theme installed, fonts and colours from the brand record</div>
+          <div><i class="d"></i>Shipping, returns and exchange policies written from the offer <span class="pill amber">needs your sign-off</span></div>
+          <div><i class="d"></i>Payment gateway connected</div>
+          <div><i class="w"></i>Shipping zones and rates <span class="pill amber">waiting on courier account</span></div>
+          <div><i></i>GST and invoice settings <span class="pill grey">developer brief ready</span></div>
+          <div><i></i>Product pages: 3 SKUs from the offer</div>
+          <div><i></i>Live check: every policy page reachable, checkout test order placed and refunded</div>
+        </div>
+        <div class="btns"><span class="btn p">Sign off policies</span><span class="btn">Open developer brief</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- stage 6 -->
+  <div class="stage" id="a6">
+    <div class="txt">
+      <h3><small>06 MEA</small>Measurement and the data layer</h3>
+      <p>Before a single visitor arrives, tracking is wired and tested. Analytics, the ad pixel and server events, the email platform, order data. This is the moment the data layer connects and the brand brain starts filling itself. From here on every stage reads the same metric contract.</p>
+      <dl class="kv">
+        <dt>Agent does</dt><dd>Installs and tests each tag, fires test events and checks they land, writes the metric contract for this brand, schedules the collectors.</dd>
+        <dt>Founder decides</dt><dd>Which accounts to connect. Grants access.</dd>
+        <dt>Brain gets</dt><dd>Connectors, metric definitions, freshness stamps. Orders, sessions and spend start flowing daily.</dd>
+      </dl>
+    </div>
+    <div class="scr">
+      <div class="scr-top"><span class="dots"><i></i><i></i><i></i></span>ecomOS<span class="url">build / measurement</span></div>
+      <div class="smain">
+        <div class="sh">Connections <span class="pill good">6 of 8 live</span></div>
+        <div class="opts">
+          <div class="opt"><b>Shopify</b><span>orders, products, customers</span><span class="pill good">Live</span></div>
+          <div class="opt"><b>GA4</b><span>sessions, events</span><span class="pill good">Live</span></div>
+          <div class="opt"><b>Meta pixel + CAPI</b><span>test event received</span><span class="pill good">Live</span></div>
+          <div class="opt"><b>Meta Ads</b><span>read-only</span><span class="pill good">Live</span></div>
+          <div class="opt"><b>Google Ads</b><span>not yet running</span><span class="pill grey">Later</span></div>
+          <div class="opt"><b>Klaviyo</b><span>lists, flows</span><span class="pill good">Live</span></div>
+          <div class="opt"><b>Support inbox</b><span>tickets, reasons</span><span class="pill amber">Grant access</span></div>
+          <div class="opt"><b>Bank / accounting</b><span>cash, COGS</span><span class="pill grey">Later</span></div>
+        </div>
+        <div class="rows">
+          <div class="row"><div class="l"><b>Metric contract</b><span>32 numbers defined for TrailFold. Computed in code, windows end on the last full day, missing shows as unavailable.</span></div><span class="btn">View</span></div>
+          <div class="row"><div class="l"><b>Brand brain</b><span>Building. Products, policies and claims read from the live store tonight.</span></div><span class="pill">In progress</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- stage 7 -->
+  <div class="stage" id="a7">
+    <div class="txt">
+      <h3><small>07 LPG</small>Landing pages</h3>
+      <p>The Site specialist writes the homepage, product pages and the first campaign landing page from the brand record: position, avatar language, approved claims, the offer. The QA gate checks every claim against the record, the reading level, and that no placeholder survives. The founder reads it as a shopper would.</p>
+      <dl class="kv">
+        <dt>Agent does</dt><dd>Page specs and copy, reference layouts from the Scout, claim check, developer brief or theme edit.</dd>
+        <dt>Founder decides</dt><dd>Approve the page, or mark lines to change.</dd>
+        <dt>Brain gets</dt><dd>Page inventory, the claims used on each page, the version history.</dd>
+      </dl>
+    </div>
+    <div class="scr">
+      <div class="scr-top"><span class="dots"><i></i><i></i><i></i></span>ecomOS<span class="url">build / landing pages / homepage v1</span></div>
+      <div class="shell">
+        <div class="snav"><div class="on">Homepage</div><div>Product: Day bag</div><div>Product: Bundle</div><div>Campaign: Monsoon</div><div class="h">QA gate</div><div>Claims: 9 of 9 traced</div><div>Reading level: grade 6</div><div>Placeholders: 0</div></div>
+        <div class="smain">
+          <div class="sh">Homepage v1 <span class="pill good">QA passed</span></div>
+          <div class="phone"><div class="in">
+            <div style="font:700 15px var(--display)">Packs to the size of a fist. Carries 18 litres.</div>
+            <div class="muted">The day bag for weekend trekkers who have been let down by a strap before.</div>
+            <div class="btn p" style="justify-self:start">Shop the bundle</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px"><div class="tile"><b>30 days</b><span>trail test, free return</span></div><div class="tile"><b>Ships in 2 days</b><span>from Bengaluru</span></div></div>
+            <div class="muted small">Every claim on this page links to its source in the brand record.</div>
+          </div></div>
+          <div class="btns"><span class="btn p">Approve</span><span class="btn">Mark lines to change</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- stage 8 -->
+  <div class="stage" id="a8">
+    <div class="txt">
+      <h3><small>08 SPD</small>Speed</h3>
+      <p>The speed lab runs on the new store before launch and every week after. A copy of each key page is loaded on a throttled phone profile, fixes are tried one at a time on the copy, each is measured 3 times, and the founder gets a plain-English list with 3 buttons per fix. This tool exists today and was run on Gehna. The numbers on this screen are Gehna's real results.</p>
+      <dl class="kv">
+        <dt>Agent does</dt><dd>Record the page, audit it, try fixes on the copy, measure, check fidelity, write the developer brief for each fix.</dd>
+        <dt>Founder decides</dt><dd>Per fix: let the agent do it, send to developer, not now.</dd>
+        <dt>Brain gets</dt><dd>Speed history per page. Registry entries for each approved fix with a read point.</dd>
+      </dl>
+    </div>
+    <div class="scr">
+      <div class="scr-top"><span class="dots"><i></i><i></i><i></i></span>ecomOS<span class="url">site / speed · gehnaindia.com homepage · measured</span></div>
+      <div class="smain">
+        <div class="tiles">
+          <div class="tile"><b class="num">15.4 s → 5.2 s</b><span>fully loaded, all 8 fixes</span></div>
+          <div class="tile"><b class="num">1.70 s → 1.22 s</b><span>largest picture (LCP)</span></div>
+          <div class="tile"><b class="num">4.34 → 1.98 MB</b><span>page weight</span></div>
+        </div>
+        <div class="pri"><div class="h"><b>Turn off the "Rocket Loader" script setting</b><em>fix 1 of 8</em></div><p>It delays every script on the page, including the menu and search. Turning it off is one switch in Cloudflare and can be turned back on in a minute.</p><div class="btns"><span class="btn p">Let the agent do it</span><span class="btn a">Send to developer</span><span class="btn">Not now</span></div></div>
+        <div class="pri"><div class="h"><b>Stop loading 4 Korean font files nobody uses</b><em>fix 2 of 8</em></div><p>The page downloads fonts for a language the site does not show. Removing them saves weight on every visit.</p><div class="btns"><span class="btn p">Let the agent do it</span><span class="btn a">Send to developer</span><span class="btn">Not now</span></div></div>
+        <div class="rows"><div class="row"><div class="l"><b>Watch it load, before and after</b><span>Side by side film, same phone, same connection, same scrolling.</span></div><span class="btn">Play</span></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- stage 9 -->
+  <div class="stage" id="a9">
+    <div class="txt">
+      <h3><small>09 CRO</small>Conversion tests</h3>
+      <p>Once traffic flows, the Site specialist proposes tests from the idea bank filtered by what the audit found on this store, ranked by expected marginal improvement on the conversion metric. Each test has a hypothesis, a measure, a read point and a stop rule before it starts. The registry tracks it.</p>
+      <dl class="kv">
+        <dt>Agent does</dt><dd>Audit the funnel, match idea signals to what it sees, rank, write the test spec, build the variant as a brief or theme change.</dd>
+        <dt>Founder decides</dt><dd>Which tests run, in which order.</dd>
+        <dt>Brain gets</dt><dd>Test results and learnings. The brand's own effect prior per idea.</dd>
+      </dl>
+    </div>
+    <div class="scr">
+      <div class="scr-top"><span class="dots"><i></i><i></i><i></i></span>ecomOS<span class="url">site / tests</span></div>
+      <div class="smain">
+        <div class="sh">Test queue <span class="pill">2 running · 3 proposed</span></div>
+        <div class="rows">
+          <div class="row"><div class="l"><b>Free shipping threshold set from margin and order value</b><span>Idea SET-081 · measure: average order value · read at 14 days or 400 orders</span></div><span class="pill good">Running</span></div>
+          <div class="row"><div class="l"><b>Hero names the weekend trekker only</b><span>Idea BRD-010 · measure: conversion rate · read at 14 days</span></div><span class="pill good">Running</span></div>
+          <div class="row"><div class="l"><b>Replace every superlative with a number or a fact</b><span>Idea ADC-064 · signal seen on 2 product pages</span></div><span class="btn p">Approve</span></div>
+          <div class="row"><div class="l"><b>Show the 30-day trail test above the add-to-cart button</b><span>From the audit · objection seen in 11 support tickets</span></div><span class="btn p">Approve</span></div>
+        </div>
+        <p class="muted">Ideas come from the bank, the audit and the web together. Source carries no weight in the ranking.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- stage 10 -->
+  <div class="stage" id="a10">
+    <div class="txt">
+      <h3><small>10 MCR · 11 ADC · 24 DEP</small>Launch on paid social</h3>
+      <p>Three specialists work together. Paid creative and copy builds the creative pipeline: concepts, hooks, static and video briefs, copy sets with every claim checked. The Media buyer writes the account structure, budgets, test plan and kill and scale rules. Until the founder switches on write access, deployment is a change list a person applies in Ads Manager.</p>
+      <dl class="kv">
+        <dt>Agent does</dt><dd>Creative briefs from references (mood only), copy from the voice sheet, campaign structure, budget plan, daily read of results once live.</dd>
+        <dt>Founder decides</dt><dd>Creatives to shoot, budget, when to turn on write access.</dd>
+        <dt>Brain gets</dt><dd>Ad-level results, winning angles, forbidden claims that got flagged.</dd>
+      </dl>
+    </div>
+    <div class="scr">
+      <div class="scr-top"><span class="dots"><i></i><i></i><i></i></span>ecomOS<span class="url">paid social / launch plan</span></div>
+      <div class="shell">
+        <div class="snav"><div>Overview</div><div class="on">Launch plan</div><div>Creative pipeline</div><div>Copy sets</div><div>Deployment list</div><div class="h">Access</div><div>Meta: read-only</div></div>
+        <div class="smain">
+          <div class="sh">Launch plan <span class="pill amber">3 approvals pending</span></div>
+          <div class="rows">
+            <div class="row"><div class="l"><b>1 cold campaign, 1 purpose line</b><span>"Find weekend trekkers who buy before a trip." One line per campaign, written before it exists (idea DEP-007).</span></div><span class="btn p">Approve</span></div>
+            <div class="row"><div class="l"><b>6 creatives to produce</b><span>3 hooks × 2 formats. Briefs cite references by mood only. Founder on camera for 2.</span></div><span class="btn p">Approve</span></div>
+            <div class="row"><div class="l"><b>Copy set A, 12 variants</b><span>Every sentence opens with the reader. 0 superlatives. All claims traced.</span></div><span class="btn p">Approve</span></div>
+            <div class="row"><div class="l"><b>Budget and stop rules</b><span>Daily budget from the founder's number. Kill at the read point if cost per order is above the ceiling.</span></div><span class="pill good">Approved</span></div>
+          </div>
+          <div class="callout small" style="padding:8px 12px">Deployment is a change list until you switch on write access for Meta. Nothing is published by the agent before that.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- stage 11 -->
+  <div class="stage" id="a11">
+    <div class="txt">
+      <h3><small>12 GAD</small>Google Ads</h3>
+      <p>Search intent is captured once the store has a few weeks of data. The Media buyer sets up brand search, shopping feed and a small non-brand test, with the same purpose lines, budgets and stop rules as paid social. The feed is built from the product records in the brain, so titles and prices never drift from the store.</p>
+      <dl class="kv">
+        <dt>Agent does</dt><dd>Feed build and check, campaign structure, negative lists, weekly search term review.</dd>
+        <dt>Founder decides</dt><dd>Budget split between social and search.</dd>
+        <dt>Brain gets</dt><dd>Search terms people use, which become copy and SEO inputs.</dd>
+      </dl>
+    </div>
+    <div class="scr">
+      <div class="scr-top"><span class="dots"><i></i><i></i><i></i></span>ecomOS<span class="url">google ads / setup</span></div>
+      <div class="smain">
+        <div class="sh">Google Ads, week 5 <span class="pill">Setup</span></div>
+        <div class="check">
+          <div><i class="d"></i>Product feed built from 3 SKUs in the brand record, 0 mismatches with the store</div>
+          <div><i class="d"></i>Brand search campaign, purpose: "Catch people who already heard of us"</div>
+          <div><i class="w"></i>Non-brand test, 20 keywords from the avatar language bank <span class="pill amber">approve budget</span></div>
+          <div><i></i>Weekly search term review scheduled</div>
+        </div>
+        <div class="tiles"><div class="tile"><b>unavailable</b><span>cost per order, no data yet</span></div><div class="tile"><b>unavailable</b><span>search share, no data yet</span></div></div>
+        <p class="muted">Missing numbers show as unavailable, never 0.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- stage 12 -->
+  <div class="stage" id="a12">
+    <div class="txt">
+      <h3><small>13 ORG · 14 EML · 15 SEO · 16 AEO</small>Organic, email, search and answer engines</h3>
+      <p>The Organic and search specialist and the Lifecycle specialist run in parallel once the store is live. Content calendar from the avatar's questions. Email flows built from the brand's own order timing, not platform defaults. Technical SEO from a crawl. Answer-engine work so ChatGPT and Google's AI answers describe the brand correctly.</p>
+      <dl class="kv">
+        <dt>Agent does</dt><dd>Calendar, drafts, flows, crawl fixes, structured data, brand facts page for answer engines.</dd>
+        <dt>Founder decides</dt><dd>What to publish, what to record on camera, which flows go live.</dd>
+        <dt>Brain gets</dt><dd>Content inventory, flow performance, ranking pages, how answer engines describe the brand.</dd>
+      </dl>
+    </div>
+    <div class="scr">
+      <div class="scr-top"><span class="dots"><i></i><i></i><i></i></span>ecomOS<span class="url">growth / this week</span></div>
+      <div class="shell">
+        <div class="snav"><div class="on">This week</div><div>Organic</div><div>Email</div><div>SEO</div><div>Answer engines</div></div>
+        <div class="smain">
+          <div class="sh">This week across 4 channels</div>
+          <div class="rows">
+            <div class="row"><div class="l"><b>Email: welcome flow, first 72 hours</b><span>Idea EML-044. 3 emails in 3 days, then weekly. Draft ready.</span></div><span class="btn p">Approve</span></div>
+            <div class="row"><div class="l"><b>Email: win-back timing from our own order gaps</b><span>Idea EML-080. Waits until we have 200 second orders to compute the median gap.</span></div><span class="pill grey">Waiting on data</span></div>
+            <div class="row"><div class="l"><b>Organic: 4 short videos, founder on camera</b><span>Questions from the avatar language bank. Shot list attached.</span></div><span class="btn a">Send to founder</span></div>
+            <div class="row"><div class="l"><b>SEO: 3 crawl fixes</b><span>Developer brief with check and rollback.</span></div><span class="btn a">Send to developer</span></div>
+            <div class="row"><div class="l"><b>Answer engines: brand facts page</b><span>What ChatGPT says about TrailFold today: nothing. Facts page and structured data drafted.</span></div><span class="btn p">Approve</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- stage 13 -->
+  <div class="stage" id="a13">
+    <div class="txt">
+      <h3><small>17 CXP</small>Customer experience</h3>
+      <p>From the first order, support tickets, reviews and delivery data flow into the brain. The Lifecycle specialist reads the reasons people write in, turns repeated ones into fixes on the page, the packaging or the policy, and drafts replies in the brand voice for a person to send.</p>
+      <dl class="kv">
+        <dt>Agent does</dt><dd>Ticket reason tagging, delivery time tracking, review requests at the right moment, draft replies.</dd>
+        <dt>Founder decides</dt><dd>Which fixes to ship. Whether drafts go out automatically later.</dd>
+        <dt>Brain gets</dt><dd>Objections and complaints by reason and count. These feed copy, offer and product decisions.</dd>
+      </dl>
+    </div>
+    <div class="scr">
+      <div class="scr-top"><span class="dots"><i></i><i></i><i></i></span>ecomOS<span class="url">customers / reasons</span></div>
+      <div class="smain">
+        <div class="sh">Why people write in, last 28 full days</div>
+        <div class="rows">
+          <div class="row"><div class="l"><b>Where is my order</b><span>Fix proposed: delivery estimate on the product page from real courier times.</span></div><span class="btn p">Approve</span></div>
+          <div class="row"><div class="l"><b>Does it fit a 15-inch laptop</b><span>Fix proposed: add the answer to the product page and the FAQ.</span></div><span class="btn p">Approve</span></div>
+          <div class="row"><div class="l"><b>Return under the trail test</b><span>Working as promised. Reply drafts in brand voice, sent by you.</span></div><span class="pill grey">No fix needed</span></div>
+        </div>
+        <p class="muted">Counts appear once the support inbox is connected. Until then this shows as unavailable.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- stage 14 -->
+  <div class="stage" id="a14">
+    <div class="txt">
+      <h3><small>18 COG · 19 WLD · 20 FIN · 21 OPS · 23 SEC</small>Back office, running quietly</h3>
+      <p>These domains do not need a launch moment. They start when there is something to run and keep going. The Money and ops specialist keeps the cash and P&amp;L model current, watches COGS as volumes change, proposes a second supplier quote when the first is stale, keeps the hiring scorecard, and runs a site security check every week. Wild bets get a stage gate each: a small budget, a read point, a kill rule.</p>
+      <dl class="kv">
+        <dt>Agent does</dt><dd>Weekly cash view, landed cost refresh, supplier RFQs, security scan, hiring scorecards, wild-bet gates.</dd>
+        <dt>Founder decides</dt><dd>Reorders, hires, which bets get the next stage.</dd>
+        <dt>Brain gets</dt><dd>Cash and margin history, supplier records, security findings and fixes.</dd>
+      </dl>
+    </div>
+    <div class="scr">
+      <div class="scr-top"><span class="dots"><i></i><i></i><i></i></span>ecomOS<span class="url">back office / this week</span></div>
+      <div class="smain">
+        <div class="rows">
+          <div class="row"><div class="l"><b>Cash and margin</b><span>Weekly model from orders, ad spend and landed cost. Read on the last full day.</span></div><span class="btn">Open</span></div>
+          <div class="row"><div class="l"><b>Reorder point</b><span>Day bag, black: at current sell-through, reorder needed before the next quote is stale.</span></div><span class="btn p">Request 2 quotes</span></div>
+          <div class="row"><div class="l"><b>Security check, weekly</b><span>Bot traffic, admin exposure, checkout scripts. Last run: findings listed with fixes.</span></div><span class="pill good">Ran</span></div>
+          <div class="row"><div class="l"><b>Wild bet: pop-up at a trail race</b><span>Stage 1 budget, read point after the event, kill rule set.</span></div><span class="btn p">Fund stage 1</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- stage 15 -->
+  <div class="stage" id="a15">
+    <div class="txt">
+      <h3><small>DAILY</small>After launch: the operating loop</h3>
+      <p>Once the store is live, a new founder is in the same place as an existing one. Every morning the system reads the numbers, finds the break, ranks the top 10, and waits for decisions. The full set of screens for that daily loop is in the Existing brand view.</p>
+      <div class="btns"><button class="btn p" data-go="existing" style="cursor:pointer;font:600 13px var(--body);padding:8px 14px">Open the daily loop</button></div>
+    </div>
+    <div class="card">
+      <h4>Who does what, across the journey</h4>
+      <div class="tablewrap" style="border:0;background:transparent"><table style="min-width:520px;font-size:12.5px">
+        <tr><th>Stage</th><th>Agents</th><th>Founder</th><th>People</th></tr>
+        <tr><td>Interview</td><td>Ask, record</td><td>Answer</td><td></td></tr>
+        <tr><td>Research, avatars, offer, brand</td><td>Research, model, draft, rank</td><td>Pick, correct</td><td></td></tr>
+        <tr><td>Store, measurement</td><td>Configure, brief, verify</td><td>Pay, grant access, sign off</td><td>Developer for briefs</td></tr>
+        <tr><td>Pages, speed, tests</td><td>Write, measure, propose</td><td>Approve per item</td><td>Developer for briefs</td></tr>
+        <tr><td>Paid social, Google</td><td>Briefs, copy, plans, reads</td><td>Approve, budget, on camera</td><td>Creator, media buyer applies changes</td></tr>
+        <tr><td>Organic, email, SEO, AEO</td><td>Calendar, drafts, flows, fixes</td><td>Approve, record</td><td>Editor, developer</td></tr>
+        <tr><td>CX, back office</td><td>Tag, model, scan, draft</td><td>Ship fixes, reorder, hire</td><td>Support, supplier, accountant</td></tr>
+      </table></div>
+    </div>
+  </div>
+</div></div>
+<!-- ================= EXISTING BRAND ================= -->
+<div class="view" id="v-existing"><div class="wrap">
+  <div class="sechead">
+    <span class="eyebrow">Door B</span>
+    <h2>A brand that already sells, from "add your website" to a daily top 10.</h2>
+    <p class="lede">The founder connects what exists. ecomOS reads it, asks what it cannot read, and builds the brand brain. Then it finds where the pipeline breaks, ranks what would fix it, and puts the list in front of the founder every day. Gehna is the example on these screens. Speed numbers are real. Other figures are marked illustrative until the metric contract is live.</p>
+  </div>
+
+  <div class="map">
+    <a href="#b1"><small>Step 1</small>Add website</a>
+    <a href="#b2"><small>Step 2</small>Connect data</a>
+    <a href="#b3"><small>Step 3</small>Founder interview</a>
+    <a href="#b4"><small>Step 4</small>Brand brain</a>
+    <a href="#b5"><small>Daily</small>Pipeline break</a>
+    <a href="#b6"><small>Daily</small>Top 10 today</a>
+    <a href="#b7"><small>Daily</small>Ask anything</a>
+    <a href="#b8"><small>Domains</small>Each part of the business</a>
+    <a href="#b9"><small>Team</small>Access and roles</a>
+    <a href="#b10"><small>Learn</small>Results and memory</a>
+  </div>
+
+  <!-- b1 -->
+  <div class="stage" id="b1">
+    <div class="txt">
+      <h3><small>STEP 1</small>Add the website</h3>
+      <p>One field. The Brand Brain Keeper crawls the store by script: products with prices, weights and stock, policy pages quoted word for word, every claim on the homepage and product pages, the platform, the theme, the scripts loaded. The speed lab records the homepage and 2 more pages on the throttled phone profile.</p>
+      <dl class="kv">
+        <dt>Agent does</dt><dd>Crawl, snapshot, tier claims (approved, site-backed, forbidden), first speed measurement.</dd>
+        <dt>Founder decides</dt><dd>Nothing yet. Reads what was found.</dd>
+        <dt>Brain gets</dt><dd>Brand record v0, dated. Everything traceable to a page.</dd>
+      </dl>
+    </div>
+    <div class="scr">
+      <div class="scr-top"><span class="dots"><i></i><i></i><i></i></span>ecomOS<span class="url">start / add your brand</span></div>
+      <div class="smain">
+        <div class="sh">Add your website</div>
+        <div class="input"><span>https://www.gehnaindia.com</span><span class="btn p">Read it</span></div>
+        <div class="rows">
+          <div class="row"><div class="l"><b>Platform and theme</b><span>Custom platform behind Cloudflare. Rocket Loader on.</span></div><span class="pill good">Read</span></div>
+          <div class="row"><div class="l"><b>Products</b><span>Catalogue read with prices and stock, dated today.</span></div><span class="pill good">Read</span></div>
+          <div class="row"><div class="l"><b>Policies</b><span>Shipping, returns, exchange, EMI, warranty quoted from the pages.</span></div><span class="pill good">Read</span></div>
+          <div class="row"><div class="l"><b>Claims</b><span>Every claim on the homepage and product pages, tiered. 3 need your confirmation.</span></div><span class="pill amber">3 to confirm</span></div>
+          <div class="row"><div class="l"><b>Speed, homepage</b><span>Fully loaded in 15.4 s on a slow phone connection. Measured 3 times.</span></div><span class="pill bad">Slow</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- b2 -->
+  <div class="stage" id="b2">
+    <div class="txt">
+      <h3><small>STEP 2</small>Connect everything the brand already has</h3>
+      <p>Store, ads, analytics, email, support, the database, documents, meeting notes. Each connector is read-only by default. Documents and notes go through the same reader as the site: facts extracted with their source, nothing summarised into vagueness. Ingestion runs in the background and shows progress.</p>
+      <dl class="kv">
+        <dt>Agent does</dt><dd>Pull history, build the warehouse, compute the metric contract, extract facts from documents, flag conflicts between sources.</dd>
+        <dt>Founder decides</dt><dd>What to connect. Access level per source.</dd>
+        <dt>Brain gets</dt><dd>Orders, sessions, spend, flows, tickets, competitors, and every fact from every document, each with a source.</dd>
+      </dl>
+    </div>
+    <div class="scr">
+      <div class="scr-top"><span class="dots"><i></i><i></i><i></i></span>ecomOS<span class="url">start / connect</span></div>
+      <div class="smain">
+        <div class="sh">Connections <span class="pill">Ingesting, 7 of 11</span></div>
+        <div class="prog"><i style="width:63%"></i></div>
+        <div class="opts">
+          <div class="opt"><b>Meta Ads</b><span>1 year, ad level, read-only</span><span class="pill good">Done</span></div>
+          <div class="opt"><b>Metabase</b><span>website sales, monthly and daily</span><span class="pill good">Done</span></div>
+          <div class="opt"><b>Store database</b><span>orders, customers</span><span class="pill amber">Grant read access</span></div>
+          <div class="opt"><b>GA4</b><span>sessions, funnel</span><span class="pill">Pulling</span></div>
+          <div class="opt"><b>Google Ads</b><span>read-only</span><span class="pill">Pulling</span></div>
+          <div class="opt"><b>Email platform</b><span>lists, flows, campaigns</span><span class="pill amber">Connect</span></div>
+          <div class="opt"><b>Support inbox</b><span>tickets, reasons</span><span class="pill amber">Connect</span></div>
+          <div class="opt"><b>Google Drive</b><span>brand docs, decks, price lists</span><span class="pill good">Done, 38 files</span></div>
+          <div class="opt"><b>Meeting notes</b><span>upload or connect</span><span class="pill good">12 notes</span></div>
+          <div class="opt"><b>Competitors</b><span>7 brands, ad libraries and sites</span><span class="pill good">Done</span></div>
+          <div class="opt"><b>Bank / accounting</b><span>cash, COGS</span><span class="pill grey">Later</span></div>
+        </div>
+        <div class="rows"><div class="row"><div class="l"><b>2 conflicts found</b><span>The price list in Drive (Mar 2026) differs from the site for 4 SKUs. The site wins unless you say otherwise.</span></div><span class="btn">Review</span></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- b3 -->
+  <div class="stage" id="b3">
+    <div class="txt">
+      <h3><small>STEP 3</small>The founder interview</h3>
+      <p>After ingestion, the system knows what it cannot know from data: margins by line, what was tried and failed, who the real competitors are in the founder's head, what the brand will never do, what the founder believes that the data does not show. It asks in rounds, with what it already found shown next to each question so the founder corrects rather than repeats.</p>
+      <dl class="kv">
+        <dt>Agent does</dt><dd>Generates questions from gaps and conflicts in the brain. Records answers as decisions with a date.</dd>
+        <dt>Founder decides</dt><dd>Answers. Marks what is confidential.</dd>
+        <dt>Brain gets</dt><dd>Margins, history of tests, competitor set as the founder sees it, red lines, beliefs to test.</dd>
+      </dl>
+    </div>
+    <div class="scr">
+      <div class="scr-top"><span class="dots"><i></i><i></i><i></i></span>ecomOS<span class="url">start / interview · round 2 of 5</span></div>
+      <div class="smain">
+        <div class="sh">What the data cannot tell us <span class="pill">5 questions</span></div>
+        <div class="qcard"><b>Which 3 brands do you lose customers to?</b><span class="muted">We found 7 in ad libraries. Pick or add.</span><div class="chips"><span class="chip sel">Brand from gallery 1</span><span class="chip sel">Brand from gallery 2</span><span class="chip">Brand from gallery 3</span><span class="chip">+ add</span></div></div>
+        <div class="qcard"><b>Gross margin after making cost, by line</b><span class="muted">Not in any connected source. Ranges are fine. Kept private.</span><div class="chips"><span class="chip">Gold: ___</span><span class="chip">Silver: ___</span><span class="chip">Custom: ___</span></div></div>
+        <div class="qcard"><b>What have you already tried that did not work?</b><span class="muted">So we never propose it again without a reason.</span><div class="input"><span>Discount codes in the welcome email, twice...</span></div></div>
+        <div class="qcard"><b>What will the brand never do?</b><div class="chips"><span class="chip sel">Sitewide sales</span><span class="chip">Influencer gifting</span><span class="chip">Marketplace listing</span><span class="chip">Other</span></div></div>
+        <div class="qcard"><b>Return and exchange policy: we read this on the site. Is it what you actually honour?</b><span class="muted">"7-day exchange, no refunds on custom pieces."</span><div class="chips"><span class="chip sel">Yes, exactly</span><span class="chip">We are more generous</span><span class="chip">Stricter in practice</span></div></div>
+        <div class="btns"><span class="btn p">Next round</span><span class="btn">Skip for now</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- b4 -->
+  <div class="stage" id="b4">
+    <div class="txt">
+      <h3><small>STEP 4</small>The brand brain, and how it keeps improving</h3>
+      <p>The brain is a set of sections the founder can read, each with a freshness stamp and a confidence. It is not a document that goes stale. Collectors re-read the site and the sources on a schedule, diff against the last snapshot, and raise questions when something changes. Every founder decision is stored once and quoted by every agent after that.</p>
+      <dl class="kv">
+        <dt>Keeper does</dt><dd>Re-crawl, diff, re-tier claims, flag stale facts, log decisions, ask the founder when a source conflicts.</dd>
+        <dt>Founder does</dt><dd>Reads, corrects, answers open questions when they have time.</dd>
+        <dt>Rule</dt><dd>Brand facts live here. Ideas stay brand-agnostic in the bank. Results live in the registry.</dd>
+      </dl>
+    </div>
+    <div class="scr">
+      <div class="scr-top"><span class="dots"><i></i><i></i><i></i></span>ecomOS<span class="url">brand brain · gehna</span></div>
+      <div class="shell">
+        <div class="snav"><div class="on">Overview</div><div>Identity and voice</div><div>Customers</div><div>Products and margins</div><div>Policies and claims</div><div>Competitors</div><div>Channels</div><div>Metric contract</div><div>Decisions log</div><div>Open questions</div></div>
+        <div class="smain">
+          <div class="sh">Brand brain <span class="pill good">Updated today, 04:00</span></div>
+          <div class="opts">
+            <div class="brainsec"><b>Identity and voice <span class="pill good">High</span></b><span>Position, voice with 14 liked and 9 disliked examples, forbidden words.</span></div>
+            <div class="brainsec"><b>Customers <span class="pill amber">Medium</span></b><span>3 avatars from orders and reviews. Needs founder confirmation on the gift buyer.</span></div>
+            <div class="brainsec"><b>Products and margins <span class="pill amber">Medium</span></b><span>Catalogue from the site, dated. Margins from round 2 of the interview.</span></div>
+            <div class="brainsec"><b>Policies and claims <span class="pill good">High</span></b><span>Quoted from the site. 3 tiers. 1 forbidden claim found in an old ad.</span></div>
+            <div class="brainsec"><b>Competitors <span class="pill good">High</span></b><span>7 brands, ads and sites, refreshed weekly. Signals only.</span></div>
+            <div class="brainsec"><b>Metric contract <span class="pill amber">6 of 32 unavailable</span></b><span>Missing until the store database and email platform connect.</span></div>
+          </div>
+          <div class="timeline">
+            <div><small>today</small><span>Site diff: 2 product prices changed. Records updated, claims re-checked.</span></div>
+            <div><small>yesterday</small><span>Founder decision: "no sitewide sales" stored. 3 bank ideas now excluded for this brand.</span></div>
+            <div><small>3 days ago</small><span>Open question raised: welcome email offer conflicts with the "no discount codes" note in a meeting from May.</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- b5 -->
+  <div class="stage" id="b5">
+    <div class="txt">
+      <h3><small>DAILY</small>The pipeline, and where it breaks</h3>
+      <p>Every morning Diagnose reads the metric contract and its history and finds the break. It does not propose fixes. It says which stage is losing the most money relative to what the brand's own history and the store type say is normal, computes the money at stake in code, and lists what data is missing. This is the first thing the founder sees.</p>
+      <dl class="kv">
+        <dt>Agent does</dt><dd>Compare every stage to its own trailing window and to peers by store type. Rank the breaks. Show the numbers that prove each one.</dd>
+        <dt>Founder decides</dt><dd>Which break to work on, if not the top one.</dd>
+        <dt>Never</dt><dd>A break is never declared from a hunch or from what is fashionable. Only from the contract.</dd>
+      </dl>
+    </div>
+    <div class="scr">
+      <div class="scr-top"><span class="dots"><i></i><i></i><i></i></span>ecomOS<span class="url">today · gehna</span></div>
+      <div class="smain">
+        <div class="sh">The agent found the break <span class="pill bad">Site speed on mobile</span></div>
+        <div class="svgwrap" style="padding:8px">
+          <svg viewBox="0 0 640 150" width="100%" role="img" aria-label="Pipeline from ads to repeat orders with the break at site speed">
+            <defs><marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="var(--muted)"/></marker></defs>
+            <g font-size="11" fill="var(--ink)">
+              <rect x="6" y="40" width="88" height="44" rx="7" fill="var(--paper)" stroke="var(--line)"/><text x="50" y="58" text-anchor="middle">Ad reach</text><text x="50" y="74" text-anchor="middle" fill="var(--muted)">Meta, read</text>
+              <rect x="112" y="40" width="88" height="44" rx="7" fill="var(--paper)" stroke="var(--line)"/><text x="156" y="58" text-anchor="middle">Clicks</text><text x="156" y="74" text-anchor="middle" fill="var(--muted)">Meta, read</text>
+              <rect x="218" y="34" width="100" height="56" rx="7" fill="var(--bad-soft)" stroke="var(--bad)" stroke-width="2"/><text x="268" y="54" text-anchor="middle" font-weight="600">Page loads</text><text x="268" y="70" text-anchor="middle" fill="var(--bad)">15.4 s on slow 4G</text><text x="268" y="84" text-anchor="middle" fill="var(--muted)">measured</text>
+              <rect x="336" y="40" width="88" height="44" rx="7" fill="var(--paper)" stroke="var(--line)"/><text x="380" y="58" text-anchor="middle">Product views</text><text x="380" y="74" text-anchor="middle" fill="var(--muted)">GA4, pulling</text>
+              <rect x="442" y="40" width="88" height="44" rx="7" fill="var(--paper)" stroke="var(--line)"/><text x="486" y="58" text-anchor="middle">Orders</text><text x="486" y="74" text-anchor="middle" fill="var(--muted)">Metabase</text>
+              <rect x="548" y="40" width="88" height="44" rx="7" fill="var(--paper)" stroke="var(--line)"/><text x="592" y="58" text-anchor="middle">Repeat</text><text x="592" y="74" text-anchor="middle" fill="var(--muted)">unavailable</text>
+              <line x1="94" y1="62" x2="110" y2="62" stroke="var(--muted)" marker-end="url(#arr)"/>
+              <line x1="200" y1="62" x2="216" y2="62" stroke="var(--muted)" marker-end="url(#arr)"/>
+              <line x1="318" y1="62" x2="334" y2="62" stroke="var(--muted)" marker-end="url(#arr)"/>
+              <line x1="424" y1="62" x2="440" y2="62" stroke="var(--muted)" marker-end="url(#arr)"/>
+              <line x1="530" y1="62" x2="546" y2="62" stroke="var(--muted)" marker-end="url(#arr)"/>
+              <text x="268" y="120" text-anchor="middle" fill="var(--bad)" font-weight="600">Break: visitors from ads wait 15 s before the page is usable</text>
+              <text x="320" y="140" text-anchor="middle" fill="var(--muted)">Money at stake is computed from paid sessions × drop-off, once GA4 is in. Shown as unavailable until then.</text>
+            </g>
+          </svg>
+        </div>
+        <div class="rows">
+          <div class="row"><div class="l"><b>Why this break first</b><span>Measured 3 times. Every paid click lands here. The fix set is already tested on a copy of the page: 15.4 s to 5.2 s.</span></div><span class="btn p">See the top 10</span></div>
+          <div class="row"><div class="l"><b>Next break in line</b><span>Repeat orders. Cannot be judged until the store database is connected.</span></div><span class="btn a">Connect</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- b6 -->
+  <div class="stage" id="b6">
+    <div class="txt">
+      <h3><small>DAILY</small>Top 10 priorities for today</h3>
+      <p>Propose takes the break, audits the brand's own surface for it, pulls candidates from the idea bank, the audit and a fixed budget of web research, and ranks them all by expected marginal improvement in code. Source carries no weight. Each card is a heading and a plain explanation. Three buttons. The founder's reasons for "not now" become ranking weights.</p>
+      <dl class="kv">
+        <dt>Agent does</dt><dd>Audit, candidate matching against observed conditions, ranking, plain-English cards, developer briefs for items that need a person.</dd>
+        <dt>Founder decides</dt><dd>Per card: let the agent do it, send to a person, not now with a reason.</dd>
+        <dt>Then</dt><dd>Approved items get a registry entry with a read point before anything starts.</dd>
+      </dl>
+    </div>
+    <div class="scr">
+      <div class="scr-top"><span class="dots"><i></i><i></i><i></i></span>ecomOS<span class="url">today / top 10 · gehna · order illustrative until the contract is live</span></div>
+      <div class="smain">
+        <div class="sh">Top 10 for today <span class="pill amber">0 of 10 decided</span></div>
+        <div class="pri"><div class="h"><b>Ship the 8 speed fixes, in this order</b><em>1 · measured</em></div><p>Tested on a copy of your homepage. Fully loaded goes from 15.4 s to 5.2 s. Each fix has its own brief, check and rollback. The first 2 are switches your developer can flip today.</p><div class="meta"><span class="pill good">Effect: measured</span><span class="pill">Effort: small</span><span class="pill">Risk: low, reversible</span></div><div class="btns"><span class="btn p">Let the agent do it</span><span class="btn a">Send to developer</span><span class="btn">Not now</span></div></div>
+        <div class="pri"><div class="h"><b>Name one shopper in the homepage hero</b><em>2 · from the bank, BRD-010</em></div><p>Right now the hero speaks to gift buyers, self-buyers and everyone else at once. Naming the main shopper and sending the others to their own collection usually lifts conversion. We would test it, not just ship it.</p><div class="meta"><span class="pill grey">Effect: sources argue the mechanism, no lift figure</span><span class="pill">Effort: small</span></div><div class="btns"><span class="btn p">Let the agent do it</span><span class="btn a">Send to developer</span><span class="btn">Not now</span></div></div>
+        <div class="pri"><div class="h"><b>Set the win-back email timing from your own order gaps</b><em>3 · from the bank, EML-080</em></div><p>The platform default waits 75 or 90 days. Your customers' real gap between orders may be different. We compute it from your orders and set the wait from that.</p><div class="meta"><span class="pill grey">Needs: store database connected</span><span class="pill">Effort: small</span></div><div class="btns"><span class="btn p">Let the agent do it</span><span class="btn a">Send to email team</span><span class="btn">Not now</span></div></div>
+        <div class="pri"><div class="h"><b>Write a one-line purpose for each ad campaign</b><em>4 · from the bank, DEP-007</em></div><p>Your account has more than one cold campaign and no written purpose for each. One line per campaign makes every budget decision easier. Nothing is changed in Meta.</p><div class="meta"><span class="pill">Effort: small</span><span class="pill grey">Meta stays read-only</span></div><div class="btns"><span class="btn p">Let the agent do it</span><span class="btn a">Send to media buyer</span><span class="btn">Not now</span></div></div>
+        <div class="pri"><div class="h"><b>Stop deciding budgets on daily ROAS alone</b><em>5 · from the bank, FIN-038</em></div><p>Daily platform ROAS swings too much to steer by. We add a blended view over a full window next to it, computed in code, and show both.</p><div class="meta"><span class="pill">Effort: small</span></div><div class="btns"><span class="btn p">Let the agent do it</span><span class="btn">Not now</span></div></div>
+        <div class="rows"><div class="row"><div class="l"><b>5 more</b><span>Replace superlatives on 2 product pages (ADC-064) · welcome flow in the first 72 hours (EML-044) · free shipping threshold from margin and order value (SET-081) · sunset flow filter check (EML-086) · delivery estimate on product pages (from the audit)</span></div><span class="btn">Show all</span></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- b7 -->
+  <div class="stage" id="b7">
+    <div class="txt">
+      <h3><small>DAILY</small>Ask anything</h3>
+      <p>A chat surface that answers from the brand brain, the metric contract, the idea bank and the card library, with the public web as a separate, labelled source. Every answer shows where it came from. The founder can approve pending items from here too, so a busy day is one screen.</p>
+      <dl class="kv">
+        <dt>Answers from</dt><dd>Brain (private), contract (computed), bank and cards (expert corpus), web (public, dated). Never mixed without a label.</dd>
+        <dt>Founder can</dt><dd>Ask, approve, park, correct a fact in the brain from the chat.</dd>
+      </dl>
+    </div>
+    <div class="scr">
+      <div class="scr-top"><span class="dots"><i></i><i></i><i></i></span>ecomOS<span class="url">ask · gehna</span></div>
+      <div class="smain">
+        <div class="chat">
+          <div class="msg me">Why are you putting speed above the ads this week?</div>
+          <div class="msg bot">Because every paid click lands on a page that takes 15.4 s to be usable on a slow phone connection, measured 3 times. The ads are working as far as we can read them. Fixing the page raises the value of every click you already pay for. The 8 fixes are tested on a copy and take the page to 5.2 s.<div class="src"><span>speed lab, measured 24 Sep</span><span>Meta, read-only</span><span>brain: platform</span></div></div>
+          <div class="msg me">What do other jewellery brands do about win-back timing?</div>
+          <div class="msg bot">From the expert corpus: set the wait from your own median and mean days between orders, not the platform default (EML-080, 2 rules cited). From the web, dated today: 2 articles, both general advice, no jewellery-specific figure. Your own number is unavailable until the store database is connected.<div class="src"><span>idea bank</span><span>web, 2 sources, dated</span><span>contract: unavailable</span></div></div>
+          <div class="msg me">Fine. Approve items 1 and 4, park 2 until the new hero photos are shot.</div>
+          <div class="msg bot">Done. 1 sent to your developer as 8 briefs. 4 assigned to the agent, draft by tomorrow 09:00. 2 parked with reason "waiting on hero photos", it will come back when the photos land in Drive.<div class="src"><span>registry: 3 entries</span></div></div>
+        </div>
+        <div class="input"><span>Ask about anything in the business...</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- b8 -->
+  <div class="stage" id="b8">
+    <div class="txt">
+      <h3><small>DOMAINS</small>Each part of the business has its own room</h3>
+      <p>The Meta gallery built for Gehna is the pattern. Each domain gets a page with the brand's data on it, the priorities for that domain, the tools to act, and the tests running. The daily top 10 is the cross-domain view. The rooms are where a specialist on the team lives all day.</p>
+      <dl class="kv">
+        <dt>Built today</dt><dd>Paid social: ad gallery, action plan, sales, competitors, creative studio, client report. Site speed: the speed lab and the founder plan page.</dd>
+        <dt>Same pattern for</dt><dd>Email, organic, SEO and AEO, Google Ads, landing pages and CRO, customer experience, finance, sourcing, security.</dd>
+      </dl>
+    </div>
+    <div class="scr">
+      <div class="scr-top"><span class="dots"><i></i><i></i><i></i></span>ecomOS<span class="url">email · gehna</span></div>
+      <div class="shell">
+        <div class="snav"><div class="h">Today</div><div>Top 10</div><div>Ask</div><div class="h">Rooms</div><div>Paid social</div><div>Google Ads</div><div class="on">Email</div><div>Organic</div><div>SEO and AEO</div><div>Site and speed</div><div>Landing pages and tests</div><div>Customers</div><div>Finance and ops</div><div>Sourcing</div><div>Security</div></div>
+        <div class="smain">
+          <div class="sh">Email <span class="pill amber">Platform not connected</span></div>
+          <div class="tiles"><div class="tile"><b>unavailable</b><span>revenue from flows, 28 days</span></div><div class="tile"><b>unavailable</b><span>list growth</span></div><div class="tile"><b>unavailable</b><span>unsubscribe rate</span></div></div>
+          <div class="rows">
+            <div class="row"><div class="l"><b>Priorities in this room</b><span>Win-back timing from order gaps · welcome flow in 72 hours · sunset filter check · SMS for urgent news only (EML-141)</span></div><span class="btn">Open</span></div>
+            <div class="row"><div class="l"><b>Tools</b><span>Flow builder from the brand voice · campaign drafts with claim check · send-time reader once connected</span></div></div>
+            <div class="row"><div class="l"><b>Tests</b><span>None running. First test proposed after the platform connects.</span></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- b9 -->
+  <div class="stage" id="b9">
+    <div class="txt">
+      <h3><small>TEAM</small>Access and roles</h3>
+      <p>The founder invites people into rooms. A creative lead gets paid social and organic. A developer gets site and speed, with briefs. An email person gets email. Each person sees their room's priorities and tools, decides within their room, and the founder keeps the cross-domain top 10 and anything that spends money.</p>
+      <dl class="kv">
+        <dt>Founder keeps</dt><dd>Budgets, write access to external accounts, anything marked high risk, the brand brain's red lines.</dd>
+        <dt>Team gets</dt><dd>Their rooms, their queue, the tools, the registry for their items.</dd>
+      </dl>
+    </div>
+    <div class="scr">
+      <div class="scr-top"><span class="dots"><i></i><i></i><i></i></span>ecomOS<span class="url">settings / team · gehna</span></div>
+      <div class="smain">
+        <div class="sh">People and rooms <span class="pill">4 people</span></div>
+        <div class="tablewrap" style="border:0"><table style="min-width:0;font-size:11.5px">
+          <tr><th>Person</th><th>Rooms</th><th>Can approve</th><th>Spend and writes</th></tr>
+          <tr><td><b>Kevin</b> · founder</td><td>All</td><td>Everything</td><td>Yes, per surface</td></tr>
+          <tr><td>Creative lead</td><td>Paid social, organic</td><td>Creative and copy items</td><td>No</td></tr>
+          <tr><td>Developer</td><td>Site and speed, landing pages</td><td>Briefs in their rooms</td><td>No</td></tr>
+          <tr><td>Email</td><td>Email, customers</td><td>Flows and campaigns</td><td>No</td></tr>
+        </table></div>
+        <div class="btns"><span class="btn p">Invite someone</span><span class="btn">Change a role</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- b10 -->
+  <div class="stage" id="b10">
+    <div class="txt">
+      <h3><small>LEARN</small>Results and memory</h3>
+      <p>Every approved item lives in the experiment registry with its idea, owner, artefact, metric, read point, kill and scale rule. At the read point the Registrar pulls the metric, records the result and the learning, and updates this brand's prior for that idea. The bank never changes from one brand's result. The brand's overlay does. Next week's top 10 is ranked with that memory.</p>
+      <dl class="kv">
+        <dt>Registrar does</dt><dd>Log, schedule reads, record, update priors, turn founder reasons into weights.</dd>
+        <dt>Founder sees</dt><dd>What was tried, what it did, what we learned, in one list.</dd>
+      </dl>
+    </div>
+    <div class="scr">
+      <div class="scr-top"><span class="dots"><i></i><i></i><i></i></span>ecomOS<span class="url">registry · gehna · illustrative rows</span></div>
+      <div class="smain">
+        <div class="sh">Experiments <span class="pill">2 running · 1 read · 1 parked</span></div>
+        <div class="tablewrap" style="border:0"><table style="min-width:0;font-size:11.5px">
+          <tr><th>Item</th><th>Metric</th><th>Read point</th><th>Status</th></tr>
+          <tr><td>Speed fixes 1 to 8</td><td>Fully loaded, homepage</td><td>After deploy, 3 runs</td><td><span class="pill good">Read: 15.4 s to 5.2 s on the copy</span></td></tr>
+          <tr><td>Campaign purpose lines</td><td>Campaign count, budget moves</td><td>14 days</td><td><span class="pill">Running</span></td></tr>
+          <tr><td>Blended ROAS view</td><td>Decisions made off it</td><td>28 days</td><td><span class="pill">Running</span></td></tr>
+          <tr><td>Hero names one shopper</td><td>Conversion rate</td><td>14 days after launch</td><td><span class="pill amber">Parked: waiting on photos</span></td></tr>
+        </table></div>
+        <div class="rows"><div class="row"><div class="l"><b>What the brand learned</b><span>Each read writes one line here, in plain words, with the number. This list is the brand's memory.</span></div></div></div>
+      </div>
+    </div>
+  </div>
+</div></div>
+<!-- ================= ARCHITECTURE ================= -->
+<div class="view" id="v-arch"><div class="wrap">
+  <div class="sechead">
+    <span class="eyebrow">Under the hood</span>
+    <h2>Four layers, 14 agents, one gate.</h2>
+    <p class="lede">The founder surfaces sit on top. Below them, the execution layer does the work, but only on ideas the founder approved. Below that, inspiration, intelligence and data. Data is the base. Nothing above it may invent a fact the base does not hold.</p>
+  </div>
+
+  <div class="legend"><span><i class="built"></i>Built today</span><span><i class="agent"></i>Agent</span><span><i></i>To build</span></div>
+  <div class="layers" style="margin-top:12px">
+    <div class="layer"><div class="name"><small>Surfaces</small>What people see</div><div class="items"><span>Today: pipeline break and top 10</span><span>Ask anything</span><span class="built">Domain rooms (Meta gallery, speed lab)</span><span class="built">Founder plan page with 3 decisions per item</span><span>Brand brain viewer</span><span>Registry</span><span>Team and roles</span><span>Onboarding, Door A and Door B</span></div></div>
+    <div class="layer gate"><div class="name"><small>Founder gate</small>The decision</div><div class="items"><span>Let the agent do it</span><span>Send to a person, with a brief</span><span>Not now, with a reason</span><span>Write access per external surface, off by default</span><span>Reasons become ranking weights</span></div></div>
+    <div class="layer"><div class="name"><small>Execution</small>Doing the work</div><div class="items"><span class="agent">Orchestrator (account manager)</span><span class="agent">Diagnose</span><span class="agent">Propose</span><span class="agent">Registrar</span><span class="agent">QA Gate</span><span class="agent">Site</span><span class="agent">Paid creative and copy</span><span class="agent">Media buyer</span><span class="agent">Lifecycle</span><span class="agent">Organic and search</span><span class="agent">Product and supply</span><span class="agent">Money and ops</span><span class="agent">Brand strategist</span><span class="built">Speed lab instrument</span><span class="built">Creative studio</span></div></div>
+    <div class="layer"><div class="name"><small>Inspiration</small>References</div><div class="items"><span class="agent">Reference Scout</span><span class="built">7 competitor brands, ads and sites</span><span class="built">Creative retrieval by angle, format, mood</span><span>The brand's own winners, ad level</span><span>Landing page and email swipes</span><span>Creator content</span></div></div>
+    <div class="layer"><div class="name"><small>Intelligence</small>What experts know</div><div class="items"><span class="built">Idea bank, 4,650 ideas, 25 domains</span><span class="built">Card library, 7,611 cards, keyword and semantic search</span><span class="built">Ranker v0: evidence, ease, safety, bottleneck fit</span><span>Marginal-improvement ranker with brand priors</span><span>Web research tool with a token budget</span><span>Candidates file: web ideas curated into the bank</span></div></div>
+    <div class="layer"><div class="name"><small>Data</small>Brand brain</div><div class="items"><span class="agent">Brand Brain Keeper</span><span class="built">Meta cache, 1 year</span><span class="built">Sales, monthly and daily</span><span class="built">Brand record v0, competitors</span><span class="built">Speed measurements</span><span>Brand brain schema</span><span>Metric contract</span><span>Experiment registry</span><span>Connectors: store DB, GA4, Google Ads, email, support, Drive, notes</span><span>Decisions log</span></div></div>
+  </div>
+
+  <section>
+    <div class="sechead"><span class="eyebrow">The agents</span><h2>3 run the loop. 3 keep it honest. 8 do the work.</h2></div>
+    <div class="grid3">
+      <div class="card"><h4>Run the loop</h4><ul class="small"><li><b>Orchestrator.</b> The account manager. Schedules the daily run, routes approved items to the right specialist, keeps the founder's queue, answers in the chat.</li><li><b>Diagnose.</b> Reads the metric contract. Outputs ranked breaks with proof and money at stake. Never proposes fixes.</li><li><b>Propose.</b> Audit, candidates from bank, audit and web, rank by marginal improvement in code, write the cards.</li><li><b>Registrar.</b> Logs approvals, schedules read points, records results, updates brand priors.</li></ul></div>
+      <div class="card"><h4>Keep it honest</h4><ul class="small"><li><b>Brand Brain Keeper.</b> Collectors, site diffs, claim tiers, decisions log, open questions. Mostly scripts.</li><li><b>Reference Scout.</b> 3 to 8 references per approved idea, tagged, mood and structure only.</li><li><b>QA Gate.</b> Before anything is delivered: claims traced, numbers recomputed, windows on full days, reading level, no competitor text, no placeholders, Meta read-only.</li></ul></div>
+      <div class="card"><h4>Do the work</h4><ul class="small"><li><b>Site</b> 05, 07, 08, 09: briefs, page specs, tests.</li><li><b>Paid creative and copy</b> 10, 11: concepts, briefs, copy sets.</li><li><b>Media buyer</b> 24, 12: structure, budgets, change lists.</li><li><b>Lifecycle</b> 14, 17, 03: flows, campaigns, offers.</li><li><b>Organic and search</b> 13, 15, 16.</li><li><b>Product and supply</b> 01, 18, 22.</li><li><b>Money and ops</b> 20, 21, 06, 23.</li><li><b>Brand strategist</b> 02, 04, 19.</li></ul></div>
+    </div>
+    <p class="muted small" style="margin-top:10px">8 specialists and not 25: agents are grouped by what they produce, because a developer brief, an ad set and an email flow need different tools, references and checks. The 25 folders are how knowledge is filed, not how work is done.</p>
+  </section>
+
+  <section>
+    <div class="sechead"><span class="eyebrow">A daily run</span><h2>What happens between 04:00 and the founder's first coffee.</h2></div>
+    <div class="seq">
+      <div><small>04:00</small><span class="who c">Keeper</span><span>Collectors run. Site re-crawled and diffed. Ad, sales and analytics pulls land in the warehouse. Metric contract recomputed in code, windows ending yesterday. Stale facts flagged.</span></div>
+      <div><small>04:20</small><span class="who">Diagnose</span><span>Reads the contract and its history. Ranks breaks with the numbers that prove them. Money at stake computed. Missing data listed.</span></div>
+      <div><small>04:30</small><span class="who">Propose</span><span>For the top break: audits the brand's surface, filters the bank by bottleneck and store tags, matches each idea's signal to observed conditions, spends the web budget on verification and new candidates, ranks everything by marginal improvement, writes the cards. Challenges bank ideas whose signal does not fire.</span></div>
+      <div><small>04:50</small><span class="who c">QA Gate</span><span>Checks every card: claims traced, numbers recomputed, plain language, no placeholders.</span></div>
+      <div><small>05:00</small><span class="who c">Orchestrator</span><span>Publishes today's top 10 and the pipeline view. Items already parked by the founder with a live reason stay out. Notifies the founder and the team rooms.</span></div>
+      <div><small>09:00</small><span class="who f">Founder</span><span>Reads the break, decides on cards, asks questions in the chat. Reasons stored.</span></div>
+      <div><small>09:05</small><span class="who c">Registrar</span><span>Writes a registry entry per approval with metric, read point, kill and scale rule.</span></div>
+      <div><small>09:10</small><span class="who">Specialist</span><span>Takes the idea record, the brain, references from the Scout and its checklist. Produces the artefact: brief, draft, change list, pull request, or a direct change where writes are on.</span></div>
+      <div><small>later</small><span class="who c">QA Gate</span><span>Checks the artefact. Delivers to the founder or the room.</span></div>
+      <div><small>read point</small><span class="who c">Registrar</span><span>Pulls the metric, records the result and the learning, updates this brand's prior for the idea. Tomorrow's ranking uses it.</span></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sechead"><span class="eyebrow">How Propose pulls ideas</span><h2>Numbers first, web last, source carries no weight.</h2></div>
+    <div class="loop">
+      <div><b>Diagnose from numbers</b>No web, no bank. 1 to 3 breaks with money at stake.</div>
+      <div><b>Audit the brand's surface</b>Observed conditions with evidence. This decides applicability.</div>
+      <div><b>Candidates from the bank</b>Filter by bottleneck and store tags in code. Keep ideas whose signal fires, quoting the evidence.</div>
+      <div><b>Web adds ideas</b>Fixed token budget, about 8,000 tokens of fetched content. Every fact with URL and date. Enters as an equal.</div>
+      <div><b>Rank in code</b>Reach × effect, adjusted by brand prior, effort, cost, risk, reversibility, confidence, founder weights, dependencies.</div>
+      <div class="gate"><b>Founder gate</b>Approve, send, park. Reasons become weights.</div>
+      <div><b>Execute, measure, learn</b>Specialist, QA, Registrar. Brand prior updates. The bank stays brand-agnostic.</div>
+    </div>
+    <div class="callout t" style="margin-top:14px"><b>What the speed test taught us:</b> on Gehna's homepage the bank confirmed 4 of 8 fixes but the audit found all of them. The bank is confirmation and breadth, the audit is discovery. Both arms found the same 7 core fixes. The measured loop was the win.</div>
+  </section>
+
+  <section>
+    <div class="sechead"><span class="eyebrow">Data flow</span><h2>Where each kind of fact lives, and what may touch it.</h2></div>
+    <div class="svgwrap">
+      <svg viewBox="0 0 760 300" width="100%" role="img" aria-label="Data flow between sources, brand brain, intelligence, agents, founder and registry">
+        <defs><marker id="arr2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="var(--muted)"/></marker></defs>
+        <g font-size="12" fill="var(--ink)">
+          <rect x="10" y="20" width="150" height="110" rx="8" fill="var(--paper)" stroke="var(--line)"/><text x="85" y="40" text-anchor="middle" font-weight="600">Private sources</text><text x="85" y="60" text-anchor="middle" fill="var(--muted)">store, ads, analytics</text><text x="85" y="76" text-anchor="middle" fill="var(--muted)">email, support, DB</text><text x="85" y="92" text-anchor="middle" fill="var(--muted)">docs, notes, site</text><text x="85" y="112" text-anchor="middle" fill="var(--muted)">read-only</text>
+          <rect x="10" y="170" width="150" height="60" rx="8" fill="var(--paper)" stroke="var(--line)" stroke-dasharray="4 3"/><text x="85" y="195" text-anchor="middle" font-weight="600">Public web</text><text x="85" y="213" text-anchor="middle" fill="var(--muted)">budgeted, dated, labelled</text>
+          <rect x="220" y="20" width="160" height="110" rx="8" fill="var(--accent-soft)" stroke="var(--accent)"/><text x="300" y="42" text-anchor="middle" font-weight="600">Brand brain</text><text x="300" y="62" text-anchor="middle" fill="var(--muted)">record, warehouse</text><text x="300" y="78" text-anchor="middle" fill="var(--muted)">metric contract</text><text x="300" y="94" text-anchor="middle" fill="var(--muted)">decisions log</text><text x="300" y="114" text-anchor="middle" fill="var(--muted)">per brand, private</text>
+          <rect x="220" y="170" width="160" height="60" rx="8" fill="var(--paper)" stroke="var(--line)"/><text x="300" y="195" text-anchor="middle" font-weight="600">Intelligence</text><text x="300" y="213" text-anchor="middle" fill="var(--muted)">bank, cards: brand-agnostic</text>
+          <rect x="440" y="60" width="150" height="120" rx="8" fill="var(--paper)" stroke="var(--line)"/><text x="515" y="84" text-anchor="middle" font-weight="600">Agents</text><text x="515" y="104" text-anchor="middle" fill="var(--muted)">Diagnose, Propose</text><text x="515" y="120" text-anchor="middle" fill="var(--muted)">specialists, QA</text><text x="515" y="140" text-anchor="middle" fill="var(--muted)">arithmetic in code</text><text x="515" y="160" text-anchor="middle" fill="var(--muted)">model fills evidence</text>
+          <rect x="640" y="20" width="110" height="60" rx="8" fill="var(--amber-soft)" stroke="var(--amber)"/><text x="695" y="45" text-anchor="middle" font-weight="600">Founder</text><text x="695" y="65" text-anchor="middle" fill="var(--muted)">approve, send, park</text>
+          <rect x="640" y="130" width="110" height="60" rx="8" fill="var(--paper)" stroke="var(--line)"/><text x="695" y="155" text-anchor="middle" font-weight="600">Registry</text><text x="695" y="175" text-anchor="middle" fill="var(--muted)">results, priors</text>
+          <rect x="440" y="230" width="310" height="50" rx="8" fill="var(--paper)" stroke="var(--line)"/><text x="595" y="251" text-anchor="middle" font-weight="600">Outputs</text><text x="595" y="269" text-anchor="middle" fill="var(--muted)">briefs, drafts, change lists, pull requests · external writes only where switched on</text>
+          <line x1="160" y1="75" x2="218" y2="75" stroke="var(--muted)" marker-end="url(#arr2)"/>
+          <line x1="160" y1="200" x2="438" y2="150" stroke="var(--muted)" stroke-dasharray="4 3" marker-end="url(#arr2)"/>
+          <line x1="380" y1="75" x2="438" y2="100" stroke="var(--muted)" marker-end="url(#arr2)"/>
+          <line x1="380" y1="200" x2="438" y2="140" stroke="var(--muted)" marker-end="url(#arr2)"/>
+          <line x1="590" y1="90" x2="638" y2="60" stroke="var(--muted)" marker-end="url(#arr2)"/>
+          <line x1="695" y1="80" x2="695" y2="128" stroke="var(--muted)" marker-end="url(#arr2)"/>
+          <line x1="640" y1="160" x2="592" y2="140" stroke="var(--muted)" marker-end="url(#arr2)"/>
+          <line x1="515" y1="180" x2="515" y2="228" stroke="var(--muted)" marker-end="url(#arr2)"/>
+          <line x1="640" y1="175" x2="382" y2="60" stroke="var(--muted)" stroke-dasharray="2 3" marker-end="url(#arr2)"/>
+          <text x="470" y="215" fill="var(--muted)" font-size="11">decisions and results flow back to the brain</text>
+        </g>
+      </svg>
+    </div>
+    <p class="muted small" style="margin-top:8px">Solid arrows are private data. Dashed is the public web, kept separate and labelled. The dotted return path is how founder decisions and read results become brand facts. The bank never receives a brand's result; the brand's overlay in the registry does.</p>
+  </section>
+
+  <section>
+    <div class="sechead"><span class="eyebrow">Model routing</span><h2>Cheap models for structure, the best model for judgement, code for arithmetic.</h2></div>
+    <div class="tablewrap"><table>
+      <tr><th>Work</th><th>Runs on</th><th>Why</th></tr>
+      <tr><td>Collectors, extraction from documents, signal matching, QA checks, registry work</td><td>Small and mid models</td><td>Structured tasks with clear inputs. Most tokens go here.</td></tr>
+      <tr><td>Diagnose narrative, Propose ranking rationale, specialist creative work and briefs, founder chat</td><td>Top model</td><td>Judgement, writing for a founder, challenging a bank idea.</td></tr>
+      <tr><td>Ranking, ROAS, windows, money at stake, thresholds</td><td>Code</td><td>Never the model. The model fills evidence fields; the sort is arithmetic.</td></tr>
+      <tr><td>Speed measurement, page fidelity, crawls, diffs</td><td>Scripts and a headless browser</td><td>Deterministic and repeatable. Already built.</td></tr>
+    </table></div>
+  </section>
+
+  <section>
+    <div class="sechead"><span class="eyebrow">Build order</span><h2>Prove the loop on one brand and one break, then widen.</h2></div>
+    <div class="tablewrap"><table>
+      <tr><th>Step</th><th>Build</th><th>Done when</th></tr>
+      <tr><td class="num">1</td><td>Brand brain schema, metric contract for Gehna, registry schema. Fill from what exists.</td><td>Every number on the Today screen has a source and a freshness stamp, or shows unavailable.</td></tr>
+      <tr><td class="num">2</td><td>Diagnose and Propose on Gehna site speed, end to end, with the Today and top 10 screens.</td><td>Kevin approves or rejects cards with reasons, and the reasons are stored.</td></tr>
+      <tr><td class="num">3</td><td>Site specialist executes 1 or 2 approved items as developer briefs. QA Gate on the output. Registrar logs read points.</td><td>A brief ships, a read happens, a result is written.</td></tr>
+      <tr><td class="num">4</td><td>Second break through a second specialist, likely Lifecycle or Paid copy.</td><td>The loop works on a domain it was not built for.</td></tr>
+      <tr><td class="num">5</td><td>Door B onboarding: add website, connectors, interview, brain viewer. Then the remaining specialists and rooms, each when a ranked idea needs it.</td><td>A second brand onboards without Kevin in the loop.</td></tr>
+      <tr><td class="num">6</td><td>Door A journey, stage by stage, reusing the same specialists.</td><td>TrailFold, the fictional brand, goes from interview to a launch plan.</td></tr>
+    </table></div>
+  </section>
+
+  <section>
+    <div class="sechead"><span class="eyebrow">Decisions for Kevin</span><h2>Open, and they change what gets built next.</h2></div>
+    <div class="grid2">
+      <div class="card"><h4>Where the founder gate lives</h4><p class="small">Today's plan page pattern (3 buttons, saved decisions) inside the app, or the gallery page extended. This draft assumes one app with rooms.</p></div>
+      <div class="card"><h4>When external writes switch on</h4><p class="small">Meta, the live site, the email platform. Per surface, by the founder. Until then every execution is a brief or a change list a person applies.</p></div>
+      <div class="card"><h4>Shared or per-brand specialists</h4><p class="small">One Site specialist with a brand parameter is the default. Per-brand copies only if a brand needs different tools.</p></div>
+      <div class="card"><h4>Web budget per run</h4><p class="small">About 8,000 tokens of fetched content per break, spent on verification and new candidates. Raise it only if the candidates file shows the bank keeps missing things.</p></div>
+      <div class="card"><h4>Business model</h4><p class="small">Per brand monthly, build plus run, or agency licence. Follow the first paying brand.</p></div>
+      <div class="card"><h4>How we build it</h4><p class="small">The engineering process itself (rules, skills, connectors, plan then implement then validate, review in CI) is parked for the build phase and will live in this repo's AI layer. Not part of this draft.</p></div>
+    </div>
+  </section>
+
+  <div class="foot">ecomOS Blueprint, draft 1, 25 Sep 2026. Screens are drawn as the product would look. Real numbers: the Gehna speed lab (15.4 s to 5.2 s fully loaded, 1.70 s to 1.22 s LCP, 4.34 MB to 1.98 MB), the library (7,611 cards), the idea bank (4,650 ideas). Idea codes such as EML-080 are real records in the bank. Everything else on a screen is illustrative and says so.</div>
+</div></div>
+
+<script>
+(function(){
+  const tabs=[...document.querySelectorAll('.tabs button')];
+  const views={big:'v-big',new:'v-new',existing:'v-existing',arch:'v-arch'};
+  function show(v,push){
+    tabs.forEach(b=>b.classList.toggle('on',b.dataset.v===v));
+    Object.entries(views).forEach(([k,id])=>document.getElementById(id).classList.toggle('on',k===v));
+    try{localStorage.setItem('ecomos-bp-view',v)}catch(e){}
+    if(push){try{history.replaceState(null,'','#'+v)}catch(e){}}
+  }
+  tabs.forEach(b=>b.addEventListener('click',()=>{show(b.dataset.v,true);window.scrollTo({top:0})}));
+  document.querySelectorAll('[data-go]').forEach(b=>b.addEventListener('click',()=>{show(b.dataset.go,true);window.scrollTo({top:0})}));
+  // stage links inside a view: keep the view, scroll to the stage
+  document.querySelectorAll('.map a').forEach(a=>a.addEventListener('click',e=>{e.preventDefault();const t=document.querySelector(a.getAttribute('href'));if(t)t.scrollIntoView({behavior:'smooth',block:'start'})}));
+  let v='big';
+  const h=(location.hash||'').replace('#','');
+  if(views[h])v=h; else { try{const s=localStorage.getItem('ecomos-bp-view');if(views[s])v=s}catch(e){} }
+  // a stage anchor like #b6 opens its view
+  if(/^a\d+$/.test(h))v='new'; if(/^b\d+$/.test(h))v='existing';
+  show(v,false);
+  if(/^[ab]\d+$/.test(h)){const t=document.getElementById(h);if(t)setTimeout(()=>t.scrollIntoView({block:'start'}),50)}
+})();
+</script>
