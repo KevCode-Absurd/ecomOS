@@ -5,6 +5,8 @@
     meta, rows = load_table("sessions", brand_dir=Path("app/data/some-brand"))
 
 `meta` is the manifest entry (file, format, rows, source, shaped_like, captured_at).
+The manifest, tables.json, is itself a table with one row per table, so the
+server lists it like any other.
 CSV cells come back typed: int, float, bool, None for an empty cell, else str.
 A table that is not in the manifest raises KeyError, so a metric can report
 unavailable with the table name instead of pretending it is 0.
@@ -41,12 +43,12 @@ def manifest(brand_dir: Path = SAMPLE) -> dict:
 
 
 def list_tables(brand_dir: Path = SAMPLE) -> list[str]:
-    return list(manifest(brand_dir)["tables"].keys())
+    return [t["table"] for t in manifest(brand_dir)["rows"]]
 
 
 def load_table(name: str, brand_dir: Path = SAMPLE):
-    m = manifest(brand_dir)
-    entry = m["tables"][name]
+    entries = {t["table"]: t for t in manifest(brand_dir)["rows"]}
+    entry = entries[name]
     path = brand_dir / entry["file"]
     if entry["format"] == "json":
         doc = json.loads(path.read_text(encoding="utf-8"))

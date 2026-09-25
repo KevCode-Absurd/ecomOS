@@ -1349,7 +1349,7 @@ class Generator:
     def render(self):
         files = {}
         manifest = {"brand": self.name, "fictional": True, "seed": self.seed, "as_of": self.as_of.isoformat(), "start": self.start.isoformat(),
-                    "captured_at": self.captured_at, "generated_by": "app/data/generate.py", "tables": {}}
+                    "captured_at": self.captured_at, "generated_by": "app/data/generate.py", "table": "tables", "rows": []}
         for name, t in self.tables.items():
             fname = f"{name}.{t['format']}"
             rows = t["rows"]
@@ -1374,9 +1374,9 @@ class Generator:
                 for r in rows:
                     w.writerow(["" if r[c] is None else ("true" if r[c] is True else "false" if r[c] is False else r[c]) for c in cols])
                 files[fname] = buf.getvalue().encode("utf-8")
-            manifest["tables"][name] = {"file": fname, "format": t["format"], "rows": len(rows), "source": t["source"],
-                                        "shaped_like": t["shaped_like"], "captured_at": self.captured_at,
-                                        "sha256": hashlib.sha256(files[fname]).hexdigest()[:16]}
+            manifest["rows"].append({"table": name, "file": fname, "format": t["format"], "rows": len(rows), "source": t["source"],
+                                     "shaped_like": t["shaped_like"], "captured_at": self.captured_at,
+                                     "sha256": hashlib.sha256(files[fname]).hexdigest()[:16]})
         files["tables.json"] = (json.dumps(manifest, indent=1) + "\n").encode("utf-8")
         return files
 
@@ -1407,8 +1407,8 @@ def main(argv=None):
         (out / fname).write_bytes(data)
         total += len(data)
     manifest = json.loads(files["tables.json"].decode("utf-8"))
-    for name, t in manifest["tables"].items():
-        print(f"{name:22s} {t['rows']:7d} rows  {t['file']}")
+    for t in manifest["rows"]:
+        print(f"{t['table']:22s} {t['rows']:7d} rows  {t['file']}")
     print(f"{len(files)} files, {total / 1e6:.1f} MB, as_of {manifest['as_of']}, seed {manifest['seed']}")
     return 0
 

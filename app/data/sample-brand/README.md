@@ -8,7 +8,7 @@ python app/data/generate.py --check    # rerun in memory and confirm the files o
 python app/data/tables.py orders       # load a table and print its shape
 ```
 
-Window: 13 months, 2025-08-25 to 2026-09-24 (the `as_of` day in `brand.json`, 396 days). Every table carries `brand`, `source` and `captured_at` (2026-09-25T06:00:00Z). JSON files carry them in the header; CSV files carry them in `tables.json`, the manifest the server reads. Load through `app/data/tables.py`, which returns typed rows for both formats.
+Window: 13 months, 2025-08-25 to 2026-09-24 (the `as_of` day in `brand.json`, 396 days). Every table carries `brand`, `source` and `captured_at` (2026-09-25T06:00:00Z). JSON files carry them in the header; CSV files carry them in `tables.json`, the manifest the server reads. The manifest is itself a table with one row per table. Load through `app/data/tables.py`, which returns typed rows for both formats.
 
 ## Tables
 
