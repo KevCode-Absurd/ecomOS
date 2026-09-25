@@ -8,7 +8,8 @@ This folder is the product: one local server, one shared data layer, one UI kit,
 app/
   CLAUDE.md          this contract (keep under 120 lines)
   BUILD-PLAN.md      how we build, in what order, with which sessions
-  server.py          one local server: static files from screens/ and web/, JSON API from data/ (to build in round 0)
+  server.py          one local server: static files from screens/ and web/, JSON API from data/
+  metrics.py         the metric contract in code: compute(name), pipeline(); served at /api/metrics/...
   web/               the shell: nav across screens, ui-kit.css, ui-kit.js, charts.js (to build in round 0)
   contracts/         shared and small: metrics, data sources, UI kit, events between screens, brand schema
   data/
