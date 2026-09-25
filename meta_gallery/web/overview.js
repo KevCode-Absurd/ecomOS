@@ -102,8 +102,8 @@ function buckets(rows) {
 function heroTile(R) {
   const t = VIEW.totals, p = VIEW.previous_totals || {};
   const spark = R.cur.map((r, i) => rollAt(R.cur, i, (s) => sumK(s, 'spend') / s.length));
-  return `<section class="tile hero c-5" aria-label="Spend">
-    <div class="label">Spend · ${esc(shortDate(VIEW.range.since))} to ${esc(shortDate(VIEW.range.until))} · ${VIEW.range.days} days</div>
+  return `<section class="tile hero lite c-5" aria-label="Meta spend">
+    <div class="label">Meta spend · ${esc(shortDate(VIEW.range.since))} to ${esc(shortDate(VIEW.range.until))} · ${VIEW.range.days} days</div>
     <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><div class="big">${money(t.spend)}</div>${dchip(t.spend, p.spend, 0)}</div>
     <div class="spark-wrap">${sparkSvg(spark, { color: '#16140f', W: 600, H: 96 })}<div class="spark-cap"><span>${esc(shortDate(VIEW.range.since))}</span><span>Spend a day, 7-day average</span><span>${esc(shortDate(VIEW.range.until))}</span></div></div>
     <div class="trio">
@@ -111,7 +111,7 @@ function heroTile(R) {
       <div><span>ROAS</span><b>${t.roas !== null ? t.roas.toFixed(2) + 'x' : 'Unavailable'}</b></div>
       <div><span>Ads live</span><b>${t.ads}</b></div>
     </div>
-    <div class="actions"><button class="btn" type="button" data-goto="gallery">Open ad gallery</button><button class="btn ghost" type="button" data-goto="report">Client report</button></div>
+    <div class="actions"><button class="btn" type="button" data-goto="gallery">Open ad gallery</button><button class="btn ghost" type="button" data-goto="campaigns">Campaigns</button></div>
   </section>`;
 }
 function spotlightTile() {
@@ -293,7 +293,7 @@ function weekdayTile() {
       <text x="${cx}" y="${H - B + 33}" text-anchor="middle" style="fill:var(--faint);font-size:10.5px">${esc(compact(x.spend_per_day))}/day</text></g>`;
   }).join('');
   return `<section class="tile c-6" aria-label="Day of week">
-    <div class="tile-head"><div><h2>Best day to spend</h2><div class="sub">Purchase ROAS by weekday, drawn from 0. Spend a day below each bar.${best ? ` Best: ${best.key}.` : ''}</div></div><button class="go" type="button" data-goto="insights" aria-label="Open insights">${ARROW}</button></div>
+    <div class="tile-head"><div><h2>Meta ROAS by weekday</h2><div class="sub">Meta's own count, drawn from 0. Spend a day below each bar.${best ? ` Best: ${best.key}.` : ''}</div></div><button class="go" type="button" data-goto="insights" aria-label="Open insights">${ARROW}</button></div>
     <svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto;display:block" role="img" aria-label="ROAS by day of week">${grid}${bars}</svg>
   </section>`;
 }
@@ -306,6 +306,205 @@ function anglesTile() {
     <div>${rows.map((r) => `<div class="hbar" data-tip="${esc(`${r.label}|Ads|${r.ads}|Spend|${money(r.spend)}|Share|${(r.spend / total * 100).toFixed(1)}%|ROAS|${r.roas !== null ? r.roas.toFixed(2) + 'x' : 'Unavailable'}`)}"><span class="l">${esc(r.label)}</span><span class="t"><i style="width:${Math.max(2, r.spend / max * 100)}%"></i></span><span class="r">${r.roas !== null ? r.roas.toFixed(2) + 'x' : '–'}</span></div>`).join('')}</div>
     <p class="small muted" style="margin:0">Tagged from ad names and copy, so treat as a guide.</p>
   </section>`;
+}
+
+// ---------- brand (all channels) ----------
+// The top of the overview is the whole brand: website sales from Metabase. Ad channels sit under it.
+// Only Meta is connected today. Google and email are listed so the team sees they are not counted yet.
+const OV_CHANNELS = [
+  { key: 'meta', name: 'Meta ads', live: true },
+  { key: 'google', name: 'Google ads', live: false },
+  { key: 'email', name: 'Email and WhatsApp', live: false },
+];
+const OV_WD = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+OV.dayMode = OV.dayMode || 'cap';
+
+function ovBrand() {
+  if (!SL.data) return null;
+  const last = rpLastSalesDay(), r = VIEW.range;
+  const until = r.until > last ? last : r.until, since = r.since;
+  if (!last || since > until) return null;
+  const n = Math.round((new Date(until + 'T00:00:00Z') - new Date(since + 'T00:00:00Z')) / 864e5) + 1;
+  const cur = rpBrand(since, until), prev = rpBrand(addDays(since, -n), addDays(since, -1));
+  return { cur, prev, cut: until < r.until, until, n, full: cur.covered === cur.n && prev.covered === prev.n };
+}
+function ovChip(cur, prev, good, B) {
+  if (!$('compare').checked || !B.full || cur === null || cur === undefined || !prev) return '';
+  const ch = (cur - prev) / Math.abs(prev);
+  if (!Number.isFinite(ch)) return '';
+  const tone = Math.abs(ch) < 0.005 ? 'flat' : (ch > 0) === (good > 0) ? '' : 'bad';
+  return `<span class="dchip ${tone}" title="vs the ${B.n} days before">${ch > 0 ? '▲' : ch < 0 ? '▼' : ''} ${Math.abs(ch * 100).toFixed(1)}%</span>`;
+}
+const ovQ = (s, q) => { if (!s.length) return null; const i = (s.length - 1) * q, lo = Math.floor(i), hi = Math.ceil(i); return s[lo] + (s[hi] - s[lo]) * (i - lo); };
+// Big days: far above a normal day. Median + 3.5 robust spreads (MAD), and at least 2x the median.
+function ovCap(vals) {
+  const s = vals.filter((v) => v !== null && Number.isFinite(v)).sort((a, b) => a - b);
+  if (s.length < 7) return null;
+  const med = ovQ(s, 0.5), mad = ovQ(s.map((v) => Math.abs(v - med)).sort((a, b) => a - b), 0.5) * 1.4826;
+  return { med, cap: Math.max(med + 3.5 * mad, 2 * med) };
+}
+function ovDays(B) {
+  const rows = B.cur.days.filter((r) => r.x && r.x.sales !== null);
+  const sc = ovCap(rows.map((r) => r.x.sales)), mc = ovCap(rows.map((r) => r.claimed));
+  return { rows, sc, mc, big: sc ? rows.filter((r) => r.x.sales > sc.cap) : [] };
+}
+
+function brandHero(B) {
+  const c = B.cur, p = B.prev;
+  const per = c.sales !== null && c.spend ? c.sales / c.spend : null;
+  const { rows, sc, big } = ovDays(B);
+  const W = 640, H = 170, L = 6, R = 6, T = 10, Bt = 20, n = c.days.length;
+  const slot = (W - L - R) / n, bw = Math.max(1.5, slot * 0.72);
+  // Keep the scale for normal days; bars for big days reach the top with their value on them.
+  const normalMax = Math.max(...rows.filter((r) => !sc || r.x.sales <= sc.cap).map((r) => r.x.sales), 1);
+  const top = normalMax * 1.12, smax = Math.max(...c.days.map((r) => r.spend), 1) * 1.15;
+  const y = (v) => T + (H - T - Bt) * (1 - Math.min(v, top) / top), ys = (v) => T + (H - T - Bt) * (1 - v / smax);
+  const bigSet = new Set(big.map((r) => r.d));
+  // Label the cut bars, biggest first, skipping any that would sit on top of a label already placed.
+  const labelled = new Set(), placed = [];
+  for (const r of big.slice().sort((a, b) => b.x.sales - a.x.sales)) {
+    const i = c.days.findIndex((d) => d.d === r.d), cx = L + slot * i + slot / 2;
+    if (r.x.sales > top && placed.every((px) => Math.abs(px - cx) > 58)) { placed.push(cx); labelled.add(r.d); }
+  }
+  const bars = c.days.map((r, i) => {
+    const cx = L + slot * i + slot / 2;
+    const tip = esc(`${new Date(r.d + 'T00:00:00Z').toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short', timeZone: 'UTC' })}|Website sales|${r.x && r.x.sales !== null ? money(r.x.sales) : 'Not available'}|Orders|${r.x ? r.x.orders : 'Not available'}|Meta spend|${money(r.spend)}|Sales per ₹1 of ads|${r.x && r.x.sales !== null && r.spend ? '₹' + (r.x.sales / r.spend).toFixed(1) : 'Not available'}${bigSet.has(r.d) ? '|Note|Big day, bar cut at the top' : ''}`);
+    const hit = `<rect x="${(cx - slot / 2).toFixed(1)}" y="${T}" width="${slot.toFixed(1)}" height="${H - T - Bt}" style="fill:transparent" data-tip="${tip}"/>`;
+    if (!r.x || r.x.sales === null) return hit;
+    const yy = y(r.x.sales), clip = r.x.sales > top;
+    return `<rect x="${(cx - bw / 2).toFixed(1)}" y="${yy.toFixed(1)}" width="${bw.toFixed(1)}" height="${(H - Bt - yy).toFixed(1)}" rx="${Math.min(2, bw / 2)}" style="fill:rgba(22,20,15,${clip ? '.95' : '.62'})" pointer-events="none"/>${clip && labelled.has(r.d) ? `<text x="${cx.toFixed(1)}" y="${T + 11}" text-anchor="${i > n - 4 ? 'end' : i < 3 ? 'start' : 'middle'}" style="fill:#fff;font:700 10.5px var(--display);paint-order:stroke;stroke:#16140f;stroke-width:3px" pointer-events="none">${esc(compact(r.x.sales))}</text>` : ''}${hit}`;
+  }).join('');
+  const sp = c.days.map((r, i) => [L + slot * i + slot / 2, ys(r.spend)]);
+  const spend = `<path d="${smoothPath(sp)}" style="fill:none;stroke:#fff" stroke-width="2.4" stroke-linecap="round" pointer-events="none"/>`;
+  const ticks = [0, Math.floor((n - 1) / 2), n - 1].map((i, k) => `<text x="${(L + slot * i + slot / 2).toFixed(1)}" y="${H - 5}" text-anchor="${['start', 'middle', 'end'][k]}" style="fill:#5a4300;font-size:11px">${esc(shortDate(c.days[i].d))}</text>`).join('');
+  return `<section class="tile hero c-8" aria-label="Website sales">
+    <div class="label">Website sales · ${esc(shortDate(c.since))} to ${esc(shortDate(c.until))} · ${B.n} days${B.cut ? ' · website figures run to the last day we have' : ''}</div>
+    <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><div class="big">${c.sales !== null ? compact(c.sales) : 'Not available'}</div>${ovChip(c.sales, p.sales, 1, B)}</div>
+    <div class="ov-legend"><span><i class="sw-bar"></i>Website sales a day</span><span><i class="sw-line"></i>Meta spend a day (own scale)</span>${big.length ? `<span>${big.length} big day${big.length > 1 ? 's' : ''} cut at the top</span>` : ''}</div>
+    <svg viewBox="0 0 ${W} ${H}" class="ov-combo" role="img" aria-label="Website sales a day with Meta spend on top">${bars}${spend}${ticks}</svg>
+    <div class="trio">
+      <div><span>Ad spend (Meta)</span><b>${compact(c.spend)}</b></div>
+      <div><span>Website visits</span><b>${c.visits !== null ? fmt(c.visits, 'int') : 'Not available'}</b></div>
+      <div><span>Orders per 10,000 visits</span><b>${c.conv !== null ? (c.conv * 1e4).toFixed(1) : 'Not available'}</b></div>
+    </div>
+    ${c.covered < c.n ? `<p class="small" style="margin:0;color:#5a4300">Website data is missing for ${c.n - c.covered} of ${c.n} days. Totals cover the days we have.</p>` : ''}
+    <div class="actions"><button class="btn dark" type="button" data-goto="sales">Brand sales</button><button class="btn ghost" type="button" data-goto="report">Client report</button></div>
+  </section>`;
+}
+
+function channelsTile(B) {
+  const c = B.cur, seen = c.days.filter((r) => r.claimed !== null);
+  const claimed = seen.length ? seen.reduce((t, r) => t + r.claimed, 0) : null;
+  const share = claimed !== null && c.sales ? claimed / c.sales : null;
+  const rest = claimed !== null && c.sales !== null ? Math.max(0, c.sales - claimed) : null;
+  const row = (ch) => ch.key === 'meta'
+    ? `<button class="chrow" type="button" data-goto-meta="1"><span class="chn"><i style="background:var(--spend)"></i>${esc(ch.name)}</span><span class="chv"><b>${compact(c.spend)}</b> spent</span><span class="chv"><b>${claimed !== null ? compact(claimed) : 'Not available'}</b> sales Meta counts${share !== null ? ` · ${(share * 100).toFixed(0)}%` : ''}</span></button>`
+    : `<div class="chrow off"><span class="chn"><i></i>${esc(ch.name)}</span><span class="chv muted">Not connected yet</span></div>`;
+  return `<section class="tile c-4" aria-label="Sales by channel">
+    <div class="tile-head"><div><h2>Where sales come from</h2><div class="sub">Each channel's own count of website sales</div></div></div>
+    ${share !== null ? `<div class="stackbar" role="img" aria-label="Share of website sales Meta counts"><span style="flex:${Math.min(claimed, c.sales)};background:var(--spend)" data-tip="${esc(`Meta ads|Sales Meta counts|${money(claimed)}|Share|${(share * 100).toFixed(1)}%`)}"></span><span style="flex:${rest};background:var(--faint)" data-tip="${esc(`Not counted by an ad channel|Sales|${money(rest)}|Share|${((1 - share) * 100).toFixed(1)}%`)}"></span></div>` : ''}
+    <div class="chlist">${OV_CHANNELS.map(row).join('')}
+      <div class="chrow"><span class="chn"><i style="background:var(--faint)"></i>Not counted by an ad channel</span><span class="chv"><b>${rest !== null ? compact(rest) : 'Not available'}</b> direct, search, repeat buyers and more</span></div></div>
+    <p class="small muted" style="margin:0">Meta counts a sale after a click or view, so its number can overlap with others. Google and email show here once connected.</p>
+  </section>`;
+}
+
+function brandKpis(B) {
+  const c = B.cur, p = B.prev, Bk = buckets(c.days);
+  const got = (s) => s.filter((r) => r.x && r.x.sales !== null);
+  const sumX = (s, k) => got(s).reduce((t, r) => t + (r.x[k] || 0), 0);
+  const series = {
+    orders: Bk.map((s) => (got(s).length ? sumX(s, 'orders') : null)),
+    aov: Bk.map((s) => { const o = sumX(s, 'orders'); return o ? sumX(s, 'sales') / o : null; }),
+    per: Bk.map((s) => { const sp = s.reduce((t, r) => t + r.spend, 0); return got(s).length && sp ? sumX(s, 'sales') / sp : null; }),
+    refund: Bk.map((s) => (got(s).length ? sumX(s, 'refund') : null)),
+  };
+  const per = c.sales !== null && c.spend ? c.sales / c.spend : null, pper = p.sales !== null && p.spend ? p.sales / p.spend : null;
+  const unit = c.days.length <= 21 ? 'day' : 'week';
+  const tile = (cls, name, val, chip, vals, foot) => `<section class="tile kt ${cls} c-3"><div class="kname">${name}</div><div class="krow"><div class="kval">${val}</div>${chip}</div>${sparkSvg(vals, { color: 'var(--ink)' })}<div class="kfoot">${foot}</div></section>`;
+  return tile('mint', 'Orders', c.orders !== null ? fmt(c.orders, 'int') : NA, ovChip(c.orders, p.orders, 1, B), series.orders, `Per ${unit}. About ${c.orders !== null && c.covered ? (c.orders / c.covered).toFixed(1) : '–'} a day.`) +
+    tile('sky', 'Average order', c.aov !== null ? compact(c.aov) : NA, ovChip(c.aov, p.aov, 1, B), series.aov, `Per ${unit}. Big single orders lift this.`) +
+    tile('lav', 'Sales per ₹1 of ads', per !== null ? '₹' + per.toFixed(1) : NA, ovChip(per, pper, 1, B), series.per, `Per ${unit}. All website sales ÷ ad spend.`) +
+    tile('peach', 'Refunds', c.refund !== null ? compact(c.refund) : NA, ovChip(c.refund, p.refund, -1, B), series.refund, `Per ${unit}. ${c.refund !== null && c.sales ? (c.refund / c.sales * 100).toFixed(1) + '% of sales.' : ''} Lower is better.`);
+}
+
+// Best day to spend, from website sales (not only Meta's count), with big days handled.
+function ovWeekdays(B, mode) {
+  const { rows, sc, mc } = ovDays(B);
+  const acc = Object.fromEntries(OV_WD.map((k) => [k, { key: k, n: 0, sales: 0, spend: 0, value: 0, valueN: 0 }]));
+  for (const r of rows) {
+    const bigS = sc && r.x.sales > sc.cap, bigM = mc && r.claimed !== null && r.claimed > mc.cap;
+    if (mode === 'drop' && (bigS || bigM)) continue;
+    const s = mode === 'cap' && bigS ? sc.cap : r.x.sales;
+    const v = r.claimed === null ? null : mode === 'cap' && bigM ? mc.cap : r.claimed;
+    const o = acc[weekday(r.d)];
+    if (!o) continue;
+    o.n += 1; o.sales += s; o.spend += r.spend;
+    if (v !== null) { o.value += v; o.valueN += 1; }
+  }
+  return OV_WD.map((k) => {
+    const o = acc[k];
+    return { ...o, per: o.spend ? o.sales / o.spend : null, roas: o.spend && o.valueN ? o.value / o.spend : null, salesDay: o.n ? o.sales / o.n : null, spendDay: o.n ? o.spend / o.n : null };
+  });
+}
+function bestDayTile(B) {
+  const mode = OV.dayMode, dow = ovWeekdays(B, mode), raw = mode === 'raw' ? null : ovWeekdays(B, 'raw');
+  const ok = dow.filter((x) => x.per !== null && x.n >= 4);
+  const avg = ok.length ? ok.reduce((t, x) => t + x.sales, 0) / ok.reduce((t, x) => t + x.spend, 0) : null;
+  const ranked = ok.slice().sort((a, b) => b.per - a.per), best = ranked[0], worst = ranked[ranked.length - 1];
+  const clear = best && avg && best.per / avg >= 1.15;
+  const W = 640, H = 240, L = 40, R = 8, T = 26, Bt = 52;
+  const vals = [...dow, ...(raw || [])].map((x) => x.per || 0);
+  const topv = Math.max(...vals, 1), step = topv > 20 ? 10 : topv > 8 ? 4 : topv > 4 ? 2 : 1, max = Math.ceil(topv / step) * step;
+  const y = (v) => T + (H - T - Bt) * (1 - v / max);
+  const slot = (W - L - R) / 7, bw = Math.min(40, slot * 0.5);
+  const grid = [];
+  for (let v = 0; v <= max + 1e-9; v += step) grid.push(`<line x1="${L}" x2="${W - R}" y1="${y(v).toFixed(1)}" y2="${y(v).toFixed(1)}" style="stroke:var(--line)"${v ? ' stroke-dasharray="3 4"' : ''}/><text x="${L - 8}" y="${(y(v) + 4).toFixed(1)}" text-anchor="end" style="fill:var(--muted);font-size:11px">₹${v}</text>`);
+  const avgLine = avg ? `<line x1="${L}" x2="${W - R}" y1="${y(avg).toFixed(1)}" y2="${y(avg).toFixed(1)}" style="stroke:var(--ink)" stroke-width="1.2" stroke-dasharray="6 4"/><text x="${W - R}" y="${(y(avg) - 5).toFixed(1)}" text-anchor="end" style="fill:var(--ink);font-size:11px">Average ₹${avg.toFixed(1)}</text>` : '';
+  const bars = dow.map((x, i) => {
+    const cx = L + slot * i + slot / 2, isBest = clear && best && x.key === best.key, r0 = raw && raw[i];
+    const tip = esc(`${x.key}|Sales per ₹1 of ads|${x.per !== null ? '₹' + x.per.toFixed(1) : 'Not available'}${r0 && r0.per !== null ? `|Before handling big days|₹${r0.per.toFixed(1)}` : ''}|Website sales a day|${x.salesDay !== null ? money(x.salesDay) : 'Not available'}|Meta spend a day|${x.spendDay !== null ? money(x.spendDay) : 'Not available'}|Meta ROAS|${x.roas !== null ? x.roas.toFixed(2) + 'x' : 'Not available'}|Days counted|${x.n}`);
+    const ghost = r0 && r0.per !== null && Math.abs(r0.per - (x.per || 0)) > 0.05 ? `<rect x="${(cx - bw / 2).toFixed(1)}" y="${y(r0.per).toFixed(1)}" width="${bw.toFixed(1)}" height="${(H - Bt - y(r0.per)).toFixed(1)}" rx="6" style="fill:none;stroke:var(--faint)" stroke-dasharray="3 3"/>` : '';
+    const bar = x.per === null ? `<text x="${cx}" y="${H - Bt - 6}" text-anchor="middle" style="fill:var(--faint);font-size:11px">n/a</text>`
+      : `<rect x="${(cx - bw / 2).toFixed(1)}" y="${y(x.per).toFixed(1)}" width="${bw.toFixed(1)}" height="${(H - Bt - y(x.per)).toFixed(1)}" rx="6" style="fill:${isBest ? 'var(--gold)' : '#dcd8cf'}"/><text x="${cx}" y="${(y(Math.max(x.per, r0 && r0.per ? r0.per : 0)) - 7).toFixed(1)}" text-anchor="middle" style="fill:var(--ink);font:700 12px var(--display)">₹${x.per.toFixed(1)}</text>`;
+    return `<g data-tip="${tip}"><rect x="${(cx - slot / 2).toFixed(1)}" y="${T - 20}" width="${slot.toFixed(1)}" height="${H - T + 20}" style="fill:transparent"/>${ghost}${bar}
+      <text x="${cx}" y="${H - Bt + 17}" text-anchor="middle" style="fill:${isBest ? 'var(--ink)' : 'var(--muted)'};font-size:12px;font-weight:${isBest ? 700 : 500}">${x.key}</text>
+      <text x="${cx}" y="${H - Bt + 32}" text-anchor="middle" style="fill:var(--faint);font-size:10.5px">${x.spendDay !== null ? esc(compact(x.spendDay)) : '–'} ads</text>
+      <text x="${cx}" y="${H - Bt + 46}" text-anchor="middle" style="fill:var(--faint);font-size:10.5px">${x.n} days</text></g>`;
+  }).join('');
+  const modes = [['raw', 'As is'], ['cap', 'Cap big days'], ['drop', 'Drop big days']];
+  const msg = !ok.length ? 'Not enough days with website sales in these dates.'
+    : clear ? `<b>${best.key}</b> brings ₹${best.per.toFixed(1)} of website sales per ₹1 of ads, ${((best.per / avg - 1) * 100).toFixed(0)}% above the average day. <b>${worst.key}</b> is lowest at ₹${worst.per.toFixed(1)}. Try moving 10 to 15% of the ${esc(worst.key)} budget to ${esc(best.key)} for 2 weeks, then check again.`
+      : `No day is clearly better: the best (${esc(best.key)}, ₹${best.per.toFixed(1)}) is within 15% of the average. Keep spend steady across the week.`;
+  return `<section class="tile c-8" aria-label="Best day to spend">
+    <div class="tile-head"><div><h2>Best day to spend</h2><div class="sub">All website sales per ₹1 of ads, by weekday. Dashed outline: before big days were handled.</div></div>
+      <div class="seg" role="group" aria-label="Big days">${modes.map(([k, l]) => `<button type="button" data-daymode="${k}" aria-pressed="${mode === k}">${l}</button>`).join('')}</div></div>
+    <svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto;display:block" role="img" aria-label="Sales per rupee of ads by weekday">${grid.join('')}${avgLine}${bars}</svg>
+    <p class="ov-say">${msg}</p>
+    <p class="small muted" style="margin:0">Each weekday has about ${ok.length ? Math.round(ok.reduce((t, x) => t + x.n, 0) / ok.length) : 0} days here, so small gaps can be chance. Pick 90 days for a steadier read. "Cap" lowers big days to the normal top. "Drop" leaves them out.</p>
+  </section>`;
+}
+function bigDaysTile(B) {
+  const { sc, big } = ovDays(B), c = B.cur;
+  const top = c.skus.slice(0, 5);
+  const bigSum = big.reduce((t, r) => t + r.x.sales, 0);
+  return `<section class="tile c-4" aria-label="Big days and top pieces">
+    <div class="tile-head"><div><h2>Big days</h2><div class="sub">${sc ? `A normal day is about ${esc(compact(sc.med))}. Big means over ${esc(compact(sc.cap))}.` : 'Needs at least 7 days of sales.'}</div></div></div>
+    ${big.length ? `<div>${big.sort((a, b) => b.x.sales - a.x.sales).slice(0, 5).map((r) => `<div class="mixrow"><i style="background:var(--gold)"></i><span>${esc(weekday(r.d))} ${esc(shortDate(r.d))} <span class="muted small">${r.x.orders} orders</span></span><span class="v">${esc(compact(r.x.sales))}</span><span class="r">${(r.x.sales / sc.med).toFixed(0)}x</span></div>`).join('')}</div>
+      <p class="small" style="margin:0">${big.length} big day${big.length > 1 ? 's' : ''} made ${esc(compact(bigSum))}, ${c.sales ? (bigSum / c.sales * 100).toFixed(0) : '–'}% of sales in these dates. Check if they were one large client order before you judge ads on them.</p>` : '<p class="muted small" style="margin:0">No big days in these dates.</p>'}
+    <div class="tile-head" style="margin-top:4px"><div><h2>Top pieces</h2><div class="sub">By website sales in these dates</div></div><button class="go" type="button" data-goto="sales" aria-label="Open brand sales">${ARROW}</button></div>
+    <div>${top.length ? top.map((s) => `<div class="mixrow"><i style="background:var(--s3)"></i><span style="min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(s.name || s.code)}</span><span class="v">${esc(compact(s.v))}</span><span class="r">${s.n} sold</span></div>`).join('') : '<p class="muted small">No product data for these dates.</p>'}</div>
+  </section>`;
+}
+function metaHeader() {
+  return `<div class="ov-section ov-meta-h c-12"><div><h2>Meta ads</h2><p>1 of your ad channels. Google and email will sit next to it once connected.</p></div></div>`;
+}
+function brandBlock() {
+  if (!SL.data) return `<section class="tile c-12"><p class="muted">${SL.err ? 'Website sales could not be loaded.' : 'Loading website sales…'}</p></section>`;
+  const B = ovBrand();
+  if (!B) return `<section class="tile c-12"><p class="muted">No website sales for these dates. Website data starts ${esc(shortDate(Object.keys(SL.data.daily_totals || SL.data.daily).sort()[0]))}.</p></section>`;
+  return `<div class="ov-section c-12"><div><h2>Your brand</h2><p>Every website order, from every source.</p></div></div>
+    ${brandHero(B)}${channelsTile(B)}${brandKpis(B)}${bestDayTile(B)}${bigDaysTile(B)}`;
 }
 
 // ---------- tooltip ----------
@@ -333,7 +532,10 @@ window.renderOverview = function renderOverview() {
   if (!VIEW) return;
   const R = rangeDays();
   const excl = VIEW.exclusions.campaigns.length ? `<div class="note">${VIEW.exclusions.campaigns.length} campaign${VIEW.exclusions.campaigns.length > 1 ? 's' : ''} left out (${money(VIEW.exclusions.spend)}). Every tile below follows the filters.</div>` : '';
-  $('overviewView').innerHTML = `<div style="display:grid;gap:16px">${excl}<div class="bento">
+  if (!SL.data && !SL.err) loadSales().then(() => { if (state.tab === 'overview') window.renderOverview(); });
+  $('overviewView').innerHTML = `<div style="display:grid;gap:16px"><div class="bento">
+    ${brandBlock()}
+    ${metaHeader()}${excl ? `<div class="c-12">${excl}</div>` : ''}
     ${heroTile(R)}${spotlightTile()}${healthTile()}
     ${kpiTiles(R)}
     ${flowTile(R)}${topAdsTile()}
@@ -360,6 +562,9 @@ document.addEventListener('click', (e) => {
   if (go) { setTab(go.dataset.goto); window.scrollTo(0, 0); return; }
   const open = e.target.closest('[data-open]');
   if (open) { openSide(open.dataset.open); return; }
+  const dm = e.target.closest('[data-daymode]');
+  if (dm) { OV.dayMode = dm.dataset.daymode; window.renderOverview(); return; }
+  if (e.target.closest('[data-goto-meta]')) { const h = document.querySelector('#overviewView .ov-meta-h'); if (h) h.scrollIntoView({ behavior: 'smooth', block: 'start' }); return; }
   const m = e.target.closest('[data-metric]');
   if (m) { OV.metric = m.dataset.metric; window.renderOverview(); }
 });
