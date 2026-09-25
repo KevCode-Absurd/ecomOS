@@ -11,12 +11,13 @@ First line to type: `Work in app/. Phase A session 1: build server.py and web/ p
 3. `app/web/charts.js`: bar, line, step, funnel, cohort grid, drawn to scale from plain arrays.
 4. `app/web/index.html`: the nav shell from `screens/INDEX.md`, the sample badge, an empty state.
 Done when: `python3 app/server.py` opens a shell that lists 28 screens and any screen folder with an `index.html` renders inside it.
+Status: done 25 Sep 2026. Server on port 8770, kit demo at `/web/kit.html`, tests in `tests/test_app_server.py`. Session 2 note: `server.py` reads a table from `data/sample-brand/<name>.json` (a list, or `{rows: [...]}`) or `<name>.csv`; `/api/tables/<name>` serves it.
 
 ## Session 2: the generator
 
 First line: `Work in app/data. Phase A session 2: build generate.py per app/PHASE-A.md and app/contracts/data-sources.md.`
 
-1. `app/data/generate.py`: from `sample-brand/brand.json` and its seed, write every table in `contracts/data-sources.md` as JSON or CSV under `data/sample-brand/`. 13 months, weekly seasonality, a Q4 peak, ad-level rows, flows matched to orders, tickets tied to orders, reviews with quotable language, reversed orders in three legs with `rto` null for a US brand.
+1. `app/data/generate.py`: from `sample-brand/brand.json` and its seed, write every table in `contracts/data-sources.md` as JSON or CSV under `data/sample-brand/`. Every table, no gaps: Kevin's call on 25 Sep 2026 is that the sample brand has every connector (Shopify, GA4, Meta, Google Ads, Klaviyo, Gorgias, reviews, Amazon, Search Console, speed runs, payouts), so every screen can show its full function to someone. The unavailable state in the kit is for real brands missing a connector, not for the demo. 13 months, weekly seasonality, a Q4 peak, ad-level rows, flows matched to orders, tickets tied to orders, reviews with quotable language, reversed orders in three legs with `rto` null for a US brand.
 2. A `data/sample-brand/README.md` that lists each table, its row count and the connector it is shaped like.
 Done when: running it twice produces identical files, and `server.py` can read `orders` and `sessions`.
 
