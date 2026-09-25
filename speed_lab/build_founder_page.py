@@ -67,7 +67,12 @@ for f in FIXES:
 base = med("baseline")
 steps = [dict(f, m=med(f["var"]), shot=shot(f["var"])) for f in FIXES]
 final = steps[-1]["m"]
-data = {"base": base, "base_shot": shot("baseline"), "steps": steps}
+film = {}
+for k in ("before", "after"):
+    fp = os.path.join(RES, f"film-{k}.json")
+    if os.path.exists(fp):
+        f = json.load(open(fp)); film[k] = {"loaded_at": f["loaded_at"], "frames": f["frames"]}
+data = {"base": base, "base_shot": shot("baseline"), "steps": steps, "film": film}
 
 
 def s(x): return f"{x/1000:.1f} seconds"
@@ -125,6 +130,18 @@ p{{max-width:66ch;margin:0 0 10px}} .muted{{color:var(--muted)}}
 .shots figure{{margin:0;min-width:0}} .shots img{{width:100%;border:1px solid var(--line);border-radius:8px;display:block}} .shots figcaption{{font-size:13px;color:var(--muted);margin-top:4px}}
 .box{{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:10px;padding:14px 18px;max-width:72ch}}
 .small{{font-size:14px;color:var(--muted);max-width:72ch}}
+.film{{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin:10px 0 14px}}
+.film[hidden]{{display:none}}
+.filmhead{{display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:8px}}
+.filmhead .row{{display:flex;gap:8px;align-items:center;flex-wrap:wrap}}
+.filmhead button{{font:600 14px var(--display);padding:8px 14px;border-radius:999px;border:1px solid var(--line);background:var(--panel);color:var(--ink);cursor:pointer}}
+.filmhead button.primary{{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}}
+.clock{{font:700 22px var(--display);font-variant-numeric:tabular-nums;min-width:70px;text-align:right}}
+.film input[type=range]{{width:100%;margin:6px 0 10px;accent-color:var(--accent)}}
+.filmcols{{display:grid;grid-template-columns:1fr 1fr;gap:12px}}
+.filmcols figure{{margin:0;min-width:0}} .filmcols img{{width:100%;max-width:300px;border:1px solid var(--line);border-radius:8px;display:block;background:var(--code);aspect-ratio:1/2}}
+.filmcols figcaption{{font:600 14px var(--display);margin-top:6px}}
+.filmcols .done{{color:var(--good)}}
 button:focus-visible,input:focus-visible{{outline:2px solid var(--accent);outline-offset:2px}}
 @media (max-width:560px){{.card{{grid-template-columns:32px 1fr}} .shots{{grid-template-columns:1fr}}}}
 @media (prefers-reduced-motion: reduce){{.tile .bar i{{transition:none}}}}
@@ -134,6 +151,16 @@ button:focus-visible,input:focus-visible{{outline:2px solid var(--accent);outlin
 <p class="muted">We copied your homepage exactly as it is today and loaded it the way a shopper on a weak 4G signal would. Then we tried 8 changes, one at a time, and measured each one. Nothing here changes what the page shows or sells. Press "Show the next fix" to see what each change does, then approve the ones you want your developer to ship.</p>
 
 <div class="now" id="tiles"></div>
+<div class="ctl"><button class="primary" id="watch">Watch it load: before and after</button></div>
+<section id="film" class="film" hidden>
+  <div class="filmhead"><div><strong>Same phone, same slow connection.</strong> Left is your homepage today. Right is with all 8 fixes. The clock runs at real speed.</div><div class="row"><button id="fplay" class="primary">Play</button><button id="frestart">Restart</button><span class="clock" id="fclock">0.0 s</span></div></div>
+  <input id="fscrub" type="range" min="0" max="160" value="0" aria-label="Time in tenths of a second">
+  <div class="filmcols">
+    <figure><img id="fbefore" alt="Homepage loading today"><figcaption><span id="fbstate">Before: waiting</span></figcaption></figure>
+    <figure><img id="fafter" alt="Homepage loading with all fixes"><figcaption><span id="fastate">After: waiting</span></figcaption></figure>
+  </div>
+  <p class="small">Frames were captured every half second while the page loaded on a Pixel 5 profile over slow 4G. Capturing frames slows the load a little, so the numbers above the fixes, measured without capture, are the record.</p>
+</section>
 <div class="ctl"><button class="primary" id="next">Show the next fix</button><button id="back">Go back one</button><button id="all">Show all 8</button><button id="reset">Start over</button></div>
 <div class="shots"><figure><img src="{data["base_shot"]}" alt="Homepage today, above the fold"><figcaption>Today</figcaption></figure><figure><img id="afterimg" src="{data["base_shot"]}" alt="Homepage after the fixes shown"><figcaption id="aftercap">No fix shown yet</figcaption></figure></div>
 <p class="small">The top banner rotates on its own, so the two pictures can show different slides. That is the page working as usual, not a change.</p>
@@ -208,6 +235,25 @@ async function save(id,decision){{
   if(!db){{ try{{localStorage.setItem('gehna-speed-decisions',JSON.stringify(decisions));}}catch(e){{}} st.textContent='saved on this device only'; return; }}
   try{{ await db.doc('decisions/'+id).set(body); st.textContent='saved'; }}catch(e){{ st.textContent='could not save ('+(e&&e.code||'error')+')'; }}
 }}
+// filmstrip
+const F = D.film || {{}};
+let ft = 0, playing = false, last = null, raf = null;
+const frameAt = (k, t) => {{ const fr = (F[k]||{{}}).frames||[]; let best = fr[0]; for (const f of fr) {{ if (f.t <= t) best = f; else break; }} return best; }};
+function drawFilm(){{
+  for (const [k, img, st, name] of [['before','fbefore','fbstate','Before'],['after','fafter','fastate','After']]) {{
+    const f = frameAt(k, ft); const im = document.getElementById(img); if (f && im.src !== f.src) im.src = f.src;
+    const la = (F[k]||{{}}).loaded_at; const el = document.getElementById(st);
+    if (la != null && ft >= la) {{ el.textContent = name + ': fully loaded at ' + la.toFixed(1) + ' s'; el.className = 'done'; }}
+    else {{ el.textContent = name + ': loading'; el.className = ''; }}
+  }}
+  document.getElementById('fclock').textContent = ft.toFixed(1) + ' s';
+  document.getElementById('fscrub').value = Math.round(ft * 10);
+}}
+function tick(now){{ if (!playing) return; if (last != null) ft = Math.min(16, ft + (now - last) / 1000); last = now; drawFilm(); if (ft >= 16) {{ playing = false; document.getElementById('fplay').textContent = 'Play again'; return; }} raf = requestAnimationFrame(tick); }}
+document.getElementById('watch').onclick = () => {{ const sec = document.getElementById('film'); sec.hidden = !sec.hidden; if (!sec.hidden) {{ drawFilm(); sec.scrollIntoView({{behavior: 'smooth', block: 'start'}}); }} }};
+document.getElementById('fplay').onclick = () => {{ if (playing) {{ playing = false; document.getElementById('fplay').textContent = 'Play'; return; }} if (ft >= 16) ft = 0; playing = true; last = null; document.getElementById('fplay').textContent = 'Pause'; raf = requestAnimationFrame(tick); }};
+document.getElementById('frestart').onclick = () => {{ ft = 0; playing = false; last = null; document.getElementById('fplay').textContent = 'Play'; drawFilm(); }};
+document.getElementById('fscrub').oninput = (e) => {{ ft = parseInt(e.target.value, 10) / 10; playing = false; document.getElementById('fplay').textContent = 'Play'; drawFilm(); }};
 document.getElementById('next').onclick=()=>{{n=Math.min(n+1,D.steps.length);renderTiles();renderList();}};
 document.getElementById('back').onclick=()=>{{n=Math.max(0,n-1);renderTiles();renderList();}};
 document.getElementById('all').onclick=()=>{{n=D.steps.length;renderTiles();renderList();}};
