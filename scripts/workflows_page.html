@@ -1,0 +1,64 @@
+<title>ecomOS Workflows</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{--paper:#F3F5F2;--panel:#FFFFFF;--ink:#172019;--muted:#5D6862;--line:#D8DED9;--line2:#E9EDEA;--accent:#0E6B60;--accent-ink:#FFFFFF;--accent-soft:#DCEDE9;--amber:#9A600C;--amber-soft:#F7EBD2;--good:#2C7A4B;--good-soft:#DFF0E4;--bad:#B23A2D;--bad-soft:#F6DFDB;
+--display:"Bricolage Grotesque","IBM Plex Sans",system-ui,sans-serif;--body:"IBM Plex Sans",system-ui,sans-serif;--mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;--shadow:0 1px 2px rgba(20,30,25,.06),0 6px 20px rgba(20,30,25,.05)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark;--paper:#0F1513;--panel:#171E1B;--ink:#E6EBE7;--muted:#9AA59E;--line:#2A332E;--line2:#222A26;--accent:#5CB9AA;--accent-ink:#0B1512;--accent-soft:#16302B;--amber:#E2A84F;--amber-soft:#3A2B11;--good:#6CC08A;--good-soft:#173A25;--bad:#E1786B;--bad-soft:#40201B;--shadow:0 1px 2px rgba(0,0,0,.4),0 6px 20px rgba(0,0,0,.3)}}
+:root[data-theme="dark"]{color-scheme:dark;--paper:#0F1513;--panel:#171E1B;--ink:#E6EBE7;--muted:#9AA59E;--line:#2A332E;--line2:#222A26;--accent:#5CB9AA;--accent-ink:#0B1512;--accent-soft:#16302B;--amber:#E2A84F;--amber-soft:#3A2B11;--good:#6CC08A;--good-soft:#173A25;--bad:#E1786B;--bad-soft:#40201B;--shadow:0 1px 2px rgba(0,0,0,.4),0 6px 20px rgba(0,0,0,.3)}
+*{box-sizing:border-box} body{margin:0;background:var(--paper);color:var(--ink);font:14.5px/1.55 var(--body)}
+.wrap{max-width:1180px;margin:0 auto;padding-inline:20px;padding-block:0}
+h1,h2,h3,h4{font-family:var(--display);margin:0;line-height:1.15;text-wrap:balance} h1{font-size:clamp(28px,4vw,40px);font-weight:700} h2{font-size:22px;font-weight:700} h2 small{font:500 12px var(--mono);color:var(--muted)} h3{font-size:17px;font-weight:600;margin-top:16px} h4{font-size:15px;font-weight:600;margin-top:12px}
+p{margin:0} .muted{color:var(--muted)} .small{font-size:12.5px}
+.eyebrow{font:500 11.5px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--paper);border-bottom:1px solid var(--line)}
+.top .wrap{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding-block:10px}
+.brand{font:700 18px var(--display);display:flex;align-items:center;gap:8px} .brand i{width:12px;height:12px;border-radius:3px;background:var(--accent);display:inline-block;transform:rotate(45deg)}
+.tabs{display:flex;gap:4px;flex-wrap:wrap;margin-left:auto} .tabs button{font:600 13.5px var(--body);padding:7px 12px;border-radius:999px;border:1px solid transparent;background:transparent;color:var(--muted);cursor:pointer} .tabs button.on{background:var(--panel);border-color:var(--line);color:var(--ink);box-shadow:var(--shadow)} .tabs button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.view{display:none;padding-block:28px 72px} .view.on{display:block}
+.hero{display:grid;gap:12px;max-width:72ch;padding-block:12px 20px}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-top:8px}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px 12px} .stat b{display:block;font:700 22px var(--display);font-variant-numeric:tabular-nums} .stat span{color:var(--muted);font-size:12px}
+.grp{margin-top:24px} .grp h2{margin-bottom:8px}
+.wf{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px 14px;margin-bottom:8px} .wf summary{cursor:pointer;display:flex;gap:10px;align-items:baseline;flex-wrap:wrap;list-style:none} .wf summary::-webkit-details-marker{display:none} .wf .id{font:500 11px var(--mono);color:var(--accent)} .wf summary b{font:600 15px var(--display)}
+.wb{margin-top:10px;font-size:13.5px} .steps{margin:10px 0 0;padding:0;list-style:none;display:grid;gap:8px} .steps li{display:grid;grid-template-columns:28px 1fr;gap:10px} .sn{font:600 12px var(--mono);color:var(--accent);padding-top:3px} .sb p{margin-top:2px}
+.meta{display:flex;gap:5px;flex-wrap:wrap;margin-top:5px} .skill{font:500 11px var(--mono);background:var(--accent-soft);color:var(--accent);padding:1px 7px;border-radius:5px} .tool{font:500 11px var(--mono);background:var(--line2);color:var(--muted);padding:1px 7px;border-radius:5px} .grey{font:500 11px var(--mono);color:var(--muted)}
+.io{display:flex;gap:12px;flex-wrap:wrap;font-size:12.5px;color:var(--muted);margin-top:4px} .io b{color:var(--ink);font-weight:600} .ask{color:var(--amber)} .ask b{color:var(--amber)}
+.sk{border-left:2px solid var(--line);padding:6px 0 6px 12px;margin:6px 0} .sk.d0{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px 14px} .sk summary{cursor:pointer;list-style:none} .sk summary::-webkit-details-marker{display:none} .sk summary b{font:600 14px var(--display)} .sel{font:500 11px var(--mono);color:var(--amber);margin-left:6px}
+.skb{margin-top:6px;font-size:13px;display:grid;gap:3px} .skb pre{white-space:pre-wrap;background:var(--line2);padding:10px;border-radius:8px;font:12px var(--mono);max-height:420px;overflow:auto}
+code{font:12px var(--mono);background:var(--line2);padding:1px 5px;border-radius:4px}
+.ex{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 18px;margin-top:10px} .exhead{display:grid;gap:4px;margin-bottom:14px}
+.exrow{display:grid;grid-template-columns:28px minmax(0,3fr) minmax(0,2fr);gap:12px;padding:10px 0;border-top:1px solid var(--line2)} .exn{font:600 12px var(--mono);color:var(--accent);padding-top:3px} .exs p{margin-top:2px;font-size:13.5px}
+.lit{background:var(--accent-soft);border:1px solid var(--accent);border-radius:8px;padding:8px 10px;font-size:12.5px} .lit code{background:transparent;color:var(--accent);font-weight:600;padding:0} .lit p{margin-top:3px;color:var(--muted)} .dim{color:var(--muted);font-size:12.5px;padding:8px 0}
+.exk{display:grid;gap:5px;align-content:start}
+.tw{overflow-x:auto;margin-top:8px} table{border-collapse:collapse;width:100%;font-size:13px;min-width:560px} th,td{text-align:left;padding:6px 8px;border-bottom:1px solid var(--line);vertical-align:top} th{font:600 11px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.prose{max-width:76ch} .prose p{margin-top:8px}
+@media (max-width:760px){.exrow{grid-template-columns:24px 1fr}.exk{grid-column:2}}
+</style>
+<div class="top"><div class="wrap"><div class="brand"><i></i>ecomOS Workflows</div><nav class="tabs" aria-label="Views"><button class="on" data-v="ex">One job, end to end</button><button data-v="wf">All workflows</button><button data-v="sk">Skill tree</button><button data-v="rt">Routing</button></nav></div></div>
+
+<div class="view on" id="v-ex"><div class="wrap">
+  <div class="hero"><span class="eyebrow">Draft for Kevin, 25 Sep 2026</span><h1>Each agent is a new hire with a written way of working and a shelf of skills.</h1><p class="muted">A workflow is the predetermined procedure for one job, the way a good person in the role would do it. A skill is a reusable step, nested so the agent picks the right sub-skill for the format, channel or platform. The Orchestrator hands a card to the owning agent with the workflow id; the agent follows the steps and loads skills as it goes.</p><div class="stats" id="stats"></div></div>
+  <!--EXAMPLE-->
+</div></div>
+
+<div class="view" id="v-wf"><div class="wrap">
+  <div class="hero"><span class="eyebrow">Workflows</span><h1>Every job, as a numbered procedure.</h1><p class="muted">Open a workflow to read its steps: what the agent does, the skill it pulls, the tools, the output, the check, and when it stops to ask the founder.</p></div>
+  <!--WORKFLOWS-->
+</div></div>
+
+<div class="view" id="v-sk"><div class="wrap">
+  <div class="hero"><span class="eyebrow">Skill tree</span><h1>Skills nest. The agent picks by the task's switches.</h1><p class="muted">A parent skill holds sub-skills selected by format, channel, platform, flow type, marketplace or supplier region. Each has a SKILL.md with purpose, inputs, steps, checks and an example. Shared skills live in agents/skills and any agent may call them.</p></div>
+  <!--SKILLS-->
+</div></div>
+
+<div class="view" id="v-rt"><div class="wrap">
+  <div class="hero"><span class="eyebrow">Routing</span><h1>How a break becomes work.</h1></div>
+  <div class="prose"><!--ROUTING--></div>
+</div></div>
+
+<script>
+const S=/*STATS*/;document.getElementById('stats').innerHTML=[[S.workflows,'workflows'],[S.steps,'steps written'],[S.skills,'skills'],[S.subskills,'of them sub-skills'],[S.agents,'agents']].map(([b,s])=>`<div class="stat"><b>${b}</b><span>${s}</span></div>`).join('');
+const tabs=[...document.querySelectorAll('.tabs button')];function show(v){tabs.forEach(b=>b.classList.toggle('on',b.dataset.v===v));['ex','wf','sk','rt'].forEach(k=>document.getElementById('v-'+k).classList.toggle('on',k===v));try{localStorage.setItem('ecomos-wf-view',v)}catch(e){}}
+tabs.forEach(b=>b.addEventListener('click',()=>{show(b.dataset.v);window.scrollTo({top:0})}));let v='ex';const h=(location.hash||'').replace('#','');if(['ex','wf','sk','rt'].includes(h))v=h;else{try{const s=localStorage.getItem('ecomos-wf-view');if(['ex','wf','sk','rt'].includes(s))v=s}catch(e){}}show(v);
+if(h.startsWith('wf-')){show('wf');const d=document.getElementById(h);if(d){d.open=true;setTimeout(()=>d.scrollIntoView({block:'start'}),50)}}
+</script>
