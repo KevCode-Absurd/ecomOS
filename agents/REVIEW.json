@@ -1,0 +1,1012 @@
+{
+ "merge": [
+  {
+   "keep": "LOOP-C01",
+   "drop": [
+    "ORCH-C06"
+   ],
+   "reason": "Same weekly business review. ORCH-C06 is an empty stub; LOOP-C01 has the full record. Renumber LOOP-C01 into the ORCH namespace when merged."
+  },
+  {
+   "keep": "LOOP-C05",
+   "drop": [
+    "ORCH-C09",
+    "MONEY-C19",
+    "BRAND-C65"
+   ],
+   "reason": "One dated seasonal calendar. ORCH-C09 is an empty stub of LOOP-C05. MONEY-C19 (acquisition financial calendar and peak guardrails) repeats LOOP-C05's base and stretch budget gates per window. BRAND-C65 (festive moment calendar for PR and events) is the same dated calendar; BRAND reads it and adds PR moments as rows."
+  },
+  {
+   "keep": "LOOP-C06",
+   "drop": [
+    "ORCH-C10"
+   ],
+   "reason": "Same crisis protocol. ORCH-C10 is an empty stub; LOOP-C06 has the full record."
+  },
+  {
+   "keep": "ORCH-C08",
+   "drop": [
+    "BRN-C13"
+   ],
+   "reason": "BRN-C13 (Door B first full build) is just the first run of BRN-C01, C02 and C04, invoked by ORCH-C08's onboarding run. One onboarding capability; the brain build is a step inside it."
+  },
+  {
+   "keep": "LOOP-C12",
+   "drop": [
+    "QA-C02",
+    "QA-C03",
+    "SITE-C34",
+    "CREA-C14",
+    "BRAND-C38",
+    "ORG-C15",
+    "LIFE-C21"
+   ],
+   "reason": "One pre-delivery QA gate owned by QA. QA-C02 (check specialist artefacts) and QA-C03 (check reports) are the same gate as LOOP-C12. SITE-C34, CREA-C14, BRAND-C38, ORG-C15 and LIFE-C21 are per-surface copies of the same claims and honesty check; they become surface checklists inside the gate plus a self-check in each specialist's output contract, not separate capabilities. Fold claims-tier tracing (from QA-C02) into LOOP-C12's encompasses."
+  },
+  {
+   "keep": "BRN-C03",
+   "drop": [
+    "QA-C04",
+    "BRAND-C22"
+   ],
+   "reason": "Claim tiering has one owner, the Keeper (ARCHITECTURE: Keeper tiers claims). QA-C04 (tier new claims found in artefacts, route to founder) and BRAND-C22 (verify first/only/number-one and comparison claims against evidence and legal risk) both produce a claims-tier entry."
+  },
+  {
+   "keep": "LOOP-C10",
+   "drop": [
+    "REG-C01",
+    "MONEY-C40"
+   ],
+   "reason": "One decision log owned by the Registrar. REG-C01 is an empty stub of LOOP-C10. MONEY-C40 (log every high-stakes decision with metric and review date) is the same log; its bottleneck-diagnosis part is DIAG's."
+  },
+  {
+   "keep": "REG-C08",
+   "drop": [
+    "ORCH-C11"
+   ],
+   "reason": "Both surface reads due and stale decisions. The Registrar owns read points and staleness; delivery goes through the Today screen (ORCH-C01), so ORCH-C11 is not a separate capability."
+  },
+  {
+   "keep": "REG-C02",
+   "drop": [
+    "BRAND-C47"
+   ],
+   "reason": "Taking a read at a read point with the control comparison in code is the Registrar's job for every registry entry, wild bets included."
+  },
+  {
+   "keep": "REG-C03",
+   "drop": [
+    "REG-C07"
+   ],
+   "reason": "REG-C07 (the brand's memory list: what was tried, what it did) is a view over the results REG-C03 records. Same output."
+  },
+  {
+   "keep": "LOOP-C09",
+   "drop": [
+    "PROP-C04",
+    "SITE-C49"
+   ],
+   "reason": "One ranker. PROP-C04 is an empty stub of LOOP-C09. SITE-C49 (score and prioritise the CRO backlog by expected profit) is a second ranker; SITE supplies hypotheses and evidence via the surface audit and Propose ranks them with everything else."
+  },
+  {
+   "keep": "ORCH-C04",
+   "drop": [
+    "ORCH-C12",
+    "MONEY-C62"
+   ],
+   "reason": "Answering a founder question is one capability. ORCH-C12 (explain any part of the business) duplicates ORCH-C04. MONEY-C62 (ask-the-data analyst over the metric contract) is the same Q&A with metric-read as a skill."
+  },
+  {
+   "keep": "LOOP-C19",
+   "drop": [
+    "ORCH-C05"
+   ],
+   "reason": "Both take facts, decisions and actions out of a conversation and route them to the brain, the decision log and queues. ORCH-C05 (chat) is an empty stub; LOOP-C19 has the full routing logic. Make the input 'chat or transcript'."
+  },
+  {
+   "keep": "LOOP-C42",
+   "drop": [
+    "LOOP-C37"
+   ],
+   "reason": "Both are the founder gate delivered on mobile while away (WhatsApp reply vs voice-note brief). One capability: mobile approvals, with voice or text summary."
+  },
+  {
+   "keep": "ORCH-C03",
+   "drop": [
+    "SITE-C20",
+    "MEDIA-C48",
+    "PROD-C25",
+    "PROD-C26"
+   ],
+   "reason": "Hand-offs and escalation are routing, not capabilities (README: hand-offs are named in agent files). SITE-C20 routes out-of-scope findings, MEDIA-C48 routes founder calls, PROD-C25 hands hiring to MONEY, PROD-C26 hands cash signals to MONEY. None has its own output type."
+  },
+  {
+   "keep": "BRN-C06",
+   "drop": [
+    "MONEY-C25"
+   ],
+   "reason": "The metric contract has one owner. ARCHITECTURE puts computation and freshness in the data layer (Keeper). MONEY-C25 (maintain metric contract and revenue definitions) is the same artefact; MONEY advises on definitions as an input."
+  },
+  {
+   "keep": "BRN-C02",
+   "drop": [
+    "MONEY-C61",
+    "MONEY-C26"
+   ],
+   "reason": "Landing sources on a schedule with freshness and failure flags is the Keeper's collector job. MONEY-C61 (warehouse and ETL) and MONEY-C26 (daily pass/warn/fail trust check) are the same collector run and its post-check."
+  },
+  {
+   "keep": "MONEY-C20",
+   "drop": [
+    "SITE-C17",
+    "ORG-C31"
+   ],
+   "reason": "Analytics setup and audit sits with measurement (06-MEA, MONEY). SITE-C17 (install tracking, UTM rules) and ORG-C31 (GA4, Search Console, GTM setup) are the same GA4 setup. The founder morning report part of SITE-C17 is already MONEY-C14 and LOOP-C01."
+  },
+  {
+   "keep": "MONEY-C21",
+   "drop": [
+    "MEDIA-C03"
+   ],
+   "reason": "Same Meta pixel and CAPI event-health audit. Tracking is measurement (MONEY). MEDIA reads the result before kill or scale calls."
+  },
+  {
+   "keep": "MONEY-C23",
+   "drop": [
+    "MEDIA-C05"
+   ],
+   "reason": "Platform ROAS vs blended MER is one of the attribution-model gaps MONEY-C23 reports. One reconciliation, read by MEDIA through the metric-read skill."
+  },
+  {
+   "keep": "MONEY-C09",
+   "drop": [
+    "LIFE-C31",
+    "MEDIA-C08"
+   ],
+   "reason": "CAC, payback and LTGP:CAC is one finance output. LIFE-C31 computes LTGP and CAC targets; MEDIA-C08 builds the new-customer P&L and sets ROAS/CPA targets from margin. Same numbers, three owners. MEDIA and LIFE read the targets."
+  },
+  {
+   "keep": "LIFE-C12",
+   "drop": [
+    "MONEY-C64"
+   ],
+   "reason": "RFM and cohort segmentation is the segment model the flows use. LIFE-C12 already scores RFM against the brand's own base."
+  },
+  {
+   "keep": "DIAG-C01",
+   "drop": [
+    "MONEY-C27",
+    "MONEY-C28"
+   ],
+   "reason": "Funnel diagnosis and revenue triage (sessions x CR x AOV) are the pipeline break read, which is DIAG's. MONEY keeps the numbers, not the diagnosis."
+  },
+  {
+   "keep": "MONEY-C15",
+   "drop": [
+    "MEDIA-C57",
+    "MEDIA-C66"
+   ],
+   "reason": "Ad-platform invoices against spend and the budget ledger are one of the platform-to-books gaps. MEDIA-C66 is the automated mode of MEDIA-C57; both are accounting output, owned by MONEY."
+  },
+  {
+   "keep": "MONEY-C53",
+   "drop": [
+    "PROD-C66"
+   ],
+   "reason": "Same three-way PO, receipt and invoice match. Accounts payable is MONEY's; PROD supplies the PO and receipt."
+  },
+  {
+   "keep": "MONEY-C52",
+   "drop": [
+    "PROD-C57",
+    "MONEY-C79"
+   ],
+   "reason": "COD remittance reconciliation is one cash job. PROD-C57 repeats it; MONEY-C79 (draft the escalation email) is the next step of the same capability and brings its founder_gate for the send. Courier weight-billing disputes move to PROD-C67."
+  },
+  {
+   "keep": "MONEY-C08",
+   "drop": [
+    "MONEY-C80"
+   ],
+   "reason": "MONEY-C80 is the live mode of MONEY-C08's financing comparison against the same 13-week forecast."
+  },
+  {
+   "keep": "BRAND-C32",
+   "drop": [
+    "BRN-C09"
+   ],
+   "reason": "Both build the voice sheet from liked and disliked examples. BRAND owns voice (04-BRD); the Keeper stores it."
+  },
+  {
+   "keep": "BRAND-C14",
+   "drop": [
+    "BRN-C10",
+    "CREA-C01"
+   ],
+   "reason": "One verbatim language bank per avatar. BRN-C10 maintains the avatar and language bank 'with the Brand strategist'; CREA-C01 mines reviews, tickets and search terms into a research packet. Same sources, same output. CREA pulls a packet from BRAND-C14."
+  },
+  {
+   "keep": "BRAND-C11",
+   "drop": [
+    "CREA-C02"
+   ],
+   "reason": "Buyer personas and the avatar record are the same artefact. BRAND owns avatars (02-AVT)."
+  },
+  {
+   "keep": "BRAND-C15",
+   "drop": [
+    "BRAND-C50"
+   ],
+   "reason": "BRAND-C50 (keep identity and customer sections current) duplicates BRAND-C15 (maintain and refresh avatars) plus BRAND-C32 and BRN-C03. Storage is the Keeper's; content comes from the owning BRAND capabilities."
+  },
+  {
+   "keep": "CREA-C03",
+   "drop": [
+    "BRAND-C17"
+   ],
+   "reason": "Both produce a ranked list of ad angles with proof per persona. Angles are creative output; CREA owns them and reads the avatar record."
+  },
+  {
+   "keep": "LIFE-C29",
+   "drop": [
+    "MONEY-C29"
+   ],
+   "reason": "Same voice-of-customer program (surveys, interviews, polls). CX (17-CXP) owns NPS/CSAT and VoC; BRAND-C05 keeps discovery interviews."
+  },
+  {
+   "keep": "BRN-C11",
+   "drop": [
+    "BRAND-C56",
+    "LIFE-C56",
+    "LIFE-C63",
+    "MEDIA-C43",
+    "ORG-C50"
+   ],
+   "reason": "Competitor collection is one data-layer job. BRAND-C56 (continuous monitoring with change alerts), LIFE-C56 (competitor prices), LIFE-C63 (competitor policy pages), MEDIA-C43 (competitor ads, pricing, keywords) and ORG-C50 (weekly competitor change brief) all snapshot the same public sources on a schedule. Specialists subscribe to the Keeper's alerts; MEDIA's reaction rule (pull a shared SKU on a 20-30% competitor discount) becomes a MEDIA-C17 input. ORG-C50's AI-answer part stays in ORG-C37."
+  },
+  {
+   "keep": "LOOP-C13",
+   "drop": [
+    "SCT-C03",
+    "CREA-C33"
+   ],
+   "reason": "One competitor teardown standard owned by the Scout. SCT-C03 (tag competitor ads and pages as signals) and CREA-C33 (research competitor creative, signal only) are teardowns in the same shape."
+  },
+  {
+   "keep": "PROD-C46",
+   "drop": [
+    "LIFE-C57",
+    "LOOP-C30"
+   ],
+   "reason": "Three records for marketplace MAP and price parity. PROD-C46 (Buy Box, reseller pricing, MAP), LIFE-C57 (MAP and parity) and LOOP-C30 (listing parity and unauthorised resellers) produce the same flags. Marketplaces are PROD's (22-AMZ); the Keeper's crawl can feed it."
+  },
+  {
+   "keep": "SITE-C36",
+   "drop": [
+    "CREA-C53",
+    "MEDIA-C44"
+   ],
+   "reason": "Three audits of ad-to-page match. SITE-C36 covers ad to page to checkout; CREA-C53 checks live ads vs destination; MEDIA-C44 mirrors the best headline on the landing page. One audit, owned by SITE because the fix usually lands on the page."
+  },
+  {
+   "keep": "SITE-C39",
+   "drop": [
+    "CREA-C27"
+   ],
+   "reason": "Landing and product page copy blocks are page copy. ARCHITECTURE gives page specs and copy to SITE. CREA supplies the ad promise as an input."
+  },
+  {
+   "keep": "SITE-C35",
+   "drop": [
+    "CREA-C25"
+   ],
+   "reason": "Both decide where ad traffic lands (PDP, advertorial, quiz, marketplace, shared offer). Funnel architecture is SITE's output."
+  },
+  {
+   "keep": "LIFE-C14",
+   "drop": [
+    "CREA-C30",
+    "CREA-C29"
+   ],
+   "reason": "Email and SMS copy is Lifecycle's (ARCHITECTURE: Lifecycle produces flows and campaigns). CREA-C30 writes lifecycle email copy blocks; CREA-C29 writes SMS marketing copy. LIFE-C14 already covers both channels."
+  },
+  {
+   "keep": "PROD-C34",
+   "drop": [
+    "CREA-C28"
+   ],
+   "reason": "Marketplace listing copy is part of the listing, which PROD produces (ARCHITECTURE). Same title and bullet rules."
+  },
+  {
+   "keep": "MEDIA-C52",
+   "drop": [
+    "PROD-C37"
+   ],
+   "reason": "Both draft the Amazon PPC structure as a change list; PROD-C37 already hands execution to MEDIA. Ads are MEDIA's."
+  },
+  {
+   "keep": "ORG-C23",
+   "drop": [
+    "SITE-C60"
+   ],
+   "reason": "Same Product, Offer, Review, Breadcrumb and FAQ schema on money pages. Structured data is technical SEO (15-SEO, ORG)."
+  },
+  {
+   "keep": "SITE-C07",
+   "drop": [
+    "ORG-C19"
+   ],
+   "reason": "Both design the collection tree and menu. Store information architecture is SITE's; ORG adds URL and doorway-page rules as an SEO input."
+  },
+  {
+   "keep": "SITE-C57",
+   "drop": [
+    "LIFE-C34"
+   ],
+   "reason": "Both design quizzes and on-site personalization with lift vs non-quiz buyers. The output is a site change."
+  },
+  {
+   "keep": "SITE-C56",
+   "drop": [
+    "LIFE-C35"
+   ],
+   "reason": "Both set on-site search and merchandising ranking rules. The surface is the site."
+  },
+  {
+   "keep": "PROD-C47",
+   "drop": [
+    "ORG-C30"
+   ],
+   "reason": "One master product feed. ORG-C30 keeps the merchant feed accurate for free listings and AI shopping, which is PROD-C47's feed handed to ORG."
+  },
+  {
+   "keep": "CREA-C52",
+   "drop": [
+    "CREA-C23"
+   ],
+   "reason": "CREA-C23 (flag DPA template and feed risks) is the QA step of CREA-C52 (design DPA overlay templates). Same artefact."
+  },
+  {
+   "keep": "LIFE-C36",
+   "drop": [
+    "CREA-C13"
+   ],
+   "reason": "Offer construction is Lifecycle's (03-OFF). CREA-C13 writes bundle, guarantee, urgency and value stack 'as a lever'; that is LIFE-C36, C39 and C42's job. CREA writes ad copy about the approved offer."
+  },
+  {
+   "keep": "LIFE-C39",
+   "drop": [
+    "SITE-C41"
+   ],
+   "reason": "SITE-C41 designs bundle tiers and savings per tier, which is LIFE-C39. The page layout of the buy box stays in SITE-C38."
+  },
+  {
+   "keep": "MONEY-C05",
+   "drop": [
+    "LIFE-C37"
+   ],
+   "reason": "Same margin waterfall and break-even go/no-go for an offer or promo. The economics model is finance output (MONEY)."
+  },
+  {
+   "keep": "LIFE-C02",
+   "drop": [
+    "LIFE-C44"
+   ],
+   "reason": "Both design the pop-up offer; LIFE-C44's economics is the MONEY-C05 model applied to it."
+  },
+  {
+   "keep": "LIFE-C45",
+   "drop": [
+    "BRAND-C43"
+   ],
+   "reason": "Both design referral incentives. Referral programs are an offer (LIFE); packaging and unboxing parts of BRAND-C43 are LIFE-C25."
+  },
+  {
+   "keep": "LIFE-C08",
+   "drop": [
+    "LIFE-C61"
+   ],
+   "reason": "LIFE-C61 (personalised win-back per lapsed customer) is a mode of the win-back flow, not a separate job. Keep its founder_gate for the send."
+  },
+  {
+   "keep": "LOOP-C03",
+   "drop": [
+    "MEDIA-C58"
+   ],
+   "reason": "Same cross-channel allocation by marginal return. Cross-domain allocation is ORCH's; MEDIA reports each channel's headroom."
+  },
+  {
+   "keep": "MEDIA-C63",
+   "drop": [
+    "MEDIA-C64"
+   ],
+   "reason": "MEDIA-C64 (autonomous budget agent in guardrails) is the continuous mode of MEDIA-C63's standing rules. The cross-channel part belongs to LOOP-C03."
+  },
+  {
+   "keep": "MEDIA-C07",
+   "drop": [
+    "MEDIA-C61"
+   ],
+   "reason": "Both govern platform-native automation (suggestions, Advantage+, PMax auto features) with a log and guardrails."
+  },
+  {
+   "keep": "MEDIA-C55",
+   "drop": [
+    "MEDIA-C65"
+   ],
+   "reason": "MEDIA-C65 (policy pre-check from rejection history) is the prevention step of MEDIA-C55 (track and resolve policy rejections). One ad-policy capability."
+  },
+  {
+   "keep": "MEDIA-C15",
+   "drop": [
+    "CREA-C17"
+   ],
+   "reason": "Both set up creative test structure, winner rule and read window in the ad account. Test plans and kill rules are MEDIA's (ARCHITECTURE); CREA supplies hypotheses."
+  },
+  {
+   "keep": "CREA-C18",
+   "drop": [
+    "MEDIA-C16",
+    "CREA-C50"
+   ],
+   "reason": "One creative volume and production plan. MEDIA-C16 sets ads per $1,000 and concept counts; CREA-C50 is the festive version of the same production calendar, fed by LOOP-C05."
+  },
+  {
+   "keep": "CREA-C15",
+   "drop": [
+    "MEDIA-C18"
+   ],
+   "reason": "Both diagnose creative fatigue (frequency by segment vs persona pool) and fix the creative mix. The artefact is a revival plan, which CREA owns; frequency is a metric-read input."
+  },
+  {
+   "keep": "CREA-C20",
+   "drop": [
+    "MEDIA-C28"
+   ],
+   "reason": "CREA-C20 keeps the live platform-spec sheet; MEDIA-C28 checks TikTok videos against the same spec."
+  },
+  {
+   "keep": "CREA-C26",
+   "drop": [
+    "CREA-C34"
+   ],
+   "reason": "CREA-C34 (line edit and readability in code before QA) is the self-check of CREA-C26 (apply the copy rules). Same procedure."
+  },
+  {
+   "keep": "CREA-C21",
+   "drop": [
+    "ORG-C08"
+   ],
+   "reason": "Same AI-use policy (AI drafts, a human originates and fact-checks). One policy for all written output."
+  },
+  {
+   "keep": "ORG-C49",
+   "drop": [
+    "MEDIA-C67"
+   ],
+   "reason": "Both scan public posts for creators already using the brand or category and draft outreach. One discovery agent; MEDIA picks whitelisting candidates from its list."
+  },
+  {
+   "keep": "LIFE-C22",
+   "drop": [
+    "MEDIA-C60"
+   ],
+   "reason": "The COD confirmation flow on WhatsApp is LIFE-C22's (and SITE-C67 triggers it). Click-to-WhatsApp ads are a campaign type under MEDIA-C09 and C11, not a separate capability."
+  },
+  {
+   "keep": "BRAND-C54",
+   "drop": [
+    "ORG-C43",
+    "LIFE-C54"
+   ],
+   "reason": "Three records for reputation-crisis response (detect a public complaint, draft a holding statement and channel plan). The public statement is PR output (BRAND). ORG posts it; LOOP-C06 runs the cross-team crisis."
+  },
+  {
+   "keep": "LIFE-C28",
+   "drop": [
+    "LIFE-C51"
+   ],
+   "reason": "Review requests and responses are one program across the site, Google and marketplaces. PROD-C38 keeps marketplace account health."
+  },
+  {
+   "keep": "LIFE-C53",
+   "drop": [
+    "ORG-C39"
+   ],
+   "reason": "Both set up and moderate an owned customer community (Slack, Discord, Circle, WhatsApp). A customer community is a retention program (LIFE)."
+  },
+  {
+   "keep": "LIFE-C27",
+   "drop": [
+    "MONEY-C71"
+   ],
+   "reason": "Support macros and knowledge base are CX output (17-CXP). MONEY-C38 keeps capacity planning."
+  },
+  {
+   "keep": "ORG-C47",
+   "drop": [
+    "ORG-C51"
+   ],
+   "reason": "ORG-C51 says it 'extends ORG-C47'. Same feedback loop; keep one record with founder_gate on the ticket step."
+  },
+  {
+   "keep": "PROD-C56",
+   "drop": [
+    "LIFE-C64",
+    "PROD-C76"
+   ],
+   "reason": "Three NDR records. LIFE-C64 (reschedule via courier portal) is an execution route; PROD-C76 (reschedule vs RTO by unit economics) is the decision rule. Both sit inside NDR resolution."
+  },
+  {
+   "keep": "SITE-C67",
+   "drop": [
+    "PROD-C58"
+   ],
+   "reason": "Both change checkout payment options for COD-heavy pincodes (prepaid-only, partial advance, COD fee). The surface is checkout (SITE)."
+  },
+  {
+   "keep": "LOOP-C28",
+   "drop": [
+    "PROD-C65"
+   ],
+   "reason": "Supplier contracts, price locks and renewal dates are the same dated contract register the Keeper holds."
+  },
+  {
+   "keep": "PROD-C15",
+   "drop": [
+    "PROD-C09"
+   ],
+   "reason": "PROD-C09 turns specs into a sourcing request suppliers quote on, which is the RFQ (PROD-C15). Supplier vetting in it is PROD-C14."
+  },
+  {
+   "keep": "PROD-C20",
+   "drop": [
+    "PROD-C33"
+   ],
+   "reason": "PROD-C33 repeats sample sign-off and pre-shipment inspection for FBA runs. FNSKU labelling goes to PROD-C35."
+  },
+  {
+   "keep": "PROD-C16",
+   "drop": [
+    "PROD-C74"
+   ],
+   "reason": "Tracking sample shipments from several factories is part of the sample gate."
+  },
+  {
+   "keep": "PROD-C17",
+   "drop": [
+    "PROD-C75"
+   ],
+   "reason": "PROD-C75 (agent-led negotiation in guardrails) is a mode of the cost-down negotiation. Keep its founder_gate."
+  },
+  {
+   "keep": "MONEY-C48",
+   "drop": [
+    "BRAND-C69"
+   ],
+   "reason": "Both watch lookalike domains, squatting and counterfeit listings. Keep one watch in security (23-SEC) and add BRAND-C69's trademark, domain and handle renewal dates to it."
+  },
+  {
+   "keep": "SITE-C13",
+   "drop": [
+    "MONEY-C45"
+   ],
+   "reason": "Both keep a live inventory of every app, script and tag, vet before install and remove unused ones. One inventory; the CVE and dependency scan is a step MONEY-C50's security audit reads."
+  },
+  {
+   "keep": "LOOP-C11",
+   "drop": [
+    "BRAND-C68"
+   ],
+   "reason": "Both draft a periodic founder update from the registry with numbers, what worked and what did not. One update; BRAND supplies the brand narrative section."
+  }
+ ],
+ "reassign": [
+  {
+   "id": "LOOP-C04",
+   "to": "ORCH",
+   "reason": "A launch plan that sequences several specialists with dates is process and routing, which ORCH owns. PROP ranks ideas; it does not run cross-team timelines (compare LOOP-C16, owned by ORCH)."
+  },
+  {
+   "id": "MEDIA-C68",
+   "to": "DIAG",
+   "reason": "Fanning an anomaly out to site speed, stock and competitor data for root cause is a cross-domain diagnosis. DIAG owns root cause across stages."
+  },
+  {
+   "id": "MEDIA-C04",
+   "to": "MONEY",
+   "reason": "Conversion tracking setup (primary action, enhanced conversions, GTM or server route) is measurement (06-MEA). This keeps it with MONEY-C20 and C21."
+  },
+  {
+   "id": "MEDIA-C56",
+   "to": "MONEY",
+   "reason": "Choosing and setting up an attribution or MMM tool is measurement stack work. It sits next to MONEY-C23 and MONEY-C63."
+  },
+  {
+   "id": "CREA-C38",
+   "to": "MEDIA",
+   "reason": "Partnership Ads and Spark authorisation is ad-account setup, like MEDIA-C26's Spark codes. CREA owns the asset, not the ad account."
+  },
+  {
+   "id": "LIFE-C55",
+   "to": "MONEY",
+   "reason": "GST credit notes against refunds are accounting and tax (MONEY-C12). The output is a filing, not a customer message."
+  },
+  {
+   "id": "LIFE-C66",
+   "to": "MONEY",
+   "reason": "DPDP access and erasure requests across every system are privacy compliance, which MONEY-C49 owns. LIFE hands the request in from support."
+  },
+  {
+   "id": "LIFE-C62",
+   "to": "MONEY",
+   "reason": "True customer profitability (support, returns, shipping and discount cost per customer) is a margin model. MONEY computes it; LIFE uses it for tiers."
+  },
+  {
+   "id": "LIFE-C50",
+   "to": "MONEY",
+   "reason": "The 'how did you hear about us' survey is an attribution input to the measurement stack, next to MONEY-C23."
+  },
+  {
+   "id": "LIFE-C48",
+   "to": "BRN",
+   "reason": "Identity resolution across orders, ESP, WhatsApp, POS and marketplaces is data-layer work. It sits with the collectors and warehouse (BRN-C02), and every specialist reads it."
+  },
+  {
+   "id": "MONEY-C70",
+   "to": "PROD",
+   "reason": "Daily 3PL and warehouse SLA tracking is physical fulfilment. PROD already owns 3PL selection (PROD-C52), warehouse workflow (PROD-C53) and courier scorecards (PROD-C59)."
+  },
+  {
+   "id": "MONEY-C37",
+   "to": "PROD",
+   "reason": "Gating POs on a tech pack and running the production critical path is sourcing work (PROD-C13, C16, C70). MONEY keeps the cash side (MONEY-C07)."
+  },
+  {
+   "id": "MONEY-C03",
+   "to": "PROD",
+   "reason": "ARCHITECTURE gives landed cost models to Product and supply (skill landed-cost-model), and PROD-C23 already refreshes landed cost. MONEY reads it for margin."
+  },
+  {
+   "id": "LOOP-C34",
+   "to": "PROD",
+   "reason": "Drafting a courier or 3PL rate renegotiation is logistics vendor work, next to PROD-C59 courier scorecards. The Keeper holds facts; it should not write outbound asks."
+  },
+  {
+   "id": "PROD-C60",
+   "to": "MONEY",
+   "reason": "HSN/SAC mapping and e-invoice rejections are GST compliance (MONEY-C12). PROD supplies the SKU master."
+  },
+  {
+   "id": "BRAND-C67",
+   "to": "LIFE",
+   "reason": "A mystery-shopper walk of browse, checkout, confirmation and a real support query is a customer-experience audit (17-CXP). It is not brand strategy."
+  },
+  {
+   "id": "LIFE-C32",
+   "to": "MEDIA",
+   "reason": "Setting paid budget and a CPA ceiling for existing customers is paid media. MEDIA-C19 already holds all existing-customer spend in one campaign."
+  },
+  {
+   "id": "PROD-C42",
+   "to": "MONEY",
+   "reason": "Crowdfunding, private capital and financing options are MONEY-C08's job. The 'hard-to-source manufacturer' part can stay a PROD-C14 note."
+  },
+  {
+   "id": "LOOP-C38",
+   "to": "ORG",
+   "reason": "What AI shopping agents say about the brand is the same surface as ORG-C37 (AI visibility) and ORG-C36 (correct wrong AI facts). QA keeps the claims-tier check through LOOP-C12. The agent-assisted performance note is a channel read, not a QA pass."
+  },
+  {
+   "id": "MEDIA-C51",
+   "to": "MONEY",
+   "reason": "Reconciling what the affiliate network says is owed against real orders is a payout reconciliation. MEDIA keeps commission design; MONEY reconciles and pays."
+  },
+  {
+   "id": "PROD-C49",
+   "to": "MEDIA",
+   "reason": "Recomputing quick-commerce ROAS from transaction value (not MRP) is an ad-performance read for MEDIA-C53's retail media. Dark-store unit economics can stay a PROD note."
+  }
+ ],
+ "gaps": [
+  {
+   "name": "On-site AI shopping assistant",
+   "agent": "SITE",
+   "what": "A pre-purchase chat on the site that answers product, size and delivery questions from the catalogue, stock and claims tiers only, and hands off to a person. Different from LIFE-C49 (support actions) and SITE-C73 (third-party agents).",
+   "autonomy": "founder_gate",
+   "trigger": "event: founder approves; weekly transcript and claims review"
+  },
+  {
+   "name": "Chargeback and payment dispute responses",
+   "agent": "MONEY",
+   "what": "Build the evidence pack (order, delivery proof, OTP, chat log) for each gateway chargeback or UPI dispute and file it before the deadline. Track win rate by reason code. MONEY-C42 sets alert thresholds but nothing answers disputes.",
+   "autonomy": "human_assist",
+   "trigger": "event: dispute opened on a payment gateway"
+  },
+  {
+   "name": "Courier lost and damaged parcel claims",
+   "agent": "PROD",
+   "what": "File claims with couriers and aggregators for lost, damaged or wrongly marked RTO shipments, with proof, and track payout against the claim. Only FBA paperwork (PROD-C35) is covered today.",
+   "autonomy": "human_assist",
+   "trigger": "event: shipment marked lost or damaged, or RTO received damaged; weekly sweep"
+  },
+  {
+   "name": "Marketplace reimbursement claims",
+   "agent": "PROD",
+   "what": "Find and file reimbursements for lost or damaged marketplace inventory and wrong fees (FBA reimbursements, Flipkart SPF, Myntra claims) inside each seller console.",
+   "autonomy": "human_assist",
+   "trigger": "weekly"
+  },
+  {
+   "name": "Insurance claims",
+   "agent": "MONEY",
+   "what": "Prepare and track claims under transit, stock, cyber and product liability policies, with the evidence each insurer asks for. MONEY-C59 buys cover but nothing files claims.",
+   "autonomy": "human_assist",
+   "trigger": "event: insured loss"
+  },
+  {
+   "name": "Influencer agreements and ASCI disclosure checks",
+   "agent": "MONEY",
+   "what": "Keep a creator agreement template (deliverables, usage rights, exclusivity, payment, disclosure clause) and check live creator and affiliate posts carry the ASCI and platform disclosure. CREA-C10 tracks rights but no contract or live disclosure check exists.",
+   "autonomy": "human_assist",
+   "trigger": "event: creator deal agreed; weekly check of live posts"
+  },
+  {
+   "name": "Shoot production and model releases",
+   "agent": "CREA",
+   "what": "Run the shoot: shot list, call sheet, studio or location and model booking, signed model and location releases, retouch QA against the real product, and filing to the asset library. CREA-C12 directs photos; ORG-C06 covers organic batching only.",
+   "autonomy": "human_assist",
+   "trigger": "event: shoot approved"
+  },
+  {
+   "name": "Packaging artwork and mandatory label brief",
+   "agent": "BRAND",
+   "what": "Brief packaging artwork and dielines per channel with mandatory declarations placed (MRP, Legal Metrology, net quantity, BIS or hallmark, EPR mark). PROD-C13 has the spec and LIFE-C25 the unboxing, but no one owns the artwork.",
+   "autonomy": "founder_gate",
+   "trigger": "event: new SKU, new channel or packaging change"
+  },
+  {
+   "name": "Festive gifting operations",
+   "agent": "SITE",
+   "what": "Turn on gift wrap, gift message, price-hidden gift invoice and delivery-by-date cutoffs per pincode for Diwali, Rakhi and wedding season, plus gift guides, and switch them off after the window.",
+   "autonomy": "founder_gate",
+   "trigger": "event: 60 days before each gifting window in LOOP-C05"
+  },
+  {
+   "name": "Corporate gifting sales desk",
+   "agent": "LIFE",
+   "what": "Run B2B gifting orders: lead list, quote with bulk tiers, custom packaging or engraving, GST invoice, split delivery to many addresses, and a repeat-order reminder next season. LIFE-C58 has corporate gift card terms only.",
+   "autonomy": "human_assist",
+   "trigger": "event: inbound corporate enquiry; 90 days before Diwali for outbound"
+  },
+  {
+   "name": "Offline retail, stockist and pop-up operations",
+   "agent": "PROD",
+   "what": "Run the operations of a pop-up, exhibition or stockist: POS setup, stock transfer and return, consignment settlement, staff roster and daily sales reconciliation into the metric contract. BRAND-C42 only designs the event.",
+   "autonomy": "human_assist",
+   "trigger": "event: pop-up, exhibition or stockist deal approved"
+  },
+  {
+   "name": "Subscription payment failure recovery",
+   "agent": "LIFE",
+   "what": "Set retry schedules, card-updater and UPI AutoPay or e-mandate re-authorisation (RBI rules) for failed renewals, and measure involuntary churn apart from cancellations. LIFE-C09 sends the message but no one owns the recovery setup.",
+   "autonomy": "founder_gate",
+   "trigger": "event: failed renewal; monthly involuntary-churn read"
+  },
+  {
+   "name": "Mobile app operations (if the brand has an app)",
+   "agent": "SITE",
+   "what": "App store listing and screenshots, release QA, deep links from ads and email, push opt-in prompt and app-only offers, and app ratings. No record covers an app.",
+   "autonomy": "human_assist",
+   "trigger": "event: brand has or launches an app; per release"
+  },
+  {
+   "name": "Export compliance and international duties",
+   "agent": "PROD",
+   "what": "Set up IEC and LUT for zero-rated exports, HS codes, commercial invoice and courier export paperwork, and choose DDP vs DDU so the buyer is not surprised by duty. SITE-C12 and PROD-C21 do not cover the paperwork.",
+   "autonomy": "human_assist",
+   "trigger": "event: first international order or new export market"
+  },
+  {
+   "name": "Multi-channel inventory sync and order routing",
+   "agent": "PROD",
+   "what": "Keep one stock pool across site, marketplaces, quick commerce and stores, with per-channel buffers to stop overselling, and set order routing and split-shipment rules. PROD-C63 only audits mismatches after the fact.",
+   "autonomy": "founder_gate",
+   "trigger": "continuous; event: new channel added"
+  },
+  {
+   "name": "GST return preparation and e-way bills",
+   "agent": "MONEY",
+   "what": "Prepare GSTR-1 and 3B, match input credit against GSTR-2B, claim marketplace TCS and TDS credits, and raise e-way bills for B2B and stock transfers. MONEY-C12 tracks thresholds only.",
+   "autonomy": "human_assist",
+   "trigger": "monthly; event: B2B dispatch or stock transfer"
+  },
+  {
+   "name": "Month-end close and management accounts",
+   "agent": "MONEY",
+   "what": "Run a close checklist (bank and gateway recs, accruals, inventory valuation, deferred revenue) and publish management accounts against budget. The pieces exist (MONEY-C51, C53, C56), but nothing owns the close.",
+   "autonomy": "human_assist",
+   "trigger": "monthly"
+  },
+  {
+   "name": "Product recall and safety incident procedure",
+   "agent": "PROD",
+   "what": "When a defect is a safety risk, find affected batches, stop sale on every channel, contact buyers, arrange returns or replacements, and log regulator notices. PROD-C73 covers CAPA only, and LOOP-C06 is generic.",
+   "autonomy": "founder_gate",
+   "trigger": "event: safety-related defect or regulator notice"
+  },
+  {
+   "name": "Grievance officer queue and consumer notices",
+   "agent": "LIFE",
+   "what": "Run the grievance queue required by India's E-Commerce Rules: acknowledge in 48 hours and resolve in 1 month. Track consumer-forum (e-Daakhil) and legal notices to closure. LOOP-C27 checks the disclosure but nobody works the queue.",
+   "autonomy": "human_assist",
+   "trigger": "event: grievance or notice received; weekly SLA check"
+  },
+  {
+   "name": "Warranty, repair and after-sales service",
+   "agent": "LIFE",
+   "what": "Run resizing, repair, re-plating, warranty and buyback or exchange requests. That means intake, courier pickup, repair partner, status updates and cost per case. This matters for jewellery and durable goods, and returns (LIFE-C26) do not cover it.",
+   "autonomy": "human_assist",
+   "trigger": "event: service request"
+  },
+  {
+   "name": "Made-to-order and personalised order workflow",
+   "agent": "PROD",
+   "what": "Handle engraving, custom size or made-to-order items: capture the spec at checkout, get the customer's approval on a proof, track production, and state non-returnable terms. No record covers custom orders.",
+   "autonomy": "human_assist",
+   "trigger": "event: personalised or made-to-order SKU sold"
+  }
+ ],
+ "autonomy": [
+  {
+   "id": "LIFE-C11",
+   "to": "founder_gate",
+   "reason": "Builds live ESP flows that email customers (back-in-stock, review request). external_write=ESP flow build and customer-facing."
+  },
+  {
+   "id": "LIFE-C12",
+   "to": "founder_gate",
+   "reason": "Writes segments into the ESP (external_write=ESP segment build). Segments decide who gets every send."
+  },
+  {
+   "id": "LIFE-C15",
+   "to": "founder_gate",
+   "reason": "Writes templates into the ESP (external_write=ESP template build). The template is what customers see."
+  },
+  {
+   "id": "LIFE-C16",
+   "to": "founder_gate",
+   "reason": "Changes DNS and suppression settings on the ESP. A wrong suppression silently stops or restarts mail to real customers."
+  },
+  {
+   "id": "LIFE-C29",
+   "to": "founder_gate",
+   "reason": "Sends NPS and CSAT surveys to customers (external_write=survey tool send)."
+  },
+  {
+   "id": "LIFE-C50",
+   "to": "founder_gate",
+   "reason": "Adds a survey to the live thank-you page (external_write=storefront). Customer-facing."
+  },
+  {
+   "id": "LIFE-C52",
+   "to": "founder_gate",
+   "reason": "Pushes reviews and UGC into the product feed, ads and marketplace listings. External write, customer-facing, and needs usage rights."
+  },
+  {
+   "id": "LIFE-C48",
+   "to": "founder_gate",
+   "reason": "Merges guest-checkout orders into accounts. That is a write to customer records in the store and ESP and is hard to undo."
+  },
+  {
+   "id": "ORG-C26",
+   "to": "founder_gate",
+   "reason": "Refreshes, redirects and prunes live pages (external_write=site pages / redirect rules). Changes what customers and search engines see."
+  },
+  {
+   "id": "ORG-C27",
+   "to": "founder_gate",
+   "reason": "Edits live page content to add links (external_write=site page content)."
+  },
+  {
+   "id": "PROD-C55",
+   "to": "founder_gate",
+   "reason": "Picks and fails over couriers through the aggregator API. An external write that changes shipping spend and delivery for real orders."
+  },
+  {
+   "id": "PROD-C59",
+   "to": "founder_gate",
+   "reason": "Moves shipping volume by changing aggregator courier priority settings. External write that changes spend."
+  },
+  {
+   "id": "PROD-C47",
+   "to": "founder_gate",
+   "reason": "Pushes the feed to channels (outputs include a per-channel push log). Prices and stock shown to customers change."
+  },
+  {
+   "id": "PROD-C40",
+   "to": "founder_gate",
+   "reason": "Runs Amazon coupons, Lightning Deals and Prime Day promotions. That spends margin and changes customer-facing price."
+  },
+  {
+   "id": "PROD-C22",
+   "to": "founder_gate",
+   "reason": "The steps include sending forecasts and PO drafts to suppliers, flagging SKUs on the PDP and throttling ad spend. Keep the compute as agent_does; gate the send, PDP and spend steps."
+  },
+  {
+   "id": "MEDIA-C07",
+   "to": "human_assist",
+   "reason": "Turning off auto-apply and testing suggestions in a sandbox are ad-account writes. Meta is read-only, so the output is a change list for a person."
+  },
+  {
+   "id": "MEDIA-C20",
+   "to": "human_assist",
+   "reason": "Capping the DPA ad set and moving it out of the cold CBO are ad-account changes. The output is a change list."
+  },
+  {
+   "id": "MEDIA-C42",
+   "to": "human_assist",
+   "reason": "Throttling spend and running clearance or new-arrival campaigns are budget changes. Meta is read-only, so it produces a change list."
+  },
+  {
+   "id": "MONEY-C20",
+   "to": "human_assist",
+   "reason": "'Configure' GA4 means changing retention, events, filters and Signals, with 'settings change log entries' as output. That is an external write, and the Signals and consent change needs a founder decision."
+  },
+  {
+   "id": "MONEY-C22",
+   "to": "human_assist",
+   "reason": "Fixing link mismatches means editing live ad, email and social URLs. Those are external writes (Meta is read-only)."
+  },
+  {
+   "id": "MONEY-C48",
+   "to": "human_assist",
+   "reason": "Locking the registrar account and fixing dangling DNS records need a person with the registrar login. It is a write."
+  },
+  {
+   "id": "MONEY-C51",
+   "to": "human_assist",
+   "reason": "Posts journal entries to the accounting ledger (external_write=accounting ledger). An accountant should import and post."
+  },
+  {
+   "id": "MONEY-C56",
+   "to": "human_assist",
+   "reason": "Writes depreciation entries to the accounting ledger."
+  },
+  {
+   "id": "MONEY-C57",
+   "to": "human_assist",
+   "reason": "Writes expense and card reconciliations to the ledger and applies expense policy to staff claims."
+  },
+  {
+   "id": "MONEY-C60",
+   "to": "human_assist",
+   "reason": "Writes FX conversions and payment reconciliations to the ledger."
+  },
+  {
+   "id": "SITE-C53",
+   "to": "founder_gate",
+   "reason": "'Ships a winner' changes the live site for every customer. It needs a founder decision, even after a test win."
+  },
+  {
+   "id": "SITE-C15",
+   "to": "founder_gate",
+   "reason": "Fixes broken links, changes redirects and reconciles platform inventory on the live store. Those writes change what customers see and what can be bought."
+  },
+  {
+   "id": "BRAND-C55",
+   "to": "founder_gate",
+   "reason": "Approves ambassadors, assigns tasks and may pay rewards on an external platform (external_write flagged). Customer-facing and may spend money."
+  },
+  {
+   "id": "BRAND-C67",
+   "to": "founder_gate",
+   "reason": "Places a real purchase (spends money) and opens a real support ticket (uses team time). external_write is already flagged 'founder-approved', which conflicts with agent_does."
+  },
+  {
+   "id": "CREA-C36",
+   "to": "founder_gate",
+   "reason": "Spends on licensed AI-actor generation. A synthetic person reading a hook to camera can read as an invented testimonial, which touches the no-invented-people red line."
+  }
+ ]
+}

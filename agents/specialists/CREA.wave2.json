@@ -1,0 +1,1440 @@
+[
+  {
+    "id": "CREA-C06",
+    "extends": "CREA-C06",
+    "name": "Write standardized concept and creative briefs",
+    "folders": [
+      "10-MCR",
+      "11-ADC"
+    ],
+    "what": "Extends the standard creative brief by turning a founder voice note, Slack message or intake form submission directly into the fixed-field brief, so nobody re-types a request by hand before the brief exists.",
+    "encompasses": [
+      "Transcribe a founder voice note or Slack message and map it straight into the fixed brief fields",
+      "Parse a Notion or Airtable intake form submission into the same brief template automatically",
+      "Ask one clarifying question only when a required field cannot be filled from the source, never invent the missing fact",
+      "Queue an incomplete intake for the founder instead of guessing an angle or offer"
+    ],
+    "inputs": [
+      "founder voice note or Slack message",
+      "intake form submission"
+    ],
+    "outputs": [
+      "structured brief, auto-filled from raw intake"
+    ],
+    "trigger": "event: raw request received",
+    "autonomy": "agent_does",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [],
+    "skills": [
+      "concept-brief-builder"
+    ],
+    "subagent": null,
+    "sources": {
+      "web": [
+        "https://zapier.com/automations/design/design-project-management/creative-brief-management"
+      ],
+      "bank": []
+    },
+    "found_in": "web_only",
+    "founder_sees": "The brief built from what you said, ready to check before it goes further.",
+    "human_role": "creative strategist / creative ops",
+    "today_done_by": "in-house"
+  },
+  {
+    "id": "CREA-C10",
+    "extends": "CREA-C10",
+    "name": "Build UGC and creator sourcing briefs",
+    "folders": [
+      "10-MCR"
+    ],
+    "what": "Extends creator sourcing by having the agent browse UGC and creator marketplaces itself, shortlist candidates against the brief's own vetting bar, and draft outreach, instead of a person scrolling profiles by hand.",
+    "encompasses": [
+      "Browse marketplaces (Billo, Minisocial, JoinBrands, and India platforms such as Kofluence and Winkl) filtered by niche, follower count and past brand work",
+      "Shortlist 5 to 10 candidates per brief against the vetting bar already set from past creator work",
+      "Draft the outreach and rate-negotiation message for each shortlisted creator, never send it without sign-off",
+      "Track response and acceptance rate per marketplace to learn which one sources faster for this brand"
+    ],
+    "inputs": [
+      "creator brief",
+      "creator marketplace listings"
+    ],
+    "outputs": [
+      "shortlist with fit reasons",
+      "draft outreach messages"
+    ],
+    "trigger": "event: new UGC brief opened",
+    "autonomy": "human_assist",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [
+      "web fetch"
+    ],
+    "skills": [
+      "ugc-creator-brief"
+    ],
+    "subagent": null,
+    "sources": {
+      "web": [
+        "https://prolatamwork.com/en/blog/how-much-ugc-content-creator-cost-2026"
+      ],
+      "bank": []
+    },
+    "found_in": "web_only",
+    "founder_sees": "A shortlist of creators worth contacting, with a draft message for each.",
+    "human_role": "UGC manager",
+    "today_done_by": "in-house or freelancer"
+  },
+  {
+    "id": "CREA-C12",
+    "extends": "CREA-C12",
+    "name": "Direct product photography and image accuracy",
+    "folders": [
+      "10-MCR",
+      "11-ADC"
+    ],
+    "what": "Extends photography direction with the full shoot logistics pack for a physical shoot, and a batch pass that generates and checks AI backgrounds across a whole SKU catalogue at once.",
+    "encompasses": [
+      "Build the shot list, prop list, equipment checklist and location or studio note before a booked shoot",
+      "Draft the model release and usage-rights lines for anyone appearing on camera",
+      "Generate AI lifestyle backgrounds for the full SKU catalogue in one batch pass",
+      "Run a visual-diff check on the batch, flagging any generated image where the product itself drifted from the real photo",
+      "Estimate the shoot day budget from crew, location and equipment line items"
+    ],
+    "inputs": [
+      "product list needing new photography",
+      "brand brain: real product photos"
+    ],
+    "outputs": [
+      "shoot logistics pack",
+      "batch background set with visual-diff flags"
+    ],
+    "trigger": "on demand",
+    "autonomy": "human_assist",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [
+      "Higgsfield: product-shot presets",
+      "web fetch"
+    ],
+    "skills": [
+      "static-ad-brief"
+    ],
+    "subagent": null,
+    "sources": {
+      "web": [
+        "https://pebblely.com/",
+        "https://www.photoroom.com/blog/ai-tools-product-photography"
+      ],
+      "bank": []
+    },
+    "found_in": "web_only",
+    "founder_sees": "The shoot pack ready to hand to a photographer, or the full catalogue's new backgrounds with anything inaccurate flagged.",
+    "human_role": "photographer briefs / art director",
+    "today_done_by": "in-house or freelancer"
+  },
+  {
+    "id": "CREA-C14",
+    "extends": "CREA-C14",
+    "name": "Run claim, policy and compliance checks",
+    "folders": [
+      "10-MCR",
+      "11-ADC"
+    ],
+    "what": "Extends the claim and compliance check with a platform-specific ad policy pre-flight pass, since Meta, TikTok, Google and each marketplace restrict different categories and wording beyond the brand's own claim tiers.",
+    "encompasses": [
+      "Check restricted content categories (health, finance, before-after imagery, personal attributes) against the specific platform this ad will run on",
+      "Check image text and overlay rules for the destination platform before the file is finalized",
+      "Check marketplace ad policy (Amazon, Flipkart) separately from social platform policy, since the rule sets differ",
+      "Re-run the check whenever a platform updates its policy, not only at first ship"
+    ],
+    "inputs": [
+      "draft creative or copy set",
+      "current per-platform ad policy pages"
+    ],
+    "outputs": [
+      "per-platform policy pass/fail table"
+    ],
+    "trigger": "event: before every set ships to a specific platform",
+    "autonomy": "agent_does",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [
+      "web fetch"
+    ],
+    "skills": [
+      "claim-compliance-audit"
+    ],
+    "subagent": "Claim Auditor",
+    "sources": {
+      "web": [],
+      "bank": []
+    },
+    "found_in": "possible",
+    "founder_sees": "Which platform-specific rule, if any, this set would trip before it ships there.",
+    "human_role": "creative strategist / compliance",
+    "today_done_by": "nobody"
+  },
+  {
+    "id": "CREA-C16",
+    "extends": "CREA-C16",
+    "name": "Break down and analyze own ad winners and losers",
+    "folders": [
+      "10-MCR",
+      "11-ADC"
+    ],
+    "what": "Extends winner/loser analysis with an automated performance report deck and shareable mood board, so a batch's results reach the founder and any outside collaborator as a visual page, not a raw metrics table.",
+    "encompasses": [
+      "Auto-build a report deck comparing this batch's winning and losing themes with example thumbnails",
+      "Build a shareable mood board of the batch's images for reference, an outside creator or the founder",
+      "Compare this batch against the account's own past winning themes, not an industry average"
+    ],
+    "inputs": [
+      "winner/loser breakdown",
+      "meta_gallery ad-level metrics"
+    ],
+    "outputs": [
+      "performance report deck",
+      "shareable mood board link"
+    ],
+    "trigger": "weekly",
+    "autonomy": "agent_does",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [
+      "meta_gallery: web/lab.js breakdown"
+    ],
+    "skills": [
+      "winner-teardown"
+    ],
+    "subagent": "Creative Performance Analyst",
+    "sources": {
+      "web": [
+        "https://www.foreplay.co/"
+      ],
+      "bank": []
+    },
+    "found_in": "web_only",
+    "founder_sees": "A short deck of what won and lost this batch, with the images, not just numbers.",
+    "human_role": "creative strategist",
+    "today_done_by": "tool"
+  },
+  {
+    "id": "CREA-C17",
+    "extends": "CREA-C17",
+    "name": "Design and structure creative and copy tests",
+    "folders": [
+      "10-MCR",
+      "11-ADC"
+    ],
+    "what": "Extends test design with live threshold monitoring that pushes a founder alert the moment a running test crosses its pre-set kill, scale or refresh rule, and adds thumbnail or first-frame testing for video ads.",
+    "encompasses": [
+      "Poll a running test against its pre-set winner, kill and read-window rules on a fixed schedule",
+      "Push one alert the moment a threshold is crossed, never wait for the next scheduled report",
+      "Test 2 to 3 thumbnail or first-frame options per video ad separately from the body-copy test",
+      "Silence repeat alerts on the same ad once the founder has acted on the first one"
+    ],
+    "inputs": [
+      "test brief",
+      "meta_gallery: live metrics"
+    ],
+    "outputs": [
+      "threshold-crossing alert",
+      "thumbnail test result"
+    ],
+    "trigger": "continuous, during any live test",
+    "autonomy": "agent_does",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [
+      "mcp: Meta_MCP ads_get_ad_entities (read only)",
+      "meta_gallery: engine.js"
+    ],
+    "skills": [
+      "creative-test-plan"
+    ],
+    "subagent": null,
+    "sources": {
+      "web": [],
+      "bank": []
+    },
+    "found_in": "possible",
+    "founder_sees": "An alert the moment a test result is ready to act on, instead of finding out days later.",
+    "human_role": "media buyer / creative strategist",
+    "today_done_by": "nobody"
+  },
+  {
+    "id": "CREA-C18",
+    "extends": "CREA-C18",
+    "name": "Plan and monitor the creative production pipeline and portfolio",
+    "folders": [
+      "10-MCR"
+    ],
+    "what": "Extends the monthly pipeline plan with a reserved experimental lane, a fixed small share of monthly creative slots for high-risk concepts, tracked separately so one swing does not get killed by the same average-performance rule as the safe majority.",
+    "encompasses": [
+      "Reserve a fixed share (for example 1 in 10 slots) of the monthly plan for a high-risk, high-upside concept",
+      "Track the experimental lane's hit rate separately from the core pipeline's hit rate",
+      "Extend an experimental concept's read window since a genuine swing needs more data before judgment"
+    ],
+    "inputs": [
+      "monthly production plan"
+    ],
+    "outputs": [
+      "experimental lane allocation and separate hit-rate tracking"
+    ],
+    "trigger": "monthly",
+    "autonomy": "agent_does",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [],
+    "skills": [
+      "creative-test-plan"
+    ],
+    "subagent": null,
+    "sources": {
+      "web": [],
+      "bank": []
+    },
+    "found_in": "possible",
+    "founder_sees": "How much of this month's budget is the safe bet versus the swing, and how each is doing.",
+    "human_role": "creative strategist",
+    "today_done_by": "nobody"
+  },
+  {
+    "id": "CREA-C20",
+    "extends": "CREA-C20",
+    "name": "Maintain naming, tagging and platform-spec standards",
+    "folders": [
+      "10-MCR",
+      "11-ADC"
+    ],
+    "what": "Extends the naming and tagging standard with computer-vision auto-tagging: the agent looks at an uploaded file itself and fills the tag fields (UGC or product shot, format, aspect ratio, approximate video length) instead of a person tagging each asset by hand.",
+    "encompasses": [
+      "Detect content style (UGC vs product photography vs founder-led) from the file itself",
+      "Detect aspect ratio, resolution and, for video, duration automatically",
+      "Auto-apply the account's fixed naming schema in the right field order once detected",
+      "Flag a file the vision check cannot confidently classify for a human to tag instead of guessing"
+    ],
+    "inputs": [
+      "uploaded creative file",
+      "naming and tagging standard"
+    ],
+    "outputs": [
+      "auto-tagged, auto-renamed file"
+    ],
+    "trigger": "event: new asset uploaded",
+    "autonomy": "agent_does",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [
+      "Higgsfield: media analysis"
+    ],
+    "skills": [
+      "naming-and-tagging"
+    ],
+    "subagent": null,
+    "sources": {
+      "web": [
+        "https://admanage.ai/ai-namer"
+      ],
+      "bank": []
+    },
+    "found_in": "web_only",
+    "founder_sees": "Nothing directly. Every new asset arrives already tagged and named.",
+    "human_role": "creative ops",
+    "today_done_by": "tool"
+  },
+  {
+    "id": "CREA-C22",
+    "extends": "CREA-C22",
+    "name": "Localise creative and copy for market and device",
+    "folders": [
+      "10-MCR",
+      "11-ADC"
+    ],
+    "what": "Extends localisation with AI dubbing and lip-sync: takes an already-winning video ad and produces a localized version in another language or dialect without a reshoot, for markets where a real local shoot is not yet justified.",
+    "encompasses": [
+      "Dub the winning ad's voiceover into the target language, keeping the same delivery pace and hook timing",
+      "Lip-sync the dub to the speaker's mouth movements so it does not read as an obvious redub",
+      "Keep localized captions and on-screen text in sync with the new audio",
+      "Run every dubbed line through the claim check in the target language, since a translation can drift from the approved claim"
+    ],
+    "inputs": [
+      "winning video ad",
+      "target language and dialect"
+    ],
+    "outputs": [
+      "localized dubbed video ad"
+    ],
+    "trigger": "event: winner identified for a new market",
+    "autonomy": "human_assist",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [],
+    "skills": [
+      "localisation-dub"
+    ],
+    "subagent": null,
+    "sources": {
+      "web": [
+        "https://lipdub.ai/",
+        "https://www.rask.ai/"
+      ],
+      "bank": []
+    },
+    "found_in": "web_only",
+    "founder_sees": "The same winning ad, speaking the new market's language, before it needs a real local shoot.",
+    "human_role": "video editor / localisation",
+    "today_done_by": "tool"
+  },
+  {
+    "id": "CREA-C33",
+    "extends": "CREA-C33",
+    "name": "Research competitor creative and messaging, signal only",
+    "folders": [
+      "10-MCR",
+      "11-ADC"
+    ],
+    "what": "Extends competitor research with a standing multi-platform swipe file: auto-transcribes competitor video hooks into a searchable text library and adds a rough spend or reach estimate signal, so the weekly scan produces a growing asset instead of a one-off note.",
+    "encompasses": [
+      "Save every reviewed competitor ad into a tagged, searchable swipe file across Meta, TikTok and LinkedIn, not only Meta",
+      "Auto-transcribe competitor video hooks into text for pattern search later",
+      "Attach a rough spend or reach estimate to each saved ad as a signal of scale, never as a performance claim",
+      "Track a named competitor's ad account continuously between the fixed weekly checks, flagging a sudden new format or angle"
+    ],
+    "inputs": [
+      "public ad library data (read only)",
+      "competitor list (meta_gallery: competitors.json)"
+    ],
+    "outputs": [
+      "searchable competitor swipe file",
+      "hook transcript library"
+    ],
+    "trigger": "continuous, reviewed weekly",
+    "autonomy": "agent_does",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [
+      "mcp: Meta_MCP ads_library_search",
+      "web fetch"
+    ],
+    "skills": [
+      "winner-teardown"
+    ],
+    "subagent": "Creative Performance Analyst",
+    "sources": {
+      "web": [
+        "https://www.foreplay.co/swipe-file"
+      ],
+      "bank": []
+    },
+    "found_in": "web_only",
+    "founder_sees": "A growing library of competitor structure and hooks, tagged and searchable, marked as signal only.",
+    "human_role": "creative strategist",
+    "today_done_by": "tool"
+  },
+  {
+    "id": "CREA-C08",
+    "extends": "CREA-C08",
+    "name": "Write video ad scripts and storyboards",
+    "folders": [
+      "10-MCR",
+      "11-ADC"
+    ],
+    "what": "Extends video scripting with a pacing check: verifies the script's word count and beat timing actually fit the target video length before it goes to production, catching an overwritten script before a shoot or edit wastes time on it.",
+    "encompasses": [
+      "Count words against a spoken-words-per-second rate for the target length (15s, 30s, 60s)",
+      "Flag a script that runs long before it reaches storyboard stage",
+      "Check each script beat (hook, bridge, mechanism, proof, CTA) gets its planned share of the runtime, not just total length"
+    ],
+    "inputs": [
+      "draft script",
+      "target video length"
+    ],
+    "outputs": [
+      "pacing check result, flagged overrun"
+    ],
+    "trigger": "event: script drafted, before storyboard",
+    "autonomy": "agent_does",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [],
+    "skills": [
+      "video-script-writer"
+    ],
+    "subagent": null,
+    "sources": {
+      "web": [],
+      "bank": []
+    },
+    "found_in": "possible",
+    "founder_sees": "Nothing directly. This catches an overwritten script before it wastes a shoot or edit.",
+    "human_role": "copywriter / video editor",
+    "today_done_by": "nobody"
+  },
+  {
+    "id": "CREA-C35",
+    "extends": null,
+    "name": "Prepare bulk ad-launch upload sheets",
+    "folders": [
+      "10-MCR",
+      "11-ADC",
+      "24-DEP"
+    ],
+    "what": "Turns an approved batch of ad copy and creative filenames into the exact spreadsheet or CSV a bulk-upload tool or Ads Manager's own bulk editor expects, one row per ad, so a person only reviews and clicks launch.",
+    "encompasses": [
+      "Map each creative file, headline, primary text and CTA to the platform's required CSV columns",
+      "Apply the account's fixed naming convention to every campaign, ad set and ad name in the sheet",
+      "Carry over only the budget, audience and placement values the media buyer already approved, never invent one",
+      "Flag any row missing a required field before the sheet is handed over",
+      "Produce a separate sheet per platform since Meta's bulk editor and TikTok's bulk tool use different columns",
+      "Version each sheet so a re-upload after edits does not create duplicate ads"
+    ],
+    "inputs": [
+      "approved creative and copy set",
+      "media buyer's approved budget and audience plan",
+      "naming and tagging standard"
+    ],
+    "outputs": [
+      "platform-formatted bulk-upload sheet (CSV)",
+      "pre-upload validation report"
+    ],
+    "trigger": "event: creative batch approved for launch",
+    "autonomy": "human_assist",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [],
+    "skills": [
+      "bulk-launch-sheet-builder"
+    ],
+    "subagent": null,
+    "sources": {
+      "web": [
+        "https://admanage.ai/blog/best-bulk-meta-ad-launch-tools",
+        "https://www.apogee.ad/en/blog/nomenclature-meta-ads-guide/"
+      ],
+      "bank": []
+    },
+    "found_in": "web_only",
+    "founder_sees": "The exact sheet that will go into Ads Manager, ready to check before anyone clicks launch.",
+    "human_role": "media buyer / traffic manager",
+    "today_done_by": "in-house or agency"
+  },
+  {
+    "id": "CREA-C36",
+    "extends": null,
+    "name": "Generate synthetic AI-actor UGC video ads end to end",
+    "folders": [
+      "10-MCR",
+      "11-ADC"
+    ],
+    "what": "Turns a written script into a finished vertical video ad using a licensed AI actor who reads the hook to camera, without booking a human creator or a shoot, for early testing before real UGC is commissioned.",
+    "encompasses": [
+      "Pick an AI actor whose look and delivery match the brief's persona, not a random default",
+      "Feed the actor the exact approved script line by line, never let the tool improvise a claim",
+      "Generate 3 to 5 hook variants of the same script for a cheap pre-test before commissioning a real creator",
+      "Add on-screen captions and a CTA card in the brand's own template",
+      "Run every generated line through the claim and compliance check before it is used",
+      "Label every synthetic-actor ad as such in the internal tagging system, never pass it off as real UGC to the founder",
+      "Reserve real human UGC for anything a synthetic actor cannot say honestly, such as a real before-after story"
+    ],
+    "inputs": [
+      "approved script",
+      "persona brief",
+      "claim audit"
+    ],
+    "outputs": [
+      "finished vertical video ad, several hook variants",
+      "synthetic-actor disclosure tag"
+    ],
+    "trigger": "on demand",
+    "autonomy": "agent_does",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [
+      "Higgsfield: generate_video"
+    ],
+    "skills": [
+      "ai-ugc-generation"
+    ],
+    "subagent": null,
+    "sources": {
+      "web": [
+        "https://ugcgen.ai/blog/arcads-vs-heygen-which-is-better-for-ads",
+        "https://www.heygen.com/blog/best-ai-video-tools-marketing-ads-2026"
+      ],
+      "bank": []
+    },
+    "found_in": "web_only",
+    "founder_sees": "The generated video, clearly marked as an AI actor, before it enters testing.",
+    "human_role": "UGC manager / video editor",
+    "today_done_by": "tool"
+  },
+  {
+    "id": "CREA-C37",
+    "extends": null,
+    "name": "Generate ad variants directly from a product page URL",
+    "folders": [
+      "10-MCR",
+      "11-ADC"
+    ],
+    "what": "Reads a live product page, pulls its images, price and stated claims, and drafts a first-pass set of static and video ad variants from it, as a fast starting point the strategist edits rather than a blank page.",
+    "encompasses": [
+      "Pull product images, price, variants and stated specs from the page, never invent a spec not on the page",
+      "Draft 3 to 6 ad concepts (different hooks, same product facts) from the page content",
+      "Flag any page claim that is not already tiered in the brand record, for the compliance check to resolve",
+      "Match the drafted CTA to the page's actual buy button and current offer, not a stale one",
+      "Re-draft automatically if the source page's price or stock status changes before launch"
+    ],
+    "inputs": [
+      "live product page URL",
+      "brand brain: claim tiers",
+      "brand brain: current offers"
+    ],
+    "outputs": [
+      "first-pass ad concept set (static and video)",
+      "source-page fact list with URL and date"
+    ],
+    "trigger": "on demand",
+    "autonomy": "agent_does",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [
+      "web fetch",
+      "script: scripts/search_knowledge.py"
+    ],
+    "skills": [
+      "url-to-ad-draft"
+    ],
+    "subagent": null,
+    "sources": {
+      "web": [
+        "https://ugcgen.ai/blog/arcads-vs-heygen-which-is-better-for-ads"
+      ],
+      "bank": []
+    },
+    "found_in": "web_only",
+    "founder_sees": "A first draft built straight from the live product page, ready to edit.",
+    "human_role": "performance creative designer / copywriter",
+    "today_done_by": "tool"
+  },
+  {
+    "id": "CREA-C38",
+    "extends": null,
+    "name": "Manage creator whitelisting and Partnership/Spark Ads authorization",
+    "folders": [
+      "10-MCR",
+      "24-DEP"
+    ],
+    "what": "Runs the technical steps that turn a creator's organic post into a paid whitelisted or Spark ad, checks the prerequisites first, and tracks every authorization code and its expiry.",
+    "encompasses": [
+      "Check the creator's Instagram is linked to a Facebook Page before requesting Partnership Ads access, the most common blocker",
+      "Walk the creator through generating the 8-digit TikTok Spark Ads code or Meta Partnership Ads authorization",
+      "Log each code with the post it belongs to, the date issued and the date it expires",
+      "Confirm the authorized post matches the exact creative and copy the brief approved, not a different cut",
+      "Flag a code nearing expiry so the ad can be relaunched before it drops",
+      "Keep whitelisting requests to pages that already post well organically, never a dead account"
+    ],
+    "inputs": [
+      "creator brief and usage rights log",
+      "creator's platform handle"
+    ],
+    "outputs": [
+      "authorization code log",
+      "whitelisting readiness checklist per creator"
+    ],
+    "trigger": "event: creator content approved for paid use",
+    "autonomy": "founder_gate",
+    "external_write": {
+      "needed": true,
+      "surface": "Meta Partnership Ads authorization; TikTok Spark Ads code exchange"
+    },
+    "tools": [],
+    "skills": [
+      "creator-whitelisting"
+    ],
+    "subagent": null,
+    "sources": {
+      "web": [
+        "https://influencermarketinghub.com/whitelisting-and-spark-ads/",
+        "https://www.reshiftmedia.com/how-to-set-up-partnership-or-whitelisting-ads-on-tiktok-using-spark-ads/"
+      ],
+      "bank": []
+    },
+    "found_in": "web_only",
+    "founder_sees": "Which creators are ready to whitelist, which are blocked and why, and when each code expires.",
+    "human_role": "UGC manager / media buyer",
+    "today_done_by": "in-house or agency"
+  },
+  {
+    "id": "CREA-C39",
+    "extends": null,
+    "name": "Auto-resize and reformat one master creative into every placement spec",
+    "folders": [
+      "10-MCR",
+      "11-ADC"
+    ],
+    "what": "Takes one approved master creative and produces every aspect-ratio and placement version a platform needs, feed square, story vertical, in-stream widescreen, recomposing the focal point rather than stretching or cropping blind.",
+    "encompasses": [
+      "Recompose the safe zone and focal point per aspect ratio, never a blind crop that cuts off the product or CTA",
+      "Produce the fixed set: 1x1, 4x5, 9x16 and 16x9 from one master file",
+      "Re-time text and caption cards to fit the shorter frame of a 9x16 cut",
+      "Check every resized version keeps the CTA and price fully visible, not clipped by platform UI overlays",
+      "Flag a master creative whose composition cannot be safely resized, so it gets reshot for that placement instead of stretched"
+    ],
+    "inputs": [
+      "approved master creative (image or video)",
+      "current platform placement specs"
+    ],
+    "outputs": [
+      "full placement set of resized creative"
+    ],
+    "trigger": "event: master creative approved",
+    "autonomy": "agent_does",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [
+      "Higgsfield: generate_image / generate_video",
+      "meta_gallery: studio.js variant builder"
+    ],
+    "skills": [
+      "placement-resize"
+    ],
+    "subagent": null,
+    "sources": {
+      "web": [
+        "https://www.wireflow.ai/blog/best-creative-automation-software-tools-in-2026",
+        "https://www.quickads.ai/blog/celtra-creative-automation-simplifies-ad-creation"
+      ],
+      "bank": []
+    },
+    "found_in": "web_only",
+    "founder_sees": "One approved creative, already delivered in every size a platform will ask for.",
+    "human_role": "motion designer / performance creative designer",
+    "today_done_by": "tool"
+  },
+  {
+    "id": "CREA-C40",
+    "extends": null,
+    "name": "Generate captions, burned-in subtitles and alt text for every ad asset",
+    "folders": [
+      "10-MCR",
+      "11-ADC"
+    ],
+    "what": "Adds accurate burned-in captions to every video ad, since most are watched muted, and writes descriptive alt text for every static image, as a fixed QA step before anything ships.",
+    "encompasses": [
+      "Transcribe the finished voiceover or on-screen speech and burn in captions matched to the brand's caption style",
+      "Time captions to the cut, never let a line run past its shot",
+      "Write alt text for every static and carousel image describing the product and offer, not just the file name",
+      "Check caption wording against the claim rules since a caption is still a claim",
+      "Support at least one non-English caption set where the localisation spec calls for it"
+    ],
+    "inputs": [
+      "finished video ad",
+      "static image set",
+      "localisation spec"
+    ],
+    "outputs": [
+      "captioned video file",
+      "alt text set"
+    ],
+    "trigger": "event: creative finished, before ship",
+    "autonomy": "agent_does",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [],
+    "skills": [
+      "caption-and-alt-text"
+    ],
+    "subagent": null,
+    "sources": {
+      "web": [
+        "https://www.rask.ai/",
+        "https://lipdub.ai/"
+      ],
+      "bank": []
+    },
+    "found_in": "web_only",
+    "founder_sees": "Nothing directly. This is a fixed QA step before an ad ships.",
+    "human_role": "video editor for ads",
+    "today_done_by": "tool"
+  },
+  {
+    "id": "CREA-C41",
+    "extends": null,
+    "name": "Auto-cut one master video ad into multiple length and aspect-ratio derivatives",
+    "folders": [
+      "10-MCR",
+      "11-ADC"
+    ],
+    "what": "Cuts one finished long-form video ad into a family of shorter derivatives, a 15-second and a 6-second bumper cut, each keyed to a different hook from the hook bank, without a fresh edit session per cut.",
+    "encompasses": [
+      "Cut to the strongest hook variant already tested in the hook bank, not an arbitrary trim",
+      "Keep the proof and CTA beat in every derivative even at 6 seconds",
+      "Produce a story-style vertical cutdown and a feed-style square cutdown from the same source",
+      "Re-time captions to each new cut length",
+      "Tag each derivative back to its parent video and the hook it uses, for the winner teardown to trace later"
+    ],
+    "inputs": [
+      "finished long-form video ad",
+      "hook bank"
+    ],
+    "outputs": [
+      "set of length and aspect-ratio derivatives, each tagged to its parent"
+    ],
+    "trigger": "event: long-form video approved",
+    "autonomy": "agent_does",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [
+      "Higgsfield: get_workflow_instructions (ad-multiplier)"
+    ],
+    "skills": [
+      "video-cutdown"
+    ],
+    "subagent": null,
+    "sources": {
+      "web": [
+        "https://www.opus.pro/tools/automatic-clip-maker",
+        "https://www.opus.pro/blog/youtube-shorts-at-scale"
+      ],
+      "bank": []
+    },
+    "found_in": "web_only",
+    "founder_sees": "The same winning video, already cut into the short lengths a platform actually rewards.",
+    "human_role": "video editor for ads",
+    "today_done_by": "tool"
+  },
+  {
+    "id": "CREA-C42",
+    "extends": null,
+    "name": "Score new creative for predicted performance before spend",
+    "folders": [
+      "10-MCR",
+      "11-ADC"
+    ],
+    "what": "Runs a draft creative through a predictive scoring pass before it enters a paid test, flagging weak elements (hook clarity, headline-image mismatch, CTA visibility) so a likely loser is fixed or dropped before it spends real budget.",
+    "encompasses": [
+      "Score a draft's visual and copy elements against patterns from the account's own past winners and losers, not a generic industry model alone",
+      "Flag a specific weak element (hook, image-text mismatch, buried CTA), never just a single opaque score",
+      "Rank a batch of drafts so the weakest gets fixed or cut before it enters the test budget",
+      "Treat the score as a filter before spend, never as the final word after real results exist"
+    ],
+    "inputs": [
+      "draft creative set",
+      "account's own past winner/loser data"
+    ],
+    "outputs": [
+      "pre-launch score per draft, with flagged weak elements"
+    ],
+    "trigger": "event: before a new batch enters paid testing",
+    "autonomy": "agent_does",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [],
+    "skills": [
+      "pre-launch-creative-scoring"
+    ],
+    "subagent": null,
+    "sources": {
+      "web": [
+        "https://www.adcreative.ai/post/fighting-ad-creative-fatigue-a-b-testing-strategies-with-ai",
+        "https://www.cometly.com/post/ai-ad-testing-tool"
+      ],
+      "bank": []
+    },
+    "found_in": "web_only",
+    "founder_sees": "Which drafts in this batch are likely weak, and why, before any of them spend money.",
+    "human_role": "creative strategist",
+    "today_done_by": "tool"
+  },
+  {
+    "id": "CREA-C43",
+    "extends": null,
+    "name": "Generate catalogue-scale ad variant grids from the product feed",
+    "folders": [
+      "10-MCR",
+      "11-ADC",
+      "22-AMZ"
+    ],
+    "what": "Combines a fixed template, the product feed's price and image fields, and a small set of copy blocks to produce a full grid of ad variants across hundreds of SKUs at once, instead of building each SKU's ad by hand.",
+    "encompasses": [
+      "Read price, image, title and stock fields straight from the product feed, never a stale copy",
+      "Apply a fixed set of template x headline x CTA combinations across every SKU in the grid",
+      "Skip a SKU with a missing image or price rather than publish a broken variant",
+      "Cap grid size to what the account's own testing budget can actually read",
+      "Regenerate only the SKUs whose feed data changed, not the whole grid, on a refresh"
+    ],
+    "inputs": [
+      "product feed",
+      "brand template",
+      "approved copy blocks"
+    ],
+    "outputs": [
+      "catalogue-scale ad variant grid"
+    ],
+    "trigger": "event: new catalogue campaign, or on feed refresh",
+    "autonomy": "agent_does",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [
+      "mcp: Meta_MCP ads_catalog_list_products (read only)"
+    ],
+    "skills": [
+      "catalogue-variant-grid"
+    ],
+    "subagent": null,
+    "sources": {
+      "web": [
+        "https://www.adcreative.ai/post/fighting-ad-creative-fatigue-a-b-testing-strategies-with-ai",
+        "https://www.get-ryze.ai/blog/best-ad-creative-optimization-tools-2026"
+      ],
+      "bank": []
+    },
+    "found_in": "web_only",
+    "founder_sees": "How many SKUs got a ready ad variant this run, and which ones were skipped and why.",
+    "human_role": "performance creative designer",
+    "today_done_by": "tool"
+  },
+  {
+    "id": "CREA-C44",
+    "extends": null,
+    "name": "Write and design COD-to-prepaid conversion and RTO-reduction creative messaging",
+    "folders": [
+      "10-MCR",
+      "11-ADC"
+    ],
+    "what": "Writes the ad and post-purchase creative lines that push a cash-on-delivery order toward prepaid, and the delivery-trust messaging that lowers return-to-origin risk, since both are India-specific costs a generic ad script ignores.",
+    "encompasses": [
+      "Write the prepaid-incentive line (small discount or free shipping) framed as unlocking a benefit, never as a penalty for choosing COD",
+      "Write the WhatsApp or SMS follow-up message offering the same incentive with a payment link inside a short window after a COD order",
+      "Write delivery-trust lines (real dispatch time, real carrier, easy return) that reduce the buyer's reason to reject at the door",
+      "Check every prepaid or RTO claim (discount amount, delivery time) against the brand record before it ships"
+    ],
+    "inputs": [
+      "brand brain: shipping and payment policies",
+      "order and RTO data (warehouse)"
+    ],
+    "outputs": [
+      "COD-to-prepaid ad and message copy",
+      "RTO-reduction creative lines"
+    ],
+    "trigger": "on demand",
+    "autonomy": "agent_does",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [],
+    "skills": [
+      "cod-prepaid-messaging"
+    ],
+    "subagent": null,
+    "sources": {
+      "web": [
+        "https://oneflowai.in/blog/cod-to-prepaid-conversion-d2c-india",
+        "https://www.icarry.in/pages/blog/cod-to-prepaid-conversion-india.html"
+      ],
+      "bank": []
+    },
+    "found_in": "web_only",
+    "founder_sees": "The exact lines that will nudge a COD order to prepaid, and the numbers behind them checked against your policy.",
+    "human_role": "copywriter",
+    "today_done_by": "in-house or agency"
+  },
+  {
+    "id": "CREA-C45",
+    "extends": null,
+    "name": "Build Amazon A+ Content and Flipkart/Myntra brand-store creative modules",
+    "folders": [
+      "10-MCR",
+      "11-ADC",
+      "22-AMZ"
+    ],
+    "what": "Designs the banner, infographic and comparison-chart modules for a marketplace's own A+ Content or brand-store template grid, since these follow a fixed module system unlike a normal ad canvas.",
+    "encompasses": [
+      "Design each module (hero banner, feature comparison, lifestyle image, spec table) to the marketplace's exact pixel and module-count limits",
+      "Reuse the brand's approved claims and real product photos, never a new unchecked claim written just for this module",
+      "Build a separate module set per marketplace (Amazon A+, Flipkart brand store, Myntra brand page) since their templates differ",
+      "Flag a module that would look identical to the standard listing images, since A+ content should add new information, not repeat it"
+    ],
+    "inputs": [
+      "brand brain: products and claims",
+      "marketplace's current template grid and size limits"
+    ],
+    "outputs": [
+      "A+ Content or brand-store module set, per marketplace"
+    ],
+    "trigger": "on demand",
+    "autonomy": "agent_does",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [],
+    "skills": [
+      "marketplace-brand-content"
+    ],
+    "subagent": null,
+    "sources": {
+      "web": [
+        "https://digitalprworld.com/amazon-content-one-time-job/",
+        "https://swcybernetics.in/blog/amazon-brand-store-design-guide-2026"
+      ],
+      "bank": []
+    },
+    "found_in": "web_only",
+    "founder_sees": "The finished module set, ready to upload to the marketplace's own content manager.",
+    "human_role": "performance creative designer",
+    "today_done_by": "agency"
+  },
+  {
+    "id": "CREA-C46",
+    "extends": null,
+    "name": "Clone a consenting voice for scaled ad voiceover variants",
+    "folders": [
+      "10-MCR",
+      "11-ADC"
+    ],
+    "what": "Clones the founder's or a contracted creator's own voice, with their documented written consent, to produce many voiceover script variants without booking a new recording session for every script change.",
+    "encompasses": [
+      "Require documented written consent naming voice cloning, commercial use and every channel the audio will run on, before any clone is made",
+      "Generate the voiceover for each approved script variant from the cloned voice, never let the voice model improvise a line",
+      "Re-generate a voiceover in minutes when a script edit changes only a few words, instead of a new studio session",
+      "Retire and delete a cloned voice the moment the person's consent window ends"
+    ],
+    "inputs": [
+      "consenting person's voice sample and signed consent",
+      "approved script"
+    ],
+    "outputs": [
+      "cloned-voice voiceover per script variant"
+    ],
+    "trigger": "on demand, only after consent is on file",
+    "autonomy": "founder_gate",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [],
+    "skills": [
+      "voice-cloning"
+    ],
+    "subagent": null,
+    "sources": {
+      "web": [
+        "https://terms.law/ai-output-rights/elevenlabs/",
+        "https://elevenlabs.io/use-policy"
+      ],
+      "bank": []
+    },
+    "found_in": "web_only",
+    "founder_sees": "The consent on file and the generated voiceover, before any script variant using it goes further.",
+    "human_role": "video editor / founder",
+    "today_done_by": "nobody"
+  },
+  {
+    "id": "CREA-C47",
+    "extends": null,
+    "name": "Build and maintain a consistent AI character or mascot sheet for reuse",
+    "folders": [
+      "10-MCR",
+      "11-ADC"
+    ],
+    "what": "Builds a fixed reference sheet for a generated character or mascot, expressions, angles, outfit, so every later AI-generated image or video reuses the same identity instead of a new random face each time.",
+    "encompasses": [
+      "Generate a character sheet: front, side and three-quarter views, a few expressions, in the brand's chosen style",
+      "Reference the same sheet on every later generation so the character does not visibly drift between assets",
+      "Version the sheet if the brand deliberately updates the character's look, and retire the old version everywhere at once"
+    ],
+    "inputs": [
+      "brand style and mascot concept"
+    ],
+    "outputs": [
+      "character or mascot reference sheet",
+      "generation reference id"
+    ],
+    "trigger": "on demand",
+    "autonomy": "agent_does",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [
+      "Higgsfield: get_workflow_instructions (character-sheet)"
+    ],
+    "skills": [
+      "character-sheet-builder"
+    ],
+    "subagent": null,
+    "sources": {
+      "web": [],
+      "bank": []
+    },
+    "found_in": "possible",
+    "founder_sees": "The reference sheet, so any future generated asset can be checked against the same character.",
+    "human_role": "art director",
+    "today_done_by": "nobody"
+  },
+  {
+    "id": "CREA-C48",
+    "extends": null,
+    "name": "Operate a browser agent to draft-upload creatives into Ads Manager as paused drafts",
+    "folders": [
+      "10-MCR",
+      "11-ADC",
+      "24-DEP"
+    ],
+    "what": "Drives Meta or TikTok Ads Manager's own web interface to create a paused, unpublished draft ad per approved creative, so a human reviews a real draft inside the platform instead of a spreadsheet, without spending a rupee until they hit publish.",
+    "encompasses": [
+      "Navigate Ads Manager's ad-creation flow and fill in creative, copy and destination fields from the approved set",
+      "Leave every draft paused and unpublished, never toggle it live",
+      "Screenshot the finished draft as it will actually render for the reviewer to check",
+      "Stop and flag if the platform's UI has changed in a way the agent cannot navigate reliably, rather than guess"
+    ],
+    "inputs": [
+      "approved creative and copy set",
+      "bulk-launch upload sheet"
+    ],
+    "outputs": [
+      "paused draft ads inside Ads Manager",
+      "draft screenshots for review"
+    ],
+    "trigger": "event: creative batch approved for launch",
+    "autonomy": "founder_gate",
+    "external_write": {
+      "needed": true,
+      "surface": "Meta Ads Manager / TikTok Ads Manager draft (paused) ad creation"
+    },
+    "tools": [],
+    "skills": [
+      "ads-manager-browser-agent"
+    ],
+    "subagent": null,
+    "sources": {
+      "web": [
+        "https://syntermedia.ai/blog/meta-ads-automation-software"
+      ],
+      "bank": []
+    },
+    "found_in": "web_only",
+    "founder_sees": "The draft ad exactly as it will render in Ads Manager, paused, waiting for a publish decision.",
+    "human_role": "media buyer / traffic manager",
+    "today_done_by": "in-house or agency"
+  },
+  {
+    "id": "CREA-C49",
+    "extends": null,
+    "name": "Clear stock footage, fonts and music rights used in video ads",
+    "folders": [
+      "10-MCR",
+      "11-ADC"
+    ],
+    "what": "Checks every piece of licensed stock footage, music and font used in a video ad against its actual license terms before the ad ships, so a takedown or claim never lands after spend is already behind it.",
+    "encompasses": [
+      "Log the license type (royalty-free, one-time, subscription) and the exact usage scope for every stock clip and track used",
+      "Check the license covers paid advertising use, not only organic or editorial use, before the asset ships",
+      "Check a licensed font's commercial-ad terms separately from its general web-use terms",
+      "Flag any asset whose license window expires while the ad is still expected to run",
+      "Keep the license file attached to the finished ad's record, not only to the raw asset"
+    ],
+    "inputs": [
+      "stock footage, music and font licenses used in a video ad"
+    ],
+    "outputs": [
+      "rights clearance checklist per video ad"
+    ],
+    "trigger": "event: before a video ad using licensed assets ships",
+    "autonomy": "agent_does",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [],
+    "skills": [
+      "media-rights-clearance"
+    ],
+    "subagent": null,
+    "sources": {
+      "web": [
+        "https://capessokol.com/insights/rights-clearance-for-video-content-four-key-agreements-to-ease-the-pain/",
+        "https://videotap.com/blog/checklist-for-video-content-licensing"
+      ],
+      "bank": []
+    },
+    "found_in": "web_only",
+    "founder_sees": "Nothing directly, unless a license does not cover paid use, in which case it is flagged before the ad ships.",
+    "human_role": "video editor / creative ops",
+    "today_done_by": "nobody"
+  },
+  {
+    "id": "CREA-C50",
+    "extends": null,
+    "name": "Build a festive and sale-event creative production calendar with lead-time countdowns",
+    "folders": [
+      "10-MCR",
+      "11-ADC"
+    ],
+    "what": "Builds the year's creative production calendar around India's festive dates and the account's own sale events, each with a working-backward countdown (concept, build, review, launch) so a festive batch is never rushed the week of.",
+    "encompasses": [
+      "List the year's relevant Indian festivals (Diwali, Holi, Republic Day sale, Raksha Bandhan) and global sale events (BFCM) the brand actually runs offers around",
+      "Work backward from each date to set concept, build, review and launch deadlines with real lead time",
+      "Flag when two festive windows overlap the same production slot, so volume gets planned, not doubled up last minute",
+      "Carry the prior year's same-event creative and its results forward as a starting reference, not a blank slate"
+    ],
+    "inputs": [
+      "brand brain: past sale events and results",
+      "India festive calendar"
+    ],
+    "outputs": [
+      "annual festive and sale-event production calendar with lead-time countdowns"
+    ],
+    "trigger": "event: annual planning, or new sale event added",
+    "autonomy": "agent_does",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [
+      "web fetch"
+    ],
+    "skills": [
+      "festive-calendar-planner"
+    ],
+    "subagent": null,
+    "sources": {
+      "web": [
+        "https://www.karix.com/blogs/whatsapp-festive-marketing-an-experts-guide-for-indian-brands",
+        "https://foxmarketeer.com/blog/whatsapp-meta-ads-ecommerce-guide/"
+      ],
+      "bank": []
+    },
+    "found_in": "web_only",
+    "founder_sees": "The year's creative calendar, with each festive batch's real deadline worked backward from the date.",
+    "human_role": "creative ops / creative strategist",
+    "today_done_by": "in-house"
+  },
+  {
+    "id": "CREA-C51",
+    "extends": null,
+    "name": "Scan organic social mentions and reviews video for paid-ad-worthy customer content",
+    "folders": [
+      "10-MCR"
+    ],
+    "what": "Scans a brand's own tags, mentions and review videos across social platforms for genuine customer content strong enough to become a paid ad, then requests usage rights, instead of relying only on commissioned UGC.",
+    "encompasses": [
+      "Search the brand's tags, mentions and hashtag for organic customer posts and review videos",
+      "Screen out likely fake, paid or unrelated content before flagging anything as a candidate",
+      "Rank candidates by how clearly they show a real reaction or a real before-after moment",
+      "Draft the usage-rights request message to the customer for anything worth pursuing"
+    ],
+    "inputs": [
+      "social platform mentions and tags",
+      "product review videos"
+    ],
+    "outputs": [
+      "ranked list of paid-ad-worthy organic content",
+      "draft usage-rights request"
+    ],
+    "trigger": "weekly",
+    "autonomy": "human_assist",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [
+      "web fetch"
+    ],
+    "skills": [
+      "organic-content-scout"
+    ],
+    "subagent": null,
+    "sources": {
+      "web": [],
+      "bank": []
+    },
+    "found_in": "possible",
+    "founder_sees": "Real customer content worth turning into an ad, with a draft message ready to ask permission.",
+    "human_role": "UGC manager",
+    "today_done_by": "nobody"
+  },
+  {
+    "id": "CREA-C52",
+    "extends": null,
+    "name": "Design catalogue and DPA overlay templates for the full product feed",
+    "folders": [
+      "10-MCR",
+      "11-ADC",
+      "22-AMZ"
+    ],
+    "what": "Builds the actual price, discount and badge overlay template that renders correctly across every SKU in the product feed for dynamic and catalogue-retargeting ads, going beyond flagging a broken template to producing the working one.",
+    "encompasses": [
+      "Design one overlay template per placement (feed, story) that pulls price, discount and stock fields straight from the feed",
+      "Test the template against the SKU with the longest title and highest price to catch truncation and overflow before launch",
+      "Auto-swap the badge (bestseller, low stock, new) from a rule set, never a manually typed one per SKU",
+      "Regenerate the rendered preview whenever the feed's price or stock field changes",
+      "Hand the finished template to the existing catalogue risk check for a final pass before it goes live"
+    ],
+    "inputs": [
+      "product feed",
+      "brand visual template",
+      "catalogue risk check"
+    ],
+    "outputs": [
+      "DPA overlay template set, rendered previews per placement"
+    ],
+    "trigger": "event: new catalogue or DPA campaign, or feed schema change",
+    "autonomy": "agent_does",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [
+      "mcp: Meta_MCP ads_catalog_list_products (read only)"
+    ],
+    "skills": [
+      "dpa-overlay-template"
+    ],
+    "subagent": null,
+    "sources": {
+      "web": [
+        "https://www.quickads.ai/blog/celtra-creative-automation-simplifies-ad-creation",
+        "https://www.wireflow.ai/blog/best-creative-automation-software-tools-in-2026"
+      ],
+      "bank": []
+    },
+    "found_in": "web_only",
+    "founder_sees": "What the price and badge overlay will actually look like across the catalogue before it goes live.",
+    "human_role": "performance creative designer",
+    "today_done_by": "agency or tool"
+  },
+  {
+    "id": "CREA-C53",
+    "extends": null,
+    "name": "Audit live ads against their landing destination for promise, image and offer match drift",
+    "folders": [
+      "10-MCR",
+      "11-ADC",
+      "07-LPG"
+    ],
+    "what": "Checks every currently live ad against the page it sends traffic to, and flags when the ad's image, price, offer or headline no longer matches what the page now shows, since pages get updated after an ad keeps running.",
+    "encompasses": [
+      "Pull the current live ad's creative and copy alongside the current live version of its destination page",
+      "Compare price, offer, product image and headline claim between the two, flag any mismatch",
+      "Catch the common drift case: the site's price or offer changed after the ad launched and nobody paused it",
+      "Flag an ad sending to a now-broken or redirected URL",
+      "Rank flagged mismatches by ad spend, so the highest-spend drift gets fixed first"
+    ],
+    "inputs": [
+      "live ad set (Meta cache)",
+      "current live destination page content"
+    ],
+    "outputs": [
+      "ad-to-page mismatch report, ranked by spend"
+    ],
+    "trigger": "weekly",
+    "autonomy": "agent_does",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [
+      "mcp: Meta_MCP ads_get_ad_entities (read only)",
+      "web fetch"
+    ],
+    "skills": [
+      "message-match-audit"
+    ],
+    "subagent": null,
+    "sources": {
+      "web": [],
+      "bank": []
+    },
+    "found_in": "possible",
+    "founder_sees": "Which live ads no longer match their own landing page, ranked by how much money is behind each one.",
+    "human_role": "CRO / performance creative designer",
+    "today_done_by": "nobody"
+  },
+  {
+    "id": "CREA-C54",
+    "extends": null,
+    "name": "Track actual production cost per asset against the monthly creative budget",
+    "folders": [
+      "10-MCR",
+      "20-FIN"
+    ],
+    "what": "Logs the real cost of every asset produced, AI generation credits, freelancer or agency invoices, stock license fees, against the monthly plan's budget line, so cost per ad is a real number instead of an assumption.",
+    "encompasses": [
+      "Log AI tool spend, freelancer and agency invoices and stock license fees per asset",
+      "Compare actual cost per asset type (static, UGC video, AI-generated video) against the plan's assumed cost",
+      "Flag when a concept's real cost is running over its planned share before the month closes",
+      "Feed the real cost-per-ad number back into format economics instead of an assumed one"
+    ],
+    "inputs": [
+      "monthly production plan",
+      "AI tool invoices",
+      "freelancer/agency invoices"
+    ],
+    "outputs": [
+      "actual cost-per-asset ledger",
+      "budget variance flag"
+    ],
+    "trigger": "weekly",
+    "autonomy": "agent_does",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [],
+    "skills": [
+      "production-cost-tracker"
+    ],
+    "subagent": null,
+    "sources": {
+      "web": [],
+      "bank": []
+    },
+    "found_in": "possible",
+    "founder_sees": "What creative actually cost this month, by format, against what was planned.",
+    "human_role": "creative ops",
+    "today_done_by": "nobody"
+  }
+]

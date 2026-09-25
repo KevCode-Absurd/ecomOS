@@ -1,0 +1,1544 @@
+[
+  {
+    "id": "PROD-C48",
+    "extends": null,
+    "name": "Onboard and launch brand listings on Blinkit, Zepto and Instamart",
+    "folders": [
+      "22-AMZ"
+    ],
+    "what": "Take a brand through quick commerce onboarding end to end: assemble the GST, FSSAI, barcode and packaging documents, submit through each platform's own channel, and get the first live listing without a mismatched document resetting the 4 to 8 week queue.",
+    "encompasses": [
+      "Assemble GST registration, FSSAI licence, PAN, bank and GS1 barcode documents and check the legal-entity name matches exactly across every document",
+      "Submit through Blinkit's Seller App, Zepto's category-manager channel and Instamart's seller portal, each with its own workflow",
+      "Check the FSSAI licence has 6 to 12 months validity left before submitting, since a near-expiry licence gets rejected",
+      "Build catalogue assets to each platform's exact size and crop rule (1000x1000px, front/back/lifestyle)",
+      "Write titles in the platform's required order: brand, product, variant, pack size",
+      "Verify barcodes scan in a shelf-stacked position and labels stay legible at thumbnail size",
+      "Track submission status and chase the missing document holding up approval",
+      "Flag when a legal-entity name mismatch or missing document will reset the queue"
+    ],
+    "inputs": [
+      "brand brain: business documents, GST and FSSAI licence status",
+      "web: each platform's onboarding requirements",
+      "product tech pack and packaging specs"
+    ],
+    "outputs": [
+      "onboarding checklist with document status",
+      "submitted application per platform",
+      "first-listing readiness report"
+    ],
+    "trigger": "on demand (new quick commerce launch)",
+    "autonomy": "founder_gate",
+    "external_write": {
+      "needed": true,
+      "surface": "Blinkit seller app / Zepto category manager / Instamart seller portal"
+    },
+    "tools": [
+      "browser agent",
+      "script: scripts/catalogue_asset_check.py",
+      "web search"
+    ],
+    "skills": [
+      "quick-commerce-onboarding"
+    ],
+    "subagent": "product_and_supply",
+    "sources": {
+      "web": [
+        "https://confetti.design/blog/how-to-start-selling-on-quick-commerce-india",
+        "https://www.tech2globe.com/quick-commerce-onboarding-services",
+        "https://www.ecomsarthi.com/blog/quick-commerce-onboarding.html"
+      ],
+      "bank": []
+    },
+    "found_in": "web_only",
+    "founder_sees": "The onboarding checklist, the document blocking approval, and the platform's own timeline.",
+    "human_role": "quick commerce / marketplace manager",
+    "today_done_by": "agency or freelancer"
+  },
+  {
+    "id": "PROD-C49",
+    "extends": null,
+    "name": "Correct quick commerce ROAS and validate dark-store unit economics",
+    "folders": [
+      "22-AMZ",
+      "18-COG"
+    ],
+    "what": "Recompute true return on ad spend from transaction value, not MRP, because platform dashboards inflate ROAS 30 to 50 percent by using MRP, and hold a SKU to a run of positive contribution margin before it scales past the first dark stores.",
+    "encompasses": [
+      "Pull platform ad spend and MRP-based ROAS from the seller dashboard",
+      "Recompute ROAS on actual transaction value in code, net of platform commission (15-25%) and GST on commission",
+      "Track inwarding fees, storage cost and damage/expiry write-off (budgeted 2-5% of MRP) per SKU",
+      "Calculate weekly per-dark-store order volume needed to clear the 55-60% gross margin floor",
+      "Flag whether a margin problem is volume (fixable with more orders) or structural (needs repricing or a COGS cut)",
+      "Hold expansion to new SKUs or cities until 3 consecutive weeks of positive contribution margin"
+    ],
+    "inputs": [
+      "quick commerce seller dashboard export",
+      "SKU landed cost and COGS"
+    ],
+    "outputs": [
+      "per-SKU per-dark-store contribution margin report",
+      "scale/hold/kill recommendation"
+    ],
+    "trigger": "weekly, or after a launch",
+    "autonomy": "agent_does",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [
+      "script: scripts/qc_roas_recompute.py",
+      "python calc"
+    ],
+    "skills": [
+      "quick-commerce-economics"
+    ],
+    "subagent": "product_and_supply",
+    "sources": {
+      "web": [
+        "https://confetti.design/blog/how-to-start-selling-on-quick-commerce-india"
+      ],
+      "bank": []
+    },
+    "found_in": "web_only",
+    "founder_sees": "The true ROAS next to the platform's reported ROAS, and the scale/hold/kill call with the number behind it.",
+    "human_role": "quick commerce / marketplace manager",
+    "today_done_by": "founder (dashboard usually taken at face value)"
+  },
+  {
+    "id": "PROD-C50",
+    "extends": null,
+    "name": "Manage quick commerce ad credits and promotional calendar negotiation",
+    "folders": [
+      "22-AMZ"
+    ],
+    "what": "Spend each platform's ad tools deliberately instead of leaving credits unused or overspending once organic search picks up, and negotiate the festive promotional windows that can lift sales 4 to 5x.",
+    "encompasses": [
+      "Activate and track per-SKU ad credits on Blinkit at launch",
+      "Run keyword-bid sponsored search on Zepto's ads platform and Instamart's self-serve ads portal",
+      "Monitor organic impressions and click-through rate weekly and cut paid spend on a SKU once organic CTR clears the category average",
+      "Draft the ask to the category manager for Diwali, Holi, IPL and Independence Day promotional slots",
+      "Track a 5-15% of projected revenue ad budget and reallocate as organic velocity rises",
+      "Seed early reviews with an introductory discount tied to sponsored search"
+    ],
+    "inputs": [
+      "platform ads dashboard export",
+      "organic impression and CTR data",
+      "festive calendar"
+    ],
+    "outputs": [
+      "ad spend plan",
+      "promotional slot request draft",
+      "weekly organic-vs-paid split"
+    ],
+    "trigger": "weekly, and ahead of each festive window",
+    "autonomy": "founder_gate",
+    "external_write": {
+      "needed": true,
+      "surface": "Blinkit/Zepto/Instamart ads portal"
+    },
+    "tools": [
+      "browser agent",
+      "script: scripts/qc_ad_spend.py"
+    ],
+    "skills": [
+      "quick-commerce-ads"
+    ],
+    "subagent": "product_and_supply",
+    "sources": {
+      "web": [
+        "https://confetti.design/blog/how-to-start-selling-on-quick-commerce-india"
+      ],
+      "bank": []
+    },
+    "found_in": "web_only",
+    "founder_sees": "The ad spend plan by SKU and platform, and the promotional-window ask before it goes to the category manager.",
+    "human_role": "quick commerce / marketplace manager",
+    "today_done_by": "agency or in-house"
+  },
+  {
+    "id": "PROD-C51",
+    "extends": null,
+    "name": "Monitor dark-store fill rate and replenishment cadence",
+    "folders": [
+      "22-AMZ",
+      "01-PRD"
+    ],
+    "what": "Watch stock levels across the dark-store network the way a merchandiser watches shelf stock, because a stockout there triggers an algorithmic ranking penalty that takes time to recover from.",
+    "encompasses": [
+      "Pull per-dark-store, per-SKU stock level and days-of-cover from the platform's inventory feed where available",
+      "Flag a SKU approaching stockout at any dark store before the ranking penalty hits",
+      "Track inbound replenishment frequency against the platform's required cadence",
+      "Track inwarding fee (about Rs 2-4/unit on Instamart) and damage/expiry write-offs against budget",
+      "Recommend a replenishment order in units per dark store from recent velocity"
+    ],
+    "inputs": [
+      "quick commerce seller dashboard stock export",
+      "sales velocity by dark store"
+    ],
+    "outputs": [
+      "stockout risk flag list",
+      "replenishment order recommendation"
+    ],
+    "trigger": "daily",
+    "autonomy": "human_assist",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [
+      "script: scripts/darkstore_fillrate.py"
+    ],
+    "skills": [
+      "quick-commerce-inventory"
+    ],
+    "subagent": "product_and_supply",
+    "sources": {
+      "web": [
+        "https://confetti.design/blog/how-to-start-selling-on-quick-commerce-india"
+      ],
+      "bank": []
+    },
+    "found_in": "web_only",
+    "founder_sees": "Which dark stores are about to stock out, and the replenishment order to send.",
+    "human_role": "inventory planner",
+    "today_done_by": "in-house or nobody"
+  },
+  {
+    "id": "PROD-C52",
+    "extends": null,
+    "name": "Select and onboard a domestic fulfilment 3PL and WMS",
+    "folders": [
+      "01-PRD"
+    ],
+    "what": "Run the RFP, SLA negotiation and integration test for a domestic order-fulfilment 3PL and its warehouse management system, separate from the import-side freight and factory 3PL already covered.",
+    "encompasses": [
+      "Draft the RFP: order volume, SKU count, pick profile, peak multiplier, required integrations (Shopify, marketplaces)",
+      "Score 3PL bids on pick accuracy history, dock-to-stock time and integration depth, not lowest quote alone",
+      "Negotiate SLA terms: same-day cutoff, error-rate cap, chargeback terms for mis-picks",
+      "Run an integration test: an order flows in, stock syncs back, a test shipment completes end to end",
+      "Check WMS support for real-time multi-channel stock sync to prevent overselling",
+      "Write the go-live checklist and a rollback plan if the 3PL underperforms in week one"
+    ],
+    "inputs": [
+      "order volume and SKU forecast",
+      "candidate 3PL/WMS proposals"
+    ],
+    "outputs": [
+      "3PL RFP",
+      "scored comparison",
+      "SLA term sheet",
+      "go-live checklist"
+    ],
+    "trigger": "on demand",
+    "autonomy": "founder_gate",
+    "external_write": {
+      "needed": true,
+      "surface": "3PL/WMS vendor contract"
+    },
+    "tools": [
+      "script: scripts/threepl_rfp.py",
+      "web search"
+    ],
+    "skills": [
+      "3pl-selection"
+    ],
+    "subagent": "product_and_supply",
+    "sources": {
+      "web": [
+        "https://unicommerce.com/products/",
+        "https://www.increff.com/blog/5-best-e-commerce-inventory-management-software-in-india-in-2026"
+      ],
+      "bank": []
+    },
+    "found_in": "web_only",
+    "founder_sees": "The scored 3PL comparison and the SLA terms before signing.",
+    "human_role": "warehouse and fulfilment lead / operations manager",
+    "today_done_by": "founder or agency"
+  },
+  {
+    "id": "PROD-C53",
+    "extends": null,
+    "name": "Configure warehouse slotting, pick-pack workflow and labor scheduling",
+    "folders": [
+      "01-PRD"
+    ],
+    "what": "Set the operational rules a fulfilment manager owns day to day once the 3PL or in-house warehouse is live: slotting by velocity, a pick-pack-QC method, and staffing against demand forecast and seasonal peaks.",
+    "encompasses": [
+      "Slot SKUs by sales velocity to shorten pick travel paths",
+      "Design the pick, pack and QC method to cut mis-pick and mis-ship rate",
+      "Build the staffing schedule from the demand forecast, including seasonal peak multipliers",
+      "Schedule cycle counts on high-value SKUs and reconcile discrepancies",
+      "Track dock-to-stock time, pick accuracy, lines per hour and cost per order",
+      "Flag when a KPI breaches its threshold for two consecutive weeks"
+    ],
+    "inputs": [
+      "SKU velocity data",
+      "demand forecast",
+      "current WMS layout"
+    ],
+    "outputs": [
+      "slotting plan",
+      "staffing schedule",
+      "weekly KPI dashboard"
+    ],
+    "trigger": "weekly",
+    "autonomy": "human_assist",
+    "external_write": {
+      "needed": true,
+      "surface": "WMS configuration"
+    },
+    "tools": [
+      "script: scripts/wms_kpi.py"
+    ],
+    "skills": [
+      "warehouse-ops"
+    ],
+    "subagent": "product_and_supply",
+    "sources": {
+      "web": [
+        "https://www.clickpost.ai/blog/fulfillment-manager"
+      ],
+      "bank": []
+    },
+    "found_in": "web_only",
+    "founder_sees": "The KPI dashboard and any threshold breach with the fix.",
+    "human_role": "warehouse and fulfilment lead",
+    "today_done_by": "in-house or 3PL"
+  },
+  {
+    "id": "PROD-C54",
+    "extends": null,
+    "name": "Build the returns and reverse-logistics grading workflow",
+    "folders": [
+      "01-PRD"
+    ],
+    "what": "Design what happens to a unit that comes back, whether an RTO or a customer return, so it is graded, restocked, refurbished or written off on a fixed rule instead of case by case.",
+    "encompasses": [
+      "Define grading rules at intake: resell as new, resell as open-box, refurbish, scrap",
+      "Tie the refund or store-credit trigger to the warehouse scan, not the courier's return-in-transit status",
+      "Route a defective return into the QC/CAPA process to trace it to a batch",
+      "Track return processing time and reverse-logistics cost per unit",
+      "Separate RTO (never delivered) from customer return (delivered then returned) in reporting",
+      "Flag a SKU or reason code whose return rate has moved outside its normal range"
+    ],
+    "inputs": [
+      "courier return data",
+      "warehouse scan data",
+      "product QC criteria"
+    ],
+    "outputs": [
+      "grading rule set",
+      "return processing report",
+      "batch-trace flag for defects"
+    ],
+    "trigger": "ongoing, reviewed weekly",
+    "autonomy": "human_assist",
+    "external_write": {
+      "needed": true,
+      "surface": "WMS return workflow"
+    },
+    "tools": [
+      "script: scripts/returns_grading.py"
+    ],
+    "skills": [
+      "reverse-logistics"
+    ],
+    "subagent": "product_and_supply",
+    "sources": {
+      "web": [
+        "https://www.clickpost.ai/blog/fulfillment-manager"
+      ],
+      "bank": []
+    },
+    "found_in": "web_only",
+    "founder_sees": "The return rate by SKU and reason, and any batch flagged for a defect pattern.",
+    "human_role": "warehouse and fulfilment lead",
+    "today_done_by": "in-house or nobody"
+  },
+  {
+    "id": "PROD-C55",
+    "extends": null,
+    "name": "Run daily multi-courier rate-shop and failover routing",
+    "folders": [
+      "01-PRD"
+    ],
+    "what": "Pick the courier for each shipment in code from live rate, pincode serviceability and SLA rather than a fixed default carrier, and fail over to a backup courier the moment one rejects or is unserviceable.",
+    "encompasses": [
+      "Pull live rate cards and pincode serviceability for every connected courier",
+      "Score each courier on cost, promised TAT and recent RTO rate for that pincode",
+      "Assign the shipment to the best-scoring courier automatically through the aggregator",
+      "Fail over to the next-best courier on rejection, non-serviceability or capacity cap",
+      "Log every routing decision so a courier's real performance can be audited later"
+    ],
+    "inputs": [
+      "order and pincode",
+      "aggregator rate and serviceability feed",
+      "courier scorecard"
+    ],
+    "outputs": [
+      "per-shipment courier assignment",
+      "routing log"
+    ],
+    "trigger": "per order, real time",
+    "autonomy": "agent_does",
+    "external_write": {
+      "needed": true,
+      "surface": "Shiprocket / aggregator API"
+    },
+    "tools": [
+      "script: scripts/courier_routing.py",
+      "aggregator API"
+    ],
+    "skills": [
+      "courier-routing"
+    ],
+    "subagent": "product_and_supply",
+    "sources": {
+      "web": [
+        "https://www.shiprocket.in/carrier-integrations/delhivery/",
+        "https://www.icarry.in/pages/blog/shiprocket-alternatives.html",
+        "https://vedwix.com/best/shipping-aggregators-in-india"
+      ],
+      "bank": []
+    },
+    "found_in": "web_only",
+    "founder_sees": "The routing rule and a weekly summary of what it saved versus a single default carrier.",
+    "human_role": "shipping / logistics executive",
+    "today_done_by": "tool (aggregator's own routing) or in-house"
+  },
+  {
+    "id": "PROD-C56",
+    "extends": null,
+    "name": "Automate NDR resolution and address-confirmation outreach",
+    "folders": [
+      "01-PRD"
+    ],
+    "what": "Work every non-delivery report the day it is raised: confirm the address or reschedule with the customer before the courier's attempt window closes, since NDR handling moves RTO more than the courier rate does.",
+    "encompasses": [
+      "Pull the day's NDR queue from the aggregator across all couriers",
+      "Send an address-confirmation or reschedule message by SMS or WhatsApp before the next attempt",
+      "Escalate a repeat-NDR order to a phone call before it converts to RTO",
+      "Reassign a chronically bad pincode's future orders to a courier with a better first-attempt rate there",
+      "Track NDR-to-delivery conversion rate versus NDR-to-RTO rate by reason code"
+    ],
+    "inputs": [
+      "daily NDR queue",
+      "customer contact channel"
+    ],
+    "outputs": [
+      "outreach sent log",
+      "NDR conversion report"
+    ],
+    "trigger": "daily, same-day on NDR",
+    "autonomy": "founder_gate",
+    "external_write": {
+      "needed": true,
+      "surface": "SMS/WhatsApp send, aggregator NDR panel"
+    },
+    "tools": [
+      "script: scripts/ndr_outreach.py",
+      "WhatsApp/SMS API"
+    ],
+    "skills": [
+      "ndr-recovery"
+    ],
+    "subagent": "product_and_supply",
+    "sources": {
+      "web": [
+        "https://theshizz.in/blog/courier-comparison-shiprocket-delhivery-bluedart",
+        "https://www.shiprocket.in/carrier-integrations/delhivery/"
+      ],
+      "bank": []
+    },
+    "found_in": "web_only",
+    "founder_sees": "The NDR-to-RTO conversion rate and what outreach recovered.",
+    "human_role": "shipping / logistics executive",
+    "today_done_by": "tool (aggregator's built-in NDR panel, human-run)"
+  },
+  {
+    "id": "PROD-C57",
+    "extends": null,
+    "name": "Reconcile COD remittance and courier billing disputes",
+    "folders": [
+      "01-PRD",
+      "18-COG"
+    ],
+    "what": "Match every courier's COD payout and weight/dimension bill against the order record, because unreconciled COD remittance and surprise weight-discrepancy charges quietly eat margin.",
+    "encompasses": [
+      "Match each COD remittance cycle's payout file against delivered orders and flag a shortfall",
+      "Match courier weight/dimension billing against the packed weight recorded at dispatch",
+      "File a dispute with the courier on a documented discrepancy and track it to resolution",
+      "Track average COD remittance lag by courier against the cash plan",
+      "Flag a courier whose disputed-charge rate is rising"
+    ],
+    "inputs": [
+      "courier remittance and billing files",
+      "dispatch weight records",
+      "order ledger"
+    ],
+    "outputs": [
+      "reconciliation report",
+      "filed disputes with status"
+    ],
+    "trigger": "per remittance cycle",
+    "autonomy": "agent_does",
+    "external_write": {
+      "needed": true,
+      "surface": "courier dispute portal"
+    },
+    "tools": [
+      "script: scripts/cod_reconcile.py"
+    ],
+    "skills": [
+      "cod-reconciliation"
+    ],
+    "subagent": "product_and_supply",
+    "sources": {
+      "web": [
+        "https://theshizz.in/blog/courier-comparison-shiprocket-delhivery-bluedart"
+      ],
+      "bank": []
+    },
+    "found_in": "web_only",
+    "founder_sees": "The reconciliation shortfall total and any dispute worth the founder's attention.",
+    "human_role": "operations / finance executive",
+    "today_done_by": "in-house or nobody"
+  },
+  {
+    "id": "PROD-C58",
+    "extends": null,
+    "name": "Run a COD-to-prepaid conversion test program",
+    "folders": [
+      "01-PRD"
+    ],
+    "what": "Test converting COD-heavy pincodes or repeat-RTO customers to prepaid-only or partial-advance checkout, and read the RTO and conversion-rate change before rolling it wider.",
+    "encompasses": [
+      "Identify pincodes and customer segments with COD share and RTO rate above brand average",
+      "Design the test: prepaid-only, partial advance, or a COD convenience fee, on a defined slice of traffic",
+      "Set the read point: conversion-rate change against RTO-rate change, not conversion alone",
+      "Blacklist or flag a serial-RTO customer for COD ineligibility on future orders"
+    ],
+    "inputs": [
+      "order data by pincode and customer",
+      "RTO history"
+    ],
+    "outputs": [
+      "test design",
+      "read-point result",
+      "COD eligibility rule update"
+    ],
+    "trigger": "on demand",
+    "autonomy": "founder_gate",
+    "external_write": {
+      "needed": true,
+      "surface": "checkout/payment configuration"
+    },
+    "tools": [
+      "script: scripts/cod_conversion_test.py"
+    ],
+    "skills": [
+      "cod-strategy"
+    ],
+    "subagent": "product_and_supply",
+    "sources": {
+      "web": [
+        "https://theshizz.in/blog/courier-comparison-shiprocket-delhivery-bluedart"
+      ],
+      "bank": []
+    },
+    "found_in": "possible",
+    "founder_sees": "The test design and the RTO-versus-conversion trade-off before it goes live.",
+    "human_role": "operations manager",
+    "today_done_by": "nobody"
+  },
+  {
+    "id": "PROD-C59",
+    "extends": null,
+    "name": "Score couriers and reallocate shipping volume by zone",
+    "folders": [
+      "01-PRD"
+    ],
+    "what": "Keep a running scorecard per courier per zone on RTO rate, first-attempt delivery rate and delivery TAT, and shift volume to the better performer on a set cadence instead of an annual contract review.",
+    "encompasses": [
+      "Compute RTO%, first-attempt delivery rate and average TAT per courier per zone from shipment data",
+      "Rank couriers within each zone and flag one that has fallen below the zone's median for a month",
+      "Recommend a volume-share shift between couriers for the next cycle",
+      "Track a new courier's onboarding performance against the incumbent before scaling volume to it"
+    ],
+    "inputs": [
+      "shipment-level delivery data by courier and zone"
+    ],
+    "outputs": [
+      "courier scorecard by zone",
+      "volume reallocation recommendation"
+    ],
+    "trigger": "monthly",
+    "autonomy": "agent_does",
+    "external_write": {
+      "needed": true,
+      "surface": "aggregator courier-priority settings"
+    },
+    "tools": [
+      "script: scripts/courier_scorecard.py"
+    ],
+    "skills": [
+      "courier-scorecard"
+    ],
+    "subagent": "product_and_supply",
+    "sources": {
+      "web": [
+        "https://theshizz.in/blog/courier-comparison-shiprocket-delhivery-bluedart",
+        "https://vedwix.com/best/shipping-aggregators-in-india"
+      ],
+      "bank": []
+    },
+    "found_in": "web_only",
+    "founder_sees": "The scorecard and the volume-shift recommendation with the number behind it.",
+    "human_role": "shipping / logistics executive",
+    "today_done_by": "in-house or tool"
+  },
+  {
+    "id": "PROD-C22",
+    "extends": "PROD-C22",
+    "name": "Reconcile live inventory across WMS, website and marketplaces to prevent overselling",
+    "folders": [
+      "01-PRD"
+    ],
+    "what": "Extend the reorder-point calculation with a real-time on-hand reconciliation across every channel, because a reorder point is only as good as the on-hand number feeding it, and stale stock data on any channel creates a cancellation and a marketplace penalty.",
+    "encompasses": [
+      "Pull on-hand stock from the WMS and every connected sales channel on a short interval",
+      "Flag a mismatch between the WMS count and any channel's shown stock beyond a set tolerance",
+      "Push a corrected available-to-sell number to every channel from the single reconciled source",
+      "Hold a SKU's channel visibility down automatically when true stock hits zero, and restore it on the next confirmed receipt"
+    ],
+    "inputs": [
+      "WMS stock feed",
+      "channel stock APIs (Shopify, Amazon, Flipkart, quick commerce)"
+    ],
+    "outputs": [
+      "reconciled stock feed",
+      "mismatch alert log"
+    ],
+    "trigger": "hourly",
+    "autonomy": "agent_does",
+    "external_write": {
+      "needed": true,
+      "surface": "marketplace/website stock API"
+    },
+    "tools": [
+      "script: scripts/inventory_reconcile.py"
+    ],
+    "skills": [
+      "inventory-sync"
+    ],
+    "subagent": "product_and_supply",
+    "sources": {
+      "web": [
+        "https://unicommerce.com/products/",
+        "https://www.increff.com/blog/5-best-e-commerce-inventory-management-software-in-india-in-2026"
+      ],
+      "bank": []
+    },
+    "found_in": "web_only",
+    "founder_sees": "Any channel where shown stock and real stock disagree, and the correction pushed.",
+    "human_role": "inventory planner",
+    "today_done_by": "tool (OMS such as Unicommerce or Increff)"
+  },
+  {
+    "id": "PROD-C60",
+    "extends": null,
+    "name": "Assign and validate HSN/SAC codes and catch e-invoice rejections",
+    "folders": [
+      "18-COG",
+      "01-PRD"
+    ],
+    "what": "Build and keep the SKU-to-HSN/SAC map correct, since a wrong or too-short HSN code is a common cause of invoice registration portal rejections and GST mismatches.",
+    "encompasses": [
+      "Assign an HSN code to every SKU and check digit length against the turnover threshold (4-digit under Rs 5 crore, 6-digit at or above)",
+      "Validate the HSN code against the GST rate charged for that SKU",
+      "Flag an e-invoice likely to be rejected by the IRP before it is submitted",
+      "Keep the map current when a SKU's classification or GST rate changes",
+      "Log every correction with the reason, for an audit trail"
+    ],
+    "inputs": [
+      "product catalogue",
+      "GST rate table",
+      "HSN reference data"
+    ],
+    "outputs": [
+      "SKU-to-HSN map",
+      "pre-submission validation flags"
+    ],
+    "trigger": "on new SKU, and monthly audit",
+    "autonomy": "agent_does",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [
+      "script: scripts/hsn_validate.py"
+    ],
+    "skills": [
+      "gst-compliance"
+    ],
+    "subagent": "product_and_supply",
+    "sources": {
+      "web": [
+        "https://www.vertexinc.com/resources/resource-library/indias-e-invoicing-regulations-explained-scope-formats-and-penalties",
+        "https://www.incorpx.io/blog/gst-invoice-rules-format-mandatory-fields",
+        "https://carajput.com/learn/compulsory-e-invoice-details-and-new-hsn-code-requirements.html"
+      ],
+      "bank": []
+    },
+    "found_in": "web_only",
+    "founder_sees": "Any SKU with a wrong or risky HSN code before it causes an e-invoice rejection.",
+    "human_role": "accounts / compliance executive",
+    "today_done_by": "founder or accountant"
+  },
+  {
+    "id": "PROD-C61",
+    "extends": null,
+    "name": "Track Legal Metrology and FSSAI licence registration and renewal",
+    "folders": [
+      "01-PRD"
+    ],
+    "what": "Keep one register of which SKUs need Legal Metrology (Packaged Commodities) registration or an FSSAI licence, their current validity window, and the relabelling needed on an MRP or GST change.",
+    "encompasses": [
+      "Map each SKU to the licences it needs: Legal Metrology state registration, FSSAI, and any category-specific licence",
+      "Track each licence's validity window and flag renewal at a safe lead time before expiry (platforms require 6-12 months left)",
+      "Check the label declares the FSSAI number and MRP where required, positioned for dark-store or warehouse scanning",
+      "Track a sticker/relabel run when MRP or GST changes, keeping the original MRP visible as the rule requires"
+    ],
+    "inputs": [
+      "SKU catalogue",
+      "current licence numbers and expiry dates"
+    ],
+    "outputs": [
+      "licence register with expiry flags",
+      "relabel task list"
+    ],
+    "trigger": "monthly audit, and on any MRP/GST change",
+    "autonomy": "human_assist",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [
+      "script: scripts/licence_tracker.py"
+    ],
+    "skills": [
+      "regulatory-compliance"
+    ],
+    "subagent": "product_and_supply",
+    "sources": {
+      "web": [
+        "https://www.taxtmi.com/article/detailed?id=15118",
+        "https://www.diligencecertification.com/legal-metrology-for-e-commerce/",
+        "https://www.omgarudagroup.com/blogs/legal-metrology-compliance-for-e-commerce-sellers-in-india"
+      ],
+      "bank": []
+    },
+    "found_in": "web_only",
+    "founder_sees": "Any licence expiring soon, and the relabel task list.",
+    "human_role": "compliance executive",
+    "today_done_by": "founder or nobody"
+  },
+  {
+    "id": "PROD-C62",
+    "extends": null,
+    "name": "Track Extended Producer Responsibility (EPR) plastic packaging compliance",
+    "folders": [
+      "01-PRD"
+    ],
+    "what": "Register the brand's plastic packaging under India's EPR rules, track the annual filing and recycling-target obligation, and flag when a shortfall means buying EPR credits.",
+    "encompasses": [
+      "Classify packaging by plastic category under the EPR rules",
+      "Track registration status and the annual filing deadline",
+      "Compute packaging weight put into the market against the recycling target",
+      "Flag a projected shortfall early enough to buy EPR credits or fix the packaging mix",
+      "Keep the filing evidence trail for an audit"
+    ],
+    "inputs": [
+      "packaging bill of materials",
+      "packaging volume by SKU",
+      "EPR target rules"
+    ],
+    "outputs": [
+      "EPR compliance status",
+      "credit-purchase recommendation if short"
+    ],
+    "trigger": "quarterly, annual filing deadline",
+    "autonomy": "human_assist",
+    "external_write": {
+      "needed": true,
+      "surface": "EPR portal filing"
+    },
+    "tools": [
+      "script: scripts/epr_tracker.py"
+    ],
+    "skills": [
+      "epr-compliance"
+    ],
+    "subagent": "product_and_supply",
+    "sources": {
+      "web": [
+        "https://www.diligencecertification.com/legal-metrology-for-e-commerce/"
+      ],
+      "bank": []
+    },
+    "found_in": "possible",
+    "founder_sees": "The EPR filing status and any credit purchase needed before the deadline.",
+    "human_role": "compliance executive",
+    "today_done_by": "nobody, or a consultant"
+  },
+  {
+    "id": "PROD-C47",
+    "extends": "PROD-C47",
+    "name": "Maintain a single product data layer and syndicate it to every channel",
+    "folders": [
+      "01-PRD",
+      "22-AMZ"
+    ],
+    "what": "Extend the catalogue feed into a full product-data layer, one place for every attribute, that pushes to the website, every marketplace and quick commerce with each channel's own formatting, not just the shopping-ads feed already covered.",
+    "encompasses": [
+      "Hold every attribute (title, description, images, specs, compliance fields) in one record per SKU",
+      "Score each SKU's data completeness before it is allowed to push to a new channel",
+      "Apply each channel's own formatting rule (image crop, title order, attribute set) at push time",
+      "Push an update once and propagate it everywhere the SKU is listed, instead of editing each channel by hand",
+      "Catch and surface a channel's rejection reason and hold the retry until it is fixed",
+      "Version every catalogue change with who approved it"
+    ],
+    "inputs": [
+      "brand's product data",
+      "each channel's listing requirements"
+    ],
+    "outputs": [
+      "unified product record",
+      "per-channel push log and rejection reasons"
+    ],
+    "trigger": "on any product data change",
+    "autonomy": "founder_gate",
+    "external_write": {
+      "needed": true,
+      "surface": "every connected marketplace/website catalogue API"
+    },
+    "tools": [
+      "script: scripts/pim_sync.py"
+    ],
+    "skills": [
+      "pim-syndication"
+    ],
+    "subagent": "product_and_supply",
+    "sources": {
+      "web": [
+        "https://www.saleslayer.com/pim-software",
+        "https://www.salsify.com/glossary/product-information-management-pim-meaning",
+        "https://www.plytix.com/product-information-management/"
+      ],
+      "bank": []
+    },
+    "found_in": "web_only",
+    "founder_sees": "Any SKU that failed to push to a channel and why.",
+    "human_role": "catalogue executive",
+    "today_done_by": "in-house, one channel at a time by hand"
+  },
+  {
+    "id": "PROD-C63",
+    "extends": null,
+    "name": "Audit catalogue data quality and cross-channel consistency",
+    "folders": [
+      "01-PRD"
+    ],
+    "what": "Run a standing audit across every channel's live listings for broken images, missing attributes, duplicate SKUs and the brand's own price mismatch between its site and its marketplace listings.",
+    "encompasses": [
+      "Check every live listing for a broken image link or missing required attribute",
+      "Detect a duplicate SKU or ASIN listed twice under different titles",
+      "Compare price and stock shown on the brand's own site against each marketplace and flag a mismatch",
+      "Score each channel's catalogue completeness and trend it over time",
+      "Rank the fixes by traffic or revenue at risk, not just by count"
+    ],
+    "inputs": [
+      "live listing pull from each channel",
+      "brand's own price and stock data"
+    ],
+    "outputs": [
+      "catalogue quality audit with ranked fixes"
+    ],
+    "trigger": "weekly",
+    "autonomy": "agent_does",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [
+      "script: scripts/catalogue_audit.py",
+      "browser agent"
+    ],
+    "skills": [
+      "catalogue-audit"
+    ],
+    "subagent": "product_and_supply",
+    "sources": {
+      "web": [
+        "https://www.expertia.ai/blogs/jd/catalogue-executive-ecommerce-executive-job-description-91706a"
+      ],
+      "bank": []
+    },
+    "found_in": "web_only",
+    "founder_sees": "The ranked list of catalogue problems by revenue at risk.",
+    "human_role": "catalogue executive",
+    "today_done_by": "in-house or nobody"
+  },
+  {
+    "id": "PROD-C64",
+    "extends": null,
+    "name": "Format and validate catalogue images and video per channel spec",
+    "folders": [
+      "01-PRD",
+      "22-AMZ"
+    ],
+    "what": "Check every product image and video against each channel's own size, crop and content rule before it is pushed, since a Blinkit thumbnail and an Amazon main image have different legibility and content requirements.",
+    "encompasses": [
+      "Check image dimensions, crop and background rule per channel",
+      "Check legibility of brand name, MRP and key claim at each channel's thumbnail size",
+      "Check FMCG images show the ingredient and nutrition panel where the channel requires it",
+      "Flag a video that exceeds a channel's length or format limit",
+      "Route a failing asset back with the exact fix needed, not a generic rejection"
+    ],
+    "inputs": [
+      "source product photography and video",
+      "each channel's asset spec"
+    ],
+    "outputs": [
+      "pass/fail per asset per channel",
+      "fix instruction for a failing asset"
+    ],
+    "trigger": "on new asset or new channel",
+    "autonomy": "agent_does",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [
+      "script: scripts/asset_spec_check.py"
+    ],
+    "skills": [
+      "catalogue-asset-qa"
+    ],
+    "subagent": "product_and_supply",
+    "sources": {
+      "web": [
+        "https://confetti.design/blog/how-to-start-selling-on-quick-commerce-india"
+      ],
+      "bank": []
+    },
+    "found_in": "web_only",
+    "founder_sees": "Any asset that will fail a channel's spec, and the fix needed.",
+    "human_role": "catalogue executive",
+    "today_done_by": "agency or in-house"
+  },
+  {
+    "id": "PROD-C65",
+    "extends": null,
+    "name": "Track supplier contracts, price locks and renewal dates",
+    "folders": [
+      "18-COG",
+      "01-PRD"
+    ],
+    "what": "Keep one register of every supplier agreement's price-lock period, renewal date and key terms, so a price lock does not expire unnoticed and a renewal is negotiated ahead of time, not after the price has already moved.",
+    "encompasses": [
+      "Log agreed price, MOQ, payment terms and price-lock end date per supplier per SKU",
+      "Flag a price lock or contract ending inside a set lead window",
+      "Compare the current landed cost against the locked price and flag when the lock is now off-market",
+      "Hand a renewal that needs real negotiation to the supplier negotiation process, not auto-renew"
+    ],
+    "inputs": [
+      "supplier agreement terms",
+      "current landed cost data"
+    ],
+    "outputs": [
+      "contract register with renewal flags"
+    ],
+    "trigger": "monthly audit",
+    "autonomy": "agent_does",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [
+      "script: scripts/supplier_contract_register.py"
+    ],
+    "skills": [
+      "contract-tracking"
+    ],
+    "subagent": "product_and_supply",
+    "sources": {
+      "web": [
+        "https://www.lyzr.ai/blog/ai-agents-in-procurement/"
+      ],
+      "bank": []
+    },
+    "found_in": "web_only",
+    "founder_sees": "Any supplier contract or price lock ending soon, and whether it is still on-market.",
+    "human_role": "sourcing manager",
+    "today_done_by": "founder or nobody"
+  },
+  {
+    "id": "PROD-C66",
+    "extends": null,
+    "name": "Run three-way PO-invoice-goods-receipt matching",
+    "folders": [
+      "18-COG"
+    ],
+    "what": "Match every supplier invoice against its purchase order and the goods actually received before it is paid, catching a short shipment, an overbilled quantity or a price that drifted from the PO.",
+    "encompasses": [
+      "Match invoice line items against the PO's agreed price and quantity",
+      "Match invoice quantity against the goods-receipt record from the warehouse or inspection",
+      "Flag a mismatch above a set tolerance instead of auto-approving payment",
+      "Route a genuine discrepancy to the supplier with the specific line item in question",
+      "Hand the reconciled, approved invoice to Finance for payment"
+    ],
+    "inputs": [
+      "purchase order",
+      "supplier invoice",
+      "goods-receipt or inspection record"
+    ],
+    "outputs": [
+      "matched/flagged invoice list",
+      "discrepancy correspondence"
+    ],
+    "trigger": "on invoice receipt",
+    "autonomy": "agent_does",
+    "external_write": {
+      "needed": true,
+      "surface": "supplier email/portal for discrepancy resolution"
+    },
+    "tools": [
+      "script: scripts/three_way_match.py"
+    ],
+    "skills": [
+      "invoice-matching"
+    ],
+    "subagent": "product_and_supply",
+    "sources": {
+      "web": [
+        "https://www.lyzr.ai/blog/ai-agents-in-procurement/"
+      ],
+      "bank": []
+    },
+    "found_in": "web_only",
+    "founder_sees": "Any invoice that does not match its PO and receipt, and by how much.",
+    "human_role": "sourcing / finance executive",
+    "today_done_by": "founder or nobody"
+  },
+  {
+    "id": "PROD-C67",
+    "extends": null,
+    "name": "Monitor supplier and courier spend for billing anomalies",
+    "folders": [
+      "18-COG"
+    ],
+    "what": "Watch every recurring supplier and courier bill against its contracted rate in code, so a quiet rate increase, a duplicate charge or a new surcharge is caught the month it appears, not a quarter later.",
+    "encompasses": [
+      "Recompute each bill's expected amount from the contracted rate and actual volume",
+      "Flag a bill that exceeds the expected amount beyond a set tolerance",
+      "Detect a duplicate invoice number or duplicate charge across two billing cycles",
+      "Track a new line item or surcharge appearing on a bill for the first time",
+      "Roll flagged items into a single monthly anomaly report"
+    ],
+    "inputs": [
+      "supplier and courier billing files",
+      "contracted rate cards"
+    ],
+    "outputs": [
+      "monthly billing anomaly report"
+    ],
+    "trigger": "per billing cycle",
+    "autonomy": "agent_does",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [
+      "script: scripts/billing_anomaly.py"
+    ],
+    "skills": [
+      "spend-monitoring"
+    ],
+    "subagent": "product_and_supply",
+    "sources": {
+      "web": [
+        "https://www.lyzr.ai/blog/ai-agents-in-procurement/"
+      ],
+      "bank": []
+    },
+    "found_in": "web_only",
+    "founder_sees": "The billing anomalies found this cycle and the amount at stake.",
+    "human_role": "operations / finance executive",
+    "today_done_by": "nobody"
+  },
+  {
+    "id": "PROD-C68",
+    "extends": null,
+    "name": "Watch sourcing platforms for new suppliers matching an open spec",
+    "folders": [
+      "01-PRD"
+    ],
+    "what": "Keep an open product spec running against IndiaMART, Alibaba and Global Sources in the background, and alert the founder when a new or better-rated supplier appears, without contacting anyone automatically.",
+    "encompasses": [
+      "Hold the approved spec (materials, tolerances, MOQ ceiling, target price) as a standing search",
+      "Scan new and updated supplier listings on the named platforms on a set cadence",
+      "Score a candidate against the spec and the existing vetted supplier's price and rating",
+      "Alert only when a candidate beats the incumbent on price, rating or lead time by a meaningful margin",
+      "Never contact a supplier without founder approval"
+    ],
+    "inputs": [
+      "approved product spec",
+      "incumbent supplier terms"
+    ],
+    "outputs": [
+      "new-supplier alert with comparison to incumbent"
+    ],
+    "trigger": "weekly background scan",
+    "autonomy": "agent_does",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [
+      "script: scripts/sourcing_watch.py",
+      "web search",
+      "browser agent"
+    ],
+    "skills": [
+      "sourcing-watch"
+    ],
+    "subagent": "product_and_supply",
+    "sources": {
+      "web": [],
+      "bank": []
+    },
+    "found_in": "possible",
+    "founder_sees": "Only the alert when a real alternative appears, with the comparison.",
+    "human_role": "sourcing manager",
+    "today_done_by": "nobody (founder re-searches occasionally by hand)"
+  },
+  {
+    "id": "PROD-C69",
+    "extends": null,
+    "name": "Score existing suppliers on an ongoing performance scorecard",
+    "folders": [
+      "01-PRD"
+    ],
+    "what": "Keep a running scorecard on every active supplier covering on-time delivery, defect rate, responsiveness and price stability, separate from the one-time vetting done before the first order.",
+    "encompasses": [
+      "Compute on-time delivery rate, AQL defect rate and quote-to-response time per supplier from order history",
+      "Track price stability: how often and how much a supplier's quote has moved between orders",
+      "Rank suppliers within a category and flag one sliding below the category's median",
+      "Feed a declining scorecard into the backup-factory and negotiation processes already in place"
+    ],
+    "inputs": [
+      "PO and delivery history",
+      "inspection results",
+      "quote history"
+    ],
+    "outputs": [
+      "supplier scorecard, ranked by category"
+    ],
+    "trigger": "monthly",
+    "autonomy": "agent_does",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [
+      "script: scripts/supplier_scorecard.py"
+    ],
+    "skills": [
+      "supplier-scorecard"
+    ],
+    "subagent": "product_and_supply",
+    "sources": {
+      "web": [],
+      "bank": []
+    },
+    "found_in": "web_only",
+    "founder_sees": "The scorecard and any supplier that has slid below its category's median.",
+    "human_role": "sourcing manager",
+    "today_done_by": "founder or nobody"
+  },
+  {
+    "id": "PROD-C70",
+    "extends": null,
+    "name": "Track factory capacity and production-slot booking",
+    "folders": [
+      "01-PRD"
+    ],
+    "what": "Confirm and track a production slot at the exact factory before a PO is placed, since an overbooked factory means a launch date slips without anyone noticing until it is too late.",
+    "encompasses": [
+      "Confirm the factory's open production capacity for the needed window before booking",
+      "Log the confirmed slot and the factory's committed ship date",
+      "Track WIP status updates against the committed date",
+      "Flag a slot at risk of slipping early enough to react",
+      "Watch for a factory over-committing capacity across multiple brands' orders"
+    ],
+    "inputs": [
+      "factory capacity confirmation",
+      "PO ship date",
+      "WIP status updates"
+    ],
+    "outputs": [
+      "production slot calendar",
+      "at-risk slip flag"
+    ],
+    "trigger": "on PO placement, then weekly",
+    "autonomy": "human_assist",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [
+      "script: scripts/factory_slot_tracker.py"
+    ],
+    "skills": [
+      "production-tracking"
+    ],
+    "subagent": "product_and_supply",
+    "sources": {
+      "web": [],
+      "bank": []
+    },
+    "found_in": "web_only",
+    "founder_sees": "Any production slot at risk of slipping, and by how much.",
+    "human_role": "sourcing manager",
+    "today_done_by": "founder or nobody"
+  },
+  {
+    "id": "PROD-C71",
+    "extends": null,
+    "name": "Coordinate packaging durability testing and compliance",
+    "folders": [
+      "01-PRD"
+    ],
+    "what": "Book and track the drop-test, tamper-evidence and transit-durability testing a packaging design needs before it goes into production, since a packaging failure in transit is a cost the sample gate does not catch.",
+    "encompasses": [
+      "Identify which tests a packaging design needs (drop test, compression, tamper evidence) for its category and shipping method",
+      "Book the test with a lab or the courier's own testing service",
+      "Track test results against the pass criteria before releasing packaging for production",
+      "Flag a packaging design that needs a redesign before the next test cycle",
+      "Keep the test report on file as evidence for a later transit-damage dispute"
+    ],
+    "inputs": [
+      "packaging spec",
+      "shipping method and courier"
+    ],
+    "outputs": [
+      "test booking and result log",
+      "pass/fail with redesign flag"
+    ],
+    "trigger": "on new packaging design",
+    "autonomy": "human_assist",
+    "external_write": {
+      "needed": true,
+      "surface": "testing lab booking"
+    },
+    "tools": [
+      "script: scripts/packaging_test_tracker.py"
+    ],
+    "skills": [
+      "packaging-qa"
+    ],
+    "subagent": "product_and_supply",
+    "sources": {
+      "web": [],
+      "bank": []
+    },
+    "found_in": "web_only",
+    "founder_sees": "The test result and whether the packaging is cleared for production.",
+    "human_role": "quality control / packaging executive",
+    "today_done_by": "founder or nobody"
+  },
+  {
+    "id": "PROD-C72",
+    "extends": null,
+    "name": "Plan peak-season capacity across warehouse and sourcing",
+    "folders": [
+      "01-PRD"
+    ],
+    "what": "Build the festive and end-of-season-sale readiness plan across safety stock, warehouse staffing and WMS/OMS load, since a peak-season failure shows up as a stockout or a missed SLA at the worst possible time.",
+    "encompasses": [
+      "Build the safety-stock uplift by SKU from last year's festive multiplier and this year's growth",
+      "Size the temporary warehouse staffing need against the forecast peak volume",
+      "Confirm the WMS/OMS and courier partners can handle the peak order rate, requesting a load test where offered",
+      "Confirm supplier and factory capacity can deliver the peak stock build in time",
+      "Set a week-by-week readiness checklist counting down to the festive window"
+    ],
+    "inputs": [
+      "last year's festive sales data",
+      "this year's growth target",
+      "supplier and 3PL capacity"
+    ],
+    "outputs": [
+      "peak-season readiness plan and countdown checklist"
+    ],
+    "trigger": "annual, ahead of festive season",
+    "autonomy": "founder_gate",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [
+      "script: scripts/peak_season_plan.py"
+    ],
+    "skills": [
+      "peak-season-planning"
+    ],
+    "subagent": "product_and_supply",
+    "sources": {
+      "web": [
+        "https://www.increff.com/blog/which-oms-wms-tools-are-most-reliable-during-big-sale-events-like-festive-season-or-end-of-season-sales-in-india"
+      ],
+      "bank": []
+    },
+    "found_in": "web_only",
+    "founder_sees": "The readiness checklist and any capacity gap found before the festive window.",
+    "human_role": "operations manager",
+    "today_done_by": "founder or in-house"
+  },
+  {
+    "id": "PROD-C44",
+    "extends": "PROD-C44",
+    "name": "Extend Indian marketplace catalogue management to Meesho, JioMart and Snapdeal",
+    "folders": [
+      "22-AMZ"
+    ],
+    "what": "Apply the same listing creation and upkeep already built for Flipkart, Myntra and Nykaa to Meesho, JioMart and Snapdeal, each with its own title, image and category-attribute rules.",
+    "encompasses": [
+      "Build and keep current listings on Meesho, JioMart and Snapdeal alongside the existing three",
+      "Adapt title, bullet and image rules per platform, the same discipline as the original three",
+      "Track each platform's own commission and return-policy differences in the economics model",
+      "Flag when a platform's catalogue rule changes and existing listings need a bulk update"
+    ],
+    "inputs": [
+      "product data",
+      "each new platform's listing rules"
+    ],
+    "outputs": [
+      "listings on the added platforms",
+      "updated economics model per platform"
+    ],
+    "trigger": "on demand, then ongoing",
+    "autonomy": "founder_gate",
+    "external_write": {
+      "needed": true,
+      "surface": "Meesho/JioMart/Snapdeal seller portal"
+    },
+    "tools": [
+      "script: scripts/marketplace_listing_builder.py"
+    ],
+    "skills": [
+      "marketplace-listing"
+    ],
+    "subagent": "product_and_supply",
+    "sources": {
+      "web": [
+        "https://www.webretailer.com/multichannel-management-software/"
+      ],
+      "bank": []
+    },
+    "found_in": "web_only",
+    "founder_sees": "The new platform's listing draft and its economics before it goes live.",
+    "human_role": "marketplace manager",
+    "today_done_by": "agency or in-house"
+  },
+  {
+    "id": "PROD-C73",
+    "extends": null,
+    "name": "Trace a defect complaint to its production batch and run a supplier CAPA loop",
+    "folders": [
+      "01-PRD"
+    ],
+    "what": "When a customer complaint or a return points to a defect, trace it back to the exact production batch or lot using the tech pack's versioning, and run a corrective-action loop with the supplier instead of a one-off refund and move on.",
+    "encompasses": [
+      "Match the defective unit's batch or lot code to the production and inspection record for that run",
+      "Check whether other units from the same batch are still in stock or in transit and hold them",
+      "Open a corrective-action request to the supplier naming the specific defect and batch",
+      "Track the supplier's root-cause response and corrective action to close-out",
+      "Log the pattern against the supplier's scorecard if defects recur from the same cause"
+    ],
+    "inputs": [
+      "customer complaint or return record",
+      "batch/lot codes",
+      "inspection history"
+    ],
+    "outputs": [
+      "batch trace result",
+      "corrective-action request and close-out log"
+    ],
+    "trigger": "on defect complaint above a threshold",
+    "autonomy": "human_assist",
+    "external_write": {
+      "needed": true,
+      "surface": "supplier communication"
+    },
+    "tools": [
+      "script: scripts/batch_trace_capa.py"
+    ],
+    "skills": [
+      "quality-capa"
+    ],
+    "subagent": "product_and_supply",
+    "sources": {
+      "web": [],
+      "bank": []
+    },
+    "found_in": "web_only",
+    "founder_sees": "The batch trace, what else is at risk, and the supplier's corrective action.",
+    "human_role": "quality control manager",
+    "today_done_by": "founder or nobody"
+  },
+  {
+    "id": "PROD-C74",
+    "extends": null,
+    "name": "Manage cross-factory sample shipment logistics and comparison timeline",
+    "folders": [
+      "01-PRD"
+    ],
+    "what": "Track sample shipments arriving from multiple candidate factories through courier and customs so every sample lands and gets tested against the same reference on the same timeline, instead of decisions trickling in as each one happens to arrive.",
+    "encompasses": [
+      "Log the courier tracking number and expected arrival for every factory's sample shipment",
+      "Flag a customs hold or delay that will push a factory's sample outside the comparison window",
+      "Consolidate arrival status into one comparison timeline so the sample gate runs on all candidates together",
+      "Chase a factory whose sample is late against its own committed ship date"
+    ],
+    "inputs": [
+      "sample shipment tracking numbers",
+      "committed ship dates per factory"
+    ],
+    "outputs": [
+      "sample arrival timeline",
+      "delay/chase flag"
+    ],
+    "trigger": "on multi-factory sample round",
+    "autonomy": "human_assist",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [
+      "script: scripts/sample_shipment_tracker.py"
+    ],
+    "skills": [
+      "sample-logistics"
+    ],
+    "subagent": "product_and_supply",
+    "sources": {
+      "web": [],
+      "bank": []
+    },
+    "found_in": "web_only",
+    "founder_sees": "The sample arrival timeline and which factory is at risk of missing the comparison window.",
+    "human_role": "sourcing manager",
+    "today_done_by": "founder or nobody"
+  },
+  {
+    "id": "PROD-C75",
+    "extends": null,
+    "name": "Run agent-led supplier negotiation within preset guardrails",
+    "folders": [
+      "01-PRD"
+    ],
+    "what": "Let an agent run the actual back-and-forth on price and terms with a supplier over email or WhatsApp within a founder-set ceiling, floor and MOQ range, and stop and hand back the moment the supplier's counter falls outside the guardrail.",
+    "encompasses": [
+      "Take the founder's price ceiling, target, MOQ range and acceptable payment terms as fixed guardrails",
+      "Draft and send the opening ask and each round of counter-response",
+      "Pull comparable pricing and the backup-factory benchmark into the negotiation as leverage",
+      "Stop and hand back to the founder the moment a counter falls outside the guardrail or a new term appears",
+      "Produce a term sheet for founder sign-off once terms land inside the guardrail",
+      "Log every message exchanged for the record"
+    ],
+    "inputs": [
+      "founder guardrails (price, MOQ, terms)",
+      "supplier contact channel",
+      "backup-factory benchmark"
+    ],
+    "outputs": [
+      "negotiation transcript",
+      "proposed term sheet"
+    ],
+    "trigger": "on demand, after leverage is built",
+    "autonomy": "founder_gate",
+    "external_write": {
+      "needed": true,
+      "surface": "supplier email/WhatsApp"
+    },
+    "tools": [
+      "script: scripts/negotiation_agent.py",
+      "email/WhatsApp API"
+    ],
+    "skills": [
+      "agent-negotiation"
+    ],
+    "subagent": "product_and_supply",
+    "sources": {
+      "web": [
+        "https://www.keelvar.com/knowledge-hub/ai-sourcing-agents-the-future-of-procurement-automation",
+        "https://pactum.com/",
+        "https://www.supplychainbrain.com/blogs/1-think-tank/post/43687-why-2026-is-the-year-of-ai-agents-for-autonomous-procurement"
+      ],
+      "bank": []
+    },
+    "found_in": "possible",
+    "founder_sees": "The guardrails before it starts, and the term sheet before anything is signed.",
+    "human_role": "sourcing manager",
+    "today_done_by": "nobody (negotiation agents exist for large indirect spend, not yet for small D2C import orders)"
+  },
+  {
+    "id": "PROD-C76",
+    "extends": null,
+    "name": "Decide NDR reschedule versus RTO acceptance using brand-specific unit economics",
+    "folders": [
+      "01-PRD"
+    ],
+    "what": "Go beyond an aggregator's generic NDR retry rule and decide, per order, whether another delivery attempt is worth it against this brand's own COD reversal cost, product margin and courier return fee, accepting the RTO early when the numbers say to stop trying.",
+    "encompasses": [
+      "Compute the cost of one more delivery attempt (courier fee, time) against the order's margin and COD reversal risk",
+      "Compare that to the cost of accepting RTO now (return freight, restock or write-off cost)",
+      "Recommend stop-trying or one-more-attempt per order, not a blanket rule for every NDR",
+      "Feed the outcome back into the courier scorecard and the COD-to-prepaid targeting"
+    ],
+    "inputs": [
+      "NDR queue",
+      "order margin",
+      "courier attempt cost",
+      "RTO/restock cost"
+    ],
+    "outputs": [
+      "per-order stop/retry recommendation"
+    ],
+    "trigger": "on each NDR event",
+    "autonomy": "agent_does",
+    "external_write": {
+      "needed": true,
+      "surface": "aggregator NDR panel"
+    },
+    "tools": [
+      "script: scripts/ndr_economics.py"
+    ],
+    "skills": [
+      "ndr-economics"
+    ],
+    "subagent": "product_and_supply",
+    "sources": {
+      "web": [
+        "https://theshizz.in/blog/courier-comparison-shiprocket-delhivery-bluedart"
+      ],
+      "bank": []
+    },
+    "found_in": "possible",
+    "founder_sees": "Nothing routine; a summary of how much this saved versus a blanket retry rule.",
+    "human_role": "shipping / logistics executive",
+    "today_done_by": "nobody (aggregators apply one rule to every NDR)"
+  }
+]

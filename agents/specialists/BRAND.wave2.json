@@ -1,0 +1,1362 @@
+[
+ {
+  "id": "BRAND-C53",
+  "extends": null,
+  "name": "Build and maintain a targeted media list for a launch or story",
+  "folders": [
+   "04-BRD"
+  ],
+  "what": "Search public journalist and outlet information to build a verified, beat-matched media list for a specific story or launch, so PR outreach targets the right people instead of a generic blast.",
+  "encompasses": [
+   "Search for journalists, editors and outlet sections covering the brand's category and price point",
+   "Match each contact's recent bylines and beat to the specific pitch angle",
+   "Pull public contact routes (bylines, outlet contact pages, social handles) since no paid database is used",
+   "Group the list by tier (top target, secondary, long-tail) and by story angle",
+   "Flag contacts who already covered the category or a named competitor recently",
+   "Note the preferred pitch format and timing pattern from each outlet's past coverage",
+   "Keep the list as a dated, versioned file so repeat pitches do not go stale",
+   "Exclude contacts who have unsubscribed or asked not to be pitched"
+  ],
+  "inputs": [
+   "PR angle (BRAND-C40)",
+   "founder-approved launch or news item",
+   "public web"
+  ],
+  "outputs": [
+   "tiered media list with contact rationale per name, dated"
+  ],
+  "trigger": "on demand, before a launch or news moment",
+  "autonomy": "agent_does",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [
+   "web: search",
+   "web: fetch",
+   "script: media_list_builder"
+  ],
+  "skills": [
+   "pr-research"
+  ],
+  "subagent": "PR Research Assistant",
+  "sources": {
+   "web": [
+    "https://muckrack.com/pr-software/media-database",
+    "https://www.buzzstream.com/blog/media-databases/"
+   ],
+   "bank": []
+  },
+  "found_in": "web_only",
+  "founder_sees": "Kevin sees a short list of named journalists and outlets matched to the specific story, with why each one fits, instead of a mass email blast.",
+  "human_role": "PR manager",
+  "today_done_by": "agency or freelancer"
+ },
+ {
+  "id": "BRAND-C54",
+  "extends": null,
+  "name": "Monitor for brand reputation risk and draft crisis holding statements",
+  "folders": [
+   "04-BRD"
+  ],
+  "what": "Watch public mentions and reviews for a sudden spike in complaints, viral criticism or a factual attack, and prepare a holding statement and escalation note before the founder decides how to respond.",
+  "encompasses": [
+   "Set a baseline mention and sentiment volume so a spike can be detected",
+   "Poll public mentions, reviews and the brand's own support queue for sudden negative spikes",
+   "Classify a spike as product defect, service failure, PR attack, or misinformation",
+   "Draft a factual holding statement that admits nothing unverified and commits to a next update",
+   "Draft the internal escalation note: what happened, what is confirmed, what is not, who needs to see it now",
+   "Never publish or reply publicly without founder approval",
+   "Log the incident and the founder's chosen response for the next audit",
+   "Flag when legal review is needed before any public statement"
+  ],
+  "inputs": [
+   "connector: public mentions/reviews (read-only)",
+   "brand brain: claims tiers and policies",
+   "support ticket volume"
+  ],
+  "outputs": [
+   "incident brief",
+   "draft holding statement",
+   "escalation note"
+  ],
+  "trigger": "alert-driven (spike detected) or on demand",
+  "autonomy": "founder_gate",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [
+   "web: search",
+   "script: mention_spike_detector",
+   "search: knowledge_search.py"
+  ],
+  "skills": [
+   "crisis-response"
+  ],
+  "subagent": "Reputation Risk Monitor",
+  "sources": {
+   "web": [
+    "https://www.cision.com/resources/insights/brand-reputation-crisis-management/",
+    "https://www.5wpr.com/practice/crisisprfirm.cfm"
+   ],
+   "bank": []
+  },
+  "found_in": "web_only",
+  "founder_sees": "Kevin gets an alert the moment something looks like a real problem, with a drafted statement he can approve, edit or kill, never one that goes out on its own.",
+  "human_role": "PR manager",
+  "today_done_by": "agency, or nobody until it is too late"
+ },
+ {
+  "id": "BRAND-C55",
+  "extends": null,
+  "name": "Operate an ambassador and community advocacy program end to end",
+  "folders": [
+   "04-BRD"
+  ],
+  "what": "Run the day-to-day of an approved ambassador or community program: screen applicants, assign tasks, check submitted content against brand guidelines, and track rewards owed.",
+  "encompasses": [
+   "Screen ambassador applications against the cohort definition from the program design (BRAND-C39)",
+   "Send onboarding materials and the handbook to accepted members",
+   "Assign recurring tasks or challenges on a cadence (post, review, referral, event)",
+   "Check submitted content against the voice sheet and claims tiers before it counts toward a reward",
+   "Flag content that makes an unapproved claim or uses a forbidden word",
+   "Track referral codes, UGC volume and reward balances owed per member",
+   "Compute program ROI: cost per acquired customer through the program versus paid channels",
+   "Surface the top members by real revenue influence, not follower count"
+  ],
+  "inputs": [
+   "brand brain: cohort definition and voice sheet",
+   "connector: ambassador platform data",
+   "connector: referral codes"
+  ],
+  "outputs": [
+   "applicant decisions queue",
+   "task assignment log",
+   "flagged content queue",
+   "reward ledger",
+   "program ROI report"
+  ],
+  "trigger": "weekly",
+  "autonomy": "agent_does",
+  "external_write": {
+   "needed": true,
+   "surface": "ambassador/community platform (writes gated behind founder approval)"
+  },
+  "tools": [
+   "connector: ambassador platform",
+   "script: content_screen",
+   "script: reward_ledger"
+  ],
+  "skills": [
+   "community-ops"
+  ],
+  "subagent": "Community Program Operator",
+  "sources": {
+   "web": [
+    "https://www.socialladderapp.com/",
+    "https://www.guideflow.com/blog/ambassador-program-software"
+   ],
+   "bank": []
+  },
+  "found_in": "web_only",
+  "founder_sees": "Kevin sees who is doing real work for the brand and what they are owed, without reading every submission himself.",
+  "human_role": "community manager, brand manager",
+  "today_done_by": "in-house, or a tool (SocialLadder, BrandChamp style platforms)"
+ },
+ {
+  "id": "BRAND-C56",
+  "extends": null,
+  "name": "Run continuous competitor monitoring with change alerts",
+  "folders": [
+   "04-BRD"
+  ],
+  "what": "Watch named competitors' public sites and ad presence on a schedule for pricing, messaging, new SKU and positioning changes, and alert only when something crosses a threshold worth a decision.",
+  "encompasses": [
+   "Crawl competitor pricing pages, homepage messaging and new product pages on a fixed cadence",
+   "Diff each page against its last capture and keep only material changes",
+   "Watch competitor job postings for signals of a new market, channel or capability",
+   "Watch competitor ad libraries for new claims or offers, as signal only, never copied",
+   "Score each change by relevance to the brand's own bottleneck, not by volume",
+   "Batch changes into a weekly digest instead of alerting on every diff",
+   "Escalate immediately only for a price move or claim that changes the category ladder",
+   "Keep the change history so a pattern (repeated discounting, a new avatar) shows over time"
+  ],
+  "inputs": [
+   "competitor list from brand brain",
+   "public competitor sites",
+   "ad library data already in the gallery"
+  ],
+  "outputs": [
+   "weekly competitor change digest",
+   "escalation note when material"
+  ],
+  "trigger": "weekly, plus threshold-triggered escalation",
+  "autonomy": "agent_does",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [
+   "web: fetch",
+   "script: site_diff",
+   "script: competitor_watch"
+  ],
+  "skills": [
+   "competitor-monitoring"
+  ],
+  "subagent": "Competitive Intelligence Monitor",
+  "sources": {
+   "web": [
+    "https://klue.com/topics/competitive-intelligence-tools-b2b-software",
+    "https://www.kompyte.com/blog/top-competitive-intelligence-tools"
+   ],
+   "bank": []
+  },
+  "found_in": "web_only",
+  "founder_sees": "Kevin gets one digest a week of what competitors actually changed, not a raw feed he has to read himself.",
+  "human_role": "competitive intelligence analyst",
+  "today_done_by": "nobody at this size, or a tool (Crayon, Klue, Kompyte)"
+ },
+ {
+  "id": "BRAND-C57",
+  "extends": null,
+  "name": "Build customer-facing competitor battlecards",
+  "folders": [
+   "04-BRD"
+  ],
+  "what": "Turn verified differences between the brand and a named competitor into a short internal battlecard the support or founder can use in a real conversation, never a public comparison page.",
+  "encompasses": [
+   "Pull the category ladder and XY map position for the named competitor (BRAND-C18, BRAND-C19)",
+   "List the real, evidenced differences: price, materials, warranty, delivery, return policy",
+   "Write the response to the most common 'why not [competitor]' questions",
+   "Attach the proof for every claim to the brand's own claims tiers",
+   "Never copy competitor text, images or claims verbatim",
+   "Flag any difference that cannot be verified as unusable until checked",
+   "Version the battlecard when a competitor changes something material",
+   "Keep the battlecard internal; it is not ad or site copy"
+  ],
+  "inputs": [
+   "category ladder (BRAND-C18)",
+   "claims tiers",
+   "competitor monitoring digest (BRAND-C56)"
+  ],
+  "outputs": [
+   "one battlecard per named competitor, internal use only"
+  ],
+  "trigger": "on demand, or when BRAND-C56 flags a material competitor change",
+  "autonomy": "agent_does",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [
+   "search: knowledge_search.py",
+   "script: battlecard_builder"
+  ],
+  "skills": [
+   "competitive-positioning"
+  ],
+  "subagent": "Competitive Intelligence Monitor",
+  "sources": {
+   "web": [
+    "https://klue.com/topics/competitive-intelligence-tools-b2b-software"
+   ],
+   "bank": []
+  },
+  "found_in": "web_only",
+  "founder_sees": "Kevin gets a one-page cheat sheet for 'why not [competitor]' that support can actually use.",
+  "human_role": "competitive intelligence analyst, product marketing",
+  "today_done_by": "nobody at this size, or a tool (Klue, Crayon) at enterprise scale"
+ },
+ {
+  "id": "BRAND-C58",
+  "extends": null,
+  "name": "Run win-loss research against named competitors",
+  "folders": [
+   "02-AVT"
+  ],
+  "what": "Ask a small sample of people who almost bought and instead bought a named competitor, or who chose the brand over one, why, to get real comparison language instead of guessing.",
+  "encompasses": [
+   "Identify near-customers: cart abandoners, quote requesters, or reviewers who mention a competitor by name",
+   "Write a short, specific interview or survey guide about the actual comparison moment",
+   "Field it by email, WhatsApp or a short call within days of the decision, while memory is fresh",
+   "Separate the stated reason from the real deciding factor",
+   "Tag every response to a specific competitor and a specific decision factor (price, trust, delivery, review)",
+   "Roll results into the objection map (BRAND-C13) and the category ladder (BRAND-C18) evidence base",
+   "Flag a competitor advantage that recurs, since it is a product or policy problem, not a copy problem",
+   "Keep sample size small and repeat quarterly rather than one large one-time study"
+  ],
+  "inputs": [
+   "cart abandonment data",
+   "review mentions of named competitors",
+   "brand brain: contact list"
+  ],
+  "outputs": [
+   "win-loss findings by competitor and factor, with quotes"
+  ],
+  "trigger": "quarterly",
+  "autonomy": "human_assist",
+  "external_write": {
+   "needed": true,
+   "surface": "email/WhatsApp outreach to customers (founder-approved template)"
+  },
+  "tools": [
+   "script: survey_field",
+   "connector: whatsapp business (read-only for existing threads)"
+  ],
+  "skills": [
+   "win-loss-research"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [
+    "https://www.autobound.ai/blog/top-15-competitive-intelligence-tools-2026",
+    "https://klue.com/topics/competitive-intelligence-tools-b2b-software"
+   ],
+   "bank": []
+  },
+  "found_in": "web_only",
+  "founder_sees": "Kevin sees the real reasons a real shopper picked a named competitor, in their own words, not a guess.",
+  "human_role": "market researcher, insights manager",
+  "today_done_by": "nobody at this size, or an agency"
+ },
+ {
+  "id": "BRAND-C59",
+  "extends": null,
+  "name": "Diagnose the gap between intended and actual brand perception",
+  "folders": [
+   "04-BRD"
+  ],
+  "what": "Compare what the brand says it stands for (positioning statement, voice sheet, claims) against what customers actually say in reviews, social mentions and survey results, and name the gap.",
+  "encompasses": [
+   "Pull the current positioning statement, voice sheet and top claims from the brand brain",
+   "Pull the most repeated words and sentiments from reviews and social listening",
+   "Score each intended attribute as confirmed, contested, or absent in the real signal",
+   "Name the single biggest gap, not a list of ten",
+   "Distinguish a messaging problem (right positioning, wrong words) from a product problem (wrong positioning)",
+   "Check whether the gap is new or has persisted across the last audits",
+   "Recommend whether the fix is a messaging change, a proof change, or a repositioning trigger",
+   "Feed a confirmed repositioning-level gap into the rebrand process (BRAND-C49)"
+  ],
+  "inputs": [
+   "brand brain: positioning, voice sheet, claims",
+   "reviews",
+   "social listening",
+   "survey results (BRAND-C06)"
+  ],
+  "outputs": [
+   "perception gap report with evidence per attribute"
+  ],
+  "trigger": "quarterly, alongside the brand consistency audit (BRAND-C37)",
+  "autonomy": "agent_does",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [
+   "search: knowledge_search.py",
+   "script: text_clustering",
+   "script: sentiment_score"
+  ],
+  "skills": [
+   "brand-perception-audit"
+  ],
+  "subagent": "Perception Gap Analyst",
+  "sources": {
+   "web": [
+    "https://www.gwi.com/blog/brand-tracking-tools",
+    "https://www.latana.com/solutions/brand-health-tracking"
+   ],
+   "bank": []
+  },
+  "found_in": "web_only",
+  "founder_sees": "Kevin sees, in one page, where the brand's story and the customer's real experience of it have split apart.",
+  "human_role": "brand strategist, insights manager",
+  "today_done_by": "nobody at this size, or a brand tracking tool (Latana, Tracksuit) at scale"
+ },
+ {
+  "id": "BRAND-C60",
+  "extends": null,
+  "name": "Source and pitch founder thought-leadership placements",
+  "folders": [
+   "04-BRD"
+  ],
+  "what": "Find podcasts, panels, bylined-article slots and expert-commentary requests that fit the founder's actual expertise and the brand's story, and draft the pitch.",
+  "encompasses": [
+   "Search for podcasts and panels in the brand's category that take outside guests",
+   "Search for publications running bylined or guest columns in the category",
+   "Match each opportunity to a specific angle from the founder's story or a real result",
+   "Draft a short, specific pitch email per opportunity, never a generic one",
+   "Track which opportunities are live requests (a journalist looking for a source now) versus evergreen",
+   "Log outcomes: accepted, declined, no reply, to avoid re-pitching a dead lead",
+   "Prepare a one-page founder briefing (talking points, no invented numbers) before any accepted slot",
+   "Never commit the founder's time without approval"
+  ],
+  "inputs": [
+   "brand brain: founder story, positioning",
+   "public web (podcast guest calls, journalist source requests)"
+  ],
+  "outputs": [
+   "opportunity list with match rationale",
+   "draft pitches",
+   "founder briefing per accepted slot"
+  ],
+  "trigger": "monthly sweep, plus on demand around a launch",
+  "autonomy": "human_assist",
+  "external_write": {
+   "needed": true,
+   "surface": "outbound pitch email (founder-approved before send)"
+  },
+  "tools": [
+   "web: search",
+   "script: pitch_drafter"
+  ],
+  "skills": [
+   "thought-leadership-sourcing"
+  ],
+  "subagent": "PR Research Assistant",
+  "sources": {
+   "web": [
+    "https://muckrack.com/pr-software/media-database"
+   ],
+   "bank": []
+  },
+  "found_in": "web_only",
+  "founder_sees": "Kevin gets a short list of real speaking or guest slots that fit him, with the pitch already drafted, not a cold list of podcasts.",
+  "human_role": "PR manager",
+  "today_done_by": "agency, or nobody at this size"
+ },
+ {
+  "id": "BRAND-C61",
+  "extends": null,
+  "name": "Find and manage award and best-of list submissions",
+  "folders": [
+   "04-BRD"
+  ],
+  "what": "Track industry awards and 'best of' list calls the brand qualifies for, and prepare the submission so a real win becomes a citable, checkable claim.",
+  "encompasses": [
+   "Search for category-relevant awards and editorial 'best of' list calls with open deadlines",
+   "Screen out awards that are pay-to-play with no editorial credibility",
+   "Match the brand's own proof (real numbers, real reviews) to each award's criteria",
+   "Draft the submission copy from the claims tiers, never an inflated number",
+   "Track submission deadlines and required assets (photos, samples, executive bio)",
+   "Log outcomes and turn a real win into an approved, site-backed claim",
+   "Flag when a submission fee is required so the founder can decide",
+   "Keep a dated log so the same award is not missed or duplicated next cycle"
+  ],
+  "inputs": [
+   "brand brain: claims tiers",
+   "public award and list calls"
+  ],
+  "outputs": [
+   "award opportunity calendar",
+   "draft submissions",
+   "outcome log"
+  ],
+  "trigger": "quarterly sweep",
+  "autonomy": "human_assist",
+  "external_write": {
+   "needed": true,
+   "surface": "award submission form (founder-approved)"
+  },
+  "tools": [
+   "web: search",
+   "script: submission_drafter"
+  ],
+  "skills": [
+   "award-sourcing"
+  ],
+  "subagent": "PR Research Assistant",
+  "sources": {
+   "web": [
+    "https://muckrack.com/pr-software/media-database"
+   ],
+   "bank": []
+  },
+  "found_in": "web_only",
+  "founder_sees": "Kevin sees which real awards are worth entering and gets the entry drafted, instead of missing deadlines.",
+  "human_role": "PR manager",
+  "today_done_by": "nobody at this size, or an agency"
+ },
+ {
+  "id": "BRAND-C62",
+  "extends": null,
+  "name": "Run a new-market entry feasibility assessment",
+  "folders": [
+   "19-WLD"
+  ],
+  "what": "Before a wild bet on a new country or region, check regulatory, tax, competitor and logistics feasibility so the founder decides with real constraints in view, not just opportunity size.",
+  "encompasses": [
+   "Check import duty, GST or VAT, and product certification requirements for the category in the target market",
+   "Check labeling and packaging rules that differ from the home market",
+   "Map the competitor set already serving that market at the brand's price point",
+   "Check shipping, customs and return logistics options and their real cost",
+   "Check payment method norms (COD prevalence, card penetration, local wallets)",
+   "Estimate a landed cost and price point for the target market from the brand's own cost data",
+   "Flag any legal restriction on the product category in that market",
+   "Score the market as go, go-with-conditions, or not-yet, with the specific blocker named"
+  ],
+  "inputs": [
+   "brand brain: product costs and specs",
+   "public regulatory sources",
+   "competitor data"
+  ],
+  "outputs": [
+   "market feasibility report per candidate country"
+  ],
+  "trigger": "on demand, when a new-market wild bet is proposed",
+  "autonomy": "human_assist",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [
+   "web: search",
+   "script: landed_cost_model"
+  ],
+  "skills": [
+   "market-entry-assessment"
+  ],
+  "subagent": "New Market Feasibility Analyst",
+  "sources": {
+   "web": [
+    "https://www.gelato.com/blog/international-expansion",
+    "https://www.shopify.com/enterprise/blog/global-expansion",
+    "https://www.transperfect.com/blog/five-things-brands-underestimate-global-e-commerce-expansion"
+   ],
+   "bank": []
+  },
+  "found_in": "web_only",
+  "founder_sees": "Kevin sees whether a new country is actually legally and logistically workable before any market-sizing conversation happens.",
+  "human_role": "expansion or new markets lead",
+  "today_done_by": "nobody at this size, or a consultancy"
+ },
+ {
+  "id": "BRAND-C63",
+  "extends": null,
+  "name": "Model and structure a brand licensing deal",
+  "folders": [
+   "19-WLD"
+  ],
+  "what": "For a proposed licensing opportunity, check royalty norms, build a licensee scorecard and draft the deal memo terms for the founder to negotiate from.",
+  "encompasses": [
+   "Check the typical royalty rate range for the product category and exclusivity level",
+   "Score a candidate licensee on production capability, distribution reach and brand fit",
+   "Draft the deal memo: royalty rate, minimum guarantee, term length, territory, approval rights",
+   "Require an approval step for product, packaging and promotional material in every draft",
+   "Flag category overlap with an existing wild bet or product line",
+   "Model the brand's expected royalty income against the licensee's own sales estimate",
+   "Check the licensee's public reputation for quality or legal issues",
+   "Keep every draft a proposal only; no term is final until the founder signs"
+  ],
+  "inputs": [
+   "brand brain: product lines, category",
+   "founder-approved licensing interest"
+  ],
+  "outputs": [
+   "licensee scorecard",
+   "deal memo draft",
+   "royalty income model"
+  ],
+  "trigger": "on demand",
+  "autonomy": "human_assist",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [
+   "web: search",
+   "script: royalty_model",
+   "script: licensee_scorecard"
+  ],
+  "skills": [
+   "licensing-deal-structuring"
+  ],
+  "subagent": "Licensing Deal Modeler",
+  "sources": {
+   "web": [
+    "https://www.shopify.com/blog/brand-licensing",
+    "https://www.licenseglobal.com/licensing-resources/brand-licensing-for-beginners"
+   ],
+   "bank": []
+  },
+  "found_in": "web_only",
+  "founder_sees": "Kevin sees a scored shortlist of licensees and a draft deal memo, not a blank negotiation.",
+  "human_role": "expansion or new markets lead, brand manager",
+  "today_done_by": "nobody at this size, or a licensing consultant"
+ },
+ {
+  "id": "BRAND-C64",
+  "extends": null,
+  "name": "Build a wholesale and retail buyer pitch kit",
+  "folders": [
+   "19-WLD"
+  ],
+  "what": "For a wholesale or retail entry wild bet, build the line sheet and buyer-facing pitch deck a retail buyer expects to see before placing an order.",
+  "encompasses": [
+   "Build the line sheet: SKU, wholesale price, MOQ, case pack, lead time, per product",
+   "Compute the wholesale margin the retailer keeps at a typical retail markup",
+   "Draft the buyer pitch deck: brand story, proof (sell-through, reviews, press), assortment plan",
+   "List the retail terms options: net terms, consignment, minimum order value",
+   "Flag which SKUs are protected by an existing exclusivity or DTC-only policy",
+   "Check packaging and labeling meet retail shelf requirements, not just DTC unboxing",
+   "Prepare a one-page leave-behind for a trade show or buyer meeting",
+   "Keep pricing consistent with the brand's own pricing position audit (BRAND-C24)"
+  ],
+  "inputs": [
+   "brand brain: products, costs, pricing position",
+   "channel fit assessment (BRAND-C51)"
+  ],
+  "outputs": [
+   "line sheet",
+   "buyer pitch deck",
+   "leave-behind one-pager"
+  ],
+  "trigger": "on demand",
+  "autonomy": "human_assist",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [
+   "script: line_sheet_builder",
+   "script: margin_model"
+  ],
+  "skills": [
+   "wholesale-kit-building"
+  ],
+  "subagent": "Wholesale Kit Builder",
+  "sources": {
+   "web": [
+    "https://exitfiles.substack.com/p/get-retail-ready",
+    "https://vip.graphics/retail-distribution-pitch-deck/"
+   ],
+   "bank": []
+  },
+  "found_in": "web_only",
+  "founder_sees": "Kevin gets a real line sheet and buyer deck ready for a trade show or a retail meeting, instead of building one from scratch under deadline.",
+  "human_role": "expansion or new markets lead, brand manager",
+  "today_done_by": "nobody at this size, or a freelancer"
+ },
+ {
+  "id": "BRAND-C65",
+  "extends": null,
+  "name": "Build the brand's cultural and festive moment calendar for PR, events and community",
+  "folders": [
+   "04-BRD"
+  ],
+  "what": "Build a dated calendar of festivals, cultural moments and category-relevant global dates that matter for PR pitches, events and community activity, kept separate from the paid promotional calendar.",
+  "encompasses": [
+   "List the major India festivals relevant to the category with realistic lead times",
+   "List category-relevant global observance days worth a PR or community angle, not generic ones",
+   "Set the lead time needed per moment: PR pitch lead time, event planning lead time, content lead time",
+   "Flag which moments fit a press angle, which fit an event, and which fit a community post only",
+   "Cross-check the calendar against the paid media calendar so messages do not collide or duplicate spend",
+   "Mark moments the brand sat out last year and why, so repeats are a choice not a miss",
+   "Update the calendar yearly and flag date shifts, since lunar festivals move",
+   "Size each moment's relevance by category fit, not by how big the festival is generally"
+  ],
+  "inputs": [
+   "brand brain: category, past campaign history",
+   "public festival and observance calendars"
+  ],
+  "outputs": [
+   "dated cultural moment calendar with lead times and channel fit"
+  ],
+  "trigger": "yearly, refreshed quarterly",
+  "autonomy": "agent_does",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [
+   "web: search",
+   "script: calendar_builder"
+  ],
+  "skills": [
+   "cultural-calendar-planning"
+  ],
+  "subagent": "Festive Calendar Planner",
+  "sources": {
+   "web": [
+    "https://www.appbrew.com/blogs/festive-season-marketing-india",
+    "https://inc42.com/resources/how-d2c-brands-can-use-influencer-marketing-to-maximise-roi-this-festive-season/"
+   ],
+   "bank": []
+  },
+  "found_in": "web_only",
+  "founder_sees": "Kevin sees which real dates are worth a PR pitch, an event, or a community post this year, with enough lead time to actually act.",
+  "human_role": "PR manager, events manager",
+  "today_done_by": "in-house, ad hoc"
+ },
+ {
+  "id": "BRAND-C66",
+  "extends": null,
+  "name": "Run AI-persona pretesting of messaging, names and concepts",
+  "folders": [
+   "02-AVT"
+  ],
+  "what": "Before spending on a real survey or interview round, run a quick AI-simulated persona pass on a messaging, naming or concept shortlist to catch obvious misses early, always labeled directional.",
+  "encompasses": [
+   "Build the persona from the brand's own validated avatar record, not a generic demographic guess",
+   "Run the shortlist (names, headlines, concepts) past the simulated persona for a reaction",
+   "Ask the same follow-up questions a real interview would ask, to surface reasoning, not just a verdict",
+   "Flag any response that just repeats the input back, a sign the simulation adds no information",
+   "Never treat a synthetic result as validated; label it clearly as a pre-filter",
+   "Use it only to cut an oversized shortlist before spending on real research (BRAND-C05, BRAND-C06)",
+   "Log where the synthetic read and the later real result agreed or disagreed, to calibrate trust over time",
+   "Stop using it for a given decision type if it disagrees with real results more than it agrees"
+  ],
+  "inputs": [
+   "validated avatar record",
+   "shortlist to test (names, headlines, concepts)"
+  ],
+  "outputs": [
+   "synthetic reaction summary per shortlist item",
+   "agreement log over time"
+  ],
+  "trigger": "on demand, before a real research round",
+  "autonomy": "agent_does",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [
+   "script: persona_simulator"
+  ],
+  "skills": [
+   "synthetic-pretesting"
+  ],
+  "subagent": "Persona Pretest Simulator",
+  "sources": {
+   "web": [
+    "https://aimultiple.com/synthetic-users",
+    "https://www.delve.ai/blog/synthetic-personas"
+   ],
+   "bank": []
+  },
+  "found_in": "web_only",
+  "founder_sees": "Kevin sees a quick directional read on a shortlist before paying for real research, clearly marked as a guess to verify, not an answer.",
+  "human_role": "market researcher",
+  "today_done_by": "nobody, or an emerging tool category (Synthetic Users, Delve AI)"
+ },
+ {
+  "id": "BRAND-C67",
+  "extends": null,
+  "name": "Run an autonomous mystery-shopper brand journey audit",
+  "folders": [
+   "04-BRD"
+  ],
+  "what": "Have an agent walk the brand's own full purchase journey, browse, cart, checkout, order confirmation and a real support query, the way a mystery shopper would, and catalog every place the experience breaks the brand's own promise.",
+  "encompasses": [
+   "Walk the site as a first-time visitor would, from a specific ad or search entry point",
+   "Complete a real checkout and note every friction point against the promise made upstream",
+   "Send a real support query and log tone, speed and accuracy of the reply against the voice sheet",
+   "Check the unboxing experience against the story told pre-purchase, using recorded footage",
+   "Compare the same journey on a top named competitor's site, signal only",
+   "Score each step: promise made, promise kept, gap",
+   "Repeat quarterly so drift shows over time, not just a one-time snapshot",
+   "Route every gap found to the owning specialist (Site, Lifecycle, Ops), not only to brand"
+  ],
+  "inputs": [
+   "brand brain: promises and claims",
+   "live site",
+   "support channel"
+  ],
+  "outputs": [
+   "journey audit report with a promise-kept score per step"
+  ],
+  "trigger": "quarterly",
+  "autonomy": "agent_does",
+  "external_write": {
+   "needed": true,
+   "surface": "a live test purchase and a real support ticket (small budget, founder-approved)"
+  },
+  "tools": [
+   "browser agent",
+   "script: journey_scorer"
+  ],
+  "skills": [
+   "brand-journey-audit"
+  ],
+  "subagent": "Brand Journey Auditor",
+  "sources": {
+   "web": [],
+   "bank": []
+  },
+  "found_in": "possible",
+  "founder_sees": "Kevin sees exactly where his own brand breaks its own promise, from a real shopper's seat, not a checklist.",
+  "human_role": "brand manager",
+  "today_done_by": "nobody; occasionally a manual mystery-shopper agency exercise"
+ },
+ {
+  "id": "BRAND-C68",
+  "extends": null,
+  "name": "Auto-draft the founder's periodic brand narrative update",
+  "folders": [
+   "04-BRD"
+  ],
+  "what": "Pull real results from the experiment registry and brand health tracker and draft the founder's quarterly narrative update in the same self-us-now structure as the brand story, so reporting stays honest and consistent instead of a slide deck built from memory.",
+  "encompasses": [
+   "Pull closed experiment results and their read-point outcomes from the registry",
+   "Pull the brand health trend and the perception gap findings (BRAND-C59) for the period",
+   "Draft the update in the founder's own established voice, not a generic report tone",
+   "State what worked, what did not, and what was learned, with the real numbers attached",
+   "Never round a result up or state a number without its source and date",
+   "Flag any metric that is unavailable rather than guessing at it",
+   "Keep the draft short enough to read in the time the founder actually has",
+   "Leave every framing choice and the public version for the founder to approve"
+  ],
+  "inputs": [
+   "experiment registry",
+   "brand health tracker",
+   "brand brain: founder story structure"
+  ],
+  "outputs": [
+   "draft quarterly narrative update"
+  ],
+  "trigger": "quarterly",
+  "autonomy": "human_assist",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [
+   "script: registry_query",
+   "search: knowledge_search.py"
+  ],
+  "skills": [
+   "founder-narrative-drafting"
+  ],
+  "subagent": "Founder Narrative Drafter",
+  "sources": {
+   "web": [],
+   "bank": []
+  },
+  "found_in": "possible",
+  "founder_sees": "Kevin gets a drafted quarter-in-review in his own voice, built from real numbers he can check, that he edits rather than writes from scratch.",
+  "human_role": "head of marketing, brand manager",
+  "today_done_by": "founder, from memory"
+ },
+ {
+  "id": "BRAND-C69",
+  "extends": null,
+  "name": "Watch the brand's own trademarks, domains and social handles for lapses or squatting",
+  "folders": [
+   "04-BRD"
+  ],
+  "what": "Track the brand's own registered marks, domains and social handles for upcoming renewal deadlines, and watch for new registrations that look like squatting or infringement.",
+  "encompasses": [
+   "Keep a dated record of every registered mark, domain and handle with its renewal date",
+   "Alert well before a renewal deadline, not on the day",
+   "Watch new trademark filings and domain registrations for close variants of the brand name",
+   "Watch for social handle squatting on platforms the brand has not claimed yet",
+   "Distinguish a real infringement risk from an unrelated similar name in a different category",
+   "Flag an international filing that blocks a planned expansion market (ties to BRAND-C62)",
+   "Log every flagged case with evidence for the founder or counsel to act on",
+   "Never take enforcement action; this is watch and alert only"
+  ],
+  "inputs": [
+   "brand brain: registered marks, domains, handles",
+   "public trademark and domain registries"
+  ],
+  "outputs": [
+   "renewal calendar",
+   "infringement watch log"
+  ],
+  "trigger": "monthly",
+  "autonomy": "agent_does",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [
+   "web: search",
+   "script: mark_watch"
+  ],
+  "skills": [
+   "trademark-watch"
+  ],
+  "subagent": "Trademark Watch Monitor",
+  "sources": {
+   "web": [
+    "https://corsearch.com/trademark-solutions/watch-a-trademark/",
+    "https://thecmo.com/services/trademark-monitoring-service/"
+   ],
+   "bank": []
+  },
+  "found_in": "web_only",
+  "founder_sees": "Kevin gets a heads up before a renewal lapses or before someone else files something close to his name.",
+  "human_role": "brand manager",
+  "today_done_by": "nobody at this size, or a paid watch service"
+ },
+ {
+  "id": "BRAND-C70",
+  "extends": null,
+  "name": "Run a partnership candidate sourcing sweep",
+  "folders": [
+   "04-BRD"
+  ],
+  "what": "Proactively search for non-competitive brands serving the same customer that would make a good collaboration, before any specific proposal exists to screen.",
+  "encompasses": [
+   "Define the target customer overlap criteria from the brand's own avatar record",
+   "Search for brands in adjacent categories serving that same customer",
+   "Check each candidate is genuinely non-competitive, not just a different product form",
+   "Check each candidate's own brand health and reputation before shortlisting",
+   "Rank candidates by audience overlap size and narrative fit",
+   "Note what each side would plausibly want from the collaboration",
+   "Hand the shortlist to the screening step (BRAND-C41) rather than proposing terms itself",
+   "Refresh the sweep twice a year so the shortlist does not go stale"
+  ],
+  "inputs": [
+   "brand brain: avatar, category",
+   "public brand and social data"
+  ],
+  "outputs": [
+   "ranked partnership candidate shortlist with fit rationale"
+  ],
+  "trigger": "twice yearly",
+  "autonomy": "agent_does",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [
+   "web: search"
+  ],
+  "skills": [
+   "partnership-sourcing"
+  ],
+  "subagent": "Partnership Sourcing Scout",
+  "sources": {
+   "web": [
+    "https://resources.workable.com/partnership-manager-job-description",
+    "https://www.tealhq.com/career-paths/partnerships-manager"
+   ],
+   "bank": []
+  },
+  "found_in": "web_only",
+  "founder_sees": "Kevin gets a short list of real, non-competitive brands worth reaching out to, before he has to think of any himself.",
+  "human_role": "partnerships manager",
+  "today_done_by": "founder, ad hoc"
+ },
+ {
+  "id": "BRAND-C71",
+  "extends": null,
+  "name": "Check reputational risk on a proposed partner, licensee or ambassador",
+  "folders": [
+   "04-BRD"
+  ],
+  "what": "Before signing a collaboration, license or ambassador agreement, run a public reputation and controversy check on the other party so a bad match does not become the brand's problem.",
+  "encompasses": [
+   "Search the candidate's recent public controversies, legal disputes and negative press",
+   "Check for statements or associations that conflict with the brand's own claims tiers or values",
+   "Check the candidate's own customer or audience sentiment, not just follower count",
+   "Check for undisclosed past brand deals that could create a conflict",
+   "Flag anything time-sensitive (an active controversy) as a stop, not a caution",
+   "Summarize risk as go, go-with-conditions, or no, with the specific evidence",
+   "Keep the check to public information only; never private or invented claims",
+   "Repeat the check yearly for an ongoing relationship, not just at signing"
+  ],
+  "inputs": [
+   "candidate name",
+   "public web"
+  ],
+  "outputs": [
+   "risk check summary with evidence and recommendation"
+  ],
+  "trigger": "on demand before signing; yearly for ongoing relationships",
+  "autonomy": "human_assist",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [
+   "web: search"
+  ],
+  "skills": [
+   "partner-risk-check"
+  ],
+  "subagent": "Partnership Sourcing Scout",
+  "sources": {
+   "web": [
+    "https://resources.workable.com/partnership-manager-job-description"
+   ],
+   "bank": []
+  },
+  "found_in": "web_only",
+  "founder_sees": "Kevin sees exactly what a proposed partner has said or done publicly before his name gets attached to theirs.",
+  "human_role": "partnerships manager, brand manager",
+  "today_done_by": "founder, ad hoc, often skipped"
+ },
+ {
+  "id": "BRAND-C06",
+  "extends": "BRAND-C06",
+  "name": "EXTENSION: Design and field customer surveys - on-demand panel option",
+  "folders": [
+   "02-AVT",
+   "04-BRD"
+  ],
+  "what": "Extends BRAND-C06: use an on-demand survey panel tool for a same-week directional read when speed matters more than a fully custom-built survey.",
+  "encompasses": [
+   "Use an on-demand panel provider for a fast, small, directional read when there is no time for a custom-built survey",
+   "Pick panel demographics that approximate the avatar when an exact match is not offered",
+   "Treat panel results as directional and confirm anything decision-critical with the brand's own customers",
+   "Compare panel cost and turnaround against building a custom survey, and choose in code by urgency"
+  ],
+  "inputs": [
+   "decision needing a fast read",
+   "avatar record"
+  ],
+  "outputs": [
+   "panel-sourced directional survey result"
+  ],
+  "trigger": "on demand, when speed matters more than depth",
+  "autonomy": "human_assist",
+  "external_write": {
+   "needed": true,
+   "surface": "survey panel platform (paid, founder-approved spend)"
+  },
+  "tools": [
+   "connector: on-demand survey panel"
+  ],
+  "skills": [
+   "customer-survey-design"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [],
+   "bank": []
+  },
+  "found_in": "web_only",
+  "founder_sees": "Kevin can get a same-week directional read when a decision cannot wait for a full custom survey.",
+  "human_role": "market researcher, insights manager",
+  "today_done_by": "tool (on-demand panel platforms)"
+ },
+ {
+  "id": "BRAND-C23",
+  "extends": "BRAND-C23",
+  "name": "EXTENSION: Size the market and niche - public-data sizing for a new market",
+  "folders": [
+   "04-BRD",
+   "19-WLD"
+  ],
+  "what": "Extends BRAND-C23: add public-data market sizing for a candidate new market or country, since a new market has no brand-owned numbers yet.",
+  "encompasses": [
+   "Pull public category size and online penetration estimates for the candidate market",
+   "Benchmark against comparable brands' known scale in that market as a sanity check",
+   "Combine the public estimate with the brand's own conversion and AOV assumptions to project a first-year range",
+   "Flag the estimate's confidence level clearly, since it rests on public data, not brand data"
+  ],
+  "inputs": [
+   "candidate market",
+   "public category reports",
+   "brand's own conversion and AOV"
+  ],
+  "outputs": [
+   "market size range with confidence flag"
+  ],
+  "trigger": "on demand, feeding a new-market wild bet",
+  "autonomy": "human_assist",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [
+   "web: search",
+   "script: market_size_model"
+  ],
+  "skills": [
+   "market-sizing"
+  ],
+  "subagent": "New Market Feasibility Analyst",
+  "sources": {
+   "web": [
+    "https://www.gelato.com/blog/international-expansion"
+   ],
+   "bank": []
+  },
+  "found_in": "web_only",
+  "founder_sees": "Kevin sees a market size range for a new country, clearly flagged as an estimate to confirm, not a brand-verified number.",
+  "human_role": "expansion or new markets lead",
+  "today_done_by": "nobody at this size, or a consultancy"
+ },
+ {
+  "id": "BRAND-C27",
+  "extends": "BRAND-C27",
+  "name": "EXTENSION: Clear names - international clearance for expansion markets",
+  "folders": [
+   "04-BRD",
+   "19-WLD"
+  ],
+  "what": "Extends BRAND-C27: clear a name across every country in a planned expansion, not only the home market, including local language meaning and app-store name availability.",
+  "encompasses": [
+   "Check trademark availability in each target expansion country, not only the home country",
+   "Check the name's meaning and pronunciation in the target market's main language",
+   "Check domain and app-store name availability for the target market's storefronts",
+   "Flag a name that clears at home but fails in a target market, before the market-entry decision is made"
+  ],
+  "inputs": [
+   "name candidate",
+   "target expansion markets"
+  ],
+  "outputs": [
+   "per-market clearance result"
+  ],
+  "trigger": "on demand, before international launch",
+  "autonomy": "human_assist",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [
+   "web: search"
+  ],
+  "skills": [
+   "naming-clearance"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [],
+   "bank": []
+  },
+  "found_in": "web_only",
+  "founder_sees": "Kevin finds out a name is blocked or means something bad in a target market before, not after, entering it.",
+  "human_role": "expansion or new markets lead, brand manager",
+  "today_done_by": "nobody at this size, or a trademark attorney"
+ },
+ {
+  "id": "BRAND-C36",
+  "extends": "BRAND-C36",
+  "name": "EXTENSION: Assemble the brand guidelines document - living guidelines hub",
+  "folders": [
+   "04-BRD"
+  ],
+  "what": "Extends BRAND-C36: build the guidelines as a living, versioned hub with role-based access instead of a static PDF, so an agency or partner always sees the current rules.",
+  "encompasses": [
+   "Publish the guidelines as a versioned page instead of a static file",
+   "Set role-based access so an outside agency or partner sees only what they need",
+   "Route a proposed guideline change through an approval step before it goes live",
+   "Show a change log so anyone can see what changed and when"
+  ],
+  "inputs": [
+   "existing brand guidelines content (BRAND-C36)"
+  ],
+  "outputs": [
+   "living guidelines hub with version history"
+  ],
+  "trigger": "whenever a guideline changes",
+  "autonomy": "agent_does",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [
+   "artifact: published guidelines page"
+  ],
+  "skills": [
+   "brand-guidelines-hub"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [
+    "https://www.frontify.com/en/solution/brand-asset-management"
+   ],
+   "bank": []
+  },
+  "found_in": "web_only",
+  "founder_sees": "Kevin and any agency he shares access with always see the current guidelines, with a record of what changed and when.",
+  "human_role": "brand manager",
+  "today_done_by": "tool (Frontify, Bynder) at agencies and larger brands"
+ },
+ {
+  "id": "BRAND-C40",
+  "extends": "BRAND-C40",
+  "name": "EXTENSION: Develop PR angles - press release, media kit and pitch drafting",
+  "folders": [
+   "04-BRD"
+  ],
+  "what": "Extends BRAND-C40: produce the physical PR deliverables, a press release, a media kit and pitch email drafts, not only the angle.",
+  "encompasses": [
+   "Draft the press release in standard format from the approved angle",
+   "Assemble the media kit: founder bio, fact sheet, high-res logo and product images, boilerplate",
+   "Draft the pitch email per target tier from the media list (BRAND-C53)",
+   "Keep every claim in the release and kit tied to the claims tiers"
+  ],
+  "inputs": [
+   "approved PR angle (BRAND-C40)",
+   "brand brain: founder bio and product facts",
+   "media list (BRAND-C53)"
+  ],
+  "outputs": [
+   "press release draft",
+   "media kit",
+   "pitch email drafts"
+  ],
+  "trigger": "on demand, before a launch or news moment",
+  "autonomy": "agent_does",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [
+   "script: press_release_drafter"
+  ],
+  "skills": [
+   "pr-drafting"
+  ],
+  "subagent": "PR Research Assistant",
+  "sources": {
+   "web": [
+    "https://muckrack.com/pr-software/media-database"
+   ],
+   "bank": []
+  },
+  "found_in": "web_only",
+  "founder_sees": "Kevin gets a ready press release, media kit and pitch emails to review, not just a strategic angle to write from scratch.",
+  "human_role": "PR manager",
+  "today_done_by": "agency or freelancer"
+ },
+ {
+  "id": "BRAND-C41",
+  "extends": "BRAND-C41",
+  "name": "EXTENSION: Screen and brief partnerships - deal structuring",
+  "folders": [
+   "04-BRD"
+  ],
+  "what": "Extends BRAND-C41: structure the actual deal, not only screen the fit, revenue split, exclusivity, deliverables, timeline and exit clause.",
+  "encompasses": [
+   "Draft the deal terms: revenue or cost split, exclusivity scope, deliverables and timeline",
+   "Draft an exit or underperformance clause before either side is committed",
+   "Model the expected value of the collaboration against its cost and the team time it needs",
+   "Flag any term that conflicts with an existing partnership or licensing agreement"
+  ],
+  "inputs": [
+   "screened partnership candidate (BRAND-C41)",
+   "partnership sourcing shortlist (BRAND-C70)"
+  ],
+  "outputs": [
+   "draft deal terms sheet"
+  ],
+  "trigger": "on demand, after a candidate passes screening",
+  "autonomy": "human_assist",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [
+   "script: deal_terms_drafter"
+  ],
+  "skills": [
+   "partnership-deal-structuring"
+  ],
+  "subagent": "Partnership Sourcing Scout",
+  "sources": {
+   "web": [
+    "https://www.pandium.com/partnership-hires-sample-job-descriptions"
+   ],
+   "bank": []
+  },
+  "found_in": "web_only",
+  "founder_sees": "Kevin gets a draft deal sheet to negotiate from, not just a yes or no on the fit.",
+  "human_role": "partnerships manager",
+  "today_done_by": "founder, ad hoc"
+ },
+ {
+  "id": "BRAND-C42",
+  "extends": "BRAND-C42",
+  "name": "EXTENSION: Design events and pop-ups - operational plan and ROI",
+  "folders": [
+   "04-BRD"
+  ],
+  "what": "Extends BRAND-C42: produce the operational plan to run an approved event, a vendor list, venue checklist, budget tracker and run-of-show, and measure its ROI afterward.",
+  "encompasses": [
+   "Build the vendor list and venue booking checklist for the approved design",
+   "Build the run-of-show and staffing plan for the day",
+   "Track the event budget against actuals in real time",
+   "Measure post-event ROI: foot traffic, sales lift in the event window versus a control period, social mentions, cost per engagement",
+   "Compare ROI against the plan's original size-to-team-capacity assumption"
+  ],
+  "inputs": [
+   "approved event design (BRAND-C42)",
+   "brand brain: budget"
+  ],
+  "outputs": [
+   "operational plan (vendor list, run-of-show, budget tracker)",
+   "post-event ROI report"
+  ],
+  "trigger": "on demand after design approval; ROI report within 2 weeks after the event",
+  "autonomy": "human_assist",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [
+   "script: budget_tracker",
+   "search: knowledge_search.py"
+  ],
+  "skills": [
+   "event-ops-and-roi"
+  ],
+  "subagent": "Community Program Operator",
+  "sources": {
+   "web": [
+    "https://www.instawork.com/blog/event-manager-job-description"
+   ],
+   "bank": []
+  },
+  "found_in": "web_only",
+  "founder_sees": "Kevin gets the full run sheet and budget for an approved event, then a real ROI number afterward, not just the creative concept.",
+  "human_role": "events manager",
+  "today_done_by": "in-house or freelancer"
+ },
+ {
+  "id": "BRAND-C48",
+  "extends": "BRAND-C48",
+  "name": "EXTENSION: Track brand health signals - continuous tracking survey and earned media value",
+  "folders": [
+   "04-BRD"
+  ],
+  "what": "Extends BRAND-C48: run a continuous, small-sample brand tracking survey program and estimate earned media value from press coverage, not only passive mention counting.",
+  "encompasses": [
+   "Run a lightweight continuous tracking survey (awareness, consideration, perception) on a fixed cadence",
+   "Use statistical modeling suited to a small sample size instead of assuming a large panel",
+   "Track press coverage specifically and estimate its earned media value",
+   "Benchmark the brand's tracked metrics against named competitors on the same questions"
+  ],
+  "inputs": [
+   "existing brand health tracking (BRAND-C48)",
+   "survey panel results",
+   "press coverage log (BRAND-C40, BRAND-C53)"
+  ],
+  "outputs": [
+   "continuous brand health dashboard with an earned media value line"
+  ],
+  "trigger": "quarterly survey wave, monthly earned-media rollup",
+  "autonomy": "human_assist",
+  "external_write": {
+   "needed": true,
+   "surface": "brand tracking panel platform (paid, founder-approved spend)"
+  },
+  "tools": [
+   "connector: brand tracking panel",
+   "script: emv_estimator"
+  ],
+  "skills": [
+   "brand-tracking"
+  ],
+  "subagent": "Perception Gap Analyst",
+  "sources": {
+   "web": [
+    "https://www.gwi.com/blog/brand-tracking-tools",
+    "https://www.gotracksuit.com/"
+   ],
+   "bank": []
+  },
+  "found_in": "web_only",
+  "founder_sees": "Kevin gets a running brand health line instead of a one-off snapshot, plus a real dollar estimate of what earned press coverage is worth.",
+  "human_role": "brand manager, head of marketing",
+  "today_done_by": "nobody at this size, or a tool (Tracksuit, Latana) at scale"
+ }
+]

@@ -41,6 +41,8 @@ Every capability is one JSON record in `catalogue.json`:
 | `sources` | web URLs and idea ids it came from; `found_in` says web, bank or both |
 | `founder_sees` | what the founder gets, in one sentence |
 
+Two files sit beside the agents: `REVIEW.json`, the overlap and gap review applied by the builder (merges, reassignments, gap records, autonomy corrections; every change carries its reason and dropped ids stay visible as "merged in"), and `id_aliases.json`, which maps every dropped id to the id that absorbed it so rooms and workflows can keep referring to old ids. Cross-cutting records carry `LOOP-C` ids and an `agent` field naming the loop agent that owns them.
+
 ## Autonomy levels
 
 - **agent_does**: safe, reversible, no external write. Runs on its trigger without asking. Examples: a weekly speed audit, tagging support tickets, drafting a report. The founder sees the output, not a request.

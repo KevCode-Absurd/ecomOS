@@ -50,21 +50,20 @@ def load():
             for c in json.load(open(jp, encoding="utf-8")):
                 c["agent"] = code
                 caps.append(c)
-    for lp in (os.path.join(A, "loop", "LOOP.json"), os.path.join(A, "loop", "LOOP.wave2.json")):
-        if os.path.exists(lp):
-            for c in json.load(open(lp, encoding="utf-8")):
-                c["agent"] = LOOP_OWNER.get(c.get("owner_agent", ""), "ORCH")
-                caps.append(c)
+    lp = os.path.join(A, "loop", "LOOP.json")
+    if os.path.exists(lp):
+        for c in json.load(open(lp, encoding="utf-8")):
+            c["agent"] = LOOP_OWNER.get(c.get("owner_agent", ""), "ORCH")
+            caps.append(c)
     # wave 2: role-first research. New records append; extensions merge into their base record.
     base = {c["id"]: c for c in caps}
-    for code, rel, layer, name in AGENTS:
-        if layer != "specialist":
-            continue
-        wp = os.path.join(A, rel.replace(".md", ".wave2.json"))
+    wave2 = [(code, os.path.join(A, rel.replace(".md", ".wave2.json"))) for code, rel, layer, name in AGENTS if layer == "specialist"]
+    wave2.append(("LOOP", os.path.join(A, "loop", "LOOP.wave2.json")))
+    for code, wp in wave2:
         if not os.path.exists(wp):
             continue
         for c in json.load(open(wp, encoding="utf-8")):
-            c["agent"] = code
+            c["agent"] = LOOP_OWNER.get(c.get("owner_agent", ""), "ORCH") if code == "LOOP" else code
             ext = c.get("extends")
             if ext and ext in base:
                 b = base[ext]
@@ -80,6 +79,45 @@ def load():
         if c["id"] in seen:
             continue
         seen.add(c["id"]); out.append(c)
+    return apply_review(out)
+
+
+def apply_review(caps):
+    """Apply agents/REVIEW.json: merges (drop into keep), reassignments, gap records, autonomy changes."""
+    rp = os.path.join(A, "REVIEW.json")
+    if not os.path.exists(rp):
+        return caps
+    rv = json.load(open(rp, encoding="utf-8"))
+    by = {c["id"]: c for c in caps}
+    dropped = set()
+    for m in rv.get("merge", []):
+        k = by.get(m["keep"])
+        if not k:
+            continue
+        for d in m.get("drop", []):
+            x = by.get(d)
+            if not x or d == m["keep"]:
+                continue
+            for f in ("encompasses", "inputs", "outputs", "tools", "skills"):
+                k[f] = list(dict.fromkeys((k.get(f) or []) + (x.get(f) or [])))
+            ks = k.setdefault("sources", {}); xs = x.get("sources") or {}
+            ks["web"] = list(dict.fromkeys((ks.get("web") or []) + (xs.get("web") or [])))
+            ks["bank"] = list(dict.fromkeys((ks.get("bank") or []) + (xs.get("bank") or [])))
+            k.setdefault("merged_from", []).append({"id": d, "name": x.get("name"), "agent": x.get("agent"), "reason": m.get("reason")})
+            dropped.add(d)
+    for r in rv.get("reassign", []):
+        if r["id"] in by and r["id"] not in dropped:
+            by[r["id"]]["reassigned_from"] = by[r["id"]]["agent"]; by[r["id"]]["agent"] = r["to"]; by[r["id"]]["reassign_reason"] = r.get("reason")
+    for a in rv.get("autonomy", []):
+        if a["id"] in by and a["id"] not in dropped:
+            by[a["id"]]["autonomy_was"] = by[a["id"]].get("autonomy"); by[a["id"]]["autonomy"] = a["to"]; by[a["id"]]["autonomy_reason"] = a.get("reason")
+    out = [c for c in caps if c["id"] not in dropped]
+    n = collections.Counter()
+    for g in rv.get("gaps", []):
+        n[g["agent"]] += 1
+        out.append({"id": f"{g['agent']}-G{n[g['agent']]:02d}", "agent": g["agent"], "name": g["name"], "what": g.get("what", ""), "trigger": g.get("trigger", "on demand"),
+                    "autonomy": g.get("autonomy", "founder_gate"), "folders": [], "encompasses": [], "inputs": [], "outputs": [], "tools": [], "skills": [],
+                    "external_write": {"needed": False, "surface": None}, "sources": {"web": [], "bank": []}, "found_in": "review", "founder_sees": ""})
     return out
 
 
