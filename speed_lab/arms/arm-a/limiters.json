@@ -1,0 +1,122 @@
+[
+ {
+  "rank": 1,
+  "id": "L1-nanum-ttf",
+  "title": "Two full Korean Nanum Myeongjo TTF files are preloaded",
+  "evidence": "14a3fceaeabbcb56-s.p.ttf (3,056,912 B raw, 1,043,710 B wire) and ae1a48c074c123e8-s.p.ttf (3,073,144 B raw, 1,120,642 B wire), 11,880 code points each, preloaded in <head>. Together 2,164,352 B, 49% of run-1 wire bytes. They download from 182 ms to 15,356 ms and the load event fires at 15,431 ms.",
+  "fix": "Latin WOFF2 subset per weight (19,220 B and 19,108 B), preloaded instead; a second @font-face per weight with unicode-range covering every other code point of the original, so coverage is unchanged and the big file is fetched only if such a character appears. Applied as f02.",
+  "expected_effect": "Load event about 12 s earlier, wire bytes about 2.1 MB lower, LCP a little earlier (less contention).",
+  "basis": "Resource timings in baseline.json: the fonts are the last responses to finish, 15 ms before loadEventEnd. Bandwidth is 200 KB/s on this profile, so 2.16 MB is about 11 s of transfer.",
+  "effort": "Low: next/font subsets:['latin'] or a pyftsubset build step.",
+  "risk": "Low. Missing glyphs fall back to the unicode-range face, not to another font.",
+  "source": "audit"
+ },
+ {
+  "rank": 2,
+  "id": "L2-rocket-loader",
+  "title": "Cloudflare Rocket Loader hides and delays all 31 Next.js scripts",
+  "evidence": "31 script tags carry type=\"2ac945fd...-text/javascript\". The preload scanner cannot see them; they are only requested at 2,696 ms after rocket-loader.min.js arrives, and run after the load event (trace: _app eval at 15,578 ms, React hydration 766 ms task at 16,021 ms). With fonts fixed first (x01), Rocket Loader cancelled its unfinished preloads at load and re-fetched 20 scripts one by one, 3.3 s to 8.9 s.",
+  "fix": "Serve the scripts as Next.js emits them (plain defer) and drop rocket-loader.min.js. In production: Cloudflare dashboard, Rocket Loader off. Applied as f01.",
+  "expected_effect": "App scripts requested at about 0.2 s instead of 2.7 s; hydration no longer tied to the load event. Alone it will not help load, because it lets the app and its tags start while the 2.16 MB fonts still download.",
+  "basis": "Baseline resource timings and a Chrome trace (tools/trace.py), plus the rejected fonts-first run x01.",
+  "effort": "Very low: one dashboard switch.",
+  "risk": "Low. Next.js already orders its own scripts with defer.",
+  "source": "audit"
+ },
+ {
+  "rank": 3,
+  "id": "L3-tags-before-load",
+  "title": "Tag stack starts right after hydration and holds the load event",
+  "evidence": "GTM (176 KB) then gtag G- (191 KB) and AW- (181 KB), UA gtag (133 KB), Meta fbevents (111 KB) + config (88 KB), Klaviyo (11 files, 68 KB), Clarity (27 KB): 986 KB in run 1. Injected with next/script afterInteractive. In f02 they keep the load event open to 13,838 ms. fbevents evaluation alone is a 321 to 358 ms long task.",
+  "fix": "strategy lazyOnload for the 6 Script tags in _app (runs after load in requestIdleCallback), plus an inline dataLayer and gtag() stub in <head> so early gtag() events queue. Applied as f03.",
+  "expected_effect": "Load event several seconds earlier; TBT unchanged in this harness because the tags still run inside the 6 s window.",
+  "basis": "f02 resource timings: the last requests before loadEventEnd are all tag hits. Next.js main.js implements lazyOnload as load + requestIdleCallback.",
+  "effort": "Low: change one prop per tag.",
+  "risk": "Tracking: visitors who leave before load plus idle (about 5 to 6 s on this profile) are not counted as page views by GA4, Google Ads, Meta, Klaviyo or Clarity. gtag() events fired before that are queued, not lost. Meta fbq and Klaviyo calls in the app are guarded and skip if the tag is not there yet.",
+  "source": "audit"
+ },
+ {
+  "rank": 4,
+  "id": "L4-react-hydration",
+  "title": "Hydration and re-render of a large React tree",
+  "evidence": "Trace of f04: framework.js tasks of 811 ms (hydration) and 688 ms (second render), plus 383 ms to evaluate _app and the page chunk. About 1.5 s of the 2.6 s TBT. 1,836 DOM nodes, 110 KB of body markup, 534 KB of first-party JS on the wire gating DOMContentLoaded.",
+  "fix": "Not possible without rebuilding the app: split the home page into smaller client components, lazy-hydrate below-the-fold carousels, drop runtime JSS in favour of static CSS, trim the _app bundle (155 KB wire).",
+  "expected_effect": "The only way to cut TBT by more than a few hundred ms.",
+  "basis": "Chrome trace attribution by script URL (tools/trace.py).",
+  "effort": "High.",
+  "risk": "Medium; needs app testing.",
+  "source": "audit"
+ },
+ {
+  "rank": 5,
+  "id": "L5-category-icons",
+  "title": "Category icons fetched at 640 px for 60 px slots",
+  "evidence": "7 icons in the first screen render at 60 x 60 CSS px (165 device px) but srcset is w=256 1x, w=640 2x, so the phone takes 640 x 640 AVIFs: 228,928 B, requested at 0.7 s next to the LCP banner and the app JS.",
+  "fix": "srcset w=128 1x, w=256 2x (next/image width={128}); files made from the stored 640 px AVIFs. 54,639 B for the 7. Applied as f04.",
+  "expected_effect": "About 174 KB less in the first seconds; earlier DCL and load, small LCP gain.",
+  "basis": "Image detail in baseline.json (rendered 60 px, natural 640 px) and served bytes.",
+  "effort": "Very low.",
+  "risk": "Very low; 256 px still exceeds the 165 device px drawn.",
+  "source": "audit"
+ },
+ {
+  "rank": 6,
+  "id": "L6-lato-ttf",
+  "title": "Lato 400 and 700 preloaded as TTF",
+  "evidence": "4291f48c2ea51320-s.p.ttf and 2c00c297d3cdabf8-s.p.ttf, 36,517 B and 35,784 B wire, high-priority preloads from 0.18 s to 1.3 s, overlapping the LCP banner download.",
+  "fix": "Latin WOFF2 subsets (14,488 B and 14,620 B) plus unicode-range faces for the other 45 code points. Applied as f05.",
+  "expected_effect": "About 43 KB less competition in the LCP window; LCP 100 to 250 ms earlier.",
+  "basis": "Baseline timings: fonts and LCP image share the same 6 connections and 200 KB/s.",
+  "effort": "Very low.",
+  "risk": "Very low.",
+  "source": "audit"
+ },
+ {
+  "rank": 7,
+  "id": "L7-lcp-no-preload",
+  "title": "LCP banner is found late",
+  "evidence": "The LCP image (new-arrivals-mobile, 40,309 B) has fetchpriority=high but no preload. It is requested at 222 ms, after the parser passes 31 script tags and 4 font preloads.",
+  "fix": "<link rel=preload as=image fetchpriority=high imagesrcset imagesizes> before the font preloads (next/image priority). Applied as f06.",
+  "expected_effect": "LCP about 50 to 150 ms earlier.",
+  "basis": "Baseline start time of the LCP request vs the head preloads (180 ms).",
+  "effort": "Very low.",
+  "risk": "Very low.",
+  "source": "audit"
+ },
+ {
+  "rank": 8,
+  "id": "L8-email-decode",
+  "title": "Parser-blocking Cloudflare email-decode script in the body",
+  "evidence": "email-decode.min.js (956 B) is a classic script before __NEXT_DATA__, marked render-blocking by Chrome, 275 to 660 ms; FCP is 720 ms.",
+  "fix": "Add defer (tried as f07).",
+  "expected_effect": "Expected FCP up to 150 ms earlier.",
+  "basis": "Its end time sits just before FCP in the baseline.",
+  "effort": "Very low.",
+  "risk": "Low: protected addresses show as placeholders until DOMContentLoaded.",
+  "source": "audit"
+ },
+ {
+  "rank": 9,
+  "id": "L9-render-blocking-css",
+  "title": "Two render-blocking stylesheets cost a round trip before first paint",
+  "evidence": "f45806cc85ed262f.css (3,053 B wire) and 69294e788452cb15.css (4,621 B wire) end at 423 and 460 ms; the first paint task starts after them and FCP is 720 ms.",
+  "fix": "Inline both (global sheet as <style>, page sheet as <style data-n-href>, the element Next.js manages on route change). Applied as f08. In production: Next.js experimental.optimizeCss or a critical CSS step.",
+  "expected_effect": "FCP 150 to 250 ms earlier.",
+  "basis": "150 ms RTT per request on this profile; CSS is small (8 KB gzip).",
+  "effort": "Low.",
+  "risk": "Low; about 8 KB more HTML on every page view, and CSS is no longer cached separately.",
+  "source": "audit"
+ },
+ {
+  "rank": 10,
+  "id": "L10-dead-ua-tag",
+  "title": "Universal Analytics tag still loaded",
+  "evidence": "gtag/js?id=UA-41818105-2, 133,440 B wire, 50 ms evaluation. Standard UA properties stopped processing hits on 1 July 2023 (Google help page 11583528).",
+  "fix": "Remove the ga-global-script element and the UA config line; keep dataLayer, gtag() and gtag('js'). GA4 and Ads via GTM untouched. Applied as f09.",
+  "expected_effect": "About 133 KB less third-party JS; no visible change in timing metrics because it runs after load.",
+  "basis": "Served bytes; web check of the UA sunset date.",
+  "effort": "Very low.",
+  "risk": "None for data: the property collects nothing.",
+  "source": "web"
+ }
+]
