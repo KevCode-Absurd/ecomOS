@@ -7,7 +7,7 @@ class ValueRulesTest(unittest.TestCase):
     def test_sale_words(self):
         for n in ['AOF - Sales Campaign - EOSS', "BFCM '25 - Pre Sale", 'BL - TOF - 2 days to go EOSS Sale', 'BL - TOF - Akshaya Tritiya - 48 hours left', 'Festive Countdown 24 hours', 'Navratri campaign']:
             self.assertTrue(vr.is_sale(n), n)
-        for n in ['BL - TOF - Navrathna Video ad', 'BL - TOF - Rings Collection', 'Wholesale buyers', '5% OFF with code']:
+        for n in ['BL - TOF - Navrathna Video ad', 'BL - TOF - Rings Collection', 'Wholesale buyers', '5% OFF with code', 'All Products - Catalogue Sales']:
             self.assertFalse(vr.is_sale(n), n)
 
     def test_build_splits_sale(self):

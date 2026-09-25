@@ -10,7 +10,7 @@ const DEFAULT_SETTINGS = { targets: { roas: null, cpa: null }, presets: [], bran
 let DATA = null, ENGINE = null, VIEW = null, CAMPAIGNS = [], THUMBS = null, NOTES = {}, COMPETITORS = null, COMP_MEDIA = {};
 // Inside claude.ai the page saves by republishing its files; run locally it saves through the local server.
 const IS_CLAUDE = !!(window.claude && window.claude.use);
-const TABS = ['overview', 'moves', 'actions', 'buyer', 'sales', 'gallery', 'campaigns', 'insights', 'studio', 'catalog', 'competitors', 'report'];
+const TABS = ['overview', 'moves', 'actions', 'buyer', 'health', 'sales', 'gallery', 'campaigns', 'insights', 'studio', 'catalog', 'competitors', 'report'];
 let SETTINGS = JSON.parse(JSON.stringify(DEFAULT_SETTINGS));
 let CAN_SAVE = true;           // becomes false after the first refused save
 const state = { since: null, until: null, kw: [], camp: [], preset: '', tab: 'overview', compare: [], hideSale: false };
@@ -20,7 +20,7 @@ const state = { since: null, until: null, kw: [], camp: [], preset: '', tab: 'ov
 // never suggested for scaling, relaunch or copying, and the "Hide sale ads" button drops them everywhere.
 // Navratna / Navrathna is a jewellery style, not a sale, so it is not matched. A small always-on code
 // (5% off with a welcome code) is not a sale either: only 10% off or more counts.
-const SALE_RE = /\b(sales?|pre[- ]?sale|bfcm|black ?friday|cyber ?monday|eoss|end of season|clearance|deal of the day|[1-9]\d ?% ?off|discount|coupon|countdown|\d+ (hours?|days?) (left|to go)|last \d+ (hours?|days?)|akshaya tritiya|navratri|navaratri|diwali|dhanteras|raksha ?bandhan|rakhi)\b/i;
+const SALE_RE = /\b(sale|sales campaign|pre[- ]?sale|bfcm|black ?friday|cyber ?monday|eoss|end of season|clearance|deal of the day|[1-9]\d ?% ?off|discount|coupon|countdown|\d+ (hours?|days?) (left|to go)|last \d+ (hours?|days?)|akshaya tritiya|navratri|navaratri|diwali|dhanteras|raksha ?bandhan|rakhi)\b/i;
 const SALE_TEXT_RE = /\b(sale|bfcm|black ?friday|eoss|[1-9]\d ?% ?off|discount|coupon|countdown|\d+ (hours?|days?) (left|to go)|deal of the day)\b/i;
 const isSaleCampaign = (name) => SALE_RE.test(String(name || ''));
 // An ad is a sale ad if its campaign, ad set or ad name says so, or its copy is about a sale.
@@ -253,6 +253,7 @@ function renderTab() {
   if (state.tab === 'competitors' && window.renderCompetitors) window.renderCompetitors();
   if (state.tab === 'buyer' && window.renderBuyer) window.renderBuyer();
   if (state.tab === 'moves' && window.renderMoves) window.renderMoves();
+  if (state.tab === 'health' && window.renderHealth) window.renderHealth();
   if (state.tab === 'catalog' && window.renderCatalog) window.renderCatalog();
 }
 

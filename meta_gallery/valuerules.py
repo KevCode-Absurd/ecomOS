@@ -20,7 +20,7 @@ from .snapshot import DATA
 
 OUT = DATA / 'valuerules.json'
 # Same words as SALE_RE in web/app.js. Navratna is a jewellery style, not a sale.
-SALE_RE = re.compile(r'\b(sales?|pre[- ]?sale|bfcm|black ?friday|cyber ?monday|eoss|end of season|clearance|deal of the day|'
+SALE_RE = re.compile(r'\b(sale|sales campaign|pre[- ]?sale|bfcm|black ?friday|cyber ?monday|eoss|end of season|clearance|deal of the day|'
                      r'[1-9]\d ?% ?off|discount|coupon|countdown|\d+ (hours?|days?) (left|to go)|last \d+ (hours?|days?)|'
                      r'akshaya tritiya|navratri|navaratri|diwali|dhanteras|raksha ?bandhan|rakhi)\b', re.I)
 
