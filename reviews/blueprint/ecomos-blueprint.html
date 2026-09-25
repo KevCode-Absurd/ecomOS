@@ -189,6 +189,7 @@ svg text{font-family:var(--body)}
     <button class="on" data-v="big">Big picture</button>
     <button data-v="new">New founder</button>
     <button data-v="existing">Existing brand</button>
+    <button data-v="agency">Agency</button>
     <button data-v="arch">Architecture</button>
   </nav>
 </div></div>
@@ -200,12 +201,12 @@ svg text{font-family:var(--body)}
       <span class="eyebrow">Draft for Kevin, 25 Sep 2026</span>
       <h1>An operating system that builds and runs an e-commerce brand, with the founder deciding.</h1>
       <p class="lede">A founder connects a brand, or starts one from nothing. ecomOS reads the brand's own data, works out where money is leaking, ranks what to do next, and puts a short list in front of the founder. The founder approves. Agents do the work, measure it, and learn. Every day the list is fresh.</p>
-      <p class="muted small">This page has 4 views. The big picture, the journey for a founder starting from zero, the journey for an existing brand, and the machinery underneath. Screens are drawn as the product would look. Numbers on screens are real where we have them (the Gehna speed lab) and marked illustrative where we do not.</p>
+      <p class="muted small">This page has 5 views. The big picture, the journey for a founder starting from zero, the journey for an existing brand, the agency running many brands, and the machinery underneath. Screens are drawn as the product would look. Numbers on screens are real where we have them (the Gehna speed lab) and marked illustrative where we do not.</p>
     </div>
     <div class="doors">
       <div class="door"><b>Door A: I want to start a brand</b><span>No product, no store. ecomOS runs the research, picks with you, sets up the store, launches the channels, then runs the daily loop.</span></div>
       <div class="door b"><b>Door B: I already run a brand</b><span>Add the website, connect the data, answer some questions. ecomOS builds the brand brain, finds the break in the pipeline, and hands you today's top 10.</span></div>
-      <div class="door"><b>Door C: I run brands for clients</b><span>Same system, one workspace per brand, team seats per domain. Not drawn in this draft.</span></div>
+      <div class="door"><b>Door C: I run brands for clients</b><span>One workspace, many brands. Each brand keeps its own brain and gate. The agency adds a portfolio, approval chains, shared specialists and client reports.</span></div>
     </div>
   </div>
 
@@ -1064,6 +1065,281 @@ svg text{font-family:var(--body)}
     </div>
   </div>
 </div></div>
+<!-- ================= AGENCY ================= -->
+<div class="view" id="v-agency"><div class="wrap">
+  <div class="sechead">
+    <span class="eyebrow">Door C</span>
+    <h2>An agency running many brands, with one team and one system.</h2>
+    <p class="lede">An agency workspace holds many brands. Each brand gets its own brain, its own daily loop and its own founder gate, exactly as in Door B. What the agency adds is a layer above: a portfolio view, an approval chain per client, specialists who work across brands from one queue, client reports that write themselves from the metric contract, and learning that moves between brands without any brand's data moving with it. The example agency on these screens is fictional. Brand names in the portfolio are placeholders.</p>
+  </div>
+
+  <div class="map">
+    <a href="#c1"><small>Step 1</small>Agency setup</a>
+    <a href="#c2"><small>Step 2</small>Add a client</a>
+    <a href="#c3"><small>Step 3</small>Approval chain</a>
+    <a href="#c4"><small>Daily</small>Portfolio</a>
+    <a href="#c5"><small>Daily</small>Specialist queue</a>
+    <a href="#c6"><small>Daily</small>Client view</a>
+    <a href="#c7"><small>Monthly</small>Client report</a>
+    <a href="#c8"><small>Learn</small>Across brands</a>
+    <a href="#c9"><small>Run</small>Capacity and billing</a>
+  </div>
+
+  <!-- c1 -->
+  <div class="stage" id="c1">
+    <div class="txt">
+      <h3><small>STEP 1</small>Agency setup</h3>
+      <p>The agency creates a workspace, not a brand. It says which services it sells, who is on the team and what each person does, and how it prefers to work with clients by default. These defaults are copied into each client and can be changed per client later.</p>
+      <dl class="kv">
+        <dt>Agent does</dt><dd>Builds the workspace, maps team members to rooms, sets the default approval chain and report cadence.</dd>
+        <dt>Agency decides</dt><dd>Services, team, defaults. Which rooms each role owns.</dd>
+        <dt>Stored</dt><dd>Agency record: services, team, roles, defaults. Separate from every brand brain.</dd>
+      </dl>
+    </div>
+    <div class="scr">
+      <div class="scr-top"><span class="dots"><i></i><i></i><i></i></span>ecomOS<span class="url">start / agency workspace</span></div>
+      <div class="smain">
+        <div class="sh">Set up your agency <span class="pill">Step 1 of 3</span></div>
+        <div class="qcard"><b>What do you run for clients?</b><div class="chips"><span class="chip sel">Paid social</span><span class="chip sel">Google Ads</span><span class="chip sel">Email</span><span class="chip">Organic content</span><span class="chip">SEO</span><span class="chip sel">Landing pages and CRO</span><span class="chip">Site and speed</span><span class="chip">Full stack</span></div></div>
+        <div class="qcard"><b>Your team and their rooms</b><div class="rows">
+          <div class="row"><div class="l"><b>Media buyer, 2 people</b><span>Paid social, Google Ads</span></div><span class="pill">2 rooms</span></div>
+          <div class="row"><div class="l"><b>Creative lead</b><span>Paid social creative, organic</span></div><span class="pill">2 rooms</span></div>
+          <div class="row"><div class="l"><b>Email specialist</b><span>Email, customers</span></div><span class="pill">2 rooms</span></div>
+          <div class="row"><div class="l"><b>Account managers, 2 people</b><span>Portfolio, client reports, client chat</span></div><span class="pill">All brands</span></div>
+        </div></div>
+        <div class="qcard"><b>Default way of working with a client</b><div class="chips"><span class="chip sel">We run it, client approves spend</span><span class="chip">Client runs it, we review</span><span class="chip">Shared: by room</span></div><span class="muted">Changed per client in step 3.</span></div>
+        <div class="btns"><span class="btn p">Next</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- c2 -->
+  <div class="stage" id="c2">
+    <div class="txt">
+      <h3><small>STEP 2</small>Add a client</h3>
+      <p>A client is a brand. Existing brands go through Door B: add the website, connect the data, interview. New brands go through Door A. The only difference is who answers the interview and who grants access: the agency can do both on the client's behalf, and the client founder confirms the parts that are theirs, such as margins and red lines.</p>
+      <dl class="kv">
+        <dt>Agent does</dt><dd>Runs the Door A or Door B onboarding. Sends the client founder only the questions the agency cannot answer.</dd>
+        <dt>Agency decides</dt><dd>Which door, which of its people are on the account, which rooms it runs.</dd>
+        <dt>Client decides</dt><dd>Access grants, margins, red lines, spend authority.</dd>
+      </dl>
+    </div>
+    <div class="scr">
+      <div class="scr-top"><span class="dots"><i></i><i></i><i></i></span>ecomOS<span class="url">agency / add client</span></div>
+      <div class="smain">
+        <div class="sh">Add a client</div>
+        <div class="opts">
+          <div class="opt sel"><b>Existing brand</b><span>Add the website, connect data, interview. Door B.</span></div>
+          <div class="opt"><b>New brand</b><span>Interview, research, build, launch. Door A.</span></div>
+        </div>
+        <div class="input"><span>https://www.gehnaindia.com</span><span class="btn p">Read it</span></div>
+        <div class="rows">
+          <div class="row"><div class="l"><b>Rooms this agency runs for Gehna</b><span>Paid social, Google Ads, email, landing pages and CRO</span></div><span class="btn">Change</span></div>
+          <div class="row"><div class="l"><b>People on the account</b><span>Account manager 1, media buyer 1, creative lead, email specialist</span></div><span class="btn">Change</span></div>
+          <div class="row"><div class="l"><b>Questions for the client founder</b><span>7 questions the agency cannot answer: margins by line, red lines, past tests, real return policy. Sent as a link.</span></div><span class="pill amber">Awaiting founder</span></div>
+          <div class="row"><div class="l"><b>Access the client grants directly</b><span>Store database, email platform, support inbox. Never through the agency's login.</span></div><span class="pill amber">3 pending</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- c3 -->
+  <div class="stage" id="c3">
+    <div class="txt">
+      <h3><small>STEP 3</small>The approval chain, per client</h3>
+      <p>The founder gate does not disappear when an agency is in the middle. It splits. Each kind of decision has an owner: the agency's specialist, the agency's account manager, or the client founder. Money, external writes and brand red lines always sit with the client unless the client hands them over in writing on this screen. Everything else can sit with the agency so the daily loop does not wait on a busy founder.</p>
+      <dl class="kv">
+        <dt>Agent does</dt><dd>Routes every card to its owner. Shows the client what the agency decided, with reasons, in the client's own view.</dd>
+        <dt>Agency decides</dt><dd>Within its rooms and below the spend line.</dd>
+        <dt>Client decides</dt><dd>Spend above the line, write access, red lines, anything marked high risk.</dd>
+      </dl>
+    </div>
+    <div class="scr">
+      <div class="scr-top"><span class="dots"><i></i><i></i><i></i></span>ecomOS<span class="url">agency / gehna / approval chain</span></div>
+      <div class="smain">
+        <div class="sh">Who approves what for Gehna</div>
+        <div class="tablewrap" style="border:0"><table style="min-width:0;font-size:11.5px">
+          <tr><th>Decision</th><th>Owner</th><th>Client sees</th></tr>
+          <tr><td>Creative and copy items</td><td><span class="pill">Creative lead</span></td><td>After the fact, with reasons</td></tr>
+          <tr><td>Campaign structure, budget moves within the monthly number</td><td><span class="pill">Media buyer</span></td><td>After the fact, with reasons</td></tr>
+          <tr><td>Email flows and campaigns</td><td><span class="pill">Email specialist</span></td><td>After the fact, with reasons</td></tr>
+          <tr><td>Landing page changes, developer briefs</td><td><span class="pill">Account manager</span></td><td>Before, as a card</td></tr>
+          <tr><td>Monthly spend above the agreed number</td><td><span class="pill amber">Client founder</span></td><td>Before, must approve</td></tr>
+          <tr><td>Write access to Meta, the site, the email platform</td><td><span class="pill amber">Client founder</span></td><td>Before, per surface</td></tr>
+          <tr><td>Anything touching a red line ("no sitewide sales")</td><td><span class="pill amber">Client founder</span></td><td>Before, must approve</td></tr>
+        </table></div>
+        <div class="callout small" style="padding:8px 12px">The client founder can take any row back at any time. The agency cannot take a row from the client.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- c4 -->
+  <div class="stage" id="c4">
+    <div class="txt">
+      <h3><small>DAILY</small>The portfolio</h3>
+      <p>The account manager's morning screen. Every brand, its break today, how many cards wait on whom, and which reads are due. Sorted by money at stake across the portfolio, computed per brand from each brand's own contract. A brand with an unavailable contract sits at the top with a "connect" flag, because a brand you cannot read is the riskiest one.</p>
+      <dl class="kv">
+        <dt>Agent does</dt><dd>Runs each brand's daily loop separately. Rolls up the breaks and queues into one list. Never mixes one brand's numbers into another's.</dd>
+        <dt>Account manager</dt><dd>Decides where the team's day goes. Opens a brand to work its top 10.</dd>
+      </dl>
+    </div>
+    <div class="scr">
+      <div class="scr-top"><span class="dots"><i></i><i></i><i></i></span>ecomOS<span class="url">agency / portfolio · illustrative brands</span></div>
+      <div class="shell">
+        <div class="snav"><div class="on">Portfolio</div><div>My queue</div><div>Reports due</div><div class="h">Brands</div><div>Gehna</div><div>Brand B</div><div>Brand C</div><div>Brand D</div><div>Brand E</div><div>Brand F</div><div class="h">Agency</div><div>Team</div><div>Learnings</div><div>Billing</div></div>
+        <div class="smain">
+          <div class="sh">6 brands today <span class="pill amber">14 cards waiting on clients</span></div>
+          <div class="tablewrap" style="border:0"><table style="min-width:0;font-size:11.5px">
+            <tr><th>Brand</th><th>Break today</th><th>Waiting on</th><th>Reads due</th></tr>
+            <tr><td><b>Brand D</b></td><td><span class="pill bad">Contract unavailable</span> store DB not connected</td><td>Client: 1 access grant</td><td class="num">0</td></tr>
+            <tr><td><b>Gehna</b></td><td><span class="pill bad">Site speed</span> 15.4 s fully loaded, measured</td><td>Client: 8 developer briefs</td><td class="num">1</td></tr>
+            <tr><td><b>Brand B</b></td><td><span class="pill amber">Repeat orders</span></td><td>Email specialist: 3 cards</td><td class="num">2</td></tr>
+            <tr><td><b>Brand C</b></td><td><span class="pill amber">Cost per order, paid social</span></td><td>Media buyer: 4 cards</td><td class="num">1</td></tr>
+            <tr><td><b>Brand E</b></td><td><span class="pill">Conversion, product pages</span></td><td>Account manager: 2 briefs</td><td class="num">0</td></tr>
+            <tr><td><b>Brand F</b></td><td><span class="pill good">No break above threshold</span></td><td>Nobody</td><td class="num">3</td></tr>
+          </table></div>
+          <p class="muted">Order and breaks are illustrative. Gehna's speed number is measured.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- c5 -->
+  <div class="stage" id="c5">
+    <div class="txt">
+      <h3><small>DAILY</small>A specialist's queue across brands</h3>
+      <p>A media buyer at an agency does not open 6 dashboards. They open one queue: every paid social card from every brand they are on, ranked by that brand's money at stake, each card carrying its brand's brain so nothing is confused. Approving a card here is the same act as the founder approving it in Door B, recorded in that brand's registry with the person's name.</p>
+      <dl class="kv">
+        <dt>Agent does</dt><dd>Builds one queue per person from the rooms they own across brands. Keeps each card inside its brand's context.</dd>
+        <dt>Specialist</dt><dd>Works the queue. Approves what is theirs, escalates what is the client's.</dd>
+      </dl>
+    </div>
+    <div class="scr">
+      <div class="scr-top"><span class="dots"><i></i><i></i><i></i></span>ecomOS<span class="url">agency / my queue · media buyer 1</span></div>
+      <div class="smain">
+        <div class="sh">My queue, paid social and Google Ads <span class="pill">9 cards, 4 brands</span></div>
+        <div class="pri"><div class="h"><b>Gehna · Write a one-line purpose for each ad campaign</b><em>DEP-007</em></div><p>More than one cold campaign, no written purpose for each. One line per campaign makes every budget decision easier. Nothing changes in Meta.</p><div class="meta"><span class="pill">Gehna brain loaded</span><span class="pill grey">Meta: read-only</span></div><div class="btns"><span class="btn p">Let the agent do it</span><span class="btn">Not now</span></div></div>
+        <div class="pri"><div class="h"><b>Brand C · Move budget from campaign 3 to campaign 1</b><em>from the audit</em></div><p>Campaign 3 has the highest cost per order over the last full 14 days. Within the monthly number, so it is yours to approve. The change list is ready for Ads Manager.</p><div class="meta"><span class="pill">Brand C brain loaded</span><span class="pill">Within spend line</span></div><div class="btns"><span class="btn p">Approve change list</span><span class="btn">Not now</span></div></div>
+        <div class="pri"><div class="h"><b>Brand E · Raise the monthly budget</b><em>from the audit</em></div><p>Above the agreed number. This card goes to Brand E's founder with your recommendation attached.</p><div class="meta"><span class="pill amber">Client decides</span></div><div class="btns"><span class="btn a">Send to client with my note</span><span class="btn">Not now</span></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- c6 -->
+  <div class="stage" id="c6">
+    <div class="txt">
+      <h3><small>DAILY</small>What the client sees</h3>
+      <p>The client founder opens their own brand, the same Door B screens, with one addition: a strip showing what the agency decided today and why. Cards that are theirs sit on top. They can ask the chat anything, and the answer draws on the same brain and the same registry the agency uses. No separate report, no waiting for a call.</p>
+      <dl class="kv">
+        <dt>Client sees</dt><dd>Today's break, their cards, the agency's decisions with reasons, the registry, the brain.</dd>
+        <dt>Client never sees</dt><dd>Other brands. The agency's internal notes marked internal. Capacity and billing.</dd>
+      </dl>
+    </div>
+    <div class="scr">
+      <div class="scr-top"><span class="dots"><i></i><i></i><i></i></span>ecomOS<span class="url">today · gehna · founder view</span></div>
+      <div class="smain">
+        <div class="sh">Today <span class="pill amber">2 for you</span></div>
+        <div class="rows">
+          <div class="row"><div class="l"><b>Your agency decided today</b><span>Purpose lines written for 4 campaigns (media buyer 1). Copy set A approved, 0 superlatives (creative lead). Reasons attached.</span></div><span class="btn">See all</span></div>
+        </div>
+        <div class="pri"><div class="h"><b>Ship the 8 speed fixes, in this order</b><em>yours · measured</em></div><p>Tested on a copy of your homepage: 15.4 s to 5.2 s fully loaded. Each fix has a brief for your developer. Your agency recommends all 8.</p><div class="btns"><span class="btn p">Let the agent do it</span><span class="btn a">Send to developer</span><span class="btn">Not now</span></div></div>
+        <div class="pri"><div class="h"><b>Turn on write access for Meta, campaigns only</b><em>yours · access</em></div><p>Lets the agent apply approved change lists instead of a person typing them in. Budgets still need your approval above the agreed number. You can turn it off any time.</p><div class="btns"><span class="btn p">Turn on</span><span class="btn">Not now</span></div></div>
+        <div class="input"><span>Ask about anything in the business...</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- c7 -->
+  <div class="stage" id="c7">
+    <div class="txt">
+      <h3><small>MONTHLY</small>The client report writes itself</h3>
+      <p>The report the Meta gallery already produces for Gehna, made general. Every number comes from the metric contract with its window and freshness. The narrative is three lists: what we did, what it did, what is next. What we did comes from the registry. What it did comes from the reads. What is next is the current top 10. The account manager edits the words, never the numbers.</p>
+      <dl class="kv">
+        <dt>Agent does</dt><dd>Assembles the report on the cadence set per client. Marks anything unavailable rather than leaving it out.</dd>
+        <dt>Account manager</dt><dd>Reads, edits the narrative, sends. The client can also open it live.</dd>
+      </dl>
+    </div>
+    <div class="scr">
+      <div class="scr-top"><span class="dots"><i></i><i></i><i></i></span>ecomOS<span class="url">agency / gehna / report · month to last full day</span></div>
+      <div class="smain">
+        <div class="sh">Gehna, monthly report <span class="pill">Draft, numbers locked</span></div>
+        <div class="tiles"><div class="tile"><b>from contract</b><span>revenue, month to date</span></div><div class="tile"><b>from contract</b><span>ad spend and period ROAS</span></div><div class="tile"><b class="num">15.4 s → 5.2 s</b><span>homepage speed, on the copy</span></div><div class="tile"><b>unavailable</b><span>repeat rate, DB not connected</span></div></div>
+        <div class="rows">
+          <div class="row"><div class="l"><b>What we did</b><span>From the registry: 8 speed fixes briefed, purpose lines on 4 campaigns, copy set A shipped, blended ROAS view added.</span></div></div>
+          <div class="row"><div class="l"><b>What it did</b><span>From the reads: speed measured on the copy. Campaign and copy reads due in 14 days, shown as pending, not as results.</span></div></div>
+          <div class="row"><div class="l"><b>What is next</b><span>The current top 10, with the 2 waiting on the founder marked.</span></div></div>
+        </div>
+        <div class="btns"><span class="btn p">Send to client</span><span class="btn">Edit narrative</span></div>
+        <p class="muted">Period ROAS is total value over total spend for the window. Totals stay separate from breakdowns.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- c8 -->
+  <div class="stage" id="c8">
+    <div class="txt">
+      <h3><small>LEARN</small>Learning across brands, without data crossing</h3>
+      <p>An agency's edge is that it has seen the same idea work or fail at many brands. ecomOS keeps that edge without leaking anything. Each brand's results stay in its own registry. What the agency keeps is an overlay: for each idea, how often it was tried across its brands, the direction of the result, and which store tags it worked for. That overlay adjusts ranking for the next brand with matching tags. No client's numbers, names or creatives ever appear in another client's workspace.</p>
+      <dl class="kv">
+        <dt>Registrar does</dt><dd>Writes each read to the brand's registry, then updates the agency overlay with direction and tags only.</dd>
+        <dt>Propose uses</dt><dd>The bank's basis, the brand's own prior, then the agency overlay, in that order.</dd>
+        <dt>Rule</dt><dd>Overlay entries carry no brand identity. A client can opt their brand out of contributing.</dd>
+      </dl>
+    </div>
+    <div class="scr">
+      <div class="scr-top"><span class="dots"><i></i><i></i><i></i></span>ecomOS<span class="url">agency / learnings · illustrative counts</span></div>
+      <div class="smain">
+        <div class="sh">What this agency has learned <span class="pill">overlay, no brand data</span></div>
+        <div class="tablewrap" style="border:0"><table style="min-width:0;font-size:11.5px">
+          <tr><th>Idea</th><th>Tried at</th><th>Direction</th><th>Worked for</th></tr>
+          <tr><td>Welcome flow in the first 72 hours (EML-044)</td><td class="num">4 brands</td><td><span class="pill good">Up 3, flat 1</span></td><td>catalogue, paid social led</td></tr>
+          <tr><td>Win-back timing from own order gaps (EML-080)</td><td class="num">3 brands</td><td><span class="pill good">Up 3</span></td><td>high AOV, one-off purchase</td></tr>
+          <tr><td>Name one shopper in the hero (BRD-010)</td><td class="num">2 brands</td><td><span class="pill amber">Up 1, down 1</span></td><td>unclear, needs more reads</td></tr>
+          <tr><td>Purpose line per campaign (DEP-007)</td><td class="num">5 brands</td><td><span class="pill grey">Process change, no metric</span></td><td>all</td></tr>
+        </table></div>
+        <div class="rows"><div class="row"><div class="l"><b>How this is used</b><span>For a new client tagged high AOV and one-off purchase, EML-080 ranks higher than the bank alone would put it. The client never sees which brands taught that.</span></div></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- c9 -->
+  <div class="stage" id="c9">
+    <div class="txt">
+      <h3><small>RUN</small>Capacity and billing</h3>
+      <p>Two things an agency owner needs that a founder does not. Capacity: how many cards each person has, how long cards wait, where the team is the bottleneck. Billing: what each brand costs to run and what it is billed. Billing per brand is an open decision in the business model. This screen only shows that the data to price it exists.</p>
+      <dl class="kv">
+        <dt>Agent does</dt><dd>Counts queue depth and wait time per person and per brand. Tallies agent runs and reads per brand.</dd>
+        <dt>Agency owner</dt><dd>Rebalances rooms, hires, sets prices.</dd>
+      </dl>
+    </div>
+    <div class="scr">
+      <div class="scr-top"><span class="dots"><i></i><i></i><i></i></span>ecomOS<span class="url">agency / team capacity · illustrative</span></div>
+      <div class="smain">
+        <div class="sh">Team capacity, this week</div>
+        <div class="rows">
+          <div class="row"><div class="l"><b>Media buyer 1</b><span>4 brands · cards waiting longest in Brand C</span></div><div style="width:120px"><div class="prog"><i style="width:85%"></i></div></div></div>
+          <div class="row"><div class="l"><b>Media buyer 2</b><span>2 brands</span></div><div style="width:120px"><div class="prog"><i style="width:40%"></i></div></div></div>
+          <div class="row"><div class="l"><b>Creative lead</b><span>6 brands · 11 briefs open</span></div><div style="width:120px"><div class="prog"><i style="width:95%"></i></div></div></div>
+          <div class="row"><div class="l"><b>Email specialist</b><span>5 brands</span></div><div style="width:120px"><div class="prog"><i style="width:60%"></i></div></div></div>
+        </div>
+        <div class="callout small" style="padding:8px 12px">Suggested: move Brand C's paid social to media buyer 2. The creative lead is the team's bottleneck. 6 of 11 open briefs are static variants the agent can draft for review.</div>
+        <div class="rows"><div class="row"><div class="l"><b>Cost to run, per brand</b><span>Agent runs, reads and web budget per brand this month. Feeds pricing once the model is chosen.</span></div><span class="btn">Open</span></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:24px">
+    <h4>What the agency door adds to the architecture</h4>
+    <ul class="small">
+      <li><b>Workspace above brands.</b> One agency record, many brand brains. A brain never knows about another brain.</li>
+      <li><b>Approval chain per brand.</b> The founder gate splits by decision type. Money, external writes and red lines default to the client.</li>
+      <li><b>Queues per person across brands.</b> Rooms are owned by people, and a person can own the same room in many brands.</li>
+      <li><b>Agency overlay in the registry.</b> Direction and store tags per idea, no brand identity, opt-out per client. Used by Propose after the brand's own prior.</li>
+      <li><b>Client report as a view.</b> Numbers from the contract, narrative from the registry, editable words, locked numbers.</li>
+      <li><b>Capacity and cost per brand.</b> Inputs for pricing, which is still an open decision.</li>
+    </ul>
+  </div>
+</div></div>
 <!-- ================= ARCHITECTURE ================= -->
 <div class="view" id="v-arch"><div class="wrap">
   <div class="sechead">
@@ -1074,12 +1350,12 @@ svg text{font-family:var(--body)}
 
   <div class="legend"><span><i class="built"></i>Built today</span><span><i class="agent"></i>Agent</span><span><i></i>To build</span></div>
   <div class="layers" style="margin-top:12px">
-    <div class="layer"><div class="name"><small>Surfaces</small>What people see</div><div class="items"><span>Today: pipeline break and top 10</span><span>Ask anything</span><span class="built">Domain rooms (Meta gallery, speed lab)</span><span class="built">Founder plan page with 3 decisions per item</span><span>Brand brain viewer</span><span>Registry</span><span>Team and roles</span><span>Onboarding, Door A and Door B</span></div></div>
-    <div class="layer gate"><div class="name"><small>Founder gate</small>The decision</div><div class="items"><span>Let the agent do it</span><span>Send to a person, with a brief</span><span>Not now, with a reason</span><span>Write access per external surface, off by default</span><span>Reasons become ranking weights</span></div></div>
+    <div class="layer"><div class="name"><small>Surfaces</small>What people see</div><div class="items"><span>Agency portfolio, queues, client reports</span><span>Today: pipeline break and top 10</span><span>Ask anything</span><span class="built">Domain rooms (Meta gallery, speed lab)</span><span class="built">Founder plan page with 3 decisions per item</span><span>Brand brain viewer</span><span>Registry</span><span>Team and roles</span><span>Onboarding, Door A and Door B</span></div></div>
+    <div class="layer gate"><div class="name"><small>Founder gate</small>The decision</div><div class="items"><span>Let the agent do it</span><span>Send to a person, with a brief</span><span>Not now, with a reason</span><span>Write access per external surface, off by default</span><span>Reasons become ranking weights</span><span>Agency: approval chain per brand, client keeps money, writes and red lines</span></div></div>
     <div class="layer"><div class="name"><small>Execution</small>Doing the work</div><div class="items"><span class="agent">Orchestrator (account manager)</span><span class="agent">Diagnose</span><span class="agent">Propose</span><span class="agent">Registrar</span><span class="agent">QA Gate</span><span class="agent">Site</span><span class="agent">Paid creative and copy</span><span class="agent">Media buyer</span><span class="agent">Lifecycle</span><span class="agent">Organic and search</span><span class="agent">Product and supply</span><span class="agent">Money and ops</span><span class="agent">Brand strategist</span><span class="built">Speed lab instrument</span><span class="built">Creative studio</span></div></div>
     <div class="layer"><div class="name"><small>Inspiration</small>References</div><div class="items"><span class="agent">Reference Scout</span><span class="built">7 competitor brands, ads and sites</span><span class="built">Creative retrieval by angle, format, mood</span><span>The brand's own winners, ad level</span><span>Landing page and email swipes</span><span>Creator content</span></div></div>
     <div class="layer"><div class="name"><small>Intelligence</small>What experts know</div><div class="items"><span class="built">Idea bank, 4,650 ideas, 25 domains</span><span class="built">Card library, 7,611 cards, keyword and semantic search</span><span class="built">Ranker v0: evidence, ease, safety, bottleneck fit</span><span>Marginal-improvement ranker with brand priors</span><span>Web research tool with a token budget</span><span>Candidates file: web ideas curated into the bank</span></div></div>
-    <div class="layer"><div class="name"><small>Data</small>Brand brain</div><div class="items"><span class="agent">Brand Brain Keeper</span><span class="built">Meta cache, 1 year</span><span class="built">Sales, monthly and daily</span><span class="built">Brand record v0, competitors</span><span class="built">Speed measurements</span><span>Brand brain schema</span><span>Metric contract</span><span>Experiment registry</span><span>Connectors: store DB, GA4, Google Ads, email, support, Drive, notes</span><span>Decisions log</span></div></div>
+    <div class="layer"><div class="name"><small>Data</small>Brand brain</div><div class="items"><span class="agent">Brand Brain Keeper</span><span class="built">Meta cache, 1 year</span><span class="built">Sales, monthly and daily</span><span class="built">Brand record v0, competitors</span><span class="built">Speed measurements</span><span>Brand brain schema</span><span>Metric contract</span><span>Experiment registry</span><span>Connectors: store DB, GA4, Google Ads, email, support, Drive, notes</span><span>Decisions log</span><span>Agency workspace above brands; overlay with direction and tags only</span></div></div>
   </div>
 
   <section>
@@ -1194,7 +1470,7 @@ svg text{font-family:var(--body)}
 <script>
 (function(){
   const tabs=[...document.querySelectorAll('.tabs button')];
-  const views={big:'v-big',new:'v-new',existing:'v-existing',arch:'v-arch'};
+  const views={big:'v-big',new:'v-new',existing:'v-existing',agency:'v-agency',arch:'v-arch'};
   function show(v,push){
     tabs.forEach(b=>b.classList.toggle('on',b.dataset.v===v));
     Object.entries(views).forEach(([k,id])=>document.getElementById(id).classList.toggle('on',k===v));
@@ -1209,8 +1485,8 @@ svg text{font-family:var(--body)}
   const h=(location.hash||'').replace('#','');
   if(views[h])v=h; else { try{const s=localStorage.getItem('ecomos-bp-view');if(views[s])v=s}catch(e){} }
   // a stage anchor like #b6 opens its view
-  if(/^a\d+$/.test(h))v='new'; if(/^b\d+$/.test(h))v='existing';
+  if(/^a\d+$/.test(h))v='new'; if(/^b\d+$/.test(h))v='existing'; if(/^c\d+$/.test(h))v='agency';
   show(v,false);
-  if(/^[ab]\d+$/.test(h)){const t=document.getElementById(h);if(t)setTimeout(()=>t.scrollIntoView({block:'start'}),50)}
+  if(/^[abc]\d+$/.test(h)){const t=document.getElementById(h);if(t)setTimeout(()=>t.scrollIntoView({block:'start'}),50)}
 })();
 </script>
