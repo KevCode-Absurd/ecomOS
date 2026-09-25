@@ -1,0 +1,246 @@
+<title>ecomOS Agent Architecture</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700&family=Public+Sans:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+:root{--bg:#F5F7F6;--panel:#FFFFFF;--ink:#172120;--muted:#5F6E6B;--line:#D5DEDA;--accent:#0E6B60;--accent-ink:#FFFFFF;
+--l1:#DCE9E5;--l2:#E2E6F2;--l3:#F2E7DA;--l4:#E9E2EC;--code:#EDF1EF;
+--display:'Bricolage Grotesque',system-ui,sans-serif;--body:'Public Sans',system-ui,sans-serif;--mono:'JetBrains Mono',ui-monospace,monospace}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#111716;--panel:#1A2321;--ink:#E6ECEA;--muted:#97A7A2;--line:#2B3735;--accent:#63C4B4;--accent-ink:#0E1614;--l1:#1E302C;--l2:#222839;--l3:#3A2F22;--l4:#2F2535;--code:#222C2A;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#111716;--panel:#1A2321;--ink:#E6ECEA;--muted:#97A7A2;--line:#2B3735;--accent:#63C4B4;--accent-ink:#0E1614;--l1:#1E302C;--l2:#222839;--l3:#3A2F22;--l4:#2F2535;--code:#222C2A;color-scheme:dark}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.55;padding-inline:16px;padding-block:0 56px}
+main{max-width:1100px;margin:0 auto}
+.doc{max-width:72ch}
+header.hd{padding-block:34px 10px;display:grid;gap:10px}
+.eyebrow{font:600 12px var(--display);letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
+h1{font-family:var(--display);font-weight:700;font-size:clamp(30px,4.6vw,44px);line-height:1.05;margin:0;letter-spacing:-.02em;text-wrap:balance;max-width:20ch}
+.lede{color:var(--muted);font-size:17px;max-width:66ch;margin:0}
+h2{font-family:var(--display);font-weight:700;font-size:24px;letter-spacing:-.01em;margin:44px 0 12px;text-wrap:balance}
+h3{font-family:var(--display);font-weight:600;font-size:18px;margin:26px 0 8px}
+p{margin:0 0 12px}
+ul,ol{padding-left:22px;margin:0 0 12px}
+li{margin-bottom:6px}
+.answer{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:6px;padding:16px 18px;margin:18px 0 8px;max-width:72ch}
+.answer p:last-child{margin:0}
+code{font-family:var(--mono);font-size:.86em;background:var(--code);padding:1px 5px;border-radius:3px}
+.tbl{overflow-x:auto;margin:10px 0 16px}
+table{border-collapse:collapse;font-size:14px;min-width:640px;font-variant-numeric:tabular-nums}
+th,td{border-bottom:1px solid var(--line);padding:9px 10px;text-align:left;vertical-align:top}
+th{font-family:var(--display);font-weight:600;font-size:12.5px;letter-spacing:.04em;text-transform:uppercase;color:var(--muted)}
+td:first-child{font-weight:600}
+.diagram{margin:18px 0 6px}
+.diagram svg{width:100%;height:auto;display:block;max-width:100%}
+.legend{font-size:13px;color:var(--muted);margin:0 0 4px}
+.flow{counter-reset:s;list-style:none;padding:0;margin:14px 0;display:grid;gap:10px;max-width:72ch}
+.flow li{display:grid;grid-template-columns:44px 1fr;gap:12px;background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:12px 14px;margin:0}
+.flow li::before{counter-increment:s;content:counter(s);font:600 20px var(--display);color:var(--accent);line-height:1.1}
+.flow b{font-family:var(--display);font-weight:600;display:block;margin-bottom:2px}
+.flow p{margin:0;color:var(--ink)}
+.flow .why{color:var(--muted);font-size:14px;margin-top:4px}
+.layers{display:grid;gap:12px;margin:14px 0}
+.layer{border:1px solid var(--line);border-radius:6px;padding:14px 16px;background:var(--panel)}
+.layer .tag{display:inline-block;font:600 11.5px var(--display);letter-spacing:.06em;text-transform:uppercase;padding:3px 8px;border-radius:4px;margin-bottom:6px;color:var(--ink)}
+.layer.d .tag{background:var(--l1)} .layer.i .tag{background:var(--l2)} .layer.n .tag{background:var(--l3)} .layer.x .tag{background:var(--l4)}
+.layer h3{margin:2px 0 8px}
+.state{font:500 12px var(--mono);padding:2px 7px;border-radius:4px;background:var(--code);white-space:nowrap}
+.state.built{color:var(--accent)}
+.foot{margin-top:40px;color:var(--muted);font-size:13px;border-top:1px solid var(--line);padding-top:12px;max-width:72ch}
+@media (max-width:640px){.flow li{grid-template-columns:34px 1fr}}
+</style>
+<main>
+<header class="hd">
+  <div class="eyebrow">Proposal for Kevin, 25 Sep 2026</div>
+  <h1>How the ecomOS agents fit together</h1>
+  <p class="lede">Four layers, 14 agents, one loop. The playbooks stay as reference. The idea bank of 4,650 testable ideas becomes the source the agents draw from, and the brand's own numbers decide what gets drawn.</p>
+</header>
+
+<section class="doc">
+<div class="answer">
+<p><strong>The answer in short.</strong> 14 agents in 4 layers. 3 run the loop (Diagnose, Propose, Registrar). 3 keep the stores honest (Brand Brain Keeper, Reference Scout, QA Gate). 8 execute, one per output surface rather than one per folder; each owns 2 to 4 of the 25 folders.</p>
+<p>The execution layer never starts from a web search. Order: the brand's own numbers, then an audit of the brand's own surface, then the idea bank, then the web to verify and fill gaps, then scoring in code, then the founder, then execution, then the registry.</p>
+<p>Build 4 agents first and run the whole loop on one bottleneck, Gehna site speed. Add specialists as approved ideas demand them.</p>
+</div>
+</section>
+
+<section>
+<h2>The four layers and where the agents sit</h2>
+<p class="legend">Data feeds Diagnose; Propose draws from the intelligence layer; the founder gate sits between proposal and execution; results flow back into the registry in the data layer.</p>
+<div class="diagram" role="img" aria-label="Four stacked layers: data, intelligence, inspiration, execution, with agents placed in each and a loop from data through diagnose, propose, founder, specialist, QA and registrar back to data.">
+<svg viewBox="0 0 1000 560" xmlns="http://www.w3.org/2000/svg" font-family="Public Sans, system-ui, sans-serif">
+  <defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="var(--accent)"/></marker></defs>
+  <!-- layer bands -->
+  <rect x="20" y="20" width="700" height="112" rx="8" fill="var(--l4)"/>
+  <rect x="20" y="150" width="700" height="96" rx="8" fill="var(--l3)"/>
+  <rect x="20" y="264" width="700" height="112" rx="8" fill="var(--l2)"/>
+  <rect x="20" y="394" width="700" height="146" rx="8" fill="var(--l1)"/>
+  <!-- band labels -->
+  <g font-family="Bricolage Grotesque, system-ui, sans-serif" font-weight="700" font-size="15" fill="var(--ink)">
+    <text x="36" y="46">4 Execution</text>
+    <text x="36" y="176">3 Inspiration</text>
+    <text x="36" y="290">2 Intelligence</text>
+    <text x="36" y="420">1 Data</text>
+  </g>
+  <g font-size="12" fill="var(--muted)">
+    <text x="36" y="64">founder gate, specialists, QA</text>
+    <text x="36" y="194">references, structure and mood only</text>
+    <text x="36" y="308">idea bank, cards, web as a tool</text>
+    <text x="36" y="438">brand brain, warehouse, metric contract, registry</text>
+  </g>
+  <!-- execution chips -->
+  <g font-size="12.5" fill="var(--ink)">
+    <rect x="36" y="78" width="118" height="40" rx="5" fill="var(--panel)" stroke="var(--accent)" stroke-width="1.5"/>
+    <text x="95" y="95" text-anchor="middle" font-weight="600">Founder gate</text><text x="95" y="110" text-anchor="middle" font-size="11" fill="var(--muted)">approve, reject, park</text>
+    <rect x="166" y="78" width="330" height="40" rx="5" fill="var(--panel)" stroke="var(--line)"/>
+    <text x="331" y="95" text-anchor="middle" font-weight="600">8 specialists, one per output surface</text><text x="331" y="110" text-anchor="middle" font-size="11" fill="var(--muted)">site, paid creative and copy, media buyer, lifecycle, organic, product and supply, money and ops, brand</text>
+    <rect x="508" y="78" width="94" height="40" rx="5" fill="var(--panel)" stroke="var(--line)"/>
+    <text x="555" y="95" text-anchor="middle" font-weight="600">QA Gate</text><text x="555" y="110" text-anchor="middle" font-size="11" fill="var(--muted)">claims, numbers</text>
+    <rect x="614" y="78" width="94" height="40" rx="5" fill="var(--panel)" stroke="var(--line)"/>
+    <text x="661" y="95" text-anchor="middle" font-weight="600">Registrar</text><text x="661" y="110" text-anchor="middle" font-size="11" fill="var(--muted)">log, read, learn</text>
+  </g>
+  <!-- inspiration chips -->
+  <g font-size="12.5" fill="var(--ink)">
+    <rect x="36" y="204" width="150" height="32" rx="5" fill="var(--panel)" stroke="var(--line)"/><text x="111" y="225" text-anchor="middle" font-weight="600">Reference Scout</text>
+    <rect x="198" y="204" width="510" height="32" rx="5" fill="var(--panel)" stroke="var(--line)" stroke-dasharray="4 3"/><text x="453" y="225" text-anchor="middle" fill="var(--muted)">competitor ads (7 brands), own winners with results, page and email swipes, creator content</text>
+  </g>
+  <!-- intelligence chips -->
+  <g font-size="12.5" fill="var(--ink)">
+    <rect x="36" y="322" width="110" height="40" rx="5" fill="var(--panel)" stroke="var(--line)"/><text x="91" y="339" text-anchor="middle" font-weight="600">Diagnose</text><text x="91" y="354" text-anchor="middle" font-size="11" fill="var(--muted)">find the bottleneck</text>
+    <rect x="158" y="322" width="110" height="40" rx="5" fill="var(--panel)" stroke="var(--accent)" stroke-width="1.5"/><text x="213" y="339" text-anchor="middle" font-weight="600">Propose</text><text x="213" y="354" text-anchor="middle" font-size="11" fill="var(--muted)">rank the ideas</text>
+    <rect x="282" y="322" width="426" height="40" rx="5" fill="var(--panel)" stroke="var(--line)" stroke-dasharray="4 3"/><text x="495" y="339" text-anchor="middle" fill="var(--muted)">idea bank 4,650 ideas, 25 domains</text><text x="495" y="354" text-anchor="middle" font-size="11" fill="var(--muted)">card library 7,611 cards, benchmarks, web research last and scoped</text>
+  </g>
+  <!-- data chips -->
+  <g font-size="12.5" fill="var(--ink)">
+    <rect x="36" y="452" width="160" height="40" rx="5" fill="var(--panel)" stroke="var(--line)"/><text x="116" y="469" text-anchor="middle" font-weight="600">Brand Brain Keeper</text><text x="116" y="484" text-anchor="middle" font-size="11" fill="var(--muted)">collect, diff, tier claims</text>
+    <rect x="208" y="452" width="160" height="40" rx="5" fill="var(--panel)" stroke="var(--line)" stroke-dasharray="4 3"/><text x="288" y="469" text-anchor="middle" fill="var(--muted)">brand record</text><text x="288" y="484" text-anchor="middle" font-size="11" fill="var(--muted)">facts, claims, voice, decisions</text>
+    <rect x="380" y="452" width="160" height="40" rx="5" fill="var(--panel)" stroke="var(--line)" stroke-dasharray="4 3"/><text x="460" y="469" text-anchor="middle" fill="var(--muted)">metric contract</text><text x="460" y="484" text-anchor="middle" font-size="11" fill="var(--muted)">computed in code, dated</text>
+    <rect x="552" y="452" width="156" height="40" rx="5" fill="var(--panel)" stroke="var(--line)" stroke-dasharray="4 3"/><text x="630" y="469" text-anchor="middle" fill="var(--muted)">experiment registry</text><text x="630" y="484" text-anchor="middle" font-size="11" fill="var(--muted)">status, read point, result</text>
+    <text x="36" y="524" font-size="11" fill="var(--muted)">warehouse: orders and sessions, ad accounts (Meta read-only), email and SMS, reviews, competitors, speed runs</text>
+  </g>
+  <!-- loop on the right -->
+  <g fill="none" stroke="var(--accent)" stroke-width="2">
+    <path d="M760 470 L760 350" marker-end="url(#ar)"/>
+    <path d="M760 330 L760 108" marker-end="url(#ar)"/>
+    <path d="M900 100 L900 460" marker-end="url(#ar)"/>
+    <path d="M770 100 L890 100"/>
+    <path d="M900 470 L770 470"/>
+  </g>
+  <g font-size="12" fill="var(--ink)" font-weight="600">
+    <text x="770" y="415">metric contract</text>
+    <text x="770" y="240">bottleneck +</text><text x="770" y="256">observed conditions</text>
+    <text x="770" y="88">proposal cards</text>
+    <text x="912" y="290">approved idea,</text><text x="912" y="306">artefact, result</text>
+  </g>
+  <g font-size="12" fill="var(--muted)">
+    <text x="770" y="430">dated, computed</text>
+    <text x="912" y="322">logged with read point</text>
+  </g>
+  <g fill="var(--panel)" stroke="var(--accent)" stroke-width="1.5" font-size="12" font-weight="600">
+    <rect x="740" y="330" width="40" height="20" rx="4"/><text x="760" y="344" text-anchor="middle" fill="var(--ink)" stroke="none">→</text>
+  </g>
+</svg>
+</div>
+</section>
+
+<section class="doc">
+<h2>What each layer holds</h2>
+<div class="layers">
+<div class="layer d"><span class="tag">1 Data: brand brain and warehouse</span>
+<h3>Per brand, the facts nobody should guess</h3>
+<ul>
+<li>Brand record: products with prices, weights and stock read from the site by script with the date; policies quoted from the page; claims in 3 tiers (approved, site-backed, forbidden) each with evidence; voice with liked and disliked examples; a decisions log where every "confirm before launch" answer is stored once.</li>
+<li>Warehouse: orders and sessions (Metabase, GA4), ad accounts (Meta cache today), email and SMS platform, reviews and support, competitors, speed measurements.</li>
+<li>Metric contract: a fixed list of computed numbers with freshness stamps. Computed in code. Missing shows as unavailable, never 0. Windows end on the last full day.</li>
+<li>Experiment registry: idea, brand, status, owner, artefact, metric, read point, kill and scale rule, result, learning, founder reason.</li>
+</ul>
+<p><strong>Agent: Brand Brain Keeper.</strong> Runs the collectors, diffs the site against the last snapshot, tiers claims, flags stale facts, keeps the decisions log. Mostly scripts; the model only tiers claims and writes voice notes.</p>
+<p><span class="state built">exists</span> Meta cache, brand.json, sales, competitors, speed runs, site facts from the copy test. <span class="state">to build</span> schema, scheduled collectors, metric contract, registry.</p>
+</div>
+<div class="layer i"><span class="tag">2 Intelligence</span>
+<h3>Where ideas come from</h3>
+<p>The idea bank (4,650 brand-agnostic ideas, filtered by bottleneck and store type, scored in code), the card library behind each idea, benchmarks and thresholds, and web research as a tool with rules: public web stays separate from private data, and every fetched fact carries its URL and date.</p>
+<p><strong>Diagnose.</strong> Input: the metric contract and its history. Output: ranked bottlenecks with the numbers that prove each one, money at stake computed in code, and what data is missing. It does not propose fixes.</p>
+<p><strong>Propose.</strong> Input: the top bottleneck, the audit of the brand's surface, the bank, the web. Output: ranked proposal cards. This is the agent that answers "what should we do next".</p>
+</div>
+<div class="layer n"><span class="tag">3 Inspiration</span>
+<h3>References, never copies</h3>
+<p>Competitor ads (7 brands already in the gallery), the brand's own winners with ad-level results, landing page and email swipes, creator content. Rule: structure and mood only, never text, logos, products or faces. Generated images can redraw products, so real photos where accuracy matters.</p>
+<p><strong>Reference Scout.</strong> Given an approved idea and a surface, returns 3 to 8 references with why each fits, tagged so the specialist can cite them. Extends <code>intelligence/creative_retrieval.py</code>.</p>
+</div>
+<div class="layer x"><span class="tag">4 Execution</span>
+<h3>Founder gate first, then specialists by output surface</h3>
+<p>Nothing runs on an idea the founder has not approved, and nothing writes to an external system until Kevin turns that on per surface. Meta stays read-only, so every execution today is a brief, a draft, a change list or a pull request.</p>
+</div>
+</div>
+
+<div class="tbl"><table>
+<thead><tr><th>Specialist</th><th>Owns folders</th><th>Produces</th></tr></thead>
+<tbody>
+<tr><td>Site</td><td>05-SET, 07-LPG, 08-SPD, 09-CRO</td><td>Developer briefs with thresholds and rollback, page specs and copy, CRO test specs, pull requests on a custom site</td></tr>
+<tr><td>Paid creative and copy</td><td>10-MCR, 11-ADC</td><td>Ad concepts, static and video briefs, hook banks, copy sets with claim checks</td></tr>
+<tr><td>Media buyer</td><td>24-DEP, 12-GAD</td><td>Account structure, budget and test plans, kill and scale rules, change lists for a human to apply</td></tr>
+<tr><td>Lifecycle</td><td>14-EML, 17-CXP, 03-OFF</td><td>Flows, campaigns, offer designs, retention programs, post-purchase fixes</td></tr>
+<tr><td>Organic and search</td><td>13-ORG, 15-SEO, 16-AEO</td><td>Content calendars, pages, technical SEO briefs, answer-engine fixes</td></tr>
+<tr><td>Product and supply</td><td>01-PRD, 18-COG, 22-AMZ</td><td>Product briefs, supplier RFQs, landed cost models, marketplace listings</td></tr>
+<tr><td>Money and ops</td><td>20-FIN, 21-OPS, 06-MEA, 23-SEC</td><td>P&amp;L and cash models, tracking fixes, hiring scorecards, security audits</td></tr>
+<tr><td>Brand strategist</td><td>02-AVT, 04-BRD, 19-WLD</td><td>Positioning, avatars, naming, wild bets with stage gates</td></tr>
+</tbody></table></div>
+
+<p><strong>Shared by all specialists.</strong> <em>QA Gate</em> runs before anything is delivered: every claim traced to the brand record, every number recomputed in code, windows end on a full day, reading level, no competitor text, no placeholders, Meta read-only. This is the checklist that would have caught every miss in the copy test. <em>Registrar</em> writes the registry entry when an idea is approved, checks read points on schedule, records results, updates the brand's effect prior for that idea, and turns founder reasons into ranking weights.</p>
+<p><strong>Why 8 specialists and not 25.</strong> Agents are grouped by what they produce, because a developer brief, an ad set and an email flow need different tools, references and QA. The 25 folders are how the knowledge is filed, not how the work is done. The multi folder has no owner; its ideas reach the right specialist through the bottleneck tag.</p>
+
+<h2>How Propose pulls ideas</h2>
+<p>This is the order, with the reason for each step.</p>
+<ol class="flow">
+<li><div><b>Diagnose from the brand's numbers</b><p>No web, no bank. Output: 1 to 3 bottlenecks with money at stake, computed from the metric contract.</p><p class="why">If the bottleneck came from the web, the system would chase what is fashionable instead of what is broken.</p></div></li>
+<li><div><b>Audit the brand's own surface for that bottleneck</b><p>For speed: the Chromium runs on 3 pages. For retention: the flows that exist, the past-customer campaigns that do not, the frequency data. For copy: what the account runs and what the site promises. Output: observed conditions with evidence, the way the Gehna speed audit did it.</p><p class="why">The most valuable step. Idea applicability is decided here, not in the bank.</p></div></li>
+<li><div><b>Pull candidates from the idea bank</b><p>Filter in code by bottleneck and store tags (Gehna: high AOV, luxury or considered, catalogue, custom platform, India mobile, paid social led). Then the model matches each idea's signal against the observed conditions and keeps only the ideas whose signal fires, quoting the evidence. Expect 30 to 80 candidates from a few hundred.</p></div></li>
+<li><div><b>Web research, scoped and last</b><p>Two jobs only: verify anything time-sensitive in the candidates (platform UI, a benchmark, a policy), and search for tactics the bank lacks for this bottleneck and category. Web-sourced candidates carry their URL and date, get a lower prior, and are written to a candidates file for curation into the bank.</p><p class="why">The bank is curated and the web is noisy, so the web is last. It is not skipped, because platforms move.</p></div></li>
+<li><div><b>Score in code</b><p>Reach: orders, sessions or revenue the idea touches. Effect: the bank's basis and size, adjusted by any brand prior from the registry. Effort, cost, risk, reversibility and confidence from the record. Founder weights from past reasons. Dependencies from prerequisites. The model fills the evidence fields; the arithmetic and the sort are code.</p></div></li>
+<li><div><b>Write the proposal cards</b><p>Each card: the idea, why now (the observed condition and the numbers), what it could move and on what basis, what it costs, how we will know (metric, read point, kill and scale rule), what it depends on, and the owning specialist.</p></div></li>
+<li><div><b>Founder gate</b><p>Approve, reject or park, with a one-line reason. Reasons become ranking weights for this brand.</p></div></li>
+<li><div><b>Execute</b><p>The owning specialist takes the idea record, the brand brain, references from the Scout and its domain checklist, and produces the artefact. QA Gate checks it. Registrar logs it with its read point.</p></div></li>
+<li><div><b>Learn</b><p>At the read point the Registrar pulls the metric, records the result, and updates the brand's prior for that idea. The bank itself does not change; brand results live in the registry and a brand overlay.</p></div></li>
+</ol>
+
+<h2>Model routing</h2>
+<ul>
+<li>Collectors, extraction, signal matching, QA checks, registry work: Haiku or Sonnet. Structured tasks with clear inputs.</li>
+<li>Diagnose narrative, Propose ranking rationale, specialist creative work and briefs: Fable.</li>
+<li>All arithmetic in code, whichever model.</li>
+<li>A run for one bottleneck should cost a fraction of the copy test, because most tokens go to structured steps on cheap models and the bank replaces open-ended research.</li>
+</ul>
+
+<h2>What exists and what to build</h2>
+<div class="tbl"><table>
+<thead><tr><th>Piece</th><th>State</th></tr></thead>
+<tbody>
+<tr><td>Card library and search</td><td><span class="state built">built</span></td></tr>
+<tr><td>Idea bank, loader, scoring v0</td><td><span class="state built">built</span></td></tr>
+<tr><td>Meta cache, brand record, sales, competitors</td><td><span class="state built">built for Gehna</span> manual refresh</td></tr>
+<tr><td>Speed measurement instrument</td><td><span class="state built">built</span> Chromium, throttled mobile profile</td></tr>
+<tr><td>Brand brain schema and collectors</td><td><span class="state">to build</span></td></tr>
+<tr><td>Metric contract</td><td><span class="state">to build</span></td></tr>
+<tr><td>Experiment registry</td><td><span class="state">to build</span></td></tr>
+<tr><td>Diagnose, Propose, Registrar</td><td><span class="state">to build</span></td></tr>
+<tr><td>Review page for the founder gate</td><td><span class="state">to build</span> the gallery's action plan tab is the seed</td></tr>
+<tr><td>Site specialist and QA Gate</td><td><span class="state">to build</span></td></tr>
+<tr><td>Other 7 specialists, Reference Scout</td><td><span class="state">on demand</span> built when a ranked idea needs them</td></tr>
+</tbody></table></div>
+
+<h2>Build order</h2>
+<ol>
+<li>Brand brain schema, metric contract for Gehna, registry schema. Fill from what exists.</li>
+<li>Diagnose and Propose on Gehna site speed, end to end, with the review page. Kevin approves or rejects with reasons.</li>
+<li>Site specialist executes 1 or 2 approved ideas as developer briefs. QA Gate on the output. Registrar logs read points.</li>
+<li>Second bottleneck through a second specialist, likely Lifecycle or Paid copy since the copy test already produced the audit, to prove the loop is general.</li>
+<li>Then the remaining specialists, each built when a ranked idea needs it.</li>
+</ol>
+
+<h2>Decisions for Kevin</h2>
+<ul>
+<li>Where the founder gate lives: the gallery page that is already published, or a new page.</li>
+<li>When Meta write access is switched on, and for which surfaces. Until then every execution is a brief, a draft, a change list or a pull request.</li>
+<li>Whether specialists are shared across brands (one Site specialist with a brand parameter) or copied per brand. Shared is the default here.</li>
+<li>How much web research per run. The default above caps it at verification plus one gap search per bottleneck.</li>
+</ul>
+<p class="foot">Same text as <code>ARCHITECTURE.md</code> in the ecomOS repo. Sources: the idea bank index, the two blind tests in <code>reviews/</code>, and the Gehna gallery.</p>
+</section>
+</main>
