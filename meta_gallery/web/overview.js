@@ -404,7 +404,8 @@ function channelsTile(B) {
     <div class="tile-head"><div><h2>Where sales come from</h2><div class="sub">Each channel's own count of website sales</div></div></div>
     ${share !== null ? `<div class="stackbar" role="img" aria-label="Share of website sales Meta counts"><span style="flex:${Math.min(claimed, c.sales)};background:var(--spend)" data-tip="${esc(`Meta ads|Sales Meta counts|${money(claimed)}|Share|${(share * 100).toFixed(1)}%`)}"></span><span style="flex:${rest};background:var(--faint)" data-tip="${esc(`Not counted by an ad channel|Sales|${money(rest)}|Share|${((1 - share) * 100).toFixed(1)}%`)}"></span></div>` : ''}
     <div class="chlist">${OV_CHANNELS.map(row).join('')}
-      <div class="chrow"><span class="chn"><i style="background:var(--faint)"></i>Not counted by an ad channel</span><span class="chv"><b>${rest !== null ? compact(rest) : 'Not available'}</b> direct, search, repeat buyers and more</span></div></div>
+      <div class="chrow"><span class="chn"><i style="background:var(--faint)"></i>Not counted by an ad channel</span><span class="chv"><b>${rest !== null ? compact(rest) : 'Not available'}</b> direct, search, repeat buyers and more</span></div>
+      <div class="chrow off"><span class="chn"><i></i>New vs repeat buyers</span><span class="chv muted">Not available yet. Needs 1 Metabase card: orders by day, first order vs repeat.</span></div></div>
     <p class="small muted" style="margin:0">Meta counts a sale after a click or view, so its number can overlap with others. Google and email show here once connected.</p>
   </section>`;
 }
@@ -481,18 +482,13 @@ function bestDayTile(B) {
       <div class="seg" role="group" aria-label="Big days">${modes.map(([k, l]) => `<button type="button" data-daymode="${k}" aria-pressed="${mode === k}">${l}</button>`).join('')}</div></div>
     <svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto;display:block" role="img" aria-label="Sales per rupee of ads by weekday">${grid.join('')}${avgLine}${bars}</svg>
     <p class="ov-say">${msg}</p>
-    <p class="small muted" style="margin:0">Each weekday has about ${ok.length ? Math.round(ok.reduce((t, x) => t + x.n, 0) / ok.length) : 0} days here, so small gaps can be chance. Pick 90 days for a steadier read. "Cap" lowers big days to the normal top. "Drop" leaves them out.</p>
+    <p class="small muted" style="margin:0">Buyers often take 7 to 14 days from first ad to purchase, so this shows the days people buy more than the days ads work best. Each weekday has about ${ok.length ? Math.round(ok.reduce((t, x) => t + x.n, 0) / ok.length) : 0} days here, so small gaps can be chance. Pick 90 days for a steadier read. "Cap" lowers big days to the normal top. "Drop" leaves them out.</p>
   </section>`;
 }
-function bigDaysTile(B) {
-  const { sc, big } = ovDays(B), c = B.cur;
-  const top = c.skus.slice(0, 5);
-  const bigSum = big.reduce((t, r) => t + r.x.sales, 0);
-  return `<section class="tile c-4" aria-label="Big days and top pieces">
-    <div class="tile-head"><div><h2>Big days</h2><div class="sub">${sc ? `A normal day is about ${esc(compact(sc.med))}. Big means over ${esc(compact(sc.cap))}.` : 'Needs at least 7 days of sales.'}</div></div></div>
-    ${big.length ? `<div>${big.sort((a, b) => b.x.sales - a.x.sales).slice(0, 5).map((r) => `<div class="mixrow"><i style="background:var(--gold)"></i><span>${esc(weekday(r.d))} ${esc(shortDate(r.d))} <span class="muted small">${r.x.orders} orders</span></span><span class="v">${esc(compact(r.x.sales))}</span><span class="r">${(r.x.sales / sc.med).toFixed(0)}x</span></div>`).join('')}</div>
-      <p class="small" style="margin:0">${big.length} big day${big.length > 1 ? 's' : ''} made ${esc(compact(bigSum))}, ${c.sales ? (bigSum / c.sales * 100).toFixed(0) : '–'}% of sales in these dates. Check if they were one large client order before you judge ads on them.</p>` : '<p class="muted small" style="margin:0">No big days in these dates.</p>'}
-    <div class="tile-head" style="margin-top:4px"><div><h2>Top pieces</h2><div class="sub">By website sales in these dates</div></div><button class="go" type="button" data-goto="sales" aria-label="Open brand sales">${ARROW}</button></div>
+function topPiecesTile(B) {
+  const top = B.cur.skus.slice(0, 6);
+  return `<section class="tile c-4" aria-label="Top pieces">
+    <div class="tile-head"><div><h2>Top pieces</h2><div class="sub">By website sales in these dates</div></div><button class="go" type="button" data-goto="sales" aria-label="Open brand sales">${ARROW}</button></div>
     <div>${top.length ? top.map((s) => `<div class="mixrow"><i style="background:var(--s3)"></i><span style="min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(s.name || s.code)}</span><span class="v">${esc(compact(s.v))}</span><span class="r">${s.n} sold</span></div>`).join('') : '<p class="muted small">No product data for these dates.</p>'}</div>
   </section>`;
 }
@@ -504,7 +500,10 @@ function brandBlock() {
   const B = ovBrand();
   if (!B) return `<section class="tile c-12"><p class="muted">No website sales for these dates. Website data starts ${esc(shortDate(Object.keys(SL.data.daily_totals || SL.data.daily).sort()[0]))}.</p></section>`;
   return `<div class="ov-section c-12"><div><h2>Your brand</h2><p>Every website order, from every source.</p></div></div>
-    ${brandHero(B)}${channelsTile(B)}${brandKpis(B)}${bestDayTile(B)}${bigDaysTile(B)}`;
+    ${brandHero(B)}${channelsTile(B)}${brandKpis(B)}
+    ${pacingTile()}${brandAlertsTile()}${topPiecesTile(B)}
+    ${bestDayTile(B)}${coTile(B)}
+    ${lagTile()}${budgetPlanTile(B)}`;
 }
 
 // ---------- tooltip ----------
@@ -533,6 +532,7 @@ window.renderOverview = function renderOverview() {
   const R = rangeDays();
   const excl = VIEW.exclusions.campaigns.length ? `<div class="note">${VIEW.exclusions.campaigns.length} campaign${VIEW.exclusions.campaigns.length > 1 ? 's' : ''} left out (${money(VIEW.exclusions.spend)}). Every tile below follows the filters.</div>` : '';
   if (!SL.data && !SL.err) loadSales().then(() => { if (state.tab === 'overview') window.renderOverview(); });
+  if (!CO.loaded) coBoot().then(() => { if (state.tab === 'overview') window.renderOverview(); });
   $('overviewView').innerHTML = `<div style="display:grid;gap:16px"><div class="bento">
     ${brandBlock()}
     ${metaHeader()}${excl ? `<div class="c-12">${excl}</div>` : ''}

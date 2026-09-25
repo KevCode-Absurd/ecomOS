@@ -33,7 +33,7 @@ from .view import Engine, ViewError
 
 STATIC = Path(__file__).resolve().parent / 'static'
 WEB = Path(__file__).resolve().parent / 'web'
-WEB_FILES = ('engine.js', 'app.js', 'insights.js', 'overview.js', 'lab.js', 'studio.js', 'sales.js', 'testlab.js', 'prodads.js', 'report.js', 'buyer.js', 'catalog.js')
+WEB_FILES = ('engine.js', 'app.js', 'insights.js', 'overview.js', 'lab.js', 'studio.js', 'sales.js', 'testlab.js', 'prodads.js', 'report.js', 'brandx.js', 'buyer.js', 'catalog.js')
 COMPETITORS = DATA / 'competitors.json'
 COMP_MEDIA = DATA / 'comp_media.json'
 CATALOG = DATA / 'catalog.json'
@@ -47,7 +47,7 @@ MAX_NOTES_BODY = 2_000_000
 MAX_AI_BODY = 80_000
 MAX_REF_BODY = 4_000_000     # AI routes that can carry one pasted reference image
 MAX_REF_IMAGE = 2_500_000
-DOCS = ('packs.json', 'playbook.json', 'tests.json', 'catalog_prompt.json')
+DOCS = ('packs.json', 'playbook.json', 'tests.json', 'catalog_prompt.json', 'client_orders.json')
 MAX_DOC = 1_500_000
 
 

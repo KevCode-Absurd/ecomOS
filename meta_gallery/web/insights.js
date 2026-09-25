@@ -112,7 +112,7 @@ function budgetSection() {
       ${r.value_gain_daily !== null ? `Rough extra purchase value: ${money(r.value_gain_daily)} a day, about ${money(r.value_gain_30d)} over 30 days.` : ''}</div>
       <div class="two" style="margin-top: 10px"><div><h3>Lower (${r.cut.length})</h3><div class="scroll"><table>${head}${rows(r.cut, 'cut')}</table></div></div>
       <div><h3>Raise (${r.scale.length})</h3><div class="scroll"><table>${head}${rows(r.scale, 'scale')}</table></div></div></div>`
-    : '<p class="small muted">No shift to suggest. It needs at least 1 running Cut ad and 1 running Scale ad in the top 30.</p>'}
+    : '<p class="small muted">No shift to suggest. It needs at least 1 running Cut ad and 1 running Scale ad in the top 100.</p>'}
     <p class="small muted">A guide, not a forecast. Ads usually get less efficient as spend grows, which is why the Scale ROAS is reduced. Meta sets spend per ad set, not per ad, so make the change at ad set level. This page cannot change budgets.</p></section>`;
 }
 function themesSection() {

@@ -269,6 +269,22 @@ tr.adset-row td { font-size: 12.5px; color: var(--muted); }
 .c-5 { grid-column: span 5; } .c-4 { grid-column: span 4; } .c-3 { grid-column: span 3; } .c-8 { grid-column: span 8; } .c-6 { grid-column: span 6; } .c-7 { grid-column: span 7; } .c-12 { grid-column: span 12; }
 
 /* Overview: brand first, channels under it */
+.co-toggle { display: flex; gap: 8px; align-items: center; font-size: 13px; font-weight: 600; }
+.co-sug { display: grid; gap: 6px; }
+.co-row .btn { white-space: nowrap; flex: none; }
+.co-row { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 8px 10px; border: 1px dashed var(--line); border-radius: 10px; font-size: 12.5px; }
+.co-form { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 10px; border: 1px solid var(--gold-line); background: var(--gold-soft); border-radius: 12px; font-size: 12px; }
+.co-form > div, .co-form .wide, .co-form .act-btns { grid-column: 1 / -1; }
+.co-form label { display: grid; gap: 3px; } .co-form input { font: inherit; padding: 6px 8px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); min-width: 0; }
+.big-num { font: 700 30px/1 var(--display); letter-spacing: -.02em; font-variant-numeric: tabular-nums; }
+.pace-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.pace-grid div { background: var(--sunken); border-radius: 12px; padding: 8px 10px; display: grid; gap: 2px; min-width: 0; }
+.pace-grid span { font-size: 11.5px; color: var(--muted); } .pace-grid b { font: 700 16px var(--display); font-variant-numeric: tabular-nums; } .pace-grid em { font-style: normal; font-size: 11.5px; color: var(--muted); }
+.na-box { display: grid; gap: 4px; padding: 12px; border: 1px dashed var(--line); border-radius: 12px; background: var(--sunken); font-size: 13px; }
+.fmt-chips { display: flex; flex-wrap: wrap; gap: 8px; margin: 8px 0 4px; }
+.fmt-chips button { font: inherit; font-size: 13px; padding: 6px 12px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); cursor: pointer; }
+.fmt-chips button[aria-pressed="true"] { background: var(--ink); border-color: var(--ink); color: #fff; }
+.fmt-chips button b { font-weight: 700; margin-left: 4px; opacity: .7; }
 .ov-section { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; padding: 8px 2px 0; border-top: 1px solid var(--line); }
 .ov-section:first-child { border-top: 0; padding-top: 0; }
 .ov-section h2 { font: 700 20px var(--display); margin: 0; letter-spacing: -.01em; }
@@ -932,7 +948,7 @@ table.sheat td.heat { min-width: 58px; }
           <section id="demo" class="panel-box" aria-label="Spend and ROAS by age and gender"></section>
           <section class="gridhead">
             <div class="controls">
-              <label>Show <select id="rankSet"><option value="spend">Top 30 by spend</option><option value="health">All ads: live by verdict, then relaunch</option><option value="roas2">Top 100 by ROAS, 2+ purchases</option><option value="roas1">Top 100 by ROAS, 1+ purchase</option><option value="roas0">Top 100 by ROAS, any spend</option></select></label>
+              <label>Show <select id="rankSet"><option value="spend">Top 100 by spend</option><option value="health">All ads: live by verdict, then relaunch</option><option value="roas2">Top 100 by ROAS, 2+ purchases</option><option value="roas1">Top 100 by ROAS, 1+ purchase</option><option value="roas0">Top 100 by ROAS, any spend</option></select></label>
               <label>Format <select id="format"></select></label>
               <label>Sort
                 <select id="sort">
@@ -959,6 +975,7 @@ table.sheat td.heat { min-width: 58px; }
               <label>Campaign status <select id="campStatus"><option value="">All</option><option value="on">Campaign on</option><option value="paused">Campaign paused</option></select></label>
             </div>
             <div class="row" style="justify-content: space-between; align-items: center"><div id="collectionLabel" class="gh-title"></div><button id="exportGrid" class="btn ghost" type="button">Export CSV</button></div>
+            <div id="fmtChips" class="fmt-chips" role="group" aria-label="Ad format"></div>
             <div id="sortNote" class="note"></div>
             <div id="totals" class="small muted"></div>
           </section>
@@ -1010,5 +1027,6 @@ table.sheat td.heat { min-width: 58px; }
 <script src="prodads.js"></script>
 <script src="app.js"></script>
 <script src="report.js"></script>
+<script src="brandx.js"></script>
 <script src="buyer.js"></script>
 <script src="catalog.js"></script>

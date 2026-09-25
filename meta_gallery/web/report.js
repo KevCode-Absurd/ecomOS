@@ -9,6 +9,10 @@ const RP_PERIODS = [['30', 'Last 30 days'], ['60', 'Last 60 days'], ['90', 'Last
 
 // ---------- numbers ----------
 function rpDay(d) {
+  const x = rpDayRaw(d);
+  return typeof coAdjust === 'function' ? coAdjust(d, x) : x;
+}
+function rpDayRaw(d) {
   // A day with no orders comes back with no sales row: that is a real zero, not missing data.
   const zero = (sales, orders) => (sales === null && orders === 0 ? 0 : sales);
   const x = SL.data.daily && SL.data.daily[d];
@@ -168,6 +172,8 @@ function rpSummary(P, t) {
   if (c.sales !== null) bits.push(`You sold <b>${esc(compact(c.sales))}</b> on your website in these ${c.n} days${s.ch !== null ? `, <b>${esc(s.txt.replace(' from before', ''))}</b> from the ${c.n} days before` : ''}.`);
   if (t.spend) bits.push(`You spent <b>${esc(compact(t.spend))}</b> on Meta ads.`);
   if (per) bits.push(`For every ₹1 spent on ads, your website made <b>₹${per.toFixed(1)}</b> in sales.`);
+  const co = c.days.reduce((t, r) => t + ((r.x && r.x.client) || 0), 0);
+  if (co) bits.push(`Client orders of <b>${esc(compact(co))}</b> are left out so normal days are clear.`);
   const big = rpBigDays(c);
   if (big.length) bits.push(`This includes ${big.length === 1 ? '1 unusually big day' : big.length + ' unusually big days'} (${esc(rpDays(big))}).`);
   return bits.join(' ');

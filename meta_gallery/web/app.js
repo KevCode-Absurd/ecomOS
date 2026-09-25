@@ -160,6 +160,7 @@ function wire() {
   for (const id of ['sort', 'verdict', 'minSpend', 'minRoas', 'campaign', 'adStatus']) $(id).addEventListener('input', renderGrid);
   $('campStatus').addEventListener('input', () => { fillFilters(); renderGrid(); });
   $('format').addEventListener('change', () => { fillFilters(); renderGrid(); remember(); });
+  $('fmtChips').addEventListener('click', (e) => { const c = e.target.closest('[data-fmtchip]'); if (!c) return; $('format').value = c.dataset.fmtchip; fillFilters(); renderGrid(); remember(); });
   $('rankSet').addEventListener('change', () => {
     // The ROAS list is mostly used to find image ads to learn from, so start it on single images.
     $('sort').value = ['spend', 'health'].includes($('rankSet').value) ? 'spend' : 'roas';
@@ -275,7 +276,7 @@ function renderPills() {
 
 function renderStatus(msg) {
   const x = VIEW ? VIEW.exclusions : null;
-  let line = 'No campaigns excluded. Totals, the top 30 and charts cover every campaign.';
+  let line = 'No campaigns excluded. Totals, the top 100 and charts cover every campaign.';
   if (x && (x.keywords.length || x.campaign_ids.length)) {
     const list = x.campaigns.map((c) => `${c.name} (${money(c.spend)})`).join('\n');
     line = x.campaigns.length
@@ -451,8 +452,8 @@ function demoBlock(demos, note) {
 }
 
 // ---------- grid ----------
-const collection = () => {
-  const set = $('rankSet') ? $('rankSet').value : 'spend', f = $('format').value;
+const collection = (set0, f0) => {
+  const set = set0 || ($('rankSet') ? $('rankSet').value : 'spend'), f = f0 || $('format').value;
   if (set === 'health') {
     const h = VIEW.collections.health, ids = f === 'all' ? h.ad_ids : h.ad_ids.filter((id) => VIEW.ads[id].creative.type === f);
     return { ...h, label: f === 'all' ? h.label : (VIEW.collections[f] || {}).label || f, ad_ids: ids, size: ids.length, available: ids.length, totals: ENGINE.constructor.addUp ? ENGINE.constructor.addUp(ids.map((id) => VIEW.ads[id].view.metrics)) : h.totals };
@@ -516,17 +517,19 @@ function renderGrid() {
   $('collectionLabel').textContent = byVerdict ? `All ${col.size} ads that spent in these dates, ${scope}: live ads by verdict, then ads that are off · showing ${list.length}` : byRoas
     ? `Top ${col.limit} by ROAS, ${scope}${col.min_purchases ? `, ${col.min_purchases}+ purchase${col.min_purchases > 1 ? 's' : ''}` : ''}` + (col.extra_images ? ` + ${col.extra_images} more image ad${col.extra_images === 1 ? '' : 's'}` : '')
       + (col.size - col.extra_images < col.limit ? ` · ${col.size} qualify in these dates` : ` · ${col.available} qualify`) + ` · showing ${list.length} of ${col.size}`
-    : `Top 30 by spend, ${scope}` + (col.size < 30 ? ` · only ${col.size} spent in these dates` : '') + ` · showing ${list.length} of ${col.size}`;
+    : `Top ${col.limit} by spend, ${scope}` + (col.size < col.limit ? ` · only ${col.size} spent in these dates` : '') + ` · showing ${list.length} of ${col.size}`;
   const notes = [];
   if (byRoas && fmtKey === 'all') notes.push('All formats are ranked together, and every single image ad with a reported ROAS is always included, even outside the top 100.');
   if (byRoas) notes.push(col.min_purchases > 1 ? `Ranked by purchase ROAS in these dates. Ads need ${col.min_purchases} or more purchases, so 1 lucky sale does not top the list.`
     : col.min_purchases === 1 ? 'Ranked by purchase ROAS in these dates. 1 purchase can make a high ROAS, so check spend and purchases on each card.'
     : 'Ranked by purchase ROAS in these dates. Ads with no reported purchase value come last, ordered by spend.');
   if (byRoas && VIEW.range.days < 360) notes.push(`<button class="linkbtn" type="button" data-year>Use the last 365 days</button> for the widest list.`);
-  if (sort === 'roas' && !byRoas) notes.push('Sorted by ROAS within this top-30-by-spend set, not the account\'s top 30 by ROAS. Switch Show to "Top 100 by ROAS" for that. Ads with no reported value are last.');
+  if (sort === 'roas' && !byRoas) notes.push('Sorted by ROAS within this top-100-by-spend set, not the account\'s top 100 by ROAS. Switch Show to "Top 100 by ROAS" for that. Ads with no reported value are last.');
   if (sort === 'change') notes.push('Sorted by spend change vs the previous period. New ads come first.');
   if (hidden) notes.push(`${hidden} ads hidden by the ROAS filter because Meta reported no purchase value for them.`);
   $('sortNote').innerHTML = notes.map((n) => (n.startsWith('<button') ? n : esc(n))).join(' ');
+  // One-click format chips (same as the Format select), with how many ads each shows in this list.
+  $('fmtChips').innerHTML = [...$('format').options].map((o) => { const c = collection(null, o.value); return `<button type="button" data-fmtchip="${esc(o.value)}" aria-pressed="${o.value === fmtKey}">${esc(o.value === 'all' ? 'All formats' : o.textContent)}<b>${c ? c.size : 0}</b></button>`; }).join('');
   const t = col.totals, vc = {};
   for (const ad of items()) { const k = healthGroup(ad); vc[k] = (vc[k] || 0) + 1; }
   $('totals').innerHTML = `This set (all ${col.size} ads, filters ignored): spend ${fmt(t.spend, 'money')} · purchase value ${fmt(t.purchase_value, 'money')} · ROAS ${fmt(t.roas, 'x')} · Live: ${vc.scale || 0} scale, ${vc.cut || 0} cut, ${vc.watch || 0} watch, ${vc.not_enough_data || 0} too little spend · Off: ${vc.relaunch || 0} to relaunch, ${vc.off || 0} other`;
@@ -798,7 +801,7 @@ function reportHtml(forFile) {
     <section class="panel-box">${demoBlock([v.demographics_all], bucketNote(v.demographics_buckets, v.demographics_exact, r) + ' Covers every ad in the report.')}</section>
     <section><h2>What kind of ad worked</h2><div class="scroll">${themeTable(ENGINE.themes(v).angle, 'Angle')}</div><p class="small muted">Angles are tagged from ad names and copy, so treat them as a guide.</p></section>
     <section><h2>Top 12 ads by spend</h2><div class="r-ads">${top.slice(0, 12).map(tile).join('')}</div></section>
-    <section><h2>What to do next</h2><p class="small muted">Verdicts compare each ad in the top 30 by spend with the targets: ROAS ${tg.roas ? tg.roas.toFixed(2) + 'x' : 'not set'} and CPA ${tg.cpa ? money(tg.cpa) : 'not set'} (${esc(tg.roas_source)}). Scale = at or above target ROAS. Watch = within 30% below, or no purchases yet under 2x target CPA. Cut = more than 30% below, or no purchases after 2x target CPA.</p>
+    <section><h2>What to do next</h2><p class="small muted">Verdicts compare each ad in the top 100 by spend with the targets: ROAS ${tg.roas ? tg.roas.toFixed(2) + 'x' : 'not set'} and CPA ${tg.cpa ? money(tg.cpa) : 'not set'} (${esc(tg.roas_source)}). Scale = at or above target ROAS. Watch = within 30% below, or no purchases yet under 2x target CPA. Cut = more than 30% below, or no purchases after 2x target CPA.</p>
       <div class="r-two"><div><h3>Scale (${by('scale').length})</h3><ul class="r-list">${by('scale').slice(0, 8).map(li).join('') || '<li class="muted">None</li>'}</ul></div><div><h3>Cut (${by('cut').length})</h3><ul class="r-list">${by('cut').slice(0, 8).map(li).join('') || '<li class="muted">None</li>'}</ul></div></div>
       ${tired.length ? `<h3 style="margin-top: 12px">Signs of fatigue (${tired.length})</h3><ul class="r-list">${tired.slice(0, 8).map((a) => `<li>${esc(a.name)}: ${esc(a.view.fatigue.reason)}</li>`).join('')}</ul>` : ''}</section>
     <footer class="r-foot"><div>${x.campaigns.length ? `Left out of every figure: ${x.campaigns.length} campaign${x.campaigns.length > 1 ? 's' : ''} (${x.ads} ads, ${money(x.spend)})${x.keywords.length ? `, matched by name: ${esc(x.keywords.join(', '))}` : ''}.` : 'No campaigns excluded.'}</div>

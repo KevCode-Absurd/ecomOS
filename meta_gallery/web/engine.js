@@ -3,7 +3,7 @@
 // missing purchase values stay null (never zero), ROAS = value / spend,
 // totals come from daily rows, breakdowns from monthly rows, kept apart.
 (function (root) {
-  const COLLECTION_SIZE = 30;
+  const COLLECTION_SIZE = 100;
   const ROAS_SET_SIZE = 100, ROAS_FLOORS = [2, 1, 0];   // "Top 100 by ROAS" lists with a floor of 2, 1 or 0 purchases
   const WATCH_BAND = 0.7;
   const CUT_SPEND_MULTIPLE = 2.0;

@@ -68,6 +68,7 @@ function bdBrief() {
   if (avg('spend') && d1.spend > avg('spend') * 1.4) alerts.push({ sev: 2, text: `Account spend jumped to ${compact(d1.spend)}, ${Math.round((d1.spend / avg('spend') - 1) * 100)}% above the daily average. Check for a budget change or a new campaign.` });
   const g = bdGuardData();
   if (g && g.now !== null && g.now < g.floor) alerts.push({ sev: 3, text: `Website sales for every ₹1 of ads fell to ₹${g.now.toFixed(1)} over 7 days, under the floor of ₹${g.floor.toFixed(1)}. See Blended return.` });
+  if (typeof brandAlerts === 'function') for (const a of brandAlerts(y)) alerts.push(a);
   alerts.sort((a, b) => b.sev - a.sev);
   // Today's 3 things, from the action plan.
   const o = ENGINE.opportunities(VIEW), todo = [];
