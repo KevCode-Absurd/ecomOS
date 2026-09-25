@@ -143,6 +143,7 @@ function brandAlerts(dayArg) {
   for (let i = 1; i <= 8; i++) { const v = week(addDays(d, -7 * i)); if (v !== null) past.push(v); }
   const pm = past.length >= 4 ? past.slice().sort((a, b) => a - b)[Math.floor(past.length / 2)] : null;
   if (rw !== null && pm && rw > pm * 2 && rw > 50000) out.push({ sev: 2, text: `Refunds in the last 7 days are ${compact(rw)}, over 2 times a normal week (${compact(pm)}).` });
+  if (typeof BX !== 'undefined' && BX.stock) for (const s of stockIssues().filter((i) => !i.id)) out.push({ sev: 2, text: s.what });
   if (x && x.sales !== null && med && x.sales > med * 3.5 && !coMarks(d).length) out.push({ sev: 1, text: `Big day on ${wd} ${shortDate(d)}: ${compact(x.sales)}. If 1 client made a large order, mark it on the Overview.` });
   return out;
 }
@@ -256,3 +257,187 @@ function budgetPlanTile(B) {
 }
 
 coBoot().then(() => { if (typeof state !== 'undefined' && ['overview', 'report', 'buyer'].includes(state.tab) && typeof renderTab === 'function') renderTab(); });
+
+// ---------- data files for city, visits and stock ----------
+const BX = { geo: null, traffic: null, stock: null, loaded: false, geoKey: 'd90', stockBusy: false, stockMsg: '' };
+async function bxBoot() {
+  if (BX.loaded) return;
+  BX.loaded = true;
+  const get = (n) => fetch(n).then((r) => (r.ok ? r.json() : null)).catch(() => null);
+  [BX.geo, BX.traffic, BX.stock] = await Promise.all([get('geo.json'), get('traffic.json'), get('stock.json')]);
+}
+
+// ---------- visits lost ----------
+// Which channel the visits went missing from. Google Analytics landings by source, grouped into
+// channels, last 4 weeks vs the 4 before. Meta link clicks from the ads data sit next to it.
+const CHANNEL_RULES = [
+  ['Meta ads', /^(meta|fb|ig|th|an|facebook|paid advertising|paid ads|ads)\/(ad|paid|paid_social|facebook)$|sitelink/i],
+  ['Google ads', /^google\/cpc$|doubleclick|syndicat/i],
+  ['Search', /\/organic$|search\.|yahoo|bing|duckduckgo|ecosia|brave/i],
+  ['Direct', /^\(direct\)/i],
+  ['Email', /\/email$|klaviyo/i],
+  ['Social', /instagram|facebook\/referral|ig\/social|threads|pinterest|youtube|igshopping|linkedin|t\.co/i],
+  ['AI assistants', /ai-assistant|chatgpt|gemini|claude|copilot/i],
+];
+const channelOf = (src) => { for (const [n, re] of CHANNEL_RULES) if (re.test(src)) return n; return /data not available|null|sanitized/i.test(src) ? 'Not tracked' : 'Other sites'; };
+function visitsTile() {
+  const T = BX.traffic;
+  if (!T || !T.weeks || T.weeks.length < 8) return `<section class="tile c-8" aria-label="Visits"><div class="tile-head"><div><h2>Where visits went</h2></div></div><p class="muted small">Traffic by source is not loaded yet.</p></section>`;
+  const weeks = T.weeks.slice().sort((a, b) => (a.since < b.since ? -1 : 1));
+  const ga = gaMap(), md = metaDayMap();
+  const sumDays = (a, b, f) => { let t = 0, n = 0; for (let d = a; d <= b; d = addDays(d, 1)) { const v = f(d); if (v !== null && v !== undefined) { t += v; n++; } } return n ? t : null; };
+  const rows = weeks.map((w) => {
+    const ch = {}, pu = {};
+    for (const [s, v] of Object.entries(w.landings || {})) { const c = channelOf(s); ch[c] = (ch[c] || 0) + v; }
+    for (const [s, v] of Object.entries(w.purchases || {})) { const c = channelOf(s); pu[c] = (pu[c] || 0) + v; }
+    return { ...w, ch, pu, visits: sumDays(w.since, w.until, (d) => (ga[d] ? ga[d].visits : null)), clicks: null };
+  });
+  // Meta link clicks by week from the ads data (all campaigns).
+  const clicksBy = {};
+  for (const r of Object.values(DATA.daily).flat()) { const d = ENGINE.iso(r[0]); clicksBy[d] = (clicksBy[d] || 0) + (r[5] || 0); }
+  for (const w of rows) w.clicks = sumDays(w.since, w.until, (d) => (d in clicksBy ? clicksBy[d] : null));
+  const last4 = rows.slice(-4), prev4 = rows.slice(-8, -4);
+  const tot = (list, f) => list.reduce((t, w) => t + (f(w) || 0), 0);
+  const chans = [...new Set(rows.flatMap((w) => Object.keys(w.ch)))];
+  const tab = chans.map((c) => ({ c, now: tot(last4, (w) => w.ch[c]), then: tot(prev4, (w) => w.ch[c]), pnow: tot(last4, (w) => w.pu[c]), pthen: tot(prev4, (w) => w.pu[c]) }))
+    .filter((x) => x.now + x.then >= 40).sort((a, b) => (b.now + b.then) - (a.now + a.then));
+  const lost = tab.map((x) => ({ ...x, d: x.now - x.then })).sort((a, b) => a.d - b.d);
+  const allLost = lost.filter((x) => x.d < 0).reduce((t, x) => t - x.d, 0);
+  const vNow = tot(last4, (w) => w.visits), vThen = tot(prev4, (w) => w.visits), cNow = tot(last4, (w) => w.clicks), cThen = tot(prev4, (w) => w.clicks);
+  const W = 640, H = 170, L = 8, R = 8, Tp = 12, B = 22, n = rows.length, slot = (W - L - R) / n, bw = slot * 0.62;
+  const vmax = Math.max(...rows.map((w) => w.visits || 0), 1) * 1.1, cmax = Math.max(...rows.map((w) => w.clicks || 0), 1) * 1.1;
+  const y = (v, m) => Tp + (H - Tp - B) * (1 - v / m);
+  const bars = rows.map((w, i) => { const cx = L + slot * i + slot / 2; return `<g data-tip="${esc(`Week ${shortDate(w.since)} to ${shortDate(w.until)}|Site visits|${w.visits !== null ? fmt(w.visits, 'int') : 'Not available'}|Meta link clicks|${w.clicks !== null ? fmt(w.clicks, 'int') : 'Not available'}|Meta ads landings|${fmt(w.ch['Meta ads'] || 0, 'int')}|Google ads landings|${fmt(w.ch['Google ads'] || 0, 'int')}`)}"><rect x="${(cx - slot / 2).toFixed(1)}" y="${Tp}" width="${slot.toFixed(1)}" height="${H - Tp - B}" style="fill:transparent"/>${w.visits !== null ? `<rect x="${(cx - bw / 2).toFixed(1)}" y="${y(w.visits, vmax).toFixed(1)}" width="${bw.toFixed(1)}" height="${(H - B - y(w.visits, vmax)).toFixed(1)}" rx="3" style="fill:#dcd8cf"/>` : ''}${i % 2 === 1 || i === n - 1 ? `<text x="${cx}" y="${H - 6}" text-anchor="middle" style="fill:var(--muted);font-size:10.5px">${esc(shortDate(w.until))}</text>` : ''}</g>`; }).join('');
+  const line = smoothPath(rows.map((w, i) => (w.clicks === null ? null : [L + slot * i + slot / 2, y(w.clicks, cmax)])));
+  const pc = (a, b) => (b ? `${a >= b ? '▲' : '▼'} ${Math.abs((a / b - 1) * 100).toFixed(0)}%` : '–');
+  const top = lost[0];
+  const msg = vNow && vThen && vNow < vThen * 0.9
+    ? `Site visits fell ${Math.round((1 - vNow / vThen) * 100)}% (last 4 weeks vs the 4 before). ${top && top.d < 0 ? `Most of the drop is <b>${esc(top.c)}</b>: ${fmt(-top.d, 'int')} fewer landings, ${allLost ? Math.round(-top.d / allLost * 100) : 0}% of all landings lost.` : ''} Meta link clicks ${cThen ? (cNow < cThen ? 'fell' : 'rose') + ' ' + Math.abs(Math.round((cNow / cThen - 1) * 100)) + '%' : 'are not available'}, so ${cThen && cNow < cThen * 0.8 ? 'Meta is sending fewer people: check reach, budgets and the link on live ads.' : 'Meta clicks held up; check where Meta clicks land and whether tracking lost them.'}`
+    : `Site visits held steady: ${vNow ? fmt(vNow, 'int') : '–'} in the last 4 weeks vs ${vThen ? fmt(vThen, 'int') : '–'} before.`;
+  return `<section class="tile c-8" aria-label="Visits">
+    <div class="tile-head"><div><h2>Where visits went</h2><div class="sub">Bars: site visits a week. Line: Meta link clicks (own scale). Last 12 weeks.</div></div></div>
+    <svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto;display:block" role="img" aria-label="Site visits and Meta link clicks by week">${bars}<path d="${line}" style="fill:none;stroke:var(--spend)" stroke-width="2.4" stroke-linecap="round" pointer-events="none"/></svg>
+    <p class="ov-say">${msg}</p>
+    <div class="scroll"><table class="bd-table"><tr><th>Channel</th><th class="n">Landings, last 4 weeks</th><th class="n">4 weeks before</th><th class="n">Change</th><th class="n">Purchases now / before</th></tr>
+      ${tab.map((x) => `<tr><td>${esc(x.c)}</td><td class="n">${fmt(x.now, 'int')}</td><td class="n">${fmt(x.then, 'int')}</td><td class="n"><b class="${x.now < x.then ? 'down' : 'up'}">${pc(x.now, x.then)}</b></td><td class="n">${x.pnow} / ${x.pthen}</td></tr>`).join('')}
+      <tr class="bd-total"><td>Meta link clicks (ads data)</td><td class="n">${fmt(cNow, 'int')}</td><td class="n">${fmt(cThen, 'int')}</td><td class="n">${pc(cNow, cThen)}</td><td></td></tr></table></div>
+    <p class="small muted" style="margin:0">${esc(T.source)} Pulled ${esc(T.pulled_at)}.</p>
+  </section>`;
+}
+
+// ---------- payment mix ----------
+// COD and EMI shares move with who is buying. More COD often means newer, less sure buyers (and more
+// returns). More EMI means bigger baskets or price worry. Gold credit is the loyal scheme.
+const PAY_GROUPS = [['Prepaid', /razor|card|upi|net ?banking|neft|rtgs|prepaid/i, 'var(--s3)'], ['EMI', /emi/i, 'var(--spend)'], ['Cash on delivery', /cash|cod/i, 'var(--roas)'], ['Gold credit', /gold credit/i, 'var(--gold)']];
+const payGroup = (k) => { for (const [n, re] of PAY_GROUPS) if (re.test(k)) return n; return 'Other'; };
+function payTile() {
+  const months = Object.keys(SL.data.months || {}).sort().slice(-7);
+  const share = (rows) => { const g = {}; let t = 0; for (const [k, n] of rows || []) { const x = payGroup(k); g[x] = (g[x] || 0) + n; t += n; } return { g, t }; };
+  const data = months.map((m) => ({ m, ...share(SL.data.months[m].pay) }));
+  const cur = data[data.length - 1], base = data.slice(-4, -1);
+  const baseShare = (n) => { const t = base.reduce((a, x) => a + x.t, 0); return t ? base.reduce((a, x) => a + (x.g[n] || 0), 0) / t : null; };
+  const pp = (n) => (cur && cur.t && baseShare(n) !== null ? (cur.g[n] || 0) / cur.t - baseShare(n) : null);
+  const cod = pp('Cash on delivery'), emi = pp('EMI');
+  const sig = [];
+  if (cod !== null && Math.abs(cod) >= 0.04) sig.push(`Cash on delivery is ${cod > 0 ? 'up' : 'down'} ${Math.abs(cod * 100).toFixed(0)} points vs the 3 months before. ${cod > 0 ? 'More first-time or unsure buyers: confirm COD orders by WhatsApp to cut returns, and push a small prepaid offer.' : 'Buyers trust you more, or COD was limited.'}`);
+  if (emi !== null && Math.abs(emi) >= 0.04) sig.push(`EMI is ${emi > 0 ? 'up' : 'down'} ${Math.abs(emi * 100).toFixed(0)} points. ${emi > 0 ? 'Bigger pieces are moving, or price is a worry. Put "No cost EMI from ₹X a month" in ads for pieces over ₹25k.' : 'Fewer buyers need EMI this month.'}`);
+  if (!sig.length && cur) sig.push('The payment mix is close to the last 3 months. No change in who is buying.');
+  const bar = (x) => `<div class="pay-row"><span>${esc(mLabel(x.m, false))}${x === cur ? '*' : ''}</span><span class="stackbar" style="flex:1">${PAY_GROUPS.map(([n, , col]) => (x.g[n] ? `<span style="flex:${x.g[n]};background:${col}" data-tip="${esc(`${mLabel(x.m)}|${n}|${x.g[n]} orders|Share|${(x.g[n] / x.t * 100).toFixed(0)}%`)}"></span>` : '')).join('')}${x.g.Other ? `<span style="flex:${x.g.Other};background:var(--faint)"></span>` : ''}</span><span class="small muted">${x.t}</span></div>`;
+  return `<section class="tile c-4" aria-label="Payment mix">
+    <div class="tile-head"><div><h2>How people pay</h2><div class="sub">Share of orders by payment, by month</div></div></div>
+    <div class="pay-legend">${PAY_GROUPS.map(([n, , col]) => `<span><i style="background:${col}"></i>${n}</span>`).join('')}</div>
+    <div>${data.map(bar).join('')}</div>
+    <p class="ov-say" style="font-size:13px">${sig.map(esc).join(' ')}</p>
+    <p class="small muted" style="margin:0">* Month so far. Counts are orders with a payment record in Metabase.</p>
+  </section>`;
+}
+
+// ---------- city view ----------
+// Where site visitors are (Google Analytics users by city, grouped to states) vs where Meta spends.
+function geoTile() {
+  const G = BX.geo;
+  if (!G) return `<section class="tile c-12" aria-label="Cities"><div class="tile-head"><div><h2>Cities and states</h2></div></div><p class="muted small">City data is not loaded yet.</p></section>`;
+  const P = G.periods[BX.geoKey] || G.periods.d90, prevC = BX.geoKey === 'd28' && G.periods.p28 ? Object.fromEntries(G.periods.p28.cities) : null;
+  const abroad = new Set(G.abroad || []);
+  const st = {};
+  let users = 0;
+  for (const [c, n] of P.cities) { if (abroad.has(c)) continue; const s = G.city_state[c] || 'Other'; (st[s] || (st[s] = { s, users: 0, spend: 0, clicks: 0, cities: [] })).users += n; st[s].cities.push(c); users += n; }
+  let spend = 0;
+  for (const m of P.meta || []) { if (m.region === 'Unknown') continue; const o = st[m.region] || (st[m.region] = { s: m.region, users: 0, spend: 0, clicks: 0, cities: [] }); o.spend += m.spend; o.clicks += m.clicks; spend += m.spend; }
+  const rows = Object.values(st).filter((x) => x.s !== 'Other').map((x) => ({ ...x, us: users ? x.users / users : 0, ss: spend ? x.spend / spend : 0 }))
+    .map((x) => ({ ...x, ratio: x.us ? x.ss / x.us : null })).sort((a, b) => b.us - a.us).slice(0, 14);
+  const tag = (x) => (x.us >= 0.02 && x.ratio !== null && x.ratio < 0.7 ? '<span class="chip v-scale">Room to spend more</span>' : x.ss >= 0.02 && x.ratio !== null && x.ratio > 1.5 ? '<span class="chip v-watch">Spend is ahead of visitors</span>' : '');
+  const maxS = Math.max(...rows.map((x) => Math.max(x.us, x.ss)), 0.01);
+  const under = rows.filter((x) => x.us >= 0.02 && x.ratio !== null && x.ratio < 0.7).map((x) => x.s), over = rows.filter((x) => x.ss >= 0.02 && x.ratio > 1.5).map((x) => x.s);
+  const cities = P.cities.filter(([c]) => !abroad.has(c)).slice(0, 12);
+  const pct = (v) => (v * 100).toFixed(1) + '%';
+  return `<section class="tile c-12" aria-label="Cities">
+    <div class="tile-head"><div><h2>Cities and states</h2><div class="sub">Site visitors by state (Google Analytics) vs Meta spend by state. ${esc(shortDate(P.since))} to ${esc(shortDate(P.until))}.</div></div>
+      <div class="seg" role="group" aria-label="Period">${[['d90', '90 days'], ['d28', '28 days']].map(([k, l]) => `<button type="button" data-geokey="${k}" aria-pressed="${BX.geoKey === k}">${l}</button>`).join('')}</div></div>
+    <div class="geo-grid"><div>
+      <div class="geo-legend"><span><i style="background:var(--gold)"></i>Share of site visitors</span><span><i style="background:var(--spend)"></i>Share of Meta spend</span></div>
+      ${rows.map((x) => `<div class="geo-row" data-tip="${esc(`${x.s}|Site visitors|${fmt(x.users, 'int')} (${pct(x.us)})|Meta spend|${money(x.spend)} (${pct(x.ss)})|Meta link clicks|${fmt(x.clicks, 'int')}|Cost per click|${x.clicks ? money(x.spend / x.clicks) : 'Not available'}`)}"><span class="gs">${esc(x.s)}</span><span class="gb"><i style="width:${(x.us / maxS * 100).toFixed(1)}%;background:var(--gold)"></i><i style="width:${(x.ss / maxS * 100).toFixed(1)}%;background:var(--spend)"></i></span><span class="gv">${pct(x.us)} / ${pct(x.ss)}</span><span class="gt">${tag(x)}</span></div>`).join('')}
+    </div><div>
+      <h3 class="geo-h">Top cities by visitors${prevC ? ', vs the 28 days before' : ''}</h3>
+      ${cities.map(([c, n]) => { const p = prevC && prevC[c]; return `<div class="mixrow"><i style="background:var(--gold)"></i><span>${esc(c)} <span class="muted small">${esc(G.city_state[c] || '')}</span></span><span class="v">${fmt(n, 'int')}</span><span class="r">${p ? `<b class="${n < p ? 'down' : 'up'}">${n < p ? '▼' : '▲'} ${Math.abs(Math.round((n / p - 1) * 100))}%</b>` : ''}</span></div>`; }).join('')}
+    </div></div>
+    <p class="ov-say">${under.length ? `<b>${esc(under.join(', '))}</b> bring${under.length === 1 ? 's' : ''} more of your visitors than their share of Meta spend. Test a state-level ad set there with 10 to 15% of budget. ` : ''}${over.length ? `<b>${esc(over.join(', '))}</b> get${over.length === 1 ? 's' : ''} more spend than visitors. Check cost per click and sales before adding more.` : ''}${!under.length && !over.length ? 'Spend roughly follows where visitors are.' : ''}</p>
+    <p class="small muted" style="margin:0">Visitors include people from every channel, Meta too. Meta does not report purchases by state for this account, and sales by city need 1 more Metabase card (orders by city). Visits from outside India and from data centres (${esc([...abroad].slice(0, 4).join(', '))}...) are left out. Pulled ${esc(G.pulled_at)}.</p>
+  </section>`;
+}
+
+// ---------- stock ----------
+const STK_LABEL = { ready: ['Ready stock', 'v-scale'], made: ['Made to order', 'v-watch'], out: ['Out of stock', 'v-cut'], gone: ['Page removed', 'v-cut'], unknown: ['Stock not clear', ''] };
+function stockChip(code) {
+  const s = BX.stock && BX.stock.products[code];
+  if (!s) return '';
+  const [l, cls] = STK_LABEL[s.status] || STK_LABEL.unknown;
+  return `<span class="chip ${cls}">${esc(l)}${s.status === 'made' && s.days ? `, about ${s.days} days` : ''}</span>`;
+}
+const STK_STOP = new Set(['18k', '14k', '22k', 'gold', 'yellow', 'rose', 'white', 'the', 'and', 'with', 'without', 'chain', 'earrings', 'earring', 'bracelet', 'bracelets', 'pendant', 'ring', 'rings', 'stud', 'studs', 'dangle', 'drop', 'hook', 'inches', 'natural', 'pearl', 'pearls', 'diamond', 'silver', 'sterling', 'necklace', 'hoop']);
+// Pieces a live ad names in its name, headline or text (2 or more distinctive words of the product name).
+function stockForAd(ad) {
+  if (!BX.stock) return [];
+  const c = ad.creative || {}, txt = [ad.name, c.headline, c.primary_text, c.title].filter(Boolean).join(' ').toLowerCase();
+  const out = [];
+  for (const [code, s] of Object.entries(BX.stock.products)) {
+    const w = String(s.name || '').toLowerCase().replace(/\(.*?\)/g, '').split(/[^a-z0-9&]+/).filter((x) => x.length > 2 && !STK_STOP.has(x));
+    if (w.length >= 2 && w.slice(0, 3).filter((x) => txt.includes(x)).length >= Math.min(2, w.length)) out.push({ code, ...s });
+  }
+  return out;
+}
+function stockIssues() {
+  if (!BX.stock) return [];
+  const out = [];
+  const live = Object.keys(DATA.ads).filter((id) => DATA.ads[id].effective_status === 'ACTIVE');
+  for (const id of live) for (const p of stockForAd(DATA.ads[id])) {
+    if (p.status === 'out' || p.status === 'gone') out.push({ id, ad: DATA.ads[id], sev: 3, what: `Shows "${p.name}", which is ${p.status === 'gone' ? 'no longer on the site' : 'out of stock'}.`, fix: 'Pause the ad or swap in a piece that is in stock.' });
+    else if (p.status === 'made' && p.days && p.days > 14) out.push({ id, ad: DATA.ads[id], sev: 1, what: `Shows "${p.name}", made to order with about ${p.days} days to deliver.`, fix: 'Say the delivery time in the ad, or lead with a ready stock piece.' });
+  }
+  const bad = Object.entries(BX.stock.products).filter(([, s]) => s.rank && s.rank <= 30 && (s.status === 'out' || s.status === 'gone'));
+  if (bad.length) out.push({ sev: 2, what: `${bad.length} of your top 30 sellers ${bad.length === 1 ? 'is' : 'are'} out of stock or removed: ${bad.slice(0, 4).map(([, s]) => s.name).join(', ')}. The Meta catalog still says in stock.`, fix: 'Fix the feed so catalog ads skip them, and restock the best ones.' });
+  return out;
+}
+function stockCheckedLine() {
+  if (!BX.stock) return 'Stock not checked yet. In the local gallery, click Check stock on the Catalog tab.';
+  const c = BX.stock.counts || {};
+  return `Stock checked ${String(BX.stock.checked_at).replace('T', ' ').slice(0, 16)} on gehnaindia.com: ${c.ready || 0} ready, ${c.made || 0} made to order, ${(c.out || 0) + (c.gone || 0)} out or removed${c.unknown ? `, ${c.unknown} not clear` : ''}.`;
+}
+async function runStockCheck() {
+  BX.stockBusy = true; BX.stockMsg = 'Checking about 100 product pages. This takes a minute…';
+  if (window.renderCatalog && state.tab === 'catalog') window.renderCatalog();
+  try {
+    const r = await fetch('/api/stock-check', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ limit: 150 }) });
+    const j = await r.json();
+    if (!r.ok || j.error) throw new Error(j.error || 'Check failed');
+    BX.stock = j; BX.stockMsg = stockCheckedLine();
+  } catch (e) { BX.stockMsg = 'Could not check stock: ' + e.message; }
+  BX.stockBusy = false;
+  if (window.renderCatalog && state.tab === 'catalog') window.renderCatalog();
+}
+document.addEventListener('click', (e) => {
+  const g = e.target.closest && e.target.closest('[data-geokey]');
+  if (g) { BX.geoKey = g.dataset.geokey; window.renderOverview(); return; }
+  if (e.target.closest && e.target.closest('[data-stockcheck]')) runStockCheck();
+});
+bxBoot().then(() => { if (typeof state !== 'undefined' && ['overview', 'buyer', 'catalog'].includes(state.tab) && typeof renderTab === 'function') renderTab(); });

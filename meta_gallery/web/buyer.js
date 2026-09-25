@@ -318,10 +318,11 @@ function bdCheckup() {
     else if (lc && lc.days_live >= 90) issues.push({ id, ad, sev: 1, what: `Running for ${lc.days_live} days.`, fix: 'Plan a refresh before it tires.' });
   }
   if (cat) for (const p of cat.products) for (const r of p.missing_images || []) issues.push({ sev: 2, what: `Catalog item ${r} (${p.name}) has no image.`, fix: 'Add the image in the catalog, or catalog ads cannot show this size.' });
+  if (typeof stockIssues === 'function') issues.push(...stockIssues());
   issues.sort((a, b) => b.sev - a.sev);
   const sevTxt = { 3: 'Fix now', 2: 'Check', 1: 'Tidy' };
   return `<section class="panel-box bd-sec" id="bd-checkup"><h2>Ad check-up</h2>
-    <p class="lead">${bdLive().length} live ads checked against their links, the catalog and the website. ${issues.length} thing${issues.length === 1 ? '' : 's'} to look at.</p>
+    <p class="lead">${bdLive().length} live ads checked against their links, the catalog and the website. ${esc(typeof stockCheckedLine === 'function' ? stockCheckedLine() : '')} ${issues.length} thing${issues.length === 1 ? '' : 's'} to look at.</p>
     ${issues.length ? `<div class="scroll"><table class="bd-table"><tr><th></th><th>Ad</th><th>What is wrong</th><th>Fix</th></tr>${issues.slice(0, 60).map((x) => `<tr><td><span class="chip ${x.sev === 3 ? 'v-cut' : x.sev === 2 ? 'v-watch' : ''}">${sevTxt[x.sev]}</span></td><td>${x.ad ? `<button class="linkbtn" type="button" data-bdopen="${esc(x.id)}">${esc(x.ad.name)}</button>` : 'Catalog'}</td><td class="small">${esc(x.what)}</td><td class="small">${esc(x.fix)}</td></tr>`).join('')}</table></div>` : '<p class="muted">All clear.</p>'}
     <p class="small muted">Prices and stock come from the Meta catalog (read ${esc(cat ? cat.pulled_at : 'not yet')}). Links and UTM tags are checked when the ad data has a link. Most live ads keep their link inside the Facebook post, which the read-only data does not include, so check those by hand once.</p></section>`;
 }

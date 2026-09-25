@@ -503,7 +503,9 @@ function brandBlock() {
     ${brandHero(B)}${channelsTile(B)}${brandKpis(B)}
     ${pacingTile()}${brandAlertsTile()}${topPiecesTile(B)}
     ${bestDayTile(B)}${coTile(B)}
-    ${lagTile()}${budgetPlanTile(B)}`;
+    ${lagTile()}${budgetPlanTile(B)}
+    ${visitsTile()}${payTile()}
+    ${geoTile()}`;
 }
 
 // ---------- tooltip ----------
@@ -532,6 +534,7 @@ window.renderOverview = function renderOverview() {
   const R = rangeDays();
   const excl = VIEW.exclusions.campaigns.length ? `<div class="note">${VIEW.exclusions.campaigns.length} campaign${VIEW.exclusions.campaigns.length > 1 ? 's' : ''} left out (${money(VIEW.exclusions.spend)}). Every tile below follows the filters.</div>` : '';
   if (!SL.data && !SL.err) loadSales().then(() => { if (state.tab === 'overview') window.renderOverview(); });
+  if (!BX.loaded) bxBoot().then(() => { if (state.tab === 'overview') window.renderOverview(); });
   if (!CO.loaded) coBoot().then(() => { if (state.tab === 'overview') window.renderOverview(); });
   $('overviewView').innerHTML = `<div style="display:grid;gap:16px"><div class="bento">
     ${brandBlock()}

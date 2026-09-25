@@ -27,6 +27,7 @@ from urllib.parse import parse_qs, urlparse
 
 from . import ai
 from . import products
+from . import stock
 from . import settings as settings_mod
 from .snapshot import DATA
 from .view import Engine, ViewError
@@ -386,7 +387,7 @@ def make_handler(gallery):
                     if COMPETITORS.is_file():
                         return self.send_file(COMPETITORS)
                     return self.send_json({'error': 'not found'}, 404)
-                if len(parts) == 1 and parts[0] in DOCS + ('brand.json', 'sales.json', 'comp_media.json', 'catalog.json'):
+                if len(parts) == 1 and parts[0] in DOCS + ('brand.json', 'sales.json', 'comp_media.json', 'catalog.json', 'geo.json', 'traffic.json', 'stock.json'):
                     path = DATA / parts[0]
                     return self.send_file(path) if path.is_file() else self.send_json({})
                 if parts == ['breakdowns.json']:
@@ -479,7 +480,8 @@ def make_handler(gallery):
                       '/api/product-ads': (self.ai_product_ads, MAX_REF_BODY),
                       '/api/catalog-premium': (self.ai_catalog_premium, MAX_AI_BODY),
                       '/api/catalog-approve': (save_approved, MAX_BODY),
-                      '/api/product-story': (self.ai_product_story, MAX_AI_BODY)}
+                      '/api/product-story': (self.ai_product_story, MAX_AI_BODY),
+                      '/api/stock-check': (lambda body: stock.run(limit=min(int(body.get('limit') or 150), 300)), MAX_BODY)}
             for doc in DOCS:
                 savers['/api/save/' + doc] = ((lambda d: lambda body: save_doc(d, body))(doc), MAX_DOC)
             if url.path not in savers:

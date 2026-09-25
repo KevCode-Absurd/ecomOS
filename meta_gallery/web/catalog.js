@@ -61,6 +61,8 @@ function ctSummary(d) {
       <p>"${esc(d.ads_set_name)}" is a fixed list made in June 2024, so newer pieces never reach catalog ads. These sell well but are missing: ${esc(notSet.slice(0, 12).map((p) => p.name).join(', '))}${notSet.length > 12 ? ` and ${notSet.length - 12} more` : ''}.</p>
       <p>In Commerce Manager, open the set and add these IDs, or make a new set "Top 100 sellers" from all 100 and point catalog ads at it.</p>
       <div class="act-btns"><button class="btn small-btn" type="button" data-ctcopy="missing">Copy the missing IDs</button><button class="btn ghost small-btn" type="button" data-ctcopy="all">Copy all top ${ps.length} IDs</button></div></div>` : ''}
+    <div class="row" style="gap:10px;align-items:center;flex-wrap:wrap"><span class="small">${esc(BX.stockMsg || stockCheckedLine())}</span>${!IS_CLAUDE ? `<button class="btn ghost small-btn" type="button" data-stockcheck ${BX.stockBusy ? 'disabled' : ''}>${BX.stockBusy ? 'Checking…' : 'Check stock'}</button>` : ''}</div>
+    <p class="small muted">The Meta catalog marks every item in stock, so stock is read from each product page on gehnaindia.com.</p>
     <p class="small muted">${esc(d.source)} Catalog read ${esc(d.pulled_at)}. This page cannot change the catalog; the team makes the change.</p></section>`;
 }
 function ctPromptHtml() {
@@ -87,7 +89,7 @@ function ctCard(p, i) {
   const story = (CT.story[p.code] || []).slice().sort((x, y) => { const a = key(x), b = key(y); return a[0] === b[0] ? a[1] - b[1] : a[0] < b[0] ? 1 : -1; });
   return `<article class="ct-card" id="ct-${esc(p.code)}"><div class="ct-top"><span class="rankc">${i + 1}</span><div><b>${esc(p.name)}</b>
       <div class="rp-adm"><span>${esc(p.code)}</span><span>${p.sold_12m} sold in 12 months</span><span>${compact(p.sales_12m)}</span>${p.price ? `<span>₹${p.price.toLocaleString('en-IN')}</span>` : ''}</div>
-      <div class="row" style="gap:6px;margin-top:4px">${p.in_ads_set ? '<span class="chip v-scale">In catalog ads</span>' : '<span class="chip v-cut">Not in catalog ads</span>'}${(p.missing_images || []).length ? `<span class="chip v-watch">${p.missing_images.length} size${p.missing_images.length > 1 ? 's' : ''} with no image</span>` : ''}${appr ? '<span class="chip good">New photo chosen</span>' : ''}</div></div></div>
+      <div class="row" style="gap:6px;margin-top:4px">${p.in_ads_set ? '<span class="chip v-scale">In catalog ads</span>' : '<span class="chip v-cut">Not in catalog ads</span>'}${typeof stockChip === 'function' ? stockChip(p.code) : ''}${(p.missing_images || []).length ? `<span class="chip v-watch">${p.missing_images.length} size${p.missing_images.length > 1 ? 's' : ''} with no image</span>` : ''}${appr ? '<span class="chip good">New photo chosen</span>' : ''}</div></div></div>
     <div class="ct-pair"><figure>${cur}<figcaption>Now in the catalog</figcaption></figure><figure>${after}<figcaption>${last ? `Premium, ${esc(last.date || '')}` : 'Premium'}</figcaption></figure></div>
     <div class="act-btns">${can ? `<button class="btn small-btn" type="button" data-ctgo="photo" data-code="${esc(p.code)}" ${busy ? 'disabled' : ''}>${busy === 'photo' ? 'Making…' : last ? 'Make another' : 'Make premium photo'}</button>` : ''}
       ${last && can ? `<button class="btn ghost small-btn" type="button" data-ctapprove="${esc(p.code)}" data-file="${esc(last.file)}">${appr === last.file ? 'Chosen ✓' : 'Use this photo'}</button>` : ''}
