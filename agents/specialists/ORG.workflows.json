@@ -1,0 +1,3607 @@
+[
+  {
+    "id": "ORG-W01",
+    "name": "Set organic account and platform strategy",
+    "capabilities": [
+      "ORG-C01"
+    ],
+    "trigger": "on demand",
+    "human_role": "social media manager setting the platform plan for the quarter",
+    "inputs_required": [
+      "brand brain: avatars, category, region, voice",
+      "current account list and health",
+      "competitor teardown"
+    ],
+    "steps": [
+      {
+        "n": 1,
+        "name": "Read the avatar and voice",
+        "does": "Pull avatar age band, region, language and where they already spend time online from the brand brain.",
+        "inputs": [
+          "brand brain"
+        ],
+        "tools": [
+          "brand brain read"
+        ],
+        "skill": "org/organic-channel-strategy",
+        "output": "avatar summary for platform fit",
+        "check": "summary names a real age band and region, not a generic buyer",
+        "ask_founder_if": "the avatar section is missing or older than 6 months"
+      },
+      {
+        "n": 2,
+        "name": "Pull the competitive teardown",
+        "does": "Get structure-only notes on which platforms 3-5 close competitors run, cadence and format mix.",
+        "inputs": [
+          "avatar summary"
+        ],
+        "tools": [
+          "web search"
+        ],
+        "skill": "org/format-design",
+        "output": "competitor platform/cadence table",
+        "check": "table names structure only, no copied text",
+        "ask_founder_if": null
+      },
+      {
+        "n": 3,
+        "name": "Score each candidate platform",
+        "does": "Score avatar fit, production cost, and set a 2-week trial success bar for anything new.",
+        "inputs": [
+          "avatar summary",
+          "competitor table"
+        ],
+        "tools": [
+          "script: none, scored in the agent"
+        ],
+        "skill": "org/organic-channel-strategy",
+        "output": "scored platform table with trial bars",
+        "check": "every new platform has a stated success bar and kill date",
+        "ask_founder_if": null
+      },
+      {
+        "n": 4,
+        "name": "Set content pillars",
+        "does": "Set 3-5 pillars, each naming a SKU and the objection it answers.",
+        "inputs": [
+          "scored platform table",
+          "claims tiers"
+        ],
+        "tools": [],
+        "skill": "org/organic-channel-strategy",
+        "output": "pillar list",
+        "check": "every pillar names a SKU and an objection",
+        "ask_founder_if": null
+      },
+      {
+        "n": 5,
+        "name": "Lock the visual world",
+        "does": "Set palette, type and caption style against the brand's approved assets so every account matches.",
+        "inputs": [
+          "brand asset files"
+        ],
+        "tools": [],
+        "skill": "org/organic-channel-strategy",
+        "output": "visual world spec",
+        "check": "spec matches approved brand assets, not a new look",
+        "ask_founder_if": "no approved brand asset file exists yet"
+      },
+      {
+        "n": 6,
+        "name": "Write the account setup checklist",
+        "does": "Bio, link-in-bio, contact, category tag, per platform (WhatsApp Business link where the brand serves an India, EU or LATAM audience; reads null for a US-only brand).",
+        "inputs": [
+          "visual world spec"
+        ],
+        "tools": [],
+        "skill": "org/organic-channel-strategy",
+        "output": "setup checklist per platform",
+        "check": "every field has a real value, no placeholder",
+        "ask_founder_if": null
+      },
+      {
+        "n": 7,
+        "name": "Check platform-policy compliance",
+        "does": "Check disclosure and content-policy requirements per platform (synthetic voice, sponsored, minors in ads).",
+        "inputs": [
+          "setup checklist"
+        ],
+        "tools": [
+          "web search"
+        ],
+        "skill": null,
+        "output": "compliance note per platform",
+        "check": "every platform's current policy checked, not last year's",
+        "ask_founder_if": null
+      },
+      {
+        "n": 8,
+        "name": "Package the founder card",
+        "does": "Turn the plan into a plain-English card for any new account, platform drop, or account-type change.",
+        "inputs": [
+          "pillar list",
+          "platform plan",
+          "compliance note"
+        ],
+        "tools": [],
+        "skill": "shared/plain-english-card",
+        "output": "founder decision card",
+        "check": "card has 3 sentences and clear buttons",
+        "ask_founder_if": null
+      },
+      {
+        "n": 9,
+        "name": "Log the decision",
+        "does": "Record the founder's decision and reason in the registry.",
+        "inputs": [
+          "founder decision"
+        ],
+        "tools": [],
+        "skill": "shared/registry-entry",
+        "output": "registry entry",
+        "check": "reason stored verbatim",
+        "ask_founder_if": null
+      }
+    ],
+    "outputs": [
+      "positioning brief",
+      "platform plan",
+      "visual world spec",
+      "account setup checklist"
+    ],
+    "qa": [
+      "Every pillar names a SKU and objection",
+      "No platform runs past its trial date without a decision",
+      "Visual spec matches approved assets"
+    ],
+    "read_point": "at the trial kill date for any new platform, else quarterly",
+    "typical_duration": "agent: 2-3 hours; founder decision: same day to 1 week",
+    "subagents": []
+  },
+  {
+    "id": "ORG-W02",
+    "name": "Build the monthly content calendar, scripts and shoot plan",
+    "capabilities": [
+      "ORG-C02",
+      "ORG-C03",
+      "ORG-C04",
+      "ORG-C06"
+    ],
+    "trigger": "weekly (calendar maintenance), monthly (full rebuild)",
+    "human_role": "content strategist and social media manager building the month's postable plan",
+    "inputs_required": [
+      "brand brain: pillars, SKUs, stock status, voice, claims tiers",
+      "founder's available shoot days",
+      "prior month's performance read"
+    ],
+    "steps": [
+      {
+        "n": 1,
+        "name": "Mine buyer and avatar questions",
+        "does": "Pull the ranked question bank from support tickets, DMs, reviews and Search Console.",
+        "inputs": [
+          "support export",
+          "review export"
+        ],
+        "tools": [
+          "script: search_knowledge.py"
+        ],
+        "skill": "org/buyer-question-mapping",
+        "output": "ranked question bank",
+        "check": "every question has a quoted source and date",
+        "ask_founder_if": "no support inbox is connected"
+      },
+      {
+        "n": 2,
+        "name": "Set the posting floor and cadence",
+        "does": "Set a minimum weekly post count per platform the team can hold without burning out, based on last month's actual delivery rate.",
+        "inputs": [
+          "prior month calendar",
+          "team capacity note"
+        ],
+        "tools": [],
+        "skill": "org/production-planning",
+        "output": "cadence target per platform",
+        "check": "floor is at or below what was actually delivered last month, not aspirational"
+      },
+      {
+        "n": 3,
+        "name": "Sequence SKUs and stock moments",
+        "does": "Slot SKUs against current and projected stock status so no post promotes an item going out of stock mid-run.",
+        "inputs": [
+          "stock feed",
+          "pillar list"
+        ],
+        "tools": [],
+        "skill": null,
+        "output": "SKU-sequenced draft calendar",
+        "check": "no slot promotes a SKU with a stock-out inside the post's live window"
+      },
+      {
+        "n": 4,
+        "name": "Add the holiday and regional layer",
+        "does": "Map the US holiday calendar (Q4 season, Black Friday and Cyber Monday, Prime Day, Valentine's Day, Mother's Day, Father's Day, back to school, July 4) and shipping cutoffs onto the calendar, tagging language variant per slot. India only (markets IN, reads null for US brands): map Diwali, Holi and regional festivals instead.",
+        "inputs": [
+          "US holiday calendar",
+          "India festive calendar (markets IN, reads null for US brands)",
+          "shipping cutoff dates"
+        ],
+        "tools": [],
+        "skill": null,
+        "output": "calendar with holiday/regional tags",
+        "check": "no post promises delivery the warehouse cannot hit"
+      },
+      {
+        "n": 5,
+        "name": "Set the fair test window",
+        "does": "Give the calendar a stated run length before judging it, tied to the store's own baseline.",
+        "inputs": [
+          "prior performance read"
+        ],
+        "tools": [],
+        "skill": "shared/metric-read",
+        "output": "test window and success bar",
+        "check": "window is stated in dates, not 'a while'"
+      },
+      {
+        "n": 6,
+        "name": "Plan founder camera time and batching",
+        "does": "Confirm the founder's available shoot days, set fixed batching days, and pick fast-turnaround formats for founder-only days.",
+        "inputs": [
+          "founder's availability",
+          "draft calendar"
+        ],
+        "tools": [],
+        "skill": "org/production-planning",
+        "output": "shoot schedule",
+        "check": "every founder-dependent slot has a confirmed date or is flagged",
+        "ask_founder_if": "the founder has not confirmed available days for the month"
+      },
+      {
+        "n": 7,
+        "name": "Write scripts, hooks and captions",
+        "does": "For every slot, dispatch to the matching make-content child by format and platform.",
+        "inputs": [
+          "SKU-sequenced calendar",
+          "question bank",
+          "claims tiers"
+        ],
+        "tools": [],
+        "skill": "org/make-content",
+        "output": "draft per slot: hook, body, caption, CTA, claims used",
+        "check": "every draft names one SKU and one buyer, reading level under grade 10"
+      },
+      {
+        "n": 8,
+        "name": "Build shot lists",
+        "does": "For video and carousel slots, confirm the shot list or slide list is filmable/designable without a follow-up question.",
+        "inputs": [
+          "drafts"
+        ],
+        "tools": [],
+        "skill": null,
+        "output": "shot/slide list per slot",
+        "check": "shot seconds sum to target length; slide count 5-9"
+      },
+      {
+        "n": 9,
+        "name": "Run the claims gate",
+        "does": "Check every draft's factual claims against the claims tiers.",
+        "inputs": [
+          "drafts"
+        ],
+        "tools": [],
+        "skill": "shared/claim-check",
+        "output": "pass/fail per draft",
+        "check": "zero untraced claims remain"
+      },
+      {
+        "n": 10,
+        "name": "Route destinations",
+        "does": "Confirm every slot's link or Story tag points to a live, matching page before it is scheduled.",
+        "inputs": [
+          "drafts with links"
+        ],
+        "tools": [
+          "browser: headless chromium"
+        ],
+        "skill": "org/destination-qa",
+        "output": "destination pass/hold per slot",
+        "check": "destination confirmed live at check time, not assumed"
+      },
+      {
+        "n": 11,
+        "name": "Assemble the final calendar",
+        "does": "Merge cadence, SKU sequencing, holiday layer, scripts, shot lists and destination checks into one dated calendar.",
+        "inputs": [
+          "all prior outputs"
+        ],
+        "tools": [],
+        "skill": null,
+        "output": "dated calendar rows: platform, pillar, SKU, format, hook, funnel stage, status",
+        "check": "every row has a status and a funnel-stage tag"
+      },
+      {
+        "n": 12,
+        "name": "Log the plan",
+        "does": "Register the month's plan and its success bar in the registry for the next performance read to compare against.",
+        "inputs": [
+          "final calendar",
+          "test window"
+        ],
+        "tools": [],
+        "skill": "shared/registry-entry",
+        "output": "registry entry",
+        "check": "metric and read point are contract fields, not invented"
+      }
+    ],
+    "outputs": [
+      "dated content calendar",
+      "scripts and captions per slot",
+      "shot lists",
+      "shoot schedule"
+    ],
+    "qa": [
+      "Every slot has a named SKU, buyer, claims-checked draft and destination pass",
+      "Cadence floor matches actual delivered capacity",
+      "Festive dates checked against shipping cutoffs"
+    ],
+    "read_point": "end of the stated test window, against the store's own baseline",
+    "typical_duration": "agent: 1-2 days; founder review and shoot days: 1-2 weeks",
+    "subagents": [
+      "content-production-worker: bulk script drafting across slots"
+    ]
+  },
+  {
+    "id": "ORG-W03",
+    "name": "Keep the idea bank fed and design repeatable formats",
+    "capabilities": [
+      "ORG-C05",
+      "ORG-C07"
+    ],
+    "trigger": "weekly, or when the idea bank runs low, or after a post clearly outperforms",
+    "human_role": "content strategist mining ideas and naming winning formats",
+    "inputs_required": [
+      "comment/DM export",
+      "product facts sheet",
+      "founder story log",
+      "recent post performance",
+      "public competitor posts"
+    ],
+    "steps": [
+      {
+        "n": 1,
+        "name": "Mine comments and DMs",
+        "does": "Pull recurring questions, jokes and requests from the last week's comments and DMs.",
+        "inputs": [
+          "comment/DM export"
+        ],
+        "tools": [],
+        "skill": "org/format-design",
+        "output": "idea stubs from owned conversation",
+        "check": "each idea has a source quote"
+      },
+      {
+        "n": 2,
+        "name": "Mine product facts and founder stories",
+        "does": "Pull first-hand material from the product facts sheet and founder story log.",
+        "inputs": [
+          "product facts sheet",
+          "founder story log"
+        ],
+        "tools": [],
+        "skill": "org/format-design",
+        "output": "idea stubs from first-hand material",
+        "check": "each idea is something a competitor cannot simply restate"
+      },
+      {
+        "n": 3,
+        "name": "Tear down competitor and category posts",
+        "does": "Review 5-10 public competitor/category posts for pacing, hook type and shot count only.",
+        "inputs": [
+          "public post URLs"
+        ],
+        "tools": [
+          "web search"
+        ],
+        "skill": "org/format-design",
+        "output": "teardown notes: structure and mood only",
+        "check": "no copied words, logos, products or faces"
+      },
+      {
+        "n": 4,
+        "name": "Check recent performance for a repeatable winner",
+        "does": "Compare recent posts to the account's own baseline for a clear outperformer.",
+        "inputs": [
+          "performance export"
+        ],
+        "tools": [],
+        "skill": "shared/metric-read",
+        "output": "candidate winning post, if any",
+        "check": "comparison uses the account's own baseline, not an industry number"
+      },
+      {
+        "n": 5,
+        "name": "Name and template the format",
+        "does": "If a winner qualifies, name it and write a fixed template a team member can run without the founder.",
+        "inputs": [
+          "candidate winning post"
+        ],
+        "tools": [],
+        "skill": "org/format-design",
+        "output": "named format with template",
+        "check": "template states what makes it runnable without the founder"
+      },
+      {
+        "n": 6,
+        "name": "Rank the new ideas",
+        "does": "Rank all new idea stubs for calendar priority.",
+        "inputs": [
+          "idea stubs"
+        ],
+        "tools": [],
+        "skill": "shared/rank-candidates",
+        "output": "ranked idea list",
+        "check": "no arithmetic done outside code"
+      },
+      {
+        "n": 7,
+        "name": "Add to the idea bank",
+        "does": "Log every new idea and format with source and date.",
+        "inputs": [
+          "ranked idea list",
+          "named format"
+        ],
+        "tools": [
+          "script: ideas.py"
+        ],
+        "skill": "shared/registry-entry",
+        "output": "idea bank entries",
+        "check": "every entry has a source and date"
+      }
+    ],
+    "outputs": [
+      "idea bank additions",
+      "teardown notes",
+      "a new named format (when one qualifies)"
+    ],
+    "qa": [
+      "Every idea traces to a real source",
+      "No competitor material copied beyond structure/mood",
+      "New format states its without-founder runnability"
+    ],
+    "read_point": "next monthly performance read, watching whether the new format repeats its result",
+    "typical_duration": "agent: half a day, weekly",
+    "subagents": []
+  },
+  {
+    "id": "ORG-W04",
+    "name": "Draft daily community replies",
+    "capabilities": [
+      "ORG-C09"
+    ],
+    "trigger": "daily",
+    "human_role": "community manager clearing the comment and DM queue",
+    "inputs_required": [
+      "comment/DM queue",
+      "brand voice file",
+      "policy/FAQ answers",
+      "current stock and shipping status"
+    ],
+    "steps": [
+      {
+        "n": 1,
+        "name": "Pull and sort the queue",
+        "does": "Sort into product question, complaint, praise, spam/bot, sales-ready lead.",
+        "inputs": [
+          "comment/DM queue"
+        ],
+        "tools": [],
+        "skill": "org/community-response-drafting",
+        "output": "sorted queue",
+        "check": "every item has exactly one type"
+      },
+      {
+        "n": 2,
+        "name": "Draft product-question replies",
+        "does": "Write a specific answer with a page link where relevant.",
+        "inputs": [
+          "sorted queue",
+          "FAQ answers"
+        ],
+        "tools": [],
+        "skill": "org/community-response-drafting",
+        "output": "draft replies",
+        "check": "no generic templated reply on a specific question"
+      },
+      {
+        "n": 3,
+        "name": "Draft complaint replies",
+        "does": "Acknowledge specifically and give a real next step.",
+        "inputs": [
+          "sorted queue",
+          "policy answers"
+        ],
+        "tools": [],
+        "skill": "org/community-response-drafting",
+        "output": "draft replies",
+        "check": "every complaint reply names a concrete next step"
+      },
+      {
+        "n": 4,
+        "name": "Draft sales-ready lead replies",
+        "does": "Write the reply plus the DM hand-off line into any approved funnel.",
+        "inputs": [
+          "sorted queue",
+          "funnel spec"
+        ],
+        "tools": [],
+        "skill": "org/community-response-drafting",
+        "output": "draft replies",
+        "check": "hand-off line matches the approved funnel design"
+      },
+      {
+        "n": 5,
+        "name": "Check DM automation policy",
+        "does": "Check any DM automation in use against current platform rate-limit and disclosure rules.",
+        "inputs": [
+          "automation config"
+        ],
+        "tools": [
+          "web search"
+        ],
+        "skill": "org/community-response-drafting",
+        "output": "policy check result",
+        "check": "checked against current policy, not an assumption"
+      },
+      {
+        "n": 6,
+        "name": "Flag founder items",
+        "does": "Flag PR risk, refund exceptions or legal threats for the founder instead of drafting a reply.",
+        "inputs": [
+          "sorted queue"
+        ],
+        "tools": [],
+        "skill": null,
+        "output": "flagged list",
+        "check": "nothing risky is drafted and sent without a flag"
+      },
+      {
+        "n": 7,
+        "name": "Queue for human send",
+        "does": "Package all drafts for a human to review and send.",
+        "inputs": [
+          "all drafts"
+        ],
+        "tools": [],
+        "skill": null,
+        "output": "send-ready queue",
+        "check": "every drafted reply has a type and a next step"
+      }
+    ],
+    "outputs": [
+      "drafted replies",
+      "flagged items for the founder"
+    ],
+    "qa": [
+      "No generic reply on a specific question",
+      "DM automation checked against current policy",
+      "Every complaint reply names a next step"
+    ],
+    "read_point": "daily, response time and resolution tracked weekly",
+    "typical_duration": "agent: 30-60 minutes; human send: same day",
+    "subagents": []
+  },
+  {
+    "id": "ORG-W05",
+    "name": "Design the comment-to-DM and lead-magnet funnel",
+    "capabilities": [
+      "ORG-C10"
+    ],
+    "trigger": "on demand",
+    "human_role": "social media manager designing how a post captures a stranger as a contact",
+    "inputs_required": [
+      "offer or lead-magnet candidate",
+      "pillar/content map",
+      "platform DM-automation policy",
+      "buyer-question map"
+    ],
+    "steps": [
+      {
+        "n": 1,
+        "name": "Confirm the lead magnet matches a real want",
+        "does": "Check the offer against the buyer-question map for evidence buyers actually asked for it.",
+        "inputs": [
+          "buyer-question map",
+          "offer candidate"
+        ],
+        "tools": [],
+        "skill": "org/funnel-design",
+        "output": "evidenced lead magnet",
+        "check": "traces to a real, quoted buyer want, not a generic discount"
+      },
+      {
+        "n": 2,
+        "name": "Design the DM flow",
+        "does": "Set the trigger keyword, auto-reply copy and human hand-off point.",
+        "inputs": [
+          "evidenced lead magnet"
+        ],
+        "tools": [],
+        "skill": "org/funnel-design",
+        "output": "flow spec",
+        "check": "hand-off point is named, not open-ended"
+      },
+      {
+        "n": 3,
+        "name": "Check platform policy",
+        "does": "Check the flow against current Meta/Instagram DM-automation policy.",
+        "inputs": [
+          "flow spec"
+        ],
+        "tools": [
+          "web search"
+        ],
+        "skill": "org/funnel-design",
+        "output": "policy check",
+        "check": "checked against current policy"
+      },
+      {
+        "n": 4,
+        "name": "Design the viral-spike overflow plan",
+        "does": "Set the comment velocity that needs a human on standby and the overflow message.",
+        "inputs": [
+          "flow spec"
+        ],
+        "tools": [],
+        "skill": "org/funnel-design",
+        "output": "overflow plan",
+        "check": "a specific velocity threshold is named"
+      },
+      {
+        "n": 5,
+        "name": "Map the destination",
+        "does": "Decide where the captured contact lands (SMS, email, CRM, or WhatsApp as a market option for India, EU or LATAM audiences) and hand the after-capture sequence to Lifecycle.",
+        "inputs": [
+          "flow spec"
+        ],
+        "tools": [],
+        "skill": "org/funnel-design",
+        "output": "destination handoff note",
+        "check": "Lifecycle is named as the owner of what happens after capture"
+      },
+      {
+        "n": 6,
+        "name": "Package the founder card",
+        "does": "Present cost, automation, and platform-policy risk.",
+        "inputs": [
+          "all prior outputs"
+        ],
+        "tools": [],
+        "skill": "shared/plain-english-card",
+        "output": "founder decision card",
+        "check": "card names cost and risk plainly"
+      },
+      {
+        "n": 7,
+        "name": "Log the decision",
+        "does": "Record the founder's decision.",
+        "inputs": [
+          "founder decision"
+        ],
+        "tools": [],
+        "skill": "shared/registry-entry",
+        "output": "registry entry",
+        "check": "reason stored verbatim"
+      }
+    ],
+    "outputs": [
+      "funnel design spec",
+      "founder decision card"
+    ],
+    "qa": [
+      "Lead magnet is evidenced, not generic",
+      "Policy checked current",
+      "Overflow plan exists before launch"
+    ],
+    "read_point": "4 weeks after launch: capture rate and DM response time",
+    "typical_duration": "agent: half a day; founder decision: same day to 1 week",
+    "subagents": []
+  },
+  {
+    "id": "ORG-W06",
+    "name": "Repurpose UGC and reviews into content",
+    "capabilities": [
+      "ORG-C11"
+    ],
+    "trigger": "weekly",
+    "human_role": "content strategist turning proof into postable content",
+    "inputs_required": [
+      "verified review/photo export",
+      "creator seeding output",
+      "usage-rights confirmation",
+      "claims tiers"
+    ],
+    "steps": [
+      {
+        "n": 1,
+        "name": "Pull new verified proof",
+        "does": "Pull new verified reviews, photos and unboxing videos since the last run.",
+        "inputs": [
+          "review/photo export"
+        ],
+        "tools": [],
+        "skill": "org/ugc-repurposing",
+        "output": "candidate proof list",
+        "check": "only items with real text or footage, not a bare star"
+      },
+      {
+        "n": 2,
+        "name": "Check usage rights",
+        "does": "Confirm each item's usage rights against the buyer or creator agreement.",
+        "inputs": [
+          "candidate proof list"
+        ],
+        "tools": [],
+        "skill": "org/ugc-repurposing",
+        "output": "rights-cleared list, flagged list",
+        "check": "nothing unconfirmed proceeds without founder permission",
+        "ask_founder_if": "usage rights are unconfirmed for a strong piece of content"
+      },
+      {
+        "n": 3,
+        "name": "Pick the strongest proof per SKU",
+        "does": "Select the most specific quotes and images per SKU.",
+        "inputs": [
+          "rights-cleared list"
+        ],
+        "tools": [],
+        "skill": "org/ugc-repurposing",
+        "output": "selected proof per SKU",
+        "check": "specific detail beats generic praise"
+      },
+      {
+        "n": 4,
+        "name": "Draft the content",
+        "does": "Dispatch to make-content for the matching format (quote card, stitched reel, before/after).",
+        "inputs": [
+          "selected proof"
+        ],
+        "tools": [],
+        "skill": "org/make-content",
+        "output": "drafts",
+        "check": "source credit matches the agreement"
+      },
+      {
+        "n": 5,
+        "name": "Run the claims gate on restated claims",
+        "does": "Check any customer claim restated as a brand claim against the claims tiers.",
+        "inputs": [
+          "drafts"
+        ],
+        "tools": [],
+        "skill": "shared/claim-check",
+        "output": "pass/fail",
+        "check": "a customer opinion is never assumed to be an approved claim"
+      },
+      {
+        "n": 6,
+        "name": "Add to the calendar and library",
+        "does": "Tag by SKU and funnel stage, add to the asset library.",
+        "inputs": [
+          "passed drafts"
+        ],
+        "tools": [],
+        "skill": null,
+        "output": "tagged drafts in the calendar/library",
+        "check": "every draft is tagged"
+      }
+    ],
+    "outputs": [
+      "postable UGC drafts",
+      "rights-flagged items"
+    ],
+    "qa": [
+      "No content used without confirmed rights",
+      "Restated claims tier-checked",
+      "Every draft tagged by SKU and funnel stage"
+    ],
+    "read_point": "next monthly performance read, UGC-tagged post performance vs baseline",
+    "typical_duration": "agent: half a day, weekly",
+    "subagents": []
+  },
+  {
+    "id": "ORG-W07",
+    "name": "Run pre-publish destination and funnel-stage QA",
+    "capabilities": [
+      "ORG-C12"
+    ],
+    "trigger": "event: post scheduled",
+    "human_role": "social media manager's final check before anything goes live",
+    "inputs_required": [
+      "scheduled post",
+      "destination link or Story tag",
+      "live site status"
+    ],
+    "steps": [
+      {
+        "n": 1,
+        "name": "Open the destination",
+        "does": "Open the post's link or Story product tag directly.",
+        "inputs": [
+          "scheduled post"
+        ],
+        "tools": [
+          "browser: headless chromium"
+        ],
+        "skill": "org/destination-qa",
+        "output": "page load result",
+        "check": "checked live, not assumed"
+      },
+      {
+        "n": 2,
+        "name": "Confirm the page matches the promise",
+        "does": "Confirm live, matching product/offer, honest stock or waitlist state.",
+        "inputs": [
+          "page load result"
+        ],
+        "tools": [],
+        "skill": "org/destination-qa",
+        "output": "match verdict",
+        "check": "stock state is honest, not defaulted to in-stock"
+      },
+      {
+        "n": 3,
+        "name": "Confirm price and offer match exactly",
+        "does": "Compare the post's stated price/offer to the live page.",
+        "inputs": [
+          "page load result"
+        ],
+        "tools": [],
+        "skill": "org/destination-qa",
+        "output": "price match verdict",
+        "check": "exact match required, not approximate"
+      },
+      {
+        "n": 4,
+        "name": "Tag the funnel stage",
+        "does": "Tag the post awareness, consideration, decision or retention.",
+        "inputs": [
+          "post content"
+        ],
+        "tools": [],
+        "skill": "org/destination-qa",
+        "output": "funnel-stage tag",
+        "check": "every post gets exactly one tag"
+      },
+      {
+        "n": 5,
+        "name": "Pass or hold",
+        "does": "Pass the post or hold it with the specific mismatch reason.",
+        "inputs": [
+          "all verdicts"
+        ],
+        "tools": [],
+        "skill": "org/destination-qa",
+        "output": "pass/hold decision",
+        "check": "a hold names the exact mismatch"
+      },
+      {
+        "n": 6,
+        "name": "Log a held post",
+        "does": "When a post is held, log the reason and notify the calendar owner so the slot is fixed or rescheduled, not silently dropped.",
+        "inputs": [
+          "pass/hold decision"
+        ],
+        "tools": [],
+        "skill": "shared/registry-entry",
+        "output": "held-post log entry",
+        "check": "every hold has a logged reason and an owner notified"
+      }
+    ],
+    "outputs": [
+      "pass/hold verdict per post",
+      "funnel-stage tag"
+    ],
+    "qa": [
+      "Destination checked live at the moment",
+      "Price/offer match is exact",
+      "Every passing post carries a funnel-stage tag"
+    ],
+    "read_point": "immediately, before publish",
+    "typical_duration": "agent: under 5 minutes per post",
+    "subagents": []
+  },
+  {
+    "id": "ORG-W08",
+    "name": "Run the content lifecycle: reuse and retire",
+    "capabilities": [
+      "ORG-C13"
+    ],
+    "trigger": "weekly",
+    "human_role": "content strategist managing the asset library's shelf life",
+    "inputs_required": [
+      "content/asset library with tags and dates",
+      "cross-channel usage log"
+    ],
+    "steps": [
+      {
+        "n": 1,
+        "name": "Pull the library",
+        "does": "Pull every asset with publish date, SKU tag and format.",
+        "inputs": [
+          "asset library"
+        ],
+        "tools": [],
+        "skill": "org/content-lifecycle",
+        "output": "asset list",
+        "check": "every asset has a date and tag"
+      },
+      {
+        "n": 2,
+        "name": "Apply shelf-life rules",
+        "does": "Apply the right rule per asset type (seasonal, price-specific, evergreen).",
+        "inputs": [
+          "asset list"
+        ],
+        "tools": [],
+        "skill": "org/content-lifecycle",
+        "output": "asset list with expiry status",
+        "check": "no default rule applied without checking the asset type"
+      },
+      {
+        "n": 3,
+        "name": "Find reuse slots",
+        "does": "Find unused reuse slots for still-valid assets: PDP, email, DM, post-purchase.",
+        "inputs": [
+          "asset list with expiry status"
+        ],
+        "tools": [],
+        "skill": "org/content-lifecycle",
+        "output": "reuse candidates",
+        "check": "each candidate names a specific surface"
+      },
+      {
+        "n": 4,
+        "name": "Mark retirements",
+        "does": "Mark expired assets and list every surface they still appear on.",
+        "inputs": [
+          "asset list with expiry status"
+        ],
+        "tools": [],
+        "skill": "org/content-lifecycle",
+        "output": "retire list with live surfaces",
+        "check": "retirement covers every surface, not just the origin post"
+      },
+      {
+        "n": 5,
+        "name": "Hand off reuse and retirement",
+        "does": "Send reuse candidates to the calendar and retirement list to the surface owners (Site for PDP, Life for email).",
+        "inputs": [
+          "reuse candidates",
+          "retire list"
+        ],
+        "tools": [],
+        "skill": null,
+        "output": "handoff notes",
+        "check": "each item has a named owner"
+      },
+      {
+        "n": 6,
+        "name": "Log the cycle",
+        "does": "Register how many assets were reused, retired and where, for the next monthly performance read.",
+        "inputs": [
+          "handoff notes"
+        ],
+        "tools": [],
+        "skill": "shared/registry-entry",
+        "output": "registry entry",
+        "check": "counts are real, not estimated"
+      }
+    ],
+    "outputs": [
+      "reuse candidate list",
+      "retirement list"
+    ],
+    "qa": [
+      "Every asset has a shelf-life rule applied",
+      "Retirement covers every surface",
+      "Price/stock content never stays live past accuracy"
+    ],
+    "read_point": "next monthly performance read, checking reused assets' new-surface performance",
+    "typical_duration": "agent: 2-3 hours, weekly",
+    "subagents": []
+  },
+  {
+    "id": "ORG-W09",
+    "name": "Run creator discovery and seeding",
+    "capabilities": [
+      "ORG-C14",
+      "ORG-C49"
+    ],
+    "trigger": "continuous scan, weekly batch for approval; monthly seeding cycle",
+    "human_role": "a creator/community manager running organic gifting and seeding",
+    "inputs_required": [
+      "product inventory available for gifting",
+      "claims tiers",
+      "past creator performance",
+      "founder budget/scope for seeding"
+    ],
+    "steps": [
+      {
+        "n": 1,
+        "name": "Scan for new creators",
+        "does": "Scan public Instagram, YouTube and Pinterest posts for creators discussing the category or named competitors without mentioning this brand.",
+        "inputs": [
+          "platform search"
+        ],
+        "tools": [
+          "web search"
+        ],
+        "skill": "org/creator-seeding-and-discovery",
+        "output": "candidate list",
+        "check": "every candidate is a real public post, not inferred"
+      },
+      {
+        "n": 2,
+        "name": "Score candidates",
+        "does": "Score category fit, audience size, engagement rate, visual-world match.",
+        "inputs": [
+          "candidate list"
+        ],
+        "tools": [],
+        "skill": "org/creator-seeding-and-discovery",
+        "output": "scored candidates",
+        "check": "scoring criteria applied consistently"
+      },
+      {
+        "n": 3,
+        "name": "Draft personalized outreach",
+        "does": "Draft a note referencing each candidate's actual content.",
+        "inputs": [
+          "scored candidates"
+        ],
+        "tools": [],
+        "skill": "org/creator-seeding-and-discovery",
+        "output": "outreach drafts",
+        "check": "no copy-paste template"
+      },
+      {
+        "n": 4,
+        "name": "Batch for founder approval",
+        "does": "Package the week's candidates and drafts for founder sign-off.",
+        "inputs": [
+          "outreach drafts"
+        ],
+        "tools": [],
+        "skill": "shared/plain-english-card",
+        "output": "approval batch",
+        "check": "nothing sends without approval",
+        "ask_founder_if": "always, before any outreach sends"
+      },
+      {
+        "n": 5,
+        "name": "Build the seeding brief",
+        "does": "For approved creators, set SKU, quantity, what to show, deadline, rights ask, disclosure requirement.",
+        "inputs": [
+          "approved creators"
+        ],
+        "tools": [],
+        "skill": "org/creator-seeding-and-discovery",
+        "output": "seeding briefs",
+        "check": "every brief has a rights ask on file before shipment"
+      },
+      {
+        "n": 6,
+        "name": "Track delivery",
+        "does": "Track shipment and delivered content per creator; flag missed deadlines.",
+        "inputs": [
+          "seeding briefs"
+        ],
+        "tools": [],
+        "skill": "org/creator-seeding-and-discovery",
+        "output": "delivery status",
+        "check": "non-delivery is flagged, not dropped"
+      },
+      {
+        "n": 7,
+        "name": "Feed content to the UGC pipeline",
+        "does": "Hand delivered content with rights status to the UGC repurposing workflow.",
+        "inputs": [
+          "delivered content"
+        ],
+        "tools": [],
+        "skill": "org/ugc-repurposing",
+        "output": "content queued for repurposing",
+        "check": "rights status travels with the content"
+      },
+      {
+        "n": 8,
+        "name": "Log the cycle",
+        "does": "Register cost, creators seeded and content yield.",
+        "inputs": [
+          "delivery status"
+        ],
+        "tools": [],
+        "skill": "shared/registry-entry",
+        "output": "registry entry",
+        "check": "cost and yield are real numbers, not estimates"
+      }
+    ],
+    "outputs": [
+      "discovery candidates with outreach drafts",
+      "seeding briefs",
+      "delivered UGC content"
+    ],
+    "qa": [
+      "No outreach without founder approval",
+      "Rights asked for before shipment",
+      "Non-delivery tracked"
+    ],
+    "read_point": "monthly: cost per piece of usable content vs prior cycles",
+    "typical_duration": "agent: continuous scan, 1-2 hours/week; seeding cycle: 2-4 weeks turnaround",
+    "subagents": []
+  },
+  {
+    "id": "ORG-W10",
+    "name": "Read and report organic content performance",
+    "capabilities": [
+      "ORG-C16"
+    ],
+    "trigger": "monthly",
+    "human_role": "social media manager reporting what actually worked",
+    "inputs_required": [
+      "platform analytics export",
+      "metric contract fields",
+      "tagged content calendar"
+    ],
+    "steps": [
+      {
+        "n": 1,
+        "name": "Pull SKU/hook-level numbers",
+        "does": "Pull performance by SKU and hook from the metric contract.",
+        "inputs": [
+          "metric contract"
+        ],
+        "tools": [],
+        "skill": "shared/metric-read",
+        "output": "SKU/hook performance table",
+        "check": "missing fields show as unavailable"
+      },
+      {
+        "n": 2,
+        "name": "Compute the store's own baseline",
+        "does": "Compute the trailing-90-day median in code.",
+        "inputs": [
+          "performance table"
+        ],
+        "tools": [],
+        "skill": "org/organic-performance-read",
+        "output": "baseline value",
+        "check": "computed in code, not estimated"
+      },
+      {
+        "n": 3,
+        "name": "Flag stranger-blind content",
+        "does": "Flag high reach with no sessions/cart lift.",
+        "inputs": [
+          "performance table",
+          "baseline"
+        ],
+        "tools": [],
+        "skill": "org/organic-performance-read",
+        "output": "stranger-blind flags",
+        "check": "flag requires both high reach and no lift, not either alone"
+      },
+      {
+        "n": 4,
+        "name": "Flag broad low-value hits",
+        "does": "Flag high views outside the avatar's demographic where data allows.",
+        "inputs": [
+          "performance table"
+        ],
+        "tools": [],
+        "skill": "org/organic-performance-read",
+        "output": "low-value flags",
+        "check": "flagged only where demographic data actually exists"
+      },
+      {
+        "n": 5,
+        "name": "Rank top hooks",
+        "does": "Rank top 3 hooks/formats by conversion signal.",
+        "inputs": [
+          "performance table"
+        ],
+        "tools": [],
+        "skill": "org/organic-performance-read",
+        "output": "top hooks list",
+        "check": "ranked by conversion, not raw engagement"
+      },
+      {
+        "n": 6,
+        "name": "Write the report",
+        "does": "Write what we did, what it did, what is next.",
+        "inputs": [
+          "all prior outputs"
+        ],
+        "tools": [],
+        "skill": "shared/report-section",
+        "output": "monthly report",
+        "check": "no vanity total leads the report"
+      }
+    ],
+    "outputs": [
+      "monthly organic performance report"
+    ],
+    "qa": [
+      "Comparisons use the store's own baseline",
+      "Missing data marked unavailable",
+      "No vanity total leads"
+    ],
+    "read_point": "monthly, fixed cadence",
+    "typical_duration": "agent: half a day",
+    "subagents": []
+  },
+  {
+    "id": "ORG-W11",
+    "name": "Run social listening for brand, competitor and category trends",
+    "capabilities": [
+      "ORG-C44"
+    ],
+    "trigger": "continuous monitoring, weekly digest",
+    "human_role": "social media manager tracking category conversation",
+    "inputs_required": [
+      "brand and competitor name list",
+      "category keyword list",
+      "public sources"
+    ],
+    "steps": [
+      {
+        "n": 1,
+        "name": "Monitor mentions",
+        "does": "Monitor brand, competitor and category mentions across public sources.",
+        "inputs": [
+          "name list",
+          "keyword list"
+        ],
+        "tools": [
+          "web search"
+        ],
+        "skill": "org/social-listening-digest",
+        "output": "raw mention list",
+        "check": "sources are public and dated"
+      },
+      {
+        "n": 2,
+        "name": "Classify mentions",
+        "does": "Classify sentiment, topic, postable idea or risk.",
+        "inputs": [
+          "raw mention list"
+        ],
+        "tools": [],
+        "skill": "org/social-listening-digest",
+        "output": "classified mentions",
+        "check": "every mention gets a classification"
+      },
+      {
+        "n": 3,
+        "name": "Track week-over-week trends",
+        "does": "Compare this week's counts to last week's to catch a real shift.",
+        "inputs": [
+          "classified mentions"
+        ],
+        "tools": [],
+        "skill": "shared/metric-read",
+        "output": "trend deltas",
+        "check": "trend claims require a week-over-week pattern"
+      },
+      {
+        "n": 4,
+        "name": "Draft the digest",
+        "does": "Write trends, sentiment shifts, 3-5 postable ideas.",
+        "inputs": [
+          "trend deltas"
+        ],
+        "tools": [],
+        "skill": "org/social-listening-digest",
+        "output": "weekly digest",
+        "check": "every idea traces to a quoted, dated mention"
+      },
+      {
+        "n": 5,
+        "name": "Route risk flags",
+        "does": "Send anything reading as PR/reputation risk to the founder same-day, apart from the digest.",
+        "inputs": [
+          "classified mentions"
+        ],
+        "tools": [],
+        "skill": "org/social-listening-digest",
+        "output": "risk flags",
+        "check": "routed same-day, not held for the weekly cycle",
+        "ask_founder_if": "a risk flag is found"
+      },
+      {
+        "n": 6,
+        "name": "Log the digest",
+        "does": "Register the week's digest and any risk flags in the registry for the monthly rollup.",
+        "inputs": [
+          "weekly digest",
+          "risk flags"
+        ],
+        "tools": [],
+        "skill": "shared/registry-entry",
+        "output": "registry entry",
+        "check": "digest and flags both logged with a date"
+      }
+    ],
+    "outputs": [
+      "weekly listening digest",
+      "risk flags"
+    ],
+    "qa": [
+      "Trend claims based on a real pattern",
+      "Every idea sourced",
+      "Risk flags routed same-day"
+    ],
+    "read_point": "weekly digest, monthly trend rollup",
+    "typical_duration": "agent: 1-2 hours/week, continuous monitoring in background",
+    "subagents": []
+  },
+  {
+    "id": "ORG-W12",
+    "name": "Run Pinterest search and board strategy",
+    "capabilities": [
+      "ORG-C45"
+    ],
+    "trigger": "on new content ready for Pinterest, plus a monthly board/trend review",
+    "human_role": "SEO/content manager treating Pinterest as visual search",
+    "inputs_required": [
+      "approved image/video for the pin",
+      "keyword/question map",
+      "current board architecture"
+    ],
+    "steps": [
+      {
+        "n": 1,
+        "name": "Identify the search phrase",
+        "does": "Pick the exact phrase a buyer would type for this image/topic.",
+        "inputs": [
+          "keyword map"
+        ],
+        "tools": [],
+        "skill": "org/make-content/pinterest-pin",
+        "output": "target search phrase",
+        "check": "phrase matches real search intent, not a caption line"
+      },
+      {
+        "n": 2,
+        "name": "Write the pin",
+        "does": "Write title and description, keyword-first, natural sentence.",
+        "inputs": [
+          "target phrase",
+          "approved image"
+        ],
+        "tools": [],
+        "skill": "org/make-content/pinterest-pin",
+        "output": "pin draft",
+        "check": "title and description both carry the phrase"
+      },
+      {
+        "n": 3,
+        "name": "Pick or create the board",
+        "does": "Match to a board titled in buyer search terms.",
+        "inputs": [
+          "board architecture",
+          "pin draft"
+        ],
+        "tools": [],
+        "skill": "org/make-content/pinterest-pin",
+        "output": "board assignment",
+        "check": "board title uses buyer language, not internal jargon"
+      },
+      {
+        "n": 4,
+        "name": "Set the destination link",
+        "does": "Point to a live, matching page.",
+        "inputs": [
+          "pin draft"
+        ],
+        "tools": [
+          "browser: headless chromium"
+        ],
+        "skill": "org/destination-qa",
+        "output": "confirmed destination",
+        "check": "never the homepage, confirmed live"
+      },
+      {
+        "n": 5,
+        "name": "Monthly board review",
+        "does": "Review board performance, retire/merge dead boards, add one board for a rising term.",
+        "inputs": [
+          "board performance data"
+        ],
+        "tools": [],
+        "skill": "org/make-content/pinterest-pin",
+        "output": "board review",
+        "check": "no board added without a search-volume signal"
+      },
+      {
+        "n": 6,
+        "name": "Log the pin and review",
+        "does": "Add the pin to the content calendar and register the monthly board review.",
+        "inputs": [
+          "confirmed destination",
+          "board review"
+        ],
+        "tools": [],
+        "skill": "shared/registry-entry",
+        "output": "registry entry",
+        "check": "both the pin and the board review are logged"
+      }
+    ],
+    "outputs": [
+      "pin drafts",
+      "monthly board review"
+    ],
+    "qa": [
+      "Title/description carry the search phrase",
+      "Destination confirmed live",
+      "No board without a signal"
+    ],
+    "read_point": "monthly, impressions and saves per board",
+    "typical_duration": "agent: 20-30 minutes per pin; monthly review: 1-2 hours",
+    "subagents": []
+  },
+  {
+    "id": "ORG-W13",
+    "name": "Ghostwrite founder LinkedIn and employer-brand content",
+    "capabilities": [
+      "ORG-C46",
+      "ORG-C48"
+    ],
+    "trigger": "on the founder's LinkedIn cadence, plus any hiring or milestone event",
+    "human_role": "a B2B content writer for the founder's personal brand and hiring content",
+    "inputs_required": [
+      "founder's real opinion/experience note",
+      "open role details or culture milestone",
+      "brand voice file"
+    ],
+    "steps": [
+      {
+        "n": 1,
+        "name": "Get the founder's real take",
+        "does": "Collect the founder's actual opinion or experience on the topic.",
+        "inputs": [
+          "founder note"
+        ],
+        "tools": [],
+        "skill": "org/founder-and-employer-brand-writing",
+        "output": "source note",
+        "check": "never an invented take",
+        "ask_founder_if": "no real opinion note exists for this topic"
+      },
+      {
+        "n": 2,
+        "name": "Draft the LinkedIn post",
+        "does": "Draft as text or carousel in a B2B tone.",
+        "inputs": [
+          "source note"
+        ],
+        "tools": [],
+        "skill": "org/founder-and-employer-brand-writing",
+        "output": "LinkedIn draft",
+        "check": "tone is B2B, distinct from buyer-facing content"
+      },
+      {
+        "n": 3,
+        "name": "Run the claims gate",
+        "does": "Check any business number or milestone claimed.",
+        "inputs": [
+          "LinkedIn draft"
+        ],
+        "tools": [],
+        "skill": "shared/claim-check",
+        "output": "pass/fail",
+        "check": "every number is backed"
+      },
+      {
+        "n": 4,
+        "name": "Draft the role/culture post",
+        "does": "Write with real day-to-day detail or a real team credit.",
+        "inputs": [
+          "role details or milestone"
+        ],
+        "tools": [],
+        "skill": "org/founder-and-employer-brand-writing",
+        "output": "employer-brand draft",
+        "check": "team members named only with consent on file"
+      },
+      {
+        "n": 5,
+        "name": "Send for the personal-voice pass",
+        "does": "Route both drafts back to the founder or hiring manager before publish.",
+        "inputs": [
+          "both drafts"
+        ],
+        "tools": [],
+        "skill": null,
+        "output": "drafts pending human voice pass",
+        "check": "nothing publishes before this pass"
+      },
+      {
+        "n": 6,
+        "name": "Log the post",
+        "does": "Register the published post and its source note for future reference and reuse.",
+        "inputs": [
+          "approved draft"
+        ],
+        "tools": [],
+        "skill": "shared/registry-entry",
+        "output": "registry entry",
+        "check": "source note is linked, not lost after publish"
+      }
+    ],
+    "outputs": [
+      "LinkedIn drafts",
+      "employer-brand drafts"
+    ],
+    "qa": [
+      "Opinions trace to a founder note",
+      "Team members named only with consent",
+      "Business numbers claims-checked"
+    ],
+    "read_point": "monthly, engagement and any inbound hire/partner leads",
+    "typical_duration": "agent: 1-2 hours per post; human voice pass: 1-2 days",
+    "subagents": []
+  },
+  {
+    "id": "ORG-W14",
+    "name": "Mine community and support conversations for product feedback",
+    "capabilities": [
+      "ORG-C47"
+    ],
+    "trigger": "monthly, or on a volume spike in one theme",
+    "human_role": "a community manager routing feedback to product and ops",
+    "inputs_required": [
+      "comments/DMs/reviews export",
+      "community-space conversations",
+      "prior feedback report"
+    ],
+    "steps": [
+      {
+        "n": 1,
+        "name": "Pull the conversation export",
+        "does": "Pull comments, DMs, reviews and community-space conversations for the period.",
+        "inputs": [
+          "export sources"
+        ],
+        "tools": [],
+        "skill": "org/community-feedback-mining",
+        "output": "raw conversation set",
+        "check": "covers the full period, not a sample"
+      },
+      {
+        "n": 2,
+        "name": "Cluster into themes",
+        "does": "Cluster into themes with a quote and count each.",
+        "inputs": [
+          "raw conversation set"
+        ],
+        "tools": [],
+        "skill": "org/community-feedback-mining",
+        "output": "themed clusters",
+        "check": "every theme has a quote and count"
+      },
+      {
+        "n": 3,
+        "name": "Compare to the prior period",
+        "does": "Compare volumes to the prior report to catch a spike.",
+        "inputs": [
+          "themed clusters",
+          "prior report"
+        ],
+        "tools": [],
+        "skill": "shared/metric-read",
+        "output": "trend comparison",
+        "check": "spike claims compare to a real prior number"
+      },
+      {
+        "n": 4,
+        "name": "Split content vs operational feedback",
+        "does": "Separate what to post about from what to fix.",
+        "inputs": [
+          "themed clusters"
+        ],
+        "tools": [],
+        "skill": "org/community-feedback-mining",
+        "output": "split lists",
+        "check": "operational themes are routed out, not kept for content only"
+      },
+      {
+        "n": 5,
+        "name": "Write and route the report",
+        "does": "Write the themed report and route operational themes to Product and Operations.",
+        "inputs": [
+          "split lists",
+          "trend comparison"
+        ],
+        "tools": [],
+        "skill": "shared/report-section",
+        "output": "themed report",
+        "check": "routing is explicit, not implied"
+      },
+      {
+        "n": 6,
+        "name": "Log the report",
+        "does": "Register the report and routing decisions for next period's trend comparison.",
+        "inputs": [
+          "themed report"
+        ],
+        "tools": [],
+        "skill": "shared/registry-entry",
+        "output": "registry entry",
+        "check": "stored for the next period's comparison"
+      }
+    ],
+    "outputs": [
+      "themed feedback report"
+    ],
+    "qa": [
+      "Every theme has a quote and count",
+      "Spike claims compare to a real number",
+      "Operational feedback actually routed"
+    ],
+    "read_point": "monthly, or immediately on a spike",
+    "typical_duration": "agent: half a day",
+    "subagents": []
+  },
+  {
+    "id": "ORG-W15",
+    "name": "Run owned long-form channel operations (YouTube, podcast, newsletter)",
+    "capabilities": [
+      "ORG-C38",
+      "ORG-C40",
+      "ORG-C41"
+    ],
+    "trigger": "on every video upload, on the podcast's publishing cadence, on the newsletter's send cadence",
+    "human_role": "a channel manager running YouTube, podcast and newsletter mechanics",
+    "inputs_required": [
+      "uploaded video, recorded episode, or drafted newsletter issue",
+      "channel operating checklist",
+      "list health metrics"
+    ],
+    "steps": [
+      {
+        "n": 1,
+        "name": "Identify the channel",
+        "does": "Read which channel this task is for.",
+        "inputs": [
+          "task"
+        ],
+        "tools": [],
+        "skill": "org/channel-ops",
+        "output": "channel identified",
+        "check": "exactly one channel matched"
+      },
+      {
+        "n": 2,
+        "name": "YouTube: apply title/description/chapters",
+        "does": "Apply the approved script's title, description, tags, chapters, end screen.",
+        "inputs": [
+          "video script"
+        ],
+        "tools": [],
+        "skill": "org/channel-ops/youtube",
+        "output": "upload checklist status",
+        "check": "matches the approved script, no ad hoc rewrite"
+      },
+      {
+        "n": 3,
+        "name": "YouTube: thumbnail and playlist",
+        "does": "Set a custom thumbnail checked at mobile size, add to the matching playlist.",
+        "inputs": [
+          "video asset"
+        ],
+        "tools": [],
+        "skill": "org/channel-ops/youtube",
+        "output": "thumbnail/playlist status",
+        "check": "thumbnail legible at small size"
+      },
+      {
+        "n": 4,
+        "name": "YouTube: Shorts cadence check",
+        "does": "Confirm the standing Shorts cadence is on track.",
+        "inputs": [
+          "Shorts publishing log"
+        ],
+        "tools": [],
+        "skill": "org/channel-ops/youtube",
+        "output": "cadence status",
+        "check": "flagged if behind, not silently skipped"
+      },
+      {
+        "n": 5,
+        "name": "Podcast: guest pipeline check",
+        "does": "Confirm the next 2 episodes have a booked guest or topic.",
+        "inputs": [
+          "guest pipeline"
+        ],
+        "tools": [],
+        "skill": "org/channel-ops/audio-and-newsletter",
+        "output": "pipeline status",
+        "check": "gap flagged, not left to surprise later",
+        "ask_founder_if": "a pipeline gap is found with under 2 weeks to air"
+      },
+      {
+        "n": 6,
+        "name": "Podcast: publish and clip",
+        "does": "Write show notes, cut clips or hand off to repurposing, publish to every platform.",
+        "inputs": [
+          "recorded episode"
+        ],
+        "tools": [],
+        "skill": "org/channel-ops/audio-and-newsletter",
+        "output": "distribution status",
+        "check": "every platform confirmed showing the right episode"
+      },
+      {
+        "n": 7,
+        "name": "Newsletter: list-health check",
+        "does": "Check bounce/unsubscribe/spam rates before the send.",
+        "inputs": [
+          "list health metrics"
+        ],
+        "tools": [],
+        "skill": "org/channel-ops/audio-and-newsletter",
+        "output": "list health status",
+        "check": "send held if any metric is outside the normal range"
+      },
+      {
+        "n": 8,
+        "name": "Newsletter: confirm send",
+        "does": "Confirm the issue is queued at the recommended time, compliant with unsubscribe/sender rules.",
+        "inputs": [
+          "newsletter issue"
+        ],
+        "tools": [],
+        "skill": "org/channel-ops/audio-and-newsletter",
+        "output": "send confirmation",
+        "check": "unsubscribe link and sender identity both present"
+      }
+    ],
+    "outputs": [
+      "YouTube upload checklist status",
+      "podcast distribution status",
+      "newsletter send status"
+    ],
+    "qa": [
+      "Guest pipeline covers 2 episodes ahead",
+      "List health checked before every send",
+      "Every platform confirmed showing the right content"
+    ],
+    "read_point": "monthly reporting per channel",
+    "typical_duration": "agent: 30-60 minutes per event",
+    "subagents": []
+  },
+  {
+    "id": "ORG-W16",
+    "name": "Run the long-form to short-form video repurposing pipeline",
+    "capabilities": [
+      "ORG-C42"
+    ],
+    "trigger": "on every new long-form recording (podcast episode, founder talk, livestream)",
+    "human_role": "a video editor turning one recording into a week of clips",
+    "inputs_required": [
+      "long-form video/audio file",
+      "transcript",
+      "target short-form platforms and aspect ratios"
+    ],
+    "steps": [
+      {
+        "n": 1,
+        "name": "Get the transcript",
+        "does": "Generate or receive a full transcript of the recording.",
+        "inputs": [
+          "recording"
+        ],
+        "tools": [],
+        "skill": "org/video-repurposing-pipeline",
+        "output": "transcript",
+        "check": "transcript covers the full runtime"
+      },
+      {
+        "n": 2,
+        "name": "Identify candidate moments",
+        "does": "Find standalone claims, reactions or quotable lines with timestamps.",
+        "inputs": [
+          "transcript"
+        ],
+        "tools": [],
+        "skill": "org/video-repurposing-pipeline",
+        "output": "candidate moments",
+        "check": "each has a timestamp"
+      },
+      {
+        "n": 3,
+        "name": "Rank by standalone watchability",
+        "does": "Rank candidates by whether they work without the full episode's context.",
+        "inputs": [
+          "candidate moments"
+        ],
+        "tools": [],
+        "skill": "org/video-repurposing-pipeline",
+        "output": "ranked clips",
+        "check": "ranking checks standalone sense, not just quotability"
+      },
+      {
+        "n": 4,
+        "name": "Cut, caption and resize",
+        "does": "Produce clips sized for each target platform.",
+        "inputs": [
+          "ranked clips"
+        ],
+        "tools": [],
+        "skill": "org/video-repurposing-pipeline",
+        "output": "finished clip files",
+        "check": "captions burned in and accurate"
+      },
+      {
+        "n": 5,
+        "name": "Write clip captions and check claims",
+        "does": "Write a hook overlay and caption per clip; tier-check any restated claim.",
+        "inputs": [
+          "finished clip files"
+        ],
+        "tools": [],
+        "skill": "shared/claim-check",
+        "output": "captioned clips",
+        "check": "claims tier-checked even if the source recording already said it"
+      },
+      {
+        "n": 6,
+        "name": "Route to the calendar",
+        "does": "Add clips as fillable calendar slots tagged by source episode.",
+        "inputs": [
+          "captioned clips"
+        ],
+        "tools": [],
+        "skill": null,
+        "output": "calendar slots filled",
+        "check": "every clip tagged with its source episode"
+      }
+    ],
+    "outputs": [
+      "ranked, captioned, correctly-sized short clips"
+    ],
+    "qa": [
+      "Every clip stands alone",
+      "Captions accurate",
+      "Claims re-checked at clip level"
+    ],
+    "read_point": "next monthly performance read, clip-level performance vs source episode",
+    "typical_duration": "agent: 2-4 hours per long-form recording",
+    "subagents": []
+  },
+  {
+    "id": "ORG-W17",
+    "name": "Set the SEO and AEO work roadmap and priorities",
+    "capabilities": [
+      "ORG-C17"
+    ],
+    "trigger": "on demand",
+    "human_role": "an SEO manager deciding whether and where to spend effort at all",
+    "inputs_required": [
+      "category demand signal",
+      "margin per SKU",
+      "technical floor status",
+      "idea bank filtered by bottleneck"
+    ],
+    "steps": [
+      {
+        "n": 1,
+        "name": "Check category demand",
+        "does": "Check search volume trend and category growth for the target category.",
+        "inputs": [
+          "web pass"
+        ],
+        "tools": [
+          "web search"
+        ],
+        "skill": "org/seo-aeo-roadmap",
+        "output": "demand signal",
+        "check": "demand signal is dated and sourced"
+      },
+      {
+        "n": 2,
+        "name": "Check margin",
+        "does": "Check per-SKU margin for the category before recommending spend.",
+        "inputs": [
+          "brand brain: cost data"
+        ],
+        "tools": [],
+        "skill": "org/seo-aeo-roadmap",
+        "output": "margin check",
+        "check": "low-margin categories are not recommended for a push"
+      },
+      {
+        "n": 3,
+        "name": "Check the technical floor",
+        "does": "Check current indexing/crawlability status.",
+        "inputs": [
+          "last technical audit"
+        ],
+        "tools": [],
+        "skill": "org/seo-aeo-roadmap",
+        "output": "technical floor status",
+        "check": "content-cluster work is never sequenced ahead of a failing floor"
+      },
+      {
+        "n": 4,
+        "name": "Filter the idea bank",
+        "does": "Filter and rank ideas by bottleneck and store tags.",
+        "inputs": [
+          "idea bank"
+        ],
+        "tools": [
+          "script: ideas.py"
+        ],
+        "skill": "shared/rank-candidates",
+        "output": "ranked idea candidates",
+        "check": "ranking done in code"
+      },
+      {
+        "n": 5,
+        "name": "Sequence the work",
+        "does": "Sequence technical floor, then money pages, then one cluster at a time, then AEO.",
+        "inputs": [
+          "all prior checks"
+        ],
+        "tools": [],
+        "skill": "org/seo-aeo-roadmap",
+        "output": "sequenced roadmap",
+        "check": "sequence follows the fixed order"
+      },
+      {
+        "n": 6,
+        "name": "Write the expectation memo",
+        "does": "State a realistic timeline in months.",
+        "inputs": [
+          "sequenced roadmap"
+        ],
+        "tools": [],
+        "skill": "org/seo-aeo-roadmap",
+        "output": "expectation memo",
+        "check": "timeline is realistic, not inflated"
+      },
+      {
+        "n": 7,
+        "name": "Run a founder-question round",
+        "does": "Ask what the data cannot settle.",
+        "inputs": [
+          "open questions"
+        ],
+        "tools": [],
+        "skill": "shared/founder-question-round",
+        "output": "question round",
+        "check": "no question the data could already answer"
+      },
+      {
+        "n": 8,
+        "name": "Package the founder card",
+        "does": "Present the roadmap for a decision.",
+        "inputs": [
+          "roadmap",
+          "expectation memo"
+        ],
+        "tools": [],
+        "skill": "shared/plain-english-card",
+        "output": "founder decision card",
+        "check": "card is under 4 sentences plus pills"
+      }
+    ],
+    "outputs": [
+      "sequenced SEO/AEO roadmap",
+      "expectation memo"
+    ],
+    "qa": [
+      "No cluster work before the floor passes",
+      "Every recommendation ties to a demand/margin number",
+      "Timeline is realistic"
+    ],
+    "read_point": "quarterly review of the roadmap against actual progress",
+    "typical_duration": "agent: 1-2 days; founder decision: 1 week",
+    "subagents": []
+  },
+  {
+    "id": "ORG-W18",
+    "name": "Research keywords and buyer questions into page briefs",
+    "capabilities": [
+      "ORG-C18"
+    ],
+    "trigger": "monthly",
+    "human_role": "an SEO manager building the target list the content program runs from",
+    "inputs_required": [
+      "support/DM/review export",
+      "Search Console query data",
+      "existing site architecture",
+      "approved roadmap"
+    ],
+    "steps": [
+      {
+        "n": 1,
+        "name": "Mine buyer questions",
+        "does": "Pull the ranked buyer-question bank.",
+        "inputs": [
+          "support export",
+          "review export"
+        ],
+        "tools": [],
+        "skill": "org/buyer-question-mapping",
+        "output": "question bank",
+        "check": "every question sourced and dated"
+      },
+      {
+        "n": 2,
+        "name": "Pull Search Console data",
+        "does": "Pull query, impression and position data where connected.",
+        "inputs": [
+          "Search Console"
+        ],
+        "tools": [],
+        "skill": "org/page-brief-build",
+        "output": "query data",
+        "check": "labelled unavailable if the connector is not live"
+      },
+      {
+        "n": 3,
+        "name": "Run a budgeted web pass",
+        "does": "Verify search volume and intent for top targets.",
+        "inputs": [
+          "question bank",
+          "query data"
+        ],
+        "tools": [
+          "web search"
+        ],
+        "skill": "shared/web-research-budgeted",
+        "output": "verified targets with volume/intent",
+        "check": "every fact has a URL and date, budget not exceeded"
+      },
+      {
+        "n": 4,
+        "name": "Classify intent and page type",
+        "does": "Classify each target as informational, comparison or transactional, matched to collection, product, guide or blog.",
+        "inputs": [
+          "verified targets"
+        ],
+        "tools": [],
+        "skill": "org/page-brief-build",
+        "output": "classified target list",
+        "check": "page type is one the store's architecture actually supports"
+      },
+      {
+        "n": 5,
+        "name": "Build the keyword-and-question map",
+        "does": "Rank targets by priority.",
+        "inputs": [
+          "classified target list"
+        ],
+        "tools": [],
+        "skill": "shared/rank-candidates",
+        "output": "ranked keyword/question map",
+        "check": "ranked in code"
+      },
+      {
+        "n": 6,
+        "name": "Check against existing content",
+        "does": "Check whether a ranking page already exists for each priority target.",
+        "inputs": [
+          "ranked map",
+          "site architecture"
+        ],
+        "tools": [
+          "browser: headless chromium"
+        ],
+        "skill": "org/page-brief-build",
+        "output": "new-vs-refresh split",
+        "check": "existing pages route to refresh, not a duplicate brief"
+      },
+      {
+        "n": 7,
+        "name": "Write the page briefs",
+        "does": "Write outline, buyer questions, internal links, schema needed for each new target.",
+        "inputs": [
+          "new-vs-refresh split"
+        ],
+        "tools": [],
+        "skill": "org/page-brief-build",
+        "output": "page briefs",
+        "check": "every brief names buyer questions from real sources"
+      },
+      {
+        "n": 8,
+        "name": "Hand off to the writer skill",
+        "does": "Route each brief to the matching seo-page child.",
+        "inputs": [
+          "page briefs"
+        ],
+        "tools": [],
+        "skill": "org/seo-page",
+        "output": "routing confirmation",
+        "check": "routed by page type"
+      },
+      {
+        "n": 9,
+        "name": "Log the briefs",
+        "does": "Register the month's briefs against the roadmap.",
+        "inputs": [
+          "page briefs"
+        ],
+        "tools": [],
+        "skill": "shared/registry-entry",
+        "output": "registry entries",
+        "check": "linked to the approved roadmap entry"
+      }
+    ],
+    "outputs": [
+      "keyword-and-question map",
+      "structured page briefs"
+    ],
+    "qa": [
+      "No brief for an unsupported page type",
+      "Every target checked against existing content first",
+      "Every web fact has a URL and date"
+    ],
+    "read_point": "next SEO reporting cycle, briefed pages' ranking and revenue",
+    "typical_duration": "agent: 1-2 days",
+    "subagents": []
+  },
+  {
+    "id": "ORG-W19",
+    "name": "Run the technical SEO and AI-crawlability audit into developer briefs",
+    "capabilities": [
+      "ORG-C20"
+    ],
+    "trigger": "quarterly",
+    "human_role": "an SEO manager running the technical floor audit",
+    "inputs_required": [
+      "live site URL",
+      "prior audit baseline",
+      "robots.txt/CDN settings",
+      "Site's speed baseline"
+    ],
+    "steps": [
+      {
+        "n": 1,
+        "name": "Crawl the site",
+        "does": "Crawl with mobile and JS rendering for indexing, canonical, sitemap, robots, redirect and heading problems.",
+        "inputs": [
+          "live site URL"
+        ],
+        "tools": [
+          "browser: headless chromium"
+        ],
+        "skill": "shared/surface-audit",
+        "output": "raw crawl findings",
+        "check": "crawl covers the whole site, mobile and JS-rendered"
+      },
+      {
+        "n": 2,
+        "name": "Check AI-crawler access",
+        "does": "Check GPTBot, PerplexityBot, Google-Extended access against robots.txt and CDN rules.",
+        "inputs": [
+          "robots.txt",
+          "CDN settings"
+        ],
+        "tools": [],
+        "skill": "org/technical-crawl-audit",
+        "output": "AI-crawler access report",
+        "check": "checked explicitly, not assumed from classic crawl results"
+      },
+      {
+        "n": 3,
+        "name": "Log the speed baseline",
+        "does": "Log current speed numbers without diagnosing them.",
+        "inputs": [
+          "speed instrument"
+        ],
+        "tools": [
+          "browser: headless chromium"
+        ],
+        "skill": "org/technical-crawl-audit",
+        "output": "speed baseline log",
+        "check": "logged only, not diagnosed here"
+      },
+      {
+        "n": 4,
+        "name": "Order findings by the technical floor",
+        "does": "Order findings with indexing/crawlability first.",
+        "inputs": [
+          "raw crawl findings"
+        ],
+        "tools": [],
+        "skill": "shared/rank-candidates",
+        "output": "ordered findings",
+        "check": "floor items rank first"
+      },
+      {
+        "n": 5,
+        "name": "Attach evidence",
+        "does": "Attach a URL, response code, screenshot or quoted setting to every finding.",
+        "inputs": [
+          "ordered findings"
+        ],
+        "tools": [],
+        "skill": "org/technical-crawl-audit",
+        "output": "evidenced findings",
+        "check": "every finding is independently verifiable"
+      },
+      {
+        "n": 6,
+        "name": "Split fixable-here vs Site hand-off",
+        "does": "Split findings this agent can brief directly from speed items for Site.",
+        "inputs": [
+          "evidenced findings"
+        ],
+        "tools": [],
+        "skill": "org/technical-crawl-audit",
+        "output": "split lists",
+        "check": "speed items are only handed off, never fixed here"
+      },
+      {
+        "n": 7,
+        "name": "Write developer briefs",
+        "does": "Write a developer brief per fixable finding.",
+        "inputs": [
+          "fixable findings"
+        ],
+        "tools": [],
+        "skill": "shared/developer-brief",
+        "output": "developer briefs",
+        "check": "every brief has a rollback step"
+      },
+      {
+        "n": 8,
+        "name": "Write the Site hand-off note",
+        "does": "Package speed findings for the Site specialist.",
+        "inputs": [
+          "speed findings"
+        ],
+        "tools": [],
+        "skill": "shared/developer-brief",
+        "output": "hand-off note",
+        "check": "note is addressed to Site, not left ambiguous"
+      }
+    ],
+    "outputs": [
+      "prioritized fix list",
+      "AI-crawler access report",
+      "developer briefs",
+      "Site hand-off note"
+    ],
+    "qa": [
+      "Every finding has verifiable evidence",
+      "AI-crawler access checked explicitly",
+      "Speed items only handed off"
+    ],
+    "read_point": "next quarterly audit, re-checking each prior finding's fix status",
+    "typical_duration": "agent: 1-2 days; sub-agent crawl: several hours in background",
+    "subagents": [
+      "technical-crawl-auditor: runs the raw whole-site crawl"
+    ]
+  },
+  {
+    "id": "ORG-W20",
+    "name": "Optimize money-page SEO: product and collection",
+    "capabilities": [
+      "ORG-C21",
+      "ORG-C22"
+    ],
+    "trigger": "on demand",
+    "human_role": "an SEO manager writing and structuring the pages that sell",
+    "inputs_required": [
+      "page brief",
+      "product/collection record",
+      "review data",
+      "image assets"
+    ],
+    "steps": [
+      {
+        "n": 1,
+        "name": "Read the brief and page type",
+        "does": "Confirm whether the target is a product or a collection page.",
+        "inputs": [
+          "page brief"
+        ],
+        "tools": [],
+        "skill": "org/seo-page",
+        "output": "page type confirmed",
+        "check": "matches the store's real catalogue structure"
+      },
+      {
+        "n": 2,
+        "name": "Write the title and meta description",
+        "does": "Write a real title and meta description covering the target term.",
+        "inputs": [
+          "page brief"
+        ],
+        "tools": [],
+        "skill": "org/seo-page/product",
+        "output": "title/meta draft",
+        "check": "title is readable, not a SKU code"
+      },
+      {
+        "n": 3,
+        "name": "Build the content stack (product) or grid rules (collection)",
+        "does": "Build the fact-based content stack for a product page, or the grid/FAQ rules for a collection page.",
+        "inputs": [
+          "product record or collection rules"
+        ],
+        "tools": [],
+        "skill": "org/seo-page/collection",
+        "output": "content stack or grid spec",
+        "check": "every claim site-backed; out-of-stock handling is honest"
+      },
+      {
+        "n": 4,
+        "name": "Apply the right template",
+        "does": "Apply the subscription/variant template if needed, or standard collection template.",
+        "inputs": [
+          "content stack"
+        ],
+        "tools": [],
+        "skill": "org/seo-page/product",
+        "output": "templated page spec",
+        "check": "subscription/variant products never use the default template"
+      },
+      {
+        "n": 5,
+        "name": "Write image alt text",
+        "does": "Write alt text describing the actual product shown.",
+        "inputs": [
+          "image assets"
+        ],
+        "tools": [],
+        "skill": "org/seo-page/product",
+        "output": "alt text set",
+        "check": "alt text matches the actual image content"
+      },
+      {
+        "n": 6,
+        "name": "Add FAQ and reviews",
+        "does": "Add real buyer questions and review data.",
+        "inputs": [
+          "buyer-question map",
+          "review data"
+        ],
+        "tools": [],
+        "skill": "org/seo-page/collection",
+        "output": "FAQ and review block",
+        "check": "questions trace to real sources"
+      },
+      {
+        "n": 7,
+        "name": "Add internal links",
+        "does": "Add the links the brief specifies.",
+        "inputs": [
+          "page brief"
+        ],
+        "tools": [],
+        "skill": "org/internal-linking",
+        "output": "linked page spec",
+        "check": "links point to live, matching pages"
+      },
+      {
+        "n": 8,
+        "name": "Run the claims gate",
+        "does": "Check every factual line.",
+        "inputs": [
+          "full page spec"
+        ],
+        "tools": [],
+        "skill": "shared/claim-check",
+        "output": "pass/fail",
+        "check": "zero untraced claims"
+      },
+      {
+        "n": 9,
+        "name": "Package the change list",
+        "does": "Package the page spec as a change list for the founder or Site to apply.",
+        "inputs": [
+          "passed page spec"
+        ],
+        "tools": [],
+        "skill": "shared/developer-brief",
+        "output": "change list",
+        "check": "rollback path stated"
+      }
+    ],
+    "outputs": [
+      "product page copy spec",
+      "collection page copy spec"
+    ],
+    "qa": [
+      "Title readable, not a SKU code",
+      "Out-of-stock handling honest",
+      "Every claim site-backed"
+    ],
+    "read_point": "next SEO reporting cycle, page-level revenue and ranking",
+    "typical_duration": "agent: half a day per page",
+    "subagents": []
+  },
+  {
+    "id": "ORG-W21",
+    "name": "Implement and validate structured data",
+    "capabilities": [
+      "ORG-C23"
+    ],
+    "trigger": "on demand",
+    "human_role": "an SEO manager adding machine-readable facts to money pages",
+    "inputs_required": [
+      "page content",
+      "product/review/FAQ/price data",
+      "deployment method"
+    ],
+    "steps": [
+      {
+        "n": 1,
+        "name": "Pick the schema types needed",
+        "does": "Decide which of Product, Review, FAQ, Breadcrumb, Offer apply.",
+        "inputs": [
+          "page content"
+        ],
+        "tools": [],
+        "skill": "org/schema-implementation",
+        "output": "schema type list",
+        "check": "matches what the page actually contains"
+      },
+      {
+        "n": 2,
+        "name": "Populate fields",
+        "does": "Populate every field from live data.",
+        "inputs": [
+          "product/review/price data"
+        ],
+        "tools": [],
+        "skill": "org/schema-implementation",
+        "output": "populated schema",
+        "check": "no placeholder value"
+      },
+      {
+        "n": 3,
+        "name": "Validate pre-deployment",
+        "does": "Run a structured-data testing tool.",
+        "inputs": [
+          "populated schema"
+        ],
+        "tools": [
+          "web: validator"
+        ],
+        "skill": "org/schema-implementation",
+        "output": "pre-deployment validation result",
+        "check": "passes before shipping"
+      },
+      {
+        "n": 4,
+        "name": "Choose the deployment path",
+        "does": "Use direct theme access or package as a GTM tag/trigger.",
+        "inputs": [
+          "deployment method"
+        ],
+        "tools": [],
+        "skill": "org/schema-implementation",
+        "output": "deployment package",
+        "check": "GTM used whenever theme access is unavailable"
+      },
+      {
+        "n": 5,
+        "name": "Write the developer brief",
+        "does": "Name the change, location, reason, check and rollback.",
+        "inputs": [
+          "deployment package"
+        ],
+        "tools": [],
+        "skill": "shared/developer-brief",
+        "output": "developer brief",
+        "check": "rollback is one step"
+      },
+      {
+        "n": 6,
+        "name": "Re-validate post-deployment",
+        "does": "After a human applies it, re-validate on the live page.",
+        "inputs": [
+          "live page"
+        ],
+        "tools": [
+          "web: validator"
+        ],
+        "skill": "org/schema-implementation",
+        "output": "post-deployment validation result",
+        "check": "confirmed live, not assumed"
+      }
+    ],
+    "outputs": [
+      "schema spec",
+      "developer brief",
+      "validation results"
+    ],
+    "qa": [
+      "No placeholder field values",
+      "Validated before and after",
+      "GTM used when needed"
+    ],
+    "read_point": "on deployment, rich-result eligibility checked",
+    "typical_duration": "agent: half a day; human deployment: 1-3 days",
+    "subagents": []
+  },
+  {
+    "id": "ORG-W22",
+    "name": "Produce SEO content pages: clusters, guides and comparisons",
+    "capabilities": [
+      "ORG-C24",
+      "ORG-C25"
+    ],
+    "trigger": "monthly, ahead of the season a cluster targets",
+    "human_role": "an SEO content writer building guide-format content with a real money page behind it",
+    "inputs_required": [
+      "page brief",
+      "moat data",
+      "public competitor facts (for comparisons)",
+      "season/timing target"
+    ],
+    "steps": [
+      {
+        "n": 1,
+        "name": "Confirm the subtype and season",
+        "does": "Confirm buying guide or comparison, and the season it targets.",
+        "inputs": [
+          "page brief"
+        ],
+        "tools": [],
+        "skill": "org/seo-page/guide",
+        "output": "confirmed subtype and timing",
+        "check": "build starts ahead of the season, not after"
+      },
+      {
+        "n": 2,
+        "name": "Find the linked money page",
+        "does": "Confirm the one real money page the piece supports.",
+        "inputs": [
+          "site architecture"
+        ],
+        "tools": [],
+        "skill": "org/seo-page/guide",
+        "output": "linked money page",
+        "check": "a piece with no matching money page is not built"
+      },
+      {
+        "n": 3,
+        "name": "Build the buying-guide body",
+        "does": "Structure by real decision criteria using proprietary data.",
+        "inputs": [
+          "moat data"
+        ],
+        "tools": [],
+        "skill": "org/seo-page/guide",
+        "output": "guide body",
+        "check": "data is tier-checked"
+      },
+      {
+        "n": 4,
+        "name": "Build the comparison body",
+        "does": "State public, sourced, dated facts about the named competitor.",
+        "inputs": [
+          "public competitor facts"
+        ],
+        "tools": [
+          "web search"
+        ],
+        "skill": "org/seo-page/guide",
+        "output": "comparison body",
+        "check": "every competitor fact is public, sourced and dated"
+      },
+      {
+        "n": 5,
+        "name": "Confirm the cluster link (for a blog-type node)",
+        "does": "Confirm the pillar this piece belongs to and add sibling links.",
+        "inputs": [
+          "cluster map"
+        ],
+        "tools": [],
+        "skill": "org/seo-page/blog",
+        "output": "cluster-linked draft",
+        "check": "links to a real pillar"
+      },
+      {
+        "n": 6,
+        "name": "Add FAQ and internal links",
+        "does": "Add real buyer questions and internal links.",
+        "inputs": [
+          "buyer-question map"
+        ],
+        "tools": [],
+        "skill": "org/internal-linking",
+        "output": "linked draft",
+        "check": "questions trace to real sources"
+      },
+      {
+        "n": 7,
+        "name": "Run the claims gate",
+        "does": "Check every claim, including comparison statements.",
+        "inputs": [
+          "full draft"
+        ],
+        "tools": [],
+        "skill": "shared/claim-check",
+        "output": "pass/fail",
+        "check": "zero untraced claims, no competitor text copied"
+      },
+      {
+        "n": 8,
+        "name": "Log the piece",
+        "does": "Register publish date and enter it into refresh tracking.",
+        "inputs": [
+          "passed draft"
+        ],
+        "tools": [],
+        "skill": "shared/registry-entry",
+        "output": "registry entry",
+        "check": "entered into refresh tracking on publish"
+      }
+    ],
+    "outputs": [
+      "buying guide draft",
+      "comparison page draft",
+      "cluster plan"
+    ],
+    "qa": [
+      "Every competitor fact public, sourced, dated",
+      "Piece links to a real money page",
+      "Built ahead of season"
+    ],
+    "read_point": "next content-refresh cycle and SEO reporting cycle",
+    "typical_duration": "agent: 1-2 days per piece",
+    "subagents": [
+      "content-production-worker: bulk drafting across a cluster"
+    ]
+  },
+  {
+    "id": "ORG-W23",
+    "name": "Run the content refresh and pruning program from revenue at risk",
+    "capabilities": [
+      "ORG-C26"
+    ],
+    "trigger": "monthly",
+    "human_role": "an SEO manager keeping existing pages healthy before writing anything new",
+    "inputs_required": [
+      "Search Console export",
+      "page-level revenue history",
+      "product feed",
+      "duplicate/cannibalization check"
+    ],
+    "steps": [
+      {
+        "n": 1,
+        "name": "Pull page-level sessions and revenue",
+        "does": "Pull sessions and, where the order-join exists, page-level revenue.",
+        "inputs": [
+          "Search Console",
+          "order ledger"
+        ],
+        "tools": [],
+        "skill": "shared/metric-read",
+        "output": "page-level performance table",
+        "check": "revenue join marked unavailable if it does not exist"
+      },
+      {
+        "n": 2,
+        "name": "Rank by revenue at risk",
+        "does": "Rank the refresh backlog by revenue at risk first, traffic-only drops second.",
+        "inputs": [
+          "performance table"
+        ],
+        "tools": [],
+        "skill": "org/content-refresh-audit",
+        "output": "ranked refresh backlog",
+        "check": "ranked in code, revenue first"
+      },
+      {
+        "n": 3,
+        "name": "Check discontinued/out-of-stock pages",
+        "does": "Check every such page against the feed.",
+        "inputs": [
+          "product feed"
+        ],
+        "tools": [],
+        "skill": "org/content-refresh-audit",
+        "output": "discontinued-page list",
+        "check": "none silently 404s"
+      },
+      {
+        "n": 4,
+        "name": "Route discontinued pages",
+        "does": "Route to a redirect or an honest out-of-stock state.",
+        "inputs": [
+          "discontinued-page list"
+        ],
+        "tools": [],
+        "skill": "shared/developer-brief",
+        "output": "redirect list",
+        "check": "every item has a stated new destination or honest state"
+      },
+      {
+        "n": 5,
+        "name": "Find duplicate/cannibalizing pages",
+        "does": "Find pages competing for the same target.",
+        "inputs": [
+          "site content inventory"
+        ],
+        "tools": [],
+        "skill": "org/content-refresh-audit",
+        "output": "duplicate candidates",
+        "check": "candidates checked against real query overlap"
+      },
+      {
+        "n": 6,
+        "name": "Recommend merge or canonical",
+        "does": "Recommend the fix, ranked by impact.",
+        "inputs": [
+          "duplicate candidates"
+        ],
+        "tools": [],
+        "skill": "shared/rank-candidates",
+        "output": "prune list",
+        "check": "ranked in code"
+      },
+      {
+        "n": 7,
+        "name": "Name each refresh problem",
+        "does": "Name the specific problem behind each refresh candidate.",
+        "inputs": [
+          "ranked refresh backlog"
+        ],
+        "tools": [],
+        "skill": "org/content-refresh-audit",
+        "output": "problem-tagged backlog",
+        "check": "no generic 'needs a refresh' without a specific reason"
+      },
+      {
+        "n": 8,
+        "name": "Package the founder card",
+        "does": "Present the top refresh items with revenue at risk.",
+        "inputs": [
+          "problem-tagged backlog"
+        ],
+        "tools": [],
+        "skill": "shared/plain-english-card",
+        "output": "founder decision card",
+        "check": "revenue number is real, from the contract"
+      }
+    ],
+    "outputs": [
+      "ranked refresh list",
+      "redirect list",
+      "prune list"
+    ],
+    "qa": [
+      "Backlog ranked by revenue at risk",
+      "No page silently 404s",
+      "Every candidate names its specific problem"
+    ],
+    "read_point": "next month, checking whether refreshed pages recovered revenue",
+    "typical_duration": "agent: 1-2 days",
+    "subagents": []
+  },
+  {
+    "id": "ORG-W24",
+    "name": "Run the internal linking program",
+    "capabilities": [
+      "ORG-C27"
+    ],
+    "trigger": "monthly",
+    "human_role": "an SEO manager keeping link equity flowing to money pages",
+    "inputs_required": [
+      "site architecture",
+      "content inventory",
+      "orphan-page check",
+      "money-page list"
+    ],
+    "steps": [
+      {
+        "n": 1,
+        "name": "Run the orphan check",
+        "does": "Find pages with zero internal links pointing to them.",
+        "inputs": [
+          "content inventory"
+        ],
+        "tools": [
+          "browser: headless chromium"
+        ],
+        "skill": "org/internal-linking",
+        "output": "orphan list",
+        "check": "check covers the whole site"
+      },
+      {
+        "n": 2,
+        "name": "Link content to money pages",
+        "does": "Add links from guides/blog to the money pages they support.",
+        "inputs": [
+          "content inventory",
+          "money-page list"
+        ],
+        "tools": [],
+        "skill": "org/internal-linking",
+        "output": "content-to-money links",
+        "check": "every content page links to a real money page"
+      },
+      {
+        "n": 3,
+        "name": "Link money pages back",
+        "does": "Add links from money pages back to relevant guides.",
+        "inputs": [
+          "money-page list"
+        ],
+        "tools": [],
+        "skill": "org/internal-linking",
+        "output": "money-to-content links",
+        "check": "links are topically relevant, not forced"
+      },
+      {
+        "n": 4,
+        "name": "Add navigational links",
+        "does": "Add related-product/collection links on product and collection pages.",
+        "inputs": [
+          "catalogue structure"
+        ],
+        "tools": [],
+        "skill": "org/internal-linking",
+        "output": "navigational links",
+        "check": "links point to live, matching pages"
+      },
+      {
+        "n": 5,
+        "name": "Fix or prune orphans",
+        "does": "Fix every orphan with a new link or hand to content-refresh for pruning.",
+        "inputs": [
+          "orphan list"
+        ],
+        "tools": [],
+        "skill": "org/internal-linking",
+        "output": "orphan resolution",
+        "check": "every orphan has a resolution, not left unaddressed"
+      },
+      {
+        "n": 6,
+        "name": "Return the linking map",
+        "does": "Return what was added and what remains, with reasons.",
+        "inputs": [
+          "all prior outputs"
+        ],
+        "tools": [],
+        "skill": "org/internal-linking",
+        "output": "linking map",
+        "check": "every remaining orphan states a reason"
+      }
+    ],
+    "outputs": [
+      "internal linking map"
+    ],
+    "qa": [
+      "Every content page links to a real money page",
+      "No orphan left unaddressed without a reason",
+      "Links checked live at build time"
+    ],
+    "read_point": "next SEO reporting cycle, crawl depth and orphan count",
+    "typical_duration": "agent: 1 day",
+    "subagents": []
+  },
+  {
+    "id": "ORG-W25",
+    "name": "Run backlink, digital PR and mention outreach",
+    "capabilities": [
+      "ORG-C28"
+    ],
+    "trigger": "monthly",
+    "human_role": "a digital PR manager earning links through disclosed outreach",
+    "inputs_required": [
+      "prospect list",
+      "a real content asset or story to pitch",
+      "outreach log"
+    ],
+    "steps": [
+      {
+        "n": 1,
+        "name": "Build the prospect list",
+        "does": "Build a list of relevant journalists, guest-post sites, broken-link targets, listicle/review editors.",
+        "inputs": [
+          "category research"
+        ],
+        "tools": [
+          "web search"
+        ],
+        "skill": "org/digital-pr-outreach",
+        "output": "prospect list",
+        "check": "every prospect is relevant to the category"
+      },
+      {
+        "n": 2,
+        "name": "Match pitches to prospects",
+        "does": "Match each to a real, disclosed pitch type.",
+        "inputs": [
+          "prospect list",
+          "content assets"
+        ],
+        "tools": [],
+        "skill": "org/digital-pr-outreach",
+        "output": "pitch matches",
+        "check": "every pitch is a real, existing asset or story"
+      },
+      {
+        "n": 3,
+        "name": "Draft personalized pitches",
+        "does": "Reference each prospect's actual past coverage.",
+        "inputs": [
+          "pitch matches"
+        ],
+        "tools": [],
+        "skill": "org/digital-pr-outreach",
+        "output": "pitch drafts",
+        "check": "no mail-merge template"
+      },
+      {
+        "n": 4,
+        "name": "Check for manipulative link risk",
+        "does": "Flag anything undisclosed or manipulative for the founder.",
+        "inputs": [
+          "pitch drafts"
+        ],
+        "tools": [],
+        "skill": "org/digital-pr-outreach",
+        "output": "flagged items",
+        "check": "nothing manipulative sends without a flag",
+        "ask_founder_if": "a pitch involves any paid or reciprocal link arrangement"
+      },
+      {
+        "n": 5,
+        "name": "Log outreach",
+        "does": "Log date, prospect, pitch type, status for every send.",
+        "inputs": [
+          "sent pitches"
+        ],
+        "tools": [],
+        "skill": "shared/registry-entry",
+        "output": "outreach log",
+        "check": "every send has a status"
+      },
+      {
+        "n": 6,
+        "name": "Track responses and placements",
+        "does": "Track responses and hand confirmed placements to link tracking.",
+        "inputs": [
+          "outreach log"
+        ],
+        "tools": [],
+        "skill": "org/content-refresh-audit",
+        "output": "placement tracking",
+        "check": "confirmed placements get a live link check"
+      }
+    ],
+    "outputs": [
+      "prospect list",
+      "pitch drafts",
+      "outreach log"
+    ],
+    "qa": [
+      "Every pitch personalized",
+      "All outreach disclosed",
+      "Every send logged with a status"
+    ],
+    "read_point": "monthly, placements earned and link quality",
+    "typical_duration": "agent: 1-2 days",
+    "subagents": []
+  },
+  {
+    "id": "ORG-W26",
+    "name": "Run local SEO and reputation program",
+    "capabilities": [
+      "ORG-C29"
+    ],
+    "trigger": "weekly, for any brand with a physical location",
+    "human_role": "a local SEO manager keeping the Google Business Profile and review flow healthy",
+    "inputs_required": [
+      "Google Business Profile access",
+      "store location list",
+      "NAP data",
+      "review inflow"
+    ],
+    "steps": [
+      {
+        "n": 1,
+        "name": "Confirm a physical location exists",
+        "does": "Check whether this brand has a physical location at all.",
+        "inputs": [
+          "brand brain"
+        ],
+        "tools": [],
+        "skill": "org/local-seo-and-reviews",
+        "output": "applicability check",
+        "check": "workflow stops here if no physical location"
+      },
+      {
+        "n": 2,
+        "name": "Check GBP accuracy",
+        "does": "Check hours, category, photos, posts, Q&A.",
+        "inputs": [
+          "GBP access"
+        ],
+        "tools": [],
+        "skill": "org/local-seo-and-reviews",
+        "output": "GBP status",
+        "check": "every field checked against the real current status"
+      },
+      {
+        "n": 3,
+        "name": "Check NAP consistency",
+        "does": "Check name, address, phone across directories.",
+        "inputs": [
+          "NAP data"
+        ],
+        "tools": [
+          "web search"
+        ],
+        "skill": "org/local-seo-and-reviews",
+        "output": "NAP mismatch list",
+        "check": "mismatches named exactly, with the wrong value"
+      },
+      {
+        "n": 4,
+        "name": "Draft unincentivized review requests",
+        "does": "Draft a request sent after a verified purchase.",
+        "inputs": [
+          "review inflow"
+        ],
+        "tools": [],
+        "skill": "org/local-seo-and-reviews",
+        "output": "review request drafts",
+        "check": "no payment or discount offered for a review"
+      },
+      {
+        "n": 5,
+        "name": "Draft review responses",
+        "does": "Draft responses to new reviews, especially negative ones, with a real next step.",
+        "inputs": [
+          "new reviews"
+        ],
+        "tools": [],
+        "skill": "org/local-seo-and-reviews",
+        "output": "response drafts",
+        "check": "every negative review response names a next step"
+      },
+      {
+        "n": 6,
+        "name": "Return the weekly status",
+        "does": "Package GBP, NAP and review status.",
+        "inputs": [
+          "all prior outputs"
+        ],
+        "tools": [],
+        "skill": null,
+        "output": "weekly local status",
+        "check": "nothing marked fine without being checked this week"
+      }
+    ],
+    "outputs": [
+      "GBP accuracy status",
+      "NAP mismatch list",
+      "review request and response drafts"
+    ],
+    "qa": [
+      "No incentivized review request",
+      "NAP mismatches named exactly",
+      "Physical location confirmed before running"
+    ],
+    "read_point": "monthly, review volume and rating trend",
+    "typical_duration": "agent: 2-3 hours/week",
+    "subagents": []
+  },
+  {
+    "id": "ORG-W27",
+    "name": "Report and diagnose SEO performance",
+    "capabilities": [
+      "ORG-C32"
+    ],
+    "trigger": "monthly",
+    "human_role": "an SEO manager running the fixed-cadence Search Console/GA4 read",
+    "inputs_required": [
+      "Search Console export",
+      "GA4 export",
+      "metric contract fields",
+      "prior month's report"
+    ],
+    "steps": [
+      {
+        "n": 1,
+        "name": "Pull the numbers",
+        "does": "Pull sessions, clicks, impressions, CTR, position, organic revenue from the contract.",
+        "inputs": [
+          "Search Console",
+          "GA4",
+          "metric contract"
+        ],
+        "tools": [],
+        "skill": "shared/metric-read",
+        "output": "numbers table",
+        "check": "missing fields shown as unavailable"
+      },
+      {
+        "n": 2,
+        "name": "Lead with revenue",
+        "does": "Structure the report to lead with organic revenue, not traffic.",
+        "inputs": [
+          "numbers table"
+        ],
+        "tools": [],
+        "skill": "org/seo-reporting-and-diagnosis",
+        "output": "revenue-led draft",
+        "check": "revenue is the first number shown"
+      },
+      {
+        "n": 3,
+        "name": "Diagnose any drop",
+        "does": "Check CTR, device mismatch, engagement, position in that order for any drop.",
+        "inputs": [
+          "numbers table"
+        ],
+        "tools": [],
+        "skill": "org/seo-reporting-and-diagnosis",
+        "output": "diagnosis",
+        "check": "diagnosis names a specific mechanism with evidence"
+      },
+      {
+        "n": 4,
+        "name": "Compare to the prior month",
+        "does": "Format as what we did, what it did, what is next.",
+        "inputs": [
+          "prior report"
+        ],
+        "tools": [],
+        "skill": "shared/report-section",
+        "output": "formatted report",
+        "check": "format matches the shared shape exactly"
+      },
+      {
+        "n": 5,
+        "name": "Package and send",
+        "does": "Finalize the monthly report.",
+        "inputs": [
+          "formatted report"
+        ],
+        "tools": [],
+        "skill": null,
+        "output": "monthly SEO report",
+        "check": "reading level under grade 10"
+      },
+      {
+        "n": 6,
+        "name": "Log the report",
+        "does": "Register the report and its numbers for next month's comparison.",
+        "inputs": [
+          "monthly SEO report"
+        ],
+        "tools": [],
+        "skill": "shared/registry-entry",
+        "output": "registry entry",
+        "check": "numbers stored match the contract exactly"
+      }
+    ],
+    "outputs": [
+      "monthly SEO report with diagnosis"
+    ],
+    "qa": [
+      "Report leads with revenue",
+      "Diagnosis names a specific mechanism",
+      "Missing data marked unavailable"
+    ],
+    "read_point": "monthly, fixed cadence",
+    "typical_duration": "agent: half a day",
+    "subagents": []
+  },
+  {
+    "id": "ORG-W28",
+    "name": "Vet SEO, link and AEO vendors before hiring",
+    "capabilities": [
+      "ORG-C33"
+    ],
+    "trigger": "on demand",
+    "human_role": "an SEO manager screening a vendor pitch before the founder signs",
+    "inputs_required": [
+      "vendor pitch/proposal",
+      "vendor's claimed case studies",
+      "proposed tactics"
+    ],
+    "steps": [
+      {
+        "n": 1,
+        "name": "List every vendor claim",
+        "does": "Extract every claim the vendor makes.",
+        "inputs": [
+          "vendor pitch"
+        ],
+        "tools": [],
+        "skill": "org/vendor-vetting",
+        "output": "claim list",
+        "check": "no claim skipped"
+      },
+      {
+        "n": 2,
+        "name": "Check for red flags",
+        "does": "Check each claim against known red flags (guarantees, PBNs, link farms).",
+        "inputs": [
+          "claim list"
+        ],
+        "tools": [],
+        "skill": "org/vendor-vetting",
+        "output": "red flags found",
+        "check": "checked against a real red-flag list, not a gut feel"
+      },
+      {
+        "n": 3,
+        "name": "Verify case studies",
+        "does": "Verify at least 2 claimed case studies independently.",
+        "inputs": [
+          "case studies"
+        ],
+        "tools": [
+          "web search"
+        ],
+        "skill": "shared/web-research-budgeted",
+        "output": "verification results",
+        "check": "verified where possible, treated as a snapshot"
+      },
+      {
+        "n": 4,
+        "name": "Check tactics against platform policy",
+        "does": "Check proposed tactics against current spam policies.",
+        "inputs": [
+          "proposed tactics"
+        ],
+        "tools": [
+          "web search"
+        ],
+        "skill": "org/vendor-vetting",
+        "output": "policy risk check",
+        "check": "checked against current policy"
+      },
+      {
+        "n": 5,
+        "name": "Check AEO-specific vendors",
+        "does": "Check whether an AEO/GEO vendor runs a real repeatable audit or a one-off scan.",
+        "inputs": [
+          "vendor pitch"
+        ],
+        "tools": [],
+        "skill": "org/vendor-vetting",
+        "output": "AEO method check",
+        "check": "distinguishes a repeatable method from a one-off resold as ongoing"
+      },
+      {
+        "n": 6,
+        "name": "Score and recommend",
+        "does": "Score the vendor with a specific reason.",
+        "inputs": [
+          "all checks"
+        ],
+        "tools": [],
+        "skill": "org/vendor-vetting",
+        "output": "scorecard",
+        "check": "reason is specific, not a gut feel"
+      },
+      {
+        "n": 7,
+        "name": "Package the founder card",
+        "does": "Present the scorecard before any signature.",
+        "inputs": [
+          "scorecard"
+        ],
+        "tools": [],
+        "skill": "shared/plain-english-card",
+        "output": "founder decision card",
+        "check": "card presented before any contract step"
+      }
+    ],
+    "outputs": [
+      "vendor scorecard"
+    ],
+    "qa": [
+      "Every red flag checked",
+      "Case studies verified where possible",
+      "Recommendation reason is specific"
+    ],
+    "read_point": "if hired: 90-day check against the vendor's own stated claims",
+    "typical_duration": "agent: 1 day",
+    "subagents": []
+  },
+  {
+    "id": "ORG-W29",
+    "name": "Run the answer-engine probe, fix the facts page, and correct wrong answers",
+    "capabilities": [
+      "ORG-C34",
+      "ORG-C35",
+      "ORG-C36",
+      "ORG-C37"
+    ],
+    "trigger": "monthly (probe and facts page), event: wrong fact found (correction)",
+    "human_role": "an AI-visibility owner keeping AI answers about the brand accurate",
+    "inputs_required": [
+      "frozen prompt set",
+      "entity and competitor list",
+      "brand facts (approved tier)",
+      "prior month's citation log"
+    ],
+    "steps": [
+      {
+        "n": 1,
+        "name": "Run the frozen prompt set",
+        "does": "Run each prompt on ChatGPT, Gemini, Perplexity, Google AI by hand.",
+        "inputs": [
+          "frozen prompt set"
+        ],
+        "tools": [
+          "browser: AI chat interfaces"
+        ],
+        "skill": "org/ai-visibility-probe",
+        "output": "raw per-prompt results",
+        "check": "every prompt run on every prioritized platform"
+      },
+      {
+        "n": 2,
+        "name": "Classify each result",
+        "does": "Classify named/cited-with-link/cited-without-link/absent, and retrieval vs memory.",
+        "inputs": [
+          "raw results"
+        ],
+        "tools": [],
+        "skill": "org/ai-visibility-probe",
+        "output": "classified results",
+        "check": "classification never collapses to a single rank number"
+      },
+      {
+        "n": 3,
+        "name": "Check persistence",
+        "does": "Recheck last month's citations to confirm they held.",
+        "inputs": [
+          "prior citation log"
+        ],
+        "tools": [
+          "browser: AI chat interfaces"
+        ],
+        "skill": "org/ai-visibility-probe",
+        "output": "persistence check",
+        "check": "actually re-run, not assumed"
+      },
+      {
+        "n": 4,
+        "name": "Classify gaps",
+        "does": "Classify each gap: missing, wrong, outdated, no coverage.",
+        "inputs": [
+          "classified results"
+        ],
+        "tools": [],
+        "skill": "org/ai-visibility-probe",
+        "output": "gap list",
+        "check": "every gap has supporting evidence"
+      },
+      {
+        "n": 5,
+        "name": "Build or refresh the facts page",
+        "does": "Draft missing fact blocks answering the gaps, atomic and tier-checked.",
+        "inputs": [
+          "gap list",
+          "brand facts"
+        ],
+        "tools": [],
+        "skill": "org/fact-consistency-management",
+        "output": "facts page blocks",
+        "check": "each block is atomic and sourced"
+      },
+      {
+        "n": 6,
+        "name": "Check cross-surface consistency",
+        "does": "Check the same fact across site, schema, feed, directories, reviews.",
+        "inputs": [
+          "facts page blocks"
+        ],
+        "tools": [
+          "browser: headless chromium"
+        ],
+        "skill": "org/fact-consistency-management",
+        "output": "consistency check",
+        "check": "the same fact reads identically everywhere"
+      },
+      {
+        "n": 7,
+        "name": "Fix a wrong fact at the source",
+        "does": "On a wrong fact found, fix the site first.",
+        "inputs": [
+          "gap list"
+        ],
+        "tools": [],
+        "skill": "org/fact-consistency-management",
+        "output": "site fix",
+        "check": "site fixed before any outreach starts"
+      },
+      {
+        "n": 8,
+        "name": "Draft publisher correction outreach",
+        "does": "Identify the likely publisher source and draft outreach.",
+        "inputs": [
+          "site fix"
+        ],
+        "tools": [
+          "web search"
+        ],
+        "skill": "org/fact-consistency-management",
+        "output": "correction outreach draft",
+        "check": "targets the actual likely source, not a guess"
+      },
+      {
+        "n": 9,
+        "name": "Rewrite a page for citation, if needed",
+        "does": "For an existing high-value page an engine should cite but cannot, rewrite it answer-first.",
+        "inputs": [
+          "page brief",
+          "gap list"
+        ],
+        "tools": [],
+        "skill": "org/aeo-page-rewrite",
+        "output": "rewritten page with readiness score",
+        "check": "page still reads naturally, not fragmented"
+      },
+      {
+        "n": 10,
+        "name": "Schedule a recheck",
+        "does": "Schedule re-running the engines after the fix.",
+        "inputs": [
+          "correction outreach draft"
+        ],
+        "tools": [],
+        "skill": "org/fact-consistency-management",
+        "output": "recheck date",
+        "check": "a real future date is set, not left open-ended"
+      },
+      {
+        "n": 11,
+        "name": "Write the monthly report",
+        "does": "Write share-of-voice trend and top 3 gaps with recommended fixes.",
+        "inputs": [
+          "all prior outputs"
+        ],
+        "tools": [],
+        "skill": "shared/report-section",
+        "output": "AI visibility report",
+        "check": "never reduces to a single rank number"
+      }
+    ],
+    "outputs": [
+      "AI visibility report",
+      "facts page draft/refresh",
+      "correction plan",
+      "rewritten page (as needed)"
+    ],
+    "qa": [
+      "Report never reduces to a single rank number",
+      "Every citation verified directly",
+      "Correction always follows site-then-publisher-then-web order"
+    ],
+    "read_point": "the scheduled recheck date, and the next monthly cycle",
+    "typical_duration": "agent: 1-2 days; sub-agent probing: several hours across platforms",
+    "subagents": [
+      "ai-visibility-prober: drives the manual multi-platform prompting"
+    ]
+  },
+  {
+    "id": "ORG-W30",
+    "name": "Audit AI shopping agents against the claims tiers",
+    "capabilities": [
+      "LOOP-C38"
+    ],
+    "trigger": "weekly",
+    "human_role": "an AI-visibility owner checking what shopping agents actually tell a buyer",
+    "inputs_required": [
+      "Agentic Storefront query access",
+      "claims tiers",
+      "live product feed",
+      "frozen agentic prompt set"
+    ],
+    "steps": [
+      {
+        "n": 1,
+        "name": "Query the agentic surfaces",
+        "does": "Query ChatGPT, Copilot, Google AI Mode, Gemini shopping with the frozen prompt set.",
+        "inputs": [
+          "frozen agentic prompt set"
+        ],
+        "tools": [
+          "browser: AI chat interfaces"
+        ],
+        "skill": "org/agentic-shopping-audit",
+        "output": "raw agentic responses",
+        "check": "every prompt run on every listed surface"
+      },
+      {
+        "n": 2,
+        "name": "Record stated facts",
+        "does": "Record price, stock, shipping and product claims stated by each agent.",
+        "inputs": [
+          "raw responses"
+        ],
+        "tools": [],
+        "skill": "org/agentic-shopping-audit",
+        "output": "stated fact log",
+        "check": "recorded verbatim, not paraphrased"
+      },
+      {
+        "n": 3,
+        "name": "Check against the live feed and claims tiers",
+        "does": "Compare stated facts to the live feed and claims tiers.",
+        "inputs": [
+          "stated fact log",
+          "live product feed"
+        ],
+        "tools": [],
+        "skill": "org/agentic-shopping-audit",
+        "output": "mismatch list",
+        "check": "checked against the live feed, not a cached value"
+      },
+      {
+        "n": 4,
+        "name": "Route mismatches",
+        "does": "Route price/stock mismatches to the feed fix path, claim mismatches to fact-correction.",
+        "inputs": [
+          "mismatch list"
+        ],
+        "tools": [],
+        "skill": "org/fact-consistency-management",
+        "output": "routed fixes",
+        "check": "each mismatch routed to the correct owner"
+      },
+      {
+        "n": 5,
+        "name": "Log for trend tracking",
+        "does": "Log the week's results against prior weeks.",
+        "inputs": [
+          "mismatch list"
+        ],
+        "tools": [],
+        "skill": "shared/registry-entry",
+        "output": "trend log entry",
+        "check": "logged weekly, not as a one-off"
+      },
+      {
+        "n": 6,
+        "name": "Escalate a repeat mismatch",
+        "does": "If the same mismatch appears 2 weeks running, escalate to the founder since the routed fix did not take.",
+        "inputs": [
+          "trend log entry"
+        ],
+        "tools": [],
+        "skill": null,
+        "output": "escalation note",
+        "check": "escalation triggers only on a real repeat, not a single week",
+        "ask_founder_if": "the same mismatch repeats for 2 consecutive weeks"
+      }
+    ],
+    "outputs": [
+      "agentic audit log",
+      "routed fixes"
+    ],
+    "qa": [
+      "Checked against the live feed, not cached",
+      "Mismatches routed correctly",
+      "Logged weekly for trend"
+    ],
+    "read_point": "weekly, plus a monthly trend rollup with the AI-visibility report",
+    "typical_duration": "agent: 2-3 hours/week",
+    "subagents": []
+  }
+]

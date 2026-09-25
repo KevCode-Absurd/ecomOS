@@ -1,0 +1,90 @@
+# Competitors and market: features
+
+Status: todo | doing | done | parked. One feature per commit. The first round is the skeleton; after that, features come in rounds of 10, stack-ranked by revenue impact, usefulness and how easy they are to build on dummy data.
+
+## Round 0: skeleton
+
+| # | Feature | Status |
+|---|---|---|
+| 0.1 | Page shell in the shared UI kit: header, empty-state tiles, insight list, action buttons | todo |
+| 0.2 | `api.py` serving this screen's metrics from `app/data/` with unavailable states | todo |
+| 0.3 | 3 metric tiles, 2 insights, 1 chart from the sample brand | todo |
+
+## Candidates from the room spec (pick 10 per round)
+
+### Questions this screen should answer
+
+- who or what are we really competing with  (BRAND-C18)
+- where is there room nobody has taken  (BRAND-C19)
+- does this positioning actually win against the alternative  (BRAND-C20)
+- is there a dimension nobody has claimed, or a reframe of the whole category  (BRAND-C21)
+- are we priced right, and is discounting undercutting us  (BRAND-C24)
+- is this idea big enough to matter at our numbers  (BRAND-C23)
+- what did they change this week that we should know about  (BRN-C11)
+- what do we say when a customer asks how we compare  (BRAND-C57)
+- why do we lose the ones we lose, by name  (BRAND-C58)
+- what is the market doing that we are not seeing  (BRAND-C07)
+
+### Metrics specified
+
+- `competitors_tracked`: How many named competitor brands are on watch. count of active entries in the competitor set
+- `price_position_index`: Where the brand's price sits versus the tracked competitors on a matched product. brand price / median competitor price for the matched product, times 100
+- `price_change_count`: How many price moves the tracked competitors made. count of price changes across all competitors
+- `new_creative_count`: New competitor ads detected. count of ad creatives first seen this period, per competitor
+- `new_launch_count`: New products, collections or channels a competitor entered. count of new SKUs, collections or marketplace listings detected
+- `positioning_openness_score`: How much of the positioning map is unclaimed. open quadrants / total quadrants on the map
+- `category_ladder_coverage`: How many real alternatives, including doing nothing, are mapped. count of distinct rungs logged on the ladder
+- `market_size_estimate`: How many repeat buyers at this brand's own AOV and margin would sustain the business. target profit / (AOV times margin times repeat orders per buyer per year)
+- `addressable_niche_size`: Estimated demand for a candidate niche. search or category demand signal for the niche, scaled by the brand's realistic capture rate
+- `win_rate_vs_named_competitor`: Share of studied almost-buyers who chose the brand over one named competitor. wins / (wins plus losses) in the win-loss sample
+- `battlecard_freshness_days`: Days since a battlecard claim was last verified. today minus last verification date, per claim
+- `competitor_activity_share`: Share of tracked competitor ad activity by count, as a public signal only. this competitor's new creatives / total new creatives across all tracked competitors
+- `premium_signal_score`: How many premium signals the brand shows versus the category norm. count of premium signals present (packaging, guarantee, service, price anchor) / count expected for the category
+- `discount_depth_vs_category`: How deep the brand discounts versus tracked competitors. brand's average discount percent minus competitor median discount percent
+- `positioning_test_score`: Which of 2 positioning frames won when tested against each other. share preferring frame A minus share preferring frame B, in the test sample
+
+### Insights specified (rules in code)
+
+- competitor cut price sharply: a tracked competitor's price on a matched product drops more than 15 percent versus its own trailing 30-day average → "{competitor} cut the price on {product} by {pct} percent." (action BRN-C11)
+- competitor tried a new angle: a tracked competitor's new creative uses a hook or product tag not seen from them in the trailing 90 days → "{competitor} is now running a new angle: {angle}." (action BRN-C11)
+- competitor entered a new channel: a tracked competitor's product is newly listed on a marketplace or channel it was not on last capture → "{competitor} is now selling on {channel}." (action BRN-C11)
+- open quadrant with real demand: a positioning map quadrant has zero competitors plotted and a non-zero demand signal → "No tracked brand is claiming '{quadrant}', and there is real search demand for it." (action BRAND-C19)
+- price has drifted outside the category range: price_position_index falls outside the learned range (a set band around the category median) for 2 consecutive captures → "The brand's price is now {pct} percent {above_below} the category range." (action BRAND-C24)
+- discounting is undercutting premium positioning: discount_depth_vs_category is positive and premium_signal_score is above the category norm at the same time → "The brand discounts {pct} points deeper than the category while claiming a premium position." (action BRAND-C24)
+- the same loss reason keeps repeating: the same coded reason appears in 3 or more win-loss interviews against the same named competitor → "{n} people chose {competitor} over us for the same reason: {reason}." (action BRAND-C58)
+- battlecard claim is stale: battlecard_freshness_days exceeds 90 for a claim still in active use → "The claim '{claim}' on the {competitor} battlecard has not been checked in {n} days." (action BRAND-C57)
+- a lower rung of the ladder is gaining: public demand signal for a lower-commitment alternative (including doing nothing) rises faster than demand for the category itself → "Interest in '{rung}' is growing faster than interest in the category." (action BRAND-C18)
+
+### Visuals specified
+
+- XY positioning map (scatter plot, 2 axes): brand and every tracked competitor plotted, with open quadrants marked
+- price ladder (horizontal band chart): brand and the 7 competitors' prices on a matched product, with the category range shaded
+- competitor change feed (reverse-chronological timeline): new creative, price move or launch per competitor, most recent first
+- category ladder diagram (vertical ladder): every rung from doing nothing up to the closest direct rival, with the brand's position marked
+- battlecard table (comparison table): brand versus one named competitor, verified differences only, with a freshness flag
+- win-loss reason breakdown (bar chart): count of losses to a named competitor, grouped by coded reason
+
+### Not in the usual tools
+
+- the positioning map plots the brand against every real shopper alternative, including doing nothing and adjacent categories, not only direct rivals
+- the price audit ties price band to the category's own learned range and the brand's premium signals, not just a raw price diff
+- competitor watch here reads only public signal (ads, sites, prices, launches) for the 7 brands already in this brand's gallery, and alerts only on real crossings
+- win-loss research asks real almost-buyers why they chose a named competitor, producing comparison language no price or ad tool can give
+- the category ladder explicitly includes doing nothing and job-based alternatives outside the obvious category
+- battlecards here are gated on verified differences with a refresh cadence and a staleness flag
+
+### Data this screen needs
+
+- `competitor_set`: brand, competitor_name, site_url, ad_library_id, marketplace_listings, active_flag (meta_gallery competitors.json, BRAND-C07)
+- `competitor_price_capture`: competitor_name, product_match_id, price, price_incl_tax (sales tax for US; GST for an India-market competitor, markets: IN), discount_pct, captured_at (price capture script (not yet built))
+- `competitor_ad_capture`: competitor_name, creative_id, first_seen, angle_tag, channel, media_url (meta_gallery comp_media.json, BRAND-C56)
+- `category_ladder`: brand, rung_name, rung_type (do_nothing, adjacent, direct), demand_signal (BRAND-C18)
+- `positioning_map`: brand_or_competitor, axis_x_score, axis_y_score, quadrant_label (BRAND-C19)
+- `battlecards`: brand, competitor_name, claim, evidence, last_verified (BRAND-C57)
+- `win_loss_interviews`: brand, respondent_id, outcome (win, loss), named_competitor, reason_code, quote, date (BRAND-C58)
+- `brand_own_margin_data`: brand, aov, gross_margin_pct, orders_per_repeat_buyer (store order and finance export, BRAND-C23)
+
+## Rounds
+
+| Round | Features picked | Date | Notes |
+|---|---|---|---|

@@ -1,0 +1,1347 @@
+[
+ {
+  "id": "site/store-setup-checklist",
+  "name": "Store setup checklist",
+  "parent": null,
+  "invoke_when": "any 05-SET style setup or configuration task: platform, foundation, domain, catalogue, architecture, markets, consent, apps",
+  "select_by": {
+   "section": "foundation | domain | catalogue | architecture | markets | consent | apps"
+  },
+  "inputs_required": [
+   "brand brain: the relevant section (products, policies, markets, legal entity)",
+   "connector: shopify admin | woocommerce admin"
+  ],
+  "steps": [
+   "Read the section's required state from the idea bank and the brand brain.",
+   "Read the live configuration through the platform connector.",
+   "Compare live state to required state, field by field.",
+   "Note evidence for every fail, not a vague warning.",
+   "Write the fix for every fail, sized to who can do it.",
+   "Mark pass only where a real read confirmed it, never assumed."
+  ],
+  "checks": [
+   "Nothing marked pass without an actual read.",
+   "Every fail has a concrete fix, not a warning.",
+   "Evidence is dated and sourced."
+  ],
+  "output": "checklist table {item, pass/fail, evidence, fix} plus a short summary",
+  "used_by": [
+   "SITE-W01",
+   "SITE-W03",
+   "SITE-W04",
+   "SITE-W05",
+   "SITE-W06"
+  ],
+  "shared_with": [],
+  "skill_md": "---\nname: store-setup-checklist\nowner: site-specialist\nversion: 1\ninvoke_when: any store setup or configuration task in 05-SET (platform choice, foundation, domain, catalogue, architecture, markets, consent)\ninputs: brand brain section relevant to the task, a live connector read, the idea-bank items for that section\noutputs: checklist table {item, pass/fail, evidence, fix}, summary line\n---\n# Store setup checklist\n\n## Purpose\nTurn a setup or configuration task into an evidence-based pass/fail list instead of a settings-page glance, so nothing is marked done without being read.\n\n## Steps\n1. Pull the idea-bank items and required-state rules for the section in question.\n2. Read the live configuration through the platform connector (Shopify Admin, WooCommerce REST API).\n3. Compare live state to required state, one field or setting at a time.\n4. For every fail, write down the exact evidence (the value read, the value required).\n5. Write the fix, sized to whether a person or the founder needs to act.\n6. Mark pass only where a live read confirmed it.\n\n## Checks\n- No item marked pass from memory or a settings screenshot alone.\n- Every fail has a concrete, actionable fix.\n- Evidence is dated so staleness is visible later.\n\n## Output\nA checklist table plus a one-line summary a founder can read in 10 seconds.\n\n## Example\n\"Payment capture timing: FAIL. Live value: manual capture. Required: automatic within 3 days. Fix: change capture setting in Shopify Payments settings, 2 minutes, no dependency.\"\n"
+ },
+ {
+  "id": "site/store-setup-checklist/payments-shipping-tax",
+  "name": "Payments, shipping and tax setup",
+  "parent": "site/store-setup-checklist",
+  "invoke_when": "configuring payment gateways, shipping zones or tax jurisdictions, where the risk of a wrong number is real money",
+  "select_by": {
+   "section": "finance"
+  },
+  "inputs_required": [
+   "brand brain: markets, margin, AOV, registered tax jurisdictions",
+   "connector: shopify admin"
+  ],
+  "steps": [
+   "Verify identity documents against the gateway's exact requirement.",
+   "Configure the setting (gateway, zone, tax row) from a real brand number, never a guess.",
+   "Test the setting with a real transaction or a real cart at the edge case.",
+   "Log the test result as evidence, not a note that it 'should work'."
+  ],
+  "checks": [
+   "A real refunded order, a real edge-bracket cart, or a real 2-region tax test backs every claim of done.",
+   "No tax setting configured without a professional's confirmation on file."
+  ],
+  "output": "configuration + test log {setting, value, test performed, result}",
+  "used_by": [
+   "SITE-W05",
+   "SITE-W06",
+   "SITE-W28"
+  ],
+  "shared_with": [],
+  "skill_md": "---\nname: payments-shipping-tax\nowner: site-specialist\nversion: 1\ninvoke_when: configuring a payment gateway, a shipping zone/rate, or a tax jurisdiction\ninputs: brand brain markets/margin/AOV/tax jurisdictions, connector read of current config\noutputs: configuration + test log {setting, value, test performed, result}\n---\n# Payments, shipping and tax setup\n\n## Purpose\nConfigure the 3 setup areas where a wrong number costs real money on day one, and prove every one of them with a real test, not a settings screenshot.\n\n## Steps\n1. For payments: verify identity documents exactly, add a second gateway (Shop Pay, PayPal, Apple Pay, a BNPL option such as Affirm, Klarna or Afterpay) and regional methods, set capture and fraud rules.\n2. Test every gateway in sandbox, then place and refund one real order before removing the storefront password.\n3. For shipping: build zones so every country has an explicit rate, set the free-shipping threshold from real margin and AOV.\n4. Test every rate bracket at its edge with a real cart.\n5. For tax: confirm real obligations with a professional first, then enable the calculation service per jurisdiction (state nexus and marketplace facilitator rules for the US).\n6. Decide inclusive/exclusive display and tax basis per jurisdiction's real rule, and test one product per tax class in 2+ regions.\n\n## Checks\n- A real refunded order exists in the gateway dashboard.\n- Every shipping bracket boundary was tested with a real cart.\n- No tax jurisdiction configured without a professional's sign-off on file.\n\n## Output\nOne configuration + test log per area, each line naming the setting, the value, the test performed and the result.\n\n## Example\n\"Free shipping threshold: set at $59, from AOV $46 and 42% margin. Tested at $58.99 (rate shown) and $59.00 (free), both correct.\"\n"
+ },
+ {
+  "id": "site/store-setup-checklist/launch-sequencing",
+  "name": "Pre-launch QA and launch sequencing",
+  "parent": "site/store-setup-checklist",
+  "invoke_when": "running the final dependency-ordered checklist right before a store goes live",
+  "select_by": {
+   "section": "launch"
+  },
+  "inputs_required": [
+   "brand brain: full setup record",
+   "results of every prior setup workflow"
+  ],
+  "steps": [
+   "Assemble the dependency-ordered checklist from every prior setup workflow's output.",
+   "Close every line with the action a real customer would take.",
+   "Run a full mobile QA pass on the real device split.",
+   "Give a single go/no-go call.",
+   "Remove the storefront password only at 100% pass."
+  ],
+  "checks": [
+   "No line marked pass from a settings screen alone.",
+   "Password removed only after every line passes."
+  ],
+  "output": "launch checklist with pass/fail + go/no-go recommendation",
+  "used_by": [
+   "SITE-W08"
+  ],
+  "shared_with": [],
+  "skill_md": "---\nname: launch-sequencing\nowner: site-specialist\nversion: 1\ninvoke_when: pre-launch, once every setup workflow has produced its own checklist\ninputs: brand brain full setup record, outputs of SITE-W01 through SITE-W07\noutputs: launch checklist with pass/fail, go/no-go recommendation\n---\n# Pre-launch QA and launch sequencing\n\n## Purpose\nProve, with real customer actions, that a store is actually ready to sell, and give one clear go or no-go call before the password comes off.\n\n## Steps\n1. Pull every prior setup workflow's result into one dependency-ordered list.\n2. For each line, perform the real action a customer would take (browse, add to cart, pay, receive an email) rather than checking a setting.\n3. Run a full mobile QA pass across the brand's real device split.\n4. Check the logged-out storefront in an incognito window, clicking every visible element.\n5. Compile the pass/fail table.\n6. Give one clear go or no-go call, naming any blocking failure.\n7. Remove the storefront password only once every line passes.\n\n## Checks\n- Every line closed with a real action, not an admin-panel glance.\n- No password removal before 100% pass.\n- The go/no-go call is unambiguous.\n\n## Output\nA pass/fail table plus a one-line go/no-go recommendation with any blocker named.\n\n## Example\n\"38 of 38 checks pass. Go. Password removed 14:02 IST, confirmed by a live incognito purchase test immediately after.\"\n"
+ },
+ {
+  "id": "site/store-setup-checklist/post-launch-hygiene",
+  "name": "Post-launch hygiene sweep",
+  "parent": "site/store-setup-checklist",
+  "invoke_when": "the recurring weekly housekeeping pass after a store is live",
+  "select_by": {
+   "section": "hygiene",
+   "cadence": "weekly"
+  },
+  "inputs_required": [
+   "connector: shopify admin",
+   "connector: support desk"
+  ],
+  "steps": [
+   "Reconcile inventory against real stock.",
+   "Classify support tickets by root cause.",
+   "Re-run shipping/tax checks on any change.",
+   "Sweep for broken links and redirect chains.",
+   "Confirm review-request and payout automations are actually firing."
+  ],
+  "checks": [
+   "Every ticket cluster of 3+ maps to a named root cause or is handed off.",
+   "No redirect chain longer than one hop remains."
+  ],
+  "output": "hygiene report + fix list",
+  "used_by": [
+   "SITE-W09"
+  ],
+  "shared_with": [],
+  "skill_md": "---\nname: post-launch-hygiene\nowner: site-specialist\nversion: 1\ninvoke_when: the weekly recurring housekeeping pass after a store is live\ninputs: connector: shopify admin, connector: support desk\noutputs: hygiene report, fix list\n---\n# Post-launch hygiene sweep\n\n## Purpose\nCatch the small things quietly going wrong on a live store before they become a support flood or a lost sale, on a fixed weekly cadence.\n\n## Steps\n1. Reconcile platform inventory against real stock (weekly for month one, then as risk warrants).\n2. Classify support tickets by root cause; anything outside Site's 4 folders gets routed with site/handoff-note, not dropped.\n3. Re-run shipping and tax checks whenever a product, zone or app changed this week.\n4. Confirm review-request automation and the payout bank account are both actually working, checked against a real order.\n5. Sweep for broken links to images, CSS and JS, and collapse any redirect chain to one 301.\n\n## Checks\n- Every recurring ticket cluster maps to a named root cause or is routed to the right specialist.\n- No item marked fixed without a live re-check.\n\n## Output\nA short weekly hygiene report and a fix list, each fix naming who does it.\n\n## Example\n\"Ticket cluster (11 this week): 'where is my size chart' on the linen shirt PDP. Root cause: size chart missing after last theme update. Fix: re-add via SITE-W11, same day.\"\n"
+ },
+ {
+  "id": "site/theme-engineering",
+  "name": "Theme engineering practice",
+  "parent": null,
+  "invoke_when": "selecting a theme, or maintaining the design system that keeps new sections consistent with it",
+  "select_by": {
+   "task": "select | design-system"
+  },
+  "inputs_required": [
+   "brand brain: required PDP/collection features",
+   "current theme CSS"
+  ],
+  "steps": [
+   "List required sections and features before browsing themes.",
+   "Vet 2-3 candidates on PDP, mobile and code quality, not the homepage demo.",
+   "Score against the feature list and pick one.",
+   "Document color, spacing, typography and component tokens from the live theme.",
+   "Check every new section against the token set and flag drift."
+  ],
+  "checks": [
+   "Every theme vetted on a real PDP and mobile width, not the marketplace preview.",
+   "A drifted button, font size or spacing is flagged before it ships."
+  ],
+  "output": "theme shortlist with scores; design token doc; drift flags",
+  "used_by": [
+   "SITE-W02"
+  ],
+  "shared_with": [],
+  "skill_md": "---\nname: theme-engineering\nowner: site-specialist\nversion: 1\ninvoke_when: selecting a new theme, or checking a new section against the brand's design tokens\ninputs: brand brain required features, current live theme CSS, candidate themes or mockups\noutputs: theme shortlist with scores; design token doc; drift flags\n---\n# Theme engineering practice\n\n## Purpose\nPick a theme on real fit, not a demo, and keep every later change consistent with one documented set of design tokens instead of drifting section by section.\n\n## Steps\n1. Write the required feature and section list before opening any theme.\n2. Vet each candidate on a real product page and a real mobile width, not the homepage demo.\n3. Score candidates against the list, note the runner-up and why it lost.\n4. Once a theme is live, document its color, spacing, typography and component tokens.\n5. Check every new homepage or PDP section, native or page-builder, against the token set.\n6. Flag any drift (wrong radius, font size, spacing) before the section ships.\n\n## Checks\n- Vetting happened on PDP and mobile, never the homepage demo alone.\n- Every new section was checked against the token doc, not shipped by eye.\n\n## Output\nA scored theme shortlist for a selection task, or a token doc plus drift flags for an ongoing design-system check.\n\n## Example\n\"New FAQ accordion built in Replo used a 6px border radius; brand token is 4px. Flagged and corrected before publish.\"\n"
+ },
+ {
+  "id": "site/theme-engineering/ai-build-guardrail",
+  "name": "AI build-agent guardrail",
+  "parent": "site/theme-engineering",
+  "invoke_when": "an AI coding agent is about to make a change to the storefront theme or a page",
+  "select_by": {
+   "source": "ai-agent"
+  },
+  "inputs_required": [
+   "brand brain: full product and policy record",
+   "brand brain: voice"
+  ],
+  "steps": [
+   "Write the input brief and change plan before the agent touches anything.",
+   "Batch exactly one change per prompt.",
+   "Preview privately, never on the public URL.",
+   "Treat the output as a draft: run mobile QA and a claims check before merge."
+  ],
+  "checks": [
+   "No AI-authored copy or code merges without a claim-check pass.",
+   "No change reaches the public URL before private preview."
+  ],
+  "output": "AI build brief; QA pass report; change log",
+  "used_by": [
+   "SITE-W02"
+  ],
+  "shared_with": [],
+  "skill_md": "---\nname: ai-build-guardrail\nowner: site-specialist\nversion: 1\ninvoke_when: an AI coding agent (Wiz, a Claude Code session, or similar) is about to change the storefront\ninputs: brand brain full product and policy record, brand voice guide\noutputs: AI build brief, QA pass report, change log\n---\n# AI build-agent guardrail\n\n## Purpose\nKeep an AI coding agent's storefront work safe and reviewable: real inputs, one change at a time, private preview, and manual QA before anything the agent wrote reaches a customer.\n\n## Steps\n1. Write a brief with the real product, policy and voice inputs the agent needs; never send it in with a bare one-line prompt.\n2. Let the agent interview and propose a plan before it starts building.\n3. Ask for exactly one storefront change per prompt, and verify each one live before the next.\n4. Preview every change privately; never let the agent's output reach the public URL directly.\n5. Treat the AI-authored section as a draft: run mobile QA and a claims check (shared/claim-check) on it.\n6. Plan long sessions around a possible usage-limit pause so a half-finished change isn't left live.\n\n## Checks\n- Every AI-authored section passed a claim check before merge.\n- No public URL ever served an unreviewed AI change.\n\n## Output\nThe AI build brief used to start the session, a QA pass report, and a change log entry per shipped edit.\n\n## Example\n\"Brief: rebuild the size-chart tab using the real size data in brand.json. Agent proposed a plan, built on a duplicate theme, previewed privately, claim-check passed, merged via reviewed PR.\"\n"
+ },
+ {
+  "id": "site/theme-engineering/git-ci-pipeline",
+  "name": "Git-based theme version control and CI",
+  "parent": "site/theme-engineering",
+  "invoke_when": "standing up or maintaining a git + CI deploy pipeline for the theme, or maintaining a staging mirror of production",
+  "select_by": {
+   "task": "devops"
+  },
+  "inputs_required": [
+   "current theme files",
+   "GitHub repo access",
+   "Shopify CLI"
+  ],
+  "steps": [
+   "Connect the theme repo to GitHub and configure CLI-based push.",
+   "Run theme-check linting on every commit; block a merge on a hard error.",
+   "Stand up a staging theme URL that mirrors production for every pull request.",
+   "Require a second reviewer or the founder gate before merging to the live theme.",
+   "Keep a one-command rollback to the previous release.",
+   "Refresh the staging store's product/price/inventory snapshot from production on a schedule."
+  ],
+  "checks": [
+   "A commit with a hard theme-check error cannot merge.",
+   "Rollback has been run once in a drill, not just documented."
+  ],
+  "output": "git repo with commit history; CI config; staging theme URL; rollback runbook",
+  "used_by": [
+   "SITE-W02"
+  ],
+  "shared_with": [],
+  "skill_md": "---\nname: git-ci-pipeline\nowner: site-specialist\nversion: 1\ninvoke_when: setting up or maintaining git-based theme version control, CI linting, or a staging mirror of production\ninputs: current theme files, GitHub repo access, Shopify CLI\noutputs: git repo with commit history, CI config, staging theme URL, rollback runbook\n---\n# Git-based theme version control and CI\n\n## Purpose\nReplace duplicate-theme-in-admin editing with a real engineering workflow, so every change is reviewable by commit and reversible by command, not by remembering which duplicate is which.\n\n## Steps\n1. Connect the theme repo to GitHub and configure Shopify CLI for local development.\n2. Add theme-check linting to run on every commit and block a merge on a hard error.\n3. Stand up a staging theme URL that auto-deploys from a branch, mirroring production.\n4. Require a second reviewer or the founder gate before any merge to the live theme.\n5. Keep one tested command to redeploy the previous commit's theme package.\n6. Tag each deploy with the change brief it shipped so the registry can trace it to an approved idea.\n7. Refresh the staging store's product/price/inventory snapshot from production on a schedule, never the reverse.\n\n## Checks\n- Rollback has actually been exercised once, not just written down.\n- Staging always mirrors current production data before a risky test.\n\n## Output\nA git repo with real commit history, working CI config, a live staging theme URL, and a rollback runbook.\n\n## Example\n\"Deploy tagged to brief DEV-2026-091. Rollback tested: `shopify theme push --release=prev` restored the prior theme in 40 seconds.\"\n"
+ },
+ {
+  "id": "site/theme-pr-diff",
+  "name": "Theme change as a reviewable diff",
+  "parent": null,
+  "invoke_when": "any theme or repo change of any size, on Shopify, WooCommerce or a custom repo",
+  "select_by": null,
+  "inputs_required": [
+   "the change description",
+   "the platform (Shopify theme, WooCommerce, custom repo)"
+  ],
+  "steps": [
+   "Duplicate the theme or branch the repo before making the change.",
+   "Make the change on the duplicate/branch only.",
+   "Screenshot before and after.",
+   "Write the rollback command.",
+   "Open a PR for a custom repo; require review before merge on Shopify too."
+  ],
+  "checks": [
+   "Never a direct edit to the live theme or main branch.",
+   "Rollback tested, not assumed."
+  ],
+  "output": "diff or PR link; rollback command; before/after screenshots",
+  "used_by": [
+   "SITE-W02",
+   "SITE-W03",
+   "SITE-W07",
+   "SITE-W10",
+   "SITE-W11",
+   "SITE-W19",
+   "SITE-W20",
+   "SITE-W26"
+  ],
+  "shared_with": [],
+  "skill_md": "---\nname: theme-pr-diff\nowner: site-specialist\nversion: 1\ninvoke_when: any theme or site-repo change is about to ship, regardless of size\ninputs: the change description, the platform (Shopify theme, WooCommerce, custom repo)\noutputs: diff or PR link, rollback command, before/after screenshots\n---\n# Theme change as a reviewable diff\n\n## Purpose\nMake every theme or repo change reviewable and reversible, the single mechanic that every other Site workflow relies on when it touches the live storefront.\n\n## Steps\n1. Duplicate the theme (Shopify/WooCommerce) or create a branch (custom repo) before making any change.\n2. Make the change only on the duplicate or branch, never the live theme or main.\n3. Screenshot the affected page before and after the change.\n4. Write the exact rollback command or step, and confirm it works.\n5. Open a pull request for a custom repo; require a second reviewer or the founder gate on Shopify/WooCommerce too.\n6. Verify the change on the live duplicate/staging URL, not only the editor preview.\n\n## Checks\n- No edit ever touches the live theme or main branch directly.\n- Rollback command has been tested, not assumed to work.\n- Before/after screenshots exist for every visual change.\n\n## Output\nA diff or PR link, a tested rollback command, and a before/after screenshot pair.\n\n## Example\n\"PDP delivery-ETA badge added on branch `pdp-eta-badge`, PR #142, rollback: `git revert 4fa21c`, tested clean revert in 15 seconds.\"\n"
+ },
+ {
+  "id": "site/platform-integrations",
+  "name": "Platform, app and automation governance",
+  "parent": null,
+  "invoke_when": "vetting or governing the app stack, wiring a no-code automation rule, tracking a platform release, or QA-ing a mobile app release",
+  "select_by": {
+   "task": "app-audit | automation | release-tracking | mobile-app"
+  },
+  "inputs_required": [
+   "connector: shopify admin apps list",
+   "brand brain: app inventory",
+   "platform release notes"
+  ],
+  "steps": [
+   "Vet a candidate app against ratings and a real before/after speed test.",
+   "Consolidate duplicate apps and remove residual code after uninstall.",
+   "List recurring manual if-this-then-that actions and wire each into the platform's native automation layer.",
+   "Test each automation rule against a real historical order before enabling it live.",
+   "Read each platform release on its schedule and write an adopt-or-ignore memo.",
+   "For a mobile app: QA the listing, deep links, push opt-in and app-only offers before each release."
+  ],
+  "checks": [
+   "No app installed without a measured before/after speed test.",
+   "Every automation rule tested against a real order before going live."
+  ],
+  "output": "app audit report; working automation rules + audit log; adopt-or-ignore memo per release; app release QA report",
+  "used_by": [
+   "SITE-W07"
+  ],
+  "shared_with": [],
+  "skill_md": "---\nname: platform-integrations\nowner: site-specialist\nversion: 1\ninvoke_when: vetting the app stack, wiring a no-code automation, tracking a platform release, or QA-ing a mobile app release\ninputs: connector: shopify admin apps list, brand brain app inventory, platform release notes\noutputs: app audit report, working automation rules + audit log, adopt-or-ignore memo, app release QA report\n---\n# Platform, app and automation governance\n\n## Purpose\nKeep the store's app stack lean, its small operational rules automated without custom code, and its platform surface current, all under one governance discipline.\n\n## Steps\n1. Vet any candidate app against ratings and a real before/after speed test, never install on trust alone.\n2. Consolidate apps doing the same job, and search for residual theme code after every uninstall.\n3. List recurring manual if-this-then-that actions a store manager does by hand.\n4. Wire each into the platform's native automation layer (Shopify Flow or equivalent), never a custom-coded rule for pure logic.\n5. Test each rule against a real historical order before turning it on live, and log every action it fires.\n6. Read each platform release (Shopify Editions, WooCommerce/WordPress core, app deprecations, API sunsets) on its own schedule.\n7. Match new native features against the paid app list to flag a possible retirement, and write a short adopt-or-ignore memo.\n8. For a brand with a mobile app, QA the store listing, screenshots, deep links and push opt-in before each release.\n\n## Checks\n- Every automation rule tested against a real order before going live, with its actions logged.\n- No API key or credential appears anywhere outside the platform's own secure settings.\n\n## Output\nAn app audit report, working automation rules with an audit log, a short per-release memo, and (when relevant) an app release QA report.\n\n## Example\n\"Automation rule: auto-tag orders over $150 with a prior chargeback or return-to-sender history as 'high-risk-review'. Tested against 20 historical orders, correctly flagged 3 known cases, enabled live.\"\n"
+ },
+ {
+  "id": "site/platform-integrations/custom-integration-build",
+  "name": "Build a custom integration or webhook",
+  "parent": "site/platform-integrations",
+  "invoke_when": "no off-the-shelf app cleanly connects the store to an external system (ERP, WMS, loyalty ledger, marketplace, courier)",
+  "select_by": {
+   "task": "integration"
+  },
+  "inputs_required": [
+   "external system's API docs",
+   "field mapping",
+   "sandbox credentials"
+  ],
+  "steps": [
+   "Map every field that must sync both ways before writing code.",
+   "Build the custom app or Flow automation, storing keys only in secure platform settings.",
+   "Add retry-with-backoff on failed webhooks and a dead-letter log.",
+   "Alert a human on a detected sync gap instead of failing silently.",
+   "Document the data contract.",
+   "Test against a sandbox before pointing at production."
+  ],
+  "checks": [
+   "No API key ever appears in theme code, a prompt, or a repo.",
+   "A sync gap alerts a human, never fails silently."
+  ],
+  "output": "working integration or Flow; webhook retry log; data contract doc; sync-health alert",
+  "used_by": [
+   "SITE-W07"
+  ],
+  "shared_with": [],
+  "skill_md": "---\nname: custom-integration-build\nowner: site-specialist\nversion: 1\ninvoke_when: a manual double-entry process is found and no off-the-shelf app covers the connection cleanly\ninputs: external system's API docs, field mapping, sandbox credentials\noutputs: working integration or Flow, webhook retry log, data contract doc, sync-health alert\n---\n# Build a custom integration or webhook\n\n## Purpose\nConnect the store to an ERP, warehouse system, loyalty ledger, marketplace feed or courier safely, with retries and alerting instead of a silent, brittle one-way sync.\n\n## Steps\n1. Map every field that must sync both ways (inventory, order status, tracking number, loyalty points) before writing any code.\n2. Build the custom app or Shopify Flow automation and register the needed webhooks.\n3. Store API keys and tokens only in the platform's secure app settings or the environment secret store, never in theme code or a public repo.\n4. Add retry-with-backoff on failed webhook deliveries, with a dead-letter log for ones that never succeed.\n5. Alert a human the moment a sync gap is detected (order count mismatch, stale inventory timestamp).\n6. Document the data contract so a future developer does not reverse-engineer it.\n7. Test against a sandbox or staging account of the external system before pointing at production.\n\n## Checks\n- No credential appears outside the platform's secure settings.\n- A deliberately failed test webhook triggers the retry logic and, if it keeps failing, a human alert.\n\n## Output\nA working integration or Flow, a retry log, a written data contract, and a sync-health alert rule.\n\n## Example\n\"Inventory sync to the 3PL's WMS: field-mapped SKU, quantity, location. Retry with exponential backoff up to 5 attempts, dead-letter log after that, Slack alert to ops on any dead-letter entry.\"\n"
+ },
+ {
+  "id": "site/reliability-monitoring",
+  "name": "Automated regression and uptime monitoring",
+  "parent": null,
+  "invoke_when": "gating a theme or app deploy on a test suite, or watching the live store continuously for outages and degradation",
+  "select_by": {
+   "watch_type": "regression | uptime"
+  },
+  "inputs_required": [
+   "critical-path map",
+   "staging theme URL",
+   "store URLs by page type"
+  ],
+  "steps": [
+   "Map critical paths into test cases and run visual diffs plus scripted flows before/after every deploy and nightly.",
+   "Self-heal a test broken by a cosmetic change; flag ones that fail for a real reason.",
+   "Capture video replay, console errors and a network trace on any failure.",
+   "Run synthetic uptime checks every few minutes from more than one region.",
+   "Run a full transaction walk on a schedule, not just a page-200 check.",
+   "Route any degradation to a human with an escalation path."
+  ],
+  "checks": [
+   "A deploy never ships without a green regression run.",
+   "An outage reaches a human within the alert routing's target time."
+  ],
+  "output": "pass/fail report; visual diff set; bug reports with replay; uptime dashboard; incident log",
+  "used_by": [
+   "SITE-W09"
+  ],
+  "shared_with": [],
+  "skill_md": "---\nname: reliability-monitoring\nowner: site-specialist\nversion: 1\ninvoke_when: gating a theme/app deploy on automated tests, or running continuous uptime and transaction monitoring\ninputs: critical-path map, staging theme URL, store URLs by page type, on-call contact\noutputs: pass/fail report, visual diff set, bug reports with replay, uptime dashboard, incident log\n---\n# Automated regression and uptime monitoring\n\n## Purpose\nCatch a breaking theme/app change before it ships, and catch a live outage or slow degradation within minutes instead of at the next scheduled hygiene sweep.\n\n## Steps\n1. Map the store's critical paths (home, PDP, filter, cart, discount code, checkout, login) into test cases.\n2. Run visual diffs across breakpoints and scripted end-to-end flows before and after every deploy, plus nightly.\n3. Self-heal a test whose selector changed for a cosmetic reason; flag the ones that fail for a real reason.\n4. On failure, capture video replay, console errors and a network trace, and write an actionable bug report.\n5. Run synthetic checks every few minutes on home, PDP, cart, checkout and search from more than one region.\n6. Run a full transaction walk (add-to-cart through confirmation) on a schedule, not just a page-200 check.\n7. Track SSL and DNS separately, and pull real-user page-load data to catch slow-but-not-down degradation.\n8. Route any failure or degradation to a human with an escalation path if unacknowledged, logging detect and fix time.\n\n## Checks\n- No deploy ships without a green regression run.\n- Every incident logs a real detect time and fix time.\n\n## Output\nA pass/fail regression report with visual diffs and bug replays, plus an uptime dashboard and incident log.\n\n## Example\n\"Nightly regression: checkout flow failed on Safari mobile after a tag-manager update. Video replay + network trace attached. Deploy blocked until fixed.\"\n"
+ },
+ {
+  "id": "site/feature-build",
+  "name": "Repeat-purchase, wholesale and demand-capture feature build",
+  "parent": null,
+  "invoke_when": "building a subscription, loyalty, wishlist, B2B, returns portal, or restock/pre-launch capture feature",
+  "select_by": {
+   "feature": "subscription | loyalty | b2b | returns | waitlist | password-page"
+  },
+  "inputs_required": [
+   "brand brain: repeat purchase rate",
+   "brand brain: wholesale demand",
+   "margin data"
+  ],
+  "steps": [
+   "Check the product and margin genuinely fit the feature before building it.",
+   "Build the feature spec: pause/skip/swap/cancel for subscriptions, price list/net-terms for B2B, condition rules for returns, notify-me for waitlists.",
+   "Size any financial incentive (exchange credit, discount) from real margin.",
+   "Never pre-select an option that commits the shopper to more than they chose.",
+   "Feed the resulting data (return reasons, waitlist size) back to product and copy."
+  ],
+  "checks": [
+   "No option pre-selected without explicit shopper choice.",
+   "Every incentive amount computed from real margin."
+  ],
+  "output": "feature setup spec; flow diagram; configured feature; conversion/return-reason report",
+  "used_by": [
+   "SITE-W10"
+  ],
+  "shared_with": [],
+  "skill_md": "---\nname: feature-build\nowner: site-specialist\nversion: 1\ninvoke_when: a subscription, loyalty, wishlist, B2B, returns portal, or restock/pre-launch capture feature is being added\ninputs: brand brain repeat-purchase rate, wholesale demand, margin data, returns/waitlist app options\noutputs: feature setup spec, flow diagram, configured feature, conversion/return-reason report\n---\n# Repeat-purchase, wholesale and demand-capture feature build\n\n## Purpose\nBuild a customer-facing feature only where the product and margin genuinely support it, and spec it against real numbers rather than copying a generic app default.\n\n## Steps\n1. Check repeat-purchase rate or wholesale demand data before proposing a subscription, bundle, loyalty or B2B path.\n2. For subscriptions: build distinct pause, skip, swap and cancel flows, and never pre-select the option in a quiz or at checkout.\n3. For B2B: build a separate price list and a minimum-order or net-terms rule, keeping it invisible to consumer pricing.\n4. For returns: configure against the brand's real return window and condition rules, and size an exchange-for-credit incentive from real margin.\n5. For restock/pre-launch: add a notify-me capture and a password-protected coming-soon page, both feeding the brand's own list.\n6. Surface the resulting structured data (return reasons, waitlist conversion) back to product and copy workflows.\n\n## Checks\n- No pre-selected option commits a shopper to more than they chose.\n- Every financial incentive traces to a real margin number.\n- Signups and return data land only in the brand's own systems.\n\n## Output\nA feature setup spec and flow diagram, the configured feature, and a report on conversion or return reasons.\n\n## Example\n\"Exchange-for-credit incentive: 10% bonus credit, sized against the category's 38% margin, still profitable after the bonus and the restocking cost.\"\n"
+ },
+ {
+  "id": "site/speed-audit",
+  "name": "Speed measurement, baseline and monitoring",
+  "parent": null,
+  "invoke_when": "capturing a speed baseline, writing the resulting developer brief, running monthly regression monitoring, or preparing for a peak-traffic event",
+  "select_by": {
+   "task": "baseline | brief | regression | peak-readiness"
+  },
+  "inputs_required": [
+   "brand brain: top paid landing page and PDP URLs",
+   "connector: pagespeed insights api",
+   "results/*.json history"
+  ],
+  "steps": [
+   "Record the real page before touching anything.",
+   "Measure 3 runs on a throttled mobile profile and take the median.",
+   "Cross-check a suspicious result against field data.",
+   "Fix the page paid ads land on first.",
+   "Write a brief with a numeric pass threshold and a one-step rollback for every diagnosed fix.",
+   "Re-audit monthly against a page-weight and script-count budget, flagging a regression the moment it appears.",
+   "Before a known sale, load-test at-risk dynamic steps and freeze risky changes."
+  ],
+  "checks": [
+   "3 runs averaged, never 1.",
+   "A fix is not called a win before ~28 days of field data."
+  ],
+  "output": "baseline measurement; root-cause diagnosis; developer brief; founder decision page; monthly trend report; peak readiness report",
+  "used_by": [
+   "SITE-W12",
+   "SITE-W15"
+  ],
+  "shared_with": [],
+  "skill_md": "---\nname: speed-audit\nowner: site-specialist\nversion: 1\ninvoke_when: capturing a speed baseline, writing the resulting brief, running monthly regression monitoring, or prepping for a sale's peak load\ninputs: brand brain top landing/PDP URLs, connector: pagespeed insights api, results/*.json history\noutputs: baseline measurement, root-cause diagnosis, developer brief, founder decision page, monthly trend report, peak readiness report\n---\n# Speed measurement, baseline and monitoring\n\n## Purpose\nMeasure real page speed honestly, fix the page paid traffic actually lands on first, and keep a running budget so nothing regresses silently.\n\n## Steps\n1. Record every response of the real page with speed_lab.record before changing anything.\n2. Measure 3 runs on a throttled mobile profile (Pixel 5, slow 4G, 4x CPU) and take the median.\n3. Cross-check a suspicious lab result against PageSpeed Insights field data.\n4. Fix the page paid ads land on before any other template.\n5. Turn every diagnosed fix into a brief: what, needs, tradeoff, who, a numeric pass threshold, and a one-step rollback.\n6. Re-audit monthly holding a page-weight and script-count budget, flagging the moment a budget is crossed.\n7. Wait about 28 days of field data before calling a fix a win.\n8. Before a known sale, list at-risk dynamic steps, load-test them, and freeze risky changes during the window.\n\n## Checks\n- Every measurement is 3 runs averaged, never 1.\n- Field and lab data are read as separate things, never conflated.\n- Every brief's threshold is a number, never a feeling.\n\n## Output\nA baseline measurement file, a diagnosis, a developer brief per fix, a monthly trend report, and (seasonally) a peak-readiness report.\n\n## Example\n\"PDP LCP: 4.1s baseline (median of 3 runs). Fix: preload hero image, cut a blocking script. Threshold: LCP under 2.5s. Rollback: remove the preload tag, one line.\"\n"
+ },
+ {
+  "id": "site/speed-audit/core-web-vitals-fix",
+  "name": "Diagnose and fix CLS, LCP and INP",
+  "parent": "site/speed-audit",
+  "invoke_when": "a Core Web Vital (layout shift, largest contentful paint, or interaction responsiveness) needs a named, fixed root cause",
+  "select_by": {
+   "metric": "cls | lcp | inp"
+  },
+  "inputs_required": [
+   "baseline measurement",
+   "recorded page / filmstrip"
+  ],
+  "steps": [
+   "For CLS: name the exact shifting element, reserve its space, fix conflicting CSS, remove fade-ins.",
+   "For LCP: name the LCP element, run the fix order (un-lazy, de-animate, compress, preload, cut the blocking script), check TTFB first.",
+   "For INP: cut main-thread JS blocking add-to-cart, pickers, filters and autocomplete.",
+   "Confirm every fix with a real device test (tap test for INP, filmstrip for CLS) and a fidelity check, not the score alone."
+  ],
+  "checks": [
+   "The specific element or script is named, never 'the page feels slow/jumpy'.",
+   "A real tap test or filmstrip confirms the fix, not the lab score alone."
+  ],
+  "output": "CLS/LCP/INP diagnosis per template + fix sequence",
+  "used_by": [
+   "SITE-W12"
+  ],
+  "shared_with": [],
+  "skill_md": "---\nname: core-web-vitals-fix\nowner: site-specialist\nversion: 1\ninvoke_when: a page's CLS, LCP or INP score needs a named root cause and a fix, not a general speed pass\ninputs: baseline measurement, recorded page or filmstrip, the metric in question\noutputs: per-template diagnosis and fix sequence for the named metric\n---\n# Diagnose and fix CLS, LCP and INP\n\n## Purpose\nTurn a Core Web Vital score into a named element and a fix, since a score alone tells nobody what to change.\n\n## Steps\n1. For layout shift (CLS): name the exact element causing the shift, reserve space for anything arriving after first paint, fix contradicting CSS, and remove fade-in effects.\n2. For largest contentful paint (LCP): name the LCP element per template, check time-to-first-byte before blaming the image, then run the fix order in sequence: un-lazy, de-animate, compress, preload, cut the blocking script hiding it.\n3. For interactivity (INP): cut main-thread JavaScript blocking add-to-cart, variant pickers, filters and search autocomplete; treat autocomplete lag as a real issue, not a shrug.\n4. Confirm every fix on a real device: a filmstrip re-run for CLS, a preload/priority check for LCP, a real tap test for INP.\n5. Run check_fidelity so the fast variant is still the same page as the baseline.\n\n## Checks\n- The shifting element, LCP element, or blocking script is named specifically.\n- INP fix confirmed by a real tap test, not the lab score alone.\n- Fidelity check passed before any number is trusted.\n\n## Output\nA per-template diagnosis naming the exact cause, and the fix sequence that was run, with before/after numbers.\n\n## Example\n\"LCP element: hero image, hidden by a 400ms fade-in script. Fix order: removed fade-in, preloaded image with fetchpriority=high. LCP 3.8s to 1.9s, median of 3 runs, fidelity confirmed.\"\n"
+ },
+ {
+  "id": "site/speed-audit/asset-weight",
+  "name": "Cut image, font and code weight",
+  "parent": "site/speed-audit",
+  "invoke_when": "images, fonts or unminified/unsplit code are adding measurable weight to a page",
+  "select_by": {
+   "asset": "image | font | code"
+  },
+  "inputs_required": [
+   "connector: media library",
+   "brand brain: brand fonts",
+   "results/*.json history"
+  ],
+  "steps": [
+   "Check images directly rather than trusting platform auto-compression.",
+   "Resize, pick the right format, ensure modern-format delivery and correct lazy/eager loading.",
+   "Cap font variations, self-host as WOFF2, add font-display: swap, match fallback metrics.",
+   "Minify/split code by page type only after images and scripts are already fixed.",
+   "Delay non-critical CSS and complete critical CSS per visually distinct template."
+  ],
+  "checks": [
+   "Before/after byte counts shown for every fix, not just a claim.",
+   "Code splitting happens after, not before, image/script fixes."
+  ],
+  "output": "image fix list; font fix list; code-splitting plan; developer brief",
+  "used_by": [
+   "SITE-W13"
+  ],
+  "shared_with": [],
+  "skill_md": "---\nname: asset-weight\nowner: site-specialist\nversion: 1\ninvoke_when: images, fonts, or unsplit code are adding measurable page weight\ninputs: connector: shopify admin | woocommerce media library, brand brain brand fonts, results/*.json history\noutputs: image fix list, font fix list, code-splitting plan, developer brief\n---\n# Cut image, font and code weight\n\n## Purpose\nCut the 3 biggest sources of unnecessary page weight, in the right order, each proven with a before/after byte count.\n\n## Steps\n1. Check images directly; never trust automatic platform compression alone.\n2. Resize to about 2,000px, use JPEG for photos and PNG only for transparency, confirm WebP/AVIF delivery, and set lazy-load below the fold, eager above it.\n3. Add width/height or aspect-ratio to every image to prevent shift, and sweep the media library for stray heavy files.\n4. Cap font variations to about 3, self-host as WOFF2, add font-display: swap, and match the fallback font's metrics.\n5. Subset fonts to the characters used on a framework storefront.\n6. Only after images and fonts are fixed, minify and split CSS/JS by page type.\n7. Delay non-critical CSS (modals, drawers, filters) and make inlined critical CSS complete per template.\n\n## Checks\n- Before/after byte counts recorded for every fix.\n- No visible text jump on font swap, checked with a filmstrip.\n- Code splitting done last, never first.\n\n## Output\nAn image fix list, a font fix list, and a code-splitting plan, each with a before/after number.\n\n## Example\n\"Hero image: 1.8MB JPEG at 4000px, resized to 2000px and re-compressed to 210KB, WebP delivery confirmed. 1.6MB saved on the PDP's first paint.\"\n"
+ },
+ {
+  "id": "site/speed-audit/infra-and-scripts",
+  "name": "Govern scripts and tune caching, CDN and headless infrastructure",
+  "parent": "site/speed-audit",
+  "invoke_when": "third-party scripts, caching/CDN configuration, or a headless/framework storefront's server-side performance need attention",
+  "select_by": {
+   "layer": "scripts | caching | headless"
+  },
+  "inputs_required": [
+   "connector: shopify admin",
+   "connector: hosting provider",
+   "custom site repo"
+  ],
+  "steps": [
+   "Inventory every script route before touching any of them.",
+   "Defer or delay non-critical scripts, testing the exact feature each powers.",
+   "Verify caching and compression from response headers directly.",
+   "Confirm visitor-specific pages are never cached.",
+   "Write a host brief with real questions only after front-end fixes are measured.",
+   "On headless: prioritize only the true LCP image, server-render the buy box, trim API payloads."
+  ],
+  "checks": [
+   "Every tracking event tested on and off before shipping a script change.",
+   "No visitor-specific page ever cached."
+  ],
+  "output": "script inventory; delay/removal plan; caching configuration; host brief; framework performance plan",
+  "used_by": [
+   "SITE-W14"
+  ],
+  "shared_with": [],
+  "skill_md": "---\nname: infra-and-scripts\nowner: site-specialist\nversion: 1\ninvoke_when: third-party scripts, caching/CDN setup, or headless storefront performance need diagnosis\ninputs: connector: shopify admin, connector: hosting provider, results/serve.log, custom site repo when headless\noutputs: script inventory, delay/removal plan, caching configuration, host brief, framework performance plan\n---\n# Govern scripts and tune caching, CDN and headless infrastructure\n\n## Purpose\nFind and delay or remove scripts that block rendering without breaking tracking, confirm caching is real from the headers, and apply framework-specific fixes on a headless build.\n\n## Steps\n1. Inventory every script route (theme, app embed, tag manager, hardcoded) from a real page-load trace.\n2. Add defer to blocking scripts and test the exact feature each powers; delay non-critical widgets until first interaction.\n3. Never change pixel loading without testing every tracked event on and off.\n4. Verify caching and compression directly from response headers, never a plugin's settings page.\n5. Confirm cart, checkout, account and any visitor-specific page are never cached.\n6. Cache static assets long-term with versioned names, targeting an 80%+ CDN hit rate.\n7. Write a host brief with real, specific questions only after front-end fixes are already measured.\n8. On a headless/framework storefront: mark only the true LCP image as priority, server-render the buy box, return only needed API fields, and code-split non-critical UI.\n\n## Checks\n- Every tracking event tested on and off before a script change ships.\n- No visitor-specific page ever cached, confirmed live.\n\n## Output\nA script inventory, a delay/removal plan, verified caching configuration, a host brief, and (when headless) a framework performance plan.\n\n## Example\n\"Review-widget script loaded on every template; scoped to load only on PDP. Confirmed the widget still renders and pixel events still fire, on and off, before shipping.\"\n"
+ },
+ {
+  "id": "site/page-spec-and-copy",
+  "name": "Page spec and copy, general procedure",
+  "parent": null,
+  "invoke_when": "any page-building task needing brand voice, proof mapping and a claim-check pass before it ships",
+  "select_by": {
+   "format": "any"
+  },
+  "inputs_required": [
+   "brand brain: products, proof, voice",
+   "approved idea record",
+   "reference scout output (structure/mood only)"
+  ],
+  "steps": [
+   "Pick the page type and section order for the traffic's awareness stage.",
+   "Draft each section's copy in the brand's real voice.",
+   "Map every claim to a brand-record source.",
+   "Note image/asset needs.",
+   "Run shared/claim-check before handoff."
+  ],
+  "checks": [
+   "Message match to the feeding ad checked.",
+   "Reading level below tenth grade.",
+   "Every claim sourced; no invented proof."
+  ],
+  "output": "page spec with copy, ready for compliance-claims-check",
+  "used_by": [
+   "SITE-W03",
+   "SITE-W11"
+  ],
+  "shared_with": [
+   "CREA"
+  ],
+  "skill_md": "---\nname: page-spec-and-copy\nowner: site-specialist\nversion: 1\ninvoke_when: any page-building task that needs the brand's real voice, proof and a claims check before it ships\ninputs: brand brain products/proof/voice, the approved idea, reference scout output (structure/mood only)\noutputs: page spec with copy, ready for shared/claim-check\n---\n# Page spec and copy, general procedure\n\n## Purpose\nThe base procedure every page-format sub-skill builds on: pick the right structure for the traffic, write in the brand's real voice, and never let an unsourced claim through.\n\n## Steps\n1. Pick the page type and section order that fits the traffic's awareness stage (see site/funnel-architecture for the routing decision itself).\n2. Draft each section's copy using the brand's real voice guide and liked/disliked examples, not a generic tone.\n3. Map every claim, number, saving or comparison to a specific brand-record source.\n4. Note the image and asset needs per section, distinguishing real product photos from anything that needs new creative.\n5. Run the draft through shared/claim-check before it leaves Site's hands.\n\n## Checks\n- Message matches the feeding ad, where one exists.\n- Reading level is below tenth grade, short sentences, digits not words, no em dashes.\n- Every claim traces to a source; nothing is invented.\n\n## Output\nA page spec: page type, audience/awareness stage, section order, copy per section with word counts, asset needs, compliance notes, CTA map.\n\n## Example\n\"Hero claims '30-day risk-free trial' -> sourced to the returns policy page, dated 3 Sep 2026. Claim-check passed.\"\n"
+ },
+ {
+  "id": "site/page-spec-and-copy/hero-and-buybox",
+  "name": "Hero and PDP buy-box builder",
+  "parent": "site/page-spec-and-copy",
+  "invoke_when": "building or scoring the above-the-fold hero of a landing page, or the PDP's first-screen buy box",
+  "select_by": {
+   "surface": "hero | buybox"
+  },
+  "inputs_required": [
+   "brand brain: products, proof file, delivery data",
+   "approved idea record"
+  ],
+  "steps": [
+   "Build the hero in the fixed 6-part order: proof, headline, subhead, CTA, FUD, image.",
+   "Score the headline on outcome-specificity.",
+   "Fit the PDP's fixed first-screen elements on the brand's real mobile device.",
+   "Place every control next to the element it changes.",
+   "Answer what/why-this-one/why-now/why-trust-you above the fold."
+  ],
+  "checks": [
+   "Headline names an outcome, never a category.",
+   "First-screen fit tested on the brand's actual device, not a simulator."
+  ],
+  "output": "hero copy draft; hero layout spec; PDP buy-box spec",
+  "used_by": [
+   "SITE-W18"
+  ],
+  "shared_with": [
+   "CREA"
+  ],
+  "skill_md": "---\nname: hero-and-buybox\nowner: site-specialist\nversion: 1\ninvoke_when: building or scoring a page's above-the-fold hero, or a PDP's first-screen buy box\ninputs: brand brain products/proof/delivery data, approved idea record\noutputs: hero copy draft, hero layout spec, PDP buy-box spec\n---\n# Hero and PDP buy-box builder\n\n## Purpose\nBuild the highest-stakes, most-viewed section of any page or PDP against a fixed, tested structure instead of a blank page, and prove it fits on a real phone.\n\n## Steps\n1. Build the hero in the fixed order: proof, headline, subhead, CTA, FUD, image.\n2. Write the headline as the outcome this SKU delivers, never a category label, and score it for specificity.\n3. Write the subhead to explain how, not repeat the headline; cap hero body at 2-3 sentences or 3-4 bullets.\n4. Show 2 verifiable proof forms above the fold and place real FUD reducers next to every CTA.\n5. For a PDP: fit the fixed first-screen elements (price, proof, CTA, variant picker, delivery info) on the brand's real mobile device.\n6. Place every control next to the element it changes; add subscribe-and-save only for genuinely consumable SKUs.\n7. Answer what, why this one, why now, and why trust you, all above the fold.\n\n## Checks\n- Headline names an outcome, not a category.\n- First-screen elements fit on the brand's real device, tested not assumed.\n- Every FUD reducer traces to a real policy.\n\n## Output\nHero copy draft, hero layout spec, and/or PDP buy-box spec, each ready for shared/claim-check.\n\n## Example\n\"Headline: 'Stop refolding your shirts every morning' (outcome-specific) beats 'Premium Cotton Shirts' (category label).\"\n"
+ },
+ {
+  "id": "site/page-spec-and-copy/body-copy-and-proof",
+  "name": "Body copy, proof placement and honest urgency",
+  "parent": "site/page-spec-and-copy",
+  "invoke_when": "writing the value props, FAQ, proof placement, or urgency/guarantee copy for a page, below the hero",
+  "select_by": {
+   "element": "value-props | proof | urgency"
+  },
+  "inputs_required": [
+   "brand brain: reviews and tickets, press mentions, live inventory, policies"
+  ],
+  "steps": [
+   "Write value props as benefit headings in the customer's own words.",
+   "Build the FAQ from that SKU's own tickets and negative reviews.",
+   "Map every testimonial/badge/press quote to one named objection and scatter proof through the page.",
+   "Check review dates for suspicious clustering.",
+   "Use urgency/scarcity only when true, phrased as risk, wired to live inventory.",
+   "Match the guarantee word-for-word to policy."
+  ],
+  "checks": [
+   "No urgency or scarcity claim without a true, current basis.",
+   "Guarantee copy matches policy word for word."
+  ],
+  "output": "page copy draft; FAQ block; proof placement map; urgency/scarcity copy; guarantee copy block",
+  "used_by": [
+   "SITE-W19",
+   "SITE-W27"
+  ],
+  "shared_with": [
+   "CREA"
+  ],
+  "skill_md": "---\nname: body-copy-and-proof\nowner: site-specialist\nversion: 1\ninvoke_when: writing value props, FAQ, proof placement, or urgency/guarantee copy below a page's hero\ninputs: brand brain reviews/tickets, press mentions, live inventory, policies\noutputs: page copy draft, FAQ block, proof placement map, urgency/scarcity copy, guarantee copy block\n---\n# Body copy, proof placement and honest urgency\n\n## Purpose\nWrite the rest of the page's words and trust elements in the customer's own language, and make sure urgency and guarantees are always true, never invented pressure.\n\n## Steps\n1. Write each value prop as a benefit heading, feature as support, mined from real reviews and tickets.\n2. Show how the product works in 3-4 steps ending at the outcome; build an honest comparison against 2-3 real alternatives.\n3. Build the FAQ from that SKU's own tickets and negative reviews, quantifying claims with a true number where one exists.\n4. Map every testimonial, badge and press quote to the one objection it answers, scattering proof through the page.\n5. Check review dates for suspicious clustering before trusting a spike as real; add a post-purchase survey to keep collecting proof.\n6. Use urgency and scarcity only when true and phrased as risk, never a fake count, wired to live inventory.\n7. Present the guarantee as confidence, matched word-for-word to the real policy.\n\n## Checks\n- Every value prop and FAQ answer traces to a real review or ticket.\n- No urgency claim without a true, current, checkable basis.\n- Guarantee wording matches the policy page exactly.\n\n## Output\nPage copy draft, FAQ block, proof placement map, urgency/scarcity copy, and guarantee copy block.\n\n## Example\n\"FAQ: 'Does it work on curly hair?' answered directly from a cluster of 14 real reviews mentioning curly hair, quoted and summarized honestly.\"\n"
+ },
+ {
+  "id": "site/page-spec-and-copy/long-form-funnel",
+  "name": "Long-form funnel page builder",
+  "parent": "site/page-spec-and-copy",
+  "invoke_when": "building an advertorial, a quiz funnel, or a sales-page/order-page/upsell funnel",
+  "select_by": {
+   "format": "advertorial | quiz | sales-page"
+  },
+  "inputs_required": [
+   "brand brain: reviews/VoC, products, margin",
+   "reference scout: swipe structures (mood/structure only)"
+  ],
+  "steps": [
+   "Gather the research base and rank pains before drafting.",
+   "Draft with AI from the research base, then scrub every invented fact.",
+   "For a quiz: cut questions with no clear job, test hook questions first, build a real results page.",
+   "For a sales funnel: build the 8-must-have sales page, a low-friction order page with a real bump, and a contribution-priced upsell."
+  ],
+  "checks": [
+   "No invented spokesperson, testimonial or study.",
+   "Every alternative named is real.",
+   "Upsell priced from real contribution margin."
+  ],
+  "output": "advertorial draft; quiz spec; sales/order/upsell spec",
+  "used_by": [
+   "SITE-W21",
+   "SITE-W22",
+   "SITE-W23"
+  ],
+  "shared_with": [],
+  "skill_md": "---\nname: long-form-funnel\nowner: site-specialist\nversion: 1\ninvoke_when: building an advertorial, a quiz funnel, or a sales-page/order-page/upsell funnel\ninputs: brand brain reviews/VoC/products/margin, reference scout swipe structures (mood/structure only)\noutputs: advertorial draft, quiz spec, sales/order/upsell spec\n---\n# Long-form funnel page builder\n\n## Purpose\nBuild the 3 long-form, multi-step page formats a brand uses to sell a considered purchase: the advertorial, the quiz, and the sales-to-upsell funnel.\n\n## Steps\n1. Gather the research base (reviews, tickets, competitor set, prior ad performance) before drafting anything.\n2. For an advertorial: name the mechanism honestly, order in the proven 14-block sequence, draft with AI then scrub every fact, tighten before design.\n3. For a quiz: cut every question with no clear job, test the first 3 hook questions, insert real info screens every 3-5 questions, build a results page from the shopper's own answers, route each answer to its offer.\n4. For a sales funnel: build the sales page's 8 must-haves, a low-friction order page with a real order bump, and a post-purchase upsell timed at peak emotion and priced by contribution per buyer.\n5. Run the draft through shared/claim-check regardless of format.\n\n## Checks\n- No invented spokesperson, testimonial, or study in any format.\n- Quiz has no dead-end branch with no matching offer.\n- Upsell price computed from real contribution margin, in code.\n\n## Output\nAn advertorial draft plus research base, a quiz spec with branching and tracking, or a sales/order/upsell spec set.\n\n## Example\n\"Quiz results page reflects the shopper's own 3 answers ('dry skin', 'sensitive', 'AM routine') and routes to the exact matching 3-step bundle, not a generic bestseller.\"\n"
+ },
+ {
+  "id": "site/page-spec-and-copy/homepage-collection-ux",
+  "name": "Homepage, collection and navigation UX",
+  "parent": "site/page-spec-and-copy",
+  "invoke_when": "building homepage/PDP theme modules, or designing the collection tree, tag taxonomy and site-wide navigation",
+  "select_by": {
+   "format": "homepage | collection | navigation"
+  },
+  "inputs_required": [
+   "brand brain: products, proof",
+   "click/scroll map data"
+  ],
+  "steps": [
+   "Build the homepage in a fixed, orienting section order.",
+   "Decide manual vs smart collections and set tag discipline.",
+   "Rebuild the mega menu as a guide with bestsellers and proof.",
+   "Decide each collection's job: browsing, deciding or buying.",
+   "Move modules by real click-map data, not a guess."
+  ],
+  "checks": [
+   "Every module placement backed by a real click or scroll number.",
+   "Navigation tested in 2-3 clicks."
+  ],
+  "output": "theme section spec; navigation and collection spec; tag taxonomy; homepage/collection UX spec",
+  "used_by": [
+   "SITE-W03",
+   "SITE-W11"
+  ],
+  "shared_with": [],
+  "skill_md": "---\nname: homepage-collection-ux\nowner: site-specialist\nversion: 1\ninvoke_when: building homepage/PDP theme modules, or designing the collection tree, tags and site-wide navigation\ninputs: brand brain products/proof, click/scroll map data\noutputs: theme section spec, navigation and collection spec, tag taxonomy, homepage/collection UX spec\n---\n# Homepage, collection and navigation UX\n\n## Purpose\nDesign the site's orienting layer, the homepage, menu and collection pages, to route shoppers fast, using real click data instead of a designer's guess.\n\n## Steps\n1. Build the homepage in a fixed, conversion-supportive section order that orients and routes rather than converting directly.\n2. Decide collections manually or as rules (smart), matched to whether the set should update itself, and delete unused defaults.\n3. Set tag discipline so every filter a shopper can select returns matching products.\n4. Build the menu around how shoppers think, capped at 7 top items, reachable in 2-3 clicks, breadcrumbs on.\n5. Rebuild the mega menu as a guide with bestsellers and proof at the top, not a bare category list.\n6. Decide each collection page's job (browsing, deciding, buying) and lay it out accordingly, redesigning the mobile grid for the thumb zone.\n7. Move a high-click, low-reach module higher, and restyle or remove a rarely clicked one, using real click-map data.\n\n## Checks\n- Every filter tested live to confirm it returns matching products.\n- Every module move backed by a real click or scroll number.\n- Menu reachable in 2-3 clicks by someone unfamiliar with the site.\n\n## Output\nA theme section spec, navigation and collection spec, tag taxonomy, or homepage/collection UX spec.\n\n## Example\n\"Click map shows 'Bestsellers' menu item gets 3x the clicks of 'New In' but sits below it; swapped their order, to be re-measured next month.\"\n"
+ },
+ {
+  "id": "site/funnel-architecture",
+  "name": "Traffic routing and build-method decisions",
+  "parent": null,
+  "invoke_when": "deciding which page type traffic should land on, or how a new page should be built",
+  "select_by": {
+   "decision": "routing | build-method"
+  },
+  "inputs_required": [
+   "brand brain: avatar and awareness stage",
+   "brand brain: ad performance (read-only)",
+   "page inventory"
+  ],
+  "steps": [
+   "Classify the SKU's traffic awareness stage and price point.",
+   "Route high-intent traffic to the PDP, cold traffic through an educating page first.",
+   "Build the advertorial only after a winning ad or research base exists.",
+   "Decide native theme, page-builder app, or headless build from the page's speed budget and the team's skill.",
+   "Weigh a builder app's JS/CSS weight against buying it for its built-in features."
+  ],
+  "checks": [
+   "Page-type choice matches the SKU's real awareness stage, not a default.",
+   "Builder choice backed by a measured weight number."
+  ],
+  "output": "funnel architecture diagram; page-type recommendation; builder decision memo; migration brief",
+  "used_by": [
+   "SITE-W16"
+  ],
+  "shared_with": [
+   "MEDIA"
+  ],
+  "skill_md": "---\nname: funnel-architecture\nowner: site-specialist\nversion: 1\ninvoke_when: deciding which page type a campaign's traffic should land on, or how a new landing page should be built\ninputs: brand brain avatar/awareness stage, ad performance (read-only), page inventory, current app list\noutputs: funnel architecture diagram, page-type recommendation, builder decision memo, migration brief\n---\n# Traffic routing and build-method decisions\n\n## Purpose\nDecide where a click should land and how the landing page gets built, both driven by evidence (awareness stage, measured speed cost) rather than habit or the newest tool.\n\n## Steps\n1. Classify the SKU's traffic awareness stage and price point before picking a page type.\n2. Send high-intent or simple-product traffic straight to the PDP; put an educating page between the ad and PDP for cold or skeptical traffic.\n3. Build the advertorial only after a winning ad or written research already exists; build a dedicated campaign page for paid traffic.\n4. Decide the build method (native theme Liquid, an AI page-builder app, or headless) from the page's speed budget and the team's coding skill.\n5. List the JS/CSS weight each candidate builder adds, measured on the brand's own speed profile.\n6. Weigh built-in features (A/B testing, analytics, personalization) against installing a separate app for each.\n7. Flag when an existing heavy-builder page is a proven speed-regression cause, and write the migration brief to native code.\n\n## Checks\n- Page-type choice is backed by the SKU's real awareness-stage evidence.\n- Builder weight numbers come from the brand's own speed profile, not a vendor's claim.\n\n## Output\nA funnel architecture diagram, a page-type recommendation, a builder decision memo, and (when needed) a migration brief.\n\n## Example\n\"SKU is a \u20b94,000 considered purchase, cold Meta traffic, no prior ad win: route through an advertorial before the PDP, not straight to product.\"\n"
+ },
+ {
+  "id": "site/funnel-architecture/message-match-audit",
+  "name": "Message-match audit: ad to page to checkout",
+  "parent": "site/funnel-architecture",
+  "invoke_when": "checking that a page still says what its feeding ad promised, at launch or whenever the ad changes",
+  "select_by": {
+   "task": "audit"
+  },
+  "inputs_required": [
+   "brand brain: live ad copy (read-only)",
+   "brand brain: page copy"
+  ],
+  "steps": [
+   "Mirror the ad's exact promise in the hero headline; continue its story.",
+   "Keep one persona and match price, discount, guarantee and shipping identically end to end.",
+   "Match the CTA label to where it sends traffic.",
+   "Re-run the check the moment ad creative changes."
+  ],
+  "checks": [
+   "Every mismatch found is listed with its exact page location.",
+   "Re-run happens the same day the ad changes."
+  ],
+  "output": "message-match audit report; mismatch fix list",
+  "used_by": [
+   "SITE-W17"
+  ],
+  "shared_with": [
+   "MEDIA",
+   "CREA"
+  ],
+  "skill_md": "---\nname: message-match-audit\nowner: site-specialist\nversion: 1\ninvoke_when: an ad creative changes, or a new page needs to be checked against the ad feeding it\ninputs: brand brain live ad copy (read-only, via mcp: meta ads), brand brain page copy\noutputs: message-match audit report, mismatch fix list\n---\n# Message-match audit: ad to page to checkout\n\n## Purpose\nConfirm the exact promise a shopper clicked on still holds true all the way to checkout, since a broken promise anywhere in the funnel kills conversion.\n\n## Steps\n1. Read the live ad's exact promise, persona and offer through the read-only Meta connector.\n2. Mirror that promise in the page's hero headline; the page should continue the ad's story, never start a new one.\n3. Keep one persona consistent end to end, and match price, discount, guarantee and shipping identically from ad to page to cart to checkout.\n4. Match the CTA label to where it actually sends traffic.\n5. Match page length to how much the ad already sold (a fully-sold ad needs a short page).\n6. Re-run this whole check the moment the feeding ad's creative changes.\n\n## Checks\n- Every mismatch found names its exact location (ad line vs page line).\n- Re-run triggered same-day on any ad creative change, not on a delay.\n\n## Output\nA message-match audit report and a mismatch fix list.\n\n## Example\n\"Ad promises '2-year warranty'; PDP guarantee block says '1 year'. Mismatch flagged, page fix routed same day.\"\n"
+ },
+ {
+  "id": "site/funnel-architecture/pre-build-research",
+  "name": "Pre-build research and brief intake",
+  "parent": "site/funnel-architecture",
+  "invoke_when": "before any new page gets built, to ground it in that SKU's own data rather than a site average",
+  "select_by": {
+   "task": "research"
+  },
+  "inputs_required": [
+   "connector: ga4",
+   "connector: session recording tool",
+   "connector: reviews platform"
+  ],
+  "steps": [
+   "Pull that SKU's own funnel data and find its weakest stage.",
+   "Read scroll maps mobile-first and watch converted-session recordings first.",
+   "Mine reviews/surveys into ranked topics.",
+   "Read the market's awareness stage from search-trend data.",
+   "Write the 1-page brief: audience, pain, outcome, awareness, type, event."
+  ],
+  "checks": [
+   "Data pulled is this SKU's own, not a blended site average.",
+   "Brief fits on one page and names a triggering event."
+  ],
+  "output": "research brief; 1-page build brief",
+  "used_by": [
+   "SITE-W17"
+  ],
+  "shared_with": [],
+  "skill_md": "---\nname: pre-build-research\nowner: site-specialist\nversion: 1\ninvoke_when: before any new page gets built, so the build starts from real evidence, not a guess\ninputs: connector: ga4, session recording tool, reviews platform\noutputs: research brief, 1-page build brief\n---\n# Pre-build research and brief intake\n\n## Purpose\nGround every new page in that specific SKU's own data, not a site-wide average, before a single word of copy is written.\n\n## Steps\n1. Pull the SKU's own funnel data and identify its weakest stage to fix first.\n2. Read scroll maps mobile-first at the fold, 75%, 50% and 25% lines.\n3. Watch converted-session recordings first, then rage-click sessions.\n4. Mine reviews and surveys into ranked topics by frequency and intensity.\n5. Read the market's awareness stage from search-trend data.\n6. Write the 1-page brief: audience, pain, outcome, awareness stage, page type, triggering event.\n\n## Checks\n- Every data point traces to this SKU specifically, not a site average.\n- The brief fits on one page and names a real triggering event.\n\n## Output\nA research brief and a 1-page build brief that starts the next page-building workflow.\n\n## Example\n\"Weakest stage: PDP-to-cart, 61% drop at the size selector. 3-5 think-aloud tests confirm shoppers can't tell if it runs small. Brief: add a fit-confidence line above the selector.\"\n"
+ },
+ {
+  "id": "site/funnel-architecture/synthetic-validation",
+  "name": "Synthetic shopper and agent validation",
+  "parent": "site/funnel-architecture",
+  "invoke_when": "validating a storefront against a simulated non-human actor before trusting it with real traffic or real orders: a synthetic shopper persona, or a third-party AI shopping agent",
+  "select_by": {
+   "actor": "shopper-persona | ai-agent"
+  },
+  "inputs_required": [
+   "candidate page or theme version",
+   "persona definitions",
+   "product feed",
+   "structured data"
+  ],
+  "steps": [
+   "Define 3-6 personas matching the brand's real segments; run them through current and candidate designs in a sandbox.",
+   "Record add-to-cart rate, click-path length and the exact abandonment step per persona.",
+   "State plainly that this is a prediction, not a measured result.",
+   "For an AI shopping agent: verify the product feed and checkout can complete a purchase without a broken step, and confirm order attribution."
+  ],
+  "checks": [
+   "Persona simulation always labelled a prediction, never a real result.",
+   "Agent-tagged orders never miscounted as organic or paid."
+  ],
+  "output": "persona run report; friction points list; design comparison summary; agentic-checkout readiness report",
+  "used_by": [
+   "SITE-W16",
+   "SITE-W17"
+  ],
+  "shared_with": [],
+  "skill_md": "---\nname: synthetic-validation\nowner: site-specialist\nversion: 1\ninvoke_when: validating a storefront against a simulated shopper persona before an expensive redesign, or checking readiness for a third-party AI shopping agent\ninputs: candidate page or theme version, persona definitions or product feed/structured data, sandbox store\noutputs: persona run report, friction points list, design comparison summary, agentic-checkout readiness report\n---\n# Synthetic shopper and agent validation\n\n## Purpose\nTest a storefront against a non-human simulated actor, either a synthetic shopper persona or a third-party AI shopping agent, before trusting it with real traffic or real orders.\n\n## Steps\n1. For a redesign: define 3-6 personas matching the brand's real segments (first-time, repeat, price-sensitive, gift buyer).\n2. Run each persona through the current site and the candidate redesign in a private, non-indexed sandbox.\n3. Record add-to-cart rate, click-path length and the exact step each persona abandoned at; compare two designs head to head.\n4. State plainly this is a prediction, not a measured result, and should not replace a real A/B test where real money is at stake.\n5. For an AI shopping agent channel: verify the product feed and structured data (price, stock, variant, shipping) are accurate.\n6. Check the checkout completes an agent-initiated purchase without a broken step, and confirm order attribution tags it correctly.\n7. Flag any blocking step (CAPTCHA, mandatory account) and decide with the founder whether to relax it.\n\n## Checks\n- Persona output is always labelled a prediction, never presented as a real result.\n- Agentic-checkout readiness stays read-only until real agent-driven orders are seen in order-source data.\n\n## Output\nA persona run report with friction points and a design comparison, or an agentic-checkout readiness report with a blocked-step list.\n\n## Example\n\"Persona 'price-sensitive first-timer' abandoned at the shipping-cost reveal in checkout on both designs; this is a prediction, recommend a real A/B test on shipping-cost disclosure timing.\"\n"
+ },
+ {
+  "id": "site/mobile-first-qa",
+  "name": "Friction removal, mobile-first QA and accessibility audit",
+  "parent": null,
+  "invoke_when": "checking that a page actually works for a real person on a real phone, with a keyboard, or with a screen reader",
+  "select_by": {
+   "check": "friction | mobile | accessibility"
+  },
+  "inputs_required": [
+   "brand brain: device split (from GA4)",
+   "theme code",
+   "key templates"
+  ],
+  "steps": [
+   "Strip navigation to essentials on single-offer pages; open a cart drawer, not a reload.",
+   "Fire pop-ups only on real intent signals; fix dead controls.",
+   "Build and review every page on the brand's own real device split.",
+   "Run an automated WCAG scan, then manually test with keyboard and screen reader.",
+   "Scope remediation to the theme codebase so fixes survive updates."
+  ],
+  "checks": [
+   "Every friction fix tested live, not assumed.",
+   "Manual accessibility pass included, not automated scan alone."
+  ],
+  "output": "friction fix list; mobile QA report; accessibility audit report",
+  "used_by": [
+   "SITE-W20"
+  ],
+  "shared_with": [
+   "CREA"
+  ],
+  "skill_md": "---\nname: mobile-first-qa\nowner: site-specialist\nversion: 1\ninvoke_when: checking a page for real friction, mobile usability, or accessibility before or after launch\ninputs: brand brain device split (from GA4), theme code, key templates (home, PDP, collection, cart, checkout)\noutputs: friction fix list, mobile QA report, accessibility audit report\n---\n# Friction removal, mobile-first QA and accessibility audit\n\n## Purpose\nCheck that a page works for a real person: no dead controls, no hidden content on mobile, and no barrier for someone using a keyboard or a screen reader.\n\n## Steps\n1. Strip navigation to logo, cart and one CTA on single-offer campaign pages; open a cart drawer on add-to-cart, never a reload.\n2. Fire pop-ups only on real intent signals, never in the first 3-5 seconds; fix or remove dead controls and false affordances.\n3. Build and review every page mobile-first, on the brand's own real device split, checking every screen width in responsive mode.\n4. Pin the PDP CTA on mobile without covering the variant selector; never hide reviews or content behind a mobile-only carousel; cap mobile forms at 4 fields.\n5. Run an automated WCAG scan on home, PDP, collection, cart and checkout templates.\n6. Manually test forms, navigation and dynamic states with a keyboard and a screen reader, separating real failures from automated false positives.\n7. Scope every remediation to the theme codebase so fixes survive future updates.\n\n## Checks\n- Every friction fix confirmed live, not assumed from a screenshot.\n- Mobile QA run on the brand's real device split, not a generic phone size.\n- Manual accessibility pass included, not the automated scan alone.\n\n## Output\nA friction fix list, a mobile QA report with screenshots per width, and an accessibility audit report.\n\n## Example\n\"Cookie banner covers the Add to Cart button on iPhone 13 at 390px width. Fixed by repositioning the banner; confirmed with a real screenshot at that exact width.\"\n"
+ },
+ {
+  "id": "site/cro-test-lifecycle",
+  "name": "CRO test lifecycle intake",
+  "parent": null,
+  "invoke_when": "picking up a ranked hypothesis and beginning its journey through design, launch, read and rollout",
+  "select_by": {
+   "stage": "intake"
+  },
+  "inputs_required": [
+   "ranked backlog (from Propose/registry)",
+   "traffic and order volume",
+   "metric contract"
+  ],
+  "steps": [
+   "Take the top ranked hypothesis with 2+ points of evidence.",
+   "Confirm it is genuinely testable given current traffic, or route it to a direct ship instead.",
+   "Hand off to the matching lifecycle stage skill."
+  ],
+  "checks": [
+   "No hypothesis enters design without 2+ points of evidence.",
+   "Below the traffic threshold, a bigger change is planned instead of a small test."
+  ],
+  "output": "test intake note",
+  "used_by": [
+   "SITE-W24"
+  ],
+  "shared_with": [],
+  "skill_md": "---\nname: cro-test-lifecycle\nowner: site-specialist\nversion: 1\ninvoke_when: a ranked CRO hypothesis is ready to enter the test lifecycle\ninputs: ranked backlog (from Propose/registry), traffic and order volume, metric contract\noutputs: test intake note, handoff to the matching stage skill\n---\n# CRO test lifecycle intake\n\n## Purpose\nThe entry point into the CRO test lifecycle: confirm a hypothesis is real and testable before spending design effort on it.\n\n## Steps\n1. Take the top-ranked hypothesis, confirming it carries at least 2 points of evidence.\n2. Check the traffic gate: below the sample-size threshold for a real test, recommend a bigger change instead of a small test.\n3. Confirm the hypothesis is stated as a full if-then-because statement, not a vague idea.\n4. Route it into site/cro-test-lifecycle/stats-design to begin the formal test design.\n\n## Checks\n- No hypothesis enters design without 2+ points of evidence.\n- A traffic-starved brand gets a bigger-change recommendation, not a small underpowered test.\n\n## Output\nA short intake note confirming the hypothesis is ready, handed to the stats-design stage.\n\n## Example\n\"Hypothesis: 'If we add a fit-confidence line above the size selector, then PDP-to-cart improves, because scroll-map and ticket data both show sizing doubt at that exact point.' 2 evidence points, traffic sufficient. Proceeding to stats design.\"\n"
+ },
+ {
+  "id": "site/cro-test-lifecycle/stats-design",
+  "name": "Design the statistics of a CRO test",
+  "parent": "site/cro-test-lifecycle",
+  "invoke_when": "sizing a test and setting its rules before it launches",
+  "select_by": {
+   "stage": "design"
+  },
+  "inputs_required": [
+   "intake note",
+   "traffic and order volume",
+   "minimum detectable effect target"
+  ],
+  "steps": [
+   "Size the sample from the minimum detectable effect, stated as orders per variant.",
+   "Compute runtime from arms x sample / weekly traffic, minimum 2 full weeks covering each weekday twice.",
+   "Pick a stopping rule before launch; never peek outside planned looks.",
+   "Randomize by user with sticky bucketing; isolate returning-visitor traffic."
+  ],
+  "checks": [
+   "Sample size stated as orders per variant, never a flat magic number.",
+   "Stopping rule written down before launch."
+  ],
+  "output": "test design spec (arms, sample, runtime, stopping rule)",
+  "used_by": [
+   "SITE-W24"
+  ],
+  "shared_with": [],
+  "skill_md": "---\nname: stats-design\nowner: site-specialist\nversion: 1\ninvoke_when: a CRO hypothesis has cleared intake and needs a real, honest test design\ninputs: intake note, traffic and order volume, minimum detectable effect target\noutputs: test design spec (arms, sample, runtime, stopping rule)\n---\n# Design the statistics of a CRO test\n\n## Purpose\nSize and design a test so its result can actually be trusted, since a wrong sample-size formula is a silent, expensive mistake.\n\n## Steps\n1. Decide test-or-not from the traffic gate and real sample-size math; below the threshold, recommend a bigger change instead.\n2. Size the test from the minimum detectable effect, stated as orders per variant, never a flat number pulled from habit.\n3. Compute runtime as arms x sample / weekly traffic, running at least 2 full weeks and covering each weekday twice.\n4. Pick a stopping rule before launch and commit to it; no peeking outside the planned looks.\n5. Randomize by user with sticky bucketing so a visitor never sees both arms.\n6. Remove or isolate returning-visitor traffic so it doesn't contaminate a new-visitor test.\n\n## Checks\n- Sample size is orders per variant, computed from a real MDE, not a round number.\n- Stopping rule exists in writing before the test goes live.\n\n## Output\nA test design spec: arms, sample size, runtime, stats engine, stopping rule, randomization method.\n\n## Example\n\"MDE: 8% relative lift on PDP-to-cart. Required: 2,400 orders per variant. At current 850 orders/week split across 2 arms, runtime: 3 weeks. Stopping rule: fixed horizon, no early peek.\"\n"
+ },
+ {
+  "id": "site/cro-test-lifecycle/launch-qa",
+  "name": "QA and launch a CRO test",
+  "parent": "site/cro-test-lifecycle",
+  "invoke_when": "right before a designed test goes live",
+  "select_by": {
+   "stage": "launch"
+  },
+  "inputs_required": [
+   "test design spec"
+  ],
+  "steps": [
+   "QA the test 2-3 times on real devices.",
+   "Confirm tracking fires in both arms.",
+   "Check for flicker on a slow connection.",
+   "Check the promo calendar for overlap.",
+   "Run an A/A test when starting a new programme or switching tools."
+  ],
+  "checks": [
+   "Tracking confirmed firing in both arms before launch.",
+   "No test launches into an unnoticed promo overlap."
+  ],
+  "output": "launch QA checklist; go/no-go",
+  "used_by": [
+   "SITE-W24"
+  ],
+  "shared_with": [],
+  "skill_md": "---\nname: launch-qa\nowner: site-specialist\nversion: 1\ninvoke_when: a designed CRO test is about to go live\ninputs: test design spec\noutputs: launch QA checklist, go/no-go\n---\n# QA and launch a CRO test\n\n## Purpose\nCatch the technical failures that quietly ruin a test before it starts, not after it has run for a week.\n\n## Steps\n1. QA the test 2-3 times on real devices, both arms, not the browser dev-tools emulator alone.\n2. Confirm tracking fires correctly in both arms, checked with a live event inspector.\n3. Check for visual flicker on a slow mobile connection.\n4. Check the marketing calendar for any promo or holiday overlap with the test window.\n5. Run an A/A test first when starting a new testing programme or switching testing tools.\n6. Give a clear go/no-go call.\n\n## Checks\n- Tracking confirmed firing in both arms before go-live.\n- Test window checked against the promo calendar.\n\n## Output\nA launch QA checklist and a go/no-go decision.\n\n## Example\n\"Flicker check on 3G: variant B's hero swap visible for 180ms before hydration. Fixed with a CSS-only swap before launch, re-tested clean.\"\n"
+ },
+ {
+  "id": "site/cro-test-lifecycle/result-read",
+  "name": "Read and interpret CRO test results",
+  "parent": "site/cro-test-lifecycle",
+  "invoke_when": "a test has reached its pre-set read point",
+  "select_by": {
+   "stage": "read"
+  },
+  "inputs_required": [
+   "test results (registry)",
+   "metric contract"
+  ],
+  "steps": [
+   "Count conversions on a confirmation event, never clicks.",
+   "Never call a test on one good or bad day.",
+   "Check sample ratio mismatch, novelty/primacy, and mobile/desktop splits.",
+   "Apply Twyman's law to any surprising win.",
+   "Decide from the confidence interval and business value together."
+  ],
+  "checks": [
+   "No verdict from a p-value alone.",
+   "SRM checked and cleared before any result is trusted."
+  ],
+  "output": "result read report; ship/hold/kill recommendation",
+  "used_by": [
+   "SITE-W24"
+  ],
+  "shared_with": [],
+  "skill_md": "---\nname: result-read\nowner: site-specialist\nversion: 1\ninvoke_when: a CRO test has reached its pre-set read point\ninputs: test results (registry), metric contract\noutputs: result read report, ship/hold/kill recommendation\n---\n# Read and interpret CRO test results\n\n## Purpose\nTurn raw test numbers into an honest verdict, catching the common ways a test result lies: bad luck days, sample mismatch, novelty, and p-value tunnel vision.\n\n## Steps\n1. Count conversions on a real confirmation event (a purchase), never a click proxy.\n2. Never call a test on the strength of one especially good or bad day.\n3. Check sample ratio mismatch at launch and at every planned look.\n4. Plot novelty and primacy effects daily before trusting the average.\n5. Check the mobile-only and desktop-only splits separately before shipping a win.\n6. Apply Twyman's law: audit any surprising win harder than an expected one before celebrating it.\n7. Decide from the confidence interval and the real business value together, never p<0.05 alone.\n8. Treat a fully powered inconclusive test as a real, useful result, not a failure to hide.\n\n## Checks\n- No verdict rests on a p-value alone.\n- SRM, novelty and device splits are all checked before a result is trusted.\n\n## Output\nA result read report and a clear ship/hold/kill recommendation.\n\n## Example\n\"Variant B: +11% PDP-to-cart, CI [3%, 19%], SRM clean, no novelty decay by week 2, consistent on mobile and desktop. Recommendation: ship.\"\n"
+ },
+ {
+  "id": "site/cro-test-lifecycle/rollout-and-protect",
+  "name": "Roll out winners and protect them over time",
+  "parent": "site/cro-test-lifecycle",
+  "invoke_when": "a test has been read as a winner and needs to ship and stay live",
+  "select_by": {
+   "stage": "rollout"
+  },
+  "inputs_required": [
+   "result read report",
+   "shipped test"
+  ],
+  "steps": [
+   "Ship the winner as the new control.",
+   "Re-verify with fresh recordings and funnel data after shipping.",
+   "Run an LTV/returns check before scaling any angle- or claim-driven win.",
+   "Keep a live-winner register and re-check quarterly it is still live."
+  ],
+  "checks": [
+   "Re-verification happens after shipping, not assumed from the test result alone.",
+   "Every past winner re-checked live at least once a quarter."
+  ],
+  "output": "winner register entry; quarterly protection check report",
+  "used_by": [
+   "SITE-W24"
+  ],
+  "shared_with": [],
+  "skill_md": "---\nname: rollout-and-protect\nowner: site-specialist\nversion: 1\ninvoke_when: a test has been read as a winner and is ready to ship, or a quarterly check on past winners is due\ninputs: result read report, shipped test, registry of past winners\noutputs: winner register entry, quarterly protection check report\n---\n# Roll out winners and protect them over time\n\n## Purpose\nShip a winner properly and prove it stays a winner, since a shipped test can silently regress or get overwritten by a later, unrelated change.\n\n## Steps\n1. Ship the winner as the new control for the next challenger test.\n2. Re-audit the page after the change ships.\n3. Re-verify with fresh session recordings, funnel rate and a re-survey once real post-ship data exists.\n4. Run an LTV and returns check before scaling any angle- or claim-driven win, since a short-term lift can mask a long-term return problem.\n5. Keep a live-winner register of every shipped test.\n6. Re-check quarterly that every past winner is still live and unbroken by a later change.\n7. Set founder expectations at a 10-20% win rate for PDP/cart/checkout tests, so a string of inconclusive tests doesn't read as failure.\n\n## Checks\n- Re-verification happens after shipping, not assumed from the pre-ship test result.\n- Every past winner is re-checked live at least once a quarter.\n\n## Output\nA winner register entry per shipped test, and a quarterly protection check report.\n\n## Example\n\"Q3 protection check: 6 of 7 shipped winners still live and measuring as expected. 1 (free-shipping bar) was overwritten by an unrelated theme update in August; restored and re-verified.\"\n"
+ },
+ {
+  "id": "site/cro-test-lifecycle/holdout-incrementality",
+  "name": "Design holdout and incrementality measurement",
+  "parent": "site/cro-test-lifecycle",
+  "invoke_when": "measuring a feature, popup, module or the whole CRO programme's real causal value",
+  "select_by": {
+   "stage": "holdout"
+  },
+  "inputs_required": [
+   "metric contract",
+   "connector: metabase"
+  ],
+  "steps": [
+   "Report programme value from a holdout, never the sum of individual test lifts.",
+   "State and challenge the identifying assumption before trusting any causal method.",
+   "Check the traffic gate before choosing a holdout design.",
+   "Turn on CUPED only for returning, identified users; winsorize outlier orders or use a proportion metric."
+  ],
+  "checks": [
+   "Programme value never reported as the sum of test lifts.",
+   "Identifying assumption written down and challenged."
+  ],
+  "output": "holdout design; programme value report",
+  "used_by": [
+   "SITE-W24"
+  ],
+  "shared_with": [],
+  "skill_md": "---\nname: holdout-incrementality\nowner: site-specialist\nversion: 1\ninvoke_when: measuring a feature, popup, recommendation module, or the whole CRO programme's real causal value\ninputs: metric contract, connector: metabase\noutputs: holdout design, programme value report\n---\n# Design holdout and incrementality measurement\n\n## Purpose\nProve a feature or a whole programme is adding real value with a holdout, since a feature's own engagement metric and the sum of individual test lifts both overstate value.\n\n## Steps\n1. Design a feature holdout (a popup, a recommendation module, a cart-recovery flow) instead of trusting its own engagement metric.\n2. Run a persistent programme-level holdout to prove the CRO programme's net value, never reported as the sum of test lifts.\n3. State the identifying assumption behind any causal method in writing, and actively try to challenge it.\n4. Check the traffic gate before choosing a holdout design; a traffic-starved brand may not support a clean holdout.\n5. Turn on CUPED variance reduction only for returning, identified users.\n6. Winsorize outlier orders or switch to a proportion metric to steady a noisy revenue test.\n\n## Checks\n- Programme value is never reported as the sum of individual test lifts.\n- The identifying assumption is written down, not left implicit.\n\n## Output\nA holdout design and a programme value report.\n\n## Example\n\"Cart-recovery discount flow: holdout group with no discount converts at 62% of the discounted group's recovery rate; net incremental revenue after the discount cost is still positive but smaller than the raw recovery-rate lift suggested.\"\n"
+ },
+ {
+  "id": "site/discovery-and-personalization",
+  "name": "On-site search and discovery baseline",
+  "parent": null,
+  "invoke_when": "making on-site search itself work better with real product data",
+  "select_by": {
+   "task": "search"
+  },
+  "inputs_required": [
+   "connector: shopify admin | woocommerce",
+   "search app (Klevu/Searchanise-class)"
+  ],
+  "steps": [
+   "Fill every field a filter needs and turn on filters wired to real product fields.",
+   "Improve search with predictive text and synonym matching.",
+   "Audit search as its own funnel: query volume, no-results rate, autocomplete lag."
+  ],
+  "checks": [
+   "Every filter tested to confirm it returns matching products live.",
+   "No-results rate tracked as its own number."
+  ],
+  "output": "search configuration spec; no-results report",
+  "used_by": [
+   "SITE-W25"
+  ],
+  "shared_with": [],
+  "skill_md": "---\nname: discovery-and-personalization\nowner: site-specialist\nversion: 1\ninvoke_when: making on-site search work better with the store's own real product data\ninputs: connector: shopify admin | woocommerce, search app (Klevu/Searchanise-class)\noutputs: search configuration spec, no-results report\n---\n# On-site search and discovery baseline\n\n## Purpose\nTurn on-site search into a real conversion lever instead of a plain text box, using the store's own product fields.\n\n## Steps\n1. Fill every field a filter needs (color, size, material, use-case) before turning filters on.\n2. Turn on search and discovery filters wired to those real product fields.\n3. Improve search with predictive text and synonym matching so a common misspelling or alternate term still finds the right product.\n4. Audit search as its own funnel: track query volume, no-results rate, and treat autocomplete lag as an everyday interactivity issue, not a separate category.\n\n## Checks\n- Every filter tested live to confirm it returns matching products.\n- No-results rate tracked as its own number, not folded into overall bounce.\n\n## Output\nA search configuration spec and a no-results report.\n\n## Example\n\"No-results rate on 'jeans' search was 40% because product titles use 'denim'; added a synonym rule, no-results dropped to 3% within a day.\"\n"
+ },
+ {
+  "id": "site/discovery-and-personalization/visual-search",
+  "name": "On-site visual product search",
+  "parent": "site/discovery-and-personalization",
+  "invoke_when": "building a photo-upload visual search feature, where the catalogue is visually distinct enough to benefit",
+  "select_by": {
+   "task": "visual-search"
+  },
+  "inputs_required": [
+   "product photo catalogue",
+   "shopper-uploaded photo"
+  ],
+  "steps": [
+   "Embed every live product's real photos once and keep the index current.",
+   "Accept a shopper-uploaded photo, embed it the same way, return the nearest real SKUs.",
+   "Cap the feature to discovery only; never claim an exact match.",
+   "Fall back cleanly to text search.",
+   "Keep uploaded photos private and short-lived."
+  ],
+  "checks": [
+   "No visual match ever labelled exact.",
+   "No uploaded shopper photo retained beyond the session."
+  ],
+  "output": "visual search widget; similarity index",
+  "used_by": [
+   "SITE-W25"
+  ],
+  "shared_with": [],
+  "skill_md": "---\nname: visual-search\nowner: site-specialist\nversion: 1\ninvoke_when: on-site search is diagnosed as a bottleneck and the catalogue is visually distinct enough to benefit from photo-based discovery\ninputs: product photo catalogue, shopper-uploaded photo\noutputs: visual search widget, similarity index\n---\n# On-site visual product search\n\n## Purpose\nLet a shopper find a real product from a photo they saw elsewhere or already own, matched only against the brand's own real product photos, never a competitor's or a generated redraw.\n\n## Steps\n1. Embed every live product's real photos once, using an image embedding model, and keep the index current as the catalogue changes.\n2. Accept a shopper-uploaded photo, embed it the same way, and return the nearest real SKUs by visual similarity.\n3. Cap the feature to product discovery only; never claim a visual match is exact.\n4. Fall back cleanly to text search when no close visual match exists.\n5. Keep uploaded shopper photos private and short-lived, never stored as training data or compared against a competitor's assets.\n\n## Checks\n- No visual match is ever presented as exact.\n- No shopper-uploaded photo persists past the session.\n- The similarity index refreshes as the catalogue changes, never stale.\n\n## Output\nA working visual search widget and its similarity index.\n\n## Example\n\"Shopper uploads a photo of a jacket seen on Instagram; widget returns the brand's own 3 closest visual matches by silhouette and color, labelled 'similar styles', never 'exact match'.\"\n"
+ },
+ {
+  "id": "site/discovery-and-personalization/personalization-rules",
+  "name": "On-site personalization from real shopper data",
+  "parent": "site/discovery-and-personalization",
+  "invoke_when": "personalizing PDP content, imagery or messaging from the shopper's own real quiz or behavioural data",
+  "select_by": {
+   "task": "personalization"
+  },
+  "inputs_required": [
+   "brand brain: quiz/behavioural data"
+  ],
+  "steps": [
+   "Show the shopper's own quiz answers as a personalized progress visual.",
+   "Recommend a starter pack size from real quiz or consumption answers.",
+   "Update the product image to match the selected variant.",
+   "Layer real-time intent signals into reassurance, not only past-browsing.",
+   "Tailor PDP facts for AI-referred visitors so they do not re-browse."
+  ],
+  "checks": [
+   "Every personalization rule sourced from real shopper data, never invented.",
+   "Image updates correctly for every variant in a live test."
+  ],
+  "output": "personalization rule set; developer brief",
+  "used_by": [
+   "SITE-W26"
+  ],
+  "shared_with": [],
+  "skill_md": "---\nname: personalization-rules\nowner: site-specialist\nversion: 1\ninvoke_when: personalizing PDP content, imagery or messaging from a shopper's own real data\ninputs: brand brain quiz/behavioural data\noutputs: personalization rule set, developer brief\n---\n# On-site personalization from real shopper data\n\n## Purpose\nPersonalize the page from what a shopper actually told the site or actually did, never from an invented or generic assumption.\n\n## Steps\n1. Show the shopper's own quiz answers reflected back as a personalized progress visual.\n2. Recommend a starter pack size from real quiz or consumption answers, not a generic default.\n3. Update the product image to match the selected variant in real time.\n4. Layer real-time intent signals (current session behaviour) into reassurance copy, not only past-browsing history.\n5. Tailor PDP facts for AI-referred visitors (arriving via an AI answer engine) so they do not need to re-browse to confirm basics.\n6. Branch the post-quiz email sequence by the shopper's own answers.\n\n## Checks\n- Every personalization rule traces to real data the site actually has about that shopper.\n- No personalization is invented to feel more tailored than the data supports.\n\n## Output\nA personalization rule set and a developer brief to implement it.\n\n## Example\n\"Shopper answered 'dry skin' + 'AM routine' in the quiz; PDP now shows 'recommended for dry skin, morning use' directly sourced from those 2 answers, not a generic tag.\"\n"
+ },
+ {
+  "id": "site/discovery-and-personalization/computed-in-code-offers",
+  "name": "Compute image order and discount ceilings in code",
+  "parent": "site/discovery-and-personalization",
+  "invoke_when": "a PDP image order or an exit-intent/cart-abandonment discount needs to be decided from real data instead of a guess",
+  "select_by": {
+   "decision": "image-order | discount-ceiling"
+  },
+  "inputs_required": [
+   "click-map or session-replay data",
+   "landed cost per SKU",
+   "founder's margin floor"
+  ],
+  "steps": [
+   "Pull real per-image zoom/dwell/skip events; rank images by attention; propose a re-sequenced order with reasoning shown.",
+   "Read landed cost, shipping cost and any active promo for the exact cart at exit intent.",
+   "Compute, in code, the maximum discount that clears the founder's margin floor.",
+   "Fall back to no discount, not a guessed one, when a cost input is missing.",
+   "Send every proposal to the founder gate; never ship automatically."
+  ],
+  "checks": [
+   "Every number computed in code from real data, never a model guess.",
+   "Proposal always goes to the founder gate."
+  ],
+  "output": "proposed image order with reasoning; confidence flag per SKU; per-cart discount ceiling; exit-intent offer config",
+  "used_by": [
+   "SITE-W26"
+  ],
+  "shared_with": [],
+  "skill_md": "---\nname: computed-in-code-offers\nowner: site-specialist\nversion: 1\ninvoke_when: a PDP image order or an exit-intent/cart-abandonment discount needs to be decided from real data, not a guess\ninputs: click-map or session-replay data per PDP, landed cost per SKU, shipping cost, founder's margin floor\noutputs: proposed image order with reasoning, confidence flag per SKU, per-cart discount ceiling, exit-intent offer config\n---\n# Compute image order and discount ceilings in code\n\n## Purpose\nReplace two decisions humans normally guess at, a PDP's image order and a flat abandonment discount, with numbers computed in code from the brand's own real data.\n\n## Steps\n1. Pull per-image zoom, dwell and skip events from the site's own click-map or session-replay data, never a generic benchmark.\n2. Rank the existing image set by which images hold attention longest before a scroll-away or an add-to-cart.\n3. Propose a re-sequenced gallery order with the reasoning shown per swap, flagging when session volume is too thin to trust it.\n4. For a discount ceiling: read landed cost, shipping cost and any already-applied promo for the exact cart at the moment of exit intent.\n5. Compute the maximum discount that cart can take and still clear the founder's margin floor, entirely in code, never estimated by the model.\n6. Fall back to no discount, not a guessed one, when a required cost input is missing for that SKU.\n7. Send both types of proposal to the founder gate before anything ships live.\n\n## Checks\n- Every number is produced by code from real cost or attention data, never a model guess.\n- A missing cost input always results in no discount, never a fallback guess.\n\n## Output\nA proposed image order with per-swap reasoning, or a per-cart discount ceiling and exit-intent offer config.\n\n## Example\n\"Cart landed cost \u20b9620, shipping \u20b980, margin floor 25%: maximum discount that still clears the floor is \u20b9140 (18%). Offer capped there, shown to the founder before going live.\"\n"
+ },
+ {
+  "id": "site/reviews-ugc-strategy",
+  "name": "Reviews and UGC display strategy",
+  "parent": null,
+  "invoke_when": "deciding the review platform, verified-purchase policy, and how reviews/UGC are sorted and displayed",
+  "select_by": null,
+  "inputs_required": [
+   "brand brain: reviews platform",
+   "connector: reviews app"
+  ],
+  "steps": [
+   "Pick a reviews app and request reviews from past customers before launch.",
+   "Decide deliberately whether reviews require a verified purchase.",
+   "Build volume below 100 reviews, then shift to relevance and media-first sorting.",
+   "Check review dates for suspicious clustering.",
+   "Confirm review-request automation is actually sending."
+  ],
+  "checks": [
+   "Verified-purchase policy stated and consistent.",
+   "Suspicious date clusters checked before being trusted as proof."
+  ],
+  "output": "reviews configuration; display strategy spec",
+  "used_by": [
+   "SITE-W19",
+   "SITE-W27"
+  ],
+  "shared_with": [
+   "CREA"
+  ],
+  "skill_md": "---\nname: reviews-ugc-strategy\nowner: site-specialist\nversion: 1\ninvoke_when: deciding the review platform, verified-purchase policy, or how reviews/UGC sort and display\ninputs: brand brain reviews platform, connector: reviews app\noutputs: reviews configuration, display strategy spec\n---\n# Reviews and UGC display strategy\n\n## Purpose\nDecide the review programme deliberately, build volume honestly, and never let a suspicious pattern pass as real proof.\n\n## Steps\n1. Pick a reviews app and request reviews from past customers before launch if none exist yet.\n2. Decide deliberately whether reviews require a verified purchase, and write down the reason.\n3. Build review volume first below 100 reviews per product, then shift the sort order to relevance and media-first sorting once past that.\n4. Check review dates for suspicious clustering before trusting a sudden spike as real.\n5. Show reviews from repeat buyers as continuity proof specifically for consumable products.\n6. Confirm review-request automation is actually sending by checking a real recent order's timeline.\n\n## Checks\n- The verified-purchase decision is documented, not ad hoc.\n- A suspicious review-date cluster is investigated before being used as proof anywhere on the site.\n\n## Output\nA reviews configuration and a display strategy spec.\n\n## Example\n\"41 reviews landed in one 48-hour window right after a giveaway; flagged as suspicious clustering, excluded from the 'verified' proof count until manually checked.\"\n"
+ },
+ {
+  "id": "site/india-ops",
+  "name": "COD return-to-origin reduction",
+  "parent": null,
+  "markets": ["IN"],
+  "invoke_when": "reducing India's COD return-to-origin rate with checkout-side automation; reads null and does not run for a US-default brand",
+  "select_by": {
+   "task": "cod-rto"
+  },
+  "inputs_required": [
+   "courier serviceability API",
+   "WhatsApp business API access",
+   "brand's historical RTO data"
+  ],
+  "steps": [
+   "Show real-time PIN serviceability on the PDP before add-to-cart.",
+   "Add OTP verification on high-value COD orders.",
+   "Add a visible COD fee sized to filter impulse orders.",
+   "Surface a prepaid incentive at the COD-selection step.",
+   "Pass a buyer risk score to fulfilment for manual review, without running logistics itself.",
+   "Build an RTO analytics view by courier, PIN code, product and payment method."
+  ],
+  "checks": [
+   "RTO levers measured against the brand's own PIN-code and payment-method data.",
+   "COD fee sized from real impulse-order data."
+  ],
+  "output": "PDP serviceability widget; checkout OTP flow; COD fee config; RTO dashboard",
+  "used_by": [
+   "SITE-W28"
+  ],
+  "shared_with": [],
+  "skill_md": "---\nname: india-ops\nowner: site-specialist\nversion: 1\nmarkets: IN (reads null, does not run for a US-default brand)\ninvoke_when: COD share and return-to-origin rate are identified as a real bottleneck for an India-facing brand\ninputs: courier serviceability API, brand's historical RTO data, WhatsApp business API access\noutputs: PDP serviceability widget, checkout OTP flow, COD fee config, RTO dashboard\n---\n# COD return-to-origin reduction (India market option)\n\n## Purpose\nBuild the site-side half of India's biggest COD margin leak: filter and verify orders before they ship, and measure RTO by the dimensions that actually explain it. This is an India-only option under the US-first checkout payment methods and address validation capability; it reads null and does not run for a US-default brand, which instead runs Shop Pay, PayPal, Apple Pay, BNPL, USPS address validation and fraud screening.\n\n## Steps\n1. Show real-time PIN code serviceability on the PDP, using the courier or aggregator API, before the shopper adds to cart.\n2. Add address auto-fill and phone OTP verification at checkout for COD orders above a set value.\n3. Add a visible COD handling fee as a checkout line item, sized from real impulse-order data to filter without losing genuine buyers.\n4. Surface a prepaid discount or free-shipping incentive at the exact step where COD is selected.\n5. Trigger an automated WhatsApp order-confirmation message after COD checkout, with an auto-cancel rule if unconfirmed.\n6. Replace the generic courier tracking link with a branded tracking page carrying post-purchase upsell content.\n7. Pass a buyer risk score (first order, high COD value, prior RTO history) to the fulfilment system for a manual check, without running the logistics NDR process itself.\n8. Build an RTO analytics view broken down by courier, PIN code, product and payment method.\n\n## Checks\n- Every lever is measured against the brand's own real RTO data, never a generic industry number.\n- The COD fee amount is backed by real impulse-order evidence, not a round guess.\n\n## Output\nA PDP serviceability widget, a checkout OTP flow, a COD fee config, a WhatsApp confirmation flow, and an RTO dashboard.\n\n## Example\n\"RTO dashboard shows PIN codes in one region running 3x the average RTO on COD orders over 2,000 rupees; OTP verification enabled for that region above 1,500 rupees instead of the store-wide 3,000-rupee threshold.\"\n"
+ },
+ {
+  "id": "site/india-ops/whatsapp-buy-flow",
+  "name": "Click-to-WhatsApp catalog and buy flow",
+  "parent": "site/india-ops",
+  "markets": ["IN", "EU", "LATAM"],
+  "invoke_when": "adding a pre-purchase WhatsApp channel on the PDP for trust- or COD-driven hesitation in a WhatsApp-commerce market (India, EU, LATAM); reads null and does not run for a US-default brand",
+  "select_by": {
+   "task": "whatsapp"
+  },
+  "inputs_required": [
+   "WhatsApp Business catalog access",
+   "PDP template"
+  ],
+  "steps": [
+   "Sync the live catalogue to the brand's WhatsApp Business catalog on a schedule.",
+   "Add a click-to-WhatsApp button pre-filling the exact SKU and variant.",
+   "Confirm the button appears only where WhatsApp commerce is legal and common.",
+   "Measure PDP-to-WhatsApp clicks separately from add-to-cart.",
+   "Hand the conversation flow itself to Lifecycle."
+  ],
+  "checks": [
+   "WhatsApp click-to-order never double-counted with add-to-cart.",
+   "Catalog sync matches the live PDP."
+  ],
+  "output": "click-to-WhatsApp button; synced catalog; click-to-order attribution",
+  "used_by": [
+   "SITE-W28"
+  ],
+  "shared_with": [
+   "LIFE"
+  ],
+  "skill_md": "---\nname: whatsapp-buy-flow\nowner: site-specialist\nversion: 1\nmarkets: IN, EU, LATAM (reads null, does not run for a US-default brand)\ninvoke_when: COD or trust-driven checkout hesitation is diagnosed as a bottleneck in a WhatsApp-commerce market (India, EU, LATAM)\ninputs: WhatsApp Business catalog access, PDP template\noutputs: click-to-WhatsApp button, synced catalog, click-to-order attribution\n---\n# Click-to-WhatsApp catalog and buy flow (India, EU, LATAM market option)\n\n## Purpose\nGive a trust-hesitant shopper in a WhatsApp-commerce market a pre-purchase chat channel on the exact SKU they're viewing, without taking over the conversation itself, which belongs to Lifecycle. This option reads null and does not run for a US-default brand.\n\n## Steps\n1. Sync the live product catalogue (price, stock, variant) to the brand's WhatsApp Business catalog on a schedule.\n2. Add a click-to-WhatsApp button on the PDP that pre-fills the exact SKU, variant and a template question.\n3. Confirm the button appears only in markets where WhatsApp commerce is legal and commonly used (India, EU, LATAM), never for a US-default brand.\n4. Measure how many PDP-to-WhatsApp clicks convert to an order, tracked separately from normal add-to-cart.\n5. Hand the WhatsApp conversation flow itself, cart recovery and support scripting to the Lifecycle specialist.\n\n## Checks\n- WhatsApp-originated orders never double-count against add-to-cart in reporting.\n- The button never appears in a market where it hasn't been confirmed appropriate.\n\n## Output\nA working click-to-WhatsApp button, a synced catalog, and click-to-order attribution data.\n\n## Example\n\"Click-to-WhatsApp button added to the top 20 SKUs by COD share in the brand's India market; 340 clicks in month one, 41 converted to an order via the WhatsApp flow Lifecycle built, tracked as its own attribution source.\"\n"
+ },
+ {
+  "id": "site/pricing-integrity",
+  "name": "Keep anchor-price and comparison claims honest and current",
+  "parent": null,
+  "invoke_when": "a competitor price change is detected, or a scheduled weekly check of every live anchor-price comparison claim",
+  "select_by": null,
+  "inputs_required": [
+   "competitor price signal feed",
+   "current PDP comparison claims"
+  ],
+  "steps": [
+   "Read only publicly listed competitor prices already used as signal elsewhere.",
+   "Match each PDP anchor-price claim to the specific competitor price it cites.",
+   "Flag a claim as stale the moment the cited price moves enough to make the comparison inaccurate.",
+   "Propose the corrected number for a human to approve.",
+   "Never let a comparison claim ship without a current, dated source."
+  ],
+  "checks": [
+   "Every comparison claim has a current, dated source.",
+   "No comparison copy changes without human approval."
+  ],
+  "output": "stale-claim flags; proposed corrected comparison copy",
+  "used_by": [
+   "SITE-W19"
+  ],
+  "shared_with": [
+   "MEDIA"
+  ],
+  "skill_md": "---\nname: pricing-integrity\nowner: site-specialist\nversion: 1\ninvoke_when: a competitor price change is detected, or a scheduled weekly check of live anchor-price claims\ninputs: competitor price signal feed (public listings only), current PDP comparison claims\noutputs: stale-claim flags, proposed corrected comparison copy\n---\n# Keep anchor-price and comparison claims honest and current\n\n## Purpose\nMake sure a PDP's price-comparison claim never goes stale or false, by watching the same public competitor prices already used as signal elsewhere, without ever copying competitor text, images or branding.\n\n## Steps\n1. Read only publicly listed competitor prices already treated as signal elsewhere in the system, never scraped account data.\n2. Match each PDP anchor-price or comparison claim to the specific competitor price it cites.\n3. Flag a claim as stale the moment the cited price changes enough to make the comparison inaccurate.\n4. Propose the corrected comparison number for a human to approve before any copy changes.\n5. Never let a comparison claim ship without a current, dated source behind it.\n6. Keep this entirely separate from the brand's own private cost and margin data.\n\n## Checks\n- Every live comparison claim has a current, dated public source.\n- No comparison copy ever changes without a human approving the correction first.\n\n## Output\nStale-claim flags and proposed corrected comparison copy, both handed to a human for approval.\n\n## Example\n\"PDP claims 'save \u20b9500 vs [competitor]'s listed price of \u20b92,499'. Competitor now lists at \u20b92,199. Flagged stale; proposed correction: 'save \u20b9200', pending founder approval.\"\n"
+ },
+ {
+  "id": "site/ai-shopping-assistant",
+  "name": "Run and govern the on-site AI shopping assistant",
+  "parent": null,
+  "invoke_when": "operating and reviewing the founder-approved pre-purchase chat assistant",
+  "select_by": null,
+  "inputs_required": [
+   "brand brain: claims tiers",
+   "catalogue, stock and delivery data",
+   "founder approval"
+  ],
+  "steps": [
+   "Confirm founder approval and current claims tiers before go-live.",
+   "Restrict answers to catalogue, stock and claims-tier data only.",
+   "Route anything outside approved data to a person, never a guess.",
+   "Log conversations and flag any forbidden-tier touch.",
+   "Run the weekly transcript and claims review; pause immediately on a violation."
+  ],
+  "checks": [
+   "No answer given outside the catalogue, stock and claims-tier data.",
+   "A found violation pauses the assistant same day."
+  ],
+  "output": "weekly transcript and claims review report; hand-off rate report",
+  "used_by": [
+   "SITE-W29"
+  ],
+  "shared_with": [],
+  "skill_md": "---\nname: ai-shopping-assistant\nowner: site-specialist\nversion: 1\ninvoke_when: operating the founder-approved, on-site pre-purchase AI shopping assistant\ninputs: brand brain claims tiers, catalogue/stock/delivery data, founder approval to run it\noutputs: weekly transcript and claims review report, hand-off rate report, candidate FAQ list\n---\n# Run and govern the on-site AI shopping assistant\n\n## Purpose\nRun a pre-purchase chat that only ever answers from real, approved data, hands off anything it can't answer safely, and gets checked every week without fail.\n\n## Steps\n1. Confirm the founder has approved turning the assistant on, and confirm the claims tiers were reviewed within the last 30 days.\n2. Configure the assistant to answer only from the catalogue, stock and claims-tier data, never open web knowledge about the brand.\n3. Set the hand-off rule: any question it cannot answer from approved data routes to a person, it never guesses.\n4. Keep this surface distinct from any reporting or CRO-analysis assistant so its scope stays fixed.\n5. Log every conversation and flag any answer that touched a forbidden-tier claim.\n6. Run the weekly transcript and claims review on a real sample of conversations.\n7. Report hand-off rate and common unanswered questions to the founder each week, feeding candidates into page-copy work.\n8. Pause the assistant and notify the founder immediately on a found violation, not at the next scheduled review.\n\n## Checks\n- No answer ever given outside the catalogue, stock and claims-tier data.\n- A claims-tier violation pauses the assistant the same day it is found.\n\n## Output\nA weekly transcript and claims review report, a hand-off rate report, and a candidate FAQ list.\n\n## Example\n\"Weekly review: 312 conversations, 4% hand-off rate, 0 claims-tier violations. Top unanswered question: 'do you ship to Nepal', fed to page-copy as a candidate FAQ/policy addition.\"\n"
+ },
+ {
+  "id": "site/holiday-gifting-ops",
+  "name": "Run holiday and gifting operations",
+  "parent": null,
+  "invoke_when": "turning on gift-specific site features ahead of a holiday or gifting window (Black Friday and Cyber Monday, the Q4 holiday season, Valentine's Day, Mother's Day, Father's Day, back to school; India market option: Diwali, Rakhi or wedding season) and turning them off after",
+  "select_by": null,
+  "inputs_required": [
+   "gifting calendar (shared with Lifecycle)",
+   "brand brain: shipping cutoffs by ZIP code (by pincode where the brand sells in India)",
+   "brand brain: catalogue"
+  ],
+  "steps": [
+   "Confirm the window and cutoff dates 60 days out.",
+   "Turn on gift wrap, message and a price-hidden invoice.",
+   "Set delivery-by-date cutoffs per ZIP code (per pincode where the brand sells in India).",
+   "Build gift guides from real product and price data.",
+   "QA the full path as a real gift buyer, then switch back after the window."
+  ],
+  "checks": [
+   "No gift order promises a delivery date the ZIP code (or pincode) cutoff cannot support.",
+   "Gifting mode switched off cleanly after the window."
+  ],
+  "output": "gift wrap/message configuration; hidden-price invoice flow; ZIP code delivery cutoff map (pincode map for India); gift guide pages",
+  "used_by": [
+   "SITE-W30"
+  ],
+  "shared_with": [
+   "LIFE"
+  ],
+  "skill_md": "---\nname: holiday-gifting-ops\nowner: site-specialist\nversion: 1\ninvoke_when: 60 days before a holiday or gifting window (Black Friday, Cyber Monday, the Q4 holiday season, Valentine's Day, Mother's Day, Father's Day, back to school; India market option: Diwali, Rakhi or wedding season)\ninputs: gifting calendar (shared with Lifecycle), brand brain shipping cutoffs by ZIP code (by pincode for India), catalogue\noutputs: gift wrap/message configuration, hidden-price invoice flow, ZIP code delivery cutoff map (pincode map for India), gift guide pages\n---\n# Run holiday and gifting operations\n\n## Purpose\nTurn a store into gift-buying mode on schedule, without ever promising a delivery date the carrier can't keep, and turn it back off cleanly afterward.\n\n## Steps\n1. Confirm the gifting window and its cutoff dates from the shared gifting calendar 60 days out.\n2. Turn on gift wrap and a gift-message option on relevant products.\n3. Build a price-hidden gift invoice path so a recipient never sees the price paid.\n4. Set delivery-by-date cutoffs per ZIP code from real carrier data (per pincode where the brand sells in India), never a flat national promise.\n5. Build gift guides grouping the catalogue by recipient and occasion, using only real product and price data.\n6. Switch relevant PDPs and the homepage to gifting-mode messaging for the window's duration.\n7. QA the full gift-wrap-to-hidden-price-to-delivery-cutoff path as a real gift buyer would experience it.\n8. Switch everything back to normal mode the day after the window closes, and log cutoff accuracy for next year.\n\n## Checks\n- No gift order ever promises a delivery date the ZIP code's (or pincode's) real cutoff cannot support.\n- Gifting mode is confirmed fully reverted after the window.\n\n## Output\nGift wrap/message configuration, a hidden-price invoice flow, a ZIP code delivery cutoff map (pincode map for India), and gift guide pages.\n\n## Example\n\"Black Friday and Cyber Monday window: cutoff set at 3 business days before December 25 for standard shipping zones, 6 days for remote ZIP codes, pulled from real carrier transit-time data, not a single national date. India market option: Diwali window cutoff set at 3 days before the festival for metro pincodes, 6 days for others.\"\n"
+ },
+ {
+  "id": "site/handoff-note",
+  "name": "Route an out-of-scope finding to the owning specialist",
+  "parent": null,
+  "invoke_when": "an audit or hygiene sweep surfaces a finding outside Site's 4 folders (setup, landing pages, speed, CRO)",
+  "select_by": null,
+  "inputs_required": [
+   "the finding and its evidence"
+  ],
+  "steps": [
+   "Name the right specialist (Lifecycle, Organic, Product, Brand strategist, Money and ops).",
+   "Package the observed condition and evidence, not a finished brief.",
+   "State plainly why this is not Site's job.",
+   "File to the registry for the owning specialist to pick up."
+  ],
+  "checks": [
+   "The note states why this is not Site's job.",
+   "Evidence is packaged, not just asserted."
+  ],
+  "output": "one short note per finding, filed to the registry",
+  "used_by": [
+   "SITE-W03",
+   "SITE-W09"
+  ],
+  "shared_with": [
+   "LIFE",
+   "ORG",
+   "PROD",
+   "BRAND",
+   "MONEY"
+  ],
+  "skill_md": "---\nname: handoff-note\nowner: site-specialist\nversion: 1\ninvoke_when: a store-setup, hygiene, or catalogue audit surfaces a finding outside Site's 4 owned folders\ninputs: the finding and its evidence\noutputs: one short note per finding, filed to the registry for the owning specialist\n---\n# Route an out-of-scope finding to the owning specialist\n\n## Purpose\nHand off a finding that belongs to another specialist, with the evidence, instead of quietly dropping it or executing it outside Site's real expertise.\n\n## Steps\n1. Name the right owning specialist: Lifecycle (welcome/cart-recovery/win-back automation, VIP segmentation), Organic (organic social cadence, technical SEO), Product (pre-build demand validation), Brand strategist (a full repositioning call), or Money and ops (broader measurement/P&L tracking).\n2. Package the observed condition and its evidence, not a finished brief the other specialist didn't ask for.\n3. State plainly why this is not Site's job, in one sentence.\n4. File the note to the registry so the owning specialist can pick it up on their own schedule.\n\n## Checks\n- The note names a specific owning specialist, not a vague \"someone should look at this\".\n- Evidence is attached, not just an assertion.\n\n## Output\nOne short handoff note per finding: {finding, evidence, which specialist, why it is theirs not Site's}.\n\n## Example\n\"Finding: no cart-recovery email sends after checkout abandonment (30 days of Shopify data show 0 sends). Evidence: attached export. Routes to: Lifecycle. Why: automated recovery messaging is Lifecycle's folder, not Site's.\"\n"
+ }
+]

@@ -1,0 +1,3945 @@
+[
+  {
+    "id": "PROD-W01",
+    "name": "Screen and validate a new product candidate",
+    "capabilities": [
+      "PROD-C01",
+      "PROD-C02",
+      "PROD-C03",
+      "PROD-C04",
+      "PROD-C05"
+    ],
+    "trigger": "on demand | scheduled weekly (bank sweep)",
+    "human_role": "Product researcher doing first-pass triage before any real research time is spent",
+    "inputs_required": [
+      "brand brain: store type and category tags",
+      "idea bank filtered to 01-PRD",
+      "candidate name or category",
+      "a stated time-box per candidate"
+    ],
+    "steps": [
+      {
+        "n": 1,
+        "name": "Log the candidate and start the clock",
+        "does": "Open a research-log entry for the candidate with a hard time-box (default 2 hours).",
+        "inputs": [
+          "candidate name or category",
+          "brand store tags"
+        ],
+        "tools": [
+          "script: scripts/ideas.py"
+        ],
+        "skill": "shared/registry-entry",
+        "output": "research log entry with a deadline",
+        "check": "the entry has a stop time before any research starts"
+      },
+      {
+        "n": 2,
+        "name": "Run the fast screen and read trend against saturation",
+        "does": "Check category size, pain evidence, scarcity and store-model fit against the fixed checklist; pull the multi-year trend line and count existing sellers in the same pass.",
+        "inputs": [
+          "idea bank filter",
+          "brand store tags",
+          "public trend data"
+        ],
+        "tools": [
+          "script: scripts/ideas.py",
+          "web search"
+        ],
+        "skill": "prod/screen-candidate",
+        "output": "pass/caution/reject with reasons, plus a trend-and-saturation read",
+        "check": "every check has a stated reason and the trend line covers at least 2 years"
+      },
+      {
+        "n": 3,
+        "name": "Validate demand on video-commerce and social-native platforms",
+        "does": "If the candidate is trend-flagged, check its demand signal on TikTok-style shop data and native ad feeds so one viral clip is not mistaken for proof.",
+        "inputs": [
+          "candidate",
+          "platform sales/trend data"
+        ],
+        "tools": [
+          "web search (budgeted)",
+          "browser: headless (public)"
+        ],
+        "skill": "shared/web-research-budgeted",
+        "output": "demand validation note",
+        "check": "the signal is seen on 2 or more independent sources, not one clip"
+      },
+      {
+        "n": 4,
+        "name": "Scout ad libraries for sustained competitor spend",
+        "does": "Search public ad libraries and spy tools for products with real, sustained spend in the category, and read what gap the incumbents leave.",
+        "inputs": [
+          "candidate",
+          "public ad library results"
+        ],
+        "tools": [
+          "browser: headless (public)",
+          "web search"
+        ],
+        "skill": "shared/web-research-budgeted",
+        "output": "competitor scouting sheet (words and numbers only)",
+        "check": "no competitor asset, text, logo or product image is copied, only signal notes"
+      },
+      {
+        "n": 5,
+        "name": "Mine reviews on the closest listings for the price buyers actually pay",
+        "does": "Read reviews on the nearest DTC and Amazon listings for price complaints and willingness-to-pay signals.",
+        "inputs": [
+          "competing listing reviews"
+        ],
+        "tools": [
+          "web search (budgeted)"
+        ],
+        "skill": "shared/web-research-budgeted",
+        "output": "price-signal note",
+        "check": "every price signal quotes its source review"
+      },
+      {
+        "n": 6,
+        "name": "Delegate repetitive search steps and close the time box",
+        "does": "Hand repeatable search legwork to a sub-agent pass so the time box is not spent typing searches by hand; stop at the deadline regardless of state.",
+        "inputs": [
+          "research log entry",
+          "time-box deadline"
+        ],
+        "tools": [],
+        "skill": null,
+        "output": "closed time-box log",
+        "check": "the stop time from step 1 was respected"
+      },
+      {
+        "n": 7,
+        "name": "Score the candidate and log the verdict",
+        "does": "Combine the screen, demand validation, scouting sheet and price signal into one verdict: pass, caution or reject, with the reason for each part.",
+        "inputs": [
+          "all prior step outputs"
+        ],
+        "tools": [
+          "script: scripts/ideas.py"
+        ],
+        "skill": "shared/registry-entry",
+        "output": "scored candidate record",
+        "check": "the verdict traces to at least one concrete piece of evidence per part"
+      },
+      {
+        "n": 8,
+        "name": "Hand off pass and caution candidates",
+        "does": "Send a pass or caution candidate to the differentiation workflow (PROD-W02) and the economics gate (PROD-W03); log a one-line reason for any reject.",
+        "inputs": [
+          "scored candidate record"
+        ],
+        "tools": [],
+        "skill": null,
+        "output": "handoff note to PROD-W02 and PROD-W03",
+        "check": "every candidate has exactly one next step named"
+      }
+    ],
+    "outputs": [
+      "candidate screen record",
+      "demand validation note",
+      "competitor scouting sheet",
+      "price-signal note"
+    ],
+    "qa": [
+      "every check has a stated reason",
+      "no competitor asset copied, signal only",
+      "the time box was respected and logged",
+      "no candidate reaches sourcing spend without this screen"
+    ],
+    "read_point": "at hand-off: whether the candidate proceeds to differentiation and economics within the time-box window",
+    "typical_duration": "agent time under 2 hours per candidate; no external wait",
+    "subagents": [
+      "PROD-Research sub-agent runs the whole screen so several candidates can be screened in parallel"
+    ]
+  },
+  {
+    "id": "PROD-W02",
+    "name": "Extend the line and sharpen the differentiation angle",
+    "capabilities": [
+      "PROD-C06",
+      "PROD-C07"
+    ],
+    "trigger": "on demand",
+    "human_role": "Product manager planning the next SKUs and the cash plan behind them",
+    "inputs_required": [
+      "brand brain: hero product performance and SKU list",
+      "differentiation angle gap from PROD-W01",
+      "sales history by SKU",
+      "cash position from Finance"
+    ],
+    "steps": [
+      {
+        "n": 1,
+        "name": "Pull the hero product's performance and the category default",
+        "does": "Read the hero SKU's sales, margin and reviews, and note what the category's default product looks like.",
+        "inputs": [
+          "brand brain: SKU performance"
+        ],
+        "tools": [
+          "script: scripts/search_knowledge.py"
+        ],
+        "skill": "shared/metric-read",
+        "output": "performance snapshot",
+        "check": "numbers come from the metric contract, not memory"
+      },
+      {
+        "n": 2,
+        "name": "Name the one differentiating thing",
+        "does": "State the single feature or angle that differs from the category default, backed by the gap already scouted in PROD-W01.",
+        "inputs": [
+          "scouting sheet from PROD-W01"
+        ],
+        "tools": [],
+        "skill": "prod/differentiation-angle",
+        "output": "one-line differentiation statement",
+        "check": "the angle traces to a real, cited competitor gap, not an assumption"
+      },
+      {
+        "n": 3,
+        "name": "Draft 2 to 3 line-extension options",
+        "does": "Propose SKU options that build on the differentiation angle rather than copying the hero product.",
+        "inputs": [
+          "differentiation statement",
+          "hero SKU spec"
+        ],
+        "tools": [],
+        "skill": "prod/differentiation-angle",
+        "output": "line-extension options",
+        "check": "each option states what it adds over the hero SKU"
+      },
+      {
+        "n": 4,
+        "name": "Tag the demand pattern for each option",
+        "does": "Classify each option evergreen, trending or seasonal using sales history and category norms.",
+        "inputs": [
+          "sales history",
+          "category type"
+        ],
+        "tools": [],
+        "skill": "prod/differentiation-angle",
+        "output": "demand-pattern tag per option",
+        "check": "the tag has a stated evidence source"
+      },
+      {
+        "n": 5,
+        "name": "Map seasonal and gifting spikes",
+        "does": "Plot any seasonal or gifting spike against the US retail calendar (Q4 holidays, Mother's/Father's Day, Valentine's) for options tagged seasonal (india: festive calendar; markets: IN).",
+        "inputs": [
+          "sales history",
+          "US retail calendar (india: festive calendar)"
+        ],
+        "tools": [],
+        "skill": null,
+        "output": "spike map",
+        "check": "spikes are read from at least one full prior cycle where data exists"
+      },
+      {
+        "n": 6,
+        "name": "Check whether a subscription is earned",
+        "does": "Look for real repeat-purchase evidence before proposing a subscription model; otherwise flag the SKU a one-time novelty.",
+        "inputs": [
+          "repeat-purchase data"
+        ],
+        "tools": [],
+        "skill": "prod/differentiation-angle",
+        "output": "subscription-fit verdict",
+        "check": "the verdict is based on repeat_rate_90d/365d, not founder preference"
+      },
+      {
+        "n": 7,
+        "name": "Size the cash and stock plan the pattern implies",
+        "does": "Compute, in code, the cash and stock commitment implied by the demand pattern (e.g., pre-buy for a seasonal spike).",
+        "inputs": [
+          "demand-pattern tags",
+          "cash position"
+        ],
+        "tools": [
+          "script: reorder point calculator (to build)"
+        ],
+        "skill": "shared/metric-read",
+        "output": "cash/stock implication note",
+        "check": "every number is computed, not estimated"
+      },
+      {
+        "n": 8,
+        "name": "Log and hand off",
+        "does": "Log the differentiation brief and demand-pattern tags to the registry and hand the SKU options to the economics gate.",
+        "inputs": [
+          "all prior outputs"
+        ],
+        "tools": [],
+        "skill": "shared/registry-entry",
+        "output": "differentiation brief",
+        "check": "the brief is complete enough for PROD-W03 to run without asking a question"
+      }
+    ],
+    "outputs": [
+      "differentiation brief",
+      "demand-pattern tags",
+      "cash/stock implication note"
+    ],
+    "qa": [
+      "angle traces to a cited gap, not an invented claim",
+      "demand tag has evidence",
+      "cash numbers computed in code"
+    ],
+    "read_point": "when the SKU reaches the economics gate: whether the angle holds at the compliance and margin check",
+    "typical_duration": "agent time under 1 hour; no external wait",
+    "subagents": []
+  },
+  {
+    "id": "PROD-W03",
+    "name": "Model economics, run the compliance gate and decide go/no-go",
+    "capabilities": [
+      "PROD-C08",
+      "PROD-C10",
+      "PROD-C11"
+    ],
+    "trigger": "on demand",
+    "human_role": "Product manager running the funding decision with the founder",
+    "inputs_required": [
+      "candidate or differentiation brief",
+      "cost basis (unit cost, freight, duty estimate)",
+      "target price",
+      "the brand's own margin floor",
+      "claims and compliance category",
+      "expansion market data if relevant"
+    ],
+    "steps": [
+      {
+        "n": 1,
+        "name": "Pull cost basis, target price and the brand's margin floor",
+        "does": "Read the real cost inputs and the brand's own floor, never a course number or industry rule of thumb.",
+        "inputs": [
+          "brand brain: cost policy"
+        ],
+        "tools": [],
+        "skill": "shared/metric-read",
+        "output": "cost and floor snapshot",
+        "check": "the floor is the brand's own, cited to where it was set"
+      },
+      {
+        "n": 2,
+        "name": "Run the margin and compliance gate in code",
+        "does": "Compute price, shipping, shelf-life and regulatory checks together as one pass/fail gate.",
+        "inputs": [
+          "cost basis",
+          "target price",
+          "compliance category"
+        ],
+        "tools": [
+          "script: landed cost calculator (to build)"
+        ],
+        "skill": "prod/margin-compliance-gate",
+        "output": "gate result with the full number breakdown",
+        "check": "a missing input blocks the gate rather than defaulting to an assumption"
+      },
+      {
+        "n": 3,
+        "name": "Score expansion markets if relevant",
+        "does": "If the candidate targets more than the home market, score each market's gate result separately.",
+        "inputs": [
+          "expansion market cost/price data"
+        ],
+        "tools": [],
+        "skill": "prod/margin-compliance-gate",
+        "output": "per-market gate result",
+        "check": "each market is gated on its own numbers, not the home market's"
+      },
+      {
+        "n": 4,
+        "name": "Apply the remaining go-live gates",
+        "does": "Check provable claims, an owned point of difference, the brand's own thresholds, contribution margin and ad-cost headroom together.",
+        "inputs": [
+          "claims tiers",
+          "differentiation brief",
+          "contribution margin data"
+        ],
+        "tools": [],
+        "skill": "shared/claim-check",
+        "output": "go-live gate result",
+        "check": "every claim used in the gate is in the approved or site-backed tier"
+      },
+      {
+        "n": 5,
+        "name": "Rank surviving candidates",
+        "does": "If more than one candidate cleared the gates, rank them on the fixed scorecard.",
+        "inputs": [
+          "all cleared candidates"
+        ],
+        "tools": [
+          "script: scripts/ideas.py"
+        ],
+        "skill": "shared/rank-candidates",
+        "output": "ranked shortlist with score parts visible",
+        "check": "no arithmetic done in the model; source carries no extra weight"
+      },
+      {
+        "n": 6,
+        "name": "Write the one-page go/no-go memo",
+        "does": "State the candidate, the evidence, the cost, what it could move on the metric contract, and the gate results.",
+        "inputs": [
+          "ranked shortlist",
+          "gate results"
+        ],
+        "tools": [],
+        "skill": "shared/plain-english-card",
+        "output": "go/no-go memo",
+        "check": "reading level under grade 10; every number in the memo is in the record"
+      },
+      {
+        "n": 7,
+        "name": "Set the pre-set review date",
+        "does": "For anything recommended for approval, set the date the result gets checked.",
+        "inputs": [
+          "memo"
+        ],
+        "tools": [],
+        "skill": "shared/registry-entry",
+        "output": "review date on the registry entry",
+        "check": "the review date is a real calendar date or a count, not \"soon\""
+      },
+      {
+        "n": 8,
+        "name": "Send to the founder gate and log the decision",
+        "does": "Send the card with the 3 buttons; log whatever the founder decides, with their reason verbatim.",
+        "inputs": [
+          "memo",
+          "review date"
+        ],
+        "tools": [],
+        "skill": "shared/registry-entry",
+        "output": "logged decision",
+        "check": "the founder's reason is stored verbatim, not paraphrased"
+      }
+    ],
+    "outputs": [
+      "margin-gate result",
+      "compliance flag list",
+      "scored shortlist",
+      "go/no-go memo"
+    ],
+    "qa": [
+      "every input has a source",
+      "missing inputs blocked the gate",
+      "claims traced to tiers",
+      "a review date is set for anything approved"
+    ],
+    "read_point": "the pre-set review date logged on approval",
+    "typical_duration": "agent time 1 to 2 hours; founder decision adds 1 to 3 days wait",
+    "subagents": []
+  },
+  {
+    "id": "PROD-W04",
+    "name": "Run field research and hand the validated angle to creative",
+    "capabilities": [
+      "PROD-C12"
+    ],
+    "trigger": "on demand",
+    "human_role": "Product researcher grounding the angle in real shopper behaviour before Creative builds on it",
+    "inputs_required": [
+      "approved or near-approved candidate",
+      "avatar draft from Brand strategist",
+      "a stated field-research time budget"
+    ],
+    "steps": [
+      {
+        "n": 1,
+        "name": "Define the field-research question",
+        "does": "State exactly what shopper behaviour would confirm or kill the current angle.",
+        "inputs": [
+          "differentiation brief"
+        ],
+        "tools": [],
+        "skill": null,
+        "output": "one research question",
+        "check": "the question is answerable within the time budget"
+      },
+      {
+        "n": 2,
+        "name": "Run the field pass within its time limit",
+        "does": "Read interviews, forums, reviews and in-market signals for the question, stopping at the time limit.",
+        "inputs": [
+          "research question",
+          "time budget"
+        ],
+        "tools": [
+          "web search (budgeted)"
+        ],
+        "skill": "shared/web-research-budgeted",
+        "output": "raw field notes",
+        "check": "the time limit was not exceeded"
+      },
+      {
+        "n": 3,
+        "name": "Extract the validated detail",
+        "does": "Pull out the avatar detail, hook language and any onboarding idea that actually surfaced in real shopper words.",
+        "inputs": [
+          "raw field notes"
+        ],
+        "tools": [],
+        "skill": null,
+        "output": "validated avatar/hook/onboarding notes",
+        "check": "every note quotes or closely paraphrases a real source"
+      },
+      {
+        "n": 4,
+        "name": "Check against the differentiation brief",
+        "does": "Flag any contradiction between the field finding and the differentiation brief from PROD-W02.",
+        "inputs": [
+          "differentiation brief",
+          "validated notes"
+        ],
+        "tools": [],
+        "skill": null,
+        "output": "contradiction flag or clear pass",
+        "check": "a contradiction is never silently dropped"
+      },
+      {
+        "n": 5,
+        "name": "Package the handoff note",
+        "does": "Write the validated angle, hook and onboarding idea as a short handoff, with the source evidence attached.",
+        "inputs": [
+          "validated notes"
+        ],
+        "tools": [],
+        "skill": "shared/report-section",
+        "output": "handoff note",
+        "check": "reading level under grade 10; every claim in the note has a source"
+      },
+      {
+        "n": 6,
+        "name": "Send the handoff and log it",
+        "does": "Send the note to Paid creative and copy, and to Site for any onboarding idea; log the handoff.",
+        "inputs": [
+          "handoff note"
+        ],
+        "tools": [],
+        "skill": "shared/registry-entry",
+        "output": "logged handoff",
+        "check": "the receiving agent and date are both recorded"
+      }
+    ],
+    "outputs": [
+      "validated angle handoff note"
+    ],
+    "qa": [
+      "every finding traces to a real shopper source",
+      "the time limit was respected"
+    ],
+    "read_point": "when Creative reports whether the angle tested; the read is logged by CREA and referenced here",
+    "typical_duration": "agent time 1 to 3 hours depending on field access",
+    "subagents": []
+  },
+  {
+    "id": "PROD-W05",
+    "name": "Build the tech pack, BOM, packaging spec and durability test",
+    "capabilities": [
+      "PROD-C13",
+      "PROD-C71"
+    ],
+    "trigger": "event: new SKU or spec change | event: new packaging design",
+    "human_role": "Product/QA manager writing the exact spec a factory builds to",
+    "inputs_required": [
+      "approved candidate or SKU",
+      "reference sample if one exists",
+      "target unit cost",
+      "packaging requirements (drop height, transit mode)"
+    ],
+    "steps": [
+      {
+        "n": 1,
+        "name": "Write measurements with tolerance bands",
+        "does": "Specify every physical dimension with a tolerance, never a bare number.",
+        "inputs": [
+          "approved candidate spec"
+        ],
+        "tools": [],
+        "skill": "prod/build-tech-pack",
+        "output": "dimensioned spec with tolerances",
+        "check": "every measurement has a tolerance band"
+      },
+      {
+        "n": 2,
+        "name": "Build the component-level BOM",
+        "does": "List every component with its own spec and target cost.",
+        "inputs": [
+          "dimensioned spec"
+        ],
+        "tools": [],
+        "skill": "prod/build-tech-pack",
+        "output": "bill of materials",
+        "check": "every component has a spec and a target cost"
+      },
+      {
+        "n": 3,
+        "name": "Price packaging as its own cost line",
+        "does": "Cost packaging separately from the product, never folded into a single unit cost.",
+        "inputs": [
+          "packaging requirements"
+        ],
+        "tools": [],
+        "skill": "prod/build-tech-pack",
+        "output": "packaging cost line",
+        "check": "packaging appears as its own line, not blended into unit cost"
+      },
+      {
+        "n": 4,
+        "name": "Version the tech pack",
+        "does": "Assign a version number and log it against the SKU record.",
+        "inputs": [
+          "BOM",
+          "packaging spec"
+        ],
+        "tools": [],
+        "skill": "shared/registry-entry",
+        "output": "versioned tech pack",
+        "check": "the version number is unique and traceable to the SKU"
+      },
+      {
+        "n": 5,
+        "name": "Book the packaging durability test",
+        "does": "Book the drop-test, tamper-evidence and transit-durability test the design needs before production.",
+        "inputs": [
+          "packaging spec",
+          "transit mode"
+        ],
+        "tools": [],
+        "skill": "prod/build-tech-pack",
+        "output": "booked test",
+        "check": "the test is booked before any production run, not after"
+      },
+      {
+        "n": 6,
+        "name": "Track the test result",
+        "does": "Record pass, fail or marginal against the stated pass criteria.",
+        "inputs": [
+          "test booking"
+        ],
+        "tools": [],
+        "skill": "prod/build-tech-pack",
+        "output": "test result",
+        "check": "the result states which specific criterion failed, if any"
+      },
+      {
+        "n": 7,
+        "name": "Update and re-book on failure",
+        "does": "If the packaging fails, revise the spec, bump the version, and re-book the test.",
+        "inputs": [
+          "test result"
+        ],
+        "tools": [],
+        "skill": "prod/build-tech-pack",
+        "output": "revised, re-versioned spec",
+        "check": "no unversioned change is made to a failed spec"
+      },
+      {
+        "n": 8,
+        "name": "Hand off to sourcing",
+        "does": "Send the versioned, tested tech pack to sourcing for RFQ.",
+        "inputs": [
+          "passed tech pack"
+        ],
+        "tools": [],
+        "skill": "shared/registry-entry",
+        "output": "handoff to PROD-W07",
+        "check": "the tech pack handed off has a passed durability result or an explicit waiver reason"
+      }
+    ],
+    "outputs": [
+      "versioned tech pack",
+      "BOM",
+      "packaging spec with cost line",
+      "packaging test result"
+    ],
+    "qa": [
+      "every measurement has a tolerance",
+      "packaging is its own cost line",
+      "the durability test is booked before production, not after"
+    ],
+    "read_point": "when the packaging test result returns: pass, hold or redesign",
+    "typical_duration": "agent time 2 to 4 hours; packaging lab turnaround 3 to 10 days",
+    "subagents": []
+  },
+  {
+    "id": "PROD-W06",
+    "name": "Discover, vet, watch and score suppliers, and monitor commodity costs",
+    "capabilities": [
+      "PROD-C14",
+      "PROD-C68",
+      "PROD-C69",
+      "PROD-C18"
+    ],
+    "trigger": "on demand (new supplier) | weekly background scan | monthly (scorecard, commodity watch)",
+    "human_role": "Sourcing manager running the full supplier relationship from first search to the ongoing scorecard",
+    "inputs_required": [
+      "tech pack or open spec",
+      "MOQ needs",
+      "supplier region preference (US domestic, China or India)",
+      "existing supplier list if any"
+    ],
+    "steps": [
+      {
+        "n": 1,
+        "name": "Pick the region and run the discovery funnel",
+        "does": "Run the region-specific discovery procedure: broad platform search against the open spec.",
+        "inputs": [
+          "open spec",
+          "region preference"
+        ],
+        "tools": [
+          "browser: headless (public)",
+          "web search"
+        ],
+        "skill": "prod/source",
+        "output": "long list of candidate suppliers",
+        "check": "the funnel used the region's own primary platform, not a generic search"
+      },
+      {
+        "n": 2,
+        "name": "Message a wide shortlist on the same spec",
+        "does": "Contact the shortlist with identical spec and terms so responses are comparable.",
+        "inputs": [
+          "long list"
+        ],
+        "tools": [],
+        "skill": "prod/source",
+        "output": "response tracker",
+        "check": "every message sent used the same spec text"
+      },
+      {
+        "n": 3,
+        "name": "Verify with a video call and certification check",
+        "does": "Verify the top responders with a live video call and a certification document check.",
+        "inputs": [
+          "response tracker"
+        ],
+        "tools": [],
+        "skill": "prod/source",
+        "output": "verified shortlist",
+        "check": "no supplier is added to the verified list on claims alone"
+      },
+      {
+        "n": 4,
+        "name": "Vet any sourcing agent the same way",
+        "does": "Apply the same verification standard to a sourcing agent as to a factory.",
+        "inputs": [
+          "agent claims"
+        ],
+        "tools": [],
+        "skill": "prod/source",
+        "output": "agent vetting result",
+        "check": "an agent is vetted, never assumed reliable because a factory recommended them"
+      },
+      {
+        "n": 5,
+        "name": "Keep the spec running in the background",
+        "does": "Leave the open spec live against Alibaba, Global Sources, Faire/Tundra and ThomasNet/Maker's Row for a better or new supplier (india: also against IndiaMART; markets: IN).",
+        "inputs": [
+          "open spec"
+        ],
+        "tools": [
+          "web search"
+        ],
+        "skill": "prod/source",
+        "output": "background watch alert",
+        "check": "the watch only alerts; it never contacts a supplier on its own"
+      },
+      {
+        "n": 6,
+        "name": "Score active suppliers monthly",
+        "does": "Score every active supplier on on-time delivery, defect rate, responsiveness and price stability.",
+        "inputs": [
+          "supplier delivery/defect history"
+        ],
+        "tools": [],
+        "skill": "prod/supplier-relationship-monitor",
+        "output": "supplier scorecard",
+        "check": "the scorecard uses real delivery and defect data, not opinion"
+      },
+      {
+        "n": 7,
+        "name": "Track commodity input costs",
+        "does": "Track the priced-in raw materials behind each SKU on a set cadence.",
+        "inputs": [
+          "commodity price data"
+        ],
+        "tools": [
+          "web search"
+        ],
+        "skill": "prod/supplier-relationship-monitor",
+        "output": "commodity price-move flag",
+        "check": "the flag names the exact input and the price move"
+      },
+      {
+        "n": 8,
+        "name": "Flag when a cost-down is not worth the risk",
+        "does": "Compare a possible cost-down against the relationship-risk cost of pushing too hard.",
+        "inputs": [
+          "scorecard",
+          "price-move flag"
+        ],
+        "tools": [],
+        "skill": "prod/supplier-relationship-monitor",
+        "output": "risk-weighted recommendation",
+        "check": "the recommendation states the risk it is weighing, not just the saving"
+      },
+      {
+        "n": 9,
+        "name": "Log everything",
+        "does": "Log the shortlist, scorecard, commodity flag and any risk recommendation to the registry.",
+        "inputs": [
+          "all prior outputs"
+        ],
+        "tools": [],
+        "skill": "shared/registry-entry",
+        "output": "logged supplier record",
+        "check": "every entry links to the prior entry for the same supplier"
+      }
+    ],
+    "outputs": [
+      "verified supplier shortlist",
+      "supplier scorecard",
+      "commodity price-move flag",
+      "new-supplier alert"
+    ],
+    "qa": [
+      "every supplier verified by video call and certification, not claims alone",
+      "scorecard uses real data",
+      "the background watch never contacts a supplier automatically"
+    ],
+    "read_point": "monthly scorecard review; the alert's read point is when the founder decides to open a conversation",
+    "typical_duration": "agent time 2 to 6 hours for a discovery pass; the weekly scan runs unattended; human calls add days",
+    "subagents": []
+  },
+  {
+    "id": "PROD-W07",
+    "name": "Draft the RFQ, compare quotes and confirm landed cost",
+    "capabilities": [
+      "PROD-C15",
+      "MONEY-C03"
+    ],
+    "trigger": "on demand",
+    "human_role": "Sourcing manager turning a spec into a purchasing decision",
+    "inputs_required": [
+      "versioned tech pack",
+      "supplier shortlist",
+      "volume tiers to quote",
+      "freight and duty assumptions"
+    ],
+    "steps": [
+      {
+        "n": 1,
+        "name": "Translate the spec into a structured RFQ",
+        "does": "Turn the tech pack into an RFQ with tolerance bands stated plainly.",
+        "inputs": [
+          "versioned tech pack"
+        ],
+        "tools": [],
+        "skill": "prod/rfq-quote-compare",
+        "output": "RFQ document",
+        "check": "every measurement in the RFQ matches the tech pack's tolerance"
+      },
+      {
+        "n": 2,
+        "name": "Send the RFQ on identical terms",
+        "does": "Send to the shortlist with the same terms and the same deadline.",
+        "inputs": [
+          "RFQ document",
+          "verified shortlist"
+        ],
+        "tools": [],
+        "skill": "prod/rfq-quote-compare",
+        "output": "sent RFQ log",
+        "check": "every supplier received the same terms and deadline"
+      },
+      {
+        "n": 3,
+        "name": "Collect quotes across volume tiers",
+        "does": "Gather quotes for each stated volume tier from every responding supplier.",
+        "inputs": [
+          "sent RFQ log"
+        ],
+        "tools": [],
+        "skill": "prod/rfq-quote-compare",
+        "output": "raw quotes table",
+        "check": "every quote covers every requested volume tier or states why not"
+      },
+      {
+        "n": 4,
+        "name": "Build landed cost per SKU in code",
+        "does": "Compute product, freight, duty and packaging cost with a backup test for every cost line.",
+        "inputs": [
+          "raw quotes",
+          "freight/duty assumptions"
+        ],
+        "tools": [
+          "script: landed cost calculator (to build)"
+        ],
+        "skill": "shared/metric-read",
+        "output": "landed cost model per volume tier",
+        "check": "every cost line has a source and a backup-tested check"
+      },
+      {
+        "n": 5,
+        "name": "Compare cost and cash impact across tiers",
+        "does": "Compare landed cost per unit and the cash impact of each volume tier.",
+        "inputs": [
+          "landed cost model"
+        ],
+        "tools": [],
+        "skill": "prod/rfq-quote-compare",
+        "output": "tier comparison sheet",
+        "check": "the comparison shows cash impact, not just unit cost"
+      },
+      {
+        "n": 6,
+        "name": "Flag incomplete quotes",
+        "does": "Flag any quote missing a required certification or term.",
+        "inputs": [
+          "raw quotes"
+        ],
+        "tools": [],
+        "skill": "prod/rfq-quote-compare",
+        "output": "quote flag list",
+        "check": "a flagged quote is excluded from the recommendation until resolved"
+      },
+      {
+        "n": 7,
+        "name": "Recommend a supplier and tier",
+        "does": "Recommend a supplier and volume tier with the full numbers shown.",
+        "inputs": [
+          "tier comparison sheet"
+        ],
+        "tools": [],
+        "skill": "prod/rfq-quote-compare",
+        "output": "sourcing recommendation",
+        "check": "the recommendation names the numbers it is based on"
+      },
+      {
+        "n": 8,
+        "name": "Hand landed cost to Money and Ops",
+        "does": "Hand the landed cost model to Money and Ops to confirm and own for the brand's P&L.",
+        "inputs": [
+          "landed cost model"
+        ],
+        "tools": [],
+        "skill": "shared/registry-entry",
+        "output": "landed cost handed to MONEY-C03",
+        "check": "Money confirms receipt before the model is treated as final"
+      }
+    ],
+    "outputs": [
+      "RFQ document",
+      "quote comparison sheet",
+      "landed cost model per volume tier"
+    ],
+    "qa": [
+      "every cost line has a backup-tested source",
+      "quotes compared on identical terms",
+      "landed cost computed in code, never estimated"
+    ],
+    "read_point": "when Money confirms the landed cost model for the P&L",
+    "typical_duration": "agent time 2 to 3 hours; supplier quote turnaround 3 to 10 days",
+    "subagents": []
+  },
+  {
+    "id": "PROD-W08",
+    "name": "Run the sample gate, negotiate the price and book the production slot",
+    "capabilities": [
+      "PROD-C16",
+      "PROD-C17",
+      "PROD-C70"
+    ],
+    "trigger": "event: sample received",
+    "human_role": "Sourcing/QA manager gating the sample and locking the deal",
+    "inputs_required": [
+      "approved reference sample (in-house and at factory)",
+      "tech pack",
+      "the new sample",
+      "backup factory quote if negotiating",
+      "competitor teardown if available"
+    ],
+    "steps": [
+      {
+        "n": 1,
+        "name": "Confirm the reference sample exists",
+        "does": "Check the approved reference sample is in-house before any comparison starts.",
+        "inputs": [
+          "reference sample"
+        ],
+        "tools": [],
+        "skill": "prod/sample-qc-gate",
+        "output": "confirmed reference",
+        "check": "no comparison starts without a confirmed in-house reference"
+      },
+      {
+        "n": 2,
+        "name": "Run the 3-stage gate",
+        "does": "Compare the new sample against the reference side by side across the 3 stages.",
+        "inputs": [
+          "reference sample",
+          "new sample",
+          "tech pack"
+        ],
+        "tools": [],
+        "skill": "prod/sample-qc-gate",
+        "output": "stage-by-stage comparison",
+        "check": "every stage records a pass, hold or reject"
+      },
+      {
+        "n": 3,
+        "name": "Score communication and reliability",
+        "does": "Score the factory's communication and reliability shown during the sample round.",
+        "inputs": [
+          "sample-round correspondence"
+        ],
+        "tools": [],
+        "skill": "prod/sample-qc-gate",
+        "output": "reliability score",
+        "check": "the score is based on response time and accuracy, not tone"
+      },
+      {
+        "n": 4,
+        "name": "Record the deviation",
+        "does": "Record the exact deviation for any hold or reject, in measurable terms.",
+        "inputs": [
+          "stage comparison"
+        ],
+        "tools": [],
+        "skill": "prod/sample-qc-gate",
+        "output": "deviation record",
+        "check": "the deviation is stated as a measurement, not a feeling"
+      },
+      {
+        "n": 5,
+        "name": "Build negotiating leverage",
+        "does": "If the sample passed, build real leverage: a vetted alternate factory, a competitor teardown, the category's normal factory margin.",
+        "inputs": [
+          "passed sample",
+          "alternate factory data"
+        ],
+        "tools": [
+          "web search"
+        ],
+        "skill": "prod/negotiate-cost-down",
+        "output": "leverage brief",
+        "check": "the leverage is real (a vetted alternate exists), not a bluff"
+      },
+      {
+        "n": 6,
+        "name": "Ask for the cost-down",
+        "does": "Present the ask with the leverage stated plainly, not as a bare request.",
+        "inputs": [
+          "leverage brief"
+        ],
+        "tools": [],
+        "skill": "prod/negotiate-cost-down",
+        "output": "negotiation outcome",
+        "check": "the ask names the specific leverage used"
+      },
+      {
+        "n": 7,
+        "name": "Confirm price and book the slot",
+        "does": "Confirm the final price and terms, then book the production slot at the exact factory.",
+        "inputs": [
+          "negotiation outcome"
+        ],
+        "tools": [],
+        "skill": "prod/negotiate-cost-down",
+        "output": "booked production slot",
+        "check": "the slot is booked at the exact factory that passed the sample, not a sister factory"
+      },
+      {
+        "n": 8,
+        "name": "Track the slot weekly",
+        "does": "Check the booked slot is still on schedule until production starts.",
+        "inputs": [
+          "booked slot"
+        ],
+        "tools": [],
+        "skill": null,
+        "output": "slot status",
+        "check": "a slip is flagged the week it becomes known, not after"
+      },
+      {
+        "n": 9,
+        "name": "Log the decision",
+        "does": "Log the sample decision, negotiated price and slot booking to the registry.",
+        "inputs": [
+          "all prior outputs"
+        ],
+        "tools": [],
+        "skill": "shared/registry-entry",
+        "output": "logged sourcing decision",
+        "check": "no creative shoot, price commitment or launch date is set before this log exists"
+      }
+    ],
+    "outputs": [
+      "stage status and deviation notes",
+      "negotiation brief",
+      "confirmed price and terms",
+      "booked production slot"
+    ],
+    "qa": [
+      "reference sample existed before comparison",
+      "no downstream commitment before the sample clears",
+      "leverage is real, not a bluff"
+    ],
+    "read_point": "when the booked slot's production start date arrives; a slip is flagged the day it is known",
+    "typical_duration": "agent time 1 to 2 hours per stage; sample shipping and factory response add 1 to 3 weeks",
+    "subagents": []
+  },
+  {
+    "id": "PROD-W09",
+    "name": "Structure payment terms and hand PO governance to Finance",
+    "capabilities": [
+      "PROD-C19",
+      "MONEY-C37"
+    ],
+    "trigger": "event: deal close",
+    "human_role": "Sourcing manager setting the deal's cash terms and governance",
+    "inputs_required": [
+      "confirmed price and terms",
+      "supplier relationship history",
+      "brand cash position from Finance"
+    ],
+    "steps": [
+      {
+        "n": 1,
+        "name": "Choose the payment route",
+        "does": "Pick wire, LC, trade assurance or escrow based on the supplier relationship's history and risk.",
+        "inputs": [
+          "confirmed terms",
+          "relationship history"
+        ],
+        "tools": [],
+        "skill": "prod/payment-terms-structure",
+        "output": "chosen payment route",
+        "check": "the route matches the relationship's actual risk level, not a default"
+      },
+      {
+        "n": 2,
+        "name": "Structure the split and MOQ",
+        "does": "Set the advance, balance and retention split, and confirm the MOQ.",
+        "inputs": [
+          "chosen route"
+        ],
+        "tools": [],
+        "skill": "prod/payment-terms-structure",
+        "output": "payment split and MOQ",
+        "check": "the split is stated as percentages tied to milestones"
+      },
+      {
+        "n": 3,
+        "name": "Compute float, cash-locked figure and financing cost",
+        "does": "Compute, in code, the float days, the cash locked up, and any financing cost.",
+        "inputs": [
+          "payment split"
+        ],
+        "tools": [
+          "script: landed cost calculator (to build)"
+        ],
+        "skill": "prod/payment-terms-structure",
+        "output": "cash/MOQ packet",
+        "check": "every figure is computed, not estimated"
+      },
+      {
+        "n": 4,
+        "name": "Hand the numbers to Finance",
+        "does": "Send the full cash/MOQ packet to Finance at deal close.",
+        "inputs": [
+          "cash/MOQ packet"
+        ],
+        "tools": [],
+        "skill": "shared/registry-entry",
+        "output": "packet delivered to Finance",
+        "check": "Finance confirms receipt before the deal proceeds"
+      },
+      {
+        "n": 5,
+        "name": "Gate the PO on the tech pack version",
+        "does": "Confirm the PO cites the exact, current tech pack version, never a verbal spec.",
+        "inputs": [
+          "PO draft",
+          "tech pack version"
+        ],
+        "tools": [],
+        "skill": null,
+        "output": "version-gated PO",
+        "check": "the PO references a specific tech pack version number"
+      },
+      {
+        "n": 6,
+        "name": "Assign one owner and one date per step",
+        "does": "Confirm one named owner and one date for every step on the production critical path.",
+        "inputs": [
+          "critical path"
+        ],
+        "tools": [],
+        "skill": null,
+        "output": "owned critical path",
+        "check": "every step has exactly one owner and one date"
+      },
+      {
+        "n": 7,
+        "name": "Route communication through one channel",
+        "does": "Route all supplier communication for this PO through one logged channel.",
+        "inputs": [
+          "communication plan"
+        ],
+        "tools": [],
+        "skill": null,
+        "output": "logged channel",
+        "check": "no side-channel communication about this PO exists unlogged"
+      },
+      {
+        "n": 8,
+        "name": "Log the governed PO",
+        "does": "Log the PO and its governance record to the registry.",
+        "inputs": [
+          "all prior outputs"
+        ],
+        "tools": [],
+        "skill": "shared/registry-entry",
+        "output": "governed PO record",
+        "check": "the record links the PO, the tech pack version and the owner list"
+      }
+    ],
+    "outputs": [
+      "payment terms recommendation",
+      "cash/MOQ packet for Finance",
+      "governed PO record"
+    ],
+    "qa": [
+      "every float day and financing cost computed, not estimated",
+      "the PO cites the exact tech pack version",
+      "one owner and one date per production step"
+    ],
+    "read_point": "at Finance's cash review, and at each production-step date",
+    "typical_duration": "agent time under 1 hour; Finance review adds 1 to 2 days",
+    "subagents": []
+  },
+  {
+    "id": "PROD-W10",
+    "name": "Run pre-shipment inspection and choose freight and 3PL",
+    "capabilities": [
+      "PROD-C20",
+      "PROD-C21"
+    ],
+    "trigger": "event: shipment ready",
+    "human_role": "Sourcing/logistics manager clearing a shipment for departure",
+    "inputs_required": [
+      "production run details",
+      "defect history for this SKU",
+      "shipment weight and volume",
+      "launch date",
+      "cash cover for freight mode"
+    ],
+    "steps": [
+      {
+        "n": 1,
+        "name": "Book third-party inspection",
+        "does": "Book third-party inspection before the container leaves the factory.",
+        "inputs": [
+          "production run details"
+        ],
+        "tools": [],
+        "skill": "prod/shipment-readiness",
+        "output": "booked inspection",
+        "check": "inspection is booked before the shipment date, not after"
+      },
+      {
+        "n": 2,
+        "name": "Size the defect buffer from real history",
+        "does": "Size the acceptable defect buffer from this SKU's own defect history, not a flat industry percentage.",
+        "inputs": [
+          "defect history"
+        ],
+        "tools": [],
+        "skill": "prod/shipment-readiness",
+        "output": "defect buffer",
+        "check": "the buffer cites the SKU's own historical defect rate"
+      },
+      {
+        "n": 3,
+        "name": "Record disposition decisions",
+        "does": "Record what happens to every defective unit found: rework, discount, discard.",
+        "inputs": [
+          "inspection findings"
+        ],
+        "tools": [],
+        "skill": "prod/shipment-readiness",
+        "output": "disposition log",
+        "check": "every defective unit has a recorded decision"
+      },
+      {
+        "n": 4,
+        "name": "Pick the freight mode",
+        "does": "Choose air, sea or a hybrid by weight, launch date and cash cover.",
+        "inputs": [
+          "shipment weight",
+          "launch date",
+          "cash cover"
+        ],
+        "tools": [],
+        "skill": "prod/shipment-readiness",
+        "output": "freight mode decision",
+        "check": "the decision states the weight/date/cash trade-off it made"
+      },
+      {
+        "n": 5,
+        "name": "Select the 3PL on service history",
+        "does": "Choose the 3PL on service history, not the lowest quote.",
+        "inputs": [
+          "3PL history"
+        ],
+        "tools": [],
+        "skill": "prod/shipment-readiness",
+        "output": "3PL selection",
+        "check": "the selection cites the 3PL's on-time and damage-rate history"
+      },
+      {
+        "n": 6,
+        "name": "Check cross-border thresholds",
+        "does": "Check duty thresholds and paperwork requirements before committing.",
+        "inputs": [
+          "shipment value",
+          "destination"
+        ],
+        "tools": [],
+        "skill": "prod/shipment-readiness",
+        "output": "threshold check result",
+        "check": "the check is done before the shipment is booked, not after"
+      },
+      {
+        "n": 7,
+        "name": "Clear the shipment to leave",
+        "does": "Confirm the shipment is cleared, with the inspection result attached.",
+        "inputs": [
+          "inspection result",
+          "freight/3PL decision"
+        ],
+        "tools": [],
+        "skill": "shared/registry-entry",
+        "output": "clearance confirmation",
+        "check": "clearance is recorded with the inspection result attached, not separately"
+      },
+      {
+        "n": 8,
+        "name": "Log the choices",
+        "does": "Log the freight/3PL choice and inspection result to the registry.",
+        "inputs": [
+          "all prior outputs"
+        ],
+        "tools": [],
+        "skill": "shared/registry-entry",
+        "output": "logged shipment record",
+        "check": "the record links to the PO it ships against"
+      }
+    ],
+    "outputs": [
+      "inspection result and disposition log",
+      "freight/3PL recommendation"
+    ],
+    "qa": [
+      "defect buffer sized from real history",
+      "3PL chosen on service history, not price alone",
+      "cross-border threshold checked before commit"
+    ],
+    "read_point": "on arrival: whether the defect rate matched the inspection's estimate",
+    "typical_duration": "agent time 1 to 2 hours; inspection turnaround 1 to 3 days",
+    "subagents": []
+  },
+  {
+    "id": "PROD-W11",
+    "name": "Audit the sourcing base: onboarding, billing anomalies and defect CAPA",
+    "capabilities": [
+      "PROD-C24",
+      "PROD-C67",
+      "MONEY-C70",
+      "PROD-C73"
+    ],
+    "trigger": "event: onboarding or new client | per billing cycle | on defect complaint above a threshold",
+    "human_role": "Sourcing/ops manager running standing governance over the whole supplier and courier base",
+    "inputs_required": [
+      "full supplier and SKU list",
+      "contracted rates for suppliers, couriers and 3PLs",
+      "current billing statements",
+      "tech pack version history",
+      "defect complaint records"
+    ],
+    "steps": [
+      {
+        "n": 1,
+        "name": "Audit the whole sourcing base once",
+        "does": "On onboarding, audit every active supplier, term and price in one pass.",
+        "inputs": [
+          "full supplier list"
+        ],
+        "tools": [],
+        "skill": "prod/sourcing-audit",
+        "output": "onboarding audit report",
+        "check": "every active supplier appears in the audit, none skipped"
+      },
+      {
+        "n": 2,
+        "name": "Set the PO cadence to the SKU count",
+        "does": "At high SKU count, move purchase orders from a weekly to a daily cadence.",
+        "inputs": [
+          "SKU count"
+        ],
+        "tools": [],
+        "skill": "prod/sourcing-audit",
+        "output": "PO cadence setting",
+        "check": "the cadence change is logged with the SKU-count threshold that triggered it"
+      },
+      {
+        "n": 3,
+        "name": "Watch bills against contracted rates",
+        "does": "Watch every recurring supplier and courier bill against its contracted rate, in code.",
+        "inputs": [
+          "billing statements",
+          "contracted rates"
+        ],
+        "tools": [
+          "script: landed cost calculator (to build)"
+        ],
+        "skill": "prod/sourcing-audit",
+        "output": "billing check result",
+        "check": "the check compares against the contracted rate, not last month's bill"
+      },
+      {
+        "n": 4,
+        "name": "Flag anomalies the month they appear",
+        "does": "Flag a quiet rate increase, a duplicate charge or a new surcharge the same billing cycle it appears.",
+        "inputs": [
+          "billing check result"
+        ],
+        "tools": [],
+        "skill": "prod/sourcing-audit",
+        "output": "billing anomaly flag",
+        "check": "the flag is raised within the same billing cycle"
+      },
+      {
+        "n": 5,
+        "name": "Track 3PL and warehouse SLA daily",
+        "does": "Track 3PL and warehouse SLA performance daily against the written SLA.",
+        "inputs": [
+          "SLA terms",
+          "daily performance data"
+        ],
+        "tools": [],
+        "skill": "prod/sourcing-audit",
+        "output": "SLA tracking log",
+        "check": "a breach is flagged the day it happens, not at month end"
+      },
+      {
+        "n": 6,
+        "name": "Trace a defect to its batch",
+        "does": "When a defect complaint crosses the threshold, trace it to the exact production batch or lot using the tech pack's versioning.",
+        "inputs": [
+          "defect complaint",
+          "tech pack version history"
+        ],
+        "tools": [],
+        "skill": "prod/defect-capa-trace",
+        "output": "batch trace",
+        "check": "the trace names the exact batch or lot, not just the SKU"
+      },
+      {
+        "n": 7,
+        "name": "Run the CAPA loop",
+        "does": "Run the corrective-action loop with the supplier: root cause, fix, verification.",
+        "inputs": [
+          "batch trace"
+        ],
+        "tools": [],
+        "skill": "prod/defect-capa-trace",
+        "output": "CAPA record",
+        "check": "the CAPA has a verified fix, not just a supplier promise"
+      },
+      {
+        "n": 8,
+        "name": "Log everything",
+        "does": "Log every anomaly, SLA breach and CAPA outcome to the registry.",
+        "inputs": [
+          "all prior outputs"
+        ],
+        "tools": [],
+        "skill": "shared/registry-entry",
+        "output": "logged governance record",
+        "check": "every entry links back to the specific supplier, courier or 3PL"
+      }
+    ],
+    "outputs": [
+      "onboarding audit report",
+      "billing anomaly flag",
+      "SLA breach flag",
+      "batch trace and CAPA record"
+    ],
+    "qa": [
+      "every anomaly computed against the contracted rate, not a feeling",
+      "batch trace uses the tech pack's own versioning",
+      "CAPA has a verified fix"
+    ],
+    "read_point": "the CAPA's verification date; the next billing cycle for anomaly recurrence",
+    "typical_duration": "agent time 2 to 4 hours for onboarding audit; billing/SLA checks run unattended weekly",
+    "subagents": []
+  },
+  {
+    "id": "PROD-W12",
+    "name": "Compute reorder points and manage DTC and Amazon FBA replenishment",
+    "capabilities": [
+      "PROD-C22",
+      "PROD-C39"
+    ],
+    "trigger": "weekly",
+    "human_role": "Inventory planner sizing every SKU's reorder point and channel-specific replenishment",
+    "inputs_required": [
+      "SKU velocity by channel",
+      "lead time per supplier",
+      "safety-stock policy",
+      "channel push plan (promotions, launches)",
+      "Amazon IPI and storage limits if applicable"
+    ],
+    "steps": [
+      {
+        "n": 1,
+        "name": "Pull real velocity and lead time",
+        "does": "Pull real velocity and lead time per SKU per channel; a subscription or bundle SKU uses committed cadence, not trailing sales.",
+        "inputs": [
+          "sales history",
+          "supplier lead time"
+        ],
+        "tools": [
+          "script: reorder point calculator (to build)"
+        ],
+        "skill": "prod/reorder-point-calc",
+        "output": "velocity/lead-time table",
+        "check": "velocity and lead time are real numbers, not defaults"
+      },
+      {
+        "n": 2,
+        "name": "Compute reorder point and safety stock",
+        "does": "Compute reorder point and safety stock in code, sized against peak-season spike risk (Q4 holiday demand, carrier return-to-sender risk); india: festive demand and COD RTO risk (markets: IN).",
+        "inputs": [
+          "velocity/lead-time table",
+          "safety-stock policy"
+        ],
+        "tools": [
+          "script: reorder point calculator (to build)"
+        ],
+        "skill": "prod/reorder-point-calc",
+        "output": "reorder point and safety stock per SKU",
+        "check": "the spike-risk adjustment is stated, not silently folded in"
+      },
+      {
+        "n": 3,
+        "name": "Compare current stock to the reorder point",
+        "does": "Compare current stock against the computed point and flag stockout risk.",
+        "inputs": [
+          "current stock",
+          "reorder point"
+        ],
+        "tools": [],
+        "skill": "prod/reorder-point-calc",
+        "output": "stockout-risk flag",
+        "check": "every SKU below its reorder point is flagged"
+      },
+      {
+        "n": 4,
+        "name": "Size non-routine orders",
+        "does": "Size any non-routine order from the committed channel push plan (a promotion or launch).",
+        "inputs": [
+          "channel push plan"
+        ],
+        "tools": [],
+        "skill": "prod/reorder-point-calc",
+        "output": "non-routine order size",
+        "check": "the size traces to a committed plan, not a guess"
+      },
+      {
+        "n": 5,
+        "name": "Size Amazon FBA replenishment",
+        "does": "Size FBA replenishment shipments from a real cover target, treating a stockout as the failure mode to avoid.",
+        "inputs": [
+          "Amazon velocity",
+          "cover target"
+        ],
+        "tools": [],
+        "skill": "prod/reorder-point-calc",
+        "output": "FBA replenishment size",
+        "check": "the cover target is the brand's own, not a platform default"
+      },
+      {
+        "n": 6,
+        "name": "Watch IPI and storage limits",
+        "does": "Watch Amazon IPI score and storage limits live so a restock is never blocked.",
+        "inputs": [
+          "IPI score",
+          "storage limit"
+        ],
+        "tools": [],
+        "skill": "prod/reorder-point-calc",
+        "output": "IPI/storage flag",
+        "check": "the flag is raised before the limit blocks a restock, not after"
+      },
+      {
+        "n": 7,
+        "name": "Draft the PO",
+        "does": "Draft a PO for every SKU below its reorder point.",
+        "inputs": [
+          "stockout-risk flags"
+        ],
+        "tools": [],
+        "skill": null,
+        "output": "PO draft",
+        "check": "the draft covers every flagged SKU"
+      },
+      {
+        "n": 8,
+        "name": "Log the plan",
+        "does": "Log the reorder plan and any PO draft to the registry.",
+        "inputs": [
+          "all prior outputs"
+        ],
+        "tools": [],
+        "skill": "shared/registry-entry",
+        "output": "logged reorder plan",
+        "check": "the plan is dated and links to the SKU record"
+      }
+    ],
+    "outputs": [
+      "reorder point and safety stock per SKU",
+      "PO draft where triggered",
+      "IPI/storage limit flag"
+    ],
+    "qa": [
+      "velocity and lead time are real numbers, not defaults",
+      "IPI limit checked before a restock is planned",
+      "arithmetic computed in code"
+    ],
+    "read_point": "weekly, against actual stockouts and IPI score",
+    "typical_duration": "agent time under 1 hour, runs unattended weekly",
+    "subagents": []
+  },
+  {
+    "id": "PROD-W13",
+    "name": "Flag concentration risk, refresh landed cost and flag dead stock",
+    "capabilities": [
+      "PROD-C23",
+      "PROD-C27"
+    ],
+    "trigger": "monthly | weekly (dead-stock sweep)",
+    "human_role": "Sourcing/inventory manager watching structural risk and ageing stock together",
+    "inputs_required": [
+      "supplier and country ledger",
+      "current FX, freight and duty rates",
+      "stock age and velocity by channel",
+      "long-term storage/dead-stock thresholds"
+    ],
+    "steps": [
+      {
+        "n": 1,
+        "name": "Compute concentration shares",
+        "does": "Compute supplier and country concentration shares across the sourcing base.",
+        "inputs": [
+          "supplier and country ledger"
+        ],
+        "tools": [
+          "script: landed cost calculator (to build)"
+        ],
+        "skill": "prod/inventory-risk-flag",
+        "output": "concentration share by supplier and country",
+        "check": "shares are computed in code from the ledger, not estimated"
+      },
+      {
+        "n": 2,
+        "name": "Confirm a mapped backup",
+        "does": "Confirm a mapped backup supplier exists in a second country for any concentrated share.",
+        "inputs": [
+          "concentration shares"
+        ],
+        "tools": [],
+        "skill": "prod/inventory-risk-flag",
+        "output": "backup-supplier confirmation",
+        "check": "the backup is a real, vetted supplier, not assumed"
+      },
+      {
+        "n": 3,
+        "name": "Recompute landed cost on any change",
+        "does": "Recompute landed cost the moment price, freight, FX or duty changes.",
+        "inputs": [
+          "current FX/freight/duty rates"
+        ],
+        "tools": [
+          "script: landed cost calculator (to build)"
+        ],
+        "skill": "prod/inventory-risk-flag",
+        "output": "refreshed landed cost",
+        "check": "the recompute is triggered by an actual rate change, not on a fixed calendar only"
+      },
+      {
+        "n": 4,
+        "name": "Watch inventory age against velocity",
+        "does": "Watch stock age against velocity across DTC and marketplace stock.",
+        "inputs": [
+          "stock age",
+          "velocity"
+        ],
+        "tools": [],
+        "skill": "prod/inventory-risk-flag",
+        "output": "age-vs-velocity table",
+        "check": "the table covers every channel the SKU sells on"
+      },
+      {
+        "n": 5,
+        "name": "Flag before it becomes dead weight",
+        "does": "Flag a SKU against the long-term storage or dead-stock threshold before it becomes dead weight.",
+        "inputs": [
+          "age-vs-velocity table",
+          "thresholds"
+        ],
+        "tools": [],
+        "skill": "prod/inventory-risk-flag",
+        "output": "dead-stock alert",
+        "check": "the alert fires before the threshold is crossed, not after"
+      },
+      {
+        "n": 6,
+        "name": "Draft the clearance options",
+        "does": "Draft a markdown, bundle or discontinue plan with the cash impact of each option.",
+        "inputs": [
+          "dead-stock alert"
+        ],
+        "tools": [
+          "script: landed cost calculator (to build)"
+        ],
+        "skill": "prod/inventory-risk-flag",
+        "output": "clearance plan with cash impact per option",
+        "check": "every option's cash impact is computed, not estimated"
+      },
+      {
+        "n": 7,
+        "name": "Send to the founder gate",
+        "does": "Send the concentration-risk and dead-stock flags to the founder gate.",
+        "inputs": [
+          "backup-supplier confirmation",
+          "clearance plan"
+        ],
+        "tools": [],
+        "skill": "shared/plain-english-card",
+        "output": "founder card",
+        "check": "the card names what it costs to act and what it costs to wait"
+      },
+      {
+        "n": 8,
+        "name": "Log the refresh",
+        "does": "Log the refreshed landed cost and clearance decision to the registry.",
+        "inputs": [
+          "all prior outputs"
+        ],
+        "tools": [],
+        "skill": "shared/registry-entry",
+        "output": "logged risk/cost record",
+        "check": "the log links to the prior month's entry for trend"
+      }
+    ],
+    "outputs": [
+      "concentration risk flag",
+      "refreshed landed cost",
+      "dead-stock alert and clearance plan"
+    ],
+    "qa": [
+      "backup supplier is mapped, not assumed",
+      "landed cost recomputed on every relevant price move",
+      "clearance cash numbers computed, not estimated"
+    ],
+    "read_point": "founder decision on the clearance plan; next month's concentration recompute",
+    "typical_duration": "agent time 1 to 2 hours monthly; dead-stock sweep runs unattended weekly",
+    "subagents": []
+  },
+  {
+    "id": "PROD-W14",
+    "name": "Sync multi-channel inventory, route orders and plan peak-season capacity",
+    "capabilities": [
+      "PROD-G05",
+      "PROD-C72"
+    ],
+    "trigger": "continuous; event: new channel added | annual, ahead of Q4/BFCM peak season (india: ahead of festive season)",
+    "human_role": "Inventory/ops planner keeping one stock pool safe across channels and ready for peak season",
+    "inputs_required": [
+      "stock pool across site, marketplaces, quick commerce and stores",
+      "per-channel buffer policy",
+      "order-routing and split-shipment rules",
+      "US peak-season retail calendar (BFCM, Prime Day, Q4 holidays; india: festive calendar)",
+      "warehouse staffing and WMS/OMS capacity"
+    ],
+    "steps": [
+      {
+        "n": 1,
+        "name": "Keep one synced stock pool",
+        "does": "Keep one stock pool synced across every channel with per-channel buffers to stop overselling.",
+        "inputs": [
+          "stock pool",
+          "buffer policy"
+        ],
+        "tools": [],
+        "skill": "prod/inventory-network-plan",
+        "output": "synced stock pool",
+        "check": "no channel oversells against its buffer"
+      },
+      {
+        "n": 2,
+        "name": "Set routing and split-shipment rules",
+        "does": "Set order routing and split-shipment rules by channel and warehouse.",
+        "inputs": [
+          "warehouse map"
+        ],
+        "tools": [],
+        "skill": "prod/inventory-network-plan",
+        "output": "routing ruleset",
+        "check": "every channel has a stated routing rule, none default by accident"
+      },
+      {
+        "n": 3,
+        "name": "Reconcile the pool daily",
+        "does": "Reconcile the stock pool daily and flag any channel drifting out of sync.",
+        "inputs": [
+          "synced stock pool"
+        ],
+        "tools": [],
+        "skill": "prod/inventory-network-plan",
+        "output": "reconciliation flag",
+        "check": "drift is flagged the day it is detected"
+      },
+      {
+        "n": 4,
+        "name": "Project peak-season safety stock",
+        "does": "Ahead of Q4/BFCM, project the safety stock needed across the season (india: ahead of the festive season; markets: IN).",
+        "inputs": [
+          "festive calendar",
+          "sales history"
+        ],
+        "tools": [],
+        "skill": "prod/inventory-network-plan",
+        "output": "peak safety-stock projection",
+        "check": "the projection uses at least one prior peak cycle's data where it exists (india: prior festive cycle; markets: IN)"
+      },
+      {
+        "n": 5,
+        "name": "Check staffing and system load",
+        "does": "Check warehouse staffing and WMS/OMS load against the projected peak volume.",
+        "inputs": [
+          "staffing capacity",
+          "system load capacity"
+        ],
+        "tools": [],
+        "skill": "prod/inventory-network-plan",
+        "output": "capacity check",
+        "check": "the check states a percentage of capacity used, not a yes/no"
+      },
+      {
+        "n": 6,
+        "name": "Build the readiness plan",
+        "does": "Build the peak-season readiness plan rolling stock, staffing and system load into one plan (india: festive readiness plan; markets: IN).",
+        "inputs": [
+          "safety-stock projection",
+          "capacity check"
+        ],
+        "tools": [],
+        "skill": "prod/inventory-network-plan",
+        "output": "peak-season readiness plan",
+        "check": "the plan covers stock, staffing and system load together, not just stock"
+      },
+      {
+        "n": 7,
+        "name": "Send to the founder gate",
+        "does": "Send the readiness plan to the founder gate ahead of the season.",
+        "inputs": [
+          "readiness plan"
+        ],
+        "tools": [],
+        "skill": "shared/plain-english-card",
+        "output": "founder card",
+        "check": "the card is sent with enough lead time to act on any gap"
+      },
+      {
+        "n": 8,
+        "name": "Log the rules and plan",
+        "does": "Log the sync rules and readiness plan to the registry.",
+        "inputs": [
+          "all prior outputs"
+        ],
+        "tools": [],
+        "skill": "shared/registry-entry",
+        "output": "logged network plan",
+        "check": "the log is dated and versioned for the season"
+      }
+    ],
+    "outputs": [
+      "multi-channel sync and routing rules",
+      "peak-season readiness plan"
+    ],
+    "qa": [
+      "no channel oversells against the buffer policy",
+      "readiness plan covers stock, staffing and system load together"
+    ],
+    "read_point": "peak season's actual stockout and fulfilment-delay rate against the plan",
+    "typical_duration": "agent time 2 to 3 hours annually for the readiness plan; sync runs continuously",
+    "subagents": []
+  },
+  {
+    "id": "PROD-W15",
+    "name": "Select a fulfilment 3PL/WMS and build warehouse and returns workflows",
+    "capabilities": [
+      "PROD-C52",
+      "PROD-C53",
+      "PROD-C54"
+    ],
+    "trigger": "on demand (3PL/WMS selection) | weekly (warehouse ops) | ongoing, reviewed weekly (returns)",
+    "human_role": "Fulfilment manager standing up or resetting domestic fulfilment operations",
+    "inputs_required": [
+      "order volume and SKU count",
+      "SLA requirements",
+      "candidate 3PL list",
+      "warehouse layout if in-house",
+      "return/return-to-sender volume and reasons (india: RTO)"
+    ],
+    "steps": [
+      {
+        "n": 1,
+        "name": "Run the RFP and SLA negotiation",
+        "does": "Run the RFP and SLA negotiation for a domestic fulfilment 3PL, separate from import-side freight.",
+        "inputs": [
+          "order volume",
+          "SLA requirements"
+        ],
+        "tools": [],
+        "skill": "prod/fulfilment-ops-setup",
+        "output": "negotiated SLA",
+        "check": "the SLA states numeric targets, not general commitments"
+      },
+      {
+        "n": 2,
+        "name": "Run the integration test",
+        "does": "Run the integration test for the 3PL's WMS before go-live.",
+        "inputs": [
+          "negotiated SLA"
+        ],
+        "tools": [],
+        "skill": "prod/fulfilment-ops-setup",
+        "output": "integration test result",
+        "check": "go-live does not happen before the integration test passes"
+      },
+      {
+        "n": 3,
+        "name": "Set slotting rules",
+        "does": "Set warehouse slotting rules by SKU velocity.",
+        "inputs": [
+          "SKU velocity"
+        ],
+        "tools": [],
+        "skill": "prod/fulfilment-ops-setup",
+        "output": "slotting rules",
+        "check": "fast-moving SKUs are slotted for the shortest pick path"
+      },
+      {
+        "n": 4,
+        "name": "Set pick-pack-QC and staffing",
+        "does": "Set the pick-pack-QC method and staffing level against real order volume.",
+        "inputs": [
+          "order volume"
+        ],
+        "tools": [],
+        "skill": "prod/fulfilment-ops-setup",
+        "output": "pick-pack-QC and staffing plan",
+        "check": "staffing is sized to real volume, not a guess"
+      },
+      {
+        "n": 5,
+        "name": "Design the returns grading rule",
+        "does": "Design the fixed rule for a returned unit: carrier return-to-sender or customer return (india: RTO or customer return; markets: IN), restock, refurbish or write off.",
+        "inputs": [
+          "return/RTO history"
+        ],
+        "tools": [],
+        "skill": "prod/fulfilment-ops-setup",
+        "output": "grading ruleset",
+        "check": "the rule is fixed, decided in advance, not case-by-case"
+      },
+      {
+        "n": 6,
+        "name": "Apply the rule on schedule",
+        "does": "Apply the grading rule on a fixed schedule as returns arrive.",
+        "inputs": [
+          "grading ruleset"
+        ],
+        "tools": [],
+        "skill": "prod/fulfilment-ops-setup",
+        "output": "graded-unit log",
+        "check": "every returned unit gets a graded outcome within the schedule"
+      },
+      {
+        "n": 7,
+        "name": "Review weekly",
+        "does": "Review staffing levels and grading outcomes weekly.",
+        "inputs": [
+          "graded-unit log",
+          "staffing plan"
+        ],
+        "tools": [],
+        "skill": "prod/fulfilment-ops-setup",
+        "output": "weekly review note",
+        "check": "the review compares actual outcomes to the plan"
+      },
+      {
+        "n": 8,
+        "name": "Log the decisions",
+        "does": "Log the 3PL/WMS decision and the grading rule to the registry.",
+        "inputs": [
+          "all prior outputs"
+        ],
+        "tools": [],
+        "skill": "shared/registry-entry",
+        "output": "logged fulfilment setup",
+        "check": "the log links the SLA, the integration test result and the grading rule"
+      }
+    ],
+    "outputs": [
+      "3PL/WMS selection record",
+      "warehouse ops ruleset",
+      "returns grading ruleset"
+    ],
+    "qa": [
+      "3PL chosen on SLA and service history, not lowest quote alone",
+      "grading rule is fixed, not case-by-case judgment",
+      "integration tested before go-live"
+    ],
+    "read_point": "weekly SLA and grading-outcome review",
+    "typical_duration": "agent time 1 day for RFP/selection; ongoing weekly review under 1 hour",
+    "subagents": []
+  },
+  {
+    "id": "PROD-W16",
+    "name": "Run daily carrier rate-shop and failed-delivery resolution",
+    "capabilities": [
+      "PROD-C55",
+      "PROD-C56"
+    ],
+    "trigger": "per order, real time | daily, same-day on carrier exception",
+    "human_role": "Shipping/ops executive running the daily carrier decision and same-day exception outreach (india: same-day NDR outreach)",
+    "inputs_required": [
+      "live carrier rate feed",
+      "ZIP code serviceability data (india: pincode)",
+      "SLA history per carrier per zone",
+      "carrier-exception queue (india: NDR queue)",
+      "customer contact channel (SMS, email; india: SMS or WhatsApp)"
+    ],
+    "steps": [
+      {
+        "n": 1,
+        "name": "Pick the carrier in code",
+        "does": "Pick the carrier per shipment in code from live rate, ZIP code serviceability and SLA.",
+        "inputs": [
+          "live rate feed",
+          "serviceability data",
+          "SLA history"
+        ],
+        "tools": [
+          "script: carrier routing (to build)"
+        ],
+        "skill": "prod/failed-delivery-ops",
+        "output": "per-order carrier choice",
+        "check": "the choice is computed from live data, not a fixed default carrier"
+      },
+      {
+        "n": 2,
+        "name": "Fail over on the spot",
+        "does": "Fail over to a backup carrier the moment the primary fails serviceability or SLA.",
+        "inputs": [
+          "per-order carrier choice"
+        ],
+        "tools": [
+          "script: carrier routing (to build)"
+        ],
+        "skill": "prod/failed-delivery-ops",
+        "output": "failover event log",
+        "check": "failover happens automatically, not after a manual check"
+      },
+      {
+        "n": 3,
+        "name": "Pull today's carrier exceptions",
+        "does": "Pull every carrier exception raised today (india: every non-delivery report; markets: IN).",
+        "inputs": [
+          "carrier-exception queue"
+        ],
+        "tools": [],
+        "skill": "prod/failed-delivery-ops",
+        "output": "today's exception list",
+        "check": "the list is pulled at least once before the carrier's attempt window closes"
+      },
+      {
+        "n": 4,
+        "name": "Confirm or reschedule",
+        "does": "Run address validation and confirm the address or reschedule with the customer before the carrier's attempt window closes.",
+        "inputs": [
+          "today's exception list",
+          "customer contact channel"
+        ],
+        "tools": [],
+        "skill": "prod/failed-delivery-ops",
+        "output": "outreach result",
+        "check": "outreach happens before the attempt window closes, not after"
+      },
+      {
+        "n": 5,
+        "name": "Log the outcome",
+        "does": "Log the outreach outcome and any return-to-sender decision (india: RTO decision; markets: IN).",
+        "inputs": [
+          "outreach result"
+        ],
+        "tools": [],
+        "skill": "prod/failed-delivery-ops",
+        "output": "exception outcome log",
+        "check": "every exception has a recorded outcome, none left open past the window"
+      },
+      {
+        "n": 6,
+        "name": "Flag rising zones",
+        "does": "Flag any zone with a rising exception or return-to-sender rate for the monthly scorecard (india: rising NDR or RTO rate; markets: IN).",
+        "inputs": [
+          "exception outcome log"
+        ],
+        "tools": [],
+        "skill": null,
+        "output": "zone risk flag",
+        "check": "the flag states the zone and the trend, not a single day's spike"
+      },
+      {
+        "n": 7,
+        "name": "Log the day",
+        "does": "Log the day's routing and exception outcomes to the registry.",
+        "inputs": [
+          "all prior outputs"
+        ],
+        "tools": [],
+        "skill": "shared/registry-entry",
+        "output": "logged daily shipping record",
+        "check": "the log is complete for every order shipped that day"
+      }
+    ],
+    "outputs": [
+      "per-order carrier routing log",
+      "exception resolution log"
+    ],
+    "qa": [
+      "routing decision computed from live data, not a fixed default carrier",
+      "every exception worked the day it was raised"
+    ],
+    "read_point": "same day: exception resolved before the attempt window closes; monthly: zone return-to-sender trend",
+    "typical_duration": "agent time runs continuously per order; exception outreach adds same-day human contact time",
+    "subagents": []
+  },
+  {
+    "id": "PROD-W17",
+    "name": "Score couriers monthly and draft a renegotiation",
+    "capabilities": [
+      "PROD-C59",
+      "LOOP-C34"
+    ],
+    "trigger": "monthly | event: shipment cost per order drifts, or a contract renewal nears",
+    "human_role": "Ops manager reallocating volume and pushing back on rising shipping cost",
+    "inputs_required": [
+      "courier scorecard history",
+      "failed-delivery/return-to-sender, first-attempt delivery and transit-time data per carrier per zone (india: RTO, first-attempt and TAT data)",
+      "public rate benchmarks for comparable carriers (UPS, USPS, FedEx, regional 3PLs; india: comparable India couriers)"
+    ],
+    "steps": [
+      {
+        "n": 1,
+        "name": "Update the running scorecard",
+        "does": "Update the scorecard per carrier per zone on failed-delivery/return-to-sender rate, first-attempt delivery rate and transit time (india: RTO rate; markets: IN).",
+        "inputs": [
+          "performance data"
+        ],
+        "tools": [],
+        "skill": "prod/courier-scorecard",
+        "output": "updated scorecard",
+        "check": "the scorecard covers every courier and zone in use"
+      },
+      {
+        "n": 2,
+        "name": "Compare performance",
+        "does": "Compare each courier's zone performance against the others on a set cadence.",
+        "inputs": [
+          "updated scorecard"
+        ],
+        "tools": [],
+        "skill": "prod/courier-scorecard",
+        "output": "comparison ranking",
+        "check": "the comparison uses the same window for every courier"
+      },
+      {
+        "n": 3,
+        "name": "Shift volume where the gap is real",
+        "does": "Shift volume to the better performer where the gap is real and sustained, not a single good week.",
+        "inputs": [
+          "comparison ranking"
+        ],
+        "tools": [],
+        "skill": "prod/courier-scorecard",
+        "output": "volume reallocation",
+        "check": "the shift cites a sustained gap over more than one period"
+      },
+      {
+        "n": 4,
+        "name": "Watch cost against public benchmarks",
+        "does": "Watch the brand's own shipping cost per order against public rate benchmarks for comparable carriers (india: comparable India couriers; markets: IN).",
+        "inputs": [
+          "cost per order",
+          "public rate cards"
+        ],
+        "tools": [
+          "web search"
+        ],
+        "skill": "prod/courier-scorecard",
+        "output": "cost-vs-benchmark read",
+        "check": "the benchmark is a real, dated public rate card"
+      },
+      {
+        "n": 5,
+        "name": "Draft the renegotiation ask",
+        "does": "When cost drifts above benchmark or a renewal nears, draft the renegotiation ask with the benchmark evidence attached.",
+        "inputs": [
+          "cost-vs-benchmark read"
+        ],
+        "tools": [],
+        "skill": "prod/courier-scorecard",
+        "output": "renegotiation draft",
+        "check": "the draft cites the specific benchmark it is asking to match"
+      },
+      {
+        "n": 6,
+        "name": "Send to the founder gate",
+        "does": "Send the volume-shift and renegotiation recommendations to the founder gate.",
+        "inputs": [
+          "volume reallocation",
+          "renegotiation draft"
+        ],
+        "tools": [],
+        "skill": "shared/plain-english-card",
+        "output": "founder card",
+        "check": "the card states the expected saving and the risk of asking"
+      },
+      {
+        "n": 7,
+        "name": "Log the outcome",
+        "does": "Log the scorecard update and any renegotiation outcome to the registry.",
+        "inputs": [
+          "all prior outputs"
+        ],
+        "tools": [],
+        "skill": "shared/registry-entry",
+        "output": "logged scorecard/renegotiation record",
+        "check": "the log links to the prior month's scorecard"
+      }
+    ],
+    "outputs": [
+      "courier scorecard",
+      "volume reallocation recommendation",
+      "renegotiation draft"
+    ],
+    "qa": [
+      "volume shift based on a real and sustained gap, not one bad week",
+      "renegotiation ask cites public benchmarks, not a guess"
+    ],
+    "read_point": "next month's scorecard, to see if the shift or renegotiation moved the numbers",
+    "typical_duration": "agent time 1 to 2 hours monthly",
+    "subagents": []
+  },
+  {
+    "id": "PROD-W18",
+    "name": "File courier and marketplace claims",
+    "capabilities": [
+      "PROD-G01",
+      "PROD-G02"
+    ],
+    "trigger": "event: shipment marked lost or damaged, or return-to-sender received damaged (india: RTO received damaged); weekly sweep | weekly",
+    "human_role": "Ops/claims coordinator recovering money owed for lost, damaged or wrongly billed inventory",
+    "inputs_required": [
+      "shipment/return-to-sender records (india: RTO records)",
+      "proof of loss or damage (photos, weight, seal)",
+      "marketplace seller console access",
+      "fee statements"
+    ],
+    "steps": [
+      {
+        "n": 1,
+        "name": "Identify this week's incidents",
+        "does": "Identify every shipment marked lost, damaged or wrongly marked return-to-sender this week (india: wrongly marked RTO; markets: IN).",
+        "inputs": [
+          "shipment/RTO records"
+        ],
+        "tools": [],
+        "skill": "prod/claims-file",
+        "output": "incident list",
+        "check": "the list covers the full week, not a sample"
+      },
+      {
+        "n": 2,
+        "name": "Assemble proof",
+        "does": "Assemble proof for each incident: photos, weight discrepancy, seal condition.",
+        "inputs": [
+          "incident list"
+        ],
+        "tools": [],
+        "skill": "prod/claims-file",
+        "output": "proof packet per incident",
+        "check": "every claim has a proof packet before it is filed"
+      },
+      {
+        "n": 3,
+        "name": "File the courier claim",
+        "does": "File the claim with the courier or aggregator, with proof attached.",
+        "inputs": [
+          "proof packet"
+        ],
+        "tools": [],
+        "skill": "prod/claims-file",
+        "output": "filed courier claim",
+        "check": "the claim is filed within the courier's own filing window"
+      },
+      {
+        "n": 4,
+        "name": "Find marketplace reimbursement candidates",
+        "does": "Find lost or damaged marketplace inventory and wrong fees inside each seller console.",
+        "inputs": [
+          "seller console access",
+          "fee statements"
+        ],
+        "tools": [],
+        "skill": "prod/claims-file",
+        "output": "reimbursement candidate list",
+        "check": "the list is pulled from the console, not from memory"
+      },
+      {
+        "n": 5,
+        "name": "File the marketplace claim",
+        "does": "File the marketplace reimbursement claim (FBA reimbursement, Walmart/eBay/TikTok Shop claim programs; india: Flipkart SPF, Myntra claim).",
+        "inputs": [
+          "reimbursement candidate list"
+        ],
+        "tools": [],
+        "skill": "prod/claims-file",
+        "output": "filed marketplace claim",
+        "check": "the claim type matches the marketplace's own reimbursement program"
+      },
+      {
+        "n": 6,
+        "name": "Track payout",
+        "does": "Track payout against every open claim.",
+        "inputs": [
+          "filed claims"
+        ],
+        "tools": [],
+        "skill": "prod/claims-file",
+        "output": "payout tracker",
+        "check": "a claim is marked paid only when the payout is confirmed, not assumed"
+      },
+      {
+        "n": 7,
+        "name": "Escalate overdue claims",
+        "does": "Escalate any claim past its normal resolution window.",
+        "inputs": [
+          "payout tracker"
+        ],
+        "tools": [],
+        "skill": "prod/claims-file",
+        "output": "escalation log",
+        "check": "escalation happens the day the window is exceeded"
+      },
+      {
+        "n": 8,
+        "name": "Log and hand to Money",
+        "does": "Log every claim, its status and payout to the registry, handed to Money for reconciliation.",
+        "inputs": [
+          "all prior outputs"
+        ],
+        "tools": [],
+        "skill": "shared/registry-entry",
+        "output": "logged claims record",
+        "check": "PROD-C35's FBA paperwork is referenced, not duplicated here"
+      }
+    ],
+    "outputs": [
+      "courier claim record with proof",
+      "marketplace reimbursement claim record",
+      "payout tracker"
+    ],
+    "qa": [
+      "every claim has proof attached",
+      "payout tracked against the claim, not assumed paid"
+    ],
+    "read_point": "when payout lands or the claim window closes unpaid",
+    "typical_duration": "agent time 2 to 3 hours weekly; courier/marketplace resolution adds 1 to 4 weeks wait",
+    "subagents": []
+  },
+  {
+    "id": "PROD-W19",
+    "name": "Run a non-standard operations request: export, offline retail, recall or made-to-order",
+    "capabilities": [
+      "PROD-G03",
+      "PROD-G04",
+      "PROD-G06",
+      "PROD-G07"
+    ],
+    "trigger": "event: first international order or new export market | event: pop-up, exhibition or stockist deal approved | event: safety-related defect or regulator notice | event: personalised or made-to-order SKU sold",
+    "human_role": "Ops manager handling an order or channel type outside the standard playbook",
+    "inputs_required": [
+      "the triggering event's details",
+      "brand brain: policies and certifications",
+      "the matching sub-skill for the type"
+    ],
+    "steps": [
+      {
+        "n": 1,
+        "name": "Classify the exception type",
+        "does": "Classify the request as export, offline retail, recall or made-to-order.",
+        "inputs": [
+          "event details"
+        ],
+        "tools": [],
+        "skill": null,
+        "output": "classified request",
+        "check": "exactly one type is chosen; a request matching two types is split"
+      },
+      {
+        "n": 2,
+        "name": "Run the cross-border procedure if export",
+        "does": "For an inbound sourcing shipment, secure a customs bond and HTS classification, check tariff and Section 321 eligibility; for an outbound order, prepare commercial invoice and export paperwork and choose DDP vs DDU (india: set up IEC and LUT for an export from India instead; markets: IN).",
+        "inputs": [
+          "export event details"
+        ],
+        "tools": [
+          "web search"
+        ],
+        "skill": "prod/non-standard-ops",
+        "output": "export compliance packet",
+        "check": "the DDP/DDU choice is stated with the buyer's expectation it protects"
+      },
+      {
+        "n": 3,
+        "name": "Run the offline-retail procedure if offline",
+        "does": "Set up POS, stock transfer and return, consignment settlement, staff roster and daily reconciliation.",
+        "inputs": [
+          "pop-up/stockist details"
+        ],
+        "tools": [],
+        "skill": "prod/non-standard-ops",
+        "output": "offline retail ops record",
+        "check": "daily sales reconciliation happens every day of the event"
+      },
+      {
+        "n": 4,
+        "name": "Run the recall procedure if a safety issue",
+        "does": "Find affected batches, stop sale on every channel, contact buyers, arrange returns or replacements, log regulator notices.",
+        "inputs": [
+          "defect/regulator notice"
+        ],
+        "tools": [],
+        "skill": "prod/non-standard-ops",
+        "output": "recall log",
+        "check": "sale is stopped on every channel before any other recall step proceeds",
+        "ask_founder_if": "always: a recall never proceeds without the founder gate first"
+      },
+      {
+        "n": 5,
+        "name": "Run the made-to-order procedure if custom",
+        "does": "Capture the spec at checkout, get customer approval on a proof, track production, state non-returnable terms.",
+        "inputs": [
+          "custom order details"
+        ],
+        "tools": [],
+        "skill": "prod/non-standard-ops",
+        "output": "made-to-order tracking record",
+        "check": "the non-returnable term is shown to the customer before payment, not after"
+      },
+      {
+        "n": 6,
+        "name": "Run the type-specific compliance check",
+        "does": "Check export duty rules, retail licensing, regulator requirements, or custom-order terms, matching the type.",
+        "inputs": [
+          "type-specific packet"
+        ],
+        "tools": [],
+        "skill": "shared/claim-check",
+        "output": "compliance check result",
+        "check": "the compliance check matches the classified type exactly"
+      },
+      {
+        "n": 7,
+        "name": "Document the handling",
+        "does": "Document the full handling and any customer communication.",
+        "inputs": [
+          "compliance check result"
+        ],
+        "tools": [],
+        "skill": null,
+        "output": "documentation record",
+        "check": "the documentation is complete enough for an audit"
+      },
+      {
+        "n": 8,
+        "name": "Log the outcome",
+        "does": "Log the outcome to the registry.",
+        "inputs": [
+          "documentation record"
+        ],
+        "tools": [],
+        "skill": "shared/registry-entry",
+        "output": "logged exception record",
+        "check": "the log states the type and the final status"
+      }
+    ],
+    "outputs": [
+      "export compliance packet",
+      "pop-up/stockist ops record",
+      "recall log",
+      "made-to-order tracking record"
+    ],
+    "qa": [
+      "recall always reaches the founder gate before any customer contact",
+      "export paperwork matches the chosen DDP/DDU term",
+      "made-to-order terms state non-returnable clearly"
+    ],
+    "read_point": "type-specific: export shipment cleared; pop-up settlement done; recall closed; made-to-order delivered",
+    "typical_duration": "varies by type: export 1 to 2 days; recall is immediate and founder-gated; made-to-order tracks production lead time",
+    "subagents": []
+  },
+  {
+    "id": "PROD-W20",
+    "name": "Screen Amazon candidates and mine competitor reviews and keywords",
+    "capabilities": [
+      "PROD-C30",
+      "PROD-C31"
+    ],
+    "trigger": "on demand",
+    "human_role": "Amazon category manager doing Amazon-specific candidate diligence",
+    "inputs_required": [
+      "candidate from PROD-W01/PROD-W03",
+      "Amazon browse/search data (public)",
+      "competing listing reviews",
+      "reverse-ASIN keyword tool access"
+    ],
+    "steps": [
+      {
+        "n": 1,
+        "name": "Apply the elimination screens",
+        "does": "Apply price floor, page-1 price spread, keyword variability and brand-dominance screens.",
+        "inputs": [
+          "candidate",
+          "Amazon browse data"
+        ],
+        "tools": [
+          "web search",
+          "browser: headless (public)"
+        ],
+        "skill": "prod/amazon-opportunity-screen",
+        "output": "elimination screen result",
+        "check": "every screen states a reason, not just a pass/fail"
+      },
+      {
+        "n": 2,
+        "name": "Run the fad filter",
+        "does": "Check the candidate's search trend for a real fad pattern, not a single spike.",
+        "inputs": [
+          "search trend data"
+        ],
+        "tools": [
+          "web search"
+        ],
+        "skill": "prod/amazon-opportunity-screen",
+        "output": "fad-filter verdict",
+        "check": "the verdict uses more than one data point in time"
+      },
+      {
+        "n": 3,
+        "name": "Read low-star reviews for fixable complaints",
+        "does": "Read 1 to 3 star reviews on competing listings for complaints the candidate could fix.",
+        "inputs": [
+          "competing listing reviews"
+        ],
+        "tools": [
+          "web search"
+        ],
+        "skill": "prod/amazon-opportunity-screen",
+        "output": "fixable-complaint list",
+        "check": "no review text is copied verbatim into the brief, only the gap it points to"
+      },
+      {
+        "n": 4,
+        "name": "Confirm the demand-and-gap signal",
+        "does": "Confirm mid-rated, high-volume sellers exist as a demand-and-gap signal.",
+        "inputs": [
+          "competing listing data"
+        ],
+        "tools": [],
+        "skill": "prod/amazon-opportunity-screen",
+        "output": "demand-gap confirmation",
+        "check": "the confirmation cites review count and rating together"
+      },
+      {
+        "n": 5,
+        "name": "Mine keywords",
+        "does": "Mine keywords from reverse-ASIN tools for the target category.",
+        "inputs": [
+          "reverse-ASIN tool access"
+        ],
+        "tools": [
+          "web fetch (public)"
+        ],
+        "skill": "prod/amazon-opportunity-screen",
+        "output": "keyword list",
+        "check": "the keyword list is ranked by search volume where available"
+      },
+      {
+        "n": 6,
+        "name": "Score the candidate",
+        "does": "Score the candidate against the elimination screens with the reasons shown.",
+        "inputs": [
+          "all screen results"
+        ],
+        "tools": [],
+        "skill": "prod/amazon-opportunity-screen",
+        "output": "Amazon screen result",
+        "check": "every elimination reason is stated"
+      },
+      {
+        "n": 7,
+        "name": "Log and hand off",
+        "does": "Log the screen result, review gaps and keyword list to the registry.",
+        "inputs": [
+          "all prior outputs"
+        ],
+        "tools": [],
+        "skill": "shared/registry-entry",
+        "output": "logged Amazon screen",
+        "check": "the log hands off to PROD-W21 for the economics model"
+      }
+    ],
+    "outputs": [
+      "Amazon screen result",
+      "product-gap brief from reviews",
+      "keyword list"
+    ],
+    "qa": [
+      "every elimination reason stated",
+      "fad filter uses real trend data, not a single spike",
+      "no competitor review text copied verbatim"
+    ],
+    "read_point": "when the candidate reaches the Amazon economics model (PROD-W21)",
+    "typical_duration": "agent time 2 to 3 hours",
+    "subagents": []
+  },
+  {
+    "id": "PROD-W21",
+    "name": "Model Amazon channel economics",
+    "capabilities": [
+      "PROD-C32"
+    ],
+    "trigger": "monthly",
+    "human_role": "Amazon manager gating a SKU's real net margin on the channel",
+    "inputs_required": [
+      "FBA/FBM fee stack",
+      "storage cost schedule",
+      "PPC budget assumption",
+      "DTC price for parity check",
+      "landed cost from PROD-W07"
+    ],
+    "steps": [
+      {
+        "n": 1,
+        "name": "Pull the current fee stack",
+        "does": "Pull the current Amazon referral, FBA and storage fee stack for the category.",
+        "inputs": [
+          "Amazon fee schedule"
+        ],
+        "tools": [
+          "web fetch (public)"
+        ],
+        "skill": "prod/amazon-fee-model",
+        "output": "current fee stack",
+        "check": "the fee stack is dated to the current Amazon publication"
+      },
+      {
+        "n": 2,
+        "name": "Model fees against landed cost",
+        "does": "Model the full fee stack against the landed cost, in code.",
+        "inputs": [
+          "landed cost",
+          "fee stack"
+        ],
+        "tools": [
+          "script: landed cost calculator (to build)"
+        ],
+        "skill": "prod/amazon-fee-model",
+        "output": "fee-stack model",
+        "check": "the model is computed in code, not estimated"
+      },
+      {
+        "n": 3,
+        "name": "Add PPC and storage cost",
+        "does": "Add a PPC budget assumption and storage cost to the model.",
+        "inputs": [
+          "PPC budget",
+          "storage cost"
+        ],
+        "tools": [],
+        "skill": "prod/amazon-fee-model",
+        "output": "extended fee-stack model",
+        "check": "the PPC assumption is stated as an assumption, not a fact"
+      },
+      {
+        "n": 4,
+        "name": "Check price parity",
+        "does": "Check the Amazon price against the DTC price-parity rule.",
+        "inputs": [
+          "DTC price"
+        ],
+        "tools": [],
+        "skill": "prod/amazon-fee-model",
+        "output": "parity check result",
+        "check": "the check compares against the live DTC price, not a stale one"
+      },
+      {
+        "n": 5,
+        "name": "Compute net margin",
+        "does": "Compute net margin after every fee, in code.",
+        "inputs": [
+          "extended fee-stack model"
+        ],
+        "tools": [
+          "script: landed cost calculator (to build)"
+        ],
+        "skill": "prod/amazon-fee-model",
+        "output": "net margin per SKU",
+        "check": "the margin is computed in code, never estimated in text"
+      },
+      {
+        "n": 6,
+        "name": "Flag margin failures",
+        "does": "Flag any SKU whose net margin fails the brand's floor.",
+        "inputs": [
+          "net margin"
+        ],
+        "tools": [],
+        "skill": "prod/amazon-fee-model",
+        "output": "margin-floor flag",
+        "check": "the floor used is the brand's own, cited to where it was set"
+      },
+      {
+        "n": 7,
+        "name": "Log the model",
+        "does": "Log the fee-stack model and margin result to the registry.",
+        "inputs": [
+          "all prior outputs"
+        ],
+        "tools": [],
+        "skill": "shared/registry-entry",
+        "output": "logged Amazon economics",
+        "check": "the log is dated and versioned to the current fee schedule"
+      }
+    ],
+    "outputs": [
+      "Amazon fee-stack model",
+      "net margin result per SKU"
+    ],
+    "qa": [
+      "every fee line sourced from Amazon's current published rate",
+      "margin computed in code",
+      "price-parity checked against live DTC price"
+    ],
+    "read_point": "monthly, or before any Amazon launch decision",
+    "typical_duration": "agent time 1 hour monthly",
+    "subagents": []
+  },
+  {
+    "id": "PROD-W22",
+    "name": "Build and launch a marketplace listing",
+    "capabilities": [
+      "PROD-C34",
+      "PROD-C44",
+      "PROD-C45"
+    ],
+    "trigger": "event: listing build or refresh | event: new listing or certification renewal",
+    "human_role": "Marketplace/catalogue manager building a compliant, optimised listing",
+    "inputs_required": [
+      "product copy, approved claims, keyword list",
+      "category node",
+      "image slots and specs per platform",
+      "US labelling/quality-marking status if regulated category (india: BIS/hallmarking/labelling status)",
+      "target marketplace"
+    ],
+    "steps": [
+      {
+        "n": 1,
+        "name": "Confirm the target marketplace",
+        "does": "Confirm which marketplace this listing is for and select the matching listing procedure.",
+        "inputs": [
+          "target marketplace"
+        ],
+        "tools": [],
+        "skill": "prod/list-on-marketplace",
+        "output": "selected marketplace procedure",
+        "check": "the marketplace named matches one of Amazon, Walmart, Target Plus, eBay, TikTok Shop, or, for an India brand, Flipkart/Myntra/Nykaa or Blinkit/Zepto"
+      },
+      {
+        "n": 2,
+        "name": "Run the compliance check first",
+        "does": "Run the US labelling/quality-marking compliance check for the category before building anything (india: BIS, hallmarking and labelling check; markets: IN).",
+        "inputs": [
+          "category",
+          "compliance status"
+        ],
+        "tools": [],
+        "skill": "prod/marketplace-compliance-check",
+        "output": "compliance result",
+        "check": "no listing is built for a regulated category before this check clears"
+      },
+      {
+        "n": 3,
+        "name": "Place the top keyword",
+        "does": "Place the target keyword in the title and the first bullet or the platform's equivalent field.",
+        "inputs": [
+          "keyword list"
+        ],
+        "tools": [],
+        "skill": "prod/list-on-marketplace",
+        "output": "keyword-placed title/bullets",
+        "check": "the top keyword appears in the title and the first content field"
+      },
+      {
+        "n": 4,
+        "name": "Write benefit-led, claim-checked copy",
+        "does": "Write benefit-led bullets or description copy with one true, tiered claim each.",
+        "inputs": [
+          "approved claims"
+        ],
+        "tools": [],
+        "skill": "shared/claim-check",
+        "output": "claim-checked copy",
+        "check": "every claim is in the approved or site-backed tier"
+      },
+      {
+        "n": 5,
+        "name": "Brief every image slot",
+        "does": "Brief every image slot to the platform's own size, crop and content rule.",
+        "inputs": [
+          "image slots"
+        ],
+        "tools": [],
+        "skill": "prod/list-on-marketplace",
+        "output": "image slot briefs",
+        "check": "every image slot has a brief, none left generic"
+      },
+      {
+        "n": 6,
+        "name": "Fill every attribute field",
+        "does": "Fill every attribute field and set backend keywords where the platform supports them.",
+        "inputs": [
+          "product data"
+        ],
+        "tools": [],
+        "skill": "prod/list-on-marketplace",
+        "output": "filled attribute set",
+        "check": "no required field is left blank"
+      },
+      {
+        "n": 7,
+        "name": "Check the category node",
+        "does": "Confirm the category node or listing category is correct for the platform.",
+        "inputs": [
+          "category taxonomy"
+        ],
+        "tools": [],
+        "skill": "prod/list-on-marketplace",
+        "output": "confirmed category node",
+        "check": "the node matches the platform's current taxonomy, not a guessed one"
+      },
+      {
+        "n": 8,
+        "name": "Run the full-draft claim check",
+        "does": "Run the claim check on the complete draft before handoff.",
+        "inputs": [
+          "complete draft"
+        ],
+        "tools": [],
+        "skill": "shared/claim-check",
+        "output": "final claim-check result",
+        "check": "the check covers the whole draft, not just the bullets"
+      },
+      {
+        "n": 9,
+        "name": "Package the draft",
+        "does": "Package the listing draft ready to paste into the seller console; never post it directly.",
+        "inputs": [
+          "final draft"
+        ],
+        "tools": [],
+        "skill": null,
+        "output": "packaged listing draft",
+        "check": "nothing is posted directly to a live listing"
+      },
+      {
+        "n": 10,
+        "name": "Hand off with compliance attached",
+        "does": "Hand the draft to the named human who applies it, with the compliance result attached.",
+        "inputs": [
+          "packaged draft",
+          "compliance result"
+        ],
+        "tools": [],
+        "skill": "shared/registry-entry",
+        "output": "handoff record",
+        "check": "the compliance result travels with the draft, not separately"
+      }
+    ],
+    "outputs": [
+      "marketplace listing draft",
+      "compliance checklist result"
+    ],
+    "qa": [
+      "every claim is in the approved or site-backed tier",
+      "no field left blank",
+      "compliance checked before the listing is drafted, not after",
+      "nothing posted directly to a live listing"
+    ],
+    "read_point": "after the listing goes live: search rank on the target keyword, and review rate over the following weeks",
+    "typical_duration": "agent time 2 to 4 hours per listing; human posting adds under 1 day",
+    "subagents": []
+  },
+  {
+    "id": "PROD-W23",
+    "name": "Prepare and ship an FBA inbound shipment",
+    "capabilities": [
+      "PROD-C35"
+    ],
+    "trigger": "event: FBA shipment",
+    "human_role": "Amazon operations executive preparing a compliant FBA shipment",
+    "inputs_required": [
+      "measured case dimensions",
+      "FBA's current hard limits",
+      "saved shipment template if one exists",
+      "carton labels"
+    ],
+    "steps": [
+      {
+        "n": 1,
+        "name": "Measure against FBA's limits",
+        "does": "Measure case dimensions against FBA's current hard limits.",
+        "inputs": [
+          "case dimensions"
+        ],
+        "tools": [
+          "web fetch (public)"
+        ],
+        "skill": "prod/fba-shipment-prep",
+        "output": "dimension check",
+        "check": "the limits used are Amazon's current published limits, not a cached figure"
+      },
+      {
+        "n": 2,
+        "name": "Reuse a saved template",
+        "does": "Reuse a saved shipment template where the SKU matches one already shipped.",
+        "inputs": [
+          "shipment history"
+        ],
+        "tools": [],
+        "skill": "prod/fba-shipment-prep",
+        "output": "reused or new template",
+        "check": "a template is reused whenever the SKU and case size match a prior shipment"
+      },
+      {
+        "n": 3,
+        "name": "Build the shipment plan",
+        "does": "Build the shipment plan: box count, weight per box, carrier.",
+        "inputs": [
+          "dimension check",
+          "template"
+        ],
+        "tools": [],
+        "skill": "prod/fba-shipment-prep",
+        "output": "shipment plan",
+        "check": "box weight stays under the carrier's per-box limit"
+      },
+      {
+        "n": 4,
+        "name": "Check carton labels",
+        "does": "Generate and check carton labels against FBA's label spec.",
+        "inputs": [
+          "shipment plan"
+        ],
+        "tools": [],
+        "skill": "prod/fba-shipment-prep",
+        "output": "checked carton labels",
+        "check": "every carton has a label matching FBA's current spec"
+      },
+      {
+        "n": 5,
+        "name": "Keep the paper trail",
+        "does": "Keep the BOL, carrier receipt and carton count so a lost-inventory claim can be filed later.",
+        "inputs": [
+          "shipment plan",
+          "carrier receipt"
+        ],
+        "tools": [],
+        "skill": "prod/fba-shipment-prep",
+        "output": "paper trail",
+        "check": "the paper trail is complete before the shipment leaves"
+      },
+      {
+        "n": 6,
+        "name": "Confirm receipt",
+        "does": "Confirm the shipment against Amazon's inbound dashboard once received.",
+        "inputs": [
+          "inbound dashboard"
+        ],
+        "tools": [
+          "web fetch (public)"
+        ],
+        "skill": "prod/fba-shipment-prep",
+        "output": "receipt confirmation",
+        "check": "any discrepancy between sent and received is flagged"
+      },
+      {
+        "n": 7,
+        "name": "Log the shipment",
+        "does": "Log the shipment plan and paper trail to the registry.",
+        "inputs": [
+          "all prior outputs"
+        ],
+        "tools": [],
+        "skill": "shared/registry-entry",
+        "output": "logged FBA shipment",
+        "check": "a receipt discrepancy is linked to a claim in PROD-W18"
+      }
+    ],
+    "outputs": [
+      "FBA shipment plan",
+      "paper trail record"
+    ],
+    "qa": [
+      "dimensions checked against FBA's current limits, not an old cached limit",
+      "paper trail complete before the shipment leaves"
+    ],
+    "read_point": "on Amazon's confirmed receipt; any discrepancy feeds a claim (PROD-W18)",
+    "typical_duration": "agent time 1 to 2 hours; inbound transit 3 to 10 days",
+    "subagents": []
+  },
+  {
+    "id": "PROD-W24",
+    "name": "Plan and protect an Amazon product launch, account setup and Brand Registry",
+    "capabilities": [
+      "PROD-C28",
+      "PROD-C29",
+      "PROD-C36"
+    ],
+    "trigger": "event: considering Amazon launch | event: listing live | event: pre-launch",
+    "human_role": "Amazon manager taking a brand from no seller account to a protected, launched product",
+    "inputs_required": [
+      "business entity and tax details (EIN/SSN, W-9; india: GST details)",
+      "bank/payout details",
+      "identity verification documents",
+      "trademark status",
+      "stock and PPC plan for launch"
+    ],
+    "steps": [
+      {
+        "n": 1,
+        "name": "Get the account right the first time",
+        "does": "Get the Amazon account, entity, payout and identity verification right the first time.",
+        "inputs": [
+          "entity/tax/payout/identity documents (india: entity/GST/payout/identity documents)"
+        ],
+        "tools": [],
+        "skill": "prod/amazon-launch-sequence",
+        "output": "verified account",
+        "check": "no field is submitted before its supporting document is confirmed correct",
+        "ask_founder_if": "before any account or spend commitment"
+      },
+      {
+        "n": 2,
+        "name": "Sequence the trademark filing",
+        "does": "File the trademark before listing creation, in the correct sequence.",
+        "inputs": [
+          "trademark status"
+        ],
+        "tools": [],
+        "skill": "prod/amazon-launch-sequence",
+        "output": "trademark filing status",
+        "check": "the filing happens before, not after, the listing goes live"
+      },
+      {
+        "n": 3,
+        "name": "Create the listing",
+        "does": "Create the listing only after the sequencing checklist clears, using PROD-W22 for the listing build.",
+        "inputs": [
+          "cleared sequencing checklist"
+        ],
+        "tools": [],
+        "skill": "prod/amazon-launch-sequence",
+        "output": "listing created",
+        "check": "the listing build itself follows PROD-W22, not a shortcut here"
+      },
+      {
+        "n": 4,
+        "name": "Enrol Brand Registry",
+        "does": "Enrol Brand Registry once the trademark and listing are both live.",
+        "inputs": [
+          "trademark status",
+          "listing status"
+        ],
+        "tools": [],
+        "skill": "prod/amazon-launch-sequence",
+        "output": "Brand Registry enrolment",
+        "check": "enrolment is not attempted before both prerequisites are live"
+      },
+      {
+        "n": 5,
+        "name": "Turn on Storefront and Subscribe & Save",
+        "does": "Turn on Storefront and Subscribe & Save benefits Brand Registry unlocks.",
+        "inputs": [
+          "Brand Registry enrolment"
+        ],
+        "tools": [],
+        "skill": "prod/amazon-launch-sequence",
+        "output": "enabled benefits",
+        "check": "both benefits are checked live, not assumed enabled"
+      },
+      {
+        "n": 6,
+        "name": "Align stock and PPC for launch week",
+        "does": "Concentrate real demand into the first weeks by aligning stock and PPC to go live together.",
+        "inputs": [
+          "stock plan",
+          "PPC plan"
+        ],
+        "tools": [],
+        "skill": "prod/amazon-launch-sequence",
+        "output": "aligned launch plan",
+        "check": "stock and PPC go live on the same date, not staggered"
+      },
+      {
+        "n": 7,
+        "name": "Build a pre-launch audience",
+        "does": "Build an audience before launch day where the platform allows it.",
+        "inputs": [
+          "audience-building options"
+        ],
+        "tools": [],
+        "skill": "prod/amazon-launch-sequence",
+        "output": "pre-launch audience plan",
+        "check": "the audience-building method is one the platform's terms allow"
+      },
+      {
+        "n": 8,
+        "name": "Protect against copycats",
+        "does": "Protect a novel product against copycats from day one: watermark images, file for design protection where relevant.",
+        "inputs": [
+          "product images",
+          "design novelty"
+        ],
+        "tools": [],
+        "skill": "prod/amazon-launch-sequence",
+        "output": "protection checklist",
+        "check": "protection steps are taken before launch day, not after a copy appears"
+      },
+      {
+        "n": 9,
+        "name": "Send to the founder gate",
+        "does": "Send the account-opening and launch plan to the founder gate before any spend commitment.",
+        "inputs": [
+          "all prior outputs"
+        ],
+        "tools": [],
+        "skill": "shared/plain-english-card",
+        "output": "founder card",
+        "check": "no spend commitment happens before the founder approves"
+      },
+      {
+        "n": 10,
+        "name": "Log the sequence",
+        "does": "Log every sequencing step and its completion date to the registry.",
+        "inputs": [
+          "all prior outputs"
+        ],
+        "tools": [],
+        "skill": "shared/registry-entry",
+        "output": "logged launch sequence",
+        "check": "every step has a completion date, none left open-ended"
+      }
+    ],
+    "outputs": [
+      "verified Amazon account",
+      "sequenced Brand Registry checklist",
+      "launch plan"
+    ],
+    "qa": [
+      "account verification done right the first time; nothing filed before its prerequisite",
+      "stock and PPC confirmed live together before launch day",
+      "founder approved before any account or spend commitment"
+    ],
+    "read_point": "launch week's sales and PPC read; Brand Registry enrolment confirmation",
+    "typical_duration": "agent time spread over the sequence; Amazon's own verification adds 1 to 3 weeks",
+    "subagents": []
+  },
+  {
+    "id": "PROD-W25",
+    "name": "Monitor marketplace health: reviews, account health and Buy Box",
+    "capabilities": [
+      "PROD-C38",
+      "PROD-C46"
+    ],
+    "trigger": "weekly",
+    "human_role": "Marketplace operations manager watching reputation and account risk weekly",
+    "inputs_required": [
+      "Account Health dashboard data",
+      "review history",
+      "Buy Box status per listing",
+      "reseller pricing across marketplaces"
+    ],
+    "steps": [
+      {
+        "n": 1,
+        "name": "Request reviews through permitted paths",
+        "does": "Request reviews only through the platform's own permitted request paths.",
+        "inputs": [
+          "order history"
+        ],
+        "tools": [],
+        "skill": "prod/marketplace-health-monitor",
+        "output": "review requests sent",
+        "check": "no review request uses an unpermitted method (no incentivised or off-platform ask)"
+      },
+      {
+        "n": 2,
+        "name": "Contest misplaced feedback",
+        "does": "Contest any misplaced or policy-violating feedback through the platform's own process.",
+        "inputs": [
+          "feedback log"
+        ],
+        "tools": [],
+        "skill": "prod/marketplace-health-monitor",
+        "output": "contested feedback log",
+        "check": "every contest cites the specific policy it violates"
+      },
+      {
+        "n": 3,
+        "name": "Watch Account Health weekly",
+        "does": "Watch Account Health weekly so a policy notice never becomes a surprise suspension.",
+        "inputs": [
+          "Account Health dashboard"
+        ],
+        "tools": [
+          "web fetch (public account view)"
+        ],
+        "skill": "prod/marketplace-health-monitor",
+        "output": "account health status",
+        "check": "the dashboard is checked every week without exception"
+      },
+      {
+        "n": 4,
+        "name": "Watch Buy Box ownership",
+        "does": "Watch who holds the Buy Box across marketplaces for the brand's listings.",
+        "inputs": [
+          "Buy Box status"
+        ],
+        "tools": [],
+        "skill": "prod/marketplace-health-monitor",
+        "output": "Buy Box ownership report",
+        "check": "the report covers every marketplace the brand sells on"
+      },
+      {
+        "n": 5,
+        "name": "Watch reseller pricing",
+        "does": "Watch unauthorised reseller pricing against MAP across marketplaces.",
+        "inputs": [
+          "reseller pricing"
+        ],
+        "tools": [
+          "web fetch (public listing pages)"
+        ],
+        "skill": "prod/marketplace-health-monitor",
+        "output": "reseller pricing report",
+        "check": "MAP is the brand's own stated policy, not assumed"
+      },
+      {
+        "n": 6,
+        "name": "Flag problems for the founder",
+        "does": "Flag a MAP or price-integrity problem for the founder rather than changing price unilaterally.",
+        "inputs": [
+          "reseller pricing report"
+        ],
+        "tools": [],
+        "skill": "prod/marketplace-health-monitor",
+        "output": "MAP violation flag",
+        "check": "no price is changed by this agent to respond to a MAP issue"
+      },
+      {
+        "n": 7,
+        "name": "Log the week",
+        "does": "Log the week's account-health, review and Buy Box status to the registry.",
+        "inputs": [
+          "all prior outputs"
+        ],
+        "tools": [],
+        "skill": "shared/registry-entry",
+        "output": "logged marketplace health record",
+        "check": "the log is dated and comparable week over week"
+      }
+    ],
+    "outputs": [
+      "account health report",
+      "review/feedback log",
+      "Buy Box/reseller report"
+    ],
+    "qa": [
+      "reviews requested only through permitted paths",
+      "price never changed without the founder gate",
+      "policy notice acted on the week it appears"
+    ],
+    "read_point": "weekly, and immediately on any account-health notice",
+    "typical_duration": "agent time under 1 hour weekly",
+    "subagents": []
+  },
+  {
+    "id": "PROD-W26",
+    "name": "Diagnose Amazon performance and plan channel growth",
+    "capabilities": [
+      "PROD-C40",
+      "PROD-C41",
+      "PROD-C43"
+    ],
+    "trigger": "on demand",
+    "human_role": "Amazon manager explaining a sales change and planning the channel's next move",
+    "inputs_required": [
+      "Business Reports",
+      "attribution data",
+      "seasonality baseline",
+      "current SKU portfolio",
+      "candidate growth levers"
+    ],
+    "steps": [
+      {
+        "n": 1,
+        "name": "Split traffic from conversion",
+        "does": "Split a sales change into traffic versus conversion before acting on it.",
+        "inputs": [
+          "Business Reports"
+        ],
+        "tools": [],
+        "skill": "prod/amazon-performance-review",
+        "output": "traffic/conversion split",
+        "check": "the split is computed from the reports, not inferred from a feeling"
+      },
+      {
+        "n": 2,
+        "name": "Check attribution and seasonality",
+        "does": "Check attribution and seasonality before calling a product a failure.",
+        "inputs": [
+          "attribution data",
+          "seasonality baseline"
+        ],
+        "tools": [],
+        "skill": "prod/amazon-performance-review",
+        "output": "attribution/seasonality check",
+        "check": "the check uses the same window as the sales change being explained"
+      },
+      {
+        "n": 3,
+        "name": "Use only compliant promotion tools",
+        "does": "Respond using only Amazon's own compliant promotion tools, never an outside workaround.",
+        "inputs": [
+          "diagnosis"
+        ],
+        "tools": [],
+        "skill": "prod/amazon-performance-review",
+        "output": "promotion response plan",
+        "check": "every tool used is one Amazon's own terms permit"
+      },
+      {
+        "n": 4,
+        "name": "Decide on a second SKU",
+        "does": "Decide when to add a second SKU, based on the diagnosis and portfolio fit.",
+        "inputs": [
+          "diagnosis",
+          "SKU portfolio"
+        ],
+        "tools": [],
+        "skill": "prod/amazon-performance-review",
+        "output": "second-SKU recommendation",
+        "check": "the recommendation traces to the diagnosis, not a hunch"
+      },
+      {
+        "n": 5,
+        "name": "Test growth levers with a defined read",
+        "does": "Test smaller, situational growth levers with a defined read: FBM to FBA, Small and Light, a design-vendor bake-off, Amazon Live.",
+        "inputs": [
+          "candidate growth levers"
+        ],
+        "tools": [],
+        "skill": "prod/amazon-performance-review",
+        "output": "growth-lever test plan",
+        "check": "every test has a defined read before it starts"
+      },
+      {
+        "n": 6,
+        "name": "Delegate non-revenue admin",
+        "does": "Delegate non-revenue admin tasks so growth decisions get the attention.",
+        "inputs": [
+          "admin task list"
+        ],
+        "tools": [],
+        "skill": null,
+        "output": "delegated task list",
+        "check": "delegation does not include a founder_gate decision"
+      },
+      {
+        "n": 7,
+        "name": "Write the channel memo",
+        "does": "Write the one-page memo behind any decision to add or expand the Amazon channel.",
+        "inputs": [
+          "all prior outputs"
+        ],
+        "tools": [],
+        "skill": "shared/plain-english-card",
+        "output": "channel expansion memo",
+        "check": "the memo states the evidence, the cost and the read date"
+      },
+      {
+        "n": 8,
+        "name": "Log everything",
+        "does": "Log the diagnosis, experiment reads and channel decision to the registry.",
+        "inputs": [
+          "all prior outputs"
+        ],
+        "tools": [],
+        "skill": "shared/registry-entry",
+        "output": "logged performance review",
+        "check": "every experiment's read date is logged, not left informal"
+      }
+    ],
+    "outputs": [
+      "sales diagnosis note",
+      "growth experiment read",
+      "channel expansion memo"
+    ],
+    "qa": [
+      "traffic vs conversion split before any conclusion",
+      "only Amazon-compliant promotion tools used",
+      "every experiment has a defined read before it starts"
+    ],
+    "read_point": "the experiment's defined read date; the memo's review date if approved",
+    "typical_duration": "agent time 1 to 3 hours per diagnosis; experiment reads take their own defined window",
+    "subagents": []
+  },
+  {
+    "id": "PROD-W27",
+    "name": "Build, hand off and audit the marketplace catalogue feed",
+    "capabilities": [
+      "PROD-C47",
+      "PROD-C63",
+      "PROD-C64"
+    ],
+    "trigger": "daily | weekly (quality audit) | on new asset or new channel (format check)",
+    "human_role": "Catalogue/PIM manager keeping one clean, compliant feed across channels",
+    "inputs_required": [
+      "live price and stock records",
+      "product records (titles, images, GTIN)",
+      "each channel's image/video spec",
+      "cross-channel price policy"
+    ],
+    "steps": [
+      {
+        "n": 1,
+        "name": "Keep one clean feed",
+        "does": "Keep one clean product feed: titles, images, prices, availability, GTIN.",
+        "inputs": [
+          "product records",
+          "live price/stock"
+        ],
+        "tools": [
+          "script: feed builder (to build)"
+        ],
+        "skill": "prod/catalogue-feed-audit",
+        "output": "master product feed",
+        "check": "the feed has no duplicate SKU and no missing GTIN"
+      },
+      {
+        "n": 2,
+        "name": "Validate against each channel's schema",
+        "does": "Validate the feed against each channel's own schema before handoff.",
+        "inputs": [
+          "master feed",
+          "channel schemas"
+        ],
+        "tools": [
+          "script: feed builder (to build)"
+        ],
+        "skill": "prod/catalogue-feed-audit",
+        "output": "validation report",
+        "check": "validation runs against the channel's current schema, not a cached one"
+      },
+      {
+        "n": 3,
+        "name": "Hand off to Media buyer and Organic",
+        "does": "Hand the validated feed to Media buyer and Organic to plug into shopping ads and marketplace channels.",
+        "inputs": [
+          "validated feed"
+        ],
+        "tools": [],
+        "skill": "shared/registry-entry",
+        "output": "handoff record",
+        "check": "the receiving agent confirms the feed loaded without error"
+      },
+      {
+        "n": 4,
+        "name": "Run the standing quality audit",
+        "does": "Run a standing audit across every channel's live listings for broken images, missing attributes, duplicate SKUs.",
+        "inputs": [
+          "live channel listings"
+        ],
+        "tools": [
+          "browser: headless (public)"
+        ],
+        "skill": "prod/catalogue-feed-audit",
+        "output": "quality audit report",
+        "check": "the audit covers every live channel, none skipped"
+      },
+      {
+        "n": 5,
+        "name": "Check cross-channel price",
+        "does": "Check the brand's own price mismatch between its site and each marketplace.",
+        "inputs": [
+          "site price",
+          "marketplace price"
+        ],
+        "tools": [],
+        "skill": "prod/catalogue-feed-audit",
+        "output": "price mismatch report",
+        "check": "a mismatch is flagged, never silently corrected"
+      },
+      {
+        "n": 6,
+        "name": "Check image/video specs",
+        "does": "Check every new product image and video against each channel's own size, crop and content rule before it is pushed.",
+        "inputs": [
+          "new asset",
+          "channel spec"
+        ],
+        "tools": [],
+        "skill": "prod/catalogue-feed-audit",
+        "output": "asset spec check",
+        "check": "the check happens before push, not after a channel rejection"
+      },
+      {
+        "n": 7,
+        "name": "Flag failures precisely",
+        "does": "Flag every failure with the exact channel and field it occurred on.",
+        "inputs": [
+          "all check results"
+        ],
+        "tools": [],
+        "skill": "prod/catalogue-feed-audit",
+        "output": "failure flag list",
+        "check": "every flag names a channel and a specific field"
+      },
+      {
+        "n": 8,
+        "name": "Log the results",
+        "does": "Log the feed validation and audit results to the registry.",
+        "inputs": [
+          "all prior outputs"
+        ],
+        "tools": [],
+        "skill": "shared/registry-entry",
+        "output": "logged feed/audit record",
+        "check": "the log is comparable day over day and week over week"
+      }
+    ],
+    "outputs": [
+      "master product feed",
+      "feed validation report",
+      "catalogue quality audit report"
+    ],
+    "qa": [
+      "feed validated against each channel's own schema, not a generic one",
+      "price mismatch flagged, never silently corrected",
+      "image/video checked before push, not after rejection"
+    ],
+    "read_point": "weekly audit result; each channel's feed-acceptance rate",
+    "typical_duration": "agent time under 1 hour daily; audit under 2 hours weekly",
+    "subagents": []
+  },
+  {
+    "id": "PROD-W28",
+    "name": "Onboard the brand on rapid delivery and quick commerce",
+    "capabilities": [
+      "PROD-C48"
+    ],
+    "trigger": "on demand (new rapid-delivery/quick-commerce launch)",
+    "human_role": "Rapid-delivery/quick-commerce manager taking a brand from documents to live on Instacart, DoorDash or Gopuff (india: Blinkit, Zepto or Instamart)",
+    "inputs_required": [
+      "business licence, resale certificate, UPC and packaging documents (india: GST, FSSAI, barcode and packaging documents)",
+      "product catalogue for the platform",
+      "target platform(s)"
+    ],
+    "steps": [
+      {
+        "n": 1,
+        "name": "Assemble the documents",
+        "does": "Assemble the business licence, resale certificate, UPC and packaging documents the platform requires (india: GST, FSSAI, barcode and packaging documents; markets: IN).",
+        "inputs": [
+          "brand compliance documents"
+        ],
+        "tools": [],
+        "skill": "prod/quick-commerce-onboard",
+        "output": "document packet",
+        "check": "every document the platform lists is present before submission"
+      },
+      {
+        "n": 2,
+        "name": "Submit through the platform's channel",
+        "does": "Submit the onboarding application through the platform's own channel.",
+        "inputs": [
+          "document packet"
+        ],
+        "tools": [],
+        "skill": "prod/quick-commerce-onboard",
+        "output": "submitted application",
+        "check": "the application is submitted through the platform's own onboarding process, not a workaround"
+      },
+      {
+        "n": 3,
+        "name": "Track review and respond",
+        "does": "Track document review status and respond to any query the platform raises.",
+        "inputs": [
+          "submitted application"
+        ],
+        "tools": [],
+        "skill": "prod/quick-commerce-onboard",
+        "output": "review status log",
+        "check": "every platform query gets a response within its stated window"
+      },
+      {
+        "n": 4,
+        "name": "Prepare the initial listing",
+        "does": "Prepare the initial catalogue listing per the platform's format, using the marketplace listing skill for that platform.",
+        "inputs": [
+          "product catalogue"
+        ],
+        "tools": [],
+        "skill": "prod/list-on-marketplace",
+        "output": "initial listing draft",
+        "check": "the listing uses the matching US platform sub-skill, or, for an India brand, the Blinkit/Zepto sub-skill, not a generic template"
+      },
+      {
+        "n": 5,
+        "name": "Confirm the validation window",
+        "does": "Confirm the platform's unit-economics validation window (commonly 90 days) and what it requires.",
+        "inputs": [
+          "platform terms"
+        ],
+        "tools": [
+          "web fetch (public)"
+        ],
+        "skill": "prod/quick-commerce-onboard",
+        "output": "validation window note",
+        "check": "the window and its requirement are both stated, not assumed"
+      },
+      {
+        "n": 6,
+        "name": "Go live and confirm the first order",
+        "does": "Get the brand live and confirm the first order flows correctly end to end.",
+        "inputs": [
+          "initial listing",
+          "review status"
+        ],
+        "tools": [],
+        "skill": "prod/quick-commerce-onboard",
+        "output": "go-live confirmation",
+        "check": "the first order is confirmed to flow without error before the launch is called done"
+      },
+      {
+        "n": 7,
+        "name": "Log the milestones",
+        "does": "Log the onboarding milestones and go-live date to the registry.",
+        "inputs": [
+          "all prior outputs"
+        ],
+        "tools": [],
+        "skill": "shared/registry-entry",
+        "output": "logged onboarding record",
+        "check": "every milestone has a date"
+      }
+    ],
+    "outputs": [
+      "onboarding document packet",
+      "go-live confirmation"
+    ],
+    "qa": [
+      "every required document assembled before submission",
+      "unit-economics validation window logged with its requirement"
+    ],
+    "read_point": "go-live date; the 90-day unit-economics validation window's outcome",
+    "typical_duration": "agent time 3 to 5 hours across the process; platform review adds 1 to 4 weeks",
+    "subagents": []
+  },
+  {
+    "id": "PROD-W29",
+    "name": "Manage rapid-delivery ad credits, promo calendar and dark-store fill rate",
+    "capabilities": [
+      "PROD-C50",
+      "PROD-C51"
+    ],
+    "trigger": "weekly, and ahead of each peak promotional window (india: festive window) | daily (fill rate)",
+    "human_role": "Rapid-delivery/quick-commerce manager running the ongoing account",
+    "inputs_required": [
+      "ad credit balance per platform",
+      "organic search performance",
+      "US retail promotional calendar (india: festive promotional calendar)",
+      "dark-store stock levels"
+    ],
+    "steps": [
+      {
+        "n": 1,
+        "name": "Spend ad credits deliberately",
+        "does": "Spend each platform's ad tools deliberately instead of leaving credits unused.",
+        "inputs": [
+          "ad credit balance"
+        ],
+        "tools": [],
+        "skill": "prod/quick-commerce-ops",
+        "output": "ad spend plan",
+        "check": "no credit balance sits unused past the platform's expiry"
+      },
+      {
+        "n": 2,
+        "name": "Pull back once organic picks up",
+        "does": "Pull back ad spend for a SKU once its organic search ranking improves.",
+        "inputs": [
+          "organic search performance"
+        ],
+        "tools": [],
+        "skill": "prod/quick-commerce-ops",
+        "output": "adjusted ad spend",
+        "check": "the pullback is triggered by a real organic-rank change, not a schedule"
+      },
+      {
+        "n": 3,
+        "name": "Recompute ROAS from transaction value",
+        "does": "Recompute ROAS from transaction value, not the platform's MRP-based default, before judging spend.",
+        "inputs": [
+          "ad spend",
+          "transaction value data"
+        ],
+        "tools": [
+          "script: metric contract"
+        ],
+        "skill": "prod/quick-commerce-ops",
+        "output": "recomputed ROAS",
+        "check": "the recompute uses transaction value, never the platform's MRP default"
+      },
+      {
+        "n": 4,
+        "name": "Negotiate peak promotional windows",
+        "does": "Negotiate peak promotional windows (BFCM, Prime Day, Q4 holidays; india: festive windows) ahead of the calendar date.",
+        "inputs": [
+          "US retail promotional calendar (india: festive calendar)"
+        ],
+        "tools": [],
+        "skill": "prod/quick-commerce-ops",
+        "output": "negotiated promo terms",
+        "check": "negotiation happens ahead of the date, not during the window"
+      },
+      {
+        "n": 5,
+        "name": "Watch dark-store stock daily",
+        "does": "Watch stock levels across the dark-store network daily, the way a merchandiser watches shelf stock.",
+        "inputs": [
+          "dark-store stock levels"
+        ],
+        "tools": [],
+        "skill": "prod/quick-commerce-ops",
+        "output": "dark-store stock report",
+        "check": "the report covers every dark store the brand is live in"
+      },
+      {
+        "n": 6,
+        "name": "Flag stockouts before the penalty",
+        "does": "Flag a dark-store stockout before it triggers an algorithmic ranking penalty.",
+        "inputs": [
+          "dark-store stock report"
+        ],
+        "tools": [],
+        "skill": "prod/quick-commerce-ops",
+        "output": "stockout flag",
+        "check": "the flag fires before the platform's own ranking-penalty window closes"
+      },
+      {
+        "n": 7,
+        "name": "Log the week",
+        "does": "Log ad spend, promo commitments and fill-rate flags to the registry.",
+        "inputs": [
+          "all prior outputs"
+        ],
+        "tools": [],
+        "skill": "shared/registry-entry",
+        "output": "logged quick commerce ops record",
+        "check": "the log is comparable week over week"
+      }
+    ],
+    "outputs": [
+      "ad credit spend log",
+      "promo calendar commitments",
+      "dark-store fill-rate flag"
+    ],
+    "qa": [
+      "ROAS recomputed from transaction value, not MRP",
+      "fill-rate flag raised before the ranking penalty window closes"
+    ],
+    "read_point": "weekly ad spend efficiency; daily fill-rate status",
+    "typical_duration": "agent time under 1 hour daily for fill rate; 1 to 2 hours weekly for ad/promo",
+    "subagents": []
+  },
+  {
+    "id": "PROD-W30",
+    "name": "Track regulatory registers: FDA, net-quantity, state licence and EPR",
+    "capabilities": [
+      "PROD-C61",
+      "PROD-C62"
+    ],
+    "trigger": "monthly audit, and on any formula/price change (india: MRP/GST change) | quarterly, annual filing deadline",
+    "human_role": "Compliance coordinator keeping every registration and filing current",
+    "inputs_required": [
+      "SKU list with category",
+      "current FDA/state licence status (india: Legal Metrology and FSSAI licence status)",
+      "state EPR registration status (india: EPR plastic-packaging registration status)",
+      "relabelling requirements"
+    ],
+    "steps": [
+      {
+        "n": 1,
+        "name": "Keep the licence register",
+        "does": "Keep one register of which SKUs need FDA facility registration or a state cosmetics/food/supplement licence (india: Legal Metrology (Packaged Commodities) registration or an FSSAI licence; markets: IN).",
+        "inputs": [
+          "SKU list with category"
+        ],
+        "tools": [],
+        "skill": "prod/regulatory-register-track",
+        "output": "licence register",
+        "check": "every SKU in a regulated category appears in the register"
+      },
+      {
+        "n": 2,
+        "name": "Track validity windows",
+        "does": "Track each licence's current validity window.",
+        "inputs": [
+          "licence register"
+        ],
+        "tools": [],
+        "skill": "prod/regulatory-register-track",
+        "output": "validity window tracker",
+        "check": "every licence's expiry date is current, not assumed"
+      },
+      {
+        "n": 3,
+        "name": "Flag relabelling on formula/price change",
+        "does": "Flag the relabelling needed on any formula, claim or price change (india: any MRP or GST change; markets: IN).",
+        "inputs": [
+          "MRP/GST change events"
+        ],
+        "tools": [],
+        "skill": "prod/regulatory-register-track",
+        "output": "relabelling flag",
+        "check": "a flag is raised on every formula/claim/price change, not only at renewal (india: MRP or GST change; markets: IN)"
+      },
+      {
+        "n": 4,
+        "name": "Register state EPR packaging",
+        "does": "Register the brand's packaging under the relevant state's EPR rules (india: India's EPR rules; markets: IN).",
+        "inputs": [
+          "packaging data"
+        ],
+        "tools": [],
+        "skill": "prod/regulatory-register-track",
+        "output": "EPR registration status",
+        "check": "the registration covers every plastic packaging type the brand uses"
+      },
+      {
+        "n": 5,
+        "name": "Track the annual EPR filing",
+        "does": "Track the annual EPR filing and recycling-target obligation.",
+        "inputs": [
+          "EPR registration status"
+        ],
+        "tools": [],
+        "skill": "prod/regulatory-register-track",
+        "output": "EPR filing tracker",
+        "check": "the filing deadline is tracked with enough lead time to act"
+      },
+      {
+        "n": 6,
+        "name": "Flag a shortfall",
+        "does": "Flag when a shortfall means buying EPR credits.",
+        "inputs": [
+          "EPR filing tracker"
+        ],
+        "tools": [],
+        "skill": "prod/regulatory-register-track",
+        "output": "EPR shortfall flag",
+        "check": "the flag states the shortfall amount, not just that one exists"
+      },
+      {
+        "n": 7,
+        "name": "Send expiring licences to the founder",
+        "does": "Send any licence expiring within 60 days to the founder gate.",
+        "inputs": [
+          "validity window tracker"
+        ],
+        "tools": [],
+        "skill": "shared/plain-english-card",
+        "output": "founder card",
+        "check": "the card is sent with at least 60 days of lead time"
+      },
+      {
+        "n": 8,
+        "name": "Log every filing",
+        "does": "Log every registration, filing and renewal to the registry.",
+        "inputs": [
+          "all prior outputs"
+        ],
+        "tools": [],
+        "skill": "shared/registry-entry",
+        "output": "logged compliance record",
+        "check": "the log is the single source of truth for every SKU's compliance status"
+      }
+    ],
+    "outputs": [
+      "compliance register",
+      "relabelling flag",
+      "EPR filing status"
+    ],
+    "qa": [
+      "every licence's validity window tracked, not assumed current",
+      "relabelling flagged on every formula/claim/price change, not just renewal (india: MRP/GST change; markets: IN)"
+    ],
+    "read_point": "each licence's renewal date; the annual EPR filing deadline",
+    "typical_duration": "agent time 1 to 2 hours monthly; quarterly EPR filing adds a few hours",
+    "subagents": []
+  }
+]

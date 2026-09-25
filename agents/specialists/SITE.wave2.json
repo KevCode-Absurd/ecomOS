@@ -1,0 +1,1621 @@
+[
+  {
+    "id": "SITE-C61",
+    "extends": null,
+    "name": "Choose a landing-page build method and keep it speed-safe",
+    "folders": [
+      "07-LPG",
+      "08-SPD"
+    ],
+    "what": "Decides how a new landing page or funnel page gets built: native theme Liquid section, an AI page-builder app (PageFly, GemPages, Replo, Shogun, Instant, Fudge), or a headless page. The decision is driven by the page's speed budget and the team's coding skill, not by which builder is trendiest, because every page-builder app renders through its own JavaScript layer that adds weight a native section does not carry.",
+    "encompasses": [
+      "list the JS and CSS weight each candidate builder app adds to a page, measured on the brand's own speed profile",
+      "compare native Liquid/CSS output (Instant, Fudge-style AI Liquid generation) against proprietary-runtime builders (PageFly, GemPages, Replo, Shogun)",
+      "weigh built-in features that avoid extra apps: A/B testing (Replo, GemPages), page-level revenue analytics (Replo, Shogun), personalization by segment (Shogun Smart Pages)",
+      "check template count and AI image-to-layout conversion (GemPages GemAI) against the team's actual need for speed of authoring",
+      "flag when a page already built in a heavy builder is the diagnosed cause of a speed regression and needs migration to native code",
+      "write the migration brief for moving one flagged page off a builder app to native theme code without losing its layout or conversion elements",
+      "recommend against buying a new builder app when the theme's own section library already covers the need"
+    ],
+    "inputs": [
+      "speed_lab measurements",
+      "page inventory",
+      "current app list",
+      "brand's dev skill level"
+    ],
+    "outputs": [
+      "builder decision memo",
+      "app weight comparison table",
+      "migration brief for flagged pages"
+    ],
+    "trigger": "new landing page requested, or a page-builder app named as a speed-audit root cause",
+    "autonomy": "founder_gate",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [
+      "speed_lab.measure",
+      "app_weight.scan",
+      "read_playbook"
+    ],
+    "skills": [
+      "site_speed_audit",
+      "landing_page_build"
+    ],
+    "subagent": "Site specialist",
+    "sources": {
+      "web": [
+        "https://www.fudge.ai/blog/shopify-page-builders-compared/",
+        "https://www.replo.app/blog/best-shopify-landing-page-builders",
+        "https://gempages.net/blogs/shopify/best-shopify-page-builder-app",
+        "https://pagefly.io/blogs/shopify/shopify-page-builder"
+      ],
+      "bank": []
+    },
+    "found_in": "web_only",
+    "founder_sees": true,
+    "human_role": "Shopify developer, theme developer",
+    "today_done_by": "agency"
+  },
+  {
+    "id": "SITE-C62",
+    "extends": null,
+    "name": "Set up git-based theme version control and a CI deploy pipeline",
+    "folders": [
+      "05-SET"
+    ],
+    "what": "Replaces duplicate-theme-in-admin editing with a real engineering workflow: theme code in git, Shopify CLI for local development, theme-check linting on every commit, a staging theme that auto-deploys from a branch, and a reviewed merge to the live theme, so changes are reviewable and reversible by commit instead of by remembering which duplicate is which.",
+    "encompasses": [
+      "connect the theme repo to GitHub and configure Shopify's GitHub integration or CLI-based push per environment",
+      "run theme-check linting automatically on every commit and block a merge on hard errors",
+      "stand up a staging theme URL that mirrors production for every pull request",
+      "require a second reviewer or the founder gate before merging to the live theme, matching the existing AI build-agent guardrail",
+      "keep a rollback path: one command to redeploy the previous commit's theme package",
+      "tag each deploy with the change brief it shipped, so the registry can trace a live change back to its approved idea",
+      "migrate an existing admin-duplicated theme history into a single git history without losing the working live version"
+    ],
+    "inputs": [
+      "current theme files",
+      "GitHub repo access",
+      "Shopify CLI"
+    ],
+    "outputs": [
+      "git repo with commit history",
+      "CI pipeline config",
+      "staging theme URL",
+      "rollback runbook"
+    ],
+    "trigger": "store setup, or after a near-miss where a live edit could not be traced or reverted",
+    "autonomy": "founder_gate",
+    "external_write": {
+      "needed": true,
+      "surface": "store theme (staging first, production on approval)"
+    },
+    "tools": [
+      "shopify_cli",
+      "theme_check",
+      "github_actions"
+    ],
+    "skills": [
+      "theme_devops"
+    ],
+    "subagent": "Site specialist",
+    "sources": {
+      "web": [
+        "https://byradiant.com/blog/what-does-a-shopify-developer-do",
+        "https://www.sapbwconsulting.com/blog/inbound-marketing/shopify-developer-job-responsibilities"
+      ],
+      "bank": []
+    },
+    "found_in": "web_only",
+    "founder_sees": true,
+    "human_role": "Shopify developer, theme developer",
+    "today_done_by": "agency"
+  },
+  {
+    "id": "SITE-C63",
+    "extends": null,
+    "name": "Build and maintain custom app integrations and webhooks",
+    "folders": [
+      "05-SET"
+    ],
+    "what": "Connects the store to systems no off-the-shelf app covers cleanly: an ERP, a warehouse system, a loyalty ledger, a marketplace feed or a regional courier, through the platform's API or a custom app, with auth tokens stored safely, retry logic on failed webhooks and an alert when a sync silently stops.",
+    "encompasses": [
+      "map the fields that must sync both ways (inventory, order status, tracking number, loyalty points) before writing any code",
+      "build the custom app or Shopify Flow automation and register the needed webhooks",
+      "store API keys and tokens only in the platform's secure app settings or the environment's secret store, never in theme code or a public repo",
+      "add retry-with-backoff on failed webhook deliveries and a dead-letter log for ones that never succeed",
+      "alert a human when a sync gap is detected (order count mismatch, stale inventory timestamp) rather than fail silently",
+      "document the integration's data contract so a future developer does not have to reverse-engineer it",
+      "test the integration against a staging or sandbox account of the external system before pointing it at production"
+    ],
+    "inputs": [
+      "external system's API docs",
+      "field mapping",
+      "sandbox credentials"
+    ],
+    "outputs": [
+      "working integration or Flow",
+      "webhook retry log",
+      "data contract doc",
+      "sync-health alert"
+    ],
+    "trigger": "a manual double-entry process is found during a setup or hygiene audit",
+    "autonomy": "founder_gate",
+    "external_write": {
+      "needed": true,
+      "surface": "store API, external system API"
+    },
+    "tools": [
+      "shopify_admin_api",
+      "shopify_flow",
+      "webhook_monitor"
+    ],
+    "skills": [
+      "ecommerce_integrations"
+    ],
+    "subagent": "Site specialist",
+    "sources": {
+      "web": [
+        "https://www.fiverr.com/categories/programming-tech/website-development/shopify-development",
+        "https://www.shopify.com/blog/fiverr-alternatives"
+      ],
+      "bank": []
+    },
+    "found_in": "web_only",
+    "founder_sees": true,
+    "human_role": "Shopify developer, integration freelancer",
+    "today_done_by": "freelancer"
+  },
+  {
+    "id": "SITE-C64",
+    "extends": null,
+    "name": "Run continuous automated regression testing on every theme or app change",
+    "folders": [
+      "08-SPD",
+      "09-CRO"
+    ],
+    "what": "Runs an AI-driven test suite before and after every theme or app change ships: visual diffs across breakpoints, scripted end-to-end flows for browse, cart, discount code and checkout, and self-healing test repair so a small DOM change does not break the whole suite. On failure it produces a video replay, network trace and a written bug report instead of a bare pass or fail.",
+    "encompasses": [
+      "map the store's critical paths into test cases: home, PDP, collection filter, cart, discount code, checkout to confirmation, account login",
+      "let an AI mapping step auto-discover new or changed flows after a release instead of hand-writing every test",
+      "run visual diffs across mobile, tablet and desktop breakpoints and classify each diff as likely-noise or likely-real before a human reviews it",
+      "run the suite in parallel isolated environments so a full pass finishes in minutes, not hours",
+      "self-heal a test whose selector changed for a cosmetic reason, and flag ones that fail for a real reason",
+      "capture video replay, console errors and network trace on any failure and write a bug report a developer can act on without re-running it",
+      "gate a theme deploy on the suite passing, wired into the CI pipeline",
+      "test payment and OTP steps with sandboxed credentials, never real customer payment data"
+    ],
+    "inputs": [
+      "critical-path map",
+      "staging theme URL",
+      "test credentials"
+    ],
+    "outputs": [
+      "pass/fail report",
+      "visual diff set",
+      "bug reports with replay",
+      "test coverage map"
+    ],
+    "trigger": "every theme or app deploy, and on a nightly schedule",
+    "autonomy": "agent_does",
+    "external_write": {
+      "needed": false,
+      "surface": "staging environment only"
+    },
+    "tools": [
+      "regression_suite.run",
+      "visual_diff.compare",
+      "self_heal.repair"
+    ],
+    "skills": [
+      "automated_qa"
+    ],
+    "subagent": "Site specialist",
+    "sources": {
+      "web": [
+        "https://www.qawolf.com/education/web-application-testing-tool",
+        "https://percy.io/blog/visual-regression-testing-tools",
+        "https://www.testmuai.com/blog/agentic-qa-tools/"
+      ],
+      "bank": []
+    },
+    "found_in": "web_only",
+    "founder_sees": false,
+    "human_role": "QA tester, QA engineer",
+    "today_done_by": "tool"
+  },
+  {
+    "id": "SITE-C65",
+    "extends": null,
+    "name": "Run real-time uptime and transaction monitoring with alert routing",
+    "folders": [
+      "08-SPD"
+    ],
+    "what": "Runs synthetic checks every few minutes against the home page, a key PDP, cart, checkout and on-site search from several regions, plus a real-user page-load feed, and routes an alert to a human the moment any of them degrades or fails, including SSL certificate expiry, instead of waiting for a scheduled housekeeping pass to notice.",
+    "encompasses": [
+      "set up synthetic checks on home, PDP, collection, cart, checkout and search at a chosen interval from more than one region",
+      "add a full transaction check that walks add-to-cart through order confirmation on a schedule, not just a page-200 check",
+      "track SSL certificate expiry and DNS resolution separately from page uptime",
+      "pull real-user monitoring (RUM) page-load data to catch slow-but-not-down degradation synthetic checks miss",
+      "route the alert to the right person with an escalation path if the first alert is not acknowledged",
+      "keep an incident log with time to detect and time to fix, feeding the post-launch hygiene review",
+      "exclude expected maintenance windows from triggering false alerts"
+    ],
+    "inputs": [
+      "store URLs by page type",
+      "on-call contact"
+    ],
+    "outputs": [
+      "uptime dashboard",
+      "incident log",
+      "alert routing rules"
+    ],
+    "trigger": "store setup completion, or after any unnoticed outage found in a hygiene review",
+    "autonomy": "agent_does",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [
+      "uptime_monitor.check",
+      "rum_feed.pull"
+    ],
+    "skills": [
+      "site_reliability"
+    ],
+    "subagent": "Site specialist",
+    "sources": {
+      "web": [
+        "https://www.pingdom.com/use-cases/ecommerce-and-retail-solution/",
+        "https://uptimerobot.com/knowledge-hub/monitoring/11-best-uptime-monitoring-tools-compared/"
+      ],
+      "bank": []
+    },
+    "found_in": "web_only",
+    "founder_sees": false,
+    "human_role": "site reliability engineer for stores",
+    "today_done_by": "tool"
+  },
+  {
+    "id": "SITE-C66",
+    "extends": null,
+    "name": "Simulate AI shopper personas through the storefront before shipping a redesign",
+    "folders": [
+      "07-LPG",
+      "09-CRO"
+    ],
+    "what": "Runs synthetic shopper personas with different intents and devices through the storefront in a sandbox before real traffic sees a redesign, reporting add-to-cart rate, navigation path and where each persona got stuck, and compares two designs head to head so the founder sees a predicted difference before committing real ad spend to a test.",
+    "encompasses": [
+      "define 3 to 6 personas matching the brand's real customer segments (first-time, repeat, price-sensitive, gift buyer)",
+      "run each persona through the current site and a candidate redesign in a private, non-indexed sandbox",
+      "record add-to-cart rate, click path length and the exact step each persona abandoned at",
+      "flag usability friction a persona hit that a human reviewer would likely also hit",
+      "compare two theme or page versions side by side on the same personas before an A/B test spends real traffic",
+      "state plainly that this is a prediction, not a measured result, and should not replace a real test on a decision with real money at stake"
+    ],
+    "inputs": [
+      "candidate page or theme version",
+      "persona definitions",
+      "sandbox store"
+    ],
+    "outputs": [
+      "persona run report",
+      "friction points list",
+      "design comparison summary"
+    ],
+    "trigger": "before a redesign goes to a real A/B test, when the change is expensive to build",
+    "autonomy": "human_assist",
+    "external_write": {
+      "needed": false,
+      "surface": "sandbox store only"
+    },
+    "tools": [
+      "shopper_sim.run"
+    ],
+    "skills": [
+      "cro_research"
+    ],
+    "subagent": "Site specialist",
+    "sources": {
+      "web": [
+        "https://www.shopify.com/blog/ai-agents-retail",
+        "https://www.shopify.com/blog/ai-agents-retail"
+      ],
+      "bank": []
+    },
+    "found_in": "web_only",
+    "founder_sees": true,
+    "human_role": "UX designer, CRO manager",
+    "today_done_by": "nobody"
+  },
+  {
+    "id": "SITE-C67",
+    "extends": null,
+    "name": "Configure checkout payment methods and address validation",
+    "folders": [
+      "05-SET",
+      "09-CRO"
+    ],
+    "what": "Sets up Shop Pay, PayPal, Apple Pay and a BNPL option (Affirm, Klarna or Afterpay) at checkout, validates the shipping address against USPS before the order is placed, and layers fraud signals onto risky orders, each measured against the brand's own failed-delivery and chargeback rate. Where the brand sells COD in India, adds the market option of a PIN code serviceability check on the PDP, OTP verification and a visible fee on high-value cash-on-delivery orders, and a WhatsApp order-confirmation trigger to cut return-to-origin (RTO); this option reads null for a US brand.",
+    "encompasses": [
+      "enable Shop Pay, PayPal, Apple Pay and a BNPL option (Affirm, Klarna or Afterpay) at checkout",
+      "validate the shipping address against USPS before the order is placed, catching a bad ZIP code or an undeliverable address before it ships",
+      "screen orders for fraud signals (mismatched billing and shipping, high-risk card BIN, order velocity) and route flagged orders for manual review",
+      "show accepted payment badges and a clear BNPL installment estimate near the buy box",
+      "trigger an automated order-confirmation message by SMS (with TCPA consent and quiet-hours rules) or email after checkout, with an auto-cancel rule if unconfirmed within a set window",
+      "replace the generic carrier tracking link with a branded tracking page that also carries post-purchase upsell content",
+      "pass a buyer risk score (first order, high order value, prior chargeback or return-to-sender history) to the fulfilment system so it can flag for manual check, without the site itself running carrier-side exception handling",
+      "build a failed-delivery and chargeback analytics view by carrier, ZIP code, product and payment method so the founder can see which lever is moving the number",
+      "India market option, reads null for US: show real-time PIN code serviceability on the PDP using the courier or aggregator's API before the shopper adds to cart",
+      "India market option, reads null for US: add address auto-fill and phone OTP verification at checkout for COD orders above a set value",
+      "India market option, reads null for US: add a visible COD handling fee as a checkout line item, sized to filter impulse orders without losing genuine buyers",
+      "India market option, reads null for US: surface a prepaid discount or free-shipping incentive at the exact checkout step where COD is selected",
+      "India market option, reads null for US: trigger a WhatsApp order-confirmation message after COD checkout, with an auto-cancel rule if unconfirmed within a set window",
+      "India market option, reads null for US: add the brand's RTO rate by PIN code and payment method to the analytics view"
+    ],
+    "inputs": [
+      "USPS address validation API",
+      "BNPL provider integration (Affirm, Klarna, Afterpay)",
+      "brand's historical chargeback and failed-delivery data",
+      "India market option, null for US: courier serviceability API",
+      "India market option, null for US: WhatsApp business API access"
+    ],
+    "outputs": [
+      "checkout payment method config",
+      "USPS address validation flow",
+      "fraud screening rules",
+      "branded tracking page",
+      "failed-delivery and chargeback dashboard",
+      "India market option, null for US: checkout OTP flow",
+      "India market option, null for US: COD fee config",
+      "India market option, null for US: WhatsApp confirmation flow"
+    ],
+    "trigger": "checkout payment mix, failed-delivery rate or chargeback rate identified as a bottleneck in the metric contract; India market option: COD share and RTO rate identified as a bottleneck",
+    "autonomy": "founder_gate",
+    "external_write": {
+      "needed": true,
+      "surface": "store checkout settings; India market option: WhatsApp business account"
+    },
+    "tools": [
+      "address_validate.usps",
+      "fraud_screen.run",
+      "returns_analytics.build",
+      "pin_serviceability.check",
+      "whatsapp_confirm.send"
+    ],
+    "skills": [
+      "checkout_config",
+      "india_ecommerce_ops"
+    ],
+    "subagent": "Site specialist",
+    "sources": {
+      "web": [
+        "https://growwwtech.com/blog/reduce-rto-ecommerce-india-proven-strategies-2026",
+        "https://www.shipmozo.com/blog/how-to-reduce-rto-in-ecommerce",
+        "https://www.hillteck.com/blog/reduce-rto-ecommerce-india.html"
+      ],
+      "bank": []
+    },
+    "found_in": "web_only",
+    "founder_sees": true,
+    "human_role": "e-commerce web manager, payments specialist; India market option: RTO-reduction freelancer",
+    "today_done_by": "freelancer"
+  },
+  {
+    "id": "SITE-C68",
+    "extends": null,
+    "name": "Track platform release notes and plan feature adoption or migration",
+    "folders": [
+      "05-SET"
+    ],
+    "what": "Reads each platform release (Shopify Editions twice a year, WooCommerce and WordPress core updates, an installed app's deprecation notice, an API version sunset date) and turns it into two short lists for the founder: native features that can now retire a paid app, and breaking changes that need a fix before the sunset date, so the store never gets caught by a deprecation it did not see coming.",
+    "encompasses": [
+      "read each Shopify Editions release and the platform's API version deprecation calendar on its schedule",
+      "match new native features against the brand's current paid app list to flag a possible app to retire",
+      "flag any announced breaking change against code the store actually uses, not a generic checklist",
+      "set a reminder ahead of every API version sunset date the store depends on",
+      "write a short adopt-or-ignore recommendation per release, not a full changelog dump",
+      "check WooCommerce or custom-platform framework updates the same way when that is the brand's platform"
+    ],
+    "inputs": [
+      "platform release notes",
+      "current app and API version list"
+    ],
+    "outputs": [
+      "adopt-or-ignore memo per release",
+      "deprecation deadline calendar"
+    ],
+    "trigger": "a platform release lands, or a deprecation notice arrives",
+    "autonomy": "human_assist",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [
+      "release_notes.scan"
+    ],
+    "skills": [
+      "platform_maintenance"
+    ],
+    "subagent": "Site specialist",
+    "sources": {
+      "web": [
+        "https://byradiant.com/blog/what-does-a-shopify-developer-do",
+        "https://www.digitalwaffle.co/job-descriptions/ecommerce-manager"
+      ],
+      "bank": []
+    },
+    "found_in": "web_only",
+    "founder_sees": true,
+    "human_role": "e-commerce web manager, Shopify developer",
+    "today_done_by": "nobody"
+  },
+  {
+    "id": "SITE-C69",
+    "extends": null,
+    "name": "Maintain a site-wide design system and component library",
+    "folders": [
+      "05-SET",
+      "07-LPG"
+    ],
+    "what": "Documents the brand's spacing, color, typography and button tokens once, then checks every new theme section and page-builder page against them, so a landing page built in a page-builder app does not drift from the native theme's look, and hands a developer or builder a spec instead of a screenshot to match by eye.",
+    "encompasses": [
+      "document color, spacing, typography and component tokens from the current live theme",
+      "check every new homepage or PDP section, whether built natively or in a page-builder app, against the token set before it ships",
+      "flag drift: a button radius, font size or color that does not match the documented token",
+      "produce a Figma-to-Liquid or Figma-to-builder handoff spec for a new section so a developer does not guess spacing from a picture",
+      "keep one canonical component list so the same 'FAQ block' or 'comparison table' is not rebuilt slightly differently five times"
+    ],
+    "inputs": [
+      "current theme CSS",
+      "brand style guide",
+      "new page mockups"
+    ],
+    "outputs": [
+      "design token doc",
+      "drift flags",
+      "handoff spec per new section"
+    ],
+    "trigger": "a new page or section is briefed, or a drift is spotted in QA",
+    "autonomy": "human_assist",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [
+      "design_tokens.check"
+    ],
+    "skills": [
+      "design_system"
+    ],
+    "subagent": "Site specialist",
+    "sources": {
+      "web": [
+        "https://www.fudge.ai/blog/shopify-page-builders-compared/",
+        "https://gempages.net/blogs/shopify/best-shopify-page-builder-app"
+      ],
+      "bank": []
+    },
+    "found_in": "web_only",
+    "founder_sees": true,
+    "human_role": "UX designer, theme developer",
+    "today_done_by": "nobody"
+  },
+  {
+    "id": "SITE-C70",
+    "extends": null,
+    "name": "Maintain a staging environment that mirrors production data and theme",
+    "folders": [
+      "05-SET"
+    ],
+    "what": "Keeps a staging copy of the store, theme and a recent product and price snapshot in sync with production, so a change, an app trial or a migration can be tested against real-looking data before it ever reaches a live customer, separate from the CI pipeline's code-only staging theme.",
+    "encompasses": [
+      "stand up a staging store or sandboxed duplicate on the same platform",
+      "refresh its product, price and inventory snapshot from production on a schedule, never the reverse",
+      "mirror the live theme and installed app list into staging before a risky change",
+      "password-protect the staging store and keep it out of search indexes",
+      "tear down or reset staging data on request so it never becomes a second source of truth",
+      "use staging, not production, for every app trial and every AI build-agent session"
+    ],
+    "inputs": [
+      "production store export",
+      "platform sandbox tooling"
+    ],
+    "outputs": [
+      "staging store",
+      "refresh schedule",
+      "reset runbook"
+    ],
+    "trigger": "store setup, or before any change flagged as risky",
+    "autonomy": "founder_gate",
+    "external_write": {
+      "needed": true,
+      "surface": "staging store only"
+    },
+    "tools": [
+      "store_sync.mirror"
+    ],
+    "skills": [
+      "theme_devops"
+    ],
+    "subagent": "Site specialist",
+    "sources": {
+      "web": [
+        "https://byradiant.com/blog/what-does-a-shopify-developer-do"
+      ],
+      "bank": []
+    },
+    "found_in": "web_only",
+    "founder_sees": true,
+    "human_role": "Shopify developer, QA tester",
+    "today_done_by": "agency"
+  },
+  {
+    "id": "SITE-C71",
+    "extends": null,
+    "name": "Build no-code automation rules for site-side operational triggers",
+    "folders": [
+      "05-SET",
+      "09-CRO"
+    ],
+    "what": "Uses the platform's own automation layer (Shopify Flow or equivalent) to wire small operational rules directly into the store instead of a developer hand-coding each one: auto-tag a high-risk order for manual review, auto-hold an order from a customer with a chargeback or return-to-sender history (a COD RTO offender in India), auto-apply gift wrap above a cart value, auto-alert the founder on a stockout of a top SKU on its own PDP.",
+    "encompasses": [
+      "list the recurring manual actions a store manager currently does by hand that are pure if-this-then-that logic",
+      "build each rule in the platform's native automation tool so it needs no custom app and no hosting",
+      "test each rule against a real historical order before turning it on live",
+      "log every automated action it takes so a human can audit what fired and why",
+      "avoid stacking automation rules that touch the same object in a conflicting order",
+      "route anything that needs judgment, not just if-then logic, to a human queue instead of automating it"
+    ],
+    "inputs": [
+      "list of manual repetitive actions",
+      "platform automation tool access"
+    ],
+    "outputs": [
+      "working automation rules",
+      "action audit log"
+    ],
+    "trigger": "a repetitive manual task is found in a hygiene or ops audit",
+    "autonomy": "founder_gate",
+    "external_write": {
+      "needed": true,
+      "surface": "store order and inventory objects"
+    },
+    "tools": [
+      "shopify_flow"
+    ],
+    "skills": [
+      "ecommerce_integrations"
+    ],
+    "subagent": "Site specialist",
+    "sources": {
+      "web": [
+        "https://byradiant.com/blog/what-does-a-shopify-developer-do"
+      ],
+      "bank": []
+    },
+    "found_in": "web_only",
+    "founder_sees": true,
+    "human_role": "e-commerce web manager, Shopify developer",
+    "today_done_by": "in-house"
+  },
+  {
+    "id": "SITE-C72",
+    "extends": null,
+    "name": "Set up a self-serve returns and exchange portal on-site",
+    "folders": [
+      "05-SET",
+      "09-CRO"
+    ],
+    "what": "Configures a customer-facing returns and exchange flow on the store (a dedicated app or a native flow), with exchange-for-store-credit incentives sized against real margin, so a return does not always mean a lost sale, and hands the fulfilment-side restocking rule to ops rather than building it itself.",
+    "encompasses": [
+      "select and configure a returns app or native flow against the brand's actual return window and condition rules",
+      "set an exchange-for-store-credit incentive with a real bonus amount the margin can support",
+      "surface return reasons in a structured way so the data feeds product and copy fixes elsewhere",
+      "keep the return portal's copy consistent with the published returns policy page word for word",
+      "hand the restocking and refund-timing rule to the operations specialist instead of building warehouse logic here",
+      "test the full return-request-to-resolution flow as a real customer would"
+    ],
+    "inputs": [
+      "returns policy page",
+      "margin data",
+      "returns app options"
+    ],
+    "outputs": [
+      "configured returns portal",
+      "exchange-credit rule",
+      "structured return-reason data feed"
+    ],
+    "trigger": "a high return or exchange volume is found in hygiene monitoring",
+    "autonomy": "founder_gate",
+    "external_write": {
+      "needed": true,
+      "surface": "store returns app"
+    },
+    "tools": [
+      "returns_app.configure"
+    ],
+    "skills": [
+      "checkout_config"
+    ],
+    "subagent": "Site specialist",
+    "sources": {
+      "web": [
+        "https://www.shopify.com/blog/fiverr-alternatives"
+      ],
+      "bank": []
+    },
+    "found_in": "web_only",
+    "founder_sees": true,
+    "human_role": "e-commerce web manager",
+    "today_done_by": "tool"
+  },
+  {
+    "id": "SITE-C73",
+    "extends": null,
+    "name": "Support agentic checkout for third-party AI shopping assistants",
+    "folders": [
+      "05-SET",
+      "09-CRO"
+    ],
+    "what": "Makes the store's product data, pricing and checkout machine-readable enough for a third-party AI shopping assistant acting on a shopper's behalf to find a product and complete a purchase, then tests that path end to end, since this channel is new and unproven but growing.",
+    "encompasses": [
+      "verify the product feed and structured data an outside AI agent would read (price, stock, variant, shipping cost) are accurate and current",
+      "check the checkout can complete a purchase from an agent-initiated session without a broken step a human would silently work around",
+      "confirm order attribution correctly tags an agent-initiated purchase so it does not get miscounted as organic or paid",
+      "flag any step (a CAPTCHA, a mandatory account creation) that blocks an agent from completing a purchase, and decide with the founder whether to relax it",
+      "keep this channel read-only in measurement until the founder has seen at least a handful of real agent-driven orders"
+    ],
+    "inputs": [
+      "product feed",
+      "structured data",
+      "checkout flow"
+    ],
+    "outputs": [
+      "agentic-checkout readiness report",
+      "attribution tag fix",
+      "blocked-step list"
+    ],
+    "trigger": "agent-driven orders start appearing in order source data, or the founder asks about this channel",
+    "autonomy": "human_assist",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [
+      "feed_check.run",
+      "checkout_probe.run"
+    ],
+    "skills": [
+      "structured_data",
+      "checkout_config"
+    ],
+    "subagent": "Site specialist",
+    "sources": {
+      "web": [
+        "https://www.shopify.com/blog/ai-agents-retail"
+      ],
+      "bank": []
+    },
+    "found_in": "possible",
+    "founder_sees": true,
+    "human_role": "Shopify developer",
+    "today_done_by": "nobody"
+  },
+  {
+    "id": "SITE-C74",
+    "extends": null,
+    "name": "Auto-sequence PDP images from the brand's own click-map and zoom data",
+    "folders": [
+      "09-CRO"
+    ],
+    "what": "A capability no tool sells yet: instead of a human guessing a better product-image order and running a slow A/B test, the agent reads which images shoppers actually zoom into, skip past or abandon on, and proposes a re-sequenced gallery ranked by real attention data, with the reasoning shown so the founder can approve before it ships.",
+    "encompasses": [
+      "pull per-image zoom, dwell and skip events from the site's own click-map or session-replay data, never a generic benchmark",
+      "rank the existing image set by which ones hold attention longest before a scroll-away or an add-to-cart",
+      "propose a re-sequenced gallery order with the reasoning per swap, not just a new order with no explanation",
+      "flag when there is not yet enough session volume on a SKU to trust the ranking, and say so instead of guessing",
+      "size this as a proposal for the founder gate, not an automatic live change, since it touches a live PDP"
+    ],
+    "inputs": [
+      "click-map or session-replay data per PDP",
+      "current image order"
+    ],
+    "outputs": [
+      "proposed image order with reasoning",
+      "confidence flag per SKU"
+    ],
+    "trigger": "a PDP has enough session volume and an unresolved add-to-cart drop-off",
+    "autonomy": "founder_gate",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [
+      "session_replay.pull",
+      "image_rank.propose"
+    ],
+    "skills": [
+      "cro_research"
+    ],
+    "subagent": "Site specialist",
+    "sources": {
+      "web": [],
+      "bank": []
+    },
+    "found_in": "possible",
+    "founder_sees": true,
+    "human_role": "CRO manager",
+    "today_done_by": "nobody"
+  },
+  {
+    "id": "SITE-C75",
+    "extends": null,
+    "name": "Cap exit-intent and cart-abandonment discounts to a margin-safe ceiling in real time",
+    "folders": [
+      "09-CRO"
+    ],
+    "what": "A capability no tool sells yet: an exit-intent popup or an abandoned-cart discount is normally a single flat number set once by a human. Here the agent computes, in code, the maximum discount that specific cart can take and still clear the brand's real per-order margin floor, using landed cost and shipping cost already in the brand record, so the offer flexes by cart instead of guessing one number for every visitor.",
+    "encompasses": [
+      "read landed cost, shipping cost and any active promo already applied for the exact cart at the moment of exit intent",
+      "compute the maximum discount in code that still clears the founder's set margin floor for that order",
+      "never let the model estimate the number; the ceiling is arithmetic from the brand's own cost data",
+      "show the founder the ceiling logic before turning the offer live, and cap it below the computed ceiling if the founder wants a buffer",
+      "fall back to no discount, not a guessed discount, when a cost input for that SKU is missing"
+    ],
+    "inputs": [
+      "landed cost per SKU",
+      "shipping cost",
+      "founder's margin floor",
+      "live cart contents"
+    ],
+    "outputs": [
+      "per-cart discount ceiling",
+      "exit-intent offer config"
+    ],
+    "trigger": "exit-intent or cart-abandonment offer is being designed or already underperforming",
+    "autonomy": "founder_gate",
+    "external_write": {
+      "needed": true,
+      "surface": "store discount engine"
+    },
+    "tools": [
+      "margin_ceiling.compute"
+    ],
+    "skills": [
+      "cro_research"
+    ],
+    "subagent": "Site specialist",
+    "sources": {
+      "web": [],
+      "bank": []
+    },
+    "found_in": "possible",
+    "founder_sees": true,
+    "human_role": "CRO manager",
+    "today_done_by": "nobody"
+  },
+  {
+    "id": "SITE-C76",
+    "extends": null,
+    "name": "Build an on-site visual product search from an uploaded photo",
+    "folders": [
+      "09-CRO"
+    ],
+    "what": "A capability no tool sells yet at the brand's scale: a shopper uploads or snaps a photo (a style they saw elsewhere, or a product they already own) and the site returns the closest real SKUs by visual similarity, using an image embedding model matched against the brand's own product photos, kept separate from any competitor-image use since only the shopper's own photo is compared, never stored as a competitor asset.",
+    "encompasses": [
+      "embed every live product's real photos once and keep the index current as the catalogue changes",
+      "accept a shopper-uploaded photo, embed it the same way, and return the nearest real SKUs, never a generated or redrawn product",
+      "cap the feature to product discovery only; never claim a visual match is exact",
+      "fall back cleanly to text search when no close visual match exists",
+      "keep uploaded shopper photos private and short-lived, never stored as training or competitor data"
+    ],
+    "inputs": [
+      "product photo catalogue",
+      "shopper-uploaded photo"
+    ],
+    "outputs": [
+      "visual search widget",
+      "similarity index"
+    ],
+    "trigger": "on-site search bottleneck diagnosed and the catalogue is visually distinct enough to benefit",
+    "autonomy": "founder_gate",
+    "external_write": {
+      "needed": true,
+      "surface": "store search index"
+    },
+    "tools": [
+      "image_embed.build",
+      "visual_search.query"
+    ],
+    "skills": [
+      "on_site_search"
+    ],
+    "subagent": "Site specialist",
+    "sources": {
+      "web": [
+        "https://athoscommerce.com/algolia-vs-athos-commerce/"
+      ],
+      "bank": []
+    },
+    "found_in": "possible",
+    "founder_sees": true,
+    "human_role": "e-commerce web manager",
+    "today_done_by": "nobody"
+  },
+  {
+    "id": "SITE-C77",
+    "extends": null,
+    "name": "Add a click-to-WhatsApp catalog and buy flow on the PDP",
+    "folders": [
+      "09-CRO"
+    ],
+    "markets": ["IN", "EU", "LATAM"],
+    "what": "Adds a pre-purchase WhatsApp channel for markets where WhatsApp commerce is common (India, EU, LATAM): a click-to-WhatsApp button on the PDP that opens a chat pre-filled with the exact SKU and variant, backed by the brand's WhatsApp catalog, for shoppers who trust a chat conversation with a human or a bot more than a cart, and routes the resulting cart-recovery and support load to the lifecycle specialist rather than handling it here. Reads null and does not run for a US-default brand.",
+    "encompasses": [
+      "sync the live product catalogue (price, stock, variant) to the brand's WhatsApp Business catalog on a schedule",
+      "add a click-to-WhatsApp button on the PDP that pre-fills the exact SKU, variant and a template question",
+      "confirm the button only appears in a market where WhatsApp commerce is legal and commonly used (India, EU, LATAM), never for a US-default brand",
+      "measure how many PDP-to-WhatsApp clicks convert to an order, separate from normal add-to-cart, so it is not double-counted",
+      "hand the WhatsApp conversation flow itself, cart recovery and support scripting to the lifecycle specialist"
+    ],
+    "inputs": [
+      "WhatsApp Business catalog access",
+      "PDP template"
+    ],
+    "outputs": [
+      "click-to-WhatsApp button",
+      "synced catalog",
+      "click-to-order attribution"
+    ],
+    "trigger": "COD or trust-driven checkout hesitation diagnosed as a bottleneck in a WhatsApp-commerce market (India, EU, LATAM); reads null for US",
+    "autonomy": "founder_gate",
+    "external_write": {
+      "needed": true,
+      "surface": "store PDP template, WhatsApp Business catalog"
+    },
+    "tools": [
+      "whatsapp_catalog.sync"
+    ],
+    "skills": [
+      "india_ecommerce_ops"
+    ],
+    "subagent": "Site specialist",
+    "sources": {
+      "web": [
+        "https://growwwtech.com/blog/reduce-rto-ecommerce-india-proven-strategies-2026"
+      ],
+      "bank": []
+    },
+    "found_in": "web_only",
+    "founder_sees": true,
+    "human_role": "e-commerce web manager",
+    "today_done_by": "freelancer"
+  },
+  {
+    "id": "SITE-C78",
+    "extends": null,
+    "name": "Configure consent-based tag gating for CCPA, CPRA and other state privacy laws",
+    "folders": [
+      "05-SET"
+    ],
+    "what": "Builds a cookie and tag consent layer that actually gates tracking scripts by the visitor's region and choice, rather than a banner that shows for legal cover while every pixel fires anyway. Defaults to US state privacy law: CCPA and CPRA for California plus Virginia, Colorado and other state laws, with an opt-out link and a do-not-sell-or-share signal. Folds in GDPR opt-in consent for EU visitors and India's DPDP Act consent rules for Indian visitors on the same store, each a market option that reads null unless the brand sells into that region.",
+    "encompasses": [
+      "inventory every tracking pixel, tag and script currently firing on first page load",
+      "route each one behind a consent-management layer keyed to visitor region and explicit choice",
+      "confirm a rejected-consent or opted-out visitor genuinely does not fire the gated scripts, by checking network requests, not just the banner's own claim",
+      "set the correct default per region: an opt-out 'Do Not Sell or Share My Personal Information' link for US state laws, opt-in for GDPR (EU market option), and opt-in for DPDP (India market option, reads null for US) rather than one global default",
+      "keep essential, non-tracking scripts (cart, checkout, payment) ungated so consent choices never break core function",
+      "log consent choices in a way the brand can produce as proof if ever asked"
+    ],
+    "inputs": [
+      "current tag list",
+      "visitor region logic",
+      "consent management tool"
+    ],
+    "outputs": [
+      "configured consent layer",
+      "gated tag list",
+      "consent log"
+    ],
+    "trigger": "store setup for a US brand, or an EU- or India-facing brand, or a compliance audit finding",
+    "autonomy": "founder_gate",
+    "external_write": {
+      "needed": true,
+      "surface": "store tag manager"
+    },
+    "tools": [
+      "consent_gate.configure",
+      "tag_audit.scan"
+    ],
+    "skills": [
+      "tracking_setup"
+    ],
+    "subagent": "Site specialist",
+    "sources": {
+      "web": [
+        "https://bybtraction.com/shopify-gst-shipping-cod-india/"
+      ],
+      "bank": []
+    },
+    "found_in": "web_only",
+    "founder_sees": true,
+    "human_role": "Shopify developer, e-commerce web manager",
+    "today_done_by": "nobody"
+  },
+  {
+    "id": "SITE-C79",
+    "extends": null,
+    "name": "Build a restock waitlist and pre-launch password-page capture flow",
+    "folders": [
+      "07-LPG",
+      "09-CRO"
+    ],
+    "what": "Adds a notify-me capture on an out-of-stock PDP and a password-protected coming-soon page for a pre-launch or a limited drop, each wired to collect an email or an SMS number (with TCPA consent) by default, or a WhatsApp number in a WhatsApp-commerce market (India, EU, LATAM), and fire an automatic notification the moment stock or launch goes live, instead of losing that demand silently.",
+    "encompasses": [
+      "add a notify-me form on any out-of-stock PDP, capturing email or an SMS number (with TCPA consent) by default, or a WhatsApp number in a market where that channel is in use",
+      "fire an automatic notification the moment the SKU is back in stock, ranked by signup order for a limited restock",
+      "build a password-protected coming-soon page for pre-launch or a drop, keeping it out of search indexes",
+      "capture waitlist signups into the brand's own list, never a third party's, so it feeds lifecycle directly",
+      "report waitlist size and back-in-stock conversion rate per SKU to size real demand before a reorder decision"
+    ],
+    "inputs": [
+      "out-of-stock SKU list",
+      "email, SMS or WhatsApp capture tool"
+    ],
+    "outputs": [
+      "notify-me widget",
+      "coming-soon page",
+      "waitlist size and conversion report"
+    ],
+    "trigger": "a top SKU goes out of stock, or a pre-launch or drop is planned",
+    "autonomy": "founder_gate",
+    "external_write": {
+      "needed": true,
+      "surface": "store PDP template, email/SMS/WhatsApp platform"
+    },
+    "tools": [
+      "waitlist.build",
+      "notify_stock.trigger"
+    ],
+    "skills": [
+      "landing_page_build"
+    ],
+    "subagent": "Site specialist",
+    "sources": {
+      "web": [],
+      "bank": []
+    },
+    "found_in": "web_only",
+    "founder_sees": true,
+    "human_role": "e-commerce web manager",
+    "today_done_by": "tool"
+  },
+  {
+    "id": "SITE-C80",
+    "extends": null,
+    "name": "Watch competitor pricing and refresh truthful anchor-price copy on the PDP",
+    "folders": [
+      "09-CRO"
+    ],
+    "what": "A capability no tool sells yet in this exact form: reads the same publicly listed competitor prices used for reference elsewhere in the system on a schedule, and when the brand's own PDP carries an anchor-price comparison claim, checks it is still true and flags it for a copy refresh the moment a competitor's public price moves, so a comparison claim never goes stale or false, without ever copying competitor text, images or branding onto the page.",
+    "encompasses": [
+      "read only publicly listed competitor prices already treated as signal elsewhere in the system, never scraped account data",
+      "match each PDP anchor-price or comparison claim to the specific competitor price it cites",
+      "flag a claim as stale the moment the cited competitor price changes enough to make the comparison inaccurate",
+      "propose the corrected comparison number for a human to approve before the copy changes",
+      "never let a comparison claim ship without a current, dated source behind it",
+      "keep this entirely separate from the brand's own private cost and margin data"
+    ],
+    "inputs": [
+      "competitor price signal feed",
+      "current PDP comparison claims"
+    ],
+    "outputs": [
+      "stale-claim flags",
+      "proposed corrected comparison copy"
+    ],
+    "trigger": "a competitor price change is detected, or a scheduled weekly check",
+    "autonomy": "founder_gate",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [
+      "competitor_price.watch",
+      "claim_match.check"
+    ],
+    "skills": [
+      "cro_research",
+      "compliance_qa"
+    ],
+    "subagent": "Site specialist",
+    "sources": {
+      "web": [],
+      "bank": []
+    },
+    "found_in": "possible",
+    "founder_sees": true,
+    "human_role": "CRO manager",
+    "today_done_by": "nobody"
+  },
+  {
+    "id": "SITE-C13",
+    "extends": "SITE-C13",
+    "name": "Audit and govern the app and script stack (extension: runtime JS conflict detection)",
+    "folders": [
+      "05-SET",
+      "08-SPD"
+    ],
+    "what": "Extends the app and script audit beyond relevance and duplication to catch runtime conflicts: two installed apps writing to the same DOM element, a console error thrown only when two specific apps load together, or a script that silently stops firing after another app updates.",
+    "encompasses": [
+      "crawl key page types with every app active and log console errors, not just app relevance",
+      "isolate which pair of apps causes a conflict by disabling one at a time in staging",
+      "detect two apps competing for the same DOM insertion point (both trying to own the cart drawer, for example)",
+      "flag a previously working script that has gone silent after an unrelated app update"
+    ],
+    "inputs": [
+      "installed app list",
+      "staging environment"
+    ],
+    "outputs": [
+      "conflict list with the two apps named",
+      "console error log per page type"
+    ],
+    "trigger": "a bug appears with no clear single cause after a new app install",
+    "autonomy": "human_assist",
+    "external_write": {
+      "needed": false,
+      "surface": "staging environment only"
+    },
+    "tools": [
+      "conflict_crawl.run"
+    ],
+    "skills": [
+      "automated_qa"
+    ],
+    "subagent": "Site specialist",
+    "sources": {
+      "web": [
+        "https://www.qawolf.com/education/web-application-testing-tool"
+      ],
+      "bank": []
+    },
+    "found_in": "web_only",
+    "founder_sees": true,
+    "human_role": "Shopify developer, QA tester",
+    "today_done_by": "agency"
+  },
+  {
+    "id": "SITE-C15",
+    "extends": "SITE-C15",
+    "name": "Monitor post-launch store hygiene (extension: session-replay bug detection)",
+    "folders": [
+      "08-SPD",
+      "09-CRO"
+    ],
+    "what": "Extends the scheduled hygiene sweep with a continuous feed from the site's own session-replay tool, turning rage-clicks, dead-clicks and JS-error events into ranked bug tickets automatically instead of waiting for a support ticket to surface the same bug.",
+    "encompasses": [
+      "pull rage-click, dead-click and JS-error events from the session-replay tool on a schedule",
+      "cluster repeated events by the same element and page into one ticket, not one per session",
+      "rank tickets by number of sessions affected, not by when they were reported",
+      "hand a ranked, evidenced bug list to the QA regression suite instead of a vague complaint"
+    ],
+    "inputs": [
+      "session-replay event feed"
+    ],
+    "outputs": [
+      "ranked bug ticket list"
+    ],
+    "trigger": "scheduled hygiene sweep, or a spike in a specific rage-click event",
+    "autonomy": "agent_does",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [
+      "session_replay.pull"
+    ],
+    "skills": [
+      "automated_qa"
+    ],
+    "subagent": "Site specialist",
+    "sources": {
+      "web": [],
+      "bank": []
+    },
+    "found_in": "web_only",
+    "founder_sees": false,
+    "human_role": "QA tester",
+    "today_done_by": "tool"
+  },
+  {
+    "id": "SITE-C33",
+    "extends": "SITE-C33",
+    "name": "Run automated speed regression monitoring (extension: real-user Core Web Vitals)",
+    "folders": [
+      "08-SPD"
+    ],
+    "what": "Extends the lab-based synthetic speed budget check with a monthly pull of real-user Core Web Vitals (CrUX) from the PageSpeed Insights API and Search Console per template, catching field-data regressions a synthetic lab test on one connection profile can miss.",
+    "encompasses": [
+      "pull CrUX field data per template (home, PDP, collection, checkout) monthly",
+      "compare field data pass/fail against the lab-based synthetic result for the same template",
+      "flag a template that fails in the field but passes in the lab as a real-device or real-network issue, not a false alarm",
+      "keep field data separate from lab data in the report so the two are never averaged together"
+    ],
+    "inputs": [
+      "PageSpeed Insights API",
+      "Search Console Core Web Vitals report"
+    ],
+    "outputs": [
+      "monthly field-data report per template"
+    ],
+    "trigger": "monthly schedule",
+    "autonomy": "agent_does",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [
+      "crux_pull.run"
+    ],
+    "skills": [
+      "site_speed_audit"
+    ],
+    "subagent": "Site specialist",
+    "sources": {
+      "web": [],
+      "bank": []
+    },
+    "found_in": "web_only",
+    "founder_sees": false,
+    "human_role": "Shopify developer",
+    "today_done_by": "tool"
+  },
+  {
+    "id": "SITE-C56",
+    "extends": "SITE-C56",
+    "name": "Optimize on-site search (extension: conversational search and self-learning merchandising)",
+    "folders": [
+      "09-CRO"
+    ],
+    "what": "Extends predictive-text, synonym-matched search with a conversational product-finder for natural-language queries, a self-learning synonym dictionary that adapts from real search-to-purchase behavior, and no-code merchandising rule scheduling the merchandiser can run without an engineering ticket.",
+    "encompasses": [
+      "add a conversational search box that answers a natural-language query ('a gift under 2000 for a first anniversary') with real matching SKUs, not a canned response",
+      "let the synonym dictionary self-adjust from real query-to-purchase pairs, with a human review before a new synonym goes live",
+      "auto-propose a synonym or filter fix the moment a real query returns zero results or a low click-through, for founder approval before publishing",
+      "let merchandising rules (pin a product, schedule a promotion, boost a season) be scheduled and published without an engineering ticket",
+      "watch for and correct search results still surfacing an out-of-stock or discontinued SKU"
+    ],
+    "inputs": [
+      "search query log",
+      "purchase data",
+      "current synonym dictionary"
+    ],
+    "outputs": [
+      "conversational search widget",
+      "auto-proposed synonym fixes",
+      "no-code merchandising rule tool"
+    ],
+    "trigger": "search-term audit finds recurring zero-result or low-CTR queries",
+    "autonomy": "founder_gate",
+    "external_write": {
+      "needed": true,
+      "surface": "store search index"
+    },
+    "tools": [
+      "search_audit.scan",
+      "synonym_propose.run"
+    ],
+    "skills": [
+      "on_site_search"
+    ],
+    "subagent": "Site specialist",
+    "sources": {
+      "web": [
+        "https://athoscommerce.com/algolia-vs-athos-commerce/",
+        "https://voyado.com/resources/blog/top-algolia-competitors/"
+      ],
+      "bank": []
+    },
+    "found_in": "web_only",
+    "founder_sees": true,
+    "human_role": "e-commerce web manager",
+    "today_done_by": "tool"
+  },
+  {
+    "id": "SITE-C57",
+    "extends": "SITE-C57",
+    "name": "Design on-site personalization (extension: page-level personalization by segment without engineering)",
+    "folders": [
+      "07-LPG",
+      "09-CRO"
+    ],
+    "what": "Extends quiz-driven and real-time-signal personalization with page-level variants of a homepage or landing page served by traffic source, geography, device or campaign UTM, using the page-builder's native personalization rules rather than a custom engineering build for every variant.",
+    "encompasses": [
+      "define page variants keyed to a real segment (paid-search visitor vs organic, mobile vs desktop, a specific ad campaign's UTM)",
+      "build each variant inside the page-builder's native personalization feature instead of a bespoke script per variant",
+      "cap the number of live variants to what the traffic can actually prove out, avoiding a variant with too little volume to ever read",
+      "report which variant each segment saw alongside its conversion, so a variant is never judged on vanity traffic alone"
+    ],
+    "inputs": [
+      "traffic segment definitions",
+      "page-builder personalization tool"
+    ],
+    "outputs": [
+      "segment-mapped page variants",
+      "variant performance report"
+    ],
+    "trigger": "a bottleneck is diagnosed as message-match, not raw traffic",
+    "autonomy": "founder_gate",
+    "external_write": {
+      "needed": true,
+      "surface": "store landing pages"
+    },
+    "tools": [
+      "page_variant.build"
+    ],
+    "skills": [
+      "personalization"
+    ],
+    "subagent": "Site specialist",
+    "sources": {
+      "web": [
+        "https://www.fudge.ai/blog/shopify-page-builders-compared/"
+      ],
+      "bank": []
+    },
+    "found_in": "web_only",
+    "founder_sees": true,
+    "human_role": "CRO manager, e-commerce web manager",
+    "today_done_by": "agency"
+  },
+  {
+    "id": "SITE-C59",
+    "extends": "SITE-C59",
+    "name": "Audit and remediate site accessibility (extension: reject overlay-only fixes, add continuous CI scan)",
+    "folders": [
+      "05-SET",
+      "08-SPD"
+    ],
+    "what": "Extends the manual and automated WCAG audit with an explicit rule against relying on an accessibility overlay widget (accessiBe, UserWay-style) as the fix, since automated overlays catch only a fraction of real issues and one such vendor was fined for overstating what its widget could do, and adds a continuous automated accessibility scan tied into the CI pipeline so a new deploy cannot silently reintroduce a fixed issue.",
+    "encompasses": [
+      "flag an overlay widget already installed as cosmetic cover, not a fix, and recommend manual remediation of the underlying markup instead",
+      "run an automated accessibility scanner on every CI deploy, not only at audit time",
+      "block a deploy that reintroduces a previously fixed contrast, alt-text or keyboard-trap issue",
+      "keep the manual keyboard and screen-reader test on the launch cadence, since automated scans catch roughly a third to two-fifths of real issues on their own"
+    ],
+    "inputs": [
+      "current accessibility scan tool",
+      "CI pipeline"
+    ],
+    "outputs": [
+      "overlay-reliance flag",
+      "CI-gated accessibility scan result"
+    ],
+    "trigger": "an overlay widget is found installed, or the CI pipeline is being set up",
+    "autonomy": "founder_gate",
+    "external_write": {
+      "needed": false,
+      "surface": "staging environment only"
+    },
+    "tools": [
+      "a11y_scan.run"
+    ],
+    "skills": [
+      "accessibility_audit"
+    ],
+    "subagent": "Site specialist",
+    "sources": {
+      "web": [
+        "https://userway.org/audit/",
+        "https://www.accessibilitychecker.org/blog/userway-vs-accessibe/",
+        "https://hounder.co/the-dog-bowl/accessibe-vs-audioeye-vs-userway-vs-equalweb-honest-comparison-public-agencies",
+        "https://wcagpros.com/wcag-articles/the-ultimate-guide-to-comparing-website-accessibility-widgets-wcag-22/"
+      ],
+      "bank": []
+    },
+    "found_in": "web_only",
+    "founder_sees": true,
+    "human_role": "QA tester, UX designer",
+    "today_done_by": "tool"
+  },
+  {
+    "id": "SITE-C60",
+    "extends": "SITE-C60",
+    "name": "Implement structured data and schema markup (extension: continuous drift monitoring)",
+    "folders": [
+      "08-SPD",
+      "09-CRO"
+    ],
+    "what": "Extends the one-time structured-data build with continuous drift monitoring: re-validating Product, Offer, Review, BreadcrumbList and FAQPage markup against a rich-results validator after every theme deploy, since a theme or app update can silently strip or break JSON-LD without any visible page change.",
+    "encompasses": [
+      "run every page type's structured data through a rich-results validator after each deploy, not only at initial build",
+      "diff the current JSON-LD against the last known-good version per template to catch silent stripping",
+      "alert when a theme or app update removes or malforms a schema block",
+      "track rich-result impression trends as a leading indicator that markup is still being read correctly"
+    ],
+    "inputs": [
+      "current JSON-LD per template",
+      "rich-results validator"
+    ],
+    "outputs": [
+      "drift alert",
+      "validator pass/fail per template"
+    ],
+    "trigger": "every theme or app deploy, tied into the CI pipeline",
+    "autonomy": "agent_does",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [
+      "schema_validator.check"
+    ],
+    "skills": [
+      "structured_data"
+    ],
+    "subagent": "Site specialist",
+    "sources": {
+      "web": [
+        "https://technicalseo.com/tools/schema-markup-generator/",
+        "https://attrock.com/schema-markup-generator/"
+      ],
+      "bank": []
+    },
+    "found_in": "web_only",
+    "founder_sees": false,
+    "human_role": "Shopify developer",
+    "today_done_by": "tool"
+  },
+  {
+    "id": "SITE-C09",
+    "extends": "SITE-C09",
+    "name": "Configure payment gateways and go-live test (extension: scheduled recurring real test purchase)",
+    "folders": [
+      "05-SET",
+      "08-SPD"
+    ],
+    "what": "Extends the one-time go-live payment test with a scheduled recurring real test purchase on production, using a small refundable amount, so a later settings, tax or shipping-rate change that breaks the payment path is caught within a day instead of by the next real customer complaint.",
+    "encompasses": [
+      "run a real, small, refundable test purchase through production on a schedule, not only once at launch",
+      "cover the primary and a secondary payment method in rotation across scheduled runs",
+      "auto-refund the test purchase immediately and log the refund so it never shows as real revenue",
+      "alert immediately if a scheduled test purchase fails at any step, before a real customer hits the same failure",
+      "re-run the test automatically after any change to tax, shipping or payment settings, not only on the fixed schedule"
+    ],
+    "inputs": [
+      "production payment gateway",
+      "refund capability"
+    ],
+    "outputs": [
+      "test purchase log",
+      "immediate failure alert"
+    ],
+    "trigger": "scheduled interval, or any tax, shipping or payment settings change",
+    "autonomy": "agent_does",
+    "external_write": {
+      "needed": true,
+      "surface": "production store (refunded test order)"
+    },
+    "tools": [
+      "test_purchase.run"
+    ],
+    "skills": [
+      "checkout_config"
+    ],
+    "subagent": "Site specialist",
+    "sources": {
+      "web": [],
+      "bank": []
+    },
+    "found_in": "web_only",
+    "founder_sees": false,
+    "human_role": "Shopify developer, QA tester",
+    "today_done_by": "nobody"
+  },
+  {
+    "id": "SITE-C11",
+    "extends": "SITE-C11",
+    "name": "Configure tax by jurisdiction (extension: sales tax nexus, automation and India GST invoicing)",
+    "folders": [
+      "05-SET"
+    ],
+    "what": "Extends jurisdiction tax configuration with US sales tax nexus tracking and automation: registers economic nexus by state, applies marketplace facilitator rules so tax is not double-collected, connects Avalara or TaxJar for real-time rate calculation and filing, collects resale certificates from wholesale buyers, and produces 1099-K reporting. Where the brand also sells in India, adds the market option of GSTIN-compliant invoicing (an HSN code held per SKU, and the CGST/SGST versus IGST split computed from the buyer's state against the seller's registered state); this option reads null for US.",
+    "encompasses": [
+      "track economic nexus by state from the brand's own sales volume and transaction count, and flag a new state that crosses the threshold",
+      "apply marketplace facilitator rules so tax a marketplace already collected is not double-charged on the brand's own site",
+      "connect Avalara or TaxJar for real-time rate calculation and automated filing across nexus states",
+      "collect and keep a resale certificate on file per wholesale buyer before exempting them from sales tax",
+      "produce 1099-K reporting against the brand's own payment processor threshold",
+      "India market option, reads null for US: hold an HSN code per SKU in the product record, not just a tax class",
+      "India market option, reads null for US: compute CGST plus SGST for an intra-state order and IGST for an inter-state order, in code from the buyer and seller state",
+      "India market option, reads null for US: generate a GSTIN-compliant invoice PDF per order via an invoicing app or native flow",
+      "India market option, reads null for US: flag a SKU missing its HSN code before it can be sold, rather than shipping an invoice with a blank field"
+    ],
+    "inputs": [
+      "nexus state list",
+      "Avalara or TaxJar connection",
+      "resale certificates on file",
+      "India market option, null for US: seller GSTIN and state",
+      "India market option, null for US: per-SKU HSN code",
+      "India market option, null for US: buyer's billing state"
+    ],
+    "outputs": [
+      "nexus tracking report",
+      "automated tax filing",
+      "1099-K report",
+      "India market option, null for US: GST invoice PDF per order",
+      "India market option, null for US: missing-HSN flag list"
+    ],
+    "trigger": "US multi-state sales volume crossing a nexus threshold or a new marketplace channel; India market option: India market setup or a missing-HSN flag found in a catalogue audit",
+    "autonomy": "founder_gate",
+    "external_write": {
+      "needed": true,
+      "surface": "store invoicing app"
+    },
+    "tools": [
+      "nexus_tracker.check",
+      "avalara_taxjar.sync",
+      "gst_invoice.generate"
+    ],
+    "skills": [
+      "india_ecommerce_ops"
+    ],
+    "subagent": "Site specialist",
+    "sources": {
+      "web": [
+        "https://bybtraction.com/shopify-gst-shipping-cod-india/",
+        "https://www.vellumarc.com/blog/shopify-india-gst-cod-payment-gateways"
+      ],
+      "bank": []
+    },
+    "found_in": "web_only",
+    "founder_sees": true,
+    "human_role": "e-commerce web manager",
+    "today_done_by": "freelancer"
+  },
+  {
+    "id": "SITE-C19",
+    "extends": "SITE-C19",
+    "name": "Build homepage and PDP theme modules (extension: AI image-to-layout and section generation)",
+    "folders": [
+      "07-LPG"
+    ],
+    "what": "Extends the fixed theme-module build process with an AI-assisted authoring step: converting a reference image or competitor layout mood board into an editable section layout, and generating a new native section from a written prompt, cutting authoring time without adopting a heavy page-builder runtime.",
+    "encompasses": [
+      "convert a reference image or mood board into an editable section layout, kept as structure and mood only, never copying competitor text, logos or product photos",
+      "generate a new native theme section from a written prompt, checked against the design token set before it ships",
+      "review the AI-generated section's markup for the same speed and accessibility standards as a hand-built section",
+      "keep the generation step inside the guardrailed AI build-agent workflow, one section per prompt, previewed on staging first"
+    ],
+    "inputs": [
+      "reference image or mood board",
+      "written section prompt",
+      "design token doc"
+    ],
+    "outputs": [
+      "editable native section layout"
+    ],
+    "trigger": "a new homepage or PDP section is briefed",
+    "autonomy": "founder_gate",
+    "external_write": {
+      "needed": true,
+      "surface": "staging theme"
+    },
+    "tools": [
+      "image_to_layout.convert"
+    ],
+    "skills": [
+      "landing_page_build",
+      "design_system"
+    ],
+    "subagent": "Site specialist",
+    "sources": {
+      "web": [
+        "https://gempages.net/blogs/shopify/best-shopify-page-builder-app",
+        "https://www.fudge.ai/blog/shopify-page-builders-compared/"
+      ],
+      "bank": []
+    },
+    "found_in": "web_only",
+    "founder_sees": true,
+    "human_role": "theme developer, UX designer",
+    "today_done_by": "tool"
+  },
+  {
+    "id": "SITE-C12",
+    "extends": "SITE-C12",
+    "name": "Set up multi-market and localization (extension: address and phone format validation, RTL layout)",
+    "folders": [
+      "05-SET"
+    ],
+    "what": "Extends market grouping and currency localization with field-level validation matched to each market's real address and phone-number format at checkout, and a full right-to-left layout test for any Arabic or Hebrew-language market, since a mismatched field format is a common source of failed delivery outside the brand's home market.",
+    "encompasses": [
+      "match address field structure (state versus province versus emirate, postal code format and length) to each market",
+      "validate phone number format and length per market's real numbering plan before checkout accepts it",
+      "test the full checkout in right-to-left layout for any Arabic or Hebrew market, not only left-to-right",
+      "confirm currency rounding at checkout matches the market's own convention, not the home market's rounding rule"
+    ],
+    "inputs": [
+      "per-market address and phone format rules",
+      "RTL theme support"
+    ],
+    "outputs": [
+      "validated checkout fields per market",
+      "RTL layout test result"
+    ],
+    "trigger": "a new market is added to the multi-market setup",
+    "autonomy": "founder_gate",
+    "external_write": {
+      "needed": true,
+      "surface": "store checkout settings"
+    },
+    "tools": [
+      "field_format.validate"
+    ],
+    "skills": [
+      "checkout_config"
+    ],
+    "subagent": "Site specialist",
+    "sources": {
+      "web": [],
+      "bank": []
+    },
+    "found_in": "web_only",
+    "founder_sees": true,
+    "human_role": "Shopify developer, QA tester",
+    "today_done_by": "agency"
+  },
+  {
+    "id": "SITE-C18",
+    "extends": "SITE-C18",
+    "name": "Configure cart and checkout base settings (extension: Plus checkout extensibility)",
+    "folders": [
+      "05-SET",
+      "09-CRO"
+    ],
+    "what": "Extends base checkout configuration with checkout-extensibility work available on an enterprise plan: a custom checkout branding editor, custom validation functions (block a PO box address for a SKU that cannot ship to one, for example) and post-purchase page app blocks, built and tested on staging before they touch the live checkout.",
+    "encompasses": [
+      "use the checkout branding editor for fonts, colors and logo placement instead of unsupported checkout.liquid edits",
+      "write a custom checkout validation function for a real business rule (no PO box for an oversized SKU, minimum order value for a wholesale price list)",
+      "add a post-purchase page app block for a relevant upsell or a satisfaction survey, checked against page-load impact",
+      "test every custom validation function against a real order that should pass and one that should be correctly blocked before going live"
+    ],
+    "inputs": [
+      "checkout extensibility access (enterprise plan)",
+      "business rule to encode"
+    ],
+    "outputs": [
+      "checkout branding config",
+      "custom validation function",
+      "post-purchase app block"
+    ],
+    "trigger": "a checkout-level business rule cannot be met by base settings alone",
+    "autonomy": "founder_gate",
+    "external_write": {
+      "needed": true,
+      "surface": "store checkout (enterprise extensibility)"
+    },
+    "tools": [
+      "checkout_ui_extension.build"
+    ],
+    "skills": [
+      "checkout_config"
+    ],
+    "subagent": "Site specialist",
+    "sources": {
+      "web": [
+        "https://www.chargeflow.io/blog/shopify-plus-pricing",
+        "https://www.liquidlemon.co/blogs/insights/shopify-plus-agency-cost"
+      ],
+      "bank": []
+    },
+    "found_in": "web_only",
+    "founder_sees": true,
+    "human_role": "Shopify developer",
+    "today_done_by": "agency"
+  }
+]

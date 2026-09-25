@@ -1,0 +1,2990 @@
+[
+  {
+    "id": "BRAND-C01",
+    "name": "Mine reviews for avatar and language signals",
+    "folders": [
+      "02-AVT"
+    ],
+    "what": "Read the brand's own product reviews by star band and pull identity markers, struggle language, objections and repeated words the avatar record and copy can use.",
+    "encompasses": [
+      "Pull all reviews per SKU with star rating and date",
+      "Read 1 and 2 star reviews for the real objection, not the surface complaint",
+      "Read 4 and 5 star reviews for the job the product actually did",
+      "Scan for identity markers like 'I am a' or 'as a'",
+      "Prioritize long narrative reviews over short generic ones",
+      "Discount single contradictory reviews, act only on repeated patterns",
+      "Capture every usable quote verbatim with source and date",
+      "Flag use cases no competitor targets"
+    ],
+    "inputs": [
+      "brand brain: products",
+      "connector: shopify/site reviews export",
+      "connector: marketplace reviews"
+    ],
+    "outputs": [
+      "tagged quote set by star band",
+      "objection list with frequency",
+      "candidate identity markers"
+    ],
+    "trigger": "monthly",
+    "autonomy": "agent_does",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [
+      "script: review_export",
+      "script: text_clustering",
+      "search: knowledge_search.py"
+    ],
+    "skills": [
+      "review-mining"
+    ],
+    "subagent": "Avatar Research Miner",
+    "sources": {
+      "web": [
+        "https://creativepm.substack.com/p/the-lazy-pms-guide-to-customer-research"
+      ],
+      "bank": [
+        "AVT-021",
+        "AVT-031",
+        "AVT-034",
+        "AVT-036",
+        "AVT-037",
+        "AVT-038",
+        "AVT-039",
+        "AVT-057",
+        "AVT-101",
+        "AVT-102",
+        "AVT-104",
+        "AVT-124",
+        "AVT-133"
+      ]
+    },
+    "found_in": "web+bank",
+    "founder_sees": "Kevin sees a short list of what customers actually said, sorted by how often it repeats, with the exact quotes."
+  },
+  {
+    "id": "BRAND-C02",
+    "name": "Mine support tickets, returns and calls for struggle language",
+    "folders": [
+      "02-AVT"
+    ],
+    "what": "Read support tickets, return reasons and call transcripts as passive evidence of the customer's real struggle, separate from anything they said to make a sale.",
+    "encompasses": [
+      "Pull tickets, return reasons and call transcripts for the period",
+      "Tag each by the underlying job or failure, not the surface request",
+      "Cluster repeated complaint patterns",
+      "Feed named objections into standing support macros",
+      "Flag sizing, fit or fulfilment anxieties for the avatar record",
+      "Log consent status before any quote leaves the ticket system"
+    ],
+    "inputs": [
+      "connector: support desk (Gorgias/Zendesk export)",
+      "connector: shopify returns"
+    ],
+    "outputs": [
+      "struggle theme list",
+      "draft support macro updates",
+      "quote set with consent flag"
+    ],
+    "trigger": "monthly",
+    "autonomy": "agent_does",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [
+      "connector: support desk export",
+      "script: text_clustering"
+    ],
+    "skills": [
+      "ticket-mining"
+    ],
+    "subagent": "Avatar Research Miner",
+    "sources": {
+      "web": [],
+      "bank": [
+        "AVT-095",
+        "AVT-119",
+        "AVT-120",
+        "AVT-121",
+        "WLD-013",
+        "WLD-014",
+        "WLD-015",
+        "WLD-016"
+      ]
+    },
+    "found_in": "bank_only",
+    "founder_sees": "Kevin sees the real reasons people struggle or return, in their own words, not a guess."
+  },
+  {
+    "id": "BRAND-C03",
+    "name": "Run forum and social listening research",
+    "folders": [
+      "02-AVT"
+    ],
+    "what": "Search public forums, Reddit, Quora and social platforms in the avatar's own words to find language, objections and sub-avatars a review file would miss.",
+    "encompasses": [
+      "Search forums using the avatar's own words, not marketing language",
+      "Read comments on a thread, not only the original post",
+      "Use Reddit for emotional language and Quora for tactics, verified per category",
+      "Cross-check search interest terms against buying behavior",
+      "Map mass, niche and sub-avatar layers from social content",
+      "Confirm platform choice with real demographic data, not a guess"
+    ],
+    "inputs": [
+      "web search",
+      "connector: social listening tool if available"
+    ],
+    "outputs": [
+      "language bank additions",
+      "sub-avatar candidate list",
+      "platform confirmation note"
+    ],
+    "trigger": "monthly",
+    "autonomy": "agent_does",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [
+      "web search",
+      "browser: headless (public pages only)"
+    ],
+    "skills": [
+      "social-listening"
+    ],
+    "subagent": "Avatar Research Miner",
+    "sources": {
+      "web": [
+        "https://onclusive.com/resources/blog/social-listening-for-audience-insights/",
+        "https://genylabs.io/how-social-listening-helps-understand-buyer-personas/"
+      ],
+      "bank": [
+        "AVT-040",
+        "AVT-041",
+        "AVT-042",
+        "AVT-046",
+        "AVT-047",
+        "AVT-050",
+        "AVT-051",
+        "AVT-052"
+      ]
+    },
+    "found_in": "web+bank",
+    "founder_sees": "Kevin sees what real people say about this category in public, in their own words, with the source link."
+  },
+  {
+    "id": "BRAND-C04",
+    "name": "Mine on-site search and behavior for job clues",
+    "folders": [
+      "02-AVT"
+    ],
+    "what": "Read the brand's own on-site search terms and browse-without-buy sessions for what shoppers were actually trying to find.",
+    "encompasses": [
+      "Pull on-site search query logs and no-result searches",
+      "Pull browse-without-buy session paths",
+      "Match queries to existing or missing product jobs",
+      "Flag a repeated no-result query as a possible product or content gap"
+    ],
+    "inputs": [
+      "connector: site search analytics",
+      "connector: GA4 sessions"
+    ],
+    "outputs": [
+      "job-clue list",
+      "content or product gap flags"
+    ],
+    "trigger": "monthly",
+    "autonomy": "agent_does",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [
+      "connector: GA4",
+      "connector: site search log"
+    ],
+    "skills": [
+      "nonconsumption-mining"
+    ],
+    "subagent": "Avatar Research Miner",
+    "sources": {
+      "web": [],
+      "bank": [
+        "AVT-123"
+      ]
+    },
+    "found_in": "bank_only",
+    "founder_sees": "Kevin sees what shoppers searched for and did not find."
+  },
+  {
+    "id": "BRAND-C05",
+    "name": "Design and run customer interview programs",
+    "folders": [
+      "02-AVT"
+    ],
+    "what": "Write the interview guide, pick the channel and incentive, and run or hand off real conversations with customers to hear the job in their own words.",
+    "encompasses": [
+      "Book a standing weekly slot for calls or DMs",
+      "Frame every invite as exploratory, never as sales or support",
+      "Match the incentive to the person, never cash to a high earner",
+      "Ask about the situation and struggle, never features, color or price",
+      "Cover every comparison step for a considered purchase",
+      "Log consent and storage location for every quote",
+      "Treat 1 interview as 1 data point; cluster several before changing a record",
+      "Extend interview timeline coverage for slow, considered purchases",
+      "Use a lightweight email or DM reply when a call is not possible"
+    ],
+    "inputs": [
+      "brand brain: customer list",
+      "connector: email/DM platform",
+      "founder availability"
+    ],
+    "outputs": [
+      "interview guide",
+      "consented transcript set",
+      "clustered findings"
+    ],
+    "trigger": "on demand",
+    "autonomy": "human_assist",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [
+      "connector: email/DM",
+      "calendar booking"
+    ],
+    "skills": [
+      "interview-program"
+    ],
+    "subagent": null,
+    "sources": {
+      "web": [
+        "https://www.factors.ai/blog/customer-and-client-avatars"
+      ],
+      "bank": [
+        "AVT-053",
+        "AVT-056",
+        "AVT-074",
+        "AVT-075",
+        "AVT-076",
+        "AVT-084",
+        "AVT-100",
+        "AVT-113",
+        "AVT-114",
+        "AVT-115",
+        "AVT-116",
+        "AVT-118",
+        "BRD-275",
+        "BRD-280"
+      ]
+    },
+    "found_in": "web+bank",
+    "founder_sees": "Kevin gets a ready interview guide and a place to log calls; the agent never talks to customers on his behalf without him agreeing to the plan."
+  },
+  {
+    "id": "BRAND-C06",
+    "name": "Design and field customer surveys",
+    "folders": [
+      "02-AVT",
+      "04-BRD"
+    ],
+    "what": "Write short, targeted surveys, identity, post-purchase or NPS, to confirm what research found at wider scale, never to discover a new job.",
+    "encompasses": [
+      "Write a short first-party identity survey for existing customers",
+      "Write a post-purchase or verification survey to confirm findings, run after interviews not before",
+      "Design a segmenting question for a pop-up in place of an instant discount",
+      "Run NPS quarterly, segmented by historical customer value",
+      "Run research separately with complaining and non-complaining customers",
+      "Cap the share of budget spent on collecting more data versus acting on it"
+    ],
+    "inputs": [
+      "connector: email/SMS platform",
+      "connector: on-site survey tool"
+    ],
+    "outputs": [
+      "survey draft",
+      "fielding plan",
+      "results summary"
+    ],
+    "trigger": "quarterly",
+    "autonomy": "human_assist",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [
+      "connector: klaviyo/on-site survey",
+      "script: survey_results_parser"
+    ],
+    "skills": [
+      "survey-design"
+    ],
+    "subagent": null,
+    "sources": {
+      "web": [],
+      "bank": [
+        "AVT-117",
+        "AVT-128",
+        "BRD-137",
+        "BRD-196",
+        "BRD-197",
+        "BRD-198",
+        "WLD-130"
+      ]
+    },
+    "found_in": "bank_only",
+    "founder_sees": "Kevin gets a survey ready to send and a plain-language summary of what came back."
+  },
+  {
+    "id": "BRAND-C07",
+    "name": "Research competitors and public benchmarks for avatar and positioning signals",
+    "folders": [
+      "02-AVT",
+      "04-BRD"
+    ],
+    "what": "Read competitor ads, pages, reviews and Q&A as public signal only, never as private data, to map the mainstream avatar, screen angles and check market health.",
+    "encompasses": [
+      "Map the mainstream avatar from the Meta Ad Library",
+      "Read competitor headlines for the constraint and reward they encode",
+      "Use ad duration as a screening signal only, never proof of a winning angle",
+      "Search the Ad Library for a candidate angle before committing to it",
+      "Read competitor page polish as a market-health signal",
+      "Use a competitor demographic lookup as a cold-start seed when no avatar exists",
+      "Compare review counts across listings as a rough demand proxy",
+      "Score the brand and competitors on real category attributes"
+    ],
+    "inputs": [
+      "mcp: Meta Ads Library (public, read-only)",
+      "web search"
+    ],
+    "outputs": [
+      "mainstream avatar sketch",
+      "angle screen result",
+      "competitor attribute scorecard"
+    ],
+    "trigger": "monthly",
+    "autonomy": "agent_does",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [
+      "mcp: ads_library_search",
+      "web search"
+    ],
+    "skills": [
+      "competitor-signal-scan"
+    ],
+    "subagent": "Avatar Research Miner",
+    "sources": {
+      "web": [
+        "https://apexbrands.io/blog/best-brand-positioning-agencies-for-e-commerce/"
+      ],
+      "bank": [
+        "AVT-020",
+        "AVT-026",
+        "AVT-048",
+        "AVT-049",
+        "AVT-051",
+        "AVT-054",
+        "AVT-108",
+        "AVT-126",
+        "AVT-127",
+        "AVT-130",
+        "BRD-223"
+      ]
+    },
+    "found_in": "web+bank",
+    "founder_sees": "Kevin sees what competitors show in public, marked as signal only, never as something to copy."
+  },
+  {
+    "id": "BRAND-C08",
+    "name": "Run AI-assisted deep research with quote verification",
+    "folders": [
+      "02-AVT"
+    ],
+    "what": "Use AI deep research as a second pass after a manual sprint, on one prioritized candidate at a time, and verify every quote at its original source before it enters a record.",
+    "encompasses": [
+      "Complete one manual research sprint before running AI deep research",
+      "Run the AI report on 1 prioritized candidate at a time",
+      "Verify every quote the AI surfaces at its real source",
+      "Let AI draft the avatar record from first-party transcripts, then verify every claim",
+      "Reject any AI-drafted line that cannot be traced to a real source"
+    ],
+    "inputs": [
+      "research sprint notes",
+      "first-party transcripts"
+    ],
+    "outputs": [
+      "verified research report",
+      "draft avatar record section"
+    ],
+    "trigger": "on demand",
+    "autonomy": "agent_does",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [
+      "web search",
+      "script: quote_verifier"
+    ],
+    "skills": [
+      "ai-deep-research-protocol"
+    ],
+    "subagent": null,
+    "sources": {
+      "web": [],
+      "bank": [
+        "AVT-058",
+        "AVT-059",
+        "AVT-060"
+      ]
+    },
+    "found_in": "bank_only",
+    "founder_sees": "Kevin sees a research report where every quote has been checked against its real source."
+  },
+  {
+    "id": "BRAND-C09",
+    "name": "Draft and validate job-to-be-done statements",
+    "folders": [
+      "02-AVT"
+    ],
+    "what": "Write each avatar as a job in a situation, with the functional, emotional and social sides, validated against a verb-noun and cross-category test, never as a demographic label.",
+    "encompasses": [
+      "Write the job as a situation sentence, not a need or attribute word",
+      "Record functional, emotional and social dimensions",
+      "Record push, pull, habit and anxiety forces",
+      "Name the exact thing the customer stopped using before they bought",
+      "Log the customer's current workaround as a competitor with no budget",
+      "Validate with the verb-noun test and the cross-category test",
+      "Name the dominant emotional state that sets the copy register",
+      "Re-check if the job moved before rewriting after a competitor launch"
+    ],
+    "inputs": [
+      "research quotes: C01-C08 outputs",
+      "brand brain: products"
+    ],
+    "outputs": [
+      "job statement",
+      "forces record",
+      "fired-alternative note"
+    ],
+    "trigger": "event: new avatar or quarterly recheck",
+    "autonomy": "agent_does",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [
+      "script: jtbd_template"
+    ],
+    "skills": [
+      "jtbd-writer"
+    ],
+    "subagent": null,
+    "sources": {
+      "web": [],
+      "bank": [
+        "AVT-001",
+        "AVT-002",
+        "AVT-004",
+        "AVT-005",
+        "AVT-006",
+        "AVT-008",
+        "AVT-011",
+        "AVT-012",
+        "AVT-013",
+        "AVT-014",
+        "AVT-028",
+        "AVT-044",
+        "AVT-062",
+        "AVT-066",
+        "AVT-067",
+        "AVT-068",
+        "AVT-120",
+        "AVT-121",
+        "AVT-122"
+      ]
+    },
+    "found_in": "bank_only",
+    "founder_sees": "Kevin gets one sentence that says who this is for and what situation they are in, not an age and income guess."
+  },
+  {
+    "id": "BRAND-C10",
+    "name": "Discover, rank and prioritize avatar candidates",
+    "folders": [
+      "02-AVT"
+    ],
+    "what": "List every avatar candidate the research turned up, require a pattern across independent sources, then rank and pick the primary avatar for the current cycle.",
+    "encompasses": [
+      "Run the 5 discovery lenses before settling on candidates",
+      "Require a pattern across 2+ independent sources before a candidate counts",
+      "Check niche and parent market are big enough to matter",
+      "Clear the 3 proof checks: real struggle, enough people, real want",
+      "List every candidate before deciding avatar count",
+      "Never average two candidates with different circumstance or emotion",
+      "Rank by first-party confirmation, evidence count, competition and size",
+      "Set 1 primary avatar per product line for the cycle",
+      "Keep adjacent candidates as a dated backlog instead of discarding them"
+    ],
+    "inputs": [
+      "outputs of C01-C08",
+      "brand brain: past avatars"
+    ],
+    "outputs": [
+      "ranked candidate list",
+      "primary avatar decision",
+      "dated backlog"
+    ],
+    "trigger": "quarterly",
+    "autonomy": "founder_gate",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [
+      "script: avatar_ranker"
+    ],
+    "skills": [
+      "avatar-ranking"
+    ],
+    "subagent": null,
+    "sources": {
+      "web": [],
+      "bank": [
+        "AVT-003",
+        "AVT-007",
+        "AVT-009",
+        "AVT-010",
+        "AVT-019",
+        "AVT-022",
+        "AVT-023",
+        "AVT-024",
+        "AVT-027",
+        "AVT-077",
+        "AVT-078",
+        "AVT-079",
+        "AVT-080",
+        "AVT-098",
+        "AVT-109",
+        "AVT-129",
+        "BRD-285"
+      ]
+    },
+    "found_in": "bank_only",
+    "founder_sees": "Kevin approves which avatar the brand focuses on this quarter, with the evidence for and against each candidate."
+  },
+  {
+    "id": "BRAND-C11",
+    "name": "Assemble and gate the full avatar record",
+    "folders": [
+      "02-AVT"
+    ],
+    "what": "Pull the job, forces, quotes, trigger moment and 5W profile into one complete avatar record, or mark it provisional if a required field has no evidence yet.",
+    "encompasses": [
+      "Require at least 2 source types, 1 first-party, for an existing brand",
+      "Reject a draft missing a quote set, trigger moment or job statement",
+      "Assemble the 5W profile: who, what, when, where, why",
+      "Run a 60-minute research sprint and the 30-second riff test as readiness gates",
+      "Mark a first-pass sketch built only from ads and reviews as provisional",
+      "Confirm the little-hire test before crediting a win to this avatar",
+      "Check the synopsis names a real circumstance, not just age, gender, income"
+    ],
+    "inputs": [
+      "outputs of C01-C09"
+    ],
+    "outputs": [
+      "full avatar record",
+      "provisional-status flag"
+    ],
+    "trigger": "event: new or refreshed avatar",
+    "autonomy": "founder_gate",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [
+      "script: avatar_record_builder"
+    ],
+    "skills": [
+      "avatar-record-builder"
+    ],
+    "subagent": null,
+    "sources": {
+      "web": [
+        "https://woocommerce.com/posts/example-buyer-personas-online-store/"
+      ],
+      "bank": [
+        "AVT-016",
+        "AVT-025",
+        "AVT-030",
+        "AVT-031",
+        "AVT-032",
+        "AVT-033",
+        "AVT-035",
+        "AVT-036",
+        "AVT-063",
+        "AVT-065",
+        "AVT-071",
+        "AVT-073",
+        "AVT-111",
+        "AVT-112",
+        "AVT-125",
+        "AVT-132"
+      ]
+    },
+    "found_in": "web+bank",
+    "founder_sees": "Kevin sees a finished, one-page avatar record he can hand to any writer, or a clear note that it is still provisional."
+  },
+  {
+    "id": "BRAND-C12",
+    "name": "Segment avatars by tier, buyer/user, B2B and subscription",
+    "folders": [
+      "02-AVT"
+    ],
+    "what": "Split one avatar record into separate records when price tier, gift buyer versus user, a B2B line, or subscription churn changes the job.",
+    "encompasses": [
+      "Build a separate avatar for each price tier the brand sells across",
+      "Record 2 avatars, buyer and user, for every gift or proxy purchase",
+      "Write emotional and social fields for B2B and gift-buyer avatars too",
+      "Build a B2B ICP layer only for a wholesale or corporate line",
+      "Split the record by consequence, cohort or prior insecurity, not just condition",
+      "Build a separate churn record for subscription avatars"
+    ],
+    "inputs": [
+      "outputs of C11"
+    ],
+    "outputs": [
+      "segmented avatar set"
+    ],
+    "trigger": "event: new tier, channel or subscription line",
+    "autonomy": "agent_does",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [
+      "script: avatar_record_builder"
+    ],
+    "skills": [
+      "avatar-segmentation"
+    ],
+    "subagent": null,
+    "sources": {
+      "web": [],
+      "bank": [
+        "AVT-003",
+        "AVT-017",
+        "AVT-018",
+        "AVT-029",
+        "AVT-033",
+        "AVT-082",
+        "AVT-083",
+        "BRD-064"
+      ]
+    },
+    "found_in": "bank_only",
+    "founder_sees": "Kevin sees which customer type each price tier or gift path is actually written for."
+  },
+  {
+    "id": "BRAND-C13",
+    "name": "Build the objection map and objection-remover pairing",
+    "folders": [
+      "02-AVT"
+    ],
+    "what": "Pair every named objection with the real thing that removed it for a real customer, and turn the pattern into support macros and a fit or size confidence angle where relevant.",
+    "encompasses": [
+      "Pair every objection with a real remover, not a guess",
+      "Add a fit or size confidence angle when sizing or fit is a named anxiety",
+      "Turn named objections and failed solutions into support macros",
+      "Block any sensitive-attribute assertion about the viewer before handoff"
+    ],
+    "inputs": [
+      "outputs of C01, C02, C09"
+    ],
+    "outputs": [
+      "objection map",
+      "support macro drafts"
+    ],
+    "trigger": "event: new avatar or rising objection pattern",
+    "autonomy": "agent_does",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [
+      "script: objection_map_builder"
+    ],
+    "skills": [
+      "objection-map-builder"
+    ],
+    "subagent": null,
+    "sources": {
+      "web": [],
+      "bank": [
+        "AVT-012",
+        "AVT-015",
+        "AVT-070",
+        "AVT-072",
+        "AVT-095",
+        "BRD-210",
+        "BRD-214",
+        "BRD-216"
+      ]
+    },
+    "found_in": "bank_only",
+    "founder_sees": "Kevin sees every real objection paired with what actually answers it."
+  },
+  {
+    "id": "BRAND-C14",
+    "name": "Maintain the verbatim language bank",
+    "folders": [
+      "02-AVT"
+    ],
+    "what": "Keep one running file per avatar of exact quoted phrases, tracked for repetition, traced to source, and anonymized, for copy and creative to reuse instead of inventing new language.",
+    "encompasses": [
+      "Capture every research quote verbatim, keeping harsh wording",
+      "Track repeated words and unexpected benefit links across batches",
+      "Trace every quote to its real source and strip full reviewer names",
+      "Verify avatar phrasing is attested on the cohort's own platform",
+      "Write copy in the avatar's own recorded phrasing, not brainstormed language"
+    ],
+    "inputs": [
+      "outputs of C01-C08"
+    ],
+    "outputs": [
+      "language bank file per avatar"
+    ],
+    "trigger": "continuous",
+    "autonomy": "agent_does",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [
+      "script: language_bank_updater"
+    ],
+    "skills": [
+      "language-bank"
+    ],
+    "subagent": null,
+    "sources": {
+      "web": [],
+      "bank": [
+        "AVT-043",
+        "AVT-045",
+        "AVT-064",
+        "AVT-085",
+        "AVT-133"
+      ]
+    },
+    "found_in": "bank_only",
+    "founder_sees": "Kevin and any writer can pull real customer phrases instead of guessing at their language."
+  },
+  {
+    "id": "BRAND-C15",
+    "name": "Maintain, audit and refresh avatars on a cadence",
+    "folders": [
+      "02-AVT"
+    ],
+    "what": "Store one living avatar record per brand, audit which briefs cite it, retrace whether the product still earns the win, and re-check the dominant avatar every quarter.",
+    "encompasses": [
+      "Store a living avatar record and evidence file, not a static document",
+      "Audit which briefs cited each avatar record every quarter, retire unused ones",
+      "Re-check the dominant avatar and priority ranking every quarter",
+      "Confirm the product still passes the little-hire test before crediting a new avatar",
+      "Treat stalled creative testing as a signal to restart avatar research",
+      "Offer a live LLM persona built from the confirmed record for directional QA questions, never for new quotes"
+    ],
+    "inputs": [
+      "outputs of C11",
+      "registry: brief citations"
+    ],
+    "outputs": [
+      "refreshed avatar record",
+      "retirement list",
+      "persona QA tool config"
+    ],
+    "trigger": "quarterly",
+    "autonomy": "agent_does",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [
+      "script: avatar_usage_audit"
+    ],
+    "skills": [
+      "avatar-maintenance"
+    ],
+    "subagent": null,
+    "sources": {
+      "web": [],
+      "bank": [
+        "AVT-061",
+        "AVT-069",
+        "AVT-081",
+        "AVT-093",
+        "AVT-099",
+        "AVT-112"
+      ]
+    },
+    "found_in": "bank_only",
+    "founder_sees": "Kevin sees which avatars are actually being used and which are stale, once a quarter."
+  },
+  {
+    "id": "BRAND-C16",
+    "name": "Run the untapped or new-avatar discovery pipeline",
+    "folders": [
+      "02-AVT"
+    ],
+    "what": "For a saturated category with no real product difference, run a structured pipeline to find an adjacent avatar competitors have not claimed.",
+    "encompasses": [
+      "Run the 4-step untapped avatar pipeline",
+      "Confirm the candidate is clearly different from the mainstream avatar, not a re-skin",
+      "Enter a newly forming trend through an adjacent product, not the crowded core item",
+      "Rework a proven mass-market play for the new avatar across every layer, not just the hook",
+      "Watch for the category splitting into sub-avatars as buyers get more sophisticated"
+    ],
+    "inputs": [
+      "outputs of C07, C10"
+    ],
+    "outputs": [
+      "untapped avatar candidate brief"
+    ],
+    "trigger": "on demand",
+    "autonomy": "founder_gate",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [
+      "script: avatar_ranker",
+      "web search"
+    ],
+    "skills": [
+      "untapped-avatar-pipeline"
+    ],
+    "subagent": null,
+    "sources": {
+      "web": [],
+      "bank": [
+        "AVT-023",
+        "AVT-032",
+        "AVT-055",
+        "AVT-096",
+        "AVT-097",
+        "AVT-107"
+      ]
+    },
+    "found_in": "bank_only",
+    "founder_sees": "Kevin sees a genuinely new customer type to consider, not a repackaged version of the current one."
+  },
+  {
+    "id": "BRAND-C17",
+    "name": "Build the creative angle map per avatar",
+    "folders": [
+      "02-AVT"
+    ],
+    "what": "Turn an avatar's why-chain, miracles and miseries into a ranked list of creative angles with matched proof, for the Paid Creative and Site specialists to brief from.",
+    "encompasses": [
+      "Build a ranked creative angle map per avatar before any copy handoff",
+      "Open every hook by naming the exact situation before curiosity",
+      "Keep 1 emotional register per brief, matched to the dominant emotion",
+      "Run a full-funnel congruence check: ad, pre-lander and page name the same situation",
+      "Show each avatar only proof and reviews that belong to that avatar",
+      "Let the avatar's why-chain shape the offer's framing",
+      "Attach past test wins and losses for this avatar and angle",
+      "Check a creator's own audience and content against the avatar before briefing"
+    ],
+    "inputs": [
+      "outputs of C09, C11, C13, C14",
+      "registry: past results"
+    ],
+    "outputs": [
+      "angle map document",
+      "avatar-matched proof list"
+    ],
+    "trigger": "event: new brief request",
+    "autonomy": "agent_does",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [
+      "script: angle_map_builder"
+    ],
+    "skills": [
+      "angle-map"
+    ],
+    "subagent": null,
+    "sources": {
+      "web": [],
+      "bank": [
+        "AVT-086",
+        "AVT-087",
+        "AVT-088",
+        "AVT-089",
+        "AVT-090",
+        "AVT-091",
+        "AVT-094",
+        "AVT-103",
+        "AVT-106",
+        "AVT-110",
+        "BRD-200",
+        "BRD-201",
+        "BRD-276",
+        "BRD-281",
+        "BRD-284",
+        "BRD-287",
+        "WLD-126"
+      ]
+    },
+    "found_in": "bank_only",
+    "founder_sees": "Kevin sees which angles to try first for this avatar, and why, before creative work starts."
+  },
+  {
+    "id": "BRAND-C18",
+    "name": "Map the category ladder and competitive set",
+    "folders": [
+      "04-BRD"
+    ],
+    "what": "Map every rung of the category ladder, including doing nothing, and every real alternative a shopper would compare against, before any positioning claim is written.",
+    "encompasses": [
+      "List the full competitive set for every avatar, including doing nothing",
+      "Map the category ladder before writing a positioning claim",
+      "Check who already claims a slot before writing a first or only claim",
+      "Check whether the real barrier is the category or the place, before spending on positioning"
+    ],
+    "inputs": [
+      "outputs of C07",
+      "brand brain: category"
+    ],
+    "outputs": [
+      "category ladder map",
+      "competitive set list"
+    ],
+    "trigger": "event: new positioning cycle",
+    "autonomy": "agent_does",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [
+      "script: category_ladder_builder"
+    ],
+    "skills": [
+      "category-ladder-mapping"
+    ],
+    "subagent": null,
+    "sources": {
+      "web": [
+        "https://apexbrands.io/blog/best-brand-positioning-agencies-for-e-commerce/"
+      ],
+      "bank": [
+        "AVT-007",
+        "BRD-003",
+        "BRD-004",
+        "BRD-016"
+      ]
+    },
+    "found_in": "web+bank",
+    "founder_sees": "Kevin sees exactly who else is fighting for the same customer, and where an open slot might be."
+  },
+  {
+    "id": "BRAND-C19",
+    "name": "Build the XY positioning map",
+    "folders": [
+      "04-BRD"
+    ],
+    "what": "Plot the brand on two axes against every real shopper alternative, not only direct rivals, to see which corners of the map are open.",
+    "encompasses": [
+      "Pick two axes that matter to this avatar's decision",
+      "Plot the brand and every real alternative, direct and indirect",
+      "Mark open corners as candidate positioning territory",
+      "Track position movement with the same instrument over time"
+    ],
+    "inputs": [
+      "outputs of C18",
+      "brand brain: brand facts"
+    ],
+    "outputs": [
+      "XY map (2 versions)",
+      "open-corner list"
+    ],
+    "trigger": "event: new positioning cycle",
+    "autonomy": "agent_does",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [
+      "script: xy_map_builder"
+    ],
+    "skills": [
+      "xy-positioning-map"
+    ],
+    "subagent": null,
+    "sources": {
+      "web": [],
+      "bank": [
+        "BRD-012",
+        "BRD-164"
+      ]
+    },
+    "found_in": "bank_only",
+    "founder_sees": "Kevin sees a simple map of where the brand sits against real competitors, and where nobody else is standing."
+  },
+  {
+    "id": "BRAND-C20",
+    "name": "Draft, audit and test the positioning statement",
+    "folders": [
+      "04-BRD"
+    ],
+    "what": "Write the positioning statement and 3-sentence promise, answer the 6 positioning questions in writing, run it against the checklist, and test 2 frames against each other before committing budget.",
+    "encompasses": [
+      "Answer the 6 positioning questions in writing",
+      "Write the 3-sentence promise for every hero and PDP headline",
+      "Run the positioning statement checklist before it ships",
+      "Test 2 positioning frames against each other before committing budget",
+      "Cut every PDP or hero message to the one line a scrolling shopper reads in 3 seconds",
+      "Cap any page or pitch to 1 big idea and at most 3 key messages",
+      "Diagnose which messaging era the category is in before writing a claim",
+      "As category leader, reinforce the original claim instead of a 'we're number 1' line"
+    ],
+    "inputs": [
+      "outputs of C18, C19",
+      "brand brain: voice"
+    ],
+    "outputs": [
+      "positioning statement",
+      "3-sentence promise",
+      "frame-test plan"
+    ],
+    "trigger": "event: new or refreshed positioning",
+    "autonomy": "founder_gate",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [
+      "script: positioning_checklist"
+    ],
+    "skills": [
+      "positioning-statement",
+      "positioning-audit"
+    ],
+    "subagent": null,
+    "sources": {
+      "web": [
+        "https://apexbrands.io/blog/best-brand-positioning-agencies-for-e-commerce/"
+      ],
+      "bank": [
+        "BRD-001",
+        "BRD-002",
+        "BRD-006",
+        "BRD-020",
+        "BRD-027",
+        "BRD-028",
+        "BRD-029",
+        "BRD-030",
+        "BRD-053",
+        "BRD-120",
+        "BRD-150",
+        "BRD-222",
+        "BRD-224",
+        "BRD-225",
+        "BRD-257"
+      ]
+    },
+    "found_in": "web+bank",
+    "founder_sees": "Kevin gets one sentence he can put on the homepage and defend, checked against a fixed list before it ships."
+  },
+  {
+    "id": "BRAND-C21",
+    "name": "Search for an unclaimed creneau or reframe the category",
+    "folders": [
+      "04-BRD"
+    ],
+    "what": "When no open positioning slot exists head-on, search for an unclaimed dimension, take the against position, or reframe the whole category around a shared frustration.",
+    "encompasses": [
+      "Find an unclaimed creneau dimension instead of fighting the leader head-on",
+      "Take the against position when a recognised leader already holds the slot",
+      "Reposition the category around a frustration the leaders all share",
+      "Reposition a named competitor with one verifiable fact and a legal review, never a 'we're better' ad",
+      "Run the reposition-the-competition procedure when no open creneau exists",
+      "Anchor a genuinely new product format to something shoppers already know"
+    ],
+    "inputs": [
+      "outputs of C18, C19"
+    ],
+    "outputs": [
+      "creneau option",
+      "against-position draft",
+      "category reframe brief"
+    ],
+    "trigger": "on demand",
+    "autonomy": "founder_gate",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [
+      "script: positioning_checklist"
+    ],
+    "skills": [
+      "creneau-search"
+    ],
+    "subagent": null,
+    "sources": {
+      "web": [],
+      "bank": [
+        "BRD-005",
+        "BRD-007",
+        "BRD-008",
+        "BRD-013",
+        "BRD-014",
+        "BRD-015",
+        "BRD-031"
+      ]
+    },
+    "found_in": "bank_only",
+    "founder_sees": "Kevin sees an alternative to a head-on fight when the obvious slot is already taken."
+  },
+  {
+    "id": "BRAND-C22",
+    "name": "Verify brand and competitor claims and flag risk",
+    "folders": [
+      "04-BRD"
+    ],
+    "what": "Check every planned claim, first, only, number one, or a comparison, against real evidence and legal risk before it reaches a page or an ad.",
+    "encompasses": [
+      "Check who already claims a slot before writing a first or only claim",
+      "Clear any competitor fact with legal review before it ships",
+      "Never quote disputed statistics like '90 percent unconscious' on a client page",
+      "Only display a certification badge the brand actually earned",
+      "Keep low-stock or urgency badges tied to the real stock file, never fabricated",
+      "Write an explicit ethical line before applying a persuasion technique",
+      "Test brand recall by creative variant before using a sexual or shock hook"
+    ],
+    "inputs": [
+      "brand brain: claims tiers",
+      "outputs of C18"
+    ],
+    "outputs": [
+      "claim risk flag list",
+      "legal-review request"
+    ],
+    "trigger": "event: new claim proposed",
+    "autonomy": "founder_gate",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [
+      "script: claims_checker"
+    ],
+    "skills": [
+      "claims-verification"
+    ],
+    "subagent": null,
+    "sources": {
+      "web": [],
+      "bank": [
+        "BRD-004",
+        "BRD-057",
+        "BRD-138",
+        "BRD-146",
+        "BRD-148",
+        "BRD-176",
+        "BRD-191",
+        "BRD-259",
+        "BRD-264",
+        "WLD-134"
+      ]
+    },
+    "found_in": "bank_only",
+    "founder_sees": "Kevin sees any claim that could get the brand in legal or trust trouble before it ships, not after."
+  },
+  {
+    "id": "BRAND-C23",
+    "name": "Size the market and niche from the brand's own numbers",
+    "folders": [
+      "04-BRD"
+    ],
+    "what": "Compute how many repeat buyers at the store's own AOV and margin would sustain the business, and check a candidate niche or new-product idea against real demand data before committing research or spend.",
+    "encompasses": [
+      "Size the target market by repeat buyers needed at this store's AOV and margin",
+      "Place a new product idea in the price by customer-count matrix",
+      "Check the parent market and sub-niche are big enough before a narrow avatar",
+      "Quantify demand with keyword volume, subreddit size or review-count proxy",
+      "Test a candidate niche against 2 viability bounds before committing"
+    ],
+    "inputs": [
+      "brand brain: AOV, margin, repeat rate",
+      "outputs of C04, C07"
+    ],
+    "outputs": [
+      "market sizing memo",
+      "niche viability check"
+    ],
+    "trigger": "event: new niche or product idea",
+    "autonomy": "agent_does",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [
+      "script: market_sizing (arithmetic in code)"
+    ],
+    "skills": [
+      "market-sizing"
+    ],
+    "subagent": null,
+    "sources": {
+      "web": [],
+      "bank": [
+        "AVT-024",
+        "AVT-030",
+        "AVT-098",
+        "AVT-131",
+        "BRD-009",
+        "BRD-011",
+        "BRD-170",
+        "BRD-206",
+        "BRD-274",
+        "WLD-135",
+        "WLD-136"
+      ]
+    },
+    "found_in": "bank_only",
+    "founder_sees": "Kevin sees, in real numbers from his own store, how many customers a new idea actually needs to work."
+  },
+  {
+    "id": "BRAND-C24",
+    "name": "Audit pricing position and premium signals",
+    "folders": [
+      "04-BRD"
+    ],
+    "what": "Check whether price sits inside or outside the category's learned range, audit premium signals each quarter, and flag where discounting is undercutting a premium story.",
+    "encompasses": [
+      "Decide price as a positioning signal before restructuring price points",
+      "Price inside the category's learned range unless a valid premium story exists",
+      "Ask the ten-times question before adding a premium tier",
+      "Stop using price cuts to build trust on high-ticket items",
+      "Run the premium signal audit each quarter against vector and promo intensity",
+      "Reframe exclusivity as a narrative angle, not a stockout",
+      "Map what 'exclusive' means per segment and awareness stage",
+      "Test whether premium creative still signals the promise with the product removed",
+      "Branch PDP and cart layout by AOV band: trust badges low, proof and financing high",
+      "Justify any price difference between segments with a story, not silent mechanics"
+    ],
+    "inputs": [
+      "brand brain: pricing, margin",
+      "outputs of C20"
+    ],
+    "outputs": [
+      "pricing position memo",
+      "quarterly premium audit"
+    ],
+    "trigger": "quarterly",
+    "autonomy": "founder_gate",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [
+      "script: pricing_audit"
+    ],
+    "skills": [
+      "premium-audit"
+    ],
+    "subagent": null,
+    "sources": {
+      "web": [],
+      "bank": [
+        "BRD-017",
+        "BRD-032",
+        "BRD-033",
+        "BRD-034",
+        "BRD-035",
+        "BRD-036",
+        "BRD-037",
+        "BRD-038",
+        "BRD-039",
+        "BRD-040",
+        "BRD-041",
+        "BRD-042",
+        "BRD-046",
+        "BRD-047",
+        "BRD-048",
+        "BRD-084",
+        "BRD-088",
+        "BRD-089",
+        "BRD-090",
+        "BRD-091",
+        "BRD-092",
+        "BRD-182",
+        "BRD-193",
+        "BRD-220",
+        "BRD-240",
+        "BRD-260",
+        "WLD-121",
+        "WLD-132"
+      ]
+    },
+    "found_in": "bank_only",
+    "founder_sees": "Kevin sees whether the brand's price is telling the story he wants it to tell, checked every quarter."
+  },
+  {
+    "id": "BRAND-C25",
+    "name": "Generate name candidates",
+    "folders": [
+      "04-BRD"
+    ],
+    "what": "Run a category, product and buyer audit, then generate far more name candidates than feels necessary, across all naming types, using AI for volume and human judgement for category fit.",
+    "encompasses": [
+      "Run a category, product and buyer audit before generating any candidate",
+      "Generate candidates across all 6 naming types on purpose",
+      "Generate far more candidates than feels necessary before judging any",
+      "Use AI to bulk-generate raw candidates, keep judgement in-house",
+      "Run the parts-of-speech distillation exercise on top candidates",
+      "Shortlist from the tension zone, not the safest consensus pick"
+    ],
+    "inputs": [
+      "brand brain: category, product, buyer",
+      "outputs of C09, C18"
+    ],
+    "outputs": [
+      "raw candidate list",
+      "shortlist"
+    ],
+    "trigger": "on demand",
+    "autonomy": "agent_does",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [
+      "script: name_generator",
+      "web search"
+    ],
+    "skills": [
+      "naming-candidate-generation"
+    ],
+    "subagent": null,
+    "sources": {
+      "web": [
+        "https://spellbrand.com/blog/how-to-check-brand-name-trademarked"
+      ],
+      "bank": [
+        "BRD-066",
+        "BRD-067",
+        "BRD-068",
+        "BRD-070",
+        "BRD-071",
+        "BRD-072",
+        "BRD-073",
+        "BRD-081",
+        "BRD-263"
+      ]
+    },
+    "found_in": "web+bank",
+    "founder_sees": "Kevin sees a wide, organized list of name options before anyone starts judging them."
+  },
+  {
+    "id": "BRAND-C26",
+    "name": "Screen and test name candidates",
+    "folders": [
+      "04-BRD"
+    ],
+    "what": "Score every candidate on the 7 core qualities, test sound and syllable count, avoid acronym and generic-name traps, and present finalists in realistic mock-ups.",
+    "encompasses": [
+      "Screen every candidate on the 7 core qualities before it advances",
+      "Test candidate sound and syllable count",
+      "Avoid initials or acronyms until the brand is already famous",
+      "Watch for a descriptive name becoming generic; guard the trademark",
+      "Do not hide a product's plain nature behind a euphemism where trust matters",
+      "Avoid naming the brand after the founder if it must outlive their visibility",
+      "Present finalists in realistic mock-ups, not a spreadsheet list",
+      "Run the name screen checklist on every finalist"
+    ],
+    "inputs": [
+      "outputs of C25"
+    ],
+    "outputs": [
+      "scored shortlist",
+      "mock-up set"
+    ],
+    "trigger": "on demand",
+    "autonomy": "agent_does",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [
+      "script: name_screen"
+    ],
+    "skills": [
+      "name-screening"
+    ],
+    "subagent": null,
+    "sources": {
+      "web": [],
+      "bank": [
+        "BRD-074",
+        "BRD-075",
+        "BRD-076",
+        "BRD-077",
+        "BRD-078",
+        "BRD-080",
+        "BRD-085",
+        "BRD-265",
+        "BRD-266",
+        "BRD-267",
+        "BRD-268",
+        "BRD-269"
+      ]
+    },
+    "found_in": "bank_only",
+    "founder_sees": "Kevin sees a short, scored list of finalists that already passed a real filter."
+  },
+  {
+    "id": "BRAND-C27",
+    "name": "Clear names for trademark, domain and language risk",
+    "folders": [
+      "04-BRD"
+    ],
+    "what": "Run trademark, domain, social-handle and language checks on every name finalist and flag risk before any name is presented as final.",
+    "encompasses": [
+      "Run a USPTO trademark database search on each finalist",
+      "Check international trademark equivalents where relevant (for example the EUIPO or an India Trade Marks Registry search when the brand sells into that market)",
+      "Search the name plus industry terms for existing use",
+      "Check domain and social handle availability",
+      "Check the name's meaning and sound in every selling-market language",
+      "Flag any finalist that needs a paid legal opinion before use"
+    ],
+    "inputs": [
+      "outputs of C26"
+    ],
+    "outputs": [
+      "clearance report per finalist",
+      "legal-review flag"
+    ],
+    "trigger": "on demand",
+    "autonomy": "human_assist",
+    "external_write": {
+      "needed": true,
+      "surface": "trademark registrar / domain registrar"
+    },
+    "tools": [
+      "web search",
+      "script: domain_checker"
+    ],
+    "skills": [
+      "trademark-domain-check"
+    ],
+    "subagent": null,
+    "sources": {
+      "web": [
+        "https://www.brandscreen.ai/blog/how-to-check-if-a-name-is-trademarked",
+        "https://howbrandsarebuilt.com/how-to-do-preliminary-trademark-screening-on-name-ideas/"
+      ],
+      "bank": [
+        "BRD-079",
+        "BRD-109"
+      ]
+    },
+    "found_in": "web+bank",
+    "founder_sees": "Kevin sees which name candidates are actually safe to use, and which need a lawyer, before he falls in love with one."
+  },
+  {
+    "id": "BRAND-C28",
+    "name": "Package the naming deliverable",
+    "folders": [
+      "04-BRD"
+    ],
+    "what": "Deliver the finalized name with nomenclature notes, a positioning line, a short brand story and a tagline that passes the strip test.",
+    "encompasses": [
+      "Deliver nomenclature, a positioning line and a short story with the name",
+      "Type and test any tagline against the strip test before it earns a place",
+      "Run the full naming project workflow for a real shortlist with screens",
+      "Replace a placeholder brand name before it becomes permanent"
+    ],
+    "inputs": [
+      "outputs of C20, C25, C26, C27, C31"
+    ],
+    "outputs": [
+      "final naming deliverable"
+    ],
+    "trigger": "event: naming project complete",
+    "autonomy": "founder_gate",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [
+      "script: naming_deliverable_builder"
+    ],
+    "skills": [
+      "naming-deliverable"
+    ],
+    "subagent": null,
+    "sources": {
+      "web": [],
+      "bank": [
+        "BRD-082",
+        "BRD-083",
+        "BRD-086",
+        "BRD-066"
+      ]
+    },
+    "found_in": "bank_only",
+    "founder_sees": "Kevin gets a finished name package: the name, why it works, and a line to launch it with."
+  },
+  {
+    "id": "BRAND-C29",
+    "name": "Screen product, SKU and collection names",
+    "folders": [
+      "04-BRD"
+    ],
+    "what": "Run a lighter short-form name screen for a product, SKU or collection name, and default to descriptive, benefit-first titles for search where a brand name is not needed.",
+    "encompasses": [
+      "Run the short-form name screen for a product or collection name",
+      "Default product and collection titles to descriptive, benefit-first titles",
+      "Give a hero feature its own distinct, brandable name where it earns one",
+      "Try a reverse line extension before creating a new SKU"
+    ],
+    "inputs": [
+      "brand brain: catalogue",
+      "outputs of C09"
+    ],
+    "outputs": [
+      "SKU/collection name shortlist"
+    ],
+    "trigger": "event: new SKU or collection",
+    "autonomy": "agent_does",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [
+      "script: name_screen"
+    ],
+    "skills": [
+      "product-name-screen"
+    ],
+    "subagent": null,
+    "sources": {
+      "web": [],
+      "bank": [
+        "BRD-069",
+        "BRD-087",
+        "BRD-226",
+        "BRD-090"
+      ]
+    },
+    "found_in": "bank_only",
+    "founder_sees": "Kevin sees a quick, checked name option for a new product without a full naming project."
+  },
+  {
+    "id": "BRAND-C30",
+    "name": "Decide brand architecture and naming extensions",
+    "folders": [
+      "04-BRD"
+    ],
+    "what": "Decide house name versus new name for a new product or market, using the teeter-totter and shopping-list tests, and default a small brand to one master brand unless a real split is needed.",
+    "encompasses": [
+      "Check if a new product is the same job or a different job before stretching the name",
+      "Run the shopping-list and bartender test before any name extension",
+      "Decide house name vs new name with the 5 rules of the road plus a stage gate",
+      "Do not expect a famous name to give a different product a free ride",
+      "Default a small brand to one master brand; split only when needed",
+      "Cover a new competitive threat with a separate brand rather than stretching the flagship",
+      "Decide which SKUs get brand-building spotlight and which stay workhorse listings",
+      "Write the 3-way role split before signing a licensing deal"
+    ],
+    "inputs": [
+      "brand brain: catalogue, brand family"
+    ],
+    "outputs": [
+      "architecture decision memo"
+    ],
+    "trigger": "event: new product line or market",
+    "autonomy": "founder_gate",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [
+      "script: brand_architecture_checklist"
+    ],
+    "skills": [
+      "brand-architecture"
+    ],
+    "subagent": null,
+    "sources": {
+      "web": [],
+      "bank": [
+        "BRD-088",
+        "BRD-089",
+        "BRD-091",
+        "BRD-092",
+        "BRD-093",
+        "BRD-094",
+        "BRD-095",
+        "BRD-101",
+        "BRD-103",
+        "BRD-239",
+        "BRD-258"
+      ]
+    },
+    "found_in": "bank_only",
+    "founder_sees": "Kevin gets a clear recommendation on whether a new idea should carry the main brand's name or its own."
+  },
+  {
+    "id": "BRAND-C31",
+    "name": "Draft the founder and brand story",
+    "folders": [
+      "04-BRD"
+    ],
+    "what": "Write the founder or brand story in a self, us, now structure, from vision, values and real customer understanding, kept stable for years.",
+    "encompasses": [
+      "Write brand strategy in a document before any visual design starts",
+      "Build strategy from 4 inputs: vision, business strategy, values, customer understanding",
+      "Fix 3 to 5 non-negotiable core values and use them to filter every approval",
+      "Turn discovery findings into a few how-might-we challenges",
+      "Write the founder or brand story as Self, Us, Now",
+      "Document the brand's day-one journey on video as a marketing and negotiating asset",
+      "Separate goal, strategy and tactics, and hold the strategy for years",
+      "Run the full brand strategy workshop to produce a written brand brief"
+    ],
+    "inputs": [
+      "brand brain: founder facts, mission",
+      "outputs of C09, C18"
+    ],
+    "outputs": [
+      "brand story draft",
+      "core values list",
+      "strategy brief"
+    ],
+    "trigger": "on demand",
+    "autonomy": "founder_gate",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [
+      "script: story_structure_template"
+    ],
+    "skills": [
+      "founder-story-builder"
+    ],
+    "subagent": null,
+    "sources": {
+      "web": [],
+      "bank": [
+        "BRD-049",
+        "BRD-050",
+        "BRD-051",
+        "BRD-052",
+        "BRD-055",
+        "BRD-062",
+        "BRD-063",
+        "BRD-065",
+        "BRD-149",
+        "BRD-154",
+        "BRD-155",
+        "BRD-161",
+        "BRD-171",
+        "BRD-190",
+        "BRD-288",
+        "BRD-290"
+      ]
+    },
+    "found_in": "bank_only",
+    "founder_sees": "Kevin gets a written brand story he can reuse everywhere, built from his own reasons, not a generic template."
+  },
+  {
+    "id": "BRAND-C32",
+    "name": "Build the voice and tone sheet",
+    "folders": [
+      "04-BRD"
+    ],
+    "what": "Set a default voice until a real voice sheet exists, then build the full sheet with liked and disliked examples so any writer or model sounds like this brand.",
+    "encompasses": [
+      "Set a documented default voice until a real voice sheet exists",
+      "Collect liked and disliked copy examples from Kevin",
+      "Write voice rules by trait, with a do and a don't example for each",
+      "Keep every asset on message: names, taglines and key messages consistent",
+      "Define coherence as one voice and quality, not rigid rules that block creativity",
+      "Run the full guidelines and voice sheet build once strategy and identity are settled"
+    ],
+    "inputs": [
+      "brand brain: liked/disliked examples",
+      "outputs of C31"
+    ],
+    "outputs": [
+      "voice and tone sheet"
+    ],
+    "trigger": "event: new brand or voice drift found",
+    "autonomy": "founder_gate",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [
+      "script: voice_sheet_builder"
+    ],
+    "skills": [
+      "voice-sheet-builder"
+    ],
+    "subagent": null,
+    "sources": {
+      "web": [
+        "https://www.brandedagency.com/blog/brand-voice-guidelines",
+        "https://www.shopify.com/blog/brand-voice"
+      ],
+      "bank": [
+        "BRD-117",
+        "BRD-118",
+        "BRD-119",
+        "BRD-136",
+        "BRD-162",
+        "BRD-186"
+      ]
+    },
+    "found_in": "web+bank",
+    "founder_sees": "Kevin gets a short sheet with real liked and disliked examples any writer or model can follow."
+  },
+  {
+    "id": "BRAND-C33",
+    "name": "Build the messaging hierarchy per page and channel",
+    "folders": [
+      "04-BRD"
+    ],
+    "what": "Write the ranked message stack for each page type and channel, homepage, PDP, email, ads, so every asset leads with the same one idea and backs it the same way.",
+    "encompasses": [
+      "Name the primary shopper in the homepage hero, route others to a secondary collection",
+      "Walk the full funnel and mark each touchpoint functional or experiential",
+      "Show product-in-use imagery before revealing price on the PDP",
+      "Rewrite checkout and bundle copy that only appeals to rational long-term value",
+      "Write 2 versions of key messaging for early adopters and the mass market",
+      "Write copy for the buyer, not the end user, when the two differ",
+      "Put the identity's best execution on the one touchpoint that decides the purchase"
+    ],
+    "inputs": [
+      "outputs of C09, C17, C20"
+    ],
+    "outputs": [
+      "messaging hierarchy per page/channel"
+    ],
+    "trigger": "event: new campaign, page or channel",
+    "autonomy": "agent_does",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [
+      "script: messaging_hierarchy_builder"
+    ],
+    "skills": [
+      "messaging-hierarchy"
+    ],
+    "subagent": null,
+    "sources": {
+      "web": [
+        "https://apexbrands.io/blog/best-brand-positioning-agencies-for-e-commerce/"
+      ],
+      "bank": [
+        "BRD-010",
+        "BRD-026",
+        "BRD-056",
+        "BRD-058",
+        "BRD-061",
+        "BRD-114",
+        "BRD-126",
+        "BRD-141",
+        "BRD-153",
+        "BRD-178",
+        "BRD-179",
+        "BRD-181",
+        "BRD-183",
+        "BRD-188",
+        "BRD-199",
+        "BRD-209",
+        "BRD-211",
+        "BRD-212",
+        "WLD-154"
+      ]
+    },
+    "found_in": "web+bank",
+    "founder_sees": "Kevin sees exactly what each page and channel should say first, second and third."
+  },
+  {
+    "id": "BRAND-C34",
+    "name": "Draft and test the brand promise and tagline",
+    "folders": [
+      "04-BRD"
+    ],
+    "what": "Write the 3-sentence promise and candidate taglines, run the strip test, and design and measure recall-based creative tests for signature lines and moments.",
+    "encompasses": [
+      "Write the 3-sentence promise and use it across hero and PDP headlines",
+      "Type and test any tagline against the strip test",
+      "Test a distinctive signature moment for recall in a hard-to-differentiate category",
+      "Test brand and message recall before and after ad exposure",
+      "Calibrate creative refreshes to be 1 step ahead of the category, not 10"
+    ],
+    "inputs": [
+      "outputs of C20, C31"
+    ],
+    "outputs": [
+      "tagline candidates",
+      "recall test plan"
+    ],
+    "trigger": "event: new promise or tagline",
+    "autonomy": "founder_gate",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [
+      "script: strip_test"
+    ],
+    "skills": [
+      "tagline-testing"
+    ],
+    "subagent": null,
+    "sources": {
+      "web": [],
+      "bank": [
+        "BRD-019",
+        "BRD-020",
+        "BRD-083",
+        "BRD-139",
+        "BRD-177",
+        "BRD-273"
+      ]
+    },
+    "found_in": "bank_only",
+    "founder_sees": "Kevin sees a short list of tested tagline options, not just one guess."
+  },
+  {
+    "id": "BRAND-C35",
+    "name": "Brief visual identity direction",
+    "folders": [
+      "04-BRD"
+    ],
+    "what": "Write the mood, palette, typography and photography direction for the brand, in words and referenced mood only, and hand the reference pull to the Reference Scout.",
+    "encompasses": [
+      "Explore 3 genuinely distinct creative directions before custom design work",
+      "Anchor the palette on 1 core colour plus a small accent set, checked print and screen",
+      "Assign typography by job and test pairings on real sample pages",
+      "Write photography rules with reference images; use real product photos where accuracy matters",
+      "Design marks for shape-first, colour-second, words-last recognition at small sizes",
+      "Match the mark type to what the brand can actually afford to teach",
+      "Check every symbol and colour choice against its real cultural reading in each selling market",
+      "Score every logo candidate on 9 functional criteria before arguing aesthetics",
+      "Sketch a large volume of rough logo concepts before narrowing to a final mark",
+      "Only invest in a mascot if it carries real brand meaning and has a redraw budget"
+    ],
+    "inputs": [
+      "outputs of C31, C32",
+      "subagent: Reference Scout output (mood only)"
+    ],
+    "outputs": [
+      "visual identity direction brief",
+      "logo scoring sheet"
+    ],
+    "trigger": "event: new identity or refresh",
+    "autonomy": "founder_gate",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [
+      "subagent: Reference Scout",
+      "script: identity_brief_builder"
+    ],
+    "skills": [
+      "visual-identity-direction"
+    ],
+    "subagent": "Reference Scout (external, shared)",
+    "sources": {
+      "web": [],
+      "bank": [
+        "BRD-018",
+        "BRD-104",
+        "BRD-105",
+        "BRD-106",
+        "BRD-107",
+        "BRD-108",
+        "BRD-109",
+        "BRD-110",
+        "BRD-111",
+        "BRD-112",
+        "BRD-113",
+        "BRD-124",
+        "BRD-142",
+        "BRD-143",
+        "BRD-144",
+        "BRD-145",
+        "BRD-184",
+        "BRD-195",
+        "BRD-292"
+      ]
+    },
+    "found_in": "bank_only",
+    "founder_sees": "Kevin sees a written direction and mood references for how the brand should look, never a copy of a competitor's actual creative."
+  },
+  {
+    "id": "BRAND-C36",
+    "name": "Assemble the brand guidelines document",
+    "folders": [
+      "04-BRD"
+    ],
+    "what": "Package the identity into a 4-part brand book: logo and mark rules, visual language, language rules, and expressions, checked against a completeness checklist before it is called finished.",
+    "encompasses": [
+      "Package the identity as logo, visual language, language rules, expressions",
+      "Apply the locked asset kit to the one decisive touchpoint first as proof",
+      "Write what the parent brand owns and what each product owns",
+      "Run the brand guideline completeness checklist before calling it finished",
+      "Run the identity system audit checklist before locking any new kit",
+      "Run a compressed identity and guideline sprint for a small brand with no agency",
+      "Keep name, price, symbols and colour fixed across markets, adapt only taste and ritual"
+    ],
+    "inputs": [
+      "outputs of C31, C32, C33, C35"
+    ],
+    "outputs": [
+      "brand guidelines document"
+    ],
+    "trigger": "event: new brand or major refresh",
+    "autonomy": "founder_gate",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [
+      "script: brand_guidelines_builder"
+    ],
+    "skills": [
+      "brand-guidelines-builder"
+    ],
+    "subagent": null,
+    "sources": {
+      "web": [
+        "https://howellstudios.com/branding-agency/"
+      ],
+      "bank": [
+        "BRD-121",
+        "BRD-115",
+        "BRD-116",
+        "BRD-131",
+        "BRD-130",
+        "BRD-133",
+        "BRD-134",
+        "BRD-123"
+      ]
+    },
+    "found_in": "web+bank",
+    "founder_sees": "Kevin gets one document that keeps the brand looking and sounding the same everywhere it appears."
+  },
+  {
+    "id": "BRAND-C37",
+    "name": "Audit brand consistency across site, ads and email",
+    "folders": [
+      "04-BRD"
+    ],
+    "what": "Walk the site, live ads and email against the guidelines and voice sheet on a set cadence, and flag drift before it compounds.",
+    "encompasses": [
+      "Run the PDP and ad brand-consistency check on a schedule",
+      "Apply the identity kit to marketplace brand pages with the same voice and rules as the site",
+      "Design the hero and buy button for mobile thumb reach with local trust signals",
+      "Audit every brand element against navigation, reassurance and engagement jobs",
+      "Audit a digital experience against 5 experience-design lenses",
+      "Make every ad or PDP one a stranger can infer the brand's position from alone"
+    ],
+    "inputs": [
+      "outputs of C32, C33, C36",
+      "connector: live site, ad accounts (read-only), email platform"
+    ],
+    "outputs": [
+      "consistency audit report",
+      "drift list"
+    ],
+    "trigger": "monthly",
+    "autonomy": "agent_does",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [
+      "browser: headless site check",
+      "mcp: ads read-only",
+      "connector: email platform export"
+    ],
+    "skills": [
+      "brand-consistency-audit"
+    ],
+    "subagent": null,
+    "sources": {
+      "web": [],
+      "bank": [
+        "BRD-105",
+        "BRD-120",
+        "BRD-127",
+        "BRD-128",
+        "BRD-129",
+        "BRD-132",
+        "BRD-140",
+        "BRD-204",
+        "BRD-205",
+        "BRD-208",
+        "BRD-262"
+      ]
+    },
+    "found_in": "bank_only",
+    "founder_sees": "Kevin sees a monthly list of where the site, ads or email have drifted off the brand's own rules."
+  },
+  {
+    "id": "BRAND-C38",
+    "name": "Run the pre-launch brand and claims check",
+    "folders": [
+      "04-BRD"
+    ],
+    "what": "Check every new page, ad or email against the research file, the voice sheet and the claims tiers before it ships, feeding the shared QA Gate.",
+    "encompasses": [
+      "Audit current and AI-drafted copy against the research file",
+      "Check every promise in a creative brief is provable by the brand",
+      "Change operations first so every brand claim on the page is actually true",
+      "Show differentiation customers can grasp in seconds, do not just declare it",
+      "Block any sensitive-attribute assertion before a creative handoff",
+      "Disclose commercial relationships in content"
+    ],
+    "inputs": [
+      "outputs of C13, C14, C22, C32",
+      "asset draft from requesting specialist"
+    ],
+    "outputs": [
+      "pre-launch check result (pass/fail with reasons)"
+    ],
+    "trigger": "event: new asset before launch",
+    "autonomy": "agent_does",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [
+      "script: claims_checker"
+    ],
+    "skills": [
+      "pre-launch-brand-check"
+    ],
+    "subagent": null,
+    "sources": {
+      "web": [],
+      "bank": [
+        "AVT-092",
+        "AVT-105",
+        "AVT-070",
+        "BRD-054",
+        "BRD-053",
+        "BRD-125"
+      ]
+    },
+    "found_in": "bank_only",
+    "founder_sees": "Kevin knows a new asset was checked against the brand's own rules before it went live, not after."
+  },
+  {
+    "id": "BRAND-C39",
+    "name": "Design community and loyalty cohorts for advocacy",
+    "folders": [
+      "04-BRD"
+    ],
+    "what": "Design an exclusive cohort the group controls, define who counts as 'us' precisely, and identify and over-invest in customers who already advocate for the brand.",
+    "encompasses": [
+      "Decide whether the segment runs on affiliation or dominion and match tone",
+      "Define 'us' narrowly and explicitly in every people-like-us statement",
+      "Build an exclusive cohort the group controls, not just a revocable elite tier",
+      "Identify and over-invest in customers who already advocate for the brand",
+      "Emphasize uniqueness, not consensus, when marketing to a micro-tribe",
+      "Add explicit belonging signals to checkout, packaging and post-purchase emails",
+      "Budget community management specifically for the post-launch lull"
+    ],
+    "inputs": [
+      "outputs of C09, C14",
+      "brand brain: top customers"
+    ],
+    "outputs": [
+      "community cohort design",
+      "advocacy program brief"
+    ],
+    "trigger": "on demand",
+    "autonomy": "founder_gate",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [
+      "script: cohort_designer"
+    ],
+    "skills": [
+      "community-design"
+    ],
+    "subagent": null,
+    "sources": {
+      "web": [],
+      "bank": [
+        "BRD-021",
+        "BRD-022",
+        "BRD-023",
+        "BRD-045",
+        "BRD-157",
+        "BRD-160",
+        "BRD-185",
+        "BRD-187",
+        "BRD-213",
+        "BRD-215",
+        "BRD-217",
+        "BRD-221",
+        "WLD-008",
+        "WLD-092",
+        "WLD-095",
+        "WLD-096",
+        "WLD-098",
+        "WLD-099",
+        "WLD-110",
+        "WLD-111",
+        "WLD-112",
+        "WLD-113",
+        "WLD-122",
+        "WLD-140",
+        "WLD-155",
+        "WLD-160"
+      ]
+    },
+    "found_in": "bank_only",
+    "founder_sees": "Kevin sees a design for a real inner circle, not just a discount tier with a badge."
+  },
+  {
+    "id": "BRAND-C40",
+    "name": "Develop PR angles and press narratives",
+    "folders": [
+      "04-BRD"
+    ],
+    "what": "Turn the brand story, a category frustration or an origin fact into a pitchable press angle, and seed launches through a few respected insiders in a high-trust community.",
+    "encompasses": [
+      "Borrow a play model from an industry outside ecommerce for a fresh angle",
+      "Use a verifiable origin story as a positioning and press lever",
+      "Seed a launch through a few respected insiders in a high-trust community",
+      "Give the founder an early-face role with 1 to 3 content themes and a handover point",
+      "Write a 5-part launch or reposition plan: truth, assertions, alternatives, people, money"
+    ],
+    "inputs": [
+      "outputs of C31",
+      "brand brain: founder, origin facts"
+    ],
+    "outputs": [
+      "PR angle list",
+      "press pitch draft"
+    ],
+    "trigger": "event: launch or newsworthy moment",
+    "autonomy": "human_assist",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [
+      "web search"
+    ],
+    "skills": [
+      "pr-angle-builder"
+    ],
+    "subagent": null,
+    "sources": {
+      "web": [],
+      "bank": [
+        "BRD-005",
+        "BRD-154",
+        "BRD-158",
+        "BRD-194",
+        "BRD-219",
+        "BRD-261",
+        "BRD-277",
+        "WLD-114",
+        "WLD-115",
+        "WLD-125",
+        "WLD-143",
+        "WLD-144"
+      ]
+    },
+    "found_in": "bank_only",
+    "founder_sees": "Kevin gets a press angle and pitch draft he or a PR contact can actually send."
+  },
+  {
+    "id": "BRAND-C41",
+    "name": "Screen and brief partnerships and collaborations",
+    "folders": [
+      "04-BRD"
+    ],
+    "what": "Screen a proposed collaboration for category overlap and narrative fit, and default to non-competitive brands serving the same customer.",
+    "encompasses": [
+      "Default collabs to non-competitive brands serving the same ICP",
+      "Check any co-brand or sponsorship placement for narrative fit before running it",
+      "Offer produced content as negotiating currency to partners who lack it",
+      "Design a limited collab as a deliberate bridge into a bigger retail channel"
+    ],
+    "inputs": [
+      "brand brain: brand facts",
+      "candidate partner info (public)"
+    ],
+    "outputs": [
+      "partnership screen result",
+      "collab brief"
+    ],
+    "trigger": "on demand",
+    "autonomy": "founder_gate",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [
+      "web search"
+    ],
+    "skills": [
+      "partnership-screen"
+    ],
+    "subagent": null,
+    "sources": {
+      "web": [],
+      "bank": [
+        "BRD-147",
+        "BRD-242",
+        "BRD-243",
+        "BRD-244",
+        "BRD-251",
+        "BRD-254"
+      ]
+    },
+    "found_in": "bank_only",
+    "founder_sees": "Kevin sees whether a proposed collaboration actually fits the brand before he says yes."
+  },
+  {
+    "id": "BRAND-C42",
+    "name": "Design events and pop-ups",
+    "folders": [
+      "04-BRD"
+    ],
+    "what": "Design a guerrilla activation, in-person event or pop-up where the exact target customer already gathers, sized to what the team can run by hand.",
+    "encompasses": [
+      "Run a guerrilla event where the exact target customer already gathers",
+      "Seed a new product in one tight community before a wider rollout",
+      "Cap wild-swing stunts to once or twice a year",
+      "Run a legal, ethics and brand-risk review before any stunt or event"
+    ],
+    "inputs": [
+      "outputs of C09, C39"
+    ],
+    "outputs": [
+      "event or pop-up concept brief"
+    ],
+    "trigger": "on demand",
+    "autonomy": "founder_gate",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [
+      "web search"
+    ],
+    "skills": [
+      "event-concept-builder"
+    ],
+    "subagent": null,
+    "sources": {
+      "web": [],
+      "bank": [
+        "BRD-189",
+        "BRD-207",
+        "BRD-289",
+        "WLD-093",
+        "WLD-097",
+        "WLD-100",
+        "WLD-101",
+        "WLD-102",
+        "WLD-103",
+        "WLD-104",
+        "WLD-105",
+        "WLD-106",
+        "WLD-107",
+        "WLD-108",
+        "WLD-116",
+        "WLD-117",
+        "WLD-119",
+        "WLD-120",
+        "WLD-123",
+        "WLD-124",
+        "WLD-127",
+        "WLD-131",
+        "WLD-145",
+        "WLD-146",
+        "WLD-147",
+        "WLD-150",
+        "WLD-151",
+        "WLD-152",
+        "WLD-153",
+        "WLD-157",
+        "WLD-161"
+      ]
+    },
+    "found_in": "bank_only",
+    "founder_sees": "Kevin gets a ready concept for a real-world event, sized to what the team can actually pull off."
+  },
+  {
+    "id": "BRAND-C43",
+    "name": "Design referral and word-of-mouth mechanics",
+    "folders": [
+      "04-BRD"
+    ],
+    "what": "Design packaging, unboxing and referral incentives that give a customer a specific reason to tell a friend, with a real tension and status story instead of a plain discount code.",
+    "encompasses": [
+      "Design packaging and unboxing so the customer has a specific reason to talk",
+      "Build a referral incentive with real tension and a status story, not just a code",
+      "Design a referral mechanic where the product genuinely improves as friends join",
+      "Own a permission asset (list, app, community) instead of relying only on platform reach",
+      "Judge organic content by revenue and owned-audience growth, not views or followers"
+    ],
+    "inputs": [
+      "outputs of C09, C39"
+    ],
+    "outputs": [
+      "referral mechanic brief"
+    ],
+    "trigger": "on demand",
+    "autonomy": "founder_gate",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [],
+    "skills": [
+      "referral-mechanic-design"
+    ],
+    "subagent": null,
+    "sources": {
+      "web": [],
+      "bank": [
+        "BRD-059",
+        "BRD-060",
+        "BRD-151",
+        "BRD-152",
+        "BRD-180",
+        "BRD-218",
+        "WLD-109",
+        "WLD-142"
+      ]
+    },
+    "found_in": "bank_only",
+    "founder_sees": "Kevin sees a referral design built on a real reason to share, not just a coupon."
+  },
+  {
+    "id": "BRAND-C44",
+    "name": "Source and log wild bet ideas",
+    "folders": [
+      "19-WLD"
+    ],
+    "what": "Continuously source wild bet candidates from adjacent industries, category norms worth breaking, and the brand's own gaps, and keep a dated backlog.",
+    "encompasses": [
+      "Name the category norm a wild bet breaks before designing it",
+      "Run a faucet test to check paid-channel dependence before picking a bet",
+      "Borrow a play model from an industry outside ecommerce",
+      "Question a category assumption competitors treat as fixed",
+      "Confirm a trend is durable, not a fad, before committing resources",
+      "Keep a cross-category idea archive that different projects feed into over time"
+    ],
+    "inputs": [
+      "outputs of C07, C09, C18",
+      "web search"
+    ],
+    "outputs": [
+      "wild bet candidate backlog"
+    ],
+    "trigger": "monthly",
+    "autonomy": "agent_does",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [
+      "web search",
+      "script: idea_bank_query (ideas.py --bottleneck ... folder 19-WLD)"
+    ],
+    "skills": [
+      "wild-bet-sourcing"
+    ],
+    "subagent": null,
+    "sources": {
+      "web": [],
+      "bank": [
+        "BRD-229",
+        "BRD-272",
+        "WLD-001",
+        "WLD-002",
+        "WLD-005",
+        "WLD-129",
+        "WLD-141",
+        "WLD-159"
+      ]
+    },
+    "found_in": "bank_only",
+    "founder_sees": "Kevin sees a running list of unusual, on-brand things the store could try."
+  },
+  {
+    "id": "BRAND-C45",
+    "name": "Bound and stage-gate a wild bet",
+    "folders": [
+      "19-WLD"
+    ],
+    "what": "Write the 8-field bound for any wild bet before it launches: budget cap, downside limit, control design, cohort, stop rule, read point, and legal review, sized to a small first step.",
+    "encompasses": [
+      "Fund only 1 wild bet lever per quarter from a shared cash cap",
+      "Cap the quarter's downside to a share of contribution margin",
+      "Never launch a wild bet without a written 8-field bound",
+      "Draw a randomized control holdout before treating anyone",
+      "Run only 1 wild bet per cohort per test window",
+      "Cap cohort size and send frequency at what the team can sustain by hand",
+      "Write a specific stop rule before every wild bet launches",
+      "Run a legal and consent review before any bet that promises, mails, texts or gates access",
+      "Never count an unverified hedge or earned-media estimate as funding",
+      "Vet third-party address or spend data before targeting with it",
+      "Follow the staged rollout order and pass each gate before the next"
+    ],
+    "inputs": [
+      "outputs of C44",
+      "brand brain: contribution margin",
+      "founder risk appetite"
+    ],
+    "outputs": [
+      "wild bet bound (budget, downside cap, control, cohort, stop rule, read point, legal flag)"
+    ],
+    "trigger": "event: wild bet proposed",
+    "autonomy": "founder_gate",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [
+      "script: wild_bet_bound_builder (arithmetic in code)"
+    ],
+    "skills": [
+      "wild-bet-bounding"
+    ],
+    "subagent": null,
+    "sources": {
+      "web": [
+        "https://agilebrandguide.com/wiki/models/stage-gate-process/"
+      ],
+      "bank": [
+        "BRD-025",
+        "BRD-166",
+        "WLD-003",
+        "WLD-004",
+        "WLD-006",
+        "WLD-017",
+        "WLD-018",
+        "WLD-020",
+        "WLD-021",
+        "WLD-022",
+        "WLD-023",
+        "WLD-024",
+        "WLD-025",
+        "WLD-026",
+        "WLD-040",
+        "WLD-053",
+        "WLD-128"
+      ]
+    },
+    "found_in": "web+bank",
+    "founder_sees": "Kevin approves a small, bounded test with a fixed downside and a clear date to check it, before any money moves."
+  },
+  {
+    "id": "BRAND-C46",
+    "name": "Write the wild bet execution brief",
+    "folders": [
+      "19-WLD"
+    ],
+    "what": "Turn an approved wild bet into an execution brief sized to the smallest group the team can serve by hand, sequenced through the checks the idea's category requires before it scales.",
+    "encompasses": [
+      "Start any manual wild bet on the smallest group the team can serve by hand",
+      "Fix the base-effort problem (support, resolution time) before launching a delight play",
+      "Build a weekly-refreshed exclusion list of customers with an unresolved failure",
+      "Reserve costly personal touches for repeat buyers with shown affinity",
+      "Size and fix a high cash-on-delivery or return rate before a delight play",
+      "Match mail format, paper stock or gift choice to brand values",
+      "Set the keep-it refund threshold from this store's own return cost and resale data",
+      "Set per-incident, per-rep and per-customer caps on any frontline spend",
+      "Give frontline staff a standing no-approval budget sized to margin and AOV",
+      "Personalize each touch with the exact abandoned or recommended product",
+      "Trigger a physical or personal touch from the same lifecycle signal that fires an email"
+    ],
+    "inputs": [
+      "outputs of C45",
+      "brand brain: AOV, margin, ops capacity"
+    ],
+    "outputs": [
+      "wild bet execution brief for ops/support/marketing"
+    ],
+    "trigger": "event: wild bet approved",
+    "autonomy": "founder_gate",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [
+      "script: wild_bet_brief_builder"
+    ],
+    "skills": [
+      "wild-bet-execution-brief"
+    ],
+    "subagent": null,
+    "sources": {
+      "web": [],
+      "bank": [
+        "WLD-009",
+        "WLD-010",
+        "WLD-011",
+        "WLD-012",
+        "WLD-013",
+        "WLD-019",
+        "WLD-035",
+        "WLD-036",
+        "WLD-037",
+        "WLD-038",
+        "WLD-039",
+        "WLD-041",
+        "WLD-042",
+        "WLD-043",
+        "WLD-044",
+        "WLD-045",
+        "WLD-046",
+        "WLD-047",
+        "WLD-048",
+        "WLD-049",
+        "WLD-050",
+        "WLD-052",
+        "WLD-054",
+        "WLD-055",
+        "WLD-056",
+        "WLD-057",
+        "WLD-058",
+        "WLD-059",
+        "WLD-060",
+        "WLD-061",
+        "WLD-062",
+        "WLD-064",
+        "WLD-065",
+        "WLD-066",
+        "WLD-067",
+        "WLD-068",
+        "WLD-069",
+        "WLD-070",
+        "WLD-071",
+        "WLD-072",
+        "WLD-073",
+        "WLD-074",
+        "WLD-075",
+        "WLD-077",
+        "WLD-078",
+        "WLD-079",
+        "WLD-080",
+        "WLD-081",
+        "WLD-082",
+        "WLD-083",
+        "WLD-085",
+        "WLD-086",
+        "WLD-087",
+        "WLD-088",
+        "WLD-089",
+        "WLD-090",
+        "WLD-091",
+        "WLD-094",
+        "WLD-137",
+        "WLD-138",
+        "WLD-139",
+        "WLD-148",
+        "WLD-149",
+        "WLD-156",
+        "WLD-158"
+      ]
+    },
+    "found_in": "bank_only",
+    "founder_sees": "Kevin gets a ready brief for the team to run a small, hand-run test, with the guardrails already built in."
+  },
+  {
+    "id": "BRAND-C47",
+    "name": "Evaluate and document the wild bet read point",
+    "folders": [
+      "19-WLD"
+    ],
+    "what": "At the read point, pull the metric with the control comparison in code, judge the bet on relationship and contribution metrics rather than vanity attention, and log the result whether it won or lost.",
+    "encompasses": [
+      "Judge every wild bet at its planned review date, not a viral spike or quiet week",
+      "Judge wild bets on relationship metrics and incremental contribution, not vanity attention",
+      "Track earned media and UGC as a signal line, never as revenue",
+      "Control for prior spend before crediting a bet for an engaged-customer gap",
+      "Report the source's reported effect next to this store's own measured effect",
+      "Never treat another brand's reported lift as a benchmark; test on this store's cohort",
+      "Document every wild bet's result, win or lose",
+      "Separate decision quality from outcome when reviewing the bet",
+      "Raise the batch, cohort or threshold only after a passed gate"
+    ],
+    "inputs": [
+      "outputs of C45, C46",
+      "metric contract: relevant metrics",
+      "registry: control group data"
+    ],
+    "outputs": [
+      "read-point result",
+      "registry entry update",
+      "learning note"
+    ],
+    "trigger": "event: read point reached",
+    "autonomy": "agent_does",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [
+      "script: budget.py (ledger)",
+      "script: registry_updater (arithmetic in code)"
+    ],
+    "skills": [
+      "wild-bet-readout"
+    ],
+    "subagent": "Registrar (shared)",
+    "sources": {
+      "web": [],
+      "bank": [
+        "WLD-007",
+        "WLD-027",
+        "WLD-028",
+        "WLD-029",
+        "WLD-030",
+        "WLD-031",
+        "WLD-032",
+        "WLD-033",
+        "WLD-034",
+        "WLD-051",
+        "WLD-063",
+        "WLD-076",
+        "WLD-084",
+        "WLD-118"
+      ]
+    },
+    "found_in": "bank_only",
+    "founder_sees": "Kevin sees a plain answer, at the date he agreed to, on whether the bet worked and what it cost."
+  },
+  {
+    "id": "BRAND-C48",
+    "name": "Track brand health signals",
+    "folders": [
+      "04-BRD"
+    ],
+    "what": "Track branded search volume, mentions, sentiment and repeat behavior over time as the brand's health line, separate from any single campaign's performance.",
+    "encompasses": [
+      "Track branded search growth instead of chasing generic category SEO terms",
+      "Classify every ad line as performance or brand; stop killing brand creative on ROAS alone",
+      "Track emotional association strength as a brand equity metric, not just recall",
+      "Run a causal or holdout test before crediting any channel for a sales change",
+      "Run a blind branded-versus-unbranded test before blaming the product",
+      "Retire an ad or tagline on audience exposure, not internal fatigue",
+      "Confirm the funnel and lifetime value are visible before buying ads to build a position"
+    ],
+    "inputs": [
+      "connector: Google Search Console (branded query volume)",
+      "connector: social mentions",
+      "metric contract: repeat_rate, review_rating"
+    ],
+    "outputs": [
+      "brand health dashboard"
+    ],
+    "trigger": "monthly",
+    "autonomy": "agent_does",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [
+      "connector: search console",
+      "web search",
+      "script: metric_contract (arithmetic in code)"
+    ],
+    "skills": [
+      "brand-health-tracking"
+    ],
+    "subagent": null,
+    "sources": {
+      "web": [
+        "https://www.gwi.com/blog/brand-health",
+        "https://prescientai.com/blog/brand-health-metrics"
+      ],
+      "bank": [
+        "BRD-024",
+        "BRD-163",
+        "BRD-164",
+        "BRD-165",
+        "BRD-173",
+        "BRD-174",
+        "BRD-175",
+        "BRD-177",
+        "BRD-192",
+        "BRD-202",
+        "BRD-203",
+        "BRD-227",
+        "BRD-283"
+      ]
+    },
+    "found_in": "web+bank",
+    "founder_sees": "Kevin sees one monthly line on whether the brand itself is getting stronger, not just whether last week's ads worked."
+  },
+  {
+    "id": "BRAND-C49",
+    "name": "Manage rebrand and repositioning programs",
+    "folders": [
+      "04-BRD"
+    ],
+    "what": "Run the full rebrand sequence when it is warranted: audit brand equity, decide what to keep, expect catalogue pruning, and measure by shipped artifacts against a real trigger.",
+    "encompasses": [
+      "Decide to rename only for a legal trigger, real friction, or a name that cannot hold the position",
+      "Weigh company stage before renaming; cheap and low-risk early, needs a strong reason once equity is deep",
+      "Audit brand equity first and decide what to keep before deciding what to change",
+      "Expect a rebrand to force catalogue cuts of products that no longer fit",
+      "Launch a rename with an explicit story and a 6 to 9 month extra resource budget",
+      "Measure a rebrand by shipped artifacts, not strategy documents, and budget the last 10 percent",
+      "Reposition a drifted brand by retracing its original founding mission",
+      "Run the full rebrand double-diamond workflow for a business that already sells",
+      "Verify perception, behavior and performance separately before promising ROI",
+      "Sequence a site redesign: sitemap, then 2 sample pages, then full build",
+      "Bring in a second person to challenge every major positioning or identity decision"
+    ],
+    "inputs": [
+      "outputs of C18-C22, C31, C32, C35, C36",
+      "brand brain: full record"
+    ],
+    "outputs": [
+      "rebrand program plan",
+      "equity audit",
+      "phased rollout plan"
+    ],
+    "trigger": "on demand",
+    "autonomy": "founder_gate",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [
+      "script: rebrand_planner"
+    ],
+    "skills": [
+      "rebrand-program"
+    ],
+    "subagent": null,
+    "sources": {
+      "web": [],
+      "bank": [
+        "BRD-096",
+        "BRD-097",
+        "BRD-098",
+        "BRD-099",
+        "BRD-100",
+        "BRD-122",
+        "BRD-135",
+        "BRD-167",
+        "BRD-228",
+        "BRD-255",
+        "BRD-256",
+        "BRD-271",
+        "BRD-286"
+      ]
+    },
+    "found_in": "bank_only",
+    "founder_sees": "Kevin gets a staged plan for a rebrand with a real trigger, a budget and a way to check it worked."
+  },
+  {
+    "id": "BRAND-C50",
+    "name": "Maintain the founder-facing brand brain identity and customer sections",
+    "folders": [
+      "02-AVT",
+      "04-BRD"
+    ],
+    "what": "Keep the identity and customer sections of the brand brain current: positioning, voice, primary avatar, claims tiers and the decisions log entries the founder has already made.",
+    "encompasses": [
+      "Write the identity section: positioning statement, promise, voice sheet reference",
+      "Write the customer section: primary avatar, segments, objection map, language bank pointer",
+      "Log every founder decision on identity or avatar once, in the decisions log",
+      "Flag stale sections due for the quarterly recheck",
+      "Diff a new avatar or positioning proposal against the last approved version"
+    ],
+    "inputs": [
+      "outputs of C09-C36",
+      "founder decisions"
+    ],
+    "outputs": [
+      "brand brain identity section",
+      "brand brain customer section",
+      "decisions log entries"
+    ],
+    "trigger": "continuous",
+    "autonomy": "agent_does",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [
+      "script: brand_brain_writer"
+    ],
+    "skills": [
+      "brand-brain-identity-customer"
+    ],
+    "subagent": null,
+    "sources": {
+      "web": [],
+      "bank": []
+    },
+    "found_in": "bank_only",
+    "founder_sees": "Kevin has one current, short reference for who the brand is and who it sells to, that stays in sync with every approved decision."
+  },
+  {
+    "id": "BRAND-C51",
+    "name": "Assess channel and packaging fit for retail, marketplace and DTC formats",
+    "folders": [
+      "04-BRD"
+    ],
+    "what": "Decide which product format and packaging fits DTC, marketplace and retail, and brief the packaging and identity work each channel needs before a retail or marketplace push.",
+    "encompasses": [
+      "Put each SKU or format in the channel where that purchase already happens",
+      "Choose which product format goes to DTC, marketplace and retail",
+      "Design packaging for the channel it must win in, iterate on real sell-through",
+      "Find the pack space that is regulatorily fixed before budgeting design effort",
+      "Position a private-label or white-label line on story and value, not on looking cheap",
+      "Pitch differentiation before data, then pitch proven sales after data to a retail buyer",
+      "Win 1 anchor account before handing off to a distributor or broker"
+    ],
+    "inputs": [
+      "brand brain: catalogue, channel mix",
+      "outputs of C29, C35"
+    ],
+    "outputs": [
+      "channel-fit memo",
+      "packaging brief per channel"
+    ],
+    "trigger": "event: new channel or retail push",
+    "autonomy": "founder_gate",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [],
+    "skills": [
+      "channel-brand-fit"
+    ],
+    "subagent": null,
+    "sources": {
+      "web": [],
+      "bank": [
+        "BRD-043",
+        "BRD-044",
+        "BRD-101",
+        "BRD-102",
+        "BRD-206",
+        "BRD-230",
+        "BRD-231",
+        "BRD-232",
+        "BRD-233",
+        "BRD-234",
+        "BRD-235",
+        "BRD-236",
+        "BRD-237",
+        "BRD-238",
+        "BRD-241",
+        "BRD-249",
+        "BRD-250",
+        "BRD-260",
+        "WLD-133"
+      ]
+    },
+    "found_in": "bank_only",
+    "founder_sees": "Kevin sees which product format and packaging fit a new channel before he commits to it."
+  },
+  {
+    "id": "BRAND-C52",
+    "name": "Advise founder operating practices for brand-building",
+    "folders": [
+      "04-BRD"
+    ],
+    "what": "Turn recurring brand-building operating patterns, hiring sequence, ideation method, decision speed and readiness checks, into short, reusable guidance for the founder and team.",
+    "encompasses": [
+      "Screen hires for lean execution autonomy, not resume pedigree",
+      "Hire generalists early, then narrow specialists as revenue scales",
+      "Treat decision and response speed as the small brand's real competitive edge",
+      "Check for real resources and stamina before starting a demanding brand initiative",
+      "Run naming or creative ideation in individuals or 2-person teams, not large groups",
+      "Separate idea generation from evaluation in every ideation session",
+      "Force clear high or low scores on candidates; ban the middle",
+      "Generate candidates through 3 different information lenses",
+      "Judge early-stage content or product work by craft, not early metrics",
+      "Screen investors for operator experience and behavior, not just check size"
+    ],
+    "inputs": [
+      "founder inputs",
+      "brand brain: team facts"
+    ],
+    "outputs": [
+      "operating-practice note per topic"
+    ],
+    "trigger": "on demand",
+    "autonomy": "human_assist",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [],
+    "skills": [
+      "founder-operating-practices"
+    ],
+    "subagent": null,
+    "sources": {
+      "web": [],
+      "bank": [
+        "BRD-156",
+        "BRD-159",
+        "BRD-168",
+        "BRD-169",
+        "BRD-172",
+        "BRD-245",
+        "BRD-246",
+        "BRD-247",
+        "BRD-248",
+        "BRD-252",
+        "BRD-253",
+        "BRD-265",
+        "BRD-266",
+        "BRD-267",
+        "BRD-268",
+        "BRD-270",
+        "BRD-278",
+        "BRD-279",
+        "BRD-282",
+        "BRD-291"
+      ]
+    },
+    "found_in": "bank_only",
+    "founder_sees": "Kevin gets short, practical notes on how to hire, decide and ideate at this stage, not a generic playbook."
+  }
+]

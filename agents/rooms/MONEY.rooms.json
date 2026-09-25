@@ -1,0 +1,2915 @@
+[
+ {
+  "room": "Finance and cash",
+  "agent": "MONEY",
+  "who_uses": [
+   "founder",
+   "finance lead",
+   "agency account manager",
+   "bookkeeper"
+  ],
+  "jobs": [
+   {
+    "job": "know real profit per order, SKU and channel",
+    "question": "what did we actually make on this, after every real cost",
+    "capabilities": [
+     "MONEY-C1",
+     "MONEY-C2",
+     "MONEY-C3"
+    ]
+   },
+   {
+    "job": "price or re-price a product from a profit target",
+    "question": "is this price actually profitable at our margin target, not just above cost",
+    "capabilities": [
+     "MONEY-C4"
+    ]
+   },
+   {
+    "job": "gate a promo before it goes live",
+    "question": "will this sale, BOGO or gift-with-purchase lose money",
+    "capabilities": [
+     "MONEY-C5"
+    ]
+   },
+   {
+    "job": "see the cash runway before it is a crisis",
+    "question": "when do we run low on cash if nothing changes",
+    "capabilities": [
+     "MONEY-C6"
+    ]
+   },
+   {
+    "job": "plan inventory cash and the cash conversion cycle",
+    "question": "how much cash is tied up in stock, and for how long",
+    "capabilities": [
+     "MONEY-C7"
+    ]
+   },
+   {
+    "job": "compare financing, the data room and insurance, and stress-test them live",
+    "question": "what does this loan, this investor ask or this coverage gap do to our cash",
+    "capabilities": [
+     "MONEY-C8",
+     "MONEY-C58",
+     "MONEY-C59",
+     "MONEY-C80"
+    ]
+   },
+   {
+    "job": "know CAC, payback and LTV:CAC before scaling spend",
+    "question": "can we afford to spend more on acquisition",
+    "capabilities": [
+     "MONEY-C9"
+    ]
+   },
+   {
+    "job": "forecast revenue from cohorts and the marketing calendar",
+    "question": "what will next month's revenue look like, split new vs returning",
+    "capabilities": [
+     "MONEY-C10"
+    ]
+   },
+   {
+    "job": "build and defend the annual OPEX and payroll budget",
+    "question": "what can we afford to spend, and what does the next dollar of spend buy",
+    "capabilities": [
+     "MONEY-C11"
+    ]
+   },
+   {
+    "job": "stay compliant on US sales tax, liabilities and FX exposure (GST for India-selling brands)",
+    "question": "are we exposed on sales-tax nexus, gift-card liability or currency risk",
+    "capabilities": [
+     "MONEY-C12"
+    ]
+   },
+   {
+    "job": "trust the daily and weekly numbers",
+    "question": "do Shopify, Meta, GA4, the processor and the books agree",
+    "capabilities": [
+     "MONEY-C14",
+     "MONEY-C15"
+    ]
+   },
+   {
+    "job": "know which SKUs and subscribers actually make money",
+    "question": "which products or subscription plans should we grow, fix or cut",
+    "capabilities": [
+     "MONEY-C17",
+     "MONEY-C18"
+    ]
+   },
+   {
+    "job": "set the acquisition financial calendar and guardrails",
+    "question": "how much can we safely spend around Q4 holiday (BFCM) and the rest of the promo calendar",
+    "capabilities": [
+     "MONEY-C19"
+    ]
+   },
+   {
+    "job": "turn every settlement, payout, bill and payroll run into one clean ledger (COD payout too, for India-selling brands)",
+    "question": "where did this payout, this bill, or (for an India-selling brand) this COD cash actually land",
+    "capabilities": [
+     "MONEY-C51",
+     "MONEY-C52",
+     "MONEY-C53",
+     "MONEY-C54",
+     "MONEY-C55",
+     "MONEY-C56",
+     "MONEY-C57",
+     "MONEY-C60",
+     "MONEY-C79"
+    ]
+   }
+  ],
+  "metrics": [
+   {
+    "name": "cm1_per_order",
+    "plain": "What is left after the product and payment fees",
+    "formula": "net revenue − COGS − payment processing fees, per order",
+    "source": "orders table + landed cost table + processor fee schedule",
+    "window": "daily, rolled to monthly",
+    "freshness_rule": "stale after 26 hours (one missed daily sync)",
+    "unavailable_when": "landed cost missing for a SKU in the order",
+    "benchmark": "no fixed benchmark; track trend against the brand's own history"
+   },
+   {
+    "name": "cm2_per_order",
+    "plain": "What is left after also paying to pack and ship it",
+    "formula": "CM1 − fulfillment, shipping and packaging cost, per order",
+    "source": "orders table + 3PL/courier cost feed",
+    "window": "daily, rolled to monthly",
+    "freshness_rule": "stale after 26 hours",
+    "unavailable_when": "fulfillment cost not mapped for the order's courier or weight band",
+    "benchmark": "no fixed benchmark"
+   },
+   {
+    "name": "cm3_per_channel",
+    "plain": "What is left after also paying the marketing that brought the order in",
+    "formula": "CM2 − variable marketing spend attributed to that order's channel (spend allocated pro rata by attributed orders)",
+    "source": "orders table + ad_spend table (Meta MCP, Google Ads)",
+    "window": "weekly, by channel",
+    "freshness_rule": "stale after 48 hours",
+    "unavailable_when": "spend not yet closed for the period, or order has no attributed channel",
+    "benchmark": "no fixed benchmark; compare channel to channel"
+   },
+   {
+    "name": "net_profit",
+    "plain": "What the brand actually kept, bottom of the P&L ladder",
+    "formula": "gross revenue − COGS − delivery cost − marketing cost − OPEX",
+    "source": "P&L cost classification map + bank ledger",
+    "window": "monthly",
+    "freshness_rule": "stale after books close plus 5 days",
+    "unavailable_when": "any P&L line still unclassified for the month",
+    "benchmark": "no fixed benchmark"
+   },
+   {
+    "name": "gross_margin_pct",
+    "plain": "Percent kept after just product cost",
+    "formula": "(net revenue − COGS) ÷ net revenue",
+    "source": "orders table + landed cost table",
+    "window": "monthly",
+    "freshness_rule": "stale after 26 hours",
+    "unavailable_when": "landed cost missing for over 5% of SKUs sold",
+    "benchmark": "varies by category; track trend, not a fixed number"
+   },
+   {
+    "name": "cash_low_point_13wk",
+    "plain": "The lowest the bank balance is expected to go in the next 13 weeks, and when",
+    "formula": "rolling 13-week cash forecast from current balance plus modeled inflows and outflows, minimum point",
+    "source": "bank ledger + AP/AR + payroll + inventory PO schedule",
+    "window": "13 weeks, refreshed weekly",
+    "freshness_rule": "stale after 8 days",
+    "unavailable_when": "bank ledger not synced this week",
+    "benchmark": "must stay above the brand's own minimum operating cash floor"
+   },
+   {
+    "name": "days_inventory_outstanding",
+    "plain": "How many days of stock sit in the warehouse on average",
+    "formula": "average inventory value ÷ (COGS ÷ days in period) × days in period",
+    "source": "inventory ledger + COGS",
+    "window": "monthly",
+    "freshness_rule": "stale after 10 days",
+    "unavailable_when": "inventory count not reconciled this month",
+    "benchmark": "target set against supplier lead time, not a universal number"
+   },
+   {
+    "name": "cash_conversion_cycle",
+    "plain": "Days between paying for stock and collecting cash for it",
+    "formula": "days inventory outstanding + days sales outstanding − days payable outstanding",
+    "source": "inventory ledger + AR + AP",
+    "window": "monthly",
+    "freshness_rule": "stale after 10 days",
+    "unavailable_when": "any of the three inputs missing",
+    "benchmark": "lower is better; compare to the brand's own history"
+   },
+   {
+    "name": "cac_blended",
+    "plain": "Total cost to get one new customer, all channels included",
+    "formula": "total marketing spend ÷ new customers acquired, same period",
+    "source": "ad_spend table + orders table (first-time customer flag)",
+    "window": "monthly, trailing 90-day trend",
+    "freshness_rule": "stale after 48 hours",
+    "unavailable_when": "spend not closed or new-customer flag missing",
+    "benchmark": "compare to CAC payback and LTGP:CAC bands, not a fixed number"
+   },
+   {
+    "name": "cac_payback_months",
+    "plain": "Months of gross profit it takes to earn back what it cost to get a customer",
+    "formula": "CAC ÷ average monthly gross profit per new customer, from real cohorts",
+    "source": "cohort table + orders table",
+    "window": "monthly, by acquisition cohort",
+    "freshness_rule": "stale after cohort is 60 days incomplete",
+    "unavailable_when": "cohort has fewer than 30 customers",
+    "benchmark": "under 12 months is a common e-commerce band; the brand's own cash conversion cycle is the harder limit"
+   },
+   {
+    "name": "ltgp_to_cac",
+    "plain": "Lifetime gross profit for every dollar spent to acquire",
+    "formula": "lifetime gross profit per customer (fixed lookback window) ÷ CAC",
+    "source": "cohort table",
+    "window": "quarterly",
+    "freshness_rule": "stale after 90 days without a cohort refresh",
+    "unavailable_when": "cohort window not yet elapsed",
+    "benchmark": "3:1 or better is a common floor; the brand sets its own band"
+   },
+   {
+    "name": "mer_and_amer",
+    "plain": "Total revenue for every dollar of ad spend, plain and adjusted",
+    "formula": "MER = total revenue ÷ total ad spend; aMER = (total revenue − discount-code and branded-search revenue) ÷ total ad spend",
+    "source": "orders table + ad_spend table + discount code table",
+    "window": "daily, rolled to weekly",
+    "freshness_rule": "stale after 48 hours",
+    "unavailable_when": "discount code attribution missing (aMER only)",
+    "benchmark": "no fixed benchmark; compare to the brand's own trend"
+   },
+   {
+    "name": "landed_cost_per_sku",
+    "plain": "The full cost to get one unit into a box, ready to sell",
+    "formula": "product cost + freight + duty + packaging, per SKU",
+    "source": "supplier invoices + freight bills + duty schedule",
+    "window": "refreshed on supplier or volume change",
+    "freshness_rule": "stale after 90 days without a check",
+    "unavailable_when": "no backup document on file for a cost line",
+    "benchmark": "no fixed benchmark"
+   },
+   {
+    "name": "platform_books_variance",
+    "plain": "How far Shopify, Meta, GA4, the processor and the books disagree",
+    "formula": "for each of the 5 recurring gaps: |platform figure − books figure| and named cause",
+    "source": "Shopify, Meta MCP, GA4, payment processor, accounting export",
+    "window": "monthly",
+    "freshness_rule": "stale after books close plus 10 days",
+    "unavailable_when": "any of the 5 sources has not closed the month",
+    "benchmark": "target under 1% variance per gap"
+   },
+   {
+    "name": "payout_deposit_gap",
+    "plain": "Payout cash a gateway or marketplace says it sent but that has not yet landed in the bank",
+    "formula": "sum reported paid by gateway/marketplace − sum landed in bank, aged by days since the payout was reported",
+    "source": "gateway/marketplace payout reports + bank ledger",
+    "window": "daily",
+    "freshness_rule": "stale after 24 hours",
+    "unavailable_when": "a source has not sent its payout report",
+    "benchmark": "target: fully deposited within the source's stated SLA"
+   },
+   {
+    "name": "cod_remittance_gap",
+    "markets": ["IN"],
+    "plain": "COD cash collected but not yet in the bank (India only; reads null for US brands)",
+    "formula": "sum of COD collected by courier − sum remitted, aged by days since collection",
+    "source": "courier COD reports + bank ledger",
+    "window": "daily",
+    "freshness_rule": "stale after 24 hours",
+    "unavailable_when": "the brand runs no COD, or a courier has not sent its collection report",
+    "benchmark": "target: fully remitted within the courier's stated SLA"
+   },
+   {
+    "name": "sales_tax_liability_position",
+    "plain": "What is owed or claimable in state sales tax this period (GST for India-selling brands)",
+    "formula": "sales tax collected − sales tax remitted/credit available, by state (output GST − input GST credit, by state/GSTIN, for India)",
+    "source": "Avalara or TaxJar + purchase records (GST invoicing app, for India)",
+    "window": "monthly, ahead of filing",
+    "freshness_rule": "stale after filing due date",
+    "unavailable_when": "a state's sales crossed the nexus threshold with no registration on file",
+    "benchmark": "must reconcile to the filed return within the accountant's tolerance"
+   },
+   {
+    "name": "opex_vs_budget",
+    "plain": "Overspend or underspend against the annual plan, by category",
+    "formula": "(actual OPEX − budgeted OPEX) ÷ budgeted OPEX, per category, per month",
+    "source": "budget_annual table + bank ledger",
+    "window": "monthly",
+    "freshness_rule": "stale after books close plus 5 days",
+    "unavailable_when": "category not mapped in the budget",
+    "benchmark": "flag anything over 10% off budget"
+   },
+   {
+    "name": "subscription_churn_rate",
+    "plain": "Share of subscribers who left this period, against the right base",
+    "formula": "customers who canceled in period ÷ active subscribers at the start of the period",
+    "source": "subscription platform export",
+    "window": "monthly",
+    "freshness_rule": "stale after 10 days",
+    "unavailable_when": "subscriber base not synced this month",
+    "benchmark": "compare to the brand's own trailing 3-month average, not an industry number"
+   }
+  ],
+  "insights": [
+   {
+    "name": "margin leak by SKU",
+    "rule": "a SKU's unit volume rose over the trailing 3 months while its CM3 stayed negative",
+    "computed_from": [
+     "cm3_per_channel",
+     "orders table"
+    ],
+    "sentence": "{sku} sold more each month but still loses ${amount} per unit after marketing cost",
+    "severity": "high if CM3 is negative and worsening, else medium",
+    "action_capability": "MONEY-C2"
+   },
+   {
+    "name": "cash below floor",
+    "rule": "the 13-week forecast's lowest point falls below the brand's stated minimum cash floor",
+    "computed_from": [
+     "cash_low_point_13wk"
+    ],
+    "sentence": "cash is projected to fall below ${floor} in week {n} if nothing changes",
+    "severity": "critical",
+    "action_capability": "MONEY-C6"
+   },
+   {
+    "name": "promo missed break-even",
+    "rule": "a completed promo's realized margin is below the break-even margin modeled before it launched",
+    "computed_from": [
+     "promo model",
+     "orders table"
+    ],
+    "sentence": "{promo} needed a {x}% sales lift to break even and got {y}%",
+    "severity": "high",
+    "action_capability": "MONEY-C5"
+   },
+   {
+    "name": "CAC payback outruns cash cycle",
+    "rule": "CAC payback period in months exceeds the cash conversion cycle expressed in months",
+    "computed_from": [
+     "cac_payback_months",
+     "cash_conversion_cycle"
+    ],
+    "sentence": "new customers take {x} months to pay back but cash is tied up for {y} months first",
+    "severity": "high",
+    "action_capability": "MONEY-C9"
+   },
+   {
+    "name": "platform-books gap unexplained",
+    "rule": "platform_books_variance exceeds 2% for a source with no cause tagged",
+    "computed_from": [
+     "platform_books_variance"
+    ],
+    "sentence": "{source} and the books differ by ${amount} this month with no named cause",
+    "severity": "high",
+    "action_capability": "MONEY-C15"
+   },
+   {
+    "name": "payout deposit stuck",
+    "rule": "payout_deposit_gap for a source exceeds that source's stated payout SLA in days",
+    "computed_from": [
+     "payout_deposit_gap"
+    ],
+    "sentence": "${amount} from {source} is {n} days past its payout SLA",
+    "severity": "high",
+    "action_capability": "MONEY-C52"
+   },
+   {
+    "name": "COD remittance stuck",
+    "markets": ["IN"],
+    "rule": "cod_remittance_gap for a courier exceeds that courier's stated SLA in days (India only; reads null for US brands)",
+    "computed_from": [
+     "cod_remittance_gap"
+    ],
+    "sentence": "₹{amount} in COD cash from {courier} is {n} days past its remittance SLA",
+    "severity": "high",
+    "action_capability": "MONEY-C52"
+   },
+   {
+    "name": "inventory cash overhang",
+    "rule": "days_inventory_outstanding exceeds the SKU's supplier lead time by more than 30 days",
+    "computed_from": [
+     "days_inventory_outstanding"
+    ],
+    "sentence": "${amount} of {sku} stock sits {n} days beyond what lead time needs",
+    "severity": "medium",
+    "action_capability": "MONEY-C7"
+   },
+   {
+    "name": "subscription churn spike",
+    "rule": "subscription_churn_rate this month exceeds the trailing 3-month average by 20% relative",
+    "computed_from": [
+     "subscription_churn_rate"
+    ],
+    "sentence": "{x}% more subscribers churned this month than the 3-month average",
+    "severity": "high",
+    "action_capability": "MONEY-C18"
+   },
+   {
+    "name": "budget overrun",
+    "rule": "opex_vs_budget for a category exceeds 10% over budget",
+    "computed_from": [
+     "opex_vs_budget"
+    ],
+    "sentence": "{category} spent {x}% over budget this month",
+    "severity": "medium",
+    "action_capability": "MONEY-C11"
+   },
+   {
+    "name": "sales tax nexus exposure",
+    "rule": "a state or marketplace's trailing 12-month sales crossed the economic-nexus threshold with no matching registration on file (the GST registration threshold, for India-selling brands)",
+    "computed_from": [
+     "sales_tax_liability_position"
+    ],
+    "sentence": "{market} sales crossed the sales-tax nexus threshold with no registration logged (the GST registration threshold, for India)",
+    "severity": "critical",
+    "action_capability": "MONEY-C12"
+   }
+  ],
+  "visuals": [
+   {
+    "name": "P&L ladder",
+    "type": "waterfall chart",
+    "shows": "gross revenue stepping down through COGS, delivery cost, marketing cost and OPEX to net profit",
+    "why_this_chart": "founder sees in one look where the money actually goes, in order",
+    "exists_today": false
+   },
+   {
+    "name": "13-week cash forecast",
+    "type": "line chart with a marked floor",
+    "shows": "projected daily cash balance with the lowest point and its date flagged",
+    "why_this_chart": "a number alone hides when the risk lands; the line shows it",
+    "exists_today": false
+   },
+   {
+    "name": "contribution margin by SKU and channel",
+    "type": "ranked bar table",
+    "shows": "CM1, CM2, CM3 per SKU and per channel, sorted worst to best",
+    "why_this_chart": "a founder decides what to cut or push in one scan",
+    "exists_today": false
+   },
+   {
+    "name": "CAC and payback trend",
+    "type": "line chart with a shaded LTGP:CAC band",
+    "shows": "blended CAC and payback months over time against the brand's own target band",
+    "why_this_chart": "shows whether scaling spend is getting safer or riskier",
+    "exists_today": false
+   },
+   {
+    "name": "platform-to-books bridge",
+    "type": "bridge/waterfall chart",
+    "shows": "the 5 recurring gaps (Shopify, Meta, GA4, processor, accounting) and their named causes",
+    "why_this_chart": "makes an abstract reconciliation into one visual anyone can check",
+    "exists_today": false
+   },
+   {
+    "name": "payout deposit aging",
+    "type": "bar chart by source (gateway, marketplace; courier for India COD), bucketed by days late",
+    "shows": "how much payout cash is owed by each source and how overdue it is",
+    "why_this_chart": "a founder sees which source to chase first",
+    "exists_today": false
+   },
+   {
+    "name": "budget vs actual",
+    "type": "bar chart by OPEX category",
+    "shows": "budgeted vs actual spend per category, this month and trailing",
+    "why_this_chart": "flags where the plan and reality diverge before it compounds",
+    "exists_today": false
+   }
+  ],
+  "actions": [
+   {
+    "label": "Rebuild the P&L cost classification map",
+    "capability": "MONEY-C1",
+    "autonomy": "agent_does"
+   },
+   {
+    "label": "Refresh CM1/CM2/CM3 by SKU, basket and channel",
+    "capability": "MONEY-C2",
+    "autonomy": "agent_does"
+   },
+   {
+    "label": "Rebuild landed cost per SKU",
+    "capability": "MONEY-C3",
+    "autonomy": "agent_does"
+   },
+   {
+    "label": "Send a price change for approval",
+    "capability": "MONEY-C4",
+    "autonomy": "founder_gate"
+   },
+   {
+    "label": "Send a promo break-even check for approval",
+    "capability": "MONEY-C5",
+    "autonomy": "founder_gate"
+   },
+   {
+    "label": "Refresh the 13-week cash forecast",
+    "capability": "MONEY-C6",
+    "autonomy": "agent_does"
+   },
+   {
+    "label": "Send the inventory cash plan to the founder",
+    "capability": "MONEY-C7",
+    "autonomy": "human_assist"
+   },
+   {
+    "label": "Send the financing comparison to the founder",
+    "capability": "MONEY-C8",
+    "autonomy": "human_assist"
+   },
+   {
+    "label": "Refresh CAC, payback and LTV:CAC",
+    "capability": "MONEY-C9",
+    "autonomy": "agent_does"
+   },
+   {
+    "label": "Refresh the cohort and calendar revenue forecast",
+    "capability": "MONEY-C10",
+    "autonomy": "agent_does"
+   },
+   {
+    "label": "Refresh the OPEX budget and marginal-spend answer",
+    "capability": "MONEY-C11",
+    "autonomy": "agent_does"
+   },
+   {
+    "label": "Send the sales-tax/liability tracker to the accountant (GST tracker, for India)",
+    "capability": "MONEY-C12",
+    "autonomy": "human_assist"
+   },
+   {
+    "label": "Publish today's finance scoreboard",
+    "capability": "MONEY-C14",
+    "autonomy": "agent_does"
+   },
+   {
+    "label": "Run the monthly platform-to-books reconciliation",
+    "capability": "MONEY-C15",
+    "autonomy": "agent_does"
+   },
+   {
+    "label": "Refresh the SKU profitability classification",
+    "capability": "MONEY-C17",
+    "autonomy": "agent_does"
+   },
+   {
+    "label": "Refresh subscription unit economics",
+    "capability": "MONEY-C18",
+    "autonomy": "agent_does"
+   },
+   {
+    "label": "Send the acquisition financial calendar for approval",
+    "capability": "MONEY-C19",
+    "autonomy": "founder_gate"
+   },
+   {
+    "label": "Post settlement journal entries",
+    "capability": "MONEY-C51",
+    "autonomy": "agent_does"
+   },
+   {
+    "label": "Refresh the payout reconciliation ledger (COD remittance ledger, for India)",
+    "capability": "MONEY-C52",
+    "autonomy": "agent_does"
+   },
+   {
+    "label": "Send AP approvals to the founder",
+    "capability": "MONEY-C53",
+    "autonomy": "founder_gate"
+   },
+   {
+    "label": "Send AR collections to the founder for review",
+    "capability": "MONEY-C54",
+    "autonomy": "human_assist"
+   },
+   {
+    "label": "Send this cycle's payroll and filings for approval",
+    "capability": "MONEY-C55",
+    "autonomy": "founder_gate"
+   },
+   {
+    "label": "Refresh the fixed asset and depreciation register",
+    "capability": "MONEY-C56",
+    "autonomy": "agent_does"
+   },
+   {
+    "label": "Reconcile the expense and card statement",
+    "capability": "MONEY-C57",
+    "autonomy": "agent_does"
+   },
+   {
+    "label": "Send the fundraising data room for approval",
+    "capability": "MONEY-C58",
+    "autonomy": "founder_gate"
+   },
+   {
+    "label": "Send the insurance comparison for approval",
+    "capability": "MONEY-C59",
+    "autonomy": "founder_gate"
+   },
+   {
+    "label": "Reconcile multi-currency transactions",
+    "capability": "MONEY-C60",
+    "autonomy": "agent_does"
+   },
+   {
+    "label": "Send the payout escalation email for approval (COD escalation, for India)",
+    "capability": "MONEY-C79",
+    "autonomy": "founder_gate"
+   },
+   {
+    "label": "Run a financing scenario against the live cash forecast",
+    "capability": "MONEY-C80",
+    "autonomy": "agent_does"
+   }
+  ],
+  "not_elsewhere": [
+   {
+    "claim": "one P&L ladder from gross revenue to net profit with CM1, CM2 and CM3 labeled by scope, computed automatically from the brand's own order and cost data",
+    "vs": "Triple Whale computes SKU-level contribution margin on its Advanced tier, but operating costs and a full P&L still go back to a spreadsheet"
+   },
+   {
+    "claim": "a rolling 13-week cash forecast tied to the same order, cost and payroll data as the P&L",
+    "vs": "Shopify's native reports show revenue and basic cost, not contribution margin or a cash forecast; that work is done in a separate spreadsheet today"
+   },
+   {
+    "claim": "a promo break-even gate that blocks or clears a promo before it goes public, using the brand's real CM3",
+    "vs": "generic discount-code apps report what a promo cost after the fact; they do not run a go/no-go check before launch"
+   },
+   {
+    "claim": "financing options stress-tested live against the brand's actual rolling cash forecast, not a one-time spreadsheet comparison",
+    "vs": "financing marketplaces and lenders quote rates but do not simulate a specific structure against the brand's own forecast"
+   },
+   {
+    "claim": "payout cash tracked to the bank and escalated to the source automatically once a remittance passes that source's own SLA (COD cash and the courier, for India-selling brands)",
+    "vs": "also in A2X and Link My Books for the gateway/marketplace collected-vs-deposited tracking (CODReconcile and Shiplystic for India's COD collected-vs-remitted tracking); the drafted, SLA-cited escalation email is not part of those tools"
+   },
+   {
+    "claim": "all 5 recurring platform-to-books gaps reconciled in one place with a named cause each month",
+    "vs": "today this is done manually across separate Shopify, Meta, GA4, processor and accounting exports"
+   }
+  ],
+  "data_needs": [
+   {
+    "table": "orders",
+    "fields": [
+     "order_id",
+     "sku_lines",
+     "gross_revenue",
+     "discounts",
+     "refunds",
+     "payment_method",
+     "channel",
+     "placed_at",
+     "first_time_customer"
+    ],
+    "connector_or_script": "Shopify Admin API export",
+    "refresh": "daily"
+   },
+   {
+    "table": "landed_cost",
+    "fields": [
+     "sku",
+     "product_cost",
+     "freight",
+     "duty",
+     "packaging",
+     "effective_date",
+     "backup_doc_url"
+    ],
+    "connector_or_script": "manual finance upload",
+    "refresh": "on supplier or volume change"
+   },
+   {
+    "table": "ad_spend",
+    "fields": [
+     "brand",
+     "channel",
+     "campaign",
+     "date",
+     "spend",
+     "attributed_revenue"
+    ],
+    "connector_or_script": "Meta MCP (read-only) + Google Ads export",
+    "refresh": "daily"
+   },
+   {
+    "table": "bank_ledger",
+    "fields": [
+     "date",
+     "amount",
+     "counterparty",
+     "category",
+     "account"
+    ],
+    "connector_or_script": "accounting export (QuickBooks/Xero; Zoho Books/Tally for India) or bank feed",
+    "refresh": "daily"
+   },
+   {
+    "table": "settlements",
+    "fields": [
+     "platform",
+     "payout_id",
+     "gross",
+     "commission",
+     "fees",
+     "tax_on_fees",
+     "refunds",
+     "net",
+     "payout_date"
+    ],
+    "connector_or_script": "marketplace/gateway payout reports",
+    "refresh": "per settlement"
+   },
+   {
+    "table": "cod_remittance",
+    "markets": ["IN"],
+    "fields": [
+     "courier",
+     "order_id",
+     "cod_collected",
+     "remitted_amount",
+     "remitted_date",
+     "sla_days"
+    ],
+    "connector_or_script": "courier portal/API (Shiprocket, Delhivery); reads null for US brands",
+    "refresh": "daily"
+   },
+   {
+    "table": "payroll_statutory",
+    "fields": [
+     "employee_id",
+     "cycle",
+     "gross",
+     "federal_withholding",
+     "state_withholding",
+     "fica",
+     "suta",
+     "net"
+    ],
+    "connector_or_script": "Gusto or ADP export",
+    "refresh": "monthly"
+   },
+   {
+    "table": "payroll_statutory_india",
+    "markets": ["IN"],
+    "fields": [
+     "employee_id",
+     "cycle",
+     "gross",
+     "pf",
+     "esi",
+     "pt",
+     "tds",
+     "net"
+    ],
+    "connector_or_script": "payroll processor export; reads null for US brands",
+    "refresh": "monthly"
+   },
+   {
+    "table": "fixed_assets",
+    "fields": [
+     "asset_id",
+     "purchase_date",
+     "cost",
+     "useful_life",
+     "depreciation_method",
+     "book_value"
+    ],
+    "connector_or_script": "manual register",
+    "refresh": "on purchase or disposal"
+   },
+   {
+    "table": "expenses_cards",
+    "fields": [
+     "employee_id",
+     "date",
+     "amount",
+     "category",
+     "receipt_url",
+     "policy_flag"
+    ],
+    "connector_or_script": "expense/card feed",
+    "refresh": "weekly"
+   },
+   {
+    "table": "budget_annual",
+    "fields": [
+     "category",
+     "month",
+     "budgeted",
+     "actual"
+    ],
+    "connector_or_script": "manual budget document",
+    "refresh": "monthly"
+   },
+   {
+    "table": "subscription_cohorts",
+    "fields": [
+     "customer_id",
+     "plan",
+     "start_date",
+     "churn_date",
+     "mrr"
+    ],
+    "connector_or_script": "subscription platform export (e.g. Recharge)",
+    "refresh": "daily"
+   },
+   {
+    "table": "sales_tax_filings",
+    "fields": [
+     "state",
+     "period",
+     "tax_collected",
+     "tax_remitted",
+     "filed_at"
+    ],
+    "connector_or_script": "Avalara or TaxJar export",
+    "refresh": "monthly"
+   },
+   {
+    "table": "gst_filings",
+    "markets": ["IN"],
+    "fields": [
+     "gstin",
+     "state",
+     "period",
+     "output_gst",
+     "input_credit",
+     "filed_at"
+    ],
+    "connector_or_script": "GST invoicing app export; reads null for US brands",
+    "refresh": "monthly"
+   }
+  ],
+  "founder_view_note": "With nothing connected, the room shows the P&L ladder and cash forecast as unavailable with a one-line reason (no order feed, no bank feed) instead of zeros, plus a short list of exactly which connections would light it up. The first thing it shows once Shopify orders and one cost file land is CM1 by SKU and the 13-week cash line; settlement and payroll rows light up as each feed is added, and COD rows light up too for an India-selling brand."
+ },
+ {
+  "room": "Measurement and data health",
+  "agent": "MONEY",
+  "who_uses": [
+   "founder",
+   "marketing lead",
+   "agency account manager",
+   "developer"
+  ],
+  "jobs": [
+   {
+    "job": "audit GA4 setup end to end",
+    "question": "is GA4 actually tracking revenue and events correctly",
+    "capabilities": [
+     "MONEY-C20"
+    ]
+   },
+   {
+    "job": "audit the Meta pixel and CAPI",
+    "question": "is Meta double-counting, under-matching or missing events",
+    "capabilities": [
+     "MONEY-C21"
+    ]
+   },
+   {
+    "job": "enforce UTM and campaign-link discipline",
+    "question": "which of our channels look bigger or smaller than they are because of bad links",
+    "capabilities": [
+     "MONEY-C22"
+    ]
+   },
+   {
+    "job": "reconcile attribution models and run incrementality checks",
+    "question": "which number is right when platforms disagree, and did this channel actually add sales",
+    "capabilities": [
+     "MONEY-C23"
+    ]
+   },
+   {
+    "job": "reconcile GA4, Meta, Shopify and marketplace order counts",
+    "question": "do all our systems agree on how many orders we actually got",
+    "capabilities": [
+     "MONEY-C24"
+    ]
+   },
+   {
+    "job": "maintain the metric contract and revenue definitions",
+    "question": "what does this number actually mean, and who owns it",
+    "capabilities": [
+     "MONEY-C25"
+    ]
+   },
+   {
+    "job": "run the daily data-quality trust check",
+    "question": "can I trust yesterday's numbers before I act on them",
+    "capabilities": [
+     "MONEY-C26"
+    ]
+   },
+   {
+    "job": "diagnose funnel and landing-page performance",
+    "question": "where in the funnel are we actually losing people, compared to our own history",
+    "capabilities": [
+     "MONEY-C27"
+    ]
+   },
+   {
+    "job": "triage a revenue or metric movement",
+    "question": "why did this number move, before anyone reacts to it",
+    "capabilities": [
+     "MONEY-C28"
+    ]
+   },
+   {
+    "job": "keep the standard dashboards current",
+    "question": "are the numbers on our dashboards still the ones we trust",
+    "capabilities": [
+     "MONEY-C30"
+    ]
+   },
+   {
+    "job": "ask any question about the brand's numbers and trust the answer",
+    "question": "what is our real return on X, computed from one warehouse instead of five exports",
+    "capabilities": [
+     "MONEY-C61",
+     "MONEY-C62"
+    ]
+   },
+   {
+    "job": "build marketing mix modeling for cross-channel budget allocation",
+    "question": "how much does each channel, including untracked ones, actually add to revenue",
+    "capabilities": [
+     "MONEY-C63"
+    ]
+   },
+   {
+    "job": "build RFM and cohort segmentation",
+    "question": "which customers are we winning, keeping or losing right now",
+    "capabilities": [
+     "MONEY-C64"
+    ]
+   },
+   {
+    "job": "audit tag management and server-side tracking",
+    "question": "is our tagging layer itself clean, consented and firing once per event",
+    "capabilities": [
+     "MONEY-C65"
+    ]
+   }
+  ],
+  "metrics": [
+   {
+    "name": "ga4_audit_score",
+    "plain": "How many GA4 setup checks pass",
+    "formula": "checks passed ÷ total checks run (property structure, timezone, retention, consent, key events, ecommerce parameters)",
+    "source": "GA4 Admin API audit script",
+    "window": "weekly",
+    "freshness_rule": "stale after 9 days",
+    "unavailable_when": "GA4 property not connected",
+    "benchmark": "target 100% pass on critical checks"
+   },
+   {
+    "name": "capi_match_quality",
+    "plain": "How well Meta can match a purchase event to a real person",
+    "formula": "event match quality score as reported by Meta events manager, per event type",
+    "source": "Meta MCP (read-only) + server event log",
+    "window": "weekly",
+    "freshness_rule": "stale after 9 days",
+    "unavailable_when": "CAPI not connected for that event",
+    "benchmark": "Meta's own good/needs-improvement bands"
+   },
+   {
+    "name": "event_dedup_rate",
+    "plain": "Share of events counted twice, once from the browser and once from the server",
+    "formula": "duplicate event_id matches ÷ total events sent, browser plus CAPI",
+    "source": "pixel and CAPI event logs",
+    "window": "weekly",
+    "freshness_rule": "stale after 9 days",
+    "unavailable_when": "event_id not present on one side",
+    "benchmark": "target under 2%"
+   },
+   {
+    "name": "utm_compliance_rate",
+    "plain": "Share of paid clicks that arrive with a valid, convention-following UTM",
+    "formula": "sessions with a valid utm_source/medium/campaign per the brand's convention ÷ total paid sessions",
+    "source": "GA4 session data + UTM convention doc",
+    "window": "weekly",
+    "freshness_rule": "stale after 9 days",
+    "unavailable_when": "campaign not yet mapped to the convention",
+    "benchmark": "target 100% on active paid campaigns"
+   },
+   {
+    "name": "fake_direct_share",
+    "plain": "Share of sessions wrongly counted as direct or organic",
+    "formula": "sessions matching a known paid-link pattern but landing with no UTM ÷ total direct+organic sessions",
+    "source": "GA4 session data + campaign log",
+    "window": "weekly",
+    "freshness_rule": "stale after 9 days",
+    "unavailable_when": "no campaign log to compare against",
+    "benchmark": "target under 5%"
+   },
+   {
+    "name": "attribution_model_gap",
+    "plain": "How far last-click and data-driven attribution disagree, by channel",
+    "formula": "|last-click attributed revenue − data-driven attributed revenue| ÷ data-driven attributed revenue, per channel",
+    "source": "GA4 + Meta + platform exports",
+    "window": "weekly",
+    "freshness_rule": "stale after 9 days",
+    "unavailable_when": "a model is not available for that channel",
+    "benchmark": "no fixed number; flag widening gaps"
+   },
+   {
+    "name": "incrementality_lift",
+    "plain": "How much of a channel's reported sales actually happened because of it",
+    "formula": "holdout or geo-lift test result: (test group revenue − control group revenue) ÷ control group revenue",
+    "source": "holdout_tests log",
+    "window": "per test, referenced until superseded",
+    "freshness_rule": "stale after 180 days without a new test",
+    "unavailable_when": "no test has been run for that channel",
+    "benchmark": "compare to the channel's platform-reported ROAS"
+   },
+   {
+    "name": "order_count_variance",
+    "plain": "How far GA4, Meta, Shopify and marketplaces disagree on order count",
+    "formula": "|platform order count − Shopify order count| ÷ Shopify order count, per platform, per day",
+    "source": "GA4 + Meta MCP + Shopify + marketplace exports",
+    "window": "daily",
+    "freshness_rule": "stale after 24 hours",
+    "unavailable_when": "a platform has not reported for that day",
+    "benchmark": "target under 3% variance"
+   },
+   {
+    "name": "bot_traffic_share",
+    "plain": "Share of sessions that look like bots, not buyers",
+    "formula": "sessions flagged by bot-score threshold ÷ total sessions",
+    "source": "GA4 + Cloudflare bot analytics",
+    "window": "daily",
+    "freshness_rule": "stale after 24 hours",
+    "unavailable_when": "no bot-scoring source connected",
+    "benchmark": "flag anything above the brand's own trailing baseline"
+   },
+   {
+    "name": "daily_trust_score",
+    "plain": "A pass, warn or fail grade for yesterday's data before anyone reads it",
+    "formula": "rule-based score across freshness, reconciliation variance and known-bad patterns for every connected source",
+    "source": "all connected sources' automated checks",
+    "window": "daily",
+    "freshness_rule": "stale after 24 hours",
+    "unavailable_when": "fewer than half of connected sources reported",
+    "benchmark": "pass required before yesterday's numbers are read"
+   },
+   {
+    "name": "funnel_step_conversion",
+    "plain": "Percent of visitors who move to the next funnel step",
+    "formula": "sessions reaching a step ÷ sessions reaching the step before it, for session→PDP→cart→checkout→purchase",
+    "source": "GA4 ecommerce events",
+    "window": "daily, trended over 90 days",
+    "freshness_rule": "stale after 24 hours",
+    "unavailable_when": "a step's event is not firing",
+    "benchmark": "compared to the brand's own trailing 90-day average, never an industry number"
+   },
+   {
+    "name": "metric_definition_drift",
+    "plain": "How many numbers have more than one definition in active use",
+    "formula": "count of metric names with 2 or more distinct stored formulas in the metric contract",
+    "source": "metric_contract table",
+    "window": "on every contract update",
+    "freshness_rule": "stale after 30 days without a review",
+    "unavailable_when": "metric contract not maintained",
+    "benchmark": "target zero"
+   },
+   {
+    "name": "source_freshness_lag",
+    "plain": "How many hours since a connected source last synced",
+    "formula": "current time − last_sync_at, per source",
+    "source": "data_freshness_log",
+    "window": "continuous",
+    "freshness_rule": "a source is stale once its own expected cadence is missed",
+    "unavailable_when": "no heartbeat recorded for that source",
+    "benchmark": "each source's own stated cadence"
+   },
+   {
+    "name": "rfm_segment_migration",
+    "plain": "How many customers moved segment this period",
+    "formula": "count of customer_id whose RFM segment label changed between this period and last",
+    "source": "rfm_scores table",
+    "window": "monthly",
+    "freshness_rule": "stale after 35 days",
+    "unavailable_when": "fewer than 2 periods of history exist",
+    "benchmark": "no fixed number; watch Loyal-to-At-Risk moves"
+   },
+   {
+    "name": "mmm_vs_platform_gap",
+    "plain": "How far the modeled channel contribution differs from what the platform claims",
+    "formula": "|modeled_contribution − platform_reported| ÷ platform_reported, per channel",
+    "source": "mmm_outputs table",
+    "window": "monthly",
+    "freshness_rule": "stale after 45 days without a model refresh",
+    "unavailable_when": "under 6 months of history for that channel",
+    "benchmark": "no fixed number; large or growing gaps get flagged"
+   },
+   {
+    "name": "tag_duplicate_fire_rate",
+    "plain": "Share of page loads where a tag fires more than once",
+    "formula": "duplicate tag fires ÷ total tag fires, per container",
+    "source": "tag manager debug log / server-side container log",
+    "window": "weekly",
+    "freshness_rule": "stale after 9 days",
+    "unavailable_when": "container not instrumented for duplicate detection",
+    "benchmark": "target under 1%"
+   }
+  ],
+  "insights": [
+   {
+    "name": "GA4 tracking gap",
+    "rule": "ga4_audit_score has one or more failed critical checks",
+    "computed_from": [
+     "ga4_audit_score"
+    ],
+    "sentence": "{n} GA4 checks failed, including {top_issue}",
+    "severity": "high if a critical check fails, else medium",
+    "action_capability": "MONEY-C20"
+   },
+   {
+    "name": "pixel match quality low",
+    "rule": "capi_match_quality for an event type falls below Meta's own good-quality band",
+    "computed_from": [
+     "capi_match_quality"
+    ],
+    "sentence": "Meta match quality for {event} is {score}, below Meta's own good-quality band",
+    "severity": "medium",
+    "action_capability": "MONEY-C21"
+   },
+   {
+    "name": "UTM leakage",
+    "rule": "utm_compliance_rate for an active paid campaign falls below 90%",
+    "computed_from": [
+     "utm_compliance_rate"
+    ],
+    "sentence": "{pct}% of clicks on {campaign} show up with no valid UTM",
+    "severity": "medium",
+    "action_capability": "MONEY-C22"
+   },
+   {
+    "name": "attribution gap widening",
+    "rule": "attribution_model_gap for a channel grew versus the prior period",
+    "computed_from": [
+     "attribution_model_gap"
+    ],
+    "sentence": "{channel}'s last-click and data-driven numbers now differ by {pct}, up from {prior_pct}",
+    "severity": "medium",
+    "action_capability": "MONEY-C23"
+   },
+   {
+    "name": "bot-driven spend spike",
+    "rule": "a day's spend or ROAS moved more than 50% versus the 14-day median and bot_traffic_share also moved above its own baseline that day",
+    "computed_from": [
+     "bot_traffic_share",
+     "order_count_variance"
+    ],
+    "sentence": "{date} had a {pct} spend spike alongside bot traffic {pct2} above normal",
+    "severity": "high",
+    "action_capability": "MONEY-C24"
+   },
+   {
+    "name": "order count mismatch",
+    "rule": "order_count_variance for a platform exceeds 3% for 2 consecutive days",
+    "computed_from": [
+     "order_count_variance"
+    ],
+    "sentence": "{platform} shows {n} more orders than Shopify for {period}",
+    "severity": "high",
+    "action_capability": "MONEY-C24"
+   },
+   {
+    "name": "metric definition drift",
+    "rule": "metric_definition_drift is above zero for a metric name in active use",
+    "computed_from": [
+     "metric_definition_drift"
+    ],
+    "sentence": "{metric} is defined two ways in active use: {def1} and {def2}",
+    "severity": "medium",
+    "action_capability": "MONEY-C25"
+   },
+   {
+    "name": "trust check failed",
+    "rule": "daily_trust_score is warn or fail",
+    "computed_from": [
+     "daily_trust_score"
+    ],
+    "sentence": "yesterday's data quality check came back {status}: {reason}",
+    "severity": "critical if fail, medium if warn",
+    "action_capability": "MONEY-C26"
+   },
+   {
+    "name": "funnel step decay",
+    "rule": "a funnel_step_conversion rate fell more than 15% relative to its own trailing 90-day average",
+    "computed_from": [
+     "funnel_step_conversion"
+    ],
+    "sentence": "{step} conversion fell {pct} versus your own 90-day average",
+    "severity": "high",
+    "action_capability": "MONEY-C27"
+   },
+   {
+    "name": "RFM migration alert",
+    "rule": "rfm_segment_migration shows a Loyal-to-At-Risk move above the brand's own trailing average count",
+    "computed_from": [
+     "rfm_segment_migration"
+    ],
+    "sentence": "{n} customers moved from Loyal to At Risk this month",
+    "severity": "medium",
+    "action_capability": "MONEY-C64"
+   },
+   {
+    "name": "source gone stale",
+    "rule": "source_freshness_lag exceeds the source's own stated cadence",
+    "computed_from": [
+     "source_freshness_lag"
+    ],
+    "sentence": "{source} has not refreshed in {hours} hours",
+    "severity": "high",
+    "action_capability": "MONEY-C61"
+   }
+  ],
+  "visuals": [
+   {
+    "name": "audit scorecard",
+    "type": "traffic-light grid",
+    "shows": "GA4, Meta CAPI and tag-management checks, pass/warn/fail per check",
+    "why_this_chart": "founder sees exactly which checks are broken, not just a score",
+    "exists_today": false
+   },
+   {
+    "name": "attribution comparison",
+    "type": "grouped bar chart per channel",
+    "shows": "last-click, data-driven and platform-reported revenue side by side",
+    "why_this_chart": "makes the disagreement between models visible instead of arguable",
+    "exists_today": false
+   },
+   {
+    "name": "funnel with baseline band",
+    "type": "step/funnel chart with a shaded baseline range",
+    "shows": "each funnel step's conversion against its own trailing 90-day band",
+    "why_this_chart": "flags a real drop instead of normal daily noise",
+    "exists_today": false
+   },
+   {
+    "name": "data freshness heatmap",
+    "type": "heatmap, source by day",
+    "shows": "how stale each connected source is right now",
+    "why_this_chart": "one glance shows what to fix before trusting a number",
+    "exists_today": false
+   },
+   {
+    "name": "RFM segment migration",
+    "type": "flow diagram between segment boxes",
+    "shows": "how many customers moved between RFM segments this period",
+    "why_this_chart": "shows customer-base health moving, not just a snapshot",
+    "exists_today": false
+   },
+   {
+    "name": "daily trust strip",
+    "type": "row of pass/warn/fail dots over time",
+    "shows": "the daily trust score for the last 30 days",
+    "why_this_chart": "a founder sees a bad streak building before it becomes a bad quarter",
+    "exists_today": false
+   }
+  ],
+  "actions": [
+   {
+    "label": "Run the GA4 settings and event audit",
+    "capability": "MONEY-C20",
+    "autonomy": "agent_does"
+   },
+   {
+    "label": "Run the Meta pixel and CAPI audit",
+    "capability": "MONEY-C21",
+    "autonomy": "agent_does"
+   },
+   {
+    "label": "Audit UTM and campaign-link discipline",
+    "capability": "MONEY-C22",
+    "autonomy": "agent_does"
+   },
+   {
+    "label": "Reconcile attribution models and log an incrementality test",
+    "capability": "MONEY-C23",
+    "autonomy": "agent_does"
+   },
+   {
+    "label": "Reconcile GA4, Meta, Shopify and marketplace order counts",
+    "capability": "MONEY-C24",
+    "autonomy": "agent_does"
+   },
+   {
+    "label": "Update the metric contract",
+    "capability": "MONEY-C25",
+    "autonomy": "agent_does"
+   },
+   {
+    "label": "Run the daily data-quality trust check",
+    "capability": "MONEY-C26",
+    "autonomy": "agent_does"
+   },
+   {
+    "label": "Diagnose the funnel",
+    "capability": "MONEY-C27",
+    "autonomy": "agent_does"
+   },
+   {
+    "label": "Triage a revenue or metric movement",
+    "capability": "MONEY-C28",
+    "autonomy": "agent_does"
+   },
+   {
+    "label": "Rebuild the standard dashboards",
+    "capability": "MONEY-C30",
+    "autonomy": "agent_does"
+   },
+   {
+    "label": "Refresh the warehouse and ETL pipeline",
+    "capability": "MONEY-C61",
+    "autonomy": "agent_does"
+   },
+   {
+    "label": "Ask the governed data analyst a question",
+    "capability": "MONEY-C62",
+    "autonomy": "agent_does"
+   },
+   {
+    "label": "Send the marketing mix model to the founder",
+    "capability": "MONEY-C63",
+    "autonomy": "human_assist"
+   },
+   {
+    "label": "Refresh RFM and cohort segments",
+    "capability": "MONEY-C64",
+    "autonomy": "agent_does"
+   },
+   {
+    "label": "Send the tag management audit to the founder",
+    "capability": "MONEY-C65",
+    "autonomy": "human_assist"
+   }
+  ],
+  "not_elsewhere": [
+   {
+    "claim": "GA4 config and event audit built into the same room as everything else that reads the brand's numbers",
+    "vs": "also in Elevar, GA4 Auditor and Data Bloo for the audit itself; those tools do not connect it to Meta, Shopify or the metric contract"
+   },
+   {
+    "claim": "attribution models reconciled against each other and against a metric contract with one owner and freshness stamp per number",
+    "vs": "Triple Whale (with Moby MMM) and Northbeam both reconcile click attribution with modeling, but neither ties the result to a written metric contract or flags when two dashboards define the same number differently"
+   },
+   {
+    "claim": "a daily pass/warn/fail trust score computed before anyone reads yesterday's numbers",
+    "vs": "GA4 and Meta audit tools run on demand or on a schedule set by the vendor; this runs every day, before the numbers are read, and logs every setting change"
+   },
+   {
+    "claim": "GA4/Meta/Shopify/marketplace order counts reconciled and bot spikes flagged in the same view as spend and attribution",
+    "vs": "Cloudflare's bot analysis tab shows bot score and traffic patterns on its own; it is not tied to order-count reconciliation or ad spend anomalies"
+   },
+   {
+    "claim": "one metric contract with a single formula, owner and freshness stamp per number, surfaced everywhere that number appears",
+    "vs": "platforms report their own version of a number by their own definition (for example, one popular platform's built-in MER is spend÷revenue while the more common convention is revenue÷spend), and nothing today catches that mismatch automatically"
+   }
+  ],
+  "data_needs": [
+   {
+    "table": "ga4_config_audit",
+    "fields": [
+     "property_id",
+     "check_name",
+     "pass_fail",
+     "detail",
+     "checked_at"
+    ],
+    "connector_or_script": "GA4 Admin API audit script",
+    "refresh": "weekly"
+   },
+   {
+    "table": "pixel_capi_events",
+    "fields": [
+     "event_name",
+     "source",
+     "event_id",
+     "dedup_key",
+     "match_quality",
+     "timestamp"
+    ],
+    "connector_or_script": "Meta MCP (read-only) + server event log",
+    "refresh": "daily"
+   },
+   {
+    "table": "utm_audit",
+    "fields": [
+     "url",
+     "campaign",
+     "utm_source",
+     "utm_medium",
+     "utm_campaign",
+     "valid",
+     "checked_at"
+    ],
+    "connector_or_script": "link crawl script against the UTM convention doc",
+    "refresh": "weekly"
+   },
+   {
+    "table": "sessions_ga4",
+    "fields": [
+     "date",
+     "channel",
+     "sessions",
+     "source_medium"
+    ],
+    "connector_or_script": "GA4 Data API",
+    "refresh": "daily"
+   },
+   {
+    "table": "order_counts",
+    "fields": [
+     "date",
+     "platform",
+     "order_count"
+    ],
+    "connector_or_script": "GA4 + Meta MCP + Shopify + marketplace exports",
+    "refresh": "daily"
+   },
+   {
+    "table": "attribution_models",
+    "fields": [
+     "channel",
+     "model",
+     "revenue",
+     "period"
+    ],
+    "connector_or_script": "GA4 + Meta + platform exports",
+    "refresh": "weekly"
+   },
+   {
+    "table": "holdout_tests",
+    "fields": [
+     "test_id",
+     "channel",
+     "geo",
+     "start",
+     "end",
+     "lift_pct",
+     "confidence"
+    ],
+    "connector_or_script": "manual test log",
+    "refresh": "per test"
+   },
+   {
+    "table": "metric_contract",
+    "fields": [
+     "metric_name",
+     "formula",
+     "source",
+     "owner",
+     "last_updated"
+    ],
+    "connector_or_script": "internal document or database",
+    "refresh": "on change"
+   },
+   {
+    "table": "data_freshness_log",
+    "fields": [
+     "source",
+     "last_sync_at",
+     "expected_cadence"
+    ],
+    "connector_or_script": "pipeline monitor",
+    "refresh": "hourly"
+   },
+   {
+    "table": "rfm_scores",
+    "fields": [
+     "customer_id",
+     "recency",
+     "frequency",
+     "monetary",
+     "segment",
+     "period"
+    ],
+    "connector_or_script": "warehouse query",
+    "refresh": "weekly"
+   },
+   {
+    "table": "mmm_outputs",
+    "fields": [
+     "channel",
+     "period",
+     "modeled_contribution",
+     "platform_reported"
+    ],
+    "connector_or_script": "marketing mix model script",
+    "refresh": "monthly"
+   },
+   {
+    "table": "tag_manager_log",
+    "fields": [
+     "container_id",
+     "tag_name",
+     "fire_count",
+     "duplicate_flag",
+     "date"
+    ],
+    "connector_or_script": "tag manager or server-side container debug log",
+    "refresh": "weekly"
+   }
+  ],
+  "founder_view_note": "With nothing connected, the room shows every audit and reconciliation card as unavailable with the exact missing connection named (no GA4 property, no CAPI, no metric contract) instead of a green check. The first thing it shows once GA4 and Shopify are connected is the GA4 audit score and the order-count reconciliation; attribution, MMM and RFM cards light up as ad and warehouse data are added."
+ },
+ {
+  "room": "Team and ops",
+  "agent": "MONEY",
+  "who_uses": [
+   "founder",
+   "operations lead",
+   "team manager",
+   "agency account manager"
+  ],
+  "jobs": [
+   {
+    "job": "run the voice-of-customer program",
+    "question": "what are customers actually telling us, and does anyone act on it",
+    "capabilities": [
+     "MONEY-C29"
+    ]
+   },
+   {
+    "job": "size the team and hire well",
+    "question": "do we need to hire, and are we hiring the right way",
+    "capabilities": [
+     "MONEY-C31",
+     "MONEY-C32"
+    ]
+   },
+   {
+    "job": "keep onboarding and SOPs current",
+    "question": "could a new hire do this job from what is written down",
+    "capabilities": [
+     "MONEY-C33"
+    ]
+   },
+   {
+    "job": "run the meeting cadence and team health",
+    "question": "are we having the right meetings, and is the team actually functioning",
+    "capabilities": [
+     "MONEY-C34",
+     "MONEY-C35"
+    ]
+   },
+   {
+    "job": "evaluate and manage vendors, 3PLs and agencies",
+    "question": "is this vendor doing what we pay them for",
+    "capabilities": [
+     "MONEY-C36"
+    ]
+   },
+   {
+    "job": "govern supplier purchase orders and production",
+    "question": "is this production run on track, on spec and on one owner's desk",
+    "capabilities": [
+     "MONEY-C37"
+    ]
+   },
+   {
+    "job": "plan customer-service capacity and ticket routing",
+    "question": "do we have enough CS coverage for what is coming, and is it costing more than it should",
+    "capabilities": [
+     "MONEY-C38"
+    ]
+   },
+   {
+    "job": "audit tooling against revenue stage",
+    "question": "are we paying for software we have outgrown or do not need yet",
+    "capabilities": [
+     "MONEY-C39"
+    ]
+   },
+   {
+    "job": "run the decision-logging and diagnosis framework",
+    "question": "who owns this kind of decision, and was it logged with a metric and a review date",
+    "capabilities": [
+     "MONEY-C40"
+    ]
+   },
+   {
+    "job": "manage freelancer and contractor engagements",
+    "question": "is this contractor scoped, paid and offboarded properly",
+    "capabilities": [
+     "MONEY-C66"
+    ]
+   },
+   {
+    "job": "keep HR and legal paperwork current",
+    "question": "are our contracts, handbook and exits all clean and signed",
+    "capabilities": [
+     "MONEY-C67",
+     "MONEY-C68",
+     "MONEY-C69"
+    ]
+   },
+   {
+    "job": "monitor 3PL and warehouse SLA performance daily",
+    "question": "is our warehouse hitting pick, pack and damage targets today",
+    "capabilities": [
+     "MONEY-C70"
+    ]
+   },
+   {
+    "job": "maintain the CS knowledge base and QA scoring",
+    "question": "are agents using current answers, and how good are their replies",
+    "capabilities": [
+     "MONEY-C71"
+    ]
+   },
+   {
+    "job": "get ahead of SaaS renewals",
+    "question": "which tool renews soon, and should we renegotiate or cancel",
+    "capabilities": [
+     "MONEY-C78"
+    ]
+   }
+  ],
+  "metrics": [
+   {
+    "name": "sop_coverage_rate",
+    "plain": "Share of core roles with a current, written SOP",
+    "formula": "roles with an SOP reviewed in the last 6 months ÷ total core roles",
+    "source": "sop_register table",
+    "window": "monthly",
+    "freshness_rule": "stale after 35 days without a check",
+    "unavailable_when": "sop_register not maintained",
+    "benchmark": "target 100% for core silos"
+   },
+   {
+    "name": "time_to_fill",
+    "plain": "Days between a hiring trigger firing and an offer accepted",
+    "formula": "offer_accepted_date − trigger_crossed_date, per role",
+    "source": "hiring_triggers table + ATS/manual log",
+    "window": "per search",
+    "freshness_rule": "stale after the role is filled and not updated within 5 days",
+    "unavailable_when": "trigger not logged for that role",
+    "benchmark": "no fixed number; compare across the brand's own searches"
+   },
+   {
+    "name": "decision_log_completeness",
+    "plain": "Share of high-stakes decisions logged with an owner and a review date",
+    "formula": "decisions logged with owner + metric + review date ÷ decisions the framework says should be logged",
+    "source": "decision_log table",
+    "window": "monthly",
+    "freshness_rule": "stale after 35 days without an entry check",
+    "unavailable_when": "decision_log not maintained",
+    "benchmark": "target 100%"
+   },
+   {
+    "name": "vendor_sla_hit_rate",
+    "plain": "Share of a vendor's SLA terms actually met",
+    "formula": "SLA metrics hit ÷ SLA metrics measured, per vendor, per period",
+    "source": "vendor_sla table",
+    "window": "monthly",
+    "freshness_rule": "stale after 35 days",
+    "unavailable_when": "vendor has no written SLA on file",
+    "benchmark": "target 100% against the written SLA"
+   },
+   {
+    "name": "invoice_sla_match_rate",
+    "plain": "Share of vendor invoices that match the agreed SLA and rate card",
+    "formula": "invoices matching contracted rate and SLA ÷ total invoices audited",
+    "source": "vendor invoices + vendor_sla table",
+    "window": "monthly",
+    "freshness_rule": "stale after 35 days",
+    "unavailable_when": "invoice not itemized enough to check",
+    "benchmark": "target 100%"
+   },
+   {
+    "name": "cs_cost_per_ticket",
+    "plain": "What one support ticket costs on average",
+    "formula": "total CS cost in period ÷ tickets resolved in period",
+    "source": "cs_tickets table + payroll/vendor cost",
+    "window": "weekly",
+    "freshness_rule": "stale after 9 days",
+    "unavailable_when": "CS cost not allocated for the period",
+    "benchmark": "compare to the brand's own trailing average"
+   },
+   {
+    "name": "cs_resolution_time",
+    "plain": "Median time to resolve a ticket",
+    "formula": "median(resolved_at − opened_at), by complexity tier",
+    "source": "cs_tickets table",
+    "window": "weekly",
+    "freshness_rule": "stale after 9 days",
+    "unavailable_when": "complexity not tagged",
+    "benchmark": "compare to the brand's own trailing average, by tier"
+   },
+   {
+    "name": "tooling_spend_pct_revenue",
+    "plain": "Software spend as a share of revenue",
+    "formula": "total tooling spend in period ÷ net revenue in period",
+    "source": "tooling_spend table + orders table",
+    "window": "monthly",
+    "freshness_rule": "stale after 35 days",
+    "unavailable_when": "a tool's cost is not tagged",
+    "benchmark": "compare to the brand's own revenue-stage plan, not a universal number"
+   },
+   {
+    "name": "meeting_cadence_adherence",
+    "plain": "Share of scheduled trading reviews and check-ins that actually happened",
+    "formula": "meetings held ÷ meetings scheduled, by type",
+    "source": "meeting_log table",
+    "window": "monthly",
+    "freshness_rule": "stale after 35 days",
+    "unavailable_when": "meeting_log not maintained",
+    "benchmark": "target 100% for the weekly trading review"
+   },
+   {
+    "name": "freelancer_completion_rate",
+    "plain": "Share of contractor engagements with scope, IP assignment and on-time invoicing all in place",
+    "formula": "engagements with all 3 items checked ÷ total active engagements",
+    "source": "freelancer_contracts table",
+    "window": "monthly",
+    "freshness_rule": "stale after 35 days",
+    "unavailable_when": "engagement not logged",
+    "benchmark": "target 100%"
+   },
+   {
+    "name": "contract_redline_turnaround",
+    "plain": "Days to get an incoming contract redlined and returned",
+    "formula": "returned_date − received_date, per contract",
+    "source": "contract tracker",
+    "window": "per contract",
+    "freshness_rule": "stale after 14 days on an open contract",
+    "unavailable_when": "contract not logged",
+    "benchmark": "no fixed number; flag anything over 10 business days"
+   },
+   {
+    "name": "offboarding_completion_rate",
+    "plain": "Share of exits with same-day access revocation and a completed checklist",
+    "formula": "exits with access revoked same day and checklist complete ÷ total exits",
+    "source": "hr_records table",
+    "window": "per exit, rolled up monthly",
+    "freshness_rule": "stale after 5 days on an open exit",
+    "unavailable_when": "exit not logged",
+    "benchmark": "target 100%"
+   },
+   {
+    "name": "saas_renewal_coverage",
+    "plain": "Share of upcoming SaaS renewals with a usage review done before the window closes",
+    "formula": "renewals with a usage review logged before auto-renew date ÷ renewals due in the next 60 days",
+    "source": "saas_contracts table",
+    "window": "monthly, forward-looking 60 days",
+    "freshness_rule": "stale after 35 days without a check",
+    "unavailable_when": "contract renewal date not on file",
+    "benchmark": "target 100%"
+   },
+   {
+    "name": "handbook_acknowledgment_rate",
+    "plain": "Share of staff who have signed the current handbook version",
+    "formula": "staff with a signed acknowledgment of the current version ÷ total staff",
+    "source": "hr_records table",
+    "window": "on every handbook update, then monthly",
+    "freshness_rule": "stale after 35 days after a version change",
+    "unavailable_when": "hr_records not maintained",
+    "benchmark": "target 100%"
+   }
+  ],
+  "insights": [
+   {
+    "name": "SOP gap",
+    "rule": "a core role in the silo map has no SOP entry, or its SOP is over 6 months old",
+    "computed_from": [
+     "sop_coverage_rate"
+    ],
+    "sentence": "{role} has no current written SOP",
+    "severity": "medium",
+    "action_capability": "MONEY-C33"
+   },
+   {
+    "name": "hiring trigger crossed",
+    "rule": "a silo's hiring trigger metric has been past its threshold for over 4 weeks with no open requisition",
+    "computed_from": [
+     "time_to_fill",
+     "hiring_triggers table"
+    ],
+    "sentence": "{silo} crossed its hiring trigger {n} weeks ago with no req open",
+    "severity": "high",
+    "action_capability": "MONEY-C31"
+   },
+   {
+    "name": "vendor SLA breach",
+    "rule": "vendor_sla_hit_rate for a vendor falls below 90% in the period",
+    "computed_from": [
+     "vendor_sla_hit_rate"
+    ],
+    "sentence": "{vendor} missed its {sla_metric} SLA {n} times this month",
+    "severity": "high",
+    "action_capability": "MONEY-C36"
+   },
+   {
+    "name": "decision log gap",
+    "rule": "no new entry was added to the decision log in the same period the weekly review meeting was held",
+    "computed_from": [
+     "decision_log_completeness",
+     "meeting_cadence_adherence"
+    ],
+    "sentence": "no decision was logged in {n} weeks despite the weekly review happening",
+    "severity": "medium",
+    "action_capability": "MONEY-C40"
+   },
+   {
+    "name": "CS cost drift",
+    "rule": "cs_cost_per_ticket this period exceeds the trailing 90-day average by more than 15%",
+    "computed_from": [
+     "cs_cost_per_ticket"
+    ],
+    "sentence": "cost per ticket rose {pct} versus the last quarter",
+    "severity": "medium",
+    "action_capability": "MONEY-C38"
+   },
+   {
+    "name": "tooling misfit",
+    "rule": "tooling_spend_pct_revenue exceeds the brand's own stage benchmark by more than 25% relative",
+    "computed_from": [
+     "tooling_spend_pct_revenue"
+    ],
+    "sentence": "{tool} costs {pct} of revenue, above what the brand's stage plan allows",
+    "severity": "medium",
+    "action_capability": "MONEY-C39"
+   },
+   {
+    "name": "offboarding gap",
+    "rule": "offboarding_completion_rate shows an exited employee with access still active past the same day",
+    "computed_from": [
+     "offboarding_completion_rate"
+    ],
+    "sentence": "{n} accounts stayed active after {employee} left",
+    "severity": "critical",
+    "action_capability": "MONEY-C69"
+   },
+   {
+    "name": "SaaS renewal window closing",
+    "rule": "a contract's auto-renew date is within 30 days and saas_renewal_coverage shows no usage review logged",
+    "computed_from": [
+     "saas_renewal_coverage"
+    ],
+    "sentence": "{tool} renews in {n} days and nobody has reviewed its usage yet",
+    "severity": "medium",
+    "action_capability": "MONEY-C78"
+   }
+  ],
+  "visuals": [
+   {
+    "name": "SOP coverage grid",
+    "type": "grid, role by status",
+    "shows": "every core role and whether its SOP is current, aging or missing",
+    "why_this_chart": "a founder sees the exact gap instead of trusting memory",
+    "exists_today": false
+   },
+   {
+    "name": "vendor SLA scorecard",
+    "type": "table with colored bars per vendor",
+    "shows": "each vendor's SLA metrics hit vs missed this period",
+    "why_this_chart": "turns a vague complaint into a documented pattern",
+    "exists_today": false
+   },
+   {
+    "name": "meeting cadence strip",
+    "type": "calendar heat strip",
+    "shows": "which scheduled meetings actually happened over the last quarter",
+    "why_this_chart": "shows whether the management rhythm is real or slipping",
+    "exists_today": false
+   },
+   {
+    "name": "hiring trigger timeline",
+    "type": "line chart with a threshold band",
+    "shows": "the trigger metric for each silo against its threshold, with the crossing date marked",
+    "why_this_chart": "turns a hiring 'feeling' into a dated number",
+    "exists_today": false
+   },
+   {
+    "name": "CS cost and time trend",
+    "type": "dual line chart",
+    "shows": "cost per ticket and resolution time over time, by complexity tier",
+    "why_this_chart": "shows if CS is getting more efficient or more expensive as volume grows",
+    "exists_today": false
+   },
+   {
+    "name": "decision log timeline",
+    "type": "timeline of logged decisions",
+    "shows": "every logged high-stakes decision with its owner, metric and review date",
+    "why_this_chart": "makes accountability visible instead of implied",
+    "exists_today": false
+   }
+  ],
+  "actions": [
+   {
+    "label": "Run the next voice-of-customer round",
+    "capability": "MONEY-C29",
+    "autonomy": "human_assist"
+   },
+   {
+    "label": "Send the org design and hiring trigger review to the founder",
+    "capability": "MONEY-C31",
+    "autonomy": "human_assist"
+   },
+   {
+    "label": "Send the hiring scorecard and search plan to the founder",
+    "capability": "MONEY-C32",
+    "autonomy": "human_assist"
+   },
+   {
+    "label": "Update onboarding and SOPs",
+    "capability": "MONEY-C33",
+    "autonomy": "human_assist"
+   },
+   {
+    "label": "Send the meeting cadence design to the founder",
+    "capability": "MONEY-C34",
+    "autonomy": "human_assist"
+   },
+   {
+    "label": "Prepare a team facilitation guide",
+    "capability": "MONEY-C35",
+    "autonomy": "human_assist"
+   },
+   {
+    "label": "Send the vendor/3PL/agency review to the founder",
+    "capability": "MONEY-C36",
+    "autonomy": "human_assist"
+   },
+   {
+    "label": "Send the production critical path to the founder",
+    "capability": "MONEY-C37",
+    "autonomy": "human_assist"
+   },
+   {
+    "label": "Send the CS capacity plan to the founder",
+    "capability": "MONEY-C38",
+    "autonomy": "human_assist"
+   },
+   {
+    "label": "Send the tooling audit to the founder",
+    "capability": "MONEY-C39",
+    "autonomy": "human_assist"
+   },
+   {
+    "label": "Update the decision-logging framework",
+    "capability": "MONEY-C40",
+    "autonomy": "human_assist"
+   },
+   {
+    "label": "Manage the freelancer engagement lifecycle",
+    "capability": "MONEY-C66",
+    "autonomy": "human_assist"
+   },
+   {
+    "label": "Send a contract for approval",
+    "capability": "MONEY-C67",
+    "autonomy": "founder_gate"
+   },
+   {
+    "label": "Send the handbook update for approval",
+    "capability": "MONEY-C68",
+    "autonomy": "founder_gate"
+   },
+   {
+    "label": "Send an offboarding checklist for approval",
+    "capability": "MONEY-C69",
+    "autonomy": "founder_gate"
+   },
+   {
+    "label": "Refresh today's 3PL/warehouse SLA scorecard",
+    "capability": "MONEY-C70",
+    "autonomy": "agent_does"
+   },
+   {
+    "label": "Update the CS knowledge base and run QA scoring",
+    "capability": "MONEY-C71",
+    "autonomy": "human_assist"
+   },
+   {
+    "label": "Send the SaaS renewal renegotiation draft for approval",
+    "capability": "MONEY-C78",
+    "autonomy": "founder_gate"
+   }
+  ],
+  "not_elsewhere": [
+   {
+    "claim": "SOP coverage tracked against the brand's own role list, with age and gaps flagged automatically",
+    "vs": "wikis and doc tools (Notion, Confluence) store SOPs but do not flag which core role has none or which one is stale"
+   },
+   {
+    "claim": "vendor and 3PL SLA performance scored against the actual written SLA and cross-checked to invoices, in one room",
+    "vs": "3PL portals report their own operational numbers; matching those numbers to the signed SLA and the invoice is done manually today"
+   },
+   {
+    "claim": "a hiring trigger shown as a number crossed on a date, next to the org chart",
+    "vs": "ATS tools track requisitions and pipeline once a search is open; they do not watch the metric that should open the search in the first place"
+   },
+   {
+    "claim": "SaaS renewal renegotiation drafted with the brand's own usage numbers before the auto-renew window closes",
+    "vs": "SaaS spend-management tools (for example Vendr, Tropic) track contract dates and spend; they do not draft the renegotiation or cancellation email itself"
+   },
+   {
+    "claim": "CS cost per ticket and resolution time tied to a complexity definition set before routing, not after",
+    "vs": "helpdesk tools (Gorgias, Zendesk) report cost and time per ticket; the complexity threshold that should decide routing is defined outside those tools today"
+   }
+  ],
+  "data_needs": [
+   {
+    "table": "sop_register",
+    "fields": [
+     "role",
+     "sop_title",
+     "owner",
+     "last_reviewed"
+    ],
+    "connector_or_script": "manual document register",
+    "refresh": "quarterly"
+   },
+   {
+    "table": "hiring_triggers",
+    "fields": [
+     "silo",
+     "metric",
+     "threshold",
+     "current_value",
+     "crossed_at"
+    ],
+    "connector_or_script": "manual log against finance data",
+    "refresh": "monthly"
+   },
+   {
+    "table": "vendor_sla",
+    "fields": [
+     "vendor",
+     "sla_metric",
+     "target",
+     "actual",
+     "period"
+    ],
+    "connector_or_script": "vendor invoices + 3PL/agency reports",
+    "refresh": "monthly"
+   },
+   {
+    "table": "decision_log",
+    "fields": [
+     "decision_id",
+     "type",
+     "owner",
+     "date",
+     "metric",
+     "review_date"
+    ],
+    "connector_or_script": "manual decision log",
+    "refresh": "continuous"
+   },
+   {
+    "table": "cs_tickets",
+    "fields": [
+     "ticket_id",
+     "channel",
+     "opened_at",
+     "resolved_at",
+     "cost",
+     "complexity"
+    ],
+    "connector_or_script": "Gorgias/Zendesk export",
+    "refresh": "daily"
+   },
+   {
+    "table": "tooling_spend",
+    "fields": [
+     "tool",
+     "monthly_cost",
+     "revenue_stage_benchmark",
+     "owner"
+    ],
+    "connector_or_script": "card/expense feed",
+    "refresh": "monthly"
+   },
+   {
+    "table": "meeting_log",
+    "fields": [
+     "meeting_type",
+     "scheduled_at",
+     "held",
+     "notes_url"
+    ],
+    "connector_or_script": "calendar export + manual log",
+    "refresh": "weekly"
+   },
+   {
+    "table": "freelancer_contracts",
+    "fields": [
+     "contractor",
+     "scope",
+     "rate",
+     "milestone",
+     "invoice_status"
+    ],
+    "connector_or_script": "manual contract tracker",
+    "refresh": "per engagement"
+   },
+   {
+    "table": "hr_records",
+    "fields": [
+     "employee_id",
+     "contract_signed",
+     "handbook_ack",
+     "exit_date",
+     "offboard_checklist_done"
+    ],
+    "connector_or_script": "HR system export",
+    "refresh": "on event"
+   },
+   {
+    "table": "saas_contracts",
+    "fields": [
+     "tool",
+     "renewal_date",
+     "usage_last_90d",
+     "cost",
+     "auto_renew"
+    ],
+    "connector_or_script": "billing exports",
+    "refresh": "monthly"
+   }
+  ],
+  "founder_view_note": "With nothing connected, the room shows the SOP grid, vendor scorecard and hiring-trigger lines as unavailable with the exact register or feed missing, instead of blank charts. The first thing it shows once the SOP register and one CS export land is SOP coverage and CS cost per ticket; vendor SLA and hiring-trigger cards light up as those logs are added."
+ },
+ {
+  "room": "Security",
+  "agent": "MONEY",
+  "who_uses": [
+   "founder",
+   "developer",
+   "operations lead",
+   "agency account manager"
+  ],
+  "jobs": [
+   {
+    "job": "build and enforce the bot and AI-agent traffic policy",
+    "question": "what is hitting our site that is not a person, and what should happen to it",
+    "capabilities": [
+     "MONEY-C41"
+    ]
+   },
+   {
+    "job": "detect fraud and abuse across checkout, cards and returns",
+    "question": "are we losing money to card testing, false declines or return abuse",
+    "capabilities": [
+     "MONEY-C42",
+     "MONEY-C76"
+    ]
+   },
+   {
+    "job": "harden account takeover and authentication defenses, correlated across systems",
+    "question": "could someone take over an account, and would we see it across every connected system",
+    "capabilities": [
+     "MONEY-C43",
+     "MONEY-C81"
+    ]
+   },
+   {
+    "job": "audit and fix web application security defects",
+    "question": "does our storefront or checkout code have an exploitable defect",
+    "capabilities": [
+     "MONEY-C44"
+    ]
+   },
+   {
+    "job": "audit third-party scripts, apps and dependencies",
+    "question": "what apps and scripts have access to our store, and are any of them risky",
+    "capabilities": [
+     "MONEY-C45"
+    ]
+   },
+   {
+    "job": "review admin access and least-privilege roles",
+    "question": "does every staff member have only the access they need, and was it removed on time",
+    "capabilities": [
+     "MONEY-C46"
+    ]
+   },
+   {
+    "job": "maintain backups and the incident response runbook",
+    "question": "if something breaks or gets ransomed today, can we actually recover",
+    "capabilities": [
+     "MONEY-C47"
+    ]
+   },
+   {
+    "job": "monitor domain, DNS and brand-impersonation risk",
+    "question": "is our domain safe, and is someone impersonating us",
+    "capabilities": [
+     "MONEY-C48"
+    ]
+   },
+   {
+    "job": "audit privacy, consent and tracking compliance",
+    "question": "are we exposed on GDPR/CCPA or consent rules for where our customers are",
+    "capabilities": [
+     "MONEY-C49"
+    ]
+   },
+   {
+    "job": "run the quarterly security audit program and confirm PCI scope",
+    "question": "are we covering all four security pillars, and which PCI questionnaire actually applies to us",
+    "capabilities": [
+     "MONEY-C50",
+     "MONEY-C74"
+    ]
+   },
+   {
+    "job": "audit and enforce email authentication",
+    "question": "can someone spoof our domain in an email right now",
+    "capabilities": [
+     "MONEY-C72"
+    ]
+   },
+   {
+    "job": "inventory and rotate API keys and credentials",
+    "question": "which keys exist, who holds them, and which are overdue for rotation",
+    "capabilities": [
+     "MONEY-C73"
+    ]
+   },
+   {
+    "job": "run staff security awareness training and phishing simulation",
+    "question": "would our own staff catch a phishing attempt today",
+    "capabilities": [
+     "MONEY-C75"
+    ]
+   },
+   {
+    "job": "run vendor security and data-processing risk assessments",
+    "question": "did this vendor pass a risk check before it touched customer or payment data",
+    "capabilities": [
+     "MONEY-C77"
+    ]
+   }
+  ],
+  "metrics": [
+   {
+    "name": "open_findings_by_severity",
+    "plain": "How many security issues are open right now, by how bad they are",
+    "formula": "count of findings with resolved_at empty, grouped by severity",
+    "source": "security_scan_findings table",
+    "window": "weekly",
+    "freshness_rule": "stale after 9 days without a new scan",
+    "unavailable_when": "no scan run this week",
+    "benchmark": "target zero critical findings open past their fix window"
+   },
+   {
+    "name": "finding_age_days",
+    "plain": "How long an open finding has been sitting unresolved",
+    "formula": "today − opened_at, per open finding",
+    "source": "security_scan_findings table",
+    "window": "continuous",
+    "freshness_rule": "stale after 9 days without a scan",
+    "unavailable_when": "finding has no opened_at",
+    "benchmark": "critical findings should close within 7 days"
+   },
+   {
+    "name": "bot_traffic_pct",
+    "plain": "Share of site traffic that scores as automated",
+    "formula": "requests below the bot-score threshold ÷ total requests, by endpoint",
+    "source": "Cloudflare bot analytics",
+    "window": "daily",
+    "freshness_rule": "stale after 24 hours",
+    "unavailable_when": "bot scoring not enabled",
+    "benchmark": "flag anything above the brand's own trailing baseline, especially on checkout"
+   },
+   {
+    "name": "card_testing_bursts",
+    "plain": "Number of times card attempts spiked in a short window, a known fraud pattern",
+    "formula": "count of time windows where failed-auth attempts exceed the set per-minute threshold",
+    "source": "payment gateway/processor logs",
+    "window": "daily",
+    "freshness_rule": "stale after 24 hours",
+    "unavailable_when": "processor does not expose attempt-level logs",
+    "benchmark": "target zero unhandled bursts"
+   },
+   {
+    "name": "chargeback_rate",
+    "group": "reversed_and_failed_orders",
+    "plain": "Share of orders disputed as chargebacks",
+    "formula": "chargebacks in period ÷ orders in period",
+    "source": "payment processor",
+    "window": "monthly",
+    "freshness_rule": "stale after 35 days",
+    "unavailable_when": "processor has not closed the period",
+    "benchmark": "kept below the processor's own flag threshold, with headroom"
+   },
+   {
+    "name": "dispute_rate",
+    "group": "reversed_and_failed_orders",
+    "plain": "Share of orders disputed on any channel, chargebacks plus PayPal/other processor disputes",
+    "formula": "(chargebacks + non-chargeback processor disputes) in period ÷ orders in period",
+    "source": "payment processor + PayPal/other gateway dispute feed",
+    "window": "monthly",
+    "freshness_rule": "stale after 35 days",
+    "unavailable_when": "a connected processor has not closed the period",
+    "benchmark": "kept below the processor's own flag threshold, with headroom"
+   },
+   {
+    "name": "return_to_sender_rate",
+    "group": "reversed_and_failed_orders",
+    "plain": "Share of shipped orders a carrier returned undelivered (refused, bad address, unclaimed), never reaching the customer",
+    "formula": "orders marked carrier return-to-sender in period ÷ orders shipped in period",
+    "source": "carrier tracking events (USPS/UPS/FedEx) + order table",
+    "window": "weekly",
+    "freshness_rule": "stale after 10 days",
+    "unavailable_when": "carrier tracking events not connected",
+    "benchmark": "no fixed benchmark; track trend against the brand's own history"
+   },
+   {
+    "name": "rto_rate",
+    "group": "reversed_and_failed_orders",
+    "markets": ["IN"],
+    "plain": "Share of COD orders that came back without the customer receiving them (India only; reads null for US brands)",
+    "formula": "COD orders returned to origin in period ÷ COD orders dispatched in period",
+    "source": "courier COD/RTO reports",
+    "window": "weekly",
+    "freshness_rule": "stale after 10 days",
+    "unavailable_when": "the brand runs no COD, or courier RTO reports are not connected",
+    "benchmark": "no fixed benchmark; track trend against the brand's own history"
+   },
+   {
+    "name": "payment_method_mix",
+    "group": "payment_method_mix",
+    "plain": "Share of orders by payment method: card, Shop Pay, PayPal, Apple Pay, BNPL (Affirm, Klarna, Afterpay)",
+    "formula": "orders by payment method in period ÷ total orders in period",
+    "source": "payment processor + checkout data",
+    "window": "monthly",
+    "freshness_rule": "stale after 35 days",
+    "unavailable_when": "a connected processor has not closed the period",
+    "benchmark": "no fixed benchmark; track trend against the brand's own history"
+   },
+   {
+    "name": "cod_share",
+    "group": "payment_method_mix",
+    "markets": ["IN"],
+    "plain": "Share of orders paid cash on delivery (India only; reads null for US brands)",
+    "formula": "COD orders in period ÷ total orders in period",
+    "source": "order table",
+    "window": "monthly",
+    "freshness_rule": "stale after 35 days",
+    "unavailable_when": "the brand runs no COD",
+    "benchmark": "no fixed benchmark; track trend against the brand's own history"
+   },
+   {
+    "name": "false_decline_rate",
+    "plain": "Share of good orders wrongly blocked by fraud rules",
+    "formula": "declined orders later confirmed legitimate ÷ total declined orders",
+    "source": "payment processor + manual review log",
+    "window": "monthly",
+    "freshness_rule": "stale after 35 days",
+    "unavailable_when": "declines not reviewed",
+    "benchmark": "no fixed number; track against approval-rate trend"
+   },
+   {
+    "name": "admin_2fa_coverage",
+    "plain": "Share of admin accounts with 2FA or a passkey enabled",
+    "formula": "admin accounts with 2FA/passkey enabled ÷ total admin accounts",
+    "source": "admin_access table",
+    "window": "weekly",
+    "freshness_rule": "stale after 9 days",
+    "unavailable_when": "a platform's admin list not pulled this week",
+    "benchmark": "target 100%"
+   },
+   {
+    "name": "access_review_completeness",
+    "plain": "Share of staff mapped to a least-privilege role with a recent review",
+    "formula": "staff with a role review in the last 90 days ÷ total staff with admin access",
+    "source": "admin_access table",
+    "window": "quarterly",
+    "freshness_rule": "stale after 100 days",
+    "unavailable_when": "no review logged",
+    "benchmark": "target 100% every quarter"
+   },
+   {
+    "name": "backup_restore_success",
+    "plain": "Whether the last restore test actually worked, and when it ran",
+    "formula": "most recent backup_log row with restore_tested_at set, and its result",
+    "source": "backup_log table",
+    "window": "monthly",
+    "freshness_rule": "stale after 35 days without a restore test",
+    "unavailable_when": "no restore test on file",
+    "benchmark": "target: a successful restore test at least every 30 days"
+   },
+   {
+    "name": "dns_dangling_records",
+    "plain": "Number of DNS records pointing at something that no longer exists",
+    "formula": "count of dns_records with status = dangling",
+    "source": "DNS audit script",
+    "window": "weekly",
+    "freshness_rule": "stale after 9 days",
+    "unavailable_when": "DNS not scanned this week",
+    "benchmark": "target zero"
+   },
+   {
+    "name": "lookalike_domain_count",
+    "plain": "Number of new domains that could be impersonating the brand",
+    "formula": "count of domain_watch rows registered in the period matching the brand's name pattern",
+    "source": "domain_watch table",
+    "window": "weekly",
+    "freshness_rule": "stale after 9 days",
+    "unavailable_when": "brand monitoring not running",
+    "benchmark": "no fixed number; every new one gets reviewed"
+   },
+   {
+    "name": "email_auth_status",
+    "plain": "Whether email from this domain can be spoofed",
+    "formula": "SPF present, DKIM present, DMARC policy (none/quarantine/reject), per sending domain",
+    "source": "DNS lookup script",
+    "window": "weekly",
+    "freshness_rule": "stale after 9 days",
+    "unavailable_when": "domain not checked this week",
+    "benchmark": "target DMARC at reject on every sending domain"
+   },
+   {
+    "name": "credential_rotation_overdue",
+    "plain": "Number of API keys or tokens overdue for rotation",
+    "formula": "count of credential_inventory rows where today − last_rotated exceeds the set rotation schedule",
+    "source": "credential_inventory table",
+    "window": "monthly",
+    "freshness_rule": "stale after 35 days",
+    "unavailable_when": "inventory not maintained",
+    "benchmark": "target zero overdue"
+   },
+   {
+    "name": "pci_saq_status",
+    "plain": "Which PCI self-assessment applies, and when it was last confirmed",
+    "formula": "current saq_type and days since confirmed_at, per payment flow",
+    "source": "pci_scope table",
+    "window": "annual, checked quarterly",
+    "freshness_rule": "stale after 12 months",
+    "unavailable_when": "no assessment on file",
+    "benchmark": "must be reconfirmed at least yearly or on any checkout change"
+   },
+   {
+    "name": "phishing_sim_click_rate",
+    "plain": "Share of staff who clicked the last simulated phishing email",
+    "formula": "staff who clicked ÷ staff who received the simulation",
+    "source": "phishing_sim table",
+    "window": "per campaign, quarterly",
+    "freshness_rule": "stale after 100 days without a new simulation",
+    "unavailable_when": "no simulation run",
+    "benchmark": "target under 5%, trending down"
+   },
+   {
+    "name": "vendor_risk_completion_rate",
+    "plain": "Share of vendors with a completed risk check and signed data-processing agreement before data access",
+    "formula": "vendors with questionnaire complete and DPA signed before data_access_granted_at ÷ total vendors with data access",
+    "source": "vendor_risk table",
+    "window": "on every new vendor, reviewed quarterly",
+    "freshness_rule": "stale after 100 days without a review",
+    "unavailable_when": "vendor_risk not maintained",
+    "benchmark": "target 100% before access is granted"
+   }
+  ],
+  "insights": [
+   {
+    "name": "critical finding aging",
+    "rule": "a finding with severity critical has finding_age_days over 7",
+    "computed_from": [
+     "finding_age_days"
+    ],
+    "sentence": "{finding} has been open {n} days past the 7-day fix window",
+    "severity": "critical",
+    "action_capability": "MONEY-C44"
+   },
+   {
+    "name": "checkout bot surge",
+    "rule": "bot_traffic_pct on a checkout-related endpoint rises more than the brand's own trailing baseline by 50% relative",
+    "computed_from": [
+     "bot_traffic_pct"
+    ],
+    "sentence": "{pct}% of checkout traffic this week scored as bots, up from {baseline_pct}%",
+    "severity": "high",
+    "action_capability": "MONEY-C41"
+   },
+   {
+    "name": "card testing detected",
+    "rule": "card_testing_bursts is above zero in the period",
+    "computed_from": [
+     "card_testing_bursts"
+    ],
+    "sentence": "{n} failed card attempts hit checkout in {window}, a card-testing pattern",
+    "severity": "critical",
+    "action_capability": "MONEY-C42"
+   },
+   {
+    "name": "chargeback rate rising toward flag",
+    "rule": "chargeback_rate is within 0.2 points of the processor's own flag threshold",
+    "computed_from": [
+     "chargeback_rate"
+    ],
+    "sentence": "chargebacks are at {pct}, {gap} points under the processor's flag line",
+    "severity": "high",
+    "action_capability": "MONEY-C42"
+   },
+   {
+    "name": "admin missing 2FA",
+    "rule": "admin_2fa_coverage is below 100%",
+    "computed_from": [
+     "admin_2fa_coverage"
+    ],
+    "sentence": "{n} admin accounts have no 2FA or passkey",
+    "severity": "critical",
+    "action_capability": "MONEY-C43"
+   },
+   {
+    "name": "backup restore untested",
+    "rule": "days since the last successful backup_restore_success exceeds 30",
+    "computed_from": [
+     "backup_restore_success"
+    ],
+    "sentence": "the last successful restore test was {n} days ago",
+    "severity": "high",
+    "action_capability": "MONEY-C47"
+   },
+   {
+    "name": "dangling DNS record",
+    "rule": "dns_dangling_records is above zero",
+    "computed_from": [
+     "dns_dangling_records"
+    ],
+    "sentence": "{n} DNS records point at nothing and could be hijacked",
+    "severity": "high",
+    "action_capability": "MONEY-C48"
+   },
+   {
+    "name": "lookalike domain registered",
+    "rule": "lookalike_domain_count is above zero in the period",
+    "computed_from": [
+     "lookalike_domain_count"
+    ],
+    "sentence": "{n} new lookalike domains were registered this month",
+    "severity": "medium",
+    "action_capability": "MONEY-C48"
+   },
+   {
+    "name": "DMARC not enforcing",
+    "rule": "email_auth_status shows dmarc policy as none or quarantine on a sending domain",
+    "computed_from": [
+     "email_auth_status"
+    ],
+    "sentence": "DMARC on {domain} is not set to reject, so spoofed mail is not blocked",
+    "severity": "high",
+    "action_capability": "MONEY-C72"
+   },
+   {
+    "name": "credential overdue",
+    "rule": "credential_rotation_overdue is above zero",
+    "computed_from": [
+     "credential_rotation_overdue"
+    ],
+    "sentence": "{n} API keys have not been rotated in over {days} days",
+    "severity": "medium",
+    "action_capability": "MONEY-C73"
+   },
+   {
+    "name": "return abuse pattern",
+    "rule": "a customer's return_count_90d exceeds the brand's own set threshold for orders in the same window",
+    "computed_from": [
+     "vendor_risk_completion_rate"
+    ],
+    "sentence": "{customer} has returned {n} of their last {m} orders",
+    "severity": "medium",
+    "action_capability": "MONEY-C76"
+   },
+   {
+    "name": "vendor risk gap",
+    "rule": "a vendor's data_access_granted_at is set but questionnaire_status is not complete or dpa_signed is false",
+    "computed_from": [
+     "vendor_risk_completion_rate"
+    ],
+    "sentence": "{vendor} got data access before its risk questionnaire was finished",
+    "severity": "high",
+    "action_capability": "MONEY-C77"
+   }
+  ],
+  "visuals": [
+   {
+    "name": "finding severity funnel",
+    "type": "stacked bar with age overlay",
+    "shows": "open findings by severity and how long each has been open",
+    "why_this_chart": "shows what is overdue, not just what exists",
+    "exists_today": false
+   },
+   {
+    "name": "bot traffic trend",
+    "type": "line chart, checkout vs site-wide",
+    "shows": "bot traffic share over time, checkout endpoints separated from the rest of the site",
+    "why_this_chart": "checkout bot traffic matters more than blog-page bot traffic",
+    "exists_today": false
+   },
+   {
+    "name": "admin access matrix",
+    "type": "heatmap, staff by admin area",
+    "shows": "who has access to what, and whether 2FA is on",
+    "why_this_chart": "makes over-broad access visible at a glance",
+    "exists_today": false
+   },
+   {
+    "name": "backup and restore calendar",
+    "type": "calendar strip",
+    "shows": "every backup run and the last successful restore test date",
+    "why_this_chart": "a backup that has never been restored is not proven to work",
+    "exists_today": false
+   },
+   {
+    "name": "credential rotation age table",
+    "type": "table, heat-colored by age",
+    "shows": "every API key or token and days since last rotation",
+    "why_this_chart": "makes an invisible risk (an old shared key) visible and dated",
+    "exists_today": false
+   },
+   {
+    "name": "domain and DNS risk list",
+    "type": "list with severity tags",
+    "shows": "dangling DNS records and new lookalike domains found this period",
+    "why_this_chart": "both are easy to miss and cheap to fix once seen",
+    "exists_today": false
+   }
+  ],
+  "actions": [
+   {
+    "label": "Update the bot and AI-agent traffic policy",
+    "capability": "MONEY-C41",
+    "autonomy": "human_assist"
+   },
+   {
+    "label": "Review checkout and payment fraud controls",
+    "capability": "MONEY-C42",
+    "autonomy": "human_assist"
+   },
+   {
+    "label": "Send the account takeover and auth hardening plan to the founder",
+    "capability": "MONEY-C43",
+    "autonomy": "human_assist"
+   },
+   {
+    "label": "Send the web app security fix list to the developer",
+    "capability": "MONEY-C44",
+    "autonomy": "human_assist"
+   },
+   {
+    "label": "Refresh the third-party script and dependency inventory",
+    "capability": "MONEY-C45",
+    "autonomy": "agent_does"
+   },
+   {
+    "label": "Send the admin access review to the founder",
+    "capability": "MONEY-C46",
+    "autonomy": "human_assist"
+   },
+   {
+    "label": "Send the backup and incident response runbook for review",
+    "capability": "MONEY-C47",
+    "autonomy": "human_assist"
+   },
+   {
+    "label": "Refresh domain, DNS and brand-impersonation monitoring",
+    "capability": "MONEY-C48",
+    "autonomy": "agent_does"
+   },
+   {
+    "label": "Send the privacy and consent audit to the founder",
+    "capability": "MONEY-C49",
+    "autonomy": "human_assist"
+   },
+   {
+    "label": "Send the quarterly security audit results to the founder",
+    "capability": "MONEY-C50",
+    "autonomy": "human_assist"
+   },
+   {
+    "label": "Audit and tighten email authentication",
+    "capability": "MONEY-C72",
+    "autonomy": "human_assist"
+   },
+   {
+    "label": "Send the API key rotation schedule for approval",
+    "capability": "MONEY-C73",
+    "autonomy": "founder_gate"
+   },
+   {
+    "label": "Send the PCI SAQ confirmation for approval",
+    "capability": "MONEY-C74",
+    "autonomy": "founder_gate"
+   },
+   {
+    "label": "Run a phishing simulation and training round",
+    "capability": "MONEY-C75",
+    "autonomy": "human_assist"
+   },
+   {
+    "label": "Review a flagged return-abuse pattern",
+    "capability": "MONEY-C76",
+    "autonomy": "human_assist"
+   },
+   {
+    "label": "Run a vendor security risk assessment",
+    "capability": "MONEY-C77",
+    "autonomy": "founder_gate"
+   },
+   {
+    "label": "Send the cross-system account-takeover correlation to the founder",
+    "capability": "MONEY-C81",
+    "autonomy": "founder_gate"
+   }
+  ],
+  "not_elsewhere": [
+   {
+    "claim": "open findings from the weekly scan tracked with age against a fix window and a named owner, in the same room as everything else",
+    "vs": "also in Detectify, Qualys and similar scanners for finding the issue; those tools do not track it against the brand's own backlog and owner"
+   },
+   {
+    "claim": "bot traffic separated for checkout endpoints and tied to fraud and order-count anomalies",
+    "vs": "also in Cloudflare's own bot analysis tab for the traffic pattern; it does not connect that traffic to chargeback risk or order-count reconciliation"
+   },
+   {
+    "claim": "backup health shown as a tested restore date, not just a backup existing",
+    "vs": "backup providers report that a backup ran; whether it actually restores is a separate, often-skipped test that most brands do not track on a calendar"
+   },
+   {
+    "claim": "domain, DNS and lookalike-domain risk watched together with the brand's own registrar lock state",
+    "vs": "domain monitoring services flag lookalikes; they do not also check the brand's own DNS for dangling records or registrar lock in the same view"
+   },
+   {
+    "claim": "credential rotation tracked with an overdue flag against a set schedule",
+    "vs": "secrets vaults (for example a password manager or cloud secrets manager) store keys; they do not by default flag which ones are overdue for rotation against a brand-set schedule"
+   },
+   {
+    "claim": "account-takeover signals correlated across Shopify admin, ad accounts, the ESP and the payment processor in one place",
+    "vs": "each platform has its own login and access logs; no single connected tool compares login geography and device across all of them to catch a pattern that only shows up together"
+   }
+  ],
+  "data_needs": [
+   {
+    "table": "security_scan_findings",
+    "fields": [
+     "finding_id",
+     "severity",
+     "area",
+     "opened_at",
+     "resolved_at",
+     "owner"
+    ],
+    "connector_or_script": "weekly automated scanner",
+    "refresh": "weekly"
+   },
+   {
+    "table": "bot_traffic",
+    "fields": [
+     "date",
+     "endpoint",
+     "bot_score_bucket",
+     "request_count"
+    ],
+    "connector_or_script": "Cloudflare bot analytics",
+    "refresh": "daily"
+   },
+   {
+    "table": "fraud_signals",
+    "fields": [
+     "date",
+     "event_type",
+     "count",
+     "amount"
+    ],
+    "connector_or_script": "payment gateway/processor logs",
+    "refresh": "daily"
+   },
+   {
+    "table": "admin_access",
+    "fields": [
+     "user",
+     "role",
+     "area",
+     "twofa_enabled",
+     "last_login",
+     "location",
+     "device"
+    ],
+    "connector_or_script": "platform admin logs (Shopify, Meta, ESP)",
+    "refresh": "daily"
+   },
+   {
+    "table": "backup_log",
+    "fields": [
+     "backup_id",
+     "location",
+     "taken_at",
+     "restore_tested_at",
+     "result"
+    ],
+    "connector_or_script": "backup provider export",
+    "refresh": "daily"
+   },
+   {
+    "table": "dns_records",
+    "fields": [
+     "domain",
+     "record_type",
+     "target",
+     "status",
+     "checked_at"
+    ],
+    "connector_or_script": "DNS audit script",
+    "refresh": "weekly"
+   },
+   {
+    "table": "domain_watch",
+    "fields": [
+     "lookalike_domain",
+     "registered_at",
+     "risk_score"
+    ],
+    "connector_or_script": "brand monitoring script",
+    "refresh": "weekly"
+   },
+   {
+    "table": "email_auth",
+    "fields": [
+     "domain",
+     "spf",
+     "dkim",
+     "dmarc_policy",
+     "checked_at"
+    ],
+    "connector_or_script": "DNS lookup script",
+    "refresh": "weekly"
+   },
+   {
+    "table": "credential_inventory",
+    "fields": [
+     "key_name",
+     "service",
+     "holder",
+     "last_rotated",
+     "rotation_due"
+    ],
+    "connector_or_script": "manual or secrets vault export",
+    "refresh": "monthly"
+   },
+   {
+    "table": "pci_scope",
+    "fields": [
+     "payment_flow",
+     "saq_type",
+     "confirmed_at"
+    ],
+    "connector_or_script": "manual assessment",
+    "refresh": "annual"
+   },
+   {
+    "table": "phishing_sim",
+    "fields": [
+     "staff_id",
+     "sent_at",
+     "clicked",
+     "reported"
+    ],
+    "connector_or_script": "training platform export",
+    "refresh": "per campaign"
+   },
+   {
+    "table": "return_abuse",
+    "fields": [
+     "customer_id",
+     "order_id",
+     "return_reason",
+     "return_count_90d",
+     "flagged"
+    ],
+    "connector_or_script": "Shopify returns + CS data",
+    "refresh": "weekly"
+   },
+   {
+    "table": "vendor_risk",
+    "fields": [
+     "vendor",
+     "questionnaire_status",
+     "dpa_signed",
+     "data_access_granted_at"
+    ],
+    "connector_or_script": "manual vendor register",
+    "refresh": "per vendor"
+   }
+  ],
+  "founder_view_note": "With nothing connected, the room shows every card (findings, bot traffic, access, backups, domain risk) as unavailable with the exact scan or feed missing, never a false all-clear. The first thing it shows once one scan and the admin access list land is open findings by severity and 2FA coverage; bot, backup, DNS and credential cards light up as those feeds are added."
+ }
+]

@@ -1,0 +1,1333 @@
+[
+ {
+  "id": "brand/research-customers",
+  "name": "Research customers",
+  "parent": null,
+  "invoke_when": "a research cycle starts and the source of evidence needs to be picked before any mining begins",
+  "select_by": {
+   "source": "reviews | tickets | social | onsite_behavior | interviews | surveys"
+  },
+  "inputs_required": [
+   "brand brain: products",
+   "the research question or 'general sweep'",
+   "which connectors are live"
+  ],
+  "steps": [
+   "1. Read the research question (or 'general monthly sweep') and the brand's live connectors.",
+   "2. Pick one or more sub-skills by source: reviews, tickets, social, onsite-behavior for passive/agent_does sources; interviews, surveys for active/human_assist sources.",
+   "3. Route to each picked sub-skill in turn; never invent findings for a source with no connector, mark it unavailable instead.",
+   "4. Collect each sub-skill's tagged output and pass it to the cross-check step in the calling workflow."
+  ],
+  "checks": [
+   "every source used is named",
+   "a source with no live connector is marked unavailable, not skipped silently",
+   "no sub-skill's output is edited before the cross-check step"
+  ],
+  "output": "a set of per-source evidence packets (tagged quotes, themes, or language additions), unmerged, for the calling workflow to cross-check",
+  "used_by": [
+   "BRAND-W01"
+  ],
+  "shared_with": [],
+  "skill_md": "---\nname: research-customers\nowner: BRAND\nversion: 1\ninvoke_when: a research cycle starts and the evidence source needs picking before mining begins\ninputs: brand brain products, the research question, which connectors are live\noutputs: per-source evidence packets, unmerged\n---\n# Research customers (parent)\n\n## Purpose\nThis is the router for all customer research. It does not mine anything itself; it decides which source-specific sub-skill runs, in what order, and hands each one the same standing rule: nothing enters an avatar record without a source and a date.\n\n## Steps\n1. Read what the run needs: a general monthly sweep, or a specific open question a prior workflow could not answer.\n2. For a general sweep, run reviews, tickets, social and onsite-behavior (all agent_does, no waiting on a person). For a specific gap, add interviews or surveys (human_assist, need a person to run them).\n3. Route to each sub-skill by source. Each sub-skill owns its own connector, its own read pattern (star band, ticket tag, forum search, search-term log, guide, or questionnaire), and its own output shape.\n4. If a connector for a picked source is not live (for example, no support desk export configured), mark that source unavailable in the packet rather than skipping it silently, so the founder knows a gap exists.\n5. Return every sub-skill's packet, unmerged, to the calling workflow, which does the cross-source pattern check.\n\n## Checks\n- Every source that ran is named in the output.\n- A source with no connector shows as unavailable.\n- Packets are not merged or summarized here; that happens one level up, after cross-checking.\n\n## Output\nList of per-source packets: `{source, status: ran|unavailable, packet}`.\n\n## Example\nA monthly sweep for Gehna returns packets for reviews (12 tagged quotes), tickets (4 struggle themes), social (2 sub-avatar notes), and onsite-behavior (unavailable, no GA4 connector live yet)."
+ },
+ {
+  "id": "brand/research-customers/reviews",
+  "name": "Mine reviews",
+  "parent": "brand/research-customers",
+  "invoke_when": "the source is the brand's own product reviews from site or marketplace",
+  "select_by": {
+   "source": "reviews"
+  },
+  "inputs_required": [
+   "connector: reviews export (site + marketplace)",
+   "product/SKU list"
+  ],
+  "steps": [
+   "1. Export reviews per SKU with star, date, and marketplace.",
+   "2. Read 1-2 star for the real objection under the surface complaint.",
+   "3. Read 4-5 star for the job the product actually did.",
+   "4. Scan for identity markers ('I am a', 'as a').",
+   "5. Prioritize long narrative reviews; discount single contradictory ones.",
+   "6. Capture every usable quote verbatim with SKU, star, source, date."
+  ],
+  "checks": [
+   "every quote has SKU, star, source and date",
+   "full reviewer name stripped",
+   "a pattern needs 2+ occurrences before it is kept"
+  ],
+  "output": "{quotes_by_star_band, objection_frequency_list, candidate_identity_markers}",
+  "used_by": [
+   "BRAND-W01"
+  ],
+  "shared_with": [
+   "MEDIA (for creative angle sourcing, read-only)"
+  ],
+  "skill_md": "---\nname: research-customers/reviews\nowner: BRAND\nversion: 1\ninvoke_when: the source is the brand's own product reviews (site or marketplace)\ninputs: reviews export by SKU with star rating and date\noutputs: tagged quote set by star band, objection frequency list, candidate identity markers\n---\n# Mine reviews\n\n## Purpose\nTurn raw star-rated reviews into a tagged quote set and objection list an avatar record or copy brief can use directly, without re-reading the raw file.\n\n## Steps\n1. Export all reviews per SKU with star rating, date and marketplace (site, Amazon.com, Walmart Marketplace, etc.; Amazon.in, Myntra or another India marketplace where the brand sells there, markets: IN).\n2. Group by star band. Read 1 and 2 star reviews for the real objection, which is often not the same as the stated complaint (a \"poor quality\" review may really be a fit or expectation-setting problem).\n3. Read 4 and 5 star reviews for the job the product actually did in the customer's life, not just that they liked it.\n4. Scan every band for identity markers: phrases like \"I am a\", \"as a\", \"for my [relationship]\" that reveal who is talking.\n5. Prioritize long, narrative reviews over short generic ones (\"nice product\") for quote quality.\n6. Discount a single contradictory review; only act on a pattern that repeats across multiple reviews.\n7. Capture every usable quote verbatim, with SKU, star band, source platform and date. Strip the reviewer's full name.\n8. Flag any use case mentioned that no competitor's marketing targets, as a candidate for BRAND-W08 (untapped avatar).\n\n## Checks\n- Every quote has SKU, star band, source and date.\n- No full reviewer name is kept.\n- A theme is only reported as real once it appears in 2 or more reviews.\n\n## Output\n`{quotes_by_star_band: [...], objection_frequency_list: [...], candidate_identity_markers: [...]}`\n\n## Example\n1-star band, 6 occurrences: \"the strap felt flimsy after 2 weeks of daily wear\" tagged as a durability objection, source: Amazon.com review, dated 14 Aug 2026."
+ },
+ {
+  "id": "brand/research-customers/tickets",
+  "name": "Mine support tickets",
+  "parent": "brand/research-customers",
+  "invoke_when": "the source is support tickets, returns or call transcripts",
+  "select_by": {
+   "source": "tickets"
+  },
+  "inputs_required": [
+   "connector: support desk export (Gorgias/Zendesk)",
+   "connector: returns log"
+  ],
+  "steps": [
+   "1. Export tickets, return reasons and call transcripts for the period.",
+   "2. Tag each by the underlying job or failure, not the surface request.",
+   "3. Cluster repeated complaint patterns.",
+   "4. Feed named objections into standing support macro drafts.",
+   "5. Flag sizing, fit or fulfilment anxieties for the avatar record.",
+   "6. Log consent status before any quote leaves the ticket system."
+  ],
+  "checks": [
+   "consent flag logged before reuse",
+   "tagged by underlying job, not the customer's stated request",
+   "failed-delivery and address-validation delay reasons kept distinct from product-quality reasons; COD refusal delay is an India-market variant (markets: IN, reads null for US)"
+  ],
+  "output": "{struggle_theme_list, draft_macro_updates, quote_set_with_consent_flag}",
+  "used_by": [
+   "BRAND-W01"
+  ],
+  "shared_with": [],
+  "skill_md": "---\nname: research-customers/tickets\nowner: BRAND\nversion: 1\ninvoke_when: the source is support tickets, returns or call transcripts\ninputs: support desk export, returns log\noutputs: struggle theme list, draft macro updates, quote set with consent flag\n---\n# Mine support tickets\n\n## Purpose\nSupport tickets are passive evidence of the customer's real struggle, separate from anything they said to make a sale. This skill turns that raw text into themes and support-macro material without exposing private customer data downstream.\n\n## Steps\n1. Export tickets, return reasons and call transcripts for the period from the support desk connector.\n2. Tag each item by the underlying job or failure (a size mismatch, a delivery delay past the ZIP code's normal shipping window, a fabric-care confusion), never by the customer's exact wording alone.\n3. Cluster repeated patterns; a single ticket is an anecdote, three or more with the same root cause is a pattern.\n4. For each named, repeated objection, draft an update to the standing support macro that answers it.\n5. Flag sizing, fit or fulfilment anxieties specifically, since these often feed a dedicated confidence angle in copy.\n6. Log the consent status of every ticket before any quote leaves the ticket system; a ticket with no consent basis is summarized, never quoted verbatim.\n\n## Checks\n- Every quote used downstream carries a consent flag.\n- Themes are tagged by underlying cause, not by the customer's literal words alone.\n- Failed-delivery or regional shipping-delay patterns (and COD refusal patterns for India-market orders, markets: IN, null for US) are kept separate from product-quality patterns; conflating them misleads the avatar record.\n\n## Output\n`{struggle_theme_list: [...], draft_macro_updates: [...], quote_set_with_consent_flag: [...]}`\n\n## Example\nTheme: \"sizing confusion, cross-body strap length\" (9 tickets in 30 days) -> macro draft added: a strap-length chart link in the auto-reply for that product tag."
+ },
+ {
+  "id": "brand/research-customers/social",
+  "name": "Run social and forum listening",
+  "parent": "brand/research-customers",
+  "invoke_when": "the source is public social platforms or forums, not the brand's own data",
+  "select_by": {
+   "source": "social"
+  },
+  "inputs_required": [
+   "avatar's likely forum/platform list (Reddit, Quora, Instagram comments)",
+   "public web access"
+  ],
+  "steps": [
+   "1. Search public forums, Reddit, Quora and social platforms in the avatar's own words.",
+   "2. Pull language, objections and sub-avatar candidates a review file would miss.",
+   "3. Record source URL and date for every finding.",
+   "4. Discard anything from a private or closed group."
+  ],
+  "checks": [
+   "every finding has a public URL and date",
+   "nothing from a private group is used",
+   "language is copied verbatim, not paraphrased, for the language bank"
+  ],
+  "output": "{language_bank_additions, sub_avatar_candidates}",
+  "used_by": [
+   "BRAND-W01"
+  ],
+  "shared_with": [
+   "MEDIA (creative angle language)"
+  ],
+  "skill_md": "---\nname: research-customers/social\nowner: BRAND\nversion: 1\ninvoke_when: the source is public social platforms or forums, not the brand's own data\ninputs: avatar's likely platforms, public web access\noutputs: language bank additions, sub-avatar candidate notes\n---\n# Run social and forum listening\n\n## Purpose\nPublic forums surface language, objections and sub-avatars in the customer's own words that a brand's own review file, which only hears from people who already bought, would miss entirely.\n\n## Steps\n1. Identify where this avatar actually talks in public: a subreddit, a Quora thread topic, Instagram comment sections on relevant posts, public Facebook groups.\n2. Search those places using the avatar's own phrasing (from prior quote sets), not marketing terms.\n3. Pull exact language, named objections, and any sub-avatar pattern (a distinct sub-group with a different job) that surfaces.\n4. Record the source URL and date for every finding used.\n5. Discard anything found in a private or closed group; only public, publicly-indexed content is used.\n6. Flag any objection here that did not appear in the brand's own reviews or tickets; that gap is itself a signal (customers with this objection may not be buying at all).\n\n## Checks\n- Every finding carries a public URL and a date.\n- Nothing from a private group, DM, or paywalled forum is used.\n- Language additions are exact quotes, not paraphrases, since the language bank exists to reuse real words.\n\n## Output\n`{language_bank_additions: [...], sub_avatar_candidates: [...]}`\n\n## Example\nr/SkincareAddiction thread, dated 2 Sep 2026: \"wish more brands made this in a travel size for humid weather\" flagged as a sub-avatar candidate (frequent traveler) with 3 similar comments in the same thread."
+ },
+ {
+  "id": "brand/research-customers/onsite-behavior",
+  "name": "Mine on-site search and behavior",
+  "parent": "brand/research-customers",
+  "invoke_when": "the source is the brand's own on-site search terms or browse-without-buy sessions",
+  "select_by": {
+   "source": "onsite_behavior"
+  },
+  "inputs_required": [
+   "connector: GA4 / site search log"
+  ],
+  "steps": [
+   "1. Pull on-site search terms for the period, ranked by volume.",
+   "2. Pull sessions that browsed a category or PDP without adding to cart.",
+   "3. Cluster search terms into unmet-need groups.",
+   "4. Flag terms with no matching product as a demand signal."
+  ],
+  "checks": [
+   "terms deduplicated and volume-ranked before being called a pattern",
+   "a single search is never treated as demand"
+  ],
+  "output": "{unmet_search_term_list, job_clue_notes}",
+  "used_by": [
+   "BRAND-W01"
+  ],
+  "shared_with": [
+   "ORG (search-content demand signal)"
+  ],
+  "skill_md": "---\nname: research-customers/onsite-behavior\nowner: BRAND\nversion: 1\ninvoke_when: the source is the brand's own on-site search terms or browse-without-buy sessions\ninputs: GA4 / site search log\noutputs: unmet-search-term list, job clue notes\n---\n# Mine on-site search and behavior\n\n## Purpose\nWhat a shopper types into the brand's own search bar, and what they browse but never add to cart, is a direct clue to the job they came to do, unfiltered by what the brand chose to say on the page.\n\n## Steps\n1. Pull on-site search query volume for the period, ranked by frequency.\n2. Pull sessions that visited a category or product page multiple times without adding to cart, and note which page.\n3. Cluster search terms into groups by apparent intent (a size question, a use-case question, a comparison question).\n4. Flag any search term with meaningful volume and no matching product or content on the site; this is a direct unmet-demand signal.\n5. Cross-reference high-volume browse-without-buy pages against the objection map, if one exists, to see if a known objection explains the drop-off.\n\n## Checks\n- Terms are deduplicated and ranked by volume before being called a pattern; one search is not a trend.\n- A browse-without-buy pattern is reported with the specific page, not \"the site\" in general.\n\n## Output\n`{unmet_search_term_list: [...], job_clue_notes: [...]}`\n\n## Example\nSearch term \"cotton saree fall stitching\" (41 searches, 30 days) with no matching product or FAQ content: flagged as an unmet demand signal for Product and Content."
+ },
+ {
+  "id": "brand/research-customers/interviews",
+  "name": "Run customer interviews",
+  "parent": "brand/research-customers",
+  "invoke_when": "a specific gap needs a live conversation, not passive text",
+  "select_by": {
+   "source": "interviews"
+  },
+  "inputs_required": [
+   "the specific open question",
+   "customer list or panel",
+   "founder or team availability to run calls"
+  ],
+  "steps": [
+   "1. Write 8-12 open, job-order questions.",
+   "2. Pick channel and a proportionate incentive.",
+   "3. Recruit 8-12 across recency bands.",
+   "4. Hand off or run the conversations; log transcripts with consent.",
+   "5. Extract job, forces and fired-alternative material."
+  ],
+  "checks": [
+   "no leading or feature-fishing questions",
+   "every transcript has a consent flag",
+   "incentive cost computed against contribution margin"
+  ],
+  "output": "{interview_guide, transcript_log, interview_findings_packet}",
+  "used_by": [
+   "BRAND-W02"
+  ],
+  "shared_with": [],
+  "skill_md": "---\nname: research-customers/interviews\nowner: BRAND\nversion: 1\ninvoke_when: a specific open question needs a live conversation, not passive text mining\ninputs: the open question, customer list or panel, founder/team availability\noutputs: interview guide, transcript log, interview findings packet\n---\n# Run customer interviews\n\n## Purpose\nPassive sources cannot ask a follow-up question. When the research packet has a real gap, live conversation is the only way to hear the trigger moment or the fired alternative in the customer's own words.\n\n## Steps\n1. Write 8-12 open questions in job-to-be-done order: the trigger, the struggle, alternatives tried, the moment of choosing, the after-state. No yes/no questions, no question that names the brand's feature first.\n2. Recommend a channel (phone, video call, SMS or voice notes; WhatsApp voice notes where the brand's customers use it, markets: IN, EU, LATAM) and a proportionate incentive sized against contribution margin, never cash large enough to bias the answer.\n3. Recruit 8-12 people across at least 2 recency bands (recent buyer, lapsed buyer), never more than 70% from one band.\n4. Hand the guide to whoever runs the calls (founder, team, or a research vendor); this step is human_assist, the agent does not conduct the call itself.\n5. Log every transcript with a consent flag before any quote is reused.\n6. Extract job statement material, the 4 forces, and the fired alternative from the transcripts, cross-checked against existing passive-data patterns.\n\n## Checks\n- No leading questions; no question that fishes for validation of an existing feature.\n- Every transcript has a consent flag before reuse.\n- Incentive cost is computed against contribution margin, not guessed.\n\n## Output\n`{interview_guide, transcript_log: [...], interview_findings_packet}`\n\n## Example\nGuide question 3: \"Walk me through the day you decided you needed this: what was happening that day?\" surfaces a holiday-gifting trigger moment absent from the review data."
+ },
+ {
+  "id": "brand/research-customers/surveys",
+  "name": "Run customer surveys",
+  "parent": "brand/research-customers",
+  "invoke_when": "a finding needs confirming at wider scale, never to discover a new job",
+  "select_by": {
+   "source": "surveys"
+  },
+  "inputs_required": [
+   "a specific hypothesis from a prior finding",
+   "connector: email/SMS platform (draft only)",
+   "segmented customer list"
+  ],
+  "steps": [
+   "1. State the confirm-or-deny hypothesis.",
+   "2. Pick identity, post-purchase, or NPS format, 6 questions or fewer.",
+   "3. Draft the send; founder approves and sends.",
+   "4. Collect and clean responses; drop junk.",
+   "5. Score the confirm/deny result in code, with sample size."
+  ],
+  "checks": [
+   "6 questions or fewer",
+   "hypothesis already has qualitative evidence behind it",
+   "send only after founder approval"
+  ],
+  "output": "{survey_question_set, cleaned_response_set, confirm_deny_result}",
+  "used_by": [
+   "BRAND-W03"
+  ],
+  "shared_with": [],
+  "skill_md": "---\nname: research-customers/surveys\nowner: BRAND\nversion: 1\ninvoke_when: an existing finding needs confirming at scale, never to discover a new job\ninputs: a specific hypothesis, email/SMS platform (draft only), segmented customer list\noutputs: survey question set, cleaned response set, confirm/deny result with sample size\n---\n# Run customer surveys\n\n## Purpose\nA survey is for confirming a pattern already found in reviews, tickets, social or interviews across a much larger sample. It is never the first place a new job or objection is discovered; fishing questions produce noisy, self-reported answers.\n\n## Steps\n1. Write the one claim the survey exists to test, drawn from an existing qualitative finding.\n2. Pick the format: identity survey (who are you), post-purchase (why this, why now), or NPS/relationship (would you return). Keep to 6 questions or fewer, no double-barreled questions.\n3. Draft the send in the email/SMS platform connector, which is read-and-draft only; it cannot send.\n4. Founder reviews the draft and sends it themselves or approves the send explicitly.\n5. Once the window closes, pull responses and drop straight-line or under-10-second junk responses, reporting the junk rate.\n6. Score the confirm/deny result in code against the original hypothesis, with the real sample size shown, never rounded up to \"most customers.\"\n\n## Checks\n- 6 questions or fewer.\n- The survey confirms an existing finding; it never opens with \"what do you want.\"\n- No send happens without explicit founder approval.\n\n## Output\n`{survey_question_set: [...], cleaned_response_set, confirm_deny_result: {rate, n, hypothesis}}`\n\n## Example\nHypothesis: \"gifting is the top occasion for tier-2 city buyers.\" Survey of 40 questions sent to 600, 210 responses, 8% junk dropped: confirm rate 61% (n=193), reported as-is, not rounded to \"most.\" "
+ },
+ {
+  "id": "brand/wild-bet",
+  "name": "Wild bet",
+  "parent": null,
+  "invoke_when": "a wild bet candidate exists, from the backlog or a fresh proposal, and needs sourcing, screening or bounding",
+  "select_by": {
+   "bet_type": "new_line | new_market | licensing | wholesale | retail_popup"
+  },
+  "inputs_required": [
+   "idea bank folder 19-WLD",
+   "contribution margin",
+   "team capacity",
+   "brand brain: values and category norms"
+  ],
+  "steps": [
+   "1. Maintain the dated backlog: source candidates monthly from adjacent industries, category norms worth breaking, and gaps the brand's own research surfaced.",
+   "2. When a bet is proposed or pulled from the backlog, screen it against brand values and current capacity.",
+   "3. Classify the bet type and route to the matching child skill for the type-specific feasibility check and execution brief.",
+   "4. Write the generic 8-field bound (hypothesis, norm broken, budget cap, downside cap, cohort, control, stop rule, read point) once feasibility is known.",
+   "5. Flag legal review if the bet promises, mails, texts, or gates access."
+  ],
+  "checks": [
+   "a bet that conflicts with a stated brand value is flagged, not bounded anyway",
+   "downside cap computed in code as a share of contribution margin",
+   "legal-review flag defaults to caution"
+  ],
+  "output": "{backlog_entry, screen_verdict, bet_type, 8_field_bound, legal_review_flag}",
+  "used_by": [
+   "BRAND-W26"
+  ],
+  "shared_with": [],
+  "skill_md": "---\nname: wild-bet\nowner: BRAND\nversion: 1\ninvoke_when: a wild bet candidate exists, from the backlog or a fresh proposal\ninputs: idea bank folder 19-WLD, contribution margin, team capacity, brand values\noutputs: backlog entry, screen verdict, bet type, 8-field bound, legal-review flag\n---\n# Wild bet (parent)\n\n## Purpose\nThis is the entry point and generic bounding procedure for any wild bet, before it is known whether the bet is a new product line, a new market, a licensing deal, a wholesale/retail entry, or a pop-up. It keeps the backlog alive and applies the same discipline (a real bound before launch) to every type.\n\n## Steps\n1. Every month, source wild bet candidates: adjacent-industry moves worth borrowing, category norms this brand could credibly break, and gaps the brand's own research (reviews, tickets, social) has surfaced. Log each with a date and the specific norm or gap it targets.\n2. When a bet is proposed by the founder or pulled from the backlog for action, screen it against the brand's stated values and current team capacity before spending any more time on it.\n3. Classify the bet's type. This determines which child skill runs next: `wild-bet/new-line`, `/new-market`, `/licensing`, `/wholesale`, or `/retail-popup`.\n4. Once the child skill returns its type-specific feasibility packet, write the 8-field bound: hypothesis, the category norm broken, budget cap, downside cap (a share of contribution margin, computed in code, never guessed), cohort and size, control design, a specific stop rule, and a read-point date.\n5. Flag for legal review whenever the bet promises something, sends mail or texts, or gates access to anything; default to \"needs review\" when unsure.\n6. Hand the bound to the founder gate before any execution brief is written.\n\n## Checks\n- A bet conflicting with a named brand value is flagged, never silently bounded.\n- Downside cap is a computed share of contribution margin, not an estimate.\n- All 8 bound fields are present and specific before the bound is presented; a missing read point or stop rule blocks presentation entirely.\n\n## Output\n`{backlog_entry, screen_verdict, bet_type, 8_field_bound: {hypothesis, norm_broken, budget_cap, downside_cap, cohort, control, stop_rule, read_point}, legal_review_flag}`\n\n## Example\nBacklog entry, Sep 2026: \"adjacent brand X ran a 48-hour founder-only pre-drop; this brand has never tried scarcity pricing\": bet_type classified as new_line once proposed, routed to the new-line child for sizing before bounding."
+ },
+ {
+  "id": "brand/wild-bet/new-line",
+  "name": "Wild bet: new product line",
+  "parent": "brand/wild-bet",
+  "invoke_when": "the bet_type is a new product line or category extension",
+  "select_by": {
+   "bet_type": "new_line"
+  },
+  "inputs_required": [
+   "market sizing memo (BRAND-W11)",
+   "avatar overlap read",
+   "product feasibility from Product and Supply"
+  ],
+  "steps": [
+   "1. Size the candidate line against the brand's own AOV, margin and repeat-buyer math.",
+   "2. Check avatar overlap with the current primary avatar.",
+   "3. Check the smallest sellable batch the team can produce and sell by hand.",
+   "4. Write the execution brief sequencing a pilot batch before any broad launch."
+  ],
+  "checks": [
+   "sizing done in code from real fields",
+   "pilot batch sized to what can be sold and learned from, not a full production run"
+  ],
+  "output": "{feasibility_packet, execution_brief}",
+  "used_by": [
+   "BRAND-W26"
+  ],
+  "shared_with": [
+   "PROD (production feasibility)"
+  ],
+  "skill_md": "---\nname: wild-bet/new-line\nowner: BRAND\nversion: 1\ninvoke_when: the bet's type is a new product line or category extension\ninputs: market sizing memo, avatar overlap read, production feasibility\noutputs: feasibility packet, type-specific execution brief\n---\n# Wild bet: new product line\n\n## Purpose\nA new line is the most common wild bet type. The specific risk is building a full range before knowing anyone repeat-buys it; this skill keeps the pilot small and measurable.\n\n## Steps\n1. Run the market-sizing skill against the brand's own AOV, margin and repeat-buyer math for this specific candidate line, not the category in general.\n2. Check the candidate against the current primary avatar's overlap: does the same customer buy this, or is this really a new-avatar bet in disguise (which changes the read entirely)?\n3. Check with Product and Supply the smallest batch that can be produced and would still be a real test, not a token quantity that proves nothing.\n4. Write the execution brief around a single pilot batch, sold to the smallest viable cohort by hand, with a named stop rule if the pilot does not sell through in the set window.\n\n## Checks\n- Sizing is computed in code from this brand's real numbers, not assumed from a category average.\n- The pilot batch size is small enough to be a real test, not a full launch in disguise.\n\n## Output\n`{feasibility_packet: {sizing, avatar_overlap, batch_feasibility}, execution_brief}`\n\n## Example\nCandidate: a travel-size line for Gehna's existing jewellery avatar. Sizing shows 340 repeat buyers needed at the target price to hit contribution-margin breakeven; pilot batch set at 150 units sold direct via the existing list before any wider stocking."
+ },
+ {
+  "id": "brand/wild-bet/new-market",
+  "name": "Wild bet: new market entry",
+  "parent": "brand/wild-bet",
+  "invoke_when": "the bet_type is entry into a new country or region",
+  "select_by": {
+   "bet_type": "new_market"
+  },
+  "inputs_required": [
+   "target country/region",
+   "current regulatory and tax posture",
+   "logistics partner options for that region"
+  ],
+  "steps": [
+   "1. Check regulatory and tax requirements for selling into the target market.",
+   "2. Check competitor presence and price positioning already in that market.",
+   "3. Check logistics feasibility (shipping cost, delivery time, returns handling) for that region.",
+   "4. Write the execution brief around a small, reversible test entry."
+  ],
+  "checks": [
+   "regulatory check is specific to the target country, not assumed similar to the home market",
+   "logistics costed with real quotes or published rates, not guessed"
+  ],
+  "output": "{feasibility_packet, execution_brief}",
+  "used_by": [
+   "BRAND-W26"
+  ],
+  "shared_with": [
+   "MONEY (tax and P&L exposure)"
+  ],
+  "skill_md": "---\nname: wild-bet/new-market\nowner: BRAND\nversion: 1\ninvoke_when: the bet's type is entry into a new country or region\ninputs: target region, current regulatory/tax posture, logistics partner options\noutputs: feasibility packet, type-specific execution brief\n---\n# Wild bet: new market entry\n\n## Purpose\nEntering a new country or region carries regulatory, tax and logistics exposure a domestic wild bet does not. This skill front-loads exactly those checks so the founder decides with real constraints, not just opportunity size.\n\n## Steps\n1. Check what regulatory registration, import duty, or product-compliance requirement applies to selling into the target market (for example, a US FDA-adjacent labeling rule, or an EU CE-style requirement, depending on category).\n2. Check the tax posture: for a new US state, sales tax nexus and registration thresholds on the home side; for a new country, US export treatment plus import duty, VAT (EU or UK) or GST on the destination side (GST applies only when the destination is India, markets: IN); state it in plain terms, flagging what needs a real accountant's sign-off versus what is a simple lookup.\n3. Check who already competes there and at what price, so the entry is not blind.\n4. Check logistics feasibility: realistic shipping cost and delivery time to that region, and how returns would even work.\n5. Write the execution brief around the smallest reversible test (a limited SKU set, a marketplace listing rather than a full localized site) before any larger investment.\n\n## Checks\n- Regulatory and tax findings are specific to the named country, not assumed from general knowledge.\n- Logistics costs are from a real quote or a published carrier rate, not estimated.\n- The brief proposes the smallest reversible entry, not a full market launch.\n\n## Output\n`{feasibility_packet: {regulatory, tax, competitor_read, logistics}, execution_brief}`\n\n## Example\nTarget: UAE. Regulatory check flags a municipality trading-license requirement for a local entity; recommendation is a marketplace-only test (Namshi/Noon) instead of a owned-site launch, pending that entity question."
+ },
+ {
+  "id": "brand/wild-bet/licensing",
+  "name": "Wild bet: licensing deal",
+  "parent": "brand/wild-bet",
+  "invoke_when": "the bet_type is licensing the brand name or IP to another party, or licensing something in",
+  "select_by": {
+   "bet_type": "licensing"
+  },
+  "inputs_required": [
+   "proposed licensee or licensor",
+   "category royalty norms",
+   "brand guidelines for quality control terms"
+  ],
+  "steps": [
+   "1. Check royalty norms for this product category and deal size.",
+   "2. Build a licensee scorecard (financial capacity, category fit, distribution reach, quality control history).",
+   "3. Draft deal-memo terms (royalty rate, minimum guarantee, quality control rights, term length, exit clause).",
+   "4. Write the execution brief flagging legal review as mandatory."
+  ],
+  "checks": [
+   "royalty norms sourced from a real, dated reference",
+   "quality control rights are explicit in the memo, not assumed"
+  ],
+  "output": "{feasibility_packet, execution_brief}",
+  "used_by": [
+   "BRAND-W26"
+  ],
+  "shared_with": [
+   "MONEY (deal economics)"
+  ],
+  "skill_md": "---\nname: wild-bet/licensing\nowner: BRAND\nversion: 1\ninvoke_when: the bet's type is a brand licensing deal, in either direction\ninputs: proposed counterparty, category royalty norms, brand guidelines\noutputs: feasibility packet, type-specific execution brief\n---\n# Wild bet: licensing deal\n\n## Purpose\nA licensing deal risks the brand's name and quality reputation in someone else's hands (or takes on someone else's IP under this brand's name). This skill checks the deal's economics and control terms before any negotiation.\n\n## Steps\n1. Research royalty norms for this product category and deal scale, from public deal reports or industry sources, dated.\n2. Build a licensee (or licensor) scorecard: financial capacity to perform, fit with the brand's category and story, existing distribution reach, and any public quality-control or reputation history.\n3. Draft deal-memo terms for the founder to negotiate from: royalty rate range, minimum guarantee, explicit quality-control approval rights on any product carrying the brand name, term length, and an exit clause if quality slips.\n4. Flag legal review as mandatory for any licensing deal; this is never a bet the agent bounds without a lawyer's terms review.\n\n## Checks\n- Royalty norms cite a real, dated source, not a guess.\n- Quality-control rights are explicit line items in the memo, not assumed to be standard.\n- Legal review flag is always set to required for this bet type.\n\n## Output\n`{feasibility_packet: {royalty_norms, licensee_scorecard}, execution_brief: {deal_memo_terms, legal_review: required}}`\n\n## Example\nProposed licensee scores strong on distribution (200+ retail doors) but weak on quality-control history (2 public recalls in another category); scorecard flags this as a founder discussion point before terms are drafted."
+ },
+ {
+  "id": "brand/wild-bet/wholesale",
+  "name": "Wild bet: wholesale entry",
+  "parent": "brand/wild-bet",
+  "invoke_when": "the bet_type is selling through wholesale buyers rather than direct pop-up retail",
+  "select_by": {
+   "bet_type": "wholesale"
+  },
+  "inputs_required": [
+   "target wholesale buyer type",
+   "current unit economics at wholesale margin",
+   "product line ready for a line sheet"
+  ],
+  "steps": [
+   "1. Check unit economics survive a wholesale margin cut.",
+   "2. Build the line sheet (SKUs, wholesale price, MOQ, lead time).",
+   "3. Build the buyer-facing pitch deck.",
+   "4. Write the execution brief around the smallest buyer commitment."
+  ],
+  "checks": [
+   "wholesale margin math computed in code against real COGS",
+   "MOQ set by Product and Supply, not assumed"
+  ],
+  "output": "{feasibility_packet, execution_brief}",
+  "used_by": [
+   "BRAND-W26"
+  ],
+  "shared_with": [
+   "PROD (MOQ, landed cost)"
+  ],
+  "skill_md": "---\nname: wild-bet/wholesale\nowner: BRAND\nversion: 1\ninvoke_when: the bet's type is a wholesale buyer entry\ninputs: target buyer type, unit economics at wholesale margin, product line\noutputs: feasibility packet, type-specific execution brief\n---\n# Wild bet: wholesale entry\n\n## Purpose\nWholesale changes the brand's margin structure and puts the product's story in someone else's retail environment. This skill checks the deal survives on the numbers before any buyer pitch goes out.\n\n## Steps\n1. Recompute unit economics at a realistic wholesale margin cut (commonly 50% off retail); check the deal is still profitable at the brand's real COGS, not the retail-margin COGS assumption.\n2. Build the line sheet: SKUs offered, wholesale price per unit, minimum order quantity, and lead time, pulling MOQ and lead time from Product and Supply rather than guessing.\n3. Build the buyer-facing pitch deck: brand story, positioning, sell-through data if any exists, and the line sheet.\n4. Write the execution brief around the smallest real buyer commitment (one boutique, one small chain) as the pilot, before a broader wholesale push.\n\n## Checks\n- Wholesale-margin unit economics are computed in code from real COGS, not the retail-margin figure reused by mistake.\n- MOQ and lead time come from Product and Supply's real numbers.\n\n## Output\n`{feasibility_packet: {wholesale_unit_economics, line_sheet}, execution_brief: {buyer_pitch_deck, pilot_buyer}}`\n\n## Example\nRetail margin is 55%; at a 50% wholesale discount, contribution margin per unit drops from $18 to $8: still positive, so the pilot proceeds with one boutique buyer at a 25-unit MOQ."
+ },
+ {
+  "id": "brand/wild-bet/retail-popup",
+  "name": "Wild bet: retail pop-up or channel entry",
+  "parent": "brand/wild-bet",
+  "invoke_when": "the bet_type is a physical retail pop-up, or a marketplace/retail channel push needing packaging and format fit",
+  "select_by": {
+   "bet_type": "retail_popup"
+  },
+  "inputs_required": [
+   "target channel (DTC, marketplace, retail)",
+   "current packaging format",
+   "brand guidelines"
+  ],
+  "steps": [
+   "1. Decide which product format and packaging fits the target channel.",
+   "2. Brief the packaging and identity changes the channel needs.",
+   "3. Size a pop-up or in-person activation to team capacity.",
+   "4. Write the execution brief sequencing packaging before the buyer pitch or the activation."
+  ],
+  "checks": [
+   "packaging fit checked against the specific channel's real constraints, not assumed same as DTC",
+   "activation sized to what the team can run by hand"
+  ],
+  "output": "{feasibility_packet, execution_brief}",
+  "used_by": [
+   "BRAND-W26"
+  ],
+  "shared_with": [
+   "PROD (packaging spec)"
+  ],
+  "skill_md": "---\nname: wild-bet/retail-popup\nowner: BRAND\nversion: 1\ninvoke_when: the bet's type is a physical retail pop-up, or a channel push (marketplace/retail) needing a packaging and format decision\ninputs: target channel, current packaging format, brand guidelines\noutputs: feasibility packet, type-specific execution brief\n---\n# Wild bet: retail pop-up or channel entry\n\n## Purpose\nA retail pop-up or a new sales channel often fails on format and packaging fit before it ever fails on demand: a DTC-only box does not survive shelf handling, and a DTC price story does not survive a marketplace price-comparison page. This skill checks channel fit first.\n\n## Steps\n1. Decide which product format and packaging fits the target channel: a shelf-ready box for retail, a marketplace-compliant listing format, or the existing DTC format if the channel is another owned or partner site.\n2. Brief the specific packaging and identity changes the channel needs (see `packaging-label-brief` for the mandatory-declaration side of this).\n3. If this is a physical pop-up, size the activation to what the team can run by hand: staffing, footfall handling, and how sales get logged.\n4. Write the execution brief sequencing packaging or listing changes before the buyer pitch or the activation itself; nothing launches in a new channel wearing DTC-only packaging.\n\n## Checks\n- Packaging or listing fit is checked against this specific channel's real constraints, not assumed identical to DTC.\n- A physical activation is sized to real team capacity, cross-checked with `event-popup-design`.\n\n## Output\n`{feasibility_packet: {channel_fit, packaging_brief}, execution_brief}`\n\n## Example\nTarget channel: a 3-day retail pop-up at a wedding expo. Packaging brief flags the DTC mailer box will not survive being carried by hand at a crowded venue; a compact gift-box format is briefed instead, reusing the existing brand palette."
+ },
+ {
+  "id": "brand/jtbd-writer",
+  "name": "Job-to-be-done writer",
+  "parent": null,
+  "invoke_when": "a new avatar candidate needs its job statement and forces written before the full record is assembled",
+  "select_by": null,
+  "inputs_required": [
+   "cross-verified research patterns",
+   "quote sets"
+  ],
+  "steps": [
+   "1. Write the job statement in a situation, motivation, outcome structure.",
+   "2. Cover functional, emotional and social sides.",
+   "3. Run the verb-noun test.",
+   "4. Run the cross-category test.",
+   "5. Name the 4 forces (push, pull, anxiety, habit) with a quote each."
+  ],
+  "checks": [
+   "passes verb-noun and cross-category tests",
+   "each force has at least one verbatim quote",
+   "no demographic substituted for a job"
+  ],
+  "output": "{job_statement, forces_record: {push, pull, anxiety, habit}}",
+  "used_by": [
+   "BRAND-W05"
+  ],
+  "shared_with": [],
+  "skill_md": "---\nname: jtbd-writer\nowner: BRAND\nversion: 1\ninvoke_when: a new avatar candidate needs its job statement and forces written\ninputs: cross-verified research patterns, quote sets\noutputs: job statement, 4-forces record\n---\n# Job-to-be-done writer\n\n## Purpose\nAn avatar defined as a job, not a demographic, is what makes the record useful for copy and product decisions later. This skill turns research patterns into a job statement that passes real tests, not a description that sounds insightful but cannot be used.\n\n## Steps\n1. Write the job in the form: \"When [situation], I want to [motivation], so I can [outcome].\" The situation must be specific and observable, not a mood.\n2. Cover all three sides: functional (what gets done), emotional (how they want to feel), social (how they want to be seen).\n3. Run the verb-noun test: the job should read as a verb-noun action a person can picture doing, not a trait.\n4. Run the cross-category test: the same job should plausibly exist even if this exact product category did not, proving it is a real job and not a repackaged product description.\n5. Name the 4 forces driving the switch: the push (the problem getting worse), the pull (the attraction to a new solution), the anxiety (what could go wrong with switching), and the habit (the pull of staying put). Each needs at least one verbatim supporting quote.\n\n## Checks\n- Statement passes both the verb-noun and cross-category tests.\n- Every force cites a real quote, not an inferred feeling.\n- No demographic detail (age, income) is substituted for the actual job.\n\n## Output\n`{job_statement, forces_record: {push, pull, anxiety, habit}}`\n\n## Example\n\"When my sister's wedding date is set and I have 6 weeks to find jewellery that photographs well but doesn't look rented, I want a piece I can wear again after, so I don't feel like I overspent on a one-time costume.\" Push: rental pieces look fake in photos (quoted). Pull: seeing a real friend's photos in a piece like this (quoted)."
+ },
+ {
+  "id": "brand/objection-map-builder",
+  "name": "Objection map builder",
+  "parent": null,
+  "invoke_when": "objections need pairing with their real removers, for a new avatar or a rising objection pattern",
+  "select_by": null,
+  "inputs_required": [
+   "research packet with tagged objections",
+   "any known product or policy change that has addressed an objection"
+  ],
+  "steps": [
+   "1. List every named objection with frequency.",
+   "2. For each, find the real thing that removed it for a real customer (a review, a support reply, a policy change).",
+   "3. Pair objection with remover, each with 2+ quoted sources.",
+   "4. Draft support macro updates for repeated objections.",
+   "5. Flag fit or sizing patterns for a dedicated confidence angle."
+  ],
+  "checks": [
+   "every objection has 2+ quoted sources",
+   "every remover is something that actually happened, not a hoped-for fix"
+  ],
+  "output": "{objection_remover_pairs, macro_drafts, confidence_angle_flags}",
+  "used_by": [
+   "BRAND-W05"
+  ],
+  "shared_with": [
+   "CREA (angle sourcing, read-only)"
+  ],
+  "skill_md": "---\nname: objection-map-builder\nowner: BRAND\nversion: 1\ninvoke_when: objections need pairing with their real removers, for a new avatar or a rising objection pattern\ninputs: research packet with tagged objections, known product/policy changes\noutputs: objection-remover pairs, support macro drafts, confidence-angle flags\n---\n# Objection map builder\n\n## Purpose\nAn objection without a proven remover is just a complaint list. This skill pairs every named objection with the specific thing that actually removed it for a real customer, so copy and support both have something real to say back.\n\n## Steps\n1. List every named objection from the research packet, with its frequency count across sources.\n2. For each objection, search the same research packet (and any product-change or policy-change log) for the specific thing that removed it for a real customer: a review that mentions the fix worked, a support reply that resolved a ticket, a policy change (like a size-exchange guarantee) introduced after the pattern was noticed.\n3. Pair each objection with its remover; a remover is not valid without 2 or more quoted sources showing it actually worked.\n4. For objections that repeat monthly, draft an update to the standing support macro that answers it directly.\n5. Flag any fit, sizing, or delivery-confidence pattern specifically; these often deserve a dedicated confidence angle in copy (a size guide, a fit guarantee callout) rather than just a macro.\n\n## Checks\n- Every objection-remover pair has 2 or more quoted sources.\n- A remover is something that already happened (a real fix, a real reply), never an invented solution the brand has not actually implemented.\n\n## Output\n`{objection_remover_pairs: [{objection, remover, sources}], macro_drafts: [...], confidence_angle_flags: [...]}`\n\n## Example\nObjection: \"unsure if the chain length suits my height\" (11 mentions). Remover: a length-guide image added to the PDP, after which 4 subsequent reviews mention using it successfully. Paired with 4 quoted sources."
+ },
+ {
+  "id": "brand/avatar-record-builder",
+  "name": "Avatar record builder",
+  "parent": null,
+  "invoke_when": "a new avatar record is being assembled, or an existing one is due for its cadence refresh",
+  "select_by": {
+   "task": "build | refresh"
+  },
+  "inputs_required": [
+   "job statement and forces (build mode)",
+   "current avatar record and brief citation log (refresh mode)"
+  ],
+  "steps": [
+   "1. In build mode: assemble job, forces, fired alternative, objection map, 5W, trigger and quotes into one record.",
+   "2. In refresh mode: audit which briefs cite the record, retrace whether the product still earns the win, and check evidence freshness.",
+   "3. Check source-type count (2+, one first-party for an existing brand).",
+   "4. Set the status flag (provisional or confirmed) honestly.",
+   "5. In refresh mode, route to fresh research if evidence is stale rather than editing from memory."
+  ],
+  "checks": [
+   "every required field present or explicitly marked missing",
+   "status flag matches real source count",
+   "refresh mode never edits from memory without new evidence"
+  ],
+  "output": "{avatar_record: {job, forces, fired_alternative, objection_map, 5w, trigger_moment, quotes, status}}",
+  "used_by": [
+   "BRAND-W05",
+   "BRAND-W07"
+  ],
+  "shared_with": [],
+  "skill_md": "---\nname: avatar-record-builder\nowner: BRAND\nversion: 1\ninvoke_when: a new avatar record is assembled, or an existing one is due for cadence refresh/audit\ninputs: job statement and forces (build); current record and brief citation log (refresh)\noutputs: full avatar record with status field (provisional|confirmed)\n---\n# Avatar record builder\n\n## Purpose\nThis is the single procedure that turns scattered research into the one record every other specialist cites, and the same procedure that keeps that record honest over time instead of going stale silently.\n\n## Steps (build mode)\n1. Pull the job statement, forces, fired alternative, objection map, 5W profile and trigger moment from the upstream skills and research packets.\n2. Assemble them into one record with a full quote set attached to every claim.\n3. Check the source-type count: at least 2 independent source types, with at least one first-party source (the brand's own reviews, tickets, or search data) if this is an existing brand with real customers.\n4. Set the status flag: \"confirmed\" only if the source-count bar is met; otherwise \"provisional,\" stated plainly.\n\n## Steps (refresh mode, quarterly cadence)\n1. Audit which briefs and pages have cited this record since the last audit.\n2. Retrace whether the product still earns the win the record describes (has anything changed: price, formulation, competitor claims).\n3. Check evidence freshness; anything older than 2 quarters is flagged.\n4. If stale, route back to the research workflow for fresh evidence rather than editing the record from memory or assumption.\n\n## Checks\n- Every required field is present or explicitly marked missing, never silently invented.\n- The status flag matches the real source count.\n- A refresh never rewrites a field without new supporting evidence behind it.\n\n## Output\n`{avatar_record: {job, forces, fired_alternative, objection_map, 5w, trigger_moment, quotes, status: provisional|confirmed}}`\n\n## Example\nRefresh audit finds the objection map's \"delivery delay\" pairing cites a policy fixed 14 months ago that has since regressed (returns log shows the same complaint rising again); flagged for a fresh tickets-mining pass before the record is reused."
+ },
+ {
+  "id": "brand/avatar-ranking",
+  "name": "Avatar ranking",
+  "parent": null,
+  "invoke_when": "multiple avatar candidates exist and one must be picked as the cycle's primary",
+  "select_by": null,
+  "inputs_required": [
+   "all candidates surfaced this quarter",
+   "metric contract fields for reach estimation"
+  ],
+  "steps": [
+   "1. List every candidate with the run that surfaced it.",
+   "2. Drop single-source candidates.",
+   "3. Score reach and fit in code.",
+   "4. Rank by reach x fit x evidence strength.",
+   "5. Recommend a primary and name runner-ups."
+  ],
+  "checks": [
+   "remaining candidates each cite 2+ source types",
+   "scores computed in code, not estimated"
+  ],
+  "output": "{ranked_list, recommended_primary}",
+  "used_by": [
+   "BRAND-W06"
+  ],
+  "shared_with": [],
+  "skill_md": "---\nname: avatar-ranking\nowner: BRAND\nversion: 1\ninvoke_when: multiple avatar candidates exist and one must be picked as the cycle's primary\ninputs: all candidates surfaced this quarter, metric contract fields\noutputs: ranked list, recommended primary avatar\n---\n# Avatar ranking\n\n## Purpose\nNot every avatar candidate research surfaces deserves to become the primary. This skill applies a consistent, evidence-weighted score instead of picking whichever idea sounds newest or most exciting.\n\n## Steps\n1. List every avatar candidate surfaced this quarter, noting which run (reviews, social, untapped-avatar pipeline, etc.) found it.\n2. Drop any candidate appearing in only one source type; a real avatar shows up more than once.\n3. Score each remaining candidate on estimated reach (against the brand's own traffic and customer data) and product fit (does the current product actually serve this job well), computed in code using `shared/rank-candidates`.\n4. Rank candidates by reach x fit x evidence strength.\n5. Recommend a primary, and name the top 1-2 runner-ups with why they ranked below the pick.\n\n## Checks\n- Every scored candidate cites 2 or more independent source types.\n- Reach and fit scores are computed in code from real fields, not estimated in prose.\n- The current primary avatar is re-scored fresh each cycle, not kept by default.\n\n## Output\n`{ranked_list: [{candidate, reach_score, fit_score, evidence_score, total}], recommended_primary}`\n\n## Example\n3 candidates scored; the current primary re-scores highest (reach 0.8, fit 0.9) but a sub-avatar from social listening (reach 0.3, fit 0.95) is flagged as a strong runner-up worth a dedicated segment record."
+ },
+ {
+  "id": "brand/avatar-segmentation",
+  "name": "Avatar segmentation",
+  "parent": null,
+  "invoke_when": "a price tier, buyer/user split, B2B line or subscription pattern changes the underlying job for part of the customer base",
+  "select_by": null,
+  "inputs_required": [
+   "current avatar record",
+   "brand brain: pricing tiers, channels, B2B/subscription lines"
+  ],
+  "steps": [
+   "1. Check whether the job itself differs by tier, buyer-vs-user, B2B, or subscription status.",
+   "2. If it does, create a separate record for the segment.",
+   "3. Reuse shared quotes but write a distinct job statement and objection map where they differ."
+  ],
+  "checks": [
+   "a split is proposed only when the job itself differs, not just the SKU or price point"
+  ],
+  "output": "{split_needed_flag, new_segment_records}",
+  "used_by": [
+   "BRAND-W07"
+  ],
+  "shared_with": [],
+  "skill_md": "---\nname: avatar-segmentation\nowner: BRAND\nversion: 1\ninvoke_when: a price tier, buyer/user split, B2B line, or subscription pattern changes the underlying job for part of the customer base\ninputs: current avatar record, brand brain pricing/channel/B2B/subscription facts\noutputs: split-needed flag, new segment avatar record(s)\n---\n# Avatar segmentation\n\n## Purpose\nNot every price tier or channel needs its own avatar; most just need the same avatar buying a different SKU. This skill draws the line at whether the actual job differs, which is the only reason to fork a record.\n\n## Steps\n1. Check the trigger: a new price tier (does the premium buyer want something functionally different, or just more of the same), a gift-buyer versus the end-user (a common split where the buyer's job, e.g. \"find a safe gift,\" differs sharply from the user's job), a B2B line (the buyer is optimizing for a business outcome, a different job entirely), or subscription churn (the ongoing-relationship job differs from the first-purchase job).\n2. If the job genuinely differs, create a separate avatar record for that segment, running `avatar-record-builder` fresh for it rather than copying the parent record with edits.\n3. Reuse shared quotes and language bank entries where they genuinely apply to both, but write a distinct job statement, forces and objection map for the segment.\n\n## Checks\n- A split happens only when the underlying job differs, never just because the SKU, price or channel differs.\n- Each split record stands on its own evidence.\n\n## Output\n`{split_needed_flag: bool, new_segment_records: [...]}`\n\n## Example\nGehna's gift-buyer segment (buying for a wedding guest) has a job about not embarrassing the giver, distinct from the wearer's job about looking good in photos; split into two records sharing the same product line."
+ },
+ {
+  "id": "brand/untapped-avatar-pipeline",
+  "name": "Untapped avatar discovery pipeline",
+  "parent": null,
+  "invoke_when": "the category is saturated with no real product difference left to claim, and a new customer needs finding instead",
+  "select_by": null,
+  "inputs_required": [
+   "competitor packet: who every rival obviously targets",
+   "brand brain: real product capabilities"
+  ],
+  "steps": [
+   "1. Map who is already claimed by visible competitors.",
+   "2. List adjacent jobs the product could serve beyond the claimed avatar.",
+   "3. Search for real evidence the adjacent job exists.",
+   "4. Drop candidates with zero found evidence.",
+   "5. Size the strongest 1-2 candidates."
+  ],
+  "checks": [
+   "every candidate job is something the product can do today, not a roadmap wish",
+   "a candidate with zero evidence is dropped, not carried on hope"
+  ],
+  "output": "{claimed_avatar_map, adjacent_job_candidates, evidence_checked_candidates}",
+  "used_by": [
+   "BRAND-W08"
+  ],
+  "shared_with": [],
+  "skill_md": "---\nname: untapped-avatar-pipeline\nowner: BRAND\nversion: 1\ninvoke_when: the category is saturated with no real product difference left to claim\ninputs: competitor packet, brand brain product capabilities\noutputs: claimed-avatar map, adjacent job candidates, evidence-checked candidates\n---\n# Untapped avatar discovery pipeline\n\n## Purpose\nWhen every competitor claims the same avatar and the product has no new feature to differentiate on, the way out is often a different customer, not a different claim. This is a structured search for a real, unclaimed adjacent avatar.\n\n## Steps\n1. From the competitor packet's per-competitor avatar reads, map exactly who every visible rival is obviously serving.\n2. List adjacent jobs this exact product, as it exists today, could also do: a gifting job, a professional-use job, a different life-stage job, drawn from the product's real capabilities, not a future roadmap.\n3. Search reviews, forums, and both own and public search terms for any sign someone already uses or wants the product for that adjacent job.\n4. Drop any candidate with zero found evidence; hope is not evidence.\n5. Run a lightweight market-sizing pass on the strongest 1-2 remaining candidates.\n\n## Checks\n- Every candidate job must be something the product can do today.\n- A candidate with no found evidence at all is dropped, not carried forward \"just in case.\"\n\n## Output\n`{claimed_avatar_map, adjacent_job_candidates: [...], evidence_checked_candidates: [...]}`\n\n## Example\nCategory: everyone targets the bride. Adjacent job found with evidence (3 reviews, 1 forum thread): jewellery bought by working women for daily office wear, a job no competitor's marketing speaks to."
+ },
+ {
+  "id": "brand/category-ladder-and-xy-map",
+  "name": "Category ladder and XY positioning map",
+  "parent": null,
+  "invoke_when": "a new positioning cycle starts or the competitive set materially changes",
+  "select_by": null,
+  "inputs_required": [
+   "competitor packet",
+   "avatar record"
+  ],
+  "steps": [
+   "1. List every rung of the category ladder, including doing nothing.",
+   "2. List the real competitive set.",
+   "3. Choose two axes the avatar actually weighs.",
+   "4. Plot every alternative on the axes.",
+   "5. Identify and check open corners."
+  ],
+  "checks": [
+   "every plotted point cites the fact that placed it there",
+   "axes drawn from the avatar record, not picked to flatter the brand"
+  ],
+  "output": "{category_ladder, competitive_set, xy_positioning_map, open_corner_note}",
+  "used_by": [
+   "BRAND-W09"
+  ],
+  "shared_with": [],
+  "skill_md": "---\nname: category-ladder-and-xy-map\nowner: BRAND\nversion: 1\ninvoke_when: a new positioning cycle starts or the competitive set materially changes\ninputs: competitor packet, avatar record\noutputs: category ladder, competitive set, XY positioning map, open-corner note\n---\n# Category ladder and XY positioning map\n\n## Purpose\nNo positioning claim should be written before the field it competes in is actually mapped. This skill covers both the ladder (every rung a shopper could pick) and the map (where every real alternative sits on the two axes that matter).\n\n## Steps\n1. List every rung of the category ladder: the category itself, sub-categories, every real product alternative, and doing nothing as a real option a shopper could choose.\n2. List the real competitive set: every brand or option a shopper would actually compare against, including at least one indirect or adjacent-category alternative, not only obvious direct rivals.\n3. Choose two axes for the map based on what the avatar record shows this customer actually weighs in a decision (never pick axes just to leave an empty, flattering corner for this brand).\n4. Plot the brand and every alternative on the two axes, citing the specific fact from the competitor packet that placed each one.\n5. Identify empty corners, then check each against real demand evidence before calling it an opportunity rather than a corner nobody wants.\n\n## Checks\n- Every plotted point cites a specific fact.\n- Axes are drawn from the avatar record's real decision criteria.\n- \"Doing nothing\" appears on the ladder.\n\n## Output\n`{category_ladder: [...], competitive_set: [...], xy_positioning_map: {axes, points}, open_corner_note}`\n\n## Example\nAxes chosen: \"price\" and \"craft-story strength\" (drawn from avatar record showing craft story outweighs brand-name recognition for this buyer). Open corner at high-price/high-craft-story is checked against review data showing real demand for handcrafted detail at this price band."
+ },
+ {
+  "id": "brand/positioning-statement",
+  "name": "Positioning statement",
+  "parent": null,
+  "invoke_when": "a positioning statement needs drafting, auditing, testing, or the map shows no open slot exists head-on",
+  "select_by": null,
+  "inputs_required": [
+   "category ladder and XY map",
+   "avatar record",
+   "claims tiers"
+  ],
+  "steps": [
+   "1. Answer the 6 positioning questions in writing.",
+   "2. Draft the 3-sentence promise.",
+   "3. Cut to the one differentiation line.",
+   "4. Run the positioning checklist.",
+   "5. If no open slot exists, search for a creneau or reframe the category.",
+   "6. Design a 2-frame test where two candidates are credible."
+  ],
+  "checks": [
+   "every claim passes claim-check",
+   "line passes the strip test",
+   "a checklist fail blocks moving forward"
+  ],
+  "output": "{positioning_statement, promise, differentiation_line, checklist_result}",
+  "used_by": [
+   "BRAND-W10"
+  ],
+  "shared_with": [],
+  "skill_md": "---\nname: positioning-statement\nowner: BRAND\nversion: 1\ninvoke_when: a positioning statement needs drafting, auditing, testing, or no open slot exists head-on\ninputs: category ladder, XY map, avatar record, claims tiers\noutputs: positioning statement, 3-sentence promise, differentiation line, checklist result\n---\n# Positioning statement\n\n## Purpose\nThis is the single procedure for turning a mapped competitive field into the one line a shopper reads and believes, including the fallback path when the map shows every direct slot already taken.\n\n## Steps\n1. Answer the 6 positioning questions in writing: for whom, for what category, against what alternative, what benefit, why believe it, why now. Every answer traces to the avatar record or a verified fact.\n2. Draft the 3-sentence promise: the change, the mechanism, the proof.\n3. Cut the promise to the one differentiation line a scrolling shopper would actually read.\n4. Run the fixed positioning checklist (clear, ownable, provable, durable, no disputed statistic); a fail on any item blocks moving forward until fixed.\n5. If the XY map shows every corner already occupied, search for an unclaimed dimension entirely (a creneau), take the deliberate against-position relative to the category leader, or reframe the whole category around a frustration the avatar record already documents.\n6. Where two framings are both credible, design a small test (an ad message test, a landing headline split, or an AI-persona pretest) before committing to one.\n\n## Checks\n- Every claim passes `shared/claim-check` against the claims tiers.\n- The differentiation line fails the strip test if a competitor's name could swap in and it would still read true: a fail means it is not ownable yet.\n- A checklist fail blocks presentation to the founder until resolved.\n\n## Output\n`{positioning_statement, promise, differentiation_line, checklist_result: {pass|fail, notes}}`\n\n## Example\nDifferentiation line: \"Jewellery you can wear the Tuesday after the wedding, not just the wedding day.\" Strip test: fails if swapped for a costume-jewellery competitor (still true for them too): flagged to sharpen further before founder review."
+ },
+ {
+  "id": "brand/market-sizing",
+  "name": "Market sizing",
+  "parent": null,
+  "invoke_when": "a new niche or product idea needs sizing from the brand's own numbers",
+  "select_by": null,
+  "inputs_required": [
+   "metric contract: AOV, gross margin, contribution margin, repeat rate",
+   "candidate niche or product idea"
+  ],
+  "steps": [
+   "1. Compute repeat buyers needed to sustain the business at this AOV/margin.",
+   "2. Check an independent size signal for the niche.",
+   "3. Place the candidate on the price-by-customer-count matrix."
+  ],
+  "checks": [
+   "all arithmetic in code",
+   "missing inputs marked unavailable, not assumed",
+   "a sizing claim always cites its independent signal"
+  ],
+  "output": "{sustaining_buyer_count, size_signal, matrix_placement}",
+  "used_by": [
+   "BRAND-W08",
+   "BRAND-W11",
+   "BRAND-W26"
+  ],
+  "shared_with": [
+   "MONEY (P&L context)"
+  ],
+  "skill_md": "---\nname: market-sizing\nowner: BRAND\nversion: 1\ninvoke_when: a new niche or product idea needs sizing from the brand's own numbers\ninputs: AOV, gross margin, contribution margin, repeat rate; candidate niche\noutputs: sustaining-buyer-count figure, independent size signal, matrix placement\n---\n# Market sizing\n\n## Purpose\nAn idea sounds bigger than it is until it is sized against this brand's actual AOV, margin and repeat rate. This skill does that arithmetic in code, every time, instead of letting an estimate happen in prose.\n\n## Steps\n1. Compute how many repeat buyers, at what purchase frequency, would sustain the business or the candidate line at this AOV and contribution margin. Use the metric contract fields directly; a missing field shows as unavailable, never assumed.\n2. Search for an independent size signal for the specific niche: category search volume, a relevant subreddit or forum size, marketplace listing count, or a review-count proxy for comparable products. Every signal needs a URL and date.\n3. Place the candidate on a matrix of price point against the customer count needed, to see whether this is realistically a volume play or a margin play, stated as a range rather than a false-precise number.\n\n## Checks\n- All arithmetic runs in code, never estimated in prose.\n- A missing input shows as unavailable, never filled with an assumption.\n- A sizing claim always cites the independent signal it is based on; a niche with no findable signal is marked \"unproven.\"\n\n## Output\n`{sustaining_buyer_count, size_signal: {value, source, date}, matrix_placement}`\n\n## Example\nAt AOV $65 and 28% contribution margin, sustaining an $18,000/month line needs approximately 220 repeat buyers per month at a 2x/year frequency; independent signal: category search volume flat over 12 months per Search Console, so treated as a margin play, not a volume play."
+ },
+ {
+  "id": "brand/pricing-audit",
+  "name": "Pricing audit",
+  "parent": null,
+  "invoke_when": "the quarterly pricing position and premium-signal audit is due",
+  "select_by": null,
+  "inputs_required": [
+   "competitor packet: category price range",
+   "metric contract: discount_rate"
+  ],
+  "steps": [
+   "1. Compare live price to the category's learned range.",
+   "2. Audit premium signals (packaging, copy, discount cadence).",
+   "3. Flag where discounting undercuts a premium story."
+  ],
+  "checks": [
+   "verdict states which competitors set the range boundaries",
+   "a high discount rate next to a premium claim is flagged explicitly"
+  ],
+  "output": "{in_range_verdict, premium_signal_audit_note}",
+  "used_by": [
+   "BRAND-W11"
+  ],
+  "shared_with": [
+   "MONEY (margin impact)"
+  ],
+  "skill_md": "---\nname: pricing-audit\nowner: BRAND\nversion: 1\ninvoke_when: the quarterly pricing position and premium-signal audit is due\ninputs: competitor packet category price range, discount_rate from the metric contract\noutputs: in-range/out-of-range verdict, premium-signal audit note\n---\n# Pricing audit\n\n## Purpose\nPrice drifts out of position slowly, and a premium story quietly gets undercut by discount cadence long before anyone notices in the P&L. This skill checks both every quarter.\n\n## Steps\n1. Compare the brand's live price to the category price range established in the latest competitor packet; state which specific competitors set the top and bottom of that range.\n2. Audit premium signals if a premium position is claimed: does packaging, page copy and current discount cadence still support it.\n3. Flag explicitly where the discount_rate from the metric contract is high enough to undercut a stated premium claim; this is a direct contradiction, not a minor note.\n\n## Checks\n- The in/out-of-range verdict names which competitors bound the range, not a vague \"seems fine.\"\n- A high discount_rate next to a premium claim is flagged plainly, not smoothed into a softer note.\n\n## Output\n`{in_range_verdict, premium_signal_audit_note}`\n\n## Example\nLive price $42 sits inside the $36-$58 category range set by 4 named competitors; discount_rate at 22% over the last quarter flagged against the brand's \"quiet luxury\" positioning claim as an active contradiction."
+ },
+ {
+  "id": "brand/naming-candidate-generation",
+  "name": "Naming candidate generation",
+  "parent": null,
+  "invoke_when": "a naming project needs raw candidates across naming types",
+  "select_by": null,
+  "inputs_required": [
+   "category, product and buyer audit",
+   "avatar record"
+  ],
+  "steps": [
+   "1. Run the category, product and buyer audit.",
+   "2. Generate candidates across naming types (descriptive, suggestive, invented, founder, evocative).",
+   "3. Use AI for volume, human judgement at review, not at generation."
+  ],
+  "checks": [
+   "list spans multiple naming types",
+   "brief lists what the name must NOT do before generation starts"
+  ],
+  "output": "{naming_brief, raw_candidate_list}",
+  "used_by": [
+   "BRAND-W12"
+  ],
+  "shared_with": [],
+  "skill_md": "---\nname: naming-candidate-generation\nowner: BRAND\nversion: 1\ninvoke_when: a naming project needs raw candidates across naming types\ninputs: category/product/buyer audit, avatar record\noutputs: naming brief, raw candidate list (50-100+)\n---\n# Naming candidate generation\n\n## Purpose\nA naming project fails when it generates too few candidates from too narrow a style. This skill forces volume and variety before any human judgment narrows the field.\n\n## Steps\n1. Run the audit: category naming conventions already in use, the product's real attributes, and the avatar's own language, so generation starts grounded, not generic.\n2. Write the naming brief, explicitly including what the name must not do: no forbidden claim, no sound-alike collision with a named competitor, no meaning that turns negative in a relevant language.\n3. Generate far more candidates than feels necessary, spanning naming types: descriptive, suggestive, invented/coined, founder-name-based, and evocative/metaphorical. Use AI generation for volume; apply human judgment only at the review step that follows, never to pre-filter the generation itself.\n\n## Checks\n- The candidate list spans at least 3 different naming types, not one flavor repeated 80 times.\n- The naming brief's \"must not do\" list is written before generation starts.\n\n## Output\n`{naming_brief, raw_candidate_list: [50-100+ names]}`\n\n## Example\nBrief flags: must not sound like [named competitor], must not translate poorly in Spanish, must work as a hashtag. Candidates generated across all 5 types, roughly 20 per type."
+ },
+ {
+  "id": "brand/name-screening-and-packaging",
+  "name": "Name screening and packaging",
+  "parent": null,
+  "invoke_when": "a raw candidate list needs scoring down to finalists, at brand, product or SKU scope, and packaging into a deliverable",
+  "select_by": {
+   "scope": "brand | sku"
+  },
+  "inputs_required": [
+   "raw candidate list (brand scope) or a lighter product/SKU naming need",
+   "clearance report once available"
+  ],
+  "steps": [
+   "1. Set the scope: full brand name or a lighter SKU/collection name.",
+   "2. Score every candidate on the 7 core qualities.",
+   "3. Test sound and syllable count out loud; avoid acronym and generic-name traps.",
+   "4. Mock up finalists in realistic contexts.",
+   "5. For brand scope: write nomenclature notes, short story and a strip-tested tagline once cleared."
+  ],
+  "checks": [
+   "each finalist shows all 7 scores, not one overall number",
+   "SKU scope defaults to descriptive, benefit-first titles where a brand name isn't needed"
+  ],
+  "output": "{scored_shortlist, finalist_mockups, naming_deliverable (brand scope only)}",
+  "used_by": [
+   "BRAND-W12"
+  ],
+  "shared_with": [],
+  "skill_md": "---\nname: name-screening-and-packaging\nowner: BRAND\nversion: 1\ninvoke_when: candidates need scoring to finalists (brand or SKU scope) and packaging into a deliverable\ninputs: raw candidate list or a lighter SKU naming need; clearance report once available\noutputs: scored shortlist, finalist mock-ups, and for brand scope, the full naming deliverable\n---\n# Name screening and packaging\n\n## Purpose\nThis skill covers both a full brand-naming screen and the lighter product/SKU/collection name screen, and carries the winner through to a presentable, packaged deliverable once cleared.\n\n## Steps\n1. Set the scope up front: a full brand name needs all 7 quality checks and a full deliverable; a SKU or collection name defaults to a descriptive, benefit-first title unless a real reason calls for a coined name.\n2. Score every candidate on the 7 core qualities: distinctive, meaningful, memorable, brief, positive, extendable, protectable. Show all 7 scores per finalist, not a single blended number.\n3. Test sound and syllable count by reading candidates aloud; flag acronym traps (unpronounceable or already-claimed initialisms) and generic-name traps (too descriptive to ever be ownable).\n4. For the top 2-3, build realistic mock-ups: a PDP title, a packaging mock, a spoken-aloud test, rather than presenting a bare word list. Use the real product photo where accuracy matters.\n5. For brand scope only, once trademark/domain clearance comes back clean: write nomenclature notes (why this name, what it signals), a short brand story, and a tagline that passes the strip test.\n\n## Checks\n- Every finalist shows all 7 individual scores.\n- SKU/collection scope defaults to descriptive naming unless a documented reason overrides it.\n- A brand-scope deliverable is only packaged after clearance, never before.\n\n## Output\n`{scored_shortlist: [{name, scores_7}], finalist_mockups, naming_deliverable: {nomenclature_notes, story, tagline} | null for SKU scope}`\n\n## Example\nSKU scope: candidate \"Everyday Gold-Tone Hoops, 18mm\" chosen over a coined name \"Aura Hoops\" since the descriptive title captures 3 real search terms found in on-site search mining."
+ },
+ {
+  "id": "brand/trademark-domain-check",
+  "name": "Trademark, domain and language clearance",
+  "parent": null,
+  "invoke_when": "a name shortlist needs legal, availability and language-risk screening before being presented as final",
+  "select_by": null,
+  "inputs_required": [
+   "scored shortlist",
+   "target markets and languages"
+  ],
+  "steps": [
+   "1. Search the USPTO trademark database and international equivalents where relevant.",
+   "2. Search name + industry terms for collisions.",
+   "3. Check domain and social handle availability.",
+   "4. Check meaning and sound per market language."
+  ],
+  "checks": [
+   "every finalist has a status: clear, risk, or needs-legal"
+  ],
+  "output": "{clearance_report_per_finalist, legal_review_flag_list}",
+  "used_by": [
+   "BRAND-W12"
+  ],
+  "shared_with": [],
+  "skill_md": "---\nname: trademark-domain-check\nowner: BRAND\nversion: 1\ninvoke_when: a name shortlist needs legal, availability and language-risk screening before it is presented as final\ninputs: scored shortlist, target markets and languages\noutputs: clearance report per finalist, legal-review flag list\n---\n# Trademark, domain and language clearance\n\n## Purpose\nA name that scores well on the 7 qualities can still be legally unusable or embarrassing in a target market's language. This is the free screening pass; a paid legal opinion or filing is a separate, human_assist step this skill only flags the need for.\n\n## Steps\n1. Search the USPTO trademark database (and international equivalents such as the EUIPO or an India registry for any export market) for exact and close matches in this product category.\n2. Search \"name + industry term\" combinations for existing uses that a database search alone would miss.\n3. Check domain availability (.com and the relevant local ccTLD) and social handle availability across the platforms the brand actually uses.\n4. Check meaning and sound in every relevant market language, including Spanish for the US market and any other market language (Hindi or a regional language for an India-market name) the brand's customer base speaks, for an unintended negative meaning.\n\n## Checks\n- Every finalist gets an explicit status: clear, risk, or needs-legal.\n- A \"risk\" or \"needs-legal\" status is never softened to \"probably fine\" in the report shown to the founder.\n\n## Output\n`{clearance_report_per_finalist: [{name, trademark_status, domain_status, language_check, overall}], legal_review_flag_list}`\n\n## Example\nCandidate clears trademark and domain search, but the Spanish phonetic reading is close to an unrelated slang term: flagged \"risk: language,\" recommended against despite scoring well on the 7 qualities."
+ },
+ {
+  "id": "brand/brand-story-and-promise",
+  "name": "Brand story and promise",
+  "parent": null,
+  "invoke_when": "the founder story needs writing, or a brand promise/tagline needs drafting and testing",
+  "select_by": null,
+  "inputs_required": [
+   "founder's own account",
+   "avatar record",
+   "positioning statement if one exists"
+  ],
+  "steps": [
+   "1. Write the founder/brand story in a self, us, now structure.",
+   "2. Draft the 3-sentence promise (change, mechanism, proof).",
+   "3. Draft 3-5 tagline candidates.",
+   "4. Run the strip test.",
+   "5. Design a recall test for a candidate signature line."
+  ],
+  "checks": [
+   "no invented biographical detail; founder confirms every detail",
+   "every promise claim passes claim-check",
+   "tagline passes the strip test"
+  ],
+  "output": "{brand_story, promise, tagline_candidates}",
+  "used_by": [
+   "BRAND-W14"
+  ],
+  "shared_with": [],
+  "skill_md": "---\nname: brand-story-and-promise\nowner: BRAND\nversion: 1\ninvoke_when: the founder/brand story needs writing, or a brand promise and tagline need drafting and testing\ninputs: founder's own account, avatar record, positioning statement if one exists\noutputs: brand story, 3-sentence promise, tagline candidates\n---\n# Brand story and promise\n\n## Purpose\nThe story and the promise are both meant to stay stable for years, so they get written once, carefully, from real material, not regenerated per campaign. This skill covers both since they are written and tested together.\n\n## Steps\n1. Write the founder or brand story in a self, us, now structure: who the founder is (self), the shared struggle with the customer (us), why this matters right now (now). Every biographical detail must be confirmed by the founder, never invented for narrative effect.\n2. Draft the 3-sentence promise from the positioning statement if one exists: the change the customer gets, the mechanism that delivers it, the proof it is real.\n3. Draft 3-5 tagline candidates from the promise.\n4. Run the strip test on every candidate: if a competitor's name could swap in and it would still read true, it fails and is cut or sharpened.\n5. For a candidate meant to become a signature line (used repeatedly across ads or packaging), design a small recall-based test: does a shopper remember it after seeing it once, measured with a stated read point.\n\n## Checks\n- No invented biographical fact; the founder confirms every detail in the story.\n- Every claim in the promise passes `shared/claim-check`.\n- Tagline candidates that fail the strip test are cut before presentation.\n\n## Output\n`{brand_story, promise, tagline_candidates: [...]}`\n\n## Example\nTagline candidate \"Jewellery that keeps its shine after the wedding\" passes the strip test (specific to this brand's durability claim, backed by a site-approved claim tier) while \"Beautiful jewellery for every occasion\" fails (any competitor's name reads equally true)."
+ },
+ {
+  "id": "brand/voice-sheet-builder",
+  "name": "Voice sheet builder",
+  "parent": null,
+  "invoke_when": "a new brand needs a default voice, or an existing one needs the full sheet built or refreshed after drift is found",
+  "select_by": null,
+  "inputs_required": [
+   "Kevin's liked and disliked copy examples",
+   "brand story and values"
+  ],
+  "steps": [
+   "1. Set a default voice if none exists.",
+   "2. Collect liked and disliked examples.",
+   "3. Derive 4-8 traits.",
+   "4. Write a do/don't example pair per trait.",
+   "5. Build a short cheat-sheet version plus the full reference."
+  ],
+  "checks": [
+   "every trait has a real, sourced liked and disliked example, never invented"
+  ],
+  "output": "{voice_and_tone_sheet: {short_version, full_version}}",
+  "used_by": [
+   "BRAND-W14"
+  ],
+  "shared_with": [],
+  "skill_md": "---\nname: voice-sheet-builder\nowner: BRAND\nversion: 1\ninvoke_when: a new brand needs a default voice, or an existing sheet needs building or refreshing after drift is found\ninputs: Kevin's liked and disliked copy examples, brand story and values\noutputs: voice and tone sheet, short and full versions\n---\n# Voice sheet builder\n\n## Purpose\nAny writer or model needs a concrete, example-based reference to sound consistently like this brand. A list of adjectives (\"friendly, bold, premium\") does not achieve that; real liked and disliked examples do.\n\n## Steps\n1. If no voice sheet exists yet, set a plain default voice (short sentences, digits not spelled-out numbers, no jargon) so copy work is not blocked, marked clearly as a placeholder.\n2. Collect Kevin's real liked and disliked copy examples, from past brand work or explicit reference material; never invent an example for the exercise.\n3. Derive 4-8 traits from the pattern in those examples (for example: \"direct, never salesy,\" \"warm but not cutesy\").\n4. For each trait, write one real liked example and one real disliked example, plus a one-line rule a writer can apply without re-reading the whole sheet.\n5. Build a one-page cheat version (traits and rules only) and a longer full reference (with the examples and reasoning) for deeper onboarding.\n\n## Checks\n- Every trait's liked and disliked examples are real and sourced, never invented to fit the trait.\n- The default voice, once a real sheet exists, is retired, not left stacked alongside it.\n\n## Output\n`{voice_and_tone_sheet: {short_version, full_version}}`\n\n## Example\nTrait: \"confident, not boastful.\" Liked: \"This chain won't tarnish. We tested it.\" Disliked: \"Our chains are the best in the industry, guaranteed to amaze!\" Rule: state the fact, skip the superlative."
+ },
+ {
+  "id": "brand/messaging-hierarchy-builder",
+  "name": "Messaging hierarchy builder",
+  "parent": null,
+  "invoke_when": "a new campaign, page or channel needs its ranked message stack written",
+  "select_by": null,
+  "inputs_required": [
+   "positioning statement",
+   "avatar record and objection map",
+   "the specific page or channel type"
+  ],
+  "steps": [
+   "1. Name the one big idea from positioning.",
+   "2. Rank up to 3 supporting messages from the objection map.",
+   "3. Fit the stack to the page or channel type.",
+   "4. Claim-check the whole stack."
+  ],
+  "checks": [
+   "big idea traces directly to the approved positioning statement",
+   "each supporting message maps to a specific objection or force"
+  ],
+  "output": "{big_idea, ranked_supporting_messages, page_fitted_stack}",
+  "used_by": [
+   "BRAND-W15"
+  ],
+  "shared_with": [],
+  "skill_md": "---\nname: messaging-hierarchy-builder\nowner: BRAND\nversion: 1\ninvoke_when: a new campaign, page or channel needs its ranked message stack written\ninputs: positioning statement, avatar record and objection map, the page/channel type\noutputs: big idea, ranked supporting messages, page-fitted message stack\n---\n# Messaging hierarchy builder\n\n## Purpose\nEvery asset on a page or channel should lead with the same one idea and back it the same way. This skill produces the ranked stack the executing specialist then writes the actual page or ad copy from.\n\n## Steps\n1. State the single big idea this page or channel must lead with, drawn directly from the approved positioning statement, never invented fresh per page.\n2. Pull the strongest supporting messages from the objection map and avatar record's forces, ranked by how much buying friction each one removes, capped at 3.\n3. Adjust order and depth for the specific page or channel type: a homepage leads broad, a PDP leads with the objection most relevant at that SKU's price point, an email leads with the relationship stage, an ad leads with the hook.\n4. Run every message in the stack through `shared/claim-check` against the claims tiers.\n\n## Checks\n- The big idea traces directly to the current positioning statement.\n- Each supporting message maps to a named objection or force, not a generic benefit.\n- The stack respects the writing rules: short sentences, digits, no em dashes.\n\n## Output\n`{big_idea, ranked_supporting_messages: [...], page_fitted_stack}`\n\n## Example\nPDP stack for a $58 chain: big idea \"wear it daily without worry,\" supporting messages ranked: (1) tarnish-resistance claim with test data, (2) size/length guide link, (3) return policy callout, matched to the top 3 PDP-stage objections in the objection map."
+ },
+ {
+  "id": "brand/identity-brief-builder",
+  "name": "Visual identity brief builder",
+  "parent": null,
+  "invoke_when": "a new identity or a major refresh needs its mood, palette, typography and photography direction written",
+  "select_by": null,
+  "inputs_required": [
+   "positioning statement",
+   "avatar record (aesthetic and price-tier expectations)"
+  ],
+  "steps": [
+   "1. Describe intended mood in words.",
+   "2. Direct palette, typography and photography in words and referenced mood only.",
+   "3. Hand the reference pull to the Reference Scout."
+  ],
+  "checks": [
+   "brief is words and mood references only, no invented final logo or asset",
+   "references are mood-only, never a competitor asset to copy"
+  ],
+  "output": "{identity_direction_brief, reference_set}",
+  "used_by": [
+   "BRAND-W16"
+  ],
+  "shared_with": [],
+  "skill_md": "---\nname: identity-brief-builder\nowner: BRAND\nversion: 1\ninvoke_when: a new identity or a major refresh needs mood, palette, typography and photography direction written\ninputs: positioning statement, avatar record's aesthetic and price-tier expectations\noutputs: identity direction brief, mood-only reference set\n---\n# Visual identity brief builder\n\n## Purpose\nThis agent directs visual identity in words; it never generates the final logo or asset itself. This skill writes a brief specific enough for a designer or the Reference Scout to act on, grounded in the positioning and avatar, not personal taste.\n\n## Steps\n1. Describe the intended mood in concrete words tied to the positioning statement and what the avatar record says this customer expects at this price tier (for example, \"quiet, not loud; craft-forward, not trend-forward\").\n2. Direct palette, typography and photography style in words and referenced mood only (cite the kind of reference: \"muted jewel tones like X,\" \"editorial photography style like Y\"), never a specific competitor asset to imitate directly.\n3. Hand the mood brief to the Reference Scout to pull real, mood-only visual references; this agent never sources or generates the final images itself.\n\n## Checks\n- The brief is entirely words and mood references; no invented final logo, mark, or asset appears in it.\n- Any reference cited is for layout and mood only, never a competitor's actual logo, product photo or face to copy.\n\n## Output\n`{identity_direction_brief, reference_set}`\n\n## Example\nBrief: \"Photography should feel like a personal collection, not a catalogue shoot: closer to editorial jewellery photography with natural light, never a white seamless background.\" Reference pull requested from Scout on that specific mood."
+ },
+ {
+  "id": "brand/brand-guidelines-builder",
+  "name": "Brand guidelines builder",
+  "parent": null,
+  "invoke_when": "a new brand or a major refresh needs the full guidelines document assembled",
+  "select_by": null,
+  "inputs_required": [
+   "identity direction brief and reference set",
+   "voice and tone sheet"
+  ],
+  "steps": [
+   "1. Draft logo and mark rules with misuse examples.",
+   "2. Assemble the visual language section.",
+   "3. Fold in the voice sheet as language rules.",
+   "4. Build the expressions section with applied examples.",
+   "5. Run the completeness checklist."
+  ],
+  "checks": [
+   "all 4 parts present before publishing",
+   "every applied example passes claim-check and the writing rules"
+  ],
+  "output": "{brand_guidelines_document, completeness_checklist_result}",
+  "used_by": [
+   "BRAND-W16"
+  ],
+  "shared_with": [],
+  "skill_md": "---\nname: brand-guidelines-builder\nowner: BRAND\nversion: 1\ninvoke_when: a new brand or a major refresh needs the full guidelines document assembled\ninputs: identity direction brief, reference set, voice and tone sheet\noutputs: brand guidelines document (4 parts), completeness checklist result\n---\n# Brand guidelines builder\n\n## Purpose\nThe guidelines document is what every future specialist and vendor checks work against. This skill assembles all 4 required parts and refuses to call the document done until every part is actually present.\n\n## Steps\n1. Draft logo and mark rules: clear space, minimum size, and at least 3 concrete misuse examples.\n2. Assemble the visual language section from the identity brief and reference set: palette, typography, photography direction, each tied back to the mood reasoning behind it.\n3. Fold in the voice and tone sheet directly as the language rules section; do not rewrite or summarize it, use the real sheet.\n4. Build the expressions section: 3-5 applied examples (a PDP header, an email, an ad) showing the rules working together in practice, each passing claim-check and the writing rules.\n5. Run the completeness checklist across all 4 parts; a missing part blocks publishing entirely, it does not ship with a \"to be added\" placeholder.\n\n## Checks\n- All 4 parts (mark rules, visual language, language rules, expressions) are present before this is called done.\n- Every applied example in the expressions section passes claim-check and the writing rules.\n\n## Output\n`{brand_guidelines_document: {mark_rules, visual_language, language_rules, expressions}, completeness_checklist_result}`\n\n## Example\nCompleteness check fails on first pass: expressions section has only 2 applied examples. Blocked from publishing until a 3rd (an email example) is added."
+ },
+ {
+  "id": "brand/brand-consistency-audit",
+  "name": "Brand consistency and perception-gap audit",
+  "parent": null,
+  "invoke_when": "the monthly consistency walk or the quarterly perception-gap comparison is due",
+  "select_by": null,
+  "inputs_required": [
+   "brand guidelines and voice sheet",
+   "live site, ads and email surfaces",
+   "recent reviews, social mentions and survey results"
+  ],
+  "steps": [
+   "1. Walk the site against guidelines.",
+   "2. Walk live ads and email against guidelines.",
+   "3. Score drift severity.",
+   "4. Compare stated identity to what customers actually say.",
+   "5. Classify the gap type (over-claim vs under-claim).",
+   "6. Draft fixes."
+  ],
+  "checks": [
+   "every drift item cites the specific rule it breaks",
+   "gap note quotes real customer language, not a paraphrase",
+   "over-claim gaps prioritized over under-claim"
+  ],
+  "output": "{site_drift_list, ads_email_drift_list, perception_gap_note, fix_list}",
+  "used_by": [
+   "BRAND-W17"
+  ],
+  "shared_with": [
+   "shared/surface-audit (underlying method)"
+  ],
+  "skill_md": "---\nname: brand-consistency-audit\nowner: BRAND\nversion: 1\ninvoke_when: the monthly consistency walk or the quarterly perception-gap comparison is due\ninputs: brand guidelines, voice sheet, live site/ads/email, recent reviews/mentions/survey results\noutputs: drift lists, perception-gap note, fix list\n---\n# Brand consistency and perception-gap audit\n\n## Purpose\nDrift compounds quietly: one off-voice email, one guideline-breaking ad, and within months the brand looks inconsistent everywhere. This skill catches it monthly, and quarterly checks the deeper question of whether the stated identity still matches what customers actually believe.\n\n## Steps\n1. Crawl key site pages (home, PDP, checkout) using `shared/surface-audit`'s method and check against logo rules, visual language and voice.\n2. Check current live ad creative (via the public ad library, read-only) and recent email/SMS sends against the same rules.\n3. Score each drift item by visibility and distance from the rule, computed, not gut-felt.\n4. Quarterly: compare the positioning statement, voice sheet and claims against what reviews, social mentions and survey results actually say, quoting real customer language.\n5. Classify each gap as the brand under-claiming (customers already believe more than the brand says) or over-claiming (customers do not believe what the brand claims); over-claims are the higher priority.\n6. Draft a specific fix for each drift or gap item, naming the owning specialist (Site, Media, Creative) who would execute it.\n\n## Checks\n- Every drift item cites the exact rule it breaks.\n- Every perception-gap note quotes real customer language, not a paraphrase.\n- Over-claim gaps are ranked above under-claim gaps.\n\n## Output\n`{site_drift_list, ads_email_drift_list, perception_gap_note, fix_list}`\n\n## Example\nDrift: PDP hero image on a new SKU uses a font outside the type system (breaks Visual Language rule 2). Perception gap: guidelines claim \"handcrafted,\" but 6 recent reviews describe the finish as \"machine-perfect\": classified as an over-claim gap, flagged high priority."
+ },
+ {
+  "id": "brand/brand-health-tracking",
+  "name": "Brand health tracking",
+  "parent": null,
+  "invoke_when": "the monthly brand health line is due",
+  "select_by": null,
+  "inputs_required": [
+   "connector: Google Search Console",
+   "metric contract: review_rating, review_count, repeat_rate_90d/365d"
+  ],
+  "steps": [
+   "1. Pull branded search volume trend.",
+   "2. Pull review rating and count trend.",
+   "3. Pull mention/sentiment signal where available.",
+   "4. Track repeat behavior trend.",
+   "5. Assemble into one dated brand health line.",
+   "6. Flag material moves."
+  ],
+  "checks": [
+   "missing data marked unavailable, never zero",
+   "every series dated",
+   "no fabricated sentiment score"
+  ],
+  "output": "{branded_search_trend, review_trend_line, brand_health_report}",
+  "used_by": [
+   "BRAND-W18"
+  ],
+  "shared_with": [
+   "shared/metric-read (underlying reads)",
+   "shared/report-section (assembly)"
+  ],
+  "skill_md": "---\nname: brand-health-tracking\nowner: BRAND\nversion: 1\ninvoke_when: the monthly brand health line is due\ninputs: Google Search Console, review_rating/count, repeat_rate_90d/365d\noutputs: branded search trend, review trend, brand health report\n---\n# Brand health tracking\n\n## Purpose\nBrand health is the slow-moving line underneath any single campaign's performance. This skill tracks it consistently every month so a real move is caught early, separate from short-term ad noise.\n\n## Steps\n1. Pull branded search query volume and trend from Search Console, covering a rolling 12 months where the connector allows.\n2. Pull review_rating and review_count trend from the metric contract using `shared/metric-read`.\n3. Check for any collectable public mention or sentiment data; if no real source exists, mark this field unavailable rather than estimating a sentiment score.\n4. Pull repeat_rate_90d and repeat_rate_365d trend as a brand-strength proxy, kept separate from campaign-level ROAS reporting.\n5. Assemble all series into one dated brand health line using `shared/report-section`, each series carrying its own freshness date.\n6. Flag any series that moved more than a stated threshold since last month for founder attention.\n\n## Checks\n- Missing data always shows as unavailable, never as zero.\n- Every series in the report carries its own date, not one blended \"as of\" date.\n- No sentiment score is ever fabricated without a real source behind it.\n\n## Output\n`{branded_search_trend, review_trend_line, brand_health_report}`\n\n## Example\nBranded search volume flat at ~1,200/month for 3 months, then a 40% jump following a PR placement (BRAND-W21); flagged as a material move worth noting alongside the placement date."
+ },
+ {
+  "id": "brand/community-cohort-design",
+  "name": "Community and loyalty cohort design",
+  "parent": null,
+  "invoke_when": "an exclusive cohort or advocacy group needs designing before any invitation goes out",
+  "select_by": null,
+  "inputs_required": [
+   "avatar record",
+   "current top advocates",
+   "brand brain: values and story"
+  ],
+  "steps": [
+   "1. Define who counts as 'us' precisely.",
+   "2. Identify who already advocates unprompted.",
+   "3. Design one real thing the group controls.",
+   "4. Draft the invitation and rules for gaining and losing membership."
+  ],
+  "checks": [
+   "membership criteria checkable against real data, not self-declared",
+   "losing-membership rules as clear as gaining them"
+  ],
+  "output": "{membership_criteria, seed_advocate_list, cohort_privilege_design, invitation_and_rules_draft}",
+  "used_by": [
+   "BRAND-W19"
+  ],
+  "shared_with": [],
+  "skill_md": "---\nname: community-cohort-design\nowner: BRAND\nversion: 1\ninvoke_when: an exclusive cohort or advocacy group needs designing before any invitation goes out\ninputs: avatar record, current top advocates, brand values and story\noutputs: membership criteria, seed advocate list, cohort privilege design, invitation and rules draft\n---\n# Community and loyalty cohort design\n\n## Purpose\nA loyalty cohort that means \"our best customers\" vaguely does not build advocacy; a cohort with precise, checkable membership criteria and one real, sustainable privilege does.\n\n## Steps\n1. Write specific, checkable membership criteria: a purchase count, a referral made, a value shared publicly, never a vague \"our best customers.\"\n2. Identify customers who already advocate unprompted (unsolicited reviews, repeat referrals, organic social mentions) as the seed group, built from real behavior data.\n3. Design one real privilege the cohort controls or gets first, sized to what the brand can sustain past the launch month, not just for the first announcement.\n4. Draft the invitation copy and the rules for both gaining and losing membership; the rules for losing membership should be as clear as the rules for gaining it.\n\n## Checks\n- Membership criteria are checkable against real data, not self-declared by the customer.\n- Rules for losing membership are as explicit as rules for gaining it.\n\n## Output\n`{membership_criteria, seed_advocate_list, cohort_privilege_design, invitation_and_rules_draft}`\n\n## Example\nCriteria: 3+ purchases in 12 months AND one unprompted public mention. Privilege: first access to new drops 48 hours early. Losing membership: no purchase in 18 months, reviewed quietly, not publicly announced."
+ },
+ {
+  "id": "brand/ambassador-program-ops",
+  "name": "Ambassador and advocacy program operations",
+  "parent": null,
+  "invoke_when": "an approved ambassador or community program needs its weekly operations run",
+  "select_by": null,
+  "inputs_required": [
+   "approved program design",
+   "applicant list",
+   "brand guidelines and voice sheet",
+   "reward schedule and budget cap"
+  ],
+  "steps": [
+   "1. Screen new applicants against criteria.",
+   "2. Assign this week's tasks.",
+   "3. Check submitted content against guidelines.",
+   "4. Track rewards owed against a budget cap.",
+   "5. Flag capacity or budget issues before they are hit."
+  ],
+  "checks": [
+   "screening criteria applied consistently, no exceptions without a founder note",
+   "rewards computed in code against a real budget cap"
+  ],
+  "output": "{screened_applicant_list, task_assignments, approved_content_list, rewards_ledger}",
+  "used_by": [
+   "BRAND-W20"
+  ],
+  "shared_with": [],
+  "skill_md": "---\nname: ambassador-program-ops\nowner: BRAND\nversion: 1\ninvoke_when: an approved ambassador or community program needs its weekly operations run\ninputs: approved program design, applicant list, brand guidelines/voice sheet, reward schedule and budget cap\noutputs: screened applicants, task assignments, approved content list, rewards ledger\n---\n# Ambassador and advocacy program operations\n\n## Purpose\nOnce a program is approved, it needs consistent weekly running: the same screening bar for every applicant, the same guideline check on every submission, and a rewards ledger that never quietly exceeds its cap.\n\n## Steps\n1. Screen every new applicant against the program's membership criteria, applying the same bar to everyone; any exception needs a founder note, never an ad hoc call.\n2. Assign the week's content or advocacy tasks to active ambassadors, matched to what each one does well.\n3. Check submitted content against the brand guidelines and voice sheet (via `shared/claim-check` for any factual claim) before it is approved for reward or reposting; a rejection gets a specific, usable reason.\n4. Track what each ambassador is owed against what they delivered, computed in code, checked against the program's budget cap.\n5. Flag when the program is approaching its budget cap or when submission volume is outpacing the team's capacity to review it, before either limit is actually hit.\n\n## Checks\n- The same screening criteria apply to every applicant.\n- Rewards are computed in code and checked against a real, approved budget cap.\n- A capacity or budget flag is raised proactively, at 90% of the cap, not after it is exceeded.\n\n## Output\n`{screened_applicant_list, task_assignments, approved_content_list, rewards_ledger}`\n\n## Example\nWeek 6: rewards ledger at $1,900 of a $2,250 monthly cap with 9 days left in the cycle: capacity flag raised for founder awareness before new task assignments go out."
+ },
+ {
+  "id": "brand/pr-angle-builder",
+  "name": "PR angle builder",
+  "parent": null,
+  "invoke_when": "a launch or newsworthy moment needs a pitchable press angle",
+  "select_by": null,
+  "inputs_required": [
+   "brand story and positioning",
+   "the specific launch or newsworthy moment"
+  ],
+  "steps": [
+   "1. Turn the brand story, a category frustration, or an origin fact into a pitchable angle.",
+   "2. Consider seeding through a few respected insiders in a high-trust community.",
+   "3. Draft the pitch, claim-checked and in brand voice."
+  ],
+  "checks": [
+   "angle is newsworthy to a journalist, not just interesting to the founder",
+   "every claim in the draft passes claim-check"
+  ],
+  "output": "{pitch_angle, seed_list_note, drafted_pitch}",
+  "used_by": [
+   "BRAND-W21"
+  ],
+  "shared_with": [],
+  "skill_md": "---\nname: pr-angle-builder\nowner: BRAND\nversion: 1\ninvoke_when: a launch or newsworthy moment needs a pitchable press angle\ninputs: brand story and positioning, the specific launch or moment\noutputs: pitch angle, seed-list note, drafted pitch\n---\n# PR angle builder\n\n## Purpose\nJournalists do not cover product announcements; they cover a story. This skill turns a brand fact into something a journalist would actually want to write, not a press-release restatement of a launch.\n\n## Steps\n1. Turn the brand story, a documented category frustration (something the avatar's own objections already point to), or a real origin fact into a pitchable angle: what is new, surprising, or timely about it right now.\n2. For a launch, consider seeding the angle through a few respected insiders in a high-trust community first, chosen for real relevance to the avatar, not follower count, before a broader press push.\n3. Draft the pitch itself in brand voice, run through `shared/claim-check` so nothing in it overstates what the brand can prove.\n\n## Checks\n- The angle would be newsworthy to an independent journalist, not just interesting to the founder.\n- Every factual claim in the drafted pitch passes claim-check.\n\n## Output\n`{pitch_angle, seed_list_note, drafted_pitch}`\n\n## Example\nAngle: not \"we launched a new collection\" but \"why American jewelry brands are quietly moving away from disposable trend pieces,\" using the brand's own durability positioning as the hook, seeded first to 2 respected stylists before a wider press push."
+ },
+ {
+  "id": "brand/media-list-builder",
+  "name": "Media list builder",
+  "parent": null,
+  "invoke_when": "a specific story or launch needs a targeted, verified media list",
+  "select_by": null,
+  "inputs_required": [
+   "pitch angle",
+   "target media tier"
+  ],
+  "steps": [
+   "1. Search for journalists and outlets whose beat matches this specific angle.",
+   "2. Verify the beat match against recent bylines, not an old database entry."
+  ],
+  "checks": [
+   "every contact's beat match checked against recent bylines"
+  ],
+  "output": "{verified_beat_matched_media_list}",
+  "used_by": [
+   "BRAND-W21"
+  ],
+  "shared_with": [],
+  "skill_md": "---\nname: media-list-builder\nowner: BRAND\nversion: 1\ninvoke_when: a specific story or launch needs a targeted, verified media list\ninputs: pitch angle, target media tier\noutputs: verified, beat-matched media list\n---\n# Media list builder\n\n## Purpose\nA generic media database list wastes outreach on journalists who no longer cover that beat. This skill builds a small, verified list matched to the specific angle, not a purchased mailing list.\n\n## Steps\n1. Search public journalist and outlet information (recent articles, bylines, outlet beat pages) for people whose current coverage matches this specific pitch angle.\n2. Verify each match against the journalist's recent bylines (last 3-6 months), not an old media database entry that may be stale.\n3. Note each contact's outlet, beat, and the specific recent piece that shows the match, so the pitch can reference it.\n\n## Checks\n- Every listed contact's beat match is checked against recent, real bylines, never assumed from an old database record.\n- The list is sized to quality, not volume; a focused list of 8-15 real matches beats a generic list of 100.\n\n## Output\n`{verified_beat_matched_media_list: [{name, outlet, beat, recent_piece, url, date}]}`\n\n## Example\nContact matched on a piece published 3 weeks ago about sustainable American fashion brands, directly relevant to this brand's durability angle, with the piece URL attached for pitch reference."
+ },
+ {
+  "id": "brand/earned-media-sourcing",
+  "name": "Thought-leadership and awards sourcing",
+  "parent": null,
+  "invoke_when": "a monthly or quarterly sweep is due for founder placements or award/best-of submissions",
+  "select_by": {
+   "type": "thought_leadership | award"
+  },
+  "inputs_required": [
+   "founder expertise notes",
+   "category and brand facts"
+  ],
+  "steps": [
+   "1. Decide the lane (thought leadership or awards).",
+   "2. For thought leadership: find podcasts, panels, bylined-article slots matching founder expertise.",
+   "3. For awards: track industry awards and best-of calls the brand qualifies for.",
+   "4. Draft the pitch or submission."
+  ],
+  "checks": [
+   "thought-leadership opportunities match a real, demonstrable area of expertise",
+   "only award calls the brand actually qualifies for are shortlisted"
+  ],
+  "output": "{thought_leadership_opportunity_list, award_call_tracker}",
+  "used_by": [
+   "BRAND-W21"
+  ],
+  "shared_with": [],
+  "skill_md": "---\nname: earned-media-sourcing\nowner: BRAND\nversion: 1\ninvoke_when: a monthly (thought leadership) or quarterly (awards) sweep is due\ninputs: founder expertise notes, category and brand facts\noutputs: thought-leadership opportunity list, award call tracker\n---\n# Thought-leadership and awards sourcing\n\n## Purpose\nBoth lanes are proactive sourcing sweeps that build a citable, checkable credibility asset over time, separate from reactive press pitching around a launch.\n\n## Steps\n1. Decide which lane this sweep covers: founder thought-leadership placements, or awards and best-of list submissions.\n2. Thought leadership: search for podcasts, panels, bylined-article slots, and expert-commentary requests that fit the founder's actual, demonstrable expertise and the brand's real story, not a generic \"founder available for interviews\" blast.\n3. Awards: track industry awards and \"best of\" list calls the brand genuinely qualifies for (by category, size, region), so a real win becomes a citable, checkable claim later.\n4. Draft the pitch (thought leadership) or the submission copy (awards), claim-checked.\n\n## Checks\n- Every thought-leadership opportunity matches a real, demonstrable area of the founder's expertise.\n- Only award calls the brand actually meets the qualifying criteria for are shortlisted.\n\n## Output\n`{thought_leadership_opportunity_list: [...], award_call_tracker: [...]}`\n\n## Example\nAward tracker flags a regional \"best emerging D2C brand\" award with a qualifying-revenue threshold the brand now meets, submission deadline in 6 weeks."
+ },
+ {
+  "id": "brand/reputation-risk-monitor",
+  "name": "Reputation risk monitor",
+  "parent": null,
+  "invoke_when": "a spike in complaints, viral criticism, or a factual attack is detected, or on demand",
+  "select_by": null,
+  "inputs_required": [
+   "public mention and review monitoring",
+   "brand records to verify or refute a claim"
+  ],
+  "steps": [
+   "1. Detect the spike against a baseline.",
+   "2. Verify the underlying claim against brand records.",
+   "3. Assess severity and reach.",
+   "4. Draft a holding statement and an escalation note."
+  ],
+  "checks": [
+   "spike measured against a baseline, not a single loud post",
+   "statement makes no claim the verification note does not support"
+  ],
+  "output": "{spike_alert, fact_verification_note, draft_holding_statement, escalation_note}",
+  "used_by": [
+   "BRAND-W22"
+  ],
+  "shared_with": [],
+  "skill_md": "---\nname: reputation-risk-monitor\nowner: BRAND\nversion: 1\ninvoke_when: a spike in complaints, viral criticism, or a factual attack is detected, or on demand\ninputs: public mention/review monitoring, brand records to verify or refute a claim\noutputs: spike alert, fact verification note, draft holding statement, escalation note\n---\n# Reputation risk monitor\n\n## Purpose\nSpeed and accuracy both matter in a reputation moment: acting fast on a wrong fact makes things worse. This skill verifies before it drafts, and always routes to the founder before anything goes public.\n\n## Steps\n1. Watch public mentions and reviews for a sudden spike in complaint volume, a viral criticism, or a specific factual attack, measured against a real baseline rate, not a single loud post.\n2. Verify the underlying claim against the brand's own records before drafting anything; state whether it is true, false, or partially true, with the evidence.\n3. Assess how far the criticism has spread and how much real brand or revenue risk it carries, using actual reach numbers where available.\n4. Draft a short holding statement that acknowledges the issue and states what happens next, making no claim the verification step does not support, and draft an escalation note naming who needs to see this and what decision they must make.\n\n## Checks\n- The spike is measured against a baseline, never triggered by a single post.\n- The holding statement never claims more than the fact-verification step actually established.\n- Nothing is posted, replied to, or sent without founder review, always.\n\n## Output\n`{spike_alert, fact_verification_note, draft_holding_statement, escalation_note}`\n\n## Example\nSpike: complaint volume on one SKU up 6x normal rate in 48 hours. Verification: a batch defect is confirmed against internal QC records. Statement drafted acknowledging the specific batch and a stated fix timeline, nothing broader claimed."
+ },
+ {
+  "id": "brand/partnership-sourcing-sweep",
+  "name": "Partnership sourcing sweep",
+  "parent": null,
+  "invoke_when": "the twice-yearly proactive sweep for collaboration candidates is due",
+  "select_by": null,
+  "inputs_required": [
+   "avatar record",
+   "current category and non-competitive adjacent categories"
+  ],
+  "steps": [
+   "1. Search for non-competitive brands serving the same avatar.",
+   "2. Build the candidate list before any specific proposal exists."
+  ],
+  "checks": [
+   "every candidate serves the same avatar without competing in the same category"
+  ],
+  "output": "{candidate_partner_list}",
+  "used_by": [
+   "BRAND-W23"
+  ],
+  "shared_with": [],
+  "skill_md": "---\nname: partnership-sourcing-sweep\nowner: BRAND\nversion: 1\ninvoke_when: the twice-yearly proactive sweep for collaboration candidates is due\ninputs: avatar record, current and adjacent non-competitive categories\noutputs: candidate partner list\n---\n# Partnership sourcing sweep\n\n## Purpose\nGood partnerships are found before there is any deal pressure to accept a mediocre one. This skill proactively builds a candidate list twice a year, separate from screening any specific proposal.\n\n## Steps\n1. From the avatar record, identify adjacent categories the same customer also spends in (for a jewellery brand's bride avatar: bridal makeup, wedding planners, occasion-wear).\n2. Search for real, non-competitive brands in those adjacent categories serving the same avatar, checking their own positioning and customer base for genuine overlap.\n3. Build the candidate list with a one-line note on why each one fits, before any specific collaboration proposal exists.\n\n## Checks\n- Every candidate serves the same avatar while competing in a genuinely different category, not a near-substitute.\n\n## Output\n`{candidate_partner_list: [{name, category, overlap_reason}]}`\n\n## Example\nCandidate: a bridal makeup artist collective serving the same wedding-season avatar, no product-category overlap, flagged for a future co-styling content collaboration."
+ },
+ {
+  "id": "brand/partnership-screen",
+  "name": "Partnership and reputation screen",
+  "parent": null,
+  "invoke_when": "a specific collaboration, licensee, or ambassador proposal needs screening and reputation clearance",
+  "select_by": null,
+  "inputs_required": [
+   "candidate or proposed partner/licensee/ambassador",
+   "brand story"
+  ],
+  "steps": [
+   "1. Screen for category overlap.",
+   "2. Screen for narrative fit.",
+   "3. Run a public reputation and controversy check.",
+   "4. Draft the collaboration brief if screened favorably.",
+   "5. Re-check yearly for ongoing relationships."
+  ],
+  "checks": [
+   "overlap verdict explicit: none, adjacent, or competing",
+   "a reputation flag stops the process until founder review"
+  ],
+  "output": "{overlap_verdict, narrative_fit_verdict, reputation_check_result, collaboration_brief}",
+  "used_by": [
+   "BRAND-W20",
+   "BRAND-W23"
+  ],
+  "shared_with": [],
+  "skill_md": "---\nname: partnership-screen\nowner: BRAND\nversion: 1\ninvoke_when: a specific collaboration, licensee, or ambassador proposal needs screening and reputation clearance\ninputs: the candidate or proposed partner, brand story\noutputs: overlap verdict, narrative fit verdict, reputation check result, collaboration brief\n---\n# Partnership and reputation screen\n\n## Purpose\nThis skill screens any proposed relationship with the brand's name attached to someone else's, whether a one-off collaboration, an ongoing licensee, or an ambassador, using the same category-overlap, narrative-fit and reputation checks.\n\n## Steps\n1. Check the candidate for direct category overlap; default to treating non-competitive brands as the safer fit.\n2. Check narrative fit: does the collaboration tell a story either brand's customer would actually want, not just a co-marketing convenience.\n3. Run a public reputation and controversy check on the other party before any agreement moves forward or any ambassador is onboarded; a flag here stops the process for founder review.\n4. If screened favorably, draft what the collaboration would look like: format, duration, what each side contributes, rough terms, stating the specific customer value, not just brand exposure.\n5. For an already-approved, ongoing relationship (a licensee, an active ambassador), re-run the reputation check yearly, on schedule, not only when a problem is already visible.\n\n## Checks\n- Overlap verdict is explicit: none, adjacent, or competing.\n- A reputation flag halts the process until the founder reviews it.\n- Ongoing relationships get a scheduled yearly re-check, not just a one-time screen at signing.\n\n## Output\n`{overlap_verdict, narrative_fit_verdict, reputation_check_result, collaboration_brief}`\n\n## Example\nAmbassador candidate screens clean on overlap and narrative fit; reputation check finds a 2-year-old public controversy unrelated to the brand's category: routed to founder for a judgment call rather than an automatic pass or fail."
+ },
+ {
+  "id": "brand/event-popup-design",
+  "name": "Event and pop-up design",
+  "parent": null,
+  "invoke_when": "a guerrilla activation, in-person event or pop-up is being designed",
+  "select_by": null,
+  "inputs_required": [
+   "avatar record: where this customer gathers in person",
+   "team capacity",
+   "budget ledger"
+  ],
+  "steps": [
+   "1. Name where the avatar already gathers.",
+   "2. Size the activation to team capacity.",
+   "3. Design the specific format.",
+   "4. Budget the activation against the ledger.",
+   "5. Plan the read: metric and measurement date."
+  ],
+  "checks": [
+   "venue/occasion is real and checkable",
+   "activation states exactly how many people are needed to staff it",
+   "budget checked against the ledger before proceeding"
+  ],
+  "output": "{venue_candidate_list, sized_activation_concept, activation_budget, read_plan}",
+  "used_by": [
+   "BRAND-W24"
+  ],
+  "shared_with": [],
+  "skill_md": "---\nname: event-popup-design\nowner: BRAND\nversion: 1\ninvoke_when: a guerrilla activation, in-person event or pop-up is being designed\ninputs: avatar record (where the customer gathers in person), team capacity, budget ledger\noutputs: venue candidate list, sized concept, activation budget, read plan\n---\n# Event and pop-up design\n\n## Purpose\nThe best in-person activation targets a real place the exact customer already gathers, sized to what a small team can actually run by hand, not a scaled-up event-marketing fantasy.\n\n## Steps\n1. Identify a real, checkable place or occasion the target avatar already gathers: a wedding expo, a college fest, a local market, a festival pop-up, drawn from the avatar record, not a generic venue guess.\n2. Size the activation to what the team can actually staff and run, stating the exact number of people needed.\n3. Design the specific format matched to the venue's real constraints: a sampling booth, a shop-in-shop pop-up, a small guerrilla activation.\n4. Cost the activation (space, staff, materials, permits or vendor fees) and check it against the budget ledger before proceeding.\n5. Define the read plan: the specific metric (footfall, samples given, codes redeemed, follow-on online sales in the days after) and the measurement date.\n\n## Checks\n- The venue or occasion named is real and independently checkable.\n- The activation states exactly how many people are needed to run it.\n- Budget is checked against the ledger before any commitment.\n\n## Output\n`{venue_candidate_list, sized_activation_concept, activation_budget, read_plan}`\n\n## Example\nVenue: a 3-day wedding expo in the brand's home city, footfall ~4,000/day. Activation: a 6x6ft sampling booth, staffed by 2. Read plan: redemption codes given at the booth, tracked against online orders in the following 14 days."
+ },
+ {
+  "id": "brand/competitive-intelligence",
+  "name": "Competitive intelligence: win-loss and battlecards",
+  "parent": null,
+  "invoke_when": "win-loss research is due quarterly, or a battlecard needs building or refreshing against a named competitor",
+  "select_by": null,
+  "inputs_required": [
+   "named competitor",
+   "recent near-miss and win customers",
+   "competitor packet"
+  ],
+  "steps": [
+   "1. Sample near-miss and win customers.",
+   "2. Ask why, in their own words, without leading.",
+   "3. Verify every named difference against current, dated sources.",
+   "4. Build the internal battlecard.",
+   "5. Distribute to support; refresh on a material competitor change."
+  ],
+  "checks": [
+   "differences verified against current, dated sources, not what used to be true",
+   "battlecard stays internal-facing unless separately cleared"
+  ],
+  "output": "{win_loss_transcripts, verified_difference_list, internal_battlecard}",
+  "used_by": [
+   "BRAND-W25"
+  ],
+  "shared_with": [],
+  "skill_md": "---\nname: competitive-intelligence\nowner: BRAND\nversion: 1\ninvoke_when: quarterly win-loss research is due, or a battlecard needs building/refreshing against a named competitor\ninputs: named competitor, recent near-miss and win customers, competitor packet\noutputs: win-loss transcripts, verified difference list, internal battlecard\n---\n# Competitive intelligence: win-loss and battlecards\n\n## Purpose\nReal comparison language comes from people who actually chose between this brand and a named competitor, not from guessing what a competitor's customer probably thinks. This skill runs that research and turns it into something support can actually use.\n\n## Steps\n1. Pull a small sample of people who almost bought this brand and instead bought the named competitor, and people who chose this brand over that competitor.\n2. Ask why, in their own words, using open questions that do not lead toward a feature the brand wants validated.\n3. Verify every difference named against what is actually true today (price, feature, delivery time, policy), checked against a current, dated source, never against what used to be true.\n4. Turn the verified differences into a short, internal battlecard support or the founder can use in a real conversation.\n5. Distribute the battlecard to support with a version number, and refresh it whenever a named competitor materially changes price, features, or policy.\n\n## Checks\n- Every difference is checked against a current, dated source.\n- The battlecard is explicitly internal-facing; it is never published externally as a comparison page without a separate legal and claim-check pass.\n- Win-loss questions are open, matching the interview-guide standard, never leading.\n\n## Output\n`{win_loss_transcripts, verified_difference_list, internal_battlecard}`\n\n## Example\nVerified difference: \"this brand's exchange window is 30 days vs the named competitor's 7 days\" (checked against both brands' current live policy pages, dated). Added to the battlecard as a support talking point for a hesitant near-miss customer."
+ },
+ {
+  "id": "brand/ai-persona-pretest",
+  "name": "AI-persona pretest",
+  "parent": null,
+  "invoke_when": "a messaging, naming or concept shortlist needs a cheap sanity check before a real, paid research round",
+  "select_by": null,
+  "inputs_required": [
+   "shortlist to pretest",
+   "avatar record",
+   "budget ledger"
+  ],
+  "steps": [
+   "1. Check the budget before running.",
+   "2. Build the persona strictly from the avatar record.",
+   "3. Run the pass on the shortlist.",
+   "4. Flag obvious misses only, never rank as if real.",
+   "5. Confirm the real research round still happens."
+  ],
+  "checks": [
+   "persona built from real avatar evidence, not a stereotype",
+   "output never presented as if it were real customer data"
+  ],
+  "output": "{persona_brief, simulated_reaction_notes, flagged_misses_list, trimmed_shortlist}",
+  "used_by": [
+   "BRAND-W10",
+   "BRAND-W14",
+   "BRAND-W27"
+  ],
+  "shared_with": [],
+  "skill_md": "---\nname: ai-persona-pretest\nowner: BRAND\nversion: 1\ninvoke_when: a messaging, naming or concept shortlist needs a cheap sanity check before a real, paid research round\ninputs: shortlist to pretest, avatar record, budget ledger\noutputs: persona brief, simulated reaction notes, flagged misses, trimmed shortlist\n---\n# AI-persona pretest\n\n## Purpose\nThis is a cheap filter, not a substitute for real research. It catches obvious misses (confusing wording, an unintended reading, a flat concept) before money is spent on a real survey, interview round, or test, and it is never allowed to be mistaken for real customer signal.\n\n## Steps\n1. Check the budget ledger before running any paid pass.\n2. Build the simulated persona strictly from the existing avatar record's job, forces and real quotes; never from a generic stereotype or an assumed demographic.\n3. Run the persona against the messaging, naming or concept shortlist and record its reactions.\n4. Use the pass only to flag obvious misses; never to rank or declare a winner among the shortlist, since this is simulated, not real, data.\n5. State plainly that the planned real survey, interview or test round still happens; this pretest only trims the shortlist first.\n\n## Checks\n- The persona is built from real avatar-record evidence, never a stereotype.\n- Every output is labeled \"simulated, not a real customer\" everywhere it is shown.\n- The real research round is never skipped because of this pretest.\n\n## Output\n`{persona_brief, simulated_reaction_notes, flagged_misses_list, trimmed_shortlist}`\n\n## Example\nPretest flags that tagline candidate B reads, in the simulated persona's reaction, as implying a health claim the brand cannot back: dropped from the shortlist before it reaches the real message test."
+ },
+ {
+  "id": "brand/packaging-label-brief",
+  "name": "Packaging and mandatory label brief",
+  "parent": null,
+  "invoke_when": "a new SKU, new channel, or a packaging change needs artwork briefed with mandatory declarations placed",
+  "select_by": null,
+  "inputs_required": [
+   "product spec (PROD-C13)",
+   "target channel(s)",
+   "brand guidelines"
+  ],
+  "steps": [
+   "1. Pull the product spec.",
+   "2. Apply the visual language to the dieline.",
+   "3. Place mandatory US declarations (FTC net-quantity and packer/distributor identity, Care Labeling Rule, Prop 65 where required, FTC Jewelry Guides quality marks where relevant); India-market packaging places MRP, Legal Metrology, BIS/hallmark and EPR marks instead (markets: IN, null for US).",
+   "4. Check channel-specific rules.",
+   "5. Run the completeness check."
+  ],
+  "checks": [
+   "every mandatory field for this product category present and legible at minimum size",
+   "channel-specific rules checked, not assumed same as DTC"
+  ],
+  "output": "{layout_draft, declaration_placed_layout, completeness_checklist_result}",
+  "used_by": [
+   "BRAND-W29"
+  ],
+  "shared_with": [
+   "PROD (product spec source)"
+  ],
+  "skill_md": "---\nname: packaging-label-brief\nowner: BRAND\nversion: 1\ninvoke_when: a new SKU, new channel, or packaging change needs artwork briefed with mandatory declarations placed\ninputs: product spec (PROD-C13), target channel(s), brand guidelines\noutputs: layout draft, declaration-placed layout, completeness checklist result\n---\n# Packaging and mandatory label brief\n\n## Purpose\nPackaging artwork has two jobs at once: carry the brand's visual language, and legally declare what the law requires for this product category and channel in the target market. This skill briefs both together so nothing goes to print missing a required field.\n\n## Steps\n1. Pull the dieline, net quantity, and any per-channel packaging constraint from the Product and Supply specialist's spec; never re-derive these from guesswork.\n2. Apply the brand guidelines' palette, typography and logo rules (clear space, minimum size) to the dieline layout.\n3. Place every legally required declaration for the target market. For a US-market SKU: net quantity and manufacturer/packer/distributor name and address under the FTC Fair Packaging and Labeling Act, the Care Labeling Rule for textiles, a Prop 65 warning where the product or destination state requires it, and FTC Jewelry Guides quality marks (karat, plating, filled) where the product is jewelry. For an India-market SKU (markets: IN, reads null for US): MRP, Legal Metrology details (net quantity; manufacturer, packer or importer name and address; month and year of manufacture; consumer care contact), BIS or hallmark mark where the product category requires it, and the EPR mark where applicable.\n4. Check any additional channel-specific rule (a marketplace's own barcode or return-label placement requirement) beyond the general legal requirements, for each target channel.\n5. Run the full completeness checklist against the layout; a missing mandatory field blocks sign-off, it never goes to print with a \"fix later\" note.\n\n## Checks\n- Every mandatory declaration for this product category is present and legible at its required minimum size.\n- Channel-specific rules are checked individually, never assumed identical to DTC packaging.\n- A missing mandatory field blocks sign-off outright.\n\n## Output\n`{layout_draft, declaration_placed_layout, completeness_checklist_result}`\n\n## Example\nNew SKU going to a marketplace channel for the first time: completeness check catches that the Prop 65 warning field, present on the DTC box, was omitted from the marketplace-specific dieline draft: blocked until added."
+ }
+]

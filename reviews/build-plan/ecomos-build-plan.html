@@ -1,0 +1,151 @@
+<title>ecomOS Build Plan</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{--paper:#F3F5F2;--panel:#FFFFFF;--ink:#172019;--muted:#5D6862;--line:#D8DED9;--line2:#E9EDEA;--accent:#0E6B60;--accent-ink:#FFFFFF;--accent-soft:#DCEDE9;--amber:#9A600C;--amber-soft:#F7EBD2;--good:#2C7A4B;--good-soft:#DFF0E4;--bad:#B23A2D;--bad-soft:#F6DFDB;
+--display:"Bricolage Grotesque","IBM Plex Sans",system-ui,sans-serif;--body:"IBM Plex Sans",system-ui,sans-serif;--mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;--shadow:0 1px 2px rgba(20,30,25,.06),0 6px 20px rgba(20,30,25,.05)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark;--paper:#0F1513;--panel:#171E1B;--ink:#E6EBE7;--muted:#9AA59E;--line:#2A332E;--line2:#222A26;--accent:#5CB9AA;--accent-ink:#0B1512;--accent-soft:#16302B;--amber:#E2A84F;--amber-soft:#3A2B11;--good:#6CC08A;--good-soft:#173A25;--bad:#E1786B;--bad-soft:#40201B;--shadow:0 1px 2px rgba(0,0,0,.4),0 6px 20px rgba(0,0,0,.3)}}
+:root[data-theme="dark"]{color-scheme:dark;--paper:#0F1513;--panel:#171E1B;--ink:#E6EBE7;--muted:#9AA59E;--line:#2A332E;--line2:#222A26;--accent:#5CB9AA;--accent-ink:#0B1512;--accent-soft:#16302B;--amber:#E2A84F;--amber-soft:#3A2B11;--good:#6CC08A;--good-soft:#173A25;--bad:#E1786B;--bad-soft:#40201B;--shadow:0 1px 2px rgba(0,0,0,.4),0 6px 20px rgba(0,0,0,.3)}
+*{box-sizing:border-box} body{margin:0;background:var(--paper);color:var(--ink);font:15px/1.55 var(--body)}
+.wrap{max-width:1120px;margin:0 auto;padding-inline:20px;padding-block:0}
+h1,h2,h3,h4{font-family:var(--display);margin:0;line-height:1.15;text-wrap:balance} h1{font-size:clamp(30px,4.5vw,44px);font-weight:700} h2{font-size:clamp(22px,3vw,28px);font-weight:700} h3{font-size:18px;font-weight:600} h4{font-size:15px;font-weight:600;margin-bottom:6px}
+p{margin:0} .muted{color:var(--muted)} .small{font-size:13px} .lede{font-size:17px;max-width:64ch} .prose{max-width:68ch} .prose p+p{margin-top:10px}
+.eyebrow{font:500 11.5px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
+section{margin-top:44px} .sechead{display:grid;gap:6px;margin-bottom:16px}
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px} .grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 18px} .card ul{margin:6px 0 0;padding-left:18px} .card li{margin:3px 0}
+.callout{border-left:3px solid var(--amber);background:var(--amber-soft);padding:12px 16px;border-radius:0 10px 10px 0} .callout.t{border-color:var(--accent);background:var(--accent-soft)}
+code{font:12.5px var(--mono);background:var(--line2);padding:1px 5px;border-radius:4px} pre{background:var(--line2);padding:12px 14px;border-radius:10px;font:12.5px/1.5 var(--mono);overflow-x:auto;margin:8px 0 0;white-space:pre-wrap}
+.tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:10px;background:var(--panel)} table{border-collapse:collapse;width:100%;font-size:13.5px;min-width:600px} th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top} th{font:600 11.5px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.loop{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;counter-reset:st} .loop div{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px 12px;font-size:13.5px} .loop div::before{counter-increment:st;content:counter(st);font:600 11px var(--mono);color:var(--accent);display:block;margin-bottom:2px} .loop div b{display:block;font:600 14px var(--display)} .loop div.gate{border-color:var(--amber);background:var(--amber-soft)}
+.phases{display:grid;gap:10px} .phase{display:grid;grid-template-columns:150px minmax(0,1fr);gap:14px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 16px;align-items:start} .phase .n{font:600 15px var(--display)} .phase .n small{display:block;font:500 10.5px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--accent);margin-bottom:2px} .phase .items{display:flex;flex-wrap:wrap;gap:6px} .phase .items span{border:1px solid var(--line);background:var(--paper);border-radius:7px;padding:4px 9px;font:12.5px var(--mono)} .phase .items span.done{border-color:var(--good);background:var(--good-soft)} .phase p{margin-top:6px;font-size:13px;color:var(--muted)}
+.tree{font:12.5px/1.6 var(--mono);background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px;overflow-x:auto;white-space:pre}
+.pill{display:inline-block;padding:1px 8px;border-radius:999px;font-size:10.5px;font-weight:600;background:var(--accent-soft);color:var(--accent)} .pill.amber{background:var(--amber-soft);color:var(--amber)}
+.foot{margin-top:56px;padding-top:18px;border-top:1px solid var(--line);font-size:13px;color:var(--muted)}
+@media (max-width:820px){.grid2,.grid3{grid-template-columns:1fr}.phase{grid-template-columns:1fr}}
+</style>
+<div class="wrap">
+  <div style="padding-block:44px 8px;display:grid;gap:12px">
+    <span class="eyebrow">Draft for Kevin, 25 Sep 2026</span>
+    <h1>Build it the way the Meta gallery was built. One screen at a time, on a sample brand, in rounds of 10.</h1>
+    <p class="lede">Each part of the business gets its own screen, its own folder and its own build sessions. A fictional US brand with generated data stands in for a client, so every screen can be built and judged now. The 560 capabilities, 235 workflows and 351 skills become the shelf each screen pulls from by id. The agent layer comes after the screens, because the screens show which buttons founders actually press.</p>
+  </div>
+
+  <section>
+    <div class="sechead"><span class="eyebrow">What changes</span><h2>From one long session holding everything to many short sessions holding one screen.</h2></div>
+    <div class="tablewrap"><table>
+      <tr><th>Before</th><th>Now</th></tr>
+      <tr><td>Playbooks, idea bank, catalogue, rooms, workflows, all in one context</td><td>Those are the spec shelf. A screen session reads only its slice, by id, about 6 to 10k tokens.</td></tr>
+      <tr><td>Gehna as the example, India assumptions in places</td><td>Tallgrass Goods, a fictional US DTC brand with generated data. No client data in the app.</td></tr>
+      <tr><td>Design pages that describe screens</td><td>Working screens on a local server, published as pages when a round lands.</td></tr>
+      <tr><td>Conversation as memory, compaction as the cost</td><td>Three files carry memory: the app contract, each screen's FEATURES.md, and git. Sessions are short by design.</td></tr>
+    </table></div>
+  </section>
+
+  <section>
+    <div class="sechead"><span class="eyebrow">The sample brand</span><h2>Tallgrass Goods, fictional.</h2></div>
+    <div class="grid2">
+      <div class="card prose"><p>A US direct-to-consumer kitchen and home goods brand: cast iron, linen, wooden boards, about 40 SKUs, average order around $85, Shopify, a 3PL in Ohio shipping UPS and USPS, paid social first, email second, Amazon as a secondary channel, no subscriptions. Every page says it is fictional.</p><p class="muted small" style="margin-top:8px">Its facts live in one file, <code>app/data/sample-brand/brand.json</code>. A generator turns that file into 13 months of orders, customers, sessions, ad rows at ad level, email flows, tickets, reviews, products with costs, inventory, speed runs and marketplace listings, from a fixed seed, shaped like each connector's real export.</p></div>
+      <div class="card"><h4>Why a normal brand first</h4><p class="small">Subscription brands need different numbers: payback period, churn, cohort revenue curves. They come later as a second sample brand with its own generator profile, not as a fork of the screens. The screens are built for the general case and gain subscription tiles when that brand exists.</p><h4 style="margin-top:12px">Why generated data is honest</h4><p class="small">It is deterministic, labelled, and shaped like Shopify, GA4, Meta, Klaviyo and Gorgias exports. When a real brand connects, the same tables fill from read-only connectors and nothing in a screen changes.</p></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sechead"><span class="eyebrow">The folder map</span><h2>One folder per screen. Shared things live in contracts and data.</h2></div>
+    <div class="tree">app/
+  CLAUDE.md          the contract every screen session reads first (under 120 lines)
+  BUILD-PLAN.md      this plan
+  server.py          one local server: static files plus a JSON API over data/      (round 0)
+  web/               nav shell, ui-kit.js, ui-kit.css, charts.js, filmstrip       (round 0)
+  contracts/         metrics.md, data-sources.md, ui-kit.md, events.md, brand.schema.json
+  data/
+    sample-brand/    brand.json (the only hand-written file)
+    generate.py      every table from brand.json, fixed seed                       (round 0)
+  connectors/        read-only adapters with a mock mode, built when a screen needs one
+  screens/
+    00-today/        CLAUDE.md  FEATURES.md  index.html  screen.js  api.py  fixtures/
+    01-market-research/
+    02-customers-avatars/
+    ...              28 screens, journey order, each seeded from its room spec
+    27-wild-bets-pr/</div>
+    <div class="grid3" style="margin-top:14px">
+      <div class="card"><h4>A screen owns</h4><p class="small">Its page, its script, its API endpoints under its own path, its fixtures. It never imports another screen's code.</p></div>
+      <div class="card"><h4>Contracts own</h4><p class="small">Every metric formula, every shared table, every kit component, every hand-off between screens. Changed in their own short session, committed first.</p></div>
+      <div class="card"><h4>When two screens need the same thing</h4><p class="small">It becomes a table in the data layer. The producing screen writes it, the consuming screen reads it, the hand-off is listed in <code>contracts/events.md</code>. No screen calls another.</p></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sechead"><span class="eyebrow">The order</span><h2>Journey order for a normal DTC brand, so each screen feeds the next.</h2></div>
+    <div class="phases">
+      <div class="phase"><div class="n"><small>Phase A</small>Foundation</div><div><div class="items"><span>server.py</span><span>web/ kit</span><span>data/generate.py</span><span>contracts/metrics.md</span><span>00-today</span></div><p>Everything else composes these. One week of sessions. Today is the home page: the pipeline with the break marked, the top 10 as stubs, the decision row writing to a decisions log.</p></div></div>
+      <div class="phase"><div class="n"><small>Phase B</small>Know the customer</div><div><div class="items"><span>01-market-research</span><span>02-customers-avatars</span><span>03-competitors</span><span>04-offers-pricing</span><span>05-brand-brain</span></div><p>The brand brain fills from these. Avatars and offers feed every later screen.</p></div></div>
+      <div class="phase"><div class="n"><small>Phase C</small>The store</div><div><div class="items"><span>06-store-health</span><span>07-landing-pages-cro</span><span class="done">08-site-speed</span></div><p>Speed already has a working lab and founder page. It ports onto the kit first.</p></div></div>
+      <div class="phase"><div class="n"><small>Phase D</small>Acquisition</div><div><div class="items"><span>09-creative</span><span>10-copy</span><span class="done">11-paid-social</span><span>12-google-ads</span><span>13-affiliate-marketplace-ads</span></div><p>Paid social ports the Meta gallery onto the shared kit and the sample data.</p></div></div>
+      <div class="phase"><div class="n"><small>Phase E</small>Retention</div><div><div class="items"><span>14-email-messaging</span><span>15-customers-cx</span></div><p>Needs orders and tickets from the generator. Revenue by flow is matched from orders, not platform attribution.</p></div></div>
+      <div class="phase"><div class="n"><small>Phase F</small>Organic</div><div><div class="items"><span>16-organic-content</span><span>17-seo</span><span>18-answer-engines</span></div><p>Needs the content inventory and answer-engine probe fixtures.</p></div></div>
+      <div class="phase"><div class="n"><small>Phase G</small>Operations</div><div><div class="items"><span>19-supply-inventory</span><span>20-marketplaces</span><span>21-finance-cash</span><span>22-measurement</span><span>23-team-ops</span><span>24-security</span></div><p>Finance needs everything upstream.</p></div></div>
+      <div class="phase"><div class="n"><small>Phase H</small>Memory</div><div><div class="items"><span>25-experiments</span><span>26-reports</span><span>27-wild-bets-pr</span></div><p>Reads the registry the other screens write to.</p></div></div>
+    </div>
+    <p class="muted small" style="margin-top:10px">Green: a working version already exists and ports. After phase A, screens in different phases can be built in parallel sessions because they share only contracts and data.</p>
+  </section>
+
+  <section>
+    <div class="sechead"><span class="eyebrow">The round</span><h2>Skeleton first, then 10 candidates, you pick, one feature per commit.</h2></div>
+    <div class="loop">
+      <div><b>Round 0</b>Shell in the kit, api.py, 3 tiles, 2 insights, 1 chart from the sample brand. Commit.</div>
+      <div><b>Ask for 10</b>"Give me 10 candidates." The session pulls from 3 sources and ranks.</div>
+      <div><b>Source 1: room spec</b>FEATURES.md, seeded with the questions, metrics, insights, visuals and data this screen was specified with.</div>
+      <div><b>Source 2: the shelf</b>The catalogue for this screen's agent, its workflows and skills, by id.</div>
+      <div><b>Source 3: one web pass</b>What the common tools show today, so we know table stakes from new.</div>
+      <div class="gate"><b>You pick</b>Ranked by revenue impact, usefulness to a founder deciding alone, buildable now on dummy data.</div>
+      <div><b>Build one</b>One feature, one commit, FEATURES.md updated in the same commit. /clear. Next.</div>
+      <div><b>Publish the round</b>The screen goes out as a page, like the gallery and the speed plan. Look at it on a phone.</div>
+    </div>
+    <div class="callout" style="margin-top:14px"><b>A feature that needs data we do not have</b> is parked with the connector named, not faked into the screen. Research sources like Reddit or Amazon reviews get a fixture file and a connector interface with the live call left as a named TODO.</div>
+  </section>
+
+  <section>
+    <div class="sechead"><span class="eyebrow">Running it in Claude Code</span><h2>One session per screen. Short by design.</h2></div>
+    <div class="grid2">
+      <div class="card"><h4>Starting a session</h4><p class="small">Open Claude Code in the repo and name the folder and the round in the first line. The session reads <code>app/CLAUDE.md</code>, <code>app/contracts/</code> and the folder. Nothing else.</p><pre>Work in app/screens/07-landing-pages-cro.
+Round 1. Give me 10 candidates.</pre><pre>Work in app/screens/07-landing-pages-cro.
+Build feature 1.3 from FEATURES.md. One commit.</pre></div>
+      <div class="card"><h4>Which model for what</h4><ul class="small"><li><b>Fable</b>: round 0 of the kit and server, contract changes, ranking the 10 candidates, and a short review of a screen's round before it is published.</li><li><b>Opus</b>: building a picked feature.</li><li><b>Sonnet</b>: a small feature, a fixture, a generator table.</li></ul><p class="small muted" style="margin-top:6px">Fable where judgement changes the outcome. Opus and Sonnet where the spec is already exact.</p></div>
+      <div class="card"><h4>Parallel sessions</h4><p class="small">Screens in different phases can run at the same time in separate sessions and separate worktrees, because they share only contracts and data. Two sessions never edit <code>contracts/</code> at once. A contract change is its own short session, committed first, then the screen sessions pick it up.</p></div>
+      <div class="card"><h4>Token rules</h4><ul class="small"><li>Reference files with @path, never paste them.</li><li>/clear between features. The conversation is not the memory.</li><li>Ask for 10, pick, build one at a time. Never "improve the screen".</li><li>Commit after every feature so a lost session costs one feature.</li><li>Compaction should be rare because sessions are short.</li></ul></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sechead"><span class="eyebrow">Where agents and connectors come in</span><h2>The screens are built as if the data and the agents were there. Two things fill them later.</h2></div>
+    <div class="grid2">
+      <div class="card"><h4>Connectors</h4><p class="small">Read-only adapters in <code>app/connectors/</code>, each with a mock mode that returns the generated tables: Shopify, GA4, Meta Ads, Google Ads, Klaviyo, Gorgias, Search Console, Amazon Seller, review sites and Reddit for research, the speed lab. The generator's tables are shaped like each connector's export, so mock to live is a config change per brand.</p></div>
+      <div class="card"><h4>Agents</h4><p class="small">Every action button already names its capability from the catalogue and shows its autonomy. Today the button logs the decision. When the agent layer is built, the same button dispatches the workflow. The screens tell us which agents to build first: the buttons founders press most.</p></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sechead"><span class="eyebrow">Round 0 checklist</span><h2>Phase A, in order.</h2></div>
+    <div class="tablewrap"><table>
+      <tr><th>#</th><th>Build</th><th>Done when</th></tr>
+      <tr><td>1</td><td><code>app/server.py</code>: static files, <code>/api/&lt;screen&gt;/</code> routed to each screen's api.py, brand and metrics endpoints from the contract, decisions log</td><td>Any screen folder can serve a page and read a metric.</td></tr>
+      <tr><td>2</td><td><code>app/web/</code>: nav shell from screens/INDEX.md, tiles, insight cards, decision row, tables, charts, filmstrip, founder note, empty state, sample badge</td><td>A screen composes a page from the kit with no custom CSS.</td></tr>
+      <tr><td>3</td><td><code>app/data/generate.py</code>: 13 months of tables from brand.json, fixed seed, connector-shaped</td><td>Re-running produces identical files. Every table in data-sources.md exists.</td></tr>
+      <tr><td>4</td><td><code>contracts/metrics.md</code> computed in server.py, with the reversed-orders group</td><td>Every metric returns a value with window and freshness, or unavailable with the reason.</td></tr>
+      <tr><td>5</td><td><code>00-today</code>: the pipeline with the break marked, the top 10 as stubs from the room spec, the decision row</td><td>Opening the app shows the break for Tallgrass Goods and lets you press a button that lands in decisions.json.</td></tr>
+    </table></div>
+  </section>
+
+  <section>
+    <div class="sechead"><span class="eyebrow">What we do not do</span><h2>Guardrails for this phase.</h2></div>
+    <ul class="prose small" style="margin:0;padding-left:18px">
+      <li>No agent execution yet. Buttons log decisions. The catalogue stays the spec.</li>
+      <li>No real brand data in the app. Gehna stays in the gallery until a connector migration is decided.</li>
+      <li>No India-specific defaults. Market fields exist in the schema and read null.</li>
+      <li>No feature without a formula, a rule or a capability id behind it.</li>
+      <li>No paid calls, no credentials in code, no writes to any external system.</li>
+    </ul>
+  </section>
+
+  <div class="foot">The skeleton exists in the repo: <code>app/CLAUDE.md</code>, <code>app/BUILD-PLAN.md</code>, <code>app/contracts/</code>, <code>app/data/sample-brand/brand.json</code>, and 28 screen folders each with a CLAUDE.md and a FEATURES.md seeded from its room spec. Nothing runs yet. Round 0 starts with the server and the kit.</div>
+</div>

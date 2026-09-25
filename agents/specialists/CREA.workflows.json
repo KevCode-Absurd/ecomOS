@@ -1,0 +1,2746 @@
+[
+  {
+    "id": "CREA-W01",
+    "name": "Launch a new paid creative test, start to finish",
+    "capabilities": [
+      "CREA-C03",
+      "CREA-C04",
+      "CREA-C05",
+      "CREA-C06",
+      "CREA-C07",
+      "CREA-C08",
+      "CREA-C11",
+      "CREA-C19",
+      "CREA-C20",
+      "CREA-C22",
+      "CREA-C24",
+      "CREA-C26",
+      "CREA-C31"
+    ],
+    "trigger": "an approved card from Propose | on demand",
+    "human_role": "Performance creative lead running one test from research to the first read",
+    "inputs_required": [
+      "brand brain: voice, audience avatars, claim tiers, product facts",
+      "approved idea/card record with bottleneck and expected effect",
+      "registry: past creative tests and learnings for this persona and angle",
+      "metric contract: hook_rate, cvr_overall, cpa, roas_blended, with freshness stamps",
+      "Reference Scout access for competitor and swipe material"
+    ],
+    "steps": [
+      {
+        "n": 1,
+        "name": "Pull the objection map and format scan",
+        "does": "Pulls the brand's existing mined research (voice of customer, owned by the Brand Brain Keeper) plus a fresh check of the account's own last 90 days of ad-level results for which formats currently deliver best (hook rate, hold rate, CPA by format).",
+        "inputs": [
+          "brand brain: voice/VOC packet",
+          "own account ad-level results, last 90 days"
+        ],
+        "tools": [
+          "script: intelligence/creative_retrieval.py",
+          "mcp: Meta_MCP ads_insights_performance_trend (read)"
+        ],
+        "skill": "crea/research/objection-and-format-scan",
+        "output": "objection map (each objection quoted and sourced) plus a format scan citing real numbers",
+        "check": "every objection has a quoted source and a date; every 'format working now' line cites a real metric, not an impression",
+        "ask_founder_if": "no support inbox or review source is connected for this brand"
+      },
+      {
+        "n": 2,
+        "name": "Pull competitor signal for layout and mood",
+        "does": "Pulls 3 to 8 competitor ad references from the Meta gallery's Competitors tab and the Reference Scout, tagged with why each fits this bottleneck.",
+        "inputs": [
+          "objection map",
+          "meta_gallery comp_media.json and competitors.json"
+        ],
+        "tools": [
+          "meta_gallery: Competitors tab",
+          "mcp: Meta_MCP ads_library_search (read)"
+        ],
+        "skill": "crea/research/competitor-signal-pull",
+        "output": "3 to 8 tagged competitor references, layout and mood only",
+        "check": "every reference carries a one-line reason and a 'signal only' tag; no text, logo, product or face is marked for reuse"
+      },
+      {
+        "n": 3,
+        "name": "Define the angle and dominant appeal",
+        "does": "Turns the objection map, format scan and avatar into 2 to 4 candidate angles, each one sentence, one persona, one dominant appeal, one buying question.",
+        "inputs": [
+          "objection map",
+          "persona/avatar record",
+          "product facts",
+          "claim tiers"
+        ],
+        "tools": [
+          "script: scripts/search_knowledge.py --keyword-only"
+        ],
+        "skill": "crea/angle-and-test/angle-builder",
+        "output": "angle brief: 2 to 4 angles, each with persona, appeal, buying question, awareness stage",
+        "check": "no angle uses a forbidden-tier claim; each angle names one dominant appeal only"
+      },
+      {
+        "n": 4,
+        "name": "Write the test plan",
+        "does": "Turns the angle brief into a hypothesis, a clean one-persona-per-ad-set structure, a pack size sized to the account's own delivery volume, and a pre-set winner and kill rule for the creative side.",
+        "inputs": [
+          "angle brief",
+          "metric contract: delivery volume, freshness",
+          "registry: past test sizes for this brand"
+        ],
+        "tools": [],
+        "skill": "crea/angle-and-test/test-plan-builder",
+        "output": "test brief: hypothesis, pack size, winner rule, kill rule, minimum read window",
+        "check": "winner and kill rule exist before any script is written; pack size matches this account's real traffic, not a generic default"
+      },
+      {
+        "n": 5,
+        "name": "Build the audience spec and hand it to MEDIA",
+        "does": "Turns the angle's persona into age range, traits, interests and exclusions matched to the avatar record, and hands the spec to the Media buyer specialist as a structured request. CREA does not build or launch the audience itself.",
+        "inputs": [
+          "angle brief",
+          "persona/avatar record",
+          "past audience performance if available"
+        ],
+        "tools": [],
+        "skill": "crea/angle-and-test/audience-spec-handoff",
+        "output": "audience spec record: age range, traits, exclusions, matched persona id, handed to MEDIA",
+        "check": "every trait in the spec ties back to a line in the persona record, not a guess",
+        "ask_founder_if": "the angle targets a persona with no avatar record yet"
+      },
+      {
+        "n": 6,
+        "name": "Pick the format and compare format economics",
+        "does": "Chooses the ad format (static, native platform format, UGC video, founder video, carousel, catalogue) from the product's real education or demo need and the account's own expected profit per ad by format, not ROAS alone.",
+        "inputs": [
+          "angle brief",
+          "test brief",
+          "product facts: education or demo need",
+          "account's own cost-per-asset and format hit-rate history"
+        ],
+        "tools": [],
+        "skill": "crea/angle-and-test/format-economics",
+        "output": "format decision with the profit-per-ad comparison behind it",
+        "check": "decision cites a number, not a preference"
+      },
+      {
+        "n": 7,
+        "name": "Write hooks and scripts or copy per format",
+        "does": "Writes the hook bank (8 to 20 hooks, graded on 5 criteria) and the format-specific script or static copy structure for each chosen format.",
+        "inputs": [
+          "angle brief",
+          "test brief",
+          "format decision",
+          "past hook grades"
+        ],
+        "tools": [
+          "meta_gallery lab: ENGINE.adDetail (past hook performance)"
+        ],
+        "skill": "crea/write-copy/hooks",
+        "output": "hook bank plus a script or copy draft per format",
+        "check": "no product name or offer in a cold hook; one dominant appeal held throughout"
+      },
+      {
+        "n": 8,
+        "name": "Build the creative brief and production or shoot brief",
+        "does": "Fills the one-page concept brief, then the format-specific production brief (static design brief, UGC or founder-video brief, or catalogue template spec) and generates a first draft image where the format calls for one.",
+        "inputs": [
+          "angle brief",
+          "hook bank or script",
+          "format decision",
+          "reference set from step 2"
+        ],
+        "tools": [
+          "meta_gallery studio: /api/variants",
+          "meta_gallery studio: /api/competitor-variants"
+        ],
+        "skill": "crea/briefing/concept-brief",
+        "output": "concept brief, production brief, and a draft asset (image or script package)",
+        "check": "destination link matches the offer stated; hook, image and copy share one awareness stage; real product photo used if fit, material or scale matters"
+      },
+      {
+        "n": 9,
+        "name": "Run the copy and claim-compliance pass",
+        "does": "Applies the fixed direct-response copywriting rules (reading level, single idea, proof ranking) and then the brand's claim-tier and platform-policy check on every line.",
+        "inputs": [
+          "draft brief and copy",
+          "brand claim tiers",
+          "current platform ad policy"
+        ],
+        "tools": [],
+        "skill": "crea/compliance/copy-craft-rules",
+        "output": "edited copy plus a claim audit table, pass or fail per line",
+        "check": "reading level under grade 10; no claim from the forbidden tier; no em dash",
+        "ask_founder_if": "a claim sits at the edge of the site-backed tier"
+      },
+      {
+        "n": 10,
+        "name": "Run a feedback and reference round with the Reference Scout",
+        "does": "Sends the draft brief and asset back through one reference round: checks it against the tagged competitor references for layout and mood fit, and routes it for one internal feedback pass before it reaches a human reviewer.",
+        "inputs": [
+          "draft brief or asset",
+          "tagged competitor references",
+          "past founder feedback notes if any"
+        ],
+        "tools": [],
+        "skill": null,
+        "output": "revised brief or asset with a short note on what changed and why",
+        "check": "no competitor text, logo, product or face was copied in the revision"
+      },
+      {
+        "n": 11,
+        "name": "Apply naming and tagging",
+        "does": "Applies the fixed naming and tagging schema (concept, persona, angle, offer, format, stage, source) to every asset and copy file before it leaves CREA.",
+        "inputs": [
+          "revised brief or asset",
+          "current naming and tagging standard"
+        ],
+        "tools": [],
+        "skill": "crea/production-ops/naming-and-tagging",
+        "output": "named, tagged asset set",
+        "check": "every asset has a stable id following the current schema"
+      },
+      {
+        "n": 12,
+        "name": "Build the launch checklist and hand off to MEDIA",
+        "does": "Assembles the launch checklist (creative files, copy, audience spec reference, test brief, destination link, tracking check) and hands the full package to the Media buyer specialist for account build and go-live.",
+        "inputs": [
+          "named asset set",
+          "test brief",
+          "audience spec record",
+          "destination link"
+        ],
+        "tools": [],
+        "skill": null,
+        "output": "launch checklist and handoff package to MEDIA",
+        "check": "every checklist line is checked or has a named blocker; MEDIA confirms receipt"
+      },
+      {
+        "n": 13,
+        "name": "Read the first-read numbers",
+        "does": "At the test brief's minimum read window, pulls the creative-side metrics (hook rate, hold rate, CPA per ad) from the metric contract and compares each ad to the account average and the test's pre-set winner and kill rule.",
+        "inputs": [
+          "metric contract fields at the read window",
+          "test brief's winner and kill rule"
+        ],
+        "tools": [],
+        "skill": null,
+        "output": "read note: winner, loser or inconclusive, per ad, against the pre-set rule",
+        "check": "verdict uses the pre-set rule, not a new judgment call; missing metrics show as unavailable, never zero"
+      },
+      {
+        "n": 14,
+        "name": "Log the result and close the loop",
+        "does": "Writes the registry entry for this test (angle, format, hook, result, learning) so the next research pass in step 1 starts from it.",
+        "inputs": [
+          "read note",
+          "test brief",
+          "angle brief"
+        ],
+        "tools": [],
+        "skill": "shared/registry-entry",
+        "output": "registry entry",
+        "check": "entry links back to the original card or idea id"
+      }
+    ],
+    "outputs": [
+      "objection map",
+      "angle brief",
+      "test brief",
+      "audience spec record",
+      "hook bank",
+      "script or static copy",
+      "concept brief",
+      "production brief",
+      "draft asset",
+      "claim audit table",
+      "launch checklist",
+      "read note",
+      "registry entry"
+    ],
+    "qa": [
+      "every claim traced to an approved or site-backed tier",
+      "no competitor text, logo, product or face reused",
+      "reading level under grade 10",
+      "real product photo used where accuracy matters",
+      "winner and kill rule set before launch",
+      "every number came from the metric contract, not estimated"
+    ],
+    "read_point": "at the test brief's minimum read window (set in step 4 from the account's own delivery volume, not a fixed default)",
+    "typical_duration": "agent time: half a day to a day across the pipeline; waiting time: the read window itself, typically 3 to 10 days depending on account volume",
+    "subagents": [
+      "Creative Studio Operator: step 8 image variant generation",
+      "Claim Auditor: step 9 compliance pass",
+      "Creative Performance Analyst: step 13 read, if a full teardown is warranted"
+    ]
+  },
+  {
+    "id": "CREA-W02",
+    "name": "Script a founder or authority-led ad",
+    "capabilities": [
+      "CREA-C09",
+      "CREA-C26"
+    ],
+    "trigger": "on demand",
+    "human_role": "Direct-response scriptwriter briefing a founder or authority-led ad",
+    "inputs_required": [
+      "brand brain: founder's real stories, credentials and permissioned reviews",
+      "angle brief or approved idea",
+      "claim tiers"
+    ],
+    "steps": [
+      {
+        "n": 1,
+        "name": "Confirm the founder fact set",
+        "does": "Pulls the founder's or authority's real, permissioned stories, credentials and reviews from the brand brain. Nothing invented.",
+        "inputs": [
+          "brand brain: founder bio and story log"
+        ],
+        "tools": [],
+        "skill": null,
+        "output": "founder fact sheet with sources",
+        "check": "every fact in the sheet has a source and a date on file",
+        "ask_founder_if": "a strong story exists but no written permission is on file"
+      },
+      {
+        "n": 2,
+        "name": "Pick the argument, not a biography",
+        "does": "Frames the ad as an argument for the viewer's problem (claim, proof, mechanism), never a life story, using the angle brief.",
+        "inputs": [
+          "founder fact sheet",
+          "angle brief"
+        ],
+        "tools": [],
+        "skill": "crea/angle-and-test/angle-builder",
+        "output": "argument outline: claim, proof, mechanism",
+        "check": "outline states the viewer's problem in the first line, not the founder's history"
+      },
+      {
+        "n": 3,
+        "name": "Write the script skeleton",
+        "does": "Drafts the scene-by-scene script (hook, bridge, mechanism, product, proof, objection, CTA) sized to the product's real education need.",
+        "inputs": [
+          "argument outline",
+          "hook bank if one exists"
+        ],
+        "tools": [],
+        "skill": "crea/write-copy/scripts",
+        "output": "scene-by-scene script table",
+        "check": "single CTA; no unverified claim"
+      },
+      {
+        "n": 4,
+        "name": "Diversify the founder's own sourcing",
+        "does": "Varies delivery style, setting and specific proof point across 2 to 3 script variants so the same founder does not read as one repeated ad.",
+        "inputs": [
+          "script skeleton"
+        ],
+        "tools": [],
+        "skill": "crea/make-creatives/founder-video",
+        "output": "2 to 3 script variants",
+        "check": "each variant uses a different real proof point, not a reworded line"
+      },
+      {
+        "n": 5,
+        "name": "Direct the shoot or AI-touched frame",
+        "does": "Sets shot direction (gaze toward the CTA, setting, product visibility) for a real shoot or an AI-touched frame, keeping the founder's real likeness accurate.",
+        "inputs": [
+          "script variants"
+        ],
+        "tools": [],
+        "skill": "crea/briefing/shoot-and-photo-direction",
+        "output": "shot list or frame-direction note",
+        "check": "founder's real face and product are not redrawn"
+      },
+      {
+        "n": 6,
+        "name": "Run the copy and claim pass",
+        "does": "Applies copywriting rules then the claim-tier check on every spoken and on-screen line.",
+        "inputs": [
+          "script variants",
+          "claim tiers"
+        ],
+        "tools": [],
+        "skill": "crea/compliance/copy-craft-rules",
+        "output": "audited script",
+        "check": "no claim outside the approved or site-backed tier"
+      },
+      {
+        "n": 7,
+        "name": "Clear rights and hand off",
+        "does": "Confirms any stock element (music, b-roll) used alongside the founder footage is cleared, then hands the finished script package to production or the shoot workflow.",
+        "inputs": [
+          "audited script"
+        ],
+        "tools": [],
+        "skill": "crea/compliance/rights-clearance",
+        "output": "rights-cleared script package",
+        "check": "every non-founder asset in the script has a license on file"
+      }
+    ],
+    "outputs": [
+      "founder fact sheet",
+      "script variants",
+      "rights-cleared script package"
+    ],
+    "qa": [
+      "no invented founder story",
+      "no claim outside approved tiers",
+      "single CTA per script"
+    ],
+    "read_point": "same read window as the launch workflow once the script ships as an ad",
+    "typical_duration": "agent time: 2 to 3 hours; waiting time: none until a shoot is booked",
+    "subagents": []
+  },
+  {
+    "id": "CREA-W03",
+    "name": "Brief and source a UGC creator, track rights",
+    "capabilities": [
+      "CREA-C10",
+      "CREA-C51"
+    ],
+    "trigger": "event: rights expiring | weekly",
+    "human_role": "Creator brief writer and UGC rights tracker",
+    "inputs_required": [
+      "angle brief or bottleneck",
+      "creator roster",
+      "past creator work and vetting notes",
+      "current rights log"
+    ],
+    "steps": [
+      {
+        "n": 1,
+        "name": "Scan organic mentions for ad-worthy content",
+        "does": "Scans the brand's own tags, mentions and review videos for genuine customer content strong enough to become a paid ad.",
+        "inputs": [
+          "social mention feed",
+          "review platform exports"
+        ],
+        "tools": [],
+        "skill": "crea/special-formats/organic-ugc-scout",
+        "output": "shortlist of candidate organic clips with source and date",
+        "check": "each clip traces to a real public post, not a screenshot with no source",
+        "ask_founder_if": "no social listening source is connected"
+      },
+      {
+        "n": 2,
+        "name": "Vet the shortlist",
+        "does": "Checks each candidate against the vetting bar set by past creator work: authenticity, product visibility, tone match.",
+        "inputs": [
+          "shortlist"
+        ],
+        "tools": [],
+        "skill": null,
+        "output": "vetted shortlist",
+        "check": "every kept clip scores above the bar on all three criteria"
+      },
+      {
+        "n": 3,
+        "name": "Decide wide or specific brief",
+        "does": "Picks a wide, discovery-style brief for a new creator or a specific, replication-style brief when a proven structure already exists.",
+        "inputs": [
+          "vetted shortlist or angle brief"
+        ],
+        "tools": [],
+        "skill": "crea/make-creatives/ugc-video",
+        "output": "brief type decision",
+        "check": "decision states why, not just a default"
+      },
+      {
+        "n": 4,
+        "name": "Write the creator brief",
+        "does": "Writes the concept, the do and don't say list, and the take allowance. Never sends a creator to 'make content' with no concept.",
+        "inputs": [
+          "brief type decision",
+          "angle brief",
+          "brand voice"
+        ],
+        "tools": [],
+        "skill": "crea/make-creatives/ugc-video",
+        "output": "creator brief document",
+        "check": "brief names a concept and a specific do/don't list"
+      },
+      {
+        "n": 5,
+        "name": "Set usage rights and expiry",
+        "does": "Sets the rights scope (paid whitelisting versus organic only), duration and renewal date before any paid use.",
+        "inputs": [
+          "creator brief",
+          "brand's standard rights terms"
+        ],
+        "tools": [],
+        "skill": null,
+        "output": "rights terms attached to the brief",
+        "check": "expiry date is set and logged before any spend touches this content",
+        "ask_founder_if": "a creator's ask sits outside the brand's standard rights terms"
+      },
+      {
+        "n": 6,
+        "name": "Log to the rights tracker",
+        "does": "Writes the rights log entry: creator, content id, scope, expiry, renewal contact.",
+        "inputs": [
+          "rights terms"
+        ],
+        "tools": [],
+        "skill": "shared/registry-entry",
+        "output": "rights log entry",
+        "check": "entry appears in the tracker before the content ships as a paid ad"
+      },
+      {
+        "n": 7,
+        "name": "Flag expiring rights weekly",
+        "does": "On the weekly run, checks the tracker for anything expiring inside 30 days and flags it before a whitelisted post silently reverts to organic-only.",
+        "inputs": [
+          "rights tracker"
+        ],
+        "tools": [],
+        "skill": null,
+        "output": "expiry flag list",
+        "check": "every flag reaches a person before the expiry date"
+      }
+    ],
+    "outputs": [
+      "creator brief",
+      "rights log entry",
+      "expiry flag list"
+    ],
+    "qa": [
+      "no UGC used without a concept brief",
+      "no paid use without a logged rights expiry date"
+    ],
+    "read_point": "first-read window once the sourced or briefed content runs as an ad, per CREA-W01",
+    "typical_duration": "agent time: 1 to 2 hours per creator; weekly scan: 30 minutes",
+    "subagents": []
+  },
+  {
+    "id": "CREA-W04",
+    "name": "Direct a product photo or video shoot",
+    "capabilities": [
+      "CREA-G01",
+      "CREA-C12"
+    ],
+    "trigger": "event: shoot approved",
+    "human_role": "Creative producer running a shoot to spec",
+    "inputs_required": [
+      "approved creative or concept brief needing real photography",
+      "product facts: real dimensions, material, color, fit",
+      "brand kit"
+    ],
+    "steps": [
+      {
+        "n": 1,
+        "name": "Set image-accuracy direction",
+        "does": "Sets direction so the product shown will match what arrives at home: real color, scale next to a known object, material texture visible.",
+        "inputs": [
+          "concept brief",
+          "product facts"
+        ],
+        "tools": [],
+        "skill": "crea/briefing/shoot-and-photo-direction",
+        "output": "image-accuracy brief",
+        "check": "brief names the exact product variant or SKU being shot, not a generic stand-in"
+      },
+      {
+        "n": 2,
+        "name": "Build the shot list",
+        "does": "Turns the brief into a numbered shot list, with angles and gaze direction toward the CTA when a person is in frame.",
+        "inputs": [
+          "image-accuracy brief"
+        ],
+        "tools": [],
+        "skill": "crea/briefing/shoot-and-photo-direction",
+        "output": "shot list",
+        "check": "every shot ties to a specific ad or page use, not a generic library"
+      },
+      {
+        "n": 3,
+        "name": "Book studio or location and model",
+        "does": "Books the shoot slot, studio or location, and any model, from the approved production budget line.",
+        "inputs": [
+          "shot list",
+          "production budget"
+        ],
+        "tools": [],
+        "skill": null,
+        "output": "booking confirmation",
+        "check": "booking sits inside the monthly production budget from CREA-W09 or CREA-W10",
+        "ask_founder_if": "the shoot needs a budget line not yet approved"
+      },
+      {
+        "n": 4,
+        "name": "Get signed releases",
+        "does": "Collects the signed model and location release before the shoot starts, never after.",
+        "inputs": [
+          "booking confirmation"
+        ],
+        "tools": [],
+        "skill": null,
+        "output": "signed releases on file",
+        "check": "release is on file before a single frame is used in any draft"
+      },
+      {
+        "n": 5,
+        "name": "Run the shoot against the shot list",
+        "does": "A person runs the shoot; CREA checks each delivered frame against the shot list and the image-accuracy brief as it comes in.",
+        "inputs": [
+          "shot list",
+          "delivered frames"
+        ],
+        "tools": [],
+        "skill": null,
+        "output": "raw frame set checked against the shot list",
+        "check": "every shot list line has a matching delivered frame or a named gap"
+      },
+      {
+        "n": 6,
+        "name": "Retouch QA against the real product",
+        "does": "Checks that retouching does not alter the real product's color, fit, scale or material past what a customer will actually receive.",
+        "inputs": [
+          "retouched frames",
+          "product facts"
+        ],
+        "tools": [],
+        "skill": "crea/briefing/shoot-and-photo-direction",
+        "output": "QA'd final frame set",
+        "check": "no retouch changes a fact-bearing detail: size, color or material"
+      },
+      {
+        "n": 7,
+        "name": "File to the asset library",
+        "does": "Names, tags and files the final frames using the standing naming schema.",
+        "inputs": [
+          "QA'd frame set"
+        ],
+        "tools": [],
+        "skill": "crea/production-ops/naming-and-tagging",
+        "output": "filed, tagged asset set",
+        "check": "every frame has a stable id and a release on file before it is usable downstream"
+      }
+    ],
+    "outputs": [
+      "shot list",
+      "signed releases",
+      "QA'd final frame set"
+    ],
+    "qa": [
+      "release on file before use",
+      "no retouch misrepresents the real product"
+    ],
+    "read_point": "not applicable directly; frames feed CREA-W01's assets and are read at that workflow's read point",
+    "typical_duration": "agent time: 2 to 4 hours of briefing and QA; waiting time: the shoot day plus retouch turnaround, 3 to 7 days",
+    "subagents": []
+  },
+  {
+    "id": "CREA-W05",
+    "name": "Turn a live product page into a fast first-pass ad variant set",
+    "capabilities": [
+      "CREA-C37",
+      "CREA-C05",
+      "CREA-C26"
+    ],
+    "trigger": "on demand",
+    "human_role": "Fast-turn creative drafter for a new or under-tested SKU",
+    "inputs_required": [
+      "live product page URL",
+      "claim tiers",
+      "brand voice"
+    ],
+    "steps": [
+      {
+        "n": 1,
+        "name": "Read the live page",
+        "does": "Reads the live product page and pulls its images, price and stated claims exactly as shown.",
+        "inputs": [
+          "product page URL"
+        ],
+        "tools": [
+          "web: read-only fetch"
+        ],
+        "skill": "crea/special-formats/product-page-to-ad",
+        "output": "page facts: images, price, stated claims",
+        "check": "every claim pulled matches the page's exact wording, nothing added"
+      },
+      {
+        "n": 2,
+        "name": "Cross-check claims against the brand record",
+        "does": "Matches each pulled claim to the brand's claim tiers and drops anything the page states that is not on record.",
+        "inputs": [
+          "page facts",
+          "claim tiers"
+        ],
+        "tools": [],
+        "skill": null,
+        "output": "cleared claim list",
+        "check": "no claim survives that is not in the approved or site-backed tier"
+      },
+      {
+        "n": 3,
+        "name": "Draft first-pass static variants",
+        "does": "Drafts 3 to 5 static ad variants pairing the real page images with headline options built from the cleared claims.",
+        "inputs": [
+          "cleared claim list",
+          "page images"
+        ],
+        "tools": [
+          "meta_gallery studio: /api/variants"
+        ],
+        "skill": "crea/make-creatives/static",
+        "output": "3 to 5 static ad drafts",
+        "check": "product image is the real photo from the page, not redrawn"
+      },
+      {
+        "n": 4,
+        "name": "Draft a first-pass video or UGC concept",
+        "does": "Drafts one short video or UGC concept using the same cleared claims, as a second format option.",
+        "inputs": [
+          "cleared claim list"
+        ],
+        "tools": [],
+        "skill": "crea/write-copy/scripts",
+        "output": "one short video concept",
+        "check": "concept states the same claims as the static set, no drift"
+      },
+      {
+        "n": 5,
+        "name": "Write headline and primary-text sets",
+        "does": "Writes headline and primary-text variant sets for the static drafts, checked against length and image fit.",
+        "inputs": [
+          "static drafts"
+        ],
+        "tools": [],
+        "skill": "crea/write-copy/headlines",
+        "output": "headline and primary-text set",
+        "check": "each headline fits the platform's current character limit"
+      },
+      {
+        "n": 6,
+        "name": "Run the copy pass",
+        "does": "Applies the core copywriting rules (reading level, single idea) to the full first-pass set.",
+        "inputs": [
+          "headline and primary-text set",
+          "video concept"
+        ],
+        "tools": [],
+        "skill": "crea/compliance/copy-craft-rules",
+        "output": "edited first-pass set",
+        "check": "reading level under grade 10"
+      },
+      {
+        "n": 7,
+        "name": "Hand off as a fast-test candidate",
+        "does": "Packages the first-pass set as a candidate for CREA-W01's test-plan step, flagged as unproven and needing its own read.",
+        "inputs": [
+          "edited first-pass set"
+        ],
+        "tools": [],
+        "skill": null,
+        "output": "fast-test candidate package",
+        "check": "package is clearly flagged as first-pass, not a finished concept"
+      }
+    ],
+    "outputs": [
+      "static ad drafts",
+      "video concept",
+      "headline and primary-text set"
+    ],
+    "qa": [
+      "no claim beyond the page's own claim-tier match",
+      "real product photo used"
+    ],
+    "read_point": "feeds into CREA-W01's test plan and read point once launched",
+    "typical_duration": "agent time: 1 to 2 hours",
+    "subagents": [
+      "Creative Studio Operator: step 3 image variant generation"
+    ]
+  },
+  {
+    "id": "CREA-W06",
+    "name": "Localise a creative and copy set for a new market or device",
+    "capabilities": [
+      "CREA-C22",
+      "CREA-C26"
+    ],
+    "trigger": "on demand",
+    "human_role": "Localisation editor for a target market and device",
+    "inputs_required": [
+      "source creative and copy set",
+      "target market's payment, delivery and trust facts",
+      "language pair if dual-language"
+    ],
+    "steps": [
+      {
+        "n": 1,
+        "name": "Confirm the target spec",
+        "does": "Confirms the device target (mobile-first, vertical-only formats where the target market's traffic calls for it) and market facts (payment method mix, delivery windows, local payment logos; COD availability and EMI where the target market runs them, markets: IN) for the target market.",
+        "inputs": [
+          "brand brain: market policies"
+        ],
+        "tools": [],
+        "skill": "crea/briefing/localisation-spec",
+        "output": "target spec sheet",
+        "check": "every trust fact on the sheet matches the current brand policy, not an assumption",
+        "ask_founder_if": "the brand has no policy on file for this market yet"
+      },
+      {
+        "n": 2,
+        "name": "Re-cut for vertical, mobile-first delivery",
+        "does": "Re-crops or re-composes the framing for vertical, mobile-first delivery, and flags any asset that cannot be honestly re-cropped.",
+        "inputs": [
+          "source creative",
+          "target spec sheet"
+        ],
+        "tools": [],
+        "skill": "crea/derivatives/resize-for-placement",
+        "output": "vertical-first asset set",
+        "check": "no important element is cropped out of frame"
+      },
+      {
+        "n": 3,
+        "name": "Localise the copy",
+        "does": "Rewrites hooks and copy for the local reading level and, where needed, drafts a dual-language hook pairing that matches how the persona actually speaks.",
+        "inputs": [
+          "source copy",
+          "persona language notes"
+        ],
+        "tools": [],
+        "skill": "crea/write-copy/hooks",
+        "output": "localised copy set",
+        "check": "dual-language line reads as a natural code-switch, not a literal translation"
+      },
+      {
+        "n": 4,
+        "name": "Swap in local trust facts",
+        "does": "Replaces any non-local trust line (a foreign currency guarantee, a foreign shipping time) with the real local fact: payment method mix, local return window, local payment logos; COD availability where the target market runs it, markets: IN.",
+        "inputs": [
+          "target spec sheet"
+        ],
+        "tools": [],
+        "skill": "crea/pricing-and-naming/price-framing",
+        "output": "trust-line-corrected copy",
+        "check": "every trust fact traces to the current local policy record"
+      },
+      {
+        "n": 5,
+        "name": "Run the compliance pass",
+        "does": "Runs the claim and copywriting-rules check on the localised set.",
+        "inputs": [
+          "trust-line-corrected copy"
+        ],
+        "tools": [],
+        "skill": "crea/compliance/copy-craft-rules",
+        "output": "audited localised set",
+        "check": "no claim carried over that does not hold in the local market"
+      },
+      {
+        "n": 6,
+        "name": "Hand off as a market-tagged variant",
+        "does": "Tags the finished set with the market and device so it never runs against the wrong audience.",
+        "inputs": [
+          "audited localised set"
+        ],
+        "tools": [],
+        "skill": "crea/production-ops/naming-and-tagging",
+        "output": "tagged localised asset set",
+        "check": "every asset carries a market tag before handoff"
+      }
+    ],
+    "outputs": [
+      "vertical-first asset set",
+      "localised copy set",
+      "tagged localised asset set"
+    ],
+    "qa": [
+      "no non-local trust claim survives",
+      "dual-language line reads natural"
+    ],
+    "read_point": "same read point as the parent test once launched in-market",
+    "typical_duration": "agent time: 2 to 3 hours per market",
+    "subagents": []
+  },
+  {
+    "id": "CREA-W07",
+    "name": "Diagnose creative fatigue and brief the revival",
+    "capabilities": [
+      "CREA-C15"
+    ],
+    "trigger": "weekly",
+    "human_role": "Creative performance analyst watching for wear-out",
+    "inputs_required": [
+      "lifecycle metrics: days to fatigue, frequency",
+      "ad-level results",
+      "hook bank for the fatigued ad's angle"
+    ],
+    "steps": [
+      {
+        "n": 1,
+        "name": "Pull lifecycle metrics",
+        "does": "Pulls each live ad's frequency, hold rate and CPA trend against the account's own historical fatigue curve.",
+        "inputs": [
+          "metric contract: frequency, hold rate, cpa trend"
+        ],
+        "tools": [],
+        "skill": null,
+        "output": "fatigue candidate list",
+        "check": "every candidate compares to this account's own curve, not a generic industry number"
+      },
+      {
+        "n": 2,
+        "name": "Rule out a small-audience-pool cause",
+        "does": "Checks delivery volume and frequency to see if the drop is really audience exhaustion, not creative wear-out.",
+        "inputs": [
+          "fatigue candidate list",
+          "delivery and frequency data"
+        ],
+        "tools": [],
+        "skill": "crea/fatigue-and-teardown/fatigue-diagnosis",
+        "output": "cause split: audience-pool versus creative",
+        "check": "verdict names the specific number that decided it"
+      },
+      {
+        "n": 3,
+        "name": "Diagnose the creative cause",
+        "does": "For creative-caused fatigue, identifies which part wore out: hook, visual, or the whole concept.",
+        "inputs": [
+          "ad's hook and structure history"
+        ],
+        "tools": [],
+        "skill": "crea/fatigue-and-teardown/fatigue-diagnosis",
+        "output": "fatigue diagnosis note",
+        "check": "diagnosis names one specific part, not a general 'the ad is tired'"
+      },
+      {
+        "n": 4,
+        "name": "Prescribe the cheapest real fix first",
+        "does": "Proposes a hook swap or format rotation before a whole new concept, in that order, using the existing hook bank.",
+        "inputs": [
+          "fatigue diagnosis note",
+          "hook bank"
+        ],
+        "tools": [],
+        "skill": "crea/write-copy/hooks",
+        "output": "revival brief",
+        "check": "brief tries the cheapest fix first unless the diagnosis rules it out"
+      },
+      {
+        "n": 5,
+        "name": "Route audience-pool cases to MEDIA",
+        "does": "For audience-pool causes, hands the finding to MEDIA instead of commissioning new creative.",
+        "inputs": [
+          "cause split"
+        ],
+        "tools": [],
+        "skill": null,
+        "output": "handoff note to MEDIA",
+        "check": "note is explicit that this is not a creative problem"
+      },
+      {
+        "n": 6,
+        "name": "Log the fatigue event",
+        "does": "Writes the registry entry for the fatigue event and its prescribed fix, feeding CREA-W08's teardown history.",
+        "inputs": [
+          "revival brief or handoff note"
+        ],
+        "tools": [],
+        "skill": "shared/registry-entry",
+        "output": "registry entry",
+        "check": "entry links the original ad id to the fix tried"
+      }
+    ],
+    "outputs": [
+      "fatigue diagnosis note",
+      "revival brief",
+      "registry entry"
+    ],
+    "qa": [
+      "diagnosis names a specific metric and comparison, not a guess"
+    ],
+    "read_point": "weekly, against the account's rolling fatigue curve",
+    "typical_duration": "agent time: about 1 hour per week across the live set",
+    "subagents": [
+      "Creative Performance Analyst: full weekly scan"
+    ]
+  },
+  {
+    "id": "CREA-W08",
+    "name": "Tear down the week's winners and losers",
+    "capabilities": [
+      "CREA-C16"
+    ],
+    "trigger": "weekly",
+    "human_role": "Creative analyst writing the weekly breakdown",
+    "inputs_required": [
+      "ad-level metrics for the week",
+      "account averages",
+      "ad creative (image or video) and copy",
+      "competitor data, signal only"
+    ],
+    "steps": [
+      {
+        "n": 1,
+        "name": "Pull the week's ad-level results",
+        "does": "Pulls every ad's metrics next to the account average for the same period.",
+        "inputs": [
+          "metric contract: ad-level"
+        ],
+        "tools": [],
+        "skill": null,
+        "output": "ranked ad list for the week",
+        "check": "totals and per-ad breakdowns are kept separate, never summed into one number"
+      },
+      {
+        "n": 2,
+        "name": "Break each ad into its parts",
+        "does": "For the top and bottom ads, breaks the creative into hook, structure, proof, offer and CTA.",
+        "inputs": [
+          "ranked ad list",
+          "ad creative and copy"
+        ],
+        "tools": [
+          "meta_gallery lab: ENGINE.adDetail"
+        ],
+        "skill": "crea/fatigue-and-teardown/winner-teardown",
+        "output": "part-by-part breakdown per ad",
+        "check": "every part is named, none skipped"
+      },
+      {
+        "n": 3,
+        "name": "Write the hypothesis per ad",
+        "does": "Writes a specific hypothesis for why each ad worked or did not, backed by the number that shows it.",
+        "inputs": [
+          "part-by-part breakdown"
+        ],
+        "tools": [],
+        "skill": "crea/fatigue-and-teardown/winner-teardown",
+        "output": "hypothesis per ad",
+        "check": "hypothesis cites a number, not an opinion"
+      },
+      {
+        "n": 4,
+        "name": "Check against competitor signal",
+        "does": "Notes whether a winning structure echoes a competitor pattern already tagged as signal, without claiming causation.",
+        "inputs": [
+          "tagged competitor references"
+        ],
+        "tools": [],
+        "skill": "crea/research/competitor-signal-pull",
+        "output": "competitor-signal note",
+        "check": "note is marked signal only, never proof"
+      },
+      {
+        "n": 5,
+        "name": "Assign a funnel role",
+        "does": "From the real numbers, assigns each ad a funnel role: cold hook winner, retention proof, or bottom-funnel closer.",
+        "inputs": [
+          "hypothesis per ad"
+        ],
+        "tools": [],
+        "skill": null,
+        "output": "funnel-role tags",
+        "check": "tag matches the metric that drove it, for example high CTR with low CVR means top-funnel only"
+      },
+      {
+        "n": 6,
+        "name": "Write the breakdown report",
+        "does": "Assembles the week's breakdown into a short report for the founder.",
+        "inputs": [
+          "all of the above"
+        ],
+        "tools": [],
+        "skill": "shared/report-section",
+        "output": "weekly breakdown report",
+        "check": "report is under the founder's usual reading time; digits not spelled out"
+      },
+      {
+        "n": 7,
+        "name": "Log the hypothesis",
+        "does": "Writes each hypothesis to the registry so future angle and hook work in CREA-W01 starts from it.",
+        "inputs": [
+          "hypothesis per ad"
+        ],
+        "tools": [],
+        "skill": "shared/registry-entry",
+        "output": "registry entries",
+        "check": "each entry links to the ad id and the metric window used"
+      }
+    ],
+    "outputs": [
+      "breakdown report",
+      "hypothesis log entries"
+    ],
+    "qa": [
+      "verdict backed by a specific number",
+      "competitor material marked signal only"
+    ],
+    "read_point": "weekly, on the last full day's data",
+    "typical_duration": "agent time: 1 to 2 hours",
+    "subagents": [
+      "Creative Performance Analyst"
+    ]
+  },
+  {
+    "id": "CREA-W09",
+    "name": "Plan the monthly creative production pipeline and portfolio mix",
+    "capabilities": [
+      "CREA-C18"
+    ],
+    "trigger": "monthly",
+    "human_role": "Creative producer planning next month's slate",
+    "inputs_required": [
+      "account's own hit-rate history",
+      "current portfolio mix by angle, format and persona",
+      "monthly budget line"
+    ],
+    "steps": [
+      {
+        "n": 1,
+        "name": "Pull the account's hit rate",
+        "does": "Pulls the real ratio of winning to tested creatives over the last quarter, by format and angle.",
+        "inputs": [
+          "registry: past test results"
+        ],
+        "tools": [],
+        "skill": null,
+        "output": "hit-rate table by format and angle",
+        "check": "rate is computed in code from real results, not estimated"
+      },
+      {
+        "n": 2,
+        "name": "Audit portfolio coverage",
+        "does": "Checks which persona, angle and format combinations are under-tested or over-concentrated.",
+        "inputs": [
+          "hit-rate table",
+          "current live set"
+        ],
+        "tools": [],
+        "skill": "shared/surface-audit",
+        "output": "coverage gap list",
+        "check": "every active persona has at least one live test in the last 60 days, or is flagged"
+      },
+      {
+        "n": 3,
+        "name": "Size next month's volume",
+        "does": "Sizes how many new concepts, variants and formats to produce next month from the hit rate and the budget line, not a fixed quota.",
+        "inputs": [
+          "hit-rate table",
+          "budget line"
+        ],
+        "tools": [],
+        "skill": "crea/production-ops/pipeline-planning",
+        "output": "monthly production plan",
+        "check": "plan's volume is derived from the hit rate and budget, shown as a calculation"
+      },
+      {
+        "n": 4,
+        "name": "Sequence the pipeline stages",
+        "does": "Lays out the month across research, concept, build, variations, feedback and launch stages with dates.",
+        "inputs": [
+          "monthly production plan"
+        ],
+        "tools": [],
+        "skill": "crea/production-ops/pipeline-planning",
+        "output": "sequenced pipeline calendar",
+        "check": "every stage has a date and an owner"
+      },
+      {
+        "n": 5,
+        "name": "Flag budget risk early",
+        "does": "Cross-checks the planned volume against the cost-per-asset trend from CREA-W10 to flag a likely overrun before it happens.",
+        "inputs": [
+          "monthly production plan",
+          "cost-per-asset trend"
+        ],
+        "tools": [],
+        "skill": "crea/production-ops/cost-tracking",
+        "output": "budget risk flag, if any",
+        "check": "flag is raised before the month starts, not after an overrun"
+      },
+      {
+        "n": 6,
+        "name": "Publish the plan",
+        "does": "Writes the plan up for the founder and MEDIA to see.",
+        "inputs": [
+          "sequenced pipeline calendar",
+          "budget risk flag"
+        ],
+        "tools": [],
+        "skill": "shared/report-section",
+        "output": "monthly plan document",
+        "check": "plan is readable in one pass, digits not spelled out"
+      }
+    ],
+    "outputs": [
+      "monthly production plan",
+      "sequenced pipeline calendar",
+      "budget risk flag"
+    ],
+    "qa": [
+      "volume derived from hit rate and budget, not a guess"
+    ],
+    "read_point": "monthly, first business day of the month, on the prior full month's data",
+    "typical_duration": "agent time: about 2 hours",
+    "subagents": []
+  },
+  {
+    "id": "CREA-W10",
+    "name": "Track production cost per asset against the monthly budget",
+    "capabilities": [
+      "CREA-C54"
+    ],
+    "trigger": "weekly",
+    "human_role": "Creative budget tracker",
+    "inputs_required": [
+      "real cost per asset produced: AI credits, freelancer or agency invoices, stock license fees",
+      "monthly budget line from CREA-W09"
+    ],
+    "steps": [
+      {
+        "n": 1,
+        "name": "Log real costs",
+        "does": "Logs every real cost as it is incurred, generation credits, invoices, license fees, against the specific asset it produced.",
+        "inputs": [
+          "billing records",
+          "invoices"
+        ],
+        "tools": [],
+        "skill": "crea/production-ops/cost-tracking",
+        "output": "cost log entries",
+        "check": "every cost ties to a named asset id, never a lump sum"
+      },
+      {
+        "n": 2,
+        "name": "Compute cost per asset",
+        "does": "Computes cost per finished asset by format, in code.",
+        "inputs": [
+          "cost log entries"
+        ],
+        "tools": [],
+        "skill": "crea/production-ops/cost-tracking",
+        "output": "cost-per-asset table by format",
+        "check": "computation is shown, not estimated"
+      },
+      {
+        "n": 3,
+        "name": "Compare to the monthly plan",
+        "does": "Checks running spend against the monthly budget line from CREA-W09.",
+        "inputs": [
+          "cost-per-asset table",
+          "monthly budget line"
+        ],
+        "tools": [],
+        "skill": "crea/production-ops/cost-tracking",
+        "output": "spend-versus-plan status",
+        "check": "status shows unavailable, not zero, for any cost not yet logged"
+      },
+      {
+        "n": 4,
+        "name": "Flag a likely overrun",
+        "does": "If the trend line crosses the budget before month end, flags it to the founder with the number and the date it will cross.",
+        "inputs": [
+          "spend-versus-plan status"
+        ],
+        "tools": [],
+        "skill": null,
+        "output": "overrun flag",
+        "check": "flag names the exact projected crossing date",
+        "ask_founder_if": "the projected overrun exceeds 15% of the monthly line"
+      },
+      {
+        "n": 5,
+        "name": "Log to the registry",
+        "does": "Writes the weekly cost snapshot to the registry for the next monthly plan.",
+        "inputs": [
+          "cost-per-asset table"
+        ],
+        "tools": [],
+        "skill": "shared/registry-entry",
+        "output": "registry entry",
+        "check": "entry is dated and links to the current monthly plan"
+      }
+    ],
+    "outputs": [
+      "cost-per-asset table",
+      "spend-versus-plan status",
+      "overrun flag"
+    ],
+    "qa": [
+      "every cost tied to a named asset",
+      "missing cost shown as unavailable, never zero"
+    ],
+    "read_point": "weekly, on real invoices and credit usage logged that week",
+    "typical_duration": "agent time: 30 to 45 minutes",
+    "subagents": []
+  },
+  {
+    "id": "CREA-W11",
+    "name": "Maintain the naming, tagging and platform-spec standard",
+    "capabilities": [
+      "CREA-C20"
+    ],
+    "trigger": "monthly",
+    "human_role": "Creative operations owner of the naming standard",
+    "inputs_required": [
+      "current naming and tagging schema",
+      "each ad platform's current character and spec limits"
+    ],
+    "steps": [
+      {
+        "n": 1,
+        "name": "Audit the current schema against real assets",
+        "does": "Checks a sample of recent assets against the standing naming and tagging schema for drift.",
+        "inputs": [
+          "recent asset filenames and tags",
+          "current schema"
+        ],
+        "tools": [],
+        "skill": "crea/production-ops/naming-and-tagging",
+        "output": "drift report",
+        "check": "every drift instance is named, not just counted"
+      },
+      {
+        "n": 2,
+        "name": "Refresh the platform spec sheet",
+        "does": "Re-checks each ad platform's current character limits, aspect ratios and file-size caps, since these change without notice.",
+        "inputs": [
+          "platform help documentation",
+          "prior spec sheet"
+        ],
+        "tools": [
+          "web: public search"
+        ],
+        "skill": "crea/production-ops/naming-and-tagging",
+        "output": "refreshed platform-spec sheet",
+        "check": "sheet's last-checked date is under 30 days when copy is being written to a limit"
+      },
+      {
+        "n": 3,
+        "name": "Update the schema if needed",
+        "does": "Adjusts the schema for a new format, persona or offer type added since the last check.",
+        "inputs": [
+          "drift report"
+        ],
+        "tools": [],
+        "skill": "crea/production-ops/naming-and-tagging",
+        "output": "updated schema",
+        "check": "update does not break the id stability of existing assets"
+      },
+      {
+        "n": 4,
+        "name": "Re-tag drifted assets",
+        "does": "Fixes tags on any asset found off-schema in the audit.",
+        "inputs": [
+          "drift report",
+          "updated schema"
+        ],
+        "tools": [],
+        "skill": "crea/production-ops/naming-and-tagging",
+        "output": "re-tagged assets",
+        "check": "every drifted asset now matches the current schema"
+      },
+      {
+        "n": 5,
+        "name": "Publish the standard",
+        "does": "Writes the current schema and spec sheet to a place every CREA workflow reads from.",
+        "inputs": [
+          "updated schema",
+          "refreshed spec sheet"
+        ],
+        "tools": [],
+        "skill": null,
+        "output": "published standard",
+        "check": "publish date is visible to every workflow that reads it"
+      }
+    ],
+    "outputs": [
+      "refreshed platform-spec sheet",
+      "updated naming and tagging schema"
+    ],
+    "qa": [
+      "spec sheet checked within 30 days when in active use"
+    ],
+    "read_point": "monthly",
+    "typical_duration": "agent time: about 1 hour",
+    "subagents": []
+  },
+  {
+    "id": "CREA-W12",
+    "name": "Set and update where AI may be used in the pipeline",
+    "capabilities": [
+      "CREA-C21"
+    ],
+    "trigger": "continuous",
+    "human_role": "AI-use governance owner for the creative pipeline",
+    "inputs_required": [
+      "current AI-use policy",
+      "any new AI tool or capability entering the pipeline"
+    ],
+    "steps": [
+      {
+        "n": 1,
+        "name": "List where AI touches the pipeline",
+        "does": "Lists every point AI drafts, generates or grades something across CREA's workflows.",
+        "inputs": [
+          "current workflows"
+        ],
+        "tools": [],
+        "skill": "crea/compliance/ai-use-governance",
+        "output": "AI touchpoint map",
+        "check": "map covers every workflow, none skipped"
+      },
+      {
+        "n": 2,
+        "name": "Classify each touchpoint",
+        "does": "Classifies each touchpoint as drafting or grunt work, allowed unsupervised, or final ideation and authorship, never unsupervised.",
+        "inputs": [
+          "AI touchpoint map"
+        ],
+        "tools": [],
+        "skill": "crea/compliance/ai-use-governance",
+        "output": "classified touchpoint list",
+        "check": "no final-ideation touchpoint is marked unsupervised"
+      },
+      {
+        "n": 3,
+        "name": "Ground each AI draft in brand facts",
+        "does": "Confirms each drafting touchpoint is fed the brand's own facts (claim tiers, voice, product data), not generic training knowledge.",
+        "inputs": [
+          "classified touchpoint list"
+        ],
+        "tools": [],
+        "skill": "crea/compliance/ai-use-governance",
+        "output": "grounding check result",
+        "check": "every drafting step names its brand-fact input"
+      },
+      {
+        "n": 4,
+        "name": "Update the policy for a new tool",
+        "does": "When a new AI capability enters the pipeline, for example an AI-actor or voice-clone tool, classifies it and adds it to the policy before use.",
+        "inputs": [
+          "new tool description"
+        ],
+        "tools": [],
+        "skill": "crea/compliance/ai-use-governance",
+        "output": "updated AI-use policy",
+        "check": "policy update happens before the tool's first real use",
+        "ask_founder_if": "a new tool would touch final ideation or unsupervised authorship"
+      },
+      {
+        "n": 5,
+        "name": "Publish and log the policy",
+        "does": "Publishes the current policy and logs the update.",
+        "inputs": [
+          "updated AI-use policy"
+        ],
+        "tools": [],
+        "skill": "shared/registry-entry",
+        "output": "published policy and registry entry",
+        "check": "policy is dated and visible to every CREA workflow"
+      }
+    ],
+    "outputs": [
+      "AI touchpoint map",
+      "updated AI-use policy"
+    ],
+    "qa": [
+      "no final-ideation step runs unsupervised",
+      "every AI draft grounded in brand facts"
+    ],
+    "read_point": "continuous, reviewed at every new tool or quarterly, whichever comes first",
+    "typical_duration": "agent time: ongoing, about 30 minutes per review",
+    "subagents": []
+  },
+  {
+    "id": "CREA-W13",
+    "name": "Frame a price or offer's value in copy",
+    "capabilities": [
+      "CREA-C31"
+    ],
+    "trigger": "on demand",
+    "human_role": "Pricing and offer copywriter",
+    "inputs_required": [
+      "brand pricing and policies",
+      "the specific price or offer to frame",
+      "positioning"
+    ],
+    "steps": [
+      {
+        "n": 1,
+        "name": "Pull the real price and policy facts",
+        "does": "Pulls the exact price, any discount, and the policy limits ops can honor, from the brand brain.",
+        "inputs": [
+          "brand brain: pricing, policies"
+        ],
+        "tools": [],
+        "skill": "crea/pricing-and-naming/price-framing",
+        "output": "price and policy fact sheet",
+        "check": "every number matches the current live price, not a cached one"
+      },
+      {
+        "n": 2,
+        "name": "Choose the ending style",
+        "does": "Picks a charm ending (.99/.95) or a round-number ending based on the brand's positioning: value versus premium.",
+        "inputs": [
+          "price and policy fact sheet",
+          "positioning"
+        ],
+        "tools": [],
+        "skill": "crea/pricing-and-naming/price-framing",
+        "output": "ending-style decision",
+        "check": "decision matches the stated positioning, not a default"
+      },
+      {
+        "n": 3,
+        "name": "Build the cost-per-day reframe if it helps",
+        "does": "Builds a cost-per-day or cost-per-use reframe when it makes the price feel smaller honestly.",
+        "inputs": [
+          "price and policy fact sheet"
+        ],
+        "tools": [],
+        "skill": "crea/pricing-and-naming/price-framing",
+        "output": "reframe line, if used",
+        "check": "the math behind the reframe is shown and correct"
+      },
+      {
+        "n": 4,
+        "name": "State the honest reason for a low price",
+        "does": "If the price looks unusually low, writes the real reason, for example clearance, factory-direct, or a holiday sale, rather than leaving it unexplained.",
+        "inputs": [
+          "price and policy fact sheet"
+        ],
+        "tools": [],
+        "skill": "crea/pricing-and-naming/price-framing",
+        "output": "reason line",
+        "check": "reason is a real, checkable fact, not a manufactured urgency"
+      },
+      {
+        "n": 5,
+        "name": "Check the guarantee wording",
+        "does": "Matches any guarantee or urgency line exactly to what ops can honor.",
+        "inputs": [
+          "policy limits"
+        ],
+        "tools": [],
+        "skill": "crea/pricing-and-naming/price-framing",
+        "output": "checked guarantee or urgency line",
+        "check": "wording matches ops eligibility exactly, no rounding up",
+        "ask_founder_if": "the requested wording exceeds what ops confirmed it can honor"
+      },
+      {
+        "n": 6,
+        "name": "Run the claim pass",
+        "does": "Runs the claim-tier check on the finished price copy block.",
+        "inputs": [
+          "finished price copy"
+        ],
+        "tools": [],
+        "skill": null,
+        "output": "audited price copy block",
+        "check": "no claim beyond the approved or site-backed tier"
+      }
+    ],
+    "outputs": [
+      "price copy block",
+      "price-framing line"
+    ],
+    "qa": [
+      "guarantee wording matches ops exactly",
+      "no fabricated deadline"
+    ],
+    "read_point": "read at whichever ad or page workflow requested it",
+    "typical_duration": "agent time: 30 to 45 minutes",
+    "subagents": []
+  },
+  {
+    "id": "CREA-W14",
+    "name": "Name a new product or proprietary system",
+    "capabilities": [
+      "CREA-C32"
+    ],
+    "trigger": "on demand",
+    "human_role": "Naming and positioning writer",
+    "inputs_required": [
+      "product or system facts",
+      "the benefit or story it should carry",
+      "any real named person attached"
+    ],
+    "steps": [
+      {
+        "n": 1,
+        "name": "Pull the benefit to carry",
+        "does": "Pulls the single strongest benefit or mechanism the name should carry, from the product facts and the angle brief if one exists.",
+        "inputs": [
+          "product facts",
+          "angle brief"
+        ],
+        "tools": [],
+        "skill": "crea/pricing-and-naming/product-naming",
+        "output": "core benefit statement",
+        "check": "benefit is one sentence, one idea"
+      },
+      {
+        "n": 2,
+        "name": "Draft name candidates",
+        "does": "Drafts 8 to 15 name candidates that carry the benefit or attach to a real named person.",
+        "inputs": [
+          "core benefit statement"
+        ],
+        "tools": [],
+        "skill": "crea/pricing-and-naming/product-naming",
+        "output": "name candidate list",
+        "check": "every candidate ties to the benefit statement, not a generic-sounding word"
+      },
+      {
+        "n": 3,
+        "name": "Check for real-person attachment",
+        "does": "If a real named person, for example the founder or a formulator, is attached, confirms the story is real and permissioned.",
+        "inputs": [
+          "name candidate list"
+        ],
+        "tools": [],
+        "skill": "crea/pricing-and-naming/product-naming",
+        "output": "attachment check result",
+        "check": "no invented person or credential",
+        "ask_founder_if": "a candidate implies a credential not on file"
+      },
+      {
+        "n": 4,
+        "name": "Screen for conflicts",
+        "does": "Screens candidates for an obvious trademark or marketplace-listing conflict via public search.",
+        "inputs": [
+          "name candidate list"
+        ],
+        "tools": [
+          "web: public search"
+        ],
+        "skill": "crea/pricing-and-naming/product-naming",
+        "output": "conflict-screened shortlist",
+        "check": "shortlist notes any close public match found"
+      },
+      {
+        "n": 5,
+        "name": "Rank and present to the founder",
+        "does": "Ranks the shortlist against the benefit fit and presents it as a founder_gate decision.",
+        "inputs": [
+          "conflict-screened shortlist"
+        ],
+        "tools": [],
+        "skill": "shared/rank-candidates",
+        "output": "ranked name shortlist",
+        "check": "ranking states the reason for the order",
+        "ask_founder_if": "always, naming is founder_gate"
+      }
+    ],
+    "outputs": [
+      "name candidate list",
+      "ranked name shortlist"
+    ],
+    "qa": [
+      "no invented credential or story"
+    ],
+    "read_point": "not applicable; the decision happens at the founder gate",
+    "typical_duration": "agent time: about 1 hour",
+    "subagents": []
+  },
+  {
+    "id": "CREA-W15",
+    "name": "Refresh objection-handling and retargeting continuity copy",
+    "capabilities": [
+      "CREA-C24"
+    ],
+    "trigger": "on demand",
+    "human_role": "Bottom-funnel copywriter",
+    "inputs_required": [
+      "current objection map",
+      "customer data source: support tickets, reviews, return reasons",
+      "existing retargeting sequence"
+    ],
+    "steps": [
+      {
+        "n": 1,
+        "name": "Pull real objections from customer data",
+        "does": "Pulls the most common real objections from support tickets, reviews and return reasons, ranked by frequency.",
+        "inputs": [
+          "support ticket export",
+          "review export",
+          "return reason codes"
+        ],
+        "tools": [],
+        "skill": "crea/special-formats/objection-retargeting-copy",
+        "output": "ranked objection list with quoted sources",
+        "check": "every objection has a real quoted source and a count",
+        "ask_founder_if": "no support or returns data source is connected"
+      },
+      {
+        "n": 2,
+        "name": "Write one line per objection",
+        "does": "Writes one bottom-funnel ad line or copy block per objection, prefacing the most common one early rather than saving it for an FAQ.",
+        "inputs": [
+          "ranked objection list"
+        ],
+        "tools": [],
+        "skill": "crea/special-formats/objection-retargeting-copy",
+        "output": "objection-handling copy set",
+        "check": "the top-ranked objection is addressed in the first line, not buried"
+      },
+      {
+        "n": 3,
+        "name": "Keep the sequence consistent",
+        "does": "Checks the new lines against the existing retargeting sequence so the same objection is not answered twice with contradicting facts.",
+        "inputs": [
+          "existing retargeting sequence",
+          "new copy set"
+        ],
+        "tools": [],
+        "skill": "crea/special-formats/objection-retargeting-copy",
+        "output": "sequence-checked copy set",
+        "check": "no two steps in the sequence contradict each other"
+      },
+      {
+        "n": 4,
+        "name": "Run the claim pass",
+        "does": "Runs the claim-tier check on every objection response, since these often brush against guarantee or comparison claims.",
+        "inputs": [
+          "sequence-checked copy set",
+          "claim tiers"
+        ],
+        "tools": [],
+        "skill": null,
+        "output": "audited copy set",
+        "check": "no forbidden-tier claim used to defuse an objection"
+      },
+      {
+        "n": 5,
+        "name": "Hand off to the owning surface",
+        "does": "Hands the finished lines to whichever surface will run them: an ad via CREA-W01, or an email or SMS block via Lifecycle.",
+        "inputs": [
+          "audited copy set"
+        ],
+        "tools": [],
+        "skill": null,
+        "output": "handoff package",
+        "check": "handoff names the exact surface and owner"
+      }
+    ],
+    "outputs": [
+      "ranked objection list",
+      "objection-handling copy set"
+    ],
+    "qa": [
+      "every objection traced to a real quoted source",
+      "top objection addressed first, not last"
+    ],
+    "read_point": "at the read point of whichever surface deploys the copy",
+    "typical_duration": "agent time: 1 to 2 hours",
+    "subagents": []
+  },
+  {
+    "id": "CREA-W16",
+    "name": "Write payment and delivery reassurance creative messaging",
+    "capabilities": [
+      "CREA-C44"
+    ],
+    "trigger": "on demand",
+    "human_role": "payment and delivery-trust copywriter",
+    "inputs_required": [
+      "current payment method mix and failed/reversed-order rates (chargeback_rate, return_to_sender_rate; cod_share and rto_rate where the brand runs COD, markets: IN)",
+      "reassurance incentive if any (BNPL, free returns, discount); prepaid incentive if the brand runs COD (markets: IN)",
+      "delivery-trust facts: carrier, timelines, tracking, ID verification where COD applies"
+    ],
+    "steps": [
+      {
+        "n": 1,
+        "name": "Pull the real payment-mix and reversed-order numbers",
+        "does": "Pulls the account's current payment method mix and failed/reversed-order rates (chargeback_rate, return_to_sender_rate) to size how much this messaging matters right now; for a COD brand, also pulls cod_share and rto_rate.",
+        "inputs": [
+          "metric contract: payment_method_mix, chargeback_rate, return_to_sender_rate, cod_share, rto_rate (cod_share and rto_rate read null outside markets: IN)"
+        ],
+        "tools": [],
+        "skill": null,
+        "output": "payment-mix and reversed-order baseline",
+        "check": "numbers pulled from the metric contract, not estimated"
+      },
+      {
+        "n": 2,
+        "name": "Write the payment reassurance line",
+        "does": "Writes the ad and checkout line that removes payment friction: a BNPL option, card or wallet trust fact, or, for a COD brand, the prepaid nudge (discount, faster dispatch), honest and specific.",
+        "inputs": [
+          "payment-mix baseline",
+          "reassurance or prepaid incentive facts"
+        ],
+        "tools": [],
+        "skill": "crea/special-formats/payment-delivery-reassurance-messaging",
+        "output": "payment reassurance copy",
+        "check": "any discount, BNPL or speed claim matches what ops actually offers"
+      },
+      {
+        "n": 3,
+        "name": "Write the delivery-trust messaging",
+        "does": "Writes the trust lines that lower failed-delivery and return-to-sender risk: real carrier name, real delivery window, tracking fact; for a COD brand, the same lines also lower return-to-origin (RTO) risk.",
+        "inputs": [
+          "delivery-trust facts"
+        ],
+        "tools": [],
+        "skill": "crea/special-formats/payment-delivery-reassurance-messaging",
+        "output": "delivery-trust copy block",
+        "check": "every fact matches current ops policy, not an aspiration"
+      },
+      {
+        "n": 4,
+        "name": "Run the claim pass",
+        "does": "Runs the claim-tier check, since delivery-time, BNPL and discount claims are a common source of drift.",
+        "inputs": [
+          "payment reassurance copy",
+          "delivery-trust copy block"
+        ],
+        "tools": [],
+        "skill": null,
+        "output": "audited payment and delivery copy",
+        "check": "no delivery-time claim beyond the current real average"
+      },
+      {
+        "n": 5,
+        "name": "Hand off with the baseline attached",
+        "does": "Hands the copy to MEDIA or the Site specialist with the payment-mix and reversed-order baseline attached so impact can be measured later.",
+        "inputs": [
+          "audited copy",
+          "payment-mix and reversed-order baseline"
+        ],
+        "tools": [],
+        "skill": "shared/registry-entry",
+        "output": "handoff package with baseline",
+        "check": "baseline numbers travel with the copy"
+      }
+    ],
+    "outputs": [
+      "payment reassurance copy",
+      "delivery-trust copy block"
+    ],
+    "qa": [
+      "every delivery, BNPL or discount fact matches current ops policy"
+    ],
+    "read_point": "next full month's payment method mix and reversed-order rates after deployment",
+    "typical_duration": "agent time: about 1 hour",
+    "subagents": []
+  },
+  {
+    "id": "CREA-W17",
+    "name": "Build Amazon A+ Content and marketplace brand-store modules",
+    "capabilities": [
+      "CREA-C45"
+    ],
+    "trigger": "on demand",
+    "human_role": "Marketplace creative module designer",
+    "inputs_required": [
+      "marketplace's current module template grid: Amazon A+, Walmart Marketplace or Target Plus brand shop; Flipkart or Myntra brand store for an India-market brand (markets: IN)",
+      "product facts and real photos",
+      "claim tiers"
+    ],
+    "steps": [
+      {
+        "n": 1,
+        "name": "Pull the current template grid",
+        "does": "Pulls the marketplace's own current A+ Content or brand-store module system, since these are fixed and change per platform update.",
+        "inputs": [
+          "marketplace template documentation"
+        ],
+        "tools": [
+          "web: public search"
+        ],
+        "skill": "crea/special-formats/marketplace-modules",
+        "output": "current module grid spec",
+        "check": "spec checked within the last 30 days"
+      },
+      {
+        "n": 2,
+        "name": "Pick the modules for this product",
+        "does": "Picks the banner, infographic and comparison-chart modules that fit this product's real differentiators.",
+        "inputs": [
+          "module grid spec",
+          "product facts"
+        ],
+        "tools": [],
+        "skill": "crea/special-formats/marketplace-modules",
+        "output": "module selection",
+        "check": "every module chosen has content to fill it, not a placeholder"
+      },
+      {
+        "n": 3,
+        "name": "Write the module copy",
+        "does": "Writes the copy for each module within its exact character and layout limits.",
+        "inputs": [
+          "module selection",
+          "claim tiers"
+        ],
+        "tools": [],
+        "skill": "crea/write-copy/primary-text",
+        "output": "module copy set",
+        "check": "copy fits each module's real space, no overflow"
+      },
+      {
+        "n": 4,
+        "name": "Direct the module imagery",
+        "does": "Directs the real product photo or diagram used in each visual module, no product redraw where fit or scale is the point.",
+        "inputs": [
+          "module copy set",
+          "real product photos"
+        ],
+        "tools": [],
+        "skill": "crea/briefing/shoot-and-photo-direction",
+        "output": "module imagery direction",
+        "check": "real product photo used for every fit or scale claim"
+      },
+      {
+        "n": 5,
+        "name": "Run the claim pass",
+        "does": "Runs the claim-tier check on every comparison-chart line especially, since these draw the most marketplace policy scrutiny.",
+        "inputs": [
+          "module copy set"
+        ],
+        "tools": [],
+        "skill": null,
+        "output": "audited module set",
+        "check": "no comparison claim without evidence on file"
+      },
+      {
+        "n": 6,
+        "name": "Hand off to Product and Supply",
+        "does": "Hands the finished modules to the Product and Supply specialist, who owns the actual marketplace listing surface.",
+        "inputs": [
+          "audited module set"
+        ],
+        "tools": [],
+        "skill": null,
+        "output": "handoff package",
+        "check": "package includes the exact module grid slot for each piece"
+      }
+    ],
+    "outputs": [
+      "module selection",
+      "module copy set",
+      "module imagery direction"
+    ],
+    "qa": [
+      "module grid spec checked within 30 days",
+      "real photo used for fit or scale claims"
+    ],
+    "read_point": "next full month's listing conversion rate after publish, read by Product and Supply",
+    "typical_duration": "agent time: 2 to 3 hours",
+    "subagents": []
+  },
+  {
+    "id": "CREA-W18",
+    "name": "Build and maintain an AI character or mascot sheet",
+    "capabilities": [
+      "CREA-C47"
+    ],
+    "trigger": "on demand",
+    "human_role": "Character and mascot continuity owner",
+    "inputs_required": [
+      "approved character concept",
+      "brand kit and voice"
+    ],
+    "steps": [
+      {
+        "n": 1,
+        "name": "Define the character's fixed traits",
+        "does": "Fixes the character's core traits so the identity does not drift across generations.",
+        "inputs": [
+          "approved character concept",
+          "brand kit"
+        ],
+        "tools": [],
+        "skill": "crea/special-formats/mascot-sheet",
+        "output": "character trait sheet",
+        "check": "every trait is specific enough to reject a wrong regeneration"
+      },
+      {
+        "n": 2,
+        "name": "Generate the reference sheet",
+        "does": "Generates the fixed set of expressions, angles and outfit views used as the anchor for every future generation.",
+        "inputs": [
+          "character trait sheet"
+        ],
+        "tools": [
+          "Higgsfield MCP: character-sheet preset"
+        ],
+        "skill": "crea/special-formats/mascot-sheet",
+        "output": "reference sheet: expressions, angles, outfit",
+        "check": "sheet covers the angles and expressions the pipeline actually reuses"
+      },
+      {
+        "n": 3,
+        "name": "File and version the sheet",
+        "does": "Names, tags and versions the reference sheet so every later generation cites the exact version used.",
+        "inputs": [
+          "reference sheet"
+        ],
+        "tools": [],
+        "skill": "crea/production-ops/naming-and-tagging",
+        "output": "versioned, filed reference sheet",
+        "check": "version id is stable and referenced by every downstream asset"
+      },
+      {
+        "n": 4,
+        "name": "Check each new use against the sheet",
+        "does": "Before any new asset uses the character, checks it against the current reference sheet for identity drift.",
+        "inputs": [
+          "new draft asset",
+          "reference sheet"
+        ],
+        "tools": [],
+        "skill": "crea/special-formats/mascot-sheet",
+        "output": "drift check result",
+        "check": "any drift is caught before the asset ships"
+      },
+      {
+        "n": 5,
+        "name": "Update the sheet on a real change",
+        "does": "When the founder approves a real change, for example a new outfit or expression, updates the sheet as a new version rather than editing history.",
+        "inputs": [
+          "approved change"
+        ],
+        "tools": [],
+        "skill": "crea/special-formats/mascot-sheet",
+        "output": "new sheet version",
+        "check": "old version stays on file, not overwritten"
+      }
+    ],
+    "outputs": [
+      "reference sheet",
+      "versioned character asset"
+    ],
+    "qa": [
+      "no identity drift ships uncaught"
+    ],
+    "read_point": "not applicable directly; feeds whichever creative uses the character",
+    "typical_duration": "agent time: 1 to 2 hours to build, 15 minutes per reuse check",
+    "subagents": [
+      "Creative Studio Operator: generation calls"
+    ]
+  },
+  {
+    "id": "CREA-W19",
+    "name": "Generate a synthetic AI-actor UGC video ad",
+    "capabilities": [
+      "CREA-C36"
+    ],
+    "trigger": "on demand, founder_gate",
+    "human_role": "Fast-test video producer, no shoot",
+    "inputs_required": [
+      "written script",
+      "founder approval to use a synthetic actor for this test",
+      "claim tiers"
+    ],
+    "steps": [
+      {
+        "n": 1,
+        "name": "Confirm the founder gate",
+        "does": "Confirms the founder has approved using a licensed AI actor for this specific test before generating anything.",
+        "inputs": [
+          "founder approval record"
+        ],
+        "tools": [],
+        "skill": null,
+        "output": "gate confirmation",
+        "check": "approval is on record for this specific use, not a standing blanket approval",
+        "ask_founder_if": "no approval is on file yet"
+      },
+      {
+        "n": 2,
+        "name": "Finalize the script for a synthetic read",
+        "does": "Finalizes the hook-to-camera script, since a synthetic actor reads exactly what is written with no ad lib.",
+        "inputs": [
+          "written script"
+        ],
+        "tools": [],
+        "skill": "crea/write-copy/scripts",
+        "output": "read-ready script",
+        "check": "script contains no line that needs natural ad lib to land"
+      },
+      {
+        "n": 3,
+        "name": "Run the claim pass",
+        "does": "Runs the claim-tier check before generation, since a synthetic ad cannot be caught and reshot the way a human one can.",
+        "inputs": [
+          "read-ready script",
+          "claim tiers"
+        ],
+        "tools": [],
+        "skill": null,
+        "output": "audited script",
+        "check": "no unverified claim reaches generation"
+      },
+      {
+        "n": 4,
+        "name": "Generate the AI-actor video",
+        "does": "Generates the finished vertical video using the licensed AI actor reading the audited script.",
+        "inputs": [
+          "audited script"
+        ],
+        "tools": [
+          "Higgsfield MCP: video preset"
+        ],
+        "skill": "crea/special-formats/ai-actor-ugc",
+        "output": "draft AI-actor video",
+        "check": "actor's on-screen claims match the audited script exactly, no drift from generation"
+      },
+      {
+        "n": 5,
+        "name": "Caption and QA",
+        "does": "Adds burned-in captions and checks the finished video against the QA checklist before it counts as ready.",
+        "inputs": [
+          "draft AI-actor video"
+        ],
+        "tools": [],
+        "skill": "crea/derivatives/caption-and-alt-text",
+        "output": "captioned, QA'd video",
+        "check": "captions match the spoken line exactly"
+      },
+      {
+        "n": 6,
+        "name": "Flag it as synthetic in the handoff",
+        "does": "Flags the asset as AI-actor generated in its metadata and handoff note, for platform disclosure rules and internal tracking.",
+        "inputs": [
+          "captioned video"
+        ],
+        "tools": [],
+        "skill": "crea/production-ops/naming-and-tagging",
+        "output": "tagged, disclosed asset",
+        "check": "disclosure tag is present before handoff to MEDIA"
+      }
+    ],
+    "outputs": [
+      "draft AI-actor video",
+      "captioned QA'd video"
+    ],
+    "qa": [
+      "founder approval on file before generation",
+      "no unverified claim in the read"
+    ],
+    "read_point": "same read point as CREA-W01 once launched as a test",
+    "typical_duration": "agent time: about 1 hour plus generation wait, typically 10 to 30 minutes",
+    "subagents": [
+      "Creative Studio Operator"
+    ]
+  },
+  {
+    "id": "CREA-W20",
+    "name": "Clone a consenting voice for voiceover variants",
+    "capabilities": [
+      "CREA-C46"
+    ],
+    "trigger": "on demand, founder_gate, only after consent is on file",
+    "human_role": "Voiceover variant producer",
+    "inputs_required": [
+      "documented written consent from the founder or contracted creator",
+      "script variants needing voiceover"
+    ],
+    "steps": [
+      {
+        "n": 1,
+        "name": "Confirm written consent is on file",
+        "does": "Confirms the specific person's documented written consent is on file for voice cloning before doing anything else.",
+        "inputs": [
+          "consent document"
+        ],
+        "tools": [],
+        "skill": null,
+        "output": "consent confirmation",
+        "check": "consent document is dated, named and specific to this use",
+        "ask_founder_if": "consent is missing, expired, or does not cover this specific use"
+      },
+      {
+        "n": 2,
+        "name": "Prepare the voice model",
+        "does": "Prepares the cloned voice model from the consented source recording.",
+        "inputs": [
+          "consented source recording"
+        ],
+        "tools": [
+          "Higgsfield MCP: create_voice"
+        ],
+        "skill": "crea/special-formats/voice-clone-variants",
+        "output": "voice model ready for use",
+        "check": "model is built only from the consented recording"
+      },
+      {
+        "n": 3,
+        "name": "Generate the script variant reads",
+        "does": "Generates voiceover for each approved script variant using the cloned voice.",
+        "inputs": [
+          "script variants",
+          "voice model"
+        ],
+        "tools": [
+          "Higgsfield MCP"
+        ],
+        "skill": "crea/special-formats/voice-clone-variants",
+        "output": "voiceover variant set",
+        "check": "each variant reads the exact audited script line"
+      },
+      {
+        "n": 4,
+        "name": "QA against the real person's cadence",
+        "does": "Checks the generated read against the real person's known cadence and pronunciation for anything that would sound obviously wrong.",
+        "inputs": [
+          "voiceover variant set"
+        ],
+        "tools": [],
+        "skill": "crea/special-formats/voice-clone-variants",
+        "output": "QA'd voiceover set",
+        "check": "no line mispronounces a name or term the real person would say correctly"
+      },
+      {
+        "n": 5,
+        "name": "Tag and log the use",
+        "does": "Tags every generated line with the consent record id and logs the use so consent scope is never exceeded.",
+        "inputs": [
+          "QA'd voiceover set",
+          "consent confirmation"
+        ],
+        "tools": [],
+        "skill": "shared/registry-entry",
+        "output": "logged, tagged voiceover set",
+        "check": "log entry shows total uses against any use-count limit in the consent"
+      }
+    ],
+    "outputs": [
+      "voiceover variant set",
+      "registry log entry"
+    ],
+    "qa": [
+      "consent on file before any generation",
+      "use logged against any consent limit"
+    ],
+    "read_point": "same read point as the ad workflow that uses the voiceover",
+    "typical_duration": "agent time: about 1 hour plus generation wait",
+    "subagents": [
+      "Creative Studio Operator"
+    ]
+  },
+  {
+    "id": "CREA-W21",
+    "name": "Score a creative batch before it enters paid testing",
+    "capabilities": [
+      "CREA-C42"
+    ],
+    "trigger": "event: before a new batch enters paid testing",
+    "human_role": "Pre-flight creative QA scorer",
+    "inputs_required": [
+      "finished draft batch",
+      "the account's own past predictive-score-to-outcome record, if any"
+    ],
+    "steps": [
+      {
+        "n": 1,
+        "name": "Run the predictive pass",
+        "does": "Runs each draft through the predictive scoring pass, flagging weak elements.",
+        "inputs": [
+          "finished draft batch"
+        ],
+        "tools": [],
+        "skill": "crea/production-ops/predictive-scoring",
+        "output": "predicted score per draft, per element",
+        "check": "score names the specific element flagged, hook clarity, headline-image mismatch or CTA visibility, not just an overall number"
+      },
+      {
+        "n": 2,
+        "name": "Compare to this account's own history",
+        "does": "Checks whether this account's past predictive scores actually tracked real outcomes, and downweights the score if not.",
+        "inputs": [
+          "predicted score per draft",
+          "past score-versus-outcome record"
+        ],
+        "tools": [],
+        "skill": "crea/production-ops/predictive-scoring",
+        "output": "calibrated score",
+        "check": "calibration is shown, not assumed accurate"
+      },
+      {
+        "n": 3,
+        "name": "Flag weak elements for a fix",
+        "does": "Sends any draft with a flagged weak element back for a specific fix, not a general redo.",
+        "inputs": [
+          "calibrated score"
+        ],
+        "tools": [],
+        "skill": "crea/production-ops/predictive-scoring",
+        "output": "fix list per draft",
+        "check": "fix list names the exact element, not 'make it better'"
+      },
+      {
+        "n": 4,
+        "name": "Re-score after fix",
+        "does": "Re-runs the pass on fixed drafts before clearing them for test.",
+        "inputs": [
+          "fixed drafts"
+        ],
+        "tools": [],
+        "skill": "crea/production-ops/predictive-scoring",
+        "output": "post-fix score",
+        "check": "post-fix score is logged next to the original for calibration tracking"
+      },
+      {
+        "n": 5,
+        "name": "Clear the batch",
+        "does": "Clears the batch for CREA-W01's launch checklist once every draft passes or has a named, accepted risk.",
+        "inputs": [
+          "post-fix score"
+        ],
+        "tools": [],
+        "skill": null,
+        "output": "cleared batch",
+        "check": "every draft is either passed or has a named, founder-accepted risk",
+        "ask_founder_if": "a draft fails but the founder wants to test it anyway"
+      }
+    ],
+    "outputs": [
+      "predicted score per draft",
+      "fix list",
+      "cleared batch"
+    ],
+    "qa": [
+      "score calibrated against this account's real outcomes, not assumed"
+    ],
+    "read_point": "the batch's actual paid-test read point, used to recalibrate the scorer over time",
+    "typical_duration": "agent time: 30 to 45 minutes per batch",
+    "subagents": []
+  },
+  {
+    "id": "CREA-W22",
+    "name": "Resize, caption and cut one master creative into every derivative",
+    "capabilities": [
+      "CREA-C39",
+      "CREA-C40",
+      "CREA-C41"
+    ],
+    "trigger": "event: master creative approved",
+    "human_role": "Creative post-production operator",
+    "inputs_required": [
+      "one approved master creative",
+      "the platform placement list it needs to cover"
+    ],
+    "steps": [
+      {
+        "n": 1,
+        "name": "List the required placements",
+        "does": "Lists every aspect-ratio and placement version the platform set needs: feed square, story vertical, in-stream widescreen.",
+        "inputs": [
+          "platform-spec sheet from CREA-W11"
+        ],
+        "tools": [],
+        "skill": "crea/derivatives/resize-for-placement",
+        "output": "required placement list",
+        "check": "list matches the current, not stale, platform-spec sheet"
+      },
+      {
+        "n": 2,
+        "name": "Recompose, don't just crop",
+        "does": "Recomposes the master for each placement, repositioning subject and text rather than a blind crop, so nothing important is lost.",
+        "inputs": [
+          "master creative",
+          "required placement list"
+        ],
+        "tools": [],
+        "skill": "crea/derivatives/resize-for-placement",
+        "output": "resized and recomposed asset set",
+        "check": "no important element, CTA, product or face, is cropped out in any version"
+      },
+      {
+        "n": 3,
+        "name": "Cut length derivatives",
+        "does": "If the master is long-form video, cuts a 15-second and a 6-second bumper version, each keyed to a different hook from the hook bank.",
+        "inputs": [
+          "master video",
+          "hook bank"
+        ],
+        "tools": [],
+        "skill": "crea/derivatives/video-cutdown",
+        "output": "length derivative set",
+        "check": "each cut opens on a distinct hook, not the same first 6 seconds repeated"
+      },
+      {
+        "n": 4,
+        "name": "Burn in captions",
+        "does": "Adds accurate burned-in captions to every video version, since most are watched muted.",
+        "inputs": [
+          "resized and cut video versions"
+        ],
+        "tools": [],
+        "skill": "crea/derivatives/caption-and-alt-text",
+        "output": "captioned video set",
+        "check": "captions match the spoken line exactly, correctly timed"
+      },
+      {
+        "n": 5,
+        "name": "Write alt text",
+        "does": "Writes descriptive alt text for every static image version.",
+        "inputs": [
+          "resized static versions"
+        ],
+        "tools": [],
+        "skill": "crea/derivatives/caption-and-alt-text",
+        "output": "alt text set",
+        "check": "alt text describes what is actually shown, not the ad's selling line"
+      },
+      {
+        "n": 6,
+        "name": "QA the full derivative set",
+        "does": "Checks every derivative against the master for message-match drift before it ships.",
+        "inputs": [
+          "full derivative set",
+          "master creative"
+        ],
+        "tools": [],
+        "skill": null,
+        "output": "QA'd derivative set",
+        "check": "every derivative says the same thing as the master, no drift"
+      },
+      {
+        "n": 7,
+        "name": "Name, tag and hand off",
+        "does": "Names and tags every derivative under the standing schema and hands the full set to the launch checklist.",
+        "inputs": [
+          "QA'd derivative set"
+        ],
+        "tools": [],
+        "skill": "crea/production-ops/naming-and-tagging",
+        "output": "named, tagged derivative set",
+        "check": "every derivative has a stable id before handoff"
+      }
+    ],
+    "outputs": [
+      "resized and recomposed asset set",
+      "length derivative set",
+      "captioned video set",
+      "alt text set"
+    ],
+    "qa": [
+      "no important element cropped out",
+      "captions accurate and correctly timed",
+      "no message-match drift across derivatives"
+    ],
+    "read_point": "each derivative reads at its own placement's read point inside CREA-W01",
+    "typical_duration": "agent time: 1 to 2 hours per master",
+    "subagents": [
+      "Creative Studio Operator"
+    ]
+  },
+  {
+    "id": "CREA-W23",
+    "name": "Clear stock footage, fonts and music rights before a video ships",
+    "capabilities": [
+      "CREA-C49"
+    ],
+    "trigger": "event: before a video ad using licensed assets ships",
+    "human_role": "Rights clearance checker",
+    "inputs_required": [
+      "every licensed stock footage, font and music asset used in the video",
+      "each asset's actual license terms"
+    ],
+    "steps": [
+      {
+        "n": 1,
+        "name": "List every licensed asset used",
+        "does": "Lists every piece of stock footage, font and music track used in the finished video.",
+        "inputs": [
+          "finished video",
+          "project asset list"
+        ],
+        "tools": [],
+        "skill": "crea/compliance/rights-clearance",
+        "output": "licensed-asset list",
+        "check": "list is exhaustive, cross-checked against the actual timeline, not memory"
+      },
+      {
+        "n": 2,
+        "name": "Pull each asset's real license terms",
+        "does": "Pulls the actual license terms for each asset: commercial use, territory, term length, exclusivity.",
+        "inputs": [
+          "licensed-asset list",
+          "license documents"
+        ],
+        "tools": [],
+        "skill": "crea/compliance/rights-clearance",
+        "output": "license terms per asset",
+        "check": "terms are the actual document, not a remembered summary"
+      },
+      {
+        "n": 3,
+        "name": "Match use to terms",
+        "does": "Checks the video's actual use, paid ad, territory, duration of the campaign, against each license's real limits.",
+        "inputs": [
+          "license terms per asset",
+          "campaign plan"
+        ],
+        "tools": [],
+        "skill": "crea/compliance/rights-clearance",
+        "output": "match or mismatch result per asset",
+        "check": "every asset gets a clear pass or a named mismatch"
+      },
+      {
+        "n": 4,
+        "name": "Fix or swap a mismatch",
+        "does": "Swaps out any asset whose license does not cover this use, before the video ships.",
+        "inputs": [
+          "match or mismatch result"
+        ],
+        "tools": [],
+        "skill": "crea/compliance/rights-clearance",
+        "output": "cleared asset set",
+        "check": "no mismatched asset remains in the final video",
+        "ask_founder_if": "a needed asset has no compliant replacement and the founder must decide to reshoot, re-license or drop it"
+      },
+      {
+        "n": 5,
+        "name": "Log the clearance",
+        "does": "Logs the clearance record for each asset so a later renewal or takedown risk can be tracked.",
+        "inputs": [
+          "cleared asset set"
+        ],
+        "tools": [],
+        "skill": "shared/registry-entry",
+        "output": "clearance log entry",
+        "check": "log entry includes each license's expiry or renewal date"
+      }
+    ],
+    "outputs": [
+      "license terms per asset",
+      "cleared asset set",
+      "clearance log entry"
+    ],
+    "qa": [
+      "every asset in the final video has a matching, logged license"
+    ],
+    "read_point": "not applicable directly; a compliance gate before CREA-W01's launch checklist",
+    "typical_duration": "agent time: 30 to 60 minutes per video",
+    "subagents": []
+  },
+  {
+    "id": "CREA-W24",
+    "name": "Build catalogue-scale ad variants and DPA overlay templates from the feed",
+    "capabilities": [
+      "CREA-C43",
+      "CREA-C52"
+    ],
+    "trigger": "event: new catalogue campaign, or on feed refresh",
+    "human_role": "Catalogue and DPA creative template builder",
+    "inputs_required": [
+      "current product feed: price, image, SKU fields",
+      "brand kit",
+      "a small set of approved copy blocks"
+    ],
+    "steps": [
+      {
+        "n": 1,
+        "name": "Audit the feed for dirty data",
+        "does": "Checks the feed's price and image fields for gaps, wrong formats or stale data before building anything on top of it.",
+        "inputs": [
+          "product feed"
+        ],
+        "tools": [],
+        "skill": "crea/make-creatives/catalogue-dpa",
+        "output": "feed audit result",
+        "check": "audit flags every SKU with a missing or malformed required field",
+        "ask_founder_if": "more than a set share of SKUs fail the audit"
+      },
+      {
+        "n": 2,
+        "name": "Design the overlay template",
+        "does": "Designs the price, discount and badge overlay template so it renders correctly across every SKU's real image dimensions and price-string length.",
+        "inputs": [
+          "feed audit result",
+          "brand kit"
+        ],
+        "tools": [],
+        "skill": "crea/make-creatives/catalogue-dpa",
+        "output": "overlay template",
+        "check": "template is tested against the longest real price string and the smallest real product image in the feed"
+      },
+      {
+        "n": 3,
+        "name": "Write the copy block set",
+        "does": "Writes a small set of reusable copy blocks, headline and primary-text patterns, that plug into any SKU's feed fields.",
+        "inputs": [
+          "approved copy blocks",
+          "claim tiers"
+        ],
+        "tools": [],
+        "skill": "crea/write-copy/primary-text",
+        "output": "reusable copy block set",
+        "check": "every block reads correctly with a real, varied sample of SKU data plugged in"
+      },
+      {
+        "n": 4,
+        "name": "Generate the full variant grid",
+        "does": "Combines the template, the feed's fields and the copy blocks to produce the full grid of ad variants across every SKU.",
+        "inputs": [
+          "overlay template",
+          "reusable copy block set",
+          "product feed"
+        ],
+        "tools": [
+          "meta_gallery studio: /api/variants"
+        ],
+        "skill": "crea/make-creatives/catalogue-dpa",
+        "output": "catalogue-scale variant grid",
+        "check": "spot-check a random sample of SKUs for correct price, image and copy pairing"
+      },
+      {
+        "n": 5,
+        "name": "Flag catalogue and DPA risk",
+        "does": "Flags anything that will break at scale: a badge that overlaps a price string on a particular SKU, a missing image, a discontinued item still live.",
+        "inputs": [
+          "catalogue-scale variant grid"
+        ],
+        "tools": [],
+        "skill": "crea/make-creatives/catalogue-dpa",
+        "output": "risk flag list",
+        "check": "every flagged risk names the specific SKU"
+      },
+      {
+        "n": 6,
+        "name": "Run the claim pass on the copy blocks",
+        "does": "Runs the claim-tier check once on the reusable copy blocks, since they apply across the whole grid.",
+        "inputs": [
+          "reusable copy block set"
+        ],
+        "tools": [],
+        "skill": null,
+        "output": "audited copy block set",
+        "check": "no block claim outside the approved or site-backed tier"
+      },
+      {
+        "n": 7,
+        "name": "Hand off to MEDIA and Product and Supply",
+        "does": "Hands the finished grid and the risk flag list to MEDIA for the DPA campaign build and to Product and Supply for feed fixes.",
+        "inputs": [
+          "catalogue-scale variant grid",
+          "risk flag list"
+        ],
+        "tools": [],
+        "skill": null,
+        "output": "handoff package",
+        "check": "every flagged risk has a named owner before handoff closes"
+      }
+    ],
+    "outputs": [
+      "overlay template",
+      "catalogue-scale variant grid",
+      "risk flag list"
+    ],
+    "qa": [
+      "template tested against real longest and shortest feed values",
+      "every SKU-level risk named, not generalized"
+    ],
+    "read_point": "next full week's DPA performance after go-live, read by MEDIA",
+    "typical_duration": "agent time: 2 to 4 hours for the first build, about 30 minutes on a routine feed refresh",
+    "subagents": [
+      "Creative Studio Operator"
+    ]
+  },
+  {
+    "id": "CREA-W25",
+    "name": "Prepare the bulk upload sheet and hand off for draft-upload",
+    "capabilities": [
+      "CREA-C35",
+      "CREA-C48"
+    ],
+    "trigger": "event: creative batch approved for launch",
+    "human_role": "Launch operations preparer",
+    "inputs_required": [
+      "approved batch of ad copy and creative filenames",
+      "the target platform's current bulk-upload or Ads Manager bulk-editor spec"
+    ],
+    "steps": [
+      {
+        "n": 1,
+        "name": "Confirm the batch is fully approved",
+        "does": "Confirms every item in the batch cleared CREA-W01's launch checklist before building the sheet.",
+        "inputs": [
+          "launch checklist status"
+        ],
+        "tools": [],
+        "skill": null,
+        "output": "confirmed batch",
+        "check": "no item without a passed checklist enters the sheet"
+      },
+      {
+        "n": 2,
+        "name": "Pull the current bulk-upload spec",
+        "does": "Pulls the exact column and format spec the target platform's bulk-upload tool or Ads Manager bulk editor currently expects.",
+        "inputs": [
+          "platform bulk-upload documentation"
+        ],
+        "tools": [
+          "web: public search"
+        ],
+        "skill": "crea/production-ops/bulk-upload-sheet",
+        "output": "current spec",
+        "check": "spec checked within 30 days"
+      },
+      {
+        "n": 3,
+        "name": "Build the sheet, one row per ad",
+        "does": "Builds the exact spreadsheet or CSV, one row per ad, matching every required column.",
+        "inputs": [
+          "confirmed batch",
+          "current spec"
+        ],
+        "tools": [],
+        "skill": "crea/production-ops/bulk-upload-sheet",
+        "output": "bulk-upload sheet",
+        "check": "every row has every required column filled, no blank required field"
+      },
+      {
+        "n": 4,
+        "name": "Spot-check against the creative brief",
+        "does": "Spot-checks a sample of rows against their original creative brief for a copy or filename mismatch.",
+        "inputs": [
+          "bulk-upload sheet",
+          "creative briefs"
+        ],
+        "tools": [],
+        "skill": "crea/production-ops/bulk-upload-sheet",
+        "output": "spot-check result",
+        "check": "sample shows zero mismatches, or every mismatch is fixed before handoff"
+      },
+      {
+        "n": 5,
+        "name": "Draft-upload as paused, unpublished",
+        "does": "Where the founder has approved it, drives Ads Manager's own web interface to create one paused, unpublished draft ad per approved creative, so a human reviews a real draft inside the platform before anything goes live.",
+        "inputs": [
+          "bulk-upload sheet"
+        ],
+        "tools": [
+          "browser agent: read/draft-only"
+        ],
+        "skill": "crea/production-ops/draft-upload-browser-agent",
+        "output": "paused draft ads inside Ads Manager",
+        "check": "every created draft is confirmed paused and unpublished, never activated",
+        "ask_founder_if": "the browser-agent step has not yet been approved for this account"
+      },
+      {
+        "n": 6,
+        "name": "Hand off to MEDIA for review and go-live",
+        "does": "Hands the sheet and the draft-ad list to MEDIA, who reviews each real draft and decides go-live.",
+        "inputs": [
+          "bulk-upload sheet",
+          "paused draft ads"
+        ],
+        "tools": [],
+        "skill": null,
+        "output": "handoff package",
+        "check": "MEDIA confirms receipt of both the sheet and the draft list"
+      }
+    ],
+    "outputs": [
+      "bulk-upload sheet",
+      "paused draft ads inside Ads Manager"
+    ],
+    "qa": [
+      "no draft created ever gets activated by CREA",
+      "spec checked within 30 days"
+    ],
+    "read_point": "not applicable directly; read happens once MEDIA activates and CREA-W01's read point applies",
+    "typical_duration": "agent time: 1 to 2 hours per batch",
+    "subagents": []
+  }
+]

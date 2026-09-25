@@ -1,0 +1,1929 @@
+[
+  {
+    "id": "MONEY-C51",
+    "extends": null,
+    "name": "Automate marketplace and gateway settlement-to-ledger posting",
+    "folders": [
+      "20-FIN"
+    ],
+    "what": "Unbundle every marketplace and gateway payout (Shopify Payments, Stripe, PayPal, Amazon settlements) into commission, fixed fee, shipping fee, marketplace-facilitator sales tax withheld, 1099-K reportable totals and refunds, and post one journal entry per settlement instead of one lump-sum bank deposit.",
+    "encompasses": [
+      "Match every settlement report to the order-level sales register",
+      "Split commission, fixed fee, collection fee, shipping fee and ad-spend deductions into separate ledger accounts",
+      "Book marketplace-facilitator sales tax withheld and 1099-K gross totals as separate line items",
+      "India only: book Section 52 TCS and GST on marketplace fees as separate line items (reads null for US brands)",
+      "Flag unexplained variance between expected fee and charged fee per order",
+      "Book revenue to the sale date, not the T+5 or T+7 payout date",
+      "Trace return and failed-delivery/return-to-sender deductions back to the original order",
+      "Produce one import-ready file per marketplace or gateway"
+    ],
+    "inputs": [
+      "Marketplace settlement and payout reports",
+      "Order-level sales register",
+      "Payment gateway settlement exports",
+      "Chart of accounts"
+    ],
+    "outputs": [
+      "Per-marketplace journal entry file",
+      "Variance report by order and fee type",
+      "Monthly fee summary by marketplace"
+    ],
+    "trigger": "Each settlement cycle, or on founder request",
+    "autonomy": "agent_does",
+    "external_write": {
+      "needed": true,
+      "surface": "accounting ledger (import file)"
+    },
+    "tools": [
+      "marketplace seller panel exports",
+      "payment gateway settlement export",
+      "spreadsheet builder",
+      "ledger import file"
+    ],
+    "skills": [],
+    "subagent": "money_and_ops_specialist",
+    "sources": {
+      "web": [
+        "https://logibricks.com/blog/marketplace-reconciliation-a-cas-step-by-step-playbook-for-reading-amazon-flipka",
+        "https://www.a2xaccounting.com/link-my-books-vs-a2x"
+      ],
+      "bank": []
+    },
+    "found_in": "web_only",
+    "founder_sees": "The variance report and the draft journal entries before they post to the ledger",
+    "human_role": "e-commerce bookkeeper",
+    "today_done_by": "tool"
+  },
+  {
+    "id": "MONEY-C52",
+    "extends": null,
+    "name": "Reconcile payout deposits daily (gateway, marketplace, and COD where it applies)",
+    "folders": [
+      "20-FIN",
+      "21-OPS"
+    ],
+    "what": "Track what every payout source (Shopify Payments, Stripe, PayPal, Amazon and other marketplace settlements) says it paid against what actually lands in the bank, age the gap by source, and escalate deposits stuck past the source's own payout schedule. For an India-selling brand that also runs COD, track cash collected by every courier against what has actually been remitted, the same way, as a market option.",
+    "encompasses": [
+      "Pull payout/deposit status per order per source: Shopify Payments, Stripe, PayPal, Amazon settlements and other marketplaces",
+      "Compute days-outstanding since the expected payout date for every undeposited amount",
+      "Compare against each source's stated payout schedule (e.g. T+2 rolling, marketplace bi-weekly)",
+      "Flag sources whose undeposited balance is rising, not falling",
+      "Separate chargeback/dispute reversals and refund holds from genuine payout deductions",
+      "Roll the outstanding payout balance into the cash forecast as a receivable",
+      "India only: pull COD collection and remittance status per order per courier, compute days-outstanding since delivery, compare against each courier's stated remittance SLA (T+2 to T+8), and separate RTO cash reversals from genuine delivered-COD remittance (reads null for US brands)"
+    ],
+    "inputs": [
+      "Gateway and marketplace payout/settlement exports (Shopify Payments, Stripe, PayPal, Amazon)",
+      "Order and delivery status feed",
+      "Bank statement",
+      "India only: courier aggregator API or portal exports"
+    ],
+    "outputs": [
+      "Daily payout reconciliation and aging report by source",
+      "List of orders past SLA with amount at risk"
+    ],
+    "trigger": "Daily",
+    "autonomy": "agent_does",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [
+      "gateway/marketplace payout APIs (Shopify Payments, Stripe, PayPal, Amazon Seller Central)",
+      "courier aggregator API (ClickPost/Shipway class, India COD only)",
+      "spreadsheet builder"
+    ],
+    "skills": [],
+    "subagent": "money_and_ops_specialist",
+    "sources": {
+      "web": [
+        "https://www.clickpost.ai/cod-cash-on-delivery-management",
+        "https://blog.shipway.com/courier-aggregator-for-d2c-shipping/"
+      ],
+      "bank": []
+    },
+    "found_in": "web_only",
+    "founder_sees": "The aging report and which payout sources (or, for India COD, which couriers) are past SLA on remittance",
+    "human_role": "e-commerce accountant / operations manager",
+    "today_done_by": "tool"
+  },
+  {
+    "id": "MONEY-C52a",
+    "extends": null,
+    "name": "Run chargeback and dispute representment",
+    "folders": [
+      "20-FIN",
+      "23-SEC"
+    ],
+    "what": "Own the chargeback and dispute lifecycle end to end: track reason codes, assemble the evidence packet the network or PayPal requires, file representment before the deadline, and track win rate by reason code and gateway.",
+    "encompasses": [
+      "Pull every chargeback and dispute from each gateway/processor (Shopify Payments, Stripe, PayPal) with its reason code and deadline",
+      "Assemble the evidence packet per reason code: proof of delivery, customer communication, IP/device match, policy acceptance",
+      "File representment before the network or PayPal deadline, never late",
+      "Track representment win rate by reason code, gateway and product",
+      "Escalate a rising chargeback rate against the processor's own threshold before the account gets flagged",
+      "Feed confirmed friendly-fraud patterns back to the fraud-control capability (MONEY-C42)"
+    ],
+    "inputs": [
+      "Gateway/processor dispute feed (Shopify Payments, Stripe, PayPal)",
+      "Order, fulfillment and customer-communication history",
+      "brand brain: return and refund policy text"
+    ],
+    "outputs": [
+      "Representment evidence packet per dispute",
+      "Chargeback win-rate report by reason code and gateway"
+    ],
+    "trigger": "As disputes arrive, weekly rollup",
+    "autonomy": "human_assist",
+    "external_write": {
+      "needed": true,
+      "surface": "gateway/processor dispute portal"
+    },
+    "tools": [
+      "script: money.chargeback_representment",
+      "gateway dispute APIs (Shopify Payments, Stripe, PayPal)"
+    ],
+    "skills": [],
+    "subagent": "money_and_ops_specialist",
+    "sources": {
+      "web": [],
+      "bank": []
+    },
+    "found_in": "bank_only",
+    "founder_sees": "Disputes needing a human call, and the win-rate trend by reason code",
+    "human_role": "e-commerce accountant / operations manager",
+    "today_done_by": "tool"
+  },
+  {
+    "id": "MONEY-C53",
+    "extends": null,
+    "name": "Automate accounts payable capture, matching and approval routing",
+    "folders": [
+      "20-FIN"
+    ],
+    "what": "Capture every vendor bill, match it to a purchase order and receipt, route it through an approval chain by amount and vendor, and schedule payment on the agreed terms.",
+    "encompasses": [
+      "Extract vendor, amount, line items and due date from an incoming bill (email or upload)",
+      "Three-way match the bill to a purchase order and a goods-receipt or delivery confirmation",
+      "Route for approval by amount threshold and cost center, with automatic escalation if unreviewed",
+      "Flag duplicate bills and bills outside the agreed price or quantity",
+      "Schedule payment to land on the agreed due date, not early or late",
+      "Maintain a payables aging list by vendor"
+    ],
+    "inputs": [
+      "Incoming vendor bills",
+      "Purchase orders",
+      "Goods-receipt records",
+      "Vendor payment terms"
+    ],
+    "outputs": [
+      "Bill queue with match status",
+      "Approval routing log",
+      "Payment schedule",
+      "Payables aging report"
+    ],
+    "trigger": "On bill receipt, and weekly for the aging review",
+    "autonomy": "founder_gate",
+    "external_write": {
+      "needed": true,
+      "surface": "vendor payment (bank or ledger)"
+    },
+    "tools": [
+      "OCR/document extraction",
+      "approval workflow",
+      "payables ledger"
+    ],
+    "skills": [],
+    "subagent": "money_and_ops_specialist",
+    "sources": {
+      "web": [
+        "https://ramp.com/accounts-payable",
+        "https://ottimate.com/ap-automation-guide/"
+      ],
+      "bank": []
+    },
+    "found_in": "web_only",
+    "founder_sees": "Bills awaiting approval, any duplicate or price-mismatch flag, and the payment schedule",
+    "human_role": "e-commerce bookkeeper / accounts payable clerk",
+    "today_done_by": "in-house"
+  },
+  {
+    "id": "MONEY-C54",
+    "extends": null,
+    "name": "Manage accounts receivable and B2B or wholesale collections",
+    "folders": [
+      "20-FIN"
+    ],
+    "what": "Invoice wholesale and B2B buyers on their agreed terms, track every invoice to collection, and run a structured dunning sequence on anything overdue.",
+    "encompasses": [
+      "Generate and send invoices on Net-30/Net-60 terms with the correct sales-tax and resale-certificate treatment (GST treatment for India-selling brands)",
+      "Track invoice status: open, partially paid, overdue, disputed",
+      "Age receivables by customer and by days overdue",
+      "Send a scheduled dunning sequence (reminder, follow-up, final notice) before escalation",
+      "Flag customers approaching or over their credit limit before the next order ships",
+      "Reconcile partial payments and credit notes against the right invoice"
+    ],
+    "inputs": [
+      "Wholesale/B2B order data",
+      "Customer credit terms",
+      "Payment receipts"
+    ],
+    "outputs": [
+      "Receivables aging report",
+      "Dunning email drafts",
+      "Credit-hold recommendation list"
+    ],
+    "trigger": "On invoice due date, and weekly for aging review",
+    "autonomy": "human_assist",
+    "external_write": {
+      "needed": true,
+      "surface": "customer-facing email / accounting ledger"
+    },
+    "tools": [
+      "invoicing tool",
+      "email draft tool",
+      "accounting ledger"
+    ],
+    "skills": [],
+    "subagent": "money_and_ops_specialist",
+    "sources": {
+      "web": [
+        "https://www.fiverr.com/categories/finance/accounting-services/bookkeeping"
+      ],
+      "bank": []
+    },
+    "found_in": "web_only",
+    "founder_sees": "The aging report and the drafted dunning emails before they are sent",
+    "human_role": "e-commerce bookkeeper / accounts receivable clerk",
+    "today_done_by": "in-house"
+  },
+  {
+    "id": "MONEY-C55",
+    "extends": null,
+    "name": "Run payroll processing and state statutory filings",
+    "folders": [
+      "20-FIN",
+      "21-OPS"
+    ],
+    "what": "Process payroll each cycle through Gusto or ADP and prepare the filings that go with it: federal and state withholding, state new-hire and unemployment-insurance registration per state an employee works in, W-2 at year end for employees, and 1099-NEC for contractors. India-selling brands with local staff run the equivalent PF, ESI, professional tax, TDS and Form 16 cycle as a market option; that path reads null for US-only brands.",
+    "encompasses": [
+      "Compute gross-to-net pay from salary/hourly structure, timesheets and PTO data",
+      "Calculate federal and state income-tax withholding, FICA, and state unemployment insurance per employee's work state",
+      "Register the brand for payroll tax in every new state before the first paycheck there",
+      "Generate payslips (via Gusto or ADP) and the payroll register",
+      "Track final-pay rules by state for exits (some states require same-day or next-day final pay)",
+      "Generate W-2 for employees and 1099-NEC for contractors at year end, and file with the SSA/IRS",
+      "India only: calculate PF, ESI, professional tax and TDS deductions, prepare the PF ECR file, ESI return and TDS challan, and generate Form 16 and the annual TDS return at year end (reads null for US brands)"
+    ],
+    "inputs": [
+      "Timesheet and PTO data",
+      "Salary/hourly structures",
+      "W-4/state withholding elections",
+      "Payroll tax rate tables by state",
+      "India only: CTC structures, investment declarations, statutory rate tables (PF, ESI, PT, TDS slabs)"
+    ],
+    "outputs": [
+      "Payroll register",
+      "Payslips",
+      "Draft state registration and withholding filings",
+      "W-2 and 1099-NEC forms",
+      "India only: draft statutory filing files (PF/ESI/TDS), Form 16"
+    ],
+    "trigger": "Payroll cycle (weekly, biweekly or semimonthly), annually for W-2/1099-NEC (or Form 16 for India)",
+    "autonomy": "founder_gate",
+    "external_write": {
+      "needed": true,
+      "surface": "Gusto or ADP, and state statutory portals"
+    },
+    "tools": [
+      "Gusto or ADP",
+      "state payroll tax rate tables",
+      "payslip generator"
+    ],
+    "skills": [],
+    "subagent": "money_and_ops_specialist",
+    "sources": {
+      "web": [
+        "https://gusto.com/",
+        "https://www.adp.com/"
+      ],
+      "bank": []
+    },
+    "found_in": "web_only",
+    "founder_sees": "The payroll register and every statutory filing draft before submission",
+    "human_role": "payroll processor / HR-finance",
+    "today_done_by": "tool"
+  },
+  {
+    "id": "MONEY-C56",
+    "extends": null,
+    "name": "Maintain the fixed asset register and depreciation schedule",
+    "folders": [
+      "20-FIN"
+    ],
+    "what": "Keep one register of every asset the brand owns (equipment, fixtures, website build cost, packaging dies) with purchase date, useful life and a running depreciation schedule.",
+    "encompasses": [
+      "Log every capital purchase above the capitalization threshold",
+      "Assign useful life and depreciation method per asset class",
+      "Compute monthly depreciation and post it to the P&L",
+      "Track disposals and write-offs",
+      "Reconcile the register to the balance sheet fixed-asset line each period"
+    ],
+    "inputs": [
+      "Capital purchase invoices",
+      "Asset capitalization policy",
+      "Prior register"
+    ],
+    "outputs": [
+      "Fixed asset register",
+      "Monthly depreciation journal entry",
+      "Disposal log"
+    ],
+    "trigger": "Monthly, and on every capital purchase",
+    "autonomy": "agent_does",
+    "external_write": {
+      "needed": true,
+      "surface": "accounting ledger"
+    },
+    "tools": [
+      "spreadsheet or ledger asset module"
+    ],
+    "skills": [],
+    "subagent": "money_and_ops_specialist",
+    "sources": {
+      "web": [
+        "https://ecombalance.com/bookkeeping-duties/"
+      ],
+      "bank": []
+    },
+    "found_in": "web_only",
+    "founder_sees": "The updated register and the monthly depreciation entry",
+    "human_role": "bookkeeper / accountant",
+    "today_done_by": "in-house"
+  },
+  {
+    "id": "MONEY-C57",
+    "extends": null,
+    "name": "Manage employee expense and corporate card reconciliation",
+    "folders": [
+      "20-FIN",
+      "21-OPS"
+    ],
+    "what": "Collect receipts for every reimbursable expense and corporate card charge, apply the travel-and-expense policy, and reconcile the card statement to the ledger.",
+    "encompasses": [
+      "Match card statement lines to submitted receipts",
+      "Flag charges with no receipt or outside policy (amount, category, vendor)",
+      "Apply the correct sales-tax treatment for reimbursable purchases where eligible (GST input-credit treatment for India-selling brands)",
+      "Route reimbursement requests for approval by amount",
+      "Reconcile the monthly card statement to the ledger with a named cause for any gap",
+      "Maintain the written travel-and-expense policy itself"
+    ],
+    "inputs": [
+      "Corporate card statement",
+      "Submitted receipts",
+      "T&E policy"
+    ],
+    "outputs": [
+      "Reconciled expense ledger",
+      "Out-of-policy flag list",
+      "Reimbursement approval queue"
+    ],
+    "trigger": "Monthly card cycle",
+    "autonomy": "agent_does",
+    "external_write": {
+      "needed": true,
+      "surface": "accounting ledger"
+    },
+    "tools": [
+      "expense capture tool",
+      "card statement feed",
+      "accounting ledger"
+    ],
+    "skills": [],
+    "subagent": "money_and_ops_specialist",
+    "sources": {
+      "web": [
+        "https://ecombalance.com/bookkeeping-duties/"
+      ],
+      "bank": []
+    },
+    "found_in": "web_only",
+    "founder_sees": "The reconciled statement and any out-of-policy or missing-receipt flags",
+    "human_role": "bookkeeper / office manager",
+    "today_done_by": "in-house"
+  },
+  {
+    "id": "MONEY-C58",
+    "extends": null,
+    "name": "Prepare the fundraising data room and lender or investor reporting pack",
+    "folders": [
+      "20-FIN"
+    ],
+    "what": "Assemble and keep current the data room a lender or investor asks for, and produce the recurring reporting pack (monthly update, covenant compliance, board deck financials) once financing is in place.",
+    "encompasses": [
+      "Build the standard data room checklist (financials, cap table, contracts, IP, compliance filings)",
+      "Keep the cap table current with every round, grant and exercise",
+      "Draft the monthly investor or lender update from the metric contract and the P&L",
+      "Track loan covenants against the actual numbers and flag a breach before it happens",
+      "Prepare the financial slides for a board deck from the same source numbers as the dashboard",
+      "Redact anything a specific reader should not see"
+    ],
+    "inputs": [
+      "Financial statements",
+      "Cap table",
+      "Loan or investment agreements",
+      "Metric contract"
+    ],
+    "outputs": [
+      "Data room folder structure and checklist",
+      "Cap table file",
+      "Investor/lender update draft",
+      "Covenant tracking sheet"
+    ],
+    "trigger": "On a raise or loan process, monthly for reporting, quarterly for the board deck",
+    "autonomy": "founder_gate",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [
+      "document assembly",
+      "cap table tool",
+      "spreadsheet builder"
+    ],
+    "skills": [],
+    "subagent": "money_and_ops_specialist",
+    "sources": {
+      "web": [
+        "https://eightx.co/blog/fractional-cfo-services-ecommerce",
+        "https://www.finaloop.com/fractional-cfo"
+      ],
+      "bank": []
+    },
+    "found_in": "web_only",
+    "founder_sees": "The full data room checklist status and the drafted update before it goes to a lender or investor",
+    "human_role": "fractional CFO",
+    "today_done_by": "freelancer"
+  },
+  {
+    "id": "MONEY-C59",
+    "extends": null,
+    "name": "Procure and track business insurance",
+    "folders": [
+      "20-FIN",
+      "21-OPS",
+      "23-SEC"
+    ],
+    "what": "Identify the insurance coverage an e-commerce brand needs (product liability, cyber, business owner's policy, D&O once there are outside investors), compare quotes, and track the renewal calendar and any claim.",
+    "encompasses": [
+      "Map the brand's actual risk exposure (product category, data held, inventory value, outside investors) to coverage types",
+      "Compare quotes and coverage limits, not just premium",
+      "Track every policy's renewal date, limit and deductible in one calendar",
+      "Flag a coverage gap when the business changes (new product category, new country, new data type)",
+      "Log and track any claim from filing to settlement"
+    ],
+    "inputs": [
+      "Product catalog and risk profile",
+      "Existing policy documents",
+      "Insurance quotes"
+    ],
+    "outputs": [
+      "Coverage comparison table",
+      "Renewal calendar",
+      "Claim tracking log"
+    ],
+    "trigger": "Annually at renewal, and on a material business change",
+    "autonomy": "founder_gate",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [
+      "insurance marketplace research",
+      "spreadsheet builder"
+    ],
+    "skills": [],
+    "subagent": "money_and_ops_specialist",
+    "sources": {
+      "web": [
+        "https://www.vouch.us/blog/ecommerce-insurance",
+        "https://mercury.com/blog/how-to-choose-ecommerce-business-insurance"
+      ],
+      "bank": []
+    },
+    "found_in": "web_only",
+    "founder_sees": "The coverage comparison and the renewal calendar with any flagged gap",
+    "human_role": "founder / broker",
+    "today_done_by": "nobody"
+  },
+  {
+    "id": "MONEY-C60",
+    "extends": null,
+    "name": "Reconcile multi-currency and cross-border payments",
+    "folders": [
+      "20-FIN"
+    ],
+    "what": "For a brand selling or paying suppliers across currencies, convert every foreign-currency transaction at the right rate, reconcile the payment processor's settlement to the bank, and flag FX gain or loss separately from operating margin.",
+    "encompasses": [
+      "Pull the daily or transaction-date FX rate used by the payment processor",
+      "Reconcile Payoneer, Wise or PayPal settlement reports to the bank deposit",
+      "Separate realized FX gain or loss from product margin in the P&L",
+      "Track outstanding foreign-currency payables to suppliers",
+      "Flag a rate move large enough to change a landed-cost assumption"
+    ],
+    "inputs": [
+      "Payment processor settlement exports",
+      "Bank statements",
+      "Supplier invoices in foreign currency",
+      "FX rate feed"
+    ],
+    "outputs": [
+      "Reconciled multi-currency ledger",
+      "FX gain/loss report",
+      "Outstanding foreign payable list"
+    ],
+    "trigger": "Each settlement cycle",
+    "autonomy": "agent_does",
+    "external_write": {
+      "needed": true,
+      "surface": "accounting ledger"
+    },
+    "tools": [
+      "FX rate feed",
+      "payment processor settlement export",
+      "accounting ledger"
+    ],
+    "skills": [],
+    "subagent": "money_and_ops_specialist",
+    "sources": {
+      "web": [
+        "https://ecombalance.com/bookkeeping-duties/"
+      ],
+      "bank": []
+    },
+    "found_in": "web_only",
+    "founder_sees": "The FX gain/loss report and any rate move large enough to matter",
+    "human_role": "bookkeeper / accountant",
+    "today_done_by": "freelancer"
+  },
+  {
+    "id": "MONEY-C61",
+    "extends": null,
+    "name": "Build and maintain the brand's data warehouse and ETL pipeline",
+    "folders": [
+      "06-MEA"
+    ],
+    "what": "Land Shopify, Meta, GA4, the ESP, marketplaces and the payment processor into one warehouse on a schedule, so every dashboard and report reads from the same tables instead of five separate exports.",
+    "encompasses": [
+      "Define the schema for orders, sessions, ad spend, email/SMS sends and marketplace settlements",
+      "Build the scheduled sync from each source into the warehouse",
+      "Handle schema drift when a source changes its export format",
+      "Deduplicate and backfill on a failed or late sync",
+      "Expose one governed semantic layer so a metric means the same thing everywhere",
+      "Alert when a source has not synced within its expected window"
+    ],
+    "inputs": [
+      "Shopify, Meta, GA4, ESP, marketplace and payment processor exports or APIs"
+    ],
+    "outputs": [
+      "Warehouse tables per source",
+      "Sync status and freshness log",
+      "Governed semantic layer definitions"
+    ],
+    "trigger": "Scheduled (daily or hourly per source), and on schema-change alert",
+    "autonomy": "agent_does",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [
+      "ETL/sync scripts",
+      "warehouse (e.g. a hosted SQL database)",
+      "schema-diff checker"
+    ],
+    "skills": [],
+    "subagent": "money_and_ops_specialist",
+    "sources": {
+      "web": [
+        "https://www.daasity.com/post/best-ecommerce-analytics-software-for-fast-growing-dtc-brands",
+        "https://www.polaranalytics.com/comparison/triple-whale-vs-daasity"
+      ],
+      "bank": []
+    },
+    "found_in": "web_only",
+    "founder_sees": "The sync freshness log and any source that has gone stale",
+    "human_role": "analytics engineer / data analyst",
+    "today_done_by": "tool"
+  },
+  {
+    "id": "MONEY-C62",
+    "extends": null,
+    "name": "Run a governed ask-the-data analyst over the brand's own metric contract",
+    "folders": [
+      "06-MEA"
+    ],
+    "what": "Let the founder or a specialist ask a plain-language question and get back a number computed from the metric contract, with its definition, freshness stamp and source, instead of an ungoverned guess.",
+    "encompasses": [
+      "Parse the question into the metric-contract terms it maps to",
+      "Compute the answer in code from the warehouse, never from model arithmetic",
+      "State the exact window, definition and freshness stamp used",
+      "Say plainly when the data needed is missing or stale instead of estimating",
+      "Log every question asked, for a FAQ of what the founder actually wants to know",
+      "Refuse a question that needs a metric the contract does not define, and say what would need to be added"
+    ],
+    "inputs": [
+      "Metric contract",
+      "Warehouse tables",
+      "The founder's question"
+    ],
+    "outputs": [
+      "Answer with number, definition, window and freshness stamp",
+      "Log of questions asked"
+    ],
+    "trigger": "On demand (chat, SMS or dashboard query; WhatsApp where the brand uses it, market option for IN/EU/LATAM)",
+    "autonomy": "agent_does",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [
+      "metric contract engine",
+      "warehouse query layer"
+    ],
+    "skills": [],
+    "subagent": "money_and_ops_specialist",
+    "sources": {
+      "web": [
+        "https://querio.ai/articles/thoughtspot-vs-hex-vs-querio-ai-analytics-comparison",
+        "https://www.triplewhale.com/blog/triple-whale-vs-polar-analytics"
+      ],
+      "bank": []
+    },
+    "found_in": "web_only",
+    "founder_sees": "The answer plus the definition and freshness stamp it was computed with",
+    "human_role": "data analyst",
+    "today_done_by": "nobody"
+  },
+  {
+    "id": "MONEY-C63",
+    "extends": null,
+    "name": "Build marketing mix modeling for cross-channel budget allocation",
+    "folders": [
+      "06-MEA"
+    ],
+    "what": "Model total revenue against spend across every channel (including channels that cannot be pixel-tracked, like offline, brand search and word of mouth) to size each channel's real contribution and suggest a budget split.",
+    "encompasses": [
+      "Assemble weekly spend by channel alongside total revenue and baseline (organic/direct) revenue",
+      "Fit a model that separates each channel's marginal contribution from the baseline",
+      "Account for adstock and diminishing returns per channel",
+      "Cross-check the model's implied CAC against the platform-reported CAC and flag the gap",
+      "Simulate a reallocated budget split and its expected revenue effect",
+      "Refresh the model on a fixed cadence, never mid-campaign"
+    ],
+    "inputs": [
+      "Weekly spend by channel",
+      "Weekly revenue",
+      "Baseline/organic revenue",
+      "Promotional and seasonal calendar"
+    ],
+    "outputs": [
+      "Channel contribution estimates",
+      "Suggested budget split",
+      "Model-vs-platform CAC gap report"
+    ],
+    "trigger": "Monthly or quarterly refresh",
+    "autonomy": "human_assist",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [
+      "statistical modeling",
+      "spreadsheet or notebook output"
+    ],
+    "skills": [
+      "dataviz"
+    ],
+    "subagent": "money_and_ops_specialist",
+    "sources": {
+      "web": [
+        "https://www.holistics.io/blog/ai-agents-for-data-analysis/"
+      ],
+      "bank": []
+    },
+    "found_in": "web_only",
+    "founder_sees": "The channel contribution estimates and the gap against platform-reported CAC",
+    "human_role": "growth/data analyst or agency",
+    "today_done_by": "agency"
+  },
+  {
+    "id": "MONEY-C64",
+    "extends": null,
+    "name": "Build RFM and cohort segmentation models for the customer base",
+    "folders": [
+      "06-MEA"
+    ],
+    "what": "Score every customer on recency, frequency and monetary value, group them into named segments, and track how many customers move between segments each period.",
+    "encompasses": [
+      "Compute recency, frequency and monetary value per customer from order history",
+      "Assign each customer to a named segment (e.g. champion, at-risk, lapsed, new)",
+      "Track segment migration month over month",
+      "Size the revenue and customer count in each segment",
+      "Flag a segment whose size or value is moving against the brand's history",
+      "Hand segment membership to the Lifecycle specialist for targeting, without duplicating the scoring logic there"
+    ],
+    "inputs": [
+      "Order history",
+      "Customer identity resolution across channels"
+    ],
+    "outputs": [
+      "Segment assignment per customer",
+      "Segment migration report",
+      "Segment size and value trend"
+    ],
+    "trigger": "Weekly or monthly refresh",
+    "autonomy": "agent_does",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [
+      "warehouse query",
+      "segmentation scoring script"
+    ],
+    "skills": [
+      "dataviz"
+    ],
+    "subagent": "money_and_ops_specialist",
+    "sources": {
+      "web": [
+        "https://www.daasity.com/post/best-ecommerce-analytics-software-for-fast-growing-dtc-brands"
+      ],
+      "bank": []
+    },
+    "found_in": "web_only",
+    "founder_sees": "The segment sizes, their trend, and any segment moving against history",
+    "human_role": "data analyst",
+    "today_done_by": "tool"
+  },
+  {
+    "id": "MONEY-C65",
+    "extends": null,
+    "name": "Audit and configure tag management and server-side tracking",
+    "folders": [
+      "06-MEA"
+    ],
+    "what": "Audit the tag management layer itself (not just GA4 or the Meta pixel individually): container structure, server-side tagging, consent mode gating, and duplicate or dead tags firing on the site.",
+    "encompasses": [
+      "Inventory every tag firing on the site and who owns it",
+      "Check container structure and versioning discipline (staging vs live)",
+      "Assess whether server-side tagging would fix data loss from browser blocking",
+      "Verify consent mode gates tags correctly by region",
+      "Find duplicate, conflicting or dead tags still firing",
+      "Document the tag map so a new tag never gets added blind"
+    ],
+    "inputs": [
+      "Tag manager container export",
+      "Site page audit",
+      "Consent management platform settings"
+    ],
+    "outputs": [
+      "Tag inventory with owners",
+      "Duplicate/dead tag list",
+      "Server-side tagging recommendation with expected data-quality gain"
+    ],
+    "trigger": "Quarterly, or after any major site or app change",
+    "autonomy": "human_assist",
+    "external_write": {
+      "needed": true,
+      "surface": "tag manager container"
+    },
+    "tools": [
+      "tag manager audit script",
+      "browser network inspection"
+    ],
+    "skills": [],
+    "subagent": "money_and_ops_specialist",
+    "sources": {
+      "web": [
+        "https://apify.com/fayoussef/email-deliverability-auditor"
+      ],
+      "bank": []
+    },
+    "found_in": "web_only",
+    "founder_sees": "The tag inventory and every duplicate, dead or misconfigured tag",
+    "human_role": "analytics engineer",
+    "today_done_by": "agency"
+  },
+  {
+    "id": "MONEY-C66",
+    "extends": null,
+    "name": "Manage freelancer and contractor engagements",
+    "folders": [
+      "21-OPS"
+    ],
+    "what": "Run the full lifecycle of a freelance or contractor engagement: scope of work, IP assignment, rate agreement, invoicing against milestones, and renewal or offboarding at the end.",
+    "encompasses": [
+      "Draft a scope of work with deliverables, rate and IP assignment clause",
+      "Track milestone completion against the agreed scope before approving an invoice",
+      "Maintain one roster of active freelancers with rate, category and renewal date",
+      "Flag a freelancer doing recurring work that should convert to a role or a retainer",
+      "Route contractor invoices through the same approval chain as vendor bills",
+      "Run a short offboarding step (access revocation, final invoice, IP handover) at engagement end"
+    ],
+    "inputs": [
+      "Scope of work templates",
+      "Freelancer invoices and milestones",
+      "Access list per freelancer"
+    ],
+    "outputs": [
+      "Scope of work drafts",
+      "Freelancer roster with renewal dates",
+      "Milestone-approved invoice queue"
+    ],
+    "trigger": "On engagement start, at each milestone, and at engagement end",
+    "autonomy": "human_assist",
+    "external_write": {
+      "needed": true,
+      "surface": "vendor payment / access systems"
+    },
+    "tools": [
+      "contract template",
+      "invoicing tool",
+      "access management"
+    ],
+    "skills": [],
+    "subagent": "money_and_ops_specialist",
+    "sources": {
+      "web": [
+        "https://www.fiverr.com/categories/finance/accounting-services"
+      ],
+      "bank": []
+    },
+    "found_in": "web_only",
+    "founder_sees": "The roster, any engagement that should convert to a role, and invoices awaiting milestone approval",
+    "human_role": "operations manager",
+    "today_done_by": "founder"
+  },
+  {
+    "id": "MONEY-C67",
+    "extends": null,
+    "name": "Draft and review vendor and employment legal contracts",
+    "folders": [
+      "21-OPS"
+    ],
+    "what": "Keep a standard set of contract templates (NDA, MSA, vendor agreement, employment agreement) and run every incoming contract through a redline checklist before the founder signs.",
+    "encompasses": [
+      "Maintain current templates for NDA, MSA, vendor agreement and employment agreement",
+      "Redline an incoming vendor or partner contract against a standard checklist (liability cap, termination notice, data handling, exclusivity)",
+      "Flag any clause outside the brand's standard terms in plain language",
+      "Track contract expiry and auto-renewal dates in one calendar",
+      "Maintain a signed-contract repository with the current version of each",
+      "Never advise on a jurisdiction-specific legal question without naming that limit"
+    ],
+    "inputs": [
+      "Incoming contract draft",
+      "Standard contract templates",
+      "Redline checklist"
+    ],
+    "outputs": [
+      "Redlined contract with flagged clauses",
+      "Contract calendar (expiry/renewal)",
+      "Signed-contract repository"
+    ],
+    "trigger": "On every new or renewing contract",
+    "autonomy": "founder_gate",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [
+      "contract redline checklist",
+      "document repository"
+    ],
+    "skills": [],
+    "subagent": "money_and_ops_specialist",
+    "sources": {
+      "web": [
+        "https://ironcladapp.com/journal/contract-management/best-contract-management-tools"
+      ],
+      "bank": []
+    },
+    "found_in": "web_only",
+    "founder_sees": "Every flagged clause and the contract calendar before anything is signed",
+    "human_role": "operations manager / outside counsel",
+    "today_done_by": "freelancer"
+  },
+  {
+    "id": "MONEY-C68",
+    "extends": null,
+    "name": "Maintain the employee handbook and HR policies",
+    "folders": [
+      "21-OPS"
+    ],
+    "what": "Keep one current handbook covering leave, work-from-home, code of conduct and state-specific requirements like mandatory anti-harassment training (California, New York, Illinois and others), and confirm every employee has acknowledged the current version.",
+    "encompasses": [
+      "Draft and update leave, WFH, expense and code-of-conduct policies as the team grows",
+      "Maintain state-mandated anti-harassment training and policy where required (e.g. California SB 1343, New York, Illinois, Connecticut)",
+      "India only: maintain the POSH (workplace harassment) policy and committee as legally required in India (reads null for US brands)",
+      "Track which employees have acknowledged the current handbook version",
+      "Flag a policy that is silent on a situation that just came up",
+      "Version the handbook so an old copy is never the one in circulation"
+    ],
+    "inputs": [
+      "Current handbook",
+      "Applicable labor law requirements",
+      "Team roster"
+    ],
+    "outputs": [
+      "Updated handbook",
+      "Acknowledgement tracking list",
+      "Policy gap flag"
+    ],
+    "trigger": "On hire growth milestones, or annually",
+    "autonomy": "founder_gate",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [
+      "document repository",
+      "acknowledgement tracking"
+    ],
+    "skills": [],
+    "subagent": "money_and_ops_specialist",
+    "sources": {
+      "web": [
+        "https://www.nextlevel.coach/blog/chief-of-staff-startup-role"
+      ],
+      "bank": []
+    },
+    "found_in": "web_only",
+    "founder_sees": "The current handbook version and the acknowledgement gap list",
+    "human_role": "HR / chief of staff",
+    "today_done_by": "founder"
+  },
+  {
+    "id": "MONEY-C69",
+    "extends": null,
+    "name": "Run structured employee offboarding",
+    "folders": [
+      "21-OPS",
+      "23-SEC"
+    ],
+    "what": "Run one checklist for every exit: same-day access revocation, asset return, knowledge transfer, exit interview and final settlement, so nothing is left half-done after someone leaves.",
+    "encompasses": [
+      "Trigger same-day revocation of every system the person had access to",
+      "Recover company assets (laptop, phone, keys) and confirm return",
+      "Run a knowledge-transfer checklist for anything only that person knew",
+      "Conduct or prepare a structured exit interview",
+      "Compute the full-and-final settlement (pending leave, bonus, dues) correctly",
+      "Confirm every step closed before marking the offboarding complete"
+    ],
+    "inputs": [
+      "Employee's system access list",
+      "Asset register",
+      "Leave and pay records"
+    ],
+    "outputs": [
+      "Access revocation confirmation",
+      "Knowledge-transfer document",
+      "Exit interview notes",
+      "Final settlement calculation"
+    ],
+    "trigger": "On resignation or termination notice",
+    "autonomy": "founder_gate",
+    "external_write": {
+      "needed": true,
+      "surface": "identity/access systems, payroll"
+    },
+    "tools": [
+      "access management",
+      "payroll engine",
+      "document template"
+    ],
+    "skills": [],
+    "subagent": "money_and_ops_specialist",
+    "sources": {
+      "web": [
+        "https://www.keka.com/payroll-compliance"
+      ],
+      "bank": []
+    },
+    "found_in": "web_only",
+    "founder_sees": "The checklist completion status, especially access revocation and the settlement number",
+    "human_role": "HR / IT admin",
+    "today_done_by": "in-house"
+  },
+  {
+    "id": "MONEY-C70",
+    "extends": null,
+    "name": "Monitor 3PL and warehouse SLA performance daily",
+    "folders": [
+      "21-OPS"
+    ],
+    "what": "Track the day-to-day performance of every 3PL and warehouse against its written SLA: pick-and-pack speed, mis-ship rate, damage rate and backorder rate, and flag a breach before it becomes a pattern.",
+    "encompasses": [
+      "Pull daily fulfillment timestamps (order to pack to ship) per warehouse",
+      "Compute mis-ship, damage and backorder rate against the SLA target",
+      "Flag a single-day spike separately from a trend that is drifting",
+      "Tie a fulfillment delay to its downstream effect (late delivery, failed-delivery/return-to-sender risk, review risk; RTO risk where the brand runs India COD, market option)",
+      "Feed confirmed SLA misses into the vendor's quarterly review with a dated log"
+    ],
+    "inputs": [
+      "Warehouse management system exports",
+      "Order and shipment timestamps",
+      "Written 3PL SLA"
+    ],
+    "outputs": [
+      "Daily SLA scorecard per warehouse",
+      "Breach log with dates and cause"
+    ],
+    "trigger": "Daily",
+    "autonomy": "agent_does",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [
+      "WMS export",
+      "spreadsheet or dashboard"
+    ],
+    "skills": [
+      "dataviz"
+    ],
+    "subagent": "money_and_ops_specialist",
+    "sources": {
+      "web": [
+        "https://blog.shipway.com/automated-courier-management-software/"
+      ],
+      "bank": []
+    },
+    "found_in": "web_only",
+    "founder_sees": "The daily scorecard and any SLA breach with its likely cause",
+    "human_role": "operations manager",
+    "today_done_by": "in-house"
+  },
+  {
+    "id": "MONEY-C71",
+    "extends": null,
+    "name": "Build and maintain the CS knowledge base, macros and QA scoring",
+    "folders": [
+      "21-OPS"
+    ],
+    "what": "Keep the customer-service knowledge base and canned-response macros current with the brand's actual policies, and score a sample of tickets each week against a written quality rubric.",
+    "encompasses": [
+      "Write and update macros from the brand's current policy (shipping, returns, warranty) whenever a policy changes",
+      "Flag a macro that contradicts the current policy or a claim tier",
+      "Score a sample of resolved tickets each week against a written quality rubric",
+      "Track first-response time, resolution time and reopen rate by macro category",
+      "Surface the most common ticket reasons back to the specialist who owns that root cause"
+    ],
+    "inputs": [
+      "Current policy pages",
+      "CS ticket history",
+      "Existing macros"
+    ],
+    "outputs": [
+      "Updated macro library",
+      "Weekly QA score sample",
+      "Top ticket-reason report"
+    ],
+    "trigger": "Weekly, and whenever a policy changes",
+    "autonomy": "human_assist",
+    "external_write": {
+      "needed": true,
+      "surface": "helpdesk macro library"
+    },
+    "tools": [
+      "helpdesk platform",
+      "policy source pages"
+    ],
+    "skills": [],
+    "subagent": "money_and_ops_specialist",
+    "sources": {
+      "web": [
+        "https://ecombalance.com/bookkeeping-duties/"
+      ],
+      "bank": []
+    },
+    "found_in": "web_only",
+    "founder_sees": "The QA score sample and any macro flagged as out of date",
+    "human_role": "customer service lead",
+    "today_done_by": "in-house"
+  },
+  {
+    "id": "MONEY-C72",
+    "extends": null,
+    "name": "Audit and enforce email authentication for sending domains",
+    "folders": [
+      "23-SEC"
+    ],
+    "what": "Check SPF, DKIM, DMARC and BIMI on every domain the brand sends email from (transactional, marketing, support) and move the DMARC policy from monitor-only to enforced without breaking deliverability.",
+    "encompasses": [
+      "Inventory every domain and subdomain used to send email",
+      "Check SPF record validity and the 10-lookup limit",
+      "Verify DKIM selectors are configured and rotating",
+      "Check the current DMARC policy (none, quarantine, reject) and its reporting address",
+      "Read DMARC aggregate reports to find unauthorized senders before tightening the policy",
+      "Step the policy from none to quarantine to reject only once reports show no legitimate mail failing"
+    ],
+    "inputs": [
+      "DNS records for every sending domain",
+      "DMARC aggregate reports"
+    ],
+    "outputs": [
+      "Authentication status per domain",
+      "Unauthorized-sender list from DMARC reports",
+      "Staged policy tightening plan"
+    ],
+    "trigger": "Quarterly, or before any bulk-sender requirement change",
+    "autonomy": "human_assist",
+    "external_write": {
+      "needed": true,
+      "surface": "DNS records"
+    },
+    "tools": [
+      "DNS lookup",
+      "DMARC report parser"
+    ],
+    "skills": [],
+    "subagent": "money_and_ops_specialist",
+    "sources": {
+      "web": [
+        "https://apify.com/fayoussef/email-deliverability-auditor",
+        "https://dmarcly.com/"
+      ],
+      "bank": []
+    },
+    "found_in": "web_only",
+    "founder_sees": "The authentication status per domain and the staged plan to reach reject",
+    "human_role": "IT/security",
+    "today_done_by": "nobody"
+  },
+  {
+    "id": "MONEY-C73",
+    "extends": null,
+    "name": "Inventory and rotate API keys, tokens and service credentials",
+    "folders": [
+      "23-SEC"
+    ],
+    "what": "Keep one inventory of every API key, token and service credential the brand's tools use, who or what holds it, when it was last rotated, and rotate on a schedule or after any staff exit.",
+    "encompasses": [
+      "Inventory every API key and token across connected tools (payment gateway, ESP, ad platforms, warehouse)",
+      "Record scope, owner and last-rotation date for each",
+      "Flag a credential with excess scope (more access than the integration needs)",
+      "Rotate on a fixed schedule and immediately after any relevant staff exit",
+      "Move credentials out of code, spreadsheets or chat into a secrets manager",
+      "Confirm an old credential is actually revoked, not just replaced"
+    ],
+    "inputs": [
+      "List of connected tools and integrations",
+      "Current credential locations"
+    ],
+    "outputs": [
+      "Credential inventory with scope and rotation date",
+      "Rotation and revocation log"
+    ],
+    "trigger": "Quarterly, and immediately on staff exit",
+    "autonomy": "founder_gate",
+    "external_write": {
+      "needed": true,
+      "surface": "secrets manager and each connected tool"
+    },
+    "tools": [
+      "secrets manager (Doppler/1Password class)",
+      "integration inventory"
+    ],
+    "skills": [],
+    "subagent": "money_and_ops_specialist",
+    "sources": {
+      "web": [
+        "https://www.doppler.com/guides/managing-secrets-at-scale/automating-secrets-management",
+        "https://apptension.com/guides/best-saas-security-and-secrets-management-tools-1password-vs-vault-vs-doppler"
+      ],
+      "bank": []
+    },
+    "found_in": "web_only",
+    "founder_sees": "The credential inventory and any over-scoped or overdue-for-rotation key",
+    "human_role": "IT/security",
+    "today_done_by": "nobody"
+  },
+  {
+    "id": "MONEY-C74",
+    "extends": null,
+    "name": "Confirm PCI DSS scope and complete the merchant self-assessment questionnaire",
+    "folders": [
+      "23-SEC"
+    ],
+    "what": "Determine which PCI DSS self-assessment questionnaire applies given how the brand takes payment, confirm the checkout does not touch raw card data outside that scope, and complete the SAQ on schedule.",
+    "encompasses": [
+      "Determine SAQ type from the checkout's payment flow (hosted fields, redirect, or direct card capture)",
+      "Confirm no raw card data is logged, emailed or stored outside the payment processor's scope",
+      "Walk the applicable SAQ checklist and collect evidence for each control",
+      "Flag any control the brand cannot currently attest to",
+      "Track the compliance attestation date and the next renewal"
+    ],
+    "inputs": [
+      "Checkout payment flow documentation",
+      "Payment processor's compliance requirements"
+    ],
+    "outputs": [
+      "SAQ type determination",
+      "Completed self-assessment with evidence",
+      "Attestation renewal date"
+    ],
+    "trigger": "Annually, or on any checkout payment-flow change",
+    "autonomy": "founder_gate",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [
+      "SAQ checklist",
+      "payment flow documentation review"
+    ],
+    "skills": [],
+    "subagent": "money_and_ops_specialist",
+    "sources": {
+      "web": [
+        "https://www.techinsurance.com/retail-insurance/e-commerce-online-retailer"
+      ],
+      "bank": []
+    },
+    "found_in": "web_only",
+    "founder_sees": "The SAQ type, any unmet control, and the attestation renewal date",
+    "human_role": "IT/security or payment processor's compliance team",
+    "today_done_by": "nobody"
+  },
+  {
+    "id": "MONEY-C75",
+    "extends": null,
+    "name": "Run staff security awareness training and phishing simulation",
+    "folders": [
+      "23-SEC"
+    ],
+    "what": "Run a recurring phishing simulation and short security training for every staff member with admin access, and track who clicks, who reports, and who needs a repeat.",
+    "encompasses": [
+      "Send a simulated phishing email on a recurring schedule",
+      "Track click rate, report rate and repeat-offender pattern",
+      "Assign a short follow-up training to anyone who clicked",
+      "Cover password hygiene, 2FA and how to report a suspicious message in the training",
+      "Report the trend (click rate improving or not) to the founder each quarter"
+    ],
+    "inputs": [
+      "Staff roster and admin-access list",
+      "Phishing simulation platform or template"
+    ],
+    "outputs": [
+      "Simulation results by staff member",
+      "Training completion log",
+      "Quarterly trend report"
+    ],
+    "trigger": "Quarterly",
+    "autonomy": "human_assist",
+    "external_write": {
+      "needed": true,
+      "surface": "email system (for simulation)"
+    },
+    "tools": [
+      "phishing simulation tool",
+      "training content"
+    ],
+    "skills": [],
+    "subagent": "money_and_ops_specialist",
+    "sources": {
+      "web": [
+        "https://cycode.com/blog/best-secrets-management-tools/"
+      ],
+      "bank": []
+    },
+    "found_in": "web_only",
+    "founder_sees": "The click-rate trend and who still needs a repeat training",
+    "human_role": "IT/security",
+    "today_done_by": "nobody"
+  },
+  {
+    "id": "MONEY-C76",
+    "extends": null,
+    "name": "Detect return and refund policy abuse",
+    "folders": [
+      "23-SEC",
+      "21-OPS"
+    ],
+    "what": "Find the customers and patterns that cost the brand through the return and refund process itself: wardrobing, serial high-return-rate customers, and refunds issued without a matching return.",
+    "encompasses": [
+      "Compute return rate and refund-without-return rate per customer over time",
+      "Flag a customer whose return rate is far above the brand's own baseline",
+      "Detect wardrobing signals (worn/used item returned, tags removed) from support notes or photos",
+      "Cross-check refunds issued against actual received returns in the warehouse system",
+      "Recommend a policy response (flag for review, require prepayment or card-on-file, deny future return; restrict COD for India brands, market option) for the founder to approve"
+    ],
+    "inputs": [
+      "Order, return and refund history per customer",
+      "Warehouse received-return log",
+      "Support ticket notes"
+    ],
+    "outputs": [
+      "Per-customer return-abuse risk score",
+      "List of refunds with no matching return",
+      "Recommended policy actions"
+    ],
+    "trigger": "Weekly",
+    "autonomy": "human_assist",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [
+      "warehouse and order data join",
+      "scoring script"
+    ],
+    "skills": [],
+    "subagent": "money_and_ops_specialist",
+    "sources": {
+      "web": [
+        "https://www.signifyd.com/"
+      ],
+      "bank": []
+    },
+    "found_in": "web_only",
+    "founder_sees": "The risk-scored customer list and any refund with no matching return",
+    "human_role": "operations / fraud analyst",
+    "today_done_by": "nobody"
+  },
+  {
+    "id": "MONEY-C77",
+    "extends": null,
+    "name": "Run vendor security and data-processing risk assessments",
+    "folders": [
+      "23-SEC"
+    ],
+    "what": "Before a new SaaS tool, ESP, 3PL or agency gets access to customer or payment data, run a standard risk questionnaire and confirm a data-processing agreement is signed.",
+    "encompasses": [
+      "Send a standard security questionnaire to a new vendor before onboarding",
+      "Confirm the vendor's certifications (SOC 2, ISO 27001) actually cover the service being used, not just the company",
+      "Confirm a data-processing agreement is signed before any customer data is shared",
+      "Classify each vendor by data sensitivity (none, PII, payment data)",
+      "Maintain one register of every vendor with data access, its risk tier and its DPA status",
+      "Re-assess a vendor on renewal or after a public breach disclosure"
+    ],
+    "inputs": [
+      "Vendor's security documentation and certifications",
+      "Data types the integration will access"
+    ],
+    "outputs": [
+      "Vendor risk register",
+      "Completed questionnaire per vendor",
+      "DPA status tracker"
+    ],
+    "trigger": "Before onboarding, and on renewal or breach disclosure",
+    "autonomy": "founder_gate",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [
+      "security questionnaire template",
+      "DPA template"
+    ],
+    "skills": [],
+    "subagent": "money_and_ops_specialist",
+    "sources": {
+      "web": [
+        "https://www.stackpack.ai/blog/best-vendor-management-software"
+      ],
+      "bank": []
+    },
+    "found_in": "web_only",
+    "founder_sees": "The risk register and any vendor with data access but no signed DPA",
+    "human_role": "IT/security or operations manager",
+    "today_done_by": "nobody"
+  },
+  {
+    "id": "MONEY-C78",
+    "extends": null,
+    "name": "Auto-draft SaaS renewal renegotiation before auto-renew windows close",
+    "folders": [
+      "21-OPS",
+      "20-FIN"
+    ],
+    "what": "Watch every SaaS contract's auto-renew date and usage data, and draft a renegotiation or cancellation email with the brand's own usage numbers before the window closes, instead of waiting for a tooling audit to catch it after the charge lands.",
+    "encompasses": [
+      "Track every SaaS contract's renewal date and notice-period deadline in one calendar",
+      "Pull actual seat usage or API usage for that tool from the brand's own logs",
+      "Draft a renegotiation email citing the brand's usage against the current plan tier",
+      "Draft a cancellation email with the required notice period if usage does not justify the cost",
+      "Hand both drafts to the founder before the notice-period deadline, not after"
+    ],
+    "inputs": [
+      "SaaS contract terms and renewal dates",
+      "Tool usage logs"
+    ],
+    "outputs": [
+      "Renewal calendar with deadlines",
+      "Drafted renegotiation or cancellation email per contract"
+    ],
+    "trigger": "On approaching notice-period deadline",
+    "autonomy": "founder_gate",
+    "external_write": {
+      "needed": true,
+      "surface": "vendor email / billing portal"
+    },
+    "tools": [
+      "contract calendar",
+      "usage log pull",
+      "email draft"
+    ],
+    "skills": [],
+    "subagent": "money_and_ops_specialist",
+    "sources": {
+      "web": [],
+      "bank": []
+    },
+    "found_in": "possible",
+    "founder_sees": "The renewal calendar and the drafted email before the deadline",
+    "human_role": "operations manager",
+    "today_done_by": "nobody"
+  },
+  {
+    "id": "MONEY-C79",
+    "extends": null,
+    "name": "Auto-escalate aged payout remittance with SLA citations",
+    "folders": [
+      "20-FIN",
+      "21-OPS"
+    ],
+    "what": "Beyond just showing a dashboard of undeposited payout cash (gateway, marketplace or, for India COD, courier), draft the actual escalation email to the source's support or ops contact once a remittance passes its own written SLA, citing the specific order IDs and the SLA clause.",
+    "encompasses": [
+      "Detect the exact day a payout or remittance crosses its source's own SLA (gateway, marketplace, or courier for India COD)",
+      "Pull the specific order IDs and amounts still outstanding for that source",
+      "Draft an escalation email citing the source's own SLA clause and the aged order list",
+      "Track whether the source responds and whether the cash actually lands after escalation",
+      "Roll a source's repeated SLA misses into its quarterly vendor review automatically"
+    ],
+    "inputs": [
+      "Payout/remittance status feed (gateway, marketplace, or courier for India COD)",
+      "Written SLA per contract or platform terms",
+      "Source's support or ops contact"
+    ],
+    "outputs": [
+      "Drafted escalation email per breach",
+      "Escalation response and resolution log"
+    ],
+    "trigger": "On SLA breach",
+    "autonomy": "founder_gate",
+    "external_write": {
+      "needed": true,
+      "surface": "courier ops email/portal"
+    },
+    "tools": [
+      "remittance status feed",
+      "SLA rules engine",
+      "email draft"
+    ],
+    "skills": [],
+    "subagent": "money_and_ops_specialist",
+    "sources": {
+      "web": [],
+      "bank": []
+    },
+    "found_in": "possible",
+    "founder_sees": "The escalation draft and whether the prior escalation actually recovered the cash",
+    "human_role": "operations manager",
+    "today_done_by": "nobody"
+  },
+  {
+    "id": "MONEY-C80",
+    "extends": null,
+    "name": "Simulate financing structures live against the rolling cash forecast",
+    "folders": [
+      "20-FIN"
+    ],
+    "what": "Instead of a one-time comparison of financing options, let the founder ask what a specific loan or revenue-based-financing structure would do to the 13-week cash forecast right now, and get a sensitivity table back in the same session.",
+    "encompasses": [
+      "Take a proposed financing structure (amount, rate, repayment schedule) as an input",
+      "Re-run the existing rolling cash forecast with that structure layered in",
+      "Show the lowest cash point with and without the structure, side by side",
+      "Stress-test the structure against a slow-sales scenario, not just the base case",
+      "Flag a covenant or repayment date that would collide with a known low-cash week"
+    ],
+    "inputs": [
+      "Rolling 13-week cash forecast",
+      "Proposed financing terms"
+    ],
+    "outputs": [
+      "Side-by-side cash forecast with and without the financing",
+      "Stress-tested lowest-cash-point comparison"
+    ],
+    "trigger": "On founder request",
+    "autonomy": "agent_does",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [
+      "cash forecast engine",
+      "scenario simulation"
+    ],
+    "skills": [
+      "dataviz"
+    ],
+    "subagent": "money_and_ops_specialist",
+    "sources": {
+      "web": [],
+      "bank": []
+    },
+    "found_in": "possible",
+    "founder_sees": "The side-by-side forecast and any covenant date colliding with a low-cash week",
+    "human_role": "fractional CFO",
+    "today_done_by": "nobody"
+  },
+  {
+    "id": "MONEY-C81",
+    "extends": null,
+    "name": "Correlate account-takeover signals across every connected system",
+    "folders": [
+      "23-SEC"
+    ],
+    "what": "No single tool today sees an anomaly that only shows up by comparing login geography and device across Shopify admin, the ad accounts, the ESP and the payment processor at once. Correlate them in one place and flag the pattern a single-tool audit would miss.",
+    "encompasses": [
+      "Pull login timestamp, IP geography and device fingerprint from every admin-level system the brand uses",
+      "Flag a login to one system from a new geography shortly after a login to another system from a different geography",
+      "Flag a password-reset or new-device login on one system followed by a permission change on another",
+      "Correlate against the current staff travel or remote-work pattern before flagging, to cut false positives",
+      "Hand a confirmed pattern straight to the incident-response runbook, not just a dashboard"
+    ],
+    "inputs": [
+      "Login logs from every admin-level connected system",
+      "Known staff location/device baseline"
+    ],
+    "outputs": [
+      "Cross-system anomaly flag with the correlated evidence",
+      "False-positive-checked incident candidate"
+    ],
+    "trigger": "Continuous, reviewed daily",
+    "autonomy": "founder_gate",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [
+      "log aggregation across systems",
+      "correlation rules"
+    ],
+    "skills": [],
+    "subagent": "money_and_ops_specialist",
+    "sources": {
+      "web": [],
+      "bank": []
+    },
+    "found_in": "possible",
+    "founder_sees": "The correlated anomaly and the evidence from each system, before any action is taken",
+    "human_role": "IT/security",
+    "today_done_by": "nobody"
+  },
+  {
+    "id": "MONEY-C06",
+    "extends": "MONEY-C06",
+    "name": "Plan Q4 holiday and promo-calendar cash peaks on top of the rolling forecast",
+    "folders": [
+      "20-FIN"
+    ],
+    "what": "Extend the rolling 13-week cash forecast to explicitly plan the peak-season cash squeeze: inventory pre-build financing before Q4 holiday (Black Friday, Cyber Monday, Prime Day) and other named-date peaks (Mother's Day, Father's Day, back to school, Valentine's Day, July 4), and sales-tax refund or credit timing that can free up cash. India-selling brands plan the same squeeze around Diwali and wedding season, with the COD collection lag and GST input-credit refund timing added as a market option that reads null for US-only brands.",
+    "encompasses": [
+      "Layer the Q4/BFCM (or other named-peak) inventory pre-build cost onto the forecast weeks before the peak, not the week it ships",
+      "Track sales-tax refund or credit timing as a cash inflow, not just a compliance item",
+      "Flag the single lowest-cash week across the whole peak build-up, not just the current 13 weeks",
+      "Compare this year's peak cash plan to last year's actual peak cash low",
+      "India only: model the COD collection lag widening during Diwali/wedding-season peak (courier volume strain) and track GST input-credit refund timing (reads null for US brands)"
+    ],
+    "inputs": [
+      "Rolling cash forecast",
+      "Holiday/promo marketing calendar",
+      "Inventory pre-build plan",
+      "Sales-tax refund/credit status",
+      "India only: GST refund status"
+    ],
+    "outputs": [
+      "Extended peak-season cash forecast",
+      "Lowest-cash-week flag across the full peak build-up"
+    ],
+    "trigger": "Ahead of each major seasonal peak",
+    "autonomy": "agent_does",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [
+      "cash forecast engine"
+    ],
+    "skills": [
+      "dataviz"
+    ],
+    "subagent": "money_and_ops_specialist",
+    "sources": {
+      "web": [
+        "https://www.shopify.com/enterprise/blog/holiday-shopping-statistics"
+      ],
+      "bank": []
+    },
+    "found_in": "web_only",
+    "founder_sees": "The lowest cash point across the full peak build-up and what drives it",
+    "human_role": "fractional CFO",
+    "today_done_by": "founder"
+  },
+  {
+    "id": "MONEY-C12",
+    "extends": "MONEY-C12",
+    "name": "Prepare and file US state sales tax returns through Avalara or TaxJar",
+    "folders": [
+      "20-FIN"
+    ],
+    "what": "Beyond tracking where nexus exists, run the actual filing mechanics through Avalara or TaxJar: sync taxability and exemption/resale-certificate data, prepare and file the return in each registered state on its own schedule, and reconcile collected-vs-remitted before every filing. India-selling brands run the equivalent e-invoice, e-way bill and GSTR filing mechanics as a market option; that path reads null for US-only brands.",
+    "encompasses": [
+      "Sync product taxability mappings and exemption/resale certificates into Avalara or TaxJar",
+      "Generate the return-ready transaction detail for every registered state each filing period",
+      "Prepare and file the state sales tax return on that state's own due date (monthly, quarterly or annual by state)",
+      "Reconcile sales tax collected against sales tax remitted per state before filing",
+      "Flag a mismatch between the ledger, the Avalara/TaxJar report and the state portal before the filing deadline",
+      "India only: generate a compliant e-invoice at point of sale, generate an e-way bill for shipments over the threshold, prepare GSTR-1 and GSTR-3B, and reconcile input tax credit against GSTR-2B before filing (reads null for US brands)"
+    ],
+    "inputs": [
+      "Sales register by state",
+      "Avalara or TaxJar taxability and filing status",
+      "Resale/exemption certificates on file",
+      "India only: purchase register, GSTR-2B from the GST portal, e-invoice/e-way bill thresholds"
+    ],
+    "outputs": [
+      "Draft state sales tax returns",
+      "Collected-vs-remitted reconciliation by state",
+      "India only: draft e-invoices, e-way bills, GSTR-1 and GSTR-3B, ITC mismatch report"
+    ],
+    "trigger": "Per each state's own filing schedule (India: per invoice/shipment for e-invoicing, monthly for GSTR-1/3B)",
+    "autonomy": "founder_gate",
+    "external_write": {
+      "needed": true,
+      "surface": "Avalara or TaxJar, and state tax portals (India: GST portal / GSP connector)"
+    },
+    "tools": [
+      "Avalara or TaxJar",
+      "state tax portal filing automation",
+      "India only: GSP/e-invoice API or portal automation, ITC reconciliation script"
+    ],
+    "skills": [],
+    "subagent": "money_and_ops_specialist",
+    "sources": {
+      "web": [
+        "https://www.avalara.com/",
+        "https://www.taxjar.com/"
+      ],
+      "bank": []
+    },
+    "found_in": "web_only",
+    "founder_sees": "The draft filings and any reconciliation mismatch before the deadline",
+    "human_role": "e-commerce accountant / sales-tax practitioner (India: GST practitioner)",
+    "today_done_by": "freelancer"
+  },
+  {
+    "id": "MONEY-C32",
+    "extends": "MONEY-C32",
+    "name": "Source, screen and support offer negotiation, not just the hiring scorecard",
+    "folders": [
+      "21-OPS"
+    ],
+    "what": "Extend structured hiring past the scorecard and job ad into the actual sourcing and screening work: choosing outreach channels, running the first screen, and preparing the offer negotiation.",
+    "encompasses": [
+      "Pick sourcing channels by role (LinkedIn, niche job boards, referral) instead of one default channel for every role",
+      "Draft outreach messages to passive candidates that reference the actual role artefact",
+      "Run a structured first-screen call script against the scorecard, not an open chat",
+      "Track candidate pipeline stage and time-in-stage per role",
+      "Prepare an offer with a band-consistent number and a negotiation range before the founder calls the candidate"
+    ],
+    "inputs": [
+      "Job description and scorecard",
+      "Candidate pipeline",
+      "Comp bands"
+    ],
+    "outputs": [
+      "Sourcing channel plan",
+      "Outreach message drafts",
+      "Screening notes against the scorecard",
+      "Offer preparation with negotiation range"
+    ],
+    "trigger": "Per open role",
+    "autonomy": "human_assist",
+    "external_write": {
+      "needed": true,
+      "surface": "job boards / candidate messaging"
+    },
+    "tools": [
+      "sourcing channel research",
+      "outreach draft",
+      "pipeline tracker"
+    ],
+    "skills": [],
+    "subagent": "money_and_ops_specialist",
+    "sources": {
+      "web": [
+        "https://www.hirechore.com/startups/role-of-chief-of-staff-in-the-startup-ecosystem"
+      ],
+      "bank": []
+    },
+    "found_in": "web_only",
+    "founder_sees": "The pipeline by stage and the offer before it goes to the candidate",
+    "human_role": "recruiter",
+    "today_done_by": "freelancer"
+  },
+  {
+    "id": "MONEY-C33",
+    "extends": "MONEY-C33",
+    "name": "Provision accounts and equipment as part of onboarding, not just write the SOPs",
+    "folders": [
+      "21-OPS"
+    ],
+    "what": "Extend the SOP-writing job into the actual first-week checklist: what gets provisioned, in what order, and what confirms a new hire is actually ready on day one.",
+    "encompasses": [
+      "Generate the account and access-provisioning checklist per role (email, Slack, Shopify admin tier, ad accounts)",
+      "Order equipment (laptop, peripherals) with enough lead time before the start date",
+      "Schedule the first-week meeting and shadow plan against the role's SOPs",
+      "Confirm every provisioning step is actually done before day one, not assumed",
+      "Flag a role that has grown past its current SOP set"
+    ],
+    "inputs": [
+      "Role SOP set",
+      "Access-tier list per role",
+      "Start date"
+    ],
+    "outputs": [
+      "Provisioning checklist with completion status",
+      "First-week schedule",
+      "Access-tier confirmation"
+    ],
+    "trigger": "Per new hire, ahead of the start date",
+    "autonomy": "human_assist",
+    "external_write": {
+      "needed": true,
+      "surface": "identity/access systems"
+    },
+    "tools": [
+      "access management",
+      "equipment ordering",
+      "scheduling"
+    ],
+    "skills": [],
+    "subagent": "money_and_ops_specialist",
+    "sources": {
+      "web": [
+        "https://www.nextlevel.coach/blog/chief-of-staff-startup-role"
+      ],
+      "bank": []
+    },
+    "found_in": "web_only",
+    "founder_sees": "The provisioning checklist and any step not done before day one",
+    "human_role": "IT admin / operations manager",
+    "today_done_by": "in-house"
+  },
+  {
+    "id": "MONEY-C34",
+    "extends": "MONEY-C34",
+    "name": "Turn meeting notes into a tracked action-item pipeline",
+    "folders": [
+      "21-OPS"
+    ],
+    "what": "Extend the meeting-rhythm design into the mechanics after each meeting: capturing notes, extracting action items with an owner and a date, and nudging before they go stale.",
+    "encompasses": [
+      "Capture structured notes from each meeting in the cadence (weekly trading review, quarterly deep dive)",
+      "Extract action items with one owner and one date each, never a vague next step",
+      "Carry an open action item forward automatically until it is closed",
+      "Nudge an owner before an action item's date, and flag it late the day after",
+      "Roll up a visible open-items count per person for the next meeting in the cadence"
+    ],
+    "inputs": [
+      "Meeting notes or recording",
+      "The management rhythm calendar"
+    ],
+    "outputs": [
+      "Structured notes per meeting",
+      "Action item list with owner and date",
+      "Late/open item nudges"
+    ],
+    "trigger": "After each meeting in the cadence",
+    "autonomy": "agent_does",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [
+      "notes capture",
+      "action-item tracker"
+    ],
+    "skills": [],
+    "subagent": "money_and_ops_specialist",
+    "sources": {
+      "web": [],
+      "bank": []
+    },
+    "found_in": "web_only",
+    "founder_sees": "The open action items, who owns them, and which are late",
+    "human_role": "chief of staff",
+    "today_done_by": "founder"
+  },
+  {
+    "id": "MONEY-C39",
+    "extends": "MONEY-C39",
+    "name": "Audit SaaS spend, renewals and unused seats, not just tooling fit",
+    "folders": [
+      "21-OPS"
+    ],
+    "what": "Extend the tooling-vs-revenue-stage audit into an ongoing spend audit: what is renewing when, what is sitting unused, and what could be consolidated or renegotiated.",
+    "encompasses": [
+      "Build one calendar of every SaaS contract's renewal date and notice period",
+      "Detect unused or barely-used seats and features per tool from actual usage logs",
+      "Flag two tools that overlap in function and could consolidate to one",
+      "Prepare a negotiation brief (usage numbers, competitor pricing, contract length options) before a renewal call",
+      "Track total SaaS spend as a percentage of revenue over time against the brand's own history"
+    ],
+    "inputs": [
+      "SaaS contract terms",
+      "Tool usage logs",
+      "Total SaaS spend history"
+    ],
+    "outputs": [
+      "Renewal calendar",
+      "Unused-seat and overlap report",
+      "Renegotiation brief per upcoming renewal"
+    ],
+    "trigger": "Monthly for the calendar, ahead of each renewal for the brief",
+    "autonomy": "human_assist",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [
+      "contract calendar",
+      "usage log pull"
+    ],
+    "skills": [],
+    "subagent": "money_and_ops_specialist",
+    "sources": {
+      "web": [
+        "https://www.vendr.com/blog/saas-vendor-management",
+        "https://www.stackpack.ai/blog/best-vendor-management-software"
+      ],
+      "bank": []
+    },
+    "found_in": "web_only",
+    "founder_sees": "The renewal calendar, unused-seat list, and the negotiation brief before each renewal",
+    "human_role": "operations manager",
+    "today_done_by": "in-house"
+  },
+  {
+    "id": "MONEY-C49",
+    "extends": "MONEY-C49",
+    "name": "Maintain a breach-notification runbook and data-processing agreement repository",
+    "folders": [
+      "23-SEC"
+    ],
+    "what": "Extend the privacy and consent audit into the response side: a ready breach-notification runbook with the actual legal timelines, and one repository of every signed data-processing agreement.",
+    "encompasses": [
+      "Write the breach-notification runbook with the specific timeline each jurisdiction requires",
+      "Pre-draft the notification templates (regulator, affected customers, payment processor) so nothing is written under pressure",
+      "Maintain a repository of every signed data-processing agreement by vendor",
+      "Flag a vendor holding customer data with no DPA on file",
+      "Run a tabletop walk-through of the runbook at least once a year"
+    ],
+    "inputs": [
+      "Applicable privacy law jurisdictions",
+      "Vendor data-processing agreements",
+      "Incident response runbook"
+    ],
+    "outputs": [
+      "Breach-notification runbook with timelines",
+      "Pre-drafted notification templates",
+      "DPA repository with gaps flagged"
+    ],
+    "trigger": "Annually, or immediately on a suspected breach",
+    "autonomy": "founder_gate",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [
+      "runbook template",
+      "document repository"
+    ],
+    "skills": [],
+    "subagent": "money_and_ops_specialist",
+    "sources": {
+      "web": [
+        "https://www.techinsurance.com/retail-insurance/e-commerce-online-retailer"
+      ],
+      "bank": []
+    },
+    "found_in": "web_only",
+    "founder_sees": "The runbook readiness and any vendor with data access but no DPA",
+    "human_role": "IT/security or legal counsel",
+    "today_done_by": "nobody"
+  }
+]

@@ -1,0 +1,1593 @@
+[
+  {
+    "room": "Creative",
+    "agent": "CREA",
+    "who_uses": [
+      "founder",
+      "creative strategist or media buyer",
+      "agency account manager",
+      "designer or video editor"
+    ],
+    "jobs": [
+      {
+        "job": "see which live ads are winning or losing and why, broken into hook, structure, proof, offer and CTA",
+        "question": "which ads should I copy the pattern of and which should I kill",
+        "capabilities": [
+          "CREA-C16",
+          "CREA-C42"
+        ]
+      },
+      {
+        "job": "tell a genuinely worn-out ad apart from one that just has a small, undertested audience",
+        "question": "is this ad fatigued or just underfunded",
+        "capabilities": [
+          "CREA-C15"
+        ]
+      },
+      {
+        "job": "turn customer language and personas into a testable angle before booking anything",
+        "question": "what angle should the next batch of creative argue, and for whom",
+        "capabilities": [
+          "CREA-C01",
+          "CREA-C02",
+          "CREA-C03"
+        ]
+      },
+      {
+        "job": "write the one-page brief before any shoot or design tool opens",
+        "question": "what exactly are we building, for whom, and why",
+        "capabilities": [
+          "CREA-C06"
+        ]
+      },
+      {
+        "job": "build and grade a bank of opening hooks before scripting a full ad",
+        "question": "which hook actually stops the scroll",
+        "capabilities": [
+          "CREA-C04"
+        ]
+      },
+      {
+        "job": "produce static ad concepts and variants from an approved brief",
+        "question": "how many usable statics came out of this brief, and does the product shown match what ships",
+        "capabilities": [
+          "CREA-C07",
+          "CREA-C12"
+        ]
+      },
+      {
+        "job": "script and storyboard video, VSL and founder-led ads in the proven order",
+        "question": "does this script hit hook, mechanism, proof, objection and CTA, and stay an argument, not a biography",
+        "capabilities": [
+          "CREA-C08",
+          "CREA-C09"
+        ]
+      },
+      {
+        "job": "source, vet and authorize UGC and whitelisted creator content",
+        "question": "which creators are worth briefing again, and are we cleared to run their post as a paid ad",
+        "capabilities": [
+          "CREA-C10",
+          "CREA-C38",
+          "CREA-C51"
+        ]
+      },
+      {
+        "job": "generate a finished AI-actor video end to end without booking a shoot",
+        "question": "can we get a working cold-open video today instead of in two weeks",
+        "capabilities": [
+          "CREA-C36"
+        ]
+      },
+      {
+        "job": "pick the right native format and localise for the target market and device",
+        "question": "does this concept fit the platform and the market, or does it need a redo",
+        "capabilities": [
+          "CREA-C11",
+          "CREA-C19",
+          "CREA-C22"
+        ]
+      },
+      {
+        "job": "turn one approved master into every placement, caption and length automatically",
+        "question": "how much manual resizing, subtitling and cutting can we skip",
+        "capabilities": [
+          "CREA-C39",
+          "CREA-C40",
+          "CREA-C41"
+        ]
+      },
+      {
+        "job": "run creative as a monthly pipeline against volume, budget, naming and the holiday calendar",
+        "question": "are we making enough of the right creative, on time, on budget, and tagged right",
+        "capabilities": [
+          "CREA-C17",
+          "CREA-C18",
+          "CREA-C20",
+          "CREA-C21",
+          "CREA-C50",
+          "CREA-C54"
+        ]
+      },
+      {
+        "job": "flag catalogue and rights risk before anything goes live at scale",
+        "question": "will this feed or overlay break on some SKUs, or does an asset carry a license risk",
+        "capabilities": [
+          "CREA-C23",
+          "CREA-C43",
+          "CREA-C49",
+          "CREA-C52"
+        ]
+      },
+      {
+        "job": "study competitor creative for gaps, and stage approved work as paused drafts",
+        "question": "what are competitors testing that we are not, and can I get approved creative into Ads Manager as a draft without touching a live setting",
+        "capabilities": [
+          "CREA-C33",
+          "CREA-C46",
+          "CREA-C47",
+          "CREA-C48"
+        ]
+      }
+    ],
+    "metrics": [
+      {
+        "name": "hook_rate",
+        "plain": "how many people stop scrolling in the first 3 seconds of a video ad",
+        "formula": "3-second video plays divided by impressions",
+        "source": "Meta ad-day and video-day rows (existing gallery cache)",
+        "window": "trailing 30 days, per ad",
+        "freshness_rule": "stale after 7 days with no new spend",
+        "unavailable_when": "fewer than 500 impressions, or the ad is mostly shown as a still image (video played in under 20% of impressions)",
+        "benchmark": "industry range about 15 to 25% for cold prospecting video on Meta feed; varies by category, account-relative is more reliable"
+      },
+      {
+        "name": "hold_rate",
+        "plain": "of the people who stopped, how many kept watching",
+        "formula": "ThruPlays divided by 3-second plays",
+        "source": "Meta video-day rows",
+        "window": "trailing 30 days, per ad",
+        "freshness_rule": "stale after 7 days with no new spend",
+        "unavailable_when": "fewer than 500 impressions or mostly shown as a still image",
+        "benchmark": "account-relative only, no external benchmark"
+      },
+      {
+        "name": "audience_reach_growth",
+        "plain": "whether the ad set still has new people to show the ad to",
+        "formula": "reach in the last 7 days divided by reach in the 7 days before it, minus 1",
+        "source": "Meta ad-set reach and frequency rows",
+        "window": "trailing 7 vs prior 7 days",
+        "freshness_rule": "stale after 3 days with no new spend",
+        "unavailable_when": "ad set has no reach breakdown in the pull",
+        "benchmark": "account-relative only; used to separate a shrinking pool from real creative wear"
+      },
+      {
+        "name": "days_to_fatigue_by_format",
+        "plain": "how many days a format usually lasts before it starts losing steam",
+        "formula": "median days from first spend to the day CTR first drops 25% and stays down, grouped by format",
+        "source": "existing lifecycle engine (meta_gallery)",
+        "window": "trailing 12 months",
+        "freshness_rule": "recompute weekly",
+        "unavailable_when": "fewer than 5 ads of that format have a full lifecycle",
+        "benchmark": "account-relative only"
+      },
+      {
+        "name": "winner_breakdown_coverage",
+        "plain": "share of this month's clear winners and losers that actually have a written reason on file",
+        "formula": "ads in the top or bottom spend quartile with a saved breakdown, divided by all ads in that quartile",
+        "source": "breakdowns.json (existing) plus spend quartile from the gallery",
+        "window": "trailing 30 days",
+        "freshness_rule": "recompute daily",
+        "unavailable_when": "no breakdowns saved yet",
+        "benchmark": "account-relative only; target is 100%"
+      },
+      {
+        "name": "brief_to_launch_days",
+        "plain": "how long it takes from a written brief to the ad actually spending",
+        "formula": "median of (first spend date minus brief date) for ads matched to a brief_id",
+        "source": "new brief log matched to ad launch date",
+        "window": "trailing 90 days",
+        "freshness_rule": "recompute weekly",
+        "unavailable_when": "fewer than 3 briefs matched to a launched ad",
+        "benchmark": "account-relative only"
+      },
+      {
+        "name": "concepts_per_brief",
+        "plain": "how many usable variants one brief produces in the studio",
+        "formula": "count of saved studio variants divided by count of briefs in the same period",
+        "source": "creative studio variant log",
+        "window": "trailing 30 days",
+        "freshness_rule": "recompute weekly",
+        "unavailable_when": "no briefs logged this period",
+        "benchmark": "account-relative only"
+      },
+      {
+        "name": "new_ad_hit_rate",
+        "plain": "share of newly launched ads that actually earn a Scale verdict",
+        "formula": "ads launched in the window that reach a Scale verdict within 14 days of first spend, divided by all ads launched in the window",
+        "source": "existing verdict engine plus launch date",
+        "window": "trailing 90 days of launches",
+        "freshness_rule": "recompute weekly",
+        "unavailable_when": "fewer than 5 ads launched in the window",
+        "benchmark": "account-relative only; compare this month to the trailing quarter"
+      },
+      {
+        "name": "cost_per_produced_asset",
+        "plain": "what a finished asset actually costs, all in",
+        "formula": "sum of AI credits, freelancer or agency invoices and stock license fees for the month, divided by finished assets that reached a live ad that month",
+        "source": "new production cost log",
+        "window": "monthly",
+        "freshness_rule": "recompute weekly within the month",
+        "unavailable_when": "no cost entries logged this month",
+        "benchmark": "account-relative only, compared to the trailing 3-month average"
+      },
+      {
+        "name": "pipeline_volume_vs_plan",
+        "plain": "are we on pace to make as much creative as the plan calls for",
+        "formula": "assets shipped to a live ad this month divided by the month's planned asset count",
+        "source": "pipeline plan and shipped-asset log",
+        "window": "monthly, checked daily",
+        "freshness_rule": "recompute daily",
+        "unavailable_when": "no plan set for the month",
+        "benchmark": "account-relative only; target is 100% by month end"
+      },
+      {
+        "name": "dpa_feed_health",
+        "plain": "share of catalogue products whose price and badge overlay actually render correctly",
+        "formula": "SKUs with no flagged overlay issue divided by all active SKUs in the feed",
+        "source": "catalogue feed plus overlay QA log",
+        "window": "latest feed sync",
+        "freshness_rule": "recompute on every feed sync",
+        "unavailable_when": "no DPA or catalogue-retargeting campaign running",
+        "benchmark": "account-relative only; target is 100%"
+      },
+      {
+        "name": "rights_expiry_risk",
+        "plain": "how many live ads are about to lose their license or authorization",
+        "formula": "count of live ads whose stock, music, font license or creator whitelisting record expires within 30 days",
+        "source": "new rights and authorization log",
+        "window": "checked daily",
+        "freshness_rule": "recompute daily",
+        "unavailable_when": "no rights log entries exist",
+        "benchmark": "account-relative only; target is 0"
+      },
+      {
+        "name": "resize_and_caption_coverage",
+        "plain": "share of approved masters that have every required size, caption and alt text ready",
+        "formula": "approved masters with all required placement specs generated, captioned and alt-texted, divided by all approved masters",
+        "source": "new asset export and QA log",
+        "window": "trailing 30 days",
+        "freshness_rule": "recompute daily",
+        "unavailable_when": "no export log yet",
+        "benchmark": "account-relative only; target is 100% within 3 days of approval"
+      },
+      {
+        "name": "predictive_score_agreement",
+        "plain": "whether the pre-spend score actually predicted the real result",
+        "formula": "scored ads whose predicted bucket (strong, mixed, weak) matches their actual 14-day verdict bucket, divided by all scored ads with 14 days of spend",
+        "source": "predictive scoring log plus verdict engine",
+        "window": "trailing 90 days of scored ads",
+        "freshness_rule": "recompute weekly",
+        "unavailable_when": "fewer than 10 scored ads have 14 days of spend",
+        "benchmark": "account-relative only; below 50% means treat the score as a rough filter only"
+      },
+      {
+        "name": "competitor_format_angle_gap_count",
+        "plain": "how many formats or angles competitors run at volume that we have not tested recently",
+        "formula": "count of format-or-angle combinations run by 3 or more competitors on over 20% of their active ads, with zero matching live ads from this account in the trailing 90 days",
+        "source": "competitor snapshot (competitors.json, comp_media.json) plus own tag taxonomy (themes.py)",
+        "window": "latest competitor pull vs trailing 90 days own",
+        "freshness_rule": "stale when the competitor pull is over 30 days old",
+        "unavailable_when": "no competitor pull on file",
+        "benchmark": "signal only, not a proven winner"
+      },
+      {
+        "name": "approved_draft_backlog",
+        "plain": "how many approved creatives are waiting to become a real draft ad",
+        "formula": "count of approved creatives with no matching Ads Manager draft ID after 3 business days",
+        "source": "approval log and draft-upload log",
+        "window": "current",
+        "freshness_rule": "recompute daily",
+        "unavailable_when": "no approval log yet",
+        "benchmark": "account-relative only; target is 0 after 3 business days"
+      },
+      {
+        "name": "production_cost_share_of_media_spend",
+        "plain": "how much of the ad budget is going into making the ads versus running them",
+        "formula": "monthly production cost divided by monthly media spend",
+        "source": "production cost log and Meta spend total",
+        "window": "monthly",
+        "freshness_rule": "recompute weekly",
+        "unavailable_when": "no cost entries logged this month",
+        "benchmark": "account-relative only"
+      }
+    ],
+    "insights": [
+      {
+        "name": "worn_out_vs_undertested",
+        "rule": "an ad's CTR is down 25% or more and ROAS is down 30% or more over the last 7 days versus the prior 21, AND its ad set's reach in the last 7 days grew less than 10% versus the 7 days before: call it worn out. If reach still grew 10% or more while CTR or ROAS fell, call it a targeting or sequencing problem, not fatigue.",
+        "computed_from": [
+          "ad daily rows",
+          "ad-set reach and frequency rows"
+        ],
+        "sentence": "{ad_name} looks worn out. CTR is down {ctr_pct}% and its audience has stopped growing.",
+        "severity": "high if ROAS is below target, otherwise medium",
+        "action_capability": "CREA-C15"
+      },
+      {
+        "name": "hidden_gem_hook",
+        "rule": "an ad's hook_rate is in the top quartile of the account's trailing 90 days, but its verdict is Watch or Cut",
+        "computed_from": [
+          "video-day rows",
+          "verdict engine"
+        ],
+        "sentence": "{ad_name}'s hook stops {hook_pct}% of viewers, above your best quarter of ads, but it is not converting. Try the same hook with a different offer.",
+        "severity": "medium",
+        "action_capability": "CREA-C04"
+      },
+      {
+        "name": "loser_with_no_breakdown",
+        "rule": "an ad in the bottom spend quartile has spent at least one target CPA, its ROAS is under half the target, and it has been live 14 days or more with no saved breakdown",
+        "computed_from": [
+          "ad daily rows",
+          "breakdowns.json"
+        ],
+        "sentence": "{ad_name} spent {spend} at {roas}x with no breakdown on file. Write one before the next batch is commissioned.",
+        "severity": "high",
+        "action_capability": "CREA-C16"
+      },
+      {
+        "name": "brief_less_spend",
+        "rule": "an ad is currently spending and has no brief_id recorded in the brief log",
+        "computed_from": [
+          "ad daily rows",
+          "brief log"
+        ],
+        "sentence": "{n} live ads have no brief on file, including {ad_name}.",
+        "severity": "medium",
+        "action_capability": "CREA-C06"
+      },
+      {
+        "name": "pipeline_behind_plan",
+        "rule": "assets shipped this month are under 70% of the planned count with 5 or fewer days left in the month",
+        "computed_from": [
+          "pipeline plan",
+          "shipped-asset log"
+        ],
+        "sentence": "{shipped} of {planned} planned assets have shipped with {days} days left this month.",
+        "severity": "high",
+        "action_capability": "CREA-C18"
+      },
+      {
+        "name": "cost_per_asset_drifting_up",
+        "rule": "this month's cost per produced asset is more than 1.3 times the trailing 3-month average",
+        "computed_from": [
+          "production cost log"
+        ],
+        "sentence": "Cost per finished asset is {cost}, {pct}% above your 3-month average.",
+        "severity": "medium",
+        "action_capability": "CREA-C54"
+      },
+      {
+        "name": "rights_expiring_soon",
+        "rule": "a live ad's stock, music, font license or creator whitelisting record expires within 14 days",
+        "computed_from": [
+          "rights and authorization log",
+          "live ad set"
+        ],
+        "sentence": "{n} live ads use a license or authorization expiring within 14 days.",
+        "severity": "high",
+        "action_capability": "CREA-C49"
+      },
+      {
+        "name": "dpa_template_broken",
+        "rule": "overlay QA flags an issue on more than 2% of active catalogue SKUs",
+        "computed_from": [
+          "catalogue feed",
+          "overlay QA log"
+        ],
+        "sentence": "{pct}% of SKUs in the feed show a broken price or badge overlay.",
+        "severity": "high",
+        "action_capability": "CREA-C52"
+      },
+      {
+        "name": "asset_qa_gap",
+        "rule": "an approved master creative is missing a required placement size, a burned-in caption, or alt text more than 3 days after approval",
+        "computed_from": [
+          "asset export and QA log"
+        ],
+        "sentence": "{n} approved creatives are missing a size, caption or alt text more than 3 days after approval.",
+        "severity": "medium",
+        "action_capability": "CREA-C39"
+      },
+      {
+        "name": "predictive_score_miscalibrated",
+        "rule": "the predictive score's bucket matched the actual 14-day verdict on fewer than half of the last 20 scored ads",
+        "computed_from": [
+          "predictive scoring log",
+          "verdict engine"
+        ],
+        "sentence": "The pre-spend score matched the real result on only {pct}% of the last {n} ads. Treat it as a rough filter, not a green light.",
+        "severity": "medium",
+        "action_capability": "CREA-C42"
+      },
+      {
+        "name": "competitor_volume_gap",
+        "rule": "3 or more competitors run a format or angle on over 20% of their active ads, and this account has zero live ads in that format or angle in the trailing 90 days",
+        "computed_from": [
+          "competitor snapshot",
+          "own tag taxonomy"
+        ],
+        "sentence": "{n} competitors run {format_or_angle} on over a fifth of their active ads. You have none live in the last 90 days. This is a signal, not proof it will work here.",
+        "severity": "low",
+        "action_capability": "CREA-C33"
+      },
+      {
+        "name": "draft_backlog_piling_up",
+        "rule": "an approved creative has waited more than 3 business days without a matching Ads Manager draft ID",
+        "computed_from": [
+          "approval log",
+          "draft-upload log"
+        ],
+        "sentence": "{n} approved creatives have waited over 3 days to become a draft ad.",
+        "severity": "medium",
+        "action_capability": "CREA-C48"
+      },
+      {
+        "name": "hit_rate_falling",
+        "rule": "the new-ad hit rate for launches in the last 30 days is 20 percentage points or more below the trailing 90-day hit rate, with at least 5 launches in each window",
+        "computed_from": [
+          "verdict engine",
+          "launch dates"
+        ],
+        "sentence": "Only {pct}% of last month's new ads hit Scale, versus {pct2}% over the last quarter.",
+        "severity": "high",
+        "action_capability": "CREA-C17"
+      }
+    ],
+    "visuals": [
+      {
+        "name": "winners and losers grid",
+        "type": "sortable card grid with thumbnails",
+        "shows": "every ad ranked by spend with verdict, ROAS, hook rate and a link to its breakdown",
+        "why_this_chart": "a founder scans thumbnails faster than a table of numbers",
+        "exists_today": true
+      },
+      {
+        "name": "fatigue diagnosis chart",
+        "type": "line chart, 3 lines plus an annotation",
+        "shows": "daily spend, rolling 7-day ROAS and link CTR, with the reach-growth line and the worn-out-or-not verdict marked",
+        "why_this_chart": "shows the reach line the native Meta fatigue flag leaves out",
+        "exists_today": false
+      },
+      {
+        "name": "hook bank leaderboard",
+        "type": "ranked list with thumbnails or waveform for audio hooks",
+        "shows": "every hook in the bank, its grade, and which ads it has been tested in",
+        "why_this_chart": "lets a writer reuse a proven hook instead of starting blank",
+        "exists_today": false
+      },
+      {
+        "name": "production pipeline funnel",
+        "type": "funnel chart",
+        "shows": "briefs written, concepts made, assets shipped, ads launched, ads that hit Scale, in one month",
+        "why_this_chart": "shows exactly where volume is being lost, not just a monthly total",
+        "exists_today": false
+      },
+      {
+        "name": "cost per asset over time",
+        "type": "line chart with a budget line",
+        "shows": "monthly cost per finished asset against the planned budget per asset",
+        "why_this_chart": "ties creative spend to output, not just media spend",
+        "exists_today": false
+      },
+      {
+        "name": "rights and authorization calendar",
+        "type": "timeline",
+        "shows": "every licensed asset, stock clip and whitelisting window with its expiry date against currently live ads",
+        "why_this_chart": "turns a compliance risk into a date on a calendar, not a buried spreadsheet",
+        "exists_today": false
+      },
+      {
+        "name": "competitor format and angle heatmap",
+        "type": "matrix, own volume vs competitor volume",
+        "shows": "each format and angle combination, this account's live count against competitor count",
+        "why_this_chart": "extends the existing Competitors tab from a browsing list into a gap finder",
+        "exists_today": false
+      }
+    ],
+    "actions": [
+      {
+        "label": "See full breakdown",
+        "capability": "CREA-C16",
+        "autonomy": "agent_does"
+      },
+      {
+        "label": "Revive with a new hook or format swap",
+        "capability": "CREA-C15",
+        "autonomy": "agent_does"
+      },
+      {
+        "label": "Build a testable angle from research",
+        "capability": "CREA-C03",
+        "autonomy": "agent_does"
+      },
+      {
+        "label": "Write the brief",
+        "capability": "CREA-C06",
+        "autonomy": "agent_does"
+      },
+      {
+        "label": "Build or grade a hook bank",
+        "capability": "CREA-C04",
+        "autonomy": "agent_does"
+      },
+      {
+        "label": "Make variants in the studio",
+        "capability": "CREA-C07",
+        "autonomy": "agent_does"
+      },
+      {
+        "label": "Write the video script and storyboard",
+        "capability": "CREA-C08",
+        "autonomy": "agent_does"
+      },
+      {
+        "label": "Book a UGC creator brief",
+        "capability": "CREA-C10",
+        "autonomy": "human_assist"
+      },
+      {
+        "label": "Scan socials for organic content worth paying for",
+        "capability": "CREA-C51",
+        "autonomy": "human_assist"
+      },
+      {
+        "label": "Request creator whitelisting or Spark authorization",
+        "capability": "CREA-C38",
+        "autonomy": "founder_gate"
+      },
+      {
+        "label": "Generate an AI-actor video end to end",
+        "capability": "CREA-C36",
+        "autonomy": "agent_does"
+      },
+      {
+        "label": "Score this creative before spend",
+        "capability": "CREA-C42",
+        "autonomy": "agent_does"
+      },
+      {
+        "label": "Resize to every missing placement",
+        "capability": "CREA-C39",
+        "autonomy": "agent_does"
+      },
+      {
+        "label": "Add captions and alt text",
+        "capability": "CREA-C40",
+        "autonomy": "agent_does"
+      },
+      {
+        "label": "Cut derivative lengths",
+        "capability": "CREA-C41",
+        "autonomy": "agent_does"
+      },
+      {
+        "label": "Add to the production calendar",
+        "capability": "CREA-C50",
+        "autonomy": "agent_does"
+      },
+      {
+        "label": "Log this cost against the budget",
+        "capability": "CREA-C54",
+        "autonomy": "agent_does"
+      },
+      {
+        "label": "Fix the DPA overlay template",
+        "capability": "CREA-C52",
+        "autonomy": "agent_does"
+      },
+      {
+        "label": "Flag or clear a stock, music or font rights risk",
+        "capability": "CREA-C49",
+        "autonomy": "agent_does"
+      },
+      {
+        "label": "Set up this test properly",
+        "capability": "CREA-C17",
+        "autonomy": "agent_does"
+      },
+      {
+        "label": "Build a mascot or character reference sheet",
+        "capability": "CREA-C47",
+        "autonomy": "agent_does"
+      },
+      {
+        "label": "Clone a consenting voice for new variants",
+        "capability": "CREA-C46",
+        "autonomy": "founder_gate"
+      },
+      {
+        "label": "Stage as a paused draft in Ads Manager",
+        "capability": "CREA-C48",
+        "autonomy": "founder_gate"
+      }
+    ],
+    "not_elsewhere": [
+      {
+        "claim": "Root-causes fatigue as a worn-out audience versus an under-tested budget, by checking whether the ad set's own reach has actually stopped growing",
+        "vs": "Meta Ads Manager's native fatigue flag reports rising frequency and falling CTR only; it does not check whether reach growth has actually flattened for that ad set"
+      },
+      {
+        "claim": "Ties a written why-it-worked or why-it-failed hypothesis to this account's own numbers and its brief, for every winner and loser",
+        "vs": "Foreplay and Motion tag ad elements like hook, format and angle automatically, but neither writes a hypothesis for this account's own result or links it back to the brief that produced it"
+      },
+      {
+        "claim": "Tracks real production cost per finished asset against the month's budget line and plan",
+        "vs": "Triple Whale's Creative Cockpit reports ROAS, thumbstop rate and hold rate per creative, but has no cost-per-asset or pipeline-budget view"
+      },
+      {
+        "claim": "Flags stock, music, font and creator-whitelisting rights expiring on currently live ads before a takedown risk lands",
+        "vs": "no creative analytics tool in this category tracks license or authorization expiry against ads that are actually live right now"
+      },
+      {
+        "claim": "Closes the loop on the pre-spend predictive score by checking it against this account's own real 14-day verdict",
+        "vs": "predictive creative scoring tools report a score at upload time but do not check it later against what the ad actually did in this account"
+      },
+      {
+        "claim": "Flags a broken price or badge overlay at the SKU level on the rendered creative itself, before a DPA campaign goes live at scale",
+        "vs": "Meta's Catalog diagnostics flag missing or malformed feed fields, not whether the price or badge overlay actually renders correctly on the ad"
+      }
+    ],
+    "data_needs": [
+      {
+        "table": "meta_ad_and_video_daily",
+        "fields": [
+          "brand",
+          "ad_id",
+          "date",
+          "spend",
+          "impressions",
+          "purchases",
+          "purchase_value",
+          "video_3s_plays",
+          "thruplays",
+          "reach",
+          "frequency"
+        ],
+        "connector_or_script": "existing meta_gallery.refresh meta plus meta_gallery.snapshot",
+        "refresh": "weekly and on demand"
+      },
+      {
+        "table": "ad_creative_breakdowns",
+        "fields": [
+          "ad_id",
+          "verdict",
+          "summary",
+          "why",
+          "structure",
+          "keep",
+          "test_next",
+          "watch_out",
+          "brief_id",
+          "model",
+          "date"
+        ],
+        "connector_or_script": "existing meta_gallery lab.js plus breakdowns.json",
+        "refresh": "on demand, per ad"
+      },
+      {
+        "table": "briefs",
+        "fields": [
+          "brief_id",
+          "date",
+          "persona",
+          "angle",
+          "offer",
+          "destination",
+          "awareness_stage",
+          "format",
+          "owner",
+          "status"
+        ],
+        "connector_or_script": "new creative brief tool (CREA-C06)",
+        "refresh": "on write"
+      },
+      {
+        "table": "hook_bank",
+        "fields": [
+          "hook_id",
+          "format",
+          "text_or_script",
+          "audio_type",
+          "on_screen_copy",
+          "visual_type",
+          "grade",
+          "tested_ad_ids"
+        ],
+        "connector_or_script": "new hook bank tool (CREA-C04)",
+        "refresh": "on write"
+      },
+      {
+        "table": "studio_variants",
+        "fields": [
+          "variant_id",
+          "source_ad_id",
+          "ref_role",
+          "prompt",
+          "image",
+          "created_at"
+        ],
+        "connector_or_script": "existing meta_gallery creative studio, /api/variants",
+        "refresh": "on demand"
+      },
+      {
+        "table": "production_cost_log",
+        "fields": [
+          "date",
+          "asset_id",
+          "cost_type",
+          "amount_inr",
+          "month_budget_line"
+        ],
+        "connector_or_script": "new manual or finance import (CREA-C54)",
+        "refresh": "weekly"
+      },
+      {
+        "table": "pipeline_plan",
+        "fields": [
+          "month",
+          "planned_assets",
+          "planned_budget",
+          "hit_rate_target"
+        ],
+        "connector_or_script": "new plan set from the account's own trailing hit rate (CREA-C18)",
+        "refresh": "monthly"
+      },
+      {
+        "table": "rights_and_authorizations",
+        "fields": [
+          "asset_id",
+          "type",
+          "license_or_consent_ref",
+          "expires_at",
+          "ad_ids_using"
+        ],
+        "connector_or_script": "new rights log (CREA-C49, CREA-C38)",
+        "refresh": "on write, checked daily"
+      },
+      {
+        "table": "dpa_overlay_qa",
+        "fields": [
+          "sku",
+          "feed_id",
+          "overlay_ok",
+          "issue",
+          "checked_at"
+        ],
+        "connector_or_script": "new catalogue overlay QA script (CREA-C52)",
+        "refresh": "on each feed sync"
+      },
+      {
+        "table": "asset_placement_coverage",
+        "fields": [
+          "master_creative_id",
+          "placement_spec",
+          "generated",
+          "captioned",
+          "alt_text"
+        ],
+        "connector_or_script": "new export and QA log (CREA-C39, CREA-C40, CREA-C41)",
+        "refresh": "on export"
+      },
+      {
+        "table": "predictive_scores",
+        "fields": [
+          "ad_or_draft_id",
+          "score",
+          "flagged_elements",
+          "scored_at",
+          "later_verdict"
+        ],
+        "connector_or_script": "new predictive scoring tool (CREA-C42) plus existing verdict engine",
+        "refresh": "on score, backfilled at day 14"
+      },
+      {
+        "table": "competitor_snapshot",
+        "fields": [
+          "brand",
+          "ad_id",
+          "format",
+          "angle_tags",
+          "days_live",
+          "versions"
+        ],
+        "connector_or_script": "existing competitors.json and comp_media.json, Ad Library search",
+        "refresh": "manual pull"
+      },
+      {
+        "table": "draft_upload_log",
+        "fields": [
+          "creative_id",
+          "approved_at",
+          "staged_at",
+          "ads_manager_draft_id"
+        ],
+        "connector_or_script": "new browser-agent draft log (CREA-C48)",
+        "refresh": "on stage"
+      }
+    ],
+    "founder_view_note": "Before any brief, cost or rights log exists, the room shows only what the Meta gallery already tracks: ad-level winners, losers and the existing spend-based fatigue flag. The breakdown coverage, pipeline, cost and rights sections show 'not started, nothing logged yet' rather than 0 or blank. The first useful thing to appear, once a single brief is logged, is whether current spend is running against a written brief at all."
+  },
+  {
+    "room": "Copy",
+    "agent": "CREA",
+    "who_uses": [
+      "founder",
+      "copywriter",
+      "compliance or legal reviewer",
+      "agency account manager"
+    ],
+    "jobs": [
+      {
+        "job": "check every claim, testimonial and guarantee line before it ships",
+        "question": "will this line get the ad rejected or make a promise we cannot keep",
+        "capabilities": [
+          "CREA-C14"
+        ]
+      },
+      {
+        "job": "catch when a live ad's promise no longer matches the page it sends to",
+        "question": "does this ad still say the same thing as the page it lands on",
+        "capabilities": [
+          "CREA-C27",
+          "CREA-C53"
+        ]
+      },
+      {
+        "job": "generate and grade headline and primary-text sets for a format",
+        "question": "which text set is actually ready to test",
+        "capabilities": [
+          "CREA-C05"
+        ]
+      },
+      {
+        "job": "keep every draft inside the account's fixed writing rules automatically",
+        "question": "is this draft too long, too fancy, or above the reading level we agreed on",
+        "capabilities": [
+          "CREA-C26",
+          "CREA-C34"
+        ]
+      },
+      {
+        "job": "turn an approved offer into copy, and frame its price honestly",
+        "question": "does this line describe an offer we can actually honor, and is the price framed the way we approved",
+        "capabilities": [
+          "CREA-C13",
+          "CREA-C31"
+        ]
+      },
+      {
+        "job": "write bottom-funnel lines for the objections buyers actually raise, worst one first",
+        "question": "are we answering the objection that is actually costing us sales, before the smaller ones",
+        "capabilities": [
+          "CREA-C24"
+        ]
+      },
+      {
+        "job": "write SMS and lifecycle email copy blocks inside carrier, platform and cadence rules",
+        "question": "is this send inside the rules and does it match the account's cadence plan",
+        "capabilities": [
+          "CREA-C29",
+          "CREA-C30"
+        ]
+      },
+      {
+        "job": "draft a first-pass ad copy set straight from a live product page",
+        "question": "can I get a starting set of ad copy today without waiting on a full brief",
+        "capabilities": [
+          "CREA-C37"
+        ]
+      },
+      {
+        "job": "write payment and delivery reassurance lines (BNPL, free returns, real delivery dates; COD-to-prepaid and RTO-reduction lines for an India-market brand, markets: IN)",
+        "question": "what do we say to remove payment and delivery hesitation without sounding pushy, or, for a COD brand, to move an order toward prepaid",
+        "capabilities": [
+          "CREA-C44"
+        ]
+      },
+      {
+        "job": "prep marketplace listing and brand-store module copy on the same claim tiers as ads",
+        "question": "is this listing or A+ module making a claim our ads are not allowed to make",
+        "capabilities": [
+          "CREA-C28",
+          "CREA-C45"
+        ]
+      },
+      {
+        "job": "route each ad's copy to the right destination and package an approved batch for bulk upload",
+        "question": "is this ad's copy written for the page it will actually land on, and is the upload sheet ready to submit",
+        "capabilities": [
+          "CREA-C25",
+          "CREA-C35",
+          "CREA-C20"
+        ]
+      },
+      {
+        "job": "name a new product or system so the name itself does selling work",
+        "question": "does this name carry the benefit or story on its own",
+        "capabilities": [
+          "CREA-C32"
+        ]
+      }
+    ],
+    "metrics": [
+      {
+        "name": "claim_check_pass_rate",
+        "plain": "share of copy sets that clear the claim check the first time",
+        "formula": "copy sets passed on first check divided by all copy sets checked",
+        "source": "claim check log",
+        "window": "trailing 30 days",
+        "freshness_rule": "recompute daily",
+        "unavailable_when": "no checks logged yet",
+        "benchmark": "account-relative only; target is 100% before anything ships"
+      },
+      {
+        "name": "flagged_claims_open",
+        "plain": "how many live ads or pages currently carry an unresolved flagged claim",
+        "formula": "count of live assets with a claim-check status of flag and no resolution",
+        "source": "claim check log joined to live ad and page set",
+        "window": "current",
+        "freshness_rule": "recompute daily",
+        "unavailable_when": "no claim tiers defined for this brand yet",
+        "benchmark": "account-relative only; target is 0"
+      },
+      {
+        "name": "message_match_score",
+        "plain": "how much of the ad's promise the landing page still says",
+        "formula": "matched items (same headline claim, same price or offer, same guarantee line, same top benefit) divided by total items checked, times 100",
+        "source": "ad copy inventory plus captured page copy blocks",
+        "window": "current live set, refreshed weekly",
+        "freshness_rule": "stale after 7 days or after any page edit",
+        "unavailable_when": "page copy blocks not yet captured for that destination",
+        "benchmark": "account-relative only; target is 100% on offer and price terms"
+      },
+      {
+        "name": "drift_alerts_count",
+        "plain": "how many live ads no longer match the page they send to",
+        "formula": "count of live ads flagged for an image, price, offer or headline mismatch against the current page",
+        "source": "ad-versus-page audit log",
+        "window": "checked daily",
+        "freshness_rule": "recompute daily",
+        "unavailable_when": "page copy blocks not captured",
+        "benchmark": "account-relative only; target is 0"
+      },
+      {
+        "name": "reading_grade_level",
+        "plain": "how hard the last month of shipped copy is to read",
+        "formula": "median Flesch-Kincaid grade level of copy shipped in the window",
+        "source": "copy QA log",
+        "window": "trailing 30 days",
+        "freshness_rule": "recompute weekly",
+        "unavailable_when": "no drafts QA'd yet",
+        "benchmark": "brand rule: at or below grade 10"
+      },
+      {
+        "name": "voice_compliance_rate",
+        "plain": "share of drafts that pass the account's own writing rules with no fixes needed",
+        "formula": "drafts with zero em dashes, zero banned words and reading grade at or below 10, divided by all drafts QA'd",
+        "source": "copy QA log",
+        "window": "trailing 30 days",
+        "freshness_rule": "recompute weekly",
+        "unavailable_when": "no drafts QA'd yet",
+        "benchmark": "account-relative only; target is 100%"
+      },
+      {
+        "name": "em_dash_and_banned_word_catches",
+        "plain": "how many rule breaks the QA step is catching before ship",
+        "formula": "count of em dash or banned-word hits caught in QA before a draft shipped",
+        "source": "copy QA log",
+        "window": "trailing 30 days",
+        "freshness_rule": "recompute weekly",
+        "unavailable_when": "no drafts QA'd yet",
+        "benchmark": "account-relative only; a leading indicator, not a failure count"
+      },
+      {
+        "name": "objection_coverage",
+        "plain": "share of the top real objections that actually have a live line answering them",
+        "formula": "top 10 objections by frequency with at least one live tagged ad or page line, divided by 10",
+        "source": "objection log plus copy inventory tagged by objection",
+        "window": "objection ranking on trailing 90 days, coverage checked current",
+        "freshness_rule": "recompute weekly",
+        "unavailable_when": "no objection log built yet",
+        "benchmark": "account-relative only; target is 100% on the top 5"
+      },
+      {
+        "name": "offer_approval_lag",
+        "plain": "how long an offer line waits for a founder decision",
+        "formula": "median days between an offer copy draft and a recorded founder decision",
+        "source": "offer approval log",
+        "window": "trailing 90 days",
+        "freshness_rule": "recompute weekly",
+        "unavailable_when": "no offer decisions logged yet",
+        "benchmark": "account-relative only"
+      },
+      {
+        "name": "price_framing_consistency",
+        "plain": "share of live prices using the framing rule the founder actually approved",
+        "formula": "live price mentions matching the approved framing rule, divided by all live price mentions",
+        "source": "copy scan of live assets for price patterns",
+        "window": "current live set",
+        "freshness_rule": "recompute weekly",
+        "unavailable_when": "no approved framing rule on file",
+        "benchmark": "account-relative only; target is 100%"
+      },
+      {
+        "name": "sms_email_rule_violations",
+        "plain": "how many drafted sends broke a rule before they shipped",
+        "formula": "count of drafted SMS or email sends missing the opt-out line, over the length limit, or breaking the cadence rule, caught before send",
+        "source": "lifecycle copy QA log",
+        "window": "trailing 30 days",
+        "freshness_rule": "recompute weekly",
+        "unavailable_when": "no lifecycle drafts QA'd yet",
+        "benchmark": "account-relative only; target is 0 that reach send"
+      },
+      {
+        "name": "product_url_draft_turnaround",
+        "plain": "how fast a product page turns into a first-pass ad copy set",
+        "formula": "median minutes from product URL submitted to a delivered draft set",
+        "source": "URL-to-draft tool log",
+        "window": "trailing 30 days",
+        "freshness_rule": "recompute weekly",
+        "unavailable_when": "fewer than 3 runs logged",
+        "benchmark": "account-relative only"
+      },
+      {
+        "name": "payment_delivery_touchpoint_coverage",
+        "plain": "share of checkout and post-purchase moments that carry an approved payment or delivery reassurance line (BNPL, free returns, delivery date); for a COD brand (markets: IN), the same metric covers COD trust or prepaid-nudge line coverage instead",
+        "formula": "touchpoints on the account's fixed list with an approved line attached, divided by all touchpoints on that list",
+        "source": "payment and delivery reassurance messaging log",
+        "window": "current",
+        "freshness_rule": "recompute weekly",
+        "unavailable_when": "no fixed touchpoint list on file",
+        "benchmark": "account-relative only; target is 100%"
+      },
+      {
+        "name": "marketplace_claim_alignment",
+        "plain": "share of marketplace listing and A+ claims that match the same claim tier used in ads",
+        "formula": "listing or module claims present in the approved claim tier set, divided by all claims found",
+        "source": "marketplace copy log versus claim tier log",
+        "window": "checked at each listing refresh, trailing 90 days",
+        "freshness_rule": "recompute on listing update",
+        "unavailable_when": "no marketplace copy log yet",
+        "benchmark": "account-relative only; target is 100%"
+      },
+      {
+        "name": "bulk_upload_sheet_error_rate",
+        "plain": "share of rows in the last upload batch that would fail on submission",
+        "formula": "rows failing a required field or character-limit check, divided by all rows in the batch",
+        "source": "bulk upload batch log",
+        "window": "last batch",
+        "freshness_rule": "recompute on each batch",
+        "unavailable_when": "no batch run yet",
+        "benchmark": "account-relative only; target is 0 before submission"
+      },
+      {
+        "name": "naming_taxonomy_compliance",
+        "plain": "share of new copy assets tagged with the full fixed taxonomy at ship time",
+        "formula": "assets shipped with all 7 tags present (concept, persona, angle, offer, format, stage, source), divided by all assets shipped",
+        "source": "naming and tagging log",
+        "window": "trailing 30 days",
+        "freshness_rule": "recompute weekly",
+        "unavailable_when": "no tagging log yet",
+        "benchmark": "account-relative only; target is 100%"
+      }
+    ],
+    "insights": [
+      {
+        "name": "claim_flagged_before_launch",
+        "rule": "a claim check on a copy set returns any line matching a banned or unverified claim pattern: an unproven superlative, a named competitor comparison, or a guarantee that does not match the brand's actual policy",
+        "computed_from": [
+          "claim check log",
+          "claim tiers"
+        ],
+        "sentence": "{n} lines in this set are flagged: {list}. None can ship until cleared.",
+        "severity": "high",
+        "action_capability": "CREA-C14"
+      },
+      {
+        "name": "message_match_drift",
+        "rule": "a live ad's offer, price or headline term no longer appears in any of its landing destination's current copy blocks",
+        "computed_from": [
+          "ad copy inventory",
+          "page copy blocks"
+        ],
+        "sentence": "{ad_name} promises {term}, but the page it sends to no longer says it.",
+        "severity": "high",
+        "action_capability": "CREA-C27"
+      },
+      {
+        "name": "reading_level_creeping_up",
+        "rule": "the median reading grade level of shipped copy over the trailing 30 days is above grade 10",
+        "computed_from": [
+          "copy QA log"
+        ],
+        "sentence": "The last 30 days of copy reads at grade {grade}, above the grade-10 limit.",
+        "severity": "medium",
+        "action_capability": "CREA-C34"
+      },
+      {
+        "name": "top_objection_has_no_line",
+        "rule": "an objection ranked in the top 5 by frequency in the trailing 90 days has zero live ad or page line tagged to it",
+        "computed_from": [
+          "objection log",
+          "copy inventory"
+        ],
+        "sentence": "{objection} is the number {rank} reason buyers hesitate, and no live line answers it.",
+        "severity": "high",
+        "action_capability": "CREA-C24"
+      },
+      {
+        "name": "offer_approval_stalled",
+        "rule": "an offer copy draft has waited more than 5 business days without a recorded founder decision",
+        "computed_from": [
+          "offer approval log"
+        ],
+        "sentence": "{offer_name} has waited {days} days for a yes or no.",
+        "severity": "medium",
+        "action_capability": "CREA-C13"
+      },
+      {
+        "name": "price_framing_inconsistent",
+        "rule": "more than 20% of live price mentions do not match the account's approved framing rule",
+        "computed_from": [
+          "copy scan for price patterns"
+        ],
+        "sentence": "{pct}% of live prices are not framed the way you approved.",
+        "severity": "low",
+        "action_capability": "CREA-C31"
+      },
+      {
+        "name": "sms_email_violation_caught",
+        "rule": "a drafted SMS or email send is missing the opt-out line, exceeds the approved length, or breaks the account's cadence rule, caught before it ships",
+        "computed_from": [
+          "lifecycle copy QA log"
+        ],
+        "sentence": "{n} drafted sends this week broke a rule before they shipped: {list}.",
+        "severity": "high",
+        "action_capability": "CREA-C29"
+      },
+      {
+        "name": "marketplace_claim_mismatch",
+        "rule": "a marketplace listing or A+ module claim is not present in the account's approved claim tier set used in ads",
+        "computed_from": [
+          "marketplace copy log",
+          "claim tiers"
+        ],
+        "sentence": "{listing} claims {term}, which is not in your approved claim list.",
+        "severity": "medium",
+        "action_capability": "CREA-C28"
+      },
+      {
+        "name": "bulk_upload_will_fail",
+        "rule": "a prepped upload sheet has a row missing a required field or over a platform character limit, caught before submission",
+        "computed_from": [
+          "bulk upload batch log"
+        ],
+        "sentence": "{n} rows in this batch will fail on upload: {reason}.",
+        "severity": "medium",
+        "action_capability": "CREA-C35"
+      },
+      {
+        "name": "naming_taxonomy_gap",
+        "rule": "a shipped copy asset is missing one or more of the 7 fixed tags",
+        "computed_from": [
+          "naming and tagging log"
+        ],
+        "sentence": "{n} assets shipped without full tagging this month.",
+        "severity": "low",
+        "action_capability": "CREA-C20"
+      },
+      {
+        "name": "payment_delivery_trust_message_missing",
+        "rule": "a checkout or post-purchase touchpoint on the account's fixed list has no approved payment or delivery reassurance line (BNPL, free returns, real delivery date) attached; for a COD brand (markets: IN), the same check looks for a prepaid-nudge or RTO-trust line instead",
+        "computed_from": [
+          "payment and delivery reassurance messaging log"
+        ],
+        "sentence": "{touchpoint} has no payment or delivery-trust line.",
+        "severity": "medium",
+        "action_capability": "CREA-C44"
+      },
+      {
+        "name": "product_url_draft_slow",
+        "rule": "the last 5 product-URL-to-draft runs took more than twice the trailing 30-day median turnaround",
+        "computed_from": [
+          "URL-to-draft tool log"
+        ],
+        "sentence": "The last {n} product-page drafts took {minutes} minutes, {pct}% slower than usual.",
+        "severity": "low",
+        "action_capability": "CREA-C37"
+      },
+      {
+        "name": "destination_routing_conflict",
+        "rule": "two or more live ads target the same keyword or audience but route to different destinations selling the same product",
+        "computed_from": [
+          "ad copy inventory",
+          "destination routing log"
+        ],
+        "sentence": "{n} live ads route the same audience to different pages for the same product.",
+        "severity": "medium",
+        "action_capability": "CREA-C25"
+      },
+      {
+        "name": "voice_rule_catches_rising",
+        "rule": "more than 10% of drafts this week were caught with an em dash or a banned inflated word before shipping",
+        "computed_from": [
+          "copy QA log"
+        ],
+        "sentence": "{pct}% of this week's drafts needed an em dash or banned-word fix before they shipped.",
+        "severity": "low",
+        "action_capability": "CREA-C34"
+      }
+    ],
+    "visuals": [
+      {
+        "name": "claim check ledger",
+        "type": "table",
+        "shows": "every claim check run, its status, the reviewer and the resolution",
+        "why_this_chart": "a founder can see what is blocked and why in one scan",
+        "exists_today": false
+      },
+      {
+        "name": "message match panel per live ad",
+        "type": "side-by-side text panel with matched terms highlighted",
+        "shows": "the ad's headline, offer and price terms next to the landing page's current hero and offer block, with matches and gaps marked",
+        "why_this_chart": "extends the existing ad side panel with the one comparison a founder cannot eyeball quickly",
+        "exists_today": false
+      },
+      {
+        "name": "objection coverage matrix",
+        "type": "matrix, objections by channel",
+        "shows": "the top objections ranked by frequency down the side, ad, page, email and SMS across the top, checked where a live line exists",
+        "why_this_chart": "shows a gap a founder would otherwise only notice by losing the sale",
+        "exists_today": false
+      },
+      {
+        "name": "reading level trend line",
+        "type": "line chart with a ceiling line",
+        "shows": "median reading grade level of shipped copy over time against the grade-10 limit",
+        "why_this_chart": "a single number drifting is easy to miss without a trend line",
+        "exists_today": false
+      },
+      {
+        "name": "offer approval funnel",
+        "type": "funnel or stage chart",
+        "shows": "offer drafts moving from drafted to submitted to founder decision, with days spent in each stage",
+        "why_this_chart": "shows exactly where an offer is stuck, not just that it is stuck",
+        "exists_today": false
+      },
+      {
+        "name": "price framing split",
+        "type": "bar chart",
+        "shows": "share of live prices by framing type against the approved rule",
+        "why_this_chart": "catches drift from an approved pricing convention at a glance",
+        "exists_today": false
+      },
+      {
+        "name": "bulk upload QA checklist",
+        "type": "pass or fail row list per batch",
+        "shows": "every row in the last upload batch with its validation result before submission",
+        "why_this_chart": "catches a failed upload before it wastes a submission, not after",
+        "exists_today": false
+      }
+    ],
+    "actions": [
+      {
+        "label": "Run the claim check",
+        "capability": "CREA-C14",
+        "autonomy": "agent_does"
+      },
+      {
+        "label": "Re-check message match against the page",
+        "capability": "CREA-C27",
+        "autonomy": "agent_does"
+      },
+      {
+        "label": "Audit this ad against its landing page",
+        "capability": "CREA-C53",
+        "autonomy": "agent_does"
+      },
+      {
+        "label": "Generate a headline and primary-text set",
+        "capability": "CREA-C05",
+        "autonomy": "agent_does"
+      },
+      {
+        "label": "Auto-edit for voice and reading-level rules",
+        "capability": "CREA-C34",
+        "autonomy": "agent_does"
+      },
+      {
+        "label": "Send this offer for founder approval",
+        "capability": "CREA-C13",
+        "autonomy": "founder_gate"
+      },
+      {
+        "label": "Frame this price",
+        "capability": "CREA-C31",
+        "autonomy": "agent_does"
+      },
+      {
+        "label": "Write the objection line",
+        "capability": "CREA-C24",
+        "autonomy": "agent_does"
+      },
+      {
+        "label": "Draft the SMS or email block",
+        "capability": "CREA-C29",
+        "autonomy": "agent_does"
+      },
+      {
+        "label": "Draft ad copy from this product page URL",
+        "capability": "CREA-C37",
+        "autonomy": "agent_does"
+      },
+      {
+        "label": "Write the payment or delivery reassurance line",
+        "capability": "CREA-C44",
+        "autonomy": "agent_does"
+      },
+      {
+        "label": "Draft the marketplace listing copy",
+        "capability": "CREA-C28",
+        "autonomy": "human_assist"
+      },
+      {
+        "label": "Build the A+ or brand-store module copy",
+        "capability": "CREA-C45",
+        "autonomy": "agent_does"
+      },
+      {
+        "label": "Route this ad's destination",
+        "capability": "CREA-C25",
+        "autonomy": "agent_does"
+      },
+      {
+        "label": "Prep the bulk upload sheet",
+        "capability": "CREA-C35",
+        "autonomy": "human_assist"
+      },
+      {
+        "label": "Apply naming and tagging",
+        "capability": "CREA-C20",
+        "autonomy": "agent_does"
+      },
+      {
+        "label": "Name this new product or system",
+        "capability": "CREA-C32",
+        "autonomy": "founder_gate"
+      }
+    ],
+    "not_elsewhere": [
+      {
+        "claim": "Checks every claim against this brand's own claim tiers and current platform policy before it ships",
+        "vs": "Grammarly and Hemingway check grammar and readability only; neither knows this brand's approved claim tiers or platform ad policy"
+      },
+      {
+        "claim": "Scores message match by checking the ad's actual offer, price and headline terms against this brand's own current page copy blocks",
+        "vs": "Instapage's AdMap gives a generic match score between an ad and its landing page, but it is not tied to this brand's own claim tiers or copy-block structure, and the page needs to be built inside Instapage"
+      },
+      {
+        "claim": "Ranks real customer objections from this account's own support tickets and reviews, then checks whether a live line actually answers each one",
+        "vs": "no ad-copy tool ranks objections from a brand's own support data and checks copy coverage against that ranking"
+      },
+      {
+        "claim": "Catches an SMS or email draft breaking the opt-out, length or the account's own cadence rule before it ships, not after",
+        "vs": "Klaviyo reports send performance after the fact; it does not block a draft for missing an opt-out or breaking a cadence rule before send"
+      },
+      {
+        "claim": "Flags a marketplace listing claim that is not in the same approved claim tier used in this brand's ads",
+        "vs": "Amazon's own listing quality tools check keyword and image compliance, not claim consistency with the brand's ad copy"
+      },
+      {
+        "claim": "Tracks reading grade level and rule catches over time as a trend against this account's own writing rules",
+        "vs": "Hemingway scores one paste at a time and keeps no per-account rule set or history"
+      }
+    ],
+    "data_needs": [
+      {
+        "table": "claim_tiers",
+        "fields": [
+          "claim_id",
+          "tier",
+          "wording",
+          "proof_ref",
+          "approved_by",
+          "platform_notes"
+        ],
+        "connector_or_script": "brand brain (not built yet)",
+        "refresh": "on brand record update"
+      },
+      {
+        "table": "claim_checks",
+        "fields": [
+          "copy_set_id",
+          "claim_id",
+          "status",
+          "reviewer",
+          "checked_at"
+        ],
+        "connector_or_script": "new claim check tool (CREA-C14)",
+        "refresh": "on each check"
+      },
+      {
+        "table": "page_copy_blocks",
+        "fields": [
+          "page_url",
+          "block",
+          "text",
+          "last_scraped_at"
+        ],
+        "connector_or_script": "new page-copy capture, scrape or CMS pull",
+        "refresh": "weekly and on ad launch"
+      },
+      {
+        "table": "ad_copy_inventory",
+        "fields": [
+          "ad_id",
+          "headline",
+          "primary_text",
+          "cta",
+          "offer_terms",
+          "price_terms",
+          "destination_url"
+        ],
+        "connector_or_script": "existing Meta gallery ad creative data",
+        "refresh": "with the Meta refresh"
+      },
+      {
+        "table": "message_match_log",
+        "fields": [
+          "ad_id",
+          "checked_at",
+          "matched_terms",
+          "unmatched_terms",
+          "score"
+        ],
+        "connector_or_script": "new message match compute (CREA-C27, CREA-C53)",
+        "refresh": "daily for live ads"
+      },
+      {
+        "table": "copy_qa_log",
+        "fields": [
+          "draft_id",
+          "reading_grade",
+          "em_dash_count",
+          "banned_word_hits",
+          "passed_at"
+        ],
+        "connector_or_script": "new QA scorer (CREA-C34)",
+        "refresh": "on each draft"
+      },
+      {
+        "table": "objection_log",
+        "fields": [
+          "objection",
+          "source",
+          "frequency_90d",
+          "rank"
+        ],
+        "connector_or_script": "voice-of-customer pipeline (not yet built)",
+        "refresh": "monthly"
+      },
+      {
+        "table": "objection_coverage",
+        "fields": [
+          "objection",
+          "channel",
+          "asset_id",
+          "live"
+        ],
+        "connector_or_script": "copy inventory tagged by objection (CREA-C24)",
+        "refresh": "weekly"
+      },
+      {
+        "table": "offer_approval_log",
+        "fields": [
+          "offer_id",
+          "drafted_at",
+          "submitted_at",
+          "decision",
+          "decided_at",
+          "decided_by"
+        ],
+        "connector_or_script": "new offer-lever tool (CREA-C13)",
+        "refresh": "on each step"
+      },
+      {
+        "table": "price_framing_log",
+        "fields": [
+          "asset_id",
+          "price_shown",
+          "framing_type",
+          "approved_rule"
+        ],
+        "connector_or_script": "copy scan (CREA-C31)",
+        "refresh": "weekly"
+      },
+      {
+        "table": "lifecycle_send_qa",
+        "fields": [
+          "send_id",
+          "channel",
+          "opt_out_present",
+          "length_ok",
+          "cadence_ok",
+          "checked_at"
+        ],
+        "connector_or_script": "new lifecycle QA (CREA-C29, CREA-C30)",
+        "refresh": "on each draft"
+      },
+      {
+        "table": "url_draft_log",
+        "fields": [
+          "product_url",
+          "submitted_at",
+          "delivered_at",
+          "asset_ids"
+        ],
+        "connector_or_script": "new URL-to-draft tool (CREA-C37)",
+        "refresh": "on each run"
+      },
+      {
+        "table": "payment_delivery_touchpoint_coverage",
+        "fields": [
+          "touchpoint",
+          "has_line",
+          "line_id",
+          "cod_or_rto_line_id (markets: IN, null for a US brand)"
+        ],
+        "connector_or_script": "new payment and delivery reassurance messaging log (CREA-C44)",
+        "refresh": "weekly"
+      },
+      {
+        "table": "marketplace_copy",
+        "fields": [
+          "listing_id",
+          "marketplace",
+          "claims",
+          "matches_claim_tier"
+        ],
+        "connector_or_script": "new marketplace copy log (CREA-C28, CREA-C45)",
+        "refresh": "on each listing update"
+      },
+      {
+        "table": "bulk_upload_batches",
+        "fields": [
+          "batch_id",
+          "rows",
+          "errors",
+          "submitted_at"
+        ],
+        "connector_or_script": "new upload sheet tool (CREA-C35)",
+        "refresh": "per batch"
+      },
+      {
+        "table": "naming_tags",
+        "fields": [
+          "asset_id",
+          "concept",
+          "persona",
+          "angle",
+          "offer",
+          "format",
+          "stage",
+          "source"
+        ],
+        "connector_or_script": "naming and tagging standard (CREA-C20)",
+        "refresh": "on each asset"
+      }
+    ],
+    "founder_view_note": "Before any claim tier, page-copy capture or QA log exists, the room shows only the ad copy already in the Meta gallery: headline, primary text and CTA, with no checks run. Claim check, message match and objection coverage sections show 'not started, no claim tiers or page copy on file' rather than a false pass. The first useful thing to appear, once claim tiers are entered, is which of today's live ads already fail one of them."
+  }
+]

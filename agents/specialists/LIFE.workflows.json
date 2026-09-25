@@ -1,0 +1,4165 @@
+[
+  {
+    "id": "LIFE-W01",
+    "name": "Audit and sequence the lifecycle build",
+    "capabilities": [
+      "LIFE-C01"
+    ],
+    "trigger": "monthly",
+    "human_role": "lifecycle marketing manager doing the monthly program audit",
+    "inputs_required": [
+      "brand brain: products and markets",
+      "ESP flow list and status",
+      "90 days of order/event history",
+      "registry: past flow builds and results"
+    ],
+    "steps": [
+      {
+        "n": 1,
+        "name": "Pull the flow inventory",
+        "does": "Reads every live and draft flow in the ESP (welcome, abandon, post-purchase, win-back, sunset, replenishment, loyalty, back-in-stock) with its status and last edit date.",
+        "inputs": [
+          "connector: ESP (read)"
+        ],
+        "tools": [
+          "connector: ESP (read)"
+        ],
+        "skill": "life/lifecycle-audit",
+        "output": "flow inventory table",
+        "check": "every flow type in the standard set has a row, even 'missing'",
+        "ask_founder_if": "ESP connector not reachable"
+      },
+      {
+        "n": 2,
+        "name": "Read the flow-vs-campaign revenue split",
+        "does": "Pulls attributed revenue by flow and by campaign for the last 90 days from the metric contract.",
+        "inputs": [
+          "metric contract"
+        ],
+        "tools": [
+          "connector: metabase (read)"
+        ],
+        "skill": "shared/metric-read",
+        "output": "revenue split with window",
+        "check": "figures are totals, never averaged from breakdowns"
+      },
+      {
+        "n": 3,
+        "name": "Score each required flow's health",
+        "does": "For every flow that exists, checks the trigger actually fires, entry/exit/re-entry filters are set, and it does not claim the same customer stage as another flow.",
+        "inputs": [
+          "flow inventory"
+        ],
+        "tools": [
+          "connector: ESP (read)"
+        ],
+        "skill": "life/lifecycle-audit",
+        "output": "health score per flow with the exact gap named",
+        "check": "every gap cites the specific setting missing, not a general complaint"
+      },
+      {
+        "n": 4,
+        "name": "Flag missing flows against the standard set",
+        "does": "Lists any of the 8 standard flow types with no live version.",
+        "inputs": [
+          "flow inventory"
+        ],
+        "tools": [],
+        "skill": "life/lifecycle-audit",
+        "output": "missing-flow list",
+        "check": "list matches the standard set exactly, no invented category"
+      },
+      {
+        "n": 5,
+        "name": "Check the segmentation and deliverability layers",
+        "does": "Confirms the segmentation model and the sender health check both ran this month, since a broken flow is often a broken input underneath it.",
+        "inputs": [
+          "segment refresh log",
+          "deliverability report"
+        ],
+        "tools": [
+          "connector: ESP (read)"
+        ],
+        "skill": "life/lifecycle-audit",
+        "output": "two pass/fail checks with dates",
+        "check": "a stale segment or a red deliverability flag outranks a missing flow"
+      },
+      {
+        "n": 6,
+        "name": "Rank the backlog by expected revenue impact",
+        "does": "Orders missing or broken flows and segmentation/deliverability gaps by expected marginal revenue, sized off order volume and AOV.",
+        "inputs": [
+          "connector: shopify orders (read)",
+          "revenue split"
+        ],
+        "tools": [
+          "connector: shopify orders (read)",
+          "script: intelligence/ideas.py"
+        ],
+        "skill": "shared/rank-candidates",
+        "output": "ranked backlog with score parts visible",
+        "check": "no arithmetic performed in the model, only in code"
+      },
+      {
+        "n": 7,
+        "name": "Check the registry for repeat items",
+        "does": "For any backlog item that matches a past rejected or parked idea for this brand, pulls the prior reason.",
+        "inputs": [
+          "registry"
+        ],
+        "tools": [
+          "script: search_knowledge.py"
+        ],
+        "skill": "shared/registry-entry",
+        "output": "backlog items flagged with prior history",
+        "check": "a repeat item states the new reason it is proposed again"
+      },
+      {
+        "n": 8,
+        "name": "Draft the monthly build-sequence report",
+        "does": "Assembles the ranked backlog, health scores and flagged repeats into one report.",
+        "inputs": [
+          "all above"
+        ],
+        "tools": [],
+        "skill": "shared/report-section",
+        "output": "monthly lifecycle backlog report",
+        "check": "matches the report-section output shape"
+      },
+      {
+        "n": 9,
+        "name": "Self-QA and post",
+        "does": "Runs the LIFE QA checklist, then posts as an agent_does report since nothing external changes yet.",
+        "inputs": [
+          "report draft"
+        ],
+        "tools": [],
+        "skill": null,
+        "output": "final report",
+        "check": "every number traces to the metric contract or an ESP read"
+      }
+    ],
+    "outputs": [
+      "ranked backlog report",
+      "flow health scorecard"
+    ],
+    "qa": [
+      "every score traces to a metric-contract field or an ESP read",
+      "missing flows checked against the full standard set",
+      "no arithmetic in the model"
+    ],
+    "read_point": "next month's audit compares the same scorecard month over month",
+    "typical_duration": "45 minutes agent time, no waiting",
+    "subagents": []
+  },
+  {
+    "id": "LIFE-W02",
+    "name": "Design and test the on-site capture pop-up",
+    "capabilities": [
+      "LIFE-C02"
+    ],
+    "trigger": "on demand",
+    "human_role": "lifecycle marketing manager / CRO owner for capture",
+    "inputs_required": [
+      "brand brain: products, current offer ladder",
+      "site audit access",
+      "metric contract: current opt-in rate and full-site conversion",
+      "approved idea record"
+    ],
+    "steps": [
+      {
+        "n": 1,
+        "name": "Read the approved idea and current pop-up",
+        "does": "Pulls the idea record and the live pop-up config (offer, fields, trigger, targeting).",
+        "inputs": [
+          "approved idea",
+          "site audit"
+        ],
+        "tools": [
+          "browser: headless chromium (read)"
+        ],
+        "skill": "life/popup-spec",
+        "output": "current-state summary",
+        "check": "every current setting is quoted, not assumed"
+      },
+      {
+        "n": 2,
+        "name": "Pick the offer type before copy or design",
+        "does": "Chooses percent-off, flat amount, free gift, or a non-discount hook (early access, guide) from the brand's discount policy and margin.",
+        "inputs": [
+          "discount policy",
+          "product margin"
+        ],
+        "tools": [
+          "brand brain (read)"
+        ],
+        "skill": "life/popup-spec",
+        "output": "chosen offer type with the reason",
+        "check": "offer type checked against discount-policy-check before it is designed further",
+        "ask_founder_if": "no discount policy on file for this offer size"
+      },
+      {
+        "n": 3,
+        "name": "Set fields, trigger timing and targeting exclusions",
+        "does": "Sets the minimum fields to capture (email, phone for SMS/WhatsApp consent), the trigger (time, scroll, exit-intent) and who is excluded (existing subscribers, checkout page).",
+        "inputs": [
+          "current pop-up config"
+        ],
+        "tools": [
+          "connector: ESP (read)"
+        ],
+        "skill": "life/popup-spec",
+        "output": "field/trigger/exclusion spec",
+        "check": "no hidden or hard-to-find close button; exclusions cover existing subscribers"
+      },
+      {
+        "n": 4,
+        "name": "Draft mobile and desktop variants",
+        "does": "Writes the headline, offer line and CTA at a skimmable reading level for both breakpoints.",
+        "inputs": [
+          "brand voice"
+        ],
+        "tools": [],
+        "skill": "life/popup-spec",
+        "output": "two draft variants",
+        "check": "reading level under grade 10; claim-check pass on the offer line"
+      },
+      {
+        "n": 5,
+        "name": "Run claim-check on the draft copy",
+        "does": "Checks the offer line and any urgency language against the claims tiers and forbidden-words list.",
+        "inputs": [
+          "draft copy",
+          "claims tiers"
+        ],
+        "tools": [],
+        "skill": "shared/claim-check",
+        "output": "pass/fail with cited rule",
+        "check": "fails closed on any unverifiable urgency claim"
+      },
+      {
+        "n": 6,
+        "name": "Propose the test order",
+        "does": "Sequences pop-up tests (offer type before copy before design), one variable at a time, with the current variant as the control.",
+        "inputs": [
+          "draft variants",
+          "registry: past pop-up tests"
+        ],
+        "tools": [
+          "script: search_knowledge.py"
+        ],
+        "skill": "shared/rank-candidates",
+        "output": "test queue with hypothesis per test",
+        "check": "each test isolates one variable"
+      },
+      {
+        "n": 7,
+        "name": "Assemble the pop-up spec card",
+        "does": "Builds the founder card: current state, proposed change, expected effect and basis, cost, risk.",
+        "inputs": [
+          "all above"
+        ],
+        "tools": [],
+        "skill": "shared/plain-english-card",
+        "output": "founder card",
+        "check": "heading is an action; no acronym unexplained"
+      },
+      {
+        "n": 8,
+        "name": "Self-QA and route to the founder gate",
+        "does": "Runs the QA checklist and hands the card to the founder gate since this changes what every visitor sees.",
+        "inputs": [
+          "card"
+        ],
+        "tools": [],
+        "skill": null,
+        "output": "gated card",
+        "check": "no external write made; artefact is a draft/spec"
+      }
+    ],
+    "outputs": [
+      "pop-up spec",
+      "test queue"
+    ],
+    "qa": [
+      "judged by full-site conversion and signed-up-customer value, not opt-in rate alone",
+      "no hidden close button",
+      "offer type cleared the discount-policy-check"
+    ],
+    "read_point": "read at 2 weeks per test on full-site conversion and list-value per visitor, not opt-in rate alone",
+    "typical_duration": "2 hours agent time; founder decision then 1-2 weeks live per test",
+    "subagents": []
+  },
+  {
+    "id": "LIFE-W03",
+    "name": "Set consent, quiet hours and unsubscribe handling",
+    "capabilities": [
+      "LIFE-C03"
+    ],
+    "trigger": "event: new market or new form",
+    "human_role": "CRM manager / compliance owner for messaging",
+    "inputs_required": [
+      "brand brain: markets sold into",
+      "current consent records in ESP/WhatsApp/SMS platforms",
+      "per-market law reference"
+    ],
+    "steps": [
+      {
+        "n": 1,
+        "name": "List every market the brand sends into",
+        "does": "Reads shipping/billing markets from order data to know which consent laws apply (opt-in default in some markets, opt-out in others).",
+        "inputs": [
+          "connector: shopify orders (read)"
+        ],
+        "tools": [
+          "connector: shopify orders (read)"
+        ],
+        "skill": "life/consent-governance",
+        "output": "market list",
+        "check": "market list matches actual order geography, not assumed markets"
+      },
+      {
+        "n": 2,
+        "name": "Pull the consent rule per market",
+        "does": "Looks up the opt-in model, record-keeping requirement and quiet-hours window for each market's SMS/WhatsApp/email law.",
+        "inputs": [
+          "market list"
+        ],
+        "tools": [
+          "web search (budgeted)"
+        ],
+        "skill": "shared/web-research-budgeted",
+        "output": "consent rule per market with source and date",
+        "check": "every rule carries a URL and date"
+      },
+      {
+        "n": 3,
+        "name": "Check current consent capture against the rule",
+        "does": "Reads the ESP/SMS/WhatsApp consent fields captured today and compares to what each market requires.",
+        "inputs": [
+          "ESP consent fields"
+        ],
+        "tools": [
+          "connector: ESP (read)",
+          "connector: WhatsApp Business API (read)"
+        ],
+        "skill": "life/consent-governance",
+        "output": "gap list per market",
+        "check": "gap list names the exact missing field or timestamp"
+      },
+      {
+        "n": 4,
+        "name": "Set the quiet-hours schedule per channel and market",
+        "does": "Sets the local-time send window for SMS, WhatsApp and push per market, since a message outside quiet hours can itself be a violation.",
+        "inputs": [
+          "consent rules"
+        ],
+        "tools": [],
+        "skill": "life/consent-governance",
+        "output": "quiet-hours table",
+        "check": "table uses local time per market, not the brand's home timezone"
+      },
+      {
+        "n": 5,
+        "name": "Write the unsubscribe and preference-center rule",
+        "does": "Sets how fast an unsubscribe or STOP reply is honoured, and whether it applies per channel or brand-wide.",
+        "inputs": [
+          "platform capability"
+        ],
+        "tools": [
+          "connector: ESP (read)"
+        ],
+        "skill": "life/consent-governance",
+        "output": "unsubscribe SLA and scope rule",
+        "check": "SLA meets or beats the strictest market's legal minimum"
+      },
+      {
+        "n": 6,
+        "name": "Draft the founder card for any gap needing a system change",
+        "does": "Where a gap needs a form field or platform setting change, drafts the card; where it is only a policy text update, drafts the text.",
+        "inputs": [
+          "gap list"
+        ],
+        "tools": [],
+        "skill": "shared/plain-english-card",
+        "output": "founder card or policy text",
+        "check": "no discount or claim invented; the ask is one setting or one field"
+      },
+      {
+        "n": 7,
+        "name": "Self-QA and route to the founder gate",
+        "does": "Runs the QA checklist; any consent-capture or unsubscribe change is founder_gate since it affects legal standing.",
+        "inputs": [
+          "card"
+        ],
+        "tools": [],
+        "skill": null,
+        "output": "gated card",
+        "check": "every claim about a law cites its source and date"
+      }
+    ],
+    "outputs": [
+      "consent rule set per market",
+      "quiet-hours table",
+      "unsubscribe SLA"
+    ],
+    "qa": [
+      "every legal claim cites a URL and date",
+      "quiet hours in local time",
+      "unsubscribe honoured at or above the legal minimum"
+    ],
+    "read_point": "checked again at the next new market or a TCPA/CCPA-style rule change (DPDP for India)",
+    "typical_duration": "3 hours agent time, no waiting unless a form change is needed",
+    "subagents": []
+  },
+  {
+    "id": "LIFE-W04",
+    "name": "Build a lifecycle flow, welcome through sunset",
+    "capabilities": [
+      "LIFE-C04",
+      "LIFE-C05",
+      "LIFE-C06",
+      "LIFE-C07",
+      "LIFE-C08",
+      "LIFE-C09",
+      "LIFE-C10",
+      "LIFE-C11"
+    ],
+    "trigger": "on demand",
+    "human_role": "lifecycle/retention marketing manager building or rebuilding one flow",
+    "inputs_required": [
+      "approved idea record naming the flow type",
+      "brand brain: products, voice, claims tiers, offer/discount policy",
+      "order and event history for the trigger",
+      "registry: past builds of this flow"
+    ],
+    "steps": [
+      {
+        "n": 1,
+        "name": "Read the idea and confirm the flow type",
+        "does": "Identifies which of the 8 flow types (welcome, browse abandon, cart/checkout abandon, post-purchase, win-back, sunset, replenishment/subscription, loyalty-VIP, back-in-stock) the approved idea or maintenance job calls for.",
+        "inputs": [
+          "approved idea"
+        ],
+        "tools": [],
+        "skill": "life/build-flow",
+        "output": "flow type confirmed",
+        "check": "flow type matches one of the 8 named types, or the run stops to ask"
+      },
+      {
+        "n": 2,
+        "name": "Select the flow-type sub-skill",
+        "does": "Loads the matching life/build-flow/<type> sub-skill for the type confirmed in step 1.",
+        "inputs": [
+          "flow type"
+        ],
+        "tools": [],
+        "skill": "life/build-flow",
+        "output": "sub-skill loaded",
+        "check": "the sub-skill loaded matches the flow type exactly"
+      },
+      {
+        "n": 3,
+        "name": "Confirm the trigger event actually fires",
+        "does": "Checks the underlying event (signup, product view without add-to-cart, cart/checkout start, order placed, no purchase in N days, no engagement in N days, subscription charge date, restock webhook) exists and fires reliably in the store's data.",
+        "inputs": [
+          "order/event history"
+        ],
+        "tools": [
+          "connector: shopify orders (read)",
+          "connector: ESP (read)"
+        ],
+        "skill": "life/build-flow",
+        "output": "confirmed trigger with a sample of recent fires",
+        "check": "trigger fired at least once in the last 30 days, or the build stops with the gap named",
+        "ask_founder_if": "the trigger event does not exist in this store's data"
+      },
+      {
+        "n": 4,
+        "name": "Set entry, exit and re-entry filters",
+        "does": "Sets who enters, what removes them early (purchased, unsubscribed, already in a conflicting flow), and whether and when they can re-enter.",
+        "inputs": [
+          "confirmed trigger",
+          "other live flows"
+        ],
+        "tools": [
+          "connector: ESP (read)"
+        ],
+        "skill": "life/build-flow",
+        "output": "filter set",
+        "check": "no two flows can claim the same person at the same lifecycle stage at once"
+      },
+      {
+        "n": 5,
+        "name": "Map the step-by-step sequence",
+        "does": "Lays out each message's delay, channel and purpose (welcome/education/social proof/urgency/discount), timed to the flow type's own logic (72 hours front-loaded for welcome, purchase-cadence for win-back, use-up cycle for replenishment).",
+        "inputs": [
+          "flow-type sub-skill logic"
+        ],
+        "tools": [],
+        "skill": "life/build-flow",
+        "output": "step list with delay, channel, purpose",
+        "check": "delay and channel match the sub-skill's timing rule for this flow type"
+      },
+      {
+        "n": 6,
+        "name": "Set the discount eligibility rule, if any",
+        "does": "Decides whether and where a discount appears in the sequence and checks it against the brand's discount policy and any founder red line.",
+        "inputs": [
+          "discount policy",
+          "step list"
+        ],
+        "tools": [],
+        "skill": "life/discount-policy-check",
+        "output": "pass/fail with the rule cited",
+        "check": "fails closed and asks the founder if a red line is unclear",
+        "ask_founder_if": "discount policy is missing or ambiguous for this flow type"
+      },
+      {
+        "n": 7,
+        "name": "Draft the copy for every step",
+        "does": "Writes subject/preview/body or SMS/WhatsApp text for each step at a skimmable, honest, on-brand level.",
+        "inputs": [
+          "step list",
+          "brand voice",
+          "claims tiers"
+        ],
+        "tools": [],
+        "skill": "life/message",
+        "output": "draft copy per step, per channel",
+        "check": "claim-check pass on every step before it is placed in the brief"
+      },
+      {
+        "n": 8,
+        "name": "Run claim-check on the full draft set",
+        "does": "Checks every claim in every step's copy against the claims tiers and forbidden-words list.",
+        "inputs": [
+          "draft copy"
+        ],
+        "tools": [],
+        "skill": "shared/claim-check",
+        "output": "pass/fail per step with the cited rule",
+        "check": "fails closed on any unverifiable claim"
+      },
+      {
+        "n": 9,
+        "name": "Set the success metric and read point",
+        "does": "Names the metric contract field (flow revenue per recipient, conversion rate, win-back rate) and the read window this flow will be judged on.",
+        "inputs": [
+          "metric contract"
+        ],
+        "tools": [
+          "connector: metabase (read)"
+        ],
+        "skill": "shared/metric-read",
+        "output": "metric and read window",
+        "check": "metric is a contract field, not invented"
+      },
+      {
+        "n": 10,
+        "name": "Assemble the flow brief",
+        "does": "Puts trigger, filters, step list, discount rule, copy references and success metric into the fixed flow-brief output-contract shape.",
+        "inputs": [
+          "all above"
+        ],
+        "tools": [],
+        "skill": "life/build-flow",
+        "output": "flow brief JSON",
+        "check": "matches the output-contract shape exactly"
+      },
+      {
+        "n": 11,
+        "name": "Self-QA against the LIFE checklist",
+        "does": "Runs the full self-QA checklist before the QA Gate sees it.",
+        "inputs": [
+          "flow brief"
+        ],
+        "tools": [],
+        "skill": null,
+        "output": "QA-passed brief",
+        "check": "every item on the checklist passes or the run stops"
+      },
+      {
+        "n": 12,
+        "name": "Route to the founder gate",
+        "does": "Builds the plain-English card and sends the brief for the founder's decision (agent builds it live, sends to a developer/ESP admin, or not now).",
+        "inputs": [
+          "QA-passed brief"
+        ],
+        "tools": [],
+        "skill": "shared/plain-english-card",
+        "output": "founder card",
+        "check": "the card names what is needed first if anything is missing"
+      },
+      {
+        "n": 13,
+        "name": "Log the registry entry",
+        "does": "Records the flow build against the idea id with its metric, read point and kill/scale rule.",
+        "inputs": [
+          "founder decision"
+        ],
+        "tools": [],
+        "skill": "shared/registry-entry",
+        "output": "registry entry",
+        "check": "metric and read point match what step 9 set"
+      }
+    ],
+    "outputs": [
+      "flow brief (output-contract shape)",
+      "founder card",
+      "registry entry"
+    ],
+    "qa": [
+      "every claim traces to a brand-record field or cited idea",
+      "no two flows share a customer stage",
+      "discount eligibility cleared discount-policy-check",
+      "trigger confirmed to actually fire before the build"
+    ],
+    "read_point": "flow-level revenue per recipient and the named conversion/win-back rate, read at the flow type's own natural cycle (72 hours for welcome, 30-60 days for win-back)",
+    "typical_duration": "3 to 5 hours agent time per flow; founder decision then ESP build time",
+    "subagents": [
+      "candidate: Lifecycle Copy Drafter for step 7 when many flows are batched at once"
+    ]
+  },
+  {
+    "id": "LIFE-W05",
+    "name": "Build and maintain the segmentation model",
+    "capabilities": [
+      "LIFE-C12"
+    ],
+    "trigger": "weekly",
+    "human_role": "CRM manager building the segments every flow and campaign draws from",
+    "inputs_required": [
+      "order/ESP event data",
+      "metric contract: RFM and engagement fields",
+      "current segment list and refresh log"
+    ],
+    "steps": [
+      {
+        "n": 1,
+        "name": "Read the current segment list",
+        "does": "Pulls every live segment (RFM tiers, buyer stage, VIP, win-back-potential, engaged audience, location) and its last refresh time.",
+        "inputs": [
+          "ESP segment config"
+        ],
+        "tools": [
+          "connector: ESP (read)"
+        ],
+        "skill": "life/segment-spec",
+        "output": "segment inventory",
+        "check": "every segment in the standard set has a row"
+      },
+      {
+        "n": 2,
+        "name": "Pull order and engagement data for scoring",
+        "does": "Reads order recency/frequency/monetary and email/SMS engagement for the scoring window.",
+        "inputs": [
+          "connector: shopify orders (read)"
+        ],
+        "tools": [
+          "connector: shopify orders (read)",
+          "connector: ESP (read)"
+        ],
+        "skill": "life/segment-spec",
+        "output": "scoring dataset",
+        "check": "window ends on the last full day"
+      },
+      {
+        "n": 3,
+        "name": "Compute RFM tiers and buyer stage in code",
+        "does": "Scores every customer into an RFM tier and a buyer-stage bucket (prospect, first-time, repeat, VIP, lapsing, lapsed) using the fixed scoring script, never estimated by the model.",
+        "inputs": [
+          "scoring dataset"
+        ],
+        "tools": [
+          "script: intelligence/ideas.py"
+        ],
+        "skill": "life/segment-spec",
+        "output": "customer-to-tier/stage table",
+        "check": "arithmetic and thresholds run in code, not the model"
+      },
+      {
+        "n": 4,
+        "name": "Score win-back-potential and high-potential segments",
+        "does": "Flags customers showing decay against their own past cadence (win-back-potential) and customers matching high-LTV traits early (high-potential).",
+        "inputs": [
+          "scoring dataset"
+        ],
+        "tools": [
+          "script: intelligence/ideas.py"
+        ],
+        "skill": "life/segment-spec",
+        "output": "two additional scored lists",
+        "check": "decay is measured against the customer's own cadence, not a flat day count"
+      },
+      {
+        "n": 5,
+        "name": "Build the location segment",
+        "does": "Groups customers by shipping geography for market-specific sends (language, currency, seasonal calendar: Q4 holidays and BFCM for the US, festival calendar for India).",
+        "inputs": [
+          "connector: shopify orders (read)"
+        ],
+        "tools": [
+          "connector: shopify orders (read)"
+        ],
+        "skill": "life/segment-spec",
+        "output": "location segment",
+        "check": "geography read from shipping address, not billing"
+      },
+      {
+        "n": 6,
+        "name": "Check every segment against its using flows/campaigns",
+        "does": "Confirms each segment definition still matches what the flows and campaigns that reference it expect.",
+        "inputs": [
+          "segment inventory",
+          "flow/campaign list"
+        ],
+        "tools": [
+          "connector: ESP (read)"
+        ],
+        "skill": "life/segment-spec",
+        "output": "used-by cross-check",
+        "check": "no segment is referenced by a flow/campaign that no longer exists, and vice versa"
+      },
+      {
+        "n": 7,
+        "name": "Write the segment definitions",
+        "does": "Documents each segment's logic (AND/OR conditions, cited fields), expected size and refresh cadence in the output-contract shape.",
+        "inputs": [
+          "all above"
+        ],
+        "tools": [],
+        "skill": "life/segment-spec",
+        "output": "segment definition set",
+        "check": "matches the fixed output-contract shape"
+      },
+      {
+        "n": 8,
+        "name": "Push refreshed segments to the ESP",
+        "does": "Where autonomy allows (agent_does), writes the refreshed segment membership to the ESP; a push to an ad platform for lookalikes is a hand-off to Media buyer, never done here.",
+        "inputs": [
+          "segment definitions"
+        ],
+        "tools": [
+          "connector: ESP (draft-write)"
+        ],
+        "skill": "life/segment-spec",
+        "output": "refreshed segments live in the ESP",
+        "check": "no write to any ad account from this step"
+      },
+      {
+        "n": 9,
+        "name": "Report what changed",
+        "does": "Notes any segment whose size moved more than a set threshold since last week, for the founder to see without a gate.",
+        "inputs": [
+          "segment inventory",
+          "refreshed segments"
+        ],
+        "tools": [],
+        "skill": "shared/report-section",
+        "output": "weekly segment change note",
+        "check": "size changes stated as numbers, not adjectives"
+      }
+    ],
+    "outputs": [
+      "segment definitions (output-contract shape)",
+      "refreshed segment membership in the ESP"
+    ],
+    "qa": [
+      "every segment logic cites real fields",
+      "arithmetic run in code",
+      "used-by cross-check passes"
+    ],
+    "read_point": "weekly size and composition check; flows/campaigns reading the segment measure their own results separately",
+    "typical_duration": "1.5 hours agent time, automated after setup",
+    "subagents": []
+  },
+  {
+    "id": "LIFE-W06",
+    "name": "Build the campaign calendar and send-ready draft",
+    "capabilities": [
+      "LIFE-C13",
+      "LIFE-C14",
+      "LIFE-C15"
+    ],
+    "trigger": "weekly",
+    "human_role": "lifecycle marketing manager planning and drafting the week's campaigns",
+    "inputs_required": [
+      "metric contract: campaign send history and results",
+      "product/launch calendar",
+      "segmentation model",
+      "brand voice and claims tiers"
+    ],
+    "steps": [
+      {
+        "n": 1,
+        "name": "Read last week's calendar and results",
+        "does": "Pulls what sent last week, to which segment, and its result from the metric contract.",
+        "inputs": [
+          "metric contract"
+        ],
+        "tools": [
+          "connector: metabase (read)"
+        ],
+        "skill": "shared/metric-read",
+        "output": "last week's send log with results",
+        "check": "results shown as unavailable if the window is incomplete, never 0"
+      },
+      {
+        "n": 2,
+        "name": "Pull the product and event calendar",
+        "does": "Reads upcoming launches, restocks, and market-relevant dates (Q4 holiday season, Black Friday/Cyber Monday, Prime Day, Mother's Day, Father's Day, back to school, Valentine's Day, July 4 for the US; festivals and sale events for India) that could anchor a send.",
+        "inputs": [
+          "product calendar"
+        ],
+        "tools": [
+          "brand brain (read)",
+          "web search (budgeted)"
+        ],
+        "skill": "life/campaign-brief",
+        "output": "event list for the coming weeks",
+        "check": "every festival/date claim is checked against this year's actual calendar, not assumed"
+      },
+      {
+        "n": 3,
+        "name": "Plan the two-layer calendar",
+        "does": "Plans the always-on baseline (value content, non-discount) and any event-based peak send, keeping content mostly non-discount and rotating format (story, UGC, education, offer) across the week.",
+        "inputs": [
+          "event list",
+          "segment list"
+        ],
+        "tools": [],
+        "skill": "life/campaign-brief",
+        "output": "two-layer weekly plan",
+        "check": "no two sends in the week target the same segment with the same format"
+      },
+      {
+        "n": 4,
+        "name": "Pick the segment and content framework per send",
+        "does": "Assigns each planned send to a segment from the segmentation model and a content framework (problem-solution, social proof, behind-the-scenes, offer).",
+        "inputs": [
+          "segment definitions"
+        ],
+        "tools": [],
+        "skill": "life/campaign-brief",
+        "output": "send-to-segment-to-framework map",
+        "check": "segment picked exists and is fresh (refreshed this week)"
+      },
+      {
+        "n": 5,
+        "name": "Decide discount or not, per send",
+        "does": "Checks each send against the discount policy before any discount is attached.",
+        "inputs": [
+          "discount policy"
+        ],
+        "tools": [],
+        "skill": "life/discount-policy-check",
+        "output": "pass/fail per send with the rule cited",
+        "check": "fails closed if the discount frequency cap is already used this month",
+        "ask_founder_if": "monthly discount frequency cap already reached"
+      },
+      {
+        "n": 6,
+        "name": "Draft the copy per channel",
+        "does": "Writes subject/preview/body for email and short-form text for SMS/WhatsApp per send, at a skimmable reading level.",
+        "inputs": [
+          "send plan",
+          "brand voice"
+        ],
+        "tools": [],
+        "skill": "life/message",
+        "output": "draft copy per send, per channel",
+        "check": "claim-check pass before the copy moves to email build"
+      },
+      {
+        "n": 7,
+        "name": "Run claim-check on all campaign drafts",
+        "does": "Checks every campaign draft's claims against the tiers before build.",
+        "inputs": [
+          "draft copy"
+        ],
+        "tools": [],
+        "skill": "shared/claim-check",
+        "output": "pass/fail with cited rule",
+        "check": "fails closed on any unverifiable claim"
+      },
+      {
+        "n": 8,
+        "name": "Build and QA the email",
+        "does": "Turns approved copy into the 600px-wide, mobile-legible email build with live text over locked images, one decision per section, compressed and alt-tagged images.",
+        "inputs": [
+          "approved copy"
+        ],
+        "tools": [
+          "connector: ESP (draft-write)"
+        ],
+        "skill": "life/build-flow",
+        "output": "built email plus pre-send checklist",
+        "check": "images compressed and alt-tagged; only one clear decision per section"
+      },
+      {
+        "n": 9,
+        "name": "Assemble the campaign brief",
+        "does": "Puts send window, segment, framework, discount decision and copy references into the fixed campaign-brief output-contract shape.",
+        "inputs": [
+          "all above"
+        ],
+        "tools": [],
+        "skill": "life/campaign-brief",
+        "output": "campaign brief set for the week",
+        "check": "matches the output-contract shape exactly"
+      },
+      {
+        "n": 10,
+        "name": "Self-QA and route to the founder gate",
+        "does": "Runs the QA checklist; the calendar and any discount send are founder_gate, non-discount value sends can be agent_does once the founder has approved the standing calendar pattern.",
+        "inputs": [
+          "campaign briefs"
+        ],
+        "tools": [],
+        "skill": null,
+        "output": "gated or approved briefs",
+        "check": "no external send happens from this workflow; ESP holds drafts only"
+      }
+    ],
+    "outputs": [
+      "weekly campaign calendar",
+      "send-ready campaign briefs and built emails"
+    ],
+    "qa": [
+      "content mostly non-discount",
+      "no two sends target the same segment with the same format in a week",
+      "every send-ready email passes the pre-send checklist"
+    ],
+    "read_point": "per-send revenue and click rate read the day after send; weekly total read against last week",
+    "typical_duration": "3 hours agent time per week; founder review then ESP scheduling",
+    "subagents": []
+  },
+  {
+    "id": "LIFE-W07",
+    "name": "Run the deliverability and list-hygiene program",
+    "capabilities": [
+      "LIFE-C16"
+    ],
+    "trigger": "weekly",
+    "human_role": "lifecycle marketing manager / email deliverability owner",
+    "inputs_required": [
+      "ESP sender reputation data",
+      "metric contract: open/bounce/spam-complaint rates",
+      "list growth and suppression history"
+    ],
+    "steps": [
+      {
+        "n": 1,
+        "name": "Pull sender reputation and placement data",
+        "does": "Reads domain/IP reputation, inbox-vs-spam placement where the ESP reports it, and bounce/complaint rates for the week.",
+        "inputs": [
+          "ESP sender data"
+        ],
+        "tools": [
+          "connector: ESP (read)"
+        ],
+        "skill": "life/deliverability-audit",
+        "output": "reputation snapshot",
+        "check": "figures are the ESP's own reported numbers, not estimated"
+      },
+      {
+        "n": 2,
+        "name": "Check list hygiene",
+        "does": "Reads the share of the list that is unengaged (no open in 90-180 days) and whether a sunset flow is removing them.",
+        "inputs": [
+          "metric contract",
+          "ESP segment data"
+        ],
+        "tools": [
+          "connector: metabase (read)",
+          "connector: ESP (read)"
+        ],
+        "skill": "life/deliverability-audit",
+        "output": "list hygiene figure",
+        "check": "unengaged share computed from the contract, never guessed"
+      },
+      {
+        "n": 3,
+        "name": "Compare against the brand's own baseline",
+        "does": "Checks this week's bounce, complaint and open figures against the brand's trailing 8-week baseline, not an industry number.",
+        "inputs": [
+          "reputation snapshot",
+          "metric contract history"
+        ],
+        "tools": [
+          "connector: metabase (read)"
+        ],
+        "skill": "life/deliverability-audit",
+        "output": "baseline comparison",
+        "check": "comparison uses the brand's own history first"
+      },
+      {
+        "n": 4,
+        "name": "Diagnose degradation if any is found",
+        "does": "If a figure has degraded, checks content quality (subject lines, spam-trigger words, image-to-text ratio) as the first fix before touching authentication or sending infrastructure.",
+        "inputs": [
+          "recent sends"
+        ],
+        "tools": [
+          "connector: ESP (read)"
+        ],
+        "skill": "life/deliverability-audit",
+        "output": "diagnosis with the suspected cause ranked first",
+        "check": "content is checked before infrastructure, in that order"
+      },
+      {
+        "n": 5,
+        "name": "Run the repair ladder if needed",
+        "does": "Applies the repair steps in order: fix content, pause sending to the most unengaged segment, re-permission or suppress chronic non-openers, check authentication (SPF/DKIM/DMARC) only if the first steps do not explain it.",
+        "inputs": [
+          "diagnosis"
+        ],
+        "tools": [
+          "connector: ESP (read)",
+          "web search (budgeted)"
+        ],
+        "skill": "life/deliverability-audit",
+        "output": "repair plan with steps taken and steps pending",
+        "check": "authentication is checked last, not first, unless a clear signal points there"
+      },
+      {
+        "n": 6,
+        "name": "Suppress or resend to unengaged segments per policy",
+        "does": "Where agent_does, updates suppression per the standing hygiene policy; anything beyond the standing policy (a full re-permission campaign) goes to the founder.",
+        "inputs": [
+          "repair plan"
+        ],
+        "tools": [
+          "connector: ESP (draft-write)"
+        ],
+        "skill": "life/deliverability-audit",
+        "output": "updated suppression list",
+        "check": "no suppression removes a customer who purchased in the last 90 days without a specific reason"
+      },
+      {
+        "n": 7,
+        "name": "Write the health report",
+        "does": "Reports the reputation snapshot, the baseline comparison and any repair-ladder action taken.",
+        "inputs": [
+          "all above"
+        ],
+        "tools": [],
+        "skill": "shared/report-section",
+        "output": "weekly deliverability report",
+        "check": "numbers from the contract only, with windows and freshness"
+      }
+    ],
+    "outputs": [
+      "deliverability health report",
+      "repair-ladder log",
+      "updated suppression list"
+    ],
+    "qa": [
+      "content checked before infrastructure",
+      "no recent purchaser suppressed without cause",
+      "figures compared to the brand's own baseline"
+    ],
+    "read_point": "weekly; a sharp drop triggers an off-cycle run the same day it is seen",
+    "typical_duration": "1 hour agent time weekly; more if the repair ladder runs",
+    "subagents": []
+  },
+  {
+    "id": "LIFE-W08",
+    "name": "Set channel policy and design conversational messaging",
+    "capabilities": [
+      "LIFE-C17",
+      "LIFE-C18"
+    ],
+    "trigger": "monthly",
+    "human_role": "lifecycle marketing manager setting SMS/WhatsApp/push rules and two-way flows",
+    "inputs_required": [
+      "channel cost data (per-SMS/WhatsApp-message cost)",
+      "consent state per channel",
+      "current channel mix and results"
+    ],
+    "steps": [
+      {
+        "n": 1,
+        "name": "Read current channel usage and cost",
+        "does": "Pulls send volume and per-message cost for SMS, WhatsApp and push over the last month.",
+        "inputs": [
+          "ESP/WhatsApp billing data"
+        ],
+        "tools": [
+          "connector: ESP (read)",
+          "connector: WhatsApp Business API (read)"
+        ],
+        "skill": "life/channel-policy",
+        "output": "cost-and-volume table",
+        "check": "cost figures come from the platform's own billing, not estimated"
+      },
+      {
+        "n": 2,
+        "name": "Check consent coverage per channel",
+        "does": "Confirms what share of the sendable list has valid consent for SMS, WhatsApp and push separately.",
+        "inputs": [
+          "consent state"
+        ],
+        "tools": [
+          "connector: ESP (read)",
+          "connector: WhatsApp Business API (read)"
+        ],
+        "skill": "life/consent-governance",
+        "output": "consent coverage by channel",
+        "check": "a channel below its market's legal consent threshold is flagged before any policy is set"
+      },
+      {
+        "n": 3,
+        "name": "Set content scope per channel",
+        "does": "Decides what content each channel carries (WhatsApp: order updates and high-value recovery; SMS: time-sensitive short offers; push: on-site nudges only) so channels do not duplicate the same message.",
+        "inputs": [
+          "cost-and-volume table"
+        ],
+        "tools": [],
+        "skill": "life/channel-policy",
+        "output": "content-scope rule per channel",
+        "check": "no message type is duplicated across two channels to the same customer at the same time"
+      },
+      {
+        "n": 4,
+        "name": "Set cadence and cost-control caps",
+        "does": "Sets a per-customer weekly cap per channel and a monthly spend cap for paid channels (SMS, WhatsApp), sized to the cost data.",
+        "inputs": [
+          "cost-and-volume table"
+        ],
+        "tools": [],
+        "skill": "life/channel-policy",
+        "output": "cadence and cap rule",
+        "check": "caps sized from real per-message cost, not an arbitrary number"
+      },
+      {
+        "n": 5,
+        "name": "Recommend WhatsApp as a channel swap where SMS is costly",
+        "does": "Where SMS cost per send is high relative to WhatsApp in the brand's market (common in India, EU or LATAM), proposes shifting eligible message types to WhatsApp; for the US default, proposes shifting eligible message types between SMS and push instead.",
+        "inputs": [
+          "cost-and-volume table"
+        ],
+        "tools": [],
+        "skill": "life/channel-policy",
+        "output": "channel-swap recommendation",
+        "check": "swap recommended only where WhatsApp consent and template approval already exist or are proposed together"
+      },
+      {
+        "n": 6,
+        "name": "Design the two-way conversation openers",
+        "does": "Writes the reply-inviting opening question for SMS/RCS/WhatsApp conversational flows (delivery check-in, product-fit question, feedback prompt).",
+        "inputs": [
+          "brand voice"
+        ],
+        "tools": [],
+        "skill": "life/message",
+        "output": "opener set per use case",
+        "check": "every opener invites a real reply, not a yes/no dead end"
+      },
+      {
+        "n": 7,
+        "name": "Set the human hand-off rule",
+        "does": "Defines the point at which a real customer reply routes to a human agent rather than a bot continuing the script.",
+        "inputs": [
+          "support platform capability"
+        ],
+        "tools": [
+          "connector: support platform (read)"
+        ],
+        "skill": "life/message",
+        "output": "hand-off rule",
+        "check": "hand-off happens at the first real reply, never after a second bot message"
+      },
+      {
+        "n": 8,
+        "name": "Assemble the channel policy and conversation spec",
+        "does": "Puts content scope, cadence, cost caps, swap recommendation and conversation openers into one policy document.",
+        "inputs": [
+          "all above"
+        ],
+        "tools": [],
+        "skill": "life/channel-policy",
+        "output": "channel policy document",
+        "check": "document covers every channel the brand actually uses"
+      },
+      {
+        "n": 9,
+        "name": "Self-QA and route to the founder gate",
+        "does": "Runs the QA checklist; channel policy changes and any new conversational flow are founder_gate.",
+        "inputs": [
+          "policy document"
+        ],
+        "tools": [],
+        "skill": null,
+        "output": "gated policy document",
+        "check": "no send action taken from this workflow"
+      }
+    ],
+    "outputs": [
+      "channel policy document",
+      "conversation opener and hand-off spec"
+    ],
+    "qa": [
+      "caps sized from real cost data",
+      "consent checked before any policy is set",
+      "hand-off happens at first real reply"
+    ],
+    "read_point": "monthly cost-per-outcome by channel, and reply/hand-off rate for conversational flows",
+    "typical_duration": "3 hours agent time monthly",
+    "subagents": []
+  },
+  {
+    "id": "LIFE-W09",
+    "name": "Design the SMS and WhatsApp commerce program",
+    "capabilities": [
+      "LIFE-C22"
+    ],
+    "trigger": "on demand",
+    "human_role": "lifecycle marketing manager building the SMS (and, where used, WhatsApp) commerce channel",
+    "inputs_required": [
+      "order/cart data by market",
+      "carrier delivery-exception and return-to-sender data (NDR/RTO data for India)",
+      "current payment method mix (including COD share for India)",
+      "SMS/WhatsApp platform template and consent status"
+    ],
+    "steps": [
+      {
+        "n": 1,
+        "name": "Read the current order and payment pattern",
+        "does": "Pulls payment method mix, cart abandonment and, for COD markets, COD share and RTO rate for that market's orders specifically, not blended with other markets.",
+        "inputs": [
+          "connector: shopify orders (read)"
+        ],
+        "tools": [
+          "connector: shopify orders (read)"
+        ],
+        "skill": "life/whatsapp-india-commerce",
+        "output": "order/payment snapshot",
+        "check": "figures scoped to one market's shipping addresses at a time"
+      },
+      {
+        "n": 2,
+        "name": "Check channel reach against the SMS baseline",
+        "does": "Compares delivered/read rates for SMS against WhatsApp where WhatsApp is used (India, EU, LATAM), since reach varies by market.",
+        "inputs": [
+          "ESP/WhatsApp platform data"
+        ],
+        "tools": [
+          "connector: ESP (read)",
+          "connector: WhatsApp Business API (read)"
+        ],
+        "skill": "life/whatsapp-india-commerce",
+        "output": "channel-reach comparison",
+        "check": "comparison uses the brand's own delivered/read data, not a general claim"
+      },
+      {
+        "n": 3,
+        "name": "Design the SMS/WhatsApp cart-recovery sequence",
+        "does": "Builds the cart/checkout abandonment sequence using the life/build-flow/browse-cart-abandon logic, with SMS as the lead channel by default and WhatsApp as the lead channel where it is the market option in use.",
+        "inputs": [
+          "cart abandon data"
+        ],
+        "tools": [],
+        "skill": "life/build-flow",
+        "output": "SMS/WhatsApp cart-recovery flow steps",
+        "check": "sequence follows the same filter and timing rules as the cart-abandon flow build"
+      },
+      {
+        "n": 4,
+        "name": "Design order-update messages",
+        "does": "Sets the order-confirmed, shipped, out-for-delivery and delivered messages by SMS by default, or on WhatsApp where that is the market's lead channel, replacing or supplementing email for these transactional updates.",
+        "inputs": [
+          "order status events"
+        ],
+        "tools": [],
+        "skill": "life/whatsapp-india-commerce",
+        "output": "order-update message set",
+        "check": "every update message maps to a real order-status event"
+      },
+      {
+        "n": 5,
+        "name": "Design the failed-card dunning or COD-to-prepaid nudge",
+        "does": "Writes the dunning retry message for a failed card charge by default; for a COD market (India), writes the message offering a small, policy-checked incentive to switch a COD order to prepaid, sized to the RTO cost it avoids rather than an arbitrary number.",
+        "inputs": [
+          "failed-payment cost data (RTO cost data for India)",
+          "discount policy"
+        ],
+        "tools": [
+          "life/discount-policy-check"
+        ],
+        "skill": "life/discount-policy-check",
+        "output": "dunning message set, or (COD markets) a COD-to-prepaid nudge with sizing shown",
+        "check": "any incentive size traces to a measured cost avoided, never an arbitrary number"
+      },
+      {
+        "n": 6,
+        "name": "Design the failed-delivery recovery sequence",
+        "does": "Fires an automatic SMS/email sequence the moment a carrier logs a delivery exception or return-to-sender; for India, fires the WhatsApp/SMS sequence the moment a courier logs a non-delivery (NDR), offering reschedule or address fix.",
+        "inputs": [
+          "carrier delivery-exception feed (NDR feed for India)"
+        ],
+        "tools": [],
+        "skill": "life/whatsapp-india-commerce",
+        "output": "failed-delivery recovery sequence",
+        "check": "sequence starts within the same day as the delivery-exception (or NDR, for India) event"
+      },
+      {
+        "n": 7,
+        "name": "Check template approval status",
+        "does": "Confirms every message type needing a WhatsApp Business template is approved before the flow can go live, where WhatsApp is used.",
+        "inputs": [
+          "WhatsApp platform"
+        ],
+        "tools": [
+          "connector: WhatsApp Business API (read)"
+        ],
+        "skill": "life/whatsapp-india-commerce",
+        "output": "template approval checklist",
+        "check": "no flow step ships on an unapproved template"
+      },
+      {
+        "n": 8,
+        "name": "Assemble the program spec",
+        "does": "Puts the cart-recovery, order-update, dunning/COD-to-prepaid and failed-delivery recovery flows into one SMS/WhatsApp commerce program document.",
+        "inputs": [
+          "all above"
+        ],
+        "tools": [],
+        "skill": "life/whatsapp-india-commerce",
+        "output": "SMS/WhatsApp commerce program spec",
+        "check": "every flow in the spec traces to a real event and a checked template where a template applies"
+      },
+      {
+        "n": 9,
+        "name": "Self-QA and route to the founder gate",
+        "does": "Runs the QA checklist; every flow here is founder_gate before it goes live.",
+        "inputs": [
+          "program spec"
+        ],
+        "tools": [],
+        "skill": null,
+        "output": "gated program spec",
+        "check": "no message is sent from this workflow"
+      }
+    ],
+    "outputs": [
+      "SMS/WhatsApp commerce program spec",
+      "template approval checklist"
+    ],
+    "qa": [
+      "incentive sizing traces to a measured cost avoided (RTO cost for India)",
+      "no unapproved template used",
+      "failed-delivery recovery sequence starts same-day"
+    ],
+    "read_point": "dunning recovery rate (or, for India, COD confirmation rate and RTO rate by pincode) and failed-delivery/NDR recovery rate, read monthly against the pre-launch baseline",
+    "typical_duration": "1 day agent time; template approval wait time varies by Meta's review where WhatsApp is used",
+    "subagents": []
+  },
+  {
+    "id": "LIFE-W10",
+    "name": "Run the lifecycle testing and experimentation program",
+    "capabilities": [
+      "LIFE-C19"
+    ],
+    "trigger": "on demand",
+    "human_role": "lifecycle marketing manager running the test backlog",
+    "inputs_required": [
+      "registry: running and past lifecycle tests",
+      "current flow/campaign/channel backlog",
+      "metric contract"
+    ],
+    "steps": [
+      {
+        "n": 1,
+        "name": "Pull the current test backlog",
+        "does": "Reads every proposed flow, campaign, offer or channel test not yet run for this brand.",
+        "inputs": [
+          "backlog",
+          "registry"
+        ],
+        "tools": [
+          "script: search_knowledge.py"
+        ],
+        "skill": "life/test-program-governance",
+        "output": "backlog list",
+        "check": "backlog matches what Propose and the other LIFE workflows have queued"
+      },
+      {
+        "n": 2,
+        "name": "Check for test hygiene conflicts",
+        "does": "Confirms no two running tests overlap on the same segment and metric at the same time, which would confound the read.",
+        "inputs": [
+          "registry: running tests"
+        ],
+        "tools": [],
+        "skill": "life/test-program-governance",
+        "output": "conflict check",
+        "check": "a conflict blocks a new test from starting until resolved"
+      },
+      {
+        "n": 3,
+        "name": "Prioritise the next tests to run",
+        "does": "Ranks the backlog by expected impact, sample size available and dependency order (structure before depth, as offers do).",
+        "inputs": [
+          "backlog",
+          "metric contract"
+        ],
+        "tools": [
+          "script: intelligence/ideas.py"
+        ],
+        "skill": "shared/rank-candidates",
+        "output": "ranked test order",
+        "check": "ranking runs in code with score parts visible"
+      },
+      {
+        "n": 4,
+        "name": "Specify each test",
+        "does": "Writes the hypothesis, control and variant, sample split, minimum sample size and pre-registered read window and metric before launch.",
+        "inputs": [
+          "ranked order"
+        ],
+        "tools": [],
+        "skill": "life/test-program-governance",
+        "output": "test specification per test",
+        "check": "metric and read window are pre-registered before launch, never chosen after seeing results"
+      },
+      {
+        "n": 5,
+        "name": "Set the holdout where relevant",
+        "does": "For a flow or campaign test measuring incrementality, defines the holdout group size and duration.",
+        "inputs": [
+          "test specification"
+        ],
+        "tools": [],
+        "skill": "life/test-program-governance",
+        "output": "holdout definition",
+        "check": "holdout is large enough to read cleanly, sized in code"
+      },
+      {
+        "n": 6,
+        "name": "Hand off the specs to the owning workflow",
+        "does": "Routes each test's build (flow, campaign, offer, channel) to its own workflow (W04, W06, W18, etc.) with the test spec attached.",
+        "inputs": [
+          "test specifications"
+        ],
+        "tools": [],
+        "skill": null,
+        "output": "routed test specs",
+        "check": "every spec reaches the workflow that will actually build the variant"
+      },
+      {
+        "n": 7,
+        "name": "Log each test to the registry",
+        "does": "Records id, hypothesis, metric, read point, kill/scale rule before the test goes live.",
+        "inputs": [
+          "test specifications"
+        ],
+        "tools": [],
+        "skill": "shared/registry-entry",
+        "output": "registry entries",
+        "check": "every entry has a metric and a read point that is a contract field"
+      }
+    ],
+    "outputs": [
+      "ranked test backlog",
+      "test specifications",
+      "registry entries"
+    ],
+    "qa": [
+      "no two running tests confound each other",
+      "metric and read window pre-registered before launch",
+      "ranking done in code"
+    ],
+    "read_point": "per-test, at the pre-registered read window",
+    "typical_duration": "2 hours agent time per prioritisation pass",
+    "subagents": []
+  },
+  {
+    "id": "LIFE-W11",
+    "name": "Run the monthly lifecycle health review",
+    "capabilities": [
+      "LIFE-C20"
+    ],
+    "trigger": "monthly",
+    "human_role": "lifecycle marketing manager producing the monthly read-out",
+    "inputs_required": [
+      "metric contract: full lifecycle metric chain",
+      "registry: this month's tests and their reads",
+      "flow/campaign send logs"
+    ],
+    "steps": [
+      {
+        "n": 1,
+        "name": "Read the full metric chain",
+        "does": "Pulls list growth, opt-in rate, flow revenue share, campaign revenue share, deliverability, and retention/repeat-rate figures for the month.",
+        "inputs": [
+          "metric contract"
+        ],
+        "tools": [
+          "connector: metabase (read)"
+        ],
+        "skill": "shared/metric-read",
+        "output": "full metric chain with windows",
+        "check": "every field is a contract field; missing ones say unavailable"
+      },
+      {
+        "n": 2,
+        "name": "Separate traffic issues from flow issues",
+        "does": "Checks whether a flow's weak result is caused by low volume entering it (a traffic/segmentation problem) versus a weak flow itself, before diagnosing the flow.",
+        "inputs": [
+          "metric chain",
+          "segment sizes"
+        ],
+        "tools": [],
+        "skill": "life/health-review",
+        "output": "traffic-vs-flow diagnosis per weak flow",
+        "check": "a volume problem is never mis-diagnosed as a content problem"
+      },
+      {
+        "n": 3,
+        "name": "Pull this month's test reads",
+        "does": "Reads every registry entry with a read point inside this month.",
+        "inputs": [
+          "registry"
+        ],
+        "tools": [
+          "script: search_knowledge.py"
+        ],
+        "skill": "shared/registry-entry",
+        "output": "test read list",
+        "check": "pending reads listed as pending, never as results"
+      },
+      {
+        "n": 4,
+        "name": "Diagnose the top 2-3 problems",
+        "does": "For the weakest points in the metric chain, states the specific cause with evidence, not a general observation.",
+        "inputs": [
+          "metric chain",
+          "traffic-vs-flow diagnosis"
+        ],
+        "tools": [],
+        "skill": "life/health-review",
+        "output": "diagnosis with evidence per problem",
+        "check": "every diagnosis names the exact setting, segment or content issue"
+      },
+      {
+        "n": 5,
+        "name": "Recommend the next 2-3 actions",
+        "does": "Names the specific next workflow to run (a flow rebuild, a segment fix, a deliverability repair) for each diagnosed problem.",
+        "inputs": [
+          "diagnosis"
+        ],
+        "tools": [],
+        "skill": "shared/rank-candidates",
+        "output": "recommended next actions, ranked",
+        "check": "each recommendation names the workflow id that would execute it"
+      },
+      {
+        "n": 6,
+        "name": "Assemble the monthly report",
+        "does": "Puts the metric chain, diagnoses and recommendations into the report-section shape (what we did, what it did, what is next).",
+        "inputs": [
+          "all above"
+        ],
+        "tools": [],
+        "skill": "shared/report-section",
+        "output": "monthly lifecycle report",
+        "check": "matches the report-section output shape"
+      },
+      {
+        "n": 7,
+        "name": "Self-QA and post to the founder",
+        "does": "Runs the QA checklist; this is agent_does since it is a report, not a change.",
+        "inputs": [
+          "monthly report"
+        ],
+        "tools": [],
+        "skill": null,
+        "output": "final report",
+        "check": "no adjective substitutes for a number"
+      }
+    ],
+    "outputs": [
+      "monthly lifecycle health report"
+    ],
+    "qa": [
+      "traffic issues separated from flow issues before diagnosing",
+      "pending reads never shown as results",
+      "every recommendation names an executing workflow"
+    ],
+    "read_point": "monthly, compared to the prior month's same report",
+    "typical_duration": "2 hours agent time monthly",
+    "subagents": []
+  },
+  {
+    "id": "LIFE-W12",
+    "name": "Score churn and lapse risk and route to the right save program",
+    "capabilities": [
+      "LIFE-C33",
+      "LIFE-G02"
+    ],
+    "trigger": "weekly",
+    "human_role": "retention marketing manager reading the order gap and routing saves",
+    "inputs_required": [
+      "order history with per-customer purchase interval",
+      "subscription pause/failed-renewal events",
+      "unresolved support ticket data",
+      "engagement data from the segmentation model"
+    ],
+    "steps": [
+      {
+        "n": 1,
+        "name": "Compute each customer's expected next-order gap",
+        "does": "Reads each customer's own historical purchase interval and flags anyone now past their expected next-order date by a set margin.",
+        "inputs": [
+          "connector: shopify orders (read)"
+        ],
+        "tools": [
+          "connector: shopify orders (read)",
+          "script: intelligence/ideas.py"
+        ],
+        "skill": "life/churn-risk-score",
+        "output": "per-customer order-gap flag",
+        "check": "gap measured against the customer's own cadence, never a flat day count for everyone"
+      },
+      {
+        "n": 2,
+        "name": "Pull subscription pause and failed-renewal events",
+        "does": "Reads any subscription pause, skip or failed-payment event in the window.",
+        "inputs": [
+          "connector: subscription platform (read)"
+        ],
+        "tools": [
+          "connector: subscription platform (read)"
+        ],
+        "skill": "life/churn-risk-score",
+        "output": "subscription risk events",
+        "check": "failed renewals separated from voluntary cancellations"
+      },
+      {
+        "n": 3,
+        "name": "Set retry schedule for failed renewals",
+        "does": "For a failed card renewal, sets the dunning retry cadence by default; for a failed UPI AutoPay or e-mandate renewal (India), sets the retry cadence and the re-authorisation message per current RBI e-mandate rules.",
+        "inputs": [
+          "failed-renewal events"
+        ],
+        "tools": [
+          "connector: subscription platform (read)",
+          "web search (budgeted)"
+        ],
+        "skill": "life/churn-risk-score",
+        "output": "retry/re-auth schedule",
+        "check": "retry cadence matches the platform default for a failed card; UPI AutoPay/e-mandate retry timing and re-auth wording match the current RBI rule for India, cited with date"
+      },
+      {
+        "n": 4,
+        "name": "Pull unresolved support and engagement decay signals",
+        "does": "Reads open or recently-escalated tickets and any drop in email/SMS engagement for the same customers.",
+        "inputs": [
+          "connector: support platform (read)"
+        ],
+        "tools": [
+          "connector: support platform (read)",
+          "connector: ESP (read)"
+        ],
+        "skill": "life/churn-risk-score",
+        "output": "support/engagement signal set",
+        "check": "a signal only counts if it is dated within the scoring window"
+      },
+      {
+        "n": 5,
+        "name": "Compute the churn-risk score in code",
+        "does": "Combines order-gap, subscription risk, support and engagement signals into a risk tier (low/medium/high) per customer, all arithmetic in code.",
+        "inputs": [
+          "all signals"
+        ],
+        "tools": [
+          "script: intelligence/ideas.py"
+        ],
+        "skill": "life/churn-risk-score",
+        "output": "risk-tiered customer list",
+        "check": "no risk score computed or adjusted by the model itself"
+      },
+      {
+        "n": 6,
+        "name": "Route each risk tier to its save program",
+        "does": "Routes low/medium engagement-decay risk to the ordinary win-back flow (W04), delivery-failure risk (return-to-sender for US, RTO for India) to the trust-rebuild win-back variant, and active-subscriber risk to the cancel-flow save offer (W20).",
+        "inputs": [
+          "risk-tiered list"
+        ],
+        "tools": [],
+        "skill": "life/churn-risk-score",
+        "output": "routing table by tier and cause",
+        "check": "a delivery-failure-caused lapse (return-to-sender for US carriers, RTO for India) never routes to a discount-led win-back first"
+      },
+      {
+        "n": 7,
+        "name": "Draft the routed message as a live draft",
+        "does": "For each routed customer or segment, produces the flow entry or one-off draft ready for the founder gate, citing the evidence behind the routing.",
+        "inputs": [
+          "routing table"
+        ],
+        "tools": [],
+        "skill": "life/build-flow",
+        "output": "routed live draft per tier",
+        "check": "every draft cites the specific signal that triggered it"
+      },
+      {
+        "n": 8,
+        "name": "Report involuntary churn apart from voluntary cancellations",
+        "does": "Reports the failed-renewal recovery rate separately from the voluntary cancel rate, since blending them hides which lever actually needs fixing.",
+        "inputs": [
+          "subscription risk events",
+          "routing outcomes"
+        ],
+        "tools": [],
+        "skill": "shared/report-section",
+        "output": "churn report with the two rates kept apart",
+        "check": "the two rates are never combined into one blended churn number"
+      },
+      {
+        "n": 9,
+        "name": "Self-QA and route to the founder gate",
+        "does": "Runs the QA checklist; every routed save action is founder_gate before it sends.",
+        "inputs": [
+          "all drafts"
+        ],
+        "tools": [],
+        "skill": null,
+        "output": "gated drafts",
+        "check": "no message sent from this workflow"
+      }
+    ],
+    "outputs": [
+      "risk-tiered customer list",
+      "routed live drafts",
+      "involuntary-vs-voluntary churn report"
+    ],
+    "qa": [
+      "order gap measured against the customer's own cadence",
+      "arithmetic in code only",
+      "a delivery-failure-caused lapse (return-to-sender for US carriers, RTO for India) routed to a trust-rebuild message, not a discount"
+    ],
+    "read_point": "weekly risk-tier movement; monthly involuntary-churn rate against the prior month",
+    "typical_duration": "2 hours agent time weekly",
+    "subagents": []
+  },
+  {
+    "id": "LIFE-W13",
+    "name": "Design the post-purchase journey, delivery communication and unboxing experience",
+    "capabilities": [
+      "LIFE-C23",
+      "LIFE-C24",
+      "LIFE-C25"
+    ],
+    "trigger": "on demand",
+    "human_role": "CX lead mapping and designing the after-purchase experience",
+    "inputs_required": [
+      "support ticket history",
+      "review text",
+      "metric contract: WISMO ticket rate",
+      "product/packaging cost data",
+      "brand's one-line promise"
+    ],
+    "steps": [
+      {
+        "n": 1,
+        "name": "List the post-purchase touchpoints",
+        "does": "Lists every touchpoint from order confirmation to delivered-and-used (confirmation, shipping update, delivery, unboxing, first use, review request).",
+        "inputs": [
+          "support/review history"
+        ],
+        "tools": [
+          "connector: support platform (read)",
+          "connector: reviews platform (read)"
+        ],
+        "skill": "life/journey-map",
+        "output": "touchpoint list",
+        "check": "list covers every real touchpoint the store has, not a generic template"
+      },
+      {
+        "n": 2,
+        "name": "Classify each touchpoint by the Kano model",
+        "does": "Classifies each as basic (must-have, its absence angers), performance (more is better) or delight (unexpected, memorable).",
+        "inputs": [
+          "touchpoint list"
+        ],
+        "tools": [],
+        "skill": "life/journey-map",
+        "output": "Kano-classified touchpoints",
+        "check": "every touchpoint has a classification with the reasoning"
+      },
+      {
+        "n": 3,
+        "name": "Find the negative peak",
+        "does": "Reads support tickets and reviews to find the single worst-experienced point in the journey today, with quoted evidence.",
+        "inputs": [
+          "support/review history"
+        ],
+        "tools": [
+          "connector: support platform (read)",
+          "connector: reviews platform (read)"
+        ],
+        "skill": "life/journey-map",
+        "output": "negative peak with quotes",
+        "check": "the peak is evidenced by real quotes, not assumed"
+      },
+      {
+        "n": 4,
+        "name": "Design the order-status and delivery communication set",
+        "does": "Writes the confirmation, shipping and delivery-estimate messages and the branded tracking page content, aimed at cutting WISMO tickets under 5 percent of orders.",
+        "inputs": [
+          "negative peak",
+          "metric contract: WISMO rate"
+        ],
+        "tools": [
+          "connector: metabase (read)"
+        ],
+        "skill": "life/journey-map",
+        "output": "order-status message set and tracking-page copy",
+        "check": "delivery-estimate language never promises a date the courier data cannot support"
+      },
+      {
+        "n": 5,
+        "name": "Design the unboxing and packaging reveal",
+        "does": "Designs the layered reveal, insert tiering, and any gift or note, naming this as the journey's main peak to fund, capped to a set share of product cost.",
+        "inputs": [
+          "product/packaging cost"
+        ],
+        "tools": [
+          "sub-agent: Reference Scout"
+        ],
+        "skill": "life/journey-map",
+        "output": "unboxing/packaging brief with cost model",
+        "check": "spend capped at 2-5 percent of product cost; no falsely-claimed handwritten note"
+      },
+      {
+        "n": 6,
+        "name": "Reference competitor unboxing for mood only",
+        "does": "Pulls competitor unboxing references from the Reference Scout for layout and mood, never copying materials or wording.",
+        "inputs": [
+          "negative peak",
+          "packaging brief"
+        ],
+        "tools": [
+          "sub-agent: Reference Scout"
+        ],
+        "skill": "life/journey-map",
+        "output": "reference set",
+        "check": "no competitor text, logo or product reproduced"
+      },
+      {
+        "n": 7,
+        "name": "Name the change each map requires",
+        "does": "States at least one concrete change per touchpoint map, not just a description of the current state.",
+        "inputs": [
+          "all above"
+        ],
+        "tools": [],
+        "skill": "life/journey-map",
+        "output": "named changes list",
+        "check": "every map names at least one concrete change"
+      },
+      {
+        "n": 8,
+        "name": "Assemble the journey and communication brief",
+        "does": "Puts the touchpoint map, delivery communication set and packaging brief into one document.",
+        "inputs": [
+          "all above"
+        ],
+        "tools": [],
+        "skill": "shared/report-section",
+        "output": "journey/communication/packaging brief",
+        "check": "brief covers order-to-delivered, not just one touchpoint"
+      },
+      {
+        "n": 9,
+        "name": "Self-QA and route to the founder gate",
+        "does": "Runs the QA checklist; packaging spend and message wording changes are founder_gate.",
+        "inputs": [
+          "brief"
+        ],
+        "tools": [],
+        "skill": null,
+        "output": "gated brief",
+        "check": "no vendor or packaging order placed from this workflow"
+      }
+    ],
+    "outputs": [
+      "journey map with Kano classification",
+      "order-status/delivery message set",
+      "packaging and unboxing brief"
+    ],
+    "qa": [
+      "negative peak evidenced by quotes",
+      "delivery estimates match courier data",
+      "packaging spend capped to product cost share"
+    ],
+    "read_point": "WISMO ticket rate and unboxing-driven UGC volume, read monthly after launch",
+    "typical_duration": "1 day agent time; longer if new packaging is sourced",
+    "subagents": []
+  },
+  {
+    "id": "LIFE-W14",
+    "name": "Design the returns, exchanges and refund experience",
+    "capabilities": [
+      "LIFE-C26"
+    ],
+    "trigger": "on demand",
+    "human_role": "returns coordinator / CX lead designing the returns flow and policy",
+    "inputs_required": [
+      "current return/refund policy",
+      "failed-delivery/fraud/chargeback data (RTO data for India)",
+      "per-market return law",
+      "support ticket volume tagged as returns"
+    ],
+    "steps": [
+      {
+        "n": 1,
+        "name": "Read the current policy and return volume",
+        "does": "Pulls the live returns policy text and the last quarter's return rate, reason breakdown and refund-cycle time.",
+        "inputs": [
+          "policy data",
+          "connector: shopify orders (read)"
+        ],
+        "tools": [
+          "connector: shopify orders (read)",
+          "connector: support platform (read)"
+        ],
+        "skill": "life/returns-policy-draft",
+        "output": "current-state snapshot",
+        "check": "return rate and reasons come from order/support data, not estimated"
+      },
+      {
+        "n": 2,
+        "name": "Check per-market return law",
+        "does": "Confirms the minimum return window and any mandatory disclosure for each market the brand ships to.",
+        "inputs": [
+          "market list"
+        ],
+        "tools": [
+          "web search (budgeted)"
+        ],
+        "skill": "shared/web-research-budgeted",
+        "output": "legal minimums per market with source and date",
+        "check": "every legal claim carries a URL and date"
+      },
+      {
+        "n": 3,
+        "name": "Set refund speed targets for both legs",
+        "does": "Sets a target for time-to-pickup and time-to-refund-after-receipt separately, since a returner cares about both.",
+        "inputs": [
+          "current-state snapshot"
+        ],
+        "tools": [],
+        "skill": "life/returns-policy-draft",
+        "output": "two speed targets",
+        "check": "targets are measured against both legs, not one combined number"
+      },
+      {
+        "n": 4,
+        "name": "Design the refund-vs-credit choice",
+        "does": "Designs the choice between cash refund and store credit, including any credit bonus, checked against the brand's margin.",
+        "inputs": [
+          "margin data"
+        ],
+        "tools": [
+          "brand brain (read)"
+        ],
+        "skill": "life/returns-policy-draft",
+        "output": "refund/credit choice design",
+        "check": "any credit bonus is sized against real margin, not an arbitrary number"
+      },
+      {
+        "n": 5,
+        "name": "Design the self-service portal rules",
+        "does": "Sets what a customer can do without contacting support (initiate, choose refund/exchange/credit, print a label) and what needs a human.",
+        "inputs": [
+          "current policy"
+        ],
+        "tools": [],
+        "skill": "life/returns-policy-draft",
+        "output": "self-service rule set",
+        "check": "fraud-flagged or high-value returns route to a human, never full self-service"
+      },
+      {
+        "n": 6,
+        "name": "Design failed-delivery and fraud controls",
+        "does": "Sets the address-risk/fraud check for orders before a return or replacement ships (ZIP/address-validation history for the US); India only: sets the pincode-level RTO risk check and the serial-returner flag for COD orders instead.",
+        "inputs": [
+          "failed-delivery/fraud data (RTO data for India)"
+        ],
+        "tools": [
+          "script: intelligence/ideas.py"
+        ],
+        "skill": "life/returns-policy-draft",
+        "output": "failed-delivery/fraud control rule (RTO/fraud control rule for India)",
+        "check": "risk check runs on real address history for the US, or pincode history for India, not a blanket restriction"
+      },
+      {
+        "n": 7,
+        "name": "Write the policy text",
+        "does": "Drafts the customer-facing returns and refund policy page text at a skimmable, honest reading level.",
+        "inputs": [
+          "all above"
+        ],
+        "tools": [],
+        "skill": "life/returns-policy-draft",
+        "output": "policy draft text",
+        "check": "claim-check pass; policy visible pre-purchase, not only after checkout"
+      },
+      {
+        "n": 8,
+        "name": "Check the returners' repeat-rate gate",
+        "does": "Confirms any investment in making returns easier is justified by the observed repeat-purchase rate of past returners versus non-returners.",
+        "inputs": [
+          "order history"
+        ],
+        "tools": [
+          "connector: shopify orders (read)"
+        ],
+        "skill": "life/returns-policy-draft",
+        "output": "repeat-rate comparison",
+        "check": "investment level matches the measured repeat-rate lift, not assumed goodwill"
+      },
+      {
+        "n": 9,
+        "name": "Self-QA and route to the founder gate",
+        "does": "Runs the QA checklist; every policy or portal change is founder_gate and legal-market-checked.",
+        "inputs": [
+          "policy draft"
+        ],
+        "tools": [],
+        "skill": null,
+        "output": "gated policy and flow spec",
+        "check": "policy text checked against law per market before it ships"
+      }
+    ],
+    "outputs": [
+      "returns flow spec",
+      "policy draft text",
+      "failed-delivery/fraud control rule (RTO/fraud control rule for India)"
+    ],
+    "qa": [
+      "policy checked against law per market",
+      "returns investment gated on returners' repeat rate",
+      "failed-delivery/fraud check uses real address history for the US, or pincode history for India"
+    ],
+    "read_point": "return rate, refund-cycle time and post-return repeat-purchase rate, read quarterly",
+    "typical_duration": "1 day agent time",
+    "subagents": []
+  },
+  {
+    "id": "LIFE-W15",
+    "name": "Draft support reply templates, ticket-tagging rules and AI agent governance",
+    "capabilities": [
+      "LIFE-C27",
+      "LIFE-C49"
+    ],
+    "trigger": "on demand",
+    "human_role": "customer support lead / CX manager standing up or refreshing support automation",
+    "inputs_required": [
+      "helpdesk ticket history by contact type",
+      "current return/refund/shipping policy",
+      "brand voice record"
+    ],
+    "steps": [
+      {
+        "n": 1,
+        "name": "Group tickets into contact types",
+        "does": "Reads a sample of recent tickets and groups them into the common contact types (WISMO, return/exchange, sizing/fit, damaged/defective, payment, cancel/change order, product question, complaint).",
+        "inputs": [
+          "ticket history"
+        ],
+        "tools": [
+          "connector: support platform (read)"
+        ],
+        "skill": "life/support-reply-draft",
+        "output": "contact-type breakdown with volume",
+        "check": "every high-volume type in the sample has its own bucket, not an 'other' catch-all over 15 percent"
+      },
+      {
+        "n": 2,
+        "name": "Draft a reply template per type",
+        "does": "Writes a template per contact type in the brand's voice, citing current policy for any factual claim.",
+        "inputs": [
+          "contact-type breakdown",
+          "current policy"
+        ],
+        "tools": [],
+        "skill": "life/support-reply-draft",
+        "output": "template library",
+        "check": "every factual claim in a template traces to the current policy"
+      },
+      {
+        "n": 3,
+        "name": "Decide automation scope per type",
+        "does": "Classifies each type as agent-can-close, agent-can-draft-only, or human-only, keeping human voice for recovery and VIP moments.",
+        "inputs": [
+          "template library"
+        ],
+        "tools": [],
+        "skill": "life/support-reply-draft",
+        "output": "automation-scope classification",
+        "check": "recovery and VIP-flagged tickets are never agent-can-close"
+      },
+      {
+        "n": 4,
+        "name": "Set tagging and routing rules",
+        "does": "Writes the rule that tags and routes each incoming ticket to the right queue and priority.",
+        "inputs": [
+          "contact-type breakdown"
+        ],
+        "tools": [
+          "connector: support platform (read)"
+        ],
+        "skill": "life/support-reply-draft",
+        "output": "tagging/routing rule set",
+        "check": "every contact type maps to exactly one primary tag"
+      },
+      {
+        "n": 5,
+        "name": "Write the AI agent's operating procedure",
+        "does": "For any contact type marked agent-can-close involving money or account changes, writes the exact rule (refund cap, who approves above it, which order states allow a refund) and the identity-verification step required first.",
+        "inputs": [
+          "automation-scope classification",
+          "current policy"
+        ],
+        "tools": [],
+        "skill": "life/ai-agent-governance",
+        "output": "operating-procedure document",
+        "check": "every money-moving rule states a hard cap and an approval path above it"
+      },
+      {
+        "n": 6,
+        "name": "Set escalation triggers",
+        "does": "Defines the signals that force escalation to a human: negative sentiment, repeated back-and-forth, an explicit request for a person, or ticket value above a threshold.",
+        "inputs": [
+          "operating procedure"
+        ],
+        "tools": [],
+        "skill": "life/ai-agent-governance",
+        "output": "escalation rule set",
+        "check": "escalation carries the full conversation history to the human, never a cold restart"
+      },
+      {
+        "n": 7,
+        "name": "Replay the agent against real past tickets",
+        "does": "Tests the drafted operating procedure and templates against a sample of last quarter's real tickets, scoring accuracy and tone before anything goes live.",
+        "inputs": [
+          "ticket sample"
+        ],
+        "tools": [
+          "connector: support platform (read)"
+        ],
+        "skill": "life/ai-agent-governance",
+        "output": "replay test report with scores",
+        "check": "replay uses real past tickets, not synthetic examples"
+      },
+      {
+        "n": 8,
+        "name": "Set the kill switch and rollback plan",
+        "does": "Defines how the AI agent is paused and what reverts if it starts producing wrong answers.",
+        "inputs": [
+          "replay test report"
+        ],
+        "tools": [],
+        "skill": "life/ai-agent-governance",
+        "output": "kill-switch and rollback plan",
+        "check": "rollback restores the prior state in one step"
+      },
+      {
+        "n": 9,
+        "name": "Self-QA and route to the founder gate",
+        "does": "Runs the QA checklist; the operating procedure and any agent-can-close scope are founder_gate before go-live and after every policy change.",
+        "inputs": [
+          "all above"
+        ],
+        "tools": [],
+        "skill": null,
+        "output": "gated governance package",
+        "check": "no AI agent goes live or stays live after a policy change without a fresh replay test"
+      }
+    ],
+    "outputs": [
+      "reply template library",
+      "tagging/routing rules",
+      "AI agent operating-procedure document",
+      "replay test report"
+    ],
+    "qa": [
+      "every claim traces to current policy",
+      "recovery/VIP tickets stay human",
+      "money-moving actions have a hard cap and approval path",
+      "replay tested before go-live and after every policy change"
+    ],
+    "read_point": "close rate, reopen rate and CSAT by contact type, read monthly; replay score re-checked after every policy change",
+    "typical_duration": "1 day agent time for initial setup; 2 hours for a policy-change re-test",
+    "subagents": []
+  },
+  {
+    "id": "LIFE-W16",
+    "name": "Run the review collection, response and syndication program",
+    "capabilities": [
+      "LIFE-C28",
+      "LIFE-C52"
+    ],
+    "trigger": "event: delivery confirmed / weekly",
+    "human_role": "review platform manager / retention marketing manager",
+    "inputs_required": [
+      "reviews platform data",
+      "delivery date data",
+      "brand voice",
+      "product feed",
+      "marketplace listing access if any"
+    ],
+    "steps": [
+      {
+        "n": 1,
+        "name": "Set the review request timing",
+        "does": "Sets the request to fire about 3 days post-delivery, or hands timing to the reviews app if it already optimises this per product.",
+        "inputs": [
+          "delivery data"
+        ],
+        "tools": [
+          "connector: shopify orders (read)"
+        ],
+        "skill": "life/review-program",
+        "output": "timing rule",
+        "check": "timing based on delivery date, not order date"
+      },
+      {
+        "n": 2,
+        "name": "Draft honest, unfiltered request copy",
+        "does": "Writes the review request at a skimmable, non-pushy reading level, never implying a reward for a positive review on a destination that forbids incentives.",
+        "inputs": [
+          "brand voice"
+        ],
+        "tools": [],
+        "skill": "life/message",
+        "output": "request copy per channel",
+        "check": "no incentive wording where the destination forbids it"
+      },
+      {
+        "n": 3,
+        "name": "Check incentive rules per destination",
+        "does": "Confirms which review destinations in this request may be incentivised with loyalty points (own site, usually yes) and which may not (Google, most marketplaces, no).",
+        "inputs": [
+          "loyalty program rules",
+          "destination platform policy"
+        ],
+        "tools": [
+          "connector: loyalty platform (read)",
+          "web search (budgeted)"
+        ],
+        "skill": "life/review-program",
+        "output": "per-destination incentive rule",
+        "check": "a marketplace or Google-bound ask never mentions a reward"
+      },
+      {
+        "n": 4,
+        "name": "Draft responses to new reviews",
+        "does": "Writes an honest, unfiltered response to each new review, especially negative ones, never a templated denial.",
+        "inputs": [
+          "new reviews"
+        ],
+        "tools": [
+          "connector: reviews platform (read)"
+        ],
+        "skill": "life/review-program",
+        "output": "draft responses",
+        "check": "no manufactured or edited-sounding response"
+      },
+      {
+        "n": 5,
+        "name": "Flag defects back to the brand record",
+        "does": "Routes any review that reveals a real product or fulfilment defect to the brand brain, not just a canned reply.",
+        "inputs": [
+          "draft responses"
+        ],
+        "tools": [],
+        "skill": "life/review-program",
+        "output": "defect-flag list",
+        "check": "a defect flag names the specific product/fulfilment issue, not a general complaint"
+      },
+      {
+        "n": 6,
+        "name": "Rank reviews and UGC for syndication",
+        "does": "Ranks on-site reviews and photo/video UGC by usefulness (photo attached, specific detail, recency), not star rating alone.",
+        "inputs": [
+          "review platform export"
+        ],
+        "tools": [
+          "connector: reviews platform (read)"
+        ],
+        "skill": "life/review-program",
+        "output": "ranked review/UGC set",
+        "check": "ranking uses the stated criteria, not star rating alone"
+      },
+      {
+        "n": 7,
+        "name": "Select feed and ad-copy candidates",
+        "does": "Selects rating/review fields for the product feed and pulls top review quotes as ad copy candidates for the paid-creative specialist, noting the permission basis.",
+        "inputs": [
+          "ranked set",
+          "product feed"
+        ],
+        "tools": [],
+        "skill": "life/review-program",
+        "output": "feed fields and review-quote bank",
+        "check": "quotes are selected and cited, never rewritten"
+      },
+      {
+        "n": 8,
+        "name": "Push top reviews into marketplace listings where allowed",
+        "does": "Where a marketplace allows imported reviews, prepares the content for that listing.",
+        "inputs": [
+          "marketplace listing access"
+        ],
+        "tools": [
+          "connector: marketplace seller console (read)"
+        ],
+        "skill": "life/review-program",
+        "output": "marketplace-ready review content",
+        "check": "only pushed where the marketplace's own terms allow it"
+      },
+      {
+        "n": 9,
+        "name": "Self-QA and route",
+        "does": "Runs the QA checklist; response drafts and any listing/feed write are founder_gate until reviewed.",
+        "inputs": [
+          "all above"
+        ],
+        "tools": [],
+        "skill": null,
+        "output": "gated program outputs",
+        "check": "no review is edited, only selected and quoted"
+      }
+    ],
+    "outputs": [
+      "review request copy and timing rule",
+      "draft review responses",
+      "defect-flag list",
+      "feed-ready fields and review-quote bank"
+    ],
+    "qa": [
+      "no incentive wording where forbidden",
+      "no manufactured response",
+      "reviews selected and quoted, never rewritten"
+    ],
+    "read_point": "review volume, average rating trend and syndicated-quote usage in ads/feed, read quarterly",
+    "typical_duration": "3 hours agent time weekly; less once the timing rule is set",
+    "subagents": []
+  },
+  {
+    "id": "LIFE-W17",
+    "name": "Run VoC surveys and score CX maturity",
+    "capabilities": [
+      "LIFE-C29",
+      "LIFE-C30"
+    ],
+    "trigger": "quarterly",
+    "human_role": "CX manager running the standing NPS/CSAT read and the maturity check",
+    "inputs_required": [
+      "existing NPS/CSAT data",
+      "support ticket open-text",
+      "review text",
+      "staff input"
+    ],
+    "steps": [
+      {
+        "n": 1,
+        "name": "Start from owned data before surveying",
+        "does": "Pools open-text answers from closed support tickets and reviews for the quarter before writing a single new survey question.",
+        "inputs": [
+          "ticket/review text"
+        ],
+        "tools": [
+          "connector: support platform (read)",
+          "connector: reviews platform (read)"
+        ],
+        "skill": "life/voc-cx-governance",
+        "output": "pooled open-text set",
+        "check": "owned data reviewed before any new survey goes out"
+      },
+      {
+        "n": 2,
+        "name": "Cluster into recurring themes",
+        "does": "Clusters the pooled text into named themes with example quotes and a count per theme, flagging any theme new this quarter or growing.",
+        "inputs": [
+          "pooled text"
+        ],
+        "tools": [
+          "script: intelligence/ideas.py"
+        ],
+        "skill": "life/voc-cx-governance",
+        "output": "theme-clustered report with quotes and counts",
+        "check": "every theme has at least one quoted example"
+      },
+      {
+        "n": 3,
+        "name": "Run or refresh the standing NPS/CSAT survey",
+        "does": "Sends or checks the standing NPS/CSAT read for the quarter, keeping the same question wording as prior quarters for comparability.",
+        "inputs": [
+          "survey platform"
+        ],
+        "tools": [],
+        "skill": "life/voc-cx-governance",
+        "output": "NPS/CSAT score with trend",
+        "check": "wording unchanged from the prior quarter unless a specific reason is logged"
+      },
+      {
+        "n": 4,
+        "name": "Add staff input",
+        "does": "Pulls a short structured input from support/CX staff on what they hear most that a survey or ticket text might miss.",
+        "inputs": [
+          "staff input"
+        ],
+        "tools": [],
+        "skill": "life/voc-cx-governance",
+        "output": "staff input summary",
+        "check": "staff input is dated and attributed to a role, not anonymous colour"
+      },
+      {
+        "n": 5,
+        "name": "Score CX maturity",
+        "does": "Scores the brand's CX approach as random, intentional or differentiated against a written standard, citing the evidence for the score.",
+        "inputs": [
+          "all above"
+        ],
+        "tools": [],
+        "skill": "life/voc-cx-governance",
+        "output": "CX maturity score with evidence",
+        "check": "score cites specific evidence, not a general impression"
+      },
+      {
+        "n": 6,
+        "name": "Check new customer-facing tools against the standard",
+        "does": "Reviews any customer-facing tool launched this quarter (chatbot, portal, new flow) against the written experience standard.",
+        "inputs": [
+          "tool list"
+        ],
+        "tools": [],
+        "skill": "life/voc-cx-governance",
+        "output": "tool compliance check",
+        "check": "every new tool is checked, none launched without a check on record"
+      },
+      {
+        "n": 7,
+        "name": "Route confirmed themes to the owning specialist",
+        "does": "Sends a confirmed recurring theme to the relevant workflow (returns, support templates, product) rather than letting the report sit unread.",
+        "inputs": [
+          "theme report"
+        ],
+        "tools": [],
+        "skill": null,
+        "output": "routed theme list",
+        "check": "every confirmed theme names the workflow it was routed to"
+      },
+      {
+        "n": 8,
+        "name": "Assemble and post the quarterly VoC/CX report",
+        "does": "Puts the theme report, NPS/CSAT trend, staff input and maturity score into one report.",
+        "inputs": [
+          "all above"
+        ],
+        "tools": [],
+        "skill": "shared/report-section",
+        "output": "quarterly VoC/CX report",
+        "check": "matches the report-section output shape"
+      }
+    ],
+    "outputs": [
+      "theme-clustered VoC report",
+      "NPS/CSAT trend",
+      "CX maturity score",
+      "tool compliance check"
+    ],
+    "qa": [
+      "owned data reviewed before surveying",
+      "every theme has a quoted example",
+      "no new customer-facing tool launched unchecked"
+    ],
+    "read_point": "quarterly, compared against the prior quarter's same report",
+    "typical_duration": "1 day agent time quarterly",
+    "subagents": []
+  },
+  {
+    "id": "LIFE-W18",
+    "name": "Design an offer package from margin and AOV",
+    "capabilities": [
+      "LIFE-C36",
+      "LIFE-C39",
+      "LIFE-C40",
+      "LIFE-C41",
+      "LIFE-C42"
+    ],
+    "trigger": "on demand",
+    "human_role": "offers/pricing owner designing a full offer package",
+    "inputs_required": [
+      "landed cost/COGS per SKU",
+      "order-value distribution",
+      "the buyer's single biggest objection",
+      "discount policy and any founder red line",
+      "refund/return cost history"
+    ],
+    "steps": [
+      {
+        "n": 1,
+        "name": "Read margin, AOV and the objection map",
+        "does": "Pulls landed cost per SKU, the real order-value distribution (not the average) and the buyer's biggest objection from the brand record.",
+        "inputs": [
+          "connector: shopify orders (read)",
+          "brand brain"
+        ],
+        "tools": [
+          "connector: shopify orders (read)",
+          "brand brain (read)"
+        ],
+        "skill": "life/offer-package-design",
+        "output": "margin/AOV/objection snapshot",
+        "check": "AOV distribution used, not the single average figure"
+      },
+      {
+        "n": 2,
+        "name": "Write the offer's value proposition",
+        "does": "Builds the offer as a full package (price, terms, proof, guarantee) scored against the value equation, built around the single biggest objection.",
+        "inputs": [
+          "margin/AOV/objection snapshot"
+        ],
+        "tools": [],
+        "skill": "life/offer-package-design",
+        "output": "value-proposition draft",
+        "check": "the offer answers the stated biggest objection, not a generic benefit"
+      },
+      {
+        "n": 3,
+        "name": "Build the margin waterfall",
+        "does": "Computes the SKU margin waterfall and contribution per order in code for the proposed package.",
+        "inputs": [
+          "landed cost",
+          "proposed package"
+        ],
+        "tools": [
+          "script: intelligence/ideas.py"
+        ],
+        "skill": "life/offer-package-design",
+        "output": "margin waterfall",
+        "check": "all arithmetic in code; currency conversion applied where relevant"
+      },
+      {
+        "n": 4,
+        "name": "Design the bundle and quantity-ladder tiers",
+        "does": "Maps the product's real use journey into bundle ideas, sizes tiers with a justified reason for each, and pre-selects a middle option, checking every tier clears the contribution floor.",
+        "inputs": [
+          "margin waterfall",
+          "use journey"
+        ],
+        "tools": [],
+        "skill": "life/offer-package-design",
+        "output": "bundle/ladder spec",
+        "check": "at least one full-price entry tier kept; every tier clears the contribution floor"
+      },
+      {
+        "n": 5,
+        "name": "Design the gift-with-purchase, if used",
+        "does": "Chooses a gift that helps the buyer use the core product, sized and placed to lift the tier the brand wants to sell, never framed dishonestly.",
+        "inputs": [
+          "bundle/ladder spec"
+        ],
+        "tools": [],
+        "skill": "life/offer-package-design",
+        "output": "GWP spec",
+        "check": "gift is not more of the same product just bought"
+      },
+      {
+        "n": 6,
+        "name": "Design upsell and cross-sell placement",
+        "does": "Places upsell and cross-sell offers by friction level (cart, checkout, post-purchase), anchored high with a cheaper down-sell, reviewed for margin.",
+        "inputs": [
+          "margin waterfall"
+        ],
+        "tools": [],
+        "skill": "life/offer-package-design",
+        "output": "upsell/cross-sell placement spec",
+        "check": "placement reviewed against margin and against compliance rules for the platform"
+      },
+      {
+        "n": 7,
+        "name": "Cost and write the guarantee",
+        "does": "Computes the guarantee's net contribution cost from real refund data and writes it in the if-not-X-in-Y-we-will-Z form, activated at delivery, not order date.",
+        "inputs": [
+          "refund/return cost history"
+        ],
+        "tools": [],
+        "skill": "life/offer-package-design",
+        "output": "guarantee wording and cost model",
+        "check": "refund root cause checked before relying on the guarantee to fix a high refund rate"
+      },
+      {
+        "n": 8,
+        "name": "Check the whole package against discount policy",
+        "does": "Runs the assembled package (price, bundle, gift, guarantee) against the discount policy and any founder red line.",
+        "inputs": [
+          "assembled package"
+        ],
+        "tools": [],
+        "skill": "life/discount-policy-check",
+        "output": "pass/fail with the rule cited",
+        "check": "fails closed and asks the founder if a red line is unclear",
+        "ask_founder_if": "a founder red line is unclear or missing for this package"
+      },
+      {
+        "n": 9,
+        "name": "Set the test plan",
+        "does": "Names the metric and read window this offer package will be judged on before it launches.",
+        "inputs": [
+          "assembled package"
+        ],
+        "tools": [
+          "connector: metabase (read)"
+        ],
+        "skill": "shared/metric-read",
+        "output": "test plan",
+        "check": "metric is a contract field, pre-registered before launch"
+      },
+      {
+        "n": 10,
+        "name": "Self-QA and route to the founder gate",
+        "does": "Runs the QA checklist and sends the full package to the founder for the decision.",
+        "inputs": [
+          "all above"
+        ],
+        "tools": [],
+        "skill": "shared/plain-english-card",
+        "output": "founder card with the full package",
+        "check": "no revenue-only or ROAS-only justification accepted"
+      }
+    ],
+    "outputs": [
+      "offer design (output-contract shape: package, objection answered, margin waterfall, contribution, discount-policy check, test plan)"
+    ],
+    "qa": [
+      "contribution floor cleared on every tier",
+      "guarantee cost computed from real refund data",
+      "no discount-policy or red-line conflict",
+      "test plan pre-registered before launch"
+    ],
+    "read_point": "take-rate by tier, contribution per order, and refund rate after guarantee launch, read at the pre-registered window",
+    "typical_duration": "1 to 2 days agent time",
+    "subagents": []
+  },
+  {
+    "id": "LIFE-W19",
+    "name": "Govern discount policy and price integrity",
+    "capabilities": [
+      "LIFE-C38"
+    ],
+    "trigger": "on demand",
+    "human_role": "offers/pricing owner setting and enforcing the discount rulebook",
+    "inputs_required": [
+      "past discount history and frequency",
+      "founder red lines from the decisions log",
+      "current reference-price practice"
+    ],
+    "steps": [
+      {
+        "n": 1,
+        "name": "Read discount frequency and depth history",
+        "does": "Pulls how often and how deep the brand has discounted in the last 6-12 months, by channel and segment.",
+        "inputs": [
+          "connector: shopify orders (read)",
+          "connector: ESP (read)"
+        ],
+        "tools": [
+          "connector: shopify orders (read)",
+          "connector: ESP (read)"
+        ],
+        "skill": "life/discount-policy-check",
+        "output": "discount history snapshot",
+        "check": "figures come from order/ESP data, not memory"
+      },
+      {
+        "n": 2,
+        "name": "Set frequency caps",
+        "does": "Sets a cap on how often a segment can be offered a discount in a period, so discounting does not train buyers to wait.",
+        "inputs": [
+          "discount history"
+        ],
+        "tools": [],
+        "skill": "life/discount-policy-check",
+        "output": "frequency cap rule",
+        "check": "cap is a specific number and period, not 'occasionally'"
+      },
+      {
+        "n": 3,
+        "name": "Set conditionality rules",
+        "does": "Sets what a discount must require (minimum order value, first-time only, loyalty tier) rather than a blanket site-wide cut.",
+        "inputs": [
+          "frequency cap rule"
+        ],
+        "tools": [],
+        "skill": "life/discount-policy-check",
+        "output": "conditionality rule set",
+        "check": "every discount type has a stated condition"
+      },
+      {
+        "n": 4,
+        "name": "Set honest framing rules",
+        "does": "Sets the rule for reference prices and urgency claims: a reference price must be a real prior selling price, and urgency must be real.",
+        "inputs": [
+          "current reference-price practice"
+        ],
+        "tools": [],
+        "skill": "life/discount-policy-check",
+        "output": "framing rule set",
+        "check": "no fake reference price or fake countdown allowed by the rule"
+      },
+      {
+        "n": 5,
+        "name": "Record founder red lines",
+        "does": "Reads and records any hard limit the founder has already set (a floor price, a channel never discounted, a product never discounted).",
+        "inputs": [
+          "decisions log"
+        ],
+        "tools": [
+          "brand brain (read)"
+        ],
+        "skill": "life/discount-policy-check",
+        "output": "red-line list",
+        "check": "a red line not on record is treated as unclear, never assumed"
+      },
+      {
+        "n": 6,
+        "name": "Write the policy document",
+        "does": "Assembles frequency caps, conditionality, framing rules and red lines into one governing document every other LIFE workflow checks against.",
+        "inputs": [
+          "all above"
+        ],
+        "tools": [],
+        "skill": "life/discount-policy-check",
+        "output": "discount policy document",
+        "check": "document is specific enough that a pass/fail check needs no judgement call"
+      },
+      {
+        "n": 7,
+        "name": "Self-QA and route to the founder gate",
+        "does": "Runs the QA checklist and sends the policy for founder confirmation before it becomes the standing rule.",
+        "inputs": [
+          "policy document"
+        ],
+        "tools": [],
+        "skill": "shared/plain-english-card",
+        "output": "founder card",
+        "check": "fails closed - if a rule is ambiguous, the card asks rather than guesses"
+      }
+    ],
+    "outputs": [
+      "discount policy document with frequency, conditionality, framing rules and red lines"
+    ],
+    "qa": [
+      "every rule is specific enough for a pass/fail check",
+      "red lines recorded, not assumed",
+      "no fake reference price or urgency allowed"
+    ],
+    "read_point": "checked whenever an offer or campaign workflow calls discount-policy-check; policy itself reviewed twice a year",
+    "typical_duration": "3 hours agent time",
+    "subagents": []
+  },
+  {
+    "id": "LIFE-W20",
+    "name": "Design the subscription offer, perks and cancel flow",
+    "capabilities": [
+      "LIFE-C43"
+    ],
+    "trigger": "on demand",
+    "human_role": "CRM manager / retention marketing manager designing the subscription program",
+    "inputs_required": [
+      "subscription platform data (churn, pause events)",
+      "COGS",
+      "order data",
+      "cancellation reasons"
+    ],
+    "steps": [
+      {
+        "n": 1,
+        "name": "Read current subscription economics",
+        "does": "Pulls active subscriber count, churn rate, pause rate and COGS per subscription cycle.",
+        "inputs": [
+          "connector: subscription platform (read)",
+          "connector: shopify orders (read)"
+        ],
+        "tools": [
+          "connector: subscription platform (read)",
+          "connector: shopify orders (read)"
+        ],
+        "skill": "life/subscription-flow-designer",
+        "output": "subscription economics snapshot",
+        "check": "figures scoped to subscription orders only, not blended with one-off orders"
+      },
+      {
+        "n": 2,
+        "name": "Size the value proposition against a plain discount",
+        "does": "Compares the subscription's total value (price, perks, flexibility) against the plain discount it replaces, to confirm the reason to subscribe is stronger than a flat percentage off.",
+        "inputs": [
+          "economics snapshot"
+        ],
+        "tools": [],
+        "skill": "life/subscription-flow-designer",
+        "output": "value-proposition comparison",
+        "check": "comparison shown in real numbers, not just a claim of 'better value'"
+      },
+      {
+        "n": 3,
+        "name": "Set cadence flexibility and perk gating",
+        "does": "Sets how easily a subscriber can change frequency, pause or swap product, and which perks unlock at which tenure or spend.",
+        "inputs": [
+          "value-proposition comparison"
+        ],
+        "tools": [],
+        "skill": "life/subscription-flow-designer",
+        "output": "cadence/perk rule set",
+        "check": "perk gating tied to real use, not an arbitrary tier line"
+      },
+      {
+        "n": 4,
+        "name": "Design the four-stage cancel flow",
+        "does": "Builds the cancel flow as a benefit reminder, an exit-reason survey, a reason-matched alternative (pause, swap, frequency change), then a conditional, costed save offer only if earlier stages fail.",
+        "inputs": [
+          "cadence/perk rule set",
+          "cancellation reasons"
+        ],
+        "tools": [],
+        "skill": "life/subscription-flow-designer",
+        "output": "four-stage cancel-flow design",
+        "check": "cancel is as easy to complete as sign-up; the save offer is conditional, not automatic"
+      },
+      {
+        "n": 5,
+        "name": "Cost the save offer",
+        "does": "Computes the save offer's cost against the subscriber's own order count and value, not one flat offer for everyone.",
+        "inputs": [
+          "cancellation reasons",
+          "COGS"
+        ],
+        "tools": [
+          "script: intelligence/ideas.py"
+        ],
+        "skill": "life/subscription-flow-designer",
+        "output": "costed save-offer table",
+        "check": "save offer sized in code, matched to the subscriber's own value"
+      },
+      {
+        "n": 6,
+        "name": "Cap pause/skip/delay abuse",
+        "does": "Sets a limit on how many times a subscriber can pause or delay before the cadence auto-adjusts or a human reviews.",
+        "inputs": [
+          "cadence/perk rule set"
+        ],
+        "tools": [],
+        "skill": "life/subscription-flow-designer",
+        "output": "abuse-cap rule",
+        "check": "cap prevents indefinite free pausing without breaking a genuine flexibility need"
+      },
+      {
+        "n": 7,
+        "name": "Design non-monetary retention mechanics",
+        "does": "Adds order streaks, a milestone surprise gift, or a mystery reward as an addition to, not a replacement for, the discount-based save offer.",
+        "inputs": [
+          "costed save-offer table"
+        ],
+        "tools": [],
+        "skill": "life/subscription-flow-designer",
+        "output": "non-monetary mechanic design",
+        "check": "non-monetary mechanic is tested against a discount-only save, not assumed better"
+      },
+      {
+        "n": 8,
+        "name": "Set per-stage save-rate tracking",
+        "does": "Sets the metric to track save rate at each of the four cancel-flow stages, so a weak stage can be rewritten instead of guessed at.",
+        "inputs": [
+          "four-stage design"
+        ],
+        "tools": [
+          "connector: metabase (read)"
+        ],
+        "skill": "shared/metric-read",
+        "output": "per-stage tracking plan",
+        "check": "each stage has its own named metric"
+      },
+      {
+        "n": 9,
+        "name": "Self-QA and route to the founder gate",
+        "does": "Runs the QA checklist; subscription and cancel-flow design changes are founder_gate.",
+        "inputs": [
+          "all above"
+        ],
+        "tools": [],
+        "skill": null,
+        "output": "gated subscription/cancel-flow spec",
+        "check": "no subscription platform config changed from this workflow"
+      }
+    ],
+    "outputs": [
+      "subscription offer spec",
+      "four-stage cancel-flow design",
+      "costed save-offer table"
+    ],
+    "qa": [
+      "cancel as easy as sign-up",
+      "save offer sized to the subscriber's own value",
+      "per-stage save rate tracked separately"
+    ],
+    "read_point": "per-stage save rate and overall subscriber churn rate, read monthly",
+    "typical_duration": "1 day agent time",
+    "subagents": []
+  },
+  {
+    "id": "LIFE-W21",
+    "name": "Design referral, partner and payment-term offers",
+    "capabilities": [
+      "LIFE-C45",
+      "LIFE-C46"
+    ],
+    "trigger": "on demand",
+    "human_role": "loyalty/offers program manager designing acquisition-adjacent offers for existing customers",
+    "inputs_required": [
+      "repeat-buyer base data",
+      "non-competing partner candidates",
+      "margin data for BNPL/trial economics"
+    ],
+    "steps": [
+      {
+        "n": 1,
+        "name": "Design the give-X-get-X referral offer",
+        "does": "Sizes a give-X-get-X referral reward from the repeat-buyer base's real value, so the giver and the receiver both get a meaningful, margin-safe reward.",
+        "inputs": [
+          "repeat-buyer base",
+          "margin data"
+        ],
+        "tools": [
+          "connector: shopify orders (read)"
+        ],
+        "skill": "life/referral-payment-offer",
+        "output": "referral offer spec",
+        "check": "reward sized against real margin, not copied from a competitor"
+      },
+      {
+        "n": 2,
+        "name": "Set the referral tracking mechanism",
+        "does": "Sets the unique code or link and the reward-payout trigger and timing.",
+        "inputs": [
+          "referral offer spec"
+        ],
+        "tools": [],
+        "skill": "life/referral-payment-offer",
+        "output": "tracking mechanism",
+        "check": "reward only pays out on a confirmed, non-refunded order"
+      },
+      {
+        "n": 3,
+        "name": "Find non-competing partner perks",
+        "does": "Identifies partner brands serving the same customer without competing, that can offer a no-cost perk in exchange for cross-promotion.",
+        "inputs": [
+          "brand's customer profile"
+        ],
+        "tools": [
+          "web search (budgeted)"
+        ],
+        "skill": "life/referral-payment-offer",
+        "output": "partner candidate list",
+        "check": "partner does not compete on the same product category"
+      },
+      {
+        "n": 4,
+        "name": "Design installment/BNPL terms",
+        "does": "Designs installment terms with a clear per-installment price shown to the buyer, checked against the payment provider's real fee.",
+        "inputs": [
+          "margin data"
+        ],
+        "tools": [
+          "web search (budgeted)"
+        ],
+        "skill": "life/referral-payment-offer",
+        "output": "BNPL/installment term spec",
+        "check": "provider fee is real, not estimated, and shown against margin"
+      },
+      {
+        "n": 5,
+        "name": "Design nominal-price trial pricing",
+        "does": "Designs a nominal-price trial that converts to full price on a stated date, with delayed payment capture handled correctly for the trial period.",
+        "inputs": [
+          "margin data"
+        ],
+        "tools": [],
+        "skill": "life/referral-payment-offer",
+        "output": "trial pricing spec",
+        "check": "conversion date and full price are disclosed to the buyer before they start the trial"
+      },
+      {
+        "n": 6,
+        "name": "Check both offers against discount policy",
+        "does": "Runs the referral reward and the trial/BNPL terms against the discount policy and any founder red line.",
+        "inputs": [
+          "referral offer spec",
+          "trial pricing spec"
+        ],
+        "tools": [],
+        "skill": "life/discount-policy-check",
+        "output": "pass/fail with the rule cited",
+        "check": "fails closed if a red line is unclear"
+      },
+      {
+        "n": 7,
+        "name": "Self-QA and route to the founder gate",
+        "does": "Runs the QA checklist and sends both offer designs for the founder's decision.",
+        "inputs": [
+          "all above"
+        ],
+        "tools": [],
+        "skill": "shared/plain-english-card",
+        "output": "founder card",
+        "check": "no payment term shown to the buyer that is not accurate to the provider's real terms"
+      }
+    ],
+    "outputs": [
+      "referral offer spec",
+      "partner perk candidate list",
+      "BNPL/trial pricing spec"
+    ],
+    "qa": [
+      "referral reward sized to real margin",
+      "provider fees real, not estimated",
+      "trial conversion terms disclosed upfront"
+    ],
+    "read_point": "referral take-rate and BNPL/trial conversion-to-full-price rate, read monthly",
+    "typical_duration": "1 day agent time",
+    "subagents": []
+  },
+  {
+    "id": "LIFE-W22",
+    "name": "Run the offer testing framework",
+    "capabilities": [
+      "LIFE-C47"
+    ],
+    "trigger": "on demand",
+    "human_role": "offers/pricing owner sequencing and reading offer tests",
+    "inputs_required": [
+      "offer test backlog",
+      "registry: past offer tests",
+      "metric contract"
+    ],
+    "steps": [
+      {
+        "n": 1,
+        "name": "Pull the offer test backlog",
+        "does": "Reads every proposed offer, bundle, GWP, upsell, guarantee or subscription test not yet run.",
+        "inputs": [
+          "backlog"
+        ],
+        "tools": [
+          "script: search_knowledge.py"
+        ],
+        "skill": "life/offer-testing-framework",
+        "output": "backlog list",
+        "check": "backlog matches what W18, W20 and W21 have queued"
+      },
+      {
+        "n": 2,
+        "name": "Sequence structure before depth",
+        "does": "Orders tests so structure (does a bundle beat a single SKU at all) is tested before depth (which bundle size wins), one variable at a time.",
+        "inputs": [
+          "backlog"
+        ],
+        "tools": [],
+        "skill": "life/offer-testing-framework",
+        "output": "sequenced test order",
+        "check": "no test changes two variables at once"
+      },
+      {
+        "n": 3,
+        "name": "Check dependency order",
+        "does": "Confirms a test whose prerequisite (e.g. a working discount-policy check) is not yet done ranks below that prerequisite.",
+        "inputs": [
+          "sequenced order"
+        ],
+        "tools": [],
+        "skill": "shared/rank-candidates",
+        "output": "dependency-checked order",
+        "check": "a dependent test never runs ahead of its prerequisite"
+      },
+      {
+        "n": 4,
+        "name": "Pre-register the metric and read window",
+        "does": "Sets the exact metric and read window for each test before it launches.",
+        "inputs": [
+          "dependency-checked order"
+        ],
+        "tools": [
+          "connector: metabase (read)"
+        ],
+        "skill": "shared/metric-read",
+        "output": "pre-registered metric/window per test",
+        "check": "metric and window fixed before launch, never chosen after seeing results"
+      },
+      {
+        "n": 5,
+        "name": "Keep the backlog current",
+        "does": "Adds new candidates from W18/W20/W21 and removes tests already run, keeping one live backlog rather than scattered lists.",
+        "inputs": [
+          "new candidates"
+        ],
+        "tools": [],
+        "skill": "life/offer-testing-framework",
+        "output": "updated backlog",
+        "check": "backlog has no duplicate test for the same offer question"
+      },
+      {
+        "n": 6,
+        "name": "Log each test to the registry",
+        "does": "Records id, hypothesis, metric, read point and kill/scale rule before launch.",
+        "inputs": [
+          "pre-registered tests"
+        ],
+        "tools": [],
+        "skill": "shared/registry-entry",
+        "output": "registry entries",
+        "check": "every entry has a metric that is a contract field"
+      }
+    ],
+    "outputs": [
+      "sequenced, dependency-checked offer test backlog",
+      "registry entries"
+    ],
+    "qa": [
+      "one variable per test",
+      "metric and window pre-registered before launch",
+      "no duplicate test in the backlog"
+    ],
+    "read_point": "per-test, at its pre-registered read window",
+    "typical_duration": "1.5 hours agent time per pass",
+    "subagents": []
+  },
+  {
+    "id": "LIFE-W23",
+    "name": "Design and manage the gift card program",
+    "capabilities": [
+      "LIFE-C58"
+    ],
+    "trigger": "on demand",
+    "human_role": "loyalty/CRM manager designing the gift card as a product",
+    "inputs_required": [
+      "current checkout/gift card app if any",
+      "return/refund policy",
+      "cash-flow visibility"
+    ],
+    "steps": [
+      {
+        "n": 1,
+        "name": "Read current gift card usage if any",
+        "does": "Pulls current denominations, redemption rate and outstanding balance if a gift card app already exists.",
+        "inputs": [
+          "checkout/gift card app"
+        ],
+        "tools": [
+          "connector: ESP (read)"
+        ],
+        "skill": "life/gift-card-program",
+        "output": "current-state snapshot",
+        "check": "figures come from the app's own data, not estimated"
+      },
+      {
+        "n": 2,
+        "name": "Choose denominations and any bonus tier",
+        "does": "Sets the sellable denominations and any bonus-value tier (buy X, get X-plus-bonus loaded).",
+        "inputs": [
+          "current-state snapshot"
+        ],
+        "tools": [],
+        "skill": "life/gift-card-program",
+        "output": "denomination and bonus design",
+        "check": "bonus tier sized against real margin, not copied from a competitor"
+      },
+      {
+        "n": 3,
+        "name": "Set expiry policy per market law",
+        "does": "Sets the expiry rule checked against what is legal in each market the brand sells gift cards into.",
+        "inputs": [
+          "market list"
+        ],
+        "tools": [
+          "web search (budgeted)"
+        ],
+        "skill": "life/gift-card-program",
+        "output": "expiry policy with source and date",
+        "check": "expiry rule never conflicts with a market's minimum legal validity period"
+      },
+      {
+        "n": 4,
+        "name": "Design the corporate/bulk-gifting offer",
+        "does": "Designs a bulk-purchase tier and process for B2B or occasion buying, distinct from the single-card retail flow.",
+        "inputs": [
+          "current-state snapshot"
+        ],
+        "tools": [],
+        "skill": "life/gift-card-program",
+        "output": "bulk-gifting offer design",
+        "check": "bulk tier has its own pricing and delivery process, not the retail flow scaled up"
+      },
+      {
+        "n": 5,
+        "name": "Set the refund-credit interaction rule",
+        "does": "Decides how a refund-issued store credit interacts with a purchased gift card, so a refund credit is never expired the way a promotional one might be.",
+        "inputs": [
+          "return/refund policy"
+        ],
+        "tools": [],
+        "skill": "life/gift-card-program",
+        "output": "credit-interaction rule",
+        "check": "refund-issued credit follows the refund policy's own expiry, never the promotional one"
+      },
+      {
+        "n": 6,
+        "name": "Model the float liability",
+        "does": "Models the unredeemed-balance liability so the founder sees the cash-flow effect of the program before launch.",
+        "inputs": [
+          "denomination design"
+        ],
+        "tools": [
+          "script: intelligence/ideas.py"
+        ],
+        "skill": "life/gift-card-program",
+        "output": "float-liability model",
+        "check": "liability model computed in code from real sell-through assumptions stated up front"
+      },
+      {
+        "n": 7,
+        "name": "Write the reminder flow copy",
+        "does": "Writes the purchase-confirmation, balance-reminder-before-expiry and redemption-receipt messages.",
+        "inputs": [
+          "expiry policy"
+        ],
+        "tools": [],
+        "skill": "life/message",
+        "output": "reminder flow copy",
+        "check": "balance reminder timed before expiry, not after"
+      },
+      {
+        "n": 8,
+        "name": "Self-QA and route to the founder gate",
+        "does": "Runs the QA checklist and sends the full program design and float model to the founder.",
+        "inputs": [
+          "all above"
+        ],
+        "tools": [],
+        "skill": "shared/plain-english-card",
+        "output": "founder card",
+        "check": "no gift card app or checkout change made from this workflow"
+      }
+    ],
+    "outputs": [
+      "gift card program design",
+      "float-liability model",
+      "reminder flow copy"
+    ],
+    "qa": [
+      "expiry policy checked per market law",
+      "float liability computed in code",
+      "refund credit never expired like a promotional one"
+    ],
+    "read_point": "sell-through rate and float balance, read quarterly after launch",
+    "typical_duration": "1 day agent time",
+    "subagents": []
+  },
+  {
+    "id": "LIFE-W24",
+    "name": "Design proactive outreach: live chat, phone concierge and voice/IVR",
+    "capabilities": [
+      "LIFE-C59",
+      "LIFE-C60",
+      "LIFE-C65"
+    ],
+    "trigger": "on demand",
+    "human_role": "customer support lead / CX manager building proactive outreach channels",
+    "inputs_required": [
+      "site analytics (visit/session data)",
+      "VIP/segmentation list",
+      "high-AOV cart abandonment data",
+      "consent and quiet-hour rules"
+    ],
+    "steps": [
+      {
+        "n": 1,
+        "name": "Define the intent signals for proactive chat",
+        "does": "Sets the visit-count, product-viewed and known-VIP signals that qualify a visitor for a proactive chat opener.",
+        "inputs": [
+          "site analytics",
+          "VIP list"
+        ],
+        "tools": [],
+        "skill": "life/concierge-outreach",
+        "output": "intent-signal definition",
+        "check": "signals are specific and measurable, not 'seems interested'"
+      },
+      {
+        "n": 2,
+        "name": "Write the proactive chat openers",
+        "does": "Writes an opener per signal, never a generic 'need help?', and sets the cap on how often one visitor is approached.",
+        "inputs": [
+          "intent-signal definition"
+        ],
+        "tools": [],
+        "skill": "life/concierge-outreach",
+        "output": "opener set with frequency cap",
+        "check": "every opener is specific to its triggering signal"
+      },
+      {
+        "n": 3,
+        "name": "Set the AOV threshold for phone follow-up",
+        "does": "Sets the order value or product category above which a phone call beats email/SMS for cart abandonment or a pre-purchase question.",
+        "inputs": [
+          "cart abandonment data"
+        ],
+        "tools": [
+          "connector: shopify orders (read)"
+        ],
+        "skill": "life/concierge-outreach",
+        "output": "AOV threshold",
+        "check": "threshold set from the brand's own AOV distribution, not a round guess"
+      },
+      {
+        "n": 4,
+        "name": "Prepare call scripts per scenario",
+        "does": "Writes the call script for cart-abandon follow-up, pre-purchase questions and VIP check-ins.",
+        "inputs": [
+          "AOV threshold"
+        ],
+        "tools": [],
+        "skill": "life/concierge-outreach",
+        "output": "call scripts",
+        "check": "each script matches one named scenario, not a single generic pitch"
+      },
+      {
+        "n": 5,
+        "name": "Build the daily call queue",
+        "does": "Ranks today's high-AOV abandoners and inquiries by order value and recency for a human to call.",
+        "inputs": [
+          "cart abandonment data above threshold"
+        ],
+        "tools": [
+          "connector: shopify orders (read)"
+        ],
+        "skill": "life/concierge-outreach",
+        "output": "ranked call queue",
+        "check": "queue ranked by value and recency, in code"
+      },
+      {
+        "n": 6,
+        "name": "Decide which use cases justify voice/IVR",
+        "does": "Chooses which events (order pre-dispatch confirmation call/dunning follow-up for a failed card by default, or COD pre-dispatch confirmation for India, delivery-failure follow-up, post-resolution satisfaction check) justify an automated IVR call, separate from SMS/WhatsApp.",
+        "inputs": [
+          "order/delivery events"
+        ],
+        "tools": [],
+        "skill": "life/concierge-outreach",
+        "output": "IVR use-case list",
+        "check": "IVR reserved for cases where a call genuinely outperforms text, not used by default"
+      },
+      {
+        "n": 7,
+        "name": "Write IVR scripts and set cadence",
+        "does": "Writes the IVR call flow for each automated use case and sets the call-attempt cadence and quiet hours, matching the SMS/WhatsApp consent rules already set.",
+        "inputs": [
+          "IVR use-case list",
+          "quiet-hour rules"
+        ],
+        "tools": [],
+        "skill": "life/concierge-outreach",
+        "output": "IVR scripts and cadence",
+        "check": "quiet hours match the channel policy already set in W08"
+      },
+      {
+        "n": 8,
+        "name": "Set outcome logging for all three channels",
+        "does": "Sets how chat, call and IVR outcomes log back into the order/customer record and the segmentation model.",
+        "inputs": [
+          "all above"
+        ],
+        "tools": [],
+        "skill": "life/concierge-outreach",
+        "output": "outcome-logging rule",
+        "check": "every outcome (answered, confirmed, no answer, opted out) has a place to log to"
+      },
+      {
+        "n": 9,
+        "name": "Self-QA and route to the founder gate",
+        "does": "Runs the QA checklist; every proactive-outreach channel here is founder_gate before launch.",
+        "inputs": [
+          "all above"
+        ],
+        "tools": [],
+        "skill": null,
+        "output": "gated outreach package",
+        "check": "no call, chat message or IVR call is placed from this workflow; a human places every call"
+      }
+    ],
+    "outputs": [
+      "proactive-chat trigger and opener set",
+      "ranked call queue and scripts",
+      "IVR scripts and cadence"
+    ],
+    "qa": [
+      "signals specific and measurable",
+      "AOV threshold from real distribution",
+      "IVR quiet hours match channel policy"
+    ],
+    "read_point": "conversion and reply rate by signal, and cost per outcome by channel, read monthly",
+    "typical_duration": "1 day agent time",
+    "subagents": []
+  },
+  {
+    "id": "LIFE-W25",
+    "name": "Run marketplace seller-support queues",
+    "capabilities": [
+      "LIFE-C67"
+    ],
+    "trigger": "continuous",
+    "human_role": "customer support agent handling Amazon/Walmart Marketplace buyer-seller queues (Flipkart, Myntra and other India marketplaces where the brand sells there)",
+    "inputs_required": [
+      "marketplace seller console access",
+      "order and delivery-proof data"
+    ],
+    "steps": [
+      {
+        "n": 1,
+        "name": "Pull open buyer-seller messages and claims",
+        "does": "Reads open messages and A-to-Z-style guarantee claims from each marketplace's own seller console.",
+        "inputs": [
+          "connector: marketplace seller console (read)"
+        ],
+        "tools": [
+          "connector: marketplace seller console (read)"
+        ],
+        "skill": "life/marketplace-support-queue",
+        "output": "open queue snapshot",
+        "check": "queue read from each marketplace's own console, not the brand's own helpdesk"
+      },
+      {
+        "n": 2,
+        "name": "Check each item's response clock",
+        "does": "Notes the exact deadline each marketplace enforces (about 48 hours for a buyer message, about 72 hours for a claim response).",
+        "inputs": [
+          "open queue snapshot"
+        ],
+        "tools": [],
+        "skill": "life/marketplace-support-queue",
+        "output": "deadline-tagged queue",
+        "check": "every item shows its own clock, since missing the message clock itself can trigger a claim right"
+      },
+      {
+        "n": 3,
+        "name": "Draft the buyer-message response",
+        "does": "Drafts a response inside the marketplace's own message window, in the brand's voice.",
+        "inputs": [
+          "deadline-tagged queue"
+        ],
+        "tools": [],
+        "skill": "life/support-reply-draft",
+        "output": "drafted responses",
+        "check": "no draft skips the message-clock deadline"
+      },
+      {
+        "n": 4,
+        "name": "Assemble claim evidence",
+        "does": "Pulls delivery proof and the correspondence log the marketplace accepts for a guarantee claim.",
+        "inputs": [
+          "order/delivery-proof data"
+        ],
+        "tools": [
+          "connector: shopify orders (read)"
+        ],
+        "skill": "life/marketplace-support-queue",
+        "output": "evidence package per claim",
+        "check": "evidence matches what the specific marketplace's claim process accepts"
+      },
+      {
+        "n": 5,
+        "name": "Draft the claim response",
+        "does": "Drafts the claim response with the assembled evidence inside the marketplace's own response window.",
+        "inputs": [
+          "evidence package"
+        ],
+        "tools": [],
+        "skill": "life/marketplace-support-queue",
+        "output": "drafted claim responses",
+        "check": "response drafted inside the claim's own clock, separate from the brand's helpdesk SLA"
+      },
+      {
+        "n": 6,
+        "name": "Track claim rate and reason",
+        "does": "Tracks claim rate and reason over time, flagging a rising rate as a signal for the returns/fulfilment specialist.",
+        "inputs": [
+          "claim history"
+        ],
+        "tools": [],
+        "skill": "shared/report-section",
+        "output": "claim-rate trend",
+        "check": "trend kept separate from the brand's own helpdesk reporting"
+      },
+      {
+        "n": 7,
+        "name": "Self-QA and route to the founder gate",
+        "does": "Runs the QA checklist; every drafted response posts only after founder or authorised review, until the marketplace-write surface is switched on.",
+        "inputs": [
+          "all above"
+        ],
+        "tools": [],
+        "skill": null,
+        "output": "gated drafts",
+        "check": "queue and SLA clocks kept separate from the brand's own helpdesk tagging"
+      }
+    ],
+    "outputs": [
+      "drafted buyer-message and claim responses within each marketplace's clock",
+      "claim-rate trend report"
+    ],
+    "qa": [
+      "every response drafted inside its own marketplace clock",
+      "evidence matches the specific marketplace's accepted format",
+      "queue kept separate from the brand's own helpdesk SLA"
+    ],
+    "read_point": "claim rate and response-time-to-deadline, read monthly",
+    "typical_duration": "30 minutes agent time daily",
+    "subagents": []
+  },
+  {
+    "id": "LIFE-W26",
+    "name": "Run the mystery-shopper brand journey audit (CX leg)",
+    "capabilities": [
+      "BRAND-C67"
+    ],
+    "trigger": "quarterly",
+    "human_role": "CX lead auditing the brand's own post-purchase and support journey",
+    "inputs_required": [
+      "site/checkout access for a real test order",
+      "support contact channel",
+      "brand's stated promises (delivery estimate, guarantee, response time)"
+    ],
+    "steps": [
+      {
+        "n": 1,
+        "name": "Place a real test order",
+        "does": "Walks the brand's own purchase journey as a customer would: browse, cart, checkout, order confirmation, using a real or test-gateway order per the brand's rules.",
+        "inputs": [
+          "checkout access"
+        ],
+        "tools": [
+          "browser: headless chromium (read)"
+        ],
+        "skill": "life/mystery-shopper-audit",
+        "output": "order journey log with timestamps",
+        "check": "no live production charge unless the brand's own test-order process allows it"
+      },
+      {
+        "n": 2,
+        "name": "Log every stated promise against what happens",
+        "does": "Records the delivery estimate, confirmation message and any promise made at checkout, to compare against what actually happens.",
+        "inputs": [
+          "order journey log"
+        ],
+        "tools": [],
+        "skill": "life/mystery-shopper-audit",
+        "output": "promise-vs-reality log",
+        "check": "every promise is quoted verbatim from the brand's own page or message"
+      },
+      {
+        "n": 3,
+        "name": "Send a real support query",
+        "does": "Sends a genuine support question through the brand's own contact channel, the way a real customer would.",
+        "inputs": [
+          "support channel"
+        ],
+        "tools": [
+          "connector: support platform (read)"
+        ],
+        "skill": "life/mystery-shopper-audit",
+        "output": "support interaction log",
+        "check": "the query is realistic, not a test designed to be easy"
+      },
+      {
+        "n": 4,
+        "name": "Time the response against the stated SLA",
+        "does": "Measures the actual response time against what the brand states or implies as its response time.",
+        "inputs": [
+          "support interaction log"
+        ],
+        "tools": [],
+        "skill": "life/mystery-shopper-audit",
+        "output": "SLA-vs-actual comparison",
+        "check": "comparison uses the brand's own stated SLA, not an assumed one"
+      },
+      {
+        "n": 5,
+        "name": "Catalogue every gap found",
+        "does": "Lists every place the real journey fell short of the stated promise, from checkout through support, each with evidence.",
+        "inputs": [
+          "all above"
+        ],
+        "tools": [],
+        "skill": "life/mystery-shopper-audit",
+        "output": "gap catalogue with evidence",
+        "check": "every gap entry is evidenced by a timestamp, screenshot or quoted message"
+      },
+      {
+        "n": 6,
+        "name": "Route each gap to its owning workflow",
+        "does": "Sends a delivery-communication gap to W13, a support gap to W15, a checkout gap to the Site specialist.",
+        "inputs": [
+          "gap catalogue"
+        ],
+        "tools": [],
+        "skill": null,
+        "output": "routed gap list",
+        "check": "every gap names the workflow or agent it was routed to"
+      },
+      {
+        "n": 7,
+        "name": "Assemble the quarterly audit report",
+        "does": "Puts the journey log, promise-vs-reality comparison and routed gaps into one report.",
+        "inputs": [
+          "all above"
+        ],
+        "tools": [],
+        "skill": "shared/report-section",
+        "output": "quarterly mystery-shopper report",
+        "check": "matches the report-section output shape"
+      },
+      {
+        "n": 8,
+        "name": "Self-QA and route to the founder gate",
+        "does": "Runs the QA checklist; this is founder_gate since the report may prompt a policy or page change.",
+        "inputs": [
+          "report"
+        ],
+        "tools": [],
+        "skill": null,
+        "output": "gated report",
+        "check": "no change made to the site or support system from this workflow itself"
+      }
+    ],
+    "outputs": [
+      "quarterly mystery-shopper audit report with routed gaps"
+    ],
+    "qa": [
+      "every gap evidenced, not impressionistic",
+      "comparison uses the brand's own stated promise, not an assumed one",
+      "every gap routed to an owning workflow"
+    ],
+    "read_point": "quarterly, compared to the prior quarter's same audit",
+    "typical_duration": "3 hours agent time quarterly",
+    "subagents": [
+      "shared with BRAND: BRAND owns the full journey audit; LIFE runs the post-purchase and support leg"
+    ]
+  },
+  {
+    "id": "LIFE-W27",
+    "name": "Run the corporate gifting sales desk",
+    "capabilities": [
+      "LIFE-G01"
+    ],
+    "trigger": "event: inbound corporate enquiry; 90 days before Q4 holiday season for outbound (Diwali for India)",
+    "human_role": "B2B/corporate gifting sales desk operator",
+    "inputs_required": [
+      "inbound enquiry or the outbound lead list",
+      "bulk pricing tiers",
+      "customisation (packaging/engraving) options",
+      "sales-tax invoicing capability (GST invoicing capability for India)",
+      "split-delivery address list"
+    ],
+    "steps": [
+      {
+        "n": 1,
+        "name": "Qualify the enquiry or build the outbound lead list",
+        "does": "For inbound, reads the enquiry for quantity, budget and occasion; for outbound, builds the lead list starting 90 days before the target Q4 holiday gifting season (Diwali or the relevant gifting season for India).",
+        "inputs": [
+          "enquiry or lead source"
+        ],
+        "tools": [
+          "web search (budgeted)"
+        ],
+        "skill": "life/corporate-gifting-desk",
+        "output": "qualified enquiry or lead list",
+        "check": "outbound timing starts at least 90 days before the target season or festival"
+      },
+      {
+        "n": 2,
+        "name": "Quote with bulk tiers",
+        "does": "Prepares a quote using the bulk pricing tiers checked against margin, not a discretionary discount.",
+        "inputs": [
+          "bulk pricing tiers"
+        ],
+        "tools": [
+          "brand brain (read)"
+        ],
+        "skill": "life/corporate-gifting-desk",
+        "output": "bulk quote",
+        "check": "quote uses the standing bulk tiers, checked against discount policy for anything beyond them"
+      },
+      {
+        "n": 3,
+        "name": "Confirm custom packaging or engraving options",
+        "does": "Confirms what customisation is offered, its lead time and any minimum order quantity.",
+        "inputs": [
+          "customisation options"
+        ],
+        "tools": [],
+        "skill": "life/corporate-gifting-desk",
+        "output": "customisation confirmation",
+        "check": "lead time stated matches the actual production/engraving capacity"
+      },
+      {
+        "n": 4,
+        "name": "Prepare the sales-tax invoice",
+        "does": "Prepares the sales-tax invoice for the B2B order, checked against state nexus and resale-certificate rules; India only: prepares the GST-compliant invoice instead, checked against the current GST rate and the buyer's GSTIN if provided.",
+        "inputs": [
+          "sales-tax invoicing capability (GST invoicing capability for India)"
+        ],
+        "tools": [
+          "web search (budgeted)"
+        ],
+        "skill": "life/corporate-gifting-desk",
+        "output": "sales-tax invoice draft (GST invoice draft for India)",
+        "check": "invoice checked against the current sales-tax rule (or GST rule for India), cited with date"
+      },
+      {
+        "n": 5,
+        "name": "Plan split delivery to multiple addresses",
+        "does": "Plans delivery to the many recipient addresses the corporate order requires, checking courier serviceability for each.",
+        "inputs": [
+          "split-delivery address list"
+        ],
+        "tools": [
+          "connector: shopify orders (read)"
+        ],
+        "skill": "life/corporate-gifting-desk",
+        "output": "split-delivery plan",
+        "check": "every address checked for courier serviceability before the order is confirmed"
+      },
+      {
+        "n": 6,
+        "name": "Set the repeat-order reminder",
+        "does": "Sets a reminder to the same corporate buyer ahead of next season's likely order.",
+        "inputs": [
+          "order confirmation"
+        ],
+        "tools": [],
+        "skill": "life/corporate-gifting-desk",
+        "output": "repeat-order reminder",
+        "check": "reminder timed to the same lead-time rule as the original outbound"
+      },
+      {
+        "n": 7,
+        "name": "Self-QA and route to the founder gate",
+        "does": "Runs the QA checklist; any quote beyond the standing bulk tiers or a new customisation option is founder_gate.",
+        "inputs": [
+          "all above"
+        ],
+        "tools": [],
+        "skill": null,
+        "output": "gated quote and order plan",
+        "check": "no invoice issued or order confirmed from this workflow without the founder's sign-off on anything beyond the standing tiers"
+      }
+    ],
+    "outputs": [
+      "bulk quote",
+      "sales-tax invoice draft (GST invoice draft for India)",
+      "split-delivery plan",
+      "repeat-order reminder"
+    ],
+    "qa": [
+      "quote uses standing bulk tiers or is gated if beyond them",
+      "sales-tax invoice checked against current rule (GST rule for India)",
+      "every delivery address checked for serviceability"
+    ],
+    "read_point": "corporate order volume and repeat-order rate, read each gifting season (Q4 holidays for the US, Diwali for India)",
+    "typical_duration": "2 hours agent time per enquiry; more for outbound list-building",
+    "subagents": []
+  },
+  {
+    "id": "LIFE-W28",
+    "name": "Run the consumer-complaint and consumer-protection notice queue",
+    "capabilities": [
+      "LIFE-G03"
+    ],
+    "trigger": "event: grievance or notice received; weekly SLA check",
+    "human_role": "customer service / CX manager handling regulatory and consumer-protection complaints (BBB, state attorney general portals, FTC complaint referrals for the US; statutory grievance officer duties for India)",
+    "inputs_required": [
+      "complaint/notice inbox (BBB, state consumer-complaint portal, FTC referral for the US; grievance inbox for India)",
+      "consumer-forum (e-Daakhil, India) and legal notice tracker",
+      "response SLA per channel (BBB and most state portals: about 2 weeks; India's E-Commerce Rules SLA of 48-hour acknowledgement and 1-month resolution, markets IN)"
+    ],
+    "steps": [
+      {
+        "n": 1,
+        "name": "Log every grievance on receipt",
+        "does": "Logs each BBB complaint, state consumer-complaint, FTC referral or legal notice (a grievance or e-Daakhil consumer-forum notice for India) the moment it arrives, with its own clock started from that timestamp.",
+        "inputs": [
+          "grievance inbox"
+        ],
+        "tools": [
+          "connector: support platform (read)"
+        ],
+        "skill": "life/grievance-queue",
+        "output": "logged grievance with clock started",
+        "check": "clock starts from actual receipt, not from when it is read"
+      },
+      {
+        "n": 2,
+        "name": "Acknowledge within the channel's SLA",
+        "does": "Sends the acknowledgement inside the SLA the receiving channel sets: BBB and most state consumer-complaint portals expect a response within about 2 weeks. India only: acknowledges within the 48-hour statutory window required under India's E-Commerce Rules instead; reads null for US brands.",
+        "inputs": [
+          "logged grievance"
+        ],
+        "tools": [
+          "connector: support platform (draft macro)"
+        ],
+        "skill": "life/grievance-queue",
+        "output": "acknowledgement sent with timestamp",
+        "check": "acknowledgement sent inside the applicable SLA (48 hours for India) or flagged as breached the moment it is missed"
+      },
+      {
+        "n": 3,
+        "name": "Investigate and prepare the resolution",
+        "does": "Investigates the complaint against the order/product/policy record and prepares a resolution within the receiving channel's own window (India's 1-month statutory window; the target response time for a BBB or state consumer-complaint case in the US).",
+        "inputs": [
+          "order/policy record"
+        ],
+        "tools": [
+          "connector: shopify orders (read)",
+          "brand brain (read)"
+        ],
+        "skill": "life/grievance-queue",
+        "output": "resolution draft",
+        "check": "resolution draft cites the specific policy or order fact it rests on"
+      },
+      {
+        "n": 4,
+        "name": "Track consumer-forum, BBB and legal notices separately",
+        "does": "Tracks any BBB case, state consumer-complaint case or legal notice (an e-Daakhil consumer-forum case for India) on its own separate clock and status, distinct from an ordinary grievance.",
+        "inputs": [
+          "notice tracker"
+        ],
+        "tools": [
+          "web search (budgeted)"
+        ],
+        "skill": "life/grievance-queue",
+        "output": "notice tracker update",
+        "check": "a legal notice is never merged into the ordinary complaint queue's SLA"
+      },
+      {
+        "n": 5,
+        "name": "Run the weekly SLA check",
+        "does": "Checks every open complaint and notice against its own clock, flagging anything approaching or past deadline.",
+        "inputs": [
+          "grievance/notice log"
+        ],
+        "tools": [],
+        "skill": "life/grievance-queue",
+        "output": "weekly SLA report",
+        "check": "every open item shows days remaining or days breached, in code"
+      },
+      {
+        "n": 6,
+        "name": "Route unresolved or escalated items to the founder",
+        "does": "Sends any item nearing breach, or any consumer-forum/legal notice, to the founder rather than letting its clock lapse quietly.",
+        "inputs": [
+          "SLA report"
+        ],
+        "tools": [],
+        "skill": "shared/plain-english-card",
+        "output": "founder card",
+        "check": "an item nearing breach is never left for the next weekly check alone"
+      },
+      {
+        "n": 7,
+        "name": "Log closure",
+        "does": "Records the resolution and closure date against the applicable deadline (statutory for India) once resolved.",
+        "inputs": [
+          "resolution draft"
+        ],
+        "tools": [],
+        "skill": "shared/registry-entry",
+        "output": "closure record",
+        "check": "closure date compared explicitly to the applicable deadline"
+      }
+    ],
+    "outputs": [
+      "logged complaint/notice queue with SLA clocks",
+      "acknowledgements sent",
+      "resolution drafts",
+      "notice tracker",
+      "weekly SLA report"
+    ],
+    "qa": [
+      "acknowledgement and resolution windows tracked in code per channel (48-hour/1-month for India's statutory rule; each platform's own SLA for US channels)",
+      "legal notices tracked on their own separate clock",
+      "nothing nearing breach left unescalated"
+    ],
+    "read_point": "weekly SLA compliance rate; every notice tracked to closure",
+    "typical_duration": "30 minutes agent time daily; more per active grievance",
+    "subagents": []
+  },
+  {
+    "id": "LIFE-W29",
+    "name": "Run warranty, repair and after-sales service",
+    "capabilities": [
+      "LIFE-G04"
+    ],
+    "trigger": "event: service request",
+    "human_role": "after-sales service coordinator",
+    "inputs_required": [
+      "service request",
+      "warranty terms",
+      "repair partner network",
+      "courier pickup capability"
+    ],
+    "steps": [
+      {
+        "n": 1,
+        "name": "Intake the service request",
+        "does": "Logs the request type (resizing, repair, re-plating, warranty claim, buyback/exchange) with the product and purchase date.",
+        "inputs": [
+          "service request"
+        ],
+        "tools": [
+          "connector: shopify orders (read)"
+        ],
+        "skill": "life/warranty-service-queue",
+        "output": "logged service request",
+        "check": "purchase date checked against the warranty window before anything is promised"
+      },
+      {
+        "n": 2,
+        "name": "Check warranty coverage",
+        "does": "Confirms whether the request is covered under warranty, out-of-warranty paid service, or a buyback/exchange case.",
+        "inputs": [
+          "warranty terms",
+          "logged request"
+        ],
+        "tools": [
+          "brand brain (read)"
+        ],
+        "skill": "life/warranty-service-queue",
+        "output": "coverage determination",
+        "check": "determination cites the specific warranty clause, not a general assumption"
+      },
+      {
+        "n": 3,
+        "name": "Arrange courier pickup",
+        "does": "Books the pickup with the courier or repair-partner network for the item to travel to service.",
+        "inputs": [
+          "courier pickup capability"
+        ],
+        "tools": [],
+        "skill": "life/warranty-service-queue",
+        "output": "pickup booking",
+        "check": "pickup address and item description confirmed with the customer before booking"
+      },
+      {
+        "n": 4,
+        "name": "Route to the repair partner",
+        "does": "Sends the item and its coverage determination to the correct repair partner (resizing, repair, re-plating) with the expected turnaround.",
+        "inputs": [
+          "coverage determination"
+        ],
+        "tools": [],
+        "skill": "life/warranty-service-queue",
+        "output": "repair-partner routing",
+        "check": "turnaround quoted matches the partner's own stated capacity, not a guess"
+      },
+      {
+        "n": 5,
+        "name": "Send status updates",
+        "does": "Sends the customer a status update at intake, at drop-off to the partner, and at return dispatch.",
+        "inputs": [
+          "routing status"
+        ],
+        "tools": [],
+        "skill": "life/message",
+        "output": "status update messages",
+        "check": "every update reflects a real status change, not a scheduled filler message"
+      },
+      {
+        "n": 6,
+        "name": "Track cost per case",
+        "does": "Tracks the cost of each service case (courier both ways, partner fee, any replacement part) against the product's warranty reserve.",
+        "inputs": [
+          "all above"
+        ],
+        "tools": [
+          "script: intelligence/ideas.py"
+        ],
+        "skill": "life/warranty-service-queue",
+        "output": "cost-per-case figure",
+        "check": "cost computed in code from real courier and partner invoices, not estimated"
+      },
+      {
+        "n": 7,
+        "name": "Close the case and log it",
+        "does": "Confirms the item's return or the buyback/exchange completion and logs the case with its resolution and total cost.",
+        "inputs": [
+          "repair-partner routing"
+        ],
+        "tools": [],
+        "skill": "shared/registry-entry",
+        "output": "closed case record",
+        "check": "closure logged only once the customer confirms receipt or the exchange completes"
+      }
+    ],
+    "outputs": [
+      "logged and routed service requests",
+      "status update messages",
+      "cost-per-case tracking",
+      "closed case records"
+    ],
+    "qa": [
+      "warranty determination cites the specific clause",
+      "turnaround matches the partner's real capacity",
+      "cost tracked in code from real invoices"
+    ],
+    "read_point": "average turnaround time and cost per case, read monthly against the warranty reserve",
+    "typical_duration": "20 to 40 minutes agent time per case",
+    "subagents": []
+  },
+  {
+    "id": "LIFE-W30",
+    "name": "Build and moderate a branded customer community",
+    "capabilities": [
+      "LIFE-C53"
+    ],
+    "trigger": "founder decides to test a community; quarterly review after launch",
+    "human_role": "community manager for customers",
+    "inputs_required": [
+      "existing repeat-customer list",
+      "brand voice record"
+    ],
+    "steps": [
+      {
+        "n": 1,
+        "name": "Check whether a community fits the brand",
+        "does": "Checks whether the brand has a base of repeat, high-engagement buyers large enough to sustain a community, since not every store benefits.",
+        "inputs": [
+          "repeat-customer list"
+        ],
+        "tools": [
+          "connector: shopify orders (read)"
+        ],
+        "skill": "life/community-program",
+        "output": "go/no-go recommendation with evidence",
+        "check": "recommendation cites the actual repeat-buyer count and engagement level, not a general enthusiasm"
+      },
+      {
+        "n": 2,
+        "name": "Choose the platform and structure",
+        "does": "Chooses Slack, Discord or Circle and designs the channel/space structure for the brand's actual use cases (product help, early access, feedback).",
+        "inputs": [
+          "go/no-go recommendation"
+        ],
+        "tools": [
+          "web search (budgeted)"
+        ],
+        "skill": "life/community-program",
+        "output": "platform choice and channel structure",
+        "check": "structure matches named use cases, not a generic template"
+      },
+      {
+        "n": 3,
+        "name": "Write the moderation policy",
+        "does": "Writes what gets removed and how a complaint raised in a public channel routes to support instead of being handled in public.",
+        "inputs": [
+          "channel structure"
+        ],
+        "tools": [],
+        "skill": "life/community-program",
+        "output": "moderation policy",
+        "check": "every complaint routing path leads to the actual support queue, not left in public"
+      },
+      {
+        "n": 4,
+        "name": "Build the engagement calendar",
+        "does": "Builds a light, always-on engagement calendar (prompts, early-access drops, AMAs) distinct from the weekly campaign calendar.",
+        "inputs": [
+          "brand voice"
+        ],
+        "tools": [],
+        "skill": "life/community-program",
+        "output": "engagement calendar",
+        "check": "calendar is light enough to sustain without daily staff time"
+      },
+      {
+        "n": 5,
+        "name": "Set the founder/team presence rule",
+        "does": "Sets when a founder or team member should show up in person versus staying quiet, so presence feels intentional, not absent or overbearing.",
+        "inputs": [
+          "engagement calendar"
+        ],
+        "tools": [],
+        "skill": "life/community-program",
+        "output": "presence rule",
+        "check": "rule names specific trigger moments, not a vague 'sometimes'"
+      },
+      {
+        "n": 6,
+        "name": "Route recurring themes back to VoC",
+        "does": "Sets the path for a recurring community theme to reach the brand brain and the VoC record (W17), not stay siloed in the community.",
+        "inputs": [
+          "moderation policy"
+        ],
+        "tools": [],
+        "skill": null,
+        "output": "routing rule",
+        "check": "routing path names the exact workflow (W17) it feeds"
+      },
+      {
+        "n": 7,
+        "name": "Set health tracking",
+        "does": "Tracks membership, active-member share and the repeat-purchase rate of members versus non-members as the one proxy metric.",
+        "inputs": [
+          "membership data"
+        ],
+        "tools": [
+          "connector: metabase (read)"
+        ],
+        "skill": "shared/metric-read",
+        "output": "health tracking plan",
+        "check": "repeat-purchase comparison computed in code, member vs non-member"
+      },
+      {
+        "n": 8,
+        "name": "Self-QA and route to the founder gate",
+        "does": "Runs the QA checklist and sends the full recommendation, structure and policy to the founder before build.",
+        "inputs": [
+          "all above"
+        ],
+        "tools": [],
+        "skill": "shared/plain-english-card",
+        "output": "founder card",
+        "check": "no workspace created or invitation sent from this workflow"
+      }
+    ],
+    "outputs": [
+      "community structure and moderation policy",
+      "engagement calendar",
+      "monthly/quarterly community health note"
+    ],
+    "qa": [
+      "go/no-go grounded in real repeat-buyer evidence",
+      "complaints route to support, not left public",
+      "member vs non-member repeat rate tracked in code"
+    ],
+    "read_point": "quarterly: membership, active-member share, and repeat-purchase rate of members vs non-members",
+    "typical_duration": "1 day agent time to design; ongoing light moderation after launch",
+    "subagents": []
+  }
+]

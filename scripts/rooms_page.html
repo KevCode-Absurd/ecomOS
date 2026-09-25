@@ -1,0 +1,70 @@
+<title>ecomOS Rooms</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{--paper:#F3F5F2;--panel:#FFFFFF;--ink:#172019;--muted:#5D6862;--line:#D8DED9;--line2:#E9EDEA;--accent:#0E6B60;--accent-ink:#FFFFFF;--accent-soft:#DCEDE9;--amber:#9A600C;--amber-soft:#F7EBD2;--good:#2C7A4B;--good-soft:#DFF0E4;--bad:#B23A2D;--bad-soft:#F6DFDB;
+--display:"Bricolage Grotesque","IBM Plex Sans",system-ui,sans-serif;--body:"IBM Plex Sans",system-ui,sans-serif;--mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;--shadow:0 1px 2px rgba(20,30,25,.06),0 6px 20px rgba(20,30,25,.05)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark;--paper:#0F1513;--panel:#171E1B;--ink:#E6EBE7;--muted:#9AA59E;--line:#2A332E;--line2:#222A26;--accent:#5CB9AA;--accent-ink:#0B1512;--accent-soft:#16302B;--amber:#E2A84F;--amber-soft:#3A2B11;--good:#6CC08A;--good-soft:#173A25;--bad:#E1786B;--bad-soft:#40201B;--shadow:0 1px 2px rgba(0,0,0,.4),0 6px 20px rgba(0,0,0,.3)}}
+:root[data-theme="dark"]{color-scheme:dark;--paper:#0F1513;--panel:#171E1B;--ink:#E6EBE7;--muted:#9AA59E;--line:#2A332E;--line2:#222A26;--accent:#5CB9AA;--accent-ink:#0B1512;--accent-soft:#16302B;--amber:#E2A84F;--amber-soft:#3A2B11;--good:#6CC08A;--good-soft:#173A25;--bad:#E1786B;--bad-soft:#40201B;--shadow:0 1px 2px rgba(0,0,0,.4),0 6px 20px rgba(0,0,0,.3)}
+*{box-sizing:border-box} body{margin:0;background:var(--paper);color:var(--ink);font:14.5px/1.55 var(--body)}
+.wrap{max-width:1180px;margin:0 auto;padding-inline:20px;padding-block:0}
+h1,h2,h3,h4{font-family:var(--display);margin:0;line-height:1.15;text-wrap:balance} h1{font-size:clamp(28px,4vw,40px);font-weight:700} h2{font-size:24px;font-weight:700} h3{font-size:17px;font-weight:600;margin-top:18px} h4{font-size:15px;font-weight:600;margin-bottom:6px}
+p{margin:0} .muted{color:var(--muted)} .small{font-size:12.5px} .num{font-variant-numeric:tabular-nums}
+.eyebrow{font:500 11.5px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--paper);border-bottom:1px solid var(--line)}
+.top .wrap{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding-block:10px}
+.brand{font:700 18px var(--display);display:flex;align-items:center;gap:8px} .brand i{width:12px;height:12px;border-radius:3px;background:var(--accent);display:inline-block;transform:rotate(45deg)}
+.tabs{display:flex;gap:4px;flex-wrap:wrap;margin-left:auto} .tabs button{font:600 13.5px var(--body);padding:7px 12px;border-radius:999px;border:1px solid transparent;background:transparent;color:var(--muted);cursor:pointer} .tabs button.on{background:var(--panel);border-color:var(--line);color:var(--ink);box-shadow:var(--shadow)} .tabs button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.view{display:none;padding-block:28px 72px} .view.on{display:block}
+.hero{display:grid;gap:12px;max-width:72ch;padding-block:12px 20px}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-top:8px}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px 12px} .stat b{display:block;font:700 22px var(--display);font-variant-numeric:tabular-nums} .stat span{color:var(--muted);font-size:12px}
+.nav{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;margin:14px 0 26px}
+.navg{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px 12px;display:grid;gap:3px} .navg b{font:600 13px var(--display);margin-bottom:3px} .navg a{color:var(--accent);text-decoration:none;font-size:13px} .navg a:hover{text-decoration:underline}
+.room{padding-block:26px;border-top:1px solid var(--line)} .rhead{display:grid;gap:4px;margin-bottom:12px}
+.scr{border:1px solid var(--line);border-radius:12px;background:var(--panel);overflow:hidden;box-shadow:var(--shadow);font-size:12.5px;line-height:1.4}
+.scr-top{display:flex;align-items:center;gap:8px;padding:7px 10px;border-bottom:1px solid var(--line);background:var(--paper);font:11px var(--mono);color:var(--muted)} .dots{display:flex;gap:4px} .dots i{width:8px;height:8px;border-radius:50%;background:var(--line);display:block} .scr-top .url{margin-left:auto}
+.smain{padding:12px 14px;display:grid;gap:10px}
+.sh{font:600 14px var(--display);display:flex;align-items:center;gap:8px;flex-wrap:wrap} .sh .pill{margin-left:auto}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:6px} .tile{border:1px solid var(--line);border-radius:7px;padding:7px 9px;min-width:0} .tile b{display:block;font:600 14px var(--display);color:var(--muted)} .tile span{color:var(--muted);font-size:11px;display:block}
+.pill{display:inline-block;padding:1px 8px;border-radius:999px;font-size:10.5px;font-weight:600;background:var(--accent-soft);color:var(--accent);white-space:nowrap} .pill.amber{background:var(--amber-soft);color:var(--amber)}
+.ins{border:1px solid var(--line);border-radius:8px;padding:8px 10px;display:grid;gap:4px} .ins .s{font-weight:600} .ins .r{color:var(--muted);font-size:11.5px}
+.btns{display:flex;gap:6px;flex-wrap:wrap;align-items:center} .btn{display:inline-block;padding:3px 9px;border-radius:6px;border:1px solid var(--line);font-weight:600;font-size:11px;background:var(--panel)} .btn.p{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)} .btn.a{background:var(--amber-soft);border-color:var(--amber-soft);color:var(--amber)}
+.cols{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:12px} .card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px;font-size:13px} .card ul{margin:0;padding-left:16px} .card li{margin:4px 0}
+.more{margin-top:10px;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:8px 14px;font-size:13px} .more summary{cursor:pointer;font-weight:600}
+.tw{overflow-x:auto;margin-top:8px} table{border-collapse:collapse;width:100%;font-size:12.5px;min-width:640px} th,td{text-align:left;padding:6px 8px;border-bottom:1px solid var(--line);vertical-align:top} th{font:600 11px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+code{font:12px var(--mono);background:var(--line2);padding:1px 5px;border-radius:4px} .dn{margin:8px 0 0;padding-left:16px} .dn li{margin:3px 0}
+.prose{max-width:72ch} .prose p+p{margin-top:10px}
+@media (max-width:900px){.cols{grid-template-columns:1fr}}
+</style>
+<div class="top"><div class="wrap"><div class="brand"><i></i>ecomOS Rooms</div><nav class="tabs" aria-label="Views"><button class="on" data-v="rooms">Rooms</button><button data-v="data">Data layer</button><button data-v="how">How rooms work</button></nav></div></div>
+
+<div class="view on" id="v-rooms"><div class="wrap">
+  <div class="hero"><span class="eyebrow">Draft for Kevin, 25 Sep 2026</span><h1>Every part of the business as a screen a founder can act on alone.</h1><p class="muted">A room shows one domain's numbers from the brand's own data, turns them into sentences with a cause and a size using rules in code, draws them, and puts the action button next to each one. The agent is optional: a founder or an agency person can read the room and decide. Screens are drawn in the "nothing connected yet" state, so every tile reads unavailable, the way the product will before data lands.</p><div class="stats" id="stats"></div></div>
+  <div class="nav"><!--NAV--></div>
+  <!--ROOMS-->
+</div></div>
+
+<div class="view" id="v-data"><div class="wrap">
+  <div class="hero"><span class="eyebrow">Data layer</span><h1>The tables the rooms need, by source.</h1><p class="muted">Union of every data need across the rooms. Tables used by several rooms come first in each group and are the ones to build first. Every table carries a brand key, a captured or computed stamp and a source. Windows end on the last full day. Missing stays null and shows as unavailable.</p></div>
+  <!--DATALAYER-->
+</div></div>
+
+<div class="view" id="v-how"><div class="wrap">
+  <div class="hero"><span class="eyebrow">Design rules</span><h1>What makes a room actionable.</h1></div>
+  <div class="cols">
+    <div class="card prose"><h4>Metrics</h4><p>Every metric has a formula, a source table, a window and an unavailable rule. Computed in code. A founder can click any number and see how it was made.</p></div>
+    <div class="card prose"><h4>Insights</h4><p>An insight is a rule code can run, and the sentence it produces: what we saw, the size, the cause. No insight needs the model's judgement. Ranked by money or time saved.</p></div>
+    <div class="card prose"><h4>Actions</h4><p>Each insight carries the buttons for its capability: let the agent do it, send to a person, not now. The autonomy level comes from the catalogue. Decisions go to the registry with a read point.</p></div>
+    <div class="card prose"><h4>Visuals</h4><p>The chart fits the question: a fix chain for speed, a bridge for margin, a cohort grid for repeat, a heatmap for freshness. Charts the lab already proved (the filmstrip, the before-and-after chain, ad-level gallery) are marked as existing.</p></div>
+    <div class="card prose"><h4>Not elsewhere</h4><p>Each room names what the usual tools do not show, and says "also in X" where a tool already does it. The common thread: joining the brand's own orders to every channel, and measured before-and-after instead of scores.</p></div>
+    <div class="card prose"><h4>Empty state</h4><p>Before data connects, a room shows unavailable, says which connector fixes it, and offers the first action that needs no data (a baseline run, a crawl, an interview). The first insight appears the moment the first table lands.</p></div>
+  </div>
+</div></div>
+
+<script>
+const S=/*STATS*/;document.getElementById('stats').innerHTML=[[S.rooms,'rooms'],[S.jobs,'jobs to be done'],[S.metrics,'metrics with formulas'],[S.insights,'insights as rules'],[S.visuals,'visuals'],[S.not_elsewhere,'not-elsewhere claims'],[S.tables,'tables in the data layer']].map(([b,s])=>`<div class="stat"><b>${b}</b><span>${s}</span></div>`).join('');
+const tabs=[...document.querySelectorAll('.tabs button')];function show(v){tabs.forEach(b=>b.classList.toggle('on',b.dataset.v===v));['rooms','data','how'].forEach(k=>document.getElementById('v-'+k).classList.toggle('on',k===v));try{localStorage.setItem('ecomos-rooms-view',v)}catch(e){}}
+tabs.forEach(b=>b.addEventListener('click',()=>{show(b.dataset.v);window.scrollTo({top:0})}));let v='rooms';const h=(location.hash||'').replace('#','');if(['rooms','data','how'].includes(h))v=h;else{try{const s=localStorage.getItem('ecomos-rooms-view');if(['rooms','data','how'].includes(s))v=s}catch(e){}}show(v);
+document.querySelectorAll('.nav a').forEach(a=>a.addEventListener('click',e=>{e.preventDefault();const t=document.querySelector(a.getAttribute('href'));if(t)t.scrollIntoView({behavior:'smooth',block:'start'})}));
+if(h.startsWith('room-')){const t=document.getElementById(h);if(t)setTimeout(()=>t.scrollIntoView({block:'start'}),50)}
+</script>

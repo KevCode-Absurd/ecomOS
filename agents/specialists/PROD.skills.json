@@ -1,0 +1,1440 @@
+[
+  {
+    "id": "prod/screen-candidate",
+    "name": "Screen a candidate for demand and fit",
+    "parent": null,
+    "invoke_when": "a product or category candidate needs a fast pass before any real research time is spent on it",
+    "select_by": null,
+    "inputs_required": [
+      "candidate name or category",
+      "brand store tags",
+      "idea bank filter",
+      "public trend data"
+    ],
+    "steps": [
+      "1. Run the fixed checklist: category size, pain evidence, scarcity, store-model fit (script: scripts/ideas.py).",
+      "2. Pull the multi-year trend line for the category (web search).",
+      "3. Count existing sellers or listings to read saturation (web search, browser: headless public).",
+      "4. Score each check pass, caution or reject with a one-line reason.",
+      "5. Combine into one verdict; a caution needs 2 or more supporting checks to pass overall."
+    ],
+    "checks": [
+      "every check has a stated reason, none skipped silently",
+      "the trend line covers at least 2 years where data exists",
+      "saturation is a count, not an impression"
+    ],
+    "output": "{verdict: pass|caution|reject, checks: [{name, result, reason}], trend_read, saturation_count}",
+    "used_by": [
+      "PROD-W01"
+    ],
+    "shared_with": [],
+    "skill_md": "---\nname: prod/screen-candidate\nowner: PROD\nversion: 1\ninvoke_when: a product or category candidate needs a fast pass before any real research time is spent on it\ninputs: candidate name or category, brand store tags, idea bank filter, public trend data\noutputs: pass/caution/reject verdict with a trend and saturation read\n---\n# Screen a candidate\n\n## Purpose\nKill a weak candidate before a single hour of deep research is spent on it. This is the front door of the research\nfunnel: every candidate that reaches sourcing spend passed through here first.\n\n## Steps\n1. Run the fixed checklist against the candidate: is the category big enough, is there real pain evidence (not just\n   founder interest), is there scarcity or a real gap, does it fit the brand's store model.\n2. Pull the category's multi-year trend line. A candidate riding a single-year spike gets flagged, not killed outright.\n3. Count existing sellers or listings in the category to read competitive saturation. A crowded category needs a\n   sharper angle than an open one.\n4. Score every check pass, caution or reject, each with a one-line reason a person could check.\n5. Combine into one verdict. A caution needs two or more supporting checks before it proceeds; a single caution alone\n   does not clear the gate.\n\n## Checks\n- Every check states its reason; \"just doesn't feel right\" is never a valid reason.\n- The trend line is real data, not a single number from memory.\n- Saturation is counted, not guessed at.\n\n## Output\n{verdict, checks[{name, result, reason}], trend_read, saturation_count}\n\n## Example\nVerdict: caution. Category size: pass ($50M category, growing). Pain evidence: pass (3 review threads, 40+ mentions\nof the same complaint). Scarcity: caution (2 close competitors, no clear open gap yet). Trend: 3-year CAGR 18%.\nSaturation: 34 sellers on the nearest marketplace search. Verdict rests on the differentiation workflow closing the\nscarcity gap before this proceeds."
+  },
+  {
+    "id": "prod/differentiation-angle",
+    "name": "Plan line extension and differentiation angle",
+    "parent": null,
+    "invoke_when": "a hero product needs its next SKUs planned, or any candidate needs its one owned difference named",
+    "select_by": null,
+    "inputs_required": [
+      "hero SKU performance",
+      "competitor scouting sheet",
+      "sales history",
+      "avatar"
+    ],
+    "steps": [
+      "1. Read the hero product's performance and the category's default feature set.",
+      "2. Name the one thing that differs from the default, citing the specific competitor gap it closes.",
+      "3. Draft 2 to 3 line-extension options that build on the angle.",
+      "4. Tag each option's demand pattern: evergreen, trending or seasonal, with evidence.",
+      "5. Check subscription fit against real repeat-purchase data, not preference."
+    ],
+    "checks": [
+      "the angle traces to a cited gap, never an invented claim",
+      "each option states what it adds over the hero SKU",
+      "the demand tag has a stated evidence source"
+    ],
+    "output": "{angle, line_extension_options: [{name, adds, demand_tag, evidence}], subscription_fit}",
+    "used_by": [
+      "PROD-W02"
+    ],
+    "shared_with": [],
+    "skill_md": "---\nname: prod/differentiation-angle\nowner: PROD\nversion: 1\ninvoke_when: a hero product needs its next SKUs planned, or any candidate needs its one owned difference named\ninputs: hero SKU performance, competitor scouting sheet, sales history, avatar draft\noutputs: differentiation angle, line-extension options, demand-pattern tags, subscription-fit verdict\n---\n# Differentiation angle\n\n## Purpose\nEvery candidate and every hero product needs one owned point of difference, not a vague \"better quality\" claim. This\nskill turns a scouted competitor gap into a concrete angle and a small set of SKU options that build on it.\n\n## Steps\n1. Read the hero product's real performance (sales, margin, reviews) and note the category's default feature set: \n   what every competitor already does.\n2. Name the single thing that differs from that default. It must trace to a specific, cited gap found during\n   competitor scouting, never an invented or assumed advantage.\n3. Draft 2 to 3 line-extension SKU options that build on the angle rather than duplicating the hero product.\n4. Tag each option's demand pattern: evergreen, trending, or seasonal: using sales history or category norms as\n   evidence, not a guess.\n5. Check whether a subscription model is genuinely earned: look for real repeat_rate_90d/365d data. Absent that\n   evidence, tag the SKU a one-time purchase, never assume recurring revenue.\n\n## Checks\n- The angle names a specific competitor gap it closes, with a citation.\n- Every line-extension option states exactly what it adds over the hero SKU.\n- The subscription verdict rests on repeat-purchase data, never founder preference.\n\n## Output\n{angle, line_extension_options[{name, adds, demand_tag, evidence}], subscription_fit}\n\n## Example\nAngle: \"every competitor ships a fixed-size travel kit; ours is the only one with 3 refill sizes.\" Options: refill\n2-pack (evergreen), holiday gift box (seasonal, Q4 spike from 2 prior years' data; india: festive gift\nbox, Diwali spike; markets: IN), travel mini (trending, but\nsubscription not earned: repeat_rate_90d is 4%, below the 15% floor)."
+  },
+  {
+    "id": "prod/margin-compliance-gate",
+    "name": "Margin, compliance and channel gate",
+    "parent": null,
+    "invoke_when": "any candidate before sourcing spend, or a listing decision before it targets a new channel or market",
+    "select_by": null,
+    "inputs_required": [
+      "unit cost",
+      "freight",
+      "duty",
+      "packaging cost",
+      "financing cost",
+      "target price",
+      "channel fee stack if applicable",
+      "brand margin floor",
+      "claims and compliance category"
+    ],
+    "steps": [
+      "1. Pull the real cost basis and the brand's own margin floor.",
+      "2. Compute gross and contribution margin in code.",
+      "3. Run the compliance screen for the category (shelf-life, regulatory, labelling).",
+      "4. Score expansion markets on their own numbers if relevant.",
+      "5. Apply the go-live gates together: claims, difference, thresholds, ad-cost headroom."
+    ],
+    "checks": [
+      "every input has a source; a missing input blocks the gate rather than defaulting",
+      "the floor used is the brand's own, cited to where it was set",
+      "arithmetic happens in code, never estimated"
+    ],
+    "output": "{gate: pass|fail, margin: {gross, contribution}, compliance_flags: [], per_market: [], blocking_inputs: []}",
+    "used_by": [
+      "PROD-W03"
+    ],
+    "shared_with": [
+      "MONEY"
+    ],
+    "skill_md": "---\nname: prod/margin-compliance-gate\nowner: PROD\nversion: 1\ninvoke_when: any candidate before sourcing spend, or a listing decision before it targets a new channel or market\ninputs: unit cost, freight, duty, packaging cost, financing cost, target price, channel fee stack if applicable,\n  the brand's own margin floor, claims and compliance category\noutputs: pass/fail gate result with the full number breakdown and any compliance flags\n---\n# Margin, compliance and channel gate\n\n## Purpose\nNo candidate reaches sourcing or listing spend without a real, computed margin and a clean compliance read. This\ngate replaces founder taste and course-learned rules of thumb with the brand's own numbers.\n\n## Steps\n1. Pull every cost input from its real source: unit cost from the quote, freight and duty from the landed cost\n   model, financing cost from the payment-terms structure. Pull the brand's own stated margin floor, never an\n   industry rule of thumb.\n2. Compute gross margin and contribution margin in code from these inputs.\n3. Run the compliance screen for the category: shelf-life, regulatory certification, labelling requirements. A\n   missing certification is a fail, not a caveat.\n4. If the candidate targets more than the home market, score each expansion market separately on its own cost and\n   price data: never assume the home market's gate result carries over.\n5. Apply the remaining go-live gates together: are the claims provable, is there a real owned difference, does the\n   candidate clear the brand's own thresholds, is there enough contribution margin left for ad-cost headroom.\n\n## Checks\n- Every input has a named source; a missing input blocks the gate outright rather than defaulting to zero or an\n  assumption.\n- The margin floor is the brand's own, cited to the decision or record that set it.\n- No arithmetic is done in prose; everything routes through the landed cost calculator.\n\n## Output\n{gate, margin{gross, contribution}, compliance_flags[], per_market[], blocking_inputs[]}\n\n## Example\nGate: fail. Contribution margin 11%, below the brand's 18% floor. Compliance: FDA facility registration not yet filed for this\nSKU category: blocking (india: FSSAI licence not yet filed; markets: IN). Recommendation: hold until packaging cost drops or price rises; do not proceed to RFQ."
+  },
+  {
+    "id": "prod/build-tech-pack",
+    "name": "Build tech pack, BOM and packaging spec",
+    "parent": null,
+    "invoke_when": "a new SKU or a spec change needs a versioned, exact specification a factory can build to",
+    "select_by": null,
+    "inputs_required": [
+      "approved candidate or SKU",
+      "reference sample if one exists",
+      "target unit cost",
+      "packaging requirements"
+    ],
+    "steps": [
+      "1. Write every dimension with a tolerance band.",
+      "2. Build the component-level BOM with spec and target cost per component.",
+      "3. Price packaging as its own cost line.",
+      "4. Version the spec and log it against the SKU.",
+      "5. Book and track the packaging durability test."
+    ],
+    "checks": [
+      "every measurement has a tolerance",
+      "packaging is its own cost line, never blended",
+      "no unversioned change is made after a test failure"
+    ],
+    "output": "{tech_pack_version, dimensions: [{name, value, tolerance}], bom: [], packaging: {spec, cost, test_result}}",
+    "used_by": [
+      "PROD-W05"
+    ],
+    "shared_with": [],
+    "skill_md": "---\nname: prod/build-tech-pack\nowner: PROD\nversion: 1\ninvoke_when: a new SKU or a spec change needs a versioned, exact specification a factory can build to\ninputs: approved candidate or SKU, reference sample if one exists, target unit cost, packaging requirements\noutputs: versioned tech pack with BOM and a costed, tested packaging spec\n---\n# Build tech pack, BOM and packaging spec\n\n## Purpose\nVague specs cause factory disputes and sample failures. This skill writes the exact, versioned document a factory\nbuilds to, so any downstream dispute has a written reference to check against.\n\n## Steps\n1. Write every physical dimension with a stated tolerance band. A number with no tolerance is not a spec.\n2. Build the bill of materials at the component level: each component gets its own spec line and target cost, not\n   one blended unit-cost figure.\n3. Price packaging as its own cost line, separate from the product's unit cost, so a packaging change never hides\n   inside a \"unit cost went up\" surprise later.\n4. Assign a version number to the whole pack and log it against the SKU record. Every future sample, RFQ and PO\n   references this version number, never a verbal description.\n5. Book the drop-test, tamper-evidence and transit-durability test the packaging design needs, sized to the actual\n   transit mode (air, sea, last-mile courier). Track the result against a stated pass criterion.\n6. If the test fails, revise the spec, bump the version number, and re-book the test. Never edit the failed version\n   in place.\n\n## Checks\n- Every measurement carries a tolerance band.\n- Packaging appears as its own cost line in every downstream cost model.\n- A durability test is booked and resolved before the SKU proceeds to production, not after a shipment already\n  failed in transit.\n\n## Output\n{tech_pack_version, dimensions[{name, value, tolerance}], bom[], packaging{spec, cost, test_result}}\n\n## Example\nTech pack v3 (v2 failed the drop test at 90cm). Box wall thickness raised from 3mm to 4.5mm corrugate, packaging cost\nline up $0.35/unit. Re-booked drop test passed at 120cm. Version 3 is the one cited in the next RFQ."
+  },
+  {
+    "id": "prod/source",
+    "name": "Source a spec through supplier discovery",
+    "parent": null,
+    "invoke_when": "a validated spec or SKU needs a supplier found, vetted or kept under watch",
+    "select_by": {
+      "task": "supplier_discovery"
+    },
+    "inputs_required": [
+      "tech pack or open spec",
+      "MOQ needs",
+      "supplier region"
+    ],
+    "steps": [
+      "1. Pick the region-specific discovery funnel by select_by.region.",
+      "2. Message a wide shortlist on the identical spec.",
+      "3. Verify the top responders with a video call and certification check.",
+      "4. Vet any sourcing agent the same way as a factory.",
+      "5. Keep the spec running in the background for a better or new supplier."
+    ],
+    "checks": [
+      "no supplier added to the verified list on claims alone",
+      "the same spec text is sent to every candidate",
+      "the background watch only alerts, never contacts a supplier"
+    ],
+    "output": "{shortlist: [], verified: [], agent_vetting: [], watch_alert: null}",
+    "used_by": [
+      "PROD-W06"
+    ],
+    "shared_with": [],
+    "skill_md": "---\nname: prod/source\nowner: PROD\nversion: 1\ninvoke_when: a validated spec or SKU needs a supplier found, vetted, or kept under a standing watch\ninputs: tech pack or open spec, MOQ needs, supplier region (US domestic, China, or India)\noutputs: verified supplier shortlist, agent vetting result, standing watch alert\n---\n# Source a spec through supplier discovery\n\n## Purpose\nThis is the parent procedure for finding a supplier. The mechanics of discovery differ sharply by region: different\nplatforms, different verification norms, different negotiating culture: so this skill routes to a region-specific\nchild rather than running one generic funnel everywhere. The brand's default sourcing region is US domestic; China\nand India are the other two supported regions.\n\n## Steps\n1. Read the spec's stated region preference (or the brand's default sourcing region) and select the matching child\n   skill: `prod/source/us-domestic`, `prod/source/china`, or `prod/source/india`.\n2. Run that child's discovery funnel: broad platform search against the exact spec, messaging a wide shortlist on\n   identical terms.\n3. Verify every top responder with a live video call and a certification document check: never add a supplier to\n   the verified list on written claims alone.\n4. If a sourcing agent is used instead of contacting a factory directly, vet the agent to the same standard as a\n   factory: verified references, a live call, checkable past shipments.\n5. For an open, ongoing spec, leave it running in the background against the region's own major platforms so a\n   better or new supplier surfaces without a person re-running the search by hand.\n\n## Checks\n- The region-specific child procedure was used, not a generic one.\n- Every verified supplier passed a video call and a certification check.\n- The background watch only produces an alert; it never contacts a supplier on its own.\n\n## Output\n{shortlist[], verified[], agent_vetting[], watch_alert}\n\n## Example\nSpec: 500ml insulated bottle, MOQ 3,000. Region: India (markets: IN). Ran `prod/source/india` against IndiaMART;\nshortlist of 14, verified 3 by video call and BIS certificate check, one sourcing agent vetted against two of his\npast client shipments before being trusted with outreach. For a US-domestic brand, the same spec instead runs\n`prod/source/us-domestic` against ThomasNet and Maker's Row."
+  },
+  {
+    "id": "prod/source/us-domestic",
+    "name": "Source domestically in the US",
+    "parent": "prod/source",
+    "invoke_when": "the spec's supplier region is US domestic (the brand's default region)",
+    "select_by": {
+      "region": "us-domestic"
+    },
+    "inputs_required": [
+      "tech pack or open spec",
+      "MOQ needs"
+    ],
+    "steps": [
+      "1. Search ThomasNet, Maker's Row and Faire/Tundra (for finished-goods wholesale) against the exact spec.",
+      "2. Check business registration, EIN and any required state licence as a first filter.",
+      "3. Message the shortlist with identical spec text and requested volume tiers.",
+      "4. Verify with a video call or facility visit and request relevant certification (UL, FDA, CPSC as the category requires).",
+      "5. Confirm real production capacity against the MOQ, not just a claimed one."
+    ],
+    "checks": [
+      "business registration and licence status checked before outreach",
+      "certification requested matches the category's actual requirement",
+      "capacity confirmed with evidence, not assumed from a listing"
+    ],
+    "output": "{shortlist: [], verified: [{name, business_registration, certification, capacity_confirmed}]}",
+    "used_by": [
+      "PROD-W06"
+    ],
+    "shared_with": [],
+    "skill_md": "---\nname: prod/source/us-domestic\nowner: PROD\nversion: 1\ninvoke_when: the spec's supplier region is US domestic (the brand's default region)\nselect_by: {region: us-domestic}\ninputs: tech pack or open spec, MOQ needs\noutputs: verified US-domestic supplier shortlist\n---\n# Source domestically in the US\n\n## Purpose\nUS-domestic sourcing runs through different directories and a different first filter than overseas sourcing:\nbusiness registration and state licensing matter immediately, and category-specific certification (UL for\nelectrical goods, FDA for food or cosmetics, CPSC for children's products) gates a supplier before price is\ndiscussed. This is the brand's default sourcing region.\n\n## Steps\n1. Search ThomasNet, Maker's Row and, for finished-goods wholesale rather than manufacturing, Faire or Tundra\n   against the exact spec, not a loose category term.\n2. Filter on business registration, EIN and any state manufacturing or trade licence first: an unregistered\n   supplier is a compliance risk before it is a quality risk.\n3. Message the shortlist with identical spec text, stating unit pricing and MOQ tiers up front.\n4. Verify the top responders with a live video call or a facility visit, and request the certification the\n   category requires (UL for electrical/hardware, FDA for food-contact or cosmetics, CPSC for children's\n   products).\n5. Confirm real production capacity against the stated MOQ: ask for evidence of a comparable past order, not\n   just a catalogue claim of capacity.\n\n## Checks\n- Business registration and licence status are checked before outreach proceeds.\n- The certification checked matches the category's actual requirement, not a generic list.\n- Capacity is confirmed with evidence, never assumed from a listing.\n\n## Output\n{shortlist[], verified[{name, business_registration, certification, capacity_confirmed}]}\n\n## Example\nSpec: FDA-regulated snack packaging. Shortlist of 7 from ThomasNet; 2 verified suppliers both hold current state\nfood-manufacturing licences (checked against the state registry) and FDA facility registration; one showed a\ncomparable 5,000-unit order as capacity evidence."
+  },
+  {
+    "id": "prod/source/india",
+    "name": "Source from India",
+    "parent": "prod/source",
+    "invoke_when": "the spec's supplier region is India (markets: IN; not selected for a US-only brand)",
+    "select_by": {
+      "region": "india"
+    },
+    "inputs_required": [
+      "tech pack or open spec",
+      "MOQ needs"
+    ],
+    "steps": [
+      "1. Search IndiaMART and category-specific B2B directories against the exact spec.",
+      "2. Check GST registration and Udyam/MSME status as a first filter.",
+      "3. Message the shortlist in the language and terms the platform's sellers expect.",
+      "4. Verify with a video call and check BIS/other mandatory certification for the category.",
+      "5. Confirm real production capacity against the MOQ, not just a claimed one."
+    ],
+    "checks": [
+      "GST and Udyam status checked before outreach",
+      "certification matches the category's mandatory list",
+      "capacity confirmed, not assumed from a catalogue listing"
+    ],
+    "output": "{shortlist: [], verified: [{name, gst, certification, capacity_confirmed}]}",
+    "used_by": [
+      "PROD-W06"
+    ],
+    "shared_with": [],
+    "skill_md": "---\nname: prod/source/india\nowner: PROD\nversion: 1\ninvoke_when: the spec's supplier region is India (markets: IN; not selected for a US-only brand)\nselect_by: {region: india}\ninputs: tech pack or open spec, MOQ needs\noutputs: verified India supplier shortlist\n---\n# Source from India\n\n## Purpose\nIndia only: this child does not run for a US-only brand, whose default region is `prod/source/us-domestic`.\nIndia sourcing runs through different platforms and a different first-filter than overseas sourcing: GST and Udyam\nstatus matter immediately, and mandatory certifications (BIS, FSSAI, Legal Metrology) gate a supplier before price\never gets discussed.\n\n## Steps\n1. Search IndiaMART and category-specific B2B directories against the exact spec, not a loose category term.\n2. Filter on GST registration and Udyam/MSME status first: an unregistered supplier is a compliance risk before it\n   is a quality risk.\n3. Message the shortlist with identical spec text, in the terms and format this platform's sellers expect (unit\n   pricing, MOQ tiers stated up front).\n4. Verify the top responders with a live video call, and check the category's mandatory certification (BIS for\n   hardware/toys, FSSAI for food-contact, Legal Metrology for packaged goods).\n5. Confirm real production capacity against the stated MOQ: ask for evidence of a comparable past order, not just\n   a catalogue claim of capacity.\n\n## Checks\n- GST and Udyam status are checked before outreach proceeds.\n- The certification checked matches the category's actual mandatory list, not a generic one.\n- Capacity is confirmed with evidence, never assumed from a listing.\n\n## Output\n{shortlist[], verified[{name, gst, certification, capacity_confirmed}]}\n\n## Example\nSpec: FSSAI-regulated snack packaging. Shortlist of 9 from IndiaMART; 2 verified suppliers both hold valid FSSAI\nlicences (checked against the FSSAI portal) and Udyam registration; one showed a comparable 5,000-unit order as\ncapacity evidence.",
+    "markets": [
+      "IN"
+    ]
+  },
+  {
+    "id": "prod/source/china",
+    "name": "Source from China",
+    "parent": "prod/source",
+    "invoke_when": "the spec's supplier region is China",
+    "select_by": {
+      "region": "china"
+    },
+    "inputs_required": [
+      "tech pack or open spec",
+      "MOQ needs"
+    ],
+    "steps": [
+      "1. Search Alibaba and Global Sources against the exact spec.",
+      "2. Filter on trade assurance eligibility and years verified on-platform.",
+      "3. Message the shortlist with identical spec and requested volume tiers.",
+      "4. Verify with a video call and request third-party certification documents (CE, RoHS, etc. as relevant).",
+      "5. Confirm a backup, second factory exists for any single-source-dependent component."
+    ],
+    "checks": [
+      "trade assurance and platform verification checked before outreach",
+      "certification requested matches the destination market's import rules",
+      "a backup factory is identified for concentration risk"
+    ],
+    "output": "{shortlist: [], verified: [{name, trade_assurance, certification, backup_identified}]}",
+    "used_by": [
+      "PROD-W06"
+    ],
+    "shared_with": [],
+    "skill_md": "---\nname: prod/source/china\nowner: PROD\nversion: 1\ninvoke_when: the spec's supplier region is China\nselect_by: {region: china}\ninputs: tech pack or open spec, MOQ needs\noutputs: verified China supplier shortlist\n---\n# Source from China\n\n## Purpose\nChina sourcing runs through Alibaba, Global Sources and trade-assurance mechanisms that do not exist the same way\nin US-domestic or India sourcing, and certification requirements are about the destination import market, not the origin.\n\n## Steps\n1. Search Alibaba and Global Sources against the exact spec, filtering out pure trading companies unless the spec\n   explicitly allows one.\n2. Filter first on trade assurance eligibility and years verified on-platform: both are a cheap first signal of\n   real operating history.\n3. Message the shortlist with identical spec text and the same requested volume tiers, so quotes are comparable.\n4. Verify the top responders with a live video call and request the third-party certification documents the\n   destination market requires (CE, RoHS, BIS for import into India, as relevant to the product category).\n5. Confirm whether a backup, second factory exists for any component this supplier is the sole source of, to avoid\n   building single-supplier concentration risk into the SKU from day one.\n\n## Checks\n- Trade assurance and on-platform verification are checked before outreach, not after a quote arrives.\n- The certification requested matches the destination market's import rules, not a generic list.\n- A backup factory is identified wherever a component is single-sourced.\n\n## Output\n{shortlist[], verified[{name, trade_assurance, certification, backup_identified}]}\n\n## Example\nSpec: injection-molded component, MOQ 5,000. Shortlist of 11 from Alibaba; 3 verified with trade assurance and 4+\nyears on-platform; one held the UL certification needed for US import; a backup factory for the same mold\nwas identified in the same province."
+  },
+  {
+    "id": "prod/rfq-quote-compare",
+    "name": "Draft RFQ and compare quotes",
+    "parent": null,
+    "invoke_when": "a validated spec needs supplier outreach for pricing, or quotes have come back and need comparing",
+    "select_by": null,
+    "inputs_required": [
+      "versioned tech pack",
+      "verified supplier shortlist",
+      "volume tiers",
+      "freight/duty assumptions"
+    ],
+    "steps": [
+      "1. Translate the tech pack into a structured RFQ with tolerances stated.",
+      "2. Send to the shortlist on identical terms and a stated deadline.",
+      "3. Collect quotes across every requested volume tier.",
+      "4. Flag any quote missing a certification or term.",
+      "5. Compare landed cost per unit and cash impact across tiers, and recommend one."
+    ],
+    "checks": [
+      "every measurement in the RFQ matches the tech pack's tolerance",
+      "every supplier received the same terms and deadline",
+      "a flagged quote is excluded from the recommendation until resolved"
+    ],
+    "output": "{rfq_document, quotes: [{supplier, tier, price, terms}], flags: [], recommendation}",
+    "used_by": [
+      "PROD-W07"
+    ],
+    "shared_with": [],
+    "skill_md": "---\nname: prod/rfq-quote-compare\nowner: PROD\nversion: 1\ninvoke_when: a validated spec needs supplier outreach for pricing, or quotes have come back and need comparing\ninputs: versioned tech pack, verified supplier shortlist, volume tiers to quote, freight and duty assumptions\noutputs: RFQ document, quote comparison sheet, a supplier and tier recommendation\n---\n# Draft RFQ and compare quotes\n\n## Purpose\nAn RFQ sent with different terms to different suppliers produces quotes that cannot be honestly compared. This\nskill enforces one structured request and one apples-to-apples comparison.\n\n## Steps\n1. Translate the versioned tech pack into a structured RFQ. State tolerance bands plainly: a supplier who cannot\n   hold a tolerance should say so at quote time, not after the first production run.\n2. Send the identical RFQ to every supplier on the shortlist, with the same requested volume tiers and the same\n   response deadline.\n3. Collect quotes across every requested tier. A supplier who only quotes one tier gets asked again before being\n   compared.\n4. Flag any quote missing a required certification or payment term; exclude it from the comparison until the gap\n   is resolved.\n5. Build the landed cost per unit for every quote at every tier (working with the landed cost calculator), and\n   compare both unit cost and the cash impact of committing to a larger tier. Recommend one supplier and tier with\n   the numbers shown, not just a lowest-price pick.\n\n## Checks\n- Every RFQ measurement matches the tech pack's own tolerance band.\n- Every supplier quoted against the same terms and deadline.\n- A flagged, incomplete quote never enters the final recommendation.\n\n## Output\n{rfq_document, quotes[{supplier, tier, price, terms}], flags[], recommendation}\n\n## Example\nRFQ sent to 4 verified suppliers for tiers 3,000 / 8,000 / 15,000 units. One quote flagged for missing a required UL/FDA certificate (india: a BIS\ncertificate; markets: IN). Recommendation: Supplier B at the 8,000 tier: lowest landed cost per unit among complete quotes, and\nthe cash impact fits the brand's stated cash cover."
+  },
+  {
+    "id": "prod/sample-qc-gate",
+    "name": "Run the 3-stage sample gate",
+    "parent": null,
+    "invoke_when": "a sample is received at any stage and must clear the reference before any downstream spend",
+    "select_by": null,
+    "inputs_required": [
+      "reference sample (in-house and at factory)",
+      "tech pack",
+      "the new sample"
+    ],
+    "steps": [
+      "1. Confirm the reference sample exists in-house before comparison starts.",
+      "2. Compare the new sample against the reference side by side, stage by stage.",
+      "3. Score the factory's communication and reliability during the round.",
+      "4. Record pass, hold or reject with the exact, measurable deviation."
+    ],
+    "checks": [
+      "no comparison starts without a confirmed in-house reference",
+      "every stage records a pass, hold or reject",
+      "a deviation is stated as a measurement, not a feeling"
+    ],
+    "output": "{stage_results: [{stage, result, deviation}], reliability_score, overall: pass|hold|reject}",
+    "used_by": [
+      "PROD-W08"
+    ],
+    "shared_with": [],
+    "skill_md": "---\nname: prod/sample-qc-gate\nowner: PROD\nversion: 1\ninvoke_when: a sample is received at any stage and must clear the reference before any downstream spend\ninputs: an approved reference sample kept both in-house and at the factory, the tech pack, the new sample\noutputs: stage-by-stage pass/hold/reject result with the exact deviation recorded\n---\n# Run the 3-stage sample gate\n\n## Purpose\nNo creative shoot, price commitment or launch date happens before a sample from the exact factory clears this gate\nagainst an approved reference. Working from memory or a photo instead of a physical reference produces drift no one\nnotices until a full production run fails.\n\n## Steps\n1. Confirm the approved reference sample is physically in-house before starting any comparison. If it only exists\n   at the factory, stop and get it shipped first.\n2. Run the 3-stage comparison: pre-production sample against reference, production sample against reference, and a\n   pulled sample from the actual shipped batch against reference. Compare side by side on every dimension the tech\n   pack specifies.\n3. Score the factory's communication and reliability during the round: response time to questions, accuracy of\n   what they claimed versus what arrived: separate from the physical sample's quality.\n4. Record pass, hold or reject for each stage, with the exact deviation stated as a measurement (e.g., \"wall\n   thickness 2.1mm vs. spec 3mm ± 0.2mm\"), never as an impression.\n\n## Checks\n- No stage begins without a confirmed, physical in-house reference.\n- Every stage has a recorded result, none skipped.\n- Every deviation is a number against the tech pack, not a subjective note.\n\n## Output\n{stage_results[{stage, result, deviation}], reliability_score, overall}\n\n## Example\nStage 1: pass. Stage 2: hold: zipper pull 4mm shorter than spec, reference confirmed 6mm minimum. Factory\nresponded to the flag within 24 hours with a corrected sample. Stage 2 re-run: pass. Overall: pass, logged with the\none recorded deviation and its resolution."
+  },
+  {
+    "id": "prod/negotiate-cost-down",
+    "name": "Negotiate a cost-down with real leverage",
+    "parent": null,
+    "invoke_when": "a sample has passed and a final price needs locking, or a standing supplier relationship needs a cost review",
+    "select_by": null,
+    "inputs_required": [
+      "passed sample",
+      "backup factory quote",
+      "competitor teardown if available",
+      "category factory margin norms"
+    ],
+    "steps": [
+      "1. Build real leverage: a vetted alternate factory, a competitor teardown, category margin norms.",
+      "2. Present the ask with the specific leverage stated, not a bare request.",
+      "3. Confirm the final price and terms.",
+      "4. Book the production slot at the exact factory that passed the sample."
+    ],
+    "checks": [
+      "the leverage is real, not a bluff",
+      "the slot is booked at the factory that actually passed the sample"
+    ],
+    "output": "{leverage: [], ask, outcome: {price, terms}, slot_booked}",
+    "used_by": [
+      "PROD-W08"
+    ],
+    "shared_with": [],
+    "skill_md": "---\nname: prod/negotiate-cost-down\nowner: PROD\nversion: 1\ninvoke_when: a sample has passed and a final price needs locking, or a standing supplier relationship needs a\n  cost review\ninputs: the passed sample, a backup factory quote, a competitor teardown if available, category factory margin norms\noutputs: the negotiated price and terms, with the leverage used stated\n---\n# Negotiate a cost-down with real leverage\n\n## Purpose\nAsking for a discount with no leverage rarely moves price and can damage the relationship. This skill builds real\nleverage first, then negotiates from it, and never asks for a cost-down that would strain the relationship for more\nthan it is worth.\n\n## Steps\n1. Build real leverage before asking for anything: a vetted, willing alternate factory at a comparable or better\n   price; a teardown of a competitor's comparable product showing where cost could come out; the category's normal\n   factory margin so an ask is grounded in what is realistic, not arbitrary.\n2. Present the ask with the specific leverage named plainly: \"we have a comparable quote at X\" carries far more\n   weight than \"can you do better.\"\n3. Confirm the final price and terms in writing before treating the negotiation as closed.\n4. Book the production slot at the exact factory that passed the sample gate: never a sister factory or a\n   different production line, even if it is cheaper.\n\n## Checks\n- The leverage used is real: a vetted alternate that genuinely exists, not an empty threat.\n- The booked slot is confirmed at the exact factory and line that passed the sample.\n\n## Output\n{leverage[], ask, outcome{price, terms}, slot_booked}\n\n## Example\nLeverage: a verified backup factory quoted 8% lower for the same spec. Ask presented with that quote referenced.\nOutcome: factory matched within 3%, citing relationship history; final terms locked at 30/70 split. Slot booked for\nweek 6 at the same factory that passed the sample."
+  },
+  {
+    "id": "prod/supplier-relationship-monitor",
+    "name": "Monitor supplier performance and commodity cost",
+    "parent": null,
+    "invoke_when": "an active supplier needs its monthly scorecard, or a commodity-priced input needs its scheduled cost check",
+    "select_by": null,
+    "inputs_required": [
+      "supplier delivery/defect history",
+      "commodity price data",
+      "existing scorecard history"
+    ],
+    "steps": [
+      "1. Score every active supplier on delivery, defect rate, responsiveness and price stability.",
+      "2. Track the priced-in commodity inputs behind each SKU on a set cadence.",
+      "3. Compare a possible cost-down against the relationship-risk cost of pushing too hard.",
+      "4. Flag the result for the founder where a cost-down is judged not worth the risk."
+    ],
+    "checks": [
+      "the scorecard uses real delivery and defect data, not opinion",
+      "the price-move flag names the exact input and the move",
+      "the recommendation states the risk it is weighing"
+    ],
+    "output": "{scorecard: {on_time, defect_rate, responsiveness, price_stability}, commodity_flags: [], risk_recommendation}",
+    "used_by": [
+      "PROD-W06"
+    ],
+    "shared_with": [],
+    "skill_md": "---\nname: prod/supplier-relationship-monitor\nowner: PROD\nversion: 1\ninvoke_when: an active supplier needs its monthly scorecard, or a commodity-priced input needs its scheduled cost\n  check\ninputs: supplier delivery and defect history, commodity price data, the existing scorecard history\noutputs: an updated supplier scorecard, a commodity price-move flag, a risk-weighted cost-down recommendation\n---\n# Monitor supplier performance and commodity cost\n\n## Purpose\nA supplier vetted once at onboarding can still drift. This skill runs the standing, ongoing side of the\nrelationship: a real scorecard on delivery and quality, and a watch on the commodity inputs that quietly move a\nSKU's cost even when the supplier's own price stays flat.\n\n## Steps\n1. Score every active supplier on a fixed set of measures: on-time delivery rate, defect rate, responsiveness to\n   queries, and price stability over time. Use the supplier's actual order history, never an impression from the\n   last conversation.\n2. Track the priced-in commodity inputs behind each SKU (cotton, resin, steel, whatever the product depends on) on\n   a set monthly cadence, comparing against public commodity price indices.\n3. When a cost-down looks possible, weigh it against the relationship-risk cost: a supplier pushed too hard on\n   price may cut corners elsewhere or deprioritize the brand's orders during a capacity crunch.\n4. Flag the result for the founder where the recommendation is \"hold off\" rather than \"push,\" since that is the\n   less obvious call.\n\n## Checks\n- The scorecard is built from real order data, not opinion.\n- A commodity flag names the specific input and the specific price move, with its date.\n- Any recommendation states which risk it is weighing against which saving.\n\n## Output\n{scorecard{on_time, defect_rate, responsiveness, price_stability}, commodity_flags[], risk_recommendation}\n\n## Example\nScorecard: on-time 94%, defect rate 1.2%, responsiveness 18-hour average, price stable 6 months. Commodity flag:\ninput resin up 9% this month per index. Recommendation: hold on renegotiating this supplier's price given their\nstrong on-time record; absorb the resin move for one cycle and recheck next month."
+  },
+  {
+    "id": "prod/payment-terms-structure",
+    "name": "Structure payment terms and cash impact",
+    "parent": null,
+    "invoke_when": "a sourcing deal is closing and its payment route, split and cash impact need structuring",
+    "select_by": null,
+    "inputs_required": [
+      "confirmed price and terms",
+      "supplier relationship history",
+      "brand cash position"
+    ],
+    "steps": [
+      "1. Choose the payment route matching the relationship's real risk.",
+      "2. Structure the advance/balance/retention split and confirm MOQ.",
+      "3. Compute float days, cash-locked figure and financing cost in code.",
+      "4. Package the numbers for Finance."
+    ],
+    "checks": [
+      "the route matches the relationship's actual risk, not a default",
+      "every float and financing figure is computed, not estimated"
+    ],
+    "output": "{route, split: {advance, balance, retention}, moq, float_days, cash_locked, financing_cost}",
+    "used_by": [
+      "PROD-W09"
+    ],
+    "shared_with": [
+      "MONEY"
+    ],
+    "skill_md": "---\nname: prod/payment-terms-structure\nowner: PROD\nversion: 1\ninvoke_when: a sourcing deal is closing and its payment route, split and cash impact need structuring\ninputs: the confirmed price and terms, supplier relationship history, the brand's cash position\noutputs: chosen payment route and split, with float days, cash-locked figure and financing cost computed in code\n---\n# Structure payment terms and cash impact\n\n## Purpose\nThe payment route and split on a sourcing deal is a real cash decision, not paperwork. This skill picks the route\nthat matches the actual relationship risk and hands Finance the full cash picture at every deal close, never a\nverbal estimate.\n\n## Steps\n1. Choose the payment route: wire transfer, letter of credit, platform trade assurance, or escrow: based on the\n   supplier relationship's real history and risk, not a fixed default used for every deal.\n2. Structure the split: advance percentage, balance on shipment or delivery, and any retention held back pending\n   the sample or inspection result. Confirm the MOQ this split assumes.\n3. Compute, in code, the float days (time cash is committed before goods or revenue arrive), the total cash locked\n   up at any point in the cycle, and any financing cost if the route involves one (LC fees, trade-assurance\n   charges).\n4. Package the full numbers into a packet Finance can act on immediately, without needing to ask a follow-up\n   question.\n\n## Checks\n- The route chosen matches the relationship's actual risk level, stated explicitly.\n- Every float, cash-locked and financing figure is computed, never estimated in prose.\n\n## Output\n{route, split{advance, balance, retention}, moq, float_days, cash_locked, financing_cost}\n\n## Example\nRoute: trade assurance (2-year relationship, but first order above $6,000). Split: 30% advance / 70% on shipment.\nMOQ 5,000. Float: 21 days average. Cash locked at peak: $5,750. Financing cost: $0 (no LC needed). Packet sent to\nFinance same day as deal close."
+  },
+  {
+    "id": "prod/shipment-readiness",
+    "name": "Clear a shipment for departure",
+    "parent": null,
+    "invoke_when": "a production run is ready to ship and needs inspection, freight mode and 3PL selection before it leaves",
+    "select_by": null,
+    "inputs_required": [
+      "production run details",
+      "SKU defect history",
+      "shipment weight/volume",
+      "launch date",
+      "cash cover"
+    ],
+    "steps": [
+      "1. Book third-party inspection before the container leaves.",
+      "2. Size the defect buffer from the SKU's real history.",
+      "3. Record disposition for every defective unit found.",
+      "4. Pick air, sea or hybrid freight by weight, date and cash cover.",
+      "5. Select the 3PL on service history and check cross-border thresholds."
+    ],
+    "checks": [
+      "defect buffer cites the SKU's own historical rate",
+      "3PL chosen on service history, not price alone",
+      "cross-border threshold checked before commit"
+    ],
+    "output": "{inspection_result, disposition_log: [], freight_mode, threepl, threshold_check}",
+    "used_by": [
+      "PROD-W10"
+    ],
+    "shared_with": [],
+    "skill_md": "---\nname: prod/shipment-readiness\nowner: PROD\nversion: 1\ninvoke_when: a production run is ready to ship and needs inspection, freight mode and 3PL selection before it leaves\ninputs: production run details, this SKU's defect history, shipment weight and volume, the launch date, cash cover\n  available for freight\noutputs: inspection result and disposition log, plus the freight mode and 3PL recommendation\n---\n# Clear a shipment for departure\n\n## Purpose\nA shipment that leaves uninspected, on the wrong freight mode, or with a 3PL picked on price alone turns into a\nlaunch-date or cash problem weeks later. This skill runs the pre-departure checklist as one gate.\n\n## Steps\n1. Book third-party inspection before the container leaves the factory: never after it has already shipped.\n2. Size the acceptable defect buffer from this specific SKU's own defect history, not an industry-standard flat\n   percentage. A SKU with a clean history gets a tighter buffer; one with past issues gets a wider one and closer\n   scrutiny.\n3. Record a disposition decision for every defective unit the inspection finds: rework, discount-and-ship, or\n   discard. No unit is left undecided.\n4. Pick the freight mode: air, sea, or a hybrid split: based on the shipment's weight, the launch date it needs\n   to hit, and the cash the brand has available to cover air freight's premium.\n5. Select the 3PL on service history (on-time rate, damage rate) rather than the lowest quote, and check\n   cross-border duty thresholds and paperwork before committing to the booking.\n\n## Checks\n- The defect buffer is sized from the SKU's own real history, not a generic figure.\n- The 3PL selection cites service history, not just price.\n- Cross-border thresholds are checked before the shipment is booked, not discovered at customs.\n\n## Output\n{inspection_result, disposition_log[], freight_mode, threepl, threshold_check}\n\n## Example\nInspection found 2.1% defects (buffer was set at 3% from history): all disposed as discount-and-ship. Freight:\nhybrid (60% sea to save cash, 40% air to hit the launch date). 3PL selected on a 97% on-time history despite a 4%\nhigher quote than the cheapest bidder. Duty threshold checked and cleared before booking."
+  },
+  {
+    "id": "prod/sourcing-audit",
+    "name": "Audit the sourcing base and watch billing/SLA",
+    "parent": null,
+    "invoke_when": "a brand is onboarded or a new client taken on, or a billing cycle or SLA period needs its standing check",
+    "select_by": null,
+    "inputs_required": [
+      "full supplier and SKU list",
+      "contracted rates",
+      "billing statements",
+      "SLA terms"
+    ],
+    "steps": [
+      "1. On onboarding, audit every active supplier, term and price once.",
+      "2. Set PO cadence to the real SKU count.",
+      "3. Watch every recurring bill against its contracted rate in code.",
+      "4. Flag anomalies the same billing cycle they appear.",
+      "5. Track 3PL and warehouse SLA performance daily."
+    ],
+    "checks": [
+      "every active supplier appears in the onboarding audit",
+      "the billing check compares against the contracted rate, not last month's bill",
+      "a breach is flagged the day it happens"
+    ],
+    "output": "{onboarding_audit: [], po_cadence, billing_flags: [], sla_log: []}",
+    "used_by": [
+      "PROD-W11"
+    ],
+    "shared_with": [
+      "MONEY"
+    ],
+    "skill_md": "---\nname: prod/sourcing-audit\nowner: PROD\nversion: 1\ninvoke_when: a brand is onboarded or a new client taken on, or a billing cycle or SLA period needs its standing\n  check\ninputs: the full supplier and SKU list, contracted rates for suppliers/couriers/3PLs, current billing statements,\n  SLA terms\noutputs: an onboarding audit report, ongoing billing-anomaly flags, and a daily SLA tracking log\n---\n# Audit the sourcing base and watch billing/SLA\n\n## Purpose\nTwo different jobs share one owner: a one-time full audit when a brand comes on board or a client is taken over,\nand a standing, ongoing watch on every bill and SLA so a quiet rate increase or missed service level is never\ndiscovered by accident.\n\n## Steps\n1. On onboarding, audit the entire sourcing base in one pass: every active supplier, their current term, their\n   current price, cross-checked against what the brand's own records say should be true.\n2. At a high SKU count, move purchase orders from a weekly to a daily cadence so no reorder waits an unnecessary\n   week.\n3. Watch every recurring supplier, courier and 3PL bill against its contracted rate, computed in code, every\n   billing cycle.\n4. Flag a quiet rate increase, a duplicate charge, or a new surcharge the same cycle it appears: never let it run\n   for months unnoticed.\n5. Track 3PL and warehouse SLA performance daily against the written SLA: pick-and-pack speed, mis-ship rate,\n   damage rate, backorder rate.\n\n## Checks\n- The onboarding audit covers every active supplier, none skipped.\n- Every billing check compares against the actual contracted rate, not simply against last month's bill.\n- An SLA breach is flagged the day it happens, not discovered at a monthly review.\n\n## Output\n{onboarding_audit[], po_cadence, billing_flags[], sla_log[]}\n\n## Example\nOnboarding audit of 22 suppliers found one still billing an old, since-superseded rate. Billing watch flagged a\nnew \"fuel surcharge\" line from a courier this cycle, absent from the signed contract. SLA log shows the 3PL's\nmis-ship rate at 0.4%, within the written 0.5% SLA."
+  },
+  {
+    "id": "prod/defect-capa-trace",
+    "name": "Trace a defect to its batch and run CAPA",
+    "parent": null,
+    "invoke_when": "a customer complaint or return points to a defect above the brand's stated threshold",
+    "select_by": null,
+    "inputs_required": [
+      "defect complaint record",
+      "tech pack version history",
+      "production batch/lot records"
+    ],
+    "steps": [
+      "1. Trace the complaint to the exact production batch or lot using tech pack versioning.",
+      "2. Run the corrective-action loop with the supplier: root cause, fix, verification.",
+      "3. Confirm the fix is verified, not just promised."
+    ],
+    "checks": [
+      "the trace names the exact batch or lot, not just the SKU",
+      "the CAPA has a verified fix"
+    ],
+    "output": "{batch_trace, root_cause, fix, verification_result}",
+    "used_by": [
+      "PROD-W11"
+    ],
+    "shared_with": [],
+    "skill_md": "---\nname: prod/defect-capa-trace\nowner: PROD\nversion: 1\ninvoke_when: a customer complaint or return points to a defect above the brand's stated threshold\ninputs: the defect complaint record, tech pack version history, production batch or lot records\noutputs: a batch trace, root cause, the corrective action and its verification result\n---\n# Trace a defect to its batch and run CAPA\n\n## Purpose\nA defect complaint that only gets logged as \"SKU X has issues\" cannot be fixed at the source. This skill traces the\ncomplaint to the exact production run, using the tech pack's own version history, and runs a real corrective-action\nloop with the supplier rather than accepting a verbal promise.\n\n## Steps\n1. Trace the defect complaint back to the exact production batch or lot, using the tech pack's version history and\n   any batch codes on the product or packaging.\n2. Once the batch is identified, check whether other units from the same batch generated complaints, to size the\n   real exposure rather than treating this as an isolated incident.\n3. Run the corrective-action loop with the supplier: identify the root cause together, agree the specific fix, and\n   set a verification method (a re-inspection, a sample from the next run) before closing the loop.\n4. Confirm the fix is actually verified: a supplier's claim that \"it's fixed\" does not close a CAPA; a checked,\n   verified outcome does.\n\n## Checks\n- The trace names a specific batch or lot number, never just the SKU.\n- The corrective action has a documented root cause, not just a fix.\n- The loop only closes once verification confirms the fix, not on the supplier's word alone.\n\n## Output\n{batch_trace, root_cause, fix, verification_result}\n\n## Example\n3 complaints traced to batch #B-0447 (tech pack v4). Root cause: a die wear issue past its replacement interval.\nFix: die replaced, replacement schedule tightened. Verification: next batch's pre-shipment inspection showed zero\nrecurrence on the same measurement point."
+  },
+  {
+    "id": "prod/reorder-point-calc",
+    "name": "Compute reorder point and channel replenishment",
+    "parent": null,
+    "invoke_when": "weekly SKU reorder planning across DTC and Amazon FBA channels",
+    "select_by": null,
+    "inputs_required": [
+      "velocity by channel",
+      "lead time",
+      "safety-stock policy",
+      "channel push plan",
+      "Amazon IPI/storage limits"
+    ],
+    "steps": [
+      "1. Pull real velocity and lead time per SKU per channel.",
+      "2. Compute reorder point and safety stock in code, adjusted for peak-season spike risk.",
+      "3. Compare current stock to the reorder point and flag stockout risk.",
+      "4. Size FBA replenishment from a real cover target and watch IPI limits."
+    ],
+    "checks": [
+      "velocity and lead time are real numbers, not defaults",
+      "a subscription or bundle SKU uses committed cadence, not trailing sales",
+      "IPI limit checked before a restock is planned"
+    ],
+    "output": "{sku, reorder_point, safety_stock, current_stock, status, fba_cover, ipi_flag}",
+    "used_by": [
+      "PROD-W12"
+    ],
+    "shared_with": [],
+    "skill_md": "---\nname: prod/reorder-point-calc\nowner: PROD\nversion: 1\ninvoke_when: weekly SKU reorder planning is due, across both DTC and Amazon FBA channels\ninputs: velocity by channel, lead time per supplier, the safety-stock policy, the committed channel push plan,\n  Amazon IPI and storage limits where relevant\noutputs: reorder point and safety stock per SKU, a stockout-risk flag, and FBA-specific replenishment sizing\n---\n# Compute reorder point and channel replenishment\n\n## Purpose\nA reorder point sized from trailing sales alone misses peak-season demand spikes (Q4, BFCM, Prime Day) and, for a\nbrand that offers cash-on-delivery (india only; markets: IN), the reversal risk from RTO reversing what looked\nlike a sale. It also misses\nthat Amazon FBA has its own IPI and storage limits that can block a restock even when stock is genuinely needed.\nIndia: the spike-risk adjustment additionally accounts for festive-season demand surges and COD-market RTO\n(markets: IN, reads null for a card/BNPL-only US brand).\n\n## Steps\n1. Pull real velocity and real lead time per SKU per channel. A subscription or bundle SKU uses its committed\n   cadence (what customers actually signed up for), never trailing sales, since trailing sales lag a subscription's\n   real demand.\n2. Compute reorder point and safety stock in code, with an explicit adjustment for peak-season spike risk: Q4\n   holiday and BFCM demand surges, and the reversal risk from any carrier return-to-sender or high-return-rate\n   period (India: festive-season demand surges and the reversal risk from COD RTO; markets: IN).\n3. Compare current stock against the computed reorder point and flag any SKU already below it or projected to fall\n   below it within the lead time window.\n4. For Amazon SKUs, size the FBA replenishment shipment from a real inventory-cover target, treating a stockout as\n   the failure mode to avoid above almost any other cost. Check the current IPI score and storage limits before\n   finalizing the shipment size, since a low IPI score can cap how much can be sent in.\n\n## Checks\n- Velocity and lead time are real, current numbers, never a stale default.\n- The spike-risk adjustment is shown explicitly, not folded silently into the number.\n- An IPI or storage-limit flag is raised before it blocks a planned restock, not after.\n\n## Output\n{sku, reorder_point, safety_stock, current_stock, status, fba_cover, ipi_flag}\n\n## Example\nSKU-1042: velocity 40/day, lead time 18 days, BFCM-adjusted safety stock +35%. Reorder point 1,080 units;\ncurrent stock 950: status: reorder now. FBA cover target 45 days; IPI score 420 (above the 400 threshold): no\nrestock block. India: the same SKU's festive-adjusted safety stock uses the same +35% logic against COD RTO risk\n(markets: IN)."
+  },
+  {
+    "id": "prod/inventory-risk-flag",
+    "name": "Flag concentration risk and dead stock, refresh landed cost",
+    "parent": null,
+    "invoke_when": "a monthly structural-risk review is due, or a weekly dead-stock sweep is due",
+    "select_by": null,
+    "inputs_required": [
+      "supplier/country ledger",
+      "current FX/freight/duty rates",
+      "stock age and velocity",
+      "dead-stock thresholds"
+    ],
+    "steps": [
+      "1. Compute supplier and country concentration shares.",
+      "2. Confirm a mapped backup supplier exists for any concentrated share.",
+      "3. Recompute landed cost on any FX/freight/duty change.",
+      "4. Flag a SKU before it becomes dead weight and draft clearance options."
+    ],
+    "checks": [
+      "backup supplier is real and vetted, not assumed",
+      "landed cost recomputed on every relevant price move",
+      "clearance cash impact is computed for every option"
+    ],
+    "output": "{concentration: {}, backup_confirmed, refreshed_landed_cost, dead_stock_alerts: [], clearance_options: []}",
+    "used_by": [
+      "PROD-W13"
+    ],
+    "shared_with": [],
+    "skill_md": "---\nname: prod/inventory-risk-flag\nowner: PROD\nversion: 1\ninvoke_when: a monthly structural-risk review is due, or a weekly dead-stock sweep is due\ninputs: the supplier and country ledger, current FX/freight/duty rates, stock age and velocity by channel, the\n  brand's dead-stock and long-term-storage thresholds\noutputs: concentration risk flag, a refreshed landed cost, and a dead-stock alert with clearance options\n---\n# Flag concentration risk and dead stock, refresh landed cost\n\n## Purpose\nTwo structural risks share one owner because both are about catching a slow-moving problem before it becomes an\nexpensive one: too much dependence on one supplier or country, and stock quietly ageing past the point it can be\nsold at full price.\n\n## Steps\n1. Compute the share of spend or volume concentrated in any single supplier or country.\n2. For any concentration above the brand's own threshold, confirm a real, vetted backup supplier exists in a\n   second country: not just a name on a list, but a verified alternate from the sourcing skill.\n3. Recompute landed cost the moment price, freight, FX or duty actually changes, rather than waiting for a fixed\n   monthly calendar date, since a duty change can move margin materially overnight.\n4. Watch stock age against velocity across every channel the SKU sells on, and flag a SKU against the long-term\n   storage or dead-stock threshold before it becomes dead weight, not after.\n5. Draft markdown, bundle, or discontinue options for a flagged SKU, each with its cash impact computed, so the\n   founder is deciding between real numbers, not vague options.\n\n## Checks\n- Every backup supplier named is real and vetted, never an assumption.\n- Landed cost is recomputed on an actual triggering event, not just a fixed calendar.\n- Every clearance option's cash impact is computed, not estimated.\n\n## Output\n{concentration{}, backup_confirmed, refreshed_landed_cost, dead_stock_alerts[], clearance_options[]}\n\n## Example\nConcentration: 68% of SKU-1042's spend is with one supplier in one country: above the 50% threshold; a verified\nbackup in a second country exists. Landed cost refreshed after a 4% duty change, margin down 1.1pt. Dead-stock\nalert: SKU-0810 at 210 days of stock against a 90-day threshold; clearance options drafted at 3 markdown depths\nwith cash impact for each."
+  },
+  {
+    "id": "prod/inventory-network-plan",
+    "name": "Sync multi-channel stock and plan peak-season capacity",
+    "parent": null,
+    "invoke_when": "a new sales channel is added, or the annual peak-season readiness plan is due",
+    "select_by": null,
+    "inputs_required": [
+      "stock pool",
+      "per-channel buffer policy",
+      "US peak-season retail calendar (BFCM, Prime Day, Q4 holidays; india: festive calendar)",
+      "warehouse/WMS capacity"
+    ],
+    "steps": [
+      "1. Keep one stock pool synced across channels with per-channel buffers.",
+      "2. Set order routing and split-shipment rules.",
+      "3. Project peak-season safety stock and check staffing/system capacity.",
+      "4. Build one combined readiness plan."
+    ],
+    "checks": [
+      "no channel oversells against its buffer",
+      "the readiness plan covers stock, staffing and system load together"
+    ],
+    "output": "{sync_status, routing_rules: [], peak_projection, capacity_check, readiness_plan}",
+    "used_by": [
+      "PROD-W14"
+    ],
+    "shared_with": [],
+    "skill_md": "---\nname: prod/inventory-network-plan\nowner: PROD\nversion: 1\ninvoke_when: a new sales channel is added, or the annual peak-season readiness plan is due\ninputs: the stock pool across site/marketplaces/rapid-delivery platforms/stores, the per-channel buffer policy,\n  the US peak-season retail calendar (Black Friday/Cyber Monday, Prime Day, Q4 holidays; india: the festive\n  calendar), warehouse staffing and WMS/OMS capacity\noutputs: multi-channel sync and routing rules, and a combined peak-season readiness plan\n---\n# Sync multi-channel stock and plan peak-season capacity\n\n## Purpose\nA stock pool split across channels without buffers oversells the moment two channels sell the last unit at once.\nAnd a peak season fails in whichever of stock, staffing or system capacity was not planned for, not necessarily\nthe one that got the most attention. This skill keeps the pool synced day to day and plans for the season as one\ncombined picture. India: the same plan is built around the festive calendar (Diwali, wedding season) instead of\nBFCM/Q4 (markets: IN).\n\n## Steps\n1. Keep one stock pool synced across every channel: site, marketplaces, rapid-delivery platforms, physical stores:\nwith a stated buffer per channel that prevents any one channel from overselling against real available stock.\n2. Set order-routing and split-shipment rules by channel and warehouse, so an order is fulfilled from the right\nlocation without a person deciding case by case.\n3. Ahead of Q4/BFCM, project the safety stock the season will need using at least one prior peak cycle's data\nwhere it exists, not a flat percentage bump (India: ahead of the festive season; markets: IN).\n4. Check warehouse staffing and WMS/OMS system load against that projected peak volume, expressed as a percentage\nof capacity used, not a yes/no guess.\n5. Combine stock, staffing and system-load readiness into one plan, since a plan that only covers stock misses the\ntwo failure modes that actually cause a bad peak season.\n\n## Checks\n- No channel is allowed to oversell against its stated buffer.\n- The readiness plan explicitly covers stock, staffing and system load together, not stock alone.\n\n## Output\n{sync_status, routing_rules[], peak_projection, capacity_check, readiness_plan}\n\n## Example\nBuffers set: site 5%, marketplaces 8% (slower stock sync), rapid-delivery platforms 15% (fastest depletion risk).\nPeak projection: BFCM week needs 2.4x baseline safety stock based on last year's data. Staffing check: current\nwarehouse shift covers 78% of projected peak pick volume: flagged for an extra shift. India: the same brand's\nDiwali-week projection runs on the festive calendar instead (markets: IN)."
+  },
+  {
+    "id": "prod/fulfilment-ops-setup",
+    "name": "Select 3PL/WMS and build warehouse and returns operations",
+    "parent": null,
+    "invoke_when": "a domestic fulfilment 3PL/WMS needs selecting, or warehouse and returns operating rules need setting",
+    "select_by": null,
+    "inputs_required": [
+      "order volume and SKU count",
+      "SLA requirements",
+      "candidate 3PL list",
+      "return/return-to-sender history (india: RTO)"
+    ],
+    "steps": [
+      "1. Run the RFP and SLA negotiation for a domestic 3PL.",
+      "2. Test the WMS integration before go-live.",
+      "3. Set slotting, pick-pack-QC and staffing rules.",
+      "4. Design and apply a fixed returns-grading rule."
+    ],
+    "checks": [
+      "3PL chosen on SLA and service history, not lowest quote",
+      "go-live does not happen before the integration test passes",
+      "the grading rule is fixed, decided in advance"
+    ],
+    "output": "{sla, integration_test_result, slotting_rules, staffing_plan, grading_ruleset}",
+    "used_by": [
+      "PROD-W15"
+    ],
+    "shared_with": [],
+    "skill_md": "---\nname: prod/fulfilment-ops-setup\nowner: PROD\nversion: 1\ninvoke_when: a domestic fulfilment 3PL/WMS needs selecting, or warehouse and returns operating rules need setting\ninputs: order volume and SKU count, SLA requirements, the candidate 3PL list, return/return-to-sender volume and\n  reasons (india: RTO volume and reasons)\noutputs: a negotiated SLA and tested WMS integration, slotting and staffing rules, and a fixed returns-grading rule\n---\n# Select 3PL/WMS and build warehouse and returns operations\n\n## Purpose\nThree related decisions belong to one fulfilment manager: which 3PL and WMS to run on, how the warehouse actually\noperates day to day, and what happens to every unit that comes back. Keeping them together avoids a WMS chosen\nwithout the warehouse rules it needs to support, or a returns rule invented case by case after go-live.\n\n## Steps\n1. Run the RFP and SLA negotiation for a domestic fulfilment 3PL (ShipStation/EasyPost-connected, or a 3PL such as\nShipBob or ShipMonk): separate from any import-side freight or factory 3PL, since the requirements differ\n(last-mile speed and accuracy versus long-haul cost).\n2. Test the 3PL's WMS integration before go-live: order sync, stock sync, and returns feed, all tested end to end.\n3. Set slotting rules by SKU velocity (fast movers closest to pack stations) and the pick-pack-QC method and\nstaffing level against real, not projected, order volume.\n4. Design a fixed rule for what happens to every returned unit: a carrier return-to-sender or a customer return\n(India: RTO or customer return; markets: IN): restock, refurbish, or write off, decided in advance rather than\ncase by case, and apply it on a set schedule.\n5. Review staffing levels and grading outcomes weekly against the plan.\n\n## Checks\n- The 3PL is chosen on SLA terms and service history, not the lowest quote alone.\n- Go-live never happens before the WMS integration test passes.\n- The grading rule is fixed and decided in advance, never improvised per return.\n\n## Output\n{sla, integration_test_result, slotting_rules, staffing_plan, grading_ruleset}\n\n## Example\n3PL selected on a 96% on-time SLA history despite a 5% higher quote. Integration test passed on stock sync;\nreturns feed needed a fix before go-live. Grading rule: return-to-sender with unopened seal restocks\nautomatically; opened seal goes to refurbish queue; anything past 60 days is written off. India: the equivalent\nrule applies to RTO instead (markets: IN)."
+  },
+  {
+    "id": "prod/failed-delivery-ops",
+    "name": "Run daily carrier rate-shop and failed-delivery resolution",
+    "parent": null,
+    "invoke_when": "an order needs a carrier picked in real time, or today's carrier-exception queue needs same-day resolution",
+    "select_by": null,
+    "inputs_required": [
+      "live carrier rate feed",
+      "ZIP code serviceability data",
+      "SLA history",
+      "carrier-exception queue"
+    ],
+    "steps": [
+      "1. Pick the carrier per shipment in code from live rate, serviceability and SLA.",
+      "2. Fail over to a backup carrier the moment the primary fails.",
+      "3. Run address validation and confirm or reschedule with the customer before the attempt window closes.",
+      "4. Log every routing and exception outcome."
+    ],
+    "checks": [
+      "the choice is computed from live data, not a fixed default carrier",
+      "every exception worked the day it was raised, before the attempt window closes (india: every NDR; markets: IN)"
+    ],
+    "output": "{carrier_choice, failover_event, exception_outcomes: []}",
+    "used_by": [
+      "PROD-W16"
+    ],
+    "shared_with": [],
+    "skill_md": "---\nname: prod/failed-delivery-ops\nowner: PROD\nversion: 1\ninvoke_when: an order needs a carrier picked in real time, or today's carrier-exception queue needs same-day resolution\ninputs: a live carrier rate feed, ZIP code serviceability data, SLA history per carrier per zone, today's carrier-exception queue (undeliverable-as-addressed, failed attempt), a customer contact channel\noutputs: a per-order carrier choice with failover, and today's exception-resolution log\n---\n# Run daily carrier rate-shop and failed-delivery resolution\n\n## Purpose\nA fixed default carrier for every shipment ignores real, live differences in rate, serviceability and reliability by zone. And a carrier exception (address issue, failed attempt) left unworked past the delivery window becomes a return-to-sender that did not need to happen. This skill runs both the routing decision and the same-day exception response as one daily operating rhythm. India: the same daily rhythm runs as NDR (non-delivery report) resolution on cash-on-delivery orders (markets: IN, reads null for US brands).\n\n## Steps\n1. Pick the carrier for each shipment in code, from live rate, ZIP code serviceability, and the carrier's own SLA history in that specific zone (UPS, USPS, FedEx, or a connected 3PL such as ShipBob or ShipMonk): never a single fixed default carrier used everywhere.\n2. Fail over automatically to a backup carrier the moment the primary fails serviceability or its SLA for that shipment, without waiting for a manual check.\n3. Pull every carrier exception raised today, run USPS/carrier address validation, and confirm the address or reschedule delivery with the customer by SMS (TCPA consent, quiet hours) or email before the carrier's own attempt window closes (India: pull the aggregator's NDR queue and confirm by SMS or WhatsApp; markets: IN).\n4. Log the outcome of every routing decision and every exception resolution, and flag any zone showing a rising return-to-sender trend for the monthly carrier scorecard (India: a rising NDR or RTO trend; markets: IN).\n\n## Checks\n- Every carrier choice is computed from live data, never defaulted to one fixed carrier.\n- Every exception raised today is worked the same day, before its attempt window closes.\n\n## Output\n{carrier_choice, failover_event, exception_outcomes[]}\n\n## Example\nOrder routed to UPS on best rate/SLA for ZIP 10001; UPS's API reported non-serviceable mid-day, failed over automatically to USPS. Same-day exception queue: 14 items, 11 resolved by address confirmation, 2 rescheduled, 1 marked return-to-sender after 2 failed contact attempts. India: same day's NDR queue for pincode 400001 worked the same way, 1 marked RTO (markets: IN)."
+  },
+  {
+    "id": "prod/courier-scorecard",
+    "name": "Score couriers and draft a renegotiation",
+    "parent": null,
+    "invoke_when": "the monthly courier scorecard is due, or shipping cost per order has drifted above benchmark",
+    "select_by": null,
+    "inputs_required": [
+      "courier scorecard history",
+      "failed-delivery/first-attempt/transit-time data per zone",
+      "public rate benchmarks"
+    ],
+    "steps": [
+      "1. Update the scorecard per courier per zone.",
+      "2. Shift volume to the better performer where the gap is real and sustained.",
+      "3. Watch cost per order against public benchmarks.",
+      "4. Draft a renegotiation ask citing the benchmark evidence."
+    ],
+    "checks": [
+      "the volume shift cites a sustained gap over more than one period",
+      "the renegotiation ask cites a real, dated public rate card"
+    ],
+    "output": "{scorecard: {}, volume_shift, benchmark_read, renegotiation_draft}",
+    "used_by": [
+      "PROD-W17"
+    ],
+    "shared_with": [],
+    "skill_md": "---\nname: prod/courier-scorecard\nowner: PROD\nversion: 1\ninvoke_when: the monthly courier scorecard is due, or shipping cost per order has drifted above benchmark or a\n  contract renewal nears\ninputs: the courier scorecard history, failed-delivery/return-to-sender/first-attempt-delivery/transit-time data\n  per carrier per zone (india: RTO/first-attempt/TAT data), public rate benchmarks for comparable carriers (UPS,\n  USPS, FedEx, regional 3PLs; india: comparable India couriers)\noutputs: an updated scorecard, a volume reallocation recommendation, and a renegotiation draft where warranted\n---\n# Score couriers and draft a renegotiation\n\n## Purpose\nCarrier volume should shift to whoever is actually performing better, on real and sustained evidence, not on one\nbad week. And a renegotiation ask lands better with a real, cited benchmark behind it than with a bare complaint\nabout cost.\n\n## Steps\n1. Update the running scorecard per carrier per zone: failed-delivery/return-to-sender rate, first-attempt\ndelivery rate, transit time, using the same measurement window for every carrier being compared (India: RTO rate\nper courier per pincode zone; markets: IN).\n2. Compare zone performance across carriers and shift volume to the better performer only where the gap is real\nand sustained across more than one measurement period, not a single good or bad week.\n3. Watch the brand's own shipping cost per order against public rate benchmarks for comparable carriers (UPS,\nUSPS, FedEx, regional 3PLs; India: comparable India couriers; markets: IN), on a set cadence.\n4. When cost drifts meaningfully above benchmark, or a contract renewal is approaching, draft a renegotiation ask\nwith the specific, dated benchmark evidence attached.\n\n## Checks\n- A volume shift is only recommended on a sustained gap across more than one period.\n- Every renegotiation ask cites a real, dated public rate card, not a vague sense that cost feels high.\n\n## Output\n{scorecard{}, volume_shift, benchmark_read, renegotiation_draft}\n\n## Example\nCarrier A: 96% first-attempt in Zone North, sustained 3 months. Carrier B: 89%, also sustained. Recommendation:\nshift 15% of Zone North volume from B to A. Cost-per-order benchmark: brand paying 8% above the current published\naverage for comparable weight/zone carriers: renegotiation draft cites the specific rate card and date."
+  },
+  {
+    "id": "prod/claims-file",
+    "name": "File courier and marketplace claims",
+    "parent": null,
+    "invoke_when": "a shipment is marked lost or damaged, or marketplace inventory or fees need reimbursement",
+    "select_by": null,
+    "inputs_required": [
+      "shipment/return-to-sender records (india: RTO records)",
+      "proof of loss or damage",
+      "seller console access",
+      "fee statements"
+    ],
+    "steps": [
+      "1. Identify every shipment marked lost, damaged, or wrongly marked return-to-sender (india: RTO).",
+      "2. Assemble proof for each incident.",
+      "3. File the courier claim, or the marketplace reimbursement claim.",
+      "4. Track payout and escalate overdue claims."
+    ],
+    "checks": [
+      "every claim has a proof packet before it is filed",
+      "a claim is marked paid only when payout is confirmed"
+    ],
+    "output": "{incident_list: [], filed_claims: [], payout_tracker: [], escalations: []}",
+    "used_by": [
+      "PROD-W18"
+    ],
+    "shared_with": [
+      "MONEY"
+    ],
+    "skill_md": "---\nname: prod/claims-file\nowner: PROD\nversion: 1\ninvoke_when: a shipment is marked lost or damaged, or marketplace inventory or fees need reimbursement\ninputs: shipment/return-to-sender records (india: RTO records), proof of loss or damage (photos, weight, seal\n  condition), marketplace seller console access, fee statements\noutputs: filed courier and marketplace claims with proof attached, and a tracked payout status\n---\n# File courier and marketplace claims\n\n## Purpose\nMoney owed for a lost, damaged, or wrongly billed unit is only recovered if someone files the claim with proof and\ntracks it to payout. This skill covers both carrier-side claims (lost/damaged shipments) and marketplace-side\nclaims (FBA reimbursements, Walmart/eBay/TikTok Shop claim programs; india: Flipkart SPF, Myntra claims) with the\nsame discipline: proof first, then file, then track.\n\n## Steps\n1. Identify every shipment marked lost, damaged, or wrongly marked return-to-sender in the review period (india:\nwrongly marked RTO; markets: IN).\n2. Assemble proof for each: photos of the package or product condition, any weight discrepancy against the\n   shipping manifest, seal condition on return.\n3. File the courier claim with the carrier or aggregator, proof attached, within their stated filing window.\n4. Separately, find lost or damaged marketplace inventory and any wrongly charged fee inside each seller console,\n   and file the matching reimbursement claim type for that platform (FBA reimbursement, Walmart Seller Center\n   claim, eBay/TikTok Shop claim; india: Flipkart SPF, Myntra claim).\n5. Track payout against every open claim: a claim is only marked paid once the payout is actually confirmed, not\n   simply once it is filed.\n6. Escalate any claim that has passed its normal resolution window.\n\n## Checks\n- No claim is filed without an attached proof packet.\n- Payout status reflects confirmed payment, never an assumption.\n\n## Output\n{incident_list[], filed_claims[], payout_tracker[], escalations[]}\n\n## Example\n3 shipments this week marked damaged; proof (photos, weight mismatch) assembled and filed with the carrier.\nSeparately, an FBA reimbursement claim filed for 2 units lost in an Amazon warehouse, confirmed paid within 12\ndays. One carrier claim escalated after exceeding its 15-day resolution window."
+  },
+  {
+    "id": "prod/non-standard-ops",
+    "name": "Handle a non-standard operations request",
+    "parent": null,
+    "invoke_when": "an order or channel event falls outside the standard sourcing/marketplace/fulfilment playbook",
+    "select_by": {
+      "type": "export|offline_retail|recall|made_to_order"
+    },
+    "inputs_required": [
+      "the triggering event's details",
+      "brand brain: policies and certifications"
+    ],
+    "steps": [
+      "1. Classify which exception type applies.",
+      "2. Route to the matching child skill by select_by.type.",
+      "3. Run the type-specific compliance check.",
+      "4. Document the handling and log the outcome."
+    ],
+    "checks": [
+      "exactly one type is chosen per request",
+      "a recall always reaches the founder gate before any customer contact"
+    ],
+    "output": "{type, packet, compliance_result, documentation}",
+    "used_by": [
+      "PROD-W19"
+    ],
+    "shared_with": [],
+    "skill_md": "---\nname: prod/non-standard-ops\nowner: PROD\nversion: 1\ninvoke_when: an order or channel event falls outside the standard sourcing/marketplace/fulfilment playbook\nselect_by: {type: export|offline_retail|recall|made_to_order}\ninputs: the triggering event's details, brand brain policies and certifications\noutputs: a type-specific handling packet and a logged outcome\n---\n# Handle a non-standard operations request\n\n## Purpose\nFour event types: a first export order, a pop-up or stockist deal, a safety recall, and a made-to-order sale: \nare each rare enough that no single standard workflow covers them, but common enough across a brand's life that\neach deserves its own real procedure rather than being improvised from scratch every time. This parent skill\nclassifies the request and routes to the matching child.\n\n## Steps\n1. Read the triggering event and classify it as exactly one type: export, offline retail, recall, or\n   made-to-order. A request that seems to match two types is split into two separate runs.\n2. Route to the matching child skill (`prod/non-standard-ops/export`, `/offline-retail`, `/recall`, or\n   `/made-to-order`) and run its specific procedure.\n3. Run the compliance check appropriate to that type (export duty rules, retail licensing, regulator notification,\n   or custom-order terms).\n4. Document the full handling, including any customer communication, and log the outcome to the registry.\n\n## Checks\n- Exactly one type is classified per request.\n- A recall never proceeds past classification without reaching the founder gate first.\n\n## Output\n{type, packet, compliance_result, documentation}\n\n## Example\nEvent: a customer signs up for a pop-up in a new city. Classified: offline_retail. Routed to the offline-retail\nchild, which set up POS, consignment terms and a daily reconciliation schedule for the event's duration."
+  },
+  {
+    "id": "prod/non-standard-ops/export",
+    "name": "Cross-border compliance: US customs, tariffs and international shipping",
+    "parent": "prod/non-standard-ops",
+    "invoke_when": "the classified type is export",
+    "select_by": {
+      "type": "export"
+    },
+    "inputs_required": [
+      "destination country",
+      "product HS code",
+      "shipment value"
+    ],
+    "steps": [
+      "1. For inbound sourcing shipments, secure a customs bond and classify goods by HTS code.",
+      "2. Check tariff exposure and Section 321 (low-value) entry eligibility.",
+      "3. For outbound international orders, prepare the commercial invoice and choose DDP vs DDU.",
+      "4. India: register and use IEC and LUT for zero-rated exports instead (markets: IN)."
+    ],
+    "checks": [
+      "the DDP/DDU choice is stated with the buyer's expectation it protects",
+      "HTS codes are checked against the current US tariff schedule (or the destination country's, for an India export)"
+    ],
+    "output": "{customs_bond_status, hts_codes: [], tariff_exposure, section_321_eligible, commercial_invoice, incoterm, export_paperwork}",
+    "used_by": [
+      "PROD-W19"
+    ],
+    "shared_with": [],
+    "skill_md": "---\nname: prod/non-standard-ops/export\nowner: PROD\nversion: 1\ninvoke_when: the classified non-standard-ops type is export or cross-border\nselect_by: {type: export}\ninputs: origin/destination country, product HTS/HS code, shipment value\noutputs: customs bond and HTS status, tariff exposure, Section 321 eligibility, commercial invoice, chosen incoterm, and export paperwork\n---\n# Cross-border compliance: US customs, tariffs and international shipping\n\n## Purpose\nA first international sourcing shipment or a first outbound international order each has its own paperwork and\nduty-exposure decisions that a domestic shipment never touches. Getting the incoterm wrong surprises the buyer\nwith an unexpected duty bill and damages the relationship on the very first order; getting an HTS classification\nwrong on an inbound shipment causes a customs hold or a duty overpayment. India: the equivalent event is an export\nfrom India, which instead needs IEC and LUT registration for zero-rated GST (markets: IN, reads null for US\nbrands).\n\n## Steps\n1. For an inbound sourcing shipment, secure a customs bond (continuous or single-entry) and classify each product\nby its correct HTS code against the current US tariff schedule.\n2. Check tariff exposure for that HTS code and country of origin, and whether the shipment qualifies for Section\n321 de minimis entry (currently for shipments under $800 per person per day) to avoid duty and formal entry where\neligible.\n3. For an outbound international order, prepare the commercial invoice and the carrier's export paperwork,\nmatching HTS/HS codes and shipment value exactly, and choose DDP (duty paid by the seller) or DDU (duty paid by\nthe buyer) so the buyer's total cost is clear before they order, not discovered at their own customs.\n4. India (markets: IN): set up IEC (Import Export Code) and LUT (Letter of Undertaking) so exports can be\nzero-rated for GST, and determine HS codes against the destination country's tariff schedule instead of the US's.\n\n## Checks\n- HTS/HS codes are checked against the actual current schedule, not assumed from a prior shipment's code.\n- The incoterm choice is communicated to the buyer before the order ships, not after.\n\n## Output\n{customs_bond_status, hts_codes[], tariff_exposure, section_321_eligible, commercial_invoice, incoterm, export_paperwork}\n\n## Example\nInbound shipment from a China supplier, value $18,000: continuous customs bond confirmed active, HTS code checked\nagainst the current schedule, tariff exposure computed, does not qualify for Section 321 given per-shipment value.\nOutbound order to Canada: incoterm DDP chosen so the buyer sees one all-in price with no duty surprise on\ndelivery. India: first order to UAE instead runs on IEC/LUT (markets: IN), HS code checked against UAE's tariff\nschedule, incoterm DDP chosen the same way."
+  },
+  {
+    "id": "prod/non-standard-ops/offline-retail",
+    "name": "Offline retail, stockist and pop-up operations",
+    "parent": "prod/non-standard-ops",
+    "invoke_when": "the classified type is offline retail",
+    "select_by": {
+      "type": "offline_retail"
+    },
+    "inputs_required": [
+      "event dates and location",
+      "consignment terms",
+      "staff roster"
+    ],
+    "steps": [
+      "1. Set up POS for the event.",
+      "2. Run stock transfer to the location and manage returns.",
+      "3. Reconcile consignment settlement and daily sales.",
+      "4. Run the staff roster for the event."
+    ],
+    "checks": [
+      "daily reconciliation happens every day of the event",
+      "stock transferred is matched against stock returned or sold"
+    ],
+    "output": "{pos_setup, stock_transfer_log, daily_reconciliation: [], settlement}",
+    "used_by": [
+      "PROD-W19"
+    ],
+    "shared_with": [],
+    "skill_md": "---\nname: prod/non-standard-ops/offline-retail\nowner: PROD\nversion: 1\ninvoke_when: the classified non-standard-ops type is offline retail\nselect_by: {type: offline_retail}\ninputs: event dates and location, consignment terms, staff roster\noutputs: POS setup, stock transfer log, daily reconciliation, and final settlement\n---\n# Offline retail, stockist and pop-up operations\n\n## Purpose\nA pop-up, exhibition or stockist arrangement moves real physical stock outside the normal warehouse-to-courier\nflow, and needs its own POS, its own stock accounting, and its own daily discipline so nothing is lost between\nwhat left the warehouse and what actually sold or came back.\n\n## Steps\n1. Set up point-of-sale for the event or the stockist location.\n2. Run the stock transfer to the location, and track any returns or unsold stock coming back.\n3. Reconcile consignment settlement (what the stockist owes for what actually sold) and daily sales for the\n   duration of the event.\n4. Run the staff roster for the event, matched to expected footfall.\n\n## Checks\n- Daily reconciliation happens every single day of the event, not only at the end.\n- Every unit transferred out is matched against a unit sold or a unit returned; nothing is unaccounted for.\n\n## Output\n{pos_setup, stock_transfer_log, daily_reconciliation[], settlement}\n\n## Example\n3-day pop-up: 400 units transferred. Daily reconciliation each day matched sales against POS records. Final\nsettlement: 340 sold, 55 returned unsold, 5 flagged as a discrepancy for follow-up with the venue."
+  },
+  {
+    "id": "prod/non-standard-ops/recall",
+    "name": "Product recall and safety incident procedure",
+    "parent": "prod/non-standard-ops",
+    "invoke_when": "the classified type is a safety-related recall",
+    "select_by": {
+      "type": "recall"
+    },
+    "inputs_required": [
+      "defect/regulator notice",
+      "affected batch data",
+      "customer purchase records"
+    ],
+    "steps": [
+      "1. Find affected batches using the tech pack's versioning.",
+      "2. Stop sale on every channel immediately.",
+      "3. Contact affected buyers and arrange returns or replacements.",
+      "4. Log every regulator notice."
+    ],
+    "checks": [
+      "sale is stopped on every channel before any other step proceeds",
+      "the founder gate is reached before any customer contact"
+    ],
+    "output": "{affected_batches: [], sale_stopped_channels: [], customer_contact_log: [], regulator_notices: []}",
+    "used_by": [
+      "PROD-W19"
+    ],
+    "shared_with": [],
+    "skill_md": "---\nname: prod/non-standard-ops/recall\nowner: PROD\nversion: 1\ninvoke_when: the classified non-standard-ops type is a safety-related recall\nselect_by: {type: recall}\ninputs: the defect or regulator notice, affected batch data, customer purchase records\noutputs: affected-batch list, sale-stopped confirmation across channels, customer contact log, regulator notice log\n---\n# Product recall and safety incident procedure\n\n## Purpose\nA safety-related defect is the single highest-stakes event this agent can face. This procedure exists to make sure\nspeed and completeness happen together: sale stops everywhere immediately, every affected buyer is found and\ncontacted, and every regulator notice is logged, with the founder in the loop from the first step.\n\n## Steps\n1. Find every affected batch using the tech pack's own versioning and any production batch codes.\n2. Stop sale on every channel: site, every marketplace, quick commerce: immediately, before any other step in\n   this procedure proceeds.\n3. Contact every buyer who purchased an affected batch, using purchase records, and arrange a return or\n   replacement.\n4. Log every regulator notice received or filed in connection with the incident.\n\n## Checks\n- Sale is stopped on every channel before any other action, with no exception.\n- This entire procedure only runs with the founder gate engaged from the first step; nothing here proceeds on\n  agent judgment alone.\n\n## Output\n{affected_batches[], sale_stopped_channels[], customer_contact_log[], regulator_notices[]}\n\n## Example\nA safety notice on a battery-included accessory triggers this procedure. Batches #B-201 through #B-204 identified.\nSale stopped on site, Amazon and 2 quick commerce platforms within the same hour. 340 affected buyers found and\ncontacted with replacement offers. One regulator notice logged and filed as required."
+  },
+  {
+    "id": "prod/non-standard-ops/made-to-order",
+    "name": "Made-to-order and personalised order workflow",
+    "parent": "prod/non-standard-ops",
+    "invoke_when": "the classified type is a personalised or made-to-order sale",
+    "select_by": {
+      "type": "made_to_order"
+    },
+    "inputs_required": [
+      "order spec captured at checkout",
+      "customer proof approval",
+      "production tracking"
+    ],
+    "steps": [
+      "1. Capture the spec at checkout.",
+      "2. Get the customer's approval on a proof before production.",
+      "3. Track production against the approved proof.",
+      "4. State non-returnable terms clearly."
+    ],
+    "checks": [
+      "the non-returnable term is shown before payment, not after",
+      "production never starts before the proof is approved"
+    ],
+    "output": "{spec, proof_approval, production_status, non_returnable_terms_shown}",
+    "used_by": [
+      "PROD-W19"
+    ],
+    "shared_with": [],
+    "skill_md": "---\nname: prod/non-standard-ops/made-to-order\nowner: PROD\nversion: 1\ninvoke_when: the classified non-standard-ops type is a personalised or made-to-order sale\nselect_by: {type: made_to_order}\ninputs: the order spec captured at checkout, customer proof approval, production tracking\noutputs: captured spec, proof approval record, production status, and the shown non-returnable terms\n---\n# Made-to-order and personalised order workflow\n\n## Purpose\nEngraving, custom sizing, and other made-to-order items cannot follow the standard returnable-product flow: the\ncustomer must approve the exact spec before production starts, and the non-returnable nature of the item must be\nclear before they pay, not discovered afterward.\n\n## Steps\n1. Capture the exact personalisation or made-to-order spec at checkout, in a form both the customer and the\n   production team can read unambiguously.\n2. Generate a proof from the captured spec and get the customer's explicit approval before any production starts.\n3. Track production against the approved proof, checking the finished item matches what was approved.\n4. State the non-returnable terms clearly to the customer before payment is taken, not buried in fine print\n   discovered after the sale.\n\n## Checks\n- The non-returnable term is shown and acknowledged before payment, never only after.\n- Production never begins before the customer's proof approval is on record.\n\n## Output\n{spec, proof_approval, production_status, non_returnable_terms_shown}\n\n## Example\nCustom engraving order: spec captured (name, font, placement). Proof sent and approved by customer via email\nbefore production started. Non-returnable terms shown and checked at checkout. Finished item verified against\nthe approved proof before shipping."
+  },
+  {
+    "id": "prod/amazon-opportunity-screen",
+    "name": "Screen an Amazon opportunity and mine reviews/keywords",
+    "parent": null,
+    "invoke_when": "an Amazon-specific candidate needs its own elimination screen and review/keyword mining",
+    "select_by": null,
+    "inputs_required": [
+      "candidate",
+      "Amazon browse/search data",
+      "competing listing reviews",
+      "reverse-ASIN keyword access"
+    ],
+    "steps": [
+      "1. Apply price floor, price spread, keyword variability and brand-dominance screens.",
+      "2. Run a fad filter against real search trend data.",
+      "3. Read low-star reviews on competing listings for fixable complaints.",
+      "4. Mine keywords from reverse-ASIN tools."
+    ],
+    "checks": [
+      "every elimination reason is stated",
+      "the fad filter uses more than one data point",
+      "no competitor review text is copied verbatim"
+    ],
+    "output": "{screen_result, fad_verdict, complaint_list: [], keyword_list: []}",
+    "used_by": [
+      "PROD-W20"
+    ],
+    "shared_with": [],
+    "skill_md": "---\nname: prod/amazon-opportunity-screen\nowner: PROD\nversion: 1\ninvoke_when: an Amazon-specific candidate needs its own elimination screen and review/keyword mining\ninputs: the candidate, Amazon browse/search data (public), competing listing reviews, reverse-ASIN keyword tool\n  access\noutputs: an Amazon-specific screen result, a product-gap brief from reviews, and a mined keyword list\n---\n# Screen an Amazon opportunity and mine reviews/keywords\n\n## Purpose\nA candidate that cleared the general product screen (PROD-C01-C05) still needs Amazon-specific diligence: Amazon's\nown price dynamics, keyword search behaviour, and review patterns work differently from the open web or DTC.\n\n## Steps\n1. Apply Amazon-specific elimination screens: a price floor below which margin cannot work after fees, the price\n   spread across page-1 listings (a huge spread signals a confusing or commoditized category), keyword search\n   variability, and how dominant one or two brands already are in the category.\n2. Run a real fad filter against the candidate's Amazon search trend data: a single-month spike is not the same\n   as sustained demand.\n3. Read 1 to 3 star reviews on the closest competing listings for complaints this candidate's design could fix. Use\n   the complaint as a design input, never copy the review's wording into any copy.\n4. Confirm mid-rated, high-volume sellers exist in the category as a demand-and-gap signal: real search volume\n   with real dissatisfaction is the strongest opportunity signal available.\n5. Mine keywords from reverse-ASIN tools for the category, ranked by search volume where the tool provides it.\n\n## Checks\n- Every elimination screen states its specific reason.\n- The fad filter is based on more than one data point over time.\n- No review text is copied verbatim; only the underlying gap it points to is used.\n\n## Output\n{screen_result, fad_verdict, complaint_list[], keyword_list[]}\n\n## Example\nScreen: pass (price floor clears with FBA fees included, page-1 spread moderate). Fad filter: pass, 3-year steady\ngrowth not a single spike. Complaints mined: \"lid doesn't seal after 2 months\" appears in 40+ reviews across 3\ncompetitors: a fixable design input. Keywords ranked by volume for the listing build."
+  },
+  {
+    "id": "prod/amazon-fee-model",
+    "name": "Model Amazon channel economics",
+    "parent": null,
+    "invoke_when": "a monthly review or a pre-launch decision needs the full Amazon fee stack modeled against margin",
+    "select_by": null,
+    "inputs_required": [
+      "FBA/FBM fee stack",
+      "storage cost schedule",
+      "PPC budget assumption",
+      "DTC price",
+      "landed cost"
+    ],
+    "steps": [
+      "1. Pull the current Amazon fee stack.",
+      "2. Model fees, PPC and storage cost against landed cost, in code.",
+      "3. Check price against the DTC price-parity rule.",
+      "4. Compute net margin and flag any SKU below the brand's floor."
+    ],
+    "checks": [
+      "every fee line is sourced from Amazon's current published rate",
+      "margin computed in code, never estimated",
+      "price parity checked against the live DTC price"
+    ],
+    "output": "{fee_stack, net_margin_per_sku: [], parity_check, margin_floor_flags: []}",
+    "used_by": [
+      "PROD-W21"
+    ],
+    "shared_with": [
+      "MONEY"
+    ],
+    "skill_md": "---\nname: prod/amazon-fee-model\nowner: PROD\nversion: 1\ninvoke_when: a monthly review or a pre-launch decision needs the full Amazon fee stack modeled against margin\ninputs: the current FBA/FBM fee stack, storage cost schedule, a PPC budget assumption, the DTC price for parity,\n  the SKU's landed cost\noutputs: a fee-stack model and the net margin per SKU after every fee, with a floor-breach flag where relevant\n---\n# Model Amazon channel economics\n\n## Purpose\nAmazon's referral fee, FBA fee and storage cost stack up in ways that are easy to underestimate from memory. This\nskill models the full stack in code against a SKU's real landed cost, so a launch or continuation decision is made\non a real net margin, not a gross-margin illusion.\n\n## Steps\n1. Pull the current, dated Amazon fee stack for the category: referral fee percentage, FBA pick-pack-ship fee by\n   size tier, and storage cost by month.\n2. Model the full fee stack against the SKU's landed cost, computed in code, never estimated.\n3. Add a stated PPC budget assumption (clearly labeled as an assumption) and the storage cost for the SKU's actual\n   size tier.\n4. Check the resulting Amazon price against the brand's DTC price-parity rule, using the current live DTC price,\n   not a stale one.\n5. Compute net margin after every fee line, in code, and flag any SKU whose net margin falls below the brand's own\n   stated floor.\n\n## Checks\n- Every fee line is sourced from Amazon's currently published rate card, dated.\n- Net margin is computed in code, never estimated in prose.\n- Price parity is checked against the live DTC price at the time of the check.\n\n## Output\n{fee_stack, net_margin_per_sku[], parity_check, margin_floor_flags[]}\n\n## Example\nSKU-1042: referral fee 15%, FBA fee $3.50 (size tier standard), storage $0.15/unit/month. Landed cost $8.50, Amazon\nprice $24.99. Net margin after all fees and a $1.50 PPC assumption: 19%, above the brand's 15% floor. Parity check:\nAmazon price matches DTC within the allowed band."
+  },
+  {
+    "id": "prod/list-on-marketplace",
+    "name": "Build a marketplace listing",
+    "parent": null,
+    "invoke_when": "a product needs a listing built or refreshed for any marketplace",
+    "select_by": {
+      "marketplace": "amazon|walmart|target-plus|ebay|tiktok-shop|flipkart-myntra-nykaa|blinkit-zepto"
+    },
+    "inputs_required": [
+      "product copy, approved claims, keyword list",
+      "category node",
+      "image slots and specs",
+      "target marketplace"
+    ],
+    "steps": [
+      "1. Select the marketplace-specific child by select_by.marketplace.",
+      "2. Place the top keyword and write claim-checked copy.",
+      "3. Brief every image slot to the platform's own spec.",
+      "4. Fill every attribute field and confirm the category node."
+    ],
+    "checks": [
+      "the marketplace named matches one of the 7 supported children",
+      "no field is left blank",
+      "no listing is posted directly to a live surface"
+    ],
+    "output": "{marketplace, listing_draft, image_briefs: [], attributes: {}, category_node}",
+    "used_by": [
+      "PROD-W22",
+      "PROD-W28"
+    ],
+    "shared_with": [],
+    "skill_md": "---\nname: prod/list-on-marketplace\nowner: PROD\nversion: 1\ninvoke_when: a product needs a listing built or refreshed for any marketplace\nselect_by: {marketplace: amazon|walmart|target-plus|ebay|tiktok-shop|flipkart-myntra-nykaa|blinkit-zepto}\ninputs: product copy, approved claims, keyword list, category node, image slots and specs, the target marketplace\noutputs: a complete listing draft ready for a named human to paste into the seller console\n---\n# Build a marketplace listing\n\n## Purpose\nEvery marketplace enforces its own title length, bullet rules, image slots and attribute set, and none of them are\nthe same. This is the parent procedure: it never posts a listing itself, only drafts one, and it always routes to\nthe platform-specific child before writing a single field. Amazon, Walmart, Target Plus, eBay and TikTok Shop are\nthe default US-first children; Flipkart/Myntra/Nykaa and Blinkit/Zepto are grouped India-market options (markets:\nIN), not selected for a US-only brand.\n\n## Steps\n1. Confirm the target marketplace and select the matching child skill\n   (`prod/list-on-marketplace/amazon`, `/walmart`, `/target-plus`, `/ebay`, `/tiktok-shop`, or, for an India brand,\n   `/flipkart-myntra-nykaa` or `/blinkit-zepto`).\n2. Run the child's specific field rules to place the top keyword and write benefit-led, claim-checked copy in the\n   platform's own format.\n3. Brief every image slot to that platform's own size, crop and content rule: an Amazon main image and a\n   TikTok Shop video cover are not interchangeable.\n4. Fill every attribute field the platform requires and confirm the correct category node in that platform's own\n   taxonomy.\n5. Package the finished draft for a named human to paste into the seller console. This skill never posts directly\n   to a live listing on any platform.\n\n## Checks\n- The marketplace named is one of the seven supported children, matched to its own child procedure.\n- No required field is left blank.\n- Nothing produced by this skill is ever posted directly; it is always handed to a human.\n\n## Output\n{marketplace, listing_draft, image_briefs[], attributes{}, category_node}\n\n## Example\nMarketplace: target-plus. Routed to `prod/list-on-marketplace/target-plus`. Title and key callouts placed per\nTarget's own style guide; 5 image slots briefed to Target's spec; attributes filled; draft handed to the\nmarketplace manager to paste into Target Plus's Partners Online portal. India: the equivalent nykaa listing routes\nto `prod/list-on-marketplace/flipkart-myntra-nykaa` instead (markets: IN)."
+  },
+  {
+    "id": "prod/list-on-marketplace/amazon",
+    "name": "List on Amazon",
+    "parent": "prod/list-on-marketplace",
+    "invoke_when": "the target marketplace is Amazon",
+    "select_by": {
+      "marketplace": "amazon"
+    },
+    "inputs_required": [
+      "product copy, approved claims, keyword list",
+      "category node",
+      "Amazon's image/attribute spec"
+    ],
+    "steps": [
+      "1. Place the top keyword in the title and first bullet.",
+      "2. Write 5 benefit-led bullets, one true claim each.",
+      "3. Brief every image slot (main, lifestyle, infographic, comparison) to Amazon's spec.",
+      "4. Fill every backend attribute and set backend search terms."
+    ],
+    "checks": [
+      "the top keyword appears in the title and first bullet",
+      "every claim in a bullet is in the approved or site-backed tier"
+    ],
+    "output": "{listing_draft, image_briefs: [], attributes: {}, backend_keywords: []}",
+    "used_by": [
+      "PROD-W22"
+    ],
+    "shared_with": [],
+    "skill_md": "---\nname: prod/list-on-marketplace/amazon\nowner: PROD\nversion: 1\ninvoke_when: the target marketplace is Amazon\nselect_by: {marketplace: amazon}\ninputs: product copy, approved claims, keyword list, category node, Amazon's image and attribute spec\noutputs: title, 5 bullets, image slot briefs, filled attributes, backend search terms\n---\n# List on Amazon\n\n## Purpose\nAmazon ranks primarily on the title and backend keywords, and converts primarily on the bullets and images. This\nskill writes to that structure specifically, not a generic product-page template.\n\n## Steps\n1. Place the single highest-priority keyword in the title, positioned where Amazon's search weighs it most, and\n   repeat it in the first bullet.\n2. Write 5 benefit-led bullets, each carrying exactly one true, tiered claim: never a bullet with two unrelated\n   claims stacked together.\n3. Brief every image slot Amazon allows (main image on white background, lifestyle, infographic, size/comparison,\n   in-use) to Amazon's exact spec for that slot.\n4. Fill every backend attribute field completely and set backend search terms with keywords not already used in\n   the visible copy, to avoid wasting indexing space.\n\n## Checks\n- The top keyword appears in both the title and the first bullet.\n- Every bullet's claim is in the approved or site-backed tier, checked before handoff.\n\n## Output\n{listing_draft, image_briefs[], attributes{}, backend_keywords[]}\n\n## Example\nTitle places \"leak-proof steel water bottle 1L\" with the top keyword first. Bullet 1 repeats it with the leak-proof\nclaim, cited to the site's own drop-test page. 5 image slots briefed including a size-comparison infographic.\nBackend terms add non-duplicate synonyms like \"insulated flask.\""
+  },
+  {
+    "id": "prod/list-on-marketplace/walmart",
+    "name": "List on Walmart Marketplace",
+    "parent": "prod/list-on-marketplace",
+    "invoke_when": "the target marketplace is Walmart Marketplace",
+    "select_by": {
+      "marketplace": "walmart"
+    },
+    "inputs_required": [
+      "product copy, approved claims, keyword list",
+      "category node",
+      "Walmart's image/attribute spec, GTIN/UPC"
+    ],
+    "steps": [
+      "1. Place the top keyword in the title per Walmart's length and style rule.",
+      "2. Write the key features and description in Walmart's own field structure.",
+      "3. Brief image slots (main, Content Hub rich media) to Walmart's spec.",
+      "4. Fill category-specific attributes and confirm a valid GTIN/UPC."
+    ],
+    "checks": [
+      "title respects Walmart's own character limit and style rule",
+      "a valid GTIN/UPC is attached to the listing"
+    ],
+    "output": "{listing_draft, image_briefs: [], attributes: {}}",
+    "used_by": [
+      "PROD-W22"
+    ],
+    "shared_with": [],
+    "skill_md": "---\nname: prod/list-on-marketplace/walmart\nowner: PROD\nversion: 1\ninvoke_when: the target marketplace is Walmart Marketplace\nselect_by: {marketplace: walmart}\ninputs: product copy, approved claims, keyword list, category node, Walmart's image and attribute spec, GTIN/UPC\noutputs: title, key features, image slot briefs, filled category attributes\n---\n# List on Walmart Marketplace\n\n## Purpose\nWalmart's title style, required GTIN/UPC and Content Hub rich-media rules differ from Amazon's, and its search\nranking (grading via the Listing Quality score) weighs different fields. A copy-pasted Amazon listing under-\nperforms here.\n\n## Steps\n1. Place the top keyword in the title, respecting Walmart's own character limit and title-style guide, which\n   discourages promotional language Amazon tolerates.\n2. Write the key features and long description in Walmart's own field structure, matching its Listing Quality\n   scoring criteria.\n3. Brief every image slot Walmart allows to its own spec, including any Content Hub rich-media module the\n   category supports.\n4. Fill every category-specific attribute Walmart requires and confirm a valid GTIN or UPC is attached; a missing\n   or invalid GTIN blocks the listing outright.\n\n## Checks\n- The title respects Walmart's character limit and style rule for the specific category.\n- A valid GTIN/UPC is present; the listing does not go live without one.\n\n## Output\n{listing_draft, image_briefs[], attributes{}}\n\n## Example\nCategory: kitchen. Title kept within Walmart's limit, promotional language removed per its style guide. GTIN\nvalidated against GS1. Attribute \"capacity_in_quarts\" filled with the exact number, not \"large.\""
+  },
+  {
+    "id": "prod/list-on-marketplace/target-plus",
+    "name": "List on Target Plus",
+    "parent": "prod/list-on-marketplace",
+    "invoke_when": "the target marketplace is Target Plus",
+    "select_by": {
+      "marketplace": "target-plus"
+    },
+    "inputs_required": [
+      "product copy, approved claims, keyword list",
+      "category node",
+      "Target's brand style guide and image spec"
+    ],
+    "steps": [
+      "1. Write the title and description to Target's brand-voice and style-guide rules.",
+      "2. Confirm the listing meets Target Plus's curated-quality bar before submitting.",
+      "3. Brief image slots to Target's lifestyle and on-white spec.",
+      "4. Fill category attributes and confirm the correct category placement."
+    ],
+    "checks": [
+      "copy matches Target's brand-voice style guide, not a generic tone",
+      "the listing meets the curated-partner quality bar before submission"
+    ],
+    "output": "{listing_draft, image_briefs: [], attributes: {}}",
+    "used_by": [
+      "PROD-W22"
+    ],
+    "shared_with": [],
+    "skill_md": "---\nname: prod/list-on-marketplace/target-plus\nowner: PROD\nversion: 1\ninvoke_when: the target marketplace is Target Plus\nselect_by: {marketplace: target-plus}\ninputs: product copy, approved claims, keyword list, category node, Target's brand style guide and image spec\noutputs: title, description, image slot briefs, filled category attributes\n---\n# List on Target Plus\n\n## Purpose\nTarget Plus is an invite-only, curated marketplace: Target reviews sellers and listings for brand fit before\nand after approval, so copy and images need to match Target's own brand voice and quality bar, not just fill in\nrequired fields.\n\n## Steps\n1. Write the title and description in Target's brand-voice style (warm, direct, benefit-led), following its\n   published style guide rather than a generic marketplace tone.\n2. Confirm the listing meets Target Plus's curated-partner quality bar (complete attributes, no placeholder\n   copy, lifestyle imagery) before it is submitted through Partners Online.\n3. Brief the on-white and lifestyle image slots to Target's own spec.\n4. Fill every category attribute Target requires and confirm the correct category placement in Target's\n   taxonomy.\n\n## Checks\n- Copy matches Target's brand-voice style guide, not a generic marketplace tone.\n- The listing meets the curated-partner quality bar before it is submitted.\n\n## Output\n{listing_draft, image_briefs[], attributes{}}\n\n## Example\nCategory: home decor. Title and description written to Target's warm, direct brand voice. Lifestyle image slot\nbriefed showing the product styled in a room setting, matching Target's own catalogue look."
+  },
+  {
+    "id": "prod/list-on-marketplace/ebay",
+    "name": "List on eBay",
+    "parent": "prod/list-on-marketplace",
+    "invoke_when": "the target marketplace is eBay",
+    "select_by": {
+      "marketplace": "ebay"
+    },
+    "inputs_required": [
+      "product copy, approved claims, keyword list",
+      "category node",
+      "eBay's item specifics and return-policy terms"
+    ],
+    "steps": [
+      "1. Place the top keyword in the title within eBay's character limit.",
+      "2. Fill every Item Specific field eBay's Best Match algorithm rewards.",
+      "3. Brief image slots to eBay's spec (12+ images, zoomable).",
+      "4. Set the return policy and handling time, since both affect Best Match ranking."
+    ],
+    "checks": [
+      "every relevant Item Specific field is filled, none left blank",
+      "the return policy and handling time are set, not left at eBay's default"
+    ],
+    "output": "{listing_draft, image_briefs: [], attributes: {}, return_policy}",
+    "used_by": [
+      "PROD-W22"
+    ],
+    "shared_with": [],
+    "skill_md": "---\nname: prod/list-on-marketplace/ebay\nowner: PROD\nversion: 1\ninvoke_when: the target marketplace is eBay\nselect_by: {marketplace: ebay}\ninputs: product copy, approved claims, keyword list, category node, eBay's item specifics and return-policy terms\noutputs: title, filled Item Specifics, image slot briefs, and a set return policy\n---\n# List on eBay\n\n## Purpose\neBay's Best Match ranking weighs Item Specifics, seller performance (Top Rated Seller status), return policy and\nhandling time as heavily as the listing copy itself, so a listing missing these is invisible in search even with\nstrong copy.\n\n## Steps\n1. Place the top keyword in the title within eBay's character limit, front-loading the most searched term.\n2. Fill every Item Specific field the category supports; Best Match rewards completeness here more than on a\n   general marketplace.\n3. Brief the image slots to eBay's spec: at least 12 images where the category allows, zoomable, no watermarks\n   or border text.\n4. Set the return policy and handling time explicitly; a shorter handling time and a buyer-friendly return\n   policy both lift Best Match ranking and Top Rated Seller eligibility.\n\n## Checks\n- Every relevant Item Specific field is filled, none left blank.\n- The return policy and handling time are deliberately set, not left at a platform default.\n\n## Output\n{listing_draft, image_briefs[], attributes{}, return_policy}\n\n## Example\nCategory: sporting goods. All 18 available Item Specifics filled. 14 images briefed, zoomable. Return policy set\nto 30-day buyer-paid return, handling time set to 1 business day, both chosen to support Top Rated Seller status."
+  },
+  {
+    "id": "prod/list-on-marketplace/tiktok-shop",
+    "name": "List on TikTok Shop",
+    "parent": "prod/list-on-marketplace",
+    "invoke_when": "the target marketplace is TikTok Shop",
+    "select_by": {
+      "marketplace": "tiktok-shop"
+    },
+    "inputs_required": [
+      "product copy, approved claims, keyword list",
+      "category node",
+      "TikTok Shop's video/image spec, creator affiliate terms"
+    ],
+    "steps": [
+      "1. Write a short, benefit-led title and description for a video-first shopping surface.",
+      "2. Brief the product image and short-form video cover to TikTok Shop's spec.",
+      "3. Fill required attributes and confirm category placement for in-feed and LIVE shopping tagging.",
+      "4. Set the creator affiliate commission and any GMV Max ad settings the brand approves."
+    ],
+    "checks": [
+      "the listing is tagged for in-feed/LIVE product linking, not just a standalone catalogue page",
+      "every claim in the video script or caption is approved or site-backed"
+    ],
+    "output": "{listing_draft, video_cover_brief, attributes: {}, affiliate_commission}",
+    "used_by": [
+      "PROD-W22"
+    ],
+    "shared_with": [],
+    "skill_md": "---\nname: prod/list-on-marketplace/tiktok-shop\nowner: PROD\nversion: 1\ninvoke_when: the target marketplace is TikTok Shop\nselect_by: {marketplace: tiktok-shop}\ninputs: product copy, approved claims, keyword list, category node, TikTok Shop's video/image spec, creator affiliate terms\noutputs: a video-first listing, video cover brief, filled attributes, and a set affiliate commission\n---\n# List on TikTok Shop\n\n## Purpose\nTikTok Shop sells primarily through in-feed video and LIVE shopping, not a browsed catalogue page: the listing\nexists to be tagged into video and LIVE content and to support the creator affiliate program, so it needs a video\ncover and a commission decision a standard catalogue listing does not.\n\n## Steps\n1. Write a short, benefit-led title and description built for a video-first shopping surface, not a dense\n   marketplace-style bullet list.\n2. Brief the product image and short-form video cover to TikTok Shop's spec, since the cover image is what shows\n   in-feed before a viewer taps through.\n3. Fill every required attribute and confirm the category placement supports in-feed and LIVE product tagging.\n4. Set the creator affiliate commission rate and any GMV Max (TikTok's automated ad) settings the brand approves,\n   since affiliate reach is a primary driver of sales here, not organic browse.\n\n## Checks\n- The listing is tagged for in-feed/LIVE product linking, not left as a standalone catalogue-only page.\n- Every claim appearing in a linked video script or caption is approved or site-backed, same as any other channel.\n\n## Output\n{listing_draft, video_cover_brief, attributes{}, affiliate_commission}\n\n## Example\nProduct: a skincare serum. Title short and benefit-led (\"Overnight glow serum\"). Video cover briefed to show the\nproduct in use in the first second. Affiliate commission set at 15% to attract creator participation."
+  },
+  {
+    "id": "prod/list-on-marketplace/flipkart-myntra-nykaa",
+    "name": "List on Flipkart, Myntra and Nykaa",
+    "parent": "prod/list-on-marketplace",
+    "markets": [
+      "IN"
+    ],
+    "invoke_when": "the target marketplace is Flipkart, Myntra or Nykaa (markets: IN; not selected for a US-only brand)",
+    "select_by": {
+      "marketplace": "flipkart|myntra|nykaa"
+    },
+    "inputs_required": [
+      "product copy, approved claims, keyword list",
+      "category node",
+      "the platform's own image/attribute/size-chart/ingredient spec"
+    ],
+    "steps": [
+      "1. Select the platform (Flipkart general, Myntra fashion, or Nykaa beauty) and apply its own field rules.",
+      "2. Place the top keyword in the title within the platform's own character limit.",
+      "3. For Myntra, confirm a size chart is present and correct; for Nykaa, run every beauty claim through claim-check first.",
+      "4. Brief image slots (including any mandatory size-chart or ingredient-list image) to the platform's spec.",
+      "5. Fill category-specific attributes (fabric/fit for Myntra, skin-type/ingredient for Nykaa, general attributes for Flipkart)."
+    ],
+    "checks": [
+      "a size chart is present for every Myntra apparel listing",
+      "every Nykaa beauty or wellness claim passed claim-check before the listing is complete",
+      "category-specific attributes are filled with real values, not left generic"
+    ],
+    "output": "{marketplace, listing_draft, size_chart, image_briefs: [], attributes: {}}",
+    "used_by": [
+      "PROD-W22",
+      "PROD-W18"
+    ],
+    "shared_with": [],
+    "skill_md": "---\nname: prod/list-on-marketplace/flipkart-myntra-nykaa\nowner: PROD\nversion: 1\ninvoke_when: the target marketplace is Flipkart, Myntra or Nykaa (markets: IN; not selected for a US-only brand)\nselect_by: {marketplace: flipkart|myntra|nykaa}\ninputs: product copy, approved claims, keyword list, category node, the platform's own image/attribute/size-chart/ingredient spec\noutputs: a complete listing draft matching the chosen platform's own rules\n---\n# List on Flipkart, Myntra and Nykaa\n\n## Purpose\nIndia only (markets: IN): this skill covers the brand's other major India marketplaces beyond Amazon, in one\ngrouped child since they share the underlying discipline (a platform-specific title/attribute set, none of them\nAmazon) while differing on their specialty. It does not run for a US-only brand, whose non-Amazon options are\nWalmart, Target Plus, eBay and TikTok Shop instead.\n\n## Steps\n1. Confirm which of the three platforms this listing targets: Flipkart (general marketplace), Myntra\n   (fashion-specific), or Nykaa (beauty/wellness-specific), since each has its own title length, attribute set\n   and search weighting.\n2. Place the top keyword in the title, respecting that platform's own character limit, which is often shorter and\n   stricter than a general marketplace.\n3. On Myntra, confirm a size chart is present and correct for the category before the listing is considered\n   complete: its absence is a common cause of size-related returns. On Nykaa, run every beauty or wellness claim\n   through the claim-check skill before it goes near the draft; an unsupported claim about skin or health effects\n   is a compliance risk, not just a marketing overreach, and is removed rather than softened.\n4. Brief every image slot the platform allows to its own spec, including a mandatory size-chart image for Myntra\n   apparel or an ingredient-list/texture-shot image for Nykaa beauty listings.\n5. Fill every category-specific attribute the platform requires: fabric/fit/occasion for Myntra, skin-type/\n   concern/ingredient for Nykaa (matching the real product formulation, never a category-typical guess), or the\n   platform's own generic attribute set for Flipkart.\n\n## Checks\n- Every Myntra apparel listing has a size chart present before it is considered complete.\n- Every Nykaa beauty or wellness claim passed claim-check before the listing is considered complete.\n- Category-specific attributes carry real, specific values, never a generic placeholder.\n\n## Output\n{marketplace, listing_draft, size_chart, image_briefs[], attributes{}}\n\n## Example\nMarketplace: nykaa. Product: a face serum. Claim \"reduces the look of fine lines\" kept (site-backed by a 4-week\nuser trial). Claim \"clinically proven\" removed (no clinical trial exists in the brand record). Ingredient\nattribute filled with the exact INCI list."
+  },
+  {
+    "id": "prod/list-on-marketplace/blinkit-zepto",
+    "name": "List on Blinkit and Zepto",
+    "parent": "prod/list-on-marketplace",
+    "markets": [
+      "IN"
+    ],
+    "invoke_when": "the target marketplace is Blinkit or Zepto (markets: IN; not selected for a US-only brand)",
+    "select_by": {
+      "marketplace": "blinkit|zepto"
+    },
+    "inputs_required": [
+      "product copy, approved claims",
+      "category node",
+      "the platform's thumbnail/pack-size spec"
+    ],
+    "steps": [
+      "1. Write a short, scan-friendly title for a small thumbnail.",
+      "2. Confirm pack size and MRP are exact and current.",
+      "3. Brief the thumbnail image to the platform's small-format spec.",
+      "4. Confirm dark-store category placement in that platform's own category tree."
+    ],
+    "checks": [
+      "the title reads clearly at thumbnail size",
+      "MRP shown matches the current, live MRP exactly"
+    ],
+    "output": "{marketplace, listing_draft, thumbnail_brief, category_placement}",
+    "used_by": [
+      "PROD-W22",
+      "PROD-W28"
+    ],
+    "shared_with": [],
+    "skill_md": "---\nname: prod/list-on-marketplace/blinkit-zepto\nowner: PROD\nversion: 1\ninvoke_when: the target marketplace is Blinkit or Zepto (markets: IN; not selected for a US-only brand)\nselect_by: {marketplace: blinkit|zepto}\ninputs: product copy, approved claims, category node, the platform's thumbnail and pack-size spec\noutputs: a short scan-friendly listing, thumbnail brief, and confirmed category placement\n---\n# List on Blinkit and Zepto\n\n## Purpose\nIndia only (markets: IN): quick commerce listings on Blinkit and Zepto are read at thumbnail size on a phone in\nseconds, not read in depth like a marketplace product page; this grouped child covers both since they share the\nsame thumbnail-first discipline while each keeps its own app layout, category tree and crop rule. It does not run\nfor a US-only brand, whose rapid-delivery/grocery listings (Instacart, DoorDash, Gopuff) are built under the\nquick-commerce-onboard skill instead, since those platforms are not part of this marketplace tree.\n\n## Steps\n1. Write a short, scan-friendly title that reads clearly even at small thumbnail size: no long benefit strings,\n   just what the product is and its pack size.\n2. Confirm the pack size and MRP shown are exact and match the brand's current, live pricing; a stale MRP here is\n   a common source of the ROAS-distortion problem these platforms' own dashboards create.\n3. Brief the thumbnail image to the chosen platform's own small-format spec, checked for legibility at the actual\n   render size in the app, not assumed identical between Blinkit and Zepto: a thumbnail crop that works on one can\n   clip the product on the other, so each is built separately even for the same SKU.\n4. Confirm the correct dark-store category placement in that platform's own category tree.\n\n## Checks\n- The title is legible and clear when previewed at actual thumbnail size.\n- The MRP shown matches the current live price exactly.\n\n## Output\n{marketplace, listing_draft, thumbnail_brief, category_placement}\n\n## Example\nProduct: 500ml juice bottle. Title: \"Brand Fresh Juice 500ml\": reads clearly at thumbnail size. MRP confirmed\nagainst the live price file. Built separately for Blinkit's and Zepto's own crop and category tree rather than\nreused as-is."
+  },
+  {
+    "id": "prod/marketplace-compliance-check",
+    "name": "Check US labelling and quality-marking compliance (FTC, Care Labeling, Prop 65)",
+    "parent": null,
+    "invoke_when": "a regulated-category listing is going live or a certification is up for renewal",
+    "select_by": null,
+    "inputs_required": [
+      "category",
+      "FTC/Care Labeling/Prop 65/CPSC status (india: BIS/hallmarking status)",
+      "certification renewal dates"
+    ],
+    "steps": [
+      "1. Identify whether the category requires an FTC quality mark, Care Labeling Rule disclosure, Prop 65 warning or CPSC rule.",
+      "2. Confirm the current certification/disclosure status and its expiry.",
+      "3. Block the listing build if a required certification or disclosure is missing or expired."
+    ],
+    "checks": [
+      "no listing for a regulated category is built before this check clears",
+      "the certification status is a recorded fact, not assumed"
+    ],
+    "output": "{category_requirements: [], certification_status, cleared: true|false}",
+    "used_by": [
+      "PROD-W22"
+    ],
+    "shared_with": [],
+    "skill_md": "---\nname: prod/marketplace-compliance-check\nowner: PROD\nversion: 1\ninvoke_when: a regulated-category listing is going live, or a certification is up for renewal\ninputs: the product category, current FTC/Care Labeling/Prop 65/CPSC status (india: BIS/hallmarking status), certification renewal dates\noutputs: a pass/block result naming exactly which requirement is or is not met\n---\n# Check US labelling and quality-marking compliance (FTC, Care Labeling, Prop 65)\n\n## Purpose\nA marketplace can pull a listing, or worse, penalize the account, for a missing FTC precious-metal quality mark, a missing textile Care Labeling Rule disclosure, or a missing Prop 65 warning. This check runs before a listing is built, not after a takedown notice. India: the same job checks BIS hallmarking and Legal Metrology labelling instead (markets: IN, reads null for US brands).\n\n## Steps\n1. Identify which compliance requirement applies to this specific category: the FTC Jewelry Guides quality mark (precious-metal jewellery), the Care Labeling Rule (fibre content, origin, care for textiles), a Prop 65 warning, or a CPSC rule (India: BIS certification for hardware/electronics/toys, hallmarking for jewellery, or Legal Metrology labelling; markets: IN).\n2. Confirm the current certification, hallmark or disclosure status and its expiry date from the brand's own compliance record, not from an assumption that \"it was fine last time.\"\n3. If a required certification or disclosure is missing or expired, block the listing build entirely until it is resolved; do not proceed with a caveat or a \"list now, fix later\" workaround.\n\n## Checks\n- No listing for a regulated category proceeds to build before this check explicitly clears.\n- Certification status is read from a recorded, dated fact, never assumed current.\n\n## Output\n{category_requirements[], certification_status, cleared}\n\n## Output note\nA real-time India BIS/hallmarking registry API was not found in the wave-2 research pass (markets: IN); that variant of this check reads a human-recorded status (BIS Care app or equivalent, checked by a person) rather than verifying a hallmark itself.\n\n## Example\nCategory: gold jewellery, US listing. FTC Jewelry Guides quality mark (karat stamp, trademark) on file, documentation current. Cleared: true. India: the same jewellery SKU also needs a BIS hallmark certificate on file (markets: IN); a second SKU in the same batch had none, cleared: false, listing build blocked until resolved."
+  },
+  {
+    "id": "prod/fba-shipment-prep",
+    "name": "Prepare an FBA inbound shipment",
+    "parent": null,
+    "invoke_when": "an FBA shipment is being planned and needs dimension checks, a plan and a paper trail",
+    "select_by": null,
+    "inputs_required": [
+      "measured case dimensions",
+      "FBA's current hard limits",
+      "saved shipment template",
+      "carton labels"
+    ],
+    "steps": [
+      "1. Measure case dimensions against FBA's current limits.",
+      "2. Reuse a saved template where the SKU matches.",
+      "3. Build the shipment plan and check carton labels.",
+      "4. Keep the paper trail and confirm receipt."
+    ],
+    "checks": [
+      "limits used are current, not cached",
+      "paper trail complete before the shipment leaves"
+    ],
+    "output": "{dimension_check, shipment_plan, carton_labels, paper_trail, receipt_confirmation}",
+    "used_by": [
+      "PROD-W23"
+    ],
+    "shared_with": [],
+    "skill_md": "---\nname: prod/fba-shipment-prep\nowner: PROD\nversion: 1\ninvoke_when: an FBA shipment is being planned and needs dimension checks, a plan and a paper trail\ninputs: measured case dimensions, FBA's current hard limits, a saved shipment template if one exists, carton labels\noutputs: a checked shipment plan, carton labels, a complete paper trail, and receipt confirmation\n---\n# Prepare an FBA inbound shipment\n\n## Purpose\nFBA's dimension and weight limits change, and an outdated cached limit produces a rejected or delayed shipment.\nKeeping the full paper trail matters because it is the only evidence available if inventory goes missing in\nAmazon's own warehouse.\n\n## Steps\n1. Measure the actual case dimensions and check them against FBA's currently published hard limits, pulled fresh\n   rather than from a cached figure from a past shipment.\n2. Reuse a saved shipment template whenever this SKU and case size match a shipment already sent successfully,\n   to avoid re-deriving the plan from scratch each time.\n3. Build the shipment plan: box count, weight per box (checked under the carrier's per-box limit), and carrier\n   choice.\n4. Generate and check carton labels against FBA's current label specification before printing.\n5. Keep the full paper trail: bill of lading, carrier receipt, carton count: so a later lost-inventory claim has\n   the evidence it needs.\n6. Confirm the shipment against Amazon's inbound dashboard once it is marked received, and flag any discrepancy\n   between what was sent and what was received.\n\n## Checks\n- The dimension limits used are the currently published ones, not a cached figure.\n- The paper trail is complete before the shipment physically leaves.\n\n## Output\n{dimension_check, shipment_plan, carton_labels, paper_trail, receipt_confirmation}\n\n## Example\nCase dimensions checked against FBA's current oversize threshold: under by 2cm. Template reused from the last\nshipment of the same SKU. 40 cartons, weight checked under the carrier's 25kg/box limit. Paper trail filed; receipt\nconfirmed 6 days later with a 2-unit discrepancy flagged for a claim."
+  },
+  {
+    "id": "prod/amazon-launch-sequence",
+    "name": "Sequence an Amazon account, Brand Registry and launch",
+    "parent": null,
+    "invoke_when": "a brand is considering an Amazon launch, or a listing is going live and needs Brand Registry and launch protection",
+    "select_by": null,
+    "inputs_required": [
+      "business entity and tax details (EIN/SSN, W-9; india: GST details)",
+      "bank/payout details",
+      "identity documents",
+      "trademark status",
+      "stock and PPC launch plan"
+    ],
+    "steps": [
+      "1. Verify the account, entity, payout and identity correctly the first time.",
+      "2. Sequence trademark filing before listing creation.",
+      "3. Enrol Brand Registry once trademark and listing are live.",
+      "4. Align stock and PPC and build a pre-launch audience.",
+      "5. Protect against copycats from day one."
+    ],
+    "checks": [
+      "nothing is filed before its prerequisite in the sequence",
+      "stock and PPC go live together, not staggered"
+    ],
+    "output": "{account_status, trademark_status, brand_registry_status, launch_plan, protection_checklist}",
+    "used_by": [
+      "PROD-W24"
+    ],
+    "shared_with": [],
+    "skill_md": "---\nname: prod/amazon-launch-sequence\nowner: PROD\nversion: 1\ninvoke_when: a brand is considering an Amazon launch, or a listing is going live and needs Brand Registry and\n  launch protection\ninputs: business entity and tax details (EIN/SSN, W-9; india: GST details), bank/payout details, identity\n  verification documents, trademark status,\n  the stock and PPC plan for launch\noutputs: a verified account, a sequenced Brand Registry checklist, and a protected launch plan\n---\n# Sequence an Amazon account, Brand Registry and launch\n\n## Purpose\nAccount setup, trademark filing, Brand Registry enrolment and launch-week execution have a strict order: doing\nthem out of order (enrolling Brand Registry before the trademark is filed, for instance) causes rejections and\nweeks of delay. This skill enforces the correct sequence.\n\n## Steps\n1. Get the Amazon seller account, business entity, payout details and identity verification right the first time\n: a rejected or later-flagged account costs far more time than a careful first submission.\n2. Sequence trademark filing before listing creation; Brand Registry cannot be enrolled without a filed trademark,\n   so this step must complete first.\n3. Once the trademark is filed and the listing (built via PROD-W22) is live, enrol Brand Registry.\n4. Turn on the Storefront and Subscribe & Save benefits Brand Registry unlocks, confirming both are actually live,\n   not just eligible.\n5. Concentrate real demand into the first launch weeks by aligning stock arrival and PPC campaign start to the same\n   date, and build a pre-launch audience where the platform's rules allow it.\n6. Protect a novel product against copycats from day one: watermark product images, and file for design protection\n   where the product is genuinely novel.\n\n## Checks\n- No step in the sequence is attempted before its prerequisite is confirmed complete.\n- Stock and PPC go live on the same date, never staggered by more than a day.\n\n## Output\n{account_status, trademark_status, brand_registry_status, launch_plan, protection_checklist}\n\n## Example\nAccount verified on first submission (2 weeks). Trademark filed before listing creation. Listing built and live.\nBrand Registry enrolled once both prerequisites confirmed. Launch week: stock arrived and PPC campaign started the\nsame day; a pre-launch waitlist built the prior 2 weeks."
+  },
+  {
+    "id": "prod/marketplace-health-monitor",
+    "name": "Monitor marketplace health: reviews, account health, Buy Box",
+    "parent": null,
+    "invoke_when": "the weekly marketplace-health check is due",
+    "select_by": null,
+    "inputs_required": [
+      "Account Health dashboard data",
+      "review history",
+      "Buy Box status",
+      "reseller pricing"
+    ],
+    "steps": [
+      "1. Request reviews only through permitted paths.",
+      "2. Watch Account Health weekly.",
+      "3. Watch Buy Box ownership and reseller pricing against MAP.",
+      "4. Flag problems for the founder rather than acting unilaterally."
+    ],
+    "checks": [
+      "no review request uses an unpermitted method",
+      "no price is changed by this agent to respond to a MAP issue"
+    ],
+    "output": "{review_requests: [], account_health_status, buy_box_report, map_violation_flags: []}",
+    "used_by": [
+      "PROD-W25"
+    ],
+    "shared_with": [],
+    "skill_md": "---\nname: prod/marketplace-health-monitor\nowner: PROD\nversion: 1\ninvoke_when: the weekly marketplace-health check is due\ninputs: Account Health dashboard data, review history, Buy Box status per listing, reseller pricing across\n  marketplaces\noutputs: sent review requests, an account health status, a Buy Box report, and any MAP violation flags\n---\n# Monitor marketplace health: reviews, account health, Buy Box\n\n## Purpose\nA policy notice ignored for a week can become a suspension; an unauthorized reseller undercutting on price can\nerode a brand's own margin and trust. This skill runs the standing weekly health check that keeps both from\nbecoming a surprise.\n\n## Steps\n1. Request product reviews only through the platform's own permitted request mechanism: never an incentivised or\n   off-platform review ask, which risks policy action against the account.\n2. Contest any feedback that is misplaced (attached to the wrong product) or violates the platform's own feedback\n   policy, through the platform's formal dispute process.\n3. Check the Account Health dashboard every single week without exception, so a new policy notice is caught the\n   week it appears, not discovered a month later as a suspension.\n4. Check who holds the Buy Box across every marketplace listing, and check unauthorised reseller pricing against\n   the brand's own MAP (minimum advertised price) policy.\n5. Flag any MAP or price-integrity problem to the founder for a decision, rather than changing the brand's own\n   price unilaterally in response.\n\n## Checks\n- Every review request uses a platform-permitted method.\n- No price is changed by this agent in response to a MAP issue; it is always flagged to the founder.\n\n## Output\n{review_requests[], account_health_status, buy_box_report, map_violation_flags[]}\n\n## Example\nAccount Health: clear, no new notices this week. Buy Box: held on 8 of 9 active listings; the 9th lost to an\nunauthorized reseller pricing 12% below the brand's MAP: flagged for the founder rather than matching the price."
+  },
+  {
+    "id": "prod/amazon-performance-review",
+    "name": "Diagnose Amazon performance and plan growth",
+    "parent": null,
+    "invoke_when": "an Amazon sales change needs explaining, or the channel's next growth move needs planning",
+    "select_by": null,
+    "inputs_required": [
+      "Business Reports",
+      "attribution data",
+      "seasonality baseline",
+      "SKU portfolio",
+      "candidate growth levers"
+    ],
+    "steps": [
+      "1. Split a sales change into traffic versus conversion.",
+      "2. Check attribution and seasonality before calling a product a failure.",
+      "3. Use only Amazon's own compliant promotion tools to respond.",
+      "4. Test growth levers with a defined read and write the channel memo."
+    ],
+    "checks": [
+      "traffic vs conversion split happens before any conclusion",
+      "every growth-lever test has a defined read before it starts"
+    ],
+    "output": "{diagnosis: {traffic_change, conversion_change}, promotion_response, growth_tests: [], channel_memo}",
+    "used_by": [
+      "PROD-W26"
+    ],
+    "shared_with": [],
+    "skill_md": "---\nname: prod/amazon-performance-review\nowner: PROD\nversion: 1\ninvoke_when: an Amazon sales change needs explaining, or the channel's next growth move needs planning\ninputs: Business Reports, attribution data, a seasonality baseline, the current SKU portfolio, candidate growth\n  levers\noutputs: a sales diagnosis, a compliant promotion response, growth-lever test results, and a channel memo\n---\n# Diagnose Amazon performance and plan growth\n\n## Purpose\nA sales drop on Amazon has at least two very different causes: fewer people seeing the listing, or fewer people\nbuying once they see it: and confusing the two leads to the wrong fix. This skill forces that split before any\nother conclusion, and keeps growth responses inside Amazon's own compliant tools.\n\n## Steps\n1. Split any sales change into a traffic component and a conversion component, using Business Reports data, before\n   drawing any conclusion about the product.\n2. Check attribution (is the traffic even coming from where it looks like) and seasonality (is this the normal\n   pattern for this time of year) before calling a product a failure based on a raw sales number.\n3. Respond only with Amazon's own compliant promotion tools: Lightning Deals, Coupons, Amazon-native ad formats: \n   never an outside workaround that risks a policy violation.\n4. Decide whether to add a second SKU based on the diagnosis, not on a hunch, and test smaller situational growth\n   levers (FBM to FBA conversion, Small and Light enrolment, a design-vendor bake-off, Amazon Live) each with a\n   defined read set before the test starts.\n5. Write the one-page memo behind any decision to add or expand the Amazon channel.\n\n## Checks\n- The traffic/conversion split happens before any conclusion about the product itself.\n- Every growth-lever test has its read defined before the test starts, never decided after seeing results.\n\n## Output\n{diagnosis{traffic_change, conversion_change}, promotion_response, growth_tests[], channel_memo}\n\n## Example\nSales down 22% week over week. Diagnosis: traffic down 3% (normal seasonality), conversion down 19%: points to a\nlisting or price issue, not a demand problem. Response: a compliant Coupon test with a defined 2-week read, not an\noff-platform discount code."
+  },
+  {
+    "id": "prod/catalogue-feed-audit",
+    "name": "Build, validate and audit the catalogue feed",
+    "parent": null,
+    "invoke_when": "the daily feed needs building, or the weekly cross-channel quality audit is due",
+    "select_by": null,
+    "inputs_required": [
+      "live price and stock records",
+      "product records",
+      "each channel's schema and image/video spec"
+    ],
+    "steps": [
+      "1. Keep one clean master feed.",
+      "2. Validate against each channel's own schema.",
+      "3. Audit live listings for broken images, missing attributes, duplicate SKUs.",
+      "4. Check cross-channel price mismatch and asset specs."
+    ],
+    "checks": [
+      "the feed has no duplicate SKU and no missing GTIN",
+      "a price mismatch is flagged, never silently corrected",
+      "asset specs are checked before push, not after rejection"
+    ],
+    "output": "{master_feed, validation_report, quality_audit_report, price_mismatch_report, asset_spec_flags: []}",
+    "used_by": [
+      "PROD-W27"
+    ],
+    "shared_with": [
+      "MEDIA",
+      "ORG"
+    ],
+    "skill_md": "---\nname: prod/catalogue-feed-audit\nowner: PROD\nversion: 1\ninvoke_when: the daily feed needs building, or the weekly cross-channel quality audit is due\ninputs: live price and stock records, product records (titles, images, GTIN), each channel's own schema and\n  image/video spec, the cross-channel price policy\noutputs: a master product feed, a per-channel validation report, and a standing catalogue quality audit\n---\n# Build, validate and audit the catalogue feed\n\n## Purpose\nMedia buyer and Organic both depend on one clean feed to plug into shopping ads and marketplace channels, and a\nbroken image or a duplicate SKU discovered by a channel's own rejection wastes a cycle that a standing audit would\nhave caught first.\n\n## Steps\n1. Keep one clean master product feed: titles, images, prices, availability, and GTIN, with no duplicate SKU and\n   no missing GTIN.\n2. Validate the feed against each destination channel's own current schema before handing it off: a schema that\n   worked last month may have changed.\n3. Hand the validated feed to Media buyer and Organic, and confirm it loaded without error on their side.\n4. Run a standing audit across every channel's live listings for broken images, missing attributes, and duplicate\n   SKUs that may have crept in independently of the feed.\n5. Check for the brand's own price mismatch between its site and each marketplace, flagging any gap rather than\n   silently reconciling it.\n6. Check every new product image and video against each channel's own size, crop and content rule before it is\n   pushed, since an Instacart thumbnail and an Amazon main image have entirely different requirements (india: a Blinkit\n   thumbnail; markets: IN).\n\n## Checks\n- The feed has zero duplicate SKUs and zero missing GTINs before handoff.\n- A price mismatch is always flagged, never quietly auto-corrected.\n- Image and video specs are checked before push, not discovered via a channel's rejection.\n\n## Output\n{master_feed, validation_report, quality_audit_report, price_mismatch_report, asset_spec_flags[]}\n\n## Example\nFeed validated clean against Amazon's, Walmart's and Instacart's current schemas. Weekly audit found 3 SKUs with a\nbroken image link on one marketplace and a $2 price mismatch between site and Walmart: both flagged, neither\nauto-corrected. India: the same audit flags a ₹20 price mismatch between site and Flipkart instead (markets: IN)."
+  },
+  {
+    "id": "prod/quick-commerce-onboard",
+    "name": "Onboard a brand on rapid-delivery and quick-commerce platforms",
+    "parent": null,
+    "invoke_when": "a new rapid-delivery/grocery marketplace launch is planned (Instacart, DoorDash, Gopuff; india: Blinkit, Zepto, Instamart)",
+    "select_by": null,
+    "inputs_required": [
+      "business licence, resale certificate, UPC and packaging documents (india: GST, FSSAI, barcode and packaging documents)",
+      "target platform(s)"
+    ],
+    "steps": [
+      "1. Assemble the required documents.",
+      "2. Submit through the platform's own channel and track review.",
+      "3. Prepare the initial listing.",
+      "4. Confirm the unit-economics validation window and go live."
+    ],
+    "checks": [
+      "every required document is present before submission",
+      "the validation window and its requirement are both stated, not assumed"
+    ],
+    "output": "{document_packet, review_status, initial_listing, validation_window, go_live_confirmation}",
+    "used_by": [
+      "PROD-W28"
+    ],
+    "shared_with": [],
+    "skill_md": "---\nname: prod/quick-commerce-onboard\nowner: PROD\nversion: 1\ninvoke_when: a new rapid-delivery/grocery marketplace launch is planned (Instacart, DoorDash, Gopuff; india: Blinkit, Zepto, Instamart)\ninputs: business licence, resale certificate, UPC and packaging documents (india: GST, FSSAI, barcode and packaging documents), the target platform(s)\noutputs: a submitted document packet, review status, initial listing, and go-live confirmation\n---\n# Onboard a brand on rapid-delivery and quick-commerce platforms\n\n## Purpose\nRapid-delivery/quick-commerce onboarding requires a specific document set and each platform runs its own review\nprocess and its own unit-economics validation window (commonly around 90 days) before the brand is judged to be\nworth investing in further. Missing a required document is the most common cause of onboarding delay. India: the\nsame job onboards to Blinkit, Zepto or Instamart with GST and FSSAI documents instead (markets: IN).\n\n## Steps\n1. Assemble the business licence, resale certificate, UPC/GS1 barcode and packaging documents the platform's own\nonboarding checklist requires, confirming every item is present before submission (India: GST registration, FSSAI\nlicence, PAN, bank and GS1 barcode documents instead; markets: IN).\n2. Submit through the platform's own onboarding channel (Instacart Retailer/CPG portal, DoorDash Marketplace,\nGopuff vendor channel; india: Blinkit Seller App, Zepto category-manager channel, Instamart seller portal), never\na workaround or a third-party shortcut.\n3. Track the document review status and respond to any query the platform raises within its stated window.\n4. Prepare the initial catalogue listing using the matching platform listing skill.\n5. Confirm the platform's own unit-economics validation window and what it requires the brand to demonstrate\nduring it.\n6. Get the brand live and confirm the first order flows correctly end to end before calling onboarding complete.\n\n## Checks\n- Every document the platform's checklist requires is present before submission.\n- The validation window and its specific requirement are both logged, not assumed.\n\n## Output\n{document_packet, review_status, initial_listing, validation_window, go_live_confirmation}\n\n## Example\nDocuments assembled: business licence, resale certificate, UPC registration, packaging compliance declaration.\nSubmitted through Instacart's Retailer portal. First order confirmed to flow correctly on day 12 of a stated\n90-day validation window. India: the same brand's Blinkit onboarding instead used GST, FSSAI licence and GS1\nbarcode documents (markets: IN)."
+  },
+  {
+    "id": "prod/quick-commerce-ops",
+    "name": "Manage rapid-delivery ad credits and dark-store fill rate",
+    "parent": null,
+    "invoke_when": "the weekly ad-credit/promo review is due, or the daily dark-store fill-rate check is due",
+    "select_by": null,
+    "inputs_required": [
+      "ad credit balance",
+      "organic search performance",
+      "US retail promotional calendar (india: festive promotional calendar)",
+      "dark-store stock levels"
+    ],
+    "steps": [
+      "1. Spend ad credits deliberately and pull back once organic picks up.",
+      "2. Recompute ROAS from transaction value, not the platform's list/MRP default.",
+      "3. Negotiate peak promotional windows (BFCM, Prime Day, Q4; india: festive windows) ahead of the calendar.",
+      "4. Watch dark-store stock daily and flag before the ranking penalty."
+    ],
+    "checks": [
+      "ROAS recompute uses transaction value, never MRP",
+      "fill-rate flag fires before the ranking-penalty window closes"
+    ],
+    "output": "{ad_spend_plan, roas_recomputed, promo_terms, dark_store_report, stockout_flags: []}",
+    "used_by": [
+      "PROD-W29"
+    ],
+    "shared_with": [
+      "MEDIA"
+    ],
+    "skill_md": "---\nname: prod/quick-commerce-ops\nowner: PROD\nversion: 1\ninvoke_when: the weekly ad-credit/promo review is due, or the daily dark-store fill-rate check is due\ninputs: ad credit balance per platform, organic search performance, the US retail promotional calendar (Q4\n  holidays, BFCM, Prime Day; india: the festive promotional calendar), dark-store stock levels\noutputs: an ad spend plan, a transaction-value-based ROAS, negotiated promo terms, and a fill-rate flag\n---\n# Manage rapid-delivery ad credits and dark-store fill rate\n\n## Purpose\nRapid-delivery/quick-commerce platforms typically report ROAS on list/MRP price, which overstates real return by\n30 to 50 percent; judging ad spend on that number leads to bad decisions. And a dark-store stockout triggers an\nalgorithmic ranking penalty that takes real time to recover from, so it needs daily, not weekly, attention.\n\n## Steps\n1. Spend each platform's ad tools deliberately rather than leaving credits unused, and pull back spend for a SKU\nonce its organic search ranking improves and stops needing paid support.\n2. Recompute ROAS from actual transaction value, never the platform's own list/MRP-based default, before judging\nwhether spend is working.\n3. Negotiate peak promotional windows (BFCM, Prime Day, Q4 holidays; India: the festive calendar; markets: IN)\nahead of the calendar date, since terms secured early are typically better than what is available once the rush\nbegins.\n4. Watch stock levels across the dark-store network daily, the way a merchandiser walks the shelf, and flag a\nstockout before it triggers the platform's own algorithmic ranking penalty, which is slow to recover from once\ntriggered.\n\n## Checks\n- Every ROAS figure used for a decision is recomputed from transaction value, never quoted from the platform's\n  list/MRP-based dashboard number.\n- A fill-rate flag is raised before the ranking-penalty window closes, not after the penalty has already applied.\n\n## Output\n{ad_spend_plan, roas_recomputed, promo_terms, dark_store_report, stockout_flags[]}\n\n## Example\nPlatform-reported ROAS: 4.2x (list-price-based). Recomputed from transaction value: 2.9x: spend plan adjusted down\nfor the weakest SKU. Dark-store report: 2 of 40 stores below reorder threshold, flagged same day, ahead of the\nplatform's ranking-penalty window."
+  },
+  {
+    "id": "prod/regulatory-register-track",
+    "name": "Track FDA, net-quantity, state licence and EPR compliance",
+    "parent": null,
+    "invoke_when": "the monthly compliance audit is due, a formula/price change occurred, or the quarterly/annual EPR filing is due",
+    "select_by": null,
+    "inputs_required": [
+      "SKU list with category",
+      "FDA/state licence status (india: Legal Metrology/FSSAI licence status)",
+      "EPR registration status"
+    ],
+    "steps": [
+      "1. Keep the licence register and track validity windows.",
+      "2. Flag relabelling on any formula, claim or price change (india: any MRP/GST change; markets: IN).",
+      "3. Track state EPR registration and the annual filing obligation (india: India's EPR rules; markets: IN).",
+      "4. Flag a shortfall requiring EPR credits."
+    ],
+    "checks": [
+      "every licence's validity window is tracked, not assumed current",
+      "relabelling is flagged on every formula/claim/price change, not only at renewal (india: MRP/GST change; markets: IN)"
+    ],
+    "output": "{licence_register: [], relabelling_flags: [], epr_status, epr_shortfall_flag}",
+    "used_by": [
+      "PROD-W30"
+    ],
+    "shared_with": [
+      "MONEY"
+    ],
+    "skill_md": "---\nname: prod/regulatory-register-track\nowner: PROD\nversion: 1\ninvoke_when: the monthly compliance audit is due, a formula/price change occurred, or the quarterly/annual EPR filing is due\ninputs: the SKU list with category, current FDA facility registration and state licence status (india: Legal\n  Metrology and FSSAI licence status), state EPR packaging registration status (india: EPR plastic-packaging\n  registration status), relabelling requirements\noutputs: a compliance register, relabelling flags, and EPR filing status with any shortfall flagged\n---\n# Track FDA, net-quantity, state licence and EPR compliance\n\n## Purpose\nFDA facility registration, Fair Packaging and Labeling Act net-quantity declarations, state licensing (cosmetics,\nfood, supplements) and state EPR packaging filing are each recurring, concrete obligations that a brand either\ntracks deliberately or handles ad hoc under deadline pressure. This skill keeps one register instead of several\nscattered across people's memory. India: the same register tracks Legal Metrology (Packaged Commodities)\nregistration, an FSSAI licence and India's EPR plastic-packaging rules instead (markets: IN, reads null for US\nbrands).\n\n## Steps\n1. Keep one register listing which SKUs require FDA facility registration or a state cosmetics/food/supplement\nlicence, based on their actual category (India: Legal Metrology state registration or an FSSAI licence; markets:\nIN).\n2. Track each licence's current validity window, so an expiry is known well ahead of the date, not discovered\nafter it lapses.\n3. Flag the relabelling a SKU needs on any formula, claim or price change: net quantity, ingredients and any\nProp 65 warning (India: on any MRP or GST change, keeping the original MRP visible as the rule requires; markets:\nIN).\n4. Register the brand's packaging under the relevant state's EPR rules (Oregon, California, Colorado, Maine;\nIndia: under India's EPR rules; markets: IN), and track the annual filing deadline and recycling-target\nobligation.\n5. Flag when a shortfall against the recycling target means the brand needs to buy EPR credits, stating the\nshortfall amount specifically.\n\n## Checks\n- Every licence's validity window reflects a checked, current status, never an assumption that it is still valid.\n- A relabelling flag fires on every formula/claim/price change, not only when a licence comes up for renewal.\n\n## Output\n{licence_register[], relabelling_flags[], epr_status, epr_shortfall_flag}\n\n## Example\nLicence register: 14 of 18 SKUs require a state cosmetics licence or FDA registration, all current. One state\nlicence expiring in 45 days, flagged to the founder. A recent formula change on 3 SKUs triggered a relabelling\nflag. Oregon EPR filing on track; no shortfall this cycle. India: the same brand's Legal Metrology/FSSAI register\nand EPR filing run the equivalent check (markets: IN)."
+  }
+]

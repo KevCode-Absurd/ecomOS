@@ -1,0 +1,2671 @@
+[
+  {
+    "id": "PROD-C01",
+    "name": "Screen candidate categories and products for demand and fit",
+    "folders": [
+      "01-PRD"
+    ],
+    "what": "Take a proposed product or category and run it through a fast pass of demand, competition and store-model checks before any research time is spent on it. Kills weak candidates early and stops founder taste from deciding alone.",
+    "encompasses": [
+      "Check the category is large and existing, not invented",
+      "Scan for a sea of sameness and look for a felt problem or passionate community",
+      "Ground each pain point in a specific review, not a category-wide guess",
+      "Match the category to the revenue model wanted (repeat, subscription, one-off)",
+      "Screen for products scarce offline and absent from big retail",
+      "Score customization requests against what fulfilment can actually handle",
+      "Screen a marketplace listing candidate against that marketplace's own density and fees",
+      "Run every trend-tool idea through the same demand and margin checks",
+      "Log a pass, caution or reject with the reason"
+    ],
+    "inputs": [
+      "idea bank: 01-PRD filtered by bottleneck",
+      "web: category search volume and trend tools",
+      "brand brain: category and product history (once built)"
+    ],
+    "outputs": [
+      "screened candidate list with pass/caution/reject and reason",
+      "research log entry"
+    ],
+    "trigger": "on demand",
+    "autonomy": "agent_does",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [
+      "script: scripts/ideas.py",
+      "script: scripts/search_knowledge.py",
+      "web search"
+    ],
+    "skills": [
+      "candidate-screen"
+    ],
+    "subagent": null,
+    "sources": {
+      "web": [
+        "https://www.shopify.com/blog/product-research",
+        "https://www.trendtrack.io/blog-post/how-can-you-find-a-winning-product-in-e-commerce-in-2026"
+      ],
+      "bank": [
+        "PRD-001",
+        "PRD-002",
+        "PRD-003",
+        "PRD-004",
+        "PRD-005",
+        "PRD-006",
+        "PRD-007",
+        "PRD-008",
+        "PRD-009",
+        "PRD-010",
+        "PRD-011",
+        "PRD-012",
+        "PRD-013",
+        "PRD-014"
+      ]
+    },
+    "found_in": "web+bank",
+    "founder_sees": "A one-page pass/caution/reject verdict on each candidate product, with the reason."
+  },
+  {
+    "id": "PROD-C02",
+    "name": "Validate demand on video-commerce and social-native platforms",
+    "folders": [
+      "01-PRD"
+    ],
+    "what": "Check a candidate's demand signal on TikTok-style shop data and native ad feeds before trusting it, because a single viral clip or one platform's number is not proof.",
+    "encompasses": [
+      "Filter video-commerce sales tools to a realistic revenue band for the brand's size",
+      "Split video revenue from live-stream revenue and count video only",
+      "Read the sales graph shape before the product image, to avoid picking on looks",
+      "Pull the 180-day and multi-year graph, not just the recent spike",
+      "Check revenue spreads across several recent videos, not one old post",
+      "Require winning creative to already exist in the target market's language",
+      "Treat one platform's demand as a lead, not proof, for a different platform",
+      "Treat live ad run length as a funded test signal, not proof of profit",
+      "Read a high concurrent ad count as budget and confidence, then check revenue backs it up"
+    ],
+    "inputs": [
+      "idea bank: 01-PRD",
+      "web: TikTok Shop and native ad spy tools (public)"
+    ],
+    "outputs": [
+      "demand validation note with graph evidence and platform caveats"
+    ],
+    "trigger": "on demand",
+    "autonomy": "agent_does",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [
+      "web search",
+      "script: scripts/ideas.py"
+    ],
+    "skills": [
+      "demand-validation"
+    ],
+    "subagent": null,
+    "sources": {
+      "web": [
+        "https://www.nexscope.ai/blog/best-amazon-product-research-tools"
+      ],
+      "bank": [
+        "PRD-015",
+        "PRD-016",
+        "PRD-017",
+        "PRD-018",
+        "PRD-019",
+        "PRD-020",
+        "PRD-021",
+        "PRD-022",
+        "PRD-023",
+        "PRD-024"
+      ]
+    },
+    "found_in": "bank_only",
+    "founder_sees": "A short note on whether a trending product's demand is real or a platform fluke, with the evidence."
+  },
+  {
+    "id": "PROD-C03",
+    "name": "Scout ad libraries and competitor spend for new product candidates",
+    "folders": [
+      "01-PRD"
+    ],
+    "what": "Search public ad libraries and spy tools for products with real, sustained ad spend, and read what gap the incumbents leave, without copying any asset.",
+    "encompasses": [
+      "Search ad libraries with generic offer and problem phrases, not brand names",
+      "Fall back to manual keyword search when a category filter returns nothing",
+      "Study established advertisers for the angle they leave open, not to copy them",
+      "Cap results per advertiser and widen the results window in spy tools",
+      "Rate each competitor's store and offer quality, not just the ad",
+      "Mine a validated competitor's top ad for avatar and angle in words only, never the asset",
+      "Scout native ad widgets for older-buyer problem categories",
+      "Never scrape an aggregator feed or copy a competitor's store outright",
+      "Train a fresh, time-boxed social account to see what it gets served",
+      "Grade competitor count with a green/amber/red ladder in the free and paid tools"
+    ],
+    "inputs": [
+      "idea bank: 01-PRD",
+      "web: Meta Ad Library, TikTok Ad Library (public, read-only)"
+    ],
+    "outputs": [
+      "competitor scouting sheet: advertiser, angle, store quality, gap found"
+    ],
+    "trigger": "weekly",
+    "autonomy": "agent_does",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [
+      "web search",
+      "browser: headless chromium (public ad libraries only)"
+    ],
+    "skills": [
+      "ad-library-scout"
+    ],
+    "subagent": null,
+    "sources": {
+      "web": [
+        "https://www.trendtrack.io/blog-post/how-can-you-find-a-winning-product-in-e-commerce-in-2026"
+      ],
+      "bank": [
+        "PRD-025",
+        "PRD-026",
+        "PRD-027",
+        "PRD-028",
+        "PRD-029",
+        "PRD-030",
+        "PRD-031",
+        "PRD-032",
+        "PRD-033",
+        "PRD-034"
+      ]
+    },
+    "found_in": "bank_only",
+    "founder_sees": "A list of competitor angles and the gap each one leaves, sourced from public ads only."
+  },
+  {
+    "id": "PROD-C04",
+    "name": "Run disciplined, time-boxed candidate research",
+    "folders": [
+      "01-PRD"
+    ],
+    "what": "Keep product research from sprawling: cap research time per candidate, delegate the repetitive search steps, and mine reviews for the price buyers say they would pay.",
+    "encompasses": [
+      "Stop scrolling and log a candidate the moment it clears the basic screen",
+      "Require an easy on-camera demo or existing content before betting on a product",
+      "Track whether a seeded creator's post actually drove sales before calling it validated",
+      "Delegate research-heavy steps to an agent; keep go/no-go decisions with a person",
+      "Generate a long list of emotional sub-niches, then narrow to a working few",
+      "Treat AI-generated concepts and mockups as stimulus, not a sourcing spec",
+      "Mine reviews for the price buyers say they would actually pay",
+      "Re-check an AI-sourced brand's real revenue before treating ad volume as proof",
+      "Cross-check keyword volume and mentions against the ad library before shortlisting"
+    ],
+    "inputs": [
+      "idea bank: 01-PRD",
+      "web: review aggregators (public)"
+    ],
+    "outputs": [
+      "timed research log",
+      "price-willingness note"
+    ],
+    "trigger": "on demand",
+    "autonomy": "agent_does",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [
+      "script: scripts/ideas.py",
+      "web search"
+    ],
+    "skills": [
+      "candidate-screen"
+    ],
+    "subagent": null,
+    "sources": {
+      "web": [],
+      "bank": [
+        "PRD-035",
+        "PRD-036",
+        "PRD-037",
+        "PRD-038",
+        "PRD-039",
+        "PRD-040",
+        "PRD-041",
+        "PRD-042",
+        "PRD-043"
+      ]
+    },
+    "found_in": "bank_only",
+    "founder_sees": "A capped research log per candidate, with the price customers say they would pay."
+  },
+  {
+    "id": "PROD-C05",
+    "name": "Read trend direction, seasonality and competitive saturation together",
+    "folders": [
+      "01-PRD"
+    ],
+    "what": "Combine a multi-year trend line with how many sellers already exist, so a category is judged on real growth and real room, not on either signal alone.",
+    "encompasses": [
+      "Run a 12-month and multi-year trend check on the exact sub-niche term",
+      "Widen category filters before abandoning a niche in a sales-data tool",
+      "Require search volume and unit sales to move together before trusting a spike",
+      "Estimate competitor revenue and apply a floor before treating them as proof",
+      "Treat missing traffic data as ambiguous, not proof a store is dead",
+      "Confirm the target buyer is reachable, online and shippable before sourcing",
+      "Count niche-level competitors and true substitutes, not just the exact product",
+      "Treat saturation as demand proof only with a concrete unserved angle",
+      "Treat a fragmented market with no leader as a possible opening, not proof on its own",
+      "Watch competitor density as an early sign a product's economics are shifting",
+      "Skip a product recognized as long-running from repeated personal exposure"
+    ],
+    "inputs": [
+      "idea bank: 01-PRD",
+      "web: Google Trends, category search data"
+    ],
+    "outputs": [
+      "trend and saturation memo with the graph and competitor count"
+    ],
+    "trigger": "on demand",
+    "autonomy": "agent_does",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [
+      "web search",
+      "script: scripts/ideas.py"
+    ],
+    "skills": [
+      "trend-seasonality-check"
+    ],
+    "subagent": null,
+    "sources": {
+      "web": [
+        "https://www.shopify.com/blog/product-research"
+      ],
+      "bank": [
+        "PRD-044",
+        "PRD-045",
+        "PRD-046",
+        "PRD-047",
+        "PRD-048",
+        "PRD-049",
+        "PRD-050",
+        "PRD-051",
+        "PRD-052",
+        "PRD-053",
+        "PRD-054",
+        "PRD-055",
+        "PRD-056",
+        "PRD-057",
+        "PRD-058",
+        "PRD-059"
+      ]
+    },
+    "found_in": "web+bank",
+    "founder_sees": "A memo saying whether demand is growing, flat or a fad, and how crowded the space is."
+  },
+  {
+    "id": "PROD-C06",
+    "name": "Extend the product line and sharpen the differentiation angle",
+    "folders": [
+      "01-PRD"
+    ],
+    "what": "For a proven hero product, plan the next SKUs, and for any candidate, name the one thing that makes it different from the category's default, backed by an angle gap in the market.",
+    "encompasses": [
+      "Build a brand around a proven product and add secondary products before it fades",
+      "List every angle competitors run, then name the avatar none of them serve",
+      "Prefer an angle that already holds a small but real share of ad volume",
+      "Rebuild the page and creative around a new avatar rather than bolt it on",
+      "Build an offer structure as a differentiation lever instead of copying the product",
+      "Use a branded or technical-sounding name only where the claim is provable",
+      "Change exactly one variable from the category's core expectation",
+      "Borrow design and mechanics from a distant industry, not a competitor",
+      "Name a self-interested and a feel-good reason to buy for every product"
+    ],
+    "inputs": [
+      "idea bank: 01-PRD",
+      "brand brain: hero SKU and avatar (once built)"
+    ],
+    "outputs": [
+      "line-extension plan",
+      "differentiation brief with the named angle gap"
+    ],
+    "trigger": "on demand",
+    "autonomy": "agent_does",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [
+      "script: scripts/ideas.py"
+    ],
+    "skills": [
+      "differentiation-brief"
+    ],
+    "subagent": null,
+    "sources": {
+      "web": [],
+      "bank": [
+        "PRD-060",
+        "PRD-061",
+        "PRD-062",
+        "PRD-063",
+        "PRD-064",
+        "PRD-065",
+        "PRD-066",
+        "PRD-067",
+        "PRD-068"
+      ]
+    },
+    "found_in": "bank_only",
+    "founder_sees": "A brief naming the one real difference a product has, and what it lets the brand say."
+  },
+  {
+    "id": "PROD-C07",
+    "name": "Classify demand pattern and plan cash around it",
+    "folders": [
+      "01-PRD"
+    ],
+    "what": "Tag every candidate evergreen, trending or seasonal, map its seasonal or gifting spikes, and check whether it truly earns a subscription or is a one-time novelty, before cash is committed.",
+    "encompasses": [
+      "Classify every candidate evergreen or trending before spending",
+      "Map seasonality across several years and plan cash around it",
+      "Map gifting and occasion spikes the same way as holiday seasonality",
+      "Never commit MOQ inventory against a trend spike with no history",
+      "Check real replenishment rate before assuming a subscription model",
+      "Reject novelty products with no real recurring value",
+      "Judge whether a novelty creates repeat purchase or is a one-time sale",
+      "Weight lifetime value, not just AOV, for a low-ticket repeat item"
+    ],
+    "inputs": [
+      "idea bank: 01-PRD",
+      "brand brain: past seasonality (once built)"
+    ],
+    "outputs": [
+      "demand classification tag per SKU",
+      "cash timing note for Finance"
+    ],
+    "trigger": "on demand",
+    "autonomy": "agent_does",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [
+      "script: scripts/ideas.py"
+    ],
+    "skills": [
+      "demand-classification"
+    ],
+    "subagent": null,
+    "sources": {
+      "web": [],
+      "bank": [
+        "PRD-069",
+        "PRD-070",
+        "PRD-071",
+        "PRD-072",
+        "PRD-073",
+        "PRD-074",
+        "PRD-075",
+        "PRD-076"
+      ]
+    },
+    "found_in": "bank_only",
+    "founder_sees": "A tag on each product (evergreen, seasonal, trend, subscription) with the cash timing it implies."
+  },
+  {
+    "id": "PROD-C08",
+    "name": "Model product economics and the compliance gate before funding a candidate",
+    "folders": [
+      "01-PRD"
+    ],
+    "what": "Price, margin, shipping, shelf-life and regulatory checks in one gate, in code, so a candidate cannot reach sourcing spend without a real margin and a clean compliance read.",
+    "encompasses": [
+      "Reject a product priced too low to cover paid-acquisition cost, and gate on a dollar-margin floor and price-to-cost multiple together",
+      "Model markup at the low end, high end and future bulk cost of the price range",
+      "Re-quote the brand's own supplier cost instead of assuming a competitor's, and set price from a broad set of comparables",
+      "Separate a fixable execution problem from a structural cost problem",
+      "Price payment-gateway friction, real shipping cost, and reversed-order cost (chargebacks, disputes, carrier return-to-sender) into the margin gate (India: also price return-to-origin/RTO cost on cash-on-delivery orders; markets: IN, reads null for US brands)",
+      "Choose materials and packaging that survive parcel handling",
+      "Require shelf life to comfortably outlast time to market and sell",
+      "Check claim, labelling and registration rules, and any category-specific certification, per country before spend",
+      "Check delivery-window targets against chargeback risk",
+      "Check trademark and licensing exposure before listing a fandom-adjacent product",
+      "Launch with exactly one SKU and add variants only after proof"
+    ],
+    "inputs": [
+      "idea bank: 01-PRD",
+      "brand brain: cost basis (once built)",
+      "metric contract: gross_margin, contribution_margin"
+    ],
+    "outputs": [
+      "margin-gate calculation (code)",
+      "compliance flag list"
+    ],
+    "trigger": "on demand",
+    "autonomy": "agent_does",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [
+      "script: landed_cost calculator (to build)",
+      "script: scripts/ideas.py"
+    ],
+    "skills": [
+      "margin-gate",
+      "compliance-screen"
+    ],
+    "subagent": null,
+    "sources": {
+      "web": [],
+      "bank": [
+        "PRD-077",
+        "PRD-078",
+        "PRD-079",
+        "PRD-080",
+        "PRD-081",
+        "PRD-082",
+        "PRD-083",
+        "PRD-084",
+        "PRD-085",
+        "PRD-086",
+        "PRD-087",
+        "PRD-088",
+        "PRD-089",
+        "PRD-090",
+        "PRD-091",
+        "PRD-092"
+      ]
+    },
+    "found_in": "bank_only",
+    "founder_sees": "Pass or fail on margin and compliance, with the numbers computed in code, not guessed."
+  },
+  {
+    "id": "PROD-C09",
+    "name": "Translate specs, vet suppliers and log the research trail",
+    "folders": [
+      "01-PRD",
+      "18-COG"
+    ],
+    "what": "Turn a validated concept into a structured sourcing request suppliers can quote against, and vet the supplier and the AI-sourced leads before spending real time on them.",
+    "encompasses": [
+      "Write one structured sourcing request with MOQ, certifications and review strength, translating consumer language into manufacturing specification",
+      "Vet a shortlisted supplier with specific capability questions by phone, and verify an AI-surfaced supplier is reachable on the named platform",
+      "Order a small sample through the brand's own fulfilment chain before an MOQ order",
+      "Compare a private sourcing agent against marketplace-direct ordering on real numbers",
+      "Add custom branding and packaging only after the product is proven to sell",
+      "Set a reminder to re-quote every supplier as order volume grows",
+      "Price warranty and after-sales cost for a considered-purchase category",
+      "Keep a research log with a fixed set of columns for every candidate, and stop research at a validated product",
+      "Score expansion markets and re-check duty, VAT and creative localization before entering a new country"
+    ],
+    "inputs": [
+      "idea bank: 01-PRD, 18-COG"
+    ],
+    "outputs": [
+      "sourcing request draft",
+      "research log"
+    ],
+    "trigger": "on demand",
+    "autonomy": "human_assist",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [
+      "script: scripts/ideas.py"
+    ],
+    "skills": [
+      "sourcing-request-draft"
+    ],
+    "subagent": "PROD-Sourcing",
+    "sources": {
+      "web": [],
+      "bank": [
+        "PRD-093",
+        "PRD-094",
+        "PRD-095",
+        "PRD-096",
+        "PRD-097",
+        "PRD-098",
+        "PRD-099",
+        "PRD-100",
+        "PRD-101",
+        "PRD-102",
+        "PRD-103",
+        "PRD-104",
+        "PRD-105"
+      ]
+    },
+    "found_in": "bank_only",
+    "founder_sees": "A structured sourcing request ready to send, plus a log of what was checked and why."
+  },
+  {
+    "id": "PROD-C10",
+    "name": "Score expansion markets and apply the go-live gates",
+    "folders": [
+      "01-PRD"
+    ],
+    "what": "Before a candidate goes live, run the remaining gates together: provable claims, an owned difference, brand-specific thresholds, contribution margin, and ad-cost headroom.",
+    "encompasses": [
+      "Use founder excitement only as a tiebreaker between equally validated concepts",
+      "Try a change of presentation before concluding demand is absent, diagnosing ads and funnel before blaming the product",
+      "Run market-level questions before product-level ones, and score every validation question pass, caution or red flag",
+      "Run the full validation stack on every candidate regardless of source, and log every rule override with its justification",
+      "Require every product claim to be provable, and require a named owned difference, before a candidate reaches the shortlist",
+      "Replace default thresholds with the brand's own measured numbers",
+      "Gate on contribution margin after all real costs, not gross margin alone, and require positive ad-cost headroom",
+      "Check whether a recommendation source has a financial interest before trusting it",
+      "Build a staged offer ladder that lifts AOV without inventing claims"
+    ],
+    "inputs": [
+      "idea bank: 01-PRD",
+      "metric contract: contribution_margin, cpa"
+    ],
+    "outputs": [
+      "go-live gate result per candidate"
+    ],
+    "trigger": "on demand",
+    "autonomy": "agent_does",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [
+      "script: scripts/ideas.py"
+    ],
+    "skills": [
+      "go-live-gate"
+    ],
+    "subagent": null,
+    "sources": {
+      "web": [],
+      "bank": [
+        "PRD-106",
+        "PRD-107",
+        "PRD-108",
+        "PRD-109",
+        "PRD-110",
+        "PRD-111",
+        "PRD-112",
+        "PRD-113",
+        "PRD-114",
+        "PRD-115",
+        "PRD-116",
+        "PRD-117",
+        "PRD-118",
+        "PRD-119"
+      ]
+    },
+    "found_in": "bank_only",
+    "founder_sees": "A pass/fail on every remaining launch gate, each with the number or evidence behind it."
+  },
+  {
+    "id": "PROD-C11",
+    "name": "Produce the scored shortlist and go/no-go memo for the founder",
+    "folders": [
+      "01-PRD"
+    ],
+    "what": "Rank the surviving candidates on a fixed scorecard and write the one-page memo the founder actually decides from, with a pre-set review date for whatever gets approved.",
+    "encompasses": [
+      "Run a quick 10-point screen before spending research-tool time",
+      "Confirm every hard stop is clear before spending on samples or ads",
+      "Confirm the full research stack actually ran before greenlighting launch",
+      "Set a post-launch review date and metric before starting a test",
+      "Assign a named owner for post-test diagnosis before launch",
+      "Score every shortlisted candidate on five dimensions and rank before testing",
+      "Write a one-page go/no-go memo with evidence before any sourcing spend",
+      "Ask which warehouse or supply source gives the better-quality version",
+      "Test random un-niched products only to dodge high CPMs in brand-heavy verticals",
+      "Require at least one other seller already making money before copying a resale product"
+    ],
+    "inputs": [
+      "idea bank: 01-PRD"
+    ],
+    "outputs": [
+      "scored shortlist",
+      "go/no-go memo",
+      "registry entry draft"
+    ],
+    "trigger": "on demand",
+    "autonomy": "founder_gate",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [
+      "script: scripts/ideas.py"
+    ],
+    "skills": [
+      "go-no-go-memo"
+    ],
+    "subagent": null,
+    "sources": {
+      "web": [],
+      "bank": [
+        "PRD-120",
+        "PRD-121",
+        "PRD-122",
+        "PRD-123",
+        "PRD-124",
+        "PRD-125",
+        "PRD-126",
+        "PRD-127",
+        "PRD-128",
+        "PRD-129"
+      ]
+    },
+    "found_in": "bank_only",
+    "founder_sees": "A ranked shortlist and a one-page memo asking for a yes, no or park decision."
+  },
+  {
+    "id": "PROD-C12",
+    "name": "Run field research discipline and hand validated angles to creative",
+    "folders": [
+      "01-PRD"
+    ],
+    "what": "Keep research grounded in real shopper behaviour and real time limits, then pass the validated avatar, hook and onboarding idea to the teams that build creative and the site.",
+    "encompasses": [
+      "Hand the candidate avatar list to creative testing instead of testing avatars here",
+      "Screen a category for jargon it forces buyers to already know",
+      "Build a checkable origin story when the product itself cannot differ",
+      "Watch real shoppers in the aisle or on live search results",
+      "Run a time-boxed research-to-concept sprint, not open browsing",
+      "State the single sharpest reason a candidate differs, not a list",
+      "Measure and cut the time to a customer's first moment of delight",
+      "Give a small immediate payoff during an unavoidable wait",
+      "Name a brand from one emotional word, tested for instant recall",
+      "Confirm a new fulfilment app is a real shipping location pre-launch",
+      "Splice the brand's own validated hook into a longer new UGC body"
+    ],
+    "inputs": [
+      "idea bank: 01-PRD"
+    ],
+    "outputs": [
+      "avatar and angle handoff note to Paid creative and copy specialist",
+      "onboarding and naming notes to Brand strategist"
+    ],
+    "trigger": "on demand",
+    "autonomy": "human_assist",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [
+      "script: scripts/ideas.py"
+    ],
+    "skills": [
+      "candidate-screen"
+    ],
+    "subagent": null,
+    "sources": {
+      "web": [],
+      "bank": [
+        "PRD-130",
+        "PRD-131",
+        "PRD-132",
+        "PRD-133",
+        "PRD-134",
+        "PRD-135",
+        "PRD-136",
+        "PRD-137",
+        "PRD-138",
+        "PRD-139",
+        "PRD-140",
+        "PRD-141",
+        "PRD-142"
+      ]
+    },
+    "found_in": "bank_only",
+    "founder_sees": "A short handoff note telling the creative and brand teams which avatar and hook to build on."
+  },
+  {
+    "id": "PROD-C13",
+    "name": "Build tech packs, BOMs, packaging specs and product data records",
+    "folders": [
+      "18-COG"
+    ],
+    "what": "Write the exact, versioned specification for every SKU: measurements with tolerances, a component-level bill of materials, packaging as its own cost line, and the physical claim checks that back the PDP.",
+    "encompasses": [
+      "Write the spec in exact numbers with a tolerance band, not descriptive words",
+      "Write one versioned tech pack per SKU",
+      "Build a component-level bill of materials for the hero SKU first",
+      "Physically verify BOM lines and PDP material claims with the supplier",
+      "Send a physical reference sample with the tech pack to a new factory",
+      "Use the BOM to test an entry or premium version of a SKU",
+      "Quote retail packaging as its own line in the BOM",
+      "Build the missing BOM before any negotiation on a takeover or new client",
+      "Ask when COGS last declined on a mature SKU",
+      "Store tech packs and source files in the brand's own system, not the supplier's"
+    ],
+    "inputs": [
+      "brand brain: product records (specs, weights, materials, certifications)",
+      "idea bank: 18-COG"
+    ],
+    "outputs": [
+      "versioned tech pack",
+      "BOM with packaging line",
+      "product data record"
+    ],
+    "trigger": "event: new SKU or spec change",
+    "autonomy": "agent_does",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [
+      "script: scripts/ideas.py",
+      "file store: brand's own drive"
+    ],
+    "skills": [
+      "tech-pack-build"
+    ],
+    "subagent": "PROD-Sourcing",
+    "sources": {
+      "web": [],
+      "bank": [
+        "COG-001",
+        "COG-002",
+        "COG-003",
+        "COG-004",
+        "COG-005",
+        "COG-006",
+        "COG-007",
+        "COG-008",
+        "COG-009",
+        "COG-010"
+      ]
+    },
+    "found_in": "bank_only",
+    "founder_sees": "A versioned spec sheet and cost breakdown for every SKU, owned by the brand, not the supplier."
+  },
+  {
+    "id": "PROD-C14",
+    "name": "Discover and vet suppliers across sourcing regions",
+    "folders": [
+      "18-COG"
+    ],
+    "what": "Run supplier discovery as a funnel across sourcing regions (US domestic, China, and India where the brand sources there): broad platform search, message a wide shortlist, verify with a video call and certification check, and vet any sourcing agent the same way as a factory.",
+    "encompasses": [
+      "Use Alibaba, 1688 (via a vetted agent), Faire or Tundra for wholesale, or ThomasNet and Maker's Row for US domestic suppliers, for research and shortlisting, not the final pick, on an ad-spend SKU (India: add IndiaMART to the shortlist; markets: IN, reads null for US brands)",
+      "Message 10 to 15 factories and filter to verified suppliers with trade assurance",
+      "Video-call the shortlist to inspect the facility before trusting it",
+      "Require ISO or BSCI certification and drop a refusal",
+      "Keep at least one vetted backup factory for every SKU carrying ad spend",
+      "Get a direct contact channel with every supplier at first contact",
+      "Vet a sourcing agent with a sample, a direct channel and references before using them",
+      "Never buy or open a factory without a specific unmet quality gap"
+    ],
+    "inputs": [
+      "idea bank: 18-COG",
+      "web: supplier discovery platforms (public)"
+    ],
+    "outputs": [
+      "supplier shortlist with verification status",
+      "backup factory record"
+    ],
+    "trigger": "on demand",
+    "autonomy": "human_assist",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [
+      "web search",
+      "script: scripts/ideas.py"
+    ],
+    "skills": [
+      "supplier-discovery"
+    ],
+    "subagent": "PROD-Sourcing",
+    "sources": {
+      "web": [
+        "https://sourcinggpt.ai/",
+        "https://www.thomasnet.com/",
+        "https://makersrow.com/"
+      ],
+      "bank": [
+        "COG-011",
+        "COG-012",
+        "COG-013",
+        "COG-014",
+        "COG-015",
+        "COG-016",
+        "COG-017",
+        "COG-018",
+        "COG-019",
+        "COG-020"
+      ]
+    },
+    "found_in": "web+bank",
+    "founder_sees": "A shortlist of verified suppliers by region, each with a certification and verification status."
+  },
+  {
+    "id": "PROD-C15",
+    "name": "Draft RFQs and compare supplier quotes across volume tiers",
+    "folders": [
+      "18-COG"
+    ],
+    "what": "Turn the spec into a structured RFQ, collect quotes on identical terms, and compare landed cost per unit and cash impact across volume tiers before picking a number.",
+    "encompasses": [
+      "Get a factory-direct or manufacturer quote alongside any intermediary's",
+      "Request a structured quote and compare suppliers only on identical terms",
+      "Request quotes at several volume tiers and compare cash and cover, not just price",
+      "Treat the first quote as an opening position, not the final price",
+      "Use landed cost per unit, not the factory quote, as the pricing decision number",
+      "Confirm a SKU's margin is healthy on its own sell-through before a bulk order",
+      "Check the factory-direct versus intermediary price gap as a negotiation sanity check"
+    ],
+    "inputs": [
+      "idea bank: 18-COG",
+      "brand brain: BOM (from PROD-C13)"
+    ],
+    "outputs": [
+      "RFQ document",
+      "quote comparison sheet with landed cost per tier"
+    ],
+    "trigger": "on demand",
+    "autonomy": "human_assist",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [
+      "script: landed_cost calculator (to build)",
+      "script: scripts/ideas.py"
+    ],
+    "skills": [
+      "rfq-draft",
+      "quote-comparison"
+    ],
+    "subagent": "PROD-Sourcing",
+    "sources": {
+      "web": [
+        "https://www.workus.ai/blog/rfq-automation",
+        "https://www.gezora.ai/products/ai-procurement-agent/"
+      ],
+      "bank": [
+        "COG-021",
+        "COG-022",
+        "COG-023",
+        "COG-024",
+        "COG-025",
+        "COG-026",
+        "COG-027"
+      ]
+    },
+    "found_in": "web+bank",
+    "founder_sees": "A quote comparison table with landed cost per unit and cash tied up, at each volume tier."
+  },
+  {
+    "id": "PROD-C16",
+    "name": "Run the 3-stage sample gate against a reference sample",
+    "folders": [
+      "18-COG"
+    ],
+    "what": "No creative shoot, price or launch date before a sample from the exact factory clears a 3-stage gate against an approved reference kept both in-house and at the factory.",
+    "encompasses": [
+      "Never shoot creative, set a price or commit a launch date before a sample from the exact factory",
+      "Run the 3-stage sample gate with a hard stop at the production sample",
+      "Score supplier communication and reliability during the sample stage",
+      "Keep one approved sample in-house and one at the factory as a reference",
+      "Compare each candidate's sample side by side against the approved reference",
+      "Never treat a passed sample as a guarantee of bulk quality"
+    ],
+    "inputs": [
+      "idea bank: 18-COG"
+    ],
+    "outputs": [
+      "sample QC report",
+      "reliability score",
+      "sample-gate status"
+    ],
+    "trigger": "event: sample received",
+    "autonomy": "human_assist",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [
+      "script: scripts/ideas.py"
+    ],
+    "skills": [
+      "sample-qc-gate"
+    ],
+    "subagent": "PROD-Sourcing",
+    "sources": {
+      "web": [],
+      "bank": [
+        "COG-028",
+        "COG-029",
+        "COG-030",
+        "COG-031",
+        "COG-032",
+        "COG-033"
+      ]
+    },
+    "found_in": "bank_only",
+    "founder_sees": "A clear stage status on every sample: passed, held or rejected, against the approved reference."
+  },
+  {
+    "id": "PROD-C17",
+    "name": "Negotiate cost-downs with backup-factory and benchmark leverage",
+    "folders": [
+      "18-COG"
+    ],
+    "what": "Build real negotiating leverage before asking for a price break: a vetted alternate factory, a teardown of a competitor's product, and the category's normal factory margin.",
+    "encompasses": [
+      "Test a cheaper competing supplier with a small, fully inspected batch first",
+      "Vet a real alternate factory before any cost-down negotiation",
+      "Buy and reverse-engineer competitor products before a cost-down negotiation",
+      "Learn the category's normal factory margin before negotiating",
+      "Choose a negotiation posture based on whether the relationship is strategic or replaceable",
+      "Frame a cost-down as a growth partnership, in units, not price talk",
+      "Write every price-break threshold and credit into the supplier agreement",
+      "Reconcile every invoice against the agreed price-break credits",
+      "Ask the factory to pass through its own sub-vendor volume breaks",
+      "Review the BOM with the supplier yearly and ask what unlocks the next price break"
+    ],
+    "inputs": [
+      "idea bank: 18-COG"
+    ],
+    "outputs": [
+      "negotiation brief with leverage points",
+      "supplier agreement price-break clause draft"
+    ],
+    "trigger": "on demand",
+    "autonomy": "human_assist",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [
+      "script: scripts/ideas.py"
+    ],
+    "skills": [
+      "negotiation-brief"
+    ],
+    "subagent": "PROD-Sourcing",
+    "sources": {
+      "web": [],
+      "bank": [
+        "COG-034",
+        "COG-035",
+        "COG-036",
+        "COG-037",
+        "COG-038",
+        "COG-039",
+        "COG-040",
+        "COG-041",
+        "COG-042",
+        "COG-043"
+      ]
+    },
+    "found_in": "bank_only",
+    "founder_sees": "A negotiation brief with the concrete leverage found, before anyone talks price with the supplier."
+  },
+  {
+    "id": "PROD-C18",
+    "name": "Monitor commodity input costs and protect the supplier relationship",
+    "folders": [
+      "18-COG"
+    ],
+    "what": "Track the priced-in raw materials behind a SKU on a set cadence, and know where a cost-down stops being worth the relationship risk.",
+    "encompasses": [
+      "Pay a bit more for order-resize flexibility in a new SKU's first runs",
+      "Stop a cost-down before it triggers supplier retaliation",
+      "Monitor commodity-priced BOM inputs on a set cadence with multiple quotes",
+      "Benchmark component costs at category trade fairs",
+      "Consider buying a concentrated raw material directly at volume",
+      "Offer to share a specific cost with the supplier to make a negotiation two-sided"
+    ],
+    "inputs": [
+      "idea bank: 18-COG",
+      "web: commodity price indices (public)"
+    ],
+    "outputs": [
+      "commodity price watch note",
+      "negotiation limit flag"
+    ],
+    "trigger": "monthly",
+    "autonomy": "agent_does",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [
+      "web search",
+      "script: scripts/ideas.py"
+    ],
+    "skills": [
+      "commodity-watch"
+    ],
+    "subagent": "PROD-Sourcing",
+    "sources": {
+      "web": [],
+      "bank": [
+        "COG-044",
+        "COG-045",
+        "COG-046",
+        "COG-047",
+        "COG-048",
+        "COG-049"
+      ]
+    },
+    "found_in": "bank_only",
+    "founder_sees": "A monthly flag if a raw-material price has moved enough to change a SKU's cost."
+  },
+  {
+    "id": "PROD-C19",
+    "name": "Structure payment terms, float and MOQ cash planning, handed to Finance",
+    "folders": [
+      "18-COG"
+    ],
+    "what": "Choose the payment route and terms per supplier relationship, and hand every float day, cash-locked figure and financing cost to Finance at each deal close, in the numbers Finance needs.",
+    "encompasses": [
+      "Treat payment terms as float and push for longer terms as trust grows",
+      "Default to trade-assurance-style protected payment for a new or unproven supplier",
+      "Allow direct transfer only for a proven supplier, with owner sign-off, for a real discount",
+      "Tie the balance payment to a passed pre-shipment QC report",
+      "Ask about consignment where the product has resale or reclaim value",
+      "Ask for a hybrid payment cadence with a buffer for the brand's own ordering mistakes",
+      "Ask if the supplier uses export credit insurance or invoice factoring to extend terms",
+      "Make financing cost an explicit BOM line and negotiate the split",
+      "Structure a partner-financed bulk buy for a cash-capped recurring SKU",
+      "Hand float days, cash locked and financing cost to Finance at each close"
+    ],
+    "inputs": [
+      "idea bank: 18-COG",
+      "metric contract: cash_conversion_days"
+    ],
+    "outputs": [
+      "payment terms recommendation",
+      "cash-and-MOQ handoff packet to Finance"
+    ],
+    "trigger": "event: deal close",
+    "autonomy": "human_assist",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [
+      "script: scripts/ideas.py"
+    ],
+    "skills": [
+      "cash-handoff-finance"
+    ],
+    "subagent": "PROD-Sourcing",
+    "sources": {
+      "web": [],
+      "bank": [
+        "COG-050",
+        "COG-051",
+        "COG-052",
+        "COG-053",
+        "COG-054",
+        "COG-055",
+        "COG-056",
+        "COG-057",
+        "COG-058",
+        "COG-059",
+        "COG-060"
+      ]
+    },
+    "found_in": "bank_only",
+    "founder_sees": "A cash-and-MOQ packet for Finance: float days, cash locked, and financing cost, per deal."
+  },
+  {
+    "id": "PROD-C20",
+    "name": "Run pre-shipment inspection and defect disposition",
+    "folders": [
+      "18-COG"
+    ],
+    "what": "Book third-party inspection before a container leaves, size the defect buffer from real history, and record every disposition decision on defective units.",
+    "encompasses": [
+      "Book a mandatory third-party pre-shipment inspection before the container leaves",
+      "Size the order's defect buffer from the observed defect rate",
+      "Decide and record whether to return or absorb defective units",
+      "Run a written QC checklist before every production run ships",
+      "Split customer returns into supplier-fault and fit/expectation buckets",
+      "Reconcile receiving counts and defects against the inspection report on arrival"
+    ],
+    "inputs": [
+      "idea bank: 18-COG",
+      "warehouse: returns and defect data"
+    ],
+    "outputs": [
+      "pre-shipment inspection report",
+      "QC checklist result",
+      "defect disposition record"
+    ],
+    "trigger": "event: shipment ready",
+    "autonomy": "human_assist",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [
+      "script: scripts/ideas.py"
+    ],
+    "skills": [
+      "qc-checklist"
+    ],
+    "subagent": "PROD-Sourcing",
+    "sources": {
+      "web": [],
+      "bank": [
+        "COG-061",
+        "COG-062",
+        "COG-063",
+        "COG-064",
+        "COG-065",
+        "COG-066"
+      ]
+    },
+    "found_in": "bank_only",
+    "founder_sees": "An inspection report and a stated decision on any defective units, before goods ship."
+  },
+  {
+    "id": "PROD-C21",
+    "name": "Choose freight mode and 3PL and manage cross-border logistics",
+    "folders": [
+      "18-COG"
+    ],
+    "what": "Pick air, sea or a hybrid by weight, launch date and cash cover, select a 3PL on service history rather than lowest quote, and check cross-border thresholds before committing a lane.",
+    "encompasses": [
+      "Choose freight mode by weight, volume and the launch calendar",
+      "Hybridize freight: air a small first batch, then sea-restock",
+      "Start planning the next shipment the day the current one lands",
+      "Order heavy or bulky items early enough for sea freight",
+      "Choose a freight forwarder on service and reliability, not the lowest quote",
+      "Verify a recommended cross-border 3PL independently before switching lanes",
+      "Check the customs de minimis threshold before choosing a cross-border DTC lane",
+      "Match freight mode and terms to the store type: slow freight for luxury, fast for impulse",
+      "Choose a 3PL on documented accuracy, speed, communication and Q4 surge history",
+      "Visit a candidate 3PL's warehouse in person before signing",
+      "Ask a candidate 3PL how it handles returns, damages and restocks",
+      "Track 3PL inventory turnover weekly and hold a monthly review"
+    ],
+    "inputs": [
+      "idea bank: 18-COG",
+      "web: freight forwarders and 3PL directories (public)"
+    ],
+    "outputs": [
+      "freight mode recommendation",
+      "3PL shortlist and review notes"
+    ],
+    "trigger": "on demand",
+    "autonomy": "human_assist",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [
+      "web search",
+      "script: scripts/ideas.py"
+    ],
+    "skills": [
+      "freight-3pl-selection"
+    ],
+    "subagent": "PROD-Sourcing",
+    "sources": {
+      "web": [],
+      "bank": [
+        "COG-067",
+        "COG-068",
+        "COG-069",
+        "COG-070",
+        "COG-071",
+        "COG-072",
+        "COG-073",
+        "COG-074",
+        "COG-075",
+        "COG-076",
+        "COG-077",
+        "COG-078",
+        "COG-079"
+      ]
+    },
+    "found_in": "bank_only",
+    "founder_sees": "A freight and 3PL recommendation, with the service history behind the pick."
+  },
+  {
+    "id": "PROD-C22",
+    "name": "Compute reorder points, safety stock and demand plans per SKU",
+    "folders": [
+      "18-COG"
+    ],
+    "what": "Calculate, in code, a reorder point and safety stock for every SKU from its own velocity, lead time and spike risk, and size non-routine orders from the committed channel push, not trailing sales alone.",
+    "encompasses": [
+      "Set a computed reorder point per SKU from velocity, lead time and safety stock",
+      "Run a named weekly review of velocity, lead time and stock position",
+      "Size safety stock from the brand's own spike and delay risk",
+      "Send suppliers the sales forecast before problems appear",
+      "Write a demand plan before any non-routine purchase order",
+      "Size a non-routine order from the committed channel push, not trailing velocity alone",
+      "Put every required field in the PO draft so nothing is left to the factory",
+      "Flag a below-reorder-point SKU on the PDP and throttle its ad spend",
+      "Size a subscription SKU's reorder point from committed cadence, not trailing sales",
+      "Build the demand plan from bundle sell-through, not single-unit history",
+      "Round the order quantity up to the supplier's carton or MOQ multiple"
+    ],
+    "inputs": [
+      "warehouse: order and stock history",
+      "brand brain: SKU lead times",
+      "metric contract: days_of_stock, stockout_days, supplier_lead_days"
+    ],
+    "outputs": [
+      "reorder point per SKU (code)",
+      "PO draft",
+      "stockout/overstock alert"
+    ],
+    "trigger": "weekly",
+    "autonomy": "agent_does",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [
+      "script: reorder point calculator (to build)",
+      "script: scripts/ideas.py"
+    ],
+    "skills": [
+      "reorder-point-calc",
+      "demand-plan"
+    ],
+    "subagent": "PROD-Sourcing",
+    "sources": {
+      "web": [
+        "https://www.cin7.com/blog/inventory-forecasting-software/",
+        "https://www.prediko.io/blog/best-inventory-forecasting-software"
+      ],
+      "bank": [
+        "COG-080",
+        "COG-081",
+        "COG-082",
+        "COG-083",
+        "COG-084",
+        "COG-085",
+        "COG-086",
+        "COG-087",
+        "COG-088",
+        "COG-089",
+        "COG-090"
+      ]
+    },
+    "found_in": "web+bank",
+    "founder_sees": "A reorder point and a ready-to-send PO draft for every SKU nearing its threshold, computed in code."
+  },
+  {
+    "id": "PROD-C23",
+    "name": "Flag supplier and country concentration risk and refresh landed cost",
+    "folders": [
+      "18-COG"
+    ],
+    "what": "Compute supplier and country concentration shares, keep a mapped backup in a second country, and recompute landed cost the moment price, freight, FX or duty changes.",
+    "encompasses": [
+      "Compute and flag supplier concentration share",
+      "Compute and flag country concentration share",
+      "Map a backup factory in a second country before it's needed",
+      "Score a candidate sourcing country on 4 qualitative factors",
+      "Run the lead-time versus cost trade-off with real quotes before moving production",
+      "Hold volume flat and ask for a concession when a shock breaks margin",
+      "Weigh a cost-down push against a CAC push using the real BOM",
+      "Decide whether a full component BOM is worth building given the SKU's COGS size",
+      "Recompute landed cost whenever price, freight, FX or duty changes"
+    ],
+    "inputs": [
+      "warehouse: supplier and country ledger",
+      "metric contract: cogs_per_unit, landed_cost"
+    ],
+    "outputs": [
+      "concentration risk flag",
+      "landed cost recompute (code)"
+    ],
+    "trigger": "monthly",
+    "autonomy": "agent_does",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [
+      "script: landed_cost calculator (to build)"
+    ],
+    "skills": [
+      "concentration-risk-flag",
+      "landed-cost-refresh"
+    ],
+    "subagent": "PROD-Sourcing",
+    "sources": {
+      "web": [],
+      "bank": [
+        "COG-091",
+        "COG-092",
+        "COG-093",
+        "COG-094",
+        "COG-095",
+        "COG-096",
+        "COG-097",
+        "COG-098",
+        "COG-099"
+      ]
+    },
+    "found_in": "bank_only",
+    "founder_sees": "A flag when one supplier or country carries too much of the brand's volume, and a fresh landed cost."
+  },
+  {
+    "id": "PROD-C24",
+    "name": "Run onboarding sourcing audits and automate PO cadence at scale",
+    "folders": [
+      "18-COG"
+    ],
+    "what": "In week one of a takeover or new brand, audit the whole sourcing base once; at high SKU count, move purchase orders from a weekly to a daily cadence.",
+    "encompasses": [
+      "Run a full sourcing audit in the first week of a takeover or new client",
+      "Automate purchase orders from weekly to daily at high SKU count",
+      "Base a sourcing operator near key suppliers to build terms faster",
+      "Open a new market with one cross-border 3PL hub and one global ad set",
+      "Re-quote competing factories on a schedule even for a happy supplier",
+      "Check IP and trademark exposure before reverse engineering a reference sample",
+      "Use an easy-iteration location to test, then move scaled production to a hub",
+      "Hire a freelance designer to build the tech pack when design skill is missing",
+      "Order pre-production samples across the size range to confirm grading",
+      "Use a general AI checklist to draft the landed cost category list, then verify by hand",
+      "Ask an established supplier for a premium courier upgrade on a large order"
+    ],
+    "inputs": [
+      "idea bank: 18-COG"
+    ],
+    "outputs": [
+      "sourcing audit report",
+      "PO automation spec"
+    ],
+    "trigger": "event: onboarding or new client",
+    "autonomy": "human_assist",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [
+      "script: scripts/ideas.py"
+    ],
+    "skills": [
+      "sourcing-audit"
+    ],
+    "subagent": "PROD-Sourcing",
+    "sources": {
+      "web": [],
+      "bank": [
+        "COG-100",
+        "COG-101",
+        "COG-102",
+        "COG-103",
+        "COG-104",
+        "COG-105",
+        "COG-106",
+        "COG-107",
+        "COG-108",
+        "COG-109",
+        "COG-110"
+      ]
+    },
+    "found_in": "bank_only",
+    "founder_sees": "A one-time full audit of every supplier and SKU when a brand or account is taken over."
+  },
+  {
+    "id": "PROD-C25",
+    "name": "Hand sourcing and ops hiring needs to Money and Ops",
+    "folders": [
+      "18-COG"
+    ],
+    "what": "When sourcing volume outgrows the current team, draft the role scorecard and hand the hiring process to the Money and Ops specialist rather than running it here.",
+    "encompasses": [
+      "Run a five-step hiring sequence from scorecard to reference-checked offer",
+      "Write a role scorecard that names required outcomes and irrelevant traits",
+      "Use standardized screening questions to pre-filter and flag deep-dive topics",
+      "Run a chronological interview to catch inflated titles",
+      "Test finalist hires with a trapped case study and a culture questionnaire",
+      "Hire a specialized role in a lower-cost hub instead of a local generalist",
+      "Keep the store's proven marketing edge in-house below a revenue threshold",
+      "Run a deliberately lean headcount and add a role only at capacity",
+      "Run a daily task and time-log channel with every direct report",
+      "Give management feedback on a predictable daily cadence, not at random"
+    ],
+    "inputs": [
+      "idea bank: 18-COG"
+    ],
+    "outputs": [
+      "role scorecard draft for a sourcing or ops hire",
+      "handoff note to Money and Ops"
+    ],
+    "trigger": "on demand",
+    "autonomy": "human_assist",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [
+      "script: scripts/ideas.py"
+    ],
+    "skills": [
+      "hiring-scorecard-draft"
+    ],
+    "subagent": null,
+    "sources": {
+      "web": [],
+      "bank": [
+        "COG-111",
+        "COG-112",
+        "COG-113",
+        "COG-114",
+        "COG-115",
+        "COG-116",
+        "COG-117",
+        "COG-118",
+        "COG-119",
+        "COG-120",
+        "COG-122",
+        "COG-123"
+      ]
+    },
+    "found_in": "bank_only",
+    "founder_sees": "A draft scorecard for a sourcing hire, handed to Money and Ops to run the actual hiring process."
+  },
+  {
+    "id": "PROD-C26",
+    "name": "Hand cash, margin and deal-risk signals to Finance and the founder",
+    "folders": [
+      "18-COG"
+    ],
+    "what": "Surface the sourcing-side numbers Finance and the founder need for cash discipline and any recovery or capability decision, without doing Finance's own P&L work here.",
+    "encompasses": [
+      "Build a daily color-coded P&L digest with a required miss explanation",
+      "Close the books monthly and pay out from free cash, not EBITDA",
+      "Use a five-slide accountability deck to negotiate a way out of a cash hole",
+      "Screen a founder's character with mutual reference calls before a deal",
+      "Evaluate an internal sourcing capability as a picks-and-shovels product for other brands"
+    ],
+    "inputs": [
+      "idea bank: 18-COG"
+    ],
+    "outputs": [
+      "sourcing-side numbers packet for Finance's P&L and cash model"
+    ],
+    "trigger": "monthly",
+    "autonomy": "human_assist",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [
+      "script: scripts/ideas.py"
+    ],
+    "skills": [
+      "cash-handoff-finance"
+    ],
+    "subagent": null,
+    "sources": {
+      "web": [],
+      "bank": [
+        "COG-121",
+        "COG-124",
+        "COG-125",
+        "COG-126",
+        "COG-127"
+      ]
+    },
+    "found_in": "bank_only",
+    "founder_sees": "A packet of sourcing-side cash and margin numbers, handed to Finance and the founder."
+  },
+  {
+    "id": "PROD-C27",
+    "name": "Flag slow-moving and dead stock and draft a clearance plan",
+    "folders": [
+      "18-COG",
+      "22-AMZ"
+    ],
+    "what": "Watch inventory age against velocity across DTC and marketplace stock, flag a SKU before it becomes dead weight, and draft a markdown, bundle or discontinue plan with the cash impact.",
+    "encompasses": [
+      "Compute days-of-stock and sell-through velocity per SKU across channels",
+      "Flag a SKU approaching the long-term storage or dead-stock threshold",
+      "Draft a markdown, bundle-out or discontinue option with the cash recovered",
+      "Recommend discontinuing a SKU whose demand pattern is a one-time novelty",
+      "Route a dead-stock decision to the founder with the write-off amount"
+    ],
+    "inputs": [
+      "warehouse: inventory age and velocity by channel",
+      "metric contract: days_of_stock, inventory_turns"
+    ],
+    "outputs": [
+      "dead-stock alert",
+      "clearance or discontinue plan",
+      "registry entry if executed"
+    ],
+    "trigger": "weekly",
+    "autonomy": "founder_gate",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [
+      "script: reorder point calculator (to build)"
+    ],
+    "skills": [
+      "dead-stock-plan"
+    ],
+    "subagent": "PROD-Sourcing",
+    "sources": {
+      "web": [
+        "https://www.finaloop.com/blog/ecommerce-inventory-management-software-guide"
+      ],
+      "bank": [
+        "COG-080",
+        "COG-081",
+        "COG-082",
+        "AMZ-108",
+        "AMZ-112"
+      ]
+    },
+    "found_in": "web+bank",
+    "founder_sees": "An alert on stock that is going dead, with a clearance plan and the cash it would recover or lose."
+  },
+  {
+    "id": "PROD-C28",
+    "name": "Set up and verify the Amazon seller account without compliance risk",
+    "folders": [
+      "22-AMZ"
+    ],
+    "what": "Get the Amazon account, entity, payout and identity verification right the first time, since a rejected or later-flagged account costs weeks.",
+    "encompasses": [
+      "Decide FBA vs FBM, and confirm the product is the brand's own, before opening the account",
+      "Gate adding Amazon on the brand's own landed cost and price, not on course figures, with a launch budget built from line items",
+      "Match the target revenue band to the cash the brand actually has available",
+      "Set a launch date once price, margin and differentiation clear; stop re-researching",
+      "Reject a product that cannot win a price or review fight against the top 10 listings",
+      "Model Seller Fulfilled Prime as an FBM alternative, and choose the Professional plan above about 40 units a month expected",
+      "Disclose any existing or previously suspended account before opening a new one",
+      "Gather the full identity, bank and tax document set, name matching ID exactly, and use a business credit card at signup",
+      "Prepare for the live video identity verification call with matching documents",
+      "Do not change bank details or business address for 1 to 2 months after approval",
+      "Open the account under a business entity with its own EIN and bank account",
+      "Buy UPC barcodes from GS1 directly, never from gray-market resellers"
+    ],
+    "inputs": [
+      "idea bank: 22-AMZ",
+      "brand brain: entity and product records"
+    ],
+    "outputs": [
+      "Amazon channel go/no-go memo",
+      "account setup checklist"
+    ],
+    "trigger": "event: considering Amazon launch",
+    "autonomy": "founder_gate",
+    "external_write": {
+      "needed": true,
+      "surface": "amazon seller central account"
+    },
+    "tools": [
+      "script: scripts/ideas.py",
+      "web search"
+    ],
+    "skills": [
+      "channel-go-no-go"
+    ],
+    "subagent": "PROD-Marketplace",
+    "sources": {
+      "web": [],
+      "bank": [
+        "AMZ-001",
+        "AMZ-002",
+        "AMZ-003",
+        "AMZ-004",
+        "AMZ-005",
+        "AMZ-006",
+        "AMZ-007",
+        "AMZ-008",
+        "AMZ-009",
+        "AMZ-010",
+        "AMZ-011",
+        "AMZ-012",
+        "AMZ-013",
+        "AMZ-014",
+        "AMZ-015",
+        "AMZ-016",
+        "AMZ-017"
+      ]
+    },
+    "found_in": "bank_only",
+    "founder_sees": "A go/no-go memo on adding Amazon, with the account and document checklist ready."
+  },
+  {
+    "id": "PROD-C29",
+    "name": "File trademark, enrol Brand Registry and protect brand equity",
+    "folders": [
+      "22-AMZ"
+    ],
+    "what": "Sequence the trademark filing, listing creation and Brand Registry enrolment correctly, then turn on the Storefront and Subscribe & Save benefits it unlocks.",
+    "encompasses": [
+      "Add VAT to the fee lines before judging margin on UK or EU sales",
+      "File a trademark application before or at listing creation, do not wait for approval",
+      "Choose a design mark over a word mark when the brand name sits on the listing image",
+      "Create the listing before applying for Brand Registry, since enrolment needs an ASIN",
+      "Record the trademark serial number in the brand record right after filing",
+      "Enrol in Brand Registry as soon as eligible and turn on its benefits",
+      "Track the Brand Referral Bonus with tracked links; do not assume a fixed percentage",
+      "Get a lawyer-reviewed NNN agreement before a production PO to an overseas factory",
+      "Enrol a repeat-purchase product in Subscribe & Save once Brand Registered",
+      "Build a Brand Registry Storefront as a destination for off-Amazon traffic"
+    ],
+    "inputs": [
+      "idea bank: 22-AMZ",
+      "brand brain: trademark status"
+    ],
+    "outputs": [
+      "trademark filing checklist",
+      "Brand Registry enrolment status",
+      "Storefront brief"
+    ],
+    "trigger": "event: listing live",
+    "autonomy": "human_assist",
+    "external_write": {
+      "needed": true,
+      "surface": "amazon brand registry"
+    },
+    "tools": [
+      "script: scripts/ideas.py"
+    ],
+    "skills": [
+      "brand-registry-sequence"
+    ],
+    "subagent": "PROD-Marketplace",
+    "sources": {
+      "web": [],
+      "bank": [
+        "AMZ-018",
+        "AMZ-019",
+        "AMZ-020",
+        "AMZ-021",
+        "AMZ-022",
+        "AMZ-023",
+        "AMZ-024",
+        "AMZ-025",
+        "AMZ-026",
+        "AMZ-027"
+      ]
+    },
+    "found_in": "bank_only",
+    "founder_sees": "A checklist confirming trademark filed, Brand Registry enrolled and Storefront live, in the right order."
+  },
+  {
+    "id": "PROD-C30",
+    "name": "Screen Amazon product candidates for price, competition and demand pattern",
+    "folders": [
+      "22-AMZ"
+    ],
+    "what": "Apply Amazon-specific elimination screens before a candidate reaches sourcing: price floor, page-1 price spread, keyword variability, brand dominance and a real fad filter.",
+    "encompasses": [
+      "Screen out disqualifying products first: cheap, head-on competitive, seasonal or restricted",
+      "Target a sell price of $25 or more for a new launch; treat $15 as the floor",
+      "Require both real demand and low competition before shortlisting",
+      "Reject categories dominated by 1 or 2 legacy brands",
+      "Reject a product with a tight page-1 price cluster; prefer a wide legitimate spread",
+      "Prefer products with many distinct search phrasings over one or two monolithic terms",
+      "Require at least 8 months of listing age on comparable products before treating demand as evergreen"
+    ],
+    "inputs": [
+      "idea bank: 22-AMZ",
+      "web: Amazon best-seller and category browse pages (public)"
+    ],
+    "outputs": [
+      "Amazon candidate screen result"
+    ],
+    "trigger": "on demand",
+    "autonomy": "agent_does",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [
+      "web search",
+      "script: scripts/ideas.py"
+    ],
+    "skills": [
+      "amazon-candidate-screen"
+    ],
+    "subagent": "PROD-Marketplace",
+    "sources": {
+      "web": [
+        "https://www.nexscope.ai/blog/best-amazon-product-research-tools"
+      ],
+      "bank": [
+        "AMZ-028",
+        "AMZ-029",
+        "AMZ-030",
+        "AMZ-031",
+        "AMZ-032",
+        "AMZ-033",
+        "AMZ-034"
+      ]
+    },
+    "found_in": "web+bank",
+    "founder_sees": "A pass/fail screen for a candidate against Amazon's own price and competition patterns."
+  },
+  {
+    "id": "PROD-C31",
+    "name": "Mine competitor reviews and keywords for Amazon opportunity",
+    "folders": [
+      "01-PRD",
+      "22-AMZ"
+    ],
+    "what": "Read 1 to 3 star reviews on competing listings for fixable complaints, confirm mid-rated high-volume sellers as a demand-and-gap signal, and mine keywords from reverse-ASIN and autocomplete sources.",
+    "encompasses": [
+      "Mine 1-star to 3-star reviews of selling competitors and write each fixable complaint into the product brief",
+      "Treat a 4.1 to 4.3 star competitor doing meaningful monthly revenue as demand proof with a spec gap",
+      "Run two different research-filter recipes as separate passes, not one copied verbatim",
+      "Validate a keyword gap live on Amazon search, not only inside the research tool",
+      "Cross-check any tool revenue estimate against BSR and a sales estimator before trusting it",
+      "Use giftability as a tie-breaker only, never as a gate",
+      "Run reverse-ASIN keyword research on 2 to 3 competitor ASINs",
+      "Cross-check Amazon autocomplete suggestions against revenue data"
+    ],
+    "inputs": [
+      "idea bank: 01-PRD, 22-AMZ",
+      "web: Amazon listings and reviews (public)"
+    ],
+    "outputs": [
+      "review-mined product-gap brief",
+      "keyword list with source"
+    ],
+    "trigger": "on demand",
+    "autonomy": "agent_does",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [
+      "web search",
+      "script: scripts/ideas.py"
+    ],
+    "skills": [
+      "review-mining",
+      "keyword-mining"
+    ],
+    "subagent": "PROD-Marketplace",
+    "sources": {
+      "web": [
+        "https://github.com/nexscope-ai/Amazon-Skills"
+      ],
+      "bank": [
+        "PRD-007",
+        "PRD-008",
+        "PRD-041",
+        "AMZ-035",
+        "AMZ-036",
+        "AMZ-037",
+        "AMZ-038",
+        "AMZ-039",
+        "AMZ-040",
+        "AMZ-041",
+        "AMZ-042"
+      ]
+    },
+    "found_in": "web+bank",
+    "founder_sees": "A list of fixable complaints from real reviews, and keywords competitors are missing."
+  },
+  {
+    "id": "PROD-C32",
+    "name": "Model Amazon channel economics and the margin gate",
+    "folders": [
+      "22-AMZ"
+    ],
+    "what": "Model the full Amazon fee stack, storage cost, PPC budget and price-parity rule against DTC, in code, so a SKU only launches with a real net margin after every fee.",
+    "encompasses": [
+      "Set a 30% or higher net margin gate after landed cost and all Amazon fees",
+      "Price at 3x or more the unit manufacturing cost, consider premium positioning",
+      "Model the full Amazon fee stack line by line before committing to stock",
+      "Compute monthly storage cost from cubic feet and the live per-cubic-foot rate",
+      "Design packaging to the smallest FBA size tier that still protects the product",
+      "Read the monthly Amazon P&L by fee line, never by revenue alone",
+      "Audit fee charges and lost or damaged inventory claims every month",
+      "Set the PPC budget from cost per click, conversion rate and margin, with a launch reserve",
+      "Keep the Amazon price at or above the brand's own DTC price unless deliberately modelled",
+      "Use Amazon's coupons, Lightning Deals and Prime Day, but never below the margin gate",
+      "Set the negative-keyword spend threshold from the brand's own margin",
+      "Enrol a qualifying low-price, lightweight SKU in Small and Light to cut the FBA fee"
+    ],
+    "inputs": [
+      "idea bank: 22-AMZ",
+      "metric contract: contribution_margin, cogs_per_unit"
+    ],
+    "outputs": [
+      "Amazon fee-stack model (code)",
+      "monthly Amazon P&L by fee line",
+      "PPC budget"
+    ],
+    "trigger": "monthly",
+    "autonomy": "agent_does",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [
+      "script: landed_cost calculator (to build)"
+    ],
+    "skills": [
+      "amazon-fee-model"
+    ],
+    "subagent": "PROD-Marketplace",
+    "sources": {
+      "web": [],
+      "bank": [
+        "AMZ-018",
+        "AMZ-043",
+        "AMZ-044",
+        "AMZ-045",
+        "AMZ-046",
+        "AMZ-047",
+        "AMZ-048",
+        "AMZ-049",
+        "AMZ-050",
+        "AMZ-051",
+        "AMZ-097",
+        "AMZ-116",
+        "AMZ-135"
+      ]
+    },
+    "found_in": "bank_only",
+    "founder_sees": "A monthly Amazon P&L by fee line, and the net margin after every fee, computed in code."
+  },
+  {
+    "id": "PROD-C33",
+    "name": "Manage Amazon-bound sourcing, sample approval and pre-shipment inspection",
+    "folders": [
+      "18-COG",
+      "22-AMZ"
+    ],
+    "what": "Run the sourcing steps specific to an FBA-bound production run: capacity check, printed sample sign-off, inspection with a barcode scan, and FNSKU labelling at the factory.",
+    "encompasses": [
+      "Confirm a factory's maximum monthly output before setting a launch date",
+      "Pay for a printed sample and approve it against the product brief before the FBA-bound run",
+      "Run a third-party inspection, including a barcode scan, before releasing the balance payment",
+      "Pay new Amazon-bound suppliers by a reversible method until trust is established",
+      "Print the FNSKU barcode on the packaging at the factory, never let Amazon apply the label",
+      "Choose air or sea freight against the launch date and PPC budget already committed",
+      "Source consumable or ingested products domestically unless the overseas path is confirmed"
+    ],
+    "inputs": [
+      "idea bank: 18-COG, 22-AMZ"
+    ],
+    "outputs": [
+      "FBA-bound sample approval",
+      "inspection report",
+      "FNSKU labelling confirmation"
+    ],
+    "trigger": "event: FBA production run",
+    "autonomy": "human_assist",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [
+      "script: scripts/ideas.py"
+    ],
+    "skills": [
+      "qc-checklist"
+    ],
+    "subagent": "PROD-Sourcing",
+    "sources": {
+      "web": [],
+      "bank": [
+        "AMZ-052",
+        "AMZ-053",
+        "AMZ-054",
+        "AMZ-055",
+        "AMZ-056",
+        "AMZ-057",
+        "AMZ-058"
+      ]
+    },
+    "found_in": "bank_only",
+    "founder_sees": "A confirmed sample, inspection and correct labelling before goods ship into FBA."
+  },
+  {
+    "id": "PROD-C34",
+    "name": "Build and optimise the Amazon listing",
+    "folders": [
+      "22-AMZ"
+    ],
+    "what": "Write and structure the listing so the target keyword sits where Amazon's search ranks on, every image slot earns its place, and every attribute field is filled.",
+    "encompasses": [
+      "Put the number one target keyword in the first 2 words of the title and the first bullet",
+      "Sort keywords into core, supporting and buzzwords-to-cut, mining adjacent listings for extra attribute terms",
+      "Write 5 bullets that lead with a benefit and carry one true, specific claim each",
+      "Make the main image differentiate the product on the search grid, and use every secondary image slot including a comparison chart",
+      "Fill every attribute field correctly, especially shelf life and units per sellable unit",
+      "Fill backend search terms with leftover true keywords not already visible",
+      "Set a future offer start date so launch traffic never lands on an out-of-stock listing",
+      "Build a new listing for an own-brand product; join an existing ASIN only if resellers already listed it",
+      "Plan buffer time for compliance flags on supplements, diet claims or anything a scanner may misread",
+      "Use A+ content and a listing or index checker once Brand Registered",
+      "Choose a specific, accurate category node instead of a too-generic auto-suggestion",
+      "Use Amazon's AI listing generator from an existing DTC product page instead of a blank listing"
+    ],
+    "inputs": [
+      "idea bank: 22-AMZ",
+      "brand brain: product copy and claims tiers",
+      "PROD-C31 keyword list"
+    ],
+    "outputs": [
+      "Amazon listing draft (title, bullets, images brief, attributes, backend keywords)"
+    ],
+    "trigger": "event: listing build or refresh",
+    "autonomy": "human_assist",
+    "external_write": {
+      "needed": true,
+      "surface": "amazon seller central listing"
+    },
+    "tools": [
+      "script: scripts/ideas.py",
+      "web search"
+    ],
+    "skills": [
+      "amazon-listing-build"
+    ],
+    "subagent": "PROD-Marketplace",
+    "sources": {
+      "web": [
+        "https://www.linnworks.com/blog/how-to-optimize-amazon-listings/"
+      ],
+      "bank": [
+        "AMZ-059",
+        "AMZ-060",
+        "AMZ-061",
+        "AMZ-062",
+        "AMZ-063",
+        "AMZ-064",
+        "AMZ-065",
+        "AMZ-066",
+        "AMZ-067",
+        "AMZ-068",
+        "AMZ-069",
+        "AMZ-070",
+        "AMZ-071",
+        "AMZ-136"
+      ]
+    },
+    "found_in": "web+bank",
+    "founder_sees": "A complete draft Amazon listing, ready for a human to paste into Seller Central."
+  },
+  {
+    "id": "PROD-C35",
+    "name": "Prepare and ship FBA inbound shipments correctly",
+    "folders": [
+      "22-AMZ"
+    ],
+    "what": "Build the shipment from measured case dimensions against FBA's hard limits, reuse a saved template, and keep every paper trail so a lost-inventory claim can be filed.",
+    "encompasses": [
+      "Build every shipment from measured case dimensions and weight against the hard FBA size limits",
+      "Save a case-pack template after the first shipment so repeat shipments reuse the same counts",
+      "Check every box label against the carrier label before dispatch",
+      "Always use the true ship-from address on every FBA shipment",
+      "Use small parcel for boxes and LTL pallets for larger volumes",
+      "Keep every carrier receipt and bill of lading before handover",
+      "Book the carrier collection; a tracking number alone does not finish a shipment",
+      "Read the FBA Inventory Breakdown before assuming stock is lost; escalate only past the normal window",
+      "Answer every dangerous-goods and prep question accurately, and set the right prep category"
+    ],
+    "inputs": [
+      "idea bank: 22-AMZ"
+    ],
+    "outputs": [
+      "shipment plan with case-pack template",
+      "shipment paperwork record"
+    ],
+    "trigger": "event: FBA shipment",
+    "autonomy": "human_assist",
+    "external_write": {
+      "needed": true,
+      "surface": "amazon seller central shipments"
+    },
+    "tools": [
+      "script: scripts/ideas.py"
+    ],
+    "skills": [
+      "fba-shipment-prep"
+    ],
+    "subagent": "PROD-Marketplace",
+    "sources": {
+      "web": [],
+      "bank": [
+        "AMZ-072",
+        "AMZ-073",
+        "AMZ-074",
+        "AMZ-075",
+        "AMZ-076",
+        "AMZ-077",
+        "AMZ-078",
+        "AMZ-079",
+        "AMZ-080"
+      ]
+    },
+    "found_in": "bank_only",
+    "founder_sees": "A shipment plan that fits FBA's size limits and a full paper trail if a claim is needed later."
+  },
+  {
+    "id": "PROD-C36",
+    "name": "Plan and protect an Amazon product launch",
+    "folders": [
+      "22-AMZ"
+    ],
+    "what": "Concentrate real demand into the first weeks with stock and PPC live together, build an audience before launch day, and protect a novel product against copycats from day one.",
+    "encompasses": [
+      "Concentrate genuine sales into launch day and the first weeks, with stock live and PPC on",
+      "Build an audience (waitlist, social, seeded creators) before launch day, not after",
+      "Launch one SKU first; add colour or size variants only when the category requires them",
+      "Use only compliant launch levers; drop manual review generation from the plan",
+      "Use price as an inventory throttle only when selling faster than the next delivery can restock",
+      "Recover a stalled launch by reading sessions and unit session percentage before re-testing",
+      "Route Amazon buyers to email or DTC with a packaging insert or QR code, no review ask",
+      "Protect a novel product with Brand Registry, Transparency and IP filing, not launch speed alone"
+    ],
+    "inputs": [
+      "idea bank: 22-AMZ",
+      "PROD-C29 Brand Registry status"
+    ],
+    "outputs": [
+      "launch plan with concentration window",
+      "copycat protection checklist"
+    ],
+    "trigger": "event: pre-launch",
+    "autonomy": "human_assist",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [
+      "script: scripts/ideas.py"
+    ],
+    "skills": [
+      "amazon-launch-plan"
+    ],
+    "subagent": "PROD-Marketplace",
+    "sources": {
+      "web": [],
+      "bank": [
+        "AMZ-081",
+        "AMZ-082",
+        "AMZ-083",
+        "AMZ-084",
+        "AMZ-085",
+        "AMZ-086",
+        "AMZ-087",
+        "AMZ-088"
+      ]
+    },
+    "found_in": "bank_only",
+    "founder_sees": "A launch week plan that lines up stock, PPC and audience together, plus a copycat-protection checklist."
+  },
+  {
+    "id": "PROD-C37",
+    "name": "Build the Amazon PPC campaign structure and hand off to Media buyer",
+    "folders": [
+      "22-AMZ"
+    ],
+    "what": "Draft the automatic-to-manual PPC campaign structure, negative-keyword hygiene and retargeting layer as a change list, and hand execution to the Media buyer specialist since ad-account writes sit there.",
+    "encompasses": [
+      "Run an automatic campaign first to discover converting search terms",
+      "Split the automatic campaign into 4 ad groups by targeting type with separate bids",
+      "Build manual keyword campaigns from proven search terms after 2 to 4 weeks of data",
+      "Run product targeting on weaker or higher-priced competitor ASINs, one ad group per competitor",
+      "Add negative keywords to every live campaign from day one",
+      "Judge PPC on net profit, not sales, and test reducing budget once organic momentum exists",
+      "Diagnose an ineligible-to-advertise listing by isolating the trigger",
+      "Add Sponsored Display or DSP retargeting once Sponsored Products is proven"
+    ],
+    "inputs": [
+      "idea bank: 22-AMZ",
+      "metric contract: cpa, roas_retargeting"
+    ],
+    "outputs": [
+      "PPC campaign structure change list, handed to Media buyer"
+    ],
+    "trigger": "on demand",
+    "autonomy": "human_assist",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [
+      "script: scripts/ideas.py"
+    ],
+    "skills": [
+      "ppc-structure-brief"
+    ],
+    "subagent": "PROD-Marketplace",
+    "sources": {
+      "web": [],
+      "bank": [
+        "AMZ-089",
+        "AMZ-090",
+        "AMZ-091",
+        "AMZ-092",
+        "AMZ-093",
+        "AMZ-094",
+        "AMZ-095",
+        "AMZ-096",
+        "AMZ-097"
+      ]
+    },
+    "found_in": "bank_only",
+    "founder_sees": "A ready-to-run Amazon PPC structure, handed to the Media buyer to execute."
+  },
+  {
+    "id": "PROD-C38",
+    "name": "Manage marketplace reviews, feedback and policy/account-health compliance",
+    "folders": [
+      "22-AMZ"
+    ],
+    "what": "Request reviews only through permitted paths, contest misplaced feedback, and watch Account Health weekly so a policy notice never becomes a surprise suspension.",
+    "encompasses": [
+      "Request reviews only through Amazon's permitted request path, never selecting only satisfied buyers",
+      "Never reimburse, gift or recruit friends or family for reviews, or link a refund to a review change",
+      "Use Vine only under current terms and only once the product is genuinely ready",
+      "Contest seller feedback that is really a product review within the window, without offering a benefit",
+      "Watch Account Health weekly for order defect rate, claims and policy notices",
+      "Run a full policy compliance audit covering barcodes, ship-from address, accounts and shared devices",
+      "Monitor Brand Registry alerts for hijackers and open a case immediately",
+      "Assign a named human owner for every account-changing action"
+    ],
+    "inputs": [
+      "idea bank: 22-AMZ",
+      "warehouse: reviews and support tickets"
+    ],
+    "outputs": [
+      "review-request compliance check",
+      "account health monitoring report",
+      "hijacker alert"
+    ],
+    "trigger": "weekly",
+    "autonomy": "human_assist",
+    "external_write": {
+      "needed": true,
+      "surface": "amazon seller central account settings"
+    },
+    "tools": [
+      "script: scripts/ideas.py"
+    ],
+    "skills": [
+      "account-health-watch"
+    ],
+    "subagent": "PROD-Marketplace",
+    "sources": {
+      "web": [],
+      "bank": [
+        "AMZ-098",
+        "AMZ-099",
+        "AMZ-100",
+        "AMZ-101",
+        "AMZ-102",
+        "AMZ-103",
+        "AMZ-104",
+        "AMZ-105",
+        "AMZ-131"
+      ]
+    },
+    "found_in": "bank_only",
+    "founder_sees": "A weekly Account Health check and an immediate flag if a hijacker or policy notice appears."
+  },
+  {
+    "id": "PROD-C39",
+    "name": "Manage Amazon inventory: replenishment, aged stock and IPI limits",
+    "folders": [
+      "18-COG",
+      "22-AMZ"
+    ],
+    "what": "Size replenishment shipments from real cover targets, treat a stockout as the failure mode to avoid, and watch IPI and storage limits live so a restock is never blocked.",
+    "encompasses": [
+      "Send 3 to 6 months of stock cover per inbound shipment, smaller for an unproven SKU",
+      "Treat a stockout as the failure mode to avoid; reorder early and rush if velocity rises",
+      "Watch inventory age and act before the long-term storage threshold hits",
+      "Plan Q4 stock early, accounting for about 3x normal volume and slower check-in",
+      "Fetch current IPI, storage and restock limits live before planning inventory",
+      "Use the Restock Inventory widget's days-of-supply estimate as a starting point, not the final answer",
+      "Flag inventory approaching 150 days as an early warning before the long-term storage threshold"
+    ],
+    "inputs": [
+      "idea bank: 22-AMZ",
+      "metric contract: days_of_stock, stockout_days"
+    ],
+    "outputs": [
+      "replenishment plan",
+      "aged-inventory alert",
+      "IPI/limit check"
+    ],
+    "trigger": "weekly",
+    "autonomy": "agent_does",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [
+      "script: reorder point calculator (to build)"
+    ],
+    "skills": [
+      "reorder-point-calc"
+    ],
+    "subagent": "PROD-Sourcing",
+    "sources": {
+      "web": [],
+      "bank": [
+        "AMZ-106",
+        "AMZ-107",
+        "AMZ-108",
+        "AMZ-109",
+        "AMZ-110",
+        "AMZ-111",
+        "AMZ-112"
+      ]
+    },
+    "found_in": "bank_only",
+    "founder_sees": "A replenishment plan and an early warning before FBA stock goes into long-term storage."
+  },
+  {
+    "id": "PROD-C40",
+    "name": "Diagnose Amazon sales changes and run compliant native promotions",
+    "folders": [
+      "22-AMZ"
+    ],
+    "what": "Split a sales change into traffic versus conversion before acting on it, check attribution and seasonality before calling a product a failure, and use only Amazon's own compliant promotion tools.",
+    "encompasses": [
+      "Read sessions and unit session percentage separately before diagnosing a sales change",
+      "Track off-Amazon ad attribution before trusting its reported return",
+      "Map revenue by month for a full year before calling a product a failure",
+      "Use Amazon's own coupons, Lightning Deals and Prime Day, but never below the margin gate"
+    ],
+    "inputs": [
+      "warehouse: Amazon Business Reports",
+      "metric contract: attribution_gap, cvr_overall"
+    ],
+    "outputs": [
+      "sales-change diagnosis note",
+      "promotion recommendation"
+    ],
+    "trigger": "on demand",
+    "autonomy": "agent_does",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [
+      "script: scripts/ideas.py"
+    ],
+    "skills": [
+      "sales-diagnosis"
+    ],
+    "subagent": "PROD-Marketplace",
+    "sources": {
+      "web": [],
+      "bank": [
+        "AMZ-113",
+        "AMZ-114",
+        "AMZ-115",
+        "AMZ-116"
+      ]
+    },
+    "found_in": "bank_only",
+    "founder_sees": "A diagnosis saying whether a sales drop is a traffic problem or a conversion problem, with the numbers."
+  },
+  {
+    "id": "PROD-C41",
+    "name": "Plan Amazon portfolio growth and channel decisions",
+    "folders": [
+      "22-AMZ"
+    ],
+    "what": "Decide when to add a second SKU, delegate non-revenue admin, and write the one-page memo behind any decision to add or expand the Amazon channel.",
+    "encompasses": [
+      "Add a second ASIN only once the first hero SKU has proven sell-through and cleared the margin gate",
+      "Master a task before outsourcing it, but delegate non-revenue admin work early",
+      "Delay buying paid Amazon tools until there is enough sales data for them to act on",
+      "Set a growth or planned-decline target once a revenue goal is hit",
+      "Account for about 2 months of manufacturing and freight lead time when judging a trending product",
+      "Write a one-page Amazon channel decision memo before adding the channel"
+    ],
+    "inputs": [
+      "idea bank: 22-AMZ"
+    ],
+    "outputs": [
+      "portfolio growth plan",
+      "channel decision memo"
+    ],
+    "trigger": "on demand",
+    "autonomy": "founder_gate",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [
+      "script: scripts/ideas.py"
+    ],
+    "skills": [
+      "channel-go-no-go"
+    ],
+    "subagent": "PROD-Marketplace",
+    "sources": {
+      "web": [],
+      "bank": [
+        "AMZ-117",
+        "AMZ-118",
+        "AMZ-119",
+        "AMZ-120",
+        "AMZ-121",
+        "AMZ-122"
+      ]
+    },
+    "found_in": "bank_only",
+    "founder_sees": "A one-page memo on whether and when to expand the Amazon channel or add a SKU."
+  },
+  {
+    "id": "PROD-C42",
+    "name": "Source alternative financing and manufacturers for a hard-to-source launch",
+    "folders": [
+      "18-COG",
+      "22-AMZ"
+    ],
+    "what": "When a product is hard to source or fund, widen the search to crowdfunding, private capital, manufacturer referrals and mass outreach, and prototype cheaply before committing.",
+    "encompasses": [
+      "Fund the first production run with a pre-order crowdfunding campaign, not personal capital",
+      "Ask a manufacturer for a referral to cover a production step they cannot do themselves",
+      "Run a tracked, mass cold-outreach campaign to 50 or more manufacturers for a hard-to-source product",
+      "Ask a manufacturer making an adjacent product for a free leftover sample to prototype cheaply",
+      "Widen manufacturer search to supplier databases, trade shows, directories and agents when a single platform stalls",
+      "Negotiate manufacturer price with a volume-commitment quote and by citing a competing offer",
+      "Ask the manufacturer to execute design changes before hiring a separate CAD designer",
+      "Commission a factory audit or a sourcing-agent visit before a large order with an unfamiliar manufacturer",
+      "Fund the first production run with a private investor for repayment plus a profit share"
+    ],
+    "inputs": [
+      "idea bank: 18-COG, 22-AMZ"
+    ],
+    "outputs": [
+      "financing option memo",
+      "widened supplier outreach list"
+    ],
+    "trigger": "on demand",
+    "autonomy": "human_assist",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [
+      "web search",
+      "script: scripts/ideas.py"
+    ],
+    "skills": [
+      "supplier-discovery"
+    ],
+    "subagent": "PROD-Sourcing",
+    "sources": {
+      "web": [],
+      "bank": [
+        "AMZ-123",
+        "AMZ-124",
+        "AMZ-125",
+        "AMZ-126",
+        "AMZ-127",
+        "AMZ-128",
+        "AMZ-129",
+        "AMZ-132",
+        "AMZ-134"
+      ]
+    },
+    "found_in": "bank_only",
+    "founder_sees": "A financing and sourcing memo when the normal supplier or capital path has stalled."
+  },
+  {
+    "id": "PROD-C43",
+    "name": "Run Amazon growth experiments and channel tests",
+    "folders": [
+      "22-AMZ"
+    ],
+    "what": "Test the smaller, situational Amazon growth levers, each with a defined read: converting FBM to FBA, a Small and Light enrolment, a design-vendor bake-off, an Amazon Live stream, and affiliate-link recapture.",
+    "encompasses": [
+      "Test converting an existing FBM SKU to FBA and measure the sales change from Prime eligibility",
+      "Ship the first production run to yourself first for a personal quality check before forwarding to Amazon",
+      "Test the same logo brief across several design-sourcing price tiers before picking a designer",
+      "Run an Amazon Live stream demonstrating the product around launch day",
+      "Use the brand's own Amazon Associates link on its own external traffic to recapture the affiliate commission"
+    ],
+    "inputs": [
+      "idea bank: 22-AMZ"
+    ],
+    "outputs": [
+      "experiment brief per test",
+      "registry entry"
+    ],
+    "trigger": "on demand",
+    "autonomy": "human_assist",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [
+      "script: scripts/ideas.py"
+    ],
+    "skills": [
+      "amazon-launch-plan"
+    ],
+    "subagent": "PROD-Marketplace",
+    "sources": {
+      "web": [],
+      "bank": [
+        "AMZ-130",
+        "AMZ-133",
+        "AMZ-137",
+        "AMZ-138",
+        "AMZ-139"
+      ]
+    },
+    "found_in": "bank_only",
+    "founder_sees": "A short test brief for each smaller Amazon growth lever, with what it should move."
+  },
+  {
+    "id": "PROD-C44",
+    "name": "Create and optimise listings on Walmart, Target Plus, eBay and TikTok Shop",
+    "folders": [
+      "22-AMZ"
+    ],
+    "what": "Build and keep current the brand's listings on marketplaces beyond Amazon (Walmart Marketplace, Target Plus, eBay, TikTok Shop, and Etsy where relevant), adapting the title, bullet and image rules each platform enforces, since none of them are Amazon. India: the same job runs on Flipkart, Myntra and Nykaa (markets: IN, reads null for US brands; see the india option of list-on-marketplace).",
+    "encompasses": [
+      "Complete each platform's seller onboarding and category-approval process",
+      "Match image and copy specs to each marketplace's own guide",
+      "Localize title and bullet structure to the platform's own search ranking signals",
+      "Fill every mandatory attribute field the category requires",
+      "Keep sales-tax and marketplace-facilitator invoicing and category eligibility current (India: GST-compliant invoicing; markets: IN, reads null for US brands)",
+      "Track approval status and reasons for any listing rejection"
+    ],
+    "inputs": [
+      "brand brain: product records and claims tiers",
+      "web: platform seller guides (public)"
+    ],
+    "outputs": [
+      "marketplace listing draft per platform",
+      "approval-status tracker"
+    ],
+    "trigger": "event: new marketplace listing or refresh",
+    "autonomy": "human_assist",
+    "external_write": {
+      "needed": true,
+      "surface": "walmart, target plus, ebay, tiktok shop seller portals (india: flipkart, myntra, nykaa seller portals)"
+    },
+    "tools": [
+      "web search"
+    ],
+    "skills": [
+      "marketplace-listing-build"
+    ],
+    "subagent": "PROD-Marketplace",
+    "sources": {
+      "web": [
+        "https://marketplace.walmart.com/",
+        "https://www.target.com/c/target-plus",
+        "https://www.ebay.com/help/selling",
+        "https://seller-us.tiktok.com/"
+      ],
+      "bank": []
+    },
+    "found_in": "web_only",
+    "founder_sees": "A ready-to-submit listing for Walmart, Target Plus, eBay or TikTok Shop, matching that platform's own rules (or, for an India brand, Flipkart, Myntra or Nykaa)."
+  },
+  {
+    "id": "PROD-C45",
+    "name": "Check US labelling and quality-marking compliance for marketplace listings",
+    "folders": [
+      "22-AMZ",
+      "18-COG"
+    ],
+    "what": "Before any jewellery, textile or regulated listing goes live, confirm US labelling and quality-marking requirements are met and recorded (FTC Jewelry Guides for precious-metal quality marks, the Care Labeling Rule for textiles, Prop 65 warnings and CPSC rules where they apply), since a marketplace can pull a listing or a buyer can flag it. India: the same gate checks BIS hallmarking (karatage, HUID) and Legal Metrology labelling instead (markets: IN, reads null for US brands).",
+    "encompasses": [
+      "Confirm the FTC Jewelry Guides quality mark (karat stamp, trademark or registered mark) is present and accurate for gold and precious-metal jewellery (India: confirm BIS hallmark, karatage and HUID instead; markets: IN, reads null for US brands)",
+      "Check textile labelling rules under the Care Labeling Rule (fibre content, country of origin, care instructions) before listing",
+      "Check Prop 65 warning requirements and CPSC rules for any category they cover",
+      "Confirm the marketplace's own category-review requirements are met (Walmart, eBay, TikTok Shop; India: Nykaa, Myntra)",
+      "Keep certification documents attached to the product data record",
+      "Flag a listing that lacks a required certificate before it goes live"
+    ],
+    "inputs": [
+      "brand brain: product records and certifications",
+      "web: FTC/Care Labeling and marketplace category rules (public; india: BIS and marketplace category rules)"
+    ],
+    "outputs": [
+      "compliance checklist per listing",
+      "certification gap flag"
+    ],
+    "trigger": "event: new listing or certification renewal",
+    "autonomy": "founder_gate",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [
+      "web search"
+    ],
+    "skills": [
+      "compliance-screen"
+    ],
+    "subagent": "PROD-Marketplace",
+    "sources": {
+      "web": [
+        "https://www.ftc.gov/business-guidance/resources/jewelry-guides",
+        "https://www.ftc.gov/business-guidance/resources/threading-your-way-through-labeling-requirements-under-textile-and-wool-acts",
+        "https://oag.ca.gov/prop65"
+      ],
+      "bank": [
+        "PRD-088",
+        "PRD-090",
+        "PRD-092"
+      ]
+    },
+    "found_in": "web+bank",
+    "founder_sees": "A pass/fail on US labelling and quality-marking compliance before a regulated listing goes live (or, for an India brand, on BIS hallmarking and labelling)."
+  },
+  {
+    "id": "PROD-C46",
+    "name": "Monitor Buy Box ownership, reseller pricing and MAP violations",
+    "folders": [
+      "22-AMZ"
+    ],
+    "what": "Watch who holds the Buy Box and what unauthorised resellers are charging across marketplaces, and flag a MAP or price-integrity problem for the founder rather than changing any price.",
+    "encompasses": [
+      "Check Buy Box ownership on the brand's own ASINs and listings",
+      "Scan for unauthorised resellers on the exact listing",
+      "Compare reseller price against the brand's own MAP and DTC price",
+      "Flag a price or Buy Box loss with the evidence, never adjust price directly",
+      "Track whether Sponsored Product ads are funding an unauthorised reseller's sales"
+    ],
+    "inputs": [
+      "web: marketplace listing pages (public)",
+      "brand brain: MAP and DTC price"
+    ],
+    "outputs": [
+      "Buy Box and reseller pricing report",
+      "MAP violation flag"
+    ],
+    "trigger": "weekly",
+    "autonomy": "agent_does",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [
+      "web search"
+    ],
+    "skills": [
+      "buy-box-monitor"
+    ],
+    "subagent": "PROD-Marketplace",
+    "sources": {
+      "web": [
+        "https://www.buyboxexperts.com/",
+        "https://parallel365.com/best-amazon-marketplace-optimization-agencies/"
+      ],
+      "bank": [
+        "AMZ-051",
+        "AMZ-067"
+      ]
+    },
+    "found_in": "web+bank",
+    "founder_sees": "A weekly report on who holds the Buy Box and any reseller undercutting the brand's own price."
+  },
+  {
+    "id": "PROD-C47",
+    "name": "Build and hand off marketplace catalogue feeds",
+    "folders": [
+      "22-AMZ"
+    ],
+    "what": "Keep one clean product feed (titles, images, prices, availability, GTIN) that Media buyer and Organic can plug into shopping ads and marketplace channels, so nobody re-types product data by hand.",
+    "encompasses": [
+      "Maintain a master product feed with accurate price, stock and image fields",
+      "Map brand product data to each marketplace's and each ad platform's feed schema",
+      "Flag a feed field that is missing or stale before it reaches an ad platform",
+      "Hand the validated feed to Media buyer for catalogue and dynamic ads",
+      "Hand the validated feed to Organic and search for shopping-feed structured data"
+    ],
+    "inputs": [
+      "brand brain: product records",
+      "warehouse: live price and stock"
+    ],
+    "outputs": [
+      "master product feed",
+      "feed validation report",
+      "handoff note"
+    ],
+    "trigger": "daily",
+    "autonomy": "agent_does",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [
+      "script: feed builder (to build)"
+    ],
+    "skills": [
+      "catalogue-feed-build"
+    ],
+    "subagent": "PROD-Marketplace",
+    "sources": {
+      "web": [
+        "https://www.linnworks.com/blog/how-to-optimize-amazon-listings/"
+      ],
+      "bank": []
+    },
+    "found_in": "web_only",
+    "founder_sees": "A single, current product feed, validated and handed to Media buyer and Organic to plug in."
+  }
+]

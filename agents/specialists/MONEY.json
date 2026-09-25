@@ -1,0 +1,2877 @@
+[
+ {
+  "id": "MONEY-C01",
+  "name": "Build the P&L cost classification map",
+  "folders": [
+   "20-FIN"
+  ],
+  "what": "Build and keep current a fixed decision tree for what counts as COGS, cost of delivery, marketing cost and OPEX, and a P&L ladder from gross revenue to net profit with a percent-of-revenue column, so every number below is comparable month to month.",
+  "encompasses": [
+   "Write the gross-to-net revenue bridge (tax, refunds, discounts out)",
+   "Classify promo codes, ad spend, affiliate fees, packaging, support cost, warehouse labor and payment fees by the statutory-vs-internal rule",
+   "Build the P&L ladder with a percent-of-revenue column",
+   "Run the 4-bucket P&L diagnosis and name the bucket most out of line",
+   "Trace a missed target to the line above it (fault rule)",
+   "Re-audit the classification whenever the fulfilment or infrastructure model changes",
+   "Restate prior-month returns when the return window exceeds a month",
+   "Handle deferred-fulfilment (pre-order, BNPL) revenue with a cancellation and return rate"
+  ],
+  "inputs": [
+   "brand brain: chart of accounts",
+   "warehouse: Shopify/accounting export",
+   "metric contract: gross_margin, other:net_profit"
+  ],
+  "outputs": [
+   "P&L ladder report",
+   "cost classification rulebook",
+   "variance memo naming the broken bucket"
+  ],
+  "trigger": "monthly",
+  "autonomy": "agent_does",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [
+   "script: money.pnl_ladder",
+   "connector: shopify orders",
+   "connector: accounting export (read)",
+   "script: arithmetic engine (code, not model)"
+  ],
+  "skills": [
+   "pnl-ladder-build",
+   "cost-classification-audit"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [
+    "https://ecombalance.com/ecommerce-cfo/",
+    "https://www.finaloop.com/blog/ecommerce-profit-benchmarks-performance-metrics"
+   ],
+   "bank": [
+    "FIN-001",
+    "FIN-002",
+    "FIN-009",
+    "FIN-014",
+    "FIN-015",
+    "FIN-017",
+    "FIN-018",
+    "FIN-019",
+    "FIN-020",
+    "FIN-021",
+    "FIN-022",
+    "FIN-023",
+    "FIN-024",
+    "FIN-025",
+    "FIN-026",
+    "FIN-027",
+    "FIN-028",
+    "FIN-029",
+    "FIN-030",
+    "FIN-032",
+    "FIN-046",
+    "FIN-078",
+    "FIN-079",
+    "FIN-097",
+    "FIN-156",
+    "FIN-182",
+    "FIN-183"
+   ]
+  },
+  "found_in": "web+bank",
+  "founder_sees": "One P&L ladder per month with the exact line that broke, in plain words."
+ },
+ {
+  "id": "MONEY-C02",
+  "name": "Compute contribution margin by SKU, basket and channel",
+  "folders": [
+   "20-FIN"
+  ],
+  "what": "Compute CM1, CM2 and CM3 labeled by scope, per basket, per SKU and per channel, as a standing report, so nobody guesses what a margin number includes.",
+  "encompasses": [
+   "Label every margin figure CM1/CM2/CM3",
+   "Compute unit economics per basket, stated count",
+   "Track gross margin percent (not just dollars) around promos",
+   "Split new-customer vs returning-customer profit contribution",
+   "Track net revenue retention apart from customer-count retention",
+   "Offer a return-step save (voucher, swap, upsell) before a plain refund to protect CM"
+  ],
+  "inputs": [
+   "warehouse: orders, COGS, fees",
+   "metric contract: contribution_margin",
+   "brand brain: fee schedule"
+  ],
+  "outputs": [
+   "CM1/CM2/CM3 standing report",
+   "per-SKU/channel margin table"
+  ],
+  "trigger": "weekly",
+  "autonomy": "agent_does",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [
+   "script: money.contribution_margin",
+   "connector: shopify orders (read)"
+  ],
+  "skills": [
+   "pnl-ladder-build"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [
+    "https://ecombalance.com/contribution-margin-tracking/"
+   ],
+   "bank": [
+    "FIN-004",
+    "FIN-007",
+    "FIN-008",
+    "FIN-010",
+    "FIN-066",
+    "FIN-160",
+    "FIN-163",
+    "FIN-181"
+   ]
+  },
+  "found_in": "web+bank",
+  "founder_sees": "Contribution margin by SKU and channel, always labeled CM1/CM2/CM3."
+ },
+ {
+  "id": "MONEY-C03",
+  "name": "Build landed cost per SKU",
+  "folders": [
+   "20-FIN"
+  ],
+  "what": "Build one documented landed cost per SKU (product, freight, duty, packaging) using a backup-test for every cost line, refreshed on volume or supplier changes.",
+  "encompasses": [
+   "Allocate freight and duty per unit per shipment on one documented basis",
+   "Split product packaging (COGS) from shipping packaging (fulfilment expense)",
+   "Check the supplier invoice price against the PO price before posting",
+   "Renegotiate supplier or fulfilment pricing once volume passes small-batch minimums",
+   "Keep a landed-cost line for every SKU before pricing or launch"
+  ],
+  "inputs": [
+   "brand brain: products, supplier quotes",
+   "warehouse: invoices, shipments"
+  ],
+  "outputs": [
+   "landed cost table per SKU",
+   "cost-line change list for finance record"
+  ],
+  "trigger": "on demand",
+  "autonomy": "agent_does",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [
+   "script: money.landed_cost"
+  ],
+  "skills": [
+   "landed-cost-build"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [],
+   "bank": [
+    "FIN-013",
+    "FIN-016",
+    "FIN-167",
+    "OPS-136"
+   ]
+  },
+  "found_in": "bank_only",
+  "founder_sees": "One landed cost number per SKU with the backup math shown."
+ },
+ {
+  "id": "MONEY-C04",
+  "name": "Price and re-price products from a profit target",
+  "folders": [
+   "20-FIN"
+  ],
+  "what": "Set or check a product's price bottom-up from a net-profit target (never keystone), solve the waterfall to the shelf price, and stress-test it 60-90 days after launch against observed costs and returns.",
+  "encompasses": [
+   "Solve waterfall pricing and check the result against market price",
+   "Flag when the waterfall price sits far above market (premium position or drop)",
+   "Stress-test every price 60-90 days post-launch with real cost and return data",
+   "Price variants (SKU, color, size) separately instead of one flat price"
+  ],
+  "inputs": [
+   "brand brain: products, cost lines",
+   "warehouse: competitor prices (public)",
+   "metric contract: contribution_margin"
+  ],
+  "outputs": [
+   "pricing worksheet",
+   "price change proposal for founder gate"
+  ],
+  "trigger": "event: new SKU or cost change",
+  "autonomy": "founder_gate",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [
+   "script: money.pricing_waterfall"
+  ],
+  "skills": [
+   "pricing-waterfall"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [],
+   "bank": [
+    "FIN-083",
+    "FIN-084",
+    "FIN-085",
+    "FIN-086",
+    "FIN-087"
+   ]
+  },
+  "found_in": "bank_only",
+  "founder_sees": "A recommended price with the profit math and a market check, for approval."
+ },
+ {
+  "id": "MONEY-C05",
+  "name": "Model and gate discount and promo economics",
+  "folders": [
+   "20-FIN"
+  ],
+  "what": "Model any promo (percent-off, BOGO, gift-with-purchase, flash sale) through its real cost shape and run a break-even go/no-go check before it goes public, using the discount pool and CAC together.",
+  "encompasses": [
+   "Model promo shapes through their true cost stack",
+   "Add discount cost to CAC as one true acquisition cost pool",
+   "Model Black Friday/sitewide-sale cohorts as lower-retention from day one",
+   "Attach the deepest discounts to a loyalty or subscription on-ramp, not a flash sale",
+   "Test whether a discount lifts conversion enough to pay for itself",
+   "Run the break-even go/no-go check before any promo above a few percent of monthly revenue"
+  ],
+  "inputs": [
+   "brand brain: pricing, margin lines",
+   "warehouse: past promo results",
+   "metric contract: contribution_margin"
+  ],
+  "outputs": [
+   "promo economics memo with go/no-go recommendation"
+  ],
+  "trigger": "event: promo proposed",
+  "autonomy": "founder_gate",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [
+   "script: money.promo_breakeven"
+  ],
+  "skills": [
+   "promo-breakeven-check"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [],
+   "bank": [
+    "FIN-003",
+    "FIN-071",
+    "FIN-072",
+    "FIN-073",
+    "FIN-074",
+    "FIN-075",
+    "FIN-076",
+    "FIN-077",
+    "FIN-080",
+    "FIN-082"
+   ]
+  },
+  "found_in": "bank_only",
+  "founder_sees": "Whether a planned discount pays for itself, with the math."
+ },
+ {
+  "id": "MONEY-C06",
+  "name": "Build the rolling cash flow forecast",
+  "folders": [
+   "20-FIN"
+  ],
+  "what": "Build a rolling 13-week cash forecast, reconcile profit to free cash flow monthly, and flag the lowest cash point before it happens, including the four hidden cash traps.",
+  "encompasses": [
+   "Build the 13-week cash forecast and find the lowest cash point",
+   "Reconcile the 3 statements (P&L, balance sheet, cash flow) monthly",
+   "Check profit vs cash monthly (free cash flow, not just net income)",
+   "Check the 4 hidden cash traps whenever profit and cash disagree",
+   "Add a cash line and lowest-cash-month figure to every growth plan",
+   "Model depreciation and tax with the real payment calendar",
+   "Cut cash-equal expense lines first when cash needs to be freed quickly",
+   "Run sensitivity tests (CAC, churn) on every cash model before relying on it"
+  ],
+  "inputs": [
+   "warehouse: bank/accounting feed (read)",
+   "brand brain: payment terms, payroll calendar",
+   "metric contract: cash_conversion_days"
+  ],
+  "outputs": [
+   "13-week cash forecast",
+   "monthly cash-vs-profit memo",
+   "lowest-cash-month flag"
+  ],
+  "trigger": "weekly",
+  "autonomy": "agent_does",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [
+   "script: money.cash_forecast_13wk"
+  ],
+  "skills": [
+   "cash-forecast-13wk"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [
+    "https://ecombalance.com/ecommerce-cfo/"
+   ],
+   "bank": [
+    "FIN-103",
+    "FIN-104",
+    "FIN-105",
+    "FIN-106",
+    "FIN-107",
+    "FIN-108",
+    "FIN-109",
+    "FIN-150",
+    "FIN-152",
+    "FIN-153",
+    "FIN-158",
+    "FIN-159",
+    "FIN-184",
+    "OPS-103"
+   ]
+  },
+  "found_in": "web+bank",
+  "founder_sees": "The week cash runs lowest, and by how much, before it happens."
+ },
+ {
+  "id": "MONEY-C07",
+  "name": "Plan inventory cash and the cash conversion cycle",
+  "folders": [
+   "20-FIN"
+  ],
+  "what": "Roll inventory forward with lead time to plan cash (never letting it go negative), target days-of-inventory to supplier lead time, and manage the cash conversion cycle as the real growth cap.",
+  "encompasses": [
+   "Roll inventory forward with lead time before modeling cash",
+   "Set days-of-inventory target per SKU and grade stock A to D",
+   "Run the weekly inventory-and-media sync to match spend to stock",
+   "Score every PO on marginal value, not replenishment habit",
+   "Test demand with a small batch before a large PO",
+   "Run a liquidation funnel for aged stock instead of holding it",
+   "Fix a CCC squeeze in order: smaller deposit, shorter lead time, longer terms, then financing",
+   "Raise spend temporarily and only to clear stuck inventory"
+  ],
+  "inputs": [
+   "warehouse: inventory levels, supplier lead times",
+   "brand brain: SKU list",
+   "metric contract: days_of_stock, cash_conversion_days"
+  ],
+  "outputs": [
+   "inventory cash plan",
+   "purchase-order recommendation with marginal-value score"
+  ],
+  "trigger": "weekly",
+  "autonomy": "human_assist",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [
+   "script: money.inventory_cash_plan"
+  ],
+  "skills": [
+   "cash-forecast-13wk"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [],
+   "bank": [
+    "FIN-110",
+    "FIN-111",
+    "FIN-112",
+    "FIN-113",
+    "FIN-114",
+    "FIN-115",
+    "FIN-116",
+    "FIN-117",
+    "FIN-118",
+    "FIN-120",
+    "FIN-121",
+    "FIN-180"
+   ]
+  },
+  "found_in": "bank_only",
+  "founder_sees": "How many days of cash are tied up in stock, and which PO to place or hold."
+ },
+ {
+  "id": "MONEY-C08",
+  "name": "Evaluate financing options",
+  "folders": [
+   "20-FIN"
+  ],
+  "what": "Compare real borrowing options (line of credit, inventory financing, revenue-based) against reference cost-of-capital rates, stress-test repayments against slower sales, and keep debt cost separate from the sales model.",
+  "encompasses": [
+   "Stress-test financing against slower sales and lower efficiency",
+   "Compare financing options against reference cost-of-capital rates",
+   "Model financing repayments as cash outflows without deleting the inventory row",
+   "Keep sales/spend and debt cost as separate model lines",
+   "Flag when permanent equity is being used to fund a few months of inventory (a founder decision, never automatic)"
+  ],
+  "inputs": [
+   "brand brain: current facilities",
+   "warehouse: cash forecast"
+  ],
+  "outputs": [
+   "financing option comparison memo",
+   "stress-tested repayment schedule"
+  ],
+  "trigger": "on demand",
+  "autonomy": "human_assist",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [
+   "script: money.financing_comparison"
+  ],
+  "skills": [
+   "cash-forecast-13wk"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [],
+   "bank": [
+    "FIN-124",
+    "FIN-125",
+    "FIN-126",
+    "FIN-127",
+    "FIN-128"
+   ]
+  },
+  "found_in": "bank_only",
+  "founder_sees": "A side-by-side of financing options with the stress-tested worst case."
+ },
+ {
+  "id": "MONEY-C09",
+  "name": "Report CAC, payback and LTV:CAC on brand data",
+  "folders": [
+   "20-FIN"
+  ],
+  "what": "Compute and label CAC (blended, media-only, paid, fully loaded), CAC payback from real cohorts, and LTGP:CAC against fixed bands, and gate acquisition scale-up on first-order CM2:CAC.",
+  "encompasses": [
+   "Compute CAC only from customers whose first order fell in the period",
+   "Report 4 labeled CACs and pair each with new-customer gross profit",
+   "Screen new-customer counts for fraud/bot orders before they feed CAC",
+   "Gate acquisition scale on first-order CM2:CAC at or above 1",
+   "Report LTV as lifetime gross profit, time-boxed to a stated window, from cohorts only",
+   "Compute CAC payback from a real cohort, read the profit tail after payback",
+   "Read LTGP:CAC against bands and flag when it sits below 1 as a first-order economics problem",
+   "Only support spend above first-order profit when a 6-month-plus cohort proves the tail",
+   "Flag category saturation before assuming old CAC efficiency will return",
+   "Test whether a conversion-lifting change actually lowers CAC before crediting it"
+  ],
+  "inputs": [
+   "warehouse: orders, ad spend",
+   "metric contract: cpa, ltgp_to_cac_90d",
+   "brand brain: cohort history"
+  ],
+  "outputs": [
+   "CAC/LTV dashboard",
+   "scale/hold recommendation with the cohort evidence"
+  ],
+  "trigger": "weekly",
+  "autonomy": "agent_does",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [
+   "script: money.cac_ltv_cohorts",
+   "script: intelligence/budget.py (read)"
+  ],
+  "skills": [
+   "cac-ltv-cohort-report"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [],
+   "bank": [
+    "FIN-005",
+    "FIN-006",
+    "FIN-039",
+    "FIN-040",
+    "FIN-048",
+    "FIN-049",
+    "FIN-050",
+    "FIN-051",
+    "FIN-052",
+    "FIN-053",
+    "FIN-054",
+    "FIN-055",
+    "FIN-056",
+    "FIN-057",
+    "FIN-058",
+    "FIN-059",
+    "FIN-060",
+    "FIN-061",
+    "FIN-062",
+    "FIN-063",
+    "FIN-064",
+    "FIN-065",
+    "FIN-068",
+    "FIN-069",
+    "FIN-094",
+    "FIN-148"
+   ]
+  },
+  "found_in": "bank_only",
+  "founder_sees": "Whether it is safe to spend more, based on this brand's own cohorts, not a rule of thumb."
+ },
+ {
+  "id": "MONEY-C10",
+  "name": "Forecast revenue from cohorts and the marketing calendar",
+  "folders": [
+   "20-FIN"
+  ],
+  "what": "Forecast new-customer and returning revenue from separate inputs (spend-efficiency curve, cohort repeat rate, dated marketing calendar), regress short histories to the mean, and name an owner for the number.",
+  "encompasses": [
+   "Forecast new-customer revenue from a spend-vs-aMER curve, excluding sale days",
+   "Forecast returning revenue from cohort size x repeat rate, then seasonality",
+   "Build the revenue forecast from the dated marketing calendar, not extrapolation",
+   "Regress a short or broken history to the mean instead of trusting it outright",
+   "Name one accountable owner for the forecast",
+   "Put wide error bars on a new marketplace or category launch forecast",
+   "Reconcile a model's rolled-up gross profit percent against its unit-economics percent",
+   "Use a placeholder CAC for a new category, then replace with observed CAC and re-forecast"
+  ],
+  "inputs": [
+   "warehouse: orders, ad spend, calendar",
+   "brand brain: marketing calendar",
+   "metric contract: sessions, cpa"
+  ],
+  "outputs": [
+   "revenue forecast (new vs returning, by week)",
+   "forecast variance report"
+  ],
+  "trigger": "weekly",
+  "autonomy": "agent_does",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [
+   "script: money.revenue_forecast"
+  ],
+  "skills": [
+   "revenue-forecast-cohort"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [],
+   "bank": [
+    "FIN-088",
+    "FIN-089",
+    "FIN-090",
+    "FIN-091",
+    "FIN-092",
+    "FIN-093",
+    "FIN-096",
+    "FIN-144",
+    "FIN-149",
+    "FIN-157",
+    "FIN-162",
+    "FIN-164"
+   ]
+  },
+  "found_in": "bank_only",
+  "founder_sees": "Next period's revenue forecast, split new vs returning, with the error bar."
+ },
+ {
+  "id": "MONEY-C11",
+  "name": "Model spend scenarios and OPEX budget",
+  "folders": [
+   "20-FIN"
+  ],
+  "what": "Build the annual budget separate from the rolling forecast, size OPEX and payroll to the brand's own profit target, and answer marginal spend questions (the next $10,000) by ranking channels on incremental CM in code.",
+  "encompasses": [
+   "Back-solve OPEX from the brand's own net-profit target",
+   "Size full-time payroll against the lowest revenue month; cover peaks with flex labor",
+   "Build a written scenario answer for a spend change with the marginal read and error bars",
+   "Compare spend scenarios on total CM3 at equal spend and on lowest cash month",
+   "Set the retargeting budget from existing-customer count and frequency",
+   "Flag when platform ROAS is being compared cross-platform without incrementality calibration",
+   "Own discounts and marketing as one pool and pick the split that maximizes total post-marketing CM",
+   "Track fixed OPEX dollars per day and revenue per employee as scaling checks",
+   "Judge marketing percent of revenue against the brand's own repeat curve"
+  ],
+  "inputs": [
+   "warehouse: spend by channel, orders",
+   "metric contract: contribution_margin, roas_blended",
+   "brand brain: OPEX targets"
+  ],
+  "outputs": [
+   "scenario comparison table",
+   "annual budget vs rolling forecast report"
+  ],
+  "trigger": "monthly",
+  "autonomy": "agent_does",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [
+   "script: money.scenario_ranker",
+   "script: intelligence/budget.py (read)"
+  ],
+  "skills": [
+   "scenario-spend-ranking"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [],
+   "bank": [
+    "FIN-031",
+    "FIN-038",
+    "FIN-067",
+    "FIN-095",
+    "FIN-098",
+    "FIN-099",
+    "FIN-100",
+    "FIN-101",
+    "FIN-102",
+    "FIN-129",
+    "FIN-130",
+    "FIN-131",
+    "FIN-132",
+    "FIN-133",
+    "FIN-134",
+    "FIN-135",
+    "FIN-151"
+   ]
+  },
+  "found_in": "bank_only",
+  "founder_sees": "Where the next dollar of spend or budget does the most good, ranked in code."
+ },
+ {
+  "id": "MONEY-C12",
+  "name": "Track US sales tax nexus and liability compliance",
+  "folders": [
+   "20-FIN"
+  ],
+  "what": "Track economic-nexus thresholds and marketplace-facilitator rules by state, keep registrations, resale certificates and filings current through Avalara or TaxJar, book gift cards and loyalty points as liabilities recognized on redemption, track FX exposure separately for revenue and landed cost, and flag return-rights compliance on promo terms. India-selling brands track GST/HSN/e-invoice/GSTR the same way this record tracks state sales tax; that path reads null for US-only brands.",
+  "encompasses": [
+   "Track economic-nexus thresholds by state (revenue and transaction-count triggers) and register before crossing them",
+   "Track which marketplaces (Amazon, Walmart Marketplace, Etsy, TikTok Shop) collect and remit sales tax as facilitator, and which leave nexus and filing to the brand",
+   "Keep Avalara or TaxJar mappings current for product taxability and keep resale certificates on file for wholesale and drop-ship buyers",
+   "File state sales tax returns on each state's schedule and reconcile collected-vs-remitted",
+   "Book gift cards issued as a liability, recognize revenue on redemption only",
+   "Carry unredeemed loyalty points as a liability charged to the redeeming order",
+   "Check promo copy against statutory return rights (never write a no-refunds-during-promo line)",
+   "Track FX exposure on multi-currency revenue separately from landed-cost FX",
+   "Keep import duties (customs bonds, HTS codes, tariffs) separate from collected sales tax in the profit model",
+   "India only: track GST/HSN nexus and registration thresholds, e-way bill and e-invoice requirements, GSTR filings and ITC (reads null for US brands)"
+  ],
+  "inputs": [
+   "brand brain: selling markets, nexus states",
+   "warehouse: gift card/loyalty ledger",
+   "connector: Avalara or TaxJar (read)"
+  ],
+  "outputs": [
+   "compliance flag list",
+   "liability ledger entries for finance review",
+   "nexus and filing-due-date tracker by state"
+  ],
+  "trigger": "monthly",
+  "autonomy": "human_assist",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [
+   "script: money.compliance_tracker"
+  ],
+  "skills": [
+   "tax-liability-tracker"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [],
+   "bank": [
+    "FIN-011",
+    "FIN-012",
+    "FIN-081",
+    "FIN-137",
+    "OPS-137"
+   ]
+  },
+  "found_in": "bank_only",
+  "founder_sees": "Any sales-tax nexus, filing or liability item that needs a human decision, with the deadline and the state."
+ },
+ {
+  "id": "MONEY-C14",
+  "name": "Publish the daily and weekly finance dashboard",
+  "folders": [
+   "20-FIN"
+  ],
+  "what": "Publish a daily contribution-margin scoreboard and a weekly profit memo (CM, new vs returning, variance, inventory risk), reading revenue, profit and cash as three separate numbers, and flag when the ad account looks healthy but the business is not.",
+  "encompasses": [
+   "Build the daily contribution dashboard with returns accrued at the historical rate",
+   "Publish the weekly profit memo (CM, new vs returning, variance, inventory risk)",
+   "Track actuals against a daily expectation so a miss is seen by day 5",
+   "Track net shipping cost and flag it past 20 percent of revenue",
+   "Diagnose 'ad account looks healthy but the business is not' against measurement, margin or cash",
+   "Track chargebacks/disputes as their own line, separate from refunds",
+   "Align team compensation with the metrics on the daily dashboard (flag mismatches to the founder)"
+  ],
+  "inputs": [
+   "metric contract: contribution_margin",
+   "warehouse: daily orders, spend",
+   "brand brain: comp plan"
+  ],
+  "outputs": [
+   "daily CM scoreboard",
+   "weekly profit memo"
+  ],
+  "trigger": "daily",
+  "autonomy": "agent_does",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [
+   "script: money.daily_dashboard"
+  ],
+  "skills": [
+   "daily-cm-scoreboard"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [],
+   "bank": [
+    "FIN-033",
+    "FIN-034",
+    "FIN-035",
+    "FIN-036",
+    "FIN-037",
+    "FIN-041",
+    "FIN-042",
+    "FIN-043",
+    "FIN-044",
+    "FIN-045",
+    "FIN-047",
+    "FIN-154",
+    "FIN-178"
+   ]
+  },
+  "found_in": "bank_only",
+  "founder_sees": "One dashboard: cash, then CM, then business, then customer, then channel, read top down."
+ },
+ {
+  "id": "MONEY-C15",
+  "name": "Reconcile platform numbers to the books",
+  "folders": [
+   "20-FIN"
+  ],
+  "what": "Reconcile the five recurring platform-to-books gaps (Shopify, Meta, GA4, payment processor, accounting) every month with a named cause for each, and publish the bridge table between statutory COGS and internal cost of delivery.",
+  "encompasses": [
+   "Name a cause for each of the 5 recurring reconciliation gaps",
+   "Publish the monthly statutory-to-internal cost bridge",
+   "Flag any gap that cannot be explained for human follow-up"
+  ],
+  "inputs": [
+   "warehouse: Shopify, Meta, GA4, payment processor exports"
+  ],
+  "outputs": [
+   "monthly reconciliation report",
+   "bridge table"
+  ],
+  "trigger": "monthly",
+  "autonomy": "agent_does",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [
+   "script: money.reconciliation"
+  ],
+  "skills": [
+   "monthly-reconciliation"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [],
+   "bank": [
+    "FIN-138",
+    "FIN-139"
+   ]
+  },
+  "found_in": "bank_only",
+  "founder_sees": "Every platform-vs-books gap explained, or flagged unexplained."
+ },
+ {
+  "id": "MONEY-C17",
+  "name": "Classify SKU portfolio profitability",
+  "folders": [
+   "20-FIN"
+  ],
+  "what": "Classify every SKU monthly as champion, hidden gem, growth driver or underperformer on contribution and cash tied up, rank a SKU contribution table, and flag rationalization candidates at each launch review.",
+  "encompasses": [
+   "Build a SKU contribution table ranked by contribution per sale, with inventory and grade columns",
+   "Classify SKUs monthly into the 4-box matrix",
+   "Rationalize SKU count at every product launch review",
+   "Score every new product idea against margin, volume or cash as the named problem it solves"
+  ],
+  "inputs": [
+   "warehouse: SKU sales, cost, inventory",
+   "metric contract: contribution_margin"
+  ],
+  "outputs": [
+   "SKU classification table",
+   "rationalization candidate list"
+  ],
+  "trigger": "monthly",
+  "autonomy": "agent_does",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [
+   "script: money.sku_matrix"
+  ],
+  "skills": [
+   "sku-portfolio-matrix"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [],
+   "bank": [
+    "FIN-119",
+    "FIN-122",
+    "FIN-123",
+    "FIN-161"
+   ]
+  },
+  "found_in": "bank_only",
+  "founder_sees": "Which SKUs make money, which tie up cash, and which to cut or push."
+ },
+ {
+  "id": "MONEY-C18",
+  "name": "Build subscription unit economics and churn reads",
+  "folders": [
+   "20-FIN"
+  ],
+  "what": "Build separate unit economics for subscription customers: churn against the correct prior-period base, conservative lifetime estimates, prepaid-plan economics on lifetime profit and cash timing, and payback measured in orders where shipments can be skipped.",
+  "encompasses": [
+   "Compute churn against the prior period's subscriber base, stated period",
+   "Use average lifetime (1/churn) only as a fallback, conservatively",
+   "Build separate unit economics for transactional vs subscription customers",
+   "Judge prepaid plans on lifetime gross profit and cash timing, not per-order margin",
+   "Treat vendor subscription retention claims as hypotheses to test",
+   "Benchmark subscription cohort retention against a known strong reference curve",
+   "Measure subscription CAC payback in orders when customers can skip shipments",
+   "Cross-check churn and lifetime gross profit two ways and require agreement"
+  ],
+  "inputs": [
+   "warehouse: subscription platform data",
+   "metric contract: subscription_churn, ltv_180d"
+  ],
+  "outputs": [
+   "subscription unit economics report",
+   "churn read with cohort basis"
+  ],
+  "trigger": "monthly",
+  "autonomy": "agent_does",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [
+   "script: money.subscription_economics"
+  ],
+  "skills": [
+   "subscription-unit-economics"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [],
+   "bank": [
+    "FIN-070",
+    "FIN-140",
+    "FIN-141",
+    "FIN-142",
+    "FIN-143",
+    "FIN-145",
+    "FIN-146",
+    "FIN-147",
+    "FIN-165",
+    "FIN-166"
+   ]
+  },
+  "found_in": "bank_only",
+  "founder_sees": "Subscription churn and lifetime profit, computed the correct way, not a rough guess."
+ },
+ {
+  "id": "MONEY-C19",
+  "name": "Plan the acquisition financial calendar and guardrails",
+  "folders": [
+   "20-FIN"
+  ],
+  "what": "Set financial guardrails for the acquisition calendar: owned peaks beyond BFCM, progressive peaking before BFCM, defensive spend budgeting (Amazon ads, branded search), stage-gating new channels by revenue level, and a frequency ceiling on retargeting existing customers.",
+  "encompasses": [
+   "Propose 4 owned brand peaks a year beyond BFCM",
+   "Schedule a new-customer acquisition peak 3-8 weeks before BFCM",
+   "Budget Amazon ads/branded search as a defensive cost, not a growth line",
+   "Stage-gate new acquisition channels by revenue level",
+   "Add new ad channels one at a time to keep incrementality measurable",
+   "Track weekly ad frequency to repeat customers as an overspend signal",
+   "Set aside a fixed share of creative output for new stories, not only iteration",
+   "Flag a negative-CAC media-arm opportunity (sponsorships, content) for founder review"
+  ],
+  "inputs": [
+   "brand brain: calendar",
+   "warehouse: spend history",
+   "metric contract: frequency, cpa"
+  ],
+  "outputs": [
+   "acquisition financial calendar",
+   "channel stage-gate list"
+  ],
+  "trigger": "quarterly",
+  "autonomy": "founder_gate",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [
+   "script: money.acquisition_calendar"
+  ],
+  "skills": [
+   "scenario-spend-ranking"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [],
+   "bank": [
+    "FIN-168",
+    "FIN-169",
+    "FIN-170",
+    "FIN-171",
+    "FIN-172",
+    "FIN-173",
+    "FIN-174",
+    "FIN-175",
+    "FIN-177",
+    "FIN-179"
+   ]
+  },
+  "found_in": "bank_only",
+  "founder_sees": "The paid-acquisition calendar and guardrails for the year, with the financial reasons."
+ },
+ {
+  "id": "MONEY-C20",
+  "name": "Audit and configure GA4 tracking",
+  "folders": [
+   "06-MEA"
+  ],
+  "what": "Run the GA4 settings and event audit (property/stream structure, timezone, retention, consent, enhanced measurement, key events, ecommerce parameters) and produce a fix list before any funnel or revenue report is trusted.",
+  "encompasses": [
+   "Check one GA4 property per shopper journey, one stream per property",
+   "Lock timezone/currency at creation, set 14-month retention",
+   "Review enhanced measurement and turn off noisy automatic events",
+   "Confirm ecommerce events and item-level parameters arrive on every purchase",
+   "Mark purchase (with unique transaction ID) as the only sales key event",
+   "Register custom parameters and dimensions before they are needed in a report",
+   "Set an internal traffic filter for office, warehouse and agency IPs",
+   "Turn on Google Signals only after a consent review",
+   "Run the 5-point settings audit in order: retention, domains, filter, timing, Signals",
+   "Test every new or changed tag in GTM Preview and DebugView before publishing"
+  ],
+  "inputs": [
+   "connector: GA4 (read)",
+   "connector: GTM (read)",
+   "brand brain: domains, consent policy"
+  ],
+  "outputs": [
+   "GA4 audit report with fix list",
+   "settings change log entries"
+  ],
+  "trigger": "monthly",
+  "autonomy": "agent_does",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [
+   "mcp: GA4 read tools",
+   "browser: GTM preview",
+   "script: money.ga4_audit"
+  ],
+  "skills": [
+   "ga4-tracking-audit"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [
+    "https://esellsphere.com/analytics/tracking-setup/",
+    "https://www.tagada.io/blog/what-is-pixel-tracking"
+   ],
+   "bank": [
+    "MEA-007",
+    "MEA-008",
+    "MEA-009",
+    "MEA-010",
+    "MEA-011",
+    "MEA-012",
+    "MEA-013",
+    "MEA-014",
+    "MEA-015",
+    "MEA-016",
+    "MEA-017",
+    "MEA-018",
+    "MEA-019",
+    "MEA-020",
+    "MEA-021",
+    "MEA-022",
+    "MEA-023",
+    "MEA-024",
+    "MEA-025",
+    "MEA-026",
+    "MEA-027",
+    "MEA-028",
+    "MEA-029",
+    "MEA-030",
+    "MEA-032",
+    "MEA-033",
+    "MEA-034",
+    "MEA-035",
+    "MEA-036",
+    "MEA-037",
+    "MEA-067",
+    "MEA-109"
+   ]
+  },
+  "found_in": "web+bank",
+  "founder_sees": "A pass/fail list of GA4 settings, with what is broken and why it matters."
+ },
+ {
+  "id": "MONEY-C21",
+  "name": "Audit Meta pixel and CAPI event quality",
+  "folders": [
+   "06-MEA"
+  ],
+  "what": "Audit the Meta pixel plus Conversions API setup for dedup, event match quality and consent gating, and verify every store event maps to a Meta standard event with value, currency and content IDs.",
+  "encompasses": [
+   "Send every event from browser pixel and CAPI, merged by one event ID",
+   "Prove dedup by searching for the shared event ID, for every event type",
+   "Audit every live Meta integration before adding CAPI; never run two server routes",
+   "Read event match quality per event through read-only Meta dataset tools",
+   "Gate all Meta sending on consent where consent rules apply",
+   "Map every store event to its Meta standard event with value, currency, content IDs",
+   "Store pixel ID and token as secrets, never in chat, docs or code",
+   "Treat CAPI Gateway and server-side GTM capability claims as unproven until tested",
+   "Propose sending gross-profit values instead of revenue so bidding optimizes on margin (founder decision)"
+  ],
+  "inputs": [
+   "mcp: Meta Ads (read-only)",
+   "connector: GTM server container (read)"
+  ],
+  "outputs": [
+   "pixel/CAPI audit report",
+   "event mapping table",
+   "EMQ trend"
+  ],
+  "trigger": "weekly",
+  "autonomy": "agent_does",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [
+   "mcp: Meta_MCP ads_pixel_event_read, ads_get_dataset_quality",
+   "script: money.capi_audit"
+  ],
+  "skills": [
+   "meta-capi-event-audit"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [
+    "https://www.tracklution.com/learn/server-side-tracking/ga4-guide/"
+   ],
+   "bank": [
+    "MEA-050",
+    "MEA-051",
+    "MEA-052",
+    "MEA-053",
+    "MEA-054",
+    "MEA-055",
+    "MEA-056",
+    "MEA-057",
+    "MEA-058",
+    "MEA-059",
+    "MEA-060",
+    "MEA-061",
+    "MEA-062",
+    "MEA-063",
+    "MEA-064",
+    "MEA-065",
+    "MEA-066",
+    "MEA-110",
+    "MEA-112"
+   ]
+  },
+  "found_in": "web+bank",
+  "founder_sees": "Whether Meta is getting clean, deduplicated, high-quality event data, and where it is not."
+ },
+ {
+  "id": "MONEY-C22",
+  "name": "Enforce UTM and campaign-link discipline",
+  "folders": [
+   "06-MEA"
+  ],
+  "what": "Write one UTM convention, audit every existing paid and owned link against it, and clean fake organic/direct rows out of campaign tables before anyone reads them.",
+  "encompasses": [
+   "Write and publish one UTM convention for paid and owned links",
+   "Audit existing links against the convention and fix mismatches",
+   "Filter out fake organic and direct rows before reading a campaign table",
+   "Check where paid social lands in GA4's default channel groups"
+  ],
+  "inputs": [
+   "warehouse: GA4 campaign data",
+   "brand brain: link list"
+  ],
+  "outputs": [
+   "UTM audit report",
+   "corrected link list"
+  ],
+  "trigger": "monthly",
+  "autonomy": "agent_does",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [
+   "script: money.utm_audit"
+  ],
+  "skills": [
+   "utm-convention-audit"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [],
+   "bank": [
+    "MEA-074",
+    "MEA-075",
+    "MEA-076",
+    "MEA-077"
+   ]
+  },
+  "found_in": "bank_only",
+  "founder_sees": "Every broken or missing UTM tag, with the fix."
+ },
+ {
+  "id": "MONEY-C23",
+  "name": "Reconcile attribution models and run incrementality checks",
+  "folders": [
+   "06-MEA"
+  ],
+  "what": "Report the gap between attribution models (last-click vs data-driven, platform vs GA4) per channel, run holdout tests before big reallocation calls, and document the attribution window used for decisions.",
+  "encompasses": [
+   "Report the last-click vs data-driven gap per channel, never one model as truth",
+   "Write and apply a rule for when a survey-reported source overrides platform credit",
+   "Check GA4's attribution window matches the Meta buying window used for decisions",
+   "Run a holdout test before reallocating spend on an attribution gap or before pausing an ad that appears to sell itself",
+   "Triangulate channel credit from several signals, not one attribution view",
+   "Confirm Shopify's built-in attribution or referral cards are never used as evidence for a budget move",
+   "Track AI/LLM referral share as its own measurement line",
+   "Widen to one blended cross-channel measurement engine once distribution passes .com"
+  ],
+  "inputs": [
+   "warehouse: GA4, Meta, Shopify attribution data",
+   "metric contract: attribution_gap, ai_referrals"
+  ],
+  "outputs": [
+   "attribution reconciliation report",
+   "holdout test design and read"
+  ],
+  "trigger": "monthly",
+  "autonomy": "agent_does",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [
+   "script: money.attribution_reconcile",
+   "mcp: Meta_MCP ads_experiment_lift_get_test (read)"
+  ],
+  "skills": [
+   "attribution-model-reconcile",
+   "holdout-incrementality-test"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [],
+   "bank": [
+    "MEA-069",
+    "MEA-078",
+    "MEA-079",
+    "MEA-080",
+    "MEA-083",
+    "MEA-134",
+    "FIN-136",
+    "FIN-155",
+    "FIN-176"
+   ]
+  },
+  "found_in": "bank_only",
+  "founder_sees": "How much channels disagree on credit, and whether a holdout test says the spend is real."
+ },
+ {
+  "id": "MONEY-C24",
+  "name": "Reconcile GA4, Meta and store order counts",
+  "folders": [
+   "06-MEA"
+  ],
+  "what": "Cross-check GA4, Meta, Shopify and marketplace numbers against each other and against store orders every period, and flag bot-driven spikes before anyone reacts to them.",
+  "encompasses": [
+   "Reconcile GA4 purchase counts and revenue to store orders for the same dates",
+   "Compare Meta's Purchase count/value to store orders to catch dedup failure",
+   "Confirm Shopify Analytics order count matches store order count",
+   "Suspect bots when Shopify shows a spike/dip GA4 does not, or one city spikes",
+   "Filter Shopify reports to the Online Store channel before judging paid media",
+   "Reconcile marketplace and omnichannel sales to their own platform reports before folding them in",
+   "Read repeat-customer behavior from the full cohort report, not Shopify's returning-customer rate",
+   "Document whether Meta's Purchase value includes shipping and tax"
+  ],
+  "inputs": [
+   "warehouse: GA4, Meta, Shopify, marketplace exports"
+  ],
+  "outputs": [
+   "cross-platform reconciliation table",
+   "bot-spike flag"
+  ],
+  "trigger": "weekly",
+  "autonomy": "agent_does",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [
+   "script: money.cross_platform_reconcile"
+  ],
+  "skills": [
+   "cross-platform-reconciliation"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [],
+   "bank": [
+    "MEA-031",
+    "MEA-068",
+    "MEA-070",
+    "MEA-071",
+    "MEA-072",
+    "MEA-084",
+    "MEA-085",
+    "MEA-091",
+    "MEA-102"
+   ]
+  },
+  "found_in": "bank_only",
+  "founder_sees": "Whether GA4, Meta and the store agree on orders and revenue, and where they do not."
+ },
+ {
+  "id": "MONEY-C25",
+  "name": "Maintain the metric contract and revenue definitions",
+  "folders": [
+   "06-MEA"
+  ],
+  "what": "Own the fixed vocabulary of computed numbers for the brand (revenue, AOV, CAC basis, top metric), with freshness stamps, one source of truth per question, and missing values shown as unavailable, never zero.",
+  "encompasses": [
+   "Pick one source of truth per question and write it down",
+   "Define revenue for marketing math as net sales plus shipping, tax out",
+   "Report AOV including shipping when shipping is a material share of revenue",
+   "Document GA4's attribution reporting model and lookback windows in the brand record",
+   "Pick the top metric (customers, revenue or profit) matched to stage and bankroll, hold it about a year",
+   "Compute cost per acquired customer before the first paid ad ever runs",
+   "Size the analytics/measurement effort to the brand's own ad spend, not a big brand's",
+   "Show every missing or blocked value as unavailable, never as zero"
+  ],
+  "inputs": [
+   "brand brain: metric contract file",
+   "warehouse: all connected sources"
+  ],
+  "outputs": [
+   "metric contract document (versioned)",
+   "freshness stamp report"
+  ],
+  "trigger": "on demand",
+  "autonomy": "agent_does",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [
+   "script: money.metric_contract"
+  ],
+  "skills": [
+   "metric-contract-maintain"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [],
+   "bank": [
+    "MEA-001",
+    "MEA-003",
+    "MEA-004",
+    "MEA-005",
+    "MEA-073",
+    "MEA-082",
+    "MEA-086",
+    "MEA-092",
+    "MEA-093",
+    "MEA-094",
+    "MEA-116",
+    "MEA-132",
+    "MEA-135"
+   ]
+  },
+  "found_in": "bank_only",
+  "founder_sees": "The one fixed list of numbers everyone else in ecomOS is allowed to compute from, and what each one means."
+ },
+ {
+  "id": "MONEY-C26",
+  "name": "Run the daily data-quality trust check",
+  "folders": [
+   "06-MEA"
+  ],
+  "what": "Run a daily automated trust check across the brand's data sources and publish a pass/warn/fail score before anyone reads yesterday's numbers, logging every settings change with a date and reason.",
+  "encompasses": [
+   "Cut the capture day from spend tables and flag any single row that swings the total",
+   "Track and investigate the (not set) share instead of ignoring it",
+   "Treat GA4's or any tool's AI-generated answers as leads to check, never as findings",
+   "Log every settings change with a date and reason, annotate reports across it",
+   "Test a new data source for 7 days before trusting it, then add it to the daily check",
+   "Confirm every funnel step is tracked before reading a drop as customer behavior",
+   "Use Realtime reports only to confirm arrival after a launch, never for analysis",
+   "End every analytics report with a decision, not a status update",
+   "When a HiPPO wants a change on opinion alone, propose a real test instead"
+  ],
+  "inputs": [
+   "warehouse: all connected sources",
+   "metric contract"
+  ],
+  "outputs": [
+   "daily trust score (pass/warn/fail)",
+   "settings change log"
+  ],
+  "trigger": "daily",
+  "autonomy": "agent_does",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [
+   "script: money.daily_trust_score"
+  ],
+  "skills": [
+   "daily-trust-score"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [],
+   "bank": [
+    "MEA-002",
+    "MEA-006",
+    "MEA-046",
+    "MEA-047",
+    "MEA-096",
+    "MEA-097",
+    "MEA-101",
+    "MEA-105",
+    "MEA-106",
+    "MEA-107",
+    "MEA-111",
+    "MEA-124"
+   ]
+  },
+  "found_in": "bank_only",
+  "founder_sees": "A daily green/yellow/red on whether yesterday's numbers can be trusted, and why if not."
+ },
+ {
+  "id": "MONEY-C27",
+  "name": "Diagnose funnel and landing-page performance",
+  "folders": [
+   "06-MEA"
+  ],
+  "what": "Read the funnel (session to product view to cart to checkout to purchase) as a trend, benchmark against the brand's own history first, and rule out traffic mismatch or a tracking gap before naming a page as the problem.",
+  "encompasses": [
+   "Judge landing pages in the Landing Page report, never by revenue in Pages and screens",
+   "Rule out a traffic mismatch before blaming a product page for low conversion",
+   "View a funnel as a trend over time to catch when a drop-off began",
+   "Set a minimum session count before comparing landing page conversion rates",
+   "Benchmark cart-to-checkout-to-purchase against the brand's own history first",
+   "Mine site search terms to find gaps between demand and catalogue",
+   "Trace a path exploration backward from purchase to find a checkout loop",
+   "Flag a landing page with high entrances but few key events for review",
+   "Treat a large session-to-product-view drop as a findability problem",
+   "Build a has-not-converted audience for reporting and remarketing"
+  ],
+  "inputs": [
+   "warehouse: GA4 funnel data",
+   "metric contract: cvr_pdp_to_cart, cvr_checkout_to_order"
+  ],
+  "outputs": [
+   "funnel diagnosis report",
+   "landing-page flag list"
+  ],
+  "trigger": "weekly",
+  "autonomy": "agent_does",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [
+   "script: money.funnel_diagnosis"
+  ],
+  "skills": [
+   "funnel-diagnosis"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [],
+   "bank": [
+    "MEA-038",
+    "MEA-039",
+    "MEA-041",
+    "MEA-042",
+    "MEA-043",
+    "MEA-045",
+    "MEA-049",
+    "MEA-098",
+    "MEA-099",
+    "MEA-100",
+    "MEA-103",
+    "MEA-113",
+    "MEA-114",
+    "MEA-125",
+    "MEA-126",
+    "MEA-128",
+    "MEA-129",
+    "MEA-130",
+    "MEA-131"
+   ]
+  },
+  "found_in": "bank_only",
+  "founder_sees": "Where the funnel is actually breaking, with the evidence that rules out other causes."
+ },
+ {
+  "id": "MONEY-C28",
+  "name": "Triage revenue and metric movements",
+  "folders": [
+   "06-MEA"
+  ],
+  "what": "Break every revenue change into sessions, conversion rate and AOV before naming a cause, checking stock status and return timing first, and treat small multi-lever moves as normal variation, not a story.",
+  "encompasses": [
+   "Break a revenue change into sessions x CVR x AOV before naming a cause",
+   "Check stock status before blaming a page or funnel step for a conversion drop",
+   "Read a revenue dip for return timing before blaming ads or the site",
+   "Treat single-digit moves across several levers as normal variation",
+   "Track unshipped orders as a fulfilment backlog signal",
+   "Break purchase revenue by country and device to find a device-specific gap",
+   "Track sell-through rate by product and category for inventory planning"
+  ],
+  "inputs": [
+   "warehouse: GA4, Shopify, inventory feed",
+   "metric contract"
+  ],
+  "outputs": [
+   "revenue movement triage memo"
+  ],
+  "trigger": "weekly",
+  "autonomy": "agent_does",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [
+   "script: money.revenue_triage"
+  ],
+  "skills": [
+   "revenue-movement-triage"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [],
+   "bank": [
+    "MEA-087",
+    "MEA-088",
+    "MEA-089",
+    "MEA-090",
+    "MEA-095",
+    "MEA-104",
+    "MEA-115",
+    "MEA-133"
+   ]
+  },
+  "found_in": "bank_only",
+  "founder_sees": "Why revenue moved, broken into sessions, conversion and basket size, not a guess."
+ },
+ {
+  "id": "MONEY-C29",
+  "name": "Run the voice-of-customer program",
+  "folders": [
+   "06-MEA"
+  ],
+  "what": "Run a structured qualitative-listening program across the customer lifecycle (founder calls, on-site polls, loyal/dissatisfied interviews), classify every data source as zero/first/third-party, and route zero-party answers into the CRM.",
+  "encompasses": [
+   "Run a lifecycle voice-of-customer program across 5 stages",
+   "Prioritize deep listening with the most loyal and most dissatisfied customers",
+   "Build a word board from qualitative answers and test it in page copy (hand off to Brand/Site specialist)",
+   "Have the founder call at least one customer a week in the early stage",
+   "Add a one-question on-site poll asking what a page is missing",
+   "Classify every data source as zero, first or third party before buying more",
+   "Push zero-party survey/quiz answers into the CRM instead of leaving them in the tool",
+   "Pair every quantitative drop with a qualitative check before proposing a fix"
+  ],
+  "inputs": [
+   "brand brain: customer contact list (consented)",
+   "warehouse: survey/poll tool export"
+  ],
+  "outputs": [
+   "VoC synthesis report",
+   "word board for copy team"
+  ],
+  "trigger": "monthly",
+  "autonomy": "human_assist",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [
+   "script: money.voc_synthesis"
+  ],
+  "skills": [
+   "voice-of-customer-program"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [],
+   "bank": [
+    "MEA-081",
+    "MEA-108",
+    "MEA-117",
+    "MEA-118",
+    "MEA-119",
+    "MEA-120",
+    "MEA-121",
+    "MEA-122",
+    "MEA-123"
+   ]
+  },
+  "found_in": "bank_only",
+  "founder_sees": "What customers actually said, organized by lifecycle stage, not a metric."
+ },
+ {
+  "id": "MONEY-C30",
+  "name": "Build and maintain reporting dashboards",
+  "folders": [
+   "06-MEA"
+  ],
+  "what": "Build and keep current the brand's standard dashboards (Shopify home cards, GA4 saved report tables, budget scenario views), removing unreliable cards and adding ones that match the metric contract.",
+  "encompasses": [
+   "Customize and save GA4 report tables instead of reading defaults",
+   "Choose Explore for a single question, keep standard Reports for ongoing monitoring",
+   "Use the Ecommerce purchases report for product calls, Checkout journey for technical bugs",
+   "Remove unreliable Shopify dashboard cards and add ones that match the metric contract",
+   "Use the ad platform's budget scenario planner before a spend change (read-only)"
+  ],
+  "inputs": [
+   "metric contract",
+   "connector: GA4, Shopify (read)"
+  ],
+  "outputs": [
+   "dashboard spec",
+   "updated dashboard cards"
+  ],
+  "trigger": "monthly",
+  "autonomy": "agent_does",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [
+   "script: money.dashboard_build"
+  ],
+  "skills": [
+   "dashboard-maintenance"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [],
+   "bank": [
+    "MEA-040",
+    "MEA-044",
+    "MEA-048",
+    "MEA-127",
+    "MEA-136"
+   ]
+  },
+  "found_in": "bank_only",
+  "founder_sees": "A dashboard that shows only the numbers that matter, matched to the metric contract."
+ },
+ {
+  "id": "MONEY-C31",
+  "name": "Design org structure and hiring triggers",
+  "folders": [
+   "21-OPS"
+  ],
+  "what": "Name one owner for each core store silo, write the next-hire trigger as a number (not a feeling), and run a quarterly org-chart-vs-revenue-stage review, flagging key-person risk.",
+  "encompasses": [
+   "Name one owner for each of the 5 core store silos before the first hire",
+   "Write the next hire trigger as a number",
+   "Check whether the current owner of a seat is underused before hiring a second person into it",
+   "Write a hire as the missing store function, never as a generic strong hire",
+   "Put a planning/ops owner in place before the first demand surge",
+   "Name a backup for every key artefact, login and supplier relationship (key-person risk)",
+   "Run an org-chart-vs-revenue-stage review every quarter",
+   "Give marketplace and subscription channels their own named owner, separate from DTC silos",
+   "Audit for one person carrying too much of the store's decisions and build a second path"
+  ],
+  "inputs": [
+   "brand brain: org chart, revenue history",
+   "metric contract: revenue"
+  ],
+  "outputs": [
+   "org design memo",
+   "hire-trigger dashboard",
+   "key-person risk list"
+  ],
+  "trigger": "quarterly",
+  "autonomy": "human_assist",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [
+   "script: money.org_design"
+  ],
+  "skills": [
+   "org-design-review",
+   "hiring-scorecard-build"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [],
+   "bank": [
+    "OPS-001",
+    "OPS-002",
+    "OPS-003",
+    "OPS-004",
+    "OPS-005",
+    "OPS-006",
+    "OPS-007",
+    "OPS-008",
+    "OPS-009",
+    "OPS-010",
+    "OPS-011",
+    "OPS-012",
+    "OPS-013",
+    "OPS-014",
+    "OPS-017",
+    "OPS-018",
+    "OPS-019",
+    "OPS-029",
+    "OPS-062",
+    "OPS-067",
+    "OPS-068",
+    "OPS-100",
+    "OPS-130",
+    "OPS-146",
+    "OPS-147"
+   ]
+  },
+  "found_in": "bank_only",
+  "founder_sees": "Whether the org is sized right for the current revenue, and who the store cannot afford to lose."
+ },
+ {
+  "id": "MONEY-C32",
+  "name": "Build hiring scorecards and run structured hiring",
+  "folders": [
+   "21-OPS"
+  ],
+  "what": "Build a structured job description (silo, artefacts, metric), an honest job ad, a sourced interview question set and comp bands before a search opens, and score candidates on scorecard behaviors, not channel skill alone.",
+  "encompasses": [
+   "Write a structured job description naming silo, artefacts and the seat's metric",
+   "Write the job ad honest and demanding about the real workload",
+   "Set comp bands for the role before opening the search",
+   "Use a sourced interview question set, not an invented rubric",
+   "Score a candidate on whether they will flag a bad brief out loud",
+   "Screen every hire for self-directed drive and brand-values fit, not competence alone",
+   "Look for talent past the org chart before an external search",
+   "Debate internal promotion vs external hire openly, then have the leader decide with a stated criterion"
+  ],
+  "inputs": [
+   "brand brain: role library, comp bands",
+   "approved idea: hire trigger fired"
+  ],
+  "outputs": [
+   "job description",
+   "job ad draft",
+   "interview scorecard",
+   "comp band recommendation"
+  ],
+  "trigger": "event: hire trigger fired",
+  "autonomy": "human_assist",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [
+   "script: money.hiring_scorecard_build"
+  ],
+  "skills": [
+   "hiring-scorecard-build"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [
+    "https://www.retailerhub.ai/guides/vendor-scorecard"
+   ],
+   "bank": [
+    "OPS-020",
+    "OPS-021",
+    "OPS-022",
+    "OPS-023",
+    "OPS-024",
+    "OPS-025",
+    "OPS-026",
+    "OPS-027",
+    "OPS-031",
+    "OPS-032",
+    "OPS-034",
+    "OPS-149",
+    "OPS-150"
+   ]
+  },
+  "found_in": "web+bank",
+  "founder_sees": "A ready-to-run hiring pack: role, ad, interview questions and a scorecard."
+ },
+ {
+  "id": "MONEY-C33",
+  "name": "Write onboarding and standard operating procedures",
+  "folders": [
+   "21-OPS"
+  ],
+  "what": "Write and keep current the SOPs a new hire needs in week 1 (the live operating artefacts, not just team norms), and give every operating artefact one named owner with a fixed update cadence.",
+  "encompasses": [
+   "Walk every new hire through the live operating artefacts in week 1",
+   "Give every operating artefact one named owner and a fixed update cadence",
+   "Draft a new SOP when a procedure has repeated 3 times (send to founder for review before use)"
+  ],
+  "inputs": [
+   "brand brain: existing SOPs, artefact list"
+  ],
+  "outputs": [
+   "onboarding checklist",
+   "SOP document",
+   "artefact ownership register"
+  ],
+  "trigger": "event: new hire or repeated procedure",
+  "autonomy": "human_assist",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [
+   "script: money.sop_build"
+  ],
+  "skills": [
+   "sop-authoring"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [],
+   "bank": [
+    "OPS-028",
+    "OPS-080"
+   ]
+  },
+  "found_in": "bank_only",
+  "founder_sees": "A week-1 onboarding pack and one place that lists who owns every recurring document."
+ },
+ {
+  "id": "MONEY-C34",
+  "name": "Design the weekly and quarterly management rhythm",
+  "folders": [
+   "21-OPS"
+  ],
+  "what": "Design and maintain the store's meeting cadence (annual reset, quarterly deep dive, weekly trading review, ad hoc), a visible scoreboard, and cascading messaging, sized to a small brand.",
+  "encompasses": [
+   "Run 4 meeting types at a small-brand length: annual, quarterly, weekly, ad hoc",
+   "Run the weekly meeting on the jugular numbers, cancel it when there is nothing to debate",
+   "Publish every goal, owner and standard where the whole team can see it",
+   "Run cascading messaging in the last 10 minutes of every staff meeting",
+   "Set 2 meeting ground rules and defend them against pushback",
+   "Prune recurring reports and channels that have become communication sludge",
+   "Book the post-peak check-in before the peak starts",
+   "Audit a recurring meeting each quarter against known traits of an effective team",
+   "Match communication method to work type: live meetings for interdependent work, dashboards for routine work"
+  ],
+  "inputs": [
+   "brand brain: meeting calendar",
+   "metric contract"
+  ],
+  "outputs": [
+   "meeting cadence calendar",
+   "scoreboard spec",
+   "quarterly meeting audit"
+  ],
+  "trigger": "quarterly",
+  "autonomy": "human_assist",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [
+   "script: money.meeting_rhythm_design"
+  ],
+  "skills": [
+   "management-rhythm-design"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [],
+   "bank": [
+    "OPS-044",
+    "OPS-046",
+    "OPS-047",
+    "OPS-052",
+    "OPS-053",
+    "OPS-054",
+    "OPS-055",
+    "OPS-056",
+    "OPS-057",
+    "OPS-064",
+    "OPS-065",
+    "OPS-066",
+    "OPS-106",
+    "OPS-109",
+    "OPS-110",
+    "OPS-116",
+    "OPS-125",
+    "OPS-126",
+    "OPS-127",
+    "OPS-134",
+    "OPS-135",
+    "OPS-145"
+   ]
+  },
+  "found_in": "bank_only",
+  "founder_sees": "A meeting calendar sized to the brand, plus the scoreboard everyone sees."
+ },
+ {
+  "id": "MONEY-C35",
+  "name": "Run team trust, accountability and decision facilitation guides",
+  "folders": [
+   "21-OPS"
+  ],
+  "what": "Prepare structured facilitation guides (team dysfunction assessment, trust exercises, conflict and accountability tools) for the founder to run with the team, tied every quarter to one real store metric.",
+  "encompasses": [
+   "Prepare the quarterly team dysfunction assessment and pair the score with one real metric",
+   "Prepare trust-building exercises (personal histories, team effectiveness, strength/weakness rounds)",
+   "Prepare conflict-facilitation guides (conflict-style read, force field analysis, role negotiation)",
+   "Prepare accountability guides (natural consequences, proposed-fix requirement, effort-based accountability)",
+   "Flag a destructive high performer or fit issue for the founder with the evidence, never act on it directly",
+   "Prepare a root-cause check for a missed launch (communication, structural, personal)",
+   "Prepare a departure communication and same-day interim-owner plan"
+  ],
+  "inputs": [
+   "brand brain: team roster",
+   "founder notes from past sessions"
+  ],
+  "outputs": [
+   "facilitation guide (one per session)",
+   "quarterly dysfunction-score-plus-metric report"
+  ],
+  "trigger": "quarterly",
+  "autonomy": "human_assist",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [
+   "script: money.team_facilitation_guides"
+  ],
+  "skills": [
+   "team-effectiveness-facilitation"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [],
+   "bank": [
+    "OPS-030",
+    "OPS-033",
+    "OPS-035",
+    "OPS-036",
+    "OPS-037",
+    "OPS-038",
+    "OPS-040",
+    "OPS-045",
+    "OPS-048",
+    "OPS-049",
+    "OPS-050",
+    "OPS-051",
+    "OPS-058",
+    "OPS-059",
+    "OPS-060",
+    "OPS-061",
+    "OPS-063",
+    "OPS-076",
+    "OPS-077",
+    "OPS-078",
+    "OPS-079",
+    "OPS-107",
+    "OPS-108",
+    "OPS-111",
+    "OPS-112",
+    "OPS-113",
+    "OPS-114",
+    "OPS-115",
+    "OPS-117",
+    "OPS-118",
+    "OPS-119",
+    "OPS-120",
+    "OPS-121",
+    "OPS-122",
+    "OPS-123",
+    "OPS-124",
+    "OPS-128",
+    "OPS-129",
+    "OPS-132",
+    "OPS-133",
+    "OPS-148"
+   ]
+  },
+  "found_in": "bank_only",
+  "founder_sees": "A ready-to-run guide for the founder's next team session, tied to a real number."
+ },
+ {
+  "id": "MONEY-C36",
+  "name": "Evaluate and manage vendors, 3PLs and agencies",
+  "folders": [
+   "21-OPS"
+  ],
+  "what": "Run vendor and 3PL selection by competitive RFP with a facility visit, put SLAs in writing with a stated consequence for a miss, audit every invoice against the brand's own order volume in code, and set scope, cost and review owner before any agency pod starts.",
+  "encompasses": [
+   "Choose a 3PL by competitive RFP with a facility visit, never one quote",
+   "Put the 3PL SLA in writing with a pick-time clause and a stated consequence for a miss",
+   "Track delivered-on-time directly and split pick lag from carrier lag before claiming a credit",
+   "Audit every monthly 3PL invoice against the brand's own order volume in code",
+   "Re-shop freight providers monthly, compare 2-3 at a time",
+   "Set scope, cost and review owner before adding any agency pod or contractor roster",
+   "Give a 3PL the growth forecast the brand actually intends to hit, not an inflated one",
+   "Send an advance shipping notice ahead of every inbound delivery",
+   "Decide fulfilment make-vs-buy before running a 3PL RFP"
+  ],
+  "inputs": [
+   "warehouse: 3PL invoices, order volume",
+   "brand brain: vendor contracts"
+  ],
+  "outputs": [
+   "vendor/3PL scorecard",
+   "RFP brief",
+   "invoice audit report with overcharge flags"
+  ],
+  "trigger": "monthly",
+  "autonomy": "human_assist",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [
+   "script: money.vendor_scorecard"
+  ],
+  "skills": [
+   "vendor-3pl-agency-evaluation"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [
+    "https://www.retailerhub.ai/guides/vendor-scorecard",
+    "https://zapro.ai/vendor-management/vendor-scorecard/"
+   ],
+   "bank": [
+    "OPS-015",
+    "OPS-016",
+    "OPS-087",
+    "OPS-088",
+    "OPS-089",
+    "OPS-090",
+    "OPS-091",
+    "OPS-097",
+    "OPS-141",
+    "OPS-142"
+   ]
+  },
+  "found_in": "web+bank",
+  "founder_sees": "A scorecard on every vendor and 3PL, and any invoice that overcharged."
+ },
+ {
+  "id": "MONEY-C37",
+  "name": "Govern supplier purchase orders and production",
+  "folders": [
+   "21-OPS"
+  ],
+  "what": "Gate large purchase orders on a documented tech pack, run a critical path with one owner and one date per production step, and route supplier communication through one channel kept as dispute evidence.",
+  "encompasses": [
+   "Never release a large PO without a tech pack on file",
+   "Pick one negotiation lever per SKU: low MOQ, low price, or short lead time",
+   "Run a critical path with one owner and one date per step; never give suppliers edit access",
+   "Build the demand forecast base excluding stockout days, using a trend or seasonal curve",
+   "Set an inventory buffer policy by volatility and capital",
+   "Keep one authoritative PO copy in accounting software and one team-visible tracker",
+   "Route all supplier communication through one channel kept as dispute evidence",
+   "Agree refund and quantity-tolerance terms before wiring a large supplier payment",
+   "Decide supplier co-development vs an independent designer before sourcing",
+   "Flag that a sourcing edge is not a permanent moat"
+  ],
+  "inputs": [
+   "warehouse: PO tracker, supplier comms",
+   "brand brain: SKU tech packs"
+  ],
+  "outputs": [
+   "PO gate checklist",
+   "critical path schedule",
+   "supplier dispute evidence file"
+  ],
+  "trigger": "event: new PO",
+  "autonomy": "human_assist",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [
+   "script: money.po_governance"
+  ],
+  "skills": [
+   "po-supplier-governance"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [],
+   "bank": [
+    "OPS-081",
+    "OPS-082",
+    "OPS-083",
+    "OPS-084",
+    "OPS-085",
+    "OPS-086",
+    "OPS-101",
+    "OPS-138",
+    "OPS-139",
+    "OPS-140"
+   ]
+  },
+  "found_in": "bank_only",
+  "founder_sees": "Whether a purchase order is safe to release, and the schedule that keeps it on time."
+ },
+ {
+  "id": "MONEY-C38",
+  "name": "Plan customer-service capacity and ticket routing",
+  "folders": [
+   "21-OPS"
+  ],
+  "what": "Staff CS tiers from the sales forecast curve, track cost per ticket, define what counts as a complex ticket before routing it, and trace a rising resolution time upstream before blaming agents.",
+  "encompasses": [
+   "Staff CS tiers from the sales forecast curve, track cost per ticket monthly",
+   "Staff a pre-purchase support lane for a considered or high-AOV product",
+   "Trace a rising resolution time upstream before blaming CS agents",
+   "Define what counts as a complex ticket before routing to new or offshore agents",
+   "Fix the PDP or size guide for a recurring pre-purchase question instead of answering it faster",
+   "Give the fulfilment owner the job of keeping purchase emotion alive after checkout"
+  ],
+  "inputs": [
+   "warehouse: helpdesk export, sales forecast",
+   "metric contract: ticket_backlog, first_reply_hours"
+  ],
+  "outputs": [
+   "CS capacity plan",
+   "ticket-routing rule set"
+  ],
+  "trigger": "monthly",
+  "autonomy": "human_assist",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [
+   "script: money.cs_capacity_plan"
+  ],
+  "skills": [
+   "cs-capacity-planning"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [],
+   "bank": [
+    "OPS-092",
+    "OPS-093",
+    "OPS-094",
+    "OPS-104",
+    "OPS-144",
+    "OPS-151"
+   ]
+  },
+  "found_in": "bank_only",
+  "founder_sees": "How many CS staff and tiers the current and forecast order volume actually needs."
+ },
+ {
+  "id": "MONEY-C39",
+  "name": "Audit tooling and match it to revenue stage",
+  "folders": [
+   "21-OPS"
+  ],
+  "what": "Audit the store's software and tooling spend against its revenue stage (never an ERP too early), name a tracker owner before adding a new system, and judge any operations change by customer output, cost and process load together.",
+  "encompasses": [
+   "Match operations tooling to revenue stage instead of buying an ERP too early",
+   "Add a dedicated tracker owner before jumping to an ERP",
+   "Judge any operations change by customer output, cost and process load together"
+  ],
+  "inputs": [
+   "brand brain: current tool stack and spend",
+   "warehouse: revenue"
+  ],
+  "outputs": [
+   "tooling audit report with cost-per-tool and stage fit"
+  ],
+  "trigger": "quarterly",
+  "autonomy": "human_assist",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [
+   "script: money.tooling_audit"
+  ],
+  "skills": [
+   "tooling-stage-audit"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [],
+   "bank": [
+    "OPS-095",
+    "OPS-096",
+    "OPS-143"
+   ]
+  },
+  "found_in": "bank_only",
+  "founder_sees": "Which tools cost more than the stage justifies, and what to add or drop."
+ },
+ {
+  "id": "MONEY-C40",
+  "name": "Run the store's decision-logging and diagnosis framework",
+  "folders": [
+   "21-OPS"
+  ],
+  "what": "Keep a responsibility chart with one owner per recurring decision type, log every high-stakes decision with its metric and review date, and run bottleneck triage (traffic vs conversion vs team capacity) before funding any hire, agency or redesign.",
+  "encompasses": [
+   "Write a 1-owner responsibility chart for every recurring decision type",
+   "Classify every decision as high-stakes or everyday before deciding how much process to use",
+   "Frame a high-stakes decision before debating it: exact question, right people, data in advance, who decides",
+   "Log every decision with the metric it should move and a review date",
+   "Run the full bottleneck diagnosis (traffic, conversion, team capacity) before funding a hire or CRO project",
+   "Segment conversion by source, campaign and geo before recommending any CRO project (hand off to Site specialist)",
+   "Bring planners and full-time staff into the room before a high-stakes inventory decision",
+   "Use force field analysis to unblock a stalled initiative"
+  ],
+  "inputs": [
+   "brand brain: decision log",
+   "metric contract"
+  ],
+  "outputs": [
+   "decision log entries",
+   "bottleneck diagnosis memo",
+   "responsibility chart"
+  ],
+  "trigger": "on demand",
+  "autonomy": "human_assist",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [
+   "script: money.decision_log"
+  ],
+  "skills": [
+   "bottleneck-diagnosis",
+   "decision-logging"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [],
+   "bank": [
+    "OPS-039",
+    "OPS-041",
+    "OPS-042",
+    "OPS-043",
+    "OPS-069",
+    "OPS-070",
+    "OPS-071",
+    "OPS-072",
+    "OPS-073",
+    "OPS-074",
+    "OPS-075",
+    "OPS-098",
+    "OPS-099",
+    "OPS-102",
+    "OPS-105",
+    "OPS-131"
+   ]
+  },
+  "found_in": "bank_only",
+  "founder_sees": "What is actually limiting growth right now, before money is spent fixing the wrong thing."
+ },
+ {
+  "id": "MONEY-C41",
+  "name": "Build and enforce the bot and AI-agent traffic policy",
+  "folders": [
+   "23-SEC"
+  ],
+  "what": "Build a bot and agent traffic baseline by agent, endpoint and intent, set an enforceable per-endpoint policy with continuous risk tiering, default to challenge over block, and give any accepted shopping agent scoped per-action authorization only.",
+  "encompasses": [
+   "Build a bot/agent traffic baseline by agent, endpoint and intent before setting policy",
+   "Set a per-endpoint bot policy instead of one site-wide switch",
+   "Score bot risk in tiers and re-evaluate continuously within a session",
+   "Default to challenge over block for ambiguous automation",
+   "Keep browsing frictionless, put the strictest checks at checkout and account changes",
+   "Stop using User-Agent alone as an access control; triangulate multiple indicators",
+   "Give an accepted shopping agent scoped, per-action authorization, never standing payment access",
+   "Treat everything an agent reads as untrusted data, never as an instruction",
+   "Design multi-agent workflows against known failure modes",
+   "Audit declines for headless-traffic false positives and watch for reseller/scalper bot patterns during drops",
+   "Retest login, checkout and webhook flows after every WAF or bot-rule change, and roll out new policy in phases",
+   "Confirm and name the DDoS mitigation layer before a peak traffic event"
+  ],
+  "inputs": [
+   "warehouse: server/CDN logs (read)",
+   "brand brain: endpoint list"
+  ],
+  "outputs": [
+   "bot traffic baseline report",
+   "per-endpoint policy document",
+   "weekly bot scan and fix list"
+  ],
+  "trigger": "weekly",
+  "autonomy": "human_assist",
+  "external_write": {
+   "needed": true,
+   "surface": "waf/bot-mitigation rules"
+  },
+  "tools": [
+   "script: money.bot_traffic_baseline",
+   "browser: headless chromium (test)"
+  ],
+  "skills": [
+   "bot-agent-policy-audit"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [
+    "https://cside.com/blog/ecommerce-fraud-prevention",
+    "https://fingerprint.com/blog/e-commerce-fraud-prevention-software/"
+   ],
+   "bank": [
+    "SEC-008",
+    "SEC-009",
+    "SEC-010",
+    "SEC-078",
+    "SEC-084",
+    "SEC-085",
+    "SEC-086",
+    "SEC-087",
+    "SEC-088",
+    "SEC-089",
+    "SEC-090",
+    "SEC-091",
+    "SEC-092",
+    "SEC-093",
+    "SEC-094",
+    "SEC-095",
+    "SEC-096",
+    "SEC-097",
+    "SEC-098",
+    "SEC-099",
+    "SEC-128"
+   ]
+  },
+  "found_in": "web+bank",
+  "founder_sees": "A weekly bot and AI-agent traffic report with a ranked fix list, for a human to apply."
+ },
+ {
+  "id": "MONEY-C42",
+  "name": "Run checkout and payment fraud controls",
+  "folders": [
+   "23-SEC"
+  ],
+  "what": "Detect card-testing bursts, review AVS/CVV/3DS settings against false-decline rates, set chargeback alert thresholds below the processor's flag, control payment-refusal patterns and promo-code abuse, and build evidence packets for disputes.",
+  "encompasses": [
+   "Detect card-testing bursts by clustering small orders, new accounts and geography mismatch",
+   "Review order-risk and decline data before turning on AVS where it is off by default",
+   "Enable dynamic 3D Secure on higher-risk transactions and track approval rate after",
+   "Set an internal chargeback alert below the processor's flag, and confirm chargeback-coverage eligibility",
+   "Track step-up verification triggers by BIN, device and customer above a value threshold",
+   "India only: track COD refusal rate by pincode and phone number, require confirmation above a value threshold (reads null for US brands)",
+   "Cap discount-code uses per code and per customer, expire a leaked code fast",
+   "Build a friendly-fraud evidence packet, and keep an evidence trail for every order to answer disputes",
+   "Track return rate by SKU and customer to catch wardrobing and serial-returner fraud",
+   "Prefer a hosted, non-editable checkout, and ban card numbers from notes, email, chat and documents",
+   "Get PCI DSS SAQ scope confirmed by the acquirer, and verify gateway PCI/tokenization/3DS support directly",
+   "Set up dunning logic that tells an expired-card renewal failure apart from fraud",
+   "Re-run the fraud/security audit when launching a subscription or new payment method"
+  ],
+  "inputs": [
+   "warehouse: order/payment data (read)",
+   "brand brain: payment gateway config"
+  ],
+  "outputs": [
+   "fraud control audit",
+   "chargeback/dispute evidence packet",
+   "PCI scope confirmation record"
+  ],
+  "trigger": "weekly",
+  "autonomy": "human_assist",
+  "external_write": {
+   "needed": true,
+   "surface": "payment gateway settings"
+  },
+  "tools": [
+   "script: money.fraud_control_audit"
+  ],
+  "skills": [
+   "checkout-fraud-control-audit"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [
+    "https://dodopayments.com/blogs/card-testing-fraud",
+    "https://learn.g2.com/best-e-commerce-fraud-protection-software"
+   ],
+   "bank": [
+    "SEC-001",
+    "SEC-011",
+    "SEC-017",
+    "SEC-018",
+    "SEC-019",
+    "SEC-022",
+    "SEC-023",
+    "SEC-024",
+    "SEC-051",
+    "SEC-052",
+    "SEC-053",
+    "SEC-054",
+    "SEC-055",
+    "SEC-056",
+    "SEC-057",
+    "SEC-058",
+    "SEC-059",
+    "SEC-060",
+    "SEC-061",
+    "SEC-062",
+    "SEC-063",
+    "SEC-064"
+   ]
+  },
+  "found_in": "web+bank",
+  "founder_sees": "Card-testing and chargeback signals this week, and which settings need a human to change."
+ },
+ {
+  "id": "MONEY-C43",
+  "name": "Harden account takeover and authentication defenses",
+  "folders": [
+   "23-SEC"
+  ],
+  "what": "Audit login, session and multi-factor authentication design: 2FA/passkeys for admins, session-cookie attributes, password hashing and rate limiting, enumeration prevention, and risk-based step-up, with recovery designed before enforcement.",
+  "encompasses": [
+   "Require 2FA with passkeys on every admin account, ranking second factors and enrolling hardware/passkeys first",
+   "Decide the account recovery path before enforcing strong second factors",
+   "Remove knowledge-based security questions as authentication factors",
+   "Set Secure, HttpOnly, SameSite, Path and a bounded expiry on every session cookie, with high-entropy session IDs",
+   "Set a password policy of long and unique, breach-checked, no forced rotation",
+   "Hash any custom-login password with a maintained adaptive hasher and per-user salt",
+   "Rate-limit login, signup and reset per username and per IP",
+   "Return identical error messages and timing for wrong password vs no such user",
+   "Trigger step-up authentication on new device, new country, or many accounts from one source",
+   "Require re-authentication before changing email, password, payment method or payout details",
+   "Run quarterly phishing simulation training covering email, voice and SMS",
+   "Allow password paste and a password manager, and offer passwordless passkey login to customers"
+  ],
+  "inputs": [
+   "warehouse: auth logs (read)",
+   "brand brain: admin roster"
+  ],
+  "outputs": [
+   "auth hardening audit",
+   "MFA coverage report",
+   "phishing training schedule"
+  ],
+  "trigger": "monthly",
+  "autonomy": "human_assist",
+  "external_write": {
+   "needed": true,
+   "surface": "identity/auth provider settings"
+  },
+  "tools": [
+   "script: money.auth_hardening_audit"
+  ],
+  "skills": [
+   "auth-ato-hardening-audit"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [
+    "https://idenfy.com/blog/best-fraud-prevention-solutions/"
+   ],
+   "bank": [
+    "SEC-003",
+    "SEC-004",
+    "SEC-007",
+    "SEC-028",
+    "SEC-029",
+    "SEC-030",
+    "SEC-031",
+    "SEC-032",
+    "SEC-065",
+    "SEC-066",
+    "SEC-067",
+    "SEC-068",
+    "SEC-071",
+    "SEC-072",
+    "SEC-073",
+    "SEC-074",
+    "SEC-075",
+    "SEC-076",
+    "SEC-077",
+    "SEC-082",
+    "SEC-083",
+    "SEC-140",
+    "SEC-141"
+   ]
+  },
+  "found_in": "web+bank",
+  "founder_sees": "Which admin accounts and login flows are weak, and the exact setting to change."
+ },
+ {
+  "id": "MONEY-C44",
+  "name": "Audit and fix web application security defects",
+  "folders": [
+   "23-SEC"
+  ],
+  "what": "Audit storefront and checkout code for XSS, injection, CSRF, clickjacking, CORS and postMessage defects, and produce a developer fix list requiring parameterised queries, output escaping, method-scoped routing and a 2-approver code review gate.",
+  "encompasses": [
+   "Escape every user-rendered field by context using the framework's auto-escaping layer",
+   "Replace concatenated SQL/shell commands with parameterised queries and argument arrays",
+   "Add a stateless CSRF token and convert state-changing actions from GET to POST",
+   "Deny framing on checkout, cart, account and admin pages",
+   "Allow-list the Origin header on checkout and payment-method endpoints",
+   "Check both sides of any postMessage call before trusting the data",
+   "Replace JSONP with a CORS endpoint or server-side proxy",
+   "Add rel=noopener to every outbound target=_blank link",
+   "Serve the entire site over HTTPS, not only login and checkout",
+   "Require code review with at least 2 approvers, never edit the live theme",
+   "Stream large file downloads instead of buffering them in memory",
+   "Validate the Host header and bind to loopback on any local admin/sync tool"
+  ],
+  "inputs": [
+   "warehouse: site source (read, custom platform only)"
+  ],
+  "outputs": [
+   "security defect list with severity",
+   "developer fix brief per defect"
+  ],
+  "trigger": "monthly",
+  "autonomy": "human_assist",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [
+   "script: money.webapp_security_scan",
+   "browser: headless chromium (test)"
+  ],
+  "skills": [
+   "webapp-security-defect-audit"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [],
+   "bank": [
+    "SEC-002",
+    "SEC-005",
+    "SEC-016",
+    "SEC-027",
+    "SEC-033",
+    "SEC-034",
+    "SEC-035",
+    "SEC-036",
+    "SEC-037",
+    "SEC-038",
+    "SEC-039",
+    "SEC-040",
+    "SEC-041",
+    "SEC-042",
+    "SEC-043",
+    "SEC-044",
+    "SEC-045",
+    "SEC-046",
+    "SEC-047",
+    "SEC-048",
+    "SEC-049",
+    "SEC-050",
+    "SEC-079",
+    "SEC-127",
+    "SEC-135",
+    "SEC-136",
+    "SEC-137",
+    "SEC-138",
+    "SEC-144",
+    "SEC-145",
+    "SEC-146"
+   ]
+  },
+  "found_in": "bank_only",
+  "founder_sees": "A prioritized list of code-level security defects with the exact fix, for a developer."
+ },
+ {
+  "id": "MONEY-C45",
+  "name": "Audit third-party scripts, apps and dependencies",
+  "folders": [
+   "23-SEC"
+  ],
+  "what": "Keep a live inventory of every app, theme, script, tag and dependency with owner and last use, vet new scripts before they are added, run automated CVE scanning, and review app permissions quarterly.",
+  "encompasses": [
+   "Keep a live inventory of every app, theme, plugin and dependency with owner and last use",
+   "Vet a third-party script's access and privileges before adding it anywhere on the site",
+   "Lock dependency versions, review new direct dependencies, check names for typosquats",
+   "Run installs only in a disposable, network-restricted build environment",
+   "Read changelogs before updating; subscribe to platform and app security bulletins",
+   "Audit browser extensions on every admin, fulfilment and support machine",
+   "Run automated dependency vulnerability (CVE) scanning on every build",
+   "Rescore every disclosed vulnerability against the brand's own deployment",
+   "Inventory every third-party tag and script with vendor, purpose and consent status",
+   "Audit ad and analytics tags for fingerprinting; remove any the brand cannot justify",
+   "Change default credentials and update firmware on store network devices",
+   "Review app permissions quarterly and after adding any checkout, payment or customer-data app"
+  ],
+  "inputs": [
+   "warehouse: app/theme/dependency manifest (read)"
+  ],
+  "outputs": [
+   "app and dependency inventory",
+   "quarterly permission review",
+   "tag/fingerprint audit"
+  ],
+  "trigger": "weekly",
+  "autonomy": "agent_does",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [
+   "script: money.dependency_app_audit"
+  ],
+  "skills": [
+   "app-dependency-tag-audit"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [
+    "https://www.clickpost.ai/blog/fraud-prevention-and-security-tools"
+   ],
+   "bank": [
+    "SEC-012",
+    "SEC-100",
+    "SEC-101",
+    "SEC-102",
+    "SEC-103",
+    "SEC-104",
+    "SEC-105",
+    "SEC-106",
+    "SEC-116",
+    "SEC-117",
+    "SEC-118",
+    "SEC-130",
+    "SEC-142",
+    "SEC-143"
+   ]
+  },
+  "found_in": "web+bank",
+  "founder_sees": "Every app, script and dependency the store runs, who owns it, and any risky permission."
+ },
+ {
+  "id": "MONEY-C46",
+  "name": "Review admin access and least-privilege roles",
+  "folders": [
+   "23-SEC"
+  ],
+  "what": "Map every staff role to only the admin areas it needs, run a full staff access audit with same-day offboarding, monitor admin logins for new locations or devices, and issue automation credentials as revocable, scoped, logged records.",
+  "encompasses": [
+   "Map every staff role to only the admin areas it needs, revoke access outside it",
+   "Restrict and alert on admin logins from new locations, devices or times",
+   "Issue every automation credential as a revocable, scoped, logged record",
+   "Run a full staff access audit with a same-day offboarding process"
+  ],
+  "inputs": [
+   "brand brain: staff roster and roles",
+   "warehouse: admin access logs (read)"
+  ],
+  "outputs": [
+   "least-privilege access map",
+   "quarterly access audit report"
+  ],
+  "trigger": "quarterly",
+  "autonomy": "human_assist",
+  "external_write": {
+   "needed": true,
+   "surface": "admin/IAM system"
+  },
+  "tools": [
+   "script: money.access_review"
+  ],
+  "skills": [
+   "admin-access-review"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [],
+   "bank": [
+    "SEC-069",
+    "SEC-070",
+    "SEC-080",
+    "SEC-129"
+   ]
+  },
+  "found_in": "bank_only",
+  "founder_sees": "Who has access to what in the admin, and any access that no longer matches the role."
+ },
+ {
+  "id": "MONEY-C47",
+  "name": "Maintain backups and the incident response runbook",
+  "folders": [
+   "23-SEC"
+  ],
+  "what": "Run daily versioned backups to 3 separated locations with a ransomware-safe copy, test restores end to end, and maintain a unified incident runbook covering breach, skimming, account takeover and ransomware together.",
+  "encompasses": [
+   "Run daily versioned backups to 3 separated locations, one ransomware-safe, tested for restore",
+   "Log admin, order-risk, automation-flow and DNS/header changes, with someone assigned to act",
+   "Scan storefront files for malware on a schedule; treat any detection as a breach until proven otherwise",
+   "Treat unexplained changes to shipping address, order contents or payment routes as compromise signals",
+   "Follow a fixed sequence on a skimming signal: offline, remove, rotate, check, notify",
+   "Lock or flag customer accounts and force resets after any breach touching the customer base",
+   "Build the incident runbook to handle chargebacks, fines and churn together, not as separate tracks",
+   "Run a full restore test end to end, not just confirm backups exist"
+  ],
+  "inputs": [
+   "warehouse: backup system status (read)"
+  ],
+  "outputs": [
+   "backup/restore test report",
+   "incident response runbook",
+   "incident log"
+  ],
+  "trigger": "monthly",
+  "autonomy": "human_assist",
+  "external_write": {
+   "needed": true,
+   "surface": "backup/DR system"
+  },
+  "tools": [
+   "script: money.backup_incident_check"
+  ],
+  "skills": [
+   "backup-restore-incident-runbook"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [],
+   "bank": [
+    "SEC-081",
+    "SEC-109",
+    "SEC-110",
+    "SEC-111",
+    "SEC-112",
+    "SEC-113",
+    "SEC-115",
+    "SEC-131",
+    "SEC-132"
+   ]
+  },
+  "found_in": "bank_only",
+  "founder_sees": "Proof the last backup can actually be restored, and the runbook to follow if something breaks."
+ },
+ {
+  "id": "MONEY-C48",
+  "name": "Monitor domain, DNS and brand-impersonation risk",
+  "folders": [
+   "23-SEC"
+  ],
+  "what": "Lock the domain registrar account, audit DNS for dangling records, and watch for lookalike domains, counterfeit marketplace listings and Safe Browsing blocklist flags against the brand.",
+  "encompasses": [
+   "Lock the domain registrar account and audit DNS for dangling records",
+   "Watch for lookalike and IDN homograph domains impersonating the brand",
+   "Watch marketplaces and social ads for counterfeit listings using the brand's name and photos",
+   "Monitor Safe Browsing status for the storefront domain"
+  ],
+  "inputs": [
+   "brand brain: domain and DNS records",
+   "public web: domain/marketplace search"
+  ],
+  "outputs": [
+   "domain and DNS security report",
+   "counterfeit/impersonation watchlist"
+  ],
+  "trigger": "weekly",
+  "autonomy": "agent_does",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [
+   "script: money.domain_brand_watch",
+   "web search"
+  ],
+  "skills": [
+   "domain-brand-impersonation-watch"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [],
+   "bank": [
+    "SEC-013",
+    "SEC-014",
+    "SEC-015",
+    "SEC-139"
+   ]
+  },
+  "found_in": "bank_only",
+  "founder_sees": "Any lookalike domain, counterfeit listing or blocklist flag found this week."
+ },
+ {
+  "id": "MONEY-C49",
+  "name": "Audit privacy, consent and tracking compliance",
+  "folders": [
+   "23-SEC"
+  ],
+  "what": "Confirm GDPR/CCPA exposure by customer location, publish a privacy policy covering AI-agent interactions with a compliant consent banner, and remove non-payment third-party tags from checkout.",
+  "encompasses": [
+   "Confirm GDPR/CCPA exposure by customer location; keep the fine and notification duty visible",
+   "Publish a privacy policy covering AI agent interactions and run a compliant consent banner",
+   "Never reuse a contact detail collected for 2FA or receipts for retargeting without separate consent",
+   "Remove non-payment third-party tags from the checkout and payment step",
+   "Re-verify current browser cookie/tracking defaults before building any measurement plan",
+   "Never repurpose HSTS as a tracking mechanism",
+   "Run a full privacy and consent check across storefront, account and checkout pages"
+  ],
+  "inputs": [
+   "brand brain: selling markets",
+   "warehouse: tag inventory"
+  ],
+  "outputs": [
+   "privacy/consent compliance report",
+   "checkout tag removal list"
+  ],
+  "trigger": "quarterly",
+  "autonomy": "human_assist",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [
+   "script: money.privacy_consent_audit"
+  ],
+  "skills": [
+   "privacy-consent-compliance-audit"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [],
+   "bank": [
+    "SEC-114",
+    "SEC-119",
+    "SEC-120",
+    "SEC-121",
+    "SEC-122",
+    "SEC-123",
+    "SEC-134"
+   ]
+  },
+  "found_in": "bank_only",
+  "founder_sees": "Whether the store's privacy and consent setup matches the law where its customers are."
+ },
+ {
+  "id": "MONEY-C50",
+  "name": "Run the quarterly security audit program",
+  "folders": [
+   "23-SEC"
+  ],
+  "what": "Run the recurring four-pillar security audit with a named owner per pillar, confirm platform SOC/PCI claims before repeating them, maintain the hosted-vs-self-hosted responsibility map, and run a full threat model and vulnerability disclosure program.",
+  "encompasses": [
+   "Run a quarterly four-pillar security audit with a named owner per pillar",
+   "Triage a security finding by whether a working exploit exists, not by its label",
+   "Write down which security duties the hosted platform covers vs the merchant",
+   "Confirm what a platform's SOC 1/SOC 2 audit actually covers before citing it",
+   "Verify Shopify's (or the platform's) default security claims against current documentation",
+   "Build a full store threat model weighted by peak calendar, region and past incidents",
+   "Publish a vulnerability disclosure channel with a stated response and fix SLA",
+   "Build a quarterly security review calendar covering every checklist and its owner"
+  ],
+  "inputs": [
+   "brand brain: platform, past incidents, peak calendar"
+  ],
+  "outputs": [
+   "quarterly security audit report",
+   "threat model document",
+   "disclosure program page draft"
+  ],
+  "trigger": "quarterly",
+  "autonomy": "human_assist",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [
+   "script: money.quarterly_security_audit"
+  ],
+  "skills": [
+   "quarterly-security-audit-program"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [
+    "https://www.guideflow.com/blog/ecommerce-fraud-protection-software"
+   ],
+   "bank": [
+    "SEC-006",
+    "SEC-020",
+    "SEC-021",
+    "SEC-025",
+    "SEC-026",
+    "SEC-107",
+    "SEC-108",
+    "SEC-124",
+    "SEC-125",
+    "SEC-126",
+    "SEC-133"
+   ]
+  },
+  "found_in": "web+bank",
+  "founder_sees": "The quarterly security scorecard: what was checked, what failed, and who owns the fix."
+ }
+]

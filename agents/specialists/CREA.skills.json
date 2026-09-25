@@ -1,0 +1,1469 @@
+[
+  {
+    "id": "crea/make-creatives",
+    "name": "Make ad creatives",
+    "parent": null,
+    "invoke_when": "a workflow step needs a finished or draft visual or video ad asset, not just copy",
+    "select_by": {
+      "task": "make_creative"
+    },
+    "inputs_required": [
+      "concept brief",
+      "format decision",
+      "brand kit",
+      "claim tiers"
+    ],
+    "steps": [
+      "Read the concept brief and the format decision made in the workflow's format-economics step.",
+      "Match the format and source (brand-made, creator, catalogue, sequence) to one child skill using select_by.",
+      "Call the matching child skill and pass it the brief, references and claim tiers unchanged.",
+      "Return the child's output plus a one-line note naming which child ran and why."
+    ],
+    "checks": [
+      "the correct child ran for the stated format and source",
+      "no format falls through with no child selected; an unmatched format stops and asks a person, it does not improvise"
+    ],
+    "output": "whatever the selected child skill outputs, plus a one-line routing note",
+    "used_by": [
+      "CREA-W01",
+      "CREA-W05",
+      "CREA-W06",
+      "CREA-W19",
+      "CREA-W24"
+    ],
+    "shared_with": [],
+    "skill_md": "---\nname: make-creatives\nowner: crea-paid-creative-copy\nversion: 1\ninvoke_when: a task needs a finished or draft ad asset, not just copy\ninputs: concept brief, format decision, brand kit, claim tiers\noutputs: routes to one child skill by format and source\n---\nPurpose: hold the one router every creative-build job passes through, so the agent\nnever guesses between two production paths and every build starts from the same\nbrief and claim-tier check.\n\nSteps\n1. Read the concept brief's stated format (static, video, catalogue, carousel) and\n   source (brand-made, creator, synthetic actor).\n2. Match to exactly one child: static, ugc-video, founder-video, catalogue-dpa or\n   carousel, using the format and source fields together, never format alone,\n   since a video could be UGC or founder-led.\n3. Call the child with the brief, the tagged reference set and the claim tiers\n   attached, unmodified.\n4. If no child fits, for example a brand-new format not yet covered, stop and\n   draft a one-page workflow proposal instead of forcing a near match.\n\nChecks\n- Every routed job names which child ran, in the handoff note.\n- No build proceeds without a concept brief attached.\n- A format with no matching child never gets forced into the nearest one.\n\nOutput: the child skill's exact output, plus a one-line routing note.\n\nExample: brief says format=video, source=founder -> routes to\ncrea/make-creatives/founder-video, not ugc-video."
+  },
+  {
+    "id": "crea/make-creatives/static",
+    "name": "Static ad creative",
+    "parent": "crea/make-creatives",
+    "invoke_when": "the card's format is a still image ad for feed, story or search placements",
+    "select_by": {
+      "format": "static"
+    },
+    "inputs_required": [
+      "concept brief",
+      "reference image (layout/mood only)",
+      "real product photo",
+      "brand kit",
+      "headline/primary-text set"
+    ],
+    "steps": [
+      "Choose the eye-path logic: clarity-first or curiosity-first, from the angle's awareness stage.",
+      "Pair the product image with the headline so the first glance states the benefit.",
+      "Set the primary-text weight (short punch versus a longer proof block) to match the placement.",
+      "Call the meta_gallery studio /api/variants endpoint with the reference and the real product photo, in product-accuracy mode.",
+      "Flag any localisation or catalogue/DPA note the design will need downstream.",
+      "Check the draft against the reference for layout and mood only, never copied text, logo, product or face."
+    ],
+    "checks": [
+      "real product photo is used wherever fit, material or scale matters",
+      "no competitor logo, text, product or face appears in the draft",
+      "layout/mood credit for any reference is noted in the brief"
+    ],
+    "output": "static ad design brief plus one or more draft image variants, with the reference credit noted",
+    "used_by": [
+      "CREA-W01",
+      "CREA-W05",
+      "CREA-W24"
+    ],
+    "shared_with": [],
+    "skill_md": "---\nname: make-creatives/static\nowner: crea-paid-creative-copy\nversion: 1\ninvoke_when: format is static, a single image ad for feed, story or search\ninputs: concept brief, reference image, real product photo, brand kit, headline/primary-text set\noutputs: static design brief plus draft image variant(s)\n---\nPurpose: turn an approved concept into a design-ready static ad spec and a first\ndraft image, using the real product photo wherever accuracy matters and a\ncompetitor reference for layout and mood only.\n\nSteps\n1. Pick clarity-first (state the benefit plainly) or curiosity-first (a visual\n   hook that earns the read) from the angle's awareness stage: cold traffic\n   usually needs curiosity, warm traffic usually needs clarity.\n2. Pair the real product image with the headline so the pairing states one\n   benefit at first glance, not two competing ideas.\n3. Set primary-text weight for the placement: short and punchy for feed, longer\n   proof-led text where the placement supports an expand.\n4. Generate the draft through the creative studio's /api/variants call, passing\n   the real product photo and the tagged reference image, with product-accuracy\n   mode on so the product itself is never redrawn.\n5. Note any localisation flag (script, currency, trust badge) or catalogue/DPA\n   flag the design will need at scale.\n6. Check the draft against the reference: same mood or layout only, nothing of\n   the competitor's own text, logo, product or face reused.\n\nChecks: real photo present where fit or scale matters; no competitor asset\ncopied; reference credit recorded.\n\nOutput: static design brief (eye path, pairing, text weight, CTA) plus the\ndraft image file(s) from the studio.\n\nExample: a cold-traffic protein-bar ad pairs a macro shot of the bar breaking\nopen with a curiosity headline (\"the bar that doesn't taste like a bar\"),\nstudio-generated with the real product photo, credited to one tagged\ncompetitor reference for its close-up crop style only."
+  },
+  {
+    "id": "crea/make-creatives/ugc-video",
+    "name": "UGC video creative",
+    "parent": "crea/make-creatives",
+    "invoke_when": "the card's format is video and the source is a creator or a real customer, not the brand itself",
+    "select_by": {
+      "format": "video",
+      "source": "ugc"
+    },
+    "inputs_required": [
+      "avatar",
+      "objection map",
+      "references from the Scout",
+      "claims tiers",
+      "creator roster or organic shortlist"
+    ],
+    "steps": [
+      "Decide the UGC source: a briefed creator, a whitelisted organic post, or an AI-actor stand-in (route to ai-actor-ugc if synthetic).",
+      "For a briefed creator, pick a wide (discovery) or specific (replication) brief and write the concept, do/don't list and take allowance.",
+      "For an organic post, confirm it already passed the organic-ugc-scout vetting bar and rights are logged.",
+      "Set the usage-rights scope and expiry before any paid use.",
+      "Check the finished or incoming clip against the angle brief for message match.",
+      "Log the source, rights and concept to the registry."
+    ],
+    "checks": [
+      "never a UGC brief with no concept, only 'make content'",
+      "rights scope and expiry are logged before paid use",
+      "the clip's claim matches the audited angle, no drift from what the creator improvised"
+    ],
+    "output": "creator or sourcing brief (for a briefed/organic path) or a routing note to ai-actor-ugc, plus the rights log entry",
+    "used_by": [
+      "CREA-W01",
+      "CREA-W03"
+    ],
+    "shared_with": [],
+    "skill_md": "---\nname: make-creatives/ugc-video\nowner: crea-paid-creative-copy\nversion: 1\ninvoke_when: format is video and the source is a creator or real customer, not the brand\ninputs: avatar, objection map, Scout references, claim tiers, creator roster or organic shortlist\noutputs: creator or sourcing brief, rights log entry, or a route to the synthetic path\n---\nPurpose: get a genuine, rights-cleared UGC-style video into production, from\nwhichever real source fits the concept, without ever sending a creator to \"make\ncontent\" with no concept.\n\nSteps\n1. Decide the source: a creator to brief fresh, an already-scouted organic post\n   to license, or (only when the founder wants a fast test with no real creator)\n   a synthetic AI-actor stand-in, which routes to make-creatives/ai-actor-ugc\n   instead of this skill's own path.\n2. For a fresh creator, pick a wide brief (let them discover the angle) or a\n   specific brief (replicate a proven structure), then write the concept, a\n   do/don't list and the number of takes allowed.\n3. For an organic post, confirm it cleared the organic-ugc-scout vetting bar\n   (authenticity, product visibility, tone) before treating it as usable.\n4. Set the rights scope, paid whitelisting or organic-only, and the expiry date,\n   before any spend touches the content.\n5. Check the delivered or sourced clip against the angle brief: does it argue\n   the same claim, or did the creator drift.\n6. Log source, concept and rights to the registry.\n\nChecks: concept present, not just an instruction; rights logged before paid use;\nmessage match to the angle.\n\nOutput: creator brief or organic-sourcing note, with rights terms attached.\n\nExample: angle is \"finally, a stroller that fits the trunk\"; brief asks a parent\ncreator to film their real trunk before and after, specific brief, 2 takes,\npaid-whitelist rights for 6 months."
+  },
+  {
+    "id": "crea/make-creatives/founder-video",
+    "name": "Founder-led video creative",
+    "parent": "crea/make-creatives",
+    "invoke_when": "the card's format is video and the source is the founder or another named authority figure",
+    "select_by": {
+      "format": "video",
+      "source": "founder"
+    },
+    "inputs_required": [
+      "founder fact sheet",
+      "angle brief",
+      "claim tiers",
+      "hook bank if one exists"
+    ],
+    "steps": [
+      "Confirm the founder's real, permissioned facts and reviews are on file, never invented.",
+      "Frame the video as an argument for the viewer's problem: claim, proof, mechanism, never a biography.",
+      "Write the scene-by-scene script in the proven order: hook, bridge, mechanism, product, proof, objection, CTA.",
+      "Diversify delivery: vary setting, proof point and framing across 2 to 3 variants so it never reads as the same clip repeated.",
+      "Set shot direction that keeps the founder's real likeness and the product accurate.",
+      "Run the claim and copywriting pass before it leaves this skill."
+    ],
+    "checks": [
+      "no invented founder story or credential",
+      "single CTA per script",
+      "founder's real face and product are never redrawn"
+    ],
+    "output": "founder fact sheet, script variants, and a shot list or frame-direction note",
+    "used_by": [
+      "CREA-W01",
+      "CREA-W02"
+    ],
+    "shared_with": [],
+    "skill_md": "---\nname: make-creatives/founder-video\nowner: crea-paid-creative-copy\nversion: 1\ninvoke_when: format is video and the source is the founder or a named authority\ninputs: founder fact sheet, angle brief, claim tiers, existing hook bank\noutputs: script variants, shot or frame-direction note\n---\nPurpose: script and direct a founder or authority-led ad as a real argument for\nthe viewer's problem, never a life-story reel, using only real, permissioned\nfacts.\n\nSteps\n1. Pull the founder's or authority's real stories, credentials and reviews from\n   the brand brain, with a source and date for each; nothing invented, and stop\n   if a strong story has no written permission on file.\n2. Frame the video as claim, proof, mechanism, stating the viewer's problem in\n   the first line, not the founder's history.\n3. Script scene by scene in the proven order: hook, bridge, mechanism, product,\n   proof, objection, CTA, sized to how much the product actually needs to be\n   explained.\n4. Draft 2 to 3 variants that vary setting, delivery style and the specific\n   proof point used, so repeated founder appearances do not read as one ad\n   recycled.\n5. Set shot direction: gaze toward the CTA, the real product visible and\n   accurate, no AI redraw of the founder's face or the product itself.\n6. Run the copywriting and claim-tier pass on every spoken and on-screen line\n   before handoff.\n\nChecks: no invented fact; single CTA; no redrawn face or product.\n\nOutput: script variants (scene, visual, line, purpose) plus a shot list.\n\nExample: founder explains why a formula works using a real customer's return\nreview as proof, three variants swap the review quoted but keep the same claim\nand mechanism."
+  },
+  {
+    "id": "crea/make-creatives/catalogue-dpa",
+    "name": "Catalogue and DPA creative",
+    "parent": "crea/make-creatives",
+    "invoke_when": "the card is a catalogue or dynamic product ad (DPA) campaign covering many SKUs from the product feed, or a feed schema change",
+    "select_by": {
+      "format": "catalogue",
+      "channel": "dpa"
+    },
+    "inputs_required": [
+      "product feed: price, image, SKU fields",
+      "brand kit",
+      "reusable copy block set"
+    ],
+    "steps": [
+      "Audit the feed for gaps, malformed fields or stale data before building anything on top of it.",
+      "Design the overlay template (price, discount, badge) tested against the longest price string and smallest image in the feed.",
+      "Generate the full variant grid by combining the template, the feed fields and the copy blocks.",
+      "Spot-check a random sample of SKUs for correct price, image and copy pairing.",
+      "Flag SKU-level risk: overlapping badge, missing image, a discontinued item still live."
+    ],
+    "checks": [
+      "template tested against real longest/shortest feed values, not a sample assumption",
+      "every flagged risk names the specific SKU, not a generalized warning"
+    ],
+    "output": "overlay template, catalogue-scale variant grid, SKU-level risk flag list",
+    "used_by": [
+      "CREA-W01",
+      "CREA-W24"
+    ],
+    "shared_with": [],
+    "skill_md": "---\nname: make-creatives/catalogue-dpa\nowner: crea-paid-creative-copy\nversion: 1\ninvoke_when: the job covers many SKUs from the product feed: a new catalogue or\n  DPA campaign, or a feed schema change\ninputs: product feed, brand kit, reusable copy block set\noutputs: overlay template, full variant grid, SKU-level risk flags\n---\nPurpose: build a price and badge overlay template and generate the full\ncatalogue-scale ad grid, since these follow a fixed module system unlike a\none-off static, and a template that fails on one SKU fails silently at scale.\n\nSteps\n1. Audit the feed's price and image fields for gaps, wrong formats or stale\n   data first; building a template on dirty data hides the real problem.\n2. Design the overlay: price, discount badge, any urgency badge, tested against\n   the single longest real price string in the feed and the smallest real\n   product image, not an average case.\n3. Write or reuse a small set of copy blocks that plug into any SKU's fields\n   without reading oddly for an outlier product name or price.\n4. Generate the variant grid by combining template, feed fields and copy\n   blocks through the creative studio's variant endpoint.\n5. Spot-check a random sample, not just the first few SKUs, for correct price,\n   image and copy pairing.\n6. Flag every SKU-specific risk by name: a badge overlapping a long price, a\n   missing image, a discontinued SKU still marked active.\n\nChecks: template survives the extreme cases in the feed; every risk names a\nSKU, not a category.\n\nOutput: overlay template file, the generated variant grid, and a risk list.\n\nExample: a Black-Friday-sale badge overlaps a 6-digit price on 4 SKUs out of\n800; the audit catches it before the DPA campaign goes live, not after."
+  },
+  {
+    "id": "crea/make-creatives/carousel",
+    "name": "Carousel ad creative",
+    "parent": "crea/make-creatives",
+    "invoke_when": "the card's format is a multi-card carousel that tells a sequence: steps, a range, or a before-to-after story",
+    "select_by": {
+      "format": "carousel"
+    },
+    "inputs_required": [
+      "concept brief",
+      "format decision (format economics)",
+      "product facts",
+      "headline/primary-text set"
+    ],
+    "steps": [
+      "Confirm the format-economics step actually favors a sequence over a single image or video.",
+      "Pick the sequence logic: step-by-step use, a size or variant range, or a before-to-after story.",
+      "Write one headline per card so each card earns the swipe to the next.",
+      "Pair each card's image with its own headline, real product photos throughout.",
+      "Set the final card as the offer and CTA card, never buried mid-sequence.",
+      "Check the full sequence reads correctly even if a viewer only sees the first 2 cards."
+    ],
+    "checks": [
+      "sequence has a clear reason to be a carousel, not a single static forced into cards",
+      "final card carries the offer and CTA",
+      "first 2 cards alone still make sense and earn a swipe"
+    ],
+    "output": "carousel card sequence: ordered image-headline pairs plus the CTA card",
+    "used_by": [
+      "CREA-W01"
+    ],
+    "shared_with": [],
+    "skill_md": "---\nname: make-creatives/carousel\nowner: crea-paid-creative-copy\nversion: 1\ninvoke_when: format is a multi-card carousel telling a sequence, not a single\n  static or video\ninputs: concept brief, format-economics decision, product facts, headline/primary-text set\noutputs: ordered carousel card sequence with a CTA card\n---\nPurpose: build a carousel that earns each swipe, using a real sequence logic,\nrather than defaulting to cards just because the format exists.\n\nSteps\n1. Check that format-economics actually chose carousel because the product has\n   a real sequence to show: steps of use, a size or variant range, or a\n   before-to-after story. If not, send it back to static or video instead.\n2. Pick the sequence logic explicitly and state it in the brief, so every card\n   is built to advance that one logic, not a grab-bag of images.\n3. Write one headline per card that earns the next swipe on its own, testing\n   the first 2 cards as if that is all a viewer will ever see.\n4. Pair each card's real product image with its headline; no card runs on a\n   generic stock image with no connection to the sequence.\n5. Put the offer and CTA on the final card, not mid-sequence where it gets\n   skipped.\n6. Read the full sequence end to end for message-match and pacing before\n   handoff.\n\nChecks: real sequence logic named; first 2 cards stand alone; CTA on the last\ncard.\n\nOutput: an ordered list of image-headline card pairs plus the CTA card, tagged\nwith the sequence logic used.\n\nExample: a skincare routine ad uses 4 cards, one per step, ending on card 5\nwith the bundle price and a single CTA, rather than 5 unrelated product shots."
+  },
+  {
+    "id": "crea/write-copy",
+    "name": "Write ad copy",
+    "parent": null,
+    "invoke_when": "a workflow step needs copy text, not a visual or video build",
+    "select_by": {
+      "task": "write_copy"
+    },
+    "inputs_required": [
+      "angle brief",
+      "product facts",
+      "claim tiers",
+      "platform character limits"
+    ],
+    "steps": [
+      "Read what copy type the step needs.",
+      "Match to one child skill by copy_type using select_by.",
+      "Call the child with the angle brief, product facts and claim tiers attached.",
+      "Return the child's output plus which child ran."
+    ],
+    "checks": [
+      "the correct child ran for the stated copy type",
+      "no copy leaves this skill without the claim-tier check downstream"
+    ],
+    "output": "the selected child's exact output, plus a routing note",
+    "used_by": [
+      "CREA-W01",
+      "CREA-W02",
+      "CREA-W05",
+      "CREA-W06",
+      "CREA-W07",
+      "CREA-W17",
+      "CREA-W19",
+      "CREA-W24"
+    ],
+    "shared_with": [],
+    "skill_md": "---\nname: write-copy\nowner: crea-paid-creative-copy\nversion: 1\ninvoke_when: a task needs written copy, not a visual or video build\ninputs: angle brief, product facts, claim tiers, platform character limits\noutputs: routes to one child skill by copy_type\n---\nPurpose: hold the one router every copywriting job passes through, so a hook\nrequest never lands on the headline child by mistake and every draft carries\nthe same brand facts.\n\nSteps\n1. Read the copy_type the step names: primary text, headline, hook, or a\n   full script.\n2. Route to exactly one child. A cold-open video needs both hooks and scripts:\n   call hooks first, then feed the winning hook into scripts.\n3. Pass the angle brief, product facts and claim tiers to the child unchanged.\n4. Return the child's output with a one-line note on which child ran, so the\n   downstream compliance step knows which checklist applies.\n\nChecks\n- The right child ran for the stated copy_type.\n- No copy is treated as finished before the compliance pass (a separate step in\n  every workflow) runs on it.\n- A copy_type with no matching child stops and asks a person rather than\n  forcing a near match.\n\nOutput: the child skill's exact output plus a one-line routing note.\n\nExample: task says copy_type=hook, format=video -> routes to\ncrea/write-copy/hooks; the winning hook then feeds crea/write-copy/scripts."
+  },
+  {
+    "id": "crea/write-copy/primary-text",
+    "name": "Primary text and body copy",
+    "parent": "crea/write-copy",
+    "invoke_when": "the copy needed is the main body text under a static, carousel card, or marketplace module, not a headline or a spoken script",
+    "select_by": {
+      "copy_type": "primary_text"
+    },
+    "inputs_required": [
+      "angle brief",
+      "cleared claim list",
+      "platform character/space limit"
+    ],
+    "steps": [
+      "State the one dominant appeal in the opening line.",
+      "Build the proof point or mechanism in the middle, ranked by strongest evidence first.",
+      "Close on the offer and a single CTA.",
+      "Fit the exact character or space limit for the placement (feed, carousel card, marketplace module).",
+      "Check reading level and single-idea discipline before returning."
+    ],
+    "checks": [
+      "opening line states the appeal, not a generic greeting",
+      "one CTA only",
+      "fits the placement's real space limit"
+    ],
+    "output": "primary text block, sized to the placement, with a reading-level score",
+    "used_by": [
+      "CREA-W01",
+      "CREA-W05",
+      "CREA-W17",
+      "CREA-W24"
+    ],
+    "shared_with": [],
+    "skill_md": "---\nname: write-copy/primary-text\nowner: crea-paid-creative-copy\nversion: 1\ninvoke_when: the copy needed is body text under a static, carousel card or\n  marketplace module, not a headline or spoken script\ninputs: angle brief, cleared claim list, platform character/space limit\noutputs: primary text block with a reading-level score\n---\nPurpose: write body copy that opens on the dominant appeal, proves it in order\nof evidence strength, and closes on one clear action, fit to the exact space\nthe placement gives it.\n\nSteps\n1. Open on the angle's one dominant appeal, stated as a specific outcome, never\n   a generic greeting or a restated headline.\n2. Order proof points from strongest real evidence (a number, a named review,\n   a demonstrable mechanism) to weakest, cutting anything with no evidence\n   behind it.\n3. Close on the offer stated plainly and exactly one CTA; a second competing\n   CTA is cut, not softened.\n4. Fit the text to the placement's real limit: a feed ad tolerates a short\n   punch, a carousel card needs far less, a marketplace module has its own\n   fixed character cap.\n5. Score reading level in code and cut or simplify until it clears grade 10.\n\nChecks: one dominant appeal, one CTA, no claim outside the cleared list, fits\nthe real space limit, reading level under grade 10.\n\nOutput: the finished primary text string, its word and character count, and\nits reading-grade score.\n\nExample: a mattress ad's primary text opens \"sleep hot? this one breathes,\"\nthen cites the one clinical measurement on file, then closes with \"try it 100\nnights, free returns\" and a single Shop Now CTA."
+  },
+  {
+    "id": "crea/write-copy/headlines",
+    "name": "Headline sets",
+    "parent": "crea/write-copy",
+    "invoke_when": "the copy needed is the short headline line above or beside the image, for statics, search or marketplace listings",
+    "select_by": {
+      "copy_type": "headline"
+    },
+    "inputs_required": [
+      "angle brief",
+      "cleared claim list",
+      "reference image if pairing a static",
+      "platform character limit"
+    ],
+    "steps": [
+      "Draft 10 or more headline candidates from the angle's dominant appeal, varying the specific benefit stated.",
+      "Check each candidate against the reference image for pairing fit, not a mismatched claim.",
+      "Check each candidate's length against the platform's current character limit.",
+      "Rank the set and mark the top 3 to 5 as the primary test set."
+    ],
+    "checks": [
+      "10+ candidates drafted before any get cut",
+      "every kept headline fits the current character limit",
+      "no headline states a claim the paired image contradicts"
+    ],
+    "output": "ranked headline set (10+ candidates, top 3-5 marked), each with its character count",
+    "used_by": [
+      "CREA-W01",
+      "CREA-W05"
+    ],
+    "shared_with": [],
+    "skill_md": "---\nname: write-copy/headlines\nowner: crea-paid-creative-copy\nversion: 1\ninvoke_when: the copy needed is a short headline for a static, search or\n  marketplace listing\ninputs: angle brief, cleared claim list, reference image if pairing a static,\n  platform character limit\noutputs: ranked headline set with character counts\n---\nPurpose: produce a real range of headline candidates, not three near-identical\nrewordings, and confirm each one fits both its space limit and the image it\nruns beside.\n\nSteps\n1. Draft 10 or more candidates from the angle's dominant appeal, varying the\n   specific benefit named (speed, price, comfort, status) rather than just\n   rewording one phrase 10 times.\n2. Where a static image is already chosen, check each candidate against it:\n   the headline and the image should state one shared idea, not two competing\n   claims.\n3. Check every candidate's character count against the platform's current\n   limit; cut or shorten anything that would truncate.\n4. Rank the full set and mark the top 3 to 5 as the ones to actually test,\n   with a one-line reason for the ranking.\n\nChecks: 10+ candidates before culling; no length violation; no image-headline\nmismatch; ranking reasoned, not arbitrary.\n\nOutput: the full candidate list, each with its character count, and the top\n3-5 flagged for test.\n\nExample: for a cold-brew concentrate, candidates range across speed (\"coffee\nin 10 seconds\"), price (\"75 cents a cup\") and taste (\"less bitter, more\nbuzz\"), ranked by which best pairs with the chosen close-up product shot."
+  },
+  {
+    "id": "crea/write-copy/hooks",
+    "name": "Hook bank",
+    "parent": "crea/write-copy",
+    "invoke_when": "the copy needed is the opening line or opening 3 seconds of a cold video, VSL or static, before any full script is written",
+    "select_by": {
+      "copy_type": "hook"
+    },
+    "inputs_required": [
+      "angle brief",
+      "past hook grades",
+      "product facts"
+    ],
+    "steps": [
+      "Draft 8 to 20 hooks covering different opening mechanisms (question, bold claim, pattern interrupt, relatable scene).",
+      "Grade each hook on 5 criteria: clarity, relevance, novelty, specificity, credibility.",
+      "Multiply the top-graded hook into layered variants across audio, on-screen text and visual, for video formats.",
+      "Confirm no hook names the product or the offer, since a cold hook should earn attention before either.",
+      "Rank the bank and flag the top 3 to 5 for test."
+    ],
+    "checks": [
+      "8 to 20 hooks drafted before grading",
+      "no product name or offer in a cold hook",
+      "top hooks flagged with a grading reason"
+    ],
+    "output": "graded hook bank (8-20 hooks, each with 5 scores), top 3-5 flagged, with audio/text/visual variants for video",
+    "used_by": [
+      "CREA-W01",
+      "CREA-W02",
+      "CREA-W06",
+      "CREA-W07",
+      "CREA-W19"
+    ],
+    "shared_with": [],
+    "skill_md": "---\nname: write-copy/hooks\nowner: crea-paid-creative-copy\nversion: 1\ninvoke_when: the copy needed is an opening line, before hook rate, for cold\n  video, VSL or static formats\ninputs: angle brief, past hook grades, product facts\noutputs: graded hook bank with variants\n---\nPurpose: produce and grade enough real hook variety that a genuinely strong\nopening survives the cut, rather than shipping the first idea that came to\nmind.\n\nSteps\n1. Draft 8 to 20 hooks spanning different opening mechanisms: a direct\n   question, a bold or surprising claim, a pattern interrupt (visual or\n   verbal), and a relatable scene the viewer recognizes.\n2. Grade every hook on 5 criteria: clarity (understood in one read), relevance\n   (matches the persona's real problem), novelty (not the account's own\n   overused opener), specificity (a real detail, not a vague promise) and\n   credibility (believable without proof yet shown).\n3. For video, take the top-graded hook and build layered variants: a different\n   audio delivery, a different on-screen text treatment, a different opening\n   visual, so one strong idea gets 3 or 4 real chances to test.\n4. Check that no hook names the product or the offer; a cold hook earns the\n   next 3 seconds first.\n5. Rank the full bank and flag the top 3 to 5 with the reason they ranked\n   there.\n\nChecks: 8-20 hooks before grading; every hook scored on all 5 criteria; no\npremature product/offer name.\n\nOutput: the graded bank, angle-tagged, format-tagged, with the top hooks\nflagged and video variants attached.\n\nExample: for a scalp-serum brand, hooks span \"why does my scalp itch by\nnoon?\" (question), \"your shampoo is the problem\" (bold claim) and a silent\nclose-up of flaking that cuts before a word is said (pattern interrupt)."
+  },
+  {
+    "id": "crea/write-copy/scripts",
+    "name": "Video scripts and storyboards",
+    "parent": "crea/write-copy",
+    "invoke_when": "the copy needed is a full scene-by-scene video script, for cold video, VSL, testimonial-style or synthetic-actor reads",
+    "select_by": {
+      "copy_type": "script",
+      "format": "video"
+    },
+    "inputs_required": [
+      "angle brief",
+      "hook bank",
+      "claim tiers",
+      "product's real education/demo need"
+    ],
+    "steps": [
+      "Decide if a full VSL is warranted or a short cold-video structure fits better, from the product's real education need.",
+      "Pick the skeleton: 7-part VSL, cold-video 7-beat (hook, bridge, mechanism, product, proof, objection, CTA), or testimonial structure.",
+      "Draft scene by scene: time, visual, on-screen text, voice line, purpose.",
+      "Storyboard the shot list sized to how it will actually be shot or generated.",
+      "Check claim-proof pairing: every claim in the script has its proof beat nearby.",
+      "Confirm a single CTA closes the script."
+    ],
+    "checks": [
+      "CTA present and singular",
+      "no unverified claim",
+      "claim and its proof sit close together in the sequence"
+    ],
+    "output": "scene-by-scene script table plus storyboard shot list",
+    "used_by": [
+      "CREA-W01",
+      "CREA-W02",
+      "CREA-W05",
+      "CREA-W19"
+    ],
+    "shared_with": [],
+    "skill_md": "---\nname: write-copy/scripts\nowner: crea-paid-creative-copy\nversion: 1\ninvoke_when: the copy needed is a full video script, cold video, VSL,\n  testimonial-style, or a synthetic-actor read\ninputs: angle brief, hook bank, claim tiers, the product's real education need\noutputs: scene-by-scene script table plus storyboard shot list\n---\nPurpose: script video ads in a proven, sized structure, never longer than the\nproduct's real education need justifies, with every claim paired to its proof.\n\nSteps\n1. Decide the format length from the product's real complexity: a simple\n   impulse product rarely needs a full VSL; a high-consideration or\n   unfamiliar-mechanism product often does.\n2. Pick the skeleton: the 7-part VSL for longer education, the cold-video\n   7-beat (hook, bridge, mechanism, product, proof, objection, CTA) for\n   shorter formats, or a testimonial structure built around a real customer\n   story.\n3. Write scene by scene as a table: timestamp, what's on screen, any on-screen\n   text, the spoken line, and that beat's purpose in the argument.\n4. Storyboard the shot list, sized to whether this will be a real shoot, a\n   creator's own filming, or an AI-actor generation, since each needs a\n   different level of shot detail.\n5. Check claim-proof pairing: every claim made has its proof beat within a\n   few seconds, not deferred to the end.\n6. Confirm exactly one CTA closes the script.\n\nChecks: single CTA; no unpaired claim; length matches the real education need,\nnot a habit.\n\nOutput: the scene table and the storyboard, both tagged to the angle and\nformat they serve.\n\nExample: a water-filter VSL spends 20 seconds on the contamination problem,\n15 on the mechanism with a visual proof, 10 on a real lab result, then closes\non price and one CTA, rather than padding to a fixed runtime."
+  },
+  {
+    "id": "crea/research/objection-and-format-scan",
+    "name": "Objection and format scan",
+    "parent": null,
+    "invoke_when": "a new test needs its research pulled fresh before angles can be written",
+    "select_by": {
+      "task": "research"
+    },
+    "inputs_required": [
+      "brand brain voice/VOC packet",
+      "own account's last 90 days of ad-level results"
+    ],
+    "steps": [
+      "Pull the brand's already-mined voice-of-customer packet (owned by the Brand Brain Keeper).",
+      "Pull the account's own last 90 days of ad-level results and rank formats by hook rate, hold rate and CPA.",
+      "Tag every objection to its real quoted source and date.",
+      "Tag every 'format working now' line to the real metric behind it.",
+      "Flag anything that reads as a surprise rather than a confirmation of known research."
+    ],
+    "checks": [
+      "every objection has a quoted source and date",
+      "every format claim cites a real metric, not an impression"
+    ],
+    "output": "objection map (quoted, sourced) plus a format scan (metric-backed)",
+    "used_by": [
+      "CREA-W01"
+    ],
+    "shared_with": [],
+    "skill_md": "---\nname: research/objection-and-format-scan\nowner: crea-paid-creative-copy\nversion: 1\ninvoke_when: a new creative test needs its research refreshed before angles get\n  written\ninputs: brand brain voice-of-customer packet, own account's last 90 days of\n  ad-level results\noutputs: sourced objection map, metric-backed format scan\n---\nPurpose: assemble the research a new angle needs, using the brand's own\nalready-mined customer language and this account's own real recent results,\nrather than a generic best-practice list.\n\nSteps\n1. Pull the current voice-of-customer packet from the brand brain, which the\n   Brand Brain Keeper owns and refreshes; this skill does not re-mine raw\n   customer data itself, it assembles what already exists for this decision.\n2. Pull this account's own last 90 days of ad-level results and rank which\n   formats currently deliver the best hook rate, hold rate and CPA, since\n   \"what's working now\" should mean this account, not the category in\n   general.\n3. Tag every objection carried into the map with its real quoted source and a\n   date, never a paraphrase presented as a quote.\n4. Tag every format claim to the specific metric and window that backs it.\n5. Flag anything in the pull that reads as a genuine surprise rather than a\n   confirmation of what the team already believed, since surprises are where\n   a new angle usually hides.\n\nChecks: source and date on every objection; metric and window on every format\nclaim.\n\nOutput: the objection map and the format scan, both ready to feed the\nangle-builder skill.\n\nExample: the scan shows static ads with a price-anchor angle now outperform\nvideo 2-to-1 on CPA over the last 90 days, a fact the format-economics step\nlater uses directly."
+  },
+  {
+    "id": "crea/research/competitor-signal-pull",
+    "name": "Competitor signal pull",
+    "parent": null,
+    "invoke_when": "a workflow step needs layout or mood references from competitor ads, never their text, logo, product or face",
+    "select_by": {
+      "task": "competitor_reference"
+    },
+    "inputs_required": [
+      "objection map or bottleneck",
+      "meta_gallery comp_media.json and competitors.json"
+    ],
+    "steps": [
+      "Pull competitor ads from the gallery's Competitors tab matching the bottleneck or persona.",
+      "Call the Reference Scout for any additional swipe material outside the gallery's own set.",
+      "Tag each reference with one line on why it fits.",
+      "Mark every reference layout/mood only, never for text, logo, product or face reuse.",
+      "Cap the set at 3 to 8 references so the brief stays usable."
+    ],
+    "checks": [
+      "every reference has a one-line fit reason",
+      "every reference is explicitly tagged signal only"
+    ],
+    "output": "3 to 8 tagged competitor references, layout/mood only",
+    "used_by": [
+      "CREA-W01",
+      "CREA-W08"
+    ],
+    "shared_with": [
+      "shared_with_reference_scout"
+    ],
+    "skill_md": "---\nname: research/competitor-signal-pull\nowner: crea-paid-creative-copy\nversion: 1\ninvoke_when: a step needs competitor references for layout or mood, never for\n  copying text, logo, product or face\ninputs: objection map or bottleneck, comp_media.json, competitors.json\noutputs: 3 to 8 tagged, layout/mood-only references\n---\nPurpose: gather real competitor structure signal, cadence, layout and mood,\nwithout ever crossing into using a competitor's actual text, logo, product or\nface, and without treating any of it as a proven winner.\n\nSteps\n1. Pull competitor ads from the Meta gallery's Competitors tab that match the\n   current bottleneck or persona, using the existing tagged competitor data\n   (competitors.json, comp_media.json) rather than a fresh scrape.\n2. Where the gallery's own set does not have enough range, call the Reference\n   Scout for additional swipe material under the same layout/mood-only rule.\n3. Write a one-line reason each reference was pulled: what structural or mood\n   element it demonstrates, never \"because it looks good.\"\n4. Mark every single reference as signal only, explicitly, in the handoff, so\n   a downstream skill cannot mistake it for cleared source material.\n5. Cap the final set at 3 to 8 references; more than that stops being usable\n   in a brief.\n\nChecks: every reference has a fit reason; every reference is tagged signal\nonly; no reference implies a proven result.\n\nOutput: the tagged reference set, ready to attach to a concept or design\nbrief.\n\nExample: 5 competitor statics are pulled for their shared \"before/after split\nscreen\" layout on a skincare bottleneck, none of their headlines or product\nshots are carried forward."
+  },
+  {
+    "id": "crea/angle-and-test/angle-builder",
+    "name": "Angle builder",
+    "parent": null,
+    "invoke_when": "a research packet exists and a small set of testable angles needs to be defined before any copy is written",
+    "select_by": {
+      "task": "define_angle"
+    },
+    "inputs_required": [
+      "objection map",
+      "persona/avatar record",
+      "product facts",
+      "claim tiers"
+    ],
+    "steps": [
+      "Write the one-sentence angle for one persona.",
+      "State the buying question the angle answers.",
+      "Pick the single dominant appeal (price, status, ease, fear-avoidance, aspiration).",
+      "Set the awareness stage the angle targets.",
+      "Check the angle against claim tiers before it leaves this skill.",
+      "Repeat to produce 2 to 4 distinct angle candidates."
+    ],
+    "checks": [
+      "each angle names one persona, one appeal, one buying question",
+      "no forbidden-tier claim in any angle"
+    ],
+    "output": "angle brief: 2 to 4 angles, each with persona, appeal, buying question, awareness stage",
+    "used_by": [
+      "CREA-W01",
+      "CREA-W02"
+    ],
+    "shared_with": [],
+    "skill_md": "---\nname: angle-and-test/angle-builder\nowner: crea-paid-creative-copy\nversion: 1\ninvoke_when: research exists and a small set of testable angles must be\n  defined before any copy gets written\ninputs: objection map, persona/avatar record, product facts, claim tiers\noutputs: 2 to 4 angle candidates, each fully specified\n---\nPurpose: turn raw research into a small, genuinely distinct set of testable\nangles, each disciplined to one persona and one dominant appeal, so a test\nbatch actually isolates what it claims to test.\n\nSteps\n1. Write the angle as one sentence for one named persona; an angle that tries\n   to speak to two personas at once gets split into two angles instead.\n2. State the exact buying question the angle answers, in the persona's own\n   words where the research supports it.\n3. Pick a single dominant appeal, price, status, ease, fear-avoidance or\n   aspiration, and hold to it; an angle mixing two appeals is not one testable\n   thing.\n4. Set the awareness stage (unaware, problem-aware, solution-aware,\n   product-aware, most-aware) the angle is built for, since the hook, proof\n   and CTA all depend on it.\n5. Check the angle against the brand's claim tiers immediately, before any\n   copy is written on top of it, so a bad angle is caught at its cheapest\n   point.\n6. Produce 2 to 4 distinct candidates this way, not near-duplicates of one\n   idea.\n\nChecks: one persona, one appeal, one buying question per angle; no\nforbidden-tier claim.\n\nOutput: the angle brief, each candidate fully specified and ready for the\ntest-plan-builder or a founder-video argument outline.\n\nExample: from an objection map full of \"will this actually fit my small\nkitchen,\" one angle targets space-anxious apartment cooks on the ease appeal,\nanswering \"does this take up counter space I don't have.\""
+  },
+  {
+    "id": "crea/angle-and-test/test-plan-builder",
+    "name": "Test plan builder",
+    "parent": null,
+    "invoke_when": "an angle brief is ready and the creative side of a test needs a hypothesis, pack size and pre-set win/kill rule",
+    "select_by": {
+      "task": "test_plan"
+    },
+    "inputs_required": [
+      "angle brief",
+      "metric contract: delivery volume, freshness",
+      "registry: past test sizes for this brand"
+    ],
+    "steps": [
+      "Write the hypothesis in one sentence: what changes, and what it should move.",
+      "Set a clean one-persona-per-ad-set structure so the test isolates the angle.",
+      "Size the pack from this account's own delivery volume, not a fixed generic number.",
+      "Set the winner rule and the kill rule before any script is written.",
+      "Set the minimum read window from the account's own delivery, not a calendar default."
+    ],
+    "checks": [
+      "winner and kill rule exist before launch",
+      "pack size and read window both derive from this account's real traffic"
+    ],
+    "output": "test brief: hypothesis, pack size, winner rule, kill rule, minimum read window",
+    "used_by": [
+      "CREA-W01"
+    ],
+    "shared_with": [
+      "shared/metric-read"
+    ],
+    "skill_md": "---\nname: angle-and-test/test-plan-builder\nowner: crea-paid-creative-copy\nversion: 1\ninvoke_when: an angle brief is ready and the creative side of a test needs a\n  hypothesis and a pre-set win/kill rule\ninputs: angle brief, metric contract delivery volume, registry of past test\n  sizes for this brand\noutputs: test brief with hypothesis, pack size, winner/kill rule, read window\n---\nPurpose: fix the test's judgment criteria before a single script is written,\nso no one is tempted to move the goalposts once real numbers start coming in;\ncovers the creative side of the test only; MEDIA owns the budget and delivery\nmechanics of the same test.\n\nSteps\n1. Write the hypothesis as one sentence: which angle or hook change is being\n   tested, and which specific metric it should move (hook rate, CVR, CPA).\n2. Structure the test as one persona per ad set, so a result can be\n   attributed to the angle, not blurred across personas sharing a set.\n3. Size the pack, how many ad variants launch at once, from this account's\n   own real delivery volume using metric-read, not a fixed \"always test 5\"\n   rule; a low-volume account needs a smaller, cleaner pack.\n4. Set the winner rule and the kill rule in the same sentence as the\n   hypothesis, before any creative exists, so the eventual read has no room\n   for a post-hoc rationalization.\n5. Set the minimum read window from the account's own delivery, enough days\n   to reach a meaningful sample, not a calendar habit like \"always 7 days.\"\n\nChecks: rules exist before scripting starts; every number in the plan is\ncomputed from real account data, not a template default.\n\nOutput: the test brief, handed whole into the launch checklist step.\n\nExample: hypothesis \"the price-anchor angle beats the durability angle on\nCPA\"; pack of 4 (2 per angle) sized to the account's 40-purchase/week volume;\nwinner rule is CPA 20% below target at 50+ purchases per ad."
+  },
+  {
+    "id": "crea/angle-and-test/audience-spec-handoff",
+    "name": "Audience spec handoff",
+    "parent": null,
+    "invoke_when": "an angle's persona needs to become a concrete targeting spec and be handed to the Media buyer, without CREA building or launching it",
+    "select_by": {
+      "task": "audience_spec"
+    },
+    "inputs_required": [
+      "angle brief",
+      "persona/avatar record",
+      "past audience performance if available"
+    ],
+    "steps": [
+      "Pull the persona's real traits: age range, interests, in-group language, past-attempt behaviors.",
+      "Translate each trait into a targetable field (age range, interest, behavior, lookalike seed).",
+      "Set exclusions: existing customers, brand-term searchers, any persona this angle should not reach.",
+      "Package the spec with the persona id and angle id attached.",
+      "Hand the spec to MEDIA as a structured request; do not build or launch an audience."
+    ],
+    "checks": [
+      "every targeting trait ties to a line in the persona record, not a guess",
+      "exclusions are explicit, not assumed"
+    ],
+    "output": "audience spec record: age range, traits, exclusions, matched persona id, handed to MEDIA",
+    "used_by": [
+      "CREA-W01"
+    ],
+    "shared_with": [
+      "shared/registry-entry"
+    ],
+    "skill_md": "---\nname: angle-and-test/audience-spec-handoff\nowner: crea-paid-creative-copy\nversion: 1\ninvoke_when: an angle's persona needs to become a concrete targeting spec for\n  MEDIA, without CREA touching the ad account\ninputs: angle brief, persona/avatar record, past audience performance\noutputs: audience spec record handed to MEDIA\n---\nPurpose: translate a persona into age, traits and exclusions a media buyer can\nact on, while keeping account-building and launch strictly on MEDIA's side of\nthe line.\n\nSteps\n1. Pull the persona's real, research-grounded traits: age range, stated\n   interests, in-group language, and what they say they already tried and\n   rejected.\n2. Translate each trait into a field a targeting spec actually uses: an age\n   range, an interest or behavior category, or a lookalike seed source; a\n   trait that cannot translate honestly is left out rather than forced.\n3. Set exclusions explicitly: current customers who should not see a cold\n   angle, brand-term searchers, and any persona this specific angle would\n   alienate.\n4. Package the spec with the source persona id and the angle id so MEDIA can\n   trace it back to the research behind it.\n5. Hand the spec to MEDIA as a structured request and stop; CREA never opens\n   an ads-manager targeting screen itself.\n\nChecks: every trait traces to the persona record; exclusions stated, not\nassumed; handoff is a request, not an action.\n\nOutput: the audience spec record, logged and sent to MEDIA.\n\nExample: persona \"budget-anxious new parent, 24-34\" becomes age 24-34,\ninterest tags for baby-gear comparison content, lookalike seed from past\n90-day purchasers, exclusion on existing customers and brand-term searchers."
+  },
+  {
+    "id": "crea/angle-and-test/format-economics",
+    "name": "Format economics comparison",
+    "parent": null,
+    "invoke_when": "a concept is set and the ad format still needs choosing, compared by expected profit per ad rather than ROAS alone",
+    "select_by": {
+      "task": "format_selection"
+    },
+    "inputs_required": [
+      "angle brief",
+      "test brief",
+      "product facts: education/demo need",
+      "account's own cost-per-asset and format hit-rate history"
+    ],
+    "steps": [
+      "List the candidate formats the concept could run as.",
+      "Pull this account's own cost-per-asset and hit-rate by format.",
+      "Compute expected profit per ad per format: (hit rate x average result value) minus cost per asset.",
+      "Weigh the product's real education or demo need against the fastest-to-produce format.",
+      "State the decision with the number behind it."
+    ],
+    "checks": [
+      "decision cites a computed number, not a stated preference",
+      "product's real education need is checked, not assumed satisfied by any format"
+    ],
+    "output": "format decision with the profit-per-ad comparison shown",
+    "used_by": [
+      "CREA-W01"
+    ],
+    "shared_with": [
+      "shared/metric-read"
+    ],
+    "skill_md": "---\nname: angle-and-test/format-economics\nowner: crea-paid-creative-copy\nversion: 1\ninvoke_when: a concept is set and the format still needs choosing, compared\n  by real economics, not habit or ROAS alone\ninputs: angle brief, test brief, product's education/demo need, account's own\n  cost-per-asset and format hit-rate history\noutputs: format decision with the comparison shown\n---\nPurpose: pick the ad format from this account's own numbers, since a format\nwith a lower hit rate but a much lower cost per asset can beat a flashier,\nexpensive format on real profit per ad.\n\nSteps\n1. List every format the concept could reasonably run as: static, native\n   platform format, UGC video, founder video, carousel, catalogue.\n2. Pull this account's own cost-per-asset and win-rate history by format,\n   using metric-read; a brand-new account with no history falls back to the\n   product's education need alone, stated as such.\n3. Compute expected profit per ad for each candidate format: hit rate times\n   the average result value of a winning ad in that format, minus the real\n   cost to produce one asset in that format.\n4. Weigh this against the product's real education or demonstration need; a\n   product that needs to be seen in motion should not default to static just\n   because static is cheaper, if the computed profit favors video anyway.\n5. State the final decision with the actual numbers shown, not a preference\n   dressed as a conclusion.\n\nChecks: decision has a number behind it; product's real demo need was\nchecked explicitly, not skipped.\n\nOutput: the format decision plus the profit-per-ad table that produced it.\n\nExample: static costs 1/5th of a UGC video to produce and hits 22% of the\ntime versus 30% for UGC; on this account's numbers static still wins on\nprofit per ad because the cost gap outweighs the hit-rate gap."
+  },
+  {
+    "id": "crea/briefing/concept-brief",
+    "name": "Concept brief builder",
+    "parent": null,
+    "invoke_when": "an idea is approved and the fixed one-page brief must exist before any design tool or shoot is booked",
+    "select_by": {
+      "task": "concept_brief"
+    },
+    "inputs_required": [
+      "approved idea record",
+      "angle brief",
+      "product facts"
+    ],
+    "steps": [
+      "Fill every fixed field: persona, angle, offer, destination, format, awareness stage.",
+      "Confirm the destination link actually matches the offer stated.",
+      "Confirm hook, image and copy plan all share one awareness stage.",
+      "Attach the reference set and claim sources used.",
+      "Return the finished brief, no blank fields."
+    ],
+    "checks": [
+      "no field left blank",
+      "destination link matches the offer stated",
+      "one shared awareness stage across hook/image/copy"
+    ],
+    "output": "one-page concept brief document",
+    "used_by": [
+      "CREA-W01"
+    ],
+    "shared_with": [],
+    "skill_md": "---\nname: briefing/concept-brief\nowner: crea-paid-creative-copy\nversion: 1\ninvoke_when: an idea is approved and the fixed brief must exist before any\n  design tool or shoot is booked\ninputs: approved idea record, angle brief, product facts\noutputs: one-page concept brief, every field filled\n---\nPurpose: produce the same fixed-field brief every time, so a designer, video\neditor or creator always gets the same shape of instruction regardless of\nwhich angle or format is behind it.\n\nSteps\n1. Fill every fixed field in order: persona, angle (one sentence), dominant\n   appeal, buying question, offer, destination, format, awareness stage.\n2. Confirm the destination link actually sells the offer stated in the brief;\n   a brief promising a bundle that the linked page does not show is sent back,\n   not shipped with a note.\n3. Confirm the hook, the planned image or video direction, and the copy plan\n   all target the same awareness stage; a cold hook paired with a\n   product-aware landing page is a mismatch caught here, not after launch.\n4. Attach the reference set used (layout/mood only) and the claim sources\n   behind any stated benefit.\n5. Return the brief only once every field is filled; a blank field is treated\n   as a stop, not a placeholder to fill in later.\n\nChecks: no blank field; destination matches offer; one shared awareness\nstage.\n\nOutput: the concept brief document, ready to feed the format-specific\nproduction brief.\n\nExample: brief for the \"price-anchor\" angle states destination as the\nbundle page, not the single-unit page, since the offer field says \"3-pack\nbundle discount.\""
+  },
+  {
+    "id": "crea/briefing/native-format-craft",
+    "name": "Native platform format craft",
+    "parent": null,
+    "invoke_when": "the chosen platform is TikTok- or Reels-style and the concept must be written so it does not read as a paid ad",
+    "select_by": {
+      "channel": "native_social"
+    },
+    "inputs_required": [
+      "angle brief",
+      "product's actual real trait to feature",
+      "current platform editorial trends"
+    ],
+    "steps": [
+      "Pick a native format from the product's real trait, not a passing trend.",
+      "Write it in the platform's own editorial voice, pacing and on-screen text conventions.",
+      "Avoid a polished, brand-commercial look that breaks the platform's own feed pattern.",
+      "Check the format still carries the angle's claim and CTA, even inside a native structure."
+    ],
+    "checks": [
+      "format picked from a real product trait, not copied from a trending format with no fit",
+      "claim and CTA survive inside the native structure"
+    ],
+    "output": "native-format concept and script/shot notes",
+    "used_by": [
+      "CREA-W01"
+    ],
+    "shared_with": [],
+    "skill_md": "---\nname: briefing/native-format-craft\nowner: crea-paid-creative-copy\nversion: 1\ninvoke_when: the platform is TikTok- or Reels-style and the ad must not read\n  as an ad\ninputs: angle brief, the product's real feature-worthy trait, current\n  platform editorial conventions\noutputs: native-format concept with script or shot notes\n---\nPurpose: fit the concept into how the platform's own users actually post,\npicked from something real about the product, not a trend with no connection\nto it.\n\nSteps\n1. Pick the native format (a POV, a \"get ready with me,\" a quick-tip list, a\n   duet-style reaction) from a real, specific trait of the product, for\n   example a satisfying unboxing motion or a genuinely surprising use case,\n   never a trending format bolted on with no fit.\n2. Write in the platform's own pacing: shorter beats, native captions style,\n   the on-screen text conventions real creators use, not a repurposed TV-ad\n   script.\n3. Deliberately avoid the polished, brand-commercial look; a rougher, native\n   feel is the point, since it is what keeps the ad from breaking the\n   feed's own pattern.\n4. Check the angle's claim and the CTA still survive inside the native\n   structure; native does not mean the ad forgets to sell.\n\nChecks: format ties to a real product trait; claim and CTA present despite\nthe native wrapper.\n\nOutput: the native-format concept plus script or shot notes in the\nplatform's own voice.\n\nExample: a phone-case brand's \"drop test\" becomes a native-feeling POV of\nsomeone actually dropping their phone on tile, not a studio slow-motion ad."
+  },
+  {
+    "id": "crea/briefing/shoot-and-photo-direction",
+    "name": "Shoot and photo direction",
+    "parent": null,
+    "invoke_when": "a real product shoot is being run, or any AI-touched image needs direction so the product shown matches what ships",
+    "select_by": {
+      "task": "shoot_direction"
+    },
+    "inputs_required": [
+      "concept or founder brief",
+      "product facts: real dimensions, material, color, fit"
+    ],
+    "steps": [
+      "Set image-accuracy direction naming the exact product variant or SKU being shot.",
+      "Build the numbered shot list with angles and gaze direction toward the CTA.",
+      "Book studio/location/model within the approved production budget.",
+      "Get signed model and location releases before the shoot starts.",
+      "QA retouching or AI-touch against the real product for color, fit, scale and material.",
+      "File and version the checked frames."
+    ],
+    "checks": [
+      "release on file before use",
+      "no retouch or AI-touch changes a fact-bearing detail"
+    ],
+    "output": "image-accuracy brief, shot list, QA'd final frame set",
+    "used_by": [
+      "CREA-W01",
+      "CREA-W02",
+      "CREA-W04",
+      "CREA-W17"
+    ],
+    "shared_with": [],
+    "skill_md": "---\nname: briefing/shoot-and-photo-direction\nowner: crea-paid-creative-copy\nversion: 1\ninvoke_when: a real shoot is running, or any AI-touched image needs direction\n  so the product shown matches what a customer actually receives\ninputs: concept or founder brief, real product facts (dimensions, material,\n  color, fit)\noutputs: image-accuracy brief, shot list, QA'd final frame set\n---\nPurpose: keep every photographed or AI-touched product image honest to what\nships, since a mismatch here becomes a return, a bad review or a platform\ncomplaint, not just a design nitpick.\n\nSteps\n1. Set direction naming the exact product variant or SKU being shot; a\n   generic \"the product\" instruction invites the wrong color or size on set.\n2. Build a numbered shot list tied to a specific ad or page use, with the\n   subject's gaze pointed toward the CTA whenever a person is in frame.\n3. Book the studio, location and any model within the approved production\n   budget from the current monthly plan.\n4. Collect signed model and location releases before the shoot starts, never\n   retroactively.\n5. Check every retouched or AI-touched frame against the real product facts:\n   color must match, scale must read correctly next to a known object,\n   material texture must still look like the real material, not a stylized\n   redraw.\n6. File and version the checked frames under the naming standard before\n   they are usable downstream.\n\nChecks: release on file before use; no fact-bearing detail altered by\nretouching or AI.\n\nOutput: the image-accuracy brief, the shot list, and the QA'd final frames.\n\nExample: a rug brand's AI background swap is allowed to change the room\nscene, never the rug's actual weave pattern or true color under warm light."
+  },
+  {
+    "id": "crea/briefing/localisation-spec",
+    "name": "Localisation spec",
+    "parent": null,
+    "invoke_when": "creative or copy needs specifying for a target market and device with its own payment, delivery and language norms",
+    "select_by": {
+      "task": "localisation"
+    },
+    "inputs_required": [
+      "brand brain: market policies",
+      "device target"
+    ],
+    "steps": [
+      "Confirm device target: standard feed and story formats by default, or mobile-first, vertical-only formats where the target market's traffic calls for it.",
+      "Pull the market's real trust facts: payment method mix (card, wallets, BNPL for a US brand), delivery windows, local payment logos; COD availability and EMI where the target market runs them (markets: IN).",
+      "Note the language pair and whether a dual-language, code-switched line is needed.",
+      "Flag any mismatched trust line inherited from another market that must be swapped out.",
+      "Set the market tag every downstream asset must carry."
+    ],
+    "checks": [
+      "every trust fact matches current brand policy for that market, not an assumption",
+      "device target stated explicitly"
+    ],
+    "output": "target spec sheet: device target, market trust facts, language notes, market tag",
+    "used_by": [
+      "CREA-W01",
+      "CREA-W06"
+    ],
+    "shared_with": [],
+    "skill_md": "---\nname: briefing/localisation-spec\nowner: crea-paid-creative-copy\nversion: 1\ninvoke_when: creative or copy needs specifying for a target market and\n  device with its own payment, delivery and language norms\ninputs: brand brain market policies, device target\noutputs: target spec sheet: device, trust facts, language notes, market tag\n---\nPurpose: fix the real, checkable local facts a creative or copy set must use,\nso a market-specific ad never carries the wrong market's assumption by\naccident.\n\nSteps\n1. Confirm the device target: the US default is standard feed and story\n   formats; a market whose traffic skews mobile-first (for example an\n   India-facing brief) defaults to vertical-only formats instead.\n2. Pull the market's real trust facts from the brand brain: the payment\n   method mix (card, Shop Pay, PayPal, Apple Pay, BNPL such as Affirm,\n   Klarna or Afterpay for a US brand; COD availability and EMI where the\n   target market runs them, markets: IN), the actual delivery window, and\n   which local payment logos are true to show.\n3. Note the language pair and whether the persona's real speech pattern\n   calls for a dual-language, code-switched hook (for example a natural\n   Hindi-English mix for an India-market brief) rather than a straight\n   translation.\n4. Flag any trust line inherited from a source market that does not hold\n   here: a foreign-currency guarantee, a shipping time that does not apply,\n   a payment method not actually offered.\n5. Set the market tag that every downstream asset in this run must carry, so\n   it can never be accidentally served to the wrong market.\n\nChecks: every fact traces to current policy, not assumption; device target\nstated.\n\nOutput: the target spec sheet, feeding the localisation workflow's copy and\nresize steps.\n\nExample, US brand: spec confirms the payment mix is card, Shop Pay and\nKlarna, delivery is 3 to 5 business days, and any inherited COD or EMI line\nis dropped since it does not apply. Example, India-market brief (markets:\nIN): spec confirms COD is offered, EMI starts at a stated amount, and the\nUS \"free returns within 30 days\" line is replaced with the real local\nreturn window."
+  },
+  {
+    "id": "crea/compliance/copy-craft-rules",
+    "name": "Copy craft rules pass",
+    "parent": null,
+    "invoke_when": "any drafted copy needs the account's fixed direct-response writing rules applied before the claim-tier check",
+    "select_by": {
+      "task": "copy_craft"
+    },
+    "inputs_required": [
+      "draft copy"
+    ],
+    "steps": [
+      "Check reading level in code; simplify until it clears grade 10.",
+      "Check single-idea discipline: one dominant appeal, one CTA, per asset.",
+      "Rank proof points by strongest real evidence first.",
+      "Cut em dashes, inflated words and any AI-tell phrasing.",
+      "Confirm digits are used instead of spelled-out numbers."
+    ],
+    "checks": [
+      "reading level under grade 10",
+      "one dominant appeal and one CTA held throughout",
+      "no em dash, no inflated word"
+    ],
+    "output": "edited copy with a reading-level score and an edit log",
+    "used_by": [
+      "CREA-W01",
+      "CREA-W02",
+      "CREA-W05",
+      "CREA-W06"
+    ],
+    "shared_with": [],
+    "skill_md": "---\nname: compliance/copy-craft-rules\nowner: crea-paid-creative-copy\nversion: 1\ninvoke_when: any drafted copy needs the account's fixed writing rules applied,\n  before the separate claim-tier check\ninputs: draft copy\noutputs: edited copy, reading-level score, edit log\n---\nPurpose: apply the same fixed craft rules to every draft regardless of which\nskill wrote it, so voice and readability never drift by writer or by format.\n\nSteps\n1. Score reading level in code (not by eye) and rewrite until the draft\n   clears the grade-10 target; a draft that reads clever but tests at grade\n   13 gets simplified, not defended.\n2. Check single-idea discipline: exactly one dominant appeal and exactly one\n   CTA per asset, unless the approved idea explicitly calls for testing two\n   in the same piece.\n3. Order proof points from strongest real evidence to weakest, cutting any\n   proof point with nothing behind it rather than padding the count.\n4. Cut every em dash, every inflated or vague superlative with no fact\n   behind it, and any phrasing that reads as generically AI-written rather\n   than in the brand's real voice.\n5. Replace spelled-out numbers with digits throughout.\n\nChecks: grade-10 or below; single idea and single CTA; no em dash; digits,\nnot spelled-out numbers.\n\nOutput: the edited copy, its reading-grade score, and a short edit log\nnaming what changed and why.\n\nExample: \"we're absolutely thrilled to introduce an incredible new way to\nelevate your morning\" becomes \"start your morning with 2 minutes of real\nenergy, no crash.\""
+  },
+  {
+    "id": "crea/compliance/rights-clearance",
+    "name": "Rights clearance check",
+    "parent": null,
+    "invoke_when": "a video ad uses licensed stock footage, fonts or music, or a shoot needs signed releases, before anything ships",
+    "select_by": {
+      "task": "rights_clearance"
+    },
+    "inputs_required": [
+      "finished asset with licensed elements",
+      "license documents or release forms"
+    ],
+    "steps": [
+      "List every licensed footage, font and music asset used, cross-checked against the actual timeline.",
+      "Pull each asset's real license terms: commercial use, territory, term length, exclusivity.",
+      "Match the video's actual use (paid ad, territory, campaign duration) to each license's real limits.",
+      "Swap or flag any mismatch before the asset ships.",
+      "Log the clearance with each license's expiry or renewal date."
+    ],
+    "checks": [
+      "every asset in the final piece has a matching, logged license",
+      "no mismatched asset remains at ship time"
+    ],
+    "output": "license terms per asset, cleared asset set, clearance log entry",
+    "used_by": [
+      "CREA-W02",
+      "CREA-W23"
+    ],
+    "shared_with": [
+      "shared/registry-entry"
+    ],
+    "skill_md": "---\nname: compliance/rights-clearance\nowner: crea-paid-creative-copy\nversion: 1\ninvoke_when: a video uses licensed stock, fonts or music, or a shoot needs\n  releases, before anything ships\ninputs: finished asset with licensed elements, license documents or release\n  forms\noutputs: license terms per asset, cleared asset set, clearance log\n---\nPurpose: catch a license or release mismatch before an ad ships, since a\ntakedown or a rights claim on a live ad is far costlier than a swap caught at\nthis stage.\n\nSteps\n1. List every piece of stock footage, font and music track actually used in\n   the finished timeline, checked against the real timeline, not remembered\n   from the brief.\n2. Pull each asset's real license document and read its actual terms:\n   whether commercial use is covered, which territory, how long the term\n   runs, and whether it is exclusive to this brand.\n3. Match the video's real use, a paid ad, running in a specific territory,\n   for a specific campaign duration, against each license's actual limits.\n4. Where a mismatch turns up, swap the asset for a compliant one before the\n   video ships; if no compliant replacement exists, this stops and the\n   founder decides whether to reshoot, re-license or drop the asset.\n5. Log the clearance for each asset with its expiry or renewal date, so a\n   later renewal risk is tracked, not rediscovered by surprise.\n\nChecks: every asset has a logged, matching license; no mismatch ships.\n\nOutput: the per-asset license terms, the cleared set, and a dated clearance\nlog entry.\n\nExample: a background music track's license covers organic use only; it is\nswapped for a paid-ad-licensed track before the video enters CREA-W01's\nlaunch checklist."
+  },
+  {
+    "id": "crea/compliance/ai-use-governance",
+    "name": "AI use governance",
+    "parent": null,
+    "invoke_when": "a new AI tool or capability is entering the creative pipeline, or the standing AI-use policy needs a periodic check",
+    "select_by": {
+      "task": "ai_governance"
+    },
+    "inputs_required": [
+      "current AI-use policy",
+      "new AI tool or capability description"
+    ],
+    "steps": [
+      "List every point AI drafts, generates or grades something in CREA's workflows.",
+      "Classify each as drafting/grunt work (allowed unsupervised) or final ideation/authorship (never unsupervised).",
+      "Confirm each drafting touchpoint is fed real brand facts, not generic training knowledge.",
+      "Classify and add any new tool to the policy before its first real use.",
+      "Publish and log the updated policy."
+    ],
+    "checks": [
+      "no final-ideation touchpoint runs unsupervised",
+      "every AI draft grounded in a named brand-fact input"
+    ],
+    "output": "AI touchpoint map, classified list, updated policy",
+    "used_by": [
+      "CREA-W12"
+    ],
+    "shared_with": [
+      "shared/registry-entry"
+    ],
+    "skill_md": "---\nname: compliance/ai-use-governance\nowner: crea-paid-creative-copy\nversion: 1\ninvoke_when: a new AI tool enters the pipeline, or the standing AI-use policy\n  needs its periodic check\ninputs: current AI-use policy, new AI tool or capability description\noutputs: AI touchpoint map, classified list, updated policy\n---\nPurpose: keep a clear, current line between where AI may draft or automate\ngrunt work unsupervised and where a person must originate the idea or the\nfinal call, across every workflow CREA runs.\n\nSteps\n1. List every point in CREA's workflows where AI drafts, generates, scores or\n   grades something, from a headline draft to a predictive creative score.\n2. Classify each: drafting or grunt work (readability scoring, resizing,\n   tagging, first-pass variant generation) can run unsupervised; final\n   ideation or unsupervised authorship (the angle itself, the founder's\n   claims, a name) never can.\n3. Confirm every drafting touchpoint is actually fed the brand's own facts,\n   claim tiers, voice notes, product data, rather than defaulting to general\n   knowledge with no brand grounding.\n4. When a new AI capability arrives, an AI-actor generator, a voice clone\n   tool, classify it under this same rule and add it to the policy before\n   its first real use, never after.\n5. Publish the current policy where every workflow can read it and log the\n   update with a date.\n\nChecks: no final-ideation step is unsupervised; every drafting step names\nits brand-fact input.\n\nOutput: the touchpoint map and the current, dated AI-use policy.\n\nExample: a new AI voice-clone tool is classified as drafting-only, gated\nbehind documented consent, and added to the policy before CREA-W20 uses it."
+  },
+  {
+    "id": "crea/production-ops/naming-and-tagging",
+    "name": "Naming and tagging standard",
+    "parent": null,
+    "invoke_when": "any asset needs a stable id and tags, or the platform-spec sheet or schema needs its periodic refresh",
+    "select_by": {
+      "task": "naming_tagging"
+    },
+    "inputs_required": [
+      "asset metadata",
+      "current platform specs",
+      "current naming schema"
+    ],
+    "steps": [
+      "Apply the fixed naming schema (campaign, ad-set, ad layers) to the asset.",
+      "Tag by concept, persona, angle, offer, format, stage, source.",
+      "Refresh the platform character-limit and spec sheet if it is over 30 days old.",
+      "Audit a sample of recent assets for schema drift and re-tag anything drifted.",
+      "Update the schema itself only for a genuinely new format, persona or offer type."
+    ],
+    "checks": [
+      "every asset has a stable id",
+      "no platform-limit check older than 30 days when copy is being written to a limit"
+    ],
+    "output": "named, tagged asset; refreshed platform-spec sheet; updated schema when needed",
+    "used_by": [
+      "CREA-W01",
+      "CREA-W04",
+      "CREA-W06",
+      "CREA-W09",
+      "CREA-W11",
+      "CREA-W18",
+      "CREA-W19",
+      "CREA-W22"
+    ],
+    "shared_with": [],
+    "skill_md": "---\nname: production-ops/naming-and-tagging\nowner: crea-paid-creative-copy\nversion: 1\ninvoke_when: any asset needs a stable id and tags, or the platform-spec sheet\n  or schema is due its periodic refresh\ninputs: asset metadata, current platform specs, current naming schema\noutputs: named/tagged asset, refreshed spec sheet, updated schema when needed\n---\nPurpose: keep every asset findable by a fixed schema, and keep the platform\nspec sheet current, since a copy set built to a stale character limit fails\nsilently on upload.\n\nSteps\n1. Apply the fixed naming schema across its layers, campaign, ad-set, ad, so\n   any asset's id tells a person what it is without opening the file.\n2. Tag every asset on all 7 fixed fields: concept, persona, angle, offer,\n   format, stage and source; a missing tag is a stop, not a skip.\n3. Check the platform character-limit and spec sheet's last-checked date; if\n   it is over 30 days old, re-check it against the platform's current help\n   documentation before any copy gets written to that limit.\n4. Periodically audit a sample of recently shipped assets against the\n   current schema, naming every instance of drift found, and re-tag them.\n5. Update the schema itself only when a genuinely new format, persona or\n   offer type has entered the pipeline, never as a casual edit, and never in\n   a way that breaks an existing asset's stable id.\n\nChecks: every asset has a stable id; every asset carries all 7 tags; spec\nsheet checked within 30 days when in active use.\n\nOutput: the tagged asset, or the refreshed spec sheet and schema.\n\nExample: a static's id reads\nconcept-priceanchor_persona-budgetparent_angle-value_format-static_stage-cold,\nso a person can read what it is from the filename alone."
+  },
+  {
+    "id": "crea/production-ops/pipeline-planning",
+    "name": "Pipeline planning",
+    "parent": null,
+    "invoke_when": "the monthly creative slate needs sizing and sequencing from the account's own hit rate and budget",
+    "select_by": {
+      "task": "pipeline_planning"
+    },
+    "inputs_required": [
+      "hit-rate table by format/angle",
+      "coverage gap list",
+      "monthly budget line"
+    ],
+    "steps": [
+      "Size next month's volume from the hit rate and the budget, shown as a calculation.",
+      "Sequence the month across research, concept, build, variations, feedback, launch stages with dates.",
+      "Assign an owner to each stage.",
+      "Cross-check the plan against the cost-per-asset trend for early budget risk."
+    ],
+    "checks": [
+      "plan's volume is derived from real data, shown as a calculation, not a fixed quota",
+      "every stage has a date and an owner"
+    ],
+    "output": "monthly production plan, sequenced pipeline calendar",
+    "used_by": [
+      "CREA-W09"
+    ],
+    "shared_with": [
+      "shared/surface-audit"
+    ],
+    "skill_md": "---\nname: production-ops/pipeline-planning\nowner: crea-paid-creative-copy\nversion: 1\ninvoke_when: the monthly creative slate needs sizing and sequencing from real\n  account data\ninputs: hit-rate table by format/angle, coverage gap list, monthly budget\n  line\noutputs: monthly production plan, sequenced pipeline calendar\n---\nPurpose: size how much creative to make next month from this account's own\nreal hit rate and budget, rather than a fixed monthly quota that ignores\nwhether last month's creative actually worked.\n\nSteps\n1. Compute next month's target volume from the hit rate (how often a tested\n   concept actually wins) and the budget line, shown as an explicit\n   calculation the founder can check, not a stated number alone.\n2. Lay the month out across its real stages: research, concept, build,\n   variations, feedback, launch, each with a calendar date.\n3. Assign an owner to every stage, whether that is CREA itself, a specific\n   sub-agent, or a human collaborator like a shoot crew.\n4. Cross-check the planned volume against the current cost-per-asset trend so\n   a likely overrun is visible before the month starts, not discovered at\n   month end.\n\nChecks: volume is a shown calculation, not an assertion; every stage has a\ndate and an owner.\n\nOutput: the monthly production plan and its sequenced calendar.\n\nExample: a 22% hit rate and a fixed budget of a stated amount computes to a\ntarget of 18 new concepts this month, laid out across 4 weekly stages."
+  },
+  {
+    "id": "crea/production-ops/cost-tracking",
+    "name": "Production cost tracking",
+    "parent": null,
+    "invoke_when": "real production costs need logging against the monthly budget, or a likely overrun needs flagging",
+    "select_by": {
+      "task": "cost_tracking"
+    },
+    "inputs_required": [
+      "billing records, invoices, generation-credit usage"
+    ],
+    "steps": [
+      "Log every real cost against the specific asset it produced, never a lump sum.",
+      "Compute cost per finished asset by format, in code.",
+      "Compare running spend against the monthly budget line.",
+      "Flag a likely overrun with the exact projected crossing date.",
+      "Log the weekly snapshot to the registry."
+    ],
+    "checks": [
+      "every cost ties to a named asset id",
+      "missing cost shows as unavailable, never zero"
+    ],
+    "output": "cost-per-asset table, spend-versus-plan status, overrun flag if any",
+    "used_by": [
+      "CREA-W09",
+      "CREA-W10",
+      "CREA-W21"
+    ],
+    "shared_with": [
+      "shared/metric-read",
+      "shared/registry-entry"
+    ],
+    "skill_md": "---\nname: production-ops/cost-tracking\nowner: crea-paid-creative-copy\nversion: 1\ninvoke_when: real production costs need logging against the monthly budget,\n  or a likely overrun needs an early flag\ninputs: billing records, invoices, AI generation-credit usage\noutputs: cost-per-asset table, spend-versus-plan status, overrun flag\n---\nPurpose: tie real production cost, AI credits, freelancer and agency\ninvoices, stock license fees, to the specific finished asset it paid for, so\nthe monthly plan is checked against real spend, not a guess.\n\nSteps\n1. Log every real cost as it is incurred against the named asset id it\n   produced; a lump-sum monthly invoice with no per-asset breakdown gets\n   split before it is logged, not entered whole.\n2. Compute cost per finished asset by format in code, never estimated in\n   prose.\n3. Compare running month-to-date spend against the monthly budget line set\n   in the pipeline plan.\n4. When the trend line projects crossing the budget before month end, flag it\n   with the exact date it will cross, not a vague warning.\n5. Log the weekly snapshot to the registry so next month's pipeline plan\n   starts from real history.\n\nChecks: every cost tied to a named asset; a cost not yet logged shows as\nunavailable, never as zero.\n\nOutput: the cost-per-asset table, the spend-versus-plan status, and an\noverrun flag when the trend calls for one.\n\nExample: this month's AI generation credits, one freelancer invoice and a\nstock-music fee total to a cost per finished asset 18% above the trailing\n3-month average, flagged with the date it will cross budget if it continues."
+  },
+  {
+    "id": "crea/production-ops/predictive-scoring",
+    "name": "Predictive creative scoring",
+    "parent": null,
+    "invoke_when": "a draft batch is finished and needs a predictive score before it enters paid testing",
+    "select_by": {
+      "task": "predictive_scoring"
+    },
+    "inputs_required": [
+      "finished draft batch",
+      "past predictive-score-to-outcome record"
+    ],
+    "steps": [
+      "Run each draft through the predictive scoring pass, naming the specific weak element.",
+      "Compare this account's own past scores against real outcomes to calibrate.",
+      "Send flagged drafts back for a named fix, not a general redo.",
+      "Re-score fixed drafts and log the post-fix score against the original."
+    ],
+    "checks": [
+      "score names a specific element, not just an overall number",
+      "calibration against this account's real outcomes is shown, not assumed"
+    ],
+    "output": "predicted score per draft, fix list, calibrated post-fix score",
+    "used_by": [
+      "CREA-W21"
+    ],
+    "shared_with": [
+      "shared/metric-read"
+    ],
+    "skill_md": "---\nname: production-ops/predictive-scoring\nowner: crea-paid-creative-copy\nversion: 1\ninvoke_when: a draft batch is finished and needs a pre-spend score before it\n  enters paid testing\ninputs: finished draft batch, this account's own past predictive-score-to-\n  outcome record\noutputs: predicted score per draft, fix list, calibrated post-fix score\n---\nPurpose: catch a weak, specific element (a muddy hook, a headline-image\nmismatch, a hidden CTA) before spend touches it, while being honest about\nwhether the score itself has actually predicted this account's real results.\n\nSteps\n1. Run each draft through the predictive pass and record which specific\n   element it flags: hook clarity, headline-image mismatch, CTA visibility,\n   never just a single overall number with no detail behind it.\n2. Check whether this account's own past predictive scores have actually\n   tracked its real 14-day verdicts; if the match rate has been weak, state\n   that plainly and treat the score as a rough filter, not a green light.\n3. Send any flagged draft back for the exact fix named, not a general\n   instruction to \"make it better.\"\n4. Re-run the pass on the fixed draft and log the post-fix score next to the\n   original, building the calibration history for next time.\n5. Clear the batch only once every draft passes, or carries a named,\n   founder-accepted risk.\n\nChecks: flags name a specific element; calibration against real outcomes is\nshown, not assumed accurate.\n\nOutput: per-draft scores, the fix list, and the calibrated post-fix scores.\n\nExample: a draft flags \"CTA visibility\" specifically, not a vague low score;\nafter the CTA is enlarged and repositioned, the re-score clears it."
+  },
+  {
+    "id": "crea/production-ops/bulk-upload-sheet",
+    "name": "Bulk upload sheet builder",
+    "parent": null,
+    "invoke_when": "an approved creative batch needs turning into the exact spreadsheet or CSV a bulk-upload tool or Ads Manager bulk editor expects",
+    "select_by": {
+      "task": "bulk_upload_sheet"
+    },
+    "inputs_required": [
+      "confirmed approved batch",
+      "target platform's current bulk-upload spec"
+    ],
+    "steps": [
+      "Pull the current bulk-upload column and format spec for the target platform.",
+      "Build the sheet, one row per ad, matching every required column.",
+      "Confirm no required field is blank.",
+      "Spot-check a sample of rows against the original creative brief for mismatch."
+    ],
+    "checks": [
+      "spec checked within 30 days",
+      "every row has every required column filled, no blank required field"
+    ],
+    "output": "bulk-upload sheet (CSV or spreadsheet), spot-check result",
+    "used_by": [
+      "CREA-W25"
+    ],
+    "shared_with": [],
+    "skill_md": "---\nname: production-ops/bulk-upload-sheet\nowner: crea-paid-creative-copy\nversion: 1\ninvoke_when: an approved batch needs turning into the exact file format a\n  bulk-upload tool or Ads Manager bulk editor expects\ninputs: confirmed approved batch, target platform's current bulk-upload spec\noutputs: bulk-upload sheet, spot-check result\n---\nPurpose: produce a bulk-upload file that actually submits cleanly the first\ntime, since a platform's own bulk-editor spec changes without notice and a\nstale column format fails an entire batch on submission.\n\nSteps\n1. Pull the target platform's current bulk-upload documentation and confirm\n   the exact columns, required fields and format it expects right now, not\n   from memory of a past batch.\n2. Build the sheet with exactly one row per ad, filling every required\n   column: campaign, ad set, creative filename, headline, primary text, CTA,\n   destination link.\n3. Confirm no required field is left blank; a blank required field fails\n   silently on many bulk-upload tools rather than erroring clearly.\n4. Spot-check a sample of rows against the original creative brief for a\n   copy or filename mismatch, since a filename typo routes the wrong\n   creative to the wrong ad.\n\nChecks: spec checked within 30 days; zero blank required fields; sample\nshows zero brief mismatches, or every mismatch is fixed first.\n\nOutput: the finished sheet and the spot-check result, ready for the\ndraft-upload step or a manual submission.\n\nExample: a batch of 12 approved ads becomes a 12-row CSV, each row's\ncreative filename checked against its brief before the sheet ships."
+  },
+  {
+    "id": "crea/production-ops/draft-upload-browser-agent",
+    "name": "Draft-upload browser agent",
+    "parent": null,
+    "invoke_when": "the founder has approved staging approved creatives as paused, unpublished drafts directly inside Ads Manager",
+    "select_by": {
+      "task": "draft_upload"
+    },
+    "inputs_required": [
+      "bulk-upload sheet",
+      "founder approval for the browser-agent step on this account"
+    ],
+    "steps": [
+      "Confirm founder approval for this account's browser-agent step is on file.",
+      "Drive Ads Manager's own web interface to create one paused, unpublished draft ad per approved creative.",
+      "Confirm every created draft is paused and unpublished, never activated.",
+      "Hand the draft-ad list to MEDIA for review."
+    ],
+    "checks": [
+      "every draft created is confirmed paused and unpublished",
+      "no draft is ever activated by this skill"
+    ],
+    "output": "paused draft ads inside Ads Manager, draft-ad id list",
+    "used_by": [
+      "CREA-W25"
+    ],
+    "shared_with": [],
+    "skill_md": "---\nname: production-ops/draft-upload-browser-agent\nowner: crea-paid-creative-copy\nversion: 1\ninvoke_when: the founder has approved staging approved creatives as paused,\n  unpublished drafts directly inside Ads Manager\ninputs: bulk-upload sheet, founder approval for this specific account\noutputs: paused draft ads inside Ads Manager, draft-ad id list\n---\nPurpose: get an approved batch into a real, reviewable draft state inside the\nplatform's own interface, using a browser agent, without ever letting a\ndraft go live, since CREA's account access stays read-only otherwise.\n\nSteps\n1. Confirm the founder has specifically approved this browser-agent step for\n   this ad account; this is a founder_gate capability and does not run on a\n   standing blanket approval.\n2. Drive Ads Manager's own web interface, using the bulk-upload sheet as the\n   source, to create exactly one paused, unpublished draft ad per approved\n   creative row.\n3. Confirm, per draft, that its status is paused and unpublished before\n   moving to the next row; a draft that accidentally activates is treated as\n   a stop-everything incident, not a minor error.\n4. Hand the resulting draft-ad id list to MEDIA, who reviews each real draft\n   inside the platform and decides whether to activate it.\n\nChecks: founder approval on file for this account; every single draft\nconfirmed paused; none ever activated by this skill.\n\nOutput: the created draft ads and their platform ids, handed to MEDIA.\n\nExample: 12 approved creatives become 12 paused draft ads inside Meta Ads\nManager, none live, all waiting for a human's go-live decision."
+  },
+  {
+    "id": "crea/derivatives/resize-for-placement",
+    "name": "Resize for placement",
+    "parent": null,
+    "invoke_when": "one approved master creative needs every aspect-ratio and placement version a platform set requires",
+    "select_by": {
+      "task": "resize"
+    },
+    "inputs_required": [
+      "approved master creative",
+      "current platform-spec sheet"
+    ],
+    "steps": [
+      "List every required placement (feed square, story vertical, in-stream widescreen) from the current spec sheet.",
+      "Recompose, not crop: reposition subject and text so nothing important is lost.",
+      "Check every important element (CTA, product, face) survives in every version."
+    ],
+    "checks": [
+      "list matches the current, not stale, platform-spec sheet",
+      "no important element cropped out in any version"
+    ],
+    "output": "resized and recomposed asset set, one per required placement",
+    "used_by": [
+      "CREA-W06",
+      "CREA-W22"
+    ],
+    "shared_with": [],
+    "skill_md": "---\nname: derivatives/resize-for-placement\nowner: crea-paid-creative-copy\nversion: 1\ninvoke_when: an approved master needs every aspect-ratio and placement\n  version a platform set requires\ninputs: approved master creative, current platform-spec sheet\noutputs: one resized, recomposed asset per required placement\n---\nPurpose: cover every real placement a master needs without a blind crop\nlosing the product, the face or the CTA in a differently shaped frame.\n\nSteps\n1. Pull the current required placement list from the naming-and-tagging\n   skill's spec sheet, not an assumed standard set, since platforms add and\n   drop placements.\n2. For each placement, recompose rather than crop: reposition the subject and\n   any text so the framing works on its own terms in that aspect ratio,\n   rather than mechanically cutting the edges off the original.\n3. Check every important element, the CTA, the product, a person's face,\n   survives visibly in every single version; a story-vertical crop that\n   clips the CTA off the bottom is a fail, not a minor tradeoff.\n\nChecks: placement list matches the current spec sheet; no important element\nlost in any version.\n\nOutput: the full set of resized, recomposed assets, one per required\nplacement, tagged to the master they came from.\n\nExample: a 1:1 feed master gets a 9:16 story version with the product\nrecentered and the CTA moved up, not just the sides of the original cropped\naway."
+  },
+  {
+    "id": "crea/derivatives/caption-and-alt-text",
+    "name": "Caption and alt text",
+    "parent": null,
+    "invoke_when": "a video ad needs burned-in captions since most are watched muted, or a static image needs descriptive alt text",
+    "select_by": {
+      "task": "caption_alt_text"
+    },
+    "inputs_required": [
+      "finished or resized video/static asset"
+    ],
+    "steps": [
+      "Transcribe the spoken line exactly for video captions.",
+      "Burn in captions correctly timed to the audio.",
+      "Write alt text describing what is actually shown in a static image, not its selling line.",
+      "Confirm captions and alt text match the finished asset exactly, no drift."
+    ],
+    "checks": [
+      "captions match the spoken line exactly, correctly timed",
+      "alt text describes what is shown, not the ad's pitch"
+    ],
+    "output": "captioned video, alt text string per static image",
+    "used_by": [
+      "CREA-W19",
+      "CREA-W22"
+    ],
+    "shared_with": [],
+    "skill_md": "---\nname: derivatives/caption-and-alt-text\nowner: crea-paid-creative-copy\nversion: 1\ninvoke_when: a video needs burned-in captions since most are watched muted,\n  or a static needs descriptive alt text\ninputs: finished or resized video/static asset\noutputs: captioned video, alt text string per static\n---\nPurpose: make sure the message survives with the sound off, and that a\nscreen-reader user gets an honest description, not a repeated sales pitch, as\na fixed QA step before anything ships.\n\nSteps\n1. Transcribe the video's spoken line exactly, word for word; a paraphrased\n   caption that drifts from the actual audio is a fail even if it reads\n   fine.\n2. Burn the captions in, timed correctly to when each line is actually\n   spoken, not offset or bunched.\n3. Write alt text for every static that describes what a sighted viewer\n   actually sees, the product, its setting, any visible text on the image,\n   rather than restating the ad's selling headline.\n4. Do a final pass confirming captions and alt text match the exact finished\n   asset, since a last-minute edit to the video or image can leave a caption\n   or alt text describing an earlier version.\n\nChecks: captions exact and correctly timed; alt text descriptive, not a\npitch restated.\n\nOutput: the captioned video file and the alt text string for each static.\n\nExample: alt text for a shoe ad reads \"white running shoe on a wet trail,\nside profile, laces untied,\" not \"the most comfortable shoe you'll ever\nown.\""
+  },
+  {
+    "id": "crea/derivatives/video-cutdown",
+    "name": "Video length cutdown",
+    "parent": null,
+    "invoke_when": "one finished long-form video ad needs cutting into shorter length derivatives, each keyed to a different hook",
+    "select_by": {
+      "task": "video_cutdown"
+    },
+    "inputs_required": [
+      "master long-form video",
+      "hook bank"
+    ],
+    "steps": [
+      "Cut a 15-second version keyed to one strong hook from the bank.",
+      "Cut a 6-second bumper version keyed to a different hook.",
+      "Confirm each cut opens on a distinct hook, not the same first seconds repeated.",
+      "Check each derivative still closes on the single CTA."
+    ],
+    "checks": [
+      "each cut opens on a distinct hook",
+      "every derivative still closes on the single CTA"
+    ],
+    "output": "length derivative set: 15-second and 6-second cuts, each hook-tagged",
+    "used_by": [
+      "CREA-W22"
+    ],
+    "shared_with": [],
+    "skill_md": "---\nname: derivatives/video-cutdown\nowner: crea-paid-creative-copy\nversion: 1\ninvoke_when: one finished long-form video needs cutting into shorter length\n  derivatives, each with a different opening hook\ninputs: master long-form video, hook bank\noutputs: 15-second and 6-second derivative cuts, hook-tagged\n---\nPurpose: get more real hook variants out of one production instead of\ntreating a long-form master as a single, single-hook asset, since each cut\ngets its own chance at a different opening.\n\nSteps\n1. Cut a 15-second version that opens on one strong hook from the bank,\n   keeping the mechanism or proof beat that best supports that specific\n   hook, not just the first 15 seconds of the master by default.\n2. Cut a 6-second bumper version keyed to a different hook from the same\n   bank, so the two derivatives are not just different lengths of the same\n   opening.\n3. Confirm the two cuts genuinely open differently; if both defaulted to the\n   master's original first seconds, redo one of them.\n4. Check both derivatives still land on the single CTA from the master,\n   even at the shorter runtime.\n\nChecks: distinct hooks per cut; CTA intact in every length.\n\nOutput: the 15-second and 6-second cuts, each tagged with its hook id.\n\nExample: the 15-second cut opens on the \"why does my scalp itch\" hook using\nthe proof beat; the 6-second bumper opens on \"your shampoo is the problem\"\nstraight into the CTA."
+  },
+  {
+    "id": "crea/fatigue-and-teardown/fatigue-diagnosis",
+    "name": "Fatigue diagnosis",
+    "parent": null,
+    "invoke_when": "a live ad's numbers are declining and it needs sorting into worn-out-creative versus small-audience-pool before any fix is proposed",
+    "select_by": {
+      "task": "fatigue_diagnosis"
+    },
+    "inputs_required": [
+      "lifecycle metrics: frequency, hold rate, CPA trend",
+      "delivery/frequency data",
+      "hook and structure history"
+    ],
+    "steps": [
+      "Compare current metrics to this account's own historical fatigue curve.",
+      "Check delivery volume and frequency for a pool-size signal, not just a declining CTR.",
+      "Split the cause: audience-pool versus creative.",
+      "For creative causes, name which specific part wore out: hook, visual or the whole concept."
+    ],
+    "checks": [
+      "verdict names the specific number that decided it",
+      "diagnosis names one specific part, not a vague 'the ad is tired'"
+    ],
+    "output": "cause split and fatigue diagnosis note",
+    "used_by": [
+      "CREA-W07"
+    ],
+    "shared_with": [
+      "shared/metric-read"
+    ],
+    "skill_md": "---\nname: fatigue-and-teardown/fatigue-diagnosis\nowner: crea-paid-creative-copy\nversion: 1\ninvoke_when: a live ad's numbers are declining and need sorting into\n  worn-out-creative versus small-audience-pool before any fix is proposed\ninputs: lifecycle metrics, delivery/frequency data, hook and structure\n  history\noutputs: cause split, fatigue diagnosis note\n---\nPurpose: stop a small, undertested audience pool from being misdiagnosed as\na tired creative, and vice versa, since the fix for each is completely\ndifferent and the wrong one wastes a production cycle.\n\nSteps\n1. Compare the ad's current frequency, hold rate and CPA trend against this\n   account's own historical curve for that format, not a generic industry\n   benchmark.\n2. Check whether reach growth for the ad set has actually flattened; a\n   declining CTR alongside reach that is still growing points to a\n   targeting or sequencing issue, not creative wear-out.\n3. Split the cause explicitly: audience-pool exhaustion or genuine creative\n   fatigue, naming the specific number that decided it.\n4. For a creative cause, name the specific part that wore out, the hook, the\n   visual, or the whole concept, rather than a general \"this ad is tired\"\n   verdict with nothing actionable in it.\n\nChecks: cause split cites a specific number; creative diagnosis names one\nspecific part.\n\nOutput: the cause split and, for creative causes, the diagnosis note.\n\nExample: CTR down 25% but ad-set reach still growing 15% week over week\nmeans a sequencing problem, routed to MEDIA, not a creative revival."
+  },
+  {
+    "id": "crea/fatigue-and-teardown/winner-teardown",
+    "name": "Winner and loser teardown",
+    "parent": null,
+    "invoke_when": "the week's top and bottom ads need breaking into hook, structure, proof, offer and CTA with a written hypothesis for each",
+    "select_by": {
+      "task": "teardown"
+    },
+    "inputs_required": [
+      "ad-level metrics",
+      "account averages",
+      "ad creative and copy",
+      "competitor data, signal only"
+    ],
+    "steps": [
+      "Pull each ad's metrics next to the account average for the period.",
+      "Break the ad into its parts: hook, structure, proof, offer, CTA.",
+      "Write a specific hypothesis per ad, backed by the number that shows it.",
+      "Assign a funnel role from the real numbers.",
+      "Note any echo of a tagged competitor signal, without claiming causation."
+    ],
+    "checks": [
+      "verdict backed by a specific number comparison, not just an opinion",
+      "competitor material marked signal only"
+    ],
+    "output": "part-by-part breakdown, hypothesis per ad, funnel-role tag",
+    "used_by": [
+      "CREA-W08"
+    ],
+    "shared_with": [
+      "shared/report-section"
+    ],
+    "skill_md": "---\nname: fatigue-and-teardown/winner-teardown\nowner: crea-paid-creative-copy\nversion: 1\ninvoke_when: the week's top and bottom ads need breaking into their parts\n  with a written, numbers-backed hypothesis\ninputs: ad-level metrics, account averages, ad creative and copy, competitor\n  data (signal only)\noutputs: part-by-part breakdown, hypothesis per ad, funnel-role tag\n---\nPurpose: explain why an ad worked or did not from its actual numbers and its\nactual parts, so the next angle or hook decision builds on a real reason,\nnot a guess dressed as analysis.\n\nSteps\n1. Pull the ad's own metrics next to the account average for the same\n   period, keeping totals separate from any breakdown.\n2. Break the ad into its parts, the hook, the structural sequence, the\n   proof used, the offer stated, and the CTA, naming each one explicitly.\n3. Write a specific hypothesis for each part's contribution, backed by the\n   metric that supports it, for example \"the hook drove an above-average\n   hold rate but the proof point did not convert it.\"\n4. From the real numbers, assign a funnel role, cold hook winner, retention\n   proof, bottom-funnel closer, matching the metric pattern that earned it.\n5. Note where a winning structure echoes a competitor pattern already\n   tagged as signal, explicitly marked as signal only, never as the reason\n   it won.\n\nChecks: hypothesis cites a number; competitor note marked signal only.\n\nOutput: the breakdown, the hypothesis, and the funnel-role tag per ad.\n\nExample: a losing ad's hook_rate is above average but CVR is far below it;\nthe hypothesis names the offer as the likely failure point, not the hook."
+  },
+  {
+    "id": "crea/pricing-and-naming/price-framing",
+    "name": "Price and value framing",
+    "parent": null,
+    "invoke_when": "a price or offer needs framing in copy: ending style, cost-per-day reframe, or an honest reason for a low price",
+    "select_by": {
+      "task": "price_framing"
+    },
+    "inputs_required": [
+      "brand pricing and policies",
+      "positioning"
+    ],
+    "steps": [
+      "Pull the exact live price and the policy limits ops can honor.",
+      "Choose charm or round-number ending from the brand's positioning.",
+      "Build a cost-per-day or cost-per-use reframe when it helps honestly.",
+      "State the real reason whenever a price looks unusually low.",
+      "Match any guarantee or urgency line exactly to what ops can honor."
+    ],
+    "checks": [
+      "every number matches the current live price, not a cached one",
+      "guarantee wording matches ops eligibility exactly"
+    ],
+    "output": "price copy block, price-framing line",
+    "used_by": [
+      "CREA-W06",
+      "CREA-W13"
+    ],
+    "shared_with": [],
+    "skill_md": "---\nname: pricing-and-naming/price-framing\nowner: crea-paid-creative-copy\nversion: 1\ninvoke_when: a price or offer needs framing in copy, honestly and matching\n  what operations can actually honor\ninputs: brand pricing and policies, positioning\noutputs: price copy block, price-framing line\n---\nPurpose: word a price so it is clear and honest, matched to the brand's real\npositioning, never rounding a guarantee or a deadline up past what\noperations actually offers.\n\nSteps\n1. Pull the exact live price and the real policy limits (return window,\n   guarantee terms, EMI eligibility) from the brand brain, never a cached or\n   remembered figure.\n2. Choose the ending style, charm pricing for a value-positioned brand,\n   round numbers for a premium one, matching the stated positioning rather\n   than defaulting to habit.\n3. Build a cost-per-day or cost-per-use reframe only when it makes the price\n   feel honestly smaller, showing the underlying math so it can be checked.\n4. Whenever a price looks unusually low next to the category, state the real\n   reason, a clearance, a factory-direct model, a holiday sale, rather than\n   leaving it to look suspicious or inventing urgency.\n5. Match any guarantee or urgency line exactly to what operations has\n   confirmed it can honor; a wording that rounds up gets stopped for a\n   founder decision.\n\nChecks: numbers match the current live price; guarantee wording matches ops\nexactly.\n\nOutput: the price copy block and the specific price-framing line used.\n\nExample: \"just 33 cents a day\" is shown with the math ($120 a year divided\nby 365) rather than stated as a bare claim."
+  },
+  {
+    "id": "crea/pricing-and-naming/product-naming",
+    "name": "Product and system naming",
+    "parent": null,
+    "invoke_when": "a new product, method or proprietary system needs a name that carries the benefit or story",
+    "select_by": {
+      "task": "product_naming"
+    },
+    "inputs_required": [
+      "product or system facts",
+      "the benefit or story it should carry",
+      "any real named person attached"
+    ],
+    "steps": [
+      "Pull the single strongest benefit or mechanism the name should carry.",
+      "Draft 8 to 15 name candidates tied to that benefit.",
+      "Confirm any attached real person's story is real and permissioned.",
+      "Screen candidates for an obvious trademark or listing conflict.",
+      "Rank the shortlist with a reason for the order and present as a founder_gate decision."
+    ],
+    "checks": [
+      "every candidate ties to the benefit statement",
+      "no invented person or credential"
+    ],
+    "output": "name candidate list, ranked shortlist",
+    "used_by": [
+      "CREA-W14"
+    ],
+    "shared_with": [
+      "shared/rank-candidates"
+    ],
+    "skill_md": "---\nname: pricing-and-naming/product-naming\nowner: crea-paid-creative-copy\nversion: 1\ninvoke_when: a new product, method or proprietary system needs a name that\n  does real selling work\ninputs: product/system facts, the benefit or story it should carry, any real\n  named person attached\noutputs: name candidate list, ranked shortlist\n---\nPurpose: draft names that carry a real benefit or a real, permissioned\nperson's story, never an invented credential, and always as a founder\ndecision, never a final call CREA makes itself.\n\nSteps\n1. Pull the single strongest benefit or mechanism the name needs to carry,\n   stated as one sentence, one idea, since a name trying to say two things\n   usually says neither clearly.\n2. Draft 8 to 15 candidates that tie directly to that benefit, or that\n   attach to a real named person's real story, rather than a generic\n   invented word chosen for sound alone.\n3. Where a real person is attached, a founder, a formulator, confirm the\n   story and any implied credential is real and on file; an implied\n   credential with nothing behind it is cut, not softened.\n4. Screen the shortlist with a quick public search for an obvious trademark\n   or existing marketplace-listing conflict.\n5. Rank the conflict-screened shortlist with a stated reason for the order\n   and present it as a founder_gate decision; naming never resolves inside\n   this skill alone.\n\nChecks: every candidate ties to the benefit; no invented credential.\n\nOutput: the full candidate list and the ranked, conflict-screened\nshortlist.\n\nExample: a joint-support supplement formulated by a named physiotherapist\ngets candidates built around mobility and that real person's actual title,\nnot an invented \"Dr.\" credential."
+  },
+  {
+    "id": "crea/special-formats/product-page-to-ad",
+    "name": "Product page to ad draft",
+    "parent": null,
+    "invoke_when": "a live product page needs turning into a fast first-pass ad variant set, as a starting point rather than a finished concept",
+    "select_by": {
+      "task": "url_to_ad"
+    },
+    "inputs_required": [
+      "live product page URL"
+    ],
+    "steps": [
+      "Read the live page and pull its images, price and stated claims exactly.",
+      "Flag anything the page claims that is not yet in the brand's claim tiers.",
+      "Hand the page facts to the static and script children for a first-pass draft set.",
+      "Flag the whole output as unproven first-pass, not a finished concept."
+    ],
+    "checks": [
+      "every claim pulled matches the page's exact wording",
+      "output is clearly flagged as first-pass"
+    ],
+    "output": "page facts plus a flagged first-pass draft set",
+    "used_by": [
+      "CREA-W05"
+    ],
+    "shared_with": [],
+    "skill_md": "---\nname: special-formats/product-page-to-ad\nowner: crea-paid-creative-copy\nversion: 1\ninvoke_when: a live product page needs turning into a fast starting draft,\n  not a finished, fully-briefed concept\ninputs: live product page URL\noutputs: page facts, flagged first-pass draft set\n---\nPurpose: get a usable starting set of ad copy and image direction out of a\nlive page in minutes, for a new or under-tested SKU that has not had a full\nconcept brief written yet.\n\nSteps\n1. Read the live page and pull its images, price and stated claims exactly\n   as written, never paraphrased or improved.\n2. Check every pulled claim against the brand's existing claim tiers,\n   flagging (and dropping) anything the page states that is not yet backed\n   in the brand record; a live page can drift ahead of what is actually\n   approved to say in an ad.\n3. Hand the cleared page facts to the static-creative and script-writing\n   children to build a first-pass draft set from real images and real,\n   cleared claims.\n4. Flag the entire output clearly as first-pass and unproven, so it is\n   never mistaken for a fully briefed, reference-checked concept.\n\nChecks: pulled claims match the page exactly before clearing; output\nflagged as first-pass.\n\nOutput: the page facts and a flagged first-pass draft set, ready for\nCREA-W01's test-plan step.\n\nExample: a new SKU's page claims \"lasts 2x longer\"; since that specific\nnumber is not yet in the claim tiers, the draft set uses the safer, already\napproved \"built for daily use\" line instead."
+  },
+  {
+    "id": "crea/special-formats/payment-delivery-reassurance-messaging",
+    "name": "Payment and delivery reassurance messaging",
+    "parent": null,
+    "invoke_when": "an ad or checkout moment needs a line that removes payment friction (BNPL, card, wallet) or lowers failed-delivery risk; for a COD brand (markets: IN), the same skill nudges a cash-on-delivery order toward prepaid and lowers return-to-origin risk",
+    "select_by": {
+      "task": "payment_delivery_reassurance"
+    },
+    "inputs_required": [
+      "current payment method mix and failed/reversed-order rates; cod_share and rto_rate where the brand runs COD (markets: IN)",
+      "reassurance or prepaid incentive if any",
+      "delivery-trust facts"
+    ],
+    "steps": [
+      "Pull the account's current payment method mix and failed/reversed-order rates to size the messaging's importance; for a COD brand, also pull cod_share and rto_rate.",
+      "Write the payment reassurance or prepaid nudge line, honest and specific about any incentive.",
+      "Write the delivery-trust line using the real carrier, window and verification facts.",
+      "Check both lines against current ops policy before shipping."
+    ],
+    "checks": [
+      "any discount, BNPL or speed claim matches what ops actually offers",
+      "every fact matches current ops policy, not an aspiration"
+    ],
+    "output": "payment reassurance copy, delivery-trust copy block",
+    "used_by": [
+      "CREA-W16"
+    ],
+    "shared_with": [],
+    "skill_md": "---\nname: special-formats/payment-delivery-reassurance-messaging\nowner: crea-paid-creative-copy\nversion: 1\ninvoke_when: an ad or checkout moment needs a line that removes payment\n  friction or lowers failed-delivery risk; for a COD brand (markets: IN),\n  the same skill nudges a cash-on-delivery order toward prepaid and lowers\n  return-to-origin risk\ninputs: current payment method mix, failed/reversed-order rates,\n  reassurance or prepaid incentive if any, delivery-trust facts\noutputs: payment reassurance copy, delivery-trust copy block\n---\nPurpose: write the lines that build trust in how an order gets paid for and\ndelivered, using only real incentives and real carrier facts, since this\nmessaging often touches checkout trust directly. For a COD brand this\nincludes the India-market option of moving a cash-on-delivery buyer toward\nprepaid and lowering the risk of a return-to-origin (RTO); that option\nreads null for a US brand.\n\nSteps\n1. Pull the account's current payment method mix and failed/reversed-order\n   rates (chargeback rate, return-to-sender rate), so the messaging effort\n   is sized to how much this actually matters for this brand right now, not\n   applied uniformly regardless of the real numbers. For a COD brand, also\n   pull the COD share and RTO rate.\n2. Write the payment reassurance line as a specific, honest line: a BNPL\n   option, a card or wallet trust fact, or, for a COD brand, a real discount\n   amount or a real faster-dispatch promise, never a vague \"pay online for a\n   better experience.\"\n3. Write the delivery-trust line using the real carrier name, the real\n   delivery window, and a real tracking or call-before-delivery fact if\n   that is actually offered.\n4. Check both lines against current operations policy before they ship,\n   since a delivery-time, BNPL or discount claim here is a common source of\n   drift between what marketing promises and what ops can do.\n\nChecks: discount, BNPL and speed claims match what ops actually offers;\nevery delivery fact matches current policy.\n\nOutput: the payment reassurance line and the delivery-trust copy block.\n\nExample, US brand: \"pay in 4 with Klarna, no interest\" only ships once ops\nconfirms the terms are real. Example, India COD brand (markets: IN): \"pay\nonline, save 50 rupees and get it a day faster\" only ships once ops\nconfirms both the discount and the faster timeline are real."
+  },
+  {
+    "id": "crea/special-formats/marketplace-modules",
+    "name": "Marketplace module design",
+    "parent": null,
+    "invoke_when": "an Amazon A+ Content page or a Walmart/Target Plus brand-shop page (Flipkart or Myntra brand-store page for an India-market brand, markets: IN) needs its module content designed within the marketplace's own fixed template grid",
+    "select_by": {
+      "task": "marketplace_modules"
+    },
+    "inputs_required": [
+      "marketplace's current module template grid",
+      "product facts and real photos",
+      "claim tiers"
+    ],
+    "steps": [
+      "Pull the marketplace's current module grid spec, checked within the last 30 days.",
+      "Pick banner, infographic and comparison-chart modules that fit the product's real differentiators.",
+      "Write module copy that fits each module's exact character and layout limit.",
+      "Direct real product imagery for each visual module.",
+      "Hand off to Product and Supply, who owns the actual listing surface."
+    ],
+    "checks": [
+      "spec checked within 30 days",
+      "real photo used for every fit or scale claim"
+    ],
+    "output": "module selection, module copy set, module imagery direction",
+    "used_by": [
+      "CREA-W17"
+    ],
+    "shared_with": [],
+    "skill_md": "---\nname: special-formats/marketplace-modules\nowner: crea-paid-creative-copy\nversion: 1\ninvoke_when: an Amazon A+ Content, Walmart Marketplace or Target Plus\n  brand-shop page (Flipkart or Myntra brand-store page for an India-market\n  brand, markets: IN) needs its module content designed inside the\n  marketplace's own fixed template grid\ninputs: marketplace's current module grid spec, product facts and real\n  photos, claim tiers\noutputs: module selection, module copy set, module imagery direction\n---\nPurpose: fill a marketplace's own fixed module system with real,\nclaim-checked content sized to its exact limits, since these templates\nfollow rules CREA does not control and the actual listing surface belongs to\nProduct and Supply.\n\nSteps\n1. Pull the marketplace's current module grid documentation, re-checked\n   within the last 30 days, since these platforms update their template\n   system without much notice.\n2. Pick the banner, infographic and comparison-chart modules that actually\n   fit this product's real differentiators; an empty module with no real\n   content behind it is worse than a smaller, fully-populated grid.\n3. Write copy for each chosen module inside its exact character and layout\n   space, since marketplace modules rarely tolerate overflow gracefully.\n4. Direct the real product photo or diagram for every visual module,\n   never a redrawn product where fit or scale is the actual point being\n   made.\n5. Hand the finished modules to Product and Supply, who owns the actual\n   marketplace listing surface and publishes them there.\n\nChecks: grid spec checked within 30 days; real photo used for fit/scale\nclaims.\n\nOutput: the module selection, the copy for each, and the imagery\ndirection, handed off with the exact module grid slot each piece fills.\n\nExample: a comparison-chart module states 3 real spec differences against\na stated competitor category, each claim traced to the brand's own claim\ntier evidence."
+  },
+  {
+    "id": "crea/special-formats/mascot-sheet",
+    "name": "Mascot and character sheet",
+    "parent": null,
+    "invoke_when": "a generated character or mascot needs a fixed reference sheet so every future use reuses the same identity",
+    "select_by": {
+      "task": "mascot_sheet"
+    },
+    "inputs_required": [
+      "approved character concept",
+      "brand kit and voice"
+    ],
+    "steps": [
+      "Fix the character's core traits so identity does not drift.",
+      "Generate the reference sheet: expressions, angles, outfit.",
+      "File and version the sheet under the naming standard.",
+      "Check every new use against the current sheet for drift.",
+      "Version, never overwrite, on a real approved change."
+    ],
+    "checks": [
+      "every trait is specific enough to reject a wrong regeneration",
+      "old version stays on file, not overwritten"
+    ],
+    "output": "reference sheet, versioned character asset, drift check result",
+    "used_by": [
+      "CREA-W18"
+    ],
+    "shared_with": [],
+    "skill_md": "---\nname: special-formats/mascot-sheet\nowner: crea-paid-creative-copy\nversion: 1\ninvoke_when: a generated character or mascot needs a fixed reference so\n  every future generation reuses the same identity\ninputs: approved character concept, brand kit and voice\noutputs: reference sheet, versioned character asset, drift check result\n---\nPurpose: keep a generated character's identity stable across every ad it\nappears in, since AI generation drifts without a fixed anchor, and a mascot\nthat looks slightly different in every ad reads as unfinished, not\nintentional.\n\nSteps\n1. Fix the character's core traits specifically enough that a wrong\n   regeneration is obviously wrong: exact color, proportion, signature\n   feature, not a vague description that allows drift.\n2. Generate the reference sheet covering the expressions, angles and outfit\n   views the pipeline will actually reuse, through the character-sheet\n   preset.\n3. File and version the sheet under the standing naming schema so every\n   later generation can cite the exact version it was built from.\n4. Before any new asset uses the character, check it against the current\n   reference sheet for drift, catching it before the asset ships rather\n   than after a viewer notices.\n5. When the founder approves a real change, a new outfit or expression,\n   save it as a new version; the old version stays on file rather than\n   being overwritten, so past assets remain traceable to what they used.\n\nChecks: traits specific enough to catch drift; old versions preserved, not\noverwritten.\n\nOutput: the reference sheet, its version id, and the drift check result for\neach new use.\n\nExample: version 2 of a mascot adds a holiday outfit for the Q4 campaign;\nversion 1's plain outfit stays on file for assets still using it."
+  },
+  {
+    "id": "crea/special-formats/voice-clone-variants",
+    "name": "Voice clone variants",
+    "parent": null,
+    "invoke_when": "a consenting founder's or creator's voice needs cloning to produce many voiceover script variants without a new recording session",
+    "select_by": {
+      "task": "voice_clone"
+    },
+    "inputs_required": [
+      "documented written consent",
+      "script variants needing voiceover"
+    ],
+    "steps": [
+      "Confirm written consent is on file, dated, named and specific to this use.",
+      "Prepare the voice model from the consented source recording only.",
+      "Generate voiceover for each approved script variant.",
+      "QA the generated read against the real person's known cadence and pronunciation.",
+      "Tag and log each use against any consent use-count limit."
+    ],
+    "checks": [
+      "model built only from the consented recording",
+      "use logged against any consent limit"
+    ],
+    "output": "voiceover variant set, QA'd against real cadence, logged use",
+    "used_by": [
+      "CREA-W20"
+    ],
+    "shared_with": [
+      "shared/registry-entry"
+    ],
+    "skill_md": "---\nname: special-formats/voice-clone-variants\nowner: crea-paid-creative-copy\nversion: 1\ninvoke_when: a consenting person's voice needs cloning to produce many\n  voiceover variants without a new recording session, only after consent is\n  on file\ninputs: documented written consent, script variants needing voiceover\noutputs: voiceover variant set, cadence QA, logged use\n---\nPurpose: scale a real, consenting person's voiceover across many script\nvariants without booking a new session each time, while never exceeding what\nthat person actually consented to.\n\nSteps\n1. Confirm the specific person's documented written consent is on file,\n   dated, named, and specific to this use; a general past consent for a\n   different purpose does not carry over.\n2. Prepare the cloned voice model using only the consented source\n   recording, never a recording gathered for another purpose without a\n   separate consent covering cloning.\n3. Generate voiceover for each approved, audited script variant using the\n   model.\n4. Check the generated read against the real person's known cadence and\n   pronunciation, catching anything that would sound obviously wrong, a\n   mispronounced name or term the real person would actually say correctly.\n5. Tag every generated line with the consent record id and log the use, so\n   total uses can be checked against any limit the consent specifies.\n\nChecks: consent on file before generation; use logged against any consent\nlimit.\n\nOutput: the finished, QA'd voiceover set and its logged use record.\n\nExample: a founder consents to voice cloning for up to 20 script variants\nover 6 months; each generated line is tagged and counted against that\nlimit."
+  },
+  {
+    "id": "crea/special-formats/organic-ugc-scout",
+    "name": "Organic UGC scout",
+    "parent": null,
+    "invoke_when": "the brand's own tags, mentions and review videos need scanning for genuine customer content strong enough to become a paid ad",
+    "select_by": {
+      "task": "ugc_scout"
+    },
+    "inputs_required": [
+      "social mention feed",
+      "review platform exports"
+    ],
+    "steps": [
+      "Scan tags, mentions and review videos for candidate clips.",
+      "Trace each candidate to a real public post with a source and date.",
+      "Vet each candidate against the bar set by past creator work: authenticity, product visibility, tone.",
+      "Shortlist only clips scoring above the bar on all three."
+    ],
+    "checks": [
+      "each clip traces to a real public post, not a screenshot with no source",
+      "every kept clip scores above the bar on all three criteria"
+    ],
+    "output": "shortlist of candidate organic clips with source and date",
+    "used_by": [
+      "CREA-W03"
+    ],
+    "shared_with": [],
+    "skill_md": "---\nname: special-formats/organic-ugc-scout\nowner: crea-paid-creative-copy\nversion: 1\ninvoke_when: the brand's own tags, mentions and review videos need scanning\n  for genuine content strong enough to become a paid ad\ninputs: social mention feed, review platform exports\noutputs: shortlist of candidate organic clips with source and date\n---\nPurpose: find real, already-existing customer content worth paying to run as\nan ad, rather than commissioning something new when a genuine post already\ndoes the job.\n\nSteps\n1. Scan the brand's own tags, mentions and review-platform video exports for\n   content that shows the product in genuine use, not a staged studio\n   shot.\n2. Trace every candidate to a real, public, still-live post, recording its\n   source and date; a screenshot with no traceable source is dropped, not\n   kept on a maybe.\n3. Vet each candidate against the bar set by the brand's own past creator\n   work: does it read as authentic, does the product actually show clearly,\n   does the tone match the brand's voice.\n4. Keep only clips that score above the bar on all three criteria, not\n   clips that pass on two out of three.\n\nChecks: every clip has a real, traceable source and date; every kept clip\nclears all three vetting criteria.\n\nOutput: the shortlisted candidate clips, ready for the UGC creator-brief\nworkflow's rights and usage step.\n\nExample: a customer's own unboxing video, tagged and public for 3 weeks\nwith strong product visibility, is shortlisted; a low-resolution repost\nwith no traceable original is dropped."
+  },
+  {
+    "id": "crea/special-formats/objection-retargeting-copy",
+    "name": "Objection-handling and retargeting continuity copy",
+    "parent": null,
+    "invoke_when": "real customer objections need turning into bottom-funnel ad lines, worst objection addressed first, kept consistent across a retargeting sequence",
+    "select_by": {
+      "task": "objection_copy"
+    },
+    "inputs_required": [
+      "support ticket export",
+      "review export",
+      "return reason codes",
+      "existing retargeting sequence"
+    ],
+    "steps": [
+      "Rank real objections from support tickets, reviews and return reasons by frequency.",
+      "Write one line per objection, top-ranked addressed first, not saved for an FAQ.",
+      "Check new lines against the existing retargeting sequence for contradiction.",
+      "Hand off to the surface that will run it: ad, email or SMS."
+    ],
+    "checks": [
+      "every objection has a real quoted source and a count",
+      "the top-ranked objection is addressed in the first line, not buried"
+    ],
+    "output": "ranked objection list, objection-handling copy set",
+    "used_by": [
+      "CREA-W01",
+      "CREA-W15"
+    ],
+    "shared_with": [],
+    "skill_md": "---\nname: special-formats/objection-retargeting-copy\nowner: crea-paid-creative-copy\nversion: 1\ninvoke_when: real customer objections need turning into bottom-funnel copy,\n  the worst one addressed first, consistent across a retargeting sequence\ninputs: support ticket export, review export, return reason codes, existing\n  retargeting sequence\noutputs: ranked objection list, objection-handling copy set\n---\nPurpose: answer the objection that is actually costing sales, ranked by real\nfrequency from the brand's own data, addressed early rather than buried in\nan FAQ nobody reads before abandoning.\n\nSteps\n1. Pull the most common real objections from support tickets, reviews and\n   return reason codes, ranked by how often each actually appears, not by\n   which one the team assumes matters most.\n2. Write one bottom-funnel line or copy block per objection, putting the\n   top-ranked one early in whatever sequence or asset it appears in, rather\n   than saving the biggest objection for a buried FAQ section.\n3. Check every new line against the brand's existing retargeting sequence,\n   so the same objection is never answered two different, contradicting\n   ways in two different steps.\n4. Hand the finished lines to whichever surface will actually run them: an\n   ad inside CREA-W01, or an email or SMS block owned by Lifecycle.\n\nChecks: every objection traced to a real quoted source and count; the top\nobjection addressed first, not last.\n\nOutput: the ranked objection list and the objection-handling copy set.\n\nExample: \"worried it won't fit my washing machine\" outranks \"worried about\ncolor fading\" 3-to-1 in support tickets, so the fit reassurance runs in ad\n1 of the sequence, not ad 4."
+  },
+  {
+    "id": "crea/special-formats/ai-actor-ugc",
+    "name": "Synthetic AI-actor UGC generation",
+    "parent": null,
+    "invoke_when": "the founder has approved a specific test using a licensed AI actor to read a finished script to camera, without booking a shoot",
+    "select_by": {
+      "format": "video",
+      "source": "ai_actor"
+    },
+    "inputs_required": [
+      "founder approval for this specific use",
+      "audited, read-ready script"
+    ],
+    "steps": [
+      "Confirm the founder gate is specifically approved for this use.",
+      "Finalize the script for a literal, no-ad-lib synthetic read.",
+      "Generate the finished vertical video using the licensed AI actor.",
+      "Check the actor's on-screen claims match the audited script exactly.",
+      "Flag the asset as AI-actor generated in its metadata for disclosure."
+    ],
+    "checks": [
+      "founder approval on record for this specific use, not a blanket approval",
+      "actor's claims match the audited script exactly, no generation drift"
+    ],
+    "output": "draft AI-actor video, disclosed and tagged",
+    "used_by": [
+      "CREA-W19"
+    ],
+    "shared_with": [],
+    "skill_md": "---\nname: special-formats/ai-actor-ugc\nowner: crea-paid-creative-copy\nversion: 1\ninvoke_when: the founder has approved a specific test using a licensed AI\n  actor to read a finished script to camera, no shoot booked\ninputs: founder approval for this specific use, audited read-ready script\noutputs: draft AI-actor video, disclosed and tagged\n---\nPurpose: get a working cold-open video test live fast using a licensed\nsynthetic actor, treated with the same claim discipline as a real shoot,\nsince a synthetic ad cannot be caught and reshot the way a live one can.\n\nSteps\n1. Confirm the founder's approval covers this specific use; this capability\n   never runs on a standing blanket approval, since each use is its own\n   decision.\n2. Finalize the script for a literal synthetic read: no line that depends on\n   natural human ad lib or timing to land correctly.\n3. Run the claim-tier check on the script before generation starts, since\n   there is no easy reshoot once the video is generated.\n4. Generate the finished vertical video with the licensed AI actor reading\n   exactly the audited script.\n5. Check the generated video's actual on-screen claims against the audited\n   script word for word, since generation can occasionally drift from the\n   input text.\n6. Flag the finished asset as AI-actor generated in its metadata, for\n   platform disclosure rules and internal tracking, before it ever reaches\n   a handoff.\n\nChecks: founder approval specific to this use; generated claims match the\naudited script exactly; disclosure tag present.\n\nOutput: the draft AI-actor video, tagged as synthetic.\n\nExample: a new SKU gets a same-day test video using a licensed AI actor\nreading an audited hook, tagged as AI-actor generated before it goes to\nMEDIA."
+  }
+]

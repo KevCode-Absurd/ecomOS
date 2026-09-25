@@ -1,0 +1,792 @@
+[
+ {
+  "id": "LOOP-C01",
+  "name": "Run the weekly business review",
+  "folders": [
+   "99-multi"
+  ],
+  "what": "Roll up the metric contract, the top bottleneck, what shipped last week, and what is due this week into one weekly view the founder reads in under 5 minutes. Matches how a fractional CMO opens the week with a data pass before directing the team.",
+  "encompasses": [
+   "pull the metric contract and flag anything unavailable, never zero",
+   "list what each specialist shipped or is blocked on since the last review",
+   "surface the one number that moved most and why, in plain words",
+   "carry forward open founder decisions from the decision log",
+   "flag any registry read point due this week",
+   "note any metric outside its normal band for 2+ weeks running"
+  ],
+  "inputs": [
+   "brand brain: metric contract",
+   "experiment registry: open items",
+   "brand brain: decisions log",
+   "prior week's review"
+  ],
+  "outputs": [
+   "weekly review page",
+   "list of decisions needed this week"
+  ],
+  "trigger": "weekly",
+  "autonomy": "agent_does",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [
+   "script: metric contract reader",
+   "script: registry reader"
+  ],
+  "skills": [
+   "weekly-review"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [
+    "https://inspiredmarketingb2b.com/what-does-a-fractional-cmo-do-day-to-day/",
+    "https://mooncamp.com/okr"
+   ],
+   "bank": [
+    "MULTI-133"
+   ]
+  },
+  "found_in": "web+bank",
+  "founder_sees": "One page: the number that moved, what shipped, what needs a decision.",
+  "owner_agent": "Orchestrator"
+ },
+ {
+  "id": "LOOP-C02",
+  "name": "Teach the founder to question a number before acting on it",
+  "folders": [
+   "99-multi"
+  ],
+  "what": "Before a bottleneck, a claim, or a competitor's headline is used to justify a decision, run it through a short skepticism check and show the founder the check, not just the conclusion. Builds founder judgment over time instead of just handing down verdicts.",
+  "encompasses": [
+   "3-question check on any growth claim before it enters a proposal",
+   "flag when a metric change lags a real event (platform attribution window change, seasonal spike)",
+   "explain why a bottleneck was or was not confirmed, in the founder's own numbers",
+   "distinguish measured, source-claimed and general-practice basis on every idea shown",
+   "log which explanations the founder found useful, to reuse the framing"
+  ],
+  "inputs": [
+   "metric contract",
+   "candidate idea record",
+   "brand history"
+  ],
+  "outputs": [
+   "short explainer attached to each proposal card"
+  ],
+  "trigger": "event: a claim or ranked idea reaches the founder",
+  "autonomy": "agent_does",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [
+   "script: claim checker"
+  ],
+  "skills": [
+   "claim-skepticism-check",
+   "founder-explainer"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [],
+   "bank": [
+    "MULTI-022",
+    "MULTI-043",
+    "MULTI-116",
+    "MULTI-386"
+   ]
+  },
+  "found_in": "bank_only",
+  "founder_sees": "A one-line reason why a number can or cannot be trusted yet.",
+  "owner_agent": "Diagnose"
+ },
+ {
+  "id": "LOOP-C03",
+  "name": "Allocate budget across channels, not inside one",
+  "folders": [
+   "99-multi"
+  ],
+  "what": "Decide how much of the next dollar goes to Meta, Google, email, organic and creators, before any specialist decides how to spend their own slice. Built bottom-up from each channel's own headroom, not a fixed percent template.",
+  "encompasses": [
+   "read each channel's own frontier (headroom before returns drop) from its specialist",
+   "scale the primary channel to its named headroom before funding a new one",
+   "strip one-off inflators before comparing channels",
+   "coordinate paid spend against the owned calendar (email, organic pushes)",
+   "recommend a next-best-dollar split with the reasoning shown",
+   "flag when a channel's spend has drifted from the last agreed split"
+  ],
+  "inputs": [
+   "metric contract: spend and return by channel",
+   "specialist headroom estimates (MEDIA, ORG, LIFE)",
+   "brand calendar"
+  ],
+  "outputs": [
+   "channel allocation recommendation",
+   "founder gate card"
+  ],
+  "trigger": "monthly",
+  "autonomy": "founder_gate",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [
+   "script: allocation ranker"
+  ],
+  "skills": [
+   "cross-channel-allocation"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [],
+   "bank": [
+    "MULTI-053",
+    "MULTI-055",
+    "MULTI-059",
+    "MULTI-061",
+    "MULTI-076",
+    "MULTI-080",
+    "MULTI-114",
+    "MULTI-134",
+    "MULTI-299"
+   ]
+  },
+  "found_in": "bank_only",
+  "founder_sees": "Where the next dollar should go and why, with a number behind each channel.",
+  "owner_agent": "Orchestrator"
+ },
+ {
+  "id": "LOOP-C04",
+  "name": "Run a launch playbook that spans channels",
+  "folders": [
+   "99-multi"
+  ],
+  "what": "When a new product, market or brand launches, sequence the specialists in the right order (validation, then flows, then paid, then content) instead of letting each one start independently. One launch, one plan, several specialists executing against it.",
+  "encompasses": [
+   "stage demand validation cheaply before any paid spend is approved",
+   "require welcome and abandoned-cart flows live before paid scales",
+   "sequence pre-launch anticipation, a hype-channel test, then list building",
+   "assign each launch step to its owning specialist with a date",
+   "hold a single launch timeline the founder can see end to end",
+   "roll learnings from one launch into the next one's plan"
+  ],
+  "inputs": [
+   "approved idea: new launch",
+   "brand brain: prior launch results"
+  ],
+  "outputs": [
+   "cross-channel launch plan",
+   "per-specialist task list with dates"
+  ],
+  "trigger": "event: a launch is approved",
+  "autonomy": "founder_gate",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [
+   "script: launch sequencer"
+  ],
+  "skills": [
+   "launch-playbook"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [],
+   "bank": [
+    "MULTI-044",
+    "MULTI-050",
+    "MULTI-288",
+    "MULTI-083"
+   ]
+  },
+  "found_in": "bank_only",
+  "founder_sees": "One launch calendar with every specialist's part and date on it.",
+  "owner_agent": "Propose"
+ },
+ {
+  "id": "LOOP-C05",
+  "name": "Keep the seasonal calendar (US holidays, sale events, category peaks)",
+  "folders": [
+   "99-multi"
+  ],
+  "what": "Hold the year's fixed demand and cost windows (Q4 holiday, Black Friday and Cyber Monday, Prime Day, Mother's Day, Father's Day, Valentine's Day, back to school, category-specific peaks) and push each specialist's prep deadline backward from them, so budgets, stock, creative and flows are ready in time. India-based brands add Diwali, wedding season and Republic Day sales (markets IN).",
+  "encompasses": [
+   "hold the dated calendar of festival, wedding-season and sale windows relevant to the brand's market",
+   "write the full peak plan at least 70 days before a major window",
+   "set base and stretch budget gates with numeric triggers ahead of each window",
+   "decide the window's objective (profit play or inventory play) before spend starts",
+   "remind each specialist of its pre-window deadline (creative volume, page load, stock)",
+   "protect evergreen spend and flows from being cut for the sale window",
+   "run the post-window read separately (peak-launch attribution needs its own correction)"
+  ],
+  "inputs": [
+   "brand calendar: dated windows",
+   "prior year's peak results",
+   "specialist readiness status"
+  ],
+  "outputs": [
+   "seasonal calendar with deadlines",
+   "founder gate card per window"
+  ],
+  "trigger": "continuous, with named milestones ahead of each window",
+  "autonomy": "founder_gate",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [
+   "script: calendar and deadline tracker"
+  ],
+  "skills": [
+   "seasonal-calendar"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [],
+   "bank": [
+    "MULTI-076",
+    "MULTI-077",
+    "MULTI-080",
+    "MULTI-083",
+    "MULTI-135"
+   ]
+  },
+  "found_in": "bank_only",
+  "founder_sees": "The next dated window, what is ready, and what is not, with time to fix it.",
+  "owner_agent": "Orchestrator",
+  "gap_note": "The bank's peak-season ideas are written for a generic Q4. Category-specific peaks and the India calendar come from the brand brain and web research."
+ },
+ {
+  "id": "LOOP-C06",
+  "name": "Run the crisis response protocol",
+  "folders": [
+   "99-multi"
+  ],
+  "what": "For a stockout, a negative-press event, a platform ban or account suspension, or a death-spiral metric pattern, assemble the right specialists fast, hold one message to the founder, and keep a single response timeline instead of each specialist reacting alone.",
+  "encompasses": [
+   "detect the trigger pattern (CAC and volume diverging, a account restriction, a stock-out on a hero SKU, a viral complaint)",
+   "assemble a named cross-functional response group within 24 hours",
+   "hold one source of truth for what happened and what is being done",
+   "route the founder to the one decision only they can make",
+   "keep a transparent, factual update cadence instead of going silent",
+   "log the incident and the response in the decision log for the post-mortem",
+   "stand down the crisis mode and confirm normal operating resumes"
+  ],
+  "inputs": [
+   "metric contract: anomaly signal",
+   "brand brain: current crisis, if any",
+   "specialist status"
+  ],
+  "outputs": [
+   "crisis response plan",
+   "founder decision card",
+   "incident log entry"
+  ],
+  "trigger": "event: a crisis trigger fires",
+  "autonomy": "founder_gate",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [
+   "script: anomaly detector"
+  ],
+  "skills": [
+   "crisis-response"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [
+    "https://bryghtpath.com/crisis-management-for-retail/",
+    "https://sproutsocial.com/insights/crisis-management/"
+   ],
+   "bank": [
+    "MULTI-283",
+    "MULTI-096",
+    "MULTI-153",
+    "MULTI-019",
+    "MULTI-138"
+   ]
+  },
+  "found_in": "web+bank",
+  "founder_sees": "What broke, who is on it, and the one call only the founder can make.",
+  "owner_agent": "Orchestrator"
+ },
+ {
+  "id": "LOOP-C07",
+  "name": "Set and track goals (OKRs) for the quarter",
+  "folders": [
+   "99-multi"
+  ],
+  "what": "Turn the founder's stated priority into a small set of measurable objectives and key results, tied to the metric contract, and check them weekly so the loop's daily proposals stay pointed at what the founder actually asked for.",
+  "encompasses": [
+   "translate a founder priority into 1 to 3 objectives with 3 to 5 measurable key results each",
+   "tie every key result to a metric contract field, never a made-up number",
+   "check key results weekly, not just at quarter end",
+   "flag when the ranked proposal list is not moving the stated objective",
+   "run a quarterly stage review against measurement, creative, structure and team",
+   "close the quarter with a plain-language read: hit, missed, why"
+  ],
+  "inputs": [
+   "founder priority statement",
+   "metric contract"
+  ],
+  "outputs": [
+   "quarterly OKR set",
+   "weekly check-in",
+   "quarter close read"
+  ],
+  "trigger": "quarterly, checked weekly",
+  "autonomy": "founder_gate",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [
+   "script: OKR tracker"
+  ],
+  "skills": [
+   "okr-setting"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [
+    "https://mooncamp.com/okr",
+    "https://www.tability.io/templates/tags/ecommerce"
+   ],
+   "bank": [
+    "MULTI-133"
+   ]
+  },
+  "found_in": "web+bank",
+  "founder_sees": "3 goals for the quarter, each with a number, checked every week.",
+  "owner_agent": "Orchestrator"
+ },
+ {
+  "id": "LOOP-C08",
+  "name": "Hold the experiment design standard",
+  "folders": [
+   "99-multi"
+  ],
+  "what": "Give every approved idea the same shape of test before a specialist runs it: a named metric, a read point sized to reach real signal, and a kill and scale rule agreed before the result comes in. Stops both premature kills and endless tests.",
+  "encompasses": [
+   "size the read point to the metric's own noise, not a fixed day count (60 to 180 days for slow metrics, days for fast ones)",
+   "write the kill and scale rule before the test starts, not after the result",
+   "record a pre-change baseline with a timestamp for every structural change",
+   "treat every idea's expected effect as a hypothesis until the brand's own data confirms it",
+   "flag a test that is too small to reach its own read point",
+   "standardise how confidence and basis (measured, source-claim, general-practice) are shown to the founder"
+  ],
+  "inputs": [
+   "approved idea record",
+   "metric contract",
+   "prior test history for this idea"
+  ],
+  "outputs": [
+   "test design attached to every registry entry"
+  ],
+  "trigger": "event: an idea is approved",
+  "autonomy": "agent_does",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [
+   "script: read-point sizer"
+  ],
+  "skills": [
+   "experiment-design-standard"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [
+    "https://growwithward.com/ice-prioritization-framework"
+   ],
+   "bank": [
+    "MULTI-014",
+    "MULTI-107",
+    "MULTI-121",
+    "MULTI-109"
+   ]
+  },
+  "found_in": "web+bank",
+  "founder_sees": "Every test comes with its own finish line, agreed up front.",
+  "owner_agent": "Registrar"
+ },
+ {
+  "id": "LOOP-C09",
+  "name": "Rank candidates without letting the loudest source win",
+  "folders": [
+   "99-multi"
+  ],
+  "what": "Score every candidate idea, whether from the bank, the brand's own audit, or the web, on the same formula (reach, effect, effort, cost, risk, confidence, founder weight) so a well-evidenced web idea can outrank a weak bank idea and a weak bank idea can be demoted with a stated reason.",
+  "encompasses": [
+   "compute reach, effect, effort, cost, risk and confidence in code from the brand's own numbers",
+   "apply founder weights learned from past approve or reject reasons",
+   "never let source (bank vs audit vs web) count as a scoring factor on its own",
+   "state in plain words why a candidate was demoted or promoted",
+   "fix the one binding constraint before ranking secondary ones",
+   "surface dependencies between candidates before ranking them independently",
+   "move fast on internal, reversible bets; slow down and gate anything customer-facing"
+  ],
+  "inputs": [
+   "candidate list from bank, audit and web",
+   "brand priors from registry",
+   "founder weight history"
+  ],
+  "outputs": [
+   "ranked proposal list with stated reasons"
+  ],
+  "trigger": "event: a diagnose run produces candidates",
+  "autonomy": "agent_does",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [
+   "script: candidate ranker"
+  ],
+  "skills": [
+   "candidate-ranking"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [
+    "https://growthmethod.com/rice-framework/"
+   ],
+   "bank": [
+    "MULTI-030",
+    "MULTI-130",
+    "MULTI-108"
+   ]
+  },
+  "found_in": "web+bank",
+  "founder_sees": "A ranked list where the reason for the order is written next to each item.",
+  "owner_agent": "Propose"
+ },
+ {
+  "id": "LOOP-C10",
+  "name": "Keep the decision log",
+  "folders": [
+   "99-multi"
+  ],
+  "what": "Record every founder approve, reject or park decision with its stated reason, once, and turn repeated reasons into ranking weights instead of asking the founder to repeat themselves on the next similar idea.",
+  "encompasses": [
+   "capture the founder's exact reason at the moment of approve, reject or park",
+   "tag the reason to the idea's attributes (bottleneck, cost, risk, channel)",
+   "turn a repeated reason into a standing ranking weight",
+   "surface the decision log so a new proposal does not repeat a rejected pattern without saying so",
+   "run a would-we-approve-it-again check in every post-mortem",
+   "keep the log queryable by specialist and by brand for the review page"
+  ],
+  "inputs": [
+   "founder decision on a proposal card"
+  ],
+  "outputs": [
+   "decision log entry",
+   "updated ranking weight"
+  ],
+  "trigger": "event: a founder decision is made",
+  "autonomy": "agent_does",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [
+   "script: decision log writer"
+  ],
+  "skills": [
+   "decision-logging"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [],
+   "bank": [
+    "MULTI-109",
+    "MULTI-198"
+   ]
+  },
+  "found_in": "bank_only",
+  "founder_sees": "Nothing extra to do; their reasons quietly shape future rankings.",
+  "owner_agent": "Registrar"
+ },
+ {
+  "id": "LOOP-C11",
+  "name": "Write the board and investor update",
+  "folders": [
+   "99-multi"
+  ],
+  "what": "Turn the metric contract, the quarter's approved and executed ideas, and the founder's own notes into a short investor or board update in the standard shape: headline number, wins with numbers, what did not work, asks.",
+  "encompasses": [
+   "pull the headline metric and 2 to 3 numeric wins from the metric contract and registry",
+   "state what did not go as planned and what was learned, not just wins",
+   "list hires, org changes and anything affecting execution",
+   "write a specific ask (introduction, advice, resource) if the founder has one",
+   "keep the same structure every period so readers can scan it fast",
+   "never invent a number; missing data shows as unavailable"
+  ],
+  "inputs": [
+   "metric contract",
+   "experiment registry: period results",
+   "founder notes"
+  ],
+  "outputs": [
+   "investor or board update draft"
+  ],
+  "trigger": "monthly or quarterly, founder's choice",
+  "autonomy": "human_assist",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [
+   "script: update drafter"
+  ],
+  "skills": [
+   "investor-update"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [
+    "https://visible.vc/blog/how-to-write-the-perfect-investor-update/",
+    "https://kruzeconsulting.com/blog/startup-investor-update-template/"
+   ],
+   "bank": [
+    "MULTI-319",
+    "MULTI-289",
+    "MULTI-290"
+   ]
+  },
+  "found_in": "web+bank",
+  "founder_sees": "A drafted update ready to send, in a template that stays the same each time.",
+  "owner_agent": "Orchestrator"
+ },
+ {
+  "id": "LOOP-C12",
+  "name": "Run the pre-delivery integrity gate",
+  "folders": [
+   "99-multi"
+  ],
+  "what": "Before any specialist's output reaches the founder, check that arithmetic ran in code, totals stay separate from breakdowns, missing data shows as unavailable, and tracking exclusions are correct, so a bad number never becomes the basis for a decision.",
+  "encompasses": [
+   "recompute every number in the deliverable from source, never trust a stated figure",
+   "confirm missing or blocked data is marked unavailable, not shown as zero",
+   "check that a spend, creative or budget call has clean tracking underneath it (bot traffic, internal traffic excluded)",
+   "confirm windows end on a full day, not a partial one",
+   "check that no competitor text, logo, product or face was copied",
+   "block delivery and name the fix needed if a check fails"
+  ],
+  "inputs": [
+   "specialist's draft output",
+   "metric contract",
+   "brand claim tiers"
+  ],
+  "outputs": [
+   "pass or fail with named fixes"
+  ],
+  "trigger": "event: any specialist output is ready to deliver",
+  "autonomy": "agent_does",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [
+   "script: QA checklist runner"
+  ],
+  "skills": [
+   "integrity-gate"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [],
+   "bank": [
+    "MULTI-001",
+    "MULTI-031",
+    "MULTI-106"
+   ]
+  },
+  "found_in": "bank_only",
+  "founder_sees": "Only output that already passed the checklist; failures never reach them.",
+  "owner_agent": "QA Gate"
+ },
+ {
+  "id": "LOOP-C13",
+  "name": "Run the competitor and reference intake standard",
+  "folders": [
+   "99-multi"
+  ],
+  "what": "Give every competitor teardown the same structure, whether it feeds a specialist's brief or the reference library, so patterns are separated from noise before anyone acts on them.",
+  "encompasses": [
+   "classify a competitor account as creating demand or harvesting an existing one",
+   "map competitor creative to a fixed format and script taxonomy",
+   "audit a competitor's proof numbers and P&L claims for internal consistency before trusting them",
+   "separate what is transferable to this brand from what is not, and say why",
+   "audit where a competitor routes paid traffic and which pages get none",
+   "count concept diversity at peak season, not just asset count",
+   "tag every reference with structure and mood only, never text, logo, product or face to copy"
+  ],
+  "inputs": [
+   "competitor ad library",
+   "competitor site",
+   "public demand signals"
+  ],
+  "outputs": [
+   "tagged reference set with transferable-pattern notes"
+  ],
+  "trigger": "on demand, when a specialist requests references",
+  "autonomy": "agent_does",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [
+   "script: creative_retrieval.py",
+   "web search"
+  ],
+  "skills": [
+   "competitor-teardown-intake"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [],
+   "bank": [
+    "MULTI-098",
+    "MULTI-099",
+    "MULTI-100",
+    "MULTI-101",
+    "MULTI-102",
+    "MULTI-103",
+    "MULTI-104",
+    "MULTI-105",
+    "MULTI-136",
+    "MULTI-154"
+   ]
+  },
+  "found_in": "bank_only",
+  "founder_sees": "References tagged with what is transferable and what is signal only.",
+  "owner_agent": "Reference Scout"
+ },
+ {
+  "id": "LOOP-C14",
+  "name": "Brief capital, exit and succession decisions",
+  "folders": [
+   "99-multi"
+  ],
+  "what": "For a raise, a strategic partner, a sale process or a succession, assemble the numbers and the standard questions into one memo, since no specialist owns this surface and the founder should not face it with a blank page.",
+  "encompasses": [
+   "write a capital and ownership memo with a downside case for every option on the table",
+   "verify claimed exit multiples against real comparables, never assume them",
+   "screen a strategic partner or minority-sale offer with the 1+1=3 test",
+   "interrogate deal terms and any buyer-imposed debt load before an offer is accepted",
+   "check accounting is audit-ready and transparent ahead of a sale process",
+   "define the successor archetype before a CEO succession hire is opened",
+   "time a due-diligence process around peak trading, not through it",
+   "choose an investment or acquisition partner on fit tested through real time together, not the term sheet alone"
+  ],
+  "inputs": [
+   "financial model",
+   "founder's stated intent (raise, partner, sale, succession)"
+  ],
+  "outputs": [
+   "capital or exit decision memo"
+  ],
+  "trigger": "event: founder opens a capital, partner, sale or succession question",
+  "autonomy": "human_assist",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [
+   "script: financial model reader"
+  ],
+  "skills": [
+   "capital-exit-briefing"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [],
+   "bank": [
+    "MULTI-092",
+    "MULTI-093",
+    "MULTI-125",
+    "MULTI-137",
+    "MULTI-150",
+    "MULTI-231",
+    "MULTI-232",
+    "MULTI-289",
+    "MULTI-290",
+    "MULTI-359",
+    "MULTI-360",
+    "MULTI-369",
+    "MULTI-370",
+    "MULTI-410"
+   ]
+  },
+  "found_in": "bank_only",
+  "founder_sees": "One memo with the numbers, the downside case, and the standard questions already asked.",
+  "owner_agent": "Orchestrator"
+ },
+ {
+  "id": "LOOP-C15",
+  "name": "Diagnose the growth stage and archetype",
+  "folders": [
+   "99-multi"
+  ],
+  "what": "Before ranking any fix, name what kind of growth problem the brand actually has (which channel, which layer, which archetype, which stage) so the right specialist and the right lever get engaged instead of the most familiar one.",
+  "encompasses": [
+   "run the top-down root-cause order: business, channel, campaign type, campaign, submetric",
+   "run the 3-layer read (ads, funnel, backend) and the 2-signal read (creative vs funnel vs price)",
+   "name the brand's growth archetype before a lever is picked",
+   "detect the death-spiral pattern (CAC rising, volume falling, spend raised to compensate) as its own state",
+   "decide whether an underperformer is an angle problem or an offer problem",
+   "require 2 or more weak periods before treating a dip as a real bottleneck, not noise",
+   "match a confirmed bottleneck to founder hours, a hire, or a system change",
+   "trigger a full operating-foundation rebuild at a plateau instead of adding tasks"
+  ],
+  "inputs": [
+   "metric contract and its history",
+   "brand's growth stage facts"
+  ],
+  "outputs": [
+   "ranked bottleneck list with the archetype and stage named"
+  ],
+  "trigger": "continuous, refreshed weekly",
+  "autonomy": "agent_does",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [
+   "script: bottleneck ranker"
+  ],
+  "skills": [
+   "growth-stage-diagnosis"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [],
+   "bank": [
+    "MULTI-018",
+    "MULTI-019",
+    "MULTI-025",
+    "MULTI-032",
+    "MULTI-033",
+    "MULTI-034",
+    "MULTI-036",
+    "MULTI-037",
+    "MULTI-038",
+    "MULTI-039",
+    "MULTI-040",
+    "MULTI-126",
+    "MULTI-138",
+    "MULTI-153",
+    "MULTI-334",
+    "MULTI-349"
+   ]
+  },
+  "found_in": "bank_only",
+  "founder_sees": "The real bottleneck, named plainly, with the numbers that prove it.",
+  "owner_agent": "Diagnose"
+ }
+]

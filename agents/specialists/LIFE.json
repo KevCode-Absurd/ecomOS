@@ -1,0 +1,2960 @@
+[
+ {
+  "id": "LIFE-C01",
+  "name": "Map and sequence the lifecycle build",
+  "folders": [
+   "14-EML",
+   "17-CXP"
+  ],
+  "what": "Reads the brand's order and flow data to find which lifecycle basics are missing or broken, then orders the build so revenue-critical flows come first.",
+  "encompasses": [
+   "Score flow existence and health against the standard set (welcome, abandonment, post-purchase, win-back, sunset)",
+   "Compute flow-to-campaign revenue split and set a rebalance target",
+   "Map F1 (acquisition), F2 (first-to-second order) and F3 (top-20% revenue) as the 3 constraints",
+   "Flag any flow missing a trigger, entry filter, exit filter or re-entry rule",
+   "Flag flows that overlap (two flows eligible for the same person at the same stage)",
+   "Flag persistent in-flow campaign-exclusion gaps",
+   "Order the backlog by expected revenue impact, not by whim",
+   "Re-run monthly to catch silent breakage"
+  ],
+  "inputs": [
+   "metric contract",
+   "connector: ESP flow list and trigger config",
+   "connector: shopify orders",
+   "brand brain: decisions log"
+  ],
+  "outputs": [
+   "ranked build/fix backlog",
+   "flow health scorecard",
+   "gap list with evidence"
+  ],
+  "trigger": "monthly",
+  "autonomy": "agent_does",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [
+   "connector: ESP (Klaviyo or brand's platform)",
+   "connector: shopify orders",
+   "metric contract",
+   "script: intelligence/ideas.py"
+  ],
+  "skills": [
+   "lifecycle-program-map"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [],
+   "bank": [
+    "EML-001",
+    "EML-002",
+    "EML-003",
+    "EML-004",
+    "EML-005",
+    "EML-006",
+    "EML-007",
+    "EML-032",
+    "EML-033",
+    "EML-036",
+    "EML-204",
+    "CXP-001",
+    "CXP-002",
+    "CXP-003",
+    "CXP-004",
+    "CXP-005",
+    "CXP-006",
+    "CXP-007",
+    "CXP-008",
+    "CXP-009",
+    "CXP-010",
+    "CXP-011",
+    "CXP-012",
+    "CXP-036",
+    "CXP-124",
+    "CXP-138"
+   ]
+  },
+  "found_in": "bank_only",
+  "founder_sees": "A one-page scorecard of what is broken in the lifecycle program, in the order it should be fixed, with the money reason for each."
+ },
+ {
+  "id": "LIFE-C02",
+  "name": "Design and test on-site capture (pop-ups and forms)",
+  "folders": [
+   "14-EML"
+  ],
+  "what": "Designs the email and SMS sign-up pop-up: offer, fields, trigger timing, targeting and layout, then proposes a test queue.",
+  "encompasses": [
+   "Design the offer before copy or design (percent off, dollars off, gift, or content)",
+   "Set field count and order (email before phone)",
+   "Set trigger timing (4-12s delay or scroll, never on load) and re-show cadence (3-5 days)",
+   "Set targeting exclusions (subscribers, cart/checkout, wholesale, non-ship countries)",
+   "Build separate mobile and desktop versions with compressed images",
+   "Add a visible close on every step",
+   "Design a teaser tab sized to avoid other on-site widgets",
+   "Draft a quiz-style pop-up for zero-party data where it fits the category",
+   "Propose the test queue in priority order: offer, then fields, then design",
+   "Judge results by full-site conversion and signed-up-customer value, not opt-in rate alone"
+  ],
+  "inputs": [
+   "brand brain: products (prices, weights, stock)",
+   "metric contract",
+   "brand brain: audience",
+   "site audit: current pop-up config"
+  ],
+  "outputs": [
+   "pop-up spec (copy, fields, trigger, targeting)",
+   "test queue",
+   "before/after result read"
+  ],
+  "trigger": "on demand",
+  "autonomy": "founder_gate",
+  "external_write": {
+   "needed": true,
+   "surface": "site pop-up tool / theme"
+  },
+  "tools": [
+   "connector: ESP (Klaviyo or brand's platform)",
+   "tool: on-site pop-up app (Privy/Justuno/native)",
+   "browser: headless chromium (site audit)",
+   "web search"
+  ],
+  "skills": [
+   "popup-spec",
+   "copy-draft"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [
+    "https://www.omnisend.com/blog/discount-popup/",
+    "https://www.digioh.com/blog/ecommerce-free-shipping-threshold"
+   ],
+   "bank": [
+    "EML-008",
+    "EML-009",
+    "EML-010",
+    "EML-011",
+    "EML-012",
+    "EML-013",
+    "EML-014",
+    "EML-015",
+    "EML-016",
+    "EML-017",
+    "EML-018",
+    "EML-019",
+    "EML-020",
+    "EML-022",
+    "EML-023",
+    "EML-024",
+    "EML-174",
+    "EML-186",
+    "EML-187",
+    "EML-193",
+    "EML-195",
+    "EML-205",
+    "CXP-038"
+   ]
+  },
+  "found_in": "web+bank",
+  "founder_sees": "The pop-up design to launch or test next, and what opt-in offer it uses, with the reasoning."
+ },
+ {
+  "id": "LIFE-C03",
+  "name": "Manage email and SMS consent and unsubscribe handling",
+  "folders": [
+   "14-EML"
+  ],
+  "what": "Sets the consent model, quiet hours and unsubscribe handling for every market the brand sends to, so sends stay legal and unsubscribes are honoured immediately.",
+  "encompasses": [
+   "Decide single vs double opt-in per market's law",
+   "Keep consent text legible on every form in every market",
+   "Collect SMS consent separately from email consent",
+   "Add a subscribed-because-of-consent condition for EU segments",
+   "Make unsubscribing 1-click and immediate",
+   "Set SMS quiet hours to the strictest legal window per recipient location",
+   "Check consent, quiet-hours and sender-registration rules live before any new market's SMS send",
+   "Collect phone numbers pre-launch even before SMS goes live"
+  ],
+  "inputs": [
+   "brand brain: policies (shipping, returns, guarantee, EMI)",
+   "brand brain: markets sold into",
+   "legal: per-market consent rules"
+  ],
+  "outputs": [
+   "consent policy document",
+   "per-market SMS compliance checklist",
+   "form consent-text spec"
+  ],
+  "trigger": "event: new market or new form",
+  "autonomy": "founder_gate",
+  "external_write": {
+   "needed": true,
+   "surface": "ESP consent settings / form config"
+  },
+  "tools": [
+   "connector: ESP (Klaviyo or brand's platform)",
+   "web search"
+  ],
+  "skills": [
+   "lifecycle-program-map"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [],
+   "bank": [
+    "EML-025",
+    "EML-026",
+    "EML-027",
+    "EML-028",
+    "EML-029",
+    "EML-030",
+    "EML-031",
+    "EML-096",
+    "EML-142",
+    "EML-143",
+    "EML-175"
+   ]
+  },
+  "found_in": "bank_only",
+  "founder_sees": "Confirmation that every market's opt-in and quiet-hours rules are followed, with a checklist to sign off before launch."
+ },
+ {
+  "id": "LIFE-C04",
+  "name": "Build the welcome flow (email and SMS)",
+  "folders": [
+   "14-EML"
+  ],
+  "what": "Builds the welcome sequence that turns a new subscriber into a first-time buyer, using the popup offer, front-loaded into the first 72 hours.",
+  "encompasses": [
+   "Point the trigger at the exact list the pop-up writes to",
+   "Filter to first-time subscribers who have never ordered",
+   "Build 6-8 emails plus a 2-3 text SMS track over about 5 days",
+   "Front-load sends into the first 72 hours",
+   "Repeat the discount code in every email, keep emails short",
+   "Use reviews that each name a specific objection",
+   "Gate a bonus behind a reply-yes step where it fits the brand's voice",
+   "Set a 10-20 percent conversion target and flag under-performance"
+  ],
+  "inputs": [
+   "brand brain: products (prices, weights, stock)",
+   "brand brain: voice (liked/disliked examples)",
+   "brand brain: reviews (objection-tagged)",
+   "metric contract"
+  ],
+  "outputs": [
+   "flow brief (trigger, filters, timing, content outline per email)",
+   "draft copy per email/SMS"
+  ],
+  "trigger": "on demand",
+  "autonomy": "founder_gate",
+  "external_write": {
+   "needed": true,
+   "surface": "ESP flow build"
+  },
+  "tools": [
+   "connector: ESP (Klaviyo or brand's platform)",
+   "script: intelligence/ideas.py",
+   "script: search_knowledge.py"
+  ],
+  "skills": [
+   "flow-brief",
+   "copy-draft"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [],
+   "bank": [
+    "EML-042",
+    "EML-043",
+    "EML-044",
+    "EML-045",
+    "EML-046",
+    "EML-047",
+    "EML-048",
+    "EML-149",
+    "EML-150",
+    "EML-210"
+   ]
+  },
+  "found_in": "bank_only",
+  "founder_sees": "The welcome flow brief and draft copy, ready to load into the sending platform once approved."
+ },
+ {
+  "id": "LIFE-C05",
+  "name": "Build browse and site abandonment flows",
+  "folders": [
+   "14-EML"
+  ],
+  "what": "Builds the flow that nudges a visitor who viewed products but did not add to cart, styled as a shop-assistant follow-up rather than a hard sell.",
+  "encompasses": [
+   "Add the added-to-cart exclusion filter by hand",
+   "Set first delay 30 minutes to 2 hours",
+   "Build a 4-6 email sequence linking to the exact product, never the homepage",
+   "Skip the new-vs-returning split by default to keep it simple",
+   "Keep the flow live even during a deliverability repair period"
+  ],
+  "inputs": [
+   "connector: shopify orders",
+   "connector: on-site behaviour tracking (viewed product)",
+   "brand brain: products (prices, weights, stock)"
+  ],
+  "outputs": [
+   "flow brief",
+   "draft copy"
+  ],
+  "trigger": "on demand",
+  "autonomy": "founder_gate",
+  "external_write": {
+   "needed": true,
+   "surface": "ESP flow build"
+  },
+  "tools": [
+   "connector: ESP (Klaviyo or brand's platform)"
+  ],
+  "skills": [
+   "flow-brief",
+   "copy-draft"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [],
+   "bank": [
+    "EML-049",
+    "EML-050",
+    "EML-051",
+    "EML-052",
+    "EML-053",
+    "EML-054",
+    "EML-055"
+   ]
+  },
+  "found_in": "bank_only",
+  "founder_sees": "The browse-abandonment flow brief, ready to build once the trigger event is confirmed to fire."
+ },
+ {
+  "id": "LIFE-C06",
+  "name": "Build cart and checkout abandonment flows",
+  "folders": [
+   "14-EML"
+  ],
+  "what": "Builds separate Added-to-Cart and Checkout-Started flows across email and SMS, with dynamic product blocks and a discount held back until later in the sequence.",
+  "encompasses": [
+   "Build 2 separate flows: Added to Cart and Checkout Started",
+   "Confirm the Added to Cart event actually fires before building on it",
+   "Set first delay 15 minutes to 1 hour, 6-8 emails over about 10 days",
+   "Build correctly linked dynamic item blocks for cart and checkout",
+   "Sequence content: reminder, founder check-in, objections, proof, buyer-status split",
+   "Answer checkout-specific objections and offer free shipping where cost is the blocker",
+   "Restrict discounts to never-bought or 60-90 day lapsed customers",
+   "Send exactly 1 abandonment SMS per flow within 48 hours, split by buyer status",
+   "Test sending the paired email and SMS at nearly the same time"
+  ],
+  "inputs": [
+   "connector: shopify orders",
+   "connector: cart/checkout event tracking",
+   "brand brain: products (prices, weights, stock)"
+  ],
+  "outputs": [
+   "flow brief (email + SMS)",
+   "draft copy",
+   "dynamic block spec"
+  ],
+  "trigger": "on demand",
+  "autonomy": "founder_gate",
+  "external_write": {
+   "needed": true,
+   "surface": "ESP flow build"
+  },
+  "tools": [
+   "connector: ESP (Klaviyo or brand's platform)"
+  ],
+  "skills": [
+   "flow-brief",
+   "copy-draft",
+   "sms-whatsapp-brief"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [],
+   "bank": [
+    "EML-056",
+    "EML-057",
+    "EML-058",
+    "EML-059",
+    "EML-060",
+    "EML-061",
+    "EML-062",
+    "EML-063",
+    "EML-064",
+    "EML-065",
+    "EML-151",
+    "EML-157",
+    "EML-196"
+   ]
+  },
+  "found_in": "bank_only",
+  "founder_sees": "The cart and checkout recovery flows, with the discount rule and timing spelled out."
+ },
+ {
+  "id": "LIFE-C07",
+  "name": "Build the post-purchase lifecycle content flow",
+  "folders": [
+   "14-EML",
+   "17-CXP"
+  ],
+  "what": "Builds the content sequence after order 1, split by first-time vs returning buyer, that teaches product use, reduces returns, and pushes toward order 2 inside the 30-day window.",
+  "encompasses": [
+   "Send the first email 10-30 minutes after order, plain text from the founder",
+   "Split content between first-time and returning buyers",
+   "Build the 6-8 step first-time sequence focused on the 30-day repeat window",
+   "Match how-to content to the exact product bought",
+   "Add a fit-check email before the review request for size-dependent products",
+   "Add a shipping-delay update email for international orders",
+   "Build a refunds segment with a short, low-pressure post-refund check-in",
+   "Split gift purchases into buyer and recipient threads",
+   "Trigger a product-education sequence about 48 hours after delivery",
+   "Send a reassurance message about 2 days after purchase",
+   "Extend into an always-on AI assistant only where the brand has real repeat-need expertise"
+  ],
+  "inputs": [
+   "connector: shopify orders",
+   "brand brain: products (prices, weights, stock)",
+   "brand brain: how-to content",
+   "metric contract"
+  ],
+  "outputs": [
+   "flow brief per buyer segment",
+   "draft copy"
+  ],
+  "trigger": "on demand",
+  "autonomy": "founder_gate",
+  "external_write": {
+   "needed": true,
+   "surface": "ESP flow build"
+  },
+  "tools": [
+   "connector: ESP (Klaviyo or brand's platform)"
+  ],
+  "skills": [
+   "flow-brief",
+   "copy-draft",
+   "journey-map"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [
+    "https://www.parcelperform.com/insights/best-customer-retention-software-ecommerce-2026-comparison"
+   ],
+   "bank": [
+    "EML-066",
+    "EML-067",
+    "EML-068",
+    "EML-069",
+    "EML-070",
+    "EML-071",
+    "EML-073",
+    "EML-075",
+    "EML-076",
+    "EML-077",
+    "EML-201",
+    "CXP-059",
+    "CXP-060",
+    "CXP-065",
+    "CXP-066",
+    "CXP-086",
+    "CXP-087",
+    "CXP-091"
+   ]
+  },
+  "found_in": "web+bank",
+  "founder_sees": "The post-purchase email program by buyer type, aimed at cutting returns and pulling forward order 2."
+ },
+ {
+  "id": "LIFE-C08",
+  "name": "Build win-back and sunset flows",
+  "folders": [
+   "14-EML",
+   "17-CXP"
+  ],
+  "what": "Builds the flow that tries to bring a lapsed customer back, timed off the brand's own purchase cadence, and the sunset flow that stops mailing people who never engage.",
+  "encompasses": [
+   "Set win-back wait time from the brand's own median/mean days between orders, or RFM cadence",
+   "Space win-back emails 3-7 days apart, never daily",
+   "Sequence: no-discount nudge, reminder, coded offer, closer, escalating the incentive",
+   "Give high-CLV lapsed customers a stronger offer",
+   "Audit the lapsed list for unresolved service issues before sending any win-back",
+   "Segment win-back by the reason for lapse and measure recovery per reason",
+   "Define the sunset trigger as zero engagement across a fixed window with a minimum-sends floor",
+   "Use AND (not OR) on the sunset flow's opened/clicked filters",
+   "Run a 3-email, 5-day-gap sunset sequence before marking unengaged",
+   "Reserve second-purchase incentives for the first-to-second step only"
+  ],
+  "inputs": [
+   "connector: shopify orders",
+   "metric contract",
+   "brand brain: support history (lapse reasons)"
+  ],
+  "outputs": [
+   "flow brief",
+   "draft copy",
+   "sunset criteria spec"
+  ],
+  "trigger": "on demand",
+  "autonomy": "founder_gate",
+  "external_write": {
+   "needed": true,
+   "surface": "ESP flow build"
+  },
+  "tools": [
+   "connector: ESP (Klaviyo or brand's platform)",
+   "script: intelligence/ideas.py"
+  ],
+  "skills": [
+   "flow-brief",
+   "copy-draft",
+   "churn-risk-scorer"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [],
+   "bank": [
+    "EML-080",
+    "EML-081",
+    "EML-082",
+    "EML-083",
+    "EML-084",
+    "EML-085",
+    "EML-086",
+    "EML-087",
+    "EML-105",
+    "EML-146",
+    "CXP-117",
+    "CXP-119",
+    "CXP-120",
+    "CXP-121",
+    "CXP-122"
+   ]
+  },
+  "found_in": "bank_only",
+  "founder_sees": "The win-back sequence and the sunset rule, with the timing set from the brand's own order history."
+ },
+ {
+  "id": "LIFE-C09",
+  "name": "Build replenishment and subscription lifecycle messaging",
+  "folders": [
+   "14-EML",
+   "17-CXP"
+  ],
+  "what": "Builds the messages tied to a subscription's lifecycle: charge reminders, pause-or-skip, failed payment, and one-off replenishment reminders timed to when the product runs out.",
+  "encompasses": [
+   "Time replenishment reminders to days-of-supply plus delivery time, capped at 2 per cycle",
+   "Use the platform's predictive next-order date where available",
+   "Build charge-reminder, pause-or-skip and failed-payment emails",
+   "Build a win-the-pause-back flow off the subscription pause event",
+   "Give subscriptions real flexibility to change cadence, skip or pause",
+   "Show a pause/skip/discount offer at the cancel step before it completes"
+  ],
+  "inputs": [
+   "connector: subscription platform (Recharge/Loop)",
+   "connector: shopify orders",
+   "brand brain: products (prices, weights, stock)"
+  ],
+  "outputs": [
+   "flow brief",
+   "draft copy"
+  ],
+  "trigger": "on demand",
+  "autonomy": "founder_gate",
+  "external_write": {
+   "needed": true,
+   "surface": "ESP/subscription platform flow build"
+  },
+  "tools": [
+   "connector: ESP (Klaviyo or brand's platform)",
+   "connector: subscription platform (Recharge/Loop)"
+  ],
+  "skills": [
+   "flow-brief",
+   "subscription-flow-designer",
+   "copy-draft"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [],
+   "bank": [
+    "EML-074",
+    "EML-078",
+    "EML-079",
+    "EML-201",
+    "CXP-089",
+    "CXP-092",
+    "CXP-150"
+   ]
+  },
+  "found_in": "bank_only",
+  "founder_sees": "The subscription lifecycle messages, mapped to each platform event they fire from."
+ },
+ {
+  "id": "LIFE-C10",
+  "name": "Build loyalty, VIP and birthday triggered flows",
+  "folders": [
+   "14-EML",
+   "17-CXP"
+  ],
+  "what": "Builds the flows that fire off loyalty-app events (points earned, tier change, redemption, birthday) and defines what a VIP program should reward.",
+  "encompasses": [
+   "Build birthday flow off the loyalty app's birthday event with a live points balance",
+   "Build points-earned, tier-up and reward-redeemed flows off their platform events",
+   "Define VIP segment by order count with a capped extra send and quarterly offer",
+   "Reward VIPs with exclusivity and status, not broad discounts",
+   "Structure tiers around milestones and status, message the top tier least",
+   "Integrate reward redemption into checkout and track redeemer vs non-redeemer repeat rate",
+   "Gate investment in VIP-specific programming on VIP revenue actually being the constraint",
+   "Build community only where a real shared activity already exists",
+   "Bundle a non-competing subscription perk into a loyalty tier gated by order frequency"
+  ],
+  "inputs": [
+   "connector: loyalty platform (Smile/Loyoly)",
+   "connector: shopify orders",
+   "metric contract"
+  ],
+  "outputs": [
+   "flow brief",
+   "loyalty tier structure proposal",
+   "draft copy"
+  ],
+  "trigger": "on demand",
+  "autonomy": "founder_gate",
+  "external_write": {
+   "needed": true,
+   "surface": "ESP/loyalty platform flow build"
+  },
+  "tools": [
+   "connector: ESP (Klaviyo or brand's platform)",
+   "connector: loyalty platform (Smile/Loyoly)"
+  ],
+  "skills": [
+   "flow-brief",
+   "copy-draft"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [
+    "https://www.yotpo.com/blog/okendo-alternatives/"
+   ],
+   "bank": [
+    "EML-091",
+    "EML-092",
+    "EML-093",
+    "EML-094",
+    "EML-103",
+    "CXP-019",
+    "CXP-039",
+    "CXP-113",
+    "CXP-114",
+    "CXP-115",
+    "CXP-116",
+    "CXP-118",
+    "CXP-158"
+   ]
+  },
+  "found_in": "web+bank",
+  "founder_sees": "The loyalty and VIP flow set, and whether the data supports building a VIP tier at all."
+ },
+ {
+  "id": "LIFE-C11",
+  "name": "Build back-in-stock and post-delivery education triggers",
+  "folders": [
+   "14-EML"
+  ],
+  "what": "Builds the back-in-stock alert (only from a real restock event) and the review-request send timed after delivery.",
+  "encompasses": [
+   "Trigger back-in-stock emails only from a real restock event, never a fake one",
+   "Time the review-request email about 3 days after delivery",
+   "Hand review-request timing to the connected reviews app once one exists"
+  ],
+  "inputs": [
+   "connector: shopify orders",
+   "connector: inventory/restock events",
+   "connector: reviews platform (Yotpo/Okendo)"
+  ],
+  "outputs": [
+   "flow brief",
+   "draft copy"
+  ],
+  "trigger": "on demand",
+  "autonomy": "agent_does",
+  "external_write": {
+   "needed": true,
+   "surface": "ESP flow build"
+  },
+  "tools": [
+   "connector: ESP (Klaviyo or brand's platform)"
+  ],
+  "skills": [
+   "flow-brief",
+   "copy-draft"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [],
+   "bank": [
+    "EML-089",
+    "EML-090"
+   ]
+  },
+  "found_in": "bank_only",
+  "founder_sees": "The back-in-stock and review-request triggers, wired to real inventory and delivery events only."
+ },
+ {
+  "id": "LIFE-C12",
+  "name": "Build and maintain the segmentation model",
+  "folders": [
+   "14-EML",
+   "17-CXP"
+  ],
+  "what": "Builds the segments that every flow and campaign draws from: engaged audience, RFM tiers, buyer stage, VIP, win-back-potential, high-potential and location, scored against the brand's own base.",
+  "encompasses": [
+   "Keep 1 master email list and 1 SMS list, send to segments not lists",
+   "Join every can-receive-marketing condition with AND, never OR",
+   "Build the core engaged segment from opens, clicks, orders and site activity",
+   "Set the engaged window by send type and list health, widen only for major sales",
+   "Score RFM against the brand's own base, not an external benchmark",
+   "Trigger win-back, replenishment and abandonment off RFM instead of a fixed day count",
+   "Build buyer-stage segments: non-buyer, first-time, returning, window shopper, abandoner",
+   "Build 4 lifecycle cohorts for subscription brands by purchase and subscribe status",
+   "Build win-back-potential and high-potential segments",
+   "Build location and predictive-value property segments",
+   "Rebuild dormant reach gradually with random samples, not one full-list blast",
+   "Push high-engagement segments to ad platforms for lookalikes (flag for the media buyer specialist)"
+  ],
+  "inputs": [
+   "connector: shopify orders",
+   "connector: ESP (Klaviyo or brand's platform)",
+   "metric contract"
+  ],
+  "outputs": [
+   "segment definitions (logic, size, refresh cadence)",
+   "segment health report"
+  ],
+  "trigger": "weekly",
+  "autonomy": "agent_does",
+  "external_write": {
+   "needed": true,
+   "surface": "ESP segment build"
+  },
+  "tools": [
+   "connector: ESP (Klaviyo or brand's platform)",
+   "connector: shopify orders",
+   "metric contract"
+  ],
+  "skills": [
+   "segment-spec"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [],
+   "bank": [
+    "EML-095",
+    "EML-096",
+    "EML-097",
+    "EML-098",
+    "EML-099",
+    "EML-100",
+    "EML-101",
+    "EML-102",
+    "EML-103",
+    "EML-104",
+    "EML-105",
+    "EML-106",
+    "EML-107",
+    "EML-108",
+    "EML-200",
+    "CXP-013",
+    "CXP-014",
+    "CXP-015",
+    "CXP-016",
+    "CXP-017",
+    "CXP-018",
+    "CXP-120"
+   ]
+  },
+  "found_in": "bank_only",
+  "founder_sees": "The current segment list with sizes, and which ones are stale or overlapping."
+ },
+ {
+  "id": "LIFE-C13",
+  "name": "Build and maintain the campaign calendar",
+  "folders": [
+   "14-EML",
+   "17-CXP"
+  ],
+  "what": "Plans the weekly non-flow campaign calendar in two layers (always-on baseline plus event-based peaks), keeping content mostly non-discount and rotating format.",
+  "encompasses": [
+   "Set a sustainable weekly cadence and never skip a week",
+   "Plan in 2 layers: always-on baseline content and event-based peak campaigns",
+   "Keep content mostly non-discount, spend about 80 percent on broad-reach content",
+   "Never send 2 consecutive campaigns of the same content type",
+   "Rotate through a defined set of non-discount content frameworks",
+   "Use campaigns as a fast test lab, then port winners into flows",
+   "Reserve resends-to-non-openers for launches, restocks and sale-closers only",
+   "Set a graphic-to-text send ratio and pair email/SMS a fixed gap apart same day",
+   "Reject hyperpersonalized micro-segmentation as the default campaign strategy"
+  ],
+  "inputs": [
+   "brand brain: products (prices, weights, stock)",
+   "metric contract",
+   "brand brain: launch calendar"
+  ],
+  "outputs": [
+   "4-6 week campaign calendar",
+   "per-send brief (topic, format, audience)"
+  ],
+  "trigger": "weekly",
+  "autonomy": "founder_gate",
+  "external_write": {
+   "needed": true,
+   "surface": "ESP campaign send"
+  },
+  "tools": [
+   "connector: ESP (Klaviyo or brand's platform)"
+  ],
+  "skills": [
+   "campaign-brief"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [],
+   "bank": [
+    "EML-109",
+    "EML-110",
+    "EML-111",
+    "EML-112",
+    "EML-113",
+    "EML-114",
+    "EML-115",
+    "EML-116",
+    "EML-117",
+    "EML-203",
+    "EML-211",
+    "EML-213",
+    "EML-226",
+    "EML-227",
+    "CXP-011",
+    "CXP-040",
+    "CXP-041",
+    "CXP-042",
+    "CXP-043"
+   ]
+  },
+  "found_in": "bank_only",
+  "founder_sees": "The next 4-6 weeks of campaign topics and formats, ready for copy."
+ },
+ {
+  "id": "LIFE-C14",
+  "name": "Write flow and campaign copy",
+  "folders": [
+   "14-EML"
+  ],
+  "what": "Writes the actual email and SMS copy for an approved flow or campaign brief: subject lines, body, CTA, at a skimmable, tenth-grade reading level, checked against the brand record.",
+  "encompasses": [
+   "Write for a 3-5 second skim at or below tenth-grade reading level",
+   "Lead with a pain or outcome headline, not a feature",
+   "Run the defined research routine before writing a new angle",
+   "Sell on at most 3 points, use reviews that each answer 1 objection",
+   "Hold discounts back to later emails in a sequence, lead with reminder and proof",
+   "Write short, curiosity-driven subject lines with hand-written preview text",
+   "Keep 1 consistent sender identity across flows and campaigns",
+   "Check every claim against the brand record before it ships",
+   "Treat AI-drafted copy as a draft only, edited before use",
+   "Close key sequences with a plain-text founder email",
+   "Reverse-engineer a strong reference email's structure, then write original copy"
+  ],
+  "inputs": [
+   "brand brain: voice (liked/disliked examples)",
+   "brand brain: claims tiers",
+   "brand brain: reviews",
+   "sub-agent: Reference Scout"
+  ],
+  "outputs": [
+   "draft copy per email/SMS",
+   "subject line and preview text options"
+  ],
+  "trigger": "on demand",
+  "autonomy": "human_assist",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [
+   "script: search_knowledge.py",
+   "web search"
+  ],
+  "skills": [
+   "copy-draft",
+   "claim-check"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [],
+   "bank": [
+    "EML-037",
+    "EML-039",
+    "EML-040",
+    "EML-118",
+    "EML-119",
+    "EML-120",
+    "EML-121",
+    "EML-122",
+    "EML-123",
+    "EML-124",
+    "EML-125",
+    "EML-126",
+    "EML-127",
+    "EML-214",
+    "EML-216",
+    "EML-217",
+    "EML-218",
+    "EML-219",
+    "EML-220",
+    "EML-221",
+    "EML-222",
+    "EML-223",
+    "EML-224",
+    "EML-225"
+   ]
+  },
+  "found_in": "bank_only",
+  "founder_sees": "The draft copy for the requested flow or campaign, with every claim traced to the brand record."
+ },
+ {
+  "id": "LIFE-C15",
+  "name": "Design and QA email visual builds",
+  "folders": [
+   "14-EML"
+  ],
+  "what": "Turns approved copy into the email build: 600px width, mobile-legible type, live text over locked images, one decision per section, compressed and alt-tagged images.",
+  "encompasses": [
+   "Build at 600px width with mobile-legible text sizes",
+   "Put headline, short line, big button and code above the fold",
+   "End every section on one path to a product page",
+   "Cap product blocks at 3-5 items per email",
+   "Keep offer, product names and footer as live text, never locked in an image",
+   "Give every image alt text with the offer and a deep link, compressed",
+   "Build a standard footer with unsubscribe, address, category links and trust icons",
+   "Vary layout and imagery between sends, matching the brand's real look",
+   "Choose static or dynamic product blocks by catalogue turnover",
+   "Use show/hide logic to personalise one email for several audiences",
+   "Test-send to desktop and mobile before scheduling"
+  ],
+  "inputs": [
+   "brand brain: voice (liked/disliked examples)",
+   "brand brain: product images",
+   "ESP template library"
+  ],
+  "outputs": [
+   "built email (HTML/ESP template)",
+   "pre-send QA checklist result"
+  ],
+  "trigger": "on demand",
+  "autonomy": "agent_does",
+  "external_write": {
+   "needed": true,
+   "surface": "ESP template build"
+  },
+  "tools": [
+   "connector: ESP (Klaviyo or brand's platform)"
+  ],
+  "skills": [
+   "email-build-qa"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [],
+   "bank": [
+    "EML-128",
+    "EML-129",
+    "EML-130",
+    "EML-131",
+    "EML-132",
+    "EML-133",
+    "EML-134",
+    "EML-135",
+    "EML-136",
+    "EML-137",
+    "EML-138",
+    "EML-198",
+    "EML-199"
+   ]
+  },
+  "found_in": "bank_only",
+  "founder_sees": "The built email, ready to schedule, with the pre-send checklist ticked off."
+ },
+ {
+  "id": "LIFE-C16",
+  "name": "Run the deliverability and list-hygiene program",
+  "folders": [
+   "14-EML"
+  ],
+  "what": "Monitors sender reputation and inbox placement, keeps the list clean, and runs the repair ladder when deliverability degrades, treating content quality as the first fix.",
+  "encompasses": [
+   "Authenticate the sending domain and ramp DMARC from none to reject",
+   "Suppress spam marks, bounces and the unengaged segment monthly",
+   "Fix content quality before chasing technical fixes",
+   "Run a staged repair ladder when sender reputation degrades, keeping abandonment flows live",
+   "Run a seed-list inbox placement test alongside open rate",
+   "Send 1-3 plain-text-only campaigns a month and invite replies as deliverability signals",
+   "Suppress never-emailed and no-activity-in-a-year profiles on day 1 of a new program",
+   "Build a tighter engaged segment for an underperforming inbox provider",
+   "Review or suppress long-tenure SMS subscribers who never bought",
+   "Restart a dormant sending program at a low cadence",
+   "Remove money words from value-first newsletter copy",
+   "Track click, spam-complaint and unsubscribe rate, not open rate alone"
+  ],
+  "inputs": [
+   "connector: ESP (Klaviyo or brand's platform)",
+   "metric contract",
+   "connector: seed-list inbox placement tool"
+  ],
+  "outputs": [
+   "deliverability health report",
+   "repair-ladder plan",
+   "suppression list update"
+  ],
+  "trigger": "weekly",
+  "autonomy": "agent_does",
+  "external_write": {
+   "needed": true,
+   "surface": "ESP domain/DNS and suppression settings"
+  },
+  "tools": [
+   "connector: ESP (Klaviyo or brand's platform)",
+   "tool: DNS/DMARC checker"
+  ],
+  "skills": [
+   "deliverability-audit"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [
+    "https://help.klaviyo.com/hc/en-us/articles/25620771311643",
+    "https://www.goshdigital.co/blog/klaviyo-2026-complete-guide"
+   ],
+   "bank": [
+    "EML-088",
+    "EML-139",
+    "EML-140",
+    "EML-180",
+    "EML-188",
+    "EML-189",
+    "EML-190",
+    "EML-191",
+    "EML-194",
+    "EML-197",
+    "EML-202",
+    "EML-209",
+    "EML-212",
+    "EML-215"
+   ]
+  },
+  "found_in": "web+bank",
+  "founder_sees": "The current inbox-placement and list-health numbers, and what to fix first if they are slipping."
+ },
+ {
+  "id": "LIFE-C17",
+  "name": "Manage the SMS, WhatsApp and push messaging program",
+  "folders": [
+   "14-EML"
+  ],
+  "what": "Sets the rules for every non-email channel: content scope, cadence, cost control, consent, and channel selection. SMS with TCPA consent and quiet hours is the default second channel; WhatsApp is a market option (India, EU, LATAM) where it beats SMS on reach or cost, reads null for US brands.",
+  "encompasses": [
+   "Reserve SMS for high-urgency, low-frequency news only",
+   "Start cadence conservatively, raise it only through a proven holdout",
+   "Adjust frequency by the product's purchase cycle and buyer state",
+   "Keep every SMS to 1 message segment, check the platform's counter",
+   "Reserve MMS for sends where the image proves a net profit gain",
+   "Capture phone numbers as an activate-the-offer step after email",
+   "Pilot RCS or iMessage business messaging as a holdout, not a default rollout",
+   "Choose the SMS platform on price and ESP fit, not AI feature pitches",
+   "Add push notification steps to flows where the brand has an app",
+   "Consider WhatsApp business messaging as a market option where SMS is costly and the market is mobile-first (India, EU, LATAM); reads null for US brands",
+   "Track click rate, unsubscribe rate, delivery rate and net profit per send"
+  ],
+  "inputs": [
+   "metric contract",
+   "brand brain: markets and channel costs"
+  ],
+  "outputs": [
+   "channel policy document",
+   "cadence and cost model"
+  ],
+  "trigger": "monthly",
+  "autonomy": "founder_gate",
+  "external_write": {
+   "needed": true,
+   "surface": "SMS/WhatsApp platform settings"
+  },
+  "tools": [
+   "connector: ESP (Klaviyo or brand's platform)",
+   "connector: WhatsApp Business API",
+   "web search"
+  ],
+  "skills": [
+   "sms-whatsapp-brief"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [
+    "https://markopolo.ai/blogs/best-whatsapp-cart-recovery-tools-for-ecommerce"
+   ],
+   "bank": [
+    "EML-025",
+    "EML-141",
+    "EML-144",
+    "EML-145",
+    "EML-146",
+    "EML-147",
+    "EML-148",
+    "EML-152",
+    "EML-153",
+    "EML-154",
+    "EML-155",
+    "EML-156",
+    "EML-159",
+    "EML-160",
+    "EML-161",
+    "EML-162"
+   ]
+  },
+  "found_in": "web+bank",
+  "founder_sees": "The recommended channel mix and send limits by market, with the cost math behind each one."
+ },
+ {
+  "id": "LIFE-C18",
+  "name": "Design conversational and two-way messaging flows",
+  "folders": [
+   "14-EML"
+  ],
+  "what": "Designs two-way SMS, RCS and WhatsApp conversations that start with a reply-inviting question and hand off to a human at the first real reply.",
+  "encompasses": [
+   "Start conversational SMS with 1 reply-inviting question inside an existing flow",
+   "Delay the first conversational text a few minutes after opt-in for a human feel",
+   "Hand the thread to a live person at the first reply",
+   "Answer long questions with a voice note or short video",
+   "Add an RCS add-to-calendar action for launches and drops",
+   "Answer conversational product questions with an RCS recommendation carousel",
+   "Turn conversation reply themes into stored zero-party customer facts",
+   "Use iMessage text effects for a small set of specific moments"
+  ],
+  "inputs": [
+   "connector: conversational messaging platform",
+   "connector: support platform (Gorgias/Zendesk)"
+  ],
+  "outputs": [
+   "conversation flow spec",
+   "handoff rule",
+   "draft opening messages"
+  ],
+  "trigger": "on demand",
+  "autonomy": "founder_gate",
+  "external_write": {
+   "needed": true,
+   "surface": "SMS/RCS/WhatsApp platform"
+  },
+  "tools": [
+   "connector: ESP (Klaviyo or brand's platform)",
+   "connector: WhatsApp Business API",
+   "connector: support platform (Gorgias/Zendesk)"
+  ],
+  "skills": [
+   "sms-whatsapp-brief"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [],
+   "bank": [
+    "EML-158",
+    "EML-206",
+    "EML-207",
+    "EML-208",
+    "EML-228",
+    "EML-229",
+    "EML-230",
+    "EML-231"
+   ]
+  },
+  "found_in": "bank_only",
+  "founder_sees": "The conversational flow design, and the point at which it must hand off to a person."
+ },
+ {
+  "id": "LIFE-C19",
+  "name": "Run the lifecycle testing and experimentation program",
+  "folders": [
+   "14-EML",
+   "17-CXP"
+  ],
+  "what": "Prioritises and specifies A/B and holdout tests across flows, campaigns and channels, and enforces test hygiene so results can be trusted.",
+  "encompasses": [
+   "Decide every test's winning metric as placed-order rate or revenue per recipient",
+   "Prioritise tests by revenue impact: flow delay first, CTA colour last",
+   "Test plain text against a fully designed version of the same message",
+   "Duplicate every downstream email onto both branches of a flow-timing test",
+   "Test flow email 1's delay before touching content, on the highest-volume flow first",
+   "Test a predictive smart-trigger pop-up against fixed delay rules",
+   "Test first-person vs second-person CTA copy",
+   "Test simultaneous multichannel abandonment sends",
+   "Run an SMS holdout test once SMS spend passes a real threshold",
+   "Design every retention test with a named constraint, a pre-registered hypothesis and a decision rule"
+  ],
+  "inputs": [
+   "metric contract",
+   "ESP: test results export",
+   "experiment registry"
+  ],
+  "outputs": [
+   "test spec (hypothesis, variants, metric, sample size)",
+   "test read-out"
+  ],
+  "trigger": "on demand",
+  "autonomy": "agent_does",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [
+   "connector: ESP (Klaviyo or brand's platform)",
+   "metric contract",
+   "experiment registry"
+  ],
+  "skills": [
+   "flow-brief"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [],
+   "bank": [
+    "EML-041",
+    "EML-163",
+    "EML-164",
+    "EML-165",
+    "EML-166",
+    "EML-167",
+    "EML-168",
+    "EML-192",
+    "CXP-123",
+    "CXP-144"
+   ]
+  },
+  "found_in": "bank_only",
+  "founder_sees": "The next test to run, its hypothesis and how it will be judged."
+ },
+ {
+  "id": "LIFE-C20",
+  "name": "Diagnose lifecycle metrics and run the monthly health review",
+  "folders": [
+   "14-EML",
+   "17-CXP"
+  ],
+  "what": "Reads the full metric chain before diagnosing a flow or campaign problem, separates traffic issues from flow issues, and produces the monthly lifecycle read-out.",
+  "encompasses": [
+   "Set clean attribution: exclude transactional sends, bot clicks and Apple opens",
+   "Turn on anonymous visitor tracking so pre-signup activity feeds flows",
+   "Check site traffic before flagging a flow revenue drop as a flow problem",
+   "Diagnose an underperforming email by copy, structure or design layer",
+   "Run a mandatory monthly review to catch silent breakage",
+   "Treat platform attribution as directional only; use profit metrics for the real constraint",
+   "Track retention metrics beyond CSAT and NPS",
+   "Recompute every reported figure from raw numbers, never reuse a rounded claim",
+   "Log AI-referred and agent traffic share every month",
+   "Run a quarterly unbranded prompt audit for brand visibility on AI platforms",
+   "Label every vendor benchmark as a claim, not a fact, in every report"
+  ],
+  "inputs": [
+   "metric contract",
+   "connector: ESP (Klaviyo or brand's platform)",
+   "connector: shopify orders"
+  ],
+  "outputs": [
+   "monthly lifecycle health report",
+   "root-cause note per flagged metric"
+  ],
+  "trigger": "monthly",
+  "autonomy": "agent_does",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [
+   "metric contract",
+   "connector: ESP (Klaviyo or brand's platform)",
+   "connector: shopify orders"
+  ],
+  "skills": [
+   "lifecycle-program-map"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [],
+   "bank": [
+    "EML-034",
+    "EML-035",
+    "EML-169",
+    "EML-170",
+    "EML-171",
+    "EML-220",
+    "CXP-035",
+    "CXP-037",
+    "CXP-145",
+    "CXP-147",
+    "CXP-148",
+    "CXP-149"
+   ]
+  },
+  "found_in": "bank_only",
+  "founder_sees": "The monthly lifecycle numbers with anything that broke or drifted, and why."
+ },
+ {
+  "id": "LIFE-C21",
+  "name": "Enforce lifecycle honesty and platform-integrity guardrails",
+  "folders": [
+   "14-EML"
+  ],
+  "what": "Applies the fixed set of honesty rules to every lifecycle send before it ships: no fake scarcity, no hidden text, no fake sender, no copied competitor content.",
+  "encompasses": [
+   "Never send a fake restock, sell-out or scarcity message",
+   "Never use invisible text tricks to pad an email",
+   "Reserve insecurity-anchor copy for angles the brand voice allows and the cause is true",
+   "Never fake a person or an automated message from a human",
+   "Use competitor emails and ads for layout and mood only, never copy them",
+   "Compute lifecycle metrics in code from exports, never estimate them"
+  ],
+  "inputs": [
+   "brand brain: claims tiers",
+   "brand brain: voice (liked/disliked examples)"
+  ],
+  "outputs": [
+   "QA pass/fail with cited rule",
+   "flagged line items for the founder"
+  ],
+  "trigger": "on demand",
+  "autonomy": "agent_does",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [],
+  "skills": [
+   "claim-check"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [],
+   "bank": [
+    "EML-014",
+    "EML-038",
+    "EML-172",
+    "EML-173",
+    "EML-174",
+    "EML-176",
+    "EML-177",
+    "EML-178"
+   ]
+  },
+  "found_in": "bank_only",
+  "founder_sees": "A pass/fail on every honesty rule for the send in question, before it goes out."
+ },
+ {
+  "id": "LIFE-C22",
+  "name": "Design the SMS and WhatsApp commerce program",
+  "folders": [
+   "14-EML",
+   "17-CXP",
+   "03-OFF"
+  ],
+  "what": "Designs SMS-based cart recovery, order-status updates and dunning for failed card payments as the default program, with WhatsApp as a market option (India, EU, LATAM) where it beats SMS and email on reach, and COD-to-prepaid conversion for COD markets. India only: COD-to-prepaid and return-to-origin (RTO) reduction read null for US brands.",
+  "encompasses": [
+   "Design a 3-step cart recovery sequence (about 30-60 min, 12-24 hr, 48-72 hr) with a rising incentive",
+   "Send order-status milestones (confirmed, shipped, out for delivery, delivered) by SMS with TCPA consent and quiet-hours rules by default",
+   "Retry a failed card charge through a dunning sequence before canceling a subscription or hold",
+   "India only: confirm COD orders over WhatsApp to reduce return-to-origin (RTO); reads null for US brands",
+   "India only: offer a prepaid discount or COD-fee waiver over WhatsApp to shift COD buyers to prepaid; reads null for US brands",
+   "Choose WhatsApp over SMS for the update channel in markets where it has higher reach (India, EU, LATAM), based on audience and opt-in",
+   "Keep WhatsApp consent and opt-out handling separate from SMS/email consent where WhatsApp is used",
+   "Route product catalog and payment links through WhatsApp's native commerce features where available"
+  ],
+  "inputs": [
+   "connector: SMS/WhatsApp platform",
+   "connector: shopify orders",
+   "brand brain: payment method mix and reversed-orders history (COD share and RTO null for US brands)"
+  ],
+  "outputs": [
+   "SMS/WhatsApp flow spec",
+   "message templates for platform approval"
+  ],
+  "trigger": "on demand",
+  "autonomy": "founder_gate",
+  "external_write": {
+   "needed": true,
+   "surface": "SMS/WhatsApp platform"
+  },
+  "tools": [
+   "connector: SMS/WhatsApp platform",
+   "web search"
+  ],
+  "skills": [
+   "sms-whatsapp-brief"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [
+    "https://markopolo.ai/blogs/best-whatsapp-cart-recovery-tools-for-ecommerce",
+    "https://projectsupply.in/blog/shopify-whatsapp-automation-indian-d2c-brands",
+    "https://neuwark.com/blog/whatsapp-cart-recovery-playbook"
+   ],
+   "bank": [
+    "EML-162",
+    "CXP-068",
+    "OFF-039",
+    "OFF-161"
+   ]
+  },
+  "found_in": "web+bank",
+  "founder_sees": "The SMS/WhatsApp message sequences for cart recovery, order status and (COD markets) COD-to-prepaid, ready for template approval."
+ },
+ {
+  "id": "LIFE-C23",
+  "name": "Design the post-purchase journey and touchpoint experience",
+  "folders": [
+   "17-CXP"
+  ],
+  "what": "Maps the customer journey after purchase, classifies each touchpoint by the Kano model, and decides where to fund delight versus where to just fix a broken promise.",
+  "encompasses": [
+   "Decide the intended feeling for each post-purchase touchpoint before writing its copy",
+   "Fix effort and broken promises before adding any delight spend",
+   "Split the journey into service moments and discretionary moments",
+   "Fund 1 deliberate peak and 1 strong ending, not an even spread of spend",
+   "Find and fix the journey's negative peak before funding any new delight",
+   "Classify every touchpoint with the Kano model before budgeting a fix or delight",
+   "Plan for delight decay and rotate every funded delighter on a cycle",
+   "Require every journey map to name at least 1 touchpoint it will change",
+   "Run a full persona journey-mapping session with Kano classification and a peak-end map"
+  ],
+  "inputs": [
+   "brand brain: claims tiers",
+   "connector: support tickets",
+   "connector: reviews platform (Yotpo/Okendo)",
+   "metric contract"
+  ],
+  "outputs": [
+   "journey map with Kano classification",
+   "prioritised touchpoint fix list"
+  ],
+  "trigger": "on demand",
+  "autonomy": "founder_gate",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [
+   "connector: support platform (Gorgias/Zendesk)",
+   "connector: reviews platform (Yotpo/Okendo)"
+  ],
+  "skills": [
+   "journey-map"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [],
+   "bank": [
+    "CXP-051",
+    "CXP-052",
+    "CXP-053",
+    "CXP-054",
+    "CXP-055",
+    "CXP-056",
+    "CXP-057",
+    "CXP-058",
+    "CXP-125",
+    "CXP-141"
+   ]
+  },
+  "found_in": "bank_only",
+  "founder_sees": "The journey map with the one negative peak to fix first and the one peak worth funding."
+ },
+ {
+  "id": "LIFE-C24",
+  "name": "Design the order-status and delivery communication experience",
+  "folders": [
+   "17-CXP"
+  ],
+  "what": "Designs the confirmation, shipping and delivery-estimate messages and the branded tracking page, aimed at cutting WISMO tickets under 5 percent of orders.",
+  "encompasses": [
+   "Turn the order confirmation into an anxiety-reduction message, not a receipt",
+   "Send at least 3 proactive automated updates between order and delivery",
+   "Build the delivery estimate from real carrier and lane data, shown as a specific date",
+   "Hold delivery-estimate accuracy above 90 percent, counting overdue orders as misses",
+   "Keep transactional emails focused on the order; route cross-sell to marketing sends",
+   "Reach out proactively before the customer asks when a parcel stalls",
+   "Tell customers up front when a multi-item order ships in separate parcels",
+   "Give a short self-service window to edit delivery address or cancel before ship",
+   "Point every tracking link to a branded page on the brand's own domain",
+   "Build the tracking page with status, a recommendation, loyalty link and returns path",
+   "Instrument tracking-page clicks and linked orders separately from raw visits",
+   "Show landed cost before checkout on cross-border orders"
+  ],
+  "inputs": [
+   "connector: shopify orders",
+   "connector: carrier/shipping data",
+   "brand brain: policies (shipping, returns, guarantee, EMI)"
+  ],
+  "outputs": [
+   "transactional message spec",
+   "tracking page spec",
+   "DEA (delivery estimate accuracy) report"
+  ],
+  "trigger": "on demand",
+  "autonomy": "founder_gate",
+  "external_write": {
+   "needed": true,
+   "surface": "ESP transactional templates / tracking page build"
+  },
+  "tools": [
+   "connector: ESP (Klaviyo or brand's platform)",
+   "connector: shopify orders",
+   "connector: carrier tracking API"
+  ],
+  "skills": [
+   "flow-brief",
+   "journey-map"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [
+    "https://www.parcelperform.com/insights/best-customer-retention-software-ecommerce-2026-comparison"
+   ],
+   "bank": [
+    "CXP-060",
+    "CXP-061",
+    "CXP-062",
+    "CXP-063",
+    "CXP-064",
+    "CXP-065",
+    "CXP-066",
+    "CXP-067",
+    "CXP-069",
+    "CXP-070",
+    "CXP-071",
+    "CXP-072",
+    "CXP-073",
+    "CXP-074",
+    "CXP-075"
+   ]
+  },
+  "found_in": "web+bank",
+  "founder_sees": "The order-status message set and tracking page design, with the current WISMO rate and DEA score."
+ },
+ {
+  "id": "LIFE-C25",
+  "name": "Design the unboxing, packaging and insert program",
+  "folders": [
+   "17-CXP"
+  ],
+  "what": "Designs the physical unboxing moment: layered reveal, inserts, gift, and note policy, capped to a set share of product cost.",
+  "encompasses": [
+   "Design the unboxing experience on purpose, as the journey's main peak",
+   "Give every order a standard insert, reserve handwritten notes for VIP or high value",
+   "Cap packaging spend at 2-5 percent of product cost, model insert cost at current volume",
+   "Layer the reveal, add a first-use guide with a QR to a short setup video",
+   "Match packaging materials and texture to the brand's one-line promise",
+   "Put an unconditional gift in the box, never a conditional discount code",
+   "Make handwritten notes item-specific and honestly produced, never falsely claimed",
+   "Avoid a cheap, irrelevant or clearance gift",
+   "Treat packaging as a filmable creative asset and track unboxing UGC volume",
+   "Offer gift wrap and a hidden-price gift receipt at checkout for gift orders"
+  ],
+  "inputs": [
+   "brand brain: products (prices, weights, stock)",
+   "brand brain: packaging cost",
+   "sub-agent: Reference Scout"
+  ],
+  "outputs": [
+   "packaging brief (materials, insert copy, gift policy)",
+   "cost model"
+  ],
+  "trigger": "on demand",
+  "autonomy": "founder_gate",
+  "external_write": {
+   "needed": true,
+   "surface": "packaging supplier / checkout gift option"
+  },
+  "tools": [
+   "sub-agent: Reference Scout"
+  ],
+  "skills": [
+   "packaging-brief"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [],
+   "bank": [
+    "CXP-076",
+    "CXP-077",
+    "CXP-078",
+    "CXP-079",
+    "CXP-080",
+    "CXP-081",
+    "CXP-082",
+    "CXP-083",
+    "CXP-084",
+    "CXP-085"
+   ]
+  },
+  "found_in": "bank_only",
+  "founder_sees": "The unboxing and packaging design, with its cost as a share of product cost."
+ },
+ {
+  "id": "LIFE-C26",
+  "name": "Design the returns, exchanges and refund experience",
+  "folders": [
+   "17-CXP"
+  ],
+  "what": "Designs the return and refund flow: speed targets, refund-vs-credit choice, self-service portal, and reversed-orders controls covering failed deliveries, chargebacks/disputes, and (COD markets) return-to-origin (RTO).",
+  "encompasses": [
+   "Collapse the refund timeline; measure request-to-initiation and initiation-to-receipt separately",
+   "Offer a clear choice between refund to original payment and store credit, never silent substitution",
+   "Measure fraud losses and cash-flow impact before scaling faster or instant refunds",
+   "Give returners a self-service portal with keep-it-or-donate refunds for low-value items",
+   "Publish the returns policy where shoppers see it before buying, checked against law per market",
+   "Gate further returns work on returners' repeat rate matching or beating non-returners",
+   "Track failed-delivery and return-to-sender rate and confirm high-risk orders before dispatch; India only: track return-to-origin (RTO) rate for COD orders instead, reads null for US brands",
+   "Track chargebacks and payment disputes as their own cost line, owned with Money and ops for representment"
+  ],
+  "inputs": [
+   "connector: shopify orders",
+   "brand brain: policies (shipping, returns, guarantee, EMI)",
+   "connector: reversed-orders data (returns, chargebacks/disputes, return-to-sender, and RTO for COD markets)"
+  ],
+  "outputs": [
+   "returns policy draft",
+   "self-service returns flow spec",
+   "refund-speed report"
+  ],
+  "trigger": "on demand",
+  "autonomy": "founder_gate",
+  "external_write": {
+   "needed": true,
+   "surface": "returns portal / policy page"
+  },
+  "tools": [
+   "connector: shopify orders",
+   "tool: returns portal (Loop/Return Prime)"
+  ],
+  "skills": [
+   "returns-policy-draft"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [],
+   "bank": [
+    "CXP-093",
+    "CXP-094",
+    "CXP-095",
+    "CXP-096",
+    "CXP-097",
+    "CXP-098",
+    "CXP-099",
+    "CXP-100"
+   ]
+  },
+  "found_in": "bank_only",
+  "founder_sees": "The returns and refund flow design, and the failed-delivery/chargeback/(COD markets) RTO numbers behind any policy change."
+ },
+ {
+  "id": "LIFE-C27",
+  "name": "Draft support reply templates and ticket-tagging rules",
+  "folders": [
+   "17-CXP"
+  ],
+  "what": "Writes reply templates for the common contact types, sets tagging and routing rules, and decides which contacts can be automated end to end versus drafted for a human.",
+  "encompasses": [
+   "Write support reply templates for the 8 common contact types, checked for brand voice",
+   "Reduce effort in every service moment: one-touch resolution, no dark patterns",
+   "Over-recover every genuine service failure with a scoped human gesture, never a manufactured one",
+   "Give frontline agents authority for one-time exceptions on sympathetic cases",
+   "Build a staff checklist for known edge cases before they happen",
+   "Track first-contact resolution, CSAT and repeat rate for the failure cohort separately",
+   "Weight 'helped me when something went wrong' above generic friendliness when prioritising fixes",
+   "Establish cost-per-contact and return-per-contact baselines",
+   "Resolve the issue first, then offer at most 1 relevant recommendation",
+   "Automate high-volume, low-complexity contacts first, keep humans for complex cases",
+   "Write the brand's voice spec before turning on any customer-facing support bot",
+   "Give AI budget to genuine post-purchase help, not only ticket deflection"
+  ],
+  "inputs": [
+   "connector: support platform (Gorgias/Zendesk)",
+   "brand brain: voice (liked/disliked examples)",
+   "brand brain: policies (shipping, returns, guarantee, EMI)"
+  ],
+  "outputs": [
+   "reply template library by contact type",
+   "tagging/routing rule set",
+   "automation-scope recommendation"
+  ],
+  "trigger": "on demand",
+  "autonomy": "human_assist",
+  "external_write": {
+   "needed": true,
+   "surface": "support platform macros/automation rules"
+  },
+  "tools": [
+   "connector: support platform (Gorgias/Zendesk)",
+   "web search"
+  ],
+  "skills": [
+   "support-reply-draft"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [
+    "https://www.gorgias.com/ai-agent",
+    "https://www.eesel.ai/blog/best-ai-for-gorgias"
+   ],
+   "bank": [
+    "CXP-101",
+    "CXP-102",
+    "CXP-103",
+    "CXP-104",
+    "CXP-105",
+    "CXP-106",
+    "CXP-107",
+    "CXP-108",
+    "CXP-109",
+    "CXP-110",
+    "CXP-111",
+    "CXP-112",
+    "CXP-142"
+   ]
+  },
+  "found_in": "web+bank",
+  "founder_sees": "The reply templates and routing rules, and which contact types are safe to fully automate."
+ },
+ {
+  "id": "LIFE-C28",
+  "name": "Run the review collection and response program",
+  "folders": [
+   "17-CXP",
+   "14-EML"
+  ],
+  "what": "Times and words review requests across the post-purchase flow, thank-you page and insert, and drafts responses to reviews, honest and unfiltered.",
+  "encompasses": [
+   "Ask for honest, unfiltered reviews across the flow, thank-you page and insert",
+   "Time the review-request email about 3 days after delivery",
+   "Hand review-request timing to the connected reviews app once it exists",
+   "Draft responses to new reviews, positive and negative, in brand voice",
+   "Flag any review response that would need a policy exception before it is posted"
+  ],
+  "inputs": [
+   "connector: reviews platform (Yotpo/Okendo)",
+   "brand brain: voice (liked/disliked examples)",
+   "connector: shopify orders"
+  ],
+  "outputs": [
+   "review-request copy and timing",
+   "draft review responses"
+  ],
+  "trigger": "event: delivery confirmed | weekly",
+  "autonomy": "human_assist",
+  "external_write": {
+   "needed": true,
+   "surface": "reviews platform reply"
+  },
+  "tools": [
+   "connector: reviews platform (Yotpo/Okendo)",
+   "connector: ESP (Klaviyo or brand's platform)"
+  ],
+  "skills": [
+   "review-request-copy"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [
+    "https://www.yotpo.com/blog/okendo-alternatives/",
+    "https://maestra.io/blog/comparisons/okendo-vs-yotpo"
+   ],
+   "bank": [
+    "CXP-088",
+    "EML-072",
+    "EML-090"
+   ]
+  },
+  "found_in": "web+bank",
+  "founder_sees": "The review request queue and draft responses, ready to send or post."
+ },
+ {
+  "id": "LIFE-C29",
+  "name": "Run NPS, CSAT and voice-of-customer surveys",
+  "folders": [
+   "17-CXP"
+  ],
+  "what": "Runs the voice-of-customer process, starting with owned data and staff input before surveying customers, and keeps a standing NPS/CSAT read.",
+  "encompasses": [
+   "Start voice-of-customer work with owned data (tickets, reviews) and employee input before surveying",
+   "Run NPS, CSAT and post-checkout surveys on a fixed cadence",
+   "Feed survey findings into the touchpoint fix backlog with evidence attached"
+  ],
+  "inputs": [
+   "connector: support platform (Gorgias/Zendesk)",
+   "connector: reviews platform (Yotpo/Okendo)",
+   "connector: survey tool"
+  ],
+  "outputs": [
+   "survey design and cadence",
+   "VoC synthesis report"
+  ],
+  "trigger": "quarterly",
+  "autonomy": "agent_does",
+  "external_write": {
+   "needed": true,
+   "surface": "survey tool send"
+  },
+  "tools": [
+   "tool: survey platform (Okendo Surveys or similar)",
+   "connector: support platform (Gorgias/Zendesk)",
+   "connector: reviews platform (Yotpo/Okendo)",
+   "web search"
+  ],
+  "skills": [
+   "journey-map"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [
+    "https://maestra.io/blog/comparisons/okendo-vs-yotpo"
+   ],
+   "bank": [
+    "CXP-143"
+   ]
+  },
+  "found_in": "web+bank",
+  "founder_sees": "The current NPS/CSAT read and the top 3 things customers say are wrong, from their own words."
+ },
+ {
+  "id": "LIFE-C30",
+  "name": "Score CX maturity and recommend governance changes",
+  "folders": [
+   "17-CXP"
+  ],
+  "what": "Scores the brand's CX maturity (random, intentional or differentiated), and checks new customer-facing tools against a written experience standard.",
+  "encompasses": [
+   "Score store CX maturity as random, intentional or differentiated",
+   "Give the customer a standing seat in leadership and merchandising decisions (recommend the practice)",
+   "Run a 3-part CX review across strategy, measurement and people",
+   "Judge every new customer-facing tool against a written experience standard before adoption",
+   "Recommend a dedicated cross-functional CX owner reporting to leadership once maturity supports it"
+  ],
+  "inputs": [
+   "metric contract",
+   "brand brain: org and ownership notes"
+  ],
+  "outputs": [
+   "CX maturity score with evidence",
+   "governance recommendation memo"
+  ],
+  "trigger": "quarterly",
+  "autonomy": "human_assist",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [
+   "metric contract"
+  ],
+  "skills": [
+   "journey-map"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [],
+   "bank": [
+    "CXP-151",
+    "CXP-152",
+    "CXP-154",
+    "CXP-155",
+    "CXP-156"
+   ]
+  },
+  "found_in": "bank_only",
+  "founder_sees": "Where the brand's CX sits on the maturity scale, and one governance change worth making."
+ },
+ {
+  "id": "LIFE-C31",
+  "name": "Build retention, cohort and LTV economics reporting",
+  "folders": [
+   "17-CXP"
+  ],
+  "what": "Computes lifetime gross profit (not revenue), CAC targets, and cohort retention metrics in code from order and refund data, always with a stated time window.",
+  "encompasses": [
+   "Report customer value as lifetime gross profit, never revenue, with a stated time window",
+   "Build LTGP from order-level revenue and refund lines, not an assumed margin",
+   "Count refunds in LTGP only, never in the CAC denominator",
+   "Set a CAC target from LTGP using a 2-3x ratio, by store scale",
+   "Forecast incremental customer volume before raising the CAC ceiling",
+   "Bound CAC with a floor and a realistic headroom case",
+   "Value customers and visitors by margin, not revenue or order count",
+   "Stop using Shopify's percent-returning-customers metric as a retention KPI",
+   "Report every retention metric by acquisition cohort, never blended",
+   "Build one core dashboard around LTGP, first-to-second conversion and top-20% share",
+   "Produce a standard cohort read-out with 3 written findings every cycle",
+   "Run a discount-cohort audit before scaling any promotion"
+  ],
+  "inputs": [
+   "connector: shopify orders",
+   "connector: metabase (brand sales)",
+   "metric contract"
+  ],
+  "outputs": [
+   "LTGP/CAC dashboard",
+   "cohort read-out (3 findings)",
+   "CAC target and headroom memo"
+  ],
+  "trigger": "monthly",
+  "autonomy": "agent_does",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [
+   "connector: shopify orders",
+   "connector: metabase (brand sales)",
+   "metric contract"
+  ],
+  "skills": [
+   "cohort-ltv-report"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [],
+   "bank": [
+    "CXP-020",
+    "CXP-021",
+    "CXP-022",
+    "CXP-023",
+    "CXP-024",
+    "CXP-025",
+    "CXP-026",
+    "CXP-027",
+    "CXP-028",
+    "CXP-029",
+    "CXP-030",
+    "CXP-032",
+    "CXP-033",
+    "CXP-034",
+    "CXP-048",
+    "CXP-050",
+    "CXP-136",
+    "CXP-139",
+    "CXP-140",
+    "CXP-145",
+    "CXP-157"
+   ]
+  },
+  "found_in": "bank_only",
+  "founder_sees": "The brand's real lifetime gross profit and CAC target, computed from its own orders and refunds, not an estimate."
+ },
+ {
+  "id": "LIFE-C32",
+  "name": "Set the existing-customer marketing spend policy",
+  "folders": [
+   "17-CXP"
+  ],
+  "what": "Sets how much paid budget, if any, should target existing customers, and at what CPA ceiling, handing the number to the media buyer specialist to execute.",
+  "encompasses": [
+   "Default to little or no paid spend on existing customers",
+   "Set the existing-customer CPA target at half or less of the new-customer target",
+   "Measure the marginal CAC of an existing-customer spend increase and pull back past target",
+   "Budget existing-customer spend as a dollar figure from frequency and audience size, not a spend share"
+  ],
+  "inputs": [
+   "metric contract",
+   "brand brain: paid channel spend by audience"
+  ],
+  "outputs": [
+   "existing-customer budget and CPA ceiling memo (handoff to media buyer specialist)"
+  ],
+  "trigger": "monthly",
+  "autonomy": "founder_gate",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [
+   "metric contract"
+  ],
+  "skills": [
+   "cohort-ltv-report"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [],
+   "bank": [
+    "CXP-044",
+    "CXP-045",
+    "CXP-046",
+    "CXP-047"
+   ]
+  },
+  "found_in": "bank_only",
+  "founder_sees": "How much, if anything, to spend on ads targeting existing customers, and the ceiling on cost per result."
+ },
+ {
+  "id": "LIFE-C33",
+  "name": "Score churn and lapse risk and route to the right save program",
+  "folders": [
+   "17-CXP",
+   "03-OFF"
+  ],
+  "what": "Builds a churn-risk score from RFM decay, subscription pause events, unresolved support issues and engagement drop, and routes each risk tier to win-back, cancel-flow save, or a support follow-up.",
+  "encompasses": [
+   "Score lapse risk from RFM decay and subscription pause/skip events",
+   "Cross-check the lapsed list against unresolved service issues before any win-back send",
+   "Move chronic skippers or pausers into the cancel-and-win-back flow",
+   "Track a failure cohort's repeat rate and CSAT separately to see if churn ties to service issues",
+   "Segment win-back by lapse reason and measure recovery per reason"
+  ],
+  "inputs": [
+   "connector: shopify orders",
+   "connector: subscription platform (Recharge/Loop)",
+   "connector: support platform (Gorgias/Zendesk)",
+   "metric contract"
+  ],
+  "outputs": [
+   "churn-risk segment with reason tags",
+   "routing rule to the owning flow"
+  ],
+  "trigger": "weekly",
+  "autonomy": "agent_does",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [
+   "connector: shopify orders",
+   "connector: subscription platform (Recharge/Loop)",
+   "connector: support platform (Gorgias/Zendesk)"
+  ],
+  "skills": [
+   "churn-risk-scorer"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [],
+   "bank": [
+    "CXP-014",
+    "CXP-098",
+    "CXP-105",
+    "CXP-119",
+    "CXP-122",
+    "OFF-169",
+    "OFF-170"
+   ]
+  },
+  "found_in": "bank_only",
+  "founder_sees": "The customers most likely to churn this month, why, and which save program each one should get."
+ },
+ {
+  "id": "LIFE-C34",
+  "name": "Design personalization and zero-party data capture",
+  "folders": [
+   "17-CXP",
+   "03-OFF"
+  ],
+  "what": "Designs quizzes and on-site personalization that change what the customer sees or gets, not just their first name, and measures it against non-quiz buyers.",
+  "encompasses": [
+   "Make personalization change what the customer sees or gets, not just a first name",
+   "Earn personalization data through a value-adding quiz the customer knowingly answers",
+   "Keep the quiz short and measure it against non-quiz buyers",
+   "Balance personalization against discovery, seasonality and ongoing testing",
+   "Pair personalization with risk reversal or virtual try-on where the category supports it",
+   "Run a zero-party persona audit on the top and bottom 20 percent of customers",
+   "Tag customers by goal with a 1-question survey and target offers by tag",
+   "Reject hyperpersonalized micro-segmentation as the default; route real personalization into flows and on-site"
+  ],
+  "inputs": [
+   "connector: shopify orders",
+   "brand brain: products (prices, weights, stock)",
+   "metric contract"
+  ],
+  "outputs": [
+   "quiz/personalization spec",
+   "measured lift vs non-quiz buyers"
+  ],
+  "trigger": "on demand",
+  "autonomy": "founder_gate",
+  "external_write": {
+   "needed": true,
+   "surface": "on-site quiz app / theme"
+  },
+  "tools": [
+   "tool: quiz app (Octane AI or similar)",
+   "connector: shopify orders"
+  ],
+  "skills": [
+   "personalization-spec"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [],
+   "bank": [
+    "CXP-041",
+    "CXP-042",
+    "CXP-049",
+    "CXP-126",
+    "CXP-127",
+    "CXP-128",
+    "CXP-129",
+    "CXP-130",
+    "OFF-164"
+   ]
+  },
+  "found_in": "bank_only",
+  "founder_sees": "The personalization or quiz design, and whether it actually lifts AOV or conversion versus non-quiz buyers."
+ },
+ {
+  "id": "LIFE-C35",
+  "name": "Direct on-site search and merchandising ranking rules",
+  "folders": [
+   "17-CXP"
+  ],
+  "what": "Sets the business rules for on-site search and merchandising ranking (intent and margin, not popularity alone) and flags friction for the Site specialist to fix. Overlaps with the Site specialist (09-CRO); this capability owns the ranking policy, Site owns the implementation.",
+  "encompasses": [
+   "Prefer buying an existing search/merchandising app over building one in-house",
+   "Write the business objective and allowed signals before any AI ranking or recommendation model ships",
+   "Rank on-site search by intent and business goal (including margin), not popularity alone",
+   "Audit whether top search queries land the right item on page 1",
+   "Flag repeated logins and long page-throughs in cart/checkout/account for the Site specialist to remove",
+   "Free merchandisers from manual search/layout monitoring for assortment and supplier work instead"
+  ],
+  "inputs": [
+   "connector: shopify orders",
+   "connector: on-site search analytics",
+   "metric contract"
+  ],
+  "outputs": [
+   "search ranking policy",
+   "search-landing audit report"
+  ],
+  "trigger": "quarterly",
+  "autonomy": "human_assist",
+  "external_write": {
+   "needed": true,
+   "surface": "search/merchandising app config (implemented by Site specialist)"
+  },
+  "tools": [
+   "tool: search/merchandising app",
+   "connector: shopify orders"
+  ],
+  "skills": [
+   "personalization-spec"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [],
+   "bank": [
+    "CXP-131",
+    "CXP-132",
+    "CXP-133",
+    "CXP-134",
+    "CXP-135",
+    "CXP-153"
+   ]
+  },
+  "found_in": "bank_only",
+  "founder_sees": "The search ranking rules and whether top queries land the right product, with fixes handed to the Site specialist."
+ },
+ {
+  "id": "LIFE-C36",
+  "name": "Design the offer's value proposition and positioning",
+  "folders": [
+   "03-OFF"
+  ],
+  "what": "Writes the offer as a full package (price, terms, proof, guarantee), scored against the value equation, built around the buyer's single biggest objection.",
+  "encompasses": [
+   "Write the offer as a full package, not just a discount",
+   "Name whether the offer targets conversion, basket size or repeat purchase",
+   "Score the offer against the value equation before cutting price",
+   "Build the offer around the buyer's single biggest objection",
+   "Differentiate a commodity SKU's offer instead of cutting its price",
+   "Reposition a hero SKU into several offers by persona",
+   "Cut offer components buyers do not value after 90-120 days",
+   "Add value before cutting price; test a higher price with a positioning change",
+   "Name the offer with the buyer's outcome word, tested on the PDP and in the ad",
+   "Build a value comparison against a real alternative on the PDP before the price",
+   "Match the ad's offer to the landing page and checkout; keep it identical everywhere",
+   "Reinforce true promises under the buy box: shipping, cancel-anytime, delivery date"
+  ],
+  "inputs": [
+   "brand brain: products (prices, weights, stock)",
+   "brand brain: claims tiers",
+   "brand brain: reviews (objection-tagged)",
+   "metric contract"
+  ],
+  "outputs": [
+   "offer brief (package, positioning, objection answered)",
+   "PDP/ad congruence check"
+  ],
+  "trigger": "on demand",
+  "autonomy": "founder_gate",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [
+   "script: intelligence/ideas.py",
+   "script: search_knowledge.py",
+   "web search"
+  ],
+  "skills": [
+   "offer-economics-model"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [],
+   "bank": [
+    "OFF-001",
+    "OFF-002",
+    "OFF-003",
+    "OFF-004",
+    "OFF-005",
+    "OFF-006",
+    "OFF-007",
+    "OFF-008",
+    "OFF-009",
+    "OFF-011",
+    "OFF-013",
+    "OFF-024",
+    "OFF-026",
+    "OFF-107",
+    "OFF-137",
+    "OFF-138",
+    "OFF-140",
+    "OFF-141",
+    "OFF-142",
+    "OFF-143",
+    "OFF-144"
+   ]
+  },
+  "found_in": "bank_only",
+  "founder_sees": "The offer package proposal, the objection it answers, and where it is not yet consistent across ad, page and checkout."
+ },
+ {
+  "id": "LIFE-C37",
+  "name": "Model offer and discount economics",
+  "folders": [
+   "03-OFF"
+  ],
+  "what": "Builds the margin waterfall and contribution model for any offer or discount before it launches, so a founder red line on margin is never crossed by accident.",
+  "encompasses": [
+   "Build the full margin waterfall for every SKU before any offer",
+   "Judge every offer on contribution per order and per visitor, never revenue or ROAS alone",
+   "Reset target ROAS and CPA whenever the offer structure changes",
+   "Model discount depth on units per order, not an assumed lift",
+   "Check how fast required ROAS rises before approving a deeper discount",
+   "Measure the brand's own sale-period efficiency lift before trusting a discount",
+   "Match a competitor or marketplace price only when landed cost supports it",
+   "Find the profit-maximising discount depth from the brand's own sale history",
+   "Score every upsell/cross-sell by incremental contribution, not take rate",
+   "Measure upsell lift against a holdout, not takers alone",
+   "Compute cannibalisation and set numeric stop rules before approving any sale",
+   "Convert every USD benchmark to the brand's own currency before using it"
+  ],
+  "inputs": [
+   "connector: shopify orders",
+   "metric contract",
+   "brand brain: COGS and landed cost"
+  ],
+  "outputs": [
+   "margin waterfall model",
+   "contribution-per-order/visitor read",
+   "go/no-go recommendation with red-line check"
+  ],
+  "trigger": "on demand",
+  "autonomy": "founder_gate",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [
+   "connector: shopify orders",
+   "metric contract",
+   "script: offer economics model"
+  ],
+  "skills": [
+   "offer-economics-model",
+   "discount-policy-check"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [],
+   "bank": [
+    "OFF-014",
+    "OFF-015",
+    "OFF-016",
+    "OFF-017",
+    "OFF-018",
+    "OFF-019",
+    "OFF-020",
+    "OFF-022",
+    "OFF-025",
+    "OFF-033",
+    "OFF-048",
+    "OFF-050",
+    "OFF-064",
+    "OFF-069",
+    "OFF-070",
+    "OFF-075",
+    "OFF-119",
+    "OFF-120",
+    "OFF-125",
+    "OFF-126",
+    "OFF-136",
+    "OFF-151",
+    "OFF-165"
+   ]
+  },
+  "found_in": "bank_only",
+  "founder_sees": "Whether a proposed offer or discount clears the brand's contribution and margin floor, in the brand's own currency."
+ },
+ {
+  "id": "LIFE-C38",
+  "name": "Govern discount policy and price integrity",
+  "folders": [
+   "03-OFF"
+  ],
+  "what": "Sets and enforces the rules that keep discounting from training buyers to wait: frequency caps, conditionality, honest framing, and any founder red line.",
+  "encompasses": [
+   "Cut flat, frequent discounting that trains buyers to wait",
+   "Never show a reference price or bonus value that is not real",
+   "Always show the full price next to any per-day or per-unit figure",
+   "Give a discount only in exchange for a bigger order, a subscription, or clearing stock",
+   "Limit flat discounts to 1-2 times a year, on high-margin SKUs or clearance only",
+   "Choose dollar-off vs percent-off framing by AOV and currency",
+   "Never let a sitewide sale equal or beat the subscriber discount",
+   "State the true compounded discount when stacking subscription and sale offers",
+   "Only use all-sales-final for genuinely non-returnable items, with a true reason",
+   "Use scarcity and urgency only when real, enforced and provable",
+   "Make the promotion or bonus expire, never the core product",
+   "Never let a discount violate a founder red line; escalate for approval instead"
+  ],
+  "inputs": [
+   "brand brain: policies (shipping, returns, guarantee, EMI)",
+   "brand brain: claims tiers",
+   "brand brain: founder red lines"
+  ],
+  "outputs": [
+   "discount policy document",
+   "pass/fail check on a proposed discount"
+  ],
+  "trigger": "on demand",
+  "autonomy": "founder_gate",
+  "external_write": {
+   "needed": true,
+   "surface": "storefront pricing/discount code config"
+  },
+  "tools": [],
+  "skills": [
+   "discount-policy-check"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [
+    "https://www.digioh.com/blog/ecommerce-free-shipping-threshold"
+   ],
+   "bank": [
+    "OFF-027",
+    "OFF-028",
+    "OFF-029",
+    "OFF-030",
+    "OFF-031",
+    "OFF-032",
+    "OFF-034",
+    "OFF-035",
+    "OFF-037",
+    "OFF-091",
+    "OFF-092",
+    "OFF-093",
+    "OFF-109",
+    "OFF-113",
+    "OFF-114",
+    "OFF-115",
+    "OFF-116",
+    "OFF-117",
+    "OFF-118",
+    "OFF-139",
+    "OFF-179"
+   ]
+  },
+  "found_in": "web+bank",
+  "founder_sees": "Whether a proposed discount follows the brand's own discount rules, and which rule it would break if not."
+ },
+ {
+  "id": "LIFE-C39",
+  "name": "Design bundle, quantity-ladder and tier pricing",
+  "folders": [
+   "03-OFF"
+  ],
+  "what": "Designs multi-pack ladders and bundles from the product's real use journey, with a justified reason for every tier and a pre-selected middle option.",
+  "encompasses": [
+   "Map the product use journey to find bundle and bonus ideas",
+   "Build a buy-more-save-more ladder for a consumable or multi-unit product",
+   "Bundle the same product or a true routine, not a forced mixed assortment",
+   "Use 3 tiers with the middle one pre-selected as the default",
+   "Step the per-unit price down with each ladder tier",
+   "Keep a low-friction, full-price entry tier in every ladder",
+   "Give every ladder tier a real physical reason to exist",
+   "Show the per-unit or per-day price next to the total on every tier",
+   "Make every tier, including the deepest, clear the contribution floor",
+   "Read take rate per tier after launch and retune the ladder",
+   "Set cart thresholds from the order-value distribution, not the average",
+   "Unlock a product, sample or gift at the cart threshold, not only shipping"
+  ],
+  "inputs": [
+   "connector: shopify orders",
+   "brand brain: products (prices, weights, stock)",
+   "metric contract"
+  ],
+  "outputs": [
+   "bundle/ladder pricing spec",
+   "PDP layout spec for tiers",
+   "take-rate-by-tier report"
+  ],
+  "trigger": "on demand",
+  "autonomy": "founder_gate",
+  "external_write": {
+   "needed": true,
+   "surface": "PDP/cart theme build"
+  },
+  "tools": [
+   "connector: shopify orders",
+   "script: order-value distribution"
+  ],
+  "skills": [
+   "bundle-ladder-builder"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [
+    "https://www.digioh.com/blog/ecommerce-free-shipping-threshold"
+   ],
+   "bank": [
+    "OFF-010",
+    "OFF-021",
+    "OFF-041",
+    "OFF-042",
+    "OFF-043",
+    "OFF-044",
+    "OFF-045",
+    "OFF-046",
+    "OFF-047",
+    "OFF-049",
+    "OFF-051",
+    "OFF-063",
+    "OFF-065",
+    "OFF-066",
+    "OFF-067",
+    "OFF-068",
+    "OFF-152",
+    "OFF-176",
+    "OFF-182"
+   ]
+  },
+  "found_in": "web+bank",
+  "founder_sees": "The bundle or ladder design, its take rate by tier, and whether every tier clears the contribution floor."
+ },
+ {
+  "id": "LIFE-C40",
+  "name": "Design gift-with-purchase and bonus offers",
+  "folders": [
+   "03-OFF"
+  ],
+  "what": "Chooses gifts that help the buyer use the core product, sized and placed to lift the tier the brand wants to sell, never framed dishonestly.",
+  "encompasses": [
+   "Choose gifts that help the buyer use the core product, not swag",
+   "Prefer a low-landed-cost gift over an equivalent-cost cash discount",
+   "Scale the gift with units and place it on the tier to be sold",
+   "Never gift more of the same product the customer just bought",
+   "Announce the gift at every step and require a claim action",
+   "Test any order-2 gift's payback before scaling it to every subscriber",
+   "Make bonuses practical tools or how-to content, not more reading",
+   "State bonus and kit values only at real, sellable prices",
+   "Size total bonus value to exceed the core product's price",
+   "Recover a free gift's value when the qualifying order is returned",
+   "India only: withhold a promised free gift on COD orders until collection is confirmed; reads null for US brands",
+   "Deliver a promised bonus unit in the second order, not the first"
+  ],
+  "inputs": [
+   "brand brain: products (prices, weights, stock)",
+   "brand brain: sourcing/landed cost"
+  ],
+  "outputs": [
+   "gift/bonus spec",
+   "gift payback test read"
+  ],
+  "trigger": "on demand",
+  "autonomy": "founder_gate",
+  "external_write": {
+   "needed": true,
+   "surface": "checkout gift config"
+  },
+  "tools": [
+   "sourcing: gift landed cost"
+  ],
+  "skills": [
+   "bundle-ladder-builder"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [],
+   "bank": [
+    "OFF-052",
+    "OFF-053",
+    "OFF-054",
+    "OFF-055",
+    "OFF-056",
+    "OFF-057",
+    "OFF-058",
+    "OFF-059",
+    "OFF-060",
+    "OFF-061",
+    "OFF-062",
+    "OFF-153",
+    "OFF-155",
+    "OFF-156",
+    "OFF-157",
+    "OFF-161",
+    "OFF-167",
+    "OFF-174",
+    "OFF-175"
+   ]
+  },
+  "found_in": "bank_only",
+  "founder_sees": "The gift or bonus design, its landed cost versus an equal-cost discount, and its payback test result."
+ },
+ {
+  "id": "LIFE-C41",
+  "name": "Design upsell and cross-sell placements",
+  "folders": [
+   "03-OFF"
+  ],
+  "what": "Places upsell and cross-sell offers by friction level (cart, checkout, post-purchase), anchored high with a cheaper down-sell, reviewed for margin and compliance.",
+  "encompasses": [
+   "Place upsell offers by friction level: cart, then checkout, then post-purchase",
+   "Anchor post-purchase upsells high, then offer a cheaper down-sell",
+   "Review checkout add-ons like shipping protection for margin and compliance",
+   "Use product samples in a later box as cross-sells, not onboarding sales emails",
+   "Offer a post-checkout upsell framed as completing the purchase, not new selling"
+  ],
+  "inputs": [
+   "connector: shopify orders",
+   "brand brain: products (prices, weights, stock)"
+  ],
+  "outputs": [
+   "upsell/cross-sell placement spec",
+   "margin and compliance review note"
+  ],
+  "trigger": "on demand",
+  "autonomy": "founder_gate",
+  "external_write": {
+   "needed": true,
+   "surface": "checkout/post-purchase upsell app"
+  },
+  "tools": [
+   "connector: shopify orders",
+   "tool: post-purchase upsell app"
+  ],
+  "skills": [
+   "offer-economics-model"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [],
+   "bank": [
+    "OFF-071",
+    "OFF-072",
+    "OFF-073",
+    "OFF-074",
+    "OFF-090"
+   ]
+  },
+  "found_in": "bank_only",
+  "founder_sees": "The upsell and cross-sell placement plan, reviewed for margin and for anything that reads as a dark pattern."
+ },
+ {
+  "id": "LIFE-C42",
+  "name": "Design the guarantee and risk-reversal offer",
+  "folders": [
+   "03-OFF"
+  ],
+  "what": "Costs and writes the guarantee (length, conditions, coverage, activation), and any second guarantee layer, so it removes real buyer risk without breaking margin.",
+  "encompasses": [
+   "Cost the guarantee's net contribution before proposing it",
+   "Write the guarantee as if not X in Y we will Z",
+   "Decide length, conditionality, coverage and activation deliberately",
+   "Add a second guarantee layer that removes a different risk",
+   "Make the guarantee visible near the price and at checkout",
+   "Fix the PDP and reviews first if refund rate is high, before relying on the guarantee",
+   "Name the guarantee clearly and on-brand, not with boilerplate",
+   "Size guarantee length and conditions for high-ticket items from the returns-cost model",
+   "Offer store credit as an alternative to a cash refund",
+   "Start the guarantee clock on delivery, not on order date",
+   "Test the guarantee window length using the brand's own refund data",
+   "Publish a real support response-time promise near the guarantee"
+  ],
+  "inputs": [
+   "brand brain: policies (shipping, returns, guarantee, EMI)",
+   "brand brain: refund/return cost history"
+  ],
+  "outputs": [
+   "guarantee spec (wording, length, conditions)",
+   "cost model"
+  ],
+  "trigger": "on demand",
+  "autonomy": "founder_gate",
+  "external_write": {
+   "needed": true,
+   "surface": "PDP/checkout guarantee badge and copy"
+  },
+  "tools": [
+   "script: refund cost model"
+  ],
+  "skills": [
+   "guarantee-designer"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [],
+   "bank": [
+    "OFF-102",
+    "OFF-103",
+    "OFF-104",
+    "OFF-105",
+    "OFF-106",
+    "OFF-108",
+    "OFF-111",
+    "OFF-112",
+    "OFF-154",
+    "OFF-158",
+    "OFF-159",
+    "EML-184"
+   ]
+  },
+  "found_in": "bank_only",
+  "founder_sees": "The guarantee's wording and length, and whether it clears its own cost model."
+ },
+ {
+  "id": "LIFE-C43",
+  "name": "Design the subscription offer, perks and cancel flow",
+  "folders": [
+   "03-OFF",
+   "17-CXP"
+  ],
+  "what": "Designs the subscription value proposition, perk gating, cadence flexibility and the cancel-flow save offer, so the reason to subscribe is stronger than a flat discount.",
+  "encompasses": [
+   "Aim first orders at subscription when cohorts show a large LTV gap",
+   "Replace a flat 10-15 percent subscribe-and-save discount with a stronger reason to subscribe",
+   "Put subscription-only perks on subscription, keep one-time visible but small",
+   "Pre-select subscription among 3 options, 2 of them subscriptions",
+   "Set subscription take-rate targets from contribution margin",
+   "Match cadence and pack size to real use, let customers adjust it",
+   "Design a gift roadmap that lands at high-churn months, shown before purchase",
+   "Put a costed, reason-matched discount inside the cancel flow, not upfront",
+   "Add a founder video and clear reasons before the cancel offer",
+   "Keep cancel findable and completable in as few steps as sign-up",
+   "Cap pause, skip and delay; treat delay as delayed revenue, not a save",
+   "Move chronic skippers or pausers into the cancel-and-win-back flow"
+  ],
+  "inputs": [
+   "connector: subscription platform (Recharge/Loop)",
+   "connector: shopify orders",
+   "metric contract"
+  ],
+  "outputs": [
+   "subscription offer spec",
+   "cancel-flow design",
+   "perk gating rules"
+  ],
+  "trigger": "on demand",
+  "autonomy": "founder_gate",
+  "external_write": {
+   "needed": true,
+   "surface": "subscription platform config / cancel flow build"
+  },
+  "tools": [
+   "connector: subscription platform (Recharge/Loop)",
+   "connector: shopify orders"
+  ],
+  "skills": [
+   "subscription-flow-designer"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [],
+   "bank": [
+    "OFF-076",
+    "OFF-077",
+    "OFF-078",
+    "OFF-079",
+    "OFF-080",
+    "OFF-081",
+    "OFF-082",
+    "OFF-083",
+    "OFF-084",
+    "OFF-085",
+    "OFF-086",
+    "OFF-087",
+    "OFF-088",
+    "OFF-089",
+    "OFF-094",
+    "OFF-095",
+    "OFF-096",
+    "OFF-097",
+    "OFF-098",
+    "OFF-099",
+    "OFF-100",
+    "OFF-101",
+    "OFF-162",
+    "OFF-166",
+    "OFF-168",
+    "OFF-169",
+    "OFF-170",
+    "OFF-171",
+    "OFF-172",
+    "OFF-177",
+    "CXP-089",
+    "CXP-092"
+   ]
+  },
+  "found_in": "bank_only",
+  "founder_sees": "The subscription value proposition and cancel-flow design, and the cash math behind the first-order discount."
+ },
+ {
+  "id": "LIFE-C44",
+  "name": "Design and model the pop-up and first-order offer",
+  "folders": [
+   "03-OFF",
+   "14-EML"
+  ],
+  "what": "Chooses the pop-up offer type and models its full economics (opt-ins, revenue, discount cost, ESP cost) before it launches, testing structure before assuming a winner.",
+  "encompasses": [
+   "Run a real first-order offer in the pop-up, not a bare join-us or generic 10 percent",
+   "Limit first-order pop-up offers to 4 types: currency off, percent off, free gift, or credit",
+   "Test structurally different pop-up offers on equal traffic, judge by profit and LTV",
+   "Test mystery/exclusive framing against a stated value, do not assume it wins",
+   "Make the pop-up offer match the site's real offer, with 1 true combined number",
+   "Model the full pop-up chain: opt-ins, revenue, discount cost, and ESP cost",
+   "Frame a pop-up discount as store credit instead of a percent-off code",
+   "Gate added acquisition spend on an AOV x conversion-rate score"
+  ],
+  "inputs": [
+   "brand brain: products (prices, weights, stock)",
+   "metric contract",
+   "connector: ESP (Klaviyo or brand's platform)"
+  ],
+  "outputs": [
+   "pop-up offer spec",
+   "pop-up chain economics model"
+  ],
+  "trigger": "on demand",
+  "autonomy": "founder_gate",
+  "external_write": {
+   "needed": true,
+   "surface": "pop-up app config"
+  },
+  "tools": [
+   "connector: ESP (Klaviyo or brand's platform)",
+   "script: pop-up chain economics model"
+  ],
+  "skills": [
+   "popup-spec",
+   "offer-economics-model"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [
+    "https://www.omnisend.com/blog/discount-popup/"
+   ],
+   "bank": [
+    "OFF-127",
+    "OFF-128",
+    "OFF-129",
+    "OFF-130",
+    "OFF-131",
+    "OFF-132",
+    "OFF-133",
+    "OFF-134",
+    "OFF-180",
+    "OFF-181"
+   ]
+  },
+  "found_in": "web+bank",
+  "founder_sees": "The pop-up offer to run, and the full profit math behind it, not just the opt-in rate."
+ },
+ {
+  "id": "LIFE-C45",
+  "name": "Design referral and partner offers",
+  "folders": [
+   "03-OFF"
+  ],
+  "what": "Designs a give-X-get-X referral program for the repeat-buyer base and finds non-competing partner perks that cost nothing to give.",
+  "encompasses": [
+   "Run a give-X-get-X referral offer for the repeat-buyer base",
+   "Partner with a non-competing brand for a no-cost subscriber or referral perk",
+   "Size the referral reward from the brand's own CAC so it stays a bargain, not a giveaway"
+  ],
+  "inputs": [
+   "connector: shopify orders",
+   "brand brain: repeat-buyer base"
+  ],
+  "outputs": [
+   "referral program spec",
+   "partner perk shortlist"
+  ],
+  "trigger": "on demand",
+  "autonomy": "founder_gate",
+  "external_write": {
+   "needed": true,
+   "surface": "referral app config"
+  },
+  "tools": [
+   "tool: referral app"
+  ],
+  "skills": [
+   "offer-economics-model"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [],
+   "bank": [
+    "OFF-135",
+    "OFF-173"
+   ]
+  },
+  "found_in": "bank_only",
+  "founder_sees": "The referral offer design and its expected cost per new customer."
+ },
+ {
+  "id": "LIFE-C46",
+  "name": "Design payment terms, trial pricing and delayed capture",
+  "folders": [
+   "03-OFF"
+  ],
+  "what": "Designs installment/BNPL terms with a clear per-installment price, nominal-price trials that convert to full price, and delayed payment capture for trial periods.",
+  "encompasses": [
+   "Offer installment or BNPL terms with the per-installment price shown",
+   "Offer a nominal-price trial that converts to full price after a set window",
+   "Delay payment capture until a trial period ends instead of charging upfront",
+   "Add a decide-by incentive and reminders to trial and sample offers",
+   "Proactively offer to extend a payment plan at the point cancellations cluster"
+  ],
+  "inputs": [
+   "connector: shopify orders",
+   "connector: payments/BNPL provider"
+  ],
+  "outputs": [
+   "payment-terms spec",
+   "trial pricing spec"
+  ],
+  "trigger": "on demand",
+  "autonomy": "founder_gate",
+  "external_write": {
+   "needed": true,
+   "surface": "checkout payment provider config"
+  },
+  "tools": [
+   "connector: shopify orders",
+   "tool: BNPL provider"
+  ],
+  "skills": [
+   "offer-economics-model"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [],
+   "bank": [
+    "OFF-110",
+    "OFF-160",
+    "OFF-163",
+    "OFF-178",
+    "OFF-162"
+   ]
+  },
+  "found_in": "bank_only",
+  "founder_sees": "The payment-terms or trial design, with the per-installment price shown honestly."
+ },
+ {
+  "id": "LIFE-C47",
+  "name": "Run the offer testing framework",
+  "folders": [
+   "03-OFF"
+  ],
+  "what": "Sequences and isolates offer tests (structure before depth, one variable at a time), keeps a backlog, and pre-registers the read window and metric before launch.",
+  "encompasses": [
+   "Prioritise testing offer structure before offer depth",
+   "Preselect the test metric before running an offer test",
+   "Hold creative and landing page constant when testing an offer change",
+   "Start by testing 1 offer element unless a full overhaul is the hypothesis",
+   "Keep a backlog of untested offer ideas; expect most tests to lose or tie",
+   "Re-test an offer after any change in traffic source or creative",
+   "Judge offer tests on gross profit and a repeat-cycle LTV window, not first-order results",
+   "Test a free sample or usage credit against an equal-cost cash discount",
+   "Hold a winning offer 6-12 months, then audit it against belief",
+   "Keep testing offers even though most variants will fail",
+   "Refresh a fatigued offer in order: creative, copy, wrapper, duration, then price",
+   "Treat a seasonal demand dip as a signal to test a new offer"
+  ],
+  "inputs": [
+   "metric contract",
+   "experiment registry"
+  ],
+  "outputs": [
+   "offer test backlog",
+   "test spec (hypothesis, metric, read window)",
+   "test read-out"
+  ],
+  "trigger": "on demand",
+  "autonomy": "agent_does",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [
+   "metric contract",
+   "experiment registry"
+  ],
+  "skills": [
+   "offer-economics-model"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [],
+   "bank": [
+    "OFF-012",
+    "OFF-023",
+    "OFF-036",
+    "OFF-040",
+    "OFF-121",
+    "OFF-122",
+    "OFF-123",
+    "OFF-124",
+    "OFF-145",
+    "OFF-146",
+    "OFF-147",
+    "OFF-148",
+    "OFF-149",
+    "OFF-150"
+   ]
+  },
+  "found_in": "bank_only",
+  "founder_sees": "The next offer test to run, its read window, and what a past winning offer's 6-12 month audit found."
+ }
+]

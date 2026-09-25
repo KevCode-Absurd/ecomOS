@@ -1,0 +1,1507 @@
+[
+ {
+  "id": "LOOP-C16",
+  "extends": null,
+  "name": "Track a cross-functional initiative end to end (not an idea from the bank)",
+  "folders": [
+   "99-multi"
+  ],
+  "what": "Hold a non-idea initiative, a re-platform, a new hire, a compliance project, a new market entry, with milestones, owners and blockers, visible to the founder until it closes. Fills the gap between single approved ideas the Registrar tracks and full cross-channel launches, for work that spans specialists but is not shaped like a bank idea.",
+  "encompasses": [
+   "open an initiative record with a plain goal, an owner per milestone and a target date",
+   "pull status from each specialist's queue without asking them to re-report it elsewhere",
+   "flag a milestone at risk before its date, not after",
+   "surface blockers that need the founder's decision, not just status",
+   "close the initiative with a one-line result and file it for the next similar initiative",
+   "distinguish an initiative from a single approved idea so it does not get lost in the registry's per-idea view"
+  ],
+  "inputs": [
+   "founder's stated initiative",
+   "each specialist's queue and status",
+   "decision log"
+  ],
+  "outputs": [
+   "initiative record with milestones and owners",
+   "at-risk flags",
+   "close-out note"
+  ],
+  "trigger": "event: founder opens a multi-specialist initiative",
+  "autonomy": "agent_does",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [
+   "script: initiative tracker"
+  ],
+  "skills": [
+   "initiative-tracking"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [
+    "https://visible.vc/blog/chief-of-staff-for-startups/",
+    "https://www.nextlevel.coach/blog/chief-of-staff-startup-role"
+   ],
+   "bank": []
+  },
+  "found_in": "web_only",
+  "founder_sees": "One place to see everything the re-platform, or the new hire, or the new market needs, without chasing five people.",
+  "human_role": "chief of staff; DTC general manager",
+  "today_done_by": "founder",
+  "owner_agent": "Orchestrator"
+ },
+ {
+  "id": "LOOP-C17",
+  "extends": null,
+  "name": "Prep the founder before a named external meeting",
+  "folders": [
+   "99-multi"
+  ],
+  "what": "Before a meeting on the founder's calendar with a supplier, investor, agency or platform rep, assemble the relevant numbers, open items and history with that counterparty into a short brief, the way an executive assistant preps a daily brief and meeting notes.",
+  "encompasses": [
+   "match a calendar entry to a known counterparty in the brand brain (vendor, investor, agency)",
+   "pull the open items and decisions tied to that counterparty from the registry and decision log",
+   "quote the last agreed terms or numbers discussed with them, with dates",
+   "flag anything overdue on either side before the meeting",
+   "hand the brief to the founder a fixed time before the meeting starts, not after it began"
+  ],
+  "inputs": [
+   "founder's calendar",
+   "brand brain: vendor and partner records",
+   "decision log",
+   "registry"
+  ],
+  "outputs": [
+   "one-page meeting brief"
+  ],
+  "trigger": "event: a named meeting is coming up on the calendar",
+  "autonomy": "agent_does",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [
+   "calendar reader",
+   "script: counterparty matcher"
+  ],
+  "skills": [
+   "meeting-prep-brief"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [
+    "https://www.usecarly.com/blog/ai-assistant-manages-inbox-and-calendar/",
+    "https://sintra.ai/blog/ai-executive-assistant"
+   ],
+   "bank": []
+  },
+  "found_in": "web_only",
+  "founder_sees": "A one-pager waiting before the call with the numbers and history already pulled.",
+  "human_role": "executive assistant",
+  "today_done_by": "founder",
+  "owner_agent": "Orchestrator"
+ },
+ {
+  "id": "LOOP-C18",
+  "extends": null,
+  "name": "Draft time-sensitive replies to partners, vendors and press for founder approval",
+  "folders": [
+   "99-multi"
+  ],
+  "what": "When a message arrives from a vendor, a platform, a partner or a journalist that needs a fast answer, draft the reply from the brand brain and the founder's own voice, tiered by risk, and hold it for approval before anything sends. Never sends on its own.",
+  "encompasses": [
+   "detect an incoming message that needs a same-day answer",
+   "draft in the founder's voice from stored liked and disliked examples",
+   "quote only approved or site-backed facts in the draft, never invent a commitment",
+   "tier the draft by risk, a routine confirmation versus anything with a number, a date or a legal word, and gate the risky ones harder",
+   "never send; hand the draft to the founder or the named person to send"
+  ],
+  "inputs": [
+   "incoming message",
+   "brand brain: voice, claims tiers",
+   "decision log"
+  ],
+  "outputs": [
+   "drafted reply with risk tier"
+  ],
+  "trigger": "event: a message needing a fast reply arrives",
+  "autonomy": "founder_gate",
+  "external_write": {
+   "needed": false,
+   "surface": "email or messaging platform, draft only, no send"
+  },
+  "tools": [
+   "script: draft assistant"
+  ],
+  "skills": [
+   "external-reply-drafting"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [
+    "https://www.catchagent.ai/blog/ai-assistants/ai-executive-assistant",
+    "https://www.marblism.com/ai-employees/eva"
+   ],
+   "bank": []
+  },
+  "found_in": "web_only",
+  "founder_sees": "A ready-to-send draft, never sent without a look.",
+  "human_role": "executive assistant; chief of staff",
+  "today_done_by": "founder",
+  "owner_agent": "Orchestrator"
+ },
+ {
+  "id": "LOOP-C19",
+  "extends": null,
+  "name": "Turn a call transcript into routed action items, not just notes",
+  "folders": [
+   "99-multi"
+  ],
+  "what": "Take a transcript from a call with an agency, supplier or investor, extract the facts and route them to the brain, the decisions and route them to the decision log, and the action items and route them to the owning specialist's queue with a due date, instead of leaving a transcript for someone to re-read.",
+  "encompasses": [
+   "pull facts, decisions and action items separately from one transcript",
+   "route each action item to the specialist or person who owns it, not to a general inbox",
+   "flag a verbal commitment the founder made on the call as a founder-visible follow-up",
+   "attach the source transcript timestamp to every extracted item so it can be checked",
+   "skip re-logging an item already in the registry from the same conversation"
+  ],
+  "inputs": [
+   "call transcript",
+   "brand brain",
+   "registry"
+  ],
+  "outputs": [
+   "routed action items",
+   "facts filed to the brain",
+   "decision log entries"
+  ],
+  "trigger": "event: a call transcript is available",
+  "autonomy": "agent_does",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [
+   "script: transcript router"
+  ],
+  "skills": [
+   "meeting-to-action"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [
+    "https://fireflies.ai/blog/ai-note-taker-for-teams/",
+    "https://zapier.com/blog/fathom-vs-fireflies/"
+   ],
+   "bank": []
+  },
+  "found_in": "web_only",
+  "founder_sees": "Nothing extra; the right person's queue already has the task.",
+  "human_role": "chief of staff; agency account manager",
+  "today_done_by": "nobody",
+  "owner_agent": "Orchestrator"
+ },
+ {
+  "id": "LOOP-C20",
+  "extends": null,
+  "name": "Design and maintain the business's own operating cadence",
+  "folders": [
+   "99-multi"
+  ],
+  "what": "Hold the calendar of recurring reviews itself, which meeting happens when, who attends, what it covers, and update it as the specialist set grows, the way a fractional CMO's weekly rhythm (a paid media review, a creative briefing, retention planning, a leadership meeting) is set on purpose, not defaulted to a single daily screen.",
+  "encompasses": [
+   "name each recurring review needed at the business's current stage (weekly, biweekly, monthly, quarterly) and what it covers",
+   "add a new recurring review when a new specialist or surface goes live, and retire one that stopped earning its slot",
+   "keep each review's agenda template so it does not drift",
+   "avoid review sprawl: cap the standing cadence and flag when it grows past what a solo founder can sit through"
+  ],
+  "inputs": [
+   "current specialist set",
+   "founder's available review time",
+   "past review attendance"
+  ],
+  "outputs": [
+   "standing cadence list with agenda templates"
+  ],
+  "trigger": "event: a specialist is added, or quarterly review of the cadence itself",
+  "autonomy": "founder_gate",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [
+   "script: cadence tracker"
+  ],
+  "skills": [
+   "operating-cadence-design"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [
+    "https://inspiredmarketingb2b.com/what-does-a-fractional-cmo-do-day-to-day/",
+    "https://fractionus.com/blog/fractional-cmo-for-ecommerce"
+   ],
+   "bank": []
+  },
+  "found_in": "web_only",
+  "founder_sees": "The list of standing reviews, with anything that stopped pulling its weight flagged.",
+  "human_role": "fractional CMO; fractional COO",
+  "today_done_by": "founder",
+  "owner_agent": "Orchestrator"
+ },
+ {
+  "id": "LOOP-C21",
+  "extends": null,
+  "name": "Triage across every brand an agency runs, not just list each one's queue",
+  "folders": [
+   "99-multi"
+  ],
+  "what": "For an agency workspace running several brands, rank which brand or item needs attention first across the whole portfolio, instead of showing separate per-brand queues the agency person has to compare by hand. This is the gap the Orchestrator's own notes flag: cross-brand queues need the agency workspace, not built.",
+  "encompasses": [
+   "pull the top item from every brand's queue into one ranked list",
+   "weigh money at stake and time sensitivity across brands on the same scale",
+   "flag a brand that has gone quiet, no founder decision in N days, ahead of one that is merely busy",
+   "keep each item tagged with its brand so nothing crosses brand lines by mistake"
+  ],
+  "inputs": [
+   "per-brand queues",
+   "per-brand money at stake"
+  ],
+  "outputs": [
+   "one ranked cross-brand list"
+  ],
+  "trigger": "daily, for an agency account manager",
+  "autonomy": "agent_does",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [
+   "script: portfolio ranker"
+  ],
+  "skills": [
+   "portfolio-triage"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [
+    "https://www.tapclicks.com/blog/onboarding-new-clients",
+    "https://almcorp.com/blog/client-onboarding-checklist-digital-agencies/"
+   ],
+   "bank": []
+  },
+  "found_in": "web_only",
+  "founder_sees": "Not applicable for a single-brand founder; the agency account manager sees one ranked list instead of several separate queues.",
+  "human_role": "agency account manager",
+  "today_done_by": "agency",
+  "owner_agent": "Orchestrator"
+ },
+ {
+  "id": "LOOP-C22",
+  "extends": null,
+  "name": "Offboard a brand or client cleanly",
+  "folders": [
+   "99-multi"
+  ],
+  "what": "When a brand relationship ends, an agency contract ends or a brand leaves the system, revoke every connector's access, export the brand brain and registry as a portable handoff package, and confirm no external write access remains open anywhere.",
+  "encompasses": [
+   "list every connector and access grant this brand currently has",
+   "revoke each one and confirm the revoke, not just request it",
+   "export the brand brain, metric contract history and registry as one dated package",
+   "confirm no external write permission is left switched on for this brand",
+   "log the offboarding date and reason"
+  ],
+  "inputs": [
+   "brand's connector and access list",
+   "brand brain",
+   "registry"
+  ],
+  "outputs": [
+   "access revoke confirmations",
+   "handoff export package",
+   "offboarding log entry"
+  ],
+  "trigger": "event: a brand relationship ends",
+  "autonomy": "founder_gate",
+  "external_write": {
+   "needed": true,
+   "surface": "connector access revocation, whichever surfaces were granted"
+  },
+  "tools": [
+   "script: access auditor"
+  ],
+  "skills": [
+   "brand-offboarding"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [
+    "https://www.dotandcompany.co/blog/the-5-most-important-aspects-of-client-onboardings"
+   ],
+   "bank": []
+  },
+  "found_in": "web_only",
+  "founder_sees": "A confirmation that nothing is still connected once a brand relationship is done.",
+  "human_role": "agency account manager",
+  "today_done_by": "agency",
+  "owner_agent": "Brand Brain Keeper"
+ },
+ {
+  "id": "LOOP-C23",
+  "extends": null,
+  "name": "Read the funnel net of returns and chargebacks, split by payment method",
+  "folders": [
+   "99-multi"
+  ],
+  "what": "Before naming a bottleneck, split gross orders by payment method (card, wallets, BNPL) and net out returns and chargebacks for the window, since a headline orders number can hide a bottleneck that only shows once reversed orders are removed. For brands that take cash on delivery (India and some other markets), also net out return-to-origin, the COD subset that never reached the customer.",
+  "encompasses": [
+   "split every order-stage number by payment method before comparing windows",
+   "compute net orders and net revenue after returns and chargebacks, alongside the gross figure, never replacing it",
+   "hold return and chargeback benchmarks by category as a comparison band tagged general-practice basis, never this brand's prior",
+   "for COD markets only: net out expected RTO and never count an unconfirmed COD order until confirmed (reads null for US brands)"
+  ],
+  "inputs": [
+   "order data with payment method",
+   "returns and chargeback data by window",
+   "category benchmarks",
+   "COD and RTO data (markets IN, null for US)"
+  ],
+  "outputs": [
+   "gross versus net orders and revenue by window",
+   "reversal-widening flag"
+  ],
+  "trigger": "daily",
+  "autonomy": "agent_does",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [
+   "script: reversed-orders splitter"
+  ],
+  "skills": [
+   "india-funnel-read"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [
+    "https://www.clickpost.ai/blog/rto-reduction-tools",
+    "https://www.sumvaad.co.in/post/impact-of-rto-on-indian-ecommerce"
+   ],
+   "bank": []
+  },
+  "found_in": "web_only",
+  "founder_sees": "Orders, shown both gross and net of the returns and chargebacks the brand actually expects.",
+  "human_role": "ecommerce business analyst; general manager",
+  "today_done_by": "tool",
+  "owner_agent": "Diagnose"
+ },
+ {
+  "id": "LOOP-C24",
+  "extends": null,
+  "name": "Vet a proposed tool, app or vendor against the existing stack before it reaches the founder",
+  "folders": [
+   "99-multi"
+  ],
+  "what": "When any specialist or the web pass surfaces a new SaaS tool, Shopify app, ERP or vendor as a candidate, check it against the brand's current stack for cost, integration risk, data overlap and migration effort before it is ranked as a proposal, since growing ecommerce stacks are meant to be layered on purpose, not bolted on.",
+  "encompasses": [
+   "list what the brand already uses that overlaps with the proposed tool's function",
+   "flag a proposed tool that duplicates data the brand already has a source of truth for",
+   "estimate integration effort, a prebuilt connector versus custom middleware, from what the tool publishes",
+   "surface the tool's real cost including any per-order or percentage fee, not just the sticker price",
+   "mark a proposed tool as needing a migration plan when it would replace a system already holding brand data"
+  ],
+  "inputs": [
+   "proposed tool or vendor",
+   "brand's current stack list"
+  ],
+  "outputs": [
+   "fit check attached to the candidate card"
+  ],
+  "trigger": "event: a new tool or vendor enters the candidate list",
+  "autonomy": "agent_does",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [
+   "script: stack fit checker"
+  ],
+  "skills": [
+   "tool-vendor-vetting"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [
+    "https://www.ringly.io/blog/shopify-erp-integration",
+    "https://www.celigo.com/blog/shopify-erp-integration/"
+   ],
+   "bank": []
+  },
+  "found_in": "web_only",
+  "founder_sees": "Whether a proposed tool fits the stack already, before it is ranked as a real option.",
+  "human_role": "fractional COO; head of growth",
+  "today_done_by": "founder",
+  "owner_agent": "Propose"
+ },
+ {
+  "id": "LOOP-C25",
+  "extends": null,
+  "name": "Run a structured retro after any closed initiative",
+  "folders": [
+   "99-multi"
+  ],
+  "what": "When a launch, a crisis response, an onboarding or another cross-functional initiative closes, run the same retro shape every time, what worked, what did not, what to change, and turn it into a reusable checklist for the next one of its kind, instead of the founder having to remember or repeat it.",
+  "encompasses": [
+   "trigger automatically when an initiative or crisis response is marked closed",
+   "pull the plan versus what actually happened, in code where numbers are involved",
+   "ask the founder one question: would we do this again the same way",
+   "write the answer into a reusable checklist tagged by initiative type, launch, crisis, onboarding, replatform",
+   "surface the last retro of the same type before the next one of that type starts"
+  ],
+  "inputs": [
+   "closed initiative record",
+   "founder's would-we-again answer"
+  ],
+  "outputs": [
+   "retro note",
+   "updated reusable checklist for that initiative type"
+  ],
+  "trigger": "event: an initiative or crisis response closes",
+  "autonomy": "agent_does",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [
+   "script: retro builder"
+  ],
+  "skills": [
+   "structured-retro"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [
+    "https://plane.so/blog/decision-log-what-it-is-why-teams-use-it-and-template"
+   ],
+   "bank": []
+  },
+  "found_in": "web_only",
+  "founder_sees": "One short retro, and a checklist that gets better each time the same kind of thing happens again.",
+  "human_role": "chief of staff",
+  "today_done_by": "nobody",
+  "owner_agent": "Registrar"
+ },
+ {
+  "id": "LOOP-C26",
+  "extends": null,
+  "name": "Check a vendor or agency invoice and its SOW cadence against what was actually delivered",
+  "folders": [
+   "99-multi"
+  ],
+  "what": "Before the founder pays an agency or freelancer invoice, check its claimed deliverables against what the registry and queues show was actually delivered, and separately track whether the agency is keeping pace with its own scope-of-work commitments, a promised cadence of concepts, reports or hours, month over month.",
+  "encompasses": [
+   "match each invoice line to a delivered artefact in the registry, or flag it as unmatched",
+   "flag a billed deliverable that never reached the founder or never shipped",
+   "hold the agency's or freelancer's scope-of-work commitment, a stated cadence or scope, and compare actual delivery against it every period",
+   "flag a pattern of under-delivery against the scope of work running 2 or more periods, not a single bad month",
+   "never approve payment itself; only flag mismatches for the founder"
+  ],
+  "inputs": [
+   "vendor invoice",
+   "registry: delivered artefacts",
+   "scope-of-work or contract terms"
+  ],
+  "outputs": [
+   "invoice match report",
+   "scope-of-work cadence tracking"
+  ],
+  "trigger": "event: an invoice arrives; monthly for scope-of-work cadence",
+  "autonomy": "founder_gate",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [
+   "script: invoice matcher"
+  ],
+  "skills": [
+   "vendor-invoice-check"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [
+    "https://almcorp.com/blog/digital-agency-client-onboarding-checklist-best-practices/",
+    "https://www.upwork.com/hire/virtual-assistants/job-description/"
+   ],
+   "bank": []
+  },
+  "found_in": "web_only",
+  "founder_sees": "Any invoice line, or any month, that does not match what was actually delivered.",
+  "human_role": "chief of staff; business analyst",
+  "today_done_by": "founder",
+  "owner_agent": "QA Gate"
+ },
+ {
+  "id": "LOOP-C27",
+  "extends": null,
+  "name": "Check US legal disclosures before a page or policy ships",
+  "folders": [
+   "99-multi"
+  ],
+  "what": "Before a policy page, product page, email template or invoice goes live, check it carries what US rules require: FTC endorsement and pricing disclosures, CAN-SPAM footer and unsubscribe, a privacy policy meeting CCPA and CPRA and other state laws, return and refund terms as posted, sales tax shown correctly on invoices, Prop 65 where relevant, auto-renewal disclosures for subscriptions. For India-based brands the same gate checks grievance officer contact, country of origin and GST invoice fields instead (markets IN).",
+  "encompasses": [
+   "confirm FTC-required disclosures on ads, influencer content and claims",
+   "confirm CAN-SPAM footer, physical address and one-click unsubscribe on email templates",
+   "confirm the privacy policy covers CCPA and CPRA rights and a do-not-sell link where required",
+   "confirm return, refund and shipping terms match the posted policy",
+   "confirm invoices show sales tax by jurisdiction correctly",
+   "confirm auto-renewal and cancellation disclosures for subscriptions",
+   "India option: grievance officer contact, country of origin, GSTIN and HSN on invoices"
+  ],
+  "inputs": [
+   "draft page, policy or invoice template",
+   "US disclosure checklist",
+   "IN disclosure checklist (markets IN)"
+  ],
+  "outputs": [
+   "pass or fail with the missing disclosure named"
+  ],
+  "trigger": "event: a customer-facing page, policy or invoice template is ready",
+  "autonomy": "agent_does",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [
+   "script: disclosure checklist"
+  ],
+  "skills": [
+   "india-compliance-check"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [
+    "https://edesy.in/tools/india-ecommerce-pricing",
+    "https://busy.in/ecommerce-reconciliation/rto-meaning-in-ecommerce-india-causes-charges-and-18-ways-to-reduce/"
+   ],
+   "bank": []
+  },
+  "found_in": "web_only",
+  "founder_sees": "Nothing extra when it passes; a named missing disclosure when it does not.",
+  "human_role": "fractional COO; business analyst",
+  "today_done_by": "nobody",
+  "owner_agent": "QA Gate"
+ },
+ {
+  "id": "LOOP-C28",
+  "extends": null,
+  "name": "Track vendor and platform contracts with renewal dates and alert before they lapse",
+  "folders": [
+   "99-multi"
+  ],
+  "what": "Ingest supplier, courier, payment gateway, SMS platform and SaaS subscription contracts into the brand brain as facts with renewal dates, rate cards and SLA terms, and alert before a renewal, a rate change or an SLA lapses unnoticed, since generic document extraction does not track dates on its own.",
+  "encompasses": [
+   "extract renewal date, rate card and SLA terms from each vendor contract or agreement, with source and date",
+   "hold a due-date list separate from the general decisions log",
+   "alert a fixed number of days before a renewal or rate-card expiry, sized to how long a renegotiation takes",
+   "flag a contract with no stored renewal date as incomplete, not silently skip it",
+   "diff a renewed contract's terms against the prior version and flag what changed"
+  ],
+  "inputs": [
+   "vendor contracts and agreements",
+   "document reader"
+  ],
+  "outputs": [
+   "contract and SLA registry with renewal alerts"
+  ],
+  "trigger": "event: a new contract is added; continuous for renewal alerts",
+  "autonomy": "agent_does",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [
+   "document reader",
+   "script: contract date tracker"
+  ],
+  "skills": [
+   "vendor-contract-tracking"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [
+    "https://www.celigo.com/blog/shopify-erp-integration/",
+    "https://watease.com/industries/retail"
+   ],
+   "bank": []
+  },
+  "found_in": "web_only",
+  "founder_sees": "A renewal or rate change flagged with enough runway to act on it.",
+  "human_role": "fractional COO; operations manager",
+  "today_done_by": "founder",
+  "owner_agent": "Brand Brain Keeper"
+ },
+ {
+  "id": "LOOP-C29",
+  "extends": null,
+  "name": "Maintain a permission map for who may see which part of the brand brain",
+  "folders": [
+   "99-multi"
+  ],
+  "what": "Hold which sections of the brand brain each person, the founder, in-house staff, agency staff, a named specialist, may see, and enforce it the same way whether the brain answers a chat question or a human opens it directly, the way enterprise knowledge bases enforce role-based access on generative answers.",
+  "encompasses": [
+   "hold a permission table by brain section and by person or role",
+   "apply the same table to a chat answer as to a direct read of the brain",
+   "flag a brain section with no assigned permission as restricted by default, not open by default",
+   "log who was shown what, for a section marked sensitive",
+   "update the table when a person's role or a brand's agency relationship changes"
+  ],
+  "inputs": [
+   "brand brain sections",
+   "team and agency roster"
+  ],
+  "outputs": [
+   "permission table",
+   "access log for sensitive sections"
+  ],
+  "trigger": "event: a new section, person or role is added",
+  "autonomy": "agent_does",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [
+   "script: permission table"
+  ],
+  "skills": [
+   "brain-permission-mapping"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [
+    "https://peoplemanagingpeople.com/tools/best-ai-knowledge-base-tools/",
+    "https://slite.com/learn/ai-knowledge-base-guide"
+   ],
+   "bank": []
+  },
+  "found_in": "web_only",
+  "founder_sees": "Confidence that an agency person or a specialist only sees what they are meant to.",
+  "human_role": "chief of staff; agency account manager",
+  "today_done_by": "nobody",
+  "owner_agent": "Brand Brain Keeper"
+ },
+ {
+  "id": "LOOP-C30",
+  "extends": null,
+  "name": "Track the brand's own marketplace listings for price parity and unauthorized resellers",
+  "folders": [
+   "99-multi"
+  ],
+  "what": "Snapshot and diff the brand's own listings on Amazon, Walmart Marketplace, eBay and TikTok Shop (Flipkart and Meesho for India-based brands), price, content, stock, the way the site is crawled, since these diverge from the D2C site and a reseller can undercut the brand's own minimum advertised price or run an unauthorized listing. No packaged tool does this today for an India multi-marketplace seller at this brand's scale.",
+  "encompasses": [
+   "snapshot the brand's own price, title, images and stock on each marketplace it sells on",
+   "flag a marketplace price below the brand's stated minimum advertised price",
+   "flag a seller name on a marketplace listing that is not the brand's own account",
+   "diff listing content against the brand's approved claims tiers, the same as the site",
+   "flag stock shown as available on a marketplace that the brand's own inventory does not support"
+  ],
+  "inputs": [
+   "marketplace listing pages",
+   "brand's own price and stock",
+   "claims tiers"
+  ],
+  "outputs": [
+   "marketplace parity report",
+   "unauthorized reseller flags"
+  ],
+  "trigger": "weekly",
+  "autonomy": "agent_does",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [
+   "crawler",
+   "script: marketplace diff"
+  ],
+  "skills": [
+   "marketplace-listing-tracking"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [],
+   "bank": []
+  },
+  "found_in": "possible",
+  "founder_sees": "A price undercut or a reseller flagged, without checking three marketplaces by hand.",
+  "human_role": "ecommerce business analyst; operations manager",
+  "today_done_by": "nobody",
+  "owner_agent": "Brand Brain Keeper"
+ },
+ {
+  "id": "LOOP-C31",
+  "extends": null,
+  "name": "Collect messaging channel data (SMS, push, chat) into the metric contract as its own channel",
+  "folders": [
+   "99-multi"
+  ],
+  "what": "Pull SMS, push and chat data (sends, consent status, replies, opt-outs, conversions) into the metric contract as a named channel, instead of leaving it inside the email platform's attribution. WhatsApp Business data is collected the same way for brands that use it (markets IN, EU, LATAM).",
+  "encompasses": [
+   "hold SMS sends, deliveries, replies and opt-outs as their own collected fields with TCPA consent status",
+   "hold push and on-site chat conversations as their own fields",
+   "attribute conversions from messaging by the brand's own order data, not platform claims",
+   "mark messaging fields unavailable, not zero, when the connector is not granted",
+   "WhatsApp catalog and broadcast fields for brands that use it (markets IN)"
+  ],
+  "inputs": [
+   "SMS and messaging platform data",
+   "order data"
+  ],
+  "outputs": [
+   "messaging fields in the metric contract"
+  ],
+  "trigger": "daily, once connected",
+  "autonomy": "agent_does",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [
+   "connector: SMS platform, read",
+   "connector: WhatsApp Business API, read (markets IN)"
+  ],
+  "skills": [
+   "whatsapp-metric-collection"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [
+    "https://watease.com/industries/retail",
+    "https://www.clickpost.ai/blog/rto-reduction-tools"
+   ],
+   "bank": []
+  },
+  "found_in": "web_only",
+  "founder_sees": "Messaging shown as its own channel with its own numbers, not missing from the picture.",
+  "human_role": "business analyst; operations manager",
+  "today_done_by": "tool",
+  "owner_agent": "Brand Brain Keeper"
+ },
+ {
+  "id": "LOOP-C32",
+  "extends": null,
+  "name": "Pull references from adjacent categories when the brand's own category is thin",
+  "folders": [
+   "99-multi"
+  ],
+  "what": "When the brand's own category and its tracked competitors do not have enough creative supply for a needed format, a new hook type, a new placement, widen the reference search to an adjacent category with the same buyer psychology, high AOV, considered purchase, gifting occasion, tagged clearly as adjacent, not as the brand's own category. Not a packaged feature of any reviewed reference tool today.",
+  "encompasses": [
+   "detect when the direct-competitor gallery has too few examples of the needed format or angle",
+   "pick an adjacent category by shared buyer psychology, AOV band, purchase consideration length, gifting occasion, not by product similarity",
+   "tag every adjacent reference as adjacent, separate from same-category references",
+   "apply the same structure-and-mood-only rule to adjacent references as to direct competitors"
+  ],
+  "inputs": [
+   "surface and format needed",
+   "direct competitor gallery",
+   "category taxonomy"
+  ],
+  "outputs": [
+   "adjacent-category references, tagged"
+  ],
+  "trigger": "event: a specialist requests references and the direct gallery is thin",
+  "autonomy": "agent_does",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [
+   "creative_retrieval.py",
+   "web image and page fetch within budget"
+  ],
+  "skills": [
+   "adjacent-category-sourcing"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [],
+   "bank": []
+  },
+  "found_in": "possible",
+  "founder_sees": "A reference from outside the brand's own category, clearly marked as borrowed structure, when the category's own supply runs thin.",
+  "human_role": "brand strategist; creative director",
+  "today_done_by": "nobody",
+  "owner_agent": "Reference Scout"
+ },
+ {
+  "id": "LOOP-C33",
+  "extends": null,
+  "name": "Build a creator archetype and hook-delivery reference library for briefing real creators",
+  "folders": [
+   "99-multi"
+  ],
+  "what": "Hold reference examples of creator archetypes, the skeptical friend, the expert, the first-time buyer, hook-delivery styles and pacing by niche, distinct from static or produced-ad swipes, so a specialist can brief a real creator sourced through a marketplace with a concrete reference instead of a vague mood board.",
+  "encompasses": [
+   "tag creator content by archetype, delivery style, pacing and niche, not just by format",
+   "keep this separate from the produced-ad swipe file, since a creator brief needs a person to imitate, not a finished ad",
+   "note which archetype and style the brand's own best-performing UGC used, when known",
+   "flag any creator reference for which likeness or face is not to be copied, only the delivery style"
+  ],
+  "inputs": [
+   "public creator content within budget",
+   "brand's own past UGC results"
+  ],
+  "outputs": [
+   "creator archetype and hook library, tagged"
+  ],
+  "trigger": "on demand, when a specialist briefs a creator",
+  "autonomy": "agent_does",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [
+   "web image and video fetch within budget",
+   "creative_retrieval.py"
+  ],
+  "skills": [
+   "creator-brief-library"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [],
+   "bank": []
+  },
+  "found_in": "possible",
+  "founder_sees": "A concrete creator brief (archetype, delivery style, pacing) instead of a mood board when a real creator needs direction.",
+  "human_role": "creative director; UGC coordinator",
+  "today_done_by": "freelancer",
+  "owner_agent": "Reference Scout"
+ },
+ {
+  "id": "LOOP-C34",
+  "extends": null,
+  "name": "Draft a courier or 3PL rate renegotiation using public rate benchmarks",
+  "folders": [
+   "99-multi"
+  ],
+  "what": "When the brand's own shipping cost per order drifts above what comparable US carriers and 3PLs charge, from public rate cards and calculators (UPS, USPS, FedEx, ShipStation benchmarks), draft a renegotiation ask to the current carrier or 3PL with the numbers, and a switch plan if refused.",
+  "encompasses": [
+   "hold public courier and 3PL rate benchmarks by weight slab and zone, dated",
+   "compare the brand's actual paid rate per shipment against the benchmark, by zone and weight slab",
+   "compute the annualised saving at current volume if the gap were closed",
+   "draft the renegotiation ask with the specific numbers, never a vague request to reduce rates",
+   "flag when a rate contract renewal date is near, so the ask lands before the contract auto-renews"
+  ],
+  "inputs": [
+   "brand's shipment cost data",
+   "public courier rate benchmarks",
+   "contract renewal date"
+  ],
+  "outputs": [
+   "rate gap analysis",
+   "drafted renegotiation message"
+  ],
+  "trigger": "event: shipment cost per order drifts, or a contract renewal nears",
+  "autonomy": "founder_gate",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [
+   "script: rate benchmark comparator"
+  ],
+  "skills": [
+   "courier-rate-renegotiation"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [
+    "https://flexicommerce.in/tools/cod-calculator",
+    "https://www.shipmozo.com/blog/how-to-reduce-rto-in-ecommerce"
+   ],
+   "bank": []
+  },
+  "found_in": "possible",
+  "founder_sees": "A drafted ask to the courier with the exact gap and the saving, ready to send.",
+  "human_role": "fractional COO; operations manager",
+  "today_done_by": "nobody",
+  "owner_agent": "Brand Brain Keeper",
+  "markets_note": "US brands read this as returns, return-to-sender and chargebacks; COD and RTO legs read null."
+ },
+ {
+  "id": "LOOP-C35",
+  "extends": null,
+  "name": "Detect audience or metric overlap between two experiments running at once",
+  "folders": [
+   "99-multi"
+  ],
+  "what": "Before approving a second test that shares the same audience or the same metric window as one already running, flag the overlap so neither test's read gets contaminated by the other. Enterprise experimentation platforms do this; nothing aimed at a solo DTC founder checks it automatically today.",
+  "encompasses": [
+   "hold the audience definition and metric window for every running registry entry",
+   "check a newly approved idea against every currently running entry for audience or window overlap",
+   "flag the overlap with which two entries collide and on what dimension",
+   "suggest a stagger, a delayed start, rather than blocking the second idea outright",
+   "clear the flag automatically once the earlier test's read point passes"
+  ],
+  "inputs": [
+   "registry: running entries with audience and window",
+   "newly approved idea"
+  ],
+  "outputs": [
+   "overlap flag with the colliding entries named"
+  ],
+  "trigger": "event: a second idea is approved while another is running",
+  "autonomy": "agent_does",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [
+   "script: overlap detector"
+  ],
+  "skills": [
+   "experiment-overlap-check"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [
+    "https://growwithward.com/ice-prioritization-framework"
+   ],
+   "bank": []
+  },
+  "found_in": "possible",
+  "founder_sees": "A flag before two tests collide, with a suggested stagger.",
+  "human_role": "business analyst; head of growth",
+  "today_done_by": "nobody",
+  "owner_agent": "Registrar"
+ },
+ {
+  "id": "LOOP-C36",
+  "extends": null,
+  "name": "Show a predicted founder decision next to a new proposal card, from their own history",
+  "folders": [
+   "99-multi"
+  ],
+  "what": "From the founder's stored approve, reject and park reasons, show a predicted decision on a new card as an internal check, so the ranker's top pick and the founder's likely call can be compared before the card is shown, and a mismatch prompts the model to write the one line most likely to matter or to flag its own ranking as possibly wrong.",
+  "encompasses": [
+   "match a new card's attributes, cost, risk, channel, reversibility, against the founder's past reasons",
+   "show a predicted approve, reject or park with the reason pattern it is based on",
+   "flag when the ranker's top card and the prediction disagree, before the founder sees either",
+   "never withhold a card because the prediction is a likely reject; only flag it",
+   "track prediction accuracy over time and stop showing it if it performs no better than chance"
+  ],
+  "inputs": [
+   "decision log history",
+   "new proposal card"
+  ],
+  "outputs": [
+   "predicted decision with the reason pattern, attached to the card for internal use"
+  ],
+  "trigger": "event: a proposal card is written, before it reaches the founder",
+  "autonomy": "agent_does",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [
+   "script: decision predictor"
+  ],
+  "skills": [
+   "decision-prediction-check"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [
+    "https://growthmethod.com/rice-framework/"
+   ],
+   "bank": []
+  },
+  "found_in": "possible",
+  "founder_sees": "Nothing directly; it only changes how a mismatched card is written.",
+  "human_role": "chief of staff",
+  "today_done_by": "nobody",
+  "owner_agent": "Propose"
+ },
+ {
+  "id": "LOOP-C37",
+  "extends": null,
+  "name": "Send the founder a short voice-note style brief for approvals while traveling",
+  "folders": [
+   "99-multi"
+  ],
+  "what": "When the founder is away from the review page, travel, a holiday, a family event, send a short, spoken-style audio or voice memo summary of the top pending decisions, in the same plain language the review page uses, so approvals do not stall during exactly the weeks, holiday season, travel, when timing matters most. Nobody packages this for a founder-approval gate today.",
+  "encompasses": [
+   "detect the founder has not opened the review page in the usual window",
+   "summarise only the pending decisions, not the full Today screen, into a short spoken-style script",
+   "deliver it over the channel the founder already uses, a voice memo over SMS, Slack or the app",
+   "accept a reply in the same channel, a word or a voice reply, as the decision, matched back to the card id",
+   "fall back to the review page once the founder is active there again"
+  ],
+  "inputs": [
+   "pending decisions",
+   "founder's activity on the review page",
+   "preferred channel"
+  ],
+  "outputs": [
+   "spoken-style brief",
+   "decision captured from a channel reply"
+  ],
+  "trigger": "event: pending decisions age past the usual window while the founder is inactive on the review page",
+  "autonomy": "founder_gate",
+  "external_write": {
+   "needed": true,
+   "surface": "SMS, Slack or messaging platform, send only, no ad-account or site write"
+  },
+  "tools": [
+   "script: brief-to-audio",
+   "messaging channel"
+  ],
+  "skills": [
+   "traveling-founder-brief"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [
+    "https://watease.com/industries/retail"
+   ],
+   "bank": []
+  },
+  "found_in": "possible",
+  "founder_sees": "A short voice note with just the decisions that are waiting, wherever they already are.",
+  "human_role": "founder; chief of staff",
+  "today_done_by": "founder",
+  "owner_agent": "Orchestrator"
+ },
+ {
+  "id": "LOOP-C38",
+  "extends": null,
+  "name": "Audit what AI shopping agents say about the brand against the claims tiers",
+  "folders": [
+   "99-multi"
+  ],
+  "what": "As merchants now sell through Agentic Storefronts inside ChatGPT, Microsoft Copilot, Google AI Mode and Gemini, managed from the Shopify Admin's Knowledge Base app, audit what these AI shopping agents actually say about the brand, price, policy, availability, against the brand's claims tiers, the same way the site and the ad account are audited, since this is now a live customer-facing surface no one else checks.",
+  "encompasses": [
+   "pull or sample what an AI shopping agent states about the brand's products, price and policy",
+   "trace each stated claim to an approved or site-backed claim in the brand brain",
+   "flag a forbidden or unprovable claim surfaced by an AI agent, the same as a forbidden claim on the site",
+   "flag stale price or stock information an AI channel is still repeating after the brand's own data changed",
+   "report agent-assisted session performance, engagement, conversion uplift, AOV, next to organic, from the Shopify dashboard's own split"
+  ],
+  "inputs": [
+   "Shopify Knowledge Base app feed or equivalent",
+   "brand claims tiers",
+   "agent-assisted session dashboard"
+  ],
+  "outputs": [
+   "AI-agent claims audit",
+   "agent-assisted channel performance note"
+  ],
+  "trigger": "weekly",
+  "autonomy": "agent_does",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [
+   "script: AI-agent claims matcher"
+  ],
+  "skills": [
+   "ai-shopping-agent-audit"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [
+    "https://www.shopify.com/news/agentic-commerce-momentum",
+    "https://www.axios.com/2026/01/08/microsoft-ai-copilot-checkout",
+    "https://about.ads.microsoft.com/en/blog/post/january-2026/conversations-that-convert-copilot-checkout-and-brand-agents"
+   ],
+   "bank": []
+  },
+  "found_in": "web_only",
+  "founder_sees": "A weekly note on what AI shopping agents are telling customers about the brand, and whether it still matches what is approved.",
+  "human_role": "business analyst; brand strategist",
+  "today_done_by": "nobody",
+  "owner_agent": "QA Gate"
+ },
+ {
+  "id": "LOOP-C39",
+  "extends": null,
+  "name": "Detect a new sales or attribution channel entering the business before it is folded into other",
+  "folders": [
+   "99-multi"
+  ],
+  "what": "As commerce itself changes, an AI shopping agent, a new marketplace, a new payment or messaging partner, catch a new channel entering the business and give it its own named field in the metric contract before its volume gets silently absorbed into other or missed altogether.",
+  "encompasses": [
+   "watch for a new referrer, attribution source or order tag appearing in the data that the current contract has no field for",
+   "propose a named field for it, tagged unverified until confirmed with the founder",
+   "backfill history for the new channel where the source allows it, and mark earlier periods unavailable where it does not",
+   "flag when a growing but unnamed source crosses a materiality threshold, so it cannot be ignored past a certain size"
+  ],
+  "inputs": [
+   "raw order and session data",
+   "current metric contract field list"
+  ],
+  "outputs": [
+   "new channel field proposal",
+   "materiality flag for unnamed sources"
+  ],
+  "trigger": "continuous",
+  "autonomy": "founder_gate",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [
+   "script: new-source detector"
+  ],
+  "skills": [
+   "new-channel-detection"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [
+    "https://www.shopify.com/blog/how-agentic-commerce-works",
+    "https://nalanetworks.com/blogs/blog/shopify-ai-2026-guide"
+   ],
+   "bank": []
+  },
+  "found_in": "web_only",
+  "founder_sees": "A heads up the first time a new channel shows up in the numbers, before it grows unnoticed.",
+  "human_role": "business analyst",
+  "today_done_by": "nobody",
+  "owner_agent": "Brand Brain Keeper"
+ },
+ {
+  "id": "LOOP-C40",
+  "extends": null,
+  "name": "Same-day threshold alert when a metric crosses a hard trigger mid-day",
+  "folders": [
+   "99-multi"
+  ],
+  "what": "Notify before end of day when a metric crosses a hard, pre-agreed trigger mid-day, matching how a head of growth reviews trading dashboards for same-day actions, without waiting for the next daily ranking and without invoking full crisis mode for something short of a crisis.",
+  "encompasses": [
+   "hold a short list of hard triggers with numeric thresholds, agreed in advance, separate from the daily ranking's own thresholds",
+   "check live data against the triggers through the day, not only at the daily batch read",
+   "notify once per trigger crossing per day, not repeatedly",
+   "route the alert to the same-day owner, not necessarily the founder, if one is set",
+   "fold the day's crossings into the next daily ranking so nothing is double-counted"
+  ],
+  "inputs": [
+   "live metric feed",
+   "pre-agreed hard triggers"
+  ],
+  "outputs": [
+   "same-day alert"
+  ],
+  "trigger": "continuous through the trading day",
+  "autonomy": "agent_does",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [
+   "script: threshold watcher"
+  ],
+  "skills": [
+   "same-day-threshold-alert"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [
+    "https://www.shipbob.com/blog/director-of-ecommerce/",
+    "https://www.3searchgroup.com/head-of-ecommerce/"
+   ],
+   "bank": []
+  },
+  "found_in": "web_only",
+  "founder_sees": "A same-day heads up on the one number that crossed a line, instead of finding out tomorrow.",
+  "human_role": "head of growth; head of ecommerce",
+  "today_done_by": "founder",
+  "owner_agent": "Diagnose"
+ },
+ {
+  "id": "LOOP-C41",
+  "extends": null,
+  "name": "Reconcile a third-party agency's or platform's reported performance against the metric contract",
+  "folders": [
+   "99-multi"
+  ],
+  "what": "Before the founder trusts an agency's or platform's own performance report, reconcile its numbers against the metric contract's own source-of-truth figures, and flag any vanity-metric framing, a mismatched window, or a number that does not match, since a fractional CMO's reporting rhythm assumes the numbers already agree, and nothing checks that assumption today.",
+  "encompasses": [
+   "match each headline number in the agency's or platform's report to the same field in the metric contract",
+   "flag a window mismatch, a different date range used to make a number look better",
+   "flag a metric reported that is not in the metric contract's vocabulary at all, and name what it is likely standing in for",
+   "recompute period ROAS or a similar ratio in code and compare to the agency's stated figure",
+   "state the discrepancy in one line, not just a wall of numbers"
+  ],
+  "inputs": [
+   "agency or platform report",
+   "metric contract"
+  ],
+  "outputs": [
+   "reconciliation note with named discrepancies"
+  ],
+  "trigger": "event: an agency or platform report is received",
+  "autonomy": "agent_does",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [
+   "script: report reconciler"
+  ],
+  "skills": [
+   "agency-report-reconciliation"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [
+    "https://digital-hunch.com/blog/fractional-cmo-responsibilities/",
+    "https://almcorp.com/blog/digital-agency-client-onboarding-checklist-best-practices/"
+   ],
+   "bank": []
+  },
+  "found_in": "web_only",
+  "founder_sees": "Whether the agency's own report agrees with the brand's own numbers, before it is trusted.",
+  "human_role": "fractional CMO; business analyst",
+  "today_done_by": "founder",
+  "owner_agent": "QA Gate"
+ },
+ {
+  "id": "LOOP-C42",
+  "extends": null,
+  "name": "Approve, reject or park a proposal card by replying on SMS or chat",
+  "folders": [
+   "99-multi"
+  ],
+  "what": "Let the founder reply to a text message (SMS, Slack or WhatsApp where used) with a single word or emoji to approve, reject or park a specific proposal card, matched back to its card id, for when they are mobile-first and travelling.",
+  "encompasses": [
+   "send the card's one-line summary over the founder's chosen channel with a short reply code",
+   "match the reply to the card id and record it exactly like a button press",
+   "confirm back with the registry entry id",
+   "fall back silently to the review page if no messaging channel is connected"
+  ],
+  "inputs": [
+   "proposal card",
+   "founder's reply"
+  ],
+  "outputs": [
+   "decision logged with reason if given",
+   "confirmation sent back"
+  ],
+  "trigger": "event: a founder replies to a card message",
+  "autonomy": "founder_gate",
+  "external_write": {
+   "needed": true,
+   "surface": "SMS, Slack or WhatsApp, message send and receive only"
+  },
+  "tools": [
+   "messaging channel",
+   "script: reply matcher"
+  ],
+  "skills": [
+   "whatsapp-decision-channel"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [
+    "https://watease.com/industries/retail"
+   ],
+   "bank": []
+  },
+  "found_in": "possible",
+  "founder_sees": "A card they can approve by typing one word back, from their phone.",
+  "human_role": "founder",
+  "today_done_by": "founder",
+  "owner_agent": "Orchestrator"
+ },
+ {
+  "id": "LOOP-C02",
+  "extends": "LOOP-C02",
+  "name": "Teach the founder to question a number before acting on it (extension: external-cause attribution)",
+  "folders": [
+   "99-multi"
+  ],
+  "what": "Extends the skepticism check: before an already-observed metric move is credited to or blamed on an executed idea, check whether an external, uncontrollable event explains it instead, going beyond the original check's attribution-window and seasonal-spike cases.",
+  "encompasses": [
+   "check a metric move against known external events: a platform algorithm change, a payment gateway outage, a competitor stockout, a courier strike, a festival date shift year over year",
+   "hold a short dated list of such external events as they are reported, separate from the brand's own history",
+   "say likely external cause, not the change we made when the check fires, before the Registrar records a result",
+   "never let an external-cause flag silently cancel a read; it still needs a founder-visible note"
+  ],
+  "inputs": [
+   "metric contract",
+   "dated list of known external events",
+   "candidate idea record"
+  ],
+  "outputs": [
+   "external-cause flag attached to a result or a proposal"
+  ],
+  "trigger": "event: a metric moves near a change the loop did not make, or a result is about to be recorded",
+  "autonomy": "agent_does",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [
+   "script: external-event matcher"
+  ],
+  "skills": [
+   "external-cause-check"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [
+    "https://bryghtpath.com/crisis-management-for-retail/"
+   ],
+   "bank": []
+  },
+  "found_in": "web_only",
+  "founder_sees": "A move flagged as probably not us before anyone takes credit or blame for it.",
+  "human_role": "business analyst",
+  "today_done_by": "nobody",
+  "owner_agent": "Diagnose"
+ },
+ {
+  "id": "LOOP-C06",
+  "extends": "LOOP-C06",
+  "name": "Run the crisis response protocol (extension: single-escalation triage below full crisis mode)",
+  "folders": [
+   "99-multi"
+  ],
+  "what": "Extends the crisis protocol with a lighter tier: a single high-stakes escalation, one very unhappy high-value customer, one risky review, one small stock issue on a minor SKU, that is too small to assemble a full cross-functional response group for, but too risky to sit in the normal queue.",
+  "encompasses": [
+   "classify an incoming escalation by stakes and reach before deciding crisis mode versus single-item triage",
+   "route a single-item escalation straight to the one specialist or the founder who should see it, with the full context attached",
+   "hold a lower bar for reopening as full crisis mode if a single item turns out to be part of a pattern",
+   "log a single-item escalation the same way as a crisis, so the pattern is visible later"
+  ],
+  "inputs": [
+   "incoming escalation",
+   "brand brain: current crisis status"
+  ],
+  "outputs": [
+   "single-item escalation routed with context",
+   "upgrade to crisis mode if a pattern emerges"
+  ],
+  "trigger": "event: an escalation arrives that does not meet the crisis threshold",
+  "autonomy": "founder_gate",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [
+   "script: escalation classifier"
+  ],
+  "skills": [
+   "escalation-triage"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [
+    "https://sproutsocial.com/insights/crisis-management/"
+   ],
+   "bank": []
+  },
+  "found_in": "web_only",
+  "founder_sees": "A single flare-up routed to the right person, without a full crisis production for something that does not need one.",
+  "human_role": "chief of staff; general manager",
+  "today_done_by": "founder",
+  "owner_agent": "Orchestrator"
+ },
+ {
+  "id": "LOOP-C10",
+  "extends": "LOOP-C10",
+  "name": "Keep the decision log (extension: handoff-ready history on personnel change)",
+  "folders": [
+   "99-multi"
+  ],
+  "what": "Extends the decision log so that when a team member, a specialist's scope, or an agency staff person changes, a new person can read the log and understand the reasoning, not just the outcome, without asking around.",
+  "encompasses": [
+   "produce a plain-language history of decisions relevant to one area, a channel, a specialist, a brand, on request",
+   "trigger this export automatically when an agency staff change or a handoff is logged",
+   "include the reasoning and the rejected alternatives, not only what was approved",
+   "date every entry so a new person can tell what is still current versus superseded"
+  ],
+  "inputs": [
+   "decision log",
+   "area or person the handoff concerns"
+  ],
+  "outputs": [
+   "handoff-ready decision history"
+  ],
+  "trigger": "event: a personnel or agency-staff change; on demand",
+  "autonomy": "agent_does",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [
+   "script: decision log exporter"
+  ],
+  "skills": [
+   "decision-handoff-export"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [
+    "https://www.larksuite.com/en_us/topics/project-management-methodologies-for-functional-teams/decision-log-for-software-development-teams"
+   ],
+   "bank": []
+  },
+  "found_in": "web_only",
+  "founder_sees": "A new person on the account gets the reasoning, not just a pile of old cards.",
+  "human_role": "agency account manager",
+  "today_done_by": "agency",
+  "owner_agent": "Registrar"
+ },
+ {
+  "id": "LOOP-C12",
+  "extends": "LOOP-C12",
+  "name": "Run the pre-delivery integrity gate (extension: gross versus net numbers and human-delivered work)",
+  "folders": [
+   "99-multi"
+  ],
+  "what": "Extends the integrity gate to two cases the original checklist does not name: numbers that must be shown gross and net of returns and chargebacks (and of RTO and GST for India-based brands), and work delivered by a freelancer, agency or employee, which gets the same checks as agent output.",
+  "encompasses": [
+   "check any revenue or order number in a deliverable states whether it is gross or net of expected returns and chargebacks",
+   "check a price or invoice figure states whether it is tax-inclusive or exclusive (sales tax, or GST for IN brands)",
+   "apply the same nine checks to work a human delivered through the queue as to an AI specialist's output, before it reaches the founder",
+   "flag when a human-delivered artefact cannot be checked, no source data attached, rather than pass it by default"
+  ],
+  "inputs": [
+   "specialist or human-delivered draft output",
+   "gross and net conventions per market"
+  ],
+  "outputs": [
+   "pass or fail with named fixes, covering human-delivered work too"
+  ],
+  "trigger": "event: any output, AI or human, is ready to deliver",
+  "autonomy": "agent_does",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [
+   "script: QA checklist runner"
+  ],
+  "skills": [
+   "integrity-gate"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [
+    "https://busy.in/ecommerce-reconciliation/rto-meaning-in-ecommerce-india-causes-charges-and-18-ways-to-reduce/"
+   ],
+   "bank": []
+  },
+  "found_in": "web_only",
+  "founder_sees": "The same clean bar for a human's work as for the agents', and every number labelled gross or net.",
+  "human_role": "business analyst",
+  "today_done_by": "nobody",
+  "owner_agent": "QA Gate"
+ }
+]

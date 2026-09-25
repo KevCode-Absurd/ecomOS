@@ -1,0 +1,2580 @@
+[
+  {
+    "id": "MEDIA-C01",
+    "name": "Audit the Meta ad account end to end",
+    "folders": [
+      "24-DEP"
+    ],
+    "what": "Read the whole Meta ad account (structure, naming, creative, tracking, spend) and produce one ranked 90 day roadmap naming the single biggest constraint, not a list of screenshots.",
+    "encompasses": [
+      "Pull account, campaign, ad set and ad level data for the trailing 12 months from the gallery cache and a fresh Meta re-pull",
+      "Run the structure review checklist: campaign purpose lines, ad set count vs spend tier, naming, CBO vs ABO use",
+      "Run the creative review in fixed order: volume, then diversity, then quality",
+      "Score the account on a readable-data test (can results be read without guessing) and a commercial-alignment test (does spend match the business's real priorities)",
+      "Validate any proposed structure against 4 fixed questions before it goes in the roadmap",
+      "Rank findings by money at stake, not by how easy they are to fix",
+      "Write the roadmap as dated, ranked actions with the metric each one should move"
+    ],
+    "inputs": [
+      "brand brain: products and margin",
+      "connector: meta ads read (gallery cache + MCP re-pull)",
+      "metric contract: cpa, roas_blended, spend"
+    ],
+    "outputs": [
+      "audit report",
+      "ranked 90 day roadmap",
+      "change list for structure fixes"
+    ],
+    "trigger": "monthly",
+    "autonomy": "agent_does",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [
+      "mcp: meta ads read (ads_get_ad_entities, ads_get_ad_accounts)",
+      "script: meta_gallery.refresh",
+      "script: meta_gallery.snapshot",
+      "gallery: campaigns tab"
+    ],
+    "skills": [
+      "meta-account-audit"
+    ],
+    "subagent": null,
+    "sources": {
+      "web": [
+        "https://admanage.ai/blog/facebook-ads-audit",
+        "https://www.adspirer.com/blog/facebook-ads-audit"
+      ],
+      "bank": [
+        "DEP-001",
+        "DEP-002",
+        "DEP-095",
+        "DEP-096",
+        "DEP-097",
+        "DEP-098",
+        "DEP-099"
+      ]
+    },
+    "found_in": "web+bank",
+    "founder_sees": "One ranked list: here is the one thing most limiting Meta results right now, and what it would take to fix it."
+  },
+  {
+    "id": "MEDIA-C02",
+    "name": "Audit the Google Ads account end to end",
+    "folders": [
+      "12-GAD"
+    ],
+    "what": "Read the whole Google Ads account and diagnose problems top down: business, channel, campaign, metric, then root cause, following the 3 pre diagnosis rules before changing anything.",
+    "encompasses": [
+      "Pull account and campaign structure, spend and conversions (manual export until a connector exists)",
+      "Diagnose any dip top down: business level, then channel share, then campaign, then metric, then root cause",
+      "Apply the 3 pre diagnosis rules before touching any setting",
+      "Find the inflection date of a change and check only the top 5 campaigns by spend around it",
+      "Match the failure mode checklist to the campaign type that dipped (Search, Shopping, PMax, Demand Gen)",
+      "Split CPA and clicks into their formula parts (impressions, CTR, CVR) to find the real cause",
+      "Default to an isolated fix over a full rebuild unless the isolated fix has already failed"
+    ],
+    "inputs": [
+      "brand brain: products and margin",
+      "connector: google ads (manual export, no read connector yet)",
+      "metric contract: cpa, roas_blended, spend"
+    ],
+    "outputs": [
+      "audit report",
+      "diagnosis writeup with root cause",
+      "change list"
+    ],
+    "trigger": "monthly",
+    "autonomy": "human_assist",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [
+      "web: Google Ads UI export (no connector yet)",
+      "script: scripts/ideas.py --bottleneck acquisition_efficiency"
+    ],
+    "skills": [
+      "google-account-audit"
+    ],
+    "subagent": "google-ads-buyer",
+    "sources": {
+      "web": [
+        "https://groas.com/post/google-ads-account-audit-checklist-2026-red-flags-fixes",
+        "https://www.adspirer.com/blog/google-ads-audit-checklist"
+      ],
+      "bank": [
+        "GAD-002",
+        "GAD-153",
+        "GAD-154",
+        "GAD-155",
+        "GAD-156",
+        "GAD-157",
+        "GAD-158",
+        "GAD-184",
+        "DEP-139"
+      ]
+    },
+    "found_in": "web+bank",
+    "founder_sees": "A plain diagnosis of why Google spend is underperforming, in the order the problem actually happened, and one fix to try first."
+  },
+  {
+    "id": "MEDIA-C03",
+    "name": "Check Meta pixel, CAPI and customer sync health",
+    "folders": [
+      "24-DEP"
+    ],
+    "what": "Confirm every order and its value passes cleanly from checkout to the Meta pixel and CAPI, and that new, engaged and existing customer segments are defined and syncing.",
+    "encompasses": [
+      "Check that purchase events fire with the real order value, not a fixed or missing value",
+      "Check event match quality and event deduplication between pixel and CAPI",
+      "Define new, engaged and existing customer audience segments from the brand's own data",
+      "Check the customer list sync runs on schedule and matches current order data",
+      "Flag any gap between store order count and Meta reported purchases"
+    ],
+    "inputs": [
+      "brand brain: order feed",
+      "connector: meta ads read (ads_pixel_event_read, ads_get_datasets, ads_get_dataset_quality)",
+      "metric contract: tracking_coverage, event_match_quality"
+    ],
+    "outputs": [
+      "health report",
+      "developer brief for any pixel or CAPI fix",
+      "registry entry if a fix is approved"
+    ],
+    "trigger": "weekly",
+    "autonomy": "agent_does",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [
+      "mcp: meta ads read (ads_get_dataset_quality, ads_get_dataset_stats, ads_pixel_event_read, ads_pixel_parameter_read)"
+    ],
+    "skills": [
+      "pixel-capi-health"
+    ],
+    "subagent": null,
+    "sources": {
+      "web": [
+        "https://admanage.ai/blog/facebook-ads-audit"
+      ],
+      "bank": [
+        "DEP-074",
+        "DEP-092"
+      ]
+    },
+    "found_in": "web+bank",
+    "founder_sees": "Whether Meta can actually see and value the brand's real orders, and what is broken if not."
+  },
+  {
+    "id": "MEDIA-C04",
+    "name": "Build and audit Google conversion tracking",
+    "folders": [
+      "12-GAD"
+    ],
+    "what": "Set one primary purchase action, pass real order value through enhanced conversions, and pick the tracking route (app, GTM, server side) by the brand's spend level, then check it against Shopify monthly.",
+    "encompasses": [
+      "Set exactly one primary purchase conversion action, optimised to purchase, never add to cart or clicks",
+      "Never use the GA4 import as the primary purchase action",
+      "Turn on enhanced conversions and pass real order value",
+      "Pick the tracking build route by spend: app first, then GTM, then server side above about $50k a month",
+      "Add the Conversion Linker tag on all pages and turn on auto tagging",
+      "Pass product ID, category and value in dynamic remarketing tag parameters",
+      "Set conversion windows to match the purchase cycle, then check against Shopify",
+      "Track new customers with their own event, not Google's acquisition setting",
+      "Use add to cart as the primary goal only for high ticket, low volume products",
+      "Reconcile Google reported purchases against backend orders after setup and every month"
+    ],
+    "inputs": [
+      "brand brain: order feed, product catalogue",
+      "connector: google ads and GTM (no read connector yet, manual)",
+      "metric contract: tracking_coverage, attribution_gap"
+    ],
+    "outputs": [
+      "developer brief for tag setup",
+      "monthly reconciliation report",
+      "change list"
+    ],
+    "trigger": "event: new account or quarterly recheck",
+    "autonomy": "human_assist",
+    "external_write": {
+      "needed": true,
+      "surface": "google ads / google tag manager"
+    },
+    "tools": [
+      "web: Google Tag Manager and Google Ads UI (no connector yet)"
+    ],
+    "skills": [
+      "google-tracking-setup"
+    ],
+    "subagent": "google-ads-buyer",
+    "sources": {
+      "web": [
+        "https://www.adspirer.com/blog/google-ads-audit-checklist"
+      ],
+      "bank": [
+        "GAD-013",
+        "GAD-014",
+        "GAD-015",
+        "GAD-016",
+        "GAD-017",
+        "GAD-018",
+        "GAD-019",
+        "GAD-020",
+        "GAD-021",
+        "GAD-022",
+        "GAD-023",
+        "GAD-025",
+        "GAD-026",
+        "GAD-166"
+      ]
+    },
+    "found_in": "web+bank",
+    "founder_sees": "Whether Google can be trusted to report real orders and real order values, with a brief a developer can implement."
+  },
+  {
+    "id": "MEDIA-C05",
+    "name": "Reconcile platform ROAS against blended MER",
+    "folders": [
+      "24-DEP",
+      "12-GAD"
+    ],
+    "what": "Compare each platform's own reported ROAS against acquisition MER (total new customer revenue over total spend) before any keep, kill or scale call, and treat incremental lift as a check column, never the optimisation target.",
+    "encompasses": [
+      "Compute platform ROAS and acquisition MER from the metric contract, in code",
+      "Use the same attribution setting on every campaign inside one platform",
+      "Never tighten Google attribution windows to match Meta, or copy Meta rules onto Google",
+      "Reconcile TikTok reported purchases with store orders on 7 day click",
+      "Reconcile marketplace sales and payment-method returns (chargebacks and disputes; cash-on-delivery returns, India only) separately before trusting platform ROAS",
+      "Run a monthly platform ROAS versus aMER reconciliation using the attribution comparison columns",
+      "Judge an assist layer (view through, upper funnel) by downstream lag, not its own last click ROAS",
+      "Sanity check any too good ROAS number against attribution window and audience segment before acting on it",
+      "Treat daily ROAS swings under about $1,000 a day as normal noise, not a signal"
+    ],
+    "inputs": [
+      "metric contract: roas_blended, spend, attribution_gap",
+      "connector: meta ads read, gallery sales.json (Metabase)",
+      "connector: google ads and TikTok (manual, no connector yet)"
+    ],
+    "outputs": [
+      "reconciliation report",
+      "flag list of platforms disagreeing with store data"
+    ],
+    "trigger": "weekly",
+    "autonomy": "agent_does",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [
+      "script: meta_gallery.metrics",
+      "gallery: insights tab",
+      "mcp: meta ads read (ads_insights_advertiser_context)"
+    ],
+    "skills": [
+      "mer-reconciliation"
+    ],
+    "subagent": null,
+    "sources": {
+      "web": [],
+      "bank": [
+        "DEP-004",
+        "DEP-062",
+        "DEP-063",
+        "DEP-064",
+        "DEP-068",
+        "DEP-069",
+        "DEP-070",
+        "DEP-071",
+        "DEP-093",
+        "DEP-102",
+        "DEP-144",
+        "GAD-007",
+        "GAD-011",
+        "GAD-195"
+      ]
+    },
+    "found_in": "bank_only",
+    "founder_sees": "Whether the ad platforms' own numbers can be trusted, and what the real blended return is once store data is the judge."
+  },
+  {
+    "id": "MEDIA-C06",
+    "name": "Run incrementality and lift tests",
+    "folders": [
+      "24-DEP"
+    ],
+    "what": "Design and read a Conversion Lift or geo lift test when platform ROAS and blended MER still disagree after attribution is tightened, to find the ad spend that would not have converted anyway.",
+    "encompasses": [
+      "Confirm attribution has already been tightened and reconciled before proposing a lift test",
+      "Choose test type: Meta Conversion Lift, geo holdout, or matched-market geo test",
+      "Size the test: markets or audience split, minimum spend, and read window",
+      "Write the test brief: hypothesis, holdout design, read point, and what counts as proof",
+      "Read the result and update the brand's effect prior for that spend level",
+      "Never let a lift test change platform bidding directly; feed the result into budget decisions instead"
+    ],
+    "inputs": [
+      "metric contract: roas_blended, spend",
+      "connector: meta ads read (ads_experiment_lift_create_test, ads_experiment_check_eligibility)",
+      "brand brain: geographic sales spread"
+    ],
+    "outputs": [
+      "test brief",
+      "read point and result writeup",
+      "registry entry"
+    ],
+    "trigger": "event: attribution disagreement persists after reconciliation",
+    "autonomy": "founder_gate",
+    "external_write": {
+      "needed": true,
+      "surface": "meta ads"
+    },
+    "tools": [
+      "mcp: meta ads read (ads_experiment_lift_get_test, ads_experiment_list_tests, ads_experiment_check_eligibility)",
+      "mcp: meta ads write (ads_experiment_lift_create_test, gated)"
+    ],
+    "skills": [
+      "incrementality-test-design"
+    ],
+    "subagent": null,
+    "sources": {
+      "web": [
+        "https://www.triplewhale.com/blog/geolift-geo-based-incrementality-testing",
+        "https://commonthreadco.com/pages/incrementality"
+      ],
+      "bank": [
+        "DEP-065"
+      ]
+    },
+    "found_in": "web+bank",
+    "founder_sees": "A clear test that answers whether this spend is buying orders that would not have happened anyway, with a plain yes or no plan to run it."
+  },
+  {
+    "id": "MEDIA-C07",
+    "name": "Filter platform automated suggestions before applying them",
+    "folders": [
+      "24-DEP"
+    ],
+    "what": "Log and test every Ads Manager or Google Ads suggestion before it is applied, and separate real targeting controls from settings that are only suggestions.",
+    "encompasses": [
+      "Log every platform suggested change with its stated expected effect",
+      "Test each suggestion in a small sandbox before wider rollout, where testable",
+      "Audit which targeting fields are real controls and which are non-binding suggestions",
+      "Turn off auto apply recommendations and AI generated assets by default",
+      "Record the actual effect of any suggestion that was applied, against the platform's claim"
+    ],
+    "inputs": [
+      "connector: meta ads read, google ads (manual)",
+      "registry: past suggestion outcomes"
+    ],
+    "outputs": [
+      "suggestion log",
+      "change list (apply or reject, with reason)"
+    ],
+    "trigger": "weekly",
+    "autonomy": "agent_does",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [
+      "mcp: meta ads read (ads_get_errors, ads_get_field_context)",
+      "web: Google Ads recommendations tab (manual)"
+    ],
+    "skills": [
+      "suggestion-filter"
+    ],
+    "subagent": null,
+    "sources": {
+      "web": [],
+      "bank": [
+        "DEP-005",
+        "DEP-140",
+        "GAD-059",
+        "GAD-141"
+      ]
+    },
+    "found_in": "bank_only",
+    "founder_sees": "A short list of what the platform wants to change automatically, whether it was tested, and whether it actually helped last time."
+  },
+  {
+    "id": "MEDIA-C08",
+    "name": "Score new customer economics and set ROAS or CAC targets from margin",
+    "folders": [
+      "24-DEP",
+      "12-GAD"
+    ],
+    "what": "Build a monthly new customer view (CAC, first purchase gross profit, GP to CAC) and set every ROAS or CPA target from the brand's own contribution margin, never an industry benchmark.",
+    "encompasses": [
+      "Compute break even ROAS and break even CPA from contribution margin, in code",
+      "Confirm unit economics before setting any scale plan",
+      "Build the monthly new customer P&L: CAC, first purchase gross profit, GP to CAC",
+      "Score GP to CAC against fixed bands to decide hold, scale, or spend more",
+      "Set each product category's ROAS target from its own gross margin, not one account wide number",
+      "Raise AOV before cutting acquisition cost when AOV is low for the category",
+      "Build GP cohort growth curves at day 90, 180 and 365 to set the real CAC tolerance"
+    ],
+    "inputs": [
+      "brand brain: cogs, margin by SKU",
+      "metric contract: cpa, gross_margin, ltv_180d, contribution_margin",
+      "connector: gallery sales.json"
+    ],
+    "outputs": [
+      "monthly new customer P&L",
+      "target sheet by category",
+      "recommendation memo"
+    ],
+    "trigger": "monthly",
+    "autonomy": "agent_does",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [
+      "script: meta_gallery.metrics",
+      "gallery: brand sales tab"
+    ],
+    "skills": [
+      "new-customer-economics"
+    ],
+    "subagent": null,
+    "sources": {
+      "web": [
+        "https://eightx.co/blog/roas-vs-mer-vs-blended-cac"
+      ],
+      "bank": [
+        "DEP-003",
+        "DEP-066",
+        "DEP-067",
+        "DEP-100",
+        "DEP-101",
+        "DEP-146",
+        "GAD-003",
+        "GAD-004",
+        "GAD-005",
+        "GAD-006"
+      ]
+    },
+    "found_in": "web+bank",
+    "founder_sees": "What it actually costs to win a new customer by category, and the ROAS or CPA target that matches the brand's own margin, not a generic rule of thumb."
+  },
+  {
+    "id": "MEDIA-C09",
+    "name": "Design Meta account structure by spend tier",
+    "folders": [
+      "24-DEP"
+    ],
+    "what": "Pick and build the campaign structure template that matches the brand's monthly Meta spend: small, mid or large, and keep the account inside its readable data and commercial alignment tests.",
+    "encompasses": [
+      "Use the small spend template: one testing campaign, optional scaling, optional small retention campaign",
+      "Use the mid spend template: 2 to 3 cold campaigns with a stated reason and higher ad volume",
+      "Use the large spend template: mandatory page strategy and bidding diversity across campaigns",
+      "Merge campaigns whose conversion volume is too thin to optimise well",
+      "Fully consolidate to one campaign only for a single product, single persona, small spend store",
+      "Split campaigns by business unit, ad sets by concept, never by launch date",
+      "Plan extra ad pages before hitting the live ad per page cap"
+    ],
+    "inputs": [
+      "brand brain: catalogue, personas",
+      "metric contract: spend, cpa",
+      "audit: MEDIA-C01 output"
+    ],
+    "outputs": [
+      "structure diagram",
+      "change list for campaign consolidation or split"
+    ],
+    "trigger": "event: spend tier change or after audit",
+    "autonomy": "human_assist",
+    "external_write": {
+      "needed": true,
+      "surface": "meta ads"
+    },
+    "tools": [
+      "mcp: meta ads read (ads_get_ad_entities)"
+    ],
+    "skills": [
+      "meta-structure-template"
+    ],
+    "subagent": null,
+    "sources": {
+      "web": [
+        "https://admanage.ai/blog/facebook-ads-audit"
+      ],
+      "bank": [
+        "DEP-008",
+        "DEP-009",
+        "DEP-010",
+        "DEP-011",
+        "DEP-012",
+        "DEP-014",
+        "DEP-094"
+      ]
+    },
+    "found_in": "web+bank",
+    "founder_sees": "The account structure that matches current spend, as a diagram and a list of changes for someone to make."
+  },
+  {
+    "id": "MEDIA-C10",
+    "name": "Write campaign purpose lines and naming convention",
+    "folders": [
+      "24-DEP"
+    ],
+    "what": "Require a one line defendable purpose for every campaign and a fixed naming pattern for every ad set, so reporting problems get fixed with naming, not new campaigns.",
+    "encompasses": [
+      "Write a one line purpose for every existing and new campaign",
+      "Fix reporting or readability problems with naming and filters before adding new campaigns",
+      "Run recurring promos in their own campaign, named for the promo",
+      "Name every ad set with persona, angle, offer, content type and launch date, never a batch name",
+      "Name ad set forks with the same concept fields plus launch date so results can be tracked across forks"
+    ],
+    "inputs": [
+      "brand brain: personas, offers",
+      "audit: MEDIA-C01 output"
+    ],
+    "outputs": [
+      "naming convention doc",
+      "change list (renames)"
+    ],
+    "trigger": "on demand",
+    "autonomy": "human_assist",
+    "external_write": {
+      "needed": true,
+      "surface": "meta ads"
+    },
+    "tools": [],
+    "skills": [
+      "naming-convention"
+    ],
+    "subagent": null,
+    "sources": {
+      "web": [],
+      "bank": [
+        "DEP-007",
+        "DEP-017",
+        "DEP-025",
+        "DEP-122"
+      ]
+    },
+    "found_in": "bank_only",
+    "founder_sees": "One naming rule for the whole account, and which campaigns or ad sets do not follow it yet."
+  },
+  {
+    "id": "MEDIA-C11",
+    "name": "Design ad set and concept architecture",
+    "folders": [
+      "24-DEP"
+    ],
+    "what": "Define a concept as one SKU, one pain point and one offer, keep non overlapping personas apart, and load each concept ad set with enough ads for 2 to 6 exposures before purchase.",
+    "encompasses": [
+      "Define a concept as SKU, pain point and offer; a change to any one starts a new ad set",
+      "Load each concept ad set with enough ads for 2 to 6 exposures before purchase, minimum 3",
+      "Launch every new concept with the concept ad plus 3 hook variations",
+      "Keep non overlapping personas out of the same ad set",
+      "Group all funnel stages for one persona in one ad set, or blend the numbers before deciding to split by stage",
+      "Spin a funnel into its own campaign once it is big enough to KPI alone",
+      "Run recurring promos in their own campaign, isolated from evergreen concepts"
+    ],
+    "inputs": [
+      "brand brain: personas, offers, SKUs",
+      "reference scout: creative references"
+    ],
+    "outputs": [
+      "ad set plan",
+      "change list"
+    ],
+    "trigger": "event: new concept ready",
+    "autonomy": "human_assist",
+    "external_write": {
+      "needed": true,
+      "surface": "meta ads"
+    },
+    "tools": [],
+    "skills": [
+      "concept-adset-design"
+    ],
+    "subagent": null,
+    "sources": {
+      "web": [],
+      "bank": [
+        "DEP-015",
+        "DEP-016",
+        "DEP-020",
+        "DEP-021",
+        "DEP-022",
+        "DEP-023",
+        "DEP-024",
+        "DEP-026"
+      ]
+    },
+    "found_in": "bank_only",
+    "founder_sees": "How a new idea becomes one ad set, with which personas and offers can share it and which cannot."
+  },
+  {
+    "id": "MEDIA-C12",
+    "name": "Build Meta audiences: broad, custom, lookalike, exclusions",
+    "folders": [
+      "24-DEP"
+    ],
+    "what": "Go broad in cold targeting by default, cap any interest or lookalike test as a small sandbox, and exclude existing customers from every cold campaign sized to the repurchase cycle.",
+    "encompasses": [
+      "Go broad in cold targeting and let the page, price and reviews qualify the buyer",
+      "Cap any interest, lookalike or custom audience test as a small sandbox",
+      "Put the target audience in the creative and copy, not in the targeting settings",
+      "Exclude existing customers from every cold campaign, sized to the brand's repurchase cycle",
+      "Define and refresh new, engaged and existing customer segments on schedule"
+    ],
+    "inputs": [
+      "brand brain: customer list, repurchase cycle",
+      "connector: meta ads read (ads_get_ad_account_custom_audiences)"
+    ],
+    "outputs": [
+      "audience plan",
+      "change list (create or refresh audiences)"
+    ],
+    "trigger": "event: new campaign or quarterly refresh",
+    "autonomy": "human_assist",
+    "external_write": {
+      "needed": true,
+      "surface": "meta ads"
+    },
+    "tools": [
+      "mcp: meta ads read (ads_get_custom_audience, ads_get_custom_audience_adsets)"
+    ],
+    "skills": [
+      "audience-build"
+    ],
+    "subagent": null,
+    "sources": {
+      "web": [
+        "https://www.brandedagency.com/blog/ecommerce-meta-ads-2026-scaling-strategy"
+      ],
+      "bank": [
+        "DEP-027",
+        "DEP-028",
+        "DEP-029",
+        "DEP-030",
+        "DEP-082"
+      ]
+    },
+    "found_in": "web+bank",
+    "founder_sees": "Which audiences to build or refresh, and which existing customers to keep out of cold campaigns."
+  },
+  {
+    "id": "MEDIA-C13",
+    "name": "Set placements and turn off automatic creative edits",
+    "folders": [
+      "24-DEP"
+    ],
+    "what": "Remove weak placements from store campaigns, and turn off Advantage+ creative edits and flexible or dynamic crop on every product ad so the brand's own image and copy show as made.",
+    "encompasses": [
+      "Never launch placement, age or gender campaigns from breakdown ROAS alone",
+      "Remove Audience Network app rewards placement from store or engaged view campaigns",
+      "Turn off flexible or dynamic crop ads on catalogue and product ads",
+      "Turn off Advantage+ creative edits on every product ad"
+    ],
+    "inputs": [
+      "audit: MEDIA-C01 output",
+      "connector: meta ads read"
+    ],
+    "outputs": [
+      "change list (placement exclusions, creative edit toggles)"
+    ],
+    "trigger": "event: after audit or new campaign",
+    "autonomy": "human_assist",
+    "external_write": {
+      "needed": true,
+      "surface": "meta ads"
+    },
+    "tools": [],
+    "skills": [
+      "placement-creative-controls"
+    ],
+    "subagent": null,
+    "sources": {
+      "web": [],
+      "bank": [
+        "DEP-031",
+        "DEP-032",
+        "DEP-090",
+        "DEP-091"
+      ]
+    },
+    "found_in": "bank_only",
+    "founder_sees": "Which placements to drop and which auto edit settings to turn off so ads look the way the brand made them."
+  },
+  {
+    "id": "MEDIA-C14",
+    "name": "Choose Meta bid strategy and cost caps",
+    "folders": [
+      "24-DEP"
+    ],
+    "what": "Default to CBO for efficiency, switch to ABO at high AOV with low daily order volume, and win impressions with a sharper hook and clearer offer instead of raising the bid.",
+    "encompasses": [
+      "Default to CBO for efficiency; switch to ABO at high AOV with low daily order volume",
+      "At large spend, run CBO with ad set minimum and maximum spend limits instead of pure CBO",
+      "Test a seasonal rotation: CBO in Q4 peak, ABO in Q1 for clean testing",
+      "Ignore cost and bid caps under about $200k a month; pick a bid strategy by business constraint",
+      "Set cost caps and bidding at ad set level, never at ad level",
+      "Win impressions with a sharper hook and clearer offer instead of raising the bid",
+      "Test whether a higher on page action rate lowers CPM before assuming a bid change is needed"
+    ],
+    "inputs": [
+      "metric contract: cpa, roas_blended, cpm",
+      "audit: MEDIA-C01 output"
+    ],
+    "outputs": [
+      "bid strategy recommendation",
+      "change list"
+    ],
+    "trigger": "event: after audit or spend tier change",
+    "autonomy": "human_assist",
+    "external_write": {
+      "needed": true,
+      "surface": "meta ads"
+    },
+    "tools": [],
+    "skills": [
+      "bid-strategy-selection"
+    ],
+    "subagent": null,
+    "sources": {
+      "web": [],
+      "bank": [
+        "DEP-033",
+        "DEP-034",
+        "DEP-035",
+        "DEP-036",
+        "DEP-037",
+        "DEP-072",
+        "DEP-141"
+      ]
+    },
+    "found_in": "bank_only",
+    "founder_sees": "Which bid setting fits the account's spend and AOV right now, and why raising the bid is not the first lever to pull."
+  },
+  {
+    "id": "MEDIA-C15",
+    "name": "Size Meta creative tests and read windows",
+    "folders": [
+      "24-DEP"
+    ],
+    "what": "Size every creative test with a kill rule threshold of 3x to 5x target CPA, use the budget formula (target conversions times CPA divided by test days) instead of Meta's learning phase rule, and check the test budget can actually reach that spend in the test window.",
+    "encompasses": [
+      "Size every creative test with a kill rule threshold: 3x to 5x target CPA before judging",
+      "Size test budgets with the formula: target conversions times CPA divided by test days",
+      "Never derive test budgets from Meta's 50 conversions in 7 days learning rule",
+      "Match test read windows to purchase cycle and volume; never read under 5 days below $50k a month",
+      "Never judge or kill an ad on $1 to $2 of spend",
+      "Check that every ad set's planned budget can actually reach its read spend threshold in the test window"
+    ],
+    "inputs": [
+      "metric contract: cpa, spend",
+      "brand brain: purchase cycle"
+    ],
+    "outputs": [
+      "test brief with budget and read window",
+      "kill rule sheet"
+    ],
+    "trigger": "event: new creative test",
+    "autonomy": "agent_does",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [],
+    "skills": [
+      "creative-test-sizing"
+    ],
+    "subagent": null,
+    "sources": {
+      "web": [],
+      "bank": [
+        "DEP-038",
+        "DEP-039",
+        "DEP-040",
+        "DEP-041",
+        "DEP-042",
+        "DEP-054"
+      ]
+    },
+    "found_in": "bank_only",
+    "founder_sees": "How much to spend and how long to wait before judging a new ad, and the exact number where it gets killed or kept."
+  },
+  {
+    "id": "MEDIA-C16",
+    "name": "Set creative volume, diversity and refresh targets",
+    "folders": [
+      "24-DEP"
+    ],
+    "what": "Launch about 1 new ad per $1,000 of monthly spend, hit the concept count band for the spend tier, test ads that differ by benefit, price or persona rather than crop or color, and plan a yearly refresh to offset CPM inflation.",
+    "encompasses": [
+      "Launch about 1 new ad per $1,000 of monthly spend, with diminishing returns at very large spend",
+      "Hit the concept count band for the account's spend tier",
+      "Test ads that differ by benefit, price point or persona, not just crop or color",
+      "Plan a yearly creative and page refresh to offset CPM inflation",
+      "Inside a winning ad set, use spend share only to brief new creative, never to move budget",
+      "Track ad format as a spend share signal inside concept ad sets, not as a separate ad set split",
+      "Run the creative review in a fixed order: volume, then diversity, then quality",
+      "Diversify creative before a narrow persona callout saturates its cluster and drifts to colder audiences",
+      "Favor static ads over video when creative capacity is limited",
+      "Audit the creative library by awareness stage against an 80/10/10 split",
+      "Audit unintended buyer signals a creative sends before launch",
+      "Audit which Meta targeting fields the creative itself is quietly narrowing"
+    ],
+    "inputs": [
+      "brand brain: creative library, spend",
+      "reference scout: references",
+      "metric contract: spend"
+    ],
+    "outputs": [
+      "creative brief backlog",
+      "volume and diversity scorecard"
+    ],
+    "trigger": "weekly",
+    "autonomy": "agent_does",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [
+      "gallery: gallery tab (tags, compare)",
+      "script: meta_gallery.themes"
+    ],
+    "skills": [
+      "creative-volume-plan"
+    ],
+    "subagent": "paid creative and copy specialist (MCR/ADC)",
+    "sources": {
+      "web": [
+        "https://www.adspirer.com/blog/facebook-ads-audit"
+      ],
+      "bank": [
+        "DEP-006",
+        "DEP-043",
+        "DEP-045",
+        "DEP-046",
+        "DEP-048",
+        "DEP-073",
+        "DEP-076",
+        "DEP-078",
+        "DEP-123",
+        "DEP-143",
+        "DEP-145",
+        "DEP-147"
+      ]
+    },
+    "found_in": "web+bank",
+    "founder_sees": "How many new ads are needed this month, what mix of angles and formats is missing, and where the creative pipeline is thin."
+  },
+  {
+    "id": "MEDIA-C17",
+    "name": "Apply kill, keep and scale rules to ad sets",
+    "folders": [
+      "24-DEP"
+    ],
+    "what": "Judge and move budget at the ad set level on a keep, yellow, kill table read at 3x to 5x target CPA, never touch a winning ad set directly, and find each winner's spend equilibrium by stepping budget until ROAS turns unprofitable.",
+    "encompasses": [
+      "Judge and move budget at the ad set level, never on a single ad's ROAS",
+      "Apply the keep, yellow, kill decision table at 3x to 5x target CPA",
+      "Never touch a winning ad set; fork new creative into a new ad set beside it",
+      "Never run creative tests inside the scaling campaign",
+      "Do not ride one winner; clone it into variants and keep a creative pipeline running",
+      "Rescue high conviction, CBO starved ads in a small separate ad set, capped and logged",
+      "Raise winning ad set budgets in steps sized to the read window, not a fixed percentage",
+      "Find each winner's spend equilibrium by stepping budget up until ROAS turns unprofitable, then pull back",
+      "Move only confirmed equilibrium winners into a dedicated scaling campaign",
+      "Judge every budget raise over 7 or more days, never on same day revenue",
+      "Confirm a winner acquires new customers under 7 day click before briefing more of it",
+      "When doubling down on a winner, shift creative volume toward it and build the funnel around it",
+      "Flag high frequency on a top spending prospecting ad before scaling it further"
+    ],
+    "inputs": [
+      "metric contract: cpa, roas_blended, frequency",
+      "connector: meta ads read"
+    ],
+    "outputs": [
+      "daily read with keep/kill/scale calls",
+      "change list for budget moves"
+    ],
+    "trigger": "daily",
+    "autonomy": "human_assist",
+    "external_write": {
+      "needed": true,
+      "surface": "meta ads"
+    },
+    "tools": [
+      "mcp: meta ads read (ads_get_ad_entities, ads_insights_performance_trend)",
+      "gallery: campaigns tab"
+    ],
+    "skills": [
+      "kill-keep-scale-rules"
+    ],
+    "subagent": null,
+    "sources": {
+      "web": [
+        "https://adlibrary.com/posts/media-buying-automation-tools",
+        "https://www.adstellar.ai/blog/media-buying-automation-tools"
+      ],
+      "bank": [
+        "DEP-044",
+        "DEP-047",
+        "DEP-049",
+        "DEP-050",
+        "DEP-051",
+        "DEP-052",
+        "DEP-053",
+        "DEP-055",
+        "DEP-056",
+        "DEP-057",
+        "DEP-059",
+        "DEP-060",
+        "DEP-149"
+      ]
+    },
+    "found_in": "web+bank",
+    "founder_sees": "A daily list: which ad sets to kill, which to leave alone, which to scale, and by how much."
+  },
+  {
+    "id": "MEDIA-C18",
+    "name": "Read frequency and diagnose creative fatigue",
+    "folders": [
+      "24-DEP"
+    ],
+    "what": "Read 30 day frequency by audience segment rather than a blended number, and when frequency rises with flat cold reach, fix the creative mix by awareness stage before touching exclusions.",
+    "encompasses": [
+      "Read 30 day frequency by audience segment, not as a blended percentage",
+      "When frequency rises with flat cold reach, fix the creative mix by awareness stage before touching exclusions",
+      "Watch frequency and ROAS trend together on narrow persona ads and brief a new concept when ROAS taper starts",
+      "Watch per ad video retention curves and fix drops at the product intro or call to action"
+    ],
+    "inputs": [
+      "metric contract: frequency, roas_blended",
+      "connector: meta ads read"
+    ],
+    "outputs": [
+      "fatigue report",
+      "creative brief request to MCR/ADC specialist"
+    ],
+    "trigger": "weekly",
+    "autonomy": "agent_does",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [
+      "gallery: insights tab (video metrics, creative lifecycle)"
+    ],
+    "skills": [
+      "frequency-fatigue-read"
+    ],
+    "subagent": "paid creative and copy specialist (MCR/ADC)",
+    "sources": {
+      "web": [
+        "https://admanage.ai/blog/facebook-ads-audit"
+      ],
+      "bank": [
+        "DEP-075",
+        "DEP-077",
+        "DEP-124"
+      ]
+    },
+    "found_in": "web+bank",
+    "founder_sees": "Which ads and segments are wearing out, and whether the fix is new creative or a targeting change."
+  },
+  {
+    "id": "MEDIA-C19",
+    "name": "Run existing customer and retargeting campaigns",
+    "folders": [
+      "24-DEP"
+    ],
+    "what": "Hold all existing customer spend in one dedicated campaign sized in dollars and frequency, ask cold spend to grow and retargeting spend to shrink where possible, and retarget non buyers with a different offer or objection, not the same ad louder.",
+    "encompasses": [
+      "Ask 'where can cold spend grow' for prospecting and 'where can this shrink' for retargeting",
+      "Skip a website visitor retargeting campaign unless the engaged segment is starved of cold spend",
+      "Size existing customer ad budget in dollars and frequency, never as a percentage of spend",
+      "Hold all existing customer spend in one dedicated campaign so it cannot bleed into cold",
+      "Do not hyper segment retargeting by funnel stage, warmth tier or page viewed",
+      "Retarget non buyers with a different offer, proof or objection handling ad, not the same ad louder",
+      "Time win back or reminder ads to land just before a customer's typical reorder date",
+      "For high AOV considered purchases, run a longer nurture ladder before a same day retargeting push",
+      "Run a dedicated lapsed customer campaign with its own strategy"
+    ],
+    "inputs": [
+      "brand brain: repurchase cycle, customer segments",
+      "connector: meta ads read"
+    ],
+    "outputs": [
+      "retargeting campaign plan",
+      "change list"
+    ],
+    "trigger": "event: after audit or quarterly review",
+    "autonomy": "human_assist",
+    "external_write": {
+      "needed": true,
+      "surface": "meta ads"
+    },
+    "tools": [],
+    "skills": [
+      "retargeting-plan"
+    ],
+    "subagent": "lifecycle specialist (EML/CXP/OFF)",
+    "sources": {
+      "web": [],
+      "bank": [
+        "DEP-079",
+        "DEP-080",
+        "DEP-081",
+        "DEP-083",
+        "DEP-084",
+        "DEP-087",
+        "DEP-088",
+        "DEP-089",
+        "DEP-150"
+      ]
+    },
+    "found_in": "bank_only",
+    "founder_sees": "How much of the budget is warm traffic, whether that is too much or too little, and what to say to non buyers instead of repeating the same ad."
+  },
+  {
+    "id": "MEDIA-C20",
+    "name": "Manage dynamic product ads and the catalogue feed",
+    "folders": [
+      "24-DEP"
+    ],
+    "what": "Keep DPA out of the cold CBO in its own capped ad set, and read its results on 7 day click or incremental attribution, never on its blended platform ROAS.",
+    "encompasses": [
+      "Keep DPA out of the cold CBO in its own ad set, and cap its share of total spend",
+      "Read DPA on 7 day click or incremental attribution, never on its blended platform ROAS",
+      "Check the product catalogue feed for missing images, prices or availability before scaling DPA",
+      "Check the customer and product sync into the catalogue is current"
+    ],
+    "inputs": [
+      "brand brain: product catalogue",
+      "connector: meta ads read (ads_catalog_get_diagnostics, ads_catalog_get_dynamic_ads_health)"
+    ],
+    "outputs": [
+      "DPA health report",
+      "change list"
+    ],
+    "trigger": "weekly",
+    "autonomy": "agent_does",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [
+      "mcp: meta ads read (ads_catalog_get_diagnostics, ads_catalog_get_dynamic_ads_health, ads_catalog_list_products)"
+    ],
+    "skills": [
+      "dpa-catalogue-health"
+    ],
+    "subagent": null,
+    "sources": {
+      "web": [
+        "https://www.brandedagency.com/blog/ecommerce-meta-ads-2026-scaling-strategy"
+      ],
+      "bank": [
+        "DEP-085",
+        "DEP-086"
+      ]
+    },
+    "found_in": "web+bank",
+    "founder_sees": "Whether the catalogue feed is healthy enough to trust DPA, and how DPA is really performing once read correctly."
+  },
+  {
+    "id": "MEDIA-C21",
+    "name": "Plan the peak sale ramp and wind down",
+    "folders": [
+      "24-DEP",
+      "12-GAD"
+    ],
+    "what": "Ramp budget and structure ahead of a peak sale, fix a wind down date before the sale starts, and prepare the Google account for a known sale date ahead of time rather than after it opens.",
+    "encompasses": [
+      "Set the ramp schedule: budget steps, new creative, and structure changes before the sale window",
+      "Fix a wind down date and budget step down before the sale starts, not during it",
+      "Prepare Google Shopping, Search and brand campaigns for the known sale date in advance",
+      "Check stock levels against the planned ramp before committing budget",
+      "Write the post sale review checklist and read point"
+    ],
+    "inputs": [
+      "brand brain: sale calendar, stock levels",
+      "metric contract: spend, cpm"
+    ],
+    "outputs": [
+      "peak sale media plan",
+      "change list",
+      "post sale review template"
+    ],
+    "trigger": "event: 3 to 4 weeks before a known sale",
+    "autonomy": "human_assist",
+    "external_write": {
+      "needed": true,
+      "surface": "meta ads / google ads"
+    },
+    "tools": [],
+    "skills": [
+      "peak-sale-ramp-plan"
+    ],
+    "subagent": null,
+    "sources": {
+      "web": [],
+      "bank": [
+        "DEP-018",
+        "GAD-161"
+      ]
+    },
+    "found_in": "bank_only",
+    "founder_sees": "The budget and structure plan for the next sale, with a fixed date to wind it back down."
+  },
+  {
+    "id": "MEDIA-C22",
+    "name": "Set up cross border and multi market ad delivery",
+    "folders": [
+      "24-DEP",
+      "12-GAD"
+    ],
+    "what": "Give cross border buyers their own currency, delivery time and duty messaging, and set local payment methods, language and currency defaults for a mobile first, non US market.",
+    "encompasses": [
+      "Give cross border buyers their own currency, delivery time and duty messaging in ad copy",
+      "Set local payment methods, language and currency defaults for a mobile first, non US market",
+      "Show shipping cost and import duty in the Google feed for cross border orders",
+      "Run one Google feed per currency"
+    ],
+    "inputs": [
+      "brand brain: markets served, shipping policy",
+      "connector: meta ads read, google merchant center (manual)"
+    ],
+    "outputs": [
+      "market setup checklist",
+      "change list"
+    ],
+    "trigger": "event: new market launch",
+    "autonomy": "human_assist",
+    "external_write": {
+      "needed": true,
+      "surface": "meta ads / google merchant center"
+    },
+    "tools": [],
+    "skills": [
+      "cross-border-setup"
+    ],
+    "subagent": "google-ads-buyer",
+    "sources": {
+      "web": [],
+      "bank": [
+        "DEP-019",
+        "GAD-045",
+        "GAD-046"
+      ]
+    },
+    "found_in": "bank_only",
+    "founder_sees": "What needs to change in ads and feeds before selling to a new country or a cross border buyer."
+  },
+  {
+    "id": "MEDIA-C23",
+    "name": "Manage ad account access, ownership and multi account scaling",
+    "folders": [
+      "24-DEP",
+      "12-GAD"
+    ],
+    "what": "Keep the ad account, Merchant Center and analytics under one master login, lock down Business Center access before adding a team, and only open a second ad account on the same pixel once spend passes about $250k a month.",
+    "encompasses": [
+      "Put the ad account, Merchant Center and analytics under one master login",
+      "Lock down TikTok and Meta Business access before adding any team member",
+      "Open a second ad account on the same pixel only once spend passes about $250k a month",
+      "Do not split ad accounts by country except to bill in local currency",
+      "Audit who has admin, employee or partner access on every connected account"
+    ],
+    "inputs": [
+      "brand brain: account inventory"
+    ],
+    "outputs": [
+      "access audit",
+      "change list (access changes)"
+    ],
+    "trigger": "quarterly",
+    "autonomy": "human_assist",
+    "external_write": {
+      "needed": true,
+      "surface": "meta ads / tiktok ads / google ads"
+    },
+    "tools": [],
+    "skills": [
+      "account-access-audit"
+    ],
+    "subagent": null,
+    "sources": {
+      "web": [],
+      "bank": [
+        "DEP-013",
+        "DEP-126",
+        "DEP-136",
+        "GAD-024"
+      ]
+    },
+    "found_in": "bank_only",
+    "founder_sees": "Who has access to what, and whether the account setup itself (logins, second accounts) is holding growth back."
+  },
+  {
+    "id": "MEDIA-C24",
+    "name": "Launch and structure the first TikTok campaigns",
+    "folders": [
+      "24-DEP"
+    ],
+    "what": "Complete TikTok account readiness, verify every pixel event fires, then launch a manual Sales campaign with broad targeting and a staged read at 24 hours and 3 days, cutting the bottom half.",
+    "encompasses": [
+      "Complete the full TikTok account setup before spending any budget",
+      "Test every TikTok pixel event before launch and stop if purchase or add to cart does not fire",
+      "Launch the first TikTok campaign as a manual Sales campaign with the catalog off",
+      "Set the first ad group to broad targeting, Complete Payment optimisation, no target CPA",
+      "Keep TikTok interests broad: 2 to 5 parent categories, never 15 to 20 stacked interests",
+      "Set daily budget at the greater of $50 or 2x current CPA per ad group",
+      "Grow structure with budget: broad ad group first, then an interest ad group, cap at 4 ad groups",
+      "Run the first test as 2 ad groups by 3 creatives by $50 a day for 3 to 4 days",
+      "Read the first test at 24 hours on soft metrics and at 3 days on cost metrics, then cut the bottom half"
+    ],
+    "inputs": [
+      "brand brain: catalogue, creative library",
+      "connector: none yet (manual TikTok Ads Manager)"
+    ],
+    "outputs": [
+      "launch checklist",
+      "change list",
+      "first test read"
+    ],
+    "trigger": "event: new TikTok account or relaunch",
+    "autonomy": "human_assist",
+    "external_write": {
+      "needed": true,
+      "surface": "tiktok ads"
+    },
+    "tools": [
+      "web: TikTok Ads Manager (no connector yet)"
+    ],
+    "skills": [
+      "tiktok-launch-checklist"
+    ],
+    "subagent": "tiktok-buyer",
+    "sources": {
+      "web": [],
+      "bank": [
+        "DEP-103",
+        "DEP-104",
+        "DEP-105",
+        "DEP-106",
+        "DEP-107",
+        "DEP-108",
+        "DEP-109",
+        "DEP-110",
+        "DEP-111"
+      ]
+    },
+    "found_in": "bank_only",
+    "founder_sees": "A launch checklist and a 4 day read plan for starting or restarting TikTok ads, with real budget numbers."
+  },
+  {
+    "id": "MEDIA-C25",
+    "name": "Scale TikTok winners and build lookalike and retargeting audiences",
+    "folders": [
+      "24-DEP"
+    ],
+    "what": "Move a winning TikTok creative into its own CBO scaling campaign while testing continues in the manual campaign, seed lookalikes from purchasers or engagement rather than direct targeting, and build retargeting from site visitors and Shop activity.",
+    "encompasses": [
+      "Move a winning TikTok creative into its own CBO scaling campaign, keep testing in the manual campaign",
+      "Seed TikTok lookalikes from purchasers or visitors instead of targeting them directly",
+      "Seed lookalikes from video engagement, not only website visits",
+      "Build TikTok retargeting from site visitors and product viewers, excluding recent buyers",
+      "Build a TikTok retargeting audience directly from Shop activity",
+      "Give product specific TikTok search keywords their own ad group"
+    ],
+    "inputs": [
+      "brand brain: catalogue",
+      "connector: none yet (manual TikTok Ads Manager)"
+    ],
+    "outputs": [
+      "scaling plan",
+      "audience build list",
+      "change list"
+    ],
+    "trigger": "weekly",
+    "autonomy": "human_assist",
+    "external_write": {
+      "needed": true,
+      "surface": "tiktok ads"
+    },
+    "tools": [],
+    "skills": [
+      "tiktok-scaling-audiences"
+    ],
+    "subagent": "tiktok-buyer",
+    "sources": {
+      "web": [],
+      "bank": [
+        "DEP-112",
+        "DEP-113",
+        "DEP-120",
+        "DEP-134",
+        "DEP-135",
+        "DEP-142"
+      ]
+    },
+    "found_in": "bank_only",
+    "founder_sees": "Which TikTok ad is ready to scale, and which audiences to build next."
+  },
+  {
+    "id": "MEDIA-C26",
+    "name": "Run the TikTok organic to paid Spark loop and creator program",
+    "folders": [
+      "24-DEP"
+    ],
+    "what": "Post organically first, wait 5 to 7 days, then Spark the winning posts, get a 365 day authorization code from every creator before Sparking their content, and keep hook test variants off the public organic profile.",
+    "encompasses": [
+      "Post organically first, wait 5 to 7 days, then Spark the winning posts",
+      "Get a 365 day authorization code from creators before Sparking their content",
+      "Keep TikTok hook test variants off the public organic profile",
+      "Structure affiliate commissions with open collabs for volume and targeted collabs for key partners"
+    ],
+    "inputs": [
+      "brand brain: creator relationships",
+      "connector: none yet (manual)"
+    ],
+    "outputs": [
+      "Spark loop schedule",
+      "creator authorization checklist",
+      "change list"
+    ],
+    "trigger": "weekly",
+    "autonomy": "human_assist",
+    "external_write": {
+      "needed": true,
+      "surface": "tiktok ads"
+    },
+    "tools": [],
+    "skills": [
+      "tiktok-spark-loop"
+    ],
+    "subagent": "tiktok-buyer",
+    "sources": {
+      "web": [],
+      "bank": [
+        "DEP-114",
+        "DEP-115",
+        "DEP-118",
+        "DEP-127"
+      ]
+    },
+    "found_in": "bank_only",
+    "founder_sees": "Which organic posts are ready to Spark, and whether the paperwork is in place to run them as ads."
+  },
+  {
+    "id": "MEDIA-C27",
+    "name": "Set up TikTok Shop, Search and GMV Max",
+    "folders": [
+      "24-DEP"
+    ],
+    "what": "Complete TikTok Shop setup in Seller Center with full listings before selling through it, run TikTok Search with a real negative keyword list, and launch GMV Max only on the top 20 percent of SKUs with an ROI target above break even.",
+    "encompasses": [
+      "Set up TikTok Shop in Seller Center with complete listings before selling through it",
+      "Run TikTok Search with 20 to 50 keywords, phrase match, and add negatives regularly",
+      "Launch GMV Max on the top 20 percent of SKUs with an ROI target above break even"
+    ],
+    "inputs": [
+      "brand brain: catalogue, margin by SKU",
+      "connector: none yet (manual TikTok Seller Center)"
+    ],
+    "outputs": [
+      "TikTok Shop setup checklist",
+      "GMV Max SKU list",
+      "change list"
+    ],
+    "trigger": "event: TikTok Shop launch or quarterly SKU review",
+    "autonomy": "human_assist",
+    "external_write": {
+      "needed": true,
+      "surface": "tiktok shop"
+    },
+    "tools": [],
+    "skills": [
+      "tiktok-shop-gmvmax"
+    ],
+    "subagent": "tiktok-buyer",
+    "sources": {
+      "web": [],
+      "bank": [
+        "DEP-116",
+        "DEP-117",
+        "DEP-119"
+      ]
+    },
+    "found_in": "bank_only",
+    "founder_sees": "Whether TikTok Shop is set up correctly, and which SKUs are worth putting into GMV Max."
+  },
+  {
+    "id": "MEDIA-C28",
+    "name": "Check TikTok video creative meets platform spec",
+    "folders": [
+      "24-DEP"
+    ],
+    "what": "Match every TikTok video to the platform's current spec (aspect ratio, length, safe zones) before upload, to avoid rejection or weak delivery.",
+    "encompasses": [
+      "Check aspect ratio, length, resolution and safe zone against TikTok's current spec",
+      "Flag any video likely to be rejected or throttled before it is uploaded",
+      "Confirm captions and text overlays sit inside the safe zone"
+    ],
+    "inputs": [
+      "creative brief from MCR/ADC specialist"
+    ],
+    "outputs": [
+      "spec check result",
+      "fix list for the creative team"
+    ],
+    "trigger": "event: new video creative ready",
+    "autonomy": "agent_does",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [],
+    "skills": [
+      "tiktok-spec-check"
+    ],
+    "subagent": "tiktok-buyer",
+    "sources": {
+      "web": [],
+      "bank": [
+        "DEP-125"
+      ]
+    },
+    "found_in": "bank_only",
+    "founder_sees": "Whether a video is ready to upload to TikTok as is, or needs a fix first."
+  },
+  {
+    "id": "MEDIA-C29",
+    "name": "Run TikTok targeting ladder and placement optimisation",
+    "folders": [
+      "24-DEP"
+    ],
+    "what": "Before dropping interests or lookalikes entirely, run one controlled 7 day broad versus stacked test, run a 4 week targeting ladder adding one layer per week, and opt out weak automatic placements after a placement read.",
+    "encompasses": [
+      "Before dropping interests or lookalikes entirely, run one controlled 7 day broad vs stack test",
+      "Run a 4 week targeting ladder, one layer added per week",
+      "Opt weak TikTok automatic placements out after a placement read",
+      "Leave spending power and household income targeting alone unless proven otherwise",
+      "Verify the TikTok Shopify app is official before connecting the Shop",
+      "Test alternate TikTok Shop storefront templates against the current one",
+      "Wait for a new audience to finish populating before launching on it"
+    ],
+    "inputs": [
+      "connector: none yet (manual TikTok Ads Manager)"
+    ],
+    "outputs": [
+      "targeting ladder plan",
+      "placement read",
+      "change list"
+    ],
+    "trigger": "weekly",
+    "autonomy": "human_assist",
+    "external_write": {
+      "needed": true,
+      "surface": "tiktok ads"
+    },
+    "tools": [],
+    "skills": [
+      "tiktok-targeting-ladder"
+    ],
+    "subagent": "tiktok-buyer",
+    "sources": {
+      "web": [],
+      "bank": [
+        "DEP-121",
+        "DEP-128",
+        "DEP-129",
+        "DEP-130",
+        "DEP-131",
+        "DEP-132",
+        "DEP-133"
+      ]
+    },
+    "found_in": "bank_only",
+    "founder_sees": "The next step in TikTok targeting, tested in a controlled way rather than guessed."
+  },
+  {
+    "id": "MEDIA-C30",
+    "name": "Set up and maintain Google Merchant Center",
+    "folders": [
+      "12-GAD"
+    ],
+    "what": "Set up Merchant Center with real policies and a real brand experience, match business info exactly to the live site, enroll the 4 add ons, and fix disapprovals before warnings turn into limited performance.",
+    "encompasses": [
+      "Set up Merchant Center for every store with real policies and a real brand experience",
+      "Match Merchant Center business info exactly to the live site",
+      "Enroll the 4 Merchant Center add ons: remarketing, reviews, ratings, promotions",
+      "Never edit price, availability or product ID in Merchant Center directly; the feed is the source of truth",
+      "Fix Merchant Center disapprovals before warnings and limited performance appear",
+      "Run the checkout and pricing integrity checklist to avoid suspension",
+      "Run the claims, reviews and site trust checklist to avoid suspension",
+      "Work toward the Top Quality Store badge",
+      "Never claim the small business or any identity attribute unless it is true by Google's definition"
+    ],
+    "inputs": [
+      "brand brain: policies, product catalogue",
+      "connector: google merchant center (manual, no connector yet)"
+    ],
+    "outputs": [
+      "Merchant Center setup checklist",
+      "disapproval fix list",
+      "change list"
+    ],
+    "trigger": "weekly",
+    "autonomy": "human_assist",
+    "external_write": {
+      "needed": true,
+      "surface": "google merchant center"
+    },
+    "tools": [
+      "web: Google Merchant Center (no connector yet)"
+    ],
+    "skills": [
+      "merchant-center-setup"
+    ],
+    "subagent": "google-ads-buyer",
+    "sources": {
+      "web": [],
+      "bank": [
+        "GAD-027",
+        "GAD-028",
+        "GAD-029",
+        "GAD-030",
+        "GAD-031",
+        "GAD-032",
+        "GAD-033",
+        "GAD-034",
+        "GAD-035"
+      ]
+    },
+    "found_in": "bank_only",
+    "founder_sees": "Whether the Merchant Center account is healthy enough to run Shopping and PMax without a suspension risk."
+  },
+  {
+    "id": "MEDIA-C31",
+    "name": "Optimise the Google product feed for quality and search match",
+    "folders": [
+      "12-GAD"
+    ],
+    "what": "Put the converting search term and product type first in every title, avoid keyword stuffing, roll out title changes in batches with a recorded baseline, and refresh the feed at least every 6 hours.",
+    "encompasses": [
+      "Put the converting search term and product type first in every title, first 70 characters",
+      "No keyword stuffing, promotional text or false attributes in titles and descriptions",
+      "Roll out title changes in batches with a recorded baseline, never all at once",
+      "Test lifestyle images against plain white product shots",
+      "Give every product variant its own GTIN",
+      "Never duplicate the same product at several prices to hold more slots",
+      "Run one feed per currency",
+      "Fix the feed that caused a bad search match, not just the negative keyword",
+      "Enrich descriptions with keywords, features and objections, without stuffing",
+      "Mine reviews for feed and ad copy angles",
+      "Refresh the feed at least every 6 hours and turn on automatic item updates for frequent price changes",
+      "Use custom labels to carry margin, bestseller and stock priority into campaign structure",
+      "Override auto cropped Shopping images with a 4:5 supplementary feed",
+      "Test a brand first title order for verticals where it may beat brand last",
+      "Duplicate the feed into role specific versions for Shopping and PMax",
+      "Audit the Google Merchant Center feed and use a multi currency feed abroad"
+    ],
+    "inputs": [
+      "brand brain: product catalogue, reviews",
+      "connector: google merchant center (manual)"
+    ],
+    "outputs": [
+      "feed audit report",
+      "title and description rewrite batch",
+      "change list"
+    ],
+    "trigger": "weekly",
+    "autonomy": "human_assist",
+    "external_write": {
+      "needed": true,
+      "surface": "google merchant center"
+    },
+    "tools": [],
+    "skills": [
+      "feed-quality-optimization"
+    ],
+    "subagent": "google-ads-buyer",
+    "sources": {
+      "web": [
+        "https://www.promodo.com/blog/google-ads-audit-checklist"
+      ],
+      "bank": [
+        "GAD-010",
+        "GAD-036",
+        "GAD-037",
+        "GAD-038",
+        "GAD-039",
+        "GAD-040",
+        "GAD-041",
+        "GAD-042",
+        "GAD-043",
+        "GAD-044",
+        "GAD-047",
+        "GAD-048",
+        "GAD-169",
+        "GAD-182",
+        "GAD-185",
+        "GAD-186",
+        "GAD-190",
+        "DEP-138"
+      ]
+    },
+    "found_in": "web+bank",
+    "founder_sees": "What is wrong with the product feed, in the order it is costing the most clicks or search matches."
+  },
+  {
+    "id": "MEDIA-C32",
+    "name": "Design Google campaign architecture and defaults",
+    "folders": [
+      "12-GAD"
+    ],
+    "what": "Give every campaign exactly one funnel job, default to one campaign per job with a written reason for every extra split, and set the safe defaults: Sales objective, Search Partners and Display off, Presence location targeting, tablets and TV off.",
+    "encompasses": [
+      "Give every campaign exactly one funnel job and check for overlaps",
+      "Default to one campaign per job; require a written reason for every extra split",
+      "Run one campaign per country; never two locations in one PMax",
+      "Split Shopping campaigns by margin tier when margins spread widely across the catalog",
+      "Name every campaign with one consistent pattern",
+      "Kill tiny orphan campaigns and roll their spend into the top campaigns",
+      "Set Sales objective and Purchase only conversion goal on every new campaign",
+      "Turn off Search Partners and Display Network on every Search campaign",
+      "Use Presence location targeting by default, not Presence or interest",
+      "Turn off tablets and TV screens by default, unless the store's own device data says otherwise",
+      "Restructure the account toward fewer, fuller campaigns with a written reason for each"
+    ],
+    "inputs": [
+      "brand brain: catalogue, margin",
+      "audit: MEDIA-C02 output"
+    ],
+    "outputs": [
+      "campaign architecture diagram",
+      "change list"
+    ],
+    "trigger": "event: new account or after audit",
+    "autonomy": "human_assist",
+    "external_write": {
+      "needed": true,
+      "surface": "google ads"
+    },
+    "tools": [],
+    "skills": [
+      "google-campaign-architecture"
+    ],
+    "subagent": "google-ads-buyer",
+    "sources": {
+      "web": [
+        "https://www.swydo.com/blog/google-ads-optimization-checklist/"
+      ],
+      "bank": [
+        "GAD-049",
+        "GAD-050",
+        "GAD-051",
+        "GAD-052",
+        "GAD-053",
+        "GAD-057",
+        "GAD-058",
+        "GAD-060",
+        "GAD-062",
+        "GAD-063",
+        "GAD-162"
+      ]
+    },
+    "found_in": "web+bank",
+    "founder_sees": "The campaign map for the Google account, with one clear job per campaign and a reason for every split."
+  },
+  {
+    "id": "MEDIA-C33",
+    "name": "Separate brand from non brand across Search, Shopping and PMax",
+    "folders": [
+      "12-GAD"
+    ],
+    "what": "Always split brand from non brand, exclude brand from every cold campaign with both a negative list and exclusions, run brand on manual bidding with a higher ROAS target, and judge growth on non brand alone.",
+    "encompasses": [
+      "Always separate brand from non brand in Search, Shopping and PMax",
+      "Exclude brand from every cold campaign with both a brand exclusion list and negative keywords",
+      "Decide whether to run brand Search by checking who actually bids on the brand name",
+      "Run brand campaigns on manual bidding or impression share, never conversion based smart bidding",
+      "Keep brand keywords in exact match, adding phrase match only to find new brand terms",
+      "Cap brand spend as a small share of the account for a growth focused store",
+      "Check brand campaign impression share actually covers the brand name",
+      "Give brand a higher ROAS target than non brand, and judge growth on non brand alone",
+      "Run a brand Shopping campaign at low priority behind non brand, with a brand only negative script",
+      "Check cold campaign search terms for brand term leakage"
+    ],
+    "inputs": [
+      "brand brain: brand terms",
+      "connector: google ads (manual)"
+    ],
+    "outputs": [
+      "brand vs non-brand split plan",
+      "change list"
+    ],
+    "trigger": "monthly",
+    "autonomy": "human_assist",
+    "external_write": {
+      "needed": true,
+      "surface": "google ads"
+    },
+    "tools": [],
+    "skills": [
+      "brand-nonbrand-split"
+    ],
+    "subagent": "google-ads-buyer",
+    "sources": {
+      "web": [],
+      "bank": [
+        "GAD-064",
+        "GAD-065",
+        "GAD-066",
+        "GAD-067",
+        "GAD-068",
+        "GAD-069",
+        "GAD-070",
+        "GAD-071",
+        "GAD-072",
+        "DEP-137"
+      ]
+    },
+    "found_in": "bank_only",
+    "founder_sees": "How much of Google spend is really buying people who already knew the brand, and the real growth number once that is set aside."
+  },
+  {
+    "id": "MEDIA-C34",
+    "name": "Run and optimise Google Shopping campaigns",
+    "folders": [
+      "12-GAD"
+    ],
+    "what": "Start a new account on Standard Shopping, launch bestsellers only in one ad group, then pick a structure that matches catalog size and margin spread, and run the weekly loop of structure, bidding, negatives and products.",
+    "encompasses": [
+      "Start a new account on Standard Shopping, not PMax; decline the PMax preselection",
+      "Launch the first Shopping campaign on bestsellers only, in one ad group",
+      "Pick a Shopping structure that matches catalog size and margin spread",
+      "Run the Shopping optimisation loop weekly: structure, bidding, negatives, products",
+      "Prune products that spend and click but drag ROAS down",
+      "Pull or de-prioritise a shared product when a competitor discounts it 20 to 30 percent",
+      "Launch one new SKU on its own small budget and listing group, separate from the bestseller cold start",
+      "Tier products by rolling performance and give each tier its own budget",
+      "Give Shopping the largest share of Google budget for consumer ecommerce",
+      "Layer Standard Shopping next to PMax for cold growth once PMax plateaus"
+    ],
+    "inputs": [
+      "brand brain: catalogue, margin",
+      "connector: google ads (manual)"
+    ],
+    "outputs": [
+      "Shopping structure plan",
+      "weekly optimisation log",
+      "change list"
+    ],
+    "trigger": "weekly",
+    "autonomy": "human_assist",
+    "external_write": {
+      "needed": true,
+      "surface": "google ads"
+    },
+    "tools": [],
+    "skills": [
+      "shopping-campaign-management"
+    ],
+    "subagent": "google-ads-buyer",
+    "sources": {
+      "web": [
+        "https://www.promodo.com/blog/google-ads-audit-checklist"
+      ],
+      "bank": [
+        "GAD-054",
+        "GAD-055",
+        "GAD-056",
+        "GAD-075",
+        "GAD-076",
+        "GAD-077",
+        "GAD-078",
+        "GAD-079",
+        "GAD-081",
+        "GAD-181"
+      ]
+    },
+    "found_in": "web+bank",
+    "founder_sees": "How Shopping is structured, which products are pulling ROAS down, and what changes weekly."
+  },
+  {
+    "id": "MEDIA-C35",
+    "name": "Run and optimise Google Search campaigns",
+    "folders": [
+      "12-GAD"
+    ],
+    "what": "Classify keywords by intent, group them into single theme ad groups, use exact match on proven converters and broad only with smart bidding and proof, write 7 to 9 RSA headlines from the brand's own offer, and review search terms on a cadence that tightens for new campaigns.",
+    "encompasses": [
+      "Let converting search terms pick new keywords, then move them into Search, titles and assets",
+      "Classify Search keywords by intent before bidding on them",
+      "Group Search keywords into single theme ad groups, never one keyword per SKU",
+      "Use exact match on proven converters; use broad match only with smart bidding and proof",
+      "Write 7 to 9 RSA headlines built from the store's own offer and bestseller angle",
+      "Fill every relevant ad asset type per asset group, not just account wide",
+      "Lead RSA headlines with product, price or offer; use descriptions to answer the real objection",
+      "Fix quality signals before raising a Search bid",
+      "Send cold problem aware Search traffic to an educational page, not a bare buy box",
+      "Test landing pages from Search continuously with a duplicate ad rotation",
+      "Run DSA only with a large, multi category content site, after RSAs already run",
+      "Test AI Max for Search only on a cold, brand excluded campaign",
+      "Build the account negative list at the right level, without blocking real product searches",
+      "Review search terms on a cadence that tightens for new campaigns and loosens once stable",
+      "Remove clicked, non converting search terms and promote converting broad terms to exact",
+      "Build a permanent account level negative list for junk search terms",
+      "Turn off Search Partners and Display Network on every Search campaign",
+      "Use Search ad price assets to qualify clicks by price point",
+      "Gate a non branded category Search test on proven internal traffic",
+      "Prioritize Search over Shopping for a bulk or wholesale buyer segment"
+    ],
+    "inputs": [
+      "brand brain: offers, catalogue",
+      "connector: google ads (manual)"
+    ],
+    "outputs": [
+      "keyword and RSA plan",
+      "search term cleanup log",
+      "change list"
+    ],
+    "trigger": "weekly",
+    "autonomy": "human_assist",
+    "external_write": {
+      "needed": true,
+      "surface": "google ads"
+    },
+    "tools": [],
+    "skills": [
+      "search-campaign-management"
+    ],
+    "subagent": "google-ads-buyer",
+    "sources": {
+      "web": [
+        "https://www.swydo.com/blog/google-ads-optimization-checklist/"
+      ],
+      "bank": [
+        "GAD-061",
+        "GAD-082",
+        "GAD-083",
+        "GAD-084",
+        "GAD-085",
+        "GAD-086",
+        "GAD-087",
+        "GAD-088",
+        "GAD-089",
+        "GAD-090",
+        "GAD-091",
+        "GAD-092",
+        "GAD-093",
+        "GAD-142",
+        "GAD-143",
+        "GAD-144",
+        "GAD-170",
+        "GAD-176",
+        "GAD-180",
+        "GAD-183"
+      ]
+    },
+    "found_in": "web+bank",
+    "founder_sees": "Which searches are worth bidding on, which words to write in the ads, and which search terms are wasting money."
+  },
+  {
+    "id": "MEDIA-C36",
+    "name": "Build and control Performance Max",
+    "folders": [
+      "12-GAD"
+    ],
+    "what": "Qualify the account before launching PMax as a conversion campaign, turn off every default that hides control (URL expansion, auto assets, final URL expansion), build asset groups by product theme, and fix inputs in order: feed, brand exclusion, structure, bidding, signals.",
+    "encompasses": [
+      "Qualify the account before launching PMax as a conversion campaign",
+      "Turn off PMax's default settings and add real controls instead of trusting the wizard",
+      "Turn off PMax final URL expansion, or restrict it with URL contains rules",
+      "Turn off PMax auto created assets and automatic text, image and video enhancements",
+      "Build PMax asset groups by product theme, 2 to 20 groups, never one giant group",
+      "Never build a single product PMax asset group",
+      "Split PMax campaigns only for a different audience, product line, country or efficiency goal",
+      "Fill PMax asset counts and refresh them every 4 to 6 weeks",
+      "Use first party lists and proven converting search terms as PMax signals",
+      "Check PMax for warm traffic over crediting before raising its target ROAS",
+      "Test feed only PMax to push spend toward Shopping and stop drift into video and display",
+      "Keep top spend PMax products in stock; exclude products that spend without converting",
+      "Fix PMax inputs in order: feed, brand exclusion, structure, bidding, signals",
+      "Mine PMax search terms to launch dedicated Search campaigns on proven terms",
+      "Run PMax as a high target safety net once manual campaigns are rebuilt",
+      "Do not rely on Standard Shopping priority to hold back PMax",
+      "Build the full PMax exclusion set: brand, URL, SKU, placement, age, customer list",
+      "Split PMax into a prospecting campaign and a remarketing or brand defense campaign",
+      "Audit PMax's own spend split before rebuilding it into manual campaigns"
+    ],
+    "inputs": [
+      "brand brain: catalogue, margin",
+      "connector: google ads (manual)"
+    ],
+    "outputs": [
+      "PMax control checklist",
+      "asset group plan",
+      "change list"
+    ],
+    "trigger": "weekly",
+    "autonomy": "human_assist",
+    "external_write": {
+      "needed": true,
+      "surface": "google ads"
+    },
+    "tools": [],
+    "skills": [
+      "pmax-control-build"
+    ],
+    "subagent": "google-ads-buyer",
+    "sources": {
+      "web": [
+        "https://www.promodo.com/blog/google-ads-audit-checklist",
+        "https://groas.com/post/google-ads-account-audit-checklist-2026-red-flags-fixes"
+      ],
+      "bank": [
+        "GAD-095",
+        "GAD-096",
+        "GAD-097",
+        "GAD-098",
+        "GAD-099",
+        "GAD-100",
+        "GAD-101",
+        "GAD-102",
+        "GAD-103",
+        "GAD-104",
+        "GAD-105",
+        "GAD-106",
+        "GAD-107",
+        "GAD-108",
+        "GAD-109",
+        "GAD-110",
+        "GAD-145",
+        "GAD-187",
+        "GAD-194"
+      ]
+    },
+    "found_in": "web+bank",
+    "founder_sees": "Whether PMax is under real control or running on defaults, and the exact settings to fix first."
+  },
+  {
+    "id": "MEDIA-C37",
+    "name": "Plan and run YouTube and Demand Gen campaigns",
+    "folders": [
+      "12-GAD"
+    ],
+    "what": "Add YouTube or Demand Gen only after Search and Shopping are dialled in or with proven Meta creative, check AOV and creative fit before spending, script creative to hook then demo then prove then ask, and judge results with traffic light KPIs at the campaign level.",
+    "encompasses": [
+      "Add a research stage on YouTube or Demand Gen for a considered, high AOV purchase",
+      "Add YouTube or Demand Gen only after Search and Shopping are dialled in, or with proven Meta creative",
+      "Check the YouTube fit before spending: AOV, visual product, creative and budget for 4 to 6 choppy weeks",
+      "Restrict cold Demand Gen prospecting to in-stream and Shorts, other placements off",
+      "Start cold Demand Gen on mobile only when launching with Meta style vertical creative",
+      "Pick a Demand Gen audience approach and never feed it the store's own customer list in prospecting",
+      "Size Demand Gen budget from AOV, not a flat small test amount",
+      "Script YouTube creative to hook, then demo, then prove, then ask",
+      "Judge YouTube ads by traffic light KPIs at the campaign level, not by gut feel per ad",
+      "Route cold YouTube traffic to a real conversion mechanism and capture email on the page",
+      "Use the real founder or a disclosed spokesperson in founder style ads",
+      "Build a YouTube list of ad viewers to retarget with direct response",
+      "Test 3 audience construction methods in parallel for cold Demand Gen",
+      "Run a small YouTube video view retargeting layer at a target CPV bid",
+      "Match Demand Gen ad groups to the product subset their creative features",
+      "Build a fuller Demand Gen retargeting audience taxonomy",
+      "Wait for a steady CPA over several days before switching Demand Gen to target bidding",
+      "Read Demand Gen results by audience and network, then act on the split",
+      "Forecast before scaling Demand Gen with Performance Planner and the tCPA simulator",
+      "Run Display only as remarketing, at a small budget, never as a cold traffic surface"
+    ],
+    "inputs": [
+      "brand brain: AOV, creative library",
+      "reference scout: video references"
+    ],
+    "outputs": [
+      "YouTube/Demand Gen launch plan",
+      "creative script brief",
+      "change list"
+    ],
+    "trigger": "event: after Search and Shopping are stable",
+    "autonomy": "human_assist",
+    "external_write": {
+      "needed": true,
+      "surface": "google ads"
+    },
+    "tools": [],
+    "skills": [
+      "youtube-demandgen-plan"
+    ],
+    "subagent": "google-ads-buyer",
+    "sources": {
+      "web": [],
+      "bank": [
+        "GAD-012",
+        "GAD-111",
+        "GAD-112",
+        "GAD-113",
+        "GAD-114",
+        "GAD-115",
+        "GAD-116",
+        "GAD-117",
+        "GAD-118",
+        "GAD-119",
+        "GAD-122",
+        "GAD-123",
+        "GAD-124",
+        "GAD-164",
+        "GAD-165",
+        "GAD-167",
+        "GAD-172",
+        "GAD-173",
+        "GAD-177",
+        "GAD-188",
+        "GAD-193"
+      ]
+    },
+    "found_in": "bank_only",
+    "founder_sees": "Whether the brand is ready for YouTube or Demand Gen, and the plan if it is."
+  },
+  {
+    "id": "MEDIA-C38",
+    "name": "Build Google remarketing and exclusion lists",
+    "folders": [
+      "12-GAD"
+    ],
+    "what": "Build remarketing lists and wait for them to reach size before launching, build a cart abandoner list from add to cart minus purchase, exclude existing customers from prospecting, and map cart abandonment ads to the 5 real objections.",
+    "encompasses": [
+      "Build remarketing lists and wait for size before launching remarketing campaigns",
+      "Build a cart abandoner remarketing list from GA4 add to cart minus purchase",
+      "Exclude existing customers from prospecting campaigns",
+      "Map cart abandonment remarketing ads to the 5 real objections",
+      "Use full catalog dynamic remarketing for warm audiences",
+      "Build a high value customer list as its own lookalike seed"
+    ],
+    "inputs": [
+      "brand brain: order history, objections list",
+      "connector: google ads / GA4 (manual)"
+    ],
+    "outputs": [
+      "remarketing list plan",
+      "change list"
+    ],
+    "trigger": "event: new remarketing campaign",
+    "autonomy": "human_assist",
+    "external_write": {
+      "needed": true,
+      "surface": "google ads"
+    },
+    "tools": [],
+    "skills": [
+      "remarketing-list-build"
+    ],
+    "subagent": "google-ads-buyer",
+    "sources": {
+      "web": [],
+      "bank": [
+        "GAD-073",
+        "GAD-120",
+        "GAD-121",
+        "GAD-168",
+        "GAD-171",
+        "GAD-192"
+      ]
+    },
+    "found_in": "bank_only",
+    "founder_sees": "Which remarketing lists exist, which are ready to use, and what each one should say to the people on it."
+  },
+  {
+    "id": "MEDIA-C39",
+    "name": "Manage Google bid strategy stages and portfolio bidding",
+    "folders": [
+      "12-GAD"
+    ],
+    "what": "Cap new account bids at break even CPA over conversion rate, move through Maximize Conversion Value then Target ROAS as volume supports it, step targets gently, and use conversion rate and AOV as the real levers, not just the bid.",
+    "encompasses": [
+      "Fix conversion rate and AOV to win the auction, not just the bid",
+      "Cap new account bids at break even CPA divided by conversion rate",
+      "Move to Maximize Conversion Value once conversions start arriving",
+      "Add a Target ROAS only once volume supports it, set at or slightly below actual",
+      "Watch new customer share before tightening a Target ROAS further",
+      "Step bid targets gently, never double a budget or halve a target overnight",
+      "Break a Target ROAS death spiral with an aggressive cut, not a timid one",
+      "Rotate expansive and restrictive bidding, or run a feeder campaign, to reach more cold traffic",
+      "Use a portfolio bid strategy only across campaigns that share one real goal",
+      "Pool same currency countries into one MCC level portfolio bid strategy",
+      "Reserve seasonality bid adjustments for short, store caused spikes only",
+      "Try smart bidding exploration before loosening a target ROAS for more auction room",
+      "Re audit legacy target ROAS and target CPA settings that a budget cap used to hide",
+      "Judge CPC against the store's own break even CPA and AOV, not a general benchmark"
+    ],
+    "inputs": [
+      "metric contract: cpc, roas_blended, cpa",
+      "connector: google ads (manual)"
+    ],
+    "outputs": [
+      "bid stage plan",
+      "change list"
+    ],
+    "trigger": "weekly",
+    "autonomy": "human_assist",
+    "external_write": {
+      "needed": true,
+      "surface": "google ads"
+    },
+    "tools": [],
+    "skills": [
+      "google-bid-stage-management"
+    ],
+    "subagent": "google-ads-buyer",
+    "sources": {
+      "web": [],
+      "bank": [
+        "GAD-008",
+        "GAD-094",
+        "GAD-125",
+        "GAD-126",
+        "GAD-127",
+        "GAD-128",
+        "GAD-129",
+        "GAD-130",
+        "GAD-131",
+        "GAD-132",
+        "GAD-133",
+        "GAD-134",
+        "GAD-135",
+        "GAD-189"
+      ]
+    },
+    "found_in": "bank_only",
+    "founder_sees": "Which bid stage the account is in, and the next careful step rather than a big jump."
+  },
+  {
+    "id": "MEDIA-C40",
+    "name": "Size and pace Google budgets",
+    "folders": [
+      "12-GAD"
+    ],
+    "what": "Size Shopping and Search launch budgets at about 3 to 4x AOV a day, size PMax launches at $50 to $100 a day and at least 3x non brand CPA, raise budgets in small weekly steps, cut faster than you raise, and treat limited by budget as a hint to test, not proof to raise spend.",
+    "encompasses": [
+      "Size Shopping and Search launch budgets at about 3 to 4x AOV a day",
+      "Size a PMax launch budget at $50 to $100 a day and at least 3x non brand CPA",
+      "Set budget shares by funnel stage as a starting rule of thumb, then check results",
+      "Raise budgets in small weekly steps, cut faster than you raise",
+      "Treat 'limited by budget' as a hint to test, not proof to raise spend"
+    ],
+    "inputs": [
+      "metric contract: spend, cpa, aov",
+      "brand brain: AOV"
+    ],
+    "outputs": [
+      "budget plan",
+      "pacing log",
+      "change list"
+    ],
+    "trigger": "weekly",
+    "autonomy": "human_assist",
+    "external_write": {
+      "needed": true,
+      "surface": "google ads"
+    },
+    "tools": [],
+    "skills": [
+      "google-budget-pacing"
+    ],
+    "subagent": "google-ads-buyer",
+    "sources": {
+      "web": [
+        "https://adlibrary.com/posts/media-buying-automation-tools"
+      ],
+      "bank": [
+        "GAD-136",
+        "GAD-137",
+        "GAD-138",
+        "GAD-139",
+        "GAD-140"
+      ]
+    },
+    "found_in": "web+bank",
+    "founder_sees": "How much budget each Google campaign should get and the next safe step up or down."
+  },
+  {
+    "id": "MEDIA-C41",
+    "name": "Check the Google scaling gates before adding budget",
+    "folders": [
+      "12-GAD"
+    ],
+    "what": "Pass 5 fixed scaling gates before adding budget or a new campaign type, only scale a campaign that already hits target ROAS at current budget, cut fast in steady state but scale fast on a clear winner or real demand spike.",
+    "encompasses": [
+      "Pass the 5 scaling gates before adding budget or a new campaign type",
+      "Scale only a campaign that already hits target ROAS at its current budget",
+      "Cut fast in steady state, but scale fast on a clear winner or a real demand spike",
+      "Scale YouTube in order: more budget and creative, then better hooks and offers, then new formats"
+    ],
+    "inputs": [
+      "metric contract: roas_blended, spend"
+    ],
+    "outputs": [
+      "scaling gate checklist result",
+      "change list"
+    ],
+    "trigger": "event: before any budget increase",
+    "autonomy": "human_assist",
+    "external_write": {
+      "needed": true,
+      "surface": "google ads"
+    },
+    "tools": [],
+    "skills": [
+      "google-scaling-gates"
+    ],
+    "subagent": "google-ads-buyer",
+    "sources": {
+      "web": [],
+      "bank": [
+        "GAD-146",
+        "GAD-147",
+        "GAD-148",
+        "GAD-149"
+      ]
+    },
+    "found_in": "bank_only",
+    "founder_sees": "Whether a campaign has actually earned more budget, checked against 5 fixed gates, not a gut call."
+  },
+  {
+    "id": "MEDIA-C42",
+    "name": "Pace ad spend against live stock",
+    "folders": [
+      "24-DEP",
+      "12-GAD"
+    ],
+    "what": "Check live stock before raising budget or moving an ad set into scaling, throttle spend ahead of a predicted stockout, plan stock ahead ready for a scaling product, and run a small clearance campaign for aged inventory.",
+    "encompasses": [
+      "Check live stock before raising budget or moving an ad set into the scaling campaign",
+      "Throttle ad spend on a SKU ahead of a predicted stockout",
+      "Plan stock ahead when a product starts scaling in ads",
+      "Run a small clearance campaign for aged or grade C inventory",
+      "Run a dedicated new arrivals campaign to surface fresh SKUs early"
+    ],
+    "inputs": [
+      "brand brain: live stock, days_of_stock",
+      "metric contract: days_of_stock, stockout_days"
+    ],
+    "outputs": [
+      "stock-aware pacing report",
+      "change list"
+    ],
+    "trigger": "daily",
+    "autonomy": "agent_does",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [],
+    "skills": [
+      "stock-aware-pacing"
+    ],
+    "subagent": null,
+    "sources": {
+      "web": [],
+      "bank": [
+        "DEP-061",
+        "GAD-150",
+        "GAD-152",
+        "GAD-178",
+        "GAD-179"
+      ]
+    },
+    "found_in": "bank_only",
+    "founder_sees": "Whether a product about to get more ad budget actually has the stock to sell it."
+  },
+  {
+    "id": "MEDIA-C43",
+    "name": "Monitor competitor ads, pricing and keywords",
+    "folders": [
+      "24-DEP",
+      "12-GAD"
+    ],
+    "what": "Watch competitor Meta ads for layout and mood only, pull or de-prioritise a shared product when a competitor discounts it 20 to 30 percent, and mine competitor keyword tools for a new Google account's first keywords.",
+    "encompasses": [
+      "Track competitor active ad counts, formats and longest running ads from the Ad Library",
+      "Pull or de-prioritise a shared product when a competitor discounts it 20 to 30 percent",
+      "Mine competitor keyword tools for a new account's first keywords",
+      "Flag a competitor's new offer or claim as a signal only, never copy their text, logo or product"
+    ],
+    "inputs": [
+      "public web: Meta Ad Library, competitor sites",
+      "gallery: competitors tab"
+    ],
+    "outputs": [
+      "competitor watch report",
+      "flag list for pricing or offer response"
+    ],
+    "trigger": "weekly",
+    "autonomy": "agent_does",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [
+      "mcp: meta ads read (ads_library_search)",
+      "gallery: competitors tab",
+      "web search"
+    ],
+    "skills": [
+      "competitor-ad-monitoring"
+    ],
+    "subagent": null,
+    "sources": {
+      "web": [
+        "https://admanage.ai/blog/facebook-ads-audit"
+      ],
+      "bank": [
+        "GAD-074",
+        "GAD-080",
+        "GAD-163"
+      ]
+    },
+    "found_in": "web+bank",
+    "founder_sees": "What competitors are running and pricing right now, as a signal, never as something to copy."
+  },
+  {
+    "id": "MEDIA-C44",
+    "name": "Check ad message match against the landing page and site experience",
+    "folders": [
+      "24-DEP",
+      "12-GAD"
+    ],
+    "what": "Mirror the best ad headline on the landing page within a day, and flag when slow landing page speed or fulfilment reliability is adding a Google experience penalty to cost.",
+    "encompasses": [
+      "Mirror the best performing ad headline on the landing page within a day of it becoming a winner",
+      "Check the winning ad's promise matches what the landing page actually says",
+      "Flag landing page speed or fulfilment reliability issues that raise Google's ad rank penalty",
+      "Hand off any page or speed fix to the Site specialist rather than attempting it directly"
+    ],
+    "inputs": [
+      "gallery: campaigns tab winners",
+      "brand brain: landing pages"
+    ],
+    "outputs": [
+      "message match report",
+      "handoff brief to Site specialist"
+    ],
+    "trigger": "weekly",
+    "autonomy": "agent_does",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [],
+    "skills": [
+      "ad-page-message-match"
+    ],
+    "subagent": "site specialist (SET/LPG/SPD/CRO)",
+    "sources": {
+      "web": [],
+      "bank": [
+        "DEP-148",
+        "GAD-175",
+        "GAD-197"
+      ]
+    },
+    "found_in": "bank_only",
+    "founder_sees": "Whether the page still says what the winning ad promises, and any site issue quietly raising ad cost."
+  },
+  {
+    "id": "MEDIA-C45",
+    "name": "Detect spend and ROAS anomalies daily",
+    "folders": [
+      "24-DEP",
+      "12-GAD"
+    ],
+    "what": "Flag any day where spend or ROAS moved 50 percent or more against the trailing 14 day median, name the ads most responsible, and separate a real anomaly from normal daily noise.",
+    "encompasses": [
+      "Compute the trailing 14 day median for spend and ROAS, per platform",
+      "Flag any day 50 percent or more off that median",
+      "Name the 3 ads that moved most on a flagged day",
+      "Check pixel, CAPI or feed health first before treating a drop as a bidding problem",
+      "Treat daily ROAS swings under about $1,000 a day as normal noise, not a signal"
+    ],
+    "inputs": [
+      "metric contract: spend, roas_blended",
+      "connector: meta ads read, gallery cache"
+    ],
+    "outputs": [
+      "daily anomaly alert"
+    ],
+    "trigger": "daily",
+    "autonomy": "agent_does",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [
+      "gallery: insights tab (anomaly alerts, already built)",
+      "script: meta_gallery.metrics"
+    ],
+    "skills": [
+      "anomaly-detection"
+    ],
+    "subagent": null,
+    "sources": {
+      "web": [
+        "https://adlibrary.com/posts/media-buying-automation-tools",
+        "https://www.adstellar.ai/blog/media-buying-automation-tools"
+      ],
+      "bank": []
+    },
+    "found_in": "web_only",
+    "founder_sees": "A same day flag when spend or ROAS moves sharply, with the ads most likely responsible."
+  },
+  {
+    "id": "MEDIA-C46",
+    "name": "Produce the daily and weekly media read",
+    "folders": [
+      "24-DEP",
+      "12-GAD"
+    ],
+    "what": "Write the daily read (pacing, anomalies, search terms) and the weekly read (blended MER, per platform ROAS, device and day of week splits) the founder actually needs, arithmetic done in code.",
+    "encompasses": [
+      "Pull spend, orders and revenue by platform and blend them into MER, in code",
+      "Be in the account daily for search terms and anomalies; do product and asset work weekly",
+      "Split ROAS and conversion rate by device with custom columns",
+      "Check 4 fixed GA4 reports every 2 weeks for paid traffic health",
+      "Write the weekly read as leadership metric (MER) plus the tactical ROAS calls for the week",
+      "Mark any missing platform or day as unavailable, never as zero"
+    ],
+    "inputs": [
+      "metric contract: full",
+      "connector: meta ads read, gallery sales.json, google ads (manual)"
+    ],
+    "outputs": [
+      "daily read",
+      "weekly read",
+      "founder-facing summary"
+    ],
+    "trigger": "daily",
+    "autonomy": "agent_does",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [
+      "gallery: overview tab, brand sales tab",
+      "script: meta_gallery.metrics"
+    ],
+    "skills": [
+      "daily-weekly-media-read"
+    ],
+    "subagent": null,
+    "sources": {
+      "web": [
+        "https://www.searchenginejournal.com/paid-media-reporting-for-ecommerce-navigating-attribution/546943/",
+        "https://eightx.co/blog/roas-vs-mer-vs-blended-cac"
+      ],
+      "bank": [
+        "GAD-159",
+        "GAD-160",
+        "GAD-174",
+        "GAD-196"
+      ]
+    },
+    "found_in": "web+bank",
+    "founder_sees": "One page each day and each week: what is spent, what it returned blended, and what needs a decision."
+  },
+  {
+    "id": "MEDIA-C47",
+    "name": "Forecast spend and flag pacing risk",
+    "folders": [
+      "24-DEP",
+      "12-GAD"
+    ],
+    "what": "Project month end spend and blended MER from the trailing pace, and flag accounts pacing to miss a budget or margin target early enough to act.",
+    "encompasses": [
+      "Project month end spend per platform from the trailing daily pace, in code",
+      "Project blended MER at the current pace against the founder's target",
+      "Flag a platform pacing to overspend or underspend its month before the month closes",
+      "Show the forecast next to the actual number each week, never in place of it"
+    ],
+    "inputs": [
+      "metric contract: spend, roas_blended",
+      "brand brain: monthly budget targets"
+    ],
+    "outputs": [
+      "spend forecast",
+      "pacing risk flag"
+    ],
+    "trigger": "weekly",
+    "autonomy": "agent_does",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [
+      "script: meta_gallery.metrics"
+    ],
+    "skills": [
+      "spend-forecasting"
+    ],
+    "subagent": null,
+    "sources": {
+      "web": [
+        "https://adlibrary.com/posts/media-buying-automation-tools"
+      ],
+      "bank": []
+    },
+    "found_in": "web_only",
+    "founder_sees": "Whether current spend is on track to land where the founder expects by month end, flagged early enough to fix."
+  },
+  {
+    "id": "MEDIA-C48",
+    "name": "Flag decisions that need the founder, not the agent",
+    "folders": [
+      "24-DEP",
+      "12-GAD"
+    ],
+    "what": "Hold back and route to the founder any decision the bank marks as a founder call: scale ceiling, discount policy, catalog breadth expectations, a new entry offer, or using the founder's own story in ads.",
+    "encompasses": [
+      "Do not scale Google spend until the offer and page already convert, and say so if asked to scale anyway",
+      "Agree a scale ceiling with the owner: GP to CAC band by default, near break even only as a deliberate choice",
+      "Route any discount request to the founder with a margin plan, never apply a blanket price cut",
+      "Check catalog breadth against Shopping and PMax scale expectations and flag the gap to the founder",
+      "Bring a free plus shipping or other entry offer idea to the founder before building it",
+      "Bring a founder personal brand or origin story ad idea to the founder before scripting it"
+    ],
+    "inputs": [
+      "registry: founder decisions log",
+      "idea record: founder-owned ideas"
+    ],
+    "outputs": [
+      "founder decision brief",
+      "registry entry once decided"
+    ],
+    "trigger": "event: idea owner tag is founder",
+    "autonomy": "founder_gate",
+    "external_write": {
+      "needed": false,
+      "surface": null
+    },
+    "tools": [],
+    "skills": [
+      "founder-decision-routing"
+    ],
+    "subagent": null,
+    "sources": {
+      "web": [],
+      "bank": [
+        "DEP-058",
+        "GAD-001",
+        "GAD-009",
+        "GAD-151",
+        "GAD-191",
+        "GAD-198"
+      ]
+    },
+    "found_in": "bank_only",
+    "founder_sees": "A short list of the calls only the founder can make, with the numbers needed to make each one."
+  }
+]

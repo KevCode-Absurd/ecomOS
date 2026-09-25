@@ -1,0 +1,1488 @@
+[
+  {
+    "id": "media/build-campaign",
+    "name": "Build a campaign (parent)",
+    "parent": null,
+    "invoke_when": "a job needs a new or rebuilt campaign, ad set/ad group, or feed on any ad platform",
+    "select_by": {},
+    "inputs_required": [
+      "brand brain: catalogue, personas, margin",
+      "audit output for the surface"
+    ],
+    "steps": [
+      "Read the platform and channel the task names.",
+      "Route to the matching platform sub-skill by platform, channel and, for marketplaces, store type.",
+      "If no sub-skill matches, stop and draft a workflow proposal instead of improvising."
+    ],
+    "checks": [
+      "every sub-skill inherits: one campaign or ad set has one job, name it so results can be read without opening it, exclude before you include (brand terms, existing customers, dead placements)"
+    ],
+    "output": "routes to a platform sub-skill; never builds a campaign itself",
+    "used_by": [
+      "MEDIA-W02",
+      "MEDIA-W03",
+      "MEDIA-W06",
+      "MEDIA-W07",
+      "MEDIA-W13",
+      "MEDIA-W15",
+      "MEDIA-W16",
+      "MEDIA-W19",
+      "MEDIA-W20",
+      "MEDIA-W21",
+      "MEDIA-W22",
+      "MEDIA-W23",
+      "MEDIA-W26",
+      "MEDIA-W27"
+    ],
+    "shared_with": [],
+    "skill_md": "---\n    name: build-campaign\n    owner: media-buyer\n    version: 1\n    invoke_when: a job needs a new or rebuilt campaign, ad set, ad group or feed\n    inputs: platform, channel, store type, brand brain catalogue and personas\n    outputs: routes to the correct platform sub-skill\n    ---\n    Purpose: hold the one rule every campaign build shares before the agent picks a\n    platform-specific procedure, so no build skips the basics because a specific\n    sub-skill forgot to say it.\n\n    Steps\n    1. Read the platform (meta, google, tiktok, marketplace), the channel (search,\n       shopping, feed, spark, retargeting) and, for a marketplace, the store type.\n    2. Match to the one sub-skill whose select_by fields fit. Never guess between two.\n    3. Hand the task to that sub-skill with the brand brain sections it needs already\n       attached.\n    4. If nothing matches, stop. Draft a one-page workflow proposal (what job, what\n       inputs, what output) for a person to review. Never improvise a build.\n\n    Checks\n    - Every build gives the resulting campaign or ad set one stated job.\n    - Every build excludes existing customers, brand terms or dead placements before\n      it includes anything new, wherever that rule applies to the platform.\n    - The name or naming pattern lets a person read results without opening the ad\n      manager.\n\n    Output: a routing decision to one platform sub-skill, or a workflow proposal.\n\n    Example: task says \"new Meta ad set for the travel-mug concept.\" Platform=meta,\n    channel=cold ad set -> routes to `media/build-campaign/meta-concept`."
+  },
+  {
+    "id": "media/pace-budget",
+    "name": "Pace and size budget (parent)",
+    "parent": null,
+    "invoke_when": "a job needs a budget number, a bid setting, or a stock-aware spend check on any platform",
+    "select_by": {},
+    "inputs_required": [
+      "metric contract: spend, cpa, aov",
+      "brand brain: margin, live stock"
+    ],
+    "steps": [
+      "Read which platform and which decision (size a launch, step a winner, check stock) the task needs.",
+      "Route to the matching platform sub-skill.",
+      "Never let a model guess a number a formula should compute."
+    ],
+    "checks": [
+      "every sub-skill computes its number in code from the formula it owns, never from a feeling",
+      "every sub-skill checks live stock before recommending more budget where stock applies"
+    ],
+    "output": "routes to a platform sub-skill; the formula lives in the child",
+    "used_by": [
+      "MEDIA-W03",
+      "MEDIA-W05",
+      "MEDIA-W08",
+      "MEDIA-W17",
+      "MEDIA-W23",
+      "MEDIA-W24"
+    ],
+    "shared_with": [
+      "shared/metric-read"
+    ],
+    "skill_md": "---\n    name: pace-budget\n    owner: media-buyer\n    version: 1\n    invoke_when: a job needs a budget size, a bid setting or a stock-aware spend check\n    inputs: platform, decision type, metric contract fields\n    outputs: routes to the correct platform sub-skill\n    ---\n    Purpose: keep every budget number computed the same way, in code, from a named\n    formula, before the agent picks which platform's formula applies.\n\n    Steps\n    1. Read the platform and the decision: sizing a new test, stepping a winner,\n       pacing against stock, or moving through a bid stage ladder.\n    2. Route to the matching sub-skill.\n    3. Pull `metric-read` (shared skill) for the fields the formula needs; if a field\n       is unavailable, say so and stop rather than substituting a guess.\n    4. Never state a number the agent computed in its own reasoning; call the\n       formula in code and report what it returns.\n\n    Checks\n    - Every number traces to a named formula, not a feeling.\n    - Live stock is checked before any recommendation to raise spend, wherever stock\n      applies to the decision.\n    - No budget change is proposed on a surface the founder has not switched writes\n      on for; the output is a change list.\n\n    Output: a routing decision to one platform sub-skill.\n\n    Example: task says \"size the read window for the new hook test.\" Platform=meta,\n    decision=test sizing -> routes to `media/pace-budget/meta`."
+  },
+  {
+    "id": "media/read-results",
+    "name": "Read results (parent)",
+    "parent": null,
+    "invoke_when": "a job needs a performance read, a forecast, or a staged test read on any platform",
+    "select_by": {},
+    "inputs_required": [
+      "metric contract: full",
+      "connector: platform read tools or gallery cache"
+    ],
+    "steps": [
+      "Read which platform and which read cadence (daily, staged, weekly) the task needs.",
+      "Route to the matching platform sub-skill.",
+      "Never blend platforms into one number without saying which platforms are missing."
+    ],
+    "checks": [
+      "missing or unsupported fields show as unavailable, never 0",
+      "totals stay separate from breakdowns"
+    ],
+    "output": "routes to a platform sub-skill; the read format lives in the child",
+    "used_by": [
+      "MEDIA-W04",
+      "MEDIA-W14",
+      "MEDIA-W27"
+    ],
+    "shared_with": [
+      "shared/metric-read",
+      "shared/report-section"
+    ],
+    "skill_md": "---\n    name: read-results\n    owner: media-buyer\n    version: 1\n    invoke_when: a job needs a performance read, forecast or staged test read\n    inputs: platform, read cadence, metric contract\n    outputs: routes to the correct platform sub-skill\n    ---\n    Purpose: keep every read built the same way, arithmetic in code, missing data\n    marked unavailable, before the agent picks which platform's read shape applies.\n\n    Steps\n    1. Read the platform and the cadence: daily, a staged test read (24 hours,\n       3 days), or a weekly blended read.\n    2. Route to the matching sub-skill.\n    3. Call `metric-read` for the fields needed; never estimate a field in prose.\n    4. Keep totals separate from any breakdown; keep ad-level numbers when several\n       ads share one image; flag dynamic or mixed creative instead of averaging it.\n\n    Checks\n    - No metric shows a computed 0 where the source was actually missing.\n    - Every number a person will act on has a source and a date.\n    - A read never states month-end or blended numbers as if they were today's actual.\n\n    Output: a routing decision to one platform sub-skill.\n\n    Example: task says \"give me today's TikTok test read.\" Platform=tiktok,\n    cadence=staged -> routes to `media/read-results/tiktok`."
+  },
+  {
+    "id": "media/kill-scale",
+    "name": "Kill, keep or scale (parent)",
+    "parent": null,
+    "invoke_when": "a job needs a keep, kill or scale decision on an ad set, ad group, SKU or targeting layer",
+    "select_by": {},
+    "inputs_required": [
+      "metric contract: cpa, roas_blended, frequency",
+      "the platform's kill/keep/scale table"
+    ],
+    "steps": [
+      "Read which platform and which unit (ad set, ad group, SKU, targeting layer) the decision covers.",
+      "Route to the matching platform sub-skill.",
+      "Never touch a winner directly; fork or step it instead."
+    ],
+    "checks": [
+      "decisions run at the level the platform's table specifies, never on one ad's own number",
+      "a winner is stepped or forked, never edited in place"
+    ],
+    "output": "routes to a platform sub-skill; the table lives in the child",
+    "used_by": [
+      "MEDIA-W04",
+      "MEDIA-W14",
+      "MEDIA-W16",
+      "MEDIA-W17",
+      "MEDIA-W24",
+      "MEDIA-W27"
+    ],
+    "shared_with": [
+      "shared/rank-candidates",
+      "shared/registry-entry"
+    ],
+    "skill_md": "---\n    name: kill-scale\n    owner: media-buyer\n    version: 1\n    invoke_when: a job needs a keep, kill or scale call\n    inputs: platform, decision unit, the platform's own kill/keep/scale table\n    outputs: routes to the correct platform sub-skill\n    ---\n    Purpose: keep every kill, keep or scale call a fixed table read, not a feeling,\n    before the agent picks which platform's table and unit-of-decision applies.\n\n    Steps\n    1. Read the platform and the unit the call is made on: Meta ad set, TikTok ad\n       group, a marketplace SKU, or a targeting layer.\n    2. Route to the matching sub-skill.\n    3. Read the table at the platform's own multiple of target CPA; never judge on\n       one ad's own ROAS or same-day revenue.\n    4. Log the call to the registry (`shared/registry-entry`) so the next read has\n       the history.\n\n    Checks\n    - The call was made at the right unit, never one ad inside a winning ad set.\n    - A winner was stepped or forked into a new unit, never edited directly.\n    - Every kill or scale call is dated and has a reason a founder could repeat.\n\n    Output: a routing decision to one platform sub-skill.\n\n    Example: task says \"should we kill the lookalike layer on TikTok?\" Platform=\n    tiktok, unit=targeting layer -> routes to `media/kill-scale/tiktok`."
+  },
+  {
+    "id": "media/account-ops",
+    "name": "Account operations (parent)",
+    "parent": null,
+    "invoke_when": "a job is about the health of an account itself, not a campaign inside it: audits, access, sale calendar, cross-border setup, suggestions, lift tests, or pre-launch QA",
+    "select_by": {},
+    "inputs_required": [
+      "brand brain: account inventory, sale calendar, markets"
+    ],
+    "steps": [
+      "Read which operational job the task names.",
+      "Route to the matching sub-skill.",
+      "These jobs run on their own trigger, not because a campaign needs building."
+    ],
+    "checks": [
+      "every finding names its money at stake and its source"
+    ],
+    "output": "routes to an operations sub-skill",
+    "used_by": [
+      "MEDIA-W01",
+      "MEDIA-W05",
+      "MEDIA-W09",
+      "MEDIA-W10",
+      "MEDIA-W11",
+      "MEDIA-W12",
+      "MEDIA-W18"
+    ],
+    "shared_with": [],
+    "skill_md": "---\n    name: account-ops\n    owner: media-buyer\n    version: 1\n    invoke_when: the job is about account health, not building a campaign\n    inputs: brand brain account inventory, sale calendar, markets served\n    outputs: routes to the correct operations sub-skill\n    ---\n    Purpose: hold the audits, access, calendar and QA jobs that keep the whole\n    account trustworthy, apart from the campaign-building tree, so they are not\n    confused with a build task.\n\n    Steps\n    1. Read the operational job named: audit, access, cross-border setup, sale ramp,\n       incrementality test, suggestion filter, or pre-launch QA.\n    2. Route to the matching sub-skill.\n    3. Every sub-skill here reports findings ranked by money at stake, with a\n       source, not a list of equal-weight observations.\n\n    Checks\n    - Every finding traces to a number and a source (brand record, platform read,\n      or a dated public URL).\n    - No sub-skill here proposes a live write; each hands back a report, a change\n      list, or (for a founder_gate job) a decision brief.\n\n    Output: a routing decision to one operations sub-skill.\n\n    Example: task says \"it's early November, Black Friday is in 3 weeks.\"\n    -> routes to `media/account-ops/peak-sale-ramp`. (India only: \"it's the first week\n    of October, Diwali sale is in 3 weeks.\")"
+  },
+  {
+    "id": "media/partnerships",
+    "name": "Partnerships and channel expansion (parent)",
+    "parent": null,
+    "invoke_when": "a job is about the affiliate program, a policy rejection, or evaluating a new ad surface",
+    "select_by": {},
+    "inputs_required": [
+      "brand brain: affiliate policy, claim tiers, channel saturation state"
+    ],
+    "steps": [
+      "Read which partnership or expansion job the task names.",
+      "Route to the matching sub-skill."
+    ],
+    "checks": [
+      "every founder_gate job here stops at a decision brief, never applies the change itself"
+    ],
+    "output": "routes to a partnerships sub-skill",
+    "used_by": [
+      "MEDIA-W25",
+      "MEDIA-W28",
+      "MEDIA-W29",
+      "MEDIA-W30"
+    ],
+    "shared_with": [],
+    "skill_md": "---\n    name: partnerships\n    owner: media-buyer\n    version: 1\n    invoke_when: the job is about affiliates, ad policy standing, or a new channel\n    inputs: affiliate policy, claim tiers, current channel saturation\n    outputs: routes to the correct partnerships sub-skill\n    ---\n    Purpose: hold the jobs that touch a partner, a platform's trust and safety team,\n    or a channel the brand has not proven yet, since these carry a different risk\n    shape than a normal campaign build.\n\n    Steps\n    1. Read the job: affiliate program health, an ad rejection or account-quality\n       flag, a pilot on an unproven surface, or building a standing automation rule.\n    2. Route to the matching sub-skill.\n    3. Every sub-skill here is founder_gate by default; assemble the numbers and the\n       range of choices, never a single recommendation dressed as the only option.\n\n    Checks\n    - No affiliate is approved, no appeal is submitted, no pilot spends, and no\n      automation rule goes live without the founder's decision on record.\n    - Every fraud or rejection flag carries its evidence, not a suspicion.\n\n    Output: a routing decision to one partnerships sub-skill.\n\n    Example: task says \"an affiliate's conversions are landing in under 90 seconds\n    of the click.\" -> routes to `media/partnerships/affiliate-program`."
+  },
+  {
+    "id": "media/build-campaign/meta-structure",
+    "name": "Meta account structure and naming",
+    "parent": "media/build-campaign",
+    "invoke_when": "the account's monthly Meta spend tier has changed, an audit found a structure problem, or a person asks for the naming rule",
+    "select_by": {
+      "platform": "meta",
+      "task": "structure_and_naming"
+    },
+    "inputs_required": [
+      "brand brain: catalogue, personas",
+      "metric contract: spend, cpa",
+      "MEDIA-C01 audit output"
+    ],
+    "steps": [
+      "Read the trailing 30-day Meta spend and place it in the small, mid or large tier.",
+      "Pick the matching structure template (small: one testing campaign, optional scaling, optional small retention; mid: 2-3 cold campaigns with a written reason each; large: mandatory page strategy and bidding diversity).",
+      "Merge any campaign whose conversion volume is too thin to optimise on its own.",
+      "Fully consolidate to one campaign only for a single product, single persona, small-spend store.",
+      "Write a one-line, defendable purpose for every campaign, existing and new.",
+      "Fix a reporting or readability problem with naming or filters before adding a new campaign.",
+      "Put every recurring promo in its own campaign, named for the promo.",
+      "Set the ad set naming pattern: persona, angle, offer, content type, launch date.",
+      "Name every fork of a concept with the same fields plus its own launch date."
+    ],
+    "checks": [
+      "campaigns split by business unit and ad sets by concept, never by launch date alone",
+      "every campaign has a one-line purpose a founder could repeat",
+      "the naming pattern lets a person filter results without opening each ad set"
+    ],
+    "output": "structure diagram, naming convention doc, change list (renames, merges, splits)",
+    "used_by": [
+      "MEDIA-W02"
+    ],
+    "shared_with": [],
+    "skill_md": "---\n    name: meta-structure\n    owner: media-buyer\n    version: 1\n    invoke_when: spend tier changed, an audit flagged structure, or naming is asked for\n    inputs: trailing 30-day spend, catalogue, personas, audit output\n    outputs: structure diagram, naming convention, change list\n    ---\n    Purpose: pick the Meta account shape that matches current spend and make every\n    campaign and ad set readable by its name alone, so a reporting problem gets\n    fixed with a rename, not a new campaign.\n\n    Steps\n    1. Place the account in its spend tier from trailing 30-day spend.\n    2. Apply that tier's template: small gets one testing campaign; mid gets 2-3\n       cold campaigns each with a written reason; large gets a page strategy and\n       bidding diversity across campaigns.\n    3. Merge campaigns too thin on conversions to optimise; fully consolidate a\n       single-product, single-persona, small-spend store to one campaign.\n    4. Write one defendable purpose line per campaign.\n    5. Set the ad set naming pattern (persona, angle, offer, content type, launch\n       date) and apply it to every existing and new ad set, including forks.\n\n    Checks\n    - Every campaign has a purpose line and every ad set follows the naming pattern.\n    - No campaign exists only because of a launch date, not a business reason.\n\n    Output: structure diagram + naming convention doc + change list for a human to\n    apply in Ads Manager.\n\n    Example: a brand crosses from $8k to $14k/month spend -> moves from the small\n    template (one testing campaign) to the mid template (2 cold campaigns, one for\n    bestsellers and one for a new SKU, each with a written reason)."
+  },
+  {
+    "id": "media/build-campaign/meta-concept",
+    "name": "Meta concept ad set build",
+    "parent": "media/build-campaign",
+    "invoke_when": "a new SKU, pain point or offer combination is ready to test on Meta",
+    "select_by": {
+      "platform": "meta",
+      "task": "concept_adset"
+    },
+    "inputs_required": [
+      "brand brain: personas, offers, SKUs",
+      "reference scout: creative references",
+      "audit: MEDIA-C01"
+    ],
+    "steps": [
+      "Define the concept as one SKU, one pain point, one offer; a change to any one starts a new ad set.",
+      "Check the concept's persona does not overlap another live ad set's persona; if it does, keep them apart or blend deliberately.",
+      "Go broad in cold targeting by default; put audience logic in creative and copy, not narrow settings.",
+      "Cap any interest, lookalike or custom-audience test as a small sandbox, never the default.",
+      "Exclude existing customers from the ad set, sized to the brand's repurchase cycle.",
+      "Remove weak placements (Audience Network app rewards on store campaigns) and turn off flexible/dynamic crop and Advantage+ creative edits on every product ad.",
+      "Default to CBO; switch to ABO only at high AOV with low daily order volume; set any cost cap at ad set level, never ad level.",
+      "Load the ad set with the concept ad plus 3 hook variations, enough for 2-6 exposures before purchase, minimum 3 ads.",
+      "Hand off to `media/account-ops/trafficking-qa` before the ad set goes live."
+    ],
+    "checks": [
+      "the ad set has exactly one SKU, one pain point, one offer",
+      "cold targeting is broad; no narrow interest test runs unlabelled as a sandbox",
+      "existing customers are excluded",
+      "placements and creative-edit toggles are set before launch"
+    ],
+    "output": "ad set build plan (concept, audience, placement, bid) + change list",
+    "used_by": [
+      "MEDIA-W03"
+    ],
+    "shared_with": [],
+    "skill_md": "---\n    name: meta-concept\n    owner: media-buyer\n    version: 1\n    invoke_when: a new SKU, pain point or offer is ready to test on Meta\n    inputs: personas, offers, SKUs, creative references, prior audit\n    outputs: ad set build plan, change list\n    ---\n    Purpose: turn one tested idea into one correctly built Meta ad set: broad,\n    excluded from existing customers, with clean placements and enough ads to be\n    read fairly.\n\n    Steps\n    1. Define the concept: one SKU, one pain point, one offer. Any change to one of\n       these starts a new ad set, not an edit to this one.\n    2. Check for persona overlap with a live ad set; keep non-overlapping personas\n       apart.\n    3. Go broad by default. Let price, page and reviews qualify the buyer; put\n       targeting logic in the creative, not the settings. Cap any interest or\n       lookalike test as a small, labelled sandbox.\n    4. Exclude existing customers, sized to the repurchase cycle.\n    5. Turn off weak placements and every automatic creative edit on product ads.\n    6. Pick CBO by default (ABO only at high AOV, low volume); set any cap at ad\n       set level.\n    7. Load 2-6 exposures worth of ads (minimum 3: the concept ad plus 3 hooks).\n    8. Pass the built ad set to the pre-launch QA skill before it goes live.\n\n    Checks\n    - One SKU, one pain point, one offer per ad set.\n    - Existing customers excluded; broad targeting used; sandbox tests labelled and\n      capped.\n\n    Output: an ad set build plan a human applies, plus the change list.\n\n    Example: new offer \"buy 2 get 1 on travel mugs\" for the commuter persona ->\n    one new ad set, broad cold, commuter-persona exclusion of existing buyers,\n    concept ad + 3 hooks, CBO, $0 interest narrowing."
+  },
+  {
+    "id": "media/build-campaign/meta-retargeting",
+    "name": "Meta existing-customer and retargeting build",
+    "parent": "media/build-campaign",
+    "invoke_when": "the audit or a quarterly review calls for setting up or resizing existing-customer Meta spend",
+    "select_by": {
+      "platform": "meta",
+      "task": "retargeting"
+    },
+    "inputs_required": [
+      "brand brain: repurchase cycle, customer segments",
+      "LIFE-C32: existing-customer budget and CPA ceiling memo"
+    ],
+    "steps": [
+      "Read the existing-customer budget and CPA ceiling the Lifecycle specialist set (LIFE-C32); if it has not been set, stop and ask for it.",
+      "Hold all existing-customer spend in one dedicated campaign so it cannot bleed into cold.",
+      "Size the campaign's budget in dollars and frequency, never as a percentage of total spend.",
+      "Skip a separate website-visitor retargeting campaign unless the engaged segment is starved of cold spend.",
+      "Do not hyper-segment by funnel stage, warmth tier or page viewed.",
+      "Write non-buyer retargeting ads around a different offer, proof point or objection than the cold ad, not the same ad louder.",
+      "Time win-back or reminder ads to land just before the customer's typical reorder date.",
+      "For high-AOV considered purchases, plan a longer nurture ladder instead of a same-day push.",
+      "Set up a dedicated lapsed-customer campaign with its own strategy."
+    ],
+    "checks": [
+      "all existing-customer spend sits in one campaign",
+      "the budget and CPA ceiling match LIFE-C32, not a guess",
+      "no funnel-stage hyper-segmentation exists"
+    ],
+    "output": "retargeting campaign plan + change list",
+    "used_by": [
+      "MEDIA-W06"
+    ],
+    "shared_with": [
+      "life"
+    ],
+    "skill_md": "---\n    name: meta-retargeting\n    owner: media-buyer\n    version: 1\n    invoke_when: existing-customer Meta spend needs setting up or resizing\n    inputs: repurchase cycle, customer segments, LIFE-C32 budget/CPA memo\n    outputs: retargeting campaign plan, change list\n    ---\n    Purpose: run existing-customer paid spend as one disciplined, isolated campaign\n    at a budget the Lifecycle specialist set from margin, never a percentage\n    guess or a bleed off cold budget.\n\n    Steps\n    1. Read the existing-customer budget dollar figure and CPA ceiling from LIFE-C32.\n       If it is missing, stop; this is a founder-gated number, not one the media\n       buyer sets.\n    2. Build or confirm one dedicated existing-customer campaign; do not let this\n       spend live inside a cold campaign.\n    3. Size the budget in dollars and by target frequency, not as a percent of the\n       account.\n    4. Check whether a separate visitor-retargeting campaign is even needed; skip\n       it unless the engaged segment is spend-starved.\n    5. Write ad copy around a different objection or proof point than the cold ad.\n    6. Time win-back messaging to the customer's typical reorder date.\n    7. Set up a lapsed-customer campaign on its own strategy if one does not exist.\n\n    Checks\n    - Spend and CPA match the LIFE-C32 memo exactly.\n    - No segmentation deeper than the plan calls for.\n\n    Output: campaign plan and a change list for a human to apply.\n\n    Example: LIFE-C32 sets $2,000/month at a 45-day CPA ceiling half the new-\n    customer target -> one existing-customer campaign at that budget, non-buyer ad\n    on a different objection, reorder-timed win-back ad."
+  },
+  {
+    "id": "media/build-campaign/meta-catalogue",
+    "name": "Meta dynamic ads and catalogue health",
+    "parent": "media/build-campaign",
+    "invoke_when": "dynamic product ads are running or about to launch, or the weekly catalogue check is due",
+    "select_by": {
+      "platform": "meta",
+      "task": "catalogue"
+    },
+    "inputs_required": [
+      "brand brain: product catalogue",
+      "connector: ads_catalog_get_diagnostics, ads_catalog_get_dynamic_ads_health"
+    ],
+    "steps": [
+      "Pull catalogue diagnostics and dynamic-ads health from Meta.",
+      "Check for missing images, prices or availability before scaling DPA.",
+      "Confirm the customer and product sync into the catalogue is current.",
+      "Keep DPA out of the cold CBO campaign; hold it in its own ad set with a capped share of total spend.",
+      "Set DPA's read window to 7-day click or incremental attribution, never blended platform ROAS."
+    ],
+    "checks": [
+      "DPA sits outside the cold CBO",
+      "feed has no missing image, price or availability gaps before spend scales",
+      "DPA is read on 7-day click, not blended ROAS"
+    ],
+    "output": "DPA health report + change list",
+    "used_by": [
+      "MEDIA-W07"
+    ],
+    "shared_with": [],
+    "skill_md": "---\n    name: meta-catalogue\n    owner: media-buyer\n    version: 1\n    invoke_when: DPA is running or about to launch, or the weekly catalogue check is due\n    inputs: product catalogue, catalogue diagnostics, dynamic-ads health\n    outputs: DPA health report, change list\n    ---\n    Purpose: keep dynamic product ads trustworthy by checking the feed before\n    trusting the number, and by reading DPA on the attribution window that actually\n    fits it.\n\n    Steps\n    1. Pull `ads_catalog_get_diagnostics` and `ads_catalog_get_dynamic_ads_health`.\n    2. Check for missing images, prices, or stock-status gaps; flag any SKU with a\n       gap before it gets more DPA spend.\n    3. Confirm the product and customer sync into the catalogue ran on schedule and\n       matches current order data.\n    4. Confirm DPA lives in its own ad set outside the cold CBO campaign, capped as\n       a share of total spend.\n    5. Confirm DPA is read on 7-day click or incremental attribution, not the\n       account's blended platform ROAS.\n\n    Checks\n    - No SKU with a missing image or wrong price is getting DPA spend.\n    - DPA's reported number is never the same column as cold prospecting's ROAS.\n\n    Output: a health report plus a change list for any feed or ad-set fix.\n\n    Example: 40 SKUs show a stale price in the feed -> flag before scaling DPA,\n    hand a developer brief to refresh the feed source, hold DPA spend at its\n    current cap until fixed."
+  },
+  {
+    "id": "media/build-campaign/google-architecture",
+    "name": "Google campaign architecture and brand split",
+    "parent": "media/build-campaign",
+    "invoke_when": "a new Google account is being built, an audit found a structure problem, or the monthly brand/non-brand check is due",
+    "select_by": {
+      "platform": "google",
+      "task": "architecture"
+    },
+    "inputs_required": [
+      "brand brain: catalogue, margin, brand terms",
+      "audit: MEDIA-C02 output"
+    ],
+    "steps": [
+      "Give every campaign exactly one funnel job; check for overlaps.",
+      "Default to one campaign per job; require a written reason for every extra split.",
+      "Run one campaign per country; never two locations in one PMax.",
+      "Split Shopping by margin tier only where margins spread widely across the catalogue.",
+      "Set the safe defaults on every new campaign: Sales objective, Purchase-only conversion goal, Search Partners and Display off, Presence location targeting, tablets and TV off unless device data says otherwise.",
+      "Always split brand from non-brand across Search, Shopping and PMax.",
+      "Exclude brand from every cold campaign with both a negative keyword list and a brand-audience exclusion.",
+      "Run brand on manual bidding or impression share, never conversion-based smart bidding, at a higher ROAS target than non-brand.",
+      "Check cold-campaign search terms for brand-term leakage; kill tiny orphan campaigns and roll their spend into the top campaigns."
+    ],
+    "checks": [
+      "every campaign has one stated job and a written reason for any split",
+      "brand is fully separated and excluded from every cold campaign",
+      "growth is judged on non-brand alone"
+    ],
+    "output": "campaign architecture diagram + brand/non-brand split plan + change list",
+    "used_by": [
+      "MEDIA-W20"
+    ],
+    "shared_with": [],
+    "skill_md": "---\n    name: google-architecture\n    owner: media-buyer\n    version: 1\n    invoke_when: new account, an audit flags structure, or the monthly brand check is due\n    inputs: catalogue, margin, brand terms, prior audit\n    outputs: architecture diagram, brand/non-brand split plan, change list\n    ---\n    Purpose: give every Google campaign one job, and make sure brand-name traffic\n    never gets counted as growth.\n\n    Steps\n    1. Map every campaign to one funnel job; flag any overlap.\n    2. Default to one campaign per job; a second campaign for the same job needs a\n       written reason.\n    3. One campaign per country; never mix locations inside one PMax.\n    4. Set safe defaults on anything new: Sales objective, Purchase-only goal,\n       Search Partners and Display off, Presence targeting, tablets/TV off.\n    5. Split brand from non-brand everywhere it can run: Search, Shopping, PMax.\n    6. Exclude brand from cold campaigns with a negative list AND an audience\n       exclusion, not just one of the two.\n    7. Put brand on manual bidding or impression share at a higher ROAS target;\n       check impression share actually covers the brand name.\n    8. Scan cold-campaign search terms monthly for brand leakage; merge orphan\n       campaigns into the account's real structure.\n\n    Checks\n    - Every campaign traces to one job and, if extra, a written reason.\n    - No brand traffic inflates the non-brand growth number.\n\n    Output: architecture diagram, split plan, change list.\n\n    Example: a PMax campaign is running for both the US and Canada -> split into two\n    country campaigns with a written reason (currency and duty messaging differ)."
+  },
+  {
+    "id": "media/build-campaign/google-merchant-feed",
+    "name": "Google Merchant Center and feed",
+    "parent": "media/build-campaign",
+    "invoke_when": "Merchant Center needs setup or a disapproval fix, or the weekly feed-quality check is due",
+    "select_by": {
+      "platform": "google",
+      "task": "merchant_feed"
+    },
+    "inputs_required": [
+      "brand brain: policies, product catalogue, reviews",
+      "connector: google merchant center (manual)"
+    ],
+    "steps": [
+      "Match Merchant Center business info exactly to the live site; enroll the 4 add-ons (remarketing, reviews, ratings, promotions).",
+      "Fix disapprovals before warnings turn into limited performance; never claim an identity attribute (e.g. small business) unless true by Google's definition.",
+      "Put the converting search term and product type first in every title, inside the first 70 characters; no keyword stuffing.",
+      "Roll out title or description changes in batches with a recorded baseline, never all at once.",
+      "Give every variant its own GTIN; never duplicate one product at several prices; run one feed per currency.",
+      "Refresh the feed at least every 6 hours; turn on automatic item updates for frequent price changes.",
+      "Use custom labels to carry margin, bestseller and stock priority into campaign structure.",
+      "Test lifestyle images against plain product shots; override auto-cropped Shopping images with a 4:5 supplementary feed.",
+      "Duplicate the feed into role-specific versions for Shopping and PMax where needed; work toward the Top Quality Store badge."
+    ],
+    "checks": [
+      "business info matches the live site exactly",
+      "no disapproval sits unresolved past its warning window",
+      "title/description changes rolled out in batches against a recorded baseline"
+    ],
+    "output": "Merchant Center setup checklist + feed audit + title/description rewrite batch + change list",
+    "used_by": [
+      "MEDIA-W19"
+    ],
+    "shared_with": [],
+    "skill_md": "---\n    name: google-merchant-feed\n    owner: media-buyer\n    version: 1\n    invoke_when: Merchant Center needs setup, a disapproval needs fixing, or the weekly feed check is due\n    inputs: policies, product catalogue, reviews, current feed\n    outputs: setup checklist, feed audit, rewrite batch, change list\n    ---\n    Purpose: keep the feed eligible, trustworthy and search-matchable, since a bad\n    feed caps every Shopping and PMax result before bidding ever gets a chance.\n\n    Steps\n    1. Match Merchant Center's business info to the live site; enroll the 4 add-ons.\n    2. Fix any disapproval first, before it becomes limited performance; never claim\n       an identity attribute that is not true by Google's definition.\n    3. Rewrite titles: converting search term + product type first, inside 70\n       characters, no stuffing. Roll changes out in batches with a baseline.\n    4. Give every variant its own GTIN; never duplicate a product at multiple\n       prices; run one feed per currency.\n    5. Refresh the feed at least every 6 hours; automate updates for frequent price\n       changes.\n    6. Tag custom labels for margin, bestseller status and stock priority.\n    7. Test lifestyle vs plain images; supply a 4:5 image feed to beat auto-crop.\n\n    Checks\n    - No open disapproval past its warning window.\n    - Every title change has a recorded baseline to measure against.\n    - No duplicate GTIN, no duplicate product at two prices.\n\n    Output: setup checklist, feed audit, rewrite batch, change list.\n\n    Example: 12 SKUs are disapproved for a missing GTIN -> fix listed first, before\n    any title rewrite batch goes out, since disapprovals cap everything else."
+  },
+  {
+    "id": "media/build-campaign/google-shopping",
+    "name": "Google Shopping campaign management",
+    "parent": "media/build-campaign",
+    "invoke_when": "the weekly Shopping optimisation loop is due, or a new account needs its first Shopping campaign",
+    "select_by": {
+      "platform": "google",
+      "channel": "shopping"
+    },
+    "inputs_required": [
+      "brand brain: catalogue, margin",
+      "connector: google ads (manual)"
+    ],
+    "steps": [
+      "Start a new account on Standard Shopping, not PMax; decline the PMax preselection.",
+      "Launch the first campaign on bestsellers only, in one ad group.",
+      "Pick a structure matching catalog size and margin spread; tier products by rolling performance with their own budget per tier.",
+      "Run the weekly loop: structure, bidding, negatives, products.",
+      "Prune products that spend and click but drag ROAS down.",
+      "Pull or de-prioritise a shared product when a competitor discounts it 20-30 percent.",
+      "Launch a new SKU on its own small budget and listing group, separate from the bestseller cold start.",
+      "Give Shopping the largest share of Google budget for consumer ecommerce; layer Standard Shopping beside PMax once PMax plateaus."
+    ],
+    "checks": [
+      "bestsellers launch first, alone",
+      "the weekly structure/bidding/negatives/products loop actually ran",
+      "a new SKU never launches inside the bestseller cold-start group"
+    ],
+    "output": "Shopping structure plan + weekly optimisation log + change list",
+    "used_by": [
+      "MEDIA-W21"
+    ],
+    "shared_with": [],
+    "skill_md": "---\n    name: google-shopping\n    owner: media-buyer\n    version: 1\n    invoke_when: the weekly Shopping loop is due, or a first Shopping campaign is needed\n    inputs: catalogue, margin, current Shopping structure\n    outputs: structure plan, weekly log, change list\n    ---\n    Purpose: run the Shopping loop the way it earns money: bestsellers first, tiered\n    by performance, pruned weekly, never buried inside PMax defaults.\n\n    Steps\n    1. On a new account, start Standard Shopping; decline any PMax preselection.\n    2. Launch bestsellers only, in one ad group, first.\n    3. Pick a structure sized to catalog size and margin spread; tier products by\n       rolling performance, each tier its own budget.\n    4. Run the weekly loop in order: structure, bidding, negatives, products.\n    5. Prune products that spend and click without earning ROAS.\n    6. Watch for a competitor discounting a shared product 20-30%; de-prioritise\n       that product rather than compete on price blind.\n    7. Give a brand-new SKU its own small budget and listing group.\n\n    Checks\n    - Bestsellers launched alone before the catalogue widened.\n    - The weekly loop covered all four areas, not just bidding.\n    - No new SKU diluted the proven bestseller group's data.\n\n    Output: structure plan, weekly optimisation log, change list.\n\n    Example: a competitor cuts price 25% on a shared bestseller -> de-prioritise\n    that product in Shopping rather than match the price without a margin plan."
+  },
+  {
+    "id": "media/build-campaign/google-search",
+    "name": "Google Search campaign management",
+    "parent": "media/build-campaign",
+    "invoke_when": "the weekly Search optimisation loop is due, or new keywords/RSAs are needed",
+    "select_by": {
+      "platform": "google",
+      "channel": "search"
+    },
+    "inputs_required": [
+      "brand brain: offers, catalogue",
+      "connector: google ads (manual)"
+    ],
+    "steps": [
+      "Classify keywords by intent before bidding; group into single-theme ad groups, never one keyword per SKU.",
+      "Use exact match on proven converters; use broad match only with smart bidding and proof.",
+      "Write 7-9 RSA headlines from the brand's own offer and bestseller angle; lead with product, price or offer; use descriptions to answer the real objection.",
+      "Fix quality signals before raising a bid; send cold, problem-aware traffic to an educational page, not a bare buy box.",
+      "Review search terms on a cadence that tightens for new campaigns and loosens once stable; remove clicked non-converters, promote converting broad terms to exact.",
+      "Build the account-level negative list at the right level, without blocking real product searches; turn off Search Partners and Display on every Search campaign.",
+      "Run DSA only with a large, multi-category content site, after RSAs already run; test AI Max for Search only on a cold, brand-excluded campaign.",
+      "Test landing pages from Search continuously with a duplicate ad rotation."
+    ],
+    "checks": [
+      "keywords grouped by intent into single-theme ad groups",
+      "RSAs answer a real objection, not just describe the product",
+      "the negative list blocks junk without blocking real product searches"
+    ],
+    "output": "keyword/RSA plan + search term cleanup log + change list",
+    "used_by": [
+      "MEDIA-W21"
+    ],
+    "shared_with": [],
+    "skill_md": "---\n    name: google-search\n    owner: media-buyer\n    version: 1\n    invoke_when: the weekly Search loop is due, or new keywords/RSAs are needed\n    inputs: offers, catalogue, current search-term report\n    outputs: keyword/RSA plan, cleanup log, change list\n    ---\n    Purpose: bid only on proven or well-classified intent, and write ads that\n    answer the real objection instead of just naming the product.\n\n    Steps\n    1. Classify keywords by intent; group into single-theme ad groups.\n    2. Exact match on proven converters; broad match only with smart bidding and\n       proof it works for this account.\n    3. Write 7-9 RSA headlines from the brand's own offer; lead with product, price\n       or offer, and let descriptions answer the real objection.\n    4. Fix quality signals (landing page relevance, ad relevance) before raising a\n       bid.\n    5. Send cold, problem-aware clicks to an educational page, not straight to a\n       buy box.\n    6. Review search terms on a tighten-then-loosen cadence; promote converting\n       broad terms to exact, remove clicked non-converters.\n    7. Keep the account negative list clean, never blocking a real product search.\n\n    Checks\n    - No ad group mixes more than one search intent.\n    - Every RSA answers an objection, not just a product description.\n\n    Output: keyword/RSA plan, search-term cleanup log, change list.\n\n    Example: \"waterproof travel mug\" search term converts well under a broad\n    \"travel mug\" keyword -> promoted to its own exact-match keyword and ad group."
+  },
+  {
+    "id": "media/build-campaign/google-pmax",
+    "name": "Performance Max control build",
+    "parent": "media/build-campaign",
+    "invoke_when": "the weekly PMax control check is due, or PMax is being qualified for a new account",
+    "select_by": {
+      "platform": "google",
+      "channel": "pmax"
+    },
+    "inputs_required": [
+      "brand brain: catalogue, margin",
+      "connector: google ads (manual)"
+    ],
+    "steps": [
+      "Qualify the account before launching PMax as a conversion campaign; never launch it as the first campaign type.",
+      "Turn off final URL expansion (or restrict with URL-contains rules) and auto-created assets/automatic enhancements.",
+      "Build asset groups by product theme, 2-20 groups, never one giant group and never a single-product group.",
+      "Fill and refresh asset counts every 4-6 weeks; build the full exclusion set: brand, URL, SKU, placement, age, customer list.",
+      "Use first-party lists and proven converting search terms as signals; check for warm-traffic over-crediting before raising target ROAS.",
+      "Fix inputs in order: feed, brand exclusion, structure, bidding, signals.",
+      "Mine PMax search terms to launch dedicated Search campaigns on proven terms; test feed-only PMax to push spend toward Shopping.",
+      "Split PMax into a prospecting campaign and a remarketing/brand-defense campaign only for a real audience or goal difference."
+    ],
+    "checks": [
+      "URL expansion and auto-assets are off unless a written reason keeps them on",
+      "asset groups are theme-based, never single-product",
+      "the exclusion set (brand, URL, SKU, placement, age, customer list) is complete"
+    ],
+    "output": "PMax control checklist + asset group plan + change list",
+    "used_by": [
+      "MEDIA-W22"
+    ],
+    "shared_with": [],
+    "skill_md": "---\n    name: google-pmax\n    owner: media-buyer\n    version: 1\n    invoke_when: the weekly PMax control check is due, or PMax is being qualified\n    inputs: catalogue, margin, current PMax settings\n    outputs: control checklist, asset group plan, change list\n    ---\n    Purpose: replace PMax's defaults with real controls, since the wizard's\n    settings hide the levers a media buyer needs to trust the campaign.\n\n    Steps\n    1. Qualify the account first: proven feed, tracking, and existing Search/\n       Shopping data. Never launch PMax as the first campaign type.\n    2. Turn off final URL expansion (or restrict it) and every auto-created asset\n       or automatic enhancement.\n    3. Build theme-based asset groups, 2-20 of them; never one giant or single-\n       product group.\n    4. Build the full exclusion set: brand, URL, SKU, placement, age, customer\n       list.\n    5. Fix inputs in this order: feed, brand exclusion, structure, bidding,\n       signals. Fixing bidding before the feed wastes the fix.\n    6. Refresh asset counts every 4-6 weeks; feed proven Search terms and first-\n       party lists in as signals.\n    7. Check for warm-traffic over-crediting before raising target ROAS.\n\n    Checks\n    - No PMax setting is left on a default the agent has not deliberately chosen.\n    - The exclusion set is complete, not partial.\n\n    Output: control checklist, asset group plan, change list.\n\n    Example: PMax is crediting itself for branded-search converters -> check brand\n    exclusion first; it was missing, not the bidding."
+  },
+  {
+    "id": "media/build-campaign/google-youtube-demandgen",
+    "name": "YouTube and Demand Gen planning",
+    "parent": "media/build-campaign",
+    "invoke_when": "Search and Shopping are stable, or proven Meta creative exists, and a new funnel layer is being considered",
+    "select_by": {
+      "platform": "google",
+      "channel": "youtube_demandgen"
+    },
+    "inputs_required": [
+      "brand brain: AOV, creative library",
+      "reference scout: video references"
+    ],
+    "steps": [
+      "Add YouTube or Demand Gen only after Search and Shopping are dialled in, or with proven Meta creative to reuse.",
+      "Check fit before spending: AOV, a visually demonstrable product, and creative/budget for 4-6 choppy weeks.",
+      "Restrict cold Demand Gen prospecting to in-stream and Shorts; other placements off. Start cold on mobile only with Meta-style vertical creative.",
+      "Never feed the store's own customer list into cold Demand Gen prospecting.",
+      "Size budget from AOV, not a flat small test amount.",
+      "Script creative to hook, then demo, then prove, then ask; use the real founder or a disclosed spokesperson in founder-style ads.",
+      "Route cold traffic to a real conversion mechanism and capture email on the page.",
+      "Judge by traffic-light KPIs at the campaign level, not gut feel per ad; wait for a steady CPA over several days before switching to target bidding."
+    ],
+    "checks": [
+      "the fit checklist passed before any spend",
+      "cold Demand Gen never targets the store's own customer list",
+      "creative follows hook-demo-prove-ask"
+    ],
+    "output": "launch plan + creative script brief + change list",
+    "used_by": [
+      "MEDIA-W23"
+    ],
+    "shared_with": [
+      "crea"
+    ],
+    "skill_md": "---\n    name: google-youtube-demandgen\n    owner: media-buyer\n    version: 1\n    invoke_when: Search/Shopping are stable or proven Meta creative exists\n    inputs: AOV, creative library, video references\n    outputs: launch plan, creative script brief, change list\n    ---\n    Purpose: decide honestly whether the brand is ready for a video-first funnel\n    layer, and if so, script and structure it so it earns a fair read.\n\n    Steps\n    1. Confirm Search and Shopping are already stable, or proven Meta creative\n       exists to adapt.\n    2. Check fit: AOV supports the CPM, the product demos visually, and there is\n       creative and budget for 4-6 choppy early weeks.\n    3. Restrict cold Demand Gen to in-stream and Shorts; keep other placements off.\n    4. Size the budget from AOV, not a flat test amount.\n    5. Script creative as hook, then demo, then prove, then ask.\n    6. Route cold traffic to a real conversion mechanism and capture email.\n    7. Judge results with traffic-light KPIs at the campaign level; hold off\n       target-based bidding until CPA is steady over several days.\n\n    Checks\n    - The fit checklist passed before spend started.\n    - Cold prospecting never targeted the brand's own customer list.\n\n    Output: launch plan, creative script brief, change list.\n\n    Example: AOV is $22 and the product cannot be demoed visually in 15\n    seconds -> fit check fails; recommend against launching yet."
+  },
+  {
+    "id": "media/build-campaign/google-remarketing",
+    "name": "Google remarketing and exclusion lists",
+    "parent": "media/build-campaign",
+    "invoke_when": "a new remarketing campaign is needed, or lists need a scheduled rebuild",
+    "select_by": {
+      "platform": "google",
+      "channel": "remarketing"
+    },
+    "inputs_required": [
+      "brand brain: order history, objections list",
+      "connector: google ads / GA4 (manual)"
+    ],
+    "steps": [
+      "Build a cart-abandoner list from GA4 add-to-cart minus purchase.",
+      "Wait for a list to reach a usable size before launching on it.",
+      "Exclude existing customers from every prospecting campaign.",
+      "Map cart-abandonment ads to the brand's 5 real objections, not one generic reminder.",
+      "Use full-catalog dynamic remarketing for warm audiences.",
+      "Build a high-value customer list as its own lookalike seed."
+    ],
+    "checks": [
+      "no list launches before it reaches a usable size",
+      "existing customers are excluded from prospecting",
+      "abandonment ads map to a real objection, not a generic nudge"
+    ],
+    "output": "remarketing list plan + change list",
+    "used_by": [
+      "MEDIA-W21"
+    ],
+    "shared_with": [],
+    "skill_md": "---\n    name: google-remarketing\n    owner: media-buyer\n    version: 1\n    invoke_when: a new remarketing campaign is needed or lists need a rebuild\n    inputs: order history, GA4 events, the brand's 5 objections\n    outputs: remarketing list plan, change list\n    ---\n    Purpose: build remarketing lists worth using, and make sure every abandonment\n    ad answers a real objection instead of just repeating the offer.\n\n    Steps\n    1. Build the cart-abandoner list: GA4 add-to-cart minus purchase.\n    2. Check list size against Google's usable minimum before launching.\n    3. Exclude existing customers from every prospecting campaign using this data.\n    4. Map each abandonment ad to one of the brand's 5 real objections.\n    5. Set up full-catalog dynamic remarketing for warm audiences.\n    6. Build a high-value customer list as a lookalike seed for cold.\n\n    Checks\n    - Every list that launched had reached its usable size first.\n    - No abandonment ad is a generic \"still thinking it over\" with no objection.\n\n    Output: remarketing list plan, change list.\n\n    Example: cart abandoners cite shipping cost as the top exit reason -> the\n    abandonment ad leads with the free-shipping threshold, not a generic discount."
+  },
+  {
+    "id": "media/build-campaign/tiktok-launch",
+    "name": "TikTok first campaign launch",
+    "parent": "media/build-campaign",
+    "invoke_when": "a new TikTok account or relaunch needs its first campaign",
+    "select_by": {
+      "platform": "tiktok",
+      "task": "first_launch"
+    },
+    "inputs_required": [
+      "brand brain: catalogue, creative library",
+      "connector: none yet (manual TikTok Ads Manager)"
+    ],
+    "steps": [
+      "Complete the full TikTok account setup before spending any budget.",
+      "Test every pixel event before launch; stop if Purchase or Add to Cart does not fire.",
+      "Launch the first campaign as a manual Sales campaign with the catalog off.",
+      "Set the first ad group to broad targeting, Complete Payment optimisation, no target CPA.",
+      "Keep interests broad: 2-5 parent categories, never 15-20 stacked interests.",
+      "Set daily budget at the greater of $50 or 2x current CPA per ad group.",
+      "Run the first test as 2 ad groups by 3 creatives by $50/day for 3-4 days.",
+      "Read at 24 hours on soft metrics and at 3 days on cost metrics; cut the bottom half.",
+      "Pass the built campaign to `media/account-ops/trafficking-qa` before it goes live."
+    ],
+    "checks": [
+      "every pixel event fires before spend starts",
+      "interests stay broad, never stacked",
+      "the 24-hour/3-day staged read actually happened before any cut"
+    ],
+    "output": "launch checklist + change list + first test read",
+    "used_by": [
+      "MEDIA-W13"
+    ],
+    "shared_with": [],
+    "skill_md": "---\n    name: tiktok-launch\n    owner: media-buyer\n    version: 1\n    invoke_when: a new TikTok account or relaunch needs its first campaign\n    inputs: catalogue, creative library, TikTok account state\n    outputs: launch checklist, change list, first test read\n    ---\n    Purpose: get a TikTok account's first campaign live correctly, broad, and read\n    on a fixed schedule, since a wrong first setup wastes the account's early data.\n\n    Steps\n    1. Complete account setup (business center, pixel, catalog connection if used)\n       before any spend.\n    2. Test every pixel event; stop if Purchase or Add to Cart fails to fire.\n    3. Launch a manual Sales campaign, catalog off for the first test.\n    4. Set the ad group to broad targeting, Complete Payment optimisation, no\n       target CPA yet.\n    5. Keep interests to 2-5 parent categories; never stack 15-20 interests.\n    6. Set daily budget at the greater of $50 or 2x current CPA per ad group.\n    7. Run 2 ad groups by 3 creatives by $50/day for 3-4 days.\n    8. Read soft metrics at 24 hours, cost metrics at 3 days; cut the bottom half.\n    9. Run the pre-launch QA check before anything goes live.\n\n    Checks\n    - Pixel events confirmed firing before spend.\n    - No more than 5 stacked interests in any ad group.\n\n    Output: launch checklist, change list, first test read.\n\n    Example: Purchase event fires but with no value passed -> hold the launch,\n    send a developer brief to fix value passing before spending."
+  },
+  {
+    "id": "media/build-campaign/tiktok-spark-loop",
+    "name": "TikTok organic-to-Spark loop and creator program",
+    "parent": "media/build-campaign",
+    "invoke_when": "a creator's or the brand's organic post is ready to be tested as a paid Spark ad",
+    "select_by": {
+      "platform": "tiktok",
+      "task": "spark_loop"
+    },
+    "inputs_required": [
+      "brand brain: creator relationships",
+      "CREA-C38: creator authorization code log"
+    ],
+    "steps": [
+      "Post organically first; wait 5-7 days before considering Spark.",
+      "Pick the winning organic posts by early engagement, not by brand preference.",
+      "Confirm CREA-C38 has logged a 365-day authorization code for any creator post before Sparking it; if not, stop and route to CREA.",
+      "Keep hook-test variants off the public organic profile.",
+      "Structure affiliate-style commissions: open collabs for volume, targeted collabs for key partners.",
+      "Schedule the Spark push once authorization is confirmed and the post has proven organically."
+    ],
+    "checks": [
+      "no creator post is Sparked without a logged, unexpired authorization code",
+      "hook-test variants stay off the public profile"
+    ],
+    "output": "Spark loop schedule + change list",
+    "used_by": [
+      "MEDIA-W15"
+    ],
+    "shared_with": [
+      "crea"
+    ],
+    "skill_md": "---\n    name: tiktok-spark-loop\n    owner: media-buyer\n    version: 1\n    invoke_when: an organic post is ready to be tested as a paid Spark ad\n    inputs: creator relationships, CREA-C38 authorization log\n    outputs: Spark loop schedule, change list\n    ---\n    Purpose: turn a proven organic post into a paid Spark ad without ever running\n    one that lacks a valid authorization, since that is a platform violation risk.\n\n    Steps\n    1. Post organically first; give it 5-7 days before judging it for Spark.\n    2. Pick winners by real early engagement, not by which post the brand likes.\n    3. Check CREA-C38's authorization log for a valid, unexpired code tied to that\n       exact post. If missing, stop and hand the request to CREA, do not proceed.\n    4. Keep any hook-test variant off the public organic profile; only the proven\n       post gets Sparked.\n    5. Set commission structure: open collabs for reach, targeted collabs for the\n       brand's key partners.\n    6. Schedule the Spark push once authorization is confirmed.\n\n    Checks\n    - Every Sparked post has a logged, unexpired authorization code.\n    - No unapproved hook variant is public.\n\n    Output: Spark loop schedule, change list.\n\n    Example: a creator's post is performing well on day 6, but no authorization\n    code is logged -> hold the Spark request, route to CREA for the code first."
+  },
+  {
+    "id": "media/build-campaign/tiktok-shop-gmvmax",
+    "name": "TikTok Shop, Search and GMV Max setup",
+    "parent": "media/build-campaign",
+    "invoke_when": "TikTok Shop is launching, or the quarterly SKU review for GMV Max is due",
+    "select_by": {
+      "platform": "tiktok",
+      "task": "shop_gmvmax"
+    },
+    "inputs_required": [
+      "brand brain: catalogue, margin by SKU",
+      "connector: none yet (manual TikTok Seller Center)"
+    ],
+    "steps": [
+      "Complete TikTok Shop setup in Seller Center with full listings before selling through it.",
+      "Run TikTok Search with 20-50 keywords, phrase match, and add negatives regularly.",
+      "Launch GMV Max only on the top 20 percent of SKUs by margin, with an ROI target above break-even.",
+      "Verify the TikTok Shopify app is the official one before connecting the Shop.",
+      "Test alternate Shop storefront templates against the current one."
+    ],
+    "checks": [
+      "listings are complete before Shop goes live",
+      "GMV Max only touches the top 20 percent of SKUs by margin"
+    ],
+    "output": "TikTok Shop setup checklist + GMV Max SKU list + change list",
+    "used_by": [
+      "MEDIA-W16"
+    ],
+    "shared_with": [],
+    "skill_md": "---\n    name: tiktok-shop-gmvmax\n    owner: media-buyer\n    version: 1\n    invoke_when: TikTok Shop is launching or the quarterly SKU review is due\n    inputs: catalogue, margin by SKU, TikTok Seller Center state\n    outputs: Shop setup checklist, GMV Max SKU list, change list\n    ---\n    Purpose: get TikTok Shop selling with complete listings, and keep GMV Max's\n    automated spend limited to SKUs whose margin can absorb it.\n\n    Steps\n    1. Complete listings in Seller Center: images, descriptions, pricing, before\n       any sale attempt.\n    2. Verify the Shopify-TikTok connector is the official app before linking.\n    3. Build TikTok Search with 20-50 keywords, phrase match; keep adding negatives.\n    4. Rank SKUs by margin; put only the top 20 percent into GMV Max.\n    5. Set GMV Max's ROI target above break-even for those SKUs, never a flat\n       number copied from another platform.\n    6. Test an alternate storefront template against the current one.\n\n    Checks\n    - No SKU with thin margin sits in GMV Max.\n    - Listings are complete before any spend starts.\n\n    Output: Shop setup checklist, GMV Max SKU list, change list.\n\n    Example: a SKU has 18% margin while the top 20% cutoff is 35% margin -> excluded\n    from GMV Max even if it is a bestseller by unit volume."
+  },
+  {
+    "id": "media/build-campaign/marketplace-amazon-flipkart",
+    "name": "Amazon, Walmart and Target marketplace ad brief",
+    "parent": "media/build-campaign",
+    "invoke_when": "a marketplace ad launch is coming up, or the quarterly marketplace ads review is due",
+    "select_by": {
+      "platform": "marketplace",
+      "market": "amazon_walmart_target"
+    },
+    "inputs_required": [
+      "marketplace catalogue and listing data",
+      "SKU margin data",
+      "brand's own Google Search converting terms"
+    ],
+    "steps": [
+      "Pull bestseller and margin data to pick which SKUs get sponsored placement first.",
+      "Propose keyword targets from the brand's own converting Google Search terms plus marketplace search suggestions.",
+      "Build the negative keyword list to exclude irrelevant marketplace searches.",
+      "Propose ACOS or TACOS targets from the SKU's actual margin, never a generic benchmark.",
+      "Propose a budget split across search, product-page and brand-store placements.",
+      "Flag catalogue or listing issues (missing bullets, weak images) that will cap performance before spend starts."
+    ],
+    "checks": [
+      "ACOS/TACOS targets trace to the SKU's own margin",
+      "listing issues are flagged before spend, not after"
+    ],
+    "output": "marketplace ad campaign brief ready for Amazon Seller Central, Walmart Connect or Target Roundel (Flipkart Ads Manager, India only)",
+    "used_by": [
+      "MEDIA-W26"
+    ],
+    "shared_with": [],
+    "skill_md": "---\n    name: marketplace-amazon-flipkart\n    owner: media-buyer\n    version: 1\n    invoke_when: a marketplace ad launch is coming, or the quarterly review is due\n    inputs: marketplace catalogue, SKU margin, converting Google Search terms\n    outputs: a ready-to-execute marketplace ad brief\n    ---\n    Purpose: since there is no Amazon, Walmart or Target connector (or Flipkart\n    connector, India only), hand a human or agency a brief complete enough to\n    build the campaign correctly the first time.\n\n    Steps\n    1. Pull bestseller and margin data; rank SKUs for sponsored placement priority.\n    2. Seed keyword targets from the brand's own converting Google Search terms,\n       plus the marketplace's own search suggestions.\n    3. Build a negative keyword list for irrelevant marketplace searches.\n    4. Set ACOS or TACOS targets from each SKU's real margin, not a category\n       average.\n    5. Propose a budget split across search, product-page and brand-store\n       placements.\n    6. Check the listing itself (bullets, images, A+ content) and flag anything\n       that will cap ad performance before spend starts.\n\n    Checks\n    - Every ACOS/TACOS target traces to that SKU's own margin.\n    - A weak listing is flagged, not launched into ads as-is.\n\n    Output: a full campaign brief ready to build in the marketplace's own console\n    (Amazon Seller Central, Walmart Connect, Target Roundel; Flipkart Ads Manager\n    for the India option).\n\n    Example: a SKU has only 3 product images and no bullet points -> flagged to fix\n    the listing before its ACOS target is set or spend begins."
+  },
+  {
+    "id": "media/build-campaign/marketplace-quick-commerce",
+    "name": "Rapid-delivery and grocery marketplace retail media brief",
+    "parent": "media/build-campaign",
+    "invoke_when": "a rapid-delivery/grocery marketplace ad push is planned, or the brand adds a new such listing (India only: a quick-commerce ad push, or a new quick-commerce listing)",
+    "select_by": {
+      "platform": "marketplace",
+      "market": "rapid_delivery_us"
+    },
+    "inputs_required": [
+      "rapid-delivery/grocery listing and stock status per fulfillment center or city (dark store, India only)",
+      "category CPC/ROAS benchmarks",
+      "SKU margin",
+      "PROD-C49: per-SKU per-fulfillment-center contribution margin report (per-dark-store, India only)"
+    ],
+    "steps": [
+      "Check which rapid-delivery or grocery marketplace platforms (Instacart, DoorDash, Gopuff, Amazon Fresh; India only: Blinkit, Zepto, Instamart) the brand's SKUs are actually listed and in-stock on before proposing spend.",
+      "Read PROD-C49's contribution-margin report; only propose spend on a SKU with 3 consecutive weeks of positive contribution margin at that fulfillment center or dark store (India only).",
+      "Propose which SKUs to sponsor based on category search volume on that platform and current margin.",
+      "Size budget to the platform's own category CPC/ROAS benchmarks, since these differ from Meta or Google norms.",
+      "Flag stockout risk before scaling; rapid-delivery ad delivery can outpace local fulfillment-center inventory (dark-store inventory, India only).",
+      "Keep rapid-delivery/grocery marketplace ad results separate from Meta/Google reporting; attribution windows and intent differ."
+    ],
+    "checks": [
+      "no SKU is sponsored without a positive contribution-margin run from PROD-C49",
+      "stockout risk is flagged before any scale-up"
+    ],
+    "output": "a retail media brief per platform ready for a human to execute in the platform's brand console",
+    "used_by": [
+      "MEDIA-W27"
+    ],
+    "shared_with": [
+      "prod"
+    ],
+    "skill_md": "---\n    name: marketplace-quick-commerce\n    owner: media-buyer\n    version: 1\n    invoke_when: a rapid-delivery/grocery marketplace ad push is planned or a new listing is added (India only: a quick-commerce ad push)\n    inputs: listing/stock status per fulfillment center (dark store, India only), category benchmarks, PROD-C49 margin report\n    outputs: a retail media brief per platform\n    ---\n    Purpose: brief rapid-delivery and grocery marketplace ads (Instacart, DoorDash,\n    Gopuff, Amazon Fresh; India only: Blinkit, Zepto, Instamart) only where a SKU's\n    real transaction-value economics, not the platform's inflated list-price ROAS,\n    already work, and only where stock can support the delivery.\n\n    Steps\n    1. Confirm the SKU is listed and in-stock at the fulfillment centers (dark\n       stores, India only) the ad would run against.\n    2. Read PROD-C49's contribution-margin report; require 3 consecutive positive\n       weeks at that fulfillment center or dark store before proposing spend.\n    3. Pick SKUs to sponsor by category search volume and current margin.\n    4. Size the budget against the platform's own category CPC/ROAS benchmark, not\n       a Meta or Google number.\n    5. Flag stockout risk before any scale-up; rapid-delivery ad delivery can\n       outpace local inventory fast.\n    6. Keep the resulting report separate from Meta/Google in reporting.\n\n    Checks\n    - No SKU with a negative or unproven contribution margin is sponsored.\n    - Stockout risk is checked before, not after, a budget increase.\n\n    Output: a platform-specific retail media brief for a human to execute.\n\n    Example: a SKU shows positive list-price-based ROAS on the platform dashboard\n    but PROD-C49's transaction-value recompute shows negative margin (India only:\n    the inflated number is MRP-based) -> brief holds that SKU back until the real\n    number turns positive."
+  },
+  {
+    "id": "media/pace-budget/meta",
+    "name": "Meta creative test sizing",
+    "parent": "media/pace-budget",
+    "invoke_when": "a new Meta creative test is ready to size",
+    "select_by": {
+      "platform": "meta",
+      "task": "test_sizing"
+    },
+    "inputs_required": [
+      "metric contract: cpa, spend",
+      "brand brain: purchase cycle"
+    ],
+    "steps": [
+      "Size the test budget with the formula: target conversions x CPA / test days; never derive it from Meta's 50-conversions-in-7-days learning rule.",
+      "Set the kill-rule threshold at 3-5x target CPA before judging.",
+      "Match the read window to purchase cycle and volume; never read under 5 days below $50k/month spend.",
+      "Never judge or kill an ad on $1-2 of spend.",
+      "Check the ad set's planned daily budget can actually reach its read-spend threshold inside the test window."
+    ],
+    "checks": [
+      "the budget formula, not Meta's learning-phase rule, sized the test",
+      "the read window is never shorter than 5 days below $50k/month spend"
+    ],
+    "output": "test brief with budget and read window + kill-rule sheet",
+    "used_by": [
+      "MEDIA-W03"
+    ],
+    "shared_with": [],
+    "skill_md": "---\n    name: meta-test-sizing\n    owner: media-buyer\n    version: 1\n    invoke_when: a new Meta creative test is ready to size\n    inputs: target CPA, purchase cycle, planned test budget\n    outputs: test brief, kill-rule sheet\n    ---\n    Purpose: size a Meta creative test so its result can actually be trusted,\n    instead of leaning on the platform's own learning-phase suggestion.\n\n    Steps\n    1. Compute the test budget: target conversions x CPA / test days, in code.\n    2. Set the kill-rule threshold: 3-5x target CPA before any judgement.\n    3. Set the read window to match the purchase cycle; never under 5 days below\n       $50k/month spend.\n    4. Confirm the planned daily budget can reach the read-spend threshold within\n       that window; if not, raise the budget or extend the window before launch.\n    5. Never allow a same-day or $1-2-spend kill call.\n\n    Checks\n    - The budget came from the formula, not Meta's 50-conversions rule.\n    - The ad set can mathematically reach its read threshold in the window given.\n\n    Output: a test brief (budget, read window, kill rule) for the launch.\n\n    Example: target CPA is $20, target 15 conversions to judge, test runs 5 days ->\n    budget = 15 x $20 / 5 = $60/day."
+  },
+  {
+    "id": "media/pace-budget/google",
+    "name": "Google bid stage and budget pacing",
+    "parent": "media/pace-budget",
+    "invoke_when": "the weekly Google bid or budget review is due",
+    "select_by": {
+      "platform": "google",
+      "task": "bid_and_budget"
+    },
+    "inputs_required": [
+      "metric contract: cpc, roas_blended, cpa, spend, aov",
+      "connector: google ads (manual)"
+    ],
+    "steps": [
+      "Cap new-account bids at break-even CPA divided by conversion rate.",
+      "Move to Maximize Conversion Value once conversions start arriving; add Target ROAS only once volume supports it, set at or slightly below actual.",
+      "Step bid targets gently; never double a budget or halve a target overnight; break a Target ROAS death spiral with an aggressive cut, not a timid one.",
+      "Size Shopping/Search launch budgets at about 3-4x AOV/day; size PMax launches at $50-100/day and at least 3x non-brand CPA.",
+      "Raise budgets in small weekly steps; cut faster than you raise.",
+      "Treat 'limited by budget' as a hint to test, not proof to raise spend.",
+      "Pool same-currency countries into one MCC-level portfolio bid strategy only where they share one real goal."
+    ],
+    "checks": [
+      "every bid cap traces to break-even math, not a platform suggestion",
+      "no budget was doubled or a target halved in one step"
+    ],
+    "output": "bid stage plan + budget plan + pacing log",
+    "used_by": [
+      "MEDIA-W24"
+    ],
+    "shared_with": [],
+    "skill_md": "---\n    name: google-bid-budget\n    owner: media-buyer\n    version: 1\n    invoke_when: the weekly Google bid or budget review is due\n    inputs: CPC, CPA, AOV, spend, current bid strategy\n    outputs: bid stage plan, budget plan, pacing log\n    ---\n    Purpose: move Google bidding and budget forward in small, reversible steps\n    tied to the brand's own break-even math, never a platform default or a big\n    jump.\n\n    Steps\n    1. Cap a new account's bids at break-even CPA / conversion rate.\n    2. Move to Maximize Conversion Value once conversions arrive; add Target ROAS\n       only once volume supports it, set near the actual number.\n    3. Size Shopping/Search launch budgets at 3-4x AOV/day; PMax at $50-100/day and\n       3x non-brand CPA.\n    4. Raise budgets in small weekly steps; cut faster than you raise.\n    5. Treat \"limited by budget\" as a signal to test, not an automatic raise.\n    6. Step bid targets gently; use an aggressive cut, not a timid one, to break a\n       Target ROAS death spiral.\n\n    Checks\n    - No budget doubled or target halved in a single step.\n    - Every cap traces to the brand's own break-even math.\n\n    Output: bid stage plan, budget plan, pacing log.\n\n    Example: account shows \"limited by budget\" on a campaign at 1.5x target ROAS ->\n    treated as a signal to test a modest raise, not proof to double the budget."
+  },
+  {
+    "id": "media/pace-budget/tiktok",
+    "name": "TikTok budget sizing and targeting-ladder pacing",
+    "parent": "media/pace-budget",
+    "invoke_when": "a TikTok ad group needs its budget set, or the next week of the targeting ladder is due",
+    "select_by": {
+      "platform": "tiktok",
+      "task": "budget_and_ladder"
+    },
+    "inputs_required": [
+      "current CPA per ad group",
+      "current targeting-ladder week"
+    ],
+    "steps": [
+      "Set daily budget at the greater of $50 or 2x current CPA per ad group.",
+      "Grow structure with budget: broad ad group first, then an interest ad group, cap at 4 ad groups.",
+      "Run a 4-week targeting ladder, adding one layer per week; run one controlled 7-day broad-vs-stacked test before dropping interests or lookalikes entirely.",
+      "Wait for a new audience to finish populating before launching on it."
+    ],
+    "checks": [
+      "budget never sits below $50 or 2x CPA, whichever is greater",
+      "the ladder adds exactly one layer per week, never several at once"
+    ],
+    "output": "budget and ladder pacing plan",
+    "used_by": [
+      "MEDIA-W17"
+    ],
+    "shared_with": [],
+    "skill_md": "---\n    name: tiktok-budget-ladder\n    owner: media-buyer\n    version: 1\n    invoke_when: a TikTok ad group needs budget set, or the ladder's next week is due\n    inputs: current CPA per ad group, current ladder week\n    outputs: budget and ladder pacing plan\n    ---\n    Purpose: size TikTok budget from a fixed floor tied to CPA, and add targeting\n    layers on a controlled weekly cadence instead of all at once.\n\n    Steps\n    1. Set daily budget at the greater of $50 or 2x current CPA, per ad group.\n    2. Add structure only with budget growth: broad first, then one interest ad\n       group, capped at 4 ad groups total.\n    3. Run the 4-week targeting ladder, one new layer per week.\n    4. Before dropping interests or lookalikes entirely, run one controlled 7-day\n       broad-vs-stacked test rather than guessing.\n    5. Wait for a new audience to finish populating before spending against it.\n\n    Checks\n    - No ad group runs under the $50/2xCPA floor.\n    - No more than one new targeting layer was added in a week.\n\n    Output: a budget and ladder pacing plan.\n\n    Example: current CPA is $30 -> daily budget floor is $60 (2x CPA), not $50."
+  },
+  {
+    "id": "media/pace-budget/stock-check",
+    "name": "Stock-aware spend pacing",
+    "parent": "media/pace-budget",
+    "invoke_when": "any surface is about to raise budget or move an ad set into scaling",
+    "select_by": {
+      "scope": "cross_platform"
+    },
+    "inputs_required": [
+      "brand brain: live stock, days_of_stock",
+      "metric contract: days_of_stock, stockout_days"
+    ],
+    "steps": [
+      "Check live stock before raising budget or moving an ad set into the scaling campaign.",
+      "Throttle spend on a SKU ahead of a predicted stockout.",
+      "Plan stock ahead when a product starts scaling in ads.",
+      "Run a small clearance campaign for aged or grade-C inventory.",
+      "Run a dedicated new-arrivals campaign to surface fresh SKUs early."
+    ],
+    "checks": [
+      "no budget increase is proposed for a SKU projected to stock out inside the scaling read window"
+    ],
+    "output": "stock-aware pacing report + change list",
+    "used_by": [
+      "MEDIA-W08"
+    ],
+    "shared_with": [
+      "prod"
+    ],
+    "skill_md": "---\n    name: stock-check\n    owner: media-buyer\n    version: 1\n    invoke_when: any surface is about to raise budget or scale an ad set\n    inputs: live stock, days_of_stock, stockout projection\n    outputs: pacing report, change list\n    ---\n    Purpose: never let ad spend outrun what the warehouse can actually ship, and\n    catch a scaling opportunity for stock that has room to grow into.\n\n    Steps\n    1. Pull live stock and days_of_stock for every SKU in a budget-raise or\n       scaling decision.\n    2. Throttle spend on any SKU projected to stock out before the read window\n       closes.\n    3. Flag a scaling product early enough that a person can order more stock\n       ahead of the ramp.\n    4. Suggest a small clearance campaign for aged or grade-C inventory instead of\n       leaving it to sell at full price alone.\n    5. Suggest a new-arrivals campaign for fresh SKUs that have not had a fair\n       chance yet.\n\n    Checks\n    - No scale-up is approved for a SKU with fewer days of stock than the read\n      window needs.\n\n    Output: pacing report, change list.\n\n    Example: a winning ad set is about to get 2x budget but the SKU has 9 days of\n    stock at current velocity and a 14-day read window -> hold the raise, flag the\n    stock gap first."
+  },
+  {
+    "id": "media/read-results/meta",
+    "name": "Meta daily and weekly read, anomaly and forecast",
+    "parent": "media/read-results",
+    "invoke_when": "the daily Meta read, the weekly read, or the spend/ROAS anomaly check is due",
+    "select_by": {
+      "platform": "meta",
+      "cadence": "daily_weekly"
+    },
+    "inputs_required": [
+      "metric contract: full",
+      "connector: meta ads read, gallery cache"
+    ],
+    "steps": [
+      "Pull spend, orders and revenue and blend them into MER in code.",
+      "Compute the trailing 14-day median for spend and ROAS; flag any day 50 percent or more off that median.",
+      "Name the 3 ads most responsible for a flagged day; check pixel, CAPI or feed health first before blaming bidding.",
+      "Treat daily ROAS swings under about $1,000/day as normal noise, not a signal.",
+      "Split ROAS and conversion rate by device with custom columns; be in the account daily for search-term-equivalent signals and anomalies, do product/asset work weekly.",
+      "Project month-end spend and blended MER from the trailing pace in code; flag a platform pacing to miss its budget or margin target early enough to act.",
+      "Mark any missing platform or day as unavailable, never as zero."
+    ],
+    "checks": [
+      "every number in the read came from code, not model arithmetic",
+      "an anomaly flag names the 3 ads most responsible and checked tracking health first",
+      "a forecast is shown next to the actual, never in place of it"
+    ],
+    "output": "daily read + weekly read + daily anomaly alert + spend forecast",
+    "used_by": [
+      "MEDIA-W04"
+    ],
+    "shared_with": [],
+    "skill_md": "---\n    name: meta-daily-weekly-read\n    owner: media-buyer\n    version: 1\n    invoke_when: the daily read, weekly read, or anomaly/forecast check is due\n    inputs: spend, orders, revenue, trailing 14-day history\n    outputs: daily read, weekly read, anomaly alert, spend forecast\n    ---\n    Purpose: give the founder one page a day and one a week on what is spent, what\n    it returned, what moved sharply, and where the month is headed, all computed\n    in code.\n\n    Steps\n    1. Blend spend, orders and revenue into MER in code.\n    2. Compute the trailing 14-day median for spend and ROAS; flag days 50%+ off\n       it.\n    3. On a flagged day, check pixel/CAPI/feed health before blaming bidding; name\n       the 3 ads that moved most.\n    4. Treat sub-$1,000/day swings as noise, not signal.\n    5. Split ROAS and conversion rate by device.\n    6. Project month-end spend and MER from the trailing pace; flag a miss early.\n    7. Mark any missing platform or day as unavailable, never zero.\n\n    Checks\n    - Every number traces to code, never model arithmetic.\n    - No computed 0 hides a genuinely missing data point.\n\n    Output: daily read, weekly read, anomaly alert, spend forecast.\n\n    Example: ROAS drops 60% against the 14-day median on a Tuesday -> check CAPI\n    health first; a dropped event, not bidding, explains the drop."
+  },
+  {
+    "id": "media/read-results/tiktok",
+    "name": "TikTok staged and ladder reads",
+    "parent": "media/read-results",
+    "invoke_when": "a TikTok test's 24-hour or 3-day read point is due, or a targeting-ladder week needs reading",
+    "select_by": {
+      "platform": "tiktok",
+      "cadence": "staged"
+    },
+    "inputs_required": [
+      "TikTok ad group metrics (manual export)",
+      "the test's stated read schedule"
+    ],
+    "steps": [
+      "Read soft metrics (CTR, video views, add-to-cart) at 24 hours; read cost metrics (CPA, ROAS) at 3 days.",
+      "Cut the bottom half of ad groups or creatives at the 3-day read, never before.",
+      "Read a targeting-ladder week's result before deciding whether to add the next layer.",
+      "Read placement performance after a fixed period before opting weak automatic placements out."
+    ],
+    "checks": [
+      "no cut happens before its scheduled read point",
+      "soft metrics are never used alone to make a cost decision"
+    ],
+    "output": "staged test read + ladder-week read",
+    "used_by": [
+      "MEDIA-W14"
+    ],
+    "shared_with": [],
+    "skill_md": "---\n    name: tiktok-staged-read\n    owner: media-buyer\n    version: 1\n    invoke_when: a 24-hour/3-day read point or ladder week is due\n    inputs: ad group metrics, the test's read schedule\n    outputs: staged test read, ladder-week read\n    ---\n    Purpose: read TikTok tests on the schedule that actually produces a trustworthy\n    signal, since TikTok's own data can look decisive before it is.\n\n    Steps\n    1. At 24 hours, read soft metrics only: CTR, video views, add-to-cart rate.\n    2. At 3 days, read cost metrics: CPA, ROAS; only now cut the bottom half.\n    3. For a targeting-ladder week, read that week's isolated result before adding\n       the next layer.\n    4. After a fixed placement-read period, decide which automatic placements to\n       opt out, not before.\n\n    Checks\n    - No ad group was cut before its 3-day cost read.\n    - A ladder layer was judged on its own week's data, not blended with prior\n      weeks.\n\n    Output: a staged test read, a ladder-week read.\n\n    Example: at 24 hours one ad group has a weak CTR but decent add-to-cart -> held\n    to the 3-day cost read rather than cut early on CTR alone."
+  },
+  {
+    "id": "media/read-results/marketplace",
+    "name": "Marketplace and rapid-delivery/grocery marketplace read",
+    "parent": "media/read-results",
+    "invoke_when": "a marketplace or rapid-delivery/grocery marketplace spend read is due (India only: a quick-commerce spend read)",
+    "select_by": {
+      "platform": "marketplace"
+    },
+    "inputs_required": [
+      "rapid-delivery/grocery seller dashboard export (quick-commerce, India only)",
+      "SKU landed cost and COGS",
+      "Amazon/Walmart/Target ad console export (Flipkart, India only)"
+    ],
+    "steps": [
+      "Recompute ROAS on actual transaction value, not list price, net of platform commission (15-25%) and applicable US sales tax on commission (GST, India only).",
+      "Track inwarding fees, storage cost and damage/expiry write-off (budgeted 2-5% of list price) per SKU.",
+      "Calculate weekly per-fulfillment-center order volume needed to clear the 55-60% gross margin floor (per-dark-store, India only).",
+      "Flag whether a margin problem is volume (fixable with more orders) or structural (needs repricing or a COGS cut).",
+      "Read Amazon/Walmart/Target ACOS or TACOS against the SKU's real margin, not the platform's own benchmark (Flipkart, India only)."
+    ],
+    "checks": [
+      "ROAS is read on transaction value, never on the platform's list-price-based number (MRP-based, India only)",
+      "every margin flag says whether it is a volume problem or a structural one"
+    ],
+    "output": "per-SKU per-fulfillment-center contribution margin report + ACOS/TACOS read (per-dark-store, India only)",
+    "used_by": [
+      "MEDIA-W27"
+    ],
+    "shared_with": [
+      "prod"
+    ],
+    "skill_md": "---\n    name: marketplace-read\n    owner: media-buyer\n    version: 1\n    invoke_when: a marketplace or rapid-delivery/grocery spend read is due (India only: quick-commerce)\n    inputs: seller dashboard export, SKU landed cost, ad console export\n    outputs: contribution margin report, ACOS/TACOS read\n    ---\n    Purpose: read marketplace and rapid-delivery/grocery ad results on the real\n    number, since platform dashboards inflate ROAS 30-50% by pricing at list price\n    (MRP, India) instead of transaction value.\n\n    Steps\n    1. Recompute ROAS on actual transaction value, net of platform commission\n       (15-25%) and applicable US sales tax on the commission (GST, India only).\n    2. Add inwarding fees, storage cost and a 2-5% list-price write-off budget for\n       damage/expiry.\n    3. Calculate the weekly per-fulfillment-center order volume needed to clear the\n       55-60% gross margin floor (per-dark-store, India only).\n    4. Flag whether a shortfall is a volume problem (more orders fixes it) or a\n       structural one (needs repricing or a COGS cut).\n    5. Read Amazon/Walmart/Target ACOS or TACOS against the SKU's own margin\n       (Flipkart, India only).\n\n    Checks\n    - No ROAS number in the report is based on list price (MRP, India only).\n    - Every margin flag names whether it is volume or structural.\n\n    Output: contribution margin report, ACOS/TACOS read.\n\n    Example: platform dashboard shows 4.2x ROAS; recomputed on transaction value\n    net of commission and fees it is 2.6x -> the true number the SKU is judged on."
+  },
+  {
+    "id": "media/kill-scale/meta",
+    "name": "Meta ad set kill, keep or scale",
+    "parent": "media/kill-scale",
+    "invoke_when": "the daily Meta read produced ad-set-level numbers that need a call",
+    "select_by": {
+      "platform": "meta",
+      "unit": "ad_set"
+    },
+    "inputs_required": [
+      "metric contract: cpa, roas_blended, frequency",
+      "connector: meta ads read"
+    ],
+    "steps": [
+      "Apply the keep/yellow/kill table read at 3-5x target CPA, at the ad-set level, never on one ad's own ROAS.",
+      "Never touch a winning ad set directly; fork new creative into a new ad set beside it.",
+      "Never run creative tests inside the scaling campaign.",
+      "Rescue a high-conviction, CBO-starved ad in a small, separate, capped and logged ad set.",
+      "Raise a winning ad set's budget in steps sized to the read window, never a fixed percentage; find its spend equilibrium by stepping up until ROAS turns unprofitable, then pull back.",
+      "Move only confirmed equilibrium winners into a dedicated scaling campaign.",
+      "Judge every budget raise over 7+ days, never on same-day revenue; confirm a winner acquires new customers under 7-day click before briefing more of it.",
+      "Flag high frequency on a top-spending prospecting ad before scaling it further."
+    ],
+    "checks": [
+      "the call was made at the ad-set level, never on one ad",
+      "a winner was forked or stepped, never edited directly",
+      "a scale-up was read over 7+ days before being confirmed"
+    ],
+    "output": "daily read with keep/kill/scale calls + change list for budget moves",
+    "used_by": [
+      "MEDIA-W04",
+      "MEDIA-W16"
+    ],
+    "shared_with": [],
+    "skill_md": "---\n    name: meta-kill-scale\n    owner: media-buyer\n    version: 1\n    invoke_when: daily ad-set metrics need a keep, kill or scale call\n    inputs: CPA, ROAS, frequency at ad-set level\n    outputs: daily call list, change list for budget moves\n    ---\n    Purpose: make Meta's daily budget calls a fixed table read, and scale a winner\n    by finding its real spend equilibrium instead of riding it blind.\n\n    Steps\n    1. Read the keep/yellow/kill table at 3-5x target CPA, at the ad-set level.\n    2. Never touch a winning ad set directly; fork new creative beside it instead.\n    3. Keep creative tests out of the scaling campaign entirely.\n    4. For a high-conviction ad starved by CBO, rescue it in a small, capped,\n       logged ad set of its own.\n    5. Step a winner's budget up in sizes matched to the read window; find the\n       point ROAS turns unprofitable, then pull back to just before it.\n    6. Move only a confirmed equilibrium winner into the dedicated scaling\n       campaign.\n    7. Judge any raise over 7+ days; confirm new-customer share under 7-day click\n       before briefing more of that creative.\n    8. Flag rising frequency on a top-spending prospecting ad before scaling it.\n\n    Checks\n    - No call was made on one ad's number inside a larger ad set.\n    - No winner was edited in place; it was forked or stepped.\n\n    Output: daily call list, change list.\n\n    Example: an ad set holds at 3.8x target CPA for 8 days after a 20% budget\n    step -> equilibrium found; hold there, do not step again this week."
+  },
+  {
+    "id": "media/kill-scale/google",
+    "name": "Google scaling gate check",
+    "parent": "media/kill-scale",
+    "invoke_when": "a budget increase or new campaign type is being considered for Google",
+    "select_by": {
+      "platform": "google",
+      "unit": "campaign"
+    },
+    "inputs_required": [
+      "metric contract: roas_blended, spend"
+    ],
+    "steps": [
+      "Pass the 5 fixed scaling gates before adding budget or a new campaign type.",
+      "Scale only a campaign that already hits target ROAS at its current budget.",
+      "Cut fast in steady state, but scale fast on a clear winner or a real demand spike.",
+      "Scale YouTube in order: more budget and creative first, then better hooks and offers, then new formats."
+    ],
+    "checks": [
+      "all 5 gates passed before any increase is approved",
+      "no campaign scales before it proves target ROAS at current spend"
+    ],
+    "output": "scaling gate checklist result + change list",
+    "used_by": [
+      "MEDIA-W24"
+    ],
+    "shared_with": [],
+    "skill_md": "---\n    name: google-scaling-gates\n    owner: media-buyer\n    version: 1\n    invoke_when: a Google budget increase or new campaign type is proposed\n    inputs: ROAS, spend, the account's 5 scaling gates\n    outputs: scaling gate checklist result, change list\n    ---\n    Purpose: earn a Google budget increase through 5 fixed gates instead of a gut\n    call, while still moving fast on a genuine winner.\n\n    Steps\n    1. Check the campaign already hits target ROAS at its current budget; if not,\n       stop here.\n    2. Run the 5 scaling gates in order and record a pass/fail on each.\n    3. In steady state, cut underperformance fast; do not wait out a slow bleed.\n    4. On a clear winner or a real demand spike, move fast rather than the usual\n       small weekly step.\n    5. For YouTube, scale in order: budget and creative first, then hooks and\n       offers, then new formats.\n\n    Checks\n    - Every gate has a recorded pass/fail, not a summary judgement.\n    - No increase went through with a failed gate unaddressed.\n\n    Output: scaling gate checklist result, change list.\n\n    Example: a campaign hits target ROAS but fails the frequency-of-conversion\n    gate -> hold the budget increase until that gate passes."
+  },
+  {
+    "id": "media/kill-scale/tiktok",
+    "name": "TikTok scale winners and cut losers",
+    "parent": "media/kill-scale",
+    "invoke_when": "a TikTok test's 3-day read is in, or a targeting-ladder week's result is in",
+    "select_by": {
+      "platform": "tiktok",
+      "unit": "ad_group"
+    },
+    "inputs_required": [
+      "TikTok ad group metrics",
+      "the staged or ladder read"
+    ],
+    "steps": [
+      "Cut the bottom half of ad groups or creatives at the 3-day read.",
+      "Move a winning creative into its own CBO scaling campaign, while testing continues in the manual campaign.",
+      "Opt weak automatic placements out after a placement read.",
+      "Drop a targeting-ladder layer that did not earn its week before adding the next one; run one controlled 7-day broad-vs-stack test before dropping interests or lookalikes entirely."
+    ],
+    "checks": [
+      "a winner moves to its own scaling campaign, testing never stops in the manual campaign",
+      "no ladder layer survives past its proving week without a result"
+    ],
+    "output": "scaling plan + kill list + change list",
+    "used_by": [
+      "MEDIA-W14"
+    ],
+    "shared_with": [],
+    "skill_md": "---\n    name: tiktok-kill-scale\n    owner: media-buyer\n    version: 1\n    invoke_when: a 3-day read or ladder week's result is in\n    inputs: ad group metrics, the staged or ladder read\n    outputs: scaling plan, kill list, change list\n    ---\n    Purpose: move a proven TikTok creative into a real scaling campaign while\n    keeping the testing lane alive, and prune weak layers before they compound.\n\n    Steps\n    1. Cut the bottom half of ad groups/creatives at the 3-day cost read.\n    2. Move a winner into its own CBO scaling campaign; keep testing running in the\n       manual campaign in parallel.\n    3. Opt out weak automatic placements after a placement read.\n    4. Drop a targeting-ladder layer that did not earn its proving week before\n       adding another.\n    5. Run one controlled 7-day broad-vs-stack test before abandoning interests or\n       lookalikes for good.\n\n    Checks\n    - Testing continued in the manual campaign even after a winner moved to\n      scaling.\n    - No ladder layer was kept past its proving week without a positive result.\n\n    Output: scaling plan, kill list, change list.\n\n    Example: a hook wins its 3-day read at 2.1x target CPA -> moved to its own CBO\n    scaling campaign; the manual campaign keeps testing the next 3 hooks."
+  },
+  {
+    "id": "media/kill-scale/marketplace",
+    "name": "Marketplace SKU hold, scale or kill",
+    "parent": "media/kill-scale",
+    "invoke_when": "a quick-commerce or marketplace SKU's margin read is in",
+    "select_by": {
+      "platform": "marketplace"
+    },
+    "inputs_required": [
+      "PROD-C49: per-SKU per-dark-store contribution margin report",
+      "stockout risk"
+    ],
+    "steps": [
+      "Hold expansion to new SKUs or cities until 3 consecutive weeks of positive contribution margin.",
+      "Scale a SKU only where margin is positive and stock supports the ramp.",
+      "Kill or de-prioritise a SKU whose margin problem is structural (repricing or COGS), not volume.",
+      "Pull a marketplace ad when stockout risk from `media/pace-budget/stock-check` outruns the read window."
+    ],
+    "checks": [
+      "no SKU scales without 3 consecutive positive-margin weeks",
+      "a structural margin problem is never treated as a volume problem"
+    ],
+    "output": "scale/hold/kill recommendation per SKU",
+    "used_by": [
+      "MEDIA-W27"
+    ],
+    "shared_with": [
+      "prod"
+    ],
+    "skill_md": "---\n    name: marketplace-kill-scale\n    owner: media-buyer\n    version: 1\n    invoke_when: a quick-commerce or marketplace SKU's margin read is in\n    inputs: PROD-C49 contribution margin report, stockout risk\n    outputs: scale/hold/kill recommendation per SKU\n    ---\n    Purpose: scale a marketplace or quick-commerce SKU only once its real,\n    transaction-value margin has proven positive for long enough to trust, and\n    stop confusing a fixable volume problem with a structural one.\n\n    Steps\n    1. Read PROD-C49's per-SKU per-dark-store contribution margin.\n    2. Hold any new SKU or city expansion until 3 consecutive positive-margin\n       weeks.\n    3. For a SKU below the margin floor, check whether more orders would clear it\n       (volume) or whether price/cost is the real problem (structural).\n    4. Kill or de-prioritise a structural loser rather than keep testing volume\n       fixes on it.\n    5. Check stockout risk before approving any scale-up.\n\n    Checks\n    - No scale-up happened before 3 consecutive positive weeks.\n    - No structural loser was left running on the theory that more orders will\n      fix it.\n\n    Output: a scale/hold/kill recommendation per SKU.\n\n    Example: a SKU has been margin-negative for 5 weeks despite rising order\n    volume -> flagged structural (COGS or price), recommended for repricing or\n    kill, not further ad spend."
+  },
+  {
+    "id": "media/account-ops/audit-meta",
+    "name": "Meta account audit",
+    "parent": "media/account-ops",
+    "invoke_when": "the monthly Meta audit is due",
+    "select_by": {
+      "platform": "meta",
+      "job": "audit"
+    },
+    "inputs_required": [
+      "brand brain: products and margin",
+      "connector: meta ads read (gallery cache + MCP re-pull)",
+      "metric contract: cpa, roas_blended, spend"
+    ],
+    "steps": [
+      "Pull account, campaign, ad set and ad level data for the trailing 12 months from the gallery cache and a fresh Meta re-pull.",
+      "Run the structure review checklist: campaign purpose lines, ad set count vs spend tier, naming, CBO vs ABO use.",
+      "Run the creative review in fixed order: volume, then diversity, then quality.",
+      "Score the account on a readable-data test and a commercial-alignment test.",
+      "Validate any proposed structure change against 4 fixed questions before it goes in the roadmap.",
+      "Rank findings by money at stake, not by how easy they are to fix.",
+      "Write the roadmap as dated, ranked actions with the metric each one should move."
+    ],
+    "checks": [
+      "the roadmap names one biggest constraint, not ten equal findings",
+      "every finding has a number and a source"
+    ],
+    "output": "audit report + ranked 90-day roadmap + change list for structure fixes",
+    "used_by": [
+      "MEDIA-W01"
+    ],
+    "shared_with": [],
+    "skill_md": "---\n    name: audit-meta\n    owner: media-buyer\n    version: 1\n    invoke_when: the monthly Meta account audit is due\n    inputs: 12 months of account/campaign/ad-set/ad data\n    outputs: audit report, ranked 90-day roadmap, change list\n    ---\n    Purpose: turn a raw Meta account into one ranked constraint a founder can act\n    on, not a list of screenshots or ten equal-weight observations.\n\n    Steps\n    1. Pull 12 months of account, campaign, ad set and ad data from the gallery\n       cache plus a fresh re-pull.\n    2. Run the structure checklist: purpose lines, ad-set count vs spend tier,\n       naming, CBO/ABO use.\n    3. Run the creative review in order: volume, then diversity, then quality.\n    4. Score the account on readable-data and commercial-alignment tests.\n    5. Validate any structure change idea against 4 fixed questions before it\n       enters the roadmap.\n    6. Rank every finding by money at stake, not ease of fix.\n    7. Write the roadmap as dated, ranked actions, each with the metric it should\n       move.\n\n    Checks\n    - The roadmap names ONE biggest constraint, not a flat list.\n    - Every finding has a number and a source.\n\n    Output: audit report, ranked 90-day roadmap, change list.\n\n    Example: naming is inconsistent AND creative volume is thin -> roadmap ranks\n    creative volume first because it is costing more, names naming as a fast,\n    smaller fix underneath it."
+  },
+  {
+    "id": "media/account-ops/audit-google",
+    "name": "Google Ads account audit and diagnosis",
+    "parent": "media/account-ops",
+    "invoke_when": "the monthly Google Ads audit is due",
+    "select_by": {
+      "platform": "google",
+      "job": "audit"
+    },
+    "inputs_required": [
+      "brand brain: products and margin",
+      "connector: google ads (manual export)",
+      "metric contract: cpa, roas_blended, spend"
+    ],
+    "steps": [
+      "Pull account and campaign structure, spend and conversions (manual export).",
+      "Diagnose any dip top down: business level, then channel share, then campaign, then metric, then root cause.",
+      "Apply the 3 pre-diagnosis rules before touching any setting.",
+      "Find the inflection date of a change and check only the top 5 campaigns by spend around it.",
+      "Match the failure-mode checklist to the campaign type that dipped (Search, Shopping, PMax, Demand Gen).",
+      "Split CPA and clicks into their formula parts (impressions, CTR, CVR) to find the real cause.",
+      "Default to an isolated fix over a full rebuild unless the isolated fix has already failed."
+    ],
+    "checks": [
+      "the diagnosis followed the order the problem actually happened, not a guess",
+      "an isolated fix was tried before any rebuild was proposed"
+    ],
+    "output": "audit report + diagnosis writeup with root cause + change list",
+    "used_by": [
+      "MEDIA-W18"
+    ],
+    "shared_with": [],
+    "skill_md": "---\n    name: audit-google\n    owner: media-buyer\n    version: 1\n    invoke_when: the monthly Google Ads audit is due\n    inputs: account/campaign structure, spend, conversions\n    outputs: audit report, diagnosis writeup, change list\n    ---\n    Purpose: diagnose a Google account top down, in the order a problem actually\n    unfolds, instead of jumping straight to a setting change.\n\n    Steps\n    1. Pull account and campaign structure, spend and conversions.\n    2. Diagnose top down: business level, then channel share, then campaign, then\n       metric, then root cause.\n    3. Apply the 3 pre-diagnosis rules before touching anything.\n    4. Find the inflection date of any dip; check only the top 5 campaigns by\n       spend around that date.\n    5. Match the failure-mode checklist to the campaign type that dipped.\n    6. Split CPA and clicks into impressions, CTR and CVR to isolate the real\n       cause.\n    7. Try the isolated fix first; propose a rebuild only after it has failed.\n\n    Checks\n    - The diagnosis order was followed, not skipped to a favorite fix.\n    - An isolated fix was tried before any rebuild reached the roadmap.\n\n    Output: audit report, diagnosis writeup with root cause, change list.\n\n    Example: CPA rose 30% -> traced to a CTR drop, not a CVR drop -> points to an\n    ad-fatigue or ranking cause, not a landing-page cause."
+  },
+  {
+    "id": "media/account-ops/access-audit",
+    "name": "Account access, ownership and multi-account scaling",
+    "parent": "media/account-ops",
+    "invoke_when": "the quarterly access review is due",
+    "select_by": {
+      "job": "access_audit"
+    },
+    "inputs_required": [
+      "brand brain: account inventory"
+    ],
+    "steps": [
+      "Confirm the ad account, Merchant Center and analytics sit under one master login.",
+      "Lock down Business Center access before adding any team member.",
+      "Check whether a second ad account on the same pixel is justified (only once spend passes about $250k/month).",
+      "Confirm ad accounts are not split by country except to bill in local currency.",
+      "Audit who has admin, employee or partner access on every connected account."
+    ],
+    "checks": [
+      "no account is split by country without a currency reason",
+      "a second account is not opened below the $250k/month threshold"
+    ],
+    "output": "access audit + change list (access changes)",
+    "used_by": [
+      "MEDIA-W11"
+    ],
+    "shared_with": [],
+    "skill_md": "---\n    name: access-audit\n    owner: media-buyer\n    version: 1\n    invoke_when: the quarterly access review is due\n    inputs: account inventory, current access list\n    outputs: access audit, change list\n    ---\n    Purpose: keep account ownership simple and access locked down before it\n    becomes an operational risk or a growth blocker.\n\n    Steps\n    1. Confirm the ad account, Merchant Center and analytics sit under one master\n       login.\n    2. Lock down Business Center access before any new team member joins.\n    3. Check the $250k/month spend threshold before approving a second ad account\n       on the same pixel.\n    4. Confirm accounts are not split by country without a currency reason.\n    5. List every admin, employee and partner on every connected account.\n\n    Checks\n    - No account split exists without a stated currency reason.\n    - No second account was opened under the spend threshold.\n\n    Output: access audit, change list.\n\n    Example: spend just crossed $260k/month and checkout in a second currency is\n    needed -> a second ad account is now justified; propose it with a reason."
+  },
+  {
+    "id": "media/account-ops/cross-border-setup",
+    "name": "Cross-border and multi-market ad delivery setup",
+    "parent": "media/account-ops",
+    "invoke_when": "a new market launch is planned",
+    "select_by": {
+      "job": "cross_border"
+    },
+    "inputs_required": [
+      "brand brain: markets served, shipping policy",
+      "connector: meta ads read, google merchant center (manual)"
+    ],
+    "steps": [
+      "Give cross-border buyers their own currency, delivery time and duty messaging in ad copy.",
+      "Set local payment methods, language and currency defaults for a mobile-first, non-US market.",
+      "Show shipping cost and import duty in the Google feed for cross-border orders.",
+      "Run one Google feed per currency."
+    ],
+    "checks": [
+      "every new market has its own currency, duty and delivery-time messaging",
+      "no feed mixes two currencies"
+    ],
+    "output": "market setup checklist + change list",
+    "used_by": [
+      "MEDIA-W10"
+    ],
+    "shared_with": [],
+    "skill_md": "---\n    name: cross-border-setup\n    owner: media-buyer\n    version: 1\n    invoke_when: a new market launch is planned\n    inputs: markets served, shipping policy\n    outputs: market setup checklist, change list\n    ---\n    Purpose: set every new market up with its own honest currency, duty and\n    delivery message before ads run there, since a wrong promise on delivery time\n    or landed cost creates the exact objection the ad should be preventing.\n\n    Steps\n    1. Set local currency, payment methods and language defaults for the new,\n       mobile-first, non-US market.\n    2. Write duty and delivery-time messaging specific to that market into the ad\n       copy.\n    3. Show shipping cost and import duty in the Google feed for cross-border\n       orders.\n    4. Run one Google feed per currency; never mix currencies in one feed.\n\n    Checks\n    - Every market's ads state its own delivery time and duty, not a generic one.\n    - No feed mixes currencies.\n\n    Output: market setup checklist, change list.\n\n    Example: launching into Canada from a US-based store -> new feed in CAD,\n    duty and delivery time called out in ad copy, separate from the US feed."
+  },
+  {
+    "id": "media/account-ops/peak-sale-ramp",
+    "name": "Peak sale ramp and wind-down plan",
+    "parent": "media/account-ops",
+    "invoke_when": "a known sale is 3-4 weeks out",
+    "select_by": {
+      "job": "peak_sale"
+    },
+    "inputs_required": [
+      "brand brain: sale calendar, stock levels",
+      "metric contract: spend, cpm"
+    ],
+    "steps": [
+      "Set the ramp schedule: budget steps, new creative, and structure changes before the sale window.",
+      "Fix a wind-down date and budget step-down before the sale starts, not during it.",
+      "Prepare Google Shopping, Search and brand campaigns for the known sale date in advance.",
+      "Check stock levels against the planned ramp before committing budget.",
+      "Write the post-sale review checklist and read point."
+    ],
+    "checks": [
+      "a wind-down date exists before the sale starts",
+      "the ramp was checked against stock before budget was committed"
+    ],
+    "output": "peak sale media plan + change list + post-sale review template",
+    "used_by": [
+      "MEDIA-W09"
+    ],
+    "shared_with": [
+      "prod"
+    ],
+    "skill_md": "---\n    name: peak-sale-ramp\n    owner: media-buyer\n    version: 1\n    invoke_when: a known sale is 3-4 weeks out\n    inputs: sale calendar, stock levels, current CPM trend\n    outputs: peak sale media plan, change list, post-sale review template\n    ---\n    Purpose: ramp into a known sale and wind back down on a fixed schedule set\n    before the sale starts, instead of reacting during it.\n\n    Steps\n    1. Set the budget-step schedule, new creative needs and structure changes for\n       the ramp window.\n    2. Fix the wind-down date and budget step-down before the sale opens.\n    3. Prepare Google Shopping, Search and brand campaigns for the sale date in\n       advance.\n    4. Check stock levels against the planned ramp before committing budget.\n    5. Write the post-sale review checklist and its read point.\n\n    Checks\n    - A wind-down date exists in writing before the sale starts.\n    - The ramp plan was checked against stock, not assumed.\n\n    Output: peak sale media plan, change list, post-sale review template.\n\n    Example: Black Friday is 3 weeks out -> budget ramp starts this week, wind-down\n    date fixed for 3 days after the sale ends, stock checked against the ramp.\n    (India only: Diwali sale is 3 weeks out.)"
+  },
+  {
+    "id": "media/account-ops/incrementality-test",
+    "name": "Incrementality and lift test design",
+    "parent": "media/account-ops",
+    "invoke_when": "platform ROAS and blended MER still disagree after attribution is tightened",
+    "select_by": {
+      "job": "incrementality"
+    },
+    "inputs_required": [
+      "metric contract: roas_blended, spend",
+      "brand brain: geographic sales spread"
+    ],
+    "steps": [
+      "Confirm attribution has already been tightened and reconciled before proposing a lift test.",
+      "Choose test type: Meta Conversion Lift, geo holdout, or matched-market geo test.",
+      "Size the test: markets or audience split, minimum spend, and read window.",
+      "Write the test brief: hypothesis, holdout design, read point, and what counts as proof.",
+      "Read the result and update the brand's effect prior for that spend level.",
+      "Never let a lift test change platform bidding directly; feed the result into budget decisions instead."
+    ],
+    "checks": [
+      "a lift test is proposed only after reconciliation already happened",
+      "the result updates the brand's own effect prior, not a generic benchmark"
+    ],
+    "output": "test brief + read point and result writeup + registry entry",
+    "used_by": [
+      "MEDIA-W12"
+    ],
+    "shared_with": [],
+    "skill_md": "---\n    name: incrementality-test\n    owner: media-buyer\n    version: 1\n    invoke_when: platform ROAS and blended MER disagree after attribution is tightened\n    inputs: ROAS, spend, geographic sales spread\n    outputs: test brief, result writeup, registry entry\n    ---\n    Purpose: find out whether disputed spend is buying orders that would not have\n    happened anyway, only after cheaper fixes (attribution, reconciliation) are\n    already done.\n\n    Steps\n    1. Confirm attribution is already tightened and reconciled; this test is not a\n       substitute for that work.\n    2. Pick the test type: Meta Conversion Lift, geo holdout, or matched-market\n       geo test.\n    3. Size the split, minimum spend and read window.\n    4. Write the brief: hypothesis, holdout design, read point, proof bar.\n    5. Read the result; update the brand's own effect prior for that spend level.\n    6. Feed the result into budget decisions; never let it change bidding directly.\n\n    Checks\n    - Reconciliation happened first; the test is not a first resort.\n    - The result is logged to the registry, win or lose.\n\n    Output: test brief, result writeup, registry entry.\n\n    Example: Meta shows 4x ROAS but blended MER shows 1.8x even after\n    reconciliation -> a geo holdout is sized to find the real incremental lift."
+  },
+  {
+    "id": "media/account-ops/suggestion-filter",
+    "name": "Platform suggestion filter",
+    "parent": "media/account-ops",
+    "invoke_when": "the weekly suggestion review is due on any platform",
+    "select_by": {
+      "job": "suggestion_filter"
+    },
+    "inputs_required": [
+      "connector: meta ads read, google ads (manual)",
+      "registry: past suggestion outcomes"
+    ],
+    "steps": [
+      "Log every platform-suggested change with its stated expected effect.",
+      "Test each suggestion in a small sandbox before wider rollout, where testable.",
+      "Audit which targeting fields are real controls and which are non-binding suggestions.",
+      "Turn off auto-apply recommendations and AI-generated assets by default.",
+      "Record the actual effect of any suggestion that was applied, against the platform's claim."
+    ],
+    "checks": [
+      "auto-apply stays off by default",
+      "every applied suggestion has a recorded actual effect, not just the platform's claim"
+    ],
+    "output": "suggestion log + change list (apply or reject, with reason)",
+    "used_by": [
+      "MEDIA-W05"
+    ],
+    "shared_with": [],
+    "skill_md": "---\n    name: suggestion-filter\n    owner: media-buyer\n    version: 1\n    invoke_when: the weekly platform-suggestion review is due\n    inputs: platform suggestion log, past outcomes\n    outputs: suggestion log, apply/reject change list\n    ---\n    Purpose: stop blind acceptance of platform-suggested changes, and keep a real\n    record of whether each one actually helped last time.\n\n    Steps\n    1. Log every suggestion with its platform-stated expected effect.\n    2. Sandbox-test where the suggestion is testable in isolation.\n    3. Check whether a \"targeting\" suggestion is a real control or just a\n       non-binding nudge.\n    4. Confirm auto-apply and AI-generated assets are off by default.\n    5. Record the real effect of anything applied, against what the platform\n       claimed.\n\n    Checks\n    - No suggestion was applied without a logged reason.\n    - Auto-apply is off unless the founder explicitly turned it on.\n\n    Output: suggestion log, apply/reject change list.\n\n    Example: Google suggests raising a Target ROAS bid; last quarter's identical\n    suggestion cut conversions 15% -> logged and rejected, with the history cited."
+  },
+  {
+    "id": "media/account-ops/trafficking-qa",
+    "name": "Pre-launch ad trafficking QA",
+    "parent": "media/account-ops",
+    "invoke_when": "any campaign, ad set or ad on any platform is about to go live",
+    "select_by": {
+      "job": "trafficking_qa",
+      "scope": "cross_platform"
+    },
+    "inputs_required": [
+      "the built campaign in the platform's editor",
+      "the approved media plan",
+      "platform creative specs"
+    ],
+    "steps": [
+      "Confirm the conversion event and pixel/CAPI fire on the exact landing page the ad points to.",
+      "Confirm geo, age and placement targeting matches the approved plan, not a leftover default.",
+      "Confirm the UTM string matches the governed naming schema.",
+      "Confirm frequency cap and dayparting, where used, are set as specified.",
+      "Confirm the creative meets the platform's current spec (aspect ratio, length, safe zones, text ratio).",
+      "Hold the launch and flag the founder if any check fails, rather than launching with a known gap."
+    ],
+    "checks": [
+      "every check passed or the launch was held, never launched with a known gap"
+    ],
+    "output": "pass/fail QA checklist per campaign before launch",
+    "used_by": [
+      "MEDIA-W03",
+      "MEDIA-W13"
+    ],
+    "shared_with": [
+      "crea"
+    ],
+    "skill_md": "---\n    name: trafficking-qa\n    owner: media-buyer\n    version: 1\n    invoke_when: any campaign, ad set or ad on any platform is about to go live\n    inputs: the built campaign, the approved plan, platform creative specs\n    outputs: a pass/fail QA checklist\n    ---\n    Purpose: run the same fixed check an ad ops trafficker runs by hand before any\n    launch, on any platform, so a known gap never goes live by accident.\n\n    Steps\n    1. Confirm the conversion event and pixel/CAPI fire on the exact landing page\n       the ad points to, not a similar one.\n    2. Confirm geo, age and placement targeting matches the approved plan.\n    3. Confirm the UTM string matches the governed naming schema.\n    4. Confirm frequency cap and dayparting, where used, are set as specified.\n    5. Confirm creative meets the platform's current spec: aspect ratio, length,\n       safe zones, text ratio.\n    6. If any check fails, hold the launch and flag the founder; never launch with\n       a known gap \"to fix later.\"\n\n    Checks\n    - Every item on the list has a pass or fail, not a skip.\n    - A failed check held the launch, with no exception.\n\n    Output: a pass/fail checklist per campaign, ad set or ad.\n\n    Example: the UTM campaign parameter is misspelled against the naming schema ->\n    launch held, one-line fix requested before it goes live."
+  },
+  {
+    "id": "media/partnerships/affiliate-program",
+    "name": "Affiliate and creator partner program management",
+    "parent": "media/partnerships",
+    "invoke_when": "a new affiliate application arrives, the weekly program health check is due, or affiliate/coupon activity needs a fraud scan",
+    "select_by": {
+      "job": "affiliate_program"
+    },
+    "inputs_required": [
+      "applicant profile and traffic source",
+      "brand's affiliate policy and commission terms",
+      "affiliate network data"
+    ],
+    "steps": [
+      "Screen inbound applications against a fixed rule set: site quality, traffic source, category fit, prior brand mentions.",
+      "Auto-approve clear passes, auto-reject clear spam or bad fit, route only borderline cases to the founder.",
+      "Generate each approved affiliate's tracking link, coupon code and starter asset kit.",
+      "Flag dormant affiliates (no clicks or sales in 60 days) for reactivation or removal; keep a leaderboard by revenue and conversion rate.",
+      "Flag conversions completing faster than the platform's normal minimum click-to-purchase time.",
+      "Flag traffic clusters from data-centre or proxy ISPs.",
+      "Search public coupon-aggregator sites for the brand's codes appearing without rights.",
+      "Flag an affiliate bidding on the brand's own name in Google Ads.",
+      "Hold commission on any flagged conversion pending founder review instead of auto-paying."
+    ],
+    "checks": [
+      "only borderline applications reach the founder",
+      "no flagged conversion is paid before founder review"
+    ],
+    "output": "approve/reject decisions with reasons + onboarding kit + dormant-affiliate list + leaderboard + fraud flag list with evidence",
+    "used_by": [
+      "MEDIA-W25"
+    ],
+    "shared_with": [],
+    "skill_md": "---\n    name: affiliate-program\n    owner: media-buyer\n    version: 1\n    invoke_when: a new application arrives, the weekly health check is due, or fraud needs a scan\n    inputs: applicant profile, affiliate policy, network click/conversion logs\n    outputs: approve/reject decisions, onboarding kit, dormant list, fraud flags\n    ---\n    Purpose: run the affiliate program the way an affiliate manager would, without\n    a human touching every routine application, while catching the fraud patterns\n    that steal commission without earning it.\n\n    Steps\n    1. Screen each application against a fixed rule set: site quality, traffic\n       source, category fit, prior brand mentions.\n    2. Auto-approve a clear pass, auto-reject clear spam, route only the borderline\n       case to the founder.\n    3. Generate the approved affiliate's link, coupon code and starter asset kit.\n    4. Flag any affiliate with no clicks or sales in 60 days.\n    5. Watch for fraud signatures: too-fast click-to-conversion, data-centre or\n       proxy ISP traffic, the brand's coupon codes on public aggregator sites\n       without rights, or an affiliate bidding on the brand name.\n    6. Hold commission on any flagged conversion pending founder review; never\n       auto-pay a flagged one.\n\n    Checks\n    - Only borderline applications reached the founder.\n    - Every held commission has evidence attached, not a hunch.\n\n    Output: approve/reject decisions, onboarding kit, dormant list, leaderboard,\n    fraud flag list.\n\n    Example: a conversion completes 40 seconds after the click, from a data-centre\n    IP -> flagged, commission held, founder notified before payout."
+  },
+  {
+    "id": "media/partnerships/policy-appeals",
+    "name": "Ad policy rejection and account-quality management",
+    "parent": "media/partnerships",
+    "invoke_when": "a new ad disapproval lands, or the daily account-quality check is due",
+    "select_by": {
+      "job": "policy_appeals"
+    },
+    "inputs_required": [
+      "platform disapproval reasons and account-quality dashboards",
+      "the brand's claim tiers"
+    ],
+    "steps": [
+      "Pull every disapproved ad and its stated policy reason on a daily check.",
+      "Map the stated reason to the specific policy clause and the likely real cause (claim, image text ratio, restricted category wording, landing page mismatch).",
+      "Propose the smallest edit that fixes the violation without changing the offer or claim tier.",
+      "Draft appeal text for a rejection believed wrongly applied, for a human to submit.",
+      "Watch the account-quality or account-health score and flag a downward trend before it causes a restriction.",
+      "Keep a running log of rejection reasons by category to catch a repeating pattern."
+    ],
+    "checks": [
+      "every rejection is mapped to a specific clause, not guessed at",
+      "no appeal is submitted without a founder-reviewed draft"
+    ],
+    "output": "daily rejection log with cause and fix + appeal drafts + account-quality trend flag",
+    "used_by": [
+      "MEDIA-W29"
+    ],
+    "shared_with": [],
+    "skill_md": "---\n    name: policy-appeals\n    owner: media-buyer\n    version: 1\n    invoke_when: a new disapproval lands or the daily account-quality check is due\n    inputs: disapproval reasons, account-quality dashboards, claim tiers\n    outputs: rejection log, appeal drafts, account-quality trend flag\n    ---\n    Purpose: treat every ad rejection as a diagnosable policy-clause problem with a\n    named fix, instead of a one-off surprise, and catch an account-quality slide\n    before it becomes a restriction.\n\n    Steps\n    1. Pull every disapproved ad and its stated reason daily.\n    2. Map the reason to the exact policy clause and the likely real cause: claim,\n       image text ratio, restricted-category wording, or landing page mismatch.\n    3. Propose the smallest edit that clears the violation without changing the\n       offer or claim tier.\n    4. Draft an appeal only for a rejection believed wrongly applied; a human\n       submits it.\n    5. Watch the account-quality score for a downward trend and flag it early.\n    6. Log rejection reasons by category to catch a repeating pattern.\n\n    Checks\n    - Every rejection has a named clause and a proposed fix.\n    - No appeal is submitted without a human review of the draft.\n\n    Output: rejection log, appeal drafts, account-quality trend flag.\n\n    Example: 4 ads in one week rejected for the same \"before/after\" claim wording\n    -> pattern logged, a claim-tier fix proposed once instead of firefighting each\n    ad separately."
+  },
+  {
+    "id": "media/partnerships/channel-pilot",
+    "name": "New ad surface and DSP evaluation",
+    "parent": "media/partnerships",
+    "invoke_when": "existing channels are past their scaling gates, or a DSP/programmatic option needs evaluating",
+    "select_by": {
+      "job": "channel_pilot"
+    },
+    "inputs_required": [
+      "current channel saturation state",
+      "a shortlist of candidate surfaces or DSPs",
+      "brand CAC/ROAS targets"
+    ],
+    "steps": [
+      "Check whether the retargeting pool is actually saturated (frequency and reach data) before recommending a new channel.",
+      "Compare DSP options by data-source fit against the brand's category; estimate minimum spend and management fee against expected incremental reach.",
+      "Pick the next surface to pilot from what the brand's audience and category actually use, not what is trending.",
+      "Size the pilot budget as the smallest spend that can produce a usable read.",
+      "Set stop and scale thresholds before the pilot starts, like the existing creative kill-rule discipline.",
+      "Build the minimum viable creative and tracking without diverting the main creative pipeline.",
+      "Read the pilot against the brand's existing CAC/ROAS targets, not the new platform's own benchmarks.",
+      "Write the learning to the experiment registry whether the pilot wins or fails."
+    ],
+    "checks": [
+      "a pilot is sized to the smallest usable read, not a token spend",
+      "stop/scale thresholds exist before the pilot starts"
+    ],
+    "output": "go/no-go recommendation with shortlist and creative-spec brief, or a pilot test plan",
+    "used_by": [
+      "MEDIA-W28"
+    ],
+    "shared_with": [],
+    "skill_md": "---\n    name: channel-pilot\n    owner: media-buyer\n    version: 1\n    invoke_when: existing channels are near their scaling gates, or a DSP is being considered\n    inputs: channel saturation state, candidate shortlist, CAC/ROAS targets\n    outputs: go/no-go recommendation, pilot test plan\n    ---\n    Purpose: only add a new channel or DSP once the existing ones are genuinely\n    saturated, and give any pilot the same stop/scale discipline as a creative\n    test, read against the brand's own targets.\n\n    Steps\n    1. Confirm saturation with frequency and reach data before recommending\n       anything new.\n    2. Shortlist DSPs or surfaces by real fit to the brand's category and data,\n       not by trend.\n    3. Size the pilot budget as the smallest spend that produces a usable read.\n    4. Set stop and scale thresholds before the pilot starts.\n    5. Build minimum viable creative and tracking without pulling from the main\n       creative pipeline.\n    6. Read the pilot against the brand's own CAC/ROAS targets, not the new\n       platform's benchmarks.\n    7. Log the result to the registry whether it wins or fails.\n\n    Checks\n    - Saturation was confirmed with data, not assumed.\n    - The pilot has a stop and a scale threshold set before it started.\n\n    Output: go/no-go recommendation, pilot test plan.\n\n    Example: Meta and Google retargeting frequency has plateaued at reach's edge\n    -> a small, capped Criteo pilot is sized and read against the brand's own CAC\n    target, not Criteo's benchmark."
+  },
+  {
+    "id": "media/partnerships/rule-automation",
+    "name": "Automated bid, budget and pause rule engine",
+    "parent": "media/partnerships",
+    "invoke_when": "the brand's kill/keep/scale and bid thresholds are established and ready to standardise",
+    "select_by": {
+      "job": "rule_automation"
+    },
+    "inputs_required": [
+      "existing kill/keep/scale thresholds",
+      "platform automation/rule-engine capability"
+    ],
+    "steps": [
+      "Translate the brand's thresholds into explicit if-then rules per platform (pause at 3-5x target CPA, cut budget X% on Y-day underperformance, alert on frequency threshold).",
+      "Keep the rule set consistent across Meta, Google and TikTok even where native automation options differ.",
+      "Log every rule firing with the before/after state so the founder can audit what an automation actually did.",
+      "Pause a rule automatically if it fires more often than expected, in case tracking broke.",
+      "Never let a rule apply a live budget or bid change until the founder has turned writes on for that surface."
+    ],
+    "checks": [
+      "every rule traces to an already-approved threshold, not a new one invented here",
+      "no rule applies a live change on a surface without writes switched on"
+    ],
+    "output": "documented rule set per platform + firing log",
+    "used_by": [
+      "MEDIA-W30"
+    ],
+    "shared_with": [],
+    "skill_md": "---\n    name: rule-automation\n    owner: media-buyer\n    version: 1\n    invoke_when: kill/keep/scale and bid thresholds are established and ready to standardise\n    inputs: existing thresholds, platform automation capability\n    outputs: documented rule set, firing log\n    ---\n    Purpose: turn thresholds the brand already uses by hand into standing,\n    auditable automations, never a new rule invented on the spot, and never live\n    until the founder switches writes on.\n\n    Steps\n    1. Translate each existing threshold into an explicit if-then rule per\n       platform.\n    2. Keep the rule set consistent across Meta, Google and TikTok, adapting only\n       for each platform's own automation options.\n    3. Log every firing with the before and after state.\n    4. Auto-pause a rule that fires far more than expected; that usually means\n       tracking broke, not that the rule found real signal.\n    5. Hold every rule inactive on a surface until the founder switches writes on\n       for it.\n\n    Checks\n    - Every rule traces to a threshold already approved elsewhere, not a new one.\n    - No rule is live on a surface without writes switched on.\n\n    Output: documented rule set, firing log.\n\n    Example: the existing kill rule (3-5x target CPA) becomes an if-then rule that\n    pauses an ad set at 4x CPA and logs the before/after spend -- but stays\n    dormant until Meta writes are switched on."
+  }
+]
