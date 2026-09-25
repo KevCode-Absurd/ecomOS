@@ -35,5 +35,5 @@ gate replaces founder taste and course-learned rules of thumb with the brand's o
 {gate, margin{gross, contribution}, compliance_flags[], per_market[], blocking_inputs[]}
 
 ## Example
-Gate: fail. Contribution margin 11%, below the brand's 18% floor. Compliance: FSSAI licence not yet filed for this
-SKU category: blocking. Recommendation: hold until packaging cost drops or price rises; do not proceed to RFQ.
+Gate: fail. Contribution margin 11%, below the brand's 18% floor. Compliance: FDA facility registration not yet filed for this
+SKU category: blocking (india: FSSAI licence not yet filed; markets: IN). Recommendation: hold until packaging cost drops or price rises; do not proceed to RFQ.

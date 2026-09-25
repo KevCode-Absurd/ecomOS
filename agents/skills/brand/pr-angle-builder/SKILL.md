@@ -24,4 +24,4 @@ Journalists do not cover product announcements; they cover a story. This skill t
 `{pitch_angle, seed_list_note, drafted_pitch}`
 
 ## Example
-Angle: not "we launched a new collection" but "why Indian jewellery brands are quietly moving away from disposable trend pieces," using the brand's own durability positioning as the hook, seeded first to 2 respected stylists before a wider press push.
+Angle: not "we launched a new collection" but "why American jewelry brands are quietly moving away from disposable trend pieces," using the brand's own durability positioning as the hook, seeded first to 2 respected stylists before a wider press push.

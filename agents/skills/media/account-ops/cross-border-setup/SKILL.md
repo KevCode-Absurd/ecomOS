@@ -25,5 +25,5 @@
 
     Output: market setup checklist, change list.
 
-    Example: launching into UAE from an India-based store -> new feed in AED,
-    duty and delivery time called out in ad copy, separate from the India feed.
+    Example: launching into Canada from a US-based store -> new feed in CAD,
+    duty and delivery time called out in ad copy, separate from the US feed.

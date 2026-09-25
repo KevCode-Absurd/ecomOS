@@ -34,6 +34,6 @@ on a real net margin, not a gross-margin illusion.
 {fee_stack, net_margin_per_sku[], parity_check, margin_floor_flags[]}
 
 ## Example
-SKU-1042: referral fee 15%, FBA fee ₹85 (size tier standard), storage ₹12/unit/month. Landed cost ₹210, Amazon
-price ₹599. Net margin after all fees and a ₹40 PPC assumption: 19%, above the brand's 15% floor. Parity check:
+SKU-1042: referral fee 15%, FBA fee $3.50 (size tier standard), storage $0.15/unit/month. Landed cost $8.50, Amazon
+price $24.99. Net margin after all fees and a $1.50 PPC assumption: 19%, above the brand's 15% floor. Parity check:
 Amazon price matches DTC within the allowed band.

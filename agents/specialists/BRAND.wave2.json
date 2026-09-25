@@ -280,7 +280,7 @@
   "encompasses": [
    "Identify near-customers: cart abandoners, quote requesters, or reviewers who mention a competitor by name",
    "Write a short, specific interview or survey guide about the actual comparison moment",
-   "Field it by email, WhatsApp or a short call within days of the decision, while memory is fresh",
+   "Field it by email, SMS (TCPA consent, quiet hours) or a short call within days of the decision, while memory is fresh; WhatsApp is a channel option where the brand's customers use it (markets: IN, EU, LATAM; reads null for US-only brands)",
    "Separate the stated reason from the real deciding factor",
    "Tag every response to a specific competitor and a specific decision factor (price, trust, delivery, review)",
    "Roll results into the objection map (BRAND-C13) and the category ladder (BRAND-C18) evidence base",
@@ -299,11 +299,12 @@
   "autonomy": "human_assist",
   "external_write": {
    "needed": true,
-   "surface": "email/WhatsApp outreach to customers (founder-approved template)"
+   "surface": "email/SMS outreach to customers (founder-approved template)"
   },
   "tools": [
    "script: survey_field",
-   "connector: whatsapp business (read-only for existing threads)"
+   "connector: sms platform (TCPA consent required, read-only for existing threads)",
+   "connector: whatsapp business (market option, markets: IN, EU, LATAM; read-only for existing threads; null for US-only brands)"
   ],
   "skills": [
    "win-loss-research"
@@ -482,17 +483,18 @@
  {
   "id": "BRAND-C62",
   "extends": null,
-  "name": "Run a new-market entry feasibility assessment",
+  "name": "Run a US state and international market entry feasibility assessment",
   "folders": [
    "19-WLD"
   ],
-  "what": "Before a wild bet on a new country or region, check regulatory, tax, competitor and logistics feasibility so the founder decides with real constraints in view, not just opportunity size.",
+  "what": "Before a wild bet on a new US state at scale or a new country, check regulatory, tax, competitor and logistics feasibility so the founder decides with real constraints in view, not just opportunity size.",
   "encompasses": [
-   "Check import duty, GST or VAT, and product certification requirements for the category in the target market",
+   "For a new US state: check sales tax nexus and registration thresholds (economic nexus, marketplace facilitator rules) and any state-specific product certification or labeling rule",
+   "For a new country: check import duty and tariffs, VAT (EU or UK) or GST, CE marking where relevant, and product certification requirements for the category in the target market; GST applies to India-market entries only (markets: IN, reads null for US-only expansion)",
    "Check labeling and packaging rules that differ from the home market",
    "Map the competitor set already serving that market at the brand's price point",
    "Check shipping, customs and return logistics options and their real cost",
-   "Check payment method norms (COD prevalence, card penetration, local wallets)",
+   "Check payment method norms for the target market (card penetration, wallets, BNPL availability); COD prevalence is a market-specific check (markets: IN, reads null for US)",
    "Estimate a landed cost and price point for the target market from the brand's own cost data",
    "Flag any legal restriction on the product category in that market",
    "Score the market as go, go-with-conditions, or not-yet, with the specific blocker named"
@@ -503,9 +505,9 @@
    "competitor data"
   ],
   "outputs": [
-   "market feasibility report per candidate country"
+   "market feasibility report per candidate US state or country"
   ],
-  "trigger": "on demand, when a new-market wild bet is proposed",
+  "trigger": "on demand, when a new-state or new-country wild bet is proposed",
   "autonomy": "human_assist",
   "external_write": {
    "needed": false,
@@ -528,7 +530,7 @@
    "bank": []
   },
   "found_in": "web_only",
-  "founder_sees": "Kevin sees whether a new country is actually legally and logistically workable before any market-sizing conversation happens.",
+  "founder_sees": "Kevin sees whether a new state or country is actually legally and logistically workable before any market-sizing conversation happens.",
   "human_role": "expansion or new markets lead",
   "today_done_by": "nobody at this size, or a consultancy"
  },
@@ -642,24 +644,25 @@
  {
   "id": "BRAND-C65",
   "extends": null,
-  "name": "Build the brand's cultural and festive moment calendar for PR, events and community",
+  "name": "Build the brand's US holiday and cultural moment calendar for PR, events and community",
   "folders": [
    "04-BRD"
   ],
-  "what": "Build a dated calendar of festivals, cultural moments and category-relevant global dates that matter for PR pitches, events and community activity, kept separate from the paid promotional calendar.",
+  "what": "Build a dated calendar of the US holiday season, cultural moments and category-relevant global dates that matter for PR pitches, events and community activity, kept separate from the paid promotional calendar.",
   "encompasses": [
-   "List the major India festivals relevant to the category with realistic lead times",
+   "List the US holiday and shopping moments relevant to the category with realistic lead times (Q4 holiday season, Black Friday and Cyber Monday, Prime Day, Valentine's Day, Mother's Day, Father's Day, back to school, July 4)",
    "List category-relevant global observance days worth a PR or community angle, not generic ones",
+   "List market-specific festival dates where the brand sells into that market (for example India festivals such as Diwali; markets: IN, reads null for US-only brands)",
    "Set the lead time needed per moment: PR pitch lead time, event planning lead time, content lead time",
    "Flag which moments fit a press angle, which fit an event, and which fit a community post only",
    "Cross-check the calendar against the paid media calendar so messages do not collide or duplicate spend",
    "Mark moments the brand sat out last year and why, so repeats are a choice not a miss",
-   "Update the calendar yearly and flag date shifts, since lunar festivals move",
-   "Size each moment's relevance by category fit, not by how big the festival is generally"
+   "Update the calendar yearly and flag date shifts, since some observances (lunar festivals, Thanksgiving-anchored dates) move",
+   "Size each moment's relevance by category fit, not by how big the moment is generally"
   ],
   "inputs": [
    "brand brain: category, past campaign history",
-   "public festival and observance calendars"
+   "public holiday and observance calendars"
   ],
   "outputs": [
    "dated cultural moment calendar with lead times and channel fit"
@@ -677,11 +680,11 @@
   "skills": [
    "cultural-calendar-planning"
   ],
-  "subagent": "Festive Calendar Planner",
+  "subagent": "Holiday and Cultural Calendar Planner",
   "sources": {
    "web": [
-    "https://www.appbrew.com/blogs/festive-season-marketing-india",
-    "https://inc42.com/resources/how-d2c-brands-can-use-influencer-marketing-to-maximise-roi-this-festive-season/"
+    "https://nrf.com/research-insights/holiday-data-center",
+    "https://www.shopify.com/blog/holiday-marketing"
    ],
    "bank": []
   },

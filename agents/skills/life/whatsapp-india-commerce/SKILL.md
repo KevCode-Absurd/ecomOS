@@ -2,8 +2,10 @@
 name: whatsapp-india-commerce
 owner: LIFE
 version: 1
+markets: [IN]
 invoke_when: building or refreshing WhatsApp cart recovery, order updates or COD
-  conversion for Indian buyers
+  conversion for Indian buyers; reads null for US brands, which use SMS as the
+  default second channel
 inputs: India order/RTO data, courier NDR feed, WhatsApp template approval status
 outputs: WhatsApp commerce program spec
 ---
@@ -35,5 +37,7 @@ A WhatsApp commerce program spec covering cart recovery, order updates, COD-to-
 prepaid and NDR recovery.
 
 ## Example
-"RTO costs ₹180 per failed COD order on average. COD-to-prepaid nudge offers ₹50
-off - well inside the ₹180 avoided cost - only on pincodes with RTO rate over 12%."
+"RTO costs INR 180 per failed COD order on average. COD-to-prepaid nudge offers
+INR 50 off - well inside the INR 180 avoided cost - only on pincodes with RTO rate
+over 12%. (US brands use the failed-card dunning flow instead, see
+life/churn-risk-score.)"

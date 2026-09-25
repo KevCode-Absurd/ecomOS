@@ -92,7 +92,7 @@
       {"table": "avatar_records", "fields": ["brand", "avatar_id", "tier", "job_statement", "5w_profile", "quote_ids", "status", "primary_flag", "last_audit_date"], "connector_or_script": "BRAND-C09 through BRAND-C11, BRAND-C15", "refresh": "on research pass, audited quarterly"},
       {"table": "language_bank", "fields": ["brand", "avatar_id", "phrase", "source_type", "source_id", "first_seen", "repeat_count", "used_in_live_copy"], "connector_or_script": "BRAND-C14", "refresh": "continuous as evidence is mined"},
       {"table": "reviews_raw", "fields": ["brand", "review_id", "star_rating", "text", "date", "product_id"], "connector_or_script": "store review export, BRAND-C01", "refresh": "weekly"},
-      {"table": "support_tickets_raw", "fields": ["brand", "ticket_id", "channel (email, whatsapp, call)", "reason_code", "return_or_rto_flag", "text", "date"], "connector_or_script": "helpdesk export, BRAND-C02", "refresh": "weekly"},
+      {"table": "support_tickets_raw", "fields": ["brand", "ticket_id", "channel (email, sms, call; whatsapp where used, markets: IN, EU, LATAM)", "reason_code", "return_or_failed_delivery_flag (return_to_sender_rate for US, rto_flag for India orders markets: IN)", "text", "date"], "connector_or_script": "helpdesk export, BRAND-C02", "refresh": "weekly"},
       {"table": "onsite_search_and_behavior", "fields": ["brand", "query", "result_count", "converted_flag", "session_id", "date"], "connector_or_script": "site search log, BRAND-C04", "refresh": "weekly"},
       {"table": "objection_map", "fields": ["brand", "objection", "remover", "source_id", "coverage_flag"], "connector_or_script": "BRAND-C13", "refresh": "as new evidence lands"},
       {"table": "voice_sheet", "fields": ["brand", "version", "liked_examples", "disliked_examples", "rules", "approved_date"], "connector_or_script": "BRAND-C32", "refresh": "on founder approval"},
@@ -180,7 +180,7 @@
     ],
     "data_needs": [
       {"table": "competitor_set", "fields": ["brand", "competitor_name", "site_url", "ad_library_id", "marketplace_listings", "active_flag"], "connector_or_script": "meta_gallery competitors.json, BRAND-C07", "refresh": "on new competitor added"},
-      {"table": "competitor_price_capture", "fields": ["competitor_name", "product_match_id", "price", "price_incl_gst", "discount_pct", "captured_at"], "connector_or_script": "price capture script (not yet built)", "refresh": "weekly"},
+      {"table": "competitor_price_capture", "fields": ["competitor_name", "product_match_id", "price", "price_incl_tax (sales tax for US; GST for an India-market competitor, markets: IN)", "discount_pct", "captured_at"], "connector_or_script": "price capture script (not yet built)", "refresh": "weekly"},
       {"table": "competitor_ad_capture", "fields": ["competitor_name", "creative_id", "first_seen", "angle_tag", "channel", "media_url"], "connector_or_script": "meta_gallery comp_media.json, BRAND-C56", "refresh": "weekly"},
       {"table": "category_ladder", "fields": ["brand", "rung_name", "rung_type (do_nothing, adjacent, direct)", "demand_signal"], "connector_or_script": "BRAND-C18", "refresh": "quarterly"},
       {"table": "positioning_map", "fields": ["brand_or_competitor", "axis_x_score", "axis_y_score", "quadrant_label"], "connector_or_script": "BRAND-C19", "refresh": "on rebuild"},
@@ -207,7 +207,7 @@
       {"job": "build a targeted media list for a launch or story", "question": "who exactly should get this pitch", "capabilities": ["BRAND-C53"]},
       {"job": "monitor for reputation risk and prepare a holding statement", "question": "is a problem building that we need to get ahead of", "capabilities": ["BRAND-C54"]},
       {"job": "build the founder's public credibility pipeline", "question": "where should the founder show up, and what are we eligible to win", "capabilities": ["BRAND-C60", "BRAND-C61"]},
-      {"job": "build the brand's cultural and festive moment calendar", "question": "what dates matter for PR, events and community this quarter", "capabilities": ["BRAND-C65"]},
+      {"job": "build the brand's US holiday and cultural moment calendar", "question": "what dates matter for PR, events and community this quarter", "capabilities": ["BRAND-C65"]},
       {"job": "design an event or pop-up sized to what the team can run", "question": "where does our exact customer already gather, and can we show up there", "capabilities": ["BRAND-C42"]}
     ],
     "metrics": [
@@ -225,7 +225,7 @@
       {"name": "event_attendance", "plain": "People who showed up at the last event or pop-up", "formula": "count of confirmed attendees", "source": "event log", "window": "per event", "unavailable_when": "no event has run"},
       {"name": "award_submission_status", "plain": "Awards and best-of lists tracked, submitted or won", "formula": "count grouped by status (eligible, submitted, won)", "source": "award tracking table", "window": "current", "unavailable_when": "no awards tracked yet"},
       {"name": "reputation_alert_count", "plain": "Open reputation risk alerts needing a response", "formula": "count of unresolved alerts from the mention spike rule", "source": "reputation monitor feed", "window": "current", "unavailable_when": "no listening connector attached"},
-      {"name": "festive_calendar_readiness", "plain": "Upcoming moments in the next 60 days with a brief already prepared", "formula": "moments with a brief / total moments in the next 60 days", "source": "festive and cultural calendar", "window": "rolling 60 days", "unavailable_when": "calendar has no entries in that window"}
+      {"name": "holiday_calendar_readiness", "plain": "Upcoming moments in the next 60 days with a brief already prepared", "formula": "moments with a brief / total moments in the next 60 days", "source": "US holiday and cultural calendar", "window": "rolling 60 days", "unavailable_when": "calendar has no entries in that window"}
     ],
     "insights": [
       {"name": "bet is overdue at its stage", "rule": "bet_cycle_time_days exceeds the bet's own planned duration for its current stage", "computed_from": ["wild bet pipeline table"], "sentence": "{bet} has sat in {stage} for {n} days, past its own plan.", "severity": "medium", "action_capability": "BRAND-C45"},
@@ -233,7 +233,7 @@
       {"name": "bet shows a real lift", "rule": "bet_read_point_lift is positive and above the bet's own pre-set bar at its read point", "computed_from": ["wild bet read point log"], "sentence": "{bet} beat its control by {n}. Worth sizing up.", "severity": "informational", "action_capability": "BRAND-C47"},
       {"name": "reputation risk building", "rule": "mention or review volume in the reputation monitor rises more than 2x the trailing average with a negative tilt", "computed_from": ["reputation monitor feed"], "sentence": "Mentions of the brand jumped {x}x this week with a negative tilt. A holding statement is drafted and waiting.", "severity": "high", "action_capability": "BRAND-C54"},
       {"name": "media list going stale", "rule": "a contact on the current media list has not been reachable or has changed beat since the list was built", "computed_from": ["media list build"], "sentence": "{n} contacts on the {story} list need a re-check before this pitch goes out.", "severity": "medium", "action_capability": "BRAND-C53"},
-      {"name": "festive moment coming up with no brief", "rule": "a calendar moment falls within 30 days and has no linked brief", "computed_from": ["festive and cultural calendar"], "sentence": "{moment} is {n} days away with no brief started.", "severity": "medium", "action_capability": "BRAND-C65"},
+      {"name": "holiday moment coming up with no brief", "rule": "a calendar moment falls within 30 days and has no linked brief", "computed_from": ["US holiday and cultural calendar"], "sentence": "{moment} is {n} days away with no brief started.", "severity": "medium", "action_capability": "BRAND-C65"},
       {"name": "partnership candidate flagged", "rule": "a reputation check on a partnership candidate returns an open flag", "computed_from": ["partner reputation check log"], "sentence": "{candidate} has an open reputation flag: {reason}.", "severity": "high", "action_capability": "BRAND-C71"},
       {"name": "ambassador content waiting too long", "rule": "a submission has sat unreviewed longer than the program's own review SLA", "computed_from": ["ambassador program table"], "sentence": "{n} ambassador submissions have waited past the review deadline.", "severity": "low", "action_capability": "BRAND-C55"},
       {"name": "award deadline approaching, nothing started", "rule": "an eligible award's submission deadline falls within 21 days and status is still 'eligible'", "computed_from": ["award tracking table"], "sentence": "The {award} deadline is {n} days away and nothing is submitted yet.", "severity": "low", "action_capability": "BRAND-C61"}
@@ -242,7 +242,7 @@
       {"name": "bet pipeline board", "type": "kanban, one column per stage", "shows": "every wild bet from idea to bounded to executing to read point to scaled or killed", "why_this_chart": "the speed lab pattern of a staged chain, applied to bets instead of site fixes", "exists_today": false},
       {"name": "read point comparison chart", "type": "bar pair per bet", "shows": "treatment versus control on the bet's own named metric", "why_this_chart": "shows the actual test result, not a feeling about how it went", "exists_today": false},
       {"name": "PR coverage timeline", "type": "reverse-chronological timeline", "shows": "placements landed, outlet, and reach where available", "why_this_chart": "the founder sees momentum, not a spreadsheet of clippings", "exists_today": false},
-      {"name": "festive and cultural calendar", "type": "calendar view, 90-day rolling window", "shows": "upcoming dates with brief-ready status color coded", "why_this_chart": "flags gaps before a date is missed, not after", "exists_today": false},
+      {"name": "US holiday and cultural calendar", "type": "calendar view, 90-day rolling window", "shows": "upcoming dates with brief-ready status color coded", "why_this_chart": "flags gaps before a date is missed, not after", "exists_today": false},
       {"name": "partnership funnel", "type": "funnel chart", "shows": "candidates sourced, screened, reputation-checked, approved", "why_this_chart": "shows where candidates are dropping out and why", "exists_today": false},
       {"name": "reputation risk monitor", "type": "line chart with alert markers", "shows": "mention or review volume over time with spikes marked", "why_this_chart": "the founder sees a brewing problem before it is a crisis", "exists_today": false}
     ],
@@ -261,7 +261,7 @@
       {"label": "Build or refresh the media list", "capability": "BRAND-C53", "autonomy": "agent_does"},
       {"label": "Send the holding statement for approval", "capability": "BRAND-C54", "autonomy": "founder_gate"},
       {"label": "Approve a thought-leadership or award pitch", "capability": "BRAND-C60", "autonomy": "human_assist"},
-      {"label": "Update the festive and cultural calendar", "capability": "BRAND-C65", "autonomy": "agent_does"},
+      {"label": "Update the US holiday and cultural calendar", "capability": "BRAND-C65", "autonomy": "agent_does"},
       {"label": "Approve an event or pop-up design", "capability": "BRAND-C42", "autonomy": "founder_gate"}
     ],
     "not_elsewhere": [
@@ -269,7 +269,7 @@
       {"claim": "the reputation monitor ties a mention or review spike directly to a drafted holding statement in the same room", "vs": "Muck Rack and Prowly monitor coverage and mentions but do not draft a holding statement tied to this brand's own crisis playbook"},
       {"claim": "partnership sourcing and reputation screening run in one pipeline, checked against the brand's own non-competitive, same-customer rule", "vs": "generic partnership or CRM tools track deals but do not screen for category overlap or run a reputation check as one gated step"},
       {"claim": "the media list is built and verified per specific story or launch, matched to real beats", "vs": "Muck Rack and Prowly sell a static, purchased journalist database; this room builds a small verified list for the story at hand"},
-      {"claim": "the festive and cultural calendar is scoped to this brand's own category, PR needs, events and community moments, not a generic marketing holiday calendar", "vs": "generic marketing calendars list every holiday, not the ones that matter for this brand's category and PR angles"},
+      {"claim": "the US holiday and cultural calendar is scoped to this brand's own category, PR needs, events and community moments, not a generic marketing holiday calendar", "vs": "generic marketing calendars list every holiday, not the ones that matter for this brand's category and PR angles"},
       {"claim": "the ambassador program room runs screening, task assignment, content approval and tracking end to end for this brand's own program", "vs": "generic UGC rights tools manage content rights but do not run the day-to-day of an approved ambassador program"}
     ],
     "data_needs": [
@@ -281,7 +281,7 @@
       {"table": "ambassador_program", "fields": ["brand", "ambassador_id", "status", "assigned_task", "submission_status", "last_activity"], "connector_or_script": "BRAND-C55", "refresh": "weekly"},
       {"table": "events_and_popups", "fields": ["brand", "event_id", "location", "date", "attendee_count", "cost"], "connector_or_script": "BRAND-C42", "refresh": "per event"},
       {"table": "award_tracking", "fields": ["brand", "award_name", "deadline", "status", "eligibility_note"], "connector_or_script": "BRAND-C61", "refresh": "quarterly"},
-      {"table": "festive_calendar", "fields": ["brand", "moment_name", "date", "category_relevance", "brief_linked_flag"], "connector_or_script": "BRAND-C65", "refresh": "annually, checked quarterly"},
+      {"table": "holiday_calendar", "fields": ["brand", "moment_name", "date", "category_relevance", "brief_linked_flag", "market (US default; India festival dates optional, markets: IN)"], "connector_or_script": "BRAND-C65", "refresh": "annually, checked quarterly"},
       {"table": "reputation_monitor_feed", "fields": ["brand", "mention_volume", "sentiment_tilt", "date", "spike_flag"], "connector_or_script": "mention listening feed, BRAND-C54 (shared with brand health)", "refresh": "daily"}
     ],
     "founder_view_note": "With nothing connected, the bet pipeline board starts empty except for whatever ideas are logged by hand, the PR timeline and media list show no entries, and the reputation monitor stays unavailable until a mention feed is attached. The first useful state comes from logging even one bet with its 8-field bound, since that alone lights up the pipeline board, the bound-completeness metric and the read-point chart once the read date arrives."

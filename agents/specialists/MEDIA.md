@@ -250,7 +250,7 @@ acquisitions. Output: health report, developer brief for any fix.
 **mer-reconciliation**
 Purpose: settle what the real blended return is. Inputs: per-platform ROAS, store
 sales, attribution settings. Steps: hold attribution constant inside each platform;
-reconcile marketplace and COD returns separately; compute MER in code; flag swings
+reconcile marketplace sales and payment-method returns (chargebacks and disputes; cash-on-delivery returns, India only) separately; compute MER in code; flag swings
 under the noise band as noise. Checks: no attribution window copied across platforms.
 Output: reconciliation report.
 

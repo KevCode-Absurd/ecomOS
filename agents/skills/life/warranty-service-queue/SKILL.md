@@ -40,4 +40,4 @@ case records.
 
 ## Example
 "Resizing request, purchased 4 months ago (in-warranty). Pickup booked, routed to
-in-house jeweller, 3-day turnaround. Cost: ₹0 to customer, ₹240 to the reserve."
+in-house jeweller, 3-day turnaround. Cost: $0 to customer, $18 to the reserve."

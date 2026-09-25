@@ -11,7 +11,7 @@ outputs: verified China supplier shortlist
 
 ## Purpose
 China sourcing runs through Alibaba, Global Sources and trade-assurance mechanisms that do not exist the same way
-in India sourcing, and certification requirements are about the destination import market, not the origin.
+in US-domestic or India sourcing, and certification requirements are about the destination import market, not the origin.
 
 ## Steps
 1. Search Alibaba and Global Sources against the exact spec, filtering out pure trading companies unless the spec
@@ -34,5 +34,5 @@ in India sourcing, and certification requirements are about the destination impo
 
 ## Example
 Spec: injection-molded component, MOQ 5,000. Shortlist of 11 from Alibaba; 3 verified with trade assurance and 4+
-years on-platform; one held BIS-compliant certification needed for India import; a backup factory for the same mold
+years on-platform; one held the UL certification needed for US import; a backup factory for the same mold
 was identified in the same province.

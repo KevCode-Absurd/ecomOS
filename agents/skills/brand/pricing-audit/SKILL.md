@@ -24,4 +24,4 @@ Price drifts out of position slowly, and a premium story quietly gets undercut b
 `{in_range_verdict, premium_signal_audit_note}`
 
 ## Example
-Live price ₹3,200 sits inside the ₹2,800-₹4,500 category range set by 4 named competitors; discount_rate at 22% over the last quarter flagged against the brand's "quiet luxury" positioning claim as an active contradiction.
+Live price $42 sits inside the $36-$58 category range set by 4 named competitors; discount_rate at 22% over the last quarter flagged against the brand's "quiet luxury" positioning claim as an active contradiction.

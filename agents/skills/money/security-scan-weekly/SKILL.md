@@ -3,7 +3,7 @@ name: money/security-scan-weekly
 owner: MONEY
 version: 1
 invoke_when: the weekly fraud, bot and abuse scan needs running
-inputs: server/CDN logs, order and payment data, chargeback log, COD refusal log, return log, domain records
+inputs: server/CDN logs, order and payment data, chargeback log, India only: COD refusal log, return log, domain records
 outputs: traffic baseline, fraud and abuse flags, domain watch result, weekly fix list
 ---
 # Run the weekly fraud, bot and abuse scan
@@ -14,7 +14,7 @@ Catch card-testing, bot traffic, return abuse and domain impersonation early, wi
 ## Steps
 1. Rebuild the bot and AI-agent traffic baseline by agent, endpoint and intent, and re-score risk tiers continuously.
 2. Check for card-testing bursts (clusters of small failed authorizations) and review AVS/CVV/3DS settings against the false-decline rate.
-3. Set the chargeback alert threshold below the processor's own flag level, and set prepayment triggers for repeat COD refusers.
+3. Set the chargeback alert threshold below the processor's own flag level, and set step-up verification triggers for repeat abuse (prepayment triggers for repeat COD refusers, for India-selling brands).
 4. Detect return and refund abuse: wardrobing, serial high-return customers, refunds without a matching return.
 5. Watch the domain registrar lock status, DNS for dangling records, and lookalike domains or counterfeit listings.
 
@@ -26,4 +26,4 @@ Catch card-testing, bot traffic, return abuse and domain impersonation early, wi
 The traffic baseline, fraud and return-abuse flags, the domain watch result, and a ranked weekly fix list.
 
 ## Example
-A burst of 40 small authorizations under 50 rupees each from the same IP range is flagged as card-testing before any of them succeed at a full-value order.
+A burst of 40 small authorizations under $1 each from the same IP range is flagged as card-testing before any of them succeed at a full-value order.

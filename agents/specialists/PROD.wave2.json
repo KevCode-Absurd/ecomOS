@@ -2,15 +2,15 @@
   {
     "id": "PROD-C48",
     "extends": null,
-    "name": "Onboard and launch brand listings on Blinkit, Zepto and Instamart",
+    "name": "Onboard and launch brand listings on Instacart, DoorDash and Gopuff",
     "folders": [
       "22-AMZ"
     ],
-    "what": "Take a brand through quick commerce onboarding end to end: assemble the GST, FSSAI, barcode and packaging documents, submit through each platform's own channel, and get the first live listing without a mismatched document resetting the 4 to 8 week queue.",
+    "what": "Take a brand through rapid-delivery/grocery marketplace onboarding end to end (Instacart, DoorDash Marketplace, Gopuff, Amazon Fresh): assemble the business licence, resale certificate, UPC/barcode and packaging documents, submit through each platform's own channel, and get the first live listing without a mismatched document resetting the queue. India: the same job runs on Blinkit, Zepto and Instamart instead, needing GST registration and an FSSAI licence (markets: IN, reads null for US brands).",
     "encompasses": [
-      "Assemble GST registration, FSSAI licence, PAN, bank and GS1 barcode documents and check the legal-entity name matches exactly across every document",
-      "Submit through Blinkit's Seller App, Zepto's category-manager channel and Instamart's seller portal, each with its own workflow",
-      "Check the FSSAI licence has 6 to 12 months validity left before submitting, since a near-expiry licence gets rejected",
+      "Assemble business licence, resale certificate, PAN/EIN, bank and UPC/GS1 barcode documents and check the legal-entity name matches exactly across every document (India: GST registration, FSSAI licence, PAN, bank and GS1 barcode documents instead; markets: IN, reads null for US brands)",
+      "Submit through Instacart's Retailer/CPG portal, DoorDash Marketplace's vendor channel and Gopuff's supplier channel, each with its own workflow (India: Blinkit's Seller App, Zepto's category-manager channel and Instamart's seller portal; markets: IN)",
+      "For a food SKU, check the FDA facility registration and any state food licence has enough validity left before submitting, since a near-expiry licence gets rejected (India: check the FSSAI licence has 6 to 12 months validity left)",
       "Build catalogue assets to each platform's exact size and crop rule (1000x1000px, front/back/lifestyle)",
       "Write titles in the platform's required order: brand, product, variant, pack size",
       "Verify barcodes scan in a shelf-stacked position and labels stay legible at thumbnail size",
@@ -18,7 +18,7 @@
       "Flag when a legal-entity name mismatch or missing document will reset the queue"
     ],
     "inputs": [
-      "brand brain: business documents, GST and FSSAI licence status",
+      "brand brain: business documents, licensing status (india: GST and FSSAI licence status)",
       "web: each platform's onboarding requirements",
       "product tech pack and packaging specs"
     ],
@@ -27,11 +27,11 @@
       "submitted application per platform",
       "first-listing readiness report"
     ],
-    "trigger": "on demand (new quick commerce launch)",
+    "trigger": "on demand (new rapid-delivery marketplace launch)",
     "autonomy": "founder_gate",
     "external_write": {
       "needed": true,
-      "surface": "Blinkit seller app / Zepto category manager / Instamart seller portal"
+      "surface": "Instacart / DoorDash / Gopuff seller portal (india: Blinkit seller app / Zepto category manager / Instamart seller portal)"
     },
     "tools": [
       "browser agent",
@@ -39,14 +39,14 @@
       "web search"
     ],
     "skills": [
-      "quick-commerce-onboarding"
+      "rapid-delivery-onboarding"
     ],
     "subagent": "product_and_supply",
     "sources": {
       "web": [
-        "https://confetti.design/blog/how-to-start-selling-on-quick-commerce-india",
-        "https://www.tech2globe.com/quick-commerce-onboarding-services",
-        "https://www.ecomsarthi.com/blog/quick-commerce-onboarding.html"
+        "https://www.instacart.com/company/partner-with-instacart/",
+        "https://get.doordash.com/en-us/products/marketplace",
+        "https://confetti.design/blog/how-to-start-selling-on-quick-commerce-india"
       ],
       "bank": []
     },
@@ -58,22 +58,22 @@
   {
     "id": "PROD-C49",
     "extends": null,
-    "name": "Correct quick commerce ROAS and validate dark-store unit economics",
+    "name": "Correct rapid-delivery ROAS and validate dark-store unit economics",
     "folders": [
       "22-AMZ",
       "18-COG"
     ],
-    "what": "Recompute true return on ad spend from transaction value, not MRP, because platform dashboards inflate ROAS 30 to 50 percent by using MRP, and hold a SKU to a run of positive contribution margin before it scales past the first dark stores.",
+    "what": "Recompute true return on ad spend from transaction value, not list price, because some rapid-delivery and quick-commerce platform dashboards inflate ROAS 30 to 50 percent by reporting off list/MRP price, and hold a SKU to a run of positive contribution margin before it scales past the first dark stores.",
     "encompasses": [
-      "Pull platform ad spend and MRP-based ROAS from the seller dashboard",
-      "Recompute ROAS on actual transaction value in code, net of platform commission (15-25%) and GST on commission",
-      "Track inwarding fees, storage cost and damage/expiry write-off (budgeted 2-5% of MRP) per SKU",
+      "Pull platform ad spend and list-price-based ROAS from the seller dashboard",
+      "Recompute ROAS on actual transaction value in code, net of platform commission (15-25%) and sales tax (india: GST) on commission",
+      "Track inwarding fees, storage cost and damage/expiry write-off (budgeted 2-5% of list price) per SKU",
       "Calculate weekly per-dark-store order volume needed to clear the 55-60% gross margin floor",
       "Flag whether a margin problem is volume (fixable with more orders) or structural (needs repricing or a COGS cut)",
-      "Hold expansion to new SKUs or cities until 3 consecutive weeks of positive contribution margin"
+      "Hold expansion to new SKUs or metro areas until 3 consecutive weeks of positive contribution margin"
     ],
     "inputs": [
-      "quick commerce seller dashboard export",
+      "rapid-delivery seller dashboard export",
       "SKU landed cost and COGS"
     ],
     "outputs": [
@@ -91,11 +91,12 @@
       "python calc"
     ],
     "skills": [
-      "quick-commerce-economics"
+      "rapid-delivery-economics"
     ],
     "subagent": "product_and_supply",
     "sources": {
       "web": [
+        "https://www.instacart.com/company/partner-with-instacart/",
         "https://confetti.design/blog/how-to-start-selling-on-quick-commerce-india"
       ],
       "bank": []
@@ -108,45 +109,46 @@
   {
     "id": "PROD-C50",
     "extends": null,
-    "name": "Manage quick commerce ad credits and promotional calendar negotiation",
+    "name": "Manage rapid-delivery ad credits and promotional calendar negotiation",
     "folders": [
       "22-AMZ"
     ],
-    "what": "Spend each platform's ad tools deliberately instead of leaving credits unused or overspending once organic search picks up, and negotiate the festive promotional windows that can lift sales 4 to 5x.",
+    "what": "Spend each platform's ad tools deliberately instead of leaving credits unused or overspending once organic search picks up, and negotiate the peak promotional windows (Q4 holiday season, Black Friday/Cyber Monday, Prime Day, back to school) that can lift sales 4 to 5x.",
     "encompasses": [
-      "Activate and track per-SKU ad credits on Blinkit at launch",
-      "Run keyword-bid sponsored search on Zepto's ads platform and Instamart's self-serve ads portal",
+      "Activate and track per-SKU ad credits on Instacart Ads at launch",
+      "Run keyword-bid sponsored search on DoorDash Ads and Gopuff's self-serve ads portal",
       "Monitor organic impressions and click-through rate weekly and cut paid spend on a SKU once organic CTR clears the category average",
-      "Draft the ask to the category manager for Diwali, Holi, IPL and Independence Day promotional slots",
+      "Draft the ask to the category manager for BFCM, Prime Day, back-to-school and Q4 holiday promotional slots (India: Diwali, Holi, IPL and Independence Day slots; markets: IN)",
       "Track a 5-15% of projected revenue ad budget and reallocate as organic velocity rises",
       "Seed early reviews with an introductory discount tied to sponsored search"
     ],
     "inputs": [
       "platform ads dashboard export",
       "organic impression and CTR data",
-      "festive calendar"
+      "US retail promotional calendar (india: festive calendar)"
     ],
     "outputs": [
       "ad spend plan",
       "promotional slot request draft",
       "weekly organic-vs-paid split"
     ],
-    "trigger": "weekly, and ahead of each festive window",
+    "trigger": "weekly, and ahead of each peak promotional window",
     "autonomy": "founder_gate",
     "external_write": {
       "needed": true,
-      "surface": "Blinkit/Zepto/Instamart ads portal"
+      "surface": "Instacart/DoorDash/Gopuff ads portal"
     },
     "tools": [
       "browser agent",
       "script: scripts/qc_ad_spend.py"
     ],
     "skills": [
-      "quick-commerce-ads"
+      "rapid-delivery-ads"
     ],
     "subagent": "product_and_supply",
     "sources": {
       "web": [
+        "https://www.instacart.com/company/partner-with-instacart/",
         "https://confetti.design/blog/how-to-start-selling-on-quick-commerce-india"
       ],
       "bank": []
@@ -169,7 +171,7 @@
       "Pull per-dark-store, per-SKU stock level and days-of-cover from the platform's inventory feed where available",
       "Flag a SKU approaching stockout at any dark store before the ranking penalty hits",
       "Track inbound replenishment frequency against the platform's required cadence",
-      "Track inwarding fee (about Rs 2-4/unit on Instamart) and damage/expiry write-offs against budget",
+      "Track inwarding fee (about $0.25-0.50/unit on rapid-delivery platforms; india: about Rs 2-4/unit on Instamart, markets: IN) and damage/expiry write-offs against budget",
       "Recommend a replenishment order in units per dark store from recent velocity"
     ],
     "inputs": [
@@ -246,8 +248,9 @@
     "subagent": "product_and_supply",
     "sources": {
       "web": [
-        "https://unicommerce.com/products/",
-        "https://www.increff.com/blog/5-best-e-commerce-inventory-management-software-in-india-in-2026"
+        "https://www.shipstation.com/",
+        "https://www.netstock.com/",
+        "https://unicommerce.com/products/"
       ],
       "bank": []
     },
@@ -313,13 +316,13 @@
     "folders": [
       "01-PRD"
     ],
-    "what": "Design what happens to a unit that comes back, whether an RTO or a customer return, so it is graded, restocked, refurbished or written off on a fixed rule instead of case by case.",
+    "what": "Design what happens to a unit that comes back, whether a carrier return-to-sender (india: RTO) or a customer return, so it is graded, restocked, refurbished or written off on a fixed rule instead of case by case.",
     "encompasses": [
       "Define grading rules at intake: resell as new, resell as open-box, refurbish, scrap",
       "Tie the refund or store-credit trigger to the warehouse scan, not the courier's return-in-transit status",
       "Route a defective return into the QC/CAPA process to trace it to a batch",
       "Track return processing time and reverse-logistics cost per unit",
-      "Separate RTO (never delivered) from customer return (delivered then returned) in reporting",
+      "Separate a failed delivery / carrier return-to-sender (never delivered) from a customer return (delivered then returned) in reporting (India: this never-delivered leg is RTO; markets: IN, reads null for US brands)",
       "Flag a SKU or reason code whose return rate has moved outside its normal range"
     ],
     "inputs": [
@@ -363,18 +366,18 @@
     "folders": [
       "01-PRD"
     ],
-    "what": "Pick the courier for each shipment in code from live rate, pincode serviceability and SLA rather than a fixed default carrier, and fail over to a backup courier the moment one rejects or is unserviceable.",
+    "what": "Pick the carrier for each shipment in code from live rate, ZIP code serviceability and SLA rather than a fixed default carrier, and fail over to a backup carrier the moment one rejects or is unserviceable (India: same logic on pincode serviceability and courier RTO rate; markets: IN).",
     "encompasses": [
-      "Pull live rate cards and pincode serviceability for every connected courier",
-      "Score each courier on cost, promised TAT and recent RTO rate for that pincode",
-      "Assign the shipment to the best-scoring courier automatically through the aggregator",
-      "Fail over to the next-best courier on rejection, non-serviceability or capacity cap",
-      "Log every routing decision so a courier's real performance can be audited later"
+      "Pull live rate cards and ZIP code serviceability for every connected carrier (UPS, USPS, FedEx, and 3PLs such as ShipBob or ShipMonk)",
+      "Score each carrier on cost, promised transit time and recent failed-delivery/return-to-sender rate for that ZIP code (India: courier RTO rate for that pincode; markets: IN)",
+      "Assign the shipment to the best-scoring carrier automatically through the shipping platform (ShipStation, EasyPost)",
+      "Fail over to the next-best carrier on rejection, non-serviceability or capacity cap",
+      "Log every routing decision so a carrier's real performance can be audited later"
     ],
     "inputs": [
-      "order and pincode",
-      "aggregator rate and serviceability feed",
-      "courier scorecard"
+      "order and ZIP code (india: pincode)",
+      "shipping-platform rate and serviceability feed",
+      "carrier scorecard"
     ],
     "outputs": [
       "per-shipment courier assignment",
@@ -384,21 +387,21 @@
     "autonomy": "agent_does",
     "external_write": {
       "needed": true,
-      "surface": "Shiprocket / aggregator API"
+      "surface": "ShipStation / EasyPost API (india: Shiprocket / aggregator API)"
     },
     "tools": [
       "script: scripts/courier_routing.py",
       "aggregator API"
     ],
     "skills": [
-      "courier-routing"
+      "carrier-routing"
     ],
     "subagent": "product_and_supply",
     "sources": {
       "web": [
-        "https://www.shiprocket.in/carrier-integrations/delhivery/",
-        "https://www.icarry.in/pages/blog/shiprocket-alternatives.html",
-        "https://vedwix.com/best/shipping-aggregators-in-india"
+        "https://www.shipstation.com/",
+        "https://www.easypost.com/",
+        "https://www.shiprocket.in/carrier-integrations/delhivery/"
       ],
       "bank": []
     },
@@ -410,70 +413,70 @@
   {
     "id": "PROD-C56",
     "extends": null,
-    "name": "Automate NDR resolution and address-confirmation outreach",
+    "name": "Automate carrier-exception resolution and address-validation outreach",
     "folders": [
       "01-PRD"
     ],
-    "what": "Work every non-delivery report the day it is raised: confirm the address or reschedule with the customer before the courier's attempt window closes, since NDR handling moves RTO more than the courier rate does.",
+    "what": "Work every carrier exception the day it is raised: run USPS/carrier address validation and reach out to the customer to confirm the address or reschedule before the delivery window closes, since exception handling cuts return-to-sender more than the carrier rate does. India: the same job is NDR (non-delivery report) resolution on cash-on-delivery orders (markets: IN, reads null for US brands).",
     "encompasses": [
-      "Pull the day's NDR queue from the aggregator across all couriers",
-      "Send an address-confirmation or reschedule message by SMS or WhatsApp before the next attempt",
-      "Escalate a repeat-NDR order to a phone call before it converts to RTO",
-      "Reassign a chronically bad pincode's future orders to a courier with a better first-attempt rate there",
-      "Track NDR-to-delivery conversion rate versus NDR-to-RTO rate by reason code"
+      "Pull the day's carrier-exception queue (undeliverable-as-addressed, failed attempt, hold-for-pickup) across UPS, USPS, FedEx and connected 3PLs (India: the aggregator's NDR queue across all couriers; markets: IN)",
+      "Run address validation and send a confirmation or reschedule message by SMS (with TCPA consent and quiet hours) or email before the next attempt (India: SMS or WhatsApp; markets: IN)",
+      "Escalate a repeat-exception order to a phone call before it converts to return-to-sender (India: before it converts to RTO; markets: IN)",
+      "Reassign a chronically bad ZIP code's future orders to a carrier with a better first-attempt rate there (India: a chronically bad pincode; markets: IN)",
+      "Track exception-to-delivery conversion rate versus exception-to-return-to-sender rate by reason code (India: NDR-to-delivery versus NDR-to-RTO rate; markets: IN)"
     ],
     "inputs": [
-      "daily NDR queue",
-      "customer contact channel"
+      "daily carrier-exception queue",
+      "customer contact channel (SMS, email; india: SMS or WhatsApp)"
     ],
     "outputs": [
       "outreach sent log",
-      "NDR conversion report"
+      "exception conversion report"
     ],
-    "trigger": "daily, same-day on NDR",
+    "trigger": "daily, same-day on exception",
     "autonomy": "founder_gate",
     "external_write": {
       "needed": true,
-      "surface": "SMS/WhatsApp send, aggregator NDR panel"
+      "surface": "SMS/email send, carrier exception panel (india: SMS/WhatsApp send, aggregator NDR panel)"
     },
     "tools": [
-      "script: scripts/ndr_outreach.py",
-      "WhatsApp/SMS API"
+      "script: scripts/exception_outreach.py",
+      "SMS/email API (india: WhatsApp/SMS API)"
     ],
     "skills": [
-      "ndr-recovery"
+      "carrier-exception-recovery"
     ],
     "subagent": "product_and_supply",
     "sources": {
       "web": [
-        "https://theshizz.in/blog/courier-comparison-shiprocket-delhivery-bluedart",
-        "https://www.shiprocket.in/carrier-integrations/delhivery/"
+        "https://www.usps.com/business/web-tools-apis/address-information-api.htm",
+        "https://theshizz.in/blog/courier-comparison-shiprocket-delhivery-bluedart"
       ],
       "bank": []
     },
     "found_in": "web_only",
-    "founder_sees": "The NDR-to-RTO conversion rate and what outreach recovered.",
+    "founder_sees": "The exception-to-return-to-sender conversion rate and what outreach recovered.",
     "human_role": "shipping / logistics executive",
-    "today_done_by": "tool (aggregator's built-in NDR panel, human-run)"
+    "today_done_by": "tool (aggregator's built-in exception panel, human-run; india: NDR panel)"
   },
   {
     "id": "PROD-C57",
     "extends": null,
-    "name": "Reconcile COD remittance and courier billing disputes",
+    "name": "Reconcile courier billing disputes and payment-remittance discrepancies",
     "folders": [
       "01-PRD",
       "18-COG"
     ],
-    "what": "Match every courier's COD payout and weight/dimension bill against the order record, because unreconciled COD remittance and surprise weight-discrepancy charges quietly eat margin.",
+    "what": "Match every carrier's weight/dimension bill against the order record and file a dispute on any discrepancy, because unreconciled carrier billing quietly eats margin. India: the same job also matches each COD remittance cycle's payout file against delivered orders (markets: IN, reads null for US brands).",
     "encompasses": [
-      "Match each COD remittance cycle's payout file against delivered orders and flag a shortfall",
-      "Match courier weight/dimension billing against the packed weight recorded at dispatch",
-      "File a dispute with the courier on a documented discrepancy and track it to resolution",
-      "Track average COD remittance lag by courier against the cash plan",
-      "Flag a courier whose disputed-charge rate is rising"
+      "Match carrier weight/dimension billing against the packed weight recorded at dispatch",
+      "File a dispute with the carrier on a documented discrepancy and track it to resolution",
+      "Match each COD remittance cycle's payout file against delivered orders and flag a shortfall (India only; markets: IN, reads null for US brands)",
+      "Track average settlement lag by carrier against the cash plan (India: COD remittance lag by courier; markets: IN)",
+      "Flag a carrier whose disputed-charge rate is rising"
     ],
     "inputs": [
-      "courier remittance and billing files",
+      "carrier remittance and billing files",
       "dispatch weight records",
       "order ledger"
     ],
@@ -491,11 +494,12 @@
       "script: scripts/cod_reconcile.py"
     ],
     "skills": [
-      "cod-reconciliation"
+      "carrier-billing-reconciliation"
     ],
     "subagent": "product_and_supply",
     "sources": {
       "web": [
+        "https://www.easypost.com/",
         "https://theshizz.in/blog/courier-comparison-shiprocket-delhivery-bluedart"
       ],
       "bank": []
@@ -512,7 +516,7 @@
     "folders": [
       "01-PRD"
     ],
-    "what": "Test converting COD-heavy pincodes or repeat-RTO customers to prepaid-only or partial-advance checkout, and read the RTO and conversion-rate change before rolling it wider.",
+    "what": "Test converting COD-heavy pincodes or repeat-RTO customers to prepaid-only or partial-advance checkout, and read the RTO and conversion-rate change before rolling it wider. India only: reads null and does not run for US brands, where card, PayPal, Apple Pay and BNPL (Affirm, Klarna, Afterpay) already dominate checkout and COD is not a meaningful payment method.",
     "encompasses": [
       "Identify pincodes and customer segments with COD share and RTO rate above brand average",
       "Design the test: prepaid-only, partial advance, or a COD convenience fee, on a defined slice of traffic",
@@ -550,7 +554,10 @@
     "found_in": "possible",
     "founder_sees": "The test design and the RTO-versus-conversion trade-off before it goes live.",
     "human_role": "operations manager",
-    "today_done_by": "nobody"
+    "today_done_by": "nobody",
+    "markets": [
+      "IN"
+    ]
   },
   {
     "id": "PROD-C59",
@@ -559,37 +566,37 @@
     "folders": [
       "01-PRD"
     ],
-    "what": "Keep a running scorecard per courier per zone on RTO rate, first-attempt delivery rate and delivery TAT, and shift volume to the better performer on a set cadence instead of an annual contract review.",
+    "what": "Keep a running scorecard per carrier per zone on failed-delivery/return-to-sender rate, first-attempt delivery rate and delivery transit time, and shift volume to the better performer on a set cadence instead of an annual contract review (India: same scorecard using RTO% by courier and pincode zone; markets: IN).",
     "encompasses": [
-      "Compute RTO%, first-attempt delivery rate and average TAT per courier per zone from shipment data",
-      "Rank couriers within each zone and flag one that has fallen below the zone's median for a month",
-      "Recommend a volume-share shift between couriers for the next cycle",
-      "Track a new courier's onboarding performance against the incumbent before scaling volume to it"
+      "Compute failed-delivery/return-to-sender rate, first-attempt delivery rate and average transit time per carrier per zone from shipment data (India: RTO% per courier per zone; markets: IN)",
+      "Rank carriers within each zone and flag one that has fallen below the zone's median for a month",
+      "Recommend a volume-share shift between carriers for the next cycle",
+      "Track a new carrier's onboarding performance against the incumbent before scaling volume to it"
     ],
     "inputs": [
-      "shipment-level delivery data by courier and zone"
+      "shipment-level delivery data by carrier and zone"
     ],
     "outputs": [
-      "courier scorecard by zone",
+      "carrier scorecard by zone",
       "volume reallocation recommendation"
     ],
     "trigger": "monthly",
     "autonomy": "agent_does",
     "external_write": {
       "needed": true,
-      "surface": "aggregator courier-priority settings"
+      "surface": "shipping-platform carrier-priority settings"
     },
     "tools": [
       "script: scripts/courier_scorecard.py"
     ],
     "skills": [
-      "courier-scorecard"
+      "carrier-scorecard"
     ],
     "subagent": "product_and_supply",
     "sources": {
       "web": [
-        "https://theshizz.in/blog/courier-comparison-shiprocket-delhivery-bluedart",
-        "https://vedwix.com/best/shipping-aggregators-in-india"
+        "https://www.shipstation.com/",
+        "https://theshizz.in/blog/courier-comparison-shiprocket-delhivery-bluedart"
       ],
       "bank": []
     },
@@ -614,7 +621,7 @@
     ],
     "inputs": [
       "WMS stock feed",
-      "channel stock APIs (Shopify, Amazon, Flipkart, quick commerce)"
+      "channel stock APIs (Shopify, Amazon, Walmart, rapid-delivery marketplaces; india: Flipkart, quick commerce)"
     ],
     "outputs": [
       "reconciled stock feed",
@@ -643,32 +650,32 @@
     "found_in": "web_only",
     "founder_sees": "Any channel where shown stock and real stock disagree, and the correction pushed.",
     "human_role": "inventory planner",
-    "today_done_by": "tool (OMS such as Unicommerce or Increff)"
+    "today_done_by": "tool (OMS such as Cin7 or Extensiv; india: Unicommerce or Increff)"
   },
   {
     "id": "PROD-C60",
     "extends": null,
-    "name": "Assign and validate HSN/SAC codes and catch e-invoice rejections",
+    "name": "Assign and validate US sales-tax product categories and catch filing errors",
     "folders": [
       "18-COG",
       "01-PRD"
     ],
-    "what": "Build and keep the SKU-to-HSN/SAC map correct, since a wrong or too-short HSN code is a common cause of invoice registration portal rejections and GST mismatches.",
+    "what": "Build and keep the SKU-to-tax-category map correct, since a wrong product tax code is a common cause of undercharged or overcharged sales tax and marketplace-facilitator filing mismatches. India: the same job maps each SKU to an HSN/SAC code and catches e-invoice rejections instead (markets: IN, reads null for US brands).",
     "encompasses": [
-      "Assign an HSN code to every SKU and check digit length against the turnover threshold (4-digit under Rs 5 crore, 6-digit at or above)",
-      "Validate the HSN code against the GST rate charged for that SKU",
-      "Flag an e-invoice likely to be rejected by the IRP before it is submitted",
-      "Keep the map current when a SKU's classification or GST rate changes",
+      "Assign an Avalara or TaxJar product tax code to every SKU and check it against each state's taxability rules (India: assign an HSN code and check digit length against the turnover threshold, 4-digit under Rs 5 crore, 6-digit at or above; markets: IN)",
+      "Track economic nexus thresholds by state and flag a new state that has crossed the registration threshold",
+      "Validate resale certificates on file for wholesale/B2B orders and flag an expired or missing one",
+      "Flag a marketplace-facilitator state where the marketplace, not the brand, should be remitting tax, and catch a double-remittance risk",
+      "Reconcile 1099-K totals from each marketplace against the brand's own sales ledger",
       "Log every correction with the reason, for an audit trail"
     ],
     "inputs": [
       "product catalogue",
-      "GST rate table",
-      "HSN reference data"
+      "state nexus and taxability rules (india: GST rate table, HSN reference data)"
     ],
     "outputs": [
-      "SKU-to-HSN map",
-      "pre-submission validation flags"
+      "SKU-to-tax-category map",
+      "nexus and filing validation flags"
     ],
     "trigger": "on new SKU, and monthly audit",
     "autonomy": "agent_does",
@@ -680,35 +687,35 @@
       "script: scripts/hsn_validate.py"
     ],
     "skills": [
-      "gst-compliance"
+      "sales-tax-compliance"
     ],
     "subagent": "product_and_supply",
     "sources": {
       "web": [
-        "https://www.vertexinc.com/resources/resource-library/indias-e-invoicing-regulations-explained-scope-formats-and-penalties",
-        "https://www.incorpx.io/blog/gst-invoice-rules-format-mandatory-fields",
-        "https://carajput.com/learn/compulsory-e-invoice-details-and-new-hsn-code-requirements.html"
+        "https://www.avalara.com/us/en/learn/nexus.html",
+        "https://www.taxjar.com/sales-tax/marketplace-facilitator",
+        "https://www.vertexinc.com/resources/resource-library/indias-e-invoicing-regulations-explained-scope-formats-and-penalties"
       ],
       "bank": []
     },
     "found_in": "web_only",
-    "founder_sees": "Any SKU with a wrong or risky HSN code before it causes an e-invoice rejection.",
+    "founder_sees": "Any SKU or state with a wrong or risky tax setup before it causes a filing error.",
     "human_role": "accounts / compliance executive",
     "today_done_by": "founder or accountant"
   },
   {
     "id": "PROD-C61",
     "extends": null,
-    "name": "Track Legal Metrology and FSSAI licence registration and renewal",
+    "name": "Track FDA, net-quantity and state licence registration and renewal",
     "folders": [
       "01-PRD"
     ],
-    "what": "Keep one register of which SKUs need Legal Metrology (Packaged Commodities) registration or an FSSAI licence, their current validity window, and the relabelling needed on an MRP or GST change.",
+    "what": "Keep one register of which SKUs need FDA facility registration, net-quantity declaration under the Fair Packaging and Labeling Act, or a state licence (cosmetics, food, supplements), their current validity window, and the relabelling needed on a formula or price change. India: the same register tracks Legal Metrology (Packaged Commodities) registration and an FSSAI licence instead (markets: IN, reads null for US brands).",
     "encompasses": [
-      "Map each SKU to the licences it needs: Legal Metrology state registration, FSSAI, and any category-specific licence",
+      "Map each SKU to the licences it needs: FDA facility registration, state cosmetics/food/supplement licence, and any category-specific licence (India: Legal Metrology state registration and FSSAI; markets: IN)",
       "Track each licence's validity window and flag renewal at a safe lead time before expiry (platforms require 6-12 months left)",
-      "Check the label declares the FSSAI number and MRP where required, positioned for dark-store or warehouse scanning",
-      "Track a sticker/relabel run when MRP or GST changes, keeping the original MRP visible as the rule requires"
+      "Check the label declares net quantity, ingredients and any required warning (Prop 65) correctly, positioned for fulfilment-center or warehouse scanning (India: FSSAI number and MRP; markets: IN)",
+      "Track a relabel run when a formula, claim or price changes, keeping required disclosures current (India: keep the original MRP visible on an MRP/GST change, as the rule requires; markets: IN)"
     ],
     "inputs": [
       "SKU catalogue",
@@ -718,7 +725,7 @@
       "licence register with expiry flags",
       "relabel task list"
     ],
-    "trigger": "monthly audit, and on any MRP/GST change",
+    "trigger": "monthly audit, and on any formula/price change (india: MRP/GST change)",
     "autonomy": "human_assist",
     "external_write": {
       "needed": false,
@@ -733,9 +740,9 @@
     "subagent": "product_and_supply",
     "sources": {
       "web": [
-        "https://www.taxtmi.com/article/detailed?id=15118",
-        "https://www.diligencecertification.com/legal-metrology-for-e-commerce/",
-        "https://www.omgarudagroup.com/blogs/legal-metrology-compliance-for-e-commerce-sellers-in-india"
+        "https://www.fda.gov/food/food-industry/registration-food-facilities-and-other-submissions",
+        "https://www.ftc.gov/business-guidance/resources/fair-packaging-labeling-act",
+        "https://www.taxtmi.com/article/detailed?id=15118"
       ],
       "bank": []
     },
@@ -747,14 +754,14 @@
   {
     "id": "PROD-C62",
     "extends": null,
-    "name": "Track Extended Producer Responsibility (EPR) plastic packaging compliance",
+    "name": "Track state Extended Producer Responsibility (EPR) packaging compliance",
     "folders": [
       "01-PRD"
     ],
-    "what": "Register the brand's plastic packaging under India's EPR rules, track the annual filing and recycling-target obligation, and flag when a shortfall means buying EPR credits.",
+    "what": "Register the brand's packaging under state EPR packaging laws (Oregon, California, Colorado, Maine), track the annual filing and recycling-target obligation, and flag when a shortfall means buying EPR credits. India: the same job tracks registration under India's EPR plastic-packaging rules instead (markets: IN, reads null for US brands).",
     "encompasses": [
-      "Classify packaging by plastic category under the EPR rules",
-      "Track registration status and the annual filing deadline",
+      "Classify packaging by material category under the relevant state's EPR rules (India: by plastic category under India's EPR rules; markets: IN)",
+      "Track registration status and each state's annual filing deadline",
       "Compute packaging weight put into the market against the recycling target",
       "Flag a projected shortfall early enough to buy EPR credits or fix the packaging mix",
       "Keep the filing evidence trail for an audit"
@@ -762,7 +769,7 @@
     "inputs": [
       "packaging bill of materials",
       "packaging volume by SKU",
-      "EPR target rules"
+      "state EPR target rules (india: EPR target rules)"
     ],
     "outputs": [
       "EPR compliance status",
@@ -783,6 +790,8 @@
     "subagent": "product_and_supply",
     "sources": {
       "web": [
+        "https://www.oregon.gov/deq/recycling/pages/epr.aspx",
+        "https://calrecycle.ca.gov/packaging/",
         "https://www.diligencecertification.com/legal-metrology-for-e-commerce/"
       ],
       "bank": []
@@ -898,7 +907,7 @@
       "01-PRD",
       "22-AMZ"
     ],
-    "what": "Check every product image and video against each channel's own size, crop and content rule before it is pushed, since a Blinkit thumbnail and an Amazon main image have different legibility and content requirements.",
+    "what": "Check every product image and video against each channel's own size, crop and content rule before it is pushed, since an Instacart thumbnail and an Amazon main image have different legibility and content requirements.",
     "encompasses": [
       "Check image dimensions, crop and background rule per channel",
       "Check legibility of brand name, MRP and key claim at each channel's thumbnail size",
@@ -929,6 +938,7 @@
     "subagent": "product_and_supply",
     "sources": {
       "web": [
+        "https://www.instacart.com/company/partner-with-instacart/",
         "https://confetti.design/blog/how-to-start-selling-on-quick-commerce-india"
       ],
       "bank": []
@@ -1085,7 +1095,7 @@
     "folders": [
       "01-PRD"
     ],
-    "what": "Keep an open product spec running against IndiaMART, Alibaba and Global Sources in the background, and alert the founder when a new or better-rated supplier appears, without contacting anyone automatically.",
+    "what": "Keep an open product spec running against Alibaba, 1688 (via a vetted agent), Faire, Tundra and Global Sources in the background, and alert the founder when a new or better-rated supplier appears, without contacting anyone automatically. India: add IndiaMART to the watch list when the brand sources there (markets: IN, reads null for US-only brands).",
     "encompasses": [
       "Hold the approved spec (materials, tolerances, MOQ ceiling, target price) as a standing search",
       "Scan new and updated supplier listings on the named platforms on a set cadence",
@@ -1266,23 +1276,23 @@
     "folders": [
       "01-PRD"
     ],
-    "what": "Build the festive and end-of-season-sale readiness plan across safety stock, warehouse staffing and WMS/OMS load, since a peak-season failure shows up as a stockout or a missed SLA at the worst possible time.",
+    "what": "Build the Q4 holiday season (Black Friday/Cyber Monday, Prime Day, back to school) readiness plan across safety stock, warehouse staffing and WMS/OMS load, since a peak-season failure shows up as a stockout or a missed SLA at the worst possible time. India: the same plan is built around the festive calendar (Diwali, wedding season) instead (markets: IN).",
     "encompasses": [
-      "Build the safety-stock uplift by SKU from last year's festive multiplier and this year's growth",
+      "Build the safety-stock uplift by SKU from last year's Q4/BFCM multiplier and this year's growth (India: last year's festive multiplier; markets: IN)",
       "Size the temporary warehouse staffing need against the forecast peak volume",
-      "Confirm the WMS/OMS and courier partners can handle the peak order rate, requesting a load test where offered",
+      "Confirm the WMS/OMS and carrier partners can handle the peak order rate, requesting a load test where offered",
       "Confirm supplier and factory capacity can deliver the peak stock build in time",
-      "Set a week-by-week readiness checklist counting down to the festive window"
+      "Set a week-by-week readiness checklist counting down to BFCM and the Q4 holiday window (India: counting down to the festive window; markets: IN)"
     ],
     "inputs": [
-      "last year's festive sales data",
+      "last year's peak-season sales data (india: festive sales data)",
       "this year's growth target",
       "supplier and 3PL capacity"
     ],
     "outputs": [
       "peak-season readiness plan and countdown checklist"
     ],
-    "trigger": "annual, ahead of festive season",
+    "trigger": "annual, ahead of Q4 holiday season (india: ahead of festive season)",
     "autonomy": "founder_gate",
     "external_write": {
       "needed": false,
@@ -1302,7 +1312,7 @@
       "bank": []
     },
     "found_in": "web_only",
-    "founder_sees": "The readiness checklist and any capacity gap found before the festive window.",
+    "founder_sees": "The readiness checklist and any capacity gap found before the peak window.",
     "human_role": "operations manager",
     "today_done_by": "founder or in-house"
   },
@@ -1313,7 +1323,7 @@
     "folders": [
       "22-AMZ"
     ],
-    "what": "Apply the same listing creation and upkeep already built for Flipkart, Myntra and Nykaa to Meesho, JioMart and Snapdeal, each with its own title, image and category-attribute rules.",
+    "what": "Apply the same listing creation and upkeep already built for Flipkart, Myntra and Nykaa to Meesho, JioMart and Snapdeal, each with its own title, image and category-attribute rules. India only: reads null and does not run for US brands, which extend to Walmart, Target Plus, eBay and TikTok Shop instead (see PROD-C44's main record).",
     "encompasses": [
       "Build and keep current listings on Meesho, JioMart and Snapdeal alongside the existing three",
       "Adapt title, bullet and image rules per platform, the same discipline as the original three",
@@ -1350,7 +1360,10 @@
     "found_in": "web_only",
     "founder_sees": "The new platform's listing draft and its economics before it goes live.",
     "human_role": "marketplace manager",
-    "today_done_by": "agency or in-house"
+    "today_done_by": "agency or in-house",
+    "markets": [
+      "IN"
+    ]
   },
   {
     "id": "PROD-C73",
@@ -1449,7 +1462,7 @@
     "folders": [
       "01-PRD"
     ],
-    "what": "Let an agent run the actual back-and-forth on price and terms with a supplier over email or WhatsApp within a founder-set ceiling, floor and MOQ range, and stop and hand back the moment the supplier's counter falls outside the guardrail.",
+    "what": "Let an agent run the actual back-and-forth on price and terms with a supplier over email or a messaging channel (WhatsApp where the supplier region uses it) within a founder-set ceiling, floor and MOQ range, and stop and hand back the moment the supplier's counter falls outside the guardrail.",
     "encompasses": [
       "Take the founder's price ceiling, target, MOQ range and acceptable payment terms as fixed guardrails",
       "Draft and send the opening ask and each round of counter-response",
@@ -1471,11 +1484,11 @@
     "autonomy": "founder_gate",
     "external_write": {
       "needed": true,
-      "surface": "supplier email/WhatsApp"
+      "surface": "supplier email/messaging channel (WhatsApp where used)"
     },
     "tools": [
       "script: scripts/negotiation_agent.py",
-      "email/WhatsApp API"
+      "email/messaging API"
     ],
     "skills": [
       "agent-negotiation"
@@ -1497,37 +1510,37 @@
   {
     "id": "PROD-C76",
     "extends": null,
-    "name": "Decide NDR reschedule versus RTO acceptance using brand-specific unit economics",
+    "name": "Decide carrier retry versus return-to-sender acceptance using brand-specific unit economics",
     "folders": [
       "01-PRD"
     ],
-    "what": "Go beyond an aggregator's generic NDR retry rule and decide, per order, whether another delivery attempt is worth it against this brand's own COD reversal cost, product margin and courier return fee, accepting the RTO early when the numbers say to stop trying.",
+    "what": "Go beyond a carrier's generic retry rule and decide, per order, whether another delivery attempt is worth it against this brand's own chargeback/dispute risk, product margin and carrier return fee, accepting the return-to-sender early when the numbers say to stop trying. India: the same decision is NDR reschedule versus RTO acceptance, weighed against COD reversal cost instead (markets: IN, reads null for US brands).",
     "encompasses": [
-      "Compute the cost of one more delivery attempt (courier fee, time) against the order's margin and COD reversal risk",
-      "Compare that to the cost of accepting RTO now (return freight, restock or write-off cost)",
-      "Recommend stop-trying or one-more-attempt per order, not a blanket rule for every NDR",
-      "Feed the outcome back into the courier scorecard and the COD-to-prepaid targeting"
+      "Compute the cost of one more delivery attempt (carrier fee, time) against the order's margin and chargeback/dispute risk (India: against COD reversal risk; markets: IN)",
+      "Compare that to the cost of accepting return-to-sender now (return freight, restock or write-off cost)",
+      "Recommend stop-trying or one-more-attempt per order, not a blanket rule for every exception",
+      "Feed the outcome back into the carrier scorecard (India: also into COD-to-prepaid targeting; markets: IN)"
     ],
     "inputs": [
-      "NDR queue",
+      "carrier-exception queue (india: NDR queue)",
       "order margin",
-      "courier attempt cost",
-      "RTO/restock cost"
+      "carrier attempt cost",
+      "return-to-sender/restock cost (india: RTO/restock cost)"
     ],
     "outputs": [
       "per-order stop/retry recommendation"
     ],
-    "trigger": "on each NDR event",
+    "trigger": "on each carrier-exception event",
     "autonomy": "agent_does",
     "external_write": {
       "needed": true,
-      "surface": "aggregator NDR panel"
+      "surface": "carrier exception panel (india: aggregator NDR panel)"
     },
     "tools": [
-      "script: scripts/ndr_economics.py"
+      "script: scripts/exception_economics.py"
     ],
     "skills": [
-      "ndr-economics"
+      "exception-economics"
     ],
     "subagent": "product_and_supply",
     "sources": {
@@ -1539,6 +1552,6 @@
     "found_in": "possible",
     "founder_sees": "Nothing routine; a summary of how much this saved versus a blanket retry rule.",
     "human_role": "shipping / logistics executive",
-    "today_done_by": "nobody (aggregators apply one rule to every NDR)"
+    "today_done_by": "nobody (aggregators apply one rule to every exception; india: every NDR)"
   }
 ]

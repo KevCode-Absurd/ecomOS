@@ -39,7 +39,7 @@
    {
     "n": 2,
     "name": "Pull and tag support signal",
-    "does": "Export tickets, return reasons and call transcripts for the period. Tag by the underlying failure, not the customer's stated request. Flag sizing, fit or delivery-delay anxieties (India-relevant: COD refusal reasons, pincode delay complaints).",
+    "does": "Export tickets, return reasons and call transcripts for the period. Tag by the underlying failure, not the customer's stated request. Flag sizing, fit or delivery-delay anxieties (failed-delivery and address-validation complaints; India-relevant: COD refusal reasons, markets: IN, reads null for US).",
     "inputs": [
      "connector: support desk export",
      "connector: returns log"
@@ -55,7 +55,7 @@
    {
     "n": 3,
     "name": "Run forum and social listening",
-    "does": "Search Reddit, Quora, Instagram comments and relevant WhatsApp-forwarded review threads in the avatar's own words for language, objections and sub-avatars a review file misses.",
+    "does": "Search Reddit, Quora, Instagram comments and relevant social threads in the avatar's own words for language, objections and sub-avatars a review file misses. Include WhatsApp-forwarded review threads where the brand's customers use that channel (markets: IN, EU, LATAM).",
     "inputs": [
      "public web"
     ],
@@ -200,7 +200,7 @@
    {
     "n": 3,
     "name": "Pick channel and incentive",
-    "does": "Recommend a channel (call, WhatsApp voice note thread, video) and a proportionate incentive (a discount code or small gift, not cash that could bias answers) sized to the brand's own economics.",
+    "does": "Recommend a channel (call, video, SMS or voice note thread; WhatsApp voice note thread where the brand's customers use it, markets: IN, EU, LATAM) and a proportionate incentive (a discount code or small gift, not cash that could bias answers) sized to the brand's own economics.",
     "inputs": [
      "contribution margin"
     ],
@@ -428,7 +428,7 @@
    {
     "n": 1,
     "name": "Confirm the competitive set",
-    "does": "List direct rivals plus real alternatives a shopper would compare against, including doing nothing and the generic marketplace listing (Amazon/Flipkart/Meesho equivalents).",
+    "does": "List direct rivals plus real alternatives a shopper would compare against, including doing nothing and the generic marketplace listing (Amazon, Walmart Marketplace or Target Plus equivalents; Flipkart or Meesho for an India-market comparison, markets: IN).",
     "inputs": [
      "brand brain: category"
     ],
@@ -1481,7 +1481,7 @@
    {
     "n": 5,
     "name": "Clear finalists for trademark, domain and language risk",
-    "does": "Search the trademark database and international equivalents, check name + industry-term collisions, check domain and social handle availability, and check meaning and sound in relevant languages (Hindi, and any export-market language).",
+    "does": "Search the USPTO trademark database and international equivalents, check name + industry-term collisions, check domain and social handle availability, and check meaning and sound in relevant languages (Spanish for US customers, plus Hindi or any other export-market language when the brand sells into that market).",
     "inputs": [
      "scored shortlist"
     ],
@@ -3693,7 +3693,7 @@
    {
     "n": 3,
     "name": "Place mandatory declarations",
-    "does": "Place every legally required declaration for the target market: MRP, Legal Metrology details (net quantity, manufacturer/packer/importer name and address, month and year of manufacture, consumer care contact), BIS or hallmark mark where the product category requires it, and the EPR mark where applicable.",
+    "does": "Place every legally required declaration for the target market. US: net quantity and manufacturer/packer/distributor name and address (FTC Fair Packaging and Labeling Act), Care Labeling Rule for textiles, Prop 65 warning where required, and FTC Jewelry Guides quality marks where the product is jewelry. India (markets: IN, null for US): MRP, Legal Metrology details (net quantity, manufacturer/packer/importer name and address, month and year of manufacture, consumer care contact), BIS or hallmark mark where the product category requires it, and the EPR mark where applicable.",
     "inputs": [
      "target channel",
      "product category"

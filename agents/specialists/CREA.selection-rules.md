@@ -60,7 +60,9 @@ elsewhere. VOC mining and personas went to the Brand Brain Keeper;
 offer-building, test design, channel routing, competitor-research
 ownership and creator whitelisting went to MEDIA; page, marketplace, SMS
 and lifecycle copy ownership, plus the claim-check and copy-QA gates,
-went to Site, Lifecycle and the QA Gate; the festive calendar went to ORG.
+went to Site, Lifecycle and the QA Gate; the holiday and sale-event
+calendar (US holiday calendar first, India festive calendar as the market
+option) went to ORG.
 CREA-W01 still runs the equivalent research and compliance steps, but as
 a consumer of another agent's record (the objection map, the claim-tier
 check), not its owner. Every handoff (audience spec to MEDIA, page copy

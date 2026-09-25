@@ -10,8 +10,8 @@
     ],
     "jobs": [
       {
-        "job": "know if this week's content plan held the posting floor and covers the next festival",
-        "question": "did we post what we planned and is the next festival slot covered",
+        "job": "know if this week's content plan held the posting floor and covers the next holiday moment",
+        "question": "did we post what we planned and is the next holiday slot covered",
         "capabilities": [
           "ORG-C02"
         ]
@@ -104,7 +104,7 @@
         ]
       },
       {
-        "job": "know if the owned community (WhatsApp or Discord) is worth the moderation time",
+        "job": "know if the owned community (Discord, Circle, Facebook group or SMS list; WhatsApp for an India, EU or LATAM audience) is worth the moderation time",
         "question": "is the community active, and do active members actually buy",
         "capabilities": [
           "ORG-C39"
@@ -123,13 +123,23 @@
         "benchmark": "not applicable, compares to the brand's own set floor"
       },
       {
-        "name": "festive_slot_coverage",
-        "plain": "Share of festivals in the next 30 days that already have a script assigned",
+        "name": "holiday_slot_coverage",
+        "plain": "Share of US holidays and retail moments in the next 30 days that already have a script assigned",
+        "formula": "holiday_slots_with_script / holiday_slots_in_next_30_days",
+        "source": "calendar holiday layer",
+        "window": "rolling 30 days",
+        "freshness_rule": "recomputed daily",
+        "unavailable_when": "no holiday calendar layer loaded"
+      },
+      {
+        "name": "festival_slot_coverage",
+        "plain": "Share of India festivals in the next 30 days that already have a script assigned",
         "formula": "festival_slots_with_script / festival_slots_in_next_30_days",
         "source": "calendar festive layer",
         "window": "rolling 30 days",
         "freshness_rule": "recomputed daily",
-        "unavailable_when": "no festive calendar layer loaded"
+        "unavailable_when": "no festive calendar layer loaded, or the brand is US-only",
+        "markets": ["IN"]
       },
       {
         "name": "founder_camera_share",
@@ -188,7 +198,7 @@
       },
       {
         "name": "dm_to_owned_contact_rate",
-        "plain": "Share of DM conversations that end with an email, WhatsApp opt-in or phone number captured",
+        "plain": "Share of DM conversations that end with an email, SMS opt-in or phone number captured (or a WhatsApp opt-in, market option for India, EU or LATAM)",
         "formula": "dm_threads_with_captured_contact / dm_threads_total",
         "source": "DM funnel log + CRM/lead table",
         "window": "trailing 30 days",
@@ -271,7 +281,7 @@
         "name": "community_active_member_rate",
         "plain": "Share of community members who sent at least one message in the last 30 days",
         "formula": "active_members_30d / total_members",
-        "source": "community platform export (WhatsApp/Discord)",
+        "source": "community platform export (Discord/SMS; WhatsApp for India, EU or LATAM audiences)",
         "window": "trailing 30 days",
         "freshness_rule": "stale after 14 days",
         "unavailable_when": "no community roster export"
@@ -280,7 +290,7 @@
         "name": "community_to_order_rate",
         "plain": "Share of community members who also placed an order in the same window, matched by phone or email",
         "formula": "members_with_matching_order / total_members",
-        "source": "community roster matched to orders (phone match for WhatsApp)",
+        "source": "community roster matched to orders (phone match for SMS or WhatsApp, WhatsApp a market option for India, EU or LATAM)",
         "window": "trailing 90 days",
         "freshness_rule": "recomputed monthly",
         "unavailable_when": "roster cannot be matched to orders (no shared phone/email field)"
@@ -298,14 +308,25 @@
         "action_capability": "ORG-C02"
       },
       {
-        "name": "festive gap",
-        "rule": "a festival is within 14 days and has zero assigned script",
+        "name": "holiday gap",
+        "rule": "a US holiday or retail moment is within 14 days and has zero assigned script",
+        "computed_from": [
+          "calendar holiday layer"
+        ],
+        "sentence": "{holiday} is in {d} days and has no script yet",
+        "severity": "high if under 7 days",
+        "action_capability": "ORG-C02"
+      },
+      {
+        "name": "festival gap",
+        "rule": "an India festival is within 14 days and has zero assigned script",
         "computed_from": [
           "calendar festive layer"
         ],
         "sentence": "{festival} is in {d} days and has no script yet",
         "severity": "high if under 7 days",
-        "action_capability": "ORG-C02"
+        "action_capability": "ORG-C02",
+        "markets": ["IN"]
       },
       {
         "name": "stranger-blind viral post",
@@ -377,7 +398,7 @@
           "DM funnel log",
           "CRM"
         ],
-        "sentence": "{pct}% of DM conversations end without an email, WhatsApp opt-in or phone number",
+        "sentence": "{pct}% of DM conversations end without an email, SMS opt-in or phone number (or a WhatsApp opt-in, market option for India, EU or LATAM)",
         "severity": "medium",
         "action_capability": "ORG-C10"
       },
@@ -437,7 +458,7 @@
       {
         "name": "calendar heatmap",
         "type": "calendar grid",
-        "shows": "planned vs published posts per day, with festival flags",
+        "shows": "planned vs published posts per day, with holiday flags (festival flags for an India calendar)",
         "why_this_chart": "founder sees the whole month's cadence and gaps at a glance",
         "exists_today": false
       },
@@ -489,9 +510,15 @@
         "autonomy": "agent_does"
       },
       {
-        "label": "Add the festive layer",
+        "label": "Add the holiday layer",
         "capability": "ORG-C02",
         "autonomy": "agent_does"
+      },
+      {
+        "label": "Add the India festival layer",
+        "capability": "ORG-C02",
+        "autonomy": "agent_does",
+        "markets": ["IN"]
       },
       {
         "label": "Review founder on-camera plan",
@@ -671,7 +698,7 @@
         "vs": "social schedulers manage the posting calendar only; they do not track reuse of the same asset across owned commerce surfaces"
       },
       {
-        "claim": "reads the owned WhatsApp or Discord community's active-member rate against matched store orders",
+        "claim": "reads the owned Discord, SMS or WhatsApp community's active-member rate against matched store orders",
         "vs": "Later has no social listening at all; Hootsuite and Sprout Social track engagement inside the platform, not matched to the brand's own order data"
       }
     ],
@@ -684,7 +711,7 @@
           "platform",
           "pillar",
           "status",
-          "festival_tag",
+          "holiday_tag",
           "language_variant"
         ],
         "connector_or_script": "calendar tool export or ORG-C02 output",
@@ -832,7 +859,7 @@
           "last_active_at",
           "message_count"
         ],
-        "connector_or_script": "WhatsApp Business API export or Discord export",
+        "connector_or_script": "Discord export or SMS platform export (WhatsApp Business API export, market option for India, EU or LATAM)",
         "refresh": "weekly"
       }
     ],
@@ -1529,6 +1556,17 @@
         "refresh": "daily"
       },
       {
+        "table": "us_holiday_calendar",
+        "fields": [
+          "holiday",
+          "date",
+          "category_relevance",
+          "shipping_cutoff"
+        ],
+        "connector_or_script": "shared with Organic room's holiday layer",
+        "refresh": "yearly, checked monthly"
+      },
+      {
         "table": "festive_calendar_india",
         "fields": [
           "festival",
@@ -1537,7 +1575,8 @@
           "shipping_cutoff"
         ],
         "connector_or_script": "shared with Organic room's festive layer",
-        "refresh": "yearly, checked monthly"
+        "refresh": "yearly, checked monthly",
+        "markets": ["IN"]
       }
     ],
     "founder_view_note": "With nothing connected, the room shows the roadmap decision and a checklist (connect Search Console, GA4, a rank tracker and a crawl tool) instead of metrics marked unavailable everywhere. Once Search Console and GA4 land, organic_sessions and organic_revenue appear first; crawl_error_count, orphan_page_count and the AI-crawler check only appear after the first full site crawl runs."
@@ -1575,7 +1614,7 @@
       },
       {
         "job": "keep the same facts identical everywhere an engine can read them",
-        "question": "does the price, return window, warranty and COD answer match on the site, schema, feed and directories",
+        "question": "does the price, return window, warranty and payment method answer match on the site, schema, feed and directories",
         "capabilities": [
           "ORG-C35"
         ]
@@ -1655,7 +1694,7 @@
       },
       {
         "name": "fact_gap_count",
-        "plain": "Gaps found in the last prompt audit, by category (price, materials, returns, shipping, COD, warranty)",
+        "plain": "Gaps found in the last prompt audit, by category (price, materials, returns, shipping, payment method, warranty)",
         "formula": "count(gaps) from the last audit, grouped by category",
         "source": "prompt audit output",
         "window": "latest audit, monthly",
@@ -2087,7 +2126,7 @@
           "last_checked",
           "facts_match"
         ],
-        "connector_or_script": "manual or scraped check of JustDial, IndiaMart, Google Business Profile and named marketplaces",
+        "connector_or_script": "manual or scraped check of Yelp, the Better Business Bureau, Google Business Profile and named marketplaces (JustDial and IndiaMart added for an India listing, market option, reads null for a US-only brand)",
         "refresh": "monthly"
       }
     ],

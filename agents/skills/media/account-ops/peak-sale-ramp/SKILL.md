@@ -24,5 +24,6 @@
 
     Output: peak sale media plan, change list, post-sale review template.
 
-    Example: Diwali sale is 3 weeks out -> budget ramp starts this week, wind-down
+    Example: Black Friday is 3 weeks out -> budget ramp starts this week, wind-down
     date fixed for 3 days after the sale ends, stock checked against the ramp.
+    (India only: Diwali sale is 3 weeks out.)

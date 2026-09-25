@@ -27,4 +27,4 @@ Pinterest is a visual search engine, not a feed; this skill writes for the searc
 {scope, pin{}, board_review{}}
 
 ## Example
-Pin title: "Foldable baby stroller for Indian apartments" -> board "Small-space baby gear ideas", linking to the collection page, not the homepage.
+Pin title: "Foldable baby stroller for small US apartments" -> board "Small-space baby gear ideas", linking to the collection page, not the homepage.

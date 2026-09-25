@@ -28,4 +28,4 @@ Add and validate Product, Review, FAQ, Breadcrumb and Offer schema on every mone
 {schema_spec[], validation_result_pre, deployment_method, developer_brief, validation_result_post}
 
 ## Example
-Product schema for stroller-v2 populated with the live price (₹8,999) and current stock status; validated, then re-validated after the GTM tag went live, both passing.
+Product schema for stroller-v2 populated with the live price ($119.99) and current stock status; validated, then re-validated after the GTM tag went live, both passing.

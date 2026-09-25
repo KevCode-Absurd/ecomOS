@@ -333,49 +333,61 @@
   {
     "id": "SITE-C67",
     "extends": null,
-    "name": "Reduce COD return-to-origin (RTO) with checkout-side automation",
+    "name": "Configure checkout payment methods and address validation",
     "folders": [
       "05-SET",
       "09-CRO"
     ],
-    "what": "Builds the site-side half of India's COD RTO problem: a PIN code serviceability check on the PDP before the shopper commits, address auto-fill with OTP verification on high-value COD orders, a visible small COD fee to filter impulse orders, a prepaid discount incentive shown at checkout, a WhatsApp order-confirmation trigger with an auto-cancel rule on no reply, and a branded tracking page, each measured against the brand's own RTO rate by PIN code and payment method.",
+    "what": "Sets up Shop Pay, PayPal, Apple Pay and a BNPL option (Affirm, Klarna or Afterpay) at checkout, validates the shipping address against USPS before the order is placed, and layers fraud signals onto risky orders, each measured against the brand's own failed-delivery and chargeback rate. Where the brand sells COD in India, adds the market option of a PIN code serviceability check on the PDP, OTP verification and a visible fee on high-value cash-on-delivery orders, and a WhatsApp order-confirmation trigger to cut return-to-origin (RTO); this option reads null for a US brand.",
     "encompasses": [
-      "show real-time PIN code serviceability on the PDP using the courier or aggregator's API before the shopper adds to cart",
-      "add address auto-fill and phone OTP verification at checkout for COD orders above a set value",
-      "add a visible COD handling fee as a checkout line item, sized to filter impulse orders without losing genuine buyers",
-      "surface a prepaid discount or free-shipping incentive at the exact checkout step where COD is selected",
-      "trigger an automated WhatsApp order-confirmation message after COD checkout, with an auto-cancel rule if unconfirmed within a set window",
-      "replace the generic courier tracking link with a branded tracking page that also carries post-purchase upsell content",
-      "pass a buyer risk score (first order, high COD value, prior RTO history) to the fulfilment system so it can flag for manual check, without the site itself running the logistics side of NDR handling",
-      "build an RTO analytics view by courier, PIN code, product and payment method so the founder can see which lever is moving the number"
+      "enable Shop Pay, PayPal, Apple Pay and a BNPL option (Affirm, Klarna or Afterpay) at checkout",
+      "validate the shipping address against USPS before the order is placed, catching a bad ZIP code or an undeliverable address before it ships",
+      "screen orders for fraud signals (mismatched billing and shipping, high-risk card BIN, order velocity) and route flagged orders for manual review",
+      "show accepted payment badges and a clear BNPL installment estimate near the buy box",
+      "trigger an automated order-confirmation message by SMS (with TCPA consent and quiet-hours rules) or email after checkout, with an auto-cancel rule if unconfirmed within a set window",
+      "replace the generic carrier tracking link with a branded tracking page that also carries post-purchase upsell content",
+      "pass a buyer risk score (first order, high order value, prior chargeback or return-to-sender history) to the fulfilment system so it can flag for manual check, without the site itself running carrier-side exception handling",
+      "build a failed-delivery and chargeback analytics view by carrier, ZIP code, product and payment method so the founder can see which lever is moving the number",
+      "India market option, reads null for US: show real-time PIN code serviceability on the PDP using the courier or aggregator's API before the shopper adds to cart",
+      "India market option, reads null for US: add address auto-fill and phone OTP verification at checkout for COD orders above a set value",
+      "India market option, reads null for US: add a visible COD handling fee as a checkout line item, sized to filter impulse orders without losing genuine buyers",
+      "India market option, reads null for US: surface a prepaid discount or free-shipping incentive at the exact checkout step where COD is selected",
+      "India market option, reads null for US: trigger a WhatsApp order-confirmation message after COD checkout, with an auto-cancel rule if unconfirmed within a set window",
+      "India market option, reads null for US: add the brand's RTO rate by PIN code and payment method to the analytics view"
     ],
     "inputs": [
-      "courier serviceability API",
-      "WhatsApp business API access",
-      "brand's historical RTO data"
+      "USPS address validation API",
+      "BNPL provider integration (Affirm, Klarna, Afterpay)",
+      "brand's historical chargeback and failed-delivery data",
+      "India market option, null for US: courier serviceability API",
+      "India market option, null for US: WhatsApp business API access"
     ],
     "outputs": [
-      "PDP serviceability widget",
-      "checkout OTP flow",
-      "COD fee config",
-      "WhatsApp confirmation flow",
+      "checkout payment method config",
+      "USPS address validation flow",
+      "fraud screening rules",
       "branded tracking page",
-      "RTO dashboard"
+      "failed-delivery and chargeback dashboard",
+      "India market option, null for US: checkout OTP flow",
+      "India market option, null for US: COD fee config",
+      "India market option, null for US: WhatsApp confirmation flow"
     ],
-    "trigger": "COD share and RTO rate identified as a bottleneck in the metric contract",
+    "trigger": "checkout payment mix, failed-delivery rate or chargeback rate identified as a bottleneck in the metric contract; India market option: COD share and RTO rate identified as a bottleneck",
     "autonomy": "founder_gate",
     "external_write": {
       "needed": true,
-      "surface": "store checkout settings, WhatsApp business account"
+      "surface": "store checkout settings; India market option: WhatsApp business account"
     },
     "tools": [
+      "address_validate.usps",
+      "fraud_screen.run",
+      "returns_analytics.build",
       "pin_serviceability.check",
-      "whatsapp_confirm.send",
-      "rto_analytics.build"
+      "whatsapp_confirm.send"
     ],
     "skills": [
-      "india_ecommerce_ops",
-      "checkout_config"
+      "checkout_config",
+      "india_ecommerce_ops"
     ],
     "subagent": "Site specialist",
     "sources": {
@@ -388,7 +400,7 @@
     },
     "found_in": "web_only",
     "founder_sees": true,
-    "human_role": "e-commerce web manager, RTO-reduction freelancer",
+    "human_role": "e-commerce web manager, payments specialist; India market option: RTO-reduction freelancer",
     "today_done_by": "freelancer"
   },
   {
@@ -548,7 +560,7 @@
       "05-SET",
       "09-CRO"
     ],
-    "what": "Uses the platform's own automation layer (Shopify Flow or equivalent) to wire small operational rules directly into the store instead of a developer hand-coding each one: auto-tag a high-risk COD order, auto-hold an order from a flagged RTO offender, auto-apply gift wrap above a cart value, auto-alert the founder on a stockout of a top SKU on its own PDP.",
+    "what": "Uses the platform's own automation layer (Shopify Flow or equivalent) to wire small operational rules directly into the store instead of a developer hand-coding each one: auto-tag a high-risk order for manual review, auto-hold an order from a customer with a chargeback or return-to-sender history (a COD RTO offender in India), auto-apply gift wrap above a cart value, auto-alert the founder on a stockout of a top SKU on its own PDP.",
     "encompasses": [
       "list the recurring manual actions a store manager currently does by hand that are pure if-this-then-that logic",
       "build each rule in the platform's native automation tool so it needs no custom app and no hosting",
@@ -840,11 +852,12 @@
     "folders": [
       "09-CRO"
     ],
-    "what": "Adds a pre-purchase WhatsApp channel for India: a click-to-WhatsApp button on the PDP that opens a chat pre-filled with the exact SKU and variant, backed by the brand's WhatsApp catalog, for shoppers who trust a chat conversation with a human or a bot more than a cart, and routes the resulting cart-recovery and support load to the lifecycle specialist rather than handling it here.",
+    "markets": ["IN", "EU", "LATAM"],
+    "what": "Adds a pre-purchase WhatsApp channel for markets where WhatsApp commerce is common (India, EU, LATAM): a click-to-WhatsApp button on the PDP that opens a chat pre-filled with the exact SKU and variant, backed by the brand's WhatsApp catalog, for shoppers who trust a chat conversation with a human or a bot more than a cart, and routes the resulting cart-recovery and support load to the lifecycle specialist rather than handling it here. Reads null and does not run for a US-default brand.",
     "encompasses": [
       "sync the live product catalogue (price, stock, variant) to the brand's WhatsApp Business catalog on a schedule",
       "add a click-to-WhatsApp button on the PDP that pre-fills the exact SKU, variant and a template question",
-      "confirm the button only appears where WhatsApp commerce is legal and commonly used, not on every market",
+      "confirm the button only appears in a market where WhatsApp commerce is legal and commonly used (India, EU, LATAM), never for a US-default brand",
       "measure how many PDP-to-WhatsApp clicks convert to an order, separate from normal add-to-cart, so it is not double-counted",
       "hand the WhatsApp conversation flow itself, cart recovery and support scripting to the lifecycle specialist"
     ],
@@ -857,7 +870,7 @@
       "synced catalog",
       "click-to-order attribution"
     ],
-    "trigger": "India market with COD or trust-driven checkout hesitation diagnosed as a bottleneck",
+    "trigger": "COD or trust-driven checkout hesitation diagnosed as a bottleneck in a WhatsApp-commerce market (India, EU, LATAM); reads null for US",
     "autonomy": "founder_gate",
     "external_write": {
       "needed": true,
@@ -884,16 +897,16 @@
   {
     "id": "SITE-C78",
     "extends": null,
-    "name": "Configure consent-based tag gating for India's DPDP Act and GDPR",
+    "name": "Configure consent-based tag gating for CCPA, CPRA and other state privacy laws",
     "folders": [
       "05-SET"
     ],
-    "what": "Builds a cookie and tag consent layer that actually gates tracking scripts by the visitor's region and choice, rather than a banner that shows for legal cover while every pixel fires anyway, covering both India's DPDP Act for Indian visitors and GDPR for EU visitors on the same store.",
+    "what": "Builds a cookie and tag consent layer that actually gates tracking scripts by the visitor's region and choice, rather than a banner that shows for legal cover while every pixel fires anyway. Defaults to US state privacy law: CCPA and CPRA for California plus Virginia, Colorado and other state laws, with an opt-out link and a do-not-sell-or-share signal. Folds in GDPR opt-in consent for EU visitors and India's DPDP Act consent rules for Indian visitors on the same store, each a market option that reads null unless the brand sells into that region.",
     "encompasses": [
       "inventory every tracking pixel, tag and script currently firing on first page load",
       "route each one behind a consent-management layer keyed to visitor region and explicit choice",
-      "confirm a rejected-consent visitor genuinely does not fire the gated scripts, by checking network requests, not just the banner's own claim",
-      "set the correct default (opt-in for GDPR regions, per DPDP's stricter consent requirements for India) rather than one global default",
+      "confirm a rejected-consent or opted-out visitor genuinely does not fire the gated scripts, by checking network requests, not just the banner's own claim",
+      "set the correct default per region: an opt-out 'Do Not Sell or Share My Personal Information' link for US state laws, opt-in for GDPR (EU market option), and opt-in for DPDP (India market option, reads null for US) rather than one global default",
       "keep essential, non-tracking scripts (cart, checkout, payment) ungated so consent choices never break core function",
       "log consent choices in a way the brand can produce as proof if ever asked"
     ],
@@ -907,7 +920,7 @@
       "gated tag list",
       "consent log"
     ],
-    "trigger": "store setup for an India or EU-facing brand, or a compliance audit finding",
+    "trigger": "store setup for a US brand, or an EU- or India-facing brand, or a compliance audit finding",
     "autonomy": "founder_gate",
     "external_write": {
       "needed": true,
@@ -940,9 +953,9 @@
       "07-LPG",
       "09-CRO"
     ],
-    "what": "Adds a notify-me capture on an out-of-stock PDP and a password-protected coming-soon page for a pre-launch or a limited drop, each wired to collect an email or WhatsApp number and fire an automatic notification the moment stock or launch goes live, instead of losing that demand silently.",
+    "what": "Adds a notify-me capture on an out-of-stock PDP and a password-protected coming-soon page for a pre-launch or a limited drop, each wired to collect an email or an SMS number (with TCPA consent) by default, or a WhatsApp number in a WhatsApp-commerce market (India, EU, LATAM), and fire an automatic notification the moment stock or launch goes live, instead of losing that demand silently.",
     "encompasses": [
-      "add a notify-me form on any out-of-stock PDP, capturing email or a WhatsApp number where that channel is in use",
+      "add a notify-me form on any out-of-stock PDP, capturing email or an SMS number (with TCPA consent) by default, or a WhatsApp number in a market where that channel is in use",
       "fire an automatic notification the moment the SKU is back in stock, ranked by signup order for a limited restock",
       "build a password-protected coming-soon page for pre-launch or a drop, keeping it out of search indexes",
       "capture waitlist signups into the brand's own list, never a third party's, so it feeds lifecycle directly",
@@ -950,7 +963,7 @@
     ],
     "inputs": [
       "out-of-stock SKU list",
-      "email or WhatsApp capture tool"
+      "email, SMS or WhatsApp capture tool"
     ],
     "outputs": [
       "notify-me widget",
@@ -961,7 +974,7 @@
     "autonomy": "founder_gate",
     "external_write": {
       "needed": true,
-      "surface": "store PDP template, email/WhatsApp platform"
+      "surface": "store PDP template, email/SMS/WhatsApp platform"
     },
     "tools": [
       "waitlist.build",
@@ -1406,33 +1419,46 @@
   {
     "id": "SITE-C11",
     "extends": "SITE-C11",
-    "name": "Configure tax by jurisdiction (extension: India GST invoice generation)",
+    "name": "Configure tax by jurisdiction (extension: sales tax nexus, automation and India GST invoicing)",
     "folders": [
       "05-SET"
     ],
-    "what": "Extends jurisdiction tax configuration with India-specific GST invoicing: a GSTIN-compliant tax invoice PDF per order, an HSN code held per SKU, and the correct CGST/SGST versus IGST split computed from the buyer's state against the seller's registered state.",
+    "what": "Extends jurisdiction tax configuration with US sales tax nexus tracking and automation: registers economic nexus by state, applies marketplace facilitator rules so tax is not double-collected, connects Avalara or TaxJar for real-time rate calculation and filing, collects resale certificates from wholesale buyers, and produces 1099-K reporting. Where the brand also sells in India, adds the market option of GSTIN-compliant invoicing (an HSN code held per SKU, and the CGST/SGST versus IGST split computed from the buyer's state against the seller's registered state); this option reads null for US.",
     "encompasses": [
-      "hold an HSN code per SKU in the product record, not just a tax class",
-      "compute CGST plus SGST for an intra-state order and IGST for an inter-state order, in code from the buyer and seller state",
-      "generate a GSTIN-compliant invoice PDF per order via an invoicing app or native flow",
-      "flag a SKU missing its HSN code before it can be sold, rather than shipping an invoice with a blank field"
+      "track economic nexus by state from the brand's own sales volume and transaction count, and flag a new state that crosses the threshold",
+      "apply marketplace facilitator rules so tax a marketplace already collected is not double-charged on the brand's own site",
+      "connect Avalara or TaxJar for real-time rate calculation and automated filing across nexus states",
+      "collect and keep a resale certificate on file per wholesale buyer before exempting them from sales tax",
+      "produce 1099-K reporting against the brand's own payment processor threshold",
+      "India market option, reads null for US: hold an HSN code per SKU in the product record, not just a tax class",
+      "India market option, reads null for US: compute CGST plus SGST for an intra-state order and IGST for an inter-state order, in code from the buyer and seller state",
+      "India market option, reads null for US: generate a GSTIN-compliant invoice PDF per order via an invoicing app or native flow",
+      "India market option, reads null for US: flag a SKU missing its HSN code before it can be sold, rather than shipping an invoice with a blank field"
     ],
     "inputs": [
-      "seller GSTIN and state",
-      "per-SKU HSN code",
-      "buyer's billing state"
+      "nexus state list",
+      "Avalara or TaxJar connection",
+      "resale certificates on file",
+      "India market option, null for US: seller GSTIN and state",
+      "India market option, null for US: per-SKU HSN code",
+      "India market option, null for US: buyer's billing state"
     ],
     "outputs": [
-      "GST invoice PDF per order",
-      "missing-HSN flag list"
+      "nexus tracking report",
+      "automated tax filing",
+      "1099-K report",
+      "India market option, null for US: GST invoice PDF per order",
+      "India market option, null for US: missing-HSN flag list"
     ],
-    "trigger": "India market setup, or a missing-HSN flag found in a catalogue audit",
+    "trigger": "US multi-state sales volume crossing a nexus threshold or a new marketplace channel; India market option: India market setup or a missing-HSN flag found in a catalogue audit",
     "autonomy": "founder_gate",
     "external_write": {
       "needed": true,
       "surface": "store invoicing app"
     },
     "tools": [
+      "nexus_tracker.check",
+      "avalara_taxjar.sync",
       "gst_invoice.generate"
     ],
     "skills": [

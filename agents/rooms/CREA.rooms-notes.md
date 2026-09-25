@@ -17,7 +17,7 @@ Hardest data to get: a brief log matched to launched ads, a real production cost
 
 ## Copy
 
-Shows claim checks against the brand's own claim tiers, message match between a live ad and its page (specific terms, not a vague score), objection coverage ranked by real customer frequency, a reading-level and voice-rule trend, and India-specific COD-to-prepaid and RTO-trust line coverage.
+Shows claim checks against the brand's own claim tiers, message match between a live ad and its page (specific terms, not a vague score), objection coverage ranked by real customer frequency, a reading-level and voice-rule trend, and payment and delivery reassurance line coverage (BNPL, free returns, delivery date; COD-to-prepaid and RTO-trust line coverage for an India-market brand, markets IN, null for a US brand).
 
 Not shown elsewhere:
 - Checks claims against this brand's own approved claim tiers and current platform policy, not generic grammar or readability, which is all Grammarly and Hemingway do.

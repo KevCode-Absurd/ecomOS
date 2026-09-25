@@ -28,4 +28,4 @@ Long-form succeeds or fails on retention curve, not hook alone; this skill force
 {title, description, chapters[], script_by_chapter[], tags[], end_screen_plan, claims_used[]}
 
 ## Example
-Title: "Stroller hinge test: 6 months, 3 Indian cities" - chapter 2 "0:45 The pothole test" with its own script block and one tiered claim.
+Title: "Stroller hinge test: 6 months, 3 US cities" - chapter 2 "0:45 The pothole test" with its own script block and one tiered claim.

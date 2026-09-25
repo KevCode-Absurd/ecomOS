@@ -2,7 +2,7 @@
 name: prod/source/india
 owner: PROD
 version: 1
-invoke_when: the spec's supplier region is India
+invoke_when: the spec's supplier region is India (markets: IN; not selected for a US-only brand)
 select_by: {region: india}
 inputs: tech pack or open spec, MOQ needs
 outputs: verified India supplier shortlist
@@ -10,6 +10,7 @@ outputs: verified India supplier shortlist
 # Source from India
 
 ## Purpose
+India only: this child does not run for a US-only brand, whose default region is `prod/source/us-domestic`.
 India sourcing runs through different platforms and a different first-filter than overseas sourcing: GST and Udyam
 status matter immediately, and mandatory certifications (BIS, FSSAI, Legal Metrology) gate a supplier before price
 ever gets discussed.

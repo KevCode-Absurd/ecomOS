@@ -28,4 +28,4 @@ Find the lowest cash point before it happens, and never let an inventory plan as
 The 13-week table, the lowest-cash-week flag with sensitivity, the inventory cash plan and the cash conversion cycle.
 
 ## Example
-Week 9 is flagged as the lowest point due to a supplier deposit and GST payment landing the same week; the flag fires in week 5, giving 4 weeks to arrange a bridge.
+Week 9 is flagged as the lowest point due to a supplier deposit and a state sales-tax payment landing the same week; the flag fires in week 5, giving 4 weeks to arrange a bridge.

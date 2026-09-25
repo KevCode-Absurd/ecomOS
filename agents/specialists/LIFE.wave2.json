@@ -8,8 +8,8 @@
     "encompasses": [
       "Match records by email, phone (with country-code normalisation), and shipping address fuzzy match",
       "Merge guest-checkout orders into the matching account once a match is confident, never silently for weak matches",
-      "Reconcile WhatsApp business number against the checkout phone field, common in India where the two differ",
-      "Fold POS and marketplace (Amazon, Flipkart) orders into the same profile when a store also sells there",
+      "Reconcile a WhatsApp business number against the checkout phone field where WhatsApp is used (common in India, EU, LATAM)",
+      "Fold POS and marketplace (Amazon, Walmart Marketplace, or Flipkart in India) orders into the same profile when a store also sells there",
       "Attach support ticket history and review history to the resolved profile, not just order history",
       "Flag low-confidence merges for a human to confirm rather than auto-merging",
       "Expose one `customer_id` the segmentation model, loyalty tiering and churn score all key off",
@@ -24,13 +24,7 @@
     "tools": ["brand record (read)", "order/helpdesk/loyalty exports (read)", "budget-free matching script"],
     "skills": ["none beyond standard retrieval"],
     "subagent": "Lifecycle specialist",
-    "sources": {
-      "web": [
-        "https://www.twilio.com/en-us/customer-data-platform",
-        "https://www.twilio.com/en-us/segment"
-      ],
-      "bank": []
-    },
+    "sources": {"web": ["https://www.twilio.com/en-us/customer-data-platform", "https://www.twilio.com/en-us/segment"], "bank": []},
     "found_in": "web_only",
     "founder_sees": "the merge queue and any large jump in unified-profile count after a rerun",
     "human_role": "CRM manager",
@@ -61,14 +55,7 @@
     "tools": ["helpdesk API (read)", "web search", "brand record (read)"],
     "skills": ["none beyond standard retrieval"],
     "subagent": "Lifecycle specialist",
-    "sources": {
-      "web": [
-        "https://decagon.ai/blog/ai-customer-service-agent-capabilities",
-        "https://www.gorgias.com/",
-        "https://decagon.ai/blog/ai-customer-service"
-      ],
-      "bank": []
-    },
+    "sources": {"web": ["https://decagon.ai/blog/ai-customer-service-agent-capabilities", "https://www.gorgias.com/", "https://decagon.ai/blog/ai-customer-service"], "bank": []},
     "found_in": "web_only",
     "founder_sees": "the full operating-procedure document and the replay test scores before anything goes live",
     "human_role": "customer support lead / CX manager",
@@ -98,13 +85,7 @@
     "tools": ["order data (read)", "ad spend by channel (read)", "web search"],
     "skills": ["none beyond standard retrieval"],
     "subagent": "Lifecycle specialist",
-    "sources": {
-      "web": [
-        "https://fairing.co/resources/measurement-faqs/what-is-a-post-purchase-survey",
-        "https://fairing.co/resources/best-post-purchase-survey-apps"
-      ],
-      "bank": []
-    },
+    "sources": {"web": ["https://fairing.co/resources/measurement-faqs/what-is-a-post-purchase-survey", "https://fairing.co/resources/best-post-purchase-survey-apps"], "bank": []},
     "found_in": "web_only",
     "founder_sees": "the survey question set and the channel-share report",
     "human_role": "retention marketing manager / lifecycle marketer",
@@ -115,7 +96,7 @@
     "extends": null,
     "name": "Run third-party review and reputation management across marketplaces and public sites",
     "folders": ["17-CXP"],
-    "what": "Monitors and drafts responses to reviews and complaints that live off the brand's own site: Google Business Profile, marketplace reviews (Amazon, Flipkart if the brand sells there), and public complaint boards, which the brand's own review platform (Yotpo, Judge.me) does not see because it only captures on-site reviews.",
+    "what": "Monitors and drafts responses to reviews and complaints that live off the brand's own site: Google Business Profile, marketplace reviews (Amazon, Walmart Marketplace, or Flipkart in India), and public complaint boards, which the brand's own review platform (Yotpo, Judge.me) does not see because it only captures on-site reviews.",
     "encompasses": [
       "Pull new reviews and ratings from Google Business Profile on a schedule",
       "Pull marketplace reviews for any marketplace the brand sells on",
@@ -133,13 +114,7 @@
     "tools": ["web search", "brand record (read)"],
     "skills": ["none beyond standard retrieval"],
     "subagent": "Lifecycle specialist",
-    "sources": {
-      "web": [
-        "https://ustechautomations.com/resources/blog/ecommerce-review-response-automation-platform-comparison-2026",
-        "https://www.g2.com/products/birdeye/reviews"
-      ],
-      "bank": []
-    },
+    "sources": {"web": ["https://ustechautomations.com/resources/blog/ecommerce-review-response-automation-platform-comparison-2026", "https://www.g2.com/products/birdeye/reviews"], "bank": []},
     "found_in": "web_only",
     "founder_sees": "every drafted response before it posts, and the rating trend",
     "human_role": "CX manager / community manager for customers",
@@ -167,12 +142,7 @@
     "tools": ["review platform export (read)", "product feed (read/write pending founder switch)"],
     "skills": ["none beyond standard retrieval"],
     "subagent": "Lifecycle specialist",
-    "sources": {
-      "web": [
-        "https://www.zigpoll.com/content/yotpo-vs-okendo-vs-judgeme-2026"
-      ],
-      "bank": []
-    },
+    "sources": {"web": ["https://www.zigpoll.com/content/yotpo-vs-okendo-vs-judgeme-2026"], "bank": []},
     "found_in": "web_only",
     "founder_sees": "the selected review quotes and feed fields before publish",
     "human_role": "review platform manager / retention marketing manager",
@@ -202,10 +172,7 @@
     "skills": ["none beyond standard retrieval"],
     "subagent": "Lifecycle specialist",
     "sources": {
-      "web": [
-        "https://www.gorgias.com/blog/ecommerce-community-management",
-        "https://www.2pointagency.com/glossary/branded-community-management-for-discord-and-slack-a-comprehensive-guide/"
-      ],
+      "web": ["https://www.gorgias.com/blog/ecommerce-community-management", "https://www.2pointagency.com/glossary/branded-community-management-for-discord-and-slack-a-comprehensive-guide/"],
       "bank": []
     },
     "found_in": "web_only",
@@ -235,12 +202,7 @@
     "tools": ["web search", "brand record (read)"],
     "skills": ["none beyond standard retrieval"],
     "subagent": "Lifecycle specialist",
-    "sources": {
-      "web": [
-        "https://www.gorgias.com/blog/ecommerce-community-management"
-      ],
-      "bank": []
-    },
+    "sources": {"web": ["https://www.gorgias.com/blog/ecommerce-community-management"], "bank": []},
     "found_in": "web_only",
     "founder_sees": "every public reply before it posts, at least until the ladder is proven",
     "human_role": "CX manager / community manager for customers",
@@ -249,31 +211,31 @@
   {
     "id": "LIFE-C55",
     "extends": null,
-    "name": "Reconcile GST credit notes against returns and refunds",
+    "name": "Reconcile sales tax on returns and refunds",
     "folders": ["17-CXP"],
-    "what": "Checks that every completed return or refund has a matching GST credit note issued and filed on time, since a refund without a credit note overstates reported sales and lets the buyer claim input tax credit the seller never reversed, an India-specific compliance gap that sits between the returns coordinator and accounts.",
+    "what": "Checks that every completed return or refund correctly reverses the sales tax collected on the original order: state nexus rules, marketplace-facilitator tax already remitted by the marketplace, and resale-certificate exempt orders, since a refund that does not reverse tax overstates remitted liability and misstates 1099-K figures. India only: reconciles GST credit notes against returns and refunds instead, since a refund without a credit note overstates reported sales and lets the buyer claim input tax credit the seller never reversed; reads null for US brands.",
     "encompasses": [
-      "List every refunded/returned order in the period and check for a matching credit note",
-      "Flag any refund missing a credit note, and any credit note issued late against the statutory deadline",
-      "Check e-invoicing applies (turnover threshold) and that credit notes go through the same e-invoice system as sales invoices",
-      "Reconcile the credit-note total against the refund total in the payment ledger, arithmetic in code",
+      "List every refunded/returned order in the period and check the sales-tax portion was correctly reversed or credited",
+      "Flag any refund where the tax adjustment is missing or was filed late against the filing deadline",
+      "Check whether a marketplace facilitator (Amazon, Walmart Marketplace) already remitted tax on the order, so the brand does not also refund tax it never collected",
+      "Exclude resale-certificate and other tax-exempt orders from the reconciliation, rather than treating them as a gap",
+      "Reconcile the tax-adjustment total against the refund total in the payment ledger, arithmetic in code",
+      "India only: check every refunded/returned order for a matching GST credit note, flag any missing or late credit note against the statutory deadline, and confirm credit notes go through the same e-invoice system as sales invoices where e-invoicing applies by turnover threshold; reads null for US brands",
       "Hand the flagged list to accounts or the founder; this capability never files the return itself"
     ],
-    "inputs": ["refund/return log", "credit note export from the invoicing system", "GST filing calendar"],
-    "outputs": ["a reconciliation report of missing or late credit notes"],
-    "trigger": "monthly, before GST return filing",
+    "inputs": [
+      "refund/return log",
+      "tax-adjustment export from the invoicing/accounting system (Avalara/TaxJar, or the GST credit-note export for India)",
+      "sales-tax filing calendar (or GST filing calendar for India)"
+    ],
+    "outputs": ["a reconciliation report of missing or late tax adjustments (GST credit notes for India)"],
+    "trigger": "monthly, before sales-tax filing (or GST return filing for India)",
     "autonomy": "human_assist",
     "external_write": {"needed": false, "surface": null},
     "tools": ["order/refund data (read)", "invoicing system export (read)", "web search"],
     "skills": ["none beyond standard retrieval"],
     "subagent": "Lifecycle specialist (hands off to Money and ops for filing)",
-    "sources": {
-      "web": [
-        "https://rmpsco.com/gst-refund-for-e-commerce-sellers-key-considerations/",
-        "https://piceapp.com/blogs/know-about-e-commerce-seller-gst-return/"
-      ],
-      "bank": []
-    },
+    "sources": {"web": ["https://rmpsco.com/gst-refund-for-e-commerce-sellers-key-considerations/", "https://piceapp.com/blogs/know-about-e-commerce-seller-gst-return/"], "bank": []},
     "found_in": "web_only",
     "founder_sees": "the reconciliation report",
     "human_role": "returns coordinator / accounts",
@@ -300,12 +262,7 @@
     "tools": ["web search", "marketplace listing pages (read)"],
     "skills": ["none beyond standard retrieval"],
     "subagent": "Lifecycle specialist",
-    "sources": {
-      "web": [
-        "https://www.retainful.com/blog/klaviyo-pricing"
-      ],
-      "bank": []
-    },
+    "sources": {"web": ["https://www.retainful.com/blog/klaviyo-pricing"], "bank": []},
     "found_in": "web_only",
     "founder_sees": "the flagged moves, not raw scrape data",
     "human_role": "retention marketing manager (pricing-adjacent)",
@@ -332,12 +289,7 @@
     "tools": ["web search"],
     "skills": ["none beyond standard retrieval"],
     "subagent": "Lifecycle specialist",
-    "sources": {
-      "web": [
-        "https://www.retainful.com/blog/klaviyo-pricing"
-      ],
-      "bank": []
-    },
+    "sources": {"web": ["https://www.retainful.com/blog/klaviyo-pricing"], "bank": []},
     "found_in": "web_only",
     "founder_sees": "the violation report with evidence",
     "human_role": "retention marketing manager / brand manager",
@@ -365,12 +317,7 @@
     "tools": ["web search", "brand record (read)"],
     "skills": ["none beyond standard retrieval"],
     "subagent": "Lifecycle specialist",
-    "sources": {
-      "web": [
-        "https://rise.ai/"
-      ],
-      "bank": []
-    },
+    "sources": {"web": ["https://rise.ai/"], "bank": []},
     "found_in": "web_only",
     "founder_sees": "the full program design and the float model",
     "human_role": "loyalty program manager / CRM manager",
@@ -397,12 +344,7 @@
     "tools": ["site analytics (read)", "segmentation model (read)"],
     "skills": ["none beyond standard retrieval"],
     "subagent": "Lifecycle specialist",
-    "sources": {
-      "web": [
-        "https://www.gorgias.com/"
-      ],
-      "bank": []
-    },
+    "sources": {"web": ["https://www.gorgias.com/"], "bank": []},
     "found_in": "web_only",
     "founder_sees": "the trigger rules and openers before launch",
     "human_role": "customer support agent / CX manager",
@@ -429,12 +371,7 @@
     "tools": ["order/cart data (read)", "segmentation model (read)"],
     "skills": ["none beyond standard retrieval"],
     "subagent": "Lifecycle specialist",
-    "sources": {
-      "web": [
-        "https://www.velvetjobs.com/job-descriptions/retention-marketing-manager"
-      ],
-      "bank": []
-    },
+    "sources": {"web": ["https://www.velvetjobs.com/job-descriptions/retention-marketing-manager"], "bank": []},
     "found_in": "web_only",
     "founder_sees": "the call queue and the outcome log",
     "human_role": "customer support agent (phone concierge)",
@@ -527,23 +464,23 @@
   {
     "id": "LIFE-C64",
     "extends": null,
-    "name": "Auto-reschedule NDR'd COD deliveries through courier self-service portals without an API",
+    "name": "Auto-reschedule failed deliveries through carrier self-service portals without an API",
     "folders": ["17-CXP"],
-    "what": "For a courier that has no API integration, an agent with browser access logs into the courier's own self-service reschedule portal and rebooks a failed (NDR) delivery once the customer has confirmed a new date over WhatsApp or SMS, work a smaller brand today does by hand because its courier volume does not justify an API integration.",
+    "what": "For a carrier with no API integration, an agent with browser access logs into the carrier's own self-service portal and rebooks a failed delivery (a USPS/UPS/FedEx delivery exception or return-to-sender) once the customer has confirmed a new date or address over SMS or email, work a smaller brand today does by hand because its carrier volume does not justify an API integration. India only: reschedules an NDR'd (non-delivery report) COD delivery once the customer confirms a new date over WhatsApp or SMS instead; reads null for US brands.",
     "encompasses": [
-      "Detect an NDR (non-delivery report) event from the courier's tracking feed or webhook",
-      "Send the WhatsApp/SMS reschedule prompt and capture the customer's chosen new date",
-      "Log into the courier's self-service portal and submit the reschedule with the confirmed date",
+      "Detect a failed-delivery event (a carrier exception or return-to-sender; an NDR for India's COD orders) from the carrier's tracking feed or webhook",
+      "Send the SMS or email reschedule prompt (WhatsApp is a market option for India) and capture the customer's chosen new date or corrected address",
+      "Log into the carrier's self-service portal and submit the reschedule with the confirmed date",
       "Confirm the reschedule went through and update the order's expected delivery date",
       "Escalate to a human the moment the portal requires a captcha, a manual call, or behaves unexpectedly",
-      "Never attempt this on a courier where credentials are not the founder's own or where the portal forbids automation in its terms"
+      "Never attempt this on a carrier where credentials are not the founder's own or where the portal forbids automation in its terms"
     ],
-    "inputs": ["courier NDR feed", "customer's confirmed new delivery date", "courier portal credentials"],
+    "inputs": ["carrier delivery-exception feed (an NDR feed for India)", "customer's confirmed new delivery date or address", "carrier portal credentials"],
     "outputs": ["a confirmed reschedule", "an updated delivery estimate", "an escalation for anything the portal blocks"],
-    "trigger": "every NDR event, for couriers without an API",
+    "trigger": "every delivery-exception (or NDR, for India) event, for carriers without an API",
     "autonomy": "founder_gate",
     "external_write": {"needed": true, "surface": "courier self-service portal"},
-    "tools": ["courier tracking feed (read)", "browser automation", "WhatsApp/SMS send (pending founder switch)"],
+    "tools": ["carrier tracking feed (read)", "browser automation", "SMS/WhatsApp/email send (pending founder switch)"],
     "skills": ["none beyond standard retrieval"],
     "subagent": "Lifecycle specialist",
     "sources": {"web": [], "bank": []},
@@ -557,14 +494,14 @@
     "extends": null,
     "name": "Design and run the outbound voice/IVR and click-to-call channel",
     "folders": ["14-EML", "17-CXP"],
-    "what": "Sets up voice as its own channel, separate from SMS, WhatsApp and push: automated IVR calls for COD delivery confirmation and satisfaction checks, and click-to-call for a VIP or high-AOV concierge conversation, since India's RTO-reduction and CX tooling relies on voice alongside WhatsApp and the brand's own channel rules do not currently cover it.",
+    "what": "Sets up voice as its own channel, separate from SMS, WhatsApp and push: automated IVR calls for pre-dispatch confirmation and satisfaction checks, and click-to-call for a VIP or high-AOV concierge conversation, since failed-delivery reduction and CX tooling often relies on voice alongside SMS (WhatsApp for India) and the brand's own channel rules do not currently cover it.",
     "encompasses": [
-      "Decide which use cases justify voice: COD pre-dispatch confirmation, delivery-failure follow-up, post-resolution satisfaction check, VIP concierge",
+      "Decide which use cases justify voice: order pre-dispatch confirmation (COD orders for India), delivery-failure follow-up, post-resolution satisfaction check, VIP concierge",
       "Write the IVR script and call flow for each automated use case",
       "Set the call-attempt cadence and quiet hours, matching the consent and quiet-hour rules already set for SMS/WhatsApp",
       "Set click-to-call triggers for a human concierge conversation (from C60's high-AOV queue)",
       "Log every call outcome (answered, confirmed, no answer, opted out) back into the order/customer record",
-      "Track cost per call against the ticket or RTO deflection it produces, so the channel earns its keep"
+      "Track cost per call against the ticket or failed-delivery deflection it produces (RTO deflection for India), so the channel earns its keep"
     ],
     "inputs": ["order/delivery events needing confirmation", "consent and quiet-hour rules", "VIP/high-AOV queue"],
     "outputs": ["IVR call scripts and flows", "a call outcome log", "a cost-per-outcome report"],
@@ -574,13 +511,7 @@
     "tools": ["order/delivery data (read)", "web search"],
     "skills": ["none beyond standard retrieval"],
     "subagent": "Lifecycle specialist",
-    "sources": {
-      "web": [
-        "https://www.clickpost.ai/blog/rto-reduction-tools",
-        "https://blog.shipway.com/shipping-software-for-reducing-rto/"
-      ],
-      "bank": []
-    },
+    "sources": {"web": ["https://www.clickpost.ai/blog/rto-reduction-tools", "https://blog.shipway.com/shipping-software-for-reducing-rto/"], "bank": []},
     "found_in": "web_only",
     "founder_sees": "the scripts and the outcome/cost report",
     "human_role": "customer support lead / lifecycle marketer",
@@ -589,15 +520,16 @@
   {
     "id": "LIFE-C66",
     "extends": null,
-    "name": "Handle data-subject access and erasure requests under India's DPDP Act",
+    "name": "Handle data-subject access and erasure requests under CCPA and state privacy law",
     "folders": ["17-CXP"],
-    "what": "When a customer asks what personal data the brand holds or asks for it to be deleted, finds every system that holds that person's data (ESP, helpdesk, loyalty, subscription, POS), verifies identity, and responds inside the statutory window, an obligation under India's Digital Personal Data Protection Act that sits on top of ordinary unsubscribe handling.",
+    "what": "When a customer asks what personal data the brand holds or asks for it to be deleted, finds every system that holds that person's data (ESP, helpdesk, loyalty, subscription, POS), verifies identity, and responds inside the statutory window: an obligation under California's CCPA/CPRA and other state privacy laws (Virginia, Colorado and others) that sits on top of ordinary unsubscribe handling. India only: the same obligation runs under India's Digital Personal Data Protection (DPDP) Act instead; reads null for US brands.",
     "encompasses": [
       "Maintain a simple data-inventory map of which systems hold customer PII",
       "Verify the requester's identity before acting on an access or erasure request",
       "For an access request, compile what is held and where, in plain language",
       "For an erasure request, check whether another law requires the brand to keep the record (tax, warranty) before deleting",
       "Execute or hand off the deletion across every system on the inventory, not just the ESP unsubscribe",
+      "Use the applicable law's own response window (CCPA/CPRA: typically 45 days, extendable once; DPDP for India: per the Act's own timeline) rather than a single fixed number",
       "Log every request and its resolution date against the statutory response window",
       "Distinguish this from marketing consent/unsubscribe handling (C03), which covers opt-out of sends, not deletion of held data"
     ],
@@ -609,13 +541,7 @@
     "tools": ["web search", "brand record (read)"],
     "skills": ["none beyond standard retrieval"],
     "subagent": "Lifecycle specialist",
-    "sources": {
-      "web": [
-        "https://www.digio.in/blog/right-to-erasure-under-dpdp-what-users-can-demand-and-when/",
-        "https://seccomply.net/resources/blog/dpdp-erasure-deletion-requests"
-      ],
-      "bank": []
-    },
+    "sources": {"web": ["https://www.digio.in/blog/right-to-erasure-under-dpdp-what-users-can-demand-and-when/", "https://seccomply.net/resources/blog/dpdp-erasure-deletion-requests"], "bank": []},
     "found_in": "web_only",
     "founder_sees": "every request and its resolution before the statutory deadline",
     "human_role": "CRM manager / CX manager",
@@ -626,7 +552,7 @@
     "extends": null,
     "name": "Run marketplace seller-support queues separate from the brand's own helpdesk",
     "folders": ["17-CXP"],
-    "what": "Manages Amazon and Flipkart buyer-seller messages and A-to-Z-style guarantee claims inside each marketplace's own seller console, on that marketplace's own response clock (48 hours to answer a buyer message, about 72 hours to respond to a claim), distinct from the brand's own helpdesk queue and its own SLAs.",
+    "what": "Manages Amazon, Walmart Marketplace and (in India) Flipkart/Myntra buyer-seller messages and A-to-Z-style guarantee claims inside each marketplace's own seller console, on that marketplace's own response clock (48 hours to answer a buyer message, about 72 hours to respond to a claim), distinct from the brand's own helpdesk queue and its own SLAs.",
     "encompasses": [
       "Pull open buyer-seller messages and claims from each marketplace seller console on a schedule",
       "Draft a response inside each marketplace's own response window, never missing the 48-hour buyer-message clock that itself triggers a claim right",
@@ -636,19 +562,13 @@
     ],
     "inputs": ["marketplace seller console access", "order and delivery-proof data"],
     "outputs": ["drafted responses and claim replies within each marketplace's clock", "a claim-rate trend report"],
-    "trigger": "continuous, for a brand selling on Amazon/Flipkart",
+    "trigger": "continuous, for a brand selling on Amazon, Walmart Marketplace, or (in India) Flipkart/Myntra",
     "autonomy": "founder_gate",
     "external_write": {"needed": true, "surface": "marketplace seller console"},
     "tools": ["marketplace seller console (read)", "order/delivery data (read)"],
     "skills": ["none beyond standard retrieval"],
     "subagent": "Lifecycle specialist (shares evidence with Product and supply for 22-AMZ)",
-    "sources": {
-      "web": [
-        "https://www.ecomengine.com/blog/amazon-a-to-z-guarantee",
-        "https://www.amazon.com/gp/help/customer/display.html?nodeId=G3JQ9V9LQ8FFMR7W"
-      ],
-      "bank": []
-    },
+    "sources": {"web": ["https://www.ecomengine.com/blog/amazon-a-to-z-guarantee", "https://www.amazon.com/gp/help/customer/display.html?nodeId=G3JQ9V9LQ8FFMR7W"], "bank": []},
     "found_in": "web_only",
     "founder_sees": "drafted responses before they post, and the claim-rate trend",
     "human_role": "customer support agent",
@@ -657,33 +577,26 @@
   {
     "id": "LIFE-C22",
     "extends": "LIFE-C22",
-    "name": "EXTENSION: Add COD pre-dispatch confirmation, fraud/pincode risk scoring and automated NDR recovery to the WhatsApp commerce program",
+    "name": "EXTENSION: Add pre-dispatch confirmation, fraud/address risk scoring and automated failed-delivery recovery to the SMS/WhatsApp commerce program",
     "folders": ["17-CXP", "14-EML"],
-    "what": "The original capability designs WhatsApp cart recovery, order updates and COD-to-prepaid conversion. Indian RTO-reduction tooling (Shipway, ClickPost) shows the fuller COD workflow also needs pre-dispatch confirmation, a fraud/pincode risk score, and an automatic recovery sequence the moment a delivery fails, which the original scope did not cover.",
+    "what": "The original capability designs SMS (and, where used, WhatsApp) cart recovery and order updates, plus COD-to-prepaid conversion for COD markets. Failed-delivery-reduction tooling (ShipStation/EasyPost address validation for the US; India's Shipway, ClickPost for RTO) shows the fuller workflow also needs pre-dispatch confirmation, a fraud/address risk score, and an automatic recovery sequence the moment a delivery fails, which the original scope did not cover.",
     "encompasses": [
-      "Trigger an OTP, WhatsApp or IVR confirmation before a COD order ships, not only order-update messages after",
-      "Score each COD order's fraud/RTO risk from pincode delivery-success history and order pattern",
-      "Route a high-risk COD order to a manual check or a prepaid-only offer instead of shipping blind",
-      "Fire an automatic WhatsApp/SMS/IVR sequence the moment a courier logs a non-delivery (NDR), offering reschedule or address fix",
-      "Tie the prepaid nudge's discount size to the actual RTO cost it avoids, not an arbitrary number",
-      "Report COD confirmation rate, RTO rate by pincode, and NDR recovery rate as new numbers the original scope did not track"
+      "Trigger an OTP, SMS/WhatsApp or IVR confirmation before an order ships when the risk score calls for it, not only order-update messages after",
+      "Score each order's fraud/failed-delivery risk from address-validation history and order pattern (pincode-level delivery-success history for India's COD orders)",
+      "Route a high-risk order to a manual check or a card-only offer instead of shipping blind (a prepaid-only offer for India's COD orders)",
+      "Fire an automatic SMS/email/IVR sequence the moment a carrier logs a delivery exception or return-to-sender (WhatsApp/SMS/IVR for India's NDR), offering redelivery or an address fix",
+      "Tie any prepaid or card-only nudge's discount size to the actual failed-delivery cost it avoids (the RTO cost avoided, for India), not an arbitrary number",
+      "Report delivery-confirmation rate and return-to-sender rate as new numbers the original scope did not track. India only: also report COD confirmation rate and RTO rate by pincode; reads null for US brands"
     ],
-    "inputs": ["courier NDR feed", "pincode-level delivery-success history", "COD order flow"],
-    "outputs": ["a pre-dispatch confirmation flow", "a pincode risk score", "an NDR recovery sequence"],
-    "trigger": "building or refreshing the WhatsApp/COD program",
+    "inputs": ["carrier delivery-exception feed (an NDR feed for India)", "address-validation / delivery-success history (pincode-level for India)", "order flow"],
+    "outputs": ["a pre-dispatch confirmation flow", "a fraud/address risk score", "a failed-delivery recovery sequence"],
+    "trigger": "building or refreshing the SMS/WhatsApp commerce program",
     "autonomy": "founder_gate",
-    "external_write": {"needed": true, "surface": "WhatsApp Business API / courier platform"},
-    "tools": ["courier data (read)", "web search"],
+    "external_write": {"needed": true, "surface": "SMS/WhatsApp platform / carrier platform"},
+    "tools": ["carrier data (read)", "web search"],
     "skills": ["none beyond standard retrieval"],
     "subagent": "Lifecycle specialist",
-    "sources": {
-      "web": [
-        "https://www.clickpost.ai/blog/rto-reduction-tools",
-        "https://blog.shipway.com/shipping-software-for-reducing-rto/",
-        "https://www.shipway.com/rto-suite"
-      ],
-      "bank": []
-    },
+    "sources": {"web": ["https://www.clickpost.ai/blog/rto-reduction-tools", "https://blog.shipway.com/shipping-software-for-reducing-rto/", "https://www.shipway.com/rto-suite"], "bank": []},
     "found_in": "web_only",
     "founder_sees": "the risk-scoring rule and the recovery sequence before launch",
     "human_role": "returns coordinator / lifecycle marketer",
@@ -710,12 +623,7 @@
     "tools": ["order history (read)"],
     "skills": ["none beyond standard retrieval"],
     "subagent": "Lifecycle specialist",
-    "sources": {
-      "web": [
-        "https://www.moengage.com/blog/klaviyo-pricing/"
-      ],
-      "bank": []
-    },
+    "sources": {"web": ["https://www.moengage.com/blog/klaviyo-pricing/"], "bank": []},
     "found_in": "web_only",
     "founder_sees": "the accuracy report before the default cadence is replaced",
     "human_role": "retention marketing manager",
@@ -742,13 +650,7 @@
     "tools": ["subscription platform data (read)", "web search"],
     "skills": ["none beyond standard retrieval"],
     "subagent": "Lifecycle specialist",
-    "sources": {
-      "web": [
-        "https://www.loopwork.co/blog/recharge-vs-seal-vs-loop",
-        "https://www.loopwork.co/blog/shopify-subscriptions-vs-recharge-vs-loop-which-app-is-the-best"
-      ],
-      "bank": []
-    },
+    "sources": {"web": ["https://www.loopwork.co/blog/recharge-vs-seal-vs-loop", "https://www.loopwork.co/blog/shopify-subscriptions-vs-recharge-vs-loop-which-app-is-the-best"], "bank": []},
     "found_in": "web_only",
     "founder_sees": "the four-stage design and the per-stage save-rate results",
     "human_role": "CRM manager / retention marketing manager",
@@ -865,22 +767,22 @@
   {
     "id": "LIFE-C08",
     "extends": "LIFE-C08",
-    "name": "EXTENSION: Add an RTO-affected win-back variant, distinct from an ordinary lapsed-buyer win-back",
+    "name": "EXTENSION: Add a failed-delivery win-back variant, distinct from an ordinary lapsed-buyer win-back",
     "folders": ["17-CXP", "14-EML"],
-    "what": "The original capability builds the win-back flow for a lapsed customer and the sunset flow. It treated every lapsed customer the same. A customer whose order never arrived (RTO) needs a trust-rebuilding message, not a discount-led win-back, since the reason they stopped buying was a delivery failure, not fading interest.",
+    "what": "The original capability builds the win-back flow for a lapsed customer and the sunset flow. It treated every lapsed customer the same. A customer whose order was never delivered (a carrier return-to-sender, or in India an RTO) needs a trust-rebuilding message, not a discount-led win-back, since the reason they stopped buying was a delivery failure, not fading interest.",
     "encompasses": [
-      "Detect an RTO-caused lapse separately from an ordinary engagement-decay lapse",
+      "Detect a delivery-failure-caused lapse (return-to-sender for US carriers, RTO for India) separately from an ordinary engagement-decay lapse",
       "Lead the message with an apology and a fix (address confirmation, a named contact, proof the issue is resolved) rather than a discount",
-      "Confirm the address and courier serviceability before re-targeting the customer with any offer",
+      "Confirm the address and carrier serviceability before re-targeting the customer with any offer",
       "Only offer a discount as a second step, after trust is addressed, and size it to the disruption, not to a generic win-back rate",
-      "Track win-back rate for the RTO-affected segment separately from the ordinary lapsed segment, since mixing them hides whether the fix worked"
+      "Track win-back rate for the delivery-failure-affected segment separately from the ordinary lapsed segment, since mixing them hides whether the fix worked"
     ],
-    "inputs": ["RTO/NDR event log", "ordinary lapse/churn flag from the segmentation model"],
-    "outputs": ["a trust-rebuild win-back message variant", "a separate win-back rate for the RTO-affected segment"],
-    "trigger": "a customer's most recent order shows an RTO/NDR event before the standard win-back trigger fires",
+    "inputs": ["carrier delivery-exception / return-to-sender event log (RTO/NDR event log for India)", "ordinary lapse/churn flag from the segmentation model"],
+    "outputs": ["a trust-rebuild win-back message variant", "a separate win-back rate for the delivery-failure-affected segment"],
+    "trigger": "a customer's most recent order shows a delivery-failure event (return-to-sender, or RTO/NDR for India) before the standard win-back trigger fires",
     "autonomy": "founder_gate",
-    "external_write": {"needed": true, "surface": "ESP/SMS/WhatsApp send"},
-    "tools": ["courier NDR/RTO data (read)", "segmentation model (read)"],
+    "external_write": {"needed": true, "surface": "ESP/SMS send (WhatsApp for India)"},
+    "tools": ["carrier delivery-exception data (or RTO data, for India) (read)", "segmentation model (read)"],
     "skills": ["none beyond standard retrieval"],
     "subagent": "Lifecycle specialist",
     "sources": {"web": [], "bank": []},
@@ -910,12 +812,7 @@
     "tools": ["loyalty platform data (read)"],
     "skills": ["none beyond standard retrieval"],
     "subagent": "Lifecycle specialist",
-    "sources": {
-      "web": [
-        "https://www.mageloyalty.com/blog/smile-vs-loyaltylion-2026-comparison"
-      ],
-      "bank": []
-    },
+    "sources": {"web": ["https://www.mageloyalty.com/blog/smile-vs-loyaltylion-2026-comparison"], "bank": []},
     "found_in": "web_only",
     "founder_sees": "the recommendation list and the liability model",
     "human_role": "loyalty program manager",

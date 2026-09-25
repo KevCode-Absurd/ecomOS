@@ -10,7 +10,8 @@ outputs: draft copy with claims cited, channel-appropriate
 
 ## Purpose
 One drafting procedure, channel picked by select_by. Keeps subject/preview/body rules
-for email separate from the character and consent rules for SMS and WhatsApp.
+for email separate from the character and consent rules for SMS (the default second
+channel) and WhatsApp (a market option for India, EU, LATAM).
 
 ## Steps
 1. Read the brief's purpose, audience and any discount/urgency rule.

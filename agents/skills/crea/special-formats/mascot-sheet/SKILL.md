@@ -34,5 +34,5 @@ overwritten.
 Output: the reference sheet, its version id, and the drift check result for
 each new use.
 
-Example: version 2 of a mascot adds a festive outfit for the Diwali
-campaign; version 1's plain outfit stays on file for assets still using it.
+Example: version 2 of a mascot adds a holiday outfit for the Q4 campaign;
+version 1's plain outfit stays on file for assets still using it.

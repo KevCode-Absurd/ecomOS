@@ -10,25 +10,25 @@
 | Reviews and reports | LOOP | founder, agency account manager, agency owner (portfolio view) | 10 | 11 | 10 | 6 | 8 | 5 | 9 |
 | Site and speed | SITE | founder, developer, agency account manager | 14 | 14 | 15 | 7 | 15 | 6 | 6 |
 | Landing pages and CRO | SITE | founder, agency account manager, copywriter, media buyer | 14 | 15 | 15 | 7 | 15 | 5 | 8 |
-| Store health | SITE | founder, developer, agency account manager, operations lead | 14 | 20 | 15 | 7 | 15 | 6 | 11 |
+| Store health | SITE | founder, developer, agency account manager, operations lead | 15 | 27 | 16 | 8 | 15 | 6 | 12 |
 | Creative | CREA | founder, creative strategist or media buyer, agency account manager, designer or video editor | 14 | 17 | 13 | 7 | 23 | 6 | 13 |
 | Copy | CREA | founder, copywriter, compliance or legal reviewer, agency account manager | 12 | 16 | 14 | 7 | 17 | 6 | 16 |
 | Paid social | MEDIA | founder, media buyer, agency account manager | 13 | 20 | 15 | 8 | 44 | 6 | 10 |
 | Google Ads | MEDIA | founder, media buyer, agency account manager | 14 | 20 | 14 | 7 | 14 | 6 | 6 |
-| Affiliate, marketplace and retail media | MEDIA | founder, affiliate manager, agency account manager | 12 | 19 | 12 | 6 | 13 | 6 | 8 |
+| Affiliate, marketplace and retail media | MEDIA | founder, affiliate manager, agency account manager | 13 | 22 | 14 | 6 | 14 | 6 | 8 |
 | Email and messaging | LIFE | founder, lifecycle marketer, agency retention lead, ESP admin | 14 | 18 | 15 | 7 | 22 | 6 | 8 |
-| Customers and CX | LIFE | founder, CX lead, agency account manager, support team lead | 14 | 19 | 14 | 7 | 27 | 6 | 12 |
+| Customers and CX | LIFE | founder, CX lead, agency account manager, support team lead | 14 | 20 | 15 | 7 | 27 | 6 | 12 |
 | Offers and pricing | LIFE | founder, pricing/offer owner, agency account manager | 14 | 19 | 15 | 7 | 17 | 6 | 11 |
-| Organic and content | ORG | founder, content or social manager, agency account manager, community manager | 14 | 19 | 14 | 6 | 34 | 6 | 12 |
-| SEO | ORG | founder, SEO or content lead, agency SEO manager, developer | 14 | 17 | 13 | 6 | 17 | 5 | 12 |
+| Organic and content | ORG | founder, content or social manager, agency account manager, community manager | 14 | 20 | 15 | 6 | 35 | 6 | 12 |
+| SEO | ORG | founder, SEO or content lead, agency SEO manager, developer | 14 | 17 | 13 | 6 | 17 | 5 | 13 |
 | Answer engines | ORG | founder, SEO or AEO lead, PR or comms lead, agency account manager | 9 | 15 | 11 | 6 | 10 | 5 | 8 |
 | Products and research | PROD | founder, category or merchandising lead, agency strategist | 14 | 20 | 14 | 6 | 13 | 5 | 10 |
-| Supply and inventory | PROD | founder, operations lead, agency operations manager | 14 | 19 | 13 | 6 | 18 | 5 | 14 |
+| Supply and inventory | PROD | founder, operations lead, agency operations manager | 14 | 24 | 14 | 7 | 18 | 5 | 16 |
 | Marketplaces and quick commerce | PROD | founder, marketplace manager, agency account manager | 14 | 17 | 13 | 6 | 15 | 5 | 12 |
-| Finance and cash | MONEY | founder, finance lead, agency account manager, bookkeeper | 14 | 18 | 10 | 7 | 29 | 6 | 12 |
+| Finance and cash | MONEY | founder, finance lead, agency account manager, bookkeeper | 14 | 19 | 11 | 7 | 29 | 6 | 14 |
 | Measurement and data health | MONEY | founder, marketing lead, agency account manager, developer | 14 | 16 | 11 | 6 | 15 | 5 | 12 |
 | Team and ops | MONEY | founder, operations lead, team manager, agency account manager | 14 | 14 | 8 | 6 | 18 | 5 | 10 |
-| Security | MONEY | founder, developer, operations lead, agency account manager | 14 | 16 | 12 | 6 | 17 | 6 | 13 |
+| Security | MONEY | founder, developer, operations lead, agency account manager | 14 | 21 | 12 | 6 | 17 | 6 | 13 |
 | Brand and customers | BRAND | founder, brand manager, agency account manager, copywriter | 14 | 18 | 12 | 6 | 16 | 7 | 14 |
 | Competitors and market | BRAND | founder, brand manager, agency account manager | 10 | 15 | 9 | 6 | 10 | 6 | 8 |
 | Wild bets and PR | BRAND | founder, brand manager, PR contact, agency account manager | 14 | 15 | 9 | 6 | 16 | 6 | 10 |
@@ -38,9 +38,9 @@
 **Jobs**
 
 - see which pipeline stage is losing the most money today. Founder asks: "where is the business actually broken right now". Capabilities: DIAG-C01, ORCH-C01
-- know how much the break is costing before deciding to act. Founder asks: "what is this worth in rupees this week". Capabilities: DIAG-C01
+- know how much the break is costing before deciding to act. Founder asks: "what is this worth in dollars this week". Capabilities: DIAG-C01
 - act on the top 10 ideas for the break in under a minute each. Founder asks: "what should I approve, send out, or park". Capabilities: PROP-C06, ORCH-C03
-- see gross orders next to what they are worth after RTO and COD confirmation. Founder asks: "are we actually growing or just booking orders that will bounce back". Capabilities: LOOP-C23
+- see gross orders next to what they are worth after returns and chargebacks. Founder asks: "are we actually growing or just booking orders that will be returned or disputed". Capabilities: LOOP-C23
 - catch a mid-day number that has already crossed a line, before end of day. Founder asks: "did anything blow past a limit today". Capabilities: LOOP-C40
 - see what is waiting on me across every queue, not per person. Founder asks: "what needs my decision right now". Capabilities: ORCH-C02, REG-C08
 - catch a test that would contaminate one already running. Founder asks: "will this new test mess up a read I am already waiting on". Capabilities: LOOP-C35
@@ -56,7 +56,7 @@
 
 - top break named: highest-stake stage from Diagnose, ranked by stake then confidence then upstream position → "{stage} is costing about {amount} this {window}, since {date}" (action PROP-C06)
 - trend alert: a stage's delta sign matches for 2 consecutive trailing windows → "{stage} has moved {direction} for 2 windows running" (action DIAG-C03)
-- RTO widening: the gap between gross and net orders widens for 2 or more windows running → "Gross orders look flat but net orders after RTO have fallen {pct} over 2 windows" (action LOOP-C23)
+- Reversals widening: the gap between gross and net orders widens for 2 or more windows running → "Gross orders look flat but net orders after returns and chargebacks have fallen {pct} over 2 windows" (action LOOP-C23)
 - same-day trigger crossed: a live metric value crosses its stored hard threshold mid-day → "{metric} crossed its {threshold} trigger at {time} today" (action LOOP-C40)
 - experiment overlap: two running registry entries share an audience or metric window → "{idea_a} and {idea_b} share the same audience; the newer one is staggered" (action LOOP-C35)
 - brand gone quiet: brand_quiet_days exceeds 7 for a brand with an active queue → "{brand} has had no founder decision in {n} days while {m} cards wait" (action LOOP-C21)
@@ -65,15 +65,15 @@
 - reads due this week: registry entries whose read_point falls in the current week → "{n} experiments hit their read point this week" (action REG-C02)
 - seasonal prep at risk: a specialist's pre-window prep item has fewer days left than its own stated lead time → "{item} is due in {n} days for {window} and is not yet marked ready" (action LOOP-C05)
 - single-item escalation: an incoming escalation is below the crisis threshold but above the normal queue bar → "{item} needs a look today; it is not a crisis but it is not routine either" (action LOOP-C06)
-- WhatsApp confirmation dropping: whatsapp_confirmation_rate falls 2+ windows running → "WhatsApp order confirmation has fallen to {pct}, which tracks with higher RTO" (action LOOP-C31)
+- chargebacks rising: chargeback_rate rises 2+ windows running or crosses 0.9 percent → "Chargebacks reached {rate} percent of paid orders, up {delta} in {n} windows; representment and the reason codes are in the Money room" (action LOOP-C31)
 
 **Not elsewhere**
 
 - money-at-stake per stage, computed in code from your own trailing history and a peer band, before any fix is proposed (vs Shopify Analytics and Klaviyo dashboards show revenue, sessions and conversion rate, not a stage-level stake number with a peer band)
-- gross orders shown net of expected RTO and split by COD versus prepaid before naming a bottleneck (vs generic ecommerce dashboards report gross orders only; no packaged Shopify or Triple Whale view nets out India RTO by default)
+- gross orders shown net of expected returns and chargebacks and split by payment method before naming a bottleneck (vs generic ecommerce dashboards report gross orders only; no packaged Shopify or Triple Whale view nets out India RTO by default)
 - one ranked list across every brand an agency runs, by stake and urgency on the same scale (vs AgencyAnalytics and Whatagraph give per-client reports and roll-ups, not a single cross-client priority queue)
 - same-day alert on a pre-agreed hard trigger, separate from full crisis mode and from tomorrow's batch ranking (vs most ecommerce dashboards check once a day; ads and analytics platforms alert on their own metrics only, not a founder-defined cross-channel trigger)
-- approve, reject or park a specific card by a single WhatsApp reply, matched back to its card id (vs WhatsApp business tools like Interakt and AiSensy handle customer-facing templates and support replies, not an internal founder decision channel tied to a proposal card)
+- approve, reject or park a specific card by a single SMS or Slack reply, matched back to its card id (vs SMS tools like Attentive and Postscript handle customer-facing templates and support replies, not an internal founder decision channel tied to a proposal card)
 - a test flagged before it starts if it shares an audience or metric window with one already running (vs enterprise experimentation platforms like GrowthBook check this inside one engineering team's own test list, not across marketing ideas drawn from a bank, an audit and the web)
 
 ## Brand brain (LOOP)
@@ -88,9 +88,9 @@
 - see what changed on the site since the last check. Founder asks: "did a price, a policy or a claim change without me knowing". Capabilities: BRN-C01
 - see which connectors are working and which failed. Founder asks: "is any of our data actually stale right now". Capabilities: BRN-C02, BRN-C14
 - see vendor and platform contracts with renewal dates before they lapse. Founder asks: "what contract needs my attention before it auto-renews". Capabilities: LOOP-C28
-- check a page or invoice carries the disclosures India's rules require before it ships. Founder asks: "is this page legally compliant before it goes live". Capabilities: LOOP-C27
+- check a page or invoice carries the disclosures US rules require before it ships. Founder asks: "is this page legally compliant before it goes live". Capabilities: LOOP-C27
 - see who can see which part of the brand's data. Founder asks: "does the agency staff see more of our brain than they should". Capabilities: LOOP-C29
-- see the brand's own marketplace listings against the D2C site. Founder asks: "is someone undercutting our price on Amazon or Flipkart". Capabilities: PROD-C46
+- see the brand's own marketplace listings against the D2C site. Founder asks: "is someone undercutting our price on Amazon or Walmart". Capabilities: PROD-C46
 - export the whole brain cleanly when a relationship ends. Founder asks: "if we part ways with this agency, can we take everything with us". Capabilities: LOOP-C22
 
 **Insights, as rules**
@@ -101,7 +101,7 @@
 - connector failing: connector_health_pct falls under 90% for a source over its own cadence → "{source} has missed {n} of its last {m} expected pulls; its fields show unavailable, not zero" (action BRN-C02)
 - contract renewal approaching: contract_renewal_countdown falls inside the alert window sized for that vendor type → "{vendor} renews in {n} days; last terms were {rate} agreed on {date}" (action LOOP-C28)
 - contract missing renewal date: a stored contract has no renewal date field → "{vendor}'s contract has no renewal date on file and is marked incomplete" (action LOOP-C28)
-- disclosure missing: a live or about-to-ship page fails a required India disclosure check → "{page} is missing {disclosure}; this blocks going live" (action LOOP-C27)
+- disclosure missing: a live or about-to-ship page fails a required US disclosure check → "{page} is missing {disclosure}; this blocks going live" (action LOOP-C27)
 - MAP violation: a marketplace listing price sits below the brand's stated minimum advertised price → "{marketplace} lists {product} at {price}, below your {map_price} minimum" (action PROD-C46)
 - unauthorized reseller: a marketplace listing's seller name does not match the brand's own account → "An unrecognised seller is listing {product} on {marketplace}" (action PROD-C46)
 - permission gap: a brain section has no assigned permission entry → "{section} has no permission set and defaults to restricted" (action LOOP-C29)
@@ -114,7 +114,7 @@
 - a conflict between a document and the live site resolved with a stated default (the site wins) rather than left for a person to notice (vs enterprise wikis surface drift for a human to review; none apply a default-winner rule between two specific source types automatically)
 - marketplace listings diffed against the brand's own price, stock and claims the same way the D2C site is crawled (vs MAP-monitoring tools exist for large brands on Amazon, but nothing in this stack ties marketplace diffs to the same claims-tier and site-diff pipeline as the brand's own site)
 - vendor and platform contracts extracted into renewal alerts sized to how long a renegotiation takes, inside the same brain as everything else about the brand (vs generic contract-management SaaS tracks renewal dates but is not fed from or feeding the same brand brain a founder already uses for decisions)
-- India-specific legal disclosure gate (grievance officer, country of origin, GST invoice fields, return policy) checked before a page ships, as a blocking check, not a general CMS compliance plugin (vs generic CMS and Shopify legal-page apps exist, but they are not tied into this brand's own claims tiers and decisions log)
+- US legal disclosure gate (FTC, CAN-SPAM, CCPA privacy policy, sales tax on invoices, return policy, auto-renewal) checked before a page ships, as a blocking check, not a general CMS compliance plugin (vs generic CMS and Shopify legal-page apps exist, but they are not tied into this brand's own claims tiers and decisions log)
 - a permission map enforced the same way whether a person opens the brain directly or asks a question in chat (vs role-based access in most knowledge tools governs direct reads only; it is not applied to an AI chat answer drawing from the same sections)
 
 ## Experiments and memory (LOOP)
@@ -168,7 +168,7 @@
 - draft a board or investor update from the quarter's real numbers. Founder asks: "what do I tell my board or investors this quarter". Capabilities: LOOP-C11
 - see whether the standing meeting cadence still fits the business as it grows. Founder asks: "are we having the right meetings, not too many or too few". Capabilities: LOOP-C20
 - see if any agency staff member or team member is overloaded across brands. Founder asks: "is anyone about to drop something because they have too much on". Capabilities: LOOP-C21
-- decide next month's channel budget split before any specialist spends their own slice. Founder asks: "where should the next rupee of budget go, across channels". Capabilities: LOOP-C03
+- decide next month's channel budget split before any specialist spends their own slice. Founder asks: "where should the next dollar of budget go, across channels". Capabilities: LOOP-C03
 
 **Insights, as rules**
 
@@ -195,7 +195,7 @@
 
 **Jobs**
 
-- find why a page is slow and what it is costing in rupees. Founder asks: "why is my page slow and what is it costing me". Capabilities: SITE-C21
+- find why a page is slow and what it is costing in dollars. Founder asks: "why is my page slow and what is it costing me". Capabilities: SITE-C21
 - cut image weight without hurting quality. Founder asks: "which images are too big and how do I fix them". Capabilities: SITE-C22
 - defer or remove scripts that block the page. Founder asks: "which scripts are slowing this page down and can they wait". Capabilities: SITE-C23
 - fix font loading. Founder asks: "why do fonts delay the page and how much do they weigh". Capabilities: SITE-C24
@@ -203,7 +203,7 @@
 - fix the largest paint element. Founder asks: "what is the LCP element on each template and what fixes it". Capabilities: SITE-C26
 - make add-to-cart, filters and search feel instant. Founder asks: "which tap or click feels slow and why". Capabilities: SITE-C27
 - confirm caching and CDN are actually working. Founder asks: "are my pages cached and served from the CDN or not". Capabilities: SITE-C28
-- get ready for a sale-day traffic spike. Founder asks: "will the site hold up on the festive sale day". Capabilities: SITE-C29
+- get ready for a sale-day traffic spike. Founder asks: "will the site hold up on Black Friday, Cyber Monday or another big sale day (or a festive sale day in India)". Capabilities: SITE-C29
 - cut and reorganize code weight. Founder asks: "how much CSS and JS can be removed, split or inlined". Capabilities: SITE-C30
 - speed-tune a headless or custom storefront. Founder asks: "what is slow in our own framework code, not the platform's". Capabilities: SITE-C31
 - hand a developer a brief they can execute without guessing. Founder asks: "what exactly should the developer change, and how do we know it worked". Capabilities: SITE-C32
@@ -234,7 +234,7 @@
 - one Lighthouse-style score is replaced with a fix-by-fix chain a founder can stop trusting or not, item by item (vs Shopify's Online Store Speed report is a single weighted score across the top 3 pages, not a per-fix breakdown)
 - cross-references every heavy script against the brand's own revenue attribution before calling it dead weight (vs also in Thunder and similar Shopify speed-and-app audits, which rank apps by measured weight but do not check revenue)
 - turns a diagnosed fix straight into a brief with a pass threshold and a rollback plan, ready for a developer (vs PageSpeed Insights and Lighthouse CI report the problem; they do not write the fix instructions or the rollback plan)
-- prices slowness in the brand's own rupees per month, not a generic industry percentage (vs no common speed tool ties LCP to the brand's own conversion rate and average order value)
+- prices slowness in the brand's own dollars per month, not a generic industry percentage (vs no common speed tool ties LCP to the brand's own conversion rate and average order value)
 - regression checks point back to the exact fix chain and filmstrip already on file, so a regression names its own cause (vs also in Lighthouse CI and SpeedCurve for budget-based regression alerts, without the same fix-level history to compare against)
 
 ## Landing pages and CRO (SITE)
@@ -247,7 +247,7 @@
 - fix the PDP first screen. Founder asks: "does the buy box have everything a phone shopper needs without scrolling". Capabilities: SITE-C38
 - write on-page copy in the customer's own words. Founder asks: "does the copy sound like our reviews and tickets, or like a template". Capabilities: SITE-C39
 - place proof next to the objection it answers. Founder asks: "is our proof actually next to the doubt it is meant to remove". Capabilities: SITE-C40
-- build bundle and offer pricing with real anchors. Founder asks: "does the bundle show a real saving in rupees, not just a percent". Capabilities: LIFE-C39
+- build bundle and offer pricing with real anchors. Founder asks: "does the bundle show a real saving in dollars, not just a percent". Capabilities: LIFE-C39
 - write urgency and scarcity that is true. Founder asks: "is our low-stock message wired to real inventory or just typed in". Capabilities: SITE-C42
 - strip friction off a single-offer page. Founder asks: "what on this page distracts from the one thing we want the shopper to do". Capabilities: SITE-C43
 - build and QA a page mobile-first. Founder asks: "does this page actually work on our own customers' phones". Capabilities: SITE-C44
@@ -269,7 +269,7 @@
 - winner scaled without an LTV check: a test's status is shipped_to_100 and winner_ltv_return_check is unavailable more than 60 days after rollout → "{test_name} shipped {days} days ago with no return or repeat check run yet" (action SITE-C53)
 - high-value backlog item stalled: a backlog hypothesis in the top quartile of test_expected_profit_ceiling has been sitting untested for over 45 days → "{hypothesis} could be worth {ceiling} and has waited {days} days untested" (action LOOP-C09)
 - broken interactive control: a button, tab or accordion on a QA pass returns no visible change on click → "{control} on {page} does nothing when tapped" (action SITE-C43)
-- bundle savings shown only as a percent: a bundle or offer block shows a percent-off with no rupee amount saved → "{offer} shows {pct}% off with no rupee saving stated" (action LIFE-C39)
+- bundle savings shown only as a percent: a bundle or offer block shows a percent-off with no dollar amount saved → "{offer} shows {pct}% off with no dollar saving stated" (action LIFE-C39)
 - proof stacked once instead of scattered: over 70 percent of a page's proof elements sit in a single section instead of distributed to their matched objection → "{page} has most of its proof in one place; {n} objections have none nearby" (action SITE-C40)
 - traffic routed to the wrong page type: a SKU's assigned awareness stage does not match the page type its ads currently point to (for example a cold, unaware audience sent straight to a bare PDP) → "{sku}'s ads target a cold audience but land on a bare PDP with no story" (action SITE-C35)
 - test flicker on a slow connection: the QA pass on a throttled connection shows the original page for over 300 ms before the variant renders → "{test_name} flashes the original page for {ms} ms before the variant loads, on a slow connection" (action SITE-C51)
@@ -277,7 +277,7 @@
 **Not elsewhere**
 
 - audits whether the ad's exact promise, price, guarantee and CTA wording survives unbroken from the ad to the page to checkout (vs VWO and Convert.com report test statistics well but do not check message continuity from the ad itself)
-- ranks the test backlog by an expected-profit ceiling built from at least 2 pieces of evidence per hypothesis, before anything launches (vs also in VWO's and Convert's own prioritization frameworks (PIE, ICE style scores), which score persuasion and ease but not a rupee ceiling tied to the brand's own traffic and AOV)
+- ranks the test backlog by an expected-profit ceiling built from at least 2 pieces of evidence per hypothesis, before anything launches (vs also in VWO's and Convert's own prioritization frameworks (PIE, ICE style scores), which score persuasion and ease but not a dollar ceiling tied to the brand's own traffic and AOV)
 - checks a scaled winner's return rate and repeat-purchase rate before calling it a lasting win (vs test platforms report the conversion lift at the moment of the test; none of the common tools re-check returns and repeat orders 60 days later)
 - flags an urgency or scarcity claim as false the moment its displayed number stops matching real inventory or a real promo end date (vs no common CRO or page-builder tool checks a countdown or stock count against the brand's own live feed)
 - ties funnel drop-off to the page-routing decision (PDP versus advertorial versus quiz versus sales page) for that SKU's awareness stage (vs also in GA4's funnel exploration for the raw drop-off numbers, which does not connect the drop to a routing rule or recommend a different page type)
@@ -297,9 +297,10 @@
 - implement structured data and schema markup. Founder asks: "can search and AI answer engines actually read our product pages". Capabilities: ORG-C23
 - run continuous regression testing on theme and app changes. Founder asks: "did the last change break browsing, cart or a discount code". Capabilities: SITE-C64
 - run real-time uptime and transaction monitoring. Founder asks: "is the store up and can someone actually complete an order right now". Capabilities: SITE-C65
-- reduce COD return-to-origin with checkout-side controls. Founder asks: "which COD orders are likely to bounce back before we ship them". Capabilities: SITE-C67
+- configure checkout payment methods and validate addresses to cut failed deliveries and chargebacks. Founder asks: "which orders are likely to fail delivery or come back as a chargeback before we ship or settle them". Capabilities: SITE-C67
+- India market option, reads null for US: reduce COD return-to-origin with checkout-side controls. Founder asks: "which COD orders are likely to bounce back before we ship them". Capabilities: SITE-C67
 - keep a staging environment in sync with production. Founder asks: "is what we are testing on staging actually what is live". Capabilities: SITE-C70
-- gate tracking scripts by consent for DPDP and GDPR. Founder asks: "do our tracking scripts actually wait for consent, not just show a banner". Capabilities: SITE-C78
+- gate tracking scripts by consent for CCPA, CPRA and other state privacy laws, with GDPR and India's DPDP Act as market options. Founder asks: "do our tracking scripts actually wait for consent, not just show a banner". Capabilities: SITE-C78
 
 **Insights, as rules**
 
@@ -310,8 +311,9 @@
 - repeated accessibility violation across templates: the same WCAG rule fails on 3 or more of the 5 checked templates → "{rule} fails on {n} of your 5 key templates, most often {example}" (action SITE-C59)
 - missing alt text above threshold: over 10 percent of product images on a template have no alt text → "{pct}% of images on {template} have no alt text" (action SITE-C59)
 - structured data errors block rich results: structured_data_error_count is over 0 on a PDP template → "{n} PDP pages have a broken {schema_type} block and cannot show rich results" (action ORG-C23)
-- RTO rate above the brand's own baseline: rto_rate_pct for the last 30 days is more than 20 percent above the brand's trailing 90-day average → "COD returns are running at {pct}%, up from your usual {baseline}%" (action SITE-C67)
-- unconfirmed COD with high RTO: a pincode cluster has cod_confirmation_rate under 50 percent and rto_rate_pct over double the brand average → "{cluster} has almost no COD confirmation and returns {x} times more often than average" (action SITE-C67)
+- chargeback or return-to-sender rate above the brand's own baseline: chargeback_rate or return_to_sender_rate for the last 30 days is more than 20 percent above the brand's trailing 90-day average → "chargebacks or failed deliveries are running at {pct}%, up from your usual {baseline}%" (action SITE-C67)
+- India market option, reads null for US: RTO rate above the brand's own baseline: rto_rate_pct for the last 30 days is more than 20 percent above the brand's trailing 90-day average → "COD returns are running at {pct}%, up from your usual {baseline}%" (action SITE-C67)
+- India market option, reads null for US: unconfirmed COD with high RTO: a pincode cluster has cod_confirmation_rate under 50 percent and rto_rate_pct over double the brand average → "{cluster} has almost no COD confirmation and returns {x} times more often than average" (action SITE-C67)
 - staging out of sync: staging_drift_days is over 30 → "staging has not matched production in {n} days; a change tested there is not safe to trust" (action SITE-C70)
 - consent gate not actually blocking a script: consent_gate_pass_rate for a named script is under 100 percent → "{script} fires before consent is given on {pct}% of test loads" (action SITE-C78)
 - broken link or redirect loop: broken_link_count is over 0 on a page linked from navigation or a sitemap → "{n} links are broken, including {example} linked from your main menu" (action SITE-C15)
@@ -324,7 +326,7 @@
 - checks a real transaction path end to end (add to cart through payment) from several regions, not just whether the homepage returns a 200 (vs UptimeRobot and StatusCake ping a URL and report status; they do not run a synthetic checkout)
 - ties every accessibility violation to the template it repeats on and routes it straight to a developer brief (vs also in axe DevTools and WAVE for the automated scan itself, which report a flat issue list without grouping by template or assigning it anywhere)
 - tracks structured data coverage as one rolling percentage across every eligible page type, not one URL at a time (vs also in Google's Rich Results Test and Search Console for validating a single page; neither gives a store-wide coverage number)
-- reads the RTO outcome back against the brand's own delivered-order history to say which COD control actually reduced returns (vs also in COD Guard, Level and RTO Shield for running the checkout-side block or confirmation; they report that the control ran, not whether it worked for this brand)
+- reads the failed-delivery and chargeback outcome back against the brand's own delivered-order history to say which checkout control actually reduced losses (India market option: which COD control actually reduced RTO) (vs also in fraud and chargeback tools such as Signifyd and Chargeflow for running the block or dispute-response step, and, in India, COD Guard, Level and RTO Shield for the checkout-side block or confirmation; they report that the control ran, not whether it worked for this brand)
 - cross-references every installed app against the brand's own revenue attribution before calling it dead weight (vs also in Thunder's and similar Shopify app-and-speed audits for counting and weighing apps; they do not check revenue)
 - verifies each pre-launch checklist item with the action a real customer would take, not a box someone ticks from memory (vs a manual launch checklist (a spreadsheet or a platform's own launch guide) records that a step was done, not that it was proven)
 
@@ -341,9 +343,9 @@
 - script and storyboard video, VSL and founder-led ads in the proven order. Founder asks: "does this script hit hook, mechanism, proof, objection and CTA, and stay an argument, not a biography". Capabilities: CREA-C08, CREA-C09
 - source, vet and authorize UGC and whitelisted creator content. Founder asks: "which creators are worth briefing again, and are we cleared to run their post as a paid ad". Capabilities: CREA-C10, CREA-C38, CREA-C51
 - generate a finished AI-actor video end to end without booking a shoot. Founder asks: "can we get a working cold-open video today instead of in two weeks". Capabilities: CREA-C36
-- pick the right native format and localise for a mobile-first Indian buyer. Founder asks: "does this concept fit the platform and the market, or does it need a redo". Capabilities: CREA-C11, CREA-C19, CREA-C22
+- pick the right native format and localise for the target market and device. Founder asks: "does this concept fit the platform and the market, or does it need a redo". Capabilities: CREA-C11, CREA-C19, CREA-C22
 - turn one approved master into every placement, caption and length automatically. Founder asks: "how much manual resizing, subtitling and cutting can we skip". Capabilities: CREA-C39, CREA-C40, CREA-C41
-- run creative as a monthly pipeline against volume, budget, naming and the festive calendar. Founder asks: "are we making enough of the right creative, on time, on budget, and tagged right". Capabilities: MEDIA-C15, CREA-C18, CREA-C20, CREA-C21, CREA-C18, CREA-C54
+- run creative as a monthly pipeline against volume, budget, naming and the holiday calendar. Founder asks: "are we making enough of the right creative, on time, on budget, and tagged right". Capabilities: MEDIA-C15, CREA-C18, CREA-C20, CREA-C21, CREA-C18, CREA-C54
 - flag catalogue and rights risk before anything goes live at scale. Founder asks: "will this feed or overlay break on some SKUs, or does an asset carry a license risk". Capabilities: CREA-C52, CREA-C43, CREA-C49, CREA-C52
 - study competitor creative for gaps, and stage approved work as paused drafts. Founder asks: "what are competitors testing that we are not, and can I get approved creative into Ads Manager as a draft without touching a live setting". Capabilities: LOOP-C13, CREA-C46, CREA-C47, CREA-C48
 
@@ -384,7 +386,7 @@
 - write bottom-funnel lines for the objections buyers actually raise, worst one first. Founder asks: "are we answering the objection that is actually costing us sales, before the smaller ones". Capabilities: CREA-C24
 - write SMS and lifecycle email copy blocks inside carrier, platform and cadence rules. Founder asks: "is this send inside the rules and does it match the account's cadence plan". Capabilities: LIFE-C14, LIFE-C14
 - draft a first-pass ad copy set straight from a live product page. Founder asks: "can I get a starting set of ad copy today without waiting on a full brief". Capabilities: CREA-C37
-- write India-specific COD-to-prepaid and RTO-reduction lines. Founder asks: "what do we say to move a cash-on-delivery order toward prepaid without sounding pushy". Capabilities: CREA-C44
+- write payment and delivery reassurance lines (BNPL, free returns, real delivery dates; COD-to-prepaid and RTO-reduction lines for an India-market brand, markets: IN). Founder asks: "what do we say to remove payment and delivery hesitation without sounding pushy, or, for a COD brand, to move an order toward prepaid". Capabilities: CREA-C44
 - prep marketplace listing and brand-store module copy on the same claim tiers as ads. Founder asks: "is this listing or A+ module making a claim our ads are not allowed to make". Capabilities: PROD-C34, CREA-C45
 - route each ad's copy to the right destination and package an approved batch for bulk upload. Founder asks: "is this ad's copy written for the page it will actually land on, and is the upload sheet ready to submit". Capabilities: SITE-C35, CREA-C35, CREA-C20
 - name a new product or system so the name itself does selling work. Founder asks: "does this name carry the benefit or story on its own". Capabilities: CREA-C32
@@ -401,7 +403,7 @@
 - marketplace_claim_mismatch: a marketplace listing or A+ module claim is not present in the account's approved claim tier set used in ads → "{listing} claims {term}, which is not in your approved claim list." (action PROD-C34)
 - bulk_upload_will_fail: a prepped upload sheet has a row missing a required field or over a platform character limit, caught before submission → "{n} rows in this batch will fail on upload: {reason}." (action CREA-C35)
 - naming_taxonomy_gap: a shipped copy asset is missing one or more of the 7 fixed tags → "{n} assets shipped without full tagging this month." (action CREA-C20)
-- cod_trust_message_missing: a checkout or post-purchase touchpoint on the account's fixed list has no approved prepaid-nudge or RTO-trust line attached → "{touchpoint} has no prepaid or delivery-trust line." (action CREA-C44)
+- payment_delivery_trust_message_missing: a checkout or post-purchase touchpoint on the account's fixed list has no approved payment or delivery reassurance line (BNPL, free returns, real delivery date) attached; for a COD brand (markets: IN), the same check looks for a prepaid-nudge or RTO-trust line instead → "{touchpoint} has no payment or delivery-trust line." (action CREA-C44)
 - product_url_draft_slow: the last 5 product-URL-to-draft runs took more than twice the trailing 30-day median turnaround → "The last {n} product-page drafts took {minutes} minutes, {pct}% slower than usual." (action CREA-C37)
 - destination_routing_conflict: two or more live ads target the same keyword or audience but route to different destinations selling the same product → "{n} live ads route the same audience to different pages for the same product." (action SITE-C35)
 - voice_rule_catches_rising: more than 10% of drafts this week were caught with an em dash or a banned inflated word before shipping → "{pct}% of this week's drafts needed an em dash or banned-word fix before they shipped." (action CREA-C26)
@@ -429,7 +431,7 @@
 - catch a spend or ROAS anomaly and find the cause fast. Founder asks: "why did yesterday's numbers move so much, and is it us or the market". Capabilities: MEDIA-C45, MEDIA-C68, SITE-C36, BRN-C11
 - check pixel, CAPI and platform-suggestion health. Founder asks: "is our tracking clean and are we accepting Meta's suggestions blindly". Capabilities: MONEY-C21, MEDIA-C07
 - run a TikTok launch, scale and Shop motion the right way. Founder asks: "is TikTok set up, scaling and Shop-ready the way the playbook says". Capabilities: MEDIA-C24, MEDIA-C25, MEDIA-C26, MEDIA-C27, CREA-C20, MEDIA-C29
-- plan a peak sale ramp, wind-down and cross-border delivery. Founder asks: "are we ready for the sale date and for buyers outside India". Capabilities: MEDIA-C21, MEDIA-C22
+- plan a peak sale ramp, wind-down and cross-border delivery. Founder asks: "are we ready for the sale date and for buyers outside the US". Capabilities: MEDIA-C21, MEDIA-C22
 - keep account access, pre-launch QA and policy risk clean. Founder asks: "is anything about to get an ad rejected or a login lost". Capabilities: MEDIA-C23, MEDIA-C59, MEDIA-C55, MEDIA-C55
 - see which decisions need the founder, not the agent. Founder asks: "what is waiting on me right now and why". Capabilities: ORCH-C03, LOOP-C03, LIFE-C22, MEDIA-C07, MEDIA-C62, MEDIA-C63, MEDIA-C63
 
@@ -458,7 +460,7 @@
 - logs every Advantage+ or automated suggestion applied, with a persisted before/after read attached to it (vs Ads Manager shows a suggestion feed but keeps no lasting before/after test log once a suggestion is applied)
 - fans one spend or ROAS anomaly out to the brand's own site speed, stock level and competitor snapshot from the same day, automatically (vs Meta Ads Manager and TikTok Ads Manager flag the anomaly inside the ad account but never look outside it for the cause)
 - tracks each TikTok Spark creator's 365-day authorization next to the organic post that earned it, with the expiry clock visible (vs TikTok Ads Manager shows Spark ads live but not the organic-to-paid loop timing or authorization expiry in one place)
-- routes every founder-gate call (scale ceiling, WhatsApp COD rollout, new-surface pilot, agentic-bidding guardrail) into one queue instead of leaving it split across ad account settings (vs no platform separates its own automation's suggestions from the calls only the founder should make)
+- routes every founder-gate call (scale ceiling, order-confirmation-flow rollout, new-surface pilot, agentic-bidding guardrail) into one queue instead of leaving it split across ad account settings (vs no platform separates its own automation's suggestions from the calls only the founder should make)
 
 ## Google Ads (MEDIA)
 
@@ -514,9 +516,10 @@
 - catch affiliate or coupon fraud before it costs margin. Founder asks: "is anyone gaming commission without earning it". Capabilities: MEDIA-C50
 - set commission tiers by partner type, category and customer status. Founder asks: "are we paying the right rate to the right partner". Capabilities: MEDIA-C51
 - reconcile what the affiliate network says is owed against real sales. Founder asks: "does the payout the network wants match what actually sold and stayed sold". Capabilities: MEDIA-C51
-- prepare an Amazon Sponsored Products/Brands brief for handoff. Founder asks: "what should whoever runs our Amazon ads actually do this month". Capabilities: MEDIA-C52
-- prepare a Flipkart sponsored placement brief for handoff. Founder asks: "what should whoever runs our Flipkart ads actually do this month". Capabilities: MEDIA-C52
-- prepare a quick commerce retail media plan for Blinkit, Zepto and Instamart. Founder asks: "is quick commerce worth a self-serve ad budget and how much". Capabilities: MEDIA-C53
+- prepare an Amazon Sponsored Products/Brands, Walmart Connect or Target Roundel brief for handoff. Founder asks: "what should whoever runs our marketplace ads actually do this month". Capabilities: MEDIA-C52
+- India only: prepare a Flipkart sponsored placement brief for handoff. Founder asks: "what should whoever runs our Flipkart ads actually do this month". Capabilities: MEDIA-C52
+- prepare a rapid-delivery/grocery retail media plan for Instacart, DoorDash and Gopuff. Founder asks: "is rapid-delivery retail media worth a self-serve ad budget and how much". Capabilities: MEDIA-C53
+- India only: prepare a quick-commerce retail media plan for Blinkit, Zepto and Instamart. Founder asks: "is quick commerce worth a self-serve ad budget and how much". Capabilities: MEDIA-C53
 - evaluate whether a DSP is worth adding. Founder asks: "are Meta and Google retargeting pools saturated enough to justify a DSP". Capabilities: MEDIA-C54
 - reconcile ad platform billing against the budget ledger. Founder asks: "does what Meta, Google and TikTok actually billed match what they reported and what we budgeted". Capabilities: MONEY-C15
 - keep a standing invoice-to-ledger reconciliation running. Founder asks: "is every new invoice matched automatically or sitting unresolved". Capabilities: MONEY-C15
@@ -531,9 +534,11 @@
 - brand-bidding affiliate: an affiliate is found bidding on the brand's own name in paid search → "{affiliate} is bidding on '{brand_term}' in search. This usually breaks program terms." (action MEDIA-C50)
 - invoice does not match platform report: invoice_vs_reported_variance exceeds 1% → "{platform}'s invoice is {pct}% off its own reported spend for {period}." (action MONEY-C15)
 - invoice does not match ledger: invoice_vs_ledger_variance is non-zero → "{platform}'s invoice is {amount} off the budget ledger for {period}." (action MONEY-C15)
-- GST credit unreconciled: an invoice's GST/RCM has not been matched to the accounting credit ledger → "{n} invoices have GST credits not yet matched." (action MONEY-C15)
+- sales tax or 1099 credit unreconciled: an invoice's sales-tax charge or 1099 record has not been matched to the accounting ledger → "{n} invoices have sales-tax or 1099 records not yet matched." (action MONEY-C15)
+- GST credit unreconciled: an invoice's GST/RCM has not been matched to the accounting credit ledger. India only; does not fire for US brands. → "{n} invoices have GST credits not yet matched." (action MONEY-C15)
 - retargeting pool saturated: retargeting_saturation_signal is true on both Meta and Google → "Both Meta and Google retargeting are capped with flat reach. Worth a DSP pilot." (action MEDIA-C54)
-- quick commerce underperforming benchmark: quick_commerce_roas_benchmark_gap is negative by more than 20% → "{platform} ROAS is {pct}% below the category benchmark." (action MEDIA-C53)
+- rapid-delivery retail media underperforming benchmark: rapid_delivery_roas_benchmark_gap is negative by more than 20% → "{platform} ROAS is {pct}% below the category benchmark." (action MEDIA-C53)
+- quick commerce underperforming benchmark: quick_commerce_roas_benchmark_gap is negative by more than 20%. India only; does not fire for US brands. → "{platform} ROAS is {pct}% below the category benchmark." (action MEDIA-C53)
 - organic mention worth whitelisting: a discovered organic mention has engagement above the brand's set threshold and is not already a paid partner → "{creator} is already showing your product organically with {engagement} engagement. Reach out before offering payment." (action ORG-C49)
 - coupon abuse rising: coupon_abuse_rate rose 1 point or more week over week → "Coupon abuse rose to {pct}% this week." (action MEDIA-C50)
 
@@ -541,8 +546,8 @@
 
 - flags affiliate fraud using fast click-to-conversion, suspect ISP, big-ticket-early-order and brand-bidding rules together, tied back to the exact commission owed (vs also in Refersion for the vetting checks themselves, but Refersion flags fraud inside its own tracker and does not tie the flag to the brand's separate commission ledger)
 - reconciles what an affiliate network says is owed against verified sales and refunds before a payout is approved (vs Refersion auto-verifies and auto-approves commissions from its own tracker; this room checks that number against the brand's order data first)
-- turns Amazon, Flipkart and quick-commerce plans into a handoff brief with targeting, budget and a category ROAS benchmark, and says plainly that live performance stays unavailable until those accounts are connected (vs no dashboard here claims to read Amazon, Flipkart or quick-commerce ad performance; the room is honest about the gap instead of guessing)
-- matches each platform's invoice, including GST and reverse-charge credits, against both its own reported spend and the brand's budget ledger in one reconciliation (vs Meta, Google and TikTok billing centers show an invoice against their own reported spend only, not the brand's ledger or its GST credits)
+- turns Amazon, Walmart, Target and rapid-delivery plans (Flipkart and quick-commerce plans for the India option) into a handoff brief with targeting, budget and a category ROAS benchmark, and says plainly that live performance stays unavailable until those accounts are connected (vs no dashboard here claims to read Amazon, Walmart, Target, Flipkart or rapid-delivery/quick-commerce ad performance; the room is honest about the gap instead of guessing)
+- matches each platform's invoice, including applicable US sales tax and 1099 records (GST and reverse-charge credits for the India option), against both its own reported spend and the brand's budget ledger in one reconciliation (vs Meta, Google and TikTok billing centers show an invoice against their own reported spend only, not the brand's ledger or its sales-tax and 1099 records)
 - surfaces creators already wearing or reviewing the product organically as whitelist candidates before any outreach cost is paid (vs affiliate and influencer platforms track creators already inside the program, not organic mentions found outside it)
 - keeps founder-gate calls (fraud holds, payout disputes, DSP spend, commission tier changes) in one queue instead of split across the affiliate network's UI, each platform's billing page, and email (vs no single tool spans affiliate, marketplace ad and platform billing decisions in one founder queue)
 
@@ -562,7 +567,7 @@
 - keep the segmentation model current. Founder asks: "are my segments still accurate or built on stale rules". Capabilities: LIFE-C12
 - plan the weekly campaign calendar. Founder asks: "am I over-mailing discounts and under-mailing everything else". Capabilities: LIFE-C13
 - protect sender reputation and list health. Founder asks: "is my list quality putting future sends at risk of the spam folder". Capabilities: LIFE-C16
-- run SMS, WhatsApp and push as their own channels. Founder asks: "should this message be WhatsApp instead of SMS, and is our India WhatsApp commerce program converting COD to prepaid". Capabilities: LIFE-C17, LIFE-C22
+- run SMS, WhatsApp and push as their own channels. Founder asks: "should this message be SMS or WhatsApp, and (for COD markets such as India) is our WhatsApp commerce program converting COD to prepaid". Capabilities: LIFE-C17, LIFE-C22
 - run the test program and monthly health read-out. Founder asks: "what changed this month, is it a traffic problem or a flow problem, and what should I test next". Capabilities: LIFE-C19, LIFE-C20
 
 **Insights, as rules**
@@ -590,7 +595,7 @@
 - A pre-send honesty check that blocks a scarcity or countdown claim with no matching inventory or expiry record (vs no ESP or SMS platform enforces this automatically; it is normally a manual copy-review step, if it happens at all)
 - Flow revenue mismatch between the platform's own report and real orders is surfaced as its own alert (vs ESPs report their own attributed number with no way to see the gap against actual order data without exporting both and joining them by hand)
 - Test hygiene (minimum sample, pre-registered read window) is enforced across flows, campaigns and channels in one backlog (vs Klaviyo's built-in A/B testing checks a single flow or campaign split, not a cross-channel test calendar with hygiene rules)
-- WhatsApp COD-to-prepaid conversion is tracked as its own metric tied to order data (vs not a standard metric in Klaviyo, Gorgias or generic WhatsApp Business dashboards, which report delivery and read rates, not payment-method conversion)
+- WhatsApp COD-to-prepaid conversion (a COD market such as India) is tracked as its own metric tied to order data (vs not a standard metric in Klaviyo, Gorgias or generic WhatsApp Business dashboards, which report delivery and read rates, not payment-method conversion)
 
 ## Customers and CX (LIFE)
 
@@ -599,7 +604,7 @@
 - map the post-purchase journey and fund the right moments. Founder asks: "which touchpoints actually make a customer feel cared for, and which are just broken promises to fix". Capabilities: LIFE-C23
 - cut delivery-status support tickets. Founder asks: "are shipping updates good enough that people stop asking 'where is my order'". Capabilities: LIFE-C24
 - run the unboxing and packaging program. Founder asks: "is what we spend on packaging and inserts earning back attention or reviews". Capabilities: LIFE-C25
-- run returns, exchanges and COD/RTO control. Founder asks: "is our return and RTO rate normal for this category and market, and is it costing us margin". Capabilities: LIFE-C26
+- run returns, exchanges and reversed-orders control (chargebacks, and RTO for COD markets). Founder asks: "is our return, chargeback and (for COD markets) RTO rate normal for this category and market, and is it costing us margin". Capabilities: LIFE-C26
 - run support replies and ticket tagging. Founder asks: "what are people actually contacting us about, and is it getting worse". Capabilities: LIFE-C27
 - collect and respond to reviews, and push the best ones out. Founder asks: "are we asking for reviews at the right moment, replying to the bad ones, and using the good ones anywhere else". Capabilities: LIFE-C28, LIFE-C28, LIFE-C52
 - run NPS, CSAT and voice-of-customer. Founder asks: "is satisfaction moving, and why". Capabilities: LIFE-C29
@@ -609,20 +614,21 @@
 - keep one profile per real person. Founder asks: "are we treating the same customer as 3 different people across channels". Capabilities: LIFE-C48
 - govern what the AI support agent can do on its own. Founder asks: "exactly what can the AI agent refund, change or promise without a human". Capabilities: LIFE-C49
 - know true profit per customer, not revenue. Founder asks: "is this 'VIP' customer actually profitable once support, returns and shipping cost are counted". Capabilities: LIFE-C62
-- handle DPDP data requests and courier/marketplace exceptions. Founder asks: "can we prove we handled this data request and this failed delivery correctly and on time". Capabilities: LIFE-C66, PROD-C56, LIFE-C55
+- handle privacy data requests and carrier delivery exceptions. Founder asks: "can we prove we handled this privacy request and this failed delivery correctly and on time". Capabilities: LIFE-C66, PROD-C56, LIFE-C55
 
 **Insights, as rules**
 
 - silent churn risk: a customer's RFM recency decays past their own historical repurchase window, with no support contact and no email/SMS engagement in the same period → "{n} customers are past their usual reorder window with zero contact from us or to us" (action LIFE-C33)
-- refund without credit note: a refund is marked completed with no linked, filed GST credit note after 15 days → "{n} refunds from the last filing period have no matching credit note on file" (action LIFE-C55)
+- refund missing tax reversal: a refund is marked completed with no matching sales-tax adjustment after 15 days (India: no linked, filed GST credit note after 15 days, markets IN) → "{n} refunds from the last filing period have no matching tax adjustment on file (GST credit note for India)" (action LIFE-C55)
 - unprofitable VIP: a customer tagged VIP by revenue shows negative true_customer_profitability over the trailing 12 months → "{n} of your VIP customers are actually unprofitable once returns and support cost are counted" (action LIFE-C62)
 - unanswered negative review: a review rated 2 stars or lower has no response after 5 days → "{n} reviews at 2 stars or below have gone unanswered for over 5 days" (action LIFE-C28)
-- NDR loop: the same order has 2 or more failed delivery attempts with no successful reschedule → "order {id} has failed delivery {n} times with no successful rebooking" (action PROD-C56)
+- failed-delivery loop: the same order has 2 or more failed delivery attempts with no successful reschedule (return-to-sender for US carriers, NDR for India's COD orders) → "order {id} has failed delivery {n} times with no successful rebooking" (action PROD-C56)
 - crisis signal: mentions of one complaint theme across public channels (reviews, socials, forums) more than triples the trailing 14-day average in a single day → "mentions of '{theme}' are {n} times the normal rate today" (action BRAND-C54)
-- DPDP deadline at risk: an open data request is within 3 days of its legal SLA deadline and not yet resolved → "request {id} is due in {n} days and is still open" (action LIFE-C66)
+- privacy request deadline at risk: an open data request is within 3 days of its legal SLA deadline and not yet resolved (CCPA/state privacy law for the US; DPDP for India) → "request {id} is due in {n} days and is still open" (action LIFE-C66)
 - identity fragmentation: the same phone number or email appears on more than one unmerged profile with orders on both → "{n} customers likely have 2 or more unmerged profiles, understating real repeat rate" (action LIFE-C48)
 - ticket reason drift: one reason_tag's share of total ticket volume grows more than 10 percentage points month over month → "'{reason}' tickets went from {a}% to {b}% of contacts this month" (action LIFE-C27)
-- RTO concentrated in one zone: a pincode cluster or courier shows an RTO rate more than double the brand's overall rate, with at least 20 orders in the window → "{zone} is running {n}x the average RTO rate on {count} orders this month" (action LIFE-C26)
+- RTO concentrated in one zone (India): a pincode cluster or courier shows an RTO rate more than double the brand's overall rate, with at least 20 orders in the window; reads null for US brands → "{zone} is running {n}x the average RTO rate on {count} orders this month" (action LIFE-C26)
+- return-to-sender concentrated in one zone or carrier: a shipping zone or carrier shows a return-to-sender rate more than double the brand's overall rate, with at least 20 orders in the window → "{zone} is running {n}x the average return-to-sender rate on {count} orders this month" (action LIFE-C26)
 - marketplace rating gap: a SKU's marketplace rating is more than 0.5 stars below its on-site rating, with at least 10 marketplace reviews → "{sku} rates {onsite} stars on-site but only {market} on {platform}" (action LIFE-C28)
 - AI agent overreach: a logged AI support agent action exceeds its configured autonomy cap (refund amount, address change scope, or action type not on the approved list) → "the AI agent took action '{action}' worth {amount}, above its {cap} cap" (action LIFE-C49)
 - marketplace seller queue backlog: marketplace seller-support tickets aging past the marketplace's own SLA and still open → "{n} marketplace buyer messages on {platform} are past SLA and unanswered" (action LIFE-C67)
@@ -631,9 +637,9 @@
 **Not elsewhere**
 
 - Lifetime value is computed on gross profit after returns, support and discount cost, not on revenue (vs Shopify's native LTV and cohort reports are revenue based and, outside Shopify Plus, do not offer cohort analysis at all; Triple Whale's cohort tools are also built on revenue and ad spend, not on returns and support cost netted out)
-- COD RTO and failed-delivery (NDR) reschedule outcomes are tracked as their own funnel tied to real courier events (vs not a standard view in Klaviyo, Gorgias or Shopify analytics, which do not carry courier delivery-attempt data)
-- Support ticket reasons and CSAT are shown next to return, RTO and true-profitability data in one room (vs also in Gorgias for ticket reasons and CSAT alone; Gorgias has no view of returns cost, RTO or per-customer profitability)
-- A single DPDP data-request register that tracks every system holding a person's data, with a legal SLA clock (vs no ecommerce tool ships this off the shelf, since the data spans the ESP, helpdesk, loyalty app, POS and marketplace accounts a brand uses)
+- Failed-delivery, return-to-sender and (India) COD RTO reschedule outcomes are tracked as their own funnel tied to real carrier events (vs not a standard view in Klaviyo, Gorgias or Shopify analytics, which do not carry carrier delivery-attempt data)
+- Support ticket reasons and CSAT are shown next to return, reversed-order (chargebacks, and RTO for COD markets) and true-profitability data in one room (vs also in Gorgias for ticket reasons and CSAT alone; Gorgias has no view of returns cost, reversed orders or per-customer profitability)
+- A single privacy data-request register (CCPA/state privacy law for the US, DPDP for India) that tracks every system holding a person's data, with a legal SLA clock (vs no ecommerce tool ships this off the shelf, since the data spans the ESP, helpdesk, loyalty app, POS and marketplace accounts a brand uses)
 - One merged customer identity across guest checkouts, phone, WhatsApp numbers, POS and marketplace orders before churn or LTV is scored (vs Shopify and most ESPs treat a guest checkout, a repeat email and a marketplace order as separate records unless a paid CDP is added; this identity resolution is a prerequisite step here, not an add-on)
 - An AI support agent's exact autonomy limits (refund cap, allowed action types) are logged and checked against every action it actually takes (vs off-the-shelf AI helpdesk agents surface a config screen for the limits, but few log and flag when an action approaches or crosses that limit automatically)
 
@@ -687,7 +693,7 @@
 
 **Jobs**
 
-- know if this week's content plan held the posting floor and covers the next festival. Founder asks: "did we post what we planned and is the next festival slot covered". Capabilities: ORG-C02
+- know if this week's content plan held the posting floor and covers the next holiday moment. Founder asks: "did we post what we planned and is the next holiday slot covered". Capabilities: ORG-C02
 - decide how much the founder needs to be on camera this month. Founder asks: "how much of what worked needed the founder's face, and are we over that budget". Capabilities: ORG-C03
 - turn today's idea into a shootable script with a named SKU and buyer. Founder asks: "what do we say, to whom, and in which language variant". Capabilities: ORG-C04
 - spot a one-off winner worth turning into a named repeatable series. Founder asks: "which post should become a format the team can run without the founder". Capabilities: ORG-C05
@@ -700,19 +706,20 @@
 - decide which creators to seed this month and confirm gifting, rights and fraud checks ran. Founder asks: "who should get product for content, and did we get usage rights back". Capabilities: ORG-C14
 - see which SKU and hook actually sold, not just which post got views. Founder asks: "which content made money, and which viral post reached strangers who never bought". Capabilities: ORG-C16
 - run the YouTube channel as its own surface with its own search mechanics. Founder asks: "are our videos titled, thumbnailed and chaptered to be found in YouTube search". Capabilities: ORG-C38
-- know if the owned community (WhatsApp or Discord) is worth the moderation time. Founder asks: "is the community active, and do active members actually buy". Capabilities: LIFE-C53
+- know if the owned community (Discord, Circle, Facebook group or SMS list; WhatsApp for an India, EU or LATAM audience) is worth the moderation time. Founder asks: "is the community active, and do active members actually buy". Capabilities: LIFE-C53
 
 **Insights, as rules**
 
 - posting floor missed: posts_published this week < posts_planned at floor → "{n} of {planned} planned posts did not go out this week" (action ORG-C02)
-- festive gap: a festival is within 14 days and has zero assigned script → "{festival} is in {d} days and has no script yet" (action ORG-C02)
+- holiday gap: a US holiday or retail moment is within 14 days and has zero assigned script → "{holiday} is in {d} days and has no script yet" (action ORG-C02)
+- festival gap: an India festival is within 14 days and has zero assigned script → "{festival} is in {d} days and has no script yet" (action ORG-C02)
 - stranger-blind viral post: a post is in the top 3 by reach in the last 30 days and carries no named SKU or CTA tag → "{title} got {reach} views but named no product and gave no next step" (action ORG-C16)
 - broad low-value hit: a post is in the top reach quartile and its matched orders fall below the set floor → "{title} reached {n} people but sold {k} pieces, below the {floor} floor" (action ORG-C16)
 - unused UGC: a verified review or photo asset has sat unposted for more than 21 days → "{n} verified reviews are unused for over {d} days" (action ORG-C11)
 - asset expiring unused: an asset's shelf-life end date is within 7 days and its reuse count is 0 → "{n} assets retire this week without being reused anywhere" (action ORG-C13)
 - claims gate catching a real pattern: the same claims rule triggers 3 or more times in a month → "{n} posts were held this month for {top_rule}, more than any other rule" (action LOOP-C12)
 - creator seeding, no yield: a creator was seeded more than 21 days ago and has delivered zero content → "{n} of {seeded} creators sent product but delivered nothing in 3 weeks" (action ORG-C14)
-- DM funnel leak: the share of DM threads ending with no captured contact exceeds 70% → "{pct}% of DM conversations end without an email, WhatsApp opt-in or phone number" (action ORG-C10)
+- DM funnel leak: the share of DM threads ending with no captured contact exceeds 70% → "{pct}% of DM conversations end without an email, SMS opt-in or phone number (or a WhatsApp opt-in, market option for India, EU or LATAM)" (action ORG-C10)
 - dead or mismatched link: a live post's link fails the check or does not match the intended page → "{n} live posts point to a page that is down or does not match" (action ORG-C12)
 - comment response lag: a comment or DM needing a reply has waited more than 24 hours → "{n} messages have waited over {h} hours for a reply" (action ORG-C09)
 - community going quiet: active member rate falls 10 percentage points or more month over month → "community activity fell {pct} points this month" (action LIFE-C53)
@@ -726,7 +733,7 @@
 - tracks creator seeding cost, fulfillment and content yield against the same tagged asset library the calendar draws from (vs creator/UGC platforms track shipments and creators, but do not connect yield to the brand's own content library or calendar)
 - flags a stranger-blind viral post and a broad-reach, low-order hit by a fixed rule tied to the store's own orders (vs platform analytics report reach and engagement; none of the mainstream schedulers flag a post as viral-but-not-selling against the brand's own order floor)
 - tracks an asset's shelf life and reuse across PDP, email, DM and post-purchase flow before retiring it (vs social schedulers manage the posting calendar only; they do not track reuse of the same asset across owned commerce surfaces)
-- reads the owned WhatsApp or Discord community's active-member rate against matched store orders (vs Later has no social listening at all; Hootsuite and Sprout Social track engagement inside the platform, not matched to the brand's own order data)
+- reads the owned Discord, SMS or WhatsApp community's active-member rate against matched store orders (vs Later has no social listening at all; Hootsuite and Sprout Social track engagement inside the platform, not matched to the brand's own order data)
 
 ## SEO (ORG)
 
@@ -778,7 +785,7 @@
 - run a fixed prompt set and see how each AI engine describes and recommends us. Founder asks: "what does ChatGPT, Gemini, Perplexity and Google AI say about us today". Capabilities: ORG-C37
 - know whether an engine's answer is a real gap and how bad it is. Founder asks: "which of the 6 gap types are we in for each named engine". Capabilities: ORG-C37
 - publish one facts page that closes every gap the audit finds. Founder asks: "what facts are missing that a buyer prompt keeps needing". Capabilities: ORG-C35
-- keep the same facts identical everywhere an engine can read them. Founder asks: "does the price, return window, warranty and COD answer match on the site, schema, feed and directories". Capabilities: ORG-C35
+- keep the same facts identical everywhere an engine can read them. Founder asks: "does the price, return window, warranty and payment method answer match on the site, schema, feed and directories". Capabilities: ORG-C35
 - make an existing high-value page easy for an engine to lift a direct answer from. Founder asks: "which pages are citable and which still bury the answer". Capabilities: ORG-C34
 - fix a wrong AI-stated fact at the source first, then the likely publisher. Founder asks: "what is an engine getting wrong about us right now, and where did it likely learn it". Capabilities: ORG-C36
 - know if a correction actually landed after fixing it. Founder asks: "did the engine's answer change after we fixed it, and how long did that take". Capabilities: ORG-C36
@@ -862,13 +869,13 @@
 - see a running scorecard on every active supplier. Founder asks: "which suppliers are slipping on time, defects or price". Capabilities: PROD-C69
 - see fulfilment SLA performance from the 3PL. Founder asks: "is my warehouse hitting the pick-pack-dispatch times it promised". Capabilities: PROD-C53, PROD-C52
 - see a courier scorecard by zone. Founder asks: "which courier should carry which zone right now". Capabilities: PROD-C59
-- work today's NDR queue before the attempt window closes. Founder asks: "which non-delivered orders need action today". Capabilities: PROD-C56
-- see COD remittance reconciled against orders. Founder asks: "did the courier pay me what it owes me". Capabilities: MONEY-C52
+- work today's carrier-exception queue before the attempt window closes (india: NDR queue). Founder asks: "which failed-delivery orders need action today". Capabilities: PROD-C56
+- see carrier billing reconciled against orders, including COD remittance where the brand offers it (india only; markets: IN). Founder asks: "did the carrier pay or bill me correctly". Capabilities: MONEY-C52
 - see slow-moving and dead stock with a clearance plan. Founder asks: "what stock is turning into dead weight, and what do I do about it". Capabilities: PROD-C27
 - track supplier contract price locks and renewal dates. Founder asks: "which supplier deals need renegotiating soon". Capabilities: LOOP-C28
 - see three-way PO-invoice-goods receipt match exceptions. Founder asks: "did I get billed for what I actually received". Capabilities: MONEY-C53
 - track commodity input cost trend behind key SKUs. Founder asks: "is a cost-down still worth asking for". Capabilities: PROD-C18
-- see peak-season readiness across stock, staffing and systems. Founder asks: "am I ready for the festive spike". Capabilities: PROD-C72
+- see peak-season readiness across stock, staffing and systems. Founder asks: "am I ready for the Q4/BFCM spike (india: the festive spike)". Capabilities: PROD-C72
 
 **Insights, as rules**
 
@@ -876,23 +883,24 @@
 - landed cost drifted without a margin recheck: landed_cost_per_unit has moved more than 5% since the last margin gate run for that SKU, and the gate has not been rerun → "{sku}'s landed cost moved {pct}% since its margin was last checked. Rerun the gate before the next order." (action PROD-C23)
 - supplier concentration risk: supplier_concentration_share exceeds 60% with no backup supplier mapped in a second country → "{pct}% of {sku}'s volume comes from one supplier with no mapped backup. One factory problem stops this SKU." (action PROD-C23)
 - supplier scorecard slipping: supplier_scorecard_score falls for 2 consecutive scoring periods → "{supplier}'s scorecard has dropped for {n} periods in a row. Review before the next PO." (action PROD-C69)
-- courier underperforming a zone: courier_rto_rate for a courier-zone pair is more than 10 points above the brand's best courier in the same zone → "{courier} runs a {pct} RTO rate in {zone}, {diff} points worse than {best_courier}. Shift volume." (action PROD-C59)
-- NDR aging toward its attempt window: an open NDR has fewer than 4 hours left before the courier's attempt window closes → "{n} NDRs close their attempt window in under 4 hours. Confirm the address or reschedule now." (action PROD-C56)
-- COD remittance shortfall: cod_remittance_variance is nonzero for a closed remittance cycle → "{courier} remitted {amount} less than expected for {period}. Open a billing dispute." (action MONEY-C52)
+- courier underperforming a zone: courier_rto_rate for a courier-zone pair is more than 10 points above the brand's best courier in the same zone → "{courier} runs a {pct} return-to-sender rate in {zone}, {diff} points worse than {best_courier}. Shift volume. (India: read as RTO rate.)" (action PROD-C59)
+- carrier exception aging toward its attempt window: an open carrier exception has fewer than 4 hours left before the attempt window closes → "{n} carrier exceptions close their attempt window in under 4 hours. Confirm the address or reschedule now. (India: NDRs.)" (action PROD-C56)
+- COD remittance shortfall: cod_remittance_variance is nonzero for a closed remittance cycle → "{courier} remitted {amount} less than expected for {period}. Open a billing dispute. (India only; markets: IN.)" (action MONEY-C52)
 - stock turning into dead weight: a SKU's inventory age passes the brand's dead-stock threshold while its sales velocity stays below the brand's slow-mover line → "{sku} has {units} units aged past {days} days with barely any sales. Draft a clearance plan." (action PROD-C27)
 - price lock expiring soon: price_lock_days_remaining is under 30 days with no renegotiation started → "{supplier}'s price lock ends in {days} days. Start the renewal conversation now." (action LOOP-C28)
 - invoice does not match goods received: three_way_match_exception_count is greater than 0 for a PO ready to pay → "{po_id} has a quantity or price mismatch against what was received. Hold payment and check it." (action MONEY-C53)
 - commodity cost spike: commodity_input_cost_index rises more than 8% since the SKU's cost was last locked → "The raw material behind {sku} is up {pct}% since the last price lock. Recheck margin before the next PO." (action PROD-C18)
-- peak season not ready: peak_season_readiness_pct is below 80% with fewer than 45 days left to the festival date → "Peak-season readiness is {pct}% with {days} days to go. Stock, staffing or systems need attention now." (action PROD-C72)
-- NDR converting to RTO more than usual: ndr_to_rto_conversion_rate rises more than 10 points above the brand's trailing 90-day average → "NDRs are converting to RTO {pct} more than usual this period. Check address-confirmation outreach and courier performance." (action PROD-C56)
+- peak season not ready: peak_season_readiness_pct is below 80% with fewer than 45 days left to the Q4/BFCM date (india: the festival date) → "Peak-season readiness is {pct}% with {days} days to go. Stock, staffing or systems need attention now." (action PROD-C72)
+- carrier exceptions converting to return-to-sender more than usual: exception_to_return_to_sender_rate rises more than 10 points above the brand's trailing 90-day average → "Carrier exceptions are converting to return-to-sender {pct} more than usual this period. Check address-confirmation outreach and carrier performance. (India: NDRs converting to RTO.)" (action PROD-C56)
+- chargeback rate rising: chargeback_rate rises above the card networks' excessive-chargeback threshold or more than 50% above the brand's trailing average → "Chargeback rate is {pct}, {diff} above normal. Review dispute reason codes before it risks processor standing." (action MONEY-C52)
 
 **Not elsewhere**
 
 - recomputes landed cost the moment FX, freight or duty changes, and flags when a margin gate needs a recheck because of it (vs Cin7 and Katana calculate reorder points and safety stock from velocity and lead time; neither ties a landed cost change back to a margin recheck automatically)
-- joins the courier scorecard to this brand's own COD reversal cost to decide NDR reschedule versus RTO acceptance per order (vs Shiprocket and NimbusPost report courier-level RTO, NDR and COD data in aggregate; they do not weigh a reschedule against this brand's own unit economics per order)
-- sizes safety stock against India-specific spike risk, including festive and gifting demand, in the same screen as the reorder point (vs generic inventory tools size safety stock from velocity and lead time alone, without a festive calendar or COD-market RTO risk built in)
+- joins the carrier scorecard to this brand's own chargeback and return-to-sender cost to decide retry versus acceptance per order (india: COD reversal cost to decide NDR reschedule versus RTO) (vs Shiprocket and NimbusPost report courier-level RTO, NDR and COD data in aggregate; ShipStation and EasyPost report carrier exception data in aggregate; none weigh a reschedule against this brand's own unit economics per order)
+- sizes safety stock against peak-season spike risk (Q4/BFCM demand, carrier return-to-sender risk), and against India-specific festive and COD-RTO risk where that applies (markets: IN), in the same screen as the reorder point (vs generic inventory tools size safety stock from velocity and lead time alone, without a peak-season calendar or return-to-sender/RTO risk built in)
 - ties a supplier's scorecard directly to its concentration share and backup-factory status in one view (vs supplier scorecards in most ERPs track performance only; they are not shown next to how exposed the brand is if that supplier fails)
-- combines safety stock, warehouse staffing and WMS load readiness against the festive calendar into one readiness percentage (vs peak-season planning is normally a spreadsheet exercise split across ops, warehouse and sourcing with no single readiness number)
+- combines safety stock, warehouse staffing and WMS load readiness against the Q4/BFCM calendar (india: the festive calendar) into one readiness percentage (vs peak-season planning is normally a spreadsheet exercise split across ops, warehouse and sourcing with no single readiness number)
 
 ## Marketplaces and quick commerce (PROD)
 
@@ -902,16 +910,16 @@
 - track Buy Box ownership and reseller or MAP violations. Founder asks: "who holds the Buy Box, and is anyone underselling my price". Capabilities: PROD-C46
 - manage reviews and account health across marketplaces. Founder asks: "is my account health at risk of a suspension". Capabilities: PROD-C38
 - build and hand off one clean catalogue feed for ads and marketplaces. Founder asks: "is the feed the ad teams pull from current and clean". Capabilities: PROD-C47
-- recompute true quick commerce ROAS from transaction value, not MRP. Founder asks: "what is this platform's ad spend really returning". Capabilities: PROD-C49
+- recompute true rapid-delivery ROAS from transaction value, not list/MRP price. Founder asks: "what is this platform's ad spend really returning". Capabilities: PROD-C49
 - reconcile marketplace settlement payouts against order value. Founder asks: "did each platform actually pay me what my orders say I'm owed". Capabilities: ORCH-C03
 - monitor dark-store fill rate and replenishment cadence. Founder asks: "which dark stores are about to go out of stock and hurt my ranking". Capabilities: PROD-C51
-- manage quick commerce ad credits and the promotional calendar. Founder asks: "am I using platform ad credits before they expire, and what's the festive calendar asking for". Capabilities: PROD-C50
-- onboard the brand onto Blinkit, Zepto or Instamart. Founder asks: "where is this onboarding stuck, and what document is missing". Capabilities: PROD-C48
-- confirm BIS, hallmarking or labelling compliance before a listing goes live. Founder asks: "is this listing legally clear to publish". Capabilities: PROD-C45
+- manage rapid-delivery ad credits and the promotional calendar. Founder asks: "am I using platform ad credits before they expire, and what's the peak retail calendar asking for (india: the festive calendar)". Capabilities: PROD-C50
+- onboard the brand onto Instacart, DoorDash or Gopuff (india: Blinkit, Zepto or Instamart). Founder asks: "where is this onboarding stuck, and what document is missing". Capabilities: PROD-C48
+- confirm US labelling/quality-marking compliance before a listing goes live (india: BIS, hallmarking or labelling). Founder asks: "is this listing legally clear to publish". Capabilities: PROD-C45
 - build and optimise the Amazon listing. Founder asks: "is my listing structured so the target keywords actually rank". Capabilities: PROD-C34
 - manage Amazon replenishment and IPI limits. Founder asks: "am I about to breach a storage limit or run out of FBA stock". Capabilities: PROD-C39
 - diagnose an Amazon sales change. Founder asks: "did sales drop because of traffic or because of conversion". Capabilities: PROD-C40
-- keep Flipkart, Myntra and Nykaa listings current. Founder asks: "which of my other marketplace listings have gone stale". Capabilities: PROD-C44
+- keep Walmart, Target Plus, eBay and TikTok Shop listings current (india: Flipkart, Myntra and Nykaa). Founder asks: "which of my other marketplace listings have gone stale". Capabilities: PROD-C44
 
 **Insights, as rules**
 
@@ -919,22 +927,22 @@
 - Buy Box lost on an advertised SKU: buy_box_win_rate falls below 80% for a SKU that is currently running ads → "{sku} is only winning the Buy Box {pct}% of the time while ads are live. Ad spend is funding someone else's sale." (action PROD-C46)
 - MAP violation detected: reseller_price_variance shows a tracked reseller price more than 10% below MAP → "A reseller is selling {sku} {pct}% below MAP. Flag it before it drags down price perception everywhere." (action PROD-C46)
 - account health approaching suspension risk: account_health_score crosses the channel's own stated warning threshold → "{channel} account health has crossed its warning line. Address it before it becomes a suspension." (action PROD-C38)
-- true ROAS far below what the dashboard shows: quick_commerce_reported_roas exceeds quick_commerce_true_roas by more than 20% → "{platform} shows {reported}x ROAS, but the real number on transaction value is {true}x. Do not scale spend on the reported figure." (action PROD-C49)
+- true ROAS far below what the dashboard shows: rapid_delivery_reported_roas exceeds rapid_delivery_true_roas by more than 20% → "{platform} shows {reported}x ROAS, but the real number on transaction value is {true}x. Do not scale spend on the reported figure." (action PROD-C49)
 - settlement shortfall: settlement_variance_amount is nonzero and beyond a small rounding tolerance for a closed cycle → "{platform} paid {amount} less than the order records show for {period}. Send to Finance to dispute." (action ORCH-C03)
 - dark store stockout risk: dark_store_fill_rate_pct for a hero SKU falls below 70% for 2 consecutive days → "{sku} is out of stock in {pct}% of its dark stores for {n} days running. Expect a ranking penalty." (action PROD-C51)
 - ad credit going unused: ad_credit_utilization_pct is below 50% with fewer than 10 days left in the credit cycle → "{platform} ad credit is {pct}% used with {days} days left in the cycle. Spend it or lose it." (action PROD-C50)
 - IPI score risking storage limits: amazon_ipi_score falls below Amazon's published storage-limit threshold → "Amazon IPI score is {score}, below the storage-limit line. Storage capacity may be restricted." (action PROD-C39)
 - sales drop is a conversion problem, not traffic: sales_change_attribution shows over 70% of a sales drop explained by conversion rate, with traffic flat or up → "Sales fell {pct}%, but traffic held steady. The problem is on the listing or price, not visibility." (action PROD-C40)
-- stale marketplace listing: listing_staleness_days exceeds 90 for a listing on Flipkart, Myntra or Nykaa → "{sku} on {channel} has not been updated in {days} days. Review it against current competitor listings." (action PROD-C44)
-- compliance document missing before go-live: bis_compliance_status is unavailable or expired for a SKU category that requires it, and the listing is live or scheduled → "{sku} needs a current BIS or hallmarking document before it can stay live. It is missing or expired." (action PROD-C45)
+- stale marketplace listing: listing_staleness_days exceeds 90 for a listing on Walmart, Target Plus, eBay or TikTok Shop (india: Flipkart, Myntra or Nykaa) → "{sku} on {channel} has not been updated in {days} days. Review it against current competitor listings." (action PROD-C44)
+- compliance document missing before go-live: us_labeling_compliance_status is unavailable or expired for a SKU category that requires it, and the listing is live or scheduled → "{sku} needs a current FTC quality-mark or Care Labeling document before it can stay live (india: a BIS or hallmarking document). It is missing or expired." (action PROD-C45)
 - catalogue feed gone stale: catalogue_feed_freshness_hours exceeds 24 while ads or listings depend on it → "The shared catalogue feed has not synced in {hours} hours. Ads and listings may be running on old data." (action PROD-C47)
 
 **Not elsewhere**
 
-- recomputes quick commerce ROAS from real transaction value instead of MRP, and shows the gap against the platform's own reported number (vs Blinkit, Zepto and Instamart seller dashboards commonly report ROAS on MRP, which can overstate the real return by 30 to 50 percent)
-- watches Buy Box, reviews, listing health and account risk together across Amazon, Flipkart, Myntra, Nykaa, Blinkit and Zepto in one room (vs Amazon Brand Analytics only covers Amazon; each other marketplace requires its own seller portal, so no tool shows all of them side by side today)
+- recomputes rapid-delivery ROAS from real transaction value instead of list/MRP price, and shows the gap against the platform's own reported number (vs Instacart, DoorDash and Gopuff seller dashboards commonly report ROAS on list price (india: Blinkit, Zepto and Instamart on MRP), which can overstate the real return by 30 to 50 percent)
+- watches Buy Box, reviews, listing health and account risk together across Amazon, Walmart, Target Plus, eBay and TikTok Shop in one room (india: Flipkart, Myntra, Nykaa, Blinkit and Zepto) (vs Amazon Brand Analytics only covers Amazon; each other marketplace requires its own seller portal, so no tool shows all of them side by side today)
 - reconciles marketplace settlement payouts against order records automatically and routes a shortfall to Finance (vs settlement checking is normally a manual tally against each platform's own downloaded report, done separately by finance)
-- keeps one clean catalogue feed that Media buyer and Organic both pull from, with a staleness check (vs self-serve ad panels like Blinkit's Brand Central manage that platform's own catalogue only, not a feed shared across channels and ad teams)
+- keeps one clean catalogue feed that Media buyer and Organic both pull from, with a staleness check (vs self-serve ad panels like Instacart's Ads Manager (india: Blinkit's Brand Central) manage that platform's own catalogue only, not a feed shared across channels and ad teams)
 - splits an Amazon sales change into traffic versus conversion before anyone calls a product a failure (vs Amazon's own Business Reports show the two numbers separately; this room does the split and states which one explains most of the change)
 
 ## Finance and cash (MONEY)
@@ -949,25 +957,26 @@
 - compare financing, the data room and insurance, and stress-test them live. Founder asks: "what does this loan, this investor ask or this coverage gap do to our cash". Capabilities: MONEY-C08, MONEY-C58, MONEY-C59, MONEY-C08
 - know CAC, payback and LTV:CAC before scaling spend. Founder asks: "can we afford to spend more on acquisition". Capabilities: MONEY-C09
 - forecast revenue from cohorts and the marketing calendar. Founder asks: "what will next month's revenue look like, split new vs returning". Capabilities: MONEY-C10
-- build and defend the annual OPEX and payroll budget. Founder asks: "what can we afford to spend, and what does the next rupee of spend buy". Capabilities: MONEY-C11
-- stay compliant on GST, liabilities and FX exposure. Founder asks: "are we exposed on tax registration, gift-card liability or currency risk". Capabilities: MONEY-C12
+- build and defend the annual OPEX and payroll budget. Founder asks: "what can we afford to spend, and what does the next dollar of spend buy". Capabilities: MONEY-C11
+- stay compliant on US sales tax, liabilities and FX exposure (GST for India-selling brands). Founder asks: "are we exposed on sales-tax nexus, gift-card liability or currency risk". Capabilities: MONEY-C12
 - trust the daily and weekly numbers. Founder asks: "do Shopify, Meta, GA4, the processor and the books agree". Capabilities: MONEY-C14, MONEY-C15
 - know which SKUs and subscribers actually make money. Founder asks: "which products or subscription plans should we grow, fix or cut". Capabilities: MONEY-C17, MONEY-C18
-- set the acquisition financial calendar and guardrails. Founder asks: "how much can we safely spend around BFCM and the festive calendar". Capabilities: LOOP-C05
-- turn every settlement, COD payout, bill and payroll run into one clean ledger. Founder asks: "where did this payout, this COD cash or this bill actually land". Capabilities: MONEY-C51, MONEY-C52, MONEY-C53, MONEY-C54, MONEY-C55, MONEY-C56, MONEY-C57, MONEY-C60, MONEY-C52
+- set the acquisition financial calendar and guardrails. Founder asks: "how much can we safely spend around Q4 holiday (BFCM) and the rest of the promo calendar". Capabilities: LOOP-C05
+- turn every settlement, payout, bill and payroll run into one clean ledger (COD payout too, for India-selling brands). Founder asks: "where did this payout, this bill, or (for an India-selling brand) this COD cash actually land". Capabilities: MONEY-C51, MONEY-C52, MONEY-C53, MONEY-C54, MONEY-C55, MONEY-C56, MONEY-C57, MONEY-C60, MONEY-C52
 
 **Insights, as rules**
 
-- margin leak by SKU: a SKU's unit volume rose over the trailing 3 months while its CM3 stayed negative → "{sku} sold more each month but still loses ₹{amount} per unit after marketing cost" (action MONEY-C02)
-- cash below floor: the 13-week forecast's lowest point falls below the brand's stated minimum cash floor → "cash is projected to fall below ₹{floor} in week {n} if nothing changes" (action MONEY-C06)
+- margin leak by SKU: a SKU's unit volume rose over the trailing 3 months while its CM3 stayed negative → "{sku} sold more each month but still loses ${amount} per unit after marketing cost" (action MONEY-C02)
+- cash below floor: the 13-week forecast's lowest point falls below the brand's stated minimum cash floor → "cash is projected to fall below ${floor} in week {n} if nothing changes" (action MONEY-C06)
 - promo missed break-even: a completed promo's realized margin is below the break-even margin modeled before it launched → "{promo} needed a {x}% sales lift to break even and got {y}%" (action MONEY-C05)
 - CAC payback outruns cash cycle: CAC payback period in months exceeds the cash conversion cycle expressed in months → "new customers take {x} months to pay back but cash is tied up for {y} months first" (action MONEY-C09)
-- platform-books gap unexplained: platform_books_variance exceeds 2% for a source with no cause tagged → "{source} and the books differ by ₹{amount} this month with no named cause" (action MONEY-C15)
-- COD remittance stuck: cod_remittance_gap for a courier exceeds that courier's stated SLA in days → "₹{amount} in COD cash from {courier} is {n} days past its remittance SLA" (action MONEY-C52)
-- inventory cash overhang: days_inventory_outstanding exceeds the SKU's supplier lead time by more than 30 days → "₹{amount} of {sku} stock sits {n} days beyond what lead time needs" (action MONEY-C07)
+- platform-books gap unexplained: platform_books_variance exceeds 2% for a source with no cause tagged → "{source} and the books differ by ${amount} this month with no named cause" (action MONEY-C15)
+- payout deposit stuck: payout_deposit_gap for a source exceeds that source's stated payout SLA in days → "${amount} from {source} is {n} days past its payout SLA" (action MONEY-C52)
+- COD remittance stuck: cod_remittance_gap for a courier exceeds that courier's stated SLA in days (India only; reads null for US brands) → "₹{amount} in COD cash from {courier} is {n} days past its remittance SLA" (action MONEY-C52)
+- inventory cash overhang: days_inventory_outstanding exceeds the SKU's supplier lead time by more than 30 days → "${amount} of {sku} stock sits {n} days beyond what lead time needs" (action MONEY-C07)
 - subscription churn spike: subscription_churn_rate this month exceeds the trailing 3-month average by 20% relative → "{x}% more subscribers churned this month than the 3-month average" (action MONEY-C18)
 - budget overrun: opex_vs_budget for a category exceeds 10% over budget → "{category} spent {x}% over budget this month" (action MONEY-C11)
-- GST exposure: a state or marketplace's trailing 12-month sales crossed the registration threshold with no matching GSTIN on file → "{market} sales crossed the GST registration threshold with no registration logged" (action MONEY-C12)
+- sales tax nexus exposure: a state or marketplace's trailing 12-month sales crossed the economic-nexus threshold with no matching registration on file (the GST registration threshold, for India-selling brands) → "{market} sales crossed the sales-tax nexus threshold with no registration logged (the GST registration threshold, for India)" (action MONEY-C12)
 
 **Not elsewhere**
 
@@ -975,7 +984,7 @@
 - a rolling 13-week cash forecast tied to the same order, cost and payroll data as the P&L (vs Shopify's native reports show revenue and basic cost, not contribution margin or a cash forecast; that work is done in a separate spreadsheet today)
 - a promo break-even gate that blocks or clears a promo before it goes public, using the brand's real CM3 (vs generic discount-code apps report what a promo cost after the fact; they do not run a go/no-go check before launch)
 - financing options stress-tested live against the brand's actual rolling cash forecast, not a one-time spreadsheet comparison (vs financing marketplaces and lenders quote rates but do not simulate a specific structure against the brand's own forecast)
-- COD cash tracked to the bank and escalated to the courier automatically once a remittance passes that courier's own SLA (vs also in CODReconcile and Shiplystic for the collected-vs-remitted tracking; the drafted, SLA-cited escalation email is not part of those tools)
+- payout cash tracked to the bank and escalated to the source automatically once a remittance passes that source's own SLA (COD cash and the courier, for India-selling brands) (vs also in A2X and Link My Books for the gateway/marketplace collected-vs-deposited tracking (CODReconcile and Shiplystic for India's COD collected-vs-remitted tracking); the drafted, SLA-cited escalation email is not part of those tools)
 - all 5 recurring platform-to-books gaps reconciled in one place with a named cause each month (vs today this is done manually across separate Shopify, Meta, GA4, processor and accounting exports)
 
 ## Measurement and data health (MONEY)
@@ -1196,7 +1205,7 @@
 - build a targeted media list for a launch or story. Founder asks: "who exactly should get this pitch". Capabilities: BRAND-C53
 - monitor for reputation risk and prepare a holding statement. Founder asks: "is a problem building that we need to get ahead of". Capabilities: BRAND-C54
 - build the founder's public credibility pipeline. Founder asks: "where should the founder show up, and what are we eligible to win". Capabilities: BRAND-C60, BRAND-C61
-- build the brand's cultural and festive moment calendar. Founder asks: "what dates matter for PR, events and community this quarter". Capabilities: LOOP-C05
+- build the brand's US holiday and cultural moment calendar. Founder asks: "what dates matter for PR, events and community this quarter". Capabilities: LOOP-C05
 - design an event or pop-up sized to what the team can run. Founder asks: "where does our exact customer already gather, and can we show up there". Capabilities: BRAND-C42
 
 **Insights, as rules**
@@ -1206,7 +1215,7 @@
 - bet shows a real lift: bet_read_point_lift is positive and above the bet's own pre-set bar at its read point → "{bet} beat its control by {n}. Worth sizing up." (action REG-C02)
 - reputation risk building: mention or review volume in the reputation monitor rises more than 2x the trailing average with a negative tilt → "Mentions of the brand jumped {x}x this week with a negative tilt. A holding statement is drafted and waiting." (action BRAND-C54)
 - media list going stale: a contact on the current media list has not been reachable or has changed beat since the list was built → "{n} contacts on the {story} list need a re-check before this pitch goes out." (action BRAND-C53)
-- festive moment coming up with no brief: a calendar moment falls within 30 days and has no linked brief → "{moment} is {n} days away with no brief started." (action LOOP-C05)
+- holiday moment coming up with no brief: a calendar moment falls within 30 days and has no linked brief → "{moment} is {n} days away with no brief started." (action LOOP-C05)
 - partnership candidate flagged: a reputation check on a partnership candidate returns an open flag → "{candidate} has an open reputation flag: {reason}." (action BRAND-C71)
 - ambassador content waiting too long: a submission has sat unreviewed longer than the program's own review SLA → "{n} ambassador submissions have waited past the review deadline." (action BRAND-C55)
 - award deadline approaching, nothing started: an eligible award's submission deadline falls within 21 days and status is still 'eligible' → "The {award} deadline is {n} days away and nothing is submitted yet." (action BRAND-C61)
@@ -1217,5 +1226,5 @@
 - the reputation monitor ties a mention or review spike directly to a drafted holding statement in the same room (vs Muck Rack and Prowly monitor coverage and mentions but do not draft a holding statement tied to this brand's own crisis playbook)
 - partnership sourcing and reputation screening run in one pipeline, checked against the brand's own non-competitive, same-customer rule (vs generic partnership or CRM tools track deals but do not screen for category overlap or run a reputation check as one gated step)
 - the media list is built and verified per specific story or launch, matched to real beats (vs Muck Rack and Prowly sell a static, purchased journalist database; this room builds a small verified list for the story at hand)
-- the festive and cultural calendar is scoped to this brand's own category, PR needs, events and community moments, not a generic marketing holiday calendar (vs generic marketing calendars list every holiday, not the ones that matter for this brand's category and PR angles)
+- the US holiday and cultural calendar is scoped to this brand's own category, PR needs, events and community moments, not a generic marketing holiday calendar (vs generic marketing calendars list every holiday, not the ones that matter for this brand's category and PR angles)
 - the ambassador program room runs screening, task assignment, content approval and tracking end to end for this brand's own program (vs generic UGC rights tools manage content rights but do not run the day-to-day of an approved ambassador program)

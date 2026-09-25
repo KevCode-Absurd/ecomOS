@@ -9,7 +9,7 @@
   ],
   "jobs": [
    {
-    "job": "find why a page is slow and what it is costing in rupees",
+    "job": "find why a page is slow and what it is costing in dollars",
     "question": "why is my page slow and what is it costing me",
     "capabilities": [
      "SITE-C21"
@@ -66,7 +66,7 @@
    },
    {
     "job": "get ready for a sale-day traffic spike",
-    "question": "will the site hold up on the festive sale day",
+    "question": "will the site hold up on Black Friday, Cyber Monday or another big sale day (or a festive sale day in India)",
     "capabilities": [
      "SITE-C29"
     ]
@@ -447,7 +447,7 @@
    {
     "name": "cost of slowness bar",
     "type": "bar chart",
-    "shows": "estimated monthly rupees lost at current LCP versus at target LCP, for the pages that carry the most traffic",
+    "shows": "estimated monthly dollars lost at current LCP versus at target LCP, for the pages that carry the most traffic",
     "why_this_chart": "translates milliseconds into the number a founder actually decides on",
     "exists_today": false
    },
@@ -554,7 +554,7 @@
     "vs": "PageSpeed Insights and Lighthouse CI report the problem; they do not write the fix instructions or the rollback plan"
    },
    {
-    "claim": "prices slowness in the brand's own rupees per month, not a generic industry percentage",
+    "claim": "prices slowness in the brand's own dollars per month, not a generic industry percentage",
     "vs": "no common speed tool ties LCP to the brand's own conversion rate and average order value"
    },
    {
@@ -704,7 +704,7 @@
    },
    {
     "job": "build bundle and offer pricing with real anchors",
-    "question": "does the bundle show a real saving in rupees, not just a percent",
+    "question": "does the bundle show a real saving in dollars, not just a percent",
     "capabilities": [
      "SITE-C41"
     ]
@@ -1028,11 +1028,11 @@
    },
    {
     "name": "bundle savings shown only as a percent",
-    "rule": "a bundle or offer block shows a percent-off with no rupee amount saved",
+    "rule": "a bundle or offer block shows a percent-off with no dollar amount saved",
     "computed_from": [
      "SITE-C41 offer builder output"
     ],
-    "sentence": "{offer} shows {pct}% off with no rupee saving stated",
+    "sentence": "{offer} shows {pct}% off with no dollar saving stated",
     "severity": "ranked by the offer's traffic",
     "action_capability": "SITE-C41"
    },
@@ -1203,7 +1203,7 @@
    },
    {
     "claim": "ranks the test backlog by an expected-profit ceiling built from at least 2 pieces of evidence per hypothesis, before anything launches",
-    "vs": "also in VWO's and Convert's own prioritization frameworks (PIE, ICE style scores), which score persuasion and ease but not a rupee ceiling tied to the brand's own traffic and AOV"
+    "vs": "also in VWO's and Convert's own prioritization frameworks (PIE, ICE style scores), which score persuasion and ease but not a dollar ceiling tied to the brand's own traffic and AOV"
    },
    {
     "claim": "checks a scaled winner's return rate and repeat-purchase rate before calling it a lasting win",
@@ -1411,7 +1411,14 @@
     ]
    },
    {
-    "job": "reduce COD return-to-origin with checkout-side controls",
+    "job": "configure checkout payment methods and validate addresses to cut failed deliveries and chargebacks",
+    "question": "which orders are likely to fail delivery or come back as a chargeback before we ship or settle them",
+    "capabilities": [
+     "SITE-C67"
+    ]
+   },
+   {
+    "job": "India market option, reads null for US: reduce COD return-to-origin with checkout-side controls",
     "question": "which COD orders are likely to bounce back before we ship them",
     "capabilities": [
      "SITE-C67"
@@ -1425,7 +1432,7 @@
     ]
    },
    {
-    "job": "gate tracking scripts by consent for DPDP and GDPR",
+    "job": "gate tracking scripts by consent for CCPA, CPRA and other state privacy laws, with GDPR and India's DPDP Act as market options",
     "question": "do our tracking scripts actually wait for consent, not just show a banner",
     "capabilities": [
      "SITE-C78"
@@ -1544,34 +1551,108 @@
     "benchmark": "zero"
    },
    {
+    "name": "address_validation_coverage_pct",
+    "plain": "how much of the brand's order footprint has a working USPS address validation check",
+    "formula": "orders validated against USPS before checkout divided by all orders in the window",
+    "source": "SITE-C67 address validation configuration joined to order data",
+    "window": "rolling 30 days",
+    "freshness_rule": "stale after 30 days",
+    "unavailable_when": "no address validation rule set exists",
+    "benchmark": "100 percent of orders validated"
+   },
+   {
     "name": "cod_pincode_coverage_pct",
-    "plain": "how much of the brand's order footprint has a working COD serviceability check",
+    "markets": ["IN"],
+    "plain": "India market option, reads null for US: how much of the brand's order footprint has a working COD serviceability check",
     "formula": "orders from pincodes with a serviceability rule configured divided by all orders in the window",
     "source": "SITE-C67 serviceability configuration joined to order data",
     "window": "rolling 30 days",
     "freshness_rule": "stale after 30 days",
-    "unavailable_when": "no serviceability rule set exists",
+    "unavailable_when": "no serviceability rule set exists, or the brand does not sell COD in India",
     "benchmark": "100 percent of served pincodes classified"
    },
    {
-    "name": "rto_rate_pct",
-    "plain": "what share of COD orders come back undelivered",
-    "formula": "COD orders marked returned-to-origin divided by total COD orders, in the window",
-    "source": "order and logistics data",
-    "window": "rolling 30 and 90 days",
-    "freshness_rule": "stale after 30 days",
-    "unavailable_when": "logistics status is not fed back into order data",
-    "benchmark": "the brand's own trailing baseline; India COD RTO commonly runs 15 to 30 percent industry-wide, shown only as context, not a target"
-   },
-   {
-    "name": "cod_confirmation_rate",
-    "plain": "how many COD orders get an OTP or WhatsApp confirmation before dispatch",
-    "formula": "COD orders with a recorded confirmation event divided by total COD orders",
+    "name": "order_confirmation_rate",
+    "plain": "how many orders get an SMS or email confirmation before dispatch",
+    "formula": "orders with a recorded confirmation event divided by total orders",
     "source": "SITE-C67 confirmation flow log",
     "window": "rolling 30 days",
     "freshness_rule": "stale after 30 days",
     "unavailable_when": "no confirmation flow is configured",
+    "benchmark": "close to 100 percent of orders confirmed"
+   },
+   {
+    "name": "cod_confirmation_rate",
+    "markets": ["IN"],
+    "plain": "India market option, reads null for US: how many COD orders get an OTP or WhatsApp confirmation before dispatch",
+    "formula": "COD orders with a recorded confirmation event divided by total COD orders",
+    "source": "SITE-C67 confirmation flow log",
+    "window": "rolling 30 days",
+    "freshness_rule": "stale after 30 days",
+    "unavailable_when": "no confirmation flow is configured, or the brand does not sell COD in India",
     "benchmark": "close to 100 percent of COD orders confirmed"
+   },
+   {
+    "name": "payment_method_mix_pct",
+    "plain": "what share of orders use each payment method (card, Shop Pay, PayPal, Apple Pay, a BNPL option such as Affirm, Klarna or Afterpay)",
+    "formula": "orders per payment method divided by total orders, in the window; where the brand offers COD in India, cod_share_pct is the same breakdown's India-only line item",
+    "source": "checkout payment method data",
+    "window": "rolling 30 days",
+    "freshness_rule": "stale after 30 days",
+    "unavailable_when": "payment method is not recorded per order",
+    "benchmark": "brand's own mix; no universal target"
+   },
+   {
+    "name": "cod_share_pct",
+    "markets": ["IN"],
+    "plain": "India market option, reads null for US: what share of orders are placed cash on delivery",
+    "formula": "COD orders divided by total orders, in the window",
+    "source": "checkout payment method data",
+    "window": "rolling 30 days",
+    "freshness_rule": "stale after 30 days",
+    "unavailable_when": "the brand does not sell COD in India",
+    "benchmark": "brand's own trailing baseline; no universal target"
+   },
+   {
+    "name": "chargeback_rate",
+    "plain": "what share of paid orders get reversed through the card network",
+    "formula": "chargebacks divided by total paid orders, in the window",
+    "source": "payment gateway dispute data",
+    "window": "rolling 30 and 90 days",
+    "freshness_rule": "stale after 30 days",
+    "unavailable_when": "the payment gateway does not report chargeback data",
+    "benchmark": "under the card network's own monitoring threshold (commonly 0.65 to 1 percent depending on network and program), shown only as context, not a target"
+   },
+   {
+    "name": "dispute_rate",
+    "plain": "what share of paid orders get reversed through PayPal or a similar wallet dispute process",
+    "formula": "wallet disputes divided by total paid orders, in the window",
+    "source": "payment gateway dispute data",
+    "window": "rolling 30 and 90 days",
+    "freshness_rule": "stale after 30 days",
+    "unavailable_when": "the payment gateway does not report dispute data",
+    "benchmark": "brand's own trailing baseline; no universal target"
+   },
+   {
+    "name": "return_to_sender_rate",
+    "plain": "what share of orders come back as an undelivered carrier return (refused, unreachable, failed delivery)",
+    "formula": "orders marked return-to-sender by the carrier divided by total orders, in the window",
+    "source": "carrier and order data",
+    "window": "rolling 30 and 90 days",
+    "freshness_rule": "stale after 30 days",
+    "unavailable_when": "carrier delivery status is not fed back into order data",
+    "benchmark": "brand's own trailing baseline; no universal target"
+   },
+   {
+    "name": "rto_rate_pct",
+    "markets": ["IN"],
+    "plain": "India market option, reads null for US: what share of COD orders come back undelivered",
+    "formula": "COD orders marked returned-to-origin divided by total COD orders, in the window",
+    "source": "order and logistics data",
+    "window": "rolling 30 and 90 days",
+    "freshness_rule": "stale after 30 days",
+    "unavailable_when": "logistics status is not fed back into order data, or the brand does not sell COD in India",
+    "benchmark": "the brand's own trailing baseline; India COD RTO commonly runs 15 to 30 percent industry-wide, shown only as context, not a target"
    },
    {
     "name": "broken_link_count",
@@ -1708,7 +1789,18 @@
     "action_capability": "SITE-C60"
    },
    {
-    "name": "RTO rate above the brand's own baseline",
+    "name": "chargeback or return-to-sender rate above the brand's own baseline",
+    "rule": "chargeback_rate or return_to_sender_rate for the last 30 days is more than 20 percent above the brand's trailing 90-day average",
+    "computed_from": [
+     "chargeback_rate",
+     "return_to_sender_rate"
+    ],
+    "sentence": "chargebacks or failed deliveries are running at {pct}%, up from your usual {baseline}%",
+    "severity": "ranked by pct above baseline",
+    "action_capability": "SITE-C67"
+   },
+   {
+    "name": "India market option, reads null for US: RTO rate above the brand's own baseline",
     "rule": "rto_rate_pct for the last 30 days is more than 20 percent above the brand's trailing 90-day average",
     "computed_from": [
      "rto_rate_pct"
@@ -1718,7 +1810,7 @@
     "action_capability": "SITE-C67"
    },
    {
-    "name": "unconfirmed COD with high RTO",
+    "name": "India market option, reads null for US: unconfirmed COD with high RTO",
     "rule": "a pincode cluster has cod_confirmation_rate under 50 percent and rto_rate_pct over double the brand average",
     "computed_from": [
      "cod_confirmation_rate",
@@ -1827,7 +1919,14 @@
     "exists_today": false
    },
    {
-    "name": "RTO funnel by pincode tier",
+    "name": "failed-delivery and chargeback funnel by ZIP code tier",
+    "type": "funnel or stacked bar",
+    "shows": "orders placed, confirmed, delivered, and lost to a failed delivery or a chargeback, split by ZIP code tier",
+    "why_this_chart": "shows where in the order journey money is actually being lost, not just a single failure percent",
+    "exists_today": false
+   },
+   {
+    "name": "India market option, reads null for US: RTO funnel by pincode tier",
     "type": "funnel or stacked bar",
     "shows": "COD orders placed, confirmed, delivered and returned to origin, split by pincode tier",
     "why_this_chart": "shows where in the COD journey money is actually being lost, not just a single RTO percent",
@@ -1898,7 +1997,7 @@
     "autonomy": "founder_gate"
    },
    {
-    "label": "Approve the RTO control plan",
+    "label": "Approve the checkout payment methods and address validation plan (India market option: the COD RTO control plan)",
     "capability": "SITE-C67",
     "autonomy": "founder_gate"
    },
@@ -1932,8 +2031,8 @@
     "vs": "also in Google's Rich Results Test and Search Console for validating a single page; neither gives a store-wide coverage number"
    },
    {
-    "claim": "reads the RTO outcome back against the brand's own delivered-order history to say which COD control actually reduced returns",
-    "vs": "also in COD Guard, Level and RTO Shield for running the checkout-side block or confirmation; they report that the control ran, not whether it worked for this brand"
+    "claim": "reads the failed-delivery and chargeback outcome back against the brand's own delivered-order history to say which checkout control actually reduced losses (India market option: which COD control actually reduced RTO)",
+    "vs": "also in fraud and chargeback tools such as Signifyd and Chargeflow for running the block or dispute-response step, and, in India, COD Guard, Level and RTO Shield for the checkout-side block or confirmation; they report that the control ran, not whether it worked for this brand"
    },
    {
     "claim": "cross-references every installed app against the brand's own revenue attribution before calling it dead weight",
@@ -2023,7 +2122,27 @@
     "refresh": "monthly or after a template change"
    },
    {
+    "table": "checkout_orders",
+    "fields": [
+     "order_id",
+     "payment_method",
+     "zip_code",
+     "address_validated",
+     "fraud_flag",
+     "confirmed_channel",
+     "confirmed_at",
+     "delivered",
+     "chargeback",
+     "dispute",
+     "return_to_sender",
+     "order_date"
+    ],
+    "connector_or_script": "checkout payment and carrier data, SITE-C67",
+    "refresh": "daily"
+   },
+   {
     "table": "cod_orders",
+    "markets": ["IN"],
     "fields": [
      "order_id",
      "pincode",
@@ -2034,7 +2153,7 @@
      "rto",
      "order_date"
     ],
-    "connector_or_script": "order and logistics data, SITE-C67",
+    "connector_or_script": "order and logistics data, SITE-C67; India market option, reads null for US",
     "refresh": "daily"
    },
    {
@@ -2085,6 +2204,6 @@
     "refresh": "as platforms publish"
    }
   ],
-  "founder_view_note": "Before anything is connected, the room shows unavailable across the board and one line: 'no monitoring set up yet; ask the agent to run pre-launch QA or set up uptime checks first'. The first things to populate are the launch checklist (if the store has not launched) or the uptime and checkout status (if it has), since a down store or a broken checkout outranks every other finding here. COD and RTO metrics only appear once order-level logistics status is fed in; until then that panel says what data is missing to turn it on."
+  "founder_view_note": "Before anything is connected, the room shows unavailable across the board and one line: 'no monitoring set up yet; ask the agent to run pre-launch QA or set up uptime checks first'. The first things to populate are the launch checklist (if the store has not launched) or the uptime and checkout status (if it has), since a down store or a broken checkout outranks every other finding here. Chargeback and return-to-sender metrics only appear once payment and carrier delivery status are fed in; India market option, reads null for US: COD and RTO metrics only appear once order-level logistics status is fed in; until then that panel says what data is missing to turn it on."
  }
 ]

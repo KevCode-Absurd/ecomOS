@@ -27,4 +27,4 @@ Once a program is approved, it needs consistent weekly running: the same screeni
 `{screened_applicant_list, task_assignments, approved_content_list, rewards_ledger}`
 
 ## Example
-Week 6: rewards ledger at ₹38,000 of a ₹45,000 monthly cap with 9 days left in the cycle: capacity flag raised for founder awareness before new task assignments go out.
+Week 6: rewards ledger at $1,900 of a $2,250 monthly cap with 9 days left in the cycle: capacity flag raised for founder awareness before new task assignments go out.

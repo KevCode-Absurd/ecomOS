@@ -28,4 +28,4 @@ Run the recurring, repeatable check of how ChatGPT, Gemini, Perplexity and Googl
 {per_prompt_results[], persistence_check[], gaps[]}
 
 ## Example
-Prompt "best foldable stroller for small Indian homes" on Perplexity cites a competitor's blog by link, and does not mention this brand at all: classified as "no coverage".
+Prompt "best foldable stroller for small US apartments" on Perplexity cites a competitor's blog by link, and does not mention this brand at all: classified as "no coverage".

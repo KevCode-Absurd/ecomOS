@@ -2,9 +2,10 @@
 name: special-formats/marketplace-modules
 owner: crea-paid-creative-copy
 version: 1
-invoke_when: an Amazon A+ Content or Flipkart/Myntra brand-store page needs
-  its module content designed inside the marketplace's own fixed template
-  grid
+invoke_when: an Amazon A+ Content, Walmart Marketplace or Target Plus
+  brand-shop page (Flipkart or Myntra brand-store page for an India-market
+  brand, markets: IN) needs its module content designed inside the
+  marketplace's own fixed template grid
 inputs: marketplace's current module grid spec, product facts and real
   photos, claim tiers
 outputs: module selection, module copy set, module imagery direction

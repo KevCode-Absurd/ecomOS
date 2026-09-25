@@ -32,8 +32,8 @@ matching row wins; a more specific platform+channel row beats a cross-platform o
 | search/shop stable | google | YouTube, Demand Gen | high AOV, visual | W23 | google-youtube-demandgen |
 | weekly | google | bidding | any | W24 | pace-budget/google, kill-scale/google |
 | new app / weekly | affiliate |: | has program | W25 | affiliate-program |
-| launch / quarterly | amazon, flipkart | sponsored ads | listed | W26 | marketplace-amazon-flipkart |
-| push / new listing | blinkit, zepto, instamart | retail media | india, dark-store | W27 | marketplace-quick-commerce |
+| launch / quarterly | amazon, walmart, target (flipkart, IN) | sponsored ads | listed | W26 | marketplace-amazon-flipkart |
+| push / new listing | instacart, doordash, gopuff (blinkit, zepto, instamart, IN) | retail media | listed | W27 | marketplace-quick-commerce |
 | gates hit | new/unproven |: | saturated | W28 | channel-pilot |
 | disapproval / daily | meta, google, tiktok |: | any | W29 | policy-appeals |
 | thresholds set | meta, google, tiktok |: | any | W30 | rule-automation |

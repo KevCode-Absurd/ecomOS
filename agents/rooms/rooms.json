@@ -18,7 +18,7 @@
    },
    {
     "job": "know how much the break is costing before deciding to act",
-    "question": "what is this worth in rupees this week",
+    "question": "what is this worth in dollars this week",
     "capabilities": [
      "DIAG-C01"
     ]
@@ -32,8 +32,8 @@
     ]
    },
    {
-    "job": "see gross orders next to what they are worth after RTO and COD confirmation",
-    "question": "are we actually growing or just booking orders that will bounce back",
+    "job": "see gross orders next to what they are worth after returns and chargebacks",
+    "question": "are we actually growing or just booking orders that will be returned or disputed",
     "capabilities": [
      "LOOP-C23"
     ]
@@ -124,7 +124,7 @@
    },
    {
     "name": "money_at_stake_top_break",
-    "plain": "What the top broken stage is costing this week, in rupees",
+    "plain": "What the top broken stage is costing this week, in dollars",
     "formula": "(peer or own-trailing value - current value) x volume at the stage x downstream conversion to revenue",
     "source": "contract.compute_deltas (code)",
     "window": "current window",
@@ -144,13 +144,14 @@
    },
    {
     "name": "gross_vs_net_orders",
-    "plain": "Orders and revenue you actually keep, after expected return-to-origin, next to the gross number",
-    "formula": "net = gross - (gross x expected RTO rate for the window); COD and prepaid split first",
+    "plain": "Orders and revenue you actually keep, after expected returns and chargebacks, next to the gross number",
+    "formula": "net = gross - (gross x expected return rate) - (gross x expected chargeback rate for the window); COD and prepaid split first",
     "source": "order data with payment method, RTO data by window",
     "window": "trailing 30 days",
     "freshness_rule": "stale after 2 days without an RTO update",
     "unavailable_when": "payment method or RTO field missing",
-    "benchmark": "India general-practice band: about 25-35% RTO, 58-65% COD share (general-practice basis, not this brand's proof)"
+    "benchmark": "India general-practice band: about 25-35% RTO, 58-65% COD share (general-practice basis, not this brand's proof)",
+    "markets_note": "For COD markets, RTO (parcel never received, a subset of COD) is netted too and shown as its own leg; it reads null for US brands."
    },
    {
     "name": "same_day_threshold_crossings",
@@ -233,14 +234,14 @@
     "benchmark": "flag at 7+ days for an active brand"
    },
    {
-    "name": "whatsapp_confirmation_rate",
-    "plain": "Share of COD orders confirmed through WhatsApp before dispatch",
-    "formula": "COD orders confirmed via WhatsApp / total COD orders in window",
-    "source": "WhatsApp Business API data, order data",
-    "window": "trailing 7 days",
-    "freshness_rule": "stale if WhatsApp connector has not synced in 48 hours",
-    "unavailable_when": "WhatsApp connector not granted",
-    "benchmark": "n/a, brand-specific; correlated to RTO rate"
+    "name": "chargeback_rate",
+    "plain": "Share of paid orders reversed through a card dispute in the window",
+    "formula": "chargebacks opened / paid orders in window",
+    "source": "payment gateway disputes and orders",
+    "window": "last 28 full days",
+    "freshness_rule": "stale after 2 days",
+    "unavailable_when": "gateway disputes not connected",
+    "benchmark": "under 0.9 percent to stay clear of card network monitoring programs"
    },
    {
     "name": "seasonal_deadline_countdown",
@@ -276,12 +277,12 @@
     "action_capability": "DIAG-C03"
    },
    {
-    "name": "RTO widening",
+    "name": "Reversals widening",
     "rule": "the gap between gross and net orders widens for 2 or more windows running",
     "computed_from": [
      "gross_vs_net_orders"
     ],
-    "sentence": "Gross orders look flat but net orders after RTO have fallen {pct} over 2 windows",
+    "sentence": "Gross orders look flat but net orders after returns and chargebacks have fallen {pct} over 2 windows",
     "severity": "high, separate from a demand bottleneck",
     "action_capability": "LOOP-C23"
    },
@@ -367,12 +368,12 @@
     "action_capability": "LOOP-C06"
    },
    {
-    "name": "WhatsApp confirmation dropping",
-    "rule": "whatsapp_confirmation_rate falls 2+ windows running",
+    "name": "chargebacks rising",
+    "rule": "chargeback_rate rises 2+ windows running or crosses 0.9 percent",
     "computed_from": [
-     "whatsapp_confirmation_rate"
+     "chargeback_rate"
     ],
-    "sentence": "WhatsApp order confirmation has fallen to {pct}, which tracks with higher RTO",
+    "sentence": "Chargebacks reached {rate} percent of paid orders, up {delta} in {n} windows; representment and the reason codes are in the Money room",
     "severity": "medium",
     "action_capability": "LOOP-C31"
    }
@@ -438,7 +439,7 @@
     "autonomy": "agent_does"
    },
    {
-    "label": "Approve, reject or park by WhatsApp reply",
+    "label": "Approve, reject or park by text reply",
     "capability": "LOOP-C42",
     "autonomy": "founder_gate"
    },
@@ -479,7 +480,7 @@
     "vs": "Shopify Analytics and Klaviyo dashboards show revenue, sessions and conversion rate, not a stage-level stake number with a peer band"
    },
    {
-    "claim": "gross orders shown net of expected RTO and split by COD versus prepaid before naming a bottleneck",
+    "claim": "gross orders shown net of expected returns and chargebacks and split by payment method before naming a bottleneck",
     "vs": "generic ecommerce dashboards report gross orders only; no packaged Shopify or Triple Whale view nets out India RTO by default"
    },
    {
@@ -491,8 +492,8 @@
     "vs": "most ecommerce dashboards check once a day; ads and analytics platforms alert on their own metrics only, not a founder-defined cross-channel trigger"
    },
    {
-    "claim": "approve, reject or park a specific card by a single WhatsApp reply, matched back to its card id",
-    "vs": "WhatsApp business tools like Interakt and AiSensy handle customer-facing templates and support replies, not an internal founder decision channel tied to a proposal card"
+    "claim": "approve, reject or park a specific card by a single SMS or Slack reply, matched back to its card id",
+    "vs": "SMS tools like Attentive and Postscript handle customer-facing templates and support replies, not an internal founder decision channel tied to a proposal card"
    },
    {
     "claim": "a test flagged before it starts if it shares an audience or metric window with one already running",
@@ -589,17 +590,19 @@
     "refresh": "on event"
    },
    {
-    "table": "whatsapp_channel",
+    "table": "messaging_channel",
     "fields": [
      "brand",
      "date",
-     "catalog_views",
-     "broadcasts_sent",
+     "channel",
+     "sends",
+     "delivered",
      "replies",
-     "cod_confirmations",
-     "confirmation_rate"
+     "opt_outs",
+     "conversions",
+     "consent_status"
     ],
-    "connector_or_script": "WhatsApp Business API",
+    "connector_or_script": "SMS platform API; WhatsApp Business API for brands that use it (markets IN)",
     "refresh": "daily"
    },
    {
@@ -629,7 +632,7 @@
     "refresh": "daily"
    }
   ],
-  "founder_view_note": "With nothing connected, the room shows unavailable for every stage and says which connector each one needs; the cross-brand list, WhatsApp row and same-day ticker simply do not render until those sources exist. The first thing to appear once the metric contract has 5 full days of history is the pipeline waterfall with the top break named; the top 10 cards follow once Propose has run once.",
+  "founder_view_note": "With nothing connected, the room shows unavailable for every stage and says which connector each one needs; the cross-brand list, messaging row and same-day ticker simply do not render until those sources exist. The first thing to appear once the metric contract has 5 full days of history is the pipeline waterfall with the top break named; the top 10 cards follow once Propose has run once.",
   "unknown_capabilities": []
  },
  {
@@ -700,7 +703,7 @@
     ]
    },
    {
-    "job": "check a page or invoice carries the disclosures India's rules require before it ships",
+    "job": "check a page or invoice carries the disclosures US rules require before it ships",
     "question": "is this page legally compliant before it goes live",
     "capabilities": [
      "LOOP-C27"
@@ -715,7 +718,7 @@
    },
    {
     "job": "see the brand's own marketplace listings against the D2C site",
-    "question": "is someone undercutting our price on Amazon or Flipkart",
+    "question": "is someone undercutting our price on Amazon or Walmart",
     "capabilities": [
      "PROD-C46"
     ]
@@ -801,7 +804,7 @@
    },
    {
     "name": "legal_disclosure_pass_rate",
-    "plain": "Share of live pages, policies and invoice templates carrying the required India disclosures",
+    "plain": "Share of live pages, policies and invoice templates carrying the required US disclosures",
     "formula": "pages passing all required checks / pages checked",
     "source": "LOOP-C27 disclosure checklist",
     "window": "as of last check",
@@ -913,7 +916,7 @@
    },
    {
     "name": "disclosure missing",
-    "rule": "a live or about-to-ship page fails a required India disclosure check",
+    "rule": "a live or about-to-ship page fails a required US disclosure check",
     "computed_from": [
      "legal_disclosure_pass_rate"
     ],
@@ -1088,7 +1091,7 @@
     "vs": "generic contract-management SaaS tracks renewal dates but is not fed from or feeding the same brand brain a founder already uses for decisions"
    },
    {
-    "claim": "India-specific legal disclosure gate (grievance officer, country of origin, GST invoice fields, return policy) checked before a page ships, as a blocking check, not a general CMS compliance plugin",
+    "claim": "US legal disclosure gate (FTC, CAN-SPAM, CCPA privacy policy, sales tax on invoices, return policy, auto-renewal) checked before a page ships, as a blocking check, not a general CMS compliance plugin",
     "vs": "generic CMS and Shopify legal-page apps exist, but they are not tied into this brand's own claims tiers and decisions log"
    },
    {
@@ -1878,7 +1881,7 @@
    },
    {
     "job": "decide next month's channel budget split before any specialist spends their own slice",
-    "question": "where should the next rupee of budget go, across channels",
+    "question": "where should the next dollar of budget go, across channels",
     "capabilities": [
      "LOOP-C03"
     ]
@@ -2334,7 +2337,7 @@
   ],
   "jobs": [
    {
-    "job": "find why a page is slow and what it is costing in rupees",
+    "job": "find why a page is slow and what it is costing in dollars",
     "question": "why is my page slow and what is it costing me",
     "capabilities": [
      "SITE-C21"
@@ -2391,7 +2394,7 @@
    },
    {
     "job": "get ready for a sale-day traffic spike",
-    "question": "will the site hold up on the festive sale day",
+    "question": "will the site hold up on Black Friday, Cyber Monday or another big sale day (or a festive sale day in India)",
     "capabilities": [
      "SITE-C29"
     ]
@@ -2772,7 +2775,7 @@
    {
     "name": "cost of slowness bar",
     "type": "bar chart",
-    "shows": "estimated monthly rupees lost at current LCP versus at target LCP, for the pages that carry the most traffic",
+    "shows": "estimated monthly dollars lost at current LCP versus at target LCP, for the pages that carry the most traffic",
     "why_this_chart": "translates milliseconds into the number a founder actually decides on",
     "exists_today": false
    },
@@ -2879,7 +2882,7 @@
     "vs": "PageSpeed Insights and Lighthouse CI report the problem; they do not write the fix instructions or the rollback plan"
    },
    {
-    "claim": "prices slowness in the brand's own rupees per month, not a generic industry percentage",
+    "claim": "prices slowness in the brand's own dollars per month, not a generic industry percentage",
     "vs": "no common speed tool ties LCP to the brand's own conversion rate and average order value"
    },
    {
@@ -3030,7 +3033,7 @@
    },
    {
     "job": "build bundle and offer pricing with real anchors",
-    "question": "does the bundle show a real saving in rupees, not just a percent",
+    "question": "does the bundle show a real saving in dollars, not just a percent",
     "capabilities": [
      "LIFE-C39"
     ]
@@ -3354,11 +3357,11 @@
    },
    {
     "name": "bundle savings shown only as a percent",
-    "rule": "a bundle or offer block shows a percent-off with no rupee amount saved",
+    "rule": "a bundle or offer block shows a percent-off with no dollar amount saved",
     "computed_from": [
      "SITE-C41 offer builder output"
     ],
-    "sentence": "{offer} shows {pct}% off with no rupee saving stated",
+    "sentence": "{offer} shows {pct}% off with no dollar saving stated",
     "severity": "ranked by the offer's traffic",
     "action_capability": "LIFE-C39"
    },
@@ -3529,7 +3532,7 @@
    },
    {
     "claim": "ranks the test backlog by an expected-profit ceiling built from at least 2 pieces of evidence per hypothesis, before anything launches",
-    "vs": "also in VWO's and Convert's own prioritization frameworks (PIE, ICE style scores), which score persuasion and ease but not a rupee ceiling tied to the brand's own traffic and AOV"
+    "vs": "also in VWO's and Convert's own prioritization frameworks (PIE, ICE style scores), which score persuasion and ease but not a dollar ceiling tied to the brand's own traffic and AOV"
    },
    {
     "claim": "checks a scaled winner's return rate and repeat-purchase rate before calling it a lasting win",
@@ -3738,7 +3741,14 @@
     ]
    },
    {
-    "job": "reduce COD return-to-origin with checkout-side controls",
+    "job": "configure checkout payment methods and validate addresses to cut failed deliveries and chargebacks",
+    "question": "which orders are likely to fail delivery or come back as a chargeback before we ship or settle them",
+    "capabilities": [
+     "SITE-C67"
+    ]
+   },
+   {
+    "job": "India market option, reads null for US: reduce COD return-to-origin with checkout-side controls",
     "question": "which COD orders are likely to bounce back before we ship them",
     "capabilities": [
      "SITE-C67"
@@ -3752,7 +3762,7 @@
     ]
    },
    {
-    "job": "gate tracking scripts by consent for DPDP and GDPR",
+    "job": "gate tracking scripts by consent for CCPA, CPRA and other state privacy laws, with GDPR and India's DPDP Act as market options",
     "question": "do our tracking scripts actually wait for consent, not just show a banner",
     "capabilities": [
      "SITE-C78"
@@ -3871,34 +3881,116 @@
     "benchmark": "zero"
    },
    {
+    "name": "address_validation_coverage_pct",
+    "plain": "how much of the brand's order footprint has a working USPS address validation check",
+    "formula": "orders validated against USPS before checkout divided by all orders in the window",
+    "source": "SITE-C67 address validation configuration joined to order data",
+    "window": "rolling 30 days",
+    "freshness_rule": "stale after 30 days",
+    "unavailable_when": "no address validation rule set exists",
+    "benchmark": "100 percent of orders validated"
+   },
+   {
     "name": "cod_pincode_coverage_pct",
-    "plain": "how much of the brand's order footprint has a working COD serviceability check",
+    "markets": [
+     "IN"
+    ],
+    "plain": "India market option, reads null for US: how much of the brand's order footprint has a working COD serviceability check",
     "formula": "orders from pincodes with a serviceability rule configured divided by all orders in the window",
     "source": "SITE-C67 serviceability configuration joined to order data",
     "window": "rolling 30 days",
     "freshness_rule": "stale after 30 days",
-    "unavailable_when": "no serviceability rule set exists",
+    "unavailable_when": "no serviceability rule set exists, or the brand does not sell COD in India",
     "benchmark": "100 percent of served pincodes classified"
    },
    {
-    "name": "rto_rate_pct",
-    "plain": "what share of COD orders come back undelivered",
-    "formula": "COD orders marked returned-to-origin divided by total COD orders, in the window",
-    "source": "order and logistics data",
-    "window": "rolling 30 and 90 days",
-    "freshness_rule": "stale after 30 days",
-    "unavailable_when": "logistics status is not fed back into order data",
-    "benchmark": "the brand's own trailing baseline; India COD RTO commonly runs 15 to 30 percent industry-wide, shown only as context, not a target"
-   },
-   {
-    "name": "cod_confirmation_rate",
-    "plain": "how many COD orders get an OTP or WhatsApp confirmation before dispatch",
-    "formula": "COD orders with a recorded confirmation event divided by total COD orders",
+    "name": "order_confirmation_rate",
+    "plain": "how many orders get an SMS or email confirmation before dispatch",
+    "formula": "orders with a recorded confirmation event divided by total orders",
     "source": "SITE-C67 confirmation flow log",
     "window": "rolling 30 days",
     "freshness_rule": "stale after 30 days",
     "unavailable_when": "no confirmation flow is configured",
+    "benchmark": "close to 100 percent of orders confirmed"
+   },
+   {
+    "name": "cod_confirmation_rate",
+    "markets": [
+     "IN"
+    ],
+    "plain": "India market option, reads null for US: how many COD orders get an OTP or WhatsApp confirmation before dispatch",
+    "formula": "COD orders with a recorded confirmation event divided by total COD orders",
+    "source": "SITE-C67 confirmation flow log",
+    "window": "rolling 30 days",
+    "freshness_rule": "stale after 30 days",
+    "unavailable_when": "no confirmation flow is configured, or the brand does not sell COD in India",
     "benchmark": "close to 100 percent of COD orders confirmed"
+   },
+   {
+    "name": "payment_method_mix_pct",
+    "plain": "what share of orders use each payment method (card, Shop Pay, PayPal, Apple Pay, a BNPL option such as Affirm, Klarna or Afterpay)",
+    "formula": "orders per payment method divided by total orders, in the window; where the brand offers COD in India, cod_share_pct is the same breakdown's India-only line item",
+    "source": "checkout payment method data",
+    "window": "rolling 30 days",
+    "freshness_rule": "stale after 30 days",
+    "unavailable_when": "payment method is not recorded per order",
+    "benchmark": "brand's own mix; no universal target"
+   },
+   {
+    "name": "cod_share_pct",
+    "markets": [
+     "IN"
+    ],
+    "plain": "India market option, reads null for US: what share of orders are placed cash on delivery",
+    "formula": "COD orders divided by total orders, in the window",
+    "source": "checkout payment method data",
+    "window": "rolling 30 days",
+    "freshness_rule": "stale after 30 days",
+    "unavailable_when": "the brand does not sell COD in India",
+    "benchmark": "brand's own trailing baseline; no universal target"
+   },
+   {
+    "name": "chargeback_rate",
+    "plain": "what share of paid orders get reversed through the card network",
+    "formula": "chargebacks divided by total paid orders, in the window",
+    "source": "payment gateway dispute data",
+    "window": "rolling 30 and 90 days",
+    "freshness_rule": "stale after 30 days",
+    "unavailable_when": "the payment gateway does not report chargeback data",
+    "benchmark": "under the card network's own monitoring threshold (commonly 0.65 to 1 percent depending on network and program), shown only as context, not a target"
+   },
+   {
+    "name": "dispute_rate",
+    "plain": "what share of paid orders get reversed through PayPal or a similar wallet dispute process",
+    "formula": "wallet disputes divided by total paid orders, in the window",
+    "source": "payment gateway dispute data",
+    "window": "rolling 30 and 90 days",
+    "freshness_rule": "stale after 30 days",
+    "unavailable_when": "the payment gateway does not report dispute data",
+    "benchmark": "brand's own trailing baseline; no universal target"
+   },
+   {
+    "name": "return_to_sender_rate",
+    "plain": "what share of orders come back as an undelivered carrier return (refused, unreachable, failed delivery)",
+    "formula": "orders marked return-to-sender by the carrier divided by total orders, in the window",
+    "source": "carrier and order data",
+    "window": "rolling 30 and 90 days",
+    "freshness_rule": "stale after 30 days",
+    "unavailable_when": "carrier delivery status is not fed back into order data",
+    "benchmark": "brand's own trailing baseline; no universal target"
+   },
+   {
+    "name": "rto_rate_pct",
+    "markets": [
+     "IN"
+    ],
+    "plain": "India market option, reads null for US: what share of COD orders come back undelivered",
+    "formula": "COD orders marked returned-to-origin divided by total COD orders, in the window",
+    "source": "order and logistics data",
+    "window": "rolling 30 and 90 days",
+    "freshness_rule": "stale after 30 days",
+    "unavailable_when": "logistics status is not fed back into order data, or the brand does not sell COD in India",
+    "benchmark": "the brand's own trailing baseline; India COD RTO commonly runs 15 to 30 percent industry-wide, shown only as context, not a target"
    },
    {
     "name": "broken_link_count",
@@ -4035,7 +4127,18 @@
     "action_capability": "ORG-C23"
    },
    {
-    "name": "RTO rate above the brand's own baseline",
+    "name": "chargeback or return-to-sender rate above the brand's own baseline",
+    "rule": "chargeback_rate or return_to_sender_rate for the last 30 days is more than 20 percent above the brand's trailing 90-day average",
+    "computed_from": [
+     "chargeback_rate",
+     "return_to_sender_rate"
+    ],
+    "sentence": "chargebacks or failed deliveries are running at {pct}%, up from your usual {baseline}%",
+    "severity": "ranked by pct above baseline",
+    "action_capability": "SITE-C67"
+   },
+   {
+    "name": "India market option, reads null for US: RTO rate above the brand's own baseline",
     "rule": "rto_rate_pct for the last 30 days is more than 20 percent above the brand's trailing 90-day average",
     "computed_from": [
      "rto_rate_pct"
@@ -4045,7 +4148,7 @@
     "action_capability": "SITE-C67"
    },
    {
-    "name": "unconfirmed COD with high RTO",
+    "name": "India market option, reads null for US: unconfirmed COD with high RTO",
     "rule": "a pincode cluster has cod_confirmation_rate under 50 percent and rto_rate_pct over double the brand average",
     "computed_from": [
      "cod_confirmation_rate",
@@ -4154,7 +4257,14 @@
     "exists_today": false
    },
    {
-    "name": "RTO funnel by pincode tier",
+    "name": "failed-delivery and chargeback funnel by ZIP code tier",
+    "type": "funnel or stacked bar",
+    "shows": "orders placed, confirmed, delivered, and lost to a failed delivery or a chargeback, split by ZIP code tier",
+    "why_this_chart": "shows where in the order journey money is actually being lost, not just a single failure percent",
+    "exists_today": false
+   },
+   {
+    "name": "India market option, reads null for US: RTO funnel by pincode tier",
     "type": "funnel or stacked bar",
     "shows": "COD orders placed, confirmed, delivered and returned to origin, split by pincode tier",
     "why_this_chart": "shows where in the COD journey money is actually being lost, not just a single RTO percent",
@@ -4225,7 +4335,7 @@
     "autonomy": "founder_gate"
    },
    {
-    "label": "Approve the RTO control plan",
+    "label": "Approve the checkout payment methods and address validation plan (India market option: the COD RTO control plan)",
     "capability": "SITE-C67",
     "autonomy": "founder_gate"
    },
@@ -4259,8 +4369,8 @@
     "vs": "also in Google's Rich Results Test and Search Console for validating a single page; neither gives a store-wide coverage number"
    },
    {
-    "claim": "reads the RTO outcome back against the brand's own delivered-order history to say which COD control actually reduced returns",
-    "vs": "also in COD Guard, Level and RTO Shield for running the checkout-side block or confirmation; they report that the control ran, not whether it worked for this brand"
+    "claim": "reads the failed-delivery and chargeback outcome back against the brand's own delivered-order history to say which checkout control actually reduced losses (India market option: which COD control actually reduced RTO)",
+    "vs": "also in fraud and chargeback tools such as Signifyd and Chargeflow for running the block or dispute-response step, and, in India, COD Guard, Level and RTO Shield for the checkout-side block or confirmation; they report that the control ran, not whether it worked for this brand"
    },
    {
     "claim": "cross-references every installed app against the brand's own revenue attribution before calling it dead weight",
@@ -4350,7 +4460,29 @@
     "refresh": "monthly or after a template change"
    },
    {
+    "table": "checkout_orders",
+    "fields": [
+     "order_id",
+     "payment_method",
+     "zip_code",
+     "address_validated",
+     "fraud_flag",
+     "confirmed_channel",
+     "confirmed_at",
+     "delivered",
+     "chargeback",
+     "dispute",
+     "return_to_sender",
+     "order_date"
+    ],
+    "connector_or_script": "checkout payment and carrier data, SITE-C67",
+    "refresh": "daily"
+   },
+   {
     "table": "cod_orders",
+    "markets": [
+     "IN"
+    ],
     "fields": [
      "order_id",
      "pincode",
@@ -4361,7 +4493,7 @@
      "rto",
      "order_date"
     ],
-    "connector_or_script": "order and logistics data, SITE-C67",
+    "connector_or_script": "order and logistics data, SITE-C67; India market option, reads null for US",
     "refresh": "daily"
    },
    {
@@ -4412,7 +4544,7 @@
     "refresh": "as platforms publish"
    }
   ],
-  "founder_view_note": "Before anything is connected, the room shows unavailable across the board and one line: 'no monitoring set up yet; ask the agent to run pre-launch QA or set up uptime checks first'. The first things to populate are the launch checklist (if the store has not launched) or the uptime and checkout status (if it has), since a down store or a broken checkout outranks every other finding here. COD and RTO metrics only appear once order-level logistics status is fed in; until then that panel says what data is missing to turn it on.",
+  "founder_view_note": "Before anything is connected, the room shows unavailable across the board and one line: 'no monitoring set up yet; ask the agent to run pre-launch QA or set up uptime checks first'. The first things to populate are the launch checklist (if the store has not launched) or the uptime and checkout status (if it has), since a down store or a broken checkout outranks every other finding here. Chargeback and return-to-sender metrics only appear once payment and carrier delivery status are fed in; India market option, reads null for US: COD and RTO metrics only appear once order-level logistics status is fed in; until then that panel says what data is missing to turn it on.",
   "unknown_capabilities": []
  },
  {
@@ -4496,7 +4628,7 @@
     ]
    },
    {
-    "job": "pick the right native format and localise for a mobile-first Indian buyer",
+    "job": "pick the right native format and localise for the target market and device",
     "question": "does this concept fit the platform and the market, or does it need a redo",
     "capabilities": [
      "CREA-C11",
@@ -4514,7 +4646,7 @@
     ]
    },
    {
-    "job": "run creative as a monthly pipeline against volume, budget, naming and the festive calendar",
+    "job": "run creative as a monthly pipeline against volume, budget, naming and the holiday calendar",
     "question": "are we making enough of the right creative, on time, on budget, and tagged right",
     "capabilities": [
      "MEDIA-C15",
@@ -5307,8 +5439,8 @@
     ]
    },
    {
-    "job": "write India-specific COD-to-prepaid and RTO-reduction lines",
-    "question": "what do we say to move a cash-on-delivery order toward prepaid without sounding pushy",
+    "job": "write payment and delivery reassurance lines (BNPL, free returns, real delivery dates; COD-to-prepaid and RTO-reduction lines for an India-market brand, markets: IN)",
+    "question": "what do we say to remove payment and delivery hesitation without sounding pushy, or, for a COD brand, to move an order toward prepaid",
     "capabilities": [
      "CREA-C44"
     ]
@@ -5460,10 +5592,10 @@
     "benchmark": "account-relative only"
    },
    {
-    "name": "cod_touchpoint_coverage",
-    "plain": "share of COD checkout and post-purchase moments that carry an approved trust or prepaid-nudge line",
+    "name": "payment_delivery_touchpoint_coverage",
+    "plain": "share of checkout and post-purchase moments that carry an approved payment or delivery reassurance line (BNPL, free returns, delivery date); for a COD brand (markets: IN), the same metric covers COD trust or prepaid-nudge line coverage instead",
     "formula": "touchpoints on the account's fixed list with an approved line attached, divided by all touchpoints on that list",
-    "source": "COD and RTO messaging log",
+    "source": "payment and delivery reassurance messaging log",
     "window": "current",
     "freshness_rule": "recompute weekly",
     "unavailable_when": "no fixed touchpoint list on file",
@@ -5606,12 +5738,12 @@
     "action_capability": "CREA-C20"
    },
    {
-    "name": "cod_trust_message_missing",
-    "rule": "a checkout or post-purchase touchpoint on the account's fixed list has no approved prepaid-nudge or RTO-trust line attached",
+    "name": "payment_delivery_trust_message_missing",
+    "rule": "a checkout or post-purchase touchpoint on the account's fixed list has no approved payment or delivery reassurance line (BNPL, free returns, real delivery date) attached; for a COD brand (markets: IN), the same check looks for a prepaid-nudge or RTO-trust line instead",
     "computed_from": [
-     "COD and RTO messaging log"
+     "payment and delivery reassurance messaging log"
     ],
-    "sentence": "{touchpoint} has no prepaid or delivery-trust line.",
+    "sentence": "{touchpoint} has no payment or delivery-trust line.",
     "severity": "medium",
     "action_capability": "CREA-C44"
    },
@@ -5750,7 +5882,7 @@
     "autonomy": "agent_does"
    },
    {
-    "label": "Write the COD or RTO trust line",
+    "label": "Write the payment or delivery reassurance line",
     "capability": "CREA-C44",
     "autonomy": "agent_does"
    },
@@ -5957,13 +6089,14 @@
     "refresh": "on each run"
    },
    {
-    "table": "cod_touchpoint_coverage",
+    "table": "payment_delivery_touchpoint_coverage",
     "fields": [
      "touchpoint",
      "has_line",
-     "line_id"
+     "line_id",
+     "cod_or_rto_line_id (markets: IN, null for a US brand)"
     ],
-    "connector_or_script": "new COD or RTO messaging log (CREA-C44)",
+    "connector_or_script": "new payment and delivery reassurance messaging log (CREA-C44)",
     "refresh": "weekly"
    },
    {
@@ -6108,7 +6241,7 @@
    },
    {
     "job": "plan a peak sale ramp, wind-down and cross-border delivery",
-    "question": "are we ready for the sale date and for buyers outside India",
+    "question": "are we ready for the sale date and for buyers outside the US",
     "capabilities": [
      "MEDIA-C21",
      "MEDIA-C22"
@@ -6141,7 +6274,7 @@
   "metrics": [
    {
     "name": "blended_mer",
-    "plain": "Total new-customer revenue for every rupee of ad spend, across all channels",
+    "plain": "Total new-customer revenue for every dollar of ad spend, across all channels",
     "formula": "total new customer revenue / total spend (Meta + TikTok + Google)",
     "source": "brand brain revenue ledger + ad platform spend",
     "window": "trailing 30 days, updated daily",
@@ -6331,7 +6464,7 @@
    },
    {
     "name": "marginal_roas_by_channel",
-    "plain": "What the next rupee of spend would likely return, by channel",
+    "plain": "What the next dollar of spend would likely return, by channel",
     "formula": "change in value / change in spend over the last 2 comparable budget steps, per channel",
     "source": "ad platform spend/value history",
     "window": "trailing 60 days",
@@ -6552,7 +6685,7 @@
     "name": "marginal ROAS bars",
     "type": "bar chart",
     "shows": "the next-dollar return estimate per channel, side by side",
-    "why_this_chart": "founder allocates the next rupee by comparing bars, not spreadsheets",
+    "why_this_chart": "founder allocates the next dollar by comparing bars, not spreadsheets",
     "exists_today": false
    }
   ],
@@ -6743,7 +6876,7 @@
     "autonomy": "agent_does"
    },
    {
-    "label": "Set up Click-to-WhatsApp COD flow",
+    "label": "Set up order confirmation flow to cut failed deliveries and chargebacks",
     "capability": "LIFE-C22",
     "autonomy": "founder_gate"
    },
@@ -6800,7 +6933,7 @@
     "vs": "TikTok Ads Manager shows Spark ads live but not the organic-to-paid loop timing or authorization expiry in one place"
    },
    {
-    "claim": "routes every founder-gate call (scale ceiling, WhatsApp COD rollout, new-surface pilot, agentic-bidding guardrail) into one queue instead of leaving it split across ad account settings",
+    "claim": "routes every founder-gate call (scale ceiling, order-confirmation-flow rollout, new-surface pilot, agentic-bidding guardrail) into one queue instead of leaving it split across ad account settings",
     "vs": "no platform separates its own automation's suggestions from the calls only the founder should make"
    }
   ],
@@ -7664,21 +7797,28 @@
     ]
    },
    {
-    "job": "prepare an Amazon Sponsored Products/Brands brief for handoff",
-    "question": "what should whoever runs our Amazon ads actually do this month",
+    "job": "prepare an Amazon Sponsored Products/Brands, Walmart Connect or Target Roundel brief for handoff",
+    "question": "what should whoever runs our marketplace ads actually do this month",
     "capabilities": [
      "MEDIA-C52"
     ]
    },
    {
-    "job": "prepare a Flipkart sponsored placement brief for handoff",
+    "job": "India only: prepare a Flipkart sponsored placement brief for handoff",
     "question": "what should whoever runs our Flipkart ads actually do this month",
     "capabilities": [
      "MEDIA-C52"
     ]
    },
    {
-    "job": "prepare a quick commerce retail media plan for Blinkit, Zepto and Instamart",
+    "job": "prepare a rapid-delivery/grocery retail media plan for Instacart, DoorDash and Gopuff",
+    "question": "is rapid-delivery retail media worth a self-serve ad budget and how much",
+    "capabilities": [
+     "MEDIA-C53"
+    ]
+   },
+   {
+    "job": "India only: prepare a quick-commerce retail media plan for Blinkit, Zepto and Instamart",
     "question": "is quick commerce worth a self-serve ad budget and how much",
     "capabilities": [
      "MEDIA-C53"
@@ -7765,38 +7905,41 @@
     "benchmark": "100%"
    },
    {
-    "name": "amazon_brief_status",
-    "plain": "Where the Amazon ads brief stands",
+    "name": "marketplace_brief_status",
+    "plain": "Where the Amazon, Walmart Connect or Target Roundel ads brief stands",
     "formula": "status flag: drafted, sent, acknowledged, live (manually updated)",
-    "source": "brand record (Amazon Ads console not connected)",
+    "source": "brand record (Amazon Ads, Walmart Connect, Target Roundel consoles not connected)",
     "window": "current",
     "freshness_rule": "stale after 30 days",
     "unavailable_when": "no brief created yet",
     "benchmark": "n/a, status only"
    },
    {
-    "name": "amazon_acos_reported",
-    "plain": "Amazon's own ACOS, as last reported to us",
+    "name": "marketplace_acos_reported",
+    "plain": "Amazon's, Walmart's or Target's own ACOS, as last reported to us",
     "formula": "ad spend / ad-attributed sales, taken from whoever runs the account",
-    "source": "manually entered from Amazon Ads console (not connected)",
+    "source": "manually entered from the marketplace's ads console (not connected)",
     "window": "as last reported",
     "freshness_rule": "unavailable until manually updated",
-    "unavailable_when": "no connector to Amazon Ads exists",
+    "unavailable_when": "no connector to the marketplace ads console exists",
     "benchmark": "brand's target ACOS"
    },
    {
     "name": "flipkart_brief_status",
-    "plain": "Where the Flipkart ads brief stands",
+    "markets": [
+     "IN"
+    ],
+    "plain": "Where the Flipkart ads brief stands. India only; reads null for US brands, which use marketplace_brief_status instead.",
     "formula": "status flag: drafted, sent, acknowledged, live",
     "source": "brand record (Flipkart Ads not connected)",
     "window": "current",
     "freshness_rule": "stale after 30 days",
-    "unavailable_when": "no brief created yet",
+    "unavailable_when": "no brief created yet, or brand is not in India",
     "benchmark": "n/a, status only"
    },
    {
-    "name": "quick_commerce_plan_status",
-    "plain": "Where the Blinkit/Zepto/Instamart plan stands, per platform",
+    "name": "rapid_delivery_plan_status",
+    "plain": "Where the Instacart/DoorDash/Gopuff retail media plan stands, per platform",
     "formula": "status flag per platform: drafted, sent, live",
     "source": "brand record (no connector)",
     "window": "current",
@@ -7805,12 +7948,38 @@
     "benchmark": "n/a, status only"
    },
    {
-    "name": "quick_commerce_roas_benchmark_gap",
-    "plain": "How reported quick-commerce ROAS compares to the category benchmark",
+    "name": "quick_commerce_plan_status",
+    "markets": [
+     "IN"
+    ],
+    "plain": "Where the Blinkit/Zepto/Instamart plan stands, per platform. India only; reads null for US brands, which use rapid_delivery_plan_status instead.",
+    "formula": "status flag per platform: drafted, sent, live",
+    "source": "brand record (no connector)",
+    "window": "current",
+    "freshness_rule": "stale after 30 days",
+    "unavailable_when": "no plan created yet, or brand is not in India",
+    "benchmark": "n/a, status only"
+   },
+   {
+    "name": "rapid_delivery_roas_benchmark_gap",
+    "plain": "How reported rapid-delivery/grocery marketplace ROAS compares to the category benchmark",
     "formula": "reported ROAS (manually entered) minus benchmark (4-8x established SKUs, 1.5-3x new launches)",
     "source": "manually entered from platform dashboards",
     "window": "as last reported",
     "freshness_rule": "unavailable until manually updated",
+    "unavailable_when": "no number reported yet",
+    "benchmark": "see formula"
+   },
+   {
+    "name": "quick_commerce_roas_benchmark_gap",
+    "markets": [
+     "IN"
+    ],
+    "plain": "How reported quick-commerce ROAS compares to the category benchmark. India only; reads null for US brands, which use rapid_delivery_roas_benchmark_gap instead.",
+    "formula": "reported ROAS (manually entered) minus benchmark (4-8x established SKUs, 1.5-3x new launches)",
+    "source": "manually entered from platform dashboards",
+    "window": "as last reported",
+    "freshness_rule": "unavailable until manually updated, or brand is not in India",
     "unavailable_when": "no number reported yet",
     "benchmark": "see formula"
    },
@@ -7845,13 +8014,26 @@
     "benchmark": "0 variance"
    },
    {
-    "name": "gst_rcm_reconciliation_status",
-    "plain": "Whether GST and reverse-charge credits on ad invoices are reconciled",
-    "formula": "count of invoices with GST/RCM matched to the credit ledger / total invoices",
+    "name": "sales_tax_1099_reconciliation_status",
+    "plain": "Whether US sales tax charged on ad invoices and 1099 filings tied to the ledger are reconciled",
+    "formula": "count of invoices with sales-tax and 1099 records matched to the accounting ledger / total invoices",
     "source": "invoices + accounting record",
     "window": "monthly",
     "freshness_rule": "stale after 30 days",
     "unavailable_when": "accounting record not connected",
+    "benchmark": "100%"
+   },
+   {
+    "name": "gst_rcm_reconciliation_status",
+    "markets": [
+     "IN"
+    ],
+    "plain": "Whether GST and reverse-charge credits on ad invoices are reconciled. India only; reads null for US brands, which use sales_tax_1099_reconciliation_status instead.",
+    "formula": "count of invoices with GST/RCM matched to the credit ledger / total invoices",
+    "source": "invoices + accounting record",
+    "window": "monthly",
+    "freshness_rule": "stale after 30 days",
+    "unavailable_when": "accounting record not connected, or brand is not in India",
     "benchmark": "100%"
    },
    {
@@ -7977,8 +8159,21 @@
     "action_capability": "MONEY-C15"
    },
    {
+    "name": "sales tax or 1099 credit unreconciled",
+    "rule": "an invoice's sales-tax charge or 1099 record has not been matched to the accounting ledger",
+    "computed_from": [
+     "sales_tax_1099_reconciliation_status"
+    ],
+    "sentence": "{n} invoices have sales-tax or 1099 records not yet matched.",
+    "severity": "medium",
+    "action_capability": "MONEY-C15"
+   },
+   {
     "name": "GST credit unreconciled",
-    "rule": "an invoice's GST/RCM has not been matched to the accounting credit ledger",
+    "markets": [
+     "IN"
+    ],
+    "rule": "an invoice's GST/RCM has not been matched to the accounting credit ledger. India only; does not fire for US brands.",
     "computed_from": [
      "gst_rcm_reconciliation_status"
     ],
@@ -7997,8 +8192,21 @@
     "action_capability": "MEDIA-C54"
    },
    {
+    "name": "rapid-delivery retail media underperforming benchmark",
+    "rule": "rapid_delivery_roas_benchmark_gap is negative by more than 20%",
+    "computed_from": [
+     "rapid_delivery_roas_benchmark_gap"
+    ],
+    "sentence": "{platform} ROAS is {pct}% below the category benchmark.",
+    "severity": "medium",
+    "action_capability": "MEDIA-C53"
+   },
+   {
     "name": "quick commerce underperforming benchmark",
-    "rule": "quick_commerce_roas_benchmark_gap is negative by more than 20%",
+    "markets": [
+     "IN"
+    ],
+    "rule": "quick_commerce_roas_benchmark_gap is negative by more than 20%. India only; does not fire for US brands.",
     "computed_from": [
      "quick_commerce_roas_benchmark_gap"
     ],
@@ -8052,7 +8260,7 @@
    {
     "name": "marketplace brief status board",
     "type": "kanban-style status board",
-    "shows": "Amazon, Flipkart, Blinkit, Zepto and Instamart briefs by status (drafted, sent, live)",
+    "shows": "Amazon, Walmart, Target, Instacart, DoorDash and Gopuff briefs by status (drafted, sent, live), plus Flipkart, Blinkit, Zepto and Instamart briefs for the India option",
     "why_this_chart": "founder tracks handoff work with no live connector, without losing track of what was sent where",
     "exists_today": false
    },
@@ -8098,17 +8306,22 @@
     "autonomy": "founder_gate"
    },
    {
-    "label": "Send the Amazon brief for handoff",
+    "label": "Send the Amazon, Walmart or Target brief for handoff",
     "capability": "MEDIA-C52",
     "autonomy": "human_assist"
    },
    {
-    "label": "Send the Flipkart brief for handoff",
+    "label": "Send the Flipkart brief for handoff (India only)",
     "capability": "MEDIA-C52",
     "autonomy": "human_assist"
    },
    {
-    "label": "Send the quick-commerce plan",
+    "label": "Send the rapid-delivery retail media plan",
+    "capability": "MEDIA-C53",
+    "autonomy": "human_assist"
+   },
+   {
+    "label": "Send the quick-commerce plan (India only)",
     "capability": "MEDIA-C53",
     "autonomy": "human_assist"
    },
@@ -8148,12 +8361,12 @@
     "vs": "Refersion auto-verifies and auto-approves commissions from its own tracker; this room checks that number against the brand's order data first"
    },
    {
-    "claim": "turns Amazon, Flipkart and quick-commerce plans into a handoff brief with targeting, budget and a category ROAS benchmark, and says plainly that live performance stays unavailable until those accounts are connected",
-    "vs": "no dashboard here claims to read Amazon, Flipkart or quick-commerce ad performance; the room is honest about the gap instead of guessing"
+    "claim": "turns Amazon, Walmart, Target and rapid-delivery plans (Flipkart and quick-commerce plans for the India option) into a handoff brief with targeting, budget and a category ROAS benchmark, and says plainly that live performance stays unavailable until those accounts are connected",
+    "vs": "no dashboard here claims to read Amazon, Walmart, Target, Flipkart or rapid-delivery/quick-commerce ad performance; the room is honest about the gap instead of guessing"
    },
    {
-    "claim": "matches each platform's invoice, including GST and reverse-charge credits, against both its own reported spend and the brand's budget ledger in one reconciliation",
-    "vs": "Meta, Google and TikTok billing centers show an invoice against their own reported spend only, not the brand's ledger or its GST credits"
+    "claim": "matches each platform's invoice, including applicable US sales tax and 1099 records (GST and reverse-charge credits for the India option), against both its own reported spend and the brand's budget ledger in one reconciliation",
+    "vs": "Meta, Google and TikTok billing centers show an invoice against their own reported spend only, not the brand's ledger or its sales-tax and 1099 records"
    },
    {
     "claim": "surfaces creators already wearing or reviewing the product organically as whitelist candidates before any outreach cost is paid",
@@ -8223,7 +8436,7 @@
      "sent_at",
      "acknowledged_at"
     ],
-    "connector_or_script": "brand record (no connector to Amazon/Flipkart/quick-commerce yet)",
+    "connector_or_script": "brand record (no connector to Amazon/Walmart/Target/Instacart yet; Flipkart/quick-commerce for the India option)",
     "refresh": "on change"
    },
    {
@@ -8233,7 +8446,8 @@
      "invoice_id",
      "period",
      "invoiced_amount",
-     "gst_rcm",
+     "sales_tax_1099",
+     "gst_rcm_india",
      "reported_spend",
      "ledger_spend"
     ],
@@ -8265,7 +8479,7 @@
     "refresh": "daily"
    }
   ],
-  "founder_view_note": "Before any connector is live, the room shows the marketplace brief status board (Amazon, Flipkart, quick commerce) as the one part that works today, since those briefs are handoff documents, not live reads, and marks every performance metric for those channels as unavailable with 'no connector yet' rather than a blank or a zero. Once the affiliate network and billing pulls connect, the first things to show are open fraud flags and invoice variance, since those two protect real money before anything else in this room does.",
+  "founder_view_note": "Before any connector is live, the room shows the marketplace brief status board (Amazon, Walmart, Target, rapid-delivery marketplaces; Flipkart and quick commerce for the India option) as the one part that works today, since those briefs are handoff documents, not live reads, and marks every performance metric for those channels as unavailable with 'no connector yet' rather than a blank or a zero. Once the affiliate network and billing pulls connect, the first things to show are open fraud flags and invoice variance, since those two protect real money before anything else in this room does.",
   "unknown_capabilities": []
  },
  {
@@ -8365,7 +8579,7 @@
    },
    {
     "job": "run SMS, WhatsApp and push as their own channels",
-    "question": "should this message be WhatsApp instead of SMS, and is our India WhatsApp commerce program converting COD to prepaid",
+    "question": "should this message be SMS or WhatsApp, and (for COD markets such as India) is our WhatsApp commerce program converting COD to prepaid",
     "capabilities": [
      "LIFE-C17",
      "LIFE-C22"
@@ -8483,13 +8697,16 @@
    },
    {
     "name": "whatsapp_cod_to_prepaid_conversion",
-    "plain": "Share of WhatsApp cart-recovery or order-update messages that convert a COD order to prepaid",
+    "plain": "Share of WhatsApp cart-recovery or order-update messages that convert a COD order to prepaid (a COD market such as India; reads null for US brands)",
     "formula": "orders switched from COD to prepaid after a WhatsApp nudge ÷ COD orders that received the nudge",
     "source": "whatsapp_events + orders",
     "window": "trailing 30 days",
     "freshness_rule": "recompute daily",
     "unavailable_when": "no WhatsApp events log or no COD flag on the order",
-    "benchmark": "no fixed target; India benchmark not public, track the brand's own baseline before and after the program"
+    "benchmark": "no fixed target; India benchmark not public, track the brand's own baseline before and after the program",
+    "markets": [
+     "IN"
+    ]
    },
    {
     "name": "quiet_hours_violation_count",
@@ -8875,7 +9092,7 @@
     "autonomy": "agent_does"
    },
    {
-    "label": "Design the India WhatsApp commerce program",
+    "label": "Design the SMS and WhatsApp commerce program",
     "capability": "LIFE-C22",
     "autonomy": "founder_gate"
    },
@@ -8907,7 +9124,7 @@
     "vs": "Klaviyo's built-in A/B testing checks a single flow or campaign split, not a cross-channel test calendar with hygiene rules"
    },
    {
-    "claim": "WhatsApp COD-to-prepaid conversion is tracked as its own metric tied to order data",
+    "claim": "WhatsApp COD-to-prepaid conversion (a COD market such as India) is tracked as its own metric tied to order data",
     "vs": "not a standard metric in Klaviyo, Gorgias or generic WhatsApp Business dashboards, which report delivery and read rates, not payment-method conversion"
    }
   ],
@@ -8993,7 +9210,8 @@
      "sent_at"
     ],
     "connector_or_script": "WhatsApp Business API or BSP export, not yet connected",
-    "refresh": "daily"
+    "refresh": "daily",
+    "notes": "cod_flag and converted_to_prepaid apply to COD markets such as India; null for US brands, which track dunning recovery instead"
    },
    {
     "table": "test_registry",
@@ -9021,7 +9239,7 @@
     "refresh": "daily"
    }
   ],
-  "founder_view_note": "With nothing connected, every metric shows unavailable and the room shows only the job list and empty chart frames, each with 'connect your ESP and order data to see this.' The first thing that lands once esp_sends and orders are connected is the flow revenue reconciliation chart and the consent-gap insight, since those need only 2 tables and catch the most urgent problems (money being miscounted, and sends that should not have gone out). WhatsApp-specific metrics stay unavailable until a WhatsApp Business or BSP feed is connected, which is normally the last piece for an Indian brand.",
+  "founder_view_note": "With nothing connected, every metric shows unavailable and the room shows only the job list and empty chart frames, each with 'connect your ESP and order data to see this.' The first thing that lands once esp_sends and orders are connected is the flow revenue reconciliation chart and the consent-gap insight, since those need only 2 tables and catch the most urgent problems (money being miscounted, and sends that should not have gone out). WhatsApp-specific metrics stay unavailable until a WhatsApp Business or BSP feed is connected, which is normally the last piece for a brand using WhatsApp as a channel (common in India, EU or LATAM).",
   "unknown_capabilities": []
  },
  {
@@ -9056,8 +9274,8 @@
     ]
    },
    {
-    "job": "run returns, exchanges and COD/RTO control",
-    "question": "is our return and RTO rate normal for this category and market, and is it costing us margin",
+    "job": "run returns, exchanges and reversed-orders control (chargebacks, and RTO for COD markets)",
+    "question": "is our return, chargeback and (for COD markets) RTO rate normal for this category and market, and is it costing us margin",
     "capabilities": [
      "LIFE-C26"
     ]
@@ -9128,8 +9346,8 @@
     ]
    },
    {
-    "job": "handle DPDP data requests and courier/marketplace exceptions",
-    "question": "can we prove we handled this data request and this failed delivery correctly and on time",
+    "job": "handle privacy data requests and carrier delivery exceptions",
+    "question": "can we prove we handled this privacy request and this failed delivery correctly and on time",
     "capabilities": [
      "LIFE-C66",
      "PROD-C56",
@@ -9179,16 +9397,6 @@
     "benchmark": "under 5 percent of orders is a common target for a healthy tracking experience"
    },
    {
-    "name": "rto_rate_cod",
-    "plain": "Share of COD orders that come back undelivered",
-    "formula": "RTO-flagged COD orders ÷ total COD orders shipped",
-    "source": "orders + courier RTO flag",
-    "window": "trailing 30 and 90 days, by pincode or zone",
-    "freshness_rule": "recompute daily",
-    "unavailable_when": "courier feed has no RTO flag",
-    "benchmark": "India COD RTO commonly runs 15 to 30 percent depending on category and geography; compare to the brand's own trend and zone spread"
-   },
-   {
     "name": "return_rate",
     "plain": "Share of delivered orders that come back as a return or exchange",
     "formula": "returned units ÷ delivered units",
@@ -9197,6 +9405,52 @@
     "freshness_rule": "recompute daily",
     "unavailable_when": "returns not logged with a SKU and reason",
     "benchmark": "varies by category; watch trend and reason mix, not a fixed number"
+   },
+   {
+    "name": "payment_method_mix",
+    "plain": "Share of orders paid by each method: card, wallet (Shop Pay/PayPal/Apple Pay), BNPL (Affirm/Klarna/Afterpay), and (India) cash on delivery",
+    "formula": "orders by payment_method ÷ total orders",
+    "fields": {
+     "cod_share": {
+      "markets": [
+       "IN"
+      ],
+      "note": "COD orders ÷ total orders; reads null for US brands"
+     }
+    },
+    "source": "orders",
+    "window": "trailing 30 days",
+    "freshness_rule": "recompute daily",
+    "unavailable_when": "payment_method not captured on the order record",
+    "benchmark": "no universal split; watch BNPL and (India) COD share trend, since both carry their own reversed-order risk (dunning for BNPL/card, RTO for COD orders in India)"
+   },
+   {
+    "name": "failed_and_reversed_orders",
+    "plain": "Orders that come back through a failed delivery, a chargeback/dispute, or (for COD markets) a returned-to-origin parcel",
+    "formula": "group of rates: chargeback_rate = disputed paid orders ÷ total paid orders; dispute_rate = disputes opened ÷ total paid orders; return_to_sender_rate = carrier-returned parcels ÷ total shipped orders; rto_rate (India only) = RTO-flagged COD orders ÷ total COD orders shipped",
+    "fields": {
+     "chargeback_rate": {
+      "owner": "Money and ops, with Lifecycle for customer contact"
+     },
+     "dispute_rate": {
+      "owner": "Money and ops, with Lifecycle for customer contact"
+     },
+     "return_to_sender_rate": {
+      "owner": "Lifecycle"
+     },
+     "rto_rate": {
+      "markets": [
+       "IN"
+      ],
+      "owner": "Lifecycle",
+      "note": "a subset of COD orders; reads null for US brands"
+     }
+    },
+    "source": "orders + payment-processor disputes + carrier delivery events (+ courier RTO flag for India)",
+    "window": "trailing 30 and 90 days, by zone/carrier and by reason",
+    "freshness_rule": "recompute daily",
+    "unavailable_when": "payment-processor dispute feed or carrier delivery-exception feed not connected",
+    "benchmark": "a chargeback rate above 1 percent of transactions risks card-network monitoring programs; return-to-sender rate varies by carrier and zone; India COD RTO commonly runs 15 to 30 percent depending on category and geography, compare to the brand's own trend and zone spread"
    },
    {
     "name": "refund_cycle_time",
@@ -9279,34 +9533,34 @@
     "benchmark": "target close to 100 percent; a low rate understates real repeat rate and LTV"
    },
    {
-    "name": "gst_credit_note_reconciliation_rate",
-    "plain": "Share of completed refunds that have a matching, filed GST credit note",
-    "formula": "refunds with a linked, filed credit_note_id ÷ total completed refunds",
-    "source": "refunds + gst_credit_notes",
-    "window": "trailing month, checked monthly for GST filing",
-    "freshness_rule": "recompute weekly, hard check before each GST filing date",
-    "unavailable_when": "credit note system not linked to refunds",
+    "name": "sales_tax_refund_reconciliation_rate",
+    "plain": "Share of completed refunds that have a matching, filed tax adjustment (a GST credit note for India)",
+    "formula": "refunds with a linked, filed tax_adjustment_id ÷ total completed refunds",
+    "source": "refunds + tax_adjustments",
+    "window": "trailing month, checked monthly before sales-tax (or GST, for India) filing",
+    "freshness_rule": "recompute weekly, hard check before each filing date",
+    "unavailable_when": "tax adjustment system not linked to refunds",
     "benchmark": "target 100 percent before each filing deadline"
    },
    {
-    "name": "dpdp_request_sla_compliance",
-    "plain": "Share of data access or erasure requests handled inside the legal deadline",
+    "name": "privacy_request_sla_compliance",
+    "plain": "Share of data access or erasure requests handled inside the legal deadline (CCPA/CPRA and state privacy law for the US; DPDP Act for India)",
     "formula": "requests resolved on or before their SLA deadline ÷ total requests received",
-    "source": "dpdp_requests",
+    "source": "privacy_requests",
     "window": "trailing 12 months",
     "freshness_rule": "recompute daily while any request is open",
-    "unavailable_when": "no dpdp_requests log kept",
+    "unavailable_when": "no privacy_requests log kept",
     "benchmark": "target 100 percent, this is a legal obligation not a growth metric"
    },
    {
-    "name": "ndr_reschedule_success_rate",
-    "plain": "Share of failed COD delivery attempts that get successfully rebooked",
-    "formula": "NDR'd orders successfully redelivered ÷ total NDR'd orders",
-    "source": "courier NDR events + orders",
-    "window": "trailing 30 days, by courier",
+    "name": "failed_delivery_reschedule_success_rate",
+    "plain": "Share of failed delivery attempts that get successfully rebooked (a carrier return-to-sender or delivery exception for the US; an NDR'd COD delivery for India)",
+    "formula": "failed-delivery orders successfully redelivered ÷ total failed-delivery orders",
+    "source": "carrier_delivery_events + orders",
+    "window": "trailing 30 days, by carrier",
     "freshness_rule": "recompute daily",
-    "unavailable_when": "courier has no NDR event feed",
-    "benchmark": "no universal figure, compare couriers against each other"
+    "unavailable_when": "carrier has no delivery-exception event feed",
+    "benchmark": "no universal figure, compare carriers against each other"
    },
    {
     "name": "cx_maturity_score",
@@ -9321,7 +9575,7 @@
    {
     "name": "marketplace_review_rating",
     "plain": "Average public rating on marketplaces and Google, next to the on-site rating for the same product",
-    "formula": "mean star rating per SKU, per source (Google Business Profile, Amazon, Flipkart, on-site)",
+    "formula": "mean star rating per SKU, per source (Google Business Profile, Amazon, Walmart Marketplace, on-site; Flipkart for India)",
     "source": "marketplace review pulls + on-site reviews",
     "window": "current snapshot, trended monthly",
     "freshness_rule": "recompute weekly",
@@ -9342,12 +9596,12 @@
     "action_capability": "LIFE-C33"
    },
    {
-    "name": "refund without credit note",
-    "rule": "a refund is marked completed with no linked, filed GST credit note after 15 days",
+    "name": "refund missing tax reversal",
+    "rule": "a refund is marked completed with no matching sales-tax adjustment after 15 days (India: no linked, filed GST credit note after 15 days, markets IN)",
     "computed_from": [
-     "gst_credit_note_reconciliation_rate"
+     "sales_tax_refund_reconciliation_rate"
     ],
-    "sentence": "{n} refunds from the last filing period have no matching credit note on file",
+    "sentence": "{n} refunds from the last filing period have no matching tax adjustment on file (GST credit note for India)",
     "severity": "high, compliance risk",
     "action_capability": "LIFE-C55"
    },
@@ -9373,10 +9627,10 @@
     "action_capability": "LIFE-C28"
    },
    {
-    "name": "NDR loop",
-    "rule": "the same order has 2 or more failed delivery attempts with no successful reschedule",
+    "name": "failed-delivery loop",
+    "rule": "the same order has 2 or more failed delivery attempts with no successful reschedule (return-to-sender for US carriers, NDR for India's COD orders)",
     "computed_from": [
-     "ndr_reschedule_success_rate"
+     "failed_delivery_reschedule_success_rate"
     ],
     "sentence": "order {id} has failed delivery {n} times with no successful rebooking",
     "severity": "medium",
@@ -9393,10 +9647,10 @@
     "action_capability": "BRAND-C54"
    },
    {
-    "name": "DPDP deadline at risk",
-    "rule": "an open data request is within 3 days of its legal SLA deadline and not yet resolved",
+    "name": "privacy request deadline at risk",
+    "rule": "an open data request is within 3 days of its legal SLA deadline and not yet resolved (CCPA/state privacy law for the US; DPDP for India)",
     "computed_from": [
-     "dpdp_request_sla_compliance"
+     "privacy_request_sla_compliance"
     ],
     "sentence": "request {id} is due in {n} days and is still open",
     "severity": "high, compliance risk",
@@ -9423,12 +9677,25 @@
     "action_capability": "LIFE-C27"
    },
    {
-    "name": "RTO concentrated in one zone",
-    "rule": "a pincode cluster or courier shows an RTO rate more than double the brand's overall rate, with at least 20 orders in the window",
+    "name": "RTO concentrated in one zone (India)",
+    "rule": "a pincode cluster or courier shows an RTO rate more than double the brand's overall rate, with at least 20 orders in the window; reads null for US brands",
     "computed_from": [
-     "rto_rate_cod"
+     "failed_and_reversed_orders"
     ],
     "sentence": "{zone} is running {n}x the average RTO rate on {count} orders this month",
+    "severity": "medium",
+    "action_capability": "LIFE-C26",
+    "markets": [
+     "IN"
+    ]
+   },
+   {
+    "name": "return-to-sender concentrated in one zone or carrier",
+    "rule": "a shipping zone or carrier shows a return-to-sender rate more than double the brand's overall rate, with at least 20 orders in the window",
+    "computed_from": [
+     "failed_and_reversed_orders"
+    ],
+    "sentence": "{zone} is running {n}x the average return-to-sender rate on {count} orders this month",
     "severity": "medium",
     "action_capability": "LIFE-C26"
    },
@@ -9490,10 +9757,10 @@
     "exists_today": false
    },
    {
-    "name": "RTO by zone map",
-    "type": "bar chart or choropleth by pincode cluster",
-    "shows": "COD RTO rate by geography and courier",
-    "why_this_chart": "RTO is a geography and courier problem more than a brand-wide one, and looks that way only on a map or grouped bar",
+    "name": "failed-delivery and RTO by zone map",
+    "type": "bar chart or choropleth by zone/pincode cluster",
+    "shows": "return-to-sender rate by shipping zone and carrier (COD RTO rate by pincode and courier for India, markets IN)",
+    "why_this_chart": "delivery failure is a geography and carrier problem more than a brand-wide one, and looks that way only on a map or grouped bar",
     "exists_today": false
    },
    {
@@ -9542,7 +9809,7 @@
     "autonomy": "founder_gate"
    },
    {
-    "label": "Approve the returns/RTO experience changes",
+    "label": "Approve the returns/reversed-orders experience changes (chargebacks; RTO for COD markets)",
     "capability": "LIFE-C26",
     "autonomy": "founder_gate"
    },
@@ -9617,7 +9884,7 @@
     "autonomy": "founder_gate"
    },
    {
-    "label": "Send GST reconciliation gap to accounting",
+    "label": "Send sales-tax reconciliation gap to accounting (GST for India)",
     "capability": "LIFE-C55",
     "autonomy": "human_assist"
    },
@@ -9642,7 +9909,7 @@
     "autonomy": "founder_gate"
    },
    {
-    "label": "Approve auto-rescheduling NDR'd COD orders",
+    "label": "Approve auto-rescheduling of failed deliveries (return-to-sender for US; NDR'd COD orders for India)",
     "capability": "PROD-C56",
     "autonomy": "founder_gate"
    },
@@ -9652,7 +9919,7 @@
     "autonomy": "founder_gate"
    },
    {
-    "label": "Approve handling of a DPDP request",
+    "label": "Approve handling of a privacy data request (CCPA/state law for US; DPDP for India)",
     "capability": "LIFE-C66",
     "autonomy": "founder_gate"
    },
@@ -9668,15 +9935,15 @@
     "vs": "Shopify's native LTV and cohort reports are revenue based and, outside Shopify Plus, do not offer cohort analysis at all; Triple Whale's cohort tools are also built on revenue and ad spend, not on returns and support cost netted out"
    },
    {
-    "claim": "COD RTO and failed-delivery (NDR) reschedule outcomes are tracked as their own funnel tied to real courier events",
-    "vs": "not a standard view in Klaviyo, Gorgias or Shopify analytics, which do not carry courier delivery-attempt data"
+    "claim": "Failed-delivery, return-to-sender and (India) COD RTO reschedule outcomes are tracked as their own funnel tied to real carrier events",
+    "vs": "not a standard view in Klaviyo, Gorgias or Shopify analytics, which do not carry carrier delivery-attempt data"
    },
    {
-    "claim": "Support ticket reasons and CSAT are shown next to return, RTO and true-profitability data in one room",
-    "vs": "also in Gorgias for ticket reasons and CSAT alone; Gorgias has no view of returns cost, RTO or per-customer profitability"
+    "claim": "Support ticket reasons and CSAT are shown next to return, reversed-order (chargebacks, and RTO for COD markets) and true-profitability data in one room",
+    "vs": "also in Gorgias for ticket reasons and CSAT alone; Gorgias has no view of returns cost, reversed orders or per-customer profitability"
    },
    {
-    "claim": "A single DPDP data-request register that tracks every system holding a person's data, with a legal SLA clock",
+    "claim": "A single privacy data-request register (CCPA/state privacy law for the US, DPDP for India) that tracks every system holding a person's data, with a legal SLA clock",
     "vs": "no ecommerce tool ships this off the shelf, since the data spans the ESP, helpdesk, loyalty app, POS and marketplace accounts a brand uses"
    },
    {
@@ -9711,13 +9978,14 @@
      "order_id",
      "reason",
      "refund_amount",
-     "credit_note_id",
-     "rto_flag",
-     "courier",
+     "tax_adjustment_id",
+     "return_to_sender_flag",
+     "carrier",
      "issued_at"
     ],
     "connector_or_script": "store returns/refund export, not yet connected",
-    "refresh": "daily"
+    "refresh": "daily",
+    "notes": "tax_adjustment_id maps to a GST credit note for India; return_to_sender_flag covers RTO for India's COD orders"
    },
    {
     "table": "support_tickets",
@@ -9786,28 +10054,31 @@
     "refresh": "weekly"
    },
    {
-    "table": "gst_credit_notes",
+    "table": "tax_adjustments",
     "fields": [
-     "note_id",
+     "adjustment_id",
      "refund_id",
+     "jurisdiction",
      "filed_at",
-     "amount"
+     "amount",
+     "credit_note_id"
     ],
-    "connector_or_script": "accounting/GST filing export, not yet connected",
+    "connector_or_script": "accounting / Avalara-TaxJar export for US sales tax; GST filing export for India (credit_note_id applies to India only, null for US)",
     "refresh": "monthly, before filing"
    },
    {
-    "table": "dpdp_requests",
+    "table": "privacy_requests",
     "fields": [
      "request_id",
      "customer_id",
+     "jurisdiction",
      "type",
      "received_at",
      "sla_deadline",
      "resolved_at",
      "systems_checked"
     ],
-    "connector_or_script": "manual log until a DPDP intake form is built",
+    "connector_or_script": "manual log until a privacy-request intake form is built (jurisdiction: CCPA/CPRA, other state law, or DPDP for India)",
     "refresh": "on each request"
    },
    {
@@ -9837,20 +10108,20 @@
     "refresh": "real time"
    },
    {
-    "table": "courier_delivery_events",
+    "table": "carrier_delivery_events",
     "fields": [
      "order_id",
-     "courier",
+     "carrier",
      "attempt_number",
      "outcome",
-     "ndr_reason",
+     "exception_reason",
      "attempted_at"
     ],
-    "connector_or_script": "courier API or manual export, not yet connected",
+    "connector_or_script": "carrier API or manual export, not yet connected (India: exception_reason also carries the NDR reason code)",
     "refresh": "daily"
    }
   ],
-  "founder_view_note": "With nothing connected, the room shows the job list and unavailable states everywhere except cx_maturity_score, which only needs a manual scoring session against a written standard. The first real signal once orders and refunds are connected is repeat_purchase_rate and return_rate; true_customer_profitability and cohort_gross_profit_ltv need support_tickets and product_costs on top of that, so they light up later. DPDP and GST reconciliation fields are the hardest to get since they live outside any marketing or CX tool, in accounting and a manual compliance log.",
+  "founder_view_note": "With nothing connected, the room shows the job list and unavailable states everywhere except cx_maturity_score, which only needs a manual scoring session against a written standard. The first real signal once orders and refunds are connected is repeat_purchase_rate and return_rate; true_customer_profitability and cohort_gross_profit_ltv need support_tickets and product_costs on top of that, so they light up later. Privacy-request and sales-tax/GST (India) reconciliation fields are the hardest to get since they live outside any marketing or CX tool, in accounting and a manual compliance log.",
   "unknown_capabilities": []
  },
  {
@@ -9966,7 +10237,7 @@
   "metrics": [
    {
     "name": "margin_after_discount",
-    "plain": "What is actually left after the discount, in rupees, not just percent off",
+    "plain": "What is actually left after the discount, in dollars, not just percent off",
     "formula": "order revenue − COGS − payment fee − discount amount, per order and rolled up per offer",
     "source": "orders + product_costs + discount_codes",
     "window": "per offer, trailing 30 and 90 days",
@@ -10632,8 +10903,8 @@
   ],
   "jobs": [
    {
-    "job": "know if this week's content plan held the posting floor and covers the next festival",
-    "question": "did we post what we planned and is the next festival slot covered",
+    "job": "know if this week's content plan held the posting floor and covers the next holiday moment",
+    "question": "did we post what we planned and is the next holiday slot covered",
     "capabilities": [
      "ORG-C02"
     ]
@@ -10726,7 +10997,7 @@
     ]
    },
    {
-    "job": "know if the owned community (WhatsApp or Discord) is worth the moderation time",
+    "job": "know if the owned community (Discord, Circle, Facebook group or SMS list; WhatsApp for an India, EU or LATAM audience) is worth the moderation time",
     "question": "is the community active, and do active members actually buy",
     "capabilities": [
      "LIFE-C53"
@@ -10745,13 +11016,25 @@
     "benchmark": "not applicable, compares to the brand's own set floor"
    },
    {
-    "name": "festive_slot_coverage",
-    "plain": "Share of festivals in the next 30 days that already have a script assigned",
+    "name": "holiday_slot_coverage",
+    "plain": "Share of US holidays and retail moments in the next 30 days that already have a script assigned",
+    "formula": "holiday_slots_with_script / holiday_slots_in_next_30_days",
+    "source": "calendar holiday layer",
+    "window": "rolling 30 days",
+    "freshness_rule": "recomputed daily",
+    "unavailable_when": "no holiday calendar layer loaded"
+   },
+   {
+    "name": "festival_slot_coverage",
+    "plain": "Share of India festivals in the next 30 days that already have a script assigned",
     "formula": "festival_slots_with_script / festival_slots_in_next_30_days",
     "source": "calendar festive layer",
     "window": "rolling 30 days",
     "freshness_rule": "recomputed daily",
-    "unavailable_when": "no festive calendar layer loaded"
+    "unavailable_when": "no festive calendar layer loaded, or the brand is US-only",
+    "markets": [
+     "IN"
+    ]
    },
    {
     "name": "founder_camera_share",
@@ -10810,7 +11093,7 @@
    },
    {
     "name": "dm_to_owned_contact_rate",
-    "plain": "Share of DM conversations that end with an email, WhatsApp opt-in or phone number captured",
+    "plain": "Share of DM conversations that end with an email, SMS opt-in or phone number captured (or a WhatsApp opt-in, market option for India, EU or LATAM)",
     "formula": "dm_threads_with_captured_contact / dm_threads_total",
     "source": "DM funnel log + CRM/lead table",
     "window": "trailing 30 days",
@@ -10893,7 +11176,7 @@
     "name": "community_active_member_rate",
     "plain": "Share of community members who sent at least one message in the last 30 days",
     "formula": "active_members_30d / total_members",
-    "source": "community platform export (WhatsApp/Discord)",
+    "source": "community platform export (Discord/SMS; WhatsApp for India, EU or LATAM audiences)",
     "window": "trailing 30 days",
     "freshness_rule": "stale after 14 days",
     "unavailable_when": "no community roster export"
@@ -10902,7 +11185,7 @@
     "name": "community_to_order_rate",
     "plain": "Share of community members who also placed an order in the same window, matched by phone or email",
     "formula": "members_with_matching_order / total_members",
-    "source": "community roster matched to orders (phone match for WhatsApp)",
+    "source": "community roster matched to orders (phone match for SMS or WhatsApp, WhatsApp a market option for India, EU or LATAM)",
     "window": "trailing 90 days",
     "freshness_rule": "recomputed monthly",
     "unavailable_when": "roster cannot be matched to orders (no shared phone/email field)"
@@ -10920,14 +11203,27 @@
     "action_capability": "ORG-C02"
    },
    {
-    "name": "festive gap",
-    "rule": "a festival is within 14 days and has zero assigned script",
+    "name": "holiday gap",
+    "rule": "a US holiday or retail moment is within 14 days and has zero assigned script",
+    "computed_from": [
+     "calendar holiday layer"
+    ],
+    "sentence": "{holiday} is in {d} days and has no script yet",
+    "severity": "high if under 7 days",
+    "action_capability": "ORG-C02"
+   },
+   {
+    "name": "festival gap",
+    "rule": "an India festival is within 14 days and has zero assigned script",
     "computed_from": [
      "calendar festive layer"
     ],
     "sentence": "{festival} is in {d} days and has no script yet",
     "severity": "high if under 7 days",
-    "action_capability": "ORG-C02"
+    "action_capability": "ORG-C02",
+    "markets": [
+     "IN"
+    ]
    },
    {
     "name": "stranger-blind viral post",
@@ -10999,7 +11295,7 @@
      "DM funnel log",
      "CRM"
     ],
-    "sentence": "{pct}% of DM conversations end without an email, WhatsApp opt-in or phone number",
+    "sentence": "{pct}% of DM conversations end without an email, SMS opt-in or phone number (or a WhatsApp opt-in, market option for India, EU or LATAM)",
     "severity": "medium",
     "action_capability": "ORG-C10"
    },
@@ -11059,7 +11355,7 @@
    {
     "name": "calendar heatmap",
     "type": "calendar grid",
-    "shows": "planned vs published posts per day, with festival flags",
+    "shows": "planned vs published posts per day, with holiday flags (festival flags for an India calendar)",
     "why_this_chart": "founder sees the whole month's cadence and gaps at a glance",
     "exists_today": false
    },
@@ -11111,9 +11407,17 @@
     "autonomy": "agent_does"
    },
    {
-    "label": "Add the festive layer",
+    "label": "Add the holiday layer",
     "capability": "ORG-C02",
     "autonomy": "agent_does"
+   },
+   {
+    "label": "Add the India festival layer",
+    "capability": "ORG-C02",
+    "autonomy": "agent_does",
+    "markets": [
+     "IN"
+    ]
    },
    {
     "label": "Review founder on-camera plan",
@@ -11293,7 +11597,7 @@
     "vs": "social schedulers manage the posting calendar only; they do not track reuse of the same asset across owned commerce surfaces"
    },
    {
-    "claim": "reads the owned WhatsApp or Discord community's active-member rate against matched store orders",
+    "claim": "reads the owned Discord, SMS or WhatsApp community's active-member rate against matched store orders",
     "vs": "Later has no social listening at all; Hootsuite and Sprout Social track engagement inside the platform, not matched to the brand's own order data"
    }
   ],
@@ -11306,7 +11610,7 @@
      "platform",
      "pillar",
      "status",
-     "festival_tag",
+     "holiday_tag",
      "language_variant"
     ],
     "connector_or_script": "calendar tool export or ORG-C02 output",
@@ -11454,7 +11758,7 @@
      "last_active_at",
      "message_count"
     ],
-    "connector_or_script": "WhatsApp Business API export or Discord export",
+    "connector_or_script": "Discord export or SMS platform export (WhatsApp Business API export, market option for India, EU or LATAM)",
     "refresh": "weekly"
    }
   ],
@@ -12152,6 +12456,17 @@
     "refresh": "daily"
    },
    {
+    "table": "us_holiday_calendar",
+    "fields": [
+     "holiday",
+     "date",
+     "category_relevance",
+     "shipping_cutoff"
+    ],
+    "connector_or_script": "shared with Organic room's holiday layer",
+    "refresh": "yearly, checked monthly"
+   },
+   {
     "table": "festive_calendar_india",
     "fields": [
      "festival",
@@ -12160,7 +12475,10 @@
      "shipping_cutoff"
     ],
     "connector_or_script": "shared with Organic room's festive layer",
-    "refresh": "yearly, checked monthly"
+    "refresh": "yearly, checked monthly",
+    "markets": [
+     "IN"
+    ]
    }
   ],
   "founder_view_note": "With nothing connected, the room shows the roadmap decision and a checklist (connect Search Console, GA4, a rank tracker and a crawl tool) instead of metrics marked unavailable everywhere. Once Search Console and GA4 land, organic_sessions and organic_revenue appear first; crawl_error_count, orphan_page_count and the AI-crawler check only appear after the first full site crawl runs.",
@@ -12199,7 +12517,7 @@
    },
    {
     "job": "keep the same facts identical everywhere an engine can read them",
-    "question": "does the price, return window, warranty and COD answer match on the site, schema, feed and directories",
+    "question": "does the price, return window, warranty and payment method answer match on the site, schema, feed and directories",
     "capabilities": [
      "ORG-C35"
     ]
@@ -12279,7 +12597,7 @@
    },
    {
     "name": "fact_gap_count",
-    "plain": "Gaps found in the last prompt audit, by category (price, materials, returns, shipping, COD, warranty)",
+    "plain": "Gaps found in the last prompt audit, by category (price, materials, returns, shipping, payment method, warranty)",
     "formula": "count(gaps) from the last audit, grouped by category",
     "source": "prompt audit output",
     "window": "latest audit, monthly",
@@ -12711,7 +13029,7 @@
      "last_checked",
      "facts_match"
     ],
-    "connector_or_script": "manual or scraped check of JustDial, IndiaMart, Google Business Profile and named marketplaces",
+    "connector_or_script": "manual or scraped check of Yelp, the Better Business Bureau, Google Business Profile and named marketplaces (JustDial and IndiaMart added for an India listing, market option, reads null for a US-only brand)",
     "refresh": "monthly"
    }
   ],
@@ -13509,15 +13827,15 @@
     ]
    },
    {
-    "job": "work today's NDR queue before the attempt window closes",
-    "question": "which non-delivered orders need action today",
+    "job": "work today's carrier-exception queue before the attempt window closes (india: NDR queue)",
+    "question": "which failed-delivery orders need action today",
     "capabilities": [
      "PROD-C56"
     ]
    },
    {
-    "job": "see COD remittance reconciled against orders",
-    "question": "did the courier pay me what it owes me",
+    "job": "see carrier billing reconciled against orders, including COD remittance where the brand offers it (india only; markets: IN)",
+    "question": "did the carrier pay or bill me correctly",
     "capabilities": [
      "MONEY-C52"
     ]
@@ -13552,7 +13870,7 @@
    },
    {
     "job": "see peak-season readiness across stock, staffing and systems",
-    "question": "am I ready for the festive spike",
+    "question": "am I ready for the Q4/BFCM spike (india: the festive spike)",
     "capabilities": [
      "PROD-C72"
     ]
@@ -13640,14 +13958,80 @@
     "benchmark": "compared against the SLA written in the 3PL contract"
    },
    {
-    "name": "courier_rto_rate",
-    "plain": "Share of shipments a courier returns undelivered, by zone",
-    "formula": "RTO shipments ÷ total shipments for that courier and zone",
+    "name": "return_to_sender_rate",
+    "group": "failed_and_reversed_orders",
+    "plain": "Share of shipments a carrier returns to the sender without delivering, by zone",
+    "formula": "return-to-sender shipments ÷ total shipments for that carrier and zone",
     "source": "courier scorecard table (shipment and delivery status feed)",
     "window": "trailing 30 days",
     "freshness_rule": "stale after 7 days",
-    "unavailable_when": "fewer than 30 shipments for that courier-zone pair in the window",
+    "unavailable_when": "fewer than 30 shipments for that carrier-zone pair in the window",
+    "benchmark": "compared across the brand's own carriers in the same zone, not an external figure"
+   },
+   {
+    "name": "rto_rate",
+    "group": "failed_and_reversed_orders",
+    "markets": [
+     "IN"
+    ],
+    "plain": "Share of cash-on-delivery shipments a courier returns undelivered (RTO), by zone. Reads null for a US brand with no COD orders.",
+    "formula": "RTO shipments ÷ total COD shipments for that courier and zone",
+    "source": "courier scorecard table (shipment and delivery status feed)",
+    "window": "trailing 30 days",
+    "freshness_rule": "stale after 7 days",
+    "unavailable_when": "fewer than 30 COD shipments for that courier-zone pair in the window, or the brand does not offer COD",
     "benchmark": "compared across the brand's own couriers in the same zone, not an external figure"
+   },
+   {
+    "name": "chargeback_rate",
+    "group": "failed_and_reversed_orders",
+    "plain": "Share of paid orders reversed through the card network or PayPal",
+    "formula": "chargebacks ÷ total paid orders, trailing period",
+    "source": "payment processor chargeback feed joined to order records",
+    "window": "trailing 30 and 90 days",
+    "freshness_rule": "stale after 7 days",
+    "unavailable_when": "no chargeback feed connected",
+    "benchmark": "compared against the card networks' own excessive-chargeback thresholds"
+   },
+   {
+    "name": "dispute_rate",
+    "group": "failed_and_reversed_orders",
+    "plain": "Share of orders with an open payment dispute awaiting representment",
+    "formula": "disputed orders ÷ total orders, trailing period",
+    "source": "payment processor dispute feed",
+    "window": "live",
+    "freshness_rule": "stale after 48 hours",
+    "unavailable_when": "no dispute feed connected",
+    "benchmark": "not applicable, an operational queue count"
+   },
+   {
+    "name": "payment_method_mix",
+    "group": "failed_and_reversed_orders",
+    "plain": "Share of orders by payment method: card, wallet (Shop Pay, PayPal, Apple Pay), BNPL (Affirm, Klarna, Afterpay), and, for an India brand, cash on delivery (markets: IN)",
+    "formula": "count of orders by payment_method ÷ total orders, trailing period",
+    "fields": [
+     {
+      "key": "card_share"
+     },
+     {
+      "key": "wallet_share"
+     },
+     {
+      "key": "bnpl_share"
+     },
+     {
+      "key": "cod_share",
+      "markets": [
+       "IN"
+      ],
+      "note": "reads null for a US brand"
+     }
+    ],
+    "source": "order payment method field",
+    "window": "trailing 30 days",
+    "freshness_rule": "stale after 7 days",
+    "unavailable_when": "payment method not recorded on the order",
+    "benchmark": "not applicable, a mix breakdown"
    },
    {
     "name": "courier_first_attempt_delivery_rate",
@@ -13670,24 +14054,27 @@
     "benchmark": "compared across the brand's own couriers, same zone"
    },
    {
-    "name": "ndr_open_count",
-    "plain": "How many non-delivery reports are open right now",
-    "formula": "count of NDR records with status open, grouped by hours remaining in the attempt window",
-    "source": "NDR queue table",
+    "name": "carrier_exception_open_count",
+    "plain": "How many carrier delivery exceptions are open right now (india: non-delivery reports, NDR)",
+    "formula": "count of exception records with status open, grouped by hours remaining in the attempt window",
+    "source": "carrier exception queue table (india: NDR queue table)",
     "window": "live",
     "freshness_rule": "stale after 6 hours without a courier status sync",
-    "unavailable_when": "no courier NDR feed connected",
+    "unavailable_when": "no carrier exception feed connected",
     "benchmark": "not applicable, an operational queue count"
    },
    {
     "name": "cod_remittance_variance",
-    "plain": "Difference between what a courier should pay in COD and what it actually paid",
+    "plain": "Difference between what a courier should pay in COD and what it actually paid. Reads null for a US brand with no COD orders.",
     "formula": "sum of expected COD amount per order − sum of amount actually remitted, by courier and period",
     "source": "COD remittance table joined to order records",
     "window": "monthly, per remittance cycle",
     "freshness_rule": "stale once a new remittance cycle closes without reconciliation",
     "unavailable_when": "remittance file not yet received from courier",
-    "benchmark": "not applicable; any nonzero variance is a dispute candidate"
+    "benchmark": "not applicable; any nonzero variance is a dispute candidate",
+    "markets": [
+     "IN"
+    ]
    },
    {
     "name": "dead_stock_value",
@@ -13731,23 +14118,34 @@
    },
    {
     "name": "peak_season_readiness_pct",
-    "plain": "How ready stock, staffing and systems are for the next festive peak",
+    "plain": "How ready stock, staffing and systems are for the next Q4/BFCM peak (india: the next festive peak)",
     "formula": "average of (safety stock vs peak target, warehouse staffing booked vs target, WMS/OMS load-test pass) as percentages",
     "source": "peak season plan table",
     "window": "checked weekly in the 90 days before the festival date",
     "freshness_rule": "stale after 14 days inside the 90-day window",
-    "unavailable_when": "no peak season plan created for the upcoming festival",
+    "unavailable_when": "no peak season plan created for the upcoming peak window (india: upcoming festival)",
     "benchmark": "100% readiness target set per brand ahead of the date"
    },
    {
-    "name": "ndr_to_rto_conversion_rate",
-    "plain": "Share of NDRs that end up going back as RTO instead of delivering",
-    "formula": "orders that end in RTO after an NDR ÷ total orders that had at least one NDR, trailing period",
-    "source": "NDR queue table joined to shipment outcome",
+    "name": "exception_to_return_to_sender_rate",
+    "plain": "Share of carrier exceptions that end up returned to sender instead of delivering (india: NDRs converting to RTO)",
+    "formula": "orders that end in a return-to-sender after an exception ÷ total orders that had at least one exception, trailing period (india: orders ending in RTO after an NDR ÷ orders with at least one NDR)",
+    "source": "carrier exception queue table joined to shipment outcome (india: NDR queue table)",
     "window": "trailing 30 days",
     "freshness_rule": "stale after 7 days",
-    "unavailable_when": "fewer than 20 NDR cases in the window",
+    "unavailable_when": "fewer than 20 exception cases in the window",
     "benchmark": "compared against the brand's own trailing average, not an external figure"
+   },
+   {
+    "name": "carrier_billing_variance",
+    "group": "failed_and_reversed_orders",
+    "plain": "Difference between a carrier's invoiced weight/dimension charge and the packed weight recorded at dispatch",
+    "formula": "sum of invoiced charge − sum of expected charge from dispatch weight, by carrier and period",
+    "source": "carrier billing file joined to dispatch weight records",
+    "window": "per billing cycle",
+    "freshness_rule": "stale once a new billing cycle closes without reconciliation",
+    "unavailable_when": "billing file not yet received from carrier",
+    "benchmark": "not applicable; any nonzero variance is a dispute candidate"
    }
   ],
   "insights": [
@@ -13797,20 +14195,20 @@
     "name": "courier underperforming a zone",
     "rule": "courier_rto_rate for a courier-zone pair is more than 10 points above the brand's best courier in the same zone",
     "computed_from": [
-     "courier_rto_rate",
+     "return_to_sender_rate",
      "courier_first_attempt_delivery_rate"
     ],
-    "sentence": "{courier} runs a {pct} RTO rate in {zone}, {diff} points worse than {best_courier}. Shift volume.",
-    "severity": "medium, avoidable RTO cost",
+    "sentence": "{courier} runs a {pct} return-to-sender rate in {zone}, {diff} points worse than {best_courier}. Shift volume. (India: read as RTO rate.)",
+    "severity": "medium, avoidable return-to-sender cost",
     "action_capability": "PROD-C59"
    },
    {
-    "name": "NDR aging toward its attempt window",
-    "rule": "an open NDR has fewer than 4 hours left before the courier's attempt window closes",
+    "name": "carrier exception aging toward its attempt window",
+    "rule": "an open carrier exception has fewer than 4 hours left before the attempt window closes",
     "computed_from": [
-     "ndr_open_count"
+     "carrier_exception_open_count"
     ],
-    "sentence": "{n} NDRs close their attempt window in under 4 hours. Confirm the address or reschedule now.",
+    "sentence": "{n} carrier exceptions close their attempt window in under 4 hours. Confirm the address or reschedule now. (India: NDRs.)",
     "severity": "high, time-critical",
     "action_capability": "PROD-C56"
    },
@@ -13820,7 +14218,7 @@
     "computed_from": [
      "cod_remittance_variance"
     ],
-    "sentence": "{courier} remitted {amount} less than expected for {period}. Open a billing dispute.",
+    "sentence": "{courier} remitted {amount} less than expected for {period}. Open a billing dispute. (India only; markets: IN.)",
     "severity": "high, direct cash loss",
     "action_capability": "MONEY-C52"
    },
@@ -13866,7 +14264,7 @@
    },
    {
     "name": "peak season not ready",
-    "rule": "peak_season_readiness_pct is below 80% with fewer than 45 days left to the festival date",
+    "rule": "peak_season_readiness_pct is below 80% with fewer than 45 days left to the Q4/BFCM date (india: the festival date)",
     "computed_from": [
      "peak_season_readiness_pct"
     ],
@@ -13875,14 +14273,25 @@
     "action_capability": "PROD-C72"
    },
    {
-    "name": "NDR converting to RTO more than usual",
-    "rule": "ndr_to_rto_conversion_rate rises more than 10 points above the brand's trailing 90-day average",
+    "name": "carrier exceptions converting to return-to-sender more than usual",
+    "rule": "exception_to_return_to_sender_rate rises more than 10 points above the brand's trailing 90-day average",
     "computed_from": [
-     "ndr_to_rto_conversion_rate"
+     "exception_to_return_to_sender_rate"
     ],
-    "sentence": "NDRs are converting to RTO {pct} more than usual this period. Check address-confirmation outreach and courier performance.",
-    "severity": "medium, rising RTO cost",
+    "sentence": "Carrier exceptions are converting to return-to-sender {pct} more than usual this period. Check address-confirmation outreach and carrier performance. (India: NDRs converting to RTO.)",
+    "severity": "medium, rising return-to-sender cost",
     "action_capability": "PROD-C56"
+   },
+   {
+    "name": "chargeback rate rising",
+    "rule": "chargeback_rate rises above the card networks' excessive-chargeback threshold or more than 50% above the brand's trailing average",
+    "computed_from": [
+     "chargeback_rate",
+     "dispute_rate"
+    ],
+    "sentence": "Chargeback rate is {pct}, {diff} above normal. Review dispute reason codes before it risks processor standing.",
+    "severity": "high, processor and cash risk",
+    "action_capability": "MONEY-C52"
    }
   ],
   "visuals": [
@@ -13903,7 +14312,7 @@
    {
     "name": "courier scorecard bars",
     "type": "grouped bar chart",
-    "shows": "RTO rate, first-attempt delivery rate and TAT per courier, grouped by zone",
+    "shows": "return-to-sender rate (india: RTO rate), first-attempt delivery rate and TAT per courier, grouped by zone",
     "why_this_chart": "makes the reallocation decision visible without reading a spreadsheet",
     "exists_today": false
    },
@@ -13915,10 +14324,10 @@
     "exists_today": false
    },
    {
-    "name": "NDR funnel",
+    "name": "carrier exception funnel",
     "type": "funnel chart",
-    "shows": "orders raised as NDR, attempted again, resolved, or converted to RTO",
-    "why_this_chart": "shows where the NDR process is leaking into RTO",
+    "shows": "orders raised as a carrier exception, attempted again, resolved, or converted to return-to-sender (india: NDR, RTO)",
+    "why_this_chart": "shows where the exception process is leaking into return-to-sender (india: NDR into RTO)",
     "exists_today": false
    },
    {
@@ -13926,6 +14335,13 @@
     "type": "stacked bar chart",
     "shows": "inventory value by SKU, stacked by age band, with the dead-stock threshold marked",
     "why_this_chart": "turns an inventory age report into a clearance priority list",
+    "exists_today": false
+   },
+   {
+    "name": "reversed orders group",
+    "type": "grouped bar chart",
+    "shows": "chargeback_rate, dispute_rate and return_to_sender_rate side by side, with rto_rate shown only for a brand offering COD (markets: IN)",
+    "why_this_chart": "keeps the three distinct reversed-order legs (returns, RTO, chargebacks/disputes) visible together instead of merged into one number",
     "exists_today": false
    }
   ],
@@ -13961,17 +14377,17 @@
     "autonomy": "founder_gate"
    },
    {
-    "label": "Work today's NDR queue",
+    "label": "Work today's carrier-exception queue (india: NDR queue)",
     "capability": "PROD-C56",
     "autonomy": "founder_gate"
    },
    {
-    "label": "Reconcile COD remittance",
+    "label": "Reconcile carrier billing and COD remittance where applicable (india only for COD; markets: IN)",
     "capability": "MONEY-C52",
     "autonomy": "agent_does"
    },
    {
-    "label": "Start a COD-to-prepaid test",
+    "label": "Start a COD-to-prepaid test (india only; markets: IN)",
     "capability": "SITE-C67",
     "autonomy": "founder_gate"
    },
@@ -14016,7 +14432,7 @@
     "autonomy": "founder_gate"
    },
    {
-    "label": "Decide NDR reschedule versus RTO acceptance",
+    "label": "Decide carrier retry versus return-to-sender acceptance (india: NDR reschedule versus RTO)",
     "capability": "PROD-C56",
     "autonomy": "founder_gate"
    }
@@ -14027,19 +14443,19 @@
     "vs": "Cin7 and Katana calculate reorder points and safety stock from velocity and lead time; neither ties a landed cost change back to a margin recheck automatically"
    },
    {
-    "claim": "joins the courier scorecard to this brand's own COD reversal cost to decide NDR reschedule versus RTO acceptance per order",
-    "vs": "Shiprocket and NimbusPost report courier-level RTO, NDR and COD data in aggregate; they do not weigh a reschedule against this brand's own unit economics per order"
+    "claim": "joins the carrier scorecard to this brand's own chargeback and return-to-sender cost to decide retry versus acceptance per order (india: COD reversal cost to decide NDR reschedule versus RTO)",
+    "vs": "Shiprocket and NimbusPost report courier-level RTO, NDR and COD data in aggregate; ShipStation and EasyPost report carrier exception data in aggregate; none weigh a reschedule against this brand's own unit economics per order"
    },
    {
-    "claim": "sizes safety stock against India-specific spike risk, including festive and gifting demand, in the same screen as the reorder point",
-    "vs": "generic inventory tools size safety stock from velocity and lead time alone, without a festive calendar or COD-market RTO risk built in"
+    "claim": "sizes safety stock against peak-season spike risk (Q4/BFCM demand, carrier return-to-sender risk), and against India-specific festive and COD-RTO risk where that applies (markets: IN), in the same screen as the reorder point",
+    "vs": "generic inventory tools size safety stock from velocity and lead time alone, without a peak-season calendar or return-to-sender/RTO risk built in"
    },
    {
     "claim": "ties a supplier's scorecard directly to its concentration share and backup-factory status in one view",
     "vs": "supplier scorecards in most ERPs track performance only; they are not shown next to how exposed the brand is if that supplier fails"
    },
    {
-    "claim": "combines safety stock, warehouse staffing and WMS load readiness against the festive calendar into one readiness percentage",
+    "claim": "combines safety stock, warehouse staffing and WMS load readiness against the Q4/BFCM calendar (india: the festive calendar) into one readiness percentage",
     "vs": "peak-season planning is normally a spreadsheet exercise split across ops, warehouse and sourcing with no single readiness number"
    }
   ],
@@ -14127,6 +14543,7 @@
      "courier",
      "zone",
      "shipments",
+     "return_to_sender_rate",
      "rto_rate",
      "first_attempt_rate",
      "tat_days",
@@ -14136,7 +14553,7 @@
     "refresh": "daily"
    },
    {
-    "table": "ndr_queue",
+    "table": "carrier_exception_queue",
     "fields": [
      "order_id",
      "courier",
@@ -14145,7 +14562,7 @@
      "status",
      "resolution"
     ],
-    "connector_or_script": "courier NDR feed",
+    "connector_or_script": "carrier exception feed (india: courier NDR feed)",
     "refresh": "hourly"
    },
    {
@@ -14158,7 +14575,7 @@
      "variance",
      "order_ids"
     ],
-    "connector_or_script": "courier remittance file reconciliation script",
+    "connector_or_script": "courier remittance file reconciliation script (india only; markets: IN)",
     "refresh": "per remittance cycle"
    },
    {
@@ -14212,7 +14629,7 @@
    {
     "table": "peak_season_plan",
     "fields": [
-     "festival_name",
+     "peak_window_name",
      "date",
      "safety_stock_target",
      "staffing_target",
@@ -14221,6 +14638,31 @@
     ],
     "connector_or_script": "manual plan plus rollup of the metrics above",
     "refresh": "weekly in the 90 days before the date"
+   },
+   {
+    "table": "carrier_billing",
+    "fields": [
+     "carrier",
+     "period",
+     "invoiced_amount",
+     "dispatch_weight_amount",
+     "variance"
+    ],
+    "connector_or_script": "carrier billing file reconciliation script",
+    "refresh": "per billing cycle"
+   },
+   {
+    "table": "payment_disputes",
+    "fields": [
+     "order_id",
+     "payment_method",
+     "chargeback_flag",
+     "dispute_status",
+     "reason_code",
+     "opened_at"
+    ],
+    "connector_or_script": "payment processor chargeback/dispute feed",
+    "refresh": "daily"
    }
   ],
   "founder_view_note": "With nothing connected, every SKU shows stock cover, reorder point and landed cost as unavailable, and the room prompts to connect an inventory feed or WMS first, since reorder math needs real velocity. Once an inventory feed lands, the first live view is the stock cover heat grid; courier and supplier scorecards fill in only after a courier or supplier data feed is connected, and stay unavailable, not zero, until then.",
@@ -14265,7 +14707,7 @@
     ]
    },
    {
-    "job": "recompute true quick commerce ROAS from transaction value, not MRP",
+    "job": "recompute true rapid-delivery ROAS from transaction value, not list/MRP price",
     "question": "what is this platform's ad spend really returning",
     "capabilities": [
      "PROD-C49"
@@ -14286,21 +14728,21 @@
     ]
    },
    {
-    "job": "manage quick commerce ad credits and the promotional calendar",
-    "question": "am I using platform ad credits before they expire, and what's the festive calendar asking for",
+    "job": "manage rapid-delivery ad credits and the promotional calendar",
+    "question": "am I using platform ad credits before they expire, and what's the peak retail calendar asking for (india: the festive calendar)",
     "capabilities": [
      "PROD-C50"
     ]
    },
    {
-    "job": "onboard the brand onto Blinkit, Zepto or Instamart",
+    "job": "onboard the brand onto Instacart, DoorDash or Gopuff (india: Blinkit, Zepto or Instamart)",
     "question": "where is this onboarding stuck, and what document is missing",
     "capabilities": [
      "PROD-C48"
     ]
    },
    {
-    "job": "confirm BIS, hallmarking or labelling compliance before a listing goes live",
+    "job": "confirm US labelling/quality-marking compliance before a listing goes live (india: BIS, hallmarking or labelling)",
     "question": "is this listing legally clear to publish",
     "capabilities": [
      "PROD-C45"
@@ -14328,7 +14770,7 @@
     ]
    },
    {
-    "job": "keep Flipkart, Myntra and Nykaa listings current",
+    "job": "keep Walmart, Target Plus, eBay and TikTok Shop listings current (india: Flipkart, Myntra and Nykaa)",
     "question": "which of my other marketplace listings have gone stale",
     "capabilities": [
      "PROD-C44"
@@ -14407,24 +14849,24 @@
     "benchmark": "not applicable, an operational freshness check"
    },
    {
-    "name": "quick_commerce_reported_roas",
-    "plain": "The ROAS the platform's own dashboard shows",
-    "formula": "platform-reported ad revenue ÷ platform-reported ad spend, as the platform calculates it (often on MRP)",
-    "source": "platform ad dashboard export",
+    "name": "rapid_delivery_reported_roas",
+    "plain": "The ROAS the rapid-delivery platform's own dashboard shows",
+    "formula": "platform-reported ad revenue ÷ platform-reported ad spend, as the platform calculates it (often on list/MRP price)",
+    "source": "platform ad dashboard export (Instacart, DoorDash, Gopuff; india: Blinkit, Zepto, Instamart)",
     "window": "trailing 7 and 30 days",
     "freshness_rule": "stale after 48 hours",
     "unavailable_when": "no ad dashboard export for that platform",
     "benchmark": "platform's own stated benchmark range, shown alongside the corrected figure"
    },
    {
-    "name": "quick_commerce_true_roas",
-    "plain": "ROAS recalculated from actual transaction value, not MRP",
+    "name": "rapid_delivery_true_roas",
+    "plain": "ROAS recalculated from actual transaction value, not list/MRP price",
     "formula": "sum of actual transaction value on attributed orders ÷ ad spend, using the real selling price after platform discount",
-    "source": "quick commerce orders table joined to ad spend export",
+    "source": "rapid-delivery orders table joined to ad spend export",
     "window": "trailing 7 and 30 days",
     "freshness_rule": "stale after 48 hours",
     "unavailable_when": "transaction-level order value not available from the platform export",
-    "benchmark": "compared directly against quick_commerce_reported_roas for the same period"
+    "benchmark": "compared directly against rapid_delivery_reported_roas for the same period"
    },
    {
     "name": "settlement_variance_amount",
@@ -14488,7 +14930,7 @@
    },
    {
     "name": "listing_staleness_days",
-    "plain": "Days since a Flipkart, Myntra or Nykaa listing was last updated",
+    "plain": "Days since a Walmart, Target Plus, eBay or TikTok Shop listing was last updated (india: Flipkart, Myntra or Nykaa)",
     "formula": "today − last_updated_at, per listing",
     "source": "catalogue audit table",
     "window": "live",
@@ -14497,8 +14939,8 @@
     "benchmark": "no external benchmark; flagged internally past 90 days"
    },
    {
-    "name": "bis_compliance_status",
-    "plain": "Whether a regulated SKU's BIS, hallmarking or labelling documentation is on file and current",
+    "name": "us_labeling_compliance_status",
+    "plain": "Whether a regulated SKU's FTC quality-mark, Care Labeling or Prop 65 documentation is on file and current (india: BIS, hallmarking or labelling)",
     "formula": "flag from the compliance docs table: required doc types present and not expired",
     "source": "compliance docs table",
     "window": "live",
@@ -14551,10 +14993,10 @@
    },
    {
     "name": "true ROAS far below what the dashboard shows",
-    "rule": "quick_commerce_reported_roas exceeds quick_commerce_true_roas by more than 20%",
+    "rule": "rapid_delivery_reported_roas exceeds rapid_delivery_true_roas by more than 20%",
     "computed_from": [
-     "quick_commerce_reported_roas",
-     "quick_commerce_true_roas"
+     "rapid_delivery_reported_roas",
+     "rapid_delivery_true_roas"
     ],
     "sentence": "{platform} shows {reported}x ROAS, but the real number on transaction value is {true}x. Do not scale spend on the reported figure.",
     "severity": "high, real cash impact",
@@ -14612,7 +15054,7 @@
    },
    {
     "name": "stale marketplace listing",
-    "rule": "listing_staleness_days exceeds 90 for a listing on Flipkart, Myntra or Nykaa",
+    "rule": "listing_staleness_days exceeds 90 for a listing on Walmart, Target Plus, eBay or TikTok Shop (india: Flipkart, Myntra or Nykaa)",
     "computed_from": [
      "listing_staleness_days"
     ],
@@ -14622,11 +15064,11 @@
    },
    {
     "name": "compliance document missing before go-live",
-    "rule": "bis_compliance_status is unavailable or expired for a SKU category that requires it, and the listing is live or scheduled",
+    "rule": "us_labeling_compliance_status is unavailable or expired for a SKU category that requires it, and the listing is live or scheduled",
     "computed_from": [
-     "bis_compliance_status"
+     "us_labeling_compliance_status"
     ],
-    "sentence": "{sku} needs a current BIS or hallmarking document before it can stay live. It is missing or expired.",
+    "sentence": "{sku} needs a current FTC quality-mark or Care Labeling document before it can stay live (india: a BIS or hallmarking document). It is missing or expired.",
     "severity": "high, legal risk",
     "action_capability": "PROD-C45"
    },
@@ -14652,7 +15094,7 @@
    {
     "name": "true versus reported ROAS bars",
     "type": "grouped bar chart",
-    "shows": "quick_commerce_reported_roas next to quick_commerce_true_roas, per platform per period",
+    "shows": "rapid_delivery_reported_roas next to rapid_delivery_true_roas, per platform per period",
     "why_this_chart": "makes the MRP inflation gap visible in one glance instead of a manual recalculation",
     "exists_today": false
    },
@@ -14712,7 +15154,7 @@
     "autonomy": "founder_gate"
    },
    {
-    "label": "Recompute true quick commerce ROAS",
+    "label": "Recompute true rapid-delivery ROAS",
     "capability": "PROD-C49",
     "autonomy": "agent_does"
    },
@@ -14732,12 +15174,12 @@
     "autonomy": "founder_gate"
    },
    {
-    "label": "Continue quick commerce onboarding",
+    "label": "Continue rapid-delivery/quick-commerce onboarding",
     "capability": "PROD-C48",
     "autonomy": "founder_gate"
    },
    {
-    "label": "Confirm BIS or hallmarking compliance",
+    "label": "Confirm US labelling/quality-marking compliance (india: BIS or hallmarking)",
     "capability": "PROD-C45",
     "autonomy": "founder_gate"
    },
@@ -14757,18 +15199,18 @@
     "autonomy": "founder_gate"
    },
    {
-    "label": "Refresh a Flipkart, Myntra or Nykaa listing",
+    "label": "Refresh a Walmart, Target Plus, eBay or TikTok Shop listing (india: Flipkart, Myntra or Nykaa)",
     "capability": "PROD-C44",
     "autonomy": "human_assist"
    }
   ],
   "not_elsewhere": [
    {
-    "claim": "recomputes quick commerce ROAS from real transaction value instead of MRP, and shows the gap against the platform's own reported number",
-    "vs": "Blinkit, Zepto and Instamart seller dashboards commonly report ROAS on MRP, which can overstate the real return by 30 to 50 percent"
+    "claim": "recomputes rapid-delivery ROAS from real transaction value instead of list/MRP price, and shows the gap against the platform's own reported number",
+    "vs": "Instacart, DoorDash and Gopuff seller dashboards commonly report ROAS on list price (india: Blinkit, Zepto and Instamart on MRP), which can overstate the real return by 30 to 50 percent"
    },
    {
-    "claim": "watches Buy Box, reviews, listing health and account risk together across Amazon, Flipkart, Myntra, Nykaa, Blinkit and Zepto in one room",
+    "claim": "watches Buy Box, reviews, listing health and account risk together across Amazon, Walmart, Target Plus, eBay and TikTok Shop in one room (india: Flipkart, Myntra, Nykaa, Blinkit and Zepto)",
     "vs": "Amazon Brand Analytics only covers Amazon; each other marketplace requires its own seller portal, so no tool shows all of them side by side today"
    },
    {
@@ -14777,7 +15219,7 @@
    },
    {
     "claim": "keeps one clean catalogue feed that Media buyer and Organic both pull from, with a staleness check",
-    "vs": "self-serve ad panels like Blinkit's Brand Central manage that platform's own catalogue only, not a feed shared across channels and ad teams"
+    "vs": "self-serve ad panels like Instacart's Ads Manager (india: Blinkit's Brand Central) manage that platform's own catalogue only, not a feed shared across channels and ad teams"
    },
    {
     "claim": "splits an Amazon sales change into traffic versus conversion before anyone calls a product a failure",
@@ -14851,11 +15293,11 @@
     "refresh": "daily"
    },
    {
-    "table": "quick_commerce_orders",
+    "table": "rapid_delivery_orders",
     "fields": [
      "platform",
      "sku",
-     "mrp",
+     "list_price",
      "transaction_value",
      "ad_spend_attributed",
      "order_date"
@@ -15013,14 +15455,14 @@
    },
    {
     "job": "build and defend the annual OPEX and payroll budget",
-    "question": "what can we afford to spend, and what does the next rupee of spend buy",
+    "question": "what can we afford to spend, and what does the next dollar of spend buy",
     "capabilities": [
      "MONEY-C11"
     ]
    },
    {
-    "job": "stay compliant on GST, liabilities and FX exposure",
-    "question": "are we exposed on tax registration, gift-card liability or currency risk",
+    "job": "stay compliant on US sales tax, liabilities and FX exposure (GST for India-selling brands)",
+    "question": "are we exposed on sales-tax nexus, gift-card liability or currency risk",
     "capabilities": [
      "MONEY-C12"
     ]
@@ -15043,14 +15485,14 @@
    },
    {
     "job": "set the acquisition financial calendar and guardrails",
-    "question": "how much can we safely spend around BFCM and the festive calendar",
+    "question": "how much can we safely spend around Q4 holiday (BFCM) and the rest of the promo calendar",
     "capabilities": [
      "LOOP-C05"
     ]
    },
    {
-    "job": "turn every settlement, COD payout, bill and payroll run into one clean ledger",
-    "question": "where did this payout, this COD cash or this bill actually land",
+    "job": "turn every settlement, payout, bill and payroll run into one clean ledger (COD payout too, for India-selling brands)",
+    "question": "where did this payout, this bill, or (for an India-selling brand) this COD cash actually land",
     "capabilities": [
      "MONEY-C51",
      "MONEY-C52",
@@ -15167,7 +15609,7 @@
    },
    {
     "name": "ltgp_to_cac",
-    "plain": "Lifetime gross profit for every rupee spent to acquire",
+    "plain": "Lifetime gross profit for every dollar spent to acquire",
     "formula": "lifetime gross profit per customer (fixed lookback window) ÷ CAC",
     "source": "cohort table",
     "window": "quarterly",
@@ -15177,7 +15619,7 @@
    },
    {
     "name": "mer_and_amer",
-    "plain": "Total revenue for every rupee of ad spend, plain and adjusted",
+    "plain": "Total revenue for every dollar of ad spend, plain and adjusted",
     "formula": "MER = total revenue ÷ total ad spend; aMER = (total revenue − discount-code and branded-search revenue) ÷ total ad spend",
     "source": "orders table + ad_spend table + discount code table",
     "window": "daily, rolled to weekly",
@@ -15206,23 +15648,36 @@
     "benchmark": "target under 1% variance per gap"
    },
    {
+    "name": "payout_deposit_gap",
+    "plain": "Payout cash a gateway or marketplace says it sent but that has not yet landed in the bank",
+    "formula": "sum reported paid by gateway/marketplace − sum landed in bank, aged by days since the payout was reported",
+    "source": "gateway/marketplace payout reports + bank ledger",
+    "window": "daily",
+    "freshness_rule": "stale after 24 hours",
+    "unavailable_when": "a source has not sent its payout report",
+    "benchmark": "target: fully deposited within the source's stated SLA"
+   },
+   {
     "name": "cod_remittance_gap",
-    "plain": "COD cash collected but not yet in the bank",
+    "markets": [
+     "IN"
+    ],
+    "plain": "COD cash collected but not yet in the bank (India only; reads null for US brands)",
     "formula": "sum of COD collected by courier − sum remitted, aged by days since collection",
     "source": "courier COD reports + bank ledger",
     "window": "daily",
     "freshness_rule": "stale after 24 hours",
-    "unavailable_when": "a courier has not sent its collection report",
+    "unavailable_when": "the brand runs no COD, or a courier has not sent its collection report",
     "benchmark": "target: fully remitted within the courier's stated SLA"
    },
    {
-    "name": "gst_liability_position",
-    "plain": "What is owed or claimable in GST this period",
-    "formula": "output GST on sales − input GST credit, by state/GSTIN",
-    "source": "GST invoicing app + purchase records",
+    "name": "sales_tax_liability_position",
+    "plain": "What is owed or claimable in state sales tax this period (GST for India-selling brands)",
+    "formula": "sales tax collected − sales tax remitted/credit available, by state (output GST − input GST credit, by state/GSTIN, for India)",
+    "source": "Avalara or TaxJar + purchase records (GST invoicing app, for India)",
     "window": "monthly, ahead of filing",
     "freshness_rule": "stale after filing due date",
-    "unavailable_when": "a state's sales crossed the registration threshold with no GSTIN on file",
+    "unavailable_when": "a state's sales crossed the nexus threshold with no registration on file",
     "benchmark": "must reconcile to the filed return within the accountant's tolerance"
    },
    {
@@ -15254,7 +15709,7 @@
      "cm3_per_channel",
      "orders table"
     ],
-    "sentence": "{sku} sold more each month but still loses ₹{amount} per unit after marketing cost",
+    "sentence": "{sku} sold more each month but still loses ${amount} per unit after marketing cost",
     "severity": "high if CM3 is negative and worsening, else medium",
     "action_capability": "MONEY-C02"
    },
@@ -15264,7 +15719,7 @@
     "computed_from": [
      "cash_low_point_13wk"
     ],
-    "sentence": "cash is projected to fall below ₹{floor} in week {n} if nothing changes",
+    "sentence": "cash is projected to fall below ${floor} in week {n} if nothing changes",
     "severity": "critical",
     "action_capability": "MONEY-C06"
    },
@@ -15296,13 +15751,26 @@
     "computed_from": [
      "platform_books_variance"
     ],
-    "sentence": "{source} and the books differ by ₹{amount} this month with no named cause",
+    "sentence": "{source} and the books differ by ${amount} this month with no named cause",
     "severity": "high",
     "action_capability": "MONEY-C15"
    },
    {
+    "name": "payout deposit stuck",
+    "rule": "payout_deposit_gap for a source exceeds that source's stated payout SLA in days",
+    "computed_from": [
+     "payout_deposit_gap"
+    ],
+    "sentence": "${amount} from {source} is {n} days past its payout SLA",
+    "severity": "high",
+    "action_capability": "MONEY-C52"
+   },
+   {
     "name": "COD remittance stuck",
-    "rule": "cod_remittance_gap for a courier exceeds that courier's stated SLA in days",
+    "markets": [
+     "IN"
+    ],
+    "rule": "cod_remittance_gap for a courier exceeds that courier's stated SLA in days (India only; reads null for US brands)",
     "computed_from": [
      "cod_remittance_gap"
     ],
@@ -15316,7 +15784,7 @@
     "computed_from": [
      "days_inventory_outstanding"
     ],
-    "sentence": "₹{amount} of {sku} stock sits {n} days beyond what lead time needs",
+    "sentence": "${amount} of {sku} stock sits {n} days beyond what lead time needs",
     "severity": "medium",
     "action_capability": "MONEY-C07"
    },
@@ -15341,12 +15809,12 @@
     "action_capability": "MONEY-C11"
    },
    {
-    "name": "GST exposure",
-    "rule": "a state or marketplace's trailing 12-month sales crossed the registration threshold with no matching GSTIN on file",
+    "name": "sales tax nexus exposure",
+    "rule": "a state or marketplace's trailing 12-month sales crossed the economic-nexus threshold with no matching registration on file (the GST registration threshold, for India-selling brands)",
     "computed_from": [
-     "gst_liability_position"
+     "sales_tax_liability_position"
     ],
-    "sentence": "{market} sales crossed the GST registration threshold with no registration logged",
+    "sentence": "{market} sales crossed the sales-tax nexus threshold with no registration logged (the GST registration threshold, for India)",
     "severity": "critical",
     "action_capability": "MONEY-C12"
    }
@@ -15388,10 +15856,10 @@
     "exists_today": false
    },
    {
-    "name": "COD remittance aging",
-    "type": "bar chart by courier, bucketed by days late",
-    "shows": "how much COD cash is owed by each courier and how overdue it is",
-    "why_this_chart": "a founder sees which courier to chase first",
+    "name": "payout deposit aging",
+    "type": "bar chart by source (gateway, marketplace; courier for India COD), bucketed by days late",
+    "shows": "how much payout cash is owed by each source and how overdue it is",
+    "why_this_chart": "a founder sees which source to chase first",
     "exists_today": false
    },
    {
@@ -15459,7 +15927,7 @@
     "autonomy": "agent_does"
    },
    {
-    "label": "Send the GST/liability tracker to the accountant",
+    "label": "Send the sales-tax/liability tracker to the accountant (GST tracker, for India)",
     "capability": "MONEY-C12",
     "autonomy": "human_assist"
    },
@@ -15494,7 +15962,7 @@
     "autonomy": "human_assist"
    },
    {
-    "label": "Refresh the COD remittance ledger",
+    "label": "Refresh the payout reconciliation ledger (COD remittance ledger, for India)",
     "capability": "MONEY-C52",
     "autonomy": "agent_does"
    },
@@ -15539,7 +16007,7 @@
     "autonomy": "human_assist"
    },
    {
-    "label": "Send the COD escalation email for approval",
+    "label": "Send the payout escalation email for approval (COD escalation, for India)",
     "capability": "MONEY-C52",
     "autonomy": "agent_does"
    },
@@ -15567,8 +16035,8 @@
     "vs": "financing marketplaces and lenders quote rates but do not simulate a specific structure against the brand's own forecast"
    },
    {
-    "claim": "COD cash tracked to the bank and escalated to the courier automatically once a remittance passes that courier's own SLA",
-    "vs": "also in CODReconcile and Shiplystic for the collected-vs-remitted tracking; the drafted, SLA-cited escalation email is not part of those tools"
+    "claim": "payout cash tracked to the bank and escalated to the source automatically once a remittance passes that source's own SLA (COD cash and the courier, for India-selling brands)",
+    "vs": "also in A2X and Link My Books for the gateway/marketplace collected-vs-deposited tracking (CODReconcile and Shiplystic for India's COD collected-vs-remitted tracking); the drafted, SLA-cited escalation email is not part of those tools"
    },
    {
     "claim": "all 5 recurring platform-to-books gaps reconciled in one place with a named cause each month",
@@ -15628,7 +16096,7 @@
      "category",
      "account"
     ],
-    "connector_or_script": "accounting export (Zoho Books/Tally) or bank feed",
+    "connector_or_script": "accounting export (QuickBooks/Xero; Zoho Books/Tally for India) or bank feed",
     "refresh": "daily"
    },
    {
@@ -15649,6 +16117,9 @@
    },
    {
     "table": "cod_remittance",
+    "markets": [
+     "IN"
+    ],
     "fields": [
      "courier",
      "order_id",
@@ -15657,11 +16128,29 @@
      "remitted_date",
      "sla_days"
     ],
-    "connector_or_script": "courier portal/API (Shiprocket, Delhivery)",
+    "connector_or_script": "courier portal/API (Shiprocket, Delhivery); reads null for US brands",
     "refresh": "daily"
    },
    {
     "table": "payroll_statutory",
+    "fields": [
+     "employee_id",
+     "cycle",
+     "gross",
+     "federal_withholding",
+     "state_withholding",
+     "fica",
+     "suta",
+     "net"
+    ],
+    "connector_or_script": "Gusto or ADP export",
+    "refresh": "monthly"
+   },
+   {
+    "table": "payroll_statutory_india",
+    "markets": [
+     "IN"
+    ],
     "fields": [
      "employee_id",
      "cycle",
@@ -15672,7 +16161,7 @@
      "tds",
      "net"
     ],
-    "connector_or_script": "payroll processor export",
+    "connector_or_script": "payroll processor export; reads null for US brands",
     "refresh": "monthly"
    },
    {
@@ -15725,7 +16214,22 @@
     "refresh": "daily"
    },
    {
+    "table": "sales_tax_filings",
+    "fields": [
+     "state",
+     "period",
+     "tax_collected",
+     "tax_remitted",
+     "filed_at"
+    ],
+    "connector_or_script": "Avalara or TaxJar export",
+    "refresh": "monthly"
+   },
+   {
     "table": "gst_filings",
+    "markets": [
+     "IN"
+    ],
     "fields": [
      "gstin",
      "state",
@@ -15734,11 +16238,11 @@
      "input_credit",
      "filed_at"
     ],
-    "connector_or_script": "GST invoicing app export",
+    "connector_or_script": "GST invoicing app export; reads null for US brands",
     "refresh": "monthly"
    }
   ],
-  "founder_view_note": "With nothing connected, the room shows the P&L ladder and cash forecast as unavailable with a one-line reason (no order feed, no bank feed) instead of zeros, plus a short list of exactly which connections would light it up. The first thing it shows once Shopify orders and one cost file land is CM1 by SKU and the 13-week cash line; settlement, COD and payroll rows light up as each feed is added.",
+  "founder_view_note": "With nothing connected, the room shows the P&L ladder and cash forecast as unavailable with a one-line reason (no order feed, no bank feed) instead of zeros, plus a short list of exactly which connections would light it up. The first thing it shows once Shopify orders and one cost file land is CM1 by SKU and the 13-week cash line; settlement and payroll rows light up as each feed is added, and COD rows light up too for an India-selling brand.",
   "unknown_capabilities": []
  },
  {
@@ -17193,6 +17697,7 @@
    },
    {
     "name": "chargeback_rate",
+    "group": "reversed_and_failed_orders",
     "plain": "Share of orders disputed as chargebacks",
     "formula": "chargebacks in period ÷ orders in period",
     "source": "payment processor",
@@ -17200,6 +17705,67 @@
     "freshness_rule": "stale after 35 days",
     "unavailable_when": "processor has not closed the period",
     "benchmark": "kept below the processor's own flag threshold, with headroom"
+   },
+   {
+    "name": "dispute_rate",
+    "group": "reversed_and_failed_orders",
+    "plain": "Share of orders disputed on any channel, chargebacks plus PayPal/other processor disputes",
+    "formula": "(chargebacks + non-chargeback processor disputes) in period ÷ orders in period",
+    "source": "payment processor + PayPal/other gateway dispute feed",
+    "window": "monthly",
+    "freshness_rule": "stale after 35 days",
+    "unavailable_when": "a connected processor has not closed the period",
+    "benchmark": "kept below the processor's own flag threshold, with headroom"
+   },
+   {
+    "name": "return_to_sender_rate",
+    "group": "reversed_and_failed_orders",
+    "plain": "Share of shipped orders a carrier returned undelivered (refused, bad address, unclaimed), never reaching the customer",
+    "formula": "orders marked carrier return-to-sender in period ÷ orders shipped in period",
+    "source": "carrier tracking events (USPS/UPS/FedEx) + order table",
+    "window": "weekly",
+    "freshness_rule": "stale after 10 days",
+    "unavailable_when": "carrier tracking events not connected",
+    "benchmark": "no fixed benchmark; track trend against the brand's own history"
+   },
+   {
+    "name": "rto_rate",
+    "group": "reversed_and_failed_orders",
+    "markets": [
+     "IN"
+    ],
+    "plain": "Share of COD orders that came back without the customer receiving them (India only; reads null for US brands)",
+    "formula": "COD orders returned to origin in period ÷ COD orders dispatched in period",
+    "source": "courier COD/RTO reports",
+    "window": "weekly",
+    "freshness_rule": "stale after 10 days",
+    "unavailable_when": "the brand runs no COD, or courier RTO reports are not connected",
+    "benchmark": "no fixed benchmark; track trend against the brand's own history"
+   },
+   {
+    "name": "payment_method_mix",
+    "group": "payment_method_mix",
+    "plain": "Share of orders by payment method: card, Shop Pay, PayPal, Apple Pay, BNPL (Affirm, Klarna, Afterpay)",
+    "formula": "orders by payment method in period ÷ total orders in period",
+    "source": "payment processor + checkout data",
+    "window": "monthly",
+    "freshness_rule": "stale after 35 days",
+    "unavailable_when": "a connected processor has not closed the period",
+    "benchmark": "no fixed benchmark; track trend against the brand's own history"
+   },
+   {
+    "name": "cod_share",
+    "group": "payment_method_mix",
+    "markets": [
+     "IN"
+    ],
+    "plain": "Share of orders paid cash on delivery (India only; reads null for US brands)",
+    "formula": "COD orders in period ÷ total orders in period",
+    "source": "order table",
+    "window": "monthly",
+    "freshness_rule": "stale after 35 days",
+    "unavailable_when": "the brand runs no COD",
+    "benchmark": "no fixed benchmark; track trend against the brand's own history"
    },
    {
     "name": "false_decline_rate",
@@ -18354,9 +18920,9 @@
     "fields": [
      "brand",
      "ticket_id",
-     "channel (email, whatsapp, call)",
+     "channel (email, sms, call; whatsapp where used, markets: IN, EU, LATAM)",
      "reason_code",
-     "return_or_rto_flag",
+     "return_or_failed_delivery_flag (return_to_sender_rate for US, rto_flag for India orders markets: IN)",
      "text",
      "date"
     ],
@@ -18937,7 +19503,7 @@
      "competitor_name",
      "product_match_id",
      "price",
-     "price_incl_gst",
+     "price_incl_tax (sales tax for US; GST for an India-market competitor, markets: IN)",
      "discount_pct",
      "captured_at"
     ],
@@ -19118,7 +19684,7 @@
     ]
    },
    {
-    "job": "build the brand's cultural and festive moment calendar",
+    "job": "build the brand's US holiday and cultural moment calendar",
     "question": "what dates matter for PR, events and community this quarter",
     "capabilities": [
      "LOOP-C05"
@@ -19248,10 +19814,10 @@
     "unavailable_when": "no listening connector attached"
    },
    {
-    "name": "festive_calendar_readiness",
+    "name": "holiday_calendar_readiness",
     "plain": "Upcoming moments in the next 60 days with a brief already prepared",
     "formula": "moments with a brief / total moments in the next 60 days",
-    "source": "festive and cultural calendar",
+    "source": "US holiday and cultural calendar",
     "window": "rolling 60 days",
     "unavailable_when": "calendar has no entries in that window"
    }
@@ -19308,10 +19874,10 @@
     "action_capability": "BRAND-C53"
    },
    {
-    "name": "festive moment coming up with no brief",
+    "name": "holiday moment coming up with no brief",
     "rule": "a calendar moment falls within 30 days and has no linked brief",
     "computed_from": [
-     "festive and cultural calendar"
+     "US holiday and cultural calendar"
     ],
     "sentence": "{moment} is {n} days away with no brief started.",
     "severity": "medium",
@@ -19371,7 +19937,7 @@
     "exists_today": false
    },
    {
-    "name": "festive and cultural calendar",
+    "name": "US holiday and cultural calendar",
     "type": "calendar view, 90-day rolling window",
     "shows": "upcoming dates with brief-ready status color coded",
     "why_this_chart": "flags gaps before a date is missed, not after",
@@ -19464,7 +20030,7 @@
     "autonomy": "human_assist"
    },
    {
-    "label": "Update the festive and cultural calendar",
+    "label": "Update the US holiday and cultural calendar",
     "capability": "LOOP-C05",
     "autonomy": "founder_gate"
    },
@@ -19492,7 +20058,7 @@
     "vs": "Muck Rack and Prowly sell a static, purchased journalist database; this room builds a small verified list for the story at hand"
    },
    {
-    "claim": "the festive and cultural calendar is scoped to this brand's own category, PR needs, events and community moments, not a generic marketing holiday calendar",
+    "claim": "the US holiday and cultural calendar is scoped to this brand's own category, PR needs, events and community moments, not a generic marketing holiday calendar",
     "vs": "generic marketing calendars list every holiday, not the ones that matter for this brand's category and PR angles"
    },
    {
@@ -19610,13 +20176,14 @@
     "refresh": "quarterly"
    },
    {
-    "table": "festive_calendar",
+    "table": "holiday_calendar",
     "fields": [
      "brand",
      "moment_name",
      "date",
      "category_relevance",
-     "brief_linked_flag"
+     "brief_linked_flag",
+     "market (US default; India festival dates optional, markets: IN)"
     ],
     "connector_or_script": "BRAND-C65",
     "refresh": "annually, checked quarterly"

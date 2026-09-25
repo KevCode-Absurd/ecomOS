@@ -15,7 +15,7 @@ parent life/build-flow skill once the trigger is confirmed.
 ## Steps
 1. Confirm the win-back trigger fires from real store data.
 2. Apply the timing rule: starts when a customer passes 1.5x to 2x their own average order gap, not a flat day count for every brand.
-3. Set content focus per step: leads with genuine value or news, not a discount, unless the customer's lapse cause is engagement decay with no other signal; an RTO-caused lapse routes to the trust-rebuild variant instead (see LIFE-W12).
+3. Set content focus per step: leads with genuine value or news, not a discount, unless the customer's lapse cause is engagement decay with no other signal; a delivery-failure-caused lapse (return-to-sender, or RTO for India) routes to the trust-rebuild variant instead (see LIFE-W12).
 4. Flag where a discount could sit, for life/discount-policy-check to clear.
 5. Hand the step list back to life/build-flow for copy drafting and assembly.
 

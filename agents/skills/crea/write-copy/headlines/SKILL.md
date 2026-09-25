@@ -31,5 +31,5 @@ Output: the full candidate list, each with its character count, and the top
 3-5 flagged for test.
 
 Example: for a cold-brew concentrate, candidates range across speed ("coffee
-in 10 seconds"), price ("3 rupees a cup") and taste ("less bitter, more
+in 10 seconds"), price ("75 cents a cup") and taste ("less bitter, more
 buzz"), ranked by which best pairs with the chosen close-up product shot.

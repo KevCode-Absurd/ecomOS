@@ -408,7 +408,7 @@
       "quiet hours in local time",
       "unsubscribe honoured at or above the legal minimum"
     ],
-    "read_point": "checked again at the next new market or a platform TCPA/DPDP-style rule change",
+    "read_point": "checked again at the next new market or a TCPA/CCPA-style rule change (DPDP for India)",
     "typical_duration": "3 hours agent time, no waiting unless a form change is needed",
     "subagents": []
   },
@@ -695,7 +695,7 @@
       {
         "n": 5,
         "name": "Build the location segment",
-        "does": "Groups customers by shipping geography for market-specific sends (language, currency, festival calendar for India).",
+        "does": "Groups customers by shipping geography for market-specific sends (language, currency, seasonal calendar: Q4 holidays and BFCM for the US, festival calendar for India).",
         "inputs": [
           "connector: shopify orders (read)"
         ],
@@ -808,7 +808,7 @@
       {
         "n": 2,
         "name": "Pull the product and event calendar",
-        "does": "Reads upcoming launches, restocks, and India-relevant dates (festivals, sale events) that could anchor a send.",
+        "does": "Reads upcoming launches, restocks, and market-relevant dates (Q4 holiday season, Black Friday/Cyber Monday, Prime Day, Mother's Day, Father's Day, back to school, Valentine's Day, July 4 for the US; festivals and sale events for India) that could anchor a send.",
         "inputs": [
           "product calendar"
         ],
@@ -1136,7 +1136,7 @@
       {
         "n": 5,
         "name": "Recommend WhatsApp as a channel swap where SMS is costly",
-        "does": "Where SMS cost per send is high relative to WhatsApp in the brand's market (common in India), proposes shifting eligible message types to WhatsApp.",
+        "does": "Where SMS cost per send is high relative to WhatsApp in the brand's market (common in India, EU or LATAM), proposes shifting eligible message types to WhatsApp; for the US default, proposes shifting eligible message types between SMS and push instead.",
         "inputs": [
           "cost-and-volume table"
         ],
@@ -1211,23 +1211,23 @@
   },
   {
     "id": "LIFE-W09",
-    "name": "Design the WhatsApp commerce program for India",
+    "name": "Design the SMS and WhatsApp commerce program",
     "capabilities": [
       "LIFE-C22"
     ],
     "trigger": "on demand",
-    "human_role": "lifecycle marketing manager building the India WhatsApp channel",
+    "human_role": "lifecycle marketing manager building the SMS (and, where used, WhatsApp) commerce channel",
     "inputs_required": [
-      "order/cart data for Indian buyers",
-      "courier NDR/RTO data",
-      "current COD share and RTO rate",
-      "WhatsApp Business API template status"
+      "order/cart data by market",
+      "carrier delivery-exception and return-to-sender data (NDR/RTO data for India)",
+      "current payment method mix (including COD share for India)",
+      "SMS/WhatsApp platform template and consent status"
     ],
     "steps": [
       {
         "n": 1,
-        "name": "Read the current India order pattern",
-        "does": "Pulls COD share, average RTO rate and cart abandonment for Indian orders specifically, not blended with other markets.",
+        "name": "Read the current order and payment pattern",
+        "does": "Pulls payment method mix, cart abandonment and, for COD markets, COD share and RTO rate for that market's orders specifically, not blended with other markets.",
         "inputs": [
           "connector: shopify orders (read)"
         ],
@@ -1235,13 +1235,13 @@
           "connector: shopify orders (read)"
         ],
         "skill": "life/whatsapp-india-commerce",
-        "output": "India order/RTO snapshot",
-        "check": "figures scoped to Indian shipping addresses only"
+        "output": "order/payment snapshot",
+        "check": "figures scoped to one market's shipping addresses at a time"
       },
       {
         "n": 2,
-        "name": "Check WhatsApp reach against SMS and email for this base",
-        "does": "Compares delivered/read rates where available, since WhatsApp typically reaches Indian buyers better than SMS or email.",
+        "name": "Check channel reach against the SMS baseline",
+        "does": "Compares delivered/read rates for SMS against WhatsApp where WhatsApp is used (India, EU, LATAM), since reach varies by market.",
         "inputs": [
           "ESP/WhatsApp platform data"
         ],
@@ -1255,20 +1255,20 @@
       },
       {
         "n": 3,
-        "name": "Design the WhatsApp cart-recovery sequence",
-        "does": "Builds the cart/checkout abandonment sequence for WhatsApp specifically, using the life/build-flow/browse-cart-abandon logic with WhatsApp as the lead channel.",
+        "name": "Design the SMS/WhatsApp cart-recovery sequence",
+        "does": "Builds the cart/checkout abandonment sequence using the life/build-flow/browse-cart-abandon logic, with SMS as the lead channel by default and WhatsApp as the lead channel where it is the market option in use.",
         "inputs": [
           "cart abandon data"
         ],
         "tools": [],
         "skill": "life/build-flow",
-        "output": "WhatsApp cart-recovery flow steps",
+        "output": "SMS/WhatsApp cart-recovery flow steps",
         "check": "sequence follows the same filter and timing rules as the cart-abandon flow build"
       },
       {
         "n": 4,
         "name": "Design order-update messages",
-        "does": "Sets the order-confirmed, shipped, out-for-delivery and delivered messages on WhatsApp, replacing or supplementing SMS for these transactional updates.",
+        "does": "Sets the order-confirmed, shipped, out-for-delivery and delivered messages by SMS by default, or on WhatsApp where that is the market's lead channel, replacing or supplementing email for these transactional updates.",
         "inputs": [
           "order status events"
         ],
@@ -1279,33 +1279,35 @@
       },
       {
         "n": 5,
-        "name": "Design the COD-to-prepaid nudge",
-        "does": "Writes the message offering a small, policy-checked incentive to switch a COD order to prepaid, sized to the RTO cost it avoids rather than an arbitrary number.",
+        "name": "Design the failed-card dunning or COD-to-prepaid nudge",
+        "does": "Writes the dunning retry message for a failed card charge by default; for a COD market (India), writes the message offering a small, policy-checked incentive to switch a COD order to prepaid, sized to the RTO cost it avoids rather than an arbitrary number.",
         "inputs": [
-          "RTO cost data",
+          "failed-payment cost data (RTO cost data for India)",
           "discount policy"
         ],
-        "tools": [],
+        "tools": [
+          "life/discount-policy-check"
+        ],
         "skill": "life/discount-policy-check",
-        "output": "COD-to-prepaid nudge with sizing shown",
-        "check": "incentive size traces to the measured RTO cost avoided"
+        "output": "dunning message set, or (COD markets) a COD-to-prepaid nudge with sizing shown",
+        "check": "any incentive size traces to a measured cost avoided, never an arbitrary number"
       },
       {
         "n": 6,
-        "name": "Design the NDR recovery sequence",
-        "does": "Fires an automatic WhatsApp sequence the moment a courier logs a non-delivery, offering reschedule or address fix.",
+        "name": "Design the failed-delivery recovery sequence",
+        "does": "Fires an automatic SMS/email sequence the moment a carrier logs a delivery exception or return-to-sender; for India, fires the WhatsApp/SMS sequence the moment a courier logs a non-delivery (NDR), offering reschedule or address fix.",
         "inputs": [
-          "courier NDR feed"
+          "carrier delivery-exception feed (NDR feed for India)"
         ],
         "tools": [],
         "skill": "life/whatsapp-india-commerce",
-        "output": "NDR recovery sequence",
-        "check": "sequence starts within the same day as the NDR event"
+        "output": "failed-delivery recovery sequence",
+        "check": "sequence starts within the same day as the delivery-exception (or NDR, for India) event"
       },
       {
         "n": 7,
         "name": "Check template approval status",
-        "does": "Confirms every message type needing a WhatsApp Business template is approved before the flow can go live.",
+        "does": "Confirms every message type needing a WhatsApp Business template is approved before the flow can go live, where WhatsApp is used.",
         "inputs": [
           "WhatsApp platform"
         ],
@@ -1319,14 +1321,14 @@
       {
         "n": 8,
         "name": "Assemble the program spec",
-        "does": "Puts the cart-recovery, order-update, COD-to-prepaid and NDR flows into one WhatsApp commerce program document.",
+        "does": "Puts the cart-recovery, order-update, dunning/COD-to-prepaid and failed-delivery recovery flows into one SMS/WhatsApp commerce program document.",
         "inputs": [
           "all above"
         ],
         "tools": [],
         "skill": "life/whatsapp-india-commerce",
-        "output": "WhatsApp commerce program spec",
-        "check": "every flow in the spec traces to a real event and a checked template"
+        "output": "SMS/WhatsApp commerce program spec",
+        "check": "every flow in the spec traces to a real event and a checked template where a template applies"
       },
       {
         "n": 9,
@@ -1342,16 +1344,16 @@
       }
     ],
     "outputs": [
-      "WhatsApp commerce program spec",
+      "SMS/WhatsApp commerce program spec",
       "template approval checklist"
     ],
     "qa": [
-      "incentive sizing traces to measured RTO cost",
+      "incentive sizing traces to a measured cost avoided (RTO cost for India)",
       "no unapproved template used",
-      "NDR sequence starts same-day"
+      "failed-delivery recovery sequence starts same-day"
     ],
-    "read_point": "COD confirmation rate, RTO rate by pincode, and NDR recovery rate, read monthly against the pre-launch baseline",
-    "typical_duration": "1 day agent time; template approval wait time varies by Meta's review",
+    "read_point": "dunning recovery rate (or, for India, COD confirmation rate and RTO rate by pincode) and failed-delivery/NDR recovery rate, read monthly against the pre-launch baseline",
+    "typical_duration": "1 day agent time; template approval wait time varies by Meta's review where WhatsApp is used",
     "subagents": []
   },
   {
@@ -1637,8 +1639,8 @@
       },
       {
         "n": 3,
-        "name": "Set retry schedule and re-authorisation for failed renewals",
-        "does": "For a failed UPI AutoPay or e-mandate renewal, sets the retry cadence and the re-authorisation message per RBI e-mandate rules.",
+        "name": "Set retry schedule for failed renewals",
+        "does": "For a failed card renewal, sets the dunning retry cadence by default; for a failed UPI AutoPay or e-mandate renewal (India), sets the retry cadence and the re-authorisation message per current RBI e-mandate rules.",
         "inputs": [
           "failed-renewal events"
         ],
@@ -1648,7 +1650,7 @@
         ],
         "skill": "life/churn-risk-score",
         "output": "retry/re-auth schedule",
-        "check": "retry timing and re-auth wording match the current RBI e-mandate rule, cited with date"
+        "check": "retry cadence matches the platform default for a failed card; UPI AutoPay/e-mandate retry timing and re-auth wording match the current RBI rule for India, cited with date"
       },
       {
         "n": 4,
@@ -1682,14 +1684,14 @@
       {
         "n": 6,
         "name": "Route each risk tier to its save program",
-        "does": "Routes low/medium engagement-decay risk to the ordinary win-back flow (W04), RTO-caused risk to the trust-rebuild win-back variant, and active-subscriber risk to the cancel-flow save offer (W20).",
+        "does": "Routes low/medium engagement-decay risk to the ordinary win-back flow (W04), delivery-failure risk (return-to-sender for US, RTO for India) to the trust-rebuild win-back variant, and active-subscriber risk to the cancel-flow save offer (W20).",
         "inputs": [
           "risk-tiered list"
         ],
         "tools": [],
         "skill": "life/churn-risk-score",
         "output": "routing table by tier and cause",
-        "check": "an RTO-caused lapse never routes to a discount-led win-back first"
+        "check": "a delivery-failure-caused lapse (return-to-sender for US carriers, RTO for India) never routes to a discount-led win-back first"
       },
       {
         "n": 7,
@@ -1737,7 +1739,7 @@
     "qa": [
       "order gap measured against the customer's own cadence",
       "arithmetic in code only",
-      "RTO-caused lapse routed to a trust-rebuild message, not a discount"
+      "a delivery-failure-caused lapse (return-to-sender for US carriers, RTO for India) routed to a trust-rebuild message, not a discount"
     ],
     "read_point": "weekly risk-tier movement; monthly involuntary-churn rate against the prior month",
     "typical_duration": "2 hours agent time weekly",
@@ -1908,7 +1910,7 @@
     "human_role": "returns coordinator / CX lead designing the returns flow and policy",
     "inputs_required": [
       "current return/refund policy",
-      "RTO/fraud/chargeback data",
+      "failed-delivery/fraud/chargeback data (RTO data for India)",
       "per-market return law",
       "support ticket volume tagged as returns"
     ],
@@ -1983,17 +1985,17 @@
       },
       {
         "n": 6,
-        "name": "Design RTO and fraud controls for COD markets",
-        "does": "Sets the pincode-level RTO risk check and the serial-returner flag for COD orders before a return or replacement ships.",
+        "name": "Design failed-delivery and fraud controls",
+        "does": "Sets the address-risk/fraud check for orders before a return or replacement ships (ZIP/address-validation history for the US); India only: sets the pincode-level RTO risk check and the serial-returner flag for COD orders instead.",
         "inputs": [
-          "RTO/fraud data"
+          "failed-delivery/fraud data (RTO data for India)"
         ],
         "tools": [
           "script: intelligence/ideas.py"
         ],
         "skill": "life/returns-policy-draft",
-        "output": "RTO/fraud control rule",
-        "check": "risk check runs on real pincode history, not a blanket COD restriction"
+        "output": "failed-delivery/fraud control rule (RTO/fraud control rule for India)",
+        "check": "risk check runs on real address history for the US, or pincode history for India, not a blanket restriction"
       },
       {
         "n": 7,
@@ -2037,12 +2039,12 @@
     "outputs": [
       "returns flow spec",
       "policy draft text",
-      "RTO/fraud control rule"
+      "failed-delivery/fraud control rule (RTO/fraud control rule for India)"
     ],
     "qa": [
       "policy checked against law per market",
       "returns investment gated on returners' repeat rate",
-      "RTO check uses real pincode history"
+      "failed-delivery/fraud check uses real address history for the US, or pincode history for India"
     ],
     "read_point": "return rate, refund-cycle time and post-return repeat-purchase rate, read quarterly",
     "typical_duration": "1 day agent time",
@@ -3355,7 +3357,7 @@
       {
         "n": 6,
         "name": "Decide which use cases justify voice/IVR",
-        "does": "Chooses which events (COD pre-dispatch confirmation, delivery-failure follow-up, post-resolution satisfaction check) justify an automated IVR call, separate from SMS/WhatsApp.",
+        "does": "Chooses which events (order pre-dispatch confirmation call/dunning follow-up for a failed card by default, or COD pre-dispatch confirmation for India, delivery-failure follow-up, post-resolution satisfaction check) justify an automated IVR call, separate from SMS/WhatsApp.",
         "inputs": [
           "order/delivery events"
         ],
@@ -3423,7 +3425,7 @@
       "LIFE-C67"
     ],
     "trigger": "continuous",
-    "human_role": "customer support agent handling Amazon/Flipkart buyer-seller queues",
+    "human_role": "customer support agent handling Amazon/Walmart Marketplace buyer-seller queues (Flipkart, Myntra and other India marketplaces where the brand sells there)",
     "inputs_required": [
       "marketplace seller console access",
       "order and delivery-proof data"
@@ -3666,20 +3668,20 @@
     "capabilities": [
       "LIFE-G01"
     ],
-    "trigger": "event: inbound corporate enquiry; 90 days before Diwali for outbound",
+    "trigger": "event: inbound corporate enquiry; 90 days before Q4 holiday season for outbound (Diwali for India)",
     "human_role": "B2B/corporate gifting sales desk operator",
     "inputs_required": [
       "inbound enquiry or the outbound lead list",
       "bulk pricing tiers",
       "customisation (packaging/engraving) options",
-      "GST invoicing capability",
+      "sales-tax invoicing capability (GST invoicing capability for India)",
       "split-delivery address list"
     ],
     "steps": [
       {
         "n": 1,
         "name": "Qualify the enquiry or build the outbound lead list",
-        "does": "For inbound, reads the enquiry for quantity, budget and occasion; for outbound, builds the lead list starting 90 days before Diwali or the relevant gifting season.",
+        "does": "For inbound, reads the enquiry for quantity, budget and occasion; for outbound, builds the lead list starting 90 days before the target Q4 holiday gifting season (Diwali or the relevant gifting season for India).",
         "inputs": [
           "enquiry or lead source"
         ],
@@ -3688,7 +3690,7 @@
         ],
         "skill": "life/corporate-gifting-desk",
         "output": "qualified enquiry or lead list",
-        "check": "outbound timing starts at least 90 days before the target festival"
+        "check": "outbound timing starts at least 90 days before the target season or festival"
       },
       {
         "n": 2,
@@ -3718,17 +3720,17 @@
       },
       {
         "n": 4,
-        "name": "Prepare the GST invoice",
-        "does": "Prepares the GST-compliant invoice for the B2B order, checked against the current GST rate and the buyer's GSTIN if provided.",
+        "name": "Prepare the sales-tax invoice",
+        "does": "Prepares the sales-tax invoice for the B2B order, checked against state nexus and resale-certificate rules; India only: prepares the GST-compliant invoice instead, checked against the current GST rate and the buyer's GSTIN if provided.",
         "inputs": [
-          "GST invoicing capability"
+          "sales-tax invoicing capability (GST invoicing capability for India)"
         ],
         "tools": [
           "web search (budgeted)"
         ],
         "skill": "life/corporate-gifting-desk",
-        "output": "GST invoice draft",
-        "check": "invoice checked against the current GST rule, cited with date"
+        "output": "sales-tax invoice draft (GST invoice draft for India)",
+        "check": "invoice checked against the current sales-tax rule (or GST rule for India), cited with date"
       },
       {
         "n": 5,
@@ -3771,37 +3773,37 @@
     ],
     "outputs": [
       "bulk quote",
-      "GST invoice draft",
+      "sales-tax invoice draft (GST invoice draft for India)",
       "split-delivery plan",
       "repeat-order reminder"
     ],
     "qa": [
       "quote uses standing bulk tiers or is gated if beyond them",
-      "GST invoice checked against current rule",
+      "sales-tax invoice checked against current rule (GST rule for India)",
       "every delivery address checked for serviceability"
     ],
-    "read_point": "corporate order volume and repeat-order rate, read each gifting season",
+    "read_point": "corporate order volume and repeat-order rate, read each gifting season (Q4 holidays for the US, Diwali for India)",
     "typical_duration": "2 hours agent time per enquiry; more for outbound list-building",
     "subagents": []
   },
   {
     "id": "LIFE-W28",
-    "name": "Run the grievance officer queue and consumer notices",
+    "name": "Run the consumer-complaint and consumer-protection notice queue",
     "capabilities": [
       "LIFE-G03"
     ],
     "trigger": "event: grievance or notice received; weekly SLA check",
-    "human_role": "grievance officer / CX manager handling statutory complaints",
+    "human_role": "customer service / CX manager handling regulatory and consumer-protection complaints (BBB, state attorney general portals, FTC complaint referrals for the US; statutory grievance officer duties for India)",
     "inputs_required": [
-      "grievance/complaint inbox",
-      "consumer-forum (e-Daakhil) and legal notice tracker",
-      "India's E-Commerce Rules SLA (48-hour acknowledgement, 1-month resolution)"
+      "complaint/notice inbox (BBB, state consumer-complaint portal, FTC referral for the US; grievance inbox for India)",
+      "consumer-forum (e-Daakhil, India) and legal notice tracker",
+      "response SLA per channel (BBB and most state portals: about 2 weeks; India's E-Commerce Rules SLA of 48-hour acknowledgement and 1-month resolution, markets IN)"
     ],
     "steps": [
       {
         "n": 1,
         "name": "Log every grievance on receipt",
-        "does": "Logs each grievance or consumer notice the moment it arrives, with the statutory clock started from that timestamp.",
+        "does": "Logs each BBB complaint, state consumer-complaint, FTC referral or legal notice (a grievance or e-Daakhil consumer-forum notice for India) the moment it arrives, with its own clock started from that timestamp.",
         "inputs": [
           "grievance inbox"
         ],
@@ -3814,8 +3816,8 @@
       },
       {
         "n": 2,
-        "name": "Acknowledge within 48 hours",
-        "does": "Sends the acknowledgement within the 48-hour statutory window required under India's E-Commerce Rules.",
+        "name": "Acknowledge within the channel's SLA",
+        "does": "Sends the acknowledgement inside the SLA the receiving channel sets: BBB and most state consumer-complaint portals expect a response within about 2 weeks. India only: acknowledges within the 48-hour statutory window required under India's E-Commerce Rules instead; reads null for US brands.",
         "inputs": [
           "logged grievance"
         ],
@@ -3824,12 +3826,12 @@
         ],
         "skill": "life/grievance-queue",
         "output": "acknowledgement sent with timestamp",
-        "check": "acknowledgement sent inside 48 hours or flagged as breached the moment it is missed"
+        "check": "acknowledgement sent inside the applicable SLA (48 hours for India) or flagged as breached the moment it is missed"
       },
       {
         "n": 3,
         "name": "Investigate and prepare the resolution",
-        "does": "Investigates the complaint against the order/product/policy record and prepares a resolution within the 1-month statutory window.",
+        "does": "Investigates the complaint against the order/product/policy record and prepares a resolution within the receiving channel's own window (India's 1-month statutory window; the target response time for a BBB or state consumer-complaint case in the US).",
         "inputs": [
           "order/policy record"
         ],
@@ -3843,8 +3845,8 @@
       },
       {
         "n": 4,
-        "name": "Track consumer-forum and legal notices separately",
-        "does": "Tracks any e-Daakhil consumer-forum case or legal notice on its own separate clock and status, distinct from an ordinary grievance.",
+        "name": "Track consumer-forum, BBB and legal notices separately",
+        "does": "Tracks any BBB case, state consumer-complaint case or legal notice (an e-Daakhil consumer-forum case for India) on its own separate clock and status, distinct from an ordinary grievance.",
         "inputs": [
           "notice tracker"
         ],
@@ -3853,12 +3855,12 @@
         ],
         "skill": "life/grievance-queue",
         "output": "notice tracker update",
-        "check": "a legal notice is never merged into the ordinary grievance queue's SLA"
+        "check": "a legal notice is never merged into the ordinary complaint queue's SLA"
       },
       {
         "n": 5,
         "name": "Run the weekly SLA check",
-        "does": "Checks every open grievance and notice against its statutory clock, flagging anything approaching or past deadline.",
+        "does": "Checks every open complaint and notice against its own clock, flagging anything approaching or past deadline.",
         "inputs": [
           "grievance/notice log"
         ],
@@ -3870,7 +3872,7 @@
       {
         "n": 6,
         "name": "Route unresolved or escalated items to the founder",
-        "does": "Sends any item nearing breach, or any consumer-forum/legal notice, to the founder rather than letting the statutory clock lapse quietly.",
+        "does": "Sends any item nearing breach, or any consumer-forum/legal notice, to the founder rather than letting its clock lapse quietly.",
         "inputs": [
           "SLA report"
         ],
@@ -3882,25 +3884,25 @@
       {
         "n": 7,
         "name": "Log closure",
-        "does": "Records the resolution and closure date against the statutory deadline once resolved.",
+        "does": "Records the resolution and closure date against the applicable deadline (statutory for India) once resolved.",
         "inputs": [
           "resolution draft"
         ],
         "tools": [],
         "skill": "shared/registry-entry",
         "output": "closure record",
-        "check": "closure date compared explicitly to the statutory deadline"
+        "check": "closure date compared explicitly to the applicable deadline"
       }
     ],
     "outputs": [
-      "logged grievance queue with SLA clocks",
+      "logged complaint/notice queue with SLA clocks",
       "acknowledgements sent",
       "resolution drafts",
       "notice tracker",
       "weekly SLA report"
     ],
     "qa": [
-      "48-hour acknowledgement and 1-month resolution windows tracked in code",
+      "acknowledgement and resolution windows tracked in code per channel (48-hour/1-month for India's statutory rule; each platform's own SLA for US channels)",
       "legal notices tracked on their own separate clock",
       "nothing nearing breach left unescalated"
     ],

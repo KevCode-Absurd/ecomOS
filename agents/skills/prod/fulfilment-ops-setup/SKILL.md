@@ -3,7 +3,8 @@ name: prod/fulfilment-ops-setup
 owner: PROD
 version: 1
 invoke_when: a domestic fulfilment 3PL/WMS needs selecting, or warehouse and returns operating rules need setting
-inputs: order volume and SKU count, SLA requirements, the candidate 3PL list, return/RTO volume and reasons
+inputs: order volume and SKU count, SLA requirements, the candidate 3PL list, return/return-to-sender volume and
+  reasons (india: RTO volume and reasons)
 outputs: a negotiated SLA and tested WMS integration, slotting and staffing rules, and a fixed returns-grading rule
 ---
 # Select 3PL/WMS and build warehouse and returns operations
@@ -14,13 +15,15 @@ operates day to day, and what happens to every unit that comes back. Keeping the
 without the warehouse rules it needs to support, or a returns rule invented case by case after go-live.
 
 ## Steps
-1. Run the RFP and SLA negotiation for a domestic fulfilment 3PL: separate from any import-side freight or factory
-   3PL, since the requirements differ (last-mile speed and accuracy versus long-haul cost).
+1. Run the RFP and SLA negotiation for a domestic fulfilment 3PL (ShipStation/EasyPost-connected, or a 3PL such as
+ShipBob or ShipMonk): separate from any import-side freight or factory 3PL, since the requirements differ
+(last-mile speed and accuracy versus long-haul cost).
 2. Test the 3PL's WMS integration before go-live: order sync, stock sync, and returns feed, all tested end to end.
 3. Set slotting rules by SKU velocity (fast movers closest to pack stations) and the pick-pack-QC method and
-   staffing level against real, not projected, order volume.
-4. Design a fixed rule for what happens to every returned unit: RTO or customer return: restock, refurbish, or
-   write off, decided in advance rather than case by case, and apply it on a set schedule.
+staffing level against real, not projected, order volume.
+4. Design a fixed rule for what happens to every returned unit: a carrier return-to-sender or a customer return
+(India: RTO or customer return; markets: IN): restock, refurbish, or write off, decided in advance rather than
+case by case, and apply it on a set schedule.
 5. Review staffing levels and grading outcomes weekly against the plan.
 
 ## Checks
@@ -33,5 +36,6 @@ without the warehouse rules it needs to support, or a returns rule invented case
 
 ## Example
 3PL selected on a 96% on-time SLA history despite a 5% higher quote. Integration test passed on stock sync;
-returns feed needed a fix before go-live. Grading rule: RTO with unopened seal restocks automatically; opened
-seal goes to refurbish queue; anything past 60 days is written off.
+returns feed needed a fix before go-live. Grading rule: return-to-sender with unopened seal restocks
+automatically; opened seal goes to refurbish queue; anything past 60 days is written off. India: the equivalent
+rule applies to RTO instead (markets: IN).

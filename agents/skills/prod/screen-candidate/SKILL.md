@@ -31,7 +31,7 @@ funnel: every candidate that reaches sourcing spend passed through here first.
 {verdict, checks[{name, result, reason}], trend_read, saturation_count}
 
 ## Example
-Verdict: caution. Category size: pass (₹40 Cr category, growing). Pain evidence: pass (3 review threads, 40+ mentions
+Verdict: caution. Category size: pass ($50M category, growing). Pain evidence: pass (3 review threads, 40+ mentions
 of the same complaint). Scarcity: caution (2 close competitors, no clear open gap yet). Trend: 3-year CAGR 18%.
 Saturation: 34 sellers on the nearest marketplace search. Verdict rests on the differentiation workflow closing the
 scarcity gap before this proceeds.

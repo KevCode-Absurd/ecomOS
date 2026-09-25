@@ -37,7 +37,7 @@ disallowed_tools:
 sub_agents:
   - PROD-Research (01-PRD)
   - PROD-Sourcing (18-COG, plus Amazon-bound sourcing tasks in 22-AMZ)
-  - PROD-Marketplace (22-AMZ, plus Flipkart/Myntra/Nykaa)
+  - PROD-Marketplace (22-AMZ, plus Walmart/Target Plus/eBay/TikTok Shop; India: Flipkart/Myntra/Nykaa, markets: IN)
 ```
 
 ## 2. Identity and scope
@@ -57,8 +57,9 @@ Money and Ops.
 What it never does:
 - Never places an order, pays a supplier, or wires money. It drafts the
   PO, the RFQ and the payment-terms recommendation; a person sends them.
-- Never edits a live Amazon, Flipkart, Myntra or Nykaa listing, price or
-  review. It drafts the listing and the change list; a person applies it
+- Never edits a live Amazon, Walmart, Target Plus, eBay or TikTok Shop
+  listing, price or review (India: Flipkart, Myntra or Nykaa; markets: IN).
+  It drafts the listing and the change list; a person applies it
   in Seller Central or the seller portal, unless and until the founder
   turns on a write connector for that surface.
 - Never touches a Meta, Google or other ad account. PPC structure for
@@ -246,7 +247,7 @@ named human or the founder gate to act on.
 | `account-health-watch` | Weekly | Account Health data | Monitoring report, hijacker alert |
 | `sales-diagnosis` | A sales change needs explaining | Business Reports, attribution | Diagnosis note |
 | `buy-box-monitor` | Weekly | Listing pages, MAP/DTC price | Buy Box/reseller report |
-| `marketplace-listing-build` | A Flipkart/Myntra/Nykaa listing is built or refreshed | Platform guide, product data | Listing draft |
+| `marketplace-listing-build` | A Walmart/Target Plus/eBay/TikTok Shop listing is built or refreshed (India: Flipkart/Myntra/Nykaa, markets: IN) | Platform guide, product data | Listing draft |
 | `catalogue-feed-build` | Daily | Live price/stock, product records | Master feed, validation report |
 
 ### Skill outlines
@@ -345,18 +346,20 @@ folder 22-AMZ)
   landed cost models, freight/3PL recommendations, reorder plans, and
   cash/MOQ packets for Finance.
 
-**PROD-Marketplace** (folder 22-AMZ, plus Flipkart, Myntra, Nykaa)
+**PROD-Marketplace** (folder 22-AMZ, plus Walmart, Target Plus, eBay,
+TikTok Shop; India: Flipkart, Myntra, Nykaa, markets: IN)
 - Why separate: marketplace work has its own strict, fast-changing rule
-  set (Amazon policy, Brand Registry, FBA limits, each Indian
-  marketplace's seller rules) and its own output shape (listings,
-  compliance checklists, PPC change lists). Separating it stops Amazon
-  policy detail from crowding out product-research or sourcing context.
+  set (Amazon policy, Brand Registry, FBA limits, each marketplace's own
+  seller rules) and its own output shape (listings, compliance
+  checklists, PPC change lists). Separating it stops Amazon policy
+  detail from crowding out product-research or sourcing context.
 - Inputs: an approved product, its brand-record claims and specs, current
   Amazon/marketplace account state.
 - Outputs: account setup checklists, Brand Registry sequencing, listing
   drafts, FBA shipment plans, launch plans, PPC structure change lists
   for the Media buyer, Account Health reports, and marketplace listing
-  drafts for Flipkart, Myntra and Nykaa.
+  drafts for Walmart, Target Plus, eBay and TikTok Shop (India: Flipkart,
+  Myntra and Nykaa, markets: IN).
 
 ## 7. Capability index
 
@@ -375,7 +378,7 @@ folder 22-AMZ)
 | PROD-C11 | Produce the scored shortlist and go/no-go memo for the founder | on demand | founder_gate |
 | PROD-C12 | Run field research discipline and hand validated angles to creative | on demand | human_assist |
 | PROD-C13 | Build tech packs, BOMs, packaging specs and product data records | event: new SKU or spec change | agent_does |
-| PROD-C14 | Discover and vet suppliers in India and overseas | on demand | human_assist |
+| PROD-C14 | Discover and vet suppliers across sourcing regions (US domestic, China, India) | on demand | human_assist |
 | PROD-C15 | Draft RFQs and compare supplier quotes across volume tiers | on demand | human_assist |
 | PROD-C16 | Run the 3-stage sample gate against a reference sample | event: sample received | human_assist |
 | PROD-C17 | Negotiate cost-downs with backup-factory and benchmark leverage | on demand | human_assist |
@@ -405,8 +408,8 @@ folder 22-AMZ)
 | PROD-C41 | Plan Amazon portfolio growth and channel decisions | on demand | founder_gate |
 | PROD-C42 | Source alternative financing and manufacturers for a hard-to-source launch | on demand | human_assist |
 | PROD-C43 | Run Amazon growth experiments and channel tests | on demand | human_assist |
-| PROD-C44 | Create and optimise listings on Flipkart, Myntra and Nykaa | event: new marketplace listing or refresh | human_assist |
-| PROD-C45 | Check BIS, hallmarking and labelling compliance for marketplace listings | event: new listing or certification renewal | founder_gate |
+| PROD-C44 | Create and optimise listings on Walmart, Target Plus, eBay and TikTok Shop (India: Flipkart, Myntra, Nykaa, markets: IN) | event: new marketplace listing or refresh | human_assist |
+| PROD-C45 | Check US labelling and quality-marking compliance (FTC, Care Labeling, Prop 65) for marketplace listings (India: BIS, hallmarking, markets: IN) | event: new listing or certification renewal | founder_gate |
 | PROD-C46 | Monitor Buy Box ownership, reseller pricing and MAP violations | weekly | agent_does |
 | PROD-C47 | Build and hand off marketplace catalogue feeds | daily | agent_does |
 
@@ -417,21 +420,25 @@ folder 22-AMZ)
   Amazon PPC lifecycle (auto to manual to retargeting) end to end; the
   bank's sequence (AMZ-089 to AMZ-097) is the strongest source and is
   marked bank_only.
-- The idea bank has no ideas at all for Flipkart, Myntra or Nykaa
-  specifically, despite folder `22-AMZ`'s stated scope covering "Amazon
-  and marketplaces." PROD-C44, C45 (partly), C46 and C47 are built from
-  the web pass and general e-commerce practice, not from the bank. If
-  Kevin wants bank coverage here, a pass-2 extraction from Indian
-  marketplace seller guides would need to feed `ideas/v1/22-AMZ...json`.
+- The idea bank has no ideas at all for Walmart, Target Plus, eBay or
+  TikTok Shop specifically (or, for an India brand, Flipkart, Myntra or
+  Nykaa; markets: IN), despite folder `22-AMZ`'s stated scope covering
+  "Amazon and marketplaces." PROD-C44, C45 (partly), C46 and C47 are
+  built from the web pass and general e-commerce practice, not from the
+  bank. If Kevin wants bank coverage here, a pass-2 extraction from
+  those marketplaces' own seller guides would need to feed
+  `ideas/v1/22-AMZ...json`.
 - No public source on landed-cost tooling was fully vetted beyond
   marketing pages (SourcingGPT, Accio, the 1688 Sourcing Profit
   Analyzer); the actual calculator PROD needs is scoped as "to build"
   in-house rather than adopted from a third party, per the "arithmetic
   in code" rule and to avoid sending brand cost data to an outside tool.
-- Real-time BIS/hallmarking API or registry access was not found in the
-  web pass; PROD-C45 assumes a human checks the BIS Care app or
-  equivalent and records the result, not that PROD can verify a hallmark
-  itself.
+- No real-time FTC/Care Labeling verification API was found in the web
+  pass; PROD-C45 assumes a human records the certification status.
+  India: a real-time BIS/hallmarking API or registry access was likewise
+  not found; PROD-C45's India option assumes a human checks the BIS Care
+  app or equivalent and records the result, not that PROD can verify a
+  hallmark itself (markets: IN).
 
 **Overlaps with other agents (named):**
 - PROD-C25 (sourcing/ops hiring) and PROD-C26 (cash/P&L handoff) sit on
@@ -459,7 +466,7 @@ folder 22-AMZ)
   surfaces (folders `09-CRO`, `11-ADC`). PROD's diagnosis is scoped to
   whether the product itself is the problem; funnel and creative
   diagnosis stay with those specialists.
-- PROD-C45 (BIS/hallmarking) and any future security or legal review
+- PROD-C45 (US labelling/quality-marking; India: BIS/hallmarking) and any future security or legal review
   could overlap with the Money and ops specialist's folder `23-SEC`
   (compliance/security). PROD checks product-level regulatory and
   labelling compliance; broader account and platform security stays with

@@ -26,4 +26,4 @@ Turn raw order and cost exports into a labeled, comparable P&L ladder, and confi
 The P&L ladder, the close checklist with a pass or fail per item, and one paragraph naming the biggest change.
 
 ## Example
-Net profit percent drops 3 points month over month; the diff names the driver as a spike in COD courier fees, not a vague 'costs went up'.
+Net profit percent drops 3 points month over month; the diff names the driver as a spike in carrier shipping fees, not a vague 'costs went up'.

@@ -80,7 +80,7 @@
         ]
       },
       {
-        "job": "pick the right native format and localise for a mobile-first Indian buyer",
+        "job": "pick the right native format and localise for the target market and device",
         "question": "does this concept fit the platform and the market, or does it need a redo",
         "capabilities": [
           "CREA-C11",
@@ -98,7 +98,7 @@
         ]
       },
       {
-        "job": "run creative as a monthly pipeline against volume, budget, naming and the festive calendar",
+        "job": "run creative as a monthly pipeline against volume, budget, naming and the holiday calendar",
         "question": "are we making enough of the right creative, on time, on budget, and tagged right",
         "capabilities": [
           "CREA-C17",
@@ -890,8 +890,8 @@
         ]
       },
       {
-        "job": "write India-specific COD-to-prepaid and RTO-reduction lines",
-        "question": "what do we say to move a cash-on-delivery order toward prepaid without sounding pushy",
+        "job": "write payment and delivery reassurance lines (BNPL, free returns, real delivery dates; COD-to-prepaid and RTO-reduction lines for an India-market brand, markets: IN)",
+        "question": "what do we say to remove payment and delivery hesitation without sounding pushy, or, for a COD brand, to move an order toward prepaid",
         "capabilities": [
           "CREA-C44"
         ]
@@ -1043,10 +1043,10 @@
         "benchmark": "account-relative only"
       },
       {
-        "name": "cod_touchpoint_coverage",
-        "plain": "share of COD checkout and post-purchase moments that carry an approved trust or prepaid-nudge line",
+        "name": "payment_delivery_touchpoint_coverage",
+        "plain": "share of checkout and post-purchase moments that carry an approved payment or delivery reassurance line (BNPL, free returns, delivery date); for a COD brand (markets: IN), the same metric covers COD trust or prepaid-nudge line coverage instead",
         "formula": "touchpoints on the account's fixed list with an approved line attached, divided by all touchpoints on that list",
-        "source": "COD and RTO messaging log",
+        "source": "payment and delivery reassurance messaging log",
         "window": "current",
         "freshness_rule": "recompute weekly",
         "unavailable_when": "no fixed touchpoint list on file",
@@ -1189,12 +1189,12 @@
         "action_capability": "CREA-C20"
       },
       {
-        "name": "cod_trust_message_missing",
-        "rule": "a checkout or post-purchase touchpoint on the account's fixed list has no approved prepaid-nudge or RTO-trust line attached",
+        "name": "payment_delivery_trust_message_missing",
+        "rule": "a checkout or post-purchase touchpoint on the account's fixed list has no approved payment or delivery reassurance line (BNPL, free returns, real delivery date) attached; for a COD brand (markets: IN), the same check looks for a prepaid-nudge or RTO-trust line instead",
         "computed_from": [
-          "COD and RTO messaging log"
+          "payment and delivery reassurance messaging log"
         ],
-        "sentence": "{touchpoint} has no prepaid or delivery-trust line.",
+        "sentence": "{touchpoint} has no payment or delivery-trust line.",
         "severity": "medium",
         "action_capability": "CREA-C44"
       },
@@ -1333,7 +1333,7 @@
         "autonomy": "agent_does"
       },
       {
-        "label": "Write the COD or RTO trust line",
+        "label": "Write the payment or delivery reassurance line",
         "capability": "CREA-C44",
         "autonomy": "agent_does"
       },
@@ -1540,13 +1540,14 @@
         "refresh": "on each run"
       },
       {
-        "table": "cod_touchpoint_coverage",
+        "table": "payment_delivery_touchpoint_coverage",
         "fields": [
           "touchpoint",
           "has_line",
-          "line_id"
+          "line_id",
+          "cod_or_rto_line_id (markets: IN, null for a US brand)"
         ],
-        "connector_or_script": "new COD or RTO messaging log (CREA-C44)",
+        "connector_or_script": "new payment and delivery reassurance messaging log (CREA-C44)",
         "refresh": "weekly"
       },
       {

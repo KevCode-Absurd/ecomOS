@@ -24,4 +24,4 @@ A generic media database list wastes outreach on journalists who no longer cover
 `{verified_beat_matched_media_list: [{name, outlet, beat, recent_piece, url, date}]}`
 
 ## Example
-Contact matched on a piece published 3 weeks ago about sustainable Indian fashion brands, directly relevant to this brand's durability angle, with the piece URL attached for pitch reference.
+Contact matched on a piece published 3 weeks ago about sustainable American fashion brands, directly relevant to this brand's durability angle, with the piece URL attached for pitch reference.

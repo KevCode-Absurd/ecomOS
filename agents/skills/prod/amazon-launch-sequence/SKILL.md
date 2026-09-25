@@ -4,7 +4,8 @@ owner: PROD
 version: 1
 invoke_when: a brand is considering an Amazon launch, or a listing is going live and needs Brand Registry and
   launch protection
-inputs: business entity and GST details, bank/payout details, identity verification documents, trademark status,
+inputs: business entity and tax details (EIN/SSN, W-9; india: GST details), bank/payout details, identity
+  verification documents, trademark status,
   the stock and PPC plan for launch
 outputs: a verified account, a sequenced Brand Registry checklist, and a protected launch plan
 ---

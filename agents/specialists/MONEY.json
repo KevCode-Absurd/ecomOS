@@ -660,26 +660,32 @@
  },
  {
   "id": "MONEY-C12",
-  "name": "Track tax, GST and liability compliance",
+  "name": "Track US sales tax nexus and liability compliance",
   "folders": [
    "20-FIN"
   ],
-  "what": "Track GST/sales-tax nexus and registration thresholds per market, book gift cards and loyalty points as liabilities recognized on redemption, track FX exposure separately for revenue and landed cost, and flag return-rights compliance on promo terms.",
+  "what": "Track economic-nexus thresholds and marketplace-facilitator rules by state, keep registrations, resale certificates and filings current through Avalara or TaxJar, book gift cards and loyalty points as liabilities recognized on redemption, track FX exposure separately for revenue and landed cost, and flag return-rights compliance on promo terms. India-selling brands track GST/HSN/e-invoice/GSTR the same way this record tracks state sales tax; that path reads null for US-only brands.",
   "encompasses": [
-   "Track sales tax/GST nexus and registration thresholds per market",
+   "Track economic-nexus thresholds by state (revenue and transaction-count triggers) and register before crossing them",
+   "Track which marketplaces (Amazon, Walmart Marketplace, Etsy, TikTok Shop) collect and remit sales tax as facilitator, and which leave nexus and filing to the brand",
+   "Keep Avalara or TaxJar mappings current for product taxability and keep resale certificates on file for wholesale and drop-ship buyers",
+   "File state sales tax returns on each state's schedule and reconcile collected-vs-remitted",
    "Book gift cards issued as a liability, recognize revenue on redemption only",
    "Carry unredeemed loyalty points as a liability charged to the redeeming order",
    "Check promo copy against statutory return rights (never write a no-refunds-during-promo line)",
    "Track FX exposure on multi-currency revenue separately from landed-cost FX",
-   "Keep import duties separate from collected sales tax in the profit model"
+   "Keep import duties (customs bonds, HTS codes, tariffs) separate from collected sales tax in the profit model",
+   "India only: track GST/HSN nexus and registration thresholds, e-way bill and e-invoice requirements, GSTR filings and ITC (reads null for US brands)"
   ],
   "inputs": [
-   "brand brain: selling markets",
-   "warehouse: gift card/loyalty ledger"
+   "brand brain: selling markets, nexus states",
+   "warehouse: gift card/loyalty ledger",
+   "connector: Avalara or TaxJar (read)"
   ],
   "outputs": [
    "compliance flag list",
-   "liability ledger entries for finance review"
+   "liability ledger entries for finance review",
+   "nexus and filing-due-date tracker by state"
   ],
   "trigger": "monthly",
   "autonomy": "human_assist",
@@ -705,7 +711,7 @@
    ]
   },
   "found_in": "bank_only",
-  "founder_sees": "Any tax, GST or liability item that needs a human decision, with the deadline."
+  "founder_sees": "Any sales-tax nexus, filing or liability item that needs a human decision, with the deadline and the state."
  },
  {
   "id": "MONEY-C14",
@@ -2315,13 +2321,14 @@
   "folders": [
    "23-SEC"
   ],
-  "what": "Detect card-testing bursts, review AVS/CVV/3DS settings against false-decline rates, set chargeback alert thresholds below the processor's flag, control COD refusal and promo-code abuse, and build evidence packets for disputes.",
+  "what": "Detect card-testing bursts, review AVS/CVV/3DS settings against false-decline rates, set chargeback alert thresholds below the processor's flag, control payment-refusal patterns and promo-code abuse, and build evidence packets for disputes.",
   "encompasses": [
    "Detect card-testing bursts by clustering small orders, new accounts and geography mismatch",
    "Review order-risk and decline data before turning on AVS where it is off by default",
    "Enable dynamic 3D Secure on higher-risk transactions and track approval rate after",
    "Set an internal chargeback alert below the processor's flag, and confirm chargeback-coverage eligibility",
-   "Track COD refusal rate by pincode and phone number, require confirmation above a value threshold",
+   "Track step-up verification triggers by BIN, device and customer above a value threshold",
+   "India only: track COD refusal rate by pincode and phone number, require confirmation above a value threshold (reads null for US brands)",
    "Cap discount-code uses per code and per customer, expire a leaked code fast",
    "Build a friendly-fraud evidence packet, and keep an evidence trail for every order to answer disputes",
    "Track return rate by SKU and customer to catch wardrobing and serial-returner fraud",

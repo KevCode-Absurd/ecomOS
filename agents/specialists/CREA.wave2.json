@@ -52,7 +52,7 @@
     ],
     "what": "Extends creator sourcing by having the agent browse UGC and creator marketplaces itself, shortlist candidates against the brief's own vetting bar, and draft outreach, instead of a person scrolling profiles by hand.",
     "encompasses": [
-      "Browse marketplaces (Billo, Minisocial, JoinBrands, and India platforms such as Kofluence and Winkl) filtered by niche, follower count and past brand work",
+      "Browse marketplaces (Billo, Minisocial, JoinBrands) filtered by niche, follower count and past brand work; for an India-market brief, browse India platforms such as Kofluence and Winkl instead",
       "Shortlist 5 to 10 candidates per brief against the vetting bar already set from past creator work",
       "Draft the outreach and rate-negotiation message for each shortlisted creator, never send it without sign-off",
       "Track response and acceptance rate per marketplace to learn which one sources faster for this brand"
@@ -151,7 +151,7 @@
     "encompasses": [
       "Check restricted content categories (health, finance, before-after imagery, personal attributes) against the specific platform this ad will run on",
       "Check image text and overlay rules for the destination platform before the file is finalized",
-      "Check marketplace ad policy (Amazon, Flipkart) separately from social platform policy, since the rule sets differ",
+      "Check marketplace ad policy (Amazon, Walmart Marketplace, Target Plus; Flipkart for an India-market brand, markets: IN) separately from social platform policy, since the rule sets differ",
       "Re-run the check whenever a platform updates its policy, not only at first ship"
     ],
     "inputs": [
@@ -937,25 +937,26 @@
   {
     "id": "CREA-C44",
     "extends": null,
-    "name": "Write and design COD-to-prepaid conversion and RTO-reduction creative messaging",
+    "name": "Write and design payment and delivery reassurance creative messaging",
     "folders": [
       "10-MCR",
       "11-ADC"
     ],
-    "what": "Writes the ad and post-purchase creative lines that push a cash-on-delivery order toward prepaid, and the delivery-trust messaging that lowers return-to-origin risk, since both are India-specific costs a generic ad script ignores.",
+    "what": "Writes the ad and post-purchase creative lines that build trust in how an order gets paid for and delivered: free returns, BNPL options, and a real delivery date. Includes, as the India-market option, the lines that push a cash-on-delivery order toward prepaid and the delivery-trust messaging that lowers return-to-origin risk; that option reads null for a US brand.",
     "encompasses": [
-      "Write the prepaid-incentive line (small discount or free shipping) framed as unlocking a benefit, never as a penalty for choosing COD",
-      "Write the WhatsApp or SMS follow-up message offering the same incentive with a payment link inside a short window after a COD order",
-      "Write delivery-trust lines (real dispatch time, real carrier, easy return) that reduce the buyer's reason to reject at the door",
-      "Check every prepaid or RTO claim (discount amount, delivery time) against the brand record before it ships"
+      "Write payment-flexibility lines (card, Shop Pay, PayPal, Apple Pay, BNPL such as Affirm, Klarna or Afterpay) framed as removing friction, never as pressure",
+      "Write free-returns and real-delivery-date lines that reduce checkout hesitation",
+      "Write the SMS (TCPA consent, quiet hours) or email follow-up message offering an incentive or reminder inside a short window after checkout",
+      "India-market option (markets: IN, null for a US brand): write the prepaid-incentive line (small discount or free shipping) framed as unlocking a benefit, never as a penalty for choosing COD, the WhatsApp or SMS follow-up with a payment link after a COD order, and the delivery-trust lines (real dispatch time, real carrier, easy return) that lower return-to-origin risk",
+      "Check every reassurance, incentive or COD/RTO claim (discount amount, delivery time, BNPL terms) against the brand record before it ships"
     ],
     "inputs": [
       "brand brain: shipping and payment policies",
-      "order and RTO data (warehouse)"
+      "order data (warehouse); COD and RTO data where the brand runs COD (markets: IN)"
     ],
     "outputs": [
-      "COD-to-prepaid ad and message copy",
-      "RTO-reduction creative lines"
+      "payment and delivery reassurance ad and message copy",
+      "COD-to-prepaid ad copy and RTO-reduction creative lines (markets: IN)"
     ],
     "trigger": "on demand",
     "autonomy": "agent_does",
@@ -965,7 +966,7 @@
     },
     "tools": [],
     "skills": [
-      "cod-prepaid-messaging"
+      "payment-delivery-reassurance-messaging"
     ],
     "subagent": null,
     "sources": {
@@ -976,14 +977,14 @@
       "bank": []
     },
     "found_in": "web_only",
-    "founder_sees": "The exact lines that will nudge a COD order to prepaid, and the numbers behind them checked against your policy.",
+    "founder_sees": "The exact lines that build payment and delivery trust before checkout, and, for a COD brand, the numbers behind a prepaid nudge checked against your policy.",
     "human_role": "copywriter",
     "today_done_by": "in-house or agency"
   },
   {
     "id": "CREA-C45",
     "extends": null,
-    "name": "Build Amazon A+ Content and Flipkart/Myntra brand-store creative modules",
+    "name": "Build Amazon A+ Content and Walmart/Target Plus brand-store creative modules",
     "folders": [
       "10-MCR",
       "11-ADC",
@@ -993,7 +994,7 @@
     "encompasses": [
       "Design each module (hero banner, feature comparison, lifestyle image, spec table) to the marketplace's exact pixel and module-count limits",
       "Reuse the brand's approved claims and real product photos, never a new unchecked claim written just for this module",
-      "Build a separate module set per marketplace (Amazon A+, Flipkart brand store, Myntra brand page) since their templates differ",
+      "Build a separate module set per marketplace (Amazon A+, Walmart Marketplace brand shop, Target Plus; Flipkart brand store and Myntra brand page for an India-market brand, markets: IN) since their templates differ",
       "Flag a module that would look identical to the standard listing images, since A+ content should add new information, not repeat it"
     ],
     "inputs": [
@@ -1123,7 +1124,7 @@
       "11-ADC",
       "24-DEP"
     ],
-    "what": "Drives Meta or TikTok Ads Manager's own web interface to create a paused, unpublished draft ad per approved creative, so a human reviews a real draft inside the platform instead of a spreadsheet, without spending a rupee until they hit publish.",
+    "what": "Drives Meta or TikTok Ads Manager's own web interface to create a paused, unpublished draft ad per approved creative, so a human reviews a real draft inside the platform instead of a spreadsheet, without spending a dollar until they hit publish.",
     "encompasses": [
       "Navigate Ads Manager's ad-creation flow and fill in creative, copy and destination fields from the approved set",
       "Leave every draft paused and unpublished, never toggle it live",
@@ -1208,24 +1209,25 @@
   {
     "id": "CREA-C50",
     "extends": null,
-    "name": "Build a festive and sale-event creative production calendar with lead-time countdowns",
+    "name": "Build a holiday and sale-event creative production calendar with lead-time countdowns",
     "folders": [
       "10-MCR",
       "11-ADC"
     ],
-    "what": "Builds the year's creative production calendar around India's festive dates and the account's own sale events, each with a working-backward countdown (concept, build, review, launch) so a festive batch is never rushed the week of.",
+    "what": "Builds the year's creative production calendar around the US holiday calendar and the account's own sale events, each with a working-backward countdown (concept, build, review, launch) so a holiday batch is never rushed the week of. For an India-market brand, runs the same countdown off the India festive calendar instead (markets: IN, null for a US brand).",
     "encompasses": [
-      "List the year's relevant Indian festivals (Diwali, Holi, Republic Day sale, Raksha Bandhan) and global sale events (BFCM) the brand actually runs offers around",
+      "List the year's relevant US holiday and sale dates (Black Friday, Cyber Monday, Prime Day, Valentine's Day, Mother's Day, Father's Day, back to school, July 4, Q4 holiday season) the brand actually runs offers around",
+      "India-market option (markets: IN, null for a US brand): list the year's relevant Indian festivals (Diwali, Holi, Republic Day sale, Raksha Bandhan) instead of, or alongside, the US calendar",
       "Work backward from each date to set concept, build, review and launch deadlines with real lead time",
-      "Flag when two festive windows overlap the same production slot, so volume gets planned, not doubled up last minute",
+      "Flag when two holiday or festive windows overlap the same production slot, so volume gets planned, not doubled up last minute",
       "Carry the prior year's same-event creative and its results forward as a starting reference, not a blank slate"
     ],
     "inputs": [
       "brand brain: past sale events and results",
-      "India festive calendar"
+      "US holiday calendar; India festive calendar for an India-market brand (markets: IN)"
     ],
     "outputs": [
-      "annual festive and sale-event production calendar with lead-time countdowns"
+      "annual holiday and sale-event production calendar with lead-time countdowns"
     ],
     "trigger": "event: annual planning, or new sale event added",
     "autonomy": "agent_does",
@@ -1237,7 +1239,7 @@
       "web fetch"
     ],
     "skills": [
-      "festive-calendar-planner"
+      "holiday-calendar-planner"
     ],
     "subagent": null,
     "sources": {
@@ -1248,7 +1250,7 @@
       "bank": []
     },
     "found_in": "web_only",
-    "founder_sees": "The year's creative calendar, with each festive batch's real deadline worked backward from the date.",
+    "founder_sees": "The year's creative calendar, with each holiday batch's real deadline worked backward from the date.",
     "human_role": "creative ops / creative strategist",
     "today_done_by": "in-house"
   },

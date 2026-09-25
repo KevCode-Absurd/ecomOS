@@ -72,14 +72,14 @@
    },
    {
     "job": "build and defend the annual OPEX and payroll budget",
-    "question": "what can we afford to spend, and what does the next rupee of spend buy",
+    "question": "what can we afford to spend, and what does the next dollar of spend buy",
     "capabilities": [
      "MONEY-C11"
     ]
    },
    {
-    "job": "stay compliant on GST, liabilities and FX exposure",
-    "question": "are we exposed on tax registration, gift-card liability or currency risk",
+    "job": "stay compliant on US sales tax, liabilities and FX exposure (GST for India-selling brands)",
+    "question": "are we exposed on sales-tax nexus, gift-card liability or currency risk",
     "capabilities": [
      "MONEY-C12"
     ]
@@ -102,14 +102,14 @@
    },
    {
     "job": "set the acquisition financial calendar and guardrails",
-    "question": "how much can we safely spend around BFCM and the festive calendar",
+    "question": "how much can we safely spend around Q4 holiday (BFCM) and the rest of the promo calendar",
     "capabilities": [
      "MONEY-C19"
     ]
    },
    {
-    "job": "turn every settlement, COD payout, bill and payroll run into one clean ledger",
-    "question": "where did this payout, this COD cash or this bill actually land",
+    "job": "turn every settlement, payout, bill and payroll run into one clean ledger (COD payout too, for India-selling brands)",
+    "question": "where did this payout, this bill, or (for an India-selling brand) this COD cash actually land",
     "capabilities": [
      "MONEY-C51",
      "MONEY-C52",
@@ -226,7 +226,7 @@
    },
    {
     "name": "ltgp_to_cac",
-    "plain": "Lifetime gross profit for every rupee spent to acquire",
+    "plain": "Lifetime gross profit for every dollar spent to acquire",
     "formula": "lifetime gross profit per customer (fixed lookback window) ÷ CAC",
     "source": "cohort table",
     "window": "quarterly",
@@ -236,7 +236,7 @@
    },
    {
     "name": "mer_and_amer",
-    "plain": "Total revenue for every rupee of ad spend, plain and adjusted",
+    "plain": "Total revenue for every dollar of ad spend, plain and adjusted",
     "formula": "MER = total revenue ÷ total ad spend; aMER = (total revenue − discount-code and branded-search revenue) ÷ total ad spend",
     "source": "orders table + ad_spend table + discount code table",
     "window": "daily, rolled to weekly",
@@ -265,23 +265,34 @@
     "benchmark": "target under 1% variance per gap"
    },
    {
+    "name": "payout_deposit_gap",
+    "plain": "Payout cash a gateway or marketplace says it sent but that has not yet landed in the bank",
+    "formula": "sum reported paid by gateway/marketplace − sum landed in bank, aged by days since the payout was reported",
+    "source": "gateway/marketplace payout reports + bank ledger",
+    "window": "daily",
+    "freshness_rule": "stale after 24 hours",
+    "unavailable_when": "a source has not sent its payout report",
+    "benchmark": "target: fully deposited within the source's stated SLA"
+   },
+   {
     "name": "cod_remittance_gap",
-    "plain": "COD cash collected but not yet in the bank",
+    "markets": ["IN"],
+    "plain": "COD cash collected but not yet in the bank (India only; reads null for US brands)",
     "formula": "sum of COD collected by courier − sum remitted, aged by days since collection",
     "source": "courier COD reports + bank ledger",
     "window": "daily",
     "freshness_rule": "stale after 24 hours",
-    "unavailable_when": "a courier has not sent its collection report",
+    "unavailable_when": "the brand runs no COD, or a courier has not sent its collection report",
     "benchmark": "target: fully remitted within the courier's stated SLA"
    },
    {
-    "name": "gst_liability_position",
-    "plain": "What is owed or claimable in GST this period",
-    "formula": "output GST on sales − input GST credit, by state/GSTIN",
-    "source": "GST invoicing app + purchase records",
+    "name": "sales_tax_liability_position",
+    "plain": "What is owed or claimable in state sales tax this period (GST for India-selling brands)",
+    "formula": "sales tax collected − sales tax remitted/credit available, by state (output GST − input GST credit, by state/GSTIN, for India)",
+    "source": "Avalara or TaxJar + purchase records (GST invoicing app, for India)",
     "window": "monthly, ahead of filing",
     "freshness_rule": "stale after filing due date",
-    "unavailable_when": "a state's sales crossed the registration threshold with no GSTIN on file",
+    "unavailable_when": "a state's sales crossed the nexus threshold with no registration on file",
     "benchmark": "must reconcile to the filed return within the accountant's tolerance"
    },
    {
@@ -313,7 +324,7 @@
      "cm3_per_channel",
      "orders table"
     ],
-    "sentence": "{sku} sold more each month but still loses ₹{amount} per unit after marketing cost",
+    "sentence": "{sku} sold more each month but still loses ${amount} per unit after marketing cost",
     "severity": "high if CM3 is negative and worsening, else medium",
     "action_capability": "MONEY-C2"
    },
@@ -323,7 +334,7 @@
     "computed_from": [
      "cash_low_point_13wk"
     ],
-    "sentence": "cash is projected to fall below ₹{floor} in week {n} if nothing changes",
+    "sentence": "cash is projected to fall below ${floor} in week {n} if nothing changes",
     "severity": "critical",
     "action_capability": "MONEY-C6"
    },
@@ -355,13 +366,24 @@
     "computed_from": [
      "platform_books_variance"
     ],
-    "sentence": "{source} and the books differ by ₹{amount} this month with no named cause",
+    "sentence": "{source} and the books differ by ${amount} this month with no named cause",
     "severity": "high",
     "action_capability": "MONEY-C15"
    },
    {
+    "name": "payout deposit stuck",
+    "rule": "payout_deposit_gap for a source exceeds that source's stated payout SLA in days",
+    "computed_from": [
+     "payout_deposit_gap"
+    ],
+    "sentence": "${amount} from {source} is {n} days past its payout SLA",
+    "severity": "high",
+    "action_capability": "MONEY-C52"
+   },
+   {
     "name": "COD remittance stuck",
-    "rule": "cod_remittance_gap for a courier exceeds that courier's stated SLA in days",
+    "markets": ["IN"],
+    "rule": "cod_remittance_gap for a courier exceeds that courier's stated SLA in days (India only; reads null for US brands)",
     "computed_from": [
      "cod_remittance_gap"
     ],
@@ -375,7 +397,7 @@
     "computed_from": [
      "days_inventory_outstanding"
     ],
-    "sentence": "₹{amount} of {sku} stock sits {n} days beyond what lead time needs",
+    "sentence": "${amount} of {sku} stock sits {n} days beyond what lead time needs",
     "severity": "medium",
     "action_capability": "MONEY-C7"
    },
@@ -400,12 +422,12 @@
     "action_capability": "MONEY-C11"
    },
    {
-    "name": "GST exposure",
-    "rule": "a state or marketplace's trailing 12-month sales crossed the registration threshold with no matching GSTIN on file",
+    "name": "sales tax nexus exposure",
+    "rule": "a state or marketplace's trailing 12-month sales crossed the economic-nexus threshold with no matching registration on file (the GST registration threshold, for India-selling brands)",
     "computed_from": [
-     "gst_liability_position"
+     "sales_tax_liability_position"
     ],
-    "sentence": "{market} sales crossed the GST registration threshold with no registration logged",
+    "sentence": "{market} sales crossed the sales-tax nexus threshold with no registration logged (the GST registration threshold, for India)",
     "severity": "critical",
     "action_capability": "MONEY-C12"
    }
@@ -447,10 +469,10 @@
     "exists_today": false
    },
    {
-    "name": "COD remittance aging",
-    "type": "bar chart by courier, bucketed by days late",
-    "shows": "how much COD cash is owed by each courier and how overdue it is",
-    "why_this_chart": "a founder sees which courier to chase first",
+    "name": "payout deposit aging",
+    "type": "bar chart by source (gateway, marketplace; courier for India COD), bucketed by days late",
+    "shows": "how much payout cash is owed by each source and how overdue it is",
+    "why_this_chart": "a founder sees which source to chase first",
     "exists_today": false
    },
    {
@@ -518,7 +540,7 @@
     "autonomy": "agent_does"
    },
    {
-    "label": "Send the GST/liability tracker to the accountant",
+    "label": "Send the sales-tax/liability tracker to the accountant (GST tracker, for India)",
     "capability": "MONEY-C12",
     "autonomy": "human_assist"
    },
@@ -553,7 +575,7 @@
     "autonomy": "agent_does"
    },
    {
-    "label": "Refresh the COD remittance ledger",
+    "label": "Refresh the payout reconciliation ledger (COD remittance ledger, for India)",
     "capability": "MONEY-C52",
     "autonomy": "agent_does"
    },
@@ -598,7 +620,7 @@
     "autonomy": "agent_does"
    },
    {
-    "label": "Send the COD escalation email for approval",
+    "label": "Send the payout escalation email for approval (COD escalation, for India)",
     "capability": "MONEY-C79",
     "autonomy": "founder_gate"
    },
@@ -626,8 +648,8 @@
     "vs": "financing marketplaces and lenders quote rates but do not simulate a specific structure against the brand's own forecast"
    },
    {
-    "claim": "COD cash tracked to the bank and escalated to the courier automatically once a remittance passes that courier's own SLA",
-    "vs": "also in CODReconcile and Shiplystic for the collected-vs-remitted tracking; the drafted, SLA-cited escalation email is not part of those tools"
+    "claim": "payout cash tracked to the bank and escalated to the source automatically once a remittance passes that source's own SLA (COD cash and the courier, for India-selling brands)",
+    "vs": "also in A2X and Link My Books for the gateway/marketplace collected-vs-deposited tracking (CODReconcile and Shiplystic for India's COD collected-vs-remitted tracking); the drafted, SLA-cited escalation email is not part of those tools"
    },
    {
     "claim": "all 5 recurring platform-to-books gaps reconciled in one place with a named cause each month",
@@ -687,7 +709,7 @@
      "category",
      "account"
     ],
-    "connector_or_script": "accounting export (Zoho Books/Tally) or bank feed",
+    "connector_or_script": "accounting export (QuickBooks/Xero; Zoho Books/Tally for India) or bank feed",
     "refresh": "daily"
    },
    {
@@ -708,6 +730,7 @@
    },
    {
     "table": "cod_remittance",
+    "markets": ["IN"],
     "fields": [
      "courier",
      "order_id",
@@ -716,11 +739,27 @@
      "remitted_date",
      "sla_days"
     ],
-    "connector_or_script": "courier portal/API (Shiprocket, Delhivery)",
+    "connector_or_script": "courier portal/API (Shiprocket, Delhivery); reads null for US brands",
     "refresh": "daily"
    },
    {
     "table": "payroll_statutory",
+    "fields": [
+     "employee_id",
+     "cycle",
+     "gross",
+     "federal_withholding",
+     "state_withholding",
+     "fica",
+     "suta",
+     "net"
+    ],
+    "connector_or_script": "Gusto or ADP export",
+    "refresh": "monthly"
+   },
+   {
+    "table": "payroll_statutory_india",
+    "markets": ["IN"],
     "fields": [
      "employee_id",
      "cycle",
@@ -731,7 +770,7 @@
      "tds",
      "net"
     ],
-    "connector_or_script": "payroll processor export",
+    "connector_or_script": "payroll processor export; reads null for US brands",
     "refresh": "monthly"
    },
    {
@@ -784,7 +823,20 @@
     "refresh": "daily"
    },
    {
+    "table": "sales_tax_filings",
+    "fields": [
+     "state",
+     "period",
+     "tax_collected",
+     "tax_remitted",
+     "filed_at"
+    ],
+    "connector_or_script": "Avalara or TaxJar export",
+    "refresh": "monthly"
+   },
+   {
     "table": "gst_filings",
+    "markets": ["IN"],
     "fields": [
      "gstin",
      "state",
@@ -793,11 +845,11 @@
      "input_credit",
      "filed_at"
     ],
-    "connector_or_script": "GST invoicing app export",
+    "connector_or_script": "GST invoicing app export; reads null for US brands",
     "refresh": "monthly"
    }
   ],
-  "founder_view_note": "With nothing connected, the room shows the P&L ladder and cash forecast as unavailable with a one-line reason (no order feed, no bank feed) instead of zeros, plus a short list of exactly which connections would light it up. The first thing it shows once Shopify orders and one cost file land is CM1 by SKU and the 13-week cash line; settlement, COD and payroll rows light up as each feed is added."
+  "founder_view_note": "With nothing connected, the room shows the P&L ladder and cash forecast as unavailable with a one-line reason (no order feed, no bank feed) instead of zeros, plus a short list of exactly which connections would light it up. The first thing it shows once Shopify orders and one cost file land is CM1 by SKU and the 13-week cash line; settlement and payroll rows light up as each feed is added, and COD rows light up too for an India-selling brand."
  },
  {
   "room": "Measurement and data health",
@@ -2249,6 +2301,7 @@
    },
    {
     "name": "chargeback_rate",
+    "group": "reversed_and_failed_orders",
     "plain": "Share of orders disputed as chargebacks",
     "formula": "chargebacks in period ÷ orders in period",
     "source": "payment processor",
@@ -2256,6 +2309,63 @@
     "freshness_rule": "stale after 35 days",
     "unavailable_when": "processor has not closed the period",
     "benchmark": "kept below the processor's own flag threshold, with headroom"
+   },
+   {
+    "name": "dispute_rate",
+    "group": "reversed_and_failed_orders",
+    "plain": "Share of orders disputed on any channel, chargebacks plus PayPal/other processor disputes",
+    "formula": "(chargebacks + non-chargeback processor disputes) in period ÷ orders in period",
+    "source": "payment processor + PayPal/other gateway dispute feed",
+    "window": "monthly",
+    "freshness_rule": "stale after 35 days",
+    "unavailable_when": "a connected processor has not closed the period",
+    "benchmark": "kept below the processor's own flag threshold, with headroom"
+   },
+   {
+    "name": "return_to_sender_rate",
+    "group": "reversed_and_failed_orders",
+    "plain": "Share of shipped orders a carrier returned undelivered (refused, bad address, unclaimed), never reaching the customer",
+    "formula": "orders marked carrier return-to-sender in period ÷ orders shipped in period",
+    "source": "carrier tracking events (USPS/UPS/FedEx) + order table",
+    "window": "weekly",
+    "freshness_rule": "stale after 10 days",
+    "unavailable_when": "carrier tracking events not connected",
+    "benchmark": "no fixed benchmark; track trend against the brand's own history"
+   },
+   {
+    "name": "rto_rate",
+    "group": "reversed_and_failed_orders",
+    "markets": ["IN"],
+    "plain": "Share of COD orders that came back without the customer receiving them (India only; reads null for US brands)",
+    "formula": "COD orders returned to origin in period ÷ COD orders dispatched in period",
+    "source": "courier COD/RTO reports",
+    "window": "weekly",
+    "freshness_rule": "stale after 10 days",
+    "unavailable_when": "the brand runs no COD, or courier RTO reports are not connected",
+    "benchmark": "no fixed benchmark; track trend against the brand's own history"
+   },
+   {
+    "name": "payment_method_mix",
+    "group": "payment_method_mix",
+    "plain": "Share of orders by payment method: card, Shop Pay, PayPal, Apple Pay, BNPL (Affirm, Klarna, Afterpay)",
+    "formula": "orders by payment method in period ÷ total orders in period",
+    "source": "payment processor + checkout data",
+    "window": "monthly",
+    "freshness_rule": "stale after 35 days",
+    "unavailable_when": "a connected processor has not closed the period",
+    "benchmark": "no fixed benchmark; track trend against the brand's own history"
+   },
+   {
+    "name": "cod_share",
+    "group": "payment_method_mix",
+    "markets": ["IN"],
+    "plain": "Share of orders paid cash on delivery (India only; reads null for US brands)",
+    "formula": "COD orders in period ÷ total orders in period",
+    "source": "order table",
+    "window": "monthly",
+    "freshness_rule": "stale after 35 days",
+    "unavailable_when": "the brand runs no COD",
+    "benchmark": "no fixed benchmark; track trend against the brand's own history"
    },
    {
     "name": "false_decline_rate",

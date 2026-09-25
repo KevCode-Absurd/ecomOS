@@ -1067,7 +1067,7 @@
   "folders": [
    "14-EML"
   ],
-  "what": "Sets the rules for every non-email channel: content scope, cadence, cost control, consent, and channel selection, including a WhatsApp pilot where SMS is costly.",
+  "what": "Sets the rules for every non-email channel: content scope, cadence, cost control, consent, and channel selection. SMS with TCPA consent and quiet hours is the default second channel; WhatsApp is a market option (India, EU, LATAM) where it beats SMS on reach or cost, reads null for US brands.",
   "encompasses": [
    "Reserve SMS for high-urgency, low-frequency news only",
    "Start cadence conservatively, raise it only through a proven holdout",
@@ -1078,7 +1078,7 @@
    "Pilot RCS or iMessage business messaging as a holdout, not a default rollout",
    "Choose the SMS platform on price and ESP fit, not AI feature pitches",
    "Add push notification steps to flows where the brand has an app",
-   "Consider WhatsApp business messaging where SMS is costly and the market is mobile-first",
+   "Consider WhatsApp business messaging as a market option where SMS is costly and the market is mobile-first (India, EU, LATAM); reads null for US brands",
    "Track click rate, unsubscribe rate, delivery rate and net profit per send"
   ],
   "inputs": [
@@ -1366,39 +1366,40 @@
  },
  {
   "id": "LIFE-C22",
-  "name": "Design the WhatsApp commerce program for India",
+  "name": "Design the SMS and WhatsApp commerce program",
   "folders": [
    "14-EML",
    "17-CXP",
    "03-OFF"
   ],
-  "what": "Designs WhatsApp-based cart recovery, order updates and COD-to-prepaid conversion for Indian buyers, where WhatsApp reach beats SMS and email.",
+  "what": "Designs SMS-based cart recovery, order-status updates and dunning for failed card payments as the default program, with WhatsApp as a market option (India, EU, LATAM) where it beats SMS and email on reach, and COD-to-prepaid conversion for COD markets. India only: COD-to-prepaid and return-to-origin (RTO) reduction read null for US brands.",
   "encompasses": [
    "Design a 3-step cart recovery sequence (about 30-60 min, 12-24 hr, 48-72 hr) with a rising incentive",
-   "Send order-status milestones (confirmed, dispatched, out for delivery, delivered) over WhatsApp for opted-in India buyers",
-   "Confirm COD orders over WhatsApp to reduce return-to-origin",
-   "Offer a prepaid discount or COD-fee waiver over WhatsApp to shift COD buyers to prepaid",
-   "Choose WhatsApp over SMS for update channel based on audience and opt-in",
-   "Keep WhatsApp consent and opt-out handling separate from email/SMS consent",
-   "Route product catalogue and payment links through WhatsApp's native commerce features where available"
+   "Send order-status milestones (confirmed, shipped, out for delivery, delivered) by SMS with TCPA consent and quiet-hours rules by default",
+   "Retry a failed card charge through a dunning sequence before canceling a subscription or hold",
+   "India only: confirm COD orders over WhatsApp to reduce return-to-origin (RTO); reads null for US brands",
+   "India only: offer a prepaid discount or COD-fee waiver over WhatsApp to shift COD buyers to prepaid; reads null for US brands",
+   "Choose WhatsApp over SMS for the update channel in markets where it has higher reach (India, EU, LATAM), based on audience and opt-in",
+   "Keep WhatsApp consent and opt-out handling separate from SMS/email consent where WhatsApp is used",
+   "Route product catalog and payment links through WhatsApp's native commerce features where available"
   ],
   "inputs": [
-   "connector: WhatsApp Business API",
+   "connector: SMS/WhatsApp platform",
    "connector: shopify orders",
-   "brand brain: India COD/RTO history"
+   "brand brain: payment method mix and reversed-orders history (COD share and RTO null for US brands)"
   ],
   "outputs": [
-   "WhatsApp flow spec",
+   "SMS/WhatsApp flow spec",
    "message templates for platform approval"
   ],
   "trigger": "on demand",
   "autonomy": "founder_gate",
   "external_write": {
    "needed": true,
-   "surface": "WhatsApp Business API"
+   "surface": "SMS/WhatsApp platform"
   },
   "tools": [
-   "connector: WhatsApp Business API",
+   "connector: SMS/WhatsApp platform",
    "web search"
   ],
   "skills": [
@@ -1419,7 +1420,7 @@
    ]
   },
   "found_in": "web+bank",
-  "founder_sees": "The WhatsApp message sequences for cart recovery, order status and COD-to-prepaid, ready for template approval."
+  "founder_sees": "The SMS/WhatsApp message sequences for cart recovery, order status and (COD markets) COD-to-prepaid, ready for template approval."
  },
  {
   "id": "LIFE-C23",
@@ -1618,7 +1619,7 @@
   "folders": [
    "17-CXP"
   ],
-  "what": "Designs the return and refund flow: speed targets, refund-vs-credit choice, self-service portal, and fraud and RTO controls for COD markets.",
+  "what": "Designs the return and refund flow: speed targets, refund-vs-credit choice, self-service portal, and reversed-orders controls covering failed deliveries, chargebacks/disputes, and (COD markets) return-to-origin (RTO).",
   "encompasses": [
    "Collapse the refund timeline; measure request-to-initiation and initiation-to-receipt separately",
    "Offer a clear choice between refund to original payment and store credit, never silent substitution",
@@ -1626,13 +1627,13 @@
    "Give returners a self-service portal with keep-it-or-donate refunds for low-value items",
    "Publish the returns policy where shoppers see it before buying, checked against law per market",
    "Gate further returns work on returners' repeat rate matching or beating non-returners",
-   "Track return-to-origin rate for COD orders and confirm high-risk orders before dispatch",
-   "Track chargebacks and payment disputes as their own cost line"
+   "Track failed-delivery and return-to-sender rate and confirm high-risk orders before dispatch; India only: track return-to-origin (RTO) rate for COD orders instead, reads null for US brands",
+   "Track chargebacks and payment disputes as their own cost line, owned with Money and ops for representment"
   ],
   "inputs": [
    "connector: shopify orders",
    "brand brain: policies (shipping, returns, guarantee, EMI)",
-   "connector: returns/RTO data"
+   "connector: reversed-orders data (returns, chargebacks/disputes, return-to-sender, and RTO for COD markets)"
   ],
   "outputs": [
    "returns policy draft",
@@ -1667,7 +1668,7 @@
    ]
   },
   "found_in": "bank_only",
-  "founder_sees": "The returns and refund flow design, and the fraud/RTO numbers behind any policy change."
+  "founder_sees": "The returns and refund flow design, and the failed-delivery/chargeback/(COD markets) RTO numbers behind any policy change."
  },
  {
   "id": "LIFE-C27",
@@ -2488,7 +2489,7 @@
    "State bonus and kit values only at real, sellable prices",
    "Size total bonus value to exceed the core product's price",
    "Recover a free gift's value when the qualifying order is returned",
-   "Withhold a promised free gift on COD orders until collection is confirmed",
+   "India only: withhold a promised free gift on COD orders until collection is confirmed; reads null for US brands",
    "Deliver a promised bonus unit in the second order, not the first"
   ],
   "inputs": [

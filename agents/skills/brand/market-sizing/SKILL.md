@@ -25,4 +25,4 @@ An idea sounds bigger than it is until it is sized against this brand's actual A
 `{sustaining_buyer_count, size_signal: {value, source, date}, matrix_placement}`
 
 ## Example
-At AOV ₹2,400 and 28% contribution margin, sustaining a ₹15L/month line needs approximately 220 repeat buyers per month at a 2x/year frequency; independent signal: category search volume flat over 12 months per Search Console, so treated as a margin play, not a volume play.
+At AOV $65 and 28% contribution margin, sustaining an $18,000/month line needs approximately 220 repeat buyers per month at a 2x/year frequency; independent signal: category search volume flat over 12 months per Search Console, so treated as a margin play, not a volume play.

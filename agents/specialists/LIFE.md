@@ -234,7 +234,7 @@ downstream automation to apply.
 | `subscription-flow-designer` | Subscription lifecycle and cancel-flow design | Subscription platform data | Subscription/cancel-flow spec |
 | `journey-map` | Journey mapping, Kano classification, CX governance, VoC | Support tickets, reviews, metric contract | Journey map or governance memo |
 | `packaging-brief` | Unboxing, packaging, insert design | Product data, packaging cost | Packaging brief + cost model |
-| `returns-policy-draft` | Returns/exchange/refund flow and policy text | Policy data, RTO/fraud data | Returns flow spec + policy draft |
+| `returns-policy-draft` | Returns/exchange/refund flow and policy text | Policy data, failed-delivery/fraud data (RTO for India) | Returns flow spec + policy draft |
 | `support-reply-draft` | Support reply templates and ticket tagging | Ticket data, brand voice | Reply template library + routing rules |
 | `review-request-copy` | Review collection timing and response drafting | Reviews platform data, brand voice | Request copy + draft responses |
 | `cohort-ltv-report` | Retention/LTV/CAC economics, existing-customer spend policy, churn scoring | Order data, metric contract | Dashboard, memo or risk segment |
@@ -322,7 +322,7 @@ downstream automation to apply.
 
 **`returns-policy-draft`**
 - Purpose: design the returns/exchange/refund flow and its customer-facing policy text.
-- Inputs: policy data, RTO/fraud/chargeback data, per-market law.
+- Inputs: policy data, failed-delivery/fraud/chargeback data (RTO for India), per-market law.
 - Steps: (1) set refund speed targets and measure both legs of the timeline; (2) design the choice between cash refund and store credit; (3) design the self-service portal rules; (4) check policy visibility pre-purchase.
 - Checks: policy checked against law per market; returns work gated on returners' repeat rate.
 - Output: returns flow spec and policy draft text.
@@ -403,7 +403,7 @@ briefs batched at once) and a cleaner QA boundary between "what to send" and
 | LIFE-C19 | Run the lifecycle testing and experimentation program | on demand | agent_does |
 | LIFE-C20 | Diagnose lifecycle metrics and run the monthly health review | monthly | agent_does |
 | LIFE-C21 | Enforce lifecycle honesty and platform-integrity guardrails | on demand | agent_does |
-| LIFE-C22 | Design the WhatsApp commerce program for India | on demand | founder_gate |
+| LIFE-C22 | Design the SMS and WhatsApp commerce program | on demand | founder_gate |
 | LIFE-C23 | Design the post-purchase journey and touchpoint experience | on demand | founder_gate |
 | LIFE-C24 | Design the order-status and delivery communication experience | on demand | founder_gate |
 | LIFE-C25 | Design the unboxing, packaging and insert program | on demand | founder_gate |

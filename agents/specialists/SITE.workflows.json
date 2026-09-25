@@ -589,7 +589,7 @@
    {
     "n": 3,
     "name": "Set capture timing and fraud screening",
-    "does": "Sets capture timing and turns on fraud screening, including a screen for fake COD orders where COD is offered.",
+    "does": "Sets capture timing and turns on fraud screening (mismatched billing and shipping, high-risk card BIN, order velocity), including a screen for fake cash-on-delivery orders where COD is offered as a market option.",
     "inputs": [],
     "tools": [],
     "skill": null,
@@ -695,7 +695,7 @@
    "SITE-C12",
    "SITE-C78"
   ],
-  "trigger": "on demand | store setup for an India or EU-facing brand, or a compliance audit finding",
+  "trigger": "on demand | store setup for a US, EU or India-facing brand, or a compliance audit finding",
   "human_role": "Global setup and compliance lead",
   "inputs_required": [
    "brand brain: target markets",
@@ -767,7 +767,7 @@
    {
     "n": 7,
     "name": "Route tags behind consent, keyed to region",
-    "does": "Routes each tracking tag behind a consent-management layer keyed to the visitor's region and choice, with the correct default: opt-in for GDPR regions, DPDP's stricter default for India.",
+    "does": "Routes each tracking tag behind a consent-management layer keyed to the visitor's region and choice, with the correct default: an opt-out Do Not Sell or Share link for US state laws (CCPA, CPRA and others), opt-in for GDPR regions, and opt-in under India's DPDP Act as a market option, reads null for US.",
     "inputs": [],
     "tools": [],
     "skill": "site/store-setup-checklist",
@@ -2437,7 +2437,7 @@
    {
     "n": 8,
     "name": "Show delivery ETA and local payment trust",
-    "does": "Shows delivery ETA or a pincode serviceability check near the buy box, and local payment methods beside the FUD reducers.",
+    "does": "Shows delivery ETA or a ZIP code and USPS address serviceability check near the buy box (pincode check where the brand sells in India), and local payment methods beside the FUD reducers.",
     "inputs": [],
     "tools": [],
     "skill": null,
@@ -3606,22 +3606,86 @@
  },
  {
   "id": "SITE-W28",
-  "name": "Reduce COD return-to-origin and add a WhatsApp buy flow for India",
+  "name": "Configure checkout payment methods and address validation, with a WhatsApp buy flow as a market option",
   "capabilities": [
    "SITE-C67",
    "SITE-C77"
   ],
-  "trigger": "COD share and RTO rate identified as a bottleneck in the metric contract | India market COD or trust-driven checkout hesitation diagnosed as a bottleneck",
-  "human_role": "India operations lead, COD and WhatsApp",
+  "trigger": "checkout payment mix, failed-delivery rate or chargeback rate identified as a bottleneck in the metric contract | India market option: COD share and RTO rate, or COD/trust-driven checkout hesitation, diagnosed as a bottleneck",
+  "human_role": "Checkout and payments lead; India market option: India operations lead for COD and WhatsApp",
   "inputs_required": [
-   "courier serviceability API",
-   "WhatsApp business API access",
-   "brand's historical RTO data"
+   "USPS address validation API",
+   "BNPL provider integration (Affirm, Klarna, Afterpay)",
+   "brand's historical chargeback and failed-delivery data",
+   "India market option, null for US: courier serviceability API",
+   "India market option, null for US: WhatsApp business API access",
+   "India market option, null for US: brand's historical RTO data"
   ],
   "steps": [
    {
     "n": 1,
-    "name": "Show real-time PIN serviceability",
+    "name": "Enable checkout payment methods",
+    "does": "Enables Shop Pay, PayPal, Apple Pay and a BNPL option (Affirm, Klarna or Afterpay) at checkout.",
+    "inputs": [],
+    "tools": [],
+    "skill": "site/store-setup-checklist/payments-shipping-tax",
+    "output": "checkout payment method config",
+    "check": "Payment badges and BNPL installment estimate render correctly at checkout."
+   },
+   {
+    "n": 2,
+    "name": "Validate the shipping address against USPS",
+    "does": "Validates the shipping address against USPS before the order is placed, catching a bad ZIP code or an undeliverable address before it ships.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "USPS address validation flow",
+    "check": "A bad or undeliverable address is caught before checkout completes, not after."
+   },
+   {
+    "n": 3,
+    "name": "Screen orders for fraud signals",
+    "does": "Screens orders for fraud signals (mismatched billing and shipping, high-risk card BIN, order velocity) and routes flagged orders for manual review.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "fraud screening rules",
+    "check": "A flagged order reaches a manual review queue, not an auto-approval."
+   },
+   {
+    "n": 4,
+    "name": "Replace tracking with a branded page",
+    "does": "Replaces the generic carrier tracking link with a branded tracking page that also carries post-purchase upsell content.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "branded tracking page",
+    "check": "Tracking page renders correctly on the brand's own domain."
+   },
+   {
+    "n": 5,
+    "name": "Pass a risk score to fulfilment",
+    "does": "Passes a buyer risk score (first order, high order value, prior chargeback or return-to-sender history, or in India prior RTO history) to the fulfilment system for a manual check, without running carrier-side exception handling itself.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "failed-delivery and chargeback dashboard",
+    "check": "Risk score reaches the fulfilment system without Site running the carrier-side process.",
+    "ask_founder_if": "no fulfilment system is ready to receive the risk score"
+   },
+   {
+    "n": 6,
+    "name": "Build the failed-delivery and chargeback analytics view",
+    "does": "Builds a failed-delivery and chargeback analytics view by carrier, ZIP code, product and payment method; India market option adds the RTO rate by PIN code.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "failed-delivery and chargeback dashboard",
+    "check": "Dashboard breaks the number down by all dimensions, not just an overall rate."
+   },
+   {
+    "n": 7,
+    "name": "India market option, reads null for US: show real-time PIN serviceability",
     "does": "Shows real-time PIN code serviceability on the PDP, using the courier or aggregator API, before the shopper adds to cart.",
     "inputs": [],
     "tools": [],
@@ -3630,8 +3694,8 @@
     "check": "Serviceability check reflects the live courier API, not a static list."
    },
    {
-    "n": 2,
-    "name": "Add OTP verification on high-value COD",
+    "n": 8,
+    "name": "India market option, reads null for US: add OTP verification on high-value COD",
     "does": "Adds address auto-fill and phone OTP verification at checkout for COD orders above a set value.",
     "inputs": [],
     "tools": [],
@@ -3640,8 +3704,8 @@
     "check": "OTP is required only above the set value threshold, confirmed live."
    },
    {
-    "n": 3,
-    "name": "Add a visible, sized COD fee",
+    "n": 9,
+    "name": "India market option, reads null for US: add a visible, sized COD fee",
     "does": "Adds a visible COD handling fee as a checkout line item, sized to filter impulse orders without losing genuine buyers.",
     "inputs": [],
     "tools": [],
@@ -3650,8 +3714,8 @@
     "check": "Fee amount is backed by real impulse-order data, not a round guess."
    },
    {
-    "n": 4,
-    "name": "Surface a prepaid incentive at the right moment",
+    "n": 10,
+    "name": "India market option, reads null for US: surface a prepaid incentive at the right moment",
     "does": "Surfaces a prepaid discount or free-shipping incentive at the exact checkout step where COD is selected.",
     "inputs": [],
     "tools": [],
@@ -3660,8 +3724,8 @@
     "check": "Incentive appears at the COD-selection step, not buried earlier."
    },
    {
-    "n": 5,
-    "name": "Trigger a WhatsApp confirmation with auto-cancel",
+    "n": 11,
+    "name": "India market option, reads null for US: trigger a WhatsApp confirmation with auto-cancel",
     "does": "Triggers an automated WhatsApp order-confirmation message after COD checkout, with an auto-cancel rule if unconfirmed within a set window.",
     "inputs": [],
     "tools": [],
@@ -3670,39 +3734,8 @@
     "check": "Auto-cancel window is enforced and logged."
    },
    {
-    "n": 6,
-    "name": "Replace tracking with a branded page",
-    "does": "Replaces the generic courier tracking link with a branded tracking page that also carries post-purchase upsell content.",
-    "inputs": [],
-    "tools": [],
-    "skill": null,
-    "output": "branded tracking page",
-    "check": "Tracking page renders correctly on the brand's own domain."
-   },
-   {
-    "n": 7,
-    "name": "Pass a risk score to fulfilment",
-    "does": "Passes a buyer risk score (first order, high COD value, prior RTO history) to the fulfilment system for a manual check, without running the logistics NDR process itself.",
-    "inputs": [],
-    "tools": [],
-    "skill": null,
-    "output": "RTO dashboard",
-    "check": "Risk score reaches the fulfilment system without Site running the logistics process.",
-    "ask_founder_if": "no fulfilment system is ready to receive the risk score"
-   },
-   {
-    "n": 8,
-    "name": "Build the RTO analytics view",
-    "does": "Builds an RTO analytics view by courier, PIN code, product and payment method.",
-    "inputs": [],
-    "tools": [],
-    "skill": null,
-    "output": "RTO dashboard",
-    "check": "Dashboard breaks RTO down by all 4 dimensions, not just an overall rate."
-   },
-   {
-    "n": 9,
-    "name": "Sync the catalogue to WhatsApp",
+    "n": 12,
+    "name": "WhatsApp-commerce market option (India, EU, LATAM), reads null for US: sync the catalogue to WhatsApp",
     "does": "Syncs the live catalogue (price, stock, variant) to the brand's WhatsApp Business catalog on a schedule.",
     "inputs": [],
     "tools": [],
@@ -3711,18 +3744,18 @@
     "check": "Catalog sync runs on a schedule and matches the live PDP."
    },
    {
-    "n": 10,
-    "name": "Add the click-to-WhatsApp button",
+    "n": 13,
+    "name": "WhatsApp-commerce market option (India, EU, LATAM), reads null for US: add the click-to-WhatsApp button",
     "does": "Adds a click-to-WhatsApp button on the PDP that pre-fills the exact SKU, variant and a template question, confirmed to appear only where WhatsApp commerce is legal and common.",
     "inputs": [],
     "tools": [],
     "skill": "site/india-ops/whatsapp-buy-flow",
     "output": "click-to-WhatsApp button",
-    "check": "Button appears only in markets where it is confirmed legal and common."
+    "check": "Button appears only in markets where it is confirmed legal and common, never for a US-default brand."
    },
    {
-    "n": 11,
-    "name": "Measure clicks separately and hand off the conversation",
+    "n": 14,
+    "name": "WhatsApp-commerce market option (India, EU, LATAM), reads null for US: measure clicks separately and hand off the conversation",
     "does": "Measures PDP-to-WhatsApp clicks separately from normal add-to-cart so they are never double-counted, and hands the conversation flow itself to Lifecycle.",
     "inputs": [],
     "tools": [],
@@ -3732,23 +3765,27 @@
    }
   ],
   "outputs": [
-   "PDP serviceability widget",
-   "checkout OTP flow",
-   "COD fee config",
-   "WhatsApp confirmation flow",
+   "checkout payment method config",
+   "USPS address validation flow",
+   "fraud screening rules",
    "branded tracking page",
-   "RTO dashboard",
-   "click-to-WhatsApp button",
-   "synced catalog",
-   "click-to-order attribution"
+   "failed-delivery and chargeback dashboard",
+   "India market option, null for US: PDP serviceability widget",
+   "India market option, null for US: checkout OTP flow",
+   "India market option, null for US: COD fee config",
+   "India market option, null for US: WhatsApp confirmation flow",
+   "WhatsApp-commerce market option (India, EU, LATAM), null for US: click-to-WhatsApp button",
+   "WhatsApp-commerce market option (India, EU, LATAM), null for US: synced catalog",
+   "WhatsApp-commerce market option (India, EU, LATAM), null for US: click-to-order attribution"
   ],
   "qa": [
-   "RTO levers measured against the brand's own PIN-code and payment-method data, never a generic industry number.",
-   "WhatsApp click-to-order never double-counted with add-to-cart.",
-   "COD fee sized from real impulse-order data, not a guess."
+   "Failed-delivery and chargeback levers measured against the brand's own carrier and payment-method data, never a generic industry number.",
+   "India market option: RTO levers measured against the brand's own PIN-code and payment-method data.",
+   "WhatsApp-commerce market option (India, EU, LATAM): click-to-order never double-counted with add-to-cart.",
+   "India market option: COD fee sized from real impulse-order data, not a guess."
   ],
-  "read_point": "RTO dashboard reviewed monthly; WhatsApp conversion checked at the same cadence.",
-  "typical_duration": "agent: 2-3 days build across both features; ongoing: automated once live.",
+  "read_point": "Failed-delivery and chargeback dashboard reviewed monthly; India market option: RTO dashboard and WhatsApp conversion checked at the same cadence.",
+  "typical_duration": "agent: 2-3 days build across checkout payment methods, address validation and the India/EU/LATAM WhatsApp option; ongoing: automated once live.",
   "subagents": []
  },
  {
@@ -3873,15 +3910,15 @@
  },
  {
   "id": "SITE-W30",
-  "name": "Run festive gifting operations",
+  "name": "Run holiday and gifting operations",
   "capabilities": [
    "SITE-G02"
   ],
-  "trigger": "event: 60 days before each gifting window (Diwali, Rakhi, wedding season)",
-  "human_role": "Festive gifting operations lead",
+  "trigger": "event: 60 days before each holiday or gifting window (Black Friday and Cyber Monday, the Q4 holiday season, Valentine's Day, Mother's Day, Father's Day, back to school; India market option: Diwali, Rakhi, wedding season)",
+  "human_role": "Holiday and gifting operations lead",
   "inputs_required": [
    "gifting calendar (shared with Lifecycle)",
-   "brand brain: shipping cutoffs by pincode",
+   "brand brain: shipping cutoffs by ZIP code (by pincode where the brand sells in India)",
    "brand brain: catalogue"
   ],
   "steps": [
@@ -3891,8 +3928,8 @@
     "does": "Confirms the gifting window and its cutoff dates from the shared gifting calendar 60 days out.",
     "inputs": [],
     "tools": [],
-    "skill": "site/festive-gifting-ops",
-    "output": "pincode delivery cutoff map",
+    "skill": "site/holiday-gifting-ops",
+    "output": "ZIP code delivery cutoff map",
     "check": "Cutoff dates confirmed against the shared calendar, not assumed from last year."
    },
    {
@@ -3917,14 +3954,14 @@
    },
    {
     "n": 4,
-    "name": "Set delivery cutoffs per pincode",
-    "does": "Sets delivery-by-date cutoffs per pincode so a shopper is never sold a promise the courier cannot keep.",
+    "name": "Set delivery cutoffs per ZIP code",
+    "does": "Sets delivery-by-date cutoffs per ZIP code (per pincode where the brand sells in India) so a shopper is never sold a promise the carrier cannot keep.",
     "inputs": [],
     "tools": [],
     "skill": null,
-    "output": "pincode delivery cutoff map",
-    "check": "Cutoff dates match real courier data by pincode.",
-    "ask_founder_if": "courier cutoff data by pincode is not available or stale"
+    "output": "ZIP code delivery cutoff map",
+    "check": "Cutoff dates match real carrier data by ZIP code (by pincode for India).",
+    "ask_founder_if": "carrier cutoff data by ZIP code (or pincode for India) is not available or stale"
    },
    {
     "n": 5,
@@ -3980,12 +4017,12 @@
   "outputs": [
    "gift wrap/message configuration",
    "hidden-price invoice flow",
-   "pincode delivery cutoff map",
+   "ZIP code delivery cutoff map",
    "gift guide pages",
    "gifting-mode QA report"
   ],
   "qa": [
-   "No gift order promises a delivery date the pincode cutoff cannot support.",
+   "No gift order promises a delivery date the ZIP code (or pincode) cutoff cannot support.",
    "Hidden-price invoice tested with a real order.",
    "Gifting mode switched off cleanly after the window."
   ],

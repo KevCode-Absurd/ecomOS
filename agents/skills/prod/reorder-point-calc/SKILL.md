@@ -10,16 +10,20 @@ outputs: reorder point and safety stock per SKU, a stockout-risk flag, and FBA-s
 # Compute reorder point and channel replenishment
 
 ## Purpose
-A reorder point sized from trailing sales alone misses two India-specific risks: festive demand spikes and
-COD-market RTO reversing what looked like a sale. It also misses that Amazon FBA has its own IPI and storage limits
-that can block a restock even when stock is genuinely needed.
+A reorder point sized from trailing sales alone misses peak-season demand spikes (Q4, BFCM, Prime Day) and, for a
+brand that offers cash-on-delivery (india only; markets: IN), the reversal risk from RTO reversing what looked
+like a sale. It also misses
+that Amazon FBA has its own IPI and storage limits that can block a restock even when stock is genuinely needed.
+India: the spike-risk adjustment additionally accounts for festive-season demand surges and COD-market RTO
+(markets: IN, reads null for a card/BNPL-only US brand).
 
 ## Steps
 1. Pull real velocity and real lead time per SKU per channel. A subscription or bundle SKU uses its committed
    cadence (what customers actually signed up for), never trailing sales, since trailing sales lag a subscription's
    real demand.
-2. Compute reorder point and safety stock in code, with an explicit adjustment for India-specific spike risk:
-   festive-season demand surges and the reversal risk from COD RTO.
+2. Compute reorder point and safety stock in code, with an explicit adjustment for peak-season spike risk: Q4
+   holiday and BFCM demand surges, and the reversal risk from any carrier return-to-sender or high-return-rate
+   period (India: festive-season demand surges and the reversal risk from COD RTO; markets: IN).
 3. Compare current stock against the computed reorder point and flag any SKU already below it or projected to fall
    below it within the lead time window.
 4. For Amazon SKUs, size the FBA replenishment shipment from a real inventory-cover target, treating a stockout as
@@ -35,6 +39,7 @@ that can block a restock even when stock is genuinely needed.
 {sku, reorder_point, safety_stock, current_stock, status, fba_cover, ipi_flag}
 
 ## Example
-SKU-1042: velocity 40/day, lead time 18 days, festive-adjusted safety stock +35%. Reorder point 1,080 units;
+SKU-1042: velocity 40/day, lead time 18 days, BFCM-adjusted safety stock +35%. Reorder point 1,080 units;
 current stock 950: status: reorder now. FBA cover target 45 days; IPI score 420 (above the 400 threshold): no
-restock block.
+restock block. India: the same SKU's festive-adjusted safety stock uses the same +35% logic against COD RTO risk
+(markets: IN).

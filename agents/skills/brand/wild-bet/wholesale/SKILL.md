@@ -25,4 +25,4 @@ Wholesale changes the brand's margin structure and puts the product's story in s
 `{feasibility_packet: {wholesale_unit_economics, line_sheet}, execution_brief: {buyer_pitch_deck, pilot_buyer}}`
 
 ## Example
-Retail margin is 55%; at a 50% wholesale discount, contribution margin per unit drops from ₹420 to ₹190: still positive, so the pilot proceeds with one boutique buyer at a 25-unit MOQ.
+Retail margin is 55%; at a 50% wholesale discount, contribution margin per unit drops from $18 to $8: still positive, so the pilot proceeds with one boutique buyer at a 25-unit MOQ.

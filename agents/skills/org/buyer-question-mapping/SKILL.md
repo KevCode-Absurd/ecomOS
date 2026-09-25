@@ -13,7 +13,7 @@ One shared source of real buyer language feeds both the content calendar (org/ma
 
 ## Steps
 1. Pull 90 days of support tickets, comments and DMs tagged with a product question.
-2. Pull review text from Amazon, Flipkart, Google and the site for the same SKUs. Quote the exact line and note the source and date.
+2. Pull review text from Amazon, Walmart, Google and the site for the same SKUs (also Flipkart, India market option, reads null for a US-only brand). Quote the exact line and note the source and date.
 3. Pull Search Console queries where connected; label People Also Ask and autocomplete pulls as web research, kept apart from private data.
 4. Cluster by SKU and funnel stage: awareness objection, decision-stage spec question, post-purchase how-to.
 5. Tag each cluster with a suggested channel: an objection with strong emotion or visual proof suits short video; a spec or comparison question suits a page; a trust or authority question suits the facts page.
@@ -28,4 +28,4 @@ One shared source of real buyer language feeds both the content calendar (org/ma
 {questions[{text, sku, funnel_stage, suggested_channel, sources[], count}]}
 
 ## Example
-"Will the folding hinge rust in Mumbai's monsoon?" - stroller-v2, decision-stage, suggested_channel: page + video, 14 mentions across reviews and DMs since June.
+"Will the folding hinge rust after a rainy Seattle winter?" - stroller-v2, decision-stage, suggested_channel: page + video, 14 mentions across reviews and DMs since June.

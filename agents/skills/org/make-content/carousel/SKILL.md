@@ -28,4 +28,4 @@ Give design a slide-by-slide brief for one argument (a comparison, a myth-bust, 
 {hook_slide, slides[], closing_slide, caption, cta, claims_used[]}
 
 ## Example
-Argument: "Why our hinge outlasts the ₹2,000 stroller." Slide 3 heading: "200,000 fold cycles tested", supporting: "our lab number, dated March 2026".
+Argument: "Why our hinge outlasts the $40 stroller." Slide 3 heading: "200,000 fold cycles tested", supporting: "our lab number, dated March 2026".

@@ -10,8 +10,9 @@ outputs: {template_name_or_freeform, variables, hand_off_point}
 
 ## Purpose
 Writes WhatsApp copy inside Meta's template rules for outbound business-initiated
-messages, and designs the reply-inviting opener for two-way conversations, common in
-India where WhatsApp reach beats SMS and email.
+messages, and designs the reply-inviting opener for two-way conversations. WhatsApp is
+a market option (common in India, EU and LATAM) where reach beats SMS and email; SMS
+is the default second channel (see life/message/sms).
 
 ## Steps
 1. Check whether an approved template exists for this message type; never draft

@@ -100,7 +100,7 @@
       },
       {
         "job": "plan a peak sale ramp, wind-down and cross-border delivery",
-        "question": "are we ready for the sale date and for buyers outside India",
+        "question": "are we ready for the sale date and for buyers outside the US",
         "capabilities": [
           "MEDIA-C21",
           "MEDIA-C22"
@@ -133,7 +133,7 @@
     "metrics": [
       {
         "name": "blended_mer",
-        "plain": "Total new-customer revenue for every rupee of ad spend, across all channels",
+        "plain": "Total new-customer revenue for every dollar of ad spend, across all channels",
         "formula": "total new customer revenue / total spend (Meta + TikTok + Google)",
         "source": "brand brain revenue ledger + ad platform spend",
         "window": "trailing 30 days, updated daily",
@@ -323,7 +323,7 @@
       },
       {
         "name": "marginal_roas_by_channel",
-        "plain": "What the next rupee of spend would likely return, by channel",
+        "plain": "What the next dollar of spend would likely return, by channel",
         "formula": "change in value / change in spend over the last 2 comparable budget steps, per channel",
         "source": "ad platform spend/value history",
         "window": "trailing 60 days",
@@ -544,7 +544,7 @@
         "name": "marginal ROAS bars",
         "type": "bar chart",
         "shows": "the next-dollar return estimate per channel, side by side",
-        "why_this_chart": "founder allocates the next rupee by comparing bars, not spreadsheets",
+        "why_this_chart": "founder allocates the next dollar by comparing bars, not spreadsheets",
         "exists_today": false
       }
     ],
@@ -735,7 +735,7 @@
         "autonomy": "agent_does"
       },
       {
-        "label": "Set up Click-to-WhatsApp COD flow",
+        "label": "Set up order confirmation flow to cut failed deliveries and chargebacks",
         "capability": "MEDIA-C60",
         "autonomy": "founder_gate"
       },
@@ -792,7 +792,7 @@
         "vs": "TikTok Ads Manager shows Spark ads live but not the organic-to-paid loop timing or authorization expiry in one place"
       },
       {
-        "claim": "routes every founder-gate call (scale ceiling, WhatsApp COD rollout, new-surface pilot, agentic-bidding guardrail) into one queue instead of leaving it split across ad account settings",
+        "claim": "routes every founder-gate call (scale ceiling, order-confirmation-flow rollout, new-surface pilot, agentic-bidding guardrail) into one queue instead of leaving it split across ad account settings",
         "vs": "no platform separates its own automation's suggestions from the calls only the founder should make"
       }
     ],
@@ -1654,21 +1654,28 @@
         ]
       },
       {
-        "job": "prepare an Amazon Sponsored Products/Brands brief for handoff",
-        "question": "what should whoever runs our Amazon ads actually do this month",
+        "job": "prepare an Amazon Sponsored Products/Brands, Walmart Connect or Target Roundel brief for handoff",
+        "question": "what should whoever runs our marketplace ads actually do this month",
         "capabilities": [
           "MEDIA-C52"
         ]
       },
       {
-        "job": "prepare a Flipkart sponsored placement brief for handoff",
+        "job": "India only: prepare a Flipkart sponsored placement brief for handoff",
         "question": "what should whoever runs our Flipkart ads actually do this month",
         "capabilities": [
           "MEDIA-C52"
         ]
       },
       {
-        "job": "prepare a quick commerce retail media plan for Blinkit, Zepto and Instamart",
+        "job": "prepare a rapid-delivery/grocery retail media plan for Instacart, DoorDash and Gopuff",
+        "question": "is rapid-delivery retail media worth a self-serve ad budget and how much",
+        "capabilities": [
+          "MEDIA-C53"
+        ]
+      },
+      {
+        "job": "India only: prepare a quick-commerce retail media plan for Blinkit, Zepto and Instamart",
         "question": "is quick commerce worth a self-serve ad budget and how much",
         "capabilities": [
           "MEDIA-C53"
@@ -1755,38 +1762,39 @@
         "benchmark": "100%"
       },
       {
-        "name": "amazon_brief_status",
-        "plain": "Where the Amazon ads brief stands",
+        "name": "marketplace_brief_status",
+        "plain": "Where the Amazon, Walmart Connect or Target Roundel ads brief stands",
         "formula": "status flag: drafted, sent, acknowledged, live (manually updated)",
-        "source": "brand record (Amazon Ads console not connected)",
+        "source": "brand record (Amazon Ads, Walmart Connect, Target Roundel consoles not connected)",
         "window": "current",
         "freshness_rule": "stale after 30 days",
         "unavailable_when": "no brief created yet",
         "benchmark": "n/a, status only"
       },
       {
-        "name": "amazon_acos_reported",
-        "plain": "Amazon's own ACOS, as last reported to us",
+        "name": "marketplace_acos_reported",
+        "plain": "Amazon's, Walmart's or Target's own ACOS, as last reported to us",
         "formula": "ad spend / ad-attributed sales, taken from whoever runs the account",
-        "source": "manually entered from Amazon Ads console (not connected)",
+        "source": "manually entered from the marketplace's ads console (not connected)",
         "window": "as last reported",
         "freshness_rule": "unavailable until manually updated",
-        "unavailable_when": "no connector to Amazon Ads exists",
+        "unavailable_when": "no connector to the marketplace ads console exists",
         "benchmark": "brand's target ACOS"
       },
       {
         "name": "flipkart_brief_status",
-        "plain": "Where the Flipkart ads brief stands",
+        "markets": ["IN"],
+        "plain": "Where the Flipkart ads brief stands. India only; reads null for US brands, which use marketplace_brief_status instead.",
         "formula": "status flag: drafted, sent, acknowledged, live",
         "source": "brand record (Flipkart Ads not connected)",
         "window": "current",
         "freshness_rule": "stale after 30 days",
-        "unavailable_when": "no brief created yet",
+        "unavailable_when": "no brief created yet, or brand is not in India",
         "benchmark": "n/a, status only"
       },
       {
-        "name": "quick_commerce_plan_status",
-        "plain": "Where the Blinkit/Zepto/Instamart plan stands, per platform",
+        "name": "rapid_delivery_plan_status",
+        "plain": "Where the Instacart/DoorDash/Gopuff retail media plan stands, per platform",
         "formula": "status flag per platform: drafted, sent, live",
         "source": "brand record (no connector)",
         "window": "current",
@@ -1795,12 +1803,34 @@
         "benchmark": "n/a, status only"
       },
       {
-        "name": "quick_commerce_roas_benchmark_gap",
-        "plain": "How reported quick-commerce ROAS compares to the category benchmark",
+        "name": "quick_commerce_plan_status",
+        "markets": ["IN"],
+        "plain": "Where the Blinkit/Zepto/Instamart plan stands, per platform. India only; reads null for US brands, which use rapid_delivery_plan_status instead.",
+        "formula": "status flag per platform: drafted, sent, live",
+        "source": "brand record (no connector)",
+        "window": "current",
+        "freshness_rule": "stale after 30 days",
+        "unavailable_when": "no plan created yet, or brand is not in India",
+        "benchmark": "n/a, status only"
+      },
+      {
+        "name": "rapid_delivery_roas_benchmark_gap",
+        "plain": "How reported rapid-delivery/grocery marketplace ROAS compares to the category benchmark",
         "formula": "reported ROAS (manually entered) minus benchmark (4-8x established SKUs, 1.5-3x new launches)",
         "source": "manually entered from platform dashboards",
         "window": "as last reported",
         "freshness_rule": "unavailable until manually updated",
+        "unavailable_when": "no number reported yet",
+        "benchmark": "see formula"
+      },
+      {
+        "name": "quick_commerce_roas_benchmark_gap",
+        "markets": ["IN"],
+        "plain": "How reported quick-commerce ROAS compares to the category benchmark. India only; reads null for US brands, which use rapid_delivery_roas_benchmark_gap instead.",
+        "formula": "reported ROAS (manually entered) minus benchmark (4-8x established SKUs, 1.5-3x new launches)",
+        "source": "manually entered from platform dashboards",
+        "window": "as last reported",
+        "freshness_rule": "unavailable until manually updated, or brand is not in India",
         "unavailable_when": "no number reported yet",
         "benchmark": "see formula"
       },
@@ -1835,13 +1865,24 @@
         "benchmark": "0 variance"
       },
       {
-        "name": "gst_rcm_reconciliation_status",
-        "plain": "Whether GST and reverse-charge credits on ad invoices are reconciled",
-        "formula": "count of invoices with GST/RCM matched to the credit ledger / total invoices",
+        "name": "sales_tax_1099_reconciliation_status",
+        "plain": "Whether US sales tax charged on ad invoices and 1099 filings tied to the ledger are reconciled",
+        "formula": "count of invoices with sales-tax and 1099 records matched to the accounting ledger / total invoices",
         "source": "invoices + accounting record",
         "window": "monthly",
         "freshness_rule": "stale after 30 days",
         "unavailable_when": "accounting record not connected",
+        "benchmark": "100%"
+      },
+      {
+        "name": "gst_rcm_reconciliation_status",
+        "markets": ["IN"],
+        "plain": "Whether GST and reverse-charge credits on ad invoices are reconciled. India only; reads null for US brands, which use sales_tax_1099_reconciliation_status instead.",
+        "formula": "count of invoices with GST/RCM matched to the credit ledger / total invoices",
+        "source": "invoices + accounting record",
+        "window": "monthly",
+        "freshness_rule": "stale after 30 days",
+        "unavailable_when": "accounting record not connected, or brand is not in India",
         "benchmark": "100%"
       },
       {
@@ -1967,8 +2008,19 @@
         "action_capability": "MEDIA-C66"
       },
       {
+        "name": "sales tax or 1099 credit unreconciled",
+        "rule": "an invoice's sales-tax charge or 1099 record has not been matched to the accounting ledger",
+        "computed_from": [
+          "sales_tax_1099_reconciliation_status"
+        ],
+        "sentence": "{n} invoices have sales-tax or 1099 records not yet matched.",
+        "severity": "medium",
+        "action_capability": "MEDIA-C57"
+      },
+      {
         "name": "GST credit unreconciled",
-        "rule": "an invoice's GST/RCM has not been matched to the accounting credit ledger",
+        "markets": ["IN"],
+        "rule": "an invoice's GST/RCM has not been matched to the accounting credit ledger. India only; does not fire for US brands.",
         "computed_from": [
           "gst_rcm_reconciliation_status"
         ],
@@ -1987,8 +2039,19 @@
         "action_capability": "MEDIA-C54"
       },
       {
+        "name": "rapid-delivery retail media underperforming benchmark",
+        "rule": "rapid_delivery_roas_benchmark_gap is negative by more than 20%",
+        "computed_from": [
+          "rapid_delivery_roas_benchmark_gap"
+        ],
+        "sentence": "{platform} ROAS is {pct}% below the category benchmark.",
+        "severity": "medium",
+        "action_capability": "MEDIA-C53"
+      },
+      {
         "name": "quick commerce underperforming benchmark",
-        "rule": "quick_commerce_roas_benchmark_gap is negative by more than 20%",
+        "markets": ["IN"],
+        "rule": "quick_commerce_roas_benchmark_gap is negative by more than 20%. India only; does not fire for US brands.",
         "computed_from": [
           "quick_commerce_roas_benchmark_gap"
         ],
@@ -2042,7 +2105,7 @@
       {
         "name": "marketplace brief status board",
         "type": "kanban-style status board",
-        "shows": "Amazon, Flipkart, Blinkit, Zepto and Instamart briefs by status (drafted, sent, live)",
+        "shows": "Amazon, Walmart, Target, Instacart, DoorDash and Gopuff briefs by status (drafted, sent, live), plus Flipkart, Blinkit, Zepto and Instamart briefs for the India option",
         "why_this_chart": "founder tracks handoff work with no live connector, without losing track of what was sent where",
         "exists_today": false
       },
@@ -2088,17 +2151,22 @@
         "autonomy": "founder_gate"
       },
       {
-        "label": "Send the Amazon brief for handoff",
+        "label": "Send the Amazon, Walmart or Target brief for handoff",
         "capability": "MEDIA-C52",
         "autonomy": "human_assist"
       },
       {
-        "label": "Send the Flipkart brief for handoff",
+        "label": "Send the Flipkart brief for handoff (India only)",
         "capability": "MEDIA-C52",
         "autonomy": "human_assist"
       },
       {
-        "label": "Send the quick-commerce plan",
+        "label": "Send the rapid-delivery retail media plan",
+        "capability": "MEDIA-C53",
+        "autonomy": "human_assist"
+      },
+      {
+        "label": "Send the quick-commerce plan (India only)",
         "capability": "MEDIA-C53",
         "autonomy": "human_assist"
       },
@@ -2138,12 +2206,12 @@
         "vs": "Refersion auto-verifies and auto-approves commissions from its own tracker; this room checks that number against the brand's order data first"
       },
       {
-        "claim": "turns Amazon, Flipkart and quick-commerce plans into a handoff brief with targeting, budget and a category ROAS benchmark, and says plainly that live performance stays unavailable until those accounts are connected",
-        "vs": "no dashboard here claims to read Amazon, Flipkart or quick-commerce ad performance; the room is honest about the gap instead of guessing"
+        "claim": "turns Amazon, Walmart, Target and rapid-delivery plans (Flipkart and quick-commerce plans for the India option) into a handoff brief with targeting, budget and a category ROAS benchmark, and says plainly that live performance stays unavailable until those accounts are connected",
+        "vs": "no dashboard here claims to read Amazon, Walmart, Target, Flipkart or rapid-delivery/quick-commerce ad performance; the room is honest about the gap instead of guessing"
       },
       {
-        "claim": "matches each platform's invoice, including GST and reverse-charge credits, against both its own reported spend and the brand's budget ledger in one reconciliation",
-        "vs": "Meta, Google and TikTok billing centers show an invoice against their own reported spend only, not the brand's ledger or its GST credits"
+        "claim": "matches each platform's invoice, including applicable US sales tax and 1099 records (GST and reverse-charge credits for the India option), against both its own reported spend and the brand's budget ledger in one reconciliation",
+        "vs": "Meta, Google and TikTok billing centers show an invoice against their own reported spend only, not the brand's ledger or its sales-tax and 1099 records"
       },
       {
         "claim": "surfaces creators already wearing or reviewing the product organically as whitelist candidates before any outreach cost is paid",
@@ -2213,7 +2281,7 @@
           "sent_at",
           "acknowledged_at"
         ],
-        "connector_or_script": "brand record (no connector to Amazon/Flipkart/quick-commerce yet)",
+        "connector_or_script": "brand record (no connector to Amazon/Walmart/Target/Instacart yet; Flipkart/quick-commerce for the India option)",
         "refresh": "on change"
       },
       {
@@ -2223,7 +2291,8 @@
           "invoice_id",
           "period",
           "invoiced_amount",
-          "gst_rcm",
+          "sales_tax_1099",
+          "gst_rcm_india",
           "reported_spend",
           "ledger_spend"
         ],
@@ -2255,6 +2324,6 @@
         "refresh": "daily"
       }
     ],
-    "founder_view_note": "Before any connector is live, the room shows the marketplace brief status board (Amazon, Flipkart, quick commerce) as the one part that works today, since those briefs are handoff documents, not live reads, and marks every performance metric for those channels as unavailable with 'no connector yet' rather than a blank or a zero. Once the affiliate network and billing pulls connect, the first things to show are open fraud flags and invoice variance, since those two protect real money before anything else in this room does."
+    "founder_view_note": "Before any connector is live, the room shows the marketplace brief status board (Amazon, Walmart, Target, rapid-delivery marketplaces; Flipkart and quick commerce for the India option) as the one part that works today, since those briefs are handoff documents, not live reads, and marks every performance metric for those channels as unavailable with 'no connector yet' rather than a blank or a zero. Once the affiliate network and billing pulls connect, the first things to show are open fraud flags and invoice variance, since those two protect real money before anything else in this room does."
   }
 ]

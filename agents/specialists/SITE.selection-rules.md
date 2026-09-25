@@ -28,9 +28,9 @@ matches the row below. Ties break toward the more specific workflow.
 | on-site search bottleneck | tag: visual catalogue | W25 | discovery-and-personalization, visual-search |
 | PDP drop-off with session data, offer underperforming | on demand | W26 | personalization-rules, computed-in-code-offers |
 | Reviews/UGC strategy | on demand | W27 | reviews-ugc-strategy |
-| tags: india, cod_heavy | rto/trust bottleneck | W28 | india-ops, whatsapp-buy-flow |
+| checkout payment mix, failed-delivery rate, chargeback rate | any platform | W28 | payments-shipping-tax; India market option (tags: india, cod_heavy, rto/trust bottleneck): india-ops, whatsapp-buy-flow |
 | founder approves assistant | G01 | W29 | ai-shopping-assistant |
-| tag: india, 60 days pre-festival | G02 | W30 | festive-gifting-ops |
+| 60 days before a holiday or gifting window (India market option: tag india) | G02 | W30 | festive-gifting-ops |
 | brand has a mobile app, release due | G03 | W07 | platform-integrations |
 
 ## How a workflow picks a sub-skill

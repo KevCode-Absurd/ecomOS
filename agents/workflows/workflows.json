@@ -1270,7 +1270,7 @@
    {
     "n": 3,
     "name": "Set capture timing and fraud screening",
-    "does": "Sets capture timing and turns on fraud screening, including a screen for fake COD orders where COD is offered.",
+    "does": "Sets capture timing and turns on fraud screening (mismatched billing and shipping, high-risk card BIN, order velocity), including a screen for fake cash-on-delivery orders where COD is offered as a market option.",
     "inputs": [],
     "tools": [],
     "skill": null,
@@ -1378,7 +1378,7 @@
    "SITE-C12",
    "SITE-C78"
   ],
-  "trigger": "on demand | store setup for an India or EU-facing brand, or a compliance audit finding",
+  "trigger": "on demand | store setup for a US, EU or India-facing brand, or a compliance audit finding",
   "human_role": "Global setup and compliance lead",
   "inputs_required": [
    "brand brain: target markets",
@@ -1450,7 +1450,7 @@
    {
     "n": 7,
     "name": "Route tags behind consent, keyed to region",
-    "does": "Routes each tracking tag behind a consent-management layer keyed to the visitor's region and choice, with the correct default: opt-in for GDPR regions, DPDP's stricter default for India.",
+    "does": "Routes each tracking tag behind a consent-management layer keyed to the visitor's region and choice, with the correct default: an opt-out Do Not Sell or Share link for US state laws (CCPA, CPRA and others), opt-in for GDPR regions, and opt-in under India's DPDP Act as a market option, reads null for US.",
     "inputs": [],
     "tools": [],
     "skill": "site/store-setup-checklist",
@@ -3144,7 +3144,7 @@
    {
     "n": 8,
     "name": "Show delivery ETA and local payment trust",
-    "does": "Shows delivery ETA or a pincode serviceability check near the buy box, and local payment methods beside the FUD reducers.",
+    "does": "Shows delivery ETA or a ZIP code and USPS address serviceability check near the buy box (pincode check where the brand sells in India), and local payment methods beside the FUD reducers.",
     "inputs": [],
     "tools": [],
     "skill": null,
@@ -4333,22 +4333,86 @@
  },
  {
   "id": "SITE-W28",
-  "name": "Reduce COD return-to-origin and add a WhatsApp buy flow for India",
+  "name": "Configure checkout payment methods and address validation, with a WhatsApp buy flow as a market option",
   "capabilities": [
    "SITE-C67",
    "SITE-C77"
   ],
-  "trigger": "COD share and RTO rate identified as a bottleneck in the metric contract | India market COD or trust-driven checkout hesitation diagnosed as a bottleneck",
-  "human_role": "India operations lead, COD and WhatsApp",
+  "trigger": "checkout payment mix, failed-delivery rate or chargeback rate identified as a bottleneck in the metric contract | India market option: COD share and RTO rate, or COD/trust-driven checkout hesitation, diagnosed as a bottleneck",
+  "human_role": "Checkout and payments lead; India market option: India operations lead for COD and WhatsApp",
   "inputs_required": [
-   "courier serviceability API",
-   "WhatsApp business API access",
-   "brand's historical RTO data"
+   "USPS address validation API",
+   "BNPL provider integration (Affirm, Klarna, Afterpay)",
+   "brand's historical chargeback and failed-delivery data",
+   "India market option, null for US: courier serviceability API",
+   "India market option, null for US: WhatsApp business API access",
+   "India market option, null for US: brand's historical RTO data"
   ],
   "steps": [
    {
     "n": 1,
-    "name": "Show real-time PIN serviceability",
+    "name": "Enable checkout payment methods",
+    "does": "Enables Shop Pay, PayPal, Apple Pay and a BNPL option (Affirm, Klarna or Afterpay) at checkout.",
+    "inputs": [],
+    "tools": [],
+    "skill": "site/store-setup-checklist/payments-shipping-tax",
+    "output": "checkout payment method config",
+    "check": "Payment badges and BNPL installment estimate render correctly at checkout."
+   },
+   {
+    "n": 2,
+    "name": "Validate the shipping address against USPS",
+    "does": "Validates the shipping address against USPS before the order is placed, catching a bad ZIP code or an undeliverable address before it ships.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "USPS address validation flow",
+    "check": "A bad or undeliverable address is caught before checkout completes, not after."
+   },
+   {
+    "n": 3,
+    "name": "Screen orders for fraud signals",
+    "does": "Screens orders for fraud signals (mismatched billing and shipping, high-risk card BIN, order velocity) and routes flagged orders for manual review.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "fraud screening rules",
+    "check": "A flagged order reaches a manual review queue, not an auto-approval."
+   },
+   {
+    "n": 4,
+    "name": "Replace tracking with a branded page",
+    "does": "Replaces the generic carrier tracking link with a branded tracking page that also carries post-purchase upsell content.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "branded tracking page",
+    "check": "Tracking page renders correctly on the brand's own domain."
+   },
+   {
+    "n": 5,
+    "name": "Pass a risk score to fulfilment",
+    "does": "Passes a buyer risk score (first order, high order value, prior chargeback or return-to-sender history, or in India prior RTO history) to the fulfilment system for a manual check, without running carrier-side exception handling itself.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "failed-delivery and chargeback dashboard",
+    "check": "Risk score reaches the fulfilment system without Site running the carrier-side process.",
+    "ask_founder_if": "no fulfilment system is ready to receive the risk score"
+   },
+   {
+    "n": 6,
+    "name": "Build the failed-delivery and chargeback analytics view",
+    "does": "Builds a failed-delivery and chargeback analytics view by carrier, ZIP code, product and payment method; India market option adds the RTO rate by PIN code.",
+    "inputs": [],
+    "tools": [],
+    "skill": null,
+    "output": "failed-delivery and chargeback dashboard",
+    "check": "Dashboard breaks the number down by all dimensions, not just an overall rate."
+   },
+   {
+    "n": 7,
+    "name": "India market option, reads null for US: show real-time PIN serviceability",
     "does": "Shows real-time PIN code serviceability on the PDP, using the courier or aggregator API, before the shopper adds to cart.",
     "inputs": [],
     "tools": [],
@@ -4357,8 +4421,8 @@
     "check": "Serviceability check reflects the live courier API, not a static list."
    },
    {
-    "n": 2,
-    "name": "Add OTP verification on high-value COD",
+    "n": 8,
+    "name": "India market option, reads null for US: add OTP verification on high-value COD",
     "does": "Adds address auto-fill and phone OTP verification at checkout for COD orders above a set value.",
     "inputs": [],
     "tools": [],
@@ -4367,8 +4431,8 @@
     "check": "OTP is required only above the set value threshold, confirmed live."
    },
    {
-    "n": 3,
-    "name": "Add a visible, sized COD fee",
+    "n": 9,
+    "name": "India market option, reads null for US: add a visible, sized COD fee",
     "does": "Adds a visible COD handling fee as a checkout line item, sized to filter impulse orders without losing genuine buyers.",
     "inputs": [],
     "tools": [],
@@ -4377,8 +4441,8 @@
     "check": "Fee amount is backed by real impulse-order data, not a round guess."
    },
    {
-    "n": 4,
-    "name": "Surface a prepaid incentive at the right moment",
+    "n": 10,
+    "name": "India market option, reads null for US: surface a prepaid incentive at the right moment",
     "does": "Surfaces a prepaid discount or free-shipping incentive at the exact checkout step where COD is selected.",
     "inputs": [],
     "tools": [],
@@ -4387,8 +4451,8 @@
     "check": "Incentive appears at the COD-selection step, not buried earlier."
    },
    {
-    "n": 5,
-    "name": "Trigger a WhatsApp confirmation with auto-cancel",
+    "n": 11,
+    "name": "India market option, reads null for US: trigger a WhatsApp confirmation with auto-cancel",
     "does": "Triggers an automated WhatsApp order-confirmation message after COD checkout, with an auto-cancel rule if unconfirmed within a set window.",
     "inputs": [],
     "tools": [],
@@ -4397,39 +4461,8 @@
     "check": "Auto-cancel window is enforced and logged."
    },
    {
-    "n": 6,
-    "name": "Replace tracking with a branded page",
-    "does": "Replaces the generic courier tracking link with a branded tracking page that also carries post-purchase upsell content.",
-    "inputs": [],
-    "tools": [],
-    "skill": null,
-    "output": "branded tracking page",
-    "check": "Tracking page renders correctly on the brand's own domain."
-   },
-   {
-    "n": 7,
-    "name": "Pass a risk score to fulfilment",
-    "does": "Passes a buyer risk score (first order, high COD value, prior RTO history) to the fulfilment system for a manual check, without running the logistics NDR process itself.",
-    "inputs": [],
-    "tools": [],
-    "skill": null,
-    "output": "RTO dashboard",
-    "check": "Risk score reaches the fulfilment system without Site running the logistics process.",
-    "ask_founder_if": "no fulfilment system is ready to receive the risk score"
-   },
-   {
-    "n": 8,
-    "name": "Build the RTO analytics view",
-    "does": "Builds an RTO analytics view by courier, PIN code, product and payment method.",
-    "inputs": [],
-    "tools": [],
-    "skill": null,
-    "output": "RTO dashboard",
-    "check": "Dashboard breaks RTO down by all 4 dimensions, not just an overall rate."
-   },
-   {
-    "n": 9,
-    "name": "Sync the catalogue to WhatsApp",
+    "n": 12,
+    "name": "WhatsApp-commerce market option (India, EU, LATAM), reads null for US: sync the catalogue to WhatsApp",
     "does": "Syncs the live catalogue (price, stock, variant) to the brand's WhatsApp Business catalog on a schedule.",
     "inputs": [],
     "tools": [],
@@ -4438,18 +4471,18 @@
     "check": "Catalog sync runs on a schedule and matches the live PDP."
    },
    {
-    "n": 10,
-    "name": "Add the click-to-WhatsApp button",
+    "n": 13,
+    "name": "WhatsApp-commerce market option (India, EU, LATAM), reads null for US: add the click-to-WhatsApp button",
     "does": "Adds a click-to-WhatsApp button on the PDP that pre-fills the exact SKU, variant and a template question, confirmed to appear only where WhatsApp commerce is legal and common.",
     "inputs": [],
     "tools": [],
     "skill": "site/india-ops/whatsapp-buy-flow",
     "output": "click-to-WhatsApp button",
-    "check": "Button appears only in markets where it is confirmed legal and common."
+    "check": "Button appears only in markets where it is confirmed legal and common, never for a US-default brand."
    },
    {
-    "n": 11,
-    "name": "Measure clicks separately and hand off the conversation",
+    "n": 14,
+    "name": "WhatsApp-commerce market option (India, EU, LATAM), reads null for US: measure clicks separately and hand off the conversation",
     "does": "Measures PDP-to-WhatsApp clicks separately from normal add-to-cart so they are never double-counted, and hands the conversation flow itself to Lifecycle.",
     "inputs": [],
     "tools": [],
@@ -4459,23 +4492,27 @@
    }
   ],
   "outputs": [
-   "PDP serviceability widget",
-   "checkout OTP flow",
-   "COD fee config",
-   "WhatsApp confirmation flow",
+   "checkout payment method config",
+   "USPS address validation flow",
+   "fraud screening rules",
    "branded tracking page",
-   "RTO dashboard",
-   "click-to-WhatsApp button",
-   "synced catalog",
-   "click-to-order attribution"
+   "failed-delivery and chargeback dashboard",
+   "India market option, null for US: PDP serviceability widget",
+   "India market option, null for US: checkout OTP flow",
+   "India market option, null for US: COD fee config",
+   "India market option, null for US: WhatsApp confirmation flow",
+   "WhatsApp-commerce market option (India, EU, LATAM), null for US: click-to-WhatsApp button",
+   "WhatsApp-commerce market option (India, EU, LATAM), null for US: synced catalog",
+   "WhatsApp-commerce market option (India, EU, LATAM), null for US: click-to-order attribution"
   ],
   "qa": [
-   "RTO levers measured against the brand's own PIN-code and payment-method data, never a generic industry number.",
-   "WhatsApp click-to-order never double-counted with add-to-cart.",
-   "COD fee sized from real impulse-order data, not a guess."
+   "Failed-delivery and chargeback levers measured against the brand's own carrier and payment-method data, never a generic industry number.",
+   "India market option: RTO levers measured against the brand's own PIN-code and payment-method data.",
+   "WhatsApp-commerce market option (India, EU, LATAM): click-to-order never double-counted with add-to-cart.",
+   "India market option: COD fee sized from real impulse-order data, not a guess."
   ],
-  "read_point": "RTO dashboard reviewed monthly; WhatsApp conversion checked at the same cadence.",
-  "typical_duration": "agent: 2-3 days build across both features; ongoing: automated once live.",
+  "read_point": "Failed-delivery and chargeback dashboard reviewed monthly; India market option: RTO dashboard and WhatsApp conversion checked at the same cadence.",
+  "typical_duration": "agent: 2-3 days build across checkout payment methods, address validation and the India/EU/LATAM WhatsApp option; ongoing: automated once live.",
   "subagents": [],
   "agent": "SITE",
   "unknown_capabilities": []
@@ -4604,15 +4641,15 @@
  },
  {
   "id": "SITE-W30",
-  "name": "Run festive gifting operations",
+  "name": "Run holiday and gifting operations",
   "capabilities": [
    "SITE-G02"
   ],
-  "trigger": "event: 60 days before each gifting window (Diwali, Rakhi, wedding season)",
-  "human_role": "Festive gifting operations lead",
+  "trigger": "event: 60 days before each holiday or gifting window (Black Friday and Cyber Monday, the Q4 holiday season, Valentine's Day, Mother's Day, Father's Day, back to school; India market option: Diwali, Rakhi, wedding season)",
+  "human_role": "Holiday and gifting operations lead",
   "inputs_required": [
    "gifting calendar (shared with Lifecycle)",
-   "brand brain: shipping cutoffs by pincode",
+   "brand brain: shipping cutoffs by ZIP code (by pincode where the brand sells in India)",
    "brand brain: catalogue"
   ],
   "steps": [
@@ -4622,8 +4659,8 @@
     "does": "Confirms the gifting window and its cutoff dates from the shared gifting calendar 60 days out.",
     "inputs": [],
     "tools": [],
-    "skill": "site/festive-gifting-ops",
-    "output": "pincode delivery cutoff map",
+    "skill": "site/holiday-gifting-ops",
+    "output": "ZIP code delivery cutoff map",
     "check": "Cutoff dates confirmed against the shared calendar, not assumed from last year."
    },
    {
@@ -4648,14 +4685,14 @@
    },
    {
     "n": 4,
-    "name": "Set delivery cutoffs per pincode",
-    "does": "Sets delivery-by-date cutoffs per pincode so a shopper is never sold a promise the courier cannot keep.",
+    "name": "Set delivery cutoffs per ZIP code",
+    "does": "Sets delivery-by-date cutoffs per ZIP code (per pincode where the brand sells in India) so a shopper is never sold a promise the carrier cannot keep.",
     "inputs": [],
     "tools": [],
     "skill": null,
-    "output": "pincode delivery cutoff map",
-    "check": "Cutoff dates match real courier data by pincode.",
-    "ask_founder_if": "courier cutoff data by pincode is not available or stale"
+    "output": "ZIP code delivery cutoff map",
+    "check": "Cutoff dates match real carrier data by ZIP code (by pincode for India).",
+    "ask_founder_if": "carrier cutoff data by ZIP code (or pincode for India) is not available or stale"
    },
    {
     "n": 5,
@@ -4711,12 +4748,12 @@
   "outputs": [
    "gift wrap/message configuration",
    "hidden-price invoice flow",
-   "pincode delivery cutoff map",
+   "ZIP code delivery cutoff map",
    "gift guide pages",
    "gifting-mode QA report"
   ],
   "qa": [
-   "No gift order promises a delivery date the pincode cutoff cannot support.",
+   "No gift order promises a delivery date the ZIP code (or pincode) cutoff cannot support.",
    "Hidden-price invoice tested with a real order.",
    "Gifting mode switched off cleanly after the window."
   ],
@@ -5498,7 +5535,7 @@
    "CREA-C26"
   ],
   "trigger": "on demand",
-  "human_role": "Localisation editor for a mobile-first, non-US market",
+  "human_role": "Localisation editor for a target market and device",
   "inputs_required": [
    "source creative and copy set",
    "target market's payment, delivery and trust facts",
@@ -5508,7 +5545,7 @@
    {
     "n": 1,
     "name": "Confirm the target spec",
-    "does": "Confirms the device target (mobile-first, vertical-only formats) and market facts (COD availability, EMI, delivery windows, local payment logos) for the target market.",
+    "does": "Confirms the device target (mobile-first, vertical-only formats where the target market's traffic calls for it) and market facts (payment method mix, delivery windows, local payment logos; COD availability and EMI where the target market runs them, markets: IN) for the target market.",
     "inputs": [
      "brand brain: market policies"
     ],
@@ -5547,7 +5584,7 @@
    {
     "n": 4,
     "name": "Swap in local trust facts",
-    "does": "Replaces any non-local trust line (a foreign currency guarantee, a foreign shipping time) with the real local fact: COD availability, local return window, local payment logos.",
+    "does": "Replaces any non-local trust line (a foreign currency guarantee, a foreign shipping time) with the real local fact: payment method mix, local return window, local payment logos; COD availability where the target market runs it, markets: IN.",
     "inputs": [
      "target spec sheet"
     ],
@@ -6253,7 +6290,7 @@
    {
     "n": 4,
     "name": "State the honest reason for a low price",
-    "does": "If the price looks unusually low, writes the real reason, for example clearance, factory-direct, or a festive sale, rather than leaving it unexplained.",
+    "does": "If the price looks unusually low, writes the real reason, for example clearance, factory-direct, or a holiday sale, rather than leaving it unexplained.",
     "inputs": [
      "price and policy fact sheet"
     ],
@@ -6491,75 +6528,75 @@
  },
  {
   "id": "CREA-W16",
-  "name": "Write COD-to-prepaid and RTO-reduction creative messaging",
+  "name": "Write payment and delivery reassurance creative messaging",
   "capabilities": [
    "CREA-C44"
   ],
   "trigger": "on demand",
-  "human_role": "COD-conversion and delivery-trust copywriter",
+  "human_role": "payment and delivery-trust copywriter",
   "inputs_required": [
-   "current COD and prepaid mix and RTO rate",
-   "prepaid incentive if any",
-   "delivery-trust facts: courier, timelines, ID verification"
+   "current payment method mix and failed/reversed-order rates (chargeback_rate, return_to_sender_rate; cod_share and rto_rate where the brand runs COD, markets: IN)",
+   "reassurance incentive if any (BNPL, free returns, discount); prepaid incentive if the brand runs COD (markets: IN)",
+   "delivery-trust facts: carrier, timelines, tracking, ID verification where COD applies"
   ],
   "steps": [
    {
     "n": 1,
-    "name": "Pull the real RTO and COD numbers",
-    "does": "Pulls the account's current COD share and RTO rate to size how much this messaging matters right now.",
+    "name": "Pull the real payment-mix and reversed-order numbers",
+    "does": "Pulls the account's current payment method mix and failed/reversed-order rates (chargeback_rate, return_to_sender_rate) to size how much this messaging matters right now; for a COD brand, also pulls cod_share and rto_rate.",
     "inputs": [
-     "metric contract: cod_share, rto_rate"
+     "metric contract: payment_method_mix, chargeback_rate, return_to_sender_rate, cod_share, rto_rate (cod_share and rto_rate read null outside markets: IN)"
     ],
     "tools": [],
     "skill": null,
-    "output": "RTO and COD baseline",
+    "output": "payment-mix and reversed-order baseline",
     "check": "numbers pulled from the metric contract, not estimated"
    },
    {
     "n": 2,
-    "name": "Write the prepaid nudge",
-    "does": "Writes the ad and post-purchase line that pushes toward prepaid, discount, faster dispatch, ID-verified courier trust, honest and specific.",
+    "name": "Write the payment reassurance line",
+    "does": "Writes the ad and checkout line that removes payment friction: a BNPL option, card or wallet trust fact, or, for a COD brand, the prepaid nudge (discount, faster dispatch), honest and specific.",
     "inputs": [
-     "RTO/COD baseline",
-     "prepaid incentive facts"
+     "payment-mix baseline",
+     "reassurance or prepaid incentive facts"
     ],
     "tools": [],
-    "skill": "crea/special-formats/cod-prepaid-rto-messaging",
-    "output": "prepaid nudge copy",
-    "check": "any discount or speed claim matches what ops actually offers"
+    "skill": "crea/special-formats/payment-delivery-reassurance-messaging",
+    "output": "payment reassurance copy",
+    "check": "any discount, BNPL or speed claim matches what ops actually offers"
    },
    {
     "n": 3,
     "name": "Write the delivery-trust messaging",
-    "does": "Writes the trust lines that lower RTO risk: real courier name, real delivery window, call-before-delivery fact if true.",
+    "does": "Writes the trust lines that lower failed-delivery and return-to-sender risk: real carrier name, real delivery window, tracking fact; for a COD brand, the same lines also lower return-to-origin (RTO) risk.",
     "inputs": [
      "delivery-trust facts"
     ],
     "tools": [],
-    "skill": "crea/special-formats/cod-prepaid-rto-messaging",
+    "skill": "crea/special-formats/payment-delivery-reassurance-messaging",
     "output": "delivery-trust copy block",
     "check": "every fact matches current ops policy, not an aspiration"
    },
    {
     "n": 4,
     "name": "Run the claim pass",
-    "does": "Runs the claim-tier check, since delivery-time and discount claims are a common source of drift.",
+    "does": "Runs the claim-tier check, since delivery-time, BNPL and discount claims are a common source of drift.",
     "inputs": [
-     "prepaid nudge copy",
+     "payment reassurance copy",
      "delivery-trust copy block"
     ],
     "tools": [],
     "skill": null,
-    "output": "audited COD and RTO copy",
+    "output": "audited payment and delivery copy",
     "check": "no delivery-time claim beyond the current real average"
    },
    {
     "n": 5,
     "name": "Hand off with the baseline attached",
-    "does": "Hands the copy to MEDIA or the Site specialist with the RTO and COD baseline attached so impact can be measured later.",
+    "does": "Hands the copy to MEDIA or the Site specialist with the payment-mix and reversed-order baseline attached so impact can be measured later.",
     "inputs": [
      "audited copy",
-     "RTO/COD baseline"
+     "payment-mix and reversed-order baseline"
     ],
     "tools": [],
     "skill": "shared/registry-entry",
@@ -6568,13 +6605,13 @@
    }
   ],
   "outputs": [
-   "prepaid nudge copy",
+   "payment reassurance copy",
    "delivery-trust copy block"
   ],
   "qa": [
-   "every delivery or discount fact matches current ops policy"
+   "every delivery, BNPL or discount fact matches current ops policy"
   ],
-  "read_point": "next full month's COD share and RTO rate after deployment",
+  "read_point": "next full month's payment method mix and reversed-order rates after deployment",
   "typical_duration": "agent time: about 1 hour",
   "subagents": [],
   "agent": "CREA",
@@ -6589,7 +6626,7 @@
   "trigger": "on demand",
   "human_role": "Marketplace creative module designer",
   "inputs_required": [
-   "marketplace's current module template grid: Amazon A+, Flipkart or Myntra brand store",
+   "marketplace's current module template grid: Amazon A+, Walmart Marketplace or Target Plus brand shop; Flipkart or Myntra brand store for an India-market brand (markets: IN)",
    "product facts and real photos",
    "claim tiers"
   ],
@@ -10612,12 +10649,12 @@
  },
  {
   "id": "MEDIA-W26",
-  "name": "Prepare Amazon and Flipkart marketplace ad briefs",
+  "name": "Prepare Amazon, Walmart and Target marketplace ad briefs",
   "capabilities": [
    "MEDIA-C52"
   ],
   "trigger": "before a marketplace ad launch, or a quarterly marketplace ads review",
-  "human_role": "media buyer briefing marketplace ads for a human or agency to execute",
+  "human_role": "media buyer briefing marketplace ads for a human or agency to execute (Flipkart for the India option)",
   "inputs_required": [
    "marketplace catalogue and listing data",
    "SKU margin data",
@@ -10701,7 +10738,7 @@
    {
     "n": 7,
     "name": "Write the marketplace ad brief",
-    "does": "Package everything into a brief ready for a human or agency to build in Seller Central or Flipkart Ads Manager.",
+    "does": "Package everything into a brief ready for a human or agency to build in Seller Central, Walmart Connect or Target Roundel (Flipkart Ads Manager, India only).",
     "inputs": [
      "all prior outputs"
     ],
@@ -10728,24 +10765,24 @@
  },
  {
   "id": "MEDIA-W27",
-  "name": "Prepare quick-commerce retail media briefs",
+  "name": "Prepare rapid-delivery and grocery marketplace retail media briefs",
   "capabilities": [
    "MEDIA-C53",
    "PROD-C49"
   ],
-  "trigger": "before a quick-commerce ad push, or when the brand adds a new quick-commerce listing",
-  "human_role": "media buyer briefing Blinkit, Zepto and Instamart ads",
+  "trigger": "before a rapid-delivery or grocery marketplace ad push, or when the brand adds a new such listing (India only: before a quick-commerce ad push, or a new quick-commerce listing)",
+  "human_role": "media buyer briefing Instacart, DoorDash and Gopuff ads (Blinkit, Zepto and Instamart, India only)",
   "inputs_required": [
-   "quick-commerce listing and stock status per dark store or city",
+   "rapid-delivery/grocery listing and stock status per fulfillment center or city (dark store, India only)",
    "category CPC/ROAS benchmarks",
    "SKU margin",
-   "PROD-C49: per-SKU per-dark-store contribution margin report"
+   "PROD-C49: per-SKU per-fulfillment-center contribution margin report (per-dark-store, India only)"
   ],
   "steps": [
    {
     "n": 1,
     "name": "Confirm listing and stock status",
-    "does": "Check which platforms the SKU is actually listed and in-stock on.",
+    "does": "Check which rapid-delivery or grocery marketplace platforms (or quick-commerce platforms, India only) the SKU is actually listed and in-stock on.",
     "inputs": [
      "listing and stock status"
     ],
@@ -10757,7 +10794,7 @@
    {
     "n": 2,
     "name": "Read the true contribution margin",
-    "does": "Pull PROD-C49's per-SKU per-dark-store margin, recomputed on transaction value net of commission, GST and fees.",
+    "does": "Pull PROD-C49's per-SKU per-fulfillment-center margin (per-dark-store, India only), recomputed on transaction value net of commission, applicable US sales tax (GST, India only) and fees.",
     "inputs": [
      "PROD-C49 report"
     ],
@@ -11625,7 +11662,7 @@
    "quiet hours in local time",
    "unsubscribe honoured at or above the legal minimum"
   ],
-  "read_point": "checked again at the next new market or a platform TCPA/DPDP-style rule change",
+  "read_point": "checked again at the next new market or a TCPA/CCPA-style rule change (DPDP for India)",
   "typical_duration": "3 hours agent time, no waiting unless a form change is needed",
   "subagents": [],
   "agent": "LIFE",
@@ -11916,7 +11953,7 @@
    {
     "n": 5,
     "name": "Build the location segment",
-    "does": "Groups customers by shipping geography for market-specific sends (language, currency, festival calendar for India).",
+    "does": "Groups customers by shipping geography for market-specific sends (language, currency, seasonal calendar: Q4 holidays and BFCM for the US, festival calendar for India).",
     "inputs": [
      "connector: shopify orders (read)"
     ],
@@ -12031,7 +12068,7 @@
    {
     "n": 2,
     "name": "Pull the product and event calendar",
-    "does": "Reads upcoming launches, restocks, and India-relevant dates (festivals, sale events) that could anchor a send.",
+    "does": "Reads upcoming launches, restocks, and market-relevant dates (Q4 holiday season, Black Friday/Cyber Monday, Prime Day, Mother's Day, Father's Day, back to school, Valentine's Day, July 4 for the US; festivals and sale events for India) that could anchor a send.",
     "inputs": [
      "product calendar"
     ],
@@ -12363,7 +12400,7 @@
    {
     "n": 5,
     "name": "Recommend WhatsApp as a channel swap where SMS is costly",
-    "does": "Where SMS cost per send is high relative to WhatsApp in the brand's market (common in India), proposes shifting eligible message types to WhatsApp.",
+    "does": "Where SMS cost per send is high relative to WhatsApp in the brand's market (common in India, EU or LATAM), proposes shifting eligible message types to WhatsApp; for the US default, proposes shifting eligible message types between SMS and push instead.",
     "inputs": [
      "cost-and-volume table"
     ],
@@ -12440,23 +12477,23 @@
  },
  {
   "id": "LIFE-W09",
-  "name": "Design the WhatsApp commerce program for India",
+  "name": "Design the SMS and WhatsApp commerce program",
   "capabilities": [
    "LIFE-C22"
   ],
   "trigger": "on demand",
-  "human_role": "lifecycle marketing manager building the India WhatsApp channel",
+  "human_role": "lifecycle marketing manager building the SMS (and, where used, WhatsApp) commerce channel",
   "inputs_required": [
-   "order/cart data for Indian buyers",
-   "courier NDR/RTO data",
-   "current COD share and RTO rate",
-   "WhatsApp Business API template status"
+   "order/cart data by market",
+   "carrier delivery-exception and return-to-sender data (NDR/RTO data for India)",
+   "current payment method mix (including COD share for India)",
+   "SMS/WhatsApp platform template and consent status"
   ],
   "steps": [
    {
     "n": 1,
-    "name": "Read the current India order pattern",
-    "does": "Pulls COD share, average RTO rate and cart abandonment for Indian orders specifically, not blended with other markets.",
+    "name": "Read the current order and payment pattern",
+    "does": "Pulls payment method mix, cart abandonment and, for COD markets, COD share and RTO rate for that market's orders specifically, not blended with other markets.",
     "inputs": [
      "connector: shopify orders (read)"
     ],
@@ -12464,13 +12501,13 @@
      "connector: shopify orders (read)"
     ],
     "skill": "life/whatsapp-india-commerce",
-    "output": "India order/RTO snapshot",
-    "check": "figures scoped to Indian shipping addresses only"
+    "output": "order/payment snapshot",
+    "check": "figures scoped to one market's shipping addresses at a time"
    },
    {
     "n": 2,
-    "name": "Check WhatsApp reach against SMS and email for this base",
-    "does": "Compares delivered/read rates where available, since WhatsApp typically reaches Indian buyers better than SMS or email.",
+    "name": "Check channel reach against the SMS baseline",
+    "does": "Compares delivered/read rates for SMS against WhatsApp where WhatsApp is used (India, EU, LATAM), since reach varies by market.",
     "inputs": [
      "ESP/WhatsApp platform data"
     ],
@@ -12484,20 +12521,20 @@
    },
    {
     "n": 3,
-    "name": "Design the WhatsApp cart-recovery sequence",
-    "does": "Builds the cart/checkout abandonment sequence for WhatsApp specifically, using the life/build-flow/browse-cart-abandon logic with WhatsApp as the lead channel.",
+    "name": "Design the SMS/WhatsApp cart-recovery sequence",
+    "does": "Builds the cart/checkout abandonment sequence using the life/build-flow/browse-cart-abandon logic, with SMS as the lead channel by default and WhatsApp as the lead channel where it is the market option in use.",
     "inputs": [
      "cart abandon data"
     ],
     "tools": [],
     "skill": "life/build-flow",
-    "output": "WhatsApp cart-recovery flow steps",
+    "output": "SMS/WhatsApp cart-recovery flow steps",
     "check": "sequence follows the same filter and timing rules as the cart-abandon flow build"
    },
    {
     "n": 4,
     "name": "Design order-update messages",
-    "does": "Sets the order-confirmed, shipped, out-for-delivery and delivered messages on WhatsApp, replacing or supplementing SMS for these transactional updates.",
+    "does": "Sets the order-confirmed, shipped, out-for-delivery and delivered messages by SMS by default, or on WhatsApp where that is the market's lead channel, replacing or supplementing email for these transactional updates.",
     "inputs": [
      "order status events"
     ],
@@ -12508,33 +12545,35 @@
    },
    {
     "n": 5,
-    "name": "Design the COD-to-prepaid nudge",
-    "does": "Writes the message offering a small, policy-checked incentive to switch a COD order to prepaid, sized to the RTO cost it avoids rather than an arbitrary number.",
+    "name": "Design the failed-card dunning or COD-to-prepaid nudge",
+    "does": "Writes the dunning retry message for a failed card charge by default; for a COD market (India), writes the message offering a small, policy-checked incentive to switch a COD order to prepaid, sized to the RTO cost it avoids rather than an arbitrary number.",
     "inputs": [
-     "RTO cost data",
+     "failed-payment cost data (RTO cost data for India)",
      "discount policy"
     ],
-    "tools": [],
+    "tools": [
+     "life/discount-policy-check"
+    ],
     "skill": "life/discount-policy-check",
-    "output": "COD-to-prepaid nudge with sizing shown",
-    "check": "incentive size traces to the measured RTO cost avoided"
+    "output": "dunning message set, or (COD markets) a COD-to-prepaid nudge with sizing shown",
+    "check": "any incentive size traces to a measured cost avoided, never an arbitrary number"
    },
    {
     "n": 6,
-    "name": "Design the NDR recovery sequence",
-    "does": "Fires an automatic WhatsApp sequence the moment a courier logs a non-delivery, offering reschedule or address fix.",
+    "name": "Design the failed-delivery recovery sequence",
+    "does": "Fires an automatic SMS/email sequence the moment a carrier logs a delivery exception or return-to-sender; for India, fires the WhatsApp/SMS sequence the moment a courier logs a non-delivery (NDR), offering reschedule or address fix.",
     "inputs": [
-     "courier NDR feed"
+     "carrier delivery-exception feed (NDR feed for India)"
     ],
     "tools": [],
     "skill": "life/whatsapp-india-commerce",
-    "output": "NDR recovery sequence",
-    "check": "sequence starts within the same day as the NDR event"
+    "output": "failed-delivery recovery sequence",
+    "check": "sequence starts within the same day as the delivery-exception (or NDR, for India) event"
    },
    {
     "n": 7,
     "name": "Check template approval status",
-    "does": "Confirms every message type needing a WhatsApp Business template is approved before the flow can go live.",
+    "does": "Confirms every message type needing a WhatsApp Business template is approved before the flow can go live, where WhatsApp is used.",
     "inputs": [
      "WhatsApp platform"
     ],
@@ -12548,14 +12587,14 @@
    {
     "n": 8,
     "name": "Assemble the program spec",
-    "does": "Puts the cart-recovery, order-update, COD-to-prepaid and NDR flows into one WhatsApp commerce program document.",
+    "does": "Puts the cart-recovery, order-update, dunning/COD-to-prepaid and failed-delivery recovery flows into one SMS/WhatsApp commerce program document.",
     "inputs": [
      "all above"
     ],
     "tools": [],
     "skill": "life/whatsapp-india-commerce",
-    "output": "WhatsApp commerce program spec",
-    "check": "every flow in the spec traces to a real event and a checked template"
+    "output": "SMS/WhatsApp commerce program spec",
+    "check": "every flow in the spec traces to a real event and a checked template where a template applies"
    },
    {
     "n": 9,
@@ -12571,16 +12610,16 @@
    }
   ],
   "outputs": [
-   "WhatsApp commerce program spec",
+   "SMS/WhatsApp commerce program spec",
    "template approval checklist"
   ],
   "qa": [
-   "incentive sizing traces to measured RTO cost",
+   "incentive sizing traces to a measured cost avoided (RTO cost for India)",
    "no unapproved template used",
-   "NDR sequence starts same-day"
+   "failed-delivery recovery sequence starts same-day"
   ],
-  "read_point": "COD confirmation rate, RTO rate by pincode, and NDR recovery rate, read monthly against the pre-launch baseline",
-  "typical_duration": "1 day agent time; template approval wait time varies by Meta's review",
+  "read_point": "dunning recovery rate (or, for India, COD confirmation rate and RTO rate by pincode) and failed-delivery/NDR recovery rate, read monthly against the pre-launch baseline",
+  "typical_duration": "1 day agent time; template approval wait time varies by Meta's review where WhatsApp is used",
   "subagents": [],
   "agent": "LIFE",
   "unknown_capabilities": []
@@ -12872,8 +12911,8 @@
    },
    {
     "n": 3,
-    "name": "Set retry schedule and re-authorisation for failed renewals",
-    "does": "For a failed UPI AutoPay or e-mandate renewal, sets the retry cadence and the re-authorisation message per RBI e-mandate rules.",
+    "name": "Set retry schedule for failed renewals",
+    "does": "For a failed card renewal, sets the dunning retry cadence by default; for a failed UPI AutoPay or e-mandate renewal (India), sets the retry cadence and the re-authorisation message per current RBI e-mandate rules.",
     "inputs": [
      "failed-renewal events"
     ],
@@ -12883,7 +12922,7 @@
     ],
     "skill": "life/churn-risk-score",
     "output": "retry/re-auth schedule",
-    "check": "retry timing and re-auth wording match the current RBI e-mandate rule, cited with date"
+    "check": "retry cadence matches the platform default for a failed card; UPI AutoPay/e-mandate retry timing and re-auth wording match the current RBI rule for India, cited with date"
    },
    {
     "n": 4,
@@ -12917,14 +12956,14 @@
    {
     "n": 6,
     "name": "Route each risk tier to its save program",
-    "does": "Routes low/medium engagement-decay risk to the ordinary win-back flow (W04), RTO-caused risk to the trust-rebuild win-back variant, and active-subscriber risk to the cancel-flow save offer (W20).",
+    "does": "Routes low/medium engagement-decay risk to the ordinary win-back flow (W04), delivery-failure risk (return-to-sender for US, RTO for India) to the trust-rebuild win-back variant, and active-subscriber risk to the cancel-flow save offer (W20).",
     "inputs": [
      "risk-tiered list"
     ],
     "tools": [],
     "skill": "life/churn-risk-score",
     "output": "routing table by tier and cause",
-    "check": "an RTO-caused lapse never routes to a discount-led win-back first"
+    "check": "a delivery-failure-caused lapse (return-to-sender for US carriers, RTO for India) never routes to a discount-led win-back first"
    },
    {
     "n": 7,
@@ -12972,7 +13011,7 @@
   "qa": [
    "order gap measured against the customer's own cadence",
    "arithmetic in code only",
-   "RTO-caused lapse routed to a trust-rebuild message, not a discount"
+   "a delivery-failure-caused lapse (return-to-sender for US carriers, RTO for India) routed to a trust-rebuild message, not a discount"
   ],
   "read_point": "weekly risk-tier movement; monthly involuntary-churn rate against the prior month",
   "typical_duration": "2 hours agent time weekly",
@@ -13147,7 +13186,7 @@
   "human_role": "returns coordinator / CX lead designing the returns flow and policy",
   "inputs_required": [
    "current return/refund policy",
-   "RTO/fraud/chargeback data",
+   "failed-delivery/fraud/chargeback data (RTO data for India)",
    "per-market return law",
    "support ticket volume tagged as returns"
   ],
@@ -13222,17 +13261,17 @@
    },
    {
     "n": 6,
-    "name": "Design RTO and fraud controls for COD markets",
-    "does": "Sets the pincode-level RTO risk check and the serial-returner flag for COD orders before a return or replacement ships.",
+    "name": "Design failed-delivery and fraud controls",
+    "does": "Sets the address-risk/fraud check for orders before a return or replacement ships (ZIP/address-validation history for the US); India only: sets the pincode-level RTO risk check and the serial-returner flag for COD orders instead.",
     "inputs": [
-     "RTO/fraud data"
+     "failed-delivery/fraud data (RTO data for India)"
     ],
     "tools": [
      "script: intelligence/ideas.py"
     ],
     "skill": "life/returns-policy-draft",
-    "output": "RTO/fraud control rule",
-    "check": "risk check runs on real pincode history, not a blanket COD restriction"
+    "output": "failed-delivery/fraud control rule (RTO/fraud control rule for India)",
+    "check": "risk check runs on real address history for the US, or pincode history for India, not a blanket restriction"
    },
    {
     "n": 7,
@@ -13276,12 +13315,12 @@
   "outputs": [
    "returns flow spec",
    "policy draft text",
-   "RTO/fraud control rule"
+   "failed-delivery/fraud control rule (RTO/fraud control rule for India)"
   ],
   "qa": [
    "policy checked against law per market",
    "returns investment gated on returners' repeat rate",
-   "RTO check uses real pincode history"
+   "failed-delivery/fraud check uses real address history for the US, or pincode history for India"
   ],
   "read_point": "return rate, refund-cycle time and post-return repeat-purchase rate, read quarterly",
   "typical_duration": "1 day agent time",
@@ -14614,7 +14653,7 @@
    {
     "n": 6,
     "name": "Decide which use cases justify voice/IVR",
-    "does": "Chooses which events (COD pre-dispatch confirmation, delivery-failure follow-up, post-resolution satisfaction check) justify an automated IVR call, separate from SMS/WhatsApp.",
+    "does": "Chooses which events (order pre-dispatch confirmation call/dunning follow-up for a failed card by default, or COD pre-dispatch confirmation for India, delivery-failure follow-up, post-resolution satisfaction check) justify an automated IVR call, separate from SMS/WhatsApp.",
     "inputs": [
      "order/delivery events"
     ],
@@ -14684,7 +14723,7 @@
    "LIFE-C67"
   ],
   "trigger": "continuous",
-  "human_role": "customer support agent handling Amazon/Flipkart buyer-seller queues",
+  "human_role": "customer support agent handling Amazon/Walmart Marketplace buyer-seller queues (Flipkart, Myntra and other India marketplaces where the brand sells there)",
   "inputs_required": [
    "marketplace seller console access",
    "order and delivery-proof data"
@@ -14931,20 +14970,20 @@
   "capabilities": [
    "LIFE-G01"
   ],
-  "trigger": "event: inbound corporate enquiry; 90 days before Diwali for outbound",
+  "trigger": "event: inbound corporate enquiry; 90 days before Q4 holiday season for outbound (Diwali for India)",
   "human_role": "B2B/corporate gifting sales desk operator",
   "inputs_required": [
    "inbound enquiry or the outbound lead list",
    "bulk pricing tiers",
    "customisation (packaging/engraving) options",
-   "GST invoicing capability",
+   "sales-tax invoicing capability (GST invoicing capability for India)",
    "split-delivery address list"
   ],
   "steps": [
    {
     "n": 1,
     "name": "Qualify the enquiry or build the outbound lead list",
-    "does": "For inbound, reads the enquiry for quantity, budget and occasion; for outbound, builds the lead list starting 90 days before Diwali or the relevant gifting season.",
+    "does": "For inbound, reads the enquiry for quantity, budget and occasion; for outbound, builds the lead list starting 90 days before the target Q4 holiday gifting season (Diwali or the relevant gifting season for India).",
     "inputs": [
      "enquiry or lead source"
     ],
@@ -14953,7 +14992,7 @@
     ],
     "skill": "life/corporate-gifting-desk",
     "output": "qualified enquiry or lead list",
-    "check": "outbound timing starts at least 90 days before the target festival"
+    "check": "outbound timing starts at least 90 days before the target season or festival"
    },
    {
     "n": 2,
@@ -14983,17 +15022,17 @@
    },
    {
     "n": 4,
-    "name": "Prepare the GST invoice",
-    "does": "Prepares the GST-compliant invoice for the B2B order, checked against the current GST rate and the buyer's GSTIN if provided.",
+    "name": "Prepare the sales-tax invoice",
+    "does": "Prepares the sales-tax invoice for the B2B order, checked against state nexus and resale-certificate rules; India only: prepares the GST-compliant invoice instead, checked against the current GST rate and the buyer's GSTIN if provided.",
     "inputs": [
-     "GST invoicing capability"
+     "sales-tax invoicing capability (GST invoicing capability for India)"
     ],
     "tools": [
      "web search (budgeted)"
     ],
     "skill": "life/corporate-gifting-desk",
-    "output": "GST invoice draft",
-    "check": "invoice checked against the current GST rule, cited with date"
+    "output": "sales-tax invoice draft (GST invoice draft for India)",
+    "check": "invoice checked against the current sales-tax rule (or GST rule for India), cited with date"
    },
    {
     "n": 5,
@@ -15036,16 +15075,16 @@
   ],
   "outputs": [
    "bulk quote",
-   "GST invoice draft",
+   "sales-tax invoice draft (GST invoice draft for India)",
    "split-delivery plan",
    "repeat-order reminder"
   ],
   "qa": [
    "quote uses standing bulk tiers or is gated if beyond them",
-   "GST invoice checked against current rule",
+   "sales-tax invoice checked against current rule (GST rule for India)",
    "every delivery address checked for serviceability"
   ],
-  "read_point": "corporate order volume and repeat-order rate, read each gifting season",
+  "read_point": "corporate order volume and repeat-order rate, read each gifting season (Q4 holidays for the US, Diwali for India)",
   "typical_duration": "2 hours agent time per enquiry; more for outbound list-building",
   "subagents": [],
   "agent": "LIFE",
@@ -15053,22 +15092,22 @@
  },
  {
   "id": "LIFE-W28",
-  "name": "Run the grievance officer queue and consumer notices",
+  "name": "Run the consumer-complaint and consumer-protection notice queue",
   "capabilities": [
    "LIFE-G03"
   ],
   "trigger": "event: grievance or notice received; weekly SLA check",
-  "human_role": "grievance officer / CX manager handling statutory complaints",
+  "human_role": "customer service / CX manager handling regulatory and consumer-protection complaints (BBB, state attorney general portals, FTC complaint referrals for the US; statutory grievance officer duties for India)",
   "inputs_required": [
-   "grievance/complaint inbox",
-   "consumer-forum (e-Daakhil) and legal notice tracker",
-   "India's E-Commerce Rules SLA (48-hour acknowledgement, 1-month resolution)"
+   "complaint/notice inbox (BBB, state consumer-complaint portal, FTC referral for the US; grievance inbox for India)",
+   "consumer-forum (e-Daakhil, India) and legal notice tracker",
+   "response SLA per channel (BBB and most state portals: about 2 weeks; India's E-Commerce Rules SLA of 48-hour acknowledgement and 1-month resolution, markets IN)"
   ],
   "steps": [
    {
     "n": 1,
     "name": "Log every grievance on receipt",
-    "does": "Logs each grievance or consumer notice the moment it arrives, with the statutory clock started from that timestamp.",
+    "does": "Logs each BBB complaint, state consumer-complaint, FTC referral or legal notice (a grievance or e-Daakhil consumer-forum notice for India) the moment it arrives, with its own clock started from that timestamp.",
     "inputs": [
      "grievance inbox"
     ],
@@ -15081,8 +15120,8 @@
    },
    {
     "n": 2,
-    "name": "Acknowledge within 48 hours",
-    "does": "Sends the acknowledgement within the 48-hour statutory window required under India's E-Commerce Rules.",
+    "name": "Acknowledge within the channel's SLA",
+    "does": "Sends the acknowledgement inside the SLA the receiving channel sets: BBB and most state consumer-complaint portals expect a response within about 2 weeks. India only: acknowledges within the 48-hour statutory window required under India's E-Commerce Rules instead; reads null for US brands.",
     "inputs": [
      "logged grievance"
     ],
@@ -15091,12 +15130,12 @@
     ],
     "skill": "life/grievance-queue",
     "output": "acknowledgement sent with timestamp",
-    "check": "acknowledgement sent inside 48 hours or flagged as breached the moment it is missed"
+    "check": "acknowledgement sent inside the applicable SLA (48 hours for India) or flagged as breached the moment it is missed"
    },
    {
     "n": 3,
     "name": "Investigate and prepare the resolution",
-    "does": "Investigates the complaint against the order/product/policy record and prepares a resolution within the 1-month statutory window.",
+    "does": "Investigates the complaint against the order/product/policy record and prepares a resolution within the receiving channel's own window (India's 1-month statutory window; the target response time for a BBB or state consumer-complaint case in the US).",
     "inputs": [
      "order/policy record"
     ],
@@ -15110,8 +15149,8 @@
    },
    {
     "n": 4,
-    "name": "Track consumer-forum and legal notices separately",
-    "does": "Tracks any e-Daakhil consumer-forum case or legal notice on its own separate clock and status, distinct from an ordinary grievance.",
+    "name": "Track consumer-forum, BBB and legal notices separately",
+    "does": "Tracks any BBB case, state consumer-complaint case or legal notice (an e-Daakhil consumer-forum case for India) on its own separate clock and status, distinct from an ordinary grievance.",
     "inputs": [
      "notice tracker"
     ],
@@ -15120,12 +15159,12 @@
     ],
     "skill": "life/grievance-queue",
     "output": "notice tracker update",
-    "check": "a legal notice is never merged into the ordinary grievance queue's SLA"
+    "check": "a legal notice is never merged into the ordinary complaint queue's SLA"
    },
    {
     "n": 5,
     "name": "Run the weekly SLA check",
-    "does": "Checks every open grievance and notice against its statutory clock, flagging anything approaching or past deadline.",
+    "does": "Checks every open complaint and notice against its own clock, flagging anything approaching or past deadline.",
     "inputs": [
      "grievance/notice log"
     ],
@@ -15137,7 +15176,7 @@
    {
     "n": 6,
     "name": "Route unresolved or escalated items to the founder",
-    "does": "Sends any item nearing breach, or any consumer-forum/legal notice, to the founder rather than letting the statutory clock lapse quietly.",
+    "does": "Sends any item nearing breach, or any consumer-forum/legal notice, to the founder rather than letting its clock lapse quietly.",
     "inputs": [
      "SLA report"
     ],
@@ -15149,25 +15188,25 @@
    {
     "n": 7,
     "name": "Log closure",
-    "does": "Records the resolution and closure date against the statutory deadline once resolved.",
+    "does": "Records the resolution and closure date against the applicable deadline (statutory for India) once resolved.",
     "inputs": [
      "resolution draft"
     ],
     "tools": [],
     "skill": "shared/registry-entry",
     "output": "closure record",
-    "check": "closure date compared explicitly to the statutory deadline"
+    "check": "closure date compared explicitly to the applicable deadline"
    }
   ],
   "outputs": [
-   "logged grievance queue with SLA clocks",
+   "logged complaint/notice queue with SLA clocks",
    "acknowledgements sent",
    "resolution drafts",
    "notice tracker",
    "weekly SLA report"
   ],
   "qa": [
-   "48-hour acknowledgement and 1-month resolution windows tracked in code",
+   "acknowledgement and resolution windows tracked in code per channel (48-hour/1-month for India's statutory rule; each platform's own SLA for US channels)",
    "legal notices tracked on their own separate clock",
    "nothing nearing breach left unescalated"
   ],
@@ -15523,7 +15562,7 @@
    {
     "n": 6,
     "name": "Write the account setup checklist",
-    "does": "Bio, link-in-bio, contact, category tag, WhatsApp Business link, per platform.",
+    "does": "Bio, link-in-bio, contact, category tag, per platform (WhatsApp Business link where the brand serves an India, EU or LATAM audience; reads null for a US-only brand).",
     "inputs": [
      "visual world spec"
     ],
@@ -15655,15 +15694,16 @@
    },
    {
     "n": 4,
-    "name": "Add the festive and regional layer",
-    "does": "Map Diwali, Holi, regional festivals and shipping cutoffs onto the calendar, tagging language variant per slot.",
+    "name": "Add the holiday and regional layer",
+    "does": "Map the US holiday calendar (Q4 season, Black Friday and Cyber Monday, Prime Day, Valentine's Day, Mother's Day, Father's Day, back to school, July 4) and shipping cutoffs onto the calendar, tagging language variant per slot. India only (markets IN, reads null for US brands): map Diwali, Holi and regional festivals instead.",
     "inputs": [
-     "festive calendar",
+     "US holiday calendar",
+     "India festive calendar (markets IN, reads null for US brands)",
      "shipping cutoff dates"
     ],
     "tools": [],
     "skill": null,
-    "output": "calendar with festive/regional tags",
+    "output": "calendar with holiday/regional tags",
     "check": "no post promises delivery the warehouse cannot hit"
    },
    {
@@ -15747,7 +15787,7 @@
    {
     "n": 11,
     "name": "Assemble the final calendar",
-    "does": "Merge cadence, SKU sequencing, festive layer, scripts, shot lists and destination checks into one dated calendar.",
+    "does": "Merge cadence, SKU sequencing, holiday layer, scripts, shot lists and destination checks into one dated calendar.",
     "inputs": [
      "all prior outputs"
     ],
@@ -16102,7 +16142,7 @@
    {
     "n": 5,
     "name": "Map the destination",
-    "does": "Decide where the captured contact lands (WhatsApp, email, CRM) and hand the after-capture sequence to Lifecycle.",
+    "does": "Decide where the captured contact lands (SMS, email, CRM, or WhatsApp as a market option for India, EU or LATAM audiences) and hand the after-capture sequence to Lifecycle.",
     "inputs": [
      "flow spec"
     ],
@@ -19325,10 +19365,10 @@
    {
     "n": 5,
     "name": "Map seasonal and gifting spikes",
-    "does": "Plot any seasonal or gifting spike against the calendar for options tagged seasonal.",
+    "does": "Plot any seasonal or gifting spike against the US retail calendar (Q4 holidays, Mother's/Father's Day, Valentine's) for options tagged seasonal (india: festive calendar; markets: IN).",
     "inputs": [
      "sales history",
-     "festive calendar"
+     "US retail calendar (india: festive calendar)"
     ],
     "tools": [],
     "skill": null,
@@ -19785,7 +19825,7 @@
   "inputs_required": [
    "tech pack or open spec",
    "MOQ needs",
-   "supplier region preference (India or China)",
+   "supplier region preference (US domestic, China or India)",
    "existing supplier list if any"
   ],
   "steps": [
@@ -19844,7 +19884,7 @@
    {
     "n": 5,
     "name": "Keep the spec running in the background",
-    "does": "Leave the open spec live against IndiaMART, Alibaba and Global Sources for a better or new supplier.",
+    "does": "Leave the open spec live against Alibaba, Global Sources, Faire/Tundra and ThomasNet/Maker's Row for a better or new supplier (india: also against IndiaMART; markets: IN).",
     "inputs": [
      "open spec"
     ],
@@ -20644,7 +20684,7 @@
    {
     "n": 2,
     "name": "Compute reorder point and safety stock",
-    "does": "Compute reorder point and safety stock in code, sized against India-specific spike risk (festive demand, COD RTO).",
+    "does": "Compute reorder point and safety stock in code, sized against peak-season spike risk (Q4 holiday demand, carrier return-to-sender risk); india: festive demand and COD RTO risk (markets: IN).",
     "inputs": [
      "velocity/lead-time table",
      "safety-stock policy"
@@ -20893,13 +20933,13 @@
    "PROD-G05",
    "PROD-C72"
   ],
-  "trigger": "continuous; event: new channel added | annual, ahead of festive season",
+  "trigger": "continuous; event: new channel added | annual, ahead of Q4/BFCM peak season (india: ahead of festive season)",
   "human_role": "Inventory/ops planner keeping one stock pool safe across channels and ready for peak season",
   "inputs_required": [
    "stock pool across site, marketplaces, quick commerce and stores",
    "per-channel buffer policy",
    "order-routing and split-shipment rules",
-   "festive calendar",
+   "US peak-season retail calendar (BFCM, Prime Day, Q4 holidays; india: festive calendar)",
    "warehouse staffing and WMS/OMS capacity"
   ],
   "steps": [
@@ -20943,7 +20983,7 @@
    {
     "n": 4,
     "name": "Project peak-season safety stock",
-    "does": "Ahead of the festive season, project the safety stock needed across the season.",
+    "does": "Ahead of Q4/BFCM, project the safety stock needed across the season (india: ahead of the festive season; markets: IN).",
     "inputs": [
      "festive calendar",
      "sales history"
@@ -20951,7 +20991,7 @@
     "tools": [],
     "skill": "prod/inventory-network-plan",
     "output": "peak safety-stock projection",
-    "check": "the projection uses at least one prior festive cycle's data where it exists"
+    "check": "the projection uses at least one prior peak cycle's data where it exists (india: prior festive cycle; markets: IN)"
    },
    {
     "n": 5,
@@ -20969,7 +21009,7 @@
    {
     "n": 6,
     "name": "Build the readiness plan",
-    "does": "Build the festive readiness plan rolling stock, staffing and system load into one plan.",
+    "does": "Build the peak-season readiness plan rolling stock, staffing and system load into one plan (india: festive readiness plan; markets: IN).",
     "inputs": [
      "safety-stock projection",
      "capacity check"
@@ -21033,7 +21073,7 @@
    "SLA requirements",
    "candidate 3PL list",
    "warehouse layout if in-house",
-   "return/RTO volume and reasons"
+   "return/return-to-sender volume and reasons (india: RTO)"
   ],
   "steps": [
    {
@@ -21088,7 +21128,7 @@
    {
     "n": 5,
     "name": "Design the returns grading rule",
-    "does": "Design the fixed rule for a returned unit: RTO or customer return, restock, refurbish or write off.",
+    "does": "Design the fixed rule for a returned unit: carrier return-to-sender or customer return (india: RTO or customer return; markets: IN), restock, refurbish or write off.",
     "inputs": [
      "return/RTO history"
     ],
@@ -21153,94 +21193,94 @@
  },
  {
   "id": "PROD-W16",
-  "name": "Run daily courier rate-shop and NDR resolution",
+  "name": "Run daily carrier rate-shop and failed-delivery resolution",
   "capabilities": [
    "PROD-C55",
    "PROD-C56"
   ],
-  "trigger": "per order, real time | daily, same-day on NDR",
-  "human_role": "Shipping/ops executive running the daily courier decision and same-day NDR outreach",
+  "trigger": "per order, real time | daily, same-day on carrier exception",
+  "human_role": "Shipping/ops executive running the daily carrier decision and same-day exception outreach (india: same-day NDR outreach)",
   "inputs_required": [
-   "live courier rate feed",
-   "pincode serviceability data",
-   "SLA history per courier per zone",
-   "NDR queue",
-   "customer contact channel"
+   "live carrier rate feed",
+   "ZIP code serviceability data (india: pincode)",
+   "SLA history per carrier per zone",
+   "carrier-exception queue (india: NDR queue)",
+   "customer contact channel (SMS, email; india: SMS or WhatsApp)"
   ],
   "steps": [
    {
     "n": 1,
-    "name": "Pick the courier in code",
-    "does": "Pick the courier per shipment in code from live rate, pincode serviceability and SLA.",
+    "name": "Pick the carrier in code",
+    "does": "Pick the carrier per shipment in code from live rate, ZIP code serviceability and SLA.",
     "inputs": [
      "live rate feed",
      "serviceability data",
      "SLA history"
     ],
     "tools": [
-     "script: courier routing (to build)"
+     "script: carrier routing (to build)"
     ],
-    "skill": "prod/daily-shipping-ops",
-    "output": "per-order courier choice",
+    "skill": "prod/failed-delivery-ops",
+    "output": "per-order carrier choice",
     "check": "the choice is computed from live data, not a fixed default carrier"
    },
    {
     "n": 2,
     "name": "Fail over on the spot",
-    "does": "Fail over to a backup courier the moment the primary fails serviceability or SLA.",
+    "does": "Fail over to a backup carrier the moment the primary fails serviceability or SLA.",
     "inputs": [
-     "per-order courier choice"
+     "per-order carrier choice"
     ],
     "tools": [
-     "script: courier routing (to build)"
+     "script: carrier routing (to build)"
     ],
-    "skill": "prod/daily-shipping-ops",
+    "skill": "prod/failed-delivery-ops",
     "output": "failover event log",
     "check": "failover happens automatically, not after a manual check"
    },
    {
     "n": 3,
-    "name": "Pull today's NDRs",
-    "does": "Pull every non-delivery report raised today.",
+    "name": "Pull today's carrier exceptions",
+    "does": "Pull every carrier exception raised today (india: every non-delivery report; markets: IN).",
     "inputs": [
-     "NDR queue"
+     "carrier-exception queue"
     ],
     "tools": [],
-    "skill": "prod/daily-shipping-ops",
-    "output": "today's NDR list",
-    "check": "the list is pulled at least once before the courier's attempt window closes"
+    "skill": "prod/failed-delivery-ops",
+    "output": "today's exception list",
+    "check": "the list is pulled at least once before the carrier's attempt window closes"
    },
    {
     "n": 4,
     "name": "Confirm or reschedule",
-    "does": "Confirm the address or reschedule with the customer before the courier's attempt window closes.",
+    "does": "Run address validation and confirm the address or reschedule with the customer before the carrier's attempt window closes.",
     "inputs": [
-     "today's NDR list",
+     "today's exception list",
      "customer contact channel"
     ],
     "tools": [],
-    "skill": "prod/daily-shipping-ops",
+    "skill": "prod/failed-delivery-ops",
     "output": "outreach result",
     "check": "outreach happens before the attempt window closes, not after"
    },
    {
     "n": 5,
     "name": "Log the outcome",
-    "does": "Log the outreach outcome and any RTO decision.",
+    "does": "Log the outreach outcome and any return-to-sender decision (india: RTO decision; markets: IN).",
     "inputs": [
      "outreach result"
     ],
     "tools": [],
-    "skill": "prod/daily-shipping-ops",
-    "output": "NDR outcome log",
-    "check": "every NDR has a recorded outcome, none left open past the window"
+    "skill": "prod/failed-delivery-ops",
+    "output": "exception outcome log",
+    "check": "every exception has a recorded outcome, none left open past the window"
    },
    {
     "n": 6,
     "name": "Flag rising zones",
-    "does": "Flag any zone with a rising NDR or RTO rate for the monthly scorecard.",
+    "does": "Flag any zone with a rising exception or return-to-sender rate for the monthly scorecard (india: rising NDR or RTO rate; markets: IN).",
     "inputs": [
-     "NDR outcome log"
+     "exception outcome log"
     ],
     "tools": [],
     "skill": null,
@@ -21250,7 +21290,7 @@
    {
     "n": 7,
     "name": "Log the day",
-    "does": "Log the day's routing and NDR outcomes to the registry.",
+    "does": "Log the day's routing and exception outcomes to the registry.",
     "inputs": [
      "all prior outputs"
     ],
@@ -21261,15 +21301,15 @@
    }
   ],
   "outputs": [
-   "per-order courier routing log",
-   "NDR resolution log"
+   "per-order carrier routing log",
+   "exception resolution log"
   ],
   "qa": [
    "routing decision computed from live data, not a fixed default carrier",
-   "every NDR worked the day it was raised"
+   "every exception worked the day it was raised"
   ],
-  "read_point": "same day: NDR resolved before the attempt window closes; monthly: zone RTO trend",
-  "typical_duration": "agent time runs continuously per order; NDR outreach adds same-day human contact time",
+  "read_point": "same day: exception resolved before the attempt window closes; monthly: zone return-to-sender trend",
+  "typical_duration": "agent time runs continuously per order; exception outreach adds same-day human contact time",
   "subagents": [],
   "agent": "PROD",
   "unknown_capabilities": []
@@ -21285,14 +21325,14 @@
   "human_role": "Ops manager reallocating volume and pushing back on rising shipping cost",
   "inputs_required": [
    "courier scorecard history",
-   "RTO, first-attempt delivery and TAT data per courier per zone",
-   "public rate benchmarks for comparable India couriers"
+   "failed-delivery/return-to-sender, first-attempt delivery and transit-time data per carrier per zone (india: RTO, first-attempt and TAT data)",
+   "public rate benchmarks for comparable carriers (UPS, USPS, FedEx, regional 3PLs; india: comparable India couriers)"
   ],
   "steps": [
    {
     "n": 1,
     "name": "Update the running scorecard",
-    "does": "Update the scorecard per courier per zone on RTO rate, first-attempt delivery rate and delivery TAT.",
+    "does": "Update the scorecard per carrier per zone on failed-delivery/return-to-sender rate, first-attempt delivery rate and transit time (india: RTO rate; markets: IN).",
     "inputs": [
      "performance data"
     ],
@@ -21328,7 +21368,7 @@
    {
     "n": 4,
     "name": "Watch cost against public benchmarks",
-    "does": "Watch the brand's own shipping cost per order against public rate benchmarks for comparable India couriers.",
+    "does": "Watch the brand's own shipping cost per order against public rate benchmarks for comparable carriers (india: comparable India couriers; markets: IN).",
     "inputs": [
      "cost per order",
      "public rate cards"
@@ -21400,10 +21440,10 @@
    "PROD-G01",
    "PROD-G02"
   ],
-  "trigger": "event: shipment marked lost or damaged, or RTO received damaged; weekly sweep | weekly",
+  "trigger": "event: shipment marked lost or damaged, or return-to-sender received damaged (india: RTO received damaged); weekly sweep | weekly",
   "human_role": "Ops/claims coordinator recovering money owed for lost, damaged or wrongly billed inventory",
   "inputs_required": [
-   "shipment/RTO records",
+   "shipment/return-to-sender records (india: RTO records)",
    "proof of loss or damage (photos, weight, seal)",
    "marketplace seller console access",
    "fee statements"
@@ -21412,7 +21452,7 @@
    {
     "n": 1,
     "name": "Identify this week's incidents",
-    "does": "Identify every shipment marked lost, damaged or wrongly marked RTO this week.",
+    "does": "Identify every shipment marked lost, damaged or wrongly marked return-to-sender this week (india: wrongly marked RTO; markets: IN).",
     "inputs": [
      "shipment/RTO records"
     ],
@@ -21461,7 +21501,7 @@
    {
     "n": 5,
     "name": "File the marketplace claim",
-    "does": "File the marketplace reimbursement claim (FBA reimbursement, Flipkart SPF, Myntra claim).",
+    "does": "File the marketplace reimbursement claim (FBA reimbursement, Walmart/eBay/TikTok Shop claim programs; india: Flipkart SPF, Myntra claim).",
     "inputs": [
      "reimbursement candidate list"
     ],
@@ -21553,8 +21593,8 @@
    },
    {
     "n": 2,
-    "name": "Run the export procedure if export",
-    "does": "Set up IEC and LUT, HS codes, commercial invoice and export paperwork; choose DDP vs DDU.",
+    "name": "Run the cross-border procedure if export",
+    "does": "For an inbound sourcing shipment, secure a customs bond and HTS classification, check tariff and Section 321 eligibility; for an outbound order, prepare commercial invoice and export paperwork and choose DDP vs DDU (india: set up IEC and LUT for an export from India instead; markets: IN).",
     "inputs": [
      "export event details"
     ],
@@ -21921,7 +21961,7 @@
    "product copy, approved claims, keyword list",
    "category node",
    "image slots and specs per platform",
-   "BIS/hallmarking/labelling status if regulated category",
+   "US labelling/quality-marking status if regulated category (india: BIS/hallmarking/labelling status)",
    "target marketplace"
   ],
   "steps": [
@@ -21935,12 +21975,12 @@
     "tools": [],
     "skill": "prod/list-on-marketplace",
     "output": "selected marketplace procedure",
-    "check": "the marketplace named matches one of Amazon, Flipkart, Myntra, Nykaa, Blinkit or Zepto"
+    "check": "the marketplace named matches one of Amazon, Walmart, Target Plus, eBay, TikTok Shop, or, for an India brand, Flipkart/Myntra/Nykaa or Blinkit/Zepto"
    },
    {
     "n": 2,
     "name": "Run the compliance check first",
-    "does": "Run the BIS, hallmarking and labelling compliance check for the category before building anything.",
+    "does": "Run the US labelling/quality-marking compliance check for the category before building anything (india: BIS, hallmarking and labelling check; markets: IN).",
     "inputs": [
      "category",
      "compliance status"
@@ -22195,7 +22235,7 @@
   "trigger": "event: considering Amazon launch | event: listing live | event: pre-launch",
   "human_role": "Amazon manager taking a brand from no seller account to a protected, launched product",
   "inputs_required": [
-   "business entity and GST details",
+   "business entity and tax details (EIN/SSN, W-9; india: GST details)",
    "bank/payout details",
    "identity verification documents",
    "trademark status",
@@ -22207,7 +22247,7 @@
     "name": "Get the account right the first time",
     "does": "Get the Amazon account, entity, payout and identity verification right the first time.",
     "inputs": [
-     "entity/GST/payout/identity documents"
+     "entity/tax/payout/identity documents (india: entity/GST/payout/identity documents)"
     ],
     "tools": [],
     "skill": "prod/amazon-launch-sequence",
@@ -22739,14 +22779,14 @@
  },
  {
   "id": "PROD-W28",
-  "name": "Onboard the brand on quick commerce",
+  "name": "Onboard the brand on rapid delivery and quick commerce",
   "capabilities": [
    "PROD-C48"
   ],
-  "trigger": "on demand (new quick commerce launch)",
-  "human_role": "Quick commerce manager taking a brand from documents to live on Blinkit, Zepto or Instamart",
+  "trigger": "on demand (new rapid-delivery/quick-commerce launch)",
+  "human_role": "Rapid-delivery/quick-commerce manager taking a brand from documents to live on Instacart, DoorDash or Gopuff (india: Blinkit, Zepto or Instamart)",
   "inputs_required": [
-   "GST, FSSAI, barcode and packaging documents",
+   "business licence, resale certificate, UPC and packaging documents (india: GST, FSSAI, barcode and packaging documents)",
    "product catalogue for the platform",
    "target platform(s)"
   ],
@@ -22754,7 +22794,7 @@
    {
     "n": 1,
     "name": "Assemble the documents",
-    "does": "Assemble the GST, FSSAI, barcode and packaging documents the platform requires.",
+    "does": "Assemble the business licence, resale certificate, UPC and packaging documents the platform requires (india: GST, FSSAI, barcode and packaging documents; markets: IN).",
     "inputs": [
      "brand compliance documents"
     ],
@@ -22797,7 +22837,7 @@
     "tools": [],
     "skill": "prod/list-on-marketplace",
     "output": "initial listing draft",
-    "check": "the listing uses the matching Blinkit or Zepto sub-skill, not a generic template"
+    "check": "the listing uses the matching US platform sub-skill, or, for an India brand, the Blinkit/Zepto sub-skill, not a generic template"
    },
    {
     "n": 5,
@@ -22855,17 +22895,17 @@
  },
  {
   "id": "PROD-W29",
-  "name": "Manage quick commerce ad credits, promo calendar and dark-store fill rate",
+  "name": "Manage rapid-delivery ad credits, promo calendar and dark-store fill rate",
   "capabilities": [
    "PROD-C50",
    "PROD-C51"
   ],
-  "trigger": "weekly, and ahead of each festive window | daily (fill rate)",
-  "human_role": "Quick commerce manager running the ongoing account",
+  "trigger": "weekly, and ahead of each peak promotional window (india: festive window) | daily (fill rate)",
+  "human_role": "Rapid-delivery/quick-commerce manager running the ongoing account",
   "inputs_required": [
    "ad credit balance per platform",
    "organic search performance",
-   "festive promotional calendar",
+   "US retail promotional calendar (india: festive promotional calendar)",
    "dark-store stock levels"
   ],
   "steps": [
@@ -22910,10 +22950,10 @@
    },
    {
     "n": 4,
-    "name": "Negotiate festive windows",
-    "does": "Negotiate festive promotional windows ahead of the calendar date.",
+    "name": "Negotiate peak promotional windows",
+    "does": "Negotiate peak promotional windows (BFCM, Prime Day, Q4 holidays; india: festive windows) ahead of the calendar date.",
     "inputs": [
-     "festive calendar"
+     "US retail promotional calendar (india: festive calendar)"
     ],
     "tools": [],
     "skill": "prod/quick-commerce-ops",
@@ -22974,24 +23014,24 @@
  },
  {
   "id": "PROD-W30",
-  "name": "Track regulatory registers: Legal Metrology, FSSAI and EPR",
+  "name": "Track regulatory registers: FDA, net-quantity, state licence and EPR",
   "capabilities": [
    "PROD-C61",
    "PROD-C62"
   ],
-  "trigger": "monthly audit, and on any MRP/GST change | quarterly, annual filing deadline",
+  "trigger": "monthly audit, and on any formula/price change (india: MRP/GST change) | quarterly, annual filing deadline",
   "human_role": "Compliance coordinator keeping every registration and filing current",
   "inputs_required": [
    "SKU list with category",
-   "current Legal Metrology and FSSAI licence status",
-   "EPR plastic-packaging registration status",
+   "current FDA/state licence status (india: Legal Metrology and FSSAI licence status)",
+   "state EPR registration status (india: EPR plastic-packaging registration status)",
    "relabelling requirements"
   ],
   "steps": [
    {
     "n": 1,
     "name": "Keep the licence register",
-    "does": "Keep one register of which SKUs need Legal Metrology (Packaged Commodities) registration or an FSSAI licence.",
+    "does": "Keep one register of which SKUs need FDA facility registration or a state cosmetics/food/supplement licence (india: Legal Metrology (Packaged Commodities) registration or an FSSAI licence; markets: IN).",
     "inputs": [
      "SKU list with category"
     ],
@@ -23014,20 +23054,20 @@
    },
    {
     "n": 3,
-    "name": "Flag relabelling on MRP/GST change",
-    "does": "Flag the relabelling needed on any MRP or GST change.",
+    "name": "Flag relabelling on formula/price change",
+    "does": "Flag the relabelling needed on any formula, claim or price change (india: any MRP or GST change; markets: IN).",
     "inputs": [
      "MRP/GST change events"
     ],
     "tools": [],
     "skill": "prod/regulatory-register-track",
     "output": "relabelling flag",
-    "check": "a flag is raised on every MRP or GST change, not only at renewal"
+    "check": "a flag is raised on every formula/claim/price change, not only at renewal (india: MRP or GST change; markets: IN)"
    },
    {
     "n": 4,
-    "name": "Register EPR packaging",
-    "does": "Register the brand's plastic packaging under India's EPR rules.",
+    "name": "Register state EPR packaging",
+    "does": "Register the brand's packaging under the relevant state's EPR rules (india: India's EPR rules; markets: IN).",
     "inputs": [
      "packaging data"
     ],
@@ -23092,7 +23132,7 @@
   ],
   "qa": [
    "every licence's validity window tracked, not assumed current",
-   "relabelling flagged on every MRP/GST change, not just renewal"
+   "relabelling flagged on every formula/claim/price change, not just renewal (india: MRP/GST change; markets: IN)"
   ],
   "read_point": "each licence's renewal date; the annual EPR filing deadline",
   "typical_duration": "agent time 1 to 2 hours monthly; quarterly EPR filing adds a few hours",
@@ -23120,7 +23160,7 @@
    "accounting export for the month",
    "gateway settlement files",
    "marketplace settlement files",
-   "COD courier remittance files",
+   "India only: COD courier remittance files",
    "open dispute list",
    "fixed asset register",
    "last month's P&L ladder"
@@ -23129,7 +23169,7 @@
    {
     "n": 1,
     "name": "Pull the month's raw exports",
-    "does": "Pull Shopify and marketplace orders, gateway settlement files, courier COD remittance files and the accounting export for the close month.",
+    "does": "Pull Shopify and marketplace orders, gateway settlement files, the accounting export for the close month, and, for an India-selling brand, courier COD remittance files.",
     "inputs": [
      "brand brain: connector list"
     ],
@@ -23137,7 +23177,7 @@
      "connector: shopify orders (read)",
      "connector: accounting export (read)",
      "connector: marketplace settlement (read)",
-     "connector: courier COD remittance (read)"
+     "connector: courier COD remittance (read, India only)"
     ],
     "skill": null,
     "output": "raw export set with row counts per source",
@@ -23147,7 +23187,7 @@
    {
     "n": 2,
     "name": "Reconcile the gateway settlement",
-    "does": "Unbundle each gateway payout into gross sale, fee, refund, GST on the fee and net, then match it to the bank credit.",
+    "does": "Unbundle each gateway payout into gross sale, fee, refund, sales tax withheld on the fee (GST on the fee for India-selling brands) and net, then match it to the bank credit.",
     "inputs": [
      "gateway settlement files",
      "bank statement"
@@ -23162,7 +23202,7 @@
    {
     "n": 3,
     "name": "Reconcile marketplace settlements",
-    "does": "Unbundle commission, fixed fee, shipping fee, TCS under Section 52, GST on fees and refunds for each marketplace payout.",
+    "does": "Unbundle commission, fixed fee, shipping fee, marketplace-facilitator sales tax withheld, 1099-K totals and refunds for each marketplace payout. India-selling brands unbundle TCS under Section 52 and GST on fees the same way, as a market option.",
     "inputs": [
      "marketplace settlement files"
     ],
@@ -23171,12 +23211,12 @@
     ],
     "skill": "money/reconcile/marketplace",
     "output": "marketplace reconciliation table, one row per payout",
-    "check": "TCS and GST on fees are broken out on their own lines, never netted into one number"
+    "check": "facilitator sales tax (or TCS/GST for India) and fees are broken out on their own lines, never netted into one number"
    },
    {
     "n": 4,
-    "name": "Reconcile COD cash and courier remittance",
-    "does": "Age cash on delivery collected by each courier against what has actually reached the bank, by courier.",
+    "name": "India only: reconcile COD cash and courier remittance",
+    "does": "For an India-selling brand running COD, age cash collected by each courier against what has actually reached the bank, by courier. Reads null for US-only brands, whose payout reconciliation is fully covered by steps 2 and 3.",
     "inputs": [
      "COD courier remittance files",
      "courier SLA terms"
@@ -23207,7 +23247,7 @@
    {
     "n": 6,
     "name": "Build the evidence pack for each open dispute",
-    "does": "Assemble the order record, delivery proof, OTP log and support chat for each open gateway chargeback or UPI dispute, and check its filing deadline.",
+    "does": "Assemble the order record, delivery proof, verification log and support chat for each open chargeback or dispute (Shopify Payments, Stripe, PayPal; UPI dispute for India-selling brands), and check its filing deadline.",
     "inputs": [
      "open dispute list",
      "order records"
@@ -23216,7 +23256,7 @@
      "script: money.reconciliation",
      "connector: shopify orders (read)"
     ],
-    "skill": null,
+    "skill": "money/reconcile/chargebacks",
     "output": "one evidence pack per open dispute, with a filing deadline",
     "check": "no dispute is missing its filing deadline",
     "ask_founder_if": "a dispute needs a person to submit it through the gateway's own portal"
@@ -23328,7 +23368,7 @@
   ],
   "outputs": [
    "P&L ladder",
-   "reconciliation bridge (gateway, marketplace, COD, ad invoices)",
+   "reconciliation bridge (gateway, marketplace, ad invoices, chargebacks, and COD for India-selling brands)",
    "dispute evidence packs",
    "fixed asset register update",
    "management accounts report",
@@ -23338,7 +23378,7 @@
    "every number sourced and freshness stamped",
    "no missing value shown as zero",
    "no ad account write attempted",
-   "GST and TCS never netted into one line"
+   "facilitator sales tax (or GST and TCS for India) never netted into one line"
   ],
   "read_point": "on publish, against last month's ladder and the annual budget",
   "typical_duration": "agent: 2 to 3 hours across the steps; waiting: up to 2 days for settlement files and accountant sign-off",
@@ -23626,7 +23666,7 @@
   ],
   "qa": [
    "profit target never replaced by keystone",
-   "TCS, GST and fee lines all present in the waterfall",
+   "sales-tax (or TCS/GST for India) and fee lines all present in the waterfall",
    "no live change without recorded approval"
   ],
   "read_point": "60 to 90 days after a price goes live, or the day after a promo ends",
@@ -24123,28 +24163,28 @@
  },
  {
   "id": "MONEY-W07",
-  "name": "GST, HSN and tax compliance tracking",
+  "name": "US sales tax nexus, filing and marketplace-facilitator compliance tracking",
   "capabilities": [
    "MONEY-C12",
    "MONEY-G04",
    "LIFE-C55",
    "PROD-C60"
   ],
-  "trigger": "monthly, before GST return filing | event: new SKU or B2B dispatch",
-  "human_role": "the person tracking GST and tax compliance",
+  "trigger": "monthly, before the state sales-tax filing deadline (India: before GST return filing) | event: new SKU or B2B dispatch",
+  "human_role": "the person tracking sales-tax and marketplace compliance",
   "inputs_required": [
-   "brand brain: selling markets, SKU list",
-   "GSTR-2B",
+   "brand brain: selling markets, SKU list, registered states",
+   "Avalara or TaxJar taxability and filing status",
    "return and refund log",
-   "credit note register",
-   "stock transfer and B2B dispatch log",
-   "gift card and loyalty point ledger"
+   "credit memo register",
+   "gift card and loyalty point ledger",
+   "India only: GSTR-2B, stock transfer and B2B dispatch log"
   ],
   "steps": [
    {
     "n": 1,
-    "name": "Assign and validate HSN or SAC codes",
-    "does": "Build and keep the SKU-to-HSN/SAC map correct for every SKU, since a wrong or too-short code is a common cause of e-invoice portal rejections.",
+    "name": "Assign and validate product tax codes",
+    "does": "Build and keep the SKU-to-product-tax-code map correct in Avalara or TaxJar for every SKU, since a wrong or missing code is a common cause of miscollected sales tax. India-selling brands keep the same SKU-to-HSN/SAC map, as a market option, since a wrong or too-short HSN/SAC code is a common cause of e-invoice portal rejections.",
     "inputs": [
      "SKU list",
      "product category"
@@ -24153,13 +24193,13 @@
      "script: money.hsn_map_validate"
     ],
     "skill": "money/gst-tax-compliance",
-    "output": "SKU-to-HSN/SAC map",
+    "output": "SKU-to-product-tax-code map (India: SKU-to-HSN/SAC map)",
     "check": "no SKU ships without a validated code"
    },
    {
     "n": 2,
-    "name": "Track GST nexus and registration thresholds",
-    "does": "Track GST or sales-tax nexus and registration thresholds per market the brand sells into.",
+    "name": "Track sales-tax nexus and registration thresholds",
+    "does": "Track economic-nexus and registration thresholds per state the brand sells into (India-selling brands track GST nexus and registration thresholds the same way, as a market option).",
     "inputs": [
      "brand brain: selling markets",
      "sales by state or country"
@@ -24173,37 +24213,39 @@
    },
    {
     "n": 3,
-    "name": "Prepare GSTR-1 and 3B inputs",
-    "does": "Prepare the sales and input-credit data GSTR-1 and 3B need, and match input credit against GSTR-2B.",
+    "name": "Prepare state sales-tax filing inputs",
+    "does": "Prepare the return-ready sales and exemption data each registered state's filing needs, from Avalara or TaxJar. India-selling brands prepare the sales and input-credit data GSTR-1 and 3B need, and match input credit against GSTR-2B, as a market option.",
     "inputs": [
      "sales ledger",
-     "GSTR-2B"
+     "Avalara or TaxJar filing report",
+     "India only: GSTR-2B"
     ],
     "tools": [
      "script: money.compliance_tracker"
     ],
     "skill": "money/gst-tax-compliance",
-    "output": "GSTR-1/3B input pack",
-    "check": "every mismatch between claimed and GSTR-2B credit is listed, not netted away"
+    "output": "state filing input pack (India: GSTR-1/3B input pack)",
+    "check": "every mismatch between claimed and available credit is listed, not netted away"
    },
    {
     "n": 4,
-    "name": "Claim marketplace TCS and TDS credit",
-    "does": "Reconcile TCS collected by marketplaces under Section 52 and TDS deducted against the credit actually available.",
+    "name": "Reconcile marketplace facilitator sales tax and 1099-K",
+    "does": "Reconcile sales tax collected and remitted by each marketplace as facilitator against the credit or exclusion the brand can actually claim, and match 1099-K gross totals to the ledger. India-selling brands reconcile TCS collected by marketplaces under Section 52 and TDS deducted against the credit actually available, as a market option.",
     "inputs": [
-     "marketplace settlement TCS lines"
+     "marketplace settlement facilitator-tax lines",
+     "India only: marketplace settlement TCS lines"
     ],
     "tools": [
      "script: money.compliance_tracker"
     ],
     "skill": "money/gst-tax-compliance",
-    "output": "TCS/TDS credit reconciliation",
+    "output": "facilitator sales tax / 1099-K reconciliation (India: TCS/TDS credit reconciliation)",
     "check": "credit claimed never exceeds what the marketplace's own statement supports"
    },
    {
     "n": 5,
-    "name": "Raise e-way bills",
-    "does": "Raise e-way bills for B2B dispatch and stock transfer above the threshold value.",
+    "name": "India only: raise e-way bills",
+    "does": "For an India-selling brand, raise e-way bills for B2B dispatch and stock transfer above the threshold value. Reads null for US-only brands, which have no e-way bill requirement.",
     "inputs": [
      "stock transfer log",
      "B2B dispatch log"
@@ -24217,23 +24259,23 @@
    },
    {
     "n": 6,
-    "name": "Reconcile GST credit notes against returns",
-    "does": "Check that every completed return or refund has a matching GST credit note issued and filed on time.",
+    "name": "Reconcile credit memos against returns",
+    "does": "Check that every completed return or refund has a matching sales-tax credit memo issued and filed on time (a GST credit note for India-selling brands).",
     "inputs": [
      "return and refund log",
-     "credit note register"
+     "credit memo register"
     ],
     "tools": [
      "script: money.compliance_tracker"
     ],
     "skill": "money/gst-tax-compliance",
-    "output": "credit note reconciliation",
-    "check": "a refund without a matching credit note is flagged before the return period closes"
+    "output": "credit memo reconciliation",
+    "check": "a refund without a matching credit memo is flagged before the return period closes"
    },
    {
     "n": 7,
     "name": "Book liabilities correctly",
-    "does": "Book gift cards and loyalty points as liabilities recognized on redemption, and track FX exposure separately from GST.",
+    "does": "Book gift cards and loyalty points as liabilities recognized on redemption, and track FX exposure separately from sales-tax (GST) exposure.",
     "inputs": [
      "gift card ledger",
      "loyalty point ledger",
@@ -24248,8 +24290,8 @@
    },
    {
     "n": 8,
-    "name": "Hand off filing to the accountant",
-    "does": "Package GSTR-1, 3B inputs, credit reconciliation and e-way bill log for the brand's accountant to file.",
+    "name": "Hand off filing to the accountant or filing service",
+    "does": "Package the state filing inputs, facilitator/1099-K reconciliation and credit memo reconciliation for the brand's accountant or Avalara/TaxJar managed-filing service (India: package GSTR-1, 3B inputs, credit reconciliation and e-way bill log for the brand's accountant).",
     "inputs": [
      "all prior outputs"
     ],
@@ -24257,19 +24299,19 @@
     "skill": "shared/developer-brief",
     "output": "filing handoff package",
     "check": "the package states what this agent tracked versus what filing itself still needs a person",
-    "ask_founder_if": "always: actual GST return filing stays with the brand's accountant"
+    "ask_founder_if": "always: actual sales-tax (or GST) return filing stays with the brand's accountant or filing service"
    }
   ],
   "outputs": [
-   "SKU-to-HSN/SAC map",
-   "GST nexus status",
-   "GSTR-1/3B input pack",
-   "e-way bill log",
-   "credit note reconciliation"
+   "SKU-to-product-tax-code map (India: SKU-to-HSN/SAC map)",
+   "sales-tax nexus status",
+   "state filing input pack (India: GSTR-1/3B input pack)",
+   "credit memo reconciliation",
+   "India only: e-way bill log"
   ],
   "qa": [
-   "no SKU without a validated HSN/SAC code",
-   "TCS and GST on fees never netted",
+   "no SKU without a validated tax code",
+   "facilitator sales tax (or TCS/GST for India) on fees never netted",
    "filing itself stays human, tracking is agent_does"
   ],
   "read_point": "monthly, ahead of the filing deadline",
@@ -24533,12 +24575,12 @@
     "tools": [],
     "skill": "money/partner-commercial-terms",
     "output": "current agreement template",
-    "check": "the disclosure clause matches the current ASCI guideline"
+    "check": "the disclosure clause matches the current FTC Endorsement Guides (or the ASCI guideline for India-selling brands)"
    },
    {
     "n": 5,
     "name": "Check live posts for disclosure",
-    "does": "Check live creator and affiliate posts weekly for the ASCI and platform disclosure tags the agreement requires.",
+    "does": "Check live creator and affiliate posts weekly for the FTC #ad and platform disclosure tags the agreement requires (the ASCI-required tag for India-selling brands).",
     "inputs": [
      "live post list"
     ],
@@ -24571,7 +24613,7 @@
   ],
   "qa": [
    "commission never paid on a returned order",
-   "disclosure checked against the current ASCI rule",
+   "disclosure checked against the current FTC Endorsement Guides (or ASCI rule for India)",
    "payout never sent without approval"
   ],
   "read_point": "each payout cycle, against the reconciliation; weekly for disclosure checks",
@@ -25411,7 +25453,7 @@
    {
     "n": 5,
     "name": "Keep the handbook current",
-    "does": "Keep one current handbook covering leave, work-from-home, code of conduct and India-specific requirements including the POSH policy.",
+    "does": "Keep one current handbook covering leave, work-from-home, code of conduct and state-specific requirements including mandatory anti-harassment training (India: the POSH policy).",
     "inputs": [
      "current handbook",
      "law or policy changes"
@@ -25419,7 +25461,7 @@
     "tools": [],
     "skill": "money/sop-and-hr-docs",
     "output": "updated handbook",
-    "check": "the POSH policy section is present and current"
+    "check": "the anti-harassment training section (POSH policy section, for India) is present and current"
    },
    {
     "n": 6,
@@ -25884,12 +25926,12 @@
  },
  {
   "id": "MONEY-W19",
-  "name": "Plan customer-service capacity and handle DPDP data-subject requests",
+  "name": "Plan customer-service capacity and handle CCPA/CPRA data-subject requests (DPDP for India)",
   "capabilities": [
    "MONEY-C38",
    "LIFE-C66"
   ],
-  "trigger": "monthly (CS capacity) | event: a customer submits an access or erasure request",
+  "trigger": "monthly (CS capacity) | event: a customer submits a CCPA/CPRA access, deletion or opt-out request (a DPDP access or erasure request for India-selling brands)",
   "human_role": "the ops manager sizing support and protecting customer data rights",
   "inputs_required": [
    "sales forecast curve",
@@ -25955,7 +25997,7 @@
    {
     "n": 5,
     "name": "Find every system holding the requester's data",
-    "does": "On a DPDP access or erasure request, find every system that holds that person's data: ESP, helpdesk, loyalty, subscription, order records.",
+    "does": "On a CCPA/CPRA access, deletion or opt-out request (a DPDP access or erasure request for India-selling brands), find every system that holds that person's data: ESP, helpdesk, loyalty, subscription, order records.",
     "inputs": [
      "system map",
      "request details"
@@ -25968,7 +26010,7 @@
    {
     "n": 6,
     "name": "Assemble or erase the data",
-    "does": "Assemble the data for an access request, or prepare the erasure across every located system for an erasure request.",
+    "does": "Assemble the data for an access request, or prepare the deletion/erasure across every located system for a deletion or opt-out request.",
     "inputs": [
      "data location map"
     ],
@@ -25981,7 +26023,7 @@
    {
     "n": 7,
     "name": "Respond within the statutory window",
-    "does": "Track the DPDP response deadline and confirm the response goes out inside it.",
+    "does": "Track the CCPA/CPRA response deadline (the DPDP response deadline for India) and confirm the response goes out inside it.",
     "inputs": [
      "request received date"
     ],
@@ -25993,28 +26035,28 @@
    {
     "n": 8,
     "name": "Log the request",
-    "does": "Log every DPDP request and its resolution for audit purposes.",
+    "does": "Log every data-subject request and its resolution for audit purposes.",
     "inputs": [
      "response confirmation"
     ],
     "tools": [],
     "skill": "shared/registry-entry",
-    "output": "DPDP request log",
+    "output": "data-subject request log",
     "check": "the log is queryable by requester and by date"
    }
   ],
   "outputs": [
    "CS staffing plan",
    "cost per ticket by tier",
-   "DPDP request log with responses"
+   "data-subject request log with responses (India: DPDP request log)"
   ],
   "qa": [
    "staffing follows the forecast curve",
-   "every DPDP request checked against every connected system",
-   "erasure never breaks a legal retention obligation"
+   "every data-subject request checked against every connected system",
+   "deletion or erasure never breaks a legal retention obligation"
   ],
-  "read_point": "monthly for CS capacity; against the statutory deadline for each DPDP request",
-  "typical_duration": "agent: 1 hour monthly for capacity; 30 to 60 minutes per DPDP request",
+  "read_point": "monthly for CS capacity; against the statutory deadline for each data-subject request",
+  "typical_duration": "agent: 1 hour monthly for capacity; 30 to 60 minutes per data-subject request",
   "subagents": [],
   "agent": "MONEY",
   "unknown_capabilities": []
@@ -26035,7 +26077,7 @@
    "endpoint list",
    "order and payment data",
    "chargeback log",
-   "COD refusal log",
+   "India only: COD refusal log",
    "current bot and WAF policy",
    "domain and DNS records"
   ],
@@ -26114,16 +26156,16 @@
    },
    {
     "n": 6,
-    "name": "Control COD refusal and prepayment triggers",
-    "does": "Control COD refusal rate and set prepayment triggers for repeat refusers.",
+    "name": "Control step-up verification and payment-refusal triggers",
+    "does": "Set step-up verification triggers for repeat card-decline or high-risk customers. India-selling brands control COD refusal rate and set prepayment triggers for repeat refusers, the same way, as a market option.",
     "inputs": [
-     "COD refusal log"
+     "India only: COD refusal log"
     ],
     "tools": [
      "script: money.fraud_control_audit"
     ],
     "skill": "money/security-scan-weekly",
-    "output": "COD control list",
+    "output": "payment-refusal control list (India: COD control list)",
     "check": "a repeat refuser is flagged by name before the next order, not after"
    },
    {
@@ -26812,7 +26854,7 @@
    {
     "n": 2,
     "name": "Pull and tag support signal",
-    "does": "Export tickets, return reasons and call transcripts for the period. Tag by the underlying failure, not the customer's stated request. Flag sizing, fit or delivery-delay anxieties (India-relevant: COD refusal reasons, pincode delay complaints).",
+    "does": "Export tickets, return reasons and call transcripts for the period. Tag by the underlying failure, not the customer's stated request. Flag sizing, fit or delivery-delay anxieties (failed-delivery and address-validation complaints; India-relevant: COD refusal reasons, markets: IN, reads null for US).",
     "inputs": [
      "connector: support desk export",
      "connector: returns log"
@@ -26828,7 +26870,7 @@
    {
     "n": 3,
     "name": "Run forum and social listening",
-    "does": "Search Reddit, Quora, Instagram comments and relevant WhatsApp-forwarded review threads in the avatar's own words for language, objections and sub-avatars a review file misses.",
+    "does": "Search Reddit, Quora, Instagram comments and relevant social threads in the avatar's own words for language, objections and sub-avatars a review file misses. Include WhatsApp-forwarded review threads where the brand's customers use that channel (markets: IN, EU, LATAM).",
     "inputs": [
      "public web"
     ],
@@ -26975,7 +27017,7 @@
    {
     "n": 3,
     "name": "Pick channel and incentive",
-    "does": "Recommend a channel (call, WhatsApp voice note thread, video) and a proportionate incentive (a discount code or small gift, not cash that could bias answers) sized to the brand's own economics.",
+    "does": "Recommend a channel (call, video, SMS or voice note thread; WhatsApp voice note thread where the brand's customers use it, markets: IN, EU, LATAM) and a proportionate incentive (a discount code or small gift, not cash that could bias answers) sized to the brand's own economics.",
     "inputs": [
      "contribution margin"
     ],
@@ -27207,7 +27249,7 @@
    {
     "n": 1,
     "name": "Confirm the competitive set",
-    "does": "List direct rivals plus real alternatives a shopper would compare against, including doing nothing and the generic marketplace listing (Amazon/Flipkart/Meesho equivalents).",
+    "does": "List direct rivals plus real alternatives a shopper would compare against, including doing nothing and the generic marketplace listing (Amazon, Walmart Marketplace or Target Plus equivalents; Flipkart or Meesho for an India-market comparison, markets: IN).",
     "inputs": [
      "brand brain: category"
     ],
@@ -28276,7 +28318,7 @@
    {
     "n": 5,
     "name": "Clear finalists for trademark, domain and language risk",
-    "does": "Search the trademark database and international equivalents, check name + industry-term collisions, check domain and social handle availability, and check meaning and sound in relevant languages (Hindi, and any export-market language).",
+    "does": "Search the USPTO trademark database and international equivalents, check name + industry-term collisions, check domain and social handle availability, and check meaning and sound in relevant languages (Spanish for US customers, plus Hindi or any other export-market language when the brand sells into that market).",
     "inputs": [
      "scored shortlist"
     ],
@@ -30522,7 +30564,7 @@
    {
     "n": 3,
     "name": "Place mandatory declarations",
-    "does": "Place every legally required declaration for the target market: MRP, Legal Metrology details (net quantity, manufacturer/packer/importer name and address, month and year of manufacture, consumer care contact), BIS or hallmark mark where the product category requires it, and the EPR mark where applicable.",
+    "does": "Place every legally required declaration for the target market. US: net quantity and manufacturer/packer/distributor name and address (FTC Fair Packaging and Labeling Act), Care Labeling Rule for textiles, Prop 65 warning where required, and FTC Jewelry Guides quality marks where the product is jewelry. India (markets: IN, null for US): MRP, Legal Metrology details (net quantity, manufacturer/packer/importer name and address, month and year of manufacture, consumer care contact), BIS or hallmark mark where the product category requires it, and the EPR mark where applicable.",
     "inputs": [
      "target channel",
      "product category"

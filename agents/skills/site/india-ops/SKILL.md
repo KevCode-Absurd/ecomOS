@@ -2,14 +2,15 @@
 name: india-ops
 owner: site-specialist
 version: 1
+markets: IN (reads null, does not run for a US-default brand)
 invoke_when: COD share and return-to-origin rate are identified as a real bottleneck for an India-facing brand
 inputs: courier serviceability API, brand's historical RTO data, WhatsApp business API access
 outputs: PDP serviceability widget, checkout OTP flow, COD fee config, RTO dashboard
 ---
-# COD return-to-origin reduction
+# COD return-to-origin reduction (India market option)
 
 ## Purpose
-Build the site-side half of India's biggest COD margin leak: filter and verify orders before they ship, and measure RTO by the dimensions that actually explain it.
+Build the site-side half of India's biggest COD margin leak: filter and verify orders before they ship, and measure RTO by the dimensions that actually explain it. This is an India-only option under the US-first checkout payment methods and address validation capability; it reads null and does not run for a US-default brand, which instead runs Shop Pay, PayPal, Apple Pay, BNPL, USPS address validation and fraud screening.
 
 ## Steps
 1. Show real-time PIN code serviceability on the PDP, using the courier or aggregator API, before the shopper adds to cart.
@@ -29,4 +30,4 @@ Build the site-side half of India's biggest COD margin leak: filter and verify o
 A PDP serviceability widget, a checkout OTP flow, a COD fee config, a WhatsApp confirmation flow, and an RTO dashboard.
 
 ## Example
-"RTO dashboard shows PIN codes in one region running 3x the average RTO on COD orders over ₹2,000; OTP verification enabled for that region above ₹1,500 instead of the store-wide ₹3,000 threshold."
+"RTO dashboard shows PIN codes in one region running 3x the average RTO on COD orders over 2,000 rupees; OTP verification enabled for that region above 1,500 rupees instead of the store-wide 3,000-rupee threshold."

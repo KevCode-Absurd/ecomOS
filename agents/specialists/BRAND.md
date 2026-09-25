@@ -268,7 +268,7 @@ WHEN TO STOP
 **trademark-domain-check**
 - Purpose: screen name finalists for legal and availability risk.
 - Inputs: shortlist of names, target markets/languages.
-- Steps: search the federal trademark database; check international equivalents where relevant; search name + industry terms; check domain and social handles; check meaning/sound per market language.
+- Steps: search the USPTO trademark database; check international equivalents where relevant (EUIPO, or an India registry search when selling into that market); search name + industry terms; check domain and social handles; check meaning/sound per market language.
 - Checks: every finalist has a clearance status (clear, risk, needs-legal).
 - Output: clearance report per finalist, legal-review flag list.
 

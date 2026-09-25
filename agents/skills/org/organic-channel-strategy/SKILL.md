@@ -12,7 +12,7 @@ outputs: positioning brief, platform plan with trial bars, visual world spec, ac
 Decide which platforms a brand organically runs, with a reason tied to the avatar and a fixed test window for anything new, not a copy of what competitors do.
 
 ## Steps
-1. Read the avatar, category, region and voice from the brand brain. India-specific: note whether the avatar buys on WhatsApp, whether Hindi or a regional language outperforms English captions, and mobile-only browsing.
+1. Read the avatar, category, region and voice from the brand brain, including whether Spanish or another language outperforms English captions for this audience, and the mobile-only browsing share. India only (markets IN, reads null for a US-only brand): note whether the avatar buys on WhatsApp, and whether Hindi or a regional language outperforms English captions.
 2. Pull the competitive teardown for structure and cadence only, never text or footage.
 3. Score each platform: avatar fit, cost to produce one week of content, a 2-week trial success bar.
 4. Set 3-5 content pillars, each naming a SKU and the objection it answers.
@@ -29,4 +29,4 @@ Decide which platforms a brand organically runs, with a reason tied to the avata
 {positioning_brief, platform_plan[], visual_world_spec, account_setup_checklist}
 
 ## Example
-Pillar "Why it does not wobble on Indian roads" ties to the SKU "stroller-v2" and the objection "will it survive potholes", scheduled 2x a week on Instagram and YouTube Shorts only, with Pinterest on a 2-week trial ending 15 Oct.
+Pillar "Why it does not wobble on potholed US streets" ties to the SKU "stroller-v2" and the objection "will it survive potholes", scheduled 2x a week on Instagram and YouTube Shorts only, with Pinterest on a 2-week trial ending 15 Oct.

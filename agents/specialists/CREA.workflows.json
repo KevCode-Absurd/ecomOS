@@ -759,7 +759,7 @@
       "CREA-C26"
     ],
     "trigger": "on demand",
-    "human_role": "Localisation editor for a mobile-first, non-US market",
+    "human_role": "Localisation editor for a target market and device",
     "inputs_required": [
       "source creative and copy set",
       "target market's payment, delivery and trust facts",
@@ -769,7 +769,7 @@
       {
         "n": 1,
         "name": "Confirm the target spec",
-        "does": "Confirms the device target (mobile-first, vertical-only formats) and market facts (COD availability, EMI, delivery windows, local payment logos) for the target market.",
+        "does": "Confirms the device target (mobile-first, vertical-only formats where the target market's traffic calls for it) and market facts (payment method mix, delivery windows, local payment logos; COD availability and EMI where the target market runs them, markets: IN) for the target market.",
         "inputs": [
           "brand brain: market policies"
         ],
@@ -808,7 +808,7 @@
       {
         "n": 4,
         "name": "Swap in local trust facts",
-        "does": "Replaces any non-local trust line (a foreign currency guarantee, a foreign shipping time) with the real local fact: COD availability, local return window, local payment logos.",
+        "does": "Replaces any non-local trust line (a foreign currency guarantee, a foreign shipping time) with the real local fact: payment method mix, local return window, local payment logos; COD availability where the target market runs it, markets: IN.",
         "inputs": [
           "target spec sheet"
         ],
@@ -1500,7 +1500,7 @@
       {
         "n": 4,
         "name": "State the honest reason for a low price",
-        "does": "If the price looks unusually low, writes the real reason, for example clearance, factory-direct, or a festive sale, rather than leaving it unexplained.",
+        "does": "If the price looks unusually low, writes the real reason, for example clearance, factory-direct, or a holiday sale, rather than leaving it unexplained.",
         "inputs": [
           "price and policy fact sheet"
         ],
@@ -1732,75 +1732,75 @@
   },
   {
     "id": "CREA-W16",
-    "name": "Write COD-to-prepaid and RTO-reduction creative messaging",
+    "name": "Write payment and delivery reassurance creative messaging",
     "capabilities": [
       "CREA-C44"
     ],
     "trigger": "on demand",
-    "human_role": "COD-conversion and delivery-trust copywriter",
+    "human_role": "payment and delivery-trust copywriter",
     "inputs_required": [
-      "current COD and prepaid mix and RTO rate",
-      "prepaid incentive if any",
-      "delivery-trust facts: courier, timelines, ID verification"
+      "current payment method mix and failed/reversed-order rates (chargeback_rate, return_to_sender_rate; cod_share and rto_rate where the brand runs COD, markets: IN)",
+      "reassurance incentive if any (BNPL, free returns, discount); prepaid incentive if the brand runs COD (markets: IN)",
+      "delivery-trust facts: carrier, timelines, tracking, ID verification where COD applies"
     ],
     "steps": [
       {
         "n": 1,
-        "name": "Pull the real RTO and COD numbers",
-        "does": "Pulls the account's current COD share and RTO rate to size how much this messaging matters right now.",
+        "name": "Pull the real payment-mix and reversed-order numbers",
+        "does": "Pulls the account's current payment method mix and failed/reversed-order rates (chargeback_rate, return_to_sender_rate) to size how much this messaging matters right now; for a COD brand, also pulls cod_share and rto_rate.",
         "inputs": [
-          "metric contract: cod_share, rto_rate"
+          "metric contract: payment_method_mix, chargeback_rate, return_to_sender_rate, cod_share, rto_rate (cod_share and rto_rate read null outside markets: IN)"
         ],
         "tools": [],
         "skill": null,
-        "output": "RTO and COD baseline",
+        "output": "payment-mix and reversed-order baseline",
         "check": "numbers pulled from the metric contract, not estimated"
       },
       {
         "n": 2,
-        "name": "Write the prepaid nudge",
-        "does": "Writes the ad and post-purchase line that pushes toward prepaid, discount, faster dispatch, ID-verified courier trust, honest and specific.",
+        "name": "Write the payment reassurance line",
+        "does": "Writes the ad and checkout line that removes payment friction: a BNPL option, card or wallet trust fact, or, for a COD brand, the prepaid nudge (discount, faster dispatch), honest and specific.",
         "inputs": [
-          "RTO/COD baseline",
-          "prepaid incentive facts"
+          "payment-mix baseline",
+          "reassurance or prepaid incentive facts"
         ],
         "tools": [],
-        "skill": "crea/special-formats/cod-prepaid-rto-messaging",
-        "output": "prepaid nudge copy",
-        "check": "any discount or speed claim matches what ops actually offers"
+        "skill": "crea/special-formats/payment-delivery-reassurance-messaging",
+        "output": "payment reassurance copy",
+        "check": "any discount, BNPL or speed claim matches what ops actually offers"
       },
       {
         "n": 3,
         "name": "Write the delivery-trust messaging",
-        "does": "Writes the trust lines that lower RTO risk: real courier name, real delivery window, call-before-delivery fact if true.",
+        "does": "Writes the trust lines that lower failed-delivery and return-to-sender risk: real carrier name, real delivery window, tracking fact; for a COD brand, the same lines also lower return-to-origin (RTO) risk.",
         "inputs": [
           "delivery-trust facts"
         ],
         "tools": [],
-        "skill": "crea/special-formats/cod-prepaid-rto-messaging",
+        "skill": "crea/special-formats/payment-delivery-reassurance-messaging",
         "output": "delivery-trust copy block",
         "check": "every fact matches current ops policy, not an aspiration"
       },
       {
         "n": 4,
         "name": "Run the claim pass",
-        "does": "Runs the claim-tier check, since delivery-time and discount claims are a common source of drift.",
+        "does": "Runs the claim-tier check, since delivery-time, BNPL and discount claims are a common source of drift.",
         "inputs": [
-          "prepaid nudge copy",
+          "payment reassurance copy",
           "delivery-trust copy block"
         ],
         "tools": [],
         "skill": null,
-        "output": "audited COD and RTO copy",
+        "output": "audited payment and delivery copy",
         "check": "no delivery-time claim beyond the current real average"
       },
       {
         "n": 5,
         "name": "Hand off with the baseline attached",
-        "does": "Hands the copy to MEDIA or the Site specialist with the RTO and COD baseline attached so impact can be measured later.",
+        "does": "Hands the copy to MEDIA or the Site specialist with the payment-mix and reversed-order baseline attached so impact can be measured later.",
         "inputs": [
           "audited copy",
-          "RTO/COD baseline"
+          "payment-mix and reversed-order baseline"
         ],
         "tools": [],
         "skill": "shared/registry-entry",
@@ -1809,13 +1809,13 @@
       }
     ],
     "outputs": [
-      "prepaid nudge copy",
+      "payment reassurance copy",
       "delivery-trust copy block"
     ],
     "qa": [
-      "every delivery or discount fact matches current ops policy"
+      "every delivery, BNPL or discount fact matches current ops policy"
     ],
-    "read_point": "next full month's COD share and RTO rate after deployment",
+    "read_point": "next full month's payment method mix and reversed-order rates after deployment",
     "typical_duration": "agent time: about 1 hour",
     "subagents": []
   },
@@ -1828,7 +1828,7 @@
     "trigger": "on demand",
     "human_role": "Marketplace creative module designer",
     "inputs_required": [
-      "marketplace's current module template grid: Amazon A+, Flipkart or Myntra brand store",
+      "marketplace's current module template grid: Amazon A+, Walmart Marketplace or Target Plus brand shop; Flipkart or Myntra brand store for an India-market brand (markets: IN)",
       "product facts and real photos",
       "claim tiers"
     ],

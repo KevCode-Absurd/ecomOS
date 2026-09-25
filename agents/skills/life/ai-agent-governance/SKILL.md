@@ -40,6 +40,6 @@ An operating-procedure document, a replay test report with scores, and an
 escalation rule set.
 
 ## Example
-"Refund cap: ₹2,000 auto-approved if order is delivered and within the return
+"Refund cap: $50 auto-approved if order is delivered and within the return
 window; above that, drafts for a human. Replay against 200 past tickets: 94%
 correct action, 3 tone flags fixed before go-live."

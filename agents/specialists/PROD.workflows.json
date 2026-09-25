@@ -225,10 +225,10 @@
       {
         "n": 5,
         "name": "Map seasonal and gifting spikes",
-        "does": "Plot any seasonal or gifting spike against the calendar for options tagged seasonal.",
+        "does": "Plot any seasonal or gifting spike against the US retail calendar (Q4 holidays, Mother's/Father's Day, Valentine's) for options tagged seasonal (india: festive calendar; markets: IN).",
         "inputs": [
           "sales history",
-          "festive calendar"
+          "US retail calendar (india: festive calendar)"
         ],
         "tools": [],
         "skill": null,
@@ -677,7 +677,7 @@
     "inputs_required": [
       "tech pack or open spec",
       "MOQ needs",
-      "supplier region preference (India or China)",
+      "supplier region preference (US domestic, China or India)",
       "existing supplier list if any"
     ],
     "steps": [
@@ -736,7 +736,7 @@
       {
         "n": 5,
         "name": "Keep the spec running in the background",
-        "does": "Leave the open spec live against IndiaMART, Alibaba and Global Sources for a better or new supplier.",
+        "does": "Leave the open spec live against Alibaba, Global Sources, Faire/Tundra and ThomasNet/Maker's Row for a better or new supplier (india: also against IndiaMART; markets: IN).",
         "inputs": [
           "open spec"
         ],
@@ -1524,7 +1524,7 @@
       {
         "n": 2,
         "name": "Compute reorder point and safety stock",
-        "does": "Compute reorder point and safety stock in code, sized against India-specific spike risk (festive demand, COD RTO).",
+        "does": "Compute reorder point and safety stock in code, sized against peak-season spike risk (Q4 holiday demand, carrier return-to-sender risk); india: festive demand and COD RTO risk (markets: IN).",
         "inputs": [
           "velocity/lead-time table",
           "safety-stock policy"
@@ -1769,13 +1769,13 @@
       "PROD-G05",
       "PROD-C72"
     ],
-    "trigger": "continuous; event: new channel added | annual, ahead of festive season",
+    "trigger": "continuous; event: new channel added | annual, ahead of Q4/BFCM peak season (india: ahead of festive season)",
     "human_role": "Inventory/ops planner keeping one stock pool safe across channels and ready for peak season",
     "inputs_required": [
       "stock pool across site, marketplaces, quick commerce and stores",
       "per-channel buffer policy",
       "order-routing and split-shipment rules",
-      "festive calendar",
+      "US peak-season retail calendar (BFCM, Prime Day, Q4 holidays; india: festive calendar)",
       "warehouse staffing and WMS/OMS capacity"
     ],
     "steps": [
@@ -1819,7 +1819,7 @@
       {
         "n": 4,
         "name": "Project peak-season safety stock",
-        "does": "Ahead of the festive season, project the safety stock needed across the season.",
+        "does": "Ahead of Q4/BFCM, project the safety stock needed across the season (india: ahead of the festive season; markets: IN).",
         "inputs": [
           "festive calendar",
           "sales history"
@@ -1827,7 +1827,7 @@
         "tools": [],
         "skill": "prod/inventory-network-plan",
         "output": "peak safety-stock projection",
-        "check": "the projection uses at least one prior festive cycle's data where it exists"
+        "check": "the projection uses at least one prior peak cycle's data where it exists (india: prior festive cycle; markets: IN)"
       },
       {
         "n": 5,
@@ -1845,7 +1845,7 @@
       {
         "n": 6,
         "name": "Build the readiness plan",
-        "does": "Build the festive readiness plan rolling stock, staffing and system load into one plan.",
+        "does": "Build the peak-season readiness plan rolling stock, staffing and system load into one plan (india: festive readiness plan; markets: IN).",
         "inputs": [
           "safety-stock projection",
           "capacity check"
@@ -1907,7 +1907,7 @@
       "SLA requirements",
       "candidate 3PL list",
       "warehouse layout if in-house",
-      "return/RTO volume and reasons"
+      "return/return-to-sender volume and reasons (india: RTO)"
     ],
     "steps": [
       {
@@ -1962,7 +1962,7 @@
       {
         "n": 5,
         "name": "Design the returns grading rule",
-        "does": "Design the fixed rule for a returned unit: RTO or customer return, restock, refurbish or write off.",
+        "does": "Design the fixed rule for a returned unit: carrier return-to-sender or customer return (india: RTO or customer return; markets: IN), restock, refurbish or write off.",
         "inputs": [
           "return/RTO history"
         ],
@@ -2025,94 +2025,94 @@
   },
   {
     "id": "PROD-W16",
-    "name": "Run daily courier rate-shop and NDR resolution",
+    "name": "Run daily carrier rate-shop and failed-delivery resolution",
     "capabilities": [
       "PROD-C55",
       "PROD-C56"
     ],
-    "trigger": "per order, real time | daily, same-day on NDR",
-    "human_role": "Shipping/ops executive running the daily courier decision and same-day NDR outreach",
+    "trigger": "per order, real time | daily, same-day on carrier exception",
+    "human_role": "Shipping/ops executive running the daily carrier decision and same-day exception outreach (india: same-day NDR outreach)",
     "inputs_required": [
-      "live courier rate feed",
-      "pincode serviceability data",
-      "SLA history per courier per zone",
-      "NDR queue",
-      "customer contact channel"
+      "live carrier rate feed",
+      "ZIP code serviceability data (india: pincode)",
+      "SLA history per carrier per zone",
+      "carrier-exception queue (india: NDR queue)",
+      "customer contact channel (SMS, email; india: SMS or WhatsApp)"
     ],
     "steps": [
       {
         "n": 1,
-        "name": "Pick the courier in code",
-        "does": "Pick the courier per shipment in code from live rate, pincode serviceability and SLA.",
+        "name": "Pick the carrier in code",
+        "does": "Pick the carrier per shipment in code from live rate, ZIP code serviceability and SLA.",
         "inputs": [
           "live rate feed",
           "serviceability data",
           "SLA history"
         ],
         "tools": [
-          "script: courier routing (to build)"
+          "script: carrier routing (to build)"
         ],
-        "skill": "prod/daily-shipping-ops",
-        "output": "per-order courier choice",
+        "skill": "prod/failed-delivery-ops",
+        "output": "per-order carrier choice",
         "check": "the choice is computed from live data, not a fixed default carrier"
       },
       {
         "n": 2,
         "name": "Fail over on the spot",
-        "does": "Fail over to a backup courier the moment the primary fails serviceability or SLA.",
+        "does": "Fail over to a backup carrier the moment the primary fails serviceability or SLA.",
         "inputs": [
-          "per-order courier choice"
+          "per-order carrier choice"
         ],
         "tools": [
-          "script: courier routing (to build)"
+          "script: carrier routing (to build)"
         ],
-        "skill": "prod/daily-shipping-ops",
+        "skill": "prod/failed-delivery-ops",
         "output": "failover event log",
         "check": "failover happens automatically, not after a manual check"
       },
       {
         "n": 3,
-        "name": "Pull today's NDRs",
-        "does": "Pull every non-delivery report raised today.",
+        "name": "Pull today's carrier exceptions",
+        "does": "Pull every carrier exception raised today (india: every non-delivery report; markets: IN).",
         "inputs": [
-          "NDR queue"
+          "carrier-exception queue"
         ],
         "tools": [],
-        "skill": "prod/daily-shipping-ops",
-        "output": "today's NDR list",
-        "check": "the list is pulled at least once before the courier's attempt window closes"
+        "skill": "prod/failed-delivery-ops",
+        "output": "today's exception list",
+        "check": "the list is pulled at least once before the carrier's attempt window closes"
       },
       {
         "n": 4,
         "name": "Confirm or reschedule",
-        "does": "Confirm the address or reschedule with the customer before the courier's attempt window closes.",
+        "does": "Run address validation and confirm the address or reschedule with the customer before the carrier's attempt window closes.",
         "inputs": [
-          "today's NDR list",
+          "today's exception list",
           "customer contact channel"
         ],
         "tools": [],
-        "skill": "prod/daily-shipping-ops",
+        "skill": "prod/failed-delivery-ops",
         "output": "outreach result",
         "check": "outreach happens before the attempt window closes, not after"
       },
       {
         "n": 5,
         "name": "Log the outcome",
-        "does": "Log the outreach outcome and any RTO decision.",
+        "does": "Log the outreach outcome and any return-to-sender decision (india: RTO decision; markets: IN).",
         "inputs": [
           "outreach result"
         ],
         "tools": [],
-        "skill": "prod/daily-shipping-ops",
-        "output": "NDR outcome log",
-        "check": "every NDR has a recorded outcome, none left open past the window"
+        "skill": "prod/failed-delivery-ops",
+        "output": "exception outcome log",
+        "check": "every exception has a recorded outcome, none left open past the window"
       },
       {
         "n": 6,
         "name": "Flag rising zones",
-        "does": "Flag any zone with a rising NDR or RTO rate for the monthly scorecard.",
+        "does": "Flag any zone with a rising exception or return-to-sender rate for the monthly scorecard (india: rising NDR or RTO rate; markets: IN).",
         "inputs": [
-          "NDR outcome log"
+          "exception outcome log"
         ],
         "tools": [],
         "skill": null,
@@ -2122,7 +2122,7 @@
       {
         "n": 7,
         "name": "Log the day",
-        "does": "Log the day's routing and NDR outcomes to the registry.",
+        "does": "Log the day's routing and exception outcomes to the registry.",
         "inputs": [
           "all prior outputs"
         ],
@@ -2133,15 +2133,15 @@
       }
     ],
     "outputs": [
-      "per-order courier routing log",
-      "NDR resolution log"
+      "per-order carrier routing log",
+      "exception resolution log"
     ],
     "qa": [
       "routing decision computed from live data, not a fixed default carrier",
-      "every NDR worked the day it was raised"
+      "every exception worked the day it was raised"
     ],
-    "read_point": "same day: NDR resolved before the attempt window closes; monthly: zone RTO trend",
-    "typical_duration": "agent time runs continuously per order; NDR outreach adds same-day human contact time",
+    "read_point": "same day: exception resolved before the attempt window closes; monthly: zone return-to-sender trend",
+    "typical_duration": "agent time runs continuously per order; exception outreach adds same-day human contact time",
     "subagents": []
   },
   {
@@ -2155,14 +2155,14 @@
     "human_role": "Ops manager reallocating volume and pushing back on rising shipping cost",
     "inputs_required": [
       "courier scorecard history",
-      "RTO, first-attempt delivery and TAT data per courier per zone",
-      "public rate benchmarks for comparable India couriers"
+      "failed-delivery/return-to-sender, first-attempt delivery and transit-time data per carrier per zone (india: RTO, first-attempt and TAT data)",
+      "public rate benchmarks for comparable carriers (UPS, USPS, FedEx, regional 3PLs; india: comparable India couriers)"
     ],
     "steps": [
       {
         "n": 1,
         "name": "Update the running scorecard",
-        "does": "Update the scorecard per courier per zone on RTO rate, first-attempt delivery rate and delivery TAT.",
+        "does": "Update the scorecard per carrier per zone on failed-delivery/return-to-sender rate, first-attempt delivery rate and transit time (india: RTO rate; markets: IN).",
         "inputs": [
           "performance data"
         ],
@@ -2198,7 +2198,7 @@
       {
         "n": 4,
         "name": "Watch cost against public benchmarks",
-        "does": "Watch the brand's own shipping cost per order against public rate benchmarks for comparable India couriers.",
+        "does": "Watch the brand's own shipping cost per order against public rate benchmarks for comparable carriers (india: comparable India couriers; markets: IN).",
         "inputs": [
           "cost per order",
           "public rate cards"
@@ -2268,10 +2268,10 @@
       "PROD-G01",
       "PROD-G02"
     ],
-    "trigger": "event: shipment marked lost or damaged, or RTO received damaged; weekly sweep | weekly",
+    "trigger": "event: shipment marked lost or damaged, or return-to-sender received damaged (india: RTO received damaged); weekly sweep | weekly",
     "human_role": "Ops/claims coordinator recovering money owed for lost, damaged or wrongly billed inventory",
     "inputs_required": [
-      "shipment/RTO records",
+      "shipment/return-to-sender records (india: RTO records)",
       "proof of loss or damage (photos, weight, seal)",
       "marketplace seller console access",
       "fee statements"
@@ -2280,7 +2280,7 @@
       {
         "n": 1,
         "name": "Identify this week's incidents",
-        "does": "Identify every shipment marked lost, damaged or wrongly marked RTO this week.",
+        "does": "Identify every shipment marked lost, damaged or wrongly marked return-to-sender this week (india: wrongly marked RTO; markets: IN).",
         "inputs": [
           "shipment/RTO records"
         ],
@@ -2329,7 +2329,7 @@
       {
         "n": 5,
         "name": "File the marketplace claim",
-        "does": "File the marketplace reimbursement claim (FBA reimbursement, Flipkart SPF, Myntra claim).",
+        "does": "File the marketplace reimbursement claim (FBA reimbursement, Walmart/eBay/TikTok Shop claim programs; india: Flipkart SPF, Myntra claim).",
         "inputs": [
           "reimbursement candidate list"
         ],
@@ -2419,8 +2419,8 @@
       },
       {
         "n": 2,
-        "name": "Run the export procedure if export",
-        "does": "Set up IEC and LUT, HS codes, commercial invoice and export paperwork; choose DDP vs DDU.",
+        "name": "Run the cross-border procedure if export",
+        "does": "For an inbound sourcing shipment, secure a customs bond and HTS classification, check tariff and Section 321 eligibility; for an outbound order, prepare commercial invoice and export paperwork and choose DDP vs DDU (india: set up IEC and LUT for an export from India instead; markets: IN).",
         "inputs": [
           "export event details"
         ],
@@ -2781,7 +2781,7 @@
       "product copy, approved claims, keyword list",
       "category node",
       "image slots and specs per platform",
-      "BIS/hallmarking/labelling status if regulated category",
+      "US labelling/quality-marking status if regulated category (india: BIS/hallmarking/labelling status)",
       "target marketplace"
     ],
     "steps": [
@@ -2795,12 +2795,12 @@
         "tools": [],
         "skill": "prod/list-on-marketplace",
         "output": "selected marketplace procedure",
-        "check": "the marketplace named matches one of Amazon, Flipkart, Myntra, Nykaa, Blinkit or Zepto"
+        "check": "the marketplace named matches one of Amazon, Walmart, Target Plus, eBay, TikTok Shop, or, for an India brand, Flipkart/Myntra/Nykaa or Blinkit/Zepto"
       },
       {
         "n": 2,
         "name": "Run the compliance check first",
-        "does": "Run the BIS, hallmarking and labelling compliance check for the category before building anything.",
+        "does": "Run the US labelling/quality-marking compliance check for the category before building anything (india: BIS, hallmarking and labelling check; markets: IN).",
         "inputs": [
           "category",
           "compliance status"
@@ -3051,7 +3051,7 @@
     "trigger": "event: considering Amazon launch | event: listing live | event: pre-launch",
     "human_role": "Amazon manager taking a brand from no seller account to a protected, launched product",
     "inputs_required": [
-      "business entity and GST details",
+      "business entity and tax details (EIN/SSN, W-9; india: GST details)",
       "bank/payout details",
       "identity verification documents",
       "trademark status",
@@ -3063,7 +3063,7 @@
         "name": "Get the account right the first time",
         "does": "Get the Amazon account, entity, payout and identity verification right the first time.",
         "inputs": [
-          "entity/GST/payout/identity documents"
+          "entity/tax/payout/identity documents (india: entity/GST/payout/identity documents)"
         ],
         "tools": [],
         "skill": "prod/amazon-launch-sequence",
@@ -3587,14 +3587,14 @@
   },
   {
     "id": "PROD-W28",
-    "name": "Onboard the brand on quick commerce",
+    "name": "Onboard the brand on rapid delivery and quick commerce",
     "capabilities": [
       "PROD-C48"
     ],
-    "trigger": "on demand (new quick commerce launch)",
-    "human_role": "Quick commerce manager taking a brand from documents to live on Blinkit, Zepto or Instamart",
+    "trigger": "on demand (new rapid-delivery/quick-commerce launch)",
+    "human_role": "Rapid-delivery/quick-commerce manager taking a brand from documents to live on Instacart, DoorDash or Gopuff (india: Blinkit, Zepto or Instamart)",
     "inputs_required": [
-      "GST, FSSAI, barcode and packaging documents",
+      "business licence, resale certificate, UPC and packaging documents (india: GST, FSSAI, barcode and packaging documents)",
       "product catalogue for the platform",
       "target platform(s)"
     ],
@@ -3602,7 +3602,7 @@
       {
         "n": 1,
         "name": "Assemble the documents",
-        "does": "Assemble the GST, FSSAI, barcode and packaging documents the platform requires.",
+        "does": "Assemble the business licence, resale certificate, UPC and packaging documents the platform requires (india: GST, FSSAI, barcode and packaging documents; markets: IN).",
         "inputs": [
           "brand compliance documents"
         ],
@@ -3645,7 +3645,7 @@
         "tools": [],
         "skill": "prod/list-on-marketplace",
         "output": "initial listing draft",
-        "check": "the listing uses the matching Blinkit or Zepto sub-skill, not a generic template"
+        "check": "the listing uses the matching US platform sub-skill, or, for an India brand, the Blinkit/Zepto sub-skill, not a generic template"
       },
       {
         "n": 5,
@@ -3701,17 +3701,17 @@
   },
   {
     "id": "PROD-W29",
-    "name": "Manage quick commerce ad credits, promo calendar and dark-store fill rate",
+    "name": "Manage rapid-delivery ad credits, promo calendar and dark-store fill rate",
     "capabilities": [
       "PROD-C50",
       "PROD-C51"
     ],
-    "trigger": "weekly, and ahead of each festive window | daily (fill rate)",
-    "human_role": "Quick commerce manager running the ongoing account",
+    "trigger": "weekly, and ahead of each peak promotional window (india: festive window) | daily (fill rate)",
+    "human_role": "Rapid-delivery/quick-commerce manager running the ongoing account",
     "inputs_required": [
       "ad credit balance per platform",
       "organic search performance",
-      "festive promotional calendar",
+      "US retail promotional calendar (india: festive promotional calendar)",
       "dark-store stock levels"
     ],
     "steps": [
@@ -3756,10 +3756,10 @@
       },
       {
         "n": 4,
-        "name": "Negotiate festive windows",
-        "does": "Negotiate festive promotional windows ahead of the calendar date.",
+        "name": "Negotiate peak promotional windows",
+        "does": "Negotiate peak promotional windows (BFCM, Prime Day, Q4 holidays; india: festive windows) ahead of the calendar date.",
         "inputs": [
-          "festive calendar"
+          "US retail promotional calendar (india: festive calendar)"
         ],
         "tools": [],
         "skill": "prod/quick-commerce-ops",
@@ -3818,24 +3818,24 @@
   },
   {
     "id": "PROD-W30",
-    "name": "Track regulatory registers: Legal Metrology, FSSAI and EPR",
+    "name": "Track regulatory registers: FDA, net-quantity, state licence and EPR",
     "capabilities": [
       "PROD-C61",
       "PROD-C62"
     ],
-    "trigger": "monthly audit, and on any MRP/GST change | quarterly, annual filing deadline",
+    "trigger": "monthly audit, and on any formula/price change (india: MRP/GST change) | quarterly, annual filing deadline",
     "human_role": "Compliance coordinator keeping every registration and filing current",
     "inputs_required": [
       "SKU list with category",
-      "current Legal Metrology and FSSAI licence status",
-      "EPR plastic-packaging registration status",
+      "current FDA/state licence status (india: Legal Metrology and FSSAI licence status)",
+      "state EPR registration status (india: EPR plastic-packaging registration status)",
       "relabelling requirements"
     ],
     "steps": [
       {
         "n": 1,
         "name": "Keep the licence register",
-        "does": "Keep one register of which SKUs need Legal Metrology (Packaged Commodities) registration or an FSSAI licence.",
+        "does": "Keep one register of which SKUs need FDA facility registration or a state cosmetics/food/supplement licence (india: Legal Metrology (Packaged Commodities) registration or an FSSAI licence; markets: IN).",
         "inputs": [
           "SKU list with category"
         ],
@@ -3858,20 +3858,20 @@
       },
       {
         "n": 3,
-        "name": "Flag relabelling on MRP/GST change",
-        "does": "Flag the relabelling needed on any MRP or GST change.",
+        "name": "Flag relabelling on formula/price change",
+        "does": "Flag the relabelling needed on any formula, claim or price change (india: any MRP or GST change; markets: IN).",
         "inputs": [
           "MRP/GST change events"
         ],
         "tools": [],
         "skill": "prod/regulatory-register-track",
         "output": "relabelling flag",
-        "check": "a flag is raised on every MRP or GST change, not only at renewal"
+        "check": "a flag is raised on every formula/claim/price change, not only at renewal (india: MRP or GST change; markets: IN)"
       },
       {
         "n": 4,
-        "name": "Register EPR packaging",
-        "does": "Register the brand's plastic packaging under India's EPR rules.",
+        "name": "Register state EPR packaging",
+        "does": "Register the brand's packaging under the relevant state's EPR rules (india: India's EPR rules; markets: IN).",
         "inputs": [
           "packaging data"
         ],
@@ -3936,7 +3936,7 @@
     ],
     "qa": [
       "every licence's validity window tracked, not assumed current",
-      "relabelling flagged on every MRP/GST change, not just renewal"
+      "relabelling flagged on every formula/claim/price change, not just renewal (india: MRP/GST change; markets: IN)"
     ],
     "read_point": "each licence's renewal date; the annual EPR filing deadline",
     "typical_duration": "agent time 1 to 2 hours monthly; quarterly EPR filing adds a few hours",

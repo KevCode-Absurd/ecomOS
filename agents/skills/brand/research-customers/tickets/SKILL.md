@@ -13,7 +13,7 @@ Support tickets are passive evidence of the customer's real struggle, separate f
 
 ## Steps
 1. Export tickets, return reasons and call transcripts for the period from the support desk connector.
-2. Tag each item by the underlying job or failure (a size mismatch, a delivery delay past the pincode's normal window, a fabric-care confusion), never by the customer's exact wording alone.
+2. Tag each item by the underlying job or failure (a size mismatch, a delivery delay past the ZIP code's normal shipping window, a fabric-care confusion), never by the customer's exact wording alone.
 3. Cluster repeated patterns; a single ticket is an anecdote, three or more with the same root cause is a pattern.
 4. For each named, repeated objection, draft an update to the standing support macro that answers it.
 5. Flag sizing, fit or fulfilment anxieties specifically, since these often feed a dedicated confidence angle in copy.
@@ -22,7 +22,7 @@ Support tickets are passive evidence of the customer's real struggle, separate f
 ## Checks
 - Every quote used downstream carries a consent flag.
 - Themes are tagged by underlying cause, not by the customer's literal words alone.
-- COD refusal or regional delivery-delay patterns are kept separate from product-quality patterns; conflating them misleads the avatar record.
+- Failed-delivery or regional shipping-delay patterns (and COD refusal patterns for India-market orders, markets: IN, null for US) are kept separate from product-quality patterns; conflating them misleads the avatar record.
 
 ## Output
 `{struggle_theme_list: [...], draft_macro_updates: [...], quote_set_with_consent_flag: [...]}`

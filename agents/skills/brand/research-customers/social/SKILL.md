@@ -28,4 +28,4 @@ Public forums surface language, objections and sub-avatars in the customer's own
 `{language_bank_additions: [...], sub_avatar_candidates: [...]}`
 
 ## Example
-r/IndianSkincareAddicts thread, dated 2 Sep 2026: "wish more brands made this in a travel size for humid weather" flagged as a sub-avatar candidate (frequent traveler) with 3 similar comments in the same thread.
+r/SkincareAddiction thread, dated 2 Sep 2026: "wish more brands made this in a travel size for humid weather" flagged as a sub-avatar candidate (frequent traveler) with 3 similar comments in the same thread.

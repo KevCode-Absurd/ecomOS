@@ -13,7 +13,7 @@ Passive sources cannot ask a follow-up question. When the research packet has a 
 
 ## Steps
 1. Write 8-12 open questions in job-to-be-done order: the trigger, the struggle, alternatives tried, the moment of choosing, the after-state. No yes/no questions, no question that names the brand's feature first.
-2. Recommend a channel (phone, WhatsApp voice notes, video call) and a proportionate incentive sized against contribution margin, never cash large enough to bias the answer.
+2. Recommend a channel (phone, video call, SMS or voice notes; WhatsApp voice notes where the brand's customers use it, markets: IN, EU, LATAM) and a proportionate incentive sized against contribution margin, never cash large enough to bias the answer.
 3. Recruit 8-12 people across at least 2 recency bands (recent buyer, lapsed buyer), never more than 70% from one band.
 4. Hand the guide to whoever runs the calls (founder, team, or a research vendor); this step is human_assist, the agent does not conduct the call itself.
 5. Log every transcript with a consent flag before any quote is reused.
@@ -28,4 +28,4 @@ Passive sources cannot ask a follow-up question. When the research packet has a 
 `{interview_guide, transcript_log: [...], interview_findings_packet}`
 
 ## Example
-Guide question 3: "Walk me through the day you decided you needed this: what was happening that day?" surfaces a wedding-season trigger moment absent from the review data.
+Guide question 3: "Walk me through the day you decided you needed this: what was happening that day?" surfaces a holiday-gifting trigger moment absent from the review data.

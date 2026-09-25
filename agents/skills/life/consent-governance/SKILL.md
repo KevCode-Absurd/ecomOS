@@ -30,5 +30,7 @@ home timezone. Unsubscribe SLA meets or beats the legal minimum.
 A consent rule set, a quiet-hours table, and an unsubscribe SLA, each per market.
 
 ## Example
-"India: DPDP Act needs affirmative opt-in for WhatsApp marketing; quiet hours
-9pm-9am IST for SMS. Gap: current form has no separate WhatsApp consent checkbox."
+"US: TCPA needs prior express written consent for SMS marketing; quiet hours
+8am-9pm recipient local time. India: DPDP Act needs affirmative opt-in for WhatsApp
+marketing; quiet hours 9pm-9am IST for SMS. Gap: current form has no separate
+WhatsApp consent checkbox."

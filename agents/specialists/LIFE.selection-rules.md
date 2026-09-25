@@ -11,7 +11,7 @@ Given (bottleneck, card type, flow type, channel, store tags):
 | Bottleneck / card | Flow type or focus | Channel | Store tag | Workflow |
 |---|---|---|---|---|
 | flow missing/broken | welcome, browse-cart-abandon, post-purchase, win-back, sunset, back-in-stock, replenishment, loyalty-vip | email/sms/whatsapp | any | W04 |
-| India COD/RTO recovery | cart-abandon, order-update, COD-to-prepaid, NDR | whatsapp | india, cod | W09 |
+| SMS/WhatsApp commerce recovery (COD/RTO for India) | cart-abandon, order-update, COD-to-prepaid (india), failed-delivery/NDR | sms, whatsapp | any (india, cod for the COD-specific legs) | W09 |
 | segmentation stale | - | - | any | W05 |
 | weekly send plan | campaign | email/sms | any | W06 |
 | deliverability degraded | - | email | any | W07 |
@@ -23,8 +23,8 @@ Given (bottleneck, card type, flow type, channel, store tags):
 | review volume/response | review request/response | email, feed | any | W16 |
 | offer/bundle/GWP/upsell card | offer package | - | any | W18 |
 | subscription churn/cancel | subscription | any | subscription | W20 |
-| marketplace ticket/claim | - | - | amazon, flipkart | W25 |
-| India grievance/notice | - | - | india | W28 |
+| marketplace ticket/claim | - | - | amazon, walmart, flipkart (india) | W25 |
+| consumer complaint/notice (BBB, state AG, FTC; grievance officer for india) | - | - | any | W28 |
 | considered-purchase warranty | - | - | luxury | W29 |
 
 Each workflow above names its skills in LIFE.workflows.json. `build-flow` selects
@@ -54,14 +54,18 @@ specialist ships each as one connected deliverable, not five meetings.
 
 Flagship workflows, at the founder's media-buying depth (12-14 steps, an
 ask_founder_if gate, a registry entry): W04 (order-gap/flow type to live draft),
-W06 (calendar to send-ready draft), W07 (deliverability fix), W09 (WhatsApp for
-India), W12 (order-gap routed to a save program), W14 (returns), W15 (support
-reply/tagging), W16 (review program), W18 (offer design from margin/AOV), W20
-(subscription health).
+W06 (calendar to send-ready draft), W07 (deliverability fix), W09 (SMS/WhatsApp
+commerce program), W12 (order-gap routed to a save program), W14 (returns), W15
+(support reply/tagging), W16 (review program), W18 (offer design from
+margin/AOV), W20 (subscription health).
 
-India-aware: W09 (COD-to-prepaid, NDR recovery), W12/G02 (RBI e-mandate re-auth,
-RTO-aware win-back), W27 (gifting timed to Diwali), W28 (E-Commerce Rules SLA,
-e-Daakhil).
+Market-specific options: W09 (SMS and failed-card dunning are the US default;
+WhatsApp, COD-to-prepaid and NDR recovery are the India option), W12/G02
+(dunning retry for a failed card is the US default; RBI e-mandate re-auth and
+RTO-aware win-back are the India option), W27 (gifting timed to the Q4 holiday
+season by default; Diwali timing for India), W28 (BBB/state AG/FTC complaint
+handling is the US default; India's E-Commerce Rules SLA and e-Daakhil consumer
+forum are the India option).
 
 Shared guardrails: `discount-policy-check` gates W04, W06, W09, W18, W19, W21,
 never reimplemented per workflow. `claim-check` gates every customer-facing

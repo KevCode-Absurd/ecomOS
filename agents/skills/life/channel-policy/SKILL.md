@@ -16,12 +16,14 @@ run, so channels do not duplicate the same message to the same customer.
 1. Pull real per-message cost and volume for SMS, WhatsApp and push.
 2. Check consent coverage per channel; a channel below its market's legal
    threshold is flagged before any cadence policy is set.
-3. Assign content scope per channel (WhatsApp: order updates and high-value
-   recovery; SMS: time-sensitive short offers; push: on-site nudges).
+3. Assign content scope per channel (SMS: time-sensitive short offers and order
+   updates by default; WhatsApp: order updates and high-value recovery where used,
+   common in India, EU or LATAM; push: on-site nudges).
 4. Set a per-customer weekly cadence cap and a monthly spend cap, sized to the
    real cost data.
-5. Where SMS cost per send is high relative to WhatsApp, recommend shifting
-   eligible message types, contingent on WhatsApp consent and template approval.
+5. Where SMS cost per send is high relative to WhatsApp (common in India, EU or
+   LATAM), recommend shifting eligible message types, contingent on WhatsApp consent
+   and template approval.
 
 ## Checks
 Caps sized from real cost data, not a round number. No message type duplicated

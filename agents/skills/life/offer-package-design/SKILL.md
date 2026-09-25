@@ -43,6 +43,6 @@ revenue-only or ROAS-only justification accepted for go/no-go.
 margin_waterfall_ref, contribution_per_order, discount_policy_check, test_plan}
 
 ## Example
-"3-pack ladder at ₹450/599/750 (per-unit price steps down each tier), middle
+"3-pack ladder at $18/24/30 (per-unit price steps down each tier), middle
 pre-selected; GWP: travel pouch on the 3-pack only; guarantee: 'not a perfect fit
-in 30 days, free exchange'; contribution/order still clears ₹180 floor on every tier."
+in 30 days, free exchange'; contribution/order still clears $7 floor on every tier."

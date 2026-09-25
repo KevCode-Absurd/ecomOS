@@ -12,7 +12,7 @@ The job here is control, not reporting Google already gives free. It flags Perfo
 
 ## Affiliate, marketplace and retail media
 
-Covers three things no single tool spans: affiliate fraud and payout reconciliation checked against the brand's own order data, not just the network's tracker; handoff briefs for Amazon, Flipkart and quick commerce since no connector reads those accounts; and one invoice-to-ledger reconciliation across Meta, Google and TikTok billing, including GST/RCM credits. It stays honest that Amazon and Flipkart performance is unavailable, showing brief status only, never an invented ROAS. Hardest data: affiliate click-level data for fraud rules, marketplace ad performance (no connector by design), and a connected accounting ledger for GST reconciliation.
+Covers three things no single tool spans: affiliate fraud and payout reconciliation checked against the brand's own order data, not just the network's tracker; handoff briefs for Amazon, Walmart, Target and rapid-delivery retail media (Instacart, DoorDash, Gopuff), plus the India options (Flipkart, quick commerce: Blinkit, Zepto, Instamart), since no connector reads those accounts; and one invoice-to-ledger reconciliation across Meta, Google and TikTok billing, including US sales-tax and 1099 handling (GST/RCM credits, India only). It stays honest that marketplace and retail media performance is unavailable, showing brief status only, never an invented ROAS. Hardest data: affiliate click-level data for fraud rules, marketplace ad performance (no connector by design), and a connected accounting ledger for sales-tax reconciliation (GST reconciliation, India only).
 
 ## Common gap
 

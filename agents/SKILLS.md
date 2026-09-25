@@ -69,6 +69,10 @@
 | candidate-screen | PROD |  |
 | capital-exit-briefing | ORCH |  |
 | caption-and-alt-text | CREA |  |
+| carrier-billing-reconciliation | MONEY |  |
+| carrier-exception-recovery | PROD |  |
+| carrier-routing | PROD |  |
+| carrier-scorecard | PROD |  |
 | cash-forecast-13wk | MONEY |  |
 | cash-handoff-finance | ORCH, PROD |  |
 | catalogue-asset-qa | PROD |  |
@@ -87,8 +91,6 @@
 | claim-skepticism-check | DIAG |  |
 | claims-compliance-gate | QA |  |
 | claims-verification | BRN |  |
-| cod-prepaid-messaging | CREA |  |
-| cod-reconciliation | MONEY |  |
 | cod-strategy | SITE |  |
 | cohort-ltv-report | MEDIA, MONEY |  |
 | collection-page-seo | ORG |  |
@@ -118,8 +120,6 @@
 | copy-editing-pass | CREA, LIFE, PROD, SITE |  |
 | cost-classification-audit | MONEY |  |
 | courier-rate-renegotiation | PROD |  |
-| courier-routing | PROD |  |
-| courier-scorecard | PROD |  |
 | creative-fatigue-diagnosis | CREA |  |
 | creative-test-plan | CREA, MEDIA, SITE |  |
 | creative-test-sizing | MEDIA |  |
@@ -166,6 +166,7 @@
 | escalation-triage | ORCH |  |
 | event-concept-builder | BRAND |  |
 | event-ops-and-roi | BRAND |  |
+| exception-economics | PROD |  |
 | experiment-design-standard | REG |  |
 | experiment-overlap-check | REG |  |
 | external-cause-check | DIAG |  |
@@ -175,7 +176,6 @@
 | fba-shipment-prep | PROD |  |
 | feed-quality-optimization | MEDIA |  |
 | feed-readiness-check | PROD |  |
-| festive-calendar-planner | CREA |  |
 | flow-brief | LIFE |  |
 | format-design | ORG |  |
 | founder-content-plan | ORG |  |
@@ -198,12 +198,12 @@
 | google-scaling-gates | MEDIA |  |
 | google-tracking-setup | MONEY |  |
 | growth-stage-diagnosis | DIAG |  |
-| gst-compliance | MONEY |  |
 | guarantee-designer | LIFE |  |
 | handoff-note | ORCH |  |
 | hiring-scorecard-build | MONEY |  |
 | hiring-scorecard-draft | ORCH |  |
 | holdout-incrementality-test | MONEY |  |
+| holiday-calendar-planner | CREA |  |
 | hook-and-script-writing | ORG |  |
 | idea-mining | ORG |  |
 | incrementality-test-design | MEDIA |  |
@@ -257,8 +257,6 @@
 | naming-clearance | BRAND |  |
 | naming-convention | MEDIA |  |
 | naming-deliverable | BRAND |  |
-| ndr-economics | PROD |  |
-| ndr-recovery | PROD |  |
 | negotiation-brief | PROD |  |
 | new-channel-detection | BRN |  |
 | new-customer-economics | MONEY |  |
@@ -283,6 +281,7 @@
 | partnership-deal-structuring | BRAND |  |
 | partnership-screen | BRAND |  |
 | partnership-sourcing | BRAND |  |
+| payment-delivery-reassurance-messaging | CREA |  |
 | peak-sale-ramp-plan | MEDIA |  |
 | peak-season-planning | PROD |  |
 | persona-builder | BRAND |  |
@@ -318,11 +317,11 @@
 | qc-checklist | PROD |  |
 | quality-capa | PROD |  |
 | quarterly-security-audit-program | MONEY |  |
-| quick-commerce-ads | PROD |  |
-| quick-commerce-economics | MEDIA |  |
 | quick-commerce-inventory | PROD |  |
-| quick-commerce-onboarding | PROD |  |
 | quote-comparison | PROD |  |
+| rapid-delivery-ads | PROD |  |
+| rapid-delivery-economics | MEDIA |  |
+| rapid-delivery-onboarding | PROD |  |
 | reading-level-check | CREA, ORG |  |
 | rebrand-program | BRAND |  |
 | referral-mechanic-design | LIFE |  |
@@ -339,6 +338,7 @@
 | review-request-copy | LIFE |  |
 | rfq-draft | PROD |  |
 | sales-diagnosis | PROD |  |
+| sales-tax-compliance | MONEY |  |
 | same-day-threshold-alert | DIAG |  |
 | sample-logistics | PROD |  |
 | sample-qc-gate | PROD |  |

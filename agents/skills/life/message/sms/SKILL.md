@@ -9,7 +9,9 @@ outputs: {body, link, opt_out_line}
 # SMS message drafting
 
 ## Purpose
-Writes short, compliant SMS copy for a flow or campaign step: brand name up
+The default second channel after email, with US TCPA consent and quiet hours by
+default and the equivalent local law elsewhere (see life/consent-governance). Writes
+short, compliant SMS copy for a flow or campaign step: brand name up
 front, a single link, and the opt-out instruction consent-governance requires,
 all inside the quiet-hours window and cadence cap life/channel-policy has
 already set for this brand and market. SMS earns its place through urgency and

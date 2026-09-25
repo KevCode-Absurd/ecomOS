@@ -292,8 +292,9 @@ WHEN TO STOP
 - Output: weekly bot scan and fix list, for a human to apply to the WAF.
 
 **checkout-fraud-control-audit**
-- Purpose: catch card-testing, chargeback and COD fraud patterns early.
-- Inputs: order/payment data, chargeback log, COD refusal log.
+- Purpose: catch card-testing, chargeback and payment-refusal fraud
+  patterns early (COD fraud patterns for India-selling brands).
+- Inputs: order/payment data, chargeback log, India only: COD refusal log.
 - Steps: cluster small orders for card-testing bursts, check AVS/3DS
   settings against false-decline rate, check chargeback alert threshold,
   build evidence packets for open disputes.
@@ -343,7 +344,7 @@ WHEN TO STOP
 | MONEY-C09 | Report CAC, payback and LTV:CAC on brand data | weekly | agent_does |
 | MONEY-C10 | Forecast revenue from cohorts and the marketing calendar | weekly | agent_does |
 | MONEY-C11 | Model spend scenarios and OPEX budget | monthly | agent_does |
-| MONEY-C12 | Track tax, GST and liability compliance | monthly | human_assist |
+| MONEY-C12 | Track US sales tax nexus and liability compliance (GST for India) | monthly | human_assist |
 | MONEY-C14 | Publish the daily and weekly finance dashboard | daily | agent_does |
 | MONEY-C15 | Reconcile platform numbers to the books | monthly | agent_does |
 | MONEY-C17 | Classify SKU portfolio profitability | monthly | agent_does |
@@ -384,8 +385,11 @@ WHEN TO STOP
 Note: capability ids skip C13 and C16. Both were drafted (a standalone
 "chargeback and dispute financial tracking" capability and a standalone
 "investor/lender reporting package" capability) and folded into others to
-stay MECE: chargeback tracking now lives inside MONEY-C14 (daily/weekly
-dashboard) and MONEY-C42 (fraud controls, the operational side); investor
+stay MECE: chargeback tracking lives inside MONEY-C14 (daily/weekly
+dashboard) and MONEY-C42 (fraud controls, the operational side), and now
+has its own first-class wave-2 capability, MONEY-C52a (chargeback and
+dispute representment), since representment against a card network or
+PayPal deadline is a distinct, US-heavy workflow of its own; investor
 and lender reporting is not a separate data-gathering capability but a
 packaging step that reuses MONEY-C06, C08, C09 and C11 output, so it is
 named explicitly in those capabilities' outputs rather than counted twice.
@@ -399,10 +403,12 @@ named explicitly in those capabilities' outputs rather than counted twice.
   over C06/C08/C09/C11 rather than its own capability; flag to Kevin if a
   real investor update is needed, since the format (deck vs memo) was not
   found anywhere in scope for this pass.
-- No idea or web source covered GST return filing mechanics (the actual
-  filing, as opposed to nexus tracking and rate application). MONEY-C12
+- No idea or web source covered the actual state sales-tax return filing
+  mechanics (as opposed to nexus tracking and rate application), or, for
+  an India-selling brand, the actual GST return filing mechanics. MONEY-C12
   covers tracking and flagging only; filing itself is out of scope and
-  stays with the brand's accountant.
+  stays with the brand's accountant or an Avalara/TaxJar managed-filing
+  service (a GST practitioner for India).
 - COD and RTO handling for India appears only on the fraud-control side
   (SEC-019, COD refusal rate) and the cash side (via FIN inventory ideas).
   No source covered RTO logistics cost recovery or courier-level RTO

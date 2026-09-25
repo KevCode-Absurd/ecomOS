@@ -19,7 +19,7 @@
       "accounting export for the month",
       "gateway settlement files",
       "marketplace settlement files",
-      "COD courier remittance files",
+      "India only: COD courier remittance files",
       "open dispute list",
       "fixed asset register",
       "last month's P&L ladder"
@@ -28,7 +28,7 @@
       {
         "n": 1,
         "name": "Pull the month's raw exports",
-        "does": "Pull Shopify and marketplace orders, gateway settlement files, courier COD remittance files and the accounting export for the close month.",
+        "does": "Pull Shopify and marketplace orders, gateway settlement files, the accounting export for the close month, and, for an India-selling brand, courier COD remittance files.",
         "inputs": [
           "brand brain: connector list"
         ],
@@ -36,7 +36,7 @@
           "connector: shopify orders (read)",
           "connector: accounting export (read)",
           "connector: marketplace settlement (read)",
-          "connector: courier COD remittance (read)"
+          "connector: courier COD remittance (read, India only)"
         ],
         "skill": null,
         "output": "raw export set with row counts per source",
@@ -46,7 +46,7 @@
       {
         "n": 2,
         "name": "Reconcile the gateway settlement",
-        "does": "Unbundle each gateway payout into gross sale, fee, refund, GST on the fee and net, then match it to the bank credit.",
+        "does": "Unbundle each gateway payout into gross sale, fee, refund, sales tax withheld on the fee (GST on the fee for India-selling brands) and net, then match it to the bank credit.",
         "inputs": [
           "gateway settlement files",
           "bank statement"
@@ -61,7 +61,7 @@
       {
         "n": 3,
         "name": "Reconcile marketplace settlements",
-        "does": "Unbundle commission, fixed fee, shipping fee, TCS under Section 52, GST on fees and refunds for each marketplace payout.",
+        "does": "Unbundle commission, fixed fee, shipping fee, marketplace-facilitator sales tax withheld, 1099-K totals and refunds for each marketplace payout. India-selling brands unbundle TCS under Section 52 and GST on fees the same way, as a market option.",
         "inputs": [
           "marketplace settlement files"
         ],
@@ -70,12 +70,12 @@
         ],
         "skill": "money/reconcile/marketplace",
         "output": "marketplace reconciliation table, one row per payout",
-        "check": "TCS and GST on fees are broken out on their own lines, never netted into one number"
+        "check": "facilitator sales tax (or TCS/GST for India) and fees are broken out on their own lines, never netted into one number"
       },
       {
         "n": 4,
-        "name": "Reconcile COD cash and courier remittance",
-        "does": "Age cash on delivery collected by each courier against what has actually reached the bank, by courier.",
+        "name": "India only: reconcile COD cash and courier remittance",
+        "does": "For an India-selling brand running COD, age cash collected by each courier against what has actually reached the bank, by courier. Reads null for US-only brands, whose payout reconciliation is fully covered by steps 2 and 3.",
         "inputs": [
           "COD courier remittance files",
           "courier SLA terms"
@@ -106,7 +106,7 @@
       {
         "n": 6,
         "name": "Build the evidence pack for each open dispute",
-        "does": "Assemble the order record, delivery proof, OTP log and support chat for each open gateway chargeback or UPI dispute, and check its filing deadline.",
+        "does": "Assemble the order record, delivery proof, verification log and support chat for each open chargeback or dispute (Shopify Payments, Stripe, PayPal; UPI dispute for India-selling brands), and check its filing deadline.",
         "inputs": [
           "open dispute list",
           "order records"
@@ -115,7 +115,7 @@
           "script: money.reconciliation",
           "connector: shopify orders (read)"
         ],
-        "skill": null,
+        "skill": "money/reconcile/chargebacks",
         "output": "one evidence pack per open dispute, with a filing deadline",
         "check": "no dispute is missing its filing deadline",
         "ask_founder_if": "a dispute needs a person to submit it through the gateway's own portal"
@@ -227,7 +227,7 @@
     ],
     "outputs": [
       "P&L ladder",
-      "reconciliation bridge (gateway, marketplace, COD, ad invoices)",
+      "reconciliation bridge (gateway, marketplace, ad invoices, chargebacks, and COD for India-selling brands)",
       "dispute evidence packs",
       "fixed asset register update",
       "management accounts report",
@@ -237,7 +237,7 @@
       "every number sourced and freshness stamped",
       "no missing value shown as zero",
       "no ad account write attempted",
-      "GST and TCS never netted into one line"
+      "facilitator sales tax (or GST and TCS for India) never netted into one line"
     ],
     "read_point": "on publish, against last month's ladder and the annual budget",
     "typical_duration": "agent: 2 to 3 hours across the steps; waiting: up to 2 days for settlement files and accountant sign-off",
@@ -521,7 +521,7 @@
     ],
     "qa": [
       "profit target never replaced by keystone",
-      "TCS, GST and fee lines all present in the waterfall",
+      "sales-tax (or TCS/GST for India) and fee lines all present in the waterfall",
       "no live change without recorded approval"
     ],
     "read_point": "60 to 90 days after a price goes live, or the day after a promo ends",
@@ -1010,28 +1010,28 @@
   },
   {
     "id": "MONEY-W07",
-    "name": "GST, HSN and tax compliance tracking",
+    "name": "US sales tax nexus, filing and marketplace-facilitator compliance tracking",
     "capabilities": [
       "MONEY-C12",
       "MONEY-G04",
       "LIFE-C55",
       "PROD-C60"
     ],
-    "trigger": "monthly, before GST return filing | event: new SKU or B2B dispatch",
-    "human_role": "the person tracking GST and tax compliance",
+    "trigger": "monthly, before the state sales-tax filing deadline (India: before GST return filing) | event: new SKU or B2B dispatch",
+    "human_role": "the person tracking sales-tax and marketplace compliance",
     "inputs_required": [
-      "brand brain: selling markets, SKU list",
-      "GSTR-2B",
+      "brand brain: selling markets, SKU list, registered states",
+      "Avalara or TaxJar taxability and filing status",
       "return and refund log",
-      "credit note register",
-      "stock transfer and B2B dispatch log",
-      "gift card and loyalty point ledger"
+      "credit memo register",
+      "gift card and loyalty point ledger",
+      "India only: GSTR-2B, stock transfer and B2B dispatch log"
     ],
     "steps": [
       {
         "n": 1,
-        "name": "Assign and validate HSN or SAC codes",
-        "does": "Build and keep the SKU-to-HSN/SAC map correct for every SKU, since a wrong or too-short code is a common cause of e-invoice portal rejections.",
+        "name": "Assign and validate product tax codes",
+        "does": "Build and keep the SKU-to-product-tax-code map correct in Avalara or TaxJar for every SKU, since a wrong or missing code is a common cause of miscollected sales tax. India-selling brands keep the same SKU-to-HSN/SAC map, as a market option, since a wrong or too-short HSN/SAC code is a common cause of e-invoice portal rejections.",
         "inputs": [
           "SKU list",
           "product category"
@@ -1040,13 +1040,13 @@
           "script: money.hsn_map_validate"
         ],
         "skill": "money/gst-tax-compliance",
-        "output": "SKU-to-HSN/SAC map",
+        "output": "SKU-to-product-tax-code map (India: SKU-to-HSN/SAC map)",
         "check": "no SKU ships without a validated code"
       },
       {
         "n": 2,
-        "name": "Track GST nexus and registration thresholds",
-        "does": "Track GST or sales-tax nexus and registration thresholds per market the brand sells into.",
+        "name": "Track sales-tax nexus and registration thresholds",
+        "does": "Track economic-nexus and registration thresholds per state the brand sells into (India-selling brands track GST nexus and registration thresholds the same way, as a market option).",
         "inputs": [
           "brand brain: selling markets",
           "sales by state or country"
@@ -1060,37 +1060,39 @@
       },
       {
         "n": 3,
-        "name": "Prepare GSTR-1 and 3B inputs",
-        "does": "Prepare the sales and input-credit data GSTR-1 and 3B need, and match input credit against GSTR-2B.",
+        "name": "Prepare state sales-tax filing inputs",
+        "does": "Prepare the return-ready sales and exemption data each registered state's filing needs, from Avalara or TaxJar. India-selling brands prepare the sales and input-credit data GSTR-1 and 3B need, and match input credit against GSTR-2B, as a market option.",
         "inputs": [
           "sales ledger",
-          "GSTR-2B"
+          "Avalara or TaxJar filing report",
+          "India only: GSTR-2B"
         ],
         "tools": [
           "script: money.compliance_tracker"
         ],
         "skill": "money/gst-tax-compliance",
-        "output": "GSTR-1/3B input pack",
-        "check": "every mismatch between claimed and GSTR-2B credit is listed, not netted away"
+        "output": "state filing input pack (India: GSTR-1/3B input pack)",
+        "check": "every mismatch between claimed and available credit is listed, not netted away"
       },
       {
         "n": 4,
-        "name": "Claim marketplace TCS and TDS credit",
-        "does": "Reconcile TCS collected by marketplaces under Section 52 and TDS deducted against the credit actually available.",
+        "name": "Reconcile marketplace facilitator sales tax and 1099-K",
+        "does": "Reconcile sales tax collected and remitted by each marketplace as facilitator against the credit or exclusion the brand can actually claim, and match 1099-K gross totals to the ledger. India-selling brands reconcile TCS collected by marketplaces under Section 52 and TDS deducted against the credit actually available, as a market option.",
         "inputs": [
-          "marketplace settlement TCS lines"
+          "marketplace settlement facilitator-tax lines",
+          "India only: marketplace settlement TCS lines"
         ],
         "tools": [
           "script: money.compliance_tracker"
         ],
         "skill": "money/gst-tax-compliance",
-        "output": "TCS/TDS credit reconciliation",
+        "output": "facilitator sales tax / 1099-K reconciliation (India: TCS/TDS credit reconciliation)",
         "check": "credit claimed never exceeds what the marketplace's own statement supports"
       },
       {
         "n": 5,
-        "name": "Raise e-way bills",
-        "does": "Raise e-way bills for B2B dispatch and stock transfer above the threshold value.",
+        "name": "India only: raise e-way bills",
+        "does": "For an India-selling brand, raise e-way bills for B2B dispatch and stock transfer above the threshold value. Reads null for US-only brands, which have no e-way bill requirement.",
         "inputs": [
           "stock transfer log",
           "B2B dispatch log"
@@ -1104,23 +1106,23 @@
       },
       {
         "n": 6,
-        "name": "Reconcile GST credit notes against returns",
-        "does": "Check that every completed return or refund has a matching GST credit note issued and filed on time.",
+        "name": "Reconcile credit memos against returns",
+        "does": "Check that every completed return or refund has a matching sales-tax credit memo issued and filed on time (a GST credit note for India-selling brands).",
         "inputs": [
           "return and refund log",
-          "credit note register"
+          "credit memo register"
         ],
         "tools": [
           "script: money.compliance_tracker"
         ],
         "skill": "money/gst-tax-compliance",
-        "output": "credit note reconciliation",
-        "check": "a refund without a matching credit note is flagged before the return period closes"
+        "output": "credit memo reconciliation",
+        "check": "a refund without a matching credit memo is flagged before the return period closes"
       },
       {
         "n": 7,
         "name": "Book liabilities correctly",
-        "does": "Book gift cards and loyalty points as liabilities recognized on redemption, and track FX exposure separately from GST.",
+        "does": "Book gift cards and loyalty points as liabilities recognized on redemption, and track FX exposure separately from sales-tax (GST) exposure.",
         "inputs": [
           "gift card ledger",
           "loyalty point ledger",
@@ -1135,8 +1137,8 @@
       },
       {
         "n": 8,
-        "name": "Hand off filing to the accountant",
-        "does": "Package GSTR-1, 3B inputs, credit reconciliation and e-way bill log for the brand's accountant to file.",
+        "name": "Hand off filing to the accountant or filing service",
+        "does": "Package the state filing inputs, facilitator/1099-K reconciliation and credit memo reconciliation for the brand's accountant or Avalara/TaxJar managed-filing service (India: package GSTR-1, 3B inputs, credit reconciliation and e-way bill log for the brand's accountant).",
         "inputs": [
           "all prior outputs"
         ],
@@ -1144,19 +1146,19 @@
         "skill": "shared/developer-brief",
         "output": "filing handoff package",
         "check": "the package states what this agent tracked versus what filing itself still needs a person",
-        "ask_founder_if": "always: actual GST return filing stays with the brand's accountant"
+        "ask_founder_if": "always: actual sales-tax (or GST) return filing stays with the brand's accountant or filing service"
       }
     ],
     "outputs": [
-      "SKU-to-HSN/SAC map",
-      "GST nexus status",
-      "GSTR-1/3B input pack",
-      "e-way bill log",
-      "credit note reconciliation"
+      "SKU-to-product-tax-code map (India: SKU-to-HSN/SAC map)",
+      "sales-tax nexus status",
+      "state filing input pack (India: GSTR-1/3B input pack)",
+      "credit memo reconciliation",
+      "India only: e-way bill log"
     ],
     "qa": [
-      "no SKU without a validated HSN/SAC code",
-      "TCS and GST on fees never netted",
+      "no SKU without a validated tax code",
+      "facilitator sales tax (or TCS/GST for India) on fees never netted",
       "filing itself stays human, tracking is agent_does"
     ],
     "read_point": "monthly, ahead of the filing deadline",
@@ -1416,12 +1418,12 @@
         "tools": [],
         "skill": "money/partner-commercial-terms",
         "output": "current agreement template",
-        "check": "the disclosure clause matches the current ASCI guideline"
+        "check": "the disclosure clause matches the current FTC Endorsement Guides (or the ASCI guideline for India-selling brands)"
       },
       {
         "n": 5,
         "name": "Check live posts for disclosure",
-        "does": "Check live creator and affiliate posts weekly for the ASCI and platform disclosure tags the agreement requires.",
+        "does": "Check live creator and affiliate posts weekly for the FTC #ad and platform disclosure tags the agreement requires (the ASCI-required tag for India-selling brands).",
         "inputs": [
           "live post list"
         ],
@@ -1454,7 +1456,7 @@
     ],
     "qa": [
       "commission never paid on a returned order",
-      "disclosure checked against the current ASCI rule",
+      "disclosure checked against the current FTC Endorsement Guides (or ASCI rule for India)",
       "payout never sent without approval"
     ],
     "read_point": "each payout cycle, against the reconciliation; weekly for disclosure checks",
@@ -2282,7 +2284,7 @@
       {
         "n": 5,
         "name": "Keep the handbook current",
-        "does": "Keep one current handbook covering leave, work-from-home, code of conduct and India-specific requirements including the POSH policy.",
+        "does": "Keep one current handbook covering leave, work-from-home, code of conduct and state-specific requirements including mandatory anti-harassment training (India: the POSH policy).",
         "inputs": [
           "current handbook",
           "law or policy changes"
@@ -2290,7 +2292,7 @@
         "tools": [],
         "skill": "money/sop-and-hr-docs",
         "output": "updated handbook",
-        "check": "the POSH policy section is present and current"
+        "check": "the anti-harassment training section (POSH policy section, for India) is present and current"
       },
       {
         "n": 6,
@@ -2747,12 +2749,12 @@
   },
   {
     "id": "MONEY-W19",
-    "name": "Plan customer-service capacity and handle DPDP data-subject requests",
+    "name": "Plan customer-service capacity and handle CCPA/CPRA data-subject requests (DPDP for India)",
     "capabilities": [
       "MONEY-C38",
       "LIFE-C66"
     ],
-    "trigger": "monthly (CS capacity) | event: a customer submits an access or erasure request",
+    "trigger": "monthly (CS capacity) | event: a customer submits a CCPA/CPRA access, deletion or opt-out request (a DPDP access or erasure request for India-selling brands)",
     "human_role": "the ops manager sizing support and protecting customer data rights",
     "inputs_required": [
       "sales forecast curve",
@@ -2818,7 +2820,7 @@
       {
         "n": 5,
         "name": "Find every system holding the requester's data",
-        "does": "On a DPDP access or erasure request, find every system that holds that person's data: ESP, helpdesk, loyalty, subscription, order records.",
+        "does": "On a CCPA/CPRA access, deletion or opt-out request (a DPDP access or erasure request for India-selling brands), find every system that holds that person's data: ESP, helpdesk, loyalty, subscription, order records.",
         "inputs": [
           "system map",
           "request details"
@@ -2831,7 +2833,7 @@
       {
         "n": 6,
         "name": "Assemble or erase the data",
-        "does": "Assemble the data for an access request, or prepare the erasure across every located system for an erasure request.",
+        "does": "Assemble the data for an access request, or prepare the deletion/erasure across every located system for a deletion or opt-out request.",
         "inputs": [
           "data location map"
         ],
@@ -2844,7 +2846,7 @@
       {
         "n": 7,
         "name": "Respond within the statutory window",
-        "does": "Track the DPDP response deadline and confirm the response goes out inside it.",
+        "does": "Track the CCPA/CPRA response deadline (the DPDP response deadline for India) and confirm the response goes out inside it.",
         "inputs": [
           "request received date"
         ],
@@ -2856,28 +2858,28 @@
       {
         "n": 8,
         "name": "Log the request",
-        "does": "Log every DPDP request and its resolution for audit purposes.",
+        "does": "Log every data-subject request and its resolution for audit purposes.",
         "inputs": [
           "response confirmation"
         ],
         "tools": [],
         "skill": "shared/registry-entry",
-        "output": "DPDP request log",
+        "output": "data-subject request log",
         "check": "the log is queryable by requester and by date"
       }
     ],
     "outputs": [
       "CS staffing plan",
       "cost per ticket by tier",
-      "DPDP request log with responses"
+      "data-subject request log with responses (India: DPDP request log)"
     ],
     "qa": [
       "staffing follows the forecast curve",
-      "every DPDP request checked against every connected system",
-      "erasure never breaks a legal retention obligation"
+      "every data-subject request checked against every connected system",
+      "deletion or erasure never breaks a legal retention obligation"
     ],
-    "read_point": "monthly for CS capacity; against the statutory deadline for each DPDP request",
-    "typical_duration": "agent: 1 hour monthly for capacity; 30 to 60 minutes per DPDP request",
+    "read_point": "monthly for CS capacity; against the statutory deadline for each data-subject request",
+    "typical_duration": "agent: 1 hour monthly for capacity; 30 to 60 minutes per data-subject request",
     "subagents": []
   },
   {
@@ -2896,7 +2898,7 @@
       "endpoint list",
       "order and payment data",
       "chargeback log",
-      "COD refusal log",
+      "India only: COD refusal log",
       "current bot and WAF policy",
       "domain and DNS records"
     ],
@@ -2975,16 +2977,16 @@
       },
       {
         "n": 6,
-        "name": "Control COD refusal and prepayment triggers",
-        "does": "Control COD refusal rate and set prepayment triggers for repeat refusers.",
+        "name": "Control step-up verification and payment-refusal triggers",
+        "does": "Set step-up verification triggers for repeat card-decline or high-risk customers. India-selling brands control COD refusal rate and set prepayment triggers for repeat refusers, the same way, as a market option.",
         "inputs": [
-          "COD refusal log"
+          "India only: COD refusal log"
         ],
         "tools": [
           "script: money.fraud_control_audit"
         ],
         "skill": "money/security-scan-weekly",
-        "output": "COD control list",
+        "output": "payment-refusal control list (India: COD control list)",
         "check": "a repeat refuser is flagged by name before the next order, not after"
       },
       {

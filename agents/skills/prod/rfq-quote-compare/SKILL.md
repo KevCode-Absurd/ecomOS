@@ -34,6 +34,6 @@ skill enforces one structured request and one apples-to-apples comparison.
 {rfq_document, quotes[{supplier, tier, price, terms}], flags[], recommendation}
 
 ## Example
-RFQ sent to 4 verified suppliers for tiers 3,000 / 8,000 / 15,000 units. One quote flagged for missing a BIS
-certificate. Recommendation: Supplier B at the 8,000 tier: lowest landed cost per unit among complete quotes, and
+RFQ sent to 4 verified suppliers for tiers 3,000 / 8,000 / 15,000 units. One quote flagged for missing a required UL/FDA certificate (india: a BIS
+certificate; markets: IN). Recommendation: Supplier B at the 8,000 tier: lowest landed cost per unit among complete quotes, and
 the cash impact fits the brand's stated cash cover.

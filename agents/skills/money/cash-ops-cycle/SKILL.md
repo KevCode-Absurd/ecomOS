@@ -14,7 +14,7 @@ One engine for the recurring cash-movement processes, so approval chains, paymen
 ## Steps
 1. For payable: capture every bill, match it to its PO and receipt, and route it through the approval chain by amount and vendor.
 2. For receivable: invoice B2B and wholesale buyers on their agreed terms and run a structured dunning sequence on overdue accounts.
-3. For payroll: process the cycle from the roster, then prepare PF, ESI, professional tax and TDS filings, plus Form 16 at year end.
+3. For payroll: process the cycle from the roster through Gusto or ADP, then prepare federal/state withholding and W-2/1099-NEC filings (PF, ESI, professional tax, TDS and Form 16 for India-selling brands).
 4. For expense: apply the travel-and-expense policy to every receipt and card charge, then reconcile the card statement to the ledger.
 
 ## Checks

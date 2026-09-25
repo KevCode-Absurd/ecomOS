@@ -2236,7 +2236,7 @@
    "Add a second gateway and regional payment methods",
    "Set capture timing and turn on fraud screening",
    "Test every gateway in sandbox, then one real order and refund",
-   "Screen for fake COD orders where relevant",
+   "Screen for fake or high-risk orders with fraud signals (mismatched billing and shipping, high-risk BIN, order velocity); screen for fake cash-on-delivery orders where COD is offered as a market option",
    "Set the card statement descriptor to the real brand name",
    "Re-check the gateway is live right before removing the password",
    "run a real, small, refundable test purchase through production on a schedule, not only once at launch",
@@ -2384,22 +2384,33 @@
    "Decide the tax basis (origin/destination) per state's rule",
    "Decide whether tax applies to shipping, per jurisdiction",
    "Test one product per tax class in at least 2 regions",
-   "hold an HSN code per SKU in the product record, not just a tax class",
-   "compute CGST plus SGST for an intra-state order and IGST for an inter-state order, in code from the buyer and seller state",
-   "generate a GSTIN-compliant invoice PDF per order via an invoicing app or native flow",
-   "flag a SKU missing its HSN code before it can be sold, rather than shipping an invoice with a blank field"
+   "track economic nexus by state from the brand's own sales volume and transaction count, and flag a new state that crosses the threshold",
+   "apply marketplace facilitator rules so tax a marketplace already collected is not double-charged on the brand's own site",
+   "connect Avalara or TaxJar for real-time rate calculation and automated filing across nexus states",
+   "collect and keep a resale certificate on file per wholesale buyer before exempting them from sales tax",
+   "produce 1099-K reporting against the brand's own payment processor threshold",
+   "India market option, reads null for US: hold an HSN code per SKU in the product record, not just a tax class",
+   "India market option, reads null for US: compute CGST plus SGST for an intra-state order and IGST for an inter-state order, in code from the buyer and seller state",
+   "India market option, reads null for US: generate a GSTIN-compliant invoice PDF per order via an invoicing app or native flow",
+   "India market option, reads null for US: flag a SKU missing its HSN code before it can be sold, rather than shipping an invoice with a blank field"
   ],
   "inputs": [
    "brand brain: registered tax jurisdictions",
-   "seller GSTIN and state",
-   "per-SKU HSN code",
-   "buyer's billing state"
+   "nexus state list",
+   "Avalara or TaxJar connection",
+   "resale certificates on file",
+   "India market option, null for US: seller GSTIN and state",
+   "India market option, null for US: per-SKU HSN code",
+   "India market option, null for US: buyer's billing state"
   ],
   "outputs": [
    "tax configuration",
    "tax QA log",
-   "GST invoice PDF per order",
-   "missing-HSN flag list"
+   "nexus tracking report",
+   "automated tax filing",
+   "1099-K report",
+   "India market option, null for US: GST invoice PDF per order",
+   "India market option, null for US: missing-HSN flag list"
   ],
   "trigger": "on demand",
   "autonomy": "founder_gate",
@@ -2409,6 +2420,8 @@
   },
   "tools": [
    "mcp: shopify",
+   "nexus_tracker.check",
+   "avalara_taxjar.sync",
    "gst_invoice.generate"
   ],
   "skills": [
@@ -2439,8 +2452,8 @@
   "agent": "SITE",
   "extensions": [
    {
-    "name": "Configure tax by jurisdiction (extension: India GST invoice generation)",
-    "what": "Extends jurisdiction tax configuration with India-specific GST invoicing: a GSTIN-compliant tax invoice PDF per order, an HSN code held per SKU, and the correct CGST/SGST versus IGST split computed from the buyer's state against the seller's registered state.",
+    "name": "Configure tax by jurisdiction (extension: sales tax nexus, automation and India GST invoicing)",
+    "what": "Extends jurisdiction tax configuration with US sales tax nexus tracking and automation: registers economic nexus by state, applies marketplace facilitator rules so tax is not double-collected, connects Avalara or TaxJar for real-time rate calculation and filing, collects resale certificates from wholesale buyers, and produces 1099-K reporting. Where the brand also sells in India, adds the market option of GSTIN-compliant invoicing (an HSN code held per SKU, and the CGST/SGST versus IGST split computed from the buyer's state against the seller's registered state); this option reads null for US.",
     "human_role": "e-commerce web manager"
    }
   ]
@@ -4015,7 +4028,7 @@
    "Fit the fixed first-screen elements on the brand's main mobile device",
    "Place every control next to the element it changes",
    "Add a subscribe-and-save selector for consumable SKUs",
-   "Show delivery ETA or a pincode serviceability check near the buy box",
+   "Show delivery ETA or a ZIP code and USPS address serviceability check near the buy box (pincode serviceability check where the brand sells in India)",
    "Show local payment methods beside the FUD reducers",
    "Answer what, why this one, why now and why trust you above the fold",
    "Put reviews, savings, sticky add-to-cart and gallery next to the buy box"
@@ -5940,7 +5953,7 @@
    "Run partnership or whitelisted ads only through a page that already posts well",
    "Log usage rights, scope and expiry per creator asset",
    "Build and maintain a standing creator roster",
-   "Browse marketplaces (Billo, Minisocial, JoinBrands, and India platforms such as Kofluence and Winkl) filtered by niche, follower count and past brand work",
+   "Browse marketplaces (Billo, Minisocial, JoinBrands) filtered by niche, follower count and past brand work; for an India-market brief, browse India platforms such as Kofluence and Winkl instead",
    "Shortlist 5 to 10 candidates per brief against the vetting bar already set from past creator work",
    "Draft the outreach and rate-negotiation message for each shortlisted creator, never send it without sign-off",
    "Track response and acceptance rate per marketplace to learn which one sources faster for this brand"
@@ -6319,9 +6332,10 @@
    "retire a weak component without killing an otherwise strong ad",
    "flag when a brand tone or claim would fail if machine-recombined with the wrong headline",
    "feed the component-level read back into the next creative brief",
-   "List the year's relevant Indian festivals (Diwali, Holi, Republic Day sale, Raksha Bandhan) and global sale events (BFCM) the brand actually runs offers around",
+   "List the year's relevant US holiday and sale dates (Black Friday, Cyber Monday, Prime Day, Valentine's Day, Mother's Day, Father's Day, back to school, July 4, Q4 holiday season) the brand actually runs offers around",
+   "India-market option (markets: IN, null for a US brand): list the year's relevant Indian festivals (Diwali, Holi, Republic Day sale, Raksha Bandhan) instead of, or alongside, the US calendar",
    "Work backward from each date to set concept, build, review and launch deadlines with real lead time",
-   "Flag when two festive windows overlap the same production slot, so volume gets planned, not doubled up last minute",
+   "Flag when two holiday or festive windows overlap the same production slot, so volume gets planned, not doubled up last minute",
    "Carry the prior year's same-event creative and its results forward as a starting reference, not a blank slate"
   ],
   "inputs": [
@@ -6336,7 +6350,7 @@
    "Meta/Google asset-level reporting",
    "brand claim tiers",
    "brand brain: past sale events and results",
-   "India festive calendar"
+   "US holiday calendar; India festive calendar for an India-market brand (markets: IN)"
   ],
   "outputs": [
    "monthly production plan",
@@ -6346,7 +6360,7 @@
    "volume and diversity scorecard",
    "component performance report",
    "next-round creative brief with named components to keep, refresh or retire",
-   "annual festive and sale-event production calendar with lead-time countdowns"
+   "annual holiday and sale-event production calendar with lead-time countdowns"
   ],
   "trigger": "monthly",
   "autonomy": "agent_does",
@@ -6365,7 +6379,7 @@
   "skills": [
    "creative-test-plan",
    "creative-volume-plan",
-   "festive-calendar-planner"
+   "holiday-calendar-planner"
   ],
   "subagent": null,
   "sources": {
@@ -6431,7 +6445,7 @@
    },
    {
     "id": "CREA-C50",
-    "name": "Build a festive and sale-event creative production calendar with lead-time countdowns",
+    "name": "Build a holiday and sale-event creative production calendar with lead-time countdowns",
     "agent": "CREA",
     "reason": "One creative volume and production plan. MEDIA-C16 sets ads per $1,000 and concept counts; CREA-C50 is the festive version of the same production calendar, fed by LOOP-C05."
    }
@@ -6673,10 +6687,10 @@
    "10-MCR",
    "11-ADC"
   ],
-  "what": "Specs creative and copy for a mobile-first, non-US market, vertical-only formats, dual-language hooks where needed, and local payment and delivery trust facts drawn from the brand record.",
+  "what": "Specs creative and copy for the target market and device: payment method mix, delivery trust facts and language, drawn from the brand record. Defaults to the US (card, wallets, BNPL, English, standard feed and story formats); specs a mobile-first market with its own norms (vertical-only formats, dual-language hooks, COD or EMI where that market runs them) when the brief targets one.",
   "encompasses": [
-   "Spec vertical-only, dual-language hooks for mobile-first markets",
-   "State local payment and delivery trust facts (COD, EMI, local carriers) from the brand record",
+   "Spec vertical-only, dual-language hooks for a mobile-first market when the brief targets one",
+   "State local payment and delivery trust facts (card, wallets, BNPL such as Affirm, Klarna or Afterpay for a US brand; COD and EMI where the target market runs them, markets: IN) and local carriers from the brand record",
    "Check that any translated or localised line still passes the claim and reading-level rules",
    "Dub the winning ad's voiceover into the target language, keeping the same delivery pace and hook timing",
    "Lip-sync the dub to the speaker's mouth movements so it does not read as an obvious redub",
@@ -7945,24 +7959,24 @@
    "Prepare Google Shopping, Search and brand campaigns for the known sale date in advance",
    "Check stock levels against the planned ramp before committing budget",
    "Write the post sale review checklist and read point",
-   "build a dated festival calendar for the brand's category with historical demand notes where available",
-   "map WhatsApp and messaging spend uplift around Diwali, since messaging engagement runs far above other channels in that window",
-   "flag GST invoice and advance-payment timing for pre-festival stock loans as a founder-visible dependency, not a media task",
-   "size quick-commerce ad spend separately from Meta/Google for the festival window, since intent and basket size differ",
-   "set the wind-down date and post-festival RTO watch, since COD orders spike and RTO risk rises after a festival"
+   "build a dated holiday and sale calendar for the brand's category with historical demand notes where available (India only: a festival calendar)",
+   "map SMS, email and push spend uplift around Black Friday and Cyber Monday, since messaging engagement runs far above other channels in that window (India only: map WhatsApp uplift around Diwali the same way)",
+   "flag sales-tax invoice timing and vendor advance-payment timing for pre-peak stock loans as a founder-visible dependency, not a media task (India only: GST invoice and advance-payment timing)",
+   "size rapid-delivery and grocery marketplace ad spend (Instacart, DoorDash, Gopuff) separately from Meta/Google for the peak window, since intent and basket size differ (India only: size quick-commerce ad spend for Blinkit, Zepto, Instamart)",
+   "set the wind-down date and post-peak watch on returns and chargebacks, since both spike after a big sale event (India only: set a post-festival RTO watch, since COD orders spike and RTO risk rises after a festival)"
   ],
   "inputs": [
    "brand brain: sale calendar, stock levels",
    "metric contract: spend, cpm",
-   "category-specific festival calendar",
-   "past festival performance if available",
-   "quick-commerce presence"
+   "category-specific holiday and sale calendar",
+   "past peak-window performance if available",
+   "rapid-delivery marketplace presence (or quick-commerce presence, India only)"
   ],
   "outputs": [
    "peak sale media plan",
    "change list",
    "post sale review template",
-   "festival ramp plan with dated budget and creative milestones"
+   "peak sale ramp plan with dated budget and creative milestones"
   ],
   "trigger": "event: 3 to 4 weeks before a known sale",
   "autonomy": "human_assist",
@@ -7990,8 +8004,8 @@
   "agent": "MEDIA",
   "extensions": [
    {
-    "name": "Plan the India festive calendar into the peak sale ramp",
-    "what": "Add India-specific festival windows (Diwali, Raksha Bandhan, Holi, Eid, Onam) and quick-commerce demand spikes to the peak sale ramp plan, since these carry different messaging, stock and payment behaviour than a generic sale.",
+    "name": "Plan the Q4 holiday and key sale calendar into the peak sale ramp",
+    "what": "Add the major US demand windows (Black Friday, Cyber Monday, Prime Day, Mother's Day, Father's Day, back to school, Valentine's Day, July 4) and rapid-delivery/grocery marketplace demand spikes to the peak sale ramp plan, since these carry different messaging, stock and payment behaviour than a generic sale. India only: plan the India festival calendar (Diwali, Raksha Bandhan, Holi, Eid, Onam) and quick-commerce demand spikes the same way instead.",
     "human_role": "performance marketing manager, growth marketer"
    }
   ]
@@ -9878,11 +9892,11 @@
    "Use AND (not OR) on the sunset flow's opened/clicked filters",
    "Run a 3-email, 5-day-gap sunset sequence before marking unengaged",
    "Reserve second-purchase incentives for the first-to-second step only",
-   "Detect an RTO-caused lapse separately from an ordinary engagement-decay lapse",
+   "Detect a delivery-failure-caused lapse (return-to-sender for US carriers, RTO for India) separately from an ordinary engagement-decay lapse",
    "Lead the message with an apology and a fix (address confirmation, a named contact, proof the issue is resolved) rather than a discount",
-   "Confirm the address and courier serviceability before re-targeting the customer with any offer",
+   "Confirm the address and carrier serviceability before re-targeting the customer with any offer",
    "Only offer a discount as a second step, after trust is addressed, and size it to the disruption, not to a generic win-back rate",
-   "Track win-back rate for the RTO-affected segment separately from the ordinary lapsed segment, since mixing them hides whether the fix worked",
+   "Track win-back rate for the delivery-failure-affected segment separately from the ordinary lapsed segment, since mixing them hides whether the fix worked",
    "Read the customer's last product, last support ticket (if any) and last review sentiment (if any)",
    "Infer a plausible, evidence-based lapse reason (price, a bad support experience, product fit) rather than guessing",
    "Draft one message addressing that specific reason with a matched, policy-compliant offer",
@@ -9894,7 +9908,7 @@
    "connector: shopify orders",
    "metric contract",
    "brand brain: support history (lapse reasons)",
-   "RTO/NDR event log",
+   "carrier delivery-exception / return-to-sender event log (RTO/NDR event log for India)",
    "ordinary lapse/churn flag from the segmentation model",
    "churn/lapse flag from the segmentation model",
    "order history",
@@ -9906,7 +9920,7 @@
    "draft copy",
    "sunset criteria spec",
    "a trust-rebuild win-back message variant",
-   "a separate win-back rate for the RTO-affected segment",
+   "a separate win-back rate for the delivery-failure-affected segment",
    "a per-customer win-back draft with the evidence it cites"
   ],
   "trigger": "on demand",
@@ -9918,7 +9932,7 @@
   "tools": [
    "connector: ESP (Klaviyo or brand's platform)",
    "script: intelligence/ideas.py",
-   "courier NDR/RTO data (read)",
+   "carrier delivery-exception data (or RTO data, for India) (read)",
    "segmentation model (read)",
    "helpdesk history (read)",
    "review history (read)"
@@ -9955,8 +9969,8 @@
   "agent": "LIFE",
   "extensions": [
    {
-    "name": "EXTENSION: Add an RTO-affected win-back variant, distinct from an ordinary lapsed-buyer win-back",
-    "what": "The original capability builds the win-back flow for a lapsed customer and the sunset flow. It treated every lapsed customer the same. A customer whose order never arrived (RTO) needs a trust-rebuilding message, not a discount-led win-back, since the reason they stopped buying was a delivery failure, not fading interest.",
+    "name": "EXTENSION: Add a failed-delivery win-back variant, distinct from an ordinary lapsed-buyer win-back",
+    "what": "The original capability builds the win-back flow for a lapsed customer and the sunset flow. It treated every lapsed customer the same. A customer whose order was never delivered (a carrier return-to-sender, or in India an RTO) needs a trust-rebuilding message, not a discount-led win-back, since the reason they stopped buying was a delivery failure, not fading interest.",
     "human_role": "retention marketing manager"
    }
   ],
@@ -10643,7 +10657,7 @@
   "folders": [
    "14-EML"
   ],
-  "what": "Sets the rules for every non-email channel: content scope, cadence, cost control, consent, and channel selection, including a WhatsApp pilot where SMS is costly.",
+  "what": "Sets the rules for every non-email channel: content scope, cadence, cost control, consent, and channel selection. SMS with TCPA consent and quiet hours is the default second channel; WhatsApp is a market option (India, EU, LATAM) where it beats SMS on reach or cost, reads null for US brands.",
   "encompasses": [
    "Reserve SMS for high-urgency, low-frequency news only",
    "Start cadence conservatively, raise it only through a proven holdout",
@@ -10654,7 +10668,7 @@
    "Pilot RCS or iMessage business messaging as a holdout, not a default rollout",
    "Choose the SMS platform on price and ESP fit, not AI feature pitches",
    "Add push notification steps to flows where the brand has an app",
-   "Consider WhatsApp business messaging where SMS is costly and the market is mobile-first",
+   "Consider WhatsApp business messaging as a market option where SMS is costly and the market is mobile-first (India, EU, LATAM); reads null for US brands",
    "Track click rate, unsubscribe rate, delivery rate and net profit per send"
   ],
   "inputs": [
@@ -10896,62 +10910,64 @@
  },
  {
   "id": "LIFE-C22",
-  "name": "Design the WhatsApp commerce program for India",
+  "name": "Design the SMS and WhatsApp commerce program",
   "folders": [
    "14-EML",
    "17-CXP",
    "03-OFF"
   ],
-  "what": "Designs WhatsApp-based cart recovery, order updates and COD-to-prepaid conversion for Indian buyers, where WhatsApp reach beats SMS and email.",
+  "what": "Designs SMS-based cart recovery, order-status updates and dunning for failed card payments as the default program, with WhatsApp as a market option (India, EU, LATAM) where it beats SMS and email on reach, and COD-to-prepaid conversion for COD markets. India only: COD-to-prepaid and return-to-origin (RTO) reduction read null for US brands.",
   "encompasses": [
    "Design a 3-step cart recovery sequence (about 30-60 min, 12-24 hr, 48-72 hr) with a rising incentive",
-   "Send order-status milestones (confirmed, dispatched, out for delivery, delivered) over WhatsApp for opted-in India buyers",
-   "Confirm COD orders over WhatsApp to reduce return-to-origin",
-   "Offer a prepaid discount or COD-fee waiver over WhatsApp to shift COD buyers to prepaid",
-   "Choose WhatsApp over SMS for update channel based on audience and opt-in",
-   "Keep WhatsApp consent and opt-out handling separate from email/SMS consent",
-   "Route product catalogue and payment links through WhatsApp's native commerce features where available",
-   "Trigger an OTP, WhatsApp or IVR confirmation before a COD order ships, not only order-update messages after",
-   "Score each COD order's fraud/RTO risk from pincode delivery-success history and order pattern",
-   "Route a high-risk COD order to a manual check or a prepaid-only offer instead of shipping blind",
-   "Fire an automatic WhatsApp/SMS/IVR sequence the moment a courier logs a non-delivery (NDR), offering reschedule or address fix",
-   "Tie the prepaid nudge's discount size to the actual RTO cost it avoids, not an arbitrary number",
-   "Report COD confirmation rate, RTO rate by pincode, and NDR recovery rate as new numbers the original scope did not track",
-   "build the Click-to-WhatsApp ad creative and destination message template",
-   "specify the WhatsApp catalog and quick-reply flow that confirms address, size/variant and COD intent before an order is marked for dispatch",
-   "flag an order where the customer never confirms on WhatsApp as a hold-for-review instead of an automatic ship",
-   "measure RTO rate for WhatsApp-confirmed orders against non-confirmed orders to prove the effect on this brand, not just cite the general benchmark",
-   "keep the WhatsApp flow compliant with Meta's business messaging policy (opt-in, template approval)"
+   "Send order-status milestones (confirmed, shipped, out for delivery, delivered) by SMS with TCPA consent and quiet-hours rules by default",
+   "Retry a failed card charge through a dunning sequence before canceling a subscription or hold",
+   "India only: confirm COD orders over WhatsApp to reduce return-to-origin (RTO); reads null for US brands",
+   "India only: offer a prepaid discount or COD-fee waiver over WhatsApp to shift COD buyers to prepaid; reads null for US brands",
+   "Choose WhatsApp over SMS for the update channel in markets where it has higher reach (India, EU, LATAM), based on audience and opt-in",
+   "Keep WhatsApp consent and opt-out handling separate from SMS/email consent where WhatsApp is used",
+   "Route product catalog and payment links through WhatsApp's native commerce features where available",
+   "Trigger an OTP, SMS/WhatsApp or IVR confirmation before an order ships when the risk score calls for it, not only order-update messages after",
+   "Score each order's fraud/failed-delivery risk from address-validation history and order pattern (pincode-level delivery-success history for India's COD orders)",
+   "Route a high-risk order to a manual check or a card-only offer instead of shipping blind (a prepaid-only offer for India's COD orders)",
+   "Fire an automatic SMS/email/IVR sequence the moment a carrier logs a delivery exception or return-to-sender (WhatsApp/SMS/IVR for India's NDR), offering redelivery or an address fix",
+   "Tie any prepaid or card-only nudge's discount size to the actual failed-delivery cost it avoids (the RTO cost avoided, for India), not an arbitrary number",
+   "Report delivery-confirmation rate and return-to-sender rate as new numbers the original scope did not track. India only: also report COD confirmation rate and RTO rate by pincode; reads null for US brands",
+   "build the SMS/email confirmation creative and message template, with TCPA-compliant opt-in and quiet-hours rules (India only: build the Click-to-WhatsApp ad creative and destination message template)",
+   "run the shipping address through USPS address validation and confirm size/variant and delivery window before an order is marked for dispatch (India only: specify the WhatsApp catalog and quick-reply flow that confirms address, size/variant and COD intent)",
+   "flag an order where the customer never confirms as a hold-for-review instead of an automatic ship",
+   "measure return-to-sender and chargeback rate for confirmed orders against non-confirmed orders to prove the effect on this brand, not just cite the general benchmark (India only: measure RTO rate for WhatsApp-confirmed orders against non-confirmed orders)",
+   "keep the confirmation flow compliant with carrier and platform messaging policy (opt-in, template approval)"
   ],
   "inputs": [
-   "connector: WhatsApp Business API",
+   "connector: SMS/WhatsApp platform",
    "connector: shopify orders",
-   "brand brain: India COD/RTO history",
-   "courier NDR feed",
-   "pincode-level delivery-success history",
-   "COD order flow",
-   "WhatsApp Business API or app access",
-   "Meta CTWA ad setup"
+   "brand brain: payment method mix and reversed-orders history (COD share and RTO null for US brands)",
+   "carrier delivery-exception feed (an NDR feed for India)",
+   "address-validation / delivery-success history (pincode-level for India)",
+   "order flow",
+   "SMS/email provider access, or WhatsApp Business API/app access (India only)",
+   "order flow with address-risk flags, or COD order flow (India only)",
+   "Meta CTWA or equivalent ad setup"
   ],
   "outputs": [
-   "WhatsApp flow spec",
+   "SMS/WhatsApp flow spec",
    "message templates for platform approval",
    "a pre-dispatch confirmation flow",
-   "a pincode risk score",
-   "an NDR recovery sequence",
-   "a CTWA ad and WhatsApp confirmation flow spec",
-   "a before/after RTO comparison once live"
+   "a fraud/address risk score",
+   "a failed-delivery recovery sequence",
+   "a confirmation-flow spec (SMS/email, or Click-to-WhatsApp, India only)",
+   "a before/after comparison on failed deliveries and chargebacks (RTO comparison, India only) once live"
   ],
   "trigger": "on demand",
   "autonomy": "founder_gate",
   "external_write": {
    "needed": true,
-   "surface": "WhatsApp Business API"
+   "surface": "SMS/WhatsApp platform"
   },
   "tools": [
-   "connector: WhatsApp Business API",
+   "connector: SMS/WhatsApp platform",
    "web search",
-   "courier data (read)",
+   "carrier data (read)",
    "Meta Ads MCP (read-only)"
   ],
   "skills": [
@@ -10967,8 +10983,7 @@
     "https://www.clickpost.ai/blog/rto-reduction-tools",
     "https://blog.shipway.com/shipping-software-for-reducing-rto/",
     "https://www.shipway.com/rto-suite",
-    "https://m.aisensy.com/blog/click-to-whatsapp-ads-for-ecommerce/",
-    "https://www.akoi.in/blog/whatsapp-commerce-d2c-brands-india/"
+    "https://m.aisensy.com/blog/click-to-whatsapp-ads-for-ecommerce/"
    ],
    "bank": [
     "EML-162",
@@ -10978,19 +10993,19 @@
    ]
   },
   "found_in": "web+bank",
-  "founder_sees": "The WhatsApp message sequences for cart recovery, order status and COD-to-prepaid, ready for template approval.",
+  "founder_sees": "The SMS/WhatsApp message sequences for cart recovery, order status and (COD markets) COD-to-prepaid, ready for template approval.",
   "agent": "LIFE",
   "extensions": [
    {
-    "name": "EXTENSION: Add COD pre-dispatch confirmation, fraud/pincode risk scoring and automated NDR recovery to the WhatsApp commerce program",
-    "what": "The original capability designs WhatsApp cart recovery, order updates and COD-to-prepaid conversion. Indian RTO-reduction tooling (Shipway, ClickPost) shows the fuller COD workflow also needs pre-dispatch confirmation, a fraud/pincode risk score, and an automatic recovery sequence the moment a delivery fails, which the original scope did not cover.",
+    "name": "EXTENSION: Add pre-dispatch confirmation, fraud/address risk scoring and automated failed-delivery recovery to the SMS/WhatsApp commerce program",
+    "what": "The original capability designs SMS (and, where used, WhatsApp) cart recovery and order updates, plus COD-to-prepaid conversion for COD markets. Failed-delivery-reduction tooling (ShipStation/EasyPost address validation for the US; India's Shipway, ClickPost for RTO) shows the fuller workflow also needs pre-dispatch confirmation, a fraud/address risk score, and an automatic recovery sequence the moment a delivery fails, which the original scope did not cover.",
     "human_role": "returns coordinator / lifecycle marketer"
    }
   ],
   "merged_from": [
    {
     "id": "MEDIA-C60",
-    "name": "Set up Click-to-WhatsApp ads and a COD confirmation flow to cut RTO",
+    "name": "Set up an SMS/email order confirmation and address-verification flow to cut failed deliveries and chargebacks",
     "agent": "MEDIA",
     "reason": "The COD confirmation flow on WhatsApp is LIFE-C22's (and SITE-C67 triggers it). Click-to-WhatsApp ads are a campaign type under MEDIA-C09 and C11, not a separate capability."
    }
@@ -11196,7 +11211,7 @@
   "folders": [
    "17-CXP"
   ],
-  "what": "Designs the return and refund flow: speed targets, refund-vs-credit choice, self-service portal, and fraud and RTO controls for COD markets.",
+  "what": "Designs the return and refund flow: speed targets, refund-vs-credit choice, self-service portal, and reversed-orders controls covering failed deliveries, chargebacks/disputes, and (COD markets) return-to-origin (RTO).",
   "encompasses": [
    "Collapse the refund timeline; measure request-to-initiation and initiation-to-receipt separately",
    "Offer a clear choice between refund to original payment and store credit, never silent substitution",
@@ -11204,13 +11219,13 @@
    "Give returners a self-service portal with keep-it-or-donate refunds for low-value items",
    "Publish the returns policy where shoppers see it before buying, checked against law per market",
    "Gate further returns work on returners' repeat rate matching or beating non-returners",
-   "Track return-to-origin rate for COD orders and confirm high-risk orders before dispatch",
-   "Track chargebacks and payment disputes as their own cost line"
+   "Track failed-delivery and return-to-sender rate and confirm high-risk orders before dispatch; India only: track return-to-origin (RTO) rate for COD orders instead, reads null for US brands",
+   "Track chargebacks and payment disputes as their own cost line, owned with Money and ops for representment"
   ],
   "inputs": [
    "connector: shopify orders",
    "brand brain: policies (shipping, returns, guarantee, EMI)",
-   "connector: returns/RTO data"
+   "connector: reversed-orders data (returns, chargebacks/disputes, return-to-sender, and RTO for COD markets)"
   ],
   "outputs": [
    "returns policy draft",
@@ -11245,7 +11260,7 @@
    ]
   },
   "found_in": "bank_only",
-  "founder_sees": "The returns and refund flow design, and the fraud/RTO numbers behind any policy change.",
+  "founder_sees": "The returns and refund flow design, and the failed-delivery/chargeback/(COD markets) RTO numbers behind any policy change.",
   "agent": "LIFE"
  },
  {
@@ -12033,7 +12048,7 @@
    "State bonus and kit values only at real, sellable prices",
    "Size total bonus value to exceed the core product's price",
    "Recover a free gift's value when the qualifying order is returned",
-   "Withhold a promised free gift on COD orders until collection is confirmed",
+   "India only: withhold a promised free gift on COD orders until collection is confirmed; reads null for US brands",
    "Deliver a promised bonus unit in the second order, not the first"
   ],
   "inputs": [
@@ -12600,11 +12615,12 @@
    "Hold the pillar mix 3 months and give the channel 12 months before a verdict",
    "Test a scheduler against manual posting only after 4 weeks manual",
    "Do not abandon the account after a run of weak posts",
-   "Build a rolling India festive and cultural calendar tied to the brand's category, including gifting spikes and periods to avoid tone-deaf posting",
-   "Flag festival-adjacent stock and shipping-cutoff dates so posts never promise delivery the warehouse cannot hit",
-   "Tag each calendar slot with the language variant it needs (Hindi, Hinglish, regional) so scripts are written once and localized against the same slot",
+   "Build a rolling US holiday and retail-moment calendar tied to the brand's category, including gifting spikes and periods to avoid tone-deaf posting",
+   "Flag holiday-adjacent stock and shipping-cutoff dates so posts never promise delivery the warehouse cannot hit",
+   "Tag each calendar slot with the language variant it needs (for example Spanish, or a regional language) so scripts are written once and localized against the same slot",
    "Set a 2-week fixed-cost trial protocol for any new platform with a stated success bar and a kill-or-adopt decision date",
-   "Cross-check festive content pushes against the paid promo calendar so organic and paid do not collide or contradict each other"
+   "Cross-check holiday content pushes against the paid promo calendar so organic and paid do not collide or contradict each other",
+   "India only (`markets`: [\"IN\"], reads null for US brands): build a rolling India festive and cultural calendar (Diwali, Holi, Raksha Bandhan, Eid, regional harvest festivals) in place of, or alongside, the US holiday calendar"
   ],
   "inputs": [
    "brand brain: stock and shipping status",
@@ -12619,7 +12635,7 @@
    "posting calendar",
    "cadence and floor targets",
    "go/no-go notes for scheduler tools",
-   "updated calendar with a festive and regional layer",
+   "updated calendar with a holiday and regional layer",
    "one-page platform-test protocol"
   ],
   "trigger": "weekly",
@@ -12664,8 +12680,8 @@
   "agent": "ORG",
   "extensions": [
    {
-    "name": "Extend the calendar with India festive moments and a new-platform test protocol",
-    "what": "Add a festive, regional and platform-expansion layer on top of the existing pillar calendar: map Diwali, Holi, Raksha Bandhan, Eid and regional harvest festivals to content and stock windows, tag slots by language variant, and set a fixed, timeboxed test protocol before the team commits cadence to an emerging platform like Threads or Bluesky.",
+    "name": "Extend the calendar with the US holiday calendar and a new-platform test protocol",
+    "what": "Add a holiday, regional and platform-expansion layer on top of the existing pillar calendar: map the Q4 holiday season, Black Friday and Cyber Monday, Prime Day, Valentine's Day, Mother's Day, Father's Day, back to school and July 4 to content and stock windows, tag slots by language variant, and set a fixed, timeboxed test protocol before the team commits cadence to an emerging platform like Threads or Bluesky. India only (`markets`: [\"IN\"], reads null for US brands): map Diwali, Holi, Raksha Bandhan, Eid and regional harvest festivals the same way instead.",
     "human_role": "content strategist"
    }
   ]
@@ -12744,11 +12760,12 @@
    "Test warning-style vs benefit-style hooks on the same product",
    "Run every script through a pre-publish quality checklist",
    "Warm up with short copywork and leave an incubation gap before editing high-stakes copy",
-   "Translate and localize approved hooks, scripts and captions into Hindi and Hinglish, keeping idioms natural rather than literal",
-   "Produce named regional-language variants (Tamil, Telugu, Bengali, Marathi) where the brand's data shows real audience share",
+   "Translate and localize approved hooks, scripts and captions into Spanish, keeping idioms natural rather than literal",
+   "Produce named regional-language or dialect variants where the brand's data shows real audience share",
    "Flag words or claims that do not translate cleanly and need a human rewrite rather than a literal pass",
    "Keep on-screen text and burned-in captions synced to the spoken language variant for each cut",
-   "Route every localized variant through the same claims and safety gate as the English original before it can publish"
+   "Route every localized variant through the same claims and safety gate as the English original before it can publish",
+   "India only (`markets`: [\"IN\"], reads null for US brands): localize into Hindi and Hinglish, plus named regional-language variants (Tamil, Telugu, Bengali, Marathi), where the brand's data shows real audience share"
   ],
   "inputs": [
    "brand brain: voice (liked and disliked examples)",
@@ -12849,8 +12866,8 @@
   "agent": "ORG",
   "extensions": [
    {
-    "name": "Localize scripts and captions into regional language and Hinglish variants",
-    "what": "Once a script or caption is approved in English, produce Hindi, Hinglish and named regional-language variants for the same post, keeping the same hook structure and claim tier, instead of writing each language from scratch.",
+    "name": "Localize scripts and captions into Spanish and other regional-language variants",
+    "what": "Once a script or caption is approved in English, produce Spanish and other named regional-language variants for the same post, keeping the same hook structure and claim tier, instead of writing each language from scratch. India only (`markets`: [\"IN\"], reads null for US brands): produce Hindi, Hinglish and named regional-language variants (Tamil, Telugu, Bengali, Marathi) instead.",
     "human_role": "content creator"
    }
   ]
@@ -13035,9 +13052,9 @@
    "Follow up in DM with buyers who clicked the link but did not order",
    "Test the DM funnel end to end before any triggering post goes live",
    "Run DM automation only inside current platform policy with an approved partner",
-   "Pull comments and DMs from Instagram, YouTube, Pinterest, LinkedIn and WhatsApp Business into one triage queue",
+   "Pull comments and DMs from Instagram, YouTube, Pinterest, LinkedIn and SMS into one triage queue, plus WhatsApp Business where the brand serves an India, EU or LATAM audience (market option, reads null for a US-only brand)",
    "Classify each message by intent: FAQ, complaint, lead, spam, press or influencer inquiry",
-   "Auto-send only messages in a founder-approved FAQ tier (shipping timelines, COD availability, sizing, return policy) with the exact policy-quoted answer",
+   "Auto-send only messages in a founder-approved FAQ tier (shipping timelines, payment method availability, sizing, return policy) with the exact policy-quoted answer",
    "Escalate complaints, ambiguous questions and anything mentioning a competitor or a claim to a human queue with a suggested draft attached",
    "Check auto-send volume and wording weekly against current platform automation policy so the account is never flagged",
    "Log every auto-sent answer so the same question is never answered two different ways across platforms"
@@ -13089,7 +13106,7 @@
   "extensions": [
    {
     "name": "Run a unified inbox with triage rules and a defined auto-send FAQ tier",
-    "what": "Beyond drafting individual replies, build the triage layer: pull comments and DMs from every connected platform into one queue, classify each by intent, auto-send only a defined FAQ tier (shipping, COD availability, sizing, returns), and route everything else to a human with a suggested draft.",
+    "what": "Beyond drafting individual replies, build the triage layer: pull comments and DMs from every connected platform into one queue, classify each by intent, auto-send only a defined FAQ tier (shipping, payment method availability, sizing, returns), and route everything else to a human with a suggested draft.",
     "human_role": "community manager"
    }
   ]
@@ -14385,7 +14402,7 @@
    "Flag and correct duplicate or outdated listings found during the citation sweep",
    "Seed the Google Business Profile Q&A section with the brand's own accurate answers before a stranger posts a wrong one",
    "Monitor new Q&A submissions daily and answer within a set response window",
-   "Schedule Google Business Profile posts (offers, new arrivals, festive hours) on the same cadence as the content calendar"
+   "Schedule Google Business Profile posts (offers, new arrivals, holiday hours) on the same cadence as the content calendar"
   ],
   "inputs": [
    "brand brain: store locations",
@@ -15301,7 +15318,7 @@
    "Model markup at the low end, high end and future bulk cost of the price range",
    "Re-quote the brand's own supplier cost instead of assuming a competitor's, and set price from a broad set of comparables",
    "Separate a fixable execution problem from a structural cost problem",
-   "Price payment-gateway friction, real shipping cost, and return-to-origin or COD cost into the margin gate",
+   "Price payment-gateway friction, real shipping cost, and reversed-order cost (chargebacks, disputes, carrier return-to-sender) into the margin gate (India: also price return-to-origin/RTO cost on cash-on-delivery orders; markets: IN, reads null for US brands)",
    "Choose materials and packaging that survive parcel handling",
    "Require shelf life to comfortably outlast time to market and sell",
    "Check claim, labelling and registration rules, and any category-specific certification, per country before spend",
@@ -15603,13 +15620,13 @@
  },
  {
   "id": "PROD-C14",
-  "name": "Discover and vet suppliers in India and overseas",
+  "name": "Discover and vet suppliers across sourcing regions",
   "folders": [
    "18-COG"
   ],
-  "what": "Run supplier discovery as a funnel: broad platform search, message a wide shortlist, verify with a video call and certification check, and vet any sourcing agent the same way as a factory.",
+  "what": "Run supplier discovery as a funnel across sourcing regions (US domestic, China, and India where the brand sources there): broad platform search, message a wide shortlist, verify with a video call and certification check, and vet any sourcing agent the same way as a factory.",
   "encompasses": [
-   "Use Alibaba or similar platforms for research and shortlisting, not the final pick, on an ad-spend SKU",
+   "Use Alibaba, 1688 (via a vetted agent), Faire or Tundra for wholesale, or ThomasNet and Maker's Row for US domestic suppliers, for research and shortlisting, not the final pick, on an ad-spend SKU (India: add IndiaMART to the shortlist; markets: IN, reads null for US brands)",
    "Message 10 to 15 factories and filter to verified suppliers with trade assurance",
    "Video-call the shortlist to inspect the facility before trusting it",
    "Require ISO or BSCI certification and drop a refusal",
@@ -15642,9 +15659,9 @@
   "subagent": "PROD-Sourcing",
   "sources": {
    "web": [
-    "https://in.linkedin.com/company/sourcing-agent-india-sai",
-    "https://indiansourcingagent.com/",
-    "https://sourcinggpt.ai/"
+    "https://sourcinggpt.ai/",
+    "https://www.thomasnet.com/",
+    "https://makersrow.com/"
    ],
    "bank": [
     "COG-011",
@@ -15660,7 +15677,7 @@
    ]
   },
   "found_in": "web+bank",
-  "founder_sees": "A shortlist of verified suppliers, each with a certification and verification status.",
+  "founder_sees": "A shortlist of verified suppliers by region, each with a certification and verification status.",
   "agent": "PROD"
  },
  {
@@ -15870,7 +15887,7 @@
   "tools": [
    "script: scripts/ideas.py",
    "script: scripts/negotiation_agent.py",
-   "email/WhatsApp API"
+   "email/messaging API"
   ],
   "skills": [
    "negotiation-brief",
@@ -16192,7 +16209,7 @@
    "brand brain: SKU lead times",
    "metric contract: days_of_stock, stockout_days, supplier_lead_days",
    "WMS stock feed",
-   "channel stock APIs (Shopify, Amazon, Flipkart, quick commerce)"
+   "channel stock APIs (Shopify, Amazon, Walmart, rapid-delivery marketplaces; india: Flipkart, quick commerce)"
   ],
   "outputs": [
    "reorder point per SKU (code)",
@@ -17251,17 +17268,17 @@
  },
  {
   "id": "PROD-C44",
-  "name": "Create and optimise listings on Flipkart, Myntra and Nykaa",
+  "name": "Create and optimise listings on Walmart, Target Plus, eBay and TikTok Shop",
   "folders": [
    "22-AMZ"
   ],
-  "what": "Build and keep current the brand's listings on India's other major marketplaces, adapting the title, bullet and image rules each platform enforces, since none of them are Amazon.",
+  "what": "Build and keep current the brand's listings on marketplaces beyond Amazon (Walmart Marketplace, Target Plus, eBay, TikTok Shop, and Etsy where relevant), adapting the title, bullet and image rules each platform enforces, since none of them are Amazon. India: the same job runs on Flipkart, Myntra and Nykaa (markets: IN, reads null for US brands; see the india option of list-on-marketplace).",
   "encompasses": [
    "Complete each platform's seller onboarding and category-approval process",
    "Match image and copy specs to each marketplace's own guide",
    "Localize title and bullet structure to the platform's own search ranking signals",
    "Fill every mandatory attribute field the category requires",
-   "Keep GST-compliant invoicing and category eligibility current",
+   "Keep sales-tax and marketplace-facilitator invoicing and category eligibility current (India: GST-compliant invoicing; markets: IN, reads null for US brands)",
    "Track approval status and reasons for any listing rejection",
    "Build and keep current listings on Meesho, JioMart and Snapdeal alongside the existing three",
    "Adapt title, bullet and image rules per platform, the same discipline as the original three",
@@ -17284,7 +17301,7 @@
   "autonomy": "human_assist",
   "external_write": {
    "needed": true,
-   "surface": "flipkart, myntra, nykaa seller portals"
+   "surface": "walmart, target plus, ebay, tiktok shop seller portals (india: flipkart, myntra, nykaa seller portals)"
   },
   "tools": [
    "web search",
@@ -17297,42 +17314,44 @@
   "subagent": "PROD-Marketplace",
   "sources": {
    "web": [
-    "https://qikink.com/blog/how-to-sell-on-myntra/",
-    "https://zarooriretail.com/services/nykaa",
-    "https://remove-bg.io/blog/flipkart-meesho-myntra-seller-image-guide-2026/",
+    "https://marketplace.walmart.com/",
+    "https://www.target.com/c/target-plus",
+    "https://www.ebay.com/help/selling",
+    "https://seller-us.tiktok.com/",
     "https://www.webretailer.com/multichannel-management-software/"
    ],
    "bank": []
   },
   "found_in": "web_only",
-  "founder_sees": "A ready-to-submit listing for Flipkart, Myntra or Nykaa, matching that platform's own rules.",
+  "founder_sees": "A ready-to-submit listing for Walmart, Target Plus, eBay or TikTok Shop, matching that platform's own rules (or, for an India brand, Flipkart, Myntra or Nykaa).",
   "agent": "PROD",
   "extensions": [
    {
     "name": "Extend Indian marketplace catalogue management to Meesho, JioMart and Snapdeal",
-    "what": "Apply the same listing creation and upkeep already built for Flipkart, Myntra and Nykaa to Meesho, JioMart and Snapdeal, each with its own title, image and category-attribute rules.",
+    "what": "Apply the same listing creation and upkeep already built for Flipkart, Myntra and Nykaa to Meesho, JioMart and Snapdeal, each with its own title, image and category-attribute rules. India only: reads null and does not run for US brands, which extend to Walmart, Target Plus, eBay and TikTok Shop instead (see PROD-C44's main record).",
     "human_role": "marketplace manager"
    }
   ]
  },
  {
   "id": "PROD-C45",
-  "name": "Check BIS, hallmarking and labelling compliance for marketplace listings",
+  "name": "Check US labelling and quality-marking compliance for marketplace listings",
   "folders": [
    "22-AMZ",
    "18-COG"
   ],
-  "what": "Before any jewellery, textile or regulated listing goes live, confirm the BIS, hallmarking and labelling requirements are met and recorded, since a marketplace can pull a listing or a buyer can flag it.",
+  "what": "Before any jewellery, textile or regulated listing goes live, confirm US labelling and quality-marking requirements are met and recorded (FTC Jewelry Guides for precious-metal quality marks, the Care Labeling Rule for textiles, Prop 65 warnings and CPSC rules where they apply), since a marketplace can pull a listing or a buyer can flag it. India: the same gate checks BIS hallmarking (karatage, HUID) and Legal Metrology labelling instead (markets: IN, reads null for US brands).",
   "encompasses": [
-   "Confirm BIS hallmark, karatage and HUID are present and recorded for gold jewellery",
-   "Check textile labelling rules (fibre content, care, origin) before listing",
-   "Confirm the marketplace's own category-review requirements are met (Nykaa, Myntra)",
+   "Confirm the FTC Jewelry Guides quality mark (karat stamp, trademark or registered mark) is present and accurate for gold and precious-metal jewellery (India: confirm BIS hallmark, karatage and HUID instead; markets: IN, reads null for US brands)",
+   "Check textile labelling rules under the Care Labeling Rule (fibre content, country of origin, care instructions) before listing",
+   "Check Prop 65 warning requirements and CPSC rules for any category they cover",
+   "Confirm the marketplace's own category-review requirements are met (Walmart, eBay, TikTok Shop; India: Nykaa, Myntra)",
    "Keep certification documents attached to the product data record",
    "Flag a listing that lacks a required certificate before it goes live"
   ],
   "inputs": [
    "brand brain: product records and certifications",
-   "web: BIS and marketplace category rules (public)"
+   "web: FTC/Care Labeling and marketplace category rules (public; india: BIS and marketplace category rules)"
   ],
   "outputs": [
    "compliance checklist per listing",
@@ -17353,7 +17372,9 @@
   "subagent": "PROD-Marketplace",
   "sources": {
    "web": [
-    "https://www.eternz.com/blog/is-it-safe-to-buy-jewellery-online-in-india/"
+    "https://www.ftc.gov/business-guidance/resources/jewelry-guides",
+    "https://www.ftc.gov/business-guidance/resources/threading-your-way-through-labeling-requirements-under-textile-and-wool-acts",
+    "https://oag.ca.gov/prop65"
    ],
    "bank": [
     "PRD-088",
@@ -17362,7 +17383,7 @@
    ]
   },
   "found_in": "web+bank",
-  "founder_sees": "A pass/fail on BIS, hallmarking and labelling compliance before a regulated listing goes live.",
+  "founder_sees": "A pass/fail on US labelling and quality-marking compliance before a regulated listing goes live (or, for an India brand, on BIS hallmarking and labelling).",
   "agent": "PROD"
  },
  {
@@ -17913,20 +17934,21 @@
    "Model depreciation and tax with the real payment calendar",
    "Cut cash-equal expense lines first when cash needs to be freed quickly",
    "Run sensitivity tests (CAC, churn) on every cash model before relying on it",
-   "Layer the festive/BFCM inventory pre-build cost onto the forecast weeks before the peak, not the week it ships",
-   "Model the COD collection lag widening during the peak (courier volume strain)",
-   "Track GST input-credit refund timing as a cash inflow, not just a compliance item",
+   "Layer the Q4/BFCM (or other named-peak) inventory pre-build cost onto the forecast weeks before the peak, not the week it ships",
+   "Track sales-tax refund or credit timing as a cash inflow, not just a compliance item",
    "Flag the single lowest-cash week across the whole peak build-up, not just the current 13 weeks",
-   "Compare this year's peak cash plan to last year's actual peak cash low"
+   "Compare this year's peak cash plan to last year's actual peak cash low",
+   "India only: model the COD collection lag widening during Diwali/wedding-season peak (courier volume strain) and track GST input-credit refund timing (reads null for US brands)"
   ],
   "inputs": [
    "warehouse: bank/accounting feed (read)",
    "brand brain: payment terms, payroll calendar",
    "metric contract: cash_conversion_days",
    "Rolling cash forecast",
-   "Festive/marketing calendar",
+   "Holiday/promo marketing calendar",
    "Inventory pre-build plan",
-   "GST refund status"
+   "Sales-tax refund/credit status",
+   "India only: GST refund status"
   ],
   "outputs": [
    "13-week cash forecast",
@@ -17953,7 +17975,7 @@
   "sources": {
    "web": [
     "https://ecombalance.com/ecommerce-cfo/",
-    "https://www.clickpost.ai/blog/rto-reduction-tools"
+    "https://www.shopify.com/enterprise/blog/holiday-shopping-statistics"
    ],
    "bank": [
     "FIN-103",
@@ -17977,8 +17999,8 @@
   "agent": "MONEY",
   "extensions": [
    {
-    "name": "Plan seasonal and festive cash peaks on top of the rolling forecast",
-    "what": "Extend the rolling 13-week cash forecast to explicitly plan the festive-season cash squeeze: inventory pre-build financing before Diwali or BFCM, the COD collection lag during the peak, and GST refund timing that can free up cash.",
+    "name": "Plan Q4 holiday and promo-calendar cash peaks on top of the rolling forecast",
+    "what": "Extend the rolling 13-week cash forecast to explicitly plan the peak-season cash squeeze: inventory pre-build financing before Q4 holiday (Black Friday, Cyber Monday, Prime Day) and other named-date peaks (Mother's Day, Father's Day, back to school, Valentine's Day, July 4), and sales-tax refund or credit timing that can free up cash. India-selling brands plan the same squeeze around Diwali and wedding season, with the COD collection lag and GST input-credit refund timing added as a market option that reads null for US-only brands.",
     "human_role": "fractional CFO"
    }
   ]
@@ -18403,39 +18425,45 @@
  },
  {
   "id": "MONEY-C12",
-  "name": "Track tax, GST and liability compliance",
+  "name": "Track US sales tax nexus and liability compliance",
   "folders": [
    "20-FIN"
   ],
-  "what": "Track GST/sales-tax nexus and registration thresholds per market, book gift cards and loyalty points as liabilities recognized on redemption, track FX exposure separately for revenue and landed cost, and flag return-rights compliance on promo terms.",
+  "what": "Track economic-nexus thresholds and marketplace-facilitator rules by state, keep registrations, resale certificates and filings current through Avalara or TaxJar, book gift cards and loyalty points as liabilities recognized on redemption, track FX exposure separately for revenue and landed cost, and flag return-rights compliance on promo terms. India-selling brands track GST/HSN/e-invoice/GSTR the same way this record tracks state sales tax; that path reads null for US-only brands.",
   "encompasses": [
-   "Track sales tax/GST nexus and registration thresholds per market",
+   "Track economic-nexus thresholds by state (revenue and transaction-count triggers) and register before crossing them",
+   "Track which marketplaces (Amazon, Walmart Marketplace, Etsy, TikTok Shop) collect and remit sales tax as facilitator, and which leave nexus and filing to the brand",
+   "Keep Avalara or TaxJar mappings current for product taxability and keep resale certificates on file for wholesale and drop-ship buyers",
+   "File state sales tax returns on each state's schedule and reconcile collected-vs-remitted",
    "Book gift cards issued as a liability, recognize revenue on redemption only",
    "Carry unredeemed loyalty points as a liability charged to the redeeming order",
    "Check promo copy against statutory return rights (never write a no-refunds-during-promo line)",
    "Track FX exposure on multi-currency revenue separately from landed-cost FX",
-   "Keep import duties separate from collected sales tax in the profit model",
-   "Generate a compliant e-invoice at the point of sale for every applicable transaction",
-   "Generate an e-way bill for any shipment over the threshold value",
-   "Prepare GSTR-1 (outward supplies) from the sales register each period",
-   "Reconcile input tax credit claimed against GSTR-2B before filing GSTR-3B",
-   "Prepare GSTR-3B with the net tax payable computed, not estimated",
-   "Flag a mismatch between books, e-invoices and the GST portal before the filing deadline"
+   "Keep import duties (customs bonds, HTS codes, tariffs) separate from collected sales tax in the profit model",
+   "India only: track GST/HSN nexus and registration thresholds, e-way bill and e-invoice requirements, GSTR filings and ITC (reads null for US brands)",
+   "Sync product taxability mappings and exemption/resale certificates into Avalara or TaxJar",
+   "Generate the return-ready transaction detail for every registered state each filing period",
+   "Prepare and file the state sales tax return on that state's own due date (monthly, quarterly or annual by state)",
+   "Reconcile sales tax collected against sales tax remitted per state before filing",
+   "Flag a mismatch between the ledger, the Avalara/TaxJar report and the state portal before the filing deadline",
+   "India only: generate a compliant e-invoice at point of sale, generate an e-way bill for shipments over the threshold, prepare GSTR-1 and GSTR-3B, and reconcile input tax credit against GSTR-2B before filing (reads null for US brands)"
   ],
   "inputs": [
-   "brand brain: selling markets",
+   "brand brain: selling markets, nexus states",
    "warehouse: gift card/loyalty ledger",
-   "Sales register",
-   "Purchase register",
-   "GSTR-2B from the GST portal",
-   "E-invoice/e-way bill thresholds"
+   "connector: Avalara or TaxJar (read)",
+   "Sales register by state",
+   "Avalara or TaxJar taxability and filing status",
+   "Resale/exemption certificates on file",
+   "India only: purchase register, GSTR-2B from the GST portal, e-invoice/e-way bill thresholds"
   ],
   "outputs": [
    "compliance flag list",
    "liability ledger entries for finance review",
-   "Draft e-invoices and e-way bills",
-   "Draft GSTR-1 and GSTR-3B",
-   "ITC mismatch report"
+   "nexus and filing-due-date tracker by state",
+   "Draft state sales tax returns",
+   "Collected-vs-remitted reconciliation by state",
+   "India only: draft e-invoices, e-way bills, GSTR-1 and GSTR-3B, ITC mismatch report"
   ],
   "trigger": "monthly",
   "autonomy": "human_assist",
@@ -18445,8 +18473,9 @@
   },
   "tools": [
    "script: money.compliance_tracker",
-   "GSP/e-invoice API or portal automation",
-   "ITC reconciliation script"
+   "Avalara or TaxJar",
+   "state tax portal filing automation",
+   "India only: GSP/e-invoice API or portal automation, ITC reconciliation script"
   ],
   "skills": [
    "tax-liability-tracker"
@@ -18454,8 +18483,8 @@
   "subagent": null,
   "sources": {
    "web": [
-    "https://gstzen.in/",
-    "https://gsthero.com/"
+    "https://www.avalara.com/",
+    "https://www.taxjar.com/"
    ],
    "bank": [
     "FIN-011",
@@ -18466,13 +18495,13 @@
    ]
   },
   "found_in": "web+bank",
-  "founder_sees": "Any tax, GST or liability item that needs a human decision, with the deadline.",
+  "founder_sees": "Any sales-tax nexus, filing or liability item that needs a human decision, with the deadline and the state.",
   "agent": "MONEY",
   "extensions": [
    {
-    "name": "Prepare and file GST returns with e-invoicing and e-way bill workflow",
-    "what": "Beyond tracking where GST liability exists, run the actual filing mechanics: generate e-invoices and e-way bills as orders ship, prepare GSTR-1 and GSTR-3B, and reconcile input tax credit against GSTR-2B before every filing.",
-    "human_role": "e-commerce accountant / GST practitioner"
+    "name": "Prepare and file US state sales tax returns through Avalara or TaxJar",
+    "what": "Beyond tracking where nexus exists, run the actual filing mechanics through Avalara or TaxJar: sync taxability and exemption/resale-certificate data, prepare and file the return in each registered state on its own schedule, and reconcile collected-vs-remitted before every filing. India-selling brands run the equivalent e-invoice, e-way bill and GSTR filing mechanics as a market option; that path reads null for US-only brands.",
+    "human_role": "e-commerce accountant / sales-tax practitioner (India: GST practitioner)"
    }
   ]
  },
@@ -18549,22 +18578,22 @@
    "Flag any gap that cannot be explained for human follow-up",
    "pull each platform's monthly invoice and match it line by line against the platform's own reported spend for that period",
    "flag invalid-traffic or ad-credit refunds that land on a later invoice and would otherwise look like a discrepancy",
-   "check GST/RCM treatment on foreign ad platform invoices (Meta, Google, TikTok bill from outside India) against what was actually remitted",
-   "flag a GSTIN-to-billing-address mismatch that would make an input tax credit invalid",
+   "check US sales tax treatment on ad platform invoices where the platform charges it, and confirm any agency or contractor paid through the ledger is tracked correctly for 1099 reporting (India only: check GST/RCM treatment on foreign ad platform invoices, since Meta, Google and TikTok bill from outside India, against what was actually remitted)",
+   "flag a billing-address-to-tax-jurisdiction mismatch that would make a resale certificate or exemption invalid (India only: a GSTIN-to-billing-address mismatch that would make an input tax credit invalid)",
    "post the reconciled true cost, not the platform's self-reported spend, into the budget ledger",
    "flag a payment-method failure or credit-line limit before it pauses live campaigns",
    "watch for new invoices from Meta, Google and TikTok as they are issued rather than reconciling in a monthly batch",
    "auto-match an invoice line to the corresponding reported spend and bank debit, and only surface the lines that do not match",
    "recognise the invalid-traffic-credit pattern (a later invoice line that offsets an earlier one) instead of flagging it as a new discrepancy",
    "post the resolved true cost to intelligence/budget.py automatically once matched, with the unmatched lines held for founder review",
-   "flag a GST/RCM mismatch the same day the invoice lands, not at month end"
+   "flag a US sales-tax or 1099 mismatch the same day the invoice lands, not at month end (India only: a GST/RCM mismatch)"
   ],
   "inputs": [
    "warehouse: Shopify, Meta, GA4, payment processor exports",
    "platform invoices",
    "platform spend reports",
    "bank/payment records",
-   "GST filing records",
+   "sales tax filing and 1099 records (GST filing records, India only)",
    "platform invoices as issued",
    "bank feed"
   ],
@@ -18572,7 +18601,7 @@
    "monthly reconciliation report",
    "bridge table",
    "ledger entries reflecting true billed cost",
-   "GST/RCM discrepancy flags",
+   "sales tax and 1099 discrepancy flags (GST/RCM discrepancy flags, India only)",
    "near-real-time ledger updates",
    "a short list of genuinely unmatched lines"
   ],
@@ -18592,9 +18621,7 @@
   "subagent": null,
   "sources": {
    "web": [
-    "https://taxgarden.in/blog/gst-on-advertising-services-google-meta-ads-rcm-india-2026",
-    "https://www.flyweel.co/blog/reconciling-attributing-and-managing-invoice-chaos",
-    "https://namomarketing.com/gst-on-google-ads-meta-ads-india/"
+    "https://www.flyweel.co/blog/reconciling-attributing-and-managing-invoice-chaos"
    ],
    "bank": [
     "FIN-138",
@@ -19042,7 +19069,7 @@
    "Use the same attribution setting on every campaign inside one platform",
    "Never tighten Google attribution windows to match Meta, or copy Meta rules onto Google",
    "Reconcile TikTok reported purchases with store orders on 7 day click",
-   "Reconcile marketplace sales and cash on delivery returns separately before trusting platform ROAS",
+   "Reconcile marketplace sales and payment-method returns (chargebacks and disputes; cash-on-delivery returns, India only) separately before trusting platform ROAS",
    "Run a monthly platform ROAS versus aMER reconciliation using the attribution comparison columns",
    "Judge an assist layer (view through, upper funnel) by downstream lag, not its own last click ROAS",
    "Sanity check any too good ROAS number against attribution window and audience segment before acting on it",
@@ -19955,13 +19982,14 @@
   "folders": [
    "23-SEC"
   ],
-  "what": "Detect card-testing bursts, review AVS/CVV/3DS settings against false-decline rates, set chargeback alert thresholds below the processor's flag, control COD refusal and promo-code abuse, and build evidence packets for disputes.",
+  "what": "Detect card-testing bursts, review AVS/CVV/3DS settings against false-decline rates, set chargeback alert thresholds below the processor's flag, control payment-refusal patterns and promo-code abuse, and build evidence packets for disputes.",
   "encompasses": [
    "Detect card-testing bursts by clustering small orders, new accounts and geography mismatch",
    "Review order-risk and decline data before turning on AVS where it is off by default",
    "Enable dynamic 3D Secure on higher-risk transactions and track approval rate after",
    "Set an internal chargeback alert below the processor's flag, and confirm chargeback-coverage eligibility",
-   "Track COD refusal rate by pincode and phone number, require confirmation above a value threshold",
+   "Track step-up verification triggers by BIN, device and customer above a value threshold",
+   "India only: track COD refusal rate by pincode and phone number, require confirmation above a value threshold (reads null for US brands)",
    "Cap discount-code uses per code and per customer, expire a leaked code fast",
    "Build a friendly-fraud evidence packet, and keep an evidence trail for every order to answer disputes",
    "Track return rate by SKU and customer to catch wardrobing and serial-returner fraud",
@@ -21994,8 +22022,8 @@
   ],
   "what": "Run trademark, domain, social-handle and language checks on every name finalist and flag risk before any name is presented as final.",
   "encompasses": [
-   "Run a federal trademark database search on each finalist",
-   "Check international trademark equivalents where relevant",
+   "Run a USPTO trademark database search on each finalist",
+   "Check international trademark equivalents where relevant (for example the EUIPO or an India Trade Marks Registry search when the brand sells into that market)",
    "Search the name plus industry terms for existing use",
    "Check domain and social handle availability",
    "Check the name's meaning and sound in every selling-market language",
@@ -23716,11 +23744,11 @@
  },
  {
   "id": "LOOP-C05",
-  "name": "Keep the seasonal calendar (India festivals, wedding season, sales events)",
+  "name": "Keep the seasonal calendar (US holidays, sale events, category peaks)",
   "folders": [
    "99-multi"
   ],
-  "what": "Hold the year's fixed demand and cost windows (Diwali, wedding season, Q4 Western peak, Republic Day and other sale events) and push each specialist's prep deadline backward from them, so budget, creative and inventory are ready before the window, not during it.",
+  "what": "Hold the year's fixed demand and cost windows (Q4 holiday, Black Friday and Cyber Monday, Prime Day, Mother's Day, Father's Day, Valentine's Day, back to school, category-specific peaks) and push each specialist's prep deadline backward from them, so budgets, stock, creative and flows are ready in time. India-based brands add Diwali, wedding season and Republic Day sales (markets IN).",
   "encompasses": [
    "hold the dated calendar of festival, wedding-season and sale windows relevant to the brand's market",
    "write the full peak plan at least 70 days before a major window",
@@ -23737,14 +23765,15 @@
    "Track weekly ad frequency to repeat customers as an overspend signal",
    "Set aside a fixed share of creative output for new stories, not only iteration",
    "Flag a negative-CAC media-arm opportunity (sponsorships, content) for founder review",
-   "List the major India festivals relevant to the category with realistic lead times",
+   "List the US holiday and shopping moments relevant to the category with realistic lead times (Q4 holiday season, Black Friday and Cyber Monday, Prime Day, Valentine's Day, Mother's Day, Father's Day, back to school, July 4)",
    "List category-relevant global observance days worth a PR or community angle, not generic ones",
+   "List market-specific festival dates where the brand sells into that market (for example India festivals such as Diwali; markets: IN, reads null for US-only brands)",
    "Set the lead time needed per moment: PR pitch lead time, event planning lead time, content lead time",
    "Flag which moments fit a press angle, which fit an event, and which fit a community post only",
    "Cross-check the calendar against the paid media calendar so messages do not collide or duplicate spend",
    "Mark moments the brand sat out last year and why, so repeats are a choice not a miss",
-   "Update the calendar yearly and flag date shifts, since lunar festivals move",
-   "Size each moment's relevance by category fit, not by how big the festival is generally"
+   "Update the calendar yearly and flag date shifts, since some observances (lunar festivals, Thanksgiving-anchored dates) move",
+   "Size each moment's relevance by category fit, not by how big the moment is generally"
   ],
   "inputs": [
    "brand calendar: dated windows",
@@ -23754,7 +23783,7 @@
    "warehouse: spend history",
    "metric contract: frequency, cpa",
    "brand brain: category, past campaign history",
-   "public festival and observance calendars"
+   "public holiday and observance calendars"
   ],
   "outputs": [
    "seasonal calendar with deadlines",
@@ -23783,8 +23812,8 @@
   "subagent": null,
   "sources": {
    "web": [
-    "https://www.appbrew.com/blogs/festive-season-marketing-india",
-    "https://inc42.com/resources/how-d2c-brands-can-use-influencer-marketing-to-maximise-roi-this-festive-season/"
+    "https://nrf.com/research-insights/holiday-data-center",
+    "https://www.shopify.com/blog/holiday-marketing"
    ],
    "bank": [
     "MULTI-076",
@@ -23807,7 +23836,7 @@
   "found_in": "bank_only",
   "founder_sees": "The next dated window, what is ready, and what is not, with time to fix it.",
   "owner_agent": "Orchestrator",
-  "gap_note": "The bank's peak-season ideas are written for a generic Western Q4 (Black Friday, holiday). Nothing in the bank names Diwali, Indian wedding season or India-specific sale calendars (Republic Day, end-of-season sale) by date. This calendar has to be built from the brand brain and general web research, not the bank.",
+  "gap_note": "The bank's peak-season ideas are written for a generic Q4. Category-specific peaks and the India calendar come from the brand brain and web research.",
   "agent": "ORCH",
   "merged_from": [
    {
@@ -23824,7 +23853,7 @@
    },
    {
     "id": "BRAND-C65",
-    "name": "Build the brand's cultural and festive moment calendar for PR, events and community",
+    "name": "Build the brand's US holiday and cultural moment calendar for PR, events and community",
     "agent": "BRAND",
     "reason": "One dated seasonal calendar. ORCH-C09 is an empty stub of LOOP-C05. MONEY-C19 (acquisition financial calendar and peak guardrails) repeats LOOP-C05's base and stretch budget gates per window. BRAND-C65 (festive moment calendar for PR and events) is the same dated calendar; BRAND reads it and adds PR moments as rows."
    }
@@ -24320,8 +24349,8 @@
    "confirm windows end on a full day, not a partial one",
    "check that no competitor text, logo, product or face was copied",
    "block delivery and name the fix needed if a check fails",
-   "check any revenue or order number in a deliverable states whether it is gross or net of expected RTO",
-   "check a price or invoice figure states whether it is GST-inclusive or exclusive",
+   "check any revenue or order number in a deliverable states whether it is gross or net of expected returns and chargebacks",
+   "check a price or invoice figure states whether it is tax-inclusive or exclusive (sales tax, or GST for IN brands)",
    "apply the same nine checks to work a human delivered through the queue as to an AI specialist's output, before it reaches the founder",
    "flag when a human-delivered artefact cannot be checked, no source data attached, rather than pass it by default",
    "Ban invented spokespeople, testimonials and comment sections",
@@ -24345,7 +24374,7 @@
    "Clear rights before using a famous face or trending term",
    "Check restricted content categories (health, finance, before-after imagery, personal attributes) against the specific platform this ad will run on",
    "Check image text and overlay rules for the destination platform before the file is finalized",
-   "Check marketplace ad policy (Amazon, Flipkart) separately from social platform policy, since the rule sets differ",
+   "Check marketplace ad policy (Amazon, Walmart Marketplace, Target Plus; Flipkart for an India-market brand, markets: IN) separately from social platform policy, since the rule sets differ",
    "Re-run the check whenever a platform updates its policy, not only at first ship",
    "Audit current and AI-drafted copy against the research file",
    "Check every promise in a creative brief is provable by the brand",
@@ -24377,7 +24406,7 @@
    "metric contract",
    "brand claim tiers",
    "specialist or human-delivered draft output",
-   "India RTO and GST conventions",
+   "gross and net conventions per market",
    "brand brain: claims tiers (approved/site-backed/forbidden)",
    "brand brain: proof file",
    "brand brain: claims tiers (approved, site-backed, forbidden)",
@@ -24520,8 +24549,8 @@
   "agent": "QA",
   "extensions": [
    {
-    "name": "Run the pre-delivery integrity gate (extension: India-specific numbers and human-delivered work)",
-    "what": "Extends the integrity gate to two cases the original checklist does not name: numbers that must be shown gross and net of India's RTO and GST, and work delivered by a freelancer, agency or in-house hire dispatched through the queue, not only AI-produced artefacts.",
+    "name": "Run the pre-delivery integrity gate (extension: gross versus net numbers and human-delivered work)",
+    "what": "Extends the integrity gate to two cases the original checklist does not name: numbers that must be shown gross and net of returns and chargebacks (and of RTO and GST for India-based brands), and work delivered by a freelancer, agency or employee, which gets the same checks as agent output.",
     "human_role": "business analyst"
    }
   ],
@@ -25141,59 +25170,71 @@
  {
   "id": "SITE-C67",
   "extends": null,
-  "name": "Reduce COD return-to-origin (RTO) with checkout-side automation",
+  "name": "Configure checkout payment methods and address validation",
   "folders": [
    "05-SET",
    "09-CRO"
   ],
-  "what": "Builds the site-side half of India's COD RTO problem: a PIN code serviceability check on the PDP before the shopper commits, address auto-fill with OTP verification on high-value COD orders, a visible small COD fee to filter impulse orders, a prepaid discount incentive shown at checkout, a WhatsApp order-confirmation trigger with an auto-cancel rule on no reply, and a branded tracking page, each measured against the brand's own RTO rate by PIN code and payment method.",
+  "what": "Sets up Shop Pay, PayPal, Apple Pay and a BNPL option (Affirm, Klarna or Afterpay) at checkout, validates the shipping address against USPS before the order is placed, and layers fraud signals onto risky orders, each measured against the brand's own failed-delivery and chargeback rate. Where the brand sells COD in India, adds the market option of a PIN code serviceability check on the PDP, OTP verification and a visible fee on high-value cash-on-delivery orders, and a WhatsApp order-confirmation trigger to cut return-to-origin (RTO); this option reads null for a US brand.",
   "encompasses": [
-   "show real-time PIN code serviceability on the PDP using the courier or aggregator's API before the shopper adds to cart",
-   "add address auto-fill and phone OTP verification at checkout for COD orders above a set value",
-   "add a visible COD handling fee as a checkout line item, sized to filter impulse orders without losing genuine buyers",
-   "surface a prepaid discount or free-shipping incentive at the exact checkout step where COD is selected",
-   "trigger an automated WhatsApp order-confirmation message after COD checkout, with an auto-cancel rule if unconfirmed within a set window",
-   "replace the generic courier tracking link with a branded tracking page that also carries post-purchase upsell content",
-   "pass a buyer risk score (first order, high COD value, prior RTO history) to the fulfilment system so it can flag for manual check, without the site itself running the logistics side of NDR handling",
-   "build an RTO analytics view by courier, PIN code, product and payment method so the founder can see which lever is moving the number",
+   "enable Shop Pay, PayPal, Apple Pay and a BNPL option (Affirm, Klarna or Afterpay) at checkout",
+   "validate the shipping address against USPS before the order is placed, catching a bad ZIP code or an undeliverable address before it ships",
+   "screen orders for fraud signals (mismatched billing and shipping, high-risk card BIN, order velocity) and route flagged orders for manual review",
+   "show accepted payment badges and a clear BNPL installment estimate near the buy box",
+   "trigger an automated order-confirmation message by SMS (with TCPA consent and quiet-hours rules) or email after checkout, with an auto-cancel rule if unconfirmed within a set window",
+   "replace the generic carrier tracking link with a branded tracking page that also carries post-purchase upsell content",
+   "pass a buyer risk score (first order, high order value, prior chargeback or return-to-sender history) to the fulfilment system so it can flag for manual check, without the site itself running carrier-side exception handling",
+   "build a failed-delivery and chargeback analytics view by carrier, ZIP code, product and payment method so the founder can see which lever is moving the number",
+   "India market option, reads null for US: show real-time PIN code serviceability on the PDP using the courier or aggregator's API before the shopper adds to cart",
+   "India market option, reads null for US: add address auto-fill and phone OTP verification at checkout for COD orders above a set value",
+   "India market option, reads null for US: add a visible COD handling fee as a checkout line item, sized to filter impulse orders without losing genuine buyers",
+   "India market option, reads null for US: surface a prepaid discount or free-shipping incentive at the exact checkout step where COD is selected",
+   "India market option, reads null for US: trigger a WhatsApp order-confirmation message after COD checkout, with an auto-cancel rule if unconfirmed within a set window",
+   "India market option, reads null for US: add the brand's RTO rate by PIN code and payment method to the analytics view",
    "Identify pincodes and customer segments with COD share and RTO rate above brand average",
    "Design the test: prepaid-only, partial advance, or a COD convenience fee, on a defined slice of traffic",
    "Set the read point: conversion-rate change against RTO-rate change, not conversion alone",
    "Blacklist or flag a serial-RTO customer for COD ineligibility on future orders"
   ],
   "inputs": [
-   "courier serviceability API",
-   "WhatsApp business API access",
-   "brand's historical RTO data",
+   "USPS address validation API",
+   "BNPL provider integration (Affirm, Klarna, Afterpay)",
+   "brand's historical chargeback and failed-delivery data",
+   "India market option, null for US: courier serviceability API",
+   "India market option, null for US: WhatsApp business API access",
    "order data by pincode and customer",
    "RTO history"
   ],
   "outputs": [
-   "PDP serviceability widget",
-   "checkout OTP flow",
-   "COD fee config",
-   "WhatsApp confirmation flow",
+   "checkout payment method config",
+   "USPS address validation flow",
+   "fraud screening rules",
    "branded tracking page",
-   "RTO dashboard",
+   "failed-delivery and chargeback dashboard",
+   "India market option, null for US: checkout OTP flow",
+   "India market option, null for US: COD fee config",
+   "India market option, null for US: WhatsApp confirmation flow",
    "test design",
    "read-point result",
    "COD eligibility rule update"
   ],
-  "trigger": "COD share and RTO rate identified as a bottleneck in the metric contract",
+  "trigger": "checkout payment mix, failed-delivery rate or chargeback rate identified as a bottleneck in the metric contract; India market option: COD share and RTO rate identified as a bottleneck",
   "autonomy": "founder_gate",
   "external_write": {
    "needed": true,
-   "surface": "store checkout settings, WhatsApp business account"
+   "surface": "store checkout settings; India market option: WhatsApp business account"
   },
   "tools": [
+   "address_validate.usps",
+   "fraud_screen.run",
+   "returns_analytics.build",
    "pin_serviceability.check",
    "whatsapp_confirm.send",
-   "rto_analytics.build",
    "script: scripts/cod_conversion_test.py"
   ],
   "skills": [
-   "india_ecommerce_ops",
    "checkout_config",
+   "india_ecommerce_ops",
    "cod-strategy"
   ],
   "subagent": "Site specialist",
@@ -25208,7 +25249,7 @@
   },
   "found_in": "web_only",
   "founder_sees": true,
-  "human_role": "e-commerce web manager, RTO-reduction freelancer",
+  "human_role": "e-commerce web manager, payments specialist; India market option: RTO-reduction freelancer",
   "today_done_by": "freelancer",
   "agent": "SITE",
   "merged_from": [
@@ -25380,7 +25421,7 @@
    "05-SET",
    "09-CRO"
   ],
-  "what": "Uses the platform's own automation layer (Shopify Flow or equivalent) to wire small operational rules directly into the store instead of a developer hand-coding each one: auto-tag a high-risk COD order, auto-hold an order from a flagged RTO offender, auto-apply gift wrap above a cart value, auto-alert the founder on a stockout of a top SKU on its own PDP.",
+  "what": "Uses the platform's own automation layer (Shopify Flow or equivalent) to wire small operational rules directly into the store instead of a developer hand-coding each one: auto-tag a high-risk order for manual review, auto-hold an order from a customer with a chargeback or return-to-sender history (a COD RTO offender in India), auto-apply gift wrap above a cart value, auto-alert the founder on a stockout of a top SKU on its own PDP.",
   "encompasses": [
    "list the recurring manual actions a store manager currently does by hand that are pure if-this-then-that logic",
    "build each rule in the platform's native automation tool so it needs no custom app and no hosting",
@@ -25678,11 +25719,16 @@
   "folders": [
    "09-CRO"
   ],
-  "what": "Adds a pre-purchase WhatsApp channel for India: a click-to-WhatsApp button on the PDP that opens a chat pre-filled with the exact SKU and variant, backed by the brand's WhatsApp catalog, for shoppers who trust a chat conversation with a human or a bot more than a cart, and routes the resulting cart-recovery and support load to the lifecycle specialist rather than handling it here.",
+  "markets": [
+   "IN",
+   "EU",
+   "LATAM"
+  ],
+  "what": "Adds a pre-purchase WhatsApp channel for markets where WhatsApp commerce is common (India, EU, LATAM): a click-to-WhatsApp button on the PDP that opens a chat pre-filled with the exact SKU and variant, backed by the brand's WhatsApp catalog, for shoppers who trust a chat conversation with a human or a bot more than a cart, and routes the resulting cart-recovery and support load to the lifecycle specialist rather than handling it here. Reads null and does not run for a US-default brand.",
   "encompasses": [
    "sync the live product catalogue (price, stock, variant) to the brand's WhatsApp Business catalog on a schedule",
    "add a click-to-WhatsApp button on the PDP that pre-fills the exact SKU, variant and a template question",
-   "confirm the button only appears where WhatsApp commerce is legal and commonly used, not on every market",
+   "confirm the button only appears in a market where WhatsApp commerce is legal and commonly used (India, EU, LATAM), never for a US-default brand",
    "measure how many PDP-to-WhatsApp clicks convert to an order, separate from normal add-to-cart, so it is not double-counted",
    "hand the WhatsApp conversation flow itself, cart recovery and support scripting to the lifecycle specialist"
   ],
@@ -25695,7 +25741,7 @@
    "synced catalog",
    "click-to-order attribution"
   ],
-  "trigger": "India market with COD or trust-driven checkout hesitation diagnosed as a bottleneck",
+  "trigger": "COD or trust-driven checkout hesitation diagnosed as a bottleneck in a WhatsApp-commerce market (India, EU, LATAM); reads null for US",
   "autonomy": "founder_gate",
   "external_write": {
    "needed": true,
@@ -25723,16 +25769,16 @@
  {
   "id": "SITE-C78",
   "extends": null,
-  "name": "Configure consent-based tag gating for India's DPDP Act and GDPR",
+  "name": "Configure consent-based tag gating for CCPA, CPRA and other state privacy laws",
   "folders": [
    "05-SET"
   ],
-  "what": "Builds a cookie and tag consent layer that actually gates tracking scripts by the visitor's region and choice, rather than a banner that shows for legal cover while every pixel fires anyway, covering both India's DPDP Act for Indian visitors and GDPR for EU visitors on the same store.",
+  "what": "Builds a cookie and tag consent layer that actually gates tracking scripts by the visitor's region and choice, rather than a banner that shows for legal cover while every pixel fires anyway. Defaults to US state privacy law: CCPA and CPRA for California plus Virginia, Colorado and other state laws, with an opt-out link and a do-not-sell-or-share signal. Folds in GDPR opt-in consent for EU visitors and India's DPDP Act consent rules for Indian visitors on the same store, each a market option that reads null unless the brand sells into that region.",
   "encompasses": [
    "inventory every tracking pixel, tag and script currently firing on first page load",
    "route each one behind a consent-management layer keyed to visitor region and explicit choice",
-   "confirm a rejected-consent visitor genuinely does not fire the gated scripts, by checking network requests, not just the banner's own claim",
-   "set the correct default (opt-in for GDPR regions, per DPDP's stricter consent requirements for India) rather than one global default",
+   "confirm a rejected-consent or opted-out visitor genuinely does not fire the gated scripts, by checking network requests, not just the banner's own claim",
+   "set the correct default per region: an opt-out 'Do Not Sell or Share My Personal Information' link for US state laws, opt-in for GDPR (EU market option), and opt-in for DPDP (India market option, reads null for US) rather than one global default",
    "keep essential, non-tracking scripts (cart, checkout, payment) ungated so consent choices never break core function",
    "log consent choices in a way the brand can produce as proof if ever asked"
   ],
@@ -25746,7 +25792,7 @@
    "gated tag list",
    "consent log"
   ],
-  "trigger": "store setup for an India or EU-facing brand, or a compliance audit finding",
+  "trigger": "store setup for a US brand, or an EU- or India-facing brand, or a compliance audit finding",
   "autonomy": "founder_gate",
   "external_write": {
    "needed": true,
@@ -25780,9 +25826,9 @@
    "07-LPG",
    "09-CRO"
   ],
-  "what": "Adds a notify-me capture on an out-of-stock PDP and a password-protected coming-soon page for a pre-launch or a limited drop, each wired to collect an email or WhatsApp number and fire an automatic notification the moment stock or launch goes live, instead of losing that demand silently.",
+  "what": "Adds a notify-me capture on an out-of-stock PDP and a password-protected coming-soon page for a pre-launch or a limited drop, each wired to collect an email or an SMS number (with TCPA consent) by default, or a WhatsApp number in a WhatsApp-commerce market (India, EU, LATAM), and fire an automatic notification the moment stock or launch goes live, instead of losing that demand silently.",
   "encompasses": [
-   "add a notify-me form on any out-of-stock PDP, capturing email or a WhatsApp number where that channel is in use",
+   "add a notify-me form on any out-of-stock PDP, capturing email or an SMS number (with TCPA consent) by default, or a WhatsApp number in a market where that channel is in use",
    "fire an automatic notification the moment the SKU is back in stock, ranked by signup order for a limited restock",
    "build a password-protected coming-soon page for pre-launch or a drop, keeping it out of search indexes",
    "capture waitlist signups into the brand's own list, never a third party's, so it feeds lifecycle directly",
@@ -25790,7 +25836,7 @@
   ],
   "inputs": [
    "out-of-stock SKU list",
-   "email or WhatsApp capture tool"
+   "email, SMS or WhatsApp capture tool"
   ],
   "outputs": [
    "notify-me widget",
@@ -25801,7 +25847,7 @@
   "autonomy": "founder_gate",
   "external_write": {
    "needed": true,
-   "surface": "store PDP template, email/WhatsApp platform"
+   "surface": "store PDP template, email/SMS/WhatsApp platform"
   },
   "tools": [
    "waitlist.build",
@@ -26326,25 +26372,26 @@
  {
   "id": "CREA-C44",
   "extends": null,
-  "name": "Write and design COD-to-prepaid conversion and RTO-reduction creative messaging",
+  "name": "Write and design payment and delivery reassurance creative messaging",
   "folders": [
    "10-MCR",
    "11-ADC"
   ],
-  "what": "Writes the ad and post-purchase creative lines that push a cash-on-delivery order toward prepaid, and the delivery-trust messaging that lowers return-to-origin risk, since both are India-specific costs a generic ad script ignores.",
+  "what": "Writes the ad and post-purchase creative lines that build trust in how an order gets paid for and delivered: free returns, BNPL options, and a real delivery date. Includes, as the India-market option, the lines that push a cash-on-delivery order toward prepaid and the delivery-trust messaging that lowers return-to-origin risk; that option reads null for a US brand.",
   "encompasses": [
-   "Write the prepaid-incentive line (small discount or free shipping) framed as unlocking a benefit, never as a penalty for choosing COD",
-   "Write the WhatsApp or SMS follow-up message offering the same incentive with a payment link inside a short window after a COD order",
-   "Write delivery-trust lines (real dispatch time, real carrier, easy return) that reduce the buyer's reason to reject at the door",
-   "Check every prepaid or RTO claim (discount amount, delivery time) against the brand record before it ships"
+   "Write payment-flexibility lines (card, Shop Pay, PayPal, Apple Pay, BNPL such as Affirm, Klarna or Afterpay) framed as removing friction, never as pressure",
+   "Write free-returns and real-delivery-date lines that reduce checkout hesitation",
+   "Write the SMS (TCPA consent, quiet hours) or email follow-up message offering an incentive or reminder inside a short window after checkout",
+   "India-market option (markets: IN, null for a US brand): write the prepaid-incentive line (small discount or free shipping) framed as unlocking a benefit, never as a penalty for choosing COD, the WhatsApp or SMS follow-up with a payment link after a COD order, and the delivery-trust lines (real dispatch time, real carrier, easy return) that lower return-to-origin risk",
+   "Check every reassurance, incentive or COD/RTO claim (discount amount, delivery time, BNPL terms) against the brand record before it ships"
   ],
   "inputs": [
    "brand brain: shipping and payment policies",
-   "order and RTO data (warehouse)"
+   "order data (warehouse); COD and RTO data where the brand runs COD (markets: IN)"
   ],
   "outputs": [
-   "COD-to-prepaid ad and message copy",
-   "RTO-reduction creative lines"
+   "payment and delivery reassurance ad and message copy",
+   "COD-to-prepaid ad copy and RTO-reduction creative lines (markets: IN)"
   ],
   "trigger": "on demand",
   "autonomy": "agent_does",
@@ -26354,7 +26401,7 @@
   },
   "tools": [],
   "skills": [
-   "cod-prepaid-messaging"
+   "payment-delivery-reassurance-messaging"
   ],
   "subagent": null,
   "sources": {
@@ -26365,7 +26412,7 @@
    "bank": []
   },
   "found_in": "web_only",
-  "founder_sees": "The exact lines that will nudge a COD order to prepaid, and the numbers behind them checked against your policy.",
+  "founder_sees": "The exact lines that build payment and delivery trust before checkout, and, for a COD brand, the numbers behind a prepaid nudge checked against your policy.",
   "human_role": "copywriter",
   "today_done_by": "in-house or agency",
   "agent": "CREA"
@@ -26373,7 +26420,7 @@
  {
   "id": "CREA-C45",
   "extends": null,
-  "name": "Build Amazon A+ Content and Flipkart/Myntra brand-store creative modules",
+  "name": "Build Amazon A+ Content and Walmart/Target Plus brand-store creative modules",
   "folders": [
    "10-MCR",
    "11-ADC",
@@ -26383,7 +26430,7 @@
   "encompasses": [
    "Design each module (hero banner, feature comparison, lifestyle image, spec table) to the marketplace's exact pixel and module-count limits",
    "Reuse the brand's approved claims and real product photos, never a new unchecked claim written just for this module",
-   "Build a separate module set per marketplace (Amazon A+, Flipkart brand store, Myntra brand page) since their templates differ",
+   "Build a separate module set per marketplace (Amazon A+, Walmart Marketplace brand shop, Target Plus; Flipkart brand store and Myntra brand page for an India-market brand, markets: IN) since their templates differ",
    "Flag a module that would look identical to the standard listing images, since A+ content should add new information, not repeat it"
   ],
   "inputs": [
@@ -26516,7 +26563,7 @@
    "11-ADC",
    "24-DEP"
   ],
-  "what": "Drives Meta or TikTok Ads Manager's own web interface to create a paused, unpublished draft ad per approved creative, so a human reviews a real draft inside the platform instead of a spreadsheet, without spending a rupee until they hit publish.",
+  "what": "Drives Meta or TikTok Ads Manager's own web interface to create a paused, unpublished draft ad per approved creative, so a human reviews a real draft inside the platform instead of a spreadsheet, without spending a dollar until they hit publish.",
   "encompasses": [
    "Navigate Ads Manager's ad-creation flow and fill in creative, copy and destination fields from the approved set",
    "Leave every draft paused and unpublished, never toggle it live",
@@ -26878,7 +26925,7 @@
    "propose a commission schedule split by partner type (content, coupon, loyalty, influencer) and by new-vs-returning customer",
    "recompute owed commission from the brand's own order data, not just the network's claimed conversions",
    "flag any mismatch between network-reported and order-confirmed sales before payout",
-   "hold commission on an order that is later returned, cancelled or RTO'd, and net it out of the next payout cycle",
+   "hold commission on an order that is later returned, cancelled or charged back, and net it out of the next payout cycle (India only: or RTO'd)",
    "surface the true net cost of the affiliate channel (commission plus discount) against its incremental revenue"
   ],
   "inputs": [
@@ -26920,12 +26967,12 @@
  {
   "id": "MEDIA-C52",
   "extends": null,
-  "name": "Prepare Amazon and Flipkart marketplace ad briefs for handoff",
+  "name": "Prepare Amazon, Walmart and Target marketplace ad briefs for handoff",
   "folders": [
    "24-DEP",
    "12-GAD"
   ],
-  "what": "Since marketplace ad platforms sit outside the agent's connected accounts, prepare the full Sponsored Products/Brands (Amazon) and sponsored placement (Flipkart) plan as a brief a human or agency executes inside the marketplace's own ads console.",
+  "what": "Since marketplace ad platforms sit outside the agent's connected accounts, prepare the full Sponsored Products/Brands (Amazon Ads), Walmart Connect and Target Roundel plan as a brief a human or agency executes inside the marketplace's own ads console. India only: prepare the Flipkart sponsored placement plan the same way instead.",
   "encompasses": [
    "pull the bestseller and margin data needed to pick which SKUs get sponsored placement first",
    "propose keyword targets from the brand's own Google Search terms that already convert, plus marketplace search suggestions",
@@ -26950,7 +26997,7 @@
    "metric contract: cpa, roas_retargeting"
   ],
   "outputs": [
-   "a marketplace ad campaign brief ready to build inside Amazon Seller Central or Flipkart Ads Manager",
+   "a marketplace ad campaign brief ready to build inside Amazon Seller Central, Walmart Connect or Target Roundel (Flipkart Ads Manager, India only)",
    "PPC campaign structure change list, handed to Media buyer"
   ],
   "trigger": "before a marketplace ad launch or a quarterly marketplace ads review",
@@ -27000,28 +27047,28 @@
  {
   "id": "MEDIA-C53",
   "extends": null,
-  "name": "Prepare quick commerce retail media briefs for Blinkit, Zepto and Instamart",
+  "name": "Prepare rapid-delivery and grocery marketplace retail media briefs for Instacart, DoorDash and Gopuff",
   "folders": [
    "24-DEP",
    "12-GAD"
   ],
-  "what": "Prepare a self-serve retail media plan for India's quick-commerce ad platforms, since a user with active purchase intent behaves differently from a social scroller and the ad platforms are outside the agent's connected accounts.",
+  "what": "Prepare a self-serve retail media plan for rapid-delivery and grocery marketplace ad platforms (Instacart Ads, DoorDash Ads, Gopuff, Amazon Fresh), since a user with active purchase intent behaves differently from a social scroller and the ad platforms are outside the agent's connected accounts. India only: prepare the same brief for India's quick-commerce ad platforms (Blinkit, Zepto, Instamart) instead.",
   "encompasses": [
-   "check which quick-commerce platforms the brand's SKUs are actually listed and in-stock on before proposing spend",
+   "check which rapid-delivery or grocery marketplaces the brand's SKUs are actually listed and in-stock on before proposing spend (India only: which quick-commerce platforms)",
    "propose which SKUs to sponsor based on category search volume on that platform and current margin",
    "propose a budget sized to the platform's own reported category benchmarks, since CPCs and ROAS norms differ from Meta or Google",
-   "flag stockout risk before scaling, since quick-commerce ad delivery can outpace local dark-store inventory",
-   "keep quick-commerce ad results separate from Meta/Google in reporting, since attribution windows and intent differ"
+   "flag stockout risk before scaling, since rapid-delivery ad delivery can outpace local fulfillment-center or dark-store inventory",
+   "keep rapid-delivery and grocery marketplace ad results separate from Meta/Google in reporting, since attribution windows and intent differ"
   ],
   "inputs": [
-   "quick-commerce listing and stock status per dark store or city",
+   "rapid-delivery/grocery listing and stock status per fulfillment center or city (dark store, India only)",
    "category CPC/ROAS benchmarks",
    "SKU margin"
   ],
   "outputs": [
    "a retail media brief per platform ready for a human to execute in the platform's brand console"
   ],
-  "trigger": "before a quick-commerce ad push, or when the brand adds a new quick-commerce listing",
+  "trigger": "before a rapid-delivery or grocery marketplace ad push, or when the brand adds a new such listing (India only: before a quick-commerce ad push)",
   "autonomy": "human_assist",
   "external_write": {
    "needed": false,
@@ -27289,9 +27336,7 @@
   "skills": [],
   "subagent": "media_buyer",
   "sources": {
-   "web": [
-    "https://www.agencyreporter.com/retail-media-networks-india-blinkit-zepto-swiggy/"
-   ],
+   "web": [],
    "bank": []
   },
   "found_in": "web_only",
@@ -27426,8 +27471,8 @@
   "encompasses": [
    "Match records by email, phone (with country-code normalisation), and shipping address fuzzy match",
    "Merge guest-checkout orders into the matching account once a match is confident, never silently for weak matches",
-   "Reconcile WhatsApp business number against the checkout phone field, common in India where the two differ",
-   "Fold POS and marketplace (Amazon, Flipkart) orders into the same profile when a store also sells there",
+   "Reconcile a WhatsApp business number against the checkout phone field where WhatsApp is used (common in India, EU, LATAM)",
+   "Fold POS and marketplace (Amazon, Walmart Marketplace, or Flipkart in India) orders into the same profile when a store also sells there",
    "Attach support ticket history and review history to the resolved profile, not just order history",
    "Flag low-confidence merges for a human to confirm rather than auto-merging",
    "Expose one `customer_id` the segmentation model, loyalty tiering and churn score all key off",
@@ -27665,7 +27710,7 @@
    "Set the rule for when a founder or team member should show up in person versus staying quiet",
    "Route recurring themes from the community back to the brand brain and to the survey/VoC record",
    "Track membership, active-member share and one proxy metric (repeat purchase rate of members vs non-members)",
-   "Choose the right owned-community platform for the brand's audience (WhatsApp community, Discord, Circle, Facebook group)",
+   "Choose the right owned-community platform for the brand's audience (Discord, Circle, Facebook group, SMS community); WhatsApp community is a market option for India, EU or LATAM audiences and reads null by default for a US-only brand",
    "Write and publish community guidelines so the space stays on-topic and safe before it grows",
    "Set a standing content and prompt rhythm distinct from the public account's calendar, tuned to superfans not strangers",
    "Plan and run online events (AMAs, early-access drops, polls) and, where relevant, in-person meetups",
@@ -27698,8 +27743,9 @@
   "tools": [
    "web search",
    "brand record (read)",
-   "WhatsApp Business API (via a Business Solution Provider)",
-   "Discord/Circle admin tools"
+   "Discord/Circle admin tools",
+   "SMS community platform (for example a Community.com or Twilio-based list)",
+   "WhatsApp Business API (via a Business Solution Provider), market option for India, EU or LATAM"
   ],
   "skills": [
    "none beyond standard retrieval"
@@ -27731,27 +27777,29 @@
  {
   "id": "LIFE-C55",
   "extends": null,
-  "name": "Reconcile GST credit notes against returns and refunds",
+  "name": "Reconcile sales tax on returns and refunds",
   "folders": [
    "17-CXP"
   ],
-  "what": "Checks that every completed return or refund has a matching GST credit note issued and filed on time, since a refund without a credit note overstates reported sales and lets the buyer claim input tax credit the seller never reversed, an India-specific compliance gap that sits between the returns coordinator and accounts.",
+  "what": "Checks that every completed return or refund correctly reverses the sales tax collected on the original order: state nexus rules, marketplace-facilitator tax already remitted by the marketplace, and resale-certificate exempt orders, since a refund that does not reverse tax overstates remitted liability and misstates 1099-K figures. India only: reconciles GST credit notes against returns and refunds instead, since a refund without a credit note overstates reported sales and lets the buyer claim input tax credit the seller never reversed; reads null for US brands.",
   "encompasses": [
-   "List every refunded/returned order in the period and check for a matching credit note",
-   "Flag any refund missing a credit note, and any credit note issued late against the statutory deadline",
-   "Check e-invoicing applies (turnover threshold) and that credit notes go through the same e-invoice system as sales invoices",
-   "Reconcile the credit-note total against the refund total in the payment ledger, arithmetic in code",
+   "List every refunded/returned order in the period and check the sales-tax portion was correctly reversed or credited",
+   "Flag any refund where the tax adjustment is missing or was filed late against the filing deadline",
+   "Check whether a marketplace facilitator (Amazon, Walmart Marketplace) already remitted tax on the order, so the brand does not also refund tax it never collected",
+   "Exclude resale-certificate and other tax-exempt orders from the reconciliation, rather than treating them as a gap",
+   "Reconcile the tax-adjustment total against the refund total in the payment ledger, arithmetic in code",
+   "India only: check every refunded/returned order for a matching GST credit note, flag any missing or late credit note against the statutory deadline, and confirm credit notes go through the same e-invoice system as sales invoices where e-invoicing applies by turnover threshold; reads null for US brands",
    "Hand the flagged list to accounts or the founder; this capability never files the return itself"
   ],
   "inputs": [
    "refund/return log",
-   "credit note export from the invoicing system",
-   "GST filing calendar"
+   "tax-adjustment export from the invoicing/accounting system (Avalara/TaxJar, or the GST credit-note export for India)",
+   "sales-tax filing calendar (or GST filing calendar for India)"
   ],
   "outputs": [
-   "a reconciliation report of missing or late credit notes"
+   "a reconciliation report of missing or late tax adjustments (GST credit notes for India)"
   ],
-  "trigger": "monthly, before GST return filing",
+  "trigger": "monthly, before sales-tax filing (or GST return filing for India)",
   "autonomy": "human_assist",
   "external_write": {
    "needed": false,
@@ -27994,14 +28042,14 @@
    "14-EML",
    "17-CXP"
   ],
-  "what": "Sets up voice as its own channel, separate from SMS, WhatsApp and push: automated IVR calls for COD delivery confirmation and satisfaction checks, and click-to-call for a VIP or high-AOV concierge conversation, since India's RTO-reduction and CX tooling relies on voice alongside WhatsApp and the brand's own channel rules do not currently cover it.",
+  "what": "Sets up voice as its own channel, separate from SMS, WhatsApp and push: automated IVR calls for pre-dispatch confirmation and satisfaction checks, and click-to-call for a VIP or high-AOV concierge conversation, since failed-delivery reduction and CX tooling often relies on voice alongside SMS (WhatsApp for India) and the brand's own channel rules do not currently cover it.",
   "encompasses": [
-   "Decide which use cases justify voice: COD pre-dispatch confirmation, delivery-failure follow-up, post-resolution satisfaction check, VIP concierge",
+   "Decide which use cases justify voice: order pre-dispatch confirmation (COD orders for India), delivery-failure follow-up, post-resolution satisfaction check, VIP concierge",
    "Write the IVR script and call flow for each automated use case",
    "Set the call-attempt cadence and quiet hours, matching the consent and quiet-hour rules already set for SMS/WhatsApp",
    "Set click-to-call triggers for a human concierge conversation (from C60's high-AOV queue)",
    "Log every call outcome (answered, confirmed, no answer, opted out) back into the order/customer record",
-   "Track cost per call against the ticket or RTO deflection it produces, so the channel earns its keep"
+   "Track cost per call against the ticket or failed-delivery deflection it produces (RTO deflection for India), so the channel earns its keep"
   ],
   "inputs": [
    "order/delivery events needing confirmation",
@@ -28043,17 +28091,18 @@
  {
   "id": "LIFE-C66",
   "extends": null,
-  "name": "Handle data-subject access and erasure requests under India's DPDP Act",
+  "name": "Handle data-subject access and erasure requests under CCPA and state privacy law",
   "folders": [
    "17-CXP"
   ],
-  "what": "When a customer asks what personal data the brand holds or asks for it to be deleted, finds every system that holds that person's data (ESP, helpdesk, loyalty, subscription, POS), verifies identity, and responds inside the statutory window, an obligation under India's Digital Personal Data Protection Act that sits on top of ordinary unsubscribe handling.",
+  "what": "When a customer asks what personal data the brand holds or asks for it to be deleted, finds every system that holds that person's data (ESP, helpdesk, loyalty, subscription, POS), verifies identity, and responds inside the statutory window: an obligation under California's CCPA/CPRA and other state privacy laws (Virginia, Colorado and others) that sits on top of ordinary unsubscribe handling. India only: the same obligation runs under India's Digital Personal Data Protection (DPDP) Act instead; reads null for US brands.",
   "encompasses": [
    "Maintain a simple data-inventory map of which systems hold customer PII",
    "Verify the requester's identity before acting on an access or erasure request",
    "For an access request, compile what is held and where, in plain language",
    "For an erasure request, check whether another law requires the brand to keep the record (tax, warranty) before deleting",
    "Execute or hand off the deletion across every system on the inventory, not just the ESP unsubscribe",
+   "Use the applicable law's own response window (CCPA/CPRA: typically 45 days, extendable once; DPDP for India: per the Act's own timeline) rather than a single fixed number",
    "Log every request and its resolution date against the statutory response window",
    "Distinguish this from marketing consent/unsubscribe handling (C03), which covers opt-out of sends, not deletion of held data"
   ],
@@ -28102,7 +28151,7 @@
   "folders": [
    "17-CXP"
   ],
-  "what": "Manages Amazon and Flipkart buyer-seller messages and A-to-Z-style guarantee claims inside each marketplace's own seller console, on that marketplace's own response clock (48 hours to answer a buyer message, about 72 hours to respond to a claim), distinct from the brand's own helpdesk queue and its own SLAs.",
+  "what": "Manages Amazon, Walmart Marketplace and (in India) Flipkart/Myntra buyer-seller messages and A-to-Z-style guarantee claims inside each marketplace's own seller console, on that marketplace's own response clock (48 hours to answer a buyer message, about 72 hours to respond to a claim), distinct from the brand's own helpdesk queue and its own SLAs.",
   "encompasses": [
    "Pull open buyer-seller messages and claims from each marketplace seller console on a schedule",
    "Draft a response inside each marketplace's own response window, never missing the 48-hour buyer-message clock that itself triggers a claim right",
@@ -28118,7 +28167,7 @@
    "drafted responses and claim replies within each marketplace's clock",
    "a claim-rate trend report"
   ],
-  "trigger": "continuous, for a brand selling on Amazon/Flipkart",
+  "trigger": "continuous, for a brand selling on Amazon, Walmart Marketplace, or (in India) Flipkart/Myntra",
   "autonomy": "founder_gate",
   "external_write": {
    "needed": true,
@@ -28602,7 +28651,7 @@
   "subagent": "Organic and search specialist",
   "sources": {
    "web": [
-    "https://in.indeed.com/hire/job-description/social-media-manager"
+    "https://www.indeed.com/hire/job-description/social-media-manager"
    ],
    "bank": []
   },
@@ -28684,15 +28733,15 @@
  {
   "id": "PROD-C48",
   "extends": null,
-  "name": "Onboard and launch brand listings on Blinkit, Zepto and Instamart",
+  "name": "Onboard and launch brand listings on Instacart, DoorDash and Gopuff",
   "folders": [
    "22-AMZ"
   ],
-  "what": "Take a brand through quick commerce onboarding end to end: assemble the GST, FSSAI, barcode and packaging documents, submit through each platform's own channel, and get the first live listing without a mismatched document resetting the 4 to 8 week queue.",
+  "what": "Take a brand through rapid-delivery/grocery marketplace onboarding end to end (Instacart, DoorDash Marketplace, Gopuff, Amazon Fresh): assemble the business licence, resale certificate, UPC/barcode and packaging documents, submit through each platform's own channel, and get the first live listing without a mismatched document resetting the queue. India: the same job runs on Blinkit, Zepto and Instamart instead, needing GST registration and an FSSAI licence (markets: IN, reads null for US brands).",
   "encompasses": [
-   "Assemble GST registration, FSSAI licence, PAN, bank and GS1 barcode documents and check the legal-entity name matches exactly across every document",
-   "Submit through Blinkit's Seller App, Zepto's category-manager channel and Instamart's seller portal, each with its own workflow",
-   "Check the FSSAI licence has 6 to 12 months validity left before submitting, since a near-expiry licence gets rejected",
+   "Assemble business licence, resale certificate, PAN/EIN, bank and UPC/GS1 barcode documents and check the legal-entity name matches exactly across every document (India: GST registration, FSSAI licence, PAN, bank and GS1 barcode documents instead; markets: IN, reads null for US brands)",
+   "Submit through Instacart's Retailer/CPG portal, DoorDash Marketplace's vendor channel and Gopuff's supplier channel, each with its own workflow (India: Blinkit's Seller App, Zepto's category-manager channel and Instamart's seller portal; markets: IN)",
+   "For a food SKU, check the FDA facility registration and any state food licence has enough validity left before submitting, since a near-expiry licence gets rejected (India: check the FSSAI licence has 6 to 12 months validity left)",
    "Build catalogue assets to each platform's exact size and crop rule (1000x1000px, front/back/lifestyle)",
    "Write titles in the platform's required order: brand, product, variant, pack size",
    "Verify barcodes scan in a shelf-stacked position and labels stay legible at thumbnail size",
@@ -28700,7 +28749,7 @@
    "Flag when a legal-entity name mismatch or missing document will reset the queue"
   ],
   "inputs": [
-   "brand brain: business documents, GST and FSSAI licence status",
+   "brand brain: business documents, licensing status (india: GST and FSSAI licence status)",
    "web: each platform's onboarding requirements",
    "product tech pack and packaging specs"
   ],
@@ -28709,11 +28758,11 @@
    "submitted application per platform",
    "first-listing readiness report"
   ],
-  "trigger": "on demand (new quick commerce launch)",
+  "trigger": "on demand (new rapid-delivery marketplace launch)",
   "autonomy": "founder_gate",
   "external_write": {
    "needed": true,
-   "surface": "Blinkit seller app / Zepto category manager / Instamart seller portal"
+   "surface": "Instacart / DoorDash / Gopuff seller portal (india: Blinkit seller app / Zepto category manager / Instamart seller portal)"
   },
   "tools": [
    "browser agent",
@@ -28721,14 +28770,14 @@
    "web search"
   ],
   "skills": [
-   "quick-commerce-onboarding"
+   "rapid-delivery-onboarding"
   ],
   "subagent": "product_and_supply",
   "sources": {
    "web": [
-    "https://confetti.design/blog/how-to-start-selling-on-quick-commerce-india",
-    "https://www.tech2globe.com/quick-commerce-onboarding-services",
-    "https://www.ecomsarthi.com/blog/quick-commerce-onboarding.html"
+    "https://www.instacart.com/company/partner-with-instacart/",
+    "https://get.doordash.com/en-us/products/marketplace",
+    "https://confetti.design/blog/how-to-start-selling-on-quick-commerce-india"
    ],
    "bank": []
   },
@@ -28741,22 +28790,22 @@
  {
   "id": "PROD-C49",
   "extends": null,
-  "name": "Correct quick commerce ROAS and validate dark-store unit economics",
+  "name": "Correct rapid-delivery ROAS and validate dark-store unit economics",
   "folders": [
    "22-AMZ",
    "18-COG"
   ],
-  "what": "Recompute true return on ad spend from transaction value, not MRP, because platform dashboards inflate ROAS 30 to 50 percent by using MRP, and hold a SKU to a run of positive contribution margin before it scales past the first dark stores.",
+  "what": "Recompute true return on ad spend from transaction value, not list price, because some rapid-delivery and quick-commerce platform dashboards inflate ROAS 30 to 50 percent by reporting off list/MRP price, and hold a SKU to a run of positive contribution margin before it scales past the first dark stores.",
   "encompasses": [
-   "Pull platform ad spend and MRP-based ROAS from the seller dashboard",
-   "Recompute ROAS on actual transaction value in code, net of platform commission (15-25%) and GST on commission",
-   "Track inwarding fees, storage cost and damage/expiry write-off (budgeted 2-5% of MRP) per SKU",
+   "Pull platform ad spend and list-price-based ROAS from the seller dashboard",
+   "Recompute ROAS on actual transaction value in code, net of platform commission (15-25%) and sales tax (india: GST) on commission",
+   "Track inwarding fees, storage cost and damage/expiry write-off (budgeted 2-5% of list price) per SKU",
    "Calculate weekly per-dark-store order volume needed to clear the 55-60% gross margin floor",
    "Flag whether a margin problem is volume (fixable with more orders) or structural (needs repricing or a COGS cut)",
-   "Hold expansion to new SKUs or cities until 3 consecutive weeks of positive contribution margin"
+   "Hold expansion to new SKUs or metro areas until 3 consecutive weeks of positive contribution margin"
   ],
   "inputs": [
-   "quick commerce seller dashboard export",
+   "rapid-delivery seller dashboard export",
    "SKU landed cost and COGS"
   ],
   "outputs": [
@@ -28774,11 +28823,12 @@
    "python calc"
   ],
   "skills": [
-   "quick-commerce-economics"
+   "rapid-delivery-economics"
   ],
   "subagent": "product_and_supply",
   "sources": {
    "web": [
+    "https://www.instacart.com/company/partner-with-instacart/",
     "https://confetti.design/blog/how-to-start-selling-on-quick-commerce-india"
    ],
    "bank": []
@@ -28794,45 +28844,46 @@
  {
   "id": "PROD-C50",
   "extends": null,
-  "name": "Manage quick commerce ad credits and promotional calendar negotiation",
+  "name": "Manage rapid-delivery ad credits and promotional calendar negotiation",
   "folders": [
    "22-AMZ"
   ],
-  "what": "Spend each platform's ad tools deliberately instead of leaving credits unused or overspending once organic search picks up, and negotiate the festive promotional windows that can lift sales 4 to 5x.",
+  "what": "Spend each platform's ad tools deliberately instead of leaving credits unused or overspending once organic search picks up, and negotiate the peak promotional windows (Q4 holiday season, Black Friday/Cyber Monday, Prime Day, back to school) that can lift sales 4 to 5x.",
   "encompasses": [
-   "Activate and track per-SKU ad credits on Blinkit at launch",
-   "Run keyword-bid sponsored search on Zepto's ads platform and Instamart's self-serve ads portal",
+   "Activate and track per-SKU ad credits on Instacart Ads at launch",
+   "Run keyword-bid sponsored search on DoorDash Ads and Gopuff's self-serve ads portal",
    "Monitor organic impressions and click-through rate weekly and cut paid spend on a SKU once organic CTR clears the category average",
-   "Draft the ask to the category manager for Diwali, Holi, IPL and Independence Day promotional slots",
+   "Draft the ask to the category manager for BFCM, Prime Day, back-to-school and Q4 holiday promotional slots (India: Diwali, Holi, IPL and Independence Day slots; markets: IN)",
    "Track a 5-15% of projected revenue ad budget and reallocate as organic velocity rises",
    "Seed early reviews with an introductory discount tied to sponsored search"
   ],
   "inputs": [
    "platform ads dashboard export",
    "organic impression and CTR data",
-   "festive calendar"
+   "US retail promotional calendar (india: festive calendar)"
   ],
   "outputs": [
    "ad spend plan",
    "promotional slot request draft",
    "weekly organic-vs-paid split"
   ],
-  "trigger": "weekly, and ahead of each festive window",
+  "trigger": "weekly, and ahead of each peak promotional window",
   "autonomy": "founder_gate",
   "external_write": {
    "needed": true,
-   "surface": "Blinkit/Zepto/Instamart ads portal"
+   "surface": "Instacart/DoorDash/Gopuff ads portal"
   },
   "tools": [
    "browser agent",
    "script: scripts/qc_ad_spend.py"
   ],
   "skills": [
-   "quick-commerce-ads"
+   "rapid-delivery-ads"
   ],
   "subagent": "product_and_supply",
   "sources": {
    "web": [
+    "https://www.instacart.com/company/partner-with-instacart/",
     "https://confetti.design/blog/how-to-start-selling-on-quick-commerce-india"
    ],
    "bank": []
@@ -28856,7 +28907,7 @@
    "Pull per-dark-store, per-SKU stock level and days-of-cover from the platform's inventory feed where available",
    "Flag a SKU approaching stockout at any dark store before the ranking penalty hits",
    "Track inbound replenishment frequency against the platform's required cadence",
-   "Track inwarding fee (about Rs 2-4/unit on Instamart) and damage/expiry write-offs against budget",
+   "Track inwarding fee (about $0.25-0.50/unit on rapid-delivery platforms; india: about Rs 2-4/unit on Instamart, markets: IN) and damage/expiry write-offs against budget",
    "Recommend a replenishment order in units per dark store from recent velocity"
   ],
   "inputs": [
@@ -28934,8 +28985,9 @@
   "subagent": "product_and_supply",
   "sources": {
    "web": [
-    "https://unicommerce.com/products/",
-    "https://www.increff.com/blog/5-best-e-commerce-inventory-management-software-in-india-in-2026"
+    "https://www.shipstation.com/",
+    "https://www.netstock.com/",
+    "https://unicommerce.com/products/"
    ],
    "bank": []
   },
@@ -29003,13 +29055,13 @@
   "folders": [
    "01-PRD"
   ],
-  "what": "Design what happens to a unit that comes back, whether an RTO or a customer return, so it is graded, restocked, refurbished or written off on a fixed rule instead of case by case.",
+  "what": "Design what happens to a unit that comes back, whether a carrier return-to-sender (india: RTO) or a customer return, so it is graded, restocked, refurbished or written off on a fixed rule instead of case by case.",
   "encompasses": [
    "Define grading rules at intake: resell as new, resell as open-box, refurbish, scrap",
    "Tie the refund or store-credit trigger to the warehouse scan, not the courier's return-in-transit status",
    "Route a defective return into the QC/CAPA process to trace it to a batch",
    "Track return processing time and reverse-logistics cost per unit",
-   "Separate RTO (never delivered) from customer return (delivered then returned) in reporting",
+   "Separate a failed delivery / carrier return-to-sender (never delivered) from a customer return (delivered then returned) in reporting (India: this never-delivered leg is RTO; markets: IN, reads null for US brands)",
    "Flag a SKU or reason code whose return rate has moved outside its normal range"
   ],
   "inputs": [
@@ -29054,18 +29106,18 @@
   "folders": [
    "01-PRD"
   ],
-  "what": "Pick the courier for each shipment in code from live rate, pincode serviceability and SLA rather than a fixed default carrier, and fail over to a backup courier the moment one rejects or is unserviceable.",
+  "what": "Pick the carrier for each shipment in code from live rate, ZIP code serviceability and SLA rather than a fixed default carrier, and fail over to a backup carrier the moment one rejects or is unserviceable (India: same logic on pincode serviceability and courier RTO rate; markets: IN).",
   "encompasses": [
-   "Pull live rate cards and pincode serviceability for every connected courier",
-   "Score each courier on cost, promised TAT and recent RTO rate for that pincode",
-   "Assign the shipment to the best-scoring courier automatically through the aggregator",
-   "Fail over to the next-best courier on rejection, non-serviceability or capacity cap",
-   "Log every routing decision so a courier's real performance can be audited later"
+   "Pull live rate cards and ZIP code serviceability for every connected carrier (UPS, USPS, FedEx, and 3PLs such as ShipBob or ShipMonk)",
+   "Score each carrier on cost, promised transit time and recent failed-delivery/return-to-sender rate for that ZIP code (India: courier RTO rate for that pincode; markets: IN)",
+   "Assign the shipment to the best-scoring carrier automatically through the shipping platform (ShipStation, EasyPost)",
+   "Fail over to the next-best carrier on rejection, non-serviceability or capacity cap",
+   "Log every routing decision so a carrier's real performance can be audited later"
   ],
   "inputs": [
-   "order and pincode",
-   "aggregator rate and serviceability feed",
-   "courier scorecard"
+   "order and ZIP code (india: pincode)",
+   "shipping-platform rate and serviceability feed",
+   "carrier scorecard"
   ],
   "outputs": [
    "per-shipment courier assignment",
@@ -29075,21 +29127,21 @@
   "autonomy": "founder_gate",
   "external_write": {
    "needed": true,
-   "surface": "Shiprocket / aggregator API"
+   "surface": "ShipStation / EasyPost API (india: Shiprocket / aggregator API)"
   },
   "tools": [
    "script: scripts/courier_routing.py",
    "aggregator API"
   ],
   "skills": [
-   "courier-routing"
+   "carrier-routing"
   ],
   "subagent": "product_and_supply",
   "sources": {
    "web": [
-    "https://www.shiprocket.in/carrier-integrations/delhivery/",
-    "https://www.icarry.in/pages/blog/shiprocket-alternatives.html",
-    "https://vedwix.com/best/shipping-aggregators-in-india"
+    "https://www.shipstation.com/",
+    "https://www.easypost.com/",
+    "https://www.shiprocket.in/carrier-integrations/delhivery/"
    ],
    "bank": []
   },
@@ -29104,89 +29156,89 @@
  {
   "id": "PROD-C56",
   "extends": null,
-  "name": "Automate NDR resolution and address-confirmation outreach",
+  "name": "Automate carrier-exception resolution and address-validation outreach",
   "folders": [
    "01-PRD"
   ],
-  "what": "Work every non-delivery report the day it is raised: confirm the address or reschedule with the customer before the courier's attempt window closes, since NDR handling moves RTO more than the courier rate does.",
+  "what": "Work every carrier exception the day it is raised: run USPS/carrier address validation and reach out to the customer to confirm the address or reschedule before the delivery window closes, since exception handling cuts return-to-sender more than the carrier rate does. India: the same job is NDR (non-delivery report) resolution on cash-on-delivery orders (markets: IN, reads null for US brands).",
   "encompasses": [
-   "Pull the day's NDR queue from the aggregator across all couriers",
-   "Send an address-confirmation or reschedule message by SMS or WhatsApp before the next attempt",
-   "Escalate a repeat-NDR order to a phone call before it converts to RTO",
-   "Reassign a chronically bad pincode's future orders to a courier with a better first-attempt rate there",
-   "Track NDR-to-delivery conversion rate versus NDR-to-RTO rate by reason code",
-   "Detect an NDR (non-delivery report) event from the courier's tracking feed or webhook",
-   "Send the WhatsApp/SMS reschedule prompt and capture the customer's chosen new date",
-   "Log into the courier's self-service portal and submit the reschedule with the confirmed date",
+   "Pull the day's carrier-exception queue (undeliverable-as-addressed, failed attempt, hold-for-pickup) across UPS, USPS, FedEx and connected 3PLs (India: the aggregator's NDR queue across all couriers; markets: IN)",
+   "Run address validation and send a confirmation or reschedule message by SMS (with TCPA consent and quiet hours) or email before the next attempt (India: SMS or WhatsApp; markets: IN)",
+   "Escalate a repeat-exception order to a phone call before it converts to return-to-sender (India: before it converts to RTO; markets: IN)",
+   "Reassign a chronically bad ZIP code's future orders to a carrier with a better first-attempt rate there (India: a chronically bad pincode; markets: IN)",
+   "Track exception-to-delivery conversion rate versus exception-to-return-to-sender rate by reason code (India: NDR-to-delivery versus NDR-to-RTO rate; markets: IN)",
+   "Detect a failed-delivery event (a carrier exception or return-to-sender; an NDR for India's COD orders) from the carrier's tracking feed or webhook",
+   "Send the SMS or email reschedule prompt (WhatsApp is a market option for India) and capture the customer's chosen new date or corrected address",
+   "Log into the carrier's self-service portal and submit the reschedule with the confirmed date",
    "Confirm the reschedule went through and update the order's expected delivery date",
    "Escalate to a human the moment the portal requires a captcha, a manual call, or behaves unexpectedly",
-   "Never attempt this on a courier where credentials are not the founder's own or where the portal forbids automation in its terms",
-   "Compute the cost of one more delivery attempt (courier fee, time) against the order's margin and COD reversal risk",
-   "Compare that to the cost of accepting RTO now (return freight, restock or write-off cost)",
-   "Recommend stop-trying or one-more-attempt per order, not a blanket rule for every NDR",
-   "Feed the outcome back into the courier scorecard and the COD-to-prepaid targeting"
+   "Never attempt this on a carrier where credentials are not the founder's own or where the portal forbids automation in its terms",
+   "Compute the cost of one more delivery attempt (carrier fee, time) against the order's margin and chargeback/dispute risk (India: against COD reversal risk; markets: IN)",
+   "Compare that to the cost of accepting return-to-sender now (return freight, restock or write-off cost)",
+   "Recommend stop-trying or one-more-attempt per order, not a blanket rule for every exception",
+   "Feed the outcome back into the carrier scorecard (India: also into COD-to-prepaid targeting; markets: IN)"
   ],
   "inputs": [
-   "daily NDR queue",
-   "customer contact channel",
-   "courier NDR feed",
-   "customer's confirmed new delivery date",
-   "courier portal credentials",
-   "NDR queue",
+   "daily carrier-exception queue",
+   "customer contact channel (SMS, email; india: SMS or WhatsApp)",
+   "carrier delivery-exception feed (an NDR feed for India)",
+   "customer's confirmed new delivery date or address",
+   "carrier portal credentials",
+   "carrier-exception queue (india: NDR queue)",
    "order margin",
-   "courier attempt cost",
-   "RTO/restock cost"
+   "carrier attempt cost",
+   "return-to-sender/restock cost (india: RTO/restock cost)"
   ],
   "outputs": [
    "outreach sent log",
-   "NDR conversion report",
+   "exception conversion report",
    "a confirmed reschedule",
    "an updated delivery estimate",
    "an escalation for anything the portal blocks",
    "per-order stop/retry recommendation"
   ],
-  "trigger": "daily, same-day on NDR",
+  "trigger": "daily, same-day on exception",
   "autonomy": "founder_gate",
   "external_write": {
    "needed": true,
-   "surface": "SMS/WhatsApp send, aggregator NDR panel"
+   "surface": "SMS/email send, carrier exception panel (india: SMS/WhatsApp send, aggregator NDR panel)"
   },
   "tools": [
-   "script: scripts/ndr_outreach.py",
-   "WhatsApp/SMS API",
-   "courier tracking feed (read)",
+   "script: scripts/exception_outreach.py",
+   "SMS/email API (india: WhatsApp/SMS API)",
+   "carrier tracking feed (read)",
    "browser automation",
-   "WhatsApp/SMS send (pending founder switch)",
-   "script: scripts/ndr_economics.py"
+   "SMS/WhatsApp/email send (pending founder switch)",
+   "script: scripts/exception_economics.py"
   ],
   "skills": [
-   "ndr-recovery",
+   "carrier-exception-recovery",
    "none beyond standard retrieval",
-   "ndr-economics"
+   "exception-economics"
   ],
   "subagent": "product_and_supply",
   "sources": {
    "web": [
-    "https://theshizz.in/blog/courier-comparison-shiprocket-delhivery-bluedart",
-    "https://www.shiprocket.in/carrier-integrations/delhivery/"
+    "https://www.usps.com/business/web-tools-apis/address-information-api.htm",
+    "https://theshizz.in/blog/courier-comparison-shiprocket-delhivery-bluedart"
    ],
    "bank": []
   },
   "found_in": "web_only",
-  "founder_sees": "The NDR-to-RTO conversion rate and what outreach recovered.",
+  "founder_sees": "The exception-to-return-to-sender conversion rate and what outreach recovered.",
   "human_role": "shipping / logistics executive",
-  "today_done_by": "tool (aggregator's built-in NDR panel, human-run)",
+  "today_done_by": "tool (aggregator's built-in exception panel, human-run; india: NDR panel)",
   "agent": "PROD",
   "merged_from": [
    {
     "id": "LIFE-C64",
-    "name": "Auto-reschedule NDR'd COD deliveries through courier self-service portals without an API",
+    "name": "Auto-reschedule failed deliveries through carrier self-service portals without an API",
     "agent": "LIFE",
     "reason": "Three NDR records. LIFE-C64 (reschedule via courier portal) is an execution route; PROD-C76 (reschedule vs RTO by unit economics) is the decision rule. Both sit inside NDR resolution."
    },
    {
     "id": "PROD-C76",
-    "name": "Decide NDR reschedule versus RTO acceptance using brand-specific unit economics",
+    "name": "Decide carrier retry versus return-to-sender acceptance using brand-specific unit economics",
     "agent": "PROD",
     "reason": "Three NDR records. LIFE-C64 (reschedule via courier portal) is an execution route; PROD-C76 (reschedule vs RTO by unit economics) is the decision rule. Both sit inside NDR resolution."
    }
@@ -29199,37 +29251,37 @@
   "folders": [
    "01-PRD"
   ],
-  "what": "Keep a running scorecard per courier per zone on RTO rate, first-attempt delivery rate and delivery TAT, and shift volume to the better performer on a set cadence instead of an annual contract review.",
+  "what": "Keep a running scorecard per carrier per zone on failed-delivery/return-to-sender rate, first-attempt delivery rate and delivery transit time, and shift volume to the better performer on a set cadence instead of an annual contract review (India: same scorecard using RTO% by courier and pincode zone; markets: IN).",
   "encompasses": [
-   "Compute RTO%, first-attempt delivery rate and average TAT per courier per zone from shipment data",
-   "Rank couriers within each zone and flag one that has fallen below the zone's median for a month",
-   "Recommend a volume-share shift between couriers for the next cycle",
-   "Track a new courier's onboarding performance against the incumbent before scaling volume to it"
+   "Compute failed-delivery/return-to-sender rate, first-attempt delivery rate and average transit time per carrier per zone from shipment data (India: RTO% per courier per zone; markets: IN)",
+   "Rank carriers within each zone and flag one that has fallen below the zone's median for a month",
+   "Recommend a volume-share shift between carriers for the next cycle",
+   "Track a new carrier's onboarding performance against the incumbent before scaling volume to it"
   ],
   "inputs": [
-   "shipment-level delivery data by courier and zone"
+   "shipment-level delivery data by carrier and zone"
   ],
   "outputs": [
-   "courier scorecard by zone",
+   "carrier scorecard by zone",
    "volume reallocation recommendation"
   ],
   "trigger": "monthly",
   "autonomy": "founder_gate",
   "external_write": {
    "needed": true,
-   "surface": "aggregator courier-priority settings"
+   "surface": "shipping-platform carrier-priority settings"
   },
   "tools": [
    "script: scripts/courier_scorecard.py"
   ],
   "skills": [
-   "courier-scorecard"
+   "carrier-scorecard"
   ],
   "subagent": "product_and_supply",
   "sources": {
    "web": [
-    "https://theshizz.in/blog/courier-comparison-shiprocket-delhivery-bluedart",
-    "https://vedwix.com/best/shipping-aggregators-in-india"
+    "https://www.shipstation.com/",
+    "https://theshizz.in/blog/courier-comparison-shiprocket-delhivery-bluedart"
    ],
    "bank": []
   },
@@ -29244,27 +29296,27 @@
  {
   "id": "PROD-C60",
   "extends": null,
-  "name": "Assign and validate HSN/SAC codes and catch e-invoice rejections",
+  "name": "Assign and validate US sales-tax product categories and catch filing errors",
   "folders": [
    "18-COG",
    "01-PRD"
   ],
-  "what": "Build and keep the SKU-to-HSN/SAC map correct, since a wrong or too-short HSN code is a common cause of invoice registration portal rejections and GST mismatches.",
+  "what": "Build and keep the SKU-to-tax-category map correct, since a wrong product tax code is a common cause of undercharged or overcharged sales tax and marketplace-facilitator filing mismatches. India: the same job maps each SKU to an HSN/SAC code and catches e-invoice rejections instead (markets: IN, reads null for US brands).",
   "encompasses": [
-   "Assign an HSN code to every SKU and check digit length against the turnover threshold (4-digit under Rs 5 crore, 6-digit at or above)",
-   "Validate the HSN code against the GST rate charged for that SKU",
-   "Flag an e-invoice likely to be rejected by the IRP before it is submitted",
-   "Keep the map current when a SKU's classification or GST rate changes",
+   "Assign an Avalara or TaxJar product tax code to every SKU and check it against each state's taxability rules (India: assign an HSN code and check digit length against the turnover threshold, 4-digit under Rs 5 crore, 6-digit at or above; markets: IN)",
+   "Track economic nexus thresholds by state and flag a new state that has crossed the registration threshold",
+   "Validate resale certificates on file for wholesale/B2B orders and flag an expired or missing one",
+   "Flag a marketplace-facilitator state where the marketplace, not the brand, should be remitting tax, and catch a double-remittance risk",
+   "Reconcile 1099-K totals from each marketplace against the brand's own sales ledger",
    "Log every correction with the reason, for an audit trail"
   ],
   "inputs": [
    "product catalogue",
-   "GST rate table",
-   "HSN reference data"
+   "state nexus and taxability rules (india: GST rate table, HSN reference data)"
   ],
   "outputs": [
-   "SKU-to-HSN map",
-   "pre-submission validation flags"
+   "SKU-to-tax-category map",
+   "nexus and filing validation flags"
   ],
   "trigger": "on new SKU, and monthly audit",
   "autonomy": "agent_does",
@@ -29276,19 +29328,19 @@
    "script: scripts/hsn_validate.py"
   ],
   "skills": [
-   "gst-compliance"
+   "sales-tax-compliance"
   ],
   "subagent": "product_and_supply",
   "sources": {
    "web": [
-    "https://www.vertexinc.com/resources/resource-library/indias-e-invoicing-regulations-explained-scope-formats-and-penalties",
-    "https://www.incorpx.io/blog/gst-invoice-rules-format-mandatory-fields",
-    "https://carajput.com/learn/compulsory-e-invoice-details-and-new-hsn-code-requirements.html"
+    "https://www.avalara.com/us/en/learn/nexus.html",
+    "https://www.taxjar.com/sales-tax/marketplace-facilitator",
+    "https://www.vertexinc.com/resources/resource-library/indias-e-invoicing-regulations-explained-scope-formats-and-penalties"
    ],
    "bank": []
   },
   "found_in": "web_only",
-  "founder_sees": "Any SKU with a wrong or risky HSN code before it causes an e-invoice rejection.",
+  "founder_sees": "Any SKU or state with a wrong or risky tax setup before it causes a filing error.",
   "human_role": "accounts / compliance executive",
   "today_done_by": "founder or accountant",
   "agent": "MONEY",
@@ -29298,16 +29350,16 @@
  {
   "id": "PROD-C61",
   "extends": null,
-  "name": "Track Legal Metrology and FSSAI licence registration and renewal",
+  "name": "Track FDA, net-quantity and state licence registration and renewal",
   "folders": [
    "01-PRD"
   ],
-  "what": "Keep one register of which SKUs need Legal Metrology (Packaged Commodities) registration or an FSSAI licence, their current validity window, and the relabelling needed on an MRP or GST change.",
+  "what": "Keep one register of which SKUs need FDA facility registration, net-quantity declaration under the Fair Packaging and Labeling Act, or a state licence (cosmetics, food, supplements), their current validity window, and the relabelling needed on a formula or price change. India: the same register tracks Legal Metrology (Packaged Commodities) registration and an FSSAI licence instead (markets: IN, reads null for US brands).",
   "encompasses": [
-   "Map each SKU to the licences it needs: Legal Metrology state registration, FSSAI, and any category-specific licence",
+   "Map each SKU to the licences it needs: FDA facility registration, state cosmetics/food/supplement licence, and any category-specific licence (India: Legal Metrology state registration and FSSAI; markets: IN)",
    "Track each licence's validity window and flag renewal at a safe lead time before expiry (platforms require 6-12 months left)",
-   "Check the label declares the FSSAI number and MRP where required, positioned for dark-store or warehouse scanning",
-   "Track a sticker/relabel run when MRP or GST changes, keeping the original MRP visible as the rule requires"
+   "Check the label declares net quantity, ingredients and any required warning (Prop 65) correctly, positioned for fulfilment-center or warehouse scanning (India: FSSAI number and MRP; markets: IN)",
+   "Track a relabel run when a formula, claim or price changes, keeping required disclosures current (India: keep the original MRP visible on an MRP/GST change, as the rule requires; markets: IN)"
   ],
   "inputs": [
    "SKU catalogue",
@@ -29317,7 +29369,7 @@
    "licence register with expiry flags",
    "relabel task list"
   ],
-  "trigger": "monthly audit, and on any MRP/GST change",
+  "trigger": "monthly audit, and on any formula/price change (india: MRP/GST change)",
   "autonomy": "human_assist",
   "external_write": {
    "needed": false,
@@ -29332,9 +29384,9 @@
   "subagent": "product_and_supply",
   "sources": {
    "web": [
-    "https://www.taxtmi.com/article/detailed?id=15118",
-    "https://www.diligencecertification.com/legal-metrology-for-e-commerce/",
-    "https://www.omgarudagroup.com/blogs/legal-metrology-compliance-for-e-commerce-sellers-in-india"
+    "https://www.fda.gov/food/food-industry/registration-food-facilities-and-other-submissions",
+    "https://www.ftc.gov/business-guidance/resources/fair-packaging-labeling-act",
+    "https://www.taxtmi.com/article/detailed?id=15118"
    ],
    "bank": []
   },
@@ -29347,14 +29399,14 @@
  {
   "id": "PROD-C62",
   "extends": null,
-  "name": "Track Extended Producer Responsibility (EPR) plastic packaging compliance",
+  "name": "Track state Extended Producer Responsibility (EPR) packaging compliance",
   "folders": [
    "01-PRD"
   ],
-  "what": "Register the brand's plastic packaging under India's EPR rules, track the annual filing and recycling-target obligation, and flag when a shortfall means buying EPR credits.",
+  "what": "Register the brand's packaging under state EPR packaging laws (Oregon, California, Colorado, Maine), track the annual filing and recycling-target obligation, and flag when a shortfall means buying EPR credits. India: the same job tracks registration under India's EPR plastic-packaging rules instead (markets: IN, reads null for US brands).",
   "encompasses": [
-   "Classify packaging by plastic category under the EPR rules",
-   "Track registration status and the annual filing deadline",
+   "Classify packaging by material category under the relevant state's EPR rules (India: by plastic category under India's EPR rules; markets: IN)",
+   "Track registration status and each state's annual filing deadline",
    "Compute packaging weight put into the market against the recycling target",
    "Flag a projected shortfall early enough to buy EPR credits or fix the packaging mix",
    "Keep the filing evidence trail for an audit"
@@ -29362,7 +29414,7 @@
   "inputs": [
    "packaging bill of materials",
    "packaging volume by SKU",
-   "EPR target rules"
+   "state EPR target rules (india: EPR target rules)"
   ],
   "outputs": [
    "EPR compliance status",
@@ -29383,6 +29435,8 @@
   "subagent": "product_and_supply",
   "sources": {
    "web": [
+    "https://www.oregon.gov/deq/recycling/pages/epr.aspx",
+    "https://calrecycle.ca.gov/packaging/",
     "https://www.diligencecertification.com/legal-metrology-for-e-commerce/"
    ],
    "bank": []
@@ -29449,7 +29503,7 @@
    "01-PRD",
    "22-AMZ"
   ],
-  "what": "Check every product image and video against each channel's own size, crop and content rule before it is pushed, since a Blinkit thumbnail and an Amazon main image have different legibility and content requirements.",
+  "what": "Check every product image and video against each channel's own size, crop and content rule before it is pushed, since an Instacart thumbnail and an Amazon main image have different legibility and content requirements.",
   "encompasses": [
    "Check image dimensions, crop and background rule per channel",
    "Check legibility of brand name, MRP and key claim at each channel's thumbnail size",
@@ -29480,6 +29534,7 @@
   "subagent": "product_and_supply",
   "sources": {
    "web": [
+    "https://www.instacart.com/company/partner-with-instacart/",
     "https://confetti.design/blog/how-to-start-selling-on-quick-commerce-india"
    ],
    "bank": []
@@ -29544,7 +29599,7 @@
   "folders": [
    "01-PRD"
   ],
-  "what": "Keep an open product spec running against IndiaMART, Alibaba and Global Sources in the background, and alert the founder when a new or better-rated supplier appears, without contacting anyone automatically.",
+  "what": "Keep an open product spec running against Alibaba, 1688 (via a vetted agent), Faire, Tundra and Global Sources in the background, and alert the founder when a new or better-rated supplier appears, without contacting anyone automatically. India: add IndiaMART to the watch list when the brand sources there (markets: IN, reads null for US-only brands).",
   "encompasses": [
    "Hold the approved spec (materials, tolerances, MOQ ceiling, target price) as a standing search",
    "Scan new and updated supplier listings on the named platforms on a set cadence",
@@ -29729,23 +29784,23 @@
   "folders": [
    "01-PRD"
   ],
-  "what": "Build the festive and end-of-season-sale readiness plan across safety stock, warehouse staffing and WMS/OMS load, since a peak-season failure shows up as a stockout or a missed SLA at the worst possible time.",
+  "what": "Build the Q4 holiday season (Black Friday/Cyber Monday, Prime Day, back to school) readiness plan across safety stock, warehouse staffing and WMS/OMS load, since a peak-season failure shows up as a stockout or a missed SLA at the worst possible time. India: the same plan is built around the festive calendar (Diwali, wedding season) instead (markets: IN).",
   "encompasses": [
-   "Build the safety-stock uplift by SKU from last year's festive multiplier and this year's growth",
+   "Build the safety-stock uplift by SKU from last year's Q4/BFCM multiplier and this year's growth (India: last year's festive multiplier; markets: IN)",
    "Size the temporary warehouse staffing need against the forecast peak volume",
-   "Confirm the WMS/OMS and courier partners can handle the peak order rate, requesting a load test where offered",
+   "Confirm the WMS/OMS and carrier partners can handle the peak order rate, requesting a load test where offered",
    "Confirm supplier and factory capacity can deliver the peak stock build in time",
-   "Set a week-by-week readiness checklist counting down to the festive window"
+   "Set a week-by-week readiness checklist counting down to BFCM and the Q4 holiday window (India: counting down to the festive window; markets: IN)"
   ],
   "inputs": [
-   "last year's festive sales data",
+   "last year's peak-season sales data (india: festive sales data)",
    "this year's growth target",
    "supplier and 3PL capacity"
   ],
   "outputs": [
    "peak-season readiness plan and countdown checklist"
   ],
-  "trigger": "annual, ahead of festive season",
+  "trigger": "annual, ahead of Q4 holiday season (india: ahead of festive season)",
   "autonomy": "founder_gate",
   "external_write": {
    "needed": false,
@@ -29765,7 +29820,7 @@
    "bank": []
   },
   "found_in": "web_only",
-  "founder_sees": "The readiness checklist and any capacity gap found before the festive window.",
+  "founder_sees": "The readiness checklist and any capacity gap found before the peak window.",
   "human_role": "operations manager",
   "today_done_by": "founder or in-house",
   "agent": "PROD"
@@ -29824,14 +29879,15 @@
   "folders": [
    "20-FIN"
   ],
-  "what": "Unbundle every marketplace and gateway payout into commission, fixed fee, shipping fee, TCS, GST on fees and refunds, and post one journal entry per settlement instead of one lump-sum bank deposit.",
+  "what": "Unbundle every marketplace and gateway payout (Shopify Payments, Stripe, PayPal, Amazon settlements) into commission, fixed fee, shipping fee, marketplace-facilitator sales tax withheld, 1099-K reportable totals and refunds, and post one journal entry per settlement instead of one lump-sum bank deposit.",
   "encompasses": [
    "Match every settlement report to the order-level sales register",
    "Split commission, fixed fee, collection fee, shipping fee and ad-spend deductions into separate ledger accounts",
-   "Book Section 52 TCS and GST on marketplace fees as separate line items",
+   "Book marketplace-facilitator sales tax withheld and 1099-K gross totals as separate line items",
+   "India only: book Section 52 TCS and GST on marketplace fees as separate line items (reads null for US brands)",
    "Flag unexplained variance between expected fee and charged fee per order",
    "Book revenue to the sale date, not the T+5 or T+7 payout date",
-   "Trace return and RTO deductions back to the original order",
+   "Trace return and failed-delivery/return-to-sender deductions back to the original order",
    "Produce one import-ready file per marketplace or gateway"
   ],
   "inputs": [
@@ -29862,7 +29918,6 @@
   "sources": {
    "web": [
     "https://logibricks.com/blog/marketplace-reconciliation-a-cas-step-by-step-playbook-for-reading-amazon-flipka",
-    "https://www.terra-insight.com/insights/flipkart-seller-settlement-reconciliation/",
     "https://www.a2xaccounting.com/link-my-books-vs-a2x"
    ],
    "bank": []
@@ -29878,43 +29933,45 @@
  {
   "id": "MONEY-C52",
   "extends": null,
-  "name": "Reconcile COD cash and courier remittance daily",
+  "name": "Reconcile payout deposits daily (gateway, marketplace, and COD where it applies)",
   "folders": [
    "20-FIN",
    "21-OPS"
   ],
-  "what": "Track cash on delivery collected by every courier against what has actually been remitted to the bank, age the gap by courier, and escalate remittances stuck past the courier's own SLA.",
+  "what": "Track what every payout source (Shopify Payments, Stripe, PayPal, Amazon and other marketplace settlements) says it paid against what actually lands in the bank, age the gap by source, and escalate deposits stuck past the source's own payout schedule. For an India-selling brand that also runs COD, track cash collected by every courier against what has actually been remitted, the same way, as a market option.",
   "encompasses": [
-   "Pull COD collection and remittance status per order per courier",
-   "Compute days-outstanding since delivery for every unremitted COD order",
-   "Compare against each courier's stated remittance SLA (T+2 to T+8)",
-   "Flag couriers whose unremitted balance is rising, not falling",
-   "Separate RTO cash reversals from genuine delivered-COD remittance",
-   "Roll the outstanding COD balance into the cash forecast as a receivable",
-   "Match each COD remittance cycle's payout file against delivered orders and flag a shortfall",
-   "Match courier weight/dimension billing against the packed weight recorded at dispatch",
-   "File a dispute with the courier on a documented discrepancy and track it to resolution",
-   "Track average COD remittance lag by courier against the cash plan",
-   "Flag a courier whose disputed-charge rate is rising",
-   "Detect the exact day a COD remittance crosses the courier's own SLA",
-   "Pull the specific order IDs and amounts still outstanding for that courier",
-   "Draft an escalation email citing the courier's own SLA clause and the aged order list",
-   "Track whether the courier responds and whether the cash actually lands after escalation",
-   "Roll a courier's repeated SLA misses into its quarterly vendor review automatically"
+   "Pull payout/deposit status per order per source: Shopify Payments, Stripe, PayPal, Amazon settlements and other marketplaces",
+   "Compute days-outstanding since the expected payout date for every undeposited amount",
+   "Compare against each source's stated payout schedule (e.g. T+2 rolling, marketplace bi-weekly)",
+   "Flag sources whose undeposited balance is rising, not falling",
+   "Separate chargeback/dispute reversals and refund holds from genuine payout deductions",
+   "Roll the outstanding payout balance into the cash forecast as a receivable",
+   "India only: pull COD collection and remittance status per order per courier, compute days-outstanding since delivery, compare against each courier's stated remittance SLA (T+2 to T+8), and separate RTO cash reversals from genuine delivered-COD remittance (reads null for US brands)",
+   "Match carrier weight/dimension billing against the packed weight recorded at dispatch",
+   "File a dispute with the carrier on a documented discrepancy and track it to resolution",
+   "Match each COD remittance cycle's payout file against delivered orders and flag a shortfall (India only; markets: IN, reads null for US brands)",
+   "Track average settlement lag by carrier against the cash plan (India: COD remittance lag by courier; markets: IN)",
+   "Flag a carrier whose disputed-charge rate is rising",
+   "Detect the exact day a payout or remittance crosses its source's own SLA (gateway, marketplace, or courier for India COD)",
+   "Pull the specific order IDs and amounts still outstanding for that source",
+   "Draft an escalation email citing the source's own SLA clause and the aged order list",
+   "Track whether the source responds and whether the cash actually lands after escalation",
+   "Roll a source's repeated SLA misses into its quarterly vendor review automatically"
   ],
   "inputs": [
-   "Courier aggregator API or portal exports",
+   "Gateway and marketplace payout/settlement exports (Shopify Payments, Stripe, PayPal, Amazon)",
    "Order and delivery status feed",
    "Bank statement",
-   "courier remittance and billing files",
+   "India only: courier aggregator API or portal exports",
+   "carrier remittance and billing files",
    "dispatch weight records",
    "order ledger",
-   "Courier remittance status feed",
-   "Written courier SLA per contract",
-   "Courier ops contact"
+   "Payout/remittance status feed (gateway, marketplace, or courier for India COD)",
+   "Written SLA per contract or platform terms",
+   "Source's support or ops contact"
   ],
   "outputs": [
-   "Daily COD remittance aging report by courier",
+   "Daily payout reconciliation and aging report by source",
    "List of orders past SLA with amount at risk",
    "reconciliation report",
    "filed disputes with status",
@@ -29928,7 +29985,8 @@
    "surface": null
   },
   "tools": [
-   "courier aggregator API (ClickPost/Shipway class)",
+   "gateway/marketplace payout APIs (Shopify Payments, Stripe, PayPal, Amazon Seller Central)",
+   "courier aggregator API (ClickPost/Shipway class, India COD only)",
    "spreadsheet builder",
    "script: scripts/cod_reconcile.py",
    "remittance status feed",
@@ -29936,36 +29994,85 @@
    "email draft"
   ],
   "skills": [
-   "cod-reconciliation"
+   "carrier-billing-reconciliation"
   ],
   "subagent": "money_and_ops_specialist",
   "sources": {
    "web": [
     "https://www.clickpost.ai/cod-cash-on-delivery-management",
     "https://blog.shipway.com/courier-aggregator-for-d2c-shipping/",
+    "https://www.easypost.com/",
     "https://theshizz.in/blog/courier-comparison-shiprocket-delhivery-bluedart"
    ],
    "bank": []
   },
   "found_in": "web_only",
-  "founder_sees": "The aging report and which couriers are past SLA on remittance",
+  "founder_sees": "The aging report and which payout sources (or, for India COD, which couriers) are past SLA on remittance",
   "human_role": "e-commerce accountant / operations manager",
   "today_done_by": "tool",
   "agent": "MONEY",
   "merged_from": [
    {
     "id": "PROD-C57",
-    "name": "Reconcile COD remittance and courier billing disputes",
+    "name": "Reconcile courier billing disputes and payment-remittance discrepancies",
     "agent": "PROD",
     "reason": "COD remittance reconciliation is one cash job. PROD-C57 repeats it; MONEY-C79 (draft the escalation email) is the next step of the same capability and brings its founder_gate for the send. Courier weight-billing disputes move to PROD-C67."
    },
    {
     "id": "MONEY-C79",
-    "name": "Auto-escalate aged COD remittance to courier ops with SLA citations",
+    "name": "Auto-escalate aged payout remittance with SLA citations",
     "agent": "MONEY",
     "reason": "COD remittance reconciliation is one cash job. PROD-C57 repeats it; MONEY-C79 (draft the escalation email) is the next step of the same capability and brings its founder_gate for the send. Courier weight-billing disputes move to PROD-C67."
    }
   ]
+ },
+ {
+  "id": "MONEY-C52a",
+  "extends": null,
+  "name": "Run chargeback and dispute representment",
+  "folders": [
+   "20-FIN",
+   "23-SEC"
+  ],
+  "what": "Own the chargeback and dispute lifecycle end to end: track reason codes, assemble the evidence packet the network or PayPal requires, file representment before the deadline, and track win rate by reason code and gateway.",
+  "encompasses": [
+   "Pull every chargeback and dispute from each gateway/processor (Shopify Payments, Stripe, PayPal) with its reason code and deadline",
+   "Assemble the evidence packet per reason code: proof of delivery, customer communication, IP/device match, policy acceptance",
+   "File representment before the network or PayPal deadline, never late",
+   "Track representment win rate by reason code, gateway and product",
+   "Escalate a rising chargeback rate against the processor's own threshold before the account gets flagged",
+   "Feed confirmed friendly-fraud patterns back to the fraud-control capability (MONEY-C42)"
+  ],
+  "inputs": [
+   "Gateway/processor dispute feed (Shopify Payments, Stripe, PayPal)",
+   "Order, fulfillment and customer-communication history",
+   "brand brain: return and refund policy text"
+  ],
+  "outputs": [
+   "Representment evidence packet per dispute",
+   "Chargeback win-rate report by reason code and gateway"
+  ],
+  "trigger": "As disputes arrive, weekly rollup",
+  "autonomy": "human_assist",
+  "external_write": {
+   "needed": true,
+   "surface": "gateway/processor dispute portal"
+  },
+  "tools": [
+   "script: money.chargeback_representment",
+   "gateway dispute APIs (Shopify Payments, Stripe, PayPal)"
+  ],
+  "skills": [],
+  "subagent": "money_and_ops_specialist",
+  "sources": {
+   "web": [],
+   "bank": []
+  },
+  "found_in": "bank_only",
+  "founder_sees": "Disputes needing a human call, and the win-rate trend by reason code",
+  "human_role": "e-commerce accountant / operations manager",
+  "today_done_by": "tool",
+  "agent": "MONEY"
  },
  {
   "id": "MONEY-C53",
@@ -30052,7 +30159,7 @@
   ],
   "what": "Invoice wholesale and B2B buyers on their agreed terms, track every invoice to collection, and run a structured dunning sequence on anything overdue.",
   "encompasses": [
-   "Generate and send invoices on Net-30/Net-60 terms with the correct GST treatment",
+   "Generate and send invoices on Net-30/Net-60 terms with the correct sales-tax and resale-certificate treatment (GST treatment for India-selling brands)",
    "Track invoice status: open, partially paid, overdue, disputed",
    "Age receivables by customer and by days overdue",
    "Send a scheduled dunning sequence (reminder, follow-up, final notice) before escalation",
@@ -30097,49 +30204,52 @@
  {
   "id": "MONEY-C55",
   "extends": null,
-  "name": "Run payroll processing and India statutory filings",
+  "name": "Run payroll processing and state statutory filings",
   "folders": [
    "20-FIN",
    "21-OPS"
   ],
-  "what": "Process payroll each cycle and prepare the statutory filings that go with it: PF, ESI, professional tax and TDS, plus Form 16 at year end.",
+  "what": "Process payroll each cycle through Gusto or ADP and prepare the filings that go with it: federal and state withholding, state new-hire and unemployment-insurance registration per state an employee works in, W-2 at year end for employees, and 1099-NEC for contractors. India-selling brands with local staff run the equivalent PF, ESI, professional tax, TDS and Form 16 cycle as a market option; that path reads null for US-only brands.",
   "encompasses": [
-   "Compute gross-to-net pay from CTC structure, attendance and leave data",
-   "Calculate PF, ESI, professional tax and TDS deductions per employee",
-   "Prepare the PF ECR file, ESI return and TDS challan for filing",
-   "Generate payslips and the payroll register",
-   "Track full-and-final settlement for exits",
-   "Generate Form 16 and the annual TDS return at year end"
+   "Compute gross-to-net pay from salary/hourly structure, timesheets and PTO data",
+   "Calculate federal and state income-tax withholding, FICA, and state unemployment insurance per employee's work state",
+   "Register the brand for payroll tax in every new state before the first paycheck there",
+   "Generate payslips (via Gusto or ADP) and the payroll register",
+   "Track final-pay rules by state for exits (some states require same-day or next-day final pay)",
+   "Generate W-2 for employees and 1099-NEC for contractors at year end, and file with the SSA/IRS",
+   "India only: calculate PF, ESI, professional tax and TDS deductions, prepare the PF ECR file, ESI return and TDS challan, and generate Form 16 and the annual TDS return at year end (reads null for US brands)"
   ],
   "inputs": [
-   "Attendance and leave data",
-   "CTC structures",
-   "Investment declarations",
-   "Statutory rate tables (PF, ESI, PT, TDS slabs)"
+   "Timesheet and PTO data",
+   "Salary/hourly structures",
+   "W-4/state withholding elections",
+   "Payroll tax rate tables by state",
+   "India only: CTC structures, investment declarations, statutory rate tables (PF, ESI, PT, TDS slabs)"
   ],
   "outputs": [
    "Payroll register",
    "Payslips",
-   "Draft statutory filing files (PF/ESI/TDS)",
-   "Form 16"
+   "Draft state registration and withholding filings",
+   "W-2 and 1099-NEC forms",
+   "India only: draft statutory filing files (PF/ESI/TDS), Form 16"
   ],
-  "trigger": "Monthly payroll cycle, annually for Form 16",
+  "trigger": "Payroll cycle (weekly, biweekly or semimonthly), annually for W-2/1099-NEC (or Form 16 for India)",
   "autonomy": "founder_gate",
   "external_write": {
    "needed": true,
-   "surface": "payroll disbursement and government statutory portals"
+   "surface": "Gusto or ADP, and state statutory portals"
   },
   "tools": [
-   "payroll engine",
-   "statutory rate tables",
+   "Gusto or ADP",
+   "state payroll tax rate tables",
    "payslip generator"
   ],
   "skills": [],
   "subagent": "money_and_ops_specialist",
   "sources": {
    "web": [
-    "https://razorpay.com/payroll/payroll-software-for-small-businesses-in-india",
-    "https://www.keka.com/payroll-compliance"
+    "https://gusto.com/",
+    "https://www.adp.com/"
    ],
    "bank": []
   },
@@ -30211,7 +30321,7 @@
   "encompasses": [
    "Match card statement lines to submitted receipts",
    "Flag charges with no receipt or outside policy (amount, category, vendor)",
-   "Apply the correct GST input-credit treatment where eligible",
+   "Apply the correct sales-tax treatment for reimbursable purchases where eligible (GST input-credit treatment for India-selling brands)",
    "Route reimbursement requests for approval by amount",
    "Reconcile the monthly card statement to the ledger with a named cause for any gap",
    "Maintain the written travel-and-expense policy itself"
@@ -30623,10 +30733,11 @@
   "folders": [
    "21-OPS"
   ],
-  "what": "Keep one current handbook covering leave, work-from-home, code of conduct and India-specific requirements like the POSH policy, and confirm every employee has acknowledged the current version.",
+  "what": "Keep one current handbook covering leave, work-from-home, code of conduct and state-specific requirements like mandatory anti-harassment training (California, New York, Illinois and others), and confirm every employee has acknowledged the current version.",
   "encompasses": [
    "Draft and update leave, WFH, expense and code-of-conduct policies as the team grows",
-   "Maintain the POSH (workplace harassment) policy and committee as legally required in India",
+   "Maintain state-mandated anti-harassment training and policy where required (e.g. California SB 1343, New York, Illinois, Connecticut)",
+   "India only: maintain the POSH (workplace harassment) policy and committee as legally required in India (reads null for US brands)",
    "Track which employees have acknowledged the current handbook version",
    "Flag a policy that is silent on a situation that just came up",
    "Version the handbook so an old copy is never the one in circulation"
@@ -30730,7 +30841,7 @@
    "Pull daily fulfillment timestamps (order to pack to ship) per warehouse",
    "Compute mis-ship, damage and backorder rate against the SLA target",
    "Flag a single-day spike separately from a trend that is drifting",
-   "Tie a fulfillment delay to its downstream effect (late delivery, RTO risk, review risk)",
+   "Tie a fulfillment delay to its downstream effect (late delivery, failed-delivery/return-to-sender risk, review risk; RTO risk where the brand runs India COD, market option)",
    "Feed confirmed SLA misses into the vendor's quarterly review with a dated log"
   ],
   "inputs": [
@@ -30979,7 +31090,7 @@
    "Flag a customer whose return rate is far above the brand's own baseline",
    "Detect wardrobing signals (worn/used item returned, tags removed) from support notes or photos",
    "Cross-check refunds issued against actual received returns in the warehouse system",
-   "Recommend a policy response (flag for review, restrict COD, deny future return) for the founder to approve"
+   "Recommend a policy response (flag for review, require prepayment or card-on-file, deny future return; restrict COD for India brands, market option) for the founder to approve"
   ],
   "inputs": [
    "Order, return and refund history per customer",
@@ -31432,7 +31543,7 @@
   "encompasses": [
    "Identify near-customers: cart abandoners, quote requesters, or reviewers who mention a competitor by name",
    "Write a short, specific interview or survey guide about the actual comparison moment",
-   "Field it by email, WhatsApp or a short call within days of the decision, while memory is fresh",
+   "Field it by email, SMS (TCPA consent, quiet hours) or a short call within days of the decision, while memory is fresh; WhatsApp is a channel option where the brand's customers use it (markets: IN, EU, LATAM; reads null for US-only brands)",
    "Separate the stated reason from the real deciding factor",
    "Tag every response to a specific competitor and a specific decision factor (price, trust, delivery, review)",
    "Roll results into the objection map (BRAND-C13) and the category ladder (BRAND-C18) evidence base",
@@ -31451,11 +31562,12 @@
   "autonomy": "human_assist",
   "external_write": {
    "needed": true,
-   "surface": "email/WhatsApp outreach to customers (founder-approved template)"
+   "surface": "email/SMS outreach to customers (founder-approved template)"
   },
   "tools": [
    "script: survey_field",
-   "connector: whatsapp business (read-only for existing threads)"
+   "connector: sms platform (TCPA consent required, read-only for existing threads)",
+   "connector: whatsapp business (market option, markets: IN, EU, LATAM; read-only for existing threads; null for US-only brands)"
   ],
   "skills": [
    "win-loss-research"
@@ -31638,17 +31750,18 @@
  {
   "id": "BRAND-C62",
   "extends": null,
-  "name": "Run a new-market entry feasibility assessment",
+  "name": "Run a US state and international market entry feasibility assessment",
   "folders": [
    "19-WLD"
   ],
-  "what": "Before a wild bet on a new country or region, check regulatory, tax, competitor and logistics feasibility so the founder decides with real constraints in view, not just opportunity size.",
+  "what": "Before a wild bet on a new US state at scale or a new country, check regulatory, tax, competitor and logistics feasibility so the founder decides with real constraints in view, not just opportunity size.",
   "encompasses": [
-   "Check import duty, GST or VAT, and product certification requirements for the category in the target market",
+   "For a new US state: check sales tax nexus and registration thresholds (economic nexus, marketplace facilitator rules) and any state-specific product certification or labeling rule",
+   "For a new country: check import duty and tariffs, VAT (EU or UK) or GST, CE marking where relevant, and product certification requirements for the category in the target market; GST applies to India-market entries only (markets: IN, reads null for US-only expansion)",
    "Check labeling and packaging rules that differ from the home market",
    "Map the competitor set already serving that market at the brand's price point",
    "Check shipping, customs and return logistics options and their real cost",
-   "Check payment method norms (COD prevalence, card penetration, local wallets)",
+   "Check payment method norms for the target market (card penetration, wallets, BNPL availability); COD prevalence is a market-specific check (markets: IN, reads null for US)",
    "Estimate a landed cost and price point for the target market from the brand's own cost data",
    "Flag any legal restriction on the product category in that market",
    "Score the market as go, go-with-conditions, or not-yet, with the specific blocker named"
@@ -31659,9 +31772,9 @@
    "competitor data"
   ],
   "outputs": [
-   "market feasibility report per candidate country"
+   "market feasibility report per candidate US state or country"
   ],
-  "trigger": "on demand, when a new-market wild bet is proposed",
+  "trigger": "on demand, when a new-state or new-country wild bet is proposed",
   "autonomy": "human_assist",
   "external_write": {
    "needed": false,
@@ -31684,7 +31797,7 @@
    "bank": []
   },
   "found_in": "web_only",
-  "founder_sees": "Kevin sees whether a new country is actually legally and logistically workable before any market-sizing conversation happens.",
+  "founder_sees": "Kevin sees whether a new state or country is actually legally and logistically workable before any market-sizing conversation happens.",
   "human_role": "expansion or new markets lead",
   "today_done_by": "nobody at this size, or a consultancy",
   "agent": "BRAND"
@@ -32371,35 +32484,35 @@
  {
   "id": "LOOP-C23",
   "extends": null,
-  "name": "Read the funnel net of RTO and COD-versus-prepaid mix, not gross orders",
+  "name": "Read the funnel net of returns and chargebacks, split by payment method",
   "folders": [
    "99-multi"
   ],
-  "what": "Before naming a bottleneck, split gross orders into COD and prepaid, and net out the RTO rate for the window, since a headline orders number in an India COD-heavy funnel can hide a bottleneck that is really a return-to-origin problem, not a demand problem.",
+  "what": "Before naming a bottleneck, split gross orders by payment method (card, wallets, BNPL) and net out returns and chargebacks for the window, since a headline orders number can hide a bottleneck that only shows once reversed orders are removed. For brands that take cash on delivery (India and some other markets), also net out return-to-origin, the COD subset that never reached the customer.",
   "encompasses": [
-   "split every order-stage number into COD and prepaid before comparing windows",
-   "compute a net orders and net revenue figure after expected RTO, alongside the gross figure, never replacing it",
-   "flag when the gap between gross and net orders widens 2 or more windows running as its own signal, separate from a demand bottleneck",
-   "hold India RTO and COD-share benchmarks, about 25 to 35 percent RTO and 58 to 65 percent COD share as publicly reported, as a comparison band tagged general-practice basis, never this brand's proof",
-   "never fold a COD order awaiting confirmation into the orders count until it is actually confirmed"
+   "split every order-stage number by payment method before comparing windows",
+   "compute net orders and net revenue after returns and chargebacks, alongside the gross figure, never replacing it",
+   "hold return and chargeback benchmarks by category as a comparison band tagged general-practice basis, never this brand's prior",
+   "for COD markets only: net out expected RTO and never count an unconfirmed COD order until confirmed (reads null for US brands)"
   ],
   "inputs": [
    "order data with payment method",
-   "RTO data by window",
-   "India RTO and COD benchmarks"
+   "returns and chargeback data by window",
+   "category benchmarks",
+   "COD and RTO data (markets IN, null for US)"
   ],
   "outputs": [
    "gross versus net orders and revenue by window",
-   "RTO-widening flag"
+   "reversal-widening flag"
   ],
-  "trigger": "daily, for a brand with COD orders",
+  "trigger": "daily",
   "autonomy": "agent_does",
   "external_write": {
    "needed": false,
    "surface": null
   },
   "tools": [
-   "script: RTO and COD splitter"
+   "script: reversed-orders splitter"
   ],
   "skills": [
    "india-funnel-read"
@@ -32413,7 +32526,7 @@
    "bank": []
   },
   "found_in": "web_only",
-  "founder_sees": "Orders, shown both gross and net of the RTO the brand actually expects.",
+  "founder_sees": "Orders, shown both gross and net of the returns and chargebacks the brand actually expects.",
   "human_role": "ecommerce business analyst; general manager",
   "today_done_by": "tool",
   "owner_agent": "Diagnose",
@@ -32571,21 +32684,24 @@
  {
   "id": "LOOP-C27",
   "extends": null,
-  "name": "Check India ecommerce legal disclosures before a page or policy ships",
+  "name": "Check US legal disclosures before a page or policy ships",
   "folders": [
    "99-multi"
   ],
-  "what": "Before a policy page, product page or invoice template goes live, check it carries the disclosures India's ecommerce rules require, a grievance officer contact, country of origin, GST-compliant invoice fields, and a stated return and refund policy, since these are legal requirements, not marketing claims, and belong in the same gate as the claims check.",
+  "what": "Before a policy page, product page, email template or invoice goes live, check it carries what US rules require: FTC endorsement and pricing disclosures, CAN-SPAM footer and unsubscribe, a privacy policy meeting CCPA and CPRA and other state laws, return and refund terms as posted, sales tax shown correctly on invoices, Prop 65 where relevant, auto-renewal disclosures for subscriptions. For India-based brands the same gate checks grievance officer contact, country of origin and GST invoice fields instead (markets IN).",
   "encompasses": [
-   "confirm a grievance officer name and contact appears where required",
-   "confirm country of origin is stated on product pages that need it",
-   "confirm an invoice template carries GSTIN, HSN codes and the required GST fields",
-   "confirm the return, refund and cancellation policy is stated in the required plain terms",
-   "flag a missing disclosure as a blocking failure, not a warning"
+   "confirm FTC-required disclosures on ads, influencer content and claims",
+   "confirm CAN-SPAM footer, physical address and one-click unsubscribe on email templates",
+   "confirm the privacy policy covers CCPA and CPRA rights and a do-not-sell link where required",
+   "confirm return, refund and shipping terms match the posted policy",
+   "confirm invoices show sales tax by jurisdiction correctly",
+   "confirm auto-renewal and cancellation disclosures for subscriptions",
+   "India option: grievance officer contact, country of origin, GSTIN and HSN on invoices"
   ],
   "inputs": [
    "draft page, policy or invoice template",
-   "India ecommerce disclosure checklist"
+   "US disclosure checklist",
+   "IN disclosure checklist (markets IN)"
   ],
   "outputs": [
    "pass or fail with the missing disclosure named"
@@ -32624,7 +32740,7 @@
   "folders": [
    "99-multi"
   ],
-  "what": "Ingest supplier, courier, payment gateway, WhatsApp Business Solution Provider and SaaS subscription contracts into the brand brain as facts with renewal dates, rate cards and SLA terms, and alert before a renewal, a rate change or an SLA lapses unnoticed, since generic document extraction does not track dates on its own.",
+  "what": "Ingest supplier, courier, payment gateway, SMS platform and SaaS subscription contracts into the brand brain as facts with renewal dates, rate cards and SLA terms, and alert before a renewal, a rate change or an SLA lapses unnoticed, since generic document extraction does not track dates on its own.",
   "encompasses": [
    "extract renewal date, rate card and SLA terms from each vendor contract or agreement, with source and date",
    "hold a due-date list separate from the general decisions log",
@@ -32738,24 +32854,24 @@
  {
   "id": "LOOP-C31",
   "extends": null,
-  "name": "Collect WhatsApp Business channel data into the metric contract as its own channel",
+  "name": "Collect messaging channel data (SMS, push, chat) into the metric contract as its own channel",
   "folders": [
    "99-multi"
   ],
-  "what": "Pull WhatsApp Business catalog, broadcast and COD order-confirmation data into the metric contract as a named channel, with its own confirmation rate and RTO correlation, instead of leaving WhatsApp folded into other or left out because it is not an ad platform.",
+  "what": "Pull SMS, push and chat data (sends, consent status, replies, opt-outs, conversions) into the metric contract as a named channel, instead of leaving it inside the email platform's attribution. WhatsApp Business data is collected the same way for brands that use it (markets IN, EU, LATAM).",
   "encompasses": [
-   "hold WhatsApp catalog views, broadcast sends and replies as their own collected fields",
-   "hold the COD order-confirmation rate through WhatsApp as a named metric, since it predicts RTO",
-   "correlate a confirmed-via-WhatsApp order's RTO rate against an unconfirmed order's RTO rate",
-   "mark WhatsApp fields unavailable, not zero, when the connector is not yet granted"
+   "hold SMS sends, deliveries, replies and opt-outs as their own collected fields with TCPA consent status",
+   "hold push and on-site chat conversations as their own fields",
+   "attribute conversions from messaging by the brand's own order data, not platform claims",
+   "mark messaging fields unavailable, not zero, when the connector is not granted",
+   "WhatsApp catalog and broadcast fields for brands that use it (markets IN)"
   ],
   "inputs": [
-   "WhatsApp Business API data",
-   "order and RTO data"
+   "SMS and messaging platform data",
+   "order data"
   ],
   "outputs": [
-   "WhatsApp fields in the metric contract",
-   "confirmation-to-RTO correlation"
+   "messaging fields in the metric contract"
   ],
   "trigger": "daily, once connected",
   "autonomy": "agent_does",
@@ -32764,7 +32880,8 @@
    "surface": null
   },
   "tools": [
-   "connector: WhatsApp Business API, read"
+   "connector: SMS platform, read",
+   "connector: WhatsApp Business API, read (markets IN)"
   ],
   "skills": [
    "whatsapp-metric-collection"
@@ -32778,7 +32895,7 @@
    "bank": []
   },
   "found_in": "web_only",
-  "founder_sees": "WhatsApp shown as its own channel with its own numbers, not missing from the picture.",
+  "founder_sees": "Messaging shown as its own channel with its own numbers, not missing from the picture.",
   "human_role": "business analyst; operations manager",
   "today_done_by": "tool",
   "owner_agent": "Brand Brain Keeper",
@@ -32884,7 +33001,7 @@
   "folders": [
    "99-multi"
   ],
-  "what": "When the brand's own shipping cost per order drifts above what comparable India couriers charge, from public rate cards and calculators, draft a renegotiation ask to the current courier or 3PL with the specific rate gap and volume leverage, for the founder to send. Nobody sells this as a packaged agent capability today; it combines a public benchmark, the brand's own shipment data and a drafted external message.",
+  "what": "When the brand's own shipping cost per order drifts above what comparable US carriers and 3PLs charge, from public rate cards and calculators (UPS, USPS, FedEx, ShipStation benchmarks), draft a renegotiation ask to the current carrier or 3PL with the numbers, and a switch plan if refused.",
   "encompasses": [
    "hold public courier and 3PL rate benchmarks by weight slab and zone, dated",
    "compare the brand's actual paid rate per shipment against the benchmark, by zone and weight slab",
@@ -32926,6 +33043,7 @@
   "human_role": "fractional COO; operations manager",
   "today_done_by": "nobody",
   "owner_agent": "Brand Brain Keeper",
+  "markets_note": "US brands read this as returns, return-to-sender and chargebacks; COD and RTO legs read null.",
   "agent": "PROD",
   "reassigned_from": "BRN",
   "reassign_reason": "Drafting a courier or 3PL rate renegotiation is logistics vendor work, next to PROD-C59 courier scorecards. The Keeper holds facts; it should not write outbound asks."
@@ -33230,26 +33348,25 @@
  {
   "id": "LOOP-C42",
   "extends": null,
-  "name": "Approve, reject or park a proposal card by replying on WhatsApp",
+  "name": "Approve, reject or park a proposal card by replying on SMS or chat",
   "folders": [
    "99-multi"
   ],
-  "what": "Let the founder reply to a WhatsApp message with a single word or emoji to approve, reject or park a specific proposal card, matched back to its card id, for when they are mobile-first and away from the review page. Distinct from the traveling-founder voice brief: this is the reply-based decision channel itself.",
+  "what": "Let the founder reply to a text message (SMS, Slack or WhatsApp where used) with a single word or emoji to approve, reject or park a specific proposal card, matched back to its card id, for when they are mobile-first and travelling.",
   "encompasses": [
-   "send the card's one-line summary over WhatsApp with a short reply code",
-   "match a reply, a word, a number or an emoji, back to the exact card id, even out of order",
-   "confirm the decision back in the same thread before it is logged",
-   "ask a clarifying question if the reply is ambiguous, rather than guessing",
-   "fall back silently to the review page if WhatsApp is not connected for this founder",
+   "send the card's one-line summary over the founder's chosen channel with a short reply code",
+   "match the reply to the card id and record it exactly like a button press",
+   "confirm back with the registry entry id",
+   "fall back silently to the review page if no messaging channel is connected",
    "detect the founder has not opened the review page in the usual window",
    "summarise only the pending decisions, not the full Today screen, into a short spoken-style script",
-   "deliver it over the channel the founder already uses, a WhatsApp voice note or a short audio message",
+   "deliver it over the channel the founder already uses, a voice memo over SMS, Slack or the app",
    "accept a reply in the same channel, a word or a voice reply, as the decision, matched back to the card id",
    "fall back to the review page once the founder is active there again"
   ],
   "inputs": [
    "proposal card",
-   "founder's WhatsApp reply",
+   "founder's reply",
    "pending decisions",
    "founder's activity on the review page",
    "preferred channel"
@@ -33260,11 +33377,11 @@
    "spoken-style brief",
    "decision captured from a channel reply"
   ],
-  "trigger": "event: a founder replies to a WhatsApp card message",
+  "trigger": "event: a founder replies to a card message",
   "autonomy": "founder_gate",
   "external_write": {
    "needed": true,
-   "surface": "WhatsApp Business API, message send and receive only"
+   "surface": "SMS, Slack or WhatsApp, message send and receive only"
   },
   "tools": [
    "messaging channel",

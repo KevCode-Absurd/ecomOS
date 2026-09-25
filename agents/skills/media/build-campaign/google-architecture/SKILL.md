@@ -30,5 +30,5 @@
 
     Output: architecture diagram, split plan, change list.
 
-    Example: a PMax campaign is running for both India and UAE -> split into two
+    Example: a PMax campaign is running for both the US and Canada -> split into two
     country campaigns with a written reason (currency and duty messaging differ).

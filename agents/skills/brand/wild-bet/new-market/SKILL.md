@@ -13,7 +13,7 @@ Entering a new country or region carries regulatory, tax and logistics exposure 
 
 ## Steps
 1. Check what regulatory registration, import duty, or product-compliance requirement applies to selling into the target market (for example, a US FDA-adjacent labeling rule, or an EU CE-style requirement, depending on category).
-2. Check the tax posture: GST/export treatment on the India side, and import duty or sales-tax exposure on the destination side, in plain terms, flagging what needs a real accountant's sign-off versus what is a simple lookup.
+2. Check the tax posture: for a new US state, sales tax nexus and registration thresholds on the home side; for a new country, US export treatment plus import duty, VAT (EU or UK) or GST on the destination side (GST applies only when the destination is India, markets: IN); state it in plain terms, flagging what needs a real accountant's sign-off versus what is a simple lookup.
 3. Check who already competes there and at what price, so the entry is not blind.
 4. Check logistics feasibility: realistic shipping cost and delivery time to that region, and how returns would even work.
 5. Write the execution brief around the smallest reversible test (a limited SKU set, a marketplace listing rather than a full localized site) before any larger investment.

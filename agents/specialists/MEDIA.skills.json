@@ -163,7 +163,7 @@
       "MEDIA-W18"
     ],
     "shared_with": [],
-    "skill_md": "---\n    name: account-ops\n    owner: media-buyer\n    version: 1\n    invoke_when: the job is about account health, not building a campaign\n    inputs: brand brain account inventory, sale calendar, markets served\n    outputs: routes to the correct operations sub-skill\n    ---\n    Purpose: hold the audits, access, calendar and QA jobs that keep the whole\n    account trustworthy, apart from the campaign-building tree, so they are not\n    confused with a build task.\n\n    Steps\n    1. Read the operational job named: audit, access, cross-border setup, sale ramp,\n       incrementality test, suggestion filter, or pre-launch QA.\n    2. Route to the matching sub-skill.\n    3. Every sub-skill here reports findings ranked by money at stake, with a\n       source, not a list of equal-weight observations.\n\n    Checks\n    - Every finding traces to a number and a source (brand record, platform read,\n      or a dated public URL).\n    - No sub-skill here proposes a live write; each hands back a report, a change\n      list, or (for a founder_gate job) a decision brief.\n\n    Output: a routing decision to one operations sub-skill.\n\n    Example: task says \"it's the first week of October, Diwali sale is in 3 weeks.\"\n    -> routes to `media/account-ops/peak-sale-ramp`."
+    "skill_md": "---\n    name: account-ops\n    owner: media-buyer\n    version: 1\n    invoke_when: the job is about account health, not building a campaign\n    inputs: brand brain account inventory, sale calendar, markets served\n    outputs: routes to the correct operations sub-skill\n    ---\n    Purpose: hold the audits, access, calendar and QA jobs that keep the whole\n    account trustworthy, apart from the campaign-building tree, so they are not\n    confused with a build task.\n\n    Steps\n    1. Read the operational job named: audit, access, cross-border setup, sale ramp,\n       incrementality test, suggestion filter, or pre-launch QA.\n    2. Route to the matching sub-skill.\n    3. Every sub-skill here reports findings ranked by money at stake, with a\n       source, not a list of equal-weight observations.\n\n    Checks\n    - Every finding traces to a number and a source (brand record, platform read,\n      or a dated public URL).\n    - No sub-skill here proposes a live write; each hands back a report, a change\n      list, or (for a founder_gate job) a decision brief.\n\n    Output: a routing decision to one operations sub-skill.\n\n    Example: task says \"it's early November, Black Friday is in 3 weeks.\"\n    -> routes to `media/account-ops/peak-sale-ramp`. (India only: \"it's the first week\n    of October, Diwali sale is in 3 weeks.\")"
   },
   {
     "id": "media/partnerships",
@@ -370,7 +370,7 @@
       "MEDIA-W20"
     ],
     "shared_with": [],
-    "skill_md": "---\n    name: google-architecture\n    owner: media-buyer\n    version: 1\n    invoke_when: new account, an audit flags structure, or the monthly brand check is due\n    inputs: catalogue, margin, brand terms, prior audit\n    outputs: architecture diagram, brand/non-brand split plan, change list\n    ---\n    Purpose: give every Google campaign one job, and make sure brand-name traffic\n    never gets counted as growth.\n\n    Steps\n    1. Map every campaign to one funnel job; flag any overlap.\n    2. Default to one campaign per job; a second campaign for the same job needs a\n       written reason.\n    3. One campaign per country; never mix locations inside one PMax.\n    4. Set safe defaults on anything new: Sales objective, Purchase-only goal,\n       Search Partners and Display off, Presence targeting, tablets/TV off.\n    5. Split brand from non-brand everywhere it can run: Search, Shopping, PMax.\n    6. Exclude brand from cold campaigns with a negative list AND an audience\n       exclusion, not just one of the two.\n    7. Put brand on manual bidding or impression share at a higher ROAS target;\n       check impression share actually covers the brand name.\n    8. Scan cold-campaign search terms monthly for brand leakage; merge orphan\n       campaigns into the account's real structure.\n\n    Checks\n    - Every campaign traces to one job and, if extra, a written reason.\n    - No brand traffic inflates the non-brand growth number.\n\n    Output: architecture diagram, split plan, change list.\n\n    Example: a PMax campaign is running for both India and UAE -> split into two\n    country campaigns with a written reason (currency and duty messaging differ)."
+    "skill_md": "---\n    name: google-architecture\n    owner: media-buyer\n    version: 1\n    invoke_when: new account, an audit flags structure, or the monthly brand check is due\n    inputs: catalogue, margin, brand terms, prior audit\n    outputs: architecture diagram, brand/non-brand split plan, change list\n    ---\n    Purpose: give every Google campaign one job, and make sure brand-name traffic\n    never gets counted as growth.\n\n    Steps\n    1. Map every campaign to one funnel job; flag any overlap.\n    2. Default to one campaign per job; a second campaign for the same job needs a\n       written reason.\n    3. One campaign per country; never mix locations inside one PMax.\n    4. Set safe defaults on anything new: Sales objective, Purchase-only goal,\n       Search Partners and Display off, Presence targeting, tablets/TV off.\n    5. Split brand from non-brand everywhere it can run: Search, Shopping, PMax.\n    6. Exclude brand from cold campaigns with a negative list AND an audience\n       exclusion, not just one of the two.\n    7. Put brand on manual bidding or impression share at a higher ROAS target;\n       check impression share actually covers the brand name.\n    8. Scan cold-campaign search terms monthly for brand leakage; merge orphan\n       campaigns into the account's real structure.\n\n    Checks\n    - Every campaign traces to one job and, if extra, a written reason.\n    - No brand traffic inflates the non-brand growth number.\n\n    Output: architecture diagram, split plan, change list.\n\n    Example: a PMax campaign is running for both the US and Canada -> split into two\n    country campaigns with a written reason (currency and duty messaging differ)."
   },
   {
     "id": "media/build-campaign/google-merchant-feed",
@@ -548,7 +548,7 @@
     "shared_with": [
       "crea"
     ],
-    "skill_md": "---\n    name: google-youtube-demandgen\n    owner: media-buyer\n    version: 1\n    invoke_when: Search/Shopping are stable or proven Meta creative exists\n    inputs: AOV, creative library, video references\n    outputs: launch plan, creative script brief, change list\n    ---\n    Purpose: decide honestly whether the brand is ready for a video-first funnel\n    layer, and if so, script and structure it so it earns a fair read.\n\n    Steps\n    1. Confirm Search and Shopping are already stable, or proven Meta creative\n       exists to adapt.\n    2. Check fit: AOV supports the CPM, the product demos visually, and there is\n       creative and budget for 4-6 choppy early weeks.\n    3. Restrict cold Demand Gen to in-stream and Shorts; keep other placements off.\n    4. Size the budget from AOV, not a flat test amount.\n    5. Script creative as hook, then demo, then prove, then ask.\n    6. Route cold traffic to a real conversion mechanism and capture email.\n    7. Judge results with traffic-light KPIs at the campaign level; hold off\n       target-based bidding until CPA is steady over several days.\n\n    Checks\n    - The fit checklist passed before spend started.\n    - Cold prospecting never targeted the brand's own customer list.\n\n    Output: launch plan, creative script brief, change list.\n\n    Example: AOV is 1,800 rupees and the product cannot be demoed visually in 15\n    seconds -> fit check fails; recommend against launching yet."
+    "skill_md": "---\n    name: google-youtube-demandgen\n    owner: media-buyer\n    version: 1\n    invoke_when: Search/Shopping are stable or proven Meta creative exists\n    inputs: AOV, creative library, video references\n    outputs: launch plan, creative script brief, change list\n    ---\n    Purpose: decide honestly whether the brand is ready for a video-first funnel\n    layer, and if so, script and structure it so it earns a fair read.\n\n    Steps\n    1. Confirm Search and Shopping are already stable, or proven Meta creative\n       exists to adapt.\n    2. Check fit: AOV supports the CPM, the product demos visually, and there is\n       creative and budget for 4-6 choppy early weeks.\n    3. Restrict cold Demand Gen to in-stream and Shorts; keep other placements off.\n    4. Size the budget from AOV, not a flat test amount.\n    5. Script creative as hook, then demo, then prove, then ask.\n    6. Route cold traffic to a real conversion mechanism and capture email.\n    7. Judge results with traffic-light KPIs at the campaign level; hold off\n       target-based bidding until CPA is steady over several days.\n\n    Checks\n    - The fit checklist passed before spend started.\n    - Cold prospecting never targeted the brand's own customer list.\n\n    Output: launch plan, creative script brief, change list.\n\n    Example: AOV is $22 and the product cannot be demoed visually in 15\n    seconds -> fit check fails; recommend against launching yet."
   },
   {
     "id": "media/build-campaign/google-remarketing",
@@ -686,12 +686,12 @@
   },
   {
     "id": "media/build-campaign/marketplace-amazon-flipkart",
-    "name": "Amazon and Flipkart marketplace ad brief",
+    "name": "Amazon, Walmart and Target marketplace ad brief",
     "parent": "media/build-campaign",
     "invoke_when": "a marketplace ad launch is coming up, or the quarterly marketplace ads review is due",
     "select_by": {
       "platform": "marketplace",
-      "market": "amazon_flipkart"
+      "market": "amazon_walmart_target"
     },
     "inputs_required": [
       "marketplace catalogue and listing data",
@@ -710,35 +710,35 @@
       "ACOS/TACOS targets trace to the SKU's own margin",
       "listing issues are flagged before spend, not after"
     ],
-    "output": "marketplace ad campaign brief ready for Amazon Seller Central or Flipkart Ads Manager",
+    "output": "marketplace ad campaign brief ready for Amazon Seller Central, Walmart Connect or Target Roundel (Flipkart Ads Manager, India only)",
     "used_by": [
       "MEDIA-W26"
     ],
     "shared_with": [],
-    "skill_md": "---\n    name: marketplace-amazon-flipkart\n    owner: media-buyer\n    version: 1\n    invoke_when: a marketplace ad launch is coming, or the quarterly review is due\n    inputs: marketplace catalogue, SKU margin, converting Google Search terms\n    outputs: a ready-to-execute marketplace ad brief\n    ---\n    Purpose: since there is no Amazon or Flipkart connector, hand a human or agency\n    a brief complete enough to build the campaign correctly the first time.\n\n    Steps\n    1. Pull bestseller and margin data; rank SKUs for sponsored placement priority.\n    2. Seed keyword targets from the brand's own converting Google Search terms,\n       plus the marketplace's own search suggestions.\n    3. Build a negative keyword list for irrelevant marketplace searches.\n    4. Set ACOS or TACOS targets from each SKU's real margin, not a category\n       average.\n    5. Propose a budget split across search, product-page and brand-store\n       placements.\n    6. Check the listing itself (bullets, images, A+ content) and flag anything\n       that will cap ad performance before spend starts.\n\n    Checks\n    - Every ACOS/TACOS target traces to that SKU's own margin.\n    - A weak listing is flagged, not launched into ads as-is.\n\n    Output: a full campaign brief ready to build in the marketplace's own console.\n\n    Example: a SKU has only 3 product images and no bullet points -> flagged to fix\n    the listing before its ACOS target is set or spend begins."
+    "skill_md": "---\n    name: marketplace-amazon-flipkart\n    owner: media-buyer\n    version: 1\n    invoke_when: a marketplace ad launch is coming, or the quarterly review is due\n    inputs: marketplace catalogue, SKU margin, converting Google Search terms\n    outputs: a ready-to-execute marketplace ad brief\n    ---\n    Purpose: since there is no Amazon, Walmart or Target connector (or Flipkart\n    connector, India only), hand a human or agency a brief complete enough to\n    build the campaign correctly the first time.\n\n    Steps\n    1. Pull bestseller and margin data; rank SKUs for sponsored placement priority.\n    2. Seed keyword targets from the brand's own converting Google Search terms,\n       plus the marketplace's own search suggestions.\n    3. Build a negative keyword list for irrelevant marketplace searches.\n    4. Set ACOS or TACOS targets from each SKU's real margin, not a category\n       average.\n    5. Propose a budget split across search, product-page and brand-store\n       placements.\n    6. Check the listing itself (bullets, images, A+ content) and flag anything\n       that will cap ad performance before spend starts.\n\n    Checks\n    - Every ACOS/TACOS target traces to that SKU's own margin.\n    - A weak listing is flagged, not launched into ads as-is.\n\n    Output: a full campaign brief ready to build in the marketplace's own console\n    (Amazon Seller Central, Walmart Connect, Target Roundel; Flipkart Ads Manager\n    for the India option).\n\n    Example: a SKU has only 3 product images and no bullet points -> flagged to fix\n    the listing before its ACOS target is set or spend begins."
   },
   {
     "id": "media/build-campaign/marketplace-quick-commerce",
-    "name": "Quick commerce retail media brief",
+    "name": "Rapid-delivery and grocery marketplace retail media brief",
     "parent": "media/build-campaign",
-    "invoke_when": "a quick-commerce ad push is planned, or the brand adds a new quick-commerce listing",
+    "invoke_when": "a rapid-delivery/grocery marketplace ad push is planned, or the brand adds a new such listing (India only: a quick-commerce ad push, or a new quick-commerce listing)",
     "select_by": {
       "platform": "marketplace",
-      "market": "quick_commerce_india"
+      "market": "rapid_delivery_us"
     },
     "inputs_required": [
-      "quick-commerce listing and stock status per dark store or city",
+      "rapid-delivery/grocery listing and stock status per fulfillment center or city (dark store, India only)",
       "category CPC/ROAS benchmarks",
       "SKU margin",
-      "PROD-C49: per-SKU per-dark-store contribution margin report"
+      "PROD-C49: per-SKU per-fulfillment-center contribution margin report (per-dark-store, India only)"
     ],
     "steps": [
-      "Check which quick-commerce platforms (Blinkit, Zepto, Instamart) the brand's SKUs are actually listed and in-stock on before proposing spend.",
-      "Read PROD-C49's contribution-margin report; only propose spend on a SKU with 3 consecutive weeks of positive contribution margin at that dark store.",
+      "Check which rapid-delivery or grocery marketplace platforms (Instacart, DoorDash, Gopuff, Amazon Fresh; India only: Blinkit, Zepto, Instamart) the brand's SKUs are actually listed and in-stock on before proposing spend.",
+      "Read PROD-C49's contribution-margin report; only propose spend on a SKU with 3 consecutive weeks of positive contribution margin at that fulfillment center or dark store (India only).",
       "Propose which SKUs to sponsor based on category search volume on that platform and current margin.",
       "Size budget to the platform's own category CPC/ROAS benchmarks, since these differ from Meta or Google norms.",
-      "Flag stockout risk before scaling; quick-commerce ad delivery can outpace local dark-store inventory.",
-      "Keep quick-commerce ad results separate from Meta/Google reporting; attribution windows and intent differ."
+      "Flag stockout risk before scaling; rapid-delivery ad delivery can outpace local fulfillment-center inventory (dark-store inventory, India only).",
+      "Keep rapid-delivery/grocery marketplace ad results separate from Meta/Google reporting; attribution windows and intent differ."
     ],
     "checks": [
       "no SKU is sponsored without a positive contribution-margin run from PROD-C49",
@@ -751,7 +751,7 @@
     "shared_with": [
       "prod"
     ],
-    "skill_md": "---\n    name: marketplace-quick-commerce\n    owner: media-buyer\n    version: 1\n    invoke_when: a quick-commerce ad push is planned or a new listing is added\n    inputs: listing/stock status per dark store, category benchmarks, PROD-C49 margin report\n    outputs: a retail media brief per platform\n    ---\n    Purpose: brief quick-commerce ads (Blinkit, Zepto, Instamart) only where a SKU's\n    real transaction-value economics, not the platform's inflated MRP-based ROAS,\n    already work, and only where stock can support the delivery.\n\n    Steps\n    1. Confirm the SKU is listed and in-stock at the dark stores the ad would run\n       against.\n    2. Read PROD-C49's contribution-margin report; require 3 consecutive positive\n       weeks at that dark store before proposing spend.\n    3. Pick SKUs to sponsor by category search volume and current margin.\n    4. Size the budget against the platform's own category CPC/ROAS benchmark, not\n       a Meta or Google number.\n    5. Flag stockout risk before any scale-up; quick-commerce ad delivery can\n       outpace local inventory fast.\n    6. Keep the resulting report separate from Meta/Google in reporting.\n\n    Checks\n    - No SKU with a negative or unproven contribution margin is sponsored.\n    - Stockout risk is checked before, not after, a budget increase.\n\n    Output: a platform-specific retail media brief for a human to execute.\n\n    Example: a SKU shows positive MRP-based ROAS on the platform dashboard but\n    PROD-C49's transaction-value recompute shows negative margin -> brief holds\n    that SKU back until the real number turns positive."
+    "skill_md": "---\n    name: marketplace-quick-commerce\n    owner: media-buyer\n    version: 1\n    invoke_when: a rapid-delivery/grocery marketplace ad push is planned or a new listing is added (India only: a quick-commerce ad push)\n    inputs: listing/stock status per fulfillment center (dark store, India only), category benchmarks, PROD-C49 margin report\n    outputs: a retail media brief per platform\n    ---\n    Purpose: brief rapid-delivery and grocery marketplace ads (Instacart, DoorDash,\n    Gopuff, Amazon Fresh; India only: Blinkit, Zepto, Instamart) only where a SKU's\n    real transaction-value economics, not the platform's inflated list-price ROAS,\n    already work, and only where stock can support the delivery.\n\n    Steps\n    1. Confirm the SKU is listed and in-stock at the fulfillment centers (dark\n       stores, India only) the ad would run against.\n    2. Read PROD-C49's contribution-margin report; require 3 consecutive positive\n       weeks at that fulfillment center or dark store before proposing spend.\n    3. Pick SKUs to sponsor by category search volume and current margin.\n    4. Size the budget against the platform's own category CPC/ROAS benchmark, not\n       a Meta or Google number.\n    5. Flag stockout risk before any scale-up; rapid-delivery ad delivery can\n       outpace local inventory fast.\n    6. Keep the resulting report separate from Meta/Google in reporting.\n\n    Checks\n    - No SKU with a negative or unproven contribution margin is sponsored.\n    - Stockout risk is checked before, not after, a budget increase.\n\n    Output: a platform-specific retail media brief for a human to execute.\n\n    Example: a SKU shows positive list-price-based ROAS on the platform dashboard\n    but PROD-C49's transaction-value recompute shows negative margin (India only:\n    the inflated number is MRP-based) -> brief holds that SKU back until the real\n    number turns positive."
   },
   {
     "id": "media/pace-budget/meta",
@@ -944,36 +944,36 @@
   },
   {
     "id": "media/read-results/marketplace",
-    "name": "Marketplace and quick-commerce read",
+    "name": "Marketplace and rapid-delivery/grocery marketplace read",
     "parent": "media/read-results",
-    "invoke_when": "a marketplace or quick-commerce spend read is due",
+    "invoke_when": "a marketplace or rapid-delivery/grocery marketplace spend read is due (India only: a quick-commerce spend read)",
     "select_by": {
       "platform": "marketplace"
     },
     "inputs_required": [
-      "quick-commerce seller dashboard export",
+      "rapid-delivery/grocery seller dashboard export (quick-commerce, India only)",
       "SKU landed cost and COGS",
-      "Amazon/Flipkart ad console export"
+      "Amazon/Walmart/Target ad console export (Flipkart, India only)"
     ],
     "steps": [
-      "Recompute ROAS on actual transaction value, not MRP, net of platform commission (15-25%) and GST on commission.",
-      "Track inwarding fees, storage cost and damage/expiry write-off (budgeted 2-5% of MRP) per SKU.",
-      "Calculate weekly per-dark-store order volume needed to clear the 55-60% gross margin floor.",
+      "Recompute ROAS on actual transaction value, not list price, net of platform commission (15-25%) and applicable US sales tax on commission (GST, India only).",
+      "Track inwarding fees, storage cost and damage/expiry write-off (budgeted 2-5% of list price) per SKU.",
+      "Calculate weekly per-fulfillment-center order volume needed to clear the 55-60% gross margin floor (per-dark-store, India only).",
       "Flag whether a margin problem is volume (fixable with more orders) or structural (needs repricing or a COGS cut).",
-      "Read Amazon/Flipkart ACOS or TACOS against the SKU's real margin, not the platform's own benchmark."
+      "Read Amazon/Walmart/Target ACOS or TACOS against the SKU's real margin, not the platform's own benchmark (Flipkart, India only)."
     ],
     "checks": [
-      "ROAS is read on transaction value, never on the platform's MRP-based number",
+      "ROAS is read on transaction value, never on the platform's list-price-based number (MRP-based, India only)",
       "every margin flag says whether it is a volume problem or a structural one"
     ],
-    "output": "per-SKU per-dark-store contribution margin report + ACOS/TACOS read",
+    "output": "per-SKU per-fulfillment-center contribution margin report + ACOS/TACOS read (per-dark-store, India only)",
     "used_by": [
       "MEDIA-W27"
     ],
     "shared_with": [
       "prod"
     ],
-    "skill_md": "---\n    name: marketplace-read\n    owner: media-buyer\n    version: 1\n    invoke_when: a marketplace or quick-commerce spend read is due\n    inputs: seller dashboard export, SKU landed cost, ad console export\n    outputs: contribution margin report, ACOS/TACOS read\n    ---\n    Purpose: read marketplace and quick-commerce ad results on the real number,\n    since platform dashboards inflate ROAS 30-50% by pricing at MRP instead of\n    transaction value.\n\n    Steps\n    1. Recompute ROAS on actual transaction value, net of platform commission\n       (15-25%) and GST on the commission.\n    2. Add inwarding fees, storage cost and a 2-5% MRP write-off budget for\n       damage/expiry.\n    3. Calculate the weekly per-dark-store order volume needed to clear the\n       55-60% gross margin floor.\n    4. Flag whether a shortfall is a volume problem (more orders fixes it) or a\n       structural one (needs repricing or a COGS cut).\n    5. Read Amazon/Flipkart ACOS or TACOS against the SKU's own margin.\n\n    Checks\n    - No ROAS number in the report is based on MRP.\n    - Every margin flag names whether it is volume or structural.\n\n    Output: contribution margin report, ACOS/TACOS read.\n\n    Example: platform dashboard shows 4.2x ROAS; recomputed on transaction value\n    net of commission and fees it is 2.6x -> the true number the SKU is judged on."
+    "skill_md": "---\n    name: marketplace-read\n    owner: media-buyer\n    version: 1\n    invoke_when: a marketplace or rapid-delivery/grocery spend read is due (India only: quick-commerce)\n    inputs: seller dashboard export, SKU landed cost, ad console export\n    outputs: contribution margin report, ACOS/TACOS read\n    ---\n    Purpose: read marketplace and rapid-delivery/grocery ad results on the real\n    number, since platform dashboards inflate ROAS 30-50% by pricing at list price\n    (MRP, India) instead of transaction value.\n\n    Steps\n    1. Recompute ROAS on actual transaction value, net of platform commission\n       (15-25%) and applicable US sales tax on the commission (GST, India only).\n    2. Add inwarding fees, storage cost and a 2-5% list-price write-off budget for\n       damage/expiry.\n    3. Calculate the weekly per-fulfillment-center order volume needed to clear the\n       55-60% gross margin floor (per-dark-store, India only).\n    4. Flag whether a shortfall is a volume problem (more orders fixes it) or a\n       structural one (needs repricing or a COGS cut).\n    5. Read Amazon/Walmart/Target ACOS or TACOS against the SKU's own margin\n       (Flipkart, India only).\n\n    Checks\n    - No ROAS number in the report is based on list price (MRP, India only).\n    - Every margin flag names whether it is volume or structural.\n\n    Output: contribution margin report, ACOS/TACOS read.\n\n    Example: platform dashboard shows 4.2x ROAS; recomputed on transaction value\n    net of commission and fees it is 2.6x -> the true number the SKU is judged on."
   },
   {
     "id": "media/kill-scale/meta",
@@ -1225,7 +1225,7 @@
       "MEDIA-W10"
     ],
     "shared_with": [],
-    "skill_md": "---\n    name: cross-border-setup\n    owner: media-buyer\n    version: 1\n    invoke_when: a new market launch is planned\n    inputs: markets served, shipping policy\n    outputs: market setup checklist, change list\n    ---\n    Purpose: set every new market up with its own honest currency, duty and\n    delivery message before ads run there, since a wrong promise on delivery time\n    or landed cost creates the exact objection the ad should be preventing.\n\n    Steps\n    1. Set local currency, payment methods and language defaults for the new,\n       mobile-first, non-US market.\n    2. Write duty and delivery-time messaging specific to that market into the ad\n       copy.\n    3. Show shipping cost and import duty in the Google feed for cross-border\n       orders.\n    4. Run one Google feed per currency; never mix currencies in one feed.\n\n    Checks\n    - Every market's ads state its own delivery time and duty, not a generic one.\n    - No feed mixes currencies.\n\n    Output: market setup checklist, change list.\n\n    Example: launching into UAE from an India-based store -> new feed in AED,\n    duty and delivery time called out in ad copy, separate from the India feed."
+    "skill_md": "---\n    name: cross-border-setup\n    owner: media-buyer\n    version: 1\n    invoke_when: a new market launch is planned\n    inputs: markets served, shipping policy\n    outputs: market setup checklist, change list\n    ---\n    Purpose: set every new market up with its own honest currency, duty and\n    delivery message before ads run there, since a wrong promise on delivery time\n    or landed cost creates the exact objection the ad should be preventing.\n\n    Steps\n    1. Set local currency, payment methods and language defaults for the new,\n       mobile-first, non-US market.\n    2. Write duty and delivery-time messaging specific to that market into the ad\n       copy.\n    3. Show shipping cost and import duty in the Google feed for cross-border\n       orders.\n    4. Run one Google feed per currency; never mix currencies in one feed.\n\n    Checks\n    - Every market's ads state its own delivery time and duty, not a generic one.\n    - No feed mixes currencies.\n\n    Output: market setup checklist, change list.\n\n    Example: launching into Canada from a US-based store -> new feed in CAD,\n    duty and delivery time called out in ad copy, separate from the US feed."
   },
   {
     "id": "media/account-ops/peak-sale-ramp",
@@ -1257,7 +1257,7 @@
     "shared_with": [
       "prod"
     ],
-    "skill_md": "---\n    name: peak-sale-ramp\n    owner: media-buyer\n    version: 1\n    invoke_when: a known sale is 3-4 weeks out\n    inputs: sale calendar, stock levels, current CPM trend\n    outputs: peak sale media plan, change list, post-sale review template\n    ---\n    Purpose: ramp into a known sale and wind back down on a fixed schedule set\n    before the sale starts, instead of reacting during it.\n\n    Steps\n    1. Set the budget-step schedule, new creative needs and structure changes for\n       the ramp window.\n    2. Fix the wind-down date and budget step-down before the sale opens.\n    3. Prepare Google Shopping, Search and brand campaigns for the sale date in\n       advance.\n    4. Check stock levels against the planned ramp before committing budget.\n    5. Write the post-sale review checklist and its read point.\n\n    Checks\n    - A wind-down date exists in writing before the sale starts.\n    - The ramp plan was checked against stock, not assumed.\n\n    Output: peak sale media plan, change list, post-sale review template.\n\n    Example: Diwali sale is 3 weeks out -> budget ramp starts this week, wind-down\n    date fixed for 3 days after the sale ends, stock checked against the ramp."
+    "skill_md": "---\n    name: peak-sale-ramp\n    owner: media-buyer\n    version: 1\n    invoke_when: a known sale is 3-4 weeks out\n    inputs: sale calendar, stock levels, current CPM trend\n    outputs: peak sale media plan, change list, post-sale review template\n    ---\n    Purpose: ramp into a known sale and wind back down on a fixed schedule set\n    before the sale starts, instead of reacting during it.\n\n    Steps\n    1. Set the budget-step schedule, new creative needs and structure changes for\n       the ramp window.\n    2. Fix the wind-down date and budget step-down before the sale opens.\n    3. Prepare Google Shopping, Search and brand campaigns for the sale date in\n       advance.\n    4. Check stock levels against the planned ramp before committing budget.\n    5. Write the post-sale review checklist and its read point.\n\n    Checks\n    - A wind-down date exists in writing before the sale starts.\n    - The ramp plan was checked against stock, not assumed.\n\n    Output: peak sale media plan, change list, post-sale review template.\n\n    Example: Black Friday is 3 weeks out -> budget ramp starts this week, wind-down\n    date fixed for 3 days after the sale ends, stock checked against the ramp.\n    (India only: Diwali sale is 3 weeks out.)"
   },
   {
     "id": "media/account-ops/incrementality-test",

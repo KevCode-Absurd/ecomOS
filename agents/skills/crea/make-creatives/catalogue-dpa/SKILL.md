@@ -31,5 +31,5 @@ SKU, not a category.
 
 Output: overlay template file, the generated variant grid, and a risk list.
 
-Example: a festive-sale badge overlaps a 6-digit price on 4 SKUs out of 800;
-the audit catches it before the DPA campaign goes live, not after.
+Example: a Black-Friday-sale badge overlaps a 6-digit price on 4 SKUs out of
+800; the audit catches it before the DPA campaign goes live, not after.

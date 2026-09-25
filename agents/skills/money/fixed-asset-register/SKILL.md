@@ -25,4 +25,4 @@ Keep one register of every asset the brand owns (equipment, fixtures, website bu
 The updated register with this month's depreciation line per asset.
 
 ## Example
-A new packaging die purchased for 180,000 rupees with a 3-year useful life adds 5,000 rupees of depreciation to this month's P&L ladder automatically.
+A new packaging die purchased for $2,200 with a 3-year useful life adds about $60 of depreciation to this month's P&L ladder automatically.

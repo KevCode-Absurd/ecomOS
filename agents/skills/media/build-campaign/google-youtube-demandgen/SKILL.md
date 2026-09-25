@@ -27,5 +27,5 @@
 
     Output: launch plan, creative script brief, change list.
 
-    Example: AOV is 1,800 rupees and the product cannot be demoed visually in 15
+    Example: AOV is $22 and the product cannot be demoed visually in 15
     seconds -> fit check fails; recommend against launching yet.

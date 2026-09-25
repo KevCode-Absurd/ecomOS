@@ -27,4 +27,4 @@ Get more use out of content that already works (PDP, email, DM, post-purchase) b
 {reuse_candidates[], retire_list[]}
 
 ## Example
-A Diwali gifting reel from last year is retired from the PDP gallery and the post-purchase flow, both places it had been reused, not just the original Instagram post.
+A Black Friday gifting reel from last year is retired from the PDP gallery and the post-purchase flow, both places it had been reused, not just the original Instagram post.

@@ -2,8 +2,8 @@
 name: marketplace-support-queue
 owner: LIFE
 version: 1
-invoke_when: managing Amazon/Flipkart buyer-seller messages or A-to-Z-style
-  guarantee claims
+invoke_when: managing Amazon/Walmart Marketplace buyer-seller messages (Flipkart,
+  Myntra for India) or A-to-Z-style guarantee claims
 inputs: marketplace seller console access, order and delivery-proof data
 outputs: drafted responses within each marketplace's clock, claim-rate trend
 ---
@@ -34,4 +34,5 @@ Drafted responses inside each clock, plus a claim-rate trend report.
 
 ## Example
 "Buyer message at hour 40 of the 48-hour Amazon window: drafted and flagged
-urgent. Claim rate this month: 0.4% of orders, flat versus last month."
+urgent. Claim rate this month: 0.4% of orders, flat versus last month. (India:
+same process on Flipkart/Myntra's own clock.)"

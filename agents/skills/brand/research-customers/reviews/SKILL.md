@@ -12,7 +12,7 @@ outputs: tagged quote set by star band, objection frequency list, candidate iden
 Turn raw star-rated reviews into a tagged quote set and objection list an avatar record or copy brief can use directly, without re-reading the raw file.
 
 ## Steps
-1. Export all reviews per SKU with star rating, date and marketplace (site, Amazon.in, Myntra, etc. as applicable).
+1. Export all reviews per SKU with star rating, date and marketplace (site, Amazon.com, Walmart Marketplace, etc.; Amazon.in, Myntra or another India marketplace where the brand sells there, markets: IN).
 2. Group by star band. Read 1 and 2 star reviews for the real objection, which is often not the same as the stated complaint (a "poor quality" review may really be a fit or expectation-setting problem).
 3. Read 4 and 5 star reviews for the job the product actually did in the customer's life, not just that they liked it.
 4. Scan every band for identity markers: phrases like "I am a", "as a", "for my [relationship]" that reveal who is talking.
@@ -30,4 +30,4 @@ Turn raw star-rated reviews into a tagged quote set and objection list an avatar
 `{quotes_by_star_band: [...], objection_frequency_list: [...], candidate_identity_markers: [...]}`
 
 ## Example
-1-star band, 6 occurrences: "the strap felt flimsy after 2 weeks of daily wear" tagged as a durability objection, source: Amazon.in review, dated 14 Aug 2026.
+1-star band, 6 occurrences: "the strap felt flimsy after 2 weeks of daily wear" tagged as a durability objection, source: Amazon.com review, dated 14 Aug 2026.

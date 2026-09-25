@@ -5,7 +5,7 @@
     "parent": null,
     "invoke_when": "any recurring payout, remittance or invoice from an outside source needs matching to the books",
     "select_by": {
-      "source": "gateway | marketplace | cod-courier | ad-platform-invoices"
+      "source": "gateway | marketplace | ad-platform-invoices | chargebacks | cod-courier (India option)"
     },
     "inputs_required": [
       "source statement or invoice for the period",
@@ -21,7 +21,7 @@
     ],
     "checks": [
       "every gap has a named cause",
-      "GST and TCS lines are never netted into one number",
+      "facilitator sales tax (or GST/TCS for India) lines are never netted into one number",
       "the reconciliation ties to a real bank credit or spend record, not an assumption"
     ],
     "output": "{source, period, matched_total, gap_total, gap_causes[], journal_entries[]}",
@@ -29,13 +29,13 @@
       "MONEY-W01"
     ],
     "shared_with": [],
-    "skill_md": "---\nname: money/reconcile\nowner: MONEY\nversion: 1\ninvoke_when: a payout, remittance or invoice from outside the brand needs matching to the books\ninputs: source statement, bank statement or spend dashboard, chart of accounts\noutputs: reconciliation table, gap causes, draft journal entries\n---\n# Reconcile a settlement source\n\n## Purpose\nEvery outside source (a gateway, a marketplace, a COD courier, an ad platform) pays or bills the brand on its own schedule and its own math. This skill is the dispatcher: it picks the right sub-skill by source and never lets a gap get filed away as rounding.\n\n## Steps\n1. Pull the source's statement for the period.\n2. Match `select_by.source` to gateway, marketplace, cod-courier or ad-platform-invoices and hand off to that child skill.\n3. Run `money.reconciliation` with the source's own unbundling rule (fee, commission, TCS, GST on fee, refund, shipping fee as separate lines).\n4. Match the unbundled total to the actual bank credit or the actual ad spend logged.\n5. Name a cause for every gap over a small tolerance.\n6. Draft the journal entry from the unbundled lines, one entry per settlement.\n\n## Checks\n- No gap is left unexplained.\n- TCS and GST on fees are always their own lines.\n- The matched total ties to a real bank credit, not an assumption.\n\n## Output\nA reconciliation table with source, period, matched total, gap total, named gap causes and draft journal entries.\n\n## Example\nA Meta invoice of 42,300 rupees for the month is matched against 41,850 rupees logged in the spend dashboard. The 450 rupee gap is named: a late-arriving GST correction from the prior invoice, not rounding."
+    "skill_md": "---\nname: money/reconcile\nowner: MONEY\nversion: 1\ninvoke_when: a payout, remittance or invoice from outside the brand needs matching to the books\ninputs: source statement, bank statement or spend dashboard, chart of accounts\noutputs: reconciliation table, gap causes, draft journal entries\n---\n# Reconcile a settlement source\n\n## Purpose\nEvery outside source (a gateway, a marketplace, a card network dispute, an ad platform, or for an India-selling brand a COD courier) pays, bills or reverses money on its own schedule and its own math. This skill is the dispatcher: it picks the right sub-skill by source and never lets a gap get filed away as rounding.\n\n## Steps\n1. Pull the source's statement for the period.\n2. Match `select_by.source` to gateway, marketplace, ad-platform-invoices, chargebacks, or cod-courier (India option) and hand off to that child skill.\n3. Run `money.reconciliation` with the source's own unbundling rule (fee, commission, facilitator sales tax or GST/TCS on fee, refund, shipping fee as separate lines).\n4. Match the unbundled total to the actual bank credit or the actual ad spend logged.\n5. Name a cause for every gap over a small tolerance.\n6. Draft the journal entry from the unbundled lines, one entry per settlement.\n\n## Checks\n- No gap is left unexplained.\n- Facilitator sales tax (or TCS and GST for India) on fees are always their own lines.\n- The matched total ties to a real bank credit, not an assumption.\n\n## Output\nA reconciliation table with source, period, matched total, gap total, named gap causes and draft journal entries.\n\n## Example\nA Meta invoice of $4,230 for the month is matched against $4,185 logged in the spend dashboard. The $45 gap is named: a late-arriving credit from the prior invoice, not rounding."
   },
   {
     "id": "money/reconcile/gateway",
     "name": "Reconcile payment gateway settlement",
     "parent": "money/reconcile",
-    "invoke_when": "a payment gateway (Razorpay, Cashfree, PayU or similar) pays out for the period",
+    "invoke_when": "a payment gateway (Shopify Payments, Stripe, PayPal or similar; Razorpay, Cashfree or PayU for India-selling brands) pays out for the period",
     "select_by": {
       "source": "gateway"
     },
@@ -45,59 +45,60 @@
       "fee schedule"
     ],
     "steps": [
-      "Unbundle each payout into gross sale, fee, refund, GST on the fee and net.",
+      "Unbundle each payout into gross sale, fee, refund, sales tax withheld on the fee (GST on the fee for India-selling brands) and net.",
       "Match the net figure to the bank credit within 2 days.",
       "Flag any payout not credited inside the gateway's own settlement SLA.",
       "For cross-currency payouts, apply the same-day conversion rate and separate FX gain or loss from the fee line."
     ],
     "checks": [
-      "fee and GST on fee are separate lines",
+      "fee and sales-tax-on-fee (or GST on fee for India) are separate lines",
       "FX gain or loss is never blended into the fee line",
       "an uncredited payout is aged, not silently carried forward"
     ],
-    "output": "{payout_id, gross, fee, gst_on_fee, refund, fx_adjustment, net, bank_match, age_days}",
+    "output": "{payout_id, gross, fee, tax_on_fee, refund, fx_adjustment, net, bank_match, age_days}",
     "used_by": [
       "MONEY-W01"
     ],
     "shared_with": [],
-    "skill_md": "---\nname: money/reconcile/gateway\nowner: MONEY\nversion: 1\ninvoke_when: a payment gateway settles a batch of orders to the bank\ninputs: gateway settlement file, bank statement, fee schedule\noutputs: per-payout reconciliation with bank match\n---\n# Reconcile payment gateway settlement\n\n## Purpose\nA gateway payout is never the same as gross sales. This skill unbundles every payout into its real parts so the books never show one lump deposit.\n\n## Steps\n1. Pull the settlement file for the period and the matching bank statement.\n2. For each payout, unbundle gross sale, gateway fee, refund, GST charged on the fee, and any FX adjustment for cross-border payments.\n3. Match the net figure to the actual bank credit.\n4. Age any payout not credited inside the gateway's stated settlement window (typically T+1 to T+3).\n5. Draft the journal entry with each unbundled line as its own account.\n\n## Checks\n- Fee and GST on fee never merge into one line.\n- FX adjustment is separated from the fee, never hidden inside it.\n- An aged payout carries a day count, not a vague 'pending' label.\n\n## Output\nOne row per payout: gross, fee, GST on fee, refund, FX adjustment, net, bank match status, age in days.\n\n## Example\nA payout of 118,000 rupees unbundles to 122,500 gross sale, minus 2,100 fee, minus 378 GST on the fee, minus 2,022 refunds, net 118,000, matched to the bank credit dated 2 days later."
+    "skill_md": "---\nname: money/reconcile/gateway\nowner: MONEY\nversion: 1\ninvoke_when: a payment gateway settles a batch of orders to the bank\ninputs: gateway settlement file, bank statement, fee schedule\noutputs: per-payout reconciliation with bank match\n---\n# Reconcile payment gateway settlement\n\n## Purpose\nA gateway payout is never the same as gross sales. This skill unbundles every payout into its real parts so the books never show one lump deposit.\n\n## Steps\n1. Pull the settlement file for the period and the matching bank statement.\n2. For each payout, unbundle gross sale, gateway fee, refund, sales tax charged on the fee (GST on the fee for India-selling brands), and any FX adjustment for cross-border payments.\n3. Match the net figure to the actual bank credit.\n4. Age any payout not credited inside the gateway's stated settlement window (typically T+1 to T+3).\n5. Draft the journal entry with each unbundled line as its own account.\n\n## Checks\n- Fee and tax on fee never merge into one line.\n- FX adjustment is separated from the fee, never hidden inside it.\n- An aged payout carries a day count, not a vague 'pending' label.\n\n## Output\nOne row per payout: gross, fee, tax on fee, refund, FX adjustment, net, bank match status, age in days.\n\n## Example\nA Stripe payout of $1,180 unbundles to $1,225 gross sale, minus $21 fee, minus $4 tax on the fee, minus $20 refunds, net $1,180, matched to the bank credit dated 2 days later."
   },
   {
     "id": "money/reconcile/marketplace",
     "name": "Reconcile marketplace settlement",
     "parent": "money/reconcile",
-    "invoke_when": "a marketplace (Amazon, Flipkart, Myntra or similar) pays out a settlement cycle",
+    "invoke_when": "a marketplace (Amazon, Walmart Marketplace, Target Plus, eBay, TikTok Shop, Etsy or similar; Flipkart, Myntra or Meesho for India-selling brands) pays out a settlement cycle",
     "select_by": {
       "source": "marketplace"
     },
     "inputs_required": [
       "marketplace settlement report",
-      "TCS certificate",
+      "1099-K or facilitator tax statement (TCS certificate for India)",
       "order and return data"
     ],
     "steps": [
-      "Unbundle commission, fixed fee, shipping fee, TCS under Section 52, GST on fees and refunds per payout.",
-      "Match TCS deducted to the marketplace's own TCS certificate.",
+      "Unbundle commission, fixed fee, shipping fee, marketplace-facilitator sales tax withheld, and refunds per payout (TCS under Section 52 and GST on fees for India-selling brands).",
+      "Match facilitator sales tax withheld (or TCS deducted, for India) to the marketplace's own statement or certificate.",
       "Match refunds in the settlement to actual returns in the order data.",
       "Flag any commission rate that does not match the agreed rate card."
     ],
     "checks": [
-      "TCS is matched to the certificate, never assumed",
+      "facilitator sales tax (or TCS for India) is matched to the marketplace's own statement, never assumed",
       "commission rate is checked against the agreed card, not accepted as stated",
       "a refund in the settlement without a matching return is flagged"
     ],
-    "output": "{payout_id, gross, commission, fixed_fee, shipping_fee, tcs, gst_on_fees, refunds, net, rate_card_check}",
+    "output": "{payout_id, gross, commission, fixed_fee, shipping_fee, facilitator_tax, refunds, net, rate_card_check}",
     "used_by": [
       "MONEY-W01"
     ],
     "shared_with": [],
-    "skill_md": "---\nname: money/reconcile/marketplace\nowner: MONEY\nversion: 1\ninvoke_when: a marketplace settles a payout cycle\ninputs: marketplace settlement report, TCS certificate, order and return data\noutputs: per-payout reconciliation with a rate-card check\n---\n# Reconcile marketplace settlement\n\n## Purpose\nMarketplace settlements bury commission, fees, TCS and refunds inside one payout figure. This skill pulls them apart and checks the marketplace charged what it agreed to.\n\n## Steps\n1. Pull the settlement report and the marketplace's TCS certificate for the period.\n2. Unbundle commission, fixed fee, shipping fee, TCS under Section 52, GST on fees and refunds.\n3. Match TCS deducted in the settlement to the certificate the marketplace issues.\n4. Match every refund line in the settlement to an actual return in the order data.\n5. Check the commission rate charged against the brand's agreed rate card by category.\n6. Flag any mismatch with the exact order or SKU it came from.\n\n## Checks\n- TCS is never assumed correct; it is matched to the certificate.\n- A refund with no matching return is flagged, not silently accepted.\n- The commission rate check is per category, since rates vary by category.\n\n## Output\nOne row per payout with gross, commission, fixed fee, shipping fee, TCS, GST on fees, refunds, net and a rate-card check result.\n\n## Example\nA Flipkart payout shows 8.5 percent commission on a category the rate card sets at 7.2 percent; the 1.3 point gap is flagged against the specific SKU category before the settlement is booked."
+    "skill_md": "---\nname: money/reconcile/marketplace\nowner: MONEY\nversion: 1\ninvoke_when: a marketplace settles a payout cycle\ninputs: marketplace settlement report, 1099-K or facilitator tax statement (TCS certificate for India), order and return data\noutputs: per-payout reconciliation with a rate-card check\n---\n# Reconcile marketplace settlement\n\n## Purpose\nMarketplace settlements bury commission, fees, facilitator sales tax and refunds inside one payout figure. This skill pulls them apart and checks the marketplace charged what it agreed to.\n\n## Steps\n1. Pull the settlement report and the marketplace's 1099-K or facilitator tax statement for the period (TCS certificate for India-selling brands).\n2. Unbundle commission, fixed fee, shipping fee, marketplace-facilitator sales tax withheld, and refunds (TCS under Section 52 and GST on fees, for India).\n3. Match facilitator sales tax withheld (or TCS deducted, for India) in the settlement to the marketplace's own statement or certificate.\n4. Match every refund line in the settlement to an actual return in the order data.\n5. Check the commission rate charged against the brand's agreed rate card by category.\n6. Flag any mismatch with the exact order or SKU it came from.\n\n## Checks\n- Facilitator sales tax (or TCS for India) is never assumed correct; it is matched to the marketplace's own statement.\n- A refund with no matching return is flagged, not silently accepted.\n- The commission rate check is per category, since rates vary by category.\n\n## Output\nOne row per payout with gross, commission, fixed fee, shipping fee, facilitator tax, refunds, net and a rate-card check result.\n\n## Example\nAn Amazon payout shows 15 percent commission on a category the rate card sets at 12.5 percent; the 2.5 point gap is flagged against the specific SKU category before the settlement is booked."
   },
   {
     "id": "money/reconcile/cod-courier",
     "name": "Reconcile COD cash and courier remittance",
     "parent": "money/reconcile",
-    "invoke_when": "cash on delivery is collected by a courier and remitted to the bank on its own cycle",
+    "markets": ["IN"],
+    "invoke_when": "an India-selling brand runs cash on delivery and it is collected by a courier and remitted to the bank on its own cycle; reads null for US-only brands, whose payout reconciliation runs through money/reconcile/gateway and money/reconcile/marketplace instead",
     "select_by": {
       "source": "cod-courier"
     },
@@ -123,7 +124,7 @@
       "MONEY-W01"
     ],
     "shared_with": [],
-    "skill_md": "---\nname: money/reconcile/cod-courier\nowner: MONEY\nversion: 1\ninvoke_when: cash on delivery is collected by a courier and needs matching to what actually reached the bank\ninputs: courier COD collection report, courier remittance report, courier SLA cycle, bank statement\noutputs: aged COD gap table by courier with escalation notes\n---\n# Reconcile COD cash and courier remittance\n\n## Purpose\nCOD cash sits with the courier until it is remitted. This skill ages that gap by courier so a slow remittance is caught before it becomes a cash problem instead of an accounting afterthought.\n\n## Steps\n1. Pull the courier's own collection report and remittance report for the period.\n2. Match collected cash per order to the remittance that eventually lands in the bank.\n3. Age every gap in days, by courier, against that courier's own stated SLA cycle.\n4. For any remittance stuck past the SLA, build the escalation note: the order IDs, the amount, and the SLA clause it breaches.\n5. Feed the unremitted total into the cash forecast as a receivable, never as cash in hand.\n\n## Checks\n- Aging never blends couriers together; each courier has its own SLA cycle.\n- An escalation cites the SLA clause by name, not a general complaint.\n- Unremitted COD lowers the cash forecast's available cash, it does not inflate it.\n\n## Output\nA table by courier: collected, remitted, gap, age in days, SLA cycle days, and an escalation flag with order IDs where the gap exceeds the SLA.\n\n## Example\nCourier X's SLA is a 7-day remittance cycle; an 82,000 rupee batch sits at 11 days. The escalation names the 34 order IDs and cites the 7-day clause in the courier's own service agreement."
+    "skill_md": "---\nname: money/reconcile/cod-courier\nowner: MONEY\nversion: 1\ninvoke_when: cash on delivery is collected by a courier and needs matching to what actually reached the bank\ninputs: courier COD collection report, courier remittance report, courier SLA cycle, bank statement\noutputs: aged COD gap table by courier with escalation notes\n---\n# Reconcile COD cash and courier remittance\n\n## Purpose\nCOD cash sits with the courier until it is remitted. This skill ages that gap by courier so a slow remittance is caught before it becomes a cash problem instead of an accounting afterthought.\n\n## Steps\n1. Pull the courier's own collection report and remittance report for the period.\n2. Match collected cash per order to the remittance that eventually lands in the bank.\n3. Age every gap in days, by courier, against that courier's own stated SLA cycle.\n4. For any remittance stuck past the SLA, build the escalation note: the order IDs, the amount, and the SLA clause it breaches.\n5. Feed the unremitted total into the cash forecast as a receivable, never as cash in hand.\n\n## Checks\n- Aging never blends couriers together; each courier has its own SLA cycle.\n- An escalation cites the SLA clause by name, not a general complaint.\n- Unremitted COD lowers the cash forecast's available cash, it does not inflate it.\n\n## Output\nA table by courier: collected, remitted, gap, age in days, SLA cycle days, and an escalation flag with order IDs where the gap exceeds the SLA.\n\n## Example\nCourier X's SLA is a 7-day remittance cycle; an 82,000 rupee batch sits at 11 days. The escalation names the 34 order IDs and cites the 7-day clause in the courier's own service agreement.\n\n## Market note\nThis skill applies only to an India-selling brand that runs cash on delivery. It reads null for a US-only brand, whose payout reconciliation runs through money/reconcile/gateway and money/reconcile/marketplace, with money/reconcile/chargebacks handling disputes."
   },
   {
     "id": "money/reconcile/ad-platform-invoices",
@@ -153,7 +154,39 @@
       "MONEY-W01"
     ],
     "shared_with": [],
-    "skill_md": "---\nname: money/reconcile/ad-platform-invoices\nowner: MONEY\nversion: 1\ninvoke_when: an ad platform's invoice needs matching to what the spend dashboard reports\ninputs: platform invoice, spend dashboard export, ad account payment method\noutputs: invoice-to-dashboard reconciliation line\n---\n# Reconcile ad platform invoices to logged spend\n\n## Purpose\nAd platforms bill on their own cycle, which rarely lines up cleanly with a calendar month or with the currency the dashboard reports in. This skill catches the gap before it distorts the P&L's marketing cost line.\n\n## Steps\n1. Pull the platform's invoice for the billing period.\n2. Pull the dashboard's logged spend for the matching period, as a period total, never an average of daily figures.\n3. Compare the two totals directly.\n4. If they differ, check for a billing-cycle boundary mismatch, a currency conversion difference, or a credit or refund applied by the platform.\n5. Name the exact cause; never file the gap as unexplained variance.\n\n## Checks\n- Comparison always uses period totals, never daily averages.\n- A currency conversion gap states the rate used on each side.\n- The gap becomes a line in the platform-to-books reconciliation, not a silent write-off.\n\n## Output\nOne line per platform per period: invoiced amount, logged amount, gap, and the named cause.\n\n## Example\nMeta's invoice covers the 3rd to the 2nd of the next month, while the dashboard reports calendar months; the resulting 6,200 rupee shift is named as a billing-cycle boundary, not a spend discrepancy."
+    "skill_md": "---\nname: money/reconcile/ad-platform-invoices\nowner: MONEY\nversion: 1\ninvoke_when: an ad platform's invoice needs matching to what the spend dashboard reports\ninputs: platform invoice, spend dashboard export, ad account payment method\noutputs: invoice-to-dashboard reconciliation line\n---\n# Reconcile ad platform invoices to logged spend\n\n## Purpose\nAd platforms bill on their own cycle, which rarely lines up cleanly with a calendar month or with the currency the dashboard reports in. This skill catches the gap before it distorts the P&L's marketing cost line.\n\n## Steps\n1. Pull the platform's invoice for the billing period.\n2. Pull the dashboard's logged spend for the matching period, as a period total, never an average of daily figures.\n3. Compare the two totals directly.\n4. If they differ, check for a billing-cycle boundary mismatch, a currency conversion difference, or a credit or refund applied by the platform.\n5. Name the exact cause; never file the gap as unexplained variance.\n\n## Checks\n- Comparison always uses period totals, never daily averages.\n- A currency conversion gap states the rate used on each side.\n- The gap becomes a line in the platform-to-books reconciliation, not a silent write-off.\n\n## Output\nOne line per platform per period: invoiced amount, logged amount, gap, and the named cause.\n\n## Example\nMeta's invoice covers the 3rd to the 2nd of the next month, while the dashboard reports calendar months; the resulting $620 shift is named as a billing-cycle boundary, not a spend discrepancy."
+  },
+  {
+    "id": "money/reconcile/chargebacks",
+    "name": "Reconcile and represent chargebacks and disputes",
+    "parent": "money/reconcile",
+    "invoke_when": "a card network, Shopify Payments, Stripe or PayPal dispute or chargeback opens against an order (a UPI dispute for India-selling brands)",
+    "select_by": {
+      "source": "chargebacks"
+    },
+    "inputs_required": [
+      "gateway/processor dispute feed",
+      "order, fulfillment and delivery-proof records",
+      "customer-communication history",
+      "reason-code deadline table"
+    ],
+    "steps": [
+      "Pull every open dispute with its reason code, amount and representment deadline.",
+      "Assemble the evidence packet the reason code calls for: proof of delivery, customer communication, IP/device match, policy acceptance.",
+      "File representment before the network or PayPal deadline, never late.",
+      "Track the win or loss outcome and roll it into the win-rate report by reason code."
+    ],
+    "checks": [
+      "no dispute is missing its filing deadline",
+      "the evidence packet matches what that reason code actually requires, not a generic packet",
+      "win rate is tracked by reason code and gateway, not blended into one number"
+    ],
+    "output": "{dispute_id, gateway, reason_code, amount, deadline, evidence_packet, outcome}",
+    "used_by": [
+      "MONEY-W01"
+    ],
+    "shared_with": [],
+    "skill_md": "---\nname: money/reconcile/chargebacks\nowner: MONEY\nversion: 1\ninvoke_when: a chargeback or dispute opens against an order on a card network, Shopify Payments, Stripe or PayPal\ninputs: gateway/processor dispute feed, order and fulfillment records, customer-communication history, reason-code deadline table\noutputs: evidence packet per dispute, win-rate report by reason code\n---\n# Reconcile and represent chargebacks and disputes\n\n## Purpose\nA chargeback or dispute is a reversal, not a return: it goes through the card network or PayPal, on their own deadline, and needs its own evidence packet. This skill treats it as a first-class reconciliation source, the same as a gateway or marketplace payout, and never lets a filing deadline slip.\n\n## Steps\n1. Pull every open dispute from each gateway or processor (Shopify Payments, Stripe, PayPal), with its reason code, amount and deadline.\n2. Assemble the evidence packet the specific reason code calls for: proof of delivery, customer communication, IP/device match, policy acceptance.\n3. File representment before the deadline.\n4. Track whether the representment won or lost, and log the reason code either way.\n5. Roll the result into the win-rate report by reason code and gateway.\n\n## Checks\n- No dispute is missing a filing deadline.\n- The evidence packet is built for the specific reason code, not a one-size packet.\n- Win rate is tracked by reason code and gateway, never blended into one number.\n\n## Output\nOne row per dispute: gateway, reason code, amount, deadline, evidence packet, and outcome once resolved.\n\n## Example\nA Stripe dispute with reason code 'product not received' gets a packet built from the shipping carrier's delivery confirmation and the customer's own delivery-confirmation email, filed two days before the ten-day deadline.\n\n## Market note\nAn India-selling brand runs the same skill for a UPI dispute, assembling the OTP log alongside delivery proof and support chat."
   },
   {
     "id": "money/audit-tracking",
@@ -343,7 +376,7 @@
       "MONEY-W01"
     ],
     "shared_with": [],
-    "skill_md": "---\nname: money/pnl-close-checklist\nowner: MONEY\nversion: 1\ninvoke_when: the monthly close needs a P&L ladder and a close checklist run\ninputs: chart of accounts, order and cost export, reconciled settlement lines, prior ladder\noutputs: P&L ladder, close checklist result, change note\n---\n# Build the P&L ladder and run the close checklist\n\n## Purpose\nTurn raw order and cost exports into a labeled, comparable P&L ladder, and confirm the close is actually complete before anyone reads the numbers.\n\n## Steps\n1. Apply the brand's fixed decision tree for what counts as COGS, cost of delivery, marketing cost and OPEX.\n2. Build the ladder line by line from gross revenue down to net profit.\n3. Run the close checklist: bank reconciliations complete, accruals booked, inventory valuation current, deferred revenue correctly held.\n4. Diff this month's ladder against last month's and name the single biggest driver of change.\n\n## Checks\n- Every ladder line traces to a source document or a reconciliation output.\n- No cost appears in both COGS and OPEX.\n- A percent-of-revenue column sits next to every ladder line.\n\n## Output\nThe P&L ladder, the close checklist with a pass or fail per item, and one paragraph naming the biggest change.\n\n## Example\nNet profit percent drops 3 points month over month; the diff names the driver as a spike in COD courier fees, not a vague 'costs went up'."
+    "skill_md": "---\nname: money/pnl-close-checklist\nowner: MONEY\nversion: 1\ninvoke_when: the monthly close needs a P&L ladder and a close checklist run\ninputs: chart of accounts, order and cost export, reconciled settlement lines, prior ladder\noutputs: P&L ladder, close checklist result, change note\n---\n# Build the P&L ladder and run the close checklist\n\n## Purpose\nTurn raw order and cost exports into a labeled, comparable P&L ladder, and confirm the close is actually complete before anyone reads the numbers.\n\n## Steps\n1. Apply the brand's fixed decision tree for what counts as COGS, cost of delivery, marketing cost and OPEX.\n2. Build the ladder line by line from gross revenue down to net profit.\n3. Run the close checklist: bank reconciliations complete, accruals booked, inventory valuation current, deferred revenue correctly held.\n4. Diff this month's ladder against last month's and name the single biggest driver of change.\n\n## Checks\n- Every ladder line traces to a source document or a reconciliation output.\n- No cost appears in both COGS and OPEX.\n- A percent-of-revenue column sits next to every ladder line.\n\n## Output\nThe P&L ladder, the close checklist with a pass or fail per item, and one paragraph naming the biggest change.\n\n## Example\nNet profit percent drops 3 points month over month; the diff names the driver as a spike in carrier shipping fees, not a vague 'costs went up'."
   },
   {
     "id": "money/margin",
@@ -473,7 +506,7 @@
       "MONEY-W04"
     ],
     "shared_with": [],
-    "skill_md": "---\nname: money/cash-forecast-13wk\nowner: MONEY\nversion: 1\ninvoke_when: cash needs forecasting or inventory cash and the cash conversion cycle need planning\ninputs: bank balance, payroll calendar, ad spend plan, inventory on order, supplier lead times, AP/AR aging\noutputs: 13-week cash table, lowest-cash flag, inventory cash plan, cash conversion cycle\n---\n# Build and monitor the 13-week cash forecast\n\n## Purpose\nFind the lowest cash point before it happens, and never let an inventory plan assume cash that will not be there.\n\n## Steps\n1. Pull bank balance, payroll calendar, ad spend plan, inventory on order and supplier lead times.\n2. Build the rolling 13-week forecast week by week.\n3. Reconcile this month's profit to free cash flow and check the 4 known cash traps (inventory build, tax timing, prepaid deposits, return timing).\n4. Flag the lowest projected week at least 3 weeks ahead, with a sensitivity range.\n5. Roll inventory forward against supplier lead time, targeting days-of-inventory to that lead time.\n6. Track the cash conversion cycle (days inventory plus days receivable minus days payable) as one number with its 3 parts shown.\n\n## Checks\n- Inventory is never modeled to go negative.\n- Profit and cash are reconciled explicitly, not assumed equal.\n- The lowest point is flagged with enough lead time to act.\n\n## Output\nThe 13-week table, the lowest-cash-week flag with sensitivity, the inventory cash plan and the cash conversion cycle.\n\n## Example\nWeek 9 is flagged as the lowest point due to a supplier deposit and GST payment landing the same week; the flag fires in week 5, giving 4 weeks to arrange a bridge."
+    "skill_md": "---\nname: money/cash-forecast-13wk\nowner: MONEY\nversion: 1\ninvoke_when: cash needs forecasting or inventory cash and the cash conversion cycle need planning\ninputs: bank balance, payroll calendar, ad spend plan, inventory on order, supplier lead times, AP/AR aging\noutputs: 13-week cash table, lowest-cash flag, inventory cash plan, cash conversion cycle\n---\n# Build and monitor the 13-week cash forecast\n\n## Purpose\nFind the lowest cash point before it happens, and never let an inventory plan assume cash that will not be there.\n\n## Steps\n1. Pull bank balance, payroll calendar, ad spend plan, inventory on order and supplier lead times.\n2. Build the rolling 13-week forecast week by week.\n3. Reconcile this month's profit to free cash flow and check the 4 known cash traps (inventory build, tax timing, prepaid deposits, return timing).\n4. Flag the lowest projected week at least 3 weeks ahead, with a sensitivity range.\n5. Roll inventory forward against supplier lead time, targeting days-of-inventory to that lead time.\n6. Track the cash conversion cycle (days inventory plus days receivable minus days payable) as one number with its 3 parts shown.\n\n## Checks\n- Inventory is never modeled to go negative.\n- Profit and cash are reconciled explicitly, not assumed equal.\n- The lowest point is flagged with enough lead time to act.\n\n## Output\nThe 13-week table, the lowest-cash-week flag with sensitivity, the inventory cash plan and the cash conversion cycle.\n\n## Example\nWeek 9 is flagged as the lowest point due to a supplier deposit and a state sales-tax payment landing the same week; the flag fires in week 5, giving 4 weeks to arrange a bridge."
   },
   {
     "id": "money/financing-comparison",
@@ -635,38 +668,38 @@
   },
   {
     "id": "money/gst-tax-compliance",
-    "name": "Track GST, HSN and tax compliance",
+    "name": "Track US sales tax nexus and filing compliance (GST/HSN for India)",
     "parent": null,
-    "invoke_when": "GST nexus, HSN codes, e-way bills or credit notes need tracking ahead of filing",
+    "invoke_when": "sales-tax nexus, product tax codes, filing prep or credit memos need tracking ahead of a filing (GST nexus, HSN codes, e-way bills or credit notes for India-selling brands)",
     "select_by": {
-      "scope": "hsn-map | nexus-tracking | filing-prep | eway-bill | credit-note"
+      "scope": "tax-code-map | nexus-tracking | filing-prep | facilitator-credit | credit-memo | eway-bill (India only)"
     },
     "inputs_required": [
       "SKU list",
-      "GSTR-2B",
-      "marketplace TCS lines",
-      "stock transfer and B2B dispatch log",
-      "return and refund log"
+      "Avalara or TaxJar filing status",
+      "marketplace facilitator-tax lines",
+      "return and refund log",
+      "India only: GSTR-2B, stock transfer and B2B dispatch log"
     ],
     "steps": [
-      "Build and validate the SKU-to-HSN/SAC map.",
-      "Track nexus and registration thresholds per market.",
-      "Prepare GSTR-1/3B inputs and match input credit against GSTR-2B.",
-      "Claim marketplace TCS and TDS credit.",
-      "Raise e-way bills for B2B dispatch and stock transfer.",
-      "Reconcile GST credit notes against returns and refunds."
+      "Build and validate the SKU-to-product-tax-code map (SKU-to-HSN/SAC map for India).",
+      "Track nexus and registration thresholds per state or market.",
+      "Prepare state filing inputs through Avalara or TaxJar (GSTR-1/3B inputs matched against GSTR-2B for India).",
+      "Claim marketplace-facilitator sales tax credit or exclusion (TCS and TDS credit for India).",
+      "India only: raise e-way bills for B2B dispatch and stock transfer.",
+      "Reconcile sales-tax credit memos against returns and refunds (GST credit notes for India)."
     ],
     "checks": [
-      "no SKU ships without a validated HSN/SAC code",
-      "TCS and GST never netted into one line",
-      "a refund without a matching credit note is flagged before the return period closes"
+      "no SKU ships without a validated tax code",
+      "facilitator sales tax (or TCS and GST for India) never netted into one line",
+      "a refund without a matching credit memo is flagged before the return period closes"
     ],
     "output": "{scope, result}",
     "used_by": [
       "MONEY-W07"
     ],
     "shared_with": [],
-    "skill_md": "---\nname: money/gst-tax-compliance\nowner: MONEY\nversion: 1\ninvoke_when: GST nexus, HSN codes, e-way bills or credit notes need tracking ahead of a filing\ninputs: SKU list, GSTR-2B, marketplace TCS lines, dispatch log, return log\noutputs: HSN map, nexus status, filing input pack, e-way bill log, credit note reconciliation\n---\n# Track GST, HSN and tax compliance\n\n## Purpose\nTrack the mechanics that feed a GST filing so the brand's own accountant files correctly and on time; this skill tracks, it does not file.\n\n## Steps\n1. Build the SKU-to-HSN/SAC map and validate every code length and category match, since a wrong or short code is a common cause of e-invoice portal rejections.\n2. Track GST or sales-tax nexus and registration thresholds per market the brand sells into.\n3. Prepare the sales and credit data GSTR-1 and 3B need, matching input credit claimed against GSTR-2B.\n4. Reconcile TCS collected under Section 52 and TDS deducted by marketplaces against the credit actually available.\n5. Raise e-way bills for B2B dispatch and stock transfer above the threshold.\n6. Check that every completed return or refund has a matching GST credit note issued and filed on time.\n\n## Checks\n- No SKU ships without a validated HSN/SAC code.\n- TCS and GST on fees are always separate lines.\n- A refund without a matching credit note is flagged before the filing period closes.\n\n## Output\nThe requested scope's result: HSN map, nexus status, GSTR-1/3B input pack, e-way bill log, or credit note reconciliation.\n\n## Example\nA new SKU is caught before its first B2B dispatch: its assigned HSN code is only 4 digits where the brand's turnover requires 6, avoiding an e-invoice portal rejection."
+    "skill_md": "---\nname: money/gst-tax-compliance\nowner: MONEY\nversion: 1\ninvoke_when: sales-tax nexus, product tax codes, filing prep or credit memos need tracking ahead of a filing (GST nexus, HSN codes, e-way bills or credit notes for India-selling brands)\ninputs: SKU list, Avalara or TaxJar filing status, marketplace facilitator-tax lines, return log, India only: GSTR-2B, dispatch log\noutputs: tax-code map, nexus status, filing input pack, facilitator-credit reconciliation, credit-memo reconciliation, India only: e-way bill log\n---\n# Track US sales tax nexus and filing compliance (GST/HSN for India)\n\n## Purpose\nTrack the mechanics that feed a state sales-tax filing (a GST filing for India-selling brands) so the brand's own accountant or filing service files correctly and on time; this skill tracks, it does not file.\n\n## Steps\n1. Build the SKU-to-product-tax-code map in Avalara or TaxJar and validate every category match (SKU-to-HSN/SAC map for India, where a wrong or short code is a common cause of e-invoice portal rejections).\n2. Track sales-tax nexus and registration thresholds per state the brand sells into.\n3. Prepare the return-ready sales and exemption data each state's filing needs (GSTR-1 and 3B inputs matched against GSTR-2B, for India).\n4. Reconcile marketplace-facilitator sales tax and 1099-K totals against the credit or exclusion actually available (TCS collected under Section 52 and TDS deducted, for India).\n5. India only: raise e-way bills for B2B dispatch and stock transfer above the threshold.\n6. Check that every completed return or refund has a matching sales-tax credit memo issued and filed on time (a GST credit note, for India).\n\n## Checks\n- No SKU ships without a validated tax code.\n- Facilitator sales tax (or TCS and GST on fees, for India) are always separate lines.\n- A refund without a matching credit memo is flagged before the filing period closes.\n\n## Output\nThe requested scope's result: tax-code map, nexus status, filing input pack, facilitator-credit reconciliation, credit-memo reconciliation, or (India only) e-way bill log.\n\n## Example\nA new SKU crosses economic nexus in a state before its first sale there is registered; the nexus tracker flags the state before the next filing deadline, avoiding an unregistered-collection gap.\n\n## Market note\nAn India-selling brand runs the HSN/SAC, e-way bill and GSTR path instead, which reads null for a US-only brand."
   },
   {
     "id": "money/fixed-asset-register",
@@ -693,7 +726,7 @@
       "MONEY-W01"
     ],
     "shared_with": [],
-    "skill_md": "---\nname: money/fixed-asset-register\nowner: MONEY\nversion: 1\ninvoke_when: a capital purchase happens or the monthly depreciation schedule needs running\ninputs: capital purchase invoices, current asset register, useful life policy\noutputs: updated register with running depreciation balance\n---\n# Maintain the fixed asset register and depreciation schedule\n\n## Purpose\nKeep one register of every asset the brand owns (equipment, fixtures, website build cost, packaging dies) so depreciation never gets estimated at year end.\n\n## Steps\n1. Log any new capital purchase with its date, cost and category.\n2. Assign useful life from the brand's stated policy, not a one-off guess.\n3. Run the month's depreciation for every asset in the register.\n4. Update each asset's running balance.\n\n## Checks\n- Every asset carries purchase date, useful life and a running balance.\n- No capital purchase this month is missing from the register.\n\n## Output\nThe updated register with this month's depreciation line per asset.\n\n## Example\nA new packaging die purchased for 180,000 rupees with a 3-year useful life adds 5,000 rupees of depreciation to this month's P&L ladder automatically."
+    "skill_md": "---\nname: money/fixed-asset-register\nowner: MONEY\nversion: 1\ninvoke_when: a capital purchase happens or the monthly depreciation schedule needs running\ninputs: capital purchase invoices, current asset register, useful life policy\noutputs: updated register with running depreciation balance\n---\n# Maintain the fixed asset register and depreciation schedule\n\n## Purpose\nKeep one register of every asset the brand owns (equipment, fixtures, website build cost, packaging dies) so depreciation never gets estimated at year end.\n\n## Steps\n1. Log any new capital purchase with its date, cost and category.\n2. Assign useful life from the brand's stated policy, not a one-off guess.\n3. Run the month's depreciation for every asset in the register.\n4. Update each asset's running balance.\n\n## Checks\n- Every asset carries purchase date, useful life and a running balance.\n- No capital purchase this month is missing from the register.\n\n## Output\nThe updated register with this month's depreciation line per asset.\n\n## Example\nA new packaging die purchased for $2,200 with a 3-year useful life adds about $60 of depreciation to this month's P&L ladder automatically."
   },
   {
     "id": "money/cash-ops-cycle",
@@ -726,7 +759,7 @@
       "MONEY-W08"
     ],
     "shared_with": [],
-    "skill_md": "---\nname: money/cash-ops-cycle\nowner: MONEY\nversion: 1\ninvoke_when: a vendor bill, B2B invoice, payroll cycle or expense statement needs processing\ninputs: vendor bills and POs, B2B invoice terms, payroll roster, expense policy, card statement\noutputs: AP queue, AR aging, payroll run, or expense reconciliation, by process\n---\n# Run accounts payable, receivable, payroll and expense\n\n## Purpose\nOne engine for the recurring cash-movement processes, so approval chains, payment terms and policy checks are applied the same way every cycle.\n\n## Steps\n1. For payable: capture every bill, match it to its PO and receipt, and route it through the approval chain by amount and vendor.\n2. For receivable: invoice B2B and wholesale buyers on their agreed terms and run a structured dunning sequence on overdue accounts.\n3. For payroll: process the cycle from the roster, then prepare PF, ESI, professional tax and TDS filings, plus Form 16 at year end.\n4. For expense: apply the travel-and-expense policy to every receipt and card charge, then reconcile the card statement to the ledger.\n\n## Checks\n- No bill is scheduled for payment without completing its approval step.\n- Payroll always shows the gross-to-net calculation, not the net figure alone.\n- Every expense line is marked compliant or flagged against the written policy.\n\n## Output\nThe requested process's result: AP approval queue and aging, AR aging and dunning log, payroll run and filing pack, or expense and card reconciliation.\n\n## Example\nA vendor bill routed for approval sits 4 days past the brand's own 3-day SLA for its amount tier; the aging report flags it by name before the vendor calls asking about it."
+    "skill_md": "---\nname: money/cash-ops-cycle\nowner: MONEY\nversion: 1\ninvoke_when: a vendor bill, B2B invoice, payroll cycle or expense statement needs processing\ninputs: vendor bills and POs, B2B invoice terms, payroll roster, expense policy, card statement\noutputs: AP queue, AR aging, payroll run, or expense reconciliation, by process\n---\n# Run accounts payable, receivable, payroll and expense\n\n## Purpose\nOne engine for the recurring cash-movement processes, so approval chains, payment terms and policy checks are applied the same way every cycle.\n\n## Steps\n1. For payable: capture every bill, match it to its PO and receipt, and route it through the approval chain by amount and vendor.\n2. For receivable: invoice B2B and wholesale buyers on their agreed terms and run a structured dunning sequence on overdue accounts.\n3. For payroll: process the cycle from the roster through Gusto or ADP, then prepare federal/state withholding and W-2/1099-NEC filings (PF, ESI, professional tax, TDS and Form 16 for India-selling brands).\n4. For expense: apply the travel-and-expense policy to every receipt and card charge, then reconcile the card statement to the ledger.\n\n## Checks\n- No bill is scheduled for payment without completing its approval step.\n- Payroll always shows the gross-to-net calculation, not the net figure alone.\n- Every expense line is marked compliant or flagged against the written policy.\n\n## Output\nThe requested process's result: AP approval queue and aging, AR aging and dunning log, payroll run and filing pack, or expense and card reconciliation.\n\n## Example\nA vendor bill routed for approval sits 4 days past the brand's own 3-day SLA for its amount tier; the aging report flags it by name before the vendor calls asking about it."
   },
   {
     "id": "money/partner-commercial-terms",
@@ -747,18 +780,18 @@
       "Set commission rates by partner type, category and customer status.",
       "Reconcile the network's payout claim against actual delivered, non-returned orders.",
       "Keep the creator agreement template current with the disclosure clause.",
-      "Check live posts for ASCI and platform disclosure tags."
+      "Check live posts for FTC #ad disclosure and platform disclosure tags (ASCI for India-selling brands)."
     ],
     "checks": [
       "commission never paid on a returned order",
-      "disclosure clause matches the current ASCI guideline"
+      "disclosure clause matches the current FTC Endorsement Guides (ASCI guideline for India)"
     ],
     "output": "{party, result}",
     "used_by": [
       "MONEY-W09"
     ],
     "shared_with": [],
-    "skill_md": "---\nname: money/partner-commercial-terms\nowner: MONEY\nversion: 1\ninvoke_when: commission tiers need setting, a payout needs reconciling, or a creator post needs a disclosure check\ninputs: category margins, customer status rules, affiliate statement, agreement template, live post list\noutputs: commission rate table, payout reconciliation, agreement template, or disclosure check\n---\n# Set and reconcile affiliate and creator commercial terms\n\n## Purpose\nProtect margin on every partner payout and keep creator content inside India's disclosure rules.\n\n## Steps\n1. Set commission rates by partner type, product category margin and customer status (new versus returning).\n2. Reconcile what the affiliate network claims is owed against actual delivered, non-returned orders.\n3. Keep the creator agreement template current: deliverables, usage rights, exclusivity, payment terms and the disclosure clause matching the current ASCI guideline.\n4. Check live creator and affiliate posts weekly for the required disclosure tag on each platform.\n\n## Checks\n- A returned or cancelled order never carries a paid commission.\n- The disclosure clause is checked against the current ASCI guideline, not an old template.\n\n## Output\nThe requested result: commission rate table, payout reconciliation, current agreement template, or a disclosure compliance check.\n\n## Example\nAn affiliate statement claims commission on 40 orders; 3 were returned within the window, so the reconciled payout excludes those 3 before approval."
+    "skill_md": "---\nname: money/partner-commercial-terms\nowner: MONEY\nversion: 1\ninvoke_when: commission tiers need setting, a payout needs reconciling, or a creator post needs a disclosure check\ninputs: category margins, customer status rules, affiliate statement, agreement template, live post list\noutputs: commission rate table, payout reconciliation, agreement template, or disclosure check\n---\n# Set and reconcile affiliate and creator commercial terms\n\n## Purpose\nProtect margin on every partner payout and keep creator content inside the FTC's disclosure rules (ASCI's rules for an India-selling brand).\n\n## Steps\n1. Set commission rates by partner type, product category margin and customer status (new versus returning).\n2. Reconcile what the affiliate network claims is owed against actual delivered, non-returned orders.\n3. Keep the creator agreement template current: deliverables, usage rights, exclusivity, payment terms and the disclosure clause matching the current FTC Endorsement Guides (the ASCI guideline for India-selling brands).\n4. Check live creator and affiliate posts weekly for the required #ad disclosure tag on each platform (the ASCI-required tag for India).\n\n## Checks\n- A returned or cancelled order never carries a paid commission.\n- The disclosure clause is checked against the current FTC Endorsement Guides (or ASCI guideline for India), not an old template.\n\n## Output\nThe requested result: commission rate table, payout reconciliation, current agreement template, or a disclosure compliance check.\n\n## Example\nAn affiliate statement claims commission on 40 orders; 3 were returned within the window, so the reconciled payout excludes those 3 before approval."
   },
   {
     "id": "money/utm-link-hygiene",
@@ -1034,11 +1067,11 @@
   },
   {
     "id": "money/cs-capacity-and-dpdp",
-    "name": "Plan CS capacity and handle DPDP data-subject requests",
+    "name": "Plan CS capacity and handle CCPA/CPRA data-subject requests (DPDP for India)",
     "parent": null,
-    "invoke_when": "CS staffing needs sizing, or a customer submits a DPDP access or erasure request",
+    "invoke_when": "CS staffing needs sizing, or a customer submits a CCPA/CPRA access, deletion or opt-out request (a DPDP access or erasure request for India-selling brands)",
     "select_by": {
-      "task": "capacity-plan | dpdp-request"
+      "task": "capacity-plan | data-subject-request"
     },
     "inputs_required": [
       "sales forecast curve",
@@ -1049,18 +1082,18 @@
     "steps": [
       "Staff CS tiers from the forecast curve and track cost per ticket.",
       "Define a complex ticket before routing it.",
-      "Find every system holding a requester's data and assemble or erase it inside the statutory window."
+      "Find every system holding a requester's data and assemble, delete or honor the opt-out inside the statutory window."
     ],
     "checks": [
       "staffing follows the forecast curve, not last month's headcount",
-      "every connected system checked for a DPDP request, none skipped"
+      "every connected system checked for a data-subject request, none skipped"
     ],
     "output": "{task, result}",
     "used_by": [
       "MONEY-W19"
     ],
     "shared_with": [],
-    "skill_md": "---\nname: money/cs-capacity-and-dpdp\nowner: MONEY\nversion: 1\ninvoke_when: CS staffing needs sizing or a DPDP data-subject request arrives\ninputs: sales forecast curve, ticket volume and cost, system map, request details\noutputs: CS staffing plan and cost per ticket, or a DPDP response with a system-by-system data map\n---\n# Plan CS capacity and handle DPDP data-subject requests\n\n## Purpose\nSize support to the forecast, not the last headcount, and protect a customer's DPDP rights across every system that holds their data.\n\n## Steps\n1. Staff CS tiers from the sales forecast curve and track cost per ticket by tier.\n2. Define what counts as a complex ticket before it gets routed to a higher tier.\n3. When resolution time rises, trace the cause upstream instead of just adding headcount.\n4. On a DPDP access or erasure request, find every system holding that person's data: ESP, helpdesk, loyalty, subscription, order records.\n5. Assemble the data for an access request, or prepare the erasure plan across every located system, respecting any legal retention obligation.\n6. Confirm the response goes out inside the statutory deadline and log the request.\n\n## Checks\n- Staffing scales with the forecast curve.\n- Every connected system is checked for a DPDP request; none are skipped.\n- An erasure never removes data needed for an open legal or tax obligation.\n\n## Output\nThe requested task's result: a CS staffing plan with cost per ticket, or a completed DPDP response with its system-by-system data map.\n\n## Example\nAn erasure request would delete an order record still needed for a live GST audit trail; the plan erases the customer's marketing and support data while retaining the order record with a stated legal reason."
+    "skill_md": "---\nname: money/cs-capacity-and-dpdp\nowner: MONEY\nversion: 1\ninvoke_when: CS staffing needs sizing or a CCPA/CPRA data-subject request arrives (a DPDP request for India-selling brands)\ninputs: sales forecast curve, ticket volume and cost, system map, request details\noutputs: CS staffing plan and cost per ticket, or a data-subject response with a system-by-system data map\n---\n# Plan CS capacity and handle CCPA/CPRA data-subject requests (DPDP for India)\n\n## Purpose\nSize support to the forecast, not the last headcount, and protect a customer's CCPA/CPRA rights (DPDP rights for an India-selling brand) across every system that holds their data.\n\n## Steps\n1. Staff CS tiers from the sales forecast curve and track cost per ticket by tier.\n2. Define what counts as a complex ticket before it gets routed to a higher tier.\n3. When resolution time rises, trace the cause upstream instead of just adding headcount.\n4. On a CCPA/CPRA access, deletion or opt-out request (a DPDP access or erasure request, for India), find every system holding that person's data: ESP, helpdesk, loyalty, subscription, order records.\n5. Assemble the data for an access request, or prepare the deletion/erasure plan across every located system, respecting any legal retention obligation.\n6. Confirm the response goes out inside the statutory deadline and log the request.\n\n## Checks\n- Staffing scales with the forecast curve.\n- Every connected system is checked for a data-subject request; none are skipped.\n- A deletion or erasure never removes data needed for an open legal or tax obligation.\n\n## Output\nThe requested task's result: a CS staffing plan with cost per ticket, or a completed data-subject response with its system-by-system data map.\n\n## Example\nA deletion request would delete an order record still needed for a live sales-tax audit trail (a GST audit trail for India); the plan erases the customer's marketing and support data while retaining the order record with a stated legal reason."
   },
   {
     "id": "money/security-scan-weekly",
@@ -1072,14 +1105,14 @@
       "server/CDN logs",
       "order and payment data",
       "chargeback log",
-      "COD refusal log",
+      "India only: COD refusal log",
       "return log",
       "domain and DNS records"
     ],
     "steps": [
       "Rebuild the bot and agent traffic baseline and re-score risk tiers.",
       "Check for card-testing bursts and review AVS/CVV/3DS against false-decline rate.",
-      "Set the chargeback alert threshold and control COD refusal triggers.",
+      "Set the chargeback alert threshold and control step-up verification triggers (COD refusal triggers for India-selling brands).",
       "Detect return and refund abuse patterns.",
       "Watch domain, DNS and impersonation risk."
     ],
@@ -1092,7 +1125,7 @@
       "MONEY-W20"
     ],
     "shared_with": [],
-    "skill_md": "---\nname: money/security-scan-weekly\nowner: MONEY\nversion: 1\ninvoke_when: the weekly fraud, bot and abuse scan needs running\ninputs: server/CDN logs, order and payment data, chargeback log, COD refusal log, return log, domain records\noutputs: traffic baseline, fraud and abuse flags, domain watch result, weekly fix list\n---\n# Run the weekly fraud, bot and abuse scan\n\n## Purpose\nCatch card-testing, bot traffic, return abuse and domain impersonation early, with friction placed at checkout and account changes, never at ordinary browsing.\n\n## Steps\n1. Rebuild the bot and AI-agent traffic baseline by agent, endpoint and intent, and re-score risk tiers continuously.\n2. Check for card-testing bursts (clusters of small failed authorizations) and review AVS/CVV/3DS settings against the false-decline rate.\n3. Set the chargeback alert threshold below the processor's own flag level, and set prepayment triggers for repeat COD refusers.\n4. Detect return and refund abuse: wardrobing, serial high-return customers, refunds without a matching return.\n5. Watch the domain registrar lock status, DNS for dangling records, and lookalike domains or counterfeit listings.\n\n## Checks\n- No rule relies on User-Agent alone.\n- Fraud caught is always tracked alongside the false-decline rate.\n\n## Output\nThe traffic baseline, fraud and return-abuse flags, the domain watch result, and a ranked weekly fix list.\n\n## Example\nA burst of 40 small authorizations under 50 rupees each from the same IP range is flagged as card-testing before any of them succeed at a full-value order."
+    "skill_md": "---\nname: money/security-scan-weekly\nowner: MONEY\nversion: 1\ninvoke_when: the weekly fraud, bot and abuse scan needs running\ninputs: server/CDN logs, order and payment data, chargeback log, India only: COD refusal log, return log, domain records\noutputs: traffic baseline, fraud and abuse flags, domain watch result, weekly fix list\n---\n# Run the weekly fraud, bot and abuse scan\n\n## Purpose\nCatch card-testing, bot traffic, return abuse and domain impersonation early, with friction placed at checkout and account changes, never at ordinary browsing.\n\n## Steps\n1. Rebuild the bot and AI-agent traffic baseline by agent, endpoint and intent, and re-score risk tiers continuously.\n2. Check for card-testing bursts (clusters of small failed authorizations) and review AVS/CVV/3DS settings against the false-decline rate.\n3. Set the chargeback alert threshold below the processor's own flag level, and set step-up verification triggers for repeat abuse (prepayment triggers for repeat COD refusers, for India-selling brands).\n4. Detect return and refund abuse: wardrobing, serial high-return customers, refunds without a matching return.\n5. Watch the domain registrar lock status, DNS for dangling records, and lookalike domains or counterfeit listings.\n\n## Checks\n- No rule relies on User-Agent alone.\n- Fraud caught is always tracked alongside the false-decline rate.\n\n## Output\nThe traffic baseline, fraud and return-abuse flags, the domain watch result, and a ranked weekly fix list.\n\n## Example\nA burst of 40 small authorizations under $1 each from the same IP range is flagged as card-testing before any of them succeed at a full-value order."
   },
   {
     "id": "money/security-audit-monthly",

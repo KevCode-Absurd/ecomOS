@@ -26,4 +26,4 @@ Every asset on a page or channel should lead with the same one idea and back it 
 `{big_idea, ranked_supporting_messages: [...], page_fitted_stack}`
 
 ## Example
-PDP stack for a ₹4,500 chain: big idea "wear it daily without worry," supporting messages ranked: (1) tarnish-resistance claim with test data, (2) size/length guide link, (3) return policy callout, matched to the top 3 PDP-stage objections in the objection map.
+PDP stack for a $58 chain: big idea "wear it daily without worry," supporting messages ranked: (1) tarnish-resistance claim with test data, (2) size/length guide link, (3) return policy callout, matched to the top 3 PDP-stage objections in the objection map.

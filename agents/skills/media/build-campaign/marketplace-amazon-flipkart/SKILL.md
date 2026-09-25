@@ -6,8 +6,9 @@
     inputs: marketplace catalogue, SKU margin, converting Google Search terms
     outputs: a ready-to-execute marketplace ad brief
     ---
-    Purpose: since there is no Amazon or Flipkart connector, hand a human or agency
-    a brief complete enough to build the campaign correctly the first time.
+    Purpose: since there is no Amazon, Walmart or Target connector (or Flipkart
+    connector, India only), hand a human or agency a brief complete enough to
+    build the campaign correctly the first time.
 
     Steps
     1. Pull bestseller and margin data; rank SKUs for sponsored placement priority.
@@ -25,7 +26,9 @@
     - Every ACOS/TACOS target traces to that SKU's own margin.
     - A weak listing is flagged, not launched into ads as-is.
 
-    Output: a full campaign brief ready to build in the marketplace's own console.
+    Output: a full campaign brief ready to build in the marketplace's own console
+    (Amazon Seller Central, Walmart Connect, Target Roundel; Flipkart Ads Manager
+    for the India option).
 
     Example: a SKU has only 3 product images and no bullet points -> flagged to fix
     the listing before its ACOS target is set or spend begins.

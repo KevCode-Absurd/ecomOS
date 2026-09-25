@@ -33,5 +33,6 @@ skill turns a scouted competitor gap into a concrete angle and a small set of SK
 
 ## Example
 Angle: "every competitor ships a fixed-size travel kit; ours is the only one with 3 refill sizes." Options: refill
-2-pack (evergreen), festive gift box (seasonal, Diwali spike from 2 prior years' data), travel mini (trending, but
+2-pack (evergreen), holiday gift box (seasonal, Q4 spike from 2 prior years' data; india: festive gift
+box, Diwali spike; markets: IN), travel mini (trending, but
 subscription not earned: repeat_rate_90d is 4%, below the 15% floor).

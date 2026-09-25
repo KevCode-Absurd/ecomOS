@@ -28,3 +28,6 @@ A table by courier: collected, remitted, gap, age in days, SLA cycle days, and a
 
 ## Example
 Courier X's SLA is a 7-day remittance cycle; an 82,000 rupee batch sits at 11 days. The escalation names the 34 order IDs and cites the 7-day clause in the courier's own service agreement.
+
+## Market note
+This skill applies only to an India-selling brand that runs cash on delivery. It reads null for a US-only brand, whose payout reconciliation runs through money/reconcile/gateway and money/reconcile/marketplace, with money/reconcile/chargebacks handling disputes.

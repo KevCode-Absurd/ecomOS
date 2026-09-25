@@ -27,4 +27,4 @@ Ad platforms bill on their own cycle, which rarely lines up cleanly with a calen
 One line per platform per period: invoiced amount, logged amount, gap, and the named cause.
 
 ## Example
-Meta's invoice covers the 3rd to the 2nd of the next month, while the dashboard reports calendar months; the resulting 6,200 rupee shift is named as a billing-cycle boundary, not a spend discrepancy.
+Meta's invoice covers the 3rd to the 2nd of the next month, while the dashboard reports calendar months; the resulting $620 shift is named as a billing-cycle boundary, not a spend discrepancy.

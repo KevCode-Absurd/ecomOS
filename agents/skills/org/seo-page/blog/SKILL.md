@@ -27,4 +27,4 @@ Write one cluster node that answers a single buyer question in real depth and li
 {title, body, pillar_link, sibling_links[], faq_block, publish_date}
 
 ## Example
-Post "How to measure your hallway before buying a foldable stroller" links up to the pillar "Complete guide to foldable strollers in India" and sideways to "Stroller weight limits explained".
+Post "How to measure your hallway before buying a foldable stroller" links up to the pillar "Complete guide to foldable strollers in the US" and sideways to "Stroller weight limits explained".

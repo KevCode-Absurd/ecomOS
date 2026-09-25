@@ -28,4 +28,4 @@ Build the target list the whole content program runs from, then turn each target
 {keyword_question_map[], page_briefs[]}
 
 ## Example
-Target "foldable stroller for small apartments India" classified as informational/guide intent, briefed as a new buying guide rather than added to the existing product page, which already covers transactional intent.
+Target "foldable stroller for small US apartments" classified as informational/guide intent, briefed as a new buying guide rather than added to the existing product page, which already covers transactional intent.

@@ -431,7 +431,7 @@
       "Model markup at the low end, high end and future bulk cost of the price range",
       "Re-quote the brand's own supplier cost instead of assuming a competitor's, and set price from a broad set of comparables",
       "Separate a fixable execution problem from a structural cost problem",
-      "Price payment-gateway friction, real shipping cost, and return-to-origin or COD cost into the margin gate",
+      "Price payment-gateway friction, real shipping cost, and reversed-order cost (chargebacks, disputes, carrier return-to-sender) into the margin gate (India: also price return-to-origin/RTO cost on cash-on-delivery orders; markets: IN, reads null for US brands)",
       "Choose materials and packaging that survive parcel handling",
       "Require shelf life to comfortably outlast time to market and sell",
       "Check claim, labelling and registration rules, and any category-specific certification, per country before spend",
@@ -788,13 +788,13 @@
   },
   {
     "id": "PROD-C14",
-    "name": "Discover and vet suppliers in India and overseas",
+    "name": "Discover and vet suppliers across sourcing regions",
     "folders": [
       "18-COG"
     ],
-    "what": "Run supplier discovery as a funnel: broad platform search, message a wide shortlist, verify with a video call and certification check, and vet any sourcing agent the same way as a factory.",
+    "what": "Run supplier discovery as a funnel across sourcing regions (US domestic, China, and India where the brand sources there): broad platform search, message a wide shortlist, verify with a video call and certification check, and vet any sourcing agent the same way as a factory.",
     "encompasses": [
-      "Use Alibaba or similar platforms for research and shortlisting, not the final pick, on an ad-spend SKU",
+      "Use Alibaba, 1688 (via a vetted agent), Faire or Tundra for wholesale, or ThomasNet and Maker's Row for US domestic suppliers, for research and shortlisting, not the final pick, on an ad-spend SKU (India: add IndiaMART to the shortlist; markets: IN, reads null for US brands)",
       "Message 10 to 15 factories and filter to verified suppliers with trade assurance",
       "Video-call the shortlist to inspect the facility before trusting it",
       "Require ISO or BSCI certification and drop a refusal",
@@ -827,9 +827,9 @@
     "subagent": "PROD-Sourcing",
     "sources": {
       "web": [
-        "https://in.linkedin.com/company/sourcing-agent-india-sai",
-        "https://indiansourcingagent.com/",
-        "https://sourcinggpt.ai/"
+        "https://sourcinggpt.ai/",
+        "https://www.thomasnet.com/",
+        "https://makersrow.com/"
       ],
       "bank": [
         "COG-011",
@@ -845,7 +845,7 @@
       ]
     },
     "found_in": "web+bank",
-    "founder_sees": "A shortlist of verified suppliers, each with a certification and verification status."
+    "founder_sees": "A shortlist of verified suppliers by region, each with a certification and verification status."
   },
   {
     "id": "PROD-C15",
@@ -2477,17 +2477,17 @@
   },
   {
     "id": "PROD-C44",
-    "name": "Create and optimise listings on Flipkart, Myntra and Nykaa",
+    "name": "Create and optimise listings on Walmart, Target Plus, eBay and TikTok Shop",
     "folders": [
       "22-AMZ"
     ],
-    "what": "Build and keep current the brand's listings on India's other major marketplaces, adapting the title, bullet and image rules each platform enforces, since none of them are Amazon.",
+    "what": "Build and keep current the brand's listings on marketplaces beyond Amazon (Walmart Marketplace, Target Plus, eBay, TikTok Shop, and Etsy where relevant), adapting the title, bullet and image rules each platform enforces, since none of them are Amazon. India: the same job runs on Flipkart, Myntra and Nykaa (markets: IN, reads null for US brands; see the india option of list-on-marketplace).",
     "encompasses": [
       "Complete each platform's seller onboarding and category-approval process",
       "Match image and copy specs to each marketplace's own guide",
       "Localize title and bullet structure to the platform's own search ranking signals",
       "Fill every mandatory attribute field the category requires",
-      "Keep GST-compliant invoicing and category eligibility current",
+      "Keep sales-tax and marketplace-facilitator invoicing and category eligibility current (India: GST-compliant invoicing; markets: IN, reads null for US brands)",
       "Track approval status and reasons for any listing rejection"
     ],
     "inputs": [
@@ -2502,7 +2502,7 @@
     "autonomy": "human_assist",
     "external_write": {
       "needed": true,
-      "surface": "flipkart, myntra, nykaa seller portals"
+      "surface": "walmart, target plus, ebay, tiktok shop seller portals (india: flipkart, myntra, nykaa seller portals)"
     },
     "tools": [
       "web search"
@@ -2513,33 +2513,35 @@
     "subagent": "PROD-Marketplace",
     "sources": {
       "web": [
-        "https://qikink.com/blog/how-to-sell-on-myntra/",
-        "https://zarooriretail.com/services/nykaa",
-        "https://remove-bg.io/blog/flipkart-meesho-myntra-seller-image-guide-2026/"
+        "https://marketplace.walmart.com/",
+        "https://www.target.com/c/target-plus",
+        "https://www.ebay.com/help/selling",
+        "https://seller-us.tiktok.com/"
       ],
       "bank": []
     },
     "found_in": "web_only",
-    "founder_sees": "A ready-to-submit listing for Flipkart, Myntra or Nykaa, matching that platform's own rules."
+    "founder_sees": "A ready-to-submit listing for Walmart, Target Plus, eBay or TikTok Shop, matching that platform's own rules (or, for an India brand, Flipkart, Myntra or Nykaa)."
   },
   {
     "id": "PROD-C45",
-    "name": "Check BIS, hallmarking and labelling compliance for marketplace listings",
+    "name": "Check US labelling and quality-marking compliance for marketplace listings",
     "folders": [
       "22-AMZ",
       "18-COG"
     ],
-    "what": "Before any jewellery, textile or regulated listing goes live, confirm the BIS, hallmarking and labelling requirements are met and recorded, since a marketplace can pull a listing or a buyer can flag it.",
+    "what": "Before any jewellery, textile or regulated listing goes live, confirm US labelling and quality-marking requirements are met and recorded (FTC Jewelry Guides for precious-metal quality marks, the Care Labeling Rule for textiles, Prop 65 warnings and CPSC rules where they apply), since a marketplace can pull a listing or a buyer can flag it. India: the same gate checks BIS hallmarking (karatage, HUID) and Legal Metrology labelling instead (markets: IN, reads null for US brands).",
     "encompasses": [
-      "Confirm BIS hallmark, karatage and HUID are present and recorded for gold jewellery",
-      "Check textile labelling rules (fibre content, care, origin) before listing",
-      "Confirm the marketplace's own category-review requirements are met (Nykaa, Myntra)",
+      "Confirm the FTC Jewelry Guides quality mark (karat stamp, trademark or registered mark) is present and accurate for gold and precious-metal jewellery (India: confirm BIS hallmark, karatage and HUID instead; markets: IN, reads null for US brands)",
+      "Check textile labelling rules under the Care Labeling Rule (fibre content, country of origin, care instructions) before listing",
+      "Check Prop 65 warning requirements and CPSC rules for any category they cover",
+      "Confirm the marketplace's own category-review requirements are met (Walmart, eBay, TikTok Shop; India: Nykaa, Myntra)",
       "Keep certification documents attached to the product data record",
       "Flag a listing that lacks a required certificate before it goes live"
     ],
     "inputs": [
       "brand brain: product records and certifications",
-      "web: BIS and marketplace category rules (public)"
+      "web: FTC/Care Labeling and marketplace category rules (public; india: BIS and marketplace category rules)"
     ],
     "outputs": [
       "compliance checklist per listing",
@@ -2560,7 +2562,9 @@
     "subagent": "PROD-Marketplace",
     "sources": {
       "web": [
-        "https://www.eternz.com/blog/is-it-safe-to-buy-jewellery-online-in-india/"
+        "https://www.ftc.gov/business-guidance/resources/jewelry-guides",
+        "https://www.ftc.gov/business-guidance/resources/threading-your-way-through-labeling-requirements-under-textile-and-wool-acts",
+        "https://oag.ca.gov/prop65"
       ],
       "bank": [
         "PRD-088",
@@ -2569,7 +2573,7 @@
       ]
     },
     "found_in": "web+bank",
-    "founder_sees": "A pass/fail on BIS, hallmarking and labelling compliance before a regulated listing goes live."
+    "founder_sees": "A pass/fail on US labelling and quality-marking compliance before a regulated listing goes live (or, for an India brand, on BIS hallmarking and labelling)."
   },
   {
     "id": "PROD-C46",

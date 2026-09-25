@@ -3,7 +3,7 @@
 ## Organic and content
 Ties every post to the order it produced, by SKU and hook, using the post's own UTM tag or promo code. Metricool, Later, Hootsuite and Sprout Social show reach and engagement, and Hootsuite and Sprout add social listening, but none join a post to a matched order, flag a viral-but-not-selling post against the brand's own order floor, or run a claims and safety gate before publish. The room also tracks creator seeding cost and content yield against the same tagged asset library the calendar draws from, and tracks an asset's reuse across PDP, email, DM and post-purchase flow, which no scheduler does.
 
-Hardest data: revenue joined to a specific post (needs UTM or promo-code discipline on every link), a claims-gate log (must be built, not pulled from a platform), and a WhatsApp/Discord roster matched to orders by phone or email.
+Hardest data: revenue joined to a specific post (needs UTM or promo-code discipline on every link), a claims-gate log (must be built, not pulled from a platform), and a Discord/SMS roster matched to orders by phone or email (a WhatsApp roster too, market option for India, EU or LATAM).
 
 ## SEO
 Computes organic revenue from the store's own order ledger, not GA4's own model; Search Console gives clicks, impressions, CTR and position only, never revenue. The refresh backlog is sequenced by revenue at risk, not traffic alone the way Semrush or Ahrefs audits do. The technical audit checks AI-crawler access (GPTBot, PerplexityBot, Google-Extended) alongside classic crawl health, which Screaming Frog does not do, and flags a discontinued page that 404s instead of redirecting, tied to the product feed.

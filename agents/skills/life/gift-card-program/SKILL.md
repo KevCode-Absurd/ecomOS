@@ -33,5 +33,5 @@ Refund credit and purchased gift card follow different expiry rules.
 A gift-card program design, a float-liability model, and the reminder flow copy.
 
 ## Example
-"₹1,000/2,500/5,000 denominations, no bonus tier at launch. Float liability at
-6-month sell-through assumption: ₹4.2L outstanding balance modeled."
+"$25/50/100 denominations, no bonus tier at launch. Float liability at
+6-month sell-through assumption: $4,200 outstanding balance modeled."

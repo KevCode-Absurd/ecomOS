@@ -6,14 +6,15 @@
     "folders": [
       "20-FIN"
     ],
-    "what": "Unbundle every marketplace and gateway payout into commission, fixed fee, shipping fee, TCS, GST on fees and refunds, and post one journal entry per settlement instead of one lump-sum bank deposit.",
+    "what": "Unbundle every marketplace and gateway payout (Shopify Payments, Stripe, PayPal, Amazon settlements) into commission, fixed fee, shipping fee, marketplace-facilitator sales tax withheld, 1099-K reportable totals and refunds, and post one journal entry per settlement instead of one lump-sum bank deposit.",
     "encompasses": [
       "Match every settlement report to the order-level sales register",
       "Split commission, fixed fee, collection fee, shipping fee and ad-spend deductions into separate ledger accounts",
-      "Book Section 52 TCS and GST on marketplace fees as separate line items",
+      "Book marketplace-facilitator sales tax withheld and 1099-K gross totals as separate line items",
+      "India only: book Section 52 TCS and GST on marketplace fees as separate line items (reads null for US brands)",
       "Flag unexplained variance between expected fee and charged fee per order",
       "Book revenue to the sale date, not the T+5 or T+7 payout date",
-      "Trace return and RTO deductions back to the original order",
+      "Trace return and failed-delivery/return-to-sender deductions back to the original order",
       "Produce one import-ready file per marketplace or gateway"
     ],
     "inputs": [
@@ -44,7 +45,6 @@
     "sources": {
       "web": [
         "https://logibricks.com/blog/marketplace-reconciliation-a-cas-step-by-step-playbook-for-reading-amazon-flipka",
-        "https://www.terra-insight.com/insights/flipkart-seller-settlement-reconciliation/",
         "https://www.a2xaccounting.com/link-my-books-vs-a2x"
       ],
       "bank": []
@@ -57,27 +57,29 @@
   {
     "id": "MONEY-C52",
     "extends": null,
-    "name": "Reconcile COD cash and courier remittance daily",
+    "name": "Reconcile payout deposits daily (gateway, marketplace, and COD where it applies)",
     "folders": [
       "20-FIN",
       "21-OPS"
     ],
-    "what": "Track cash on delivery collected by every courier against what has actually been remitted to the bank, age the gap by courier, and escalate remittances stuck past the courier's own SLA.",
+    "what": "Track what every payout source (Shopify Payments, Stripe, PayPal, Amazon and other marketplace settlements) says it paid against what actually lands in the bank, age the gap by source, and escalate deposits stuck past the source's own payout schedule. For an India-selling brand that also runs COD, track cash collected by every courier against what has actually been remitted, the same way, as a market option.",
     "encompasses": [
-      "Pull COD collection and remittance status per order per courier",
-      "Compute days-outstanding since delivery for every unremitted COD order",
-      "Compare against each courier's stated remittance SLA (T+2 to T+8)",
-      "Flag couriers whose unremitted balance is rising, not falling",
-      "Separate RTO cash reversals from genuine delivered-COD remittance",
-      "Roll the outstanding COD balance into the cash forecast as a receivable"
+      "Pull payout/deposit status per order per source: Shopify Payments, Stripe, PayPal, Amazon settlements and other marketplaces",
+      "Compute days-outstanding since the expected payout date for every undeposited amount",
+      "Compare against each source's stated payout schedule (e.g. T+2 rolling, marketplace bi-weekly)",
+      "Flag sources whose undeposited balance is rising, not falling",
+      "Separate chargeback/dispute reversals and refund holds from genuine payout deductions",
+      "Roll the outstanding payout balance into the cash forecast as a receivable",
+      "India only: pull COD collection and remittance status per order per courier, compute days-outstanding since delivery, compare against each courier's stated remittance SLA (T+2 to T+8), and separate RTO cash reversals from genuine delivered-COD remittance (reads null for US brands)"
     ],
     "inputs": [
-      "Courier aggregator API or portal exports",
+      "Gateway and marketplace payout/settlement exports (Shopify Payments, Stripe, PayPal, Amazon)",
       "Order and delivery status feed",
-      "Bank statement"
+      "Bank statement",
+      "India only: courier aggregator API or portal exports"
     ],
     "outputs": [
-      "Daily COD remittance aging report by courier",
+      "Daily payout reconciliation and aging report by source",
       "List of orders past SLA with amount at risk"
     ],
     "trigger": "Daily",
@@ -87,7 +89,8 @@
       "surface": null
     },
     "tools": [
-      "courier aggregator API (ClickPost/Shipway class)",
+      "gateway/marketplace payout APIs (Shopify Payments, Stripe, PayPal, Amazon Seller Central)",
+      "courier aggregator API (ClickPost/Shipway class, India COD only)",
       "spreadsheet builder"
     ],
     "skills": [],
@@ -100,7 +103,54 @@
       "bank": []
     },
     "found_in": "web_only",
-    "founder_sees": "The aging report and which couriers are past SLA on remittance",
+    "founder_sees": "The aging report and which payout sources (or, for India COD, which couriers) are past SLA on remittance",
+    "human_role": "e-commerce accountant / operations manager",
+    "today_done_by": "tool"
+  },
+  {
+    "id": "MONEY-C52a",
+    "extends": null,
+    "name": "Run chargeback and dispute representment",
+    "folders": [
+      "20-FIN",
+      "23-SEC"
+    ],
+    "what": "Own the chargeback and dispute lifecycle end to end: track reason codes, assemble the evidence packet the network or PayPal requires, file representment before the deadline, and track win rate by reason code and gateway.",
+    "encompasses": [
+      "Pull every chargeback and dispute from each gateway/processor (Shopify Payments, Stripe, PayPal) with its reason code and deadline",
+      "Assemble the evidence packet per reason code: proof of delivery, customer communication, IP/device match, policy acceptance",
+      "File representment before the network or PayPal deadline, never late",
+      "Track representment win rate by reason code, gateway and product",
+      "Escalate a rising chargeback rate against the processor's own threshold before the account gets flagged",
+      "Feed confirmed friendly-fraud patterns back to the fraud-control capability (MONEY-C42)"
+    ],
+    "inputs": [
+      "Gateway/processor dispute feed (Shopify Payments, Stripe, PayPal)",
+      "Order, fulfillment and customer-communication history",
+      "brand brain: return and refund policy text"
+    ],
+    "outputs": [
+      "Representment evidence packet per dispute",
+      "Chargeback win-rate report by reason code and gateway"
+    ],
+    "trigger": "As disputes arrive, weekly rollup",
+    "autonomy": "human_assist",
+    "external_write": {
+      "needed": true,
+      "surface": "gateway/processor dispute portal"
+    },
+    "tools": [
+      "script: money.chargeback_representment",
+      "gateway dispute APIs (Shopify Payments, Stripe, PayPal)"
+    ],
+    "skills": [],
+    "subagent": "money_and_ops_specialist",
+    "sources": {
+      "web": [],
+      "bank": []
+    },
+    "found_in": "bank_only",
+    "founder_sees": "Disputes needing a human call, and the win-rate trend by reason code",
     "human_role": "e-commerce accountant / operations manager",
     "today_done_by": "tool"
   },
@@ -166,7 +216,7 @@
     ],
     "what": "Invoice wholesale and B2B buyers on their agreed terms, track every invoice to collection, and run a structured dunning sequence on anything overdue.",
     "encompasses": [
-      "Generate and send invoices on Net-30/Net-60 terms with the correct GST treatment",
+      "Generate and send invoices on Net-30/Net-60 terms with the correct sales-tax and resale-certificate treatment (GST treatment for India-selling brands)",
       "Track invoice status: open, partially paid, overdue, disputed",
       "Age receivables by customer and by days overdue",
       "Send a scheduled dunning sequence (reminder, follow-up, final notice) before escalation",
@@ -210,49 +260,52 @@
   {
     "id": "MONEY-C55",
     "extends": null,
-    "name": "Run payroll processing and India statutory filings",
+    "name": "Run payroll processing and state statutory filings",
     "folders": [
       "20-FIN",
       "21-OPS"
     ],
-    "what": "Process payroll each cycle and prepare the statutory filings that go with it: PF, ESI, professional tax and TDS, plus Form 16 at year end.",
+    "what": "Process payroll each cycle through Gusto or ADP and prepare the filings that go with it: federal and state withholding, state new-hire and unemployment-insurance registration per state an employee works in, W-2 at year end for employees, and 1099-NEC for contractors. India-selling brands with local staff run the equivalent PF, ESI, professional tax, TDS and Form 16 cycle as a market option; that path reads null for US-only brands.",
     "encompasses": [
-      "Compute gross-to-net pay from CTC structure, attendance and leave data",
-      "Calculate PF, ESI, professional tax and TDS deductions per employee",
-      "Prepare the PF ECR file, ESI return and TDS challan for filing",
-      "Generate payslips and the payroll register",
-      "Track full-and-final settlement for exits",
-      "Generate Form 16 and the annual TDS return at year end"
+      "Compute gross-to-net pay from salary/hourly structure, timesheets and PTO data",
+      "Calculate federal and state income-tax withholding, FICA, and state unemployment insurance per employee's work state",
+      "Register the brand for payroll tax in every new state before the first paycheck there",
+      "Generate payslips (via Gusto or ADP) and the payroll register",
+      "Track final-pay rules by state for exits (some states require same-day or next-day final pay)",
+      "Generate W-2 for employees and 1099-NEC for contractors at year end, and file with the SSA/IRS",
+      "India only: calculate PF, ESI, professional tax and TDS deductions, prepare the PF ECR file, ESI return and TDS challan, and generate Form 16 and the annual TDS return at year end (reads null for US brands)"
     ],
     "inputs": [
-      "Attendance and leave data",
-      "CTC structures",
-      "Investment declarations",
-      "Statutory rate tables (PF, ESI, PT, TDS slabs)"
+      "Timesheet and PTO data",
+      "Salary/hourly structures",
+      "W-4/state withholding elections",
+      "Payroll tax rate tables by state",
+      "India only: CTC structures, investment declarations, statutory rate tables (PF, ESI, PT, TDS slabs)"
     ],
     "outputs": [
       "Payroll register",
       "Payslips",
-      "Draft statutory filing files (PF/ESI/TDS)",
-      "Form 16"
+      "Draft state registration and withholding filings",
+      "W-2 and 1099-NEC forms",
+      "India only: draft statutory filing files (PF/ESI/TDS), Form 16"
     ],
-    "trigger": "Monthly payroll cycle, annually for Form 16",
+    "trigger": "Payroll cycle (weekly, biweekly or semimonthly), annually for W-2/1099-NEC (or Form 16 for India)",
     "autonomy": "founder_gate",
     "external_write": {
       "needed": true,
-      "surface": "payroll disbursement and government statutory portals"
+      "surface": "Gusto or ADP, and state statutory portals"
     },
     "tools": [
-      "payroll engine",
-      "statutory rate tables",
+      "Gusto or ADP",
+      "state payroll tax rate tables",
       "payslip generator"
     ],
     "skills": [],
     "subagent": "money_and_ops_specialist",
     "sources": {
       "web": [
-        "https://razorpay.com/payroll/payroll-software-for-small-businesses-in-india",
-        "https://www.keka.com/payroll-compliance"
+        "https://gusto.com/",
+        "https://www.adp.com/"
       ],
       "bank": []
     },
@@ -320,7 +373,7 @@
     "encompasses": [
       "Match card statement lines to submitted receipts",
       "Flag charges with no receipt or outside policy (amount, category, vendor)",
-      "Apply the correct GST input-credit treatment where eligible",
+      "Apply the correct sales-tax treatment for reimbursable purchases where eligible (GST input-credit treatment for India-selling brands)",
       "Route reimbursement requests for approval by amount",
       "Reconcile the monthly card statement to the ledger with a named cause for any gap",
       "Maintain the written travel-and-expense policy itself"
@@ -587,7 +640,7 @@
       "Answer with number, definition, window and freshness stamp",
       "Log of questions asked"
     ],
-    "trigger": "On demand (chat, WhatsApp or dashboard query)",
+    "trigger": "On demand (chat, SMS or dashboard query; WhatsApp where the brand uses it, market option for IN/EU/LATAM)",
     "autonomy": "agent_does",
     "external_write": {
       "needed": false,
@@ -868,10 +921,11 @@
     "folders": [
       "21-OPS"
     ],
-    "what": "Keep one current handbook covering leave, work-from-home, code of conduct and India-specific requirements like the POSH policy, and confirm every employee has acknowledged the current version.",
+    "what": "Keep one current handbook covering leave, work-from-home, code of conduct and state-specific requirements like mandatory anti-harassment training (California, New York, Illinois and others), and confirm every employee has acknowledged the current version.",
     "encompasses": [
       "Draft and update leave, WFH, expense and code-of-conduct policies as the team grows",
-      "Maintain the POSH (workplace harassment) policy and committee as legally required in India",
+      "Maintain state-mandated anti-harassment training and policy where required (e.g. California SB 1343, New York, Illinois, Connecticut)",
+      "India only: maintain the POSH (workplace harassment) policy and committee as legally required in India (reads null for US brands)",
       "Track which employees have acknowledged the current handbook version",
       "Flag a policy that is silent on a situation that just came up",
       "Version the handbook so an old copy is never the one in circulation"
@@ -973,7 +1027,7 @@
       "Pull daily fulfillment timestamps (order to pack to ship) per warehouse",
       "Compute mis-ship, damage and backorder rate against the SLA target",
       "Flag a single-day spike separately from a trend that is drifting",
-      "Tie a fulfillment delay to its downstream effect (late delivery, RTO risk, review risk)",
+      "Tie a fulfillment delay to its downstream effect (late delivery, failed-delivery/return-to-sender risk, review risk; RTO risk where the brand runs India COD, market option)",
       "Feed confirmed SLA misses into the vendor's quarterly review with a dated log"
     ],
     "inputs": [
@@ -1263,7 +1317,7 @@
       "Flag a customer whose return rate is far above the brand's own baseline",
       "Detect wardrobing signals (worn/used item returned, tags removed) from support notes or photos",
       "Cross-check refunds issued against actual received returns in the warehouse system",
-      "Recommend a policy response (flag for review, restrict COD, deny future return) for the founder to approve"
+      "Recommend a policy response (flag for review, require prepayment or card-on-file, deny future return; restrict COD for India brands, market option) for the founder to approve"
     ],
     "inputs": [
       "Order, return and refund history per customer",
@@ -1395,23 +1449,23 @@
   {
     "id": "MONEY-C79",
     "extends": null,
-    "name": "Auto-escalate aged COD remittance to courier ops with SLA citations",
+    "name": "Auto-escalate aged payout remittance with SLA citations",
     "folders": [
       "20-FIN",
       "21-OPS"
     ],
-    "what": "Beyond just showing a dashboard of unremitted COD cash, draft the actual escalation email to each courier's ops contact once a remittance passes that courier's own written SLA, citing the specific order IDs and the SLA clause.",
+    "what": "Beyond just showing a dashboard of undeposited payout cash (gateway, marketplace or, for India COD, courier), draft the actual escalation email to the source's support or ops contact once a remittance passes its own written SLA, citing the specific order IDs and the SLA clause.",
     "encompasses": [
-      "Detect the exact day a COD remittance crosses the courier's own SLA",
-      "Pull the specific order IDs and amounts still outstanding for that courier",
-      "Draft an escalation email citing the courier's own SLA clause and the aged order list",
-      "Track whether the courier responds and whether the cash actually lands after escalation",
-      "Roll a courier's repeated SLA misses into its quarterly vendor review automatically"
+      "Detect the exact day a payout or remittance crosses its source's own SLA (gateway, marketplace, or courier for India COD)",
+      "Pull the specific order IDs and amounts still outstanding for that source",
+      "Draft an escalation email citing the source's own SLA clause and the aged order list",
+      "Track whether the source responds and whether the cash actually lands after escalation",
+      "Roll a source's repeated SLA misses into its quarterly vendor review automatically"
     ],
     "inputs": [
-      "Courier remittance status feed",
-      "Written courier SLA per contract",
-      "Courier ops contact"
+      "Payout/remittance status feed (gateway, marketplace, or courier for India COD)",
+      "Written SLA per contract or platform terms",
+      "Source's support or ops contact"
     ],
     "outputs": [
       "Drafted escalation email per breach",
@@ -1532,23 +1586,24 @@
   {
     "id": "MONEY-C06",
     "extends": "MONEY-C06",
-    "name": "Plan seasonal and festive cash peaks on top of the rolling forecast",
+    "name": "Plan Q4 holiday and promo-calendar cash peaks on top of the rolling forecast",
     "folders": [
       "20-FIN"
     ],
-    "what": "Extend the rolling 13-week cash forecast to explicitly plan the festive-season cash squeeze: inventory pre-build financing before Diwali or BFCM, the COD collection lag during the peak, and GST refund timing that can free up cash.",
+    "what": "Extend the rolling 13-week cash forecast to explicitly plan the peak-season cash squeeze: inventory pre-build financing before Q4 holiday (Black Friday, Cyber Monday, Prime Day) and other named-date peaks (Mother's Day, Father's Day, back to school, Valentine's Day, July 4), and sales-tax refund or credit timing that can free up cash. India-selling brands plan the same squeeze around Diwali and wedding season, with the COD collection lag and GST input-credit refund timing added as a market option that reads null for US-only brands.",
     "encompasses": [
-      "Layer the festive/BFCM inventory pre-build cost onto the forecast weeks before the peak, not the week it ships",
-      "Model the COD collection lag widening during the peak (courier volume strain)",
-      "Track GST input-credit refund timing as a cash inflow, not just a compliance item",
+      "Layer the Q4/BFCM (or other named-peak) inventory pre-build cost onto the forecast weeks before the peak, not the week it ships",
+      "Track sales-tax refund or credit timing as a cash inflow, not just a compliance item",
       "Flag the single lowest-cash week across the whole peak build-up, not just the current 13 weeks",
-      "Compare this year's peak cash plan to last year's actual peak cash low"
+      "Compare this year's peak cash plan to last year's actual peak cash low",
+      "India only: model the COD collection lag widening during Diwali/wedding-season peak (courier volume strain) and track GST input-credit refund timing (reads null for US brands)"
     ],
     "inputs": [
       "Rolling cash forecast",
-      "Festive/marketing calendar",
+      "Holiday/promo marketing calendar",
       "Inventory pre-build plan",
-      "GST refund status"
+      "Sales-tax refund/credit status",
+      "India only: GST refund status"
     ],
     "outputs": [
       "Extended peak-season cash forecast",
@@ -1569,7 +1624,7 @@
     "subagent": "money_and_ops_specialist",
     "sources": {
       "web": [
-        "https://www.clickpost.ai/blog/rto-reduction-tools"
+        "https://www.shopify.com/enterprise/blog/holiday-shopping-statistics"
       ],
       "bank": []
     },
@@ -1581,52 +1636,53 @@
   {
     "id": "MONEY-C12",
     "extends": "MONEY-C12",
-    "name": "Prepare and file GST returns with e-invoicing and e-way bill workflow",
+    "name": "Prepare and file US state sales tax returns through Avalara or TaxJar",
     "folders": [
       "20-FIN"
     ],
-    "what": "Beyond tracking where GST liability exists, run the actual filing mechanics: generate e-invoices and e-way bills as orders ship, prepare GSTR-1 and GSTR-3B, and reconcile input tax credit against GSTR-2B before every filing.",
+    "what": "Beyond tracking where nexus exists, run the actual filing mechanics through Avalara or TaxJar: sync taxability and exemption/resale-certificate data, prepare and file the return in each registered state on its own schedule, and reconcile collected-vs-remitted before every filing. India-selling brands run the equivalent e-invoice, e-way bill and GSTR filing mechanics as a market option; that path reads null for US-only brands.",
     "encompasses": [
-      "Generate a compliant e-invoice at the point of sale for every applicable transaction",
-      "Generate an e-way bill for any shipment over the threshold value",
-      "Prepare GSTR-1 (outward supplies) from the sales register each period",
-      "Reconcile input tax credit claimed against GSTR-2B before filing GSTR-3B",
-      "Prepare GSTR-3B with the net tax payable computed, not estimated",
-      "Flag a mismatch between books, e-invoices and the GST portal before the filing deadline"
+      "Sync product taxability mappings and exemption/resale certificates into Avalara or TaxJar",
+      "Generate the return-ready transaction detail for every registered state each filing period",
+      "Prepare and file the state sales tax return on that state's own due date (monthly, quarterly or annual by state)",
+      "Reconcile sales tax collected against sales tax remitted per state before filing",
+      "Flag a mismatch between the ledger, the Avalara/TaxJar report and the state portal before the filing deadline",
+      "India only: generate a compliant e-invoice at point of sale, generate an e-way bill for shipments over the threshold, prepare GSTR-1 and GSTR-3B, and reconcile input tax credit against GSTR-2B before filing (reads null for US brands)"
     ],
     "inputs": [
-      "Sales register",
-      "Purchase register",
-      "GSTR-2B from the GST portal",
-      "E-invoice/e-way bill thresholds"
+      "Sales register by state",
+      "Avalara or TaxJar taxability and filing status",
+      "Resale/exemption certificates on file",
+      "India only: purchase register, GSTR-2B from the GST portal, e-invoice/e-way bill thresholds"
     ],
     "outputs": [
-      "Draft e-invoices and e-way bills",
-      "Draft GSTR-1 and GSTR-3B",
-      "ITC mismatch report"
+      "Draft state sales tax returns",
+      "Collected-vs-remitted reconciliation by state",
+      "India only: draft e-invoices, e-way bills, GSTR-1 and GSTR-3B, ITC mismatch report"
     ],
-    "trigger": "Per invoice/shipment for e-invoicing, monthly for GSTR-1/3B",
+    "trigger": "Per each state's own filing schedule (India: per invoice/shipment for e-invoicing, monthly for GSTR-1/3B)",
     "autonomy": "founder_gate",
     "external_write": {
       "needed": true,
-      "surface": "GST portal / GSP connector"
+      "surface": "Avalara or TaxJar, and state tax portals (India: GST portal / GSP connector)"
     },
     "tools": [
-      "GSP/e-invoice API or portal automation",
-      "ITC reconciliation script"
+      "Avalara or TaxJar",
+      "state tax portal filing automation",
+      "India only: GSP/e-invoice API or portal automation, ITC reconciliation script"
     ],
     "skills": [],
     "subagent": "money_and_ops_specialist",
     "sources": {
       "web": [
-        "https://gstzen.in/",
-        "https://gsthero.com/"
+        "https://www.avalara.com/",
+        "https://www.taxjar.com/"
       ],
       "bank": []
     },
     "found_in": "web_only",
-    "founder_sees": "The draft filings and any ITC mismatch before the deadline",
-    "human_role": "e-commerce accountant / GST practitioner",
+    "founder_sees": "The draft filings and any reconciliation mismatch before the deadline",
+    "human_role": "e-commerce accountant / sales-tax practitioner (India: GST practitioner)",
     "today_done_by": "freelancer"
   },
   {

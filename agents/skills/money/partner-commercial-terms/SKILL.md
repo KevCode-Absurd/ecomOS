@@ -9,17 +9,17 @@ outputs: commission rate table, payout reconciliation, agreement template, or di
 # Set and reconcile affiliate and creator commercial terms
 
 ## Purpose
-Protect margin on every partner payout and keep creator content inside India's disclosure rules.
+Protect margin on every partner payout and keep creator content inside the FTC's disclosure rules (ASCI's rules for an India-selling brand).
 
 ## Steps
 1. Set commission rates by partner type, product category margin and customer status (new versus returning).
 2. Reconcile what the affiliate network claims is owed against actual delivered, non-returned orders.
-3. Keep the creator agreement template current: deliverables, usage rights, exclusivity, payment terms and the disclosure clause matching the current ASCI guideline.
-4. Check live creator and affiliate posts weekly for the required disclosure tag on each platform.
+3. Keep the creator agreement template current: deliverables, usage rights, exclusivity, payment terms and the disclosure clause matching the current FTC Endorsement Guides (the ASCI guideline for India-selling brands).
+4. Check live creator and affiliate posts weekly for the required #ad disclosure tag on each platform (the ASCI-required tag for India).
 
 ## Checks
 - A returned or cancelled order never carries a paid commission.
-- The disclosure clause is checked against the current ASCI guideline, not an old template.
+- The disclosure clause is checked against the current FTC Endorsement Guides (or ASCI guideline for India), not an old template.
 
 ## Output
 The requested result: commission rate table, payout reconciliation, current agreement template, or a disclosure compliance check.

@@ -34,5 +34,5 @@ estimated. Trial conversion terms disclosed to the buyer up front.
 A referral offer spec, a partner candidate list, and a BNPL/trial pricing spec.
 
 ## Example
-"Give ₹300, get ₹300, capped at 1 reward per order pair, paid only after the
+"Give $10, get $10, capped at 1 reward per order pair, paid only after the
 referred order ships without a return - protects margin against return abuse."

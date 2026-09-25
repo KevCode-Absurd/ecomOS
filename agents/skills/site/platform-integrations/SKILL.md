@@ -29,4 +29,4 @@ Keep the store's app stack lean, its small operational rules automated without c
 An app audit report, working automation rules with an audit log, a short per-release memo, and (when relevant) an app release QA report.
 
 ## Example
-"Automation rule: auto-tag COD orders over ₹5,000 as 'high-risk-review'. Tested against 20 historical orders, correctly flagged 3 known RTO cases, enabled live."
+"Automation rule: auto-tag orders over $150 with a prior chargeback or return-to-sender history as 'high-risk-review'. Tested against 20 historical orders, correctly flagged 3 known cases, enabled live."

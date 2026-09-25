@@ -25,7 +25,8 @@ have caught first.
 5. Check for the brand's own price mismatch between its site and each marketplace, flagging any gap rather than
    silently reconciling it.
 6. Check every new product image and video against each channel's own size, crop and content rule before it is
-   pushed, since a Blinkit thumbnail and an Amazon main image have entirely different requirements.
+   pushed, since an Instacart thumbnail and an Amazon main image have entirely different requirements (india: a Blinkit
+   thumbnail; markets: IN).
 
 ## Checks
 - The feed has zero duplicate SKUs and zero missing GTINs before handoff.
@@ -36,6 +37,6 @@ have caught first.
 {master_feed, validation_report, quality_audit_report, price_mismatch_report, asset_spec_flags[]}
 
 ## Example
-Feed validated clean against Amazon's, Flipkart's and Blinkit's current schemas. Weekly audit found 3 SKUs with a
-broken image link on one marketplace and a ₹20 price mismatch between site and Flipkart: both flagged, neither
-auto-corrected.
+Feed validated clean against Amazon's, Walmart's and Instacart's current schemas. Weekly audit found 3 SKUs with a
+broken image link on one marketplace and a $2 price mismatch between site and Walmart: both flagged, neither
+auto-corrected. India: the same audit flags a ₹20 price mismatch between site and Flipkart instead (markets: IN).

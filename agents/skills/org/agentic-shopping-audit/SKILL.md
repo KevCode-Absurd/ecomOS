@@ -28,4 +28,4 @@ As merchants now sell through Agentic Storefronts inside ChatGPT, Copilot, Googl
 {audit_log[], routed_fixes[]}
 
 ## Example
-ChatGPT's shopping surface states stroller-v2 is "in stock, ₹7,999" when the live feed shows out of stock at ₹8,999: both a stock and a price mismatch, routed to the feed source-of-truth fix.
+ChatGPT's shopping surface states stroller-v2 is "in stock, $99.99" when the live feed shows out of stock at $119.99: both a stock and a price mismatch, routed to the feed source-of-truth fix.

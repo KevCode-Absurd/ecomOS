@@ -32,6 +32,6 @@ verbal estimate.
 {route, split{advance, balance, retention}, moq, float_days, cash_locked, financing_cost}
 
 ## Example
-Route: trade assurance (2-year relationship, but first order above ₹5L). Split: 30% advance / 70% on shipment.
-MOQ 5,000. Float: 21 days average. Cash locked at peak: ₹4.8L. Financing cost: ₹0 (no LC needed). Packet sent to
+Route: trade assurance (2-year relationship, but first order above $6,000). Split: 30% advance / 70% on shipment.
+MOQ 5,000. Float: 21 days average. Cash locked at peak: $5,750. Financing cost: $0 (no LC needed). Packet sent to
 Finance same day as deal close.

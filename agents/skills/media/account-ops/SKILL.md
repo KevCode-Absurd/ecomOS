@@ -25,5 +25,6 @@
 
     Output: a routing decision to one operations sub-skill.
 
-    Example: task says "it's the first week of October, Diwali sale is in 3 weeks."
-    -> routes to `media/account-ops/peak-sale-ramp`.
+    Example: task says "it's early November, Black Friday is in 3 weeks."
+    -> routes to `media/account-ops/peak-sale-ramp`. (India only: "it's the first week
+    of October, Diwali sale is in 3 weeks.")

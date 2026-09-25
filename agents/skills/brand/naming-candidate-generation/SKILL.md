@@ -24,4 +24,4 @@ A naming project fails when it generates too few candidates from too narrow a st
 `{naming_brief, raw_candidate_list: [50-100+ names]}`
 
 ## Example
-Brief flags: must not sound like [named competitor], must not translate poorly in Hindi, must work as a hashtag. Candidates generated across all 5 types, roughly 20 per type.
+Brief flags: must not sound like [named competitor], must not translate poorly in Spanish, must work as a hashtag. Candidates generated across all 5 types, roughly 20 per type.

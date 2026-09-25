@@ -36,4 +36,4 @@ builds to, so any downstream dispute has a written reference to check against.
 
 ## Example
 Tech pack v3 (v2 failed the drop test at 90cm). Box wall thickness raised from 3mm to 4.5mm corrugate, packaging cost
-line up ₹4.20/unit. Re-booked drop test passed at 120cm. Version 3 is the one cited in the next RFQ.
+line up $0.35/unit. Re-booked drop test passed at 120cm. Version 3 is the one cited in the next RFQ.
