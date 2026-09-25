@@ -60,6 +60,11 @@ class H(BaseHTTPRequestHandler):
         pass
 
     def _serve(self, with_body=True):
+        # read and discard any request body so the connection stays in sync for keep-alive
+        n = int(self.headers.get("Content-Length") or 0)
+        if n > 0:
+            try: self.rfile.read(n)
+            except Exception: pass
         host = self.headers.get("Host", "")
         scheme = "https" if isinstance(self.server, HTTPSServer) else "http"
         url = f"{scheme}://{host}{self.path}"
@@ -96,6 +101,8 @@ class H(BaseHTTPRequestHandler):
     def do_HEAD(self): self._serve(with_body=False)
     def do_POST(self): self._serve()
     def do_OPTIONS(self):
+        run = open(RUN).read().strip() if os.path.exists(RUN) else ""
+        self._log(run, f"OPTIONS {self.headers.get('Host','')}{self.path}", 204, 0, "preflight", "preflight")
         self.send_response(204); self.send_header("Access-Control-Allow-Origin", "*"); self.send_header("Access-Control-Allow-Headers", "*"); self.send_header("Access-Control-Allow-Methods", "*"); self.send_header("Content-Length", "0"); self.end_headers()
 
 
