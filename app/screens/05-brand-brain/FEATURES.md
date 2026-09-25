@@ -1,0 +1,97 @@
+# Brand brain: features
+
+Status: todo | doing | done | parked. One feature per commit. The first round is the skeleton; after that, features come in rounds of 10, stack-ranked by revenue impact, usefulness and how easy they are to build on dummy data.
+
+## Round 0: skeleton
+
+| # | Feature | Status |
+|---|---|---|
+| 0.1 | Page shell in the shared UI kit: header, empty-state tiles, insight list, action buttons | todo |
+| 0.2 | `api.py` serving this screen's metrics from `app/data/` with unavailable states | todo |
+| 0.3 | 3 metric tiles, 2 insights, 1 chart from the sample brand | todo |
+
+## Candidates from the room spec (pick 10 per round)
+
+### Questions this screen should answer
+
+- can I trust what this page is telling me right now  (BRN-C12)
+- what can and can't we say about this product  (BRN-C03)
+- why did we decide that, and when  (BRN-C08)
+- what does the system need from me to get unstuck  (BRN-C07)
+- the document says one thing and the site says another, which wins  (BRN-C05)
+- did a price, a policy or a claim change without me knowing  (BRN-C01)
+- is any of our data actually stale right now  (BRN-C02, BRN-C14)
+- what contract needs my attention before it auto-renews  (LOOP-C28)
+- is this page legally compliant before it goes live  (LOOP-C27)
+- does the agency staff see more of our brain than they should  (LOOP-C29)
+- is someone undercutting our price on Amazon or Walmart  (PROD-C46)
+- if we part ways with this agency, can we take everything with us  (LOOP-C22)
+
+### Metrics specified
+
+- `section_freshness`: Days since each brain section last collected or crawled. today - last successful collection date, per section
+- `confidence_tier_counts`: How many claims sit in each tier: approved, site-backed, forbidden, untiered. count of claims by tier
+- `open_questions_count`: How many gaps or conflicts are waiting on a founder answer. count of open question records with no founder answer
+- `conflict_count`: Facts where a document and the site (or two connectors) disagree. count of unresolved conflict records
+- `site_diff_count`: Products, prices, stock, policy or claim changes since the last crawl. count of diffs between the last two site snapshots
+- `connector_health_pct`: Share of connected sources that reported successfully in their own cadence. successful pulls / expected pulls, per source, rolled up
+- `contract_renewal_countdown`: Days left before each vendor or platform contract renews or its rate card expires. renewal_date - today, per contract
+- `legal_disclosure_pass_rate`: Share of live pages, policies and invoice templates carrying the required US disclosures. pages passing all required checks / pages checked
+- `marketplace_parity_flags`: Listings where price, content or stock diverge from the brand's own D2C data, by marketplace. count of listing fields differing from the brand's stated price, stock and approved claims
+- `permission_coverage_pct`: Share of brain sections with an assigned permission table entry. sections with an explicit permission entry / total sections
+- `competitor_snapshot_age`: Days since each tracked competitor's ads, site and price were last captured. today - last snapshot date, per competitor
+- `voice_sheet_examples_count`: How many liked, disliked and site-backed examples back the current voice sheet. count of tagged voice examples
+
+### Insights specified (rules in code)
+
+- claim untiered too long: a claim has sat untiered for more than 7 days → "{claim} has been untiered for {n} days and needs a founder call" (action BRN-C07)
+- source conflict: a document fact and the live site disagree on the same field → "{document} says {value_a}, the site says {value_b}; the site wins by default until you say otherwise" (action BRN-C05)
+- site changed unnoticed: a price, stock, policy or claim diff appears between two crawls → "{field} changed from {old} to {new} on {date}" (action BRN-C01)
+- connector failing: connector_health_pct falls under 90% for a source over its own cadence → "{source} has missed {n} of its last {m} expected pulls; its fields show unavailable, not zero" (action BRN-C02)
+- contract renewal approaching: contract_renewal_countdown falls inside the alert window sized for that vendor type → "{vendor} renews in {n} days; last terms were {rate} agreed on {date}" (action LOOP-C28)
+- contract missing renewal date: a stored contract has no renewal date field → "{vendor}'s contract has no renewal date on file and is marked incomplete" (action LOOP-C28)
+- disclosure missing: a live or about-to-ship page fails a required US disclosure check → "{page} is missing {disclosure}; this blocks going live" (action LOOP-C27)
+- MAP violation: a marketplace listing price sits below the brand's stated minimum advertised price → "{marketplace} lists {product} at {price}, below your {map_price} minimum" (action PROD-C46)
+- unauthorized reseller: a marketplace listing's seller name does not match the brand's own account → "An unrecognised seller is listing {product} on {marketplace}" (action PROD-C46)
+- permission gap: a brain section has no assigned permission entry → "{section} has no permission set and defaults to restricted" (action LOOP-C29)
+- competitor snapshot stale: competitor_snapshot_age exceeds 7 days → "{competitor} was last captured {n} days ago" (action BRN-C11)
+- founder question round due: open_questions_count reaches 4 or more, or one open question blocks a running item → "{n} open questions are waiting; it is time for a founder round" (action BRN-C07)
+
+### Visuals specified
+
+- freshness x confidence heatmap (heatmap grid): each brain section on freshness (rows) against confidence tier (columns)
+- claims tier bar (stacked bar): count of claims by tier: approved, site-backed, forbidden, untiered
+- decisions log timeline (vertical timeline): founder decisions with reason and date, most recent first
+- conflict table (two-column comparison table): each unresolved conflict, source A value versus source B value, with the site marked as current default
+- contract renewal calendar (horizontal timeline / gantt strip): each vendor contract's renewal date with the alert window marked
+- permission matrix (grid): brain sections (rows) against roles or people (columns) with view rights marked
+- marketplace parity strip (small multiples per marketplace): brand's own price versus marketplace price versus MAP line, per SKU with a flag
+
+### Not in the usual tools
+
+- claims tiered approved, site-backed or forbidden, tied to red lines and forbidden-claim detection, not generic content staleness
+- a conflict between a document and the live site resolved with a stated default (the site wins) rather than left for a person to notice
+- marketplace listings diffed against the brand's own price, stock and claims the same way the D2C site is crawled
+- vendor and platform contracts extracted into renewal alerts sized to how long a renegotiation takes, inside the same brain as everything else about the brand
+- US legal disclosure gate (FTC, CAN-SPAM, CCPA privacy policy, sales tax on invoices, return policy, auto-renewal) checked before a page ships, as a blocking check, not a general CMS compliance plugin
+- a permission map enforced the same way whether a person opens the brain directly or asks a question in chat
+
+### Data this screen needs
+
+- `brain_sections`: brand, section, last_collected, confidence, source, unavailable_flag (brain-keeper collectors)
+- `claims`: brand, claim_text, tier, source, date, product_or_page (BRN-C03)
+- `open_questions`: brand, question, raised_date, blocks, answered_date, answer (BRN-C07)
+- `conflicts`: brand, field, source_a, value_a, source_b, value_b, default_winner, resolved (BRN-C05)
+- `site_snapshots`: brand, page, snapshot_date, products, prices, stock, policies, claims, scripts (site crawler)
+- `connector_log`: brand, source, expected_pulls, successful_pulls, last_success (BRN-C02)
+- `vendor_contracts`: brand, vendor, type, renewal_date, rate_card, sla_terms, source_doc, last_diff (LOOP-C28 document reader)
+- `disclosure_checks`: brand, page_or_template, check, pass_fail, checked_date (LOOP-C27)
+- `marketplace_listings`: brand, marketplace, sku, price, map_price, seller_name, stock, content_diff, snapshot_date (LOOP-C30 marketplace snapshot)
+- `permission_table`: brand, section, role_or_person, access_level (LOOP-C29)
+- `competitor_snapshots`: brand, competitor, ads, site, prices, launches, snapshot_date (BRN-C11)
+- `decisions_log`: brand, date, topic, decision, reason, person (BRN-C08)
+
+## Rounds
+
+| Round | Features picked | Date | Notes |
+|---|---|---|---|

@@ -75,6 +75,10 @@ Not built yet: the brand brain and metric contract, the experiment registry, the
 - Meta: the Meta Ads MCP connector in Claude (read tools only). The direct Marketing API is not active yet.
 - Metabase: https://analyze.gehnaindia.com dashboard 6 (website sales). The connector cannot read the cards yet, so daily data came from a signed-in browser. Production access is coming.
 
+## The build (from 25 Sep 2026)
+
+The product is built screen by screen in `app/`, the way the Meta gallery was built: a skeleton, then features in rounds of 10 on a fictional US sample brand (Tallgrass Goods) with generated data. Read `app/CLAUDE.md` and `app/BUILD-PLAN.md`. Each screen folder under `app/screens/` has its own CLAUDE.md and FEATURES.md; a build session works in one folder and reads only `app/CLAUDE.md`, `app/contracts/` and that folder. The spec shelf is `agents/` (catalogue, rooms, workflows, skills); screens link to it by id and never copy it. US brand by default; market-only fields read null.
+
 ## Next steps (Kevin picks the track)
 
 - Copy track: build a compact Peach Bucket writing brief from Kevin's liked and disliked examples, then write 3 real requests with ad-copy v1.2 and only the cards each decision needs. Judge by whether Kevin would use them and how much editing they need.
