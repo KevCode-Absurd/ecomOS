@@ -1,0 +1,2011 @@
+[
+ {
+  "id": "CREA-C01",
+  "name": "Mine customer language into a research packet",
+  "folders": [
+   "10-MCR",
+   "11-ADC"
+  ],
+  "what": "Gathers raw voice-of-customer material, reviews, support tickets, buyer interviews, site search terms and founder video, and turns it into one research packet strategists and copywriters draw angles and proof from.",
+  "encompasses": [
+   "Mine 5-star and 1-star reviews for exact customer phrases",
+   "Pull support ticket and chat transcripts for named objections",
+   "Run or commission 12 to 15 buyer interviews before a new product's copy",
+   "Mine site search and on-site search terms for buying language",
+   "Distill founder or brand video content into a compile document with an LLM",
+   "Log consent before contacting checkout abandoners for research",
+   "Read every research pass for surprises, not to confirm the team's own belief",
+   "Build one feature-and-benefit table per product line",
+   "Hunt the keystone fact and untold process facts behind a product"
+  ],
+  "inputs": [
+   "brand brain: reviews and support tickets",
+   "brand brain: audience notes",
+   "warehouse: reviews and support tickets",
+   "founder interview transcripts"
+  ],
+  "outputs": [
+   "research packet (quotes tagged by theme)",
+   "feature-benefit table",
+   "keystone-fact list"
+  ],
+  "trigger": "on demand",
+  "autonomy": "agent_does",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [
+   "script: scripts/search_knowledge.py",
+   "script: intelligence/creative_retrieval.py"
+  ],
+  "skills": [
+   "voice-of-customer-mining"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [],
+   "bank": [
+    "ADC-009",
+    "ADC-010",
+    "ADC-011",
+    "ADC-012",
+    "ADC-013",
+    "ADC-014",
+    "ADC-018",
+    "ADC-139",
+    "ADC-170",
+    "ADC-171",
+    "ADC-205",
+    "ADC-207",
+    "MCR-014",
+    "MCR-015",
+    "MCR-019",
+    "MCR-162"
+   ]
+  },
+  "found_in": "bank_only",
+  "founder_sees": "A short digest of what customers actually say, with quotes and where each one came from."
+ },
+ {
+  "id": "CREA-C02",
+  "name": "Build and refresh buyer personas",
+  "folders": [
+   "10-MCR"
+  ],
+  "what": "Builds and updates data-grounded buyer personas from customer language rather than demographic labels, and opens a new persona once the main one plateaus.",
+  "encompasses": [
+   "Draft personas by hand from the research packet's own language",
+   "Run one AI expansion round, validated against real quotes",
+   "Retire a persona once its ads stop converting",
+   "Open a new persona or use-case facet once the current one plateaus",
+   "Tag each persona with its own vocabulary and objections"
+  ],
+  "inputs": [
+   "research packet (C01)",
+   "brand brain: audience",
+   "metric contract: acquisition_efficiency history"
+  ],
+  "outputs": [
+   "persona records (belief, vocabulary, objections, plateau status)"
+  ],
+  "trigger": "monthly",
+  "autonomy": "agent_does",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [
+   "script: scripts/search_knowledge.py"
+  ],
+  "skills": [
+   "persona-builder"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [],
+   "bank": [
+    "MCR-012",
+    "MCR-013",
+    "MCR-018"
+   ]
+  },
+  "found_in": "bank_only",
+  "founder_sees": "A short list of who is being sold to right now, and why the next persona is being opened."
+ },
+ {
+  "id": "CREA-C03",
+  "name": "Define ad angles, appeals and positioning",
+  "folders": [
+   "10-MCR",
+   "11-ADC"
+  ],
+  "what": "Turns the research packet and product facts into a small set of testable angles, each one sentence for one persona, holding one dominant appeal, one buying question and one true point of difference.",
+  "encompasses": [
+   "Write the one-sentence angle for one persona and one problem",
+   "Write the buying question: the belief the reader holds now and the belief they need",
+   "Pick the one dominant appeal the product can credibly satisfy",
+   "Default to cure-and-reward framing over prevention",
+   "Name the real rival as a habit or an old way, never a competitor brand",
+   "Check that no rival could honestly claim the same unique mechanism",
+   "Set story depth and appeal strength by awareness stage",
+   "Keep one idea per SKU or collection, never one idea for the whole store",
+   "Slow the agitation and widen self-identification for luxury or high-ticket goods"
+  ],
+  "inputs": [
+   "research packet (C01)",
+   "brand brain: products and claims tiers",
+   "metric contract: conversion history",
+   "approved idea record"
+  ],
+  "outputs": [
+   "angle brief (persona, problem, appeal, buying question, mechanism)"
+  ],
+  "trigger": "on demand",
+  "autonomy": "agent_does",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [
+   "script: intelligence/creative_retrieval.py",
+   "script: scripts/ideas.py"
+  ],
+  "skills": [
+   "angle-and-hook-workshop"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [],
+   "bank": [
+    "ADC-016",
+    "ADC-017",
+    "ADC-019",
+    "ADC-020",
+    "ADC-021",
+    "ADC-022",
+    "ADC-024",
+    "ADC-025",
+    "ADC-026",
+    "ADC-027",
+    "ADC-044",
+    "ADC-083",
+    "ADC-123",
+    "ADC-159",
+    "ADC-161",
+    "ADC-186",
+    "ADC-200",
+    "ADC-201",
+    "MCR-004",
+    "MCR-005",
+    "MCR-006",
+    "MCR-009",
+    "MCR-011",
+    "MCR-017",
+    "MCR-033",
+    "MCR-042",
+    "MCR-077",
+    "MCR-183",
+    "MCR-184",
+    "MCR-185"
+   ]
+  },
+  "found_in": "bank_only",
+  "founder_sees": "The one-sentence angle plan behind a coming batch of ads, in plain words."
+ },
+ {
+  "id": "CREA-C04",
+  "name": "Build and grade hook banks",
+  "folders": [
+   "10-MCR",
+   "11-ADC"
+  ],
+  "what": "Writes and grades opening hooks for cold video, VSL and static ads, and multiplies a working hook into layered variants across audio, on-screen copy and visual.",
+  "encompasses": [
+   "Write hooks that name the persona's problem before the product",
+   "Grade each hook for clarity, relevance, novelty, specificity and credibility",
+   "Vary hooks across angle, offer, persona and format",
+   "Keep the product name, image and offer out of a cold hook",
+   "Check a curiosity hook against a real payoff before use",
+   "Multiply one working hook into audio, copy and visual variants",
+   "Clear rights before using a famous face or trending audio in a hook",
+   "Open a hook with the problem, adding a persona label only if it widens relevance"
+  ],
+  "inputs": [
+   "angle brief (C03)",
+   "brand voice notes",
+   "past hook performance tags"
+  ],
+  "outputs": [
+   "hook bank grouped by angle and format",
+   "hook variant list"
+  ],
+  "trigger": "on demand",
+  "autonomy": "agent_does",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [
+   "script: intelligence/creative_retrieval.py",
+   "meta_gallery: themes.py tag reader"
+  ],
+  "skills": [
+   "angle-and-hook-workshop"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [
+    "https://adligator.com/blog/facebook-ad-creative-trends-2026",
+    "https://www.webtonic.io/blog/e-commerce-ad-creative-statistics"
+   ],
+   "bank": [
+    "ADC-035",
+    "ADC-038",
+    "ADC-039",
+    "ADC-040",
+    "ADC-043",
+    "MCR-010",
+    "MCR-016",
+    "MCR-071",
+    "MCR-072",
+    "MCR-073",
+    "MCR-074",
+    "MCR-075",
+    "MCR-076",
+    "MCR-078",
+    "MCR-079",
+    "MCR-084",
+    "MCR-085",
+    "MCR-173",
+    "MCR-174",
+    "MCR-181"
+   ]
+  },
+  "found_in": "web+bank",
+  "founder_sees": "The hooks going into next week's tests, and why each one was written that way."
+ },
+ {
+  "id": "CREA-C05",
+  "name": "Generate and test headline and primary-text sets",
+  "folders": [
+   "10-MCR",
+   "11-ADC"
+  ],
+  "what": "Writes headline and primary-text variant sets for statics, search and marketplace placements, each with a true specific and checked against length and image fit.",
+  "encompasses": [
+   "Write a bank of 10 or more headline candidates before choosing 3",
+   "Put a true number, time, count or price in the headline",
+   "Keep headlines to 12 words or fewer, prefer the shorter option",
+   "Run the what-is-sold test on the headline alone",
+   "Test the headline against the real image before shipping",
+   "Generate headline variants from a bank of proven opener words",
+   "Keep product-shot headlines to 5 or 6 words that beat the current alternative"
+  ],
+  "inputs": [
+   "angle brief",
+   "brand brain: product facts",
+   "reference image for headline-image check"
+  ],
+  "outputs": [
+   "headline and primary-text variant set, by placement"
+  ],
+  "trigger": "on demand",
+  "autonomy": "agent_does",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [
+   "script: intelligence/creative_retrieval.py"
+  ],
+  "skills": [
+   "angle-and-hook-workshop",
+   "copy-editing-pass"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [],
+   "bank": [
+    "ADC-023",
+    "ADC-030",
+    "ADC-031",
+    "ADC-032",
+    "ADC-033",
+    "ADC-034",
+    "ADC-036",
+    "ADC-163",
+    "MCR-041"
+   ]
+  },
+  "found_in": "bank_only",
+  "founder_sees": "The exact headline options for a coming ad, each with why it should work."
+ },
+ {
+  "id": "CREA-C06",
+  "name": "Write standardized concept and creative briefs",
+  "folders": [
+   "10-MCR",
+   "11-ADC"
+  ],
+  "what": "Writes the one-page creative brief, persona, angle, offer, destination, awareness stage, before any design tool or shoot is booked, using the same fixed fields every time.",
+  "encompasses": [
+   "Fill the fixed brief fields: persona, problem, angle, offer, destination, format, stage",
+   "Confirm the click destination matches the offer before sign-off",
+   "Write a reusable copy skeleton for a catalogue brand's product line",
+   "Write the 3-part reader, belief, line brief before drafting any ad",
+   "Write a one-paragraph messaging strategy before a new product's copy",
+   "Keep hook, image, copy and destination at the same awareness stage"
+  ],
+  "inputs": [
+   "approved idea record",
+   "brand brain: products",
+   "angle brief (C03)"
+  ],
+  "outputs": [
+   "creative brief document",
+   "copy skeleton template"
+  ],
+  "trigger": "event: idea approved",
+  "autonomy": "agent_does",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [],
+  "skills": [
+   "concept-brief-builder"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [],
+   "bank": [
+    "ADC-028",
+    "ADC-188",
+    "ADC-197",
+    "MCR-001",
+    "MCR-003",
+    "MCR-022",
+    "MCR-029",
+    "MCR-150",
+    "MCR-178"
+   ]
+  },
+  "found_in": "bank_only",
+  "founder_sees": "The one-page brief that will drive the next batch of ads."
+ },
+ {
+  "id": "CREA-C07",
+  "name": "Write static ad production briefs and generate variants",
+  "folders": [
+   "10-MCR"
+  ],
+  "what": "Writes the design brief for a static ad, eye path, image-headline pairing, primary-text weight, and produces image concepts and variants through the creative studio from a reference image, a winning ad or the real product photo.",
+  "encompasses": [
+   "Give every static three jobs: stop the scroll, say the message, drive the click",
+   "Pick clarity or curiosity for a static, never the middle",
+   "Design the eye path so the highest-awareness message lands first",
+   "Give primary text and headline equal weight to the image",
+   "Avoid a plain white-background product shot for cold traffic",
+   "Scale a proven static by swapping one element, not the whole format",
+   "Drop the corner logo unless it is a deliberate native reveal",
+   "Generate variants from a pasted reference image or a competitor layout, layout and mood only",
+   "Keep the real product photo in any AI-touched image where accuracy matters"
+  ],
+  "inputs": [
+   "creative brief (C06)",
+   "reference image",
+   "brand kit (colors, product photos)",
+   "real product photo"
+  ],
+  "outputs": [
+   "static ad design brief",
+   "generated image variants (draft)"
+  ],
+  "trigger": "on demand",
+  "autonomy": "agent_does",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [
+   "meta_gallery: web/studio.js /api/variants",
+   "meta_gallery: web/studio.js /api/competitor-variants",
+   "Higgsfield: product-shot presets",
+   "script: intelligence/creative_retrieval.py"
+  ],
+  "skills": [
+   "static-ad-brief"
+  ],
+  "subagent": "Creative Studio Operator",
+  "sources": {
+   "web": [
+    "https://www.webtonic.io/blog/e-commerce-ad-creative-statistics"
+   ],
+   "bank": [
+    "MCR-034",
+    "MCR-035",
+    "MCR-036",
+    "MCR-037",
+    "MCR-038",
+    "MCR-039",
+    "MCR-040",
+    "MCR-045",
+    "MCR-046",
+    "MCR-048",
+    "MCR-049",
+    "MCR-153",
+    "MCR-182"
+   ]
+  },
+  "found_in": "web+bank",
+  "founder_sees": "The static ad concept and a first-pass image to react to."
+ },
+ {
+  "id": "CREA-C08",
+  "name": "Write video ad scripts and storyboards",
+  "folders": [
+   "10-MCR"
+  ],
+  "what": "Scripts cold video, VSL and testimonial-style ads in the proven order, hook, bridge, mechanism, product, proof, objection, CTA, and storyboards the shot list, sized to how much education the product actually needs.",
+  "encompasses": [
+   "Build a VSL only when the product needs real education to convert",
+   "Script the VSL in 7 parts from hook to CTA",
+   "Start length short and cut down further, not the reverse",
+   "Keep a clear CTA on the first VSL rather than testing no CTA",
+   "Bridge to education before naming the product",
+   "Reveal the product only as slowly as the awareness stage allows",
+   "Stack proof after the product and match it to the viewer",
+   "Close with a reason to buy, a risk reversal and one CTA with no open loop",
+   "Fix the opening of an underperforming video before the back half",
+   "Edit pace to match the format's polish level",
+   "Use a numbered-reasons body for routine, consumable products"
+  ],
+  "inputs": [
+   "creative brief (C06)",
+   "angle brief (C03)",
+   "hook bank (C04)",
+   "brand claims tiers",
+   "product facts"
+  ],
+  "outputs": [
+   "video script (scene by scene)",
+   "storyboard shot list"
+  ],
+  "trigger": "on demand",
+  "autonomy": "agent_does",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [
+   "script: intelligence/creative_retrieval.py",
+   "Higgsfield: get_workflow_instructions (ad-multiplier, character-sheet)"
+  ],
+  "skills": [
+   "video-script-builder"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [
+    "https://invideo.io/make/ugc-ads/",
+    "https://creatify.ai/blog/how-to-make-your-first-ai-ugc-video-ad"
+   ],
+   "bank": [
+    "MCR-055",
+    "MCR-056",
+    "MCR-057",
+    "MCR-058",
+    "MCR-059",
+    "MCR-061",
+    "MCR-062",
+    "MCR-063",
+    "MCR-064",
+    "MCR-066",
+    "MCR-070",
+    "MCR-107",
+    "MCR-108",
+    "MCR-109",
+    "MCR-110",
+    "MCR-111",
+    "MCR-112",
+    "MCR-113",
+    "MCR-170",
+    "MCR-171",
+    "MCR-180"
+   ]
+  },
+  "found_in": "web+bank",
+  "founder_sees": "The full script for a new video ad, with the reason for each section."
+ },
+ {
+  "id": "CREA-C09",
+  "name": "Write founder-led and authority-driven ad scripts",
+  "folders": [
+   "10-MCR",
+   "11-ADC"
+  ],
+  "what": "Scripts founder and creator-authority ads as an argument for the viewer's problem, never a biography, using only real, permissioned stories and reviews, and diversifies scenes so one founder does not fatigue the whole account.",
+  "encompasses": [
+   "Build the founder script as claim, proof, mechanism, proof, CTA",
+   "Keep the founder story to origin, mechanism and the adversarial angle only",
+   "Tell it through the viewer's problem, not the founder's biography",
+   "Verify the founder story and reviews are real and unaltered before use",
+   "Diversify founder ads by scene, format and involvement level",
+   "Borrow category authority when there is no famous face",
+   "Test swapping the face before scaling a founder ad on cold traffic",
+   "Test removing the founder to open a new audience",
+   "Use matching customer proof instead of founder self-vouching",
+   "Put a real, named person behind founder-led copy, never an invented authority"
+  ],
+  "inputs": [
+   "founder facts and quotes (brand brain)",
+   "approved reviews",
+   "creative brief (C06)"
+  ],
+  "outputs": [
+   "founder ad script",
+   "authority-ad script"
+  ],
+  "trigger": "on demand",
+  "autonomy": "agent_does",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [
+   "script: intelligence/creative_retrieval.py"
+  ],
+  "skills": [
+   "video-script-builder"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [],
+   "bank": [
+    "ADC-095",
+    "MCR-067",
+    "MCR-068",
+    "MCR-090",
+    "MCR-091",
+    "MCR-092",
+    "MCR-093",
+    "MCR-095",
+    "MCR-103",
+    "MCR-169",
+    "MCR-172"
+   ]
+  },
+  "found_in": "bank_only",
+  "founder_sees": "The founder script, with which facts in it are real and sourced."
+ },
+ {
+  "id": "CREA-C10",
+  "name": "Build UGC and creator sourcing briefs",
+  "folders": [
+   "10-MCR"
+  ],
+  "what": "Writes the creator brief, never UGC without a concept, sets the vetting bar from past creator work, and tracks usage rights so a whitelisted post or licensed clip does not run past its window.",
+  "encompasses": [
+   "Give every UGC ask a concept, not just an instruction to make content",
+   "Brief creators in detail, allow up to 2 takes",
+   "Vet a new creator by the brief behind their best past post",
+   "Choose a wide brief for discovery or a specific one for replication",
+   "Run partnership or whitelisted ads only through a page that already posts well",
+   "Log usage rights, scope and expiry per creator asset",
+   "Build and maintain a standing creator roster"
+  ],
+  "inputs": [
+   "creative brief (C06)",
+   "brand voice notes",
+   "creator roster"
+  ],
+  "outputs": [
+   "creator brief",
+   "usage-rights log entry"
+  ],
+  "trigger": "event: rights expiring",
+  "autonomy": "human_assist",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [],
+  "skills": [
+   "ugc-creator-brief"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [
+    "https://sideshift.app/blog/ugc-usage-rights",
+    "https://soona.co/blog/the-best-ugc-platforms-in-2026"
+   ],
+   "bank": [
+    "MCR-096",
+    "MCR-098",
+    "MCR-099",
+    "MCR-101",
+    "MCR-175"
+   ]
+  },
+  "found_in": "web+bank",
+  "founder_sees": "The brief a creator would receive, and which rights are about to lapse."
+ },
+ {
+  "id": "CREA-C11",
+  "name": "Select and craft native platform formats",
+  "folders": [
+   "10-MCR",
+   "11-ADC"
+  ],
+  "what": "Picks a native TikTok- or Reels-style format from the product's actual trait, not a trend, and writes it so it does not read as an ad, matching the platform's own editorial style.",
+  "encompasses": [
+   "Pick a native format by product trait: demo, transformation or POV",
+   "Write paid content in the platform's native editorial style",
+   "Judge a native video by purchases per view, not by views"
+  ],
+  "inputs": [
+   "creative brief (C06)",
+   "product facts"
+  ],
+  "outputs": [
+   "native format brief"
+  ],
+  "trigger": "on demand",
+  "autonomy": "agent_does",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [
+   "script: intelligence/creative_retrieval.py"
+  ],
+  "skills": [
+   "video-script-builder"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [],
+   "bank": [
+    "ADC-169",
+    "MCR-104",
+    "MCR-105"
+   ]
+  },
+  "found_in": "bank_only",
+  "founder_sees": "Which native format was picked for a video ad, and why."
+ },
+ {
+  "id": "CREA-C12",
+  "name": "Direct product photography and image accuracy",
+  "folders": [
+   "10-MCR",
+   "11-ADC"
+  ],
+  "what": "Sets direction for product photography and any AI-touched image so the product shown matches what arrives at home, and points a photographed person's gaze toward the CTA.",
+  "encompasses": [
+   "Require the real product photo in any AI-assisted image where accuracy matters",
+   "Check proof imagery is recognizable and true to the shipped product",
+   "Direct eye-line and gaze toward the CTA in a shot with a person"
+  ],
+  "inputs": [
+   "real product photos (brand brain)",
+   "creative brief (C06)"
+  ],
+  "outputs": [
+   "photography and image direction note"
+  ],
+  "trigger": "on demand",
+  "autonomy": "agent_does",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [
+   "Higgsfield: product-shot presets"
+  ],
+  "skills": [
+   "static-ad-brief"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [],
+   "bank": [
+    "ADC-203",
+    "MCR-043"
+   ]
+  },
+  "found_in": "bank_only",
+  "founder_sees": "A short note on what the product shot must show accurately."
+ },
+ {
+  "id": "CREA-C13",
+  "name": "Build the offer as a creative and copy lever",
+  "folders": [
+   "10-MCR",
+   "11-ADC"
+  ],
+  "what": "Writes the offer itself, bundle, guarantee, urgency, value stack, trial, tiered ladder, as a lever the creative and copy can use, always checked against what operations can actually honor.",
+  "encompasses": [
+   "Treat the offer as a concept lever, not just a discount",
+   "Word a bundle or kit as inclusion, real saving, and why-together in one line",
+   "Write the strongest guarantee operations can honor, placed at the decision point",
+   "Use a deadline only when it is real, stated in digits",
+   "Build a real, computed value stack so believed value beats price",
+   "Limit a special offer to a group the buyer plausibly belongs to",
+   "Offer a free trial on request over a part-price sample",
+   "Build a three-tier offer ladder from entry product to premium tier",
+   "Gate a discount behind email capture at exit intent",
+   "Bundle a low-ticket item when unit price cannot cover ad cost"
+  ],
+  "inputs": [
+   "brand brain: pricing and policies",
+   "ops sign-off on guarantee terms",
+   "metric contract: aov and margin_cogs"
+  ],
+  "outputs": [
+   "offer copy block",
+   "offer construction note for the idea record"
+  ],
+  "trigger": "event: new offer approved",
+  "autonomy": "founder_gate",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [],
+  "skills": [
+   "offer-and-price-framing"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [],
+   "bank": [
+    "ADC-063",
+    "ADC-072",
+    "ADC-073",
+    "ADC-074",
+    "ADC-076",
+    "ADC-077",
+    "ADC-078",
+    "ADC-079",
+    "ADC-080",
+    "ADC-135",
+    "ADC-136",
+    "ADC-137",
+    "ADC-145",
+    "ADC-147",
+    "ADC-149",
+    "ADC-155",
+    "MCR-008",
+    "MCR-120",
+    "MCR-121",
+    "MCR-187"
+   ]
+  },
+  "found_in": "bank_only",
+  "founder_sees": "The exact offer wording and the operational limit it must not cross."
+ },
+ {
+  "id": "CREA-C14",
+  "name": "Run claim, policy and compliance checks",
+  "folders": [
+   "10-MCR",
+   "11-ADC"
+  ],
+  "what": "Checks every claim, testimonial, guarantee line and comparison in a creative or copy set against the brand record's claim tiers and current platform policy before it ships, and flags anything that cannot be traced to evidence.",
+  "encompasses": [
+   "Never invent a number, study, count or as-seen-in claim",
+   "Verify an impressive claim against a document or test on file",
+   "Check each claim type against current platform ad policy",
+   "Keep testimonials real, permitted in writing and unaltered in meaning",
+   "Match guarantee wording exactly to the brand record's eligibility limits",
+   "Disclose paid partnerships, never present a brand page as independent",
+   "Replace graphic before-after imagery with an illustrated version for sensitive claims",
+   "Run a policy check on any line implying a personal attribute",
+   "Run the reasonable-reader test on figurative headline language",
+   "Produce a full claim-audit table before a set ships",
+   "Clear rights before using a famous face or trending term"
+  ],
+  "inputs": [
+   "brand brain: claims tiers (approved, site-backed, forbidden)",
+   "current platform ad policy",
+   "draft creative/copy set"
+  ],
+  "outputs": [
+   "claim audit table",
+   "pass/fail flags per line"
+  ],
+  "trigger": "event: before every set ships",
+  "autonomy": "agent_does",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [
+   "script: scripts/search_knowledge.py",
+   "brand brain reader"
+  ],
+  "skills": [
+   "claim-compliance-audit"
+  ],
+  "subagent": "Claim Auditor",
+  "sources": {
+   "web": [
+    "https://www.ftc.gov/business-guidance/advertising-marketing/health-claims",
+    "https://www.ftc.gov/legal-library/browse/ftc-policy-statement-regarding-advertising-substantiation"
+   ],
+   "bank": [
+    "ADC-060",
+    "ADC-069",
+    "ADC-075",
+    "ADC-115",
+    "ADC-116",
+    "ADC-117",
+    "ADC-118",
+    "ADC-119",
+    "ADC-120",
+    "ADC-122",
+    "MCR-044",
+    "MCR-047",
+    "MCR-080",
+    "MCR-094",
+    "MCR-156",
+    "MCR-157",
+    "MCR-158",
+    "MCR-159",
+    "MCR-160",
+    "MCR-161"
+   ]
+  },
+  "found_in": "web+bank",
+  "founder_sees": "The claim audit table, with anything unresolved called out before it ships."
+ },
+ {
+  "id": "CREA-C15",
+  "name": "Diagnose creative fatigue and plan revivals",
+  "folders": [
+   "10-MCR",
+   "11-ADC"
+  ],
+  "what": "Tells apart a genuinely worn-out ad from a small persona pool, then revives a fatigued winner with a new hook or format swap before commissioning a whole new concept.",
+  "encompasses": [
+   "Diagnose fatigue as audience exhaustion versus a small persona pool",
+   "Revive with new-footage hooks on the same body first",
+   "Rotate format, not just hooks, when a winner fatigues",
+   "Keep a real swing in every iteration, plus some net-new concepts every batch",
+   "Split a fatigued testimonial into a new hook with the old customer body",
+   "Move a strong mid-ad line to the hook as a cheap retest",
+   "Keep a winner running until its own numbers decline, then swap execution, not the appeal"
+  ],
+  "inputs": [
+   "meta_gallery: lifecycle metrics (days to fatigue)",
+   "ad-level results",
+   "hook bank (C04)"
+  ],
+  "outputs": [
+   "fatigue diagnosis note",
+   "revival brief"
+  ],
+  "trigger": "weekly",
+  "autonomy": "agent_does",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [
+   "meta_gallery: ENGINE.lifecycle",
+   "meta_gallery: web/lab.js breakdown"
+  ],
+  "skills": [
+   "creative-fatigue-diagnosis"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [
+    "https://www.tryatria.com/blog/meta-creative-fatigue-diagnose-and-fix-2026",
+    "https://hawky.ai/blog/identify-fix-creative-fatigue-ads"
+   ],
+   "bank": [
+    "ADC-126",
+    "MCR-065",
+    "MCR-089",
+    "MCR-102",
+    "MCR-140",
+    "MCR-141",
+    "MCR-142",
+    "MCR-143"
+   ]
+  },
+  "found_in": "web+bank",
+  "founder_sees": "Which ads are fatiguing and the exact fix planned, not a request for a whole new concept."
+ },
+ {
+  "id": "CREA-C16",
+  "name": "Break down and analyze own ad winners and losers",
+  "folders": [
+   "10-MCR",
+   "11-ADC"
+  ],
+  "what": "Breaks every winner and loser into its parts, hook, structure, proof, offer, CTA, with a written hypothesis for why it worked or did not, using the account's own numbers, not last-click ROAS alone.",
+  "encompasses": [
+   "Read the full chain: attention, click, post-click, incremental result",
+   "Check CTR against link CTR before trusting a high click rate",
+   "Rank ads by spend first, then require the result to hold",
+   "Judge winners on incremental or 7-day-click results at ad-set level",
+   "Judge total portfolio profit, not the single best ROAS",
+   "Assign each surviving ad a funnel role from its real metrics",
+   "Run a frame-by-frame teardown on a live video before fixing it",
+   "Grade a draft against a rubric built from the account's own winners",
+   "Reskin a winning structure with new facts, never clone it",
+   "Check a winning format fits the new topic before reusing it",
+   "Find the natural break point between a winners pile and a losers pile",
+   "When an ad fails, change the headline first, then price, then offer"
+  ],
+  "inputs": [
+   "meta_gallery: ad-level metrics",
+   "meta_gallery: web/lab.js breakdown facts",
+   "competitor ad data (signal only)"
+  ],
+  "outputs": [
+   "winner/loser breakdown report",
+   "hypothesis log"
+  ],
+  "trigger": "weekly",
+  "autonomy": "agent_does",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [
+   "meta_gallery: web/lab.js breakdown",
+   "meta_gallery: ENGINE.adDetail",
+   "mcp: Meta_MCP ads_get_ad_entities (read only)"
+  ],
+  "skills": [
+   "winner-teardown"
+  ],
+  "subagent": "Creative Performance Analyst",
+  "sources": {
+   "web": [
+    "https://www.adstellar.ai/blog/ad-fatigue-detection-tool"
+   ],
+   "bank": [
+    "ADC-125",
+    "ADC-208",
+    "ADC-210",
+    "ADC-211",
+    "ADC-212",
+    "MCR-007",
+    "MCR-050",
+    "MCR-087",
+    "MCR-106",
+    "MCR-131",
+    "MCR-132",
+    "MCR-133",
+    "MCR-134",
+    "MCR-136",
+    "MCR-137",
+    "MCR-138",
+    "MCR-145",
+    "MCR-147",
+    "MCR-179"
+   ]
+  },
+  "found_in": "web+bank",
+  "founder_sees": "Why each strong or weak ad performed the way it did, in plain words with the numbers."
+ },
+ {
+  "id": "CREA-C17",
+  "name": "Design and structure creative and copy tests",
+  "folders": [
+   "10-MCR",
+   "11-ADC"
+  ],
+  "what": "Sets up every creative or copy test with a written hypothesis, a clean ad-set structure, a pre-set winner definition and a minimum read window, and sizes the test from the account's own traffic.",
+  "encompasses": [
+   "Give every test a written hypothesis before it launches",
+   "Keep one persona-and-angle pair per ad set for a clean read",
+   "Size a pack to 4 to 8 ads, plan 10 or more per concept, with a short guaranteed-delivery window",
+   "Wait at least 7 days before judging a new pack, and record a low-delivery batch as inconclusive, not failed",
+   "Exclude existing customers from cold tests",
+   "Change one variable per test, sized big enough to measure, judged by cost per purchase",
+   "Cap per-ad delivery so one ad does not starve the rest",
+   "Treat a 1-element ad, headline-only, image-only, as a test, not a default",
+   "Check LTV or category-education cost before funding a test at scale",
+   "Run a small representative test before scaling any new offer or claim",
+   "Embed a hidden verification phrase to measure real read-through",
+   "Compare total sales, not just share shift, when testing a promotion"
+  ],
+  "inputs": [
+   "metric contract",
+   "past test records (registry)",
+   "account traffic volume"
+  ],
+  "outputs": [
+   "test brief (hypothesis, structure, size, read point, winner rule)"
+  ],
+  "trigger": "event: idea approved",
+  "autonomy": "agent_does",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [
+   "script: scripts/ideas.py",
+   "mcp: Meta_MCP ads_get_ad_entities (read only)"
+  ],
+  "skills": [
+   "creative-test-plan"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [
+    "https://www.evo-media.co.uk/post/creative-production-performance-marketing-2026"
+   ],
+   "bank": [
+    "ADC-001",
+    "ADC-112",
+    "ADC-124",
+    "ADC-128",
+    "ADC-130",
+    "ADC-146",
+    "ADC-154",
+    "ADC-178",
+    "ADC-179",
+    "ADC-182",
+    "ADC-183",
+    "ADC-184",
+    "ADC-190",
+    "ADC-198",
+    "ADC-199",
+    "MCR-002",
+    "MCR-051",
+    "MCR-069",
+    "MCR-081",
+    "MCR-083",
+    "MCR-086",
+    "MCR-088",
+    "MCR-124",
+    "MCR-125",
+    "MCR-126",
+    "MCR-127",
+    "MCR-128",
+    "MCR-129",
+    "MCR-130",
+    "MCR-135",
+    "MCR-164",
+    "MCR-189",
+    "MCR-191"
+   ]
+  },
+  "found_in": "web+bank",
+  "founder_sees": "The test plan, and exactly how a winner will be called before it launches."
+ },
+ {
+  "id": "CREA-C18",
+  "name": "Plan and monitor the creative production pipeline and portfolio",
+  "folders": [
+   "10-MCR"
+  ],
+  "what": "Runs creative as a monthly pipeline, research, concept, build, variations, feedback, launch, sizes volume and budget from the account's own hit rate, and watches portfolio breadth and stage weight so no single ad or stage dominates.",
+  "encompasses": [
+   "Run the pipeline in the fixed order every cycle",
+   "Size monthly volume from the account's own historical hit rate",
+   "Set a production budget tier, then replace it with real per-ad profit",
+   "Split effort mostly toward iteration, with some net-new always in the mix",
+   "Weight new creative at least 70% toward less-aware stages",
+   "Run several distinct formats at once, not one",
+   "Keep the portfolio diverse enough that the platform serves different shoppers",
+   "Track live coverage against the account's own tier defaults",
+   "Pace how hard a winner is pushed by inventory and cash, not ROAS alone",
+   "Tag the live library and find segment-by-format gaps",
+   "Weight the appeal mix by proven pull, keeping any appeal paying at least half the best",
+   "Start with organic content before scaling paid for a brand-new store"
+  ],
+  "inputs": [
+   "metric contract: acquisition_efficiency, team_capacity",
+   "meta_gallery: creative themes and coverage",
+   "brand brain: cash and inventory"
+  ],
+  "outputs": [
+   "monthly production plan",
+   "portfolio coverage report"
+  ],
+  "trigger": "monthly",
+  "autonomy": "agent_does",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [
+   "meta_gallery: themes.py",
+   "meta_gallery: web/studio.js coverage tables"
+  ],
+  "skills": [
+   "creative-test-plan"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [
+    "https://www.adstellar.ai/blog/ad-creative-benchmarks-2026"
+   ],
+   "bank": [
+    "ADC-127",
+    "MCR-021",
+    "MCR-032",
+    "MCR-082",
+    "MCR-100",
+    "MCR-114",
+    "MCR-115",
+    "MCR-116",
+    "MCR-117",
+    "MCR-118",
+    "MCR-119",
+    "MCR-122",
+    "MCR-123",
+    "MCR-144",
+    "MCR-146",
+    "MCR-149",
+    "MCR-163",
+    "MCR-165",
+    "MCR-166",
+    "MCR-167",
+    "MCR-176"
+   ]
+  },
+  "found_in": "web+bank",
+  "founder_sees": "How much creative to make this month, and where the current library has gaps."
+ },
+ {
+  "id": "CREA-C19",
+  "name": "Select ad format and compare format economics",
+  "folders": [
+   "10-MCR"
+  ],
+  "what": "Chooses the ad format after the concept is set, using the product's education and demo needs, and compares formats by expected profit per ad rather than ROAS alone.",
+  "encompasses": [
+   "Pick the format only after the concept, using the education and demo test",
+   "Test new angles and offers as statics before building video",
+   "Compare formats by expected gross profit per ad, not ROAS alone",
+   "Stop putting cold budget behind product-aware creative formats",
+   "Decide the click destination before the format for marketplace-heavy sellers",
+   "Note where a short campaign-budget push fits versus the default ad-set budget"
+  ],
+  "inputs": [
+   "creative brief (C06)",
+   "metric contract: margin_cogs",
+   "production cost data"
+  ],
+  "outputs": [
+   "format recommendation with profit reasoning"
+  ],
+  "trigger": "on demand",
+  "autonomy": "agent_does",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [],
+  "skills": [
+   "creative-test-plan"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [
+    "https://www.webtonic.io/blog/e-commerce-ad-creative-statistics"
+   ],
+   "bank": [
+    "MCR-023",
+    "MCR-024",
+    "MCR-025",
+    "MCR-026",
+    "MCR-031",
+    "MCR-188"
+   ]
+  },
+  "found_in": "web+bank",
+  "founder_sees": "Which format was picked for a concept, and the profit reasoning behind it."
+ },
+ {
+  "id": "CREA-C20",
+  "name": "Maintain naming, tagging and platform-spec standards",
+  "folders": [
+   "10-MCR",
+   "11-ADC"
+  ],
+  "what": "Keeps a fixed naming and tagging taxonomy for every asset, concept, persona, angle, offer, format, stage, source, and a live sheet of each ad platform's current character limits and truncation points.",
+  "encompasses": [
+   "Tag every asset by concept, persona, angle, offer, format, stage and source",
+   "Tag creative by awareness stage at the moment it is built",
+   "Fetch and store current platform character limits before writing to them",
+   "Keep a stable creative ID that survives across platforms and file versions",
+   "Use controlled vocabulary and a fixed field order for campaign, ad set and ad names"
+  ],
+  "inputs": [
+   "web: current platform ad specs",
+   "past asset tags (meta_gallery: themes.py)"
+  ],
+  "outputs": [
+   "naming and tagging standard document",
+   "current platform-limits sheet"
+  ],
+  "trigger": "monthly",
+  "autonomy": "agent_does",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [
+   "web search",
+   "meta_gallery: themes.py"
+  ],
+  "skills": [
+   "naming-and-tagging"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [
+    "https://admanage.ai/blog/ad-creative-naming-conventions"
+   ],
+   "bank": [
+    "ADC-109",
+    "MCR-020",
+    "MCR-155"
+   ]
+  },
+  "found_in": "web+bank",
+  "founder_sees": "Nothing directly. This keeps every other output consistent and searchable."
+ },
+ {
+  "id": "CREA-C21",
+  "name": "Govern AI use in the creative and copy pipeline",
+  "folders": [
+   "10-MCR",
+   "11-ADC"
+  ],
+  "what": "Sets where AI is allowed in the pipeline, drafting and grunt work, never final ideation or unsupervised authorship, grounds every AI draft in the brand's own facts and winners, and screens AI output for tells before it ships.",
+  "encompasses": [
+   "Use AI in the middle of the pipeline, keep ideation and final judgment human",
+   "Load the brand's own facts and past winners into any AI tool before generating",
+   "Write the hook first, let AI draft the rest, hand-edit before a human editor cuts video",
+   "Ground AI-generated hooks in the brand's own winning ads",
+   "Screen AI-drafted scripts and lines for AI tells before finalizing",
+   "Let AI draft and improve lines, never let it author copy or supply proof unsupervised",
+   "Use founder or in-house content as the human counter to an AI-heavy creative mix"
+  ],
+  "inputs": [
+   "brand brain",
+   "past winners",
+   "AI draft output"
+  ],
+  "outputs": [
+   "AI usage rule sheet",
+   "AI-tell screening pass on a draft"
+  ],
+  "trigger": "continuous",
+  "autonomy": "agent_does",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [],
+  "skills": [
+   "copy-editing-pass"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [],
+   "bank": [
+    "ADC-045",
+    "ADC-131",
+    "MCR-097",
+    "MCR-151",
+    "MCR-152",
+    "MCR-154",
+    "MCR-168"
+   ]
+  },
+  "found_in": "bank_only",
+  "founder_sees": "Nothing directly. This is a QA rule the agent applies to its own drafts."
+ },
+ {
+  "id": "CREA-C22",
+  "name": "Localise creative and copy for market and device",
+  "folders": [
+   "10-MCR",
+   "11-ADC"
+  ],
+  "what": "Specs creative and copy for a mobile-first, non-US market, vertical-only formats, dual-language hooks where needed, and local payment and delivery trust facts drawn from the brand record.",
+  "encompasses": [
+   "Spec vertical-only, dual-language hooks for mobile-first markets",
+   "State local payment and delivery trust facts (COD, EMI, local carriers) from the brand record",
+   "Check that any translated or localised line still passes the claim and reading-level rules"
+  ],
+  "inputs": [
+   "brand brain: market and audience",
+   "brand brain: payment and delivery policies"
+  ],
+  "outputs": [
+   "localisation spec for a creative brief"
+  ],
+  "trigger": "on demand",
+  "autonomy": "agent_does",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [],
+  "skills": [
+   "static-ad-brief"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [],
+   "bank": [
+    "ADC-082",
+    "MCR-054"
+   ]
+  },
+  "found_in": "bank_only",
+  "founder_sees": "The local facts and format choices built into a brief for this market."
+ },
+ {
+  "id": "CREA-C23",
+  "name": "Flag catalogue and dynamic product ad (DPA) creative risks",
+  "folders": [
+   "10-MCR"
+  ],
+  "what": "Checks the product feed and catalogue template before a DPA or catalog-retargeting layer goes live, and flags dirty data, missing overlays or a template that will misfire on accuracy.",
+  "encompasses": [
+   "Flag catalog and DPA creative risks: feed quality, overlay template, SKU threshold, before handoff",
+   "Recommend a catalog retargeting layer run under handcrafted bottom-funnel objection ads, not alone",
+   "Check that custom overlays and lifestyle imagery are in place rather than a bare default catalog pull"
+  ],
+  "inputs": [
+   "brand brain: product catalogue and feed",
+   "meta_gallery: catalog-ad detection"
+  ],
+  "outputs": [
+   "DPA readiness flag list"
+  ],
+  "trigger": "monthly",
+  "autonomy": "agent_does",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [
+   "meta_gallery: engine catalog detection"
+  ],
+  "skills": [
+   "static-ad-brief"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [
+    "https://www.flighted.co/blog/the-complete-guide-to-meta-dynamic-product-ads",
+    "https://socioh.com/blog/advertising/optimize-your-meta-catalog-ads-examples/"
+   ],
+   "bank": [
+    "MCR-053",
+    "MCR-190"
+   ]
+  },
+  "found_in": "web+bank",
+  "founder_sees": "Whether the product catalogue is ready for dynamic ads, and what would break first."
+ },
+ {
+  "id": "CREA-C24",
+  "name": "Build objection-handling and retargeting continuity copy",
+  "folders": [
+   "10-MCR",
+   "11-ADC"
+  ],
+  "what": "Writes one bottom-funnel ad or line per real objection pulled from customer data, prefaces the most common one early rather than saving it all for an FAQ, and keeps the same argument alive across every follow-up and retargeting touch.",
+  "encompasses": [
+   "Build one bottom-of-funnel ad per objection, not a benefit list",
+   "Add fit, sizing and returns risk to the apparel objection list",
+   "Preface a real objection early, keep the full FAQ at the bottom",
+   "Address the three blockers for a warm list: risk, price, effectiveness",
+   "Pre-empt a rival's pitch with true facts (inoculation), using a weak attack only",
+   "Reposition against a self-image or identity objection",
+   "Continue the same specific argument through every follow-up or retargeting message",
+   "Personalize a lead follow-up to exactly what they asked about, with local proof"
+  ],
+  "inputs": [
+   "research packet (C01), objections",
+   "brand brain: policies (returns, sizing)"
+  ],
+  "outputs": [
+   "objection-handling copy set",
+   "retargeting continuity note"
+  ],
+  "trigger": "on demand",
+  "autonomy": "agent_does",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [
+   "script: scripts/search_knowledge.py"
+  ],
+  "skills": [
+   "angle-and-hook-workshop"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [],
+   "bank": [
+    "ADC-084",
+    "ADC-085",
+    "ADC-087",
+    "ADC-177",
+    "ADC-206",
+    "MCR-027",
+    "MCR-030",
+    "MCR-060",
+    "MCR-177"
+   ]
+  },
+  "found_in": "bank_only",
+  "founder_sees": "The objection each bottom-funnel ad answers, sourced from real customer words."
+ },
+ {
+  "id": "CREA-C25",
+  "name": "Design channel and destination routing for ad traffic",
+  "folders": [
+   "10-MCR",
+   "11-ADC"
+  ],
+  "what": "Decides where a given ad should send traffic, site, off-platform marketplace search, or a single shared front-end offer, so acquisition channels are not competing for different destinations.",
+  "encompasses": [
+   "Route a no-CTA, top-of-funnel VSL's viewers to marketplace search rather than a purchase page",
+   "Point several acquisition channels at one shared front-end offer instead of fragmenting the pitch",
+   "Confirm the chosen destination is reachable and matches the ad's promise before sign-off"
+  ],
+  "inputs": [
+   "brand brain: sales channels",
+   "metric contract: marketplace_share"
+  ],
+  "outputs": [
+   "destination routing recommendation"
+  ],
+  "trigger": "on demand",
+  "autonomy": "agent_does",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [],
+  "skills": [
+   "creative-test-plan"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [],
+   "bank": [
+    "ADC-148",
+    "MCR-192"
+   ]
+  },
+  "found_in": "bank_only",
+  "founder_sees": "Which destination a given ad or channel should point to, and why."
+ },
+ {
+  "id": "CREA-C26",
+  "name": "Apply core direct-response copywriting rules across formats",
+  "folders": [
+   "11-ADC"
+  ],
+  "what": "Applies the account's fixed copywriting rules, reading level, sentence and paragraph pacing, single-idea discipline, proof ranking, framing defaults, to any ad, page or email line, regardless of surface.",
+  "encompasses": [
+   "Run the salesman test on every line before it ships",
+   "Open every sentence with the reader, never I, we, our or the brand name",
+   "Hit a 7th-grade reading score for a thumb scrolling a phone",
+   "Cut cleverness, jokes and boasting from sales copy by default",
+   "Keep one idea per sentence and one idea per asset",
+   "Structure the body as attention, interest, desire, proof, then action",
+   "Ladder every feature to a benefit in the product's own spec units",
+   "Swap vague quality words for a concrete, checkable detail",
+   "Rank proof by strength: demonstration, third-party evidence, cost narration, analogy",
+   "Default to positive framing, use negative only when the product fully resolves it",
+   "Reserve ALL CAPS for print packaging and inserts, avoid it in digital ads"
+  ],
+  "inputs": [
+   "creative brief (C06)",
+   "angle brief (C03)",
+   "brand voice notes",
+   "draft copy"
+  ],
+  "outputs": [
+   "copy set (headline, body, CTA) in the brand's plain-language style"
+  ],
+  "trigger": "on demand",
+  "autonomy": "agent_does",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [
+   "script: intelligence/creative_retrieval.py"
+  ],
+  "skills": [
+   "copy-editing-pass"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [],
+   "bank": [
+    "ADC-003",
+    "ADC-004",
+    "ADC-005",
+    "ADC-006",
+    "ADC-007",
+    "ADC-008",
+    "ADC-041",
+    "ADC-042",
+    "ADC-046",
+    "ADC-047",
+    "ADC-049",
+    "ADC-051",
+    "ADC-052",
+    "ADC-053",
+    "ADC-054",
+    "ADC-057",
+    "ADC-058",
+    "ADC-059",
+    "ADC-062",
+    "ADC-064",
+    "ADC-066",
+    "ADC-067",
+    "ADC-068",
+    "ADC-071",
+    "ADC-088",
+    "ADC-089",
+    "ADC-090",
+    "ADC-094",
+    "ADC-096",
+    "ADC-097",
+    "ADC-132",
+    "ADC-160",
+    "ADC-162",
+    "ADC-185",
+    "ADC-202"
+   ]
+  },
+  "found_in": "bank_only",
+  "founder_sees": "The finished copy, already checked against the house style rules."
+ },
+ {
+  "id": "CREA-C27",
+  "name": "Write landing and product page copy blocks (message match)",
+  "folders": [
+   "11-ADC"
+  ],
+  "what": "Writes the page-level copy blocks, hero, benefit blocks, spec block, FAQ, in a fixed order so the ad's promise, the headline and the page all say the same thing, and checks the page for real friction before it ships.",
+  "encompasses": [
+   "Reuse one headline promise across the ad, the PDP first line and the collection hero",
+   "Assemble the hero as eyebrow, headline, deck, one CTA",
+   "Build the page in a fixed order, with a CTA every 2 to 3 sections and FAQ last",
+   "Write a product page in three blocks: title, benefit bullets, spec block",
+   "Cut a spec bullet that answers no real shopper filter or search",
+   "Check ad-to-page congruency against the ad's exact promise",
+   "Run a heatmap or attention tool on a new page before launch",
+   "Build a timely page around a real, relevant news story, only when genuinely relevant",
+   "Make sure a quiz or interactive step delivers a real personalized result"
+  ],
+  "inputs": [
+   "brand brain: products",
+   "ad angle and promise (C03)",
+   "page structure conventions"
+  ],
+  "outputs": [
+   "page copy blocks",
+   "message-match check note"
+  ],
+  "trigger": "event: new ad launched",
+  "autonomy": "agent_does",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [
+   "script: intelligence/creative_retrieval.py"
+  ],
+  "skills": [
+   "copy-editing-pass"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [],
+   "bank": [
+    "ADC-029",
+    "ADC-037",
+    "ADC-050",
+    "ADC-056",
+    "ADC-061",
+    "ADC-091",
+    "ADC-092",
+    "ADC-111",
+    "ADC-151",
+    "ADC-152",
+    "ADC-167",
+    "ADC-168",
+    "ADC-195",
+    "ADC-204"
+   ]
+  },
+  "found_in": "bank_only",
+  "founder_sees": "The page copy next to the ad it must match, with any mismatch flagged."
+ },
+ {
+  "id": "CREA-C28",
+  "name": "Write marketplace listing copy",
+  "folders": [
+   "11-ADC"
+  ],
+  "what": "Front-loads a marketplace listing title with the product, key spec and use case, in that marketplace's own conventions, using the same claim tiers as ads.",
+  "encompasses": [
+   "Order the title as product, key spec, use case",
+   "Write bullet points in the marketplace's accepted format",
+   "Align listing claims with the same brand claim tiers used in ads"
+  ],
+  "inputs": [
+   "brand brain: products",
+   "marketplace category rules"
+  ],
+  "outputs": [
+   "marketplace listing copy draft"
+  ],
+  "trigger": "on demand",
+  "autonomy": "human_assist",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [
+   "web search"
+  ],
+  "skills": [
+   "copy-editing-pass"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [],
+   "bank": [
+    "ADC-114"
+   ]
+  },
+  "found_in": "bank_only",
+  "founder_sees": "The listing title and bullets, ready to hand to the team that publishes to the marketplace."
+ },
+ {
+  "id": "CREA-C29",
+  "name": "Write SMS ad and marketing copy",
+  "folders": [
+   "11-ADC"
+  ],
+  "what": "Writes SMS lines as one short message: the offer or update, one clear action, and the opt-out, within carrier and platform rules.",
+  "encompasses": [
+   "Write the offer or update line at SMS length",
+   "Write one clear call to action",
+   "Include the required opt-out line",
+   "Check against current SMS marketing compliance rules"
+  ],
+  "inputs": [
+   "brand brain: offers",
+   "compliance rules"
+  ],
+  "outputs": [
+   "SMS copy draft"
+  ],
+  "trigger": "on demand",
+  "autonomy": "agent_does",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [],
+  "skills": [
+   "copy-editing-pass"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [],
+   "bank": [
+    "ADC-113"
+   ]
+  },
+  "found_in": "bank_only",
+  "founder_sees": "The SMS text exactly as it would send."
+ },
+ {
+  "id": "CREA-C30",
+  "name": "Write lifecycle email and retention copy blocks",
+  "folders": [
+   "11-ADC"
+  ],
+  "what": "Writes the copy blocks for lifecycle email and retention sends, subject and preview, structure choice, segmentation, cadence rules, so the Lifecycle specialist can build and schedule the actual flow.",
+  "encompasses": [
+   "Pick the structure (PPAS, CJN, HSO or an outline block) before writing",
+   "Segment welcome emails by how the subscriber joined the list",
+   "Design a three-part system: welcome, sell, revive",
+   "Write a re-engagement line for subscribers inactive 30 to 60 days",
+   "Branch copy tone by engagement level (openers get sold faster)",
+   "Keep about 80% of sends plain-benefit, the rest for gimmick or urgency",
+   "Write a value email before the next promo, not promo after promo",
+   "Write a soft-sell P.S. line for value-only sends",
+   "Write a one-word reply CTA to gauge warm interest",
+   "Repeat the same CTA a second time in deadline emails",
+   "Write three closing-day emails at different times on the final sale day",
+   "Write a resend with a new subject after a launch email goes unopened"
+  ],
+  "inputs": [
+   "brand brain: retention offers",
+   "lifecycle stage data (from Lifecycle specialist)",
+   "brand voice notes"
+  ],
+  "outputs": [
+   "email and SMS copy blocks by lifecycle stage",
+   "subject and preview line sets"
+  ],
+  "trigger": "event: Lifecycle specialist requests copy",
+  "autonomy": "agent_does",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [
+   "script: intelligence/creative_retrieval.py"
+  ],
+  "skills": [
+   "copy-editing-pass"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [],
+   "bank": [
+    "ADC-048",
+    "ADC-055",
+    "ADC-081",
+    "ADC-086",
+    "ADC-098",
+    "ADC-106",
+    "ADC-108",
+    "ADC-110",
+    "ADC-133",
+    "ADC-138",
+    "ADC-141",
+    "ADC-142",
+    "ADC-143",
+    "ADC-144",
+    "ADC-153",
+    "ADC-156",
+    "ADC-157",
+    "ADC-158",
+    "ADC-172",
+    "ADC-174",
+    "ADC-175",
+    "ADC-176",
+    "ADC-191",
+    "ADC-192",
+    "ADC-196",
+    "ADC-213"
+   ]
+  },
+  "found_in": "bank_only",
+  "founder_sees": "The email copy for a flow, handed to Lifecycle to build and schedule."
+ },
+ {
+  "id": "CREA-C31",
+  "name": "Frame price and value in copy",
+  "folders": [
+   "11-ADC"
+  ],
+  "what": "Chooses how a price is framed in copy: charm versus round-number endings, cost-per-day reframes, and an honest reason stated whenever a price looks unusually low.",
+  "encompasses": [
+   "Match price-ending style to positioning: charm pricing or round numbers",
+   "Reframe price as a small recurring cost per day or per use",
+   "State the honest reason when a price is unusually low",
+   "Use an apples-to-oranges comparison instead of an itemized value breakdown, when it is the fairer read"
+  ],
+  "inputs": [
+   "brand brain: pricing",
+   "positioning (C03)"
+  ],
+  "outputs": [
+   "price-framing copy line"
+  ],
+  "trigger": "on demand",
+  "autonomy": "agent_does",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [],
+  "skills": [
+   "offer-and-price-framing"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [],
+   "bank": [
+    "ADC-164",
+    "ADC-165",
+    "ADC-166",
+    "ADC-193"
+   ]
+  },
+  "found_in": "bank_only",
+  "founder_sees": "How a price is worded in copy, and why that framing was chosen."
+ },
+ {
+  "id": "CREA-C32",
+  "name": "Name products, brands and proprietary systems",
+  "folders": [
+   "11-ADC"
+  ],
+  "what": "Names a new product, method or proprietary system so the name itself carries the benefit or story, and attaches a real named person to an otherwise generic product.",
+  "encompasses": [
+   "Draft name candidates that tell the benefit or story",
+   "Name a proprietary system so buyers compare methods, not commodities",
+   "Attach a real, named person to a generic product name",
+   "Test candidate names with small paid spend before committing"
+  ],
+  "inputs": [
+   "brand brain: product facts",
+   "brand voice"
+  ],
+  "outputs": [
+   "name candidate list with rationale"
+  ],
+  "trigger": "on demand",
+  "autonomy": "founder_gate",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [],
+  "skills": [
+   "naming-and-tagging"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [],
+   "bank": [
+    "ADC-173",
+    "ADC-180",
+    "ADC-181"
+   ]
+  },
+  "found_in": "bank_only",
+  "founder_sees": "The name shortlist and the reasoning behind each one."
+ },
+ {
+  "id": "CREA-C33",
+  "name": "Research competitor creative and messaging, signal only",
+  "folders": [
+   "10-MCR",
+   "11-ADC"
+  ],
+  "what": "Studies competitor ads and messaging from public ad libraries for structure, cadence and gaps only, filters out likely paid or fake-organic content, and never copies text, logos, products or faces into the brand's own work.",
+  "encompasses": [
+   "Audit competitor messaging for baseline and white noise",
+   "Check a competitor's ad library on a fixed weekly or twice-monthly cadence",
+   "Study competitors one or two revenue tiers above, one at a time",
+   "Study the brand's own winners first, then competitors, one at a time",
+   "Mine competitor video transcripts for angles, never wording",
+   "Filter out likely paid content before treating an organic post as a signal",
+   "Build a swipe file from niche brands' email and post-purchase flows"
+  ],
+  "inputs": [
+   "meta_gallery: comp_media.json",
+   "meta_gallery: competitors.json",
+   "public ad library data (read only)"
+  ],
+  "outputs": [
+   "competitor signal report (structure and gaps, never claims)"
+  ],
+  "trigger": "weekly",
+  "autonomy": "agent_does",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [
+   "mcp: Meta_MCP ads_library_search",
+   "meta_gallery: Competitors tab data",
+   "web search"
+  ],
+  "skills": [
+   "winner-teardown"
+  ],
+  "subagent": "Creative Performance Analyst",
+  "sources": {
+   "web": [],
+   "bank": [
+    "ADC-015",
+    "ADC-129",
+    "ADC-134",
+    "ADC-140",
+    "ADC-150",
+    "ADC-209",
+    "MCR-028",
+    "MCR-052",
+    "MCR-139",
+    "MCR-148",
+    "MCR-186"
+   ]
+  },
+  "found_in": "bank_only",
+  "founder_sees": "What competitors are doing structurally, marked clearly as a signal, not a proven winner."
+ },
+ {
+  "id": "CREA-C34",
+  "name": "Edit and QA copy before handoff to the QA Gate",
+  "folders": [
+   "11-ADC"
+  ],
+  "what": "Runs the line-level and page-level edit pass on every draft, cutting, tightening and testing readability in code, before the set goes to the shared QA Gate.",
+  "encompasses": [
+   "Rest the draft, then read it aloud until it stops stumbling",
+   "Cut every non-working word with a modifier sweep",
+   "Cut the lead, move the best line to the top",
+   "Run the tossed-salad audit, cutting any claim off the one idea",
+   "Score readability in code and shorten until it passes",
+   "Hold a 9-of-10 ship bar, get outside feedback first",
+   "Run the skim test: scroll without reading, check the offer still lands",
+   "Check voice consistency across a run of SKU or collection pages, 3 at a time",
+   "Preview a static in-context against real feed clutter before sign-off",
+   "Show reviewers 3 or more line versions, not just 1",
+   "Never leave a blank placeholder in client-facing copy"
+  ],
+  "inputs": [
+   "draft copy or creative set",
+   "brand voice notes",
+   "readability scorer"
+  ],
+  "outputs": [
+   "edited copy set",
+   "readability score",
+   "edit log"
+  ],
+  "trigger": "event: before every set ships",
+  "autonomy": "agent_does",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [
+   "script: readability scorer (to build)"
+  ],
+  "skills": [
+   "copy-editing-pass"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [],
+   "bank": [
+    "ADC-002",
+    "ADC-065",
+    "ADC-070",
+    "ADC-093",
+    "ADC-099",
+    "ADC-100",
+    "ADC-101",
+    "ADC-102",
+    "ADC-103",
+    "ADC-104",
+    "ADC-105",
+    "ADC-107",
+    "ADC-121",
+    "ADC-187",
+    "ADC-189",
+    "ADC-194"
+   ]
+  },
+  "found_in": "bank_only",
+  "founder_sees": "Nothing directly. This is the polish pass before the QA Gate and the founder ever see a set."
+ }
+]

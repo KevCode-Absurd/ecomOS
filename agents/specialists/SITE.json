@@ -1,0 +1,3565 @@
+[
+ {
+  "id": "SITE-C01",
+  "name": "Compare platform and total cost of ownership",
+  "folders": [
+   "05-SET"
+  ],
+  "what": "Compares Shopify, WooCommerce and a custom or headless build against the brand's catalogue size, budget and design needs, and picks the platform and plan tier with the lowest true cost, not the lowest sticker price.",
+  "encompasses": [
+   "List required theme features before comparing platforms",
+   "Score hosting, apps, transaction fees and dev time as one cost",
+   "Recommend a plan tier and flag the trigger to upgrade",
+   "Check inherited or legacy account features before relying on the plan name",
+   "Read trial terms and flag the date payment must be added"
+  ],
+  "inputs": [
+   "brand brain: budget and team capacity",
+   "brand brain: catalogue size and SKU complexity",
+   "founder decision log"
+  ],
+  "outputs": [
+   "platform recommendation memo",
+   "cost comparison table",
+   "plan tier recommendation"
+  ],
+  "trigger": "on demand",
+  "autonomy": "founder_gate",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [
+   "web search",
+   "script: scripts/ideas.py"
+  ],
+  "skills": [
+   "store-setup-checklist"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [
+    "https://www.shopify.com/blog/shopify-store-launch-checklist"
+   ],
+   "bank": [
+    "SET-001",
+    "SET-002",
+    "SET-003",
+    "SET-004",
+    "SET-005",
+    "SET-009",
+    "SET-010",
+    "SET-011",
+    "SET-023",
+    "SET-024",
+    "SET-122"
+   ]
+  },
+  "found_in": "web+bank",
+  "founder_sees": "Which platform and plan to build on, and why, with the real yearly cost."
+ },
+ {
+  "id": "SITE-C02",
+  "name": "Set up store foundation and account security",
+  "folders": [
+   "05-SET"
+  ],
+  "what": "Configures the account a brand will keep for years: owner email, legal identity, currency and unit defaults, staff roles, two-factor authentication and agency access windows.",
+  "encompasses": [
+   "Register under an email the business permanently controls",
+   "Enter exact legal identity before payments or tax",
+   "Set currency, region and units once before any price is entered",
+   "Turn on two-factor authentication before activating payments",
+   "Set custom staff roles and time-bound agency collaborator access",
+   "Keep every payment key out of files, prompts and chat"
+  ],
+  "inputs": [
+   "brand brain: legal entity",
+   "brand brain: team roster",
+   "founder decision log"
+  ],
+  "outputs": [
+   "setup checklist",
+   "security configuration report"
+  ],
+  "trigger": "on demand",
+  "autonomy": "founder_gate",
+  "external_write": {
+   "needed": true,
+   "surface": "shopify admin | woocommerce admin"
+  },
+  "tools": [
+   "mcp: shopify",
+   "connector: woocommerce admin"
+  ],
+  "skills": [
+   "store-setup-checklist"
+  ],
+  "subagent": "Store Setup Auditor",
+  "sources": {
+   "web": [
+    "https://www.shopify.com/blog/shopify-store-launch-checklist"
+   ],
+   "bank": [
+    "SET-006",
+    "SET-007",
+    "SET-008",
+    "SET-012",
+    "SET-066",
+    "SET-073",
+    "SET-135",
+    "SET-159"
+   ]
+  },
+  "found_in": "web+bank",
+  "founder_sees": "The account is owned, secured and free of leftover agency access."
+ },
+ {
+  "id": "SITE-C03",
+  "name": "Set up domain, DNS and brand-domain defense",
+  "folders": [
+   "05-SET"
+  ],
+  "what": "Buys or connects the store's domain, points DNS correctly for the platform and for sender authentication, and registers the near-miss domains a squatter would use.",
+  "encompasses": [
+   "Never launch on the default platform domain",
+   "Filter candidate names by brandability rules",
+   "Weigh platform registrar against a neutral one for portability",
+   "Reuse the DNS workflow for sender domain authentication",
+   "Register matching TLDs beyond .com"
+  ],
+  "inputs": [
+   "brand brain: brand name",
+   "connector: registrar/DNS"
+  ],
+  "outputs": [
+   "DNS change list",
+   "domain readiness report"
+  ],
+  "trigger": "on demand",
+  "autonomy": "human_assist",
+  "external_write": {
+   "needed": true,
+   "surface": "dns | domain registrar"
+  },
+  "tools": [
+   "connector: dns",
+   "web search"
+  ],
+  "skills": [
+   "store-setup-checklist"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [
+    "https://www.shopify.com/blog/shopify-store-launch-checklist"
+   ],
+   "bank": [
+    "SET-016",
+    "SET-017",
+    "SET-021",
+    "SET-022",
+    "SET-160",
+    "SET-220",
+    "SET-222"
+   ]
+  },
+  "found_in": "web+bank",
+  "founder_sees": "The domain and its DNS records are ready, with squatters blocked."
+ },
+ {
+  "id": "SITE-C04",
+  "name": "Select, vet and safely edit the theme",
+  "folders": [
+   "05-SET"
+  ],
+  "what": "Picks a theme against a written feature list, vets it on product and mobile views, and enforces a duplicate-before-edit workflow so live changes never touch the production theme directly.",
+  "encompasses": [
+   "List required sections and features before browsing themes",
+   "Vet a theme on PDP, mobile and developer quality, not the homepage",
+   "Decide free vs paid theme from the feature list",
+   "Duplicate the theme before every edit round",
+   "Use theme or section-level CSS instead of core file edits",
+   "Verify every change on the live URL, not only the editor preview",
+   "Know which edits autosave and which need an explicit save"
+  ],
+  "inputs": [
+   "brand brain: required PDP/collection features",
+   "founder decision log"
+  ],
+  "outputs": [
+   "theme shortlist with scores",
+   "theme edit log",
+   "pull request (custom site)"
+  ],
+  "trigger": "on demand",
+  "autonomy": "human_assist",
+  "external_write": {
+   "needed": true,
+   "surface": "shopify theme | woocommerce theme | custom site repo"
+  },
+  "tools": [
+   "mcp: shopify",
+   "mcp: github",
+   "browser: headless chromium"
+  ],
+  "skills": [
+   "theme-pr-diff"
+  ],
+  "subagent": "Store Setup Auditor",
+  "sources": {
+   "web": [
+    "https://www.shopify.com/blog/shopify-store-launch-checklist",
+    "https://www.shopify.com/blog/claude-code-vs-cursor"
+   ],
+   "bank": [
+    "SET-013",
+    "SET-018",
+    "SET-019",
+    "SET-020",
+    "SET-023",
+    "SET-024",
+    "SET-025",
+    "SET-026",
+    "SET-027",
+    "SET-028",
+    "SET-029",
+    "SET-136",
+    "SET-149",
+    "SET-163",
+    "SET-166",
+    "SET-196",
+    "SET-212",
+    "SET-213",
+    "SET-225",
+    "SET-226",
+    "SET-228",
+    "SET-229",
+    "SET-230",
+    "SET-231"
+   ]
+  },
+  "found_in": "web+bank",
+  "founder_sees": "Which theme to use and a safe way to change it without breaking the live store."
+ },
+ {
+  "id": "SITE-C05",
+  "name": "Guardrail AI build-agent sessions",
+  "folders": [
+   "05-SET"
+  ],
+  "what": "Writes the input brief and change plan before an AI coding agent touches the storefront, batches one change per prompt, previews privately and QAs every AI-authored section as a draft, never as finished work.",
+  "encompasses": [
+   "Give the build agent real brand inputs, not a bare prompt",
+   "Let the agent interview and propose a plan before building",
+   "Ask for one storefront change per prompt and verify it live",
+   "Preview privately, never on the public URL",
+   "Treat AI theme and copy output as a draft needing manual QA",
+   "Check AI-generated PDP claims against the real product and ad rules",
+   "Plan long sessions around a possible usage-limit pause"
+  ],
+  "inputs": [
+   "brand brain: full product and policy record",
+   "brand brain: voice"
+  ],
+  "outputs": [
+   "AI build brief",
+   "QA pass report",
+   "change log"
+  ],
+  "trigger": "event: theme or page build starts",
+  "autonomy": "human_assist",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [
+   "mcp: shopify",
+   "mcp: github",
+   "browser: headless chromium"
+  ],
+  "skills": [
+   "compliance-claims-check",
+   "theme-pr-diff"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [
+    "https://www.fudge.ai/blog/shopify-ai-toolkit/",
+    "https://www.shopify.com/blog/claude-code-vs-cursor"
+   ],
+   "bank": [
+    "SET-145",
+    "SET-146",
+    "SET-147",
+    "SET-148",
+    "SET-151",
+    "SET-181",
+    "SET-215",
+    "SET-227"
+   ]
+  },
+  "found_in": "web+bank",
+  "founder_sees": "AI-built pages and code are checked and safe before they go live."
+ },
+ {
+  "id": "SITE-C06",
+  "name": "Build product catalogue data",
+  "folders": [
+   "05-SET"
+  ],
+  "what": "Completes every required product field: type, weight, cost, variants, SKUs, images and swatches, so orders, tax, shipping and margin reporting all work from day one.",
+  "encompasses": [
+   "Match product type to how it is really sold and fulfilled",
+   "Turn on inventory tracking and give every product a SKU",
+   "Enter cost per item so margin reports work",
+   "Build variant options and price every row",
+   "Verify swatch accuracy and add hex values",
+   "Set digital download limits and gift card fulfilment correctly",
+   "Group gallery images by variant"
+  ],
+  "inputs": [
+   "brand brain: products (prices, weights, stock)",
+   "connector: shopify admin | woocommerce admin"
+  ],
+  "outputs": [
+   "catalogue completeness report",
+   "field-by-field fix list"
+  ],
+  "trigger": "on demand",
+  "autonomy": "human_assist",
+  "external_write": {
+   "needed": true,
+   "surface": "shopify admin | woocommerce admin"
+  },
+  "tools": [
+   "mcp: shopify",
+   "connector: woocommerce admin"
+  ],
+  "skills": [
+   "store-setup-checklist"
+  ],
+  "subagent": "Store Setup Auditor",
+  "sources": {
+   "web": [
+    "https://www.shopify.com/blog/shopify-store-launch-checklist"
+   ],
+   "bank": [
+    "SET-030",
+    "SET-031",
+    "SET-032",
+    "SET-033",
+    "SET-034",
+    "SET-035",
+    "SET-037",
+    "SET-038",
+    "SET-039",
+    "SET-040",
+    "SET-042",
+    "SET-043",
+    "SET-044",
+    "SET-045",
+    "SET-047",
+    "SET-049",
+    "SET-050",
+    "SET-051",
+    "SET-176",
+    "SET-193",
+    "SET-194",
+    "SET-195",
+    "SET-198"
+   ]
+  },
+  "found_in": "web+bank",
+  "founder_sees": "Every product is complete enough to sell, ship and be taxed correctly."
+ },
+ {
+  "id": "SITE-C07",
+  "name": "Build collection, tag and menu architecture",
+  "folders": [
+   "05-SET"
+  ],
+  "what": "Decides manual versus smart collections, sets tag discipline so filters work, and builds a navigation menu shoppers can use in 2 to 3 clicks.",
+  "encompasses": [
+   "Decide collections first, then tag to match",
+   "Choose smart collection conditions (any vs all) deliberately",
+   "Delete or rename default collections before launch",
+   "Build menus around how shoppers think",
+   "Cap storefront navigation to 7 items or fewer",
+   "Keep breadcrumb navigation on across PDP and collection"
+  ],
+  "inputs": [
+   "brand brain: product catalogue",
+   "brand brain: audience"
+  ],
+  "outputs": [
+   "navigation and collection spec",
+   "tag taxonomy"
+  ],
+  "trigger": "on demand",
+  "autonomy": "founder_gate",
+  "external_write": {
+   "needed": true,
+   "surface": "shopify theme | woocommerce theme"
+  },
+  "tools": [
+   "mcp: shopify"
+  ],
+  "skills": [
+   "page-spec-and-copy"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [],
+   "bank": [
+    "SET-046",
+    "SET-052",
+    "SET-053",
+    "SET-054",
+    "SET-055",
+    "SET-056",
+    "SET-057",
+    "SET-164",
+    "SET-174",
+    "SET-199",
+    "SET-218",
+    "SET-221"
+   ]
+  },
+  "found_in": "bank_only",
+  "founder_sees": "The menu and collections a shopper can actually navigate."
+ },
+ {
+  "id": "SITE-C08",
+  "name": "Draft legal and policy pages",
+  "folders": [
+   "05-SET"
+  ],
+  "what": "Produces shipping, returns, privacy and terms pages from the brand's real practice, never a bare template, and routes them to a human for legal sign-off before publish.",
+  "encompasses": [
+   "Create every required legal and info page before launch",
+   "Edit every placeholder in a policy template",
+   "Write real shipping terms with a cross-border duties disclosure",
+   "Configure self-serve returns after the policy is published",
+   "Point checkout's agree-box at the real terms page",
+   "Get a human legal sign-off on AI-drafted policy text"
+  ],
+  "inputs": [
+   "brand brain: shipping and returns practice",
+   "brand brain: policies"
+  ],
+  "outputs": [
+   "draft policy pages",
+   "legal review request"
+  ],
+  "trigger": "on demand",
+  "autonomy": "human_assist",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [
+   "mcp: shopify",
+   "web search"
+  ],
+  "skills": [
+   "page-spec-and-copy",
+   "compliance-claims-check"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [
+    "https://www.shopify.com/blog/shopify-store-launch-checklist"
+   ],
+   "bank": [
+    "SET-058",
+    "SET-059",
+    "SET-060",
+    "SET-061",
+    "SET-062",
+    "SET-063",
+    "SET-064"
+   ]
+  },
+  "found_in": "web+bank",
+  "founder_sees": "Draft policy pages ready for a lawyer's sign-off, not a launch blocker."
+ },
+ {
+  "id": "SITE-C09",
+  "name": "Configure payment gateways and go-live test",
+  "folders": [
+   "05-SET"
+  ],
+  "what": "Sets up the primary and a second payment method, regional methods for key markets, fraud and capture rules, and proves the whole path with a sandboxed then a real refunded order before removing the storefront password.",
+  "encompasses": [
+   "Verify identity documents exactly for payment activation",
+   "Add a second gateway and regional payment methods",
+   "Set capture timing and turn on fraud screening",
+   "Test every gateway in sandbox, then one real order and refund",
+   "Screen for fake COD orders where relevant",
+   "Set the card statement descriptor to the real brand name",
+   "Re-check the gateway is live right before removing the password"
+  ],
+  "inputs": [
+   "brand brain: markets and currencies",
+   "connector: shopify admin | woocommerce admin"
+  ],
+  "outputs": [
+   "payment setup checklist",
+   "go-live test log"
+  ],
+  "trigger": "on demand",
+  "autonomy": "founder_gate",
+  "external_write": {
+   "needed": true,
+   "surface": "payment gateway"
+  },
+  "tools": [
+   "mcp: shopify",
+   "connector: woocommerce admin"
+  ],
+  "skills": [
+   "store-setup-checklist"
+  ],
+  "subagent": "Store Setup Auditor",
+  "sources": {
+   "web": [
+    "https://www.shopify.com/blog/shopify-store-launch-checklist"
+   ],
+   "bank": [
+    "SET-066",
+    "SET-067",
+    "SET-068",
+    "SET-069",
+    "SET-070",
+    "SET-071",
+    "SET-072",
+    "SET-074",
+    "SET-075",
+    "SET-076",
+    "SET-077",
+    "SET-202",
+    "SET-205",
+    "SET-206",
+    "SET-219"
+   ]
+  },
+  "found_in": "web+bank",
+  "founder_sees": "Payments are live, tested with a real refunded order, and fraud screening is on."
+ },
+ {
+  "id": "SITE-C10",
+  "name": "Configure shipping zones and rates",
+  "folders": [
+   "05-SET"
+  ],
+  "what": "Builds shipping zones, rates, free-shipping thresholds and package weights from the brand's real margin and fulfilment ability, and tests every rate bracket before launch.",
+  "encompasses": [
+   "Give every target country an explicit rate",
+   "Set the free shipping threshold from margin and AOV, and show it",
+   "Use per-item, table or class rates when cost scales with weight",
+   "Keep each country in exactly one zone",
+   "Assign a fulfilment location to every zone",
+   "Add a delivery time estimate to every rate label",
+   "Test carts at every rate bracket edge before launch"
+  ],
+  "inputs": [
+   "brand brain: margin and AOV",
+   "brand brain: fulfilment locations"
+  ],
+  "outputs": [
+   "shipping configuration",
+   "rate QA log"
+  ],
+  "trigger": "on demand",
+  "autonomy": "human_assist",
+  "external_write": {
+   "needed": true,
+   "surface": "shopify admin | woocommerce admin"
+  },
+  "tools": [
+   "mcp: shopify"
+  ],
+  "skills": [
+   "store-setup-checklist"
+  ],
+  "subagent": "Store Setup Auditor",
+  "sources": {
+   "web": [],
+   "bank": [
+    "SET-078",
+    "SET-079",
+    "SET-080",
+    "SET-081",
+    "SET-082",
+    "SET-083",
+    "SET-084",
+    "SET-085",
+    "SET-086",
+    "SET-087",
+    "SET-088",
+    "SET-089",
+    "SET-090",
+    "SET-091",
+    "SET-092",
+    "SET-157",
+    "SET-209",
+    "SET-223"
+   ]
+  },
+  "found_in": "bank_only",
+  "founder_sees": "Shipping rates that match the brand's margin and are tested at every edge."
+ },
+ {
+  "id": "SITE-C11",
+  "name": "Configure tax by jurisdiction",
+  "folders": [
+   "05-SET"
+  ],
+  "what": "Sets tax display, calculation basis and per-jurisdiction rows or an automated tax service, after the brand's obligations are confirmed with a real tax professional, and tests one product per class in at least two regions.",
+  "encompasses": [
+   "Establish real tax obligations with a professional first",
+   "Enable the platform tax service per registered region",
+   "Decide inclusive vs exclusive display once, consistently",
+   "Decide the tax basis (origin/destination) per state's rule",
+   "Decide whether tax applies to shipping, per jurisdiction",
+   "Test one product per tax class in at least 2 regions"
+  ],
+  "inputs": [
+   "brand brain: registered tax jurisdictions"
+  ],
+  "outputs": [
+   "tax configuration",
+   "tax QA log"
+  ],
+  "trigger": "on demand",
+  "autonomy": "founder_gate",
+  "external_write": {
+   "needed": true,
+   "surface": "shopify admin | woocommerce admin"
+  },
+  "tools": [
+   "mcp: shopify"
+  ],
+  "skills": [
+   "store-setup-checklist"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [],
+   "bank": [
+    "SET-093",
+    "SET-094",
+    "SET-095",
+    "SET-096",
+    "SET-097",
+    "SET-098",
+    "SET-099",
+    "SET-100",
+    "SET-101",
+    "SET-157"
+   ]
+  },
+  "found_in": "bank_only",
+  "founder_sees": "Tax is set up correctly and re-checked whenever the catalogue or zones change."
+ },
+ {
+  "id": "SITE-C12",
+  "name": "Set up multi-market and localization",
+  "folders": [
+   "05-SET"
+  ],
+  "what": "Groups target countries into markets by shared tax treatment, sets per-market currency, catalogue, theme content and price rounding, and verifies the plan actually supports it before promising it to the founder.",
+  "encompasses": [
+   "Group countries by tax treatment, not geography",
+   "Verify the plan supports per-market theme customization",
+   "Add languages with auto-translate plus human review",
+   "Build a per-market catalogue that excludes products where needed",
+   "Nest a country as a sub-market when treatment matches",
+   "Round converted per-market prices to a natural ending"
+  ],
+  "inputs": [
+   "brand brain: target markets",
+   "founder decision log"
+  ],
+  "outputs": [
+   "market plan",
+   "localization configuration"
+  ],
+  "trigger": "on demand",
+  "autonomy": "founder_gate",
+  "external_write": {
+   "needed": true,
+   "surface": "shopify markets | woocommerce"
+  },
+  "tools": [
+   "mcp: shopify"
+  ],
+  "skills": [
+   "store-setup-checklist"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [],
+   "bank": [
+    "SET-118",
+    "SET-119",
+    "SET-120",
+    "SET-121",
+    "SET-122",
+    "SET-168",
+    "SET-185",
+    "SET-186",
+    "SET-187",
+    "SET-188",
+    "SET-208"
+   ]
+  },
+  "found_in": "bank_only",
+  "founder_sees": "A market plan for each country, with the tax, price and content that actually apply there."
+ },
+ {
+  "id": "SITE-C13",
+  "name": "Audit and govern the app and script stack",
+  "folders": [
+   "05-SET"
+  ],
+  "what": "Vets every app before install, removes ones with no clear revenue role, consolidates duplicates, and removes residual code after uninstalls, keeping the stack lean by policy, not habit.",
+  "encompasses": [
+   "Launch with a lean stack and add one app at a time",
+   "Vet an app before install against ratings and a before/after test",
+   "Prefer native platform features over duplicate third-party apps",
+   "Enable an app's theme embed right after install",
+   "Consolidate apps doing the same job",
+   "Search for and remove residual code after every uninstall"
+  ],
+  "inputs": [
+   "connector: shopify admin apps list",
+   "brand brain: app inventory"
+  ],
+  "outputs": [
+   "app audit report",
+   "install/removal recommendation list"
+  ],
+  "trigger": "monthly",
+  "autonomy": "human_assist",
+  "external_write": {
+   "needed": true,
+   "surface": "shopify admin (app install/uninstall)"
+  },
+  "tools": [
+   "mcp: shopify",
+   "script: speed_lab.measure"
+  ],
+  "skills": [
+   "store-setup-checklist"
+  ],
+  "subagent": "Store Setup Auditor",
+  "sources": {
+   "web": [],
+   "bank": [
+    "SET-105",
+    "SET-123",
+    "SET-124",
+    "SET-125",
+    "SET-126",
+    "SET-127",
+    "SET-128",
+    "SET-129",
+    "SET-130",
+    "SET-131",
+    "SET-158"
+   ]
+  },
+  "found_in": "bank_only",
+  "founder_sees": "Which apps are worth keeping, and which are slowing the store for no return."
+ },
+ {
+  "id": "SITE-C14",
+  "name": "Run pre-launch QA and launch sequencing",
+  "folders": [
+   "05-SET"
+  ],
+  "what": "Follows a dependency-ordered launch checklist, verifies every step with the action a real customer would take, and only removes the storefront password after the full checklist passes.",
+  "encompasses": [
+   "Follow the dependency-ordered launch sequence step by step",
+   "Close every step with a real customer action, not a settings check",
+   "Verify every product is buyable end to end",
+   "Confirm confirmation and shipping emails actually arrive",
+   "Run a full mobile QA pass on the live storefront",
+   "Verify the logged-out storefront in incognito, clicking every element",
+   "Launch imperfect once the checklist passes, then collect feedback"
+  ],
+  "inputs": [
+   "brand brain: full setup record",
+   "founder decision log"
+  ],
+  "outputs": [
+   "launch checklist with pass/fail",
+   "go/no-go recommendation"
+  ],
+  "trigger": "event: pre-launch",
+  "autonomy": "founder_gate",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [
+   "browser: headless chromium",
+   "mcp: shopify"
+  ],
+  "skills": [
+   "store-setup-checklist"
+  ],
+  "subagent": "Store Setup Auditor",
+  "sources": {
+   "web": [
+    "https://www.shopify.com/blog/shopify-store-launch-checklist",
+    "https://help.shopify.com/en/manual/intro-to-shopify/plus-launch-checklist"
+   ],
+   "bank": [
+    "SET-015",
+    "SET-102",
+    "SET-103",
+    "SET-104",
+    "SET-139",
+    "SET-140",
+    "SET-141",
+    "SET-142",
+    "SET-143",
+    "SET-144",
+    "SET-161",
+    "SET-162",
+    "SET-224"
+   ]
+  },
+  "found_in": "web+bank",
+  "founder_sees": "A pass/fail launch checklist and a clear go or no-go call."
+ },
+ {
+  "id": "SITE-C15",
+  "name": "Monitor post-launch store hygiene",
+  "folders": [
+   "05-SET"
+  ],
+  "what": "Runs scheduled housekeeping after launch: inventory reconciliation, support-ticket root-cause classification, broken-link and redirect sweeps, and re-verification of tracking and gateway status after any change.",
+  "encompasses": [
+   "Reconcile platform inventory against real stock weekly in month one",
+   "Classify support tickets weekly to find thin pages or policies",
+   "Re-run shipping and tax checks whenever a product, zone or app changes",
+   "Confirm review-request automation is actually sending",
+   "Confirm the payout bank account matches the region's deposit type",
+   "Find and fix broken links to images, CSS and JS",
+   "Use 301 redirects only, and remove redirect chains"
+  ],
+  "inputs": [
+   "connector: shopify admin",
+   "connector: support desk"
+  ],
+  "outputs": [
+   "hygiene report",
+   "fix list"
+  ],
+  "trigger": "weekly",
+  "autonomy": "agent_does",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [
+   "mcp: shopify",
+   "browser: headless chromium"
+  ],
+  "skills": [
+   "store-setup-checklist"
+  ],
+  "subagent": "Store Setup Auditor",
+  "sources": {
+   "web": [],
+   "bank": [
+    "SET-106",
+    "SET-108",
+    "SET-154",
+    "SET-155",
+    "SET-156",
+    "SET-206",
+    "SET-211",
+    "SPD-119",
+    "SPD-120",
+    "SPD-121"
+   ]
+  },
+  "found_in": "bank_only",
+  "founder_sees": "A weekly list of small things quietly going wrong on the store."
+ },
+ {
+  "id": "SITE-C16",
+  "name": "Set up subscription, loyalty, wishlist and B2B features",
+  "folders": [
+   "05-SET"
+  ],
+  "what": "Adds subscription, bundle, loyalty, wishlist or a B2B price list and net-terms path only when the product and margin genuinely fit repeat purchase or wholesale, and builds the UI for it.",
+  "encompasses": [
+   "Choose subscriptions or bundles only when the product fits repeat purchase",
+   "Add loyalty only when repeat purchase matters to margin",
+   "Add a wishlist so shoppers can save for later",
+   "Build a separate B2B path with price list and minimum order",
+   "Never pre-select a subscription option in a quiz or checkout",
+   "Build a distinct hypothesis set for pause, skip, swap and cancel flows"
+  ],
+  "inputs": [
+   "brand brain: repeat purchase rate",
+   "brand brain: wholesale demand"
+  ],
+  "outputs": [
+   "feature setup spec",
+   "flow diagram"
+  ],
+  "trigger": "on demand",
+  "autonomy": "founder_gate",
+  "external_write": {
+   "needed": true,
+   "surface": "shopify admin | subscription app"
+  },
+  "tools": [
+   "mcp: shopify"
+  ],
+  "skills": [
+   "page-spec-and-copy"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [],
+   "bank": [
+    "CRO-136",
+    "CRO-147",
+    "LPG-017",
+    "LPG-040",
+    "LPG-127",
+    "SET-118",
+    "SET-132",
+    "SET-133",
+    "SET-197"
+   ]
+  },
+  "found_in": "bank_only",
+  "founder_sees": "Whether a subscription, loyalty or B2B feature is worth building, and its spec."
+ },
+ {
+  "id": "SITE-C17",
+  "name": "Install tracking and build the founder's reporting cadence",
+  "folders": [
+   "05-SET"
+  ],
+  "what": "Installs analytics through native integrations, sets UTM auto-match rules, picks an attribution model deliberately, and builds one repeatable morning report instead of scattered dashboards.",
+  "encompasses": [
+   "Install and verify analytics tracking through the native integration",
+   "Read analytics over a multi-month window, not one day",
+   "Set up UTM auto-match so campaign traffic attributes itself",
+   "Choose an attribution model deliberately for the question being asked",
+   "Build a repeatable morning marketing report",
+   "Use the analytics AI query tool for plain-language questions",
+   "Read sales by gross, net, discount and channel as separate views"
+  ],
+  "inputs": [
+   "connector: ga4",
+   "connector: metabase",
+   "metric contract"
+  ],
+  "outputs": [
+   "tracking QA report",
+   "daily/weekly report template"
+  ],
+  "trigger": "daily",
+  "autonomy": "agent_does",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [
+   "connector: ga4",
+   "connector: metabase",
+   "mcp: shopify"
+  ],
+  "skills": [
+   "reporting-cadence"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [],
+   "bank": [
+    "CRO-001",
+    "CRO-002",
+    "CRO-003",
+    "CRO-004",
+    "CRO-005",
+    "CRO-006",
+    "CRO-007",
+    "CRO-008",
+    "CRO-010",
+    "CRO-019",
+    "CRO-155",
+    "SET-137",
+    "SET-138",
+    "SET-191",
+    "SET-192",
+    "SET-207",
+    "SET-236",
+    "SET-237",
+    "SET-238",
+    "SET-239",
+    "SET-240",
+    "SET-244"
+   ]
+  },
+  "found_in": "bank_only",
+  "founder_sees": "One daily report instead of five dashboards, built from clean tracking."
+ },
+ {
+  "id": "SITE-C18",
+  "name": "Configure cart and checkout base settings",
+  "folders": [
+   "05-SET"
+  ],
+  "what": "Sets guest checkout, minimal fields, consent separation, checkout branding, coupon caps and order limits so the base checkout is fast and safe before any CRO test touches it.",
+  "encompasses": [
+   "Keep guest checkout on, never force account creation",
+   "Set checkout fields to the minimum needed",
+   "Separate transactional from marketing consent",
+   "Brand the checkout within plan limits",
+   "Enable coupons with per-user limit and max spend cap",
+   "Set a per-order quantity cap when stock is scarce",
+   "Turn on exactly one abandoned-checkout email owner"
+  ],
+  "inputs": [
+   "brand brain: policies",
+   "connector: shopify admin"
+  ],
+  "outputs": [
+   "checkout configuration",
+   "settings change list"
+  ],
+  "trigger": "on demand",
+  "autonomy": "human_assist",
+  "external_write": {
+   "needed": true,
+   "surface": "shopify checkout | woocommerce checkout"
+  },
+  "tools": [
+   "mcp: shopify"
+  ],
+  "skills": [
+   "store-setup-checklist"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [],
+   "bank": [
+    "CRO-121",
+    "CRO-122",
+    "CRO-123",
+    "CRO-124",
+    "CRO-125",
+    "CRO-126",
+    "CRO-127",
+    "CRO-128",
+    "CRO-129",
+    "SET-109",
+    "SET-110",
+    "SET-111",
+    "SET-112",
+    "SET-113",
+    "SET-114",
+    "SET-115",
+    "SET-116",
+    "SET-117",
+    "SET-189",
+    "SET-203",
+    "SET-204",
+    "SET-216"
+   ]
+  },
+  "found_in": "bank_only",
+  "founder_sees": "A checkout with no unnecessary friction and no duplicate emails."
+ },
+ {
+  "id": "SITE-C19",
+  "name": "Build homepage and PDP theme modules",
+  "folders": [
+   "05-SET"
+  ],
+  "what": "Builds the reusable theme-level sections that make up the homepage and PDP: fixed section order, hero focal points, sticky add-to-cart, size charts, FAQ tabs and trust blocks, each backed by a real reason to include it.",
+  "encompasses": [
+   "Build the homepage in a fixed, conversion-focused section order",
+   "Set a focal point on hero and banner images",
+   "Add a size chart to every sized product",
+   "Add collapsible FAQ tabs built from real tickets and reviews",
+   "Keep add-to-cart sticky on mobile",
+   "Reuse the trust section on the PDP below the buy area",
+   "Add a free-shipping progress bar that updates live in cart"
+  ],
+  "inputs": [
+   "brand brain: products",
+   "brand brain: proof (reviews, press)"
+  ],
+  "outputs": [
+   "theme section spec",
+   "pull request (custom site)"
+  ],
+  "trigger": "on demand",
+  "autonomy": "human_assist",
+  "external_write": {
+   "needed": true,
+   "surface": "shopify theme | woocommerce theme | custom site repo"
+  },
+  "tools": [
+   "mcp: shopify",
+   "mcp: github"
+  ],
+  "skills": [
+   "page-spec-and-copy",
+   "theme-pr-diff"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [],
+   "bank": [
+    "SET-014",
+    "SET-150",
+    "SET-164",
+    "SET-165",
+    "SET-169",
+    "SET-171",
+    "SET-172",
+    "SET-173",
+    "SET-175",
+    "SET-177",
+    "SET-178",
+    "SET-179",
+    "SET-182",
+    "SET-183",
+    "SET-184",
+    "SET-190",
+    "SET-197",
+    "SET-200",
+    "SET-201",
+    "SET-217",
+    "SET-255"
+   ]
+  },
+  "found_in": "bank_only",
+  "founder_sees": "The reusable page sections that make up the storefront, each with a reason."
+ },
+ {
+  "id": "SITE-C20",
+  "name": "Route out-of-scope setup findings to the owning specialist",
+  "folders": [
+   "05-SET"
+  ],
+  "what": "Some findings in a store-setup audit are not the site's job: email flows, organic social cadence, product validation and supplier copy belong to other specialists. This capability packages those findings and hands them off instead of quietly dropping them.",
+  "encompasses": [
+   "Flag a lifecycle automation gap (welcome, cart recovery, win-back) for the Lifecycle specialist",
+   "Flag an organic social cadence gap for the Organic and search specialist",
+   "Flag a pre-build product validation need for the Product specialist",
+   "Flag a VIP or segmentation campaign for the Lifecycle specialist",
+   "Package the observed condition and evidence, not a finished brief"
+  ],
+  "inputs": [
+   "site audit findings"
+  ],
+  "outputs": [
+   "handoff note per specialist",
+   "registry cross-reference"
+  ],
+  "trigger": "on demand",
+  "autonomy": "agent_does",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [],
+  "skills": [
+   "handoff-note"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [],
+   "bank": [
+    "SET-134",
+    "SET-233",
+    "SET-234",
+    "SET-235",
+    "SET-241",
+    "SET-242",
+    "SET-243",
+    "SET-248",
+    "SET-249",
+    "SET-252"
+   ]
+  },
+  "found_in": "bank_only",
+  "founder_sees": "A short note saying which other specialist should look at this, and why."
+ },
+ {
+  "id": "SITE-C21",
+  "name": "Capture a speed baseline and find the root cause",
+  "folders": [
+   "08-SPD"
+  ],
+  "what": "Records the ad landing page and top product page with speed_lab.record, replays them on a throttled mobile profile with speed_lab.measure, and finds the single biggest cause of slowness before proposing many small fixes.",
+  "encompasses": [
+   "Record every response of the real page before touching anything",
+   "Measure 3 runs on a Pixel 5 profile, slow 4G, 4x CPU, take the median",
+   "Fix the page paid ads land on before any other page",
+   "Test every template type, not only the homepage",
+   "Cross-check a suspicious result with a second tool",
+   "Confirm the test actually saw the latest change before trusting it"
+  ],
+  "inputs": [
+   "brand brain: top paid landing page and PDP URLs",
+   "connector: pagespeed insights api"
+  ],
+  "outputs": [
+   "baseline measurement (results/*.json)",
+   "root-cause diagnosis"
+  ],
+  "trigger": "monthly",
+  "autonomy": "agent_does",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [
+   "script: speed_lab.record",
+   "script: speed_lab.measure",
+   "script: speed_lab.serve",
+   "browser: headless chromium"
+  ],
+  "skills": [
+   "speed-audit"
+  ],
+  "subagent": "Speed Lab Runner",
+  "sources": {
+   "web": [
+    "https://blog.duda.co/core-web-vitals-what-agencies-need-to-know-in-2026",
+    "https://visualsentinel.com/blog/core-web-vitals-optimization-ecommerce"
+   ],
+   "bank": [
+    "LPG-097",
+    "SET-250",
+    "SPD-001",
+    "SPD-002",
+    "SPD-003",
+    "SPD-004",
+    "SPD-020",
+    "SPD-021",
+    "SPD-025",
+    "SPD-026",
+    "SPD-027",
+    "SPD-028"
+   ]
+  },
+  "found_in": "web+bank",
+  "founder_sees": "The one thing making the page slow, proven with a real measurement, not a guess."
+ },
+ {
+  "id": "SITE-C22",
+  "name": "Cut image weight",
+  "folders": [
+   "08-SPD"
+  ],
+  "what": "Finds oversized, wrongly formatted or non-lazy images across the store and produces the exact resize, compress, format and loading fixes needed, with before/after byte counts.",
+  "encompasses": [
+   "Check images first; do not trust automatic platform compression alone",
+   "Resize to about 2,000px before upload, hold hard size ceilings",
+   "Use JPEG for photos, PNG only for transparency, never GIF",
+   "Let the platform/CDN deliver WebP or AVIF",
+   "Lazy-load below the fold, force eager load on hero and first-card images",
+   "Add width/height or aspect-ratio to prevent layout shift",
+   "Sweep the media library for multi-MB non-product images"
+  ],
+  "inputs": [
+   "connector: shopify admin | woocommerce media library"
+  ],
+  "outputs": [
+   "image fix list with before/after sizes",
+   "developer brief"
+  ],
+  "trigger": "monthly",
+  "autonomy": "human_assist",
+  "external_write": {
+   "needed": true,
+   "surface": "shopify theme | media library"
+  },
+  "tools": [
+   "script: speed_lab.measure",
+   "browser: headless chromium"
+  ],
+  "skills": [
+   "speed-audit",
+   "developer-brief"
+  ],
+  "subagent": "Speed Lab Runner",
+  "sources": {
+   "web": [
+    "https://visualsentinel.com/blog/core-web-vitals-optimization-ecommerce"
+   ],
+   "bank": [
+    "SPD-033",
+    "SPD-034",
+    "SPD-035",
+    "SPD-036",
+    "SPD-037",
+    "SPD-038",
+    "SPD-039",
+    "SPD-040",
+    "SPD-041",
+    "SPD-042",
+    "SPD-043",
+    "SPD-044",
+    "SPD-045",
+    "SPD-046",
+    "SPD-047",
+    "SPD-048",
+    "SPD-049",
+    "SPD-050",
+    "SPD-051",
+    "SPD-052"
+   ]
+  },
+  "found_in": "web+bank",
+  "founder_sees": "Exactly which images are too heavy and the fix for each."
+ },
+ {
+  "id": "SITE-C23",
+  "name": "Govern third-party scripts and app tags for speed",
+  "folders": [
+   "08-SPD"
+  ],
+  "what": "Inventories every script route (theme, app embed, tag manager, hardcoded), defers or delays non-critical ones behind interaction, and removes dead or duplicate ones, without breaking tracking.",
+  "encompasses": [
+   "Inventory every route a script uses before touching any of them",
+   "Add defer to blocking scripts, test the exact feature they power",
+   "Delay non-critical widget scripts until first interaction",
+   "On Shopify, use the content_for_header delay override, never comment it out",
+   "Never change pixel loading without testing every event on and off",
+   "Load app assets only on templates where the widget appears",
+   "Turn off unused Shopify app embeds"
+  ],
+  "inputs": [
+   "connector: shopify admin",
+   "results/serve.log"
+  ],
+  "outputs": [
+   "script inventory",
+   "delay/removal plan",
+   "developer brief"
+  ],
+  "trigger": "monthly",
+  "autonomy": "human_assist",
+  "external_write": {
+   "needed": true,
+   "surface": "shopify theme | tag manager"
+  },
+  "tools": [
+   "script: speed_lab.measure",
+   "script: speed_lab.serve"
+  ],
+  "skills": [
+   "speed-audit",
+   "developer-brief"
+  ],
+  "subagent": "Speed Lab Runner",
+  "sources": {
+   "web": [],
+   "bank": [
+    "SPD-053",
+    "SPD-054",
+    "SPD-055",
+    "SPD-056",
+    "SPD-057",
+    "SPD-058",
+    "SPD-059",
+    "SPD-060",
+    "SPD-061",
+    "SPD-062",
+    "SPD-063",
+    "SPD-064",
+    "SPD-065",
+    "SPD-066",
+    "SPD-067",
+    "SPD-068",
+    "SPD-069",
+    "SPD-070",
+    "SPD-071",
+    "SPD-072",
+    "SPD-132",
+    "SPD-137"
+   ]
+  },
+  "found_in": "bank_only",
+  "founder_sees": "Which scripts to delay or remove, and proof tracking still fires."
+ },
+ {
+  "id": "SITE-C24",
+  "name": "Fix font loading",
+  "folders": [
+   "08-SPD"
+  ],
+  "what": "Subsets fonts to the characters actually used, serves them as self-hosted WOFF2 with font-display swap, limits variation count, and matches the fallback font's metrics to prevent a layout jump on swap.",
+  "encompasses": [
+   "Keep about 3 font variations at most",
+   "Self-host fonts as WOFF2 instead of calling Google Fonts",
+   "Add font-display: swap to every @font-face rule",
+   "Style the fallback font to match size and line height",
+   "On a framework storefront, subset fonts to the characters needed"
+  ],
+  "inputs": [
+   "brand brain: brand fonts"
+  ],
+  "outputs": [
+   "font fix list",
+   "developer brief"
+  ],
+  "trigger": "on demand",
+  "autonomy": "human_assist",
+  "external_write": {
+   "needed": true,
+   "surface": "shopify theme | custom site repo"
+  },
+  "tools": [
+   "script: speed_lab.measure",
+   "mcp: github"
+  ],
+  "skills": [
+   "speed-audit",
+   "developer-brief"
+  ],
+  "subagent": "Speed Lab Runner",
+  "sources": {
+   "web": [],
+   "bank": [
+    "SPD-073",
+    "SPD-087",
+    "SPD-088",
+    "SPD-089",
+    "SPD-090"
+   ]
+  },
+  "found_in": "bank_only",
+  "founder_sees": "The font fix that cuts megabytes without changing how the brand looks."
+ },
+ {
+  "id": "SITE-C25",
+  "name": "Diagnose and fix layout shift (CLS)",
+  "folders": [
+   "08-SPD"
+  ],
+  "what": "Names the exact element causing layout shift per template, reserves space for anything that arrives after first paint, and fixes conflicting CSS instead of papering over the symptom.",
+  "encompasses": [
+   "Diagnose the exact element causing the shift before fixing it",
+   "Reserve space for every element that arrives after first paint",
+   "Fix contradicting CSS rules and move late inline styles into the head",
+   "Remove entrance effects and fade-ins on in-view elements",
+   "On a framework storefront, reserve fixed-height containers for late content"
+  ],
+  "inputs": [],
+  "outputs": [
+   "CLS diagnosis per template",
+   "developer brief"
+  ],
+  "trigger": "on demand",
+  "autonomy": "human_assist",
+  "external_write": {
+   "needed": true,
+   "surface": "shopify theme | custom site repo"
+  },
+  "tools": [
+   "script: speed_lab.measure",
+   "script: speed_lab.filmstrip"
+  ],
+  "skills": [
+   "speed-audit",
+   "developer-brief"
+  ],
+  "subagent": "Speed Lab Runner",
+  "sources": {
+   "web": [],
+   "bank": [
+    "SPD-051",
+    "SPD-076",
+    "SPD-084",
+    "SPD-091",
+    "SPD-092",
+    "SPD-093",
+    "SPD-094"
+   ]
+  },
+  "found_in": "bank_only",
+  "founder_sees": "Exactly which element is jumping, and the fix."
+ },
+ {
+  "id": "SITE-C26",
+  "name": "Diagnose and fix LCP",
+  "folders": [
+   "08-SPD"
+  ],
+  "what": "Names the LCP element per template and runs the standard fix order: un-lazy, de-animate, compress, preload, then cut the blocking script hiding it, proving the fix with averaged before/after runs.",
+  "encompasses": [
+   "Name the LCP element per template before fixing it",
+   "Run the fix order: un-lazy, de-animate, compress, preload, cut blocking scripts",
+   "If the image downloads fast but paints late, find the hiding script",
+   "Check TTFB before blaming the image",
+   "Preload only the LCP image with high fetch priority",
+   "Design the above-the-fold section so the biggest element is text where possible"
+  ],
+  "inputs": [],
+  "outputs": [
+   "LCP diagnosis and fix sequence",
+   "developer brief"
+  ],
+  "trigger": "on demand",
+  "autonomy": "human_assist",
+  "external_write": {
+   "needed": true,
+   "surface": "shopify theme | custom site repo"
+  },
+  "tools": [
+   "script: speed_lab.measure",
+   "script: speed_lab.filmstrip"
+  ],
+  "skills": [
+   "speed-audit",
+   "developer-brief"
+  ],
+  "subagent": "Speed Lab Runner",
+  "sources": {
+   "web": [
+    "https://blog.duda.co/core-web-vitals-what-agencies-need-to-know-in-2026"
+   ],
+   "bank": [
+    "SPD-095",
+    "SPD-096",
+    "SPD-097",
+    "SPD-098",
+    "SPD-043",
+    "SPD-146",
+    "SPD-143",
+    "SPD-067",
+    "SPD-083"
+   ]
+  },
+  "found_in": "web+bank",
+  "founder_sees": "The exact largest element and the fix order that will move LCP."
+ },
+ {
+  "id": "SITE-C27",
+  "name": "Fix interactivity (INP) on key interactions",
+  "folders": [
+   "08-SPD"
+  ],
+  "what": "Cuts main-thread JavaScript blocking add-to-cart, variant pickers, filters and search autocomplete, and confirms the fix with a real tap test, not just a score.",
+  "encompasses": [
+   "Cut JavaScript on the main thread for add-to-cart, pickers, filters",
+   "Treat search autocomplete lag as an everyday INP issue",
+   "Confirm a fix with a tap test on Add to Cart, not just the score",
+   "Track cart-completion time separately from INP",
+   "Move compatible scripts to a web worker at rebuild time"
+  ],
+  "inputs": [],
+  "outputs": [
+   "INP diagnosis",
+   "developer brief"
+  ],
+  "trigger": "on demand",
+  "autonomy": "human_assist",
+  "external_write": {
+   "needed": true,
+   "surface": "shopify theme | custom site repo"
+  },
+  "tools": [
+   "script: speed_lab.measure"
+  ],
+  "skills": [
+   "speed-audit",
+   "developer-brief"
+  ],
+  "subagent": "Speed Lab Runner",
+  "sources": {
+   "web": [],
+   "bank": [
+    "SPD-099",
+    "SPD-100",
+    "SPD-101",
+    "SPD-102",
+    "SPD-071"
+   ]
+  },
+  "found_in": "bank_only",
+  "founder_sees": "Why tapping Add to Cart feels slow, and the fix."
+ },
+ {
+  "id": "SITE-C28",
+  "name": "Configure caching, CDN and hosting",
+  "folders": [
+   "08-SPD"
+  ],
+  "what": "Verifies caching and compression from response headers, excludes cart/checkout/account pages from the cache, sets long TTLs on static assets, and matches the hosting tier to real order volume.",
+  "encompasses": [
+   "Verify caching from response headers, not a plugin's settings page",
+   "Never cache cart, checkout, account or any visitor-specific page",
+   "Cache static assets long-term with versioned names",
+   "Defer session creation until first add-to-cart or login",
+   "Set up a CDN targeting an 80%+ hit rate",
+   "Match hosting tier to monthly order volume",
+   "Call the host with 4 key questions only after front-end fixes are measured"
+  ],
+  "inputs": [
+   "connector: hosting provider"
+  ],
+  "outputs": [
+   "caching configuration",
+   "host brief with 4 questions"
+  ],
+  "trigger": "on demand",
+  "autonomy": "human_assist",
+  "external_write": {
+   "needed": true,
+   "surface": "hosting | cdn"
+  },
+  "tools": [
+   "script: speed_lab.measure"
+  ],
+  "skills": [
+   "speed-audit",
+   "developer-brief"
+  ],
+  "subagent": "Speed Lab Runner",
+  "sources": {
+   "web": [],
+   "bank": [
+    "SPD-103",
+    "SPD-104",
+    "SPD-105",
+    "SPD-106",
+    "SPD-107",
+    "SPD-108",
+    "SPD-109",
+    "SPD-110",
+    "SPD-115",
+    "SPD-139",
+    "SPD-148"
+   ]
+  },
+  "found_in": "bank_only",
+  "founder_sees": "Whether caching is actually working, and a short brief for the host if not."
+ },
+ {
+  "id": "SITE-C29",
+  "name": "Prepare peak-event load readiness",
+  "folders": [
+   "08-SPD"
+  ],
+  "what": "Lists every dynamic step at risk under a big-sale spike, load-tests them ahead of time, considers a waiting room for a limited drop, and freezes app installs and theme changes during the window.",
+  "encompasses": [
+   "List dynamic steps at risk of a peak-event slowdown",
+   "Load-test the at-risk steps before the event",
+   "Consider a virtual waiting room for a limited-inventory drop",
+   "Freeze app installs and theme changes during the peak window",
+   "Keep a tested rollback path ready before the event"
+  ],
+  "inputs": [
+   "brand brain: upcoming sale calendar"
+  ],
+  "outputs": [
+   "peak readiness report",
+   "change freeze notice"
+  ],
+  "trigger": "event: upcoming sale",
+  "autonomy": "founder_gate",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [
+   "script: speed_lab.measure"
+  ],
+  "skills": [
+   "speed-audit"
+  ],
+  "subagent": "Speed Lab Runner",
+  "sources": {
+   "web": [],
+   "bank": [
+    "SPD-111",
+    "SPD-112",
+    "SPD-113",
+    "SPD-114",
+    "SPD-131"
+   ]
+  },
+  "found_in": "bank_only",
+  "founder_sees": "Whether the store can survive the next big sale, and what to freeze beforehand."
+ },
+ {
+  "id": "SITE-C30",
+  "name": "Minify, split and inline critical code",
+  "folders": [
+   "08-SPD"
+  ],
+  "what": "Minifies and splits CSS/JS by page type, inlines complete critical CSS per template, and delays non-critical CSS (modals, drawers, filters), only after images and scripts are already fixed.",
+  "encompasses": [
+   "Minify and split CSS/JS by page type, only after images and scripts are done",
+   "Delay non-critical CSS with the media=print trick",
+   "Make inlined critical CSS complete for every visually different template",
+   "On WooCommerce, unload cart/checkout/block styles from pages without a cart",
+   "Fix render-blocking JavaScript ahead of the main image"
+  ],
+  "inputs": [],
+  "outputs": [
+   "code-splitting plan",
+   "developer brief"
+  ],
+  "trigger": "on demand",
+  "autonomy": "human_assist",
+  "external_write": {
+   "needed": true,
+   "surface": "shopify theme | custom site repo"
+  },
+  "tools": [
+   "script: speed_lab.measure",
+   "mcp: github"
+  ],
+  "skills": [
+   "speed-audit",
+   "developer-brief"
+  ],
+  "subagent": "Speed Lab Runner",
+  "sources": {
+   "web": [],
+   "bank": [
+    "SPD-079",
+    "SPD-080",
+    "SPD-081",
+    "SPD-082",
+    "SPD-083"
+   ]
+  },
+  "found_in": "bank_only",
+  "founder_sees": "The code-splitting plan and why it comes last, not first."
+ },
+ {
+  "id": "SITE-C31",
+  "name": "Tune headless and framework storefront performance",
+  "folders": [
+   "08-SPD"
+  ],
+  "what": "Applies framework-specific fixes on a custom or headless storefront: image priority hints, server-side rendering of the buy box, trimmed API payloads, and code-split UI components.",
+  "encompasses": [
+   "Mark only the LCP image as priority, set sizes on small images",
+   "Server-render the buy box and top collection tiles",
+   "Return only the fields a tile or page actually needs from the API",
+   "Code-split and lazy-load non-critical UI components",
+   "Set a long image cache TTL with a correct Vary header"
+  ],
+  "inputs": [
+   "custom site repo"
+  ],
+  "outputs": [
+   "framework performance plan",
+   "pull request"
+  ],
+  "trigger": "on demand",
+  "autonomy": "human_assist",
+  "external_write": {
+   "needed": true,
+   "surface": "custom site repo"
+  },
+  "tools": [
+   "script: speed_lab.measure",
+   "mcp: github"
+  ],
+  "skills": [
+   "speed-audit",
+   "developer-brief"
+  ],
+  "subagent": "Speed Lab Runner",
+  "sources": {
+   "web": [],
+   "bank": [
+    "SPD-074",
+    "SPD-075",
+    "SPD-077",
+    "SPD-086",
+    "SPD-147",
+    "SPD-140"
+   ]
+  },
+  "found_in": "bank_only",
+  "founder_sees": "Framework-specific fixes for a custom or headless build."
+ },
+ {
+  "id": "SITE-C32",
+  "name": "Write the speed developer brief and host brief",
+  "folders": [
+   "08-SPD"
+  ],
+  "what": "Turns every diagnosed fix into a brief with a pass threshold, rollback plan, dependencies and who does it, so a developer can execute without guessing, following speed_lab.build_founder_page's format.",
+  "encompasses": [
+   "Write every fix as a plan with pass threshold, rollback and dependencies",
+   "State the fix in plain terms: what, needs, tradeoff, who and how long",
+   "Share the PageSpeed report's own link instead of relaying findings by hand",
+   "Write a host brief with the 4 key questions instead of guessing server settings",
+   "Sequence fixes: content before infrastructure"
+  ],
+  "inputs": [
+   "diagnosed fixes from SITE-C22 to SITE-C31"
+  ],
+  "outputs": [
+   "developer brief (per fix)",
+   "founder decision page"
+  ],
+  "trigger": "on demand",
+  "autonomy": "founder_gate",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [
+   "script: speed_lab.build_founder_page",
+   "script: speed_lab.check_fidelity"
+  ],
+  "skills": [
+   "developer-brief"
+  ],
+  "subagent": "Speed Lab Runner",
+  "sources": {
+   "web": [],
+   "bank": [
+    "SPD-078",
+    "SPD-127",
+    "SPD-128",
+    "SPD-004"
+   ]
+  },
+  "found_in": "bank_only",
+  "founder_sees": "One plain-English page: what to fix, what it needs, the tradeoff, who does it."
+ },
+ {
+  "id": "SITE-C33",
+  "name": "Run automated speed regression monitoring",
+  "folders": [
+   "08-SPD"
+  ],
+  "what": "Runs a speed check before any new feature or app ships and on a monthly schedule, holding a page-weight and script-count budget, and flags a regression the moment it appears.",
+  "encompasses": [
+   "Re-audit speed on a monthly schedule and hold a page weight budget",
+   "Run a speed check on any new feature or app before it ships",
+   "Automate speed testing on a schedule",
+   "Add third-party script count to the speed budget as its own number",
+   "Wait about 28 days of field data before judging a fix worked",
+   "Read field and lab data as different things, fix from lab first"
+  ],
+  "inputs": [
+   "results/*.json history"
+  ],
+  "outputs": [
+   "regression alert",
+   "monthly speed trend report"
+  ],
+  "trigger": "monthly",
+  "autonomy": "agent_does",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [
+   "script: speed_lab.measure",
+   "connector: pagespeed insights api"
+  ],
+  "skills": [
+   "speed-audit"
+  ],
+  "subagent": "Speed Lab Runner",
+  "sources": {
+   "web": [
+    "https://blog.duda.co/core-web-vitals-what-agencies-need-to-know-in-2026"
+   ],
+   "bank": [
+    "SPD-005",
+    "SPD-006",
+    "SPD-007",
+    "SPD-008",
+    "SPD-009",
+    "SPD-010",
+    "SPD-011",
+    "SPD-012",
+    "SPD-013",
+    "SPD-014",
+    "SPD-015",
+    "SPD-016",
+    "SPD-017",
+    "SPD-018",
+    "SPD-019",
+    "SPD-022",
+    "SPD-023",
+    "SPD-024",
+    "SPD-029",
+    "SPD-030",
+    "SPD-031",
+    "SPD-032",
+    "SPD-116",
+    "SPD-117",
+    "SPD-118",
+    "SPD-122",
+    "SPD-123",
+    "SPD-124",
+    "SPD-125",
+    "SPD-126",
+    "SPD-129",
+    "SPD-130",
+    "SPD-133",
+    "SPD-134",
+    "SPD-135",
+    "SPD-136",
+    "SPD-138",
+    "SPD-141",
+    "SPD-142",
+    "SPD-144",
+    "SPD-145"
+   ]
+  },
+  "found_in": "web+bank",
+  "founder_sees": "A monthly trend line and an alert the moment something new gets slow."
+ },
+ {
+  "id": "SITE-C34",
+  "name": "Run compliance and claims QA on page copy",
+  "folders": [
+   "07-LPG",
+   "05-SET"
+  ],
+  "what": "Checks every page, advertorial and quiz against the brand's proof file before it ships: no invented people, testimonials or studies, every number computed in code, every image real, every claim tiered and sourced.",
+  "encompasses": [
+   "Ban invented spokespeople, testimonials and comment sections",
+   "Add a disclosure label to every advertorial or quiz page",
+   "Audit every claim, number and endorsement against the brand's proof file",
+   "Compute every saving or lift number in code, never from memory",
+   "Use competitor and swipe pages for structure and mood only",
+   "Only use before-and-after images that are real and category-allowed",
+   "Only claim exclusivity after checking it live",
+   "Never show different prices for the same SKU to different shoppers at once"
+  ],
+  "inputs": [
+   "brand brain: claims tiers (approved/site-backed/forbidden)",
+   "brand brain: proof file"
+  ],
+  "outputs": [
+   "compliance pass/fail report",
+   "flagged-line list"
+  ],
+  "trigger": "event: before any page publish",
+  "autonomy": "agent_does",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [
+   "script: scripts/search_knowledge.py"
+  ],
+  "skills": [
+   "compliance-claims-check"
+  ],
+  "subagent": "QA Gate (shared)",
+  "sources": {
+   "web": [],
+   "bank": [
+    "CRO-100",
+    "CRO-138",
+    "LPG-001",
+    "LPG-002",
+    "LPG-003",
+    "LPG-004",
+    "LPG-005",
+    "LPG-006",
+    "LPG-007",
+    "LPG-008",
+    "LPG-009",
+    "LPG-064",
+    "LPG-066",
+    "LPG-067",
+    "LPG-074",
+    "LPG-081",
+    "LPG-083",
+    "LPG-114",
+    "LPG-127",
+    "LPG-161",
+    "LPG-166",
+    "SET-036",
+    "SET-107",
+    "SET-152",
+    "SET-153",
+    "SET-214",
+    "SET-215"
+   ]
+  },
+  "found_in": "bank_only",
+  "founder_sees": "Every claim on the page traced to something real, before it goes live."
+ },
+ {
+  "id": "SITE-C35",
+  "name": "Design traffic-to-page-type routing and funnel architecture",
+  "folders": [
+   "07-LPG"
+  ],
+  "what": "Decides where an ad or search click should land, PDP, advertorial, quiz, sales page or campaign page, based on the SKU's awareness stage and price point, and builds the funnel's page sequence.",
+  "encompasses": [
+   "Send high-intent or simple-product traffic straight to the PDP",
+   "Put an educating page between the ad and PDP for cold or skeptical traffic",
+   "Build the advertorial only after a winning ad or written research exists",
+   "Pick the format by the buyer's main obstacle",
+   "Classify each page's traffic awareness stage before writing the top",
+   "Build a dedicated single-product campaign page for paid traffic",
+   "Choose format by traffic awareness level"
+  ],
+  "inputs": [
+   "brand brain: avatar and awareness stage",
+   "brand brain: ad performance (read-only)"
+  ],
+  "outputs": [
+   "funnel architecture diagram",
+   "page-type recommendation per campaign"
+  ],
+  "trigger": "event: new campaign or SKU launch",
+  "autonomy": "founder_gate",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [
+   "script: scripts/ideas.py"
+  ],
+  "skills": [
+   "page-spec-and-copy"
+  ],
+  "subagent": "Page Builder",
+  "sources": {
+   "web": [
+    "https://splitbase.com/landing-page-optimization"
+   ],
+   "bank": [
+    "CRO-108",
+    "CRO-160",
+    "LPG-010",
+    "LPG-011",
+    "LPG-012",
+    "LPG-013",
+    "LPG-014",
+    "LPG-015",
+    "LPG-016",
+    "LPG-044",
+    "LPG-045",
+    "LPG-046",
+    "LPG-098",
+    "LPG-160"
+   ]
+  },
+  "found_in": "web+bank",
+  "founder_sees": "Which page type this campaign should land on, and why."
+ },
+ {
+  "id": "SITE-C36",
+  "name": "Audit message match from ad to page to checkout",
+  "folders": [
+   "07-LPG"
+  ],
+  "what": "Checks that the ad's exact promise, persona, price, guarantee and CTA wording carry through unbroken from the ad to the landing page to the cart and checkout, and re-runs the check whenever creative changes.",
+  "encompasses": [
+   "Mirror the ad's exact promise in the hero headline",
+   "Continue the ad's story; never start a new one",
+   "Keep one persona consistent end to end",
+   "Match page length to how much the ad already sold",
+   "Match the CTA label to where it sends traffic",
+   "Keep price, discount, guarantee and shipping identical throughout",
+   "Re-run the check whenever ad creative changes"
+  ],
+  "inputs": [
+   "brand brain: live ad copy (read-only)",
+   "brand brain: page copy"
+  ],
+  "outputs": [
+   "message-match audit report",
+   "mismatch fix list"
+  ],
+  "trigger": "event: ad creative changes",
+  "autonomy": "agent_does",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [
+   "mcp: meta ads (read-only)"
+  ],
+  "skills": [
+   "compliance-claims-check",
+   "page-spec-and-copy"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [],
+   "bank": [
+    "LPG-018",
+    "LPG-019",
+    "LPG-020",
+    "LPG-021",
+    "LPG-022",
+    "LPG-023",
+    "LPG-024",
+    "LPG-025"
+   ]
+  },
+  "found_in": "bank_only",
+  "founder_sees": "Whether the page still says what the ad promised."
+ },
+ {
+  "id": "SITE-C37",
+  "name": "Build and score the hero section",
+  "folders": [
+   "07-LPG"
+  ],
+  "what": "Writes the hero in a fixed 6-part order (proof, headline, subhead, CTA, FUD, image) and scores the headline on outcome-specificity, then places FUD reducers next to every CTA.",
+  "encompasses": [
+   "Build the hero in the fixed 6-part order",
+   "Write the headline as the outcome this SKU delivers, never a category label",
+   "Score the headline against a tested formula and the outcome rule",
+   "Write the subhead to explain how, never repeat the headline",
+   "Keep hero body to 2-3 sentences or 3-4 bullets",
+   "Show 2 verifiable proof forms above the fold",
+   "Place real FUD reducers next to every CTA",
+   "Use a hero image or video that shows the promise"
+  ],
+  "inputs": [
+   "brand brain: products",
+   "brand brain: proof file",
+   "approved idea record"
+  ],
+  "outputs": [
+   "hero copy draft",
+   "hero layout spec"
+  ],
+  "trigger": "on demand",
+  "autonomy": "human_assist",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [
+   "script: scripts/search_knowledge.py"
+  ],
+  "skills": [
+   "page-spec-and-copy"
+  ],
+  "subagent": "Page Builder",
+  "sources": {
+   "web": [
+    "https://www.mvrdigital.co/services/landing-pages-cro"
+   ],
+   "bank": [
+    "LPG-026",
+    "LPG-027",
+    "LPG-028",
+    "LPG-029",
+    "LPG-030",
+    "LPG-031",
+    "LPG-032",
+    "LPG-033",
+    "LPG-035",
+    "LPG-036",
+    "LPG-037",
+    "LPG-038",
+    "LPG-039",
+    "LPG-059",
+    "LPG-149",
+    "LPG-200"
+   ]
+  },
+  "found_in": "web+bank",
+  "founder_sees": "A drafted, scored hero section ready for the founder to approve."
+ },
+ {
+  "id": "SITE-C38",
+  "name": "Optimize the PDP buy-box and first screen",
+  "folders": [
+   "07-LPG",
+   "09-CRO"
+  ],
+  "what": "Fits the PDP's first-screen elements, price, proof, CTA, variant picker and delivery info, on the brand's real mobile device, and adds subscribe-and-save, delivery ETA and local payment trust signals where they fit the SKU.",
+  "encompasses": [
+   "Fit the fixed first-screen elements on the brand's main mobile device",
+   "Place every control next to the element it changes",
+   "Add a subscribe-and-save selector for consumable SKUs",
+   "Show delivery ETA or a pincode serviceability check near the buy box",
+   "Show local payment methods beside the FUD reducers",
+   "Answer what, why this one, why now and why trust you above the fold",
+   "Put reviews, savings, sticky add-to-cart and gallery next to the buy box"
+  ],
+  "inputs": [
+   "brand brain: products",
+   "brand brain: delivery data"
+  ],
+  "outputs": [
+   "PDP buy-box spec",
+   "before/after mock"
+  ],
+  "trigger": "on demand",
+  "autonomy": "human_assist",
+  "external_write": {
+   "needed": true,
+   "surface": "shopify theme | woocommerce theme"
+  },
+  "tools": [
+   "mcp: shopify"
+  ],
+  "skills": [
+   "page-spec-and-copy"
+  ],
+  "subagent": "Page Builder",
+  "sources": {
+   "web": [],
+   "bank": [
+    "CRO-101",
+    "CRO-102",
+    "CRO-103",
+    "CRO-111",
+    "CRO-112",
+    "LPG-034",
+    "LPG-040",
+    "LPG-041",
+    "LPG-042",
+    "LPG-043",
+    "LPG-047",
+    "LPG-057",
+    "LPG-079",
+    "SET-180"
+   ]
+  },
+  "found_in": "bank_only",
+  "founder_sees": "The buy-box layout that fits on the brand's real phone."
+ },
+ {
+  "id": "SITE-C39",
+  "name": "Write on-page persuasion copy",
+  "folders": [
+   "07-LPG",
+   "09-CRO"
+  ],
+  "what": "Writes value props, how-it-works steps, honest comparisons, FAQ and closers in the customer's own words, mined from reviews and tickets, scannable and below a tenth-grade reading level.",
+  "encompasses": [
+   "Write each value prop as a benefit heading with the feature as support",
+   "Show how the product works in 3-4 steps ending at the outcome",
+   "Build an honest comparison against the 2-3 real alternatives",
+   "Build the FAQ from that SKU's own tickets and negative reviews",
+   "Write section headings as the shopper's payoff, not a department label",
+   "Write in the customer's own words, mined from reviews and tickets",
+   "Rewrite feature bullets as outcome-first copy with a so-what test",
+   "Quantify claims with a true number wherever one exists"
+  ],
+  "inputs": [
+   "brand brain: reviews and tickets",
+   "brand brain: products",
+   "reference scout: 3-8 references"
+  ],
+  "outputs": [
+   "page copy draft",
+   "FAQ block"
+  ],
+  "trigger": "on demand",
+  "autonomy": "human_assist",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [
+   "script: scripts/search_knowledge.py"
+  ],
+  "skills": [
+   "page-spec-and-copy",
+   "compliance-claims-check"
+  ],
+  "subagent": "Page Builder",
+  "sources": {
+   "web": [],
+   "bank": [
+    "CRO-106",
+    "CRO-107",
+    "CRO-109",
+    "CRO-110",
+    "CRO-115",
+    "CRO-134",
+    "CRO-150",
+    "CRO-161",
+    "CRO-162",
+    "LPG-049",
+    "LPG-050",
+    "LPG-051",
+    "LPG-052",
+    "LPG-053",
+    "LPG-054",
+    "LPG-058",
+    "LPG-060",
+    "LPG-061",
+    "LPG-062",
+    "LPG-063",
+    "LPG-065",
+    "LPG-068",
+    "LPG-099",
+    "LPG-178",
+    "SET-041",
+    "SET-254"
+   ]
+  },
+  "found_in": "bank_only",
+  "founder_sees": "Page copy in the customer's own words, checked against real tickets and reviews."
+ },
+ {
+  "id": "SITE-C40",
+  "name": "Design proof and social-proof placement",
+  "folders": [
+   "07-LPG",
+   "09-CRO"
+  ],
+  "what": "Maps every testimonial, badge, press quote and video to the one objection it answers, scatters proof through the page instead of stacking it once, and builds a real post-purchase survey to keep collecting it.",
+  "encompasses": [
+   "Show the trust badge shoppers actually trust for that channel",
+   "Map every testimonial to 1 named objection it must answer",
+   "Scatter proof throughout the page instead of stacking it once",
+   "Add phone-shot UGC and a short founder video for trust-led SKUs",
+   "Build 3 proof layers on a presell page: mechanism, social, demonstration",
+   "Collect proof on purpose with a short post-purchase survey",
+   "Pair every press logo with a short attributed quote",
+   "Check review dates for suspicious clustering before trusting them"
+  ],
+  "inputs": [
+   "brand brain: reviews",
+   "brand brain: press mentions"
+  ],
+  "outputs": [
+   "proof placement map",
+   "post-purchase survey questions"
+  ],
+  "trigger": "on demand",
+  "autonomy": "human_assist",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [],
+  "skills": [
+   "page-spec-and-copy"
+  ],
+  "subagent": "Page Builder",
+  "sources": {
+   "web": [],
+   "bank": [
+    "CRO-104",
+    "CRO-105",
+    "CRO-150",
+    "CRO-151",
+    "CRO-152",
+    "CRO-153",
+    "CRO-156",
+    "CRO-157",
+    "CRO-158",
+    "LPG-069",
+    "LPG-070",
+    "LPG-071",
+    "LPG-072",
+    "LPG-073",
+    "LPG-075",
+    "LPG-076",
+    "LPG-159",
+    "LPG-184",
+    "LPG-207",
+    "SET-246"
+   ]
+  },
+  "found_in": "bank_only",
+  "founder_sees": "Where each piece of proof goes, and which doubt it answers."
+ },
+ {
+  "id": "SITE-C41",
+  "name": "Design offer, bundle and price presentation",
+  "folders": [
+   "07-LPG",
+   "05-SET"
+  ],
+  "what": "Builds bundle tiers with real per-tier savings shown in money, anchors price against a real sourced comparison, and designs post-purchase and cart-level offers priced by contribution per buyer.",
+  "encompasses": [
+   "Show bundle savings in money, in the tier headline",
+   "Offer 3 bundle tiers, each with an image and one honest badge",
+   "Anchor price against a real, sourced comparison, never invented",
+   "Set equal step savings across tiers to steer to the target tier",
+   "Present a bundle as a value stack against summed item value",
+   "Judge every funnel step by contribution per buyer, not take rate",
+   "Pick the post-purchase upsell by more-of-same or next-problem logic"
+  ],
+  "inputs": [
+   "brand brain: margin and COGS",
+   "brand brain: products"
+  ],
+  "outputs": [
+   "offer design spec",
+   "bundle pricing table"
+  ],
+  "trigger": "on demand",
+  "autonomy": "founder_gate",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [
+   "script: intelligence/budget.py"
+  ],
+  "skills": [
+   "page-spec-and-copy"
+  ],
+  "subagent": "Page Builder",
+  "sources": {
+   "web": [],
+   "bank": [
+    "CRO-112",
+    "CRO-119",
+    "CRO-120",
+    "CRO-139",
+    "CRO-140",
+    "LPG-056",
+    "LPG-077",
+    "LPG-078",
+    "LPG-080",
+    "LPG-128",
+    "LPG-132",
+    "LPG-173",
+    "LPG-179",
+    "LPG-181",
+    "LPG-185",
+    "LPG-187",
+    "LPG-206",
+    "SET-048"
+   ]
+  },
+  "found_in": "bank_only",
+  "founder_sees": "A bundle or offer design with the real margin math shown."
+ },
+ {
+  "id": "SITE-C42",
+  "name": "Write compliant urgency, scarcity and guarantee copy",
+  "folders": [
+   "07-LPG"
+  ],
+  "what": "Writes urgency and scarcity only when it is true and phrased as risk rather than a fake count, wires a live low-stock display to real inventory, and presents the guarantee word-for-word matched to policy.",
+  "encompasses": [
+   "Use urgency and scarcity only when true, phrased as risk not a fake count",
+   "Build a real-time low-stock display wired to live inventory",
+   "Present the guarantee as confidence, matched word for word to policy",
+   "Close long pages with 2 honest options: leave, or try risk-free",
+   "Use a soft demand-implying CTA only when stock is genuinely limited"
+  ],
+  "inputs": [
+   "brand brain: live inventory",
+   "brand brain: policies"
+  ],
+  "outputs": [
+   "urgency/scarcity copy",
+   "guarantee copy block"
+  ],
+  "trigger": "on demand",
+  "autonomy": "human_assist",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [
+   "mcp: shopify"
+  ],
+  "skills": [
+   "compliance-claims-check",
+   "page-spec-and-copy"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [],
+   "bank": [
+    "CRO-100",
+    "LPG-081",
+    "LPG-082",
+    "LPG-084",
+    "LPG-085",
+    "LPG-195",
+    "SET-167"
+   ]
+  },
+  "found_in": "bank_only",
+  "founder_sees": "Urgency and guarantee copy that is true, checked against live stock."
+ },
+ {
+  "id": "SITE-C43",
+  "name": "Remove navigation and interaction friction on conversion surfaces",
+  "folders": [
+   "07-LPG",
+   "09-CRO"
+  ],
+  "what": "Strips navigation to essentials on single-offer pages, opens a cart drawer instead of reloading, fires pop-ups only on intent signals, and repairs dead controls, blockers and coupon-field clutter.",
+  "encompasses": [
+   "Strip navigation to logo, cart and 1 CTA on campaign pages",
+   "Open a cart drawer on add-to-cart instead of reloading",
+   "Fire pop-ups only on intent signals, never in the first 3-5 seconds",
+   "Fix or remove false affordances and dead controls",
+   "Remove the cart discount-code box when no promotion is live",
+   "Repair popups, chat widgets or cookie bars covering add-to-cart",
+   "Reveal extra form fields only after the first is filled"
+  ],
+  "inputs": [],
+  "outputs": [
+   "friction fix list",
+   "developer brief"
+  ],
+  "trigger": "on demand",
+  "autonomy": "human_assist",
+  "external_write": {
+   "needed": true,
+   "surface": "shopify theme | woocommerce theme"
+  },
+  "tools": [
+   "browser: headless chromium"
+  ],
+  "skills": [
+   "page-spec-and-copy",
+   "developer-brief"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [],
+   "bank": [
+    "CRO-117",
+    "CRO-118",
+    "CRO-132",
+    "CRO-148",
+    "CRO-159",
+    "LPG-086",
+    "LPG-087",
+    "LPG-088",
+    "LPG-089",
+    "LPG-090",
+    "LPG-158",
+    "LPG-180",
+    "SET-170",
+    "SET-232",
+    "SET-251",
+    "SPD-085"
+   ]
+  },
+  "found_in": "bank_only",
+  "founder_sees": "Which controls are broken or in the way, and the fix."
+ },
+ {
+  "id": "SITE-C44",
+  "name": "Build and QA pages mobile-first",
+  "folders": [
+   "07-LPG",
+   "09-CRO"
+  ],
+  "what": "Builds and reviews every page against the brand's own device split, checks every screen width in responsive mode, keeps mobile forms to 4 fields, and never hides critical content behind a mobile-only carousel.",
+  "encompasses": [
+   "Build and review every page mobile-first, on the brand's own device split",
+   "Pin the PDP CTA on mobile with live price, without covering the selector",
+   "Never hide reviews or content behind a carousel/accordion on mobile",
+   "Shrink mobile chrome so no oversized logo buries the headline",
+   "Cut mobile forms to 4 fields or fewer with visible labels",
+   "Check every screen width in responsive mode before sending traffic",
+   "Put about 90% of CRO effort on mobile"
+  ],
+  "inputs": [
+   "brand brain: device split (from GA4)"
+  ],
+  "outputs": [
+   "mobile QA report",
+   "screenshot set per width"
+  ],
+  "trigger": "event: before any page launch",
+  "autonomy": "agent_does",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [
+   "browser: headless chromium"
+  ],
+  "skills": [
+   "page-spec-and-copy"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [],
+   "bank": [
+    "CRO-130",
+    "LPG-091",
+    "LPG-092",
+    "LPG-093",
+    "LPG-094",
+    "LPG-095",
+    "LPG-096",
+    "LPG-150"
+   ]
+  },
+  "found_in": "bank_only",
+  "founder_sees": "Proof the page works on the phone widths real shoppers actually use."
+ },
+ {
+  "id": "SITE-C45",
+  "name": "Run the advertorial research and drafting pipeline",
+  "folders": [
+   "07-LPG"
+  ],
+  "what": "Gathers the research base, ranks pains, tests the big idea's uniqueness, drafts in the proven structure with AI, then runs a structured tighten pass and scrubs every invented fact before design.",
+  "encompasses": [
+   "Gather a full research base before drafting",
+   "Rank candidate pains by urgency, scale and relevance",
+   "Test the big idea against the competitor set before drafting",
+   "Name the mechanism honestly with a checkable causal chain",
+   "Order the advertorial in the 14-block sequence",
+   "Write a why-nothing-else-worked block naming real alternatives",
+   "Draft with AI from the research base, then scrub every invented fact",
+   "Run a structured tighten pass before design"
+  ],
+  "inputs": [
+   "brand brain: reviews and VoC",
+   "reference scout: swipe structures (mood/structure only)"
+  ],
+  "outputs": [
+   "advertorial draft",
+   "research base document"
+  ],
+  "trigger": "on demand",
+  "autonomy": "human_assist",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [
+   "script: scripts/search_knowledge.py"
+  ],
+  "skills": [
+   "page-spec-and-copy",
+   "compliance-claims-check"
+  ],
+  "subagent": "Page Builder",
+  "sources": {
+   "web": [],
+   "bank": [
+    "LPG-100",
+    "LPG-101",
+    "LPG-102",
+    "LPG-103",
+    "LPG-104",
+    "LPG-105",
+    "LPG-106",
+    "LPG-107",
+    "LPG-108",
+    "LPG-109",
+    "LPG-110",
+    "LPG-111",
+    "LPG-112",
+    "LPG-113",
+    "LPG-154",
+    "LPG-155",
+    "LPG-163",
+    "LPG-164",
+    "LPG-165",
+    "LPG-167",
+    "LPG-168",
+    "LPG-169",
+    "LPG-170",
+    "LPG-171",
+    "LPG-172",
+    "LPG-174",
+    "LPG-177",
+    "LPG-196",
+    "LPG-198",
+    "LPG-199",
+    "LPG-201",
+    "LPG-208"
+   ]
+  },
+  "found_in": "bank_only",
+  "founder_sees": "A drafted advertorial with every fact checked against the brand record."
+ },
+ {
+  "id": "SITE-C46",
+  "name": "Design, build and route a quiz funnel",
+  "folders": [
+   "07-LPG"
+  ],
+  "what": "Writes a full quiz spec, question by question, tests the hook questions first, inserts real nurture screens, builds the results page from the shopper's own answers, and routes answers to the matching offer.",
+  "encompasses": [
+   "Cut every quiz question that has no clear job",
+   "Test the first 3 questions before anything else",
+   "Open with the least invasive, most important question",
+   "Insert a real info screen about every 3-5 questions",
+   "Start length at 8-12 questions",
+   "Build the results page to show the shopper's own answers and 1 CTA",
+   "Route each answer to its matching page or offer",
+   "Judge on completion rate and downstream purchase together"
+  ],
+  "inputs": [
+   "brand brain: products",
+   "brand brain: sizing/consumption data"
+  ],
+  "outputs": [
+   "quiz spec (questions, branching, tracking)",
+   "results page spec"
+  ],
+  "trigger": "on demand",
+  "autonomy": "human_assist",
+  "external_write": {
+   "needed": true,
+   "surface": "shopify theme | quiz app"
+  },
+  "tools": [
+   "mcp: shopify"
+  ],
+  "skills": [
+   "page-spec-and-copy"
+  ],
+  "subagent": "Page Builder",
+  "sources": {
+   "web": [],
+   "bank": [
+    "CRO-133",
+    "LPG-115",
+    "LPG-116",
+    "LPG-117",
+    "LPG-118",
+    "LPG-119",
+    "LPG-120",
+    "LPG-121",
+    "LPG-122",
+    "LPG-123",
+    "LPG-124",
+    "LPG-125",
+    "LPG-126",
+    "LPG-156",
+    "LPG-182",
+    "LPG-188",
+    "LPG-189",
+    "LPG-190",
+    "LPG-191",
+    "LPG-192",
+    "LPG-193",
+    "LPG-194",
+    "LPG-202",
+    "LPG-203"
+   ]
+  },
+  "found_in": "bank_only",
+  "founder_sees": "A complete quiz spec, ready to hand to a builder."
+ },
+ {
+  "id": "SITE-C47",
+  "name": "Build the sales-page, order-page and post-purchase upsell funnel",
+  "folders": [
+   "07-LPG"
+  ],
+  "what": "Builds a high-AOV sales page with its 8 must-haves, a low-friction order page with real order bumps, and a post-purchase upsell timed at peak emotion and priced by contribution per buyer.",
+  "encompasses": [
+   "Build the sales page with its 8 must-haves, from scored headline to credibility",
+   "Let copy and proof carry the sale; design removes friction only",
+   "Build a low-friction order page with obvious fields and real order bumps",
+   "Offer a post-purchase upsell at peak emotion, priced by contribution",
+   "Use a soft first ask for cold traffic on a store"
+  ],
+  "inputs": [
+   "brand brain: products",
+   "brand brain: margin"
+  ],
+  "outputs": [
+   "sales page spec",
+   "order page spec",
+   "upsell spec"
+  ],
+  "trigger": "on demand",
+  "autonomy": "human_assist",
+  "external_write": {
+   "needed": true,
+   "surface": "shopify theme | custom site repo"
+  },
+  "tools": [
+   "mcp: shopify"
+  ],
+  "skills": [
+   "page-spec-and-copy"
+  ],
+  "subagent": "Page Builder",
+  "sources": {
+   "web": [],
+   "bank": [
+    "LPG-016",
+    "LPG-129",
+    "LPG-130",
+    "LPG-131",
+    "LPG-132",
+    "LPG-133",
+    "LPG-183"
+   ]
+  },
+  "found_in": "bank_only",
+  "founder_sees": "A full sales-to-upsell funnel spec for a high-AOV or consumable SKU."
+ },
+ {
+  "id": "SITE-C48",
+  "name": "Run pre-build research and brief intake",
+  "folders": [
+   "07-LPG",
+   "09-CRO"
+  ],
+  "what": "Pulls the SKU's own funnel data, scroll maps, click maps, session recordings, surveys and search-trend awareness signal before any page gets built, and writes the 1-page brief that starts every build.",
+  "encompasses": [
+   "Pull that SKU's own data, not a site average",
+   "Fix the weakest funnel stage first",
+   "Read scroll maps mobile-first at the fold, 75, 50 and 25 percent lines",
+   "Watch converted-session recordings first, then rage clicks",
+   "Run 3-5 think-aloud user tests before a major redesign",
+   "Mine reviews and surveys into ranked topics before writing",
+   "Read the market's awareness stage from search trend data",
+   "Write a 1-page brief: audience, pain, outcome, awareness, type, event"
+  ],
+  "inputs": [
+   "connector: ga4",
+   "connector: session recording tool",
+   "connector: reviews platform"
+  ],
+  "outputs": [
+   "research brief",
+   "1-page build brief"
+  ],
+  "trigger": "event: before any new page build",
+  "autonomy": "agent_does",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [
+   "connector: ga4",
+   "web search"
+  ],
+  "skills": [
+   "page-spec-and-copy"
+  ],
+  "subagent": "Page Builder",
+  "sources": {
+   "web": [
+    "https://splitbase.com/blog/how-to-conduct-an-ecommerce-cro-audit"
+   ],
+   "bank": [
+    "CRO-013",
+    "CRO-017",
+    "CRO-018",
+    "CRO-021",
+    "CRO-022",
+    "CRO-023",
+    "CRO-024",
+    "CRO-025",
+    "CRO-026",
+    "CRO-027",
+    "CRO-028",
+    "CRO-029",
+    "CRO-030",
+    "CRO-031",
+    "CRO-032",
+    "CRO-033",
+    "CRO-034",
+    "CRO-035",
+    "CRO-036",
+    "CRO-037",
+    "CRO-038",
+    "CRO-039",
+    "CRO-040",
+    "CRO-041",
+    "CRO-137",
+    "CRO-149",
+    "CRO-167",
+    "LPG-134",
+    "LPG-135",
+    "LPG-136",
+    "LPG-137",
+    "LPG-138",
+    "LPG-139",
+    "LPG-140",
+    "LPG-141",
+    "LPG-142",
+    "LPG-153",
+    "LPG-176",
+    "SET-247"
+   ]
+  },
+  "found_in": "web+bank",
+  "founder_sees": "The brief and the evidence behind it, before anyone writes a word of copy."
+ },
+ {
+  "id": "SITE-C49",
+  "name": "Score and prioritize the CRO test backlog",
+  "folders": [
+   "09-CRO"
+  ],
+  "what": "Turns research findings into hypotheses with at least 2 points of evidence each, scores them by expected profit with a ceiling estimate, and ranks above-the-fold PDP and homepage work ahead of below-the-fold work by default.",
+  "encompasses": [
+   "Require at least 2 points of evidence before a hypothesis enters the backlog",
+   "Write every hypothesis as a full if-then-because statement",
+   "Rank the backlog by expected profit with a ceiling estimate, not raw revenue",
+   "Rank above-the-fold changes ahead of below-the-fold by default",
+   "Work in order: clarity, then copy, then offer, then proof, then friction",
+   "Ship an obvious clarity fix directly instead of testing it",
+   "Choose a scoring framework by the programme's maturity"
+  ],
+  "inputs": [
+   "research findings (SITE-C48)",
+   "brand brain: margin"
+  ],
+  "outputs": [
+   "ranked test backlog",
+   "repair-vs-test list"
+  ],
+  "trigger": "weekly",
+  "autonomy": "founder_gate",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [],
+  "skills": [
+   "cro-test-spec"
+  ],
+  "subagent": "CRO Analyst",
+  "sources": {
+   "web": [
+    "https://splitbase.com/blog/how-to-conduct-an-ecommerce-cro-audit",
+    "https://www.conversion-design.com/blog/cro-process"
+   ],
+   "bank": [
+    "CRO-011",
+    "CRO-012",
+    "CRO-014",
+    "CRO-015",
+    "CRO-016",
+    "CRO-020",
+    "CRO-042",
+    "CRO-043",
+    "CRO-044",
+    "CRO-045",
+    "CRO-046",
+    "CRO-047",
+    "CRO-048",
+    "CRO-049",
+    "CRO-050",
+    "CRO-051",
+    "CRO-145",
+    "CRO-146",
+    "CRO-163",
+    "LPG-143",
+    "LPG-145",
+    "LPG-148",
+    "LPG-157",
+    "LPG-186",
+    "LPG-197",
+    "SET-253"
+   ]
+  },
+  "found_in": "web+bank",
+  "founder_sees": "A ranked list of what to fix or test next, and why each one is on it."
+ },
+ {
+  "id": "SITE-C50",
+  "name": "Design the statistics of a CRO test",
+  "folders": [
+   "09-CRO"
+  ],
+  "what": "Chooses the test type and stats engine, sizes the sample from the minimum detectable effect, sets a stopping rule before launch, and prevents contamination from returning visitors or overlapping tests.",
+  "encompasses": [
+   "Decide test-or-not from traffic gate and real sample size math",
+   "Below the traffic threshold, run bigger changes, not more small tests",
+   "Size every test from the minimum detectable effect",
+   "State sample size as orders per variant, reject flat magic numbers",
+   "Compute runtime from arms x sample / weekly traffic",
+   "Run every test at least 2 full weeks, covering each weekday twice",
+   "Pick a stopping rule before launch and never peek between planned looks",
+   "Randomise by user with sticky bucketing",
+   "Remove or isolate retention traffic from the test population"
+  ],
+  "inputs": [
+   "ranked backlog (SITE-C49)",
+   "traffic and order volume"
+  ],
+  "outputs": [
+   "test design spec (arms, sample, runtime, stopping rule)"
+  ],
+  "trigger": "on demand",
+  "autonomy": "human_assist",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [],
+  "skills": [
+   "cro-test-spec"
+  ],
+  "subagent": "CRO Analyst",
+  "sources": {
+   "web": [],
+   "bank": [
+    "CRO-052",
+    "CRO-053",
+    "CRO-054",
+    "CRO-055",
+    "CRO-056",
+    "CRO-057",
+    "CRO-058",
+    "CRO-059",
+    "CRO-060",
+    "CRO-061",
+    "CRO-062",
+    "CRO-063",
+    "CRO-064",
+    "CRO-065",
+    "CRO-066",
+    "CRO-067",
+    "CRO-068",
+    "CRO-069",
+    "CRO-070",
+    "CRO-141",
+    "CRO-142",
+    "CRO-143",
+    "CRO-144",
+    "CRO-164",
+    "CRO-165",
+    "LPG-144"
+   ]
+  },
+  "found_in": "bank_only",
+  "founder_sees": "The exact test design: how long, how many orders, and how it will be judged."
+ },
+ {
+  "id": "SITE-C51",
+  "name": "QA and launch a CRO test",
+  "folders": [
+   "09-CRO"
+  ],
+  "what": "QAs the test 2-3 times on real devices, confirms tracking fires in both arms, checks for flicker on a slow connection, and checks the promo calendar before flipping the test live.",
+  "encompasses": [
+   "QA the test 2-3 times on real devices before launch",
+   "Confirm tracking fires in both arms",
+   "Check for flicker on a slow mobile connection",
+   "Check the marketing calendar for promo or holiday overlap",
+   "Run an A/A test when starting a new programme or switching tools"
+  ],
+  "inputs": [
+   "test design spec (SITE-C50)"
+  ],
+  "outputs": [
+   "launch QA checklist",
+   "go/no-go"
+  ],
+  "trigger": "event: before test launch",
+  "autonomy": "founder_gate",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [
+   "browser: headless chromium"
+  ],
+  "skills": [
+   "cro-test-spec"
+  ],
+  "subagent": "CRO Analyst",
+  "sources": {
+   "web": [],
+   "bank": [
+    "CRO-071",
+    "CRO-072",
+    "CRO-073",
+    "CRO-078"
+   ]
+  },
+  "found_in": "bank_only",
+  "founder_sees": "Confirmation the test is safe to launch, tracked correctly, in both arms."
+ },
+ {
+  "id": "SITE-C52",
+  "name": "Read and interpret CRO test results",
+  "folders": [
+   "09-CRO"
+  ],
+  "what": "Counts conversions on a confirmation event, checks sample ratio mismatch, novelty and device splits, and decides on the confidence interval and business value together, never on p<0.05 alone.",
+  "encompasses": [
+   "Count conversions on a confirmation event, judge on purchases not clicks",
+   "Never kill or call a test on one good or bad day",
+   "Check sample ratio mismatch at launch and at every planned look",
+   "Check novelty and primacy with a daily plot before judging the average",
+   "Apply Twyman's law: audit any surprising win before celebrating it",
+   "Decide against the confidence interval and business value, not p<0.05 alone",
+   "Treat a fully powered inconclusive test as a real result",
+   "Check the mobile-only and desktop-only result before shipping a win"
+  ],
+  "inputs": [
+   "test results (registry)",
+   "metric contract"
+  ],
+  "outputs": [
+   "result read report",
+   "ship/hold/kill recommendation"
+  ],
+  "trigger": "event: test reaches read point",
+  "autonomy": "founder_gate",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [
+   "connector: metabase"
+  ],
+  "skills": [
+   "cro-test-spec"
+  ],
+  "subagent": "CRO Analyst",
+  "sources": {
+   "web": [],
+   "bank": [
+    "CRO-074",
+    "CRO-075",
+    "CRO-076",
+    "CRO-077",
+    "CRO-079",
+    "CRO-080",
+    "CRO-081",
+    "CRO-082",
+    "LPG-146",
+    "LPG-147"
+   ]
+  },
+  "found_in": "bank_only",
+  "founder_sees": "Whether the test really won, with the honesty checks already done."
+ },
+ {
+  "id": "SITE-C53",
+  "name": "Roll out winners and protect them over time",
+  "folders": [
+   "09-CRO"
+  ],
+  "what": "Ships a winner, re-verifies it with fresh recordings and funnel data after shipping, runs an LTV and returns check before scaling any angle-driven win, and checks quarterly that shipped winners are still live.",
+  "encompasses": [
+   "Make the winner the new control for the next challenger",
+   "Re-audit the page after every shipped change",
+   "Re-verify every shipped change with fresh recordings, funnel rate and a re-survey",
+   "Run an LTV and returns check before scaling any angle- or claim-driven win",
+   "Keep a live-winner register and check quarterly it is still live",
+   "Set founder expectations at a 10-20% win rate for PDP/cart/checkout tests"
+  ],
+  "inputs": [
+   "shipped test result (SITE-C52)"
+  ],
+  "outputs": [
+   "winner register entry",
+   "quarterly protection check report"
+  ],
+  "trigger": "quarterly",
+  "autonomy": "agent_does",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [
+   "connector: metabase"
+  ],
+  "skills": [
+   "cro-test-spec"
+  ],
+  "subagent": "CRO Analyst",
+  "sources": {
+   "web": [],
+   "bank": [
+    "CRO-083",
+    "CRO-084",
+    "CRO-085",
+    "CRO-086",
+    "CRO-088",
+    "CRO-162",
+    "LPG-151",
+    "LPG-152",
+    "LPG-162"
+   ]
+  },
+  "found_in": "bank_only",
+  "founder_sees": "Proof last quarter's winners are still on the site and still working."
+ },
+ {
+  "id": "SITE-C54",
+  "name": "Design holdout and incrementality measurement",
+  "folders": [
+   "09-CRO"
+  ],
+  "what": "Measures a feature, popup, recommendation module or the whole CRO programme with a holdout instead of its own engagement metric, and states and challenges the identifying assumption before trusting any causal method.",
+  "encompasses": [
+   "Report program value from a holdout, never as the sum of test lifts",
+   "Measure a popup or module with a feature holdout, not engagement alone",
+   "Run a persistent programme holdout to prove net value",
+   "State and challenge the identifying assumption before trusting a causal method",
+   "Check the traffic gate before choosing a holdout design",
+   "Judge cart-recovery flows against a holdout, not discount rate alone",
+   "Turn on CUPED only for returning, identified users",
+   "Winsorize outlier orders or use a proportion metric to steady a revenue test"
+  ],
+  "inputs": [
+   "metric contract",
+   "connector: metabase"
+  ],
+  "outputs": [
+   "holdout design",
+   "programme value report"
+  ],
+  "trigger": "quarterly",
+  "autonomy": "founder_gate",
+  "external_write": {
+   "needed": false,
+   "surface": null
+  },
+  "tools": [
+   "connector: metabase"
+  ],
+  "skills": [
+   "cro-test-spec"
+  ],
+  "subagent": "CRO Analyst",
+  "sources": {
+   "web": [],
+   "bank": [
+    "CRO-009",
+    "CRO-087",
+    "CRO-089",
+    "CRO-090",
+    "CRO-091",
+    "CRO-092",
+    "CRO-093",
+    "CRO-094",
+    "CRO-131",
+    "CRO-147"
+   ]
+  },
+  "found_in": "bank_only",
+  "founder_sees": "Whether the whole CRO effort is really adding revenue, proven with a holdout."
+ },
+ {
+  "id": "SITE-C55",
+  "name": "Design homepage, collection and site-wide navigation UX",
+  "folders": [
+   "09-CRO",
+   "05-SET"
+  ],
+  "what": "Designs the homepage to orient and route shoppers fast rather than convert directly, rebuilds the mega menu as a guide with bestsellers and proof, and decides each collection page's job before laying it out.",
+  "encompasses": [
+   "Design the homepage to orient and route, not convert directly",
+   "Rebuild the mega menu as a guide with bestsellers and proof at top",
+   "Decide whether a collection page is for browsing, deciding or buying",
+   "Redesign the mobile collection grid for the thumb zone above the fold",
+   "Keep promo messaging consistent from collection to PDP",
+   "Move a high-click, low-reach module higher on the page",
+   "Restyle or remove modules that are visible but get almost no clicks",
+   "Keep navigation and CTA patterns conventional, not novel"
+  ],
+  "inputs": [
+   "brand brain: catalogue",
+   "click/scroll map data"
+  ],
+  "outputs": [
+   "homepage/collection UX spec",
+   "navigation redesign"
+  ],
+  "trigger": "on demand",
+  "autonomy": "human_assist",
+  "external_write": {
+   "needed": true,
+   "surface": "shopify theme | woocommerce theme"
+  },
+  "tools": [
+   "mcp: shopify"
+  ],
+  "skills": [
+   "page-spec-and-copy"
+  ],
+  "subagent": "Page Builder",
+  "sources": {
+   "web": [],
+   "bank": [
+    "CRO-095",
+    "CRO-096",
+    "CRO-097",
+    "CRO-098",
+    "CRO-099",
+    "CRO-113",
+    "CRO-114",
+    "CRO-154",
+    "LPG-048",
+    "LPG-175",
+    "LPG-205"
+   ]
+  },
+  "found_in": "bank_only",
+  "founder_sees": "A homepage and collection layout designed for what shoppers actually do there."
+ },
+ {
+  "id": "SITE-C56",
+  "name": "Optimize on-site search",
+  "folders": [
+   "05-SET",
+   "07-LPG",
+   "09-CRO"
+  ],
+  "what": "Turns on-site search into a conversion lever with predictive text, synonym matching, filters wired to real product fields, and audits it as its own funnel with autocomplete and no-results handling.",
+  "encompasses": [
+   "Install search and discovery filters and fill the fields filters need",
+   "Improve search with predictive text and synonym matching",
+   "Turn on-site search into a conversion lever, not just a box",
+   "Audit search as its own funnel with autocomplete and no-results handling",
+   "Treat autocomplete lag as an everyday interactivity issue"
+  ],
+  "inputs": [
+   "connector: shopify admin | woocommerce",
+   "search app (Klevu/Searchanise-class)"
+  ],
+  "outputs": [
+   "search configuration spec",
+   "no-results report"
+  ],
+  "trigger": "on demand",
+  "autonomy": "human_assist",
+  "external_write": {
+   "needed": true,
+   "surface": "shopify search app | woocommerce search plugin"
+  },
+  "tools": [
+   "mcp: shopify"
+  ],
+  "skills": [
+   "page-spec-and-copy"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [],
+   "bank": [
+    "SET-057",
+    "SET-245",
+    "LPG-055",
+    "CRO-135",
+    "SPD-101"
+   ]
+  },
+  "found_in": "bank_only",
+  "founder_sees": "How well site search actually helps shoppers find and buy."
+ },
+ {
+  "id": "SITE-C57",
+  "name": "Design on-site personalization",
+  "folders": [
+   "07-LPG",
+   "09-CRO"
+  ],
+  "what": "Adds real-data personalization: quiz-answer-driven results and sizing, variant-linked imagery, real-time intent signals for reassurance and AI-referral-aware PDP facts, always from real shopper data, never invented.",
+  "encompasses": [
+   "Show the shopper's own quiz answers as a personalized progress visual",
+   "Recommend a starter pack size from quiz or consumption answers",
+   "Show a real percentile comparison against other quiz-takers",
+   "Layer real-time intent signals into reassurance, not only past-browsing",
+   "Tailor PDP facts for AI-referred visitors so they do not re-browse",
+   "Update the product image to match the selected variant",
+   "Branch the post-quiz email sequence by the shopper's own answers"
+  ],
+  "inputs": [
+   "brand brain: quiz/behavioural data"
+  ],
+  "outputs": [
+   "personalization rule set",
+   "developer brief"
+  ],
+  "trigger": "on demand",
+  "autonomy": "human_assist",
+  "external_write": {
+   "needed": true,
+   "surface": "shopify theme | personalization app"
+  },
+  "tools": [
+   "mcp: shopify"
+  ],
+  "skills": [
+   "page-spec-and-copy"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [],
+   "bank": [
+    "LPG-188",
+    "LPG-189",
+    "LPG-192",
+    "LPG-193",
+    "LPG-203",
+    "LPG-204",
+    "CRO-116",
+    "CRO-166",
+    "CRO-167"
+   ]
+  },
+  "found_in": "bank_only",
+  "founder_sees": "Personalization rules built from the shopper's own real answers and behaviour."
+ },
+ {
+  "id": "SITE-C58",
+  "name": "Design reviews and UGC display strategy",
+  "folders": [
+   "05-SET",
+   "09-CRO"
+  ],
+  "what": "Decides the review platform and verified-purchase policy, builds review volume below 100 reviews then shifts to relevance and media-first sorting, and checks for suspicious clustering before trusting proof.",
+  "encompasses": [
+   "Pick a reviews app and request reviews from past customers before launch",
+   "Decide deliberately whether reviews require a verified purchase",
+   "Build review volume first, then shift to relevance and media-first sorting",
+   "Check review dates for suspicious clustering",
+   "Show reviews from repeat buyers as continuity proof for consumables",
+   "Confirm review-request automation is actually sending"
+  ],
+  "inputs": [
+   "brand brain: reviews platform",
+   "connector: reviews app"
+  ],
+  "outputs": [
+   "reviews configuration",
+   "display strategy spec"
+  ],
+  "trigger": "on demand",
+  "autonomy": "human_assist",
+  "external_write": {
+   "needed": true,
+   "surface": "shopify reviews app"
+  },
+  "tools": [
+   "mcp: shopify"
+  ],
+  "skills": [
+   "page-spec-and-copy"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [],
+   "bank": [
+    "SET-108",
+    "SET-126",
+    "SET-210",
+    "CRO-104",
+    "CRO-157",
+    "LPG-184"
+   ]
+  },
+  "found_in": "bank_only",
+  "founder_sees": "The review strategy and proof it is actually collecting and showing reviews."
+ },
+ {
+  "id": "SITE-C59",
+  "name": "Audit and remediate site accessibility",
+  "folders": [
+   "05-SET"
+  ],
+  "what": "Runs an automated and manual WCAG scan on key templates (home, PDP, collection, cart, checkout), tests with a keyboard and screen reader on dynamic elements, and writes remediation as a developer brief scoped to the theme codebase.",
+  "encompasses": [
+   "Scan every key template with an automated WCAG tool",
+   "Manually test forms, navigation and dynamic states with keyboard and screen reader",
+   "Close cookie-consent and data-privacy gaps alongside accessibility ones",
+   "Write remediation in the theme codebase so fixes survive updates",
+   "Re-scan after any theme or app change"
+  ],
+  "inputs": [
+   "connector: shopify theme code | woocommerce theme code"
+  ],
+  "outputs": [
+   "accessibility audit report",
+   "developer brief"
+  ],
+  "trigger": "quarterly",
+  "autonomy": "human_assist",
+  "external_write": {
+   "needed": true,
+   "surface": "shopify theme | woocommerce theme"
+  },
+  "tools": [
+   "browser: headless chromium",
+   "web search"
+  ],
+  "skills": [
+   "accessibility-audit",
+   "developer-brief"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [
+    "https://beaccessible.com/",
+    "https://www.ecomback.com/",
+    "https://blog.usablenet.com/ecommerce-accessibility-checklist-how-to-make-your-online-store-ada-wcag-compliant"
+   ],
+   "bank": [
+    "SET-065"
+   ]
+  },
+  "found_in": "web+bank",
+  "founder_sees": "Whether the store would pass a real accessibility audit, and the fix list."
+ },
+ {
+  "id": "SITE-C60",
+  "name": "Implement structured data and schema markup",
+  "folders": [
+   "05-SET",
+   "07-LPG"
+  ],
+  "what": "Adds Product, Offer, Review, BreadcrumbList and FAQPage structured data to PDP, collection and advertorial pages so search and AI answer engines can read the store correctly, and validates it after every theme change.",
+  "encompasses": [
+   "Add Product and Offer schema to every PDP with real price and availability",
+   "Add Review/AggregateRating schema only where reviews are real and verifiable",
+   "Add BreadcrumbList schema matching the real navigation",
+   "Add FAQPage schema to PDP FAQ blocks built from real tickets",
+   "Validate schema after every theme or app change",
+   "Never mark up an invented rating, price or availability"
+  ],
+  "inputs": [
+   "brand brain: products",
+   "brand brain: reviews"
+  ],
+  "outputs": [
+   "structured data spec",
+   "validation report"
+  ],
+  "trigger": "on demand",
+  "autonomy": "human_assist",
+  "external_write": {
+   "needed": true,
+   "surface": "shopify theme | woocommerce theme"
+  },
+  "tools": [
+   "web search"
+  ],
+  "skills": [
+   "structured-data-audit"
+  ],
+  "subagent": null,
+  "sources": {
+   "web": [],
+   "bank": []
+  },
+  "found_in": "web_only",
+  "founder_sees": "Whether the store's pages are readable by search and AI answer engines."
+ }
+]
