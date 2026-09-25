@@ -1387,7 +1387,7 @@ def main(argv=None):
     ap.add_argument("--brand", default=str(SAMPLE / "brand.json"))
     ap.add_argument("--out", default=str(SAMPLE))
     ap.add_argument("--as-of", default=None, help="override brand.json as_of (YYYY-MM-DD)")
-    ap.add_argument("--check", action="store_true", help="regenerate in memory and compare with the files on disk; write nothing")
+    ap.add_argument("--check", action="store_true", help="regenerate in memory and compare with the files on disk (line endings ignored); write nothing")
     args = ap.parse_args(argv)
     brand = json.loads(Path(args.brand).read_text(encoding="utf-8"))
     files = Generator(brand, args.as_of).run()
@@ -1396,7 +1396,7 @@ def main(argv=None):
         bad = 0
         for fname, data in files.items():
             p = out / fname
-            same = p.exists() and p.read_bytes() == data
+            same = p.exists() and p.read_bytes().replace(b"\r\n", b"\n") == data
             print(f"{'same' if same else 'DIFF'}  {fname}")
             bad += 0 if same else 1
         print("identical" if not bad else f"{bad} file(s) differ")
