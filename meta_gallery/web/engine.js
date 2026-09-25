@@ -73,6 +73,7 @@
     }
     excluded(ad, keywords, campIds) {
       if (campIds.has(ad.campaign_id)) return 'campaign';
+      if (this.extraExclude && this.extraExclude(ad)) return 'sale ad';   // set by the page, e.g. "Hide sale ads"
       const name = (ad.campaign_name || '').toLowerCase();
       for (const k of keywords) if (name.includes(k)) return k;
       return null;

@@ -182,13 +182,16 @@ function bdRelaunchList() {
   const ids = (VIEW.collections.health || VIEW.collections.all).ad_ids;
   return ids.map((id) => VIEW.ads[id]).filter((a) => a && healthGroup(a) === 'relaunch')
     .map((a) => ({ ad: a, m: a.view.metrics, sale: bdSale(a), score: a.view.metrics.roas * Math.log(1 + a.view.metrics.purchases) }))
-    .sort((x, y) => x.sale - y.sale || y.score - x.score);   // evergreen ads first, sale ads after
+    .filter((x) => !x.sale)   // sale ads sold on the discount: never suggest them outside a sale
+    .sort((x, y) => y.score - x.score).slice(0, REC_CAP);
 }
-// Sale and countdown ads only make sense again when a sale is on.
-function bdSale(ad) {
-  const c = ad.creative || {};
-  return /\b(eoss|sale|% ?off|hours left|days? left|days? to go|day to go|last \d+|countdown)\b/i.test([ad.name, ad.campaign_name, ad.adset_name, c.headline, c.primary_text].join(' '));
+// Switched-off sale ads that did well: kept aside for the next sale, not suggested now.
+function bdSaleKeep() {
+  const ids = (VIEW.collections.health || VIEW.collections.all).ad_ids;
+  return ids.map((id) => VIEW.ads[id]).filter((a) => a && healthGroup(a) === 'relaunch' && bdSale(a));
 }
+// Sale and countdown ads only make sense again when a sale is on (isSaleAd in app.js).
+function bdSale(ad) { return isSaleAd(ad); }
 function bdRelaunch() {
   const list = bdRelaunchList(), C = bdCpa(), show = BD.relaunchAll ? list : list.slice(0, 8);
   if (!list.length) return `<section class="panel-box bd-sec" id="bd-relaunch"><h2>Relaunch kit</h2><p class="muted">No switched-off ad beat the target with 2 or more sales in these dates. Try the last 365 days.</p></section>`;
@@ -206,9 +209,10 @@ function bdRelaunch() {
       <div class="act-btns"><button class="btn ghost small-btn" type="button" data-bdcopytext="${esc(brief)}">Copy brief</button><button class="btn ghost small-btn" type="button" data-bdopen="${esc(ad.id)}">${c.type === 'static_image' ? 'Make fresh versions' : 'Open ad'}</button></div></div></article>`;
   };
   return `<section class="panel-box bd-sec" id="bd-relaunch"><div class="bd-head"><div><h2>Relaunch kit</h2>
-      <p class="lead">${list.length} switched-off ads beat the ROAS target (${roasTxt(bdTarget())}) with 2 or more sales in these dates. Everyday ads first, then sale ads to keep for the next sale. Each has a ready brief.</p></div></div>
+      <p class="lead">The best ${list.length} switched-off everyday ads that beat the ROAS target (${roasTxt(bdTarget())}) with 2 or more sales in these dates. Each has a ready brief.</p></div></div>
     <div class="bd-rls">${show.map(card).join('')}</div>
-    ${list.length > show.length ? `<button class="btn ghost" type="button" data-bdrelaunchall>Show all ${list.length}</button>` : ''}</section>`;
+    ${list.length > show.length ? `<button class="btn ghost" type="button" data-bdrelaunchall>Show all ${list.length}</button>` : ''}
+    ${(() => { const k = bdSaleKeep(); return k.length ? `<p class="small muted">${k.length} sale ad${k.length > 1 ? 's' : ''} also did well (${esc(k.slice(0, 3).map((a) => a.name).join(', '))}${k.length > 3 ? ' and more' : ''}). They sold on the discount, so they are left out here. Keep them for the next sale.</p>` : ''; })()}</section>`;
 }
 
 // ---------- 5. Audience and placement cuts ----------

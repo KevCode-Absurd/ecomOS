@@ -331,6 +331,7 @@ function rpPlan() {
   const o = ENGINE.opportunities(VIEW), items = [];
   // 1 ad in 1 list only (pause first), and say the format when 2 ads share a name.
   const seen = new Set();
+  for (const k of ['scale', 'gems']) o[k] = o[k].filter((x) => !isSaleAd(DATA.ads[x.id]));   // never push sale ads outside a sale
   for (const k of ['pause', 'scale', 'gems', 'tired']) o[k] = o[k].filter((x) => !seen.has(x.id) && seen.add(x.id));
   const all = ['pause', 'scale', 'gems', 'tired'].flatMap((k) => o[k]), count = {};
   for (const x of all) count[x.name] = (count[x.name] || 0) + 1;

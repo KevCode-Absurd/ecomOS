@@ -10,10 +10,44 @@ const DEFAULT_SETTINGS = { targets: { roas: null, cpa: null }, presets: [], bran
 let DATA = null, ENGINE = null, VIEW = null, CAMPAIGNS = [], THUMBS = null, NOTES = {}, COMPETITORS = null, COMP_MEDIA = {};
 // Inside claude.ai the page saves by republishing its files; run locally it saves through the local server.
 const IS_CLAUDE = !!(window.claude && window.claude.use);
-const TABS = ['overview', 'actions', 'buyer', 'sales', 'gallery', 'campaigns', 'insights', 'studio', 'catalog', 'competitors', 'report'];
+const TABS = ['overview', 'moves', 'actions', 'buyer', 'sales', 'gallery', 'campaigns', 'insights', 'studio', 'catalog', 'competitors', 'report'];
 let SETTINGS = JSON.parse(JSON.stringify(DEFAULT_SETTINGS));
 let CAN_SAVE = true;           // becomes false after the first refused save
-const state = { since: null, until: null, kw: [], camp: [], preset: '', tab: 'overview', compare: [] };
+const state = { since: null, until: null, kw: [], camp: [], preset: '', tab: 'overview', compare: [], hideSale: false };
+
+// ---------- sale ads ----------
+// Sale, festival offer and countdown campaigns sell on the discount, not the ad. They are outliers:
+// never suggested for scaling, relaunch or copying, and the "Hide sale ads" button drops them everywhere.
+// Navratna / Navrathna is a jewellery style, not a sale, so it is not matched. A small always-on code
+// (5% off with a welcome code) is not a sale either: only 10% off or more counts.
+const SALE_RE = /\b(sales?|pre[- ]?sale|bfcm|black ?friday|cyber ?monday|eoss|end of season|clearance|deal of the day|[1-9]\d ?% ?off|discount|coupon|countdown|\d+ (hours?|days?) (left|to go)|last \d+ (hours?|days?)|akshaya tritiya|navratri|navaratri|diwali|dhanteras|raksha ?bandhan|rakhi)\b/i;
+const SALE_TEXT_RE = /\b(sale|bfcm|black ?friday|eoss|[1-9]\d ?% ?off|discount|coupon|countdown|\d+ (hours?|days?) (left|to go)|deal of the day)\b/i;
+const isSaleCampaign = (name) => SALE_RE.test(String(name || ''));
+// An ad is a sale ad if its campaign, ad set or ad name says so, or its copy is about a sale.
+function isSaleAd(ad) {
+  if (!ad) return false;
+  if (ad._sale !== undefined) return ad._sale;
+  const c = ad.creative || {};
+  const v = isSaleCampaign(ad.campaign_name) || isSaleCampaign(ad.adset_name) || isSaleCampaign(ad.name) || SALE_TEXT_RE.test([c.headline, c.title, c.primary_text, c.body].join(' '));
+  try { Object.defineProperty(ad, '_sale', { value: v, enumerable: false }); } catch (e) { /* frozen */ }
+  return v;
+}
+// Run fn with sale ads left out of every ENGINE sum, whatever the button says.
+function withoutSale(fn) {
+  const was = ENGINE.extraExclude;
+  ENGINE.extraExclude = isSaleAd;
+  try { return fn(); } finally { ENGINE.extraExclude = was; }
+}
+// Campaign ids named as a sale.
+function saleCampaignIds() {
+  if (!DATA) return [];
+  const ids = new Set();
+  for (const ad of Object.values(DATA.ads)) if (isSaleCampaign(ad.campaign_name)) ids.add(ad.campaign_id);
+  return [...ids];
+}
+const noSale = (list, get = (x) => x) => list.filter((x) => !isSaleAd(get(x)));
+const REC_CAP = 12;   // most ads any suggestion list names
+
 
 // ---------- formatting ----------
 const nf0 = new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 });
@@ -59,7 +93,7 @@ function thumbHtml(adId, alt) {
 
 // ---------- per-viewer memory (filters only) ----------
 function remember() {
-  try { localStorage.setItem('gallery-state', JSON.stringify({ since: state.since, until: state.until, kw: state.kw, camp: state.camp, xp: state.preset, preset: $('preset').value, fmt: $('format').value, set: $('rankSet').value, compare: $('compare').checked })); } catch (e) { /* storage unavailable */ }
+  try { localStorage.setItem('gallery-state', JSON.stringify({ since: state.since, until: state.until, kw: state.kw, camp: state.camp, hs: state.hideSale, xp: state.preset, preset: $('preset').value, fmt: $('format').value, set: $('rankSet').value, compare: $('compare').checked })); } catch (e) { /* storage unavailable */ }
 }
 function recall() {
   try { return JSON.parse(localStorage.getItem('gallery-state') || 'null'); } catch (e) { return null; }
@@ -107,6 +141,8 @@ async function boot() {
     applyPreset($('preset').value);
   }
   state.preset = saved && saved.xp ? saved.xp : '';
+  state.hideSale = !!(saved && saved.hs);
+  saleButton();
   $('since').value = state.since; $('until').value = state.until;
   fillPresets(); fillTargets(); fillBranding(); fillCampaignList(); renderPills();
   wire();
@@ -120,7 +156,16 @@ async function boot() {
     .catch(() => { THUMBS = { ads: {}, images: {} }; renderGrid(); renderTab(); });
 }
 
+function saleButton() {
+  const b = $('saleToggle');
+  if (!b) return;
+  const sale = Object.values(DATA.ads).filter(isSaleAd), names = [...new Set(sale.map((a) => a.campaign_name))];
+  b.setAttribute('aria-pressed', String(state.hideSale));
+  b.innerHTML = `${state.hideSale ? 'Sale ads hidden' : 'Hide sale ads'} <span class="count">${sale.length}</span>`;
+  b.title = `${sale.length} sale, festival offer and countdown ads in ${names.length} campaigns. ${state.hideSale ? 'Click to show them again.' : 'Click to leave them out of every tab.'}\n\n${names.slice(0, 30).join('\n')}${names.length > 30 ? `\n+ ${names.length - 30} more` : ''}`;
+}
 function wire() {
+  if ($('saleToggle')) $('saleToggle').addEventListener('click', () => { state.hideSale = !state.hideSale; saleButton(); refresh(); });
   $('preset').addEventListener('change', () => { applyPreset($('preset').value); refresh(); });
   for (const id of ['since', 'until']) $(id).addEventListener('change', () => { $('preset').value = 'custom'; state.since = $('since').value; state.until = $('until').value; refresh(); });
   $('compare').addEventListener('change', renderAll);
@@ -207,6 +252,7 @@ function renderTab() {
   if (state.tab === 'insights' && window.renderInsights) window.renderInsights();
   if (state.tab === 'competitors' && window.renderCompetitors) window.renderCompetitors();
   if (state.tab === 'buyer' && window.renderBuyer) window.renderBuyer();
+  if (state.tab === 'moves' && window.renderMoves) window.renderMoves();
   if (state.tab === 'catalog' && window.renderCatalog) window.renderCatalog();
 }
 
@@ -223,7 +269,9 @@ function applyPreset(v) {
 function refresh() {
   $('error').textContent = '';
   try {
+    ENGINE.extraExclude = state.hideSale ? isSaleAd : null;
     VIEW = ENGINE.view(state.since, state.until, state.kw, state.camp, SETTINGS.targets);
+    VIEW.hide_sale = state.hideSale;
   } catch (e) {
     $('error').textContent = e.message;
     return;
@@ -651,7 +699,7 @@ async function addNote(form) {
 function card(ad) {
   const v = ad.view, m = v.metrics, c = ad.creative;
   const p = $('compare').checked ? v.prev_metrics : null;
-  const chips = [verdictChip(v.verdict), fatigueChip(v.fatigue), `<span class="chip fmt">${esc(c.type_label)}</span>`, `<span class="chip ${ad.effective_status === 'ACTIVE' ? 'active' : ''}">${esc(statusLabel(ad.effective_status))}</span>`];
+  const chips = [verdictChip(v.verdict), fatigueChip(v.fatigue), `<span class="chip fmt">${esc(c.type_label)}</span>`, isSaleAd(ad) ? '<span class="chip sale" title="Sale, festival offer or countdown ad">Sale</span>' : '', `<span class="chip ${ad.effective_status === 'ACTIVE' ? 'active' : ''}">${esc(statusLabel(ad.effective_status))}</span>`];
   const n = (v.same_media_ads || []).length;
   if (n) chips.push(`<span class="chip" title="Metrics stay per ad">Same ${c.type === 'video' ? 'video' : 'image'} in ${n} other ad${n > 1 ? 's' : ''}</span>`);
   if (!p && VIEW.previous.complete && $('compare').checked) chips.push('<span class="chip" title="No spend in the previous period">New</span>');
