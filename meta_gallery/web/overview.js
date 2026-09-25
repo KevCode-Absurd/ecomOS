@@ -353,6 +353,10 @@ function ovDays(B) {
 function brandHero(B) {
   const c = B.cur, p = B.prev;
   const per = c.sales !== null && c.spend ? c.sales / c.spend : null;
+  // Visits start when Google Analytics data starts (late May 2026). For longer ranges, count the days that have both.
+  const vd = c.days.filter((r) => r.visits !== null && r.x && r.x.sales !== null);
+  const vis = c.visits !== null ? { visits: c.visits, conv: c.conv, part: false }
+    : vd.length ? { visits: vd.reduce((t, r) => t + r.visits, 0), conv: vd.reduce((t, r) => t + (r.x.orders || 0), 0) / vd.reduce((t, r) => t + r.visits, 0), part: true, from: vd[0].d } : { visits: null, conv: null };
   const { rows, sc, big } = ovDays(B);
   const W = 640, H = 170, L = 6, R = 6, T = 10, Bt = 20, n = c.days.length;
   const slot = (W - L - R) / n, bw = Math.max(1.5, slot * 0.72);
@@ -385,8 +389,8 @@ function brandHero(B) {
     <svg viewBox="0 0 ${W} ${H}" class="ov-combo" role="img" aria-label="Website sales a day with Meta spend on top">${bars}${spend}${ticks}</svg>
     <div class="trio">
       <div><span>Ad spend (Meta)</span><b>${compact(c.spend)}</b></div>
-      <div><span>Website visits</span><b>${c.visits !== null ? fmt(c.visits, 'int') : 'Not available'}</b></div>
-      <div><span>Orders per 10,000 visits</span><b>${c.conv !== null ? (c.conv * 1e4).toFixed(1) : 'Not available'}</b></div>
+      <div><span>Website visits${vis.part ? ` (from ${esc(shortDate(vis.from))})` : ''}</span><b>${vis.visits !== null ? fmt(vis.visits, 'int') : 'Not available'}</b></div>
+      <div><span>Orders per 10,000 visits${vis.part ? ' (same days)' : ''}</span><b>${vis.conv !== null ? (vis.conv * 1e4).toFixed(1) : 'Not available'}</b></div>
     </div>
     ${c.covered < c.n ? `<p class="small" style="margin:0;color:#5a4300">Website data is missing for ${c.n - c.covered} of ${c.n} days. Totals cover the days we have.</p>` : ''}
     <div class="actions"><button class="btn dark" type="button" data-goto="sales">Brand sales</button><button class="btn ghost" type="button" data-goto="report">Client report</button></div>
