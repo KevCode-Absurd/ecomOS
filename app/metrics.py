@@ -28,11 +28,14 @@ current window and the trailing ones, plus money at stake.
 Fields read from the tables in contracts/data-sources.md (the generator and the
 connectors must produce these names):
 
-  orders          id, created_at, customer_id, status, total, shipping, tax
+  orders          id, created_at, customer_id, total, shipping, tax or tax_lines
                   (number, {jurisdiction: amount} or [{jurisdiction, amount}]),
-                  refund, payment_method, line_items [{sku, qty}], delivered_at
-                  or status "delivered", shipped_at or status "shipped".
-                  Optional: shipping_cost, payment_fee.
+                  refund (number or {amount}), payment_method, line_items
+                  [{sku, qty}]. Cancelled: cancelled_at, or status or
+                  financial_status voided or cancelled. Shipped and delivered:
+                  shipped_at and delivered_at at top level or inside
+                  `fulfilment`, or fulfillment_status. Optional: cogs,
+                  shipping_cost, payment_fee.
   sessions        date, product_view, add_to_cart, checkout, purchase (flags per
                   session row, or counts when a row carries `sessions`)
   products        sku, cost
@@ -40,9 +43,12 @@ connectors must produce these names):
   google_rows     date, spend, impressions, clicks, purchases|conversions,
                   purchase_value|conversion_value
   flows           flow, date|sent_at, order_ids (matched order ids)
-  list_growth     date, new_subscribers, unsubscribes, bounces
+  list_growth     date, new_subscribers, unsubscribes, bounces (or, without
+                  it, welcome flow sends and unsubscribes from flows and campaign_sends)
   reversed_orders order_id, type (return, chargeback, dispute,
-                  return_to_sender, rto), amount, opened_at, closed_at, outcome
+                  return_to_sender, rto), amount, opened_at, closed_at, outcome.
+                  A leg with no rows at all reads unavailable (feed not
+                  connected), never 0.
   payouts         period_end|deposit_date, fees
   cash            date, balance
   speed_runs      page, variant, run, load_ms, lcp_ms, fcp_ms, bytes, requests
@@ -321,22 +327,36 @@ class Ctx:
 # ---------------------------------------------------------------- orders
 
 def order_ok(o):
-    return str(o.get('status') or '').lower() not in CANCELLED
+    """Counted at all: not cancelled, voided or a test order."""
+    if o.get('cancelled_at'):
+        return False
+    return not ({str(o.get('status') or '').lower(), str(o.get('financial_status') or '').lower()} & CANCELLED)
 
 
 def order_paid(o):
-    status = str(first(o, 'financial_status', default='') or '').lower()
+    status = str(o.get('financial_status') or '').lower()
     if status:
         return status in ('paid', 'partially_refunded', 'refunded', 'partially_paid')
     return order_ok(o) and num(o.get('total')) > 0
 
 
+def fulfilment(o):
+    """Shipping facts: top-level fields or the nested Shopify-style fulfilment object."""
+    nested = first(o, 'fulfilment', 'fulfillment', default={})
+    return nested if isinstance(nested, dict) else {}
+
+
 def order_shipped(o):
-    return bool(first(o, 'shipped_at', 'fulfilled_at', 'delivered_at')) or str(o.get('status') or '').lower() in SHIPPED
+    f = fulfilment(o)
+    if first(o, 'shipped_at', 'fulfilled_at', 'delivered_at') or first(f, 'shipped_at', 'fulfilled_at', 'delivered_at'):
+        return True
+    return bool({str(o.get('status') or '').lower(), str(first(o, 'fulfillment_status', 'fulfilment_status', default='') or '').lower()} & SHIPPED)
 
 
 def order_delivered(o):
-    return bool(o.get('delivered_at')) or str(o.get('status') or '').lower() == 'delivered'
+    if o.get('delivered_at') or fulfilment(o).get('delivered_at'):
+        return True
+    return 'delivered' in {str(o.get('status') or '').lower(), str(first(o, 'fulfillment_status', 'fulfilment_status', default='') or '').lower()}
 
 
 def tax_lines(o):
@@ -520,13 +540,13 @@ def m_repeat_rate_90d(ctx):
 
 
 STAGES = [
-    # stage, the rate metric, what the gap multiplies (volume key), what one unit is worth
-    ('sessions', 'sessions'),
-    ('product_view_rate', 'sessions'),
-    ('add_to_cart_rate', 'sessions'),
-    ('checkout_rate', 'add_to_cart'),
-    ('cvr_overall', 'sessions'),
-    ('aov', 'orders'),
+    # stage, what the gap multiplies (volume key), compound (an outcome of the stages above it)
+    ('sessions', 'sessions', False),
+    ('product_view_rate', 'sessions', False),
+    ('add_to_cart_rate', 'sessions', False),
+    ('checkout_rate', 'add_to_cart', False),
+    ('cvr_overall', 'sessions', True),
+    ('aov', 'orders', False),
 ]
 
 
@@ -584,11 +604,11 @@ def stakes(ctx, windows=4):
     ctx.set_window('sessions', 'date', offset=0)  # back to the current window for the caller
     priors = [s[0] for s in series[1:]]
     rows = []
-    for stage, volume_key in STAGES:
+    for stage, volume_key, compound in STAGES:
         cur = current_vals.get(stage)
         prior = [p.get(stage) for p in priors if p.get(stage) is not None]
         med = median(prior)
-        row = {'stage': stage, 'current': cur, 'prior': [p.get(stage) for p in priors], 'prior_median': med,
+        row = {'stage': stage, 'compound': compound, 'current': cur, 'prior': [p.get(stage) for p in priors], 'prior_median': med,
                'volume': current_vol.get(volume_key) if stage != 'sessions' else 1,
                'unit_value': unit_value(current_vol, stage), 'gap': None, 'stake': None}
         if cur is None or med is None or len(prior) < 2:
@@ -609,10 +629,14 @@ def m_money_at_stake(ctx):
     readable = [r for r in rows if r.get('stake') is not None]
     if not readable:
         raise Unavailable('fewer than 2 prior windows have sessions and orders, so there is no trailing median yet', 'sessions')
-    top = max(readable, key=lambda r: r['stake'])
+    # the break is the simple stage with the most at stake; cvr_overall is compound (it moves when
+    # any stage above it moves) and only names the break when no simple stage explains the loss
+    simple = [r for r in readable if not r['compound'] and r['stake'] > 0]
+    top = max(simple, key=lambda r: r['stake']) if simple else max(readable, key=lambda r: r['stake'])
     out = {'value': top['stake'], 'stage': top['stage'] if top['stake'] > 0 else None,
            'inputs': {'gap': top['gap'], 'volume': top['volume'], 'unit_value': top['unit_value'],
-                      'prior_windows': len(wins) - 1, 'baseline': 'own trailing median'},
+                      'prior_windows': len(wins) - 1, 'baseline': 'own trailing median',
+                      'ranking': 'largest stake among simple stages; cvr_overall is compound and ranks last'},
            'breakdown': rows, 'windows': wins}
     if top['stake'] <= 0:
         out['note'] = 'no stage is below its own trailing median'
@@ -628,11 +652,24 @@ def reversed_rows(ctx, types, field='opened_at', start=None, end=None):
     return [r for r in ctx.rows('reversed_orders', field, start, end, continuous=False) if str(r.get('type') or '').lower() in types]
 
 
-def reversed_order_ids(ctx, types):
-    ids = set()
+LEG_FEEDS = {
+    'return': 'Shopify returns (reversed_orders rows of type return)',
+    'chargeback': 'gateway disputes (reversed_orders rows of type chargeback)',
+    'return_to_sender': 'the carrier exception feed (reversed_orders rows of type return_to_sender)',
+    'rto': 'the courier RTO feed (reversed_orders rows of type rto)',
+}
+
+
+def reversed_order_ids(ctx, types, leg):
+    """Order ids with a reversal of these types. No row of the type anywhere means the feed is not connected."""
+    ids, seen = set(), False
     for r in ctx.raw('reversed_orders'):
-        if isinstance(r, dict) and str(r.get('type') or '').lower() in types and r.get('order_id') is not None:
-            ids.add(str(r['order_id']))
+        if isinstance(r, dict) and str(r.get('type') or '').lower() in types:
+            seen = True
+            if r.get('order_id') is not None:
+                ids.add(str(r['order_id']))
+    if not seen:
+        raise Unavailable(f'reversed_orders has no {leg} rows, so the {leg} leg is not connected', 'reversed_orders', LEG_FEEDS[leg])
     return ids
 
 
@@ -643,7 +680,7 @@ def m_return_rate(ctx):
     if not delivered:
         raise Unavailable('no delivered orders in the window: orders need delivered_at or status "delivered"', 'orders')
     try:
-        returned_ids = reversed_order_ids(ctx, RETURN_TYPES)
+        returned_ids = reversed_order_ids(ctx, RETURN_TYPES, 'return')
         returned = sum(1 for o in delivered if str(o.get('id')) in returned_ids)
     except Unavailable:
         if not any('return' in o for o in delivered):
@@ -657,6 +694,7 @@ def m_chargeback_rate(ctx):
     paid = [o for o in orders_in(ctx) if order_paid(o)]
     if not paid:
         raise Unavailable('no paid orders in the window', 'orders')
+    reversed_order_ids(ctx, CHARGEBACK_TYPES, 'chargeback')  # no chargeback rows at all means the feed is missing
     opened = reversed_rows(ctx, CHARGEBACK_TYPES)
     return {'value': len(opened) / len(paid), 'inputs': {'numerator': len(opened), 'denominator': len(paid)},
             'benchmark': {'max': CHARGEBACK_BENCHMARK, 'label': 'under 0.9 percent'}}
@@ -664,7 +702,7 @@ def m_chargeback_rate(ctx):
 
 def m_dispute_win_rate(ctx):
     ctx.set_window('reversed_orders', 'opened_at')
-    closed = reversed_rows(ctx, CHARGEBACK_TYPES, field='closed_at')
+    closed = [r for r in reversed_rows(ctx, CHARGEBACK_TYPES, field='closed_at') if str(r.get('outcome') or '').lower() != 'open']
     if not closed:
         raise Unavailable('no disputes closed in the window', 'reversed_orders')
     won = [r for r in closed if str(r.get('outcome') or '').lower() in WON]
@@ -676,7 +714,7 @@ def m_return_to_sender_rate(ctx):
     shipped = [o for o in orders_in(ctx) if order_shipped(o)]
     if not shipped:
         raise Unavailable('no shipped orders in the window: orders need shipped_at or a shipped status', 'orders')
-    rts_ids = reversed_order_ids(ctx, RTS_TYPES)
+    rts_ids = reversed_order_ids(ctx, RTS_TYPES, 'return_to_sender')
     back = sum(1 for o in shipped if str(o.get('id')) in rts_ids)
     return {'value': back / len(shipped), 'inputs': {'numerator': back, 'denominator': len(shipped)}}
 
@@ -700,7 +738,7 @@ def m_rto_rate(ctx):
     cod = [o for o in orders_in(ctx) if str(o.get('payment_method') or '').lower() in PAYMENT_BUCKETS['cod']]
     if not cod:
         raise Unavailable('no cash-on-delivery orders in the window', 'orders')
-    rto_ids = reversed_order_ids(ctx, RTO_TYPES)
+    rto_ids = reversed_order_ids(ctx, RTO_TYPES, 'rto')
     back = sum(1 for o in cod if str(o.get('id')) in rto_ids)
     return {'value': back / len(cod), 'inputs': {'numerator': back, 'denominator': len(cod)}}
 
@@ -863,14 +901,35 @@ def m_revenue_by_flow_order_matched(ctx):
 
 
 def m_list_growth(ctx):
-    ctx.set_window('list_growth', 'date')
-    rows = ctx.rows('list_growth', 'date')
-    if not rows:
-        raise Unavailable('no list rows in the window', 'list_growth')
-    new = sum(num(first(r, 'new_subscribers', 'new', 'subscribed')) for r in rows)
-    unsub = sum(num(first(r, 'unsubscribes', 'unsubscribed')) for r in rows)
-    bounced = sum(num(first(r, 'bounces', 'bounced')) for r in rows)
-    return {'value': new - unsub - bounced, 'inputs': {'new_subscribers': new, 'unsubscribes': unsub, 'bounces': bounced}}
+    if ctx.data.table_path('list_growth'):
+        ctx.set_window('list_growth', 'date')
+        rows = ctx.rows('list_growth', 'date')
+        if not rows:
+            raise Unavailable('no list rows in the window', 'list_growth')
+        new = sum(num(first(r, 'new_subscribers', 'new', 'subscribed')) for r in rows)
+        unsub = sum(num(first(r, 'unsubscribes', 'unsubscribed')) for r in rows)
+        bounced = sum(num(first(r, 'bounces', 'bounced')) for r in rows)
+        return {'value': new - unsub - bounced, 'inputs': {'new_subscribers': new, 'unsubscribes': unsub, 'bounces': bounced}}
+    # no list export: new subscribers are the welcome flow's first message sends;
+    # unsubscribes and bounces are summed across flows and campaigns
+    ctx.set_window('flows', 'date')
+    flows = ctx.rows('flows', 'date')
+    welcome = [r for r in flows if 'welcome' in str(first(r, 'flow', 'name', default='')).lower()]
+    if not welcome:
+        raise Unavailable('no list_growth table and no welcome flow in flows to count new subscribers from', 'list_growth',
+                          'Klaviyo list growth report (list_growth table)')
+    first_msg = min(str(first(r, 'message_id', 'message', default='')) for r in welcome)
+    new = sum(num(r.get('sends')) for r in welcome if str(first(r, 'message_id', 'message', default='')) == first_msg)
+    unsub = sum(num(r.get('unsubscribes')) for r in flows)
+    campaigns = 0
+    if ctx.data.table_path('campaign_sends'):
+        crows = ctx.rows('campaign_sends', 'sent_at', continuous=False)
+        campaigns = len(crows)
+        unsub += sum(num(r.get('unsubscribes')) for r in crows)
+    return {'value': new - unsub,
+            'inputs': {'new_subscribers': new, 'unsubscribes': unsub, 'bounces': None, 'welcome_message': first_msg, 'campaigns': campaigns},
+            'note': 'from welcome flow sends and unsubscribes across flows and campaigns, not a list export; '
+                    'bounces are per send there, not list removals, so they are left out'}
 
 
 def m_ltv_180d(ctx):
@@ -912,14 +971,19 @@ def m_contribution_margin(ctx):
 
     # COGS from line items and product cost
     costs = {}
-    for p in ctx.raw('products'):
-        if isinstance(p, dict) and p.get('sku') is not None and p.get('cost') not in (None, ''):
-            costs[str(p['sku'])] = num(p['cost'])
-    if not costs:
-        raise Unavailable('products carry no cost, so COGS is unknown', 'products',
-                          'a cost sheet with cost per sku (products table)')
-    cogs, missing_skus, no_lines = 0.0, set(), 0
+    if not all(o.get('cogs') not in (None, '') for o in orders):
+        for p in ctx.raw('products'):
+            if isinstance(p, dict) and p.get('sku') is not None and p.get('cost') not in (None, ''):
+                costs[str(p['sku'])] = num(p['cost'])
+        if not costs:
+            raise Unavailable('orders carry no cogs and products no cost, so COGS is unknown', 'products',
+                              'a cost sheet with cost per sku (products table)')
+    cogs, missing_skus, no_lines, from_order = 0.0, set(), 0, 0
     for o in orders:
+        if o.get('cogs') not in (None, ''):
+            cogs += num(o['cogs'])
+            from_order += 1
+            continue
         lines = line_items(o)
         if not lines:
             no_lines += 1
@@ -948,10 +1012,13 @@ def m_contribution_margin(ctx):
     elif ctx.data.table_path('payouts'):
         field = 'period_end' if any('period_end' in r for r in ctx.raw('payouts') if isinstance(r, dict)) else 'deposit_date'
         rows = ctx.rows('payouts', field)
+        gateways = {str(o.get('gateway')).lower() for o in orders if o.get('gateway')}
+        if gateways:  # marketplace settlements (Amazon) carry referral fees, not payment fees for these orders
+            rows = [r for r in rows if str(r.get('gateway') or '').lower() in gateways]
         if not rows:
-            raise Unavailable('no payouts in the window', 'payouts')
+            raise Unavailable('no payouts in the window for the gateways the orders use', 'payouts')
         fees = sum(num(r.get('fees')) for r in rows)
-        fees_from = 'payouts.fees'
+        fees_from = 'payouts.fees for ' + (', '.join(sorted(gateways)) if gateways else 'all gateways') + f', {len(rows)} payouts ending in the window'
     else:
         raise Unavailable('no payment fees: add payment_fee to orders or a payouts table', 'payouts')
 
@@ -967,7 +1034,8 @@ def m_contribution_margin(ctx):
            'inputs': {'net_revenue': round(revenue, 2), 'cogs': round(cogs, 2), 'shipping': round(shipping, 2),
                       'payment_fees': round(fees, 2), 'returns_cost': round(returns, 2), 'marketing': round(marketing, 2),
                       'orders': len(orders)},
-           'sources': {'shipping': shipping_from, 'payment_fees': fees_from, 'marketing': ', '.join(k for k, v in per.items() if v)},
+           'sources': {'cogs': 'orders.cogs' if from_order == len(orders) else 'products.cost by line item', 'shipping': shipping_from,
+                       'payment_fees': fees_from, 'marketing': ', '.join(k for k, v in per.items() if v)},
            'margin_rate': ratio(value, revenue)}
     notes = []
     if missing_skus:

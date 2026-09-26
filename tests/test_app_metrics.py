@@ -292,6 +292,84 @@ class FixtureMetricsTest(unittest.TestCase):
         names = {m['name'] for m in server.read_metric_contract()}
         self.assertTrue(names <= set(metrics.METRICS), names - set(metrics.METRICS))
 
+    def test_shopify_shaped_orders_and_missing_legs(self):
+        """Orders with nested fulfilment, cancelled_at and financial_status; a reversal leg with no rows is unavailable."""
+        tmp = Path(tempfile.mkdtemp())
+        try:
+            sample = tmp / 'sample'
+            sample.mkdir()
+            shutil.copy(server.SAMPLE / 'brand.json', sample / 'brand.json')
+            orders = []
+            for i in range(10):
+                o = {'id': i, 'created_at': f'2026-09-{10 + i:02d}T10:00:00Z', 'customer_id': f'c{i}', 'total': 100, 'shipping': 0,
+                     'tax': 5, 'refund': {'amount': 10} if i == 0 else None, 'payment_method': 'card', 'gateway': 'shopify_payments',
+                     'financial_status': 'paid', 'fulfillment_status': 'delivered', 'cancelled_at': None,
+                     'fulfilment': {'carrier': 'UPS', 'shipped_at': f'2026-09-{11 + i:02d}', 'delivered_at': f'2026-09-{13 + i:02d}'},
+                     'line_items': [{'sku': 's1', 'qty': 2}], 'cogs': 40}
+                if i == 9:
+                    o.update(financial_status='voided', fulfillment_status=None, cancelled_at='2026-09-19T11:00:00Z', fulfilment={})
+                if i == 8:
+                    o.update(fulfillment_status='in_transit', fulfilment={'carrier': 'USPS', 'shipped_at': '2026-09-19', 'delivered_at': None})
+                orders.append(o)
+            (sample / 'orders.json').write_text(json.dumps({'rows': orders}), encoding='utf-8')
+            (sample / 'reversed_orders.json').write_text(json.dumps({'rows': [
+                {'order_id': 1, 'type': 'return', 'amount': 100, 'opened_at': '2026-09-15', 'closed_at': '2026-09-20', 'outcome': 'refunded'},
+                {'order_id': 2, 'type': 'chargeback', 'amount': 100, 'opened_at': '2026-09-16', 'closed_at': None, 'outcome': 'open'}]}), encoding='utf-8')
+            (sample / 'payouts.json').write_text(json.dumps({'rows': [
+                {'gateway': 'shopify_payments', 'period_end': '2026-09-21', 'gross': 900, 'fees': 27},
+                {'gateway': 'amazon', 'period_end': '2026-09-21', 'gross': 5000, 'fees': 1100}]}), encoding='utf-8')
+            (sample / 'ad_rows.json').write_text(json.dumps([{'date': '2026-09-20', 'spend': 50, 'impressions': 1, 'reach': 1, 'clicks': 1, 'purchases': 1, 'purchase_value': 100}]), encoding='utf-8')
+            data = server.Data(sample)
+            aov = data.metric('aov', end='2026-09-24')
+            self.assertEqual(aov['inputs']['denominator'], 9, 'the voided order with cancelled_at is not counted')
+            self.assertAlmostEqual(aov['value'], (9 * 95 - 10) / 9)
+            rr = data.metric('return_rate', end='2026-09-24')
+            self.assertEqual(rr['inputs'], {'numerator': 1, 'denominator': 8}, 'delivered from the nested fulfilment object')
+            cb = data.metric('chargeback_rate', end='2026-09-24')
+            self.assertEqual(cb['inputs'], {'numerator': 1, 'denominator': 9})
+            self.assertTrue(data.metric('dispute_win_rate', end='2026-09-24')['unavailable'], 'an open dispute is not closed')
+            rts = data.metric('return_to_sender_rate', end='2026-09-24')
+            self.assertTrue(rts['unavailable'], 'no return_to_sender rows at all means the feed is not connected, not 0')
+            self.assertIsNone(rts['value'])
+            self.assertIn('carrier', rts['fix'])
+            cm = data.metric('contribution_margin', end='2026-09-24')
+            self.assertFalse(cm['unavailable'], cm.get('reason'))
+            self.assertEqual(cm['inputs']['cogs'], 360, 'cogs from the order, not the product sheet')
+            self.assertEqual(cm['inputs']['payment_fees'], 27, 'Amazon settlements are not payment fees for Shopify orders')
+            self.assertEqual(cm['inputs']['shipping'], 9 * 9.5)
+            self.assertEqual(cm['sources']['cogs'], 'orders.cogs')
+        finally:
+            shutil.rmtree(tmp, ignore_errors=True)
+
+    def test_list_growth_without_a_list_table(self):
+        tmp = Path(tempfile.mkdtemp())
+        try:
+            sample = tmp / 'sample'
+            sample.mkdir()
+            shutil.copy(server.SAMPLE / 'brand.json', sample / 'brand.json')
+            (sample / 'flows.json').write_text(json.dumps({'rows': [
+                {'flow': 'Welcome Series', 'message_id': 'F-01-M1', 'date': '2026-09-20', 'sends': 30, 'unsubscribes': 1, 'bounces': 4, 'matched_order_ids': []},
+                {'flow': 'Welcome Series', 'message_id': 'F-01-M2', 'date': '2026-09-22', 'sends': 25, 'unsubscribes': 2, 'bounces': 3, 'matched_order_ids': []},
+                {'flow': 'Winback', 'message_id': 'F-05-M1', 'date': '2026-09-21', 'sends': 100, 'unsubscribes': 3, 'bounces': 9, 'matched_order_ids': []}]}), encoding='utf-8')
+            (sample / 'campaign_sends.json').write_text(json.dumps({'rows': [
+                {'campaign': 'Labor Day', 'sent_at': '2026-09-19T14:00:00Z', 'sends': 500, 'unsubscribes': 4, 'bounces': 20, 'matched_order_ids': []}]}), encoding='utf-8')
+            data = server.Data(sample)
+            out = data.metric('list_growth', end='2026-09-24')
+            self.assertFalse(out['unavailable'], out.get('reason'))
+            self.assertEqual(out['value'], 30 - (1 + 2 + 3 + 4))
+            self.assertEqual(out['inputs']['new_subscribers'], 30)
+            self.assertIsNone(out['inputs']['bounces'])
+            self.assertIn('not a list export', out['note'])
+        finally:
+            shutil.rmtree(tmp, ignore_errors=True)
+
+    def test_compound_stage_ranks_after_the_stage_that_explains_it(self):
+        out = self.ok('money_at_stake')
+        rows = {r['stage']: r for r in out['breakdown']}
+        self.assertTrue(rows['cvr_overall']['compound'])
+        self.assertFalse(rows['checkout_rate']['compound'])
+        self.assertIn('compound', out['inputs']['ranking'])
+
     def test_bad_window(self):
         out = self.metric('sessions', window='abc')
         self.assertTrue(out['unavailable'])
@@ -326,6 +404,28 @@ class MissingDataTest(unittest.TestCase):
         if not present:
             self.assertIsNone(pipe['break'])
             self.assertTrue(pipe['money_at_stake']['unavailable'])
+
+    def test_generated_sample_brand(self):
+        """With session 2's tables on disk, every metric answers except the legs the generator says are not connected."""
+        data = server.Data(server.SAMPLE)
+        if 'orders' not in {t['name'] for t in data.tables()}:
+            self.skipTest('generate.py has not run')
+        not_connected = {'return_to_sender_rate', 'cash_runway_weeks'}
+        for row in data.contract():
+            out = data.metric(row['name'])
+            if row['name'] == 'rto_rate':
+                self.assertTrue(out['not_applicable'])
+            elif row['name'] in not_connected:
+                self.assertTrue(out['unavailable'], row['name'])
+                self.assertTrue(out['fix'], row['name'])
+            else:
+                self.assertFalse(out.get('unavailable'), f"{row['name']}: {out.get('reason')}")
+                self.assertIsNotNone(out['value'], row['name'])
+        pipe = data.pipeline()
+        self.assertEqual(pipe['break']['stage'], 'checkout_rate', 'the planted story: mobile checkout broke on 2026-08-21')
+        self.assertGreater(pipe['break']['money_at_stake'], 0)
+        self.assertEqual(pipe['metrics']['sessions']['window']['end'], data.brand['as_of'])
+        self.assertLess(data.metric('chargeback_rate')['value'], 0.009)
 
     def test_missing_table_names_the_connector(self):
         tmp = Path(tempfile.mkdtemp())
