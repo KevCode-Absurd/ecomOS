@@ -10,7 +10,7 @@ const DEFAULT_SETTINGS = { targets: { roas: null, cpa: null }, presets: [], bran
 let DATA = null, ENGINE = null, VIEW = null, CAMPAIGNS = [], THUMBS = null, NOTES = {}, COMPETITORS = null, COMP_MEDIA = {};
 // Inside claude.ai the page saves by republishing its files; run locally it saves through the local server.
 const IS_CLAUDE = !!(window.claude && window.claude.use);
-const TABS = ['overview', 'moves', 'actions', 'buyer', 'health', 'sales', 'gallery', 'campaigns', 'insights', 'studio', 'catalog', 'competitors', 'report'];
+const TABS = ['overview', 'moves', 'festive', 'actions', 'buyer', 'health', 'sales', 'gallery', 'campaigns', 'insights', 'studio', 'catalog', 'competitors', 'report'];
 let SETTINGS = JSON.parse(JSON.stringify(DEFAULT_SETTINGS));
 let CAN_SAVE = true;           // becomes false after the first refused save
 const state = { since: null, until: null, kw: [], camp: [], preset: '', tab: 'overview', compare: [], hideSale: false };
@@ -254,6 +254,7 @@ function renderTab() {
   if (state.tab === 'buyer' && window.renderBuyer) window.renderBuyer();
   if (state.tab === 'moves' && window.renderMoves) window.renderMoves();
   if (state.tab === 'health' && window.renderHealth) window.renderHealth();
+  if (state.tab === 'festive' && window.renderFestive) window.renderFestive();
   if (state.tab === 'catalog' && window.renderCatalog) window.renderCatalog();
 }
 

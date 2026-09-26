@@ -34,7 +34,7 @@ from .view import Engine, ViewError
 
 STATIC = Path(__file__).resolve().parent / 'static'
 WEB = Path(__file__).resolve().parent / 'web'
-WEB_FILES = ('engine.js', 'app.js', 'insights.js', 'overview.js', 'lab.js', 'studio.js', 'sales.js', 'testlab.js', 'prodads.js', 'report.js', 'brandx.js', 'buyer.js', 'moves.js', 'health.js', 'catalog.js')
+WEB_FILES = ('engine.js', 'app.js', 'insights.js', 'overview.js', 'lab.js', 'studio.js', 'sales.js', 'testlab.js', 'prodads.js', 'report.js', 'brandx.js', 'buyer.js', 'moves.js', 'health.js', 'festive.js', 'catalog.js')
 COMPETITORS = DATA / 'competitors.json'
 COMP_MEDIA = DATA / 'comp_media.json'
 CATALOG = DATA / 'catalog.json'
@@ -387,9 +387,13 @@ def make_handler(gallery):
                     if COMPETITORS.is_file():
                         return self.send_file(COMPETITORS)
                     return self.send_json({'error': 'not found'}, 404)
-                if len(parts) == 1 and parts[0] in DOCS + ('brand.json', 'sales.json', 'comp_media.json', 'catalog.json', 'geo.json', 'traffic.json', 'stock.json', 'valuerules.json', 'metainsights.json', 'tracking.json', 'freq.json', 'changes.json', 'structure.json', 'creativedna.json'):
+                if len(parts) == 1 and parts[0] in DOCS + ('brand.json', 'sales.json', 'comp_media.json', 'catalog.json', 'geo.json', 'traffic.json', 'stock.json', 'valuerules.json', 'metainsights.json', 'tracking.json', 'freq.json', 'changes.json', 'structure.json', 'creativedna.json', 'checkout.json', 'creativepack.json', 'compwatch.json', 'festive.json'):
                     path = DATA / parts[0]
                     return self.send_file(path) if path.is_file() else self.send_json({})
+                if len(parts) == 2 and parts[0] in ('creative', 'creative_pack') and re.fullmatch(r'[a-z0-9-]{1,60}\.(jpg|png)', parts[1]):
+                    # Creative pack: previews (creative/) and full size files (creative_pack/), read only.
+                    path = DATA / parts[0] / parts[1]
+                    return self.send_file(path, cache='max-age=3600') if path.is_file() else self.send_json({'error': 'not found'}, 404)
                 if parts == ['breakdowns.json']:
                     return self.send_json(ai.load_breakdowns())
                 if parts == ['api', 'ai-status']:
