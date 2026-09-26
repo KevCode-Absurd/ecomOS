@@ -16,8 +16,10 @@ Routes
   GET  /api/brand                     data/sample-brand/brand.json
   GET  /api/tables                    tables present in data/sample-brand/ with row counts
   GET  /api/tables/<name>?limit=N     rows of one table (JSON or CSV on disk)
-  GET  /api/metrics                   metric names and groups from contracts/metrics.md
-  GET  /api/metrics/<name>?window=28d one metric via metrics.py (session 3); unavailable until then
+  GET  /api/metrics                   metric names, groups, units from contracts/metrics.md and metrics.py
+  GET  /api/metrics/pipeline?window=28d&windows=4  every pipeline metric with trailing windows, the break
+  GET  /api/metrics/<name>?window=28d&end=YYYY-MM-DD  one metric via metrics.py: value, window, freshness,
+                                      formula, or unavailable with the reason and the connector that fixes it
   GET  /api/decisions?screen=<slug>   the decisions log
   POST /api/decisions                 append one decision {screen, capability, choice, reason}
   ANY  /api/<slug>/...                handed to screens/<slug>/api.py: handle(req)
@@ -198,7 +200,7 @@ class Data:
         return out
 
     def _metrics(self):
-        """metrics.py next to server.py, reloaded when it changes. None until session 3 builds it."""
+        """metrics.py next to server.py, reloaded when it changes."""
         path = APP / 'metrics.py'
         if not path.is_file():
             return None
@@ -208,18 +210,39 @@ class Data:
             self._metrics_mtime = mtime
         return self._metrics_mod
 
+    def contract(self):
+        """The metric list: contracts/metrics.md rows, plus what metrics.py adds (the speed metrics)."""
+        rows = {m['name']: dict(m) for m in read_metric_contract()}
+        mod = self._metrics()
+        if mod is not None and hasattr(mod, 'METRICS'):
+            for name in mod.METRICS:
+                info = mod.describe(name)
+                row = rows.setdefault(name, {'name': name, 'group': info['group'], 'formula': info['formula'] or ''})
+                row.update(unit=info['unit'], higher_is_better=info['higher_is_better'],
+                           default_window=info['default_window'], sources=info['sources'], engine=True)
+        for row in rows.values():
+            row.setdefault('engine', False)
+        return list(rows.values())
+
     def metric(self, name, **kw):
         """One metric from the contract: value, window, freshness, formula, or unavailable with reason."""
-        contract = {m['name']: m for m in read_metric_contract()}
+        contract = {m['name']: m for m in self.contract()}
         if name not in contract:
             raise KeyError(name)
         mod = self._metrics()
         base = {'metric': name, 'group': contract[name]['group'], 'formula': contract[name]['formula']}
-        if mod is None or not hasattr(mod, 'compute'):
+        if mod is None or not hasattr(mod, 'compute') or name not in getattr(mod, 'METRICS', {}):
             return dict(base, value=None, unavailable=True,
-                        reason='metrics.py is not built yet (Phase A session 3)', fix='app/metrics.py')
+                        reason='this metric is in the contract but not in metrics.py yet', fix='app/metrics.py')
         result = mod.compute(name, self, **kw)
         return dict(base, **result) if isinstance(result, dict) else dict(base, value=result)
+
+    def pipeline(self, **kw):
+        """Every pipeline metric with trailing windows and the break, from metrics.py."""
+        mod = self._metrics()
+        if mod is None or not hasattr(mod, 'pipeline'):
+            return {'unavailable': True, 'reason': 'metrics.py is missing', 'fix': 'app/metrics.py'}
+        return mod.pipeline(self, **kw)
 
 
 def load_module(name, path):
@@ -372,9 +395,11 @@ def make_handler(data, decisions, apis):
                 out = rows[:int(limit)] if limit.isdigit() else rows
                 return self.send_json({'table': parts[1], 'total': len(rows), 'rows': out})
             if parts == ['metrics']:
-                return self.send_json({'metrics': read_metric_contract(), 'engine': (APP / 'metrics.py').is_file()})
+                return self.send_json({'metrics': data.contract(), 'engine': (APP / 'metrics.py').is_file()})
             if len(parts) == 2 and parts[0] == 'metrics':
-                kw = {k: v[0] for k, v in qs.items() if SAFE_NAME.match(k)}
+                kw = {k: v[0][:40] for k, v in qs.items() if SAFE_NAME.match(k) and v}
+                if parts[1] == 'pipeline':
+                    return self.send_json(data.pipeline(**kw))
                 try:
                     return self.send_json(data.metric(parts[1], **kw))
                 except KeyError:
