@@ -17,7 +17,9 @@ Routes
   GET  /api/tables                    tables present in data/sample-brand/ with row counts
   GET  /api/tables/<name>?limit=N     rows of one table (JSON or CSV on disk)
   GET  /api/metrics                   metric names and groups from contracts/metrics.md
-  GET  /api/metrics/<name>?window=28d one metric via metrics.py (session 3); unavailable until then
+  GET  /api/metrics/pipeline?window=28d the pipeline group, 4 trailing windows (optional device=)
+  GET  /api/metrics/<name>?window=28d one metric via metrics.py: window=Nd, end=YYYY-MM-DD, plus the
+                                      filters that metric takes (device, channel, by, page, variant)
   GET  /api/decisions?screen=<slug>   the decisions log
   POST /api/decisions                 append one decision {screen, capability, choice, reason}
   ANY  /api/<slug>/...                handed to screens/<slug>/api.py: handle(req)
@@ -121,6 +123,8 @@ def read_metric_contract():
 def _coerce(value):
     if value is None or value == '':
         return None
+    if value in ('true', 'false'):
+        return value == 'true'
     try:
         if re.fullmatch(r'-?\d+', value):
             return int(value)
@@ -197,8 +201,23 @@ class Data:
                 out.append({'name': path.stem, 'rows': None, 'format': path.suffix[1:], 'error': 'unreadable'})
         return out
 
+    def meta(self, name):
+        """Where a table came from and when: the JSON header, or its row in the tables.json manifest."""
+        path = self.table_path(name)
+        if path is None:
+            raise KeyError(name)
+        value = self._load(path)
+        if isinstance(value, dict):
+            return {k: v for k, v in value.items() if k != 'rows' and not isinstance(v, (list, dict))}
+        try:
+            manifest = self.table('tables')
+        except (KeyError, ValueError):
+            return {}
+        row = next((r for r in manifest if isinstance(r, dict) and r.get('table') == name), {})
+        return {k: row[k] for k in ('source', 'captured_at', 'shaped_like', 'rows') if k in row}
+
     def _metrics(self):
-        """metrics.py next to server.py, reloaded when it changes. None until session 3 builds it."""
+        """metrics.py next to server.py, reloaded when it changes. None if it is missing."""
         path = APP / 'metrics.py'
         if not path.is_file():
             return None
@@ -220,6 +239,14 @@ class Data:
                         reason='metrics.py is not built yet (Phase A session 3)', fix='app/metrics.py')
         result = mod.compute(name, self, **kw)
         return dict(base, **result) if isinstance(result, dict) else dict(base, value=result)
+
+    def pipeline(self, **kw):
+        """The Pipeline group of the contract, 4 trailing windows each. Bad query values raise ValueError."""
+        names = [m['name'] for m in read_metric_contract() if m['group'].startswith('Pipeline')]
+        mod = self._metrics()
+        if mod is None or not hasattr(mod, 'pipeline'):
+            return {'unavailable': True, 'reason': 'metrics.py is missing', 'fix': 'app/metrics.py', 'metrics': []}
+        return mod.pipeline(self, names, **kw)
 
 
 def load_module(name, path):
@@ -376,9 +403,13 @@ def make_handler(data, decisions, apis):
             if len(parts) == 2 and parts[0] == 'metrics':
                 kw = {k: v[0] for k, v in qs.items() if SAFE_NAME.match(k)}
                 try:
+                    if parts[1] == 'pipeline':
+                        return self.send_json(data.pipeline(**kw))
                     return self.send_json(data.metric(parts[1], **kw))
                 except KeyError:
                     return self.send_json({'error': 'metric not in contract', 'metric': parts[1]}, 404)
+                except ValueError as exc:
+                    return self.send_json({'error': str(exc), 'metric': parts[1]}, 400)
             if parts == ['decisions']:
                 if method == 'POST':
                     try:

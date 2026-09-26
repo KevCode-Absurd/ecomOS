@@ -49,4 +49,19 @@ Round 0 lifts the metrics the first screens need. Each screen's `FEATURES.md` li
 | cash_runway_weeks | cash on hand / average weekly net burn |
 | sales_tax_collected | sum by jurisdiction from `orders` |
 
-Speed metrics (08) come from `speed_runs` as measured by the lab: fully_loaded_ms, lcp_ms, fcp_ms, bytes, requests.
+## Speed (08)
+Median of the lab's runs in the window from `speed_runs`, for one page, device and variant (default pdp, mobile, baseline).
+| Metric | Formula |
+|---|---|
+| fully_loaded_ms | median load_ms |
+| lcp_ms | median lcp_ms |
+| fcp_ms | median fcp_ms |
+| bytes | median bytes transferred |
+| requests | median request count |
+
+## Words used above
+Computed in `app/metrics.py`; its docstring holds the same list.
+- **paid order**: financial status paid, partially refunded or refunded, and not cancelled. Voided orders are out.
+- **net revenue**: line subtotal minus discounts on paid orders. Before tax, shipping charged and refunds. Refunds count as a returns cost in contribution margin.
+- **cohort**: first-time customers by month of first order. A cohort counts only once everyone in it has had the full 90 or 180 days; the last 6 such cohorts are used.
+- **platform reported**: purchases and purchase value in the paid group come from Meta and Google, not from orders. Order-matched numbers are named as such.

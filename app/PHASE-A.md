@@ -28,6 +28,7 @@ First line: `Work in app/. Phase A session 3: implement contracts/metrics.md in 
 1. A `metrics.py` next to `server.py` with one function per metric in `contracts/metrics.md`, each returning value, window, freshness and formula, or unavailable with the reason and the connector that fixes it.
 2. `/api/metrics/<name>?window=28d` and `/api/metrics/pipeline` (all pipeline metrics with 4 trailing windows).
 Done when: every metric in the contract answers, and a missing table yields unavailable, never 0.
+Status: done 26 Sep 2026. 34 metrics (the speed line became a table), 30 answer on the sample brand. 4 read unavailable with the reason and fix: return_to_sender_rate (carrier_events), rto_rate (not applicable, US), cash_runway_weeks (accounting), contribution_margin (no shipping label cost; the generator has none). Query: `window=Nd`, `end=`, and per metric `device`, `channel`, `by=campaign|ad`, `page`, `variant`. Bad values are 400. The mobile checkout break shows as `money_at_stake?device=mobile`, break_stage checkout. Tests in `tests/test_app_metrics.py`.
 
 ## Session 4: the Today screen, round 0
 

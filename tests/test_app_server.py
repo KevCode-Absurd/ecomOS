@@ -122,10 +122,17 @@ class ServerTest(unittest.TestCase):
         self.assertEqual(len(names), len(set(names)))
         status, body = self.call('/api/metrics/add_to_cart_rate?window=28d')
         self.assertEqual(status, 200)
-        self.assertIsNone(body['value'])
+        self.assertIsNone(body['value'], 'the fixture sessions table has no sessions field')
         self.assertTrue(body['unavailable'])
+        self.assertTrue(body['reason'])
         self.assertIn('formula', body)
         self.assertEqual(self.call('/api/metrics/not_a_metric')[0], 404)
+        self.assertEqual(self.call('/api/metrics/sessions?window=abc')[0], 400)
+        self.assertEqual(self.call('/api/metrics/spend?device=mobile')[0], 400)
+        status, body = self.call('/api/metrics/pipeline?window=28d')
+        self.assertEqual(status, 200)
+        self.assertEqual(len(body['windows']), 4)
+        self.assertIn('checkout_rate', [m['metric'] for m in body['metrics']])
 
     def test_decisions_log(self):
         status, body = self.call('/api/decisions', 'POST', {'screen': '00-today', 'capability': 'CRO.pdp.diagnose', 'choice': 'agent', 'reason': 'x' * 400, 'autonomy': 'founder_gate'})
@@ -177,6 +184,8 @@ class ContractParsingTest(unittest.TestCase):
         self.assertEqual(server._coerce('0.5'), 0.5)
         self.assertEqual(server._coerce('-3.25'), -3.25)
         self.assertIsNone(server._coerce(''))
+        self.assertIs(server._coerce('true'), True)
+        self.assertIs(server._coerce('false'), False)
         self.assertEqual(server._coerce('2026-09-01'), '2026-09-01')
         self.assertEqual(server._coerce('sku-001'), 'sku-001')
 
