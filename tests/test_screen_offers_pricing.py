@@ -1466,5 +1466,22 @@ class BunchesTest(unittest.TestCase):
             self.assertTrue(b['unavailable'])   # never computed from the fixture
 
 
+class NoThresholdInJsTest(unittest.TestCase):
+    """Round 6 feature 1: no threshold, market or brand word written in screen.js; no zero stands in for unknown."""
+
+    def test_js(self):
+        import re
+        js = (SCREEN / 'screen.js').read_text(encoding='utf-8')
+        texts = re.findall(r"(?:title|sub|text|label): '([^']*)'", js)
+        for t in texts:
+            self.assertFalse(re.search(r'\b\d+ percent\b', t), t)
+            self.assertNotIn('US ', t)
+        self.assertNotRegex(js, r'\|\| 0\b')
+        self.assertNotRegex(js, r'\?\? 0\b')
+        d = api.handle(Req(['overview']))
+        for k in ('single_share_push', 'min_saving', 'depth_cut', 'approval_days', 'parity_gap', 'snooze_days'):
+            self.assertIsNotNone(d['settings'][k])
+
+
 if __name__ == '__main__':
     unittest.main()

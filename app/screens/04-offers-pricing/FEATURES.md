@@ -111,6 +111,12 @@ Known gaps from round 0:
 | 5.7 | One free shipping line everywhere (web pass 2: Rebuy, the cart bar must match the real rule): new rule OFFER-R30 when the offers record and the shipping policy's free tier disagree, a broken policy promise, with a person-owned fix across the brain, the policy page, the cart bar and the shipping app on the same day. Quiet for Bombas ($75 in both) | done |
 | 5.8 | Code-won customers (web pass 2: Saras): customers whose first order used a code against full-price first orders, repeat within 180 days, first orders at least 180 days old, at least 200 customers a group. New rule OFFER-R31 when code-won customers repeat 20 percent less; it rides on the first-order code test, else its own test judged on profit per visitor and repeat. Real on the sample brand's orders (33 percent both ways, so quiet); a connect move for Bombas | done |
 
+## Round 6: depth pass, room jobs, 360 px (from 28 Sep 2026)
+
+| # | Feature | Status |
+|---|---|---|
+| 6.1 | Depth pass, brand content only from the brain and tables: thresholds (single-pack share, minimum saving, depth cut, parity gap, approval days, snooze days) and the market name come from `settings` in the overview, not from text in screen.js. The positioning map leaves our point off when discount in ads is unavailable instead of drawing it at 0. A test fails if screen.js carries a percent, a market or a `|| 0` | done |
+
 ## Contract asks
 
 - A shared `registry` table in the data layer that screens can append proposed rows to (events.md). Local fallback: 04 writes proposed rows to `app/screens/04-offers-pricing/outbox/registry.<brand>.json` (git-ignored); the experiments screen can read them from there until the table exists.
@@ -246,6 +252,7 @@ Intelligems (threshold and price tests scored by profit per visitor), Rebuy (tie
 | Round | Features picked | Date | Notes |
 |---|---|---|---|
 | 0 | skeleton, 0.1 to 0.9 | 2026-09-28 | S3.9; screenshot round0.png |
+| 6 | 6.1 onward: depth pass | 2026-09-28 | in progress |
 | 5 | 5.1 to 5.10: stack read-back, break-even discount, profit per visitor, pack label, installments, loyalty calibration, line match, code-won cohorts, order bunches | 2026-09-28 | screenshot round5.png |
 | 4 | 4.1 to 4.10: save to the brain, offer records, bundle pairs, red line gate, approved first, launched read, upsell connect, brief pack, stale inputs | 2026-09-28 | screenshot round4.png |
 | 3 | 3.1 to 3.10: registry, referral, loyalty, window creep, subscription note, depth rules, plug and play, priors, decisions | 2026-09-28 | screenshot round3.png |

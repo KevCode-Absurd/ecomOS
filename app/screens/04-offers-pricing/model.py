@@ -878,6 +878,9 @@ def cart_ladder(rd, threshold, gift, cm_share, step=5, groups=None):
 
 # ---------------------------------------------------------------- promo depth by line
 
+DEPTH_CUT = 0.20   # the cut the volume check prices (api.page_settings shows it)
+
+
 def depth_by_line(rd, tiers, end=None):
     """For each product line's best-selling pack: the deepest promo tier that keeps contribution after an average
     order's share of paid media at or over the target contribution margin. Fulfilment and media are shared out by
@@ -912,7 +915,7 @@ def depth_by_line(rd, tiers, end=None):
                 break
         # break-even discount (web pass: contribution before media over price) and the units a 20 percent cut needs
         base = p - c - per_order_cost * alloc - (p * fee_pct / 100 + fee_fix * alloc)
-        cut = 0.20
+        cut = DEPTH_CUT
         at_cut = p * (1 - cut) - c - per_order_cost * alloc - (p * (1 - cut) * fee_pct / 100 + fee_fix * alloc)
         rows.append({'line': ln['line'], 'sku': sku, 'category': ln['category'], 'price': p, 'cogs': c,
                      'break_even_discount': round(base / p, 4) if p else None,

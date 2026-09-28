@@ -11,6 +11,8 @@
   const pretty = (s) => String(s || '').replace(/_/g, ' ');
   const pct = (v, d) => v == null ? NA : (v * 100).toFixed(d == null ? 1 : d) + ' percent';
   let ACTIONS = [];
+  let SET = {};
+  let d_market = null;   // thresholds and windows from the server (api.page_settings); none is written here
 
   // ---------- helpers ----------
   function section(id, head, ...body) {
@@ -64,7 +66,7 @@
         const aEl = el('a', { href: URL.createObjectURL(new Blob([r.text], { type: 'text/plain' })), download: 'offer-briefs.txt' });
         document.body.append(aEl); aEl.click(); aEl.remove(); } }),
         el('button', { class: 'btn sm', type: 'button', text: 'Export CSV', onclick: () => UI.csv(d.plan.map((a, i) => ({ rank: i + 1, title: a.title, owner: a.owner, severity: a.severity, status: a.status, artefact: a.artefact.kind, total: a.rubric.total, stake_usd: a.money_at_stake && a.money_at_stake.usd, why: a.why })), null, 'offers-plan.csv') })],
-      foot: el('div', { class: 'row' }, UI.rubricLegend(), el('span', { class: 'micro faint', text: 'Ranking: critical first by stake, then rubric total, severity, stake. "Not now" snoozes 14 days.' })),
+      foot: el('div', { class: 'row' }, UI.rubricLegend(), el('span', { class: 'micro faint', text: 'Ranking: critical first by stake, then rubric total, severity, stake. "Not now" snoozes ' + SET.snooze_days + ' days.' })),
       empty: 'No open offer or price move for this window.',
     }));
     if ((d.planned || []).length) document.getElementById('plan').append(el('div', { class: 'card flat tight planned' }, el('span', { class: 'kicker', text: 'In the brain as plans' }),
@@ -248,7 +250,7 @@
   }
 
   function ladderBlock(l) {
-    const head = { title: 'Does every pack size earn its place?', sub: 'Price per item after discounts, 12 full months. Singles over 30 percent of a line, or a pack saving under 10 percent per item, means the ladder is not moving shoppers up.' };
+    const head = { title: 'Does every pack size earn its place?', sub: 'Price per item after discounts, 12 full months. Singles over ' + pct(SET.single_share_push, 0) + ' of a line, or a pack saving under ' + pct(SET.min_saving, 0) + ' per item, means the ladder is not moving shoppers up.' };
     if (l.unavailable) return section('desk-ladder', head, UI.emptyState({ screen: SLUG, title: 'No product sales', text: l.reason, missing: [l.fix] }));
     const moves = l.moves || [];
     const two = moves.filter((r) => r.single_sku && r.pack_sku);
@@ -362,7 +364,7 @@
   }
 
   function calendarBlock(cal) {
-    const head = { title: 'Which promo windows need an offer, and by when?', sub: 'US retail windows by date rule. Each must be approved a set number of days before it starts. Last year is net sales per day in the window against the 28 days before it.' };
+    const head = { title: 'Which promo windows need an offer, and by when?', sub: (d_market ? d_market + ' ' : '') + 'retail windows by date rule. Each must be approved a set number of days before it starts. Last year is net sales per day in the window against the 28 days before it.' };
     if (!cal || !cal.length) return section('desk-calendar', head, UI.emptyState({ screen: SLUG, title: 'Calendar unavailable', text: 'No windows for this market.' }));
     const act = (w) => ACTIONS.find((x) => (x.finding_ids || []).some((id) => id.endsWith('.window_' + w.key)));
     const tl = UI.timeline(cal.slice(0, 6).map((w) => ({ when: fmt.date(w.start), who: w.due ? 'approve by ' + fmt.date(w.approve_by) : (w.plan ? 'planned' : 'in ' + w.days_to_start + ' days'),
@@ -392,7 +394,7 @@
         { key: 'contribution_at_depth', label: 'Kept at that depth', format: (v) => v == null ? 'no tier clears' : fmt.money(v) },
         { key: 'share_at_depth', label: 'Share of price', format: (v) => v == null ? 'no tier clears' : pct(v) },
         { key: 'break_even_discount', label: 'Break-even discount', unit: '%' },
-        { key: 'units_needed_at_20', label: 'Units needed at 20 percent off', format: (v) => v == null ? 'never pays' : v.toFixed(2) + 'x' }],
+        { key: 'units_needed_at_20', label: 'Units needed at ' + pct(SET.depth_cut, 0) + ' off', format: (v) => v == null ? 'never pays' : v.toFixed(2) + 'x' }],
       rows: dl.rows, maxRows: 30,
       verdict: { at: 1, kind: (r) => r.max_depth == null ? 'watch' : r.max_depth >= 0.2 ? 'scale' : 'keep', text: (r) => r.tier, reason: (r) => 'red line ' + pct(dl.target, 0) },
       sort: false });
@@ -478,7 +480,7 @@
       else byXY[k] = { label: short, x: c.price, y: c.discount_in_ads, size: c.proof_hooks.length ? 9 : 6, note: c.proof_hooks.join(', ') || 'no proof hook' };
     }
     const pts = Object.values(byXY);
-    pts.push({ label: b.name || cp.us.name, x: cp.us.price, y: cp.us.discount_in_ads || 0, us: true, size: 10 });
+    if (cp.us.discount_in_ads != null) pts.push({ label: b.name || cp.us.name, x: cp.us.price, y: cp.us.discount_in_ads, us: true, size: 10 });
     const map = Charts.positioningMap({ x: { label: 'Price per item, $', min: 0, max: Math.max(...pts.map((p) => p.x)) + 5, lo: 'cheaper', hi: 'dearer' },
       y: { label: 'Discount in ads, percent', min: 0, max: 25 },
       points: pts, midX: cp.set_median_price, midY: 10, quadrants: ['cheap and discount-led', 'premium with a discount', 'cheap, no discount', 'premium, proof-led'],
@@ -492,7 +494,7 @@
   }
 
   function parityBlock(mp) {
-    const head = { title: 'Is anyone selling us cheaper than our own site?', sub: 'Marketplace listings in the brain: price over the pack count in the title, against the site\'s paid price per item at the same pack size. More than ' + (mp ? pct(mp.gap, 0) : '10 percent') + ' under is an undercut.' };
+    const head = { title: 'Is anyone selling us cheaper than our own site?', sub: 'Marketplace listings in the brain: price over the pack count in the title, against the site\'s paid price per item at the same pack size. More than ' + pct(mp ? mp.gap : SET.parity_gap, 0) + ' under is an undercut.' };
     if (!mp || !mp.rows.length) return section('desk-parity', head, UI.emptyState({ screen: SLUG, title: 'No marketplace listings', text: 'Add marketplace listings to the brain.' }));
     const a = ACTIONS.find((x) => x.rule_id === 'OFFER-R17');
     const table = UI.verdictTable({
@@ -514,7 +516,7 @@
   }
 
   function testsBlock(tests) {
-    const head = { title: 'Which moves can run together, and which must wait?', sub: 'Each move changes a surface for a set number of days. Two moves on one surface cannot run at once, and nothing runs inside a promo window. Earliest start is 7 days after today for approval.' };
+    const head = { title: 'Which moves can run together, and which must wait?', sub: 'Each move changes a surface for a set number of days. Two moves on one surface cannot run at once, and nothing runs inside a promo window. Earliest start is ' + SET.approval_days + ' days after today for approval.' };
     if (!tests || !tests.length) return section('desk-tests', head, UI.emptyState({ screen: SLUG, title: 'No moves to schedule', text: 'The plan has no open moves.' }));
     const short = (iso) => { const d = new Date(iso + 'T00:00:00'); return isNaN(d) ? NA : d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }); };
     const V = { ready: ['new', 'Starts first'], waits: ['wait', 'Waits'], after_freeze: ['watch', 'After the peak'] };
@@ -623,6 +625,8 @@
 
   function render(d) {
     ACTIONS = d.plan || [];
+    SET = d.settings || {};
+    d_market = (d.brand || {}).market || null;
     badge(d.brand || {});
     plan(d);
     wrong(d);

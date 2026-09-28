@@ -305,6 +305,13 @@ DESK_KEYS = ('objections', 'returns', 'ladder', 'first_order', 'waterfalls', 'ca
              'subscription', 'bundles', 'proposed_tests', 'launched', 'discount_cohorts', 'bunches')
 
 
+def page_settings():
+    """Thresholds and windows the page names in its headings, so none is written in screen.js (depth.md rule 11)."""
+    pb = actions.playbook
+    return {'single_share_push': pb.SINGLE_SHARE_PUSH, 'min_saving': pb.MIN_SAVING, 'depth_cut': model.DEPTH_CUT,
+            'approval_days': actions.APPROVAL_DAYS, 'parity_gap': pb.PARITY_GAP, 'snooze_days': actions.RANK.SNOOZE_DAYS}
+
+
 def with_decisions(acts, today=None, path=None):
     """depth.md rule 14: decisions from the log show on each move; 'not now' hides a move for 14 days.
     Returns (plan, snoozed) where snoozed lists the hidden moves with the day they come back."""
@@ -350,7 +357,8 @@ def overview(data, brand):
                          'can_launch': a['plan_record']['status'] == 'active' and a['artefact']['kind'] in approvals.OFFER_KINDS,
                          **a['plan_record']} for a in planned],
             'stack': offer_stack(rd), 'threshold': th, 'bfcm': bfcm(rd), **desk,
-            'creep': creep_rule(months), 'chart': chart(months), 'findings': ranked['findings'], 'rules': audit.RULES}
+            'creep': creep_rule(months), 'chart': chart(months), 'findings': ranked['findings'], 'rules': audit.RULES,
+            'settings': page_settings()}
 
 
 def rank(brand='bombas', window=None):
