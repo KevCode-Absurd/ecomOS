@@ -1,0 +1,322 @@
+{
+ "brand": "bombas",
+ "simulated": true,
+ "generated_by": "app/data/generate.py",
+ "version": 2,
+ "seed": 7,
+ "scale": 1.0,
+ "as_of": "2026-09-27",
+ "start": "2024-09-28",
+ "days": 730,
+ "calibrated_fields": "5 of 6",
+ "fields": {
+  "revenue_band": {
+   "value": {
+    "low_usd": 450000000,
+    "high_usd": 550000000,
+    "point_usd": 500000000,
+    "scale": 1.0,
+    "growth_per_year": 0.291,
+    "anchor": "trailing 12 months of the window = point x scale"
+   },
+   "origin": "brain",
+   "rule": "growth from the last two dated series points, applied backward only",
+   "status": "sourced",
+   "as_of": "2025-10",
+   "source_ids": [
+    "bombas.operations.revenue_mix.1",
+    "bombas.economics.revenue_band_2023",
+    "bombas.economics.revenue_band_2018",
+    "bombas.economics.revenue_band_2017_projection"
+   ]
+  },
+  "aov": {
+   "value": {
+    "estimate": 73,
+    "low": 52.0,
+    "high": 93.75
+   },
+   "origin": "brain",
+   "rule": "AOV = net merchandise per order (after discount, before shipping and tax)",
+   "status": "assumed",
+   "as_of": "2026-09-28",
+   "source_ids": [
+    "bombas.products.price_ladder_socks",
+    "bombas.products.pack_sizes",
+    "bombas.offers.free_shipping_threshold_usd",
+    "bombas.offers.first_order_code"
+   ]
+  },
+  "repeat_rate": {
+   "value": 0.35,
+   "origin": "brain",
+   "rule": "share of new customers with a 2nd order within 365 days",
+   "status": "assumed",
+   "as_of": "2026-09-28",
+   "source_ids": [
+    "bombas.avatars.guarantee_reassured_loyalist",
+    "bombas.avatars.durability_disappointed_repeat_customer"
+   ]
+  },
+  "sales_channel_mix": {
+   "value": {
+    "dtc_site_pct": 90,
+    "wholesale_pct": 9,
+    "owned_retail_pct": 1,
+    "marketplaces_pct": null
+   },
+   "origin": "brain",
+   "rule": "orders = dtc site plus owned retail (POS); wholesale is a monthly fixture, not orders",
+   "status": "assumed",
+   "as_of": "2026-09-28",
+   "source_ids": [
+    "bombas.economics.wholesale_vs_dtc_mix_2020",
+    "bombas.operations.revenue_mix.1",
+    "bombas.channels.flagship_retail_2025",
+    "bombas.calendar.flagship_store_nyc_2025"
+   ]
+  },
+  "channel_mix": {
+   "value": {
+    "paid_social": 35,
+    "paid_search": 20,
+    "organic_search": 15,
+    "direct": 15,
+    "email_sms": 10,
+    "other": 5
+   },
+   "origin": "fallback (generic)",
+   "rule": "brain channel_mix is dtc / wholesale / retail, not acquisition; acquisition split uses the calibration.md fallback",
+   "status": null,
+   "as_of": null,
+   "source_ids": []
+  },
+  "seasonality": {
+   "value": {
+    "jan": 0.854,
+    "feb": 0.753,
+    "mar": 0.803,
+    "apr": 0.803,
+    "may": 0.854,
+    "jun": 0.803,
+    "jul": 0.803,
+    "aug": 0.854,
+    "sep": 0.904,
+    "oct": 1.054,
+    "nov": 1.607,
+    "dec": 1.908
+   },
+   "origin": "brain",
+   "rule": "month curve on orders; BFCM and gifting weeks reshape days inside a month only",
+   "status": "assumed",
+   "as_of": "2026-09-28",
+   "source_ids": [
+    "bombas.offers.guarantee",
+    "bombas.policies.returns_window_days",
+    "bombas.offers.gifting",
+    "bombas.avatars.holiday_gift_buyer",
+    "bombas.objections.gift_order_arrival_risk",
+    "bombas.avatars.cold_weather_wool_loyalist",
+    "bombas.learnings.hook_types"
+   ]
+  },
+  "giving_units": {
+   "value": {
+    "rule": "one item donated per item purchased; replacements and exchanges do not count",
+    "brain_items_per_year": 33333333
+   },
+   "origin": "brain",
+   "rule": "orders.giving_units = items bought (pack size x qty); the brain rate is a cross-check, not a target",
+   "status": "derived",
+   "as_of": "2026",
+   "source_ids": [
+    "bombas.story_bank.mission_proof_giving_1m",
+    "bombas.story_bank.mission_proof_giving_10m",
+    "bombas.operations.fulfillment_fact.5",
+    "bombas.story_bank.mission_proof_giving_100m",
+    "bombas.identity.giving_partner_network_2026"
+   ]
+  },
+  "category_mix": {
+   "value": {
+    "socks_and_slippers_pct": 93,
+    "underwear_and_tshirts_pct": 7,
+    "footwear_pct_2025": 20
+   },
+   "origin": "brain",
+   "rule": "93 / 7 revenue split applied to lines; footwear_pct_2025 (single report) not applied",
+   "status": "sourced",
+   "as_of": "2023-03",
+   "source_ids": [
+    "bombas.economics.category_revenue_mix_2023",
+    "bombas.economics.footwear_share_2025"
+   ]
+  },
+  "retail_partners": {
+   "value": [
+    {
+     "name": "Nordstrom",
+     "since": 2018
+    },
+    {
+     "name": "Dick's Sporting Goods",
+     "since": 2018
+    },
+    {
+     "name": "Athleta",
+     "since": 2020,
+     "stores": 190
+    },
+    {
+     "name": "Target",
+     "since": 2025,
+     "category": "socks"
+    },
+    {
+     "name": "DSW",
+     "since": 2025,
+     "category": "footwear",
+     "stores": 500
+    },
+    {
+     "name": "Scheels",
+     "since": null
+    }
+   ],
+   "origin": "brain",
+   "rule": "wholesale fixture split by partner, from each start year",
+   "status": "sourced",
+   "as_of": "2025-10",
+   "source_ids": [
+    "bombas.channels.wholesale_launch_2018",
+    "bombas.channels.athleta_partnership_2020",
+    "bombas.channels.target_dsw_2025",
+    "bombas.operations.revenue_mix.1"
+   ]
+  }
+ },
+ "placeholders": {
+  "note": "Shapes, not brand facts. Fixed constants in the generator.",
+  "cvr_by_channel": {
+   "paid_social": 0.011,
+   "paid_search": 0.034,
+   "organic_search": 0.028,
+   "direct": 0.041,
+   "email": 0.038,
+   "sms": 0.045,
+   "other": 0.016
+  },
+  "device_share": {
+   "mobile": 0.7,
+   "desktop": 0.26,
+   "tablet": 0.04
+  },
+  "cvr_device_mult": {
+   "mobile": 0.85,
+   "desktop": 1.45,
+   "tablet": 1.0
+  },
+  "meta_cpa_usd": 34.0,
+  "meta_q4_cpa_mult": 1.25,
+  "meta_cpm_usd": 14.0,
+  "meta_ctr": 0.012,
+  "meta_link_ctr": 0.008,
+  "meta_click_credit": 0.8,
+  "meta_view_credit_on_other_orders": 0.07,
+  "google_cpa_usd": {
+   "brand_search": 8.0,
+   "nonbrand_search": 45.0,
+   "pmax": 30.0,
+   "demand_gen": 80.0
+  },
+  "google_credit": 0.88,
+  "google_brand_overlap": {
+   "organic_search": 0.05,
+   "direct": 0.04
+  },
+  "klaviyo_overlap": {
+   "direct": 0.2,
+   "organic_search": 0.08,
+   "paid_social": 0.06,
+   "paid_search": 0.04,
+   "other": 0.05
+  },
+  "ga4_capture": 0.93,
+  "journey_ready": 0.97,
+  "return_rate": 0.06,
+  "carrier_return_rate": 0.004,
+  "chargeback_rate": 0.004,
+  "chargeback_fee_usd": 15.0,
+  "fee_online": [
+   0.029,
+   0.3
+  ],
+  "fee_pos": [
+   0.026,
+   0.1
+  ],
+  "payout_lag_days": 2,
+  "payment_mix": {
+   "card": 0.62,
+   "shop_pay": 0.18,
+   "apple_pay": 0.08,
+   "paypal": 0.12
+  },
+  "ticket_rate": 0.035,
+  "ticket_rate_dec": 0.06,
+  "presale_ticket_rate": 0.006,
+  "review_rate_per_line": 0.012,
+  "abandoned_per_web_order": 0.75,
+  "cogs_share_of_price": 0.3,
+  "shipping_fee_usd": 5.99,
+  "free_shipping_threshold_usd": 75.0,
+  "first_order_code_pct": 20,
+  "first_order_code_use": 0.55,
+  "repeat_code_use": 0.1,
+  "repeat_code_pct": 10,
+  "email_consent": 0.6,
+  "sms_consent": 0.25,
+  "owned_retail_open": "2025-11-01",
+  "repeat_gap_median_days": [
+   75,
+   120
+  ],
+  "repeat_gap_sigma": 0.9,
+  "repeat_continue": 0.45
+ },
+ "derived": {
+  "basket": {
+   "lines_per_order": 1.4204,
+   "expected_line_value": 55.49,
+   "expected_discount": 0.0737
+  },
+  "repeat_q": 0.3643,
+  "mix_solved": {
+   "new": {
+    "paid_social": 0.4353,
+    "paid_search": 0.2426,
+    "organic_search": 0.15,
+    "direct": 0.0903,
+    "email": 0.0254,
+    "sms": 0.0064,
+    "other": 0.05
+   },
+   "returning": {
+    "paid_social": 0.2,
+    "paid_search": 0.125,
+    "organic_search": 0.15,
+    "direct": 0.255,
+    "email": 0.176,
+    "sms": 0.044,
+    "other": 0.05
+   },
+   "repeat_share_web": 0.3625
+  },
+  "payout_totals": {
+   "gross": 787978414.74,
+   "fees": 25743658.71,
+   "refunds": 24116969.41,
+   "adjustments": -2242454.52
+  }
+ }
+}

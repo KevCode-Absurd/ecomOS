@@ -1,0 +1,204 @@
+{
+ "brand": "bombas",
+ "simulated": true,
+ "as_of": "2026-09-27",
+ "scale": 1.0,
+ "rows": [
+  {
+   "table": "orders",
+   "rows": 11061240,
+   "where": "data.sqlite",
+   "source": "generator",
+   "shaped_like": "Shopify Order + customerJourneySummary"
+  },
+  {
+   "table": "order_lines",
+   "rows": 15712074,
+   "where": "data.sqlite",
+   "source": "generator",
+   "shaped_like": "Shopify LineItem (nested in orders)"
+  },
+  {
+   "table": "customers",
+   "rows": 7554112,
+   "where": "data.sqlite",
+   "source": "generator",
+   "shaped_like": "Shopify Customer"
+  },
+  {
+   "table": "products",
+   "rows": 21,
+   "where": "data.sqlite",
+   "source": "generator",
+   "shaped_like": "Shopify ProductVariant + GA4 item report (28 days)"
+  },
+  {
+   "table": "inventory",
+   "rows": 30660,
+   "where": "data.sqlite",
+   "source": "generator",
+   "shaped_like": "Shopify InventoryLevel, daily capture"
+  },
+  {
+   "table": "inbound_pos",
+   "rows": 249,
+   "where": "data.sqlite",
+   "source": "fixture",
+   "shaped_like": "fixture (not in the Shopify census)"
+  },
+  {
+   "table": "reversed_orders",
+   "rows": 716202,
+   "where": "data.sqlite",
+   "source": "generator",
+   "shaped_like": "Shopify Return, Fulfillment, ShopifyPaymentsDispute"
+  },
+  {
+   "table": "payouts",
+   "rows": 730,
+   "where": "data.sqlite",
+   "source": "generator",
+   "shaped_like": "ShopifyPaymentsPayout"
+  },
+  {
+   "table": "abandoned_checkouts",
+   "rows": 8242547,
+   "where": "data.sqlite",
+   "source": "generator",
+   "shaped_like": "Shopify AbandonedCheckout"
+  },
+  {
+   "table": "sessions",
+   "rows": 285214,
+   "where": "data.sqlite",
+   "source": "generator",
+   "shaped_like": "GA4 runReport"
+  },
+  {
+   "table": "ad_rows",
+   "rows": 22791,
+   "where": "data.sqlite",
+   "source": "generator",
+   "shaped_like": "Meta Insights level=ad, time_increment=1"
+  },
+  {
+   "table": "google_rows",
+   "rows": 14600,
+   "where": "data.sqlite",
+   "source": "generator",
+   "shaped_like": "Google Ads GAQL campaign, search_term_view, asset_group"
+  },
+  {
+   "table": "flows",
+   "rows": 6570,
+   "where": "data.sqlite",
+   "source": "generator",
+   "shaped_like": "Klaviyo Metric Aggregates by flow message"
+  },
+  {
+   "table": "campaign_sends",
+   "rows": 1736,
+   "where": "data.sqlite",
+   "source": "generator",
+   "shaped_like": "Klaviyo Campaign + Metric Aggregates"
+  },
+  {
+   "table": "tickets",
+   "rows": 1131568,
+   "where": "data.sqlite",
+   "source": "fixture",
+   "shaped_like": "fixture (Gorgias shape)"
+  },
+  {
+   "table": "reviews",
+   "rows": 179826,
+   "where": "data.sqlite",
+   "source": "fixture",
+   "shaped_like": "fixture (reviews app shape)"
+  },
+  {
+   "table": "speed_runs",
+   "rows": 18,
+   "where": "data.sqlite",
+   "source": "fixture",
+   "shaped_like": "fixture (speed lab)"
+  },
+  {
+   "table": "content_posts",
+   "rows": 120,
+   "where": "data.sqlite",
+   "source": "fixture",
+   "shaped_like": "fixture (platform exports)"
+  },
+  {
+   "table": "search_console",
+   "rows": 720,
+   "where": "data.sqlite",
+   "source": "fixture",
+   "shaped_like": "fixture (Search Console shape)"
+  },
+  {
+   "table": "marketplace_listings",
+   "rows": 0,
+   "where": "data.sqlite",
+   "source": "fixture",
+   "shaped_like": "fixture (Amazon Seller shape)"
+  },
+  {
+   "table": "wholesale_sell_in",
+   "rows": 124,
+   "where": "data.sqlite",
+   "source": "fixture",
+   "shaped_like": "fixture (no connector; brain wholesale share)"
+  },
+  {
+   "table": "aggregates/daily",
+   "rows": 730,
+   "where": "aggregates/daily.json",
+   "source": "generator",
+   "shaped_like": "rollup of the tables above"
+  },
+  {
+   "table": "aggregates/monthly",
+   "rows": 25,
+   "where": "aggregates/monthly.json",
+   "source": "generator",
+   "shaped_like": "rollup of the tables above"
+  },
+  {
+   "table": "aggregates/channels_monthly",
+   "rows": 200,
+   "where": "aggregates/channels_monthly.json",
+   "source": "generator",
+   "shaped_like": "rollup of the tables above"
+  },
+  {
+   "table": "aggregates/products_monthly",
+   "rows": 525,
+   "where": "aggregates/products_monthly.json",
+   "source": "generator",
+   "shaped_like": "rollup of the tables above"
+  },
+  {
+   "table": "aggregates/cohorts",
+   "rows": 25,
+   "where": "aggregates/cohorts.json",
+   "source": "generator",
+   "shaped_like": "rollup of the tables above"
+  },
+  {
+   "table": "aggregates/wholesale_monthly",
+   "rows": 124,
+   "where": "aggregates/wholesale_monthly.json",
+   "source": "generator",
+   "shaped_like": "rollup of the tables above"
+  },
+  {
+   "table": "aggregates/calibration",
+   "rows": 12,
+   "where": "aggregates/calibration.json",
+   "source": "generator",
+   "shaped_like": "rollup of the tables above"
+  }
+ ]
+}
