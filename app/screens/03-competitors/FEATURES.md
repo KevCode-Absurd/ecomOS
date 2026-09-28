@@ -47,6 +47,16 @@ Round 1 notes: `snapshot.py` plans and runs a page-id Ad Library pull through `a
 | 6.7 | The weekly capture runs from the page (agent does it, free): `POST capture` writes today's page-summary capture from the brain and the competitor_snapshot hand-off, once a day, and says how many changes it found since the last one; the freshness block shows the dated captures and the button; the threat trend, diffs and price moves start from the second capture. Capture paths now resolve at call time, so tests write to a temp folder | done |
 | 6.8 | What the team logged: every record entered on this screen (interviews, prices seen, card checks, polls, threshold changes) in one list in the audit, newest first, with a plain summary, who and when; "Remove" takes a mistake back (`POST inputs/remove`) and every rule reads the file again, so a mistyped price never leaves a false cut on the plan | done |
 | 6.9 | Waiting on you: under the plan, the calls only the founder makes (undecided moves that are founder gated, or drafted by an agent for approval), top 5 by plan rank, each as one question ("Decide:" or "Approve:" and the artefact), what yes sets going next and its check date, with the decision row; decided moves leave the queue; says so when nothing waits | done |
+| 6.10 | Round close: 32 rules, 5 kinds of first-party records logged on the page (interviews, prices seen, card checks, polls, thresholds) with a log and remove; the capture runs from the page; a waiting-on-you queue. Found and fixed on the end-to-end browser pass: the hand-off block in the Market and data tab was empty since 5.1 (it loaded after the tabs detached it); the smoke test now opens every tab and fails on any empty block. 360 px clean on every tab; screen tests green; screenshot `round6.png` | done |
+
+### Round 6 status for Kevin (28 Sep 2026)
+
+1. The screen now takes what only your team knows: win-loss interviews, rival prices seen on their sites, battlecard checks and positioning poll results.
+2. Each one feeds a rule. 3 losses for one reason against one rival put the answer on the plan; a rival price 15 percent under its own month average does too.
+3. A line that wins its poll goes straight to a 2-ad test; a checked battlecard closes its stale warning.
+4. You can tune every alert threshold on the page inside a safe range, run the weekly capture with one click (free), and remove any entry made by mistake.
+5. Under the plan, "Waiting on you" lists your top 5 calls and what yes sets going. Fixed: the hand-off block showed empty; a browser test now opens every tab.
+6. Next, round 7: the ad-level pull once you run it, the brief pack straight into the creative and offers screens' formats, and win-loss answers drafted from real interview codes.
 
 ## Round 5: hand-offs, execution lanes and the season
 
@@ -264,7 +274,7 @@ Round 2 notes: the lead authorised the $2.08 pull on 28 Sep; the session's permi
 | Round | Features picked | Date | Notes |
 |---|---|---|---|
 | 0 | 0.1 to 0.8 | 2026-09-28 | Bombas brain and simulated prices |
-| 6 | 6.1 to 6.4 | 2026-09-28 | Win-loss log; repeated loss reason; rival prices seen; battlecard checks; positioning polls; thresholds on the page; capture from the page; the team log; waiting on you |
+| 6 | 6.1 to 6.10 | 2026-09-28 | Win-loss log; repeated loss reason; rival prices seen; battlecard checks; positioning polls; thresholds on the page; capture from the page; the team log; waiting on you; round close (and the hand-off fix). Screenshot `round6.png` |
 | 5 | 5.1 to 5.10 | 2026-09-28 | Hand-offs; action lanes; season plan; quarterly review; exports (and the 5.4 load fix); browser smoke test; team notes; brief pack; check due lane; round close |
 | 4 | 4.1 to 4.10 | 2026-09-28 | Placements and new channel alerts; gap lines; stop rules; unit from the brain; never zero; phone width; threat history; support answers; room metrics. Screenshot `round4.png` |
 | 3 | 3.1 to 3.10 | 2026-09-28 | Page-summary captures and diffs; price moves; landing page tracking; printable report; battlecards; positioning test; win-loss kit; tunable thresholds; second brand. Screenshot `round3.png` |

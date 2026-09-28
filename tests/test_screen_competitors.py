@@ -1144,7 +1144,12 @@ const {{ chromium }} = require('{PW}');
     const errs = []; p.on('pageerror', (e) => errs.push(String(e)));
     await p.goto(url, {{ waitUntil: 'networkidle' }});
     await p.waitForTimeout(1500);
-    out[k] = {{ errs, tabs: await p.$$eval('#desk .tab', (t) => t.length), plan: await p.$$eval('.plan-item', (t) => t.length),
+    const empty = [];
+    for (const t of await p.$$('#desk .tab')) {{
+      await t.click(); await p.waitForTimeout(200);
+      empty.push(...await p.$$eval('#desk .section > [id]:not([id$="-sub"])', (xs) => xs.filter((x) => !x.children.length).map((x) => x.id)));
+    }}
+    out[k] = {{ errs, empty, tabs: await p.$$eval('#desk .tab', (t) => t.length), plan: await p.$$eval('.plan-item', (t) => t.length),
                moves: await p.$$eval('#r-moves tbody tr', (t) => t.length) }};
   }}
   console.log(JSON.stringify(out)); await b.close();
@@ -1153,6 +1158,7 @@ const {{ chromium }} = require('{PW}');
             out = json.loads(res.stdout.strip().splitlines()[-1])
             self.assertEqual(out['main']['errs'], [])
             self.assertEqual(out['main']['tabs'], 4)
+            self.assertEqual(out['main']['empty'], [])   # every desk block renders in its tab, late loaders included
             self.assertGreaterEqual(out['main']['plan'], 5)
             self.assertEqual(out['report']['errs'], [])
             self.assertGreaterEqual(out['report']['moves'], 5)

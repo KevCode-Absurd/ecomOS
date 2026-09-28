@@ -672,10 +672,12 @@
 
   // ---------- 5x. hand-offs to other screens ----------
   async function handoffSection() {
+    // hold the node now: the desk tabs detach inactive panels before this fetch returns, so a lookup by id would miss it
+    const box = document.getElementById('handoff');
     let snap, exp;
     try { [snap, exp] = await Promise.all([api(BASE + 'competitor_snapshot'), api(BASE + 'experiments')]); }
-    catch (e) { mount('#handoff', el('p', { class: 'na', text: 'Hand-offs unavailable: ' + e.message })); return; }
-    mount('#handoff', UI.table({ columns: [{ key: 't', label: 'Table' }, { key: 'n', label: 'Rows', unit: 'n' }, { key: 'to', label: 'Read by' }, { key: 'where', label: 'Where' }], sort: false,
+    catch (e) { mount(box, el('p', { class: 'na', text: 'Hand-offs unavailable: ' + e.message })); return; }
+    mount(box, UI.table({ columns: [{ key: 't', label: 'Table' }, { key: 'n', label: 'Rows', unit: 'n' }, { key: 'to', label: 'Read by' }, { key: 'where', label: 'Where' }], sort: false,
       rows: [{ t: 'competitor_snapshot', n: snap.rows.length, to: 'customers and avatars, creative, offers and pricing', where: 'fixtures/competitor_snapshot_' + snap.brand + '.json' },
         { t: 'experiment registry (proposed)', n: exp.rows.length, to: 'experiments', where: 'drafted here; a row is proposed when you approve the test' }] }),
       el('div', { class: 'row' }, el('a', { class: 'btn sm', href: 'fixtures/competitor_snapshot_' + snap.brand + '.json', target: '_blank', rel: 'noopener', text: 'Open the snapshot' }),
