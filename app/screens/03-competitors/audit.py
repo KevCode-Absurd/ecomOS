@@ -313,6 +313,8 @@ RULES = [
      "inputs": ["prices seen logged on this screen"], "capability": "BRN-C11", "owner_screen": SCREEN},
     {"rule_id": "COMP-R35", "name": "rival site traffic by channel (visits, share by source)", "entity_type": "brand",
      "inputs": ["a site traffic estimate source"], "capability": "BRAND-C07", "owner_screen": SCREEN},
+    {"rule_id": "COMP-R36", "name": "a direct page launched a burst of new ads between 2 ad-level snapshots", "entity_type": "page",
+     "inputs": ["2 ad-level snapshots"], "capability": "BRN-C11", "owner_screen": SCREEN},
     {"rule_id": "COMP-R08", "name": "discount on most ads while direct peers run none", "entity_type": "offer",
      "inputs": ["brain offers.promo_share_active_ads", "brain competitors offers_seen"], "capability": "LIFE-C38",
      "owner_screen": SCREEN},
@@ -320,7 +322,7 @@ RULES = [
 # what a strategist groups the findings by on the page (depth.md section 2: grouped by bottleneck)
 RULE_GROUP = {"COMP-R01": "creative", "COMP-R05": "creative", "COMP-R06": "creative", "COMP-R03": "offer", "COMP-R07": "offer",
               "COMP-R08": "offer", "COMP-R09": "offer", "COMP-R02": "price", "COMP-R10": "price", "COMP-R11": "position",
-              "COMP-R04": "watch", "COMP-R12": "watch", "COMP-R13": "watch", "COMP-R14": "watch", "COMP-R15": "lost", "COMP-R16": "lost", "COMP-R17": "lost", "COMP-R18": "price", "COMP-R19": "creative", "COMP-R20": "position", "COMP-R21": "offer", "COMP-R22": "position", "COMP-R23": "position", "COMP-R24": "watch", "COMP-R25": "price", "COMP-R26": "watch", "COMP-R27": "watch", "COMP-R28": "position", "COMP-R29": "lost", "COMP-R30": "creative", "COMP-R31": "lost", "COMP-R32": "position", "COMP-R33": "price", "COMP-R34": "watch", "COMP-R35": "watch"}
+              "COMP-R04": "watch", "COMP-R12": "watch", "COMP-R13": "watch", "COMP-R14": "watch", "COMP-R15": "lost", "COMP-R16": "lost", "COMP-R17": "lost", "COMP-R18": "price", "COMP-R19": "creative", "COMP-R20": "position", "COMP-R21": "offer", "COMP-R22": "position", "COMP-R23": "position", "COMP-R24": "watch", "COMP-R25": "price", "COMP-R26": "watch", "COMP-R27": "watch", "COMP-R28": "position", "COMP-R29": "lost", "COMP-R30": "creative", "COMP-R31": "lost", "COMP-R32": "position", "COMP-R33": "price", "COMP-R34": "watch", "COMP-R35": "watch", "COMP-R36": "watch"}
 GROUP_LABEL = {"lost": "Shoppers we lose, by name", "creative": "Ads they run that we do not", "offer": "Offers they say that we do not",
                "price": "Price against theirs", "position": "Corners of the map", "watch": "Watch and protect"}
 RUBRIC_OVERRIDES = {"COMP-R01": {"reputation": 5}, "COMP-R02": {"reputation": 3}, "COMP-R04": {"reputation": 5, "satisfaction": 4},
@@ -536,6 +538,7 @@ TUNABLE = {"price_band_low": (_self, "PRICE_BAND", 0), "price_band_high": (_self
 
 
 # the range a threshold may be tuned to on the page (inputs.py kind threshold); outside it the change is refused
+BURST_ADS = 10   # new ads on one direct page between 2 ad-level snapshots that make a burst (COMP-R36)
 CORNER_FRAME = {"durability": "buy_it_for_life", "comfort": None}   # the shopper frame that asks for a strong claim on each axis
 PRICE_STREAK = 2   # captures in a row outside the price band before the drift is confirmed (the room's rule)
 TUNE_RANGE = {"price_band_low": (50, 100), "price_band_high": (100, 200), "stale_days": (3, 90), "angle_share_max": (0.05, 0.6),
@@ -1322,6 +1325,21 @@ def rule_recheck(m, ends_on):
                      "no baseline: a missed price cut has no measured cost")]
 
 
+def rule_burst(m, ends_on):
+    """COMP-R36: lights up with the second ad-level snapshot. A direct page with BURST_ADS or more new ads since the last pull."""
+    out = []
+    frame = {p["name"]: p["frame"] for p in m["pages"]}
+    for e in (m.get("changes") or {}).get("events", []):
+        if e["kind"] != "new_ads" or e.get("source") != "snapshot diff" or frame.get(e["page"]) != "direct" or (e.get("n") or 0) < BURST_ADS:
+            continue
+        since = e["text"].split("since ")[-1] if "since " in e["text"] else "the last pull"
+        ev = [_row("new_ads_since_last_pull", e["n"], "n", f"since {since}", ends_on, None, BURST_ADS, "threshold", "snapshot diff")]
+        out.append(_finding("COMP-R36", "medium", {"type": "page", "id": f"burst_{pagemod.slug(e['page'])}", "label": f"{e['page']} ad burst"}, ev,
+                            f"{e['page']} launched {e['n']} new ads since the last pull.", [], ends_on, 0.6,
+                            "no baseline: their spend behind the new ads is not public"))
+    return out
+
+
 def rule_season(m, ends_on):
     sn = m.get("season") or {}
     if not sn.get("fires"):
@@ -1364,7 +1382,7 @@ def run(brand: str, window: dict | None = None, root: Path | None = None) -> lis
         out += [_unavailable("COMP-R35", "low", {"type": "brand", "id": "rival_traffic", "label": "rival traffic by channel"},
                              ["site visits and share by source per tracked page"], "a site traffic estimate source (read only)",
                              "Connect a site traffic estimate source in Setup, read-only, for the direct pages.", ends_on)]
-        out += rule_ladder(m, ends_on) + rule_corners(m, ends_on) + rule_refresh(m, ends_on) + rule_freshness(m, ends_on) + rule_losses(m, ends_on) + rule_attack(m, ends_on) + rule_presence(m, ends_on) + rule_velocity(m, ends_on) + rule_niche(m, ends_on) + rule_premium(m, ends_on) + rule_search(m, ends_on) + rule_new_move(m, ends_on) + rule_price_cut(m, ends_on) + rule_landing(m, ends_on) + rule_cards(m, ends_on) + rule_frames(m, ends_on) + rule_winloss(m, ends_on) + rule_repeat_loss(m, ends_on) + rule_frame_win(m, ends_on) + rule_band_out_of_date(m, ends_on) + rule_recheck(m, ends_on) + rule_season(m, ends_on)
+        out += rule_ladder(m, ends_on) + rule_corners(m, ends_on) + rule_refresh(m, ends_on) + rule_freshness(m, ends_on) + rule_losses(m, ends_on) + rule_attack(m, ends_on) + rule_presence(m, ends_on) + rule_velocity(m, ends_on) + rule_niche(m, ends_on) + rule_premium(m, ends_on) + rule_search(m, ends_on) + rule_new_move(m, ends_on) + rule_price_cut(m, ends_on) + rule_landing(m, ends_on) + rule_cards(m, ends_on) + rule_frames(m, ends_on) + rule_winloss(m, ends_on) + rule_repeat_loss(m, ends_on) + rule_frame_win(m, ends_on) + rule_band_out_of_date(m, ends_on) + rule_recheck(m, ends_on) + rule_burst(m, ends_on) + rule_season(m, ends_on)
     out += rule_price(m, ends_on) + rule_lookalike(m, ends_on)
     out.sort(key=lambda f: (SEVERITY_ORDER[f["severity"]], f["id"]))
     return out

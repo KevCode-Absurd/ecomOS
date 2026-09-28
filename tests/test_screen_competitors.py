@@ -2278,17 +2278,17 @@ class TestPullLightsUp(TempInputs):
         api.audit.snap.SNAPSHOTS = self._snaps
         super().tearDown()
 
-    def land(self, day):
+    def land(self, day, copies=4):
         src = json.loads((ROOT / 'app' / 'connectors' / 'fixtures' / 'apify' / 'curious_coder~facebook-ads-library-scraper.json').read_text())
         items = src['items'] if isinstance(src, dict) else src
         cfg = api.audit.snap.config('bombas', self.tmp)
         pages = [p for p in cfg['meta_ad_library']['pages'] if p.get('page_id')]
         ids = [p['page_id'] for p in pages]
         out = []
-        for k in range(4):
+        for k in range(copies):
             for i, it in enumerate(items):
                 x = json.loads(json.dumps(it))
-                x['page_id'] = ids[(i * 4 + k) % len(ids)]
+                x['page_id'] = ids[(i * copies + k) % len(ids)]
                 x['ad_archive_id'] = f'{x.get("ad_archive_id")}-{k}-{day}'
                 out.append(x)
         snap = api.audit.snap.build('bombas', out, pages, dt.date.fromisoformat(day), {'mode': 'test'})
@@ -2391,6 +2391,25 @@ class TestSecondBrandRound10(TestSecondBrandInputs):
         blob = json.dumps([ho, fr]) + text
         for word in ('Bombas', 'bombas', 'Stance', 'Darn Tough', 'COMFORT20', 'sock'):
             self.assertNotIn(word, blob)
+
+
+class TestBurst(TestPullLightsUp):
+    """10.8: a burst of 10 or more new ads on a direct page between 2 snapshots goes on the plan as a read-out."""
+    def test_lights_up(self):
+        pass
+
+    def test_burst(self):
+        w = {'ends_on': '2026-09-27', 'days': 28, 'trailing': 4}
+        self.land('2026-09-26', copies=2)
+        self.assertNotIn('COMP-R36', [a['rule_id'] for a in api.rank('bombas', w)['actions']])
+        self.land('2026-09-27', copies=24)
+        acts = [a for a in api.rank('bombas', w)['actions'] if a['rule_id'] == 'COMP-R36']
+        self.assertTrue(acts)
+        for a in acts:
+            self.assertEqual(a['owner'], 'agent')
+            self.assertGreaterEqual(a['size']['count'], 10)
+            self.assertEqual(api.actions.ranker.validate_action(a), [])
+            self.assertIn('new ads since the last pull', a['why'])
 
 
 if __name__ == '__main__':

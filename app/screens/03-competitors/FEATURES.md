@@ -45,6 +45,7 @@ Round 1 notes: `snapshot.py` plans and runs a page-id Ad Library pull through `a
 | 10.5 | Hand-offs read back: the hand-off block shows the sent rows by status (proposed, decided, done, dropped), read from the shared table; the dated weekly report adds a hand-offs section (sent by status, and what still waits: decided moves and support rows not yet sent). The screen reads the shared table and never writes it except through the server | done |
 | 10.6 | The room's `new_creative_count` is coded to light up: unavailable ("needs 2 ad-level snapshots") until two snapshots exist, then the count of competitor ads first seen between them, from the ad-level diff; a test lands 2 snapshots and checks the count against the ads in the second | done |
 | 10.7 | Second brand check for round 10: on the minimal hat brand every hand-off row passes the server's validator, the dated report is `report_acme_<date>.md` with that brand's name, the pull table points at its own run command, and no Bombas word or "sock" appears | done |
+| 10.8 | New-ad bursts (the web pass's new-ad alerts, coded to light up): COMP-R36 fires with the second ad-level snapshot when a direct page launched 10 or more new ads since the last pull; the agent reads them by format, first line kind, offer and angle from the snapshot rows (no ad text stored) and a counter brief follows only where they overlap our top angles; sized by the ads read, with a stop rule and a 7-day check; a test lands 2 snapshots and fires it | done |
 
 ## Round 9: a depth pass on rounds 6 to 8, then what is left of the room
 
@@ -364,7 +365,7 @@ Where each job lives now (round 9). The question column quotes the room spec.
 | Round | Features picked | Date | Notes |
 |---|---|---|---|
 | 0 | 0.1 to 0.8 | 2026-09-28 | Bombas brain and simulated prices |
-| 10 | 10.1 to 10.7 | 2026-09-28 | Shared hand-offs; dated weekly report; pull-ready blocks; depth pass outside the desk; hand-offs read back; new creative count; second brand check |
+| 10 | 10.1 to 10.8 | 2026-09-28 | Shared hand-offs; dated weekly report; pull-ready blocks; depth pass outside the desk; hand-offs read back; new creative count; second brand check; new-ad bursts |
 | 9 | 9.1 to 9.10 | 2026-09-28 | Depth pass; room jobs map; price drift across captures; open corners with demand; traffic connect step; visits count as tracking; team exports; sized new rules; evidence on new rules; round close. Screenshot `round9.png` |
 | 8 | 8.1 to 8.10 | 2026-09-28 | Outcomes; lost moves held; overdue reads; scoreboard; site changes; bring back snoozed; results in the brief and report; learnings for the brain; second brand check; round close. Screenshot `round8.png` |
 | 7 | 7.1 to 7.10 | 2026-09-28 | Interview reasons; coverage by name; prices seen on the band chart; price re-check cadence; logged work in the brief; queue and log in the report; briefs as rows; second brand check; form access; round close. Screenshot `round7.png` |
