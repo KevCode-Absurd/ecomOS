@@ -583,13 +583,17 @@
 
   // ---------- 5s. battlecards with freshness ----------
   function cardsSection(bc) {
-    const t = UI.verdictTable({ columns: [{ key: 'name', label: 'Against' }, { key: 'verified_on', label: 'Facts checked', format: (v) => v ? fmt.date(v) : NA },
+    const t = UI.verdictTable({ columns: [{ key: 'name', label: 'Against' }, { key: 'verified_on', label: 'Facts checked', format: (v, r) => v ? fmt.date(v) + ', by ' + r.checked_by : NA },
       { key: 'age_days', label: 'Days old', format: (v) => v == null ? NA : String(v) }],
     rows: bc.rows, verdict: { at: 1, kind: (r) => r.stale ? 'fix' : 'keep', text: (r) => r.stale ? 'Stale' : 'Fresh', reason: (r) => (r.age_days == null ? NA : r.age_days) + ' days against ' + bc.stale_days },
     reason: { key: 'claims', label: 'What the card says', text: (r) => r.claims.slice(1, 3).join(' ') },
     actions: { label: 'Copy card', onClick: (r) => UI.copy(r.card) }, sort: false });
     mount('#cards', t, el('div', { class: 'row' }, UI.copyButton({ label: 'Copy all cards for support', text: () => bc.all_text }),
       UI.decisionRow({ capability: 'BRAND-C57', autonomy: 'agent_does', screen: SCREEN, compact: true, finding_id: SCREEN + '.battlecards' })),
+      bc.rows.length ? el('details', { class: 'card flat' }, el('summary', { class: 'small', text: 'I checked a card against their site today' }),
+        inputForm('card_check', [{ key: 'page', label: 'Card', options: bc.rows.map((r) => r.name) }, { key: 'dropped', label: 'Lines dropped as no longer true', type: 'number', value: '0' },
+          { key: 'date', label: 'Date checked', type: 'date', value: new Date().toISOString().slice(0, 10) }], 'Mark checked'),
+        el('p', { class: 'micro faint', text: 'Check every line against their site first. The card counts as fresh from this date.' })) : null,
       el('p', { class: 'micro faint', text: bc.rule + ' Verified differences only; never disparage.' }));
   }
 

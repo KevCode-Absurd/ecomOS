@@ -558,7 +558,8 @@ def act_card(f: dict, m: dict) -> dict:
                          "draft_note": "Drafted from the next capture."},
             "steps": _steps(("agent", f"Pull a fresh capture of {page} (page id, inside the caps) and its price feed."),
                             ("agent", "Check each line of the card; drop what no longer holds; date the rest."),
-                            ("agent", "Publish the refreshed card to the support macros.")),
+                            ("agent", "Publish the refreshed card to the support macros."),
+                            ("person", "Or check it by hand on their site and mark it checked on this screen; the finding closes.")),
             "size": {"text": "1 card, every line re-checked"}, "win_rule": None,
             "stop_rule": "A line that no longer holds is dropped the same day", "check_on": _plus(f["last_seen"], 7), "time_to_ship_hours": 1}
 

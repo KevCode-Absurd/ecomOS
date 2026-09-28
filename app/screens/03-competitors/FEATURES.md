@@ -41,6 +41,7 @@ Round 1 notes: `snapshot.py` plans and runs a page-id Ad Library pull through `a
 | 6.1 | Win-loss interviews logged on the page (`inputs.py`, `GET/POST inputs`): outcome, the named competitor (from the names on file), one reason code and the date; no names or quotes kept; a local, git-ignored file per brand; win rate by name (wins / (wins + losses)) fills the room metric; COMP-R29 holds until 5 are logged and says how many are on file | done |
 | 6.2 | The same loss reason keeps repeating (room rule, COMP-R31, high): 3 or more logged losses with one reason code against one named competitor put an answer on the plan, picked by reason in code (price and value: a pack step offer; durability: a proof block; fit: a size block; comfort or style: 2 ads; availability: a stock ticket; trust: a trust block; other: 3 more interviews), with a win rule, a stop rule and a 30-day check; a bar chart of losses by reason for each name (the room's win-loss visual) | done |
 | 6.3 | Rival prices seen, logged on the page (the room's price capture): tracked page, product label, price, units in the pack, date and an optional https link; per page and product the latest price a unit against the mean of its earlier records in the trailing 30 days; a cut of 15 percent or more goes on the plan as COMP-R25 with the room's sentence ("cut the price on X by N percent"), answered with value, never a reflex match; raises listed; no earlier record in the window means no baseline and no move; `price_change_count` fills from logged moves too | done |
+| 6.4 | Battlecard checks: a person who checked every line of a direct page's card against their site marks it checked (with how many lines were dropped); the card's freshness counts from the latest check, else from the capture, and says which; a check closes the stale card finding (COMP-R27, whose steps now offer the hand check); `battlecard_freshness_days` follows | done |
 
 ## Round 5: hand-offs, execution lanes and the season
 
@@ -258,7 +259,7 @@ Round 2 notes: the lead authorised the $2.08 pull on 28 Sep; the session's permi
 | Round | Features picked | Date | Notes |
 |---|---|---|---|
 | 0 | 0.1 to 0.8 | 2026-09-28 | Bombas brain and simulated prices |
-| 6 | 6.1 to 6.3 | 2026-09-28 | Win-loss log; repeated loss reason; rival prices seen |
+| 6 | 6.1 to 6.4 | 2026-09-28 | Win-loss log; repeated loss reason; rival prices seen; battlecard checks |
 | 5 | 5.1 to 5.10 | 2026-09-28 | Hand-offs; action lanes; season plan; quarterly review; exports (and the 5.4 load fix); browser smoke test; team notes; brief pack; check due lane; round close |
 | 4 | 4.1 to 4.10 | 2026-09-28 | Placements and new channel alerts; gap lines; stop rules; unit from the brain; never zero; phone width; threat history; support answers; room metrics. Screenshot `round4.png` |
 | 3 | 3.1 to 3.10 | 2026-09-28 | Page-summary captures and diffs; price moves; landing page tracking; printable report; battlecards; positioning test; win-loss kit; tunable thresholds; second brand. Screenshot `round3.png` |

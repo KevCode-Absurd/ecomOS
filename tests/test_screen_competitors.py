@@ -1369,8 +1369,8 @@ class TempInputs(TempBrain):
         api.audit.inpmod.FOLDER = self._folder
         super().tearDown()
 
-    def post(self, body):
-        r = Req(['inputs'], method='POST')
+    def post(self, body, today=DAY):
+        r = Req(['inputs'], method='POST', query={'today': [today]})
         r.body = body
         return api.handle(r)
 
@@ -1487,6 +1487,34 @@ class TestPriceSeen(TempInputs):
         self.assertEqual(pm['logged']['moves'], [])
         self.assertEqual(pm['logged']['with_baseline'], 0)
         self.assertEqual(len(pm['recent']), 2)
+
+
+class TestCardCheck(TempInputs):
+    """6.4: a person marks a battlecard checked; freshness counts from the check and the stale finding closes."""
+    def check(self, page, date=DAY, dropped=0, today=DAY):
+        return self.post({'kind': 'card_check', 'page': page, 'date': date, 'dropped': dropped}, today=today)
+
+    def test_validation(self):
+        self.assertEqual(self.check('Quince')[0], 400)        # not a direct page
+        self.assertEqual(self.check('Stance', dropped=99)[0], 400)
+        self.assertEqual(self.check('Stance', date='2031-01-01')[0], 400)
+        self.assertEqual(self.check('stance')[0], 201)
+
+    def test_check_closes_stale_card(self):
+        late = {'ends_on': '2027-02-27', 'days': 28, 'trailing': 4}
+        stale = [a for a in api.rank('bombas', late)['actions'] if a['rule_id'] == 'COMP-R27']
+        self.assertTrue(stale)
+        page = stale[0]['entity']['label'].replace(' battlecard', '')
+        self.assertEqual(self.check(page, date='2027-02-20', today='2027-02-28')[0], 201)
+        left = [a['entity']['label'] for a in api.rank('bombas', late)['actions'] if a['rule_id'] == 'COMP-R27']
+        self.assertNotIn(f'{page} battlecard', left)
+        d = api.handle(Req(['overview'], query={'today': ['2027-02-28']}))
+        card = next(r for r in d['battlecards']['rows'] if r['name'] == page)
+        self.assertEqual(card['verified_on'], '2027-02-20')
+        self.assertEqual(card['age_days'], 8)
+        self.assertEqual(card['checked_by'], 'a person')
+        other = next(r for r in d['battlecards']['rows'] if r['name'] != page)
+        self.assertEqual(other['checked_by'], 'the capture')
 
 
 if __name__ == '__main__':

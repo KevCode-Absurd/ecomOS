@@ -8,6 +8,8 @@ Kinds:
   interview   a win-loss interview (BRAND-C58): outcome win or loss, competitor from the names on file, reason code
   price_seen  a rival price a person saw on their site (the price capture the room asks for): tracked page, product
               label, price in dollars, units in the pack, date, and an optional https source link
+  card_check  a person checked every line of one direct page's battlecard against their site today: page, date, and how
+              many lines were dropped as no longer true. The card's freshness counts from the latest check.
 Price rule (the room's "competitor cut price sharply"): per page and product, the latest price per unit against the
 mean of that product's earlier records in the trailing TRAIL_DAYS (30) days; a move of the price move threshold or
 more is a cut or a raise. With no earlier record in the window there is no baseline, and no move.
@@ -117,7 +119,32 @@ def price_moves(rows: list[dict], threshold: float, frames: dict | None = None) 
     return {"moves": sorted(moves, key=lambda r: r["change"]), "with_baseline": based, "records": len(rows)}
 
 
-VALIDATE = {"interview": _interview, "price_seen": _price_seen}
+def _card_check(body: dict, known: dict, today: dt.date) -> tuple[dict | None, str | None]:
+    pages = known.get("direct") or []
+    page = next((n for n in pages if n.lower() == str(body.get("page") or "").strip().lower()), None)
+    if not page:
+        return None, "page must be a direct page with a battlecard: " + ", ".join(pages)
+    day = _date(body.get("date") or today.isoformat(), today)
+    if not day:
+        return None, "date must be YYYY-MM-DD and not in the future"
+    try:
+        dropped = int(body.get("dropped") or 0)
+    except (TypeError, ValueError):
+        return None, "dropped must be a whole number"
+    if not 0 <= dropped <= 20:
+        return None, "dropped must be 0 to 20"
+    return {"page": page, "date": day, "dropped": dropped}, None
+
+
+def card_checks(rows: list[dict]) -> dict:
+    """The latest check per page: {page: record}."""
+    out: dict[str, dict] = {}
+    for r in sorted(rows, key=lambda r: (r["date"], r["id"])):
+        out[r["page"]] = r
+    return out
+
+
+VALIDATE = {"interview": _interview, "price_seen": _price_seen, "card_check": _card_check}
 
 
 def add(brand: str, kind: str, body, known: dict, today: dt.date) -> tuple[int, dict]:

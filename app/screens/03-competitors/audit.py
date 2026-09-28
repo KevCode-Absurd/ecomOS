@@ -601,6 +601,11 @@ def market(brand: str, today: dt.date, root: Path | None = None) -> dict:
 
 def market_full(brand: str, today: dt.date, root: Path | None = None) -> dict:
     m = market(brand, today, root)
+    checks = inpmod.card_checks(inpmod.read(brand, "card_check"))
+    for p in m["pages"]:   # a battlecard's freshness counts from the latest person check, else from the capture
+        c = checks.get(p["name"])
+        p["card_checked_on"] = c["date"] if c else None
+        p["card_age_days"] = (today - dt.date.fromisoformat(c["date"])).days if c else p.get("age_days")
     m["ladder"] = laddermod.build(m, m["brain"])
     cur = snap.load(brand)
     prev = snap.load(brand, before=cur["captured_at"]) if cur else None
@@ -1109,13 +1114,14 @@ STALE_CARD_DAYS = 90
 def rule_cards(m, ends_on):
     out = []
     for p in m["pages"]:
-        if p["role"] == "self" or p["frame"] != "direct" or p["source"] == "none" or p.get("age_days") is None:
+        age = p.get("card_age_days", p.get("age_days"))
+        if p["role"] == "self" or p["frame"] != "direct" or p["source"] == "none" or age is None:
             continue
-        if p["age_days"] > STALE_CARD_DAYS:
-            ev = [_row("battlecard_freshness_days", p["age_days"], "days", "latest capture", ends_on, p["age_days"], STALE_CARD_DAYS,
-                       "threshold", "competitors")]
+        if age > STALE_CARD_DAYS:
+            ev = [_row("battlecard_freshness_days", age, "days", "latest check" if p.get("card_checked_on") else "latest capture", ends_on, age,
+                       STALE_CARD_DAYS, "threshold", "team" if p.get("card_checked_on") else "competitors")]
             out.append(_finding("COMP-R27", "low", {"type": "page", "id": f"card_{p['key']}", "label": f"{p['name']} battlecard"}, ev,
-                                f"The {p['name']} battlecard rests on facts last checked {p['age_days']} days ago.", p["record_ids"], ends_on,
+                                f"The {p['name']} battlecard rests on facts last checked {age} days ago.", p["record_ids"], ends_on,
                                 0.5, "no baseline: a stale claim has no measured cost"))
     return out
 

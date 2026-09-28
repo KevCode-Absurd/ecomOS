@@ -276,13 +276,14 @@ def battlecards(m: dict, pages: dict) -> dict:
     for r in pages["rows"]:
         if r["role"] == "self" or r["frame"] != "direct" or r["source"] == "none":
             continue
-        age = r.get("age_days")
-        rows.append({"name": r["name"], "key": r["key"], "verified_on": r.get("captured_at"), "age_days": age,
+        age = r.get("card_age_days", r.get("age_days"))
+        rows.append({"name": r["name"], "key": r["key"], "verified_on": r.get("card_checked_on") or r.get("captured_at"), "age_days": age,
+                     "checked_by": "a person" if r.get("card_checked_on") else "the capture",
                      "stale": age is not None and age > STALE_CARD_DAYS, "card": r["battlecard"],
                      "claims": [ln for ln in r["battlecard"].split("\n")[1:] if ln and not ln.startswith("Say only")]})
     return {"rows": rows, "stale_days": STALE_CARD_DAYS,
             "all_text": "\n\n".join(x["card"] for x in rows),
-            "rule": f"A battlecard is stale when its facts were last checked more than {STALE_CARD_DAYS} days ago."}
+            "rule": f"A battlecard is stale when its facts were last checked more than {STALE_CARD_DAYS} days ago, by a person or a capture."}
 
 
 def placements(m: dict) -> dict:
@@ -517,7 +518,8 @@ def handle(req):
                 body = req.body if isinstance(req.body, dict) else {}
                 m = audit.market_full(brand, today, BRAIN_ROOT)
                 return audit.inpmod.add(brand, str(body.get("kind") or ""), body, {"competitors": m["losses"]["names"],
-                                        "pages": [p["name"] for p in m["pages"] if p["role"] != "self"]}, today)
+                                        "pages": [p["name"] for p in m["pages"] if p["role"] != "self"],
+                                        "direct": [p["name"] for p in m["pages"] if p["role"] != "self" and p["frame"] == "direct" and p["source"] != "none"]}, today)
             return {"records": audit.inpmod.read(brand, req.arg("kind")), "reason_codes": audit.inpmod.REASON_CODES,
                     "note": "Logged by the team on this screen. Local file, never sent anywhere. No names or quotes kept."}
         if req.method == "GET" and req.path == ["briefs"]:
