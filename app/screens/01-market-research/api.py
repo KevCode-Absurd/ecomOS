@@ -1146,6 +1146,13 @@ def rank(brand, window=None):
     actions.sort(key=rank_mod.sort_key)
     # the founder's decisions (the shared log app/data/decisions.json, written by the decision row): a "not now" parks the
     # action for 14 days and it leaves the plan; an "agent" or "person" choice rides on the card so it is not re-argued
+    # what each card covers: every finding behind it, so a merged card reads as a checklist, never a black box
+    by_id = {f['id']: f for f in findings}
+    names = {r['rule_id']: r['name'] for r in audit.RULES}
+    for a in actions:
+        a['covers'] = [{'id': fid, 'rule_id': by_id[fid].get('rule_id'), 'rule': names.get(by_id[fid].get('rule_id'), ''), 'severity': by_id[fid].get('severity'),
+                        'status': by_id[fid].get('status'), 'sentence': by_id[fid].get('sentence'), 'stake_usd': (by_id[fid].get('money_at_stake') or {}).get('usd')}
+                       for fid in a.get('finding_ids') or [] if fid in by_id]
     before = list(actions)
     actions = rank_mod.apply_decisions(actions, today=dt.date.fromisoformat(window['ends_on']), path=DECISIONS_PATH)
     parked = [a for a in before if a.get('status') == 'snoozed']

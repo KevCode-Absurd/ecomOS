@@ -549,6 +549,18 @@ class RankTest(unittest.TestCase):
             self.assertIn(r['owner'], ('agent', 'agent_drafts', 'person'))
             self.assertTrue(r.get('stop_rule') and r.get('win_rule') and r.get('check_on'), rule['rule_id'])
 
+    def test_every_card_lists_what_it_covers(self):
+        acts = self.actions()
+        for a in acts:
+            self.assertEqual([c['id'] for c in a['covers']], list(a['finding_ids']), a['id'])
+            for c in a['covers']:
+                self.assertTrue(c['sentence'])
+                self.assertTrue(c['rule'])
+            self.assertEqual(api.rank_mod.validate_action(a), [], a['id'])
+        merged = [a for a in acts if len(a['covers']) > 1]
+        self.assertTrue(merged)
+        self.assertTrue(all(len({c['rule_id'] for c in a['covers']}) >= 1 for a in merged))
+
     def test_deterministic_order(self):
         a = [x['id'] for x in self.actions()]
         b = [x['id'] for x in self.actions()]

@@ -23,8 +23,16 @@
     if (action) line.append(el('button', { class: 'btn soft xs', type: 'button', text: action.label, onclick: action.onClick }));
     return line;
   }
+  function coversList(a, compact) {
+    const c = a.covers || [];
+    if (!c.length || (compact && c.length < 2)) return null;
+    const sev = (s) => s === 'critical' || s === 'high' ? 'fix' : s === 'low' ? 'na' : 'watch';
+    return el('div', { class: 'card flat' + (compact ? ' covers' : ''), style: compact ? { marginTop: '-4px', marginBottom: '8px' } : null },
+      el('div', { class: 'micro muted', text: 'This card covers ' + c.length + ' finding' + (c.length === 1 ? '' : 's') + '; each one closes on its own rule.' }),
+      el('ul', { class: 'small', style: { margin: '4px 0 0', paddingLeft: '18px' } }, c.map((f) => el('li', null, UI.verdict(sev(f.severity), f.severity || ''), ' ', el('span', { class: 'mono micro faint', text: f.rule_id }), ' ', f.sentence || f.rule, f.stake_usd != null ? el('span', { class: 'muted', text: ' (' + fmt.money(f.stake_usd) + ')' }) : null))));
+  }
   function openAction(a) {
-    UI.panel({ title: a.title, body: UI.actionCard(a, { expanded: true, screen: SLUG }) });
+    UI.panel({ title: a.title, body: el('div', { class: 'stack' }, UI.actionCard(a, { expanded: true, screen: SLUG }), coversList(a, false)) });
   }
   const state = { actions: [], byFinding: {} };
   function actionFor(findingId) { return state.byFinding[findingId] || null; }
@@ -126,7 +134,7 @@
     const list = state.actions.filter((a) => a.status !== 'unavailable');
     if (!list.length) { mount('#actions', el('p', { class: 'muted', text: 'No open action.' })); return; }
     const top = list.slice(0, TOP_CARDS), rest = list.slice(TOP_CARDS);
-    const parts = top.map((a, i) => UI.actionCard(a, { expanded: i === 0, screen: SLUG }));
+    const parts = top.flatMap((a, i) => [UI.actionCard(a, { expanded: i === 0, screen: SLUG }), coversList(a, true)].filter(Boolean));
     if (rest.length) {
       parts.push(el('div', { class: 'card scroll' }, el('h4', { text: rest.length + ' more, below the top ' + TOP_CARDS }), UI.verdictTable({
         columns: [{ key: 'rank', label: '#', unit: 'n' }, { key: 'title', label: 'Action' }, { key: 'ownerText', label: 'Owner' }, { key: 'kind', label: 'Artefact' }, { key: 'total', label: 'Score', align: 'right', format: (v) => v == null ? NA : Math.round(v) + ' /100' }, { key: 'stake', label: 'Stake', align: 'right', format: (v) => v == null ? NA : fmt.money(v) }],

@@ -203,7 +203,7 @@ The candidate side of the desk: the pipeline with its gates, boxes and scorecard
 | # | Feature | Status |
 |---|---|---|
 | 5.1 | The hand-off (events contract): `fixtures/product_candidates.json` rewritten on every candidate write (stage and decision, planned price, landed cost estimate, pack units, first run, tech pack version, angle, review date; a gross margin from the estimates, labelled as such), served at `product_candidates`; a go writes a proposed test in the registry shape to `fixtures/proposed_tests.json` (hypothesis from the angle, metric contribution margin, read point the review date), served at `tests`; the pipeline block shows both | done |
-| 5.2 | Merged cards show what they cover: every finding behind a card as a checklist with its rule and sentence, in the card panel and under the top cards | todo |
+| 5.2 | What each card covers: every finding behind a card (rule id, severity, sentence, stake) as a checklist in the card panel, and under each top card that merges 2 or more findings, so a merged card reads as a list that closes item by item | done |
 | 5.3 | The research calendar: every due date on the desk (review dates, time boxes, check dates, pull windows, the gift window) on one timeline for the next 45 days, each opening its action | todo |
 | 5.4 | Creative hand-off per buyer or theme card: the angle brief for creative (the doubt, the avatar, the proof on file, review quotes never from Reddit, the words buyers use, the do-not list), copyable from the card panel | todo |
 | 5.5 | The desk report: one markdown page with every block's gap line, the top 10, the connect list and the parked list, copy or download from Exports | todo |
