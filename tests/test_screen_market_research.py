@@ -1353,6 +1353,27 @@ class PipelineTest(ShapeMixin, unittest.TestCase):
         finally:
             audit.PIPELINE_PATH = self.real2
 
+    def test_one_sku_first(self):
+        D = date(2026, 9, 27)
+        self.real2 = audit.PIPELINE_PATH
+        try:
+            audit.PIPELINE_PATH = self.tmp
+            self.tmp.write_text(json.dumps({'rows': [{'candidate_id': 'a', 'brand': 'fake', 'name': 'A', 'stage': 'gated', 'first_run': {'units': 500}, 'variants': 4},
+                                                     {'candidate_id': 'b', 'brand': 'fake', 'name': 'B', 'stage': 'gated', 'first_run': {'units': 500}, 'variants': 1},
+                                                     {'candidate_id': 'c', 'brand': 'fake', 'name': 'C', 'stage': 'gated', 'variants': 3},
+                                                     {'candidate_id': 'd', 'brand': 'fake', 'name': 'D', 'stage': 'go', 'first_run': {'units': 500}, 'variants': 3}]}), encoding='utf-8')
+            found = audit.variant_findings('fake', D)
+            self.assertEqual([f['id'].split('.')[-1] for f in found], ['a'])     # b is one SKU, c has no first run yet, d is past go
+            self.assertIn('4 variants', found[0]['sentence'])
+            self.check_shape(found[0])
+            self.assertIn('one SKU', api.recipe(found[0])['title'])
+            r = api.candidate_update('fake', 'a', {'variants': '1', 'who': 'person'}, D)
+            self.assertEqual(r['changes'], ['1 variant'])
+            self.assertEqual(audit.variant_findings('fake', D), [])
+            self.assertEqual({x['candidate_id']: x['variants'] for x in audit.first_run_read('fake', D, None)['rows']}['a'], 1)
+        finally:
+            audit.PIPELINE_PATH = self.real2
+
     def test_demand_pattern_tags(self):
         even = {'rows': [{'category': 'socks', 'series': [100] * 12}], 'months': [f'2026-{m:02d}' for m in range(1, 13)], 'last': '2026-12'}
         peaked = {'rows': [{'category': 'socks', 'series': [50] * 10 + [300, 400]}], 'months': even['months'], 'last': '2026-12'}

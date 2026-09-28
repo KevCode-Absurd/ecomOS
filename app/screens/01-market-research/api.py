@@ -1093,6 +1093,18 @@ def recipe(f):
             'size': {'text': f'hold to {ent.get("hold_until")}', 'usd': None}, 'stop_rule': 'no research hours on a re-screen without a new signal', 'check_on': _check_on(f, 3), 'time_to_ship_hours': 0.5,
             'win_rule': 'a note naming the new signal, or the candidate killed with the same reason',
         }
+    if rid == 'PROD-R48':
+        ent = f.get('entity') or {}
+        return {
+            'title': f'Launch {ent.get("label") or "the candidate"} with one SKU, not {ent.get("variants")} variants, until the core sells',
+            'owner': 'agent',
+            'artefact': {'kind': 'research_note', 'label': f'the one-SKU plan for {ent.get("label")}: which variant leads and why (the best-selling size or colour in the category), the first run re-sized to it, and the read point that unlocks the next variant (bank idea PRD-093)'},
+            'steps': [{'n': 1, 'who': 'agent', 'text': 'Pick the lead variant from the category data (the size or colour that sells most) and re-size the first run to it.'},
+                      {'n': 2, 'who': 'person', 'text': 'Approve the one-SKU launch, or name the second variant the demand case proves.'},
+                      {'n': 3, 'who': 'agent', 'text': 'Write variants 1 on the candidate; the next variant enters the pipeline after sell-through.'}],
+            'size': {'text': f'{ent.get("variants")} variants planned', 'usd': None}, 'stop_rule': 'no MOQ per variant before the core product sells', 'check_on': _check_on(f, 7), 'time_to_ship_hours': 1,
+            'win_rule': 'one variant in the first run, the rest queued behind a sell-through read',
+        }
     return None
 
 
@@ -1244,7 +1256,7 @@ def merge_strength(actions):
     return keep
 
 
-CANDIDATE_RULES = ('PROD-R14', 'PROD-R15', 'PROD-R16', 'PROD-R18', 'PROD-R21', 'PROD-R23', 'PROD-R24', 'PROD-R25', 'PROD-R27', 'PROD-R28', 'PROD-R37', 'PROD-R38', 'PROD-R39', 'PROD-R40', 'PROD-R45', 'PROD-R46', 'PROD-R47')
+CANDIDATE_RULES = ('PROD-R14', 'PROD-R15', 'PROD-R16', 'PROD-R18', 'PROD-R21', 'PROD-R23', 'PROD-R24', 'PROD-R25', 'PROD-R27', 'PROD-R28', 'PROD-R37', 'PROD-R38', 'PROD-R39', 'PROD-R40', 'PROD-R45', 'PROD-R46', 'PROD-R47', 'PROD-R48')
 
 
 def merge_candidates(actions):
@@ -1606,6 +1618,9 @@ def candidate_update(brand, cid, body, today):
             cur['notes'] = str(sm['notes']).strip()[:300] or None
         row['sample'] = cur
         changes.append('sample ' + (cur.get('result') or ('received' if cur.get('received_on') else 'ordered' if cur.get('ordered_on') else 'noted')))
+    if body.get('variants') is not None:
+        row['variants'] = int(_num(body['variants'], 1) or 1)
+        changes.append(f'{row["variants"]} variant' + ('' if row['variants'] == 1 else 's'))
     if body.get('owner') is not None:
         row['owner'] = str(body['owner']).strip()[:60] or None
         changes.append(f'owner {row["owner"] or "cleared"}')

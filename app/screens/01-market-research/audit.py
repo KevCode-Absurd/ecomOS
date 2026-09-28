@@ -176,6 +176,8 @@ Rules
   PROD-R47  Kill memory: an open candidate that shares 3 or more content words (name and angle) with a candidate killed inside
             the 90-day hold. Severity medium. Money null. Capability PROD-C01 (screen candidates, agent does). Owner:
             01-market-research.
+  PROD-R48  One SKU first: a candidate with a first run decided, before go, whose first launch carries more than one variant
+            (bank idea PRD-093). Severity medium. Money null. Capability PROD-C07. Owner: 01-market-research.
   PROD-R03  Hero line with no next SKU: a line with 25 percent or more of its category's net sales in
             the last 3 whole months while the candidate pipeline holds no open next-SKU candidate for
             that category. Money: null (an unlaunched SKU has no baseline). Capability PROD-C06
@@ -292,6 +294,7 @@ RULES = [
     {'rule_id': 'PROD-R46', 'name': 'Candidate at shortlisted or later, or with a first run decided, whose sample has not passed a test through our own chain', 'entity_type': 'sku',
      'inputs': ['fixtures.pipeline'], 'capability': 'PROD-C16', 'owner_screen': SCREEN},
     {'rule_id': 'PROD-R47', 'name': 'Open candidate that reads like one killed inside the 90-day hold', 'entity_type': 'sku', 'inputs': ['fixtures.pipeline'], 'capability': 'PROD-C01', 'owner_screen': SCREEN},
+    {'rule_id': 'PROD-R48', 'name': 'Candidate with a first run decided whose first launch carries more than one variant', 'entity_type': 'sku', 'inputs': ['fixtures.pipeline'], 'capability': 'PROD-C07', 'owner_screen': SCREEN},
 ]
 CAPABILITY = {'PROD-R01': {'id': 'PROD-C05', 'autonomy': 'agent_does'},
               'PROD-R02': {'id': 'PROD-C06', 'autonomy': 'agent_does'},
@@ -339,7 +342,8 @@ CAPABILITY = {'PROD-R01': {'id': 'PROD-C05', 'autonomy': 'agent_does'},
               'PROD-R44': {'id': 'PROD-C34', 'autonomy': 'human_assist'},
               'PROD-R45': {'id': 'PROD-C11', 'autonomy': 'founder_gate'},
               'PROD-R46': {'id': 'PROD-C16', 'autonomy': 'human_assist'},
-              'PROD-R47': {'id': 'PROD-C01', 'autonomy': 'agent_does'}}
+              'PROD-R47': {'id': 'PROD-C01', 'autonomy': 'agent_does'},
+              'PROD-R48': {'id': 'PROD-C07', 'autonomy': 'agent_does'}}
 SEVERITY_ORDER = {'critical': 0, 'high': 1, 'medium': 2, 'low': 3}
 
 # Review records name their line in a short key; the store names it by SKU title.
@@ -837,6 +841,7 @@ def run(brand, window=None, data=None):
     out += owner_findings(brand, ends_on)
     out += sample_findings(brand, ends_on)
     out += kill_findings(brand, ends_on)
+    out += variant_findings(brand, ends_on)
     out.sort(key=lambda f: (SEVERITY_ORDER[f['severity']], -((f['money_at_stake'] or {}).get('usd') or 0), f['id']))
     return out
 
@@ -3658,7 +3663,7 @@ def first_run_read(brand, ends_on, net_28d):
         else:
             verdict = 'sized'
         rows.append({'candidate_id': c.get('candidate_id'), 'name': c.get('name'), 'stage': st, 'closed': st in CLOSED_STAGES, 'units': fr.get('units'), 'moq_units': fr.get('moq_units'),
-                     'format': fr.get('format'), 'cash_usd': cash, 'cash_share_28d': share, 'moq_over_units': moq_over, 'lower_moq_option': fr.get('lower_moq_option') or None,
+                     'format': fr.get('format'), 'cash_usd': cash, 'cash_share_28d': share, 'moq_over_units': moq_over, 'lower_moq_option': fr.get('lower_moq_option') or None, 'variants': c.get('variants'),
                      'decided_on': fr.get('decided_on'), 'verdict': verdict, 'finding_id': f'{SCREEN}.PROD-R37.{c.get("candidate_id")}'})
     order = {'full_moq_risk': 0, 'no_plan': 1, 'sized': 2, 'not_yet': 3, 'closed': 4}
     rows.sort(key=lambda r: (order[r['verdict']], r['name'] or ''))
@@ -4399,4 +4404,27 @@ def kill_findings(brand, ends_on):
             f['entity'] = {'type': 'sku', 'id': cid, 'label': la['name'], 'candidate': True, 'stage': la['stage'], 'killed': k['name'], 'killed_on': k['killed_on'], 'reason': k['reason'], 'hold_until': k['hold_until'], 'shared': la['shared']}
             f['id'] = f'{SCREEN}.PROD-R47.{cid}'
             out.append(f)
+    return out
+
+
+# ---------------------------------------------------------------- one SKU first (round 7.7, bank idea PRD-093)
+
+def variant_findings(brand, ends_on):
+    """PROD-R48: a candidate with a first run decided, before go, whose first launch carries more than one variant (sizes,
+    colours, formulations) before the core product has sold."""
+    out = []
+    for c in pipeline(brand):
+        st = c.get('stage')
+        if st in CLOSED_STAGES or not c.get('first_run'):
+            continue
+        n = c.get('variants')
+        if not isinstance(n, int) or n <= 1:
+            continue
+        cid = c.get('candidate_id')
+        ev = [_ev('variants_in_first_run', n, 'count', ends_on.isoformat(), 'first run plan', 1, 'threshold', source='fixtures.pipeline', simulated=False, freshness_days=0, stage=st)]
+        sentence = f'{c.get("name")} plans {n} variants in its first run before the core product has sold once; every variant multiplies the MOQ and the returns risk.'
+        f = _finding('PROD-R48', cid, ends_on, 'medium', ev, sentence, None, 0.8, [], money_reason='the bet is the first run cash, priced on the first-run card')
+        f['entity'] = {'type': 'sku', 'id': cid, 'label': c.get('name'), 'candidate': True, 'stage': st, 'variants': n}
+        f['id'] = f'{SCREEN}.PROD-R48.{cid}'
+        out.append(f)
     return out

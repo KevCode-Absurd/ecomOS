@@ -1035,9 +1035,11 @@
     const vrows = rows.map((r) => { const a = actionFor(r.finding_id); return Object.assign({}, r, {
       unitsText: r.units == null ? NA : fmt.int(r.units), moqText: r.moq_units == null ? NA : fmt.int(r.moq_units) + (r.moq_over_units ? ' (over the units wanted)' : ''), fmtText: r.format || NA,
       cashText: r.cash_usd == null ? NA : fmt.money(r.cash_usd) + (r.cash_share_28d != null ? ' (' + (r.cash_share_28d * 100).toFixed(0) + ' percent of 28-day net)' : ' (revenue unknown)'), optText: r.lower_moq_option || 'none noted',
-      actions: [a ? { label: r.verdict === 'no_plan' ? 'Size the first run' : 'Cost a lower-MOQ format', onClick: () => openAction(a) } : null, r.verdict !== 'not_yet' ? { label: r.verdict === 'no_plan' ? 'Enter it' : 'Edit', cls: 'quiet', onClick: () => size(r) } : { label: 'Before gated', cls: 'quiet', onClick: () => {} }].filter(Boolean) }); });
+      varText: r.variants == null ? 'not set' : r.variants + (r.variants === 1 ? ' (one SKU)' : ' variants'),
+      actions: [a ? { label: r.verdict === 'no_plan' ? 'Size the first run' : 'Cost a lower-MOQ format', onClick: () => openAction(a) } : null, r.verdict !== 'not_yet' ? { label: r.verdict === 'no_plan' ? 'Enter it' : 'Edit', cls: 'quiet', onClick: () => size(r) } : { label: 'Before gated', cls: 'quiet', onClick: () => {} },
+        r.verdict !== 'not_yet' ? { label: 'Variants', cls: 'quiet', onClick: () => { const v = prompt('How many variants (sizes, colours) in the first launch of ' + r.name + '? One SKU first is the rule.', r.variants || 1); if (v != null && v.trim()) candidatePost('candidates/' + r.candidate_id, { variants: v, who: 'person' }); } } : null].filter(Boolean) }); });
     const tbl = UI.verdictTable({
-      columns: [{ key: 'name', label: 'Candidate' }, { key: 'stage', label: 'Stage' }, { key: 'unitsText', label: 'Units wanted' }, { key: 'fmtText', label: 'Format' }, { key: 'moqText', label: 'MOQ' }, { key: 'cashText', label: 'Cash out' }, { key: 'optText', label: 'Lower-MOQ option' }],
+      columns: [{ key: 'name', label: 'Candidate' }, { key: 'stage', label: 'Stage' }, { key: 'unitsText', label: 'Units wanted' }, { key: 'varText', label: 'Variants' }, { key: 'fmtText', label: 'Format' }, { key: 'moqText', label: 'MOQ' }, { key: 'cashText', label: 'Cash out' }, { key: 'optText', label: 'Lower-MOQ option' }],
       rows: vrows,
       verdict: { at: 1, kind: (r) => r.verdict === 'full_moq_risk' ? 'fix' : r.verdict === 'no_plan' ? 'watch' : r.verdict === 'sized' ? 'keep' : 'na', text: (r) => vt[r.verdict], reason: (r) => fr.rule },
       actions: { label: 'Do', onClick: () => {} }, sort: false });
