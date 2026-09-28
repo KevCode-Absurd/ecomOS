@@ -246,7 +246,7 @@ Intelligems (threshold and price tests scored by profit per visitor), Rebuy (tie
 | Round | Features picked | Date | Notes |
 |---|---|---|---|
 | 0 | skeleton, 0.1 to 0.9 | 2026-09-28 | S3.9; screenshot round0.png |
-| 5 | 5.1 stack read-back, 5.2 break-even discount, 5.3 profit per visitor, 5.4 pack label, 5.5 installments, 5.6 loyalty calibration, 5.7 line match, 5.8 code-won cohorts | 2026-09-28 | in progress |
+| 5 | 5.1 stack read-back, 5.2 break-even discount, 5.3 profit per visitor, 5.4 pack label, 5.5 installments, 5.6 loyalty calibration, 5.7 line match, 5.8 code-won cohorts, 5.9 order bunches | 2026-09-28 | in progress |
 | 4 | 4.1 to 4.10: save to the brain, offer records, bundle pairs, red line gate, approved first, launched read, upsell connect, brief pack, stale inputs | 2026-09-28 | screenshot round4.png |
 | 3 | 3.1 to 3.10: registry, referral, loyalty, window creep, subscription note, depth rules, plug and play, priors, decisions | 2026-09-28 | screenshot round3.png |
 | 2 | 2.1 to 2.10: position, parity, discipline, gift pick, cart ladder, test calendar, depth by line, second order, cost against price, desk tabs | 2026-09-28 | screenshot round2.png |

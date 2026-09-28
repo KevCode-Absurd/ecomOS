@@ -189,9 +189,18 @@
       actionLine(line, a));
   }
 
-  function cartBlock(cl) {
+  function bunchesCard(bn) {
+    if (!bn) return null;
+    if (bn.unavailable) return el('div', { class: 'card' }, el('h4', { text: 'Where do order values bunch?' }), el('p', { class: 'muted small', text: NA + ': ' + bn.reason }));
+    return el('div', { class: 'card tight' }, el('h4', { text: 'Where do order values bunch?' }), UI.table({ columns: [
+      { key: 'at', label: 'Bunch at', format: (v) => fmt.money(v) }, { key: 'share', label: 'Share of orders in that $5', unit: '%' },
+      { key: 'tier', label: 'Tier to test', format: (v) => fmt.money(v, null, 0) }], rows: bn.peaks, sort: false }),
+      el('p', { class: 'micro faint', text: fmt.int(bn.orders) + ' orders, 28 days; ' + bn.rule + '. Reward each tier with product, not a percent.' }));
+  }
+
+  function cartBlock(cl, bn) {
     const head = { title: 'What does the cart reward past the free shipping line?', sub: 'A second tier one item past the line. The gift pays for itself once a shopper adds its cost over the contribution share, before media.' };
-    if (!cl) return section('desk-cart', head, UI.emptyState({ screen: SLUG, title: 'Cart ladder unavailable', text: 'Needs a threshold, a gift item and contribution inputs.' }));
+    if (!cl) return section('desk-cart', head, UI.emptyState({ screen: SLUG, title: 'Cart ladder unavailable', text: 'Needs a threshold, a gift item and contribution inputs.' }), bunchesCard(bn));
     const a = ACTIONS.find((x) => x.rule_id === 'OFFER-R20');
     const tiers = UI.verdictTable({ columns: [{ key: 'n', label: 'Tier' }, { key: 'at', label: 'Cart value', format: (v) => fmt.money(v, null, 0) }, { key: 'reward', label: 'Reward' }],
       rows: cl.tiers.map((t, i) => Object.assign({ n: String(i + 1), today: !i }, t)), verdict: { at: 1, kind: (r) => r.today ? 'keep' : 'new', text: (r) => r.today ? 'Today' : 'Proposed' }, sort: false });
@@ -201,7 +210,7 @@
       ['Pays after', fmt.money(cl.pays_after) + ' added, so the climb covers it ' + cl.cover.toFixed(1) + ' times'],
       ['Orders already past tier 2', cl.leak_share == null ? NA + ': ' + cl.leak_reason : pct(cl.leak_share, 0)],
     ]);
-    return section('desk-cart', head, el('div', { class: 'grid two' }, el('div', { class: 'card tight' }, tiers), el('div', { class: 'card' }, facts)),
+    return section('desk-cart', head, el('div', { class: 'grid two' }, el('div', { class: 'card tight' }, tiers), el('div', { class: 'card' }, facts)), bunchesCard(bn),
       actionLine(a ? 'The cart has one reward. Add the gift tier at ' + fmt.money(cl.tier2, null, 0) + '.' : 'The cart already runs more than one reward.', a));
   }
 
@@ -622,7 +631,7 @@
       { key: 'launch', label: 'Launch next', rules: ['OFFER-R11', 'OFFER-R12', 'OFFER-R21', 'OFFER-R27'],
         blocks: () => [testsBlock(d.tests), registryBlock(d.registry, d.proposed_tests, d.launched), calendarBlock(d.calendar), depthBlock(d.depth), giftingBlock(d.gifting), secondOrderBlock(d.cohorts)] },
       { key: 'offers', label: 'Offers', rules: ['OFFER-R08', 'OFFER-R10', 'OFFER-R19', 'OFFER-R31', 'OFFER-R20', 'OFFER-R23', 'OFFER-R24', 'OFFER-R04', 'OFFER-R14', 'OFFER-R15'],
-        blocks: () => [firstOrderBlock(d.first_order, d.discount_cohorts), cartBlock(d.cart), buyersBlock(d), objectionBlock(d.objections || [], d.returns), guaranteeBlock(d.guarantee, d.returns), subscriptionBlock(d.subscription), stackBlock(d.stack || [])] },
+        blocks: () => [firstOrderBlock(d.first_order, d.discount_cohorts), cartBlock(d.cart, d.bunches), buyersBlock(d), objectionBlock(d.objections || [], d.returns), guaranteeBlock(d.guarantee, d.returns), subscriptionBlock(d.subscription), stackBlock(d.stack || [])] },
       { key: 'prices', label: 'Prices and packs', rules: ['OFFER-R22', 'OFFER-R16', 'OFFER-R17', 'OFFER-R07', 'OFFER-R09', 'OFFER-R26', 'OFFER-R29'],
         blocks: () => [costBlock(d.costs), positionBlock(d.position, d.brand || {}), parityBlock(d.parity), ladderBlock(d.ladder), bundlesBlock(d.bundles), waterfallBlock(d.waterfalls)] },
       { key: 'shipping', label: 'Shipping and discounts', rules: ['OFFER-R01', 'OFFER-R05', 'OFFER-R06', 'OFFER-R18', 'OFFER-R25', 'OFFER-R30'],

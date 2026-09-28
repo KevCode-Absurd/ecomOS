@@ -302,7 +302,7 @@ def orientation(rd, th):
 
 DESK_KEYS = ('objections', 'returns', 'ladder', 'first_order', 'waterfalls', 'calendar', 'gifting', 'guarantee', 'position',
              'parity', 'discipline', 'cart', 'tests', 'depth', 'cohorts', 'costs', 'registry', 'referral', 'loyalty',
-             'subscription', 'bundles', 'proposed_tests', 'launched', 'discount_cohorts')
+             'subscription', 'bundles', 'proposed_tests', 'launched', 'discount_cohorts', 'bunches')
 
 
 def with_decisions(acts, today=None, path=None):

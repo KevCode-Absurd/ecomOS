@@ -1071,6 +1071,15 @@ def cohort_action(f, a, ctx):
     return a
 
 
+def bunches(rd):
+    """Order-value bunches and the tiers above them, from real order bins only (never from the fixture)."""
+    dist = rd.m('order_value_distribution', audit.WINDOW, step=5)
+    if dist.get('unavailable'):
+        return {'unavailable': True, 'reason': dist.get('reason')}
+    return {'unavailable': False, 'peaks': model.order_bunches(dist['groups']), 'orders': dist['value'],
+            'rule': 'the 3 biggest bunches of order value at least $20 apart; each tier $10 above its bunch, rounded up to $5'}
+
+
 def returns_block(rd):
     """returns_by_reason for the window, or the labelled fixture when the metric is unavailable."""
     m = rd.m('returns_by_reason', audit.WINDOW)
@@ -1281,5 +1290,5 @@ def rank(brand='bombas', window=None, data=None):
     return {'screen': SCREEN, 'brand': brand, 'window': w, 'simulated': True, 'net_revenue_28d': nr,
             'actions': actions, 'findings': findings, 'objections': ctx.objections, 'returns': returns_block(rd),
             'ladder': dict(ctx.ladder, moves=ctx.ladder_rows), 'first_order': ctx.first_order, 'waterfalls': ctx.waterfalls, 'calendar': ctx.calendar, 'gifting': ctx.gifting, 'guarantee': ctx.guarantee, 'position': ctx.position, 'parity': ctx.parity,
-            'discipline': dict(ctx.discipline, policy=discount_policy(ctx), windows=ctx.depth_history, window_creep_points=playbook.WINDOW_CREEP_POINTS), 'cart': ctx.cart, 'tests': calendar, 'depth': ctx.depth, 'cohorts': ctx.cohorts, 'costs': ctx.costs, 'registry': ctx.registry, 'referral': ctx.referral, 'loyalty': ctx.loyalty, 'bundles': ctx.bundles, 'proposed_tests': ctx.proposed_rows, 'launched': ctx.launched, 'discount_cohorts': audit.discount_cohorts(rd),
+            'discipline': dict(ctx.discipline, policy=discount_policy(ctx), windows=ctx.depth_history, window_creep_points=playbook.WINDOW_CREEP_POINTS), 'cart': ctx.cart, 'tests': calendar, 'depth': ctx.depth, 'cohorts': ctx.cohorts, 'costs': ctx.costs, 'registry': ctx.registry, 'referral': ctx.referral, 'loyalty': ctx.loyalty, 'bundles': ctx.bundles, 'proposed_tests': ctx.proposed_rows, 'launched': ctx.launched, 'discount_cohorts': audit.discount_cohorts(rd), 'bunches': bunches(rd),
             'subscription': model.subscription_note(rd, ctx.cohorts, (ctx.depth or {}).get('rows'), (ctx.depth or {}).get('target'))}

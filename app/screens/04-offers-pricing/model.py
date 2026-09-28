@@ -1213,3 +1213,26 @@ def discount_cohorts(rd, days, min_n):
                   'first_order_value': round(sum(v for _, v in rows) / n, 2) if n else None}
     return {'unavailable': False, 'days': days, 'first_orders_before': cutoff, **out,
             'basis': f'customers whose first order is on or before {cutoff}; a repeat is any order within {days} days of the first'}
+
+
+# ---------------------------------------------------------------- tiers from order-value bunches
+
+def order_bunches(groups, n=3, min_gap=20, above=10, step=5):
+    """Where order values bunch (web pass 2: Intelligems sets each tier a bit above a bunch): local peaks in the
+    $5 bins, the n biggest at least `min_gap` dollars apart, each with a tier `above` dollars over it."""
+    if not groups:
+        return []
+    peaks = []
+    for i, g in enumerate(groups):
+        left = groups[i - 1]['share'] if i else -1
+        right = groups[i + 1]['share'] if i + 1 < len(groups) else -1
+        if g['share'] > 0 and g['share'] >= left and g['share'] >= right:
+            peaks.append(g)
+    out = []
+    for g in sorted(peaks, key=lambda x: -x['share']):
+        mid = (g['from'] + g['to']) / 2
+        if all(abs(mid - p['at']) >= min_gap for p in out):
+            out.append({'at': mid, 'share': g['share'], 'tier': math.ceil((mid + above) / step) * step})
+        if len(out) == n:
+            break
+    return sorted(out, key=lambda p: p['at'])

@@ -1452,5 +1452,19 @@ class DiscountCohortTest(unittest.TestCase):
             self.assertEqual(next(f for f in audit.run('bombas') if f['rule_id'] == 'OFFER-R31')['status'], 'unavailable')
 
 
+class BunchesTest(unittest.TestCase):
+    def test_peaks(self):
+        g = [{'from': f, 'to': f + 5, 'share': s} for f, s in [(50, .05), (55, .12), (60, .06), (70, .03), (105, .09), (110, .04), (175, .02), (180, .05), (185, .01)]]
+        p = api.model.order_bunches(g)
+        self.assertEqual([x['at'] for x in p], [57.5, 107.5, 182.5])
+        self.assertEqual([x['tier'] for x in p], [70, 120, 195])
+
+    def test_real_rows_only(self):
+        b = api.actions.bunches(audit.Reader(None, 'bombas', audit.last_full_day(None, 'bombas')))
+        rd = audit.Reader(None, 'bombas', audit.last_full_day(None, 'bombas'))
+        if rd.m('order_value_distribution', 28, step=5).get('unavailable'):
+            self.assertTrue(b['unavailable'])   # never computed from the fixture
+
+
 if __name__ == '__main__':
     unittest.main()
