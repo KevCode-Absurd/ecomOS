@@ -2418,6 +2418,36 @@ class Round6Walkthrough(TempBrain):
         self.assertTrue(w['next'])
 
 
+class Round6PublicFacing(TempBrain):
+    """Round 6 feature 5: the public-facing preview per capability and the founder flag the package and brain file honour."""
+
+    def test_preview_flag_and_package(self):
+        v = api.handle(Req(['package', 'public'], query={'capability': ['CREA-C06']}))
+        self.assertEqual((v['public_facing'], v['flagged_by'], v['leaks']), (False, 'none', []))
+        self.assertGreaterEqual(v['tokens']['saved'], 0)
+        self.assertEqual(v['records']['normal'] - v['records']['public'], len(v['records']['dropped']))
+        self.assertTrue(all(d['visibility'] == 'private' for d in v['records']['dropped']))
+        p = api.handle(Req(['package'], query={'capability': ['CREA-C06']}))
+        self.assertFalse(p['public_facing'])
+        status, res = api.handle(Req(['package', 'public'], 'POST', body={'capability': 'CREA-C06', 'public': True}))
+        self.assertEqual((status, res['flagged']), (201, ['CREA-C06']))
+        p2 = api.handle(Req(['package'], query={'capability': ['CREA-C06']}))
+        self.assertEqual((p2['public_facing'], p2['flagged_by']), (True, 'founder'))
+        self.assertLessEqual(p2['tokens'], p['tokens'])
+        self.assertEqual(p2['records'], v['records']['public'])
+        f = api.handle(Req(['agentfile'], query={'capability': ['CREA-C06']}))
+        self.assertTrue(f['public_facing'])
+        self.assertIn('You are public facing', f['text'])
+        # a private record handed to this reader is now a trail finding
+        t = api.handle(Req(['trail']))
+        self.assertEqual(t['counts']['private_to_public'], 0)  # the builder drops them, so none is handed
+        status, res = api.handle(Req(['package', 'public'], 'POST', body={'capability': 'CREA-C06', 'public': False}))
+        self.assertEqual((status, res['flagged']), (201, []))
+        self.assertFalse(api.handle(Req(['package'], query={'capability': ['CREA-C06']}))['public_facing'])
+        self.assertEqual(api.handle(Req(['package', 'public'], query={'capability': ['nope']}))[0], 400)
+        self.assertEqual(api.handle(Req(['package', 'public'], 'POST', body={'capability': 'ZZZ-C99'}))[0], 404)
+
+
 class Round4SecondBrand(unittest.TestCase):
     """Round 4 feature 2: plug and play. Every route answers for the example brain (7 records), unavailable never zero."""
 

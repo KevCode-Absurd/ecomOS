@@ -8,6 +8,8 @@ question, and accept or ignore on a proposed record. Nothing external.
                                 judgement rules, the package, where to check (markdown)
   GET  agentfile/endpoints      this route table as JSON, for an agent or an MCP wrapper
   GET  brainmd                  the router BRAIN.md text
+  GET  package/public?capability=  the package as public-facing against as it stands: records dropped, summaries changed, tokens saved
+  POST package/public           {capability, public}: flag a capability public-facing (founder record until the overlay carries it)
   GET  walkthrough              the brain end to end: 11 setup steps read from the records, the next one named
   GET  audiences                audience profiles from the avatars with their doubts, proof, approval and defaults
   POST audiences/default        {surface, avatar_id}: the default profile per surface (ads, email, pdp, cx, social)
@@ -204,6 +206,9 @@ _pspec.loader.exec_module(parity)
 _sspec = importlib.util.spec_from_file_location("brand_brain_sitediff", HERE / "sitediff.py")
 sitediff = importlib.util.module_from_spec(_sspec)
 _sspec.loader.exec_module(sitediff)
+_pfspec = importlib.util.spec_from_file_location("brand_brain_publicfacing", HERE / "publicfacing.py")
+publicfacing = importlib.util.module_from_spec(_pfspec)
+_pfspec.loader.exec_module(publicfacing)
 _wtspec = importlib.util.spec_from_file_location("brand_brain_walkthrough", HERE / "walkthrough.py")
 walkthrough = importlib.util.module_from_spec(_wtspec)
 _wtspec.loader.exec_module(walkthrough)
@@ -1156,11 +1161,13 @@ def package_view(brain: Brain, cap_id: str):
     if not re.fullmatch(r"[A-Z]{2,6}-C\d{2,3}", cap_id or ""):
         return 400, {"error": "capability must be an id like CREA-C06"}
     try:
-        pkg = package_mod.package(brain.brand, cap_id, root=BRAIN_ROOT, today=brain.today, use_cache=False)
+        cap = package_mod.resolve(cap_id)
+        is_pub, flagged_by = publicfacing.is_public(brain, cap_id, cap)
+        pkg = package_mod.package(brain.brand, dict(cap, public_facing=is_pub), root=BRAIN_ROOT, today=brain.today, use_cache=False)
     except KeyError as exc:
         return 404, {"error": str(exc), "capability": cap_id}
     cat = rank_mod.catalogue().get(cap_id, {})
-    return {"capability": cap_id, "name": cat.get("name"), "autonomy": cat.get("autonomy"), "budget": pkg["budget"], "tokens": pkg["tokens"], "public_facing": pkg["public_facing"],
+    return {"capability": cap_id, "name": cat.get("name"), "autonomy": cat.get("autonomy"), "budget": pkg["budget"], "tokens": pkg["tokens"], "public_facing": pkg["public_facing"], "flagged_by": flagged_by,
             "share": round(pkg["tokens"] / pkg["budget"], 2) if pkg["budget"] else None,
             "parts": [{"tier": p["tier"], "section": p.get("section"), "tokens": package_mod.tokens(p["text"]), "text": p["text"]} for p in pkg["parts"]],
             "records": len(pkg["records"]), "record_ids": [r["id"] for r in pkg["records"]], "version": pkg["version"], "text": pkg["text"]}
@@ -1892,6 +1899,34 @@ def handle(req):
         return cd
     if req.method == "POST" and parts == ["claims"]:
         return claim_add(brain, req.body)
+    if req.method == "GET" and parts == ["package", "public"]:
+        cap = (req.arg("capability", "") or "").upper()
+        if not re.fullmatch(r"[A-Z]{2,6}-C\d{2,3}", cap):
+            return 400, {"error": "capability must be an id like CREA-C06"}
+        res = publicfacing.preview(brain, cap, package_mod, BRAIN_ROOT)
+        if isinstance(res, tuple):
+            return res
+        res["all_flagged"] = publicfacing.flagged(brain)
+        return res
+    if req.method == "POST" and parts == ["package", "public"]:
+        body = req.body or {}
+        cap = str(body.get("capability") or "").upper()
+        if not re.fullmatch(r"[A-Z]{2,6}-C\d{2,3}", cap):
+            return 400, {"error": "capability must be an id like CREA-C06"}
+        try:
+            package_mod.resolve(cap)
+        except KeyError as exc:
+            return 404, {"error": str(exc), "capability": cap}
+        cur = set(publicfacing.flagged(brain))
+        if body.get("public", True):
+            cur.add(cap)
+        else:
+            cur.discard(cap)
+        rec = publicfacing.flag_record(brain, sorted(cur))
+        errs = founder_put(brain, rec, "permission", rec["text"][:160])
+        if errs:
+            return 400, {"error": "; ".join(errs)}
+        return 201, {"ok": True, "flagged": rec["value"], "version": brain.version(), "next": ("Flagged public-facing: its package and brain file leave every private record out from now on." if cap in cur else "Flag removed: the package reads every record again.")}
     if req.method == "GET" and parts == ["walkthrough"]:
         w = walkthrough.steps(brain, {"health": health, "audiences": audiences, "ladderproof": ladderproof, "locks": locks, "voice": voice, "peaks": peaks, "market": market, "legal": legal, "assumptions": assumptions, "decisions_log": lambda b: decisions_log(b, _decisions_path(req))})
         w.update(brand=brain.brand, today=brain.today.isoformat(), version=brain.version())
