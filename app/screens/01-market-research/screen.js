@@ -196,6 +196,14 @@
       (function () { const a = actionFor(SLUG + '.PROD-R02.' + r.line.toLowerCase().replace(/ /g, '-')); return a ? el('div', { class: 'row', style: { marginTop: '6px' } }, el('button', { class: 'btn soft xs', type: 'button', text: 'Fix the top complaint', onclick: () => openAction(a) })) : null; })()))),
       gapLine('Lines with a low-star share over 10 percent and 1.5 times the brand median carry a fix action. The rest are read for the next SKU\'s angle.'));
   }
+  async function openBrief(cid) {
+    let b;
+    try { b = await api(BASE + 'candidates/' + encodeURIComponent(cid) + '/brief' + Q); } catch (e) { alert('Brief unavailable: ' + e.message); return; }
+    UI.panel({ title: 'Brief: ' + b.name, tools: [UI.copyButton({ label: 'Copy brief', text: () => b.text })],
+      body: el('div', { class: 'stack' }, el('p', { class: 'micro muted', text: 'One page from every block of the desk: the angle and proof for creative, the spec, margin and cash timing for sourcing. Numbers come from the blocks; nothing is written here.' }),
+        el('pre', { class: 'small', style: { whiteSpace: 'pre-wrap', margin: 0 }, text: b.text })) });
+  }
+
   async function candidatePost(path, body) {
     try { await api(BASE + path + Q, { method: 'POST', body }); load(); }
     catch (e) { alert('Could not save: ' + e.message); }
@@ -212,6 +220,7 @@
       checks: (p.checks || []).map((c) => pretty(c) + ' ' + ((r.screen_result || {})[c] || 'not run')).join(', '),
       angle: r.angle_text || 'no angle yet', price: r.planned_price, hours: r.hours_logged,
       actions: [].concat(acts.length ? [{ label: acts[0].rule_id === 'PROD-R15' ? 'Kill or fix' : 'Decide', onClick: () => openAction(acts[0]) }] : [],
+        [{ label: 'Brief', cls: 'quiet', onClick: () => openBrief(r.candidate_id) }],
         !r.closed && nx ? [{ label: 'Advance to ' + nx, cls: 'quiet', onClick: () => candidatePost('candidates/' + r.candidate_id, { stage: nx, who: 'person' }) }] : [],
         !r.closed ? [{ label: 'Log 1 h', cls: 'quiet', onClick: () => candidatePost('candidates/' + r.candidate_id, { hours_add: 1, who: 'person' }) }, { label: 'Kill', cls: 'quiet', onClick: () => { if (confirm('Kill ' + r.name + '? It stays killed 90 days.')) candidatePost('candidates/' + r.candidate_id, { stage: 'killed', who: 'person' }); } }] : []) }); });
     const t = UI.verdictTable({

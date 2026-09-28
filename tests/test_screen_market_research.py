@@ -1142,6 +1142,24 @@ class DecisionMemoryTest(unittest.TestCase):
             api.DECISIONS_PATH = saved
 
 
+class BriefTest(unittest.TestCase):
+    def test_candidate_brief_reads_every_block(self):
+        b = api.handle(Req(['candidates', 'cand-003', 'brief']))
+        self.assertEqual(b['candidate_id'], 'cand-003')
+        t = b['text']
+        for head in ('CANDIDATE BRIEF', 'THE ANGLE', 'THE DEMAND CASE', 'THE MONEY', 'THE GATES', 'THE SCORECARD', 'THE SPEC AND THE CLOCK', 'OPEN ACTIONS', 'LOG'):
+            self.assertIn(head, t)
+        self.assertIn('Holiday gift box', t)
+        self.assertIn('Demand pattern: seasonal', t)
+        self.assertIn('Planned price $68.00 for 4 unit(s)', t)
+        self.assertIn('of 100, verdict', t)
+        self.assertNotIn('—', t)
+        self.assertEqual(api.handle(Req(['candidates', 'nope', 'brief']))[0], 400)
+
+    def test_brief_is_read_only(self):
+        self.assertEqual(api.handle(Req(['candidates', 'cand-003', 'brief'], method='POST'))[0], 405)
+
+
 class WebPassTest(unittest.TestCase):
     """web_pass.py: a template a research session fills, a checker that refuses a number without a source, and the desk
     reading the brand's own file first."""

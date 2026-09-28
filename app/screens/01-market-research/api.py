@@ -1460,6 +1460,63 @@ def pipeline_block(brand, ends_on, findings, floor):
             'rule': f'a candidate fires when it passes its time box, or fails {audit.SCREEN_FAIL_AT} of the {len(audit.SCREEN_CHECKS)} fast checks'}
 
 
+def candidate_brief(data, brand, cid):
+    """One page per candidate, assembled from every block of the desk: the artefact that goes to creative (angle, avatar,
+    proof) and sourcing (spec, margin, cash timing). Plain text a founder can paste; every number comes from the blocks."""
+    o = overview(data, brand)
+    d = o['desk']
+    pipe = next((r for r in (d['pipeline'].get('rows') or []) if r.get('candidate_id') == cid), None)
+    if pipe is None:
+        raise ValueError(f'no candidate {cid}')
+
+    def row_of(block, key='rows'):
+        rows = (d.get(block) or {}).get(key) if isinstance(d.get(block), dict) else d.get(block)
+        return next((r for r in rows or [] if r.get('candidate_id') == cid), None)
+
+    margin, gates, score, pack, hours, pattern = row_of('margin'), row_of('gates'), row_of('scorecard'), row_of('tech_packs'), row_of('hours'), row_of('pattern', 'candidates')
+    price_row = next((r for r in (d.get('price_signal') or {}).get('candidates') or [] if r.get('candidate_id') == cid), None)
+    lanes = [r for r in (d.get('video') or {}).get('rows') or [] if pipe.get('name') in (r.get('candidates') or [])]
+    checks = [r for r in (d.get('trend_checks') or {}).get('rows') or [] if pipe.get('name') in (r.get('candidates') or [])]
+    acts = [a for a in rank(brand or 'sample', {'ends_on': o['window']['ends_on'], 'days': 28, 'trailing': 4})['actions'] if (a.get('entity') or {}).get('candidate') == cid or cid in json.dumps(a.get('finding_ids') or [])]
+    na = 'unavailable'
+    g = (margin or {}).get('gate') or {}
+    lines = [f'CANDIDATE BRIEF: {pipe.get("name")}', f'{o["brand"].get("brand")}, {o["window"]["ends_on"]}. Stage {pipe.get("stage")}, screened in {pipe.get("screen_in_date") or na}, {pipe.get("hours_logged") or 0} h logged. Simulated sales; public reviews and ads.', '',
+             'THE ANGLE', f'{pipe.get("angle_text") or "none yet"}', f'Source: {pipe.get("angle_source") or "none"}. Confidence: {((gates or {}).get("angle") or {}).get("label") or na}.', '',
+             'THE DEMAND CASE']
+    lines.append(f'Fast checks: ' + ', '.join(f'{k} {v or "unchecked"}' for k, v in (pipe.get('screen_result') or {}).items()))
+    for r in lanes:
+        lines.append(f'Lane {r.get("label")}: {({"pattern": "a pattern across platforms", "single": "one platform only", "none": "no platform above the floor"}).get(r.get("verdict"), r.get("verdict"))}; platforms {", ".join(r.get("platforms") or []) or "none"}; Instagram posts {r.get("instagram_posts") if r.get("instagram_posts") is not None else na}{" (mock)" if r.get("instagram_mode") == "mock" else ""}; Reddit {r.get("reddit_mentions") or 0} mentions, {r.get("reddit_upvotes") or 0} upvotes; creator ads {", ".join(r.get("creator_pages") or []) or "none"}.')
+    for r in checks:
+        lines.append(f'Trend on {r.get("label")}: {r.get("verdict", "").replace("_", " ")} ({r.get("market") or "no series"}, {r.get("history_years") or 0} years of history).')
+    if pattern:
+        lines.append(f'Demand pattern: {pattern.get("tag")}; {pattern.get("why")}. Cash timing: {pattern.get("cash_timing")}. Cash plan: {pattern.get("cash_plan") or "none attached"}.')
+    lines += ['', 'THE MONEY']
+    if margin:
+        lines.append(f'Planned price ${(margin.get("price") or 0):,.2f} for {margin.get("pack_units") or 1} unit(s). Modelled contribution margin: ' + (f'{g.get("margin_pct"):g} percent' if g.get('margin_pct') is not None else na) + (f' against a floor of {g.get("floor_pct"):g} percent ({"passes" if g.get("margin_pct") >= g.get("floor_pct") else "fails"}).' if g.get('floor_pct') is not None and g.get('margin_pct') is not None else ' (no floor on file).'))
+        if g.get('lines'):
+            lines.append('Waterfall: ' + '; '.join(f'{l.get("label")} ${(l.get("usd") or 0):,.2f}' for l in g['lines']))
+    if price_row:
+        lines.append(f'Review price signal: per pair ${(price_row.get("per_pair") or 0):,.2f} planned against what reviewers say a pair is worth; gap {round((price_row.get("gap") or 0) * 100)} percent.')
+    lines += ['', 'THE GATES']
+    if gates:
+        for k, v in (gates.get('gates') or {}).items():
+            v = v if isinstance(v, dict) else {'status': v}
+            lines.append(f'{audit.GATE_LABEL.get(k, k)}: {v.get("status") or na}' + (f' ({v.get("why")})' if v.get('why') else ''))
+        lines.append(f'Compliance: {gates.get("compliance") or na}.')
+    if score:
+        lines += ['', 'THE SCORECARD', f'{score.get("total")} of 100, verdict {score.get("verdict", "").replace("_", " ")}; ' + ', '.join(f'{audit.CRITERIA_LABEL[k]} {v if v is not None else "n/a"}' for k, v in (score.get('scores') or {}).items()) + f'. Review date {score.get("review_date") or na}.']
+    lines += ['', 'THE SPEC AND THE CLOCK']
+    if pack:
+        lines.append(f'Tech pack: {pack.get("status", "").replace("_", " ")}' + (f', version {pack.get("version")}' if pack.get('version') else '') + (f', missing {", ".join(m.replace("_", " ") for m in pack.get("missing") or [])}' if pack.get('missing') else '') + '.')
+    if hours:
+        lines.append(f'Hours: {hours.get("hours_logged")} logged of {hours.get("hours_allowed")} allowed through {hours.get("stage")}' + (f', over by {hours.get("over_by")}' if hours.get('over_by') else '') + '.')
+    lines.append(f'Time box: {pipe.get("time_box_days")} days, {pipe.get("days_left") if pipe.get("days_left") is not None else na} left.')
+    lines += ['', 'OPEN ACTIONS ON THIS CANDIDATE']
+    lines += [f'- {a.get("title")} ({a.get("owner")})' for a in acts] or ['- none']
+    lines += ['', 'LOG'] + [f'- {l.get("on")} {l.get("who")}: {l.get("what")}' for l in pipe.get('log') or []]
+    return {'candidate_id': cid, 'name': pipe.get('name'), 'text': '\n'.join(lines), 'sections': ['angle', 'demand', 'money', 'gates', 'scorecard', 'spec', 'actions', 'log']}
+
+
 def _brand(req):
     brand = req.arg('brand', DEFAULT_BRAND)
     if brand in ('', 'sample'):
@@ -1486,9 +1543,11 @@ def handle(req):
             return overview(data, brand)
         if req.path == ['findings']:
             return {'findings': audit.run(brand, None, data=data), 'rules': audit.RULES}
+        if len(req.path) == 3 and req.path[0] == 'candidates' and req.path[2] == 'brief':
+            return candidate_brief(data, brand, req.path[1])
         if req.path == ['parked']:
             r = rank(brand or 'sample', None)
             return {'parked': r['parked'], 'decided': r['decided'], 'snooze_days': rank_mod.SNOOZE_DAYS, 'window': r['window']}
     except ValueError as exc:
         return 400, {'error': str(exc)}
-    return 404, {'error': 'not found', 'routes': ['overview', 'findings', 'rank', 'parked']}
+    return 404, {'error': 'not found', 'routes': ['overview', 'findings', 'rank', 'parked', 'candidates/<id>/brief']}
