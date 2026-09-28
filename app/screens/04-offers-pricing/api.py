@@ -309,7 +309,8 @@ def page_settings():
     """Thresholds and windows the page names in its headings, so none is written in screen.js (depth.md rule 11)."""
     pb = actions.playbook
     return {'single_share_push': pb.SINGLE_SHARE_PUSH, 'min_saving': pb.MIN_SAVING, 'depth_cut': model.DEPTH_CUT,
-            'approval_days': actions.APPROVAL_DAYS, 'parity_gap': pb.PARITY_GAP, 'snooze_days': actions.RANK.SNOOZE_DAYS}
+            'approval_days': actions.APPROVAL_DAYS, 'parity_gap': pb.PARITY_GAP, 'snooze_days': actions.RANK.SNOOZE_DAYS,
+            'promo_ratio': pb.PROMO_DAY_RATIO}
 
 
 def with_decisions(acts, today=None, path=None):

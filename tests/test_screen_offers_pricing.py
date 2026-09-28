@@ -1507,5 +1507,18 @@ class SizedStopTest(unittest.TestCase):
         self.check(api.actions.rank(None, None, server.Data())['actions'])
 
 
+class BlockLineTest(unittest.TestCase):
+    """Round 6 feature 3: depth.md rule 9 and section 2. Every desk block ends in a real next move: the move its
+    rules made, or the reason it is unavailable. No block ends in a generic line."""
+
+    def test_every_block_mapped(self):
+        import re
+        js = (SCREEN / 'screen.js').read_text(encoding='utf-8')
+        ids = set(re.findall(r"section\('(desk-[a-z]+)'", js))
+        mapped = set(re.findall(r"'(desk-[a-z]+)': \[", js))
+        self.assertEqual(ids - mapped - {'desk-stack', 'desk-subscription'}, set())
+        self.assertNotIn('waits on the source named above', js)
+
+
 if __name__ == '__main__':
     unittest.main()

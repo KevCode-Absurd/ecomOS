@@ -18,8 +18,29 @@
   function section(id, head, ...body) {
     const node = el('section', { class: 'section', id: id }, UI.sectionHead(head), ...body);
     // depth.md rule 9 and section 2: every desk block ends in a line with the next move, even when it is unavailable
-    if (id.indexOf('desk-') === 0 && !node.querySelector('.act-line')) node.append(actionLine('This block waits on the source named above. The connect strip at the top lists it with its steps.', null));
+    if (id.indexOf('desk-') === 0 && !node.querySelector('.act-line')) node.append(fallbackLine(id, node));
     return node;
+  }
+  /** Rule ids behind each desk block: structure, not brand content. The fallback line opens the move those rules made. */
+  const BLOCK_RULES = { 'desk-threshold': ['R01', 'R05', 'R06', 'R30'], 'desk-cart': ['R20', 'R28'], 'desk-discount': ['R18', 'R19', 'R25'],
+    'desk-ladder': ['R07', 'R09', 'R29'], 'desk-first': ['R08', 'R31'], 'desk-waterfall': ['R10', 'R03'], 'desk-calendar': ['R11'],
+    'desk-depth': ['R11', 'R03'], 'desk-second': ['R21'], 'desk-cost': ['R22'], 'desk-gifting': ['R12', 'R13'], 'desk-guarantee': ['R14'],
+    'desk-position': ['R16'], 'desk-parity': ['R17'], 'desk-bundles': ['R26'], 'desk-buyers': ['R23', 'R24'],
+    'desk-objections': ['R04', 'R15'], 'desk-tests': ['R27'], 'desk-registry': ['R27'] };
+  function blockAction(id) {
+    const rules = (BLOCK_RULES[id] || []).map((r) => '.OFFER-' + r + '.');
+    const hits = ACTIONS.filter((a) => (a.finding_ids || []).some((f) => rules.some((r) => f.indexOf(r) >= 0)));
+    return hits.find((a) => a.status !== 'unavailable') || hits[0] || null;
+  }
+  function fallbackLine(id, node) {
+    const a = blockAction(id);
+    const empty = node && node.querySelector('.empty-state');
+    if (empty && (!a || a.status === 'unavailable')) {
+      const why = (empty.querySelector('p') || empty.querySelector('h2')).textContent.replace(/\.$/, '').replace(/^[A-Z](?=[a-z])/, (c) => c.toLowerCase());
+      return actionLine('Unavailable: ' + why + '. Nothing to approve here until that lands.' + (a ? ' Connect it first.' : ''), a);
+    }
+    if (!a) return actionLine('Nothing to move here in this window. The rules behind this block found no gap.', null);
+    return actionLine((a.status === 'unavailable' ? 'Connect first: ' : '') + a.title + '.', a);
   }
   function kv(pairs) {
     return el('dl', { class: 'kv' }, pairs.flatMap(([k, v]) => [el('dt', { text: k }), el('dd', { text: v })]));
@@ -218,7 +239,7 @@
 
   function discountBlock(d) {
     const c = d.chart, dd = d.discipline;
-    const head = { title: 'Are we training buyers to wait for a discount?', sub: 'Discount share of gross by day and by month. A promo day runs at ' + (dd ? dd.promo_ratio : 1.5) + ' times the year\'s median share or more; the rest is always-on discounting.' };
+    const head = { title: 'Are we training buyers to wait for a discount?', sub: 'Discount share of gross by day and by month. A promo day runs at ' + (dd ? dd.promo_ratio : SET.promo_ratio) + ' times the year\'s median share or more; the rest is always-on discounting.' };
     const a = ACTIONS.find((x) => (x.finding_ids || []).some((id) => id.indexOf('OFFER-R19') >= 0 || id.indexOf('OFFER-R18') >= 0));
     const parts = [];
     if (c.unavailable) parts.push(UI.emptyState({ screen: SLUG, title: 'No monthly sales', text: c.reason, missing: [c.fix] }));
@@ -246,7 +267,8 @@
     return section('desk-discount', head, el('div', { class: 'grid two' }, el('div', { class: 'card' }, ...parts), el('div', { class: 'card tight' }, score)),
       winTable ? el('div', { class: 'card tight' }, el('h4', { text: 'Is each promo window getting deeper year on year?' }), winTable) : null,
       el('div', { class: 'card' }, el('p', { class: 'small', text: (d.creep || {}).sentence || '' }), policy),
-      actionLine(ty.always_on_share != null ? pct(ty.always_on_share, 0) + ' of discount dollars go out on ordinary days. The code is the discount program; test what replaces it.' : 'Discount history unavailable.', a));
+      actionLine(ty.always_on_share != null ? pct(ty.always_on_share, 0) + ' of discount dollars go out on ordinary days. The code is the discount program; test what replaces it.'
+        : (a ? (a.status === 'unavailable' ? 'Connect first: ' : '') + a.title + '.' : 'Discount history is unavailable: ' + (c.reason || 'no daily sales') + '.'), a));
   }
 
   function ladderBlock(l) {
@@ -531,7 +553,9 @@
     const ready = tests.filter((t) => t.status === 'ready');
     return section('desk-tests', head, el('div', { class: 'card tight' }, table,
       el('div', { class: 'row' }, el('button', { class: 'btn sm', type: 'button', text: 'Export calendar CSV', onclick: () => UI.csv(tests.map((t) => ({ move: t.title, start: t.start, end: t.end, days: t.days, changes: t.surfaces.join('; '), waits_for: t.waits_for.join('; ') })), null, 'offer-test-calendar.csv') }))),
-      actionLine(ready.length + ' moves can start on ' + fmt.date(ready.length ? ready[0].start : null) + ' side by side. ' + (tests.length - ready.length) + ' wait for a shared surface or the peak.', null));
+      actionLine((ready.length ? ready.length + (ready.length === 1 ? ' move starts' : ' moves can start') + ' on ' + fmt.date(ready[0].start) + '. ' : 'No move can start yet. ')
+        + (tests.length - ready.length ? (tests.length - ready.length) + ' wait for a shared surface or the peak. ' : 'None waits. ') + 'Approve the first one.',
+        ready.length ? ACTIONS.find((x) => x.id === ready[0].id) : null));
   }
 
   function buyersBlock(d) {
@@ -548,7 +572,9 @@
       ['Paid in product', pct(lo.product_share_of_margin, 1) + ' of gross margin'],
       ['First reward', lo.first_reward ? fmt.money(lo.first_reward.value) + ' after ' + lo.first_reward.orders_to_reach + ' orders, costs ' + fmt.money(lo.first_reward.cost_in_product) + ' in product' : NA], ['Cap', pct(lo.cap, 0) + ' of gross margin (our own heuristic)']]),
       el('p', { class: 'micro faint', text: lo.basis + '.' })));
-    const line = [ra ? 'No referral offer: launch give-one-get-one at ' + fmt.money(ro.cost_per_referral) + ' a customer.' : '', la ? 'No loyalty program: pay points in product.' : ''].filter(Boolean).join(' ') || 'Referral and loyalty offers are in place.';
+    else parts.push(el('div', { class: 'card' }, el('h4', { text: 'Loyalty' }), el('p', { class: 'muted small', text: NA + ': ' + ((lo || {}).reason || 'no data') })));
+    const out = (x) => !x || x.unavailable;
+    const line = (out(ro) && out(lo) && !ra && !la) ? 'Unavailable: referral and loyalty need daily sales, product sales and a gift item. Nothing to approve until they land.' : [ra ? 'No referral offer: launch give-one-get-one at ' + fmt.money(ro.cost_per_referral) + ' a customer.' : '', la ? 'No loyalty program: pay points in product.' : ''].filter(Boolean).join(' ') || 'Referral and loyalty offers are in place.';
     return section('desk-buyers', head, el('div', { class: 'grid two' }, ...parts), actionLine(line, ra || la));
   }
 
@@ -609,7 +635,8 @@
       el('div', { class: 'grid two' }, el('div', { class: 'card' }, returnsChart(returns)),
         el('div', { class: 'card' }, el('h4', { text: top ? 'The spec for the biggest open doubt' : 'Every deal-breaker has proof' }),
           top ? el('pre', { class: 'spec', text: top.spec }) : null, top ? UI.copyButton({ label: 'Copy spec', text: () => top.spec }) : null)),
-      actionLine(open.length + ' of ' + rows.length + ' deal-breaker doubts have no proof. Launch the offer for the biggest one first.', top ? findA(top) : null));
+      rows.length ? actionLine(open.length ? open.length + ' of ' + rows.length + ' deal-breaker doubts have no proof. Launch the offer for the biggest one first.'
+        : 'Every deal-breaker doubt has proof. Keep the lines next to the price.', top ? findA(top) : null) : actionLine('Unavailable: no review doubts in the brain or the reviews table. Nothing to approve here until they land.', null));
   }
 
   // ---------- 6. the audit ----------
