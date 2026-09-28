@@ -1041,7 +1041,7 @@ def theme_impact(lang_records: list[dict], ladders_rows: list[dict], as_of: str)
             if isinstance(rv.get("star"), int):
                 rated.append({"star": rv["star"], "themes": themes, "date": str(rv.get("date") or "")[:10], "id": rec["id"]})
     if len(rated) < THEME_MIN * 2:
-        return {"available": False, "reason": f"only {len(rated)} rated reviews in the brain", "rows": []}
+        return {"available": False, "reason": f"only {len(rated)} rated reviews in the brain" if rated else "no rated reviews in the brain yet", "rows": []}
     cut = (_dt.date.fromisoformat(as_of) - _dt.timedelta(days=RISING_DAYS)).isoformat()
     recent = [r for r in rated if r["date"] > cut]
     older = [r for r in rated if r["date"] and r["date"] <= cut]
@@ -2756,6 +2756,8 @@ def block_notes(d: dict) -> dict:
 # ---------------------------------------------------------------- the gap each block shows (depth.md section 3, rule 9)
 
 GAP_KINDS = ("never_tried", "cross_source", "competitor", "unavailable")
+EMPTY_REASON = {"recheck-wrap": "No avatar or ladder record in the brain yet.", "survey-wrap": "No gap is named yet, so there is nothing to ask.",
+                "look-wrap": "No Ad Library read in the brain yet.", "voice-wrap": "No voice record in the brain yet."}
 GAP_LABEL = {"never_tried": "never tried", "cross_source": "cross-source check", "competitor": "against competitors", "unavailable": "unavailable"}
 
 
@@ -2796,7 +2798,7 @@ def block_gaps(d: dict) -> dict:
         off = sum(1 for r in ss["rows"] if r["verdict"] in ("sales_higher", "reviews_higher"))
         g["salesshare-wrap"] = ("cross_source", f"Store sales by line against review shares: {off} avatars differ by 1.5x or more.")
     rc = d.get("rechecks") or {}
-    if "rows" in rc:
+    if rc.get("rows"):
         nd = cnt(rc.get("no_date"))
         g["recheck-wrap"] = ("never_tried", f"{pl(nd, 'record')} " + ("carries" if nd == 1 else "carry") + " no expiry date, so no one re-checks " + ("it." if nd == 1 else "them.")
                              if nd else "Every record carries an expiry date; none is left unchecked.")
@@ -2804,8 +2806,8 @@ def block_gaps(d: dict) -> dict:
     if fo.get("rows"):
         g["forces-wrap"] = ("never_tried", f"{cnt(fo.get('under'))} of {len(fo['rows'])} avatars have a force no line speaks to.")
     sv = d.get("survey") or {}
-    if sv.get("questions"):
-        gaps = len({i for q in sv["questions"] for i in q.get("gap_ids") or []})
+    gaps = len({i for q in sv.get("questions") or [] for i in q.get("gap_ids") or []})
+    if gaps:
         g["survey-wrap"] = ("never_tried", f"{pl(gaps, 'gap')} no source answers yet; we have never asked buyers.")
     cv = d.get("coverage") or {}
     if cv.get("rows"):
@@ -2856,7 +2858,7 @@ def block_gaps(d: dict) -> dict:
         w = sum(1 for r in cf["rows"] if r.get("verdict") == "watch")
         g["claims-wrap"] = ("cross_source", f"Our claims against {cf.get('complaints', 0):,} reviews of 1 or 2 stars: {n} of {len(cf['rows'])} under fire, {w} to watch.")
     lk = d.get("lookalikes") or {}
-    if "rows" in lk:
+    if "rows" in lk and d.get("ad_voice", {}).get("available", True) and (d.get("ad_voice") or {}).get("total_ads"):
         g["look-wrap"] = ("competitor", (f"{pl(len(lk['rows']), 'page')} in the Ad Library " + ("uses" if len(lk["rows"]) == 1 else "use") + " our name and send" + ("s" if len(lk["rows"]) == 1 else "") + " buyers elsewhere."
                                           if lk["rows"] else "No page in the Ad Library pull uses our name."))
     tm = d.get("timing") or {}
@@ -2890,7 +2892,7 @@ def block_gaps(d: dict) -> dict:
         g["mix-wrap"] = ("cross_source", f"Channels this year against last: {round(mx['paid_share_returning'] * 100, 1)} percent of returning orders came through paid ads."
                          if isinstance(mx.get("paid_share_returning"), (int, float)) else "Channels this year against last.")
     vo = d.get("voice") or {}
-    if vo:
+    if vo.get("contexts") or vo.get("do") or vo.get("liked") or vo.get("disliked"):
         ctx = len(vo.get("contexts") or [])
         liked = len(vo.get("liked") or []) + len(vo.get("disliked") or [])
         g["voice-wrap"] = ("never_tried", f"{liked} lines marked as us or not us across {pl(ctx, 'context')}." if liked
@@ -2903,7 +2905,7 @@ def block_gaps(d: dict) -> dict:
             src = {"salesshare-wrap": "sales_share", "paths-wrap": "paths", "cohort-wrap": "cohorts", "mix-wrap": "mix", "health-wrap": "health", "gap-wrap": "copy_gap",
                    "perc-wrap": "perception", "hier-wrap": "hierarchy", "misread-wrap": "misreads", "themes-wrap": "themes"}.get(sid)
             reason = (d.get(src) or {}).get("reason") if src else None
-            kind, text = "unavailable", (str(reason).rstrip(".").capitalize() + "." if reason else "No input for this block yet.")
+            kind, text = "unavailable", (str(reason).rstrip(".").capitalize() + "." if reason else EMPTY_REASON.get(sid, "No input for this block yet."))
         out[sid] = {"kind": kind, "label": GAP_LABEL[kind], "text": text}
     return out
 

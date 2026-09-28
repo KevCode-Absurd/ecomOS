@@ -651,7 +651,8 @@ def _plans(brand: str, window: dict) -> dict:
              "steps": [{"n": 1, "who": "agent", "text": "Plan the extra pulls by page id, inside the weekly cap, with the cost."},
                        {"n": 2, "who": "person", "text": "Approve the spend before any pull runs."},
                        {"n": 3, "who": "agent", "text": "Run the pulls and re-read the thin block."}]}
-    plans[("CUST-R30", "thin_quotes")] = dict(widen, title="Widen the avatar quotes to 5 per avatar from 2 sources",
+    plans[("CUST-R30", "thin_quotes")] = dict(widen, title=("Widen the avatar quotes to 5 per avatar from 2 sources" if avatars
+                                                            else "Find the first avatars: 5 quotes each from 2 sources"),
                                               draft="DRAFT pull plan\nReviews on our site, Amazon and review sites for each avatar's moments\nTarget: 5 quotes from 2 sources per avatar")
     plans[("CUST-R30", "thin_ads")] = dict(widen, title="Read every live ad, not a sample, by page id",
                                            draft="DRAFT pull plan\nAd Library by our page id, all active ads with hooks and formats\nTarget: every live ad")

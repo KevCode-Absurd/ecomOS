@@ -2381,3 +2381,39 @@ class NoThresholdsInPage(TempBrain):
         self.assertIn(f"{api.builds.SALES_GAP}x", d['blocks']['salesshare-wrap']['rule'])
         self.assertEqual({r['tier'] for r in d['focus']['rows'][:1]}, {'next'})
         self.assertTrue(all(r['verdict'] in ('gap', 'heavy', 'fine') for r in d['formats']['rows']))
+
+
+class EmptyBrand(unittest.TestCase):
+    """Feature 10.2: a brand with nothing, an empty brain and no tables. Every route renders, nothing reads as zero,
+    every block says why it is empty, and the first move is to find the first avatars."""
+
+    def setUp(self):
+        self.root = Path(tempfile.mkdtemp())
+        (self.root / 'empty').mkdir()
+        self.old = api.BRAIN_ROOT
+        api.BRAIN_ROOT = self.root
+
+    def tearDown(self):
+        api.BRAIN_ROOT = self.old
+        shutil.rmtree(self.root, ignore_errors=True)
+
+    def q(self, path):
+        return api.handle(Req(path, query={'brand': ['empty']}))
+
+    def test_every_route_and_block(self):
+        d = self.q(['overview'])
+        for o in d['orientation']:
+            self.assertIsNone(o['value'], o['label'])
+        kinds = {s: b['gap']['kind'] for s, b in d['blocks'].items()}
+        self.assertEqual({k for k in kinds.values()}, {'unavailable'})
+        for b in d['blocks'].values():
+            self.assertTrue(b['gap']['text'].endswith('.'))
+            self.assertNotRegex(b['gap']['text'], r'\b0 ')
+        for path in (['audit'], ['report'], ['tests'], ['handoff'], ['agenda']):
+            self.assertNotIn('bombas', json.dumps(self.q(path)).lower(), path)
+        self.assertEqual(self.q(['avatar', 'anyone', 'brief'])[0], 404)
+        acts = api.rank('empty', RANK_WINDOW)['actions']
+        for a in acts:
+            self.assertEqual(rank_engine.validate_action(a), [], a['id'])
+        top = sorted(acts, key=rank_engine.sort_key)[0]
+        self.assertEqual(top['title'], 'Find the first avatars: 5 quotes each from 2 sources')

@@ -105,7 +105,7 @@ CUST-R28 price-led avatar. Price rungs hold 30 percent or more of its one-star m
 CUST-R29 records due for a re-check. Avatar or ladder records expire within 30 days (builds.rechecks).
     One finding for the set. Severity low. Capability BRAND-C15.
 CUST-R30 thin read. Avatar quotes under 60 in all, or fewer than 30 live ads read (builds.strength rules).
-    One finding per thin block. Severity low. Capability BRAND-C01.
+    One finding per thin block. Severity low; high when the brain holds no avatar at all. Capability BRAND-C01.
 CUST-R31 reviews and sales disagree on who buys. An avatar's share of sales through the lines it buys is
     1.5x its share from reviews or under 1 / 1.5, or sales give it a share and reviews give none
     (builds.sales_share; products_monthly with the SKU to line fixture). One finding per avatar.
@@ -1013,8 +1013,10 @@ def r26_r30(d, avatars, ends_on):
     quotes = sum(a["quote_count"] for a in avatars)
     if quotes < builds.THIN_ITEMS * 2:
         ev = [_ev("avatar_quotes", quotes, "n", ends_on, "brain.avatars", baseline=builds.THIN_ITEMS * 2)]
-        out.append(_finding("CUST-R30", "low", {"type": "brand", "id": "thin_quotes", "label": "Avatar quotes"}, ev,
-                            f"All avatars together rest on {quotes} quotes, under {builds.THIN_ITEMS * 2}.", "BRAND-C01", 0.5, [], ends_on))
+        s = (f"All avatars together rest on {quotes} quotes, under {builds.THIN_ITEMS * 2}." if avatars
+             else f"The brain holds no avatar yet. Avatars start from {builds.THIN_ITEMS * 2} quotes or more.")
+        out.append(_finding("CUST-R30", "high" if not avatars else "low", {"type": "brand", "id": "thin_quotes", "label": "Avatar quotes"}, ev,
+                            s, "BRAND-C01", 0.5, [], ends_on))
     ads = d["ad_voice"].get("total_ads")
     if ads is not None and ads < builds.THIN_ITEMS:
         ev = [_ev("live_ads_read", ads, "n", ends_on, "brain.learnings", baseline=builds.THIN_ITEMS)]
