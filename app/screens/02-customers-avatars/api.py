@@ -406,6 +406,7 @@ def overview(brain: Brain) -> dict:
             "copy_gap": builds.copy_gap({sec: brain.records(sec) for sec in ("voice", "claims", "identity", "offers", "policies", "products", "visual", "story_bank")},
                                         brain.records("language_bank"), _brand_tokens(brain), audit.source_name),
             "paths": _paths(brain.brand), "gate": gate,
+            "naming": builds.naming(avatars, all_rungs, builds.hooks(brain.records("language_bank"), all_rungs, avatars, _brand_tokens(brain), audit.source_name)["rows"]),
             "timing": builds.doubt_timing(all_rungs, brain.records("language_bank"), ends_on, audit.source_name), "health": _health(brain.brand, avatars), "hierarchy": _hierarchy(brain, avatars, all_rungs, lad),
             "offer_map": builds.offer_map(avatars, all_rungs, brain.records("offers"), brain.records("policies") + brain.records("claims")),
             "lookalikes": builds.lookalikes(brain.records("competitors"), _brand_name(brain)),
@@ -521,6 +522,8 @@ def _plans(brand: str, window: dict) -> dict:
             plans[("CUST-R14", "forces_" + r["key"])] = r["action"]
     for r in d["moments"].get("rows", []):
         plans[("CUST-R15", "moment_" + r["label"].lower().replace(" ", "_").replace("'", ""))] = r["action"]
+    nm = builds.naming(avatars, all_rungs, [])
+    plans[("CUST-R03", "ad_angles")] = nm["action"]
     if d["perception"].get("action"):
         plans[("CUST-R17", "perception_gap")] = d["perception"]["action"]
     for r in d["claims_fire"]["rows"]:
@@ -602,7 +605,7 @@ def rank(brand: str, window: dict) -> dict:
         a = eng.action_from_finding(f, nr)
         plan = _plan_for(f, plans)
         a["title"] = _title(f, plan) or a["title"]
-        if plan and f["status"] == "open":
+        if plan and (f["status"] == "open" or f["rule_id"] == "CUST-R03"):
             a["owner"] = plan.get("owner") or a["owner"]
             a["steps"] = plan.get("steps") or a["steps"]
             art = plan.get("artefact") or {}

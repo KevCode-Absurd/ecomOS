@@ -1907,3 +1907,25 @@ def handoff(d: dict) -> list[dict]:
             {"screen": "10-copy", "label": "Copy", "items": copy},
             {"screen": "07-landing-pages-cro", "label": "Landing pages", "items": pages},
             {"screen": "14-email-messaging", "label": "Email and messaging", "items": email}]
+
+
+# ---------------------------------------------------------------- ad naming convention
+
+def naming(avatars: list[dict], all_rungs: list[dict], hooks_rows: list[dict]) -> dict:
+    """A naming convention that lets the audit read avatar and angle from any ad name, with the valid keys from the brain."""
+    angles = sorted({r["theme"] for r in all_rungs})
+    av = [a["key"] for a in avatars if "(Reddit)" not in a["name"]]
+    fmts = ["video", "static", "carousel", "dco", "catalog", "ugc"]
+    hk = [re.sub(r"[^a-z0-9]+", "_", h["hook"].lower()).strip("_") for h in hooks_rows[:5]]
+    example = f"AV-{av[0]} | ANG-{angles[0]} | FMT-video | HK-{hk[0] if hk else 'none'} | Oct test" if av and angles else None
+    spec = "\n".join(["AD NAMING CONVENTION", "Put these tags anywhere in the ad name, separated by | or spaces:",
+                      "AV-<avatar key>   ANG-<doubt theme>   FMT-<format>   HK-<hook>",
+                      f"Avatar keys: {', '.join(av)}", f"Doubt themes: {', '.join(angles)}", f"Formats: {', '.join(fmts)}",
+                      f"Hooks: {', '.join(hk) or 'none banked'}", f"Example: {example}" if example else "",
+                      "The audit reads the tags; untagged ads count as unknown, never as zero."])
+    return {"avatars": av, "angles": angles, "formats": fmts, "hooks": hk, "example": example, "spec": spec,
+            "action": {"id": f"{SCREEN}.naming", "kind": "policy", "owner": "person", "title": "Adopt the ad naming convention so coverage can be read",
+                       "capability": {"id": "CREA-C03", "autonomy": "agent_does"}, "draft": spec,
+                       "steps": [{"n": 1, "who": "person", "text": "Share the convention with whoever names ads."},
+                                 {"n": 2, "who": "person", "text": "Rename live ads in the ad account, or tag new ones from today."},
+                                 {"n": 3, "who": "agent", "text": "Read tags on the next pull and fill the coverage cells."}]}}

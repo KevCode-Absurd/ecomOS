@@ -1091,5 +1091,22 @@ class Handoff(TempBrain):
                 self.assertNotIn('(language only)', i['draft'])
 
 
+class Naming(TempBrain):
+    """Feature 4.5: the ad naming convention and its parser."""
+
+    def test_parse_and_spec(self):
+        n = api.handle(Req(['overview']))['naming']
+        self.assertIn('durability', n['angles'])
+        tags = audit.parse_ad_name(n['example'])
+        self.assertEqual(tags['angle'], n['angles'][0])
+        self.assertEqual(tags['avatar'], n['avatars'][0])
+        self.assertEqual(tags['format'], 'video')
+        self.assertEqual(audit.parse_ad_name('Summer promo 2'), {})
+        acts = {a['id']: a for a in api.rank('bombas', RANK_WINDOW)['actions']}
+        r03 = acts['02-customers-avatars.CUST-R03.ad_angles']
+        self.assertEqual(r03['owner'], 'person')
+        self.assertIn('AD NAMING CONVENTION', r03['artefact']['draft'])
+
+
 if __name__ == '__main__':
     unittest.main()

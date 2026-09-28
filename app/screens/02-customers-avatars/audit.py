@@ -312,6 +312,17 @@ def language_rows(brain: Brain) -> dict:
     return {"themes": out, "phrases": sum(len(t["phrases"]) for t in out)}
 
 
+AD_NAME = re.compile(r"(?:^|[|\s_-])(AV|ANG|FMT|HK)-([a-z0-9_]+)", re.I)
+
+
+def parse_ad_name(name: str) -> dict:
+    """Read the avatar, angle, format and hook tags from an ad name that follows the convention in builds.naming()."""
+    out = {}
+    for m in AD_NAME.finditer(str(name or "")):
+        out[{"AV": "avatar", "ANG": "angle", "FMT": "format", "HK": "hook"}[m.group(1).upper()]] = m.group(2).lower()
+    return out
+
+
 def ad_angles(brand: str, ends_on: str | None = None) -> dict:
     """Meta ads per objection theme from the paid social ad table, if it names an angle."""
     try:
@@ -324,6 +335,11 @@ def ad_angles(brand: str, ends_on: str | None = None) -> dict:
     if res.get("unavailable"):
         return {"available": False, "reason": res.get("reason"), "by_theme": {}, "ads": 0}
     groups = res.get("groups") or []
+    for g in groups:
+        if not g.get("angle"):
+            tag = parse_ad_name(g.get("name") or g.get("ad_name") or g.get("label") or "")
+            if tag.get("angle"):
+                g["angle"] = tag["angle"]
     named = [g for g in groups if g.get("angle")]
     if not named:
         return {"available": False, "ads": len(groups), "by_theme": {},

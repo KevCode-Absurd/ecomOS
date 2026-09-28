@@ -524,6 +524,13 @@
     mount('#themes', t, el('p', { class: 'micro faint', text: 'A public sample, skewed to unhappy buyers. Read it as a ranking of what to fix first, not a forecast of stars.' }));
   }
 
+  function renderNaming(n) {
+    mount('#naming', el('div', { class: 'row between' }, el('b', { text: 'Name ads so this matrix can count them' }),
+      el('div', { class: 'row' }, UI.copyButton({ label: 'Copy the convention', text: () => n.spec }), el('button', { class: 'btn soft sm', type: 'button', text: 'Steps', onclick: () => briefPanel(n.action) }))),
+      el('p', { class: 'small', text: 'Tags in any ad name: AV-<avatar>, ANG-<doubt theme>, FMT-<format>, HK-<hook>. Example: ' + (n.example || NA) }),
+      el('p', { class: 'micro faint', text: 'Keys come from the brain: ' + n.avatars.length + ' avatars, ' + n.angles.length + ' doubt themes. Once live ads carry them, the ads column of this matrix fills with no other change.' }));
+  }
+
   function objectionTable(rows) {
     return UI.table({
       columns: [
@@ -801,6 +808,7 @@
     renderForces(d.forces);
     renderSurvey(d.survey);
     renderCoverage(d.coverage, d.formats);
+    renderNaming(d.naming);
     renderLadders(d.ladders, d.avatars);
     renderGap(d.copy_gap);
     renderPerception(d.perception);
