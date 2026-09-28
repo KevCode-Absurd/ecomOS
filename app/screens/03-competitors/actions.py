@@ -545,6 +545,18 @@ def act_landing(f: dict, m: dict) -> dict:
             "check_on": _plus(f["last_seen"], 7), "time_to_ship_hours": 2}
 
 
+def act_card(f: dict, m: dict) -> dict:
+    """COMP-R27: a stale battlecard. The agent re-verifies each fact against a fresh capture and refreshes the card."""
+    page = f["entity"]["label"].replace(" battlecard", "")
+    return {"title": f"Re-verify the {page} battlecard before support uses it again", "owner": "agent",
+            "artefact": {"kind": "copy", "label": f"a refreshed {page} battlecard with dates", "draft": None,
+                         "draft_note": "Drafted from the next capture."},
+            "steps": _steps(("agent", f"Pull a fresh capture of {page} (page id, inside the caps) and its price feed."),
+                            ("agent", "Check each line of the card; drop what no longer holds; date the rest."),
+                            ("agent", "Publish the refreshed card to the support macros.")),
+            "size": None, "win_rule": None, "stop_rule": None, "check_on": _plus(f["last_seen"], 7), "time_to_ship_hours": 1}
+
+
 def act_connect(f: dict, m: dict) -> dict:
     un = f.get("unavailable") or {}
     con = un.get("connector") or "the missing source"
@@ -566,7 +578,7 @@ BUILDERS = {"COMP-R01": act_angle, "COMP-R02": act_price, "COMP-R03": act_offer_
             "COMP-R19": act_velocity, "COMP-R20": act_niche,
             "COMP-R21": act_premium, "COMP-R22": act_search, "COMP-R23": act_connect,
             "COMP-R24": act_new_move, "COMP-R25": act_price_cut,
-            "COMP-R26": act_landing}   # R16 has no data source yet: always a connect action
+            "COMP-R26": act_landing, "COMP-R27": act_card}   # R16 has no data source yet: always a connect action
 
 
 def action(f: dict, m: dict, net_revenue: float | None) -> dict:

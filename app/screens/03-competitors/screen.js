@@ -490,9 +490,21 @@
       el('p', { class: 'micro faint', text: ld.rule }));
   }
 
+  // ---------- 5s. battlecards with freshness ----------
+  function cardsSection(bc) {
+    const t = UI.verdictTable({ columns: [{ key: 'name', label: 'Against' }, { key: 'verified_on', label: 'Facts checked', format: (v) => v ? fmt.date(v) : NA },
+      { key: 'age_days', label: 'Days old', format: (v) => v == null ? NA : String(v) }],
+    rows: bc.rows, verdict: { at: 1, kind: (r) => r.stale ? 'fix' : 'keep', text: (r) => r.stale ? 'Stale' : 'Fresh', reason: (r) => (r.age_days == null ? NA : r.age_days) + ' days against ' + bc.stale_days },
+    reason: { key: 'claims', label: 'What the card says', text: (r) => r.claims.slice(1, 3).join(' ') },
+    actions: { label: 'Copy card', onClick: (r) => UI.copy(r.card) }, sort: false });
+    mount('#cards', t, el('div', { class: 'row' }, UI.copyButton({ label: 'Copy all cards for support', text: () => bc.all_text }),
+      UI.decisionRow({ capability: 'BRAND-C57', autonomy: 'agent_does', screen: SCREEN, compact: true, finding_id: SCREEN + '.battlecards' })),
+      el('p', { class: 'micro faint', text: bc.rule + ' Verified differences only; never disparage.' }));
+  }
+
   // ---------- 5z. desk tabs: each job holds its sections ----------
   const DESK = [
-    { key: 'rivals', label: 'Rivals', ids: ['pages', 'landing', 'losses', 'category', 'reviews'] },
+    { key: 'rivals', label: 'Rivals', ids: ['pages', 'cards', 'landing', 'losses', 'category', 'reviews'] },
     { key: 'creative', label: 'Ads', ids: ['coverage', 'velocity', 'mix', 'refs', 'changes'] },
     { key: 'price', label: 'Price and offer', ids: ['map', 'premium', 'prices', 'presence'] },
     { key: 'market', label: 'Market and data', ids: ['niche', 'search', 'fresh'] },
@@ -575,6 +587,7 @@
     searchSection(d.search);
     digestSection();
     landingSection(d.landing);
+    cardsSection(d.battlecards);
     document.getElementById('audit-sub').textContent = p.findings.length + ' findings from ' + p.rules.length + ' rules. Public signals, one capture.';
     mount('#audit', auditTable(p.findings));
     deskTabs();

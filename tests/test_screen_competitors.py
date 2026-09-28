@@ -866,6 +866,20 @@ class TestLanding(TempBrain):
         self.assertTrue([f for f in out if f['rule_id'] == 'COMP-R26'])
 
 
+class TestCards(TempBrain):
+    """3.5: battlecards per direct page with freshness; stale rule on a late window."""
+    def test_cards(self):
+        api.BRAIN_ROOT = self.tmp
+        bc = api.handle(Req(['overview']))['battlecards']
+        self.assertEqual(len(bc['rows']), 5)
+        for r in bc['rows']:
+            self.assertFalse(r['stale'])
+            self.assertTrue(r['claims'])
+        late = audit.run('bombas', {'ends_on': '2027-01-10', 'days': 1, 'trailing': 0}, self.tmp)
+        self.assertTrue([f for f in late if f['rule_id'] == 'COMP-R27'])
+        self.assertFalse([f for f in audit.run('bombas', WINDOW, self.tmp) if f['rule_id'] == 'COMP-R27'])
+
+
 class TestRank(TempBrain):
     """Depth contract rules 2, 3 and 13: owner, steps and artefact on every action; every finding ends in one."""
     W = {'ends_on': '2026-09-27', 'days': 28, 'trailing': 4}
@@ -959,7 +973,7 @@ class TestPage(unittest.TestCase):
         js = (SCREEN / 'screen.js').read_text(encoding='utf-8')
         html = (SCREEN / 'index.html').read_text(encoding='utf-8')
         desk = html.split('id="desk-src"', 1)[1].split('<!-- 6. The audit -->', 1)[0]
-        for sec_id in ('pages', 'landing', 'losses', 'category', 'reviews', 'coverage', 'velocity', 'mix', 'refs', 'changes',
+        for sec_id in ('pages', 'cards', 'landing', 'losses', 'category', 'reviews', 'coverage', 'velocity', 'mix', 'refs', 'changes',
                        'map', 'premium', 'prices', 'presence', 'niche', 'search', 'fresh'):
             self.assertIn(f'id="{sec_id}"', desk)
             self.assertIn(f"'{sec_id}'", js)

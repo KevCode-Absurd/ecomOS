@@ -257,6 +257,24 @@ def digest(brand: str, today: dt.date) -> dict:
 UI_OWNER = {"agent": "agent does it", "agent_drafts": "agent drafts, you approve", "person": "a person does it"}
 
 
+STALE_CARD_DAYS = 90
+
+
+def battlecards(m: dict, pages: dict) -> dict:
+    """One battlecard per direct page: the verified differences, the date they were last checked and a freshness flag."""
+    rows = []
+    for r in pages["rows"]:
+        if r["role"] == "self" or r["frame"] != "direct" or r["source"] == "none":
+            continue
+        age = r.get("age_days")
+        rows.append({"name": r["name"], "key": r["key"], "verified_on": r.get("captured_at"), "age_days": age,
+                     "stale": age is not None and age > STALE_CARD_DAYS, "card": r["battlecard"],
+                     "claims": [ln for ln in r["battlecard"].split("\n")[1:] if ln and not ln.startswith("Say only")]})
+    return {"rows": rows, "stale_days": STALE_CARD_DAYS,
+            "all_text": "\n\n".join(x["card"] for x in rows),
+            "rule": f"A battlecard is stale when its facts were last checked more than {STALE_CARD_DAYS} days ago."}
+
+
 def overview(brand: str, today: dt.date) -> dict:
     m = audit.market_full(brand, today, BRAIN_ROOT)
     brain = m.pop("brain")
@@ -265,7 +283,7 @@ def overview(brand: str, today: dt.date) -> dict:
             "simulated_note": SIMULATED_NOTE.format(name=name), "signal_note": SIGNAL_NOTE,
             "competitors": [_public(c) for c in m["competitors"]], "angles": m["angles"],
             "positioning": positioning(m),
-            "lookalike": m["lookalike"], "gap": gaps(m), "pages": page_rows(m),
+            "lookalike": m["lookalike"], "gap": gaps(m), "pages": (pr := page_rows(m)), "battlecards": battlecards(m, pr),
             "coverage": {"all": m["coverage"], "direct": m["coverage_direct"]}, "mix": m["mix"], "references": m["references"], "ladder": m["ladder"], "changes": m["changes"], "freshness": freshness(m, brand), "losses": m["losses"], "category": m["category"], "reviews": m["reviews"], "presence": m["presence"], "velocity": m["velocity"], "niche": m["niche"], "premium": m["premium"], "search": m["search"], "price_moves": m["price_moves"], "landing": m["landing"],
             "category_median": m["category_median"], "price_position_index": m["price_position_index"]}
 
