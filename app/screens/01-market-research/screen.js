@@ -711,6 +711,27 @@
         gaps.length ? { label: 'Write the first', onClick: () => openSpec(gaps[0]) } : null));
   }
 
+  function hoursBlock(h) {
+    const rows = (h && h.rows) || [];
+    if (!rows.length) return el('p', { class: 'muted', text: 'No candidate with hours logged.' });
+    const bars = Charts.bar({ title: 'Hours logged against hours allowed through the stage', labels: rows.map((r) => r.name.length > 18 ? r.name.slice(0, 16) + '..' : r.name), unit: 'n',
+      series: [{ name: 'hours logged', values: rows.map((r) => r.hours_logged) }, { name: 'hours allowed', values: rows.map((r) => r.hours_allowed) }],
+      note: h.rule + '. Budget per stage: ' + (h.stages || []).map((s) => s + ' ' + h.budget[s]).join(', ') + ' (' + h.budget_source + ').' });
+    const vrows = rows.map((r) => { const fid = (h.findings || {})[r.candidate_id]; const a = fid ? actionFor(fid) : null; return Object.assign({}, r, {
+      allowed: r.hours_allowed == null ? NA : r.hours_allowed, share: r.used_share,
+      actions: [a ? { label: 'Stop the clock', onClick: () => openAction(a) } : { label: r.closed ? 'Closed' : 'Log 1 h', cls: 'quiet', onClick: () => { if (!r.closed) candidatePost('candidates/' + r.candidate_id, { hours_add: 1, who: 'person' }); } }] }); });
+    const t = UI.verdictTable({
+      columns: [{ key: 'name', label: 'Candidate' }, { key: 'stage', label: 'Stage' }, { key: 'hours_logged', label: 'Hours logged', align: 'right', format: (v) => v == null ? NA : v.toFixed(1) }, { key: 'allowed', label: 'Allowed through the stage', align: 'right', format: (v) => v == null ? NA : v.toFixed(0) }, { key: 'share', label: 'Used', unit: '%' }],
+      rows: vrows,
+      verdict: { at: 1, kind: (r) => r.closed ? 'na' : r.over_by > 0 ? 'fix' : (r.used_share || 0) >= 0.75 ? 'watch' : 'keep', text: (r) => r.closed ? 'Closed' : r.over_by > 0 ? 'Over budget' : (r.used_share || 0) >= 0.75 ? 'Near the cap' : 'In budget', reason: (r) => r.over_by > 0 ? r.over_by + ' hours over' : '' },
+      actions: { label: 'Do', onClick: () => {} }, sort: false });
+    const over = rows.filter((r) => !r.closed && r.over_by > 0);
+    return el('div', { class: 'stack' }, UI.orientation([{ label: 'hours logged across the pipeline', value: h.total_hours, unit: 'n' }, { label: 'over budget', value: over.length, unit: 'n', tone: over.length ? 'bad' : 'good' }]),
+      el('div', { class: 'grid two' }, el('div', { class: 'card' }, bars), el('div', { class: 'card scroll' }, t)),
+      gapLine(over.length ? over.length + ' candidate' + (over.length === 1 ? ' has' : 's have') + ' passed the hours budget: ' + over.map((r) => r.name).join(', ') + '. No more hours without a named question.' : 'Every open candidate is inside its hours budget.',
+        over.length && (h.findings || {})[over[0].candidate_id] && actionFor(h.findings[over[0].candidate_id]) ? { label: 'Stop the first clock', onClick: () => openAction(actionFor(h.findings[over[0].candidate_id])) } : null));
+  }
+
   function loadDesk(o) {
     const d = o.desk || {};
     const w = (o.window || {}).trend;
@@ -735,6 +756,7 @@
     parts.push(section('desk-scorecard', 'Which candidates does the founder decide on this week?', 'The fixed scorecard with the brand\'s weights: demand, margin, differentiation, compliance and cash timing, each scored in code, ranked, with the go or no-go memo drafted from the numbers and the review date.', scorecardBlock(d.scorecard)));
     parts.push(section('desk-video', 'Is the demand one clip or a real pattern?', 'Independent platforms showing demand per lane: the Instagram hashtag pull, Reddit mentions and upvotes, competitor creator-style ads and our own, with the candidates that rest on each lane.', videoBlock(d.video)));
     parts.push(section('desk-tech-packs', 'Which candidates have a real, versioned spec ready for sourcing?', 'Tech pack versions per candidate: tolerances, the bill of materials and the packaging cost line. A pack saved from the card becomes the current version and supersedes the last.', techPackBlock(d.tech_packs)));
+    parts.push(section('desk-hours', 'Has any candidate used up its research hours?', 'Hours logged per candidate against the hours allowed through its stage, from the brand\'s budget per stage. Research cannot sprawl past the box.', hoursBlock(d.hours)));
     parts.push(section('desk-pattern', 'Is each candidate evergreen, seasonal or a trend, and when does cash move?', 'The demand pattern from our own 12-month series by category and the web pass, with the cash timing it implies and the cash plan attached to each candidate.', patternBlock(d.pattern)));
     parts.push(section('desk-pipeline', 'What is in the next-SKU pipeline, and what is past its time box?', 'Candidates screened in from the gaps above or by hand, their stage, fast checks, time box and hours. Advance, log hours or kill from the card; every write lands in the pipeline log.', pipelineBlock(d.pipeline || { rows: [] })));
     const jumps = UI.pills({ items: parts.map((p) => ({ key: p.id, label: p.querySelector('h2').textContent.replace(/\?.*$/, '?').split(',')[0].slice(0, 42) })), onChange: (key) => { const t = document.getElementById(key); if (t) t.scrollIntoView({ behavior: 'smooth', block: 'start' }); } });

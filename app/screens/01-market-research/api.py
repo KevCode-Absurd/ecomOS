@@ -729,6 +729,21 @@ def recipe(f):
             'stop_rule': 'no RFQ without a current pack', 'check_on': _check_on(f, 7), 'time_to_ship_hours': 4,
             'win_rule': 'a current pack with tolerances, BOM and packaging cost',
         }
+    if rid == 'PROD-R28':
+        ent = f.get('entity') or {}
+        return {
+            'title': (f'Stop the research clock on {ent.get("label")}: {ent.get("hours_logged"):g} hours against {ent.get("hours_allowed"):g}'
+                      if ent.get('hours_logged') is not None and ent.get('hours_allowed') is not None else f'Stop the research clock on {ent.get("label")}'),
+            'owner': 'agent_drafts',
+            'artefact': {'kind': 'research_note', 'label': f'a 1-page close-out for {ent.get("label")}: what the hours answered, the one open question if any, and the decision'},
+            'steps': [
+                {'n': 1, 'who': 'agent', 'text': 'List what the logged hours produced (checks, angle, gate, spec) and what is still open.'},
+                {'n': 2, 'who': 'agent', 'text': 'Draft the close-out: advance with a named question and a hard cap of 2 more hours, or kill with the reason.'},
+                {'n': 3, 'who': 'person', 'text': 'Decide from the card. No more hours log against the candidate until then.'}],
+            'size': {'text': (f'{ent.get("hours_logged"):g} of {ent.get("hours_allowed"):g} hours used' if ent.get('hours_logged') is not None and ent.get('hours_allowed') is not None else 'hours unavailable'), 'usd': None},
+            'stop_rule': 'no new hours without a named question', 'check_on': _check_on(f, 2), 'time_to_ship_hours': 1,
+            'win_rule': 'a stage change or a kill logged',
+        }
     return None
 
 
@@ -756,7 +771,7 @@ def merge_lanes(actions):
     return keep
 
 
-CANDIDATE_RULES = ('PROD-R14', 'PROD-R15', 'PROD-R16', 'PROD-R18', 'PROD-R21', 'PROD-R23', 'PROD-R24', 'PROD-R25', 'PROD-R27')
+CANDIDATE_RULES = ('PROD-R14', 'PROD-R15', 'PROD-R16', 'PROD-R18', 'PROD-R21', 'PROD-R23', 'PROD-R24', 'PROD-R25', 'PROD-R27', 'PROD-R28')
 
 
 def merge_candidates(actions):
@@ -957,7 +972,8 @@ def overview(data, brand):
                      'pattern': pattern_block(brand, data, rd, findings), 'lane_map': audit.lane_map(br, ends_on), 'spend': audit.spend_signal(br, brand, ends_on),
                      'price_signal': price_signal_block(br, brand, data, findings), 'complaints': audit.listing_complaints(br),
                      'gates': gates_block(brand, data, br, rd, ends_on, findings), 'scorecard': scorecard_block(brand, data, br, rd, ends_on, findings),
-                     'video': audit.video_signals(br, brand, ends_on), 'tech_packs': tech_pack_block(brand, findings)},
+                     'video': audit.video_signals(br, brand, ends_on), 'tech_packs': tech_pack_block(brand, findings),
+                     'hours': dict(audit.hours_table(brand, br), findings={f['entity']['id']: f['id'] for f in findings if f['rule_id'] == 'PROD-R28'})},
             'audit': {'findings': findings, 'rules': audit.RULES}}
 
 

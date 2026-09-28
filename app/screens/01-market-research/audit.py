@@ -109,6 +109,9 @@ Rules
   PROD-R27  Spec missing: a candidate at gated or later whose newest tech pack lacks tolerances, a BOM or a packaging
             cost line, or has none. Packs are versioned on the candidate (tech_packs, newest last). Capability
             PROD-C13 (build tech packs, BOMs and packaging specs, agent does). Owner: 01-market-research.
+  PROD-R28  Research sprawl: an open candidate whose hours logged pass the hours allowed through its stage (the per-stage
+            budgets summed: 4 screened, 16 researched, 8 gated, 4 shortlisted by default; a brand sets its own in
+            learnings.research_hours_budget). Severity low. Capability PROD-C04. Owner: 01-market-research.
   PROD-R03  Hero line with no next SKU: a line with 25 percent or more of its category's net sales in
             the last 3 whole months while the candidate pipeline holds no open next-SKU candidate for
             that category. Money: null (an unlaunched SKU has no baseline). Capability PROD-C06
@@ -187,6 +190,8 @@ RULES = [
      'inputs': ['fixtures.social_pull', 'brain.language_bank', 'brain.content', 'fixtures.pipeline'], 'capability': 'PROD-C02', 'owner_screen': SCREEN},
     {'rule_id': 'PROD-R27', 'name': 'Candidate at gated or later with no current versioned spec (tolerances, BOM, packaging cost)', 'entity_type': 'sku',
      'inputs': ['fixtures.pipeline'], 'capability': 'PROD-C13', 'owner_screen': SCREEN},
+    {'rule_id': 'PROD-R28', 'name': 'Open candidate whose research hours pass the cumulative hours budget for its stage', 'entity_type': 'sku',
+     'inputs': ['fixtures.pipeline', 'brain.learnings'], 'capability': 'PROD-C04', 'owner_screen': SCREEN},
 ]
 CAPABILITY = {'PROD-R01': {'id': 'PROD-C05', 'autonomy': 'agent_does'},
               'PROD-R02': {'id': 'PROD-C06', 'autonomy': 'agent_does'},
@@ -214,7 +219,8 @@ CAPABILITY = {'PROD-R01': {'id': 'PROD-C05', 'autonomy': 'agent_does'},
               'PROD-R24': {'id': 'PROD-C10', 'autonomy': 'agent_does'},
               'PROD-R25': {'id': 'PROD-C11', 'autonomy': 'founder_gate'},
               'PROD-R26': {'id': 'PROD-C02', 'autonomy': 'agent_does'},
-              'PROD-R27': {'id': 'PROD-C13', 'autonomy': 'agent_does'}}
+              'PROD-R27': {'id': 'PROD-C13', 'autonomy': 'agent_does'},
+              'PROD-R28': {'id': 'PROD-C04', 'autonomy': 'agent_does'}}
 SEVERITY_ORDER = {'critical': 0, 'high': 1, 'medium': 2, 'low': 3}
 
 # Review records name their line in a short key; the store names it by SKU title.
@@ -692,6 +698,7 @@ def run(brand, window=None, data=None):
     out += shortlist_findings(brand, data, br, rd, ends_on)
     out += video_findings(br, brand, ends_on)
     out += tech_pack_findings(brand, ends_on)
+    out += hours_findings(brand, br, ends_on)
     out.sort(key=lambda f: (SEVERITY_ORDER[f['severity']], -((f['money_at_stake'] or {}).get('usd') or 0), f['id']))
     return out
 
@@ -2457,5 +2464,55 @@ def tech_pack_findings(brand, ends_on):
         f = _finding('PROD-R27', cid, ends_on, 'medium', ev, sentence, None, 0.9, [], money_reason='a spec gap delays sourcing; it has no order count')
         f['entity'] = {'type': 'sku', 'id': cid, 'label': cand['name'], 'candidate': True, 'stage': cand.get('stage'), 'missing': tp['missing'], 'version': tp['version']}
         f['id'] = f'{SCREEN}.PROD-R27.{cid}'
+        out.append(f)
+    return out
+
+
+# ---------------------------------------------------------------- research hours budget per stage (PROD-C04: a fixed time budget that research cannot sprawl past)
+
+DEFAULT_HOURS_BUDGET = {'screened': 4, 'researched': 16, 'gated': 8, 'shortlisted': 4, 'go': 0}
+SPRAWL_TIMES = 1.0     # fires when hours logged pass the cumulative budget for the stage
+
+
+def hours_budget(br):
+    """Hours a candidate may use per stage, from a learnings record (learnings.research_hours_budget) else the defaults."""
+    r = br.get(f'{br.brand}.learnings.research_hours_budget') if br else None
+    v = (r or {}).get('value') if r else None
+    if isinstance(v, dict) and all(isinstance(v.get(k), (int, float)) for k in STAGES):
+        return {k: float(v[k]) for k in STAGES}, r['id']
+    return dict(DEFAULT_HOURS_BUDGET), 'defaults (no learnings.research_hours_budget record)'
+
+
+def hours_table(brand, br):
+    budget, source = hours_budget(br)
+    rows = []
+    for cand in pipeline(brand):
+        st = cand.get('stage')
+        idx = STAGES.index(st) if st in STAGES else None
+        allowed = sum(budget[s] for s in STAGES[:idx + 1]) if idx is not None else None
+        used = float(cand.get('hours_logged') or 0)
+        rows.append({'candidate_id': cand.get('candidate_id'), 'name': cand.get('name'), 'stage': st, 'closed': st in CLOSED_STAGES, 'hours_logged': used,
+                     'hours_allowed': allowed, 'used_share': round(used / allowed, 4) if allowed else None, 'over_by': round(used - allowed, 1) if allowed is not None and used > allowed else 0,
+                     'finding_id': f'{SCREEN}.PROD-R28.{cand.get("candidate_id")}'})
+    total_used = sum(r['hours_logged'] for r in rows)
+    rows.sort(key=lambda r: (r['closed'], -(r['used_share'] or 0)))
+    return {'rows': rows, 'budget': budget, 'budget_source': source, 'stages': STAGES, 'total_hours': round(total_used, 1),
+            'rule': 'the allowed hours at a stage are the budgets of every stage up to it, summed; research sprawl fires when hours logged pass that'}
+
+
+def hours_findings(brand, br, ends_on):
+    """PROD-R28: an open candidate whose hours logged pass the cumulative hours budget for its stage."""
+    out = []
+    t = hours_table(brand, br)
+    for r in t['rows']:
+        if r['closed'] or r['hours_allowed'] is None or r['hours_logged'] <= r['hours_allowed'] * SPRAWL_TIMES:
+            continue
+        ev = [_ev('research_time_used', r['used_share'], 'ratio', ends_on.isoformat(), 'since screen-in', SPRAWL_TIMES, 'threshold', source='fixtures.pipeline', simulated=False, freshness_days=0,
+                  hours_logged=r['hours_logged'], hours_allowed=r['hours_allowed'], stage=r['stage'], budget_source=t['budget_source'])]
+        sentence = (f'{r["name"]} has used {r["hours_logged"]:g} research hours against {r["hours_allowed"]:g} allowed through {r["stage"]} '
+                    f'({round(r["used_share"] * 100)} percent). Decide or kill it; no more hours without a named question.')
+        f = _finding('PROD-R28', r['candidate_id'], ends_on, 'low', ev, sentence, None, 0.9, [], money_reason='research hours, not revenue')
+        f['entity'] = {'type': 'sku', 'id': r['candidate_id'], 'label': r['name'], 'candidate': True, 'stage': r['stage'], 'hours_logged': r['hours_logged'], 'hours_allowed': r['hours_allowed']}
+        f['id'] = f'{SCREEN}.PROD-R28.{r["candidate_id"]}'
         out.append(f)
     return out

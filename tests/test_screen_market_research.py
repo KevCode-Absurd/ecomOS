@@ -823,6 +823,21 @@ class PipelineTest(ShapeMixin, unittest.TestCase):
         self.assertEqual(audit.tech_pack_status(r['candidate'])['status'], 'current')
         self.assertEqual(audit.tech_pack_findings('fake', today), [])
 
+    def test_hours_budget_and_sprawl(self):
+        self.assertEqual(audit.hours_budget(None)[0], audit.DEFAULT_HOURS_BUDGET)
+        self.tmp.write_text(json.dumps({'rows': [{'candidate_id': 'a', 'brand': 'fake', 'name': 'Sprawl', 'stage': 'researched', 'hours_logged': 25.0},
+                                                 {'candidate_id': 'b', 'brand': 'fake', 'name': 'Fine', 'stage': 'researched', 'hours_logged': 10.0},
+                                                 {'candidate_id': 'c', 'brand': 'fake', 'name': 'Dead', 'stage': 'killed', 'hours_logged': 99.0}]}), encoding='utf-8')
+        t = audit.hours_table('fake', None)
+        by = {r['candidate_id']: r for r in t['rows']}
+        self.assertEqual(by['a']['hours_allowed'], 20)     # 4 screened plus 16 researched
+        self.assertEqual(by['a']['over_by'], 5.0)
+        self.assertEqual(by['b']['over_by'], 0)
+        fs = audit.hours_findings('fake', None, date(2026, 9, 27))
+        self.assertEqual([f['entity']['id'] for f in fs], ['a'])
+        self.assertIn('25 research hours against 20', fs[0]['sentence'])
+        self.check_shape(fs[0])
+
     def test_funnel_counts_stages_reached(self):
         rows = [audit.candidate_view(r, date(2026, 9, 27)) for r in [
             {'candidate_id': 'a', 'name': 'a', 'stage': 'gated', 'screen_in_date': '2026-09-20', 'time_box_days': 10},
