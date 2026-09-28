@@ -1230,3 +1230,62 @@ def draft_avatar(brand: str, segment: str, lang_records: list[dict], competitors
            "evidence": [q for q in quotes if q["ref"].startswith("http")],
            "notes": "Drafted by the Customers and avatars screen from a category gap. A hypothesis until 5 quotes from 2 sources and a survey share exist."}
     return {"segment": segment, "record": rec, "mentions": sum(by_source.values()), "by_source": by_source, "quotes": len(rec["evidence"])}
+
+
+# ---------------------------------------------------------------- avatar moments calendar
+
+# US moments by month (app/CLAUDE.md: US holidays by default). pattern -> (label, month, day the moment starts)
+US_MOMENTS = [(r"\bchristmas|\bholiday", "Holiday gifting", 12, 1), (r"\bwinter|\bcold", "Winter", 11, 15),
+              (r"\bvalentine", "Valentine's Day", 2, 1), (r"\bmother", "Mother's Day", 5, 1), (r"\bfather", "Father's Day", 6, 1),
+              (r"\bback to school|\bschool", "Back to school", 8, 1), (r"\bsummer|\bheat", "Summer", 6, 1),
+              (r"\bmarathon|\brace\b", "Fall race season", 9, 15), (r"\bnew year|\bresolution", "New Year", 1, 1)]
+LEAD_DAYS = {"ad": 21, "email": 14}
+HORIZON_MONTHS = 6
+
+
+def moments(avatars: list[dict], monthly: list[dict], as_of: str) -> dict:
+    """Upcoming moments named in avatar triggers, when each starts, what ships before it, and last year's sales index."""
+    import datetime as _dt
+    today = _dt.date.fromisoformat(as_of)
+    sales = {r["month"]: r.get("net_sales") for r in monthly if r.get("net_sales") and r.get("days") and r["days"] >= 28}
+    last12 = [sales[m] for m in sorted(sales)[-12:]]
+    avg = sum(last12) / len(last12) if last12 else None
+    found: dict[str, dict] = {}
+    for a in avatars:
+        text = " ".join(a.get("triggers") or []).lower()
+        for pat, label, mon, day in US_MOMENTS:
+            if re.search(pat, text):
+                f = found.setdefault(label, {"label": label, "month": mon, "day": day, "avatars": []})
+                if a["name"] not in f["avatars"]:
+                    f["avatars"].append(a["name"])
+    rows = []
+    for f in found.values():
+        yr = today.year if (f["month"], f["day"]) >= (today.month, today.day) else today.year + 1
+        start = _dt.date(yr, f["month"], f["day"])
+        months_out = (start.year - today.year) * 12 + start.month - today.month
+        if months_out > HORIZON_MONTHS:
+            continue
+        ly = f"{yr - 1}-{f['month']:02d}"
+        idx = round(sales[ly] / avg, 2) if avg and ly in sales else None
+        ad_by, mail_by = start - _dt.timedelta(days=LEAD_DAYS["ad"]), start - _dt.timedelta(days=LEAD_DAYS["email"])
+        late = ad_by < today
+        rows.append({"label": f["label"], "starts": start.isoformat(), "avatars": f["avatars"], "sales_index_last_year": idx,
+                     "ad_by": ad_by.isoformat(), "email_by": mail_by.isoformat(), "late": late,
+                     "action": {"id": f"{SCREEN}.moment.{f['label'].lower().replace(' ', '_').replace(chr(39), '')}", "kind": "report",
+                                "owner": "agent_drafts", "title": f"{f['label']} plan for {', '.join(f['avatars'][:2])}",
+                                "capability": {"id": "LIFE-C20", "autonomy": "agent_does"},
+                                "draft": "\n".join([f"DRAFT {f['label']} plan", f"Starts: {start.isoformat()}",
+                                                    f"Ads live by: {ad_by.isoformat()}. Emails scheduled by: {mail_by.isoformat()}.",
+                                                    f"Avatars: {', '.join(f['avatars'])}",
+                                                    f"Last year this month sold at {idx}x the monthly average." if idx else "Last year's index: unavailable",
+                                                    "Ships: 1 ad brief per avatar from its next build, 2 emails, the gift or pack offer if the brain has one."]),
+                                "steps": [{"n": 1, "who": "agent", "text": "Pull each avatar's next build and last year's best sellers that month."},
+                                          {"n": 2, "who": "agent", "text": "Draft the ad briefs and 2 emails with the dates above."},
+                                          {"n": 3, "who": "person", "text": "Approve the plan and put it on the calendar."},
+                                          {"n": 4, "who": "agent", "text": "Check ads are live on the ad date. Flag if not."}],
+                                "check_on": ad_by.isoformat()}})
+    rows.sort(key=lambda r: r["starts"])
+    nxt = rows[0] if rows else None
+    return {"rows": rows, "as_of": as_of,
+            "line": (f"Next: {nxt['label']} starts {nxt['starts']}. Ads need to be live by {nxt['ad_by']}." if nxt else
+                     "No avatar names a moment in the next 6 months.")}

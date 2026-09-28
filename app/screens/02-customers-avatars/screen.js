@@ -259,6 +259,24 @@
     }));
   }
 
+  // ---------- desk: moments ----------
+  function renderMoments(x) {
+    document.getElementById('moments-sub').textContent = 'Moments named in avatar triggers, matched to US dates, 6 months ahead. Ads live 21 days before, emails 14 days before. Index: that month last year against the 12-month average, simulated. ' + x.line;
+    if (!x.rows.length) { mount('#moments-tl', el('p', { class: 'muted small', text: x.line })); mount('#moments'); return; }
+    const items = [];
+    for (const r of x.rows) {
+      items.push({ when: fmt.date(r.ad_by), who: 'agent drafts', title: 'Ads live for ' + r.label, text: r.avatars.join(', '), tone: r.late ? 'bad' : 'warn' });
+      items.push({ when: fmt.date(r.email_by), who: 'agent drafts', title: 'Emails scheduled for ' + r.label, text: '2 emails' });
+      items.push({ when: fmt.date(r.starts), who: 'moment', title: r.label + ' starts', text: r.sales_index_last_year ? 'Last year ' + r.sales_index_last_year + 'x the monthly average' : 'index unavailable', tone: 'good' });
+    }
+    items.sort((a, b) => new Date(a.when) - new Date(b.when));
+    mount('#moments-tl', UI.timeline(items));
+    mount('#moments', ...x.rows.map((r) => UI.actionCard({ id: r.action.id, title: r.action.title, severity: r.late ? 'high' : 'medium', owner: r.action.owner,
+      why: r.label + ' starts ' + r.starts + '. Ads live by ' + r.ad_by + '.' + (r.sales_index_last_year ? ' Last year it sold at ' + r.sales_index_last_year + 'x the monthly average.' : ''),
+      capability: r.action.capability, steps: r.action.steps, check_on: r.action.check_on,
+      artefact: { kind: r.action.kind, label: 'a dated plan: ad briefs and 2 emails', draft: r.action.draft } }, { compact: true, screen: SLUG })));
+  }
+
   // ---------- desk: misreads ----------
   const LINE_V = { problem: ['cut', 'Problem'], split: ['watch', 'Split'], fine: ['keep', 'Fine'] };
   function renderMisreads(x) {
@@ -574,6 +592,7 @@
     renderServed(d.served, d.avatars);
     renderDrafts(d.drafts);
     renderMisreads(d.misreads);
+    renderMoments(d.moments);
     renderCohorts(d.cohorts);
     renderMix(d.mix);
     mount('#avatars', ...(d.avatars.length ? d.avatars.map(avatarCard) : [el('p', { class: 'muted', text: 'No avatar records yet.' })]));

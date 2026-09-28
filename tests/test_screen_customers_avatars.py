@@ -729,5 +729,29 @@ class AvatarDraft(TempBrain):
         self.assertEqual(api.handle(Req(['avatars', 'draft'], 'POST', body={'segment': 'nope'}))[0], 400)
 
 
+class Moments(unittest.TestCase):
+    """Feature 2.7: avatar moments with ship-by dates."""
+
+    def test_moments_from_triggers(self):
+        from tables import brand_data
+        monthly = brand_data('bombas').table('monthly')
+        av = [{'name': 'Gift', 'triggers': ['Christmas']}, {'name': 'Wool', 'triggers': ['winter']}, {'name': 'Mom', 'triggers': ["Mother's Day"]}]
+        x = api.builds.moments(av, monthly, '2026-09-27')
+        labels = [r['label'] for r in x['rows']]
+        self.assertEqual(labels, ['Winter', 'Holiday gifting'])
+        hol = x['rows'][1]
+        self.assertEqual(hol['starts'], '2026-12-01')
+        self.assertEqual(hol['ad_by'], '2026-11-10')
+        self.assertEqual(hol['email_by'], '2026-11-17')
+        self.assertGreater(hol['sales_index_last_year'], 1)
+        self.assertEqual(hol['action']['check_on'], '2026-11-10')
+
+    def test_late_flag_and_rollover(self):
+        x = api.builds.moments([{'name': 'Gift', 'triggers': ['holiday']}], [], '2026-11-20')
+        r = x['rows'][0]
+        self.assertTrue(r['late'])
+        self.assertIsNone(r['sales_index_last_year'])
+
+
 if __name__ == '__main__':
     unittest.main()

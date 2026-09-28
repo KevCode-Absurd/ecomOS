@@ -271,6 +271,16 @@ def _mix(brand: str) -> dict:
     return builds.mix(monthly, channels, as_of)
 
 
+def _moments(brand: str, avatars: list[dict]) -> dict:
+    try:
+        from tables import brand_data
+        data = brand_data(brand)
+        monthly, as_of = data.table("monthly"), data.brand.get("as_of")
+    except (ImportError, ValueError, KeyError, FileNotFoundError) as exc:
+        return {"rows": [], "line": f"No monthly table for {brand} ({exc})."}
+    return builds.moments(avatars, monthly, as_of)
+
+
 def _competitor_names(brain: Brain) -> list[str]:
     """Competitor names from the brain, including brands Reddit recommends instead."""
     names = set()
@@ -332,6 +342,7 @@ def overview(brain: Brain) -> dict:
             "copy_gap": builds.copy_gap({sec: brain.records(sec) for sec in ("voice", "claims", "identity", "offers", "policies", "products", "visual", "story_bank")},
                                         brain.records("language_bank"), _brand_tokens(brain), audit.source_name),
             "gate": builds.gate(avatars, all_rungs),
+            "moments": _moments(brain.brand, avatars),
             "forces": builds.forces(avatars, all_rungs, brain.records("language_bank"), _competitor_names(brain)),
             "hooks": builds.hooks(brain.records("language_bank"), all_rungs, avatars, _brand_tokens(brain), audit.source_name),
             "themes": builds.theme_impact(brain.records("language_bank"), lad["rows"], ends_on),
