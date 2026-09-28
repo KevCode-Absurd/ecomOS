@@ -2234,5 +2234,23 @@ class HandoverTest(unittest.TestCase):
                         self.assertRegex(t, p_, a['id'])
 
 
+class SnoozedFindingTest(unittest.TestCase):
+    """Round 9 feature 7: audit.md section 4, a finding whose move is put off reads snoozed until it comes back."""
+
+    def test_mark(self):
+        import json, tempfile
+        from datetime import date
+        r = api.actions.rank('bombas')
+        acts, findings = r['actions'][:2], r['findings']
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / 'decisions.json'
+            path.write_text(json.dumps([{'finding_id': acts[0]['id'], 'choice': 'not_now', 'time': '2026-09-27T10:00:00Z'}]), encoding='utf-8')
+            _, snoozed = api.with_decisions(acts, today=date(2026, 9, 28), path=path)
+        api.mark_snoozed(findings, snoozed)
+        marked = [f for f in findings if f['status'] == 'snoozed']
+        self.assertEqual(sorted(f['id'] for f in marked), sorted(acts[0]['finding_ids']))
+        self.assertTrue(all(f['snoozed_until'] == '2026-10-11' for f in marked))
+
+
 if __name__ == '__main__':
     unittest.main()

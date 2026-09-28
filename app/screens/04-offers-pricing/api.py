@@ -330,8 +330,18 @@ def with_decisions(acts, today=None, path=None):
                 back = (date.fromisoformat(str(d.get('time'))[:10]) + timedelta(days=rk.SNOOZE_DAYS)).isoformat()
             except ValueError:
                 back = None
-            snoozed.append({'id': a['id'], 'title': a['title'], 'back_on': back, 'reason': d.get('reason')})
+            snoozed.append({'id': a['id'], 'title': a['title'], 'back_on': back, 'reason': d.get('reason'),
+                            'finding_ids': list(a.get('finding_ids') or [])})
     return kept, snoozed
+
+
+def mark_snoozed(findings, snoozed):
+    """audit.md section 4: a finding whose move the founder put off ("Not now") reads snoozed until it comes back."""
+    until = {fid: x.get('back_on') for x in snoozed for fid in x.get('finding_ids') or []}
+    for f in findings:
+        if f['id'] in until and f.get('status') == 'open':
+            f['status'], f['snoozed_until'] = 'snoozed', until[f['id']]
+    return findings
 
 
 def blind_spots(ranked, rd=None):
@@ -449,6 +459,7 @@ def overview(data, brand):
     resolved = finding_history(brand, ranked['findings'], ends_on, HISTORY_PATH.get(brand))
     desk = {k: ranked[k] for k in DESK_KEYS}
     plan, snoozed = with_decisions(ranked['actions'])
+    mark_snoozed(ranked['findings'], snoozed)
     made = approvals.planned(rd) if brand else {}
     for a in plan:
         if a['id'] in made:
