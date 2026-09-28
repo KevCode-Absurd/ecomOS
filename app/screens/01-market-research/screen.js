@@ -275,11 +275,26 @@
     let b;
     try { b = await api(BASE + 'candidates/' + encodeURIComponent(cid) + '/brief' + Q); } catch (e) { alert('Brief unavailable: ' + e.message); return; }
     const sendTo = (team) => el('button', { class: 'btn sm', type: 'button', text: 'Send to ' + team, onclick: async (ev) => { const btn = ev.currentTarget; try { const res = await api(BASE + 'candidates/' + encodeURIComponent(cid) + '/handoff/' + encodeURIComponent(team) + Q, { method: 'POST', body: { who: 'person' } }); btn.textContent = 'Sent to ' + team + ' (' + res.shared.status + ')'; btn.disabled = true; } catch (e) { alert('Not sent: ' + e.message); } } });
-    UI.panel({ title: 'Brief: ' + b.name, tools: [UI.copyButton({ label: 'Copy brief', text: () => b.text }), sendTo('copy'), sendTo('landing pages')],
+    const launch = el('button', { class: 'btn sm', type: 'button', text: 'Launch plan', onclick: () => openLaunch(cid) });
+    UI.panel({ title: 'Brief: ' + b.name, tools: [UI.copyButton({ label: 'Copy brief', text: () => b.text }), launch, sendTo('copy'), sendTo('landing pages'), sendTo('creative')],
       body: el('div', { class: 'stack' }, el('p', { class: 'micro muted', text: 'One page from every block of the desk: the angle and proof for creative, the spec, margin and cash timing for sourcing. Numbers come from the blocks; nothing is written here. From shortlisted on, Send to copy posts the listing copy brief and Send to landing pages the launch page brief to the shared hand-off log; the team sets the status.' }),
         el('pre', { class: 'small', style: { whiteSpace: 'pre-wrap', margin: 0 }, text: b.text })) });
   }
 
+  async function openLaunch(cid) {
+    let lp;
+    try { lp = await api(BASE + 'candidates/' + encodeURIComponent(cid) + '/launch' + Q); } catch (e) { alert('Launch plan unavailable: ' + e.message); return; }
+    const st = { done: 'Done', due: 'Due', overdue: 'Overdue', no_date: 'No date' };
+    const setDate = (key, label) => { const v = prompt(label + ' (2026-11-01), or empty to clear', ''); if (v == null) return; const body = { who: 'person' }; body[key] = v; candidatePost('candidates/' + cid, body); };
+    const rows = lp.steps.map((x) => ({ due: x.due ? fmt.date(x.due) + (x.days < 0 ? ' (' + (-x.days) + ' d ago)' : ' (in ' + x.days + ' d)') : 'no date', label: x.label, owner: x.owner, state: st[x.state], when: x.done_when, x }));
+    UI.panel({ title: 'Launch plan: ' + lp.name, tools: [UI.copyButton({ label: 'Copy plan', text: () => lp.text })],
+      body: el('div', { class: 'stack' }, el('p', { class: 'micro muted', text: 'Target ' + (lp.target ? fmt.date(lp.target) + ' (' + lp.target_source + ')' : 'not set') + '. Lead time ' + (lp.lead_time_days == null ? 'unknown' : lp.lead_time_days + ' days') + ' (' + (lp.lead_time_source || 'none on file') + '). ' + lp.open + ' steps open, ' + lp.overdue + ' overdue' + (lp.launch_ready ? '; launch-ready' : '') + '.' }),
+        UI.verdictTable({ columns: [{ key: 'due', label: 'Due' }, { key: 'label', label: 'Step' }, { key: 'owner', label: 'Owner' }, { key: 'when', label: 'Done when' }], rows,
+          verdict: { at: 1, kind: (r) => r.x.state === 'done' ? 'keep' : r.x.state === 'overdue' ? 'fix' : r.x.state === 'due' ? 'watch' : 'na', text: (r) => r.state, reason: () => lp.rule }, sort: false }),
+        el('div', { class: 'row', style: { gap: '6px', flexWrap: 'wrap' } }, el('button', { class: 'btn sm quiet', type: 'button', text: 'Set the launch target', onclick: () => setDate('launch_target', 'Launch target for ' + lp.name) }),
+          el('button', { class: 'btn sm quiet', type: 'button', text: 'Order placed on', onclick: () => setDate('ordered_on', 'Order placed on') }), el('button', { class: 'btn sm quiet', type: 'button', text: 'Stock landed on', onclick: () => setDate('stock_landed_on', 'Stock landed on') }), el('button', { class: 'btn sm quiet', type: 'button', text: 'Launched on', onclick: () => setDate('launched_on', 'Launched on') })),
+        el('p', { class: 'micro faint', text: 'Rule: ' + lp.rule + '.' })) });
+  }
   async function answerQuestion(r) {
     const answer = prompt('Your answer to "' + (r.doubt || r.question) + '" (one or two lines; it becomes a brain record):');
     if (answer == null || !answer.trim()) return;

@@ -2071,6 +2071,54 @@ class HandoffCreativeTest(unittest.TestCase):
         finally:
             audit.SHARED_HANDOFFS_PATH, audit.PIPELINE_PATH = saved
 
+    def test_launch_plan_dates_work_back_from_the_target(self):
+        import tempfile
+        saved = (audit.SHARED_HANDOFFS_PATH, audit.PIPELINE_PATH, api.HANDOFF_PATH, api.TESTS_PATH)
+        tmp = Path(tempfile.mkdtemp())
+        audit.SHARED_HANDOFFS_PATH, audit.PIPELINE_PATH, api.HANDOFF_PATH, api.TESTS_PATH = tmp / 'handoffs.json', tmp / 'pipeline.json', tmp / 'pc.json', tmp / 'pt.json'
+        try:
+            data = api.sample_data()
+            D = audit.last_full_day(data, None)
+            target = D + timedelta(days=90)
+            audit.PIPELINE_PATH.write_text(json.dumps({'rows': [       # rows for the sample brand, read with brand None
+                {'candidate_id': 'g1', 'brand': 'sample', 'name': 'G', 'category': 'socks', 'stage': 'go', 'launch_target': target.isoformat(), 'lead_time_days': 40, 'cogs_source': 'quote', 'sample': {'result': 'pass'}, 'review_date': (target + timedelta(days=10)).isoformat()},
+                {'candidate_id': 'g2', 'brand': 'sample', 'name': 'H', 'category': 'socks', 'stage': 'shortlisted'},
+                {'candidate_id': 'r1', 'brand': 'sample', 'name': 'R', 'category': 'socks', 'stage': 'researched'}]}), encoding='utf-8')
+            lp = api.launch_plan(data, None, 'g1')
+            by = {x['key']: x for x in lp['steps']}
+            self.assertEqual(lp['target'], target.isoformat())
+            self.assertEqual(by['order']['due'], (target - timedelta(days=40 + audit.ORDER_SAFETY_DAYS)).isoformat())
+            self.assertEqual(by['quote']['due'], (target - timedelta(days=40 + audit.ORDER_SAFETY_DAYS + api.LAUNCH_QUOTE_DAYS)).isoformat())
+            self.assertEqual(by['copy']['due'], (target - timedelta(days=14)).isoformat())
+            self.assertEqual(by['page']['due'], (target - timedelta(days=10)).isoformat())
+            self.assertEqual(by['stock']['due'], (target - timedelta(days=audit.ORDER_SAFETY_DAYS)).isoformat())
+            self.assertEqual(by['read']['due'], (target + timedelta(days=28)).isoformat())      # 28 days after launch beats the earlier review date
+            self.assertEqual((by['quote']['state'], by['sample']['state'], by['order']['state'], by['copy']['state']), ('done', 'done', 'due', 'due'))
+            self.assertEqual(lp['overdue'], 0)
+            self.assertIn('LAUNCH PLAN: G', lp['text'])
+            lp2 = api.launch_plan(data, None, 'g2')                     # no target, no lead time: the dates are honest blanks
+            self.assertIsNone(lp2['target'])
+            self.assertEqual({x['state'] for x in lp2['steps'] if x['key'] != 'target'}, {'no_date'})
+            self.assertEqual(next(x for x in lp2['steps'] if x['key'] == 'target')['state'], 'due')
+            self.assertEqual([c['candidate_id'] for c in api.launch_candidates(None)], ['g1', 'g2'])
+            with self.assertRaises(ValueError):
+                api.launch_plan(data, None, 'nope')
+            # the launch steps ride the calendar
+            cal = api.calendar_items(data, None, horizon_days=120)
+            launch = [i for i in cal['items'] if i['kind'] == 'launch']
+            self.assertTrue(any(i['title'].startswith('First order placed: G') for i in launch))
+            self.assertFalse(any('Supplier quote' in i['title'] for i in launch))     # done steps stay off the calendar
+            out = api.handle(Req(['candidates', 'g1', 'launch'], brand='sample'))
+            self.assertEqual(out['candidate_id'], 'g1')
+            self.assertEqual(api.handle(Req(['candidates', 'nope', 'launch'], brand='sample'))[0], 404)
+            r = api.candidate_update('sample', 'g1', {'ordered_on': 'soon', 'who': 'person'}, D)
+            self.assertEqual(r[0], 400)
+            r = api.candidate_update('sample', 'g1', {'ordered_on': D.isoformat(), 'who': 'person'}, D)
+            self.assertEqual(r['changes'], ['ordered on set'])
+            self.assertEqual({x['key']: x['state'] for x in api.launch_plan(data, None, 'g1')['steps']}['order'], 'done')
+        finally:
+            audit.SHARED_HANDOFFS_PATH, audit.PIPELINE_PATH, api.HANDOFF_PATH, api.TESTS_PATH = saved
+
     def test_avatar_handoff_names_the_buyer(self):
         fid = next(f['id'] for f in audit.run('bombas', {'ends_on': '2026-09-27'}) if f['rule_id'] == 'PROD-R11')
         h = api.creative_handoff('bombas', fid)

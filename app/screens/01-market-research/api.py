@@ -1723,6 +1723,14 @@ def candidate_update(brand, cid, body, today):
             return 400, {'error': 'cogs_source must be one of ' + ', '.join(audit.COGS_SOURCES)}
         row['cogs_source'] = src
         changes.append(f'cost source {src}')
+    for k in ('launch_target', 'ordered_on', 'stock_landed_on', 'launched_on'):
+        if body.get(k) is not None:
+            q = str(body[k]).strip()
+            try:
+                row[k] = dt.date.fromisoformat(q).isoformat() if q else None
+            except ValueError:
+                return 400, {'error': f'{k} must be a date like 2026-09-28'}
+            changes.append(k.replace('_', ' ') + (' set' if q else ' cleared'))
     if body.get('quote_on') is not None:
         q = str(body['quote_on']).strip()
         try:
@@ -1966,6 +1974,8 @@ GO_HANDOFF_TEAMS = {
              'ask': 'the product listing copy: title, 5 bullets, the description, the FAQ from the objection ladder, in the words buyers use'},
     'landing pages': {'kind': 'page_section', 'label': 'the launch page section', 'capability': 'PROD-C12',
                       'ask': 'the launch section for the product page: the angle as the headline, the proof block, the buyer\'s doubt answered, the offer structure, and the reviews to quote'},
+    'creative': {'kind': 'ad_brief', 'label': 'the launch ad brief', 'capability': 'PROD-C12',
+                 'ask': 'the launch ad brief: the angle as the hook, the buyer and the doubt, the proof to show, 3 formats from the brand\'s own winners, and the do-not list'},
 }
 
 
@@ -2020,6 +2030,99 @@ def send_candidate_handoff(data, brand, cid, team, body, today):
     doc['rows'] = rows
     HANDOFFS_PATH.write_text(json.dumps(doc, indent=1), encoding='utf-8')
     return 201, {'ok': True, 'handoff': row, 'shared': shared}
+
+
+
+# ---------------------------------------------------------------- the launch plan: every dated step to go-live on one list
+
+LAUNCH_STEPS = [
+    # key, label, owner, days before launch (None: from the lead time), what makes it done
+    ('target', 'Launch target set', 'person', 0, 'a launch target date on the candidate'),
+    ('quote', 'Supplier quote in hand', 'person', None, 'cost source quote on the candidate'),
+    ('sample', 'Sample passed through our chain', 'person', None, 'sample result pass'),
+    ('sourcing', 'Sourcing channel compared', 'agent', None, 'a chosen channel and one alternative'),
+    ('order', 'First order placed', 'person', None, 'the order-by date on the candidate, or lead time plus safety before launch'),
+    ('copy', 'Listing copy done', 'copy', 14, 'status done on the shared log'),
+    ('page', 'Launch page done', 'landing pages', 10, 'status done on the shared log'),
+    ('ad_brief', 'Launch ad brief sent', 'creative', 14, 'a row to creative on the shared log'),
+    ('stock', 'Stock landed', 'person', audit.ORDER_SAFETY_DAYS, 'the order plus its lead time'),
+    ('launch', 'Launch', 'person', 0, 'the launch target'),
+    ('read', 'First read', 'agent', -28, 'the review date, or 28 days after launch'),
+]
+LAUNCH_QUOTE_DAYS = 21     # the quote is in hand this long before the order
+LAUNCH_SAMPLE_DAYS = 14    # the sample has passed this long before the order
+
+
+def launch_plan(data, brand, cid):
+    """Every dated step to go-live for one candidate at shortlisted or go, or with a first run decided: the date each step is
+    due (worked back from the launch target through the lead time and the safety days), its owner, its state (done, due,
+    overdue, no date) and what makes it done. The target is the candidate's launch_target, else the peak month less the
+    safety days for a seasonal candidate; with neither, the steps have no dates and the first step says so."""
+    cand = next((c for c in audit.pipeline(brand or 'sample') if c.get('candidate_id') == cid), None)
+    if cand is None:
+        raise ValueError(f'no candidate {cid}')
+    ends_on = audit.last_full_day(data, brand)
+    br = audit.brain(brand, today=ends_on) if brand else None
+    rd = audit.Reader(data, brand, ends_on)
+    ready = next((r for r in audit.launch_readiness(brand or 'sample', data, br, rd, ends_on)['rows'] if r['candidate_id'] == cid), None)
+    items = {i['key']: i for i in (ready or {}).get('checklist') or []}
+    lead, lead_src = audit.lead_time_for(cand, br)
+    mix = audit.category_mix(data, brand, rd)
+    pat = audit.demand_pattern(cand.get('category'), mix, audit.web_pass(brand), cand.get('name'))
+    target_src = None
+    target = None
+    if cand.get('launch_target'):
+        target, target_src = dt.date.fromisoformat(str(cand['launch_target'])[:10]), 'launch target on the candidate'
+    elif pat.get('tag') == 'seasonal' and pat.get('peak_months'):
+        ob, peak = audit.order_by_date(pat['peak_months'], ends_on, lead if lead is not None else 0)
+        if peak:
+            target, target_src = peak - dt.timedelta(days=audit.ORDER_SAFETY_DAYS), f'{audit.ORDER_SAFETY_DAYS} days before the {str(peak)[:7]} peak (seasonal)'
+    order_due = (target - dt.timedelta(days=(lead or 0) + audit.ORDER_SAFETY_DAYS)) if target and lead is not None else None
+    creative = audit.team_status(cid, 'creative')
+    sv = audit.sample_verdict(cand.get('sample'))
+    sourcing = next((r for r in audit.sourcing_read(brand or 'sample')['rows'] if r['candidate_id'] == cid), None)
+    done = {'target': bool(target), 'quote': str(cand.get('cogs_source') or '') == 'quote', 'sample': sv == 'tested_pass', 'sourcing': bool(sourcing and sourcing['verdict'] == 'compared'),
+            'order': bool(cand.get('ordered_on')), 'copy': items.get('copy', {}).get('status') == 'pass', 'page': items.get('page', {}).get('status') == 'pass', 'ad_brief': creative['status'] != 'none',
+            'stock': bool(cand.get('stock_landed_on')), 'launch': bool(cand.get('launched_on')), 'read': False}
+    steps = []
+    for key, label, owner, before, rule in LAUNCH_STEPS:
+        if key == 'quote':
+            due = order_due - dt.timedelta(days=LAUNCH_QUOTE_DAYS) if order_due else None
+        elif key == 'sample':
+            due = order_due - dt.timedelta(days=LAUNCH_SAMPLE_DAYS) if order_due else None
+        elif key in ('sourcing', 'order'):
+            due = order_due
+        elif key == 'read':
+            due = max(target + dt.timedelta(days=28), dt.date.fromisoformat(cand['review_date'])) if target and cand.get('review_date') else (target + dt.timedelta(days=28) if target else None)
+        elif key == 'target':
+            due = ends_on
+        else:
+            due = target - dt.timedelta(days=before) if target else None
+        if key in ('order', 'sourcing', 'quote', 'sample') and target and lead is None:
+            why = 'no lead time on the candidate or the brand, so the order date cannot be placed'
+        else:
+            why = rule
+        state = 'done' if done[key] else ('no_date' if due is None else 'overdue' if due < ends_on else 'due')
+        steps.append({'key': key, 'label': label, 'owner': owner, 'due': due.isoformat() if due else None, 'days': (due - ends_on).days if due else None, 'state': state, 'done_when': why})
+    open_steps = [x for x in steps if x['state'] != 'done']
+    return {'candidate_id': cid, 'name': cand.get('name'), 'stage': cand.get('stage'), 'ends_on': ends_on.isoformat(), 'target': target.isoformat() if target else None, 'target_source': target_src,
+            'lead_time_days': lead, 'lead_time_source': lead_src, 'steps': steps, 'open': len(open_steps), 'overdue': sum(1 for x in steps if x['state'] == 'overdue'),
+            'launch_ready': bool(ready and ready.get('launch_ready')),
+            'text': '\n'.join([f'LAUNCH PLAN: {cand.get("name")} ({cand.get("stage")})', f'Target: {target.isoformat() if target else "not set"} ({target_src or "set launch_target on the candidate"}). Lead time: {lead if lead is not None else "unknown"} days ({lead_src or "none on file"}).', '']
+                              + [f'- {x["due"] or "no date"}  {x["label"]}  [{x["owner"]}]  {x["state"]}' + ('' if x['state'] == 'done' else f'  (done when: {x["done_when"]})') for x in steps]),
+            'rule': f'dates work back from the launch target: the order goes in lead time plus {audit.ORDER_SAFETY_DAYS} days before launch, the quote {LAUNCH_QUOTE_DAYS} days and the passed sample {LAUNCH_SAMPLE_DAYS} days before the order, copy and the ad brief 14 days and the page 10 days before launch, stock lands {audit.ORDER_SAFETY_DAYS} days before, the first read 28 days after; a step with no date says why'}
+
+
+def launch_candidates(brand):
+    """Candidates the launch plan applies to: open at shortlisted or later, or with a first run decided."""
+    out = []
+    for c in audit.pipeline(brand or 'sample'):
+        st = c.get('stage')
+        idx = audit.STAGES.index(st) if st in audit.STAGES else None
+        if st in ('killed', 'kill') or idx is None or (idx < audit.READINESS_STAGE_MIN and not c.get('first_run')):
+            continue
+        out.append(c)
+    return out
 
 
 # ---------------------------------------------------------------- the hand-off (events contract: product_candidates, and a proposed test on go)
@@ -2147,6 +2250,14 @@ def calendar_items(data, brand, horizon_days=CALENDAR_DAYS):
         if ob:
             add(ob, 'order_by', f'Order by: {c.get("name")}', f'{lead} days of lead time plus {audit.ORDER_SAFETY_DAYS} of safety before the {str(peak)[:7]} peak' + ('; first run decided' if c.get('first_run') else '; no first run yet'),
                 finding_id=f'{SCREEN}.PROD-R40.{c.get("candidate_id")}', tone='warn', candidate=c.get('candidate_id'))
+    for c in launch_candidates(brand):
+        try:
+            lp = launch_plan(data if data is not None else sample_data(), brand, c.get('candidate_id'))
+        except ValueError:
+            continue
+        for x in lp['steps']:
+            if x['state'] in ('due', 'overdue') and x['key'] != 'target':
+                add(x['due'], 'launch', f'{x["label"]}: {c.get("name")}', f'{x["owner"]}; done when {x["done_when"]}', tone='warn', candidate=c.get('candidate_id'))
     for a in r['actions'][:10]:
         if a.get('check_on') and a.get('status') != 'unavailable':
             add(a['check_on'], 'check', f'Check: {a["title"][:70]}', a.get('win_rule') or '', action=a, tone='good')
@@ -2632,6 +2743,11 @@ def handle(req):
             return {'findings': audit.run(brand, None, data=data), 'rules': audit.RULES}
         if len(req.path) == 3 and req.path[0] == 'candidates' and req.path[2] == 'brief':
             return candidate_brief(data, brand, req.path[1])
+        if len(req.path) == 3 and req.path[0] == 'candidates' and req.path[2] == 'launch':
+            try:
+                return launch_plan(data, brand, req.path[1])
+            except ValueError as e:
+                return 404, {'error': str(e)}
         if req.path == ['product_candidates']:
             return {'table': 'product_candidates', 'brand': brand or 'sample', 'rows': handoff_rows(brand or 'sample'), 'file': str(HANDOFF_PATH.relative_to(APP.parent))}
         if req.path == ['tests']:
@@ -2664,4 +2780,4 @@ def handle(req):
             return {'parked': r['parked'], 'decided': r['decided'], 'snooze_days': rank_mod.SNOOZE_DAYS, 'window': r['window']}
     except ValueError as exc:
         return 400, {'error': str(exc)}
-    return 404, {'error': 'not found', 'routes': ['overview', 'findings', 'rank', 'parked', 'decisions', 'calendar', 'week', 'report', 'reports', 'changes', 'log', 'candidates/<id>/brief', 'candidates/<id>/handoff/<team> (POST)', 'handoff/<finding_id>', 'handoffs', 'product_candidates', 'tests']}
+    return 404, {'error': 'not found', 'routes': ['overview', 'findings', 'rank', 'parked', 'decisions', 'calendar', 'week', 'report', 'reports', 'changes', 'log', 'candidates/<id>/brief', 'candidates/<id>/launch', 'candidates/<id>/handoff/<team> (POST)', 'handoff/<finding_id>', 'handoffs', 'product_candidates', 'tests']}
