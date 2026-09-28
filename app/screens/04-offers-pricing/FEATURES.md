@@ -2,13 +2,46 @@
 
 Status: todo | doing | done | parked. One feature per commit. The first round is the skeleton; after that, features come in rounds of 10, stack-ranked by revenue impact, usefulness and how easy they are to build on dummy data.
 
-## Round 0: skeleton
+## Round 0: skeleton (done 28 Sep 2026, S3.9, Bombas simulated data)
 
 | # | Feature | Status |
 |---|---|---|
-| 0.1 | Page shell in the shared UI kit: header, empty-state tiles, insight list, action buttons | todo |
-| 0.2 | `api.py` serving this screen's metrics from `app/data/` with unavailable states | todo |
-| 0.3 | 3 metric tiles, 2 insights, 1 chart from the sample brand | todo |
+| 0.1 | Page shell in the shared UI kit: header, simulated-data banner, tiles, insights, decision row, findings | done |
+| 0.2 | `api.py`: `overview` and `findings` under `/api/04-offers-pricing/`, unavailable states, sample brand degrades | done |
+| 0.3 | 3 tiles (free shipping threshold vs AOV and break-even, discount share of gross, multi-pack share), 2 insights as rules (threshold pull and move rule; discount creep), 1 chart (AOV and discount share by month, 24 months) | done |
+| 0.4 | Offer stack from the brain: threshold, shipping under it, first-order code (ad library, first and last seen), code share in live ads, pack ladder, guarantee, return window, gifting; each with source, link and date | done |
+| 0.5 | Free shipping threshold economics: order value in $5 bins (paid vs free), share $10 just under and just over, break-even (AOV + label / margin), the move rule | done |
+| 0.6 | Discount policy: discount share by month, BFCM depth against the 28 days before | done |
+| 0.7 | Pack ladder: revenue and packs by pack size, paid and list price per pair, drop per rung and vs the single | done |
+| 0.8 | Guarantee against objections: top rung of each ladder, proof or none, returns per 1,000 orders for the matching reason | done |
+| 0.9 | `audit.py`: OFFER-R01 threshold under break-even (money), OFFER-R03 per-SKU margin unavailable, OFFER-R04 deal-breaker rung with no proof (money floor from returns when above own median) | done |
+
+Metrics added in their own commits: `order_value_distribution`, `returns_by_reason` (`app/contracts/metrics.md`, Offers section).
+
+Known gaps from round 0:
+- Per-SKU margin is unavailable: `finance_inputs.json` keys cost by codes like `BMB-SK-M-ANK-1`; products use `BB-ANK-1`. Break-even uses the target gross margin until they join.
+- Order-level numbers (bins, returns by reason) read `data.sqlite`; the page shows them as shares or per-order rates and takes volume from the daily totals, so a scale 0.1 build and the scale 1.0 aggregates agree.
+- Simulated orders charge $5.99 under the line and use their own codes; the brain's public values ($7.95, COMFORT20) are shown beside them.
+- The brain lists 7 and 12 packs; the simulated catalogue has 1, 3, 4, 6 and 8. The 6-pack ankle sock gives no per-pair drop over the 4-pack (a LIFE-C39 candidate).
+
+## Room jobs
+
+| Job | Question | Capability | Status |
+|---|---|---|---|
+| Design the offer's full value proposition | does this offer beat the buyer's biggest objection, priced and proven | LIFE-C36 | round 0: guarantee table, OFFER-R04 |
+| Model offer and discount economics before launch | what does this discount cost in margin, and does it cross my red line | MONEY-C05 | round 0: threshold break-even, OFFER-R01; margin waits on COGS join |
+| Govern discount policy and price integrity | are we training buyers to wait for a discount | LIFE-C38 | round 0: discount share, BFCM depth, creep rule |
+| Design bundles and quantity-ladder pricing | does every tier have a reason to exist, is the middle one winning | LIFE-C39 | round 0: pack ladder table |
+| Design gift-with-purchase offers | is the gift lifting the tier we want | LIFE-C40 | todo |
+| Place upsell and cross-sell offers | which placements convert, and do they hurt margin | LIFE-C41 | todo |
+| Design the guarantee and risk-reversal offer | does the guarantee remove risk without breaking margin | LIFE-C42 | todo (claims not tagged) |
+| Design the subscription offer and cancel flow | is the reason to subscribe stronger than a flat discount | LIFE-C43 | parked (non-subscription first) |
+| Design and model the pop-up first-order offer | does the pop-up offer pay for itself | LIFE-C02 | todo |
+| Design referral and partner offers | is referral cheaper than paid media | LIFE-C45 | todo |
+| Design payment terms, BNPL and trial pricing | is trial-to-full matching the model | LIFE-C46 | todo |
+| Run the offer testing framework | what to test next, is any test untrustworthy | LIFE-C47 | todo |
+| Track competitor and MAP pricing | did a competitor or reseller move price | BRN-C11, PROD-C46 | todo |
+| Run the gift card program | outstanding gift card liability and redemption | LIFE-C58 | todo |
 
 ## Candidates from the room spec (pick 10 per round)
 
@@ -106,3 +139,4 @@ Status: todo | doing | done | parked. One feature per commit. The first round is
 
 | Round | Features picked | Date | Notes |
 |---|---|---|---|
+| 0 | skeleton, 0.1 to 0.9 | 2026-09-28 | S3.9; screenshot round0.png |
