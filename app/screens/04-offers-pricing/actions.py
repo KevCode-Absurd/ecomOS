@@ -1451,6 +1451,28 @@ def price_files(actions, ctx):
                                          'price_a': p['price_a'], 'price_b': p['price_b'], 'bundle_price': p['bundle_price'],
                                          'orders_together_90d': p['orders_both']} for p in ctx.bundles['pairs'][:BUNDLE_BUILD]],
                                'note': 'one bundle product per row, both items in one pack; no new SKU is made here.'}
+        elif a.get('rule_id') == 'OFFER-R08' and ctx.first_order and not ctx.first_order.get('unavailable'):
+            g = next((r for r in ctx.first_order['rows'] if r['key'] == 'gwp'), None)
+            gift = (g or {}).get('gift') or {}
+            code = next((r for r in ctx.first_order['rows'] if r['key'] == 'code'), {})
+            if gift.get('sku'):
+                a['price_file'] = {'name': 'first-order-discount-settings.csv', 'label': 'settings', 'rows': [
+                    {'arm': 'A', 'setting': 'discount', 'value': code.get('terms') or 'today\'s first-order code'},
+                    {'arm': 'B', 'setting': 'discount type', 'value': 'free item with the order (buy any, get this item free)'},
+                    {'arm': 'B', 'setting': 'free item', 'value': f'{gift["sku"]}, worth {money(gift["value"])}, costs {money(gift["cost"])}'},
+                    {'arm': 'B', 'setting': 'who qualifies', 'value': 'customers with no prior order'},
+                    {'arm': 'B', 'setting': 'uses', 'value': 'one per customer'},
+                    {'arm': 'B', 'setting': 'combines with', 'value': 'shipping discounts only'},
+                    {'arm': 'A and B', 'setting': 'split', 'value': '50/50 by new visitor; each ad runs both offers'}],
+                    'note': 'type these into the store\'s discount settings; nothing is changed from here.'}
+        elif a.get('rule_id') == 'OFFER-R32' and ctx.welcome and not ctx.welcome.get('unavailable'):
+            a['price_file'] = {'name': 'welcome-holdout-settings.csv', 'label': 'settings', 'rows': [
+                {'arm': 'A', 'setting': 'pop-up offer', 'value': f'{ctx.welcome["code"]} as today'},
+                {'arm': 'B', 'setting': 'pop-up offer', 'value': 'email sign-up with no code'},
+                {'arm': 'B', 'setting': 'share of new visitors', 'value': '10 percent'},
+                {'arm': 'A and B', 'setting': 'who sees it', 'value': 'new visitors only'},
+                {'arm': 'A and B', 'setting': 'length', 'value': '28 days'}],
+                'note': 'type these into the pop-up tool; nothing is changed from here.'}
         elif a.get('rule_id') == 'OFFER-R36' and not (ctx.paid or {}).get('unavailable'):
             lean = [r for r in ctx.paid['rows'] if r['judged'] and r['code_share'] >= playbook.CODE_DEPENDENT]
             a['price_file'] = {'name': 'code-exclusions.csv', 'label': 'exclusions',

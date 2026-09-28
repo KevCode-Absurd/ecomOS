@@ -2331,7 +2331,8 @@ class PriceFileTest(unittest.TestCase):
             self.assertIn(r['sku'], cost['artefact']['draft'])
             self.assertAlmostEqual(r['change'], r['price_b'] - r['price_now'], 2)
         for a in acts.values():
-            self.assertEqual(a['artefact']['kind'], 'price_change')
+            if not a['price_file'].get('label'):         # a price file, not settings or a build list
+                self.assertEqual(a['artefact']['kind'], 'price_change')
 
 
 class BuildFileTest(unittest.TestCase):
@@ -2399,6 +2400,23 @@ class WindowDatesTest(unittest.TestCase):
             ds = [e['date'] for e in a['calendar_file']['events']]
             self.assertEqual(ds, [w['approve_by'], (date.fromisoformat(w['approve_by']) + timedelta(days=7)).isoformat(), w['start'], w['end']])
             self.assertEqual(ds, sorted(ds))
+
+
+class SettingsFileTest(unittest.TestCase):
+    """Round 10 feature 8: offer tests ship the settings a person types into the store or pop-up tool."""
+
+    def test_bombas_first_order(self):
+        a = next(x for x in api.actions.rank('bombas')['actions'] if x['rule_id'] == 'OFFER-R08')
+        rows = a['price_file']['rows']
+        gift = next(r for r in rows if r['setting'] == 'free item')
+        self.assertIn('BMB-SK-M-ANK-1', gift['value'])
+        self.assertIn('nothing is changed from here', a['price_file']['note'])
+
+    def test_sample_welcome(self):
+        sys.path.insert(0, str(ROOT / 'app'))
+        import server
+        a = next(x for x in api.actions.rank(None, None, server.Data())['actions'] if x['rule_id'] == 'OFFER-R32')
+        self.assertIn('WELCOME10', a['price_file']['rows'][0]['value'])
 
 
 if __name__ == '__main__':
