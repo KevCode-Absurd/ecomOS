@@ -137,6 +137,21 @@ Status: todo | doing | done | parked. One feature per commit. The first round is
 | 3.9 | Proposed updates in a minute (`GET review`, `POST review/bulk`): proposals grouped by the file or agent they came from, each next to the record that wins the field today (new field, replaces, same value), with the evidence quote; Accept all that add something, Ignore the same-value ones, Ignore all, or one by one; accepts and ignores land in the changes log | done | Clear 30 proposals in a minute and never accept a duplicate |
 | 3.10 | The founder round (`GET digest`): the top 5 questions with pull-first hints and the rooms they unblock, the proposed updates waiting, one health line, the top 3 moves to approve, in one message to copy; Slack and email delivery read unavailable until a connector exists | done | Get the weekly ask as one message that takes a minute to answer |
 
+## Round 4 (manager, 28 Sep 2026): 10 features, one commit each
+
+| # | Feature | Status | What a founder can do |
+|---|---|---|---|
+| 4.1 | The bottlenecks, and the unlocks under each (`bottlenecks.py`, `GET bottlenecks`, `POST bottlenecks/pick`): the diagnosis's pressure points with their numbers, mapped to the idea bank's fixed taxonomy; under each, the master-list items that address it (matched by words, with score and decision) and the bank's 5 best unlocks for this store (store tags from the brand's own records, ideas must name the theme, ranked by fit then the bank's score) with effect, effort, cost, risk, the signal to check and the steps; Pick it writes a plans record, rule BRN-R22 turns it into a test brief action on the master list; strengths and the diagnosis test queue | done | See the bottleneck, what is already moving on it, and pick the next unlock from 4,650 ideas without reading them |
+| 4.2 | Plug and play proof on a second brand | todo | |
+| 4.3 | Ladder proof matrix: rungs by surface | todo | |
+| 4.4 | The brain audits itself | todo | |
+| 4.5 | Peak readiness | todo | |
+| 4.6 | Record history and restore | todo | |
+| 4.7 | Visual palette check | todo | |
+| 4.8 | Decisions polish: snooze expiry, undo | todo | |
+| 4.9 | New brand skeleton | todo | |
+| 4.10 | Public and private audit | todo | |
+
 ### Round 3 status for Kevin (28 Sep 2026)
 
 1. What you can do now: read one list of everything that changed this week with the value before; see that the first order code sits in 21 of 23 active ads before touching it; replace every benchmark that stood in for your number, one click each; give shopping agents and answer engines one approved set of store facts and export it; check a draft against the platform it goes to (Amazon, Meta, Google, email, SMS); see exactly what any agent is told before it writes; let the voice sheet learn from the words you cut and add; read the week in one page or print it; clear 30 proposed updates in a minute with the record each would replace beside it; get the founder round as one message.

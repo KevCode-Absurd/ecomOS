@@ -139,6 +139,15 @@ def build(f: dict, nr: float | None) -> dict:
         a.update(title=f"Settle {label.replace('_', ' ')}: {_pct(_ev(f, 'weak_share'))} of it is inferred", owner="agent_drafts",
                  artefact={"kind": "brain_record", "label": "approved records in place of inferred ones", "draft": None},
                  steps=f.get("steps") or a["steps"], check_on=_check_on(f, 7), time_to_ship_hours=1)
+    elif rid == "BRN-R22":
+        idea = f.get("idea") or {}
+        steps = [{"n": i + 1, "who": "agent", "text": str(st)} for i, st in enumerate((idea.get("steps") or [])[:4])]
+        draft = f"Test brief for {idea.get('idea_id')}: {idea.get('title')}\nSignal to check first: {idea.get('signal')}\nMetric: {idea.get('metric')} {idea.get('direction')}\nEffort {idea.get('effort')}, cost {idea.get('cost')}, risk {idea.get('risk')}." + (f"\nWhy you picked it: {idea.get('why')}" if idea.get("why") else "")
+        a.update(title=f"Write the test brief for {idea.get('idea_id')}: {str(idea.get('title'))[:60]}", owner="agent_drafts",
+                 artefact={"kind": "test_brief", "label": "a test brief with the signal check, the metric and the read date", "draft": draft},
+                 steps=(steps or [{"n": 1, "who": "agent", "text": "Check the idea's signal in the brand's data."}]) + [{"n": len(steps) + 1, "who": "agent", "text": "Draft the brief with the metric, the size and the read date; add it to the experiments registry."},
+                                                                                                                       {"n": len(steps) + 2, "who": "person", "text": "Approve the brief. The experiments screen runs it."}],
+                 check_on=_check_on(f, 7), time_to_ship_hours=2)
     elif rid == "BRN-R21":
         a.update(title=f"Confirm or correct: {label}", owner="person",
                  artefact={"kind": "brain_record", "label": "your number as an approved record; the generator reads it next run", "draft": None},

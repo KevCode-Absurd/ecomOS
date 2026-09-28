@@ -107,6 +107,10 @@ BRN-R21 modelled assumption read by rooms. An assumption in
     source id, and rooms that read its section (assumptions.py). Severity
     medium for modelled, low for sourced. Capability BRN-C07 (founder round).
     Owner: 05-brand-brain.
+BRN-R22 picked idea without a brief. A plans record `idea_<id>` the founder
+    picked from the idea bank (status picked) with no test brief yet. Severity
+    medium. Capability PROP-C06 (proposal cards; the brief is drafted, the
+    founder approves). Owner: 05-brand-brain.
 BRN-R07 competitor snapshot stale. A configured Ad Library page was captured
     more than SNAPSHOT_STALE_DAYS (7) ago, or never. Severity low. Capability
     BRN-C11 (competitor snapshot, signals only). Owner: 05-brand-brain.
@@ -181,10 +185,12 @@ RULES = [
      "inputs": ["team.permission_*"], "capability": "LOOP-C29", "owner_screen": SCREEN},
     {"rule_id": "BRN-R21", "name": "modelled assumption read by rooms", "entity_type": "metric",
      "inputs": ["assumptions.json", "questions.bank.json"], "capability": "BRN-C07", "owner_screen": SCREEN},
+    {"rule_id": "BRN-R22", "name": "picked idea without a brief", "entity_type": "brand",
+     "inputs": ["plans.idea_*"], "capability": "PROP-C06", "owner_screen": SCREEN},
 ]
 AUTONOMY = {"BRN-C12": "agent_does", "BRN-C07": "founder_gate", "BRN-C03": "agent_does",
             "CREA-C19": "agent_does", "CREA-C04": "agent_does", "BRN-C11": "agent_does", "CREA-C06": "agent_does",
-            "BRAND-C57": "agent_does", "CREA-C03": "agent_does", "BRN-C05": "founder_gate", "BRN-C01": "agent_does", "PROD-C46": "agent_does", "LOOP-C28": "agent_does", "LOOP-C27": "agent_does", "LOOP-C29": "agent_does"}
+            "BRAND-C57": "agent_does", "CREA-C03": "agent_does", "BRN-C05": "founder_gate", "BRN-C01": "agent_does", "PROD-C46": "agent_does", "LOOP-C28": "agent_does", "LOOP-C27": "agent_does", "LOOP-C29": "agent_does", "PROP-C06": "agent_does"}
 
 _uspec = importlib.util.spec_from_file_location("brand_brain_assumptions", Path(__file__).resolve().parent / "assumptions.py")
 assumptions = importlib.util.module_from_spec(_uspec)
@@ -601,6 +607,21 @@ def rule_assumptions(brain: Brain, bank: list[dict] | None, ends_on: str) -> lis
     return out
 
 
+def rule_picked_ideas(brain: Brain, ends_on: str) -> list[dict]:
+    out = []
+    for r in brain.records("plans"):
+        v = r.get("value") if isinstance(r.get("value"), dict) else {}
+        if not (r.get("field") or "").startswith("idea_") or v.get("status") != "picked":
+            continue
+        ev = [_row("brief_written", 0, "flag", ends_on, r["age_days"], 1, "plans")]
+        sentence = f"You picked idea {v.get('idea_id')}: {str(v.get('title'))[:80]}. No test brief exists yet."
+        f = _finding("BRN-R22", "medium", {"type": "brand", "id": f"idea_{(v.get('idea_id') or '').lower().replace('-', '_')}", "label": str(v.get("title"))[:60]},
+                     ev, sentence, [r["id"]], ends_on, 0.9)
+        f["idea"] = v
+        out.append(f)
+    return out
+
+
 def rule_permissions(brain: Brain, ends_on: str) -> list[dict]:
     pm = health.permissions(brain)
     unset = [s for s in pm["sections"] if not s["explicit"] and s["records"]]
@@ -640,7 +661,7 @@ def run(brand: str, window: dict | None = None, root: Path | None = None) -> lis
         bank = keeper.load_bank()
     except (OSError, ValueError, KeyError):
         bank = None
-    out = rule_stale(brain, ends_on) + rule_claims(brain, ends_on) + rule_competitor_gaps(brain, ends_on) + rule_angle_gaps(brain, ends_on) + rule_signals(brain, ends_on) + rule_weak_sections(brain, ends_on) + rule_conflicts(brain, ends_on) + rule_untiered_claims(brain, ends_on) + rule_site_changes(brain, ends_on) + rule_parity(brain, ends_on) + rule_contracts(brain, ends_on) + rule_legal(brain, ends_on) + rule_permissions(brain, ends_on) + rule_snapshot_stale(brain, ends_on)
+    out = rule_stale(brain, ends_on) + rule_claims(brain, ends_on) + rule_competitor_gaps(brain, ends_on) + rule_angle_gaps(brain, ends_on) + rule_signals(brain, ends_on) + rule_weak_sections(brain, ends_on) + rule_conflicts(brain, ends_on) + rule_untiered_claims(brain, ends_on) + rule_site_changes(brain, ends_on) + rule_parity(brain, ends_on) + rule_contracts(brain, ends_on) + rule_legal(brain, ends_on) + rule_picked_ideas(brain, ends_on) + rule_permissions(brain, ends_on) + rule_snapshot_stale(brain, ends_on)
     if bank is None:
         for rid, sev in (("BRN-R02", "medium"), ("BRN-R03", "medium")):
             f = _finding(rid, sev, {"type": "brand", "id": "question_bank", "label": "question bank"},

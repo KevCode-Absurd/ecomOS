@@ -54,6 +54,7 @@
     loadDecisions(m);
     loadChanges();
     loadReport();
+    loadUnlocks();
     const con = m.connect || [];
     const cw = document.getElementById('connect-wrap');
     if (con.length) {
@@ -201,6 +202,40 @@
     });
     mount('#decisions-tools', UI.orientation([{ label: 'approvals', value: d.counts.action, unit: 'n' }, { label: 'snoozed', value: d.counts.snoozed, unit: 'n' }, { label: 'brain decisions', value: d.counts.brain, unit: 'n' }, { label: 'last', value: null, unit: 'n', unavailable_label: d.last ? fmt.date(d.last) : 'none yet' }]));
     mount('#decisions', UI.timeline(items.slice(0, 30)), items.length > 30 ? el('div', { class: 'micro faint', text: (items.length - 30) + ' older entries not shown.' }) : null);
+  }
+
+  // ---------- 1a. bottlenecks and unlocks ----------
+  function ideaRow(i, b, reload) {
+    return Object.assign({}, i, { effect: (i.metric || '') + ' ' + (i.direction || '') + (i.size ? ', ' + i.size : ''), ecr: (i.effort || '') + ' / ' + (i.cost || '') + ' / ' + (i.risk || ''), actions: [{ label: 'Pick it', cls: 'primary', onClick: async () => {
+      try { const r = await api(BASE + 'bottlenecks/pick', { method: 'POST', body: { idea_id: i.id, bottleneck: b.key } }); alert(r.next); reload(); loadPlan(); } catch (e) { alert('Could not pick: ' + e.message); }
+    } }, { label: 'Steps', onClick: () => UI.panel({ title: i.id + ': ' + i.title, body: el('div', { class: 'stack' }, el('div', null, el('b', { text: 'If: ' }), i.hypothesis || ''), el('div', null, el('b', { text: 'Check first: ' }), i.signal || ''), el('ol', { class: 'a-steps' }, ...(i.steps || []).map((st) => el('li', { text: st }))), el('div', { class: 'micro faint', text: 'Bank score ' + i.score + ', confidence ' + (i.confidence || NA) + ', basis ' + (i.basis || NA) + '. Referenced by id; the bank is the source.' })) }) }] });
+  }
+  function bottleneckCard(b, u, reload) {
+    const card = el('article', { class: 'card bottleneck' });
+    card.append(el('div', { class: 'row' }, el('span', { class: 'rank num', text: String(b.rank) }), el('h4', { text: pretty(b.theme) }), ...b.codes.map((c) => el('span', { class: 'chip mono', text: pretty(c) })), ...Object.entries(b.numbers).slice(0, 3).map(([k, v]) => el('span', { class: 'chip', text: pretty(k) + ' ' + v })), (b.where || []).length ? el('span', { class: 'micro faint', text: 'seen on ' + b.where.map(pretty).join(', ') }) : null));
+    card.append(el('div', { class: 'small', text: b.text || '' }));
+    const onList = b.on_list.length ? UI.table({ columns: [{ key: 'title', label: 'On the master list' }, { key: 'screen', label: 'Screen' }, { key: 'owner', label: 'Owner', format: pretty }, { key: 'total', label: 'Score', unit: 'n', align: 'right' }, { key: 'decided', label: 'Decision', format: (v, r) => r.decision ? pretty(r.decision.choice) : 'open' }], rows: b.on_list.slice(0, 6), sort: false })
+      : el('p', { class: 'muted small', text: 'Nothing on the master list names this bottleneck yet. The unlocks below fill the gap.' });
+    const ideas = b.ideas.length ? UI.verdictTable({ columns: [{ key: 'id', label: 'Idea' }, { key: 'title', label: 'Unlock' }, { key: 'effect', label: 'Expected effect' }, { key: 'ecr', label: 'Effort / cost / risk' }, { key: 'signal', label: 'Check first' }],
+      verdict: { at: 1, kind: (r) => r.theme_hits >= 3 ? 'scale' : (r.theme_hits ? 'keep' : 'watch'), text: (r) => r.theme_hits >= 3 ? 'Names it' : (r.theme_hits ? 'Fits' : 'Nearby'), reason: (r) => 'bank score ' + r.score },
+      rows: b.ideas.map((i) => ideaRow(i, b, reload)), actions: { label: 'Do' }, sort: false })
+      : el('p', { class: 'muted small', text: u.bank.available ? 'No idea in the bank fits this bottleneck and store.' : 'The idea bank is not loadable here.' });
+    card.append(el('div', { class: 'grid two' }, el('div', { class: 'stack' }, el('span', { class: 'kicker', text: 'On the list now' }), onList), el('div', { class: 'stack' }, el('span', { class: 'kicker', text: 'Unlocks from the idea bank' }), ideas)));
+    if (b.picked.length) card.append(el('div', { class: 'small' }, el('b', { text: 'Picked: ' }), b.picked.map((p) => p.idea_id + ' (' + (p.status || 'picked') + ')').join(', ') + '. Each is a test brief on the master list.'));
+    return card;
+  }
+  async function loadUnlocks() {
+    let u;
+    try { u = await api(BASE + 'bottlenecks'); } catch (e) { mount('#unlocks', el('p', { class: 'muted', text: 'Bottlenecks unavailable: ' + e.message })); return; }
+    mount('#unlocks-tools', UI.orientation([{ label: 'bottlenecks', value: u.bottlenecks.length, unit: 'n' }, { label: 'on the list', value: u.bottlenecks.reduce((a, b) => a + b.on_list.length, 0), unit: 'n' }, { label: 'unlocks offered', value: u.bottlenecks.reduce((a, b) => a + b.ideas.length, 0), unit: 'n' }, { label: 'picked', value: u.picked, unit: 'n' }, { label: 'bank', value: u.bank.ideas, unit: 'n' }]));
+    const d = u.diagnosis;
+    const items = [];
+    if (d.summary) items.push(el('div', { class: 'card flat' }, el('b', { text: 'Diagnosis: ' }), d.summary, ' ', el('span', { class: 'micro faint', text: (d.basis || '') + (d.as_of ? ' As of ' + d.as_of + '.' : '') })));
+    items.push(...u.bottlenecks.map((b) => bottleneckCard(b, u, loadUnlocks)));
+    if (d.strengths.length) items.push(el('div', { class: 'small' }, el('b', { text: 'Strengths to lead with: ' }), d.strengths.map((s) => pretty(s.theme) + ' (' + Object.entries(s.numbers).slice(0, 2).map(([k, v]) => pretty(k) + ' ' + v).join(', ') + ')').join('; ') + '.'));
+    if (d.test_queue.length) items.push(el('div', { class: 'small' }, el('b', { text: 'The diagnosis test queue: ' }), el('ol', { class: 'a-steps' }, ...d.test_queue.map((t) => el('li', { text: t })))));
+    items.push(el('div', { class: 'micro faint', text: u.note + ' Store tags: ' + u.store_tags.map(pretty).join(', ') + '.' }));
+    mount('#unlocks', ...items);
   }
 
   // ---------- 1b2. weekly report and founder digest ----------

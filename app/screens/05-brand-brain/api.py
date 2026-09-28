@@ -93,6 +93,10 @@ question, and accept or ignore on a proposed record. Nothing external.
                                 top 3 moves; delivery unavailable until a Slack or email connector exists
   GET  review                   the review queue grouped by source, each proposal with the record it would replace
   POST review/bulk              {choice: accept | ignore, ids}: clear many proposals at once
+  GET  bottlenecks              the diagnosis's bottlenecks with the master-list items that address each and the
+                                idea bank's best unlocks for it, ranked in code; strengths and the test queue
+  POST bottlenecks/pick         {idea_id, bottleneck, why}: pick an idea; it becomes a plans record and a test brief
+                                on the master list
   GET  records?section=<name>   one section's records with tier, date, source and evidence
   GET  audit                    findings from audit.py (app/contracts/audit.md shape)
   POST questions/<field>        {answer}: writes a founder record, marks the question answered
@@ -135,6 +139,9 @@ _spec.loader.exec_module(audit)
 _hspec = importlib.util.spec_from_file_location("brand_brain_health", HERE / "health.py")
 health = importlib.util.module_from_spec(_hspec)
 _hspec.loader.exec_module(health)
+_ospec = importlib.util.spec_from_file_location("brand_brain_bottlenecks", HERE / "bottlenecks.py")
+bottlenecks = importlib.util.module_from_spec(_ospec)
+_ospec.loader.exec_module(bottlenecks)
 _rpspec = importlib.util.spec_from_file_location("brand_brain_report", HERE / "report.py")
 report = importlib.util.module_from_spec(_rpspec)
 _rpspec.loader.exec_module(report)
@@ -907,6 +914,30 @@ def claim_add(brain: Brain, body: dict):
     return 201, {"ok": True, "record": rid, "tier": tier, "flows_to": FLOWS_TO.get("claims", ""), "version": brain.version()}
 
 
+def bottlenecks_view(brain: Brain, window: dict) -> dict:
+    try:
+        actions = rank_mod.master(brain.brand, window)["actions"]
+    except Exception:  # noqa: BLE001
+        actions = rank(brain.brand, window)["actions"]
+    out = bottlenecks.unlocks(brain, actions)
+    out.update(brand=brain.brand, today=brain.today.isoformat(), version=brain.version())
+    return out
+
+
+def idea_pick(brain: Brain, body: dict):
+    body = body or {}
+    idea_id = str(body.get("idea_id") or "").strip().upper()
+    if not re.fullmatch(r"[A-Z]{2,6}-\d{3,4}", idea_id):
+        return 400, {"error": "idea_id must be a bank id like OFF-103"}
+    res = bottlenecks.pick(brain, idea_id, str(body.get("bottleneck") or "").strip() or None, str(body.get("why") or "").strip())
+    if not res["ok"]:
+        return 404, res
+    errs = founder_put(brain, res["record"], kind="founder_edit", what=f"picked idea {idea_id}: {res['record']['value']['title'][:100]}")
+    if errs:
+        return 400, {"error": "record not valid", "details": errs}
+    return 201, {"ok": True, "record": res["record"]["id"], "idea_id": idea_id, "next": "It is a plans record now. The audit turns it into a test brief on the master list on the next load.", "version": brain.version()}
+
+
 def report_view(brain: Brain, days: int) -> dict:
     try:
         actions = rank(brain.brand, _window_dict(brain))["actions"]
@@ -1266,6 +1297,10 @@ def handle(req):
         ends = (brain.today - dt.timedelta(days=1)).isoformat()
         findings = audit.run(brain.brand, {"ends_on": ends, "days": 1, "trailing": 0}, BRAIN_ROOT)
         return {"findings": findings, "rules": audit.RULES, "brain_version": brain.version()}
+    if req.method == "GET" and parts == ["bottlenecks"]:
+        return bottlenecks_view(brain, _window(req, brain))
+    if req.method == "POST" and parts == ["bottlenecks", "pick"]:
+        return idea_pick(brain, req.body)
     if req.method == "GET" and parts == ["report"]:
         try:
             days = max(1, min(90, int(req.arg("days", "7") or 7)))

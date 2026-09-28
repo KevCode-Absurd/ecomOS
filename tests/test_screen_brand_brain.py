@@ -90,7 +90,7 @@ class AuditShape(unittest.TestCase):
         self.assertIn('05-brand-brain.BRN-R02.section_economics', ids)
         self.assertIn('05-brand-brain.BRN-R04.mission_trust.rung_1.donation_pledge', ids)
         rules = {r['rule_id'] for r in audit.RULES}
-        self.assertLessEqual({'BRN-R01', 'BRN-R02', 'BRN-R03', 'BRN-R04', 'BRN-R05', 'BRN-R06', 'BRN-R07', 'BRN-R08', 'BRN-R09', 'BRN-R10', 'BRN-R11', 'BRN-R12', 'BRN-R13', 'BRN-R14', 'BRN-R15', 'BRN-R16', 'BRN-R17', 'BRN-R18', 'BRN-R19', 'BRN-R20', 'BRN-R21'}, rules)
+        self.assertLessEqual({'BRN-R01', 'BRN-R02', 'BRN-R03', 'BRN-R04', 'BRN-R05', 'BRN-R06', 'BRN-R07', 'BRN-R08', 'BRN-R09', 'BRN-R10', 'BRN-R11', 'BRN-R12', 'BRN-R13', 'BRN-R14', 'BRN-R15', 'BRN-R16', 'BRN-R17', 'BRN-R18', 'BRN-R19', 'BRN-R20', 'BRN-R21', 'BRN-R22'}, rules)
 
 
 class AuditRules(TempBrain):
@@ -1371,3 +1371,40 @@ class Round3Review(TempBrain):
         kinds = [x['kind'] for x in api.handle(Req(['changes']))['changes']]
         self.assertIn('accepted', kinds)
         self.assertIn('ignored', kinds)
+
+
+class Round4Unlocks(TempBrain):
+    """Round 4 feature 1: the bottlenecks with what is on the list for each and the idea bank's unlocks; picking one."""
+
+    def test_bottlenecks_unlocks_and_tags(self):
+        u = api.handle(Req(['bottlenecks']))
+        self.assertEqual(len(u['bottlenecks']), 3)
+        self.assertEqual(u['bottlenecks'][0]['theme'], 'durability_vs_price')
+        self.assertIn('trust_brand', u['bottlenecks'][0]['codes'])
+        self.assertTrue(any('durability' in x['title'].lower() for x in u['bottlenecks'][0]['on_list']))
+        self.assertTrue(u['bottlenecks'][0]['ideas'])
+        self.assertLessEqual(len(u['bottlenecks'][0]['ideas']), 5)
+        self.assertTrue(all(i['id'] and i['signal'] for b in u['bottlenecks'] for i in b['ideas']))
+        self.assertIn('shopify', u['store_tags'])
+        self.assertIn('paid_social_led', u['store_tags'])
+        self.assertTrue(u['diagnosis']['test_queue'])
+        self.assertTrue(u['diagnosis']['summary'])
+
+    def test_pick_becomes_plan_finding_and_brief(self):
+        u = api.handle(Req(['bottlenecks']))
+        idea = u['bottlenecks'][0]['ideas'][0]['id']
+        status, res = api.handle(Req(['bottlenecks', 'pick'], 'POST', body={'idea_id': idea, 'bottleneck': 'bottleneck_1', 'why': 'fits the durability story'}))
+        self.assertEqual(status, 201)
+        rec = next(r for r in self.section('plans') if r['id'] == res['record'])
+        self.assertEqual((rec['value']['idea_id'], rec['value']['status'], rec['tier']), (idea, 'picked', 'approved'))
+        u = api.handle(Req(['bottlenecks']))
+        self.assertNotIn(idea, [i['id'] for i in u['bottlenecks'][0]['ideas']])
+        self.assertEqual(u['bottlenecks'][0]['picked'][0]['idea_id'], idea)
+        f = next(f for f in api.handle(Req(['audit']))['findings'] if f['rule_id'] == 'BRN-R22')
+        self.assertEqual(f['capability']['id'], 'PROP-C06')
+        a = next(a for a in api.rank('bombas', {'ends_on': '2026-09-27', 'days': 28, 'trailing': 4})['actions'] if a['rule_id'] == 'BRN-R22')
+        self.assertEqual((a['owner'], a['artefact']['kind']), ('agent_drafts', 'test_brief'))
+        self.assertTrue(a['artefact']['draft'].startswith('Test brief for ' + idea))
+        self.assertEqual(api.rank_mod.validate_action(a), [])
+        self.assertEqual(api.handle(Req(['bottlenecks', 'pick'], 'POST', body={'idea_id': 'nope'}))[0], 400)
+        self.assertEqual(api.handle(Req(['bottlenecks', 'pick'], 'POST', body={'idea_id': 'ZZZ-999'}))[0], 404)
