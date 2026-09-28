@@ -38,6 +38,25 @@
   function actionFor(findingId) { return state.byFinding[findingId] || null; }
 
   // ---------- 1. the plan ----------
+  async function loadCalendar() {
+    let c;
+    try { c = await api(BASE + 'calendar' + Q); } catch (e) { return; }
+    const host = document.getElementById('calendar');
+    if (!host) return;
+    host.innerHTML = '';
+    const items = c.items || [];
+    const byId = {}; for (const a of state.actions) byId[a.id] = a;
+    const open = (it) => { const a = byId[it.action_id]; if (a) openAction(a); };
+    const rows = items.map((it) => ({ when: fmt.date(it.when) + (it.days < 0 ? ' (' + (-it.days) + ' d ago)' : it.days === 0 ? ' (today)' : ' (in ' + it.days + ' d)'), kind: it.kind.replace('_', ' '), title: it.title, text: it.text, it,
+      actions: [it.action_id ? { label: 'Open', onClick: () => open(it) } : { label: 'No card', cls: 'quiet', onClick: () => {} }] }));
+    host.append(section('desk-calendar', 'What is due, and when?', 'Every dated thing on this desk in the next ' + c.horizon_days + ' days: time boxes, review dates, the check dates of the top actions, parked actions coming back, pulls due and the gift window. Each one opens its card.',
+      el('div', { class: 'grid two' }, el('div', { class: 'card' }, UI.timeline(items.slice(0, 14).map((it) => ({ when: it.when, title: it.title, text: it.text, tone: it.tone })))),
+        el('div', { class: 'card scroll' }, UI.verdictTable({ columns: [{ key: 'when', label: 'When' }, { key: 'title', label: 'What' }, { key: 'text', label: 'Detail' }], rows,
+          verdict: { at: 1, kind: (r) => r.it.days < 0 ? 'fix' : r.it.days <= 7 ? 'watch' : 'keep', text: (r) => r.it.days < 0 ? 'Overdue' : r.it.days <= 7 ? 'This week' : r.it.kind.replace('_', ' '), reason: () => 'by date' },
+          actions: { label: 'Do', onClick: () => {} }, sort: false }))),
+      gapLine((c.overdue ? c.overdue + ' overdue' : 'nothing overdue') + ', ' + (c.this_week || 0) + ' due in the next 7 days, ' + items.length + ' in ' + c.horizon_days + ' days.', items.length && items[0].action_id ? { label: 'Open the first', onClick: () => open(items[0]) } : null)));
+  }
+
   async function loadParked() {
     let r;
     try { r = await api(BASE + 'parked' + Q); } catch (e) { return; }
@@ -71,6 +90,7 @@
       empty: 'No open finding on this desk for the window. The desk below shows the gaps still worth a look.',
     }));
     loadParked();
+    loadCalendar();
     if (connect.length) {
       document.getElementById('plan').append(el('div', { class: 'card flat', style: { marginTop: '10px' } },
         el('div', { class: 'sec-head' }, el('h2', { text: 'Connect first: ' + connect.length + ' rules wait on a source' }),

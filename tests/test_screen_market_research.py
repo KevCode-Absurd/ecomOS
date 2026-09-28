@@ -1182,6 +1182,20 @@ class DecisionMemoryTest(unittest.TestCase):
             api.DECISIONS_PATH = saved
 
 
+class CalendarTest(unittest.TestCase):
+    def test_calendar_lists_every_dated_thing(self):
+        c = api.handle(Req(['calendar']))
+        kinds = {i['kind'] for i in c['items']}
+        self.assertTrue({'time_box', 'review', 'check', 'pull'} <= kinds, kinds)
+        self.assertIn('window', kinds)                      # 1 Nov is inside 45 days of 27 Sep
+        self.assertEqual(c['items'], sorted(c['items'], key=lambda i: (i['when'], i['kind'], i['title'])))
+        self.assertTrue(all(i['days'] <= c['horizon_days'] for i in c['items']))
+        self.assertGreaterEqual(c['overdue'], 1)            # the seeded gift box is past its 7-day box
+        self.assertTrue(all(i['action_id'] for i in c['items'] if i['kind'] in ('review', 'check') or (i['kind'] == 'time_box' and i['days'] < 0)))   # a card whenever a rule fires or the candidate has one
+        s = api.handle(Req(['calendar'], brand='sample'))
+        self.assertEqual([i['kind'] for i in s['items'] if i['kind'] not in ('pull', 'window', 'check')], [])   # no candidates on the sample brand
+
+
 class HandoffTest(unittest.TestCase):
     """The events contract hand-off: product_candidates rewritten on every candidate write, a proposed test on a go."""
 

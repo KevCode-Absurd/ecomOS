@@ -1626,6 +1626,58 @@ def proposed_tests(brand):
     return [r for r in doc.get('rows') or [] if r.get('brand') == brand]
 
 
+# ---------------------------------------------------------------- the research calendar (round 5.3)
+
+CALENDAR_DAYS = 45
+
+
+def calendar_items(data, brand, horizon_days=CALENDAR_DAYS):
+    """Every dated thing on this desk in the next horizon: candidate review dates and time-box ends, the check dates of the
+    open actions, the parked actions' return dates, the pulls' next due dates, and the gift window. Each item names the
+    action it opens. Past-due items stay at the top."""
+    r = rank(brand or 'sample', None)
+    ends_on = dt.date.fromisoformat(r['window']['ends_on'])
+    last = ends_on + dt.timedelta(days=horizon_days)
+    by_finding = {fid: a for a in r['actions'] for fid in a.get('finding_ids') or []}
+    by_cand = {(a.get('entity') or {}).get('id'): a for a in r['actions'] if (a.get('entity') or {}).get('candidate')}
+    items = []
+
+    def add(when, kind, title, text, action=None, finding_id=None, tone='accent', candidate=None):
+        if not when:
+            return
+        d = dt.date.fromisoformat(str(when)[:10])
+        if d > last:
+            return
+        a = action or (by_finding.get(finding_id) if finding_id else None) or (by_cand.get(candidate) if candidate else None)
+        items.append({'when': d.isoformat(), 'days': (d - ends_on).days, 'kind': kind, 'title': title, 'text': text, 'action_id': a['id'] if a else None,
+                      'action_title': a['title'] if a else None, 'tone': 'bad' if d < ends_on else tone})
+
+    for c in audit.pipeline(brand or 'sample'):
+        if c.get('stage') in audit.CLOSED_STAGES:
+            continue
+        cv = audit.candidate_view(c, ends_on)
+        if c.get('screen_in_date') and c.get('time_box_days'):
+            add((dt.date.fromisoformat(c['screen_in_date']) + dt.timedelta(days=int(c['time_box_days']))).isoformat(), 'time_box', f'Time box ends: {c.get("name")}',
+                f'{c.get("time_box_days")} days from {c.get("screen_in_date")}; ' + ('over by ' + str(-cv['days_left']) + ' days' if cv['days_left'] is not None and cv['days_left'] < 0 else f'{cv["days_left"]} days left'),
+                finding_id=f'{SCREEN}.PROD-R14.{c.get("candidate_id")}', tone='warn', candidate=c.get('candidate_id'))
+        if c.get('review_date'):
+            add(c['review_date'], 'review', f'Review date: {c.get("name")}', 'the scorecard memo is read and the founder decides go, hold or kill', finding_id=f'{SCREEN}.PROD-R25.{c.get("candidate_id")}', tone='accent', candidate=c.get('candidate_id'))
+    for a in r['actions'][:10]:
+        if a.get('check_on') and a.get('status') != 'unavailable':
+            add(a['check_on'], 'check', f'Check: {a["title"][:70]}', a.get('win_rule') or '', action=a, tone='good')
+    for a in r.get('parked') or []:
+        add(a.get('returns_on'), 'parked', f'Back on the plan: {a["title"][:60]}', (a.get('decision') or {}).get('reason') or 'parked with not now', action=a, tone='na')
+    br = audit.brain(brand) if brand else None
+    for p in audit.pulls(br, brand, ends_on)['rows']:
+        if p.get('next_due'):
+            add(p['next_due'], 'pull', f'Pull due: {p["label"]}', f'{p["window_days"]}-day window; ' + (f'about ${p["estimate_usd"]:,.2f} a run' if p.get('estimate_usd') is not None else 'no price on file'), finding_id=p['finding_id'], tone='warn')
+    gift = dt.date(ends_on.year, 11, 1)
+    if 0 <= (gift - ends_on).days <= horizon_days:
+        add(gift.isoformat(), 'window', 'The gift window opens', 'stock, the gift box and the gift ads must be live; 25 percent of socks sold in Nov and Dec (web pass)', finding_id=f'{SCREEN}.PROD-R05.gifting_socks', tone='accent')
+    items.sort(key=lambda i: (i['when'], i['kind'], i['title']))
+    return {'ends_on': ends_on.isoformat(), 'horizon_days': horizon_days, 'items': items, 'overdue': sum(1 for i in items if i['days'] < 0), 'this_week': sum(1 for i in items if 0 <= i['days'] <= 7)}
+
+
 def _brand(req):
     brand = req.arg('brand', DEFAULT_BRAND)
     if brand in ('', 'sample'):
@@ -1658,9 +1710,11 @@ def handle(req):
             return {'table': 'product_candidates', 'brand': brand or 'sample', 'rows': handoff_rows(brand or 'sample'), 'file': str(HANDOFF_PATH.relative_to(APP.parent))}
         if req.path == ['tests']:
             return {'rows': proposed_tests(brand or 'sample'), 'file': str(TESTS_PATH.relative_to(APP.parent))}
+        if req.path == ['calendar']:
+            return calendar_items(data, brand)
         if req.path == ['parked']:
             r = rank(brand or 'sample', None)
             return {'parked': r['parked'], 'decided': r['decided'], 'snooze_days': rank_mod.SNOOZE_DAYS, 'window': r['window']}
     except ValueError as exc:
         return 400, {'error': str(exc)}
-    return 404, {'error': 'not found', 'routes': ['overview', 'findings', 'rank', 'parked', 'candidates/<id>/brief', 'product_candidates', 'tests']}
+    return 404, {'error': 'not found', 'routes': ['overview', 'findings', 'rank', 'parked', 'calendar', 'candidates/<id>/brief', 'product_candidates', 'tests']}
