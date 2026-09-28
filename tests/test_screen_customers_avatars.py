@@ -94,7 +94,7 @@ class AuditShape(unittest.TestCase):
         self.assertEqual(r03['status'], 'unavailable')
         self.assertEqual(r03['evidence'], [])
         self.assertEqual(set(r03['unavailable']), {'inputs', 'connector', 'fix'})
-        self.assertEqual({r['rule_id'] for r in audit.RULES}, {f'CUST-R{n:02d}' for n in range(1, 11)})
+        self.assertEqual({r['rule_id'] for r in audit.RULES}, {f'CUST-R{n:02d}' for n in range(1, 17)})
 
 
 class AuditRules(TempBrain):
@@ -548,7 +548,7 @@ class RankRound1(TempBrain):
 
     def test_every_rule_fires_on_bombas(self):
         rules = {f['rule_id'] for f in audit.run('bombas', RANK_WINDOW, self.tmp)}
-        self.assertEqual(rules, {f'CUST-R{n:02d}' for n in range(1, 11)})
+        self.assertEqual(rules, {f'CUST-R{n:02d}' for n in range(1, 17)})
 
     def test_open_actions_carry_drafts(self):
         acts = api.rank('bombas', RANK_WINDOW)['actions']
@@ -807,6 +807,25 @@ class Paths(unittest.TestCase):
         self.assertFalse(d['available'])
         self.assertEqual(d['moves'], [])
         self.assertIn('customer_paths', d['shape'])
+
+
+class Round2Rules(TempBrain):
+    """Feature 2.10: round 2 rules fire and carry their drafted work."""
+
+    def test_round2_rules(self):
+        f = {x['id']: x for x in audit.run('bombas', RANK_WINDOW, self.tmp)}
+        self.assertIn('02-customers-avatars.CUST-R12.copy_gap', f)
+        self.assertIn('02-customers-avatars.CUST-R13.provisional_avatars', f)
+        self.assertEqual(f['02-customers-avatars.CUST-R16.customer_paths']['status'], 'unavailable')
+        self.assertIn('02-customers-avatars.CUST-R15.moment_winter', f)
+        acts = {a['id']: a for a in api.rank('bombas', RANK_WINDOW)['actions']}
+        self.assertEqual(acts['02-customers-avatars.CUST-R13.provisional_avatars']['capability']['id'], 'LIFE-C50')
+        self.assertTrue(acts['02-customers-avatars.CUST-R13.provisional_avatars']['artefact']['draft'].startswith('DRAFT post-purchase survey'))
+        self.assertTrue(acts['02-customers-avatars.CUST-R11.theme_price_value']['title'].startswith('Lift stars on price value'))
+
+    def test_moment_rule_window(self):
+        f = audit.run('bombas', {'ends_on': '2026-07-01', 'days': 28}, self.tmp)
+        self.assertFalse([x for x in f if x['rule_id'] == 'CUST-R15'])
 
 
 if __name__ == '__main__':

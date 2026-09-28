@@ -53,7 +53,16 @@ Web pass: Peel, Triple Whale, Lifetimely, Klaviyo predictive, Daasity RFM, Thema
 | 2.7 | Which avatar moments are coming and what ships before each: moments named in avatar triggers matched to US dates (holiday gifting, winter, Valentine's, Mother's and Father's Day, back to school, summer, race season, New Year), 6 months ahead, with ads live 21 days and emails 14 days before, last year's sales index for that month, a timeline and a dated plan card per moment (check date is the ads-live date; late when that date has passed). Bombas: winter from 15 Nov (ads by 25 Oct, 1.51x) and holiday gifting from 1 Dec (ads by 10 Nov, 1.93x) | done |
 | 2.8 | What we ask buyers to close these gaps: a post-purchase survey where every question names the gaps it closes (which avatar sounds like you, with the unserved situations as options; what almost stopped you, from the rungs without proof; what you bought before, for avatars missing push or habit lines; how you heard about us; who the order is for). Days to 385 answers (a share within 5 points) from orders a day and an assumed 15 percent response. "Open the survey draft" gives the spec, owner and steps; answers are written back to the avatar records as drafts a person approves. Bombas: 5 questions, 15 gaps | done |
 | 2.9 | Which first product brings buyers back and when to nudge them: gateway products (180-day repeat 1.3x the median first product or more, 100 or more first buyers) and dead ends (0.7x or less), the second-order path (next product at 15 percent or more of repeaters, email on its median day minus 5), win-back timing from the median order gap (due 1x, win-back 1.5x, lapsed 3x), and a save flow when the 3+ orders, 91 to 364 days cell grows 20 percent. Reads a `customer_paths` aggregate; tested on a fixture. Bombas shows the rules and an honest unavailable state until the aggregate exists (Contract asks) | done |
-| 2.10 | `rank` and audit rules for round 2, screenshot `round2.png` | todo |
+| 2.10 | Six more audit rules (CUST-R11 review theme costs stars, R12 buyer words we never say, R13 provisional avatars with the survey as the fix, R14 under-researched avatar, R15 avatar moment within 45 days of its ads-live date, R16 order-level paths unavailable until the aggregate exists), all 16 firing on Bombas. `rank` pairs each with its drafted work; 38 actions pass `validate_action`. Helpers the page and the audit share moved into `audit.py`. Screenshot `round2.png` (gate, forces, survey) | done |
+
+### Round 2 founder note (28 Sep 2026)
+
+1. You can now see which review themes cost stars (price and value, delivery, durability) and which earn them (comfort), each tied to its fix.
+2. Buyers praise us with words our own pages never use: soft, slip, wash, worth, durable. One click drafts page bullets and ad lines from them.
+3. A hook bank of lines buyers repeat (stay in place, don't slip, worth the price) turns picked hooks into an ad brief.
+4. A gate says no avatar is bet-ready yet: each holds 3 to 4 quotes. The five-question post-purchase survey closes 15 of those gaps in under a day of orders.
+5. Winter ads for the wool avatar need to be live by 25 Oct and holiday gifting by 10 Nov; both plans are drafted. Hiking can be added as a provisional avatar in one click.
+6. Next, round 3: the customer paths aggregate from the lead (gateway products, win-back day), review sources beyond the sample, and live-page checks for the copy gap.
 
 ### Round 1 founder note (28 Sep 2026)
 
@@ -190,3 +199,4 @@ The job to be done for each avatar is brand data: it lives in `app/brain/<brand>
 |---|---|---|---|
 | 0 | skeleton, 0.1 to 0.8 | 28 Sep 2026 | Bombas brain plus simulated cohorts; screenshot `round0.png` |
 | 1 | 1.1 to 1.10, no picks (depth brief) | 28 Sep 2026 | done; screenshot `round1.png` |
+| 2 | 2.1 to 2.10, from the web pass | 28 Sep 2026 | done; screenshot `round2.png` |

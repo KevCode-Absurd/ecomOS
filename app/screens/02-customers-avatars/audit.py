@@ -50,6 +50,20 @@ CUST-R09 retention age break. After the peak return month, active share falls 20
 CUST-R10 split product line. Praise and complaints on a line name the same trait. Severity low.
     Capability CREA-C24.
 
+CUST-R11 review theme costs stars. A theme's impact (share of rated reviews x star gap) is below
+    zero with 8 or more reviews (builds.theme_impact). High when rising, else medium. Capability BRAND-C13.
+CUST-R12 buyer words we never say. 3 or more of the top 20 praise words are absent from every
+    site and founder record in the brain (builds.copy_gap). Severity medium. Capability BRAND-C14.
+CUST-R13 provisional avatars. One or more avatars fail a core evidence check (builds.gate). One
+    finding for the set; the fix is the post-purchase survey. Severity medium. Capability LIFE-C50.
+CUST-R14 under-researched avatar. A force (push, pull, anxiety, habit) has no line, or anxiety
+    plus habit is under 15 percent (builds.forces). Severity low. Capability BRAND-C05.
+CUST-R15 avatar moment coming. An avatar moment's ads-live date is within 45 days or past
+    (builds.moments). High when past, else medium. Capability LIFE-C20.
+CUST-R16 order-level paths unreadable. No customer_paths aggregate, so gateway products,
+    second-order paths and order-gap timing cannot run. Status unavailable. Capability LIFE-C12.
+    When the aggregate exists, R16 fires once per gateway or path move instead (medium).
+
 Money at stake is null for every rule: an evidence or proof gap has no revenue formula
 yet (`money_reason` says so). Confidence: one brain snapshot is one window (0.5), minus
 0.2 when an input record is past `expires_at`.
@@ -99,10 +113,24 @@ RULES = [
      "inputs": ["cohorts"], "capability": "LIFE-C08", "owner_screen": SCREEN},
     {"rule_id": "CUST-R10", "name": "split product line", "entity_type": "sku",
      "inputs": ["brain products review_summary"], "capability": "CREA-C24", "owner_screen": SCREEN},
+    {"rule_id": "CUST-R11", "name": "review theme costs stars", "entity_type": "brand",
+     "inputs": ["brain language_bank"], "capability": "BRAND-C13", "owner_screen": SCREEN},
+    {"rule_id": "CUST-R12", "name": "buyer words we never say", "entity_type": "brand",
+     "inputs": ["brain language_bank", "brain site and founder records"], "capability": "BRAND-C14", "owner_screen": SCREEN},
+    {"rule_id": "CUST-R13", "name": "provisional avatars", "entity_type": "brand",
+     "inputs": ["brain avatars", "brain objection_ladders"], "capability": "LIFE-C50", "owner_screen": SCREEN},
+    {"rule_id": "CUST-R14", "name": "under-researched avatar", "entity_type": "brand",
+     "inputs": ["brain avatars", "brain language_bank", "brain competitors"], "capability": "BRAND-C05", "owner_screen": SCREEN},
+    {"rule_id": "CUST-R15", "name": "avatar moment coming", "entity_type": "brand",
+     "inputs": ["brain avatars", "monthly"], "capability": "LIFE-C20", "owner_screen": SCREEN},
+    {"rule_id": "CUST-R16", "name": "order-level paths", "entity_type": "metric",
+     "inputs": ["customer_paths"], "capability": "LIFE-C12", "owner_screen": SCREEN},
 ]
 AUTONOMY = {"BRAND-C11": "founder_gate", "BRAND-C13": "agent_does", "CREA-C03": "agent_does", "SITE-C38": "human_assist",
             "PROD-C73": "human_assist", "CREA-C24": "agent_does", "LIFE-C27": "human_assist", "BRAND-C16": "founder_gate",
-            "MEDIA-C12": "human_assist", "LIFE-C20": "agent_does", "LIFE-C08": "founder_gate"}
+            "MEDIA-C12": "human_assist", "LIFE-C20": "agent_does", "LIFE-C08": "founder_gate", "BRAND-C14": "agent_does",
+            "LIFE-C50": "founder_gate", "BRAND-C05": "human_assist", "LIFE-C12": "founder_gate"}
+MOMENT_WARN_DAYS = 45
 NO_DATA = "no revenue formula for this rule yet"
 
 
@@ -289,7 +317,7 @@ def _finding(rule_id, severity, entity, evidence, sentence, capability, confiden
             "capability": {"id": capability, "autonomy": AUTONOMY[capability]},
             "money_at_stake": None, "confidence": round(max(confidence, 0.1), 2),
             "brain_refs": refs, "first_seen": ends_on, "last_seen": ends_on, "status": status,
-            "unavailable": unavailable, "money_reason": NO_MONEY if rule_id in ("CUST-R01", "CUST-R02", "CUST-R03", "CUST-R04") else NO_DATA}
+            "unavailable": unavailable, "money_reason": NO_MONEY if rule_id in ("CUST-R01", "CUST-R02", "CUST-R03", "CUST-R04", "CUST-R13", "CUST-R14") else NO_DATA}
 
 
 def _plural(n, word):
@@ -380,6 +408,52 @@ def load_mix(brand: str) -> dict:
     return builds.mix(monthly, channels, as_of)
 
 
+def brand_tokens(brain: Brain) -> set[str]:
+    """Words of the brand's own name, from the brain identity, so a phrase that only names the brand counts as generic."""
+    toks = {brain.brand.lower()}
+    for r in brain.records("identity"):
+        if r.get("field") in ("name", "brand_name", "legal_name") and isinstance(r.get("value"), str):
+            toks.update(t.lower().strip(".,") for t in r["value"].split())
+    return toks
+
+
+def competitor_names(brain: Brain) -> list[str]:
+    """Competitor names from the brain, including brands Reddit recommends instead."""
+    names = set()
+    for r in brain.records("competitors"):
+        v = r.get("value")
+        if isinstance(v, dict):
+            names.update(x for x in (v.get("name"), v.get("competitor")) if isinstance(x, str))
+    for r in brain.records("positioning"):
+        v = r.get("value")
+        if isinstance(v, dict):
+            for k in ("direct", "reddit_recommended_instead"):
+                names.update(x for x in v.get(k) or [] if isinstance(x, str))
+    return sorted(names)
+
+
+OUR_SECTIONS = ("voice", "claims", "identity", "offers", "policies", "products", "visual", "story_bank")
+
+
+def load_moments(brand: str, avatars: list[dict]) -> dict:
+    try:
+        from tables import brand_data
+        data = brand_data(brand)
+        monthly, as_of = data.table("monthly"), data.brand.get("as_of")
+    except (ImportError, ValueError, KeyError, FileNotFoundError) as exc:
+        return {"rows": [], "line": f"No monthly table for {brand} ({exc})."}
+    return builds.moments(avatars, monthly, as_of)
+
+
+def load_paths(brand: str) -> dict:
+    try:
+        from tables import brand_data
+        rows = brand_data(brand).table("customer_paths")
+    except (ImportError, ValueError, KeyError, FileNotFoundError):
+        return builds.paths(None, f"no customer_paths aggregate for {brand}; order rows are too large to read here")
+    return builds.paths(rows)
+
+
 def with_tops(avatars, all_rungs):
     for a in avatars:
         top = top_objection(a["id"], all_rungs)
@@ -394,7 +468,14 @@ def desk(brain: Brain, avatars: list[dict], all_rungs: list[dict]) -> dict:
     return {"ladders": builds.ladders(all_rungs, avatars),
             "misreads": builds.misreads(brain.records("avatars"), avatars, all_rungs, brain.records("language_bank"), brain.records("products")),
             "served": builds.served(avatars, all_rungs, brain.records("competitors"), brain.records("positioning")),
-            "cohorts": load_cohorts(brain.brand, avatars), "mix": load_mix(brain.brand)}
+            "cohorts": load_cohorts(brain.brand, avatars), "mix": load_mix(brain.brand),
+            "themes": builds.theme_impact(brain.records("language_bank"), builds.ladders(all_rungs, avatars)["rows"],
+                                          (brain.today - dt.timedelta(days=1)).isoformat()),
+            "copy_gap": builds.copy_gap({s_: brain.records(s_) for s_ in OUR_SECTIONS}, brain.records("language_bank"),
+                                        brand_tokens(brain), source_name),
+            "gate": builds.gate(avatars, all_rungs),
+            "forces": builds.forces(avatars, all_rungs, brain.records("language_bank"), competitor_names(brain)),
+            "moments": load_moments(brain.brand, avatars), "paths": load_paths(brain.brand)}
 
 
 def r04(d, all_rungs, ends_on):
@@ -496,6 +577,77 @@ def r10(d, ends_on):
     return out
 
 
+def r11_r12(d, ends_on):
+    out = []
+    x = d["themes"]
+    for r in x.get("rows", []) if x.get("available") else []:
+        if r["impact"] >= 0:
+            continue
+        ev = [_ev("theme_share", r["share"], "%", ends_on, "brain.language_bank"),
+              _ev("star_gap", r["star_gap"], "n", ends_on, "brain.language_bank", baseline=0)]
+        s = (f"Reviews about {r['theme'].replace('_', ' ')} run {abs(r['star_gap'])} stars below the rest. "
+             f"They are {round(r['share'] * 100, 1)} percent of rated reviews.")
+        out.append(_finding("CUST-R11", "high" if r["rising"] else "medium", {"type": "brand", "id": "theme_" + r["theme"], "label": r["theme"].replace("_", " ")},
+                            ev, s, "BRAND-C13", 0.5, [], ends_on))
+    g = d["copy_gap"]
+    if g.get("available") and g["missing"] >= 3:
+        ev = [_ev("praise_words_missing", g["missing"], "n", ends_on, "brain.language_bank", baseline=3)]
+        top = ", ".join([r["word"] for r in g["rows"] if r["verdict"] == "missing"][:5])
+        s = f"{g['missing']} of the top {len(g['rows'])} praise words never appear in our own words, like {top}."
+        out.append(_finding("CUST-R12", "medium", {"type": "brand", "id": "copy_gap", "label": "Buyer words we never say"},
+                            ev, s, "BRAND-C14", 0.5, [], ends_on))
+    return out
+
+
+def r13_r14(d, ends_on):
+    out = []
+    prov = [r for r in d["gate"]["rows"] if r["status"] == "provisional"]
+    if prov:
+        ev = [_ev("provisional_avatars", len(prov), "n", ends_on, "brain.avatars", baseline=0)]
+        s = f"{len(prov)} of {len(d['gate']['rows'])} avatars fail a core evidence check. Briefs on them rest on a guess."
+        out.append(_finding("CUST-R13", "medium", {"type": "brand", "id": "provisional_avatars", "label": "Provisional avatars"},
+                            ev, s, "LIFE-C50", 0.5, [f"{d['brand']}.avatars.{r['key']}" for r in prov][:10], ends_on))
+    for r in d["forces"]["rows"]:
+        if not r["under"] or not r["lines"]:
+            continue
+        ev = [_ev("coded_lines", r["lines"], "n", ends_on, "brain.language_bank"),
+              _ev("forces_missing", len(r["missing"]), "n", ends_on, "brain.language_bank", baseline=0)]
+        miss = ", ".join(r["missing"]) or "anxiety and habit"
+        s = f"We know why {r['name']} buyers like us, but have no lines on {miss}."
+        out.append(_finding("CUST-R14", "low", {"type": "brand", "id": "forces_" + r["key"], "label": r["name"]},
+                            ev, s, "BRAND-C05", 0.5, [f"{d['brand']}.avatars.{r['key']}"], ends_on))
+    return out
+
+
+def r15_r16(d, ends_on):
+    out = []
+    end = dt.date.fromisoformat(ends_on)
+    for r in d["moments"].get("rows", []):
+        days = (dt.date.fromisoformat(r["ad_by"]) - end).days
+        if days > MOMENT_WARN_DAYS:
+            continue
+        ev = [_ev("days_to_ads_live", days, "days", ends_on, "brain.avatars", baseline=MOMENT_WARN_DAYS)]
+        s = (f"{r['label']} starts {r['starts']}. Ads for {', '.join(r['avatars'][:2])} need to be live by {r['ad_by']}, "
+             f"{days} days away." if days >= 0 else f"{r['label']} ads were due live by {r['ad_by']}.")
+        out.append(_finding("CUST-R15", "high" if days < 0 else "medium",
+                            {"type": "brand", "id": "moment_" + r["label"].lower().replace(" ", "_").replace("'", ""), "label": r["label"]},
+                            ev, s, "LIFE-C20", 0.5, [], ends_on))
+    p = d["paths"]
+    if not p.get("available"):
+        out.append(_finding("CUST-R16", "medium", {"type": "metric", "id": "customer_paths", "label": "Order-level paths"}, [],
+                            "Gateway products, second-order paths and win-back timing cannot run. " + p["reason"][:1].upper() + p["reason"][1:] + ".",
+                            "LIFE-C12", 0.5, [], ends_on, status="unavailable",
+                            unavailable={"inputs": ["customer_paths"], "connector": "shopify",
+                                         "fix": "Build the customer_paths aggregate from order rows (first product, next product, order gaps, value cells)."}))
+    else:
+        for m in p["moves"]:
+            key = m["id"].split(".paths.")[1]
+            ev = [_ev("paths_rule", 1, "n", ends_on, "customer_paths", simulated=True)]
+            out.append(_finding("CUST-R16", "medium", {"type": "metric", "id": "paths_" + key.replace(".", "_"), "label": m["title"][:60]},
+                                ev, m["title"] + ".", "LIFE-C12", 0.5, [], ends_on))
+    return out
+
+
 def run(brand: str, window: dict, brain_root: Path | None = None) -> list[dict]:
     ends_on = window["ends_on"]
     today = dt.date.fromisoformat(ends_on) + dt.timedelta(days=1)
@@ -506,6 +658,7 @@ def run(brand: str, window: dict, brain_root: Path | None = None) -> list[dict]:
     d = desk(brain, with_tops(avatars, all_rungs), all_rungs)
     d["brand"] = brand
     findings = (r01(brain, avatars, ends_on) + r02(brain, avatars, all_rungs, ends_on) + r03(brain, all_rungs, angles, ends_on)
-                + r04(d, all_rungs, ends_on) + r05(d, ends_on) + r06(d, ends_on) + r07(d, ends_on) + r08_r09(d, ends_on) + r10(d, ends_on))
+                + r04(d, all_rungs, ends_on) + r05(d, ends_on) + r06(d, ends_on) + r07(d, ends_on) + r08_r09(d, ends_on) + r10(d, ends_on)
+                + r11_r12(d, ends_on) + r13_r14(d, ends_on) + r15_r16(d, ends_on))
     findings.sort(key=lambda f: (SEVERITY_ORDER[f["severity"]], f["rule_id"], f["id"]))
     return findings

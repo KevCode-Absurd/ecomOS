@@ -272,46 +272,19 @@ def _mix(brand: str) -> dict:
 
 
 def _paths(brand: str) -> dict:
-    try:
-        from tables import brand_data
-        rows = brand_data(brand).table("customer_paths")
-    except (ImportError, ValueError, KeyError, FileNotFoundError):
-        return builds.paths(None, f"no customer_paths aggregate for {brand}; order rows are too large to read here")
-    return builds.paths(rows)
+    return audit.load_paths(brand)
 
 
 def _moments(brand: str, avatars: list[dict]) -> dict:
-    try:
-        from tables import brand_data
-        data = brand_data(brand)
-        monthly, as_of = data.table("monthly"), data.brand.get("as_of")
-    except (ImportError, ValueError, KeyError, FileNotFoundError) as exc:
-        return {"rows": [], "line": f"No monthly table for {brand} ({exc})."}
-    return builds.moments(avatars, monthly, as_of)
+    return audit.load_moments(brand, avatars)
 
 
 def _competitor_names(brain: Brain) -> list[str]:
-    """Competitor names from the brain, including brands Reddit recommends instead."""
-    names = set()
-    for r in brain.records("competitors"):
-        v = r.get("value")
-        if isinstance(v, dict):
-            names.update(x for x in (v.get("name"), v.get("competitor")) if isinstance(x, str))
-    for r in brain.records("positioning"):
-        v = r.get("value")
-        if isinstance(v, dict):
-            for k in ("direct", "reddit_recommended_instead"):
-                names.update(x for x in v.get(k) or [] if isinstance(x, str))
-    return sorted(names)
+    return audit.competitor_names(brain)
 
 
 def _brand_tokens(brain: Brain) -> set[str]:
-    """Words of the brand's own name, from the brain identity, so a phrase that only names the brand counts as generic."""
-    toks = {brain.brand.lower()}
-    for r in brain.records("identity"):
-        if r.get("field") in ("name", "brand_name", "legal_name") and isinstance(r.get("value"), str):
-            toks.update(t.lower().strip(".,") for t in r["value"].split())
-    return toks
+    return audit.brand_tokens(brain)
 
 
 def _formats(brain: Brain, avatars: list[dict]) -> dict:
@@ -434,6 +407,20 @@ def _plans(brand: str, window: dict) -> dict:
     for sg in d["served"]["segments"]:
         if sg["action"]:
             plans[("CUST-R06", "situation_" + sg["segment"].replace(" ", "_"))] = sg["action"]
+    for r in d["themes"].get("rows", []):
+        if r.get("action"):
+            plans[("CUST-R11", "theme_" + r["theme"])] = r["action"]
+    if d["copy_gap"].get("action"):
+        plans[("CUST-R12", "copy_gap")] = d["copy_gap"]["action"]
+    win = daily_window(brand, ends)
+    opd = sum(r.get("orders") or 0 for r in win["rows"]) / len(win["rows"]) if not win["unavailable"] else None
+    sv = builds.survey(d["gate"]["rows"], builds.ladders(all_rungs, avatars)["rows"], d["forces"]["rows"], d["served"]["segments"], opd)
+    plans[("CUST-R13", "provisional_avatars")] = sv["action"]
+    for r in d["forces"]["rows"]:
+        if r.get("action"):
+            plans[("CUST-R14", "forces_" + r["key"])] = r["action"]
+    for r in d["moments"].get("rows", []):
+        plans[("CUST-R15", "moment_" + r["label"].lower().replace(" ", "_").replace("'", ""))] = r["action"]
     for m in d["mix"].get("moves", []):
         if m["id"].endswith(".paid_returning"):
             plans[("CUST-R07", "returning_via_paid")] = m
@@ -458,6 +445,10 @@ def _title(f: dict, plan: dict | None) -> str | None:
         return "Name the angle on every Meta ad so objection coverage can be read"
     if f["rule_id"] == "CUST-R03":
         return f"Brief an ad that answers the {f['entity']['label']} doubt"
+    if f["rule_id"] == "CUST-R16" and f["status"] == "unavailable":
+        return "Build the customer paths aggregate so gateway and win-back rules can run"
+    if f["rule_id"] == "CUST-R11" and plan:
+        return f"Lift stars on {f['entity']['label']}: {plan['title'][0].lower()}{plan['title'][1:]}"
     return plan["title"] if plan else None
 
 
