@@ -43,6 +43,7 @@ question, and accept or ignore on a proposed record. Nothing external.
   POST assets/<key>/retire|offline  retire an asset record, or mark it not live
   GET  trail?days=7             who read what: section reads by reader, facts handed to agents, private facts to public readers
   POST export/diff              {bundle | content_base64}: what changed since that export, record by record
+  POST export/restore           {bundle | token, sections, dry_run}: put an export's records back for the sections named; a dry run first
   POST export/diff/start|part|finish  the same export in 24 KB base64 parts (the server takes 32 KB a request)
   POST review/draft             {text, channel, kind}: every check in one call and the route
   GET  overview                 T0 card, section table, tiles, insights, chart, ladders,
@@ -221,6 +222,9 @@ _pspec.loader.exec_module(parity)
 _sspec = importlib.util.spec_from_file_location("brand_brain_sitediff", HERE / "sitediff.py")
 sitediff = importlib.util.module_from_spec(_sspec)
 _sspec.loader.exec_module(sitediff)
+_rsspec = importlib.util.spec_from_file_location("brand_brain_restore", HERE / "restore.py")
+restore = importlib.util.module_from_spec(_rsspec)
+_rsspec.loader.exec_module(restore)
 _fbspec = importlib.util.spec_from_file_location("brand_brain_feedback", HERE / "feedback.py")
 feedback = importlib.util.module_from_spec(_fbspec)
 _fbspec.loader.exec_module(feedback)
@@ -1857,6 +1861,37 @@ def handle(req):
             return 400, {"error": "the upload is not a JSON export"}
         f.unlink(missing_ok=True)
         return braindiff.diff(brain, bundle, SECTIONS)
+    if req.method == "POST" and parts == ["export", "restore"]:
+        body = req.body or {}
+        bundle = body.get("bundle")
+        token = str(body.get("token") or "")
+        if bundle is None and token:
+            f = brain.dir / "review" / "uploads" / f"{token}.b64"
+            if not re.fullmatch(r"[A-Za-z0-9_-]{8,24}", token) or not f.is_file():
+                return 404, {"error": "no upload with that token; start again"}
+            try:
+                bundle = json.loads(base64.b64decode(f.read_text(encoding="utf-8"), validate=True).decode("utf-8"))
+            except (ValueError, UnicodeDecodeError):
+                f.unlink(missing_ok=True)
+                return 400, {"error": "the upload is not a JSON export"}
+            if not body.get("keep_upload"):
+                f.unlink(missing_ok=True)
+        if not isinstance(bundle, dict):
+            return 400, {"error": "send bundle (the export JSON) or token (a finished part upload)"}
+        sections = body.get("sections") if isinstance(body.get("sections"), list) else []
+        if body.get("dry_run", True):
+            res = restore.plan(brain, bundle, [str(x) for x in sections], SECTIONS)
+            if isinstance(res, tuple):
+                return res
+            return dict(res, dry_run=True, note="What the restore would do per section. Send dry_run false to apply; nothing is deleted, the current values go to history.")
+        before_v = brain.version()
+        res = restore.apply(brain, bundle, [str(x) for x in sections], SECTIONS)
+        if isinstance(res, tuple):
+            return res
+        for sp in res["plan"]:
+            changes.log(brain, "restore", sp["section"], None, f"{sp['section']} restored from the export of {bundle.get('exported_at')}: {len(sp['re_add'])} re-added, {len(sp['change'])} changed, {len(sp['retire'])} retired")
+        changes.version_step(brain, before_v, f"restore from export {bundle.get('exported_at')}")
+        return 201, dict(res, dry_run=False, version=brain.version(), next="Restored. Every current value that moved is in its record's history; retired records stay on file.")
     if req.method == "POST" and parts == ["export", "diff"]:
         body = req.body or {}
         bundle = body.get("bundle")

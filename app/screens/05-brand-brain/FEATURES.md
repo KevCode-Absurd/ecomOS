@@ -200,7 +200,7 @@ Sources: round 6's candidates (the alert digest, notes on audience profiles, res
 | 7.6 | What goes stale this week (`expiring.py`, `GET expiring`, `POST expiring/confirm`): every record whose expiry falls inside 7 days or is past, by the source that refreshes it, with the re-pull for public sources (read-only, inside the caps) and a one-click confirm for founder and document records that moves the expiry on by the section's shelf life; rule BRN-R36 puts one action per source on the plan (the agent re-pulls, the founder confirms), medium when any is already past | done | See what the brain is about to forget and refresh or confirm it before an agent reads a stale fact |
 | 7.7 | The founder round as a checklist | todo | |
 | 7.8 | Section trust, explained | todo | |
-| 7.9 | Restore from an export | todo | |
+| 7.9 | Restore from an export (`restore.py`, `POST export/restore`): after a dropped export's diff, name the sections and plan the restore (re-added, changed, retired per section), then apply: the export's records are written back through the store with the export named as their source, the current values go into history, records the export does not hold are retired; changes and freshness are never restored; one logged change per section | done | Undo a bad week in one section without losing the record of what happened since |
 | 7.10 | Change a number safely | todo | |
 
 ### Round 6 status for Kevin (28 Sep 2026)

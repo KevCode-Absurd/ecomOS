@@ -2728,6 +2728,35 @@ class Round7Feedback(TempBrain):
         self.assertIn('correction', [c['kind'] for c in api.handle(Req(['changes']))['changes']])
 
 
+class Round7Restore(TempBrain):
+    """Round 7 feature 9: restore sections from an earlier export; a dry run first; values move to history, nothing is deleted."""
+
+    def test_plan_then_restore(self):
+        b = api.handle(Req(['export']))
+        api.handle(Req(['profile', 'offers', 'free_shipping_threshold_usd'], 'POST', body={'text': '80'}))
+        api.handle(Req(['claims'], 'POST', body={'text': 'waterproof', 'tier': 'forbidden'}))
+        api.handle(Req(['approve', 'bombas.claims.donation_pledge'], 'POST', body={'choice': 'approve'}))
+        pl = api.handle(Req(['export', 'restore'], 'POST', body={'bundle': b, 'sections': ['offers', 'claims'], 'dry_run': True}))
+        self.assertTrue(pl['dry_run'])
+        by = {x['section']: x for x in pl['sections']}
+        self.assertIn('bombas.offers.free_shipping_threshold_usd', by['offers']['change'])
+        self.assertIn('bombas.claims.donation_pledge', by['claims']['change'])
+        self.assertIn('bombas.claims.never_waterproof', by['claims']['retire'])
+        self.assertEqual(next(r['value'] for r in self.section('offers') if r['id'] == 'bombas.offers.free_shipping_threshold_usd'), 80.0)
+        status, res = api.handle(Req(['export', 'restore'], 'POST', body={'bundle': b, 'sections': ['offers', 'claims'], 'dry_run': False}))
+        self.assertEqual((status, res['ok'], res['dry_run']), (201, True, False))
+        rec = next(r for r in self.section('offers') if r['id'] == 'bombas.offers.free_shipping_threshold_usd')
+        self.assertEqual((rec['value'], rec['source']['restored_from']['version']), (75, b['version']))
+        self.assertEqual(rec['history'][-1]['value'], 80.0)  # the founder's 80 is in history
+        self.assertEqual(next(r['tier'] for r in self.section('claims') if r['id'] == 'bombas.claims.donation_pledge'), 'site_backed')
+        self.assertEqual(next(r['status'] for r in self.section('claims') if r['id'] == 'bombas.claims.never_waterproof'), 'retired')
+        self.assertEqual(api.handle(Req(['export', 'diff'], 'POST', body={'bundle': b}))['counts']['changed'], 0)
+        self.assertIn('restore', [c['kind'] for c in api.handle(Req(['changes']))['changes']])
+        self.assertEqual(api.handle(Req(['export', 'restore'], 'POST', body={'bundle': b, 'sections': ['changes']}))[0], 400)
+        self.assertEqual(api.handle(Req(['export', 'restore'], 'POST', body={'bundle': {'x': 1}, 'sections': ['offers']}))[0], 400)
+        self.assertEqual(api.handle(Req(['export', 'restore'], 'POST', body={'token': 'nope-token-1', 'sections': ['offers']}))[0], 404)
+
+
 class Round4SecondBrand(unittest.TestCase):
     """Round 4 feature 2: plug and play. Every route answers for the example brain (7 records), unavailable never zero."""
 
