@@ -699,20 +699,23 @@
   }
 
   // ---------- 3. action lanes by owner, with the founder's decisions ----------
-  const LANES = [{ key: 'all', label: 'All' }, { key: 'agent', label: 'Agent does it' }, { key: 'agent_drafts', label: 'Agent drafts, you approve' }, { key: 'person', label: 'A person does it' }];
+  const LANES = [{ key: 'due', label: 'Check due' }, { key: 'all', label: 'All' }, { key: 'agent', label: 'Agent does it' }, { key: 'agent_drafts', label: 'Agent drafts, you approve' }, { key: 'person', label: 'A person does it' }];
   async function actionLanes(p) {
     let dec = {};
     try { const r = await api('/api/decisions?screen=' + SCREEN); for (const x of (r.decisions || [])) if (x.finding_id) dec[x.finding_id] = x; } catch (e) { dec = {}; }
     const hours = (xs) => xs.reduce((t, a) => t + (a.time_to_ship_hours || 0), 0);
     const box = el('div', { class: 'stack' });
     const summary = el('div', { class: 'small muted' });
+    const today = new Date().toISOString().slice(0, 10);
+    const isDue = (a) => !!(a.decision || dec[a.id]) && ((a.decision || dec[a.id]).choice !== 'not_now') && a.check_on && a.check_on <= today;
     const draw = (key) => {
-      const xs = p.actions.filter((a) => key === 'all' || a.owner === key);
+      const xs = p.actions.filter((a) => key === 'all' || (key === 'due' ? isDue(a) : a.owner === key));
       const decided = xs.filter((a) => dec[a.id]).length;
       summary.textContent = xs.length + ' actions, about ' + hours(xs) + ' hours of work; ' + decided + ' decided, ' + (xs.length - decided) + ' waiting on you.';
+      if (key === 'due' && !xs.length) { box.replaceChildren(el('p', { class: 'muted', text: 'No decided move has reached its check date. Each card shows its date; this lane fills as dates arrive.' })); return; }
       box.replaceChildren(...(xs.length ? xs.map((a) => UI.actionCard(Object.assign({}, a, { decision: a.decision || (dec[a.id] ? { choice: dec[a.id].choice, time: dec[a.id].time } : null) }), { screen: SCREEN })) : [el('p', { class: 'muted', text: 'Nothing in this lane.' })]));
     };
-    const items = LANES.map((l) => ({ key: l.key, label: l.label, n: l.key === 'all' ? p.actions.length : p.actions.filter((a) => a.owner === l.key).length }));
+    const items = LANES.map((l) => ({ key: l.key, label: l.label, n: l.key === 'all' ? p.actions.length : l.key === 'due' ? p.actions.filter(isDue).length : p.actions.filter((a) => a.owner === l.key).length }));
     mount('#actions', UI.pills({ items, current: 'all', onChange: draw }), summary, box);
     draw('all');
   }

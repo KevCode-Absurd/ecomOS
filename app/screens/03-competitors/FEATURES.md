@@ -46,6 +46,7 @@ Round 1 notes: `snapshot.py` plans and runs a page-id Ad Library pull through `a
 | 5.6 | A browser smoke test in the screen's test file: it starts the server on a free port, loads the page and the report view in Chromium, and fails on any script error, fewer than 4 desk tabs, fewer than 5 plan items or an empty report; skipped where Playwright or Chromium is absent; checked that it fails on a broken script | done |
 | 5.7 | Team notes (depth section 7): a notes block in each competitor page's panel; `GET notes?entity=` and `POST notes {entity, text}` save to a local, git-ignored file (`fixtures/notes/<brand>.json`), never sent anywhere; entity ids validated, notes capped at 500 characters and 2,000 a brand | done |
 | 5.8 | The brief pack: `GET briefs` groups every open move with its draft by the team that ships it (creative, copy, growth, offers, site, marketplaces, support, research), each with why, check date and stop rule; one copy button per team above the action cards; snoozed moves left out | done |
+| 5.9 | "Check due" lane: decided moves (agent or person, not snoozed) whose check date has arrived, so the founder reads each result on time; empty now, with a line saying it fills as dates arrive | done |
 
 ## Round 4: the rest of the room, and a depth pass on the screen
 
@@ -239,7 +240,7 @@ Round 2 notes: the lead authorised the $2.08 pull on 28 Sep; the session's permi
 | Round | Features picked | Date | Notes |
 |---|---|---|---|
 | 0 | 0.1 to 0.8 | 2026-09-28 | Bombas brain and simulated prices |
-| 5 | 5.1 to 5.8 | 2026-09-28 | Hand-offs; action lanes; season plan; quarterly review; exports (and the 5.4 load fix); browser smoke test; team notes; brief pack |
+| 5 | 5.1 to 5.9 | 2026-09-28 | Hand-offs; action lanes; season plan; quarterly review; exports (and the 5.4 load fix); browser smoke test; team notes; brief pack; check due lane |
 | 4 | 4.1 to 4.10 | 2026-09-28 | Placements and new channel alerts; gap lines; stop rules; unit from the brain; never zero; phone width; threat history; support answers; room metrics. Screenshot `round4.png` |
 | 3 | 3.1 to 3.10 | 2026-09-28 | Page-summary captures and diffs; price moves; landing page tracking; printable report; battlecards; positioning test; win-loss kit; tunable thresholds; second brand. Screenshot `round3.png` |
 | 2 | 2.1 to 2.10 | 2026-09-28 | Lost by name; category ladder; review themes; Amazon against our site; creative velocity; weekly brief; niche sizing; premium signals; search seeds; desk tabs. Screenshot `round2.png` |

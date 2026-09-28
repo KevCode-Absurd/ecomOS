@@ -1339,7 +1339,7 @@ class TestPage(unittest.TestCase):
     def test_action_lanes(self):
         js = (SCREEN / 'screen.js').read_text(encoding='utf-8')
         self.assertIn("api('/api/decisions?screen=' + SCREEN)", js)
-        for k in ("key: 'agent'", "key: 'agent_drafts'", "key: 'person'"):
+        for k in ("key: 'due'", "key: 'agent'", "key: 'agent_drafts'", "key: 'person'"):
             self.assertIn(k, js)
 
     def test_report_view(self):
