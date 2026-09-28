@@ -1003,9 +1003,12 @@ def loyalty_action(f, a, ctx):
     return a
 
 
+BUNDLE_BUILD = 3   # the bundle move builds the top pairs by orders together
+
+
 def bundle_action(f, a, ctx):
     bp = ctx.bundles
-    top = bp['pairs'][:3]
+    top = bp['pairs'][:BUNDLE_BUILD]
     rows = [f'- {p["a_title"]} ({money(p["price_a"])}) with {p["b_title"]} ({money(p["price_b"])}): bundle at {money(p["bundle_price"])}, '
             f'{p["orders_both"]} orders had both, {p["lift"]:.1f} times chance. Margin: '
             + (money(p['bundle_margin']) if p['bundle_margin'] is not None else f'unavailable, {p["margin_reason"]}') + '.' for p in top]
@@ -1442,6 +1445,17 @@ def price_files(actions, ctx):
         if rows:
             a['price_file'] = {'name': f'{a["rule_id"].lower()}-arm-b-prices.csv', 'rows': rows,
                                'note': 'arm B only; arm A keeps today\'s price. Prices are per pack before tax.'}
+        elif a.get('rule_id') == 'OFFER-R26' and not (ctx.bundles or {}).get('unavailable'):
+            a['price_file'] = {'name': 'bundles-to-build.csv', 'label': 'bundles',
+                               'rows': [{'bundle': f'{p["a_title"]} + {p["b_title"]}', 'sku_a': p['a'], 'sku_b': p['b'],
+                                         'price_a': p['price_a'], 'price_b': p['price_b'], 'bundle_price': p['bundle_price'],
+                                         'orders_together_90d': p['orders_both']} for p in ctx.bundles['pairs'][:BUNDLE_BUILD]],
+                               'note': 'one bundle product per row, both items in one pack; no new SKU is made here.'}
+        elif a.get('rule_id') == 'OFFER-R36' and not (ctx.paid or {}).get('unavailable'):
+            lean = [r for r in ctx.paid['rows'] if r['judged'] and r['code_share'] >= playbook.CODE_DEPENDENT]
+            a['price_file'] = {'name': 'code-exclusions.csv', 'label': 'exclusions',
+                               'rows': [{'sku': r['sku'], 'title': r['title'], 'list_price': r['list'], 'code_share': r['code_share']} for r in lean],
+                               'note': 'arm B only: these products are excluded from every code; the rest of the cart keeps it.'}
     return actions
 
 

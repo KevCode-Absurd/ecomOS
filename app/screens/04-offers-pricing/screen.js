@@ -210,8 +210,9 @@
   function priceFile(a) {
     const pf = a.price_file;
     if (!pf) return null;
-    return el('div', { class: 'row save-row' }, el('span', { class: 'kicker', text: 'Price file' }),
-      el('button', { class: 'btn sm', type: 'button', text: 'Export ' + pf.rows.length + (pf.rows.length === 1 ? ' price' : ' prices'), onclick: () => UI.csv(pf.rows, null, pf.name) }),
+    const noun = pf.label || (pf.rows.length === 1 ? 'price' : 'prices');
+    return el('div', { class: 'row save-row' }, el('span', { class: 'kicker', text: pf.label ? 'File' : 'Price file' }),
+      el('button', { class: 'btn sm', type: 'button', text: 'Export ' + pf.rows.length + ' ' + noun, onclick: () => UI.csv(pf.rows, null, pf.name) }),
       el('span', { class: 'micro faint', text: pf.note }));
   }
 

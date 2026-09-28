@@ -2334,5 +2334,34 @@ class PriceFileTest(unittest.TestCase):
             self.assertEqual(a['artefact']['kind'], 'price_change')
 
 
+class BuildFileTest(unittest.TestCase):
+    """Round 10 feature 4: the bundle move ships its bundles file; a code exclusion test ships its SKU list."""
+
+    def test_sample_bundles(self):
+        sys.path.insert(0, str(ROOT / 'app'))
+        import server
+        a = next(x for x in api.actions.rank(None, None, server.Data())['actions'] if x['rule_id'] == 'OFFER-R26')
+        rows = a['price_file']['rows']
+        self.assertEqual(len(rows), api.actions.BUNDLE_BUILD)
+        for r in rows:
+            self.assertIn(r['sku_a'], ' '.join(x['a'] for x in api.actions.rank(None, None, server.Data())['bundles']['pairs']))
+
+    def test_exclusions_when_fired(self):
+        sys.path.insert(0, str(ROOT / 'app'))
+        import server
+        pbs = (api.actions.playbook, audit._playbook())
+        orig = pbs[0].CODE_DEPENDENT
+        for pb in pbs:
+            pb.CODE_DEPENDENT = 0.30
+        try:
+            a = next(x for x in api.actions.rank(None, None, server.Data())['actions'] if x['rule_id'] == 'OFFER-R36')
+            names = a['title']
+            self.assertTrue(a['price_file']['rows'])
+            self.assertTrue(all(r['code_share'] >= 0.30 for r in a['price_file']['rows']))
+        finally:
+            for pb in pbs:
+                pb.CODE_DEPENDENT = orig
+
+
 if __name__ == '__main__':
     unittest.main()
