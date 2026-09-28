@@ -6,9 +6,31 @@ Status: todo | doing | done | parked. One feature per commit. The first round is
 
 | # | Feature | Status |
 |---|---|---|
-| 0.1 | Page shell in the shared UI kit: header, empty-state tiles, insight list, action buttons | todo |
-| 0.2 | `api.py` serving this screen's metrics from `app/data/` with unavailable states | todo |
-| 0.3 | 3 metric tiles, 2 insights, 1 chart from the sample brand | todo |
+| 0.1 | Page shell in the shared UI kit: header, empty-state tiles, insight list, action buttons | done |
+| 0.2 | `api.py` serving this screen's metrics from `app/data/` with unavailable states | done |
+| 0.3 | 3 metric tiles, 2 insights, 1 chart from the sample brand | done (4 tiles, Bombas simulated) |
+| 0.4 | `audit.py`: findings in the contract shape, 12 rules | done |
+
+## Jobs to be done (room "Team and ops", agent MONEY)
+
+| Job | Question | Capabilities | Audit rules | Round 0 state |
+|---|---|---|---|---|
+| run the voice-of-customer program | what are customers actually telling us, and does anyone act on it | LIFE-C29 | none here (screen 15 owns CX rules) | not built |
+| size the team and hire well | do we need to hire, and are we hiring the right way | MONEY-C31, MONEY-C32 | TEAM-R02, TEAM-R09 | R09 fires; R02 unavailable (no hiring_triggers) |
+| keep onboarding and SOPs current | could a new hire do this job from what is written down | MONEY-C33 | TEAM-R01 | unavailable until the founder uploads SOPs |
+| run the meeting cadence and team health | are we having the right meetings, and is the team actually functioning | MONEY-C34, MONEY-C35 | TEAM-R04, TEAM-R12 | unavailable (no meeting_log, no decisions.json yet) |
+| evaluate and manage vendors, 3PLs and agencies | is this vendor doing what we pay them for | MONEY-C36 | TEAM-R03 | unavailable (no vendor_sla) |
+| govern supplier purchase orders and production | is this production run on track, on spec and on one owner's desk | MONEY-C37 | none yet | not built (screen 16 reads inbound_pos) |
+| plan customer-service capacity and ticket routing | do we have enough CS coverage for what is coming, and is it costing more than it should | MONEY-C38 | TEAM-R05, TEAM-R09, TEAM-R10 | R09 fires; R10 quiet; R05 unavailable (no care cost) |
+| audit tooling against revenue stage | are we paying for software we have outgrown or do not need yet | MONEY-C39 | TEAM-R06 | spend shown; rule unavailable (no stage plan) |
+| run the decision-logging and diagnosis framework | who owns this kind of decision, and was it logged with a metric and a review date | LOOP-C10 | TEAM-R04, TEAM-R11 | R11 fires (0 of 2 complete) |
+| manage freelancer and contractor engagements | is this contractor scoped, paid and offboarded properly | MONEY-C66 | none yet | not built |
+| keep HR and legal paperwork current | are our contracts, handbook and exits all clean and signed | MONEY-C67, MONEY-C68, MONEY-C69 | TEAM-R07 | unavailable (no hr_records) |
+| monitor 3PL and warehouse SLA performance daily | is our warehouse hitting pick, pack and damage targets today | MONEY-C70 | none yet | not built |
+| maintain the CS knowledge base and QA scoring | are agents using current answers, and how good are their replies | LIFE-C27 | none here | not built |
+| get ahead of SaaS renewals | which tool renews soon, and should we renegotiate or cancel | MONEY-C78 | TEAM-R08 | unavailable (no renewal dates) |
+
+Metric proposals for a contract session (counted in audit.py today, not in metrics.md): peak_month_load, tickets_per_100_orders, cs_resolution_time, decision_log_completeness, tooling_spend_pct_revenue.
 
 ## Candidates from the room spec (pick 10 per round)
 
@@ -91,3 +113,14 @@ Status: todo | doing | done | parked. One feature per commit. The first round is
 
 | Round | Features picked | Date | Notes |
 |---|---|---|---|
+| 0 | skeleton, api, audit | 28 Sep 2026 | S3.25, Bombas simulated at scale 0.1 |
+
+## Round 0 status
+
+1. Shell, api.py (overview, findings), 4 tiles, 2 rule insights, 1 line chart, workload and cadence table, team signals, cost lines; all labelled simulated.
+2. audit.py has 12 rules: TEAM-R01 to R08 from the room spec, R09 to R12 for cadence and capacity. On Bombas, R09 (December support load 3.4 times a normal month, 65 days out, 0 of 4 open roles in care) and R11 (0 of 2 decisions complete) fire.
+3. The other rules read unavailable, with the table and connector named: SOPs, hiring triggers, vendor SLAs, meeting log, care cost, stage plan, HR records, renewals, decisions.json.
+4. Money at stake is null on both fired rules: finance_inputs has no care cost per ticket, and headcount is not split by team. Adding one would price R09.
+5. Tests: tests/test_screen_team_ops.py (10 tests) passes; screenshot round0.png at 1280 wide.
+6. Next: care cost in finance_inputs, a hiring trigger per team, and the SOP register from brain documents.
+
