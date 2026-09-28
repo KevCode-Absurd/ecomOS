@@ -79,6 +79,36 @@
     return card;
   }
 
+  // ---------- keyboard: j and k move between plan items and actions, Enter opens the steps, ? lists the keys; Esc closes panels (kit)
+  const KEY_ITEMS = '#plan .plan-item, #actions article.action';
+  const KEYS = [['j', 'next plan item or action'], ['k', 'previous one'], ['Enter', 'open or close how it gets done'], ['Esc', 'close a panel'], ['?', 'this list']];
+  function keyItems() { return Array.from(document.querySelectorAll(KEY_ITEMS)).filter((n) => n.offsetParent !== null); }
+  function focusItem(n) {
+    keyItems().forEach((x) => { x.tabIndex = -1; });
+    n.tabIndex = 0; n.focus(); n.scrollIntoView({ block: 'nearest' });
+  }
+  document.addEventListener('keydown', (e) => {
+    if (e.defaultPrevented || e.metaKey || e.ctrlKey || e.altKey) return;
+    const t = e.target;
+    if (t && (t.isContentEditable || /^(INPUT|TEXTAREA|SELECT|BUTTON|A)$/.test(t.tagName))) return;
+    if (document.querySelector('.panel-backdrop')) return;
+    if (e.key === '?') {
+      e.preventDefault();
+      UI.panel({ title: 'Keys', body: el('ul', null, ...KEYS.map(([k, what]) => el('li', null, el('b', { text: k }), ' ' + what))) });
+      return;
+    }
+    const items = keyItems();
+    if (!items.length) return;
+    const cur = items.indexOf(t && t.closest ? t.closest(KEY_ITEMS) : null);
+    if (e.key === 'j' || e.key === 'k') {
+      e.preventDefault();
+      focusItem(items[e.key === 'j' ? Math.min(items.length - 1, cur + 1) : Math.max(0, cur - 1)]);
+    } else if (e.key === 'Enter' && cur >= 0) {
+      const b = Array.from(items[cur].querySelectorAll('button')).find((x) => /steps|How it gets done|^Hide$/.test(x.textContent));
+      if (b) { e.preventDefault(); b.click(); }
+    }
+  });
+
   // one avatar, one page: Copy gives plain text, Print prints only the page
   async function openAvatarPage(key, btn) {
     let r;

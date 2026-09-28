@@ -1798,3 +1798,17 @@ class AvatarPage(TempBrain):
         r = api.handle(Req(['avatar', key, 'brief'], query={'brand': ['example']}))
         self.assertNotIn('bombas', json.dumps(r).lower())
         self.assertTrue(r['title'].startswith('Example'))
+
+
+class Keyboard(unittest.TestCase):
+    """Feature 7.7: j and k move between plan items and actions, Enter opens the steps, ? lists the keys, typing is left alone."""
+
+    def test_keys_are_wired_and_typing_is_ignored(self):
+        js = (ROOT / 'app' / 'screens' / '02-customers-avatars' / 'screen.js').read_text(encoding='utf-8')
+        block = js[js.index('// ---------- keyboard'):js.index('// one avatar, one page')]
+        for k in ("e.key === 'j'", "e.key === 'k'", "e.key === 'Enter'", "e.key === '?'"):
+            self.assertIn(k, block)
+        self.assertIn('INPUT|TEXTAREA|SELECT', block)
+        self.assertIn(".panel-backdrop", block)
+        html = (ROOT / 'app' / 'screens' / '02-customers-avatars' / 'index.html').read_text(encoding='utf-8')
+        self.assertIn('Keys: j and k move', html)
