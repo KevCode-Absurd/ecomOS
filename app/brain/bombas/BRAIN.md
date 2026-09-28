@@ -19,14 +19,14 @@ Freshness: all records in date
 | [story_bank](story_bank.json) | 23 | 2026-09-28 | Bombas pitched on Shark Tank in the Season 6 premiere, which first... |
 | [voice](voice.json) | 3 | 2026-09-28 | Bombas repeats the same donation tagline word for word across its... |
 | [visual](visual.json) | 16 | 2026-09-28 | Bombas main stylesheet defines a black color token named black as... |
-| [products](products.json) | 20 | 2026-09-28 | Bombas sells a digital gift card in denominations from 25 to 300... |
+| [products](products.json) | 30 | 2026-09-28 | Bombas sells a digital gift card in denominations from 25 to 300... |
 | [offers](offers.json) | 9 | 2026-09-28 | Bombas offers free standard shipping on US orders of 75 dollars or... |
 | [policies](policies.json) | 10 | 2026-09-28 | Bombas accepts returns for a refund within 30 days of purchase, or... |
 | [claims](claims.json) | 6 | 2026-09-28 | Bombas ankle socks are described as moisture-wicking with a... |
 | [avatars](avatars.json) | 13 | 2026-09-28 | Cold Weather Wool Sock Loyalist: warm, durable socks for cold... |
-| [objections](objections.json) | 20 | 2026-09-28 | Compression socks are too hard to pull on, sit too high or too... |
-| [objection_ladders](objection_ladders.json) | 7 | 2026-09-28 | Comfort and feel: 23 complaint and 55 praise quotes. Top rung... |
-| [language_bank](language_bank.json) | 129 | 2026-09-28 | Reviewers say 'it is literally just a men's shirt' (complaint). |
+| [objections](objections.json) | 42 | 2026-09-28 | Compression socks are too hard to pull on, sit too high or too... |
+| [objection_ladders](objection_ladders.json) | 7 | 2026-09-28 | Comfort and feel: 24 complaint and 103 praise quotes. Top rung... |
+| [language_bank](language_bank.json) | 335 | 2026-09-28 | Reviewers say 'it is literally just a men's shirt' (complaint). |
 | [competitors](competitors.json) | 508 | 2026-09-28 | 1-VoIP runs 1 active Meta ads; longest has run 171 days. |
 | [positioning](positioning.json) | 4 | 2026-09-28 | Reddit frame 'buy it for life' appears in 9 posts or comments. |
 | [channels](channels.json) | 13 | 2026-09-28 | Bombas announced it would begin selling socks in more than 190... |
@@ -62,7 +62,7 @@ No records yet: diagnosis, decisions, changes, plans.
 
 - Documents: [documents/manifest.json](documents/manifest.json), 0 files
 - Open questions: [open_questions.json](open_questions.json), 12 open
-- Brain version ab8004b9a825. Generated from records; edit records, not this file.
+- Brain version ae0278b2e712. Generated from records; edit records, not this file.
 
 ## Founder notes
 
