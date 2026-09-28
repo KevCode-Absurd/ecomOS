@@ -93,6 +93,7 @@ class Ctx:
         self.registry = model.registry(rd, playbook.REGISTRY_SURFACES, playbook.PRICE_TEST_WORDS)
         self.welcome = audit.welcome(rd)
         self.trust = audit.test_trust(rd)
+        self.price_moves = audit.price_moves(rd)
         self.ship_rate = (model.brain_value(rd, 'offers.standard_shipping_cost')[0] or {}).get('cost_usd') if rd.brand else None
         self.scenarios = (model.threshold_scenarios(rd, self.threshold, self.ship_rate, self.be['value'], (self.po or {}).get('units') or 1)
                           if self.threshold is not None and self.be.get('value') is not None else [])
@@ -1127,6 +1128,43 @@ def trust_action(f, a, ctx):
     return a
 
 
+def recapture_action(f, a, ctx):
+    """OFFER-R34 while unavailable: one capture cannot show a move, so the move is a dated second capture."""
+    last = (f.get('unavailable') or {}).get('last_capture')
+    due = (date.fromisoformat(last) + timedelta(days=playbook.RECAPTURE_DAYS)).isoformat() if last else ctx.check_on(0)
+    a.update({'title': f'Capture competitor and reseller prices again on {due}', 'owner': 'person',
+              'artefact': {'kind': 'connector_setup', 'label': 'second price capture, public pages',
+                           'draft': '\n'.join([f['sentence'], f'Due: {due}, {playbook.RECAPTURE_DAYS} days after the last capture.',
+                                               'Same pages, same Ad Library page ids, same marketplace listings. Public pages only.',
+                                               f'Then this screen compares each price with the last one; {playbook.PRICE_MOVE * 100:.0f} percent or more is a move.'])},
+              'steps': steps(('person', f'Run the public price capture on the brand brain screen on {due}.'),
+                             ('agent', 'Compare each price with its last capture and post the moves here.')),
+              'size': {'text': 'every competitor price band and marketplace listing in the brain', 'usd': None},
+              'check_on': due, 'win_rule': 'Every price in the brain has a second capture.',
+              'stop_rule': 'Drop a listing from the capture after 3 captures with no move; keep the rest monthly.'})
+    return a
+
+
+def moves_action(f, a, ctx):
+    """OFFER-R34 with moves: read each move before any answer. A competitor's price is a signal, never a trigger."""
+    pm = ctx.price_moves
+    lines = [f['sentence'], ''] + [f'{m["name"]}: {money(m["before"])} on {m["before_on"]} to {money(m["now"])} on {m["now_on"]} ({m["change"] * 100:+.0f} percent)'
+                                   for m in pm['moves']]
+    lines += ['', 'For each: is it a promo or a new list price? Check their Ad Library page and site banner.',
+              'A reseller cut goes to the parity check. A competitor cut changes nothing until it lasts 2 captures.',
+              'Our answer, if any, is proof or a pack, not a matching discount.']
+    a.update({'title': f'Read {len(pm["moves"])} price moves before any answer', 'owner': 'agent_drafts',
+              'artefact': {'kind': 'research_note', 'label': 'Price move notes', 'draft': '\n'.join(lines)},
+              'steps': steps(('agent', 'Check each move: promo or list price, and since when.'),
+                             ('agent', 'Draft the note with what each move means for our ladder.'),
+                             ('person', 'Decide: hold, or open a pack or proof move.')),
+              'size': {'text': f'{len(pm["moves"])} of {pm["paired"]} prices moved', 'usd': None},
+              'win_rule': 'Each move is read and filed as promo or list price.',
+              'stop_rule': 'No price change from us on 1 capture; a move must hold for 2.',
+              'check_on': ctx.check_on(30), 'time_to_ship_hours': 1})
+    return a
+
+
 def bunches(rd):
     """Order-value bunches and the tiers above them, from real order bins only (never from the fixture)."""
     dist = rd.m('order_value_distribution', audit.WINDOW, step=5)
@@ -1303,14 +1341,16 @@ BUILDERS = {'OFFER-R01': threshold_action, 'OFFER-R04': rung_action, 'OFFER-R08'
             'OFFER-R22': cost_action, 'OFFER-R23': referral_action, 'OFFER-R24': loyalty_action,
             'OFFER-R25': discount_action, 'OFFER-R26': bundle_action,
             'OFFER-R27': launched_action, 'OFFER-R29': bnpl_action,
-            'OFFER-R30': match_action, 'OFFER-R31': cohort_action, 'OFFER-R32': welcome_action, 'OFFER-R33': trust_action}
+            'OFFER-R30': match_action, 'OFFER-R31': cohort_action, 'OFFER-R32': welcome_action, 'OFFER-R33': trust_action, 'OFFER-R34': moves_action}
+UNAVAILABLE_BUILDERS = {'OFFER-R34': recapture_action}
 
 
 def build(f, rd, ctx, nr):
     a = RANK.action_from_finding(f, nr)
     a['screen'] = SCREEN
     if f.get('status') == 'unavailable':
-        return a
+        fn = UNAVAILABLE_BUILDERS.get(f['rule_id'])
+        return fn(f, a, ctx) if fn else a
     if f['rule_id'] in RUBRIC_OVERRIDE:
         rescore(a, RUBRIC_OVERRIDE[f['rule_id']])
     fn = BUILDERS.get(f['rule_id'])
@@ -1346,5 +1386,5 @@ def rank(brand='bombas', window=None, data=None):
     return {'screen': SCREEN, 'brand': brand, 'window': w, 'simulated': True, 'net_revenue_28d': nr,
             'actions': actions, 'findings': findings, 'objections': ctx.objections, 'returns': returns_block(rd),
             'ladder': dict(ctx.ladder, moves=ctx.ladder_rows), 'first_order': ctx.first_order, 'waterfalls': ctx.waterfalls, 'calendar': ctx.calendar, 'gifting': ctx.gifting, 'guarantee': ctx.guarantee, 'position': ctx.position, 'parity': ctx.parity,
-            'discipline': dict(ctx.discipline, policy=discount_policy(ctx), windows=ctx.depth_history, window_creep_points=playbook.WINDOW_CREEP_POINTS), 'cart': ctx.cart, 'tests': calendar, 'depth': ctx.depth, 'cohorts': ctx.cohorts, 'costs': ctx.costs, 'registry': ctx.registry, 'referral': ctx.referral, 'loyalty': ctx.loyalty, 'bundles': ctx.bundles, 'proposed_tests': ctx.proposed_rows, 'launched': ctx.launched, 'discount_cohorts': audit.discount_cohorts(rd), 'welcome': ctx.welcome, 'trust': ctx.trust, 'bunches': bunches(rd),
+            'discipline': dict(ctx.discipline, policy=discount_policy(ctx), windows=ctx.depth_history, window_creep_points=playbook.WINDOW_CREEP_POINTS), 'cart': ctx.cart, 'tests': calendar, 'depth': ctx.depth, 'cohorts': ctx.cohorts, 'costs': ctx.costs, 'registry': ctx.registry, 'referral': ctx.referral, 'loyalty': ctx.loyalty, 'bundles': ctx.bundles, 'proposed_tests': ctx.proposed_rows, 'launched': ctx.launched, 'discount_cohorts': audit.discount_cohorts(rd), 'welcome': ctx.welcome, 'trust': ctx.trust, 'price_moves': ctx.price_moves, 'bunches': bunches(rd),
             'subscription': model.subscription_note(rd, ctx.cohorts, (ctx.depth or {}).get('rows'), (ctx.depth or {}).get('target'))}

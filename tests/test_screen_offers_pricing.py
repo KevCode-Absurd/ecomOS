@@ -1638,5 +1638,44 @@ class TestTrustTest(unittest.TestCase):
         self.assertIn('EXP-005', a['artefact']['draft'])     # an offer test judged on aov
 
 
+class PriceMovesTest(unittest.TestCase):
+    """Round 6 feature 8: room jobs BRN-C11 and PROD-C46, did a competitor or reseller move price. OFFER-R34."""
+
+    def reader(self, comps, listings):
+        class R:
+            def records(self, sec):
+                return {'competitors': comps, 'marketplaces': listings}.get(sec, [])
+        return R()
+
+    def listing(self, rid, asin, price, on, history=()):
+        return {'id': rid, 'value': {'channel': 'amazon', 'asin': asin, 'price_usd': price}, 'source': {'captured_at': on},
+                'history': list(history)}
+
+    def test_move_from_same_item_history(self):
+        old = {'value': {'asin': 'A1', 'price_usd': 40.0}, 'changed_at': '2026-08-01'}
+        pm = api.model.price_moves(self.reader([], [self.listing('l1', 'A1', 36.0, '2026-09-01', [old])]), 0.05)
+        self.assertFalse(pm['unavailable'])
+        self.assertEqual([m['change'] for m in pm['moves']], [-0.1])
+
+    def test_merged_duplicate_is_not_a_move(self):
+        dup = {'value': {'asin': 'A2', 'price_usd': 20.0}, 'changed_at': '2026-08-01', 'reason': 'near duplicate', 'record_id': 'l2'}
+        same_day = {'value': {'asin': 'A1', 'price_usd': 20.0}, 'changed_at': '2026-09-01'}
+        pm = api.model.price_moves(self.reader([], [self.listing('l1', 'A1', 36.0, '2026-09-01', [dup, same_day])]), 0.05)
+        self.assertTrue(pm['unavailable'])
+        self.assertIn('one capture', pm['reason'])
+
+    def test_competitor_band(self):
+        c = {'id': 'c1', 'value': {'name': 'Rival', 'price_band_usd': 'median 14'}, 'source': {'captured_at': '2026-09-01'},
+             'history': [{'value': {'name': 'Rival', 'price_band_usd': 'median 16'}, 'changed_at': '2026-08-01'}]}
+        pm = api.model.price_moves(self.reader([c], []), 0.05)
+        self.assertEqual(pm['moves'][0]['name'], 'Rival')
+        self.assertEqual(pm['moves'][0]['change'], -0.125)
+
+    def test_bombas_recapture(self):
+        a = next(x for x in api.actions.rank('bombas')['actions'] if any('OFFER-R34' in f for f in x['finding_ids']))
+        self.assertEqual((a['status'], a['owner'], a['artefact']['kind']), ('unavailable', 'person', 'connector_setup'))
+        self.assertIn('again on', a['title'])
+
+
 if __name__ == '__main__':
     unittest.main()

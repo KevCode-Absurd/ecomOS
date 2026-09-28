@@ -229,3 +229,8 @@ OFFER_SURFACES = ('first order offer', 'list price', 'pack price', 'cart rewards
                   'referral', 'product page pack selector', 'product page price block', 'pop-up')
 BAD_OFFER_METRICS = ('aov', 'average_order_value', 'conversion_rate', 'cvr', 'revenue')
 TEST_MIN_DAYS = 28
+
+# Competitor and reseller price moves (screen 04, OFFER-R34; room job BRN-C11, PROD-C46). A move is the current
+# captured price against the last value in the brain record's history. PRICE_MOVE or more either way is a move.
+PRICE_MOVE = 0.05
+RECAPTURE_DAYS = 30            # a single capture older than this is due for a second one

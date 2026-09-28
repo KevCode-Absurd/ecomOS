@@ -138,6 +138,11 @@ Rules
              (playbook.OFFER_SURFACES, BAD_OFFER_METRICS), or two running tests on one surface (model.test_trust).
              One finding for the registry. Medium when an offer or price test is affected, else low. Money null: a bad
              read costs the next decision, not a dollar amount we can count. Capability LIFE-C47.
+  OFFER-R34  A competitor or reseller moved price (room jobs BRN-C11 and PROD-C46): a competitor's median price per
+             item or a marketplace listing price moved playbook.PRICE_MOVE or more against the last value in its brain
+             record's history (model.price_moves). Medium when a competitor cut price or a listing fell, else low.
+             Money null: a move is a signal to read, not a loss we can count. Unavailable while every price has one
+             capture; the move is a second capture once the first is RECAPTURE_DAYS old. Capability BRN-C11.
   OFFER-R03  Margin after discount per SKU. Needs cogs_landed keyed by the store's SKUs. Unavailable while no
              finance_inputs SKU key matches a product SKU. Capability MONEY-C05 (founder gate). Owner: 04.
   OFFER-R04  A deal-breaker rung with no proof: the top rung of an objection ladder whose proof is empty or
@@ -245,6 +250,9 @@ RULES = [
      'inputs': ['orders', 'flows', 'brain.offers.first_order_code', 'registry'], 'capability': 'LIFE-C02', 'owner_screen': SCREEN},
     {'rule_id': 'OFFER-R33', 'name': 'Tests on record we cannot trust', 'entity_type': 'metric',
      'inputs': ['registry'], 'capability': 'LIFE-C47', 'owner_screen': SCREEN},
+    {'rule_id': 'OFFER-R34', 'name': 'A competitor or reseller moved price', 'entity_type': 'metric',
+     'inputs': ['brain.competitors.price_band_usd history', 'brain.marketplaces.price_usd history'], 'capability': 'BRN-C11',
+     'owner_screen': SCREEN},
     {'rule_id': 'OFFER-R03', 'name': 'Margin after discount per SKU', 'entity_type': 'sku',
      'inputs': ['finance_inputs.cogs_landed keyed by product SKU', 'products'], 'capability': 'MONEY-C05',
      'owner_screen': SCREEN},
@@ -282,6 +290,7 @@ CAPABILITY = {'OFFER-R01': {'id': 'MONEY-C05', 'autonomy': 'founder_gate'},
               'OFFER-R31': {'id': 'LIFE-C02', 'autonomy': 'founder_gate'},
               'OFFER-R32': {'id': 'LIFE-C02', 'autonomy': 'founder_gate'},
               'OFFER-R33': {'id': 'LIFE-C47', 'autonomy': 'human_assist'},
+              'OFFER-R34': {'id': 'BRN-C11', 'autonomy': 'agent_does'},
               'OFFER-R06': {'id': 'MONEY-C05', 'autonomy': 'founder_gate'},
               'OFFER-R04': {'id': 'LIFE-C36', 'autonomy': 'founder_gate'}}
 SEVERITY_ORDER = {'critical': 0, 'high': 1, 'medium': 2, 'low': 3}
@@ -1300,6 +1309,34 @@ def rule_test_trust(rd):
                      f'{len(offer)} on an offer or price test.', None, 0.8, [], end, money_reason='a bad read costs the next decision')]
 
 
+def price_moves(rd):
+    return _model().price_moves(rd, _playbook().PRICE_MOVE)
+
+
+def rule_price_moves(rd):
+    end = rd.ends_on
+    pm = price_moves(rd)
+    entity = {'type': 'metric', 'id': 'price_moves', 'label': 'Competitor and reseller prices'}
+    if pm['unavailable']:
+        if not pm['prices']:
+            return []
+        return [_finding('OFFER-R34', entity, 'low', [], 'Whether a competitor or reseller moved price is unknown: ' + pm['reason'] + '.',
+                         None, 0.1, [], end, status='unavailable', money_reason='one capture',
+                         unavailable={'inputs': ['second price capture'], 'connector': 'second price capture',
+                                      'fix': 'Capture competitor and marketplace prices again on the brand brain screen.',
+                                      'last_capture': pm.get('last_capture')})]
+    if not pm['moves']:
+        return []
+    cuts = [m for m in pm['moves'] if m['change'] < 0]
+    ev = [_ev('price_change', m['change'], 'ratio', end, baseline=m['before'], baseline_kind=f'price on {m["before_on"]}',
+              window=f'{m["before_on"]} to {m["now_on"]}', source='brain') for m in pm['moves'][:4]]
+    top = pm['moves'][0] if cuts else pm['moves'][-1]
+    return [_finding('OFFER-R34', entity, 'medium' if cuts else 'low', ev,
+                     f'{len(pm["moves"])} prices moved {pm["move"] * 100:.0f} percent or more since the last capture. '
+                     f'Biggest: {top["name"]} {top["change"] * 100:+.0f} percent.', None, 0.6, [m['id'] for m in pm['moves'][:6]], end,
+                     money_reason='a move is a signal, not a counted loss')]
+
+
 def rule_ladder(rd):
     end = rd.ends_on
     pb = _playbook()
@@ -1471,7 +1508,7 @@ def run(brand, window=None, data=None):
     """Findings for one brand, sorted by severity then money at stake. `window` is {ends_on} or None."""
     ends_on = date.fromisoformat(window['ends_on']) if window and window.get('ends_on') else last_full_day(data, brand)
     rd = Reader(data, brand, ends_on)
-    out = (rule_threshold(rd) + rule_stale(rd) + rule_pull(rd) + rule_first_order(rd) + rule_red_line(rd) + rule_promo(rd) + rule_gifting(rd) + rule_guarantee(rd) + rule_position(rd) + rule_parity(rd) + rule_discount(rd) + rule_cart(rd) + rule_second_order(rd) + rule_cost(rd) + rule_referral(rd) + rule_loyalty(rd) + rule_window_creep(rd) + rule_bundles(rd) + rule_launched(rd) + rule_upsell(rd) + rule_bnpl(rd) + rule_threshold_match(rd) + rule_cohorts(rd) + rule_welcome(rd) + rule_test_trust(rd) + rule_ladder(rd) + rule_sku_margin(rd) +
+    out = (rule_threshold(rd) + rule_stale(rd) + rule_pull(rd) + rule_first_order(rd) + rule_red_line(rd) + rule_promo(rd) + rule_gifting(rd) + rule_guarantee(rd) + rule_position(rd) + rule_parity(rd) + rule_discount(rd) + rule_cart(rd) + rule_second_order(rd) + rule_cost(rd) + rule_referral(rd) + rule_loyalty(rd) + rule_window_creep(rd) + rule_bundles(rd) + rule_launched(rd) + rule_upsell(rd) + rule_bnpl(rd) + rule_threshold_match(rd) + rule_cohorts(rd) + rule_welcome(rd) + rule_test_trust(rd) + rule_price_moves(rd) + rule_ladder(rd) + rule_sku_margin(rd) +
            rule_unanswered(rd))
     out.sort(key=lambda f: (SEVERITY_ORDER[f['severity']], -((f.get('money_at_stake') or {}).get('usd') or -1), f['id']))
     return out

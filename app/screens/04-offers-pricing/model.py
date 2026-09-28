@@ -1342,3 +1342,47 @@ def test_trust(entries, ends_on, offer_surfaces, bad_metrics, min_days_default):
                          'metric': e.get('metric'), 'start': start, 'until': e.get('until'),
                          'problems': [{'key': k, 'text': t, 'fix': f} for k, t, f in probs]})
     return {'checked': len(live), 'rows': rows}
+
+
+# ---------------------------------------------------------------- did a competitor or reseller move price?
+
+def price_moves(rd, move):
+    """Competitor price bands (median per item) and marketplace listing prices, now against the last value in each
+    brain record's history. Unavailable while no price has a second capture: one capture cannot show a move."""
+    obs, dates = [], []
+    for sec, kind in (('competitors', 'competitor'), ('marketplaces', 'listing')):
+        for rec in rd.records(sec):
+            v = rec.get('value')
+            if not isinstance(v, dict):
+                continue
+            now = _median_price(v.get('price_band_usd')) if kind == 'competitor' else v.get('price_usd')
+            if not now:
+                continue
+            on = str((rec.get('source') or {}).get('captured_at') or rec.get('date') or '')[:10] or None
+            if on:
+                dates.append(on)
+            before, before_on = None, None
+            for h in reversed(rec.get('history') or []):
+                hv = h.get('value') if isinstance(h.get('value'), dict) else {}
+                # same item only: a near-duplicate merged into this record is another item, and a same-day change is no move
+                if h.get('reason') or (h.get('record_id') and h['record_id'] != rec['id']) or str(h.get('changed_at') or '')[:10] >= (on or ''):
+                    continue
+                if kind == 'listing' and hv.get('asin') != v.get('asin'):
+                    continue
+                p = _median_price(hv.get('price_band_usd')) if kind == 'competitor' else hv.get('price_usd')
+                if p:
+                    before, before_on = p, str(h.get('changed_at') or '')[:10] or None
+                    break
+            name = v.get('name') if kind == 'competitor' else f'{v.get("channel")} {v.get("asin")} ({v.get("seller") or "seller unknown"})'
+            obs.append({'id': rec['id'], 'kind': kind, 'name': name, 'now': now, 'now_on': on, 'before': before, 'before_on': before_on,
+                        'change': round(now / before - 1, 4) if before else None})
+    paired = [o for o in obs if o['before']]
+    if not obs:
+        return {'unavailable': True, 'reason': 'no competitor price band or listing price in the brain', 'prices': 0}
+    if not paired:
+        last = max(dates) if dates else None
+        return {'unavailable': True, 'reason': f'each of {len(obs)} prices has one capture' + (f', the latest on {last}' if last else '') +
+                '; a move shows once a second capture lands', 'prices': len(obs), 'last_capture': last}
+    moves = sorted([o for o in paired if abs(o['change']) >= move], key=lambda o: o['change'])
+    return {'unavailable': False, 'prices': len(obs), 'paired': len(paired), 'moves': moves, 'move': move,
+            'basis': f'current capture against the last value in each brain record\'s history; {move * 100:.0f} percent or more either way is a move'}

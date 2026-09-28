@@ -25,7 +25,7 @@
   const BLOCK_RULES = { 'desk-threshold': ['R01', 'R05', 'R06', 'R30'], 'desk-cart': ['R20', 'R28'], 'desk-discount': ['R18', 'R19', 'R25'],
     'desk-ladder': ['R07', 'R09', 'R29'], 'desk-first': ['R08', 'R31'], 'desk-welcome': ['R32'], 'desk-waterfall': ['R10', 'R03'], 'desk-calendar': ['R11'],
     'desk-depth': ['R11', 'R03'], 'desk-second': ['R21'], 'desk-cost': ['R22'], 'desk-gifting': ['R12', 'R13'], 'desk-guarantee': ['R14'],
-    'desk-position': ['R16'], 'desk-parity': ['R17'], 'desk-bundles': ['R26'], 'desk-buyers': ['R23', 'R24'],
+    'desk-position': ['R16'], 'desk-parity': ['R17'], 'desk-moves': ['R34'], 'desk-bundles': ['R26'], 'desk-buyers': ['R23', 'R24'],
     'desk-objections': ['R04', 'R15'], 'desk-tests': ['R27'], 'desk-registry': ['R27', 'R33'], 'desk-registry-trust': ['R33'] };
   function blockAction(id) {
     const rules = (BLOCK_RULES[id] || []).map((r) => '.OFFER-' + r + '.');
@@ -593,6 +593,17 @@
       actionLine(a && a.status !== 'unavailable' ? 'No holdout has checked the code. ' + a.title + '.' : 'A holdout test on record covers the code. Read it before changing the offer.', a));
   }
 
+  function movesBlock(pm) {
+    const head = { title: 'Did a competitor or reseller move price?', sub: 'Each competitor\'s median price per item and each marketplace listing, now against its last capture. ' + pct(SET.price_move, 0) + ' or more either way is a move.' };
+    if (!pm || pm.unavailable) return section('desk-moves', head, UI.emptyState({ screen: SLUG, title: 'No price move can be seen yet', text: (pm || {}).reason }));
+    const table = UI.verdictTable({ columns: [{ key: 'name', label: 'Who' }, { key: 'before', label: 'Before', format: (v, r) => fmt.money(v) + ' (' + fmt.date(r.before_on) + ')' },
+      { key: 'now', label: 'Now', format: (v, r) => fmt.money(v) + ' (' + fmt.date(r.now_on) + ')' }, { key: 'change', label: 'Change', format: (v) => pct(v, 0) }],
+      rows: pm.moves, verdict: { at: 1, kind: (r) => r.change < 0 ? 'fix' : 'watch', text: (r) => r.change < 0 ? 'Cut' : 'Raised', reason: (r) => r.kind }, sort: false });
+    return section('desk-moves', head, el('div', { class: 'card tight' }, pm.moves.length ? table : el('p', { class: 'small', text: 'No price moved since the last capture.' }),
+      el('p', { class: 'micro faint', text: pm.basis + '. ' + pm.paired + ' of ' + pm.prices + ' prices have 2 captures.' })),
+      actionLine(pm.moves.length ? (blockAction('desk-moves') || {}).title + '. A move is a signal; we answer with proof or a pack, not a matching discount.' : 'No move to read. The next capture keeps the check going.', blockAction('desk-moves')));
+  }
+
   function buyersBlock(d) {
     const head = { title: 'What do we offer people who already buy?', sub: 'Referral and loyalty, priced in product at landed cost against paid media per new customer and gross margin.' };
     const ro = d.referral, lo = d.loyalty;
@@ -698,8 +709,8 @@
         blocks: () => [testsBlock(d.tests), registryBlock(d.registry, d.proposed_tests, d.launched, d.trust), calendarBlock(d.calendar), depthBlock(d.depth), giftingBlock(d.gifting), secondOrderBlock(d.cohorts)] },
       { key: 'offers', label: 'Offers', rules: ['OFFER-R08', 'OFFER-R10', 'OFFER-R19', 'OFFER-R31', 'OFFER-R32', 'OFFER-R20', 'OFFER-R23', 'OFFER-R24', 'OFFER-R04', 'OFFER-R14', 'OFFER-R15'],
         blocks: () => [firstOrderBlock(d.first_order, d.discount_cohorts), welcomeBlock(d.welcome), cartBlock(d.cart, d.bunches), buyersBlock(d), objectionBlock(d.objections || [], d.returns), guaranteeBlock(d.guarantee, d.returns), subscriptionBlock(d.subscription), stackBlock(d.stack || [])] },
-      { key: 'prices', label: 'Prices and packs', rules: ['OFFER-R22', 'OFFER-R16', 'OFFER-R17', 'OFFER-R07', 'OFFER-R09', 'OFFER-R26', 'OFFER-R29'],
-        blocks: () => [costBlock(d.costs), positionBlock(d.position, d.brand || {}), parityBlock(d.parity), ladderBlock(d.ladder), bundlesBlock(d.bundles), waterfallBlock(d.waterfalls)] },
+      { key: 'prices', label: 'Prices and packs', rules: ['OFFER-R22', 'OFFER-R16', 'OFFER-R17', 'OFFER-R34', 'OFFER-R07', 'OFFER-R09', 'OFFER-R26', 'OFFER-R29'],
+        blocks: () => [costBlock(d.costs), positionBlock(d.position, d.brand || {}), parityBlock(d.parity), movesBlock(d.price_moves), ladderBlock(d.ladder), bundlesBlock(d.bundles), waterfallBlock(d.waterfalls)] },
       { key: 'shipping', label: 'Shipping and discounts', rules: ['OFFER-R01', 'OFFER-R05', 'OFFER-R06', 'OFFER-R18', 'OFFER-R25', 'OFFER-R30'],
         blocks: () => [thresholdBlock(d.threshold), discountBlock(d)] },
     ];

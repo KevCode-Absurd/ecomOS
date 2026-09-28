@@ -302,7 +302,7 @@ def orientation(rd, th):
 
 DESK_KEYS = ('objections', 'returns', 'ladder', 'first_order', 'waterfalls', 'calendar', 'gifting', 'guarantee', 'position',
              'parity', 'discipline', 'cart', 'tests', 'depth', 'cohorts', 'costs', 'registry', 'referral', 'loyalty',
-             'subscription', 'bundles', 'proposed_tests', 'launched', 'discount_cohorts', 'bunches', 'welcome', 'trust')
+             'subscription', 'bundles', 'proposed_tests', 'launched', 'discount_cohorts', 'bunches', 'welcome', 'trust', 'price_moves')
 
 
 def page_settings():
@@ -310,7 +310,7 @@ def page_settings():
     pb = actions.playbook
     return {'single_share_push': pb.SINGLE_SHARE_PUSH, 'min_saving': pb.MIN_SAVING, 'depth_cut': model.DEPTH_CUT,
             'approval_days': actions.APPROVAL_DAYS, 'parity_gap': pb.PARITY_GAP, 'snooze_days': actions.RANK.SNOOZE_DAYS,
-            'promo_ratio': pb.PROMO_DAY_RATIO}
+            'promo_ratio': pb.PROMO_DAY_RATIO, 'price_move': pb.PRICE_MOVE}
 
 
 def with_decisions(acts, today=None, path=None):
