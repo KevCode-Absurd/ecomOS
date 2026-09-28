@@ -132,7 +132,10 @@ def threshold(rd):
     ft = out.get('fixture_threshold') or t  # a fixture is drawn around its own line
     lo, hi = max(0, ft - 40), ft + 60
     out.update({
-        'fixture': fixture, 'band': band, 'bins': [g for g in groups if lo <= g['from'] < hi],
+        'fixture': fixture, 'band': band,
+        'bins': [dict(g, share_paid=round(g['share'] * g['paid_shipping_orders'] / g['orders'], 6) if g['orders'] else None,
+                      share_free=round(g['share'] * (1 - g['paid_shipping_orders'] / g['orders']), 6) if g['orders'] else None)
+                 for g in groups if lo <= g['from'] < hi],
         'shade': [ft - band, ft], 'window': (dist.get('window') or {}), 'basis': dist.get('basis'),
         'orders_sample': None if fixture else dist['value'],
         'share_just_under': None if fixture else audit.band_share(groups, t - band, t),
@@ -283,15 +286,17 @@ def overview(data, brand):
         ranked = actions.rank(brand, {'ends_on': ends_on.isoformat()})
         findings, plan = ranked['findings'], ranked['actions']
         objections, returns, lad = ranked['objections'], ranked['returns'], ranked['ladder']
+        first = ranked['first_order']
     else:
         findings, plan = audit.run(brand, {'ends_on': ends_on.isoformat()}, data=data), []
         objections, returns = [], {'unavailable': True, 'reason': 'no brand folder', 'groups': []}
         lad = ladder(rd)
+        first = {'unavailable': True, 'reason': 'no brand folder'}
     months = discount_months(rd)
     th = threshold(rd)
     return {'brand': head, 'window': {'ends_on': ends_on.isoformat(), 'days': audit.WINDOW},
             'orientation': orientation(rd, th), 'plan': plan,
-            'stack': offer_stack(rd), 'threshold': th, 'bfcm': bfcm(rd), 'ladder': lad,
+            'stack': offer_stack(rd), 'threshold': th, 'bfcm': bfcm(rd), 'ladder': lad, 'first_order': first,
             'objections': objections, 'returns': returns, 'creep': creep_rule(months), 'chart': chart(months),
             'findings': findings, 'rules': audit.RULES}
 
@@ -299,7 +304,7 @@ def overview(data, brand):
 def rank(brand='bombas', window=None):
     """Ranked actions for app/rank.py and the master list (depth.md section 5)."""
     out = actions.rank(brand, window)
-    for k in ('findings', 'objections', 'returns', 'ladder'):
+    for k in ('findings', 'objections', 'returns', 'ladder', 'first_order'):
         out.pop(k, None)
     return out
 

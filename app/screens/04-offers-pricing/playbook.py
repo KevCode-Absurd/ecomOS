@@ -85,3 +85,15 @@ SINGLE_SHARE_PUSH = 0.30  # singles above 30 percent of a line's packs: the ladd
 VIABLE_TRADE_UP = 0.25    # a price test is worth running when under 25 percent of single buyers must trade up to pay
 NEW_PACK_SAVING = 0.10    # a new pack on a single-only basics line starts at 10 percent off per item
 DEFAULT_NEW_PACK = 3
+
+
+# First-order offer alternatives (screen 04, OFFER-R08). Each is a way to pay for a first order. `keeps_price`:
+# the list price is never cut, so it does not train buyers to wait for a code. `answers`: the doubt it speaks to.
+FIRST_ORDER_OPTIONS = [
+    {'key': 'code', 'name': 'Percent-off code (today)', 'keeps_price': False, 'answers': 'price'},
+    {'key': 'gwp', 'name': 'Free item with the first order', 'keeps_price': True, 'answers': 'value'},
+    {'key': 'free_ship', 'name': 'Free shipping on the first order', 'keeps_price': True, 'answers': 'shipping cost'},
+    {'key': 'dollar_off', 'name': 'Dollars off at the free shipping line', 'keeps_price': False, 'answers': 'price, and lifts the basket'},
+    {'key': 'pack', 'name': 'First-order price on the best-selling pack', 'keeps_price': False, 'answers': 'value, and moves shoppers up the ladder'},
+]
+CODE_ADS_SHARE = 0.5      # a percent code in more than half the active ads is the default way in: check what it costs

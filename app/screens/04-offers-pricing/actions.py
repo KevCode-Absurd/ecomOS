@@ -69,6 +69,7 @@ class Ctx:
         self.po = model.per_order(self.totals)
         self.objections = objection_map(rd)
         self.ladder, self.ladder_rows = audit.ladder_moves(rd)
+        self.first_order = audit.first_order(rd)
         self.ship_rate = (model.brain_value(rd, 'offers.standard_shipping_cost')[0] or {}).get('cost_usd') if rd.brand else None
         self.scenarios = (model.threshold_scenarios(rd, self.threshold, self.ship_rate, self.be['value'], (self.po or {}).get('units') or 1)
                           if self.threshold is not None and self.be.get('value') is not None else [])
@@ -222,6 +223,42 @@ def rung_action(f, a, ctx):
     return a
 
 
+def first_order_action(f, a, ctx):
+    fo = ctx.first_order
+    code = next(r for r in fo['rows'] if r['key'] == 'code')
+    best = max((r for r in fo['rows'] if not r.get('unavailable') and r['keeps_price']), key=lambda r: r['contribution'])
+    under = (f' It also takes the average basket from {money(fo["gross_order"])} to {money(code["price_paid"])}, under the '
+             f'${fo["threshold"]:,.0f} line, so the shopper pays shipping or adds an item.') if code['under_line'] else ''
+    brief = '\n'.join([
+        f'Test brief: {best["name"].lower()} against the {fo["code_pct"]:.0f} percent code',
+        f'Why: the code keeps {money(code["contribution"])} per first order; {best["terms"]} keeps {money(best["contribution"])}. '
+        f'Paid media per new customer is {money(fo["new_cac"])}, so payback moves from {code["payback"]:.2f}x to {best["payback"]:.2f}x.' + under,
+        f'Arms: A keeps the code in ads and on the site. B swaps it for: {best["terms"]}. Same creative, only the offer line changes.',
+        'Split: 50/50 by visitor on new visitors; ad variants in pairs so each ad runs both offers.',
+        'Primary metric: first-order contribution per new visitor.',
+        f'The bar B must clear: it can lose up to {best["cvr_limit"] * 100:.0f} percent of first-order conversion and still earn more per visitor.',
+        f'Win: contribution per new visitor up in B. Stop: new-customer conversion in B down more than {best["cvr_limit"] * 100:.0f} percent for 7 days.',
+    ])
+    a.update({
+        'title': f'Test {best["name"].lower()} against the {fo["code_pct"]:.0f} percent first-order code',
+        'why': f['sentence'] + under,
+        'owner': 'agent_drafts',
+        'artefact': {'kind': 'test_brief', 'label': f'Test brief and ad variants: {best["name"].lower()} against the code', 'draft': brief},
+        'steps': steps(
+            ('agent', 'List the active ads that carry the code and the site places it shows.'),
+            ('agent', 'Draft the test brief and one offer-line variant per ad.'),
+            ('person', 'Approve the offer and the variants. The media buyer launches the pairs.'),
+            ('agent', 'Read first-order conversion and contribution per new visitor by arm every 7 days.'),
+            ('agent', f'Call it on {ctx.check_on(35)} with the win and stop rules.')),
+        'size': {'text': (f'Up to {money(f["money_at_stake"]["usd"])} in 28 days at equal conversion' if f.get('money_at_stake') else
+                          f'{money(code["cost"] - best["cost"])} more kept per first order'), 'usd': (f.get('money_at_stake') or {}).get('usd')},
+        'win_rule': 'Contribution per new visitor up in B.',
+        'stop_rule': f'New-customer conversion in B down more than {best["cvr_limit"] * 100:.0f} percent for 7 days.',
+        'check_on': ctx.check_on(35), 'time_to_ship_hours': 6,
+    })
+    return a
+
+
 def returns_block(rd):
     """returns_by_reason for the window, or the labelled fixture when the metric is unavailable."""
     m = rd.m('returns_by_reason', audit.WINDOW)
@@ -346,7 +383,7 @@ def rescore(a, dims):
     return a
 
 
-BUILDERS = {'OFFER-R01': threshold_action, 'OFFER-R04': rung_action}
+BUILDERS = {'OFFER-R01': threshold_action, 'OFFER-R04': rung_action, 'OFFER-R08': first_order_action}
 
 
 def build(f, rd, ctx, nr):
@@ -382,4 +419,4 @@ def rank(brand='bombas', window=None):
     actions.sort(key=RANK.sort_key)
     return {'screen': SCREEN, 'brand': brand, 'window': w, 'simulated': True, 'net_revenue_28d': nr,
             'actions': actions, 'findings': findings, 'objections': ctx.objections, 'returns': returns_block(rd),
-            'ladder': dict(ctx.ladder, moves=ctx.ladder_rows)}
+            'ladder': dict(ctx.ladder, moves=ctx.ladder_rows), 'first_order': ctx.first_order}

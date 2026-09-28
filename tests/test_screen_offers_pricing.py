@@ -385,5 +385,46 @@ class PackLadderTest(unittest.TestCase):
                 self.assertAlmostEqual(r['margin_per_pack'], round(r['price_per_pack'] - cogs[r['sku']], 2))
 
 
+class FirstOrderTest(unittest.TestCase):
+    """Round 1 feature 5: the first-order code against offers that keep the list price, with the test brief."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.rd = audit.Reader(None, 'bombas', audit.last_full_day(None, 'bombas'))
+        cls.fo = audit.first_order(cls.rd)
+        cls.out = api.actions.rank('bombas')
+
+    def test_options_arithmetic(self):
+        fo = self.fo
+        self.assertFalse(fo['unavailable'])
+        base = fo['full_price']['contribution']
+        code = next(r for r in fo['rows'] if r['key'] == 'code')
+        self.assertAlmostEqual(code['price_paid'], round(fo['gross_order'] * (1 - fo['code_pct'] / 100), 2))
+        self.assertEqual(code['under_line'], code['price_paid'] < fo['threshold'])
+        for r in fo['rows']:
+            if r.get('unavailable'):
+                self.assertTrue(r['reason'])
+                continue
+            self.assertAlmostEqual(r['cost'], round(base - r['contribution'], 2), places=1)
+            self.assertAlmostEqual(r['payback'], round(r['contribution'] / fo['new_cac'], 2), places=1)
+            if r.get('cvr_limit') is not None:
+                self.assertAlmostEqual(r['cvr_limit'], round(1 - code['contribution'] / r['contribution'], 4))
+
+    def test_rule_and_action(self):
+        f = next((f for f in self.out['findings'] if f['rule_id'] == 'OFFER-R08'), None)
+        share = api.model.brain_value(self.rd, 'offers.promo_share_active_ads')[0]
+        if share['ads_with_code'] / share['active_ads'] <= audit._playbook().CODE_ADS_SHARE or not self.fo['best_key']:
+            self.assertIsNone(f)
+            return
+        m = f['money_at_stake']
+        i = m['inputs']
+        self.assertAlmostEqual(m['usd'], round(round(i['discounts_28d'] * i['new_customer_share'], 2) * (1 - i['better_offer_cost'] / i['code_cost']), 2), places=0)
+        a = next(a for a in self.out['actions'] if a['rule_id'] == 'OFFER-R08')
+        self.assertEqual(a['artefact']['kind'], 'test_brief')
+        self.assertIn('conversion', a['artefact']['draft'])
+        best = next(r for r in self.fo['rows'] if r['key'] == self.fo['best_key'])
+        self.assertTrue(best['keeps_price'])
+
+
 if __name__ == '__main__':
     unittest.main()

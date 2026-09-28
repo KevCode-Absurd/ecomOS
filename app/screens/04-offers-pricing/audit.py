@@ -28,6 +28,13 @@ Rules
              up to pay for it. Verdict `deepen` when that share is under VIABLE_TRADE_UP, else `push` (keep the price,
              preselect the pack and show price per item). Money null: the trade-up rate is what the test finds.
              Capability LIFE-C39 (founder gate). Thresholds in playbook.py.
+  OFFER-R08  First-order code is the default way in: the brain's first-order code sits in more than
+             playbook.CODE_ADS_SHARE of active ads, and an offer that keeps the list price
+             (playbook.FIRST_ORDER_OPTIONS) keeps more contribution per first order (model.first_order_options).
+             Money: discount dollars on new-customer orders in 28 days (discounts x new-customer order share; orders
+             do not carry the code yet) times the share of the code's cost the better offer saves. Equal
+             conversion is assumed; the test brief states how much conversion the offer can lose. Confidence 0.4.
+             Capability LIFE-C02 (founder gate).
   OFFER-R09  A line in a repeat-buy category (playbook.REPEAT_CATEGORIES) sold only as a single. Proposal: a pack of
              the most common multi-pack size in that category (else 3) at NEW_PACK_SAVING off per item, with its
              margin per pack from cogs_landed x size. Capability LIFE-C39 (founder gate).
@@ -79,6 +86,9 @@ RULES = [
      'inputs': ['brain.offers.free_shipping_threshold_usd', 'orders'], 'capability': 'MONEY-C05', 'owner_screen': SCREEN},
     {'rule_id': 'OFFER-R07', 'name': 'Pack ladder not moving shoppers up', 'entity_type': 'sku',
      'inputs': ['products_monthly', 'finance_inputs.cogs_landed'], 'capability': 'LIFE-C39', 'owner_screen': SCREEN},
+    {'rule_id': 'OFFER-R08', 'name': 'First-order code is the default way in', 'entity_type': 'offer',
+     'inputs': ['brain.offers.first_order_code', 'brain.offers.promo_share_active_ads', 'daily', 'finance_inputs'],
+     'capability': 'LIFE-C02', 'owner_screen': SCREEN},
     {'rule_id': 'OFFER-R09', 'name': 'Basics line sold only as a single', 'entity_type': 'sku',
      'inputs': ['products_monthly', 'finance_inputs.cogs_landed'], 'capability': 'LIFE-C39', 'owner_screen': SCREEN},
     {'rule_id': 'OFFER-R03', 'name': 'Margin after discount per SKU', 'entity_type': 'sku',
@@ -92,6 +102,7 @@ CAPABILITY = {'OFFER-R01': {'id': 'MONEY-C05', 'autonomy': 'founder_gate'},
               'OFFER-R03': {'id': 'MONEY-C05', 'autonomy': 'founder_gate'},
               'OFFER-R05': {'id': 'MONEY-C05', 'autonomy': 'founder_gate'},
               'OFFER-R07': {'id': 'LIFE-C39', 'autonomy': 'founder_gate'},
+              'OFFER-R08': {'id': 'LIFE-C02', 'autonomy': 'founder_gate'},
               'OFFER-R09': {'id': 'LIFE-C39', 'autonomy': 'founder_gate'},
               'OFFER-R06': {'id': 'MONEY-C05', 'autonomy': 'founder_gate'},
               'OFFER-R04': {'id': 'LIFE-C36', 'autonomy': 'founder_gate'}}
@@ -427,6 +438,49 @@ def ladder_moves(rd):
     return lad, rows
 
 
+def first_order(rd):
+    """The first-order options table for the rule and the desk."""
+    lad, _ = ladder_moves(rd)
+    lines = [] if lad.get('unavailable') else [r for r in lad['lines'] if r['pack_sku']]
+    top = max(lines, key=lambda r: r['packs'] - (r['single_packs'] or 0)) if lines else None
+    return _model().first_order_options(rd, _playbook().FIRST_ORDER_OPTIONS, top)
+
+
+def rule_first_order(rd):
+    end = rd.ends_on
+    pb = _playbook()
+    share, _ = _model().brain_value(rd, 'offers.promo_share_active_ads')
+    if not isinstance(share, dict) or not share.get('active_ads'):
+        return []
+    ads = share['ads_with_code'] / share['active_ads']
+    fo = first_order(rd)
+    if fo.get('unavailable') or ads <= pb.CODE_ADS_SHARE:
+        return []
+    code = next(r for r in fo['rows'] if r['key'] == 'code')
+    alts = [r for r in fo['rows'] if not r.get('unavailable') and r['keeps_price'] and r['contribution'] > code['contribution']]
+    if not alts:
+        return []
+    best = max(alts, key=lambda r: r['contribution'])
+    spend = round(fo['discounts_28d'] * fo['new_share'], 2)
+    saved = round(spend * (1 - best['cost'] / code['cost']), 2) if code['cost'] else None
+    money = None if saved is None else {
+        'usd': saved, 'formula': 'discounts_28d x new_customer_share x (1 - better_offer_cost / code_cost)',
+        'inputs': {'discounts_28d': fo['discounts_28d'], 'new_customer_share': fo['new_share'],
+                   'better_offer_cost': best['cost'], 'code_cost': code['cost']},
+        'window': '28d', 'note': 'at equal conversion; the test finds the real number'}
+    entity = {'type': 'offer', 'id': 'first_order_code', 'label': f'{fo["code_pct"]:.0f} percent first-order code'}
+    evidence = [_ev('ads_with_code', round(ads, 4), 'ratio', end, baseline=pb.CODE_ADS_SHARE, baseline_kind='threshold',
+                    window='active ads', source='brain.offers.promo_share_active_ads'),
+                _ev('first_order_contribution_code', code['contribution'], 'usd', end, baseline=best['contribution'],
+                    baseline_kind=best['key'], source='daily, finance_inputs'),
+                _ev('first_order_payback_code', code['payback'], 'ratio', end, baseline=best['payback'],
+                    baseline_kind=best['key'], source='daily, finance_inputs')]
+    sentence = (f'{share["ads_with_code"]} of {share["active_ads"]} active ads carry the {fo["code_pct"]:.0f} percent code. '
+                f'It keeps ${code["contribution"]:,.2f} per first order; {best["name"].lower()} keeps ${best["contribution"]:,.2f}.')
+    return [_finding('OFFER-R08', entity, 'high', evidence, sentence, money, 0.4,
+                     [f'{rd.brand}.offers.first_order_code', f'{rd.brand}.offers.promo_share_active_ads'], end)]
+
+
 def rule_ladder(rd):
     end = rd.ends_on
     pb = _playbook()
@@ -598,7 +652,7 @@ def run(brand, window=None, data=None):
     """Findings for one brand, sorted by severity then money at stake. `window` is {ends_on} or None."""
     ends_on = date.fromisoformat(window['ends_on']) if window and window.get('ends_on') else last_full_day(data, brand)
     rd = Reader(data, brand, ends_on)
-    out = (rule_threshold(rd) + rule_stale(rd) + rule_pull(rd) + rule_ladder(rd) + rule_sku_margin(rd) +
+    out = (rule_threshold(rd) + rule_stale(rd) + rule_pull(rd) + rule_first_order(rd) + rule_ladder(rd) + rule_sku_margin(rd) +
            rule_unanswered(rd))
     out.sort(key=lambda f: (SEVERITY_ORDER[f['severity']], -((f.get('money_at_stake') or {}).get('usd') or -1), f['id']))
     return out

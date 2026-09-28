@@ -361,3 +361,104 @@ def line_summary(rows):
     return out
 
 
+
+
+# ---------------------------------------------------------------- first-order offer
+
+def first_order_options(rd, options, pack=None, end=None):
+    """Per-order money of each first-order offer at the average list-price order: price paid, extra cost, label net
+    of shipping charged (the free shipping line counts after discount), contribution before media and payback on
+    the paid media spent per new customer. Returns dict with the inputs and rows, or dict(unavailable, reason)."""
+    end = end or rd.ends_on
+    t = window_totals(rd, end)
+    po = per_order(t)
+    cr = cogs_ratio(rd, end)
+    code, _ = brain_value(rd, 'offers.first_order_code')
+    thr, _ = brain_value(rd, 'offers.free_shipping_threshold_usd')
+    ship, _ = brain_value(rd, 'offers.standard_shipping_cost')
+    rate = (ship or {}).get('cost_usd') if isinstance(ship, dict) else None
+    pct_off = (code or {}).get('discount_pct') if isinstance(code, dict) else None
+    label = label_average(rd, end)
+    pick = fin_value(rd, 'threepl_pick_pack', end, unit='usd_per_order')
+    pick_unit = fin_value(rd, 'threepl_pick_pack', end, unit='usd_per_unit')
+    pack_fee = fin_value(rd, 'packaging', end)
+    fee_pct = fin_value(rd, 'payment_fee_percent', end, 'online_store')
+    fee_fix = fin_value(rd, 'payment_fee_fixed', end, 'online_store')
+    ic = item_cost(rd, end)
+    need = {'daily aggregate': po, 'cogs_landed': cr.get('ratio'), 'first-order code in the brain': pct_off,
+            'free shipping threshold in the brain': thr, 'shipping rate in the brain': rate, 'shipping_label': label,
+            'threepl_pick_pack': pick, 'packaging': pack_fee, 'payment fees': fee_pct if fee_fix is not None else None,
+            'item cost': ic.get('value')}
+    miss = [k for k, v in need.items() if v is None]
+    if miss:
+        return {'unavailable': True, 'reason': 'missing ' + ', '.join(miss)}
+    g = po['gross']
+    cogs = cr['ratio'] * po['net']
+    units = po['units']
+    new_cac = t['spend'] / t['new_customer_orders'] if t['new_customer_orders'] else None
+    target_cac = fin_value(rd, 'target_cac', end)
+    dollar_off = math.ceil(g * pct_off / 100 / 2 / 5) * 5
+
+    def money(price, extra_item=0.0, extra_units=0):
+        # the average order ships free; the label stays with the brand so offers compare on price and item cost.
+        # An offer that takes the basket under the line is flagged: the shopper then pays shipping or adds an item.
+        cost = (cogs + extra_item + pack_fee + pick + (pick_unit or 0) * max(units - 1 + extra_units, 0)
+                + price * fee_pct / 100 + fee_fix + label)
+        c = price - cost
+        return {'price_paid': round(price, 2), 'under_line': price < thr, 'extra_item': round(extra_item, 2),
+                'contribution': round(c, 2), 'payback': round(c / new_cac, 2) if new_cac else None}
+
+    base = money(g)
+    rows = []
+    for o in options:
+        k = o['key']
+        if k == 'code':
+            m = money(g * (1 - pct_off / 100))
+            m['terms'] = f'{pct_off:.0f} percent off the first order'
+        elif k == 'gwp':
+            m = money(g, extra_item=ic['value'], extra_units=1)
+            m['terms'] = 'one free item in the box (median landed cost per item)'
+        elif k == 'free_ship':
+            # costs the label only on first orders under the line; their share needs order rows
+            dist = rd.m('order_value_distribution', WINDOW, end, step=5)
+            if dist.get('unavailable'):
+                rows.append(dict(o, unavailable=True, terms='no shipping charge on the first order, any value',
+                                 reason='the share of first orders under the line needs order rows'))
+                continue
+            under = sum(x['share'] for x in dist['groups'] if x['to'] <= thr)
+            m = money(g)
+            m['contribution'] = round(m['contribution'] - under * (rate - 0), 2)
+            m['payback'] = round(m['contribution'] / new_cac, 2) if new_cac else None
+            m['terms'] = f'no shipping charge on the first order; {under * 100:.0f} percent of orders sit under the line'
+        elif k == 'dollar_off':
+            m = money(g - dollar_off if g >= thr else g)
+            m['terms'] = f'${dollar_off} off a first order of ${thr:,.0f} or more'
+        elif k == 'pack':
+            if not pack or pack.get('pack_price') is None:
+                rows.append(dict(o, unavailable=True, reason='no multi-pack in the catalogue'))
+                continue
+            cut = round(pack['pack_price'] * 0.15, 2)
+            m = money(g - cut)
+            m['terms'] = f'15 percent off the {pack["pack"]}-pack ({pack["line"]}) on the first order'
+        m['cost'] = round(base['contribution'] - m['contribution'], 2)
+        rows.append(dict(o, **m))
+    code_row = next((r for r in rows if r['key'] == 'code' and not r.get('unavailable')), None)
+    for r in rows:
+        if r.get('unavailable') or not code_row or r['key'] == 'code':
+            continue
+        # how much first-order conversion this offer can lose against the code before it earns less per visitor
+        r['cvr_limit'] = round(1 - code_row['contribution'] / r['contribution'], 4) if r['contribution'] > code_row['contribution'] else None
+    keep = [r for r in rows if not r.get('unavailable') and r['keeps_price']]
+    best = max(keep, key=lambda r: r['contribution']) if keep else None
+    better = best if best and code_row and best['contribution'] > code_row['contribution'] else None
+    return {'unavailable': False, 'best_key': better['key'] if better else None,
+            'best_gain': round(better['contribution'] - code_row['contribution'], 2) if better else None,
+            'new_discounts_28d': round(t['discounts'] * po['new_share'], 2),
+            'gross_order': round(g, 2), 'net_order': round(po['net'], 2), 'cogs': round(cogs, 2),
+            'threshold': thr, 'shipping_rate': rate, 'code_pct': pct_off, 'new_cac': round(new_cac, 2) if new_cac else None,
+            'target_cac': target_cac, 'full_price': base, 'rows': rows,
+            'new_orders_28d': t['new_customer_orders'], 'discounts_28d': round(t['discounts'], 2),
+            'new_share': round(po['new_share'], 4), 'window': {'start': t['start'], 'end': t['end']},
+            'basis': ('The average order at list price, 28 days; landed cost from the cogs ratio; the label stays with '
+                      'the brand. The line counts after discount: an offer that takes the basket under it is flagged, '
+                      'because the shopper then pays shipping or adds an item')}

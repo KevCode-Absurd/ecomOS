@@ -121,8 +121,8 @@
     const dist = Charts.bar({
       labels: bins.map((g) => '$' + g.from), stacked: true, unit: '%', shade: i0 >= 0 ? [i0, i0 + Math.round((th.shade[1] - th.shade[0]) / 5) - 1] : null,
       series: [
-        { name: 'Pays shipping', values: bins.map((g) => g.orders ? g.share * g.paid_shipping_orders / g.orders : null) },
-        { name: 'Ships free', values: bins.map((g) => g.orders ? g.share * (1 - g.paid_shipping_orders / g.orders) : null) },
+        { name: 'Pays shipping', values: bins.map((g) => g.share_paid) },
+        { name: 'Ships free', values: bins.map((g) => g.share_free) },
       ],
       maxLabels: 10, title: (th.fixture ? 'Fixture: ' : '') + 'share of orders by order value, $5 bins' + (th.fixture ? ' (shape only, not brand data)' : ', ' + th.window.label),
       note: th.fixture ? 'Order values are ' + NA + ': ' + th.distribution_unavailable + '. A labelled fixture is drawn so the layout can be checked. Shaded: the $' + th.band + ' just under the line.'
@@ -211,6 +211,36 @@
       actionLine(push + ' lines need the pack preselected, not a lower price. ' + add + ' basics lines need a pack.', act({ verdict: 'push' }) || act({ verdict: 'add' })));
   }
 
+  function firstOrderBlock(fo) {
+    const head = { title: 'What should pay for a first order?', sub: 'Each offer at the average list-price order, 28 days: price paid, what it costs against full price, contribution before media, and payback on paid media per new customer.' };
+    if (!fo || fo.unavailable) return section('desk-first', head, UI.emptyState({ screen: SLUG, title: 'First-order economics unavailable', text: (fo || {}).reason }));
+    const a = ACTIONS.find((x) => x.rule_id === 'OFFER-R08');
+    const best = fo.rows.find((r) => r.key === fo.best_key) || null;
+    const isBest = (r) => best && r.key === best.key;
+    const table = UI.verdictTable({
+      columns: [
+        { key: 'name', label: 'Offer' }, { key: 'terms', label: 'Terms', format: (v, r) => r.unavailable ? (v || '') + ' (' + r.reason + ')' : v },
+        { key: 'price_paid', label: 'Price paid', unit: '$', format: (v, r) => v == null ? NA : fmt.money(v) + (r.under_line ? ' (under the line)' : '') },
+        { key: 'cost', label: 'Cost vs full price', unit: '$' },
+        { key: 'contribution', label: 'Contribution', unit: '$' },
+        { key: 'payback', label: 'Payback', format: (v) => v == null ? NA : v.toFixed(2) + 'x' },
+        { key: 'cvr_limit', label: 'Conversion it can lose', format: (v, r) => r.key === 'code' ? 'baseline' : v == null ? (r.unavailable ? NA : 'none') : pct(v, 0) },
+      ],
+      rows: withActs(fo.rows, (r) => isBest(r) && a ? [{ label: 'Open test brief', onClick: () => openAction(a) }] : []),
+      verdict: { at: 1, kind: (r) => r.key === 'code' ? 'watch' : r.unavailable ? 'na' : isBest(r) ? 'new' : r.cvr_limit ? 'keep' : 'cut',
+        text: (r) => r.key === 'code' ? 'Today' : r.unavailable ? 'Unavailable' : isBest(r) ? 'Test' : r.cvr_limit ? 'Option' : 'Worse', reason: (r) => r.answers },
+      actions: { label: 'Do' }, sort: false,
+    });
+    const facts = kv([
+      ['Average order', fmt.money(fo.gross_order) + ' at list price, ' + fmt.money(fo.net_order) + ' after discounts'],
+      ['Full price keeps', fmt.money(fo.full_price.contribution) + ' before media, ' + fo.full_price.payback.toFixed(2) + 'x payback'],
+      ['Paid media per new customer', fmt.money(fo.new_cac) + (fo.target_cac != null ? ' against a ' + fmt.money(fo.target_cac) + ' target' : '')],
+      ['Discounts on new orders, 28 days', fmt.money(fo.new_discounts_28d) + ' (all discounts times the ' + pct(fo.new_share, 0) + ' new-customer share; orders do not carry the code yet)'],
+    ]);
+    return section('desk-first', head, el('div', { class: 'card tight' }, table, el('p', { class: 'micro faint', text: fo.basis + '.' })), el('div', { class: 'card' }, facts),
+      actionLine(best ? 'Test ' + best.name.toLowerCase() + ' against the code. It keeps ' + fmt.money(fo.best_gain) + ' more per first order.' : 'No price-keeping offer beats the code today.', a));
+  }
+
   function returnsChart(r) {
     if (!r || !r.groups || !r.groups.length) return el('p', { class: 'muted small', text: 'Returns by reason ' + NA + '.' });
     const rows = r.groups.slice().sort((a, b) => b.per_1000 - a.per_1000);
@@ -265,7 +295,7 @@
     wrong(d);
     actionsList(d);
     mount('#desk', el('div', { class: 'desk-kicker' }, el('h3', { text: 'The desk' })),
-      stackBlock(d.stack || []), thresholdBlock(d.threshold), discountBlock(d), ladderBlock(d.ladder), objectionBlock(d.objections || [], d.returns));
+      stackBlock(d.stack || []), thresholdBlock(d.threshold), firstOrderBlock(d.first_order), discountBlock(d), ladderBlock(d.ladder), objectionBlock(d.objections || [], d.returns));
     auditBlock(d);
   }
 
