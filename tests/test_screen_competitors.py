@@ -1845,5 +1845,15 @@ class TestSecondBrandInputs(TestSecondBrand):
         self.assertFalse((SCREEN / 'fixtures' / 'inputs' / 'acme.json').exists())
 
 
+class TestFormAccess(unittest.TestCase):
+    """7.9: the write-back forms are labelled, announce their status, submit on Enter and name what Remove removes."""
+    def test_forms(self):
+        js = (SCREEN / 'screen.js').read_text(encoding='utf-8')
+        body = js.split('function inputForm(')[1].split('\n  }\n')[0]
+        for bit in ("role: 'status'", "'aria-live': 'polite'", "e.key === 'Enter'", "'aria-label': f.label", "role: 'group'"):
+            self.assertIn(bit, body)
+        self.assertIn("'aria-label': 'Remove ' + x.what", js)
+
+
 if __name__ == '__main__':
     unittest.main()

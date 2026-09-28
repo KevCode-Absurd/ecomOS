@@ -430,8 +430,8 @@
   // a small form that logs one first-party record (inputs.py); the page reloads so every rule reads it
   function inputForm(kind, fields, label) {
     const ctl = {};
-    const status = el('span', { class: 'micro muted' });
-    const row = el('div', { class: 'row wrap input-form' });
+    const status = el('span', { class: 'micro muted', role: 'status', 'aria-live': 'polite' });
+    const row = el('div', { class: 'row wrap input-form', role: 'group', 'aria-label': label });
     for (const f of fields) {
       const c = f.options ? el('select', { class: 'text sm', 'aria-label': f.label }, ...f.options.map((o) => el('option', { value: o, text: o })))
         : el('input', { class: 'text sm', type: f.type || 'text', 'aria-label': f.label, placeholder: f.label, value: f.value || '', step: f.step || null });
@@ -439,11 +439,12 @@
       row.append(el('label', { class: 'micro' }, el('span', { class: 'faint', text: f.label }), c));
     }
     const b = el('button', { class: 'btn sm', type: 'button', text: label });
+    for (const c of Object.values(ctl)) if (c.tagName === 'INPUT') c.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); b.click(); } });
     b.addEventListener('click', async () => {
       const body = { kind };
       for (const [k, c] of Object.entries(ctl)) body[k] = c.type === 'number' ? (c.value === '' ? null : Number(c.value)) : c.value;
       try { await api(BASE + 'inputs', { method: 'POST', body }); status.textContent = 'Saved. Reloading.'; setTimeout(() => location.reload(), 300); }
-      catch (e) { status.textContent = 'Not saved: ' + e.message; }
+      catch (e) { status.textContent = 'Not saved: ' + e.message; const first = Object.values(ctl)[0]; if (first) first.focus(); }
     });
     row.append(b, status);
     return row;
@@ -844,7 +845,7 @@
     } }] }));
     const tbl = rows.length ? el('table', { class: 'kit dense' }, el('thead', null, el('tr', null, ...['Logged', 'What', 'Record', 'By', ''].map((h) => el('th', { text: h })))),
       el('tbody', null, ...rows.map((x) => el('tr', null, el('td', { text: fmt.date(x.logged_at) }), el('td', { text: x.what }), el('td', { text: x.summary + (x.date ? ', ' + fmt.date(x.date) : '') }),
-        el('td', { text: x.by }), el('td', null, el('button', { class: 'btn sm quiet', type: 'button', text: 'Remove', onclick: x.row_actions[0].onClick })))))) : null;
+        el('td', { text: x.by }), el('td', null, el('button', { class: 'btn sm quiet', type: 'button', text: 'Remove', 'aria-label': 'Remove ' + x.what + ': ' + x.summary, onclick: x.row_actions[0].onClick })))))) : null;
     mount('#inputs', el('h4', { text: 'What the team logged (' + rows.length + ')' }), tbl ? el('div', { class: 'table-wrap' }, tbl) : el('p', { class: 'small muted', text: 'Nothing logged yet. Interviews, prices seen, card checks, polls and threshold changes show here.' }),
       el('p', { class: 'micro faint', text: r.note }));
   }
