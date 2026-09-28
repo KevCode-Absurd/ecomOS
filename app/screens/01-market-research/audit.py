@@ -134,6 +134,9 @@ Rules
             order line items, returns from the return leg of reversed orders), with the reasons. Room metric
             sku_return_rate. Severity medium. Money null (refund value is not in the orders table). Capability PROD-C06.
             Owner: 01-market-research.
+  PROD-R35  Open question for the founder (brain open_questions) with 5 or more complaint quotes behind it, never asked or
+            asked 14 or more days ago with no answer. Severity medium at 20 quotes, else low. Money null (priced on the
+            theme card). Capability PROD-C12 (field research, human assist). Owner: 01-market-research.
   PROD-R03  Hero line with no next SKU: a line with 25 percent or more of its category's net sales in
             the last 3 whole months while the candidate pipeline holds no open next-SKU candidate for
             that category. Money: null (an unlaunched SKU has no baseline). Capability PROD-C06
@@ -226,6 +229,8 @@ RULES = [
      'inputs': ['fixtures.market_trends', 'brain.products'], 'capability': 'PROD-C06', 'owner_screen': SCREEN},
     {'rule_id': 'PROD-R34', 'name': 'Line returning at 1.5 times the store median rate on 20 or more returns in 12 months', 'entity_type': 'sku',
      'inputs': ['orders', 'reversed_orders', 'products'], 'capability': 'PROD-C06', 'owner_screen': SCREEN},
+    {'rule_id': 'PROD-R35', 'name': 'Open question for the founder with 5 or more complaint quotes behind it, never asked or unanswered 14 days', 'entity_type': 'ladder_rung',
+     'inputs': ['brain.open_questions', 'brain.objection_ladders'], 'capability': 'PROD-C12', 'owner_screen': SCREEN},
 ]
 CAPABILITY = {'PROD-R01': {'id': 'PROD-C05', 'autonomy': 'agent_does'},
               'PROD-R02': {'id': 'PROD-C06', 'autonomy': 'agent_does'},
@@ -260,7 +265,8 @@ CAPABILITY = {'PROD-R01': {'id': 'PROD-C05', 'autonomy': 'agent_does'},
               'PROD-R31': {'id': 'PROD-C29', 'autonomy': 'human_assist'},
               'PROD-R32': {'id': 'PROD-C46', 'autonomy': 'agent_does'},
               'PROD-R33': {'id': 'PROD-C06', 'autonomy': 'agent_does'},
-              'PROD-R34': {'id': 'PROD-C06', 'autonomy': 'agent_does'}}
+              'PROD-R34': {'id': 'PROD-C06', 'autonomy': 'agent_does'},
+              'PROD-R35': {'id': 'PROD-C12', 'autonomy': 'human_assist'}}
 SEVERITY_ORDER = {'critical': 0, 'high': 1, 'medium': 2, 'low': 3}
 
 # Review records name their line in a short key; the store names it by SKU title.
@@ -745,6 +751,7 @@ def run(brand, window=None, data=None):
     out += marketplace_findings(br, prods_for_map, ends_on)
     out += cadence_findings(br, ends_on)
     out += return_findings(data, brand, ends_on, net)
+    out += question_findings(br, ends_on)
     out.sort(key=lambda f: (SEVERITY_ORDER[f['severity']], -((f['money_at_stake'] or {}).get('usd') or 0), f['id']))
     return out
 
@@ -3236,5 +3243,69 @@ def return_findings(data, brand, ends_on, net_28d):
         f['entity'] = {'type': 'sku', 'id': r['line'], 'label': r['line'], 'category': r['category'], 'rate': r['rate'], 'median': rr['median'], 'returns': r['returns'],
                        'units': r['units'], 'top_reason': r['top_reason'], 'reasons': r['reasons']}
         f['id'] = f'{SCREEN}.PROD-R34.{slug(r["line"])}'
+        out.append(f)
+    return out
+
+
+# ---------------------------------------------------------------- open questions (round 4.4)
+
+QUESTION_MIN_QUOTES = 5     # a question earns a card at 5 or more complaint quotes behind it
+QUESTION_WAIT_DAYS = 14     # ... or when asked this long ago with no answer
+_QUOTES_RE = re.compile(r'(\d+)\s+complaint quotes')
+_DOUBT_RE = re.compile(r'"([^"]+)"')
+_LADDER_FIELD_RE = re.compile(r'^ladder_(.+?)_(\d+)$')
+
+
+def open_questions(br, ends_on):
+    """The questions the brain holds for the founder (open_questions), each tied to its theme and the complaint quotes behind
+    it, with whether it was asked, answered, or never asked; and whether the brand's records now answer the theme anyway."""
+    if br is None:
+        return {'rows': [], 'rule': None}
+    site = brand_words(br)
+    rows = []
+    for rec in br.records('open_questions'):
+        v = rec.get('value') or {}
+        q = v.get('question') or rec.get('text') or ''
+        m = _LADDER_FIELD_RE.match(str(rec.get('field') or ''))
+        ladder_theme = m.group(1) if m else None
+        theme = LADDER_THEME.get(ladder_theme) if ladder_theme else None
+        quotes = int(_QUOTES_RE.search(q).group(1)) if _QUOTES_RE.search(q) else None
+        doubt = _DOUBT_RE.search(q).group(1) if _DOUBT_RE.search(q) else None
+        asked, answered = v.get('asked_on'), v.get('answered_on')
+        days_open = (ends_on - date.fromisoformat(str(asked)[:10])).days if asked and not answered else None
+        words = ANSWER_WORDS.get(theme, []) if theme else []
+        on_site = any(w in site for w in words) if (site and words) else None
+        if answered:
+            verdict = 'answered'
+        elif asked and days_open is not None and days_open >= QUESTION_WAIT_DAYS:
+            verdict = 'overdue'
+        elif asked:
+            verdict = 'asked'
+        else:
+            verdict = 'never_asked'
+        rows.append({'id': rec['id'], 'question': q, 'doubt': doubt, 'theme': theme, 'theme_label': THEME_LABEL.get(theme, theme) if theme else None,
+                     'quotes': quotes, 'who': v.get('who_can_answer'), 'why': v.get('why'), 'asked_on': asked, 'answered_on': answered, 'days_open': days_open,
+                     'records_answer_theme': on_site, 'verdict': verdict, 'rung': int(m.group(2)) if m else None,
+                     'finding_id': f'{SCREEN}.PROD-R35.{rec["field"]}'})
+    order = {'overdue': 0, 'never_asked': 1, 'asked': 2, 'answered': 3}
+    rows.sort(key=lambda r: (order[r['verdict']], -(r['quotes'] or 0)))
+    return {'rows': rows, 'rule': f'a question earns a card at {QUESTION_MIN_QUOTES} or more complaint quotes behind it and never asked, or asked {QUESTION_WAIT_DAYS} or more days ago with no answer'}
+
+
+def question_findings(br, ends_on):
+    """PROD-R35: an open question for the founder with 5 or more complaint quotes behind it, never asked or asked 14 or more days ago with no answer."""
+    out = []
+    for r in open_questions(br, ends_on)['rows']:
+        if r['verdict'] not in ('never_asked', 'overdue') or (r['quotes'] or 0) < QUESTION_MIN_QUOTES:
+            continue
+        ev = [_ev('complaint_quotes', r['quotes'], 'count', ends_on.isoformat(), 'all reviews to capture', QUESTION_MIN_QUOTES, 'threshold', source=r['id'], simulated=False, freshness_days=0, doubt=r['doubt']),
+              _ev('days_since_asked', r['days_open'], 'days', ends_on.isoformat(), 'brain now', QUESTION_WAIT_DAYS, 'threshold', source=r['id'], simulated=False, freshness_days=0, asked_on=r['asked_on'])]
+        state = f'asked {r["days_open"]} days ago with no answer' if r['verdict'] == 'overdue' else 'never asked'
+        sentence = f'{r["question"]} The founder is the one who can answer it and it was {state}.'
+        f = _finding('PROD-R35', r['id'].split('.')[-1], ends_on, 'medium' if (r['quotes'] or 0) >= 4 * QUESTION_MIN_QUOTES else 'low', ev, sentence, None, 0.8, [r['id']],
+                     money_reason='a doubt with no proof is priced on its theme card, not twice')
+        f['entity'] = {'type': 'ladder_rung', 'id': r['theme'] or r['id'], 'label': r['theme_label'] or 'question', 'doubt': r['doubt'], 'question': r['question'], 'quotes': r['quotes'],
+                       'who': r['who'], 'why': r['why'], 'verdict': r['verdict'], 'record': r['id']}
+        f['id'] = r['finding_id']
         out.append(f)
     return out

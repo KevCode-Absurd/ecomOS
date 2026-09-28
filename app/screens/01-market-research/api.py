@@ -872,6 +872,22 @@ def recipe(f):
             'stop_rule': 'stop if the reasons are spread thin with no top reason over 30 percent', 'check_on': _check_on(f, 60), 'time_to_ship_hours': 3,
             'win_rule': 'the line\'s return rate within 1.2 times the store median over the next 60 days',
         }
+    if rid == 'PROD-R35':
+        ent = f.get('entity') or {}
+        doubt = ent.get('doubt') or 'the doubt'
+        return {
+            'title': f'Ask the founder what proof answers "{doubt}"',
+            'owner': 'agent_drafts',
+            'artefact': {'kind': 'brain_record', 'label': f'the founder\'s answer as a record: a claim, policy or offer that answers "{doubt}" (approved, since the founder gave it), or a note that no proof exists and the doubt is a product or offer problem'},
+            'steps': [
+                {'n': 1, 'who': 'agent', 'text': f'Draft the question with the 3 strongest of the {ent.get("quotes") or 0} complaint quotes and the proof that would answer it (a guarantee, a policy, a spec, a test).'},
+                {'n': 2, 'who': 'person', 'text': 'Answer in a line from the plan, or say no proof exists yet.'},
+                {'n': 3, 'who': 'agent', 'text': 'Write the answer as a claims, policies or offers record and set answered_on; the theme card and the ad brief read it next run.'},
+                {'n': 4, 'who': 'agent', 'text': 'With no proof, log it on the theme as a product or offer gap and open a candidate note if the fix is a product.'}],
+            'size': {'text': f'{ent.get("quotes") or 0} complaint quotes, {(ent.get("verdict") or "").replace("_", " ")}', 'usd': None},
+            'stop_rule': 'one ask per question; no re-ask inside 14 days', 'check_on': _check_on(f, 14), 'time_to_ship_hours': 1,
+            'win_rule': 'answered_on set and a record that answers the doubt',
+        }
     return None
 
 
@@ -944,6 +960,25 @@ def merge_marketplace(actions):
         host['title'] = host['title'] + f'; {n} listing{"s" if n != 1 else ""} priced off the site'
     elif n > 1:
         host['title'] = f'Check {n} Amazon listings priced off the site price, starting with {(host.get("entity") or {}).get("id")}'
+    return keep
+
+
+def merge_questions(actions):
+    """A founder question (PROD-R35) rides on its theme's PROD-R07 card when that card is open, so one theme is one card."""
+    hosts = {(a.get('entity') or {}).get('id'): a for a in actions if a.get('rule_id') == 'PROD-R07'}
+    keep = []
+    for a in actions:
+        if a.get('rule_id') != 'PROD-R35':
+            keep.append(a)
+            continue
+        host = hosts.get((a.get('entity') or {}).get('id'))
+        if host is None:
+            keep.append(a)
+            continue
+        host['finding_ids'] = sorted(set(host['finding_ids']) | set(a['finding_ids']))
+        host['why'] = host['why'] + ' ' + a['why']
+        host['brain_refs'] = sorted(set(host.get('brain_refs') or []) | set(a.get('brain_refs') or []))
+        host['steps'] = host['steps'] + [{'n': len(host['steps']) + 1, 'who': 'person', 'text': f'Answer the open question on this theme: {(a.get("entity") or {}).get("question")}'}]
     return keep
 
 
@@ -1041,7 +1076,7 @@ def rank(brand, window=None):
         a['screen'] = SCREEN
         if not rank_mod.validate_action(a):
             actions.append(a)
-    actions = merge_marketplace(merge_surfaces(merge_candidates(merge_lanes(actions, brand))))
+    actions = merge_questions(merge_marketplace(merge_surfaces(merge_candidates(merge_lanes(actions, brand)))))
     for a in actions:   # a merge can lift the host's confidence; the total follows the rubric
         r = a['rubric']
         r['total'] = round(sum(rank_mod.WEIGHTS[k] * (r[k] if r[k] is not None else 2.5) / 5 for k in rank_mod.WEIGHTS), 1)
@@ -1181,7 +1216,7 @@ def overview(data, brand):
                      'gates': gates_block(brand, data, br, rd, ends_on, findings), 'scorecard': scorecard_block(brand, data, br, rd, ends_on, findings),
                      'video': audit.video_signals(br, brand, ends_on), 'tech_packs': tech_pack_block(brand, findings),
                      'hours': dict(audit.hours_table(brand, br), findings={f['entity']['id']: f['id'] for f in findings if f['rule_id'] == 'PROD-R28'}),
-                     'trend_checks': audit.trend_checks(br, brand, ends_on), 'surfaces': audit.audience_surfaces(br, ends_on), 'marketplace': audit.marketplace_read(br, products(data, brand)), 'cadence': audit.launch_cadence(br, ends_on), 'returns': audit.return_rates(data, brand, ends_on)},
+                     'trend_checks': audit.trend_checks(br, brand, ends_on), 'surfaces': audit.audience_surfaces(br, ends_on), 'marketplace': audit.marketplace_read(br, products(data, brand)), 'cadence': audit.launch_cadence(br, ends_on), 'returns': audit.return_rates(data, brand, ends_on), 'questions': audit.open_questions(br, ends_on)},
             'audit': {'findings': findings, 'rules': audit.RULES}}
 
 

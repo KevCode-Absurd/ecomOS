@@ -873,6 +873,27 @@
         high.length && actionFor(high[0].finding_id) ? { label: 'Cut the first', onClick: () => openAction(actionFor(high[0].finding_id)) } : null));
   }
 
+  function questionsBlock(q) {
+    const rows = (q && q.rows) || [];
+    if (!rows.length) return UI.emptyState({ screen: SLUG, title: 'No open questions', text: 'The brain holds no open questions for the founder.', missing: ['brain'] });
+    const vt = { overdue: 'Asked, no answer', never_asked: 'Never asked', asked: 'Asked, waiting', answered: 'Answered' };
+    const vrows = rows.map((r) => { const a = actionFor(r.finding_id); return Object.assign({}, r, {
+      q: r.doubt ? '"' + r.doubt + '"' : r.question.slice(0, 80), quotesText: r.quotes == null ? NA : String(r.quotes), theme: r.theme_label || NA,
+      state: r.answered_on ? 'answered ' + fmt.date(r.answered_on) : r.asked_on ? 'asked ' + fmt.date(r.asked_on) + (r.days_open != null ? ' (' + r.days_open + ' d)' : '') : 'not asked yet',
+      site: r.records_answer_theme == null ? NA : r.records_answer_theme ? 'the theme, yes; this doubt, no' : 'no',
+      actions: [a ? { label: 'Ask the founder', onClick: () => openAction(a) } : { label: r.verdict === 'answered' ? 'Done' : 'Thin', cls: 'quiet', onClick: () => {} }] }); });
+    const tbl = UI.verdictTable({
+      columns: [{ key: 'q', label: 'The doubt' }, { key: 'theme', label: 'Theme' }, { key: 'quotesText', label: 'Complaint quotes' }, { key: 'who', label: 'Who can answer' }, { key: 'state', label: 'State' }, { key: 'site', label: 'Records answer it' }],
+      rows: vrows,
+      verdict: { at: 1, kind: (r) => r.verdict === 'overdue' ? 'fix' : r.verdict === 'never_asked' ? 'watch' : r.verdict === 'answered' ? 'keep' : 'na', text: (r) => vt[r.verdict], reason: (r) => q.rule },
+      actions: { label: 'Do', onClick: () => {} }, sort: false });
+    const open = rows.filter((r) => r.verdict === 'overdue' || r.verdict === 'never_asked');
+    return el('div', { class: 'stack' }, el('div', { class: 'card scroll' }, tbl),
+      el('p', { class: 'micro faint', text: 'Rule: ' + q.rule + '. A doubt with no proof is an offer, guarantee or product problem; copy alone cannot answer it. The answer becomes a claims, policies or offers record and the theme card reads it.' }),
+      gapLine(open.length ? open.length + ' question' + (open.length === 1 ? ' waits' : 's wait') + ' on the founder: ' + open.map((r) => '"' + (r.doubt || r.question.slice(0, 40)) + '"').join(', ') + '.' : 'Every open question has been asked and answered.',
+        open.length && actionFor(open[0].finding_id) ? { label: 'Ask the first', onClick: () => openAction(actionFor(open[0].finding_id)) } : null));
+  }
+
   function loadDesk(o) {
     const d = o.desk || {};
     const w = (o.window || {}).trend;
@@ -882,6 +903,7 @@
     parts.push(section('desk-cadence', 'Who launches, how often, and where are we quiet?', 'Competitor launches from the web pass by brand and by lane over 12 and 24 months, against our own cadence; a lane we sell where they keep launching and we have not is in play.', cadenceBlock(d.cadence)));
     parts.push(section('desk-conversation', 'What are people talking about, and what goes unanswered?', 'Themes across reviews (site, Amazon, Trustpilot, retailers), Reddit and an Instagram hashtag pull: volume, complaint against praise, the top doubt, and whether the site and the active ads answer it.', conversationBlock(d.conversation)));
     parts.push(section('desk-surfaces', 'Where do buyers talk, and where are we absent?', 'Each subreddit in the Reddit pull, each review source in the ladders and each social surface the brand names: reach on file, tone, the loudest theme, and whether any brand record shows us there. Counts only; no usernames.', surfacesBlock(d.surfaces)));
+    parts.push(section('desk-questions', 'What does the desk need the founder to answer?', 'The open questions the brain holds, each a doubt from the objection ladders with the complaint quotes behind it and no policy, offer or claim that covers it; who can answer, whether it was asked, and whether any record answers it yet.', questionsBlock(d.questions)));
     parts.push(section('desk-preferences', 'Which preferences are shifting, and where do we stand on each?', 'Public survey numbers from the web pass against our own claims, our active ads, the competitors\' pitches and the category conversation.', preferencesBlock(d.preferences)));
     parts.push(section('desk-map', 'Where do we sit against the competitors, and which position is open?', 'Price per pair against the share of proof-led hooks, from the brain\'s competitor records and the Ad Library pull. Sized by active ads. The Reddit frames show how the category talks about itself.', mapBlock(d.map)));
     parts.push(section('desk-avatars', 'Which buyers do we serve, and which do competitors pitch to that we do not?', 'The brain\'s avatars by the lines we sell: our evidence against competitor pitches in every cell. Big segments on a complaint-led theme carry the repeat revenue at risk.', avatarBlock(d.avatars)));

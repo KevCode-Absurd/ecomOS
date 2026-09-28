@@ -261,6 +261,8 @@ class RulesTest(ShapeMixin, unittest.TestCase):
                 self.assertEqual({(f.split('.')[2]).split('-')[0] for f in a['finding_ids']}, {'reddit'})   # one listening post across subreddits
             elif 'PROD-R32' in rules:
                 self.assertTrue(rules <= {'PROD-R31', 'PROD-R32'}, rules)   # one Amazon stance card
+            elif 'PROD-R35' in rules:
+                self.assertTrue(rules <= {'PROD-R07', 'PROD-R35'}, rules)   # a founder question rides on its theme card
             else:
                 self.assertTrue(rules <= {'PROD-R05', 'PROD-R06', 'PROD-R20', 'PROD-R33'}, rules)   # one brief per lane
         covered = [fid for a in acts for fid in a['finding_ids']]
@@ -926,6 +928,32 @@ class PipelineTest(ShapeMixin, unittest.TestCase):
             self.check_shape(found[0])
         finally:
             audit.market_trends = saved
+
+    def test_open_questions(self):
+        D = date(2026, 9, 27)
+        self.assertEqual(audit.open_questions(None, D)['rows'], [])
+
+        class FakeBrain:
+            brand = 'fake'
+
+            def records(self, sec):
+                if sec == 'open_questions':
+                    return [{'id': 'fake.open_questions.ladder_durability_3', 'field': 'ladder_durability_3', 'value': {'question': 'What proof answers "will it last"? 35 complaint quotes raise it and no policy, offer or claim covers it.', 'who_can_answer': 'the founder', 'asked_on': None, 'answered_on': None}},
+                            {'id': 'fake.open_questions.ladder_fit_and_sizing_2', 'field': 'ladder_fit_and_sizing_2', 'value': {'question': 'What proof answers "does it fit"? 3 complaint quotes raise it.', 'who_can_answer': 'the founder', 'asked_on': '2026-09-01', 'answered_on': None}},
+                            {'id': 'fake.open_questions.ladder_comfort_and_feel_1', 'field': 'ladder_comfort_and_feel_1', 'value': {'question': 'What proof answers "is it soft"? 9 complaint quotes raise it.', 'who_can_answer': 'the founder', 'asked_on': '2026-09-20', 'answered_on': '2026-09-22'}}]
+                if sec == 'claims':
+                    return [{'text': 'Our lifetime guarantee replaces any pair.', 'value': {}}]
+                return []
+
+        rows = {r['theme']: r for r in audit.open_questions(FakeBrain(), D)['rows']}
+        self.assertEqual((rows['durability']['verdict'], rows['durability']['quotes'], rows['durability']['doubt'], rows['durability']['records_answer_theme']), ('never_asked', 35, 'will it last', True))
+        self.assertEqual((rows['fit_sizing']['verdict'], rows['fit_sizing']['days_open']), ('overdue', 26))
+        self.assertEqual(rows['comfort']['verdict'], 'answered')
+        found = audit.question_findings(FakeBrain(), D)
+        self.assertEqual([f['id'] for f in found], [f'{audit.SCREEN}.PROD-R35.ladder_durability_3'])   # 3 quotes is under the floor; answered never fires
+        self.assertEqual(found[0]['severity'], 'medium')
+        self.assertEqual(found[0]['entity']['id'], 'durability')
+        self.check_shape(found[0])
 
     def test_demand_pattern_tags(self):
         even = {'rows': [{'category': 'socks', 'series': [100] * 12}], 'months': [f'2026-{m:02d}' for m in range(1, 13)], 'last': '2026-12'}
