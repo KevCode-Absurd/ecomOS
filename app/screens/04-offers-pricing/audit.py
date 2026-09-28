@@ -112,6 +112,9 @@ Rules
              whose plan's check_on has passed. Evidence: net sales per day, AOV and discount share of gross from the
              daily aggregate since launch against the 28 days before. Store-wide numbers, so the read is a
              signal, not the test result; the registry holds the result. Capability LIFE-C47.
+  OFFER-R28  Upsell take rate by placement (room spec upsell_take_rate): orders that took an upsell over orders shown
+             it, by placement (cart, checkout, post-purchase). Needs an upsell_events table from the upsell app the
+             brain names (stack.upsell_app); unavailable until it connects, and silent when no app is named.
   OFFER-R03  Margin after discount per SKU. Needs cogs_landed keyed by the store's SKUs. Unavailable while no
              finance_inputs SKU key matches a product SKU. Capability MONEY-C05 (founder gate). Owner: 04.
   OFFER-R04  A deal-breaker rung with no proof: the top rung of an objection ladder whose proof is empty or
@@ -206,6 +209,8 @@ RULES = [
      'inputs': ['orders', 'brain.offers', 'finance_inputs.cogs_landed'], 'capability': 'LIFE-C39', 'owner_screen': SCREEN},
     {'rule_id': 'OFFER-R27', 'name': 'Launched offer past its check date', 'entity_type': 'offer',
      'inputs': ['brain.offers', 'brain.plans', 'daily'], 'capability': 'LIFE-C47', 'owner_screen': SCREEN},
+    {'rule_id': 'OFFER-R28', 'name': 'Upsell take rate by placement', 'entity_type': 'metric',
+     'inputs': ['upsell_events', 'brain.stack.upsell_app'], 'capability': 'LIFE-C41', 'owner_screen': SCREEN},
     {'rule_id': 'OFFER-R03', 'name': 'Margin after discount per SKU', 'entity_type': 'sku',
      'inputs': ['finance_inputs.cogs_landed keyed by product SKU', 'products'], 'capability': 'MONEY-C05',
      'owner_screen': SCREEN},
@@ -237,6 +242,7 @@ CAPABILITY = {'OFFER-R01': {'id': 'MONEY-C05', 'autonomy': 'founder_gate'},
               'OFFER-R25': {'id': 'LIFE-C38', 'autonomy': 'founder_gate'},
               'OFFER-R26': {'id': 'LIFE-C39', 'autonomy': 'founder_gate'},
               'OFFER-R27': {'id': 'LIFE-C47', 'autonomy': 'founder_gate'},
+              'OFFER-R28': {'id': 'LIFE-C41', 'autonomy': 'founder_gate'},
               'OFFER-R06': {'id': 'MONEY-C05', 'autonomy': 'founder_gate'},
               'OFFER-R04': {'id': 'LIFE-C36', 'autonomy': 'founder_gate'}}
 SEVERITY_ORDER = {'critical': 0, 'high': 1, 'medium': 2, 'low': 3}
@@ -1115,6 +1121,20 @@ def rule_launched(rd):
     return out
 
 
+def rule_upsell(rd):
+    end = rd.ends_on
+    app, rec = _model().brain_value(rd, 'stack.upsell_app')
+    if not app:
+        return []
+    if rd.table('upsell_events'):
+        return []   # the take-rate rule lands when the table exists; nothing is guessed before then
+    return [_finding('OFFER-R28', {'type': 'metric', 'id': 'upsell_take_rate', 'label': f'Upsell take rate in {app}'}, 'low', [],
+                     f'Upsell take rate by placement is unknown: {app} is not connected.', None, 0.1, [rec['id']] if rec else [], end,
+                     status='unavailable', money_reason='no upsell events',
+                     unavailable={'inputs': ['upsell_events'], 'connector': str(app),
+                                  'fix': f'Connect {app} read-only: offers shown and taken, by placement, per day.'})]
+
+
 def rule_ladder(rd):
     end = rd.ends_on
     pb = _playbook()
@@ -1286,7 +1306,7 @@ def run(brand, window=None, data=None):
     """Findings for one brand, sorted by severity then money at stake. `window` is {ends_on} or None."""
     ends_on = date.fromisoformat(window['ends_on']) if window and window.get('ends_on') else last_full_day(data, brand)
     rd = Reader(data, brand, ends_on)
-    out = (rule_threshold(rd) + rule_stale(rd) + rule_pull(rd) + rule_first_order(rd) + rule_red_line(rd) + rule_promo(rd) + rule_gifting(rd) + rule_guarantee(rd) + rule_position(rd) + rule_parity(rd) + rule_discount(rd) + rule_cart(rd) + rule_second_order(rd) + rule_cost(rd) + rule_referral(rd) + rule_loyalty(rd) + rule_window_creep(rd) + rule_bundles(rd) + rule_launched(rd) + rule_ladder(rd) + rule_sku_margin(rd) +
+    out = (rule_threshold(rd) + rule_stale(rd) + rule_pull(rd) + rule_first_order(rd) + rule_red_line(rd) + rule_promo(rd) + rule_gifting(rd) + rule_guarantee(rd) + rule_position(rd) + rule_parity(rd) + rule_discount(rd) + rule_cart(rd) + rule_second_order(rd) + rule_cost(rd) + rule_referral(rd) + rule_loyalty(rd) + rule_window_creep(rd) + rule_bundles(rd) + rule_launched(rd) + rule_upsell(rd) + rule_ladder(rd) + rule_sku_margin(rd) +
            rule_unanswered(rd))
     out.sort(key=lambda f: (SEVERITY_ORDER[f['severity']], -((f.get('money_at_stake') or {}).get('usd') or -1), f['id']))
     return out

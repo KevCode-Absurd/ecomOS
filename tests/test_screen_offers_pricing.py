@@ -600,7 +600,7 @@ class RankCompleteTest(unittest.TestCase):
         cls.acts = cls.out['actions']
 
     def test_every_rule_has_a_builder_or_is_connect_only(self):
-        connect_only = {'OFFER-R03', 'OFFER-R13'}
+        connect_only = {'OFFER-R03', 'OFFER-R13', 'OFFER-R28'}
         for r in audit.RULES:
             self.assertTrue(r['rule_id'] in api.actions.BUILDERS or r['rule_id'] in connect_only
                             or r['rule_id'] in ('OFFER-R07', 'OFFER-R09'), r['rule_id'])
@@ -906,7 +906,7 @@ class DeskTabsTest(unittest.TestCase):
         js = (SCREEN / 'screen.js').read_text(encoding='utf-8')
         self.assertIn('UI.tabs', js)
         in_tabs = set(re.findall(r"'(OFFER-R\d+)'", js[js.index('const TABS'):js.index('const openIn')]))
-        connect_only = {'OFFER-R03', 'OFFER-R13'}
+        connect_only = {'OFFER-R03', 'OFFER-R13', 'OFFER-R28'}
         for r in audit.RULES:
             if r['rule_id'] not in connect_only:
                 self.assertIn(r['rule_id'], in_tabs)
@@ -1302,6 +1302,19 @@ class LaunchedReadTest(unittest.TestCase):
                 audit.BRAIN_ROOT = None
         finally:
             shutil.rmtree(tmp, ignore_errors=True)
+
+
+class UpsellConnectTest(unittest.TestCase):
+    def test_upsell_is_a_connect_move_for_the_named_app(self):
+        rd = audit.Reader(None, 'bombas', audit.last_full_day(None, 'bombas'))
+        app = api.model.brain_value(rd, 'stack.upsell_app')[0]
+        out = api.actions.rank('bombas')
+        f = next((f for f in out['findings'] if f['rule_id'] == 'OFFER-R28'), None)
+        self.assertEqual(bool(f), bool(app) and not rd.table('upsell_events'))
+        if f:
+            a = next(a for a in out['actions'] if f['id'] in a['finding_ids'])
+            self.assertEqual(a['owner'], 'person')
+            self.assertIn(app, a['title'])
 
 
 if __name__ == '__main__':
