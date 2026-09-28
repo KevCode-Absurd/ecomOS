@@ -1541,5 +1541,16 @@ class BlindSpotsTest(unittest.TestCase):
         self.assertEqual(api.blind_spots(ranked), [])
 
 
+class PhoneTest(unittest.TestCase):
+    """Round 6 feature 5: the 360 px pass. Buttons keep a 32 px tap target on phones; no fixed widths past 360 px."""
+
+    def test_css(self):
+        import re
+        css = (SCREEN / 'screen.css').read_text(encoding='utf-8')
+        self.assertIn('min-height: 32px', css)
+        for w in re.findall(r'(?<!max-)(?<!min-)width:\s*(\d+)px', css):
+            self.assertLessEqual(int(w), 360, w)
+
+
 if __name__ == '__main__':
     unittest.main()

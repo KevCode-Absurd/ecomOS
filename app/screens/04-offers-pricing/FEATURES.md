@@ -119,8 +119,11 @@ Known gaps from round 0:
 | 6.2 | Depth pass, sized with a stop rule (depth.md rules 5 and 12) on both brands: the marketplace listing move is sized by its one-star count instead of "no cost per order" and gets a listing stop rule (put the old listing back if marketplace conversion falls 2 weeks); step lines kept under 20 words. A test checks size, stop rule, check date, sentence length and banned words for every move on Bombas and the sample brand | done |
 | 6.3 | Every desk block ends in a real next move (depth.md rule 9 and section 2): a rule map per block, so a block without its own line opens the move its rules made, or names why it is unavailable with the connect move. Fixed on the sample brand: "0 of 0 doubts", "Referral and loyalty are in place" when both were unavailable, a bare "Discount history unavailable", and "1 moves". The test calendar line opens the first move to approve. The promo-day ratio comes from settings | done |
 | 6.4 | What we cannot see yet: a small block under the connect strip names price sensitivity (no finished price test in the registry) and gift card balances (no gift card ledger) as unavailable, plus order rows and returns by reason when missing. Each line says what fills it, what it then shows, and opens the move that starts it (the cost pass-through price test, or the store connect task). Nothing is estimated in their place | done |
+| 6.5 | Phone width at 360 px: every desk tab and every opened action card checked in a 360 px browser, no element past the edge and no page side-scroll on Bombas or the sample brand. Buttons under 24 px tall (the kit's "How it gets done" and "Copy brief", this screen's small buttons) get a 32 px tap target on phones through screen.css only | done |
 
 ## Contract asks
+
+- Kit: a 32 px minimum tap height for `.toggle` and copy buttons under 560 px, so every screen gets it. Local fallback: 04 sets it in screen.css for its own sections.
 
 - A shared `registry` table in the data layer that screens can append proposed rows to (events.md). Local fallback: 04 writes proposed rows to `app/screens/04-offers-pricing/outbox/registry.<brand>.json` (git-ignored); the experiments screen can read them from there until the table exists.
 
