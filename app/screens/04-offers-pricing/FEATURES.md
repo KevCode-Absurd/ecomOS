@@ -109,6 +109,7 @@ Known gaps from round 0:
 | 5.5 | Pay in installments (room spec LIFE-C46; web pass 2: Shopify's documented $35 US minimum for Shop Pay Installments, lift claims not read in full so not used): new rule OFFER-R29 when packs at $35 or more carry a share of revenue and the brain names no installment provider. The action is a page test judged on profit per visitor after the provider fee, starting with a person confirming what checkout already offers | done |
 | 5.6 | Loyalty calibration (web pass 2: Smile.io): the first reward is sized inside 3 to 10 percent of AOV and reached in 1 to 3 orders at the earn rate, with its cost paid in product; shown in the loyalty card and the spec | done |
 | 5.7 | One free shipping line everywhere (web pass 2: Rebuy, the cart bar must match the real rule): new rule OFFER-R30 when the offers record and the shipping policy's free tier disagree, a broken policy promise, with a person-owned fix across the brain, the policy page, the cart bar and the shipping app on the same day. Quiet for Bombas ($75 in both) | done |
+| 5.8 | Code-won customers (web pass 2: Saras): customers whose first order used a code against full-price first orders, repeat within 180 days, first orders at least 180 days old, at least 200 customers a group. New rule OFFER-R31 when code-won customers repeat 20 percent less; it rides on the first-order code test, else its own test judged on profit per visitor and repeat. Real on the sample brand's orders (33 percent both ways, so quiet); a connect move for Bombas | done |
 
 ## Contract asks
 
@@ -245,7 +246,7 @@ Intelligems (threshold and price tests scored by profit per visitor), Rebuy (tie
 | Round | Features picked | Date | Notes |
 |---|---|---|---|
 | 0 | skeleton, 0.1 to 0.9 | 2026-09-28 | S3.9; screenshot round0.png |
-| 5 | 5.1 stack read-back, 5.2 break-even discount, 5.3 profit per visitor, 5.4 pack label, 5.5 installments, 5.6 loyalty calibration, 5.7 line match | 2026-09-28 | in progress |
+| 5 | 5.1 stack read-back, 5.2 break-even discount, 5.3 profit per visitor, 5.4 pack label, 5.5 installments, 5.6 loyalty calibration, 5.7 line match, 5.8 code-won cohorts | 2026-09-28 | in progress |
 | 4 | 4.1 to 4.10: save to the brain, offer records, bundle pairs, red line gate, approved first, launched read, upsell connect, brief pack, stale inputs | 2026-09-28 | screenshot round4.png |
 | 3 | 3.1 to 3.10: registry, referral, loyalty, window creep, subscription note, depth rules, plug and play, priors, decisions | 2026-09-28 | screenshot round3.png |
 | 2 | 2.1 to 2.10: position, parity, discipline, gift pick, cart ladder, test calendar, depth by line, second order, cost against price, desk tabs | 2026-09-28 | screenshot round2.png |

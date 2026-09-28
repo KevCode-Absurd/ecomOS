@@ -530,6 +530,8 @@ def surfaces(a):
         return (['product page pack selector'] if ent == 'push' else ['pack price']), 35
     if r == 'OFFER-R09':
         return ['new packs'], 56
+    if r == 'OFFER-R31':
+        return ['first order offer', 'ad angle'], 35
     if r == 'OFFER-R29':
         return ['product page price block'], 35
     if r == 'OFFER-R26':
@@ -1054,6 +1056,21 @@ def match_action(f, a, ctx):
     return a
 
 
+def cohort_action(f, a, ctx):
+    a.update({'title': 'Cut the first-order code depth or swap it for a gift', 'owner': 'agent_drafts',
+              'artefact': {'kind': 'test_brief', 'label': 'First-order offer test judged on repeat', 'draft': '\n'.join([
+                  f['sentence'], 'Arms: A keeps the code. B offers a free item and no percent off.',
+                  'Primary metric: profit per visitor on the first order; second metric: repeat within 180 days.',
+                  'Win: B keeps profit per visitor and lifts repeat. Stop: first-order conversion in B down 25 percent for 7 days.'])},
+              'steps': steps(('agent', 'Split first orders by code and read repeat by group.'),
+                             ('agent', 'Draft the test brief.'), ('person', 'Approve the test.'),
+                             ('agent', f'Read the repeat rate at 90 and 180 days; first call on {ctx.check_on(90)}.')),
+              'size': {'text': 'every first order won with a code', 'usd': None},
+              'win_rule': 'B keeps profit per visitor and lifts repeat.', 'stop_rule': 'First-order conversion in B down 25 percent for 7 days.',
+              'check_on': ctx.check_on(90), 'time_to_ship_hours': 4})
+    return a
+
+
 def returns_block(rd):
     """returns_by_reason for the window, or the labelled fixture when the metric is unavailable."""
     m = rd.m('returns_by_reason', audit.WINDOW)
@@ -1221,7 +1238,7 @@ BUILDERS = {'OFFER-R01': threshold_action, 'OFFER-R04': rung_action, 'OFFER-R08'
             'OFFER-R22': cost_action, 'OFFER-R23': referral_action, 'OFFER-R24': loyalty_action,
             'OFFER-R25': discount_action, 'OFFER-R26': bundle_action,
             'OFFER-R27': launched_action, 'OFFER-R29': bnpl_action,
-            'OFFER-R30': match_action}
+            'OFFER-R30': match_action, 'OFFER-R31': cohort_action}
 
 
 def build(f, rd, ctx, nr):
@@ -1256,7 +1273,7 @@ def rank(brand='bombas', window=None, data=None):
     actions = [build(f, rd, ctx, nr) for f in findings if f.get('status') in ('open', 'unavailable', None)]
     actions = merge_connect(merge_gifting(merge_red_line(merge_ladder(actions, ctx)), ctx))
     actions = merge_into(merge_into(actions, 'OFFER-R05', 'OFFER-R01'), 'OFFER-R06', 'OFFER-R01')
-    actions = merge_into(actions, 'OFFER-R19', 'OFFER-R08')
+    actions = merge_into(merge_into(actions, 'OFFER-R19', 'OFFER-R08'), 'OFFER-R31', 'OFFER-R08')
     actions = flag_stale_inputs(attach_margin_checks(add_priors(covered_by_registry(actions, ctx), ctx), ctx), ctx)
     actions = [a for a in actions if not RANK.validate_action(a)]
     actions.sort(key=RANK.sort_key)
@@ -1264,5 +1281,5 @@ def rank(brand='bombas', window=None, data=None):
     return {'screen': SCREEN, 'brand': brand, 'window': w, 'simulated': True, 'net_revenue_28d': nr,
             'actions': actions, 'findings': findings, 'objections': ctx.objections, 'returns': returns_block(rd),
             'ladder': dict(ctx.ladder, moves=ctx.ladder_rows), 'first_order': ctx.first_order, 'waterfalls': ctx.waterfalls, 'calendar': ctx.calendar, 'gifting': ctx.gifting, 'guarantee': ctx.guarantee, 'position': ctx.position, 'parity': ctx.parity,
-            'discipline': dict(ctx.discipline, policy=discount_policy(ctx), windows=ctx.depth_history, window_creep_points=playbook.WINDOW_CREEP_POINTS), 'cart': ctx.cart, 'tests': calendar, 'depth': ctx.depth, 'cohorts': ctx.cohorts, 'costs': ctx.costs, 'registry': ctx.registry, 'referral': ctx.referral, 'loyalty': ctx.loyalty, 'bundles': ctx.bundles, 'proposed_tests': ctx.proposed_rows, 'launched': ctx.launched,
+            'discipline': dict(ctx.discipline, policy=discount_policy(ctx), windows=ctx.depth_history, window_creep_points=playbook.WINDOW_CREEP_POINTS), 'cart': ctx.cart, 'tests': calendar, 'depth': ctx.depth, 'cohorts': ctx.cohorts, 'costs': ctx.costs, 'registry': ctx.registry, 'referral': ctx.referral, 'loyalty': ctx.loyalty, 'bundles': ctx.bundles, 'proposed_tests': ctx.proposed_rows, 'launched': ctx.launched, 'discount_cohorts': audit.discount_cohorts(rd),
             'subscription': model.subscription_note(rd, ctx.cohorts, (ctx.depth or {}).get('rows'), (ctx.depth or {}).get('target'))}

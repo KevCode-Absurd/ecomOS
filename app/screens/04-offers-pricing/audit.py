@@ -121,6 +121,10 @@ Rules
   OFFER-R30  The free shipping line in the offers record differs from the free tier in the shipping policy record
              (web pass 2: a cart bar must match the real shipping rule). A broken promise: reputation 5 and
              satisfaction 5 by the rubric's own rule. Severity high. Capability MONEY-C05.
+  OFFER-R31  Discount-acquired customers repeat less: customers whose first order used a code repeat within
+             playbook.COHORT_DAYS at least COHORT_GAP less (relative) than full-price first orders, each group at least
+             COHORT_MIN customers (model.discount_cohorts). Unavailable without order rows. Rides on the first-order
+             code test when it fires; else its own test brief. Capability LIFE-C02.
   OFFER-R03  Margin after discount per SKU. Needs cogs_landed keyed by the store's SKUs. Unavailable while no
              finance_inputs SKU key matches a product SKU. Capability MONEY-C05 (founder gate). Owner: 04.
   OFFER-R04  A deal-breaker rung with no proof: the top rung of an objection ladder whose proof is empty or
@@ -222,6 +226,8 @@ RULES = [
     {'rule_id': 'OFFER-R30', 'name': 'Free shipping line does not match the shipping policy', 'entity_type': 'offer',
      'inputs': ['brain.offers.free_shipping_threshold_usd', 'brain.policies.shipping_options'], 'capability': 'MONEY-C05',
      'owner_screen': SCREEN},
+    {'rule_id': 'OFFER-R31', 'name': 'Discount-acquired customers repeat less', 'entity_type': 'offer',
+     'inputs': ['orders'], 'capability': 'LIFE-C02', 'owner_screen': SCREEN},
     {'rule_id': 'OFFER-R03', 'name': 'Margin after discount per SKU', 'entity_type': 'sku',
      'inputs': ['finance_inputs.cogs_landed keyed by product SKU', 'products'], 'capability': 'MONEY-C05',
      'owner_screen': SCREEN},
@@ -256,6 +262,7 @@ CAPABILITY = {'OFFER-R01': {'id': 'MONEY-C05', 'autonomy': 'founder_gate'},
               'OFFER-R28': {'id': 'LIFE-C41', 'autonomy': 'founder_gate'},
               'OFFER-R29': {'id': 'LIFE-C46', 'autonomy': 'founder_gate'},
               'OFFER-R30': {'id': 'MONEY-C05', 'autonomy': 'founder_gate'},
+              'OFFER-R31': {'id': 'LIFE-C02', 'autonomy': 'founder_gate'},
               'OFFER-R06': {'id': 'MONEY-C05', 'autonomy': 'founder_gate'},
               'OFFER-R04': {'id': 'LIFE-C36', 'autonomy': 'founder_gate'}}
 SEVERITY_ORDER = {'critical': 0, 'high': 1, 'medium': 2, 'low': 3}
@@ -1187,6 +1194,30 @@ def rule_threshold_match(rd):
                      money_reason='the orders caught between the two lines need order rows')]
 
 
+def discount_cohorts(rd):
+    pb = _playbook()
+    return _model().discount_cohorts(rd, pb.COHORT_DAYS, pb.COHORT_MIN)
+
+
+def rule_cohorts(rd):
+    end = rd.ends_on
+    dc = discount_cohorts(rd)
+    entity = {'type': 'offer', 'id': 'discount_cohorts', 'label': 'Customers won with a code'}
+    if dc.get('unavailable'):
+        return [_finding('OFFER-R31', entity, 'low', [], 'Whether code-won customers come back less is unknown without order rows.',
+                         None, 0.1, [], end, status='unavailable', money_reason='no order rows',
+                         unavailable={'inputs': ['orders'], 'connector': dc.get('fix') or 'shopify',
+                                      'fix': 'Connect the store orders, read-only, with customer ids and discount codes.'})]
+    d, f = dc['discounted']['repeat'], dc['full_price']['repeat']
+    if d is None or f is None or f == 0 or d >= f * (1 - _playbook().COHORT_GAP):
+        return []
+    ev = [_ev('repeat_rate_discounted_first_order', d, 'ratio', end, baseline=f, baseline_kind='full_price_first_order',
+              window=f'{dc["days"]}d after the first order', source='orders')]
+    return [_finding('OFFER-R31', entity, 'medium', ev,
+                     f'Customers won with a code repeat {d * 100:.0f} percent of the time within {dc["days"]} days; full-price ones {f * 100:.0f} percent.',
+                     None, 0.7, [], end, money_reason='lifetime value needs a longer read')]
+
+
 def rule_ladder(rd):
     end = rd.ends_on
     pb = _playbook()
@@ -1358,7 +1389,7 @@ def run(brand, window=None, data=None):
     """Findings for one brand, sorted by severity then money at stake. `window` is {ends_on} or None."""
     ends_on = date.fromisoformat(window['ends_on']) if window and window.get('ends_on') else last_full_day(data, brand)
     rd = Reader(data, brand, ends_on)
-    out = (rule_threshold(rd) + rule_stale(rd) + rule_pull(rd) + rule_first_order(rd) + rule_red_line(rd) + rule_promo(rd) + rule_gifting(rd) + rule_guarantee(rd) + rule_position(rd) + rule_parity(rd) + rule_discount(rd) + rule_cart(rd) + rule_second_order(rd) + rule_cost(rd) + rule_referral(rd) + rule_loyalty(rd) + rule_window_creep(rd) + rule_bundles(rd) + rule_launched(rd) + rule_upsell(rd) + rule_bnpl(rd) + rule_threshold_match(rd) + rule_ladder(rd) + rule_sku_margin(rd) +
+    out = (rule_threshold(rd) + rule_stale(rd) + rule_pull(rd) + rule_first_order(rd) + rule_red_line(rd) + rule_promo(rd) + rule_gifting(rd) + rule_guarantee(rd) + rule_position(rd) + rule_parity(rd) + rule_discount(rd) + rule_cart(rd) + rule_second_order(rd) + rule_cost(rd) + rule_referral(rd) + rule_loyalty(rd) + rule_window_creep(rd) + rule_bundles(rd) + rule_launched(rd) + rule_upsell(rd) + rule_bnpl(rd) + rule_threshold_match(rd) + rule_cohorts(rd) + rule_ladder(rd) + rule_sku_margin(rd) +
            rule_unanswered(rd))
     out.sort(key=lambda f: (SEVERITY_ORDER[f['severity']], -((f.get('money_at_stake') or {}).get('usd') or -1), f['id']))
     return out

@@ -1177,3 +1177,39 @@ def bundle_pairs(rd, min_orders, min_lift, saving, days):
     out.sort(key=lambda r: (-r['lift'] * r['orders_both']))
     return {'unavailable': False, 'orders': n, 'window': {'start': start, 'end': end}, 'pairs': out[:12],
             'rule': f'at least {min_orders} orders with both and {min_lift}x lift over chance, last {days} days'}
+
+
+# ---------------------------------------------------------------- discount-acquired cohorts
+
+def discount_cohorts(rd, days, min_n):
+    """Customers whose first order is at least `days` old, split by whether that first order used a discount:
+    the share who ordered again within `days`, and the average value of their first order. Needs order rows."""
+    orders = rd.table('orders')
+    if not isinstance(orders, list) or not orders:
+        return {'unavailable': True, 'reason': 'the orders table is not connected', 'fix': 'shopify'}
+    cutoff = (rd.ends_on - timedelta(days=days)).isoformat()
+    first, later = {}, {}
+    for o in sorted(orders, key=lambda r: str(r.get('created_at'))):
+        c = o.get('customer_id')
+        day = str(o.get('created_at'))[:10]
+        if c is None or day > rd.ends_on.isoformat():
+            continue
+        if c not in first:
+            first[c] = o
+        else:
+            f = date.fromisoformat(str(first[c].get('created_at'))[:10])
+            if (date.fromisoformat(day) - f).days <= days:
+                later[c] = True
+    groups = {'discounted': [], 'full_price': []}
+    for c, o in first.items():
+        if str(o.get('created_at'))[:10] > cutoff:
+            continue
+        key = 'discounted' if ((o.get('discount') or {}).get('amount') or 0) > 0 else 'full_price'
+        groups[key].append((c, float(o.get('subtotal') or 0)))
+    out = {}
+    for k, rows in groups.items():
+        n = len(rows)
+        out[k] = {'customers': n, 'repeat': round(sum(1 for c, _ in rows if later.get(c)) / n, 4) if n >= min_n else None,
+                  'first_order_value': round(sum(v for _, v in rows) / n, 2) if n else None}
+    return {'unavailable': False, 'days': days, 'first_orders_before': cutoff, **out,
+            'basis': f'customers whose first order is on or before {cutoff}; a repeat is any order within {days} days of the first'}

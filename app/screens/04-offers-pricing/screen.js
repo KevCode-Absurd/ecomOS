@@ -271,7 +271,7 @@
       actionLine(push + ' lines need the pack preselected, not a lower price. ' + add + ' basics lines need a pack.', act({ verdict: 'push' }) || act({ verdict: 'add' })));
   }
 
-  function firstOrderBlock(fo) {
+  function firstOrderBlock(fo, dcoh) {
     const head = { title: 'What should pay for a first order?', sub: 'Each offer at the average list-price order, 28 days: price paid, what it costs against full price, contribution before media, and payback on paid media per new customer.' };
     if (!fo || fo.unavailable) return section('desk-first', head, UI.emptyState({ screen: SLUG, title: 'First-order economics unavailable', text: (fo || {}).reason }));
     const a = ACTIONS.find((x) => x.rule_id === 'OFFER-R08');
@@ -295,6 +295,7 @@
       ['Average order', fmt.money(fo.gross_order) + ' at list price, ' + fmt.money(fo.net_order) + ' after discounts'],
       ['Full price keeps', fmt.money(fo.full_price.contribution) + ' before media, ' + fo.full_price.payback.toFixed(2) + 'x payback'],
       ['Paid media per new customer', fmt.money(fo.new_cac) + (fo.target_cac != null ? ' against a ' + fmt.money(fo.target_cac) + ' target' : '')],
+      ['Code-won customers come back', dcoh && !dcoh.unavailable && dcoh.discounted.repeat != null ? pct(dcoh.discounted.repeat, 0) + ' within ' + dcoh.days + ' days, against ' + pct(dcoh.full_price.repeat, 0) + ' for full-price first orders' : NA + ': ' + ((dcoh || {}).reason || 'too few customers')],
       ['Discounts on new orders, 28 days', fmt.money(fo.new_discounts_28d) + ' (all discounts times the ' + pct(fo.new_share, 0) + ' new-customer share; orders do not carry the code yet)'],
     ]);
     const gifts = (fo.gifts || []).slice(0, 6);
@@ -620,8 +621,8 @@
     const TABS = [
       { key: 'launch', label: 'Launch next', rules: ['OFFER-R11', 'OFFER-R12', 'OFFER-R21', 'OFFER-R27'],
         blocks: () => [testsBlock(d.tests), registryBlock(d.registry, d.proposed_tests, d.launched), calendarBlock(d.calendar), depthBlock(d.depth), giftingBlock(d.gifting), secondOrderBlock(d.cohorts)] },
-      { key: 'offers', label: 'Offers', rules: ['OFFER-R08', 'OFFER-R10', 'OFFER-R19', 'OFFER-R20', 'OFFER-R23', 'OFFER-R24', 'OFFER-R04', 'OFFER-R14', 'OFFER-R15'],
-        blocks: () => [firstOrderBlock(d.first_order), cartBlock(d.cart), buyersBlock(d), objectionBlock(d.objections || [], d.returns), guaranteeBlock(d.guarantee, d.returns), subscriptionBlock(d.subscription), stackBlock(d.stack || [])] },
+      { key: 'offers', label: 'Offers', rules: ['OFFER-R08', 'OFFER-R10', 'OFFER-R19', 'OFFER-R31', 'OFFER-R20', 'OFFER-R23', 'OFFER-R24', 'OFFER-R04', 'OFFER-R14', 'OFFER-R15'],
+        blocks: () => [firstOrderBlock(d.first_order, d.discount_cohorts), cartBlock(d.cart), buyersBlock(d), objectionBlock(d.objections || [], d.returns), guaranteeBlock(d.guarantee, d.returns), subscriptionBlock(d.subscription), stackBlock(d.stack || [])] },
       { key: 'prices', label: 'Prices and packs', rules: ['OFFER-R22', 'OFFER-R16', 'OFFER-R17', 'OFFER-R07', 'OFFER-R09', 'OFFER-R26', 'OFFER-R29'],
         blocks: () => [costBlock(d.costs), positionBlock(d.position, d.brand || {}), parityBlock(d.parity), ladderBlock(d.ladder), bundlesBlock(d.bundles), waterfallBlock(d.waterfalls)] },
       { key: 'shipping', label: 'Shipping and discounts', rules: ['OFFER-R01', 'OFFER-R05', 'OFFER-R06', 'OFFER-R18', 'OFFER-R25', 'OFFER-R30'],

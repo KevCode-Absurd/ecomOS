@@ -1430,5 +1430,27 @@ class ThresholdMatchTest(unittest.TestCase):
             shutil.rmtree(tmp, ignore_errors=True)
 
 
+class DiscountCohortTest(unittest.TestCase):
+    def test_sample_cohorts_and_bombas_unavailable(self):
+        sys.path.insert(0, str(ROOT / 'app'))
+        import server
+        d = server.Data()
+        rd = audit.Reader(d, None, audit.last_full_day(d, None))
+        dc = audit.discount_cohorts(rd)
+        self.assertFalse(dc['unavailable'])
+        for k in ('discounted', 'full_price'):
+            if dc[k]['repeat'] is not None:
+                self.assertTrue(0 <= dc[k]['repeat'] <= 1)
+                self.assertGreaterEqual(dc[k]['customers'], audit._playbook().COHORT_MIN)
+        fired = [f for f in audit.run(None, None, data=d) if f['rule_id'] == 'OFFER-R31']
+        pb = audit._playbook()
+        should = (dc['discounted']['repeat'] is not None and dc['full_price']['repeat']
+                  and dc['discounted']['repeat'] < dc['full_price']['repeat'] * (1 - pb.COHORT_GAP))
+        self.assertEqual(bool(fired), bool(should))
+        rb = audit.Reader(None, 'bombas', audit.last_full_day(None, 'bombas'))
+        if not rb.table('orders'):
+            self.assertEqual(next(f for f in audit.run('bombas') if f['rule_id'] == 'OFFER-R31')['status'], 'unavailable')
+
+
 if __name__ == '__main__':
     unittest.main()
