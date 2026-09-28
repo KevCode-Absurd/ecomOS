@@ -1494,7 +1494,7 @@ def rank(brand, window=None):
     opp = {r['key']: r for r in audit.lane_opportunity(br_s, products(data, brand), dt.date.fromisoformat(window['ends_on']))['rows']} if br_s is not None else {}
     for a in actions:
         o = opp.get((a.get('entity') or {}).get('id')) if a.get('rule_id') in LANE_RULES else None
-        a['opportunity'] = {'score': o['score'], 'rank': o['rank'], 'of': len(opp), 'parts': o['parts'], 'parts_read': o['parts_read'], 'verdict': o['verdict']} if o else None
+        a['opportunity'] = {'score': o['score'], 'rank': o['rank'], 'of': len(opp), 'parts': o['parts'], 'parts_read': o['parts_read'], 'verdict': o['verdict'], 'open_candidates': o['open_candidates']} if o else None
     # what each card covers: every finding behind it, so a merged card reads as a checklist, never a black box
     by_id = {f['id']: f for f in findings}
     names = {r['rule_id']: r['name'] for r in audit.RULES}
@@ -1676,7 +1676,11 @@ def candidate_add(brand, body, today):
         return 400, {'error': 'name is empty'}
     doc = _pipeline_doc()
     n = 1 + max([int(str(r.get('candidate_id', 'cand-0')).split('-')[-1]) for r in doc['rows'] if str(r.get('candidate_id', '')).startswith('cand-')] or [0])
-    row = {'candidate_id': f'cand-{n:03d}', 'brand': brand, 'name': name, 'category': str(body.get('category') or 'socks')[:40], 'stage': 'screened',
+    lane = str(body.get('lane') or '').strip() or None
+    lane_keys = [k for k, _, _ in audit.lanes_for(brand)]
+    if lane and lane not in lane_keys:
+        return 400, {'error': 'lane must be one of ' + ', '.join(lane_keys) if lane_keys else 'this brand has no lanes on file'}
+    row = {'candidate_id': f'cand-{n:03d}', 'brand': brand, 'name': name, 'category': str(body.get('category') or 'socks')[:40], 'lane': lane, 'stage': 'screened',
            'screen_result': {k: (body.get('screen_result') or {}).get(k) if (body.get('screen_result') or {}).get(k) in ('pass', 'fail') else None for k in audit.SCREEN_CHECKS},
            'time_box_days': int(_num(body.get('time_box_days'), 1) or 10), 'hours_logged': _num(body.get('hours_logged')) or 0.0,
            'angle_text': (str(body.get('angle_text') or '').strip()[:300] or None), 'angle_source': (str(body.get('angle_source') or '').strip()[:300] or None),
@@ -1719,6 +1723,13 @@ def candidate_update(brand, cid, body, today):
             return 400, {'error': 'hours_add must be a number'}
         row['hours_logged'] = round((row.get('hours_logged') or 0) + h, 2)
         changes.append(f'{h:g} hours logged')
+    if body.get('lane') is not None:
+        lane = str(body['lane']).strip() or None
+        lane_keys = [k for k, _, _ in audit.lanes_for(brand)]
+        if lane and lane not in lane_keys:
+            return 400, {'error': 'lane must be one of ' + ', '.join(lane_keys) if lane_keys else 'this brand has no lanes on file'}
+        row['lane'] = lane
+        changes.append(f'lane {lane or "cleared"}')
     for k in ('angle_text', 'angle_source', 'cash_plan', 'source_finding', 'offer_structure', 'price_band_check', 'cash_test_plan'):
         if body.get(k) is not None:
             row[k] = str(body[k]).strip()[:300] or None
@@ -1945,7 +1956,7 @@ def pipeline_block(brand, ends_on, findings, floor):
         r['finding_ids'] = by_entity.get(r.get('candidate_id'), [])
     open_rows = [r for r in rows if not r['closed']]
     tests = proposed_tests(brand or 'sample')
-    return {'rows': rows, 'funnel': audit.pipeline_funnel(rows), 'stages': audit.STAGES, 'checks': list(audit.SCREEN_CHECKS),
+    return {'lanes': [{'key': k, 'label': l} for k, l, _ in audit.lanes_for(brand)], 'rows': rows, 'funnel': audit.pipeline_funnel(rows), 'stages': audit.STAGES, 'checks': list(audit.SCREEN_CHECKS),
             'handoff': {'rows': len(rows), 'go': sum(1 for r in rows if r.get('stage') == 'go'), 'with_cost': sum(1 for r in rows if r.get('cogs_estimate') is not None), 'file': 'fixtures/product_candidates.json', 'read_by': ['04-offers-pricing', '19-supply-inventory']},
             'proposed_tests': [{'id': x['id'], 'name': x['name'], 'read_point': x['read_point'], 'status': x['status']} for x in tests],
             'open': len(open_rows), 'over_box': sum(1 for r in open_rows if r['over_box']), 'hours': round(sum(r.get('hours_logged') or 0 for r in rows), 1),
@@ -2274,7 +2285,7 @@ def handoff_rows(brand):
         tp = audit.tech_pack_status(c)
         price, cogs = c.get('planned_price'), c.get('cogs_estimate')
         rd_row = ready.get(c.get('candidate_id'))
-        rows.append({'candidate_id': c.get('candidate_id'), 'brand': c.get('brand'), 'name': c.get('name'), 'category': c.get('category'), 'stage': c.get('stage'),
+        rows.append({'candidate_id': c.get('candidate_id'), 'brand': c.get('brand'), 'name': c.get('name'), 'category': c.get('category'), 'lane': c.get('lane'), 'stage': c.get('stage'),
                      'readiness': {'verdict': rd_row['verdict'], 'hard_open': rd_row['hard_open'], 'soft_open': rd_row['soft_open'], 'passed': rd_row['passed'], 'of': rd_row['of'], 'launch_ready': rd_row['launch_ready'], 'teams': {k: v['status'] for k, v in rd_row['teams'].items()}} if rd_row else None,
                      'decision': 'go' if c.get('stage') == 'go' else 'no_go' if c.get('stage') == 'killed' else 'open',
                      'planned_price_usd': price, 'landed_cost_estimate_usd': cogs, 'pack_units': c.get('pack_units') or 1,

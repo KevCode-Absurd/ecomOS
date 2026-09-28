@@ -4453,7 +4453,7 @@ def line_theme_findings(br, ends_on):
 
 # ---------------------------------------------------------------- the research log and a named owner (round 6.8, bank ideas PRD-104 and PRD-126)
 
-LOG_COLUMNS = ['candidate_id', 'name', 'category', 'stage', 'owner', 'screen_in_date', 'time_box_days', 'hours_logged', 'demand', 'competition', 'store_fit', 'angle_text', 'angle_source',
+LOG_COLUMNS = ['candidate_id', 'name', 'category', 'lane', 'stage', 'owner', 'screen_in_date', 'time_box_days', 'hours_logged', 'demand', 'competition', 'store_fit', 'angle_text', 'angle_source',
                'planned_price', 'cogs_estimate', 'pack_units', 'lead_time_days', 'cash_plan', 'first_run_units', 'first_run_moq', 'first_run_format', 'first_run_cash_usd', 'lower_moq_option',
                'tech_pack_version', 'tech_pack_status', 'labelling', 'category_certification', 'review_date', 'source_finding', 'last_log_on', 'last_log']
 OWNER_STAGE_MIN = 3   # shortlisted or later: a named person owns the post-test diagnosis
@@ -4469,7 +4469,7 @@ def research_log(brand):
         sr = c.get('screen_result') or {}
         comp = c.get('compliance') or {}
         log = c.get('log') or []
-        rows.append({'candidate_id': c.get('candidate_id'), 'name': c.get('name'), 'category': c.get('category'), 'stage': c.get('stage'), 'owner': c.get('owner'),
+        rows.append({'candidate_id': c.get('candidate_id'), 'name': c.get('name'), 'category': c.get('category'), 'lane': c.get('lane'), 'stage': c.get('stage'), 'owner': c.get('owner'),
                      'screen_in_date': c.get('screen_in_date'), 'time_box_days': c.get('time_box_days'), 'hours_logged': c.get('hours_logged'),
                      'demand': sr.get('demand'), 'competition': sr.get('competition'), 'store_fit': sr.get('store_fit'), 'angle_text': c.get('angle_text'), 'angle_source': c.get('angle_source'),
                      'planned_price': c.get('planned_price'), 'cogs_estimate': c.get('cogs_estimate'), 'pack_units': c.get('pack_units'), 'lead_time_days': c.get('lead_time_days'), 'cash_plan': c.get('cash_plan'),
@@ -5101,7 +5101,7 @@ def lane_opportunity(br, prods, ends_on):
         read = {k: v for k, v in parts.items() if v is not None}
         wsum = sum(weights[k] for k in read)
         score = round(sum(weights[k] * v for k, v in read.items()) / wsum * 100) if wsum else None
-        open_c = [c.get('name') for c in cands if any(t in (str(c.get('name') or '') + ' ' + str(c.get('angle_text') or '')).lower() for t in terms)]
+        open_c = [c.get('name') for c in cands if c.get('lane') == pt['key'] or (not c.get('lane') and any(t in (str(c.get('name') or '') + ' ' + str(c.get('angle_text') or '')).lower() for t in terms))]   # a lane on the candidate wins; without one, the words decide
         verdict = 'thin' if len(read) < OPP_MIN_PARTS or score is None else 'strong_no_candidate' if score >= strong and not open_c else 'strong' if score >= strong else 'weak'
         rows.append({'key': pt['key'], 'label': label, 'score': score, 'parts': parts, 'parts_read': len(read), 'of': len(OPP_WEIGHTS), 'sellers': pt['x'], 'trend': pt['y'], 'quadrant': pt['quadrant'],
                      'sold': pt['sold'], 'advertised': pt['advertised'], 'complaint_listings': [l['asin'] for l in matched], 'open_candidates': open_c, 'verdict': verdict, 'finding_id': pt['finding_id']})

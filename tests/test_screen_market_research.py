@@ -2364,7 +2364,7 @@ class OpportunityTest(unittest.TestCase):
         lane_cards = [a for a in r['actions'] if a.get('rule_id') in api.LANE_RULES and a.get('opportunity')]
         self.assertTrue(lane_cards)
         o = lane_cards[0]['opportunity']
-        self.assertEqual(set(o), {'score', 'rank', 'of', 'parts', 'parts_read', 'verdict'})
+        self.assertEqual(set(o), {'score', 'rank', 'of', 'parts', 'parts_read', 'verdict', 'open_candidates'})
         self.assertTrue(all(a.get('opportunity') is None for a in r['actions'] if a.get('rule_id') in api.CANDIDATE_RULES))
 
 
@@ -2431,6 +2431,43 @@ class FloorsTest(unittest.TestCase):
         self.assertEqual(api.set_floors('bombas', {'moon': 1}, date(2026, 9, 28), brain=br)[0], 400)
         self.assertEqual(api.set_floors('bombas', {'kill_hold_days': 'soon'}, date(2026, 9, 28), brain=br)[0], 400)
         self.assertEqual(api.set_floors(None, {'kill_hold_days': 1}, date(2026, 9, 28))[0], 400)
+
+
+class LaneOnCandidateTest(unittest.TestCase):
+    def test_screen_in_keeps_the_lane(self):
+        import tempfile
+        saved = (audit.PIPELINE_PATH, api.HANDOFF_PATH, api.TESTS_PATH)
+        tmp = Path(tempfile.mkdtemp())
+        audit.PIPELINE_PATH, api.HANDOFF_PATH, api.TESTS_PATH = tmp / 'pipeline.json', tmp / 'pc.json', tmp / 'pt.json'
+        try:
+            D = date(2026, 9, 27)
+            keys = [k for k, _, _ in audit.lanes_for('bombas')]
+            self.assertIn('underwear', keys)
+            self.assertEqual(api.candidate_add('bombas', {'name': 'Boxer brief', 'lane': 'moon'}, D)[0], 400)
+            code, out = api.candidate_add('bombas', {'name': 'Everyday brief', 'lane': 'underwear', 'who': 'person'}, D)
+            self.assertEqual((code, out['candidate']['lane']), (201, 'underwear'))
+            cid = out['candidate']['candidate_id']
+            br = audit.brain('bombas')
+            data = audit.brand_data('bombas')
+            E = audit.last_full_day(data, 'bombas')
+            op = {r['key']: r for r in audit.lane_opportunity(br, api.products(data, 'bombas'), E)['rows']}
+            self.assertIn('Everyday brief', op['underwear']['open_candidates'])            # the lane on the candidate wins, no word match needed
+            self.assertEqual(op['underwear']['verdict'], 'strong')
+            self.assertEqual(api.candidate_update('bombas', cid, {'lane': 'moon', 'who': 'person'}, D)[0], 400)
+            r = api.candidate_update('bombas', cid, {'lane': 'gifting', 'who': 'person'}, D)
+            self.assertEqual(r['changes'], ['lane gifting'])
+            self.assertEqual({x['candidate_id']: x['lane'] for x in api.handoff_rows('bombas')}[cid], 'gifting')
+            self.assertIn('lane', audit.LOG_COLUMNS)
+            self.assertEqual({x['candidate_id']: x['lane'] for x in audit.research_log('bombas')['rows']}[cid], 'gifting')
+            rk = api.rank('bombas', None)
+            op2 = {r['key']: r for r in audit.lane_opportunity(br, api.products(data, 'bombas'), E)['rows']}
+            cards = [a for a in rk['actions'] if a.get('opportunity')]
+            self.assertTrue(cards)
+            for a in cards:                                                                   # every lane card lists the same open candidates as the read
+                self.assertEqual(a['opportunity']['open_candidates'], op2[(a.get('entity') or {}).get('id')]['open_candidates'])
+            self.assertIn('Everyday brief', op2['gifting']['open_candidates'])
+        finally:
+            audit.PIPELINE_PATH, api.HANDOFF_PATH, api.TESTS_PATH = saved
 
 
 class SecondBrandTest(unittest.TestCase):

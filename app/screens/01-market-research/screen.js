@@ -321,7 +321,7 @@
     const vrows = rows.map((r) => { const acts = (r.finding_ids || []).map(actionFor).filter(Boolean); const nx = stageNext(r); return Object.assign({}, r, {
       stageText: r.stage + (r.closed ? '' : r.days_left != null ? (r.days_left < 0 ? ', ' + Math.abs(r.days_left) + ' d over the box' : ', ' + r.days_left + ' d left') : ''),
       checks: (p.checks || []).map((c) => pretty(c) + ' ' + ((r.screen_result || {})[c] || 'not run')).join(', '),
-      angle: r.angle_text || 'no angle yet', price: r.planned_price, hours: r.hours_logged,
+      angle: r.angle_text || 'no angle yet', price: r.planned_price, hours: r.hours_logged, laneText: r.lane ? ((p.lanes || []).find((l) => l.key === r.lane) || { label: r.lane }).label : 'none',
       actions: [].concat(acts.length ? [{ label: acts[0].rule_id === 'PROD-R15' ? 'Kill or fix' : 'Decide', onClick: () => openAction(acts[0]) }] : [],
         [{ label: 'Brief', cls: 'quiet', onClick: () => openBrief(r.candidate_id) }],
         !r.closed ? [{ label: r.owner ? 'Owner: ' + r.owner : 'Owner', cls: 'quiet', onClick: () => { const v = prompt('Who owns ' + r.name + ' (reads the test and runs the diagnosis)?', r.owner || ''); if (v != null) candidatePost('candidates/' + r.candidate_id, { owner: v, who: 'person' }); } }] : [],
@@ -329,7 +329,7 @@
         !r.closed && nx ? [{ label: 'Advance to ' + nx, cls: 'quiet', onClick: () => candidatePost('candidates/' + r.candidate_id, { stage: nx, who: 'person' }) }] : [],
         !r.closed ? [{ label: 'Log 1 h', cls: 'quiet', onClick: () => candidatePost('candidates/' + r.candidate_id, { hours_add: 1, who: 'person' }) }, { label: 'Kill', cls: 'quiet', onClick: () => { const why = prompt('Kill ' + r.name + '? It stays killed 90 days. Name the reason (the desk remembers it):'); if (why != null && why.trim()) candidatePost('candidates/' + r.candidate_id, { stage: 'killed', kill_reason: why, who: 'person' }); } }] : []) }); });
     const t = UI.verdictTable({
-      columns: [{ key: 'name', label: 'Candidate' }, { key: 'category', label: 'Category' }, { key: 'stageText', label: 'Stage and box' }, { key: 'checks', label: 'Fast checks' }, { key: 'angle', label: 'Angle' },
+      columns: [{ key: 'name', label: 'Candidate' }, { key: 'category', label: 'Category' }, { key: 'laneText', label: 'Lane' }, { key: 'stageText', label: 'Stage and box' }, { key: 'checks', label: 'Fast checks' }, { key: 'angle', label: 'Angle' },
         { key: 'price', label: 'Planned price', unit: '$' }, { key: 'hours', label: 'Hours', align: 'right', format: (v) => v == null ? NA : v.toFixed(1) }],
       rows: vrows,
       verdict: { at: 1, kind: (r) => r.closed ? (r.stage === 'go' ? 'scale' : 'na') : (r.failed_checks || []).length >= 2 ? 'stop' : r.over_box ? 'fix' : 'keep',
@@ -341,10 +341,11 @@
     const price = el('input', { class: 'text sm', placeholder: 'planned price', type: 'number', style: { maxWidth: '130px' } });
     const box = el('input', { class: 'text sm', placeholder: 'time box, days', type: 'number', value: '10', style: { maxWidth: '130px' } });
     const angle = el('input', { class: 'text sm', placeholder: 'angle in one line (optional)', style: { flex: '1 1 260px' } });
-    const add = el('button', { class: 'btn primary sm', type: 'button', text: 'Screen it in', onclick: () => { if (!name.value.trim()) { alert('Give the candidate a name.'); return; } candidatePost('candidates', { name: name.value, category: cat.value || 'socks', planned_price: price.value || null, time_box_days: box.value || 10, angle_text: angle.value || null, who: 'person' }); } });
+    const lane = el('select', { class: 'text sm', style: { maxWidth: '200px' } }, el('option', { value: '', text: 'lane (optional)' }), ...((p.lanes || []).map((l) => el('option', { value: l.key, text: l.label }))));
+    const add = el('button', { class: 'btn primary sm', type: 'button', text: 'Screen it in', onclick: () => { if (!name.value.trim()) { alert('Give the candidate a name.'); return; } candidatePost('candidates', { name: name.value, category: cat.value || 'socks', lane: lane.value || null, planned_price: price.value || null, time_box_days: box.value || 10, angle_text: angle.value || null, who: 'person' }); } });
     const orient = UI.orientation([{ label: 'open', value: p.open, unit: 'n' }, { label: 'over the box', value: p.over_box, unit: 'n', tone: p.over_box ? 'bad' : 'good' }, { label: 'hours logged', value: p.hours, unit: 'n' }, { label: 'margin floor', value: p.floor_pct == null ? null : p.floor_pct / 100, unit: '%' }]);
     return el('div', { class: 'stack' }, orient, handoffLine,
-      el('div', { class: 'grid two' }, el('div', { class: 'card' }, funnel), el('div', { class: 'card flat' }, el('h4', { text: 'Screen a candidate in' }), el('div', { class: 'row', style: { gap: '6px', flexWrap: 'wrap' } }, name, cat, price, box), el('div', { class: 'row', style: { gap: '6px', marginTop: '6px' } }, angle, add),
+      el('div', { class: 'grid two' }, el('div', { class: 'card' }, funnel), el('div', { class: 'card flat' }, el('h4', { text: 'Screen a candidate in' }), el('div', { class: 'row', style: { gap: '6px', flexWrap: 'wrap' } }, name, cat, lane, price, box), el('div', { class: 'row', style: { gap: '6px', marginTop: '6px' } }, angle, add),
         el('p', { class: 'micro faint', text: 'It lands at screened with a time box. The 3 fast checks run when the agent screens it; you can set them from the card. Margin gate: ' + p.gate_rule + ' ' + floor }))),
       el('div', { class: 'card scroll' }, t),
       gapLine(p.over_box ? p.over_box + ' candidates are past their time box. Each carries a decide-or-kill action.' : (p.open ? 'Every open candidate is inside its box.' : 'The pipeline is empty. Every gap above with a screen action can fill it.'),
@@ -891,7 +892,7 @@
     const matrix = UI.coverageMatrix({ rows: rows.map((r) => ({ key: r.key, label: r.rank + '. ' + r.label, sub: (r.score == null ? 'no score' : r.score + ' of 100') + ', ' + r.parts_read + ' of ' + r.of + ' parts' })), cols, cells, single: true, max: 100, unit: 'n', corner: 'lane x part',
       note: 'Each part 0 to 100; n/a is not read. Weights in the column heads. ' + (op.rule || '') });
     const vt = { strong_no_candidate: 'Strong, no candidate', strong: 'Strong, candidate open', weak: 'Weak', thin: 'Thin read' };
-    const screenIn = (r) => { const name = prompt('Name the candidate to screen into ' + r.label, ''); if (name == null || !name.trim()) return; candidatePost('candidates', { name: name.trim(), category: 'socks', time_box_days: 10, angle_text: null, who: 'person' }); };
+    const screenIn = (r) => { const name = prompt('Name the candidate to screen into ' + r.label, ''); if (name == null || !name.trim()) return; candidatePost('candidates', { name: name.trim(), category: 'socks', lane: r.key, time_box_days: 10, angle_text: null, who: 'person' }); };
     const vrows = rows.map((r) => { const a = actionFor(r.finding_id); return Object.assign({}, r, {
       scoreText: r.score == null ? NA : r.score + ' of 100 (' + r.parts_read + ' of ' + r.of + ' parts)', candText: r.open_candidates.length ? r.open_candidates.join(', ') : 'none', quad: r.quadrant, sellersText: String(r.sellers),
       actions: [r.verdict === 'strong_no_candidate' ? { label: 'Screen a candidate in', onClick: () => screenIn(r) } : null, a ? { label: 'Open the lane card', cls: 'quiet', onClick: () => openAction(a) } : null].filter(Boolean) }); });
