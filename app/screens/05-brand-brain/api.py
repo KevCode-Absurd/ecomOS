@@ -4,6 +4,11 @@ Reads app/brain/<brand>/ through app/brain/store.py and keeper.py. The only
 writes go through Brain.put and Brain.retire: a founder answer to an open
 question, and accept or ignore on a proposed record. Nothing external.
 
+  GET  agentfile?capability=    the brain file an agent reads for one capability: strict rules,
+                                judgement rules, the package, where to check (markdown)
+  GET  agentfile/endpoints      this route table as JSON, for an agent or an MCP wrapper
+  GET  brainmd                  the router BRAIN.md text
+  POST review/draft             {text, channel, kind}: every check in one call and the route
   GET  overview                 T0 card, section table, tiles, insights, chart, ladders,
                                 open questions, review queue, conflicts
   GET  master?window=28d        the orchestrator's master list: every screen's rank merged
@@ -179,6 +184,9 @@ _pspec.loader.exec_module(parity)
 _sspec = importlib.util.spec_from_file_location("brand_brain_sitediff", HERE / "sitediff.py")
 sitediff = importlib.util.module_from_spec(_sspec)
 _sspec.loader.exec_module(sitediff)
+_afspec = importlib.util.spec_from_file_location("brand_brain_agentfile", HERE / "agentfile.py")
+agentfile = importlib.util.module_from_spec(_afspec)
+_afspec.loader.exec_module(agentfile)
 _rvspec = importlib.util.spec_from_file_location("brand_brain_reviewer", HERE / "reviewer.py")
 reviewer = importlib.util.module_from_spec(_rvspec)
 _rvspec.loader.exec_module(reviewer)
@@ -1792,6 +1800,28 @@ def handle(req):
         return cd
     if req.method == "POST" and parts == ["claims"]:
         return claim_add(brain, req.body)
+    if req.method == "GET" and parts == ["agentfile", "endpoints"]:
+        rows = agentfile.endpoints(__doc__ or "")
+        return {"screen": "05-brand-brain", "brand": brain.brand, "endpoints": rows, "counts": {"routes": len(rows), "read_only": sum(1 for r in rows if r["read_only"])},
+                "note": "This screen's routes, parsed from its own route table. GET routes are read-only. Name yourself with ?reader=<capability id> on a read so the read is logged. There is no write to any external system."}
+    if req.method == "GET" and parts == ["agentfile"]:
+        cap = (req.arg("capability", "") or "").upper()
+        pv = package_view(brain, cap)
+        if isinstance(pv, tuple):
+            return pv
+        res = agentfile.build(brain, cap, pv, {"claims": claims_mod, "voice": voice, "visibility": visibility, "ladderproof": ladderproof, "market": market, "package": package_mod})
+        _log_read(brain, [p["section"] for p in pv["parts"] if p.get("section")], req.arg("reader") or cap)
+        res["name"] = pv.get("name")
+        return res
+    if req.method == "GET" and parts == ["brainmd"]:
+        p = brain.dir / "BRAIN.md"
+        try:
+            text = p.read_text(encoding="utf-8") if p.is_file() else None
+        except OSError:
+            text = None
+        if text is None:
+            return 404, {"error": "no BRAIN.md for this brand; regenerate it from the self audit"}
+        return {"file": "BRAIN.md", "text": text, "tokens": package_mod.tokens(text), "version": brain.version()}
     if req.method == "POST" and parts == ["review", "draft"]:
         text = str((req.body or {}).get("text") or "")
         if not text.strip():

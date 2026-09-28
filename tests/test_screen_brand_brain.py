@@ -2018,10 +2018,47 @@ class Round5ReviewFirst(TempBrain):
         self.assertEqual(r['route'][0]['who'], 'person')
 
 
+class Round5AgentFile(TempBrain):
+    """Round 5 feature 5: the brain file an agent reads, strict rules apart from judgement rules, the route index and BRAIN.md."""
+
+    def test_agent_file_has_strict_and_judgement_rules_and_the_package(self):
+        api.handle(Req(['claims'], 'POST', body={'text': 'the softest socks in the world', 'tier': 'forbidden'}))
+        api.handle(Req(['voice', 'snippet', 'free_shipping'], 'POST', body={'text': 'Free standard shipping on orders over $75.'}))
+        f = api.handle(Req(['agentfile'], query={'capability': ['CREA-C06']}))
+        self.assertEqual(f['capability'], 'CREA-C06')
+        self.assertIn('## Strict rules (checked, never break)', f['text'])
+        self.assertIn('## Judgement rules (guide)', f['text'])
+        self.assertIn('the softest socks in the world', f['text'])
+        self.assertIn('Free standard shipping on orders over $75.', f['text'])
+        self.assertIn('free shipping threshold: 75', f['text'])
+        self.assertIn('# bombas: brand card (T0)', f['text'])
+        self.assertIn('POST /api/05-brand-brain/review/draft', f['text'])
+        keys = [r['key'] for r in f['strict']]
+        self.assertTrue({'never_say', 'locked_lines', 'numbers', 'channel_rules', 'standing'} <= set(keys))
+        self.assertTrue(any(r['key'] == 'ladders' for r in f['judgement']))
+        self.assertGreater(f['tokens'], f['package_tokens'])
+        self.assertEqual(api.handle(Req(['agentfile'], query={'capability': ['nope']}))[0], 400)
+        # the read is logged under the capability
+        self.assertTrue(api.handle(Req(['selfaudit']))['reads']['available'])
+
+    def test_endpoints_index_and_brainmd(self):
+        e = api.handle(Req(['agentfile', 'endpoints']))
+        self.assertGreaterEqual(e['counts']['routes'], 60)
+        paths = {r['path'] for r in e['endpoints']}
+        self.assertIn('/api/05-brand-brain/agentfile?capability=', paths)
+        self.assertIn('/api/05-brand-brain/review/draft', paths)
+        self.assertTrue(all(r['read_only'] == (r['method'] == 'GET') for r in e['endpoints']))
+        b = api.handle(Req(['brainmd']))
+        self.assertTrue(b['text'].startswith('# bombas'))
+        self.assertLessEqual(b['tokens'], 1500)
+        (self.tmp / 'bombas' / 'BRAIN.md').unlink()
+        self.assertEqual(api.handle(Req(['brainmd']))[0], 404)
+
+
 class Round4SecondBrand(unittest.TestCase):
     """Round 4 feature 2: plug and play. Every route answers for the example brain (7 records), unavailable never zero."""
 
-    ROUTES = [['overview'], ['master'], ['profile'], ['documents'], ['competitors'], ['coverage'], ['signals'], ['health'], ['conflicts'], ['questions'], ['ladders', 'proof'], ['selfaudit'], ['peaks'], ['visual'], ['newbrand'], ['visibility'], ['moves'], ['channels'],
+    ROUTES = [['overview'], ['master'], ['profile'], ['documents'], ['competitors'], ['coverage'], ['signals'], ['health'], ['conflicts'], ['questions'], ['ladders', 'proof'], ['selfaudit'], ['peaks'], ['visual'], ['newbrand'], ['visibility'], ['moves'], ['channels'], ['agentfile', 'endpoints'], ['brainmd'],
               ['decisions'], ['flows'], ['claims'], ['site', 'diff'], ['parity'], ['contracts'], ['legal'], ['voice'], ['battlecards'], ['permissions'],
               ['export'], ['assumptions'], ['facts'], ['summaries'], ['changes'], ['learn'], ['report'], ['digest'], ['review'], ['bottlenecks'], ['audit']]
 
