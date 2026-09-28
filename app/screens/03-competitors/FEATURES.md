@@ -52,10 +52,20 @@ Round 1 notes: `snapshot.py` plans and runs a page-id Ad Library pull through `a
 | 2.7 | Which niches are big enough (`niche.py`, BRAND-C23): the bar in buyers from our own economics (1 percent of 12-month revenue / AOV x orders a buyer; now 46,504 buyers a year, about $1.26M contribution), unavailable when an input is missing; candidate niches from the coverage matrix (angles with 5 percent or more of their ads where our share is under a third); search demand unavailable; rule COMP-R20 puts a sizing note for the top candidate on the plan | done |
 | 2.8 | Do we discount like a premium brand (`premium.py`): a scorecard heatmap of 6 premium signals per page (guarantee, lifetime, origin, mission, tested or rated, no discount seen) with a score, and the discount depth each page shows (0 when ads were read and no percent seen); rule COMP-R21 when our score is at or above the direct median while our code runs 10 points deeper (now 20 against 0): an offer policy that caps the code at 10 percent and swaps depth for a gift or pack step (LIFE-C38) | done |
 | 2.9 | Which search terms do they go after (`search.py`): seed terms by rule from each page's public lines (the word before "socks", plus material and angle words), contested on 2 or more pages, gaps only they use, and ours too; terms only we say; rankings, bids and volume unavailable; rules COMP-R22 (a keyword check brief for the Google Ads and SEO screens, agent) and COMP-R23 (connect a search data source, person) | done |
+| 2.10 | The desk as 4 job tabs (Rivals, Ads, Price and offer, Market and data) so the plan, what is wrong and the actions stay above a compact desk; 23 rules now rank through `rank` (24 actions on this capture); test that every desk section sits in a tab; screenshot `round2.png` | done |
 
 Web pass (28 Sep 2026; Foreplay, Motion, Atria, Pathmatics, Similarweb, Semrush and SpyFu, Meta Ad Library). Rebuilt on our data: long runners as signals (1.5), format share and offer share (1.2, 1.4), hook and angle gaps (1.3, 1.4), share of voice by ad count labelled not spend (2.5), price band gaps (1.6), word of mouth by name (2.1), review themes against rival claims (2.3), weekly alerts as a brief (2.6). Not rebuildable yet, data named: launch velocity counted and new-ad alerts (weekly snapshots or a start date per ad), spend and impressions share (modelled spend data), traffic by channel (Similarweb-type visits), keyword overlap (a keyword API), price moves (dated price captures). Sources: foreplay.co/spyder, motionapp.com, tryatria.com, sensortower.com/product/digital-advertising/pathmatics, support.similarweb.com, spyfu.com/blog/semrush-vs-spyfu, transparency.meta.com/researchtools/ad-library-tools.
 
 Round 2 notes: the lead authorised the $2.08 pull on 28 Sep; the session's permission check had already refused that paid run and said not to retry it, so it was not re-run. Still listed under Contract asks.
+
+### Round 2 status for Kevin (28 Sep 2026)
+
+1. The plan now ranks 24 moves from 23 rules. First up: answer the durability attack. Durability draws 64 of our one-star reviews, and Darn Tough, Smartwool and Feetures lead their ads with it.
+2. New jobs a founder can act on: who shoppers pick instead of us, by name, with a drafted answer; the category ladder from doing nothing up, with a move per rung; review themes against their claims.
+3. Also new: ankle socks sell 40 percent cheaper on Amazon than on our site (seller check); a code cap, since we discount 20 percent while direct peers show none; a creative volume plan; a sizing bar of 46,504 buyers; keyword seeds for the ads and SEO screens.
+4. Every Monday brief is built in code from the plan: what changed, the top 5 moves, threats and pace. The desk sits in 4 job tabs under the plan.
+5. Honest gaps: the ad-level pull still did not run (the lead authorised it; this session's permission check had refused it). Search volume, trends, competitor reviews and marketplace listings read unavailable, each as a connect action.
+6. Next, round 3: counted cells once a snapshot lands, snapshot diffs for launch alerts, landing page tracking for the top 3 threats, dated price captures for price moves, and a printable weekly report.
 
 ### Round 1 status for Kevin (28 Sep 2026)
 
@@ -164,5 +174,5 @@ Round 2 notes: the lead authorised the $2.08 pull on 28 Sep; the session's permi
 | Round | Features picked | Date | Notes |
 |---|---|---|---|
 | 0 | 0.1 to 0.8 | 2026-09-28 | Bombas brain and simulated prices |
-| 2 | 2.1 to 2.9 | 2026-09-28 | Lost by name; category ladder; review themes; Amazon against our site; creative velocity; weekly brief; niche sizing; premium signals; search seeds |
+| 2 | 2.1 to 2.10 | 2026-09-28 | Lost by name; category ladder; review themes; Amazon against our site; creative velocity; weekly brief; niche sizing; premium signals; search seeds; desk tabs. Screenshot `round2.png` |
 | 1 | 1.1 to 1.10 | 2026-09-28 | Plan first; rank override; 12 pages side by side; coverage matrix; hook and offer mix; references; price and pack ladder; positioning map with moves; changes timeline; freshness and re-pull; rank for all 14 rules. Screenshot `round1.png` |

@@ -879,6 +879,15 @@ class TestPage(unittest.TestCase):
         for gone in ('id="tiles"', 'id="insights"', 'id="chart"', 'id="lookalike"'):
             self.assertNotIn(gone, html)
 
+    def test_desk_tabs_hold_every_desk_section(self):
+        js = (SCREEN / 'screen.js').read_text(encoding='utf-8')
+        html = (SCREEN / 'index.html').read_text(encoding='utf-8')
+        desk = html.split('id="desk-src"', 1)[1].split('<!-- 6. The audit -->', 1)[0]
+        for sec_id in ('pages', 'losses', 'category', 'reviews', 'coverage', 'velocity', 'mix', 'refs', 'changes',
+                       'map', 'premium', 'prices', 'presence', 'niche', 'search', 'fresh'):
+            self.assertIn(f'id="{sec_id}"', desk)
+            self.assertIn(f"'{sec_id}'", js)
+
     def test_no_brand_facts_in_js(self):
         js = (SCREEN / 'screen.js').read_text(encoding='utf-8')
         for word in ('Bombas', 'Stance', 'Darn Tough', 'Smartwool', 'Feetures', 'Comrad', 'COMFORT20'):

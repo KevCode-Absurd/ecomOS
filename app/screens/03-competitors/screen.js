@@ -475,6 +475,24 @@
       el('p', { class: 'micro faint', text: s.rule }));
   }
 
+  // ---------- 5z. desk tabs: each job holds its sections ----------
+  const DESK = [
+    { key: 'rivals', label: 'Rivals', ids: ['pages', 'losses', 'category', 'reviews'] },
+    { key: 'creative', label: 'Ads', ids: ['coverage', 'velocity', 'mix', 'refs', 'changes'] },
+    { key: 'price', label: 'Price and offer', ids: ['map', 'premium', 'prices', 'presence'] },
+    { key: 'market', label: 'Market and data', ids: ['niche', 'search', 'fresh'] },
+  ];
+  function deskTabs() {
+    const src = document.getElementById('desk-src');
+    const items = DESK.map((t) => {
+      const box = el('div', { class: 'stack desk-panel' });
+      for (const id of t.ids) { const n = document.getElementById(id); if (n && n.closest('.section')) box.append(n.closest('.section')); }
+      return { key: t.key, label: t.label, n: box.children.length, panel: box };
+    });
+    mount('#desk', UI.tabs({ items }));
+    if (src) src.remove();
+  }
+
   // ---------- 6. the audit ----------
   function rulesTable(rules) {
     return UI.table({ columns: [{ key: 'rule_id', label: 'Rule' }, { key: 'name', label: 'What it checks' }, { key: 'inputs', label: 'Reads', format: (v) => (v || []).join(', ') }, { key: 'capability', label: 'Capability' }],
@@ -511,6 +529,7 @@
     digestSection();
     document.getElementById('audit-sub').textContent = p.findings.length + ' findings from ' + p.rules.length + ' rules. Public signals, one capture.';
     mount('#audit', auditTable(p.findings));
+    deskTabs();
     mount('#rules', el('h4', { text: 'Rules' }), rulesTable(p.rules));
   }
 
