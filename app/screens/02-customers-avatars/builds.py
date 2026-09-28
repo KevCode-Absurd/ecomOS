@@ -3069,3 +3069,17 @@ def size_moves(d: dict, ranked: dict) -> dict:
     walk({k: v for k, v in d.items() if k not in ("blocks", "compare")})
     d["sized_moves"] = counts
     return counts
+
+
+def stake_tile(actions: list[dict], cohorts: dict) -> dict:
+    """The money this screen can price, summed from its open actions, and how many carry it. Unavailable, never 0,
+    when none does. The season the January check left out is named in the title, not added."""
+    open_ = [a for a in actions if a.get("status") == "open"]
+    priced = [a for a in open_ if isinstance((a.get("money_at_stake") or {}).get("usd"), (int, float))]
+    season = ((cohorts.get("calendar_break") or {}).get("stake") or {}).get("season_usd")
+    note = f" A seasonal drop of ${season:,.0f} is left out: it matched last year." if season and ((cohorts.get("calendar_break") or {}).get("stake") or {}).get("usd") is None else ""
+    if not priced:
+        return {"label": "money at stake", "value": None, "unit": "usd", "unavailable_label": "unavailable",
+                "reason": "no move here has an own-history baseline gap yet", "title": "Summed from open moves with a stake." + note}
+    return {"label": "money at stake", "value": round(sum(a["money_at_stake"]["usd"] for a in priced)), "unit": "usd",
+            "suffix": f" on {len(priced)} of {len(open_)} moves", "title": "Summed from open moves with a stake, each against the brand's own history." + note}

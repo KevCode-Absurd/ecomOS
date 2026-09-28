@@ -2109,3 +2109,23 @@ class WeakCohortMoney(unittest.TestCase):
     def test_weak_both_years_is_the_season(self):
         g = self.grid({'2025-03', '2026-03'})
         self.assertIn('the season', g['weak_stakes']['2026-03']['note'])
+
+
+class StakeTile(TempBrain):
+    """Feature 8.9: the head shows the money this screen prices, summed from open moves, unavailable when none."""
+
+    def test_tile_sums_open_priced_moves(self):
+        d = api.handle(Req(['overview']))
+        t = next(o for o in d['orientation'] if o['label'] == 'money at stake')
+        acts = [a for a in api.rank('bombas', RANK_WINDOW)['actions'] if a['status'] == 'open']
+        priced = [a for a in acts if (a.get('money_at_stake') or {}).get('usd')]
+        self.assertEqual(t['value'], round(sum(a['money_at_stake']['usd'] for a in priced)))
+        self.assertEqual(t['suffix'], f' on {len(priced)} of {len(acts)} moves')
+        self.assertIn('matched last year', t['title'])
+
+    def test_unavailable_not_zero_for_a_second_brand(self):
+        api.BRAIN_ROOT = None
+        d = api.handle(Req(['overview'], query={'brand': ['example']}))
+        t = next(o for o in d['orientation'] if o['label'] == 'money at stake')
+        self.assertIsNone(t['value'])
+        self.assertTrue(t['reason'])

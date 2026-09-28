@@ -249,10 +249,9 @@ def orientation(brain: Brain, avatars: list[dict], all_rungs: list[dict], chart:
         {"label": "returning share of orders", "value": ret_share, "unit": "%", "title": "returning orders over all orders, 28 days, simulated"},
         {"label": "repeat in 3 months", "value": rep, "unit": "%",
          "title": "latest full cohort, active again in months 1 to 3, upper bound, simulated"},
-        {"label": "avatars with proof", "value": with_proof if avatars else None, "unit": "n", "suffix": f" of {len(avatars)}",
-         "title": "avatars whose top doubt has a proof record"},
         {"label": "rungs without proof", "value": open_rungs if all_rungs else None, "unit": "n",
-         "tone": "bad" if open_rungs else None, "title": "objection ladder rungs with no proof record"},
+         "tone": "bad" if open_rungs else None,
+         "title": f"objection ladder rungs with no proof record; {with_proof} of {len(avatars)} avatars have proof on their top doubt"},
         {"label": "oldest avatar check", "value": fresh, "unit": "n", "suffix": " days ago",
          "title": "days since the oldest avatar record was last dated"},
     ]
@@ -486,7 +485,9 @@ def _build_overview(brain: Brain) -> dict:
     out["compare"] = builds.compare_rows(out)
     out["blocks"] = builds.block_notes(out)
     w = {"ends_on": out["ends_on"], "days": 28, "trailing": 4}
-    builds.size_moves(out, {a["plan_id"]: a for a in rank(brain.brand, w)["actions"] if a.get("plan_id")})
+    acts = rank(brain.brand, w)["actions"]
+    builds.size_moves(out, {a["plan_id"]: a for a in acts if a.get("plan_id")})
+    out["orientation"].append(builds.stake_tile(acts, out["cohorts"]))
     return out
 
 
