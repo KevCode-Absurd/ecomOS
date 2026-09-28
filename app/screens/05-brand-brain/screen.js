@@ -67,6 +67,7 @@
     loadDrift(m.actions || []);
     loadLocks();
     loadAudiences(m.actions || []);
+    loadRedlines(m.actions || []);
     loadSelfAudit(m.actions || []);
     loadPeaks(m.actions || []);
     loadVisual(m.actions || []);
@@ -1459,6 +1460,20 @@
     const add = el('button', { class: 'btn primary sm', type: 'button', text: 'Put the yes on file' });
     add.addEventListener('click', async () => { add.disabled = true; try { const r = await api(BASE + 'ugc', { method: 'POST', body: { name: name.value.trim(), handle: handle.value.trim(), channel: channel.value, what: what.value.trim(), scope: scope.value, term_months: term.value || null, granted_on: granted.value || null, evidence: evidence.value.trim() } }); status.textContent = r.next; loadUgc(actions); loadPlan(); } catch (e) { add.disabled = false; status.textContent = 'Could not save: ' + e.message; } });
     mount('#ugc', table, el('div', { class: 'row', style: { marginTop: '8px' } }, name, handle, channel, what), el('div', { class: 'row' }, scope, term, granted, evidence, draft, add, status), out, el('p', { class: 'micro faint', text: ug.note }));
+  }
+  async function loadRedlines(actions) {
+    let rg;
+    try { rg = await api(BASE + 'redlines'); } catch (e) { mount('#redlines', el('p', { class: 'muted', text: 'Red lines unavailable: ' + e.message })); return; }
+    const act = (actions || []).find((a) => a.rule_id === 'BRN-R34');
+    const c = rg.counts;
+    mount('#redlines-tools', UI.orientation([{ label: 'red lines', value: c.total, unit: 'n' }, { label: 'without a reason', value: c.without_reason, unit: 'n', tone: c.without_reason ? 'warn' : 'good' }, { label: 'never say', value: c.by_kind.never_say, unit: 'n' }, { label: 'required lines', value: c.by_kind.required_line, unit: 'n' }]));
+    const status = el('span', { class: 'micro muted' });
+    const rows = rg.lines.map((x) => {
+      const why = x.why ? el('span', { class: 'small', text: x.why }) : (x.editable ? (() => { const inp = el('input', { class: 'text sm', placeholder: 'why, in a line', style: { minWidth: '220px' } }); const b = el('button', { class: 'btn xs primary', type: 'button', text: 'Save' }); b.addEventListener('click', async () => { if (!inp.value.trim()) return; b.disabled = true; try { await api(BASE + 'redlines/reason', { method: 'POST', body: { record: x.record, reason: inp.value.trim() } }); loadRedlines(actions); loadPlan(); } catch (e) { b.disabled = false; status.textContent = 'Could not save: ' + e.message; } }); return el('span', { class: 'row' }, inp, b); })() : el('span', { class: 'muted small', text: 'set with the logo rules' }));
+      return el('div', { class: 'row card flat small' }, el('span', { class: 'chip ' + (x.kind === 'never_say' ? 'bad' : x.kind === 'required_line' ? 'warn' : ''), text: x.label }), el('b', { text: x.text }), el('span', { class: 'micro faint', text: (x.scope || '') + (x.date ? ', set ' + fmt.date(x.date) : '') + (x.set_by ? ', by ' + pretty(x.set_by) : '') }), why);
+    });
+    mount('#redlines', el('div', { class: 'row' }, UI.copyButton({ label: 'Copy the register', text: () => rg.text }), act ? UI.decisionRow({ capability: 'BRN-C08', autonomy: 'founder_gate', owner: act.owner, screen: SCREEN, compact: true, finding_id: act.id, current: act.decision, stub: act.title + '. ' + act.artefact.label + '.' }) : null, status),
+      rows.length ? el('div', { class: 'stack' }, ...rows) : el('p', { class: 'muted small', text: 'No red line yet. Forbid a claim, lock a required line, or reject an idea and it lands here.' }), el('p', { class: 'micro faint', text: rg.note }));
   }
   async function loadAudiences(actions) {
     let au;

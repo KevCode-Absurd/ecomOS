@@ -159,6 +159,13 @@ def build(f: dict, nr: float | None) -> dict:
                         {"n": 3, "who": "person", "text": "Pick the record as proof, or approve the drafted fact as an approved record."},
                         {"n": 4, "who": "agent", "text": f"Attach it to the rung. The surfaces that use the rung ({surfaces or 'copy, page, listing, macro'}) read the proof on their next brief."}],
                  check_on=_check_on(f, 7), time_to_ship_hours=1)
+    elif rid == "BRN-R34":
+        rl = f.get("redlines") or {}
+        n = _ev(f, "red_lines_without_reason")
+        a.update(title=f"Give {n} red line{'s' if n != 1 else ''} a reason so agents keep them", owner="person",
+                 artefact={"kind": "brain_record", "label": "every red line with its reason, on the record", "draft": "\n".join(f"- {x['text']}: why?" for x in rl.get("without_reason") or []) or None},
+                 steps=[{"n": 1, "who": "agent", "text": "List the red lines with no reason, newest first."}, {"n": 2, "who": "person", "text": "Type one line of why for each in the register."}, {"n": 3, "who": "agent", "text": "The reason lands on the record; the brain file carries it under strict rules."}],
+                 check_on=_check_on(f, 14), time_to_ship_hours=0.25)
     elif rid == "BRN-R33":
         au = f.get("audiences") or {}
         top = ", ".join(f"{x['name']} ({round((x['share'] or 0) * 100)} percent)" for x in au.get("top") or [])

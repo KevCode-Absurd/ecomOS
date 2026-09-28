@@ -37,7 +37,8 @@ def strict_rules(brain, claims_mod, voice_mod, visibility_mod, public: bool) -> 
     rules = []
     forb = claims_mod.forbidden_phrases(brain)
     if forb:
-        rules.append({"key": "never_say", "label": "Never say", "lines": [f"{f['phrase']} ({f['id']})" for f in forb[:20]], "check": "claims scan blocks it"})
+        reasons = {r["id"]: (r.get("value") or {}).get("reason") for r in brain.records("claims") if isinstance(r.get("value"), dict)}
+        rules.append({"key": "never_say", "label": "Never say", "lines": [f"{f['phrase']}" + (f" (because {reasons[f['id']]})" if reasons.get(f["id"]) else "") + f" ({f['id']})" for f in forb[:20]], "check": "claims scan blocks it"})
     try:
         sn = voice_mod.snippets(brain)
         locked = [r for r in sn.get("snippets") or [] if r.get("status") == "locked" and r.get("locked")]

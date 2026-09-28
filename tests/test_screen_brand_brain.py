@@ -2450,10 +2450,43 @@ class Round6PublicFacing(TempBrain):
         self.assertEqual(api.handle(Req(['package', 'public'], 'POST', body={'capability': 'ZZZ-C99'}))[0], 404)
 
 
+class Round6Redlines(TempBrain):
+    """Round 6 feature 6: the red lines register with reasons; a reason lands on the record and the brain file carries it; rule BRN-R34."""
+
+    def test_register_reasons_and_rule(self):
+        api.handle(Req(['claims'], 'POST', body={'text': 'waterproof', 'tier': 'forbidden'}))
+        api.handle(Req(['locks'], 'POST', body={'label': 'FTC disclaimer', 'text': 'Results vary.', 'scope': 'ad'}))
+        api.handle(Req(['channels', 'amazon'], 'POST', body={'pattern': '100% cotton', 'kind': 'fail', 'why': 'we sell a blend'}))
+        api.handle(Req(['bottlenecks', 'reject'], 'POST', body={'idea_id': 'AMZ-007', 'reason': 'tried in 2025'}))
+        rg = api.handle(Req(['redlines']))
+        kinds = {x['kind'] for x in rg['lines']}
+        self.assertTrue({'never_say', 'required_line', 'channel_rule', 'rejected_idea'} <= kinds, kinds)
+        forb = next(x for x in rg['lines'] if x['kind'] == 'never_say' and x['text'] == 'waterproof')
+        self.assertIsNone(forb['why'])
+        self.assertEqual(next(x for x in rg['lines'] if x['kind'] == 'channel_rule')['why'], 'we sell a blend')
+        self.assertGreaterEqual(rg['counts']['without_reason'], 1)
+        f = next(f for f in api.handle(Req(['audit']))['findings'] if f['rule_id'] == 'BRN-R34')
+        self.assertIn('have no reason on file', f['sentence'])
+        a = next(a for a in api.rank('bombas', {'ends_on': '2026-09-27', 'days': 28, 'trailing': 4})['actions'] if a['rule_id'] == 'BRN-R34')
+        self.assertEqual((a['owner'], api.rank_mod.validate_action(a)), ('person', []))
+        status, res = api.handle(Req(['redlines', 'reason'], 'POST', body={'record': forb['record'], 'reason': 'the socks are not waterproof and the FTC would ask for proof'}))
+        self.assertEqual(status, 201)
+        rec = next(r for r in self.section('claims') if r['id'] == forb['record'])
+        self.assertEqual((rec['value']['phrase'], rec['value']['reason'][:9], rec['tier']), ('waterproof', 'the socks', 'forbidden'))
+        self.assertEqual(api.handle(Req(['scan'], 'POST', body={'text': 'Our waterproof socks.'}))['verdict'], 'fail')  # the scanner still reads the text
+        rg = api.handle(Req(['redlines']))
+        self.assertEqual(next(x for x in rg['lines'] if x['record'] == forb['record'])['why'][:9], 'the socks')
+        self.assertIn('because the socks are not waterproof', api.handle(Req(['agentfile'], query={'capability': ['CREA-C06']}))['text'])
+        self.assertIn('Why: the socks are not waterproof', rg['text'])
+        self.assertEqual(api.handle(Req(['redlines', 'reason'], 'POST', body={'record': forb['record'], 'reason': ''}))[0], 400)
+        self.assertEqual(api.handle(Req(['redlines', 'reason'], 'POST', body={'record': 'bombas.claims.nope', 'reason': 'x'}))[0], 404)
+        self.assertIn('reason', [c['kind'] for c in api.handle(Req(['changes']))['changes']])
+
+
 class Round4SecondBrand(unittest.TestCase):
     """Round 4 feature 2: plug and play. Every route answers for the example brain (7 records), unavailable never zero."""
 
-    ROUTES = [['overview'], ['master'], ['profile'], ['documents'], ['competitors'], ['coverage'], ['signals'], ['health'], ['conflicts'], ['questions'], ['ladders', 'proof'], ['selfaudit'], ['peaks'], ['visual'], ['newbrand'], ['visibility'], ['moves'], ['channels'], ['agentfile', 'endpoints'], ['brainmd'], ['trail'], ['assets'], ['ugc'], ['drift'], ['locks'], ['audiences'], ['walkthrough'],
+    ROUTES = [['overview'], ['master'], ['profile'], ['documents'], ['competitors'], ['coverage'], ['signals'], ['health'], ['conflicts'], ['questions'], ['ladders', 'proof'], ['selfaudit'], ['peaks'], ['visual'], ['newbrand'], ['visibility'], ['moves'], ['channels'], ['agentfile', 'endpoints'], ['brainmd'], ['trail'], ['assets'], ['ugc'], ['drift'], ['locks'], ['audiences'], ['walkthrough'], ['redlines'],
               ['decisions'], ['flows'], ['claims'], ['site', 'diff'], ['parity'], ['contracts'], ['legal'], ['voice'], ['battlecards'], ['permissions'],
               ['export'], ['assumptions'], ['facts'], ['summaries'], ['changes'], ['learn'], ['report'], ['digest'], ['review'], ['bottlenecks'], ['audit']]
 

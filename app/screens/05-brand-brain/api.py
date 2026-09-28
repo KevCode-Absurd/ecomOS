@@ -8,6 +8,8 @@ question, and accept or ignore on a proposed record. Nothing external.
                                 judgement rules, the package, where to check (markdown)
   GET  agentfile/endpoints      this route table as JSON, for an agent or an MCP wrapper
   GET  brainmd                  the router BRAIN.md text
+  GET  redlines                 the red lines register: never say, required lines, blocking rules, logo, rejected ideas, decisions, with reasons
+  POST redlines/reason          {record, reason}: the reason written onto a red line's record
   GET  package/public?capability=  the package as public-facing against as it stands: records dropped, summaries changed, tokens saved
   POST package/public           {capability, public}: flag a capability public-facing (founder record until the overlay carries it)
   GET  walkthrough              the brain end to end: 11 setup steps read from the records, the next one named
@@ -206,6 +208,9 @@ _pspec.loader.exec_module(parity)
 _sspec = importlib.util.spec_from_file_location("brand_brain_sitediff", HERE / "sitediff.py")
 sitediff = importlib.util.module_from_spec(_sspec)
 _sspec.loader.exec_module(sitediff)
+_rlspec = importlib.util.spec_from_file_location("brand_brain_redlines", HERE / "redlines.py")
+redlines = importlib.util.module_from_spec(_rlspec)
+_rlspec.loader.exec_module(redlines)
 _pfspec = importlib.util.spec_from_file_location("brand_brain_publicfacing", HERE / "publicfacing.py")
 publicfacing = importlib.util.module_from_spec(_pfspec)
 _pfspec.loader.exec_module(publicfacing)
@@ -1899,6 +1904,22 @@ def handle(req):
         return cd
     if req.method == "POST" and parts == ["claims"]:
         return claim_add(brain, req.body)
+    if req.method == "GET" and parts == ["redlines"]:
+        reg = redlines.register(brain)
+        reg.update(brand=brain.brand, today=brain.today.isoformat(), capability={"id": "BRN-C08", "autonomy": "founder_gate"})
+        return reg
+    if req.method == "POST" and parts == ["redlines", "reason"]:
+        body = req.body or {}
+        rid = str(body.get("record") or "")
+        if not re.fullmatch(r"[a-z0-9_-]+\.[a-z_]+\.[A-Za-z0-9_.-]{1,120}", rid):
+            return 400, {"error": "record must be a record id"}
+        res = redlines.with_reason(brain, rid, str(body.get("reason") or ""))
+        if isinstance(res, tuple):
+            return res
+        errs = founder_put(brain, res["record"], "reason", f"{rid}: reason set: {res['reason'][:100]}")
+        if errs:
+            return 400, {"error": "; ".join(errs)}
+        return 201, {"ok": True, "record": rid, "reason": res["reason"], "version": brain.version()}
     if req.method == "GET" and parts == ["package", "public"]:
         cap = (req.arg("capability", "") or "").upper()
         if not re.fullmatch(r"[A-Z]{2,6}-C\d{2,3}", cap):

@@ -167,6 +167,10 @@ BRN-R33 audience profiles not set. No avatar record is approved, or no
     default profile is picked for ads (audiences.py), so generators write for
     no one in particular. One low finding. Capability BRN-C10 (avatar and
     language bank maintenance). Owner: 05-brand-brain.
+BRN-R34 red lines without a reason. Entries in the red lines register
+    (forbidden claims, required lines, blocking channel rules, rejected ideas,
+    never or always decisions) with no reason on file (redlines.py). One low
+    finding naming the count. Capability BRN-C08. Owner: 05-brand-brain.
 BRN-R07 competitor snapshot stale. A configured Ad Library page was captured
     more than SNAPSHOT_STALE_DAYS (7) ago, or never. Severity low. Capability
     BRN-C11 (competitor snapshot, signals only). Owner: 05-brand-brain.
@@ -265,10 +269,12 @@ RULES = [
      "inputs": ["positioning", "identity", "voice", "language_bank"], "capability": "BRAND-C57", "owner_screen": SCREEN},
     {"rule_id": "BRN-R33", "name": "audience profiles not set", "entity_type": "brand",
      "inputs": ["avatars", "objection_ladders"], "capability": "BRN-C10", "owner_screen": SCREEN},
+    {"rule_id": "BRN-R34", "name": "red lines without a reason", "entity_type": "brand",
+     "inputs": ["claims", "content", "learnings", "decisions", "visual"], "capability": "BRN-C08", "owner_screen": SCREEN},
 ]
 AUTONOMY = {"BRN-C12": "agent_does", "BRN-C07": "founder_gate", "BRN-C03": "agent_does",
             "CREA-C19": "agent_does", "CREA-C04": "agent_does", "BRN-C11": "agent_does", "CREA-C06": "agent_does",
-            "BRAND-C57": "agent_does", "CREA-C03": "agent_does", "BRN-C05": "founder_gate", "BRN-C01": "agent_does", "PROD-C46": "agent_does", "LOOP-C28": "agent_does", "LOOP-C27": "agent_does", "LOOP-C29": "agent_does", "PROP-C06": "agent_does", "CREA-C12": "agent_does", "LOOP-C22": "founder_gate", "BRN-C10": "agent_does"}
+            "BRAND-C57": "agent_does", "CREA-C03": "agent_does", "BRN-C05": "founder_gate", "BRN-C01": "agent_does", "PROD-C46": "agent_does", "LOOP-C28": "agent_does", "LOOP-C27": "agent_does", "LOOP-C29": "agent_does", "PROP-C06": "agent_does", "CREA-C12": "agent_does", "LOOP-C22": "founder_gate", "BRN-C10": "agent_does", "BRN-C08": "founder_gate"}
 
 _uspec = importlib.util.spec_from_file_location("brand_brain_assumptions", Path(__file__).resolve().parent / "assumptions.py")
 assumptions = importlib.util.module_from_spec(_uspec)
@@ -282,6 +288,9 @@ _lspec.loader.exec_module(legal)
 _pspec = importlib.util.spec_from_file_location("brand_brain_parity", Path(__file__).resolve().parent / "parity.py")
 parity = importlib.util.module_from_spec(_pspec)
 _pspec.loader.exec_module(parity)
+_rlspec = importlib.util.spec_from_file_location("brand_brain_redlines", Path(__file__).resolve().parent / "redlines.py")
+redlines = importlib.util.module_from_spec(_rlspec)
+_rlspec.loader.exec_module(redlines)
 _auspec = importlib.util.spec_from_file_location("brand_brain_audiences", Path(__file__).resolve().parent / "audiences.py")
 audiences = importlib.util.module_from_spec(_auspec)
 _auspec.loader.exec_module(audiences)
@@ -829,6 +838,18 @@ def rule_self_audit(brain: Brain, ends_on: str) -> list[dict]:
     return out
 
 
+def rule_redlines(brain: Brain, ends_on: str) -> list[dict]:
+    reg = redlines.register(brain)
+    n = reg["counts"]["without_reason"]
+    if not n:
+        return []
+    ev = [_row("red_lines_without_reason", n, "n", ends_on, None, 0, "claims"), _row("red_lines", reg["counts"]["total"], "n", ends_on, None, None, "claims")]
+    names = "; ".join(str(x["text"])[:40] for x in reg["lines"] if not x["why"] and x["editable"])[:160]
+    f = _finding("BRN-R34", "low", {"type": "brand", "id": "red_lines", "label": "red lines register"}, ev, f"{n} of {reg['counts']['total']} red lines have no reason on file: {names}.", [x["record"] for x in reg["lines"] if not x["why"]][:6], ends_on, 0.9)
+    f["redlines"] = {"without_reason": [{"record": x["record"], "text": x["text"], "kind": x["kind"]} for x in reg["lines"] if not x["why"] and x["editable"]][:10]}
+    return [f]
+
+
 def rule_audiences(brain: Brain, ends_on: str) -> list[dict]:
     a = audiences.profiles(brain, ladderproof)
     if not a["profiles"]:
@@ -941,7 +962,7 @@ def run(brand: str, window: dict | None = None, root: Path | None = None) -> lis
         bank = keeper.load_bank()
     except (OSError, ValueError, KeyError):
         bank = None
-    out = rule_stale(brain, ends_on) + rule_claims(brain, ends_on) + rule_competitor_gaps(brain, ends_on) + rule_angle_gaps(brain, ends_on) + rule_signals(brain, ends_on) + rule_weak_sections(brain, ends_on) + rule_conflicts(brain, ends_on) + rule_untiered_claims(brain, ends_on) + rule_site_changes(brain, ends_on) + rule_parity(brain, ends_on) + rule_contracts(brain, ends_on) + rule_legal(brain, ends_on) + rule_picked_ideas(brain, ends_on) + rule_ladder_proof(brain, ends_on) + rule_self_audit(brain, ends_on) + rule_peaks(brain, ends_on) + rule_visual(brain, ends_on) + rule_visibility(brain, ends_on) + rule_rejected_due(brain, ends_on) + rule_assets(brain, ends_on) + rule_consents(brain, ends_on) + rule_drift(brain, ends_on) + rule_audiences(brain, ends_on) + rule_permissions(brain, ends_on) + rule_snapshot_stale(brain, ends_on)
+    out = rule_stale(brain, ends_on) + rule_claims(brain, ends_on) + rule_competitor_gaps(brain, ends_on) + rule_angle_gaps(brain, ends_on) + rule_signals(brain, ends_on) + rule_weak_sections(brain, ends_on) + rule_conflicts(brain, ends_on) + rule_untiered_claims(brain, ends_on) + rule_site_changes(brain, ends_on) + rule_parity(brain, ends_on) + rule_contracts(brain, ends_on) + rule_legal(brain, ends_on) + rule_picked_ideas(brain, ends_on) + rule_ladder_proof(brain, ends_on) + rule_self_audit(brain, ends_on) + rule_peaks(brain, ends_on) + rule_visual(brain, ends_on) + rule_visibility(brain, ends_on) + rule_rejected_due(brain, ends_on) + rule_assets(brain, ends_on) + rule_consents(brain, ends_on) + rule_drift(brain, ends_on) + rule_audiences(brain, ends_on) + rule_redlines(brain, ends_on) + rule_permissions(brain, ends_on) + rule_snapshot_stale(brain, ends_on)
     if bank is None:
         for rid, sev in (("BRN-R02", "medium"), ("BRN-R03", "medium")):
             f = _finding(rid, sev, {"type": "brand", "id": "question_bank", "label": "question bank"},
