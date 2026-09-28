@@ -32,6 +32,9 @@ question, and accept or ignore on a proposed record. Nothing external.
   GET  conflicts                open and settled conflicts with the default winner named and who reads the field
   POST conflicts/<id>           {record_id | index | text, reason}: the founder decides; writes an approved founder
                                 record for the field, marks the conflict resolved, logs a decisions record
+  GET  questions                every open question ranked by weight times rooms unblocked, with the pull-first
+                                hint, the fields an answer fills and the screens it unblocks
+  POST questions/bank/<qid>     {answer}: answers a bank question with an approved founder record on its first field
   GET  records?section=<name>   one section's records with tier, date, source and evidence
   GET  audit                    findings from audit.py (app/contracts/audit.md shape)
   POST questions/<field>        {answer}: writes a founder record, marks the question answered
@@ -159,6 +162,76 @@ def _conflict_rows(brain: Brain) -> list[dict]:
 
 def conflicts(brain: Brain) -> list[dict]:
     return [c for c in _conflict_rows(brain) if c.get("status", "open") == "open"]
+
+
+ROOM_SCREEN = {"today": "00-today", "research": "01-market-research", "avatars": "02-customers-avatars", "competitors": "03-competitors",
+               "offers": "04-offers-pricing", "brand": "05-brand-brain", "store_health": "06-store-health", "cro": "07-landing-pages-cro",
+               "speed": "08-site-speed", "creative": "09-creative", "copy": "10-copy", "paid_social": "11-paid-social", "google_ads": "12-google-ads",
+               "affiliates": "13-affiliate-marketplace-ads", "email": "14-email-messaging", "cx": "15-customers-cx", "organic": "16-organic-content",
+               "seo": "17-seo", "answer_engines": "18-answer-engines", "supply": "19-supply-inventory", "marketplaces": "20-marketplaces",
+               "finance": "21-finance-cash", "measurement": "22-measurement", "team_ops": "23-team-ops", "security": "24-security",
+               "experiments": "25-experiments", "reports": "26-reports", "wild_bets": "27-wild-bets-pr", "orchestrator": "05-brand-brain"}
+
+
+def questions_ranked(brain: Brain) -> dict:
+    """Every open question in one list: the brain's own open_questions plus the bank questions no connected source answers.
+    Ranked by weight times rooms unblocked. Each carries the pull-first hint and the fields an answer fills."""
+    bank = keeper.load_bank()
+    try:
+        registry = keeper.load_registry()
+    except (OSError, ValueError, KeyError):
+        registry = {}
+    rooms_by_sec = {}
+    for q in bank:
+        for f in q["fills"]:
+            rooms_by_sec.setdefault(f.split(".")[0], set()).update(q["unblocks_rooms"])
+    out = []
+    for q in open_questions(brain, bank):
+        rooms = sorted(rooms_by_sec.get(q["section"], set()))
+        out.append({"id": q["id"], "kind": "brain", "field": q["field"], "question": q["question"], "why": q["why"], "section": q["section"],
+                    "fills": [f"{q['section']}.{q['field']}"], "rooms": rooms, "screens": sorted({ROOM_SCREEN.get(r, r) for r in rooms}),
+                    "weight": q["weight"], "importance": q["weight"] * max(1, len(rooms)), "connect": [],
+                    "hint": f"Only {q['who_can_answer'] or 'the founder'} can answer this. One line is enough; a proof link is better.",
+                    "who": q["who_can_answer"], "answered_on": q["answered_on"], "answer_record": q["answer_record"]})
+    for a in keeper.ask(brain, n=50, bank=bank, registry=registry):
+        rooms = a["rooms"]
+        connect = [{"id": s, "name": registry.get(s, {}).get("name", s), "category": registry.get(s, {}).get("category")} for s in a["connect"]]
+        first = a["fills"][0]
+        sec = first.split(".")[0]
+        out.append({"id": a["id"], "kind": "bank", "field": first.split(".", 1)[1] if "." in first else f"founder_{a['id'].split('.')[-1]}",
+                    "question": a["asks"], "why": a["why"], "section": sec, "fills": a["fills"], "rooms": rooms,
+                    "screens": sorted({ROOM_SCREEN.get(r, r) for r in rooms}), "weight": a["weight"], "importance": a["importance"],
+                    "connect": connect, "hint": (f"Pull first: connect {' or '.join(c['name'] for c in connect[:3])} in Setup and this answers itself. Or answer in a line." if connect else "No source answers this. Answer in a line."),
+                    "who": "the founder", "answered_on": None, "answer_record": None})
+    out.sort(key=lambda q: (bool(q["answered_on"]), -q["importance"], -q["weight"], q["id"]))
+    open_n = sum(1 for q in out if not q["answered_on"])
+    return {"questions": out, "counts": {"open": open_n, "answered": len(out) - open_n, "round_due": open_n >= QUESTION_ROUND_AT,
+                                          "rooms_blocked": len({r for q in out if not q["answered_on"] for r in q["rooms"]}),
+                                          "connect_first": sum(1 for q in out if not q["answered_on"] and q["connect"])},
+            "top": [q for q in out if not q["answered_on"]][:5], "round_at": QUESTION_ROUND_AT}
+
+
+def answer_bank(brain: Brain, qid: str, body: dict):
+    text = str((body or {}).get("answer") or "").strip()
+    if not text:
+        return 400, {"error": "answer is empty"}
+    bank = keeper.load_bank()
+    q = next((x for x in bank if x["id"] == qid), None)
+    if q is None:
+        return 404, {"error": "no such bank question", "id": qid}
+    first = q["fills"][0]
+    section = first.split(".")[0]
+    field = first.split(".", 1)[1] if "." in first else f"founder_{qid.split('.')[-1]}"
+    if section not in SECTIONS or not re.fullmatch(r"[a-z0-9_]{1,60}", field):
+        return 400, {"error": "question fills no writable field", "fills": q["fills"]}
+    rid = f"{brain.brand}.{section}.{field}"
+    rec = {"id": rid, "brand": brain.brand, "section": section, "field": field, "value": _coerce(text), "text": text,
+           "tier": "approved", "confidence": 1.0, "visibility": "private",
+           "source": {"type": "founder", "ref": f"05-brand-brain answer to {qid}", "captured_at": brain.today.isoformat()}}
+    errs = founder_put(brain, rec)
+    if errs:
+        return 400, {"error": "record not valid", "details": errs}
+    return 201, {"ok": True, "record": rid, "question": qid, "also_fills": q["fills"][1:], "unblocks": sorted(q["unblocks_rooms"]), "version": brain.version()}
 
 
 DEFAULT_WINNER = ("founder", "connector", "site", "document", "ad_library", "interview", "press", "review", "ticket", "agent", "inferred")
@@ -616,6 +689,12 @@ def handle(req):
         ends = (brain.today - dt.timedelta(days=1)).isoformat()
         findings = audit.run(brain.brand, {"ends_on": ends, "days": 1, "trailing": 0}, BRAIN_ROOT)
         return {"findings": findings, "rules": audit.RULES, "brain_version": brain.version()}
+    if req.method == "GET" and parts == ["questions"]:
+        qv = questions_ranked(brain)
+        qv.update(brand=brain.brand, today=brain.today.isoformat(), version=brain.version())
+        return qv
+    if req.method == "POST" and len(parts) == 3 and parts[:2] == ["questions", "bank"]:
+        return answer_bank(brain, parts[2], req.body)
     if req.method == "POST" and len(parts) == 2 and parts[0] == "questions":
         return answer(brain, parts[1], req.body)
     if req.method == "POST" and len(parts) == 2 and parts[0] == "review":

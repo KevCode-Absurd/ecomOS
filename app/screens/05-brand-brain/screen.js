@@ -559,14 +559,17 @@
     return card;
   }
 
+  // ---------- 5e. open questions, ranked ----------
   function questionCard(q, reload) {
-    const card = el('article', { class: 'card flat rec' });
-    card.append(el('div', { class: 'meta' }, el('span', { class: 'chip mono', text: q.field }), el('span', { class: 'chip', text: pretty(q.section) }),
-      el('span', { class: 'chip ' + (q.weight >= 8 ? 'bad' : ''), text: 'weight ' + q.weight }),
+    const card = el('article', { class: 'card flat rec question' + (q.answered_on ? ' settled' : '') });
+    card.append(el('div', { class: 'meta' }, el('span', { class: 'chip ' + (q.weight >= 8 ? 'bad' : ''), text: 'weight ' + q.weight }),
+      el('span', { class: 'chip accent', text: 'unblocks ' + q.rooms.length + ' rooms' }), el('span', { class: 'chip mono', text: q.fills[0] }),
+      q.kind === 'bank' && q.connect.length ? el('span', { class: 'chip', text: 'pull first' }) : null,
       q.answered_on ? el('span', { class: 'chip good', text: 'answered ' + fmt.date(q.answered_on) }) : null));
-    card.append(el('div', { text: q.question }));
-    if (q.why) card.append(el('div', { class: 'muted small', text: q.why }));
-    if (q.who_can_answer) card.append(el('div', { class: 'muted small', text: 'Who can answer: ' + q.who_can_answer }));
+    card.append(el('div', { class: 'q' , text: q.question }));
+    if (q.why) card.append(el('div', { class: 'muted small', text: q.why[0].toUpperCase() + q.why.slice(1) + '.' }));
+    card.append(el('div', { class: 'small', text: q.hint }));
+    card.append(el('div', { class: 'row rooms' }, el('span', { class: 'micro faint', text: 'Unblocks:' }), ...q.screens.map((sc) => el('a', { class: 'chip mono', href: '/screens/' + sc + '/', target: '_blank', rel: 'noopener', text: sc }))));
     if (q.answered_on) { card.append(el('div', { class: 'muted small', text: 'Saved as ' + q.answer_record })); return card; }
     const input = el('input', { type: 'text', placeholder: 'Your answer in a line', 'aria-label': 'Answer: ' + q.question });
     const btn = el('button', { class: 'btn primary sm', type: 'button', text: 'Save answer' });
@@ -575,13 +578,32 @@
       if (!input.value.trim()) { status.textContent = 'Type an answer first.'; return; }
       btn.disabled = true;
       try {
-        const res = await api(BASE + 'questions/' + encodeURIComponent(q.field), { method: 'POST', body: { answer: input.value } });
-        status.textContent = 'Saved as ' + res.record + '.';
+        const url = q.kind === 'bank' ? BASE + 'questions/bank/' + encodeURIComponent(q.id) : BASE + 'questions/' + encodeURIComponent(q.field);
+        const res = await api(url, { method: 'POST', body: { answer: input.value } });
+        status.textContent = 'Saved as ' + res.record + (res.unblocks ? '. Unblocks ' + res.unblocks.map(pretty).join(', ') : '') + '.';
         reload();
       } catch (e) { btn.disabled = false; status.textContent = 'Could not save: ' + e.message; }
     });
     card.append(el('div', { class: 'answer' }, input, btn), status);
     return card;
+  }
+  async function loadQuestions() {
+    let qv;
+    try { qv = await api(BASE + 'questions'); } catch (e) { mount('#questions', el('p', { class: 'muted', text: 'Questions unavailable: ' + e.message })); return; }
+    mount('#questions-tools', UI.orientation([
+      { label: 'open', value: qv.counts.open, unit: 'n', tone: qv.counts.round_due ? 'bad' : null, title: 'a founder round is due at ' + qv.round_at },
+      { label: 'answer by connecting', value: qv.counts.connect_first, unit: 'n' }, { label: 'rooms blocked', value: qv.counts.rooms_blocked, unit: 'n' }, { label: 'answered', value: qv.counts.answered, unit: 'n', tone: 'good' }]));
+    const open = qv.questions.filter((q) => !q.answered_on);
+    const done = qv.questions.filter((q) => q.answered_on);
+    const items = open.map((q) => questionCard(q, loadQuestions));
+    if (!open.length) items.push(el('p', { class: 'muted', text: 'Nothing waits on you. The next pull or audit may add a question.' }));
+    if (done.length) {
+      const list = el('div', { class: 'grid', hidden: true });
+      const btn = el('button', { class: 'btn sm', type: 'button', text: 'Show ' + done.length + ' answered' });
+      btn.addEventListener('click', () => { list.hidden = !list.hidden; btn.textContent = list.hidden ? 'Show ' + done.length + ' answered' : 'Hide answered'; if (!list.hidden && !list.children.length) mount(list, ...done.map((q) => questionCard(q, loadQuestions))); });
+      items.push(el('div', { class: 'row' }, btn), list);
+    }
+    mount('#questions', ...items);
   }
 
   function reviewCard(r, reload) {
@@ -683,7 +705,6 @@
     mount('#insights', ...(d.insights.length ? d.insights.map((i) => UI.insight(Object.assign({ screen: SCREEN }, i)))
       : [el('p', { class: 'muted', text: 'No rule fired today.' })]));
     mount('#ladders', ...d.ladders.map(ladderCard));
-    mount('#questions', ...(d.questions.length ? d.questions.map((q) => questionCard(q, loadDesk)) : [el('p', { class: 'muted', text: 'No open questions.' })]));
     mount('#review', ...(d.review.length ? d.review.map((r) => reviewCard(r, loadDesk)) : [el('p', { class: 'muted', text: 'Nothing proposed. Agent updates land here before they reach the brain.' })]));
     try {
       const a = await api(BASE + 'audit');
@@ -697,6 +718,7 @@
     loadMarket();
     loadHealth();
     loadConflicts();
+    loadQuestions();
     const [prof] = await Promise.all([loadProfile(), loadDesk()]);
     await loadPlan(prof);
   }

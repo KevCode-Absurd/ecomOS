@@ -598,3 +598,34 @@ class Round1Conflicts(TempBrain):
         lane = json.loads((self.tmp / 'bombas' / 'raw' / 'z-founder' / 'positioning.json').read_text(encoding='utf-8'))
         self.assertEqual(lane[-1]['id'], 'bombas.positioning.frame')
         self.assertEqual(lane[-1]['tier'], 'approved')
+
+
+class Round1Questions(TempBrain):
+    """Round 1 feature 7: every open question ranked by weight times rooms unblocked, pull-first hints, inline answers."""
+
+    def test_ranked_list_merges_brain_and_bank(self):
+        qv = api.handle(Req(['questions']))
+        kinds = {q['kind'] for q in qv['questions']}
+        self.assertEqual(kinds, {'brain', 'bank'})
+        imp = [q['importance'] for q in qv['questions'] if not q['answered_on']]
+        self.assertEqual(imp, sorted(imp, reverse=True))
+        self.assertEqual(qv['top'][0]['id'], 'q.economics.gross_margin')
+        self.assertTrue(qv['top'][0]['connect'])
+        self.assertIn('Pull first', qv['top'][0]['hint'])
+        self.assertIn('21-finance-cash', qv['top'][0]['screens'])
+        self.assertEqual(len(qv['top']), 5)
+        self.assertTrue(qv['counts']['round_due'])
+        ladder = next(q for q in qv['questions'] if q['kind'] == 'brain')
+        self.assertEqual(ladder['section'], 'objection_ladders')
+        self.assertIn('05-brand-brain', ladder['screens'])
+
+    def test_bank_answer_writes_founder_record_and_drops_the_question(self):
+        status, res = api.handle(Req(['questions', 'bank', 'q.economics.gross_margin'], 'POST', body={'answer': '58%'}))
+        self.assertEqual((status, res['record']), (201, 'bombas.economics.gross_margin_pct'))
+        rec = next(r for r in self.section('economics') if r['id'] == res['record'])
+        self.assertEqual((rec['value'], rec['tier'], rec['source']['type']), (58.0, 'approved', 'founder'))
+        self.assertIn('finance', res['unblocks'])
+        ids = {q['id'] for q in api.handle(Req(['questions']))['questions']}
+        self.assertNotIn('q.economics.gross_margin', ids)
+        self.assertEqual(api.handle(Req(['questions', 'bank', 'q.nope'], 'POST', body={'answer': 'x'}))[0], 404)
+        self.assertEqual(api.handle(Req(['questions', 'bank', 'q.claims.approved'], 'POST', body={'answer': ' '}))[0], 400)
