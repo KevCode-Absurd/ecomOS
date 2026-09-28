@@ -1056,8 +1056,8 @@ def build(f, rd, ctx, nr):
     return fn(f, a, ctx) if fn else a
 
 
-def ends_on(brand, window):
-    last = audit.last_full_day(None, brand)
+def ends_on(brand, window, data=None):
+    last = audit.last_full_day(data, brand)
     want = (window or {}).get('ends_on')
     if want:
         want = date.fromisoformat(str(want)[:10])
@@ -1065,13 +1065,15 @@ def ends_on(brand, window):
     return last
 
 
-def rank(brand='bombas', window=None):
-    end = ends_on(brand, window)
+def rank(brand='bombas', window=None, data=None):
+    """Ranked actions for a brand folder, or for a data source with no folder (the sample brand): data is then
+    the server's Data and brand is None. Structure is fixed; content is the brand's (depth.md section 8)."""
+    end = ends_on(brand, window, data)
     w = {'ends_on': end.isoformat(), 'days': audit.WINDOW}
-    findings = audit.run(brand, w)
-    rd = audit.Reader(None, brand, end)
+    findings = audit.run(brand, w, data=data)
+    rd = audit.Reader(data, brand, end)
     ctx = Ctx(rd)
-    nr = RANK.net_revenue_28d(brand, w)
+    nr = RANK.net_revenue_28d(brand, w) if brand else None
     actions = [build(f, rd, ctx, nr) for f in findings if f.get('status') in ('open', 'unavailable', None)]
     actions = merge_connect(merge_gifting(merge_red_line(merge_ladder(actions, ctx)), ctx))
     actions = merge_into(merge_into(actions, 'OFFER-R05', 'OFFER-R01'), 'OFFER-R06', 'OFFER-R01')

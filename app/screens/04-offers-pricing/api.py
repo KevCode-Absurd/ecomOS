@@ -276,41 +276,32 @@ def orientation(rd, th):
     ]
 
 
+DESK_KEYS = ('objections', 'returns', 'ladder', 'first_order', 'waterfalls', 'calendar', 'gifting', 'guarantee', 'position',
+             'parity', 'discipline', 'cart', 'tests', 'depth', 'cohorts', 'costs', 'registry', 'referral', 'loyalty',
+             'subscription')
+
+
 def overview(data, brand):
     ends_on = audit.last_full_day(data, brand)
     rd = audit.Reader(data, brand, ends_on)
     b = rd.source.brand
     head = {'brand': b.get('brand'), 'name': b.get('name'), 'as_of': b.get('as_of'),
             'simulated': bool(b.get('simulated') or b.get('fictional')), 'market': b.get('market')}
-    if brand:
-        ranked = actions.rank(brand, {'ends_on': ends_on.isoformat()})
-        findings, plan = ranked['findings'], ranked['actions']
-        objections, returns, lad = ranked['objections'], ranked['returns'], ranked['ladder']
-        first, falls, cal, gift = ranked['first_order'], ranked['waterfalls'], ranked['calendar'], ranked['gifting']
-        guar, pos, par, disc = ranked['guarantee'], ranked['position'], ranked['parity'], ranked['discipline']
-        cart, tests, depth, coh = ranked['cart'], ranked['tests'], ranked['depth'], ranked['cohorts']
-        costs, reg, refl, loy = ranked['costs'], ranked['registry'], ranked['referral'], ranked['loyalty']
-        sub = ranked['subscription']
-    else:
-        findings, plan = audit.run(brand, {'ends_on': ends_on.isoformat()}, data=data), []
-        objections, returns = [], {'unavailable': True, 'reason': 'no brand folder', 'groups': []}
-        lad = ladder(rd)
-        first, falls, cal, gift, guar = {'unavailable': True, 'reason': 'no brand folder'}, [], [], None, None
-        pos = par = disc = cart = None
-        tests, depth, coh, costs, reg, refl, loy, sub = [], None, None, None, None, None, None, None
+    # one path for every brand: a brand folder, or a data source with no folder (the sample brand)
+    ranked = actions.rank(brand, {'ends_on': ends_on.isoformat()}, data=None if brand else data)
+    desk = {k: ranked[k] for k in DESK_KEYS}
     months = discount_months(rd)
     th = threshold(rd)
     return {'brand': head, 'window': {'ends_on': ends_on.isoformat(), 'days': audit.WINDOW},
-            'orientation': orientation(rd, th), 'plan': plan,
-            'stack': offer_stack(rd), 'threshold': th, 'bfcm': bfcm(rd), 'ladder': lad, 'first_order': first, 'waterfalls': falls, 'calendar': cal, 'gifting': gift, 'guarantee': guar, 'position': pos, 'parity': par, 'discipline': disc, 'cart': cart, 'tests': tests, 'depth': depth, 'cohorts': coh, 'costs': costs, 'registry': reg, 'referral': refl, 'loyalty': loy, 'subscription': sub,
-            'objections': objections, 'returns': returns, 'creep': creep_rule(months), 'chart': chart(months),
-            'findings': findings, 'rules': audit.RULES}
+            'orientation': orientation(rd, th), 'plan': ranked['actions'],
+            'stack': offer_stack(rd), 'threshold': th, 'bfcm': bfcm(rd), **desk,
+            'creep': creep_rule(months), 'chart': chart(months), 'findings': ranked['findings'], 'rules': audit.RULES}
 
 
 def rank(brand='bombas', window=None):
     """Ranked actions for app/rank.py and the master list (depth.md section 5)."""
     out = actions.rank(brand, window)
-    for k in ('findings', 'objections', 'returns', 'ladder', 'first_order', 'waterfalls', 'calendar', 'gifting', 'guarantee', 'position', 'parity', 'discipline', 'cart', 'tests', 'depth', 'cohorts', 'costs', 'registry', 'referral', 'loyalty', 'subscription'):
+    for k in ('findings',) + DESK_KEYS:
         out.pop(k, None)
     return out
 

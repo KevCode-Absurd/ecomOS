@@ -159,7 +159,9 @@ class BombasTest(unittest.TestCase):
         d = api.handle(req)
         self.assertIsNone(d['threshold']['threshold'])
         self.assertTrue(d['threshold']['reason'])
-        self.assertEqual(d['plan'], [])
+        rank_mod = load('ecomos_rank', ROOT / 'app' / 'rank.py')
+        for a in d['plan']:
+            self.assertEqual(rank_mod.validate_action(a), [])   # same structure for a brand with no folder
         o = {x['label']: x for x in d['orientation']}
         self.assertIsNone(o['free shipping from']['value'])
 
@@ -1046,6 +1048,29 @@ class DepthRulesTest(unittest.TestCase):
         js = (SCREEN / 'screen.js').read_text(encoding='utf-8')
         for t in re.findall(r"const head = \{ title: '([^']+)'", js):
             self.assertTrue(t.endswith('?') or t.split()[0] in ('Should',) or '?' in t, t)
+
+
+class PlugAndPlayTest(unittest.TestCase):
+    """Round 3 feature 7: depth.md rule 11, the same screen for a second brand (the sample brand, no brain folder)."""
+
+    def test_sample_brand_plan(self):
+        sys.path.insert(0, str(ROOT / 'app'))
+        import server
+        req = Req(['overview'], brand='sample')
+        req.data = server.Data()
+        d = api.handle(req)
+        for k in api.DESK_KEYS:
+            self.assertIn(k, d)
+        covered = {fid for a in d['plan'] for fid in a['finding_ids']}
+        for f in d['findings']:
+            if f['status'] in ('open', 'unavailable'):
+                self.assertIn(f['id'], covered)
+        self.assertTrue(any(a['status'] == 'unavailable' for a in d['plan']))   # missing sources show as connect moves
+        self.assertFalse(d['brand']['name'] == 'Bombas')
+        reg = d['registry']
+        if not reg['unavailable']:
+            for e in reg['entries']:
+                self.assertIn(e['status'], ('running', 'done', 'parked', 'proposed', None))
 
 
 if __name__ == '__main__':

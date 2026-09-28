@@ -1007,13 +1007,23 @@ def registry(rd, surface_rules, price_words):
         return {'unavailable': True, 'reason': 'no experiment registry for this brand', 'entries': [], 'elasticity': None}
     out = []
     for e in rows:
-        text = ' '.join([str(e.get('hypothesis') or ''), json.dumps(e.get('variant') or {}), ' '.join(e.get('audience') or [])]).lower()
+        # two shapes exist: events.md (metric dict, start, read_point, end, result dict) and the older seed
+        # (metric string, started_at, ended_at, status won or lost, result text); read both, invent nothing
+        metric = e.get('metric')
+        metric = metric.get('name') if isinstance(metric, dict) else metric
+        result = e.get('result')
+        if isinstance(result, str):
+            result = {'note': result, 'lift': None, 'direction': None, 'read_on': e.get('ended_at')}
+        status = e.get('status')
+        status = 'done' if status in ('won', 'lost', 'done', 'inconclusive') else status
+        variant = e.get('variant') if isinstance(e.get('variant'), dict) else {}
+        text = ' '.join([str(e.get('name') or ''), str(e.get('hypothesis') or ''), json.dumps(variant), ' '.join(e.get('audience') or [])]).lower()
         surface = next((sf for words, sf in surface_rules if all(w in text for w in words)), None)
-        until = e.get('end') or e.get('read_point')
-        out.append({'id': e.get('id'), 'hypothesis': e.get('hypothesis'), 'status': e.get('status'), 'surface': surface,
-                    'start': e.get('start'), 'until': until, 'metric': (e.get('metric') or {}).get('name'),
-                    'result': e.get('result'), 'brain_refs': e.get('brain_refs') or [], 'variant': e.get('variant'),
-                    'price_test': any(w in text for w in price_words) or bool(re.search(r'\$\d', json.dumps(e.get('variant') or {})))})
+        until = e.get('end') or e.get('ended_at') or e.get('read_point')
+        out.append({'id': e.get('id'), 'hypothesis': e.get('hypothesis') or e.get('name'), 'status': status, 'surface': surface,
+                    'start': e.get('start') or e.get('started_at'), 'until': until, 'metric': metric,
+                    'result': result, 'learning': e.get('learning'), 'brain_refs': e.get('brain_refs') or [], 'variant': variant,
+                    'price_test': any(w in text for w in price_words) or bool(re.search(r'\$\d', json.dumps(variant)))})
     price = [e for e in out if e['price_test'] and e['status'] == 'done' and (e['result'] or {}).get('lift') is not None]
     elasticity = ({'tests': [e['id'] for e in price], 'reads': [{'id': e['id'], 'lift': e['result']['lift'], 'metric': e['metric']} for e in price]}
                   if price else None)
