@@ -159,7 +159,7 @@ Sources: the 5 things no tool does (`WEB-PASS.md`): rejected ideas with a reason
 | # | Feature | Status | What a founder can do |
 |---|---|---|---|
 | 5.1 | Rejected ideas with a reason and a review date (`POST bottlenecks/reject`, `POST bottlenecks/unreject`): Reject writes a learnings record with the reason and a review date (90 days by default); the idea leaves the unlocks and agents read the learnings before proposing; after the review date it returns flagged with the reason, and rule BRN-R29 puts the review on the master list (keep it out or bring it back); Bring back retires the rejection, never deletes it | done | Stop the same idea coming back every week, without losing why you said no |
-| 5.2 | Competitor moves scored against the bottleneck | todo | |
+| 5.2 | Competitor moves scored against our bottleneck (`moves.py`, `GET moves`): every competitor signal in the brain (angle gaps, format and hook gaps, names Reddit recommends instead, frames we do not carry, contested angles, untracked names) matched to the diagnosis's bottlenecks by words and scored in code (fit by bottleneck rank times 10, plus evidence capped at 10); each counter-proposal carries match, hold and counter in plain words and links to the master-list action it lands on, with the decision row; moves touching no bottleneck are watch items | done | See which competitor moves hit the bottleneck that matters, with 3 responses each, and decide once on the master list |
 | 5.3 | Channel rule sets the founder edits | todo | |
 | 5.4 | Review first: one route for any draft | todo | |
 | 5.5 | The brain file agents read | todo | |

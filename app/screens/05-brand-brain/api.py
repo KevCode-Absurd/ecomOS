@@ -179,6 +179,9 @@ _pspec.loader.exec_module(parity)
 _sspec = importlib.util.spec_from_file_location("brand_brain_sitediff", HERE / "sitediff.py")
 sitediff = importlib.util.module_from_spec(_sspec)
 _sspec.loader.exec_module(sitediff)
+_mvspec = importlib.util.spec_from_file_location("brand_brain_moves", HERE / "moves.py")
+moves = importlib.util.module_from_spec(_mvspec)
+_mvspec.loader.exec_module(moves)
 _vbspec = importlib.util.spec_from_file_location("brand_brain_visibility", HERE / "visibility.py")
 visibility = importlib.util.module_from_spec(_vbspec)
 _vbspec.loader.exec_module(visibility)
@@ -1556,6 +1559,28 @@ def handle(req):
         return bottlenecks_view(brain, _window(req, brain))
     if req.method == "POST" and parts == ["bottlenecks", "pick"]:
         return idea_pick(brain, req.body)
+    if req.method == "GET" and parts == ["moves"]:
+        window = _window(req, brain)
+        try:
+            actions = rank_mod.master(brain.brand, window)["actions"]
+        except Exception:  # noqa: BLE001
+            actions = rank(brain.brand, window)["actions"]
+        d = bottlenecks.diagnosis(brain)
+        try:
+            cov = market.coverage(brain)
+        except Exception:  # noqa: BLE001
+            cov = {"gaps": [], "contested": []}
+        try:
+            gp = market.gaps(brain)
+        except Exception:  # noqa: BLE001
+            gp = []
+        try:
+            sg = market.signals(brain)
+        except Exception:  # noqa: BLE001
+            sg = {}
+        out = moves.counter_proposals(brain, d["bottlenecks"], cov, gp if isinstance(gp, list) else (gp.get("gaps") or []), sg, actions)
+        out.update(brand=brain.brand, today=brain.today.isoformat(), bottlenecks=[{"key": b["key"], "theme": b["theme"], "rank": b["rank"]} for b in d["bottlenecks"]], capability={"id": "BRN-C11", "autonomy": "agent_does"})
+        return out
     if req.method == "POST" and parts == ["bottlenecks", "reject"]:
         body = req.body or {}
         idea_id = str(body.get("idea_id") or "").strip().upper()

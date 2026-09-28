@@ -59,6 +59,7 @@
     loadChanges();
     loadReport();
     loadUnlocks();
+    loadMoves();
     loadLadderProof(m.actions || []);
     loadSelfAudit(m.actions || []);
     loadPeaks(m.actions || []);
@@ -491,6 +492,29 @@
     // attach the undo buttons after the kit renders the rows
     Array.from(tl.querySelectorAll('.tl')).forEach((row, i) => { const it = items[i]; if (it && it.extra) row.lastChild.append(el('div', { style: { marginTop: '4px' } }, it.extra)); });
     mount('#decisions', filters, tl, items.length > 30 ? el('div', { class: 'micro faint', text: (items.length - 30) + ' older entries not shown.' }) : null, el('p', { class: 'micro faint', text: d.note }));
+  }
+
+  // ---------- 1b. competitor moves against the bottleneck ----------
+  function movePanel(r) {
+    const body = el('div', { class: 'stack' });
+    body.append(el('div', { class: 'row' }, el('span', { class: 'chip', text: pretty(r.kind) }), r.bottleneck_theme ? el('span', { class: 'chip warn', text: 'against ' + pretty(r.bottleneck_theme) }) : el('span', { class: 'chip', text: 'no bottleneck: watch' }), el('span', { class: 'chip', text: 'score ' + r.score }), ...(r.who || []).slice(0, 4).map((w) => el('span', { class: 'chip mono', text: w }))));
+    body.append(el('div', { text: r.label }));
+    body.append(el('div', { class: 'stack' }, ...['match', 'hold', 'counter'].map((k) => el('div', { class: 'card flat small' }, el('b', { text: k.charAt(0).toUpperCase() + k.slice(1) + ': ' }), r.options[k]))));
+    if (r.action) body.append(el('div', { class: 'row' }, el('span', { class: 'small' }, el('b', { text: 'On the master list: ' }), r.action.title + ' (' + pretty(r.action.owner) + ', ' + (r.action.total == null ? NA : r.action.total) + '/100)'), UI.decisionRow({ capability: r.action.capability || 'BRN-C11', autonomy: 'agent_does', owner: r.action.owner, screen: SCREEN, compact: true, finding_id: r.action.id, current: r.action.decision, stub: r.action.title + '. Deciding here is deciding on the master list.' })));
+    else body.append(el('div', { class: 'micro faint', text: 'No master-list action for this move yet; it is a signal to read, not work to approve.' }));
+    UI.panel({ title: 'Counter-proposal: ' + pretty(r.key), body });
+  }
+  async function loadMoves() {
+    let m;
+    try { m = await api(BASE + 'moves'); } catch (e) { mount('#moves', el('p', { class: 'muted', text: 'Moves unavailable: ' + e.message })); return; }
+    const c = m.counts;
+    mount('#moves-tools', UI.orientation([{ label: 'moves', value: c.moves, unit: 'n' }, { label: 'against a bottleneck', value: c.against_bottleneck, unit: 'n', tone: c.against_bottleneck ? 'bad' : 'good' }, { label: 'with an action', value: c.with_action, unit: 'n' }, { label: 'watch', value: c.watch, unit: 'n' }]));
+    const rows = (list) => UI.verdictTable({
+      columns: [{ key: 'label', label: 'Move' }, { key: 'bottleneck', label: 'Against', format: (v) => v ? pretty(v) : 'none' }, { key: 'score', label: 'Score', num: true }, { key: 'evidence', label: 'Evidence', num: true }, { key: 'action', label: 'Master list', format: (v) => v ? v.title : 'no action yet' }],
+      verdict: { at: 1, kind: (x) => x.fit >= 3 ? 'fix' : x.fit ? 'watch' : 'wait', text: (x) => x.fit >= 3 ? 'Counter now' : x.fit ? 'Counter' : 'Watch', reason: (x) => 'fit ' + x.fit + ' (' + (x.overlap || []).join(', ') + '), evidence ' + x.evidence },
+      rows: list.map((r) => Object.assign({}, r, { bottleneck: r.bottleneck_theme })), sort: false, empty: 'Nothing here.', onRow: movePanel, actions: { label: 'Options', onClick: movePanel },
+    });
+    mount('#moves', UI.tabs({ items: [{ key: 'counter', label: 'Counter-proposals', n: c.against_bottleneck, panel: rows(m.counter_proposals) }, { key: 'watch', label: 'Watch', n: c.watch, panel: rows(m.watch) }] }), el('p', { class: 'micro faint', text: m.scoring + '. ' + m.note }));
   }
 
   // ---------- 1a. bottlenecks and unlocks ----------

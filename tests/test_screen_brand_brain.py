@@ -1912,10 +1912,36 @@ class Round5Rejected(TempBrain):
         self.assertEqual(api.handle(Req(['bottlenecks', 'unreject'], 'POST', body={'idea_id': idea}))[0], 404)
 
 
+class Round5Moves(TempBrain):
+    """Round 5 feature 2: competitor moves matched to the bottlenecks by words, scored in code, linked to the master-list action."""
+
+    def test_counter_proposals_ranked_and_linked(self):
+        m = api.handle(Req(['moves']))
+        self.assertEqual(m['counts']['moves'], len(m['counter_proposals']) + len(m['watch']))
+        self.assertTrue(m['counter_proposals'])
+        top = m['counter_proposals'][0]
+        self.assertEqual(top['score'], max(r['score'] for r in m['counter_proposals']))
+        self.assertTrue(all(r['fit'] >= 1 and r['bottleneck'] for r in m['counter_proposals']))
+        self.assertTrue(all(r['fit'] == 0 and r['bottleneck'] is None for r in m['watch']))
+        self.assertTrue(all(set(r['options']) == {'match', 'hold', 'counter'} for r in m['counter_proposals'] + m['watch']))
+        dur = next(r for r in m['counter_proposals'] if r['kind'] == 'angle_gap' and r['key'] == 'durability')
+        self.assertEqual((dur['bottleneck'], dur['fit'], dur['score']), ('bottleneck_1', 3, 30 + min(10, dur['evidence'])))
+        self.assertTrue(dur['action'] and dur['action']['id'].endswith('.BRN-R08.angle_durability'))
+        rec = next(r for r in m['counter_proposals'] if r['kind'] == 'recommended_instead' and r['key'] == 'darn_tough')
+        self.assertTrue(rec['action'] and 'Darn Tough' in rec['action']['title'])
+        self.assertEqual(m['counts']['with_action'], sum(1 for r in m['counter_proposals'] if r['action']))
+        self.assertEqual([b['rank'] for b in m['bottlenecks']], [1, 2, 3])
+
+    def test_example_brand_reads_no_moves(self):
+        shutil.copytree(BRAIN / 'example', self.tmp / 'example')
+        m = api.handle(Req(['moves'], query={'brand': ['example']}))
+        self.assertEqual(m['counts'], {'moves': 0, 'against_bottleneck': 0, 'watch': 0, 'with_action': 0})
+
+
 class Round4SecondBrand(unittest.TestCase):
     """Round 4 feature 2: plug and play. Every route answers for the example brain (7 records), unavailable never zero."""
 
-    ROUTES = [['overview'], ['master'], ['profile'], ['documents'], ['competitors'], ['coverage'], ['signals'], ['health'], ['conflicts'], ['questions'], ['ladders', 'proof'], ['selfaudit'], ['peaks'], ['visual'], ['newbrand'], ['visibility'],
+    ROUTES = [['overview'], ['master'], ['profile'], ['documents'], ['competitors'], ['coverage'], ['signals'], ['health'], ['conflicts'], ['questions'], ['ladders', 'proof'], ['selfaudit'], ['peaks'], ['visual'], ['newbrand'], ['visibility'], ['moves'],
               ['decisions'], ['flows'], ['claims'], ['site', 'diff'], ['parity'], ['contracts'], ['legal'], ['voice'], ['battlecards'], ['permissions'],
               ['export'], ['assumptions'], ['facts'], ['summaries'], ['changes'], ['learn'], ['report'], ['digest'], ['review'], ['bottlenecks'], ['audit']]
 
