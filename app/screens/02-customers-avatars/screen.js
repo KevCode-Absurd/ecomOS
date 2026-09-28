@@ -391,6 +391,20 @@
       thin.length ? UI.actionCard(widen, { compact: true, screen: SLUG }) : null);
   }
 
+  // ---------- desk: price doubts ----------
+  function renderPrice(x) {
+    const f = x.facts || {};
+    document.getElementById('price-sub').textContent = 'Share of each avatar\'s one-star mentions that sit on price rungs. Price-led: 30 percent or more. Facts from the brain offers and products; per-pair price by pack is unavailable until pack prices are in the brain. ' + x.line;
+    mount('#price-tools', UI.orientation([
+      { label: 'free shipping from', value: f.free_shipping_at, unit: '$' }, { label: 'lowest single pair', value: f.lowest_single, unit: '$' },
+      { label: 'shipping on one pair', value: f.shipping_on_one_pair, unit: '%' }, { label: 'pairs to free shipping', value: f.pairs_to_free_shipping, unit: 'n' }]));
+    mount('#price', UI.verdictTable({
+      columns: [{ key: 'name', label: 'Avatar' }, { key: 'price_share', label: 'Price share of one-star', unit: '%' }, { key: 'price_one_star', label: 'Price one-star', unit: 'n' }, { key: 'one_star', label: 'All one-star', unit: 'n' }],
+      rows: x.rows.map((r) => Object.assign({}, r, { actions: r.action ? [{ label: 'Brief it', onClick: () => briefPanel(r.action) }] : [{ label: 'Not price-led', cls: 'quiet', onClick: () => {} }] })),
+      verdict: { at: 1, kind: (r) => r.verdict === 'price_led' ? 'fix' : 'keep', text: (r) => r.verdict === 'price_led' ? 'Price-led' : 'Other' }, actions: { label: 'Do' }, sort: false,
+    }));
+  }
+
   // ---------- desk: re-check calendar ----------
   function renderRechecks(x) {
     document.getElementById('recheck-sub').textContent = 'Each avatar and ladder record stops being trusted on its expiry date. Due: within 30 days. ' + x.line +
@@ -924,7 +938,7 @@
   const DESK = [
     { key: 'avatars', label: 'Avatars', ids: ['focus-wrap', 'avatars-wrap', 'voiceads-wrap', 'split-wrap', 'gate-wrap', 'recheck-wrap', 'forces-wrap', 'survey-wrap', 'served-wrap', 'market-wrap', 'returns-wrap', 'misread-wrap'] },
     { key: 'doubts', label: 'Doubts and words', ids: ['ladders-wrap', 'cover-wrap', 'themes-wrap', 'words-wrap', 'hooks-wrap', 'gap-wrap', 'macros-wrap'] },
-    { key: 'offers', label: 'Offers and claims', ids: ['offers-wrap', 'claims-wrap', 'timing-wrap'] },
+    { key: 'offers', label: 'Offers and claims', ids: ['offers-wrap', 'price-wrap', 'claims-wrap', 'timing-wrap'] },
     { key: 'retention', label: 'Retention', ids: ['paths-wrap', 'cohort-wrap', 'mix-wrap', 'moments-wrap', 'health-wrap'] },
     { key: 'brand', label: 'Brand and voice', ids: ['perc-wrap', 'hier-wrap', 'look-wrap', 'voice-wrap'] },
   ];
@@ -957,6 +971,7 @@
     renderWrong(a, r);
     renderActions(r);
     renderOffers(d.offer_map);
+    renderPrice(d.price);
     renderFocus(d.focus);
     renderAdVoice(d.ad_voice);
     renderSplit(d.split);

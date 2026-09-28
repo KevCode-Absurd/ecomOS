@@ -99,7 +99,7 @@ Lead's review: rounds 1 to 4 passed. Focus: returns and tickets by avatar, depth
 | 5.6 | Which avatars need a re-check soon: every avatar and ladder record by its expiry date (expired, due within 30 days, ok, no date), with one agent task that re-reads the sources and proposes updates to the brand brain review queue, checked on the first expiry. Bombas: 11 avatars expire on 28 Oct; the 7 ladders and 2 Reddit avatars carry no expiry | done |
 | 5.7 | How strong is each read: a fold above the desk tabs lists the sample behind every block (quotes, mentions on rungs, rated, praise and complaint reviews, dated complaints, coded lines, linked reviews, live ads read, first-time buyers) with its tab, thin under 100 reviews or 30 items (60 quotes for avatar cards). Thin blocks get one "widen the thin reads" pull plan; a person approves the spend before any pull. Bombas: avatar cards (38 quotes) and the ad read (23 ads) are thin | done |
 | 5.8 | Avatar cards say what we know and what we do not: each card gains chips for its build rank (from 4.9), ad voice (silent, under, fair, heavy), return risk against the median, where it speaks (Amazon or our site) and the split read, plus a "we do not know yet" line listing every evidence check it fails. Built once in `builds.card_meta` from the same builders | done |
-| 5.9 | Price doubts by avatar and the pack that answers them | todo |
+| 5.9 | Which avatars doubt the price and what answers it: the share of each avatar's one-star mentions on price rungs, price-led at 30 percent or more, with the facts the brain holds as orientation (free shipping point, lowest single pair, shipping as a share of one pair, pairs to free shipping) and a pack picker brief that shows the free shipping line; per-pair price by pack stays unavailable until pack prices are in the brain (Contract asks). Bombas: the In-Store Single Pair Trier, Price and Mission Skeptic and Guarantee Reassured Loyalist are price-led; one pair pays 61 percent on top in shipping | done |
 | 5.10 | Audit rules and `rank` for round 5, screenshot `round5.png` | todo |
 
 ### Round 4 founder note (28 Sep 2026)
@@ -139,6 +139,8 @@ Lead's review: rounds 1 to 4 passed. Focus: returns and tickets by avatar, depth
 6. Next, round 2: rules from the web pass (gateway product, second-order path, win-back timing by gap, RFM cells, theme impact, copy gap check) and hiking as a sized avatar.
 
 ## Contract asks
+
+- Pack prices in the brain offers (price per pack size and line), so 5.9 can show the per-pair price at each pack. Fallback: unavailable, with the free shipping facts.
 
 - A tickets and returns aggregate by reason and product line (monthly), so 5.2 reads real return reasons per avatar. Fallback: the review-complaint proxy and a connect card.
 

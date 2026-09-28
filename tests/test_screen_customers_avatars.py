@@ -1341,5 +1341,20 @@ class CardMeta(TempBrain):
             self.assertIn('unknown', a['meta'])
 
 
+class PriceDoubts(TempBrain):
+    """Feature 5.9: price-led avatars and the facts that answer them; pack prices unavailable, never zero."""
+
+    def test_price(self):
+        x = api.handle(Req(['overview']))['price']
+        f = x['facts']
+        self.assertEqual(f['pairs_to_free_shipping'], 6)
+        self.assertIsNone(f['pack_prices'])
+        for r in x['rows']:
+            self.assertEqual(r['verdict'] == 'price_led', r['price_share'] >= 0.3)
+            if r['action']:
+                self.assertIn('unavailable', r['action']['draft'])
+        self.assertEqual(x['rows'][0]['key'], 'in_store_single_pair_trier')
+
+
 if __name__ == '__main__':
     unittest.main()

@@ -2313,3 +2313,56 @@ def card_meta(d: dict) -> None:
                      "speaks": mkt[k]["verdict"] if k in mkt else None,
                      "split": spl[k]["verdict"] if k in spl else None,
                      "status": g["status"] if g else None, "unknown": unknown}
+
+
+# ---------------------------------------------------------------- price doubts by avatar
+
+PRICE_LED = 0.30          # price rungs hold 30 percent or more of an avatar's one-star mentions
+
+
+def price_doubts(avatars: list[dict], all_rungs: list[dict], offers: list[dict], products: list[dict]) -> dict:
+    """Which avatars doubt the price most, and the pack and shipping facts the brain holds to answer them."""
+    def val(recs, field):
+        return next((r.get("value") for r in recs if r.get("field") == field or r["id"].endswith("." + field)), None)
+    threshold = val(offers, "free_shipping_threshold_usd")
+    ship = val(offers, "standard_shipping_cost")
+    ship_cost = ship.get("cost_usd") if isinstance(ship, dict) else (ship if isinstance(ship, (int, float)) else None)
+    ladder = val(products, "price_ladder_socks")
+    single = ladder.get("min_usd") if isinstance(ladder, dict) else None
+    packs = val(products, "pack_sizes") or val(offers, "bundles_pack_ladder")
+    facts = {"free_shipping_at": threshold if isinstance(threshold, (int, float)) else None, "shipping_cost": ship_cost, "lowest_single": single,
+             "packs": packs if isinstance(packs, list) else None, "pack_prices": None}
+    if facts["free_shipping_at"] and single:
+        facts["pairs_to_free_shipping"] = int(-(-facts["free_shipping_at"] // single))
+    if ship_cost and single:
+        facts["shipping_on_one_pair"] = round(ship_cost / single, 4)
+    rows = []
+    for a in avatars:
+        mine = [r for r in all_rungs if a["id"] in r["avatars"]]
+        tot = sum(r["one_star"] or 0 for r in mine)
+        if not tot:
+            continue
+        price = sum(r["one_star"] or 0 for r in mine if "price" in r["theme"])
+        share = price / tot
+        verdict = "price_led" if share >= PRICE_LED else "other"
+        act = None
+        if verdict == "price_led":
+            lines = [f"DRAFT pack picker change for {a['name']}", f"{round(share * 100)} percent of their one-star mentions are about price."]
+            if facts.get("pairs_to_free_shipping"):
+                lines.append(f"Show it plainly: free shipping from ${facts['free_shipping_at']:g}, about {facts['pairs_to_free_shipping']} pairs at the lowest single price of ${single:g}.")
+            if facts.get("shipping_on_one_pair"):
+                lines.append(f"One pair alone pays ${ship_cost:g} shipping, {round(facts['shipping_on_one_pair'] * 100)} percent on top. Lead with a pack instead.")
+            lines.append("Per-pair price by pack: unavailable until pack prices are in the brain. A person adds them.")
+            act = {"id": f"{SCREEN}.price.{a['key']}", "kind": "page_section", "owner": "agent_drafts",
+                   "title": f"Show {a['name']} the per-pair price and the free shipping line",
+                   "capability": {"id": "LIFE-C39", "autonomy": "founder_gate"}, "draft": "\n".join(lines),
+                   "steps": [{"n": 1, "who": "person", "text": "Add the pack prices to the brain offers."},
+                             {"n": 2, "who": "agent", "text": "Draft the pack picker line: per-pair price and the free shipping point."},
+                             {"n": 3, "who": "person", "text": "Approve and ship on the product page."},
+                             {"n": 4, "who": "agent", "text": "Recount price one-star mentions on the next pull."}]}
+        rows.append({"key": a["key"], "name": a["name"], "price_share": round(share, 4), "price_one_star": price, "one_star": tot,
+                     "verdict": verdict, "action": act})
+    rows.sort(key=lambda r: -r["price_share"])
+    led = [r["name"] for r in rows if r["verdict"] == "price_led"]
+    return {"rows": rows, "facts": facts,
+            "line": (f"{len(led)} avatars are price-led: {', '.join(led[:3])}{' and more' if len(led) > 3 else ''}." if led else "No avatar is price-led.")}
