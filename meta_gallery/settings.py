@@ -70,6 +70,7 @@ def save(data, path=None):
     clean = validate(data)
     with _lock:
         path.parent.mkdir(parents=True, exist_ok=True)
+        path = Path(path).resolve()  # a link to the host's persistent disk is followed, not replaced
         tmp = path.with_suffix('.tmp')
         tmp.write_text(json.dumps(clean, ensure_ascii=False, indent=1), encoding='utf-8')
         tmp.replace(path)
@@ -120,6 +121,7 @@ def save_notes(data, path=None):
     clean = validate_notes(data)
     with _lock:
         path.parent.mkdir(parents=True, exist_ok=True)
+        path = Path(path).resolve()  # a link to the host's persistent disk is followed, not replaced
         tmp = path.with_suffix('.tmp')
         tmp.write_text(json.dumps(clean, ensure_ascii=False, indent=1), encoding='utf-8')
         tmp.replace(path)

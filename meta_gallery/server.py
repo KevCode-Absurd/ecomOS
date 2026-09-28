@@ -10,11 +10,16 @@ The old page stays at /old.
 The only writes it accepts are team settings (targets, exclusion presets,
 report branding) and team notes on ads, each saved to a local file after
 validation. Every other write is rejected.
+
+Team mode (TEAM_MODE=1, see meta_gallery/team.py and meta_gallery/deploy/DEPLOY.md) runs it on a
+host for the team: invite code sign in, image caps, a usage log, and owner-only settings.
+API keys come from the host environment and never reach the browser.
 """
 import argparse
 import base64
 import json
 import mimetypes
+import os
 import re
 import threading
 import time
@@ -28,6 +33,7 @@ from urllib.parse import parse_qs, urlparse
 from . import ai
 from . import products
 from . import stock
+from . import team
 from . import settings as settings_mod
 from .snapshot import DATA
 from .view import Engine, ViewError
@@ -48,6 +54,7 @@ MAX_NOTES_BODY = 2_000_000
 MAX_AI_BODY = 80_000
 MAX_REF_BODY = 4_000_000     # AI routes that can carry one pasted reference image
 MAX_REF_IMAGE = 2_500_000
+OWNER_ONLY = ('/api/settings', '/api/save/settings.json', '/api/catalog-approve', '/api/stock-check')
 DOCS = ('packs.json', 'playbook.json', 'tests.json', 'catalog_prompt.json', 'client_orders.json')
 MAX_DOC = 1_500_000
 
@@ -316,6 +323,7 @@ def save_doc(name, body):
         raise ValueError('Bad document.')
     path = DATA / name
     path.parent.mkdir(parents=True, exist_ok=True)
+    path = Path(path).resolve()  # a link to the host's persistent disk is followed, not replaced
     tmp = path.with_suffix('.tmp')
     tmp.write_text(json.dumps(body, ensure_ascii=False, indent=1), encoding='utf-8')
     tmp.replace(path)
@@ -330,14 +338,47 @@ def query_filters(qs):
     return since, until, kw, camps
 
 
+def ai_cost(path, body):
+    """(images, text calls) a POST will spend, used for the team caps."""
+    def n(default, lo, hi):
+        return max(lo, min(hi, int(body.get('n') or default)))
+    if path == '/api/variants':
+        return n(3, 1, 5), 1
+    if path == '/api/competitor-variants':
+        return n(3, 1, 4), 1
+    if path == '/api/product-ads':
+        return (0, 1) if body.get('copy_only') else (n(4, 1, 5), 1)
+    if path == '/api/catalog-premium':
+        return 1, 0
+    if path == '/api/product-story':
+        return n(10, 1, 15), 0
+    if path in ('/api/breakdown', '/api/ask'):
+        return 0, 1
+    return 0, 0
+
+
 def make_handler(gallery):
     class Handler(BaseHTTPRequestHandler):
         def log_message(self, fmt, *args):
             pass
 
-        def send_json(self, obj, status=200):
+        def end_headers(self):
+            self.send_header('X-Content-Type-Options', 'nosniff')
+            self.send_header('Referrer-Policy', 'same-origin')
+            self.send_header('X-Frame-Options', 'DENY')
+            super().end_headers()
+
+        def user(self):
+            return team.who(self.headers.get('Cookie')) if team.enabled() else None
+
+        def secure(self):
+            return (self.headers.get('X-Forwarded-Proto') or '').split(',')[0].strip() == 'https'
+
+        def send_json(self, obj, status=200, headers=()):
             body = json.dumps(obj, ensure_ascii=False).encode('utf-8')
             self.send_response(status)
+            for k, v in headers:
+                self.send_header(k, v)
             self.send_header('Content-Type', 'application/json; charset=utf-8')
             self.send_header('Cache-Control', 'no-store')
             self.send_header('Content-Length', str(len(body)))
@@ -365,12 +406,22 @@ def make_handler(gallery):
             url = urlparse(self.path)
             parts = [p for p in url.path.split('/') if p]
             qs = parse_qs(url.query)
+            if parts == ['healthz']:
+                return self.send_bytes(b'ok', 'text/plain; charset=utf-8', cache='no-store')
+            if team.enabled():
+                name = self.user()
+                if not name:
+                    if not parts:
+                        return self.send_bytes(team.LOGIN_PAGE.encode('utf-8'), 'text/html; charset=utf-8', cache='no-store')
+                    return self.send_json({'error': 'Sign in first.'}, 401)
+                if parts == ['team', 'me']:
+                    return self.send_json(team.usage(name))
             try:
                 if not parts:
                     page = (WEB / 'index.html').read_text(encoding='utf-8')
                     doc = ('<!doctype html><html lang="en"><head><meta charset="utf-8">'
                            '<meta name="viewport" content="width=device-width, initial-scale=1"></head><body>'
-                           + page + '</body></html>')
+                           + page + (team.BADGE if team.enabled() else '') + '</body></html>')
                     return self.send_bytes(doc.encode('utf-8'), 'text/html; charset=utf-8')
                 if len(parts) == 1 and parts[0] in WEB_FILES:
                     return self.send_bytes((WEB / parts[0]).read_bytes(), 'text/javascript; charset=utf-8')
@@ -488,26 +539,68 @@ def make_handler(gallery):
                       '/api/stock-check': (lambda body: stock.run(limit=min(int(body.get('limit') or 150), 300)), MAX_BODY)}
             for doc in DOCS:
                 savers['/api/save/' + doc] = ((lambda d: lambda body: save_doc(d, body))(doc), MAX_DOC)
+            origin = self.headers.get('Origin')
+            host = self.headers.get('Host', '')
+            name = None
+            if team.enabled():
+                # Same-site only: the page's own origin, over https on the host.
+                if origin and origin not in (f'https://{host}', f'http://{host}'):
+                    return self.send_json({'error': 'forbidden origin'}, 403)
+                if url.path == '/team/logout':
+                    return self.send_json({'ok': True}, headers=[('Set-Cookie', team.cookie('', self.secure(), clear=True))])
+                if url.path == '/team/login':
+                    try:
+                        length = int(self.headers.get('Content-Length') or 0)
+                        body = json.loads(self.rfile.read(min(length, 2000)).decode('utf-8')) if 0 < length <= 2000 else {}
+                        ip = (self.headers.get('X-Forwarded-For') or self.client_address[0]).split(',')[0].strip()
+                        value, who = team.login(body.get('code') if isinstance(body, dict) else None, ip)
+                    except ValueError as e:
+                        return self.send_json({'error': str(e)}, 401)
+                    team.log(who, '/team/login')
+                    return self.send_json({'ok': True, 'name': who}, headers=[('Set-Cookie', team.cookie(value, self.secure()))])
+                name = self.user()
+                if not name:
+                    return self.send_json({'error': 'Sign in first.'}, 401)
+                if url.path in OWNER_ONLY and name not in team.owners():
+                    return self.send_json({'error': 'Only the owner can change this.'}, 403)
             if url.path not in savers:
                 return self.send_json({'error': 'read-only'}, 405)
             save, limit = savers[url.path]
             # Only same-origin JSON from the local page. This blocks other websites posting here.
-            origin = self.headers.get('Origin')
-            host = self.headers.get('Host', '')
-            if host.split(':')[0] not in ('127.0.0.1', 'localhost') or (origin and origin != f'http://{host}'):
+            if not team.enabled() and (host.split(':')[0] not in ('127.0.0.1', 'localhost') or (origin and origin != f'http://{host}')):
                 return self.send_json({'error': 'forbidden origin'}, 403)
             if (self.headers.get('Content-Type') or '').split(';')[0].strip() != 'application/json':
                 return self.send_json({'error': 'JSON only'}, 415)
             length = int(self.headers.get('Content-Length') or 0)
             if not 0 < length <= limit:
                 return self.send_json({'error': 'body too large or empty'}, 413)
+            images = asks = 0
             try:
                 body = json.loads(self.rfile.read(length).decode('utf-8'))
-                return self.send_json(save(body))
+                if name:
+                    images, asks = ai_cost(url.path, body if isinstance(body, dict) else {})
+                    if images or asks:
+                        try:
+                            team.reserve(name, images, asks)
+                        except ValueError as e:
+                            images = asks = 0
+                            return self.send_json({'error': str(e)}, 429)
+                out = save(body)
+                if name and (images or asks):
+                    made = len(out.get('made') or []) if isinstance(out, dict) and isinstance(out.get('made'), list) else images
+                    if made < images:
+                        team.refund(name, images - made)
+                    team.log(name, url.path, min(made, images), asks)
+                    images = asks = 0
+                return self.send_json(out)
             except (ai.AIError, products.ProductError) as e:
                 return self.send_json({'error': str(e)}, 502)
             except (ValueError, UnicodeDecodeError, TypeError) as e:
                 return self.send_json({'error': str(e)}, 400)
+            finally:
+                if name and (images or asks):
+                    team.refund(name, images, asks)
+                    team.log(name, url.path, 0, 0, ok=False)
 
         def ai_breakdown(self, body):
             """body: {ad_id, facts}. facts is the ad data the page shows (same as the shared page sends Claude)."""
@@ -645,8 +738,14 @@ def main(argv=None):
     if args.prefetch_images:
         prefetch_images(gallery)
         return
-    server = ThreadingHTTPServer(('127.0.0.1', args.port), make_handler(gallery))
-    print(f'Gallery running at http://127.0.0.1:{args.port}  (Ctrl+C to stop)')
+    host, port = '127.0.0.1', args.port
+    if team.enabled():
+        problems = team.check_config()
+        if problems:
+            raise SystemExit('Team mode is not set up: ' + ' '.join(problems))
+        host, port = '0.0.0.0', int(os.environ.get('PORT') or args.port)
+    server = ThreadingHTTPServer((host, port), make_handler(gallery))
+    print(f'Gallery running at http://{host}:{port}' + (' (team mode)' if team.enabled() else '  (Ctrl+C to stop)'))
     try:
         server.serve_forever()
     except KeyboardInterrupt:

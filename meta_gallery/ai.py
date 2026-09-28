@@ -13,6 +13,7 @@ Results are saved under data/meta-gallery/ (breakdowns.json, variants/<ad id>/).
 """
 import base64
 import json
+import os
 import re
 import threading
 import time
@@ -46,7 +47,9 @@ class AIError(Exception):
 
 
 def settings(env_path=None):
-    env = load_env(Path(env_path) if env_path else ROOT / '.env')
+    # .env on this machine first, then the host's environment (secrets on a server like Render).
+    env = {k: os.environ[k] for k in list(DEFAULTS) + ['ANTHROPIC_API_KEY', 'OPENAI_API_KEY'] if os.environ.get(k)}
+    env.update(load_env(Path(env_path) if env_path else ROOT / '.env'))
     cfg = {k: env.get(k) or v for k, v in DEFAULTS.items()}
     cfg['anthropic_key'] = env.get('ANTHROPIC_API_KEY') or ''
     cfg['openai_key'] = env.get('OPENAI_API_KEY') or ''
@@ -236,6 +239,7 @@ def save_breakdown(ad_id, data, path=None):
         all_ = load_breakdowns(path)
         all_[str(ad_id)] = clean_breakdown(data)
         path.parent.mkdir(parents=True, exist_ok=True)
+        path = Path(path).resolve()  # a link to the host's persistent disk is followed, not replaced
         tmp = path.with_suffix('.tmp')
         tmp.write_text(json.dumps(all_, ensure_ascii=False, indent=1), encoding='utf-8')
         tmp.replace(path)

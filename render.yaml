@@ -1,0 +1,38 @@
+# Render blueprint for the team dashboard (meta_gallery). Keys and codes are set in the Render
+# dashboard as secrets (sync: false), never in this file or in git.
+services:
+  - type: web
+    name: ecomos-dashboard
+    runtime: python
+    plan: starter
+    region: singapore
+    branch: main
+    buildCommand: python --version
+    startCommand: bash meta_gallery/deploy/start.sh
+    healthCheckPath: /healthz
+    autoDeploy: true
+    disk:
+      name: dashboard-data
+      mountPath: /var/data
+      sizeGB: 1
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.9
+      - key: TEAM_MODE
+        value: "1"
+      - key: TEAM_SECRET
+        generateValue: true
+      - key: TEAM_CODES
+        sync: false
+      - key: TEAM_OWNERS
+        sync: false
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: ANTHROPIC_API_KEY
+        sync: false
+      - key: TEAM_DAILY_IMAGES
+        value: "50"
+      - key: TEAM_MONTHLY_IMAGES
+        value: "1500"
+      - key: TEAM_DAILY_ASKS
+        value: "200"

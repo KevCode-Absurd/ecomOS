@@ -130,7 +130,7 @@ function hlTracking() {
 const HL_SPEC = [
   ['Send Purchase from the server when the order is created, for every payment method', 'Today about a third of orders never reach Meta, and Google Analytics misses a similar share, so the thank you page is not loading for some orders (payment redirects, cash on delivery, EMI). Fire the server event from the order created or payment captured webhook, not from the page.',
     `// Node example: call when an order is confirmed (Razorpay webhook, COD confirm, EMI approve)
-await fetch(\`https://graph.facebook.com/v23.0/\${PIXEL_ID}/events?access_token=\${CAPI_TOKEN}\`, {
+await fetch(CAPI_EVENTS_URL, {   // Conversions API events URL for your pixel. Keep the token in server config only.
   method: 'POST', headers: { 'Content-Type': 'application/json' },
   body: JSON.stringify({ data: [{
     event_name: 'Purchase', event_time: Math.floor(Date.now() / 1000), action_source: 'website',
