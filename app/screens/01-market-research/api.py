@@ -1886,7 +1886,9 @@ def calendar_items(data, brand, horizon_days=CALENDAR_DAYS):
             add(p['next_due'], 'pull', f'Pull due: {p["label"]}', f'{p["window_days"]}-day window; ' + (f'about ${p["estimate_usd"]:,.2f} a run' if p.get('estimate_usd') is not None else 'no price on file'), finding_id=p['finding_id'], tone='warn')
     gift = dt.date(ends_on.year, 11, 1)
     if 0 <= (gift - ends_on).days <= horizon_days:
-        add(gift.isoformat(), 'window', 'The gift window opens', 'stock, the gift box and the gift ads must be live; 25 percent of socks sold in Nov and Dec (web pass)', finding_id=f'{SCREEN}.PROD-R05.gifting_socks', tone='accent')
+        fxg = next((m for m in (audit.web_pass(brand) or {}).get('markets') or [] if 'gift' in str(m.get('key') or '')), None)
+        why = (fxg.get('drivers') or [''])[0] if fxg else 'the US holiday gift window; stock and the gift offer must be live before it'
+        add(gift.isoformat(), 'window', 'The gift window opens', why, finding_id=f'{SCREEN}.PROD-R05.{fxg["key"]}' if fxg else None, tone='accent')
     items.sort(key=lambda i: (i['when'], i['kind'], i['title']))
     return {'ends_on': ends_on.isoformat(), 'horizon_days': horizon_days, 'items': items, 'overdue': sum(1 for i in items if i['days'] < 0), 'this_week': sum(1 for i in items if 0 <= i['days'] <= 7)}
 
