@@ -6,49 +6,49 @@
  "rows": [
   {
    "table": "orders",
-   "rows": 11061240,
+   "rows": 8801664,
    "where": "data.sqlite",
    "source": "generator",
    "shaped_like": "Shopify Order + customerJourneySummary"
   },
   {
    "table": "order_lines",
-   "rows": 15712074,
+   "rows": 11764753,
    "where": "data.sqlite",
    "source": "generator",
    "shaped_like": "Shopify LineItem (nested in orders)"
   },
   {
    "table": "customers",
-   "rows": 7554112,
+   "rows": 5819036,
    "where": "data.sqlite",
    "source": "generator",
    "shaped_like": "Shopify Customer"
   },
   {
    "table": "products",
-   "rows": 21,
+   "rows": 25,
    "where": "data.sqlite",
    "source": "generator",
    "shaped_like": "Shopify ProductVariant + GA4 item report (28 days)"
   },
   {
    "table": "inventory",
-   "rows": 30660,
+   "rows": 36500,
    "where": "data.sqlite",
    "source": "generator",
    "shaped_like": "Shopify InventoryLevel, daily capture"
   },
   {
    "table": "inbound_pos",
-   "rows": 249,
+   "rows": 291,
    "where": "data.sqlite",
    "source": "fixture",
    "shaped_like": "fixture (not in the Shopify census)"
   },
   {
    "table": "reversed_orders",
-   "rows": 716202,
+   "rows": 533323,
    "where": "data.sqlite",
    "source": "generator",
    "shaped_like": "Shopify Return, Fulfillment, ShopifyPaymentsDispute"
@@ -62,14 +62,14 @@
   },
   {
    "table": "abandoned_checkouts",
-   "rows": 8242547,
+   "rows": 16842382,
    "where": "data.sqlite",
    "source": "generator",
    "shaped_like": "Shopify AbandonedCheckout"
   },
   {
    "table": "sessions",
-   "rows": 285214,
+   "rows": 278582,
    "where": "data.sqlite",
    "source": "generator",
    "shaped_like": "GA4 runReport"
@@ -104,14 +104,14 @@
   },
   {
    "table": "tickets",
-   "rows": 1131568,
+   "rows": 472982,
    "where": "data.sqlite",
    "source": "fixture",
    "shaped_like": "fixture (Gorgias shape)"
   },
   {
    "table": "reviews",
-   "rows": 179826,
+   "rows": 135163,
    "where": "data.sqlite",
    "source": "fixture",
    "shaped_like": "fixture (reviews app shape)"
@@ -152,6 +152,20 @@
    "shaped_like": "fixture (no connector; brain wholesale share)"
   },
   {
+   "table": "marketplace_sales",
+   "rows": 50,
+   "where": "data.sqlite",
+   "source": "fixture",
+   "shaped_like": "fixture (no connector; brain marketplace share, Amazon and TikTok Shop)"
+  },
+  {
+   "table": "paid_other_spend",
+   "rows": 2920,
+   "where": "data.sqlite",
+   "source": "fixture",
+   "shaped_like": "fixture (no connector; YouTube creators, TikTok, Pinterest, other at the brain's paid split)"
+  },
+  {
    "table": "aggregates/daily",
    "rows": 730,
    "where": "aggregates/daily.json",
@@ -167,14 +181,14 @@
   },
   {
    "table": "aggregates/channels_monthly",
-   "rows": 200,
+   "rows": 186,
    "where": "aggregates/channels_monthly.json",
    "source": "generator",
    "shaped_like": "rollup of the tables above"
   },
   {
    "table": "aggregates/products_monthly",
-   "rows": 525,
+   "rows": 625,
    "where": "aggregates/products_monthly.json",
    "source": "generator",
    "shaped_like": "rollup of the tables above"
@@ -194,8 +208,22 @@
    "shaped_like": "rollup of the tables above"
   },
   {
+   "table": "aggregates/marketplace_monthly",
+   "rows": 50,
+   "where": "aggregates/marketplace_monthly.json",
+   "source": "generator",
+   "shaped_like": "rollup of the tables above"
+  },
+  {
+   "table": "aggregates/paid_media_monthly",
+   "rows": 150,
+   "where": "aggregates/paid_media_monthly.json",
+   "source": "generator",
+   "shaped_like": "rollup of the tables above"
+  },
+  {
    "table": "aggregates/calibration",
-   "rows": 12,
+   "rows": 16,
    "where": "aggregates/calibration.json",
    "source": "generator",
    "shaped_like": "rollup of the tables above"

@@ -6,9 +6,25 @@ Status: todo | doing | done | parked. One feature per commit. The first round is
 
 | # | Feature | Status |
 |---|---|---|
-| 0.1 | Page shell in the shared UI kit: header, empty-state tiles, insight list, action buttons | todo |
-| 0.2 | `api.py` serving this screen's metrics from `app/data/` with unavailable states | todo |
-| 0.3 | 3 metric tiles, 2 insights, 1 chart from the sample brand | todo |
+| 0.1 | Page shell in the shared UI kit: header, empty-state tiles, insight list, action buttons | done |
+| 0.2 | `api.py` serving this screen's metrics from `app/data/` with unavailable states | done |
+| 0.3 | 3 metric tiles, 2 insights, 1 chart from the sample brand | done |
+| 0.4 | `audit.py`: rules CREA-R01 to R06 in the contract shape of `app/contracts/audit.md` | done |
+
+## JTBD table (room jobs to audit rules)
+
+Rules live in `audit.py` (docstring has thresholds). A job with no rule yet names the log it waits for.
+
+| Room job | Question | Rule | Inputs | Capability |
+|---|---|---|---|---|
+| winners and losers by pattern | which ads should I copy the pattern of and which should I kill | CREA-R01 format ROAS 10 percent under its own 4-window median | ad_rows | CREA-C16 |
+| fatigued or underfunded | is this ad fatigued or just underfunded | CREA-R02 starved winner; fatigue is PAID-R03, owned by 11-paid-social | ad_rows | CREA-C15 |
+| testable angle | what angle should the next batch argue, and for whom | CREA-R03 hook and angle tags (unavailable until ads are tagged) | ad_rows.hook_type, angle | CREA-C03 |
+| hook bank | which hook actually stops the scroll | CREA-R04 video hook rate under 0.75 x median (unavailable: no 3-second plays) | ad_rows.video_3s | CREA-C04 |
+| monthly pipeline | are we making enough of the right creative, on time | CREA-R05 new ads 25 percent under the 4-window median | ad_rows | CREA-C18 |
+| competitor gaps and drafts | what are competitors testing that we are not | CREA-R06 format run by 3+ competitors on over 20 percent of ads, none of ours in 90 days (signal only) | brain learnings, ad_rows | LOOP-C13 |
+| brief, statics, video scripts, UGC, AI video, native format, resizing | (6 jobs) | none yet | brief log, studio variant log, creator log, export log | CREA-C06, C07, C08, C10, C36, C11, C39 |
+| catalogue and rights risk | will this feed or overlay break, or does an asset carry license risk | none yet | rights log, overlay QA log | CREA-C52, C43, C49 |
 
 ## Candidates from the room spec (pick 10 per round)
 
@@ -104,3 +120,12 @@ Status: todo | doing | done | parked. One feature per commit. The first round is
 
 | Round | Features picked | Date | Notes |
 |---|---|---|---|
+
+## Round 0 status
+
+- 28 Sep 2026: shell, api.py (overview, findings), 3 tiles, 2 rule insights, 1 chart (ROAS by format, 5 windows), all on Bombas simulated data at scale 0.1.
+- Tiles: new ads launched 28d (12, flat on the 4-window median), video share of spend (27.1 percent), video hook rate (unavailable: no 3-second plays in ad_rows).
+- Audit: 6 rules. CREA-R01 fires on Bombas: carousel 1.97x against its own 2.22x median, $23,640 at stake, high. CREA-R03 and R04 report unavailable, never 0.
+- Insights: format winners (CREA-R01) and Ad Library run length, own 12 days against 3 competitors at 13 to 80 (brain learnings, signal only).
+- Tests: tests/test_screen_creative.py, 11 passing. Screen suite: only the known test_screen_today tolerance failure with the mixed-scale sqlite.
+- Next: hook and angle tags on ad_rows, 3-second plays in the Meta pull, then the brief and pipeline logs. Screenshot: round0.png.

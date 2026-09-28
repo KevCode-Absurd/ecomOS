@@ -279,6 +279,48 @@ class Bombas(unittest.TestCase):
         self.assertEqual(man['fields']['channel_mix']['origin'], 'fallback (generic)')
         self.assertIn('return_rate', man['placeholders'])
 
+    # ---- S2.3c fixes (app/data/brands/bombas/REVIEW.md, "Fixes for the generator")
+    def test_products_join_finance_keys(self):
+        fin = json.loads((ROOT / 'app' / 'data' / 'brands' / 'bombas' / 'finance_inputs.json').read_text())['rows']
+        keys = {r['scope_key'] for r in fin if r['field'] == 'cogs_landed'}
+        skus = {r[0] for r in self.db.execute('SELECT sku FROM products')}
+        self.assertEqual(skus, keys)
+        self.assertEqual(self.one('SELECT count(*) FROM order_lines WHERE sku NOT IN (SELECT sku FROM products)'), 0)
+        join = self.agg['calibration']['review_checks']['finance_join']
+        self.assertEqual(join['skus_with_cogs'], len(keys))
+        gm = {m['month']: m['gross_margin'] for m in join['gross_margin_by_month']}
+        self.assertIsNone(gm['2024-12'])  # finance rows start 2025-01-01: unavailable, not 0
+        self.assertTrue(0 < gm['2025-06'] < 1)
+
+    def test_channel_mix_and_paid_split_follow_the_brain(self):
+        cal = self.agg['calibration']
+        mix = cal['sales_channel_mix_last_12m']
+        for k, want in mix['target'].items():
+            self.assertAlmostEqual(mix['generated'][k], want, delta=0.02, msg=k)
+        paid = cal['paid_split_last_12m']
+        for k, want in paid['target'].items():
+            self.assertAlmostEqual(paid['generated'][k], want, delta=0.02, msg=k)
+        self.assertAlmostEqual(cal['revenue_last_12m']['vs_point_pct'], 0, delta=4)
+
+    def test_pos_is_null_before_the_store_opened(self):
+        opened = gen.PLACEHOLDERS['owned_retail_open']
+        self.assertFalse([r for r in self.agg['channels_monthly'] if r['channel'] == 'pos' and r['month'] < opened[:7]])
+        self.assertTrue([r for r in self.agg['channels_monthly'] if r['channel'] == 'pos' and r['month'] >= opened[:7]])
+        for r in self.agg['monthly']:
+            self.assertEqual(r['pos_orders'] is None, r['month'] < opened[:7], r['month'])
+        self.assertEqual(self.one("SELECT count(*) FROM orders WHERE channel = 'pos' AND created_at < ?", opened), 0)
+
+    def test_written_rates_equal_the_placeholders(self):
+        rc = self.agg['calibration']['review_checks']
+        pl = gen.PLACEHOLDERS
+        self.assertAlmostEqual(rc['tickets_per_1000_orders']['year'] / 1000, pl['ticket_rate'], delta=0.008)
+        self.assertAlmostEqual(rc['checkout_abandonment'], pl['abandoned_per_web_order'] / (1 + pl['abandoned_per_web_order']), delta=0.01)
+        lo, hi = pl['ga4_capture']
+        self.assertTrue(lo <= rc['ga4_capture_daily']['min'] <= rc['ga4_capture_daily']['max'] <= hi)
+        self.assertAlmostEqual(rc['funnel']['sessions_per_month'] / rc['funnel']['target'], 1, delta=0.03)
+        for d in rc['bfcm'][1:]:
+            self.assertGreater(d['discount_pct_of_gross'], 0.12, d)
+
     def test_monthly_index_follows_seasonality(self):
         # December and November are the peaks; February is the low, as in the brain index
         m = {r['month']: r['net_sales'] for r in self.agg['monthly']}

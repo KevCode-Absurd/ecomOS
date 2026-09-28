@@ -226,7 +226,7 @@ class BombasTest(unittest.TestCase):
 
     def test_demand_prices_reviews_pipeline(self):
         o = self.o
-        self.assertEqual(len(o['demand']), 13)
+        self.assertEqual(len(o['demand']), 19)  # the 25 finance SKUs roll up to 19 lines by title (S2.3c)
         self.assertTrue(o['price_bands']['band'])
         self.assertTrue(o['reviews'] and all(r['works'] is not None for r in o['reviews']))
         self.assertEqual(o['pipeline']['rows'], [])
