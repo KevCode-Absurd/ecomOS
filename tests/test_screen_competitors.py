@@ -1690,5 +1690,28 @@ class TestFounderQueue(TempBrain):
         self.assertEqual(api.founder_queue(acts)['items'], [])
 
 
+class TestInterviewThemes(TempInputs):
+    """7.1: with 3 logged losses to a name, the reason and the answer come from the interviews, not the ad-angle rule."""
+    def test_interviews_set_the_reason(self):
+        row = lambda: next(x for x in api.handle(Req(['overview']))['losses']['rows'] if x['name'] == 'Darn Tough')
+        self.assertEqual((row()['theme'], row()['theme_source']), ('durability', 'rule'))
+        for r in ('fit and sizing', 'fit and sizing', 'price and value'):
+            self.interview('loss', 'Darn Tough', r)
+        x = row()
+        self.assertEqual((x['theme'], x['theme_source'], x['reason']), ('fit', 'interviews', 'fit and sizing'))
+        self.assertEqual(x['why'], '2 of 3 logged losses name fit and sizing')
+        self.assertEqual(x['ladder'], 'bombas.objection_ladders.fit_and_sizing')
+        self.assertIn('fit better', x['answer'])
+        f = next(f for f in api.handle(Req(['plan']))['findings'] if f['rule_id'] == 'COMP-R15' and 'Darn Tough' in f['sentence'])
+        self.assertIn('Our interviews say why', f['sentence'])
+        self.assertIn('logged_losses_to_name', [e['metric'] for e in f['evidence']])
+
+    def test_every_reason_maps(self):
+        self.assertEqual(set(api.audit.lossmod.REASON_THEME), set(api.audit.inpmod.REASON_CODES))
+        js = (SCREEN / 'screen.js').read_text(encoding='utf-8')
+        for theme, _, _ in api.audit.lossmod.REASON_THEME.values():
+            self.assertIn(theme + ":", js)
+
+
 if __name__ == '__main__':
     unittest.main()

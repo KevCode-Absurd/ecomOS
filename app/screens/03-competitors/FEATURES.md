@@ -34,6 +34,12 @@ Round 0 notes (28 Sep 2026): brand price per pair is simulated net sales per uni
 
 Round 1 notes: `snapshot.py` plans and runs a page-id Ad Library pull through `app/connectors/apify.py` (12 pages with ids, 1,800 items cap, estimate $2.08, inside the $4 run and $30 week caps). The live run was blocked by the session's permission check on 28 Sep, so round 1 builds on the brain's 28 Sep pulls (page-level formats, hook types, offers, run lengths and 3 quoted ads a page) and the page says so.
 
+## Round 7: first-party reasons, price watch cadence and the hand-offs
+
+| # | Feature | Status |
+|---|---|---|
+| 7.1 | Win-loss answers from interview codes: once 3 or more losses to a name are logged, the reason is the top coded loss reason (not the ad-angle rule), each reason maps to our objection ladder (fit, comfort, delivery, price, durability), and the compare answer, support macro and COMP-R15 sentence ("Our interviews say why") draw on it, with the count as evidence and higher confidence | done |
+
 ## Round 6: the page writes back (first-party records the rules read)
 
 | # | Feature | Status |
@@ -274,6 +280,7 @@ Round 2 notes: the lead authorised the $2.08 pull on 28 Sep; the session's permi
 | Round | Features picked | Date | Notes |
 |---|---|---|---|
 | 0 | 0.1 to 0.8 | 2026-09-28 | Bombas brain and simulated prices |
+| 7 | 7.1 | 2026-09-28 | Interview reasons |
 | 6 | 6.1 to 6.10 | 2026-09-28 | Win-loss log; repeated loss reason; rival prices seen; battlecard checks; positioning polls; thresholds on the page; capture from the page; the team log; waiting on you; round close (and the hand-off fix). Screenshot `round6.png` |
 | 5 | 5.1 to 5.10 | 2026-09-28 | Hand-offs; action lanes; season plan; quarterly review; exports (and the 5.4 load fix); browser smoke test; team notes; brief pack; check due lane; round close |
 | 4 | 4.1 to 4.10 | 2026-09-28 | Placements and new channel alerts; gap lines; stop rules; unit from the brain; never zero; phone width; threat history; support answers; room metrics. Screenshot `round4.png` |

@@ -14,13 +14,20 @@ Rule COMP-R15: an alternative recommended instead of us MIN_TIMES (2) or more ti
 "how we compare" page section and support macro from verified brain facts (BRAND-C57). The win rate
 against a named competitor needs win-loss interviews (BRAND-C58) and reads unavailable until then. Interviews are
 logged on the page (inputs.py): win rate = wins / (wins + losses) per name; COMP-R29 holds until MIN_INTERVIEWS (5)
-are logged.
+are logged. With INTERVIEW_THEME_MIN (3) or more logged losses to a name, the reason is the top coded loss reason, not
+the ad-angle rule, and the answer draws on that reason's objection ladder.
 """
 from __future__ import annotations
 
 MIN_TIMES = 2
 MIN_INTERVIEWS = 5    # COMP-R29 stays on the plan until this many interviews are logged
 THEME_LADDER = {"durability": "durability", "value": "price_and_value", "style": None, "unknown": None}
+INTERVIEW_THEME_MIN = 3   # logged losses to one name before its reason comes from the interviews, not the ad-angle rule
+# interview reason code -> theme, what shoppers say the rival does, our objection ladder theme
+REASON_THEME = {"price and value": ("value", "cost less", "price_and_value"), "durability": ("durability", "last longer", "durability"),
+                "fit and sizing": ("fit", "fit better", "fit_and_sizing"), "comfort and feel": ("comfort", "feel better", "comfort_and_feel"),
+                "style": ("style", "look better", None), "availability": ("availability", "arrive sooner or stay in stock", "order_and_delivery"),
+                "trust": ("trust", "feel safer to buy from", None), "other": ("unknown", "win for a reason we cannot read", None)}
 THEME_LABEL = {"durability": "last longer", "value": "cost less", "style": "look better", "unknown": "win for a reason we cannot read"}
 
 
@@ -64,14 +71,24 @@ def build(m: dict, brain, interviews: list[dict] | None = None, win_loss=None) -
                      "no_proof": lad["no_proof"] if lad else [], "proof": lad["proof"] if lad else None,
                      "ladder": lad["id"] if lad else None, "fires": v["recommended_instead"] >= MIN_TIMES})
     rows.sort(key=lambda x: (-x["times"], -(x["upvotes"] or 0), x["name"]))
-    for x in rows:
-        x["answer"] = answer(x, m["brand"].capitalize())
     names = [x["name"] for x in rows] + [p["name"] for p in m["pages"] if p["role"] != "self" and not any(_same(p["name"], x["name"]) for x in rows)]
     wl = win_loss(interviews or [], names) if win_loss else {"rows": [], "n": 0, "win_rate": None}
     top = next((x for x in rows if x["fires"]), rows[0] if rows else None)
     top_wl = next((w for w in wl["rows"] if top and w["name"] == top["name"]), None)
     for x in rows:
         x["win_loss"] = next((w for w in wl["rows"] if w["name"] == x["name"]), None)
+        x["theme_source"] = "rule"
+        w = x["win_loss"]
+        if w and w["losses"] >= INTERVIEW_THEME_MIN:   # first-party reasons beat the ad-angle rule
+            reason, n = next(iter(w["reasons"].items()))
+            theme, label, ladder = REASON_THEME[reason]
+            lad = ladders.get(ladder) if ladder else None
+            x.update({"theme": theme, "theme_label": label, "theme_source": "interviews", "reason": reason,
+                      "why": f"{n} of {w['losses']} logged losses name {reason}",
+                      "our_one_star": lad["one_star"] if lad else None, "top_doubt": lad["top_doubt"] if lad else None,
+                      "no_proof": lad["no_proof"] if lad else [], "proof": lad["proof"] if lad else None, "ladder": lad["id"] if lad else None})
+    for x in rows:
+        x["answer"] = answer(x, m["brand"].capitalize())
     return {"rows": rows, "frames": frames, "win_rate": top_wl["win_rate"] if top_wl else None, "win_rate_name": top["name"] if top else None,
             "win_loss": wl, "names": names, "min_interviews": MIN_INTERVIEWS, "kit": interview_kit(rows, m["brand"].capitalize(), term=(m.get("term") or {}).get("plural", "products")),
             "reason_codes": REASON_CODES, "interviews": wl["n"],

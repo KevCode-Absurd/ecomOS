@@ -964,16 +964,20 @@ def rule_losses(m, ends_on):
     for x in (m.get("losses") or {}).get("rows", []):
         if not x["fires"]:
             continue
-        ev = [_row("recommended_instead", x["times"], "n", "latest capture", ends_on, None, lossmod.MIN_TIMES, "threshold", "reddit"),
-              _row("upvotes", x["upvotes"], "n", "latest capture", ends_on, None, None, "threshold", "reddit")]
+        ev = [_row("recommended_instead", x["times"], "n", "latest capture", ends_on, None, lossmod.MIN_TIMES, "threshold", "reddit")]
+        if x.get("theme_source") == "interviews":
+            ev.append(_row("logged_losses_to_name", x["win_loss"]["losses"], "n", "interviews logged", ends_on, None,
+                           lossmod.INTERVIEW_THEME_MIN, "threshold", "team"))
+        ev.append(_row("upvotes", x["upvotes"], "n", "latest capture", ends_on, None, None, "threshold", "reddit"))
         if x["our_one_star"] is not None:
             ev.append(_row("our_one_star_on_theme", x["our_one_star"], "n", "reviews on file", ends_on, None, None, "threshold",
                            "objection_ladders"))
-        sentence = (f"Reddit recommends {x['name']} instead of us {x['times']} times. The rule reads why: they "
-                    f"{x['theme_label']}.")
+        sentence = (f"Reddit recommends {x['name']} instead of us {x['times']} times. "
+                    + (f"Our interviews say why: they {x['theme_label']} ({x['why']})." if x.get("theme_source") == "interviews"
+                       else f"The rule reads why: they {x['theme_label']}."))
         ent = {"type": "brand", "id": f"lost_{x['key']}", "label": f"lost to {x['name']}"}
         refs = [x["record"]] + ([x["ladder"]] if x["ladder"] else [])
-        out.append(_finding("COMP-R15", "medium", ent, ev, sentence, refs, ends_on, 0.3,
+        out.append(_finding("COMP-R15", "medium", ent, ev, sentence, refs, ends_on, 0.6 if x.get("theme_source") == "interviews" else 0.3,
                             "no baseline: lost orders to a named brand are not measured"))
     return out
 

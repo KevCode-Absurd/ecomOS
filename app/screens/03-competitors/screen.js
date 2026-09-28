@@ -412,7 +412,7 @@
   }
 
   // ---------- 5i. who we lose to, by name ----------
-  const THEME_KIND = { durability: 'stop', value: 'watch', style: 'watch', unknown: 'na' };
+  const THEME_KIND = { durability: 'stop', value: 'watch', style: 'watch', fit: 'watch', comfort: 'watch', availability: 'watch', trust: 'watch', unknown: 'na' };
   function lossPanel(r) {
     UI.panel({ title: 'Our answer to ' + r.name, body: el('div', { class: 'stack' },
       el('pre', { class: 'card sunken bc', text: r.answer }),
