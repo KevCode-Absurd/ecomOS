@@ -159,6 +159,13 @@ def build(f: dict, nr: float | None) -> dict:
                         {"n": 3, "who": "person", "text": "Pick the record as proof, or approve the drafted fact as an approved record."},
                         {"n": 4, "who": "agent", "text": f"Attach it to the rung. The surfaces that use the rung ({surfaces or 'copy, page, listing, macro'}) read the proof on their next brief."}],
                  check_on=_check_on(f, 7), time_to_ship_hours=1)
+    elif rid == "BRN-R33":
+        au = f.get("audiences") or {}
+        top = ", ".join(f"{x['name']} ({round((x['share'] or 0) * 100)} percent)" for x in au.get("top") or [])
+        a.update(title="Approve the audience profiles and pick the default for ads", owner="person",
+                 artefact={"kind": "brain_record", "label": "approved profiles and a default per surface every generator reads", "draft": ("Top profiles by share: " + top + ".") if top else None},
+                 steps=[{"n": 1, "who": "agent", "text": "Show the profiles by share with the doubts each raises and the proof on file."}, {"n": 2, "who": "person", "text": "Approve the ones that are real, and pick the default for ads, email, the product page and CX."}, {"n": 3, "who": "agent", "text": "The brain file lists them under judgement rules; every brief names one."}],
+                 check_on=_check_on(f, 14), time_to_ship_hours=0.5)
     elif rid == "BRN-R32":
         dz = f.get("drift") or {}
         a.update(title="Redraft the positioning frame with the words customers use" + (": " + ", ".join(dz.get("missing") or [])[:60] if dz.get("missing") else ""), owner="agent_drafts",

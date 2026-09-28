@@ -8,6 +8,8 @@ question, and accept or ignore on a proposed record. Nothing external.
                                 judgement rules, the package, where to check (markdown)
   GET  agentfile/endpoints      this route table as JSON, for an agent or an MCP wrapper
   GET  brainmd                  the router BRAIN.md text
+  GET  audiences                audience profiles from the avatars with their doubts, proof, approval and defaults
+  POST audiences/default        {surface, avatar_id}: the default profile per surface (ads, email, pdp, cx, social)
   POST remember                 {text}: decisions, red lines, learnings and facts proposed from a pasted note
   POST remember/confirm         {items}: the ticked proposals written as approved founder records
   GET  locks                    locked zones: locked lines, locked facts, logo rules; the review route enforces them
@@ -201,6 +203,9 @@ _pspec.loader.exec_module(parity)
 _sspec = importlib.util.spec_from_file_location("brand_brain_sitediff", HERE / "sitediff.py")
 sitediff = importlib.util.module_from_spec(_sspec)
 _sspec.loader.exec_module(sitediff)
+_auspec = importlib.util.spec_from_file_location("brand_brain_audiences", HERE / "audiences.py")
+audiences = importlib.util.module_from_spec(_auspec)
+_auspec.loader.exec_module(audiences)
 _rmspec = importlib.util.spec_from_file_location("brand_brain_remember", HERE / "remember.py")
 remember = importlib.util.module_from_spec(_rmspec)
 _rmspec.loader.exec_module(remember)
@@ -1883,6 +1888,19 @@ def handle(req):
         return cd
     if req.method == "POST" and parts == ["claims"]:
         return claim_add(brain, req.body)
+    if req.method == "GET" and parts == ["audiences"]:
+        a = audiences.profiles(brain, ladderproof)
+        a.update(brand=brain.brand, today=brain.today.isoformat(), capability={"id": "BRN-C10", "autonomy": "agent_does"})
+        return a
+    if req.method == "POST" and parts == ["audiences", "default"]:
+        body = req.body or {}
+        rec = audiences.set_default(brain, str(body.get("surface") or ""), str(body.get("avatar_id") or ""))
+        if isinstance(rec, tuple):
+            return rec
+        errs = founder_put(brain, rec, "audience", rec["text"][:160])
+        if errs:
+            return 400, {"error": "; ".join(errs)}
+        return 201, {"ok": True, "defaults": rec["value"], "version": brain.version(), "next": "Set. The brain file lists the default first for every generator."}
     if req.method == "POST" and parts == ["remember"]:
         text = str((req.body or {}).get("text") or "")
         if not text.strip():
@@ -2009,7 +2027,7 @@ def handle(req):
         pv = package_view(brain, cap)
         if isinstance(pv, tuple):
             return pv
-        res = agentfile.build(brain, cap, pv, {"claims": claims_mod, "voice": voice, "visibility": visibility, "ladderproof": ladderproof, "market": market, "package": package_mod})
+        res = agentfile.build(brain, cap, pv, {"claims": claims_mod, "voice": voice, "visibility": visibility, "ladderproof": ladderproof, "market": market, "package": package_mod, "audiences": audiences})
         _log_read(brain, [p["section"] for p in pv["parts"] if p.get("section")], req.arg("reader") or cap)
         if pv.get("record_ids"):
             trail.log_records(brain, req.arg("reader") or cap, pv["record_ids"], pv.get("public_facing"))

@@ -2329,10 +2329,43 @@ class Round6Remember(TempBrain):
         self.assertEqual(empty['counts']['total'], 0)
 
 
+class Round6Audiences(TempBrain):
+    """Round 6 feature 3: audience profiles from the avatars with their doubts, approval and defaults; the brain file lists them; rule BRN-R33."""
+
+    def test_profiles_defaults_rule_and_brain_file(self):
+        a = api.handle(Req(['audiences']))
+        self.assertEqual(a['counts']['profiles'], 13)
+        self.assertEqual(a['counts']['approved'], 0)
+        self.assertGreater(a['counts']['with_doubts'], 3)
+        p = next(x for x in a['profiles'] if x['key'] == 'durability_disappointed_repeat_customer')
+        self.assertTrue(p['doubts'] and 'durability' in {d['theme'] for d in p['doubts']})
+        self.assertIn('Doubts to answer', p['line'])
+        self.assertEqual(a['profiles'][0]['share'], max(x['share'] or 0 for x in a['profiles']))
+        f = next(f for f in api.handle(Req(['audit']))['findings'] if f['rule_id'] == 'BRN-R33')
+        self.assertIn('none of the 13 profiles is approved', f['sentence'])
+        act = next(x for x in api.rank('bombas', {'ends_on': '2026-09-27', 'days': 28, 'trailing': 4})['actions'] if x['rule_id'] == 'BRN-R33')
+        self.assertEqual((act['owner'], api.rank_mod.validate_action(act)), ('person', []))
+        status, res = api.handle(Req(['audiences', 'default'], 'POST', body={'surface': 'ads', 'avatar_id': p['id']}))
+        self.assertEqual((status, res['defaults']), (201, {'ads': p['id']}))
+        api.handle(Req(['approve', p['id']], 'POST', body={'choice': 'approve'}))
+        a = api.handle(Req(['audiences']))
+        p2 = next(x for x in a['profiles'] if x['id'] == p['id'])
+        self.assertEqual((p2['approved'], p2['default_for']), (True, ['ads']))
+        self.assertFalse([f for f in api.handle(Req(['audit']))['findings'] if f['rule_id'] == 'BRN-R33'])
+        bf = api.handle(Req(['agentfile'], query={'capability': ['CREA-C06']}))
+        self.assertEqual(bf['judgement'][0]['key'], 'audience')
+        self.assertIn('default for ads: ' + p['name'], bf['text'])
+        status, res = api.handle(Req(['audiences', 'default'], 'POST', body={'surface': 'ads', 'avatar_id': ''}))
+        self.assertEqual((status, res['defaults']), (201, {}))
+        self.assertEqual(api.handle(Req(['audiences', 'default'], 'POST', body={'surface': 'tv', 'avatar_id': p['id']}))[0], 400)
+        self.assertEqual(api.handle(Req(['audiences', 'default'], 'POST', body={'surface': 'ads', 'avatar_id': 'bombas.avatars.nope'}))[0], 404)
+        self.assertIn('audience', [c['kind'] for c in api.handle(Req(['changes']))['changes']])
+
+
 class Round4SecondBrand(unittest.TestCase):
     """Round 4 feature 2: plug and play. Every route answers for the example brain (7 records), unavailable never zero."""
 
-    ROUTES = [['overview'], ['master'], ['profile'], ['documents'], ['competitors'], ['coverage'], ['signals'], ['health'], ['conflicts'], ['questions'], ['ladders', 'proof'], ['selfaudit'], ['peaks'], ['visual'], ['newbrand'], ['visibility'], ['moves'], ['channels'], ['agentfile', 'endpoints'], ['brainmd'], ['trail'], ['assets'], ['ugc'], ['drift'], ['locks'],
+    ROUTES = [['overview'], ['master'], ['profile'], ['documents'], ['competitors'], ['coverage'], ['signals'], ['health'], ['conflicts'], ['questions'], ['ladders', 'proof'], ['selfaudit'], ['peaks'], ['visual'], ['newbrand'], ['visibility'], ['moves'], ['channels'], ['agentfile', 'endpoints'], ['brainmd'], ['trail'], ['assets'], ['ugc'], ['drift'], ['locks'], ['audiences'],
               ['decisions'], ['flows'], ['claims'], ['site', 'diff'], ['parity'], ['contracts'], ['legal'], ['voice'], ['battlecards'], ['permissions'],
               ['export'], ['assumptions'], ['facts'], ['summaries'], ['changes'], ['learn'], ['report'], ['digest'], ['review'], ['bottlenecks'], ['audit']]
 

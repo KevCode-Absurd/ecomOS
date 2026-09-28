@@ -66,6 +66,7 @@
     loadUgc(m.actions || []);
     loadDrift(m.actions || []);
     loadLocks();
+    loadAudiences(m.actions || []);
     loadSelfAudit(m.actions || []);
     loadPeaks(m.actions || []);
     loadVisual(m.actions || []);
@@ -1449,6 +1450,26 @@
     const add = el('button', { class: 'btn primary sm', type: 'button', text: 'Put the yes on file' });
     add.addEventListener('click', async () => { add.disabled = true; try { const r = await api(BASE + 'ugc', { method: 'POST', body: { name: name.value.trim(), handle: handle.value.trim(), channel: channel.value, what: what.value.trim(), scope: scope.value, term_months: term.value || null, granted_on: granted.value || null, evidence: evidence.value.trim() } }); status.textContent = r.next; loadUgc(actions); loadPlan(); } catch (e) { add.disabled = false; status.textContent = 'Could not save: ' + e.message; } });
     mount('#ugc', table, el('div', { class: 'row', style: { marginTop: '8px' } }, name, handle, channel, what), el('div', { class: 'row' }, scope, term, granted, evidence, draft, add, status), out, el('p', { class: 'micro faint', text: ug.note }));
+  }
+  async function loadAudiences(actions) {
+    let au;
+    try { au = await api(BASE + 'audiences'); } catch (e) { mount('#audiences', el('p', { class: 'muted', text: 'Audiences unavailable: ' + e.message })); return; }
+    const act = (actions || []).find((a) => a.rule_id === 'BRN-R33');
+    const c = au.counts;
+    mount('#audiences-tools', UI.orientation([{ label: 'profiles', value: c.profiles, unit: 'n' }, { label: 'approved', value: c.approved, unit: 'n', tone: c.approved ? 'good' : 'bad' }, { label: 'defaults set', value: c.defaults_set, unit: 'n', title: 'of ' + au.surfaces.length + ' surfaces' }, { label: 'share covered', value: c.share_covered, unit: '%' }]));
+    const status = el('span', { class: 'micro muted' });
+    const cards = au.profiles.map((p) => {
+      const card = el('article', { class: 'card flat rec' });
+      card.append(el('div', { class: 'row' }, el('b', { text: p.name }), el('span', { class: 'chip', text: p.share == null ? NA : Math.round(p.share * 100) + '%' }), tierChip(p.tier), ...p.default_for.map((s) => el('span', { class: 'chip good', text: 'default: ' + s })), p.doubts.length ? el('span', { class: 'chip ' + (p.doubts.some((d) => !d.has_proof) ? 'warn' : ''), text: p.doubts.length + ' doubt' + (p.doubts.length === 1 ? '' : 's') + (p.doubts.some((d) => !d.has_proof) ? ', proof missing' : '') }) : null));
+      card.append(el('div', { class: 'small', text: p.line }));
+      if (p.quote) card.append(el('blockquote', { text: '"' + p.quote + '"' }));
+      const row = el('div', { class: 'row' });
+      for (const s of au.surfaces) { const b = el('button', { class: 'btn xs' + (p.default_for.includes(s) ? ' primary' : ' soft'), type: 'button', text: p.default_for.includes(s) ? 'default for ' + s : 'make default for ' + s }); b.addEventListener('click', async () => { b.disabled = true; try { await api(BASE + 'audiences/default', { method: 'POST', body: { surface: s, avatar_id: p.default_for.includes(s) ? '' : p.id } }); loadAudiences(actions); loadPlan(); } catch (e) { b.disabled = false; status.textContent = 'Could not set: ' + e.message; } }); row.append(b); }
+      if (!p.approved) { const ap = el('button', { class: 'btn xs', type: 'button', text: 'Approve' }); ap.addEventListener('click', async () => { ap.disabled = true; try { await api(BASE + 'approve/' + encodeURIComponent(p.id), { method: 'POST', body: { choice: 'approve' } }); loadAudiences(actions); loadPlan(); } catch (e) { ap.disabled = false; status.textContent = 'Could not approve: ' + e.message; } }); row.append(ap); }
+      card.append(row);
+      return card;
+    });
+    mount('#audiences', el('div', { class: 'row' }, act ? UI.decisionRow({ capability: 'BRN-C10', autonomy: 'agent_does', owner: act.owner, screen: SCREEN, compact: true, finding_id: act.id, current: act.decision, stub: act.title + '. ' + act.artefact.label + '.' }) : null, status), el('div', { class: 'grid two' }, ...cards), el('p', { class: 'micro faint', text: au.note }));
   }
   async function loadLocks() {
     let z;

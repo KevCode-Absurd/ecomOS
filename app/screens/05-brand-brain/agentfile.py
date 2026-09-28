@@ -121,6 +121,14 @@ def build(brain, capability: str, package_view: dict, mods: dict) -> dict:
     public = bool(package_view.get("public_facing"))
     strict = strict_rules(brain, mods["claims"], mods["voice"], mods["visibility"], public)
     judge = judgement_rules(brain, mods["voice"], mods.get("market"), mods["ladderproof"])
+    if mods.get("audiences") is not None:
+        try:
+            au = mods["audiences"].profiles(brain, mods["ladderproof"])
+            if au["profiles"]:
+                order = sorted(au["profiles"], key=lambda p: (0 if p["default_for"] else 1, 0 if p["approved"] else 1, -(p["share"] or 0)))
+                judge.insert(0, {"key": "audience", "label": "Write for one of these people (defaults first; approved ones are safe to name)", "lines": [("default for " + ", ".join(p["default_for"]) + ": " if p["default_for"] else "") + p["line"] + (" [approved]" if p["approved"] else " [evidence only]") for p in order[:6]]})
+        except Exception:  # noqa: BLE001
+            pass
     out = [f"# {brain.brand}: brain file for {capability}" + (f" ({package_view.get('name')})" if package_view.get("name") else ""), "",
            f"Generated {brain.today.isoformat()}, brain version {brain.version()}. Read this before you write. Strict rules are checked by the scanner and block; judgement rules guide. Records are named by id; ask for one with GET records/<section>.", ""]
     out.append("## Strict rules (checked, never break)")
