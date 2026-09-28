@@ -98,6 +98,7 @@ class Ctx:
         self.paid = audit.paid_prices(rd)
         self.attach = audit.attach_rates(rd)
         self.code_returns = audit.returns_by_code(rd)
+        self.baseline = audit.visitor_baseline(rd)
         self.ship_rate = (model.brain_value(rd, 'offers.standard_shipping_cost')[0] or {}).get('cost_usd') if rd.brand else None
         self.scenarios = (model.threshold_scenarios(rd, self.threshold, self.ship_rate, self.be['value'], (self.po or {}).get('units') or 1)
                           if self.threshold is not None and self.be.get('value') is not None else [])
@@ -1276,6 +1277,30 @@ def code_returns_action(f, a, ctx):
     return a
 
 
+def power_action(f, a, ctx):
+    """OFFER-R39: a test policy for thin traffic, with the change a 35-day sitewide test can see."""
+    vb = ctx.baseline
+    k = playbook.POWER_K
+    see35 = model.detectable_lift(vb, playbook.POWER_MAX_DAYS, k)
+    draft = '\n'.join(['Test policy for this store\'s traffic', f['sentence'],
+                        f'Today: {vb["sessions_per_day"]:,} sessions a day, {vb["conversion"] * 100:.2f} percent conversion, '
+                        f'{money(vb["profit_per_visitor"], 2)} profit per visitor.',
+                        f'1. Run one offer or price test at a time, sitewide where it can be.',
+                        f'2. Test changes big enough to see: a 35-day sitewide test sees about {see35 * 100:.0f} percent or more.',
+                        f'3. Or run {vb["days_needed"]} days for a {playbook.POWER_LIFT * 100:.0f} percent change.',
+                        '4. Never call a test early; the read point is set before the start.',
+                        'Every test brief on this screen shows the change its planned days can see.'])
+    a.update({'title': f'Run fewer, bigger tests: 35 days sees about {see35 * 100:.0f} percent, not 10', 'owner': 'agent_drafts',
+              'artefact': {'kind': 'policy', 'label': 'Test policy for thin traffic', 'draft': draft},
+              'steps': steps(('agent', 'Draft the policy with today\'s traffic numbers.'), ('person', 'Approve it.'),
+                             ('person', 'Send it to the experiments screen as the store rule.')),
+              'size': {'text': f'{vb["days_needed"]} days needed for a {playbook.POWER_LIFT * 100:.0f} percent change', 'usd': None},
+              'win_rule': 'Every new test runs long enough for the change it aims at.',
+              'stop_rule': f'Check again on {ctx.check_on(28)}; drop the policy if sessions double.',
+              'check_on': ctx.check_on(28), 'time_to_ship_hours': 1})
+    return a
+
+
 def bunches(rd):
     """Order-value bunches and the tiers above them, from real order bins only (never from the fixture)."""
     dist = rd.m('order_value_distribution', audit.WINDOW, step=5)
@@ -1452,7 +1477,7 @@ BUILDERS = {'OFFER-R01': threshold_action, 'OFFER-R04': rung_action, 'OFFER-R08'
             'OFFER-R22': cost_action, 'OFFER-R23': referral_action, 'OFFER-R24': loyalty_action,
             'OFFER-R25': discount_action, 'OFFER-R26': bundle_action,
             'OFFER-R27': launched_action, 'OFFER-R29': bnpl_action,
-            'OFFER-R30': match_action, 'OFFER-R31': cohort_action, 'OFFER-R32': welcome_action, 'OFFER-R33': trust_action, 'OFFER-R34': moves_action, 'OFFER-R35': stress_action, 'OFFER-R36': paid_action, 'OFFER-R37': attach_action, 'OFFER-R38': code_returns_action}
+            'OFFER-R30': match_action, 'OFFER-R31': cohort_action, 'OFFER-R32': welcome_action, 'OFFER-R33': trust_action, 'OFFER-R34': moves_action, 'OFFER-R35': stress_action, 'OFFER-R36': paid_action, 'OFFER-R37': attach_action, 'OFFER-R38': code_returns_action, 'OFFER-R39': power_action}
 UNAVAILABLE_BUILDERS = {'OFFER-R34': recapture_action}
 
 
@@ -1495,8 +1520,10 @@ def rank(brand='bombas', window=None, data=None):
     actions = [a for a in actions if not RANK.validate_action(a)]
     actions.sort(key=RANK.sort_key)
     calendar = test_calendar(actions, ctx)
+    for row in calendar:   # the change a sitewide test of this length can see; a single page sees less
+        row['can_see'] = model.detectable_lift(ctx.baseline, row['days'], playbook.POWER_K)
     return {'screen': SCREEN, 'brand': brand, 'window': w, 'simulated': True, 'net_revenue_28d': nr,
             'actions': actions, 'findings': findings, 'objections': ctx.objections, 'returns': returns_block(rd),
             'ladder': dict(ctx.ladder, moves=ctx.ladder_rows), 'first_order': ctx.first_order, 'waterfalls': ctx.waterfalls, 'calendar': ctx.calendar, 'gifting': ctx.gifting, 'guarantee': ctx.guarantee, 'position': ctx.position, 'parity': ctx.parity,
-            'discipline': dict(ctx.discipline, policy=discount_policy(ctx), windows=ctx.depth_history, window_creep_points=playbook.WINDOW_CREEP_POINTS), 'cart': ctx.cart, 'tests': calendar, 'depth': ctx.depth, 'cohorts': ctx.cohorts, 'costs': ctx.costs, 'registry': ctx.registry, 'referral': ctx.referral, 'loyalty': ctx.loyalty, 'bundles': ctx.bundles, 'proposed_tests': ctx.proposed_rows, 'launched': ctx.launched, 'discount_cohorts': audit.discount_cohorts(rd), 'welcome': ctx.welcome, 'trust': ctx.trust, 'price_moves': ctx.price_moves, 'stress': ctx.stress, 'paid': ctx.paid, 'attach': ctx.attach, 'code_returns': ctx.code_returns, 'bunches': bunches(rd),
+            'discipline': dict(ctx.discipline, policy=discount_policy(ctx), windows=ctx.depth_history, window_creep_points=playbook.WINDOW_CREEP_POINTS), 'cart': ctx.cart, 'tests': calendar, 'depth': ctx.depth, 'cohorts': ctx.cohorts, 'costs': ctx.costs, 'registry': ctx.registry, 'referral': ctx.referral, 'loyalty': ctx.loyalty, 'bundles': ctx.bundles, 'proposed_tests': ctx.proposed_rows, 'launched': ctx.launched, 'discount_cohorts': audit.discount_cohorts(rd), 'welcome': ctx.welcome, 'trust': ctx.trust, 'price_moves': ctx.price_moves, 'stress': ctx.stress, 'paid': ctx.paid, 'attach': ctx.attach, 'code_returns': ctx.code_returns, 'baseline': ctx.baseline, 'bunches': bunches(rd),
             'subscription': model.subscription_note(rd, ctx.cohorts, (ctx.depth or {}).get('rows'), (ctx.depth or {}).get('target'))}

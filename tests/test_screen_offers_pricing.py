@@ -1845,5 +1845,29 @@ class CodeReturnsTest(unittest.TestCase):
         self.assertEqual([f for f in audit.run(None, None, server.Data()) if f['rule_id'] == 'OFFER-R38'], [])
 
 
+class PowerTest(unittest.TestCase):
+    """Round 7 feature 4: profit per visitor today, the days a test needs, and OFFER-R39 for thin traffic."""
+
+    def test_formula(self):
+        base = {'unavailable': False, 'conversion': 0.02, 'sessions_per_day': 1000}
+        k = api.actions.playbook.POWER_K
+        d = api.model.detectable_lift(base, 28, k)
+        self.assertAlmostEqual(d, (k * 0.98 / (0.02 * 14000)) ** 0.5, 4)
+        self.assertIsNone(api.model.detectable_lift({'unavailable': True}, 28, k))
+
+    def test_sample_thin_bombas_not(self):
+        sys.path.insert(0, str(ROOT / 'app'))
+        import server
+        r = api.actions.rank(None, None, server.Data())
+        vb = r['baseline']
+        self.assertGreater(vb['days_needed'], api.actions.playbook.POWER_MAX_DAYS)
+        a = next(x for x in r['actions'] if x['rule_id'] == 'OFFER-R39')
+        self.assertEqual(a['artefact']['kind'], 'policy')
+        self.assertTrue(all(row['can_see'] for row in r['tests']))
+        b = api.actions.rank('bombas')
+        self.assertLessEqual(b['baseline']['days_needed'], api.actions.playbook.POWER_MAX_DAYS)
+        self.assertFalse(any(x['rule_id'] == 'OFFER-R39' for x in b['actions']))
+
+
 if __name__ == '__main__':
     unittest.main()

@@ -1569,3 +1569,48 @@ def returns_by_code(rd, days, lag):
     return {'unavailable': False, **out, 'ratio': round(c / f, 3) if c is not None and f else None,
             'start': start.isoformat(), 'end': end.isoformat(),
             'basis': f'orders {start.isoformat()} to {end.isoformat()}, {lag} days before the window end so returns can land'}
+
+
+# ---------------------------------------------------------------- the test baseline: profit per visitor and days needed
+
+def visitor_baseline(rd, lift, k):
+    """28-day sessions, orders and profit before media, profit per visitor, and the days a sitewide 50/50 test needs
+    to see a `lift` relative change in conversion. Sessions from the sessions metric, else the daily aggregate.
+    Profit from 28-day contribution before media, else order rows (subtotal minus code minus cogs, labelled)."""
+    end = rd.ends_on
+    sm = rd.m('sessions', 28)
+    sessions = sm.get('value') if not sm.get('unavailable') else None
+    t = window_totals(rd, end)
+    if sessions is None and t:
+        daily = {r['date']: r for r in rd.table('daily') or []}
+        vals = [daily[(end - timedelta(days=i)).isoformat()].get('sessions') for i in range(28)]
+        sessions = sum(vals) if all(v is not None for v in vals) else None
+    if not sessions:
+        return {'unavailable': True, 'reason': 'no sessions for the last 28 days', 'fix': 'ga4'}
+    c = contribution_28d(rd)
+    if c.get('value') is not None and t:
+        orders, profit = t['orders'], c['before_media'] * t['orders']
+        basis = '28-day contribution before media over sessions'
+    else:
+        rows = [o for o in (rd.table('orders') or []) if (end - timedelta(days=27)).isoformat() <= str(o.get('created_at'))[:10] <= end.isoformat()
+                and not o.get('cancelled_at')]
+        if not rows or any(o.get('cogs') is None for o in rows):
+            return {'unavailable': True, 'reason': 'no profit per order for the last 28 days', 'fix': 'finance_inputs'}
+        orders = len(rows)
+        profit = sum(float(o.get('subtotal') or 0) - float((o.get('discount') or {}).get('amount') or 0) - float(o['cogs']) for o in rows)
+        basis = 'order rows: subtotal minus code minus cogs, before shipping, fees and media, over sessions'
+    p = orders / sessions
+    per_arm = k * (1 - p) / (p * lift ** 2) if p else None
+    days = math.ceil(2 * per_arm / (sessions / 28)) if per_arm else None
+    return {'unavailable': False, 'sessions': int(sessions), 'orders': int(orders), 'profit': round(profit, 2),
+            'profit_per_visitor': round(profit / sessions, 3), 'conversion': round(p, 5), 'lift': lift,
+            'days_needed': days, 'sessions_per_day': round(sessions / 28), 'basis': basis}
+
+
+def detectable_lift(base, days, k):
+    """The smallest relative change in conversion a sitewide 50/50 test of `days` can see (see visitor_baseline)."""
+    if not base or base.get('unavailable') or not days:
+        return None
+    p = base['conversion']
+    n = base['sessions_per_day'] * days / 2
+    return round(math.sqrt(k * (1 - p) / (p * n)), 4) if p and n else None

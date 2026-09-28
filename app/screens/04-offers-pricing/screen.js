@@ -26,7 +26,7 @@
     'desk-ladder': ['R07', 'R09', 'R29'], 'desk-first': ['R08', 'R31'], 'desk-welcome': ['R32', 'R38'], 'desk-waterfall': ['R10', 'R03'], 'desk-calendar': ['R11'],
     'desk-depth': ['R11', 'R03'], 'desk-second': ['R21'], 'desk-cost': ['R22'], 'desk-paid': ['R36', 'R31'], 'desk-attach': ['R37', 'R28', 'R31'], 'desk-gifting': ['R12', 'R13'], 'desk-guarantee': ['R14', 'R35'],
     'desk-position': ['R16'], 'desk-parity': ['R17'], 'desk-moves': ['R34'], 'desk-bundles': ['R26'], 'desk-buyers': ['R23', 'R24'],
-    'desk-objections': ['R04', 'R15'], 'desk-tests': ['R27'], 'desk-registry': ['R27', 'R33'], 'desk-registry-trust': ['R33'] };
+    'desk-objections': ['R04', 'R15'], 'desk-tests': ['R27', 'R39'], 'desk-registry': ['R27', 'R33'], 'desk-registry-trust': ['R33'] };
   function blockAction(id) {
     const rules = (BLOCK_RULES[id] || []).map((r) => '.OFFER-' + r + '.');
     const hits = ACTIONS.filter((a) => (a.finding_ids || []).some((f) => rules.some((r) => f.indexOf(r) >= 0)));
@@ -558,7 +558,7 @@
       actionLine(n ? n + ' listings undercut the site. Check each seller, then price or report.' : 'No listing undercuts the site.', a));
   }
 
-  function testsBlock(tests) {
+  function testsBlock(tests, vb) {
     const head = { title: 'Which moves can run together, and which must wait?', sub: 'Each move changes a surface for a set number of days. Two moves on one surface cannot run at once, and nothing runs inside a promo window. Earliest start is ' + SET.approval_days + ' days after today for approval.' };
     if (!tests || !tests.length) return section('desk-tests', head, UI.emptyState({ screen: SLUG, title: 'No moves to schedule', text: 'The plan has no open moves.' }));
     const short = (iso) => { const d = new Date(iso + 'T00:00:00'); return isNaN(d) ? NA : d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }); };
@@ -566,13 +566,16 @@
     const vk = (r) => r.approved ? ['scale', 'Approved, ' + V[r.status][1].toLowerCase()] : V[r.status];
     const table = UI.verdictTable({
       columns: [{ key: 'title', label: 'Move' }, { key: 'start', label: 'Runs', format: (v, r) => short(r.start) + ' to ' + short(r.end) + ', ' + r.days + ' days' },
-        { key: 'surfaces', label: 'Changes', format: (v) => v.join(', ') }, { key: 'waits_for', label: 'Waits for', format: (v) => v.length ? v.join('; ') : 'nothing' }],
+        { key: 'surfaces', label: 'Changes', format: (v) => v.join(', ') }, { key: 'waits_for', label: 'Waits for', format: (v) => v.length ? v.join('; ') : 'nothing' },
+        { key: 'can_see', label: 'Can see, sitewide', format: (v) => v == null ? NA : pct(v, 0) + ' change or more' }],
       rows: withActs(tests, (r) => { const a = ACTIONS.find((x) => x.id === r.id); return a ? [{ label: 'Open action', onClick: () => openAction(a) }] : []; }),
       verdict: { at: 1, kind: (r) => vk(r)[0], text: (r) => vk(r)[1], reason: (r) => r.surfaces.join(', ') },
       actions: { label: 'Do' }, sort: false,
     });
     const ready = tests.filter((t) => t.status === 'ready');
-    return section('desk-tests', head, el('div', { class: 'card tight' }, table,
+    const base = vb && !vb.unavailable ? el('p', { class: 'small', text: 'Today: ' + fmt.money(vb.profit_per_visitor) + ' profit per visitor, ' + fmt.int(vb.sessions_per_day) + ' sessions a day, ' + pct(vb.conversion, 2) + ' conversion. A sitewide test needs ' + vb.days_needed + ' days to see a ' + pct(vb.lift, 0) + ' change. Basis: ' + vb.basis + '.' })
+      : el('p', { class: 'small muted', text: 'Profit per visitor: ' + NA + ', ' + ((vb || {}).reason || 'no sessions') + '.' });
+    return section('desk-tests', head, el('div', { class: 'card tight' }, base, table,
       el('div', { class: 'row' }, el('button', { class: 'btn sm', type: 'button', text: 'Export calendar CSV', onclick: () => UI.csv(tests.map((t) => ({ move: t.title, start: t.start, end: t.end, days: t.days, changes: t.surfaces.join('; '), waits_for: t.waits_for.join('; ') })), null, 'offer-test-calendar.csv') }))),
       actionLine((ready.length ? ready.length + (ready.length === 1 ? ' move starts' : ' moves can start') + ' on ' + fmt.date(ready[0].start) + '. ' : 'No move can start yet. ')
         + (tests.length - ready.length ? (tests.length - ready.length) + ' wait for a shared surface or the peak. ' : 'None waits. ') + 'Approve the first one.',
@@ -747,8 +750,8 @@
     wrong(d);
     actionsList(d);
     const TABS = [
-      { key: 'launch', label: 'Launch next', rules: ['OFFER-R11', 'OFFER-R12', 'OFFER-R21', 'OFFER-R27', 'OFFER-R33'],
-        blocks: () => [testsBlock(d.tests), registryBlock(d.registry, d.proposed_tests, d.launched, d.trust), calendarBlock(d.calendar), depthBlock(d.depth), giftingBlock(d.gifting), secondOrderBlock(d.cohorts)] },
+      { key: 'launch', label: 'Launch next', rules: ['OFFER-R11', 'OFFER-R12', 'OFFER-R21', 'OFFER-R27', 'OFFER-R33', 'OFFER-R39'],
+        blocks: () => [testsBlock(d.tests, d.baseline), registryBlock(d.registry, d.proposed_tests, d.launched, d.trust), calendarBlock(d.calendar), depthBlock(d.depth), giftingBlock(d.gifting), secondOrderBlock(d.cohorts)] },
       { key: 'offers', label: 'Offers', rules: ['OFFER-R08', 'OFFER-R10', 'OFFER-R19', 'OFFER-R31', 'OFFER-R32', 'OFFER-R38', 'OFFER-R20', 'OFFER-R37', 'OFFER-R23', 'OFFER-R24', 'OFFER-R04', 'OFFER-R14', 'OFFER-R35', 'OFFER-R15'],
         blocks: () => [firstOrderBlock(d.first_order, d.discount_cohorts), welcomeBlock(d.welcome, d.code_returns), cartBlock(d.cart, d.bunches), attachBlock(d.attach), buyersBlock(d), objectionBlock(d.objections || [], d.returns), guaranteeBlock(d.guarantee, d.returns, d.stress), subscriptionBlock(d.subscription), stackBlock(d.stack || [])] },
       { key: 'prices', label: 'Prices and packs', rules: ['OFFER-R22', 'OFFER-R36', 'OFFER-R16', 'OFFER-R17', 'OFFER-R34', 'OFFER-R07', 'OFFER-R09', 'OFFER-R26', 'OFFER-R29'],

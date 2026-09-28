@@ -263,3 +263,10 @@ RETURN_DAYS = 180
 RETURN_LAG = 30
 RETURN_RATIO = 1.25
 RETURN_MIN = 200
+
+# Test power (screen 04). Days a 50/50 test needs to see a POWER_LIFT relative change in conversion at 80 percent
+# power and 5 percent two-sided significance: n per arm = POWER_K x (1 - p) / (p x lift^2), POWER_K = 2 x (1.96 +
+# 0.84)^2. Sitewide traffic is the upper bound; a single page gets less, so its test runs longer.
+POWER_LIFT = 0.10
+POWER_K = 15.68
+POWER_MAX_DAYS = 35           # a sitewide test that needs longer than this means traffic is too thin for the usual 28 days

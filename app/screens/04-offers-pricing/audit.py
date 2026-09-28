@@ -161,6 +161,9 @@ Rules
              full-price rate or more, each side RETURN_MIN orders, over RETURN_DAYS ending RETURN_LAG days back
              (model.returns_by_code). Money null: the holdout read counts the refunds. Medium. Rides on the
              welcome code holdout when that move exists. Capability LIFE-C02.
+  OFFER-R39  Traffic too thin for 28-day tests: a sitewide 50/50 test needs more than playbook.POWER_MAX_DAYS days to
+             see a POWER_LIFT change in conversion at today's sessions and conversion (model.visitor_baseline). The
+             move is a test policy: fewer, bigger tests. Money null. Medium. Capability LIFE-C47.
   OFFER-R03  Margin after discount per SKU. Needs cogs_landed keyed by the store's SKUs. Unavailable while no
              finance_inputs SKU key matches a product SKU. Capability MONEY-C05 (founder gate). Owner: 04.
   OFFER-R04  A deal-breaker rung with no proof: the top rung of an objection ladder whose proof is empty or
@@ -279,6 +282,8 @@ RULES = [
      'inputs': ['orders', 'products'], 'capability': 'LIFE-C41', 'owner_screen': SCREEN},
     {'rule_id': 'OFFER-R38', 'name': 'Code orders come back more', 'entity_type': 'offer',
      'inputs': ['orders'], 'capability': 'LIFE-C02', 'owner_screen': SCREEN},
+    {'rule_id': 'OFFER-R39', 'name': 'Traffic too thin for 28-day tests', 'entity_type': 'metric',
+     'inputs': ['sessions or daily.sessions', 'orders or daily'], 'capability': 'LIFE-C47', 'owner_screen': SCREEN},
     {'rule_id': 'OFFER-R03', 'name': 'Margin after discount per SKU', 'entity_type': 'sku',
      'inputs': ['finance_inputs.cogs_landed keyed by product SKU', 'products'], 'capability': 'MONEY-C05',
      'owner_screen': SCREEN},
@@ -321,6 +326,7 @@ CAPABILITY = {'OFFER-R01': {'id': 'MONEY-C05', 'autonomy': 'founder_gate'},
               'OFFER-R36': {'id': 'MONEY-C05', 'autonomy': 'founder_gate'},
               'OFFER-R37': {'id': 'LIFE-C41', 'autonomy': 'founder_gate'},
               'OFFER-R38': {'id': 'LIFE-C02', 'autonomy': 'founder_gate'},
+              'OFFER-R39': {'id': 'LIFE-C47', 'autonomy': 'founder_gate'},
               'OFFER-R06': {'id': 'MONEY-C05', 'autonomy': 'founder_gate'},
               'OFFER-R04': {'id': 'LIFE-C36', 'autonomy': 'founder_gate'}}
 SEVERITY_ORDER = {'critical': 0, 'high': 1, 'medium': 2, 'low': 3}
@@ -1474,6 +1480,25 @@ def rule_code_returns(rd):
                      None, 0.6, [], end, money_reason='the extra refunds are counted in the holdout read')]
 
 
+def visitor_baseline(rd):
+    pb = _playbook()
+    return _model().visitor_baseline(rd, pb.POWER_LIFT, pb.POWER_K)
+
+
+def rule_power(rd):
+    end = rd.ends_on
+    pb = _playbook()
+    vb = visitor_baseline(rd)
+    if vb['unavailable'] or vb['days_needed'] is None or vb['days_needed'] <= pb.POWER_MAX_DAYS:
+        return []
+    ev = [_ev('days_needed_sitewide', vb['days_needed'], 'count', end, baseline=28, baseline_kind='usual_test_days'),
+          _ev('sessions_per_day', vb['sessions_per_day'], 'count', end), _ev('conversion', vb['conversion'], 'ratio', end)]
+    return [_finding('OFFER-R39', {'type': 'metric', 'id': 'test_power', 'label': 'Test length'}, 'medium', ev,
+                     f'At {vb["sessions_per_day"]:,} sessions a day, a sitewide test needs {vb["days_needed"]} days to see a '
+                     f'{pb.POWER_LIFT * 100:.0f} percent change in conversion. A 28-day test cannot tell.', None, 0.8, [], end,
+                     money_reason='a test too short to read costs the decision, not a counted dollar')]
+
+
 def rule_ladder(rd):
     end = rd.ends_on
     pb = _playbook()
@@ -1645,7 +1670,7 @@ def run(brand, window=None, data=None):
     """Findings for one brand, sorted by severity then money at stake. `window` is {ends_on} or None."""
     ends_on = date.fromisoformat(window['ends_on']) if window and window.get('ends_on') else last_full_day(data, brand)
     rd = Reader(data, brand, ends_on)
-    out = (rule_threshold(rd) + rule_stale(rd) + rule_pull(rd) + rule_first_order(rd) + rule_red_line(rd) + rule_promo(rd) + rule_gifting(rd) + rule_guarantee(rd) + rule_position(rd) + rule_parity(rd) + rule_discount(rd) + rule_cart(rd) + rule_second_order(rd) + rule_cost(rd) + rule_referral(rd) + rule_loyalty(rd) + rule_window_creep(rd) + rule_bundles(rd) + rule_launched(rd) + rule_upsell(rd) + rule_bnpl(rd) + rule_threshold_match(rd) + rule_cohorts(rd) + rule_welcome(rd) + rule_test_trust(rd) + rule_price_moves(rd) + rule_claim_stress(rd) + rule_paid(rd) + rule_attach(rd) + rule_code_returns(rd) + rule_ladder(rd) + rule_sku_margin(rd) +
+    out = (rule_threshold(rd) + rule_stale(rd) + rule_pull(rd) + rule_first_order(rd) + rule_red_line(rd) + rule_promo(rd) + rule_gifting(rd) + rule_guarantee(rd) + rule_position(rd) + rule_parity(rd) + rule_discount(rd) + rule_cart(rd) + rule_second_order(rd) + rule_cost(rd) + rule_referral(rd) + rule_loyalty(rd) + rule_window_creep(rd) + rule_bundles(rd) + rule_launched(rd) + rule_upsell(rd) + rule_bnpl(rd) + rule_threshold_match(rd) + rule_cohorts(rd) + rule_welcome(rd) + rule_test_trust(rd) + rule_price_moves(rd) + rule_claim_stress(rd) + rule_paid(rd) + rule_attach(rd) + rule_code_returns(rd) + rule_power(rd) + rule_ladder(rd) + rule_sku_margin(rd) +
            rule_unanswered(rd))
     out.sort(key=lambda f: (SEVERITY_ORDER[f['severity']], -((f.get('money_at_stake') or {}).get('usd') or -1), f['id']))
     return out
