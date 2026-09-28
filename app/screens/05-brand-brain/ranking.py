@@ -148,6 +148,17 @@ def build(f: dict, nr: float | None) -> dict:
                  steps=(steps or [{"n": 1, "who": "agent", "text": "Check the idea's signal in the brand's data."}]) + [{"n": len(steps) + 1, "who": "agent", "text": "Draft the brief with the metric, the size and the read date; add it to the experiments registry."},
                                                                                                                        {"n": len(steps) + 2, "who": "person", "text": "Approve the brief. The experiments screen runs it."}],
                  check_on=_check_on(f, 7), time_to_ship_hours=2)
+    elif rid == "BRN-R23":
+        rung = f.get("rung") or {}
+        cands = rung.get("candidates") or []
+        surfaces = ", ".join(str(u).replace("_", " ") for u in rung.get("uses") or [])
+        a.update(title=f"Brief the proof for {str(rung.get('theme') or label).replace('_', ' ')} rung {rung.get('level')}: {str(rung.get('doubt'))[:60]}", owner="agent_drafts",
+                 artefact={"kind": "brain_record", "label": f"an approved proof record attached to the rung, read by {surfaces or 'every surface'}", "draft": rung.get("brief")},
+                 steps=[{"n": 1, "who": "agent", "text": ("Show the " + str(len(cands)) + " records on file that name this doubt: " + ", ".join(c["id"] for c in cands[:3]) + ".") if cands else "Confirm nothing on file names this doubt; list the fact that would (a policy term, a product fact, an offer term or a tiered claim)."},
+                        {"n": 2, "who": "agent", "text": "Draft the proof line from the record, sourced to the site or a policy; never a review quote as a testimonial."},
+                        {"n": 3, "who": "person", "text": "Pick the record as proof, or approve the drafted fact as an approved record."},
+                        {"n": 4, "who": "agent", "text": f"Attach it to the rung. The surfaces that use the rung ({surfaces or 'copy, page, listing, macro'}) read the proof on their next brief."}],
+                 check_on=_check_on(f, 7), time_to_ship_hours=1)
     elif rid == "BRN-R21":
         a.update(title=f"Confirm or correct: {label}", owner="person",
                  artefact={"kind": "brain_record", "label": "your number as an approved record; the generator reads it next run", "draft": None},

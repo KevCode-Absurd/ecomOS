@@ -179,6 +179,9 @@ _pspec.loader.exec_module(parity)
 _sspec = importlib.util.spec_from_file_location("brand_brain_sitediff", HERE / "sitediff.py")
 sitediff = importlib.util.module_from_spec(_sspec)
 _sspec.loader.exec_module(sitediff)
+_dspec = importlib.util.spec_from_file_location("brand_brain_ladderproof", HERE / "ladderproof.py")
+ladderproof = importlib.util.module_from_spec(_dspec)
+_dspec.loader.exec_module(ladderproof)
 _cspec = importlib.util.spec_from_file_location("brand_brain_claims", HERE / "claims.py")
 claims_mod = importlib.util.module_from_spec(_cspec)
 _cspec.loader.exec_module(claims_mod)
@@ -1298,6 +1301,20 @@ def handle(req):
         ends = (brain.today - dt.timedelta(days=1)).isoformat()
         findings = audit.run(brain.brand, {"ends_on": ends, "days": 1, "trailing": 0}, BRAIN_ROOT)
         return {"findings": findings, "rules": audit.RULES, "brain_version": brain.version()}
+    if req.method == "GET" and parts == ["ladders", "proof"]:
+        m = ladderproof.matrix(brain, claims_mod)
+        m["capability"] = {"id": "BRN-C03", "autonomy": "agent_does"}
+        return m
+    if req.method == "POST" and parts == ["ladders", "proof"]:
+        body = req.body or {}
+        res = ladderproof.attach(brain, str(body.get("theme") or ""), body.get("level"), str(body.get("record_id") or ""))
+        if isinstance(res, tuple):
+            return res
+        errs = founder_put(brain, res["record"], "proof", f"{res['record']['value'].get('theme', '').replace('_', ' ')} rung {res['rung'].get('level')}: proof set to {body.get('record_id')}")
+        if errs:
+            return 400, {"error": "; ".join(errs)}
+        return 201, {"ok": True, "record": res["record"]["id"], "proof_id": body.get("record_id"), "proof_tier": res["proof_tier"], "usable": res["usable"], "version": brain.version(),
+                     "next": ("The rung is proved; its surfaces read it on the next brief." if res["usable"] else f"Attached, but the record is {res['proof_tier'].replace('_', ' ')}: approve it in the claims desk before a surface uses it.")}
     if req.method == "GET" and parts == ["bottlenecks"]:
         return bottlenecks_view(brain, _window(req, brain))
     if req.method == "POST" and parts == ["bottlenecks", "pick"]:

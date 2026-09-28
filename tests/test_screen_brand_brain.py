@@ -1410,10 +1410,86 @@ class Round4Unlocks(TempBrain):
         self.assertEqual(api.handle(Req(['bottlenecks', 'pick'], 'POST', body={'idea_id': 'ZZZ-999'}))[0], 404)
 
 
+class Round4LadderProof(TempBrain):
+    """Round 4 feature 3: the ladder proof matrix, rungs by surface; the gap brief; attaching a record as proof; rule BRN-R23."""
+
+    def test_matrix_shape_and_gaps(self):
+        m = api.handle(Req(['ladders', 'proof']))
+        self.assertEqual([c['key'] for c in m['cols']], ['copy', 'pdp', 'amazon_listing', 'cx_macro', 'offer'])
+        self.assertEqual(m['counts']['rungs'], len(m['rows']))
+        self.assertEqual(m['counts']['rungs'], m['counts']['proved'] + m['counts']['weak'] + m['counts']['missing'])
+        cell = m['cells']['price_and_value.1']
+        self.assertEqual((cell['copy']['us'], cell['copy']['status'], cell['copy']['tier']), (2, 'proved', 'site_backed'))
+        self.assertNotIn('offer', cell)  # the rung is not used on the offer
+        gap = next(g for g in m['gaps'] if g['key'] == 'durability.3')
+        self.assertEqual((gap['status'], gap['proof_ids'], gap['one_star']), ('missing', [], 35))
+        self.assertEqual(m['cells']['durability.3']['copy']['us'], 0)
+        self.assertTrue(m['cells']['durability.3']['copy']['act'])
+        self.assertIn('Proof brief: durability, rung 3', gap['brief'])
+        self.assertIn('Never a review quote as a testimonial', gap['brief'])
+        self.assertTrue(gap['candidates'] and all(c['tier'] != 'forbidden' for c in gap['candidates']))
+        self.assertEqual(m['gaps'][0]['one_star'], max(g['one_star'] for g in m['gaps']))
+        self.assertEqual(m['counts']['one_star_unproved'], sum(g['one_star'] for g in m['gaps']))
+
+    def test_rule_and_action(self):
+        m = api.handle(Req(['ladders', 'proof']))
+        fs = [f for f in api.handle(Req(['audit']))['findings'] if f['rule_id'] == 'BRN-R23']
+        self.assertEqual(len(fs), m['counts']['missing'])
+        f = next(f for f in fs if f['entity']['id'] == 'rung_durability_3')
+        self.assertEqual((f['severity'], f['capability']['id']), ('medium', 'BRN-C03'))
+        self.assertIn('35 one-star lines', f['sentence'])
+        self.assertIn('bombas.objection_ladders.durability', f['brain_refs'])
+        acts = [a for a in api.rank('bombas', {'ends_on': '2026-09-27', 'days': 28, 'trailing': 4})['actions'] if a['rule_id'] == 'BRN-R23']
+        self.assertEqual(len(acts), len(fs))
+        a = next(a for a in acts if a['entity']['id'] == 'rung_durability_3')
+        self.assertTrue(a['title'].startswith('Brief the proof for durability rung 3'))
+        self.assertEqual((a['owner'], a['artefact']['kind']), ('agent_drafts', 'brain_record'))
+        self.assertTrue(a['artefact']['draft'].startswith('Proof brief: durability, rung 3'))
+        self.assertEqual(api.rank_mod.validate_action(a), [])
+
+    def test_attach_proof_is_a_founder_edit(self):
+        status, res = api.handle(Req(['ladders', 'proof'], 'POST', body={'theme': 'durability', 'level': 3, 'record_id': 'bombas.products.heel_hole_durability'}))
+        self.assertEqual((status, res['usable'], res['proof_tier']), (201, False, 'evidence'))
+        m = api.handle(Req(['ladders', 'proof']))
+        r = next(r for r in m['rungs'] if r['key'] == 'durability.3')
+        self.assertEqual((r['status'], r['tier']), ('weak', 'evidence'))
+        self.assertEqual(m['cells']['durability.3']['copy']['us'], 1)
+        status, res = api.handle(Req(['ladders', 'proof'], 'POST', body={'theme': 'durability', 'level': '3', 'record_id': 'bombas.policies.happiness_guarantee'}))
+        self.assertEqual((status, res['usable']), (201, True))
+        m = api.handle(Req(['ladders', 'proof']))
+        r = next(r for r in m['rungs'] if r['key'] == 'durability.3')
+        self.assertEqual((r['status'], r['proof_ids']), ('proved', ['bombas.products.heel_hole_durability', 'bombas.policies.happiness_guarantee']))
+        self.assertNotIn('rung_durability_3', [f['entity']['id'] for f in api.handle(Req(['audit']))['findings'] if f['rule_id'] == 'BRN-R23'])
+        lad = next(x for x in self.section('objection_ladders') if x['id'] == 'bombas.objection_ladders.durability')
+        self.assertEqual((lad['tier'], lad['source']['type'], lad['source']['was']['tier']), ('approved', 'founder', 'approved'))  # the second attach follows the first founder edit
+        self.assertTrue(lad.get('history'))  # the value before each attach is kept
+        self.assertEqual(lad['value']['rungs'][2]['proof_ids'][-1], 'bombas.policies.happiness_guarantee')
+        self.assertTrue(any(c['kind'] == 'proof' for c in api.handle(Req(['changes']))['changes']))
+        # the founder record survives a re-read and the other rungs are untouched
+        self.assertEqual(lad['value']['rungs'][0]['proof_ids'], ['bombas.policies.happiness_guarantee'])
+        self.assertEqual(api.handle(Req(['ladders', 'proof'], 'POST', body={'theme': 'nope', 'level': 1, 'record_id': 'bombas.policies.happiness_guarantee'}))[0], 404)
+        self.assertEqual(api.handle(Req(['ladders', 'proof'], 'POST', body={'theme': 'durability', 'level': 9, 'record_id': 'bombas.policies.happiness_guarantee'}))[0], 404)
+        self.assertEqual(api.handle(Req(['ladders', 'proof'], 'POST', body={'theme': 'durability', 'level': 3, 'record_id': 'bombas.x.y'}))[0], 404)
+        self.assertEqual(api.handle(Req(['ladders', 'proof'], 'POST', body={'theme': 'durability', 'level': 'x', 'record_id': 'bombas.policies.happiness_guarantee'}))[0], 400)
+
+    def test_forbidden_proof_is_refused_and_flagged(self):
+        api.handle(Req(['approve', 'bombas.claims.guarantee_promise'], 'POST', body={'choice': 'forbid'}))
+        status, res = api.handle(Req(['ladders', 'proof'], 'POST', body={'theme': 'durability', 'level': 3, 'record_id': 'bombas.claims.guarantee_promise'}))
+        self.assertEqual(status, 400)
+        m = api.handle(Req(['ladders', 'proof']))
+        self.assertTrue(all(c['id'] != 'bombas.claims.guarantee_promise' for g in m['gaps'] for c in g['candidates']))
+
+    def test_example_brand_reads_unavailable(self):
+        shutil.copytree(BRAIN / 'example', self.tmp / 'example')
+        m = api.handle(Req(['ladders', 'proof'], query={'brand': ['example']}))
+        self.assertTrue(m['unavailable_reason'])
+        self.assertEqual((m['rows'], m['counts']['rungs']), ([], 0))
+
+
 class Round4SecondBrand(unittest.TestCase):
     """Round 4 feature 2: plug and play. Every route answers for the example brain (7 records), unavailable never zero."""
 
-    ROUTES = [['overview'], ['master'], ['profile'], ['documents'], ['competitors'], ['coverage'], ['signals'], ['health'], ['conflicts'], ['questions'],
+    ROUTES = [['overview'], ['master'], ['profile'], ['documents'], ['competitors'], ['coverage'], ['signals'], ['health'], ['conflicts'], ['questions'], ['ladders', 'proof'],
               ['decisions'], ['flows'], ['claims'], ['site', 'diff'], ['parity'], ['contracts'], ['legal'], ['voice'], ['battlecards'], ['permissions'],
               ['export'], ['assumptions'], ['facts'], ['summaries'], ['changes'], ['learn'], ['report'], ['digest'], ['review'], ['bottlenecks'], ['audit']]
 

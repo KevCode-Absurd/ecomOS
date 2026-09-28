@@ -59,6 +59,7 @@
     loadChanges();
     loadReport();
     loadUnlocks();
+    loadLadderProof(m.actions || []);
     const con = m.connect || [];
     const cw = document.getElementById('connect-wrap');
     if (con.length) {
@@ -163,6 +164,65 @@
     const st = el('span', { class: 'micro muted' });
     exp.addEventListener('click', async () => { exp.disabled = true; try { const b = await api(BASE + 'export'); const blob = new Blob([JSON.stringify(b, null, 1)], { type: 'application/json' }); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = b.brand + '-brain-' + b.exported_at + '.json'; a.click(); st.textContent = b.counts.records + ' records, ' + b.counts.documents + ' documents, ' + b.counts.conflicts + ' conflicts. ' + b.note; } catch (e) { st.textContent = 'Could not export: ' + e.message; } exp.disabled = false; });
     mount('#perm', matrix, el('div', { class: 'row', style: { marginTop: '10px' } }, exp, UI.decisionRow({ capability: 'LOOP-C22', autonomy: 'founder_gate', owner: 'agent_drafts', screen: SCREEN, compact: true, stub: 'Offboarding: export the brain and the registry as a handoff package, list every connector to revoke in Setup, and confirm no external write access stays open. You approve each revoke.' }), st));
+  }
+
+  // ---------- 5c3b. ladder proof matrix: rungs by surface ----------
+  function proofPanel(g, action, reload) {
+    const body = el('div', { class: 'stack' });
+    body.append(el('div', { class: 'row' }, el('span', { class: 'chip bad', text: g.status === 'forbidden' ? 'proof is forbidden' : 'no proof on file' }),
+      el('span', { class: 'chip', text: (g.one_star == null ? NA : g.one_star) + ' one-star' }), ...g.uses.map((u) => el('span', { class: 'chip', text: pretty(u) }))));
+    if (g.lost_ids && g.lost_ids.length) body.append(el('div', { class: 'small warn', text: 'Proof ids the brain no longer holds: ' + g.lost_ids.join(', ') }));
+    body.append(el('pre', { class: 'card sunken brief', text: g.brief }));
+    const status = el('span', { class: 'micro muted' });
+    const cand = el('div', { class: 'cand' });
+    if (g.candidates.length) {
+      cand.append(el('div', { class: 'small' }, el('b', { text: 'On file already, ranked by overlap with the doubt:' })));
+      for (const c of g.candidates) {
+        const use = el('button', { class: 'btn sm' + (c.usable ? ' primary' : ''), type: 'button', text: c.usable ? 'Use as proof' : 'Attach (needs approval)' });
+        use.addEventListener('click', async () => { use.disabled = true; try { const r = await api(BASE + 'ladders/proof', { method: 'POST', body: { theme: g.theme, level: g.level, record_id: c.id } }); status.textContent = r.next; panel.close(); reload(); } catch (e) { use.disabled = false; status.textContent = 'Could not attach: ' + e.message; } });
+        cand.append(el('div', { class: 'row' }, el('span', { class: 'chip mono', text: c.id }), el('span', { class: 'chip ' + (c.usable ? 'good' : 'warn'), text: pretty(c.tier) }), el('span', { class: 'small', text: c.text }), use));
+      }
+    } else cand.append(el('div', { class: 'small muted', text: 'Nothing on file names this doubt. The brief asks the agent to draft the fact; you approve it in the review queue.' }));
+    body.append(cand);
+    const other = el('input', { class: 'text', placeholder: 'or type a record id, like bombas.policies.happiness_guarantee' });
+    const go = el('button', { class: 'btn sm', type: 'button', text: 'Attach this id' });
+    go.addEventListener('click', async () => { if (!other.value.trim()) return; go.disabled = true; try { const r = await api(BASE + 'ladders/proof', { method: 'POST', body: { theme: g.theme, level: g.level, record_id: other.value.trim() } }); status.textContent = r.next; panel.close(); reload(); } catch (e) { go.disabled = false; status.textContent = 'Could not attach: ' + e.message; } });
+    body.append(el('div', { class: 'row' }, other, go, status));
+    body.append(el('div', { class: 'row' }, UI.copyButton({ label: 'Copy the proof brief', text: () => g.brief }),
+      UI.decisionRow({ capability: 'BRN-C03', autonomy: 'agent_does', owner: 'agent_drafts', screen: SCREEN, compact: true,
+        finding_id: action ? action.id : ('05-brand-brain.BRN-R23.rung_' + g.theme + '_' + g.level), current: action ? action.decision : null,
+        stub: 'The brain agent drafts the proof line for this rung from the records on file (or the missing fact to source), and puts it in the review queue. You approve it; the rung reads it on ' + g.uses.map(pretty).join(', ') + '.' })));
+    const panel = UI.panel({ title: 'Brief the proof: ' + pretty(g.theme) + ' rung ' + g.level, body });
+  }
+  function rungPanel(r) {
+    const body = el('div', { class: 'stack' });
+    body.append(el('div', { class: 'row' }, el('span', { class: 'chip ' + (r.status === 'proved' ? 'good' : 'warn'), text: r.status + (r.tier ? ', ' + pretty(r.tier) : '') }), ...r.uses.map((u) => el('span', { class: 'chip', text: pretty(u) }))));
+    body.append(el('div', { text: 'Doubt: ' + r.doubt }));
+    if (r.proof) body.append(el('div', { class: 'small' }, el('b', { text: 'Proof: ' }), r.proof));
+    body.append(el('div', { class: 'small muted', text: 'Records: ' + (r.proof_ids.length ? r.proof_ids.join(', ') : 'none') + (r.status === 'weak' ? '. Approve the record in the claims desk and the rung is proved.' : '') }));
+    UI.panel({ title: pretty(r.theme) + ' rung ' + r.level, body });
+  }
+  async function loadLadderProof(actions) {
+    let m;
+    try { m = await api(BASE + 'ladders/proof'); } catch (e) { mount('#ladderproof', el('p', { class: 'muted', text: 'Ladder proof unavailable: ' + e.message })); return; }
+    if (m.unavailable_reason) { mount('#ladderproof-tools'); mount('#ladderproof', el('p', { class: 'muted', text: 'Unavailable: ' + m.unavailable_reason + '.' })); return; }
+    const byKey = {}; for (const r of m.rungs) byKey[r.key] = r;
+    const byAct = {}; for (const a of actions || []) if (a.rule_id === 'BRN-R23' && a.entity && a.entity.id) byAct[a.entity.id] = a;
+    const c = m.counts;
+    mount('#ladderproof-tools', UI.orientation([{ label: 'rungs', value: c.rungs, unit: 'n' }, { label: 'proved', value: c.proved, unit: 'n' }, { label: 'weak', value: c.weak, unit: 'n' }, { label: 'no proof', value: c.missing, unit: 'n', title: c.one_star_unproved + ' of ' + c.one_star_total + ' one-star lines sit behind unproved rungs' }, { label: 'blocked cells', value: c.blocked, unit: 'n' }]));
+    const matrix = UI.coverageMatrix({
+      rows: m.rows, cols: m.cols, cells: m.cells, unit: 'n', single: true, max: 2, corner: 'Rung by surface',
+      gapRule: (cell) => (cell && (cell.status === 'missing' || cell.status === 'forbidden')) ? 'gap' : ((cell && (cell.status === 'weak' || cell.status === 'blocked')) ? 'lead' : ''),
+      action: { label: 'Brief the proof', onClick: (cell, row) => { const r = byKey[row.key]; if (r && r.brief) proofPanel(r, byAct['rung_' + r.theme + '_' + r.level], () => { loadLadderProof(actions); loadDesk(); }); else if (r) rungPanel(r); } },
+      onCell: (cell, row) => { const r = byKey[row.key]; if (!r) return; if (r.brief) proofPanel(r, byAct['rung_' + r.theme + '_' + r.level], () => { loadLadderProof(actions); loadDesk(); }); else rungPanel(r); },
+      note: m.note,
+    });
+    const lines = el('div', { class: 'stack cov-lines' });
+    if (m.gaps.length) lines.append(el('div', null, el('b', { text: 'No proof: ' }), m.gaps.map((g) => pretty(g.theme) + ' ' + g.level + ' (' + (g.one_star == null ? NA : g.one_star) + ' one-star, ' + g.uses.length + ' surfaces)').join('; ') + '. Each carries a proof brief and is on the master list.'));
+    if (m.weak.length) lines.append(el('div', null, el('b', { text: 'Weak: ' }), m.weak.map((w) => pretty(w.theme) + ' ' + w.level + ' (' + pretty(w.tier) + ')').join('; ') + '. Approve the record and the rung is proved.'));
+    if (m.blocked.length) lines.append(el('div', null, el('b', { text: 'Blocked by a surface rule: ' }), m.blocked.map((b) => pretty(b.rung) + ' on the ' + b.surface_label.toLowerCase() + ' (' + b.reason + ')').join('; ') + '. Use a different proof there or fix the wording.'));
+    if (!m.gaps.length && !m.weak.length && !m.blocked.length) lines.append(el('div', { class: 'muted', text: 'Every rung is proved on every surface it is used on.' }));
+    mount('#ladderproof', matrix, lines);
   }
 
   // ---------- 5c4. battlecards ----------

@@ -111,6 +111,13 @@ BRN-R22 picked idea without a brief. A plans record `idea_<id>` the founder
     picked from the idea bank (status picked) with no test brief yet. Severity
     medium. Capability PROP-C06 (proposal cards; the brief is drafted, the
     founder approves). Owner: 05-brand-brain.
+BRN-R23 objection rung without proof. A ladder rung used on at least one
+    surface (ad copy, product page, Amazon listing, CX macro, offer) whose
+    proof_ids are empty, point at records the brain no longer holds, or point
+    only at a forbidden claim (ladderproof.py). Severity medium when 10 or more
+    one-star lines sit behind it, else low. Capability BRN-C03 (claim tiering;
+    the proof brief is drafted, the founder approves the record). Owner:
+    05-brand-brain.
 BRN-R07 competitor snapshot stale. A configured Ad Library page was captured
     more than SNAPSHOT_STALE_DAYS (7) ago, or never. Severity low. Capability
     BRN-C11 (competitor snapshot, signals only). Owner: 05-brand-brain.
@@ -187,6 +194,8 @@ RULES = [
      "inputs": ["assumptions.json", "questions.bank.json"], "capability": "BRN-C07", "owner_screen": SCREEN},
     {"rule_id": "BRN-R22", "name": "picked idea without a brief", "entity_type": "brand",
      "inputs": ["plans.idea_*"], "capability": "PROP-C06", "owner_screen": SCREEN},
+    {"rule_id": "BRN-R23", "name": "objection rung without proof", "entity_type": "brand",
+     "inputs": ["objection_ladders", "claims", "policies", "offers", "products"], "capability": "BRN-C03", "owner_screen": SCREEN},
 ]
 AUTONOMY = {"BRN-C12": "agent_does", "BRN-C07": "founder_gate", "BRN-C03": "agent_does",
             "CREA-C19": "agent_does", "CREA-C04": "agent_does", "BRN-C11": "agent_does", "CREA-C06": "agent_does",
@@ -204,6 +213,9 @@ _lspec.loader.exec_module(legal)
 _pspec = importlib.util.spec_from_file_location("brand_brain_parity", Path(__file__).resolve().parent / "parity.py")
 parity = importlib.util.module_from_spec(_pspec)
 _pspec.loader.exec_module(parity)
+_dspec = importlib.util.spec_from_file_location("brand_brain_ladderproof", Path(__file__).resolve().parent / "ladderproof.py")
+ladderproof = importlib.util.module_from_spec(_dspec)
+_dspec.loader.exec_module(ladderproof)
 _sspec = importlib.util.spec_from_file_location("brand_brain_sitediff", Path(__file__).resolve().parent / "sitediff.py")
 sitediff = importlib.util.module_from_spec(_sspec)
 _sspec.loader.exec_module(sitediff)
@@ -622,6 +634,26 @@ def rule_picked_ideas(brain: Brain, ends_on: str) -> list[dict]:
     return out
 
 
+def rule_ladder_proof(brain: Brain, ends_on: str) -> list[dict]:
+    out = []
+    m = ladderproof.matrix(brain)
+    for g in m["gaps"]:
+        if not g["uses"]:
+            continue
+        one = g.get("one_star")
+        ev = [_row("proof_records", 0, "n", ends_on, None, 1, "objection_ladders"),
+              _row("one_star_lines", one, "n", ends_on, None, 10, "objection_ladders"),
+              _row("surfaces_used", len(g["uses"]), "n", ends_on, None, 1, "objection_ladders")]
+        why = "the proof is a forbidden claim" if g["status"] == "forbidden" else ("its proof ids point at records the brain no longer holds" if g["lost_ids"] else "no proof record is attached")
+        sentence = f"Rung {g['level']} of the {g['theme'].replace('_', ' ')} ladder ({g['doubt']}) is used on {len(g['uses'])} surfaces and {why}." + (f" {one} one-star lines sit behind it." if isinstance(one, (int, float)) else "")
+        f = _finding("BRN-R23", "medium" if isinstance(one, (int, float)) and one >= 10 else "low",
+                     {"type": "brand", "id": f"rung_{g['theme']}_{g['level']}", "label": f"{g['theme'].replace('_', ' ')} rung {g['level']}"},
+                     ev, sentence, [g["record"]] + [c["id"] for c in g["candidates"]], ends_on, 0.9)
+        f["rung"] = {k: g[k] for k in ("theme", "level", "doubt", "uses", "brief", "candidates", "one_star")}
+        out.append(f)
+    return out
+
+
 def rule_permissions(brain: Brain, ends_on: str) -> list[dict]:
     pm = health.permissions(brain)
     unset = [s for s in pm["sections"] if not s["explicit"] and s["records"]]
@@ -661,7 +693,7 @@ def run(brand: str, window: dict | None = None, root: Path | None = None) -> lis
         bank = keeper.load_bank()
     except (OSError, ValueError, KeyError):
         bank = None
-    out = rule_stale(brain, ends_on) + rule_claims(brain, ends_on) + rule_competitor_gaps(brain, ends_on) + rule_angle_gaps(brain, ends_on) + rule_signals(brain, ends_on) + rule_weak_sections(brain, ends_on) + rule_conflicts(brain, ends_on) + rule_untiered_claims(brain, ends_on) + rule_site_changes(brain, ends_on) + rule_parity(brain, ends_on) + rule_contracts(brain, ends_on) + rule_legal(brain, ends_on) + rule_picked_ideas(brain, ends_on) + rule_permissions(brain, ends_on) + rule_snapshot_stale(brain, ends_on)
+    out = rule_stale(brain, ends_on) + rule_claims(brain, ends_on) + rule_competitor_gaps(brain, ends_on) + rule_angle_gaps(brain, ends_on) + rule_signals(brain, ends_on) + rule_weak_sections(brain, ends_on) + rule_conflicts(brain, ends_on) + rule_untiered_claims(brain, ends_on) + rule_site_changes(brain, ends_on) + rule_parity(brain, ends_on) + rule_contracts(brain, ends_on) + rule_legal(brain, ends_on) + rule_picked_ideas(brain, ends_on) + rule_ladder_proof(brain, ends_on) + rule_permissions(brain, ends_on) + rule_snapshot_stale(brain, ends_on)
     if bank is None:
         for rid, sev in (("BRN-R02", "medium"), ("BRN-R03", "medium")):
             f = _finding(rid, sev, {"type": "brand", "id": "question_bank", "label": "question bank"},
