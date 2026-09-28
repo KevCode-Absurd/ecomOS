@@ -35,6 +35,8 @@ Round 0 lifts the metrics the first screens need. Each screen's `FEATURES.md` li
 | cpa | spend / purchases |
 | frequency | impressions / reach |
 
+Google rows (28 Sep 2026, S3.5): paid sums read `google_rows` campaign rows only (`row_kind = campaign`); search term and asset group rows are never added to them. The v2 tables name cost `spend`, the sample brand `cost`; both are read.
+
 ## Retention (14, 15)
 | Metric | Formula |
 |---|---|

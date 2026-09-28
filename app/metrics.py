@@ -607,6 +607,24 @@ def _build_span(rows):
     return (min(days), max(days)) if days else (None, None)
 
 
+def _build_campaign_rows(rows):
+    return [r for r in rows if r.get('row_kind') == 'campaign']
+
+
+def paid_rows(spec, rows):
+    """The rows a paid total sums, and the column for each contract field.
+
+    Google Ads v2 tables (`row_kind` column) hold campaign, search_term and asset_group
+    rows that are never summed together: totals read the campaign rows only. They name
+    cost `spend`; the older sample brand names it `cost`."""
+    fields = dict(spec['fields'])
+    if rows and 'row_kind' in rows[0]:
+        rows = prep(spec['table'] + ':campaign', rows, _build_campaign_rows)
+    if rows and fields.get('spend') == 'cost' and 'cost' not in rows[0] and 'spend' in rows[0]:
+        fields['spend'] = 'spend'
+    return rows, fields
+
+
 def paid_totals(ctx, kw, by=None):
     chans = paid_channels(ctx, kw)
     if not chans:
@@ -618,7 +636,8 @@ def paid_totals(ctx, kw, by=None):
     by_channel, groups, creatives = {}, {}, {}
     for c in chans:
         spec = PAID[c]
-        rows = ctx.rows(spec['table'])
+        rows, fields = paid_rows(spec, ctx.rows(spec['table']))
+        spec = dict(spec, fields=fields)
         need(rows, ('date',) + tuple(spec['fields'].values()), spec['table'])
         first, last = prep(spec['table'] + ':span', rows, _build_span)
         cover(ctx.win, first, last, spec['table'])
