@@ -31,6 +31,13 @@ COMP-R03 same offer type, run longer. A competitor shows an offer type the
 COMP-R04 lookalike page. The brain has a competitors record whose verdict is
     an impostor or lookalike page. Severity medium (known downstream cost, no
     money formula). Capability MONEY-C48 (human assist). Owner: 03-competitors.
+COMP-R05 coverage gap. A cell of the creative coverage matrix (coverage.py:
+    angle by format) where the tracked pages put RULE_MIN (3 percent) or more of
+    their ads and we put none, and the brain holds our proof for the angle. Top
+    RULE_TOP (3) cells by their share. Severity medium. Capability CREA-C06
+    (agent does the brief; a person approves before anything is made).
+    Estimated from page-level mixes until an ad-level snapshot exists, so
+    confidence 0.3; 0.5 with a snapshot. Owner: 03-competitors.
 
 Rubric overrides (depth.md section 4 allows reputation and satisfaction per rule):
 COMP-R01 reputation 5: an unclaimed angle is a competitor position gap named in
@@ -76,6 +83,7 @@ def _local(name: str):
 
 snap = _local("snapshot")
 pagemod = _local("pages")
+covmod = _local("coverage")
 
 SCREEN = "03-competitors"
 SEVERITY_ORDER = {"critical": 0, "high": 1, "medium": 2, "low": 3}
@@ -114,9 +122,12 @@ RULES = [
      "owner_screen": SCREEN},
     {"rule_id": "COMP-R04", "name": "lookalike page", "entity_type": "page",
      "inputs": ["brain competitors.lookalike_page"], "capability": "MONEY-C48", "owner_screen": SCREEN},
+    {"rule_id": "COMP-R05", "name": "coverage gap: an angle and format they run and we do not", "entity_type": "ad",
+     "inputs": ["brain competitors", "brain learnings", "brain positioning.proof_points", "Ad Library snapshot"],
+     "capability": "CREA-C06", "owner_screen": SCREEN},
 ]
 RUBRIC_OVERRIDES = {"COMP-R01": {"reputation": 5}, "COMP-R02": {"reputation": 3}, "COMP-R04": {"reputation": 5, "satisfaction": 4}}
-AUTONOMY = {"BRAND-C21": "founder_gate", "BRAND-C24": "founder_gate", "MONEY-C48": "human_assist"}
+AUTONOMY = {"CREA-C06": "agent_does", "BRAND-C21": "founder_gate", "BRAND-C24": "founder_gate", "MONEY-C48": "human_assist"}
 
 
 # ---------------------------------------------------------------- reading
@@ -309,6 +320,8 @@ def market(brand: str, today: dt.date, root: Path | None = None) -> dict:
         if p["role"] != "self":
             p["verdict"] = pagemod.verdict(p, us, top)
     return {"brand": brand, "brain": brain, "competitors": comps, "profile": prof, "packs": packs,
+            "coverage": covmod.matrix(pages, snap.ANGLES, snapshot, brain),
+            "coverage_direct": covmod.matrix(pages, snap.ANGLES, snapshot, brain, direct_only=True),
             "pages": pages, "snapshot": {k: v for k, v in (snapshot or {}).items() if k != "ads"} or None,
             "our_top_angles": top,
             "category_median": cat_median, "price_position_index": index, "angles": angles,
@@ -467,6 +480,27 @@ def rule_lookalike(m, ends_on):
                      "no baseline: lost orders to the page are not measurable")]
 
 
+def rule_coverage(m, ends_on):
+    cov = m["coverage"]
+    out = []
+    picks = [g for g in cov["gaps"] if g["proof"] and g["them"] >= covmod.RULE_MIN][:covmod.RULE_TOP]
+    for g in picks:
+        ev = [_row("their_share_of_ads", g["them"], "%", "latest capture", ends_on, _fresh(m["competitors"]),
+                   covmod.RULE_MIN, "threshold", "ad_library", False),
+              _row("our_share_of_ads", g["us"] or 0, "%", "latest capture", ends_on, _fresh(m["competitors"]),
+                   0, "threshold", "ad_library", False),
+              _row("pages_running_it", g["n"], "n", "latest capture", ends_on, _fresh(m["competitors"]), None,
+                   "threshold", "ad_library", False)]
+        pct = round(g["them"] * 100)
+        sentence = (f"{g['n']} tracked pages run {g['angle_label'].lower()} in {g['format']}, about {pct} percent "
+                    f"of their ads. {m['brand'].capitalize()} runs none.")
+        ent = {"type": "ad", "id": g["gap_id"], "label": f"{g['angle_label']} in {g['format']}"}
+        conf = 0.3 if cov["estimated"] else 0.5
+        out.append(_finding("COMP-R05", "medium", ent, ev, sentence, [f"{m['brand']}.positioning.proof_points"], ends_on,
+                            conf, "no baseline: an untried cell has no spend history"))
+    return out
+
+
 def _today(window) -> dt.date:
     if window and window.get("ends_on"):
         return dt.date.fromisoformat(str(window["ends_on"])) + dt.timedelta(days=1)
@@ -483,7 +517,7 @@ def run(brand: str, window: dict | None = None, root: Path | None = None) -> lis
                             "Run the Ad Library extractor for the brand's competitor set.", ends_on)
                for rid in ("COMP-R01", "COMP-R03")]
     else:
-        out = rule_angles(m, ends_on) + rule_offer_runs(m, ends_on)
+        out = rule_angles(m, ends_on) + rule_offer_runs(m, ends_on) + rule_coverage(m, ends_on)
     out += rule_price(m, ends_on) + rule_lookalike(m, ends_on)
     out.sort(key=lambda f: (SEVERITY_ORDER[f["severity"]], f["id"]))
     return out

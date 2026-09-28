@@ -158,8 +158,9 @@
   // ---------- 2. what is wrong, ranked ----------
   const SEV = { critical: 0, high: 1, medium: 2, low: 3 };
   function evidenceLine(e) {
-    const v = e.value == null ? NA : (e.unit === 'usd' ? usd(e.value) : fmt.num(e.value));
-    const base = e.baseline == null ? '' : ' against ' + (Array.isArray(e.baseline) ? e.baseline.join(' to ') : (e.unit === 'usd' ? usd(e.baseline) : fmt.num(e.baseline))) + ' (' + pretty(e.baseline_kind) + ')';
+    const one = (x) => e.unit === 'usd' ? usd(x) : e.unit === '%' ? fmt.pct(x) : fmt.num(x);
+    const v = e.value == null ? NA : one(e.value);
+    const base = e.baseline == null ? '' : ' against ' + (Array.isArray(e.baseline) ? e.baseline.join(' to ') : one(e.baseline)) + ' (' + pretty(e.baseline_kind) + ')';
     return el('li', null, el('span', { class: 'mono micro', text: e.metric }), ' ', el('b', { class: 'num', text: v }), base, el('span', { class: 'faint', text: ', ' + e.window + (e.simulated ? ', simulated' : '') }));
   }
   function wrongList(findings, actionsById) {
@@ -246,6 +247,35 @@
     draw('all');
   }
 
+  // ---------- 5b. the creative coverage matrix ----------
+  function briefPanel(cell, row, col) {
+    UI.panel({ title: 'Brief: ' + row.label.toLowerCase() + ' as ' + col.label.toLowerCase(), body: el('div', { class: 'stack' },
+      el('pre', { class: 'card sunken bc', text: cell.brief }),
+      el('div', { class: 'row' }, UI.copyButton({ label: 'Copy brief', text: () => cell.brief })),
+      cell.proof ? null : el('div', { class: 'na small', text: 'No proof for this angle in the brain. Add it on the brand brain screen first.' }),
+      el('div', { class: 'micro faint', text: 'The agent writes the brief; you approve before anything is made. This logs a creative decision.' }),
+      UI.decisionRow({ capability: 'CREA-C06', owner: 'agent_drafts', screen: SCREEN, finding_id: SCREEN + '.' + cell.gap_id }),
+      el('div', { class: 'micro faint', text: 'Pages that fill this cell: ' + (cell.pages.join(', ') || 'none') + '. Signals for layout and mood only.' })) });
+  }
+  function coverageSection(cov) {
+    const box = el('div');
+    const next = el('p', { class: 'small' });
+    const draw = (key) => {
+      const c = cov[key];
+      box.replaceChildren(UI.coverageMatrix({
+        rows: c.rows, cols: c.cols, cells: c.cells, unit: '%', corner: 'Angle, our ads',
+        gapRule: (cell) => cell ? cell.kind : '', action: { label: 'Brief it', onClick: briefPanel },
+        note: (c.estimated ? 'Estimated from page-level mixes: a page\'s format mix split over the angles it runs; ours from hook counts times our format mix. ' : 'Counted from the ad-level snapshot. ') + 'Them: ' + fmt.num(c.their_ads) + ' ads on ' + c.pages.length + ' pages. Us: ' + fmt.num(c.our_ads) + ' ads.',
+      }));
+      const g = c.gaps.slice(0, 4);
+      next.replaceChildren(el('b', { text: 'Next to try: ' }), g.length ? g.map((x) => x.angle_label.toLowerCase() + ' in ' + x.format + ' (' + Math.round(x.them * 100) + '% of theirs' + (x.proof ? '' : ', proof missing') + ')').join('; ') + '.' : 'no cell passes the gap rule on this capture.');
+    };
+    const first = cov.all;
+    document.getElementById('cov-sub').textContent = 'Cell: our share of ads | their share. A gap is a cell where they put ' + Math.round(first.gap_min * 100) + ' percent or more of their ads and we put none. Amber: we are ' + first.over_x + 'x ahead, check it is not waste.';
+    mount('#coverage', UI.pills({ items: [{ key: 'all', label: 'All tracked pages', n: cov.all.pages.length }, { key: 'direct', label: 'Direct only', n: cov.direct.pages.length }], current: 'all', onChange: draw }), box, next);
+    draw('all');
+  }
+
   // ---------- 6. the audit ----------
   function rulesTable(rules) {
     return UI.table({ columns: [{ key: 'rule_id', label: 'Rule' }, { key: 'name', label: 'What it checks' }, { key: 'inputs', label: 'Reads', format: (v) => (v || []).join(', ') }, { key: 'capability', label: 'Capability' }],
@@ -267,6 +297,7 @@
     mount('#prices', ...priceTable(d.prices));
     mount('#board', ...d.board.map(boardCard));
     pagesSection(d.pages);
+    coverageSection(d.coverage);
     document.getElementById('audit-sub').textContent = p.findings.length + ' findings from ' + p.rules.length + ' rules. Public signals, one capture.';
     mount('#audit', auditTable(p.findings));
     mount('#rules', el('h4', { text: 'Rules' }), rulesTable(p.rules));

@@ -281,6 +281,57 @@ class TestPages(TempBrain):
             self.assertNotIn('quotes', r)
 
 
+class TestCoverage(TempBrain):
+    """1.3: angles by format, our share against theirs; gaps carry a brief; COMP-R05 on the biggest gaps with proof."""
+    def setUp(self):
+        super().setUp()
+        api.BRAIN_ROOT = self.tmp
+        self.c = api.handle(Req(['overview']))['coverage']
+
+    def test_shape_and_estimate_flag(self):
+        c = self.c['all']
+        self.assertEqual([x['key'] for x in c['cols']], audit.covmod.FORMATS)
+        self.assertEqual(len(c['rows']), len(audit.snap.ANGLES))
+        self.assertTrue(c['estimated'])
+        self.assertEqual(c['our_ads'], 23)
+        self.assertLessEqual(len(self.c['direct']['pages']), len(c['pages']))
+        for row in c['cells'].values():
+            for cell in row.values():
+                for side in ('us', 'them'):
+                    if cell[side] is not None:
+                        self.assertTrue(0 <= cell[side] <= 1)
+
+    def test_their_shares_sum_to_tagged_ads(self):
+        c = self.c['all']
+        total = sum(cell['them'] for row in c['cells'].values() for cell in row.values())
+        self.assertLessEqual(total, 1.02)
+        self.assertGreater(total, 0.3)
+
+    def test_gap_rule_and_brief(self):
+        c = self.c['all']
+        for g in c['gaps']:
+            cell = c['cells'][g['angle']][g['format']]
+            self.assertEqual(cell['kind'], 'gap')
+            self.assertGreaterEqual(cell['them'], audit.covmod.GAP_MIN)
+            self.assertFalse(cell['us'])
+            self.assertIn('Never copy', cell['brief'])
+            if not cell['proof']:
+                self.assertIn('none in the brain', cell['brief'])
+
+    def test_rule_r05_top_gaps_with_proof(self):
+        out = audit.run('bombas', WINDOW, self.tmp)
+        r5 = [f for f in out if f['rule_id'] == 'COMP-R05']
+        self.assertTrue(1 <= len(r5) <= audit.covmod.RULE_TOP)
+        for f in r5:
+            self.assertEqual(f['confidence'], 0.3)
+            self.assertEqual(f['capability']['id'], 'CREA-C06')
+        acts = api.rank('bombas', {'ends_on': '2026-09-27', 'days': 28, 'trailing': 4})['actions']
+        for f in r5:
+            a = next(a for a in acts if f['id'] in a['finding_ids'])
+            self.assertEqual(a['artefact']['kind'], 'ad_brief')
+            self.assertTrue(a['artefact']['draft'])
+
+
 class TestRank(TempBrain):
     """Depth contract rules 2, 3 and 13: owner, steps and artefact on every action; every finding ends in one."""
     W = {'ends_on': '2026-09-27', 'days': 28, 'trailing': 4}

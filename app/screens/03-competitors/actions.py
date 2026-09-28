@@ -198,6 +198,27 @@ def act_lookalike(f: dict, m: dict) -> dict:
     }
 
 
+def act_coverage(f: dict, m: dict) -> dict:
+    """COMP-R05: an angle and format they run and we do not. The brief is the cell's own brief."""
+    gid = f["entity"]["id"]
+    g = next((x for x in m["coverage"]["gaps"] if x["gap_id"] == gid), None)
+    label = f["entity"]["label"]
+    return {
+        "title": f"Brief 2 ads: {label.lower()}, a cell they fill and we leave empty",
+        "owner": "agent_drafts",
+        "artefact": {"kind": "ad_brief", "label": f"an ad brief: {label.lower()}", "draft": g["brief"] if g else None},
+        "steps": _steps(("agent", "Pull our proof for the angle and the format spec."),
+                        ("agent", "Write the brief: 2 ads, proof first, same product and offer as control."),
+                        ("person", "Approve the brief. Creative makes the 2 ads."),
+                        ("agent", f"Run beside control and read cost per order on {_plus(f['last_seen'], 14)}.")),
+        "size": {"text": f"0 ads now, 2 after; they put {round((g or {}).get('them', 0) * 100)} percent of their ads here",
+                 "count": 2},
+        "win_rule": "Cost per order at or below control after 2,000 impressions each",
+        "stop_rule": "Cost per order 30 percent above control after 7 days",
+        "check_on": _plus(f["last_seen"], 14), "time_to_ship_hours": 4,
+    }
+
+
 def act_connect(f: dict, m: dict) -> dict:
     un = f.get("unavailable") or {}
     con = un.get("connector") or "the missing source"
@@ -210,7 +231,8 @@ def act_connect(f: dict, m: dict) -> dict:
             "time_to_ship_hours": 1}
 
 
-BUILDERS = {"COMP-R01": act_angle, "COMP-R02": act_price, "COMP-R03": act_offer_run, "COMP-R04": act_lookalike}
+BUILDERS = {"COMP-R01": act_angle, "COMP-R02": act_price, "COMP-R03": act_offer_run, "COMP-R04": act_lookalike,
+            "COMP-R05": act_coverage}
 
 
 def action(f: dict, m: dict, net_revenue: float | None) -> dict:

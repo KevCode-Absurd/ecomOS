@@ -184,7 +184,8 @@ def self_row(brain, profile: dict, snap_mod, snapshot, snap_rows, self_id: str |
            "record_ids": [f"{brand}.learnings.hook_types", f"{brand}.learnings.active_ads_snapshot"],
            "positioning": get("positioning.frame"), "push": None, "price_text": None, "ad_library_url": None,
            "active_ads": active, "sample_ads": sum(_norm_formats(fm.get("formats")).values()) or None,
-           "formats": snapf or _norm_formats(fm.get("formats")),
+           # the page-level pull splits dynamic creative from catalog; the manual snapshot folds them together
+           "formats": _norm_formats(fm.get("formats")) or snapf,
            "median_days": fm.get("median_run_days"), "long_runners_30d": fm.get("long_runners_30d"),
            "longest_days": longest.get("days_running"), "longest_start": longest.get("start_date"),
            "longest_url": longest.get("ad_url"),

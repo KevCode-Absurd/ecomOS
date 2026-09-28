@@ -52,7 +52,7 @@ ANGLES = [
     ("material", "Material story", ["merino", "wool", "cotton", "bamboo", "organic", "fabric", "cashmere", "linen"]),
     ("style", "Style and new colours", ["style", "color", "colour", "new arrival", "collection", "look great", "fashion",
                                         "pattern", "drop", "limited"]),
-    ("proof", "Reviews and proof", ["review", "5-star", "5 star", "stars", "rated", "best seller", "bestseller",
+    ("proof", "Reviews and proof", ["review", "testimonial", "social proof", "5-star", "5 star", "stars", "rated", "best seller", "bestseller",
                                     "customers", "loved by", "award", "tested"]),
     ("giving", "Giving and mission", ["donate", "donation", "giving", "give back", "one purchased", "homeless", "mission"]),
     ("gifting", "Gifting and season", ["gift", "holiday", "stocking", "christmas", "father's day", "mother's day",
