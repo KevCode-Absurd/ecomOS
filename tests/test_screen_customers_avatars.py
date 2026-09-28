@@ -821,7 +821,9 @@ class Round2Rules(TempBrain):
         acts = {a['id']: a for a in api.rank('bombas', RANK_WINDOW)['actions']}
         self.assertEqual(acts['02-customers-avatars.CUST-R13.provisional_avatars']['capability']['id'], 'LIFE-C50')
         self.assertTrue(acts['02-customers-avatars.CUST-R13.provisional_avatars']['artefact']['draft'].startswith('DRAFT post-purchase survey'))
-        self.assertTrue(acts['02-customers-avatars.CUST-R11.theme_price_value']['title'].startswith('Lift stars on price value'))
+        self.assertTrue(acts['02-customers-avatars.CUST-R11.theme_delivery']['title'].startswith('Lift stars on delivery'))
+        merged = next(a for a in acts.values() if '02-customers-avatars.CUST-R11.theme_price_value' in a['finding_ids'])
+        self.assertEqual(merged['rule_id'], 'CUST-R04')
 
     def test_moment_rule_window(self):
         f = audit.run('bombas', {'ends_on': '2026-07-01', 'days': 28}, self.tmp)
@@ -1407,6 +1409,20 @@ class SecondBrand(unittest.TestCase):
         finally:
             api.BRAIN_ROOT = None
             shutil.rmtree(tmp)
+
+
+class MergedActions(TempBrain):
+    """Feature 6.2: findings that ask for the same draft become one action with every finding id."""
+
+    def test_merge(self):
+        acts = api.rank('bombas', RANK_WINDOW)['actions']
+        seen = [fid for a in acts for fid in a['finding_ids']]
+        self.assertEqual(len(seen), len(set(seen)))
+        drafts = [a['artefact']['draft'] for a in acts if a['status'] == 'open' and a['artefact']['draft']]
+        self.assertEqual(len(drafts), len(set(drafts)))
+        lead = next(a for a in acts if '02-customers-avatars.CUST-R11.theme_durability' in a['finding_ids'])
+        self.assertIn('02-customers-avatars.CUST-R02.durability.3', lead['finding_ids'])
+        self.assertIn('Also answers 1 more finding.', lead['why'])
 
 
 if __name__ == '__main__':

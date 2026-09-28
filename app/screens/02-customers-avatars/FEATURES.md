@@ -107,7 +107,7 @@ Lead's review: rounds 1 to 4 passed. Focus: returns and tickets by avatar, depth
 | # | Feature | Status |
 |---|---|---|
 | 6.1 | Plug and play on a second brand: every route (overview, rank, audit, handoff, tests) renders for the sparse `example` brain with no sample-brand fact and honest unavailable states (tested). Fixed on the way: the simulated note reads the brand name from the brain; the brand's own site is found from its site map and identity urls instead of a coded host; the copy gap is unavailable with no praise reviews; the messaging hierarchy cannot be approved, and CUST-R22 does not fire, until a theme earns stars | done |
-| 6.2 | One merged action per artefact: findings that ask for the same draft (a rung's offer from R02 and R11, for example) become one action with both finding ids | todo |
+| 6.2 | One action per artefact: findings that ask for the same draft become one action, led by the highest-scoring finding, carrying every finding id and an "also answers" note, so the founder approves the work once. Every finding still maps to exactly one action and no two open actions carry the same draft (tested). Bombas: the durability offer now answers R02 and R11, the price proof move R04 and R11; 59 actions | done |
 | 6.3 | This week and next: every dated move (ship-by, ads live, check on, re-check) on one list | todo |
 | 6.4 | Compare two avatars side by side | todo |
 | 6.5 | Each ladder rung opens its evidence: every one-star and five-star line, the avatars and the proof | todo |

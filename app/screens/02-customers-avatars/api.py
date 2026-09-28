@@ -680,8 +680,29 @@ def rank(brand: str, window: dict) -> dict:
             a["plan_capability"] = plan.get("capability")
         _rescore(a, eng)
         a["job"] = RULE_JOB.get(f["rule_id"], "avatars")
+        a["_artefact_id"] = (plan or {}).get("id") if f["status"] == "open" else None
         actions.append(a)
-    return {"actions": actions}
+    return {"actions": merge_same_artefact(actions)}
+
+
+def merge_same_artefact(actions: list[dict]) -> list[dict]:
+    """Findings that ask for the same drafted artefact become one action: the highest-scoring one leads and
+    carries every finding id, so the founder approves the work once."""
+    out, by = [], {}
+    for a in sorted(actions, key=lambda x: (-(x["rubric"]["total"] or 0), x["id"])):
+        key = a.pop("_artefact_id", None)
+        if key and key in by:
+            lead = by[key]
+            lead["finding_ids"] = lead["finding_ids"] + [fid for fid in a["finding_ids"] if fid not in lead["finding_ids"]]
+            lead.setdefault("also", []).append({"id": a["id"], "rule_id": a["rule_id"], "why": a["why"]})
+            continue
+        if key:
+            by[key] = a
+        out.append(a)
+    for a in out:
+        if a.get("also"):
+            a["why"] = a["why"] + " Also answers " + str(len(a["also"])) + " more finding" + ("s" if len(a["also"]) > 1 else "") + "."
+    return out
 
 
 def builds_label(kind: str) -> str:
