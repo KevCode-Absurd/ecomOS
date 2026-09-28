@@ -380,7 +380,11 @@
     });
     const c = ch.counts;
     mount('#changes', UI.orientation([{ label: 'follow', value: c.follow, unit: 'n', tone: c.follow ? 'bad' : null }, { label: 'watch', value: c.watch, unit: 'n' }, { label: 'ignore', value: c.ignore, unit: 'n' }, { label: 'ours', value: c.ours, unit: 'n' }]),
-      tl, el('p', { class: 'micro faint', text: ch.rule + ' ' + (ch.captures < 2 ? 'Page-summary diffs start with the second dated capture (' + ch.captures + ' on file). ' : '') + (ch.snapshots < 2 ? 'Ad-level diffs start when a second snapshot lands.' : '') + (ch.older ? ' ' + ch.older + ' older events hidden.' : '') }));
+      tl, el('details', { class: 'card flat' }, el('summary', { class: 'small', text: 'Log a change seen on their site (' + (ch.site_logged || 0) + ' in 28 days)' }),
+        inputForm('site_change', [{ key: 'page', label: 'Page', options: (window.__priceMoves && window.__priceMoves.pages) || [] }, { key: 'what', label: 'What changed', options: ch.site_kinds || [] },
+          { key: 'date', label: 'Date seen', type: 'date', value: new Date().toISOString().slice(0, 10) }, { key: 'url', label: 'Source link (https)' }], 'Log the change'),
+        el('p', { class: 'micro faint', text: 'A new product, bundle, offer or price on a direct page goes on the plan as a counter brief. Public pages only.' })),
+      el('p', { class: 'micro faint', text: ch.rule + ' ' + (ch.captures < 2 ? 'Page-summary diffs start with the second dated capture (' + ch.captures + ' on file). ' : '') + (ch.snapshots < 2 ? 'Ad-level diffs start when a second snapshot lands.' : '') + (ch.older ? ' ' + ch.older + ' older events hidden.' : '') }));
   }
 
   // ---------- 5h. snapshot freshness and the re-pull ----------
@@ -844,7 +848,7 @@
   }
 
   // everything the team logged on this screen, newest first, with a way to take a mistake back
-  const KIND_LABEL = { interview: 'Win-loss interview', price_seen: 'Price seen', card_check: 'Battlecard check', frame_test: 'Positioning poll', threshold: 'Threshold change', outcome: 'Outcome of a move' };
+  const KIND_LABEL = { interview: 'Win-loss interview', price_seen: 'Price seen', card_check: 'Battlecard check', frame_test: 'Positioning poll', threshold: 'Threshold change', outcome: 'Outcome of a move', site_change: 'Change on their site' };
   async function inputsLog() {
     let r;
     try { r = await api(BASE + 'inputs'); } catch (e) { mount('#inputs', el('h4', { text: 'What the team logged' }), el('p', { class: 'na', text: 'Unavailable: ' + e.message })); return; }

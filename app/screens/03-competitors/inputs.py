@@ -16,6 +16,7 @@ Kinds:
               newest change per name wins over the brain's competitor_thresholds record
   outcome     what happened to a move once its check date came: the action id (a move on the plan), the result
               (won, lost, flat, not shipped), an optional short reading (for example "cost per order 31 against 38"), date
+  site_change a change a person saw on a rival's site: tracked page, what changed (a fixed list), date, optional https link
 Price rule (the room's "competitor cut price sharply"): per page and product, the latest price per unit against the
 mean of that product's earlier records in the trailing TRAIL_DAYS (30) days; a move of the price move threshold or
 more is a cut or a raise. With no earlier record in the window there is no baseline, and no move.
@@ -229,8 +230,32 @@ def outcomes(rows: list[dict]) -> dict:
     return out
 
 
+SITE_CHANGES = {"new_product": "launched a new product", "new_bundle": "added a new bundle or pack", "new_offer": "started a new offer",
+                "price_change": "changed a price", "new_headline": "changed the home page headline", "new_hero": "changed the hero image",
+                "removed_product": "removed a product"}
+SITE_FOLLOW = {"new_product", "new_bundle", "new_offer", "price_change"}   # on a direct page: brief our counter
+SITE_LAUNCH = {"new_product", "new_bundle"}                                # counts toward new_launch_count
+
+
+def _site_change(body: dict, known: dict, today: dt.date) -> tuple[dict | None, str | None]:
+    pages = known.get("pages") or []
+    page = next((n for n in pages if n.lower() == str(body.get("page") or "").strip().lower()), None)
+    if not page:
+        return None, "page must be one of the tracked pages: " + ", ".join(pages)
+    what = str(body.get("what") or "")
+    if what not in SITE_CHANGES:
+        return None, "what must be one of: " + ", ".join(SITE_CHANGES)
+    day = _date(body.get("date") or today.isoformat(), today)
+    if not day:
+        return None, "date must be YYYY-MM-DD and not in the future"
+    url = str(body.get("url") or "").strip()
+    if url and not re.match(r"^https://[A-Za-z0-9.-]+(/[^\s]*)?$", url):
+        return None, "source must be an https link"
+    return {"page": page, "what": what, "date": day, "url": url[:300] or None}, None
+
+
 VALIDATE = {"interview": _interview, "price_seen": _price_seen, "card_check": _card_check, "frame_test": _frame_test,
-            "threshold": _threshold, "outcome": _outcome}
+            "threshold": _threshold, "outcome": _outcome, "site_change": _site_change}
 
 
 def add(brand: str, kind: str, body, known: dict, today: dt.date) -> tuple[int, dict]:
@@ -276,6 +301,8 @@ def summary(r: dict) -> str:
         return f"line {r['line']}: {r['prefer_new']} to {r['prefer_current']} of {r['asked']} asked"
     if k == "outcome":
         return f"{r['action_id'].split('.', 1)[-1]}: {r['result']}" + (f" ({r['reading']})" if r.get("reading") else "")
+    if k == "site_change":
+        return f"{r['page']} {SITE_CHANGES.get(r['what'], r['what'])}"
     if k == "threshold":
         return f"{r['name'].replace('_', ' ')} set to {r['value']:g}"
     return k or "record"

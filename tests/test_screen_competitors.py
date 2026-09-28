@@ -1936,5 +1936,30 @@ class TestScoreboard(TempInputs):
         self.assertEqual((sb['read'], sb['not_shipped'], sb['win_share']), (2, 1, 0.5))
 
 
+class TestSiteChange(TempInputs):
+    """8.5: changes seen on a rival's site join the timeline; a new product on a direct page goes on the plan; launches counted."""
+    def change(self, page, what, date=DAY):
+        return self.post({'kind': 'site_change', 'page': page, 'what': what, 'date': date})
+
+    def test_site_change(self):
+        self.assertEqual(self.change('Nobody', 'new_product')[0], 400)
+        self.assertEqual(self.change('Stance', 'rumour')[0], 400)
+        m = next(r for r in api.handle(Req(['overview']))['room_metrics'] if r['key'] == 'new_launch_count')
+        self.assertIsNone(m['value'])
+        self.assertEqual(self.change('Stance', 'new_product')[0], 201)
+        self.assertEqual(self.change('Quince', 'new_bundle')[0], 201)
+        self.assertEqual(self.change('Stance', 'new_headline')[0], 201)
+        self.assertEqual(self.change('Stance', 'new_product', date='2026-08-01')[0], 201)   # outside the 28 days
+        d = api.handle(Req(['overview']))
+        ev = [e for e in d['changes']['events'] if e['source'] == 'logged']
+        self.assertEqual(sorted((e['page'], e['verdict']) for e in ev), [('Quince', 'ignore'), ('Stance', 'follow'), ('Stance', 'watch')])
+        m = next(r for r in d['room_metrics'] if r['key'] == 'new_launch_count')
+        self.assertEqual(m['value'], 2)
+        a = next(a for a in api.rank('bombas', {'ends_on': '2026-09-27', 'days': 28, 'trailing': 4})['actions']
+                 if a['rule_id'] == 'COMP-R24' and 'Stance' in a['why'])
+        self.assertIn('launched a new product', a['why'])
+        self.assertEqual(api.actions.ranker.validate_action(a), [])
+
+
 if __name__ == '__main__':
     unittest.main()

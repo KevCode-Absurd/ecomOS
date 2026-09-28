@@ -628,6 +628,21 @@ def market_full(brand: str, today: dt.date, root: Path | None = None) -> dict:
     prev = snap.load(brand, before=cur["captured_at"]) if cur else None
     cprev, ccur = capmod.latest_two(brand)
     m["changes"] = changemod.build(m, m["brain"], prev, cur, today, capmod.diff(cprev, ccur), len(capmod.captures(brand)))
+    ch, frame = m["changes"], {p["name"]: p["frame"] for p in m["pages"]}
+    site = [r for r in inpmod.read(brand, "site_change") if r["date"] >= ch["window_start"]]
+    for r in site:   # changes seen on their sites by a person join the timeline
+        direct = frame.get(r["page"]) == "direct"
+        v = (("follow", "Follow", "Answer it: brief our counter this week.") if direct and r["what"] in inpmod.SITE_FOLLOW else
+             ("watch", "Watch", "Look at it on the next visit; brief an answer if it overlaps our angles.") if direct else
+             ("ignore", "Ignore", "No overlap with our frame."))
+        ch["events"].append({"when": r["date"], "page": r["page"], "kind": "site_" + r["what"], "value": r["what"],
+                             "text": inpmod.SITE_CHANGES[r["what"]] + " (seen on their site)", "url": r.get("url"),
+                             "verdict": v[0], "verdict_text": v[1], "action": v[2], "source": "logged", "direct": direct})
+        ch["counts"][v[0]] = ch["counts"].get(v[0], 0) + 1
+    ch["events"].sort(key=lambda e: (e["when"] or "", e["page"]), reverse=True)
+    ch["launches"] = sum(1 for r in site if r["what"] in inpmod.SITE_LAUNCH)
+    ch["site_logged"] = len(site)
+    ch["site_kinds"] = list(inpmod.SITE_CHANGES)
     m["landing"] = landmod.build(m, cur)
     m["frame_tests"] = inpmod.read(brand, "frame_test")
     m["frames"] = framemod.build(m, m["brain"])
@@ -1098,11 +1113,12 @@ def rule_search(m, ends_on):
 def rule_new_move(m, ends_on):
     out = []
     for e in (m.get("changes") or {}).get("events", []):
-        if e.get("source") not in ("page summary diff", "snapshot diff") or e["verdict"] != "follow":
+        if e.get("source") not in ("page summary diff", "snapshot diff", "logged") or e["verdict"] != "follow":
             continue
         p = next((x for x in m["pages"] if x["name"] == e["page"]), None)
-        ev = [_row("new_" + ("offer" if e["kind"] == "new_offer" else "angle"), 1, "n", f"since {e.get('since', 'last capture')}", ends_on,
-                   None, 0, "threshold", e["source"])]
+        metric = e["kind"] if e.get("source") == "logged" else "new_" + ("offer" if e["kind"] == "new_offer" else "angle")
+        ev = [_row(metric, 1, "n", f"since {e.get('since', 'last capture')}", ends_on, None, 0, "threshold",
+                   "team" if e.get("source") == "logged" else e["source"])]
         sentence = f"{e['page']} {e['text']}, first seen {e['when']}."
         ent = {"type": "page", "id": f"move_{pagemod.slug(e['page'])}_{e['kind']}_{pagemod.slug(str(e.get('value')))}",
                "label": f"{e['page']}: {e['text']}"}
