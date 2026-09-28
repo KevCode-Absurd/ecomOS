@@ -125,3 +125,123 @@ def next_build(avatar: dict, top: dict | None) -> dict:
     return {"id": f"{SCREEN}.build.{avatar['key']}", "kind": kind, "title": title, "why": why, "owner": owner,
             "capability": {"id": cap, "autonomy": autonomy}, "steps": _steps(kind, name, top["doubt"] if top else None),
             "draft": _draft(kind, avatar, top, proof_text), "provisional": avatar["grounding"] != "grounded"}
+
+
+# ---------------------------------------------------------------- avatar by channel coverage
+
+# where an answer to a doubt ships, keyed by the rung's `uses` value
+CHANNELS = [
+    {"key": "copy", "label": "Ads and email", "kind": "ad_brief", "cap": ("CREA-C24", "agent_does"), "where": "the next ad and email"},
+    {"key": "pdp", "label": "Product page", "kind": "page_section", "cap": ("SITE-C38", "human_assist"), "where": "the product page"},
+    {"key": "amazon_listing", "label": "Amazon listing", "kind": "listing_fix", "cap": ("PROD-C34", "human_assist"), "where": "the Amazon listing"},
+    {"key": "cx_macro", "label": "Support replies", "kind": "copy", "cap": ("LIFE-C27", "human_assist"), "where": "the support reply macro"},
+    {"key": "offer", "label": "Offer", "kind": "offer", "cap": ("LIFE-C42", "founder_gate"), "where": "the offer"},
+]
+FORMAT_LABEL = {"dco": "dynamic creative", "dpa": "catalog ads", "video": "video", "image": "static image",
+                "carousel": "carousel", "catalog": "catalog ads"}
+FORMAT_GAP_SHARE = 0.15   # the category runs a format in 15 percent or more of live ads
+FORMAT_GAP_RATIO = 0.5    # and we run it at under half that share
+
+
+def _cell_brief(avatar: dict, ch: dict, open_rungs: list[dict]) -> dict:
+    r = max(open_rungs, key=lambda x: (x["one_star"] or 0, x["level"] or 0))
+    one = next((q for q in r.get("one_star_quotes") or [] if q), None)
+    five = next((q for q in r.get("five_star_quotes") or [] if q), None)
+    doubts = "; ".join(f"\"{x['doubt']}\" ({x['one_star'] if x['one_star'] is not None else 'unknown'} one-star)" for x in open_rungs)
+    draft = "\n".join([f"DRAFT: {ch['label']} for {avatar['name']}",
+                       f"Doubts with no answer here: {doubts}",
+                       f"Lead doubt in their words: \"{one}\"" if one else "Lead doubt in their words: unavailable",
+                       f"Five-star line to echo: \"{five}\"" if five else "Five-star line to echo: unavailable",
+                       "Proof: none on file. A person adds the fact before this ships.",
+                       f"Ships in: {ch['where']}."])
+    owner = "agent_drafts"
+    return {"id": f"{SCREEN}.cover.{avatar['key']}.{ch['key']}", "kind": ch["kind"],
+            "title": f"{ch['label']}: answer \"{r['doubt']}\" for {avatar['name']}", "owner": owner,
+            "capability": {"id": ch["cap"][0], "autonomy": ch["cap"][1]}, "draft": draft,
+            "steps": [{"n": 1, "who": "agent", "text": "Pull the one-star and five-star lines for the doubt."},
+                      {"n": 2, "who": "agent", "text": f"Draft the answer for {ch['where']}."},
+                      {"n": 3, "who": "person", "text": "Add the proof and approve. Nothing ships before that."},
+                      {"n": 4, "who": "agent", "text": "Mark the rung as answered in the brain so the cell turns green."}]}
+
+
+def coverage(avatars: list[dict], all_rungs: list[dict]) -> dict:
+    """Avatar by channel: doubts that channel must answer (them) against doubts answered with proof (us)."""
+    rows, cells, skipped = [], {}, []
+    for a in avatars:
+        mine = [r for r in all_rungs if a["id"] in r["avatars"]]
+        if not mine:
+            skipped.append(a["name"])
+            continue
+        rows.append({"key": a["key"], "label": a["name"], "sub": f"share {round(a['share_estimate'] * 100)} percent"
+                     if a["share_estimate"] is not None else "share unavailable"})
+        cells[a["key"]] = {}
+        for ch in CHANNELS:
+            need = [r for r in mine if ch["key"] in (r.get("uses") or [])]
+            done = [r for r in need if r["proof_ids"]]
+            open_ = [r for r in need if not r["proof_ids"]]
+            cell = {"us": len(done) if need else None, "them": len(need) if need else None, "unit": "n", "open": len(open_)}
+            if open_:
+                cell["brief"] = _cell_brief(a, ch, open_)
+            cells[a["key"]][ch["key"]] = cell
+    gaps = [(r, ch) for r in rows for ch in CHANNELS if cells[r["key"]][ch["key"]].get("open")]
+    by_col = {ch["key"]: sum(1 for r, c in gaps if c["key"] == ch["key"]) for ch in CHANNELS}
+    worst = max(CHANNELS, key=lambda c: by_col[c["key"]])
+    line = (f"{len(gaps)} cells have a doubt with no answer. {worst['label']} has the most: {by_col[worst['key']]}."
+            if gaps else "Every doubt is answered in every channel that needs it.")
+    return {"rows": rows, "cols": [{"key": c["key"], "label": c["label"]} for c in CHANNELS], "cells": cells,
+            "gaps": len(gaps), "line": line, "skipped": skipped}
+
+
+def format_mix(learnings: list[dict]) -> dict:
+    """Our live Meta format mix against the category median, from the Ad Library pulls in the brain."""
+    own, comp = None, []
+    for r in learnings:
+        v = r.get("value") if isinstance(r.get("value"), dict) else {}
+        f = v.get("formats")
+        if not isinstance(f, dict) or not v.get("page"):
+            continue
+        tot = sum(n for n in f.values() if isinstance(n, (int, float)))
+        if not tot:
+            continue
+        share = {k: n / tot for k, n in f.items() if isinstance(n, (int, float))}
+        if v.get("role") == "self":
+            own = {"page": v["page"], "share": share, "ads": tot}
+        elif v.get("role") == "competitor":
+            comp.append({"page": v["page"], "share": share, "ads": tot})
+    if own is None or not comp:
+        return {"available": False, "reason": "no Ad Library format pull for us and the category in the brain", "rows": []}
+    fmts = sorted({k for c in comp for k in c["share"]} | set(own["share"]))
+    rows = []
+    for k in fmts:
+        vals = sorted(c["share"].get(k, 0.0) for c in comp)
+        mid = len(vals) // 2
+        med = vals[mid] if len(vals) % 2 else (vals[mid - 1] + vals[mid]) / 2
+        us = own["share"].get(k, 0.0)
+        runs = sum(1 for c in comp if c["share"].get(k, 0) > 0)
+        gap = med >= FORMAT_GAP_SHARE and us < med * FORMAT_GAP_RATIO
+        rows.append({"format": k, "label": FORMAT_LABEL.get(k, k), "us": round(us, 4), "them": round(med, 4), "pages_running": runs, "gap": gap})
+    rows.sort(key=lambda r: -r["them"])
+    gaps = [r["label"] for r in rows if r["gap"]]
+    return {"available": True, "rows": rows, "own_ads": own["ads"], "pages": len(comp),
+            "line": (f"The category leans on {', '.join(gaps)} and we barely run it." if gaps
+                     else "Our format mix is close to the category median."), "gaps": gaps}
+
+
+def format_brief(row: dict, avatars: list[dict]) -> dict:
+    """A test brief for a format the category runs and we do not: one variant per avatar with proof on its top doubt."""
+    picks = [a for a in avatars if a.get("top_objection") and a["top_objection"]["proof"]][:3]
+    lines = [f"DRAFT: {row['label']} test, one variant per avatar",
+             f"Why: the category median runs it in {round(row['them'] * 100)} percent of live ads. We run {round(row['us'] * 100)} percent."]
+    for i, a in enumerate(picks, 1):
+        t = a["top_objection"]
+        lines.append(f"Variant {i}, {a['name']}: open on \"{(a.get('triggers') or [a['job']])[0]}\", answer \"{t['doubt']}\" with: {t['proof_text']}")
+    if not picks:
+        lines.append("No avatar has proof on its top doubt yet. Answer a doubt first.")
+    lines.append("Tag each ad with its avatar so the matrix can read coverage.")
+    return {"id": f"{SCREEN}.format.{row['format']}", "kind": "test_brief", "owner": "agent_drafts",
+            "title": f"Test {row['label']} with {len(picks)} avatar variants",
+            "capability": {"id": "CREA-C06", "autonomy": "agent_does"}, "draft": "\n".join(lines),
+            "steps": [{"n": 1, "who": "agent", "text": "Draft one variant per avatar from the brain."},
+                      {"n": 2, "who": "person", "text": "Approve the brief. Creative builds the variants."},
+                      {"n": 3, "who": "person", "text": "Launch at a capped test budget in the ad account."},
+                      {"n": 4, "who": "agent", "text": "Read cost per order after 7 days against the account median."}]}

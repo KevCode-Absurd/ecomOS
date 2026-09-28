@@ -221,6 +221,14 @@ def orientation(brain: Brain, avatars: list[dict], all_rungs: list[dict], chart:
     ]
 
 
+def _formats(brain: Brain, avatars: list[dict]) -> dict:
+    f = builds.format_mix(brain.records("learnings"))
+    for r in f.get("rows") or []:
+        if r["gap"]:
+            r["brief"] = builds.format_brief(r, avatars)
+    return f
+
+
 def overview(brain: Brain) -> dict:
     ends_on = (brain.today - dt.timedelta(days=1)).isoformat()
     avatars = audit.avatar_rows(brain)
@@ -241,7 +249,8 @@ def overview(brain: Brain) -> dict:
             "simulated_note": SIMULATED_NOTE, "orientation": orientation(brain, avatars, all_rungs, chart, ends_on),
             "avatars": avatars,
             "objections": objections, "angles": {k: angles[k] for k in ("available", "reason", "ads")},
-            "language": audit.language_rows(brain), "voice": voice_sheet(brain)}
+            "language": audit.language_rows(brain), "voice": voice_sheet(brain),
+            "coverage": builds.coverage(avatars, all_rungs), "formats": _formats(brain, avatars)}
 
 
 def handle(req):

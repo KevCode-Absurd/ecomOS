@@ -67,6 +67,40 @@
     return card;
   }
 
+  // ---------- desk: avatar by channel ----------
+  function briefPanel(b) {
+    const brief = [b.title, '', 'Owner: ' + pretty(b.owner), '', 'Steps:'].concat(b.steps.map((s) => s.n + '. ' + s.text + ' (' + s.who + ')'), ['', b.draft]).join('\n');
+    UI.panel({
+      title: b.title,
+      tools: [UI.copyButton({ label: 'Copy brief', text: () => brief })],
+      body: el('div', { class: 'stack' },
+        el('div', { class: 'row' }, UI.ownerChip(b.owner), el('span', { class: 'chip', text: 'makes ' + (KIND_LABEL[b.kind] || pretty(b.kind)) }), el('span', { class: 'chip mono', text: b.capability.id })),
+        el('pre', { class: 'draft', text: b.draft }),
+        el('ol', { class: 'a-steps' }, ...b.steps.map((s) => el('li', null, s.text, el('span', { class: 'who', text: ' (' + s.who + ')' })))),
+        UI.decisionRow({ capability: b.capability, owner: b.owner, screen: SLUG, finding_id: b.id })),
+    });
+  }
+  function renderCoverage(c, f) {
+    document.getElementById('cover-sub').textContent = 'Each cell: doubts answered with proof | doubts that channel must answer, from the objection ladders. ' + c.line;
+    mount('#cover', UI.coverageMatrix({
+      rows: c.rows, cols: c.cols, cells: c.cells, unit: 'n', corner: 'Avatar',
+      gapRule: (cell) => !cell || cell.them == null ? '' : cell.open ? 'gap' : 'lead',
+      action: { label: 'Brief it', onClick: (cell) => cell && cell.brief && briefPanel(cell.brief) },
+      note: 'Red: a doubt with no answer there, click Brief it. Green: every doubt answered. n/a: no doubt needs that channel.' +
+        (c.skipped.length ? ' Not shown, no doubts mapped yet: ' + c.skipped.join(', ') + '.' : ''),
+    }));
+    if (!f.available) { mount('#formats', UI.emptyState({ screen: SLUG, title: 'Format mix unavailable', text: f.reason })); return; }
+    mount('#formats', el('h4', { text: 'Meta formats: us against the category' }),
+      el('p', { class: 'small muted', text: 'Share of live ads. Us from our Ad Library page, them the median of ' + f.pages + ' category pages. Signals only, never proof a format wins.' }),
+      UI.verdictTable({
+        columns: [{ key: 'label', label: 'Format' }, { key: 'us', label: 'Us', unit: '%' }, { key: 'them', label: 'Category', unit: '%' }, { key: 'pages_running', label: 'Pages', unit: 'n' }],
+        rows: f.rows.map((r) => Object.assign({}, r, { actions: r.brief ? [{ label: 'Brief it', onClick: () => briefPanel(r.brief) }] : [{ label: 'No gap', cls: 'quiet', onClick: () => {} }] })),
+        verdict: { at: 1, kind: (r) => r.gap ? 'new' : r.us > r.them * 1.5 && r.us > 0.1 ? 'watch' : 'keep', text: (r) => r.gap ? 'Gap' : r.us > r.them * 1.5 && r.us > 0.1 ? 'Heavy' : 'Fine' },
+        actions: { label: 'Do' }, sort: false,
+      }),
+      el('p', { class: 'small', text: f.line }));
+  }
+
   function objectionTable(rows) {
     return UI.table({
       columns: [
@@ -259,6 +293,7 @@
     renderPlan(d, r);
     renderWrong(a, r);
     renderActions(r);
+    renderCoverage(d.coverage, d.formats);
     mount('#avatars', ...(d.avatars.length ? d.avatars.map(avatarCard) : [el('p', { class: 'muted', text: 'No avatar records yet.' })]));
     document.getElementById('obj-note').textContent = 'Avatars come from the objection ladders. Ad coverage: ' +
       (d.angles.available ? 'counted from the ad table.' : d.angles.reason + '.') + ' Page coverage needs a live page scan.';

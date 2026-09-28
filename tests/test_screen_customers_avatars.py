@@ -272,5 +272,48 @@ class AvatarBuilds(TempBrain):
             self.assertNotIn('(Reddit)', a['next']['draft'].split('Customer line:')[-1] if 'Customer line:' in a['next']['draft'] else '')
 
 
+class Coverage(TempBrain):
+    """Feature 1.3: avatar by channel, gaps carry a brief; format mix us against the category."""
+
+    def test_cells_count_doubts_and_proof(self):
+        d = api.handle(Req(['overview']))
+        c = d['coverage']
+        brain = api._brain(Req(['overview']))
+        rungs = audit.rungs(brain)
+        for row in c['rows']:
+            aid = 'bombas.avatars.' + row['key']
+            for col in c['cols']:
+                cell = c['cells'][row['key']][col['key']]
+                need = [r for r in rungs if aid in r['avatars'] and col['key'] in r['uses']]
+                if not need:
+                    self.assertIsNone(cell['us'])
+                    continue
+                self.assertEqual(cell['them'], len(need))
+                self.assertEqual(cell['us'], sum(1 for r in need if r['proof_ids']))
+                if cell['open']:
+                    b = cell['brief']
+                    self.assertTrue(b['draft'].startswith('DRAFT'))
+                    self.assertEqual(b['owner'], 'agent_drafts')
+                    self.assertTrue(2 <= len(b['steps']) <= 8)
+        self.assertEqual(c['gaps'], sum(1 for r in c['rows'] for col in c['cols'] if c['cells'][r['key']][col['key']].get('open')))
+        self.assertIn('Runner (Reddit)', c['skipped'])
+
+    def test_format_mix_and_gap_brief(self):
+        f = api.handle(Req(['overview']))['formats']
+        self.assertTrue(f['available'])
+        for r in f['rows']:
+            self.assertTrue(0 <= r['us'] <= 1 and 0 <= r['them'] <= 1)
+            self.assertEqual(r['gap'], r['them'] >= 0.15 and r['us'] < r['them'] * 0.5)
+            self.assertEqual('brief' in r, r['gap'])
+        self.assertIn('dynamic creative', f['gaps'])
+
+    def test_format_mix_unavailable_without_pull(self):
+        rows = [r for r in self.section('learnings') if not (isinstance(r.get('value'), dict) and r['value'].get('role') == 'self')]
+        self.write('learnings', rows)
+        f = api.handle(Req(['overview']))['formats']
+        self.assertFalse(f['available'])
+        self.assertTrue(f['reason'])
+
+
 if __name__ == '__main__':
     unittest.main()
