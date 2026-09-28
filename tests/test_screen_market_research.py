@@ -1664,6 +1664,37 @@ class PipelineTest(ShapeMixin, unittest.TestCase):
         finally:
             audit.PIPELINE_PATH = self.real2
 
+    def test_cost_floor(self):
+        self.real2 = audit.PIPELINE_PATH
+        try:
+            audit.PIPELINE_PATH = self.tmp
+            self.tmp.write_text(json.dumps({'rows': [{'candidate_id': 'a', 'brand': 'fake', 'name': 'A', 'stage': 'gated', 'cogs_estimate': 9.0, 'cost_floor': {'usd': 3.0, 'source': 'alibaba listing', 'on': '2026-09-01'}},
+                                                     {'candidate_id': 'b', 'brand': 'fake', 'name': 'B', 'stage': 'gated', 'cogs_estimate': 5.0, 'cost_floor': {'usd': 3.0}},
+                                                     {'candidate_id': 'c', 'brand': 'fake', 'name': 'C', 'stage': 'gated', 'cogs_estimate': 5.0},
+                                                     {'candidate_id': 'd', 'brand': 'fake', 'name': 'D', 'stage': 'researched', 'cogs_estimate': 5.0},
+                                                     {'candidate_id': 'e', 'brand': 'fake', 'name': 'E', 'stage': 'gated', 'cost_floor': {'usd': 3.0}}]}), encoding='utf-8')
+            data = api.sample_data()
+            D = audit.last_full_day(data, None)
+            rd = audit.Reader(data, None, D)
+            read = audit.cost_floor_read('fake', data, None, rd, D)
+            by = {r['candidate_id']: r for r in read['rows']}
+            self.assertNotIn('d', by)
+            self.assertEqual({k: v['verdict'] for k, v in by.items()}, {'a': 'above', 'b': 'in_line', 'c': 'no_check', 'e': 'no_cost'})
+            self.assertEqual(by['a']['multiple'], 3.0)
+            found = audit.cost_floor_findings('fake', data, None, rd, D)
+            self.assertEqual([(f['id'].split('.')[-1], f['severity']) for f in found], [('a', 'medium'), ('c', 'low')])
+            self.assertIn('3 times the $3.00', found[0]['sentence'])
+            self.check_shape(found[0])
+            self.assertIn('Re-source A', api.recipe(found[0])['title'])
+            self.assertIn('reverse-image search', api.recipe(found[1])['title'])
+            self.assertIn('PROD-R57', api.CANDIDATE_RULES)
+            r = api.candidate_update('fake', 'c', {'cost_floor': {'usd': '2.5', 'source': 'reverse-image search, supplier marketplace'}, 'who': 'person'}, D)
+            self.assertEqual(r['changes'], ['cost floor $2.50'])
+            self.assertEqual({x['candidate_id']: x['verdict'] for x in audit.cost_floor_read('fake', data, None, rd, D)['rows']}['c'], 'in_line')
+            self.assertEqual(api.candidate_update('fake', 'c', {'cost_floor': {'usd': 0}, 'who': 'person'}, D)[0], 400)
+        finally:
+            audit.PIPELINE_PATH = self.real2
+
     def test_demand_pattern_tags(self):
         even = {'rows': [{'category': 'socks', 'series': [100] * 12}], 'months': [f'2026-{m:02d}' for m in range(1, 13)], 'last': '2026-12'}
         peaked = {'rows': [{'category': 'socks', 'series': [50] * 10 + [300, 400]}], 'months': even['months'], 'last': '2026-12'}

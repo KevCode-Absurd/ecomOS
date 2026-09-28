@@ -825,8 +825,11 @@
         open.length && actionFor(open[0].finding_id) ? { label: 'Open the first', onClick: () => openAction(actionFor(open[0].finding_id)) } : null));
   }
 
-  function marginPointsBlock(mp) {
+  function marginPointsBlock(mp, cf) {
     const rows = (mp && mp.rows) || [];
+    const floors = {}; (((cf && cf.rows) || [])).forEach((r) => { floors[r.candidate_id] = r; });
+    const floorTextFor = (cid) => { const f = floors[cid]; if (!f) return 'before gated'; if (f.verdict === 'no_check') return 'not checked'; return fmt.money(f.floor_usd) + (f.multiple != null ? ' (cost ' + f.multiple + ' times it)' : '') + (f.floor_source ? ', ' + f.floor_source : ''); };
+    const enterFloor = (r) => { const usd = prompt('Supplier unit price seen for the identical item (' + r.name + '), USD', ''); if (usd == null || !usd.trim()) return; const src = prompt('Where it was seen (the listing or marketplace)', ''); if (src == null) return; candidatePost('candidates/' + r.candidate_id, { cost_floor: { usd: usd.trim(), source: src }, who: 'person' }); };
     if (!rows.length) return UI.emptyState({ screen: SLUG, title: 'No open candidate', text: 'Screen a candidate in; its margin runs at every price point here.', missing: ['pipeline'] });
     const pt = (p) => p.margin_pct == null ? (p.price == null && p.cogs == null ? 'not entered' : 'unavailable') : p.margin_pct.toFixed(1) + ' percent at ' + fmt.money(p.price) + (p.passes === false ? ' (fails)' : '');
     const vt = { one_price: 'One-point margin', fails: 'Fails at planned', not_run: 'Points missing', no_price: 'No price', all_clear: 'Clears every point' };
@@ -840,11 +843,11 @@
       candidatePost('candidates/' + r.candidate_id, { cogs_source: src.trim(), cogs_estimate: cogs, quote_on: on, who: 'person' }); };
     const vrows = rows.map((r) => { const ap = actionFor(r.finding_ids.points); const ac = actionFor(r.finding_ids.cost); return Object.assign({}, r, {
       lowText: pt(r.points.low), planText: pt(r.points.planned), highText: pt(r.points.high), bulkText: r.points.bulk.margin_pct == null ? 'not entered' : r.points.bulk.margin_pct.toFixed(1) + ' percent at ' + fmt.money(r.points.bulk.cogs) + ' a unit',
-      costText: r.cost_basis_label + (r.quote_on ? ' (' + fmt.date(r.quote_on) + ')' : ''),
-      actions: [ap ? { label: 'Fix the low point', onClick: () => openAction(ap) } : null, ac ? { label: 'Get our quote', onClick: () => openAction(ac) } : null,
-        { label: 'Price points', cls: 'quiet', onClick: () => points(r) }, { label: 'Cost basis', cls: 'quiet', onClick: () => basis(r) }].filter(Boolean) }); });
+      costText: r.cost_basis_label + (r.quote_on ? ' (' + fmt.date(r.quote_on) + ')' : ''), floorText: floorTextFor(r.candidate_id),
+      actions: [ap ? { label: 'Fix the low point', onClick: () => openAction(ap) } : null, ac ? { label: 'Get our quote', onClick: () => openAction(ac) } : null, floors[r.candidate_id] && actionFor(floors[r.candidate_id].finding_id) ? { label: floors[r.candidate_id].verdict === 'above' ? 'Re-source' : 'Check the floor', onClick: () => openAction(actionFor(floors[r.candidate_id].finding_id)) } : null,
+        { label: 'Price points', cls: 'quiet', onClick: () => points(r) }, { label: 'Cost basis', cls: 'quiet', onClick: () => basis(r) }, floors[r.candidate_id] ? { label: 'Cost floor', cls: 'quiet', onClick: () => enterFloor(r) } : null].filter(Boolean) }); });
     const tbl = UI.verdictTable({
-      columns: [{ key: 'name', label: 'Candidate' }, { key: 'stage', label: 'Stage' }, { key: 'lowText', label: 'Low' }, { key: 'planText', label: 'Planned' }, { key: 'highText', label: 'High' }, { key: 'bulkText', label: 'At bulk cost' }, { key: 'costText', label: 'Cost basis' }],
+      columns: [{ key: 'name', label: 'Candidate' }, { key: 'stage', label: 'Stage' }, { key: 'lowText', label: 'Low' }, { key: 'planText', label: 'Planned' }, { key: 'highText', label: 'High' }, { key: 'bulkText', label: 'At bulk cost' }, { key: 'costText', label: 'Cost basis' }, { key: 'floorText', label: 'Floor seen' }],
       rows: vrows,
       verdict: { at: 1, kind: (r) => r.points_verdict === 'one_price' || r.points_verdict === 'fails' ? 'fix' : r.points_verdict === 'all_clear' ? 'keep' : 'watch', text: (r) => vt[r.points_verdict], reason: (r) => mp.rule },
       actions: { label: 'Do', onClick: () => {} }, sort: false });
@@ -1395,7 +1398,7 @@
     parts.push(section('desk-returns', 'Which lines come back, and why?', 'Return rate per line over the last 12 whole months from orders and the return leg of reversed orders, against the store median, with the reasons. Room metric sku_return_rate.', returnsBlock(d.returns)));
     parts.push(section('desk-margin', 'Does each candidate make money after real costs?', 'The margin gate per candidate: planned price stepping down through landed cost, the donated item, fulfilment and payment fees to contribution, every term from the finance inputs or the brain.', marginBlock(d.margin)));
     parts.push(section('desk-price-band', 'Is each candidate priced where paid acquisition can pay back?', 'The planned checkout price per candidate against the reject line ($9.99 or under needs an offer structure), the $9 to $20 caution band (needs a band check) and the $50 to $150 target band for a paid-acquisition launch (bank ideas PRD-077, PRD-078). Below the target a candidate sells on organic, retention or as a bundle part.', priceBandBlock(d.price_bands)));
-    parts.push(section('desk-margin-points', 'Does the margin hold at the low price, and whose number is the cost?', 'The margin gate at the low, planned and high price and at the expected bulk cost (bank idea PRD-080), and the cost basis: from gated on it must be the brand\'s own supplier quote, not an estimate, a competitor-implied number or the category median (bank idea PRD-081).', marginPointsBlock(d.margin_points)));
+    parts.push(section('desk-margin-points', 'Does the margin hold at the low price, and whose number is the cost?', 'The margin gate at the low, planned and high price and at the expected bulk cost (bank idea PRD-080), and the cost basis: from gated on it must be the brand\'s own supplier quote, not an estimate, a competitor-implied number or the category median (bank idea PRD-081), checked against the floor a supplier lists the identical item at (bank idea PRD-094).', marginPointsBlock(d.margin_points, d.cost_floors)));
     parts.push(section('desk-lane-map', 'Which lanes are growing with room left, and which are growing and already full?', 'Trend direction against competitive saturation per lane, read together as one go or no-go signal: market growth and launches from the web pass, sellers from the competitor pages in the brain.', laneMapBlock(d.lane_map)));
     parts.push(section('desk-opportunity', 'Which lane is the best bet for the next candidate?', 'One score per lane from 5 parts on stated weights: demand (the trend score), room from competitors, price room (what reviewers say they pay against our price), a complaint to build on, and room for us. A part not read is left out and the score says how many parts it rests on. The top lane with no open candidate ends in a screen-in.', opportunityBlock(d.opportunity)));
     parts.push(section('desk-spend', 'Who is actually funding which lane, not just posting about it?', 'Competitor pages by the longest run of their active ads per lane. Three or more advertisers at 90 days is a funded test; one at 14 days is a live test; the rest is noise.', spendBlock(d.spend)));

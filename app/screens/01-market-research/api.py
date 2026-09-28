@@ -1105,6 +1105,21 @@ def recipe(f):
             'size': {'text': f'{ent.get("variants")} variants planned', 'usd': None}, 'stop_rule': 'no MOQ per variant before the core product sells', 'check_on': _check_on(f, 7), 'time_to_ship_hours': 1,
             'win_rule': 'one variant in the first run, the rest queued behind a sell-through read',
         }
+    if rid == 'PROD-R57':
+        ent = f.get('entity') or {}
+        none = ent.get('verdict') == 'no_check'
+        return {
+            'title': (f'Check the cost floor for {ent.get("label") or "the candidate"}: reverse-image search a competitor\'s photo and enter the supplier price seen' if none
+                      else f'Re-source {ent.get("label") or "the candidate"}: the cost on file is {(ent.get("multiple") or 0):g} times the ${(ent.get("floor_usd") or 0):,.2f} floor seen'),
+            'owner': 'agent',
+            'artefact': {'kind': 'research_note', 'label': (f'the cost floor for {ent.get("label")}: the supplier unit price seen for the identical item, the listing it came from, the date, and the moves it implies (bank idea PRD-094)' if none
+                                                            else f'the re-sourcing note for {ent.get("label")}: the floor seen and its source, the quote on file, and 2 suppliers asked to quote at the floor plus the brand\'s spec')},
+            'steps': [{'n': 1, 'who': 'agent', 'text': 'Reverse-image search the leading competitor photo for this item and read the supplier unit price on the matching listings.' if none else 'Send the floor listing and the tech pack to 2 suppliers for a quote at the first run and at the next step.'},
+                      {'n': 2, 'who': 'person', 'text': 'Enter the floor on the candidate with its source and date.' if none else 'Enter the new quote on the candidate as source quote with its date and units.'},
+                      {'n': 3, 'who': 'agent', 'text': 'Compare it against the cost on file; above twice the floor, the sourcing comparison runs again.' if none else 'Re-run the margin at every point; a cost still above twice the floor is a note on the sourcing comparison.'}],
+            'size': {'text': 'no floor on file' if none else f'{(ent.get("multiple") or 0):g} times the floor', 'usd': None}, 'stop_rule': 'no first order on a cost more than twice the floor a supplier lists', 'check_on': _check_on(f, 7), 'time_to_ship_hours': 1,
+            'win_rule': 'a cost floor with its source on the candidate and a landed cost inside twice it',
+        }
     if rid == 'PROD-R56':
         ent = f.get('entity') or {}
         return {
@@ -1162,7 +1177,7 @@ def recipe(f):
             'title': f'Get our own supplier quote for {ent.get("label") or "the candidate"}: the cost on file is {ent.get("cost_basis_label") or "not ours"}',
             'owner': 'agent_drafts',
             'artefact': {'kind': 'research_note', 'label': f'the quote request for {ent.get("label")}: the spec from the tech pack, the quantities at the first run and at bulk, the landed cost terms (unit, freight, duty, packaging), sent to 2 or more suppliers, and the quote written on the candidate with its date (bank idea PRD-081)'},
-            'steps': [{'n': 1, 'who': 'agent', 'text': 'Draft the quote request from the tech pack and the first run: units at the first run and at 500 and 1,000 units.'},
+            'steps': [{'n': 1, 'who': 'agent', 'text': 'Draft the quote request from the tech pack and the first run: units at the first run and at 500 and 1,000 units; reverse-image search a competitor photo first so the cost floor is known before the quotes land (bank idea PRD-094).'},
                       {'n': 2, 'who': 'person', 'text': 'Send it to 2 or more suppliers and enter the landed quote on the candidate as cost source "quote" with its date.'},
                       {'n': 3, 'who': 'agent', 'text': 'Re-run the margin gate at every point on the quoted cost; the bulk quote fills the bulk cost point.'}],
             'size': {'text': f'cost on file ${(ent.get("cogs") or 0):,.2f}' if ent.get('cogs') is not None else 'no cost on file', 'usd': None}, 'stop_rule': 'no MOQ order on a cost a supplier has not quoted', 'check_on': _check_on(f, 14), 'time_to_ship_hours': 1,
@@ -1362,7 +1377,7 @@ def merge_strength(actions):
 
 
 LANE_RULES = ('PROD-R06', 'PROD-R19', 'PROD-R20', 'PROD-R33', 'PROD-R26', 'PROD-R29')
-CANDIDATE_RULES = ('PROD-R14', 'PROD-R15', 'PROD-R16', 'PROD-R18', 'PROD-R21', 'PROD-R23', 'PROD-R24', 'PROD-R25', 'PROD-R27', 'PROD-R28', 'PROD-R37', 'PROD-R38', 'PROD-R39', 'PROD-R40', 'PROD-R45', 'PROD-R46', 'PROD-R47', 'PROD-R48', 'PROD-R49', 'PROD-R50', 'PROD-R51', 'PROD-R52', 'PROD-R53', 'PROD-R54', 'PROD-R55', 'PROD-R56')
+CANDIDATE_RULES = ('PROD-R14', 'PROD-R15', 'PROD-R16', 'PROD-R18', 'PROD-R21', 'PROD-R23', 'PROD-R24', 'PROD-R25', 'PROD-R27', 'PROD-R28', 'PROD-R37', 'PROD-R38', 'PROD-R39', 'PROD-R40', 'PROD-R45', 'PROD-R46', 'PROD-R47', 'PROD-R48', 'PROD-R49', 'PROD-R50', 'PROD-R51', 'PROD-R52', 'PROD-R53', 'PROD-R54', 'PROD-R55', 'PROD-R56', 'PROD-R57')
 
 
 def merge_candidates(actions):
@@ -1620,7 +1635,7 @@ def overview(data, brand):
                      'gates': gates_block(brand, data, br, rd, ends_on, findings), 'scorecard': scorecard_block(brand, data, br, rd, ends_on, findings),
                      'video': audit.video_signals(br, brand, ends_on), 'tech_packs': tech_pack_block(brand, findings),
                      'hours': dict(audit.hours_table(brand, br), findings={f['entity']['id']: f['id'] for f in findings if f['rule_id'] == 'PROD-R28'}),
-                     'trend_checks': audit.trend_checks(br, brand, ends_on), 'surfaces': audit.audience_surfaces(br, ends_on), 'marketplace': audit.marketplace_read(br, products(data, brand)), 'cadence': audit.launch_cadence(br, ends_on), 'returns': audit.return_rates(data, brand, ends_on), 'questions': audit.open_questions(br, ends_on), 'pulls': audit.pulls(br, brand, ends_on), 'first_runs': audit.first_run_read(brand, ends_on, audit.net_28d(rd)), 'brain_freshness': audit.brain_freshness(br, ends_on), 'assumptions': audit.assumptions(br), 'strength': audit.read_strength(br, brand, data, rd, ends_on), 'line_themes': audit.line_theme_matrix(br), 'samples': audit.sample_read(brand or 'sample', ends_on), 'kills': audit.kill_memory(brand or 'sample', ends_on), 'packaging': audit.packaging_read(brand or 'sample', ends_on), 'readiness': audit.launch_readiness(brand, data, br, rd, ends_on), 'price_bands': audit.price_band_read(brand or 'sample'), 'margin_points': audit.margin_point_read(brand, data, br, rd, ends_on), 'identical_sellers': audit.identical_sellers_read(brand or 'sample', br), 'opportunity': audit.lane_opportunity(br, products(data, brand), ends_on), 'sourcing': audit.sourcing_read(brand or 'sample'), 'floors': audit.floors_read(br), 'requotes': audit.requote_read(brand or 'sample'), 'audit_memo': audit.memo_stats()},
+                     'trend_checks': audit.trend_checks(br, brand, ends_on), 'surfaces': audit.audience_surfaces(br, ends_on), 'marketplace': audit.marketplace_read(br, products(data, brand)), 'cadence': audit.launch_cadence(br, ends_on), 'returns': audit.return_rates(data, brand, ends_on), 'questions': audit.open_questions(br, ends_on), 'pulls': audit.pulls(br, brand, ends_on), 'first_runs': audit.first_run_read(brand, ends_on, audit.net_28d(rd)), 'brain_freshness': audit.brain_freshness(br, ends_on), 'assumptions': audit.assumptions(br), 'strength': audit.read_strength(br, brand, data, rd, ends_on), 'line_themes': audit.line_theme_matrix(br), 'samples': audit.sample_read(brand or 'sample', ends_on), 'kills': audit.kill_memory(brand or 'sample', ends_on), 'packaging': audit.packaging_read(brand or 'sample', ends_on), 'readiness': audit.launch_readiness(brand, data, br, rd, ends_on), 'price_bands': audit.price_band_read(brand or 'sample'), 'margin_points': audit.margin_point_read(brand, data, br, rd, ends_on), 'identical_sellers': audit.identical_sellers_read(brand or 'sample', br), 'opportunity': audit.lane_opportunity(br, products(data, brand), ends_on), 'sourcing': audit.sourcing_read(brand or 'sample'), 'floors': audit.floors_read(br), 'requotes': audit.requote_read(brand or 'sample'), 'cost_floors': audit.cost_floor_read(brand, data, br, rd, ends_on), 'audit_memo': audit.memo_stats()},
             'audit': {'findings': findings, 'rules': audit.RULES}}
 
 
@@ -1756,6 +1771,13 @@ def candidate_update(brand, cid, body, today):
             return 400, {'error': 'units_add must be a number above 0'}
         row['units_ordered'] = int((row.get('units_ordered') or 0) + n)
         changes.append(f'{int(n):,} units ordered, {row["units_ordered"]:,} in total')
+    if isinstance(body.get('cost_floor'), dict):
+        cf = body['cost_floor']
+        usd = _num(cf.get('usd'))
+        if usd is None or usd <= 0:
+            return 400, {'error': 'cost_floor.usd must be a number above 0'}
+        row['cost_floor'] = {'usd': usd, 'source': str(cf.get('source') or '').strip()[:200] or None, 'on': today.isoformat()}
+        changes.append(f'cost floor ${usd:,.2f}')
     if body.get('quote_on') is not None:
         q = str(body['quote_on']).strip()
         try:

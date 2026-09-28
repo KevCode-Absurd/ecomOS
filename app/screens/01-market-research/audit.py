@@ -206,6 +206,9 @@ Rules
   PROD-R56  Re-quote due: a candidate (open or at go) whose units ordered so far crossed 500 or 1,000 while the cost on file
             is a quote for fewer units, or no quote at all (bank idea PRD-101: re-quote every supplier as volume grows).
             Money: null (the saving is unknown until the new quote lands). Capability PROD-C13
+  PROD-R57  Cost above the floor seen: an open candidate at gated or later whose landed cost on file is more than twice the
+            supplier price seen for the identical item (a reverse-image search of a competitor's photo, entered with its
+            source), or which has no cost floor check at gated or later (bank idea PRD-094). Money: null. Capability PROD-C08
   PROD-R03  Hero line with no next SKU: a line with 25 percent or more of its category's net sales in
             the last 3 whole months while the candidate pipeline holds no open next-SKU candidate for
             that category. Money: null (an unlaunched SKU has no baseline). Capability PROD-C06
@@ -335,6 +338,7 @@ RULES = [
     {'rule_id': 'PROD-R54', 'name': 'Candidate planned as a brand SKU whose identical item has 10 or more sellers in a live listing pull', 'entity_type': 'sku', 'inputs': ['fixtures.pipeline', 'fixtures.amazon_listings'], 'capability': 'PROD-C01', 'owner_screen': SCREEN},
     {'rule_id': 'PROD-R55', 'name': 'Candidate with a first run decided on one sourcing channel with no alternative compared', 'entity_type': 'sku', 'inputs': ['fixtures.pipeline'], 'capability': 'PROD-C13', 'owner_screen': SCREEN},
     {'rule_id': 'PROD-R56', 'name': 'Candidate whose ordered units crossed 500 or 1,000 since its quote', 'entity_type': 'sku', 'inputs': ['fixtures.pipeline'], 'capability': 'PROD-C13', 'owner_screen': SCREEN},
+    {'rule_id': 'PROD-R57', 'name': 'Candidate at gated or later with no cost floor check, or a landed cost more than twice the floor seen', 'entity_type': 'sku', 'inputs': ['fixtures.pipeline', 'finance_inputs'], 'capability': 'PROD-C08', 'owner_screen': SCREEN},
 ]
 CAPABILITY = {'PROD-R01': {'id': 'PROD-C05', 'autonomy': 'agent_does'},
               'PROD-R02': {'id': 'PROD-C06', 'autonomy': 'agent_does'},
@@ -391,7 +395,8 @@ CAPABILITY = {'PROD-R01': {'id': 'PROD-C05', 'autonomy': 'agent_does'},
               'PROD-R53': {'id': 'PROD-C08', 'autonomy': 'agent_does'},
               'PROD-R54': {'id': 'PROD-C01', 'autonomy': 'agent_does'},
               'PROD-R55': {'id': 'PROD-C13', 'autonomy': 'agent_does'},
-              'PROD-R56': {'id': 'PROD-C13', 'autonomy': 'agent_does'}}
+              'PROD-R56': {'id': 'PROD-C13', 'autonomy': 'agent_does'},
+              'PROD-R57': {'id': 'PROD-C08', 'autonomy': 'agent_does'}}
 SEVERITY_ORDER = {'critical': 0, 'high': 1, 'medium': 2, 'low': 3}
 
 # Review records name their line in a short key; the store names it by SKU title.
@@ -986,6 +991,7 @@ def _run_audit(brand, ends_on, data):
     out += identical_seller_findings(brand, br, ends_on)
     out += sourcing_findings(brand, ends_on)
     out += requote_findings(brand, ends_on)
+    out += cost_floor_findings(brand, data, br, rd, ends_on)
     out.sort(key=lambda f: (SEVERITY_ORDER[f['severity']], -((f['money_at_stake'] or {}).get('usd') or 0), f['id']))
     return out
 
@@ -5219,5 +5225,64 @@ def requote_findings(brand, ends_on):
         f = _finding('PROD-R56', cid, ends_on, 'medium', ev, sentence, None, 0.8, [], money_reason='the saving is unknown until the new quote lands')
         f['entity'] = {'type': 'sku', 'id': cid, 'label': r['name'], 'candidate': True, 'stage': r['stage'], 'units_ordered': r['units_ordered'], 'step': step, 'quote_units': r['quote_units'], 'quote_on': r['quote_on']}
         f['id'] = f'{SCREEN}.PROD-R56.{cid}'
+        out.append(f)
+    return out
+
+
+# ---------------------------------------------------------------- the cost floor: what a supplier sells the identical item for
+
+COST_FLOOR_MULTIPLE = 2.0   # a landed cost above this many times the floor seen means the quote is far off the market (bank idea PRD-094)
+COST_FLOOR_STAGE_MIN = 2    # gated or later
+
+
+def cost_floor_read(brand, data, br, rd, ends_on):
+    """Per open candidate at gated or later: the cost floor seen (a supplier's unit price for the identical item, from a
+    reverse-image search of a competitor's photo, entered with its source and date), the landed cost on file, the multiple,
+    and the verdict: no_check (no floor entered), above (cost more than the multiple times the floor), in_line, no_cost."""
+    fin_rows = finance_rows(data, brand)
+    fin = metrics().finance.Finance(fin_rows) if fin_rows else None
+    day = ends_on.isoformat()
+    rows = []
+    for c in pipeline(brand):
+        st = c.get('stage')
+        idx = STAGES.index(st) if st in STAGES else None
+        if st in CLOSED_STAGES or idx is None or idx < COST_FLOOR_STAGE_MIN:
+            continue
+        cf = c.get('cost_floor') or {}
+        floor = cf.get('usd') if isinstance(cf.get('usd'), (int, float)) and cf.get('usd') > 0 else None
+        cogs = cogs_estimate_for(c, fin, day).get('value')
+        mult = round(cogs / floor, 2) if cogs and floor else None
+        if floor is None:
+            verdict = 'no_check'
+        elif cogs is None:
+            verdict = 'no_cost'
+        elif mult > COST_FLOOR_MULTIPLE:
+            verdict = 'above'
+        else:
+            verdict = 'in_line'
+        rows.append({'candidate_id': c.get('candidate_id'), 'name': c.get('name'), 'stage': st, 'floor_usd': floor, 'floor_source': cf.get('source'), 'floor_on': cf.get('on'), 'cogs': cogs, 'multiple': mult,
+                     'verdict': verdict, 'finding_id': f'{SCREEN}.PROD-R57.{c.get("candidate_id")}'})
+    order = {'above': 0, 'no_check': 1, 'no_cost': 2, 'in_line': 3}
+    rows.sort(key=lambda r: (order[r['verdict']], -(r['multiple'] or 0), r['name'] or ''))
+    return {'rows': rows, 'multiple': COST_FLOOR_MULTIPLE,
+            'rule': f'from gated on, the cost floor is checked: reverse-image search a competitor\'s product photo, read the supplier unit price for the identical item, enter it with its source; a landed cost more than {COST_FLOOR_MULTIPLE:g} times that floor means the quote is far off the market and the sourcing comparison runs again (bank idea PRD-094)'}
+
+
+def cost_floor_findings(brand, data, br, rd, ends_on):
+    """PROD-R57: no cost floor check at gated or later, or a landed cost more than twice the floor seen."""
+    out = []
+    for r in cost_floor_read(brand, data, br, rd, ends_on)['rows']:
+        if r['verdict'] not in ('no_check', 'above'):
+            continue
+        cid = r['candidate_id']
+        ev = [_ev('cost_to_floor_multiple', r['multiple'], 'ratio', ends_on.isoformat(), 'candidate now', COST_FLOOR_MULTIPLE, 'threshold', source='fixtures.pipeline', simulated=False, freshness_days=0,
+                  floor_usd=r['floor_usd'], floor_source=r['floor_source'], cogs=r['cogs'], stage=r['stage'])]
+        if r['verdict'] == 'no_check':
+            sentence = f'{r["name"]} is at {r["stage"]} with no cost floor check: nobody has looked up what a supplier sells the identical item for.'
+        else:
+            sentence = f'{r["name"]}: the landed cost on file (${r["cogs"]:,.2f}) is {r["multiple"]:g} times the ${r["floor_usd"]:,.2f} a supplier lists the identical item at ({r["floor_source"] or "source not named"}); the quote is far off the market.'
+        f = _finding('PROD-R57', cid, ends_on, 'low' if r['verdict'] == 'no_check' else 'medium', ev, sentence, None, 0.7, [], money_reason='an unlaunched SKU has no baseline to price the gap')
+        f['entity'] = {'type': 'sku', 'id': cid, 'label': r['name'], 'candidate': True, 'stage': r['stage'], 'verdict': r['verdict'], 'floor_usd': r['floor_usd'], 'cogs': r['cogs'], 'multiple': r['multiple']}
+        f['id'] = f'{SCREEN}.PROD-R57.{cid}'
         out.append(f)
     return out
