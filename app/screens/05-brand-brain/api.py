@@ -38,6 +38,10 @@ question, and accept or ignore on a proposed record. Nothing external.
   GET  decisions                the decisions timeline: action decisions from every screen plus the brain's
                                 decisions section, newest first
   POST documents/extract        {name}: re-read a stored text or markdown file into proposed records
+  GET  rank                     this screen's ranked actions with real titles, steps, artefacts and drafts (ranking.py);
+                                served by app/rank.py through the `rank(brand, window)` export below
+  GET  flows                    which screens read each profile section, from a scan of their code, and when a
+                                founder last edited it; last read is unavailable until reads are logged
   GET  records?section=<name>   one section's records with tier, date, source and evidence
   GET  audit                    findings from audit.py (app/contracts/audit.md shape)
   POST questions/<field>        {answer}: writes a founder record, marks the question answered
@@ -79,6 +83,9 @@ _spec.loader.exec_module(audit)
 _hspec = importlib.util.spec_from_file_location("brand_brain_health", HERE / "health.py")
 health = importlib.util.module_from_spec(_hspec)
 _hspec.loader.exec_module(health)
+_kspec = importlib.util.spec_from_file_location("brand_brain_ranking", HERE / "ranking.py")
+ranking = importlib.util.module_from_spec(_kspec)
+_kspec.loader.exec_module(ranking)
 _ispec = importlib.util.spec_from_file_location("brand_brain_ingest", HERE / "ingest.py")
 ingest = importlib.util.module_from_spec(_ispec)
 _ispec.loader.exec_module(ingest)
@@ -711,6 +718,51 @@ def approve(brain: Brain, rid: str, body: dict):
     return 201, {"ok": True, "record": rid, "tier": new["tier"], "was": rec.get("tier"), "version": brain.version()}
 
 
+def rank(brand: str = "bombas", window: dict | None = None) -> dict:
+    """The screen's own ranked actions (depth.md section 5): real titles, steps, artefacts and drafts for BRN-R01 to R12.
+    app/rank.py picks this up for GET /api/05-brand-brain/rank and for the master list."""
+    return ranking.rank(brand, window, lambda b, w: audit.run(b, w, BRAIN_ROOT))
+
+
+# which screens read each profile section: a static scan of the screens' api code, plus the T0 card readers
+READ_PATTERNS = (re.compile(r"""records\(\s*["']([a-z_]+)["']"""), re.compile(r"""for sec in \(([^)]*)\)"""))
+
+
+def flows(brain: Brain) -> dict:
+    """Which screens read each profile section and when they last read it. Reads come from a code scan of app/screens/*/api.py;
+    a read log does not exist yet, so last_read is unavailable with the reason (contract ask in FEATURES.md)."""
+    readers: dict[str, set] = {}
+    t0_readers: set = set()
+    root = APP / "screens"
+    for d in sorted(p for p in root.iterdir() if p.is_dir() and p.name != "05-brand-brain"):
+        api_py = d / "api.py"
+        if not api_py.is_file():
+            continue
+        try:
+            t = api_py.read_text(encoding="utf-8")
+        except OSError:
+            continue
+        secs = set(READ_PATTERNS[0].findall(t))
+        for g in READ_PATTERNS[1].findall(t):
+            secs |= set(re.findall(r"""["']([a-z_]+)["']""", g))
+        for sec in secs:
+            readers.setdefault(sec, set()).add(d.name)
+        if "t0_card" in t or "package" in t:
+            t0_readers.add(d.name)
+    out = []
+    for sec, label, first in PROFILE_SECTIONS:
+        recs = brain.records(sec)
+        approved = [r for r in recs if r["tier"] == "approved"]
+        newest_founder = max((r["date"] for r in approved if r["date"] != "undated"), default=None)
+        direct = sorted(readers.get(sec, set()))
+        out.append({"section": sec, "label": label, "records": len(recs), "approved": len(approved), "last_founder_edit": newest_founder,
+                    "read_by": direct, "read_by_t0": sorted(t0_readers), "flows_to": FLOWS_TO.get(sec, ""),
+                    "last_read": None, "last_read_reason": "no read log yet; the store does not stamp reads",
+                    "reach": len(set(direct) | t0_readers)})
+    return {"sections": out, "screens_scanned": sum(1 for p in root.iterdir() if p.is_dir() and (p / "api.py").is_file()) - 1,
+            "note": "Read by: screens whose api reads the section from the brain store, from a scan of their code. T0: screens that read the compact brand card, which carries every profile section. An edit here reaches them on their next load."}
+
+
 def handle(req):
     try:
         brain = _brain(req)
@@ -768,6 +820,10 @@ def handle(req):
         ends = (brain.today - dt.timedelta(days=1)).isoformat()
         findings = audit.run(brain.brand, {"ends_on": ends, "days": 1, "trailing": 0}, BRAIN_ROOT)
         return {"findings": findings, "rules": audit.RULES, "brain_version": brain.version()}
+    if req.method == "GET" and parts == ["flows"]:
+        fl = flows(brain)
+        fl.update(brand=brain.brand, today=brain.today.isoformat(), version=brain.version())
+        return fl
     if req.method == "GET" and parts == ["decisions"]:
         dl = decisions_log(brain)
         dl.update(brand=brain.brand, today=brain.today.isoformat(), version=brain.version())

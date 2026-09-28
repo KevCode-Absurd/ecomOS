@@ -1,0 +1,174 @@
+"""rank(brand, window) for the brand brain screen: audit findings to actions with real titles, steps, artefacts and drafts.
+
+Contract: app/contracts/depth.md sections 4 and 5. The rubric scores come from app/rank.py (`score`), then the
+reputation overrides written next to each rule in audit.py are applied and the total recomputed with the fixed
+weights. Owners: a brief that becomes an ad is `agent_drafts` (the founder approves before anything ships);
+a brain refresh the agent can run read-only is `agent`; a conflict or a claim is the founder's call, `person`.
+Unavailable findings keep the default connect action. Deterministic: no model call, no clock beyond the window.
+"""
+from __future__ import annotations
+
+import datetime as dt
+import importlib.util
+import sys
+from pathlib import Path
+
+HERE = Path(__file__).resolve().parent
+APP = HERE.parents[1]
+
+_r = importlib.util.spec_from_file_location("ecomos_rank_for_bb", APP / "rank.py")
+rank_mod = importlib.util.module_from_spec(_r)
+sys.modules["ecomos_rank_for_bb"] = rank_mod
+_r.loader.exec_module(rank_mod)
+
+REPUTATION_OVERRIDE = {"BRN-R05": 3, "BRN-R06": 3, "BRN-R08": 3, "BRN-R09": 5, "BRN-R10": 3, "BRN-R04": 5}
+CHECK_DAYS = {"BRN-R05": 14, "BRN-R06": 14, "BRN-R08": 14, "BRN-R07": 7, "BRN-R09": 14, "BRN-R10": 14}
+TEST_BUDGET_USD = 300
+
+
+def _pct(x) -> str:
+    return f"{round(x * 100)} percent" if isinstance(x, (int, float)) else "unavailable"
+
+
+def _ev(f: dict, metric: str):
+    return next((e.get("value") for e in f.get("evidence") or [] if e.get("metric") == metric), None)
+
+
+def _check_on(f: dict, days: int) -> str | None:
+    end = f.get("last_seen") or f.get("first_seen")
+    try:
+        return (dt.date.fromisoformat(str(end)[:10]) + dt.timedelta(days=days)).isoformat() if end else None
+    except ValueError:
+        return None
+
+
+def build(f: dict, nr: float | None) -> dict:
+    """One action from one finding, with the rule's own title, steps and artefact."""
+    a = rank_mod.action_from_finding(f, nr)
+    rid = f.get("rule_id")
+    ent = f.get("entity") or {}
+    label = ent.get("label") or ent.get("id") or ""
+    if f.get("status") == "unavailable":
+        return a
+    if rid == "BRN-R01":
+        n = _ev(f, "stale_records")
+        a.update(title=f"Refresh {label.replace('_', ' ')}: " + (f"{n} records past their shelf life" if n else "older than its shelf life"), owner="agent",
+                 artefact={"kind": "brain_record", "label": f"fresh {label.replace('_', ' ')} records, old ones retired to history", "draft": None},
+                 steps=[{"n": 1, "who": "agent", "text": f"Re-crawl the public source that fills {label.replace('_', ' ')}, read-only, inside its caps. Estimate first if it is paid."},
+                        {"n": 2, "who": "agent", "text": "Diff the new records against the current ones. Changes go to the review queue and the changes log."},
+                        {"n": 3, "who": "person", "text": "Accept the changes. Stale records retire, never delete."},
+                        {"n": 4, "who": "agent", "text": "Run BRN-R01 again. The finding resolves when no record is past its shelf life."}],
+                 check_on=_check_on(f, 7), time_to_ship_hours=1)
+    elif rid == "BRN-R02":
+        rooms, nf = _ev(f, "rooms_blocked"), _ev(f, "empty_fields")
+        a.update(title=f"Fill {label.replace('_', ' ')}: {nf or 'the'} field{'s' if nf != 1 else ''} that {rooms or 'the'} rooms wait on", owner="agent_drafts",
+                 artefact={"kind": "brain_record", "label": "approved records for the empty fields", "draft": None},
+                 steps=[{"n": 1, "who": "agent", "text": "Check the connectors first: a source that fills the section beats a question."},
+                        {"n": 2, "who": "agent", "text": "Draft one question per empty field, with the pull-first hint, into the open questions block."},
+                        {"n": 3, "who": "person", "text": "Answer each in a line, or connect the source."},
+                        {"n": 4, "who": "agent", "text": "Write the answers as approved records. The rooms read them on their next load."}],
+                 check_on=_check_on(f, 7), time_to_ship_hours=2)
+    elif rid == "BRN-R03":
+        q = (f.get("sentence") or "").replace("No answer yet to: ", "")
+        a.update(title="Answer: " + (q[:80] + ("..." if len(q) > 80 else "")), owner="agent_drafts",
+                 artefact={"kind": "brain_record", "label": "an approved founder record for the field", "draft": None},
+                 steps=[{"n": 1, "who": "agent", "text": "Show the question with what the brain already holds and the pull-first hint."},
+                        {"n": 2, "who": "person", "text": "Answer in a line in the open questions block, with a proof link when there is one."},
+                        {"n": 3, "who": "agent", "text": "Write the answer as an approved record and re-run the rules that waited on it."}],
+                 check_on=_check_on(f, 7), time_to_ship_hours=1)
+    elif rid == "BRN-R04":
+        a.update(title=f"Approve or replace the claim copy leans on: {label[:60]}", owner="person",
+                 artefact={"kind": "brain_record", "label": "the claim tiered approved, or the copy pointed at an approved claim", "draft": None},
+                 steps=[{"n": 1, "who": "agent", "text": "List the claim, its source page and every rung and page that uses it."},
+                        {"n": 2, "who": "person", "text": "In the brain health heatmap, approve the claim as is, or forbid it."},
+                        {"n": 3, "who": "agent", "text": "If forbidden, re-point the rung at an approved claim and flag the live copy on the copy screen."}],
+                 check_on=_check_on(f, 7), time_to_ship_hours=1)
+    elif rid == "BRN-R05":
+        us, them = _ev(f, "format_share_us"), _ev(f, "format_share_competitor_median")
+        a.update(title=f"Test {label.lower()}: competitors run {_pct(them)}, we run {_pct(us)}", owner="agent_drafts",
+                 artefact={"kind": "test_brief", "label": f"a test brief for 3 {label.lower()}", "draft": None},
+                 steps=[{"n": 1, "who": "agent", "text": "Read the 3 competitor pages leading on this format for layout and mood only. Never their text, logos, products or faces."},
+                        {"n": 2, "who": "agent", "text": "Write a test brief: 3 ads in this format, same product and offer as the current flight, hooks from the contested angles."},
+                        {"n": 3, "who": "person", "text": "Approve the brief. The creative screen makes the ads."},
+                        {"n": 4, "who": "agent", "text": f"Read cost per order at 1,000 impressions or more. Stop after ${TEST_BUDGET_USD} of spend with no winner."}],
+                 size={"text": "3 ads, one format", "usd": None}, stop_rule=f"no ad beats the median cost per order after ${TEST_BUDGET_USD} of spend",
+                 check_on=_check_on(f, CHECK_DAYS[rid]), time_to_ship_hours=6)
+    elif rid == "BRN-R06":
+        a.update(title=f"Put {label.lower()} in the next brief: we run none, competitors do", owner="agent_drafts",
+                 artefact={"kind": "ad_brief", "label": f"3 first lines in the {label.lower().replace(' hooks', '')} form", "draft": None},
+                 steps=[{"n": 1, "who": "agent", "text": "Take the 3 strongest contested angles and write each as this hook form: 3 first lines."},
+                        {"n": 2, "who": "person", "text": "Approve the lines. They join the next ad brief."},
+                        {"n": 3, "who": "agent", "text": "Read the hook rate against the statement hooks in the same flight after 14 days."}],
+                 size={"text": "3 first lines", "usd": None}, stop_rule="hook rate below the statement hooks after 14 days", check_on=_check_on(f, CHECK_DAYS[rid]), time_to_ship_hours=2)
+    elif rid == "BRN-R07":
+        a.update(title=f"Re-pull {label} from the Ad Library by page id", owner="agent",
+                 artefact={"kind": "brain_record", "label": "a fresh competitor snapshot: formats, hooks, run lengths", "draft": None},
+                 steps=[{"n": 1, "who": "agent", "text": "Show the estimate from the connector against the per-run and weekly caps. Pages by id only, never a search term."},
+                        {"n": 2, "who": "agent", "text": "Run the pull. Records land in the review queue with the capture date."},
+                        {"n": 3, "who": "person", "text": "Accept the snapshot. The coverage matrix and the gaps recompute."}],
+                 check_on=_check_on(f, CHECK_DAYS[rid]), time_to_ship_hours=1)
+    elif rid == "BRN-R08":
+        n = _ev(f, "competitor_pages_running_angle")
+        a.update(title=f"Brief the {label.lower()} angle: {n} competitor page{'s run' if n != 1 else ' runs'} it, we run 0", owner="agent_drafts",
+                 artefact={"kind": "ad_brief", "label": f"a concept brief on {label.lower()}, 3 concepts", "draft": f.get("draft")},
+                 steps=[{"n": 1, "who": "agent", "text": "Write 3 concepts from the drafted brief: a first line and a first frame each, proof only from approved or site-backed claims."},
+                        {"n": 2, "who": "person", "text": "Approve the concepts, or send the brief back with a note."},
+                        {"n": 3, "who": "agent", "text": "Hand the approved concepts to the creative screen as an ad brief."},
+                        {"n": 4, "who": "agent", "text": f"Read cost per order at 1,000 impressions or more after 7 days. Stop after ${TEST_BUDGET_USD} of spend with no winner."}],
+                 size={"text": "3 concepts", "usd": None}, stop_rule=f"no concept beats the median cost per order after ${TEST_BUDGET_USD} of spend",
+                 win_rule="a concept beats the current median cost per order in 7 days", check_on=_check_on(f, CHECK_DAYS[rid]), time_to_ship_hours=4)
+        if f.get("own_positioning"):
+            a["why"] = (a.get("why") or "") + " The brain names this angle as who we are."
+    elif rid == "BRN-R09":
+        where = f.get("where") or []
+        a.update(title=f"Answer the {label} comparison where buyers make it", owner="agent_drafts",
+                 artefact={"kind": "copy", "label": "one proof line for each surface: " + ", ".join(where[:4]), "draft": None},
+                 steps=[{"n": 1, "who": "agent", "text": "Name the doubt behind the recommendation and the proof the brain holds for it. If the ladder rung has no proof, raise the open question first."},
+                        {"n": 2, "who": "agent", "text": "Draft one proof line per surface: " + (", ".join(where[:4]) or "PDP, retargeting ad, CX macro") + ". Never quote the thread."},
+                        {"n": 3, "who": "person", "text": "Approve the lines. Each ships from its own screen."},
+                        {"n": 4, "who": "agent", "text": "Re-read the public threads on the next pull and count the recommendations again."}],
+                 check_on=_check_on(f, CHECK_DAYS[rid]), time_to_ship_hours=3)
+    elif rid == "BRN-R10":
+        a.update(title=f"Add a line for {label} to the positioning frame", owner="agent_drafts",
+                 artefact={"kind": "brain_record", "label": "a positioning frame with the buyers' frame in it, approved", "draft": None},
+                 steps=[{"n": 1, "who": "agent", "text": "Draft one sentence for the frame that answers it, from the proof points in the brain."},
+                        {"n": 2, "who": "person", "text": "Edit and save it in the profile. It becomes approved and flows to copy, creative and landing pages."},
+                        {"n": 3, "who": "agent", "text": "Re-check the frame against the next public pull."}],
+                 check_on=_check_on(f, CHECK_DAYS[rid]), time_to_ship_hours=1)
+    elif rid == "BRN-R11":
+        a.update(title=f"Settle {label.replace('_', ' ')}: {_pct(_ev(f, 'weak_share'))} of it is inferred", owner="agent_drafts",
+                 artefact={"kind": "brain_record", "label": "approved records in place of inferred ones", "draft": None},
+                 steps=f.get("steps") or a["steps"], check_on=_check_on(f, 7), time_to_ship_hours=1)
+    elif rid == "BRN-R12":
+        a.update(title=f"Decide {label}: two sources disagree", owner="person",
+                 artefact={"kind": "brain_record", "label": "an approved founder record for the field, decision logged", "draft": None},
+                 steps=[{"n": 1, "who": "agent", "text": "Show both values with their sources and the default winner."},
+                        {"n": 2, "who": "person", "text": "Pick one, or type the right value with a reason, in the conflicts block."},
+                        {"n": 3, "who": "agent", "text": "Write the approved record and the decision. Every screen reads it on its next load."}],
+                 check_on=_check_on(f, 7), time_to_ship_hours=1)
+    # rubric with the documented reputation overrides, total recomputed with the fixed weights
+    r = dict(rank_mod.score(dict(f, owner=a["owner"]), nr))
+    if rid in REPUTATION_OVERRIDE:
+        r["reputation"] = max(r["reputation"], REPUTATION_OVERRIDE[rid])
+    if rid == "BRN-R08" and f.get("own_positioning"):
+        r["reputation"] = 5
+    if rid == "BRN-R12" and any(w in (label or "") for w in ("claim", "polic", "guarantee", "return")):
+        r["reputation"] = 5
+    r["ease"] = {"agent": 5, "agent_drafts": 4, "person": 3 if a["artefact"].get("draft") else 2}[a["owner"]]
+    total = 0.0
+    for k, w in rank_mod.WEIGHTS.items():
+        v = r[k] if r[k] is not None else 2.5
+        total += w * v / 5
+    r["total"] = round(total, 1)
+    a["rubric"] = r
+    return a
+
+
+def rank(brand: str, window: dict | None, audit_run) -> dict:
+    window = window or rank_mod.default_window()
+    nr = rank_mod.net_revenue_28d(brand, window)
+    findings = audit_run(brand, window)
+    actions = [build(f, nr) for f in findings if f.get("status") in ("open", "unavailable", None)]
+    good = [a for a in actions if not rank_mod.validate_action(a)]
+    good.sort(key=rank_mod.sort_key)
+    return {"screen": "05-brand-brain", "brand": brand, "window": window, "simulated": True, "source": "screen", "net_revenue_28d": nr, "actions": good}

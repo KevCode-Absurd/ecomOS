@@ -724,3 +724,51 @@ class Round1FilesIn(TempBrain):
         b = api.ingest.extract(self.NOTE, 'bombas', 'documents/x.md', DAY)
         self.assertEqual(json.dumps(a), json.dumps(b))
         self.assertEqual(api.handle(Req(['documents', 'extract'], 'POST', body={'name': 'nope.md'}))[0], 404)
+
+
+class Round1RankAndFlows(TempBrain):
+    """Round 1 feature 10: rank() with real titles, steps and drafts; the flow proof of where an edit goes."""
+
+    W = {'ends_on': '2026-09-27', 'days': 28, 'trailing': 4}
+
+    def test_rank_override_is_picked_up_and_valid(self):
+        r = api.rank_mod.rank('05-brand-brain', 'bombas', self.W)
+        self.assertEqual(r['source'], 'screen')
+        findings = {f['id'] for f in api.audit.run('bombas', self.W, self.tmp)}
+        covered = {fid for a in r['actions'] for fid in a['finding_ids']}
+        self.assertEqual(findings, covered)
+        for a in r['actions']:
+            self.assertEqual(api.rank_mod.validate_action(a), [])
+            self.assertNotIn('—', a['title'])
+            self.assertLess(len(a['title']), 120)
+        by_rule = {}
+        for a in r['actions']:
+            by_rule.setdefault(a['rule_id'], a)
+        self.assertTrue(by_rule['BRN-R08']['artefact']['draft'].startswith('Concept brief'))
+        self.assertEqual(by_rule['BRN-R08']['owner'], 'agent_drafts')
+        self.assertEqual(by_rule['BRN-R07']['owner'] if 'BRN-R07' in by_rule else 'agent', 'agent')
+        self.assertEqual(by_rule['BRN-R04']['owner'], 'person')
+        self.assertTrue(by_rule['BRN-R05']['stop_rule'] and by_rule['BRN-R05']['check_on'])
+        self.assertTrue(by_rule['BRN-R09']['title'].startswith('Answer the '))
+        self.assertGreaterEqual(by_rule['BRN-R09']['rubric']['reputation'], 5)
+        # a title never repeats the capability name as the default does
+        self.assertFalse(any(a['title'].startswith('Write standardized') or a['title'].startswith('Claim tiering') for a in r['actions']))
+
+    def test_rank_deterministic_and_top_is_a_brief(self):
+        a = api.rank('bombas', self.W)['actions']
+        b = api.rank('bombas', self.W)['actions']
+        self.assertEqual(json.dumps(a), json.dumps(b))
+        self.assertEqual(a[0]['rule_id'], 'BRN-R08')
+        self.assertEqual(a[0]['severity'], 'high')
+
+    def test_flows_name_the_readers(self):
+        fl = api.handle(Req(['flows']))
+        by = {s['section']: s for s in fl['sections']}
+        self.assertIn('02-customers-avatars', by['positioning']['read_by'])
+        self.assertIn('01-market-research', by['positioning']['read_by'])
+        self.assertIsNone(by['positioning']['last_read'])
+        self.assertTrue(by['positioning']['last_read_reason'])
+        self.assertGreaterEqual(fl['screens_scanned'], 20)
+        api.handle(Req(['profile', 'positioning', 'frame'], 'POST', body={'text': 'Comfort that lasts.'}))
+        by = {s['section']: s for s in api.handle(Req(['flows']))['sections']}
+        self.assertEqual((by['positioning']['approved'], by['positioning']['last_founder_edit']), (1, DAY))
