@@ -2080,3 +2080,56 @@ def focus(avatars: list[dict], served_x: dict, ad_voice_x: dict, ladders_rows: l
     top = rows[0] if rows else None
     return {"rows": rows, "weights": FOCUS_W,
             "line": (f"Build for {top['name']} next: score {top['score']} of 100. Next build: {top['next']['title']}." if top else "No avatar has a share to score.")}
+
+
+# ---------------------------------------------------------------- return risk by avatar
+
+RETURN_KINDS = ("fit", "wear")    # complaint kinds that end in a return or a replacement
+RISK_HIGH = 1.25                  # an avatar's return risk at 1.25x the median avatar or more
+
+
+def return_risk(avatars: list[dict], buys: dict[str, dict[str, int]], line_rows: list[dict], monthly: list[dict], as_of: str) -> dict:
+    """Return risk per avatar: the lines it buys, weighted by how often, times each line's 1 and 2 star share and the share
+    of its top complaints that are fit or wear (the ones that come back). A proxy from public reviews until ticket and
+    return reasons are aggregated."""
+    lines = {l["line"]: l for l in line_rows}
+    lr = {}
+    for k, l in lines.items():
+        kinds = [_issue_kind(i) for i in l["issues"]]
+        frac = sum(1 for x in kinds if x in RETURN_KINDS) / len(kinds) if kinds else 0.0
+        lr[k] = {"neg": l["neg_share"], "return_frac": round(frac, 2), "risk": l["neg_share"] * frac,
+                 "top": next((i for i in l["issues"] if _issue_kind(i) in RETURN_KINDS), None)}
+    rows = []
+    for a in avatars:
+        b = {k: n for k, n in (buys.get(a["id"]) or {}).items() if k in lr}
+        tot = sum(b.values())
+        if not tot:
+            continue
+        risk = sum(n * lr[k]["risk"] for k, n in b.items()) / tot
+        driver = max(b, key=lambda k: (b[k] * lr[k]["risk"], k))
+        rows.append({"key": a["key"], "name": a["name"], "risk": round(risk, 4), "driver": driver, "driver_issue": lr[driver]["top"],
+                     "lines": dict(sorted(b.items(), key=lambda kv: -kv[1])[:4])})
+    med = _median([r["risk"] for r in rows])
+    for r in rows:
+        r["ratio"] = round(r["risk"] / med, 2) if med else None
+        r["verdict"] = "high" if r["ratio"] and r["ratio"] >= RISK_HIGH else "normal"
+        r["action"] = None
+        if r["verdict"] == "high":
+            r["action"] = {"id": f"{SCREEN}.returns.{r['key']}", "kind": "flow", "owner": "agent_drafts",
+                           "title": f"Cut returns for {r['name']}: a fit check before and after the order",
+                           "capability": {"id": "LIFE-C07", "autonomy": "founder_gate"},
+                           "draft": "\n".join([f"DRAFT return prevention for {r['name']}",
+                                               f"Driver: {r['driver'].replace('_', ' ')}, where the top return complaint is \"{r['driver_issue']}\"",
+                                               "Before: a size and fit line on the product page for this line.",
+                                               "After: an email on day 2 after delivery with how to size, wear and wash, and an easy exchange link.",
+                                               "Check: returns on this line by reason, once tickets are aggregated."]),
+                           "steps": [{"n": 1, "who": "agent", "text": "Draft the fit line and the day 2 email from the review complaints."},
+                                     {"n": 2, "who": "person", "text": "Approve both. Put the email in the post-purchase flow."},
+                                     {"n": 3, "who": "agent", "text": "Recount fit and wear complaints on this line next pull."}]}
+    rows.sort(key=lambda r: -r["risk"])
+    ref = [r for r in monthly if r.get("refunds_on_orders") is not None and r.get("net_sales") and _add(r["month"], 1) <= as_of[:7]][-3:]
+    refund_share = round(sum(r["refunds_on_orders"] for r in ref) / sum(r["net_sales"] for r in ref), 4) if ref else None
+    return {"rows": rows, "median": med, "lines": lr, "refund_share_3m": refund_share,
+            "tickets": {"available": False, "reason": "ticket reasons are in the order-level tables; no aggregate by reason and product line yet",
+                        "fix": "Aggregate tickets and returns by reason and product line (see Contract asks)."},
+            "line": (f"{rows[0]['name']} carries the most return risk, driven by {rows[0]['driver'].replace('_', ' ')}." if rows else "No avatar is tied to a product line yet.")}

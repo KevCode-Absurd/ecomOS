@@ -1232,5 +1232,20 @@ class DepthRules(TempBrain):
                 self.assertTrue(f['unavailable']['fix'])
 
 
+class ReturnRisk(TempBrain):
+    """Feature 5.2: return risk by avatar from the lines it buys; ticket reasons unavailable, never zero."""
+
+    def test_return_risk(self):
+        x = api.handle(Req(['overview']))['returns']
+        self.assertEqual(x['rows'][0]['key'], 'daily_compression_wearer')
+        self.assertEqual(x['rows'][0]['verdict'], 'high')
+        self.assertIsNotNone(x['rows'][0]['action'])
+        for r in x['rows']:
+            self.assertEqual(r['verdict'] == 'high', r['ratio'] >= 1.25)
+            self.assertEqual(r['action'] is not None, r['verdict'] == 'high')
+        self.assertFalse(x['tickets']['available'])
+        self.assertTrue(0 < x['refund_share_3m'] < 0.2)
+
+
 if __name__ == '__main__':
     unittest.main()

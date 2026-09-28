@@ -92,7 +92,7 @@ Lead's review: rounds 1 to 4 passed. Focus: returns and tickets by avatar, depth
 | # | Feature | Status |
 |---|---|---|
 | 5.1 | Depth rules as tests on this screen: rule 11 (no brand, competitor, promo or dollar fact in `screen.js` or `index.html`), rule 12 (no em dash, should, consider or leverage in titles, whys, steps or the page; under 45 words), rule 4 (every open finding shows its numbers), rule 8 (rules that read tables carry simulated evidence), rule 7 (unavailable is null or a connect action, never zero). One heading fixed | done |
-| 5.2 | Which avatars return the most: return risk by avatar from the lines they buy and the fit and wear complaints on them, with refunds as orientation and the ticket-reason read waiting on the data layer | todo |
+| 5.2 | Which avatars send the most back: return risk per avatar (the lines it buys, weighted by how often, times each line's 1 and 2 star share and the share of its top complaints that are fit or wear), high at 1.25x the median with a fit-before and day-2-after email brief; refunds over net sales for the last 3 months as orientation; the ticket and return reason read as a person-owned connect card until tickets are aggregated by reason and line (Contract asks). Bombas: the Daily Compression Wearer at 1.68x, driven by compression that is hard to pull on | done |
 | 5.3 | Support replies per doubt: a drafted macro for every rung support answers, for 15-customers-cx | todo |
 | 5.4 | Each coverage cell explains itself: click a cell to see the rungs behind the count and the brief | todo |
 | 5.5 | Are marketplace buyers a different avatar: avatars whose voice is mostly Amazon, and the listing work they need | todo |
@@ -139,6 +139,8 @@ Lead's review: rounds 1 to 4 passed. Focus: returns and tickets by avatar, depth
 6. Next, round 2: rules from the web pass (gateway product, second-order path, win-back timing by gap, RFM cells, theme impact, copy gap check) and hiking as a sized avatar.
 
 ## Contract asks
+
+- A tickets and returns aggregate by reason and product line (monthly), so 5.2 reads real return reasons per avatar. Fallback: the review-complaint proxy and a connect card.
 
 - A SKU to product-line map in the brain's products section (for example BMB-SK-CMP-3 to compression), so avatar value can read revenue by line from `products_monthly`. Fallback: 4.9 scores avatars without revenue.
 

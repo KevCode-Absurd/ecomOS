@@ -298,6 +298,20 @@ def _health(brand: str, avatars: list[dict]) -> dict:
     return builds.health(monthly, audit.load_cohorts(brand, avatars).get("rows", []), as_of)
 
 
+def _returns(brain: Brain, avatars: list[dict], all_rungs: list[dict]) -> dict:
+    mis = builds.misreads(brain.records("avatars"), avatars, all_rungs, brain.records("language_bank"), brain.records("products"))
+    if not mis.get("available"):
+        return {"rows": [], "line": mis.get("reason"), "tickets": {"available": False, "reason": mis.get("reason"), "fix": ""}, "refund_share_3m": None}
+    buys = builds.avatar_lines(brain.records("avatars"), all_rungs, brain.records("language_bank"), {l["line"] for l in mis["lines"]})
+    try:
+        from tables import brand_data
+        data = brand_data(brain.brand)
+        monthly, as_of = data.table("monthly"), data.brand.get("as_of")
+    except (ImportError, ValueError, KeyError, FileNotFoundError):
+        monthly, as_of = [], (brain.today - dt.timedelta(days=1)).isoformat()
+    return builds.return_risk(avatars, buys, mis["lines"], monthly, as_of)
+
+
 def _split(brain: Brain, avatars: list[dict], all_rungs: list[dict]) -> dict:
     issues = {}
     for r in brain.records("products"):
@@ -416,7 +430,7 @@ def overview(brain: Brain) -> dict:
             "coverage": builds.coverage(avatars, all_rungs), "ladders": lad,
             "copy_gap": builds.copy_gap({sec: brain.records(sec) for sec in ("voice", "claims", "identity", "offers", "policies", "products", "visual", "story_bank")},
                                         brain.records("language_bank"), _brand_tokens(brain), audit.source_name),
-            "paths": _paths(brain.brand), "gate": gate, "ad_voice": builds.ad_voice(avatars, brain.records("learnings")), "split": _split(brain, avatars, all_rungs),
+            "paths": _paths(brain.brand), "gate": gate, "returns": _returns(brain, avatars, all_rungs), "ad_voice": builds.ad_voice(avatars, brain.records("learnings")), "split": _split(brain, avatars, all_rungs),
             "naming": builds.naming(avatars, all_rungs, builds.hooks(brain.records("language_bank"), all_rungs, avatars, _brand_tokens(brain), audit.source_name)["rows"]),
             "timing": builds.doubt_timing(all_rungs, brain.records("language_bank"), ends_on, audit.source_name), "health": _health(brain.brand, avatars), "hierarchy": _hierarchy(brain, avatars, all_rungs, lad),
             "offer_map": builds.offer_map(avatars, all_rungs, brain.records("offers"), brain.records("policies") + brain.records("claims")),

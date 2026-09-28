@@ -354,6 +354,24 @@
       artefact: { kind: r.action.kind, label: 'a dated plan: ad briefs and 2 emails', draft: r.action.draft } }, { compact: true, screen: SLUG })));
   }
 
+  // ---------- desk: return risk ----------
+  function renderReturns(x) {
+    document.getElementById('returns-sub').textContent = 'Return risk per avatar: the lines it buys, weighted by how often, times each line\'s 1 and 2 star share and the share of its top complaints that are fit or wear. High: 1.25x the median avatar. A proxy from public reviews until ticket and return reasons are aggregated. ' + (x.line || '');
+    mount('#returns-tools', UI.orientation([{ label: 'refunds, last 3 months', value: x.refund_share_3m, unit: '%', title: 'refunds on orders over net sales, simulated' }]));
+    mount('#returns', UI.verdictTable({
+      columns: [{ key: 'name', label: 'Avatar' }, { key: 'ratio', label: 'x median', unit: 'x' }, { key: 'driver_t', label: 'Driven by' }, { key: 'lines_t', label: 'Lines it buys' }],
+      rows: (x.rows || []).map((r) => Object.assign({}, r, { driver_t: pretty(r.driver) + (r.driver_issue ? ': ' + r.driver_issue : ''),
+        lines_t: Object.entries(r.lines).map(([k, n]) => pretty(k) + ' ' + n).join(', '),
+        actions: r.action ? [{ label: 'Brief it', onClick: () => briefPanel(r.action) }] : [{ label: 'Watch', cls: 'quiet', onClick: () => {} }] })),
+      verdict: { at: 1, kind: (r) => r.verdict === 'high' ? 'fix' : 'keep', text: (r) => r.verdict === 'high' ? 'High' : 'Normal' }, actions: { label: 'Do' }, sort: false,
+    }));
+    const t = x.tickets || {};
+    mount('#returns-side', UI.actionCard({ id: SLUG + '.returns.connect', title: 'Aggregate tickets and returns by reason and line', severity: 'medium', status: 'unavailable', owner: 'person',
+      why: 'Unavailable: ' + (t.reason || 'no aggregate') + '. With it, this table reads real return reasons per avatar instead of review complaints.',
+      steps: [{ n: 1, who: 'person', text: t.fix || 'Ask the data session for the aggregate.' }, { n: 2, who: 'agent', text: 'Swap the proxy for real reasons and re-rank.' }],
+      artefact: { kind: 'connector_setup', label: 'a tickets and returns aggregate, read-only' } }, { compact: true, screen: SLUG }));
+  }
+
   // ---------- desk: misreads ----------
   const LINE_V = { problem: ['cut', 'Problem'], split: ['watch', 'Split'], fine: ['keep', 'Fine'] };
   function renderMisreads(x) {
@@ -831,7 +849,7 @@
 
   // ---------- the desk, grouped into tabs by job ----------
   const DESK = [
-    { key: 'avatars', label: 'Avatars', ids: ['focus-wrap', 'avatars-wrap', 'voiceads-wrap', 'split-wrap', 'gate-wrap', 'forces-wrap', 'survey-wrap', 'served-wrap', 'misread-wrap'] },
+    { key: 'avatars', label: 'Avatars', ids: ['focus-wrap', 'avatars-wrap', 'voiceads-wrap', 'split-wrap', 'gate-wrap', 'forces-wrap', 'survey-wrap', 'served-wrap', 'returns-wrap', 'misread-wrap'] },
     { key: 'doubts', label: 'Doubts and words', ids: ['ladders-wrap', 'cover-wrap', 'themes-wrap', 'words-wrap', 'hooks-wrap', 'gap-wrap'] },
     { key: 'offers', label: 'Offers and claims', ids: ['offers-wrap', 'claims-wrap', 'timing-wrap'] },
     { key: 'retention', label: 'Retention', ids: ['paths-wrap', 'cohort-wrap', 'mix-wrap', 'moments-wrap', 'health-wrap'] },
@@ -884,6 +902,7 @@
     renderServed(d.served, d.avatars);
     renderDrafts(d.drafts);
     renderMisreads(d.misreads);
+    renderReturns(d.returns);
     renderClaims(d.claims_fire);
     renderLookalikes(d.lookalikes);
     renderTiming(d.timing);
