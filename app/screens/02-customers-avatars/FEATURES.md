@@ -21,6 +21,23 @@ Round 0 notes:
 - Ad coverage needs an angle per ad. The simulated `ad_rows` has placeholder text and no angle; the generator or an ad naming rule would fill it.
 - "Ungrounded" means no quotes, or quotes from fewer than 2 independent sources. On Bombas 7 of 11 avatars rest on 1 source.
 
+## Round 1: the execution surface (from 28 Sep 2026)
+
+Judged by `app/contracts/depth.md`. Each feature ends in an action with an owner, steps and an artefact.
+
+| # | Feature | Status |
+|---|---|---|
+| 1.1 | Round 0 anti-patterns out: plan board first with ranked actions from `rank`, orientation beside it (new customers 28d, returning share, repeat in 3 months, avatars with proof, rungs without proof, oldest avatar check), what is wrong grouped by rule with evidence and a link to its action, action cards with steps, desk, audit and rule list at the bottom. Tiles, insights and the repeat bar chart removed. `rank(brand, window)` in `api.py` gives every action a real title | done |
+| 1.2 | Avatar cards that end in the next build for that avatar | todo |
+| 1.3 | Avatar by channel coverage matrix, empty cells briefed | todo |
+| 1.4 | Objection ladders per avatar with the copy or offer action per rung without proof | todo |
+| 1.5 | Language bank to copy, with a copy brief artefact | todo |
+| 1.6 | Cohort grid with the break named and the retention action | todo |
+| 1.7 | New against returning mix and what drives it | todo |
+| 1.8 | Avatars served and not served: positioning map | todo |
+| 1.9 | Where reviews say the avatar is misread | todo |
+| 1.10 | `rank` with real steps and artefacts for every rule | todo |
+
 ## Room jobs (room "Brand and customers", agent BRAND)
 
 | Job | Question | Capabilities |
@@ -138,3 +155,4 @@ The job to be done for each avatar is brand data: it lives in `app/brain/<brand>
 | Round | Features picked | Date | Notes |
 |---|---|---|---|
 | 0 | skeleton, 0.1 to 0.8 | 28 Sep 2026 | Bombas brain plus simulated cohorts; screenshot `round0.png` |
+| 1 | 1.1 to 1.10, no picks (depth brief) | 28 Sep 2026 | in progress |

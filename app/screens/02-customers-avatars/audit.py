@@ -103,7 +103,8 @@ def avatar_rows(brain: Brain) -> list[dict]:
             grounding = "single_source"
         else:
             grounding = "grounded"
-        out.append({"id": a["id"], "key": key(a["id"]), "name": v.get("name") or a.get("text") or key(a["id"]),
+        out.append({"id": a["id"], "key": key(a["id"]), "name": v.get("name") or (f"{v['situation'].capitalize()} (Reddit)" if v.get("situation") else None)
+                    or a.get("text") or key(a["id"]),
                     "share_estimate": v.get("share_estimate"), "intensity": v.get("intensity"),
                     "job": v.get("job"), "triggers": v.get("triggers") or [], "pains": v.get("pains") or [],
                     "quotes": quotes, "quote_count": len(quotes), "sources": sources, "grounding": grounding,

@@ -107,7 +107,6 @@ class AuditRules(TempBrain):
         d = api.handle(Req(['overview']))
         card = next(a for a in d['avatars'] if a['id'] == rows[0]['id'])
         self.assertEqual(card['grounding'], 'inferred')
-        self.assertTrue(any(i['rule'] == 'avatar has 0 customer quotes' for i in d['insights']))
 
     def test_proof_on_rung_clears_top_objection(self):
         rows = self.section('objection_ladders')
@@ -124,12 +123,9 @@ class Api(TempBrain):
     def test_overview(self):
         d = api.handle(Req(['overview']))
         self.assertIn('simulated', d['simulated_note'].lower())
-        self.assertEqual(len(d['tiles']), 3)
-        self.assertEqual(d['tiles'][0]['value'], sum(a['grounding'] == 'grounded' for a in d['avatars']))
-        rules = {i['rule'] for i in d['insights']}
-        self.assertIn("avatar's top objection rung (most one-star mentions) has no proof record", rules)
-        for i in d['insights']:
-            self.assertTrue(i['capability'] and i['autonomy'])
+        self.assertNotIn('tiles', d)
+        self.assertNotIn('insights', d)
+        self.assertTrue(3 <= len(d['orientation']) <= 6)
         self.assertTrue(d['avatars'] and d['objections'] and d['language']['themes'])
         for a in d['avatars']:
             self.assertLessEqual(len(a['quotes']), 4)
@@ -140,7 +136,6 @@ class Api(TempBrain):
             self.assertIsNone(o['pages']['value'])
         self.assertTrue(d['voice']['do'])
         self.assertTrue(d['voice']['contexts'])
-        self.assertEqual(d['decision']['capability'], 'BRAND-C15')
 
     def test_repeat_chart_from_cohorts(self):
         c = api.repeat_by_cohort('bombas')
@@ -149,8 +144,8 @@ class Api(TempBrain):
         row = c['rows'][-1]
         self.assertAlmostEqual(row['rate'], round(min(row['active_m1_m3'] / row['customers'], 1), 4))
         self.assertLess(c['labels'][-1], '2026-07')
-        tile = api.overview(api._brain(Req(['overview'])))['tiles'][2]
-        self.assertEqual(tile['value'], c['values'][-1])
+        o = {x['label']: x for x in api.overview(api._brain(Req(['overview'])))['orientation']}
+        self.assertEqual(o['repeat in 3 months']['value'], c['values'][-1])
 
     def test_liked_and_disliked_examples_write_founder_records(self):
         code, res = api.handle(Req(['voice', 'examples'], 'POST', body={'kind': 'liked', 'text': 'Comfort you can feel.'}))
@@ -177,6 +172,53 @@ class Api(TempBrain):
         self.assertTrue(d['findings'])
         self.assertEqual(api.handle(Req(['overview'], query={'brand': ['../x']}))[0], 404)
         self.assertEqual(api.handle(Req(['nope']))[0], 404)
+
+
+rank_engine = load('customers_avatars_rank_t', ROOT / 'app' / 'rank.py')
+RANK_WINDOW = {'ends_on': '2026-09-27', 'days': 28, 'trailing': 4}
+
+
+class Round1Plan(TempBrain):
+    """Feature 1.1: the plan first, orientation beside it, every finding ends in an action."""
+
+    def test_page_order_plan_first_audit_last(self):
+        html = (SCREEN / 'index.html').read_text(encoding='utf-8')
+        body = html[html.index('<div class="screen">'):]
+        ids = [body.index(f'id="{x}"') for x in ('plan', 'wrong', 'actions', 'avatars', 'audit')]
+        self.assertEqual(ids, sorted(ids))
+        self.assertNotIn('id="tiles"', html)
+        first = body.index('<section')
+        self.assertTrue(body[first:first + 60].startswith('<section class="section" id="plan-wrap">'))
+
+    def test_orientation_numbers(self):
+        d = api.handle(Req(['overview']))
+        o = {x['label']: x for x in d['orientation']}
+        self.assertEqual(o['rungs without proof']['value'], sum(1 for r in audit.rungs(api._brain(Req(['overview']))) if not r['proof_ids']))
+        self.assertTrue(0 < o['returning share of orders']['value'] < 1)
+        self.assertIsInstance(o['new customers, 28d']['value'], int)
+
+    def test_orientation_unavailable_not_zero(self):
+        win = api.daily_window('bombas', '2020-01-01')
+        self.assertTrue(win['unavailable'])
+
+    def test_every_finding_maps_to_a_valid_action(self):
+        out = api.rank('bombas', RANK_WINDOW)
+        acts = out['actions']
+        self.assertTrue(acts)
+        covered = {fid for a in acts for fid in a['finding_ids']}
+        findings = audit.run('bombas', RANK_WINDOW, self.tmp)
+        for f in findings:
+            if f['status'] in ('open', 'unavailable'):
+                self.assertIn(f['id'], covered)
+        for a in acts:
+            self.assertEqual(rank_engine.validate_action(a), [], a['id'])
+            if a['status'] == 'unavailable':
+                self.assertEqual(a['owner'], 'person')
+        self.assertEqual(len({a['title'] for a in acts}), len(acts))
+
+    def test_rank_deterministic(self):
+        strip = lambda o: json.dumps([{k: v for k, v in a.items()} for a in o['actions']], sort_keys=True)
+        self.assertEqual(strip(api.rank('bombas', RANK_WINDOW)), strip(api.rank('bombas', RANK_WINDOW)))
 
 
 if __name__ == '__main__':

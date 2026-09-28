@@ -5,8 +5,9 @@ objection_ladders, language_bank, voice, claims). Repeat by cohort comes from th
 simulated aggregates (cohorts.json) through app/data/tables.py. The only write is a
 founder-marked voice example, through Brain.put. Nothing external, no model.
 
-  GET  overview          tiles, insights, chart, avatar cards, objection map, language bank,
+  GET  overview          orientation numbers, avatar cards, objection map, language bank,
                          voice sheet
+  GET  rank              served by app/rank.py, which calls `rank(brand, window)` below when present
   GET  audit             findings from audit.py (app/contracts/audit.md shape) and RULES
   POST voice/examples    {kind: liked | disliked, text, note?}: writes a founder voice record
 
@@ -171,54 +172,50 @@ def add_example(brain: Brain, body: dict):
     return 201, {"ok": True, "record": rid}
 
 
-# ---------------------------------------------------------------- tiles, insights
+# ---------------------------------------------------------------- orientation
 
-def tiles(avatars, objections, chart) -> list[dict]:
-    grounded = sum(1 for a in avatars if a["grounding"] == "grounded")
-    proven = sum(1 for o in objections if o["status"] == "proof on file")
-    rep = {"name": "Repeat within 3 months", "plain": "Latest cohort's first-time buyers active again in months 1 to 3",
-           "unit": "%", "higher_is_better": True}
-    if chart["unavailable"]:
-        rep.update(value=None, unavailable_reason=chart["reason"], fix=chart.get("fix"), window="cohorts")
-    else:
-        vals = chart["values"]
-        rep.update(value=vals[-1], window=f"cohort {chart['labels'][-1]}, simulated",
-                   delta=round(vals[-1] / vals[-2] - 1, 4) if len(vals) > 1 and vals[-2] else None)
+def daily_window(brand: str, ends_on: str, days: int = 28) -> dict:
+    """Trailing `days` of the daily aggregate ending on or before `ends_on`. Unavailable when short, never 0."""
+    try:
+        from tables import brand_data
+        rows = brand_data(brand).table("daily")
+    except (ImportError, ValueError, KeyError, FileNotFoundError) as exc:
+        return {"unavailable": True, "reason": f"no daily table for {brand} ({exc})", "rows": []}
+    rows = [r for r in rows if isinstance(r, dict) and str(r.get("date", ""))[:10] <= ends_on]
+    rows = rows[-days:]
+    if len(rows) < days:
+        return {"unavailable": True, "reason": f"only {len(rows)} of {days} days in the daily table", "rows": rows}
+    return {"unavailable": False, "rows": rows, "start": rows[0]["date"], "end": rows[-1]["date"]}
+
+
+def orientation(brain: Brain, avatars: list[dict], all_rungs: list[dict], chart: dict, ends_on: str) -> list[dict]:
+    """3 to 6 small numbers beside the plan: where customers stand, not the answer."""
+    win = daily_window(brain.brand, ends_on)
+    new_c = ret_share = None
+    if not win["unavailable"]:
+        new_c = sum(r.get("new_customer_orders") or 0 for r in win["rows"])
+        orders = sum(r.get("orders") or 0 for r in win["rows"])
+        ret = sum(r.get("returning_customer_orders") or 0 for r in win["rows"])
+        ret_share = round(ret / orders, 4) if orders else None
+    rep = None if chart["unavailable"] else chart["values"][-1]
+    with_proof = sum(1 for a in avatars if a.get("top_objection") and a["top_objection"]["proof"])
+    open_rungs = sum(1 for r in all_rungs if not r["proof_ids"])
+    dates = [a["date"] for a in avatars if a["date"] != "undated"]
+    fresh = (brain.today - dt.date.fromisoformat(min(dates))).days if dates else None
+    why = win.get("reason")
     return [
-        {"name": "Grounded avatars", "plain": f"Avatars with quotes from {audit.MIN_SOURCES} or more sources, of {len(avatars)}",
-         "value": grounded if avatars else None, "unit": f"of {len(avatars)}", "window": "as of latest brain",
-         "unavailable_reason": None if avatars else "no avatar records yet", "fix": "BRAND-C11",
-         "tone": "bad" if avatars and grounded * 2 < len(avatars) else None},
-        {"name": "Objection coverage", "plain": "Named objections where every rung has a proof record",
-         "value": round(proven / len(objections), 4) if objections else None, "unit": "%", "window": "as of latest brain",
-         "unavailable_reason": None if objections else "objection map is empty", "fix": "BRAND-C13",
-         "higher_is_better": True},
-        rep,
+        {"label": "new customers, 28d", "value": new_c, "unit": "n", "title": "first orders in the last 28 days, simulated",
+         "unavailable_label": None if new_c is not None else "unavailable", "reason": why},
+        {"label": "returning share of orders", "value": ret_share, "unit": "%", "title": "returning orders over all orders, 28 days, simulated"},
+        {"label": "repeat in 3 months", "value": rep, "unit": "%",
+         "title": "latest full cohort, active again in months 1 to 3, upper bound, simulated"},
+        {"label": "avatars with proof", "value": with_proof if avatars else None, "unit": "n", "suffix": f" of {len(avatars)}",
+         "title": "avatars whose top doubt has a proof record"},
+        {"label": "rungs without proof", "value": open_rungs if all_rungs else None, "unit": "n",
+         "tone": "bad" if open_rungs else None, "title": "objection ladder rungs with no proof record"},
+        {"label": "oldest avatar check", "value": fresh, "unit": "n", "suffix": " days ago",
+         "title": "days since the oldest avatar record was last dated"},
     ]
-
-
-def insights(avatars, all_rungs, ends_on) -> list[dict]:
-    """Two rules: an avatar whose top objection has no proof, and an avatar with no quotes or 1 source."""
-    out = []
-    for f in audit.r02(None, avatars, all_rungs, ends_on):
-        out.append({"rule": "avatar's top objection rung (most one-star mentions) has no proof record",
-                    "severity": "medium", "sentence": f["sentence"], "capability": "BRAND-C13", "autonomy": "agent",
-                    "evidence": f"rung {f['entity']['id']}; refs: {', '.join(f['brain_refs'])}"})
-    bare = [a for a in avatars if a["quote_count"] == 0]
-    thin = [a for a in avatars if a["quote_count"] and a["grounding"] != "grounded"]
-    for a in bare:
-        out.append({"rule": "avatar has 0 customer quotes", "severity": "medium",
-                    "sentence": f"{a['name']} has no customer quotes. It is a guess until customers say it.",
-                    "capability": "BRAND-C01", "autonomy": "agent", "evidence": a["id"]})
-    if thin:
-        share = sum(a["share_estimate"] or 0 for a in thin)
-        known = [a for a in thin if a["share_estimate"] is not None]
-        tail = f" They cover about {round(share * 100)} percent of buyers." if known else ""
-        out.append({"rule": f"avatar quotes come from fewer than {audit.MIN_SOURCES} sources", "severity": "medium",
-                    "sentence": f"{len(thin)} of {len(avatars)} avatars rest on quotes from 1 source each.{tail}",
-                    "capability": "BRAND-C11", "autonomy": "founder_gate",
-                    "evidence": "; ".join(f"{a['name']}: {a['sources'][0]}" for a in thin)})
-    return out
 
 
 def overview(brain: Brain) -> dict:
@@ -232,13 +229,11 @@ def overview(brain: Brain) -> dict:
         a["top_objection"] = None if top is None else {"id": top["id"], "doubt": top["doubt"], "one_star": top["one_star"],
                                                         "proof": bool(top["proof_ids"])}
     chart = repeat_by_cohort(brain.brand)
-    return {"brand": brain.brand, "today": brain.today.isoformat(), "version": brain.version(),
-            "simulated_note": SIMULATED_NOTE, "tiles": tiles(avatars, objections, chart),
-            "insights": insights(avatars, all_rungs, ends_on), "chart": chart, "avatars": avatars,
+    return {"brand": brain.brand, "today": brain.today.isoformat(), "ends_on": ends_on, "version": brain.version(),
+            "simulated_note": SIMULATED_NOTE, "orientation": orientation(brain, avatars, all_rungs, chart, ends_on),
+            "avatars": avatars,
             "objections": objections, "angles": {k: angles[k] for k in ("available", "reason", "ads")},
-            "language": audit.language_rows(brain), "voice": voice_sheet(brain),
-            "decision": {"capability": "BRAND-C15", "autonomy": "agent",
-                         "label": "Re-check every avatar against the newest reviews and tickets"}}
+            "language": audit.language_rows(brain), "voice": voice_sheet(brain)}
 
 
 def handle(req):
@@ -256,3 +251,46 @@ def handle(req):
     if req.method == "POST" and parts == ["voice", "examples"]:
         return add_example(brain, req.body)
     return 404, {"error": "not found", "path": parts}
+
+
+# ---------------------------------------------------------------- rank (depth contract section 5)
+
+_rank_engine = None
+
+
+def _engine():
+    """app/rank.py, loaded once. The screen dresses its default actions with real titles."""
+    global _rank_engine
+    if _rank_engine is None:
+        spec = importlib.util.spec_from_file_location("customers_avatars_rank_engine", APP / "rank.py")
+        _rank_engine = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(_rank_engine)
+    return _rank_engine
+
+
+def _title(f: dict) -> str | None:
+    ent = f["entity"]
+    if f["rule_id"] == "CUST-R01":
+        return f"Back the {ent['label']} avatar with a second source"
+    if f["rule_id"] == "CUST-R02":
+        doubt = next((r for r in f["sentence"].split('"')[1:2]), ent["label"])
+        return f"Answer \"{doubt}\""
+    if f["rule_id"] == "CUST-R03" and f["status"] == "unavailable":
+        return "Name the angle on every Meta ad so objection coverage can be read"
+    if f["rule_id"] == "CUST-R03":
+        return f"Brief an ad that answers the {ent['label']} doubt"
+    return None
+
+
+def rank(brand: str, window: dict) -> dict:
+    eng = _engine()
+    findings = audit.run(brand, window, BRAIN_ROOT)
+    nr = eng.net_revenue_28d(brand, window)
+    actions = []
+    for f in findings:
+        if f.get("status") not in ("open", "unavailable"):
+            continue
+        a = eng.action_from_finding(f, nr)
+        a["title"] = _title(f) or a["title"]
+        actions.append(a)
+    return {"actions": actions}

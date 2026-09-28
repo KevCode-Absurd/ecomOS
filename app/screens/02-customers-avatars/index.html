@@ -10,16 +10,48 @@
 <body data-screen="02-customers-avatars">
 <div class="screen">
   <div class="sample-badge" role="note" id="badge">Loading customers.</div>
-  <div class="screen-head"><h1>Customers and avatars</h1><p>Who buys, the job they hire us for, what stops them, and the words they use.</p></div>
-  <section class="section"><h3>At a glance</h3><div class="grid tiles" id="tiles"></div></section>
-  <section class="section"><h3>Insights</h3><div class="grid" id="insights"></div></section>
-  <section class="section"><h3>Repeat within 3 months, by first-order month</h3><div class="card" id="chart"></div></section>
-  <section class="section"><h3>Avatars</h3><p class="muted small">Share is a rough estimate from a sample of public reviews. A badge shows how well customers back each one.</p><div class="grid avatars" id="avatars"></div></section>
-  <section class="section"><h3>Objection map</h3><p class="muted small" id="obj-note"></p><div id="objections"></div></section>
-  <section class="section"><h3>Language bank</h3><div class="grid two" id="language"></div></section>
-  <section class="section"><h3>Voice sheet</h3><div class="grid two" id="voice"></div></section>
-  <section class="section"><h3>Next step</h3><div class="card" id="decision"></div></section>
-  <section class="section"><h3>Audit findings</h3><div id="audit"></div></section>
+  <div class="screen-head"><h1>Customers and avatars</h1><p>Who buys, why, what stops them, and what we build next for each avatar.</p></div>
+
+  <!-- 1. The plan -->
+  <section class="section" id="plan-wrap"><div id="plan"></div></section>
+  <section class="section" id="connect-wrap" hidden><div id="connect"></div></section>
+
+  <!-- 2. What is wrong, ranked -->
+  <section class="section" id="wrong-wrap">
+    <div class="sec-head"><h2>What is wrong with how we know our customers?</h2><span class="sub" id="wrong-sub"></span></div>
+    <div id="wrong"></div>
+  </section>
+
+  <!-- 3 and 4. Actions with their implementation -->
+  <section class="section" id="actions-wrap">
+    <div class="sec-head"><h2>Actions, and how each gets done</h2><div class="tools" id="actions-tools"></div><span class="sub">Every finding above ends in one of these. Open steps to see who does what and what ships.</span></div>
+    <div class="grid" id="actions"></div>
+  </section>
+
+  <!-- 5. The desk -->
+  <section class="section">
+    <div class="sec-head"><h2>Who are our avatars, and what backs each one?</h2><span class="sub">Share is a rough estimate from a sample of public reviews. The badge shows how well customers back each one.</span></div>
+    <div class="grid avatars" id="avatars"></div>
+  </section>
+  <section class="section">
+    <div class="sec-head"><h2>Which doubts still have no answer?</h2><span class="sub" id="obj-note"></span></div>
+    <div id="objections"></div>
+  </section>
+  <section class="section">
+    <div class="sec-head"><h2>What words do customers use?</h2><span class="sub">Phrases by theme with counts and sources. Reddit lines are for language only, never testimonials.</span></div>
+    <div class="grid two" id="language"></div>
+  </section>
+  <section class="section">
+    <div class="sec-head"><h2>Does it sound like us?</h2><span class="sub">The voice sheet from the brain. Mark any line as us or not us and every writer gets it.</span></div>
+    <div class="grid two" id="voice"></div>
+  </section>
+
+  <!-- 6. The audit -->
+  <section class="section" id="audit-wrap">
+    <div class="sec-head"><h2>Audit: every rule and finding</h2><span class="sub" id="audit-sub"></span></div>
+    <div id="audit"></div>
+    <div id="rules"></div>
+  </section>
 </div>
 <script src="/web/ui-kit.js"></script>
 <script src="/web/charts.js"></script>
