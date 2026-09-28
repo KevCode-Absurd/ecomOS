@@ -1975,5 +1975,29 @@ class MemoTest(unittest.TestCase):
         self.assertEqual(api.actions.rank(None, None, data)['actions'], api.actions.rank(None, None, data)['actions'])
 
 
+class OneScaleTest(unittest.TestCase):
+    """Round 8 feature 1: a brand with no daily aggregate sizes stakes against net revenue from its order rows."""
+
+    def test_sample_uses_money(self):
+        sys.path.insert(0, str(ROOT / 'app'))
+        import server
+        r = api.actions.rank(None, None, server.Data())
+        self.assertIsNotNone(r['net_revenue_28d'])
+        staked = [a for a in r['actions'] if (a.get('money_at_stake') or {}).get('usd')]
+        top = max(staked, key=lambda a: a['money_at_stake']['usd'])
+        self.assertEqual(r['actions'][0]['id'], top['id'])     # the biggest stake leads when nothing is critical
+
+    def test_orders_formula(self):
+        import datetime as dtm
+        orders = [{'created_at': '2026-09-20T10:00:00Z', 'subtotal': 100, 'discount': {'amount': 10}},
+                  {'created_at': '2026-09-21T10:00:00Z', 'subtotal': 50, 'discount': None, 'cancelled_at': '2026-09-21'},
+                  {'created_at': '2026-07-01T10:00:00Z', 'subtotal': 70, 'discount': None}]
+        class R:
+            ends_on = dtm.date(2026, 9, 24)
+            def table(self, name):
+                return orders if name == 'orders' else None
+        self.assertEqual(api.model.net_revenue_orders(R(), 28), 90.0)
+
+
 if __name__ == '__main__':
     unittest.main()

@@ -1561,6 +1561,8 @@ def rank(brand='bombas', window=None, data=None):
     rd = audit.Reader(data, brand, end)
     ctx = Ctx(rd)
     nr = RANK.net_revenue_28d(brand, w) if brand else None
+    if nr is None:   # one money scale: a brand with no daily aggregate sizes stakes against its order rows
+        nr = model.net_revenue_orders(rd, audit.WINDOW)
     actions = [build(f, rd, ctx, nr) for f in findings if f.get('status') in ('open', 'unavailable', None)]
     actions = merge_connect(merge_gifting(merge_red_line(merge_ladder(actions, ctx)), ctx))
     actions = merge_into(merge_into(actions, 'OFFER-R05', 'OFFER-R01'), 'OFFER-R06', 'OFFER-R01')

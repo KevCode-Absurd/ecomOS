@@ -1702,3 +1702,19 @@ def returner_codes(rd, days):
             'code_dollars': round(dollars, 2), 'code_dollars_28d': round(dollars * 28 / days, 2),
             'codes': sorted(codes.items(), key=lambda kv: -kv[1])[:5],
             'basis': f'returning orders {start.isoformat()} to {end.isoformat()}; the gap is days since the same buyer\'s last order'}
+
+
+# ---------------------------------------------------------------- one money scale for every brand
+
+def net_revenue_orders(rd, days=28):
+    """Net sales over the last `days` from order rows (subtotal minus the order's discount, cancelled orders out),
+    for a brand whose daily aggregate is missing. The rubric sizes every stake against this."""
+    orders = rd.table('orders')
+    if not isinstance(orders, list) or not orders:
+        return None
+    end = rd.ends_on
+    start = (end - timedelta(days=days - 1)).isoformat()
+    rows = [o for o in orders if start <= str(o.get('created_at'))[:10] <= end.isoformat() and not o.get('cancelled_at')]
+    if not rows:
+        return None
+    return round(sum(float(o.get('subtotal') or 0) - float((o.get('discount') or {}).get('amount') or 0) for o in rows), 2)

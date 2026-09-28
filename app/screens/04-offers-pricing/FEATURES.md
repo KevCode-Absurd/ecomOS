@@ -167,6 +167,12 @@ Known gaps from round 0:
 - Per-product price tests (Intelligems): stays unavailable until a finished price test lands, as the lead asked.
 - Post-purchase offer take rate (AfterSell, Rebuy), shipping protection line (Parcelis, UpCart), cashback in place of a code (Fondue), loyalty points liability (Smile.io), MAP violations (Wiser, Prisync): need app events or crawls; listed, not built.
 
+## Round 8: one money scale for the plan (from 28 Sep 2026)
+
+| # | Feature | Status |
+|---|---|---|
+| 8.1 | One money scale: a brand with no daily aggregate (the sample brand) now sizes every stake against its 28-day net sales from order rows ($92,398), so the rubric's revenue and profit dimensions read the money, not only the severity. The welcome code holdout ($2,417 a 28 days, 2.6 percent of net) moves from 8th to 1st; the goes-with block ($423) drops to 8th | done |
+
 ## Contract asks
 
 - Kit: a 32 px minimum tap height for `.toggle` and copy buttons under 560 px, so every screen gets it. Local fallback: 04 sets it in screen.css for its own sections.
@@ -304,6 +310,7 @@ Intelligems (threshold and price tests scored by profit per visitor), Rebuy (tie
 | Round | Features picked | Date | Notes |
 |---|---|---|---|
 | 0 | skeleton, 0.1 to 0.9 | 2026-09-28 | S3.9; screenshot round0.png |
+| 8 | 8.1 onward: one money scale | 2026-09-28 | in progress |
 | 7 | 7.1 to 7.10: paid prices, attach rate, returns by code, test power, code leaks, returning-buyer codes, code depth, app blind spots, one read of orders, close | 2026-09-28 | screenshot round7.png (sample brand) |
 | 6 | 6.1 to 6.10: settings not text, sized moves, block lines, cannot see yet, 360 px, welcome code, test trust, price moves, tier lift, claims stress | 2026-09-28 | screenshot round6.png |
 | 5 | 5.1 to 5.10: stack read-back, break-even discount, profit per visitor, pack label, installments, loyalty calibration, line match, code-won cohorts, order bunches | 2026-09-28 | screenshot round5.png |
