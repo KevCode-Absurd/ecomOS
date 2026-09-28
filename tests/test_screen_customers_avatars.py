@@ -221,5 +221,56 @@ class Round1Plan(TempBrain):
         self.assertEqual(strip(api.rank('bombas', RANK_WINDOW)), strip(api.rank('bombas', RANK_WINDOW)))
 
 
+class AvatarBuilds(TempBrain):
+    """Feature 1.2: every avatar card ends in the next build with an owner, steps and a draft."""
+
+    def cards(self):
+        return {a['key']: a for a in api.handle(Req(['overview']))['avatars']}
+
+    def test_every_card_has_a_next_build(self):
+        for a in self.cards().values():
+            n = a['next']
+            self.assertIn(n['kind'], ('offer', 'page_section', 'research_note', 'ad_brief'))
+            self.assertIn(n['owner'], ('agent', 'agent_drafts'))
+            self.assertTrue(2 <= len(n['steps']) <= 8)
+            self.assertTrue(all(s['who'] in ('agent', 'person') for s in n['steps']))
+            self.assertTrue(n['draft'].startswith('DRAFT'))
+            self.assertNotIn('—', n['draft'] + n['title'] + n['why'])
+            self.assertEqual(n['id'], '02-customers-avatars.build.' + a['key'])
+
+    def test_rule_order(self):
+        c = self.cards()
+        self.assertEqual(c['durability_disappointed_repeat_customer']['next']['kind'], 'offer')
+        self.assertEqual(c['reddit_runner']['next']['kind'], 'research_note')
+        self.assertEqual(c['everyday_comfort_seeker']['next']['kind'], 'ad_brief')
+        self.assertIn('Proof:', c['everyday_comfort_seeker']['next']['draft'])
+
+    def test_proof_moves_offer_to_ad_brief(self):
+        rows = self.section('objection_ladders')
+        for lad in rows:
+            if lad['id'] == 'bombas.objection_ladders.durability':
+                lad['value']['rungs'][2]['proof_ids'] = ['bombas.policies.happiness_guarantee']
+                lad['value']['rungs'][2]['proof'] = 'Holes in 60 days get a free pair.'
+        self.write('objection_ladders', rows)
+        n = self.cards()['durability_disappointed_repeat_customer']['next']
+        self.assertEqual(n['kind'], 'ad_brief')
+        self.assertIn('Holes in 60 days get a free pair.', n['draft'])
+
+    def test_no_page_section_without_offer_use(self):
+        rows = self.section('objection_ladders')
+        for lad in rows:
+            if lad['id'] == 'bombas.objection_ladders.durability':
+                lad['value']['rungs'][2]['uses'] = ['copy', 'pdp']
+        self.write('objection_ladders', rows)
+        self.assertEqual(self.cards()['durability_disappointed_repeat_customer']['next']['kind'], 'page_section')
+
+    def test_channels_and_no_reddit_testimonial(self):
+        c = self.cards()
+        self.assertEqual(c['reddit_runner']['channels'], [{'channel': 'Reddit', 'n': 5}])
+        self.assertIn('our site', [x['channel'] for x in c['daily_compression_wearer']['channels']])
+        for a in c.values():
+            self.assertNotIn('(Reddit)', a['next']['draft'].split('Customer line:')[-1] if 'Customer line:' in a['next']['draft'] else '')
+
+
 if __name__ == '__main__':
     unittest.main()

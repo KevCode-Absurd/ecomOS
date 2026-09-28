@@ -22,25 +22,48 @@
     return el('a', { href: ref, target: '_blank', rel: 'noopener', text: text || short(ref) });
   }
 
+  const KIND_LABEL = { offer: 'an offer spec', page_section: 'a page section', research_note: 'a research note', ad_brief: 'an ad brief', email: 'an email draft', copy: 'copy', test_brief: 'a test brief' };
+  function nextBuild(n) {
+    const box = el('div', { class: 'next' });
+    const draft = el('pre', { class: 'draft', hidden: true, text: n.draft });
+    const toggle = el('button', { class: 'btn quiet xs', type: 'button', text: 'Show draft' });
+    toggle.addEventListener('click', () => { draft.hidden = !draft.hidden; toggle.textContent = draft.hidden ? 'Show draft' : 'Hide draft'; });
+    const brief = [n.title, '', 'Why: ' + n.why, 'Artefact: ' + (KIND_LABEL[n.kind] || n.kind), '', 'Steps:']
+      .concat(n.steps.map((s) => s.n + '. ' + s.text + ' (' + s.who + ')'), ['', n.draft]).join('\n');
+    box.append(el('span', { class: 'kicker', text: 'Next build' }),
+      el('div', { class: 'row' }, el('b', { text: n.title })),
+      el('div', { class: 'small muted', text: n.why }),
+      el('div', { class: 'row' }, el('span', { class: 'chip', text: 'makes ' + (KIND_LABEL[n.kind] || n.kind) }),
+        n.provisional ? el('span', { class: 'chip warn', text: 'provisional avatar', title: 'Quotes come from 1 source or none' }) : null),
+      draft,
+      el('div', { class: 'row' }, toggle, UI.copyButton({ label: 'Copy brief', cls: 'quiet xs', text: () => brief }),
+        UI.decisionRow({ capability: n.capability, owner: n.owner, screen: SLUG, compact: true, finding_id: n.id })));
+    return box;
+  }
+
   function avatarCard(a) {
     const [tone, label] = GROUNDING[a.grounding];
-    const card = el('article', { class: 'card av' });
+    const card = el('article', { class: 'card av', dataset: { key: a.key } });
     card.append(el('div', { class: 'head' }, el('b', { text: a.name }), el('span', { class: 'chip ' + tone, text: label })));
     card.append(el('div', { class: 'meta' },
       el('span', { text: 'share ' + pctWhole(a.share_estimate) }),
       el('span', { text: 'intensity ' + (a.intensity || NA) }),
-      el('span', { text: a.quote_count + ' quotes from ' + (a.sources.length ? a.sources.join(', ') : 'no source') })));
-    card.append(el('div', { class: 'job' }, el('b', { text: 'Job: ' }), a.job || NA));
-    for (const q of a.quotes.slice(0, 3)) {
-      card.append(el('blockquote', null, '"' + q.quote + '" ', link(q.ref, q.source || undefined)));
-    }
-    if (!a.quotes.length) card.append(el('p', { class: 'muted small', text: 'No customer quotes. This avatar is inferred.' }));
+      el('span', { text: a.quote_count + ' quotes' })));
     const t = a.top_objection;
-    if (t) {
-      card.append(el('div', { class: 'top' + (t.proof ? '' : ' open') },
-        el('b', { text: 'Top doubt: ' }), t.doubt + ' (' + (t.one_star == null ? NA : t.one_star) + ' one-star). ',
-        el('span', { class: 'chip ' + (t.proof ? 'good' : 'bad'), text: t.proof ? 'proof on file' : 'no proof' })));
-    }
+    const rows = [
+      ['Job', a.job || NA],
+      ['Moment', a.triggers.length ? a.triggers.slice(0, 3).join('; ') : NA],
+      ['Pain', a.pains.length ? a.pains.slice(0, 2).join('; ') : NA],
+      ['Top doubt', t ? el('span', null, t.doubt + ' ', el('span', { class: 'muted', text: '(' + (t.one_star == null ? NA : t.one_star) + ' one-star, ' + (t.five_star == null ? NA : t.five_star) + ' five-star)' })) : 'none named'],
+      ['Proof', t ? el('span', null, el('span', { class: 'chip ' + (t.proof ? 'good' : 'bad'), text: t.proof ? 'on file' : 'none' }), ' ',
+        t.proof_text ? t.proof_text : '', el('span', { class: 'muted', text: ' ' + a.rungs.proven + ' of ' + a.rungs.total + ' doubts answered' })) : NA],
+      ['Where', a.channels.length ? el('span', { class: 'chans' }, ...a.channels.map((c) => el('span', { class: 'chip', text: c.channel + ' ' + c.n }))) : NA],
+    ];
+    card.append(el('dl', { class: 'facts' }, ...rows.flatMap(([k, v]) => [el('dt', { text: k }), el('dd', null, v)])));
+    const quotes = a.quotes.filter((q) => q.source !== 'Reddit').slice(0, 2);
+    for (const q of quotes) card.append(el('blockquote', null, '"' + q.quote + '" ', link(q.ref, q.source || undefined)));
+    if (!a.quotes.length) card.append(el('p', { class: 'muted small', text: 'No customer quotes. This avatar is a guess until customers say it.' }));
+    card.append(nextBuild(a.next));
     return card;
   }
 

@@ -47,6 +47,9 @@ UI_AUTONOMY = {"agent_does": "agent", "founder_gate": "founder_gate", "human_ass
 _spec = importlib.util.spec_from_file_location("customers_avatars_audit", HERE / "audit.py")
 audit = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(audit)
+_spec = importlib.util.spec_from_file_location("customers_avatars_builds", HERE / "builds.py")
+builds = importlib.util.module_from_spec(_spec)
+_spec.loader.exec_module(builds)
 
 
 def _brain(req) -> Brain:
@@ -227,7 +230,12 @@ def overview(brain: Brain) -> dict:
     for a in avatars:
         top = audit.top_objection(a["id"], all_rungs)
         a["top_objection"] = None if top is None else {"id": top["id"], "doubt": top["doubt"], "one_star": top["one_star"],
-                                                        "proof": bool(top["proof_ids"])}
+                                                        "five_star": top["five_star"], "proof": bool(top["proof_ids"]),
+                                                        "proof_text": top["proof"] if top["proof_ids"] else None}
+        mine = [r for r in all_rungs if a["id"] in r["avatars"]]
+        a["rungs"] = {"total": len(mine), "proven": sum(1 for r in mine if r["proof_ids"])}
+        a["channels"] = builds.channels(a, a["count_by_source"], audit.source_name)
+        a["next"] = builds.next_build(a, top)
     chart = repeat_by_cohort(brain.brand)
     return {"brand": brain.brand, "today": brain.today.isoformat(), "ends_on": ends_on, "version": brain.version(),
             "simulated_note": SIMULATED_NOTE, "orientation": orientation(brain, avatars, all_rungs, chart, ends_on),

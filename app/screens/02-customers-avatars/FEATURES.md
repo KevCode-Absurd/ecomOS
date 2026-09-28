@@ -28,7 +28,7 @@ Judged by `app/contracts/depth.md`. Each feature ends in an action with an owner
 | # | Feature | Status |
 |---|---|---|
 | 1.1 | Round 0 anti-patterns out: plan board first with ranked actions from `rank`, orientation beside it (new customers 28d, returning share, repeat in 3 months, avatars with proof, rungs without proof, oldest avatar check), what is wrong grouped by rule with evidence and a link to its action, action cards with steps, desk, audit and rule list at the bottom. Tiles, insights and the repeat bar chart removed. `rank(brand, window)` in `api.py` gives every action a real title | done |
-| 1.2 | Avatar cards that end in the next build for that avatar | todo |
+| 1.2 | Avatar cards: job, moment, pain, top doubt with one-star and five-star counts, proof on file, where their voice shows (channel chips). Each ends in the next build from a rule in `builds.py` (offer when the top doubt has no proof and the rung lists offer, page block when it has no proof, research note when there are no quotes, else an ad brief), with owner, steps, a drafted artefact filled from the brain, Copy brief and the decision row. Reddit lines are never shown as testimonials | done |
 | 1.3 | Avatar by channel coverage matrix, empty cells briefed | todo |
 | 1.4 | Objection ladders per avatar with the copy or offer action per rung without proof | todo |
 | 1.5 | Language bank to copy, with a copy brief artefact | todo |

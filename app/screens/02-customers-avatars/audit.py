@@ -109,6 +109,7 @@ def avatar_rows(brain: Brain) -> list[dict]:
                     "job": v.get("job"), "triggers": v.get("triggers") or [], "pains": v.get("pains") or [],
                     "quotes": quotes, "quote_count": len(quotes), "sources": sources, "grounding": grounding,
                     "tier": a["tier"], "date": a["date"], "expired": expired(a, brain.today),
+                    "count_by_source": v.get("count_by_source") or ({"reddit": v["mentions"]} if v.get("mentions") else {}), "emotional_driver": v.get("emotional_driver"),
                     "note": a.get("notes")})
     out.sort(key=lambda r: (-(r["share_estimate"] or -1), r["name"]))
     return out
@@ -126,6 +127,8 @@ def rungs(brain: Brain) -> list[dict]:
                         "doubt": r.get("doubt"), "one_star": c.get("one_star"), "five_star": c.get("five_star"),
                         "sources": c.get("sources") or {}, "proof": r.get("proof"), "proof_ids": r.get("proof_ids") or [],
                         "avatars": r.get("avatars") or [], "derived_from": r.get("derived_from") or [],
+                        "one_star_quotes": [q for q in r.get("one_star") or [] if isinstance(q, str)],
+                        "five_star_quotes": [q for q in r.get("five_star") or [] if isinstance(q, str)],
                         "uses": r.get("uses") or [], "expired": expired(lad, brain.today)})
     return out
 
