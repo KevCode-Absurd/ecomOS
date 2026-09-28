@@ -326,7 +326,9 @@ def ladders(all_rungs: list[dict], avatars: list[dict]) -> dict:
         rows.append({"id": r["id"], "theme": r["theme"], "level": r["level"], "doubt": r["doubt"], "one_star": one, "five_star": five,
                      "proof": r["proof"] if r["proof_ids"] else None, "proof_ids": r["proof_ids"], "verdict": v,
                      "avatars": [keys[x] for x in r["avatars"] if x in keys], "avatar_names": av,
-                     "uses": r.get("uses") or [], "action": _rung_action(r, v, av)})
+                     "uses": r.get("uses") or [], "action": _rung_action(r, v, av),
+                     "one_star_quotes": [_clip(q) for q in r.get("one_star_quotes") or []][:8],
+                     "five_star_quotes": [_clip(q) for q in r.get("five_star_quotes") or []][:8], "sources": r.get("sources") or {}})
     order = {"answer": 0, "not_landing": 1, "lead": 2, "keep": 3}
     rows.sort(key=lambda x: (order[x["verdict"]], -(x["one_star"] or 0), x["id"]))
     counts = {k: sum(1 for x in rows if x["verdict"] == k) for k in order}

@@ -141,6 +141,17 @@
       el('span', { class: 'sbar' }, el('i', { class: 'one', style: 'width:' + Math.round(100 * one / tot) + '%' }), el('i', { class: 'five', style: 'width:' + Math.round(100 * five / tot) + '%' })),
       el('span', { class: 'num small', text: one + ' | ' + five }));
   }
+  function rungPanel(r) {
+    const src = Object.entries(r.sources || {}).filter(([, n]) => n).map(([k, n]) => pretty(k) + ' ' + n).join(', ') || NA;
+    const list = (label, qs, tone) => el('div', { class: 'stack' }, el('span', { class: 'kicker', text: label }),
+      ...(qs.length ? qs.map((q) => el('blockquote', { class: 'q ' + tone, text: '"' + q + '"' })) : [el('span', { class: 'na', text: 'none on file' })]));
+    UI.panel({ title: '"' + r.doubt + '"', tools: r.action ? [el('button', { class: 'btn soft sm', type: 'button', text: 'Brief it', onclick: () => briefPanel(r.action) })] : [],
+      body: el('div', { class: 'stack' },
+        el('div', { class: 'small' }, pretty(r.theme) + ', rung ' + r.level + '. ' + r.one_star + ' one-star, ' + r.five_star + ' five-star. Mentions by source: ' + src + '. Reddit counts as language only.'),
+        el('div', { class: 'small' }, el('b', { text: 'Proof: ' }), r.proof || 'none on file'),
+        el('div', { class: 'small' }, el('b', { text: 'Avatars: ' }), r.avatar_names.join(', ') || 'none named'),
+        el('div', { class: 'grid two' }, list('One-star lines', r.one_star_quotes, 'bad'), list('Five-star lines', r.five_star_quotes, 'good'))) });
+  }
   function renderLadders(L, avatars) {
     document.getElementById('ladder-sub').textContent = 'Each rung: one-star against five-star mentions, proof on file, and the move. ' + L.line +
       ' Not landing means proof is on file and one-star is 2x five-star or more, with 10 or more.';
@@ -153,7 +164,7 @@
         rows: rows.map((r) => Object.assign({}, r, { rung: pretty(r.theme) + ', ' + r.level, counts: '', proof: r.proof || 'none on file', who: r.avatar_names.join(', ') || 'none named',
           actions: r.action ? [{ label: 'Brief it', onClick: () => briefPanel(r.action) }] : [{ label: 'Nothing to do', cls: 'quiet', onClick: () => {} }] })),
         verdict: { at: 1, kind: (r) => VERDICT[r.verdict][0], text: (r) => VERDICT[r.verdict][1] },
-        actions: { label: 'Do' }, sort: false, maxRows: 40, empty: 'No rung names this avatar yet.',
+        actions: { label: 'Do' }, sort: false, maxRows: 40, empty: 'No rung names this avatar yet.', onRow: (r) => rungPanel(r),
       }));
       // the split bar is an element, so place it after render
       table.querySelectorAll('tbody tr').forEach((tr, i) => { const r = rows[i]; if (r && tr.children[3]) tr.children[3].replaceChildren(splitBar(r.one_star, r.five_star)); });

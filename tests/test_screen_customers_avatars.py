@@ -1457,5 +1457,30 @@ class Compare(TempBrain):
         self.assertNotIn('Reddit', dur['win_words'] or '')
 
 
+class ScriptSyntax(unittest.TestCase):
+    """screen.js parses: a syntax slip breaks the whole page."""
+
+    def test_node_check(self):
+        import shutil as _sh
+        import subprocess
+        node = _sh.which('node')
+        if not node:
+            self.skipTest('node not installed')
+        r = subprocess.run([node, '--check', str(SCREEN / 'screen.js')], capture_output=True, text=True)
+        self.assertEqual(r.returncode, 0, r.stderr)
+
+
+class RungEvidence(TempBrain):
+    """Feature 6.5: each rung carries its lines for the evidence panel."""
+
+    def test_rung_rows_carry_lines(self):
+        rows = {r['id']: r for r in api.handle(Req(['overview']))['ladders']['rows']}
+        r = rows['durability.3']
+        self.assertTrue(r['one_star_quotes'])
+        self.assertLessEqual(len(r['one_star_quotes']), 8)
+        self.assertIn('sources', r)
+        self.assertIn('onRow: (r) => rungPanel(r)', (SCREEN / 'screen.js').read_text(encoding='utf-8'))
+
+
 if __name__ == '__main__':
     unittest.main()
