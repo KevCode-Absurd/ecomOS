@@ -1,0 +1,14 @@
+{
+ "note": "Seeded empty in round 0. A test is added here once it has a hypothesis with 2 pieces of evidence, a metric, a sample size and a read date.",
+ "fields": [
+  {"key": "test_id", "label": "Test", "rule": "CRO-<nn>, set when the test is written down"},
+  {"key": "hypothesis", "label": "Hypothesis", "rule": "Because <evidence>, changing <element> on <page> for <device> will move <metric>"},
+  {"key": "evidence", "label": "Evidence", "rule": "2 or more pieces: a finding id, a brain record id, a review count"},
+  {"key": "metric", "label": "Metric", "rule": "one primary metric from session_funnel, for example add_to_cart_rate on mobile"},
+  {"key": "mde", "label": "Smallest lift", "rule": "the relative lift worth detecting, set before launch"},
+  {"key": "sample_per_arm", "label": "Sample per arm", "rule": "16 x p x (1 - p) / (p x mde) squared; 80 percent power, 5 percent two-sided"},
+  {"key": "read_date", "label": "Read date", "rule": "launch + the days to reach the sample, and never under 14 days (2 full weeks)"},
+  {"key": "status", "label": "Status", "rule": "backlog, live, read, shipped, dropped"}
+ ],
+ "tests": []
+}

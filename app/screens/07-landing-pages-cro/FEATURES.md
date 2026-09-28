@@ -6,9 +6,41 @@ Status: todo | doing | done | parked. One feature per commit. The first round is
 
 | # | Feature | Status |
 |---|---|---|
-| 0.1 | Page shell in the shared UI kit: header, empty-state tiles, insight list, action buttons | todo |
-| 0.2 | `api.py` serving this screen's metrics from `app/data/` with unavailable states | todo |
-| 0.3 | 3 metric tiles, 2 insights, 1 chart from the sample brand | todo |
+| 0.1 | Page shell in the shared UI kit: header, empty-state tiles, insight list, action buttons | done |
+| 0.2 | `api.py` serving this screen's metrics from `app/data/` with unavailable states | done |
+| 0.3 | 3 metric tiles, 2 insights, 1 chart from the sample brand | done |
+| 0.4 | Funnel by device with the break per device, money at stake by device, funnel by source | done |
+| 0.5 | Page registry (site_map plus landing pages, funnel rates, speed where speed_runs has one) | done |
+| 0.6 | Message match: Ad Library promises from the brain against captured page records | done |
+| 0.7 | PDP objection-proof map from the objection ladders | done |
+| 0.8 | Test registry seeded empty (hypothesis, metric, sample size rule, read date) | done |
+| 0.9 | `audit.py`: CRO-R07 device break, CRO-R02 lander message mismatch, contract shape | done |
+
+Round 0 notes (28 Sep 2026, Bombas simulated, scale 0.1):
+- New metric `session_funnel` in `app/metrics.py` (see `contracts/metrics.md`), because orders by device are not in the daily aggregate. Purchase is GA4 ecommercePurchases.
+- In this data the mobile break is at add to cart (4.99 percent against a median of 5.23 percent), not checkout to purchase, which sits at its median on every device. CRO-R07 checks every step, so it names whichever step breaks.
+- Message match reads the brain: the ad side is the Ad Library records (COMFORT20 offer, comfort hook, giving line); the page side is site-captured records for that path. Only the home page is captured, so the other paid landers read unavailable, not mismatch. The ad table has no copy or landing URL; the lander comes from GA4 paid social sessions.
+- Speed shows unavailable: the `speed_runs` fixture has no `device` or `measured_at` column, so `lcp_ms` cannot read it. A fix belongs in the generator or the speed metric, not here.
+- Stake on a mismatch is the lander's drop against its own median; the mismatch is the named cause, not a proven one (confidence minus 0.2).
+
+## Room jobs (Landing pages and CRO)
+
+| Job | Question | Capability | Status |
+|---|---|---|---|
+| decide where an ad or search click should land | should this click go to a PDP, an advertorial, a quiz or a sales page | SITE-C35 | todo |
+| check the ad's promise survives to the page and the cart | does the price, guarantee and offer on the ad still match at checkout | SITE-C36 | round 0: page side from the brain |
+| build and score the hero section | is the hero specific enough to stop the scroll | SITE-C37 | todo |
+| fix the PDP first screen | does the buy box have everything a phone shopper needs without scrolling | SITE-C38 | todo |
+| write on-page copy in the customer's own words | does the copy sound like our reviews and tickets, or like a template | SITE-C39 | todo |
+| place proof next to the objection it answers | is our proof actually next to the doubt it is meant to remove | SITE-C40 | round 0: proof map |
+| build bundle and offer pricing with real anchors | does the bundle show a real saving in dollars, not just a percent | LIFE-C39 | todo |
+| write urgency and scarcity that is true | is our low-stock message wired to real inventory or just typed in | SITE-C42 | todo |
+| strip friction off a single-offer page | what on this page distracts from the one thing we want the shopper to do | SITE-C43 | todo |
+| build and QA a page mobile-first | does this page actually work on our own customers' phones | SITE-C44 | round 0: device break |
+| score and rank the test backlog | which test is worth running next, and why | LOOP-C09 | round 0: registry seeded |
+| QA a test before it goes live | will this test track correctly and not flicker on a slow connection | SITE-C51 | todo |
+| read a finished test's results | did this test actually win, and is it safe to trust | SITE-C52 | todo |
+| decide whether to scale a winner | does this winner still look good once returns and repeat orders are in | SITE-C53 | todo |
 
 ## Candidates from the room spec (pick 10 per round)
 
@@ -98,3 +130,4 @@ Status: todo | doing | done | parked. One feature per commit. The first round is
 
 | Round | Features picked | Date | Notes |
 |---|---|---|---|
+| 0 | 0.1 to 0.9 | 28 Sep 2026 | skeleton on Bombas simulated data; screenshot in round0.png |
