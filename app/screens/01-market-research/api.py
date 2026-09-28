@@ -970,6 +970,30 @@ def recipe(f):
             'size': {'text': f'trending, at {ent.get("stage")}', 'usd': None}, 'stop_rule': 'no MOQ order on a trend alone', 'check_on': _check_on(f, 7), 'time_to_ship_hours': 1,
             'win_rule': 'an evergreen line or candidate named beside the trend',
         }
+    if rid == 'PROD-R40':
+        ent = f.get('entity') or {}
+        name = ent.get('label') or 'the candidate'
+        if ent.get('lead_time_days') is None:
+            return {
+                'title': f'Set the lead time for {name} so its order-by date can be read',
+                'owner': 'agent',
+                'artefact': {'kind': 'brain_record', 'label': f'the lead time in days on {name} (from the supplier quote), or a brand default in learnings.lead_time_days'},
+                'steps': [{'n': 1, 'who': 'agent', 'text': 'Read the supplier quote or the tech pack for production plus transit days; with none, use the brand default and say so.'},
+                          {'n': 2, 'who': 'person', 'text': 'Enter the lead time on the pattern row; the order-by date and the calendar read it at once.'}],
+                'size': {'text': 'one number', 'usd': None}, 'stop_rule': 'no cash plan without a lead time', 'check_on': _check_on(f, 7), 'time_to_ship_hours': 0.5,
+                'win_rule': 'an order-by date on the candidate',
+            }
+        return {
+            'title': f'Decide the first run of {name} before {ent.get("order_by")}: the order must go in for the {str(ent.get("peak") or "")[:7]} peak',
+            'owner': 'agent',
+            'artefact': {'kind': 'research_note', 'label': f'the first-run decision for {name}: units, format, cash and the purchase order date, sized from the demand pattern and the margin gate'},
+            'steps': [{'n': 1, 'who': 'agent', 'text': f'Size the first run (units, format, MOQ, cash) from the demand pattern and the gate; the order-by date is {ent.get("order_by")} with {ent.get("lead_time_days")} days of lead time and {audit.ORDER_SAFETY_DAYS} of safety.'},
+                      {'n': 2, 'who': 'person', 'text': 'Decide: order by the date, order a smaller lower-MOQ run, or skip this peak and note it.'},
+                      {'n': 3, 'who': 'agent', 'text': 'Write the first run on the candidate and the order date into the cash plan; the calendar carries it.'}],
+            'size': {'text': f'{ent.get("days")} days to the order-by date' if (ent.get('days') or 0) >= 0 else f'{-(ent.get("days") or 0)} days past the order-by date', 'usd': None},
+            'stop_rule': 'no order after the order-by date without a note that the peak is skipped', 'check_on': ent.get('order_by') or _check_on(f, 7), 'time_to_ship_hours': 2,
+            'win_rule': 'a first run decided and a purchase order date in the cash plan',
+        }
     return None
 
 
@@ -1064,7 +1088,7 @@ def merge_questions(actions):
     return keep
 
 
-CANDIDATE_RULES = ('PROD-R14', 'PROD-R15', 'PROD-R16', 'PROD-R18', 'PROD-R21', 'PROD-R23', 'PROD-R24', 'PROD-R25', 'PROD-R27', 'PROD-R28', 'PROD-R37', 'PROD-R38', 'PROD-R39')
+CANDIDATE_RULES = ('PROD-R14', 'PROD-R15', 'PROD-R16', 'PROD-R18', 'PROD-R21', 'PROD-R23', 'PROD-R24', 'PROD-R25', 'PROD-R27', 'PROD-R28', 'PROD-R37', 'PROD-R38', 'PROD-R39', 'PROD-R40')
 
 
 def merge_candidates(actions):
@@ -1399,6 +1423,9 @@ def candidate_update(brand, cid, body, today):
     if body.get('pack_units') is not None:
         row['pack_units'] = int(_num(body['pack_units'], 1) or 1)
         changes.append('pack units set')
+    if body.get('lead_time_days') is not None:
+        row['lead_time_days'] = int(_num(body['lead_time_days'], 1) or 0) or None
+        changes.append(f'lead time {row["lead_time_days"]} days')
     if body.get('override_reason') is not None:
         reason = str(body['override_reason']).strip()[:300]
         if reason:
@@ -1463,11 +1490,16 @@ def pattern_block(brand, data, rd, findings):
     by_entity = {f['entity']['id']: f['id'] for f in findings if f['rule_id'] == 'PROD-R18'}
     cats = [dict(audit.demand_pattern(r['category'], mix, fx), kind='category') for r in (mix.get('rows') or [])] if not mix.get('unavailable') else []
     cands = []
+    br = audit.brain(brand) if brand else None
+    by_order = {f['entity']['id']: f['id'] for f in findings if f['rule_id'] == 'PROD-R40'}
     for c in audit.pipeline(brand):
         p = audit.demand_pattern(c.get('category'), mix, fx, c.get('name'))
+        lead, lead_src = audit.lead_time_for(c, br)
+        order_by, peak = audit.order_by_date(p.get('peak_months'), rd.ends_on, lead) if p['tag'] == 'seasonal' else (None, None)
         cands.append(dict(p, kind='candidate', candidate_id=c.get('candidate_id'), name=c.get('name'), stage=c.get('stage'), closed=c.get('stage') in audit.CLOSED_STAGES,
-                          cash_plan=c.get('cash_plan'), finding_id=by_entity.get(c.get('candidate_id'))))
-    return {'categories': cats, 'candidates': cands, 'unavailable': mix.get('reason') if mix.get('unavailable') else None,
+                          cash_plan=c.get('cash_plan'), finding_id=by_entity.get(c.get('candidate_id')), lead_time_days=lead, lead_time_source=lead_src, order_by=order_by, peak=peak,
+                          days_to_order=(dt.date.fromisoformat(order_by) - rd.ends_on).days if order_by else None, first_run_decided=bool(c.get('first_run')), order_finding_id=by_order.get(c.get('candidate_id'))))
+    return {'categories': cats, 'candidates': cands, 'unavailable': mix.get('reason') if mix.get('unavailable') else None, 'safety_days': audit.ORDER_SAFETY_DAYS,
             'rule': f'seasonal when the top 2 months carry {round(audit.SEASONAL_TOP2_SHARE * 100)} percent or more of 12-month units (an even year is 17) or the name says gift; trending at {audit.TRENDING_CAGR:g} percent market growth a year or {audit.TRENDING_LAUNCHES} launches in 24 months; else evergreen',
             'months': mix.get('months')}
 
@@ -1690,6 +1722,21 @@ def calendar_items(data, brand, horizon_days=CALENDAR_DAYS):
                 finding_id=f'{SCREEN}.PROD-R14.{c.get("candidate_id")}', tone='warn', candidate=c.get('candidate_id'))
         if c.get('review_date'):
             add(c['review_date'], 'review', f'Review date: {c.get("name")}', 'the scorecard memo is read and the founder decides go, hold or kill', finding_id=f'{SCREEN}.PROD-R25.{c.get("candidate_id")}', tone='accent', candidate=c.get('candidate_id'))
+    br0 = audit.brain(brand) if brand else None
+    rd0 = audit.Reader(data if data is not None else (None if brand else sample_data()), brand, ends_on)
+    mix0 = audit.category_mix(data if data is not None else (None if brand else sample_data()), brand, rd0)
+    fx0 = audit.web_pass(brand)
+    for c in audit.pipeline(brand or 'sample'):
+        if c.get('stage') in audit.CLOSED_STAGES:
+            continue
+        p = audit.demand_pattern(c.get('category'), mix0, fx0, c.get('name'))
+        if p['tag'] != 'seasonal':
+            continue
+        lead, _ = audit.lead_time_for(c, br0)
+        ob, peak = audit.order_by_date(p.get('peak_months'), ends_on, lead)
+        if ob:
+            add(ob, 'order_by', f'Order by: {c.get("name")}', f'{lead} days of lead time plus {audit.ORDER_SAFETY_DAYS} of safety before the {str(peak)[:7]} peak' + ('; first run decided' if c.get('first_run') else '; no first run yet'),
+                finding_id=f'{SCREEN}.PROD-R40.{c.get("candidate_id")}', tone='warn', candidate=c.get('candidate_id'))
     for a in r['actions'][:10]:
         if a.get('check_on') and a.get('status') != 'unavailable':
             add(a['check_on'], 'check', f'Check: {a["title"][:70]}', a.get('win_rule') or '', action=a, tone='good')

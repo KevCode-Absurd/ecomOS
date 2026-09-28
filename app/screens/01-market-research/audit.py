@@ -151,6 +151,10 @@ Rules
   PROD-R39  Trend alone: a candidate tagged trending at gated or later with no evergreen line in the store and no evergreen
             candidate open beside it (bank idea PRD-047). Severity medium. Money null. Capability PROD-C07. Owner:
             01-market-research.
+  PROD-R40  Order-by date: a seasonal candidate at gated or later whose order must go in inside 30 days (peak month less
+            the lead time less 14 days of safety) or already passed, with no first run decided; or whose lead time is not
+            on file (candidate field, else learnings.lead_time_days, else an operations record). High when the date is
+            inside the window, medium when the lead time is missing. Capability PROD-C07. Owner: 01-market-research.
   PROD-R03  Hero line with no next SKU: a line with 25 percent or more of its category's net sales in
             the last 3 whole months while the candidate pipeline holds no open next-SKU candidate for
             that category. Money: null (an unlaunched SKU has no baseline). Capability PROD-C06
@@ -253,6 +257,8 @@ RULES = [
      'inputs': ['fixtures.pipeline'], 'capability': 'PROD-C04', 'owner_screen': SCREEN},
     {'rule_id': 'PROD-R39', 'name': 'Trending candidate at gated or later with no evergreen line or candidate beside it', 'entity_type': 'sku',
      'inputs': ['fixtures.pipeline', 'products_monthly', 'fixtures.market_trends'], 'capability': 'PROD-C07', 'owner_screen': SCREEN},
+    {'rule_id': 'PROD-R40', 'name': 'Seasonal candidate whose order-by date is inside 30 days or past with no first run, or whose lead time is not on file', 'entity_type': 'sku',
+     'inputs': ['fixtures.pipeline', 'products_monthly', 'brain.learnings', 'brain.operations'], 'capability': 'PROD-C07', 'owner_screen': SCREEN},
 ]
 CAPABILITY = {'PROD-R01': {'id': 'PROD-C05', 'autonomy': 'agent_does'},
               'PROD-R02': {'id': 'PROD-C06', 'autonomy': 'agent_does'},
@@ -292,7 +298,8 @@ CAPABILITY = {'PROD-R01': {'id': 'PROD-C05', 'autonomy': 'agent_does'},
               'PROD-R36': {'id': 'PROD-C04', 'autonomy': 'agent_does'},
               'PROD-R37': {'id': 'PROD-C07', 'autonomy': 'agent_does'},
               'PROD-R38': {'id': 'PROD-C04', 'autonomy': 'agent_does'},
-              'PROD-R39': {'id': 'PROD-C07', 'autonomy': 'agent_does'}}
+              'PROD-R39': {'id': 'PROD-C07', 'autonomy': 'agent_does'},
+              'PROD-R40': {'id': 'PROD-C07', 'autonomy': 'agent_does'}}
 SEVERITY_ORDER = {'critical': 0, 'high': 1, 'medium': 2, 'low': 3}
 
 # Review records name their line in a short key; the store names it by SKU title.
@@ -782,6 +789,7 @@ def run(brand, window=None, data=None):
     out += first_run_findings(brand, ends_on, net)
     out += override_findings(brand, ends_on)
     out += companion_findings(brand, data, rd, ends_on)
+    out += order_findings(brand, data, br, rd, ends_on)
     out.sort(key=lambda f: (SEVERITY_ORDER[f['severity']], -((f['money_at_stake'] or {}).get('usd') or 0), f['id']))
     return out
 
@@ -3739,5 +3747,74 @@ def companion_findings(brand, data, rd, ends_on):
         f = _finding('PROD-R39', cid, ends_on, 'medium', ev, sentence, None, 0.6, [], money_reason='the bet is the first run cash, priced on the first-run card')
         f['entity'] = {'type': 'sku', 'id': cid, 'label': r['name'], 'candidate': True, 'stage': r['stage']}
         f['id'] = r['finding_id']
+        out.append(f)
+    return out
+
+
+# ---------------------------------------------------------------- lead time and the order-by date (round 6.1)
+
+ORDER_SAFETY_DAYS = 14        # stock lands this long before the peak month opens
+ORDER_WARN_DAYS = 30          # the order-by date inside this window with no first run decided is a finding
+
+
+def lead_time_for(cand, br):
+    """The candidate's lead time in days: its own field first, else the brand's default from a learnings record
+    (learnings.lead_time_days) or an operations record whose value carries lead_time_days; None when nothing is on file."""
+    if cand.get('lead_time_days'):
+        return int(cand['lead_time_days']), 'candidate'
+    if br is not None:
+        rec = br.get(f'{br.brand}.learnings.lead_time_days')
+        if rec and isinstance(rec.get('value'), (int, float)):
+            return int(rec['value']), rec['id']
+        for r in br.records('operations'):
+            v = r.get('value')
+            if isinstance(v, dict) and isinstance(v.get('lead_time_days'), (int, float)):
+                return int(v['lead_time_days']), r['id']
+    return None, None
+
+
+def order_by_date(peak_months, ends_on, lead_days):
+    """The date a purchase order must go in so stock lands ORDER_SAFETY_DAYS before the next peak month opens."""
+    if not peak_months or lead_days is None:
+        return None, None
+    m = int(peak_months[0])
+    peak = date(ends_on.year, m, 1)
+    if peak <= ends_on:
+        peak = date(ends_on.year + 1, m, 1)
+    return (peak - timedelta(days=int(lead_days) + ORDER_SAFETY_DAYS)).isoformat(), peak.isoformat()
+
+
+def order_findings(brand, data, br, rd, ends_on):
+    """PROD-R40: a seasonal candidate at gated or later whose order-by date (peak month less lead time and 14 days) is
+    inside 30 days or past, with no first run decided; or one whose lead time is not on file at all."""
+    mix = category_mix(data, brand, rd)
+    fx = web_pass(brand)
+    out = []
+    for c in pipeline(brand):
+        st = c.get('stage')
+        idx = STAGES.index(st) if st in STAGES else None
+        if st in CLOSED_STAGES or idx is None or idx < SPEC_STAGE_MIN:
+            continue
+        p = demand_pattern(c.get('category'), mix, fx, c.get('name'))
+        if p['tag'] != 'seasonal':
+            continue
+        cid = c.get('candidate_id')
+        lead, src = lead_time_for(c, br)
+        order_by, peak = order_by_date(p.get('peak_months'), ends_on, lead)
+        days = (date.fromisoformat(order_by) - ends_on).days if order_by else None
+        sized = bool(c.get('first_run'))
+        if lead is None:
+            what, sev = 'no lead time is on file, so the order-by date cannot be set', 'medium'
+        elif days is not None and days <= ORDER_WARN_DAYS and not sized:
+            what, sev = (f'the order must go in by {order_by} ({days} days) for stock to land {ORDER_SAFETY_DAYS} days before the {peak[:7]} peak, and no first run is decided' if days >= 0
+                         else f'the order-by date {order_by} passed {-days} days ago and no first run is decided'), 'high'
+        else:
+            continue
+        ev = [_ev('days_to_order_by', days, 'days', ends_on.isoformat(), 'first run plan', ORDER_WARN_DAYS, 'threshold', source='fixtures.pipeline', simulated=False, freshness_days=0, order_by=order_by, peak=peak, lead_time_days=lead, lead_time_source=src),
+              _ev('first_run_decided', 1 if sized else 0, 'flag', ends_on.isoformat(), 'candidate now', 1, 'threshold', source='fixtures.pipeline', simulated=False, freshness_days=0)]
+        sentence = f'{c.get("name")} is seasonal ({p["why"]}) and {what}.'
+        f = _finding('PROD-R40', cid, ends_on, sev, ev, sentence, None, 0.8, [], money_reason='a missed peak is priced on the first-run card once the run is sized')
+        f['entity'] = {'type': 'sku', 'id': cid, 'label': c.get('name'), 'candidate': True, 'stage': st, 'order_by': order_by, 'peak': peak, 'lead_time_days': lead, 'days': days}
+        f['id'] = f'{SCREEN}.PROD-R40.{cid}'
         out.append(f)
     return out

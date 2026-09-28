@@ -1142,6 +1142,34 @@ class PipelineTest(ShapeMixin, unittest.TestCase):
         for f in audit.companion_findings('bombas', data, rd, date(2026, 9, 27)):
             self.check_shape(f)
 
+    def test_order_by_date_and_lead_time(self):
+        D = date(2026, 9, 27)
+        self.assertEqual(audit.order_by_date(['11', '12'], D, 45), ('2026-09-03', '2026-11-01'))     # 45 days of lead plus 14 of safety before 1 Nov
+        self.assertEqual(audit.order_by_date(['3'], D, 30), ('2027-01-16', '2027-03-01'))           # the next March, not the past one
+        self.assertEqual(audit.order_by_date(['11'], D, None), (None, None))
+        self.assertEqual(audit.lead_time_for({'lead_time_days': 40}, None), (40, 'candidate'))
+        self.assertEqual(audit.lead_time_for({}, None), (None, None))
+
+        class B:
+            brand = 'fake'
+
+            def get(self, rid):
+                return {'id': rid, 'value': 60} if rid == 'fake.learnings.lead_time_days' else None
+
+            def records(self, sec):
+                return []
+        self.assertEqual(audit.lead_time_for({}, B()), (60, 'fake.learnings.lead_time_days'))
+        # on Bombas: the gift box is seasonal at gated with no lead time on file
+        audit.PIPELINE_PATH = self.real   # the seeded pipeline, not this test's empty one
+        rd = audit.Reader(None, 'bombas', D)
+        found = audit.order_findings('bombas', None, audit.brain('bombas'), rd, D)
+        self.assertEqual([f['id'].split('.')[-1] for f in found], ['cand-003'])
+        self.assertEqual(found[0]['severity'], 'medium')
+        self.assertIn('no lead time is on file', found[0]['sentence'])
+        self.check_shape(found[0])
+        r = api.recipe(found[0])
+        self.assertIn('lead time', r['title'])
+
     def test_demand_pattern_tags(self):
         even = {'rows': [{'category': 'socks', 'series': [100] * 12}], 'months': [f'2026-{m:02d}' for m in range(1, 13)], 'last': '2026-12'}
         peaked = {'rows': [{'category': 'socks', 'series': [50] * 10 + [300, 400]}], 'months': even['months'], 'last': '2026-12'}

@@ -213,6 +213,21 @@ The candidate side of the desk: the pipeline with its gates, boxes and scorecard
 | 5.9 | Since you last looked: Mark as seen takes a snapshot of every finding's severity, status and stake (POST `snapshot`, per brand under `fixtures/seen/`); the strip under the plan (route `changes`) says what is new, gone, worse, better, or moved 20 percent in stake since then, or that nothing moved; no snapshot reads as no snapshot | done |
 | 5.10 | Recipes for PROD-R38 and R39 (every rule has a recipe or a connect action), tests for each feature (98 in the file), `round5.png`, `round5b.png`, `round5c.png` (the Bombas page, 39,955 px tall, each part under 1 MB) and `round5s.png` (the sample brand), the round 5 founder note | done |
 
+## Round 6: what the desk stands on (from 28 Sep 2026)
+
+| # | Feature | Status |
+|---|---|---|
+| 6.1 | Lead time and the order-by date: a lead time per candidate (entered on the pattern row, else a brand default from learnings.lead_time_days or an operations record) sets the order-by date for a seasonal candidate (peak month less the lead time less 14 days of safety), shown on the pattern row and the calendar; rule PROD-R40 seasonal candidate at gated or later with the order-by date inside 30 days or past and no first run decided (high), or no lead time on file (medium), merged into the candidate card | done |
+| 6.2 | The brain's freshness for the sections this desk reads: last update, record count, stale and conflict counts against the contract's TTL; rule PROD-R41 a section past its TTL, with stale records or an open conflict | todo |
+| 6.3 | What the simulated numbers assume: the calibration assumptions with status, as-of and sources; rule PROD-R42 an assumption this desk prices with (repeat rate, revenue band, AOV) not confirmed by the founder | todo |
+| 6.4 | How strong is each read: sample size, sources and age per block, thin flagged; rule PROD-R43 a top-10 action resting on a thin read | todo |
+| 6.5 | Founder answers written back: an Answer button on the open question card writes the answer as a claims, policies or offers record in the brain (approved, founder tier) and sets answered_on | todo |
+| 6.6 | Line by theme: the complaint themes per line (own-site issues, Amazon issues by ASIN mapped to lines) as a coverage matrix; rule PROD-R44 a line with 20 or more mined quotes where one theme is 40 percent or more of complaints | todo |
+| 6.7 | The week plan: pulls due, reviews due, time boxes ending, order-by dates, hours and spend left in their caps for the next 7 days, copyable | todo |
+| 6.8 | Idea bank pass: PRD-104 the research log with fixed columns as a CSV export; PRD-126 a named owner per candidate from shortlisted on, rule PROD-R45 | todo |
+| 6.9 | Second brand pass on everything new in rounds 5 and 6 (calendar, report, hand-offs, order-by, freshness, assumptions on Tallgrass Goods) and fix what breaks | todo |
+| 6.10 | Recipes, tests, round6.png, founder note | todo |
+
 ## Round 5 note for the founder (28 Sep 2026)
 
 1. The desk now hands off instead of just showing. A go on a candidate writes the product_candidates row that offers and supply read (stage, decision, planned price, landed cost estimate, pack units, first run, tech pack, angle, review date) and a proposed test for the experiment registry with the angle as the hypothesis and the review date as the read point. Every buyer, theme, positioning and preference card carries a creative hand-off: the angle, the buyer, the doubt rung by rung, the proof on file with its tier, what buyers say from review sources only (never Reddit), the words to use, the do-not list. Both copy in one click.
