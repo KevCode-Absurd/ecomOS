@@ -583,3 +583,63 @@ def promo_calendar(rd, windows, alert_days):
                     'due': due and not plans.get(w['key']), 'last_year': window_perf(rd, last_s, last_e)})
     out.sort(key=lambda r: r['start'])
     return out
+
+
+# ---------------------------------------------------------------- gifting
+
+def business_days_before(day, n):
+    d = day
+    while n > 0:
+        d -= timedelta(days=1)
+        if d.weekday() < 5:
+            n -= 1
+    return d
+
+
+def gifting(rd, ratio, gift_day):
+    """Gift-led lines (Nov and Dec share of their 12 months against the store's), the gift card and gifting
+    records, the gift card ledger state, and the last order date per shipping option for the next gift day."""
+    end = rd.ends_on
+    months = full_months(rd, end, 12)
+    monthly = {r['month']: r for r in (rd.table('monthly') or [])}
+    q4 = [m for m in months if m[5:] in ('11', '12')]
+    store_total = sum(monthly[m]['net_sales'] for m in months if m in monthly)
+    store_q4 = sum(monthly[m]['net_sales'] for m in q4 if m in monthly)
+    store_share = round(store_q4 / store_total, 4) if store_total and len(q4) == 2 else None
+    lines = {}
+    for r in rd.table('products_monthly') or []:
+        if r['month'] in months:
+            a = lines.setdefault(r['sku'].rsplit('-', 1)[0], {'total': 0.0, 'q4': 0.0, 'category': r.get('category'), 'skus': set(),
+                                                              'by_month': {}})
+            a['total'] += r['net_sales'] or 0
+            a['skus'].add(r['sku'])
+            a['by_month'][r['month']] = a['by_month'].get(r['month'], 0) + (r['net_sales'] or 0)
+            if r['month'] in q4:
+                a['q4'] += r['net_sales'] or 0
+    rows = []
+    for line, a in lines.items():
+        share = round(a['q4'] / a['total'], 4) if a['total'] and len(q4) == 2 else None
+        rows.append({'line': line, 'category': a['category'], 'skus': sorted(a['skus']), 'revenue_12m': round(a['total'], 2),
+                     'q4_revenue': round(a['q4'], 2), 'q4_share': share,
+                     'index': round(share / store_share, 2) if share is not None and store_share else None,
+                     'gift_led': bool(share is not None and store_share and share >= ratio * store_share)})
+    rows.sort(key=lambda r: -(r['index'] or 0))
+    card, card_rec = brain_value(rd, 'products.gift_card')
+    prog, prog_rec = brain_value(rd, 'offers.gifting')
+    opts, opts_rec = brain_value(rd, 'policies.shipping_options')
+    year = end.year if date(end.year, *gift_day) >= end else end.year + 1
+    gday = date(year, *gift_day)
+    ship = []
+    for o in (opts if isinstance(opts, list) else []):
+        bd = str(o.get('business_days') or '')
+        top = max((int(x) for x in re.findall(r'\d+', bd)), default=None)
+        ship.append({'name': o.get('name'), 'cost_usd': o.get('cost_usd'), 'threshold_usd': o.get('threshold_usd'),
+                     'business_days': bd, 'order_by': business_days_before(gday, top + 1).isoformat() if top else None})
+    ledger = rd.table('gift_card_ledger')
+    return {'months': f'{months[0]} to {months[-1]}' if months else None, 'store_q4_share': store_share, 'lines': rows,
+            'ratio': ratio,
+            'gift_card': card if isinstance(card, dict) else None, 'gift_card_id': (card_rec or {}).get('id'),
+            'program': prog, 'program_id': (prog_rec or {}).get('id'), 'program_source': ((prog_rec or {}).get('source') or {}).get('ref'),
+            'gift_day': gday.isoformat(), 'ship_by': ship, 'shipping_id': (opts_rec or {}).get('id'),
+            'ledger': {'unavailable': not ledger, 'reason': None if ledger else 'the gift_card_ledger table is not connected',
+                       'fix': None if ledger else 'Connect the store gift card export, read-only.'}}

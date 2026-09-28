@@ -291,6 +291,27 @@
       actionLine(due.length ? due.length + ' windows need an approved offer in the next 30 days: ' + due.map((w) => w.name + ' by ' + fmt.date(w.approve_by)).join(', ') + '.' : 'No window is due in the next 30 days.', due.length ? act(due[0]) : null));
   }
 
+  function giftingBlock(g) {
+    const head = { title: 'Do we sell gifts at the holidays?', sub: 'Holiday index = a line\'s November and December share of its 12 months over the store\'s own share. Gift-led lines sit at or above the bar.' };
+    if (!g) return section('desk-gifting', head, UI.emptyState({ screen: SLUG, title: 'Gifting unavailable', text: 'No brand folder.' }));
+    const a = ACTIONS.find((x) => x.entity && x.entity.id === 'window_holiday_gifting') || ACTIONS.find((x) => x.rule_id === 'OFFER-R12');
+    const top = g.lines.slice(0, 12);
+    const chart = Charts.bar({ labels: top.map((r) => r.line.split('-').slice(-2).join('-')), series: [{ name: 'Holiday index', values: top.map((r) => r.index) }],
+      benchmark: g.ratio, benchmark_label: 'gift-led bar', unit: 'x', width: 900, height: 200,
+      title: 'Holiday index by line, ' + g.months, note: 'Store November and December share: ' + pct(g.store_q4_share) + ' of the 12 months. 1.0x means the line follows the store.' });
+    const card = g.gift_card || {};
+    const ship = UI.table({ columns: [{ key: 'name', label: 'Shipping' }, { key: 'business_days', label: 'Business days' }, { key: 'order_by', label: 'Order by for ' + fmt.date(g.gift_day), format: (v) => v ? fmt.date(v) : NA }], rows: g.ship_by, sort: false });
+    const facts = kv([
+      ['Gift card', card.denominations_usd ? (card.name || 'gift card') + ', ' + card.denominations_usd.map((d) => '$' + d).join(', ') : NA],
+      ['Gifting program', g.program || NA],
+      ['Gift card liability', g.ledger.unavailable ? NA + ': ' + g.ledger.reason : 'see the ledger'],
+    ]);
+    const led = g.lines.filter((r) => r.gift_led).length;
+    return section('desk-gifting', head, el('div', { class: 'card' }, chart),
+      el('div', { class: 'grid two' }, el('div', { class: 'card' }, facts), el('div', { class: 'card tight' }, ship)),
+      actionLine(led ? led + ' lines sell as gifts. Put them on the holiday page first.' : 'No line sells as a gift yet. Build the holiday page around the big packs, the gift card and the order-by dates.', a));
+  }
+
   function returnsChart(r) {
     if (!r || !r.groups || !r.groups.length) return el('p', { class: 'muted small', text: 'Returns by reason ' + NA + '.' });
     const rows = r.groups.slice().sort((a, b) => b.per_1000 - a.per_1000);
@@ -344,7 +365,7 @@
     plan(d);
     wrong(d);
     actionsList(d);
-    mount('#desk', el('div', { class: 'desk-kicker' }, el('h3', { text: 'The desk' })), calendarBlock(d.calendar),
+    mount('#desk', el('div', { class: 'desk-kicker' }, el('h3', { text: 'The desk' })), calendarBlock(d.calendar), giftingBlock(d.gifting),
       stackBlock(d.stack || []), thresholdBlock(d.threshold), firstOrderBlock(d.first_order), waterfallBlock(d.waterfalls), discountBlock(d), ladderBlock(d.ladder), objectionBlock(d.objections || [], d.returns));
     auditBlock(d);
   }

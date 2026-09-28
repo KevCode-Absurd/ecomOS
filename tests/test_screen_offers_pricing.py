@@ -508,5 +508,49 @@ class PromoCalendarTest(unittest.TestCase):
             self.assertAlmostEqual(b['depth'], w['last_year']['depth'], places=3)
 
 
+class GiftingTest(unittest.TestCase):
+    """Round 1 feature 8: gift-led lines, order-by dates, the holiday landing page, the gift card ledger."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.rd = audit.Reader(None, 'bombas', audit.last_full_day(None, 'bombas'))
+        cls.g = audit.gifting(cls.rd)
+        cls.out = api.actions.rank('bombas')
+
+    def test_index_and_order_by(self):
+        from datetime import date
+        g = self.g
+        for r in g['lines']:
+            if r['q4_share'] is not None:
+                self.assertAlmostEqual(r['index'], round(r['q4_share'] / g['store_q4_share'], 2), places=2)
+                self.assertEqual(r['gift_led'], r['q4_share'] >= g['ratio'] * g['store_q4_share'])
+        gday = date.fromisoformat(g['gift_day'])
+        for o in g['ship_by']:
+            if o['order_by']:
+                d = date.fromisoformat(o['order_by'])
+                self.assertLess(d, gday)
+                self.assertLess(d.weekday(), 5)
+
+    def test_gifting_rides_on_the_holiday_action(self):
+        fids = {f['id']: f for f in self.out['findings']}
+        covered = {fid: a for a in self.out['actions'] for fid in a['finding_ids']}
+        for fid, f in fids.items():
+            if f['rule_id'] in ('OFFER-R12', 'OFFER-R13'):
+                self.assertIn(fid, covered)
+        hol = next((a for a in self.out['actions'] if a['entity']['id'] == 'window_holiday_gifting'), None)
+        if hol and any(f['rule_id'] == 'OFFER-R12' for f in fids.values()):
+            self.assertEqual(hol['artefact']['kind'], 'landing_page')
+            self.assertIn('Order-by dates', hol['artefact']['draft'])
+            self.assertIn('04-offers-pricing.OFFER-R12.gifting', hol['finding_ids'])
+        led = any(r['gift_led'] for r in self.g['lines'])
+        self.assertEqual('04-offers-pricing.OFFER-R12.gifting' in fids, not led)
+
+    def test_ledger_is_a_connect_action(self):
+        a = next((a for a in self.out['actions'] if a['rule_id'] == 'OFFER-R13'), None)
+        if self.g['ledger']['unavailable']:
+            self.assertEqual(a['owner'], 'person')
+            self.assertEqual(a['artefact']['kind'], 'connector_setup')
+
+
 if __name__ == '__main__':
     unittest.main()

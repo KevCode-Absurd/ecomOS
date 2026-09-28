@@ -48,6 +48,12 @@ Rules
              rules in playbook.PROMO_WINDOWS. Money: last year's net sales in the window above the 28 days before it
              (usd_revenue), times the 28-day contribution before media share (usd). Severity high when approval is
              14 days away or less. Capability LIFE-C38 (founder gate).
+  OFFER-R12  No line sells as a gift: the brand runs a gifting program or a gift card (brain offers.gifting,
+             products.gift_card) and no product line's November and December share of its 12 months reaches
+             playbook.GIFT_LED_RATIO times the store's own share. Money null. The action is the holiday gifting
+             landing page (merged into the holiday window's action when that window is due). Capability LIFE-C40.
+  OFFER-R13  Gift card liability and redemption (room spec): unavailable until the gift_card_ledger table
+             connects. Capability LIFE-C58 (human assist).
   OFFER-R03  Margin after discount per SKU. Needs cogs_landed keyed by the store's SKUs. Unavailable while no
              finance_inputs SKU key matches a product SKU. Capability MONEY-C05 (founder gate). Owner: 04.
   OFFER-R04  A deal-breaker rung with no proof: the top rung of an objection ladder whose proof is empty or
@@ -106,6 +112,11 @@ RULES = [
      'capability': 'MONEY-C05', 'owner_screen': SCREEN},
     {'rule_id': 'OFFER-R11', 'name': 'Promo window due with no offer planned', 'entity_type': 'offer',
      'inputs': ['daily', 'brain.plans', 'brain.calendar'], 'capability': 'LIFE-C38', 'owner_screen': SCREEN},
+    {'rule_id': 'OFFER-R12', 'name': 'No line sells as a gift', 'entity_type': 'offer',
+     'inputs': ['products_monthly', 'monthly', 'brain.offers.gifting', 'brain.products.gift_card'],
+     'capability': 'LIFE-C40', 'owner_screen': SCREEN},
+    {'rule_id': 'OFFER-R13', 'name': 'Gift card liability and redemption', 'entity_type': 'metric',
+     'inputs': ['gift_card_ledger'], 'capability': 'LIFE-C58', 'owner_screen': SCREEN},
     {'rule_id': 'OFFER-R03', 'name': 'Margin after discount per SKU', 'entity_type': 'sku',
      'inputs': ['finance_inputs.cogs_landed keyed by product SKU', 'products'], 'capability': 'MONEY-C05',
      'owner_screen': SCREEN},
@@ -121,6 +132,8 @@ CAPABILITY = {'OFFER-R01': {'id': 'MONEY-C05', 'autonomy': 'founder_gate'},
               'OFFER-R09': {'id': 'LIFE-C39', 'autonomy': 'founder_gate'},
               'OFFER-R10': {'id': 'MONEY-C05', 'autonomy': 'founder_gate'},
               'OFFER-R11': {'id': 'LIFE-C38', 'autonomy': 'founder_gate'},
+              'OFFER-R12': {'id': 'LIFE-C40', 'autonomy': 'founder_gate'},
+              'OFFER-R13': {'id': 'LIFE-C58', 'autonomy': 'human_assist'},
               'OFFER-R06': {'id': 'MONEY-C05', 'autonomy': 'founder_gate'},
               'OFFER-R04': {'id': 'LIFE-C36', 'autonomy': 'founder_gate'}}
 SEVERITY_ORDER = {'critical': 0, 'high': 1, 'medium': 2, 'low': 3}
@@ -610,6 +623,35 @@ def rule_promo(rd):
     return out
 
 
+def gifting(rd):
+    pb = _playbook()
+    return _model().gifting(rd, pb.GIFT_LED_RATIO, pb.GIFT_DAY)
+
+
+def rule_gifting(rd):
+    end = rd.ends_on
+    g = gifting(rd)
+    out = []
+    if g['ledger']['unavailable'] and (g['gift_card'] or g['program']):
+        out.append(_finding('OFFER-R13', {'type': 'metric', 'id': 'gift_card_liability', 'label': 'Gift card liability'}, 'low', [],
+                            'Gift card liability and redemption are unknown: the gift card ledger is not connected.', None,
+                            0.1, [g['gift_card_id']] if g['gift_card_id'] else [], end, status='unavailable',
+                            money_reason='no ledger', unavailable={'inputs': ['gift_card_ledger'], 'connector': 'shopify',
+                                                                  'fix': g['ledger']['fix']}))
+    if not (g['program'] or g['gift_card']) or g['store_q4_share'] is None or not g['lines'] or any(r['gift_led'] for r in g['lines']):
+        return out
+    top = max(g['lines'], key=lambda r: r['index'] or 0)
+    evidence = [_ev('best_line_holiday_index', top['index'], 'ratio', end, baseline=_playbook().GIFT_LED_RATIO,
+                    baseline_kind='threshold', window=g['months'], source='products_monthly, monthly'),
+                _ev('store_nov_dec_share', g['store_q4_share'], 'ratio', end, window=g['months'], source='monthly')]
+    sentence = (f'No line sells more at the holidays than the store does. The best holiday index is {top["index"]:.2f} '
+                f'against a {_playbook().GIFT_LED_RATIO:.1f} bar, so the gift program is not pulling.')
+    refs = [x for x in (g['program_id'], g['gift_card_id']) if x]
+    out.append(_finding('OFFER-R12', {'type': 'offer', 'id': 'gifting', 'label': 'Gifting'}, 'medium', evidence, sentence,
+                        None, 0.6, refs, end, money_reason='gift sales are not tagged apart from other sales'))
+    return out
+
+
 def rule_ladder(rd):
     end = rd.ends_on
     pb = _playbook()
@@ -781,7 +823,7 @@ def run(brand, window=None, data=None):
     """Findings for one brand, sorted by severity then money at stake. `window` is {ends_on} or None."""
     ends_on = date.fromisoformat(window['ends_on']) if window and window.get('ends_on') else last_full_day(data, brand)
     rd = Reader(data, brand, ends_on)
-    out = (rule_threshold(rd) + rule_stale(rd) + rule_pull(rd) + rule_first_order(rd) + rule_red_line(rd) + rule_promo(rd) + rule_ladder(rd) + rule_sku_margin(rd) +
+    out = (rule_threshold(rd) + rule_stale(rd) + rule_pull(rd) + rule_first_order(rd) + rule_red_line(rd) + rule_promo(rd) + rule_gifting(rd) + rule_ladder(rd) + rule_sku_margin(rd) +
            rule_unanswered(rd))
     out.sort(key=lambda f: (SEVERITY_ORDER[f['severity']], -((f.get('money_at_stake') or {}).get('usd') or -1), f['id']))
     return out

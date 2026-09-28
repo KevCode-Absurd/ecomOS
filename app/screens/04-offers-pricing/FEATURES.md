@@ -35,6 +35,7 @@ Known gaps from round 0:
 | 1.5 | First-order offer: the code against 4 alternatives (free item, free shipping, dollars off at the line, first-order pack price) at the average list-price order: price paid, cost against full price, contribution before media, payback on paid media per new customer, and how much first-order conversion each can lose against the code. Flags that the code takes the average basket under the free shipping line (the line counts after discount). New rule OFFER-R08 (code in more than half the active ads and a price-keeping offer keeps more), with the test brief and paired ad variants. Money is labelled "at equal conversion" | done |
 | 1.6 | Margin waterfall per offer (`Charts.waterfall`, pills to switch): the average order, the first order with the code, the first order with a free item, an order at the free shipping line, the average order with the wear promise; list price, discount, landed cost, pick pack and box, shipping net, payment fee, returns at the brain model rates, before media, paid media, contribution. Each step names its source; a missing input breaks the step and every total after it. Red line: a first order must pay its own media, other orders keep the target contribution margin; proposed offers under it cannot clear approval. New rule OFFER-R10 (live offer under the red line), merged into the first-order test when it is the code | done |
 | 1.7 | Promo calendar: 8 US retail windows by date rule (`playbook.PROMO_WINDOWS`, a brand in another market swaps the list), next dates, the approval date (start minus the window's lead), last year's net sales per day against the 28 days before and the discount depth, and whether a brain `plans` record covers it. Timeline plus a verdict table. New rule OFFER-R11: a window due in 30 days with no plan becomes a dated offer spec (approve, briefs, site loaded, report dates), a margin check at last year's depth and a depth cap; money is last year's sales above baseline | done |
+| 1.8 | Gifting and the holiday offer: a holiday index per line (its November and December share over the store's), the gift card and bulk gifting records, order-by dates for December 24 per shipping option from the brain (business days), the gift card ledger as unavailable. New rules OFFER-R12 (no line sells as a gift while a gift program runs; rides on the holiday window's action, whose artefact becomes the landing page spec: hero, gift boxes from packs of 6 or more, gift card, bulk gifting link, order-by bar, proof) and OFFER-R13 (gift card liability, a connect action) | done |
 
 ## Room jobs
 
@@ -152,7 +153,7 @@ Known gaps from round 0:
 | Round | Features picked | Date | Notes |
 |---|---|---|---|
 | 0 | skeleton, 0.1 to 0.9 | 2026-09-28 | S3.9; screenshot round0.png |
-| 1 | 1.1 plan first, 1.2 objection to offer map, 1.3 free shipping line, 1.4 pack ladder, 1.5 first-order offer, 1.6 margin waterfall, 1.7 promo calendar | 2026-09-28 | manager session; screenshot round1.png (updated as the round lands) |
+| 1 | 1.1 plan first, 1.2 objection to offer map, 1.3 free shipping line, 1.4 pack ladder, 1.5 first-order offer, 1.6 margin waterfall, 1.7 promo calendar, 1.8 gifting and holiday | 2026-09-28 | manager session; screenshot round1.png (updated as the round lands) |
 
 
 ## Round 1 candidates (ranked 28 Sep 2026 by the lead session)

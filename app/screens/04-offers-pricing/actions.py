@@ -72,6 +72,7 @@ class Ctx:
         self.first_order = audit.first_order(rd)
         self.waterfalls = audit.offer_waterfalls(rd, self.objections)
         self.calendar = audit.promo_calendar(rd)
+        self.gifting = audit.gifting(rd)
         self.ship_rate = (model.brain_value(rd, 'offers.standard_shipping_cost')[0] or {}).get('cost_usd') if rd.brand else None
         self.scenarios = (model.threshold_scenarios(rd, self.threshold, self.ship_rate, self.be['value'], (self.po or {}).get('units') or 1)
                           if self.threshold is not None and self.be.get('value') is not None else [])
@@ -308,6 +309,67 @@ def promo_action(f, a, ctx):
     return a
 
 
+def gifting_page(ctx, w=None):
+    """The holiday gifting landing page spec, drafted from the brain and the data."""
+    g, pb = ctx.gifting, playbook
+    rows = {r['line']: r for r in ctx.ladder.get('rows', [])} if not ctx.ladder.get('unavailable') else {}
+    boxes = [r for r in ctx.ladder.get('rows', []) if (r.get('pack') or 0) >= pb.GIFT_PACK_MIN]
+    boxes.sort(key=lambda r: -r['revenue'])
+    card = g.get('gift_card') or {}
+    lines = [f'Landing page spec: holiday gifts' + (f', live {w["start"]} to {w["end"]}' if w else '')]
+    lines.append('1. Hero: the gift boxes, the price, and the order-by date for arrival by ' + g['gift_day'] + '.')
+    if boxes:
+        lines.append('2. Gift boxes: ' + '; '.join(f'{r["sku"]} ({r["pack"]} items) at {money(r["price_per_pack"])}' for r in boxes[:4]) + '.')
+    else:
+        lines.append('2. Gift boxes: no pack of ' + str(pb.GIFT_PACK_MIN) + ' or more in the catalogue; the pack offer adds one.')
+    if card.get('denominations_usd'):
+        d = card['denominations_usd']
+        lines.append(f'3. Gift card: {card.get("name") or "digital gift card"}, ${min(d)} to ${max(d)}, delivered by email, the last-minute answer.')
+    if g.get('program'):
+        lines.append(f'4. Bulk and corporate gifting: {g["program"]}. Link: {g.get("program_source") or "the bulk gifting page"}.')
+    ship = '; '.join(f'{o["name"]} order by {o["order_by"]}' for o in g['ship_by'] if o['order_by'])
+    if ship:
+        lines.append(f'5. Order-by dates for {g["gift_day"]}: {ship}. Show them in the header bar and the cart.')
+    lines.append('6. Proof: the guarantee line and the review count under each box.')
+    lines.append('Win: gift box share of revenue in the window above the store share; gift card sales up on last year.')
+    lines.append('Stop: none. Pull the order-by bar the day after the last date.')
+    return '\n'.join(lines)
+
+
+def gifting_action(f, a, ctx):
+    a.update({
+        'title': 'Build the holiday gifting page and push the gift boxes',
+        'owner': 'agent_drafts',
+        'artefact': {'kind': 'landing_page', 'label': 'Holiday gifting landing page spec', 'draft': gifting_page(ctx)},
+        'steps': steps(('agent', 'Pick the gift boxes and pull their price and reviews.'),
+                       ('agent', 'Draft the page, the order-by bar and 3 ad briefs for the gift boxes.'),
+                       ('person', 'Approve the page. The site team builds it.'),
+                       ('agent', 'Read gift box share of revenue weekly through the window.')),
+        'win_rule': 'Gift box share of revenue in the window above the store share.', 'stop_rule': 'Pull the order-by bar after the last date.',
+        'check_on': ctx.check_on(28), 'time_to_ship_hours': 12})
+    return a
+
+
+def merge_gifting(actions, ctx):
+    """When the holiday gifting window is due, the gifting finding rides on its action and the page is its artefact."""
+    hol = next((a for a in actions if a.get('rule_id') == 'OFFER-R11' and a['entity']['id'] == 'window_holiday_gifting'), None)
+    if not hol:
+        return actions
+    w = next((x for x in ctx.calendar if x['key'] == 'holiday_gifting'), None)
+    hol['title'] = f'Build the holiday gifting page and offer by {w["approve_by"]}' if w else hol['title']
+    hol['steps'][1] = step(2, 'agent', 'Draft the offer spec, the gifting landing page, the order-by bar and the margin check.')
+    hol['artefact'] = {'kind': 'landing_page', 'label': 'Holiday gifting landing page and offer spec',
+                       'draft': hol['artefact']['draft'] + '\n\n' + gifting_page(ctx, w)}
+    keep = []
+    for a in actions:
+        if a.get('rule_id') == 'OFFER-R12':
+            hol['finding_ids'] = hol['finding_ids'] + a['finding_ids']
+            hol['why'] = hol['why'] + ' ' + a['why']
+            continue
+        keep.append(a)
+    return keep
+
+
 def returns_block(rd):
     """returns_by_reason for the window, or the labelled fixture when the metric is unavailable."""
     m = rd.m('returns_by_reason', audit.WINDOW)
@@ -464,7 +526,7 @@ def rescore(a, dims):
 
 
 BUILDERS = {'OFFER-R01': threshold_action, 'OFFER-R04': rung_action, 'OFFER-R08': first_order_action,
-            'OFFER-R10': red_line_action, 'OFFER-R11': promo_action}
+            'OFFER-R10': red_line_action, 'OFFER-R11': promo_action, 'OFFER-R12': gifting_action}
 
 
 def build(f, rd, ctx, nr):
@@ -495,9 +557,9 @@ def rank(brand='bombas', window=None):
     ctx = Ctx(rd)
     nr = RANK.net_revenue_28d(brand, w)
     actions = [build(f, rd, ctx, nr) for f in findings if f.get('status') in ('open', 'unavailable', None)]
-    actions = merge_red_line(merge_ladder(actions, ctx))
+    actions = merge_gifting(merge_red_line(merge_ladder(actions, ctx)), ctx)
     actions = [a for a in actions if not RANK.validate_action(a)]
     actions.sort(key=RANK.sort_key)
     return {'screen': SCREEN, 'brand': brand, 'window': w, 'simulated': True, 'net_revenue_28d': nr,
             'actions': actions, 'findings': findings, 'objections': ctx.objections, 'returns': returns_block(rd),
-            'ladder': dict(ctx.ladder, moves=ctx.ladder_rows), 'first_order': ctx.first_order, 'waterfalls': ctx.waterfalls, 'calendar': ctx.calendar}
+            'ladder': dict(ctx.ladder, moves=ctx.ladder_rows), 'first_order': ctx.first_order, 'waterfalls': ctx.waterfalls, 'calendar': ctx.calendar, 'gifting': ctx.gifting}

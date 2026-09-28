@@ -127,3 +127,9 @@ PROMO_WINDOWS = [
      'offer': 'Gift boxes, gift cards and bulk gifting, with the last ship date on every page.', 'gifting': True},
 ]
 PROMO_ALERT_DAYS = 30     # a window is due when its approval date is within 30 days, or past
+
+# Gifting (screen 04, OFFER-R12 and the holiday window). A line is gift-led when its November and December share of
+# its 12-month revenue is at least GIFT_LED_RATIO times the store's own November and December share.
+GIFT_LED_RATIO = 1.3
+GIFT_DAY = (12, 24)       # the day a gift must arrive by
+GIFT_PACK_MIN = 6         # packs this size or bigger are the gift box candidates on the holiday page
