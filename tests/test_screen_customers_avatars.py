@@ -1990,7 +1990,7 @@ SMOKE_JS = r"""
 const { chromium } = require(process.env.PW_MODULE);
 (async () => {
   const b = await chromium.launch({ executablePath: process.env.PW_CHROME || undefined, args: ['--no-sandbox'] });
-  const p = await b.newPage({ viewport: { width: 1280, height: 900 } });
+  const p = await b.newPage({ viewport: { width: 1280, height: 800 } });
   const errs = [];
   p.on('pageerror', (e) => errs.push(e.message));
   p.on('console', (m) => { if (m.type() === 'error' && !/^Failed to load resource/.test(m.text())) errs.push(m.text()); });
@@ -2005,6 +2005,9 @@ const { chromium } = require(process.env.PW_MODULE);
   await p.goto(base, { waitUntil: 'networkidle' });
   await p.waitForSelector('#plan .plan-item', { timeout: 20000 });
   const out = { plan: await p.$$eval('#plan .plan-item', (n) => n.length), tabs: {} };
+  out.fold = await p.evaluate(() => ({ orient: document.querySelector('#plan .orient').getBoundingClientRect().bottom,
+    whole: Array.from(document.querySelectorAll('#plan .plan-item')).filter((n) => n.getBoundingClientRect().bottom <= innerHeight).length,
+    height: innerHeight }));
   for (const t of ['avatars', 'doubts', 'offers', 'retention', 'brand']) {
     await p.goto(base + '#tab=' + t); await p.waitForTimeout(300);
     out.tabs[t] = await p.$$eval('#desk .section', (n) => n.filter((x) => x.offsetParent !== null).length);
@@ -2031,7 +2034,8 @@ const { chromium } = require(process.env.PW_MODULE);
 class BrowserSmoke(unittest.TestCase):
     """Features 8.6 and 8.8: load the page, every desk tab, the report and an avatar page in Chromium against a real server,
     for the sample brand and a second brand (?brand=example). Fails on any script error, a missing plan, desk block or
-    report, or any "undefined", "NaN" or "null" on the page (depth rule 7). Skipped without Node and Playwright."""
+    report, or any "undefined", "NaN" or "null" on the page (depth rule 7). At 1280 by 800 the orientation numbers and at least
+    3 whole plan items sit above the fold (9.1, depth.md section 2). Skipped without Node and Playwright."""
 
     def test_page_loads_clean(self):
         import os
@@ -2072,6 +2076,9 @@ class BrowserSmoke(unittest.TestCase):
                 self.assertGreater(n, 0, (brand, tab))
             self.assertGreaterEqual(out['report'], 6, brand)
             self.assertEqual(out['avatar'], 8, brand)
+            self.assertEqual(out['fold']['height'], 800)
+            self.assertLessEqual(out['fold']['orient'], 800, brand)
+            self.assertGreaterEqual(out['fold']['whole'], min(3, out['plan']), brand)
         self.assertIn('Example is the sample brand', outs['example']['badge'])
         self.assertNotIn('Bombas', outs['example']['badge'])
 

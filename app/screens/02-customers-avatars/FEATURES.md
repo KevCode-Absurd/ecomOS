@@ -147,6 +147,21 @@ Lead's review: rounds 1 to 4 passed. Focus: returns and tickets by avatar, depth
 | 8.9 | Money on the page head: a "money at stake" number beside the plan, summed from open moves with a stake against the brand's own history, with how many carry it; unavailable with the reason, never 0, when none does. Its title names the seasonal drop left out. Bombas: $63,664 on 1 of 65 moves (the month-7 fall); the $5,842,578 January season is named, not added. To stay within the contract's 3 to 6 numbers, "avatars with proof" folds into the title of "rungs without proof" | done |
 | 8.10 | Audit and `rank` for round 8: 32 rules (R32 weak cohort from 8.7, silent here), 31 firing on Bombas; 67 actions. Money now sits only where the brand's own history shows a gap: the month-7 fall ($63,664); January and paid returning are flat against their own past, so none of ours makes the master top 10 (best 62, cut-off 63). Full screen suite: only the known site speed failures. Screenshot `round8.png` (the plan head with money at stake, the focus table with sales-share avatars) | done |
 
+## Round 9: the rules checked everywhere, answers back into the brain (from 28 Sep 2026)
+
+| # | Feature | Status |
+|---|---|---|
+| 9.1 | The first screen: at 1280 by 800 the orientation numbers and at least 3 whole plan items sit above the fold (depth.md section 2), checked by the browser smoke test for both brands. Bombas: orientation ends at 262 px, 4 whole plan items fit | done |
+| 9.2 | Writing rules on every string the screen makes: overview, rank, audit, report, avatar pages. No em dash, no "should", "consider" or "leverage", sentences under 20 words; fix what fails | todo |
+| 9.3 | Decisions on the avatar page: what was decided on this avatar's moves, with dates | todo |
+| 9.4 | Survey answers back into shares: a fixture path for answers by avatar; when present, the share from answers replaces the estimate with its count and source; unavailable until a survey table exists | todo |
+| 9.5 | A faster cold overview: find and trim the slow builders | todo |
+| 9.6 | Depth rule 4: every finding shows the metric, value, baseline or threshold and window in its evidence | todo |
+| 9.7 | Depth rule 6: every desk row with a verdict has a button that does something | todo |
+| 9.8 | Depth rule 13: rank is deterministic across cold runs and makes no model call | todo |
+| 9.9 | The page at phone width, re-checked with the round 7 and 8 blocks | todo |
+| 9.10 | Audit rules and `rank` for round 9, screenshot `round9.png` | todo |
+
 ### Round 8 founder note (28 Sep 2026)
 
 1. January is the season, not a new problem. Returning orders fell 42.5 percent into January, against 44.2 percent the year before. The $5.8 million from round 7 is no longer claimed as money at stake.
