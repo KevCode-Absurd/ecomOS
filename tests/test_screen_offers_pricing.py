@@ -1958,5 +1958,22 @@ class StackBlindSpotTest(unittest.TestCase):
         self.assertFalse(any(x['key'] == 'loyalty_app' for x in d['blind_spots']))   # the brain names no loyalty app
 
 
+class MemoTest(unittest.TestCase):
+    """Round 7 feature 9: order-row reads run once per window and settings; the rule and the desk share them."""
+
+    def test_shared_and_keyed(self):
+        sys.path.insert(0, str(ROOT / 'app'))
+        import server
+        data = server.Data()
+        end = audit.last_full_day(data, None)
+        a = audit.welcome(audit.Reader(data, None, end))
+        b = audit.welcome(audit.Reader(data, None, end))
+        self.assertIs(a, b)
+        from datetime import timedelta
+        c = audit.welcome(audit.Reader(data, None, end - timedelta(days=7)))
+        self.assertIsNot(a, c)
+        self.assertEqual(api.actions.rank(None, None, data)['actions'], api.actions.rank(None, None, data)['actions'])
+
+
 if __name__ == '__main__':
     unittest.main()

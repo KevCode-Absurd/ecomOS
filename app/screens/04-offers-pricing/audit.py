@@ -1285,7 +1285,7 @@ def rule_threshold_match(rd):
 
 def discount_cohorts(rd):
     pb = _playbook()
-    return _model().discount_cohorts(rd, pb.COHORT_DAYS, pb.COHORT_MIN, pb.DEPTH_BANDS)
+    return _memo(rd, 'cohorts', _model().discount_cohorts, pb.COHORT_DAYS, pb.COHORT_MIN, pb.DEPTH_BANDS)
 
 
 def rule_cohorts(rd):
@@ -1307,9 +1307,25 @@ def rule_cohorts(rd):
                      None, 0.7, [], end, money_reason='lifetime value needs a longer read')]
 
 
+# ---------------------------------------------------------------- one read of the order rows per window
+
+_MEMO = {}
+
+
+def _memo(rd, name, fn, *args):
+    """Order-row reads run once per (order table, window end, brand, settings): the rule and the desk share them."""
+    orders = rd.table('orders')
+    key = (name, id(orders), len(orders) if isinstance(orders, list) else None, rd.ends_on, getattr(rd, 'brand', None), args)
+    if key not in _MEMO:
+        if len(_MEMO) > 64:
+            _MEMO.clear()
+        _MEMO[key] = fn(rd, *args)
+    return _MEMO[key]
+
+
 def welcome(rd):
     pb = _playbook()
-    return _model().welcome_code(rd, pb.WELCOME_DAYS, pb.WELCOME_FLOW_WORDS)
+    return _memo(rd, 'welcome', _model().welcome_code, pb.WELCOME_DAYS, pb.WELCOME_FLOW_WORDS)
 
 
 def rule_welcome(rd):
@@ -1422,7 +1438,7 @@ def rule_claim_stress(rd):
 
 def paid_prices(rd):
     pb = _playbook()
-    return _model().paid_prices(rd, pb.PAID_DAYS, pb.PAID_MIN_UNITS)
+    return _memo(rd, 'paid', _model().paid_prices, pb.PAID_DAYS, pb.PAID_MIN_UNITS)
 
 
 def rule_paid(rd):
@@ -1446,7 +1462,7 @@ def rule_paid(rd):
 
 def attach_rates(rd):
     pb = _playbook()
-    return _model().attach_rates(rd, pb.ATTACH_DAYS, pb.ATTACH_MIN_ORDERS)
+    return _memo(rd, 'attach', _model().attach_rates, pb.ATTACH_DAYS, pb.ATTACH_MIN_ORDERS)
 
 
 def rule_attach(rd):
@@ -1472,7 +1488,7 @@ def rule_attach(rd):
 
 def returns_by_code(rd):
     pb = _playbook()
-    return _model().returns_by_code(rd, pb.RETURN_DAYS, pb.RETURN_LAG)
+    return _memo(rd, 'code_returns', _model().returns_by_code, pb.RETURN_DAYS, pb.RETURN_LAG)
 
 
 def rule_code_returns(rd):
@@ -1516,8 +1532,8 @@ def rule_power(rd):
 def code_leaks(rd):
     pb = _playbook()
     code, _ = _model().brain_value(rd, 'offers.first_order_code')
-    return _model().code_leaks(rd, pb.LEAK_DAYS, pb.COUPON_SITE_WORDS, pb.LEAK_SPIKE, pb.LEAK_SPIKE_MIN,
-                               code.get('code') if isinstance(code, dict) else None)
+    return _memo(rd, 'leaks', _model().code_leaks, pb.LEAK_DAYS, pb.COUPON_SITE_WORDS, pb.LEAK_SPIKE, pb.LEAK_SPIKE_MIN,
+                 code.get('code') if isinstance(code, dict) else None)
 
 
 def rule_leaks(rd):
@@ -1544,7 +1560,7 @@ def rule_leaks(rd):
 
 
 def returner_codes(rd):
-    return _model().returner_codes(rd, _playbook().RETURNER_DAYS)
+    return _memo(rd, 'returners', _model().returner_codes, _playbook().RETURNER_DAYS)
 
 
 def rule_returners(rd):
