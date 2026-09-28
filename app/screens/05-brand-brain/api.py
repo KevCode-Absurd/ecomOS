@@ -446,6 +446,8 @@ def decisions_log(brain: Brain, path: Path | None = None) -> dict:
         rows = []
     snooze_days = getattr(rank_mod, "SNOOZE_DAYS", 14)
     rows = [r for r in (rows if isinstance(rows, list) else []) if isinstance(r, dict)]
+    # the lead's brand field (commit dde9966): a row with a brand belongs to that brand; a row without one is the sample brand's
+    rows = [r for r in rows if (r.get("brand") == brain.brand) or (not r.get("brand") and brain.brand == "bombas")]
     latest: dict = {}
     for i, r in enumerate(rows):
         latest[r.get("finding_id") or (r.get("screen"), r.get("capability"))] = i
@@ -502,7 +504,7 @@ def decisions_undo(brain: Brain, body: dict, path: Path | None = None):
     if last.get("choice") == "undo":
         return 400, {"error": "already undone", "finding_id": fid}
     row = {"screen": "05-brand-brain", "capability": str(last.get("capability") or "")[:80], "choice": "undo", "reason": str((body or {}).get("reason") or "")[:300],
-           "time": dt.datetime.now(dt.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"), "finding_id": fid, "undoes": {"choice": last.get("choice"), "time": last.get("time")}}
+           "time": dt.datetime.now(dt.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"), "finding_id": fid, "brand": brain.brand, "undoes": {"choice": last.get("choice"), "time": last.get("time")}}
     rows.append(row)
     try:
         path.parent.mkdir(parents=True, exist_ok=True)

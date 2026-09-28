@@ -530,7 +530,7 @@
     try { d = await api(BASE + 'decisions'); } catch (e) { mount('#decisions', el('p', { class: 'muted', text: 'Decisions unavailable: ' + e.message })); return; }
     const byId = {}; for (const a of (m && m.actions) || []) byId[a.id] = a;
     const status = el('span', { class: 'micro muted' });
-    const undo = (it) => { const b = el('button', { class: 'btn xs soft', type: 'button', text: it.choice === 'not_now' ? 'Undo the snooze' : 'Undo' }); b.addEventListener('click', async () => { b.disabled = true; try { await api('/api/decisions', { method: 'POST', body: { screen: it.screen || SCREEN, capability: it.capability, choice: 'undo', finding_id: it.finding_id, reason: 'undone from the brain screen' } }); status.textContent = 'Undone. The action is back on the list with no decision; the log keeps both rows.'; loadPlan(); } catch (e) { b.disabled = false; status.textContent = 'Could not undo: ' + e.message; } }); return b; };
+    const undo = (it) => { const b = el('button', { class: 'btn xs soft', type: 'button', text: it.choice === 'not_now' ? 'Undo the snooze' : 'Undo' }); b.addEventListener('click', async () => { b.disabled = true; try { await api('/api/decisions', { method: 'POST', body: { screen: it.screen || SCREEN, capability: it.capability, choice: 'undo', finding_id: it.finding_id, reason: 'undone from the brain screen', brand: BRAND || 'bombas' } }); status.textContent = 'Undone. The action is back on the list with no decision; the log keeps both rows.'; loadPlan(); } catch (e) { b.disabled = false; status.textContent = 'Could not undo: ' + e.message; } }); return b; };
     const pick = (it) => {
       if (decisionsFilter === 'all') return true;
       if (it.kind === 'brain') return decisionsFilter === 'brain';
