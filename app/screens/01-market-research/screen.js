@@ -1091,6 +1091,22 @@
         thin.length && actionFor(thin[0].finding_id) ? { label: 'Widen the first', onClick: () => openAction(actionFor(thin[0].finding_id)) } : null));
   }
 
+  function lineThemeBlock(m) {
+    if (!m || !m.rows || !m.rows.length) return UI.emptyState({ screen: SLUG, title: 'No mined complaints by line', text: 'The brain holds no Amazon issue counts or own-site issue phrases yet.', missing: ['reviews'] });
+    const matrix = UI.coverageMatrix({ rows: m.rows.map((r) => ({ key: r.key, label: r.label, sub: r.total + ' quotes, ' + (r.sources || []).join(' and ') })), cols: m.cols, cells: m.cells, single: true, max: m.max || 1, unit: 'n', corner: 'line x theme',
+      note: 'Complaint quotes per theme; darker is more. ' + m.rule + '.',
+      onCell: (cell, row, col) => { const r = m.rows.find((x) => x.key === row.key); if (!r) return; const a = actionFor(r.finding_id); UI.panel({ title: r.label + ': ' + col.label, body: el('div', { class: 'stack' }, el('p', null, (cell ? cell.us : 0) + ' complaint quotes on ' + col.label.toLowerCase() + ' of ' + r.total + ' on the line.'), a ? UI.actionCard(a, { expanded: true, screen: SLUG }) : el('p', { class: 'muted small', text: 'No rule fired on this line; its complaints are spread across themes or too few to judge.' })) }); } });
+    const vt = { concentrated: 'One theme leads', spread: 'Spread', thin: 'Too few to judge' };
+    const vrows = m.rows.map((r) => { const a = actionFor(r.finding_id); return Object.assign({}, r, { top: r.top_label ? r.top_label + ' (' + Math.round((r.top_share || 0) * 100) + ' percent)' : NA, src: (r.sources || []).join(', '),
+      actions: [a ? { label: 'Fix the listing', onClick: () => openAction(a) } : { label: vt[r.verdict], cls: 'quiet', onClick: () => {} }] }); });
+    const t = UI.verdictTable({ columns: [{ key: 'label', label: 'Line' }, { key: 'total', label: 'Complaint quotes', unit: 'n' }, { key: 'top', label: 'Top theme' }, { key: 'src', label: 'Sources' }], rows: vrows,
+      verdict: { at: 1, kind: (r) => r.verdict === 'concentrated' ? 'fix' : r.verdict === 'thin' ? 'na' : 'watch', text: (r) => vt[r.verdict], reason: () => m.rule }, actions: { label: 'Do', onClick: () => {} }, sort: false });
+    const hot = m.rows.filter((r) => r.verdict === 'concentrated');
+    return el('div', { class: 'stack' }, el('div', { class: 'card' }, matrix), el('div', { class: 'card scroll' }, t),
+      gapLine(hot.length ? hot.length + ' line' + (hot.length === 1 ? '' : 's') + ' with complaints on one theme: ' + hot.map((r) => r.label + ' (' + (r.top_label || '').toLowerCase() + ')').join(', ') + '.' : 'No line concentrates its complaints on one theme.',
+        hot.length && actionFor(hot[0].finding_id) ? { label: 'Fix the first', onClick: () => openAction(actionFor(hot[0].finding_id)) } : null));
+  }
+
   function loadDesk(o) {
     const d = o.desk || {};
     const w = (o.window || {}).trend;
@@ -1116,6 +1132,7 @@
     parts.push(section('desk-spend', 'Who is actually funding which lane, not just posting about it?', 'Competitor pages by the longest run of their active ads per lane. Three or more advertisers at 90 days is a funded test; one at 14 days is a live test; the rest is noise.', spendBlock(d.spend)));
     parts.push(section('desk-price-signal', 'What would buyers actually pay for a pair?', 'Price mentions mined from review quotes across Amazon, the brand site, Trustpilot and retailers, as a median per pair, against the competitor band, our own pair and each candidate\'s planned price.', priceSignalBlock(d.price_signal)));
     parts.push(section('desk-complaints', 'What do buyers hate about what exists, listing by listing?', 'Complaint themes mined from the brand\'s own Amazon listings as a share of reviews mined, against praise, with the listing\'s public stars, ratings and price. One complaint over 15 percent is the angle to build on.', complaintBlock(d.complaints)));
+    parts.push(section('desk-line-themes', 'Where do the complaints land, line by theme?', 'Mined complaint quotes per line and theme: Amazon issues by ASIN mapped to the line by the listing title, plus the own-site issue phrases; a line where one theme carries 40 percent or more gets a listing and page fix.', lineThemeBlock(d.line_themes)));
     parts.push(section('desk-marketplace', 'Who sells us on Amazon, and at what price?', 'The brain\'s Amazon read: whether a brand store, A+ content or a brand-as-seller offer showed, the resellers seen, and every listing with its price per pair against the site. Public listing data, no order counts.', marketplaceBlock(d.marketplace)));
     parts.push(section('desk-gates', 'Is each candidate ready to fund: an owned angle and the 5 go-live gates?', 'Angle confidence (filled, sourced, not a competitor claim) and the gates per candidate: provable claim, owned difference, brand threshold, contribution margin, ad-cost ceiling, plus the compliance check.', gatesBlock(d.gates)));
     parts.push(section('desk-scorecard', 'Which candidates does the founder decide on this week?', 'The fixed scorecard with the brand\'s weights: demand, margin, differentiation, compliance and cash timing, each scored in code, ranked, with the go or no-go memo drafted from the numbers and the review date.', scorecardBlock(d.scorecard)));

@@ -1246,6 +1246,32 @@ class PipelineTest(ShapeMixin, unittest.TestCase):
         ss = audit.read_strength(None, None, sample, audit.Reader(sample, None, date(2026, 9, 24)), date(2026, 9, 24))
         self.assertEqual({r['key']: r['verdict'] for r in ss['rows'] if r['key'] in ('sales', 'returns', 'ads')}, {'sales': 'ok', 'returns': 'ok', 'ads': 'unavailable'})   # returns: one source, so never strong
 
+    def test_line_theme_matrix(self):
+        D = date(2026, 9, 27)
+        self.assertEqual(audit.line_of_title("Women's Cushioned No Show Socks - 4 Pack"), 'no_show')
+        self.assertEqual(audit.line_of_title("Men's Originals Ankle Socks"), 'ankle')
+        self.assertEqual(audit.line_of_title('Gripper Slipper'), 'slippers')
+        self.assertEqual(audit.line_of_title('Mystery item'), 'other')
+        self.assertEqual(audit.theme_of_phrase('hole in the heel after two wears'), 'durability')
+        self.assertEqual(audit.theme_of_phrase('runs small, too tight'), 'fit_sizing')
+        self.assertEqual(audit.line_theme_matrix(None)['rows'], [])
+        m = audit.line_theme_matrix(audit.brain('bombas'))
+        self.assertTrue(m['rows'])
+        self.assertTrue(all(r['total'] == sum(r['themes'].values()) for r in m['rows']))
+        self.assertTrue(all(c['key'] in audit.THEME_LABEL for c in m['cols']))
+        self.assertEqual(m['rows'][0]['key'], 'ankle')                     # the ankle line: 88 quotes, price and worth leads
+        for r in m['rows']:
+            self.assertIn(r['verdict'], ('concentrated', 'spread', 'thin'))
+            if r['verdict'] == 'concentrated':
+                self.assertGreaterEqual(r['total'], audit.LINE_MIN_QUOTES)
+                self.assertGreaterEqual(r['top_share'], audit.THEME_CONCENTRATION)
+        found = audit.line_theme_findings(audit.brain('bombas'), D)
+        self.assertEqual([f['id'].split('.')[-1] for f in found], ['ankle'])
+        for f in found:
+            self.check_shape(f)
+            self.assertEqual(f['capability']['id'], 'PROD-C34')
+            self.assertIn('listing', api.recipe(f)['title'])
+
     def test_demand_pattern_tags(self):
         even = {'rows': [{'category': 'socks', 'series': [100] * 12}], 'months': [f'2026-{m:02d}' for m in range(1, 13)], 'last': '2026-12'}
         peaked = {'rows': [{'category': 'socks', 'series': [50] * 10 + [300, 400]}], 'months': even['months'], 'last': '2026-12'}

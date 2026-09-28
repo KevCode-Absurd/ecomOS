@@ -1041,6 +1041,20 @@ def recipe(f):
             'size': {'text': '; '.join(ent.get('why') or []), 'usd': None}, 'stop_rule': 'stop at the per-run or weekly cap', 'check_on': _check_on(f, 7), 'time_to_ship_hours': 1,
             'win_rule': 'the read at or above every floor',
         }
+    if rid == 'PROD-R44':
+        ent = f.get('entity') or {}
+        theme = (ent.get('theme_label') or 'the theme').lower()
+        return {
+            'title': f'Fix the {ent.get("label") or "line"} listing and page for {theme}: {round((ent.get("share") or 0) * 100)} percent of its complaints',
+            'owner': 'agent_drafts',
+            'artefact': {'kind': 'listing_fix', 'label': f'the {ent.get("label")} listing and PDP changes for {theme}: the answer in the bullets and the first image, the size or care note where it belongs, and the review reply template'},
+            'steps': [{'n': 1, 'who': 'agent', 'text': f'Read the {ent.get("total") or 0} complaint quotes on {theme} and name the 3 concrete causes (fit, wear, pack, expectation).'},
+                      {'n': 2, 'who': 'agent', 'text': 'Draft the listing bullets, the first-image note and the PDP section that answer them with the proof on file; a product cause goes to the candidate pipeline as a fix.'},
+                      {'n': 3, 'who': 'person', 'text': 'Approve and publish the copy on the marketplace and the site.'},
+                      {'n': 4, 'who': 'agent', 'text': 'Re-read the theme share on new reviews after 60 days.'}],
+            'size': {'text': f'{ent.get("total") or 0} quotes, {", ".join(ent.get("sources") or [])}', 'usd': None}, 'stop_rule': 'no claim the proof does not back', 'check_on': _check_on(f, 60), 'time_to_ship_hours': 3,
+            'win_rule': f'{theme} under 30 percent of new complaint quotes on the line',
+        }
     return None
 
 
@@ -1445,7 +1459,7 @@ def overview(data, brand):
                      'gates': gates_block(brand, data, br, rd, ends_on, findings), 'scorecard': scorecard_block(brand, data, br, rd, ends_on, findings),
                      'video': audit.video_signals(br, brand, ends_on), 'tech_packs': tech_pack_block(brand, findings),
                      'hours': dict(audit.hours_table(brand, br), findings={f['entity']['id']: f['id'] for f in findings if f['rule_id'] == 'PROD-R28'}),
-                     'trend_checks': audit.trend_checks(br, brand, ends_on), 'surfaces': audit.audience_surfaces(br, ends_on), 'marketplace': audit.marketplace_read(br, products(data, brand)), 'cadence': audit.launch_cadence(br, ends_on), 'returns': audit.return_rates(data, brand, ends_on), 'questions': audit.open_questions(br, ends_on), 'pulls': audit.pulls(br, brand, ends_on), 'first_runs': audit.first_run_read(brand, ends_on, audit.net_28d(rd)), 'brain_freshness': audit.brain_freshness(br, ends_on), 'assumptions': audit.assumptions(br), 'strength': audit.read_strength(br, brand, data, rd, ends_on)},
+                     'trend_checks': audit.trend_checks(br, brand, ends_on), 'surfaces': audit.audience_surfaces(br, ends_on), 'marketplace': audit.marketplace_read(br, products(data, brand)), 'cadence': audit.launch_cadence(br, ends_on), 'returns': audit.return_rates(data, brand, ends_on), 'questions': audit.open_questions(br, ends_on), 'pulls': audit.pulls(br, brand, ends_on), 'first_runs': audit.first_run_read(brand, ends_on, audit.net_28d(rd)), 'brain_freshness': audit.brain_freshness(br, ends_on), 'assumptions': audit.assumptions(br), 'strength': audit.read_strength(br, brand, data, rd, ends_on), 'line_themes': audit.line_theme_matrix(br)},
             'audit': {'findings': findings, 'rules': audit.RULES}}
 
 

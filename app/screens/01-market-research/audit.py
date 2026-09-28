@@ -164,6 +164,9 @@ Rules
   PROD-R43  Thin read: a read this desk rests on (conversation, reviews, Reddit, ads, the web pass, avatars, listings, sales,
             returns) whose sample, source count or age misses its floor while rules stand on it. Severity low. Money null.
             Capability PROD-C04. Owner: 01-market-research.
+  PROD-R44  Complaints concentrate: a line with 20 or more mined complaint quotes (Amazon issues by ASIN mapped to the line by
+            the listing title, plus the own-site issue phrases) where one theme carries 40 percent or more. Severity medium.
+            Money null. Capability PROD-C34 (build and optimise the listing, human assist). Owner: 01-market-research.
   PROD-R03  Hero line with no next SKU: a line with 25 percent or more of its category's net sales in
             the last 3 whole months while the candidate pipeline holds no open next-SKU candidate for
             that category. Money: null (an unlaunched SKU has no baseline). Capability PROD-C06
@@ -274,6 +277,8 @@ RULES = [
      'inputs': ['brain.assumptions'], 'capability': 'PROD-C08', 'owner_screen': SCREEN},
     {'rule_id': 'PROD-R43', 'name': 'Read this desk rests on whose sample, sources or age misses its floor', 'entity_type': 'metric',
      'inputs': ['brain.*', 'fixtures.market_trends', 'products_monthly', 'reversed_orders'], 'capability': 'PROD-C04', 'owner_screen': SCREEN},
+    {'rule_id': 'PROD-R44', 'name': 'Line with 20 or more mined complaint quotes where one theme carries 40 percent or more', 'entity_type': 'sku',
+     'inputs': ['brain.products', 'brain.marketplaces'], 'capability': 'PROD-C34', 'owner_screen': SCREEN},
 ]
 CAPABILITY = {'PROD-R01': {'id': 'PROD-C05', 'autonomy': 'agent_does'},
               'PROD-R02': {'id': 'PROD-C06', 'autonomy': 'agent_does'},
@@ -317,7 +322,8 @@ CAPABILITY = {'PROD-R01': {'id': 'PROD-C05', 'autonomy': 'agent_does'},
               'PROD-R40': {'id': 'PROD-C07', 'autonomy': 'agent_does'},
               'PROD-R41': {'id': 'PROD-C04', 'autonomy': 'agent_does'},
               'PROD-R42': {'id': 'PROD-C08', 'autonomy': 'agent_does'},
-              'PROD-R43': {'id': 'PROD-C04', 'autonomy': 'agent_does'}}
+              'PROD-R43': {'id': 'PROD-C04', 'autonomy': 'agent_does'},
+              'PROD-R44': {'id': 'PROD-C34', 'autonomy': 'human_assist'}}
 SEVERITY_ORDER = {'critical': 0, 'high': 1, 'medium': 2, 'low': 3}
 
 # Review records name their line in a short key; the store names it by SKU title.
@@ -811,6 +817,7 @@ def run(brand, window=None, data=None):
     out += freshness_findings(br, ends_on)
     out += assumption_findings(br, ends_on)
     out += strength_findings(br, brand, data, rd, ends_on)
+    out += line_theme_findings(br, ends_on)
     out.sort(key=lambda f: (SEVERITY_ORDER[f['severity']], -((f['money_at_stake'] or {}).get('usd') or 0), f['id']))
     return out
 
@@ -4097,6 +4104,100 @@ def strength_findings(br, brand, data, rd, ends_on):
         sentence = f'The {r["label"].lower()} read is thin: {"; ".join(why)}. {len(r["rules"])} rules stand on it.'
         f = _finding('PROD-R43', r['key'], ends_on, 'low', ev, sentence, None, 0.9, [], money_reason='a thin read has no order count; the rules on it carry the stake')
         f['entity'] = {'type': 'metric', 'id': r['key'], 'label': r['label'], 'rules': r['rules'], 'sample': r['sample'], 'sources': r['sources'], 'age_days': r['age_days'], 'why': why}
+        f['id'] = r['finding_id']
+        out.append(f)
+    return out
+
+
+# ---------------------------------------------------------------- line by theme: where the complaints land (round 6.6)
+
+LINE_WORDS = [('no_show', ['no show', 'no-show']), ('ankle', ['ankle']), ('calf', ['calf']), ('compression', ['compression']), ('merino', ['merino']), ('slippers', ['slipper']),
+              ('underwear', ['underwear', 'boxer', 'brief', 'bralette']), ('t_shirts', ['t-shirt', 'tee']), ('athletic', ['athletic', 'running', 'performance'])]
+LINE_MIN_QUOTES = 20          # a line is judged on 20 or more mined complaint quotes
+THEME_CONCENTRATION = 0.4     # ... where one theme carries 40 percent or more of them
+
+
+def line_of_title(title):
+    t = ' ' + str(title or '').lower() + ' '
+    for key, words in LINE_WORDS:
+        if any(w in t for w in words):
+            return key
+    return 'other'
+
+
+def theme_of_phrase(text):
+    try:
+        from app.connectors.apify_adapters import THEMES  # noqa: WPS433
+    except Exception:  # noqa: BLE001
+        THEMES = {}
+    t = ' ' + str(text or '').lower() + ' '
+    best, best_n = None, 0
+    for th in sorted(set(THEMES) | set(EXTRA_THEME_TERMS)):
+        terms = [x for x in (THEMES.get(th) or []) if x not in GENERIC_THEME_TERMS] + EXTRA_THEME_TERMS.get(th, [])
+        n = sum(1 for x in terms if x in t)
+        if n > best_n:
+            best, best_n = th, n
+    return best
+
+
+def line_theme_matrix(br):
+    """Lines by complaint theme: Amazon mined issues per ASIN (mapped to a line by the listing title) plus the own-site issue
+    phrases per line, as counts per theme; per line the total, the top theme and its share, and the verdict: concentrated
+    (20 or more quotes with one theme at 40 percent or more), spread, or thin."""
+    if br is None:
+        return {'rows': [], 'cols': [], 'cells': {}, 'rule': None}
+    titles = {}
+    for r in br.records('marketplaces'):
+        v = r.get('value') or {}
+        if isinstance(v, dict) and v.get('asin') and v.get('title'):
+            titles.setdefault(v['asin'], v['title'])
+    cells, sources = {}, {}
+    for r in br.records('products'):
+        v = r.get('value') or {}
+        if isinstance(v, dict) and v.get('asin') and v.get('kind') == 'issues':
+            line = line_of_title(titles.get(v['asin'], ''))
+            for th, n in (v.get('themes') or {}).items():
+                if th == 'general' or not n:
+                    continue
+                cells.setdefault(line, {})[th] = cells.get(line, {}).get(th, 0) + int(n)
+            sources.setdefault(line, set()).add('amazon')
+    for rl in review_lines(br):
+        line = rl.get('key') or 'other'
+        for phrase in rl.get('issues') or []:
+            th = theme_of_phrase(phrase)
+            if th:
+                cells.setdefault(line, {})[th] = cells.get(line, {}).get(th, 0) + 1
+                sources.setdefault(line, set()).add('own_site')
+    themes = sorted({th for c in cells.values() for th in c})
+    rows = []
+    for line, c in cells.items():
+        total = sum(c.values())
+        top = max(c.items(), key=lambda kv: kv[1]) if c else (None, 0)
+        share = round(top[1] / total, 4) if total else None
+        verdict = 'concentrated' if total >= LINE_MIN_QUOTES and share is not None and share >= THEME_CONCENTRATION else 'spread' if total >= LINE_MIN_QUOTES else 'thin'
+        rows.append({'key': line, 'label': REVIEW_LINE.get(line, line.replace('_', ' ').title()), 'total': total, 'top_theme': top[0], 'top_label': THEME_LABEL.get(top[0], top[0]) if top[0] else None,
+                     'top_share': share, 'sources': sorted(sources.get(line, [])), 'themes': c, 'verdict': verdict, 'finding_id': f'{SCREEN}.PROD-R44.{line}'})
+    order = {'concentrated': 0, 'spread': 1, 'thin': 2}
+    rows.sort(key=lambda r: (order[r['verdict']], -r['total']))
+    mx = max((n for c in cells.values() for n in c.values()), default=0)
+    return {'rows': rows, 'cols': [{'key': th, 'label': THEME_LABEL.get(th, th)} for th in themes],
+            'cells': {line: {th: {'us': n, 'unit': 'n', 'label': f'{n} complaint quotes'} for th, n in c.items()} for line, c in cells.items()}, 'max': mx,
+            'rule': f'a line is judged on {LINE_MIN_QUOTES} or more mined complaint quotes (Amazon issues by ASIN mapped to the line by the listing title, plus the own-site issue phrases); concentrated when one theme carries {int(THEME_CONCENTRATION * 100)} percent or more of them'}
+
+
+def line_theme_findings(br, ends_on):
+    """PROD-R44: a line whose mined complaints concentrate on one theme."""
+    out = []
+    if br is None:
+        return out
+    for r in line_theme_matrix(br)['rows']:
+        if r['verdict'] != 'concentrated':
+            continue
+        ev = [_ev('top_theme_share', r['top_share'], 'ratio', ends_on.isoformat(), 'all mined reviews', THEME_CONCENTRATION, 'threshold', source='brain.products', simulated=False, freshness_days=0, theme=r['top_theme'], sources=r['sources']),
+              _ev('complaint_quotes', r['total'], 'count', ends_on.isoformat(), 'all mined reviews', LINE_MIN_QUOTES, 'threshold', source='brain.products', simulated=False, freshness_days=0)]
+        sentence = f'{r["label"]}: {round(r["top_share"] * 100)} percent of {r["total"]} mined complaint quotes are about {r["top_label"].lower()} ({", ".join(r["sources"])}).'
+        f = _finding('PROD-R44', r['key'], ends_on, 'medium', ev, sentence, None, 0.7, [], money_reason='the line\'s net sales are on the review-issue card; a listing fix has no order count until tested')
+        f['entity'] = {'type': 'sku', 'id': r['key'], 'label': r['label'], 'theme': r['top_theme'], 'theme_label': r['top_label'], 'share': r['top_share'], 'total': r['total'], 'sources': r['sources']}
         f['id'] = r['finding_id']
         out.append(f)
     return out
