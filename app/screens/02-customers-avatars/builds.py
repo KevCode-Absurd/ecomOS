@@ -1688,3 +1688,53 @@ def voice_check(text: str, forbidden: list[str], disliked: list[str], buyer_word
     add("buyer_words", "pass" if used else "warn", f"Uses buyer words: {', '.join(used)}." if used else f"Uses none of the buyer words, like {', '.join(buyer_words[:4])}.")
     verdict = "fail" if any(c["status"] == "fail" for c in checks) else ("warn" if any(c["status"] == "warn" for c in checks) else "pass")
     return {"verdict": verdict, "checks": checks}
+
+
+# ---------------------------------------------------------------- brand health line
+
+HEALTH_MONTHS = 12
+REPEAT_DROP_PTS = 0.03    # repeat months 1 to 3: last 3 cohorts against the 3 before, down 3 points or more
+TICKETS_RISE = 0.20       # tickets per 1,000 orders: last 3 months against the 3 before, up 20 percent or more
+MISSING_LINES = [("branded search", "Search Console", "Connect Search Console read-only; the line reads branded query clicks by month."),
+                 ("mentions and sentiment", "social listening", "Connect a listening feed read-only; mentions and net sentiment by month."),
+                 ("review rating by month", "reviews app", "Connect the reviews app read-only; average stars by month from every review, not a sample.")]
+
+
+def health(monthly: list[dict], cohort_rows: list[dict], as_of: str) -> dict:
+    """The brand's health line from its own store data, and the lines that wait on a connector."""
+    full = [r for r in monthly if r.get("orders") and _add(r["month"], 1) <= as_of[:7]][-HEALTH_MONTHS:]
+    if len(full) < 6:
+        return {"available": False, "reason": f"only {len(full)} full months", "rows": [], "missing": MISSING_LINES, "moves": []}
+    months = [r["month"] for r in full]
+    ret = [round(r["returning_customer_orders"] / r["orders"], 4) for r in full]
+    tick = [round(1000 * r["tickets"] / r["orders"], 2) if r.get("tickets") is not None else None for r in full]
+    give = [round(r["giving_units"] / r["orders"], 2) if r.get("giving_units") else None for r in full]
+    rep = {r["cohort"]: r["repeat_m1_m3"] for r in cohort_rows if r.get("repeat_m1_m3") is not None}
+    rep_vals = [rep.get(m) for m in months]
+    rows = [{"label": "Returning share of orders", "values": ret, "unit": "%", "higher_is_better": True},
+            {"label": "Repeat in months 1 to 3", "sub": "by first-order month", "values": rep_vals, "unit": "%", "higher_is_better": True},
+            {"label": "Tickets per 1,000 orders", "values": tick, "unit": "n", "higher_is_better": False},
+            {"label": "Items given per order", "values": give, "unit": "n", "higher_is_better": True}]
+    moves = []
+    rv = [v for v in rep_vals if v is not None]
+    if len(rv) >= 6:
+        a, b = sum(rv[-6:-3]) / 3, sum(rv[-3:]) / 3
+        if a - b >= REPEAT_DROP_PTS:
+            moves.append({"id": f"{SCREEN}.health.repeat", "key": "repeat", "title": "Find why the newest buyers come back less",
+                          "why": f"Repeat in months 1 to 3 fell from {round(a * 100, 1)} to {round(b * 100, 1)} percent across the last 3 cohorts.",
+                          "kind": "report", "owner": "agent", "capability": {"id": "LIFE-C20", "autonomy": "agent_does"}})
+    tv = [v for v in tick if v is not None]
+    if len(tv) >= 6:
+        a, b = sum(tv[-6:-3]) / 3, sum(tv[-3:]) / 3
+        if a and (b / a - 1) >= TICKETS_RISE:
+            moves.append({"id": f"{SCREEN}.health.tickets", "key": "tickets", "title": "Find what is driving more support tickets per order",
+                          "why": f"Tickets per 1,000 orders rose from {round(a, 1)} to {round(b, 1)} over the last 3 months.",
+                          "kind": "report", "owner": "agent", "capability": {"id": "LIFE-C20", "autonomy": "agent_does"}})
+    for m in moves:
+        m["draft"] = f"DRAFT review\n{m['why']}\nRead: reason codes, products and avatars behind the change\nOutput: the top 3 causes with the fix for each"
+        m["steps"] = [{"n": 1, "who": "agent", "text": "Break the change down by product, channel and reason."},
+                      {"n": 2, "who": "agent", "text": "Name the top 3 causes with numbers and a fix for each."},
+                      {"n": 3, "who": "person", "text": "Approve the fixes to run."}]
+    return {"available": True, "months": months, "rows": rows, "missing": MISSING_LINES, "moves": moves, "simulated": True,
+            "line": f"{len(rows)} lines from our own store data, {len(MISSING_LINES)} wait on a connector." +
+                    (f" {len(moves)} moving the wrong way." if moves else " None is moving the wrong way.")}

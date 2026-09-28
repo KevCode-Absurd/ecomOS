@@ -285,6 +285,16 @@ def _competitor_names(brain: Brain) -> list[str]:
     return audit.competitor_names(brain)
 
 
+def _health(brand: str, avatars: list[dict]) -> dict:
+    try:
+        from tables import brand_data
+        data = brand_data(brand)
+        monthly, as_of = data.table("monthly"), data.brand.get("as_of")
+    except (ImportError, ValueError, KeyError, FileNotFoundError) as exc:
+        return {"available": False, "reason": str(exc), "rows": [], "missing": builds.MISSING_LINES, "moves": []}
+    return builds.health(monthly, audit.load_cohorts(brand, avatars).get("rows", []), as_of)
+
+
 def _hierarchy(brain: Brain, avatars: list[dict], all_rungs: list[dict], lad: dict) -> dict:
     ends = (brain.today - dt.timedelta(days=1)).isoformat()
     th = builds.theme_impact(brain.records("language_bank"), lad["rows"], ends)
@@ -373,7 +383,7 @@ def overview(brain: Brain) -> dict:
             "coverage": builds.coverage(avatars, all_rungs), "ladders": lad,
             "copy_gap": builds.copy_gap({sec: brain.records(sec) for sec in ("voice", "claims", "identity", "offers", "policies", "products", "visual", "story_bank")},
                                         brain.records("language_bank"), _brand_tokens(brain), audit.source_name),
-            "paths": _paths(brain.brand), "gate": gate, "hierarchy": _hierarchy(brain, avatars, all_rungs, lad),
+            "paths": _paths(brain.brand), "gate": gate, "health": _health(brain.brand, avatars), "hierarchy": _hierarchy(brain, avatars, all_rungs, lad),
             "offer_map": builds.offer_map(avatars, all_rungs, brain.records("offers"), brain.records("policies") + brain.records("claims")),
             "lookalikes": builds.lookalikes(brain.records("competitors"), _brand_name(brain)),
             "claims_fire": builds.claims_fire(brain.records("claims"), brain.records("language_bank"), _brand_tokens(brain), audit.source_name,

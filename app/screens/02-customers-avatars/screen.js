@@ -193,6 +193,20 @@
       ...c.moves.map((m) => UI.actionCard(m, { compact: true, screen: SLUG })));
   }
 
+  // ---------- desk: brand health ----------
+  function renderHealth(x) {
+    document.getElementById('health-sub').textContent = 'Monthly lines from our own store data, 12 full months, simulated. Rules: repeat in months 1 to 3 down 3 points over the last 3 cohorts; tickets per 1,000 orders up 20 percent over 3 months. ' + (x.line || x.reason || '');
+    if (!x.available) { mount('#health', UI.emptyState({ screen: SLUG, title: 'Health line unavailable', text: x.reason })); }
+    else mount('#health', Charts.trendStrip({ rows: x.rows, title: 'Brand health, ' + x.months[0] + ' to ' + x.months[x.months.length - 1] }),
+      el('p', { class: 'micro faint', text: 'A gap in a line is a month with no full cohort yet, not a zero.' }));
+    const connect = x.missing.map(([label, src, fix]) => UI.actionCard({ id: SLUG + '.health.connect.' + label.replace(/\W+/g, '_'), title: 'Connect ' + src + ' for the ' + label + ' line',
+      why: 'The ' + label + ' line is unavailable until ' + src + ' is connected.', severity: 'low', status: 'unavailable', owner: 'person',
+      steps: [{ n: 1, who: 'person', text: fix }, { n: 2, who: 'agent', text: 'Backfill 12 months and add the line here.' }],
+      artefact: { kind: 'connector_setup', label: src + ' connected, read-only' } }, { compact: true, screen: SLUG }));
+    mount('#health-moves', ...x.moves.map((m) => UI.actionCard({ id: m.id, title: m.title, why: m.why, severity: 'medium', owner: m.owner, capability: m.capability, steps: m.steps,
+      artefact: { kind: m.kind, label: 'a cause review', draft: m.draft } }, { compact: true, screen: SLUG })), ...connect);
+  }
+
   // ---------- desk: new against returning ----------
   function renderMix(x) {
     if (!x.available) { mount('#mix-line', UI.emptyState({ screen: SLUG, title: 'Mix unavailable', text: x.reason })); return; }
@@ -723,6 +737,7 @@
     renderMoments(d.moments);
     renderPaths(d.paths);
     renderCohorts(d.cohorts);
+    renderHealth(d.health);
     renderMix(d.mix);
     mount('#avatars', ...(d.avatars.length ? d.avatars.map(avatarCard) : [el('p', { class: 'muted', text: 'No avatar records yet.' })]));
     document.getElementById('obj-note').textContent = 'Avatars come from the objection ladders. Ad coverage: ' +

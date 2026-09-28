@@ -945,5 +945,27 @@ class VoiceCheck(TempBrain):
         self.assertEqual({c['key']: c['status'] for c in r['checks']}['disliked'], 'warn')
 
 
+class Health(unittest.TestCase):
+    """Feature 3.7: brand health line from store data; missing lines wait on connectors, never zero."""
+
+    def test_health(self):
+        from tables import brand_data
+        monthly = brand_data('bombas').table('monthly')
+        x = api.builds.health(monthly, [], '2026-09-27')
+        self.assertTrue(x['available'])
+        self.assertEqual(x['months'][-1], '2026-08')
+        self.assertEqual(len(x['rows'][0]['values']), 12)
+        self.assertTrue(all(v is None for v in x['rows'][1]['values']))
+        self.assertEqual(len(x['missing']), 3)
+
+    def test_ticket_rise_fires(self):
+        from tables import brand_data
+        monthly = [dict(r) for r in brand_data('bombas').table('monthly')]
+        for r in monthly[-4:-1]:
+            r['tickets'] = r['tickets'] * 2
+        x = api.builds.health(monthly, [], '2026-09-27')
+        self.assertIn('tickets', [m['key'] for m in x['moves']])
+
+
 if __name__ == '__main__':
     unittest.main()
