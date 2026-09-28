@@ -1126,5 +1126,22 @@ class SplitCheck(TempBrain):
         self.assertEqual(x['rows'][0]['verdict'], 'focused')
 
 
+class AdVoice(TempBrain):
+    """Feature 4.7: who our live ads speak to, against share of buyers."""
+
+    def test_ad_voice(self):
+        x = api.handle(Req(['overview']))['ad_voice']
+        self.assertTrue(x['available'])
+        rows = {r['key']: r for r in x['rows']}
+        self.assertEqual(rows['everyday_comfort_seeker']['verdict'], 'over')
+        self.assertEqual(rows['durability_disappointed_repeat_customer']['verdict'], 'silent')
+        self.assertIsNotNone(rows['durability_disappointed_repeat_customer']['action'])
+        matched = sum(r['ads'] for r in x['rows'])
+        self.assertAlmostEqual(matched + sum(u['ads'] for u in x['unmatched']), x['total_ads'], places=0)
+
+    def test_no_hook_read_unavailable(self):
+        self.assertFalse(api.builds.ad_voice([], [])['available'])
+
+
 if __name__ == '__main__':
     unittest.main()

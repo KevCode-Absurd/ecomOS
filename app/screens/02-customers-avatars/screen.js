@@ -385,6 +385,21 @@
       note: 'Blank: this lever answers none of the avatar\'s doubts. Columns after the policies are offers no ladder uses yet.' }));
   }
 
+  // ---------- desk: who our ads speak to ----------
+  function renderAdVoice(x) {
+    if (!x.available) { mount('#voiceads', UI.emptyState({ screen: SLUG, title: 'Ad read unavailable', text: x.reason })); return; }
+    document.getElementById('voiceads-sub').textContent = 'Our live ads by hook, from the Ad Library read in the brain, matched to the avatar whose name the hook speaks to, against each avatar\'s share of buyers. Under: less than half its share. ' + x.line;
+    const V = { silent: ['stop', 'Silent'], under: ['fix', 'Under'], fair: ['keep', 'Fair'], over: ['watch', 'Heavy'] };
+    const rows = x.rows.map((r) => Object.assign({}, r, { bar: '', actions: r.action ? [{ label: 'Brief it', onClick: () => briefPanel(r.action) }] : [{ label: 'Keep', cls: 'quiet', onClick: () => {} }] }));
+    const t = UI.verdictTable({
+      columns: [{ key: 'name', label: 'Avatar' }, { key: 'buyer_share', label: 'Buyers', unit: '%' }, { key: 'ad_share', label: 'Live ads', unit: '%' }, { key: 'bar', label: 'Buyers | ads' }],
+      rows, verdict: { at: 1, kind: (r) => V[r.verdict][0], text: (r) => V[r.verdict][1] }, actions: { label: 'Do' }, sort: false });
+    t.querySelectorAll('tbody tr').forEach((tr, i) => { const r = rows[i]; if (r && tr.children[4]) tr.children[4].replaceChildren(el('span', { class: 'pair' },
+      el('i', { class: 'b', style: 'width:' + Math.round(200 * (r.buyer_share || 0)) + 'px' }), el('i', { class: 'a', style: 'width:' + Math.round(200 * Math.min(1, r.ad_share || 0)) + 'px' }))); });
+    mount('#voiceads', t, el('p', { class: 'small', text: 'Ads that name no avatar: ' + x.unmatched.map((u) => u.hook + ' (' + u.ads + ')').join(', ') + '.' }),
+      el('p', { class: 'micro faint', text: 'Hooks come from a read of our Ad Library page, signals only. Tag ads with the naming convention and this reads exact.' }));
+  }
+
   // ---------- desk: split check ----------
   function renderSplit(x) {
     document.getElementById('split-sub').textContent = 'Product lines behind each avatar (its own reviews count 3 times a review linked through a doubt) and its doubt themes. Split: 2 lines each hold 30 percent or more and draw different complaints. Broad: 3 or more doubt themes, none at half. ' + x.line;
@@ -782,7 +797,7 @@
 
   // ---------- the desk, grouped into tabs by job ----------
   const DESK = [
-    { key: 'avatars', label: 'Avatars', ids: ['avatars-wrap', 'split-wrap', 'gate-wrap', 'forces-wrap', 'survey-wrap', 'served-wrap', 'misread-wrap'] },
+    { key: 'avatars', label: 'Avatars', ids: ['avatars-wrap', 'voiceads-wrap', 'split-wrap', 'gate-wrap', 'forces-wrap', 'survey-wrap', 'served-wrap', 'misread-wrap'] },
     { key: 'doubts', label: 'Doubts and words', ids: ['ladders-wrap', 'cover-wrap', 'themes-wrap', 'words-wrap', 'hooks-wrap', 'gap-wrap'] },
     { key: 'offers', label: 'Offers and claims', ids: ['offers-wrap', 'claims-wrap', 'timing-wrap'] },
     { key: 'retention', label: 'Retention', ids: ['paths-wrap', 'cohort-wrap', 'mix-wrap', 'moments-wrap', 'health-wrap'] },
@@ -817,6 +832,7 @@
     renderWrong(a, r);
     renderActions(r);
     renderOffers(d.offer_map);
+    renderAdVoice(d.ad_voice);
     renderSplit(d.split);
     renderGate(d.gate);
     renderForces(d.forces);

@@ -1994,3 +1994,60 @@ def split_check(avatars: list[dict], all_rungs: list[dict], buys: dict[str, dict
     rows.sort(key=lambda r: (order[r["verdict"]], r["name"]))
     n = sum(1 for r in rows if r["verdict"] != "focused")
     return {"rows": rows, "line": f"{n} of {len(rows)} avatars may be more than one buyer."}
+
+
+# ---------------------------------------------------------------- who our live ads speak to
+
+NAME_GENERIC = {"buyer", "customer", "loyalist", "seeker", "wearer", "avoider", "skeptic", "trier", "repeat", "uncertain",
+                "reassured", "disappointed", "everyday", "daily", "single", "pair", "sock", "socks", "occasion", "store"}
+AD_UNDER = 0.5            # an avatar gets under half its share of buyers in share of ads
+
+
+def ad_voice(avatars: list[dict], learnings: list[dict]) -> dict:
+    """Our live ads by hook, matched to the avatar whose name the hook speaks to, against each avatar's share of buyers."""
+    hooks = next((r.get("value") for r in learnings if r.get("field") == "hook_types" and isinstance(r.get("value"), dict)), None)
+    if not hooks:
+        return {"available": False, "reason": "no hook read of our own ads in the brain", "rows": []}
+    total = sum(n for n in hooks.values() if isinstance(n, int))
+    keys = {}
+    for a in avatars:
+        if a["share_estimate"] is None:
+            continue
+        keys[a["key"]] = {_lemma(w) for w in re.findall(r"[a-z]+", a["name"].lower()) if len(w) >= 4 and w not in NAME_GENERIC and w not in STOP}
+    per = {k: 0 for k in keys}
+    unmatched = []
+    for hook, n in hooks.items():
+        hl = {_lemma(w) for w in re.findall(r"[a-z]+", hook.lower())}
+        hit = [k for k, ws in keys.items() if ws & hl]
+        if not hit:
+            unmatched.append({"hook": hook, "ads": n})
+        for k in hit:
+            per[k] += n / len(hit)
+    rows = []
+    for a in avatars:
+        if a["key"] not in keys:
+            continue
+        ads = per[a["key"]]
+        share_ads = ads / total if total else None
+        ratio = share_ads / a["share_estimate"] if a["share_estimate"] else None
+        verdict = "silent" if ads == 0 else ("under" if ratio is not None and ratio < AD_UNDER else ("over" if ratio and ratio > 2 else "fair"))
+        act = None
+        if verdict in ("silent", "under") and a["next"]["kind"] == "ad_brief":
+            act = dict(a["next"], id=f"{SCREEN}.advoice.{a['key']}")
+        elif verdict in ("silent", "under"):
+            act = {"id": f"{SCREEN}.advoice.{a['key']}", "kind": "ad_brief", "owner": "agent_drafts", "title": f"Brief an ad that speaks to {a['name']}",
+                   "capability": {"id": "CREA-C06", "autonomy": "agent_does"},
+                   "draft": f"DRAFT ad brief\nAvatar: {a['name']} ({round(a['share_estimate'] * 100)} percent of buyers)\nMoment: {(a.get('triggers') or ['unavailable'])[0]}\n"
+                            f"Answer first: {a['top_objection']['doubt'] if a.get('top_objection') else 'unavailable'}\nNo ad speaks to them today.",
+                   "steps": [{"n": 1, "who": "agent", "text": "Draft 2 variants from the avatar's moment and top doubt."},
+                             {"n": 2, "who": "person", "text": "Approve. Creative makes them."},
+                             {"n": 3, "who": "agent", "text": "Tag them AV-" + a["key"] + " and read cost per order after 7 days."}]}
+        rows.append({"key": a["key"], "name": a["name"], "buyer_share": a["share_estimate"], "ads": round(ads, 1),
+                     "ad_share": round(share_ads, 4) if share_ads is not None else None, "ratio": round(ratio, 2) if ratio is not None else None,
+                     "verdict": verdict, "action": act})
+    rows.sort(key=lambda r: ({"silent": 0, "under": 1, "fair": 2, "over": 3}[r["verdict"]], -(r["buyer_share"] or 0)))
+    none_share = sum(u["ads"] for u in unmatched) / total if total else None
+    silent = [r["name"] for r in rows if r["verdict"] == "silent"]
+    return {"available": True, "rows": rows, "unmatched": unmatched, "total_ads": total, "none_share": round(none_share, 4) if none_share is not None else None,
+            "line": f"{sum(u['ads'] for u in unmatched)} of {total} live ads speak to no avatar by name. "
+                    + (f"No ad speaks to {len(silent)} avatars, {round(sum(r['buyer_share'] for r in rows if r['verdict'] == 'silent') * 100)} percent of buyers." if silent else "")}
