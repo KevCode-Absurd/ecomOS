@@ -75,6 +75,10 @@ Rules
             the entered estimate, else the median of single-unit SKUs in the category. Capability PROD-C08.
   PROD-R17  Actual margin unavailable: contribution_margin by SKU needs order rows joined to landed costs; one
             connect finding while the store is not connected. Capability PROD-C08. Owner: 01-market-research.
+  PROD-R18  Seasonal without a cash plan: a candidate whose demand pattern reads seasonal (the category's top 2
+            months carry 25 percent or more of 12-month units, or the name says gift) and whose cash_plan is empty.
+            Trending reads from market growth of 8 percent a year or 3 launches in 24 months; else evergreen.
+            Capability PROD-C07 (classify demand pattern and plan cash, agent does). Owner: 01-market-research.
   PROD-R03  Hero line with no next SKU: a line with 25 percent or more of its category's net sales in
             the last 3 whole months while the candidate pipeline holds no open next-SKU candidate for
             that category. Money: null (an unlaunched SKU has no baseline). Capability PROD-C06
@@ -135,6 +139,8 @@ RULES = [
      'inputs': ['fixtures.pipeline', 'finance_inputs', 'brain.economics', 'monthly'], 'capability': 'PROD-C08', 'owner_screen': SCREEN},
     {'rule_id': 'PROD-R17', 'name': 'Actual contribution margin by SKU unavailable (needs order rows joined to landed costs)', 'entity_type': 'metric',
      'inputs': ['orders', 'order_lines', 'finance_inputs'], 'capability': 'PROD-C08', 'owner_screen': SCREEN},
+    {'rule_id': 'PROD-R18', 'name': 'Seasonal candidate (top 2 months carry 25 percent of the category, or a gift by name) with no cash plan attached', 'entity_type': 'sku',
+     'inputs': ['fixtures.pipeline', 'products_monthly', 'fixtures.market_trends'], 'capability': 'PROD-C07', 'owner_screen': SCREEN},
 ]
 CAPABILITY = {'PROD-R01': {'id': 'PROD-C05', 'autonomy': 'agent_does'},
               'PROD-R02': {'id': 'PROD-C06', 'autonomy': 'agent_does'},
@@ -152,7 +158,8 @@ CAPABILITY = {'PROD-R01': {'id': 'PROD-C05', 'autonomy': 'agent_does'},
               'PROD-R14': {'id': 'PROD-C04', 'autonomy': 'agent_does'},
               'PROD-R15': {'id': 'PROD-C01', 'autonomy': 'agent_does'},
               'PROD-R16': {'id': 'PROD-C08', 'autonomy': 'agent_does'},
-              'PROD-R17': {'id': 'PROD-C08', 'autonomy': 'agent_does'}}
+              'PROD-R17': {'id': 'PROD-C08', 'autonomy': 'agent_does'},
+              'PROD-R18': {'id': 'PROD-C07', 'autonomy': 'agent_does'}}
 SEVERITY_ORDER = {'critical': 0, 'high': 1, 'medium': 2, 'low': 3}
 
 # Review records name their line in a short key; the store names it by SKU title.
@@ -621,6 +628,7 @@ def run(brand, window=None, data=None):
     out += search_findings(br, data, brand, ends_on)
     out += pipeline_findings(brand, ends_on)
     out += margin_findings(brand, data, br, rd, ends_on)
+    out += pattern_findings(brand, data, rd, ends_on)
     out.sort(key=lambda f: (SEVERITY_ORDER[f['severity']], -((f['money_at_stake'] or {}).get('usd') or 0), f['id']))
     return out
 
@@ -1713,4 +1721,68 @@ def margin_findings(brand, data, br, rd, ends_on):
         u['entity'] = {'type': 'metric', 'id': 'contribution_margin', 'label': 'Actual margin by SKU'}
         u['sentence'] = u['sentence'] + (f' ({r.get("reason")})' if r.get('reason') else '')
         out.append(u)
+    return out
+
+
+# ---------------------------------------------------------------- demand pattern: evergreen, seasonal, trending
+
+SEASONAL_TOP2_SHARE = 0.25    # the top 2 months carry this share of the year's units (an even year is 16.7 percent)
+TRENDING_CAGR = 8.0           # a public market growing this fast a year, or 3 launches in 24 months, reads trending
+TRENDING_LAUNCHES = 3
+GIFT_WORDS = ['gift', 'holiday', 'christmas']
+
+
+def demand_pattern(category, mix, fx, name='', lane_key=None):
+    """The tag and its numbers: from our 12-month unit series for the category, the market growth and the launches in
+    the web pass. Deterministic; every input named."""
+    row = next((r for r in (mix.get('rows') or []) if r.get('category') == category), None) if mix and not mix.get('unavailable') else None
+    months = (mix or {}).get('months') or []
+    top2_share = peak = None
+    if row and row.get('series') and sum(v or 0 for v in row['series']):
+        total = sum(v or 0 for v in row['series'])
+        pairs = sorted(zip(months, row['series']), key=lambda p: -(p[1] or 0))
+        top2_share = round(sum(v or 0 for _, v in pairs[:2]) / total, 4)
+        peak = [m[5:7] for m, _ in pairs[:2]]
+    markets = [m for m in (fx or {}).get('markets') or [] if MARKET_CATEGORY.get(m.get('key')) == category]
+    cagr = max([m['cagr_pct'] for m in markets if isinstance(m.get('cagr_pct'), (int, float))] or [None]) if markets else None
+    launches = [l for l in (fx or {}).get('launches') or [] if (lane_key and l.get('sub_category') == lane_key) or (not lane_key and category in (l.get('sub_category') or ''))]
+    gift = any(w in (name or '').lower() for w in GIFT_WORDS)
+    if gift or (top2_share is not None and top2_share >= SEASONAL_TOP2_SHARE):
+        tag, why = 'seasonal', (f'the top 2 months carry {round(top2_share * 100)} percent of {category} units' if top2_share is not None else 'a gift product by name')
+    elif (cagr is not None and cagr >= TRENDING_CAGR) or len(launches) >= TRENDING_LAUNCHES:
+        tag, why = 'trending', (f'market growth {cagr:g} percent a year' if cagr is not None and cagr >= TRENDING_CAGR else f'{len(launches)} launches in 24 months')
+    elif row is not None:
+        tag, why = 'evergreen', (f'even shape: the top 2 months carry {round(top2_share * 100)} percent of units' if top2_share is not None else 'an even 12-month series')
+    else:
+        tag, why = None, 'no 12-month series for the category'
+    cash = None
+    if tag == 'seasonal' and peak:
+        cash = f'cash in lands in months {" and ".join(peak)}; stock must be paid for before the peak, so the order date is the lead time back from month {min(peak)}'
+    elif tag == 'trending':
+        cash = 'cash moves early: a first small run reads demand before a full order'
+    elif tag == 'evergreen':
+        cash = 'cash moves evenly: reorder points, not a launch spike'
+    return {'category': category, 'tag': tag, 'why': why, 'top2_share': top2_share, 'peak_months': peak, 'market_cagr': cagr,
+            'launches_24m': len(launches), 'cash_timing': cash, 'gift': gift}
+
+
+def pattern_findings(brand, data, rd, ends_on):
+    """PROD-R18: a seasonal candidate with no cash plan attached cannot reach the shortlist."""
+    mix = category_mix(data, brand, rd)
+    fx = market_trends()
+    out = []
+    for cand in pipeline(brand):
+        if cand.get('stage') in CLOSED_STAGES:
+            continue
+        p = demand_pattern(cand.get('category'), mix, fx, cand.get('name'))
+        if p['tag'] == 'seasonal' and not cand.get('cash_plan'):
+            cid = cand.get('candidate_id') or slug(cand.get('name'))
+            ev = [_ev('demand_pattern_tag', 1, 'flag', ends_on.isoformat(), '12 months', source='products_monthly', tag=p['tag'], why=p['why']),
+                  _ev('top2_month_share', p['top2_share'], 'ratio', month_end(mix['last']).isoformat() if not mix.get('unavailable') else ends_on.isoformat(), '12 months', SEASONAL_TOP2_SHARE, 'threshold', source='products_monthly'),
+                  _ev('cash_plan_attached', 0, 'flag', ends_on.isoformat(), 'candidate now', 1, 'threshold', source='fixtures.pipeline', simulated=False, freshness_days=0)]
+            sentence = f'{cand["name"]} is tagged seasonal ({p["why"]}), but no cash plan is attached for its spike window. It cannot reach the shortlist without one.'
+            f = _finding('PROD-R18', cid, ends_on, 'medium', ev, sentence, None, 0.7, [], money_reason='a cash plan sizes the order; the gap is timing, not revenue')
+            f['entity'] = {'type': 'sku', 'id': cid, 'label': cand['name'], 'candidate': True, 'peak_months': p['peak_months'], 'cash_timing': p['cash_timing']}
+            f['id'] = f'{SCREEN}.PROD-R18.{cid}'
+            out.append(f)
     return out

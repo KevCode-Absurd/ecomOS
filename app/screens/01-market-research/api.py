@@ -568,6 +568,27 @@ def recipe(f):
             'stop_rule': 'no sourcing spend until the modelled margin passes the floor', 'check_on': _check_on(f, 7), 'time_to_ship_hours': 2,
             'win_rule': 'modelled contribution margin at or above the brand floor',
         }
+    if rid == 'PROD-R18':
+        ent = f.get('entity') or {}
+        peak = ' and '.join(ent.get('peak_months') or []) or 'the peak months'
+        draft = (f'Cash plan for {ent.get("label")}\n'
+                 f'Peak: months {peak}. {ent.get("cash_timing") or ""}\n'
+                 f'Order by: lead time back from month {min(ent.get("peak_months") or ["11"])}. Lead time: unavailable, no operations record holds it; ask supply.\n'
+                 f'Cash out: units ordered x landed cost, paid before the peak. Cash in: sales in the peak months.\n'
+                 f'First run: size it at the share a new SKU takes of the category in its first season, from the products table when connected.')
+        return {
+            'title': f'Attach a cash plan to {ent.get("label")} for its {peak} peak',
+            'owner': 'agent_drafts',
+            'artefact': {'kind': 'research_note', 'label': f'a cash plan for {ent.get("label")}: order-by date, units, cash out and cash in by month', 'draft': draft},
+            'steps': [
+                {'n': 1, 'who': 'agent', 'text': 'Read the category\'s 12-month series and name the peak months and their share.'},
+                {'n': 2, 'who': 'agent', 'text': 'Ask supply for the lead time (no operations record holds it) and set the order-by month.'},
+                {'n': 3, 'who': 'agent', 'text': 'Size the first run from the landed cost and the category\'s first-season share; write cash out and cash in by month.'},
+                {'n': 4, 'who': 'person', 'text': 'Approve the plan. It is attached to the candidate from the card and the finding resolves.'}],
+            'size': {'text': f'{round((_ev_value(f, "top2_month_share") or 0) * 100)} percent of the category\'s units land in 2 months', 'usd': None},
+            'stop_rule': 'no shortlist without a cash plan', 'check_on': _check_on(f, 7), 'time_to_ship_hours': 2,
+            'win_rule': 'a cash plan attached to the candidate',
+        }
     return None
 
 
@@ -761,7 +782,8 @@ def overview(data, brand):
                      'demand': demand(tr, reviews), 'store_growth': tr.get('store_growth'),
                      'demand_unavailable': {'reason': tr.get('reason'), 'fix': tr.get('fix')} if tr.get('unavailable') else None,
                      'price_bands': bands, 'reviews': review_mining(reviews, lads),
-                     'pipeline': pipeline_block(brand, ends_on, findings, floor), 'margin': margin_block(brand, data, br, rd, ends_on, findings)},
+                     'pipeline': pipeline_block(brand, ends_on, findings, floor), 'margin': margin_block(brand, data, br, rd, ends_on, findings),
+                     'pattern': pattern_block(brand, data, rd, findings)},
             'audit': {'findings': findings, 'rules': audit.RULES}}
 
 
@@ -885,6 +907,21 @@ def margin_block(brand, data, br, rd, ends_on, findings):
             'units_per_order': upo, 'actual_unavailable': actual['id'] if actual else None,
             'formula': '(price - landed cost - donated item - fulfilment - payment fee) / price',
             'bank_rule': f'bank idea PRD-079: at least ${audit.BANK_DOLLAR_FLOOR:g} contribution a unit and {audit.BANK_MULTIPLE:g} times landed cost, shown as a reference, not the gate'}
+
+
+def pattern_block(brand, data, rd, findings):
+    mix = audit.category_mix(data, brand, rd)
+    fx = audit.market_trends()
+    by_entity = {f['entity']['id']: f['id'] for f in findings if f['rule_id'] == 'PROD-R18'}
+    cats = [dict(audit.demand_pattern(r['category'], mix, fx), kind='category') for r in (mix.get('rows') or [])] if not mix.get('unavailable') else []
+    cands = []
+    for c in audit.pipeline(brand):
+        p = audit.demand_pattern(c.get('category'), mix, fx, c.get('name'))
+        cands.append(dict(p, kind='candidate', candidate_id=c.get('candidate_id'), name=c.get('name'), stage=c.get('stage'), closed=c.get('stage') in audit.CLOSED_STAGES,
+                          cash_plan=c.get('cash_plan'), finding_id=by_entity.get(c.get('candidate_id'))))
+    return {'categories': cats, 'candidates': cands, 'unavailable': mix.get('reason') if mix.get('unavailable') else None,
+            'rule': f'seasonal when the top 2 months carry {round(audit.SEASONAL_TOP2_SHARE * 100)} percent or more of 12-month units (an even year is 17) or the name says gift; trending at {audit.TRENDING_CAGR:g} percent market growth a year or {audit.TRENDING_LAUNCHES} launches in 24 months; else evergreen',
+            'months': mix.get('months')}
 
 
 def pipeline_block(brand, ends_on, findings, floor):

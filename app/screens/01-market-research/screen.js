@@ -473,6 +473,27 @@
     return wrap;
   }
 
+  function patternBlock(p) {
+    if (!p || p.unavailable) return UI.emptyState({ screen: SLUG, title: 'No 12-month series', text: (p && p.unavailable) || 'products_monthly is not connected', missing: ['shopify'] });
+    const rows = (p.candidates || []).concat(p.categories || []);
+    const vrows = rows.map((r) => { const a = r.finding_id ? actionFor(r.finding_id) : null; return Object.assign({}, r, {
+      label: r.kind === 'candidate' ? r.name : r.category + ' (category)',
+      peak: r.peak_months ? r.peak_months.map((m) => ['', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][Number(m)]).join(' and ') : NA,
+      cagr: r.market_cagr, cash: r.kind === 'candidate' ? (r.cash_plan ? 'attached: ' + r.cash_plan : 'none') : (r.cash_timing || NA),
+      actions: [a ? { label: 'Draft the cash plan', onClick: () => openAction(a) } : r.kind === 'candidate' && !r.closed ? { label: r.cash_plan ? 'Edit cash plan' : 'Attach cash plan', cls: 'quiet', onClick: () => { const v = prompt('Cash plan for ' + r.name + ' (order-by month, units, cash out, cash in):', r.cash_plan || ''); if (v != null && v.trim()) candidatePost('candidates/' + r.candidate_id, { cash_plan: v, who: 'person' }); } } : { label: r.kind === 'category' ? 'Reference' : 'Closed', cls: 'quiet', onClick: () => {} }] }); });
+    const t = UI.verdictTable({
+      columns: [{ key: 'label', label: 'Candidate or category' }, { key: 'why', label: 'Why' }, { key: 'top2_share', label: 'Top 2 months', unit: '%' }, { key: 'peak', label: 'Peak' },
+        { key: 'cagr', label: 'Market growth a year', align: 'right', format: (v) => v == null ? NA : v + ' percent' }, { key: 'launches_24m', label: 'Launches, 24 mo', unit: 'n' }, { key: 'cash', label: 'Cash timing or plan' }],
+      rows: vrows,
+      verdict: { at: 1, kind: (r) => r.tag === 'seasonal' ? (r.kind === 'candidate' && !r.cash_plan && !r.closed ? 'fix' : 'watch') : r.tag === 'trending' ? 'new' : r.tag ? 'keep' : 'na',
+        text: (r) => r.tag ? r.tag[0].toUpperCase() + r.tag.slice(1) : 'No series', reason: (r) => r.why || '' },
+      actions: { label: 'Do', onClick: () => {} }, sort: false });
+    const missing = (p.candidates || []).filter((r) => r.tag === 'seasonal' && !r.cash_plan && !r.closed);
+    return el('div', { class: 'stack' }, el('div', { class: 'card scroll' }, t), el('p', { class: 'micro faint', text: 'Rule: ' + p.rule + '. Series: our units by category over 12 whole months (simulated); growth and launches from the web pass.' }),
+      gapLine(missing.length ? missing.length + ' seasonal candidate' + (missing.length === 1 ? ' has' : 's have') + ' no cash plan: ' + missing.map((r) => r.name).join(', ') + '. None can reach the shortlist without one.' : 'Every seasonal candidate carries a cash plan.',
+        missing.length && actionFor(missing[0].finding_id) ? { label: 'Draft the first', onClick: () => openAction(actionFor(missing[0].finding_id)) } : null));
+  }
+
   function loadDesk(o) {
     const d = o.desk || {};
     const w = (o.window || {}).trend;
@@ -489,6 +510,7 @@
     parts.push(section('desk-price', 'Where do our prices sit against the competitor band?', 'Per-pair list price by line against the band of competitor median prices from the brain. Socks only; other categories have no competitor price on file.', priceBlock(d.price_bands || {})));
     parts.push(section('desk-reviews', 'What do reviews praise and fail, line by line?', 'Public site review totals per line, with the objection ladder rungs built from them.', reviewBlock(d.reviews || [])));
     parts.push(section('desk-margin', 'Does each candidate make money after real costs?', 'The margin gate per candidate: planned price stepping down through landed cost, the donated item, fulfilment and payment fees to contribution, every term from the finance inputs or the brain.', marginBlock(d.margin)));
+    parts.push(section('desk-pattern', 'Is each candidate evergreen, seasonal or a trend, and when does cash move?', 'The demand pattern from our own 12-month series by category and the web pass, with the cash timing it implies and the cash plan attached to each candidate.', patternBlock(d.pattern)));
     parts.push(section('desk-pipeline', 'What is in the next-SKU pipeline, and what is past its time box?', 'Candidates screened in from the gaps above or by hand, their stage, fast checks, time box and hours. Advance, log hours or kill from the card; every write lands in the pipeline log.', pipelineBlock(d.pipeline || { rows: [] })));
     mount('#desk', ...parts);
   }

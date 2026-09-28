@@ -597,6 +597,19 @@ class PipelineTest(unittest.TestCase):
         g4 = audit.margin_gate(dict(cand, pack_units=4), fin, None, '2026-09-27', 2.0, 25.0)
         self.assertEqual(g4['cogs']['value'], 16.0)
 
+    def test_demand_pattern_tags(self):
+        even = {'rows': [{'category': 'socks', 'series': [100] * 12}], 'months': [f'2026-{m:02d}' for m in range(1, 13)], 'last': '2026-12'}
+        peaked = {'rows': [{'category': 'socks', 'series': [50] * 10 + [300, 400]}], 'months': even['months'], 'last': '2026-12'}
+        fx = {'markets': [{'key': 'socks_us', 'cagr_pct': 9.0}], 'launches': []}
+        self.assertEqual(audit.demand_pattern('socks', even, {'markets': [], 'launches': []})['tag'], 'evergreen')
+        self.assertEqual(audit.demand_pattern('socks', even, fx)['tag'], 'trending')
+        p = audit.demand_pattern('socks', peaked, fx)
+        self.assertEqual(p['tag'], 'seasonal')
+        self.assertEqual(p['peak_months'], ['12', '11'])
+        self.assertEqual(p['top2_share'], 0.5833)
+        self.assertEqual(audit.demand_pattern('socks', even, {'markets': [], 'launches': []}, 'Holiday gift box')['tag'], 'seasonal')
+        self.assertIsNone(audit.demand_pattern('hats', even, fx)['tag'])
+
     def test_funnel_counts_stages_reached(self):
         rows = [audit.candidate_view(r, date(2026, 9, 27)) for r in [
             {'candidate_id': 'a', 'name': 'a', 'stage': 'gated', 'screen_in_date': '2026-09-20', 'time_box_days': 10},
