@@ -1081,6 +1081,18 @@ def recipe(f):
             'size': {'text': f'{(v or "none").replace("_", " ")}' + (', first run decided' if ent.get('first_run_decided') else ''), 'usd': None}, 'stop_rule': 'no MOQ order without a passed sample', 'check_on': _check_on(f, 14), 'time_to_ship_hours': 1,
             'win_rule': 'a sample tested through our own chain with result pass',
         }
+    if rid == 'PROD-R47':
+        ent = f.get('entity') or {}
+        return {
+            'title': f'Read the kill note on {ent.get("killed") or "the killed candidate"} before spending an hour on {ent.get("label") or "this one"}',
+            'owner': 'agent',
+            'artefact': {'kind': 'research_note', 'label': f'the kill note and what is new: why {ent.get("killed")} was killed on {ent.get("killed_on")}, which signal is different this time, and the decision to keep the hold or re-screen'},
+            'steps': [{'n': 1, 'who': 'agent', 'text': f'Show the kill reason ({ent.get("reason") or "none logged"}) and the shared words ({", ".join(ent.get("shared") or [])}).'},
+                      {'n': 2, 'who': 'agent', 'text': 'Name the signal that is new since the kill (a review theme, a launch, a market number), with its source; with none, the hold stands.'},
+                      {'n': 3, 'who': 'person', 'text': f'Keep the hold to {ent.get("hold_until")} (kill this one too, with the note), or re-screen on the new signal.'}],
+            'size': {'text': f'hold to {ent.get("hold_until")}', 'usd': None}, 'stop_rule': 'no research hours on a re-screen without a new signal', 'check_on': _check_on(f, 3), 'time_to_ship_hours': 0.5,
+            'win_rule': 'a note naming the new signal, or the candidate killed with the same reason',
+        }
     return None
 
 
@@ -1232,7 +1244,7 @@ def merge_strength(actions):
     return keep
 
 
-CANDIDATE_RULES = ('PROD-R14', 'PROD-R15', 'PROD-R16', 'PROD-R18', 'PROD-R21', 'PROD-R23', 'PROD-R24', 'PROD-R25', 'PROD-R27', 'PROD-R28', 'PROD-R37', 'PROD-R38', 'PROD-R39', 'PROD-R40', 'PROD-R45', 'PROD-R46')
+CANDIDATE_RULES = ('PROD-R14', 'PROD-R15', 'PROD-R16', 'PROD-R18', 'PROD-R21', 'PROD-R23', 'PROD-R24', 'PROD-R25', 'PROD-R27', 'PROD-R28', 'PROD-R37', 'PROD-R38', 'PROD-R39', 'PROD-R40', 'PROD-R45', 'PROD-R46', 'PROD-R47')
 
 
 def merge_candidates(actions):
@@ -1485,7 +1497,7 @@ def overview(data, brand):
                      'gates': gates_block(brand, data, br, rd, ends_on, findings), 'scorecard': scorecard_block(brand, data, br, rd, ends_on, findings),
                      'video': audit.video_signals(br, brand, ends_on), 'tech_packs': tech_pack_block(brand, findings),
                      'hours': dict(audit.hours_table(brand, br), findings={f['entity']['id']: f['id'] for f in findings if f['rule_id'] == 'PROD-R28'}),
-                     'trend_checks': audit.trend_checks(br, brand, ends_on), 'surfaces': audit.audience_surfaces(br, ends_on), 'marketplace': audit.marketplace_read(br, products(data, brand)), 'cadence': audit.launch_cadence(br, ends_on), 'returns': audit.return_rates(data, brand, ends_on), 'questions': audit.open_questions(br, ends_on), 'pulls': audit.pulls(br, brand, ends_on), 'first_runs': audit.first_run_read(brand, ends_on, audit.net_28d(rd)), 'brain_freshness': audit.brain_freshness(br, ends_on), 'assumptions': audit.assumptions(br), 'strength': audit.read_strength(br, brand, data, rd, ends_on), 'line_themes': audit.line_theme_matrix(br), 'samples': audit.sample_read(brand or 'sample', ends_on)},
+                     'trend_checks': audit.trend_checks(br, brand, ends_on), 'surfaces': audit.audience_surfaces(br, ends_on), 'marketplace': audit.marketplace_read(br, products(data, brand)), 'cadence': audit.launch_cadence(br, ends_on), 'returns': audit.return_rates(data, brand, ends_on), 'questions': audit.open_questions(br, ends_on), 'pulls': audit.pulls(br, brand, ends_on), 'first_runs': audit.first_run_read(brand, ends_on, audit.net_28d(rd)), 'brain_freshness': audit.brain_freshness(br, ends_on), 'assumptions': audit.assumptions(br), 'strength': audit.read_strength(br, brand, data, rd, ends_on), 'line_themes': audit.line_theme_matrix(br), 'samples': audit.sample_read(brand or 'sample', ends_on), 'kills': audit.kill_memory(brand or 'sample', ends_on)},
             'audit': {'findings': findings, 'rules': audit.RULES}}
 
 
@@ -1555,6 +1567,12 @@ def candidate_update(brand, cid, body, today):
         if st != row.get('stage'):
             changes.append(f'{row.get("stage")} to {st}')
             row['stage'] = st
+            if st == 'killed':
+                row['killed_on'] = today.isoformat()
+                reason = str(body.get('kill_reason') or '').strip()[:300]
+                if reason:
+                    row['kill_reason'] = reason
+                    changes.append(f'killed: {reason}')
             if st == 'shortlisted' and not row.get('review_date'):
                 row['review_date'] = (today + dt.timedelta(days=14)).isoformat()
     if body.get('hours_add') is not None:

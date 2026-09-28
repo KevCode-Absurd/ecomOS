@@ -1329,6 +1329,30 @@ class PipelineTest(ShapeMixin, unittest.TestCase):
         finally:
             audit.PIPELINE_PATH = self.real2
 
+    def test_kill_memory(self):
+        D = date(2026, 9, 27)
+        self.assertEqual(audit.content_words('Merino hiking sock 4-Pack', 'a merino sock for hikers'), {'merino', 'hiking', 'hiker'})
+        self.real2 = audit.PIPELINE_PATH
+        try:
+            audit.PIPELINE_PATH = self.tmp
+            self.tmp.write_text(json.dumps({'rows': [{'candidate_id': 'k1', 'brand': 'fake', 'name': 'Merino hiking crew sock', 'stage': 'screened', 'angle_text': 'a merino crew for hikers with a blister tab'},
+                                                     {'candidate_id': 'n1', 'brand': 'fake', 'name': 'Merino hiking crew, second try', 'stage': 'screened', 'angle_text': 'merino crew for hikers'},
+                                                     {'candidate_id': 'n2', 'brand': 'fake', 'name': 'Cotton dress sock', 'stage': 'screened', 'angle_text': 'a thin dress sock'},
+                                                     {'candidate_id': 'k2', 'brand': 'fake', 'name': 'Old idea', 'stage': 'killed', 'killed_on': '2026-01-01', 'kill_reason': 'no demand', 'angle_text': 'cotton dress sock thin'}]}), encoding='utf-8')
+            r = api.candidate_update('fake', 'k1', {'stage': 'killed', 'kill_reason': 'the margin gate failed twice', 'who': 'person'}, D)
+            self.assertEqual(r['changes'], ['screened to killed', 'killed: the margin gate failed twice'])
+            km = audit.kill_memory('fake', D)
+            k = {x['candidate_id']: x for x in km['rows']}
+            self.assertEqual((k['k1']['killed_on'], k['k1']['reason'], k['k1']['in_hold'], k['k1']['hold_until']), ('2026-09-27', 'the margin gate failed twice', True, '2026-12-26'))
+            self.assertEqual([x['candidate_id'] for x in k['k1']['lookalikes']], ['n1'])
+            self.assertFalse(k['k2']['in_hold'])                          # 269 days: the hold is over, n2 is not flagged
+            found = audit.kill_findings('fake', D)
+            self.assertEqual([f['id'].split('.')[-1] for f in found], ['n1'])
+            self.assertIn('killed 0 days ago because the margin gate failed twice', found[0]['sentence'])
+            self.check_shape(found[0])
+        finally:
+            audit.PIPELINE_PATH = self.real2
+
     def test_demand_pattern_tags(self):
         even = {'rows': [{'category': 'socks', 'series': [100] * 12}], 'months': [f'2026-{m:02d}' for m in range(1, 13)], 'last': '2026-12'}
         peaked = {'rows': [{'category': 'socks', 'series': [50] * 10 + [300, 400]}], 'months': even['months'], 'last': '2026-12'}

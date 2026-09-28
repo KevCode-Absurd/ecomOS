@@ -233,7 +233,7 @@ The candidate side of the desk: the pipeline with its gates, boxes and scorecard
 | # | Feature | Status |
 |---|---|---|
 | 7.1 | The sample gate (bank idea PRD-098): from shortlisted on, or once a first run is decided, a sample ordered, received and tested through the store's own fulfilment chain, entered on the row; rule PROD-R46 no passed sample (high once a first run is decided or the test failed), a person runs it, merged into the candidate card | done |
-| 7.2 | Kill memory: killed candidates with the reason and the date, a 90-day hold; rule PROD-R47 a new candidate that reads like one killed inside 90 days | todo |
+| 7.2 | Kill memory: a kill asks for its reason and keeps the date; killed candidates sit on a 90-day hold with the reason, the hold date and the open candidates that read like them (3 or more shared content words in name and angle); rule PROD-R47 an open look-alike inside the hold gets the kill note before any hours go in, merged into the candidate card | done |
 | 7.3 | The weekly report runner: `weekly.py --brand X` writes the desk report and the week plan to a dated file and lists past reports from Exports; scheduling it is the lead's call (contract ask) | todo |
 | 7.4 | Decisions on this desk: every choice from the shared decisions log for this screen with its action, when and the note, as a table under the plan and a CSV | todo |
 | 7.5 | Send to creative: the creative hand-off written as a file and a row in a hand-off table (events contract shape) from the card panel; contract ask for the shared table | todo |

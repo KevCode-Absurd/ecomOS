@@ -173,6 +173,9 @@ Rules
             received and tested through the store's own fulfilment chain (bank idea PRD-098). High once a first run is
             decided or the test failed, else medium. Money null. Capability PROD-C16 (the sample gate, human assist).
             Owner: 01-market-research.
+  PROD-R47  Kill memory: an open candidate that shares 3 or more content words (name and angle) with a candidate killed inside
+            the 90-day hold. Severity medium. Money null. Capability PROD-C01 (screen candidates, agent does). Owner:
+            01-market-research.
   PROD-R03  Hero line with no next SKU: a line with 25 percent or more of its category's net sales in
             the last 3 whole months while the candidate pipeline holds no open next-SKU candidate for
             that category. Money: null (an unlaunched SKU has no baseline). Capability PROD-C06
@@ -288,6 +291,7 @@ RULES = [
     {'rule_id': 'PROD-R45', 'name': 'Candidate at shortlisted or later with no named owner', 'entity_type': 'sku', 'inputs': ['fixtures.pipeline'], 'capability': 'PROD-C11', 'owner_screen': SCREEN},
     {'rule_id': 'PROD-R46', 'name': 'Candidate at shortlisted or later, or with a first run decided, whose sample has not passed a test through our own chain', 'entity_type': 'sku',
      'inputs': ['fixtures.pipeline'], 'capability': 'PROD-C16', 'owner_screen': SCREEN},
+    {'rule_id': 'PROD-R47', 'name': 'Open candidate that reads like one killed inside the 90-day hold', 'entity_type': 'sku', 'inputs': ['fixtures.pipeline'], 'capability': 'PROD-C01', 'owner_screen': SCREEN},
 ]
 CAPABILITY = {'PROD-R01': {'id': 'PROD-C05', 'autonomy': 'agent_does'},
               'PROD-R02': {'id': 'PROD-C06', 'autonomy': 'agent_does'},
@@ -334,7 +338,8 @@ CAPABILITY = {'PROD-R01': {'id': 'PROD-C05', 'autonomy': 'agent_does'},
               'PROD-R43': {'id': 'PROD-C04', 'autonomy': 'agent_does'},
               'PROD-R44': {'id': 'PROD-C34', 'autonomy': 'human_assist'},
               'PROD-R45': {'id': 'PROD-C11', 'autonomy': 'founder_gate'},
-              'PROD-R46': {'id': 'PROD-C16', 'autonomy': 'human_assist'}}
+              'PROD-R46': {'id': 'PROD-C16', 'autonomy': 'human_assist'},
+              'PROD-R47': {'id': 'PROD-C01', 'autonomy': 'agent_does'}}
 SEVERITY_ORDER = {'critical': 0, 'high': 1, 'medium': 2, 'low': 3}
 
 # Review records name their line in a short key; the store names it by SKU title.
@@ -831,6 +836,7 @@ def run(brand, window=None, data=None):
     out += line_theme_findings(br, ends_on)
     out += owner_findings(brand, ends_on)
     out += sample_findings(brand, ends_on)
+    out += kill_findings(brand, ends_on)
     out.sort(key=lambda f: (SEVERITY_ORDER[f['severity']], -((f['money_at_stake'] or {}).get('usd') or 0), f['id']))
     return out
 
@@ -4313,4 +4319,71 @@ def sample_findings(brand, ends_on):
         f['entity'] = {'type': 'sku', 'id': cid, 'label': r['name'], 'candidate': True, 'stage': r['stage'], 'verdict': r['verdict'], 'first_run_decided': r['first_run_decided']}
         f['id'] = r['finding_id']
         out.append(f)
+    return out
+
+
+# ---------------------------------------------------------------- kill memory (round 7.2)
+
+KILL_HOLD_DAYS = 90
+KILL_MATCH_WORDS = 3
+STOPWORDS = {'the', 'a', 'an', 'and', 'or', 'of', 'for', 'with', 'to', 'in', 'on', 'by', 'at', 'from', 'that', 'this', 'is', 'are', 'it', 'as', 'sock', 'socks', 'line', 'pack', 'pair', 'pairs', 'plus'}
+
+
+def content_words(*texts):
+    words = set()
+    for t in texts:
+        for w in re.findall(r'[a-z][a-z\-]{2,}', str(t or '').lower()):
+            if w not in STOPWORDS:
+                words.add(w.rstrip('s'))
+    return words
+
+
+def kill_memory(brand, ends_on):
+    """Killed candidates with the reason, the date, the 90-day hold, and the open candidates that read like them (3 or more
+    shared content words in name and angle). The desk remembers a kill so the same idea is not re-screened on the same signal."""
+    rows = [c for c in pipeline(brand)]
+    killed, open_ = [], []
+    for c in rows:
+        st = c.get('stage')
+        if st in ('killed', 'kill'):
+            log = c.get('log') or []
+            entry = next((l for l in reversed(log) if 'kill' in str(l.get('what') or '').lower()), None)
+            killed_on = c.get('killed_on') or (entry or {}).get('on')
+            reason = c.get('kill_reason') or (str((entry or {}).get('what') or '').split('killed:', 1)[-1].strip() if entry and 'killed:' in str(entry.get('what') or '') else None)
+            days = (ends_on - date.fromisoformat(killed_on)).days if killed_on else None
+            killed.append({'candidate_id': c.get('candidate_id'), 'name': c.get('name'), 'killed_on': killed_on, 'days_since': days,
+                           'hold_until': (date.fromisoformat(killed_on) + timedelta(days=KILL_HOLD_DAYS)).isoformat() if killed_on else None,
+                           'in_hold': days is not None and days <= KILL_HOLD_DAYS, 'reason': reason, 'words': sorted(content_words(c.get('name'), c.get('angle_text'))), 'lookalikes': []})
+        elif st not in CLOSED_STAGES:
+            open_.append(c)
+    for k in killed:
+        kw = set(k['words'])
+        for c in open_:
+            shared = kw & content_words(c.get('name'), c.get('angle_text'))
+            if len(shared) >= KILL_MATCH_WORDS:
+                k['lookalikes'].append({'candidate_id': c.get('candidate_id'), 'name': c.get('name'), 'stage': c.get('stage'), 'shared': sorted(shared)})
+    killed.sort(key=lambda k: (0 if k['in_hold'] else 1, -(len(k['lookalikes'])), k['killed_on'] or ''))
+    return {'rows': killed, 'hold_days': KILL_HOLD_DAYS,
+            'rule': f'a killed candidate stays killed for {KILL_HOLD_DAYS} days; an open candidate that shares {KILL_MATCH_WORDS} or more content words with one killed inside the hold is a re-screen of the same idea until a new signal is named'}
+
+
+def kill_findings(brand, ends_on):
+    """PROD-R47: an open candidate that reads like one killed inside the 90-day hold."""
+    out = []
+    seen = set()
+    for k in kill_memory(brand, ends_on)['rows']:
+        if not k['in_hold']:
+            continue
+        for la in k['lookalikes']:
+            cid = la['candidate_id']
+            if cid in seen:
+                continue
+            seen.add(cid)
+            ev = [_ev('shared_words_with_killed', len(la['shared']), 'count', ends_on.isoformat(), 'pipeline now', KILL_MATCH_WORDS, 'threshold', source='fixtures.pipeline', simulated=False, freshness_days=0,
+                      killed=k['name'], killed_on=k['killed_on'], reason=k['reason'], shared=la['shared'])]
+            sentence = f'{la["name"]} reads like {k["name"]}, killed {k["days_since"]} days ago' + (f' because {k["reason"]}' if k['reason'] else ' with no reason logged') + f' (shared: {", ".join(la["shared"])}). The hold runs to {k["hold_until"]}.'
+            f = _finding('PROD-R47', cid, ends_on, 'medium', ev, sentence, None, 0.7, [], money_reason='a re-screen costs research hours, not revenue')
+            f['entity'] = {'type': 'sku', 'id': cid, 'label': la['name'], 'candidate': True, 'stage': la['stage'], 'killed': k['name'], 'killed_on': k['killed_on'], 'reason': k['reason'], 'hold_until': k['hold_until'], 'shared': la['shared']}
+            f['id'] = f'{SCREEN}.PROD-R47.{cid}'
+            out.append(f)
     return out

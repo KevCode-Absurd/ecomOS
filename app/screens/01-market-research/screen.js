@@ -295,7 +295,7 @@
         !r.closed ? [{ label: r.owner ? 'Owner: ' + r.owner : 'Owner', cls: 'quiet', onClick: () => { const v = prompt('Who owns ' + r.name + ' (reads the test and runs the diagnosis)?', r.owner || ''); if (v != null) candidatePost('candidates/' + r.candidate_id, { owner: v, who: 'person' }); } }] : [],
         !r.closed && (r.failed_checks || []).length ? [{ label: 'Log override', cls: 'quiet', onClick: () => { const v = prompt('Why does ' + r.name + ' move on with ' + r.failed_checks.join(', ') + ' failed? Name the signal.'); if (v != null && v.trim()) candidatePost('candidates/' + r.candidate_id, { override_reason: v, who: 'person' }); } }] : [],
         !r.closed && nx ? [{ label: 'Advance to ' + nx, cls: 'quiet', onClick: () => candidatePost('candidates/' + r.candidate_id, { stage: nx, who: 'person' }) }] : [],
-        !r.closed ? [{ label: 'Log 1 h', cls: 'quiet', onClick: () => candidatePost('candidates/' + r.candidate_id, { hours_add: 1, who: 'person' }) }, { label: 'Kill', cls: 'quiet', onClick: () => { if (confirm('Kill ' + r.name + '? It stays killed 90 days.')) candidatePost('candidates/' + r.candidate_id, { stage: 'killed', who: 'person' }); } }] : []) }); });
+        !r.closed ? [{ label: 'Log 1 h', cls: 'quiet', onClick: () => candidatePost('candidates/' + r.candidate_id, { hours_add: 1, who: 'person' }) }, { label: 'Kill', cls: 'quiet', onClick: () => { const why = prompt('Kill ' + r.name + '? It stays killed 90 days. Name the reason (the desk remembers it):'); if (why != null && why.trim()) candidatePost('candidates/' + r.candidate_id, { stage: 'killed', kill_reason: why, who: 'person' }); } }] : []) }); });
     const t = UI.verdictTable({
       columns: [{ key: 'name', label: 'Candidate' }, { key: 'category', label: 'Category' }, { key: 'stageText', label: 'Stage and box' }, { key: 'checks', label: 'Fast checks' }, { key: 'angle', label: 'Angle' },
         { key: 'price', label: 'Planned price', unit: '$' }, { key: 'hours', label: 'Hours', align: 'right', format: (v) => v == null ? NA : v.toFixed(1) }],
@@ -1128,6 +1128,20 @@
         open.length && actionFor(open[0].finding_id) ? { label: 'Open the first', onClick: () => openAction(actionFor(open[0].finding_id)) } : null));
   }
 
+  function killsBlock(k) {
+    const rows = (k && k.rows) || [];
+    if (!rows.length) return UI.emptyState({ screen: SLUG, title: 'Nothing killed yet', text: 'A kill with its reason is remembered here for ' + ((k && k.hold_days) || 90) + ' days; a look-alike candidate gets the note before any hours go in.', missing: [] });
+    const vrows = rows.map((r) => { const la = r.lookalikes || []; const a = la.length ? actionFor(la[0].finding_id || (SLUG + '.PROD-R47.' + la[0].candidate_id)) : null; return Object.assign({}, r, {
+      on: r.killed_on ? fmt.date(r.killed_on) + (r.days_since != null ? ' (' + r.days_since + ' d ago)' : '') : NA, hold: r.hold_until ? fmt.date(r.hold_until) : NA, why: r.reason || 'no reason logged',
+      like: la.length ? la.map((x) => x.name + ' (' + x.shared.join(', ') + ')').join('; ') : 'none open',
+      actions: [a ? { label: 'Read the note first', onClick: () => openAction(a) } : { label: r.in_hold ? 'On hold' : 'Hold over', cls: 'quiet', onClick: () => {} }] }); });
+    const tbl = UI.verdictTable({ columns: [{ key: 'name', label: 'Killed candidate' }, { key: 'on', label: 'Killed on' }, { key: 'why', label: 'Reason' }, { key: 'hold', label: 'Hold until' }, { key: 'like', label: 'Open look-alikes' }], rows: vrows,
+      verdict: { at: 1, kind: (r) => (r.lookalikes || []).length && r.in_hold ? 'fix' : r.in_hold ? 'watch' : 'na', text: (r) => (r.lookalikes || []).length && r.in_hold ? 'Look-alike open' : r.in_hold ? 'On hold' : 'Hold over', reason: () => k.rule }, actions: { label: 'Do', onClick: () => {} }, sort: false });
+    const hot = rows.filter((r) => r.in_hold && (r.lookalikes || []).length);
+    return el('div', { class: 'stack' }, el('div', { class: 'card scroll' }, tbl), el('p', { class: 'micro faint', text: 'Rule: ' + k.rule + '.' }),
+      gapLine(hot.length ? hot.length + ' killed idea' + (hot.length === 1 ? ' has' : 's have') + ' an open look-alike: ' + hot.map((r) => r.name).join(', ') + '.' : 'No open candidate reads like a recent kill.', null));
+  }
+
   function loadDesk(o) {
     const d = o.desk || {};
     const w = (o.window || {}).trend;
@@ -1165,6 +1179,7 @@
     parts.push(section('desk-trend-checks', 'Does each lane\'s trend rest on history, or on a forecast?', 'The 12-month rate against the multi-year rate per lane from the web pass series: a trend is trusted with 3 or more years of history on the exact term; a last year over twice the multi-year rate is a spike.', trendChecksBlock(d.trend_checks)));
     parts.push(section('desk-pattern', 'Is each candidate evergreen, seasonal or a trend, and when does cash move?', 'The demand pattern from our own 12-month series by category and the web pass, with the cash timing it implies and the cash plan attached to each candidate.', patternBlock(d.pattern)));
     parts.push(section('desk-pipeline', 'What is in the next-SKU pipeline, and what is past its time box?', 'Candidates screened in from the gaps above or by hand, their stage, fast checks, time box and hours. Advance, log hours or kill from the card; every write lands in the pipeline log.', pipelineBlock(d.pipeline || { rows: [] })));
+    parts.push(section('desk-kills', 'What did we kill, and why?', 'Killed candidates with the reason and the date, on a 90-day hold; an open candidate that reads like one of them gets the kill note before any hours go in.', killsBlock(d.kills)));
     parts.push(section('desk-pulls', 'How fresh is what this desk reads, and what would a refresh cost?', 'Every pull the desk depends on: its last capture, age against its window, the blocks it feeds and the estimate for a run under the brand\'s caps. A person approves each paid call; nothing runs from here.', pullsBlock(d.pulls)));
     parts.push(section('desk-brain', 'How fresh is the brain this desk reads?', 'The brain sections behind the rules here, each with its records, last update, age against the contract TTL, stale and conflict counts and confidence; a conflict waits on the founder, a stale section waits on a pull or the keeper.', brainFreshnessBlock(d.brain_freshness)));
     parts.push(section('desk-assumptions', 'What do the simulated numbers assume?', 'The calibration assumptions behind the simulated tables: value, status (founder, sourced, derived, modelled), as-of date, sources, and which rules here price with them. Founder-confirmed or not, said plainly.', assumptionsBlock(d.assumptions)));
