@@ -1161,6 +1161,38 @@ const {{ chromium }} = require('{PW}');
             srv.wait(timeout=10)
 
 
+class TestNotes(TempBrain):
+    """5.7: team notes on a page or action, validated, local only."""
+    def setUp(self):
+        super().setUp()
+        self._notes = api.NOTES
+        api.NOTES = self.tmp / 'notes'
+
+    def tearDown(self):
+        api.NOTES = self._notes
+        super().tearDown()
+
+    def post(self, body):
+        r = Req(['notes'], method='POST')
+        r.body = body
+        return api.handle(r)
+
+    def test_add_and_read(self):
+        code, out = self.post({'entity': 'stance', 'text': 'Check their fall drop on Monday.'})
+        self.assertEqual(code, 201)
+        self.post({'entity': 'feetures', 'text': 'Bundle page changed.'})
+        got = api.handle(Req(['notes'], query={'entity': ['stance']}))['notes']
+        self.assertEqual([n['text'] for n in got], ['Check their fall drop on Monday.'])
+        self.assertEqual(len(api.handle(Req(['notes']))['notes']), 2)
+
+    def test_rejects_bad_input(self):
+        self.assertEqual(self.post({'entity': '../x', 'text': 'hi'})[0], 400)
+        self.assertEqual(self.post({'entity': 'stance', 'text': '  '})[0], 400)
+        self.assertEqual(self.post('nope')[0], 400)
+        code, out = self.post({'entity': 'stance', 'text': 'x' * 900})
+        self.assertEqual(len(out['note']['text']), api.NOTE_MAX)
+
+
 class TestRank(TempBrain):
     """Depth contract rules 2, 3 and 13: owner, steps and artefact on every action; every finding ends in one."""
     W = {'ends_on': '2026-09-27', 'days': 28, 'trailing': 4}

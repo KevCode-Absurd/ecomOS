@@ -10,6 +10,7 @@ in audit.py; this file shapes them for the page. No writes, nothing external.
   GET  overview   the desk: pages side by side, coverage matrix, hook and offer
                   mix, references, price and pack ladder, positioning map,
                   changes, freshness and the re-pull plan
+  GET  notes?entity=  POST notes {entity, text}  team notes on a page or action (local, git-ignored)
   GET  competitor_snapshot  the events.md hand-off rows (also written to fixtures by capture.py)
   GET  experiments          registry rows drafted from open test actions, for 25-experiments
   GET  digest     the weekly competitor brief as plain text, built from the plan
@@ -22,6 +23,7 @@ work on every route. Set BRAIN_ROOT to point at a copy of app/brain (tests do).
 from __future__ import annotations
 
 import datetime as dt
+import json
 import importlib.util
 import re
 from pathlib import Path
@@ -431,6 +433,41 @@ def overview(brand: str, today: dt.date) -> dict:
             "category_median": m["category_median"], "price_position_index": m["price_position_index"]}
 
 
+NOTES = HERE / "fixtures" / "notes"
+NOTE_MAX, NOTES_MAX = 500, 2000
+SAFE_ENTITY = re.compile(r"^[a-z0-9_.-]{1,80}$")
+
+
+def notes_path(brand: str) -> Path:
+    return NOTES / f"{brand}.json"
+
+
+def read_notes(brand: str, entity: str | None = None) -> list[dict]:
+    try:
+        rows = json.loads(notes_path(brand).read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        rows = []
+    return [r for r in rows if entity is None or r.get("entity") == entity]
+
+
+def add_note(brand: str, body) -> tuple[int, dict]:
+    """A team note on an entity (a page key or an action id). Local file, git-ignored; never sent anywhere."""
+    if not isinstance(body, dict):
+        return 400, {"error": "body must be an object"}
+    entity, text = str(body.get("entity") or ""), str(body.get("text") or "").strip()
+    if not SAFE_ENTITY.match(entity) or not text:
+        return 400, {"error": "entity (a page key or action id) and text are required"}
+    rows = read_notes(brand)
+    if len(rows) >= NOTES_MAX:
+        return 400, {"error": "notes file is full"}
+    row = {"entity": entity, "text": text[:NOTE_MAX].replace("\u2014", ","), "by": str(body.get("by") or "team")[:40],
+           "time": dt.datetime.now(dt.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")}
+    rows.append(row)
+    notes_path(brand).parent.mkdir(parents=True, exist_ok=True)
+    notes_path(brand).write_text(json.dumps(rows, indent=1), encoding="utf-8")
+    return 201, {"ok": True, "note": row}
+
+
 def handle(req):
     try:
         brand, today = _brand(req), _today(req)
@@ -439,6 +476,10 @@ def handle(req):
     try:
         if req.method == "GET" and req.path == ["overview"]:
             return overview(brand, today)
+        if req.path == ["notes"]:
+            if req.method == "POST":
+                return add_note(brand, req.body)
+            return {"notes": read_notes(brand, req.arg("entity"))}
         if req.method == "GET" and req.path == ["competitor_snapshot"]:
             m = audit.market_full(brand, today, BRAIN_ROOT)
             return {"table": "competitor_snapshot", "brand": brand, "fields": audit.handmod.FIELDS,

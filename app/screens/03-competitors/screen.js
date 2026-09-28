@@ -176,6 +176,24 @@
   function angleChips(p) {
     return el('div', { class: 'chips' }, ...(p.angles || []).map((a) => el('span', { class: 'chip', title: 'set by "' + a.word + '" in the ' + a.where, text: a.label + (a.n != null ? ' ' + a.n : '') + ': "' + a.word + '"' })));
   }
+  function notesBlock(entity) {
+    const list = el('div', { class: 'stack small' });
+    const input = el('textarea', { class: 'text', rows: 2, placeholder: 'A note for the team on this page', 'aria-label': 'Team note' });
+    const status = el('span', { class: 'micro muted' });
+    const load = async () => {
+      try { const r = await api(BASE + 'notes?entity=' + encodeURIComponent(entity));
+        list.replaceChildren(...(r.notes.length ? r.notes.map((n) => el('div', { class: 'card flat' }, el('span', { class: 'micro faint', text: fmt.date(n.time) + ', ' + n.by + ': ' }), n.text)) : [el('span', { class: 'muted', text: 'No notes yet.' })])); }
+      catch (e) { list.replaceChildren(el('span', { class: 'na', text: 'Notes unavailable: ' + e.message })); }
+    };
+    const save = el('button', { class: 'btn sm', type: 'button', text: 'Save note' });
+    save.addEventListener('click', async () => {
+      if (!input.value.trim()) { status.textContent = 'Type a note first.'; return; }
+      try { await api(BASE + 'notes', { method: 'POST', body: { entity, text: input.value } }); input.value = ''; status.textContent = 'Saved.'; load(); }
+      catch (e) { status.textContent = 'Could not save: ' + e.message; }
+    });
+    load();
+    return el('div', { class: 'stack' }, el('h4', { text: 'Team notes' }), list, input, el('div', { class: 'row' }, save, status));
+  }
   function pagePanel(r, us, data) {
     const L = data.format_labels;
     const cmp = (label, a, b) => el('tr', null, el('th', { text: label }), el('td', { text: a }), el('td', { text: b }));
@@ -201,6 +219,7 @@
       UI.decisionRow({ capability: 'BRAND-C57', autonomy: 'agent_does', screen: SCREEN, finding_id: SCREEN + '.page.' + r.key + '.battlecard' }),
       el('div', { class: 'micro faint', text: 'Watch this page weekly: alert only when a new angle, offer or format crosses the rule.' }),
       UI.decisionRow({ capability: 'BRN-C11', autonomy: 'agent_does', screen: SCREEN, finding_id: SCREEN + '.page.' + r.key + '.watch' }),
+      notesBlock(r.key),
       el('div', { class: 'micro faint', text: 'Signals only. Run length shows what a page keeps live, not what works. Never copy their text, logos, products or faces.' }));
     UI.panel({ title: r.name + (r.frame === 'direct' ? ', direct competitor' : ', basics and apparel'), body });
   }
