@@ -47,6 +47,16 @@ Round 1 notes: `snapshot.py` plans and runs a page-id Ad Library pull through `a
 | 9.7 | Exports gain the team's records (every interview, price, check, poll, threshold, outcome and site change with its date, summary and who) and the "what worked" scoreboard as CSV, next to the 7 desk tables | done |
 | 9.8 | Depth rule 5 on every rule added since round 6: a test logs the records that fire COMP-R24, R25, R31, R32, R33, R34 (and R35 is always on) and checks every money or traffic action has a size, a stop rule and a check date. Found and fixed: the price cut answer (COMP-R25) had no size, missed in 4.3 because it had never fired | done |
 | 9.9 | Depth rule 4 on the new rules: on the fired scenario every open finding has evidence rows in the audit contract shape, and every number in the sentences of COMP-R24, R25, R31 to R34 is backed by an evidence value, window or threshold. Found and fixed: the logged price cut said "30-day average" with no 30 in its evidence; its window now reads "trailing 30 days to" the date | done |
+| 9.10 | Round close: 35 rules; the depth pass holds on rounds 6 to 9 (held findings, caveats, words, sized actions, evidence behind every number), guarded by tests; the room jobs table maps each job to where it lives; no script errors; every desk block has its sub line, gap line and caveat; 360 px clean with every form open; screen tests green; screenshot `round9.png` | done |
+
+### Round 9 status for Kevin (28 Sep 2026)
+
+1. A depth check of rounds 6 to 8 found and fixed 5 gaps: an open finding with no action, 2 blocks with no caveat line, a price cut answer with no size, and a sentence whose number had no evidence behind it.
+2. Tests now fail if any of those come back. The browser test opens every tab and checks each block for its sub line, gap line and caveat.
+3. Our price index is now kept with each capture. Two captures in a row outside the range confirm a price drift, and the move turns high.
+4. An open corner of the map that shoppers ask for on Reddit (buy it for life) now turns high, with the count shown.
+5. A logged visit to a rival's site counts as tracking for 7 days, "no change" included. Rival traffic is a connect step, not a guess. The team's records export as CSV.
+6. Next, round 10: counted ad shares and new-ad alerts once you run the ad-level pull, and another depth pass after it.
 
 ## Round 8: closing the loop on moves
 
@@ -342,7 +352,7 @@ Where each job lives now (round 9). The question column quotes the room spec.
 | Round | Features picked | Date | Notes |
 |---|---|---|---|
 | 0 | 0.1 to 0.8 | 2026-09-28 | Bombas brain and simulated prices |
-| 9 | 9.1 to 9.9 | 2026-09-28 | Depth pass; room jobs map; price drift across captures; open corners with demand; traffic connect step; visits count as tracking; team exports; sized new rules; evidence on new rules |
+| 9 | 9.1 to 9.10 | 2026-09-28 | Depth pass; room jobs map; price drift across captures; open corners with demand; traffic connect step; visits count as tracking; team exports; sized new rules; evidence on new rules; round close. Screenshot `round9.png` |
 | 8 | 8.1 to 8.10 | 2026-09-28 | Outcomes; lost moves held; overdue reads; scoreboard; site changes; bring back snoozed; results in the brief and report; learnings for the brain; second brand check; round close. Screenshot `round8.png` |
 | 7 | 7.1 to 7.10 | 2026-09-28 | Interview reasons; coverage by name; prices seen on the band chart; price re-check cadence; logged work in the brief; queue and log in the report; briefs as rows; second brand check; form access; round close. Screenshot `round7.png` |
 | 6 | 6.1 to 6.10 | 2026-09-28 | Win-loss log; repeated loss reason; rival prices seen; battlecard checks; positioning polls; thresholds on the page; capture from the page; the team log; waiting on you; round close (and the hand-off fix). Screenshot `round6.png` |
