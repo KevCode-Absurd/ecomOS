@@ -27,6 +27,9 @@ def load(name, path):
 
 api = load('offers_pricing_api_test', SCREEN / 'api.py')
 audit = api.audit
+import tempfile as _tf
+_HIST = Path(_tf.mkdtemp())
+api.HISTORY_PATH.update({'bombas': _HIST / 'findings.bombas.json', None: _HIST / 'findings.sample.json'})   # never the real outbox
 
 
 class Req:
@@ -2183,6 +2186,32 @@ class StaleConfidenceTest(unittest.TestCase):
         self.assertEqual((out[0]['confidence'], out[0]['stale_refs']), (0.5, ['b.offers.old']))
         self.assertEqual(out[1]['confidence'], 0.7)
         self.assertNotIn('stale_refs', out[1])
+
+
+class FindingHistoryTest(unittest.TestCase):
+    """Round 9 feature 5: audit.md section 4 with a local history: first_seen kept, resolved after a quiet run."""
+
+    def test_lifecycle(self):
+        from datetime import date
+        path = _HIST / 'lifecycle.json'
+        f = lambda fid, status='open', rule='OFFER-R99': {'id': fid, 'rule_id': rule, 'status': status, 'first_seen': 'x',
+                                                        'entity': {'label': fid}, 'sentence': 's'}
+        a = f('a'); a['first_seen'] = '2026-09-01'
+        api.finding_history('t', [a, f('b')], date(2026, 9, 1), path)
+        a2 = f('a'); a2['first_seen'] = '2026-09-08'
+        res = api.finding_history('t', [a2], date(2026, 9, 8), path)
+        self.assertEqual(a2['first_seen'], '2026-09-01')              # kept across runs
+        self.assertEqual([(r['id'], r['resolved_on']) for r in res], [('b', '2026-09-08')])
+        un = f('c', 'unavailable', 'OFFER-R99')
+        res = api.finding_history('t', [un], date(2026, 9, 15), path)
+        self.assertNotIn('a', [r['id'] for r in res])                  # rule could not read: not resolved
+        res = api.finding_history('t', [], date(2026, 10, 30), path)
+        self.assertNotIn('b', [r['id'] for r in res])                  # resolved more than 28 days ago: archived
+
+    def test_overview_uses_temp(self):
+        d = api.handle(Req(['overview']))
+        self.assertIn('resolved', d)
+        self.assertTrue((_HIST / 'findings.bombas.json').is_file())
 
 
 if __name__ == '__main__':

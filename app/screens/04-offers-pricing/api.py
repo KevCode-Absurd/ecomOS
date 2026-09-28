@@ -395,6 +395,49 @@ def week(ranked, rd=None):
             'team_hours': team, 'team_reason': None if team is not None else 'the brain holds no weekly hours for the team'}
 
 
+HISTORY_PATH = {}   # tests point a brand's history at a temporary file
+FINDINGS_KEEP_DAYS = 28
+
+
+def finding_history(brand, findings, ends_on, path=None):
+    """audit.md section 4 without a shared findings table (contract ask): a git-ignored history per brand in this
+    screen's outbox. A finding keeps its first_seen across runs; one not emitted on a run whose rule could read its
+    inputs flips to resolved with resolved_on and stays 28 days; one that fires again reopens with a new first_seen.
+    audit.run stays pure; only the overview reads and writes this file."""
+    path = Path(path) if path else approvals.OUTBOX / f'findings.{brand or "sample"}.json'
+    try:
+        hist = json.loads(path.read_text(encoding='utf-8')) if path.is_file() else {}
+    except ValueError:
+        hist = {}
+    end = ends_on.isoformat() if hasattr(ends_on, 'isoformat') else str(ends_on)
+    now = {f['id']: f for f in findings}
+    unavailable_rules = {f['rule_id'] for f in findings if f.get('status') == 'unavailable'}
+    for fid, f in now.items():
+        h = hist.get(fid)
+        if h and h.get('status') == 'open' and f.get('status') == 'open' and h.get('first_seen', end) <= end:
+            f['first_seen'] = h['first_seen']
+        hist[fid] = {'rule_id': f['rule_id'], 'status': f.get('status'), 'first_seen': f['first_seen'], 'last_seen': end,
+                     'label': (f.get('entity') or {}).get('label'), 'sentence': f.get('sentence')}
+    resolved = []
+    for fid, h in list(hist.items()):
+        if fid in now:
+            continue
+        if h.get('status') == 'open' and h.get('rule_id') not in unavailable_rules and h.get('last_seen', end) < end:
+            h.update(status='resolved', resolved_on=end)
+        if h.get('status') == 'resolved':
+            age = (date.fromisoformat(end) - date.fromisoformat(h['resolved_on'])).days
+            if age > FINDINGS_KEEP_DAYS:
+                hist.pop(fid)
+                continue
+            resolved.append(dict(h, id=fid))
+    try:
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(json.dumps(hist, indent=1, sort_keys=True), encoding='utf-8')
+    except OSError:
+        pass   # a read-only disk keeps the page working; history just does not carry over
+    return resolved
+
+
 def overview(data, brand):
     ends_on = audit.last_full_day(data, brand)
     rd = audit.Reader(data, brand, ends_on)
@@ -403,6 +446,7 @@ def overview(data, brand):
             'simulated': bool(b.get('simulated') or b.get('fictional')), 'fictional': bool(b.get('fictional')), 'market': b.get('market')}
     # one path for every brand: a brand folder, or a data source with no folder (the sample brand)
     ranked = actions.rank(brand, {'ends_on': ends_on.isoformat()}, data=None if brand else data)
+    resolved = finding_history(brand, ranked['findings'], ends_on, HISTORY_PATH.get(brand))
     desk = {k: ranked[k] for k in DESK_KEYS}
     plan, snoozed = with_decisions(ranked['actions'])
     made = approvals.planned(rd) if brand else {}
@@ -420,7 +464,7 @@ def overview(data, brand):
                          **a['plan_record']} for a in planned],
             'stack': offer_stack(rd), 'threshold': th, 'bfcm': bfcm(rd), **desk,
             'creep': creep_rule(months), 'chart': chart(months), 'findings': ranked['findings'], 'rules': audit.RULES,
-            'settings': page_settings(), 'blind_spots': blind_spots(ranked, rd), 'week': week(ranked, rd)}
+            'settings': page_settings(), 'blind_spots': blind_spots(ranked, rd), 'week': week(ranked, rd), 'resolved': resolved}
 
 
 def rank(brand='bombas', window=None):

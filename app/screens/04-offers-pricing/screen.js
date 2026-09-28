@@ -137,14 +137,16 @@
   }
   function wrong(d) {
     const fs = d.findings.filter((f) => f.status !== 'resolved');
-    const rows = fs.map((f) => ({ f, rule: f.rule_id, what: f.entity.label, sentence: (f.weak_evidence ? 'Weak evidence. ' : '') + f.sentence, evidence: evidenceText(f) || 'no evidence rows: ' + (f.money_reason || NA), confidence: f.confidence, stake: f.money_at_stake ? f.money_at_stake.usd : null }));
+    const since = (f) => f.first_seen && f.first_seen < f.last_seen ? ' (open since ' + fmt.date(f.first_seen) + ')' : '';
+    const rows = fs.map((f) => ({ f, rule: f.rule_id, what: f.entity.label + since(f), sentence: (f.weak_evidence ? 'Weak evidence. ' : '') + f.sentence, evidence: evidenceText(f) || 'no evidence rows: ' + (f.money_reason || NA), confidence: f.confidence, stake: f.money_at_stake ? f.money_at_stake.usd : null }));
     mount('#wrong', UI.sectionHead({ title: 'What is wrong, ranked', sub: fs.length + ' open findings from ' + d.rules.length + ' rules, severity first. Each links to the action that fixes it.' }),
       UI.verdictTable({
         columns: [{ key: 'what', label: 'Where' }, { key: 'sentence', label: 'Finding' }, { key: 'evidence', label: 'Evidence, window' }, { key: 'stake', label: 'Stake', unit: '$' }, { key: 'confidence', label: 'Conf.', format: (v, r) => v == null ? NA : v.toFixed(1) + (r.f.windows ? ' (' + r.f.windows.agree + ' of ' + r.f.windows.read + ' windows)' : '') }],
         rows, verdict: { at: 0, kind: (r) => r.f.status === 'unavailable' ? 'wait' : r.f.severity === 'critical' || r.f.severity === 'high' ? 'fix' : 'watch', text: (r) => r.f.status === 'unavailable' ? 'Connect' : r.f.severity, reason: (r) => r.f.rule_id },
         actions: { label: 'Open action', onClick: (r) => { const a = findAction(r.f.id); if (a) openAction(a); } },
         sort: false,
-      }));
+      }),
+      (d.resolved || []).length ? el('p', { class: 'micro faint', text: 'Resolved in the last 28 days: ' + d.resolved.map((h) => (h.label || h.rule_id) + ' (' + fmt.date(h.resolved_on) + ')').join('; ') + '.' }) : null);
   }
 
   /** Save a move to the brand brain as a plan record: proposed (review queue) or approved by the founder. */
