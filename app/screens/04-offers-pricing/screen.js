@@ -331,6 +331,31 @@
       actionLine(g.on_selling_page ? 'The guarantee is on a selling page. Keep it next to the price.' : 'The guarantee answers ' + g.one_star_answered + ' one-star doubts but lives on the ' + g.stated_on.join(', ') + '. Put it next to the price and in the cart.', a));
   }
 
+  function positionBlock(cp, b) {
+    const head = { title: 'Where do we sit on price and offer against the set?', sub: 'Median price per item from each competitor\'s price band in the brain, the discount their ads show in the Ad Library, and the proof their ads sell. Signals only; nothing is copied.' };
+    if (!cp || !cp.us) return section('desk-position', head, UI.emptyState({ screen: SLUG, title: 'Position unavailable', text: 'No competitor price bands in the brain.' }));
+    const a = ACTIONS.find((x) => x.rule_id === 'OFFER-R16');
+    const byXY = {};
+    for (const c of cp.competitors.filter((c) => c.price != null && c.discount_in_ads != null)) {
+      const k = c.price + '|' + c.discount_in_ads;
+      const short = c.name.split(' ')[0];
+      if (byXY[k]) { byXY[k].label += ', ' + short; byXY[k].size = Math.max(byXY[k].size, c.proof_hooks.length ? 9 : 6); }
+      else byXY[k] = { label: short, x: c.price, y: c.discount_in_ads, size: c.proof_hooks.length ? 9 : 6, note: c.proof_hooks.join(', ') || 'no proof hook' };
+    }
+    const pts = Object.values(byXY);
+    pts.push({ label: b.name || cp.us.name, x: cp.us.price, y: cp.us.discount_in_ads || 0, us: true, size: 10 });
+    const map = Charts.positioningMap({ x: { label: 'Price per item, $', min: 0, max: Math.max(...pts.map((p) => p.x)) + 5, lo: 'cheaper', hi: 'dearer' },
+      y: { label: 'Discount in ads, percent', min: 0, max: 25 },
+      points: pts, midX: cp.set_median_price, midY: 10, quadrants: ['cheap and discount-led', 'premium with a discount', 'cheap, no discount', 'premium, proof-led'],
+      title: 'Price per item against discount in ads', note: cp.basis + '. Bigger dots sell proof in their ads.' });
+    const table = UI.table({ columns: [
+      { key: 'name', label: 'Competitor' }, { key: 'price', label: 'Median per item', unit: '$' },
+      { key: 'discount_in_ads', label: 'Discount in ads', format: (v) => v == null ? NA : v ? v + ' percent' : 'none' },
+      { key: 'proof_hooks', label: 'Proof they sell', format: (v) => (v || []).join(', ') || 'none' }], rows: cp.competitors, sort: false });
+    return section('desk-position', head, el('div', { class: 'grid two' }, el('div', { class: 'card' }, map), el('div', { class: 'card tight' }, table)),
+      actionLine(a ? 'We are the cheap, discount-led dot in a proof-led set. Lead 3 ads with proof instead of the code.' : 'Our price and offer position matches the set.', a));
+  }
+
   function returnsChart(r) {
     if (!r || !r.groups || !r.groups.length) return el('p', { class: 'muted small', text: 'Returns by reason ' + NA + '.' });
     const rows = r.groups.slice().sort((a, b) => b.per_1000 - a.per_1000);
@@ -385,7 +410,7 @@
     wrong(d);
     actionsList(d);
     mount('#desk', el('div', { class: 'desk-kicker' }, el('h3', { text: 'The desk' })), calendarBlock(d.calendar), giftingBlock(d.gifting),
-      stackBlock(d.stack || []), thresholdBlock(d.threshold), firstOrderBlock(d.first_order), waterfallBlock(d.waterfalls), discountBlock(d), ladderBlock(d.ladder), objectionBlock(d.objections || [], d.returns), guaranteeBlock(d.guarantee, d.returns));
+      stackBlock(d.stack || []), thresholdBlock(d.threshold), firstOrderBlock(d.first_order), positionBlock(d.position, d.brand || {}), waterfallBlock(d.waterfalls), discountBlock(d), ladderBlock(d.ladder), objectionBlock(d.objections || [], d.returns), guaranteeBlock(d.guarantee, d.returns));
     auditBlock(d);
   }
 

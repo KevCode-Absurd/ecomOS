@@ -686,3 +686,57 @@ def guarantee(rd, keys, page_rules, selling):
             'planned': {'refund_or_replace': (rm.get('refund_or_replace_share_of_orders_pct') or None) and rm['refund_or_replace_share_of_orders_pct'] / 100,
                         'replacement': (rm.get('replacement_under_guarantee_pct') or None) and rm['replacement_under_guarantee_pct'] / 100,
                         'refund': (rm.get('refund_pct') or None) and rm['refund_pct'] / 100, 'source': (rm_rec or {}).get('id')}}
+
+
+# ---------------------------------------------------------------- competitor price and offer position
+
+def _median_price(text):
+    m = re.search(r'median(?: about)? (\d+(?:\.\d+)?)', str(text or ''))
+    return float(m.group(1)) if m else None
+
+
+def _pct(text):
+    m = re.search(r'(\d+(?:\.\d+)?)\s*%', str(text or ''))
+    return float(m.group(1)) if m else None
+
+
+def competitor_position(rd, proof_words):
+    """Each named competitor's median price per item (brain price band), the discount it shows in ads (Ad Library
+    offers seen), and whether its ads sell proof (hook types); us: paid price per item in our main category and the
+    first-order code share of active ads."""
+    comps, adlib = [], {}
+    for rec in rd.records('competitors'):
+        v = rec.get('value')
+        if isinstance(v, dict) and v.get('page') and 'offers_seen' in v:
+            adlib[str(v.get('page_id'))] = v
+    for rec in rd.records('competitors'):
+        v = rec.get('value')
+        if not (isinstance(v, dict) and v.get('price_band_usd')):
+            continue
+        ad = adlib.get(str(v.get('page_id'))) or {}
+        offers = ad.get('offers_seen')
+        disc = max((p for p in (_pct(o) for o in offers or []) if p is not None), default=0.0) if offers is not None else None
+        hooks = [h for h in v.get('hook_types') or [] if any(w in h.lower() for w in proof_words)]
+        comps.append({'id': rec['id'], 'name': v.get('name'), 'price': _median_price(v['price_band_usd']),
+                      'price_band': v['price_band_usd'], 'discount_in_ads': disc, 'offers_seen': offers,
+                      'proof_hooks': hooks, 'positioning': v.get('positioning'), 'ads_seen': ad.get('ads_seen'),
+                      'source': v.get('price_ref'), 'date': rec.get('date')})
+    lad = ladder(rd)
+    us = None
+    if not lad.get('unavailable'):
+        cats = {}
+        for r in lad['rows']:
+            c = cats.setdefault(r['category'], {'rev': 0.0, 'items': 0.0})
+            c['rev'] += r['revenue']
+            c['items'] += (r['packs'] or 0) * (r['pack'] or 0)
+        main = max(cats, key=lambda k: cats[k]['rev']) if cats else None
+        share, _ = brain_value(rd, 'offers.promo_share_active_ads')
+        code, _ = brain_value(rd, 'offers.first_order_code')
+        if main and cats[main]['items']:
+            us = {'name': (getattr(rd.source, 'brand', None) or {}).get('name') or rd.brand, 'category': main, 'price': round(cats[main]['rev'] / cats[main]['items'], 2),
+                  'discount_in_ads': (code or {}).get('discount_pct') if isinstance(code, dict) else None,
+                  'code_share': round(share['ads_with_code'] / share['active_ads'], 4) if isinstance(share, dict) and share.get('active_ads') else None}
+    priced = [c['price'] for c in comps if c['price'] is not None]
+    return {'us': us, 'competitors': comps, 'set_median_price': round(sorted(priced)[len(priced) // 2], 2) if priced else None,
+            'basis': 'competitor price bands and hooks from the brain (public pages and the Ad Library); ours is net sales '
+                     'over items sold in our main category, 12 full months'}

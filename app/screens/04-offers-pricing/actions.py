@@ -74,6 +74,7 @@ class Ctx:
         self.calendar = audit.promo_calendar(rd)
         self.gifting = audit.gifting(rd)
         self.guarantee = audit.guarantee(rd)
+        self.position = audit.competitor_position(rd)
         self.ship_rate = (model.brain_value(rd, 'offers.standard_shipping_cost')[0] or {}).get('cost_usd') if rd.brand else None
         self.scenarios = (model.threshold_scenarios(rd, self.threshold, self.ship_rate, self.be['value'], (self.po or {}).get('units') or 1)
                           if self.threshold is not None and self.be.get('value') is not None else [])
@@ -501,6 +502,40 @@ def merge_connect(actions):
     return keep
 
 
+def position_action(f, a, ctx):
+    cp = ctx.position
+    us = cp['us']
+    frame, _ = model.brain_value(ctx.rd, 'positioning.price_frame')
+    g = ctx.guarantee or {}
+    term = next((t['text'] for t in g.get('terms', []) if t['id'].endswith('offers.guarantee')), None)
+    top_doubt = max((r for r in ctx.objections if not r['answered']), key=lambda r: r['one_star'], default=None)
+    proof = [c for c in cp['competitors'] if c['proof_hooks']]
+    lines = ['Ad briefs: lead with proof, not the code',
+             f'Why: we sell at {money(us["price"])} an item against a set median of {money(cp["set_median_price"])} and still lead with '
+             f'{us["discount_in_ads"]:.0f} percent off. The set sells proof: ' + '; '.join(f'{c["name"]} ({", ".join(c["proof_hooks"])})' for c in proof[:3]) +
+             '. Their ads are signals for the angle only; nothing is copied.']
+    if term:
+        lines.append(f'Brief 1, the guarantee: open on the promise in our own words: "{term}" No code in the ad.')
+    if top_doubt:
+        lines.append(f'Brief 2, the top doubt: answer "{top_doubt["doubt"]}" ({top_doubt["one_star"]} one-star mentions) with '
+                     f'{top_doubt["offer"].split(":")[0].lower()} once approved.')
+    if frame:
+        lines.append(f'Brief 3, price per wear: the brand\'s own price frame, "{frame}", with the pack price per item.')
+    lines += ['Test: each brief runs next to the current code ad in the same ad set, same budget.',
+              'Win: contribution per new visitor at or above the code ad. Stop: cost per first order above the target for 7 days.']
+    a.update({
+        'title': 'Lead 3 ads with proof instead of the code',
+        'owner': 'agent_drafts',
+        'artefact': {'kind': 'ad_brief', 'label': '3 ad briefs that lead with proof', 'draft': '\n'.join(lines)},
+        'steps': steps(('agent', 'Pull the guarantee terms, the top open doubt and the price frame from the brain.'),
+                       ('agent', 'Draft 3 briefs with first line, first frame and no code.'),
+                       ('person', 'Approve the briefs. Creative makes them; the media buyer runs them next to the code ads.'),
+                       ('agent', f'Read contribution per new visitor by ad weekly; call it on {ctx.check_on(28)}.')),
+        'win_rule': 'Contribution per new visitor at or above the code ad.',
+        'stop_rule': 'Cost per first order above the target for 7 days.', 'check_on': ctx.check_on(28), 'time_to_ship_hours': 8})
+    return a
+
+
 def returns_block(rd):
     """returns_by_reason for the window, or the labelled fixture when the metric is unavailable."""
     m = rd.m('returns_by_reason', audit.WINDOW)
@@ -641,7 +676,8 @@ def merge_ladder(actions, ctx):
 
 # Rubric overrides by rule (depth.md section 4 lets a screen raise reputation or satisfaction for a rule; the
 # override is written in audit.py's docstring next to the rule). Weights never change.
-RUBRIC_OVERRIDE = {'OFFER-R04': {'reputation': 4, 'satisfaction': 4}, 'OFFER-R14': {'reputation': 4, 'satisfaction': 4}}
+RUBRIC_OVERRIDE = {'OFFER-R04': {'reputation': 4, 'satisfaction': 4}, 'OFFER-R14': {'reputation': 4, 'satisfaction': 4},
+                   'OFFER-R16': {'reputation': 5}}
 
 
 def rescore(a, dims):
@@ -658,7 +694,8 @@ def rescore(a, dims):
 
 BUILDERS = {'OFFER-R01': threshold_action, 'OFFER-R04': rung_action, 'OFFER-R08': first_order_action,
             'OFFER-R10': red_line_action, 'OFFER-R11': promo_action, 'OFFER-R12': gifting_action,
-            'OFFER-R14': guarantee_action, 'OFFER-R05': stale_action, 'OFFER-R06': pull_action, 'OFFER-R15': claims_action}
+            'OFFER-R14': guarantee_action, 'OFFER-R05': stale_action, 'OFFER-R06': pull_action, 'OFFER-R15': claims_action,
+            'OFFER-R16': position_action}
 
 
 def build(f, rd, ctx, nr):
@@ -695,4 +732,4 @@ def rank(brand='bombas', window=None):
     actions.sort(key=RANK.sort_key)
     return {'screen': SCREEN, 'brand': brand, 'window': w, 'simulated': True, 'net_revenue_28d': nr,
             'actions': actions, 'findings': findings, 'objections': ctx.objections, 'returns': returns_block(rd),
-            'ladder': dict(ctx.ladder, moves=ctx.ladder_rows), 'first_order': ctx.first_order, 'waterfalls': ctx.waterfalls, 'calendar': ctx.calendar, 'gifting': ctx.gifting, 'guarantee': ctx.guarantee}
+            'ladder': dict(ctx.ladder, moves=ctx.ladder_rows), 'first_order': ctx.first_order, 'waterfalls': ctx.waterfalls, 'calendar': ctx.calendar, 'gifting': ctx.gifting, 'guarantee': ctx.guarantee, 'position': ctx.position}

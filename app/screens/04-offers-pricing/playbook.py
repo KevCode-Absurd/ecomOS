@@ -142,3 +142,7 @@ PAGE_TYPES = [('/products/', 'product page'), ('/collections/', 'collection page
               ('/policies/', 'policy page'), ('/pages/', 'content page')]
 SELLING_PAGES = ('product page', 'collection page', 'cart', 'home page')
 CLAIM_OVER_PLAN = 1.5     # claims above 1.5 times the planned rate: the guarantee costs more than it was priced at
+
+# Competitor price and offer position (screen 04, OFFER-R16). Signals only: competitor ads are never copied.
+PROOF_HOOK_WORDS = ('guarantee', 'lab tested', 'made in usa', 'review')   # hook types that sell proof, not price
+MIN_PROOF_LED = 2         # at least 2 competitors priced above us run no discount in ads: the set is proof-led

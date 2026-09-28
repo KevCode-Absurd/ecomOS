@@ -641,5 +641,36 @@ class RankCompleteTest(unittest.TestCase):
             self.assertEqual(self.rank_mod.validate_action(a), [])
 
 
+class PositionTest(unittest.TestCase):
+    """Round 2 feature 1: price and offer position against the competitor set."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.rd = audit.Reader(None, 'bombas', audit.last_full_day(None, 'bombas'))
+        cls.cp = audit.competitor_position(cls.rd)
+        cls.out = api.actions.rank('bombas')
+
+    def test_parsing(self):
+        m = api.model
+        self.assertEqual(m._median_price('18 to 35 per pair, median 25'), 25.0)
+        self.assertEqual(m._median_price('median about 32 per pair (pack parsing rough)'), 32.0)
+        self.assertIsNone(m._median_price('from 18 per pair'))
+        self.assertEqual(m._pct('bundle save up to 15% off'), 15.0)
+
+    def test_rule_matches_its_inputs(self):
+        cp, pb = self.cp, audit._playbook()
+        us = cp['us']
+        proof_led = [c for c in cp['competitors'] if c['price'] is not None and c['price'] > us['price'] and c['discount_in_ads'] == 0]
+        should = us['price'] < cp['set_median_price'] and us['code_share'] > pb.CODE_ADS_SHARE and len(proof_led) >= pb.MIN_PROOF_LED
+        fired = [f for f in self.out['findings'] if f['rule_id'] == 'OFFER-R16']
+        self.assertEqual(bool(fired), should)
+        if fired:
+            self.assertEqual(set(fired[0]['brain_refs']), {c['id'] for c in proof_led})
+            a = next(a for a in self.out['actions'] if a['rule_id'] == 'OFFER-R16')
+            self.assertEqual(a['artefact']['kind'], 'ad_brief')
+            self.assertEqual(a['rubric']['reputation'], 5)
+            self.assertIn('nothing is copied', a['artefact']['draft'])
+
+
 if __name__ == '__main__':
     unittest.main()

@@ -62,6 +62,11 @@ Rules
   OFFER-R15  Guarantee claims against plan (room spec: guarantee cost above plan): returns per order for the
              claim reasons against the brain's planned rate, fires above playbook.CLAIM_OVER_PLAN times plan.
              Unavailable until reversed_orders connects. Capability LIFE-C42.
+  OFFER-R16  Discount-led in a proof-led set: our paid price per item in the main category is under the set's median,
+             our first-order code is in more than playbook.CODE_ADS_SHARE of active ads, and at least
+             playbook.MIN_PROOF_LED competitors priced above us show no discount in their ads. Competitor ads are
+             signals only. Money null. Reputation 5 (a competitor position gap named in the brain). The action is
+             3 ad briefs that lead with proof instead of the code. Capability BRN-C11 (founder gate).
   OFFER-R03  Margin after discount per SKU. Needs cogs_landed keyed by the store's SKUs. Unavailable while no
              finance_inputs SKU key matches a product SKU. Capability MONEY-C05 (founder gate). Owner: 04.
   OFFER-R04  A deal-breaker rung with no proof: the top rung of an objection ladder whose proof is empty or
@@ -130,6 +135,9 @@ RULES = [
      'capability': 'LIFE-C42', 'owner_screen': SCREEN},
     {'rule_id': 'OFFER-R15', 'name': 'Guarantee claims against the planned rate', 'entity_type': 'offer',
      'inputs': ['reversed_orders', 'brain.economics.return_share_model'], 'capability': 'LIFE-C42', 'owner_screen': SCREEN},
+    {'rule_id': 'OFFER-R16', 'name': 'Discount-led in a proof-led set', 'entity_type': 'offer',
+     'inputs': ['brain.competitors', 'brain.offers.promo_share_active_ads', 'products_monthly'],
+     'capability': 'BRN-C11', 'owner_screen': SCREEN},
     {'rule_id': 'OFFER-R03', 'name': 'Margin after discount per SKU', 'entity_type': 'sku',
      'inputs': ['finance_inputs.cogs_landed keyed by product SKU', 'products'], 'capability': 'MONEY-C05',
      'owner_screen': SCREEN},
@@ -149,6 +157,7 @@ CAPABILITY = {'OFFER-R01': {'id': 'MONEY-C05', 'autonomy': 'founder_gate'},
               'OFFER-R13': {'id': 'LIFE-C58', 'autonomy': 'human_assist'},
               'OFFER-R14': {'id': 'LIFE-C42', 'autonomy': 'founder_gate'},
               'OFFER-R15': {'id': 'LIFE-C42', 'autonomy': 'founder_gate'},
+              'OFFER-R16': {'id': 'BRN-C11', 'autonomy': 'founder_gate'},
               'OFFER-R06': {'id': 'MONEY-C05', 'autonomy': 'founder_gate'},
               'OFFER-R04': {'id': 'LIFE-C36', 'autonomy': 'founder_gate'}}
 SEVERITY_ORDER = {'critical': 0, 'high': 1, 'medium': 2, 'low': 3}
@@ -712,6 +721,35 @@ def rule_guarantee(rd):
     return out
 
 
+def competitor_position(rd):
+    return _model().competitor_position(rd, _playbook().PROOF_HOOK_WORDS)
+
+
+def rule_position(rd):
+    end = rd.ends_on
+    pb = _playbook()
+    cp = competitor_position(rd)
+    us = cp['us']
+    if not us or us['price'] is None or cp['set_median_price'] is None or us['code_share'] is None:
+        return []
+    proof_led = [c for c in cp['competitors'] if c['price'] is not None and c['price'] > us['price'] and c['discount_in_ads'] == 0]
+    if not (us['price'] < cp['set_median_price'] and us['code_share'] > pb.CODE_ADS_SHARE and len(proof_led) >= pb.MIN_PROOF_LED):
+        return []
+    evidence = [_ev('price_per_item', us['price'], 'usd', end, baseline=cp['set_median_price'], baseline_kind='competitor_median',
+                    window='12 full months', source='products_monthly, brain.competitors'),
+                _ev('ads_with_code', us['code_share'], 'ratio', end, baseline=pb.CODE_ADS_SHARE, baseline_kind='threshold',
+                    window='active ads', source='brain.offers.promo_share_active_ads'),
+                _ev('proof_led_competitors_priced_above', len(proof_led), 'count', end, baseline=pb.MIN_PROOF_LED,
+                    baseline_kind='threshold', window='brain', source='brain.competitors')]
+    names = ', '.join(c['name'] for c in proof_led[:3])
+    sentence = (f'We sell at ${us["price"]:,.2f} an item, under the set median of ${cp["set_median_price"]:,.0f}, and put a '
+                f'{us["discount_in_ads"]:.0f} percent code in {us["code_share"] * 100:.0f} percent of ads. {names} charge more '
+                f'and show no discount.')
+    return [_finding('OFFER-R16', {'type': 'offer', 'id': 'price_position', 'label': 'Price and offer position'}, 'medium',
+                     evidence, sentence, None, 0.5, [c['id'] for c in proof_led], end,
+                     money_reason='the price a proof-led message could hold is what the ads test finds')]
+
+
 def rule_ladder(rd):
     end = rd.ends_on
     pb = _playbook()
@@ -883,7 +921,7 @@ def run(brand, window=None, data=None):
     """Findings for one brand, sorted by severity then money at stake. `window` is {ends_on} or None."""
     ends_on = date.fromisoformat(window['ends_on']) if window and window.get('ends_on') else last_full_day(data, brand)
     rd = Reader(data, brand, ends_on)
-    out = (rule_threshold(rd) + rule_stale(rd) + rule_pull(rd) + rule_first_order(rd) + rule_red_line(rd) + rule_promo(rd) + rule_gifting(rd) + rule_guarantee(rd) + rule_ladder(rd) + rule_sku_margin(rd) +
+    out = (rule_threshold(rd) + rule_stale(rd) + rule_pull(rd) + rule_first_order(rd) + rule_red_line(rd) + rule_promo(rd) + rule_gifting(rd) + rule_guarantee(rd) + rule_position(rd) + rule_ladder(rd) + rule_sku_margin(rd) +
            rule_unanswered(rd))
     out.sort(key=lambda f: (SEVERITY_ORDER[f['severity']], -((f.get('money_at_stake') or {}).get('usd') or -1), f['id']))
     return out

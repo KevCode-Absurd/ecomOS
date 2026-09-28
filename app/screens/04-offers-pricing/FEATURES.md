@@ -48,6 +48,12 @@ Known gaps from round 0:
 5. Honest gaps: order rows and returns are not in this container, so bins and returns show labelled fixtures and 3 rules sit behind one "connect shopify" action.
 6. Next (round 2): discount ladder discipline and creep, price elasticity from experiments, marketplace price parity through the data layer, loyalty and referral offers, the web pass on the best offer tools.
 
+## Round 2: the market and the discipline (from 28 Sep 2026)
+
+| # | Feature | Status |
+|---|---|---|
+| 2.1 | Price and offer position against the set (`Charts.positioningMap`): each competitor's median price per item from its price band in the brain, the discount its ads show (Ad Library offers seen), the proof its ads sell (hook types), against our paid price per item in the main category and the code share of our ads. New rule OFFER-R16 (discount-led in a proof-led set; reputation 5) with 3 ad briefs that lead with proof (guarantee terms, the top open doubt, the brand's price frame), competitor ads as signals only. Idea bank: MULTI-154, BRD-036 | done |
+
 ## Room jobs
 
 | Job | Question | Capability | Status |
@@ -164,6 +170,7 @@ Known gaps from round 0:
 | Round | Features picked | Date | Notes |
 |---|---|---|---|
 | 0 | skeleton, 0.1 to 0.9 | 2026-09-28 | S3.9; screenshot round0.png |
+| 2 | 2.1 price and offer position | 2026-09-28 | in progress |
 | 1 | 1.1 plan first, 1.2 objection to offer map, 1.3 free shipping line, 1.4 pack ladder, 1.5 first-order offer, 1.6 margin waterfall, 1.7 promo calendar, 1.8 gifting and holiday, 1.9 guarantee as an offer, 1.10 rank complete | 2026-09-28 | manager session; screenshot round1.png (updated as the round lands) |
 
 
