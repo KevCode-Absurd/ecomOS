@@ -689,6 +689,15 @@
       'Never copy their text, logos, products or faces.'].map((t) => el('li', { text: t })));
   }
 
+  // ---------- 3b. the brief pack: every draft, by the team that ships it ----------
+  async function briefPack() {
+    let b;
+    try { b = await api(BASE + 'briefs'); } catch (e) { mount('#briefs', el('p', { class: 'na', text: 'Brief pack unavailable: ' + e.message })); return; }
+    mount('#briefs', el('div', { class: 'row' }, el('b', { text: 'Brief pack: ' }), el('span', { class: 'small', text: b.total + ' moves, ' + b.drafted + ' with a draft, for ' + b.teams.length + ' teams.' }),
+      ...b.teams.map((t) => UI.copyButton({ label: t.team + ' (' + t.n + ')', text: () => t.text }))),
+      el('p', { class: 'micro faint', text: 'Copy one team\'s pack and paste it into that team\'s channel. Snoozed moves are left out.' }));
+  }
+
   // ---------- 3. action lanes by owner, with the founder's decisions ----------
   const LANES = [{ key: 'all', label: 'All' }, { key: 'agent', label: 'Agent does it' }, { key: 'agent_drafts', label: 'Agent drafts, you approve' }, { key: 'person', label: 'A person does it' }];
   async function actionLanes(p) {
@@ -725,6 +734,7 @@
     document.getElementById('wrong-sub').textContent = p.findings.length + ' findings on the latest capture, severity first. Each links to the action that closes it.';
     mount('#wrong', ...wrongList(p.findings, byId, p));
     actionLanes(p);
+    briefPack();
     document.getElementById('map-sub').textContent = 'Split at the tracked median price (' + usd(d.positioning.split_x) + ') and the middle of the claim scale. Each corner ends in a move: hold, contest, claim or skip.';
     mount('#map', ...mapCard(d.positioning));
     window.__priceMoves = d.price_moves;

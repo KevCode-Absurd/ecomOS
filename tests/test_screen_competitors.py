@@ -1193,6 +1193,19 @@ class TestNotes(TempBrain):
         self.assertEqual(len(out['note']['text']), api.NOTE_MAX)
 
 
+class TestBriefPack(TempBrain):
+    """5.8: every drafted artefact grouped by the team that ships it."""
+    def test_pack(self):
+        api.BRAIN_ROOT = self.tmp
+        b = api.handle(Req(['briefs']))
+        teams = {t['team']: t for t in b['teams']}
+        self.assertIn('creative', teams)
+        self.assertIn('Brief pack for the creative team', teams['creative']['text'])
+        self.assertIn('Never copy', teams['creative']['text'])
+        self.assertEqual(b['total'], sum(t['n'] for t in b['teams']))
+        self.assertNotIn('setup', teams)
+
+
 class TestRank(TempBrain):
     """Depth contract rules 2, 3 and 13: owner, steps and artefact on every action; every finding ends in one."""
     W = {'ends_on': '2026-09-27', 'days': 28, 'trailing': 4}

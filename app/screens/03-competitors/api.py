@@ -11,6 +11,7 @@ in audit.py; this file shapes them for the page. No writes, nothing external.
                   mix, references, price and pack ladder, positioning map,
                   changes, freshness and the re-pull plan
   GET  notes?entity=  POST notes {entity, text}  team notes on a page or action (local, git-ignored)
+  GET  briefs     every drafted artefact on the plan, one text per team
   GET  competitor_snapshot  the events.md hand-off rows (also written to fixtures by capture.py)
   GET  experiments          registry rows drafted from open test actions, for 25-experiments
   GET  digest     the weekly competitor brief as plain text, built from the plan
@@ -468,6 +469,34 @@ def add_note(brand: str, body) -> tuple[int, dict]:
     return 201, {"ok": True, "note": row}
 
 
+KIND_TEAM = {"ad_brief": "creative", "copy": "copy", "test_brief": "growth", "offer": "offers", "page_section": "site",
+             "listing_fix": "marketplaces", "ticket": "support", "research_note": "research", "brain_record": "brand brain",
+             "connector_setup": "setup", "report": "founder"}
+
+
+def brief_pack(brand: str, today: dt.date) -> dict:
+    """Every drafted artefact on the plan, grouped by the team that ships it, as one text per team."""
+    window = actions.ranker.default_window(28, (today - dt.timedelta(days=1)).isoformat())
+    acts = actions.ranker.apply_decisions(actions.build(brand, window, BRAIN_ROOT)["actions"], today)
+    teams: dict[str, list[dict]] = {}
+    for a in acts:
+        if a.get("status") == "unavailable":
+            continue
+        teams.setdefault(KIND_TEAM.get(a["artefact"]["kind"], "other"), []).append(a)
+    out = []
+    for team, xs in sorted(teams.items()):
+        parts = []
+        for i, a in enumerate(xs, 1):
+            parts += [f"{i}. {a['title']}", f"   Why: {a['why']}", f"   Check on: {a.get('check_on') or 'unavailable'}"
+                      + (f"; stop if: {a['stop_rule']}" if a.get("stop_rule") else "")]
+            if a["artefact"].get("draft"):
+                parts += ["   " + ln for ln in a["artefact"]["draft"].split("\n")]
+            parts.append("")
+        out.append({"team": team, "n": len(xs), "drafted": sum(1 for a in xs if a["artefact"].get("draft")),
+                    "text": f"Brief pack for the {team} team, {brand.capitalize()}, {today.isoformat()}.\n\n" + "\n".join(parts).rstrip()})
+    return {"teams": out, "total": sum(t["n"] for t in out), "drafted": sum(t["drafted"] for t in out)}
+
+
 def handle(req):
     try:
         brand, today = _brand(req), _today(req)
@@ -480,6 +509,8 @@ def handle(req):
             if req.method == "POST":
                 return add_note(brand, req.body)
             return {"notes": read_notes(brand, req.arg("entity"))}
+        if req.method == "GET" and req.path == ["briefs"]:
+            return brief_pack(brand, today)
         if req.method == "GET" and req.path == ["competitor_snapshot"]:
             m = audit.market_full(brand, today, BRAIN_ROOT)
             return {"table": "competitor_snapshot", "brand": brand, "fields": audit.handmod.FIELDS,
