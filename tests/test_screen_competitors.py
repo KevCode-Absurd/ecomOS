@@ -1785,5 +1785,21 @@ class TestDigestLogged(TempInputs):
         self.assertIn('- loss against Stance: style', g['text'])
 
 
+class TestBriefRows(TempBrain):
+    """7.7: the brief pack as rows in the proposed briefs shape."""
+    def test_rows(self):
+        api.BRAIN_ROOT = self.tmp
+        b = api.handle(Req(['briefs']))
+        self.assertEqual(len(b['rows']), b['total'])
+        need = {'id', 'brand', 'from_screen', 'team', 'kind', 'title', 'why', 'draft', 'win_rule', 'stop_rule', 'check_on',
+                'capability', 'autonomy', 'owner', 'status', 'created'}
+        self.assertEqual(set(b['fields']), need)
+        for r in b['rows']:
+            self.assertEqual(r['from_screen'], '03-competitors')
+            self.assertIn(r['status'], ('proposed', 'decided'))
+            self.assertNotEqual(r['kind'], 'connector_setup')
+        self.assertIn('briefs', (SCREEN / 'FEATURES.md').read_text(encoding='utf-8').split('## Contract asks')[1])
+
+
 if __name__ == '__main__':
     unittest.main()

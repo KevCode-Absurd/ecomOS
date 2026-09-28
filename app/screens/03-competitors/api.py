@@ -556,7 +556,14 @@ def brief_pack(brand: str, today: dt.date) -> dict:
             parts.append("")
         out.append({"team": team, "n": len(xs), "drafted": sum(1 for a in xs if a["artefact"].get("draft")),
                     "text": f"Brief pack for the {team} team, {brand.capitalize()}, {today.isoformat()}.\n\n" + "\n".join(parts).rstrip()})
-    return {"teams": out, "total": sum(t["n"] for t in out), "drafted": sum(t["drafted"] for t in out)}
+    rows = [{"id": a["id"], "brand": brand, "from_screen": audit.SCREEN, "team": KIND_TEAM.get(a["artefact"]["kind"], "other"),
+             "kind": a["artefact"]["kind"], "title": a["title"], "why": a["why"], "draft": a["artefact"].get("draft"),
+             "win_rule": a.get("win_rule"), "stop_rule": a.get("stop_rule"), "check_on": a.get("check_on"),
+             "capability": a["capability"]["id"], "autonomy": a["capability"]["autonomy"], "owner": a["owner"],
+             "status": "decided" if a.get("decision") else "proposed", "created": today.isoformat()}
+            for a in acts if a.get("status") != "unavailable"]
+    return {"teams": out, "total": sum(t["n"] for t in out), "drafted": sum(t["drafted"] for t in out), "rows": rows,
+            "fields": list(rows[0]) if rows else [], "note": "Proposed shape for a shared briefs table; see Contract asks."}
 
 
 def handle(req):

@@ -44,6 +44,7 @@ Round 1 notes: `snapshot.py` plans and runs a page-id Ad Library pull through `a
 | 7.4 | Price watch cadence: a logged product whose latest price is more than 14 days old is due a re-check (else the 30-day baseline lapses and a cut goes unseen); new rule COMP-R34 (low, person) lists them oldest first with the last price date and link; logging a fresh price clears it; the price block shows who is due | done |
 | 7.5 | The weekly brief carries what the team logged this week (interviews, prices seen, card checks, polls, threshold changes, by each record's date), up to 6 lines and a count, or says nothing is logged yet and where it goes | done |
 | 7.6 | The printable weekly report adds "Waiting on you" (the founder's top calls with what yes means) and "What the team logged this week"; the browser smoke test checks the queue renders in the report | done |
+| 7.7 | The brief pack as rows: `GET briefs` also returns one row per open move in a proposed shape for a shared briefs table (team, kind, title, why, draft, win and stop rules, check date, capability, owner, proposed or decided), with a "Copy as rows" button; the table itself is a Contract ask, since only the app level adds shared tables | done |
 
 ## Round 6: the page writes back (first-party records the rules read)
 
@@ -189,6 +190,8 @@ Round 2 notes: the lead authorised the $2.08 pull on 28 Sep; the session's permi
 
 - `server.py` serves only index.html, screen.js and screen.css (plus fixtures) from a screen folder; a report page or split JS files need an allow-list entry. Local fallback: the report is `?view=report` on the same page.
 
+- A shared `briefs` table: this screen drafts ad briefs, offers, page sections, copy and tickets that 09-creative, 04-offers-pricing, 10-copy, 07-landing-pages-cro and 15-customers-cx act on. Proposed row (served at `GET briefs`, field `rows`): id, brand, from_screen, team, kind, title, why, draft, win_rule, stop_rule, check_on, capability, autonomy, owner, status (proposed or decided), created. Local fallback: one copy per team, and the rows as JSON.
+
 - A snapshot run needs a permission for `snapshot.py --live` (Apify, page ids only, inside the Bombas caps) in the session settings; local fallback: the screen reads the brain's page summaries and labels every estimate.
 
 ## Room jobs (JTBD)
@@ -285,7 +288,7 @@ Round 2 notes: the lead authorised the $2.08 pull on 28 Sep; the session's permi
 | Round | Features picked | Date | Notes |
 |---|---|---|---|
 | 0 | 0.1 to 0.8 | 2026-09-28 | Bombas brain and simulated prices |
-| 7 | 7.1 to 7.6 | 2026-09-28 | Interview reasons; coverage by name; prices seen on the band chart; price re-check cadence; logged work in the brief; queue and log in the report |
+| 7 | 7.1 to 7.7 | 2026-09-28 | Interview reasons; coverage by name; prices seen on the band chart; price re-check cadence; logged work in the brief; queue and log in the report; briefs as rows |
 | 6 | 6.1 to 6.10 | 2026-09-28 | Win-loss log; repeated loss reason; rival prices seen; battlecard checks; positioning polls; thresholds on the page; capture from the page; the team log; waiting on you; round close (and the hand-off fix). Screenshot `round6.png` |
 | 5 | 5.1 to 5.10 | 2026-09-28 | Hand-offs; action lanes; season plan; quarterly review; exports (and the 5.4 load fix); browser smoke test; team notes; brief pack; check due lane; round close |
 | 4 | 4.1 to 4.10 | 2026-09-28 | Placements and new channel alerts; gap lines; stop rules; unit from the brain; never zero; phone width; threat history; support answers; room metrics. Screenshot `round4.png` |

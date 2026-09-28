@@ -800,7 +800,8 @@
     let b;
     try { b = await api(BASE + 'briefs'); } catch (e) { mount('#briefs', el('p', { class: 'na', text: 'Brief pack unavailable: ' + e.message })); return; }
     mount('#briefs', el('div', { class: 'row' }, el('b', { text: 'Brief pack: ' }), el('span', { class: 'small', text: b.total + ' moves, ' + b.drafted + ' with a draft, for ' + b.teams.length + ' teams.' }),
-      ...b.teams.map((t) => UI.copyButton({ label: t.team + ' (' + t.n + ')', text: () => t.text }))),
+      ...b.teams.map((t) => UI.copyButton({ label: t.team + ' (' + t.n + ')', text: () => t.text })),
+      UI.copyButton({ label: 'Copy as rows (JSON)', text: () => JSON.stringify(b.rows, null, 1) })),
       el('p', { class: 'micro faint', text: 'Copy one team\'s pack and paste it into that team\'s channel. Snoozed moves are left out.' }));
   }
 
