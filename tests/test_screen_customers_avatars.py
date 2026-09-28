@@ -980,5 +980,30 @@ class OnePager(TempBrain):
         self.assertEqual(api.handle(Req(['avatar', '../x', 'brief']))[0], 400)
 
 
+class DoubtTiming(TempBrain):
+    """Feature 3.9: doubt seasons from review dates, normalised by all complaints in the same months."""
+
+    def test_timing(self):
+        x = api.handle(Req(['overview']))['timing']
+        for m in x['moves']:
+            self.assertGreaterEqual(m['lift'], 1.5)
+            self.assertTrue(m['draft'].startswith('DRAFT'))
+        themes = [m['theme'] for m in x['moves']]
+        self.assertIn('price_and_value', themes)
+        for r in x['rows']:
+            self.assertEqual(len(x['cells'][r['key']]), 12)
+
+    def test_even_spread_has_no_season(self):
+        recs, rungs = [], []
+        for t in ('a', 'b'):
+            ids = []
+            for m in range(1, 13):
+                rid = f'{t}{m}'
+                recs.append({'id': rid, 'value': {'reviews': [{'star': 1, 'date': f'2025-{m:02d}-10', 'source': 'amazon'}]}})
+                ids.append(rid)
+            rungs.append({'theme': t, 'derived_from': ids})
+        self.assertEqual(api.builds.doubt_timing(rungs, recs, '2026-09-27', audit.source_name)['moves'], [])
+
+
 if __name__ == '__main__':
     unittest.main()

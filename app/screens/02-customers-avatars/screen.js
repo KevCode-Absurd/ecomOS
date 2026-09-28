@@ -326,6 +326,16 @@
       { compact: true, screen: SLUG, extra: r.ad_library ? el('a', { href: r.ad_library, target: '_blank', rel: 'noopener', class: 'small', text: 'Open in the Ad Library' }) : null })));
   }
 
+  // ---------- desk: doubt timing ----------
+  function renderTiming(x) {
+    document.getElementById('timing-sub').textContent = '1 and 2 star reviews behind each ladder theme, by month of year, Reddit left out. A season: the theme\'s share of all complaints in 3 months is 1.5x its share over the year, with 4 or more. Share of all complaints corrects for months the review pull over-samples. ' + x.line;
+    mount('#timing', UI.coverageMatrix({ rows: x.rows, cols: x.cols, cells: x.cells, single: true, max: x.max, unit: 'n', corner: 'Theme',
+      note: 'A public review sample: read seasons as direction, and re-check when the reviews app is connected.' }));
+    mount('#timing-moves', ...x.moves.map((m) => UI.actionCard({ id: m.id, title: m.title, why: m.why + (m.late ? ' The season has started: ship now.' : ' Live by ' + m.ship_by + '.'),
+      severity: m.late ? 'high' : 'medium', owner: m.owner, capability: m.capability, steps: m.steps, check_on: m.ship_by,
+      artefact: { kind: m.kind, label: 'a seasonal answer on the page, in email and in support', draft: m.draft } }, { compact: true, screen: SLUG })));
+  }
+
   // ---------- desk: moments ----------
   function renderMoments(x) {
     document.getElementById('moments-sub').textContent = 'Moments named in avatar triggers, matched to US dates, 6 months ahead. Ads live 21 days before, emails 14 days before. Index: that month last year against the 12-month average, simulated. ' + x.line;
@@ -742,6 +752,7 @@
     renderMisreads(d.misreads);
     renderClaims(d.claims_fire);
     renderLookalikes(d.lookalikes);
+    renderTiming(d.timing);
     renderMoments(d.moments);
     renderPaths(d.paths);
     renderCohorts(d.cohorts);

@@ -1768,3 +1768,65 @@ def one_pager(a: dict, d: dict, forbidden: list[str]) -> str:
     L += ["", f"NEXT BUILD: {a['next']['title']}", "", "DO NOT SAY: " + ("; ".join(forbidden) if forbidden else "no forbidden claims on file") +
           ". No Reddit line as a review. No claim without proof on file.", "Simulated sales data; customer words are public reviews."]
     return "\n".join(L)
+
+
+# ---------------------------------------------------------------- doubt timing by month of year
+
+SEASON_MIN = 6            # complaints on a theme before timing is read
+SEASON_LIFT = 1.5         # the theme's share of all complaints in a 3-month window is 1.5x its share over the year
+SEASON_WIN_MIN = 4        # with 4 or more of the theme's complaints in that window
+MONTH_SHORT = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+
+
+def doubt_timing(all_rungs: list[dict], lang_records: list[dict], as_of: str, source_name) -> dict:
+    """1 and 2 star reviews behind each ladder theme by month of year; a theme that bunches in one season is briefed before it."""
+    import datetime as _dt
+    by_id = {r["id"]: r for r in lang_records}
+    themes: dict[str, list[int]] = {}
+    seen = set()
+    for r in all_rungs:
+        for pid in r["derived_from"]:
+            rec = by_id.get(pid)
+            v = (rec or {}).get("value") if isinstance((rec or {}).get("value"), dict) else {}
+            for i, rv in enumerate(v.get("reviews") or []):
+                key = (r["theme"], pid, i)
+                if key in seen or not isinstance(rv.get("star"), int) or rv["star"] > 2 or not str(rv.get("date") or "")[5:7].isdigit():
+                    continue
+                if source_name(rv.get("source") or "") == "Reddit":
+                    continue
+                seen.add(key)
+                themes.setdefault(r["theme"], [0] * 12)[int(rv["date"][5:7]) - 1] += 1
+    rows, cells, moves = [], {}, []
+    today = _dt.date.fromisoformat(as_of)
+    total = [sum(c[m] for c in themes.values()) for m in range(12)]
+    grand = sum(total)
+    win = lambda arr, m: sum(arr[(m + k) % 12] for k in range(3))
+    for t, counts in sorted(themes.items(), key=lambda kv: -sum(kv[1])):
+        n = sum(counts)
+        rows.append({"key": t, "label": t.replace("_", " "), "sub": f"{n} complaints"})
+        cells[t] = {MONTH_SHORT[m]: {"us": counts[m] if counts[m] else None, "unit": "n"} for m in range(12)}
+        if n < SEASON_MIN or not grand:
+            continue
+        base = n / grand
+        lift = lambda m: (win(counts, m) / win(total, m)) / base if win(total, m) else 0
+        best = max(range(12), key=lambda m: (lift(m), -m))
+        if lift(best) < SEASON_LIFT or win(counts, best) < SEASON_WIN_MIN:
+            continue
+        share = win(counts, best) / win(total, best)
+        yr = today.year if best + 1 >= today.month else today.year + 1
+        start = _dt.date(yr, best + 1, 1)
+        ship = start - _dt.timedelta(days=21)
+        season = f"{MONTH_SHORT[best]} to {MONTH_SHORT[(best + 2) % 12]}"
+        moves.append({"id": f"{SCREEN}.timing.{t}", "theme": t, "season": season, "share": round(share, 4), "lift": round(lift(best), 2), "complaints": n,
+                      "title": f"Answer {t.replace('_', ' ')} doubts before {season}", "kind": "page_section", "owner": "agent_drafts",
+                      "why": f"In {season}, {t.replace('_', ' ')} is {round(share * 100)} percent of all complaints, against {round(base * 100)} percent over the year.",
+                      "ship_by": ship.isoformat(), "late": ship < today, "capability": {"id": "SITE-C38", "autonomy": "human_assist"},
+                      "draft": f"DRAFT seasonal answer\nTheme: {t.replace('_', ' ')}\nSeason: {season}, starts {start.isoformat()}\nLive by: {ship.isoformat()}\n"
+                               "Where: product page first screen, order confirmation email, support macro",
+                      "steps": [{"n": 1, "who": "agent", "text": "Pull the ladder's answer and proof for this theme."},
+                                {"n": 2, "who": "agent", "text": "Draft the page block, the email line and the macro."},
+                                {"n": 3, "who": "person", "text": f"Approve and ship by {ship.isoformat()}."},
+                                {"n": 4, "who": "agent", "text": "Compare the season's complaints with last year's."}]})
+    return {"rows": rows, "cols": [{"key": m, "label": m} for m in MONTH_SHORT], "cells": cells, "moves": moves,
+            "max": max((max(c) for c in themes.values()), default=1),
+            "line": (f"{len(moves)} doubt theme{'s' if len(moves) != 1 else ''} bunch in one season." if moves else "No doubt theme bunches in one season.")}
