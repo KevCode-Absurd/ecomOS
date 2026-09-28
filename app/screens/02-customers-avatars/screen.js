@@ -431,6 +431,28 @@
       el('p', { class: 'micro faint', text: 'Word stems, so read it as direction. Unechoed words can still be true; they belong in proof points, not the lead line.' }));
   }
 
+  // ---------- desk: messaging hierarchy ----------
+  function renderHierarchy(h) {
+    document.getElementById('hier-sub').textContent = h.line + ' Approve it and it becomes a positioning record every screen reads.';
+    const status = el('span', { class: 'micro muted', 'aria-live': 'polite' });
+    const btn = el('button', { class: 'btn primary sm', type: 'button', text: h.approved ? 'Approved' : 'Approve as our messaging hierarchy', disabled: h.approved });
+    btn.addEventListener('click', async () => {
+      status.textContent = 'Saving';
+      try { const r = await api(BASE + 'messaging/approve', { method: 'POST', body: {} }); status.textContent = 'Saved as ' + r.record + '.'; btn.disabled = true; btn.textContent = 'Approved'; }
+      catch (e) { status.textContent = 'Could not save: ' + e.message; }
+    });
+    const text = ['MESSAGING HIERARCHY', '1. Lead: ' + h.lead, '   Now: ' + (h.frame || NA), '2. Proof points:']
+      .concat(h.proofs.map((p, i) => '   ' + (i + 1) + ') ' + (p.text || p.id) + ' (' + p.five_star + ' five-star lines on the doubts it answers)'),
+        ['3. Answer first: ' + (h.doubt ? h.doubt.doubt + ' (' + h.doubt.one_star + ' one-star)' : NA)]).join('\n');
+    mount('#hier', el('div', { class: 'hier' },
+      el('div', null, el('span', { class: 'kicker', text: '1. Lead' }), el('div', { class: 'lead', text: h.lead }), el('div', { class: 'small muted', text: 'Our frame now: ' + (h.frame || NA) })),
+      el('div', null, el('span', { class: 'kicker', text: '2. Proof points, by five-star lines behind them' }),
+        el('ol', null, ...h.proofs.map((p) => el('li', null, (p.text || p.id) + ' ', el('span', { class: 'chip good', text: p.five_star + ' five-star' }))))),
+      el('div', null, el('span', { class: 'kicker', text: '3. Answer first' }),
+        h.doubt ? el('div', null, '"' + h.doubt.doubt + '" ', el('span', { class: 'chip bad', text: h.doubt.one_star + ' one-star' })) : el('span', { class: 'na', text: NA }))),
+      el('div', { class: 'row' }, btn, UI.copyButton({ label: 'Copy', text: () => text }), status));
+  }
+
   // ---------- desk: hook bank ----------
   function renderHooks(h) {
     document.getElementById('hooks-sub').textContent = '2 to 4 word phrases in 3 or more distinct 4 and 5 star reviews, from ' + h.praise_reviews + ' praise reviews, Reddit left out. ' + h.line;
@@ -670,6 +692,7 @@
     renderLadders(d.ladders, d.avatars);
     renderGap(d.copy_gap);
     renderPerception(d.perception);
+    renderHierarchy(d.hierarchy);
     renderHooks(d.hooks);
     renderThemes(d.themes);
     renderWords(d.words, d.avatars);

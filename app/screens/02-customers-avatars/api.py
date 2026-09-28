@@ -10,6 +10,7 @@ founder-marked voice example, through Brain.put. Nothing external, no model.
   GET  rank              served by app/rank.py, which calls `rank(brand, window)` below when present
   GET  audit             findings from audit.py (app/contracts/audit.md shape) and RULES
   POST avatars/draft      {segment}: writes the drafted avatar for an unserved situation, tier inferred
+  POST messaging/approve  writes the drafted messaging hierarchy as an approved founder positioning record
   POST voice/examples    {kind: liked | disliked, text, note?}: writes a founder voice record
 
 Query `brand` (default bombas) and `today` (YYYY-MM-DD, default the real date) work on
@@ -283,6 +284,30 @@ def _competitor_names(brain: Brain) -> list[str]:
     return audit.competitor_names(brain)
 
 
+def _hierarchy(brain: Brain, avatars: list[dict], all_rungs: list[dict], lad: dict) -> dict:
+    ends = (brain.today - dt.timedelta(days=1)).isoformat()
+    th = builds.theme_impact(brain.records("language_bank"), lad["rows"], ends)
+    pc = builds.perception(brain.records("positioning") + brain.records("identity"), brain.records("language_bank"), _brand_tokens(brain), audit.source_name)
+    texts = {}
+    for sec in ("offers", "policies", "claims"):
+        for r in brain.records(sec):
+            texts[r["id"]] = r.get("text")
+    frame = next((r.get("value") for r in brain.records("positioning") if r.get("field") == "frame" and isinstance(r.get("value"), str)), None)
+    h = builds.hierarchy(th, pc, lad["rows"], all_rungs, texts, frame, brain.brand, brain.today.isoformat())
+    h["approved"] = any(r.get("id") == h["record"]["id"] for r in brain.raw("positioning"))
+    return h
+
+
+def approve_hierarchy(brain: Brain):
+    avatars = audit.avatar_rows(brain)
+    all_rungs = audit.rungs(brain)
+    h = _hierarchy(brain, avatars, all_rungs, builds.ladders(all_rungs, avatars))
+    errs = brain.put(h["record"])
+    if errs:
+        return 400, {"error": "record not valid", "details": errs}
+    return 201, {"ok": True, "record": h["record"]["id"]}
+
+
 def _brand_name(brain: Brain) -> str:
     for r in brain.records("identity"):
         if r.get("field") in ("name", "brand_name") and isinstance(r.get("value"), str):
@@ -336,7 +361,7 @@ def overview(brain: Brain) -> dict:
             "coverage": builds.coverage(avatars, all_rungs), "ladders": lad,
             "copy_gap": builds.copy_gap({sec: brain.records(sec) for sec in ("voice", "claims", "identity", "offers", "policies", "products", "visual", "story_bank")},
                                         brain.records("language_bank"), _brand_tokens(brain), audit.source_name),
-            "paths": _paths(brain.brand), "gate": gate,
+            "paths": _paths(brain.brand), "gate": gate, "hierarchy": _hierarchy(brain, avatars, all_rungs, lad),
             "offer_map": builds.offer_map(avatars, all_rungs, brain.records("offers"), brain.records("policies") + brain.records("claims")),
             "lookalikes": builds.lookalikes(brain.records("competitors"), _brand_name(brain)),
             "claims_fire": builds.claims_fire(brain.records("claims"), brain.records("language_bank"), _brand_tokens(brain), audit.source_name,
@@ -362,6 +387,8 @@ def handle(req):
         ends = (brain.today - dt.timedelta(days=1)).isoformat()
         findings = audit.run(brain.brand, {"ends_on": ends, "days": 1, "trailing": 0}, BRAIN_ROOT)
         return {"findings": findings, "rules": audit.RULES, "brain_version": brain.version()}
+    if req.method == "POST" and parts == ["messaging", "approve"]:
+        return approve_hierarchy(brain)
     if req.method == "POST" and parts == ["avatars", "draft"]:
         return add_avatar_draft(brain, req.body)
     if req.method == "POST" and parts == ["voice", "examples"]:

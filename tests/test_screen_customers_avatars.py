@@ -904,5 +904,23 @@ class OfferMap(TempBrain):
         self.assertNotIn('first order code confirmed', [c['label'] for c in x['cols']])
 
 
+class Hierarchy(TempBrain):
+    """Feature 3.5: a messaging hierarchy from buyer evidence, written on approval."""
+
+    def test_hierarchy_and_approve(self):
+        h = api.handle(Req(['overview']))['hierarchy']
+        self.assertEqual(h['lead_theme'], 'comfort')
+        self.assertEqual(len(h['proofs']), 3)
+        fives = [p['five_star'] for p in h['proofs']]
+        self.assertEqual(fives, sorted(fives, reverse=True))
+        self.assertEqual(h['doubt']['id'], 'durability.3')
+        self.assertFalse(h['approved'])
+        code, res = api.handle(Req(['messaging', 'approve'], 'POST', body={}))
+        self.assertEqual(code, 201)
+        rec = next(r for r in self.section('positioning') if r['id'] == res['record'])
+        self.assertEqual(rec['source']['type'], 'founder')
+        self.assertTrue(api.handle(Req(['overview']))['hierarchy']['approved'])
+
+
 if __name__ == '__main__':
     unittest.main()

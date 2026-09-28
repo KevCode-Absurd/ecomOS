@@ -1613,3 +1613,31 @@ def offer_map(avatars: list[dict], all_rungs: list[dict], offer_records: list[di
             "bare": [r["label"] for r in rows if not any(v["us"] for v in cells[r["key"]].values())],
             "line": ((f"Our ads push one offer in {push['ads']} of {push['of']} live ads; it answers none of the ladder doubts. " if push and push["id"] not in used else "")
                      + (f"{len(unused)} offers answer no avatar's doubt: {', '.join(unused)}." if unused else "Every offer answers at least one doubt."))}
+
+
+# ---------------------------------------------------------------- messaging hierarchy from buyer evidence
+
+def hierarchy(themes: dict, perception_x: dict, ladders_rows: list[dict], all_rungs: list[dict], proof_texts: dict[str, str],
+              frame: str | None, brand: str, today: str) -> dict:
+    """One lead line, 3 proof points and 1 doubt answer, each ranked by what buyers say, as a record to approve."""
+    earn = [r for r in themes.get("rows", []) if r["impact"] > 0]
+    lead_theme = max(earn, key=lambda r: r["impact"])["theme"] if earn else None
+    words = [t["word"] for t in perception_x.get("theirs", [])][:3]
+    score: dict[str, int] = {}
+    for r in all_rungs:
+        for p in r["proof_ids"]:
+            score[p] = score.get(p, 0) + (r["five_star"] or 0)
+    proofs = [{"id": p, "five_star": n, "text": proof_texts.get(p)} for p, n in sorted(score.items(), key=lambda kv: (-kv[1], kv[0]))[:3]]
+    doubt = next((r for r in ladders_rows if r["verdict"] == "answer"), None) or next((r for r in ladders_rows if r["verdict"] == "not_landing"), None)
+    lead = (f"Lead on {lead_theme.replace('_', ' ')}, in their words: {', '.join(words)}." if lead_theme else "Lead line unavailable: no theme earns stars yet.")
+    value = {"lead": lead, "lead_theme": lead_theme, "buyer_words": words, "frame_now": frame,
+             "proof_points": [p["id"] for p in proofs], "doubt_to_answer": doubt["id"] if doubt else None,
+             "doubt_text": doubt["doubt"] if doubt else None}
+    record = {"id": f"{brand}.positioning.messaging_hierarchy", "brand": brand, "section": "positioning", "field": "messaging_hierarchy",
+              "value": value, "text": lead + (f" Answer first: {doubt['doubt']}." if doubt else ""),
+              "tier": "approved", "confidence": 1.0, "visibility": "private",
+              "source": {"type": "founder", "ref": "02-customers-avatars messaging hierarchy", "captured_at": today}}
+    return {"lead": lead, "lead_theme": lead_theme, "words": words, "frame": frame, "proofs": proofs,
+            "doubt": {"id": doubt["id"], "doubt": doubt["doubt"], "one_star": doubt["one_star"], "verdict": doubt["verdict"]} if doubt else None,
+            "record": record,
+            "line": "Built from buyer evidence: the theme that earns the most stars, the proof points behind the most five-star lines, the doubt that most needs an answer."}
