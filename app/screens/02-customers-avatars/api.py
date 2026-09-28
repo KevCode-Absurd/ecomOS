@@ -318,29 +318,113 @@ def _engine():
     return _rank_engine
 
 
-def _title(f: dict) -> str | None:
-    ent = f["entity"]
-    if f["rule_id"] == "CUST-R01":
-        return f"Back the {ent['label']} avatar with a second source"
-    if f["rule_id"] == "CUST-R02":
-        doubt = next((r for r in f["sentence"].split('"')[1:2]), ent["label"])
-        return f"Answer \"{doubt}\""
+EASE = {"agent": 5, "agent_drafts": 4, "person_draft": 3, "person": 2}
+
+
+def _plans(brand: str, window: dict) -> dict:
+    """The drafted work behind each finding, keyed by the finding's entity id, from the same builders the page uses."""
+    ends = window["ends_on"]
+    brain = Brain(brand, BRAIN_ROOT, dt.date.fromisoformat(ends) + dt.timedelta(days=1))
+    avatars = audit.with_tops(audit.avatar_rows(brain), audit.rungs(brain))
+    all_rungs = audit.rungs(brain)
+    d = audit.desk(brain, avatars, all_rungs)
+    plans = {}
+    for a in avatars:
+        plans[("CUST-R01", a["key"])] = builds.next_build(dict(a, quotes=[]), None) if a["grounding"] != "grounded" else None
+        if a["grounding"] != "grounded":
+            have = ", ".join(a["sources"]) or "no source"
+            p = plans[("CUST-R01", a["key"])]
+            p["title"] = f"Back the {a['name']} avatar with a second source"
+            p["draft"] = "\n".join([f"DRAFT research note: second source for {a['name']}",
+                                    f"Have: {a['quote_count']} quotes from {have}",
+                                    "Need: 5 quotes from 2 or more independent sources, with links",
+                                    "Where to look: review sites, marketplace reviews and our own site reviews not yet used",
+                                    "Reddit lines count as language only, never as a testimonial"])
+            p["owner"] = "agent_drafts"
+            p["steps"] = p["steps"][:2] + [{"n": 3, "who": "agent", "text": "Write the quotes into the avatar record as a draft."},
+                                           {"n": 4, "who": "person", "text": "Approve the record. The card re-grades itself."}]
+    for row in d["ladders"]["rows"]:
+        if row["action"]:
+            plans[("rung", row["id"])] = row["action"]
+    for r in d["misreads"].get("rows", []):
+        plans[("CUST-R05", f"{r['line']}.{r['avatar_key']}")] = r["action"]
+    for l in d["misreads"].get("lines", []):
+        if l.get("action"):
+            plans[("CUST-R10", "split_" + l["line"])] = l["action"]
+    for sg in d["served"]["segments"]:
+        if sg["action"]:
+            plans[("CUST-R06", "situation_" + sg["segment"].replace(" ", "_"))] = sg["action"]
+    for m in d["mix"].get("moves", []):
+        if m["id"].endswith(".paid_returning"):
+            plans[("CUST-R07", "returning_via_paid")] = m
+    for m in d["cohorts"].get("moves", []):
+        if ".retention.calendar_" in m["id"]:
+            plans[("CUST-R08", "calendar_" + m["id"].split("calendar_")[1])] = m
+        if m["id"].endswith(".age_break"):
+            cb = d["cohorts"].get("age_break") or {}
+            plans[("CUST-R09", f"age_month_{cb.get('month')}")] = m
+    return plans
+
+
+def _plan_for(f: dict, plans: dict) -> dict | None:
+    rid, eid = f["rule_id"], f["entity"]["id"]
+    if rid in ("CUST-R02", "CUST-R04"):
+        return plans.get(("rung", eid))
+    return plans.get((rid, eid))
+
+
+def _title(f: dict, plan: dict | None) -> str | None:
     if f["rule_id"] == "CUST-R03" and f["status"] == "unavailable":
         return "Name the angle on every Meta ad so objection coverage can be read"
     if f["rule_id"] == "CUST-R03":
-        return f"Brief an ad that answers the {ent['label']} doubt"
-    return None
+        return f"Brief an ad that answers the {f['entity']['label']} doubt"
+    return plan["title"] if plan else None
+
+
+def _rescore(a: dict, eng) -> None:
+    r = a["rubric"]
+    if a["status"] == "unavailable":
+        r["ease"] = 1
+    elif a["owner"] == "person":
+        r["ease"] = EASE["person_draft"] if (a["artefact"] or {}).get("draft") else EASE["person"]
+    else:
+        r["ease"] = EASE[a["owner"]]
+    if a["rule_id"] == "CUST-R05":
+        r["reputation"] = max(r["reputation"], 4)   # review theme on the buy path, per the audit docstring
+    total = 0.0
+    for k, w in eng.WEIGHTS.items():
+        total += w * (r[k] if r[k] is not None else 2.5) / 5
+    r["total"] = round(total, 1)
 
 
 def rank(brand: str, window: dict) -> dict:
+    """Every open or unavailable finding as an action with its real title, owner, steps and drafted artefact."""
     eng = _engine()
     findings = audit.run(brand, window, BRAIN_ROOT)
     nr = eng.net_revenue_28d(brand, window)
+    plans = _plans(brand, window)
     actions = []
     for f in findings:
         if f.get("status") not in ("open", "unavailable"):
             continue
         a = eng.action_from_finding(f, nr)
-        a["title"] = _title(f) or a["title"]
+        plan = _plan_for(f, plans)
+        a["title"] = _title(f, plan) or a["title"]
+        if plan and f["status"] == "open":
+            a["owner"] = plan.get("owner") or a["owner"]
+            a["steps"] = plan.get("steps") or a["steps"]
+            art = plan.get("artefact") or {}
+            kind = art.get("kind") or plan.get("kind") or a["artefact"]["kind"]
+            a["artefact"] = {"kind": kind, "label": art.get("label") or builds_label(kind),
+                             "draft": art.get("draft") or plan.get("draft")}
+            for k in ("stop_rule", "check_on"):
+                if plan.get(k):
+                    a[k] = plan[k]
+            a["plan_capability"] = plan.get("capability")
+        _rescore(a, eng)
         actions.append(a)
     return {"actions": actions}
+
+
+def builds_label(kind: str) -> str:
+    return _engine().ARTEFACT_LABEL.get(kind, kind)

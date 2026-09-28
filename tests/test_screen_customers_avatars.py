@@ -94,7 +94,7 @@ class AuditShape(unittest.TestCase):
         self.assertEqual(r03['status'], 'unavailable')
         self.assertEqual(r03['evidence'], [])
         self.assertEqual(set(r03['unavailable']), {'inputs', 'connector', 'fix'})
-        self.assertEqual({r['rule_id'] for r in audit.RULES}, {'CUST-R01', 'CUST-R02', 'CUST-R03'})
+        self.assertEqual({r['rule_id'] for r in audit.RULES}, {f'CUST-R{n:02d}' for n in range(1, 11)})
 
 
 class AuditRules(TempBrain):
@@ -541,6 +541,39 @@ class Misreads(TempBrain):
     def test_no_summaries_unavailable(self):
         self.write('products', [r for r in self.section('products') if r.get('field') != 'review_summary'])
         self.assertFalse(self.misreads()['available'])
+
+
+class RankRound1(TempBrain):
+    """Feature 1.10: rank gives every rule a real title, owner, steps and a drafted artefact."""
+
+    def test_every_rule_fires_on_bombas(self):
+        rules = {f['rule_id'] for f in audit.run('bombas', RANK_WINDOW, self.tmp)}
+        self.assertEqual(rules, {f'CUST-R{n:02d}' for n in range(1, 11)})
+
+    def test_open_actions_carry_drafts(self):
+        acts = api.rank('bombas', RANK_WINDOW)['actions']
+        for a in acts:
+            self.assertEqual(rank_engine.validate_action(a), [], a['id'])
+            self.assertIn(a['artefact']['kind'], rank_engine.ARTEFACT_KINDS)
+            if a['status'] == 'open':
+                self.assertTrue((a['artefact']['draft'] or '').startswith('DRAFT'), a['id'])
+                self.assertNotIn('Draft the artefact', ' '.join(s['text'] for s in a['steps']))
+            self.assertTrue(0 <= a['rubric']['total'] <= 100)
+            self.assertNotIn('—', a['title'] + a['why'])
+
+    def test_top_action_is_the_compression_misread(self):
+        from_server = rank_engine.rank('02-customers-avatars', 'bombas', RANK_WINDOW, use_override=True)
+        self.assertEqual(from_server['source'], 'screen')
+        top = from_server['actions'][0]
+        self.assertEqual(top['rule_id'], 'CUST-R05')
+        self.assertIn('compression', top['title'])
+
+    def test_person_tickets_score_ease_3(self):
+        for a in api.rank('bombas', RANK_WINDOW)['actions']:
+            if a['owner'] == 'person' and a['status'] == 'open':
+                self.assertEqual(a['rubric']['ease'], 3)
+            if a['status'] == 'unavailable':
+                self.assertEqual(a['rubric']['ease'], 1)
 
 
 if __name__ == '__main__':

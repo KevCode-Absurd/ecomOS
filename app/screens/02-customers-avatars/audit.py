@@ -28,6 +28,28 @@ CUST-R03 objection coverage in ads. Each named objection theme should appear as 
     Severity medium. Capability CREA-C03 (define ad angles, agent does).
     Owner: 02-customers-avatars.
 
+CUST-R04 proof not landing. A ladder rung has proof on file, yet one-star mentions are 2x the
+    five-star ones or more, with 10 or more (builds.NOT_LANDING_*). Severity medium. Capability
+    SITE-C38 (PDP first screen). Owner: 02-customers-avatars.
+CUST-R05 avatar misread on a product line. The avatar buys the line (2 or more linked reviews), a top
+    complaint shares words with the avatar's job or pains, and the line's 1 and 2 star share is at or
+    above the median line. Severity high at 1.5x the median or more, else medium. Capability by the
+    complaint: SITE-C38 fit, PROD-C73 wear, CREA-C24 feel, LIFE-C27 order. Reputation override: 4
+    (a review theme on the buy path). Owner: 02-customers-avatars.
+CUST-R06 unserved buying situation. 2 or more competitors in the brain push a buying situation and
+    we hold no avatar with quotes for it (builds.SITUATIONS). Severity medium. Capability BRAND-C16.
+    Owner: 02-customers-avatars.
+CUST-R07 returning buyers bought back through paid ads. A quarter or more of returning orders in
+    the latest full month came through paid social or paid search (channels_monthly). Severity
+    medium. Capability MEDIA-C12. Unavailable when the channel table is missing.
+    Owner: 02-customers-avatars; screen 11 reads it.
+CUST-R08 calendar retention cliff. Half or more of the cohorts alive in one calendar month fell 40
+    percent or more at once (cohorts.json). Severity medium. Capability LIFE-C20.
+CUST-R09 retention age break. After the peak return month, active share falls 20 percent or more
+    from one month to the next, cliff months left out. Severity medium. Capability LIFE-C08.
+CUST-R10 split product line. Praise and complaints on a line name the same trait. Severity low.
+    Capability CREA-C24.
+
 Money at stake is null for every rule: an evidence or proof gap has no revenue formula
 yet (`money_reason` says so). Confidence: one brain snapshot is one window (0.5), minus
 0.2 when an input record is past `expires_at`.
@@ -45,6 +67,11 @@ for p in (APP / "brain", APP / "data", APP):
         sys.path.insert(0, str(p))
 
 from store import Brain  # noqa: E402
+import importlib.util as _ilu  # noqa: E402
+
+_bspec = _ilu.spec_from_file_location("customers_avatars_builds_audit", Path(__file__).resolve().parent / "builds.py")
+builds = _ilu.module_from_spec(_bspec)
+_bspec.loader.exec_module(builds)
 
 SCREEN = "02-customers-avatars"
 MIN_SOURCES = 2
@@ -58,8 +85,25 @@ RULES = [
      "inputs": ["brain avatars", "brain objection_ladders"], "capability": "BRAND-C13", "owner_screen": SCREEN},
     {"rule_id": "CUST-R03", "name": "objection coverage in ads", "entity_type": "brand",
      "inputs": ["brain objection_ladders", "ad_rows.angle"], "capability": "CREA-C03", "owner_screen": SCREEN},
+    {"rule_id": "CUST-R04", "name": "proof not landing", "entity_type": "ladder_rung",
+     "inputs": ["brain objection_ladders"], "capability": "SITE-C38", "owner_screen": SCREEN},
+    {"rule_id": "CUST-R05", "name": "avatar misread on a product line", "entity_type": "sku",
+     "inputs": ["brain products review_summary", "brain avatars", "brain language_bank"], "capability": "SITE-C38", "owner_screen": SCREEN},
+    {"rule_id": "CUST-R06", "name": "unserved buying situation", "entity_type": "brand",
+     "inputs": ["brain competitors", "brain avatars"], "capability": "BRAND-C16", "owner_screen": SCREEN},
+    {"rule_id": "CUST-R07", "name": "returning buyers bought back through paid ads", "entity_type": "metric",
+     "inputs": ["channels_monthly"], "capability": "MEDIA-C12", "owner_screen": SCREEN},
+    {"rule_id": "CUST-R08", "name": "calendar retention cliff", "entity_type": "metric",
+     "inputs": ["cohorts"], "capability": "LIFE-C20", "owner_screen": SCREEN},
+    {"rule_id": "CUST-R09", "name": "retention age break", "entity_type": "metric",
+     "inputs": ["cohorts"], "capability": "LIFE-C08", "owner_screen": SCREEN},
+    {"rule_id": "CUST-R10", "name": "split product line", "entity_type": "sku",
+     "inputs": ["brain products review_summary"], "capability": "CREA-C24", "owner_screen": SCREEN},
 ]
-AUTONOMY = {"BRAND-C11": "founder_gate", "BRAND-C13": "agent_does", "CREA-C03": "agent_does"}
+AUTONOMY = {"BRAND-C11": "founder_gate", "BRAND-C13": "agent_does", "CREA-C03": "agent_does", "SITE-C38": "human_assist",
+            "PROD-C73": "human_assist", "CREA-C24": "agent_does", "LIFE-C27": "human_assist", "BRAND-C16": "founder_gate",
+            "MEDIA-C12": "human_assist", "LIFE-C20": "agent_does", "LIFE-C08": "founder_gate"}
+NO_DATA = "no revenue formula for this rule yet"
 
 
 # ---------------------------------------------------------------- shared builders
@@ -245,7 +289,7 @@ def _finding(rule_id, severity, entity, evidence, sentence, capability, confiden
             "capability": {"id": capability, "autonomy": AUTONOMY[capability]},
             "money_at_stake": None, "confidence": round(max(confidence, 0.1), 2),
             "brain_refs": refs, "first_seen": ends_on, "last_seen": ends_on, "status": status,
-            "unavailable": unavailable, "money_reason": NO_MONEY}
+            "unavailable": unavailable, "money_reason": NO_MONEY if rule_id in ("CUST-R01", "CUST-R02", "CUST-R03", "CUST-R04") else NO_DATA}
 
 
 def _plural(n, word):
@@ -316,6 +360,142 @@ def r03(brain, all_rungs, angles, ends_on):
     return out
 
 
+def load_cohorts(brand: str, avatars: list[dict]) -> dict:
+    try:
+        from tables import brand_data
+        data = brand_data(brand)
+        rows, monthly, as_of = data.table("cohorts"), data.table("monthly"), data.brand.get("as_of")
+    except (ImportError, ValueError, KeyError, FileNotFoundError) as exc:
+        return {"available": False, "reason": f"no cohort table for {brand} ({exc})", "rows": [], "moves": []}
+    return builds.cohort_grid(rows, monthly, as_of, avatars)
+
+
+def load_mix(brand: str) -> dict:
+    try:
+        from tables import brand_data
+        data = brand_data(brand)
+        monthly, channels, as_of = data.table("monthly"), data.table("channels_monthly"), data.brand.get("as_of")
+    except (ImportError, ValueError, KeyError, FileNotFoundError) as exc:
+        return {"available": False, "reason": f"no monthly or channel table for {brand} ({exc})", "moves": []}
+    return builds.mix(monthly, channels, as_of)
+
+
+def with_tops(avatars, all_rungs):
+    for a in avatars:
+        top = top_objection(a["id"], all_rungs)
+        a["top_objection"] = None if top is None else {"id": top["id"], "doubt": top["doubt"], "one_star": top["one_star"],
+                                                        "five_star": top["five_star"], "proof": bool(top["proof_ids"]),
+                                                        "proof_text": top["proof"] if top["proof_ids"] else None}
+    return avatars
+
+
+def desk(brain: Brain, avatars: list[dict], all_rungs: list[dict]) -> dict:
+    """Every desk builder the page and the rules share, computed once."""
+    return {"ladders": builds.ladders(all_rungs, avatars),
+            "misreads": builds.misreads(brain.records("avatars"), avatars, all_rungs, brain.records("language_bank"), brain.records("products")),
+            "served": builds.served(avatars, all_rungs, brain.records("competitors"), brain.records("positioning")),
+            "cohorts": load_cohorts(brain.brand, avatars), "mix": load_mix(brain.brand)}
+
+
+def r04(d, all_rungs, ends_on):
+    out = []
+    lad = {r["id"]: r for r in all_rungs}
+    for row in d["ladders"]["rows"]:
+        if row["verdict"] != "not_landing":
+            continue
+        ev = [_ev("one_star_mentions", row["one_star"], "n", ends_on, "brain.objection_ladders"),
+              _ev("five_star_mentions", row["five_star"], "n", ends_on, "brain.objection_ladders",
+                  baseline=builds.NOT_LANDING_RATIO, baseline_kind="threshold")]
+        s = (f"Proof is on file for \"{row['doubt']}\", yet {row['one_star']} one-star reviews raise it "
+             f"against {row['five_star']} five-star. The proof is not landing.")
+        out.append(_finding("CUST-R04", "medium", {"type": "ladder_rung", "id": row["id"], "label": f"{row['theme']}, rung {row['level']}"},
+                            ev, s, "SITE-C38", 0.5 - (0.2 if lad[row["id"]]["expired"] else 0),
+                            [lad[row["id"]]["ladder"]] + row["proof_ids"], ends_on))
+    return out
+
+
+def r05(d, ends_on):
+    x = d["misreads"]
+    if not x.get("available"):
+        return []
+    out = []
+    for r in x["rows"]:
+        sev = "high" if r["neg_share"] >= builds.LINE_PROBLEM * r["median"] else "medium"
+        ev = [_ev("one_two_star_share", r["neg_share"], "%", ends_on, "brain.products.review_summary",
+                  baseline=round(r["median"], 4), baseline_kind="threshold"),
+              _ev("linked_reviews", r["links"], "n", ends_on, "brain.language_bank", baseline=builds.MIN_LINKS)]
+        s = (f"{r['avatar']} buys {r['line'].replace('_', ' ')} for its job, and the top complaint is \"{r['hits'][0]}\". "
+             f"{round(r['neg_share'] * 100, 1)} percent of reviews are 1 or 2 star.")
+        out.append(_finding("CUST-R05", sev, {"type": "sku", "id": f"{r['line']}.{r['avatar_key']}", "label": f"{r['line'].replace('_', ' ')}, {r['avatar']}"},
+                            ev, s, r["action"]["capability"]["id"], 0.5, [f"{d['brand']}.avatars.{r['avatar_key']}"], ends_on))
+    return out
+
+
+def r06(d, ends_on):
+    out = []
+    for sg in d["served"]["segments"]:
+        if sg["verdict"] != "gap":
+            continue
+        ev = [_ev("competitors_pushing", len(sg["theirs"]), "n", ends_on, "brain.competitors", baseline=2),
+              _ev("our_avatars", 0, "n", ends_on, "brain.avatars", baseline=1)]
+        s = f"{len(sg['theirs'])} competitors sell to {sg['segment']} buyers: {', '.join(sg['theirs'][:3])}. We hold no avatar for them."
+        out.append(_finding("CUST-R06", "medium", {"type": "brand", "id": "situation_" + sg["segment"].replace(" ", "_"), "label": sg["segment"]},
+                            ev, s, "BRAND-C16", 0.5, [], ends_on))
+    return out
+
+
+def r07(d, ends_on):
+    x = d["mix"]
+    if not x.get("available"):
+        return [_finding("CUST-R07", "medium", {"type": "metric", "id": "returning_via_paid", "label": "Returning orders through paid ads"},
+                         [], "Returning orders by channel cannot be read. " + str(x.get("reason", "")).capitalize() + ".", "MEDIA-C12", 0.5, [], ends_on,
+                         status="unavailable", unavailable={"inputs": ["channels_monthly"], "connector": "shopify",
+                                                            "fix": "Connect the store orders with first-order flags, read-only."})]
+    if x["paid_share_returning"] is None or x["paid_share_returning"] < builds.PAID_RETURNING:
+        return []
+    ev = [_ev("paid_share_of_returning_orders", x["paid_share_returning"], "%", ends_on, "channels_monthly",
+              baseline=builds.PAID_RETURNING, simulated=True)]
+    s = f"{round(x['paid_share_returning'] * 100, 1)} percent of returning orders in {x['latest']} came through paid ads. We pay again for buyers we have."
+    return [_finding("CUST-R07", "medium", {"type": "metric", "id": "returning_via_paid", "label": "Returning orders through paid ads"},
+                     ev, s, "MEDIA-C12", 0.5, [], ends_on)]
+
+
+def r08_r09(d, ends_on):
+    c = d["cohorts"]
+    if not c.get("available"):
+        return []
+    out = []
+    cb = c.get("calendar_break")
+    if cb:
+        ev = [_ev("cohorts_falling_together", cb["share"], "%", ends_on, "cohorts", baseline=builds.CLIFF_SHARE, simulated=True),
+              _ev("cohorts_alive", cb["cohorts"], "n", ends_on, "cohorts", simulated=True)]
+        s = f"In {cb['month']}, {round(cb['share'] * 100)} percent of {cb['cohorts']} cohorts fell 40 percent or more at once. Every past buyer went quiet together."
+        out.append(_finding("CUST-R08", "medium", {"type": "metric", "id": "calendar_" + cb["month"], "label": f"Retention cliff, {cb['month']}"},
+                            ev, s, "LIFE-C20", 0.5, [], ends_on))
+    ab = c.get("age_break")
+    if ab and ab["drop"] is not None and ab["drop"] >= 0.2:
+        ev = [_ev("active_share_drop", ab["drop"], "%", ends_on, "cohorts", baseline=0.2, simulated=True)]
+        s = f"Active share falls {round(ab['drop'] * 100)} percent from month {ab['month']} to month {ab['month'] + 1} after the first order."
+        out.append(_finding("CUST-R09", "medium", {"type": "metric", "id": f"age_month_{ab['month']}", "label": f"Retention break, month {ab['month']}"},
+                            ev, s, "LIFE-C08", 0.5, [], ends_on))
+    return out
+
+
+def r10(d, ends_on):
+    x = d["misreads"]
+    if not x.get("available"):
+        return []
+    out = []
+    for l in x["lines"]:
+        if l["verdict"] != "split":
+            continue
+        ev = [_ev("shared_traits", len(l["polar"]), "n", ends_on, "brain.products.review_summary", baseline=1)]
+        s = f"Buyers praise and blame {l['line'].replace('_', ' ')} for the same thing: {', '.join(l['polar'])}. Set the expectation."
+        out.append(_finding("CUST-R10", "low", {"type": "sku", "id": "split_" + l["line"], "label": l["line"].replace("_", " ")},
+                            ev, s, "CREA-C24", 0.5, [l["ref"]], ends_on))
+    return out
+
+
 def run(brand: str, window: dict, brain_root: Path | None = None) -> list[dict]:
     ends_on = window["ends_on"]
     today = dt.date.fromisoformat(ends_on) + dt.timedelta(days=1)
@@ -323,6 +503,9 @@ def run(brand: str, window: dict, brain_root: Path | None = None) -> list[dict]:
     avatars = avatar_rows(brain)
     all_rungs = rungs(brain)
     angles = ad_angles(brand, ends_on)
-    findings = r01(brain, avatars, ends_on) + r02(brain, avatars, all_rungs, ends_on) + r03(brain, all_rungs, angles, ends_on)
+    d = desk(brain, with_tops(avatars, all_rungs), all_rungs)
+    d["brand"] = brand
+    findings = (r01(brain, avatars, ends_on) + r02(brain, avatars, all_rungs, ends_on) + r03(brain, all_rungs, angles, ends_on)
+                + r04(d, all_rungs, ends_on) + r05(d, ends_on) + r06(d, ends_on) + r07(d, ends_on) + r08_r09(d, ends_on) + r10(d, ends_on))
     findings.sort(key=lambda f: (SEVERITY_ORDER[f["severity"]], f["rule_id"], f["id"]))
     return findings
