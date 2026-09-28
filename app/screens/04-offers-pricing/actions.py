@@ -92,6 +92,7 @@ class Ctx:
         self.proposed_rows = (_load('offers_pricing_approvals', HERE / 'approvals.py').outbox_rows(rd.brand) if rd.brand else [])
         self.registry = model.registry(rd, playbook.REGISTRY_SURFACES, playbook.PRICE_TEST_WORDS)
         self.welcome = audit.welcome(rd)
+        self.trust = audit.test_trust(rd)
         self.ship_rate = (model.brain_value(rd, 'offers.standard_shipping_cost')[0] or {}).get('cost_usd') if rd.brand else None
         self.scenarios = (model.threshold_scenarios(rd, self.threshold, self.ship_rate, self.be['value'], (self.po or {}).get('units') or 1)
                           if self.threshold is not None and self.be.get('value') is not None else [])
@@ -1105,6 +1106,27 @@ def welcome_action(f, a, ctx):
     return a
 
 
+def trust_action(f, a, ctx):
+    """OFFER-R33: repair notes for each test we cannot trust, sent to the experiments screen. A person fixes the record."""
+    rows = ctx.trust['rows']
+    lines = [f['sentence'], '']
+    for r in rows:
+        lines.append(f'{r["id"]} ({r["status"]}, {r["surface"] or "surface not matched"}, metric {r["metric"] or "none"}): {r["hypothesis"] or ""}')
+        lines += [f'  - {p["text"]} Fix: {p["fix"]}' for p in r['problems']]
+    lines.append('Rule: offer and price tests are judged on profit per visitor per arm, with the metric written before the start.')
+    a.update({'title': f'Fix the record for {len(rows)} tests before any of them decides an offer', 'owner': 'person',
+              'artefact': {'kind': 'report', 'label': 'Test trust notes for the experiments screen', 'draft': '\n'.join(lines)},
+              'steps': steps(('agent', 'List each test with its problems and the fix.'),
+                             ('person', 'Mark early looks and short runs as hints in the registry.'),
+                             ('person', 'Read the overdue tests, or stop them and write why.'),
+                             ('person', 'Set profit per visitor on offer tests before the next read.')),
+              'size': {'text': f'{len(rows)} tests, {sum(len(r["problems"]) for r in rows)} problems', 'usd': None},
+              'win_rule': 'Every running or done test has a metric set before its start and a clean read.',
+              'stop_rule': f'Check the registry again on {ctx.check_on(14)}; stop when no test is flagged.',
+              'check_on': ctx.check_on(14), 'time_to_ship_hours': 1})
+    return a
+
+
 def bunches(rd):
     """Order-value bunches and the tiers above them, from real order bins only (never from the fixture)."""
     dist = rd.m('order_value_distribution', audit.WINDOW, step=5)
@@ -1281,7 +1303,7 @@ BUILDERS = {'OFFER-R01': threshold_action, 'OFFER-R04': rung_action, 'OFFER-R08'
             'OFFER-R22': cost_action, 'OFFER-R23': referral_action, 'OFFER-R24': loyalty_action,
             'OFFER-R25': discount_action, 'OFFER-R26': bundle_action,
             'OFFER-R27': launched_action, 'OFFER-R29': bnpl_action,
-            'OFFER-R30': match_action, 'OFFER-R31': cohort_action, 'OFFER-R32': welcome_action}
+            'OFFER-R30': match_action, 'OFFER-R31': cohort_action, 'OFFER-R32': welcome_action, 'OFFER-R33': trust_action}
 
 
 def build(f, rd, ctx, nr):
@@ -1324,5 +1346,5 @@ def rank(brand='bombas', window=None, data=None):
     return {'screen': SCREEN, 'brand': brand, 'window': w, 'simulated': True, 'net_revenue_28d': nr,
             'actions': actions, 'findings': findings, 'objections': ctx.objections, 'returns': returns_block(rd),
             'ladder': dict(ctx.ladder, moves=ctx.ladder_rows), 'first_order': ctx.first_order, 'waterfalls': ctx.waterfalls, 'calendar': ctx.calendar, 'gifting': ctx.gifting, 'guarantee': ctx.guarantee, 'position': ctx.position, 'parity': ctx.parity,
-            'discipline': dict(ctx.discipline, policy=discount_policy(ctx), windows=ctx.depth_history, window_creep_points=playbook.WINDOW_CREEP_POINTS), 'cart': ctx.cart, 'tests': calendar, 'depth': ctx.depth, 'cohorts': ctx.cohorts, 'costs': ctx.costs, 'registry': ctx.registry, 'referral': ctx.referral, 'loyalty': ctx.loyalty, 'bundles': ctx.bundles, 'proposed_tests': ctx.proposed_rows, 'launched': ctx.launched, 'discount_cohorts': audit.discount_cohorts(rd), 'welcome': ctx.welcome, 'bunches': bunches(rd),
+            'discipline': dict(ctx.discipline, policy=discount_policy(ctx), windows=ctx.depth_history, window_creep_points=playbook.WINDOW_CREEP_POINTS), 'cart': ctx.cart, 'tests': calendar, 'depth': ctx.depth, 'cohorts': ctx.cohorts, 'costs': ctx.costs, 'registry': ctx.registry, 'referral': ctx.referral, 'loyalty': ctx.loyalty, 'bundles': ctx.bundles, 'proposed_tests': ctx.proposed_rows, 'launched': ctx.launched, 'discount_cohorts': audit.discount_cohorts(rd), 'welcome': ctx.welcome, 'trust': ctx.trust, 'bunches': bunches(rd),
             'subscription': model.subscription_note(rd, ctx.cohorts, (ctx.depth or {}).get('rows'), (ctx.depth or {}).get('target'))}

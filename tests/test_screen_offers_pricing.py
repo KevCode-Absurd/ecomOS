@@ -1605,5 +1605,38 @@ class WelcomeCodeTest(unittest.TestCase):
         self.assertEqual([x['status'] for x in f], ['unavailable'])
 
 
+class TestTrustTest(unittest.TestCase):
+    """Round 6 feature 7: room job LIFE-C47, is any test untrustworthy. OFFER-R33 and model.test_trust."""
+
+    def entry(self, **kw):
+        e = {'id': 'E1', 'status': 'running', 'surface': 'first order offer', 'start': '2026-08-01', 'until': '2026-10-01',
+             'metric': 'profit_per_visitor', 'registered_on': '2026-07-30', 'min_days': 28, 'result': None, 'hypothesis': 'h'}
+        e.update(kw)
+        return e
+
+    def keys(self, entries):
+        import datetime as dtm
+        pb = api.actions.playbook
+        t = api.model.test_trust(entries, dtm.date(2026, 9, 24), pb.OFFER_SURFACES, pb.BAD_OFFER_METRICS, pb.TEST_MIN_DAYS)
+        return {r['id']: [p['key'] for p in r['problems']] for r in t['rows']}
+
+    def test_each_problem(self):
+        self.assertEqual(self.keys([self.entry()]), {})
+        self.assertEqual(self.keys([self.entry(metric=None)]), {'E1': ['no_metric']})
+        self.assertEqual(self.keys([self.entry(registered_on='2026-08-05')]), {'E1': ['late_metric']})
+        self.assertEqual(self.keys([self.entry(result={'read_on': '2026-09-01'})]), {'E1': ['early_look']})
+        self.assertEqual(self.keys([self.entry(until='2026-09-01')]), {'E1': ['overdue']})
+        self.assertEqual(self.keys([self.entry(status='done', until='2026-08-20')]), {'E1': ['short']})
+        self.assertEqual(self.keys([self.entry(metric='aov')]), {'E1': ['wrong_metric']})
+        self.assertEqual(self.keys([self.entry(), self.entry(id='E2')]), {'E1': ['collision'], 'E2': ['collision']})
+
+    def test_bombas_rule(self):
+        f = [x for x in audit.run('bombas') if x['rule_id'] == 'OFFER-R33']
+        self.assertEqual(len(f), 1)
+        a = next(x for x in api.actions.rank('bombas')['actions'] if x['rule_id'] == 'OFFER-R33')
+        self.assertEqual((a['owner'], a['artefact']['kind']), ('person', 'report'))
+        self.assertIn('EXP-005', a['artefact']['draft'])     # an offer test judged on aov
+
+
 if __name__ == '__main__':
     unittest.main()

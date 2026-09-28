@@ -131,6 +131,13 @@ Rules
              dollars) (model.welcome_code). Money: code dollars scaled to 28 days, what is at stake if no code order is
              new. Medium at WELCOME_FLAG or more, else low. Unavailable without order rows while the brain names a
              first-order code. Capability LIFE-C02.
+  OFFER-R33  Tests on record we cannot trust (room job LIFE-C47, "is any test untrustworthy"): a running or done
+             registry entry with no metric set before the start, a metric registered after the start, an early look
+             before the read point, a read point passed with no read, a done test shorter than its minimum days
+             (playbook.TEST_MIN_DAYS when unset), an offer or price test judged on AOV or conversion
+             (playbook.OFFER_SURFACES, BAD_OFFER_METRICS), or two running tests on one surface (model.test_trust).
+             One finding for the registry. Medium when an offer or price test is affected, else low. Money null: a bad
+             read costs the next decision, not a dollar amount we can count. Capability LIFE-C47.
   OFFER-R03  Margin after discount per SKU. Needs cogs_landed keyed by the store's SKUs. Unavailable while no
              finance_inputs SKU key matches a product SKU. Capability MONEY-C05 (founder gate). Owner: 04.
   OFFER-R04  A deal-breaker rung with no proof: the top rung of an objection ladder whose proof is empty or
@@ -236,6 +243,8 @@ RULES = [
      'inputs': ['orders'], 'capability': 'LIFE-C02', 'owner_screen': SCREEN},
     {'rule_id': 'OFFER-R32', 'name': 'Welcome code with no holdout', 'entity_type': 'offer',
      'inputs': ['orders', 'flows', 'brain.offers.first_order_code', 'registry'], 'capability': 'LIFE-C02', 'owner_screen': SCREEN},
+    {'rule_id': 'OFFER-R33', 'name': 'Tests on record we cannot trust', 'entity_type': 'metric',
+     'inputs': ['registry'], 'capability': 'LIFE-C47', 'owner_screen': SCREEN},
     {'rule_id': 'OFFER-R03', 'name': 'Margin after discount per SKU', 'entity_type': 'sku',
      'inputs': ['finance_inputs.cogs_landed keyed by product SKU', 'products'], 'capability': 'MONEY-C05',
      'owner_screen': SCREEN},
@@ -272,6 +281,7 @@ CAPABILITY = {'OFFER-R01': {'id': 'MONEY-C05', 'autonomy': 'founder_gate'},
               'OFFER-R30': {'id': 'MONEY-C05', 'autonomy': 'founder_gate'},
               'OFFER-R31': {'id': 'LIFE-C02', 'autonomy': 'founder_gate'},
               'OFFER-R32': {'id': 'LIFE-C02', 'autonomy': 'founder_gate'},
+              'OFFER-R33': {'id': 'LIFE-C47', 'autonomy': 'human_assist'},
               'OFFER-R06': {'id': 'MONEY-C05', 'autonomy': 'founder_gate'},
               'OFFER-R04': {'id': 'LIFE-C36', 'autonomy': 'founder_gate'}}
 SEVERITY_ORDER = {'critical': 0, 'high': 1, 'medium': 2, 'low': 3}
@@ -1266,6 +1276,30 @@ def rule_welcome(rd):
                      money, 0.6, [], end)]
 
 
+def test_trust(rd):
+    pb = _playbook()
+    reg = _model().registry(rd, pb.REGISTRY_SURFACES, pb.PRICE_TEST_WORDS)
+    if reg.get('unavailable'):
+        return {'unavailable': True, 'reason': reg.get('reason'), 'checked': 0, 'rows': []}
+    return dict(_model().test_trust(reg['entries'], rd.ends_on, pb.OFFER_SURFACES, pb.BAD_OFFER_METRICS, pb.TEST_MIN_DAYS),
+                unavailable=False, source=reg.get('source'))
+
+
+def rule_test_trust(rd):
+    end = rd.ends_on
+    pb = _playbook()
+    t = test_trust(rd)
+    if t['unavailable'] or not t['rows']:
+        return []
+    offer = [r for r in t['rows'] if r['surface'] in pb.OFFER_SURFACES]
+    n = sum(len(r['problems']) for r in t['rows'])
+    ev = [_ev('untrustworthy_tests', len(t['rows']), 'count', end, baseline=t['checked'], baseline_kind='running_or_done_tests',
+              window='registry to date', source='registry')]
+    return [_finding('OFFER-R33', {'type': 'metric', 'id': 'test_trust', 'label': 'Tests on record'}, 'medium' if offer else 'low', ev,
+                     f'{len(t["rows"])} of {t["checked"]} tests on record have a read we cannot trust: {n} problems, '
+                     f'{len(offer)} on an offer or price test.', None, 0.8, [], end, money_reason='a bad read costs the next decision')]
+
+
 def rule_ladder(rd):
     end = rd.ends_on
     pb = _playbook()
@@ -1437,7 +1471,7 @@ def run(brand, window=None, data=None):
     """Findings for one brand, sorted by severity then money at stake. `window` is {ends_on} or None."""
     ends_on = date.fromisoformat(window['ends_on']) if window and window.get('ends_on') else last_full_day(data, brand)
     rd = Reader(data, brand, ends_on)
-    out = (rule_threshold(rd) + rule_stale(rd) + rule_pull(rd) + rule_first_order(rd) + rule_red_line(rd) + rule_promo(rd) + rule_gifting(rd) + rule_guarantee(rd) + rule_position(rd) + rule_parity(rd) + rule_discount(rd) + rule_cart(rd) + rule_second_order(rd) + rule_cost(rd) + rule_referral(rd) + rule_loyalty(rd) + rule_window_creep(rd) + rule_bundles(rd) + rule_launched(rd) + rule_upsell(rd) + rule_bnpl(rd) + rule_threshold_match(rd) + rule_cohorts(rd) + rule_welcome(rd) + rule_ladder(rd) + rule_sku_margin(rd) +
+    out = (rule_threshold(rd) + rule_stale(rd) + rule_pull(rd) + rule_first_order(rd) + rule_red_line(rd) + rule_promo(rd) + rule_gifting(rd) + rule_guarantee(rd) + rule_position(rd) + rule_parity(rd) + rule_discount(rd) + rule_cart(rd) + rule_second_order(rd) + rule_cost(rd) + rule_referral(rd) + rule_loyalty(rd) + rule_window_creep(rd) + rule_bundles(rd) + rule_launched(rd) + rule_upsell(rd) + rule_bnpl(rd) + rule_threshold_match(rd) + rule_cohorts(rd) + rule_welcome(rd) + rule_test_trust(rd) + rule_ladder(rd) + rule_sku_margin(rd) +
            rule_unanswered(rd))
     out.sort(key=lambda f: (SEVERITY_ORDER[f['severity']], -((f.get('money_at_stake') or {}).get('usd') or -1), f['id']))
     return out

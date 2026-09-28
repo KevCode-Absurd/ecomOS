@@ -1029,7 +1029,9 @@ def registry(rd, surface_rules, price_words):
         text = ' '.join([str(e.get('name') or ''), str(e.get('hypothesis') or ''), json.dumps(variant), ' '.join(e.get('audience') or [])]).lower()
         surface = next((sf for words, sf in surface_rules if all(w in text for w in words)), None)
         until = e.get('end') or e.get('ended_at') or e.get('read_point')
+        m = e.get('metric') if isinstance(e.get('metric'), dict) else {}
         out.append({'id': e.get('id'), 'hypothesis': e.get('hypothesis') or e.get('name'), 'status': status, 'surface': surface,
+                    'min_days': m.get('min_days'), 'registered_on': m.get('registered_on'),
                     'start': e.get('start') or e.get('started_at'), 'until': until, 'metric': metric,
                     'result': result, 'learning': e.get('learning'), 'brain_refs': e.get('brain_refs') or [], 'variant': variant,
                     'price_test': any(w in text for w in price_words) or bool(re.search(r'\$\d', json.dumps(variant)))})
@@ -1299,3 +1301,44 @@ def welcome_code(rd, days, flow_words):
             'code_per_order': round(dollars / len(coded), 2) if coded else None, 'required_new_share': need,
             'signups': signups, 'signup_to_order': round(len(coded) / signups, 4) if signups else None,
             'basis': f'new customers\' first orders {start} to {end}; margin is subtotal minus code minus order cogs, before shipping, fees and media'}
+
+
+# ---------------------------------------------------------------- can we trust the tests on record?
+
+def test_trust(entries, ends_on, offer_surfaces, bad_metrics, min_days_default):
+    """Registry entries that are running or done, checked for what makes a read untrustworthy: no metric written
+    before the start, a metric registered after the start, an early look taken as a result, a read point passed
+    with no read, a test called before its minimum days, an offer or price test judged on AOV or conversion instead
+    of profit per visitor, and two running tests on one surface at once. Each problem has the fix in words."""
+    end = ends_on.isoformat()
+    rows = []
+    live = [e for e in entries if e['status'] in ('running', 'done') and e.get('start')]
+    for e in live:
+        probs = []
+        start = e['start']
+        need = e.get('min_days') or min_days_default
+        res = e.get('result') or {}
+        if not e.get('metric'):
+            probs.append(('no_metric', 'No metric was written down before it started.', 'Write the metric now and read it as a new test from today.'))
+        elif e.get('registered_on') and e['registered_on'] > start:
+            probs.append(('late_metric', f'The metric was written on {e["registered_on"]}, after the {start} start.', 'Treat the read as a hint; re-run with the metric set first.'))
+        if e['status'] == 'running' and res.get('read_on') and e.get('until') and res['read_on'] < e['until']:
+            probs.append(('early_look', f'An early look on {res["read_on"]} sits in the record before the {e["until"]} read point.', 'Do not act on it; wait for the read point.'))
+        if e['status'] == 'running' and e.get('until') and e['until'] < end and not res.get('read_on'):
+            late = (ends_on - date.fromisoformat(e['until'])).days
+            probs.append(('overdue', f'The read point passed {late} days ago with no read.', 'Read it now, or stop it and write why.'))
+        if e['status'] == 'done' and e.get('until'):
+            ran = (date.fromisoformat(e['until']) - date.fromisoformat(start)).days
+            if ran < need:
+                probs.append(('short', f'It ran {ran} days; it needed {need}.', 'Keep the result as a hint only.'))
+        if e.get('surface') in offer_surfaces and str(e.get('metric') or '').lower() in bad_metrics:
+            probs.append(('wrong_metric', f'An offer test judged on {e["metric"]}. That can rise while profit falls.', 'Judge it on profit per visitor per arm.'))
+        clash = [o['id'] for o in live if o is not e and o['status'] == 'running' and e['status'] == 'running' and e.get('surface')
+                 and o.get('surface') == e['surface'] and (o.get('start') or '') <= (e.get('until') or end) and (e.get('start') or '') <= (o.get('until') or end)]
+        if clash:
+            probs.append(('collision', f'Runs on the same surface as {", ".join(clash)} at the same time.', 'Pause one; neither read is clean while both run.'))
+        if probs:
+            rows.append({'id': e['id'], 'hypothesis': e.get('hypothesis'), 'status': e['status'], 'surface': e.get('surface'),
+                         'metric': e.get('metric'), 'start': start, 'until': e.get('until'),
+                         'problems': [{'key': k, 'text': t, 'fix': f} for k, t, f in probs]})
+    return {'checked': len(live), 'rows': rows}

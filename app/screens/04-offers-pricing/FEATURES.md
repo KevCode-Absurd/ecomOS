@@ -121,6 +121,7 @@ Known gaps from round 0:
 | 6.4 | What we cannot see yet: a small block under the connect strip names price sensitivity (no finished price test in the registry) and gift card balances (no gift card ledger) as unavailable, plus order rows and returns by reason when missing. Each line says what fills it, what it then shows, and opens the move that starts it (the cost pass-through price test, or the store connect task). Nothing is estimated in their place | done |
 | 6.5 | Phone width at 360 px: every desk tab and every opened action card checked in a 360 px browser, no element past the edge and no page side-scroll on Bombas or the sample brand. Buttons under 24 px tall (the kit's "How it gets done" and "Copy brief", this screen's small buttons) get a 32 px tap target on phones through screen.css only | done |
 | 6.6 | Does the welcome code pay for itself (room job LIFE-C02, the pop-up first-order offer): new customers' first orders over 90 days split by the welcome code, code dollars, margin per code order after the code, welcome signups (first welcome email sends, a proxy) and signup to code order. The required new share, code dollars over margin after the code plus code dollars, is the share of code orders that must not have happened without it. New rule OFFER-R32 when 100 or more code first orders and no holdout on record; the move is a 10 percent holdout for 28 days judged on profit per visitor. Sample brand: WELCOME10, $2,590 a month, needs 15 percent new. Bombas: a connect move (no order rows) | done |
+| 6.7 | Can we trust each test on record (room job LIFE-C47, "is any test untrustworthy"): every running or done registry entry is checked for no metric before the start, a metric set after the start, an early look before the read point, a read point passed with no read, a run shorter than its minimum days, an offer or price test judged on AOV or conversion instead of profit per visitor, and two running tests on one surface. New rule OFFER-R33 with a person-owned repair list for the experiments screen. The registry table marks each flagged test "Cannot trust" with the reasons. Bombas: 4 of 5 tests flagged | done |
 
 ## Contract asks
 
@@ -158,7 +159,7 @@ Intelligems (threshold and price tests scored by profit per visitor), Rebuy (tie
 | Design and model the pop-up first-order offer | does the pop-up offer pay for itself | LIFE-C02 | round 6: welcome code required new share, OFFER-R32 holdout |
 | Design referral and partner offers | is referral cheaper than paid media | LIFE-C45 | todo |
 | Design payment terms, BNPL and trial pricing | is trial-to-full matching the model | LIFE-C46 | todo |
-| Run the offer testing framework | what to test next, is any test untrustworthy | LIFE-C47 | todo |
+| Run the offer testing framework | what to test next, is any test untrustworthy | LIFE-C47 | rounds 3 to 6: registry, test calendar, profit per visitor, OFFER-R33 test trust |
 | Track competitor and MAP pricing | did a competitor or reseller move price | BRN-C11, PROD-C46 | todo |
 | Run the gift card program | outstanding gift card liability and redemption | LIFE-C58 | todo |
 

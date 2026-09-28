@@ -222,3 +222,10 @@ WELCOME_MIN_ORDERS = 100       # code first orders in the window before the rule
 WELCOME_FLAG = 0.25            # required new share at or above this is medium severity, else low
 WELCOME_FLOW_WORDS = ('welcome',)
 HOLDOUT_WORDS = ('holdout', 'hold-out', 'hold out', 'no code arm', 'pop-up', 'popup', 'welcome')
+
+# Test trust (screen 04, OFFER-R33; room job LIFE-C47, "is any test untrustworthy"). Offer and price surfaces are
+# judged on profit per visitor (web pass 2: Intelligems), never on AOV or conversion alone.
+OFFER_SURFACES = ('first order offer', 'list price', 'pack price', 'cart rewards', 'bundles', 'new packs', 'loyalty',
+                  'referral', 'product page pack selector', 'product page price block', 'pop-up')
+BAD_OFFER_METRICS = ('aov', 'average_order_value', 'conversion_rate', 'cvr', 'revenue')
+TEST_MIN_DAYS = 28

@@ -26,7 +26,7 @@
     'desk-ladder': ['R07', 'R09', 'R29'], 'desk-first': ['R08', 'R31'], 'desk-welcome': ['R32'], 'desk-waterfall': ['R10', 'R03'], 'desk-calendar': ['R11'],
     'desk-depth': ['R11', 'R03'], 'desk-second': ['R21'], 'desk-cost': ['R22'], 'desk-gifting': ['R12', 'R13'], 'desk-guarantee': ['R14'],
     'desk-position': ['R16'], 'desk-parity': ['R17'], 'desk-bundles': ['R26'], 'desk-buyers': ['R23', 'R24'],
-    'desk-objections': ['R04', 'R15'], 'desk-tests': ['R27'], 'desk-registry': ['R27'] };
+    'desk-objections': ['R04', 'R15'], 'desk-tests': ['R27'], 'desk-registry': ['R27', 'R33'], 'desk-registry-trust': ['R33'] };
   function blockAction(id) {
     const rules = (BLOCK_RULES[id] || []).map((r) => '.OFFER-' + r + '.');
     const hits = ACTIONS.filter((a) => (a.finding_ids || []).some((f) => rules.some((r) => f.indexOf(r) >= 0)));
@@ -381,21 +381,27 @@
       actionLine(under.length ? under.map((w) => w.name).join(', ') + ' is under the red line. A proposed offer under it cannot be approved.' : 'Every live offer clears its red line.', a));
   }
 
-  function registryBlock(reg, proposed, launched) {
+  function registryBlock(reg, proposed, launched, trust) {
     const head = { title: 'What is already being tested, and what does it block?', sub: 'The experiment registry, mapped to the surfaces this screen changes. A running test holds its surface until its read point; a finished one can be the proof a doubt needs.' };
     if (!reg || reg.unavailable) return section('desk-registry', head, UI.emptyState({ screen: SLUG, title: 'No experiment registry', text: (reg || {}).reason }));
     const covered = ACTIONS.filter((a) => a.registry && a.registry.relation === 'covered');
+    const flagged = (trust && trust.rows) || [];
+    const bad = Object.fromEntries(flagged.map((r) => [r.id, r]));
     const table = UI.verdictTable({
       columns: [{ key: 'id', label: 'Test' }, { key: 'hypothesis', label: 'Hypothesis' }, { key: 'surface', label: 'Holds', format: (v) => v || 'not an offer surface' },
         { key: 'until', label: 'Until', format: (v) => v ? fmt.date(v) : NA }, { key: 'result', label: 'Result', format: (v) => v && v.lift != null ? v.direction + ' ' + pct(Math.abs(v.lift), 0) + ' (' + fmt.date(v.read_on) + ')' : 'no read yet' }],
       rows: withActs(reg.entries, (e) => { const a = ACTIONS.find((x) => (x.registry && x.registry.id === e.id) || (x.brain_refs || []).indexOf(e.id) >= 0); return a ? [{ label: 'Open action', onClick: () => openAction(a) }] : []; }),
-      verdict: { at: 1, kind: (r) => r.status === 'running' ? 'wait' : r.status === 'done' ? 'keep' : 'na', text: (r) => r.status, reason: (r) => r.metric || 'no metric' },
+      verdict: { at: 1, kind: (r) => bad[r.id] ? 'fix' : r.status === 'running' ? 'wait' : r.status === 'done' ? 'keep' : 'na',
+        text: (r) => bad[r.id] ? 'Cannot trust' : r.status, reason: (r) => bad[r.id] ? bad[r.id].problems.map((p) => p.key.replace(/_/g, ' ')).join(', ') : r.metric || 'no metric' },
       actions: { label: 'Do' }, sort: false });
+    const ta = blockAction('desk-registry-trust');
+    const trustList = flagged.length ? el('div', null, el('h4', { text: 'Can we trust each read? ' + flagged.length + ' of ' + trust.checked + ' tests, no' }),
+      el('ul', { class: 'small' }, flagged.map((r) => el('li', null, el('b', { text: r.id + ': ' }), r.problems.map((p) => p.text + ' ' + p.fix).join(' '))))) : null;
     const prop = (proposed || []).length ? el('p', { class: 'small', text: 'Proposed by this screen, waiting for the experiments screen to register: ' + proposed.map((x) => x.id + ' (' + x.hypothesis.split('.')[0] + ')').join('; ') + '.' }) : null;
     const live = (launched || []).length ? el('p', { class: 'small', text: 'Live offers launched from this screen: ' + launched.map((o) => (o.label || o.id) + ' since ' + fmt.date(o.valid_from) + (o.due ? ', past its check date' : '')).join('; ') + '.' }) : null;
-    return section('desk-registry', head, el('div', { class: 'card tight' }, table, prop, live,
+    return section('desk-registry', head, el('div', { class: 'card tight' }, table, trustList, prop, live,
       el('p', { class: 'micro faint', text: 'Source: ' + reg.source + '. Price elasticity: ' + (reg.elasticity ? reg.elasticity.reads.map((x) => x.id + ' ' + pct(x.lift, 1)).join(', ') : NA + ', ' + reg.elasticity_reason) + '.' })),
-      actionLine(covered.length ? covered.length + ' proposed moves are already running as tests: read them before building anything new. ' + (reg.elasticity ? '' : 'The cost pass-through price test would be the first price read.') : 'No proposed move duplicates a running test.', covered[0] || ACTIONS.find((a) => a.rule_id === 'OFFER-R22')));
+      ta ? actionLine(ta.title + '. A read we cannot trust must not decide an offer.', ta) : actionLine(covered.length ? covered.length + ' proposed moves are already running as tests: read them before building anything new. ' + (reg.elasticity ? '' : 'The cost pass-through price test would be the first price read.') : 'No proposed move duplicates a running test.', covered[0] || ACTIONS.find((a) => a.rule_id === 'OFFER-R22')));
   }
 
   function calendarBlock(cal) {
@@ -688,8 +694,8 @@
     wrong(d);
     actionsList(d);
     const TABS = [
-      { key: 'launch', label: 'Launch next', rules: ['OFFER-R11', 'OFFER-R12', 'OFFER-R21', 'OFFER-R27'],
-        blocks: () => [testsBlock(d.tests), registryBlock(d.registry, d.proposed_tests, d.launched), calendarBlock(d.calendar), depthBlock(d.depth), giftingBlock(d.gifting), secondOrderBlock(d.cohorts)] },
+      { key: 'launch', label: 'Launch next', rules: ['OFFER-R11', 'OFFER-R12', 'OFFER-R21', 'OFFER-R27', 'OFFER-R33'],
+        blocks: () => [testsBlock(d.tests), registryBlock(d.registry, d.proposed_tests, d.launched, d.trust), calendarBlock(d.calendar), depthBlock(d.depth), giftingBlock(d.gifting), secondOrderBlock(d.cohorts)] },
       { key: 'offers', label: 'Offers', rules: ['OFFER-R08', 'OFFER-R10', 'OFFER-R19', 'OFFER-R31', 'OFFER-R32', 'OFFER-R20', 'OFFER-R23', 'OFFER-R24', 'OFFER-R04', 'OFFER-R14', 'OFFER-R15'],
         blocks: () => [firstOrderBlock(d.first_order, d.discount_cohorts), welcomeBlock(d.welcome), cartBlock(d.cart, d.bunches), buyersBlock(d), objectionBlock(d.objections || [], d.returns), guaranteeBlock(d.guarantee, d.returns), subscriptionBlock(d.subscription), stackBlock(d.stack || [])] },
       { key: 'prices', label: 'Prices and packs', rules: ['OFFER-R22', 'OFFER-R16', 'OFFER-R17', 'OFFER-R07', 'OFFER-R09', 'OFFER-R26', 'OFFER-R29'],
