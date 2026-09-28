@@ -5,12 +5,9 @@ services:
     name: ecomos-dashboard
     runtime: python
     plan: starter
-    region: singapore
-    branch: main
     buildCommand: python --version
     startCommand: bash meta_gallery/deploy/start.sh
     healthCheckPath: /healthz
-    autoDeploy: true
     disk:
       name: dashboard-data
       mountPath: /var/data
