@@ -914,7 +914,7 @@
     const tbl = rows.length ? el('table', { class: 'kit dense' }, el('thead', null, el('tr', null, ...['Logged', 'What', 'Record', 'By', ''].map((h) => el('th', { text: h })))),
       el('tbody', null, ...rows.map((x) => el('tr', null, el('td', { text: fmt.date(x.logged_at) }), el('td', { text: x.what }), el('td', { text: x.summary + (x.date ? ', ' + fmt.date(x.date) : '') }),
         el('td', { text: x.by }), el('td', null, el('button', { class: 'btn sm quiet', type: 'button', text: 'Remove', 'aria-label': 'Remove ' + x.what + ': ' + x.summary, onclick: x.row_actions[0].onClick })))))) : null;
-    mount('#inputs', el('h4', { text: 'What the team logged (' + rows.length + ')' }), tbl ? el('div', { class: 'table-wrap' }, tbl) : el('p', { class: 'small muted', text: 'Nothing logged yet. Interviews, prices seen, card checks, polls and threshold changes show here.' }),
+    mount('#inputs', el('h4', { text: 'What the team logged (' + rows.length + ')' }), tbl ? el('div', { class: 'table-wrap' }, tbl) : el('p', { class: 'small muted', text: 'Nothing logged yet. Interviews, prices seen, card checks, polls, thresholds, outcomes and site changes show here.' }),
       el('p', { class: 'micro faint', text: r.note }));
   }
 
@@ -976,7 +976,8 @@
     const fmtM = (r) => r.value == null ? NA : r.unit === '%' ? fmt.pct(r.value) : fmt.num(r.value) + (r.unit === 'days' ? ' days' : r.unit === 'points' ? ' points' : '');
     mount('#metrics', el('h4', { text: 'Room metrics' }), UI.table({ columns: [{ key: 'key', label: 'Metric', format: (v) => pretty(v) }, { key: 'v', label: 'Value' },
       { key: 'formula', label: 'Formula' }, { key: 'unavailable', label: 'Why unavailable', format: (v) => v || '' }], sort: false,
-      rows: (d.room_metrics || []).map((r) => Object.assign({}, r, { v: fmtM(r) })) }));
+      rows: (d.room_metrics || []).map((r) => Object.assign({}, r, { v: fmtM(r) })) }),
+      el('p', { class: 'micro faint', text: 'The room\'s metrics, computed in code from this screen\'s models. A row that cannot be computed says why; it never reads 0.' }));
     const th = p.thresholds || { values: {} };
     mount('#rules', el('h4', { text: 'Rules' }), rulesTable(p.rules), el('h4', { text: 'Thresholds in force' }),
       UI.table({ columns: [{ key: 'k', label: 'Threshold' }, { key: 'v', label: 'Value' }, { key: 'd', label: 'Default' }, { key: 's', label: 'From' }], sort: false,

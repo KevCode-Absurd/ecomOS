@@ -2317,5 +2317,17 @@ class TestPullLightsUp(TempInputs):
         self.assertEqual(pl['lit'], len(pl['rows']))
 
 
+class TestDepthRound10(unittest.TestCase):
+    """10.4: the blocks outside the desk added since round 6 each end in a caveat line, and the empty log names every kind."""
+    def test_blocks(self):
+        js = (SCREEN / 'screen.js').read_text(encoding='utf-8')
+        for block in ("mount('#metrics'", "mount('#scoreboard'", "mount('#inputs'", "mount('#queue'"):
+            body = js.split(block, 1)[1][:2500]
+            self.assertIn("class: 'micro faint'", body, block)
+        empty = js.split('Nothing logged yet.', 1)[1][:200]
+        for word in ('Interviews', 'prices', 'card checks', 'polls', 'thresholds', 'outcomes', 'site changes'):
+            self.assertIn(word, empty)
+
+
 if __name__ == '__main__':
     unittest.main()
