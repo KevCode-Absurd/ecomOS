@@ -850,7 +850,7 @@ def rule_promo(rd):
             evidence.append(_ev('discount_depth_last_year', ly['depth'], 'ratio', end, baseline=ly['baseline_depth'],
                                 baseline_kind='28d_before', window=f'{ly["start"]} to {ly["end"]}', source='daily'))
         when = f'{w["days_to_approve"]} days' if w['days_to_approve'] >= 0 else f'{-w["days_to_approve"]} days ago'
-        sentence = f'{w["name"]} starts {w["start"]}. The offer must be approved by {w["approve_by"]} ({when}) and none is planned.'
+        sentence = f'{w["name"]} starts {w["start"]}, and no offer is planned for approval by {w["approve_by"]} ({when}).'
         if ly and ly['lift'] is not None:
             sentence += f' Last year it sold {ly["lift"] * 100:.0f} percent above the 28 days before.'
         out.append(_finding('OFFER-R11', entity, 'high' if w['days_to_approve'] <= 14 else 'medium', evidence, sentence,
@@ -1384,7 +1384,7 @@ def rule_welcome(rd):
              'window': '28d', 'note': 'at stake if no code order is new'}
     return [_finding('OFFER-R32', entity, 'medium' if need >= pb.WELCOME_FLAG else 'low', ev,
                      f'{w["code"]} cost ${w["code_dollars"]:,.0f} on {w["code_orders"]} first orders in {w["days"]} days. '
-                     f'It pays only if {need * 100:.0f} percent of them are truly new. No holdout has checked.',
+                     f'It pays only if {need * 100:.0f} percent of them are truly new, and no holdout has checked.',
                      money, 0.6, [], end)]
 
 
@@ -1789,5 +1789,27 @@ def run(brand, window=None, data=None):
     rd = Reader(data, brand, ends_on)
     out = (rule_threshold(rd) + rule_stale(rd) + rule_pull(rd) + rule_first_order(rd) + rule_red_line(rd) + rule_promo(rd) + rule_gifting(rd) + rule_guarantee(rd) + rule_position(rd) + rule_parity(rd) + rule_discount(rd) + rule_cart(rd) + rule_second_order(rd) + rule_cost(rd) + rule_referral(rd) + rule_loyalty(rd) + rule_window_creep(rd) + rule_bundles(rd) + rule_launched(rd) + rule_upsell(rd) + rule_bnpl(rd) + rule_threshold_match(rd) + rule_cohorts(rd) + rule_welcome(rd) + rule_test_trust(rd) + rule_price_moves(rd) + rule_claim_stress(rd) + rule_paid(rd) + rule_attach(rd) + rule_code_returns(rd) + rule_power(rd) + rule_leaks(rd) + rule_returners(rd) + rule_ladder(rd) + rule_sku_margin(rd) +
            rule_unanswered(rd))
+    out = severity_from_money(out, _net_28d(rd))
     out.sort(key=lambda f: (SEVERITY_ORDER[f['severity']], -((f.get('money_at_stake') or {}).get('usd') or -1), f['id']))
     return out
+
+
+def _net_28d(rd):
+    t = _model().window_totals(rd, rd.ends_on)
+    return t['net_sales'] if t else _model().net_revenue_orders(rd, WINDOW)
+
+
+def severity_from_money(findings, net):
+    """audit.md section 2: a stake over 5 percent of trailing 28-day net revenue is critical, over 1 percent high.
+    Only raises a rule's own severity, never lowers it; the rule's reason stays in the sentence."""
+    if not net:
+        return findings
+    for f in findings:
+        usd = (f.get('money_at_stake') or {}).get('usd')
+        if f.get('status') != 'open' or not isinstance(usd, (int, float)):
+            continue
+        share = usd / net
+        want = 'critical' if share > 0.05 else 'high' if share > 0.01 else None
+        if want and SEVERITY_ORDER[want] < SEVERITY_ORDER[f['severity']]:
+            f['severity'] = want
+    return findings

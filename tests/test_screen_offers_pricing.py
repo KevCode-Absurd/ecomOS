@@ -1729,7 +1729,7 @@ class ClaimStressTest(unittest.TestCase):
         try:
             f = [x for x in audit.run('bombas') if x['rule_id'] == 'OFFER-R35']
             self.assertEqual(len(f), 1)
-            self.assertEqual(f[0]['severity'], 'high')
+            self.assertIn(f[0]['severity'], ('high', 'critical'))   # raised by money share (round 8)
             a = next(x for x in api.actions.rank('bombas')['actions'] if x['rule_id'] == 'OFFER-R35')
             self.assertEqual(a['artefact']['kind'], 'policy')
         finally:
@@ -2087,6 +2087,26 @@ class MoneyShapeTest(unittest.TestCase):
         for f in audit.run('bombas') + audit.run(None, None, server.Data()):
             if f['money_at_stake']:
                 self.assertLessEqual({'usd', 'formula', 'inputs', 'window'}, set(f['money_at_stake']), f['rule_id'])
+
+
+class SeverityWordingTest(unittest.TestCase):
+    """Round 8 feature 8: audit.md sections 2 and 7. Severity rises with money share; sentences stay short."""
+
+    def test_money_raises_severity(self):
+        import datetime as dtm
+        mk = lambda usd, sev: {'status': 'open', 'severity': sev, 'money_at_stake': {'usd': usd}}
+        out = audit.severity_from_money([mk(60, 'low'), mk(20, 'medium'), mk(5, 'medium'), mk(60, 'critical')], 1000)
+        self.assertEqual([f['severity'] for f in out], ['critical', 'high', 'medium', 'critical'])
+
+    def test_sentences(self):
+        import re
+        sys.path.insert(0, str(ROOT / 'app'))
+        import server
+        for f in audit.run('bombas') + audit.run(None, None, server.Data()):
+            s_ = f['sentence']
+            self.assertLess(len(s_.split()), 40, s_)
+            self.assertLessEqual(len(re.findall(r'[.!?](?:\s|$)', s_)), 2, s_)
+            self.assertNotRegex(s_, r'(?i)\b(should|try|consider)\b')
 
 
 if __name__ == '__main__':
