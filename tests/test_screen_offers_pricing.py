@@ -1947,5 +1947,16 @@ class DepthBandTest(unittest.TestCase):
                 self.assertIsNone(b['repeat'])      # too few is unavailable, never a rate
 
 
+class StackBlindSpotTest(unittest.TestCase):
+    """Round 7 feature 8: an app named in the brain stack with no table shows as a "cannot see yet" line."""
+
+    def test_bombas_rebuy(self):
+        d = api.handle(Req(['overview']))
+        row = next(x for x in d['blind_spots'] if x['key'] == 'upsell_app')
+        self.assertIn('Rebuy', row['reason'])
+        self.assertIn(row['action_id'], {a['id'] for a in d['plan']})
+        self.assertFalse(any(x['key'] == 'loyalty_app' for x in d['blind_spots']))   # the brain names no loyalty app
+
+
 if __name__ == '__main__':
     unittest.main()

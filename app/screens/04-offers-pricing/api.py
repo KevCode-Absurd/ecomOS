@@ -334,7 +334,7 @@ def with_decisions(acts, today=None, path=None):
     return kept, snoozed
 
 
-def blind_spots(ranked):
+def blind_spots(ranked, rd=None):
     """What this screen cannot see yet, in words, with what fills each gap and the move that starts it.
     Price sensitivity and gift card balances stay unavailable until their data lands; nothing is estimated."""
     acts = ranked['actions']
@@ -362,6 +362,12 @@ def blind_spots(ranked):
                     'needs': 'the orders table with line items and codes',
                     'fills': 'bundle pairs, orders bunched under the threshold, and whether code-won buyers come back',
                     'action_id': first('OFFER-R26') or first('OFFER-R31')})
+    for field, (what, table, shows) in actions.playbook.STACK_SOURCES.items():
+        app, rec = actions.model.brain_value(rd, 'stack.' + field) if rd is not None and rd.brand else (None, None)
+        if app and not rd.table(table):
+            out.append({'key': field, 'what': what, 'reason': f'{app} is named in the brain but its {table} table is not connected',
+                        'needs': f'the {table} table, read-only from {app}', 'fills': shows,
+                        'action_id': first('OFFER-R28') if field == 'upsell_app' else None})
     r = ranked.get('returns') or {}
     if isinstance(r, dict) and r.get('unavailable'):
         out.append({'key': 'returns', 'what': 'Returns by reason', 'reason': r.get('reason'),
@@ -395,7 +401,7 @@ def overview(data, brand):
                          **a['plan_record']} for a in planned],
             'stack': offer_stack(rd), 'threshold': th, 'bfcm': bfcm(rd), **desk,
             'creep': creep_rule(months), 'chart': chart(months), 'findings': ranked['findings'], 'rules': audit.RULES,
-            'settings': page_settings(), 'blind_spots': blind_spots(ranked)}
+            'settings': page_settings(), 'blind_spots': blind_spots(ranked, rd)}
 
 
 def rank(brand='bombas', window=None):

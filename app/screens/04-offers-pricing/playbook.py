@@ -291,3 +291,12 @@ RETURNER_MIN = 100
 # Depth bands for first-order codes (screen 04, 7.7; web pass 3: Lifetimely). Upper edges of each band, as a share
 # of the first order's subtotal; 0 is full price.
 DEPTH_BANDS = (0.0, 0.10, 0.20, 1.0)
+
+# App data this screen cannot read yet (screen 04, 7.8; web pass 3). A brain stack field naming an app of this kind
+# adds a "cannot see yet" line until its table lands: field -> (what, table, what it shows).
+STACK_SOURCES = {
+    'upsell_app': ('Upsell and post-purchase take rate', 'upsell_events',
+                   'offers shown and taken by placement, the margin they add, and refunds on added items'),
+    'loyalty_app': ('Loyalty points owed', 'loyalty_ledger', 'points earned but not spent, what they cost at landed cost, and redemption'),
+    'shipping_protection_app': ('Shipping protection', 'protection_claims', 'opt-in rate, fees kept and claims paid'),
+}
