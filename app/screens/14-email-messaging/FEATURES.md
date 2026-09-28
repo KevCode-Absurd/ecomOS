@@ -6,9 +6,29 @@ Status: todo | doing | done | parked. One feature per commit. The first round is
 
 | # | Feature | Status |
 |---|---|---|
-| 0.1 | Page shell in the shared UI kit: header, empty-state tiles, insight list, action buttons | todo |
-| 0.2 | `api.py` serving this screen's metrics from `app/data/` with unavailable states | todo |
-| 0.3 | 3 metric tiles, 2 insights, 1 chart from the sample brand | todo |
+| 0.1 | Page shell in the shared UI kit: header, empty-state tiles, insight list, action buttons | done |
+| 0.2 | `api.py` serving this screen's metrics from `app/data/` with unavailable states | done |
+| 0.3 | 3 metric tiles, 2 insights, 1 chart from the sample brand | done |
+| 0.4 | `audit.py`: 15 rules (EMAIL-R01 to R15) in the contract shape, 5 computable, 10 unavailable with the connector that fills them | done |
+
+## JTBD table (room jobs, capabilities and the audit rules that answer them)
+
+| Job | Question | Capability | Rules | On Bombas today |
+|---|---|---|---|---|
+| design and test the sign-up pop-up | is my pop-up earning its keep | LIFE-C02 | none yet | no pop-up log |
+| keep consent and quiet hours correct | am I allowed to send this now | LIFE-C03 | EMAIL-R02, EMAIL-R07 | unavailable: no per-contact send log or consent log |
+| turn new subscribers into first buyers | is the welcome flow converting in 72 hours | LIFE-C04 | EMAIL-R10 | runs, needs 3 or more welcome messages; quiet |
+| win back browsers and cart abandoners | how much am I recovering, does the discount fire early | LIFE-C05, LIFE-C06 | EMAIL-R06 | unavailable: no flow_defs |
+| turn order 1 into order 2 | is post-purchase content working | LIFE-C07 | none yet | flow table shows Post-Purchase revenue |
+| win back lapsed buyers, stop mailing dead contacts | is win-back on the brand's cadence | LIFE-C08 | EMAIL-R11, EMAIL-R12 | R12 fires (high, $6,809); R11 unavailable |
+| keep subscriptions on schedule | do charge and failed-payment messages land | LIFE-C09 | none | subscription variant later |
+| run loyalty, VIP and birthday triggers | do VIPs use the perks | LIFE-C10 | none yet | no loyalty data |
+| back-in-stock and post-delivery sends | is every restock alert real | LIFE-C11 | EMAIL-R15 | fires on KC-0342 |
+| keep the segmentation model current | are segments stale | LIFE-C12 | EMAIL-R03, EMAIL-R05 | unavailable |
+| plan the weekly campaign calendar | am I over-mailing discounts | LIFE-C13 | EMAIL-R14 (honesty, LOOP-C12) | fires on KC-0341 |
+| protect sender reputation and list health | is list quality a spam risk | LIFE-C16 | EMAIL-R04, EMAIL-R08 | unavailable: no complaints, no per-contact opens |
+| run SMS, WhatsApp and push | SMS or WhatsApp; COD to prepaid | LIFE-C17, LIFE-C22 | EMAIL-R09 | unavailable; COD metric null for US |
+| test program and monthly read-out | traffic problem or flow problem | LIFE-C19, LIFE-C20 | EMAIL-R01, EMAIL-R13 | R01 runs, all 6 flows within 15 percent; R13 unavailable |
 
 ## Candidates from the room spec (pick 10 per round)
 
@@ -102,3 +122,13 @@ Status: todo | doing | done | parked. One feature per commit. The first round is
 
 | Round | Features picked | Date | Notes |
 |---|---|---|---|
+| 0 | 0.1 to 0.4 | 28 Sep 2026 | skeleton, audit, round0.png |
+
+## Round 0 status
+
+1. Built 28 Sep 2026: index.html, screen.js, api.py (overview, findings), audit.py, round0.png at 1280 wide; tests in `tests/test_screen_email.py` (6 pass).
+2. Tiles: flow revenue from real orders ($396,439, 11.1 percent of store revenue), net list growth (-976, a negative month), campaign unsubscribe rate (0.30 percent). All simulated.
+3. Insights as rules: EMAIL-R01 flow revenue check (quiet, all 6 flows within 15 percent) and EMAIL-R12 sunset proxy (fires). Chart: platform against real-order revenue per flow.
+4. Audit fires on Bombas: EMAIL-R12 high ($6,809 at stake), EMAIL-R14 last-call claim with no calendar record, EMAIL-R15 restock send with no restock; 10 rules unavailable with their connector.
+5. Contract follow-up for an app-level session: metrics.py reads `flow` and `sent_at`, the generator writes `flow_name` and `send_time` with JSON text ids; `audit.EmailData` bridges it. Add unsubscribe_rate_per_send to metrics.md.
+6. Needs a local data.sqlite (scale 0.1 used); Bombas tests skip without it. Next round: welcome 72-hour conversion, discount share of campaigns, send calendar heatmap.
