@@ -24,6 +24,11 @@ question, and accept or ignore on a proposed record. Nothing external.
                                 competitor sets; proposed pages waiting on a page id
   POST competitors/page-id      {name, page_id}: writes an approved founder record competitors.page_id_<slug>;
                                 the page joins the page list and the next pull estimate
+  GET  health                   freshness by confidence: sections by tier with counts, freshness, the one action
+                                per section (connect, ask the founder, re-crawl), and the connectors
+  GET  health/cell?section=&tier=  the records in one heatmap cell, best first
+  POST approve/<record id>      {choice: approve | forbid}: the founder settles a record; it becomes an approved
+                                (or forbidden) founder record with the old tier in history
   GET  records?section=<name>   one section's records with tier, date, source and evidence
   GET  audit                    findings from audit.py (app/contracts/audit.md shape)
   POST questions/<field>        {answer}: writes a founder record, marks the question answered
@@ -62,6 +67,9 @@ META_SECTIONS = {"freshness", "open_questions", "changes"}
 _spec = importlib.util.spec_from_file_location("brand_brain_audit", HERE / "audit.py")
 audit = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(audit)
+_hspec = importlib.util.spec_from_file_location("brand_brain_health", HERE / "health.py")
+health = importlib.util.module_from_spec(_hspec)
+_hspec.loader.exec_module(health)
 _mspec = importlib.util.spec_from_file_location("brand_brain_market", HERE / "market.py")
 market = importlib.util.module_from_spec(_mspec)
 _mspec.loader.exec_module(market)
@@ -435,6 +443,28 @@ def page_id_add(brain: Brain, body: dict):
     return 201, {"ok": True, "record": rid, "flows_to": "the page list and the next Ad Library pull estimate", "version": brain.version()}
 
 
+def approve(brain: Brain, rid: str, body: dict):
+    choice = (body or {}).get("choice")
+    if choice not in ("approve", "forbid"):
+        return 400, {"error": "choice must be approve or forbid"}
+    parts = rid.split(".")
+    if len(parts) < 3 or parts[1] not in SECTIONS:
+        return 404, {"error": "no such record", "id": rid}
+    rec = next((r for r in brain.raw(parts[1]) if r.get("id") == rid), None)
+    if rec is None:
+        return 404, {"error": "no such record", "id": rid}
+    was = {"type": (rec.get("source") or {}).get("type"), "ref": (rec.get("source") or {}).get("ref"), "tier": rec.get("tier")}
+    hist = list(rec.get("history") or []) + [{"value": rec.get("value"), "changed_at": brain.today.isoformat(),
+                                             "source_ref": was["ref"] or "", "tier": was["tier"], "reason": f"founder {choice}"}]
+    new = dict(rec, tier="approved" if choice == "approve" else "forbidden", confidence=1.0, status="active", history=hist,
+               source={"type": "founder", "ref": f"05-brand-brain {choice} of {rid}", "captured_at": brain.today.isoformat(), "was": was})
+    new.pop("expires_at", None)
+    errs = brain.put(new)
+    if errs:
+        return 400, {"error": "record not valid", "details": errs}
+    return 201, {"ok": True, "record": rid, "tier": new["tier"], "was": rec.get("tier"), "version": brain.version()}
+
+
 def handle(req):
     try:
         brain = _brain(req)
@@ -455,6 +485,16 @@ def handle(req):
         return document_add(brain, req.body)
     if req.method == "GET" and parts == ["competitors"]:
         return competitors(brain)
+    if req.method == "GET" and parts == ["health"]:
+        h = health.heatmap(brain)
+        h["connectors"] = health.connectors(brain)
+        h.update(brand=brain.brand, today=brain.today.isoformat(), version=brain.version())
+        return h
+    if req.method == "GET" and parts == ["health", "cell"]:
+        sec, tier = req.arg("section", ""), req.arg("tier", "")
+        return {"section": sec, "tier": tier, "records": health.records_in_cell(brain, sec, tier)}
+    if req.method == "POST" and len(parts) == 2 and parts[0] == "approve":
+        return approve(brain, parts[1], req.body)
     if req.method == "GET" and parts == ["signals"]:
         sg = market.signals(brain)
         sg.update(brand=brain.brand, today=brain.today.isoformat(), version=brain.version())

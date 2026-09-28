@@ -373,7 +373,87 @@
     return d;
   }
 
-  // ---------- 5. the desk (round 0 blocks, restyled) ----------
+  // ---------- 5. health: freshness by confidence ----------
+  const KIND_VERDICT = { connect: 'stop', ask: 'fix', recrawl: 'watch', ok: 'keep' };
+  function cellPanel(sec, tier) {
+    const body = el('div', { class: 'stack' });
+    const list = el('div', { class: 'grid' });
+    body.append(el('div', { class: 'small muted', text: 'Approve makes it an approved founder record that wins the merge; forbid marks it as a thing we never say. Both keep the old tier in history.' }), list);
+    UI.panel({ title: pretty(sec) + ': ' + pretty(tier) + ' records', body });
+    api(BASE + 'health/cell?section=' + encodeURIComponent(sec) + '&tier=' + encodeURIComponent(tier)).then((d) => {
+      if (!d.records.length) { list.append(el('p', { class: 'muted', text: 'No records in this cell.' })); return; }
+      for (const r of d.records) {
+        const card = el('article', { class: 'card flat rec' });
+        card.append(el('div', { class: 'meta' }, tierChip(r.tier), el('span', { class: 'chip mono', text: r.id }), el('span', { text: r.date ? fmt.date(r.date) : 'undated' }), el('span', { text: 'confidence ' + (r.confidence == null ? NA : r.confidence) })));
+        card.append(el('div', { text: r.text || '' }), el('div', { class: 'meta' }, sourceLink({ type: r.source.type, ref: r.source.ref, link: /^https?:/.test(r.source.ref) ? r.source.ref : null })));
+        const status = el('span', { class: 'micro muted' });
+        const act = (choice) => async (e) => {
+          e.target.disabled = true;
+          try { const res = await api(BASE + 'approve/' + encodeURIComponent(r.id), { method: 'POST', body: { choice } }); status.textContent = 'Now ' + res.tier + ' (was ' + res.was + ').'; card.classList.add('settled'); }
+          catch (err) { e.target.disabled = false; status.textContent = 'Could not save: ' + err.message; }
+        };
+        if (r.tier !== 'approved') card.append(el('div', { class: 'row' }, el('button', { class: 'btn primary sm', type: 'button', text: 'Approve as is', onclick: act('approve') }), el('button', { class: 'btn danger sm', type: 'button', text: 'Forbid', onclick: act('forbid') }), status));
+        list.append(card);
+      }
+    }).catch((e) => list.append(el('p', { class: 'muted', text: 'Could not load: ' + e.message })));
+  }
+  function sectionPanel(s, action) {
+    const v = s.verdict;
+    const body = el('div', { class: 'stack' });
+    body.append(el('div', { class: 'row' }, UI.verdict(KIND_VERDICT[v.kind], v.text, v.reason), el('span', { class: 'chip', text: s.records + ' records' }), s.age_days != null ? el('span', { class: 'chip', text: s.age_days + ' d old, shelf ' + (s.shelf_days == null ? 'none' : s.shelf_days + ' d') }) : null, s.confidence != null ? el('span', { class: 'chip', text: 'confidence ' + s.confidence }) : null));
+    body.append(el('div', null, el('b', { text: 'Why: ' }), v.reason + '.'));
+    if (s.rooms.length) body.append(el('div', null, el('b', { text: 'Rooms that read it: ' }), s.rooms.map(pretty).join(', ') + '.'));
+    if (s.empty_fields.length) body.append(el('div', null, el('b', { text: 'Fields the rooms need and do not have: ' }), s.empty_fields.map((f) => pretty(f.split('.').slice(1).join('.'))).join(', ') + '.'));
+    if (s.sources.length) body.append(el('div', null, el('b', { text: 'Sources that fill it: ' }), s.sources.map((x) => x.name + (x.access === 'public' && !/public/i.test(x.name) ? ' (public)' : '')).join(', ') + '.'));
+    body.append(el('div', { class: 'row' }, ...Object.entries(s.counts).filter(([, n]) => n).map(([t, n]) => el('button', { class: 'btn xs soft', type: 'button', text: pretty(t) + ' ' + n, onclick: () => cellPanel(s.section, t) }))));
+    if (action) body.append(UI.actionCard(action, { screen: SCREEN, expanded: true }));
+    else if (v.kind !== 'ok') body.append(UI.actionCard({ id: '05-brand-brain.health.' + s.section, title: v.text + ': ' + pretty(s.section), why: v.reason + '.', severity: 'medium', owner: v.owner, capability: { id: v.capability }, artefact: { kind: v.artefact, label: v.artefact === 'connector_setup' ? 'a source connected, read-only' : 'approved brain records' }, steps: v.steps, finding_ids: [] }, { screen: SCREEN, expanded: true }));
+    body.append(el('button', { class: 'btn sm', type: 'button', text: 'Browse all records', onclick: () => openSection(s.section) }));
+    UI.panel({ title: pretty(s.section), body });
+  }
+  function healthTable(h, byAct) {
+    const rows = h.sections.map((s) => Object.assign({}, s, { strong_pct: s.strong_share, rooms_n: s.rooms.length, rooms_text: s.rooms.slice(0, 4).map(pretty).join(', ') + (s.rooms.length > 4 ? ' +' + (s.rooms.length - 4) : ''), age: s.records ? s.age_days : null }));
+    return UI.verdictTable({
+      columns: [
+        { key: 'label', label: 'Section' },
+        { key: 'records', label: 'Records', unit: 'n', align: 'right', format: (v) => v ? String(v) : 'no records' },
+        { key: 'age', label: 'Newest', unit: 'days', align: 'right' },
+        { key: 'shelf_days', label: 'Shelf', unit: 'days', align: 'right', format: (v) => v == null ? 'none' : v + ' d' },
+        { key: 'strong_pct', label: 'Approved or backed', unit: '%', align: 'right' },
+        { key: 'confidence', label: 'Confidence', align: 'right', format: (v) => v == null ? NA : v.toFixed(2) },
+        { key: 'rooms_text', label: 'Rooms that read it' },
+      ],
+      verdict: { at: 1, kind: (r) => KIND_VERDICT[r.verdict.kind], text: (r) => r.verdict.text, reason: (r) => r.verdict.reason },
+      actions: { label: (r) => r.verdict.kind === 'ok' ? 'Open' : 'Do it', onClick: (r) => sectionPanel(r, byAct[r.section]) },
+      rows, sort: false, maxRows: 40,
+    });
+  }
+  async function loadHealth() {
+    let h, actions = [];
+    try { h = await api(BASE + 'health'); } catch (e) { mount('#health', el('p', { class: 'muted', text: 'Health unavailable: ' + e.message })); return null; }
+    try { const r = await api(BASE + 'rank'); actions = r.actions || []; } catch (e) { actions = []; }
+    const byAct = {};
+    for (const a of actions) if (a.entity && /^section_/.test(a.entity.id) && /BRN-R(01|02|11)/.test(a.rule_id || '')) { const k = a.entity.id.replace(/^section_/, ''); if (!byAct[k] || a.rule_id === 'BRN-R11') byAct[k] = a; }
+    const emptyRows = new Set(h.sections.filter((s) => !s.records && s.verdict.kind !== 'ok').map((s) => s.section));
+    mount('#health-tools', UI.orientation([
+      { label: 'sections', value: h.counts.sections, unit: 'n' }, { label: 'need an action', value: h.counts.weak, unit: 'n', tone: h.counts.weak ? 'bad' : 'good' },
+      { label: 'connect', value: h.counts.by_kind.connect, unit: 'n' }, { label: 'ask', value: h.counts.by_kind.ask, unit: 'n' }, { label: 're-crawl', value: h.counts.by_kind.recrawl, unit: 'n' },
+      { label: 'records', value: h.records, unit: 'n' }, { label: 'approved or backed', value: h.strong_share, unit: '%' }]));
+    const matrix = UI.coverageMatrix({
+      rows: h.rows, cols: h.cols, cells: h.cells, unit: 'n', single: true, max: Math.min(h.max, 60), corner: 'Section by tier',
+      gapRule: (cell, row, col) => (!cell && col.key === 'approved' && emptyRows.has(row.key) ? 'gap' : (cell && (col.key === 'inferred' || col.key === 'unverified') && cell.us > 0 ? 'over' : (col.key === 'forbidden' && cell && cell.us ? 'gap' : ''))),
+      action: { label: 'Review', onClick: (cell, row, col) => { if (cell) cellPanel(row.key, col.key); else { const s = h.sections.find((x) => x.section === row.key); if (s) sectionPanel(s, byAct[row.key]); } } },
+      onCell: (cell, row, col) => { if (cell) cellPanel(row.key, col.key); },
+      note: h.note + ' Amber cells are inferred or unverified records a founder can settle. Colour scale caps at 60 so the language bank does not wash out the rest.',
+    });
+    mount('#health', UI.tabs({ items: [
+      { key: 'actions', label: 'Sections and actions', n: h.counts.weak, panel: () => healthTable(h, byAct) },
+      { key: 'heat', label: 'Heatmap by tier', panel: () => matrix },
+    ], current: h.counts.weak ? 'actions' : 'heat' }));
+    return h;
+  }
+
+  // ---------- 5b. the desk (round 0 blocks, restyled) ----------
   function recordCard(r) {
     const card = el('article', { class: 'card flat rec' });
     card.append(el('div', { class: 'meta' }, tierChip(r.tier), el('span', { class: 'chip mono', text: r.id }),
@@ -517,7 +597,6 @@
       UI.copyButton({ label: 'Copy T0 card', text: () => d.t0 }));
     mount('#insights', ...(d.insights.length ? d.insights.map((i) => UI.insight(Object.assign({ screen: SCREEN }, i)))
       : [el('p', { class: 'muted', text: 'No rule fired today.' })]));
-    mount('#sections', sectionsTable(d.sections));
     mount('#ladders', ...d.ladders.map(ladderCard));
     mount('#questions', ...(d.questions.length ? d.questions.map((q) => questionCard(q, loadDesk)) : [el('p', { class: 'muted', text: 'No open questions.' })]));
     mount('#review', ...(d.review.length ? d.review.map((r) => reviewCard(r, loadDesk)) : [el('p', { class: 'muted', text: 'Nothing proposed. Agent updates land here before they reach the brain.' })]));
@@ -532,6 +611,7 @@
     mountDrop();
     loadDocs();
     loadMarket();
+    loadHealth();
     const [prof] = await Promise.all([loadProfile(), loadDesk()]);
     await loadPlan(prof);
   }

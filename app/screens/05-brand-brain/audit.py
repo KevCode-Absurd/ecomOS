@@ -53,6 +53,10 @@ BRN-R10 category frame not carried. The frame buyers use most in public
     marketing brand more often than a giving brand. Severity medium.
     Capability CREA-C03 (angles and positioning). Reputation override 3.
     Owner: 05-brand-brain.
+BRN-R11 section a room needs is mostly inferred or unverified. Half or more
+    of a section's active records are inferred or unverified and a room reads
+    it (health.py, WEAK_SHARE 0.5). Severity medium. Capability BRN-C07
+    (founder round, agent drafts). Owner: 05-brand-brain.
 BRN-R07 competitor snapshot stale. A configured Ad Library page was captured
     more than SNAPSHOT_STALE_DAYS (7) ago, or never. Severity low. Capability
     BRN-C11 (competitor snapshot, signals only). Owner: 05-brand-brain.
@@ -105,11 +109,16 @@ RULES = [
      "inputs": ["competitors (reddit_recommended)", "objection_ladders"], "capability": "BRAND-C57", "owner_screen": SCREEN},
     {"rule_id": "BRN-R10", "name": "category frame not carried", "entity_type": "brand",
      "inputs": ["positioning.reddit_frames", "positioning.frame", "identity.giving_model", "story_bank"], "capability": "CREA-C03", "owner_screen": SCREEN},
+    {"rule_id": "BRN-R11", "name": "section a room needs is mostly inferred or unverified", "entity_type": "brand",
+     "inputs": ["brain sections", "questions.bank.json"], "capability": "BRN-C07", "owner_screen": SCREEN},
 ]
 AUTONOMY = {"BRN-C12": "agent_does", "BRN-C07": "founder_gate", "BRN-C03": "agent_does",
             "CREA-C19": "agent_does", "CREA-C04": "agent_does", "BRN-C11": "agent_does", "CREA-C06": "agent_does",
             "BRAND-C57": "agent_does", "CREA-C03": "agent_does"}
 
+_hspec = importlib.util.spec_from_file_location("brand_brain_health", Path(__file__).resolve().parent / "health.py")
+health = importlib.util.module_from_spec(_hspec)
+_hspec.loader.exec_module(health)
 _mspec = importlib.util.spec_from_file_location("brand_brain_market", Path(__file__).resolve().parent / "market.py")
 market = importlib.util.module_from_spec(_mspec)
 _mspec.loader.exec_module(market)
@@ -322,6 +331,22 @@ def rule_signals(brain: Brain, ends_on: str) -> list[dict]:
     return out
 
 
+def rule_weak_sections(brain: Brain, ends_on: str) -> list[dict]:
+    out = []
+    for s in health.heatmap(brain)["sections"]:
+        if s["verdict"]["kind"] != "ask" or not s["records"]:
+            continue
+        ev = [_row("weak_share", round(s["weak_share"], 2), "share", ends_on, s["age_days"], health.WEAK_SHARE, f"brain.{s['section']}"),
+              _row("rooms_reading", len(s["rooms"]), "n", ends_on, None, 1, "questions.bank.json")]
+        sentence = (f"{round(s['weak_share'] * 100)} percent of {s['section'].replace('_', ' ')} is inferred or unverified. "
+                    f"{len(s['rooms'])} rooms read it: {', '.join(r.replace('_', ' ') for r in s['rooms'][:4])}.")
+        f = _finding("BRN-R11", "medium", {"type": "brand", "id": f"section_{s['section']}", "label": s["section"]},
+                     ev, sentence, [], ends_on, 0.5)
+        f["steps"] = s["verdict"]["steps"]
+        out.append(f)
+    return out
+
+
 def rule_snapshot_stale(brain: Brain, ends_on: str) -> list[dict]:
     out = []
     d = market.pages(brain)
@@ -349,7 +374,7 @@ def run(brand: str, window: dict | None = None, root: Path | None = None) -> lis
         bank = keeper.load_bank()
     except (OSError, ValueError, KeyError):
         bank = None
-    out = rule_stale(brain, ends_on) + rule_claims(brain, ends_on) + rule_competitor_gaps(brain, ends_on) + rule_angle_gaps(brain, ends_on) + rule_signals(brain, ends_on) + rule_snapshot_stale(brain, ends_on)
+    out = rule_stale(brain, ends_on) + rule_claims(brain, ends_on) + rule_competitor_gaps(brain, ends_on) + rule_angle_gaps(brain, ends_on) + rule_signals(brain, ends_on) + rule_weak_sections(brain, ends_on) + rule_snapshot_stale(brain, ends_on)
     if bank is None:
         for rid, sev in (("BRN-R02", "medium"), ("BRN-R03", "medium")):
             f = _finding(rid, sev, {"type": "brand", "id": "question_bank", "label": "question bank"},

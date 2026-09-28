@@ -90,7 +90,7 @@ class AuditShape(unittest.TestCase):
         self.assertIn('05-brand-brain.BRN-R02.section_economics', ids)
         self.assertIn('05-brand-brain.BRN-R04.mission_trust.rung_1.donation_pledge', ids)
         rules = {r['rule_id'] for r in audit.RULES}
-        self.assertLessEqual({'BRN-R01', 'BRN-R02', 'BRN-R03', 'BRN-R04', 'BRN-R05', 'BRN-R06', 'BRN-R07', 'BRN-R08', 'BRN-R09', 'BRN-R10'}, rules)
+        self.assertLessEqual({'BRN-R01', 'BRN-R02', 'BRN-R03', 'BRN-R04', 'BRN-R05', 'BRN-R06', 'BRN-R07', 'BRN-R08', 'BRN-R09', 'BRN-R10', 'BRN-R11'}, rules)
 
 
 class AuditRules(TempBrain):
@@ -437,3 +437,65 @@ class Round1Signals(TempBrain):
         self.assertEqual(d['repull']['pages'], before + 1)
         self.assertNotIn('Uniqlo', [p['name'] for p in d['proposed']])
         self.assertEqual(api.handle(Req(['competitors', 'page-id'], 'POST', body={'name': 'Uniqlo', 'page_id': 'abc'}))[0], 400)
+
+
+class Round1Health(TempBrain):
+    """Round 1 feature 4: freshness by confidence per section, each weak row ending in an action; approve or forbid a record."""
+
+    def test_heatmap_rows_cols_and_verdicts(self):
+        h = api.handle(Req(['health']))
+        self.assertEqual([c['key'] for c in h['cols']], api.health.TIERS)
+        keys = [r['key'] for r in h['rows']]
+        self.assertNotIn('freshness', keys)
+        self.assertIn('plans', keys)
+        self.assertEqual(h['cells']['plans'], {})   # no records: an empty row, never a 0
+        self.assertEqual(sum(c['us'] for c in h['cells']['claims'].values()), 6)
+        by = {s['section']: s for s in h['sections']}
+        self.assertEqual(by['objection_ladders']['verdict']['kind'], 'ask')
+        self.assertEqual(by['objection_ladders']['verdict']['owner'], 'agent_drafts')
+        self.assertTrue(by['objection_ladders']['verdict']['steps'])
+        self.assertEqual(by['claims']['verdict']['kind'], 'ok')
+        self.assertIsNone(by['plans']['age_days'])
+        self.assertEqual(h['sections'][0]['verdict']['kind'], 'ask')  # weak rows first
+        self.assertGreater(h['strong_share'], 0)
+
+    def test_stale_section_becomes_recrawl(self):
+        rows = self.section('policies')
+        for r in rows:
+            r['expires_at'] = '2026-01-01'
+        self.write('policies', rows)
+        by = {s['section']: s for s in api.handle(Req(['health']))['sections']}
+        v = by['policies']['verdict']
+        self.assertEqual((v['kind'], v['capability'], v['owner']), ('recrawl', 'BRN-C01', 'agent'))
+        self.assertEqual(by['policies']['stale'], 10)
+
+    def test_empty_needed_section_becomes_connect_or_ask(self):
+        self.write('economics', [])
+        by = {s['section']: s for s in api.handle(Req(['health']))['sections']}
+        v = by['economics']['verdict']
+        self.assertIn(v['kind'], ('connect', 'ask'))
+        self.assertEqual(v['owner'], 'person' if v['kind'] == 'connect' else 'agent_drafts')
+        self.assertTrue(v['steps'])
+
+    def test_weak_section_rule_and_cell_records(self):
+        ids = {f['id'] for f in api.handle(Req(['audit']))['findings']}
+        self.assertIn('05-brand-brain.BRN-R11.section_objection_ladders', ids)
+        cell = api.handle(Req(['health', 'cell'], query={'section': ['positioning'], 'tier': ['inferred']}))
+        self.assertEqual(len(cell['records']), 6)
+        self.assertTrue(all(r['tier'] == 'inferred' for r in cell['records']))
+        self.assertEqual(api.handle(Req(['health', 'cell'], query={'section': ['nope'], 'tier': ['inferred']}))['records'], [])
+
+    def test_approve_and_forbid_write_founder_records(self):
+        rid = 'bombas.positioning.frame'
+        status, res = api.handle(Req(['approve', rid], 'POST', body={'choice': 'approve'}))
+        self.assertEqual((status, res['tier'], res['was']), (201, 'approved', 'inferred'))
+        rec = next(r for r in self.section('positioning') if r['id'] == rid)
+        self.assertEqual((rec['tier'], rec['source']['type'], rec['source']['was']['tier']), ('approved', 'founder', 'inferred'))
+        self.assertTrue(rec.get('history'))
+        prof = api.handle(Req(['profile']))
+        f = next(f for s in prof['sections'] if s['section'] == 'positioning' for f in s['fields'] if f['key'] == 'frame')
+        self.assertEqual(f['tier'], 'approved')
+        status, res = api.handle(Req(['approve', 'bombas.claims.donation_pledge'], 'POST', body={'choice': 'forbid'}))
+        self.assertEqual((status, res['tier']), (201, 'forbidden'))
+        self.assertEqual(api.handle(Req(['approve', 'bombas.claims.nope'], 'POST', body={'choice': 'approve'}))[0], 404)
+        self.assertEqual(api.handle(Req(['approve', rid], 'POST', body={'choice': 'maybe'}))[0], 400)
