@@ -587,6 +587,31 @@ class TestFreshness(TempBrain):
         self.assertTrue([f for f in out if f['rule_id'] == 'COMP-R14'])
 
 
+class TestLosses(TempBrain):
+    """2.1: who we lose to by name, the reason by rule, the answer from verified facts."""
+    def setUp(self):
+        super().setUp()
+        api.BRAIN_ROOT = self.tmp
+        self.ls = api.handle(Req(['overview']))['losses']
+
+    def test_rows_and_reasons(self):
+        by = {r['name']: r for r in self.ls['rows']}
+        self.assertEqual(by['Darn Tough']['theme'], 'durability')
+        self.assertEqual(by['Uniqlo']['theme'], 'value')
+        self.assertEqual(by['Stance']['theme'], 'style')
+        self.assertIsNone(by['Stance']['our_one_star'])
+        self.assertFalse(by['Kirkland']['fires'])
+        self.assertIsNone(self.ls['win_rate'])
+        for r in self.ls['rows']:
+            self.assertIn('never quoted', r['answer'])
+            self.assertIn('never disparage', r['answer'])
+
+    def test_rule_r15(self):
+        out = audit.run('bombas', WINDOW, self.tmp)
+        ids = sorted(f['entity']['id'] for f in out if f['rule_id'] == 'COMP-R15')
+        self.assertEqual(ids, ['lost_darn_tough', 'lost_stance', 'lost_uniqlo'])
+
+
 class TestRank(TempBrain):
     """Depth contract rules 2, 3 and 13: owner, steps and artefact on every action; every finding ends in one."""
     W = {'ends_on': '2026-09-27', 'days': 28, 'trailing': 4}

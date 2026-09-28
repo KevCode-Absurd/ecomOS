@@ -354,6 +354,30 @@
       planBox, table, el('p', { class: 'micro faint', text: fr.rule }));
   }
 
+  // ---------- 5i. who we lose to, by name ----------
+  const THEME_KIND = { durability: 'stop', value: 'watch', style: 'watch', unknown: 'na' };
+  function lossPanel(r) {
+    UI.panel({ title: 'Our answer to ' + r.name, body: el('div', { class: 'stack' },
+      el('pre', { class: 'card sunken bc', text: r.answer }),
+      el('div', { class: 'row' }, UI.copyButton({ label: 'Copy the answer', text: () => r.answer })),
+      UI.decisionRow({ capability: 'BRAND-C57', owner: 'agent_drafts', screen: SCREEN, finding_id: SCREEN + '.COMP-R15.lost_' + r.key }),
+      el('div', { class: 'micro faint', text: 'Win-loss interviews tell the real reason. A person books them; the agent writes the guide.' }),
+      UI.decisionRow({ capability: 'BRAND-C58', autonomy: 'human_assist', screen: SCREEN, finding_id: SCREEN + '.winloss.' + r.key })) });
+  }
+  function lossSection(ls) {
+    const t = UI.verdictTable({
+      columns: [{ key: 'name', label: 'Picked instead', format: (v, r) => v + (r.tracked ? '' : ' (not tracked)') },
+        { key: 'times', label: 'Times', unit: 'n' }, { key: 'upvotes', label: 'Upvotes', unit: 'n' },
+        { key: 'our_one_star', label: 'Our one-stars on it', format: (v) => v == null ? NA : fmt.num(v) }],
+      rows: ls.rows, verdict: { at: 1, kind: (r) => THEME_KIND[r.theme], text: (r) => 'They ' + r.theme_label, reason: (r) => r.why },
+      reason: { key: 'why', label: 'Why the rule says so', text: (r) => r.why + '; ' + (r.where || []).map((x) => 'r/' + x).join(', ') },
+      actions: { label: (r) => r.fires ? 'Answer' : 'Open', onClick: lossPanel }, sort: false, onRow: lossPanel });
+    const fr = Object.entries(ls.frames || {}).map(([k, v]) => pretty(k) + ' ' + v).join(', ');
+    mount('#losses', t, el('p', { class: 'small' }, el('b', { text: 'Win rate against a named brand: ' }), 'unavailable, ' + ls.win_rate_reason + '.'),
+      fr ? el('p', { class: 'small muted', text: 'How Reddit frames the category (mentions): ' + fr + '.' }) : null,
+      el('p', { class: 'micro faint', text: ls.rule }));
+  }
+
   // ---------- 6. the audit ----------
   function rulesTable(rules) {
     return UI.table({ columns: [{ key: 'rule_id', label: 'Rule' }, { key: 'name', label: 'What it checks' }, { key: 'inputs', label: 'Reads', format: (v) => (v || []).join(', ') }, { key: 'capability', label: 'Capability' }],
@@ -379,6 +403,7 @@
     refsSection(d.references);
     changesSection(d.changes);
     freshSection(d.freshness);
+    lossSection(d.losses);
     document.getElementById('audit-sub').textContent = p.findings.length + ' findings from ' + p.rules.length + ' rules. Public signals, one capture.';
     mount('#audit', auditTable(p.findings));
     mount('#rules', el('h4', { text: 'Rules' }), rulesTable(p.rules));

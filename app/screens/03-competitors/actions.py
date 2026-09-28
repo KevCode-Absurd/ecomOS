@@ -387,6 +387,22 @@ def act_stale(f: dict, m: dict) -> dict:
             "size": None, "win_rule": None, "stop_rule": None, "check_on": _plus(f["last_seen"], 7), "time_to_ship_hours": 1}
 
 
+def act_lost(f: dict, m: dict) -> dict:
+    """COMP-R15: shoppers pick a named alternative. Write the compare block and the support macro from verified facts."""
+    key = f["entity"]["id"].removeprefix("lost_")
+    x = next((r for r in m["losses"]["rows"] if r["key"] == key), None) or {"name": key, "answer": None, "theme_label": ""}
+    return {"title": f"Write our answer to {x['name']}: a compare block, an FAQ and a support macro",
+            "owner": "agent_drafts",
+            "artefact": {"kind": "page_section", "label": f"a how we compare block against {x['name']}", "draft": x["answer"]},
+            "steps": _steps(("agent", "Pull the verified proof for the theme and the doubts with no proof."),
+                            ("agent", "Draft the compare block, 1 FAQ answer and 1 support macro. No disparaging lines."),
+                            ("person", "Approve; legal checks any named comparison."),
+                            ("agent", f"Publish the FAQ and macro; check the theme's one-star count on {_plus(f['last_seen'], 28)}.")),
+            "size": {"text": f"{x.get('times')} Reddit recommendations, {x.get('upvotes')} upvotes"},
+            "win_rule": "Fewer one-star reviews on the theme next quarter", "stop_rule": None,
+            "check_on": _plus(f["last_seen"], 28), "time_to_ship_hours": 3}
+
+
 def act_connect(f: dict, m: dict) -> dict:
     un = f.get("unavailable") or {}
     con = un.get("connector") or "the missing source"
@@ -402,7 +418,8 @@ def act_connect(f: dict, m: dict) -> dict:
 BUILDERS = {"COMP-R01": act_angle, "COMP-R02": act_price, "COMP-R03": act_offer_run, "COMP-R04": act_lookalike,
             "COMP-R05": act_coverage, "COMP-R06": act_first_line, "COMP-R07": act_offer_gap, "COMP-R08": act_discount,
             "COMP-R09": act_ladder, "COMP-R10": act_above, "COMP-R11": act_corner,
-            "COMP-R12": act_refresh, "COMP-R13": act_no_id, "COMP-R14": act_stale}
+            "COMP-R12": act_refresh, "COMP-R13": act_no_id, "COMP-R14": act_stale,
+            "COMP-R15": act_lost}
 
 
 def action(f: dict, m: dict, net_revenue: float | None) -> dict:

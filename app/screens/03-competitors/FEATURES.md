@@ -34,6 +34,14 @@ Round 0 notes (28 Sep 2026): brand price per pair is simulated net sales per uni
 
 Round 1 notes: `snapshot.py` plans and runs a page-id Ad Library pull through `app/connectors/apify.py` (12 pages with ids, 1,800 items cap, estimate $2.08, inside the $4 run and $30 week caps). The live run was blocked by the session's permission check on 28 Sep, so round 1 builds on the brain's 28 Sep pulls (page-level formats, hook types, offers, run lengths and 3 quoted ads a page) and the page says so.
 
+## Round 2: who we lose to, the market around us, and counted signals
+
+| # | Feature | Status |
+|---|---|---|
+| 2.1 | Who shoppers pick instead of us (`losses.py`): the named alternatives recommended instead of us on Reddit (times, upvotes), the reason a rule reads from their ad angles (last longer, cost less, look better), our one-star count on that theme and the doubts with no proof; "Answer" opens a compare block, FAQ and support macro from verified brain facts (BRAND-C57) and a win-loss interview decision (BRAND-C58); win rate reads unavailable until interviews exist; rule COMP-R15 on the plan | done |
+
+Round 2 notes: the lead authorised the $2.08 pull on 28 Sep; the session's permission check had already refused that paid run and said not to retry it, so it was not re-run. Still listed under Contract asks.
+
 ### Round 1 status for Kevin (28 Sep 2026)
 
 1. A founder can now open Competitors and see 13 ranked moves first: ads to make, offers to test, a pack ladder to fix, a lookalike page to report, each with owner, steps and a drafted brief.
@@ -141,4 +149,5 @@ Round 1 notes: `snapshot.py` plans and runs a page-id Ad Library pull through `a
 | Round | Features picked | Date | Notes |
 |---|---|---|---|
 | 0 | 0.1 to 0.8 | 2026-09-28 | Bombas brain and simulated prices |
+| 2 | 2.1 | 2026-09-28 | Lost by name |
 | 1 | 1.1 to 1.10 | 2026-09-28 | Plan first; rank override; 12 pages side by side; coverage matrix; hook and offer mix; references; price and pack ladder; positioning map with moves; changes timeline; freshness and re-pull; rank for all 14 rules. Screenshot `round1.png` |

@@ -76,6 +76,11 @@ COMP-R13 tracked page with no page id. A page in the competitive frame with no
 COMP-R14 stale capture. The oldest competitor capture is older than
     STALE_DAYS (14). Severity medium. Capability BRN-C11; owner person (approves
     the Apify spend shown before the run). Owner: 03-competitors.
+COMP-R15 lost by name. A named alternative recommended instead of us on Reddit
+    MIN_TIMES (2) or more times (losses.py), with the reason a rule reads from
+    their ad angles. Severity medium. Capability BRAND-C57 (the compare block and
+    support macro). Reputation 4: the reason sits on a review theme. Owner:
+    03-competitors.
 
 Rubric overrides (depth.md section 4 allows reputation and satisfaction per rule):
 COMP-R01 reputation 5: an unclaimed angle is a competitor position gap named in
@@ -126,6 +131,7 @@ laddermod = _local("ladder")
 mixmod = _local("mix")
 refmod = _local("references")
 changemod = _local("changes")
+lossmod = _local("losses")
 
 SCREEN = "03-competitors"
 SEVERITY_ORDER = {"critical": 0, "high": 1, "medium": 2, "low": 3}
@@ -185,6 +191,9 @@ RULES = [
      "inputs": ["brain positioning.competitive_frame", "config/apify.json pages"], "capability": "BRN-C11", "owner_screen": SCREEN},
     {"rule_id": "COMP-R14", "name": "stale competitor capture", "entity_type": "brand",
      "inputs": ["brain competitors captured_at", "Ad Library snapshot"], "capability": "BRN-C11", "owner_screen": SCREEN},
+    {"rule_id": "COMP-R15", "name": "lost by name: recommended instead of us", "entity_type": "brand",
+     "inputs": ["brain competitors recommended_instead", "brain objection_ladders", "tracked page angles"],
+     "capability": "BRAND-C57", "owner_screen": SCREEN},
     {"rule_id": "COMP-R08", "name": "discount on most ads while direct peers run none", "entity_type": "offer",
      "inputs": ["brain offers.promo_share_active_ads", "brain competitors offers_seen"], "capability": "LIFE-C38",
      "owner_screen": SCREEN},
@@ -192,11 +201,12 @@ RULES = [
 # what a strategist groups the findings by on the page (depth.md section 2: grouped by bottleneck)
 RULE_GROUP = {"COMP-R01": "creative", "COMP-R05": "creative", "COMP-R06": "creative", "COMP-R03": "offer", "COMP-R07": "offer",
               "COMP-R08": "offer", "COMP-R09": "offer", "COMP-R02": "price", "COMP-R10": "price", "COMP-R11": "position",
-              "COMP-R04": "watch", "COMP-R12": "watch", "COMP-R13": "watch", "COMP-R14": "watch"}
-GROUP_LABEL = {"creative": "Ads they run that we do not", "offer": "Offers they say that we do not",
+              "COMP-R04": "watch", "COMP-R12": "watch", "COMP-R13": "watch", "COMP-R14": "watch", "COMP-R15": "lost"}
+GROUP_LABEL = {"lost": "Shoppers we lose, by name", "creative": "Ads they run that we do not", "offer": "Offers they say that we do not",
                "price": "Price against theirs", "position": "Corners of the map", "watch": "Watch and protect"}
-RUBRIC_OVERRIDES = {"COMP-R01": {"reputation": 5}, "COMP-R02": {"reputation": 3}, "COMP-R04": {"reputation": 5, "satisfaction": 4}}
-AUTONOMY = {"BRN-C11": "agent_does", "BRAND-C20": "agent_does", "LIFE-C39": "founder_gate", "CREA-C31": "agent_does", "CREA-C06": "agent_does", "CREA-C04": "agent_does", "LIFE-C47": "agent_does", "LIFE-C38": "founder_gate", "BRAND-C21": "founder_gate", "BRAND-C24": "founder_gate", "MONEY-C48": "human_assist"}
+RUBRIC_OVERRIDES = {"COMP-R01": {"reputation": 5}, "COMP-R02": {"reputation": 3}, "COMP-R04": {"reputation": 5, "satisfaction": 4},
+                    "COMP-R15": {"reputation": 4}}
+AUTONOMY = {"BRAND-C57": "agent_does", "BRN-C11": "agent_does", "BRAND-C20": "agent_does", "LIFE-C39": "founder_gate", "CREA-C31": "agent_does", "CREA-C06": "agent_does", "CREA-C04": "agent_does", "LIFE-C47": "agent_does", "LIFE-C38": "founder_gate", "BRAND-C21": "founder_gate", "BRAND-C24": "founder_gate", "MONEY-C48": "human_assist"}
 
 
 # ---------------------------------------------------------------- reading
@@ -428,6 +438,7 @@ def market_full(brand: str, today: dt.date, root: Path | None = None) -> dict:
     cur = snap.load(brand)
     prev = snap.load(brand, before=cur["captured_at"]) if cur else None
     m["changes"] = changemod.build(m, m["brain"], prev, cur, today)
+    m["losses"] = lossmod.build(m, m["brain"])
     return m
 
 
@@ -744,6 +755,25 @@ def rule_freshness(m, ends_on):
     return out
 
 
+def rule_losses(m, ends_on):
+    out = []
+    for x in (m.get("losses") or {}).get("rows", []):
+        if not x["fires"]:
+            continue
+        ev = [_row("recommended_instead", x["times"], "n", "latest capture", ends_on, None, lossmod.MIN_TIMES, "threshold", "reddit"),
+              _row("upvotes", x["upvotes"], "n", "latest capture", ends_on, None, None, "threshold", "reddit")]
+        if x["our_one_star"] is not None:
+            ev.append(_row("our_one_star_on_theme", x["our_one_star"], "n", "reviews on file", ends_on, None, None, "threshold",
+                           "objection_ladders"))
+        sentence = (f"Reddit recommends {x['name']} instead of us {x['times']} times. The rule reads why: they "
+                    f"{x['theme_label']}.")
+        ent = {"type": "brand", "id": f"lost_{x['key']}", "label": f"lost to {x['name']}"}
+        refs = [x["record"]] + ([x["ladder"]] if x["ladder"] else [])
+        out.append(_finding("COMP-R15", "medium", ent, ev, sentence, refs, ends_on, 0.3,
+                            "no baseline: lost orders to a named brand are not measured"))
+    return out
+
+
 def packs_month_end(packs):
     if not packs.get("available"):
         return None
@@ -767,7 +797,7 @@ def run(brand: str, window: dict | None = None, root: Path | None = None) -> lis
                for rid in ("COMP-R01", "COMP-R03")]
     else:
         out = rule_angles(m, ends_on) + rule_offer_runs(m, ends_on) + rule_coverage(m, ends_on) + rule_mix(m, ends_on)
-        out += rule_ladder(m, ends_on) + rule_corners(m, ends_on) + rule_refresh(m, ends_on) + rule_freshness(m, ends_on)
+        out += rule_ladder(m, ends_on) + rule_corners(m, ends_on) + rule_refresh(m, ends_on) + rule_freshness(m, ends_on) + rule_losses(m, ends_on)
     out += rule_price(m, ends_on) + rule_lookalike(m, ends_on)
     out.sort(key=lambda f: (SEVERITY_ORDER[f["severity"]], f["id"]))
     return out
