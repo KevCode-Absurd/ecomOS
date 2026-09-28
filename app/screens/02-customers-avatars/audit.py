@@ -103,10 +103,14 @@ CUST-R29 records due for a re-check. Avatar or ladder records expire within 30 d
     One finding for the set. Severity low. Capability BRAND-C15.
 CUST-R30 thin read. Avatar quotes under 60 in all, or fewer than 30 live ads read (builds.strength rules).
     One finding per thin block. Severity low. Capability BRAND-C01.
+CUST-R31 reviews and sales disagree on who buys. An avatar's share of sales through the lines it buys is
+    1.5x its share from reviews or under 1 / 1.5, or sales give it a share and reviews give none
+    (builds.sales_share; products_monthly with the SKU to line fixture). One finding per avatar.
+    Severity low. Capability LIFE-C29. Unavailable when the line sales cannot be read.
 
-Money at stake is null for every rule: an evidence or proof gap has no revenue formula
-yet (`money_reason` says so). Confidence: one brain snapshot is one window (0.5), minus
-0.2 when an input record is past `expires_at`.
+Money at stake is null for evidence and proof gaps, which have no revenue formula yet (`money_reason`
+says so); R07, R08 and R09 carry a stake against the brand's own history when it exists. Confidence:
+one brain snapshot is one window (0.5), minus 0.2 when an input record is past `expires_at`.
 """
 from __future__ import annotations
 
@@ -194,6 +198,8 @@ RULES = [
      "inputs": ["brain avatars", "brain objection_ladders"], "capability": "BRAND-C15", "owner_screen": SCREEN},
     {"rule_id": "CUST-R30", "name": "thin read", "entity_type": "brand",
      "inputs": ["brain avatars", "brain learnings hook_types"], "capability": "BRAND-C01", "owner_screen": SCREEN},
+    {"rule_id": "CUST-R31", "name": "reviews and sales disagree on who buys", "entity_type": "brand",
+     "inputs": ["products_monthly", "fixtures sku_lines", "brain avatars", "brain language_bank"], "capability": "LIFE-C29", "owner_screen": SCREEN},
 ]
 AUTONOMY = {"BRAND-C11": "founder_gate", "BRAND-C13": "agent_does", "CREA-C03": "agent_does", "SITE-C38": "human_assist",
             "PROD-C73": "human_assist", "CREA-C24": "agent_does", "LIFE-C27": "human_assist", "BRAND-C16": "founder_gate",
@@ -201,7 +207,8 @@ AUTONOMY = {"BRAND-C11": "founder_gate", "BRAND-C13": "agent_does", "CREA-C03": 
             "LIFE-C50": "founder_gate", "BRAND-C05": "human_assist", "LIFE-C12": "founder_gate", "BRAND-C59": "agent_does",
             "BRN-C03": "founder_gate", "MONEY-C48": "human_assist", "LIFE-C42": "founder_gate", "BRAND-C33": "founder_gate",
             "BRAND-C12": "agent_does", "CREA-C06": "agent_does", "LIFE-C07": "founder_gate", "PROD-C34": "human_assist",
-            "LIFE-C39": "founder_gate", "BRAND-C15": "agent_does", "BRAND-C01": "agent_does"}
+            "LIFE-C39": "founder_gate", "BRAND-C15": "agent_does", "BRAND-C01": "agent_does",
+            "LIFE-C29": "founder_gate"}
 SILENT_MIN_SHARE = 0.12
 MOMENT_WARN_DAYS = 45
 NO_DATA = "no revenue formula for this rule yet"
@@ -689,7 +696,7 @@ def desk(brain: Brain, avatars: list[dict], all_rungs: list[dict]) -> dict:
             "health": load_health(brain.brand, avatars),
             "split": split_rows(brain, avatars, all_rungs),
             "ad_voice": builds.ad_voice(avatars, brain.records("learnings")),
-            "returns": load_returns(brain, avatars, all_rungs),
+            "returns": load_returns(brain, avatars, all_rungs), "sales_share": load_sales_share(brain, avatars, all_rungs),
             "marketplace": builds.marketplace(avatars, all_rungs, brain.records("language_bank"), source_name),
             "price": builds.price_doubts(avatars, all_rungs, brain.records("offers"), brain.records("products")),
             "rechecks": builds.rechecks(avatars, brain.records("objection_ladders"), brain.today.isoformat())}
@@ -888,7 +895,7 @@ def r17_r23(d, ends_on):
         if r["verdict"] != "under_fire":
             continue
         ev = [_ev("one_two_star_reviews_on_claim_words", r["hits"], "n", ends_on, "brain.language_bank", baseline=builds.CLAIM_HITS)]
-        s = f"{r['hits']} 1 and 2 star reviews throw this claim's words back at us: {', '.join(r['words'][:3])}. The claim is under fire."
+        s = f"{r['hits']} reviews of 1 or 2 stars throw this claim's words back at us: {', '.join(r['words'][:3])}. The claim is under fire."
         out.append(_finding("CUST-R18", "high", {"type": "brand", "id": "claim_" + r["id"].split(".")[-1], "label": r["id"].split(".")[-1].replace("_", " ")},
                             ev, s, "BRN-C03", 0.5, [r["id"]], ends_on))
     for r in d["lookalikes"]["rows"]:
@@ -978,6 +985,31 @@ def r26_r30(d, avatars, ends_on):
     return out
 
 
+def r31(d, ends_on):
+    x = d.get("sales_share") or {}
+    if not x.get("available"):
+        if x.get("reason") and "products table" in str(x.get("reason")):
+            return [_finding("CUST-R31", "low", {"type": "brand", "id": "sales_share", "label": "Share of sales by avatar"}, [],
+                             "Sales by product line cannot be read, so avatar shares rest on reviews alone.", "LIFE-C29", 0.5, [], ends_on,
+                             status="unavailable", unavailable={"inputs": ["products_monthly"], "connector": "shopify",
+                                                                "fix": "Connect the store's product sales, read-only."})]
+        return []
+    out = []
+    for r in x["rows"]:
+        if r["verdict"] not in ("sales_higher", "reviews_higher", "sales_only"):
+            continue
+        ev = [_ev("sales_share", r["sales_share"], "%", ends_on, "products_monthly", simulated=True)]
+        if r["review_share"] is not None:
+            ev.append(_ev("review_share", r["review_share"], "%", ends_on, "brain.avatars"))
+            ev.append(_ev("sales_to_review_ratio", r["ratio"], "x", ends_on, "products_monthly", baseline=builds.SALES_GAP))
+            s = f"{r['name']} is {round(r['review_share'] * 100)} percent of buyers by reviews but {round(r['sales_share'] * 100, 1)} percent of sales by line."
+        else:
+            s = f"Reviews give {r['name']} no share; the lines it buys carry {round(r['sales_share'] * 100, 1)} percent of sales."
+        out.append(_finding("CUST-R31", "low", {"type": "brand", "id": "salesshare_" + r["key"], "label": r["name"]}, ev, s, "LIFE-C29", 0.5,
+                            [f"{d['brand']}.avatars.{r['key']}"], ends_on))
+    return out
+
+
 def run(brand: str, window: dict, brain_root: Path | None = None) -> list[dict]:
     ends_on = window["ends_on"]
     today = dt.date.fromisoformat(ends_on) + dt.timedelta(days=1)
@@ -989,6 +1021,6 @@ def run(brand: str, window: dict, brain_root: Path | None = None) -> list[dict]:
     d["brand"] = brand
     findings = (r01(brain, avatars, ends_on) + r02(brain, avatars, all_rungs, ends_on) + r03(brain, all_rungs, angles, ends_on)
                 + r04(d, all_rungs, ends_on) + r05(d, ends_on) + r06(d, ends_on) + r07(d, ends_on) + r08_r09(d, ends_on) + r10(d, ends_on)
-                + r11_r12(d, ends_on) + r13_r14(d, ends_on) + r15_r16(d, ends_on) + r17_r23(d, ends_on) + r24_r25(d, ends_on) + r26_r30(d, avatars, ends_on))
+                + r11_r12(d, ends_on) + r13_r14(d, ends_on) + r15_r16(d, ends_on) + r17_r23(d, ends_on) + r24_r25(d, ends_on) + r26_r30(d, avatars, ends_on) + r31(d, ends_on))
     findings.sort(key=lambda f: (SEVERITY_ORDER[f["severity"]], f["rule_id"], f["id"]))
     return findings

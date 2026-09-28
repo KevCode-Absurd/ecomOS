@@ -551,7 +551,7 @@ RULE_JOB = {"CUST-R01": "avatars", "CUST-R05": "avatars", "CUST-R06": "avatars",
             "CUST-R10": "offers", "CUST-R18": "offers", "CUST-R20": "offers", "CUST-R21": "offers",
             "CUST-R07": "retention", "CUST-R08": "retention", "CUST-R09": "retention", "CUST-R15": "retention", "CUST-R16": "retention",
             "CUST-R23": "retention", "CUST-R24": "avatars", "CUST-R25": "avatars", "CUST-R26": "avatars", "CUST-R27": "avatars", "CUST-R28": "offers",
-            "CUST-R29": "avatars", "CUST-R30": "avatars", "CUST-R17": "brand", "CUST-R19": "brand", "CUST-R22": "brand"}
+            "CUST-R29": "avatars", "CUST-R30": "avatars", "CUST-R31": "avatars", "CUST-R17": "brand", "CUST-R19": "brand", "CUST-R22": "brand"}
 EASE = {"agent": 5, "agent_drafts": 4, "person_draft": 3, "person": 2}
 
 
@@ -637,6 +637,9 @@ def _plans(brand: str, window: dict) -> dict:
             plans[("CUST-R28", "price_" + r["key"])] = r["action"]
     if d["rechecks"].get("action"):
         plans[("CUST-R29", "rechecks")] = d["rechecks"]["action"]
+    for r in (d.get("sales_share") or {}).get("rows", []):
+        if r.get("action"):
+            plans[("CUST-R31", "salesshare_" + r["key"])] = r["action"]
     widen = {"kind": "research_note", "owner": "agent_drafts", "capability": {"id": "BRAND-C01", "autonomy": "agent_does"},
              "steps": [{"n": 1, "who": "agent", "text": "Plan the extra pulls by page id, inside the weekly cap, with the cost."},
                        {"n": 2, "who": "person", "text": "Approve the spend before any pull runs."},

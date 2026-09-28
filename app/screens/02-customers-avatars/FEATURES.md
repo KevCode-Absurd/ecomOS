@@ -130,7 +130,16 @@ Lead's review: rounds 1 to 4 passed. Focus: returns and tickets by avatar, depth
 | 7.7 | Keyboard: j and k move focus through the plan items and the action cards, Enter opens or closes how it gets done, ? lists the keys, Esc closes any panel (kit). Keys are left alone while typing, on a button or link, or with a panel open. Checked in a browser: j, j, Enter, k, ?, Esc all land | done |
 | 7.8 | Do reviews and sales agree on who buys: each line's store sales over 12 full months (`products_monthly`, SKU to line through a local fixture until the data layer carries the map) split across avatars by their share of that line's linked reviews, next to each avatar's share from reviews. Differ at 1.5x either way; each disagreement, and each avatar with a share from sales only, gets a drafted survey check to settle it. Bombas: lines cover 61 percent of sales; 4 of 7 avatars differ (the Everyday Comfort Seeker is 13 percent of reviews but 3.6 percent of sales) and 4 more get a share for the first time (In-Store Single Pair Trier 18.2 percent). Unavailable with the reason for a second brand | done |
 | 7.9 | Print polish: the monthly report and each avatar page open with one line naming the brand, the window and the simulated label, once, in the panel, the copy and the print. Print keeps each section whole, sets page margins and prints black on white. The three moves in the report now carry their money or size ("$5,842,578 at stake, 2026-01"); "12 1 and 2 star reviews" reads "12 reviews of 1 or 2 stars". Checked as a print PDF in a browser | done |
-| 7.10 | Audit rules and `rank` for round 7, screenshot `round7.png` | todo |
+| 7.10 | CUST-R31 reviews and sales disagree on who buys: one low finding per avatar whose share of sales by line is 1.5x its review share either way, or who has a share from sales only; each maps to its drafted survey check in `rank` (LIFE-C29, founder gate, agent drafts; 7.8's action fixed to match the catalogue). Unavailable with a connect step when product sales cannot be read. 31 rules, 30 firing on Bombas; 67 actions, 32 of them sized with a stop rule. The rule docstring now says which rules carry money. Also: "12 1 and 2 star reviews" reads "12 reviews of 1 or 2 stars" in the claims finding and line. Screenshot `round7.png` (the plan, led by the January stake) | done |
+
+### Round 7 founder note (28 Sep 2026)
+
+1. Your first priced move from this screen: the January drop cost about $5.8 million against a normal month. The plan to bring past buyers back in January is number 5 on your master top 10.
+2. That figure may be partly the season. Last January sits outside the data, and the page says so next to the number.
+3. Every move that spends money or changes a page now shows its size, a stop rule and a check date. "Not now" shows its date and the day the move comes back.
+4. Reviews and sales disagree on who buys. The Everyday Comfort Seeker is 13 percent of reviews but 3.6 percent of sales. 4 avatars get a share for the first time, from sales. Each gap has a survey question ready.
+5. Each avatar has one page to hand a creator or an agency, and it prints clean. Every block says what it reads, its gap and its caveat. Keys j and k move through the plan.
+6. Next, round 8: real order and ticket data when the data layer lands, and money on more rules where our own history allows.
 
 ### Round 6 founder note (28 Sep 2026)
 
@@ -323,3 +332,4 @@ The job to be done for each avatar is brand data: it lives in `app/brain/<brand>
 | 4 | 4.1 to 4.10, one desk, hand-offs, remaining jobs | 28 Sep 2026 | done; screenshot `round4.png` |
 | 5 | 5.1 to 5.10, returns, support and depth per cell | 28 Sep 2026 | done; screenshot `round5.png` |
 | 6 | 6.1 to 6.10, any brand, one action per draft, agenda, compare, report, speed, phone width | 28 Sep 2026 | done; screenshot `round6.png` |
+| 7 | 7.1 to 7.10, depth rules 5, 9, 10 and 14 on this screen, money on retention, sales against reviews, avatar pages, keys, print | 28 Sep 2026 | done; screenshot `round7.png` |

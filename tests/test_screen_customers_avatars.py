@@ -98,7 +98,7 @@ class AuditShape(unittest.TestCase):
         self.assertEqual(r03['status'], 'unavailable')
         self.assertEqual(r03['evidence'], [])
         self.assertEqual(set(r03['unavailable']), {'inputs', 'connector', 'fix'})
-        self.assertEqual({r['rule_id'] for r in audit.RULES}, {f'CUST-R{n:02d}' for n in range(1, 31)})
+        self.assertEqual({r['rule_id'] for r in audit.RULES}, {f'CUST-R{n:02d}' for n in range(1, 32)})
 
 
 class AuditRules(TempBrain):
@@ -595,7 +595,7 @@ class RankRound1(TempBrain):
 
     def test_every_rule_fires_on_bombas(self):
         rules = {f['rule_id'] for f in audit.run('bombas', RANK_WINDOW, self.tmp)}
-        self.assertEqual(rules, {f'CUST-R{n:02d}' for n in range(1, 31) if n != 23})
+        self.assertEqual(rules, {f'CUST-R{n:02d}' for n in range(1, 32) if n != 23})
 
     def test_open_actions_carry_drafts(self):
         acts = api.rank('bombas', RANK_WINDOW)['actions']
@@ -1861,3 +1861,19 @@ class PrintPolish(TempBrain):
         css = (ROOT / 'app' / 'screens' / '02-customers-avatars' / 'screen.css').read_text(encoding='utf-8')
         self.assertIn('break-inside: avoid', css)
         self.assertIn('@page', css)
+
+
+class SalesShareRule(TempBrain):
+    """Feature 7.10: CUST-R31 fires once per avatar where reviews and sales disagree, each with its survey check in rank."""
+
+    def test_r31_matches_the_block_and_has_its_plan(self):
+        d = api.handle(Req(['overview']))['sales_share']
+        want = {'02-customers-avatars.CUST-R31.salesshare_' + r['key'] for r in d['rows'] if r['verdict'] in ('sales_higher', 'reviews_higher', 'sales_only')}
+        got = {f['id'] for f in api.audit.run('bombas', RANK_WINDOW, api.BRAIN_ROOT) if f['rule_id'] == 'CUST-R31'}
+        self.assertEqual(got, want)
+        acts = {a['id']: a for a in api.rank('bombas', RANK_WINDOW)['actions']}
+        for fid in want:
+            a = next(x for x in acts.values() if fid in x['finding_ids'])
+            self.assertTrue(a['title'].startswith('Settle the share of'))
+            self.assertEqual(a['job'], 'avatars')
+            self.assertEqual(a['capability']['autonomy'], 'founder_gate')

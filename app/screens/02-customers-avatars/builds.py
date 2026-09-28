@@ -1643,7 +1643,7 @@ def claims_fire(claim_records: list[dict], lang_records: list[dict], brand_token
     rows.sort(key=lambda r: (-r["hits"], r["id"]))
     fire = sum(1 for r in rows if r["verdict"] == "under_fire")
     return {"rows": rows, "complaints": len(comp),
-            "line": f"{fire} of {len(rows)} live claims use words that 3 or more 1 and 2 star reviews throw back at us."}
+            "line": f"{fire} of {len(rows)} live claims use words that 3 or more reviews of 1 or 2 stars throw back at us."}
 
 
 # ---------------------------------------------------------------- lookalike pages
@@ -2932,13 +2932,13 @@ def sales_share(avatars: list[dict], buys: dict[str, dict[str, int]], ls: dict) 
         if verdict in ("sales_higher", "reviews_higher") or (share is not None and rev is None):
             why = (f"Reviews put it at {round(rev * 100)} percent of buyers; its lines carry {round(share * 100, 1)} percent of sales." if rev
                    else f"Reviews give no share; its lines carry {round(share * 100, 1)} percent of sales.")
-            act = {"id": f"02-customers-avatars.salesshare.{a['key']}", "kind": "research_note", "owner": "person",
+            act = {"id": f"02-customers-avatars.salesshare.{a['key']}", "kind": "research_note", "owner": "agent_drafts",
                    "title": f"Settle the share of {a['name']}: ask buyers after the order",
-                   "capability": {"id": "LIFE-C29", "autonomy": "human_assist"},
+                   "capability": {"id": "LIFE-C29", "autonomy": "founder_gate"},
                    "draft": f"DRAFT survey check\nAvatar: {a['name']}\n{why}\nAsk: which of these fits you best, one line per avatar situation\n"
                             "Read: 385 answers, then set the avatar share from answers and retire the estimate.",
                    "steps": [{"n": 1, "who": "agent", "text": "Add the avatar's situation line to the post-purchase survey."},
-                             {"n": 2, "who": "person", "text": "Turn the question on in the survey tool."},
+                             {"n": 2, "who": "person", "text": "Approve the question and turn it on in the survey tool."},
                              {"n": 3, "who": "agent", "text": "At 385 answers, write the share to the avatar record with its source."}]}
         rows.append({"key": a["key"], "name": a["name"], "review_share": rev, "sales_share": share, "sales_usd": round(s) if s else None,
                      "ratio": ratio, "verdict": verdict if not (share is not None and rev is None) else "sales_only", "action": act})
