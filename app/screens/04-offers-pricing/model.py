@@ -853,3 +853,22 @@ def gwp_candidates(rd, ratio):
                         'cost': r['cogs_per_pack'], 'ratio': round(x, 2), 'qualifies': x >= ratio})
     out.sort(key=lambda r: (-r['ratio'], r['cost']))
     return out
+
+
+# ---------------------------------------------------------------- cart reward ladder
+
+def cart_ladder(rd, threshold, gift, cm_share, step=5, groups=None):
+    """Two tiers in the cart: free shipping at the threshold, then the gift one item past it. The gift pays for
+    itself when a shopper adds at least gift cost over the contribution share; orders already past tier 2 get it
+    for nothing, and their share needs order value bins."""
+    if threshold is None or not gift or not cm_share:
+        return None
+    t2 = math.ceil((threshold + gift['value']) / step) * step
+    cost = gift['cost'] + (fin_value(rd, 'threepl_pick_pack', rd.ends_on, unit='usd_per_unit') or 0)
+    need = round(cost / cm_share, 2)
+    leak = round(sum(g['share'] for g in groups if g['from'] >= t2), 6) if groups else None
+    return {'tiers': [{'at': threshold, 'reward': 'free shipping'},
+                      {'at': t2, 'reward': f'a free {gift["category"]} single ({gift["sku"]}, worth ${gift["value"]:,.2f})'}],
+            'tier2': t2, 'gift_cost': round(cost, 2), 'climb': round(t2 - threshold, 2), 'pays_after': need,
+            'cover': round((t2 - threshold) / need, 2) if need else None, 'leak_share': leak,
+            'leak_reason': None if groups else 'the share of orders already past tier 2 needs order value bins'}

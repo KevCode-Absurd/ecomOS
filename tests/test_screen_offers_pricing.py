@@ -766,5 +766,38 @@ class GiftPickTest(unittest.TestCase):
         self.assertAlmostEqual(cost, round(fo['cogs'] + cands[0]['cost'], 2), places=1)
 
 
+class CartLadderTest(unittest.TestCase):
+    """Round 2 feature 5: a second cart reward past the free shipping line, and the brand's own tools in the steps."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.rd = audit.Reader(None, 'bombas', audit.last_full_day(None, 'bombas'))
+        cls.cl = audit.cart_ladder(cls.rd)
+        cls.out = api.actions.rank('bombas')
+
+    def test_arithmetic(self):
+        cl = self.cl
+        self.assertEqual(cl['tier2'] % 5, 0)
+        self.assertGreater(cl['tier2'], cl['tiers'][0]['at'])
+        cm = api.model.contribution_28d(self.rd)['before_media_share']
+        self.assertAlmostEqual(cl['pays_after'], round(cl['gift_cost'] / cm, 2))
+        self.assertAlmostEqual(cl['cover'], round(cl['climb'] / cl['pays_after'], 2))
+        if cl['leak_share'] is None:
+            self.assertTrue(cl['leak_reason'])
+
+    def test_rule_and_tools_from_the_brain(self):
+        app = api.model.brain_value(self.rd, 'stack.upsell_app')[0]
+        f = next((f for f in self.out['findings'] if f['rule_id'] == 'OFFER-R20'), None)
+        self.assertEqual(bool(f), bool(app))
+        if f:
+            a = next(a for a in self.out['actions'] if a['rule_id'] == 'OFFER-R20')
+            self.assertIn(app, a['title'])
+            self.assertEqual(a['artefact']['kind'], 'page_section')
+        ab = api.model.brain_value(self.rd, 'stack.ab_testing')[0]
+        t = next(a for a in self.out['actions'] if a['rule_id'] == 'OFFER-R01')
+        if ab:
+            self.assertTrue(any(ab in s['text'] for s in t['steps']))
+
+
 if __name__ == '__main__':
     unittest.main()

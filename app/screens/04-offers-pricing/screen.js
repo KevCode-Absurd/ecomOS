@@ -160,6 +160,22 @@
       actionLine(line, a));
   }
 
+  function cartBlock(cl) {
+    const head = { title: 'What does the cart reward past the free shipping line?', sub: 'A second tier one item past the line. The gift pays for itself once a shopper adds its cost over the contribution share, before media.' };
+    if (!cl) return section('desk-cart', head, UI.emptyState({ screen: SLUG, title: 'Cart ladder unavailable', text: 'Needs a threshold, a gift item and contribution inputs.' }));
+    const a = ACTIONS.find((x) => x.rule_id === 'OFFER-R20');
+    const tiers = UI.verdictTable({ columns: [{ key: 'n', label: 'Tier' }, { key: 'at', label: 'Cart value', format: (v) => fmt.money(v, null, 0) }, { key: 'reward', label: 'Reward' }],
+      rows: cl.tiers.map((t, i) => Object.assign({ n: String(i + 1), today: !i }, t)), verdict: { at: 1, kind: (r) => r.today ? 'keep' : 'new', text: (r) => r.today ? 'Today' : 'Proposed' }, sort: false });
+    const facts = kv([
+      ['Climb from tier 1', fmt.money(cl.climb, null, 0)],
+      ['Gift cost with pick fee', fmt.money(cl.gift_cost)],
+      ['Pays after', fmt.money(cl.pays_after) + ' added, so the climb covers it ' + cl.cover.toFixed(1) + ' times'],
+      ['Orders already past tier 2', cl.leak_share == null ? NA + ': ' + cl.leak_reason : pct(cl.leak_share, 0)],
+    ]);
+    return section('desk-cart', head, el('div', { class: 'grid two' }, el('div', { class: 'card tight' }, tiers), el('div', { class: 'card' }, facts)),
+      actionLine(a ? 'The cart has one reward. Add the gift tier at ' + fmt.money(cl.tier2, null, 0) + '.' : 'The cart already runs more than one reward.', a));
+  }
+
   function discountBlock(d) {
     const c = d.chart, dd = d.discipline;
     const head = { title: 'Are we training buyers to wait for a discount?', sub: 'Discount share of gross by day and by month. A promo day runs at ' + (dd ? dd.promo_ratio : 1.5) + ' times the year\'s median share or more; the rest is always-on discounting.' };
@@ -444,7 +460,7 @@
     wrong(d);
     actionsList(d);
     mount('#desk', el('div', { class: 'desk-kicker' }, el('h3', { text: 'The desk' })), calendarBlock(d.calendar), giftingBlock(d.gifting),
-      stackBlock(d.stack || []), thresholdBlock(d.threshold), firstOrderBlock(d.first_order), positionBlock(d.position, d.brand || {}), parityBlock(d.parity), waterfallBlock(d.waterfalls), discountBlock(d), ladderBlock(d.ladder), objectionBlock(d.objections || [], d.returns), guaranteeBlock(d.guarantee, d.returns));
+      stackBlock(d.stack || []), thresholdBlock(d.threshold), cartBlock(d.cart), firstOrderBlock(d.first_order), positionBlock(d.position, d.brand || {}), parityBlock(d.parity), waterfallBlock(d.waterfalls), discountBlock(d), ladderBlock(d.ladder), objectionBlock(d.objections || [], d.returns), guaranteeBlock(d.guarantee, d.returns));
     auditBlock(d);
   }
 

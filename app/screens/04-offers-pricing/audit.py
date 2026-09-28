@@ -80,6 +80,11 @@ Rules
              days (not promo days, model.discount_discipline) while the first-order code is in more than
              playbook.CODE_ADS_SHARE of active ads. Rides on the first-order code test when it fires. Money null.
              Capability LIFE-C38 (founder gate).
+  OFFER-R20  One reward in the cart: the brain names an upsell or cart app (stack.upsell_app), the offers section
+             has no record with a second cart tier, and a gift item exists (model.gwp_candidates). The action is a
+             second tier one item past the free shipping line (model.cart_ladder): the gift pays when a shopper adds
+             gift cost over the contribution share. Money null: climbers and the orders already past tier 2 need
+             order rows. Capability LIFE-C41 (founder gate). Web pass: Rebuy tiered progress bar.
   OFFER-R03  Margin after discount per SKU. Needs cogs_landed keyed by the store's SKUs. Unavailable while no
              finance_inputs SKU key matches a product SKU. Capability MONEY-C05 (founder gate). Owner: 04.
   OFFER-R04  A deal-breaker rung with no proof: the top rung of an objection ladder whose proof is empty or
@@ -157,6 +162,9 @@ RULES = [
      'capability': 'LIFE-C38', 'owner_screen': SCREEN},
     {'rule_id': 'OFFER-R19', 'name': 'Always-on discounting', 'entity_type': 'offer',
      'inputs': ['daily', 'brain.offers.promo_share_active_ads'], 'capability': 'LIFE-C38', 'owner_screen': SCREEN},
+    {'rule_id': 'OFFER-R20', 'name': 'One reward in the cart', 'entity_type': 'offer',
+     'inputs': ['brain.stack.upsell_app', 'brain.offers', 'finance_inputs', 'products_monthly'], 'capability': 'LIFE-C41',
+     'owner_screen': SCREEN},
     {'rule_id': 'OFFER-R03', 'name': 'Margin after discount per SKU', 'entity_type': 'sku',
      'inputs': ['finance_inputs.cogs_landed keyed by product SKU', 'products'], 'capability': 'MONEY-C05',
      'owner_screen': SCREEN},
@@ -180,6 +188,7 @@ CAPABILITY = {'OFFER-R01': {'id': 'MONEY-C05', 'autonomy': 'founder_gate'},
               'OFFER-R17': {'id': 'PROD-C46', 'autonomy': 'human_assist'},
               'OFFER-R18': {'id': 'LIFE-C38', 'autonomy': 'founder_gate'},
               'OFFER-R19': {'id': 'LIFE-C38', 'autonomy': 'founder_gate'},
+              'OFFER-R20': {'id': 'LIFE-C41', 'autonomy': 'founder_gate'},
               'OFFER-R06': {'id': 'MONEY-C05', 'autonomy': 'founder_gate'},
               'OFFER-R04': {'id': 'LIFE-C36', 'autonomy': 'founder_gate'}}
 SEVERITY_ORDER = {'critical': 0, 'high': 1, 'medium': 2, 'low': 3}
@@ -839,6 +848,33 @@ def rule_discount(rd):
     return out
 
 
+def cart_ladder(rd):
+    t, _ = threshold_usd(rd)
+    cands = _model().gwp_candidates(rd, _playbook().GWP_RATIO)
+    cm = _model().contribution_28d(rd)
+    dist = rd.m('order_value_distribution', WINDOW, step=5)
+    return _model().cart_ladder(rd, t, cands[0] if cands else None, cm.get('before_media_share'),
+                                groups=None if dist.get('unavailable') else dist['groups'])
+
+
+def rule_cart(rd):
+    end = rd.ends_on
+    app, rec = _model().brain_value(rd, 'stack.upsell_app')
+    if not app:
+        return []
+    tiers = [r for r in rd.records('offers') if 'tier' in str(r.get('field') or '') or 'tier' in str(r.get('id'))]
+    cl = cart_ladder(rd)
+    if tiers or not cl:
+        return []
+    evidence = [_ev('cart_reward_tiers', 1, 'count', end, baseline=2, baseline_kind='target', window='brain', source='brain.offers'),
+                _ev('gift_pays_after_added_value', cl['pays_after'], 'usd', end, baseline=cl['climb'], baseline_kind='tier_gap',
+                    window='28d', source='finance_inputs, daily')]
+    sentence = (f'The cart has one reward, free shipping at ${cl["tiers"][0]["at"]:,.0f}, though {app} can run tiers. '
+                f'A gift at ${cl["tier2"]:,.0f} pays once a shopper adds ${cl["pays_after"]:,.2f}.')
+    return [_finding('OFFER-R20', {'type': 'offer', 'id': 'cart_ladder', 'label': 'Cart rewards'}, 'medium', evidence, sentence,
+                     None, 0.5, [rec['id']] if rec else [], end, money_reason=cl['leak_reason'] or 'climbers need order rows')]
+
+
 def rule_ladder(rd):
     end = rd.ends_on
     pb = _playbook()
@@ -1010,7 +1046,7 @@ def run(brand, window=None, data=None):
     """Findings for one brand, sorted by severity then money at stake. `window` is {ends_on} or None."""
     ends_on = date.fromisoformat(window['ends_on']) if window and window.get('ends_on') else last_full_day(data, brand)
     rd = Reader(data, brand, ends_on)
-    out = (rule_threshold(rd) + rule_stale(rd) + rule_pull(rd) + rule_first_order(rd) + rule_red_line(rd) + rule_promo(rd) + rule_gifting(rd) + rule_guarantee(rd) + rule_position(rd) + rule_parity(rd) + rule_discount(rd) + rule_ladder(rd) + rule_sku_margin(rd) +
+    out = (rule_threshold(rd) + rule_stale(rd) + rule_pull(rd) + rule_first_order(rd) + rule_red_line(rd) + rule_promo(rd) + rule_gifting(rd) + rule_guarantee(rd) + rule_position(rd) + rule_parity(rd) + rule_discount(rd) + rule_cart(rd) + rule_ladder(rd) + rule_sku_margin(rd) +
            rule_unanswered(rd))
     out.sort(key=lambda f: (SEVERITY_ORDER[f['severity']], -((f.get('money_at_stake') or {}).get('usd') or -1), f['id']))
     return out

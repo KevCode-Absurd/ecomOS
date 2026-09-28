@@ -79,6 +79,7 @@ class Ctx:
         self.position = audit.competitor_position(rd)
         self.parity = audit.marketplace_parity(rd)
         self.discipline = audit.discipline(rd)
+        self.cart = audit.cart_ladder(rd)
         self.ship_rate = (model.brain_value(rd, 'offers.standard_shipping_cost')[0] or {}).get('cost_usd') if rd.brand else None
         self.scenarios = (model.threshold_scenarios(rd, self.threshold, self.ship_rate, self.be['value'], (self.po or {}).get('units') or 1)
                           if self.threshold is not None and self.be.get('value') is not None else [])
@@ -118,7 +119,7 @@ def threshold_action(f, a, ctx):
         'steps': steps(
             ('agent', f'Count orders from ${t:,.0f} to ${new} in the last 28 days and the label they cost.'),
             ('agent', 'Draft the test brief and the cart bar line for both arms.'),
-            ('person', 'Approve the brief. Set arm B in the shipping rates app. Nothing changes before that.'),
+            ('person', f'Approve the brief. Set arm B in {tool(ctx, "ab_testing", "the test tool")}. Nothing changes before that.'),
             ('agent', 'Read conversion, AOV and contribution per visitor by arm every 7 days.'),
             ('agent', f'Call the test on {ctx.check_on(35)} with the win and stop rules.')),
         'size': {'text': size, 'usd': stake['usd'] if stake else None},
@@ -256,7 +257,7 @@ def first_order_action(f, a, ctx):
         'steps': steps(
             ('agent', 'List the active ads that carry the code and the site places it shows.'),
             ('agent', 'Draft the test brief and one offer-line variant per ad.'),
-            ('person', 'Approve the offer and the variants. The media buyer launches the pairs.'),
+            ('person', f'Approve the offer and the variants. The media buyer launches the pairs; the site arm runs in {tool(ctx, "ab_testing", "the test tool")}.'),
             ('agent', 'Read first-order conversion and contribution per new visitor by arm every 7 days.'),
             ('agent', f'Call it on {ctx.check_on(35)} with the win and stop rules.')),
         'size': {'text': (f'Up to {money(f["money_at_stake"]["usd"])} in 28 days at equal conversion' if f.get('money_at_stake') else
@@ -598,6 +599,37 @@ def discount_action(f, a, ctx):
     return a
 
 
+def tool(ctx, key, fallback):
+    """The brand's own tool for a job from the brain stack, else a plain word."""
+    v, _ = model.brain_value(ctx.rd, f'stack.{key}')
+    return v if isinstance(v, str) and v else fallback
+
+
+def cart_action(f, a, ctx):
+    cl = ctx.cart
+    app = tool(ctx, 'upsell_app', 'the cart app')
+    lines = ['Page section: a two-tier progress bar in the cart and the header',
+             f'Tier 1 at ${cl["tiers"][0]["at"]:,.0f}: {cl["tiers"][0]["reward"]}.',
+             f'Tier 2 at ${cl["tier2"]:,.0f}: {cl["tiers"][1]["reward"]}. Costs {money(cl["gift_cost"])} with the pick fee.',
+             f'Why it pays: a shopper who climbs from tier 1 adds ${cl["climb"]:,.0f}; the gift is paid for after {money(cl["pays_after"])}, '
+             f'so the climb covers it {cl["cover"]:.1f} times.',
+             'Leak: orders already past tier 2 get the gift for nothing. ' + (f'They are {cl["leak_share"] * 100:.0f} percent of orders.'
+                                                                              if cl['leak_share'] is not None else cl['leak_reason'][0].upper() + cl['leak_reason'][1:] + '.'),
+             'Copy: "You are $X from free shipping", then "You are $X from a free gift".',
+             'Win: share of orders at or past tier 2 up, margin per order up. Stop: margin per order down 2 weeks in a row.']
+    a.update({
+        'title': f'Add a second cart reward at ${cl["tier2"]:,.0f} in {app}',
+        'owner': 'agent_drafts',
+        'artefact': {'kind': 'page_section', 'label': 'Two-tier cart progress bar', 'draft': '\n'.join(lines)},
+        'steps': steps(('agent', 'Pick the gift item and confirm stock for 60 days.'),
+                       ('agent', f'Draft the tiers, the bar copy and the {app} set-up notes.'),
+                       ('person', f'Approve the tiers. The site team sets them in {app}.'),
+                       ('agent', f'Read the share of orders past each tier and margin per order weekly; call it on {ctx.check_on(35)}.')),
+        'win_rule': 'Share of orders at or past tier 2 up with margin per order up.',
+        'stop_rule': 'Margin per order down 2 weeks in a row.', 'check_on': ctx.check_on(35), 'time_to_ship_hours': 6})
+    return a
+
+
 def returns_block(rd):
     """returns_by_reason for the window, or the labelled fixture when the metric is unavailable."""
     m = rd.m('returns_by_reason', audit.WINDOW)
@@ -758,7 +790,7 @@ BUILDERS = {'OFFER-R01': threshold_action, 'OFFER-R04': rung_action, 'OFFER-R08'
             'OFFER-R10': red_line_action, 'OFFER-R11': promo_action, 'OFFER-R12': gifting_action,
             'OFFER-R14': guarantee_action, 'OFFER-R05': stale_action, 'OFFER-R06': pull_action, 'OFFER-R15': claims_action,
             'OFFER-R16': position_action, 'OFFER-R17': parity_action, 'OFFER-R18': discount_action,
-            'OFFER-R19': discount_action}
+            'OFFER-R19': discount_action, 'OFFER-R20': cart_action}
 
 
 def build(f, rd, ctx, nr):
@@ -797,4 +829,4 @@ def rank(brand='bombas', window=None):
     return {'screen': SCREEN, 'brand': brand, 'window': w, 'simulated': True, 'net_revenue_28d': nr,
             'actions': actions, 'findings': findings, 'objections': ctx.objections, 'returns': returns_block(rd),
             'ladder': dict(ctx.ladder, moves=ctx.ladder_rows), 'first_order': ctx.first_order, 'waterfalls': ctx.waterfalls, 'calendar': ctx.calendar, 'gifting': ctx.gifting, 'guarantee': ctx.guarantee, 'position': ctx.position, 'parity': ctx.parity,
-            'discipline': dict(ctx.discipline, policy=discount_policy(ctx))}
+            'discipline': dict(ctx.discipline, policy=discount_policy(ctx)), 'cart': ctx.cart}
