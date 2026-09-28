@@ -2627,4 +2627,157 @@ def block_notes(d: dict) -> dict:
         if s and s["n"] is not None:
             caveat = f"Based on {s['n']:,} {s['basis']}" + (" (thin)" if s["verdict"] == "thin" else "") + ". " + caveat
         out[sid] = {"window": window, "caveat": caveat}
+    for sid, gp in block_gaps(d).items():
+        out[sid]["gap"] = gp
+    return out
+
+
+# ---------------------------------------------------------------- the gap each block shows (depth.md section 3, rule 9)
+
+GAP_KINDS = ("never_tried", "cross_source", "competitor", "unavailable")
+GAP_LABEL = {"never_tried": "never tried", "cross_source": "cross-source check", "competitor": "against competitors", "unavailable": "unavailable"}
+
+
+def block_gaps(d: dict) -> dict:
+    """For each desk block, the one gap it shows beyond totals: what was never tried, a check across two sources,
+    or a position against competitors. A block whose inputs are missing says unavailable with the reason."""
+    def pl(n, w):
+        return f"{n:,} {w}" + ("" if n == 1 else "s")
+    def ok(x):
+        return isinstance(x, dict) and x.get("available", True)
+    def cnt(x):
+        return len(x) if isinstance(x, (list, dict)) else (x or 0)
+    av = d.get("avatars") or []
+    n_av = len(av)
+    g = {}
+    advo = d.get("ad_voice") or {}
+    silent = [r for r in advo.get("rows", []) if r.get("verdict") == "silent"]
+    if ok(advo):
+        share = round(sum(r.get("buyer_share") or 0 for r in silent) * 100)
+        g["voiceads-wrap"] = ("never_tried", f"{pl(len(silent), 'avatar')} hear no live ad of ours: {share} percent of buyers.")
+        g["focus-wrap"] = ("never_tried", f"{len(silent)} of {n_av} avatars have never had an ad of their own.")
+    gate = d.get("gate") or {}
+    if gate.get("rows"):
+        g["gate-wrap"] = ("never_tried", f"{pl(cnt(gate.get('tasks')), 'check')} never run across {len(gate['rows'])} avatars.")
+        g["avatars-wrap"] = ("never_tried", f"{len(gate['rows']) - (gate.get('validated') or 0)} of {len(gate['rows'])} avatars have not passed every core check.")
+    om = d.get("offer_map") or {}
+    if om.get("rows"):
+        g["offers-wrap"] = ("never_tried", f"{pl(cnt(om.get('unused')), 'offer')} answer no doubt; {pl(cnt(om.get('open_rungs')), 'doubt')} have no offer.")
+    cmp = d.get("compare") or {}
+    if cmp.get("rows"):
+        g["compare-wrap"] = ("cross_source", f"{len(cmp.get('fields') or [])} rows put reviews, live ads and returns side by side for any 2 avatars.")
+    sp = d.get("split") or {}
+    if sp.get("rows"):
+        n = sum(1 for r in sp["rows"] if r.get("verdict") in ("split", "broad"))
+        g["split-wrap"] = ("cross_source", f"Lines bought against doubts raised: {n} of {len(sp['rows'])} avatars may be more than one buyer.")
+    rc = d.get("rechecks") or {}
+    if "rows" in rc:
+        nd = cnt(rc.get("no_date"))
+        g["recheck-wrap"] = ("never_tried", f"{pl(nd, 'record')} " + ("carries" if nd == 1 else "carry") + " no expiry date, so no one re-checks " + ("it." if nd == 1 else "them.")
+                             if nd else "Every record carries an expiry date; none is left unchecked.")
+    fo = d.get("forces") or {}
+    if fo.get("rows"):
+        g["forces-wrap"] = ("never_tried", f"{cnt(fo.get('under'))} of {len(fo['rows'])} avatars have a force no line speaks to.")
+    sv = d.get("survey") or {}
+    if sv.get("questions"):
+        gaps = len({i for q in sv["questions"] for i in q.get("gap_ids") or []})
+        g["survey-wrap"] = ("never_tried", f"{pl(gaps, 'gap')} no source answers yet; we have never asked buyers.")
+    cv = d.get("coverage") or {}
+    if cv.get("rows"):
+        g["cover-wrap"] = ("never_tried", f"{pl(cnt(cv.get('gaps')), 'cell')} hold a doubt no channel answers.")
+    ld = d.get("ladders") or {}
+    if ld.get("rows"):
+        c = ld.get("counts") or {}
+        g["ladders-wrap"] = ("never_tried", f"{pl(c.get('answer', 0), 'rung')} have no proof on file.")
+        rows = ld["rows"]
+        words = d.get("words") or {}
+        if words.get("phrases_total") is not None:
+            g["words-wrap"] = ("never_tried", f"{words['phrases_total'] - (words.get('phrases_used') or 0):,} of {words['phrases_total']:,} banked phrases sit on no rung, so no brief uses them.")
+        th = d.get("themes") or {}
+        if ok(th) and th.get("rows"):
+            open_themes = {r["theme"] for r in rows if not r.get("proof")}
+            costly = [t for t in th["rows"] if t.get("impact", 0) < 0 and any(l in open_themes for l in t.get("ladders") or [])]
+            g["themes-wrap"] = ("never_tried", f"{pl(len(costly), 'theme')} cost stars and still have a rung with no proof.")
+    mc = d.get("macros") or {}
+    if mc.get("counts") and sum(mc["counts"].values()):
+        c = mc["counts"]
+        g["macros-wrap"] = ("never_tried", f"{c.get('check', 0) + c.get('person', 0)} of {sum(c.values())} support replies are not ready to send.")
+    cg = d.get("copy_gap") or {}
+    if ok(cg):
+        g["gap-wrap"] = ("cross_source", f"Praise reviews against our own records: {cnt(cg.get('missing'))} words buyers use, we never do.")
+        hk = d.get("hooks") or {}
+        miss = {r["word"] for r in cg.get("rows", []) if r.get("verdict") == "missing"}
+        if hk.get("rows"):
+            n = sum(1 for r in hk["rows"] if set(r["hook"].split()) & miss)
+            g["hooks-wrap"] = ("never_tried", f"{n} of {len(hk['rows'])} repeated lines use a word we have never said.")
+    pc = d.get("perception") or {}
+    if ok(pc):
+        g["perc-wrap"] = ("cross_source", f"Our positioning against praise reviews: {cnt(pc.get('unechoed'))} of our words never come back.")
+    hi = d.get("hierarchy") or {}
+    if ok(hi):
+        g["hier-wrap"] = ("never_tried", "No page or email runs an approved order yet." if not hi.get("approved") else "Approved; pages that do not lead with it are listed in the audit.")
+    se = d.get("served") or {}
+    segs = [s for s in se.get("segments") or [] if s.get("verdict") == "gap"]
+    if se.get("points"):
+        g["served-wrap"] = ("competitor", f"{pl(len(segs), 'segment')} the category serves and we have no avatar for" + (f": {segs[0]['segment']}." if segs else "."))
+    pr = d.get("price") or {}
+    if pr.get("rows"):
+        f = pr.get("facts") or {}
+        g["price-wrap"] = ("never_tried", "Per-pair price by pack is never shown: pack prices are not in the brain." if f.get("pack_prices") is None
+                           else f"{sum(1 for r in pr['rows'] if r.get('verdict') == 'price_led')} price-led avatars against the pack prices on file.")
+    cf = d.get("claims_fire") or {}
+    if cf.get("rows"):
+        n = sum(1 for r in cf["rows"] if r.get("verdict") == "under_fire")
+        w = sum(1 for r in cf["rows"] if r.get("verdict") == "watch")
+        g["claims-wrap"] = ("cross_source", f"Our claims against {cf.get('complaints', 0):,} reviews of 1 or 2 stars: {n} of {len(cf['rows'])} under fire, {w} to watch.")
+    lk = d.get("lookalikes") or {}
+    if "rows" in lk:
+        g["look-wrap"] = ("competitor", (f"{pl(len(lk['rows']), 'page')} in the Ad Library " + ("uses" if len(lk["rows"]) == 1 else "use") + " our name and send" + ("s" if len(lk["rows"]) == 1 else "") + " buyers elsewhere."
+                                          if lk["rows"] else "No page in the Ad Library pull uses our name."))
+    tm = d.get("timing") or {}
+    if tm.get("rows"):
+        late = sum(1 for m in tm.get("moves") or [] if m.get("late"))
+        g["timing-wrap"] = ("never_tried", f"{pl(len(tm.get('moves') or []), 'seasonal answer')} never shipped; {late} already late.")
+    mo = d.get("moments") or {}
+    if mo.get("rows"):
+        g["moments-wrap"] = ("never_tried", f"{pl(len(mo['rows']), 'moment')} ahead with no ad or email live yet.")
+    mk = d.get("marketplace") or {}
+    if mk.get("rows"):
+        n = sum(1 for r in mk["rows"] if r.get("verdict") == "marketplace")
+        g["market-wrap"] = ("cross_source", f"Amazon reviews against our site's: {n} of {len(mk['rows'])} avatars speak mostly on Amazon.")
+    rt = d.get("returns") or {}
+    if rt.get("rows"):
+        ref = rt.get("refund_share_3m")
+        g["returns-wrap"] = ("cross_source", (f"Review proxy against store refunds: {round(ref * 100, 1)} percent of revenue refunded in 3 months, simulated."
+                                              if isinstance(ref, (int, float)) else "Review proxy only; store refunds are unavailable."))
+    mr = d.get("misreads") or {}
+    if ok(mr):
+        g["misread-wrap"] = ("cross_source", f"What each avatar hires us for against what reviews blame: {pl(len(mr.get('rows') or []), 'pair')} clash.")
+    co = d.get("cohorts") or {}
+    if ok(co):
+        g["cohort-wrap"] = ("cross_source", "Cohorts by months since the first order against the calendar month" +
+                            (f": {co['calendar_break']['month']} hit every cohort at once." if co.get("calendar_break") else "."))
+    he = d.get("health") or {}
+    if ok(he):
+        g["health-wrap"] = ("never_tried", f"{pl(cnt(he.get('missing')), 'health line')} never read: the connector is not set up.")
+    mx = d.get("mix") or {}
+    if ok(mx):
+        g["mix-wrap"] = ("cross_source", f"Channels this year against last: {round(mx['paid_share_returning'] * 100, 1)} percent of returning orders came through paid ads."
+                         if isinstance(mx.get("paid_share_returning"), (int, float)) else "Channels this year against last.")
+    vo = d.get("voice") or {}
+    if vo:
+        ctx = len(vo.get("contexts") or [])
+        liked = len(vo.get("liked") or []) + len(vo.get("disliked") or [])
+        g["voice-wrap"] = ("never_tried", f"{liked} lines marked as us or not us across {pl(ctx, 'context')}." if liked
+                           else f"No line is marked as us or not us yet, across {pl(ctx, 'context')}.")
+    out = {}
+    for sid in BLOCKS:
+        if sid in g:
+            kind, text = g[sid]
+        else:
+            src = {"paths-wrap": "paths", "cohort-wrap": "cohorts", "mix-wrap": "mix", "health-wrap": "health", "gap-wrap": "copy_gap",
+                   "perc-wrap": "perception", "hier-wrap": "hierarchy", "misread-wrap": "misreads", "themes-wrap": "themes"}.get(sid)
+            reason = (d.get(src) or {}).get("reason") if src else None
+            kind, text = "unavailable", (str(reason).rstrip(".").capitalize() + "." if reason else "No input for this block yet.")
+        out[sid] = {"kind": kind, "label": GAP_LABEL[kind], "text": text}
     return out

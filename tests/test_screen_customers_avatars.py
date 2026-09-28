@@ -1654,3 +1654,31 @@ class ReadsInOnePass(unittest.TestCase):
         d = api.handle(Req(['overview']))
         self.assertIn('simulated', d['blocks']['cohort-wrap']['window'])
         self.assertTrue(d['blocks']['ladders-wrap']['caveat'].startswith('Based on '))
+
+
+class GapsNotTotals(unittest.TestCase):
+    """Feature 7.3: depth rule 9. Every desk block shows a never-tried cell, a cross-source check or a competitor position."""
+
+    def test_every_block_names_a_gap(self):
+        for brand in ('bombas', 'example'):
+            d = api.handle(Req(['overview'], query={'brand': [brand]}))
+            for sid, b in d['blocks'].items():
+                g = b['gap']
+                self.assertIn(g['kind'], api.builds.GAP_KINDS, sid)
+                self.assertTrue(g['text'].endswith('.'), sid)
+                self.assertNotRegex(g['text'], r'\b(should|consider|leverage)\b|—')
+            if brand == 'bombas':
+                self.assertEqual([s for s, b in d['blocks'].items() if b['gap']['kind'] == 'unavailable'], ['paths-wrap'])
+
+    def test_counts_match_the_blocks(self):
+        d = api.handle(Req(['overview']))
+        g = {s: b['gap']['text'] for s, b in d['blocks'].items()}
+        under = sum(1 for r in d['claims_fire']['rows'] if r['verdict'] == 'under_fire')
+        self.assertIn(f"{under} of {len(d['claims_fire']['rows'])} under fire", g['claims-wrap'])
+        silent = [r for r in d['ad_voice']['rows'] if r['verdict'] == 'silent']
+        self.assertTrue(g['voiceads-wrap'].startswith(f"{len(silent)} avatar"))
+        self.assertIn(f"{d['ladders']['counts']['answer']} rung", g['ladders-wrap'])
+
+    def test_page_draws_the_gap(self):
+        js = (ROOT / 'app' / 'screens' / '02-customers-avatars' / 'screen.js').read_text(encoding='utf-8')
+        self.assertIn("'block-gap gap-' + b.gap.kind", js)

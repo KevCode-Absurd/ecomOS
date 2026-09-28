@@ -1035,15 +1035,16 @@
   }
   window.addEventListener('hashchange', () => { const k = (location.hash.match(/tab=([a-z]+)/) || [])[1]; if (deskTabs && DESK.some((t) => t.key === k)) deskTabs.show(k); });
 
-  // ---------- window and caveat on every desk block (depth rule 10)
+  // ---------- window, gap and caveat on every desk block (depth rules 9 and 10)
   function renderBlocks(blocks) {
     for (const [id, b] of Object.entries(blocks || {})) {
       const sec = document.getElementById(id);
       if (!sec) continue;
-      sec.querySelectorAll(':scope > .block-window, :scope > .sec-head > .block-window, :scope > .block-caveat').forEach((n) => n.remove());
+      sec.querySelectorAll(':scope > .block-window, :scope > .sec-head > .block-window, :scope > .block-caveat, :scope > .block-gap').forEach((n) => n.remove());
       const head = sec.querySelector(':scope > .sec-head');
       const h2 = head && head.querySelector('h2');
       if (h2) h2.after(el('span', { class: 'block-window', text: b.window }));
+      if (head && b.gap) head.after(el('p', { class: 'block-gap gap-' + b.gap.kind }, el('b', { text: 'Gap, ' + b.gap.label + ': ' }), b.gap.text));
       sec.append(el('p', { class: 'block-caveat', text: 'Caveat: ' + b.caveat }));
     }
   }
