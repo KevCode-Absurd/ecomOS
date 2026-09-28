@@ -612,6 +612,35 @@ class TestLosses(TempBrain):
         self.assertEqual(ids, ['lost_darn_tough', 'lost_stance', 'lost_uniqlo'])
 
 
+class TestCategory(TempBrain):
+    """2.2: the category ladder from doing nothing up, our rung marked, a move per rung."""
+    def setUp(self):
+        super().setUp()
+        api.BRAIN_ROOT = self.tmp
+        self.c = api.handle(Req(['overview']))['category']
+
+    def test_rungs(self):
+        keys = [r['key'] for r in self.c['rungs']]
+        self.assertEqual(keys, ['premium', 'direct', 'adjacent', 'value', 'do_nothing'])
+        by = {r['key']: r for r in self.c['rungs']}
+        self.assertEqual(by['premium']['members'], ['Comrad Socks'])
+        self.assertIn('Kirkland', by['value']['members'])
+        self.assertEqual(len(by['adjacent']['members']), 7)
+        self.assertEqual(self.c['our_rung'], 'direct')
+        self.assertTrue(by['direct']['ours'])
+        for r in self.c['rungs']:
+            self.assertIsNone(r['trend'])
+            self.assertTrue(r['move'] and r['capability'])
+
+    def test_r16_is_a_connect_action(self):
+        out = audit.run('bombas', WINDOW, self.tmp)
+        f = next(f for f in out if f['rule_id'] == 'COMP-R16')
+        self.assertEqual(f['status'], 'unavailable')
+        acts = api.rank('bombas', {'ends_on': '2026-09-27', 'days': 28, 'trailing': 4})['actions']
+        a = next(a for a in acts if a['rule_id'] == 'COMP-R16')
+        self.assertEqual((a['owner'], a['artefact']['kind']), ('person', 'connector_setup'))
+
+
 class TestRank(TempBrain):
     """Depth contract rules 2, 3 and 13: owner, steps and artefact on every action; every finding ends in one."""
     W = {'ends_on': '2026-09-27', 'days': 28, 'trailing': 4}

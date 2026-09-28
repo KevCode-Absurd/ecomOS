@@ -378,6 +378,20 @@
       el('p', { class: 'micro faint', text: ls.rule }));
   }
 
+  // ---------- 5j. the category ladder ----------
+  function categorySection(c) {
+    const box = el('div', { class: 'cat-ladder' });
+    for (const r of c.rungs) {
+      box.append(el('div', { class: 'rung-row card flat' + (r.ours ? ' ours' : '') },
+        el('div', { class: 'row' }, el('b', { text: r.label }), r.ours ? el('span', { class: 'chip accent', text: 'we sit here' }) : null,
+          el('span', { class: 'micro faint', text: r.signal_text })),
+        el('div', { class: 'small muted', text: r.members.length ? r.members.join(', ') : 'nobody mapped yet' }),
+        el('div', { class: 'row' }, el('span', { class: 'small' }, el('b', { text: 'Move: ' }), r.move),
+          UI.decisionRow({ capability: r.capability, autonomy: r.autonomy, screen: SCREEN, compact: true, finding_id: SCREEN + '.rung.' + r.key }))));
+    }
+    mount('#category', box, el('p', { class: 'micro faint', text: c.rule + ' Our price ' + usd(c.our_price) + ' a pair (simulated) against a split of ' + usd(c.split) + '. ' + c.coverage + ' of ' + c.rungs.length + ' rungs mapped. Demand trend by rung: unavailable, ' + c.trend_reason + '.' }));
+  }
+
   // ---------- 6. the audit ----------
   function rulesTable(rules) {
     return UI.table({ columns: [{ key: 'rule_id', label: 'Rule' }, { key: 'name', label: 'What it checks' }, { key: 'inputs', label: 'Reads', format: (v) => (v || []).join(', ') }, { key: 'capability', label: 'Capability' }],
@@ -404,6 +418,7 @@
     changesSection(d.changes);
     freshSection(d.freshness);
     lossSection(d.losses);
+    categorySection(d.category);
     document.getElementById('audit-sub').textContent = p.findings.length + ' findings from ' + p.rules.length + ' rules. Public signals, one capture.';
     mount('#audit', auditTable(p.findings));
     mount('#rules', el('h4', { text: 'Rules' }), rulesTable(p.rules));

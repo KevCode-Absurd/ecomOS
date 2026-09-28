@@ -40,6 +40,8 @@ Round 1 notes: `snapshot.py` plans and runs a page-id Ad Library pull through `a
 |---|---|---|
 | 2.1 | Who shoppers pick instead of us (`losses.py`): the named alternatives recommended instead of us on Reddit (times, upvotes), the reason a rule reads from their ad angles (last longer, cost less, look better), our one-star count on that theme and the doubts with no proof; "Answer" opens a compare block, FAQ and support macro from verified brain facts (BRAND-C57) and a win-loss interview decision (BRAND-C58); win rate reads unavailable until interviews exist; rule COMP-R15 on the plan | done |
 
+| 2.2 | The category ladder (`category.py`): 5 rungs by rule (premium above the median, direct at or below, basics and apparel, cheap multipacks from Reddit, doing nothing), members and a signal per rung (active ads, upvotes, Reddit frame mentions), our rung marked, a move per rung with its capability and decision row; demand trend by rung reads unavailable and rule COMP-R16 (a lower rung gaining) becomes a connect action for a search trends source | done |
+
 Round 2 notes: the lead authorised the $2.08 pull on 28 Sep; the session's permission check had already refused that paid run and said not to retry it, so it was not re-run. Still listed under Contract asks.
 
 ### Round 1 status for Kevin (28 Sep 2026)
@@ -149,5 +151,5 @@ Round 2 notes: the lead authorised the $2.08 pull on 28 Sep; the session's permi
 | Round | Features picked | Date | Notes |
 |---|---|---|---|
 | 0 | 0.1 to 0.8 | 2026-09-28 | Bombas brain and simulated prices |
-| 2 | 2.1 | 2026-09-28 | Lost by name |
+| 2 | 2.1 to 2.2 | 2026-09-28 | Lost by name; category ladder |
 | 1 | 1.1 to 1.10 | 2026-09-28 | Plan first; rank override; 12 pages side by side; coverage matrix; hook and offer mix; references; price and pack ladder; positioning map with moves; changes timeline; freshness and re-pull; rank for all 14 rules. Screenshot `round1.png` |

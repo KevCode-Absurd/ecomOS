@@ -81,6 +81,11 @@ COMP-R15 lost by name. A named alternative recommended instead of us on Reddit
     their ad angles. Severity medium. Capability BRAND-C57 (the compare block and
     support macro). Reputation 4: the reason sits on a review theme. Owner:
     03-competitors.
+COMP-R16 a lower rung is gaining. Interest in a lower rung of the category
+    ladder (category.py: doing nothing, cheap multipacks) rising faster than
+    interest in the category. Needs a search trends source, so it reads
+    unavailable and becomes a connect action (person). Capability BRAND-C18.
+    Owner: 03-competitors.
 
 Rubric overrides (depth.md section 4 allows reputation and satisfaction per rule):
 COMP-R01 reputation 5: an unclaimed angle is a competitor position gap named in
@@ -132,6 +137,7 @@ mixmod = _local("mix")
 refmod = _local("references")
 changemod = _local("changes")
 lossmod = _local("losses")
+catmod = _local("category")
 
 SCREEN = "03-competitors"
 SEVERITY_ORDER = {"critical": 0, "high": 1, "medium": 2, "low": 3}
@@ -194,6 +200,8 @@ RULES = [
     {"rule_id": "COMP-R15", "name": "lost by name: recommended instead of us", "entity_type": "brand",
      "inputs": ["brain competitors recommended_instead", "brain objection_ladders", "tracked page angles"],
      "capability": "BRAND-C57", "owner_screen": SCREEN},
+    {"rule_id": "COMP-R16", "name": "a lower rung of the ladder is gaining", "entity_type": "ladder_rung",
+     "inputs": ["search trends by rung"], "capability": "BRAND-C18", "owner_screen": SCREEN},
     {"rule_id": "COMP-R08", "name": "discount on most ads while direct peers run none", "entity_type": "offer",
      "inputs": ["brain offers.promo_share_active_ads", "brain competitors offers_seen"], "capability": "LIFE-C38",
      "owner_screen": SCREEN},
@@ -201,12 +209,12 @@ RULES = [
 # what a strategist groups the findings by on the page (depth.md section 2: grouped by bottleneck)
 RULE_GROUP = {"COMP-R01": "creative", "COMP-R05": "creative", "COMP-R06": "creative", "COMP-R03": "offer", "COMP-R07": "offer",
               "COMP-R08": "offer", "COMP-R09": "offer", "COMP-R02": "price", "COMP-R10": "price", "COMP-R11": "position",
-              "COMP-R04": "watch", "COMP-R12": "watch", "COMP-R13": "watch", "COMP-R14": "watch", "COMP-R15": "lost"}
+              "COMP-R04": "watch", "COMP-R12": "watch", "COMP-R13": "watch", "COMP-R14": "watch", "COMP-R15": "lost", "COMP-R16": "lost"}
 GROUP_LABEL = {"lost": "Shoppers we lose, by name", "creative": "Ads they run that we do not", "offer": "Offers they say that we do not",
                "price": "Price against theirs", "position": "Corners of the map", "watch": "Watch and protect"}
 RUBRIC_OVERRIDES = {"COMP-R01": {"reputation": 5}, "COMP-R02": {"reputation": 3}, "COMP-R04": {"reputation": 5, "satisfaction": 4},
                     "COMP-R15": {"reputation": 4}}
-AUTONOMY = {"BRAND-C57": "agent_does", "BRN-C11": "agent_does", "BRAND-C20": "agent_does", "LIFE-C39": "founder_gate", "CREA-C31": "agent_does", "CREA-C06": "agent_does", "CREA-C04": "agent_does", "LIFE-C47": "agent_does", "LIFE-C38": "founder_gate", "BRAND-C21": "founder_gate", "BRAND-C24": "founder_gate", "MONEY-C48": "human_assist"}
+AUTONOMY = {"BRAND-C18": "agent_does", "BRAND-C57": "agent_does", "BRN-C11": "agent_does", "BRAND-C20": "agent_does", "LIFE-C39": "founder_gate", "CREA-C31": "agent_does", "CREA-C06": "agent_does", "CREA-C04": "agent_does", "LIFE-C47": "agent_does", "LIFE-C38": "founder_gate", "BRAND-C21": "founder_gate", "BRAND-C24": "founder_gate", "MONEY-C48": "human_assist"}
 
 
 # ---------------------------------------------------------------- reading
@@ -439,6 +447,7 @@ def market_full(brand: str, today: dt.date, root: Path | None = None) -> dict:
     prev = snap.load(brand, before=cur["captured_at"]) if cur else None
     m["changes"] = changemod.build(m, m["brain"], prev, cur, today)
     m["losses"] = lossmod.build(m, m["brain"])
+    m["category"] = catmod.build(m, m["brain"])
     return m
 
 
@@ -797,6 +806,9 @@ def run(brand: str, window: dict | None = None, root: Path | None = None) -> lis
                for rid in ("COMP-R01", "COMP-R03")]
     else:
         out = rule_angles(m, ends_on) + rule_offer_runs(m, ends_on) + rule_coverage(m, ends_on) + rule_mix(m, ends_on)
+        out += [_unavailable("COMP-R16", "low", {"type": "ladder_rung", "id": "lower_rungs", "label": "lower rungs of the ladder"},
+                             ["search trends by rung"], "a search trends source (read only)",
+                             "Connect a search trends source for the category and each lower rung.", ends_on)]
         out += rule_ladder(m, ends_on) + rule_corners(m, ends_on) + rule_refresh(m, ends_on) + rule_freshness(m, ends_on) + rule_losses(m, ends_on)
     out += rule_price(m, ends_on) + rule_lookalike(m, ends_on)
     out.sort(key=lambda f: (SEVERITY_ORDER[f["severity"]], f["id"]))
