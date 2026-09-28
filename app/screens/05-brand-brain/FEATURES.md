@@ -186,6 +186,23 @@ Sources: round 5's candidates (locked zones, the example brain walkthrough, publ
 | 6.9 | The brain in one page (`onepage.py`, `GET onepage`): one markdown for a new team member built from the records: the brand card, the positioning and proof points, the audience profiles with defaults first, the voice sheet, the red lines with reasons, the locked lines and facts, the section owners, the connected sources, the competitors on file, the top open questions, the last decisions, and where things live on the screen; copy, download or print; every gap says so; the read is logged | done | Hand a new hire or an agency lead one page on day one, true to the records, without writing it yourself |
 | 6.10 | Founder notes in BRAIN.md (`GET brainmd/notes`, `POST brainmd/notes`): the notes block every agent reads first, read and set from the package block; the router is regenerated around it and keeps it word for word; no em dashes, under 4,000 characters, the router stays under 1,500 tokens; logged as a router change | done | Tell every agent the house rules and the people no record holds, in your own words, and never lose them to a regeneration |
 
+## Round 7 (manager, 28 Sep 2026): 10 features, one commit each
+
+Sources: round 6's candidates (the alert digest, notes on audience profiles, restore from an export, a safe number change), the web pass leftovers, and the room jobs still without a build (what agents got wrong, the brand's own words, records expiring, proof requests, the founder round as a checklist, section trust explained).
+
+| # | Feature | Status | What a founder can do |
+|---|---|---|---|
+| 7.1 | The weekly alert digest (`alerts.py`, `GET alerts`, `POST alerts/sent`): one message from every check the screen runs (site changes not reviewed, competitor snapshot age, assets and consents expiring or expired, section reviews overdue, peaks inside 30 days with decisions waiting, red lines without a reason, rejected ideas due, questions open, changes this week), ranked by level with the block each line names; Mark sent writes a founder record and the next digest flags what is new since; a tab next to the weekly report; delivery is copy until a connector exists | done | Read one message a week and know everything that is due, with what appeared since the last one |
+| 7.2 | Founder notes on audience profiles | todo | |
+| 7.3 | The brand's own words: names and spellings the scanner checks | todo | |
+| 7.4 | Proof requests for claims that are not yet approved | todo | |
+| 7.5 | What agents got wrong | todo | |
+| 7.6 | Records expiring this week | todo | |
+| 7.7 | The founder round as a checklist | todo | |
+| 7.8 | Section trust, explained | todo | |
+| 7.9 | Restore from an export | todo | |
+| 7.10 | Change a number safely | todo | |
+
 ### Round 6 status for Kevin (28 Sep 2026)
 
 1. What you can do now: lock a disclaimer or a line once and no agent draft ships without it or with a reworded version; paste a chat and tick the decisions, red lines, learnings and facts into the brain; make every generator write for one named audience profile with the doubts that person brings; see how far any brand's brain is on an 11-step strip and what to do next; flag a capability public-facing and see what it loses; read every red line in one place with the why; ask a plain question and get the number, the count or the comparison with its record; give each section an owner and a cadence and see the overdue reviews on the plan; hand a new hire the brain in one page; write the founder notes every agent reads first and never lose them to a regeneration.

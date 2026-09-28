@@ -2601,10 +2601,32 @@ class Round6FounderNotes(TempBrain):
         self.assertIn('router', [c['kind'] for c in api.handle(Req(['changes']))['changes']])
 
 
+class Round7Alerts(TempBrain):
+    """Round 7 feature 1: the weekly alert digest across every check, with what is new since the last one."""
+
+    def test_digest_and_since(self):
+        api.handle(Req(['assets'], 'POST', body={'name': 'Hero video', 'kind': 'creator', 'rights_holder': 'Maya', 'where': 'Meta ads', 'expires_on': '2026-10-10'}))
+        api.handle(Req(['claims'], 'POST', body={'text': 'waterproof', 'tier': 'forbidden'}))
+        al = api.handle(Req(['alerts']))
+        kinds = {x['kind'] for x in al['items']}
+        self.assertTrue({'asset', 'redline', 'question', 'competitors'} & kinds)
+        self.assertIn('Hero video', al['text'])
+        self.assertIsNone(al['since'])
+        self.assertTrue(all(x['new'] for x in al['items']))
+        self.assertEqual(al['items'][0]['severity'], min((x['severity'] for x in al['items']), key=lambda s: {'high': 0, 'medium': 1, 'low': 2}[s]))
+        status, res = api.handle(Req(['alerts', 'sent'], 'POST'))
+        self.assertEqual((status, res['since']), (201, '2026-09-28'))
+        al = api.handle(Req(['alerts']))
+        self.assertEqual(al['since'], '2026-09-28')
+        self.assertEqual(al['counts']['new'], 0)  # nothing dated after today
+        self.assertIn('since the digest of 2026-09-28', al['text'])
+        self.assertEqual(al['delivery']['slack'], None)
+
+
 class Round4SecondBrand(unittest.TestCase):
     """Round 4 feature 2: plug and play. Every route answers for the example brain (7 records), unavailable never zero."""
 
-    ROUTES = [['overview'], ['master'], ['profile'], ['documents'], ['competitors'], ['coverage'], ['signals'], ['health'], ['conflicts'], ['questions'], ['ladders', 'proof'], ['selfaudit'], ['peaks'], ['visual'], ['newbrand'], ['visibility'], ['moves'], ['channels'], ['agentfile', 'endpoints'], ['brainmd'], ['trail'], ['assets'], ['ugc'], ['drift'], ['locks'], ['audiences'], ['walkthrough'], ['redlines'], ['owners'], ['onepage'], ['brainmd', 'notes'],
+    ROUTES = [['overview'], ['master'], ['profile'], ['documents'], ['competitors'], ['coverage'], ['signals'], ['health'], ['conflicts'], ['questions'], ['ladders', 'proof'], ['selfaudit'], ['peaks'], ['visual'], ['newbrand'], ['visibility'], ['moves'], ['channels'], ['agentfile', 'endpoints'], ['brainmd'], ['trail'], ['assets'], ['ugc'], ['drift'], ['locks'], ['audiences'], ['walkthrough'], ['redlines'], ['owners'], ['onepage'], ['brainmd', 'notes'], ['alerts'],
               ['decisions'], ['flows'], ['claims'], ['site', 'diff'], ['parity'], ['contracts'], ['legal'], ['voice'], ['battlecards'], ['permissions'],
               ['export'], ['assumptions'], ['facts'], ['summaries'], ['changes'], ['learn'], ['report'], ['digest'], ['review'], ['bottlenecks'], ['audit']]
 

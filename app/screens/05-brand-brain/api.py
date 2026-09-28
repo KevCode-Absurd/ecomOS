@@ -9,6 +9,8 @@ question, and accept or ignore on a proposed record. Nothing external.
   GET  agentfile/endpoints      this route table as JSON, for an agent or an MCP wrapper
   GET  brainmd                  the router BRAIN.md text
   GET|POST brainmd/notes        the founder notes block in BRAIN.md, read and set; kept across regeneration
+  GET  alerts                   the weekly alert digest across every check, with what is new since the last one
+  POST alerts/sent              mark the digest sent today; the next one flags what is new since
   GET  onepage                  the brain in one page for a new team member (markdown)
   GET  owners                   section owners and review cadence; overdue reviews first
   POST owners/<section>         {owner, cadence_days, reviewed}: set the owner or cadence, or mark reviewed today
@@ -212,6 +214,9 @@ _pspec.loader.exec_module(parity)
 _sspec = importlib.util.spec_from_file_location("brand_brain_sitediff", HERE / "sitediff.py")
 sitediff = importlib.util.module_from_spec(_sspec)
 _sspec.loader.exec_module(sitediff)
+_alspec = importlib.util.spec_from_file_location("brand_brain_alerts", HERE / "alerts.py")
+alerts = importlib.util.module_from_spec(_alspec)
+_alspec.loader.exec_module(alerts)
 _opspec = importlib.util.spec_from_file_location("brand_brain_onepage", HERE / "onepage.py")
 onepage = importlib.util.module_from_spec(_opspec)
 _opspec.loader.exec_module(onepage)
@@ -1930,6 +1935,25 @@ def handle(req):
         return cd
     if req.method == "POST" and parts == ["claims"]:
         return claim_add(brain, req.body)
+    if req.method == "GET" and parts == ["alerts"]:
+        def safe(fn, default):
+            try:
+                return fn()
+            except Exception:  # noqa: BLE001
+                return default
+        parts_ = {"site": safe(lambda: sitediff.diff(brain), {}), "market": safe(lambda: market.pages(brain), {}), "assets": safe(lambda: assets.register(brain), {}), "consents": safe(lambda: ugc.register(brain), {}),
+                  "owners": safe(lambda: owners.owners(brain, health.SHELF_DAYS, health.META_SECTIONS, brain.section_stats()), {}), "peaks": safe(lambda: peaks.readiness(brain, market.angles_of, legal, assumptions), {}),
+                  "redlines": safe(lambda: redlines.register(brain), {}), "rejected": safe(lambda: list(bottlenecks.rejected_ideas(brain).values()), []),
+                  "questions": safe(lambda: [q for q in questions_ranked(brain).get("questions") or [] if not q.get("answered_on")], []), "changes": safe(lambda: changes.recent(brain, 7), {})}
+        res = alerts.build(brain, parts_)
+        res.update(brand=brain.brand, today=brain.today.isoformat(), capability={"id": "BRN-C07", "autonomy": "founder_gate"})
+        return res
+    if req.method == "POST" and parts == ["alerts", "sent"]:
+        rec = alerts.sent_record(brain)
+        errs = founder_put(brain, rec, "founder_edit", "alert digest marked sent")
+        if errs:
+            return 400, {"error": "; ".join(errs)}
+        return 201, {"ok": True, "since": rec["value"], "version": brain.version(), "next": "Marked sent. The next digest flags what appears after today."}
     if req.method == "GET" and parts == ["onepage"]:
         frame = next((r for r in brain.records("positioning") if r["id"].endswith(".positioning.frame")), None)
         proof = next((r for r in brain.records("positioning") if r.get("field") == "proof_points"), None)
