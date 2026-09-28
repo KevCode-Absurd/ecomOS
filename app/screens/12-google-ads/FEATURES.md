@@ -6,9 +6,31 @@ Status: todo | doing | done | parked. One feature per commit. The first round is
 
 | # | Feature | Status |
 |---|---|---|
-| 0.1 | Page shell in the shared UI kit: header, empty-state tiles, insight list, action buttons | todo |
-| 0.2 | `api.py` serving this screen's metrics from `app/data/` with unavailable states | todo |
-| 0.3 | 3 metric tiles, 2 insights, 1 chart from the sample brand | todo |
+| 0.1 | Page shell in the shared UI kit: simulated banner, founder note, tiles, decision row, insights, tables | done |
+| 0.2 | `api.py` serving this screen's numbers from `app/data/brands/bombas/` through `app/metrics.py`, with unavailable states | done |
+| 0.3 | 4 tiles (Google spend, Google ROAS, non-brand ROAS, brand share of spend), 1 chart (daily spend or conversions, 90 days, brand vs non-brand) | done |
+| 0.4 | Brand vs non-brand split (spend, conversions, value, ROAS, cost per conversion, share of spend) with the brand incrementality flag | done |
+| 0.5 | Search terms table, 30 days, with the negatives-to-add and new-keywords rules in `api.term_rule` | done |
+| 0.6 | Impression share lost to budget vs rank per Search campaign (clipped days counted, never read as a number) | done |
+| 0.7 | Performance Max asset group table (ad strength only; spend by asset group is not in the data, shown unavailable) | done |
+| 0.8 | Conversion tracking check: Google conversions and value vs store paid search orders and net sales, last full month, gap stated | done |
+| 0.9 | `audit.py` in the audit.md shape: GADS-R01 brand cannibalisation, R02 budget capped, R03 search term waste, R04 tracking gap, R05 lost to rank | done |
+
+Round 0 notes (28 Sep 2026, Bombas simulated, scale 0.1): R01, R02, R04 and R05 fire. R03 fires on nothing: every simulated term converts near its campaign's cost per conversion, so the negatives rule has no rows. R04 fires on value, not count: Google's value per conversion is about 11 percent over the store's net order value (Google's value includes tax and shipping). Brand impression share reads low because days over 90 percent are stored empty. Break-even ROAS is unavailable for Bombas (no cost inputs), so R02 compares against the account's own Google ROAS.
+
+## Jobs to be done (PRODUCT-PLAN.md 5.3), candidates for round 1
+
+| Job | Who does it today | Data needed | How ecomOS helps | Status |
+|---|---|---|---|---|
+| Split brand and non-brand | search manager | campaign and keyword rows, search terms | brand versus non-brand efficiency, share of spend, incrementality flag on brand | round 0 done; next: brand holdout plan, PMax brand share |
+| Mine search terms | search manager | search term report with conversions | negatives to add, new keywords to add, themes rising | round 0 rules done; next: themes rising, n-gram waste |
+| Keep the shopping feed healthy | feed manager | Merchant Center statuses and issues | disapprovals and title quality with fixes | todo (no Merchant Center table yet) |
+| Read PMax | search manager | asset groups, channel split, asset labels | asset group leaderboard, cannibalisation check against brand search | round 0 ad strength only; leaderboard needs spend by asset group |
+| Win the auction where it matters | search manager | impression share, lost share by budget and rank, quality score | where budget is capping, where rank is losing, quality score fixes | round 0 done; next: quality score by keyword |
+| Bid to the right target | search manager | conversion values, margins from finance inputs | tROAS and tCPA suggestions from contribution margin, not platform ROAS | todo (needs Bombas cost inputs) |
+| Keep tracking right | technical marketer | conversion actions, GA4 reconciliation | conversion audit, value mismatch alerts | round 0 check done; next: GA4 reconciliation |
+| Match query to page | search and CRO | landing pages by query, GA4 funnel | landing page fit, speed by page | todo |
+| Report | account manager | everything above | weekly summary | todo |
 
 ## Candidates from the room spec (pick 10 per round)
 
@@ -101,3 +123,4 @@ Status: todo | doing | done | parked. One feature per commit. The first round is
 
 | Round | Features picked | Date | Notes |
 |---|---|---|---|
+| 0 | 0.1 to 0.9 | 2026-09-28 | S3.5 on Bombas simulated data |
