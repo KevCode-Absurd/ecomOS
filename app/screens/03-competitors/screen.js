@@ -149,9 +149,9 @@
     mount('#queue', q.items.length ? el('div', { class: 'card flat stack queue' },
       UI.sectionHead({ title: 'Waiting on you: ' + q.total + ' call' + (q.total === 1 ? '' : 's'), sub: 'The top ' + q.items.length + ' by plan rank. Everything else the agent does or a person owns.' }),
       ...q.items.map((x) => el('div', { class: 'queue-item stack' },
-        el('div', null, el('span', { class: 'chip', text: '#' + x.rank }), ' ', el('b', { text: x.question }), el('span', { class: 'muted', text: ' for "' + x.title + '"' })),
+        el('div', null, el('span', { class: 'chip' + (x.overdue ? ' warn' : ''), text: x.overdue ? 'overdue' : '#' + x.rank }), ' ', el('b', { text: x.question }), el('span', { class: 'muted', text: ' for "' + x.title + '"' })),
         el('div', { class: 'small' }, el('b', { text: 'Yes means: ' }), x.yes + (x.check_on ? ' Checked on ' + fmt.date(x.check_on) + '.' : '')),
-        UI.decisionRow({ capability: x.capability, autonomy: x.autonomy, owner: x.owner, screen: SCREEN, compact: true, finding_id: x.id }))),
+        x.overdue ? null : UI.decisionRow({ capability: x.capability, autonomy: x.autonomy, owner: x.owner, screen: SCREEN, compact: true, finding_id: x.id }))),
       el('p', { class: 'micro faint', text: q.rule })) : el('p', { class: 'small muted', text: 'Nothing waits on you. Every open move is the agent\'s or a named person\'s.' }));
     if ((p.held || []).length) document.getElementById('queue').append(el('div', { class: 'card flat small' }, el('b', { text: 'Held after a lost result: ' }),
       p.held.map((h) => h.title + ' (lost ' + fmt.date(h.lost_on) + (h.reading ? ', ' + h.reading : '') + '; back on ' + fmt.date(h.back_on) + ')').join('; ') + '.',

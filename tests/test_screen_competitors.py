@@ -1901,5 +1901,25 @@ class TestHoldLost(TempInputs):
         self.assertIn(a['id'], [x['id'] for x in api.handle(Req(['plan']))['actions']])
 
 
+class TestOverdue(unittest.TestCase):
+    """8.3: decided moves a week past their check date with no outcome are overdue and lead the founder's queue."""
+    def act(self, i, choice, check_on, outcome=None, owner='agent_drafts', autonomy='agent_does'):
+        return {'id': f'a{i}', 'title': f't{i}', 'why': 'w', 'status': 'open', 'owner': owner, 'check_on': check_on,
+                'decision': {'choice': choice} if choice else None, 'outcome': outcome, 'steps': [],
+                'capability': {'id': 'X', 'autonomy': autonomy}, 'artefact': {'label': 'l'}}
+
+    def test_overdue(self):
+        today = dt.date(2026, 10, 20)
+        acts = [self.act(1, 'agent', '2026-10-01'), self.act(2, 'agent', '2026-10-15'), self.act(3, 'not_now', '2026-10-01'),
+                self.act(4, 'person', '2026-10-05', outcome={'result': 'won'}), self.act(5, None, '2026-10-01'), self.act(6, 'person', '2026-10-10')]
+        late = api.overdue(acts, today)
+        self.assertEqual([(x['id'], x['days_late']) for x in late], [('a1', 19), ('a6', 10)])
+        q = api.founder_queue(acts, late)
+        self.assertEqual(q['overdue'], 2)
+        self.assertEqual([x['id'] for x in q['items'][:2]], ['a1', 'a6'])
+        self.assertTrue(q['items'][0]['question'].startswith('Read the result: 19 days'))
+        self.assertIn('a5', [x['id'] for x in q['items']])   # undecided and drafted: still asks for approval
+
+
 if __name__ == '__main__':
     unittest.main()

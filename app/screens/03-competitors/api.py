@@ -183,9 +183,23 @@ def rank(brand: str = "bombas", window: dict | None = None) -> dict:
 
 
 QUEUE_MAX = 5
+OVERDUE_DAYS = 7   # a decided move with no outcome this many days past its check date is overdue
 
 
-def founder_queue(acts: list[dict]) -> dict:
+def overdue(acts: list[dict], today: dt.date) -> list[dict]:
+    """Decided moves (not snoozed) with no logged outcome, OVERDUE_DAYS or more past their check date, most late first."""
+    out = []
+    for a in acts:
+        d = a.get("decision") or {}
+        if not d or d.get("choice") in ("not_now", "undo") or a.get("outcome") or not a.get("check_on"):
+            continue
+        late = (today - dt.date.fromisoformat(a["check_on"])).days
+        if late >= OVERDUE_DAYS:
+            out.append({"id": a["id"], "title": a["title"], "check_on": a["check_on"], "days_late": late, "owner": a["owner"]})
+    return sorted(out, key=lambda x: (-x["days_late"], x["id"]))
+
+
+def founder_queue(acts: list[dict], late: list[dict] | None = None) -> dict:
     """The calls only the founder can make, top QUEUE_MAX by plan rank: undecided moves that are founder gated, or that
     an agent drafts and a person approves. Each says what yes sets going next and when it is checked."""
     out = []
@@ -201,8 +215,16 @@ def founder_queue(acts: list[dict]) -> dict:
                     "question": ("Decide: " if gate else "Approve: ") + a["artefact"]["label"],
                     "yes": after or "The agent ships it and reports on the check date.", "check_on": a.get("check_on"),
                     "capability": a["capability"]["id"], "autonomy": a["capability"]["autonomy"], "owner": a["owner"]})
-    return {"items": out[:QUEUE_MAX], "total": len(out),
-            "rule": f"Undecided moves that are founder gated or drafted for approval, top {QUEUE_MAX} by plan rank."}
+    reads = [{"id": x["id"], "rank": next((i for i, a in enumerate(acts, 1) if a["id"] == x["id"]), None), "title": x["title"], "why": "",
+              "gate": False, "question": f"Read the result: {x['days_late']} days past its check date",
+              "yes": "Log the outcome on the check due lane; a lost move is held 90 days.", "check_on": x["check_on"],
+              "capability": next(a["capability"]["id"] for a in acts if a["id"] == x["id"]),
+              "autonomy": next(a["capability"]["autonomy"] for a in acts if a["id"] == x["id"]), "owner": "person", "overdue": True}
+             for x in late or []]
+    out = reads + out
+    return {"items": out[:QUEUE_MAX], "total": len(out), "overdue": len(reads),
+            "rule": f"Overdue reads first ({OVERDUE_DAYS} or more days past the check date with no outcome), then undecided moves "
+                    f"that are founder gated or drafted for approval, by plan rank; top {QUEUE_MAX}."}
 
 
 def plan(brand: str, today: dt.date) -> dict:
@@ -216,7 +238,7 @@ def plan(brand: str, today: dt.date) -> dict:
             "connect": [a for a in acts if a.get("status") == "unavailable"],
             "snoozed": len(out["actions"]) - len(acts), "findings": out["findings"], "rules": audit.RULES,
             "groups": [{"key": k, "label": v} for k, v in audit.GROUP_LABEL.items()], "rule_group": audit.RULE_GROUP,
-            "thresholds": m["thresholds"], "queue": founder_queue(acts), "held": out.get("held") or [], "hold_days": actions.HOLD_LOST_DAYS,
+            "thresholds": m["thresholds"], "queue": founder_queue(acts, late := overdue(acts, today)), "overdue": late, "held": out.get("held") or [], "hold_days": actions.HOLD_LOST_DAYS,
             "snapshot_age_days": max(ages) if (ages := [p["age_days"] for p in m["pages"] if p["age_days"] is not None]) else None}
 
 
