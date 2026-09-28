@@ -2113,5 +2113,17 @@ class TestPriceDrift(TempInputs):
         self.assertIsNotNone(c['ours']['price_position_index'])
 
 
+class TestTrafficConnect(TempBrain):
+    """9.5: rival traffic by channel is an honest connect step owned by a person, never a guessed number."""
+    def test_connect(self):
+        api.BRAIN_ROOT = self.tmp
+        p = api.handle(Req(['plan']))
+        f = next(f for f in p['findings'] if f['rule_id'] == 'COMP-R35')
+        self.assertEqual(f['status'], 'unavailable')
+        a = next(a for a in p['connect'] if a['rule_id'] == 'COMP-R35')
+        self.assertEqual((a['owner'], a['artefact']['kind']), ('person', 'connector_setup'))
+        self.assertIn('COMP-R35', api.SECTION_RULES['velocity'])
+
+
 if __name__ == '__main__':
     unittest.main()

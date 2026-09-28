@@ -311,6 +311,8 @@ RULES = [
      "inputs": ["prices seen logged on this screen", "brain competitors price_ref"], "capability": "BRAND-C24", "owner_screen": SCREEN},
     {"rule_id": "COMP-R34", "name": "logged rival prices due a re-check", "entity_type": "brand",
      "inputs": ["prices seen logged on this screen"], "capability": "BRN-C11", "owner_screen": SCREEN},
+    {"rule_id": "COMP-R35", "name": "rival site traffic by channel (visits, share by source)", "entity_type": "brand",
+     "inputs": ["a site traffic estimate source"], "capability": "BRAND-C07", "owner_screen": SCREEN},
     {"rule_id": "COMP-R08", "name": "discount on most ads while direct peers run none", "entity_type": "offer",
      "inputs": ["brain offers.promo_share_active_ads", "brain competitors offers_seen"], "capability": "LIFE-C38",
      "owner_screen": SCREEN},
@@ -318,7 +320,7 @@ RULES = [
 # what a strategist groups the findings by on the page (depth.md section 2: grouped by bottleneck)
 RULE_GROUP = {"COMP-R01": "creative", "COMP-R05": "creative", "COMP-R06": "creative", "COMP-R03": "offer", "COMP-R07": "offer",
               "COMP-R08": "offer", "COMP-R09": "offer", "COMP-R02": "price", "COMP-R10": "price", "COMP-R11": "position",
-              "COMP-R04": "watch", "COMP-R12": "watch", "COMP-R13": "watch", "COMP-R14": "watch", "COMP-R15": "lost", "COMP-R16": "lost", "COMP-R17": "lost", "COMP-R18": "price", "COMP-R19": "creative", "COMP-R20": "position", "COMP-R21": "offer", "COMP-R22": "position", "COMP-R23": "position", "COMP-R24": "watch", "COMP-R25": "price", "COMP-R26": "watch", "COMP-R27": "watch", "COMP-R28": "position", "COMP-R29": "lost", "COMP-R30": "creative", "COMP-R31": "lost", "COMP-R32": "position", "COMP-R33": "price", "COMP-R34": "watch"}
+              "COMP-R04": "watch", "COMP-R12": "watch", "COMP-R13": "watch", "COMP-R14": "watch", "COMP-R15": "lost", "COMP-R16": "lost", "COMP-R17": "lost", "COMP-R18": "price", "COMP-R19": "creative", "COMP-R20": "position", "COMP-R21": "offer", "COMP-R22": "position", "COMP-R23": "position", "COMP-R24": "watch", "COMP-R25": "price", "COMP-R26": "watch", "COMP-R27": "watch", "COMP-R28": "position", "COMP-R29": "lost", "COMP-R30": "creative", "COMP-R31": "lost", "COMP-R32": "position", "COMP-R33": "price", "COMP-R34": "watch", "COMP-R35": "watch"}
 GROUP_LABEL = {"lost": "Shoppers we lose, by name", "creative": "Ads they run that we do not", "offer": "Offers they say that we do not",
                "price": "Price against theirs", "position": "Corners of the map", "watch": "Watch and protect"}
 RUBRIC_OVERRIDES = {"COMP-R01": {"reputation": 5}, "COMP-R02": {"reputation": 3}, "COMP-R04": {"reputation": 5, "satisfaction": 4},
@@ -1348,6 +1350,9 @@ def run(brand: str, window: dict | None = None, root: Path | None = None) -> lis
         out += [_unavailable("COMP-R16", "low", {"type": "ladder_rung", "id": "lower_rungs", "label": "lower rungs of the ladder"},
                              ["search trends by rung"], "a search trends source (read only)",
                              "Connect a search trends source for the category and each lower rung.", ends_on)]
+        out += [_unavailable("COMP-R35", "low", {"type": "brand", "id": "rival_traffic", "label": "rival traffic by channel"},
+                             ["site visits and share by source per tracked page"], "a site traffic estimate source (read only)",
+                             "Connect a site traffic estimate source in Setup, read-only, for the direct pages.", ends_on)]
         out += rule_ladder(m, ends_on) + rule_corners(m, ends_on) + rule_refresh(m, ends_on) + rule_freshness(m, ends_on) + rule_losses(m, ends_on) + rule_attack(m, ends_on) + rule_presence(m, ends_on) + rule_velocity(m, ends_on) + rule_niche(m, ends_on) + rule_premium(m, ends_on) + rule_search(m, ends_on) + rule_new_move(m, ends_on) + rule_price_cut(m, ends_on) + rule_landing(m, ends_on) + rule_cards(m, ends_on) + rule_frames(m, ends_on) + rule_winloss(m, ends_on) + rule_repeat_loss(m, ends_on) + rule_frame_win(m, ends_on) + rule_band_out_of_date(m, ends_on) + rule_recheck(m, ends_on) + rule_season(m, ends_on)
     out += rule_price(m, ends_on) + rule_lookalike(m, ends_on)
     out.sort(key=lambda f: (SEVERITY_ORDER[f["severity"]], f["id"]))
