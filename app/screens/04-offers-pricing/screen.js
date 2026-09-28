@@ -11,6 +11,7 @@
   const pretty = (s) => String(s || '').replace(/_/g, ' ');
   const pct = (v, d) => v == null ? NA : (v * 100).toFixed(d == null ? 1 : d) + ' percent';
   let ACTIONS = [];
+  let PLANNED = [];
   let SET = {};
   let d_market = null;   // thresholds and windows from the server (api.page_settings); none is written here
 
@@ -110,6 +111,7 @@
     if ((d.planned || []).length) document.getElementById('plan').append(el('div', { class: 'card flat tight planned' }, el('span', { class: 'kicker', text: 'In the brain as plans' }),
       ...d.planned.map((x) => { const st = el('span', { class: 'micro muted' }); return el('div', { class: 'row' }, el('span', { class: 'small', text: x.title + ' (' + x.status + ')' }),
         x.can_launch ? el('button', { class: 'btn xs', type: 'button', text: 'Mark launched', onclick: async () => { try { const r = await UI.api('/api/' + SLUG + '/launched?brand=' + encodeURIComponent(brand), { method: 'POST', body: { id: x.id } }); st.textContent = 'Live from today: ' + r.record; } catch (e) { st.textContent = 'Could not mark: ' + e.message; } } }) : null, st); })));
+    handOffs();
     if ((d.snoozed || []).length) document.getElementById('plan').append(el('p', { class: 'micro faint', text: 'Not now: ' + d.snoozed.map((x) => x.title + (x.back_on ? ' (back ' + fmt.date(x.back_on) + ')' : '')).join('; ') + '.' }));
     const cw = document.getElementById('connect-wrap');
     const blind = d.blind_spots || [];
@@ -154,6 +156,20 @@
         sort: false,
       }),
       (d.resolved || []).length ? el('p', { class: 'micro faint', text: 'Resolved in the last 28 days: ' + d.resolved.map((h) => (h.label || h.rule_id) + ' (' + fmt.date(h.resolved_on) + ')').join('; ') + '.' }) : null);
+  }
+
+  /** Read back this screen's hand-offs by status (events.md): who has each brief and where it stands. */
+  async function handOffs() {
+    let rows = [];
+    try { rows = ((await UI.api('/api/handoffs?from_screen=' + SLUG)).handoffs || []).filter((h) => (h.finding_id || '').indexOf(SLUG) === 0); } catch (e) { return; }
+    const ids = new Set(ACTIONS.map((a) => a.id).concat((PLANNED || []).map((p) => p.id)));
+    rows = rows.filter((h) => ids.has(h.finding_id));
+    if (!rows.length) return;
+    const by = {};
+    rows.forEach((h) => { by[h.status] = (by[h.status] || 0) + 1; });
+    document.getElementById('plan').append(el('div', { class: 'card flat tight week handed' }, el('span', { class: 'kicker', text: 'Handed over' }),
+      el('span', { class: 'small', text: Object.keys(by).sort().map((k) => by[k] + ' ' + k).join(', ') + '.' }),
+      el('ul', { class: 'small' }, rows.slice(-6).reverse().map((h) => el('li', { text: h.title + ': ' + h.to + ', ' + h.status + ' (' + h.id + ')' })))));
   }
 
   /** Post an approved brief to the shared hand-offs table once (events.md); a second approval finds the first row. */
@@ -811,6 +827,7 @@
       a.size = Object.assign({}, a.size, { text: a.size.text + '; ' + when });
     });
     ACTIONS = d.plan || [];
+    PLANNED = d.planned || [];
     SET = d.settings || {};
     d_market = (d.brand || {}).market || null;
     badge(d.brand || {});

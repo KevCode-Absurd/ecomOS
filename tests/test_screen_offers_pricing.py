@@ -2308,5 +2308,15 @@ class HandoffTest(unittest.TestCase):
                 self.assertIsNotNone(row, a['artefact']['kind'])
 
 
+class HandoffReadTest(unittest.TestCase):
+    """Round 10 feature 2: the plan reads this screen's hand-offs back by status, only its own rows."""
+
+    def test_js(self):
+        js = (SCREEN / 'screen.js').read_text(encoding='utf-8')
+        self.assertIn("'/api/handoffs?from_screen=' + SLUG", js)
+        self.assertIn("indexOf(SLUG) === 0", js)          # never another screen's rows
+        self.assertIn("'Handed over'", js)
+
+
 if __name__ == '__main__':
     unittest.main()
