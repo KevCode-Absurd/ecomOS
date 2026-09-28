@@ -127,6 +127,9 @@ def pages(brain) -> dict:
     frame = next((r for r in brain.records("competitors") if r.get("field") == "competitor_frame"), None)
     lookalike = next((r for r in brain.records("competitors") if r.get("field") == "lookalike_page"), None)
 
+    founder_ids = {(r.get("field") or "")[len("page_id_"):]: r for r in brain.records("competitors") if (r.get("field") or "").startswith("page_id_")}
+    conf_pages = list(conf_pages) + [{"name": p.get("name"), "role": "competitor", "page_id": str(founder_ids[_slug(p.get("name"))].get("value")), "founder_added": True}
+                                     for p in proposed if _slug(p.get("name")) in founder_ids]
     rows = []
     for cp in conf_pages:
         name, role, pid = cp.get("name"), cp.get("role") or "competitor", cp.get("page_id")
@@ -166,6 +169,7 @@ def pages(brain) -> dict:
             "positioning": desc.get("positioning"), "price_band": desc.get("price_band_usd"), "what_they_push": desc.get("what_they_push"),
             "angles": desc.get("hook_types") or (list(own_hooks.keys()) if role == "self" and own_hooks else []),
             "flags": flags, "record_ids": [x["id"] for x in (rec, sig) if x] + ([described[str(pid)]["id"]] if pid and str(pid) in described else []),
+            "founder_added": bool(cp.get("founder_added")),
         }
         row["verdict"] = _verdict(row)
         rows.append(row)
@@ -174,7 +178,7 @@ def pages(brain) -> dict:
     them = [r for r in rows if r["role"] == "competitor" and r["pulled"]]
     return {"pages": rows, "us": us, "competitors_pulled": len(them), "competitors_configured": sum(1 for r in rows if r["role"] == "competitor"),
             "not_pulled": [r["name"] for r in rows if r["role"] == "competitor" and not r["pulled"]],
-            "proposed": [{"name": p.get("name"), "score": p.get("score"), "reasons": [x.get("why") for x in p.get("reasons") or []], "next": p.get("next")} for p in proposed],
+            "proposed": [{"name": p.get("name"), "score": p.get("score"), "reasons": [x.get("why") for x in p.get("reasons") or []], "next": p.get("next")} for p in proposed if _slug(p.get("name")) not in founder_ids],
             "medians": medians(rows), "frame": {"text": frame.get("text"), "tier": frame.get("tier"), "id": frame.get("id")} if frame else None,
             "lookalike": {"text": lookalike.get("text"), "id": lookalike.get("id"), "page_id": (lookalike.get("value") or {}).get("page_id"), "date": lookalike.get("date")} if lookalike else None,
             "snapshot_age_days": max([r["age_days"] for r in rows if r["age_days"] is not None], default=None),
@@ -185,6 +189,8 @@ def _verdict(r: dict) -> dict:
     if r["role"] == "self":
         return {"kind": "info", "text": "Us", "reason": "the brand's own page"}
     if not r["pulled"]:
+        if r.get("founder_added"):
+            return {"kind": "wait", "text": "Pull pending", "reason": "page id added by the founder; it joins the next Ad Library pull"}
         return {"kind": "wait", "text": "Not pulled", "reason": "no page id on file, or the page ran no ads in the market"}
     lr = r["long_runner_share"]
     if isinstance(lr, (int, float)) and lr >= 0.4:
@@ -263,7 +269,7 @@ ANGLES = [
     ("comfort", "Comfort and feel", ["comfort", "cozy", "soft", "feel", "cushion", "relief claim"]),
     ("performance", "Performance and fit", ["performance", "athletic", "run", "hike", "fit", "demo", "sport"]),
     ("relief", "Problem to relief", ["problem to relief", "relief", "compression", "pain", "swelling", "support"]),
-    ("durability", "Durability and guarantee", ["durab", "guarantee", "lifetime", "buy it for life", "last", "warranty", "wear"]),
+    ("durability", "Durability and guarantee", ["durab", "guarantee", "lifetime", "buy it for life", "warranty", "hole", "wear through", "lasts"]),
     ("material", "Material and construction", ["merino", "wool", "cotton", "material", "fabric", "construction", "feature list", "feature"]),
     ("trust", "Proof and authority", ["lab tested", "doctor", "tested", "heritage", "trust", "made in", "number one", "award", "certified"]),
     ("social_proof", "Social proof and reviews", ["review", "testimonial", "nurse count", "social proof", "5 star", "rating", "creator"]),
@@ -389,12 +395,113 @@ def _brief(key: str, label: str, names: list[str], proof: dict, us: dict | None,
     return "\n".join(lines)
 
 
+# ---------------------------------------------------------------- market signals: what buyers say elsewhere
+
+SURFACES = {  # where an answer to a doubt lives, by the ladder rung's `uses` tag; generic surfaces, not brand facts
+    "copy": "retargeting ad", "offer": "offer or guarantee block", "offers": "offer or guarantee block", "cx_macro": "CX macro and FAQ",
+    "cx": "CX macro and FAQ", "email": "post-purchase email", "landing": "landing page proof section", "pdp": "PDP proof section",
+    "amazon_listing": "Amazon listing bullets",
+}
+
+
+def _ladder_for(brain, angle: str) -> dict | None:
+    words = next((w for k, _, w in ANGLES if k == angle), [])
+    for lad in brain.records("objection_ladders"):
+        v = lad.get("value")
+        if not isinstance(v, dict):
+            continue
+        theme = (v.get("theme") or lad.get("field") or "").lower()
+        if any(w in theme for w in words) or angle in theme:
+            rungs = v.get("rungs") or []
+            last = rungs[-1] if rungs else None
+            no_proof = [r for r in rungs if not r.get("proof_ids")]
+            return {"id": lad["id"], "theme": theme, "rungs": len(rungs), "no_proof": len(no_proof),
+                    "deal_breaker": {"level": last.get("level"), "doubt": last.get("doubt"), "has_proof": bool(last.get("proof_ids")),
+                                     "one_star": (last.get("counts") or {}).get("one_star"), "uses": last.get("uses") or []} if last else None}
+    return None
+
+
+def signals(brain) -> dict:
+    """The recommended-instead signal, the category frames buyers use, the competitor sets, and the answer to each."""
+    d = pages(brain)
+    by_slug = {p["slug"]: p for p in d["pages"]}
+    frames_rec = next((r for r in brain.records("positioning") if r.get("field") == "reddit_frames" and isinstance(r.get("value"), dict)), None)
+    frames = dict(frames_rec["value"]) if frames_rec else {}
+    frame_rec = next((r for r in brain.records("positioning") if r["id"] == f"{brain.brand}.positioning.frame"), None)
+    comp_frame = next((r for r in brain.records("competitors") if r.get("field") == "competitor_frame"), None)
+    sets_rec = next((r for r in brain.records("positioning") if r.get("field") == "competitive_frame" and isinstance(r.get("value"), dict)), None)
+    proof_rec = next((r for r in brain.records("positioning") if r["id"] == f"{brain.brand}.positioning.proof_points"), None)
+    mission_in_ads = next((r for r in brain.records("story_bank") if "mission" in (r.get("field") or "") and "ads" in (r.get("field") or "")), None)
+    giving = next((r for r in brain.records("identity") if r.get("field") == "giving_model"), None)
+    founder_ids = {(r.get("field") or "")[len("page_id_"):]: r for r in brain.records("competitors") if (r.get("field") or "").startswith("page_id_")}
+
+    recommended = []
+    for r in brain.records("competitors"):
+        v = r.get("value")
+        if not (isinstance(v, dict) and "recommended_instead" in v and v.get("competitor")):
+            continue
+        slug = _slug(v["competitor"])
+        page = by_slug.get(slug) or next((p for k, p in by_slug.items() if k.startswith(slug) or slug.startswith(k)), None)
+        angles = []
+        for lbl in (page or {}).get("angles") or []:
+            angles += [a for a in angles_of(lbl) if a not in angles]
+        if not angles:
+            # no page read: the value anchors are a price comparison by construction
+            angles = ["offer"]
+        lead = angles[0]
+        ladder = _ladder_for(brain, lead)
+        where = []
+        if ladder and ladder["deal_breaker"]:
+            where = sorted({SURFACES.get(u, u) for u in ladder["deal_breaker"]["uses"]}) or ["PDP proof section", "retargeting ad"]
+        else:
+            where = ["PDP proof section", "retargeting ad", "CX macro and FAQ"]
+        recommended.append({
+            "competitor": v["competitor"], "slug": slug, "threads": v.get("recommended_instead"), "upvotes": v.get("upvotes"),
+            "subreddits": v.get("subreddits") or [], "record_id": r["id"], "page_tracked": bool(page and page["pulled"]),
+            "page_id_on_file": bool(page and page.get("page_id")) or slug in founder_ids,
+            "doubt_angle": lead, "doubt_label": ANGLE_LABEL.get(lead, lead), "ladder": ladder,
+            "proof_status": ("no ladder" if not ladder else ("no proof on the deal-breaker rung" if not ladder["deal_breaker"]["has_proof"] else "proof on file")),
+            "where": where, "never": "Reddit words are never quoted as a testimonial; usernames are not stored.",
+        })
+    recommended.sort(key=lambda x: (-(x["threads"] or 0), -(x["upvotes"] or 0), x["competitor"]))
+
+    # frames: which category frame buyers use most, and whether our positioning frame carries it
+    frame_text = (frame_rec.get("text") or "").lower() if frame_rec else ""
+    frame_rows = []
+    for key, n in sorted(frames.items(), key=lambda kv: -(kv[1] or 0)):
+        angs = angles_of(key.replace("_", " "))
+        covered = any(any(w in frame_text for w in words) for k, _, words in ANGLES if k in angs) if angs else None
+        frame_rows.append({"frame": key, "label": key.replace("_", " "), "mentions": n, "angles": angs, "covered_by_our_frame": covered})
+    top = frame_rows[0] if frame_rows else None
+    mission_vs_marketing = None
+    if giving and "mission_giving" in frames and "marketing_brand" in frames:
+        mission_vs_marketing = {"mission": frames["mission_giving"], "marketing": frames["marketing_brand"],
+                                "ads_with_mission": ((mission_in_ads or {}).get("value") or {}).get("ads_with_line") if isinstance((mission_in_ads or {}).get("value"), dict) else None,
+                                "text": (mission_in_ads or {}).get("text"), "record_ids": [x["id"] for x in (giving, mission_in_ads, frames_rec) if x]}
+
+    sets = {}
+    if sets_rec:
+        for k, names in sets_rec["value"].items():
+            if isinstance(names, list):
+                sets[k] = [{"name": n, "tracked": any(p["pulled"] and (p["slug"] == _slug(n) or p["slug"].startswith(_slug(n)) or _slug(n).startswith(p["slug"])) for p in d["pages"])} for n in names]
+    proposed = []
+    for p in d["proposed"]:
+        slug = _slug(p["name"])
+        proposed.append(dict(p, slug=slug, page_id=(founder_ids[slug].get("value") if slug in founder_ids else None)))
+    return {"recommended": recommended, "frames": frame_rows, "top_frame": top, "our_frame": {"text": frame_rec.get("text"), "tier": frame_rec.get("tier"), "id": frame_rec["id"]} if frame_rec else None,
+            "competitor_frame": {"text": comp_frame.get("text"), "tier": comp_frame.get("tier"), "id": comp_frame["id"], "value": comp_frame.get("value")} if comp_frame else None,
+            "proof_points": {"text": proof_rec.get("text"), "value": proof_rec.get("value"), "id": proof_rec["id"]} if proof_rec else None,
+            "mission_vs_marketing": mission_vs_marketing, "sets": sets, "proposed": proposed,
+            "sources": {"frames": frames_rec["id"] if frames_rec else None, "sets": sets_rec["id"] if sets_rec else None},
+            "note": "Reddit and review language is a signal about doubts and frames. It is never quoted as a testimonial and usernames are never stored."}
+
+
 def repull(brain) -> dict:
     """Cost of a fresh pull of every configured page by id, against the caps. Never runs anything."""
     cfg = config(brain)
     ml = cfg.get("meta_ad_library") or {}
     budget = cfg.get("budget") or {}
-    ids = [p for p in ml.get("pages") or [] if p.get("page_id")]
+    ids = [p for p in pages(brain)["pages"] if p.get("page_id")]
     limit = ml.get("limit_per_source") or 150
     actor = ml.get("actor")
     apify = _apify_mod()

@@ -281,13 +281,89 @@
     mount('#coverage', matrix, lines);
   }
 
+  // ---------- 4c. market signals: recommended instead, frames, competitor sets ----------
+  function answerPanel(r, action) {
+    const body = el('div', { class: 'stack' });
+    const lad = r.ladder || {};
+    const db = lad.deal_breaker || {};
+    body.append(el('div', { class: 'row' }, el('span', { class: 'chip bad', text: r.threads + ' threads, ' + (r.upvotes == null ? NA : r.upvotes) + ' upvotes' }), ...r.subreddits.map((x) => el('span', { class: 'chip', text: 'r/' + x }))));
+    body.append(el('div', null, el('b', { text: 'The doubt behind it: ' }), r.doubt_label.toLowerCase() + '. ' + (lad.theme ? 'Our ' + pretty(lad.theme) + ' ladder: ' + lad.rungs + ' rungs, ' + lad.no_proof + ' without proof.' : 'No ladder for it yet.')));
+    if (db.doubt) body.append(el('div', { class: 'card sunken' }, el('b', { text: 'Deal-breaker rung ' + db.level + ': ' }), db.doubt, ' ', el('span', { class: 'chip ' + (db.has_proof ? 'good' : 'bad'), text: db.has_proof ? 'proof on file' : 'no proof' }), db.one_star != null ? el('span', { class: 'chip', text: db.one_star + ' one-star mentions' }) : null));
+    body.append(el('div', null, el('b', { text: 'Where the answer goes: ' }), r.where.join(', ') + '.'));
+    body.append(el('div', { class: 'small muted', text: r.never }));
+    if (action) body.append(UI.actionCard(action, { screen: SCREEN, expanded: true }));
+    else body.append(UI.decisionRow({ capability: 'BRAND-C57', autonomy: 'agent_does', owner: 'agent', screen: SCREEN, compact: true, finding_id: '05-brand-brain.BRN-R09.recommended_' + r.slug }));
+    UI.panel({ title: 'Answer ' + r.competitor, body });
+  }
+  function recommendedTable(sg, byAct) {
+    const rows = sg.recommended.map((r) => Object.assign({}, r, { subs: r.subreddits.map((x) => 'r/' + x).join(', '), where_text: r.where.join(', '), tracked: r.page_tracked ? 'yes' : (r.page_id_on_file ? 'pull pending' : 'no page id') }));
+    return UI.verdictTable({
+      columns: [
+        { key: 'competitor', label: 'Recommended instead' },
+        { key: 'threads', label: 'Threads', unit: 'n', align: 'right' },
+        { key: 'upvotes', label: 'Upvotes', unit: 'n', align: 'right' },
+        { key: 'subs', label: 'Where said' },
+        { key: 'doubt_label', label: 'The doubt behind it' },
+        { key: 'where_text', label: 'Answer goes to' },
+        { key: 'tracked', label: 'Ads tracked' },
+      ],
+      verdict: { at: 1, kind: (r) => r.proof_status === 'proof on file' ? 'keep' : (r.threads >= 3 ? 'stop' : 'fix'), text: (r) => r.proof_status === 'proof on file' ? 'Proof on file' : (r.proof_status === 'no ladder' ? 'No ladder' : 'No proof'), reason: (r) => r.proof_status },
+      reason: { key: 'why', label: 'Our proof', text: (r) => r.proof_status + (r.ladder && r.ladder.deal_breaker && !r.ladder.deal_breaker.has_proof ? ': "' + r.ladder.deal_breaker.doubt + '"' : '') },
+      actions: { label: 'Answer it', onClick: (r) => answerPanel(r, byAct['recommended_' + r.slug]) },
+      rows, sort: false, empty: 'No public thread recommends a competitor instead. Good, and check the pull is fresh.',
+    });
+  }
+  function framesBlock(sg) {
+    const fr = sg.frames || [];
+    const wrap = el('div', { class: 'stack' });
+    wrap.append(Charts.bar({ title: 'How buyers frame the category, mentions', labels: fr.map((f) => f.label), series: [{ name: 'mentions', values: fr.map((f) => f.mentions) }], unit: 'n', height: 180, values: true,
+      note: 'From public threads. A frame with no line in our positioning is a gap the positioning screen fills; the brain owns the frame text.' }));
+    const lines = el('div', { class: 'stack cov-lines' });
+    for (const f of fr) lines.append(el('div', null, el('span', { class: 'chip ' + (f.covered_by_our_frame === false ? 'bad' : f.covered_by_our_frame ? 'good' : ''), text: f.covered_by_our_frame === false ? 'not in our frame' : f.covered_by_our_frame ? 'in our frame' : 'no angle' }), ' ', el('b', { text: f.label }), ' ' + f.mentions + ' mentions'));
+    if (sg.our_frame) lines.append(el('div', { class: 'small muted' }, el('b', { text: 'Our frame (' + pretty(sg.our_frame.tier) + '): ' }), sg.our_frame.text));
+    if (sg.mission_vs_marketing) lines.append(el('div', { class: 'small' }, el('b', { text: 'Mission read: ' }), 'marketing brand ' + sg.mission_vs_marketing.marketing + ', giving brand ' + sg.mission_vs_marketing.mission + '. ' + (sg.mission_vs_marketing.text || '')));
+    wrap.append(lines);
+    return wrap;
+  }
+  function setsBlock(sg, reload) {
+    const wrap = el('div', { class: 'stack' });
+    if (sg.competitor_frame) wrap.append(el('div', { class: 'small' }, el('span', { class: 'chip good', text: pretty(sg.competitor_frame.tier) }), ' ', el('b', { text: 'Competitor frame: ' }), sg.competitor_frame.text));
+    for (const [k, names] of Object.entries(sg.sets || {})) {
+      wrap.append(el('div', { class: 'row' }, el('span', { class: 'kicker', text: pretty(k) }), ...names.map((n) => el('span', { class: 'chip ' + (n.tracked ? 'accent' : ''), text: n.name + (n.tracked ? '' : ' (not tracked)') }))));
+    }
+    for (const p of sg.proposed || []) {
+      const input = el('input', { class: 'text sm', placeholder: 'Meta page id (digits)', 'aria-label': 'Page id for ' + p.name, style: { maxWidth: '200px' } });
+      const btn = el('button', { class: 'btn sm primary', type: 'button', text: 'Add ' + p.name });
+      const status = el('span', { class: 'micro muted' });
+      btn.addEventListener('click', async () => {
+        btn.disabled = true;
+        try { const res = await api(BASE + 'competitors/page-id', { method: 'POST', body: { name: p.name, page_id: input.value.trim() } }); status.textContent = 'Saved ' + res.record + '. Flows to ' + res.flows_to + '.'; if (reload) reload(); }
+        catch (e) { btn.disabled = false; status.textContent = 'Could not save: ' + e.message; }
+      });
+      wrap.append(el('div', { class: 'card flat proposed' }, el('div', null, el('b', { text: 'Proposed: ' + p.name }), ' score ' + p.score + '. ' + p.reasons.join(' ') + ' A person pastes the page id; the next pull reads it by id.'),
+        el('div', { class: 'row' }, input, btn, status)));
+    }
+    return wrap;
+  }
+  async function loadSignals(actions, reload) {
+    let sg;
+    try { sg = await api(BASE + 'signals'); } catch (e) { mount('#signals', el('p', { class: 'muted', text: 'Signals unavailable: ' + e.message })); return; }
+    const byAct = {}; for (const a of actions || []) if (a.entity && a.entity.id) byAct[a.entity.id] = a;
+    mount('#signals', UI.tabs({ items: [
+      { key: 'rec', label: 'Recommended instead', n: sg.recommended.length, panel: () => el('div', { class: 'stack' }, recommendedTable(sg, byAct), el('div', { class: 'micro faint', text: sg.note })) },
+      { key: 'frames', label: 'Category frames', n: sg.frames.length, panel: () => framesBlock(sg) },
+      { key: 'sets', label: 'Competitor sets', n: Object.values(sg.sets || {}).reduce((a, b) => a + b.length, 0), panel: () => setsBlock(sg, reload) },
+    ] }));
+  }
+
   async function loadMarket() {
     let d, actions = [];
     try { d = await api(BASE + 'competitors'); } catch (e) { mount('#market', el('p', { class: 'muted', text: 'Competitors unavailable: ' + e.message })); return null; }
-    try { const r = await api(BASE + 'rank'); actions = (r.actions || []).filter((a) => /BRN-R0[5678]/.test(a.rule_id || '')); } catch (e) { actions = []; }
+    try { const r = await api(BASE + 'rank'); actions = (r.actions || []).filter((a) => /BRN-R(0[5-9]|10)/.test(a.rule_id || '')); } catch (e) { actions = []; }
     mount('#market-tools', UI.orientation(marketOrient(d)));
     const gapsN = (d.gaps || []).length;
     loadCoverage(actions);
+    loadSignals(actions, loadMarket);
     mount('#market', UI.tabs({ items: [
       { key: 'gaps', label: 'Gaps to brief', n: gapsN, panel: () => gapCards(d, actions) },
       { key: 'pages', label: 'Pages', n: d.pages.length, panel: () => el('div', { class: 'stack' }, pagesTable(d), el('div', { class: 'micro faint', text: d.note + ' Click a row for the page detail.' })) },

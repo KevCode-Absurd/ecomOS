@@ -90,7 +90,7 @@ class AuditShape(unittest.TestCase):
         self.assertIn('05-brand-brain.BRN-R02.section_economics', ids)
         self.assertIn('05-brand-brain.BRN-R04.mission_trust.rung_1.donation_pledge', ids)
         rules = {r['rule_id'] for r in audit.RULES}
-        self.assertLessEqual({'BRN-R01', 'BRN-R02', 'BRN-R03', 'BRN-R04', 'BRN-R05', 'BRN-R06', 'BRN-R07', 'BRN-R08'}, rules)
+        self.assertLessEqual({'BRN-R01', 'BRN-R02', 'BRN-R03', 'BRN-R04', 'BRN-R05', 'BRN-R06', 'BRN-R07', 'BRN-R08', 'BRN-R09', 'BRN-R10'}, rules)
 
 
 class AuditRules(TempBrain):
@@ -386,3 +386,54 @@ class Round1Coverage(TempBrain):
         self.assertEqual(api.market.angles_of('seasonal comfort'), ['comfort', 'seasonal'])
         self.assertEqual(api.market.angles_of('lifetime guarantee'), ['durability'])
         self.assertEqual(api.market.angles_of('catalog retargeting'), [])
+
+
+class Round1Signals(TempBrain):
+    """Round 1 feature 3: the recommended-instead signal, the category frames and the competitor sets as actions."""
+
+    def test_recommended_instead_with_doubt_proof_and_where(self):
+        sg = api.handle(Req(['signals']))
+        self.assertTrue(sg['recommended'])
+        self.assertEqual(sg['recommended'][0]['competitor'], 'Darn Tough')  # most threads first
+        for r in sg['recommended']:
+            self.assertTrue(r['where'])
+            self.assertIn(r['proof_status'], ('no ladder', 'no proof on the deal-breaker rung', 'proof on file'))
+            self.assertIn('never quoted', r['never'])
+        dt_ = sg['recommended'][0]
+        self.assertEqual(dt_['doubt_angle'], 'durability')
+        self.assertEqual(dt_['proof_status'], 'no proof on the deal-breaker rung')
+        self.assertIn('retargeting ad', dt_['where'])
+
+    def test_frames_against_our_frame(self):
+        sg = api.handle(Req(['signals']))
+        self.assertEqual(sg['top_frame']['frame'], 'buy_it_for_life')
+        self.assertIs(sg['top_frame']['covered_by_our_frame'], False)
+        self.assertTrue(sg['our_frame']['id'].endswith('.positioning.frame'))
+        self.assertEqual(sg['competitor_frame']['tier'], 'approved')
+        self.assertIn('direct', sg['sets'])
+        self.assertTrue(all(n['tracked'] for n in sg['sets']['direct']))
+
+    def test_signal_findings(self):
+        findings = api.handle(Req(['audit']))['findings']
+        r09 = [f for f in findings if f['rule_id'] == 'BRN-R09']
+        self.assertEqual(len(r09), 4)
+        top = next(f for f in r09 if f['entity']['id'] == 'recommended_darn_tough')
+        self.assertEqual(top['severity'], 'high')
+        self.assertEqual(top['capability']['id'], 'BRAND-C57')
+        self.assertTrue(top['where'])
+        self.assertNotIn('u/', top['sentence'])
+        r10 = {f['entity']['id'] for f in findings if f['rule_id'] == 'BRN-R10'}
+        self.assertEqual(r10, {'frame_buy_it_for_life', 'frame_mission'})
+
+    def test_page_id_write_flows_to_pages_and_repull(self):
+        before = api.handle(Req(['competitors']))['repull']['pages']
+        status, res = api.handle(Req(['competitors', 'page-id'], 'POST', body={'name': 'Uniqlo', 'page_id': '123456789012'}))
+        self.assertEqual(status, 201)
+        rec = next(r for r in self.section('competitors') if r['id'] == res['record'])
+        self.assertEqual((rec['source']['type'], rec['tier'], rec['value']), ('founder', 'approved', '123456789012'))
+        d = api.handle(Req(['competitors']))
+        row = next(p for p in d['pages'] if p['name'] == 'Uniqlo')
+        self.assertEqual(row['verdict']['text'], 'Pull pending')
+        self.assertEqual(d['repull']['pages'], before + 1)
+        self.assertNotIn('Uniqlo', [p['name'] for p in d['proposed']])
+        self.assertEqual(api.handle(Req(['competitors', 'page-id'], 'POST', body={'name': 'Uniqlo', 'page_id': 'abc'}))[0], 400)

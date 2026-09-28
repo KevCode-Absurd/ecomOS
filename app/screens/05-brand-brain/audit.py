@@ -41,6 +41,18 @@ BRN-R08 angle gap against competitors. In the coverage matrix (market.py),
     CREA-C06 (concept brief). Reputation override 5 when the angle is one the
     brain's own positioning names (a competitor position gap), else 3.
     Owner: 05-brand-brain.
+BRN-R09 recommended instead with no answer. A competitor that public threads
+    recommend instead of the brand (competitors records with
+    `recommended_instead`). Severity high at 3 or more threads, else medium.
+    Capability BRAND-C57 (battlecard, agent does; the copy it feeds is
+    approved on its own screen). Reputation override 5: a competitor position
+    gap named in the brain. Owner: 05-brand-brain.
+BRN-R10 category frame not carried. The frame buyers use most in public
+    threads (positioning.reddit_frames) has no line in the brand's positioning
+    frame; or the brand has a giving model and public threads read it as a
+    marketing brand more often than a giving brand. Severity medium.
+    Capability CREA-C03 (angles and positioning). Reputation override 3.
+    Owner: 05-brand-brain.
 BRN-R07 competitor snapshot stale. A configured Ad Library page was captured
     more than SNAPSHOT_STALE_DAYS (7) ago, or never. Severity low. Capability
     BRN-C11 (competitor snapshot, signals only). Owner: 05-brand-brain.
@@ -89,9 +101,14 @@ RULES = [
      "inputs": ["competitors (Ad Library pull)", "config/apify.json"], "capability": "BRN-C11", "owner_screen": SCREEN},
     {"rule_id": "BRN-R08", "name": "angle gap against competitors", "entity_type": "brand",
      "inputs": ["competitors (Ad Library pull)", "learnings.hook_types", "claims", "objection_ladders"], "capability": "CREA-C06", "owner_screen": SCREEN},
+    {"rule_id": "BRN-R09", "name": "recommended instead with no answer", "entity_type": "brand",
+     "inputs": ["competitors (reddit_recommended)", "objection_ladders"], "capability": "BRAND-C57", "owner_screen": SCREEN},
+    {"rule_id": "BRN-R10", "name": "category frame not carried", "entity_type": "brand",
+     "inputs": ["positioning.reddit_frames", "positioning.frame", "identity.giving_model", "story_bank"], "capability": "CREA-C03", "owner_screen": SCREEN},
 ]
 AUTONOMY = {"BRN-C12": "agent_does", "BRN-C07": "founder_gate", "BRN-C03": "agent_does",
-            "CREA-C19": "agent_does", "CREA-C04": "agent_does", "BRN-C11": "agent_does", "CREA-C06": "agent_does"}
+            "CREA-C19": "agent_does", "CREA-C04": "agent_does", "BRN-C11": "agent_does", "CREA-C06": "agent_does",
+            "BRAND-C57": "agent_does", "CREA-C03": "agent_does"}
 
 _mspec = importlib.util.spec_from_file_location("brand_brain_market", Path(__file__).resolve().parent / "market.py")
 market = importlib.util.module_from_spec(_mspec)
@@ -265,6 +282,46 @@ def rule_angle_gaps(brain: Brain, ends_on: str) -> list[dict]:
     return out
 
 
+def rule_signals(brain: Brain, ends_on: str) -> list[dict]:
+    out = []
+    sg = market.signals(brain)
+    for r in sg["recommended"]:
+        n = r["threads"] or 0
+        lad = r.get("ladder") or {}
+        db = lad.get("deal_breaker") or {}
+        ev = [_row("threads_recommending_instead", n, "n", ends_on, None, 1, "competitors (reddit_recommended)"),
+              _row("upvotes", r["upvotes"], "n", ends_on, None, None, "competitors (reddit_recommended)"),
+              _row("deal_breaker_proof", 1 if db.get("has_proof") else 0, "flag", ends_on, None, 1, "objection_ladders")]
+        subs = ", ".join("r/" + x for x in r["subreddits"][:2])
+        tail = (f"The doubt behind it is {r['doubt_label'].lower()}. Our {lad.get('theme', '').replace('_', ' ')} ladder has no proof on rung {db.get('level')}."
+                if lad and not db.get("has_proof") else
+                f"The doubt behind it is {r['doubt_label'].lower()}." + (" We have no ladder for it." if not lad else " Proof is on file on the ladder."))
+        sentence = f"Public threads recommend {r['competitor']} instead of us {n} time{'s' if n != 1 else ''} ({r['upvotes']} upvotes, {subs}). {tail}"
+        f = _finding("BRN-R09", "high" if n >= 3 else "medium", {"type": "brand", "id": f"recommended_{r['slug']}", "label": r["competitor"]},
+                     ev, sentence, [r["record_id"]] + ([lad["id"]] if lad else []), ends_on, 0.5)
+        f["where"] = r["where"]
+        f["doubt_angle"] = r["doubt_angle"]
+        out.append(f)
+    top = sg.get("top_frame")
+    if top and top.get("covered_by_our_frame") is False and sg.get("our_frame"):
+        total = sum(x["mentions"] or 0 for x in sg["frames"])
+        ev = [_row("frame_mentions", top["mentions"], "n", ends_on, None, None, "positioning.reddit_frames"),
+              _row("frame_mentions_total", total, "n", ends_on, None, None, "positioning.reddit_frames"),
+              _row("frame_in_our_positioning", 0, "flag", ends_on, None, 1, "positioning.frame")]
+        sentence = f"Buyers frame the category as {top['label']} in {top['mentions']} of {total} mentions. Our positioning frame has no line for it."
+        out.append(_finding("BRN-R10", "medium", {"type": "brand", "id": f"frame_{top['frame']}", "label": top["label"]},
+                            ev, sentence, [sg["sources"]["frames"], sg["our_frame"]["id"]], ends_on, 0.5))
+    mm = sg.get("mission_vs_marketing")
+    if mm and (mm["mission"] or 0) <= (mm["marketing"] or 0):
+        ev = [_row("read_as_marketing_brand", mm["marketing"], "n", ends_on, None, mm["mission"], "positioning.reddit_frames"),
+              _row("read_as_giving_brand", mm["mission"], "n", ends_on, None, None, "positioning.reddit_frames")]
+        sentence = (f"Public threads read us as a marketing brand {mm['marketing']} times and as a giving brand {mm['mission']} time{'s' if mm['mission'] != 1 else ''}. "
+                    + (mm["text"] if mm.get("text") else "The giving model is in the brain and not in the ads."))
+        out.append(_finding("BRN-R10", "medium", {"type": "brand", "id": "frame_mission", "label": "mission read as marketing"},
+                            ev, sentence, mm["record_ids"], ends_on, 0.5))
+    return out
+
+
 def rule_snapshot_stale(brain: Brain, ends_on: str) -> list[dict]:
     out = []
     d = market.pages(brain)
@@ -292,7 +349,7 @@ def run(brand: str, window: dict | None = None, root: Path | None = None) -> lis
         bank = keeper.load_bank()
     except (OSError, ValueError, KeyError):
         bank = None
-    out = rule_stale(brain, ends_on) + rule_claims(brain, ends_on) + rule_competitor_gaps(brain, ends_on) + rule_angle_gaps(brain, ends_on) + rule_snapshot_stale(brain, ends_on)
+    out = rule_stale(brain, ends_on) + rule_claims(brain, ends_on) + rule_competitor_gaps(brain, ends_on) + rule_angle_gaps(brain, ends_on) + rule_signals(brain, ends_on) + rule_snapshot_stale(brain, ends_on)
     if bank is None:
         for rid, sev in (("BRN-R02", "medium"), ("BRN-R03", "medium")):
             f = _finding(rid, sev, {"type": "brand", "id": "question_bank", "label": "question bank"},

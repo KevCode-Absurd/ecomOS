@@ -19,6 +19,11 @@ question, and accept or ignore on a proposed record. Nothing external.
                                 competitor medians, the gaps, proposed pages, and the cost of a re-pull
   GET  coverage                 angles by page: our ad count per angle against each competitor page, gaps with a
                                 drafted concept brief, our own ground, contested angles
+  GET  signals                  what buyers say elsewhere: recommended-instead per competitor with the doubt behind
+                                it, our proof status and where to answer; category frames against our frame; the
+                                competitor sets; proposed pages waiting on a page id
+  POST competitors/page-id      {name, page_id}: writes an approved founder record competitors.page_id_<slug>;
+                                the page joins the page list and the next pull estimate
   GET  records?section=<name>   one section's records with tier, date, source and evidence
   GET  audit                    findings from audit.py (app/contracts/audit.md shape)
   POST questions/<field>        {answer}: writes a founder record, marks the question answered
@@ -411,6 +416,25 @@ def competitors(brain: Brain) -> dict:
     return d
 
 
+def page_id_add(brain: Brain, body: dict):
+    name = str((body or {}).get("name") or "").strip()
+    pid = str((body or {}).get("page_id") or "").strip()
+    if not name or not re.fullmatch(r"[A-Za-z0-9 .&'-]{2,60}", name):
+        return 400, {"error": "name must be a plain page name"}
+    if not re.fullmatch(r"\d{5,20}", pid):
+        return 400, {"error": "page_id must be the numeric Meta page id"}
+    slug = market._slug(name)
+    rid = f"{brain.brand}.competitors.page_id_{slug}"
+    rec = {"id": rid, "brand": brain.brand, "section": "competitors", "field": f"page_id_{slug}", "value": pid,
+           "text": f"{name} Meta page id {pid}, added by the founder for the Ad Library pull.",
+           "tier": "approved", "confidence": 1.0, "visibility": "private",
+           "source": {"type": "founder", "ref": "05-brand-brain competitors page id", "captured_at": brain.today.isoformat()}}
+    errs = brain.put(rec)
+    if errs:
+        return 400, {"error": "record not valid", "details": errs}
+    return 201, {"ok": True, "record": rid, "flows_to": "the page list and the next Ad Library pull estimate", "version": brain.version()}
+
+
 def handle(req):
     try:
         brain = _brain(req)
@@ -431,6 +455,12 @@ def handle(req):
         return document_add(brain, req.body)
     if req.method == "GET" and parts == ["competitors"]:
         return competitors(brain)
+    if req.method == "GET" and parts == ["signals"]:
+        sg = market.signals(brain)
+        sg.update(brand=brain.brand, today=brain.today.isoformat(), version=brain.version())
+        return sg
+    if req.method == "POST" and parts == ["competitors", "page-id"]:
+        return page_id_add(brain, req.body)
     if req.method == "GET" and parts == ["coverage"]:
         c = market.coverage(brain)
         c.update(brand=brain.brand, today=brain.today.isoformat(), version=brain.version())
