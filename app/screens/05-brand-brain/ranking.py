@@ -159,6 +159,13 @@ def build(f: dict, nr: float | None) -> dict:
                         {"n": 3, "who": "person", "text": "Pick the record as proof, or approve the drafted fact as an approved record."},
                         {"n": 4, "who": "agent", "text": f"Attach it to the rung. The surfaces that use the rung ({surfaces or 'copy, page, listing, macro'}) read the proof on their next brief."}],
                  check_on=_check_on(f, 7), time_to_ship_hours=1)
+    elif rid == "BRN-R38":
+        st = f.get("settle") or {}
+        left = st.get("left") or []
+        a.update(title=f"Settle {len(left)} record{'s' if len(left) != 1 else ''} that still contradict {str(st.get('field')).replace('_', ' ')}", owner="person",
+                 artefact={"kind": "brain_record", "label": "each contradicting record fixed, retired or confirmed as a different fact", "draft": "\n".join(f"- {c['id']} ({c.get('tier')}): {c.get('says')}" for c in left)},
+                 steps=[{"n": 1, "who": "agent", "text": "List each record with what it says, its tier and where it came from, next to the value you saved."}, {"n": 2, "who": "person", "text": "For each: retire it when it is out of date, edit it when it is a different fact, or mark it done."}, {"n": 3, "who": "agent", "text": "The plan closes when none is left; agents read the saved value only."}],
+                 check_on=_check_on(f, 2), time_to_ship_hours=0.5)
     elif rid == "BRN-R37":
         up = f.get("update") or {}
         left = up.get("left") or []

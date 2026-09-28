@@ -1148,7 +1148,7 @@ class Round3ChangesTrace(TempBrain):
 
     def test_every_write_logs_a_change_with_before(self):
         self.assertEqual(api.handle(Req(['changes']))['counts']['total'], 0)
-        api.handle(Req(['profile', 'offers', 'free_shipping_threshold_usd'], 'POST', body={'text': '80'}))
+        api.handle(Req(['profile', 'offers', 'free_shipping_threshold_usd'], 'POST', body={'text': '80', 'force': True}))
         api.handle(Req(['approve', 'bombas.positioning.frame'], 'POST', body={'choice': 'approve'}))
         api.handle(Req(['documents'], 'POST', body={'name': 'n.md', 'text': '# Offers\nBundle: 4 pack saves 10 percent'}))
         ch = api.handle(Req(['changes']))
@@ -1321,7 +1321,7 @@ class Round3ReportDigest(TempBrain):
     """Round 3 features 8 and 10: the weekly report and the founder round digest, in plain words."""
 
     def test_report_reads_the_week(self):
-        api.handle(Req(['profile', 'offers', 'free_shipping_threshold_usd'], 'POST', body={'text': '80'}))
+        api.handle(Req(['profile', 'offers', 'free_shipping_threshold_usd'], 'POST', body={'text': '80', 'force': True}))
         api.handle(Req(['questions', 'bank', 'q.economics.gross_margin'], 'POST', body={'answer': '58%'}))
         rp = api.handle(Req(['report'], query={'days': ['7']}))
         self.assertTrue(rp['text'].startswith('Brand brain, week to ' + DAY))
@@ -1511,7 +1511,7 @@ class Round4SelfAudit(TempBrain):
 
     def test_regenerate_router_removes_drift(self):
         # a founder edit changes the records, so the router's rows and version line drift
-        api.handle(Req(['profile', 'offers', 'free_shipping_threshold_usd'], 'POST', body={'text': '80'}))
+        api.handle(Req(['profile', 'offers', 'free_shipping_threshold_usd'], 'POST', body={'text': '80', 'force': True}))
         sa = api.handle(Req(['selfaudit']))
         self.assertTrue(any(p['kind'] == 'drifted' for p in sa['proposals']))
         status, res = api.handle(Req(['selfaudit', 'regenerate'], 'POST'))
@@ -1644,7 +1644,7 @@ class Round4History(TempBrain):
         self.assertGreaterEqual(h['counts']['values'], 1)
         self.assertTrue(all(it['kind'] in ('value', 'change') for it in h['items']))
         self.assertEqual(h['current']['value_text'], h['current']['value_text'])
-        api.handle(Req(['profile', 'offers', 'free_shipping_threshold_usd'], 'POST', body={'text': '80'}))
+        api.handle(Req(['profile', 'offers', 'free_shipping_threshold_usd'], 'POST', body={'text': '80', 'force': True}))
         h = api.handle(Req(['history'], query={'record': ['bombas.offers.free_shipping_threshold_usd']}))
         vals = [it for it in h['items'] if it['kind'] == 'value']
         self.assertEqual(vals[-1]['value'], 75)
@@ -1654,7 +1654,7 @@ class Round4History(TempBrain):
         self.assertEqual(api.handle(Req(['history'], query={'record': ['bad id']}))[0], 400)
 
     def test_restore_and_undo(self):
-        api.handle(Req(['profile', 'offers', 'free_shipping_threshold_usd'], 'POST', body={'text': '80'}))
+        api.handle(Req(['profile', 'offers', 'free_shipping_threshold_usd'], 'POST', body={'text': '80', 'force': True}))
         h = api.handle(Req(['history'], query={'record': ['bombas.offers.free_shipping_threshold_usd']}))
         idx = next(it['index'] for it in h['items'] if it['kind'] == 'value' and it['value'] == 75)
         status, res = api.handle(Req(['history', 'restore'], 'POST', body={'record': 'bombas.offers.free_shipping_threshold_usd', 'index': idx}))
@@ -2063,7 +2063,7 @@ class Round5ExportDiff(TempBrain):
     def test_diff_whole_and_in_parts(self):
         b = api.handle(Req(['export']))
         self.assertEqual(api.handle(Req(['export', 'diff'], 'POST', body={'bundle': b}))['same'], True)
-        api.handle(Req(['profile', 'offers', 'free_shipping_threshold_usd'], 'POST', body={'text': '80'}))
+        api.handle(Req(['profile', 'offers', 'free_shipping_threshold_usd'], 'POST', body={'text': '80', 'force': True}))
         api.handle(Req(['claims'], 'POST', body={'text': 'the softest socks in the world', 'tier': 'forbidden'}))
         api.handle(Req(['approve', 'bombas.claims.donation_pledge'], 'POST', body={'choice': 'approve'}))
         d = api.handle(Req(['export', 'diff'], 'POST', body={'bundle': b}))
@@ -2590,7 +2590,7 @@ class Round6FounderNotes(TempBrain):
         self.assertIn('The CX lead is Priya', (self.tmp / 'bombas' / 'BRAIN.md').read_text(encoding='utf-8'))
         self.assertEqual(api.handle(Req(['brainmd', 'notes']))['notes'], 'House rule: no discount deeper than 25 percent without Kevin. The CX lead is Priya.')
         # a regeneration from the self audit keeps the notes word for word
-        api.handle(Req(['profile', 'offers', 'free_shipping_threshold_usd'], 'POST', body={'text': '80'}))
+        api.handle(Req(['profile', 'offers', 'free_shipping_threshold_usd'], 'POST', body={'text': '80', 'force': True}))
         self.assertEqual(api.handle(Req(['selfaudit', 'regenerate'], 'POST'))[0], 201)
         self.assertIn('The CX lead is Priya', api.handle(Req(['brainmd']))['text'])
         self.assertFalse(any(p['kind'] == 'drifted' for p in api.handle(Req(['selfaudit']))['proposals']))
@@ -2685,7 +2685,7 @@ class Round7Expiring(TempBrain):
         for a in acts:
             self.assertEqual(api.rank_mod.validate_action(a), [])
         # a founder record expiring tomorrow: confirm moves it on by the shelf life
-        api.handle(Req(['profile', 'offers', 'guarantee'], 'POST', body={'text': 'Happiness Guarantee, any reason, 30 days.'}))
+        api.handle(Req(['profile', 'offers', 'guarantee'], 'POST', body={'text': 'Happiness Guarantee, any reason, 30 days.', 'force': True}))
         rows = self.section('offers')
         rec = next(r for r in rows if r['id'] == 'bombas.offers.guarantee')
         rec['expires_at'] = '2026-09-29'
@@ -2733,7 +2733,7 @@ class Round7Restore(TempBrain):
 
     def test_plan_then_restore(self):
         b = api.handle(Req(['export']))
-        api.handle(Req(['profile', 'offers', 'free_shipping_threshold_usd'], 'POST', body={'text': '80'}))
+        api.handle(Req(['profile', 'offers', 'free_shipping_threshold_usd'], 'POST', body={'text': '80', 'force': True}))
         api.handle(Req(['claims'], 'POST', body={'text': 'waterproof', 'tier': 'forbidden'}))
         api.handle(Req(['approve', 'bombas.claims.donation_pledge'], 'POST', body={'choice': 'approve'}))
         pl = api.handle(Req(['export', 'restore'], 'POST', body={'bundle': b, 'sections': ['offers', 'claims'], 'dry_run': True}))
@@ -2932,6 +2932,47 @@ class Round8QuizAndSchedule(TempBrain):
         self.assertEqual(api.handle(Req(['schedule'], 'POST', body={'weekday': 'x'}))[0], 400)
 
 
+class Round8Contradictions(TempBrain):
+    """Round 8 feature 7: a contradiction check before a write."""
+
+    def test_dry_run_by_unit_and_words(self):
+        r = api.handle(Req(['contradict'], query={'section': ['offers'], 'field': ['free_shipping_threshold_usd'], 'text': ['80']}))
+        self.assertEqual((r['verdict'], r['unit'], r['numbers']), ('conflicts', 'usd', ['80']))
+        self.assertEqual([c['id'] for c in r['conflicts']], ['bombas.policies.shipping_options'])
+        self.assertIn('says', r['sentence'])
+        ok = api.handle(Req(['contradict'], query={'section': ['offers'], 'field': ['free_shipping_threshold_usd'], 'text': ['75']}))
+        self.assertEqual((ok['verdict'], len(ok['agrees'])), ('clear', 1))
+        un = api.handle(Req(['contradict'], query={'section': ['voice'], 'field': ['tone'], 'text': ['warm and plain']}))
+        self.assertEqual((un['verdict'], un['count']), ('unchecked', 0))
+        code = api.handle(Req(['contradict'], query={'section': ['offers'], 'field': ['first_order_code'], 'text': ['WELCOME25']}))
+        self.assertEqual(code['verdict'], 'conflicts')
+        self.assertTrue(all(c['kind'] == 'code' for c in code['conflicts']))
+        self.assertEqual(api.handle(Req(['contradict']))['open'], [])
+
+    def test_save_blocks_then_force_opens_a_plan_settled_to_close(self):
+        status, body = api.handle(Req(['profile', 'offers', 'free_shipping_threshold_usd'], 'POST', body={'text': '80'}))
+        self.assertEqual(status, 409)
+        self.assertEqual(body['contradictions']['count'], 1)
+        self.assertNotIn('80', [str(r.get('value')) for r in self.section('offers') if r['id'] == 'bombas.offers.free_shipping_threshold_usd'])
+        status, body = api.handle(Req(['profile', 'offers', 'free_shipping_threshold_usd'], 'POST', body={'text': '80', 'force': True}))
+        self.assertEqual((status, body['contradictions'], body['plan']), (201, 1, 'bombas.plans.settle_free_shipping_threshold_usd'))
+        kinds = [c['value'].get('kind') for c in self.section('changes')]
+        self.assertIn('override', kinds)
+        op = api.handle(Req(['contradict']))['open']
+        self.assertEqual((len(op), op[0]['left'], op[0]['conflicts'][0]['id']), (1, 1, 'bombas.policies.shipping_options'))
+        acts = [a for a in api.rank('bombas', {'ends_on': '2026-09-27', 'days': 28, 'trailing': 4})['actions'] if a['rule_id'] == 'BRN-R38']
+        self.assertEqual(len(acts), 1)
+        self.assertTrue(acts[0]['title'].startswith('Settle 1 record'))
+        self.assertEqual(acts[0]['owner'], 'person')
+        r = api.handle(Req(['contradict', 'settle'], 'POST', body={'plan': op[0]['plan'], 'record': 'bombas.policies.shipping_options', 'how': 'retire'}))
+        self.assertEqual((r['closed'], r['retired'], r['left']), (True, True, 0))
+        self.assertEqual(api.handle(Req(['contradict']))['open'], [])
+        self.assertEqual([r['status'] for r in self.section('policies') if r['id'] == 'bombas.policies.shipping_options'], ['retired'])
+        self.assertFalse([f for f in api.handle(Req(['audit']))['findings'] if f['rule_id'] == 'BRN-R38'])
+        status, body = api.handle(Req(['contradict', 'settle'], 'POST', body={'plan': op[0]['plan'], 'record': 'x', 'how': 'done'}))
+        self.assertEqual(status, 404)
+
+
 class Round8SourcesTrustHistory(TempBrain):
     """Round 8 features 5, 6 and 9: trust over time, the sources register, the records CSV."""
 
@@ -2944,7 +2985,7 @@ class Round8SourcesTrustHistory(TempBrain):
         site = [g for g in sr['sources'] if g['type'] == 'site']
         self.assertTrue(site and all(g['last'] for g in site))
         self.assertIn('site', sr['counts']['by_type'])
-        api.handle(Req(['profile', 'offers', 'free_shipping_threshold_usd'], 'POST', body={'text': '80'}))
+        api.handle(Req(['profile', 'offers', 'free_shipping_threshold_usd'], 'POST', body={'text': '80', 'force': True}))
         sr = api.handle(Req(['sources']))
         self.assertTrue(any(g['type'] == 'founder' and '05-brand-brain' in g['ref'] for g in sr['sources']))
         c = api.handle(Req(['records', 'csv']))
@@ -2969,7 +3010,7 @@ class Round8SourcesTrustHistory(TempBrain):
 class Round4SecondBrand(unittest.TestCase):
     """Round 4 feature 2: plug and play. Every route answers for the example brain (7 records), unavailable never zero."""
 
-    ROUTES = [['overview'], ['master'], ['profile'], ['documents'], ['competitors'], ['coverage'], ['signals'], ['health'], ['conflicts'], ['questions'], ['ladders', 'proof'], ['selfaudit'], ['peaks'], ['visual'], ['newbrand'], ['visibility'], ['moves'], ['channels'], ['agentfile', 'endpoints'], ['brainmd'], ['trail'], ['assets'], ['ugc'], ['drift'], ['locks'], ['audiences'], ['walkthrough'], ['redlines'], ['owners'], ['onepage'], ['brainmd', 'notes'], ['alerts'], ['glossary'], ['expiring'], ['feedback'], ['numbers'], ['proofs'], ['trust'], ['round'], ['brandbook'], ['quiz'], ['schedule'], ['sources'], ['records', 'csv'], ['trust', 'history'],
+    ROUTES = [['overview'], ['master'], ['profile'], ['documents'], ['competitors'], ['coverage'], ['signals'], ['health'], ['conflicts'], ['questions'], ['ladders', 'proof'], ['selfaudit'], ['peaks'], ['visual'], ['newbrand'], ['visibility'], ['moves'], ['channels'], ['agentfile', 'endpoints'], ['brainmd'], ['trail'], ['assets'], ['ugc'], ['drift'], ['locks'], ['audiences'], ['walkthrough'], ['redlines'], ['owners'], ['onepage'], ['brainmd', 'notes'], ['alerts'], ['glossary'], ['expiring'], ['feedback'], ['numbers'], ['proofs'], ['trust'], ['round'], ['brandbook'], ['quiz'], ['schedule'], ['sources'], ['records', 'csv'], ['trust', 'history'], ['contradict'],
               ['decisions'], ['flows'], ['claims'], ['site', 'diff'], ['parity'], ['contracts'], ['legal'], ['voice'], ['battlecards'], ['permissions'],
               ['export'], ['assumptions'], ['facts'], ['summaries'], ['changes'], ['learn'], ['report'], ['digest'], ['review'], ['bottlenecks'], ['audit']]
 

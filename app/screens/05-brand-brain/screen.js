@@ -760,7 +760,18 @@
     const out = el('div', { class: 'stack' });
     go.addEventListener('click', async () => { if (!rid.value.trim() || !val.value.trim()) return; go.disabled = true; try { const r = await api(BASE + 'numbers/change', { method: 'POST', body: { record: rid.value.trim(), value: val.value.trim() } }); status.textContent = r.next; loadNumbers(actions); loadProfile(); loadPlan(); loadChanges(); } catch (e) { status.textContent = 'Could not change: ' + e.message; } go.disabled = false; });
     const plans = nb.pending.map((p) => { const act = byAct['update_' + p.field]; const rows = p.dependents.map((d) => { const b = el('button', { class: 'btn xs' + (d.done ? ' soft' : ''), type: 'button', text: d.done ? 'done' : 'Mark done', disabled: !!d.done }); b.addEventListener('click', async () => { b.disabled = true; try { const r = await api(BASE + 'numbers/done', { method: 'POST', body: { plan: p.plan, dependent: d.id } }); status.textContent = r.closed ? 'Every dependent updated; the plan closed.' : r.left + ' left.'; loadNumbers(actions); loadPlan(); } catch (e) { b.disabled = false; status.textContent = 'Could not mark: ' + e.message; } }); return el('div', { class: 'row small' }, el('span', { class: 'chip', text: pretty(d.kind || 'record') }), el('span', { class: 'chip mono', text: d.id }), el('span', { text: d.label }), b); }); return el('div', { class: 'card flat' }, el('div', { class: 'row' }, el('b', { text: pretty(p.field) + ': ' + p.before + ' to ' + p.after }), el('span', { class: 'chip ' + (p.left ? 'warn' : 'good'), text: p.left + ' of ' + p.total + ' left' }), act ? UI.decisionRow({ capability: 'BRN-C01', autonomy: 'agent_does', owner: act.owner, screen: SCREEN, compact: true, finding_id: act.id, current: act.decision, stub: act.title + '. ' + act.artefact.label + '.' }) : null), ...rows); });
-    mount('#numbers', el('div', { class: 'row' }, rid, val, go, status), out, ...(plans.length ? plans : [el('p', { class: 'muted small', text: 'No number change open. Every fact is in one place; change it here and the dependents follow.' })]), el('p', { class: 'micro faint', text: nb.note }));
+    let ct = null; try { ct = await api(BASE + 'contradict'); } catch (e) { ct = null; }
+    const byCt = {}; for (const a of actions || []) if (a.rule_id === 'BRN-R38' && a.entity) byCt[a.entity.id] = a;
+    const settles = (ct ? ct.open : []).filter((p) => p.left).map((p) => {
+      const act = byCt['settle_' + p.field];
+      const rows = p.conflicts.map((c) => {
+        const mk = (label, how) => { const b = el('button', { class: 'btn xs' + (c.done ? ' soft' : ''), type: 'button', text: label, disabled: !!c.done }); b.addEventListener('click', async () => { if (how === 'retire' && !confirm('Retire ' + c.id + '? It leaves every package and stays in history.')) return; b.disabled = true; try { const r = await api(BASE + 'contradict/settle', { method: 'POST', body: { plan: p.plan, record: c.id, how } }); status.textContent = r.closed ? 'Every record settled; the plan closed.' : r.left + ' left to settle.'; loadNumbers(actions); loadPlan(); loadChanges(); } catch (e) { b.disabled = false; status.textContent = 'Could not settle: ' + e.message; } }); return b; };
+        return el('div', { class: 'row small' }, el('span', { class: 'chip', text: c.tier || 'record' }), el('span', { class: 'chip mono', text: c.id }), el('span', { text: c.says }), c.done ? el('span', { class: 'chip good', text: c.how === 'retire' ? 'retired' : 'fixed' }) : mk('Retire it', 'retire'), c.done ? null : mk('Fixed by hand', 'done'));
+      });
+      return el('div', { class: 'card flat' }, el('div', { class: 'row' }, el('b', { text: pretty(p.field) + ' saved as ' + (Array.isArray(p.value) ? p.value.join(', ') : p.value) + ' over ' + p.total + ' contradiction' + (p.total === 1 ? '' : 's') }), el('span', { class: 'chip ' + (p.left ? 'warn' : 'good'), text: p.left + ' of ' + p.total + ' left' }), act ? UI.decisionRow({ capability: 'BRN-C05', autonomy: 'founder_gate', owner: act.owner, screen: SCREEN, compact: true, finding_id: act.id, current: act.decision, stub: act.title + '. ' + act.artefact.label + '.' }) : null), ...rows);
+    });
+    mount('#numbers', el('div', { class: 'row' }, rid, val, go, status), out, ...(plans.length ? plans : [el('p', { class: 'muted small', text: 'No number change open. Every fact is in one place; change it here and the dependents follow.' })]),
+      el('h4', { text: 'Saved over a contradiction' }), ...(settles.length ? settles : [el('p', { class: 'muted small', text: ct ? 'Nothing waits. Every profile save is checked first; a record with a different number or code next to the same words stops the save until you have seen it.' : 'Contradiction check unavailable.' })]), el('p', { class: 'micro faint', text: nb.note }));
   }
 
   // ---------- 1b2. who read what ----------
@@ -823,6 +834,22 @@
   }
 
   // ---------- 2. the profile, editable ----------
+  // 8.7: every profile save is checked for contradictions first; a 409 lists them and the founder chooses
+  async function saveProfile(section, key, text) {
+    const url = BASE + 'profile/' + section + '/' + encodeURIComponent(key);
+    try { return await api(url, { method: 'POST', body: { text } }); }
+    catch (e) {
+      const c = e.status === 409 && e.data && e.data.contradictions;
+      if (!c) throw e;
+      const lines = c.conflicts.slice(0, 6).map((x) => '- ' + x.id + ' (' + x.tier + '): ' + x.says.slice(0, 90)).join('\n');
+      const ok = confirm(c.count + ' record' + (c.count === 1 ? ' says' : 's say') + ' something else next to the same words:\n' + lines + (c.count > 6 ? '\n- and ' + (c.count - 6) + ' more' : '') + '\n\nSave anyway? The save is logged and each record waits under Change a number safely until you settle it. Cancel to fix them first.');
+      if (!ok) throw new Error('not saved: ' + c.count + ' contradiction' + (c.count === 1 ? '' : 's') + ' to settle first');
+      const r = await api(url, { method: 'POST', body: { text, force: true } });
+      loadNumbers(); loadChanges(); loadPlan();
+      return r;
+    }
+  }
+
   function profileSection(sec) {
     const wrap = el('div', { class: 'profile-sec' });
     wrap.append(el('div', { class: 'row between' },
@@ -832,7 +859,7 @@
         key: f.key, name: pretty(f.key), sub: f.variants > 1 ? f.variants + ' records, best shown' : null,
         text: f.text, tier: f.tier, source: f.source, date: f.date, confidence: f.confidence, multiline: true,
         placeholder: 'unavailable. Add it and every screen gets it.',
-        onSave: async (text) => api(BASE + 'profile/' + sec.section + '/' + encodeURIComponent(f.key), { method: 'POST', body: { text } }),
+        onSave: (text) => saveProfile(sec.section, f.key, text),
       }));
     }
     const withRecord = sec.fields.filter((f) => f.record_id);
@@ -845,7 +872,7 @@
     addBtn.addEventListener('click', async () => {
       const k = addKey.value.trim().toLowerCase().replace(/[^a-z0-9_]+/g, '_').replace(/^_+|_+$/g, '');
       if (!k || !addVal.value.trim()) { status.textContent = 'Give the field a name and a value.'; return; }
-      try { await api(BASE + 'profile/' + sec.section + '/' + k, { method: 'POST', body: { text: addVal.value.trim() } }); status.textContent = 'Saved as approved. Reload to see it in place.'; addKey.value = ''; addVal.value = ''; }
+      try { await saveProfile(sec.section, k, addVal.value.trim()); status.textContent = 'Saved as approved. Reload to see it in place.'; addKey.value = ''; addVal.value = ''; }
       catch (e) { status.textContent = 'Could not save: ' + e.message; }
     });
     wrap.append(el('div', { class: 'row add-field' }, addKey, addVal, addBtn, status));

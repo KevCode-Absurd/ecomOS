@@ -24,6 +24,8 @@ question, and accept or ignore on a proposed record. Nothing external.
   GET  numbers                  open update plans after a number change, with the dependents left
   POST numbers/change           {record, value}: change a scalar fact; the dependents become a plan on the master list
   POST numbers/done             {plan, dependent}: mark one dependent updated; the plan closes when none is left
+  GET  contradict               ?section=&field=&text= dry run of the check a profile save gets; without them, the open settle plans
+  POST contradict/settle        {plan, record, how}: settle one contradicting record (retire, or done after fixing it)
   GET  feedback                 what agents got wrong: the corrections on record, by capability and kind
   POST feedback                 {capability, kind, wrong, what, right, fact}: a correction as a learning; the misused fact's section goes to review
   GET  expiring                 records expiring within 7 days, by the source that refreshes them
@@ -261,6 +263,9 @@ _prspec.loader.exec_module(proofs)
 _nmspec = importlib.util.spec_from_file_location("brand_brain_numbers", HERE / "numbers.py")
 numbers = importlib.util.module_from_spec(_nmspec)
 _nmspec.loader.exec_module(numbers)
+_ctspec = importlib.util.spec_from_file_location("brand_brain_contradict", HERE / "contradict.py")
+contradict = importlib.util.module_from_spec(_ctspec)
+_ctspec.loader.exec_module(contradict)
 _rsspec = importlib.util.spec_from_file_location("brand_brain_restore", HERE / "restore.py")
 restore = importlib.util.module_from_spec(_rsspec)
 _rsspec.loader.exec_module(restore)
@@ -969,13 +974,23 @@ def profile_edit(brain: Brain, section: str, field: str, body: dict):
     if section not in {s for s, _, _ in PROFILE_SECTIONS} or not re.fullmatch(r"[a-z0-9_]{1,60}", field):
         return 404, {"error": "no such profile field", "section": section, "field": field}
     rid = f"{brain.brand}.{section}.{field}"
+    chk = contradict.check(brain, section, field, text, changes, exclude_id=rid)
+    force = bool((body or {}).get("force"))
+    if chk["conflicts"] and not force:
+        return 409, {"error": chk["sentence"] + " Check them, then save anyway or fix them first.", "contradictions": chk}
     rec = {"id": rid, "brand": brain.brand, "section": section, "field": field, "value": _coerce(text), "text": text,
            "tier": "approved", "confidence": 1.0, "visibility": "private",
            "source": {"type": "founder", "ref": "05-brand-brain profile edit", "captured_at": brain.today.isoformat()}}
     errs = founder_put(brain, rec)
     if errs:
         return 400, {"error": "record not valid", "details": errs}
-    return 201, {"ok": True, "record": rid, "tier": "approved", "flows_to": FLOWS_TO.get(section, ""), "version": brain.version()}
+    out = {"ok": True, "record": rid, "tier": "approved", "flows_to": FLOWS_TO.get(section, ""), "version": brain.version(), "contradictions": chk["count"], "agrees": len(chk["agrees"])}
+    if chk["conflicts"]:
+        plan = contradict.plan_record(brain, rid, chk)
+        perrs = founder_put(brain, plan, "override", f"{field.replace('_', ' ')} saved over {chk['count']} contradiction{'s' if chk['count'] != 1 else ''}: " + ", ".join(c["id"] for c in chk["conflicts"][:5]))
+        out["plan"] = None if perrs else plan["id"]
+        out["next"] = "Saved over the contradictions. Settle each record on the plan: fix it, retire it or mark it done."
+    return 201, out
 
 
 def documents(brain: Brain) -> dict:
@@ -1524,6 +1539,20 @@ def handle(req):
         return profile(brain)
     if req.method == "POST" and len(parts) == 3 and parts[0] == "profile":
         return profile_edit(brain, parts[1], parts[2], req.body)
+    if req.method == "GET" and parts == ["contradict"]:
+        section, field, text = req.arg("section") or "", req.arg("field") or "", req.arg("text") or ""
+        if not (section and field and text):
+            return {"open": contradict.open_plans(brain), "brand": brain.brand, "capability": {"id": "BRN-C05", "autonomy": "founder_gate"},
+                    "note": "Every profile save is checked first: a record that carries a different number or code next to the same words stops the save until you have seen it. Saving anyway is logged and the records wait here until each is settled."}
+        chk = contradict.check(brain, section, field, text, changes)
+        return dict(chk, open=contradict.open_plans(brain))
+    if req.method == "POST" and parts == ["contradict", "settle"]:
+        body = req.body or {}
+        res = contradict.settle(brain, str(body.get("plan") or ""), str(body.get("record") or ""), str(body.get("how") or ""))
+        if isinstance(res, tuple):
+            return res
+        changes.log(brain, "settled", "plans", res["plan"], f"contradiction settled: {res['record']} {'retired' if res['how'] == 'retire' else 'fixed by hand'}" + (", plan closed" if res["closed"] else ""))
+        return res
     if req.method == "GET" and parts == ["documents"]:
         return documents(brain)
     if req.method == "POST" and parts == ["documents"]:

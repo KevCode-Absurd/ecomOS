@@ -290,10 +290,16 @@ RULES = [
      "inputs": ["every section (expires_at)"], "capability": "BRN-C02", "owner_screen": SCREEN},
     {"rule_id": "BRN-R37", "name": "dependents pending after a number change", "entity_type": "brand",
      "inputs": ["plans.update_*"], "capability": "BRN-C01", "owner_screen": SCREEN},
+    {"rule_id": "BRN-R38", "name": "a save over a contradiction not settled", "entity_type": "brand",
+     "inputs": ["plans.settle_*"], "capability": "BRN-C05", "owner_screen": SCREEN},
 ]
 AUTONOMY = {"BRN-C12": "agent_does", "BRN-C07": "founder_gate", "BRN-C03": "agent_does",
             "CREA-C19": "agent_does", "CREA-C04": "agent_does", "BRN-C11": "agent_does", "CREA-C06": "agent_does",
             "BRAND-C57": "agent_does", "CREA-C03": "agent_does", "BRN-C05": "founder_gate", "BRN-C01": "agent_does", "PROD-C46": "agent_does", "LOOP-C28": "agent_does", "LOOP-C27": "agent_does", "LOOP-C29": "agent_does", "PROP-C06": "agent_does", "CREA-C12": "agent_does", "LOOP-C22": "founder_gate", "BRN-C10": "agent_does", "BRN-C08": "founder_gate", "BRN-C02": "agent_does"}
+
+_ctspec = importlib.util.spec_from_file_location("brand_brain_contradict", Path(__file__).resolve().parent / "contradict.py")
+contradict = importlib.util.module_from_spec(_ctspec)
+_ctspec.loader.exec_module(contradict)
 
 _uspec = importlib.util.spec_from_file_location("brand_brain_assumptions", Path(__file__).resolve().parent / "assumptions.py")
 assumptions = importlib.util.module_from_spec(_uspec)
@@ -881,6 +887,22 @@ def rule_number_dependents(brain: Brain, ends_on: str) -> list[dict]:
     return out
 
 
+def rule_contradictions(brain: Brain, ends_on: str) -> list[dict]:
+    out = []
+    for pl in contradict.open_plans(brain):
+        if not pl["left"]:
+            continue
+        left = [c for c in pl["conflicts"] if not c.get("done")]
+        ev = [_row("records_left", pl["left"], "n", ends_on, None, 0, "plans"), _row("records_total", pl["total"], "n", ends_on, None, None, "plans")]
+        sev = "high" if any(c.get("tier") in ("approved", "site_backed") for c in left) else "medium"
+        f = _finding("BRN-R38", sev, {"type": "brand", "id": f"settle_{pl['field']}", "label": f"{pl['field'].replace('_', ' ')} contradictions"}, ev,
+                     f"{pl['field'].replace('_', ' ')} was saved over {pl['total']} record{'s that say' if pl['total'] != 1 else ' that says'} something else; {pl['left']} still {'do' if pl['left'] != 1 else 'does'}: " + "; ".join(f"{c['id']} says {str(c.get('says'))[:40]}" for c in left[:2]) + ("..." if len(left) > 2 else "") + ".",
+                     [pl["plan"], pl["record"]], ends_on, 0.95)
+        f["settle"] = {"plan": pl["plan"], "field": pl["field"], "record": pl["record"], "value": pl["value"], "left": [{"id": c["id"], "says": c.get("says"), "tier": c.get("tier")} for c in left[:8]]}
+        out.append(f)
+    return out
+
+
 def rule_expiring(brain: Brain, ends_on: str) -> list[dict]:
     out = []
     ex = expiring.expiring(brain, health.SHELF_DAYS)
@@ -1032,7 +1054,7 @@ def run(brand: str, window: dict | None = None, root: Path | None = None) -> lis
         bank = keeper.load_bank()
     except (OSError, ValueError, KeyError):
         bank = None
-    out = rule_stale(brain, ends_on) + rule_claims(brain, ends_on) + rule_competitor_gaps(brain, ends_on) + rule_angle_gaps(brain, ends_on) + rule_signals(brain, ends_on) + rule_weak_sections(brain, ends_on) + rule_conflicts(brain, ends_on) + rule_untiered_claims(brain, ends_on) + rule_site_changes(brain, ends_on) + rule_parity(brain, ends_on) + rule_contracts(brain, ends_on) + rule_legal(brain, ends_on) + rule_picked_ideas(brain, ends_on) + rule_ladder_proof(brain, ends_on) + rule_self_audit(brain, ends_on) + rule_peaks(brain, ends_on) + rule_visual(brain, ends_on) + rule_visibility(brain, ends_on) + rule_rejected_due(brain, ends_on) + rule_assets(brain, ends_on) + rule_consents(brain, ends_on) + rule_drift(brain, ends_on) + rule_audiences(brain, ends_on) + rule_redlines(brain, ends_on) + rule_owners(brain, ends_on) + rule_expiring(brain, ends_on) + rule_number_dependents(brain, ends_on) + rule_permissions(brain, ends_on) + rule_snapshot_stale(brain, ends_on)
+    out = rule_stale(brain, ends_on) + rule_claims(brain, ends_on) + rule_competitor_gaps(brain, ends_on) + rule_angle_gaps(brain, ends_on) + rule_signals(brain, ends_on) + rule_weak_sections(brain, ends_on) + rule_conflicts(brain, ends_on) + rule_untiered_claims(brain, ends_on) + rule_site_changes(brain, ends_on) + rule_parity(brain, ends_on) + rule_contracts(brain, ends_on) + rule_legal(brain, ends_on) + rule_picked_ideas(brain, ends_on) + rule_ladder_proof(brain, ends_on) + rule_self_audit(brain, ends_on) + rule_peaks(brain, ends_on) + rule_visual(brain, ends_on) + rule_visibility(brain, ends_on) + rule_rejected_due(brain, ends_on) + rule_assets(brain, ends_on) + rule_consents(brain, ends_on) + rule_drift(brain, ends_on) + rule_audiences(brain, ends_on) + rule_redlines(brain, ends_on) + rule_owners(brain, ends_on) + rule_expiring(brain, ends_on) + rule_number_dependents(brain, ends_on) + rule_contradictions(brain, ends_on) + rule_permissions(brain, ends_on) + rule_snapshot_stale(brain, ends_on)
     if bank is None:
         for rid, sev in (("BRN-R02", "medium"), ("BRN-R03", "medium")):
             f = _finding(rid, sev, {"type": "brand", "id": "question_bank", "label": "question bank"},
