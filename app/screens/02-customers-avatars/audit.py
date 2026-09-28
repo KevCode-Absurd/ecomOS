@@ -48,8 +48,13 @@ CUST-R07 returning buyers bought back through paid ads. A quarter or more of ret
     Owner: 02-customers-avatars; screen 11 reads it.
 CUST-R08 calendar retention cliff. Half or more of the cohorts alive in one calendar month fell 40
     percent or more at once (cohorts.json). Severity medium. Capability LIFE-C20.
+    Money (builds._cliff_stake): per cohort, (share the month before x the median step at that age outside cliff
+    months, 4 or more, minus the share in the cliff month) x cohort size, summed, x that month's AOV. The note
+    says whether the same month last year is in the grid, since part of a cliff can be the season.
 CUST-R09 retention age break. After the peak return month, active share falls 20 percent or more
     from one month to the next, cliff months left out. Severity medium. Capability LIFE-C08.
+    Money (builds._age_stake): share in month k x (the fall at the break minus the median fall at the other
+    ages after the peak, 4 or more) x the median cohort size x the median AOV of 12 months, per cohort.
 CUST-R10 split product line. Praise and complaints on a line name the same trait. Severity low.
     Capability CREA-C24.
 
@@ -719,15 +724,19 @@ def r07(d, ends_on):
     ev = [_ev("paid_share_of_returning_orders", x["paid_share_returning"], "%", ends_on, "channels_monthly",
               baseline=builds.PAID_RETURNING, simulated=True)]
     s = f"{round(x['paid_share_returning'] * 100, 1)} percent of returning orders in {x['latest']} came through paid ads. We pay again for buyers we have."
-    f = _finding("CUST-R07", "medium", {"type": "metric", "id": "returning_via_paid", "label": "Returning orders through paid ads"},
-                 ev, s, "MEDIA-C12", 0.5, [], ends_on)
-    st = x.get("stake") or {}
+    return [_with_stake(_finding("CUST-R07", "medium", {"type": "metric", "id": "returning_via_paid", "label": "Returning orders through paid ads"},
+                                 ev, s, "MEDIA-C12", 0.5, [], ends_on), x.get("stake"))]
+
+
+def _with_stake(f: dict, st: dict | None) -> dict:
+    """Puts a builder's stake on a finding in the audit.md shape, or its reason when the stake is null."""
+    st = st or {}
     if isinstance(st.get("usd"), (int, float)) and st["usd"] > 0:
-        f["money_at_stake"] = {k: st[k] for k in ("usd", "formula", "inputs", "window")}
+        f["money_at_stake"] = {k: st[k] for k in ("usd", "formula", "inputs", "window", "note") if k in st}
         f["money_reason"] = None
     elif st.get("reason"):
         f["money_reason"] = st["reason"]
-    return [f]
+    return f
 
 
 def r08_r09(d, ends_on):
@@ -740,14 +749,14 @@ def r08_r09(d, ends_on):
         ev = [_ev("cohorts_falling_together", cb["share"], "%", ends_on, "cohorts", baseline=builds.CLIFF_SHARE, simulated=True),
               _ev("cohorts_alive", cb["cohorts"], "n", ends_on, "cohorts", simulated=True)]
         s = f"In {cb['month']}, {round(cb['share'] * 100)} percent of {cb['cohorts']} cohorts fell 40 percent or more at once. Every past buyer went quiet together."
-        out.append(_finding("CUST-R08", "medium", {"type": "metric", "id": "calendar_" + cb["month"], "label": f"Retention cliff, {cb['month']}"},
-                            ev, s, "LIFE-C20", 0.5, [], ends_on))
+        out.append(_with_stake(_finding("CUST-R08", "medium", {"type": "metric", "id": "calendar_" + cb["month"], "label": f"Retention cliff, {cb['month']}"},
+                                        ev, s, "LIFE-C20", 0.5, [], ends_on), cb.get("stake")))
     ab = c.get("age_break")
     if ab and ab["drop"] is not None and ab["drop"] >= 0.2:
         ev = [_ev("active_share_drop", ab["drop"], "%", ends_on, "cohorts", baseline=0.2, simulated=True)]
         s = f"Active share falls {round(ab['drop'] * 100)} percent from month {ab['month']} to month {ab['month'] + 1} after the first order."
-        out.append(_finding("CUST-R09", "medium", {"type": "metric", "id": f"age_month_{ab['month']}", "label": f"Retention break, month {ab['month']}"},
-                            ev, s, "LIFE-C08", 0.5, [], ends_on))
+        out.append(_with_stake(_finding("CUST-R09", "medium", {"type": "metric", "id": f"age_month_{ab['month']}", "label": f"Retention break, month {ab['month']}"},
+                                        ev, s, "LIFE-C08", 0.5, [], ends_on), ab.get("stake")))
     return out
 
 

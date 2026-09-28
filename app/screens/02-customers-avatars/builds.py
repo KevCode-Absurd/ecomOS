@@ -460,6 +460,64 @@ def _move(mid, title, why, kind, label, cap, owner, steps, draft, check_days=28,
             "artefact": {"kind": kind, "label": label, "draft": draft}, "steps": steps, "check_on": check, "stop_rule": stop}
 
 
+MIN_BASE = 4   # own-history baseline needs 4 or more windows (audit.md section 3)
+
+
+def _cliff_stake(rows: list[dict], cal: str, cliff_months: set, aov: dict) -> dict:
+    """Orders lost in a calendar cliff month against each cohort's normal step at that age.
+
+    Expected share = the cohort's share the month before x the median step ratio at that age, from cells outside
+    cliff months (4 or more). Lost orders = (expected minus actual) x cohort size, summed; one order per active
+    customer, as in the grid. Stake = lost orders x that month's AOV. Null with the reason when an input is missing."""
+    lost, cells = 0.0, 0
+    for r in rows:
+        for k in range(1, GRID_MONTHS):
+            if _add(r["cohort"], k + 1) != cal:
+                continue
+            a, b = r["values"][k - 1], r["values"][k]
+            base = [x["values"][k] / x["values"][k - 1] for x in rows
+                    if x["values"][k - 1] and x["values"][k] is not None and _add(x["cohort"], k + 1) not in cliff_months]
+            if not a or b is None or len(base) < MIN_BASE:
+                continue
+            lost += max(0.0, a * _median(base) - b) * r["customers"]
+            cells += 1
+    if not cells:
+        return {"usd": None, "reason": f"no baseline: under {MIN_BASE} normal months at the ages in {cal}"}
+    if not aov.get(cal):
+        return {"usd": None, "reason": f"no AOV for {cal}"}
+    usd = round(lost * aov[cal])
+    if usd <= 0:
+        return {"usd": None, "reason": f"no gap: cohorts in {cal} fell no more than their normal step"}
+    ly = _add(cal, -12)
+    seen_ly = any(_add(r["cohort"], k + 1) == ly for r in rows for k in range(1, GRID_MONTHS) if r["values"][k] is not None)
+    return {"usd": usd, "formula": "sum over cohorts of (share_prev_month * median_step_at_age - share_now) * customers * aov_month",
+            "inputs": {"cohorts": cells, "lost_orders": round(lost), "aov_month": aov[cal]}, "window": cal,
+            "note": ("Against a normal month. The same month last year is in the grid; compare before reading it as new."
+                     if seen_ly else "Against a normal month. The same month last year is outside the grid, so part of this may be the season.")}
+
+
+def _age_stake(rows: list[dict], med_ex: list, drops: list, age_k: int, age_drop: float | None, aov: dict) -> dict:
+    """Orders lost per cohort at the age break, above the median fall at other ages.
+
+    Excess = the break's fall minus the median fall at the other ages after the peak (4 or more). Lost orders =
+    share in month k x excess x the median cohort size. Stake = lost orders x the median AOV of the last 12 months."""
+    others = [d for d, k in drops if k != age_k]
+    if age_drop is None or len(others) < MIN_BASE:
+        return {"usd": None, "reason": f"no baseline: {len(others)} other ages, {MIN_BASE} needed"}
+    excess = age_drop - _median(others)
+    if excess <= 0:
+        return {"usd": None, "reason": "no gap: the fall is no bigger than at other ages"}
+    size = _median([r["customers"] for r in rows])
+    vals = [v for m, v in sorted(aov.items())[-12:] if v]
+    if not vals or not med_ex[age_k - 1]:
+        return {"usd": None, "reason": "no AOV or active share for the break"}
+    lost = med_ex[age_k - 1] * excess * size
+    a = _median(vals)
+    return {"usd": round(lost * a), "formula": "share_month_k * (fall_at_break - median_fall_other_ages) * median_cohort_size * median_aov_12m",
+            "inputs": {"share_month_k": round(med_ex[age_k - 1], 4), "fall_at_break": age_drop, "median_fall_other_ages": round(_median(others), 4),
+                       "median_cohort_size": round(size), "median_aov_12m": round(a, 2)}, "window": "one cohort"}
+
+
 def cohort_grid(cohorts: list[dict], monthly: list[dict], as_of: str, avatars: list[dict]) -> dict:
     """Active share by months since the first order, the breaks in it, and the retention move for each break.
 
@@ -564,9 +622,11 @@ def cohort_grid(cohorts: list[dict], monthly: list[dict], as_of: str, avatars: l
             f"DRAFT post-purchase branch\nFor: first buyers in {names}\nEmail 1: thank you, and how the gift landed\n"
             "Email 2: a pair for you, with a five-star line on comfort\nEmail 3: the care guide", as_of=as_of))
     cols = [f"M{k}" for k in range(1, GRID_MONTHS + 1)]
+    cal_stake = _cliff_stake(rows, cliffs[0][0], cliff_months, aov) if cliffs else None
+    age_stake = _age_stake(rows, med_ex, drops, age_k, age_drop, aov) if age_k else None
     return {"available": True, "rows": rows, "columns": cols, "median_by_month": [round(x, 4) if x is not None else None for x in med_by_k],
-            "peak_month": peak_k, "age_break": {"month": age_k, "drop": age_drop} if age_k else None,
-            "calendar_break": {"month": cliffs[0][0], "share": round(cliffs[0][1], 4), "cohorts": cliffs[0][2]} if cliffs else None,
+            "peak_month": peak_k, "age_break": {"month": age_k, "drop": age_drop, "stake": age_stake} if age_k else None,
+            "calendar_break": {"month": cliffs[0][0], "share": round(cliffs[0][1], 4), "cohorts": cliffs[0][2], "stake": cal_stake} if cliffs else None,
             "weak": [r["cohort"] for r in weak], "repeat_median": rep_med, "moves": moves, "as_of": as_of, "simulated": True}
 
 

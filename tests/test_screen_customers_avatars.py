@@ -71,8 +71,11 @@ class AuditShape(unittest.TestCase):
             for row in f['evidence']:
                 self.assertEqual(set(row), EVIDENCE)
             self.assertIn(f['capability']['autonomy'], ('agent_does', 'founder_gate', 'human_assist'))
-            self.assertIsNone(f['money_at_stake'])
-            self.assertTrue(f['money_reason'])
+            if f['money_at_stake'] is None:
+                self.assertTrue(f['money_reason'])
+            else:
+                self.assertTrue({'usd', 'formula', 'inputs', 'window'} <= set(f['money_at_stake']))
+                self.assertGreater(f['money_at_stake']['usd'], 0)
             self.assertLess(len(f['sentence'].split()), 40)
             self.assertNotIn('—', f['sentence'])
             for word in ('should', 'try', 'consider'):
@@ -605,12 +608,15 @@ class RankRound1(TempBrain):
             self.assertTrue(0 <= a['rubric']['total'] <= 100)
             self.assertNotIn('—', a['title'] + a['why'])
 
-    def test_top_action_is_the_compression_misread(self):
+    def test_top_actions_lead_with_money_then_the_compression_misread(self):
         from_server = rank_engine.rank('02-customers-avatars', 'bombas', RANK_WINDOW, use_override=True)
         self.assertEqual(from_server['source'], 'screen')
-        top = from_server['actions'][0]
-        self.assertEqual(top['rule_id'], 'CUST-R05')
-        self.assertIn('compression', top['title'])
+        acts = from_server['actions']
+        self.assertEqual(acts[0]['rule_id'], 'CUST-R08')
+        self.assertTrue(acts[0]['money_at_stake']['usd'] > 0)
+        top_unpriced = next(a for a in acts if not a.get('money_at_stake'))
+        self.assertEqual(top_unpriced['rule_id'], 'CUST-R05')
+        self.assertIn('compression', top_unpriced['title'])
 
     def test_person_tickets_score_ease_3(self):
         for a in api.rank('bombas', RANK_WINDOW)['actions']:
@@ -1731,3 +1737,36 @@ class FounderCanDisagree(unittest.TestCase):
         self.write([{'finding_id': a['id'], 'choice': 'not_now', 'time': RANK_WINDOW['ends_on'] + 'T10:00:00Z'}])
         rep = api.handle(Req(['report']))
         self.assertNotIn(a['title'], json.dumps(rep))
+
+
+class RetentionStake(unittest.TestCase):
+    """Feature 7.5: money on the retention cliff and the age break, against the brand's own cohort history."""
+
+    def grid(self, cohorts=None):
+        from tables import brand_data
+        data = brand_data('bombas')
+        return api.builds.cohort_grid(cohorts if cohorts is not None else data.table('cohorts'), data.table('monthly'), '2026-09-27', [])
+
+    def test_cliff_stake_redoes_from_inputs_and_names_the_season(self):
+        st = self.grid()['calendar_break']['stake']
+        self.assertGreater(st['usd'], 0)
+        self.assertAlmostEqual(st['usd'], st['inputs']['lost_orders'] * st['inputs']['aov_month'], delta=st['inputs']['aov_month'])
+        self.assertIn('season', st['note'])
+
+    def test_age_stake_redoes_from_inputs(self):
+        st = self.grid()['age_break']['stake']
+        i = st['inputs']
+        redo = i['share_month_k'] * (i['fall_at_break'] - i['median_fall_other_ages']) * i['median_cohort_size'] * i['median_aov_12m']
+        self.assertLess(abs(redo - st['usd']) / st['usd'], 0.01)
+
+    def test_findings_carry_the_stake_in_the_contract_shape(self):
+        fs = {f['rule_id']: f for f in api.audit.run('bombas', RANK_WINDOW, api.BRAIN_ROOT)}
+        for rid in ('CUST-R08', 'CUST-R09'):
+            m = fs[rid]['money_at_stake']
+            self.assertTrue({'usd', 'formula', 'inputs', 'window'} <= set(m), rid)
+            self.assertIsNone(fs[rid]['money_reason'])
+        self.assertIsNone(fs['CUST-R07']['money_at_stake'])
+        self.assertIn('median', fs['CUST-R07']['money_reason'])
+
+    def test_short_history_has_no_baseline(self):
+        self.assertEqual(api.builds._age_stake([], [0.1] * 12, [(0.3, 2), (0.1, 3)], 2, 0.3, {'2026-08': 70})['usd'], None)
