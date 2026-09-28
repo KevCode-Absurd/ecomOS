@@ -227,6 +227,21 @@ def founder_queue(acts: list[dict], late: list[dict] | None = None) -> dict:
                     f"that are founder gated or drafted for approval, by plan rank; top {QUEUE_MAX}."}
 
 
+def snoozed_list(all_acts: list[dict]) -> list[dict]:
+    """Moves the founder set to "Not now" that are still inside the snooze, with the date each comes back."""
+    out = []
+    for a in all_acts:
+        if a.get("status") != "snoozed":
+            continue
+        t = str((a.get("decision") or {}).get("time") or "")[:10]
+        try:
+            back = (dt.date.fromisoformat(t) + dt.timedelta(days=actions.ranker.SNOOZE_DAYS)).isoformat()
+        except ValueError:
+            back = None
+        out.append({"id": a["id"], "title": a["title"], "snoozed_on": t or None, "back_on": back, "capability": a["capability"]["id"]})
+    return out
+
+
 def plan(brand: str, today: dt.date) -> dict:
     """The plan board: ranked actions with decisions applied, the findings they close, and the orientation."""
     window = actions.ranker.default_window(28, (today - dt.timedelta(days=1)).isoformat())
@@ -238,7 +253,8 @@ def plan(brand: str, today: dt.date) -> dict:
             "connect": [a for a in acts if a.get("status") == "unavailable"],
             "snoozed": len(out["actions"]) - len(acts), "findings": out["findings"], "rules": audit.RULES,
             "groups": [{"key": k, "label": v} for k, v in audit.GROUP_LABEL.items()], "rule_group": audit.RULE_GROUP,
-            "thresholds": m["thresholds"], "queue": founder_queue(acts, late := overdue(acts, today)), "overdue": late, "held": out.get("held") or [], "hold_days": actions.HOLD_LOST_DAYS,
+            "thresholds": m["thresholds"], "queue": founder_queue(acts, late := overdue(acts, today)), "overdue": late,
+            "snoozed_list": snoozed_list(out["actions"]), "held": out.get("held") or [], "hold_days": actions.HOLD_LOST_DAYS,
             "snapshot_age_days": max(ages) if (ages := [p["age_days"] for p in m["pages"] if p["age_days"] is not None]) else None}
 
 

@@ -156,6 +156,17 @@
     if ((p.held || []).length) document.getElementById('queue').append(el('div', { class: 'card flat small' }, el('b', { text: 'Held after a lost result: ' }),
       p.held.map((h) => h.title + ' (lost ' + fmt.date(h.lost_on) + (h.reading ? ', ' + h.reading : '') + '; back on ' + fmt.date(h.back_on) + ')').join('; ') + '.',
       el('div', { class: 'micro faint', text: 'A move that lost stays off the plan for ' + p.hold_days + ' days, even while its rule still fires. Remove the outcome in the team log to bring it back sooner.' })));
+    if ((p.snoozed_list || []).length) document.getElementById('queue').append(el('details', { class: 'card flat' },
+      el('summary', { class: 'small', text: 'Snoozed with "Not now" (' + p.snoozed_list.length + ')' }),
+      ...p.snoozed_list.map((x) => {
+        const st = el('span', { class: 'micro muted', role: 'status' });
+        const b = el('button', { class: 'btn sm', type: 'button', text: 'Bring back', 'aria-label': 'Bring back: ' + x.title });
+        b.addEventListener('click', async () => {
+          try { await api('/api/decisions', { method: 'POST', body: { screen: SCREEN, capability: x.capability, choice: 'undo', finding_id: x.id } }); st.textContent = 'Back on the plan. Reloading.'; setTimeout(() => location.reload(), 300); }
+          catch (e) { st.textContent = 'Not changed: ' + e.message; }
+        });
+        return el('div', { class: 'row wrap small' }, el('span', { text: x.title + ' (back on ' + (x.back_on ? fmt.date(x.back_on) : NA) + ')' }), b, st);
+      })));
     const cw = document.getElementById('connect-wrap');
     cw.hidden = !p.connect.length;
     if (p.connect.length) mount('#connect', el('div', { class: 'card flat' }, UI.sectionHead({ title: 'Connect first: ' + p.connect.length + ' rules wait on a source', sub: 'Person tasks in Setup, read-only. They never crowd out work that can start today.' }),

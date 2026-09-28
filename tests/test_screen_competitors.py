@@ -1961,5 +1961,16 @@ class TestSiteChange(TempInputs):
         self.assertEqual(api.actions.ranker.validate_action(a), [])
 
 
+class TestSnoozedList(unittest.TestCase):
+    """8.6: snoozed moves listed with the day they come back and a way to bring them back now."""
+    def test_list(self):
+        acts = [{'id': 'a', 'title': 'A', 'status': 'snoozed', 'decision': {'choice': 'not_now', 'time': '2026-09-20T10:00:00Z'}, 'capability': {'id': 'X'}},
+                {'id': 'b', 'title': 'B', 'status': 'open', 'decision': None, 'capability': {'id': 'Y'}}]
+        self.assertEqual(api.snoozed_list(acts), [{'id': 'a', 'title': 'A', 'snoozed_on': '2026-09-20', 'back_on': '2026-10-04', 'capability': 'X'}])
+        js = (SCREEN / 'screen.js').read_text(encoding='utf-8')
+        self.assertIn("choice: 'undo', finding_id: x.id", js)
+        self.assertIn('snoozed_list', json.dumps(api.handle(Req(['plan']))))
+
+
 if __name__ == '__main__':
     unittest.main()
