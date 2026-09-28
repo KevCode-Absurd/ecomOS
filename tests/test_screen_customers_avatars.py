@@ -2013,6 +2013,8 @@ const { chromium } = require(process.env.PW_MODULE);
   for (const t of ['avatars', 'doubts', 'offers', 'retention', 'brand']) {
     await p.goto(base + '#tab=' + t); await p.waitForTimeout(300);
     out.tabs[t] = await p.$$eval('#desk .section', (n) => n.filter((x) => x.offsetParent !== null).length);
+    out.noAction = (out.noAction || []).concat(await p.$$eval('#desk .section', (n) => n.filter((x) => x.offsetParent !== null &&
+      !x.querySelector('button, a.btn')).map((x) => x.id)));
     await scan(t);
   }
   out.badge = await p.evaluate(() => document.querySelector('#badge').innerText);
@@ -2083,6 +2085,7 @@ class BrowserSmoke(unittest.TestCase):
             self.assertGreater(out['plan'], 0, brand)
             for tab, n in out['tabs'].items():
                 self.assertGreater(n, 0, (brand, tab))
+            self.assertEqual(out['noAction'], [], brand)
             self.assertGreaterEqual(out['report'], 6, brand)
             self.assertEqual(out['avatar'], 9, brand)
             self.assertEqual(out['fold']['height'], 800)
@@ -2684,3 +2687,25 @@ class DecisionsByBrand(unittest.TestCase):
         self.assertNotEqual(got['status'], 'snoozed')
         self.assertEqual(api.decisions_for('example', api.DECISIONS_PATH)[a['id']]['choice'], 'not_now')
         self.assertEqual(api.decisions_for('nobody', api.DECISIONS_PATH), {})
+
+
+class EveryBlockActs(TempBrain):
+    """Feature 11.3: every desk block ends in a gap line and an action; an unavailable block's action is the move that
+    fills it (depth rule 3), drafted, with an owner, steps and a check date."""
+
+    def test_unavailable_blocks_carry_their_unlock(self):
+        api.BRAIN_ROOT = None
+        for brand in ('bombas', 'example'):
+            d = api.handle(Req(['overview'], query={'brand': [brand]}))
+            for sid, b in d['blocks'].items():
+                self.assertTrue(b['gap']['text'], sid)
+                if b['gap']['kind'] == 'unavailable':
+                    u = b['unlock']
+                    self.assertIn(u['owner'], ('agent_drafts', 'person'))
+                    self.assertTrue(u['draft'].startswith('DRAFT'))
+                    self.assertTrue(2 <= len(u['steps']) <= 8)
+                    self.assertTrue(u['check_on'])
+                    self.assertEqual(rank_engine.validate_action(dict(u, rubric={'total': 0}, artefact={'kind': u['kind']}, why='x',
+                                                                      severity='low', finding_ids=[])), [])
+                else:
+                    self.assertNotIn('unlock', b)

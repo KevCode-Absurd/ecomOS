@@ -1129,7 +1129,11 @@
       const head = sec.querySelector(':scope > .sec-head');
       const h2 = head && head.querySelector('h2');
       if (h2) h2.after(el('span', { class: 'block-window', text: b.window }));
-      if (head && b.gap) head.after(el('p', { class: 'block-gap gap-' + b.gap.kind }, el('b', { text: 'Gap, ' + b.gap.label + ': ' }), b.gap.text));
+      if (head && b.gap) {
+        const gapLine = el('p', { class: 'block-gap gap-' + b.gap.kind }, el('b', { text: 'Gap, ' + b.gap.label + ': ' }), b.gap.text);
+        if (b.unlock) gapLine.append(' ', el('button', { class: 'btn soft xs', type: 'button', text: 'Fill this block', onclick: () => briefPanel(b.unlock) }));
+        head.after(gapLine);
+      }
       const sub = head && head.querySelector('.sub');
       if (sub && b.rule) sub.textContent = b.rule + (b.line ? ' ' + b.line : '');
       sec.append(el('p', { class: 'block-caveat', text: 'Caveat: ' + b.caveat }));

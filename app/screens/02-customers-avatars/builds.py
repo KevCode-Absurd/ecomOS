@@ -2756,6 +2756,34 @@ BLOCKS = {
 }
 
 
+def block_unlock(sid: str, src: str, reason: str, d: dict) -> dict:
+    """The move that fills an unavailable block (depth.md rule 3: an unavailable read ends in a connect action).
+    Brain gaps are drafted by the agent for a person to approve; a store table is connected by a person, read-only;
+    an Ad Library read is a pull by page id inside the weekly cap, spend approved by a person."""
+    import datetime as _dt
+    check = (_dt.date.fromisoformat(d["ends_on"]) + _dt.timedelta(days=MOVE_CHECK_DAYS)).isoformat() if d.get("ends_on") else None
+    name = sid.replace("-wrap", "")
+    if src == "store":
+        return {"id": f"{SCREEN}.unlock.{name}", "kind": "connector_setup", "owner": "person", "title": "Connect the store data this block reads",
+                "capability": {"id": "BRAND-C48", "autonomy": "agent_does"}, "check_on": check,
+                "draft": f"DRAFT connect note\nBlock: {name}\nMissing: {reason}\nConnect: the store's orders and customers, read-only\nThen: this block fills on the next load, no page change",
+                "steps": [{"n": 1, "who": "person", "text": "Connect the store read-only in Setup."},
+                          {"n": 2, "who": "agent", "text": "Check the table fills and the block renders on the next load."}]}
+    if src == "ads":
+        return {"id": f"{SCREEN}.unlock.{name}", "kind": "research_note", "owner": "agent_drafts", "title": "Read our live ads by page id",
+                "capability": {"id": "BRAND-C01", "autonomy": "agent_does"}, "check_on": check,
+                "draft": f"DRAFT pull plan\nBlock: {name}\nMissing: {reason}\nPull: the Ad Library by our page id and 5 category pages, inside the weekly cap\nThen: write the read to the brain learnings",
+                "steps": [{"n": 1, "who": "agent", "text": "Plan the pull by page id with its cost, inside the weekly cap."},
+                          {"n": 2, "who": "person", "text": "Approve the spend before any pull runs."},
+                          {"n": 3, "who": "agent", "text": "Run it and write the read to the brain."}]}
+    return {"id": f"{SCREEN}.unlock.{name}", "kind": "research_note", "owner": "agent_drafts", "title": "Draft the brain records this block needs",
+            "capability": {"id": "BRAND-C15", "autonomy": "agent_does"}, "check_on": check,
+            "draft": f"DRAFT brain records\nBlock: {name}\nMissing: {reason}\nSources: our site, public reviews and the founder, each with a link and a date\nThen: a person approves; the block fills on the next load",
+            "steps": [{"n": 1, "who": "agent", "text": "Draft the missing records from public sources, each with a link and a date."},
+                      {"n": 2, "who": "person", "text": "Approve or edit them on the brand brain screen."},
+                      {"n": 3, "who": "agent", "text": "Check the block renders on the next load."}]}
+
+
 def block_notes(d: dict) -> dict:
     """For each desk block: the window it reads and one caveat line, with the sample when the strength read has it."""
     months = d.get("mix", {}).get("months") or d.get("health", {}).get("months") or []
@@ -2772,6 +2800,8 @@ def block_notes(d: dict) -> dict:
         out[sid] = {"window": window, "caveat": caveat}
     for sid, gp in block_gaps(d).items():
         out[sid]["gap"] = gp
+        if gp["kind"] == "unavailable":
+            out[sid]["unlock"] = block_unlock(sid, BLOCKS[sid][0], gp["text"], d)
     for sid, r in block_rules(d).items():
         out[sid].update(r)
     return out
