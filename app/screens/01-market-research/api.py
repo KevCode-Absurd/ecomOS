@@ -1815,6 +1815,8 @@ def candidate_update(brand, cid, body, today):
             except ValueError:
                 return 400, {'error': f'{k} must be a date like 2026-09-28'}
             changes.append(k.replace('_', ' ') + (' set' if q else ' cleared'))
+            if q and k in LAUNCH_DECISIONS:
+                log_launch_decision(row, k, q, str(body.get('who') or 'person'))
     for k in ('units_ordered', 'quote_units'):
         if body.get(k) is not None:
             n = _num(body[k])
@@ -2290,6 +2292,23 @@ def launch_plan(data, brand, cid):
             'text': '\n'.join([f'LAUNCH PLAN: {cand.get("name")} ({cand.get("stage")})', f'Target: {target.isoformat() if target else "not set"} ({target_src or "set launch_target on the candidate"}). Lead time: {lead if lead is not None else "unknown"} days ({lead_src or "none on file"}).', '']
                               + [f'- {x["due"] or "no date"}  {x["label"]}  [{x["owner"]}]  {x["state"]}' + ('' if x['state'] == 'done' else f'  (done when: {x["done_when"]})') for x in steps]),
             'rule': f'dates work back from the launch target: the order goes in lead time plus {audit.ORDER_SAFETY_DAYS} days before launch, the quote {LAUNCH_QUOTE_DAYS} days and the passed sample {LAUNCH_SAMPLE_DAYS} days before the order, copy and the ad brief 14 days and the page 10 days before launch, stock lands {audit.ORDER_SAFETY_DAYS} days before, the first read 28 days after; a step with no date says why'}
+
+
+
+LAUNCH_DECISIONS = {'ordered_on': 'first order placed', 'stock_landed_on': 'stock landed', 'launched_on': 'launched'}
+
+
+def log_launch_decision(row, key, on, who):
+    """A launch step marked on a candidate is a decision a person made: one row in the shared decisions log (this screen,
+    capability PROD-C10, choice person, the step and the date as the reason, the candidate's finding id), so the decisions
+    table here and 00-today see it. A refused row (a full log) never blocks the write on the candidate."""
+    try:
+        srv = _server()
+        srv.Decisions(DECISIONS_PATH).append({'screen': SCREEN, 'capability': 'PROD-C10', 'choice': 'person', 'autonomy': 'founder_gate',
+                                              'reason': f'launch step: {LAUNCH_DECISIONS[key]} on {on} for {row.get("name")} ({who})', 'finding_id': f'{SCREEN}.candidate.{row.get("candidate_id")}'})
+        return True
+    except (ValueError, OSError):
+        return False
 
 
 def launch_candidates(brand):
@@ -2796,6 +2815,36 @@ def answer_question(brand, body, today, brain=None):
 
 # ---------------------------------------------------------------- the week plan (round 6.7)
 
+
+def owner_load(data, brand, cal_items, hrs):
+    """Load per owner this week: the launch steps open on the candidates they own (from the launch plans, person-owned steps),
+    the hand-offs waiting on a team for those candidates, and the research hours left across them. The most loaded owner is
+    named by open steps, then hand-offs waiting. A candidate with no owner counts under "no owner"."""
+    by = {}
+    cands = {c.get('candidate_id'): c for c in audit.pipeline(brand or 'sample') if c.get('stage') not in ('killed', 'kill')}
+    hours_by = {h.get('name'): h for h in hrs}
+    sent = handoffs_sent(brand)['rows']
+    for cid, c in cands.items():
+        owner = str(c.get('owner') or '').strip() or 'no owner'
+        o = by.setdefault(owner, {'owner': owner, 'candidates': 0, 'open_steps': 0, 'overdue_steps': 0, 'handoffs_waiting': 0, 'hours_left': 0.0, 'names': []})
+        o['candidates'] += 1
+        o['names'].append(c.get('name'))
+        h = hours_by.get(c.get('name'))
+        if h:
+            o['hours_left'] = round(o['hours_left'] + (h.get('left') or 0), 1)
+        try:
+            lp = launch_plan(data if data is not None else sample_data(), brand, cid) if c in launch_candidates(brand) else None
+        except ValueError:
+            lp = None
+        if lp:
+            o['open_steps'] += sum(1 for x in lp['steps'] if x['state'] in ('due', 'overdue', 'no_date') and x['owner'] == 'person')
+            o['overdue_steps'] += sum(1 for x in lp['steps'] if x['state'] == 'overdue' and x['owner'] == 'person')
+        o['handoffs_waiting'] += sum(1 for hrow in sent if hrow.get('candidate_id') == cid and hrow.get('shared_status') in ('proposed', 'decided'))
+    rows = sorted(by.values(), key=lambda o: (-o['open_steps'], -o['handoffs_waiting'], o['owner']))
+    most = rows[0]['owner'] if rows and (rows[0]['open_steps'] or rows[0]['handoffs_waiting']) else None
+    return {'rows': rows, 'most': most, 'rule': 'load is the person-owned launch steps open on the candidates an owner holds, the hand-offs waiting on a team for them, and the research hours left; the most loaded owner is named so the week is balanced before it starts'}
+
+
 def week_plan(data, brand):
     """The next 7 days on this desk in one copyable list: what is due (from the calendar), the hours left in each open
     candidate's budget, the spend left under the weekly cap (from the ledger), and the pulls a person can approve this week
@@ -2830,12 +2879,14 @@ def week_plan(data, brand):
     lines += ['', 'SPEND THIS WEEK'] + [(f'- ${spent:,.2f} of ${cap:,.2f} spent, ${left:,.2f} left' if left is not None else '- ledger or cap unavailable') + (f'; {lg.get("over_bound_week")} run(s) settled over their bound' if lg.get('over_bound_week') else '')]
     lines += ['', 'PULLS A PERSON CAN APPROVE THIS WEEK'] + ([f'- {p["label"]}: {p["verdict"]}' + (f', about ${p["estimate_usd"]:,.2f}' if p.get('estimate_usd') is not None else ', no price on file') + ({True: ' (fits the cap)', False: ' (does not fit this week)', None: ''}[p['fits']]) + (f'; {p["command"]}' if p.get('command') else '') for p in affordable] or ['- every pull is fresh'])
     launch = [i for i in cal['items'] if i['kind'] == 'launch']
+    load = owner_load(data, brand, cal['items'], hrs)
+    lines += ['', 'LOAD BY OWNER'] + ([f'- {o["owner"]}: {o["open_steps"]} launch steps open, {o["handoffs_waiting"]} hand-offs waiting, {o["hours_left"]} h left on {o["candidates"]} candidate' + ('' if o['candidates'] == 1 else 's') for o in load['rows']] or ['- nobody owns a candidate yet']) + ([f'- most loaded: {load["most"]}'] if load.get('most') else [])
     lines += ['', 'LAUNCH STEPS THIS WEEK'] + ([f'- {i["when"]}: {i["title"]} ({i["text"]})' for i in launch] or ['- none due; the launch plan on each candidate brief has the dates'])
     sent = handoffs_sent(brand)
     waiting = [h for h in sent['rows'] if h.get('shared_status') in ('proposed', 'decided')]
     lines += ['', 'HAND-OFFS OUT'] + ([f'- {h.get("sent_on")}: {h.get("title")} to {h.get("to")}, {h.get("shared_status")}' for h in sent['rows'][:8]] or ['- nothing sent yet']) + ([f'- {len(waiting)} waiting on a team; the checklist reads their status'] if waiting else [])
     return {'brand': brand or 'sample', 'from': ends_on, 'text': '\n'.join(lines), 'due': cal['items'], 'hours': hrs, 'spend': {'cap': cap, 'spent': spent, 'left': left}, 'pulls': [{k: p.get(k) for k in ('key', 'label', 'verdict', 'estimate_usd', 'fits')} for p in affordable], 'top': [a['title'] for a in top],
-            'launch': launch, 'handoffs': [{k: h.get(k) for k in ('sent_on', 'title', 'to', 'shared_status')} for h in sent['rows']]}
+            'launch': launch, 'handoffs': [{k: h.get(k) for k in ('sent_on', 'title', 'to', 'shared_status')} for h in sent['rows']], 'load': load}
 
 
 # ---------------------------------------------------------------- decisions on this desk (round 7.4)
@@ -2850,6 +2901,10 @@ def decisions_on_desk(data, brand, limit=50):
     except (OSError, ValueError):
         rows = []
     rows = [r for r in rows if isinstance(r, dict) and r.get('screen') == SCREEN]
+    for r in rows:
+        if str(r.get('finding_id') or '').startswith(f'{SCREEN}.candidate.'):
+            r['launch_step'] = True
+            r['candidate_id'] = r['finding_id'].split('.')[-1]
     r = rank(brand or 'sample', None)
     by_finding = {fid: a for a in r['actions'] + (r.get('parked') or []) for fid in a.get('finding_ids') or []}
     by_cap = {}
@@ -2858,6 +2913,12 @@ def decisions_on_desk(data, brand, limit=50):
     out = []
     for d in sorted(rows, key=lambda x: str(x.get('time') or ''), reverse=True)[:limit]:
         a = by_finding.get(d.get('finding_id')) or (by_cap.get(d.get('capability')) if not d.get('finding_id') else None)
+        if d.get('launch_step'):
+            cand = next((c for c in audit.pipeline(brand or 'sample') if c.get('candidate_id') == d.get('candidate_id')), None)
+            out.append({'time': d.get('time'), 'on': str(d.get('time') or '')[:10], 'choice': d.get('choice'), 'capability': d.get('capability'), 'finding_id': d.get('finding_id'), 'reason': d.get('reason') or '',
+                        'title': f'Launch step on {cand.get("name") if cand else d.get("candidate_id")}', 'owner': 'person', 'state': 'open' if cand and cand.get('stage') not in ('killed', 'kill') else 'gone', 'action_id': None,
+                        'launch_step': True, 'candidate_id': d.get('candidate_id')})
+            continue
         state = 'gone' if a is None else 'parked' if a.get('status') == 'snoozed' else 'open'
         out.append({'time': d.get('time'), 'on': str(d.get('time') or '')[:10], 'choice': d.get('choice'), 'capability': d.get('capability'), 'finding_id': d.get('finding_id'), 'reason': d.get('reason') or '',
                     'title': a['title'] if a else (d.get('finding_id') or d.get('capability')), 'owner': a.get('owner') if a else None, 'state': state, 'action_id': a['id'] if a else None})

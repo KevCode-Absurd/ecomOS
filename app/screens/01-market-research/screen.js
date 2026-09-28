@@ -902,12 +902,13 @@
     const matrix = UI.coverageMatrix({ rows: rows.map((r) => ({ key: r.key, label: r.rank + '. ' + r.label, sub: (r.score == null ? 'no score' : r.score + ' of 100') + ', ' + r.parts_read + ' of ' + r.of + ' parts' })), cols, cells, single: true, max: 100, unit: 'n', corner: 'lane x part',
       note: 'Each part 0 to 100; n/a is not read. Weights in the column heads. ' + (op.rule || '') });
     const vt = { strong_no_candidate: 'Strong, no candidate', strong: 'Strong, candidate open', weak: 'Weak', thin: 'Thin read' };
-    const screenIn = (r) => { const name = prompt('Name the candidate to screen into ' + r.label, ''); if (name == null || !name.trim()) return; candidatePost('candidates', { name: name.trim(), category: 'socks', lane: r.key, time_box_days: 10, angle_text: null, who: 'person' }); };
+    const killText = (r) => r.last_kill ? r.last_kill.name + ' killed ' + fmt.date(r.last_kill.killed_on) + (r.last_kill.reason ? ': ' + r.last_kill.reason : ', no reason logged') + (r.last_kill.in_hold ? ' (hold to ' + fmt.date(r.last_kill.hold_until) + ')' : '') + (r.kills > 1 ? '; ' + r.kills + ' kills in this lane' : '') : 'none';
+    const screenIn = (r) => { const name = prompt('Name the candidate to screen into ' + r.label + (r.last_kill ? '. Last kill here: ' + killText(r) + '. Name the new signal in the angle.' : ''), ''); if (name == null || !name.trim()) return; candidatePost('candidates', { name: name.trim(), category: 'socks', lane: r.key, time_box_days: 10, angle_text: null, who: 'person' }); };
     const vrows = rows.map((r) => { const a = actionFor(r.finding_id); return Object.assign({}, r, {
-      scoreText: r.score == null ? NA : r.score + ' of 100 (' + r.parts_read + ' of ' + r.of + ' parts)', candText: r.open_candidates.length ? r.open_candidates.join(', ') : 'none', quad: r.quadrant, sellersText: String(r.sellers),
+      scoreText: r.score == null ? NA : r.score + ' of 100 (' + r.parts_read + ' of ' + r.of + ' parts)', candText: r.open_candidates.length ? r.open_candidates.join(', ') : 'none', quad: r.quadrant, sellersText: String(r.sellers), killTextV: killText(r),
       actions: [r.verdict === 'strong_no_candidate' ? { label: 'Screen a candidate in', onClick: () => screenIn(r) } : null, a ? { label: 'Open the lane card', cls: 'quiet', onClick: () => openAction(a) } : null].filter(Boolean) }); });
     const tbl = UI.verdictTable({
-      columns: [{ key: 'label', label: 'Lane' }, { key: 'scoreText', label: 'Score' }, { key: 'quad', label: 'Trend and sellers' }, { key: 'sellersText', label: 'Sellers' }, { key: 'candText', label: 'Open candidates' }],
+      columns: [{ key: 'label', label: 'Lane' }, { key: 'scoreText', label: 'Score' }, { key: 'quad', label: 'Trend and sellers' }, { key: 'sellersText', label: 'Sellers' }, { key: 'candText', label: 'Open candidates' }, { key: 'killTextV', label: 'Last kill here' }],
       rows: vrows,
       verdict: { at: 1, kind: (r) => r.verdict === 'strong_no_candidate' ? 'fix' : r.verdict === 'strong' ? 'keep' : r.verdict === 'thin' ? 'na' : 'watch', text: (r) => vt[r.verdict], reason: (r) => op.rule },
       actions: { label: 'Do', onClick: () => {} }, sort: false });

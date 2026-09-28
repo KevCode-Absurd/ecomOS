@@ -2341,6 +2341,44 @@ class HandoffCreativeTest(unittest.TestCase):
         self.assertNotIn('—', rp['text'])
         self.assertEqual(api.handle(Req(['candidates', 'nope', 'report']))[0], 404)
 
+    def test_launch_steps_are_decisions_and_owner_load(self):
+        import tempfile
+        saved = (audit.SHARED_HANDOFFS_PATH, audit.PIPELINE_PATH, api.HANDOFF_PATH, api.TESTS_PATH, api.DECISIONS_PATH, api.HANDOFFS_DIR, api.HANDOFFS_PATH)
+        tmp = Path(tempfile.mkdtemp())
+        audit.SHARED_HANDOFFS_PATH, audit.PIPELINE_PATH, api.HANDOFF_PATH, api.TESTS_PATH, api.DECISIONS_PATH, api.HANDOFFS_DIR, api.HANDOFFS_PATH = tmp / 'h.json', tmp / 'p.json', tmp / 'pc.json', tmp / 'pt.json', tmp / 'decisions.json', tmp / 'ho', tmp / 'ch.json'
+        try:
+            data = api.sample_data()
+            D = audit.last_full_day(data, None)
+            audit.PIPELINE_PATH.write_text(json.dumps({'rows': [
+                {'candidate_id': 'g1', 'brand': 'sample', 'name': 'G', 'category': 'socks', 'stage': 'go', 'owner': 'Sam', 'launch_target': (D + timedelta(days=30)).isoformat(), 'lead_time_days': 5, 'angle_text': 'a', 'angle_source': 'review gap', 'planned_price': 20},
+                {'candidate_id': 'g2', 'brand': 'sample', 'name': 'H', 'category': 'socks', 'stage': 'shortlisted', 'owner': 'Ana', 'launch_target': (D + timedelta(days=60)).isoformat(), 'lead_time_days': 5},
+                {'candidate_id': 'r1', 'brand': 'sample', 'name': 'R', 'category': 'socks', 'stage': 'researched'}]}), encoding='utf-8')
+            r = api.candidate_update('sample', 'g1', {'ordered_on': D.isoformat(), 'who': 'kevin'}, D)
+            self.assertEqual(r['changes'], ['ordered on set'])
+            rows = json.loads(api.DECISIONS_PATH.read_text(encoding='utf-8'))
+            self.assertEqual(len(rows), 1)
+            self.assertEqual((rows[0]['screen'], rows[0]['capability'], rows[0]['choice'], rows[0]['finding_id']), ('01-market-research', 'PROD-C10', 'person', f'{audit.SCREEN}.candidate.g1'))
+            self.assertIn('launch step: first order placed on ' + D.isoformat() + ' for G (kevin)', rows[0]['reason'])
+            api.candidate_update('sample', 'g1', {'launch_target': (D + timedelta(days=31)).isoformat(), 'who': 'kevin'}, D)      # a target is a plan, not a step
+            self.assertEqual(len(json.loads(api.DECISIONS_PATH.read_text(encoding='utf-8'))), 1)
+            dd = api.decisions_on_desk(data, None)
+            step_rows = [x for x in (dd.get('rows') or []) if x.get('launch_step')]
+            self.assertEqual(len(step_rows), 1)
+            self.assertEqual(step_rows[0]['candidate_id'], 'g1')
+            api.handle(Req(['candidates', 'g1', 'handoff', 'copy'], brand='sample', method='POST'))
+            wp = api.week_plan(data, None)
+            load = {o['owner']: o for o in wp['load']['rows']}
+            self.assertEqual(set(load), {'Sam', 'Ana', 'no owner'})
+            self.assertEqual(load['Sam']['handoffs_waiting'], 1)
+            self.assertGreater(load['Sam']['open_steps'], 0)
+            self.assertGreater(load['Ana']['open_steps'], 0)
+            self.assertEqual(load['no owner']['open_steps'], 0)
+            self.assertEqual(wp['load']['most'], wp['load']['rows'][0]['owner'])
+            self.assertIn('LOAD BY OWNER', wp['text'])
+            self.assertIn('most loaded:', wp['text'])
+        finally:
+            audit.SHARED_HANDOFFS_PATH, audit.PIPELINE_PATH, api.HANDOFF_PATH, api.TESTS_PATH, api.DECISIONS_PATH, api.HANDOFFS_DIR, api.HANDOFFS_PATH = saved
+
     def test_avatar_handoff_names_the_buyer(self):
         fid = next(f['id'] for f in audit.run('bombas', {'ends_on': '2026-09-27'}) if f['rule_id'] == 'PROD-R11')
         h = api.creative_handoff('bombas', fid)
@@ -2616,6 +2654,11 @@ class LaneOnCandidateTest(unittest.TestCase):
             for a in cards:                                                                   # every lane card lists the same open candidates as the read
                 self.assertEqual(a['opportunity']['open_candidates'], op2[(a.get('entity') or {}).get('id')]['open_candidates'])
             self.assertIn('Everyday brief', op2['gifting']['open_candidates'])
+            # the last kill in a lane rides the opportunity row
+            api.candidate_update('bombas', cid, {'stage': 'killed', 'kill_reason': 'commodity, 12 sellers', 'who': 'person'}, D)
+            op3 = {r['key']: r for r in audit.lane_opportunity(br, api.products(data, 'bombas'), E)['rows']}
+            self.assertEqual((op3['gifting']['last_kill']['name'], op3['gifting']['last_kill']['reason'], op3['gifting']['kills']), ('Everyday brief', 'commodity, 12 sellers', 1))
+            self.assertIsNone(op3['underwear']['last_kill'])
         finally:
             audit.PIPELINE_PATH, api.HANDOFF_PATH, api.TESTS_PATH = saved
 

@@ -4637,6 +4637,7 @@ def kill_memory(brand, ends_on):
             days = (ends_on - date.fromisoformat(killed_on)).days if killed_on else None
             killed.append({'candidate_id': c.get('candidate_id'), 'name': c.get('name'), 'killed_on': killed_on, 'days_since': days,
                            'hold_until': (date.fromisoformat(killed_on) + timedelta(days=hold_days)).isoformat() if killed_on else None,
+                           'lane': c.get('lane'), 'angle_text': c.get('angle_text'),
                            'in_hold': days is not None and days <= hold_days, 'reason': reason, 'words': sorted(content_words(c.get('name'), c.get('angle_text'))), 'lookalikes': []})
         elif st not in CLOSED_STAGES:
             open_.append(c)
@@ -5140,6 +5141,7 @@ def lane_opportunity(br, prods, ends_on):
     listings = listing_complaints(br)
     cands = [c for c in pipeline(br.brand) if c.get('stage') not in CLOSED_STAGES]
     lanes = {k: (label, terms) for k, label, terms in lanes_for(br)}
+    kills = kill_memory(br.brand, ends_on)['rows']
     rows = []
     for pt in lm['points']:
         label, terms = lanes.get(pt['key'], (pt['label'], []))
@@ -5155,9 +5157,12 @@ def lane_opportunity(br, prods, ends_on):
         wsum = sum(weights[k] for k in read)
         score = round(sum(weights[k] * v for k, v in read.items()) / wsum * 100) if wsum else None
         open_c = [c.get('name') for c in cands if c.get('lane') == pt['key'] or (not c.get('lane') and any(t in (str(c.get('name') or '') + ' ' + str(c.get('angle_text') or '')).lower() for t in terms))]   # a lane on the candidate wins; without one, the words decide
+        lane_kills = [k for k in kills if k.get('lane') == pt['key'] or (not k.get('lane') and any(t in (str(k.get('name') or '') + ' ' + str(k.get('angle_text') or '')).lower() for t in terms))]
+        last_kill = max(lane_kills, key=lambda k: str(k.get('killed_on') or '')) if lane_kills else None
         verdict = 'thin' if len(read) < OPP_MIN_PARTS or score is None else 'strong_no_candidate' if score >= strong and not open_c else 'strong' if score >= strong else 'weak'
         rows.append({'key': pt['key'], 'label': label, 'score': score, 'parts': parts, 'parts_read': len(read), 'of': len(OPP_WEIGHTS), 'sellers': pt['x'], 'trend': pt['y'], 'quadrant': pt['quadrant'],
-                     'sold': pt['sold'], 'advertised': pt['advertised'], 'complaint_listings': [l['asin'] for l in matched], 'open_candidates': open_c, 'verdict': verdict, 'finding_id': pt['finding_id']})
+                     'sold': pt['sold'], 'advertised': pt['advertised'], 'complaint_listings': [l['asin'] for l in matched], 'open_candidates': open_c, 'verdict': verdict, 'finding_id': pt['finding_id'],
+                     'last_kill': {'name': last_kill['name'], 'killed_on': last_kill['killed_on'], 'reason': last_kill['reason'], 'in_hold': last_kill['in_hold'], 'hold_until': last_kill['hold_until']} if last_kill else None, 'kills': len(lane_kills)})
     rows.sort(key=lambda r: (-(r['score'] if r['score'] is not None else -1), r['label']))
     for i, r in enumerate(rows):
         r['rank'] = i + 1
