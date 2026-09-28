@@ -682,5 +682,28 @@ class Hooks(TempBrain):
         self.assertEqual(api.builds.hooks(recs, [], [], set(), audit.source_name)['rows'], [])
 
 
+class Forces(TempBrain):
+    """Feature 2.5: four forces per avatar; under-researched avatars get a switch interview plan."""
+
+    def test_rule(self):
+        x = api.handle(Req(['overview']))['forces']
+        for r in x['rows']:
+            n = {k: v['n'] for k, v in r['forces'].items()}
+            tot = sum(n.values())
+            missing = [k for k, v in n.items() if v < 1]
+            self.assertEqual(r['missing'], missing)
+            under = bool(missing) or not tot or (n['anxiety'] + n['habit']) / tot < 0.15
+            self.assertEqual(r['under'], under)
+            self.assertEqual(r['action'] is not None, under)
+            if r['action']:
+                self.assertEqual(r['action']['owner'], 'person')
+        self.assertIn('Durability Disappointed Repeat Customer', [r['name'] for r in x['rows'] if r['under']])
+
+    def test_competitor_name_counts_as_habit(self):
+        av = [{'id': 'b.avatars.x', 'key': 'x', 'name': 'X', 'quotes': [{'quote': 'I always wore Darn Tough before', 'source': 'Amazon'}]}]
+        x = api.builds.forces(av, [], [], ['Darn Tough'])
+        self.assertEqual(x['rows'][0]['forces']['habit']['n'], 1)
+
+
 if __name__ == '__main__':
     unittest.main()

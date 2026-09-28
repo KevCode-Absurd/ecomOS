@@ -285,6 +285,21 @@
     mount('#gate', el('div', { class: 'matrix-wrap' }, tbl), el('p', { class: 'micro faint', text: g.tasks + ' tasks in all. Checks read the avatar records and ladders in the brain only.' }));
   }
 
+  // ---------- desk: four forces ----------
+  function renderForces(x) {
+    document.getElementById('forces-sub').textContent = 'Every line tied to an avatar (its quotes and the reviews behind its doubts, Reddit left out), coded by word patterns: push (the old way hurts), pull (what draws them), anxiety (what scares them), habit (what keeps them where they are, competitor names included). ' + x.line;
+    const f = (k) => (r) => { const v = r.forces[k]; return v.n + (v.example ? '' : ''); };
+    mount('#forces', UI.verdictTable({
+      columns: [{ key: 'name', label: 'Avatar' }, { key: 'lines', label: 'Lines', unit: 'n' }, { key: 'push', label: 'Push', unit: 'n' }, { key: 'pull', label: 'Pull', unit: 'n' },
+        { key: 'anxiety', label: 'Anxiety', unit: 'n' }, { key: 'habit', label: 'Habit', unit: 'n' }, { key: 'tension', label: 'Anxiety + habit', unit: '%' }],
+      rows: x.rows.map((r) => Object.assign({}, r, { push: r.forces.push.n, pull: r.forces.pull.n, anxiety: r.forces.anxiety.n, habit: r.forces.habit.n,
+        actions: r.action ? [{ label: 'Interview', onClick: () => briefPanel(r.action) }] : [{ label: 'Enough lines', cls: 'quiet', onClick: () => {} }] })),
+      verdict: { at: 1, kind: (r) => r.under ? 'fix' : 'keep', text: (r) => r.under ? 'Under-researched' : 'Covered',
+        reason: (r) => r.missing.length ? 'no lines for: ' + r.missing.join(', ') : '' },
+      actions: { label: 'Do' }, sort: false,
+    }), el('p', { class: 'micro faint', text: 'Under-researched: a force with no line, or anxiety plus habit under 15 percent of coded lines. Patterns are word lists, so read counts as direction, not a census.' }));
+  }
+
   // ---------- desk: copy gap ----------
   function renderGap(x) {
     if (!x.available) { mount('#gap', UI.emptyState({ screen: SLUG, title: 'Copy gap unavailable', text: x.reason })); return; }
@@ -531,6 +546,7 @@
     renderWrong(a, r);
     renderActions(r);
     renderGate(d.gate);
+    renderForces(d.forces);
     renderCoverage(d.coverage, d.formats);
     renderLadders(d.ladders, d.avatars);
     renderGap(d.copy_gap);

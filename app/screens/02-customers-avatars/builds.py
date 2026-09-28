@@ -1124,3 +1124,69 @@ def hooks(lang_records: list[dict], all_rungs: list[dict], avatars: list[dict], 
                        {"n": 3, "who": "agent", "text": "Tag each ad with its hook and read cost per order after 7 days."}]}
     return {"rows": out, "praise_reviews": n, "brief": brief,
             "line": f"{len(out)} phrases repeat across 3 or more praise reviews. Each is a tested opening line, written by buyers."}
+
+
+# ---------------------------------------------------------------- four forces per avatar (Moesta)
+
+FORCES = {
+    "push": r"\b(tired of|sick of|fall(s|ing)? down|slide(s)? down|holes? in (my|the) old|my old|other brands?|used to wear|kept|always had)\b",
+    "pull": r"\b(finally|stay(s)? (up|in place|put)|worth|best|favorite|soft|comfort|love|switch(ed)? to|no more)\b",
+    "anxiety": r"\b(expensive|overpriced|price|pricey|worried|not sure|hesitant|risk|fake|counterfeit|will (they|it)|scam|sizing|too (small|big|tight))\b",
+    "habit": r"\b(cheap(er)?|multi-?packs?|store brand|walmart|costco|target|amazon basics|used to buy|always bought)\b",
+}
+FORCE_MIN = 1                 # every force needs at least 1 line
+TENSION_SHARE = 0.15          # anxiety plus habit under 15 percent of coded lines: we know why they like us, not what holds them back
+
+
+def forces(avatars: list[dict], all_rungs: list[dict], lang_records: list[dict], competitor_names: list[str]) -> dict:
+    """Code every line tied to an avatar as push, pull, anxiety or habit, from word patterns. Competitor names count as habit."""
+    by_id = {r["id"]: r for r in lang_records}
+    comp = [re.escape(n.lower()) for n in competitor_names if n]
+    habit = FORCES["habit"] if not comp else FORCES["habit"][:-3] + "|" + "|".join(comp) + r")\b"
+    pats = dict(FORCES, habit=habit)
+    rows = []
+    for a in avatars:
+        lines = [q["quote"] for q in a["quotes"] if q["source"] != "Reddit"]
+        for r in all_rungs:
+            if a["id"] not in r["avatars"]:
+                continue
+            for pid in r["derived_from"]:
+                rec = by_id.get(pid)
+                v = (rec or {}).get("value") if isinstance((rec or {}).get("value"), dict) else {}
+                for rv in v.get("reviews") or []:
+                    if rv.get("quote") and rv.get("source") != "reddit":
+                        lines.append(rv["quote"])
+        lines = list(dict.fromkeys(lines))
+        coded = {k: [] for k in pats}
+        for ln in lines:
+            low = ln.lower().replace("’", "'")
+            for k, p in pats.items():
+                if re.search(p, low):
+                    coded[k].append(ln)
+        total = sum(len(v) for v in coded.values())
+        tension = (len(coded["anxiety"]) + len(coded["habit"])) / total if total else None
+        missing = [k for k, v in coded.items() if len(v) < FORCE_MIN]
+        under = bool(missing) or (tension is not None and tension < TENSION_SHARE) or not total
+        action = None
+        if under:
+            qs = {"push": "What was going wrong with the socks you had before?", "pull": "What made you pick us that day?",
+                  "anxiety": "What almost stopped you from buying?", "habit": "What did you buy before, and why did you stick with it?"}
+            ask = missing or ["anxiety", "habit"]
+            action = {"id": f"{SCREEN}.forces.{a['key']}", "kind": "research_note", "owner": "person",
+                      "title": f"Run 5 switch interviews with {a['name']} buyers",
+                      "capability": {"id": "BRAND-C05", "autonomy": "human_assist"},
+                      "draft": "\n".join([f"DRAFT interview script: {a['name']}", "Who: 5 buyers from the last 90 days who fit this avatar",
+                                          f"Forces with too few lines: {', '.join(ask)}", *[f"- {qs[k]}" for k in ask],
+                                          "- Walk me through the day you bought. What happened first?",
+                                          "Output: quotes coded by force, written back to the avatar record"]),
+                      "steps": [{"n": 1, "who": "agent", "text": "Pick 20 recent buyers who fit the avatar and draft the invite."},
+                                {"n": 2, "who": "person", "text": "Run 5 calls of 20 minutes with the script."},
+                                {"n": 3, "who": "agent", "text": "Code the notes by force and write the quotes to the avatar record."},
+                                {"n": 4, "who": "person", "text": "Approve the record update."}]}
+        rows.append({"key": a["key"], "name": a["name"], "lines": len(lines),
+                     "forces": {k: {"n": len(v), "example": _clip(v[0]) if v else None} for k, v in coded.items()},
+                     "tension": round(tension, 4) if tension is not None else None, "under": under, "missing": missing, "action": action})
+    rows.sort(key=lambda r: (not r["under"], -(r["lines"]), r["name"]))
+    n_under = sum(1 for r in rows if r["under"])
+    return {"rows": rows, "under": n_under,
+            "line": f"{n_under} of {len(rows)} avatars lack lines on at least one force, or know why buyers like us but not what holds them back."}

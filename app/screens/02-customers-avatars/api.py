@@ -241,6 +241,21 @@ def _mix(brand: str) -> dict:
     return builds.mix(monthly, channels, as_of)
 
 
+def _competitor_names(brain: Brain) -> list[str]:
+    """Competitor names from the brain, including brands Reddit recommends instead."""
+    names = set()
+    for r in brain.records("competitors"):
+        v = r.get("value")
+        if isinstance(v, dict):
+            names.update(x for x in (v.get("name"), v.get("competitor")) if isinstance(x, str))
+    for r in brain.records("positioning"):
+        v = r.get("value")
+        if isinstance(v, dict):
+            for k in ("direct", "reddit_recommended_instead"):
+                names.update(x for x in v.get(k) or [] if isinstance(x, str))
+    return sorted(names)
+
+
 def _brand_tokens(brain: Brain) -> set[str]:
     """Words of the brand's own name, from the brain identity, so a phrase that only names the brand counts as generic."""
     toks = {brain.brand.lower()}
@@ -286,6 +301,7 @@ def overview(brain: Brain) -> dict:
             "copy_gap": builds.copy_gap({sec: brain.records(sec) for sec in ("voice", "claims", "identity", "offers", "policies", "products", "visual", "story_bank")},
                                         brain.records("language_bank"), _brand_tokens(brain), audit.source_name),
             "gate": builds.gate(avatars, all_rungs),
+            "forces": builds.forces(avatars, all_rungs, brain.records("language_bank"), _competitor_names(brain)),
             "hooks": builds.hooks(brain.records("language_bank"), all_rungs, avatars, _brand_tokens(brain), audit.source_name),
             "themes": builds.theme_impact(brain.records("language_bank"), lad["rows"], ends_on),
             "words": builds.words(brain.records("language_bank"), all_rungs, avatars, _brand_tokens(brain), audit.source_name), "formats": _formats(brain, avatars)}
