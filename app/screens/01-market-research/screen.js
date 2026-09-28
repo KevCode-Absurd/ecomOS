@@ -272,7 +272,7 @@
       actions: { label: 'Do', onClick: () => {} }, sort: false });
     const gaps = subRows.filter((r) => r.covered && r.advertised === false && (r.cagr_pct >= 4 || r.key === 'gifting_socks'));
     return el('div', { class: 'stack' },
-      el('div', { class: 'grid two' }, el('div', { class: 'card' }, strip), el('div', { class: 'card scroll' }, el('h4', { text: 'Our mix against the market, 12 whole months to ' + (mix.last || NA) }), mixTable)),
+      el('div', { class: 'grid two' }, el('div', { class: 'card' }, strip), el('div', { class: 'card scroll' }, el('h4', { text: 'Our mix against the market, 12 whole months to ' + (mix.last || NA) }), (mix.basis && mix.basis !== 'products_monthly') || mix.growth_note ? el('p', { class: 'micro muted', text: (mix.basis && mix.basis !== 'products_monthly' ? 'Built from ' + mix.basis + '. ' : '') + (mix.growth_note ? mix.growth_note.charAt(0).toUpperCase() + mix.growth_note.slice(1) + '.' : '') }) : null, mixTable)),
       el('div', { class: 'card scroll' }, el('h4', { text: 'Lanes: sold, advertised, or neither' }), subTable),
       gapLine(gaps.length ? gaps.length + ' growing lanes are sold and not named in any active ad: ' + gaps.map((g) => g.label).join(', ') + '. Each carries an ad brief in the plan.' : 'Every growing lane the brand sells has an active ad naming it.',
         gaps.length ? { label: 'Brief the first', onClick: () => { const a = actionFor(gaps[0].finding_id); if (a) openAction(a); } } : null));

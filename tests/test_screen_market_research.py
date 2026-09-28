@@ -1070,6 +1070,37 @@ class SecondBrandTest(unittest.TestCase):
         self.assertIsNone(audit.social_pull_for(None))
         self.assertEqual(audit.social_pull_for('bombas')['brand'], 'bombas')
 
+    def test_mix_from_orders(self):
+        class D:
+            brand = {'as_of': '2026-09-24'}
+
+            def table(self, name):
+                if name == 'orders':
+                    return [{'created_at': '2026-08-03T10:00:00Z', 'subtotal': 100.0, 'discount': {'code': 'X', 'amount': 10.0},
+                             'line_items': [{'sku': 'A', 'qty': 2, 'line_total': 60.0}, {'sku': 'B', 'qty': 1, 'line_total': 40.0}]},
+                            {'created_at': '2026-08-20T10:00:00Z', 'subtotal': 30.0, 'discount': None, 'cancelled_at': '2026-08-21T00:00:00Z',
+                             'line_items': [{'sku': 'A', 'qty': 1, 'line_total': 30.0}]},
+                            {'created_at': '2026-07-20T10:00:00Z', 'subtotal': 30.0, 'discount': None, 'line_items': [{'sku': 'A', 'qty': 1, 'line_total': 30.0}]}]
+                if name == 'products':
+                    return [{'sku': 'A', 'type': 'pans'}, {'sku': 'B', 'type': 'boards'}]
+                raise KeyError(name)
+
+        rows = audit.orders_monthly(D())
+        self.assertEqual(rows, [{'month': '2026-07', 'category': 'pans', 'units': 1, 'net_sales': 30.0},
+                                {'month': '2026-08', 'category': 'boards', 'units': 1, 'net_sales': 36.0},
+                                {'month': '2026-08', 'category': 'pans', 'units': 2, 'net_sales': 54.0}])   # the discount is shared by line value; the cancelled order is out
+        rd = audit.Reader(D(), None, date(2026, 9, 24))
+        m = audit.category_mix(D(), None, rd)
+        self.assertFalse(m['unavailable'])
+        self.assertEqual(m['basis'], 'order line items by product type (no monthly product table)')
+        self.assertEqual({r['category']: r['units'] for r in m['rows']}, {'pans': 3, 'boards': 1})
+        self.assertIsNone(m['store_growth'])          # a partial prior year never reads as growth
+        self.assertIn('0 of the 12 prior months', m['growth_note'])
+        sample = api.sample_data()
+        ms = audit.category_mix(sample, None, audit.Reader(sample, None, date(2026, 9, 24)))
+        self.assertEqual(len(ms['rows']), 5)
+        self.assertIsNone(ms['store_growth'])
+
     def test_sample_brand_routes(self):
         data = api.sample_data()
         o = api.overview(data, None)
@@ -1081,6 +1112,8 @@ class SecondBrandTest(unittest.TestCase):
         self.assertEqual(d['video']['rows'], [])
         self.assertEqual(d['lane_map']['points'], [])
         self.assertFalse(d['trends']['on_file'])
+        self.assertFalse(d['mix']['unavailable'])   # the mix comes from order line items
+        self.assertEqual({c['category'] for c in d['pattern']['categories']}, {'cast iron', 'gift sets', 'wooden boards', 'linen', 'kitchen tools'})
         self.assertEqual(d['surfaces']['rows'], [])
         self.assertIsNone(d['marketplace']['presence'])
         for f in audit.run(None, None, data=data):

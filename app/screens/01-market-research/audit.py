@@ -746,10 +746,49 @@ def run(brand, window=None, data=None):
 MIX_MONTHS = 12
 
 
-def category_mix(data, brand, rd):
-    """Our units and net sales by category over the last 12 whole months against the 12 before, from products_monthly."""
+def orders_monthly(data):
+    """products_monthly-shaped rows built from order line items when a brand has no monthly product table: month, category
+    (the product's type), units and net sales (line total less the order's discount, shared by line value). Cancelled orders
+    are left out. Raises KeyError when orders or products are not connected."""
+    orders = data.table('orders')
+    products = data.table('products')
+    cat_of = {p.get('sku'): (p.get('type') or p.get('category') or 'other') for p in products if p.get('sku')}
+    out = {}
+    for o in orders:
+        if o.get('cancelled_at'):
+            continue
+        month = str(o.get('created_at') or '')[:7]
+        lines = o.get('line_items') or []
+        subtotal = float(o.get('subtotal') or sum(float(l.get('line_total') or 0) for l in lines) or 0)
+        discount = float(((o.get('discount') or {}).get('amount') if isinstance(o.get('discount'), dict) else o.get('discount')) or 0)
+        for l in lines:
+            cat = cat_of.get(l.get('sku'), 'other')
+            value = float(l.get('line_total') or 0)
+            net = value - (discount * value / subtotal if subtotal else 0)
+            g = out.setdefault((month, cat), {'month': month, 'category': cat, 'units': 0, 'net_sales': 0.0})
+            g['units'] += int(l.get('qty') or 0)
+            g['net_sales'] += net
+    return [dict(g, net_sales=round(g['net_sales'], 2)) for g in sorted(out.values(), key=lambda g: (g['month'], g['category']))]
+
+
+def mix_rows(data, brand):
+    """The monthly product rows the mix reads: products_monthly when connected, else order line items by product type."""
+    source = brand_data(brand) if brand else data
     try:
-        rows = (brand_data(brand) if brand else data).table('products_monthly')
+        return source.table('products_monthly'), 'products_monthly'
+    except (KeyError, ValueError) as exc:
+        first = exc
+    try:
+        return orders_monthly(source), 'order line items by product type (no monthly product table)'
+    except (KeyError, ValueError):
+        raise first
+
+
+def category_mix(data, brand, rd):
+    """Our units and net sales by category over the last 12 whole months against the 12 before, from products_monthly, or
+    from order line items when a brand has no monthly product table."""
+    try:
+        rows, basis = mix_rows(data, brand)
     except (KeyError, ValueError) as exc:
         return {'unavailable': True, 'reason': f'products_monthly is not connected ({exc})', 'fix': 'shopify', 'rows': []}
     last = rd.last_month
@@ -771,6 +810,10 @@ def category_mix(data, brand, rd):
             g['net_sales'] += r.get('net_sales') or 0.0
     total_units = sum(g['units'] for g in now.values())
     total_net = sum(g['net_sales'] for g in now.values())
+    ago_months = {r.get('month') for r in rows if p_first <= (r.get('month') or '') <= p_last}
+    covered = len(ago_months) >= MIX_MONTHS   # growth needs the whole prior year on file; a partial year reads as unavailable
+    if not covered:
+        ago = {}
     out = []
     for cat, g in now.items():
         a = ago.get(cat)
@@ -781,7 +824,8 @@ def category_mix(data, brand, rd):
                     'net_growth': round(g['net_sales'] / a['net_sales'] - 1, 4) if a and a['net_sales'] else None,
                     'series': [series[cat][m] for m in months]})
     out.sort(key=lambda r: -r['net_sales'])
-    return {'unavailable': False, 'first': first, 'last': last, 'months': months, 'rows': out,
+    return {'unavailable': False, 'first': first, 'last': last, 'months': months, 'rows': out, 'basis': basis,
+            'growth_note': None if covered else f'growth on last year is unavailable: the data holds {len(ago_months)} of the 12 prior months',
             'store_growth': round(sum(g['units'] for g in now.values()) / sum(g['units'] for g in ago.values()) - 1, 4) if ago and sum(g['units'] for g in ago.values()) else None}
 
 

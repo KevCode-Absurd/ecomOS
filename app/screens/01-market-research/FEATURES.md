@@ -188,7 +188,7 @@ The candidate side of the desk: the pipeline with its gates, boxes and scorecard
 | # | Feature | Status |
 |---|---|---|
 | 4.1 | Decision memory: the founder's choices from the shared decisions log ride on the plan. A "not now" parks the action for 14 days (it leaves the plan, a "Decided" strip under the plan lists it with the note, the date it comes back and its card so it can be decided again); agent and person choices stay on their cards as "Saved"; an expired park returns on its own; route `parked` | done |
-| 4.2 | Category mix from orders when a brand has no monthly product table (the sample brand): units and net sales by product type per month from order line items, labelled as such | todo |
+| 4.2 | Category mix from orders when a brand has no monthly product table (the sample brand): units and net sales by product type per month from order line items (discount shared by line value, cancelled orders out), labelled as such on the page; growth on last year reads unavailable until the whole prior year is on file; the demand pattern tags now fill for the sample brand | done |
 | 4.3 | Return rate by line from orders and reversed orders (room metric `sku_return_rate`); rule PROD-R34 line returning 1.5 times the store median on 20 or more returns, with the reasons | todo |
 | 4.4 | Open questions the brain holds, each tied to its theme and complaint count; rule PROD-R35 question with 5 or more complaint quotes never asked, merged into the theme card | todo |
 | 4.5 | Pulls and their freshness: every pull this desk depends on with its last capture, age, refresh window, estimate under the caps; rule PROD-R36 pull due or never run | todo |
