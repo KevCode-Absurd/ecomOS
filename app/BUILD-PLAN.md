@@ -87,3 +87,8 @@ Anything that needs an external API we do not have yet (Reddit, Amazon reviews, 
 - No real brand data in `app/`. Gehna stays in `meta_gallery/` and `data/meta-gallery/` until a connector migration is decided.
 - No India-specific defaults. Market fields exist and read null.
 - No feature without a formula, a rule or a capability id behind it.
+
+
+## Round 0 complete (28 Sep 2026)
+
+All 28 screens plus setup exist at round 0 on Bombas simulated data (scale 1.0, founder calibration). Consistency pass S3.P: every audit returns the contract shape, no unavailable finding carries money, no em dashes, every capability id is in the catalogue, every page carries the simulated label. Tests: 353 screen, 51 extractor, 82 brain. 246 rules, 166 findings open, 139 waiting on a connector. Three screens (creative, organic content, supply) carry a round 1 job because a rule tuned on the 0.1 build does not fire at 1.0; rule: thresholds as ratios not counts. Onboarding extractors S6.0a to S6.0f landed in parallel: site crawler, stack detector, Ad Library page ids, Amazon discovery, Reddit plan, press, jobs, and the runner that ends in the 5 questions. Review page for Kevin: the click-through artifact (28 screenshots, money ranking, decisions). Next: Kevin picks the first 5 screens for feature rounds (recommended Today, Paid social, Google Ads, Brand brain, Offers), then S3.R feature rounds, then stage 4 inspiration (S4.1 contract first, S4.2a puller with media).
