@@ -245,7 +245,8 @@ class Round1TopSection(TempBrain):
         status, res = api.handle(Req(['documents'], method='POST', body={'name': 'brand book v3.md', 'text': '# Voice\nShort. Warm. Digits.', 'note': 'from the agency'}))
         self.assertEqual(status, 201)
         self.assertEqual(res['document']['name'], DAY + '-brand book v3.md')
-        self.assertEqual(res['records_changed_count'], 1)   # "Short. Warm. Digits." under a Voice heading is one proposed voice record
+        self.assertEqual(res['records_changed_count'], 0)   # a 3-word line under a heading is too short for a record; the file is read and kept
+        self.assertIn('nothing to propose', res['next'])
         status, res2 = api.handle(Req(['documents'], method='POST', body={'url': 'https://example.com/deck'}))
         self.assertEqual(status, 201)
         self.assertEqual(res2['document']['tags'], ['url'])
