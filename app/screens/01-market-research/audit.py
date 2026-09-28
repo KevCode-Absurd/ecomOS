@@ -182,6 +182,10 @@ Rules
             reads as custom, printed, branded, embossed, bespoke or die-cut while no sample has passed a test through our
             own chain and nothing has sold. Stock packaging first; the custom run comes after sell-through (bank idea
             PRD-100). Money: null (the bet is the first run cash, priced on the first-run card). Capability PROD-C07
+  PROD-R50  Not ready to fund: a candidate at go, or at shortlisted with a first run decided, with a hard stop open on the
+            launch checklist (demand screen run, angle with a source, margin gate, compliance, tech pack, sample passed,
+            first run sized, owner). Bank ideas PRD-121 and PRD-112: every hard stop clear before sample or ad money.
+            Money: null (the bet is the first run cash). Capability PROD-C10
   PROD-R03  Hero line with no next SKU: a line with 25 percent or more of its category's net sales in
             the last 3 whole months while the candidate pipeline holds no open next-SKU candidate for
             that category. Money: null (an unlaunched SKU has no baseline). Capability PROD-C06
@@ -191,6 +195,7 @@ Money uses net sales, not margin. Review counts are public and real; sales are s
 """
 import copy
 import hashlib
+import weakref
 import importlib.util
 import json
 import os
@@ -303,6 +308,7 @@ RULES = [
     {'rule_id': 'PROD-R47', 'name': 'Open candidate that reads like one killed inside the 90-day hold', 'entity_type': 'sku', 'inputs': ['fixtures.pipeline'], 'capability': 'PROD-C01', 'owner_screen': SCREEN},
     {'rule_id': 'PROD-R48', 'name': 'Candidate with a first run decided whose first launch carries more than one variant', 'entity_type': 'sku', 'inputs': ['fixtures.pipeline'], 'capability': 'PROD-C07', 'owner_screen': SCREEN},
     {'rule_id': 'PROD-R49', 'name': 'Candidate with a first run decided in a custom or printed format before a passed sample and any sell-through', 'entity_type': 'sku', 'inputs': ['fixtures.pipeline'], 'capability': 'PROD-C07', 'owner_screen': SCREEN},
+    {'rule_id': 'PROD-R50', 'name': 'Candidate at go, or shortlisted with a first run decided, with a hard stop open on the launch checklist', 'entity_type': 'sku', 'inputs': ['fixtures.pipeline', 'finance_inputs', 'brain.competitors'], 'capability': 'PROD-C10', 'owner_screen': SCREEN},
 ]
 CAPABILITY = {'PROD-R01': {'id': 'PROD-C05', 'autonomy': 'agent_does'},
               'PROD-R02': {'id': 'PROD-C06', 'autonomy': 'agent_does'},
@@ -352,7 +358,8 @@ CAPABILITY = {'PROD-R01': {'id': 'PROD-C05', 'autonomy': 'agent_does'},
               'PROD-R46': {'id': 'PROD-C16', 'autonomy': 'human_assist'},
               'PROD-R47': {'id': 'PROD-C01', 'autonomy': 'agent_does'},
               'PROD-R48': {'id': 'PROD-C07', 'autonomy': 'agent_does'},
-              'PROD-R49': {'id': 'PROD-C07', 'autonomy': 'agent_does'}}
+              'PROD-R49': {'id': 'PROD-C07', 'autonomy': 'agent_does'},
+              'PROD-R50': {'id': 'PROD-C10', 'autonomy': 'founder_gate'}}
 SEVERITY_ORDER = {'critical': 0, 'high': 1, 'medium': 2, 'low': 3}
 
 # Review records name their line in a short key; the store names it by SKU title.
@@ -408,7 +415,7 @@ def month_end(month):
 
 
 def last_full_day(data, brand):
-    source = brand_data(brand) if brand else data
+    source = _source(data, brand)
     return date.fromisoformat(source.brand['as_of'])
 
 
@@ -854,15 +861,21 @@ def run(brand, window=None, data=None):
         _MEMO['runs'] += 1
         return _run_audit(brand, ends_on, data)
     slot = (str(brand), ends_on.isoformat())
+    try:
+        ref = weakref.ref(data) if data is not None else None
+    except TypeError:
+        _MEMO['runs'] += 1
+        return _run_audit(brand, ends_on, data)     # a data object that cannot be watched is never memoised
     key = memo_key(brand, ends_on, data)
     hit = _MEMO['states'].get(slot)
-    if hit and hit['key'] == key:
+    same_data = hit is not None and ((hit['ref'] is None and ref is None) or (hit['ref'] is not None and hit['ref']() is data))
+    if hit and same_data and hit['key'] == key:
         _MEMO['served'] += 1
         return copy.deepcopy(hit['findings'])
     findings = _run_audit(brand, ends_on, data)
     _MEMO['runs'] += 1
     _MEMO['states'].pop(slot, None)
-    _MEMO['states'][slot] = {'key': key, 'findings': copy.deepcopy(findings)}
+    _MEMO['states'][slot] = {'key': key, 'ref': ref, 'findings': copy.deepcopy(findings)}
     while len(_MEMO['states']) > MEMO_KEEP:
         _MEMO['states'].pop(next(iter(_MEMO['states'])))
     return findings
@@ -934,6 +947,7 @@ def _run_audit(brand, ends_on, data):
     out += kill_findings(brand, ends_on)
     out += variant_findings(brand, ends_on)
     out += packaging_findings(brand, ends_on)
+    out += readiness_findings(brand, data, br, rd, ends_on)
     out.sort(key=lambda f: (SEVERITY_ORDER[f['severity']], -((f['money_at_stake'] or {}).get('usd') or 0), f['id']))
     return out
 
@@ -970,7 +984,7 @@ def orders_monthly(data):
 
 def mix_rows(data, brand):
     """The monthly product rows the mix reads: products_monthly when connected, else order line items by product type."""
-    source = brand_data(brand) if brand else data
+    source = _source(data, brand)
     try:
         return source.table('products_monthly'), 'products_monthly'
     except (KeyError, ValueError) as exc:
@@ -1902,7 +1916,7 @@ def group_of(query, groups):
 
 def search_demand(data, brand, groups, ends_on):
     """Search Console and Google search-term rows summed per group over 28 days. Unavailable, never 0, when a table is absent."""
-    source = brand_data(brand) if brand else data
+    source = _source(data, brand)
     out = {g['key']: {'impressions': None, 'clicks': None, 'position': None, 'queries': 0, 'top': [], 'paid_spend': None, 'paid_clicks': None, 'paid_conversions': None} for g in groups}
     start = (ends_on - timedelta(days=SEARCH_WINDOW_DAYS - 1)).isoformat()
     organic = paid = None
@@ -1996,8 +2010,20 @@ BANK_MULTIPLE = 3.0
 CHEAPEST_LABEL_KEYS = ('usps:zones_1_4', 'usps:zone_1_4')
 
 
+def _source(data, brand):
+    """The brand's data folder when it has one, else the data object handed in (a test brand, or the sample brand)."""
+    if brand:
+        try:
+            return brand_data(brand)
+        except ValueError:
+            return data
+    return data
+
+
 def finance_rows(data, brand):
-    source = brand_data(brand) if brand else data
+    source = _source(data, brand)
+    if source is None:
+        return None
     try:
         return source.table('finance_inputs')
     except (KeyError, ValueError):
@@ -2010,7 +2036,7 @@ def finance_rows(data, brand):
 
 def units_per_order(data, brand, rd):
     """Average units per order over the last whole month, from the monthly aggregate. None when absent."""
-    source = brand_data(brand) if brand else data
+    source = _source(data, brand)
     try:
         rows = source.table('monthly')
     except (KeyError, ValueError):
@@ -3426,7 +3452,7 @@ def return_rates(data, brand, ends_on):
     """Per line: units sold over the last 12 whole months (order line items), returns opened on those lines in the same span
     (reversed orders of type return, by SKU), the rate, the top reasons, against the store median. Unavailable, never 0, when
     orders or reversed orders are not connected. Room metric sku_return_rate."""
-    source = brand_data(brand) if brand else data
+    source = _source(data, brand)
     try:
         orders = source.table('orders')
         products = source.table('products')
@@ -3744,19 +3770,16 @@ def first_run_read(brand, ends_on, net_28d):
         share = round(cash / net_28d, 4) if cash is not None and net_28d else None
         moq_over = (fr.get('moq_units') or 0) > (fr.get('units') or 0) if fr.get('moq_units') is not None and fr.get('units') is not None else None
         option = bool(str(fr.get('lower_moq_option') or '').strip())
+        sizing = 'no_plan' if not fr else 'full_moq_risk' if not option and ((share is not None and share >= FIRST_RUN_CASH_SHARE) or share is None or moq_over) else 'sized'
         if st in CLOSED_STAGES:
             verdict = 'closed'
         elif idx is None or idx < FIRST_RUN_STAGE_MIN:
             verdict = 'not_yet'
-        elif not fr:
-            verdict = 'no_plan'
-        elif not option and ((share is not None and share >= FIRST_RUN_CASH_SHARE) or share is None or moq_over):
-            verdict = 'full_moq_risk'
         else:
-            verdict = 'sized'
+            verdict = sizing
         rows.append({'candidate_id': c.get('candidate_id'), 'name': c.get('name'), 'stage': st, 'closed': st in CLOSED_STAGES, 'units': fr.get('units'), 'moq_units': fr.get('moq_units'),
                      'format': fr.get('format'), 'cash_usd': cash, 'cash_share_28d': share, 'moq_over_units': moq_over, 'lower_moq_option': fr.get('lower_moq_option') or None, 'variants': c.get('variants'),
-                     'decided_on': fr.get('decided_on'), 'verdict': verdict, 'finding_id': f'{SCREEN}.PROD-R37.{c.get("candidate_id")}'})
+                     'decided_on': fr.get('decided_on'), 'verdict': verdict, 'sizing': sizing, 'finding_id': f'{SCREEN}.PROD-R37.{c.get("candidate_id")}'})
     order = {'full_moq_risk': 0, 'no_plan': 1, 'sized': 2, 'not_yet': 3, 'closed': 4}
     rows.sort(key=lambda r: (order[r['verdict']], r['name'] or ''))
     return {'rows': rows, 'net_28d': net_28d, 'share_floor': FIRST_RUN_CASH_SHARE,
@@ -4383,6 +4406,18 @@ def owner_findings(brand, ends_on):
 SAMPLE_STAGE_MIN = 3   # shortlisted or later, or any candidate with a first run decided: a sample must have run through our own chain first
 
 
+def sample_verdict(s):
+    """none, ordered, received, tested_pass or tested_fail from a candidate's sample record."""
+    s = s or {}
+    if s.get('result') in ('pass', 'fail'):
+        return 'tested_' + s['result']
+    if s.get('received_on'):
+        return 'received'
+    if s.get('ordered_on'):
+        return 'ordered'
+    return 'none'
+
+
 def sample_read(brand, ends_on):
     """Per open candidate at shortlisted or later, or with a first run decided: the sample on file (ordered, received, tested
     through the store's own fulfilment chain, result), and the verdict: none, ordered, received, tested pass, tested fail."""
@@ -4395,16 +4430,7 @@ def sample_read(brand, ends_on):
         if idx < SAMPLE_STAGE_MIN and not c.get('first_run'):
             continue
         s = c.get('sample') or {}
-        if not s:
-            verdict = 'none'
-        elif s.get('result') in ('pass', 'fail'):
-            verdict = 'tested_' + s['result']
-        elif s.get('received_on'):
-            verdict = 'received'
-        elif s.get('ordered_on'):
-            verdict = 'ordered'
-        else:
-            verdict = 'none'
+        verdict = sample_verdict(s)
         rows.append({'candidate_id': c.get('candidate_id'), 'name': c.get('name'), 'stage': st, 'first_run_decided': bool(c.get('first_run')), 'ordered_on': s.get('ordered_on'), 'received_on': s.get('received_on'),
                      'through_own_chain': s.get('through_own_chain'), 'result': s.get('result'), 'notes': s.get('notes'), 'verdict': verdict, 'finding_id': f'{SCREEN}.PROD-R46.{c.get("candidate_id")}'})
     order = {'none': 0, 'tested_fail': 1, 'ordered': 2, 'received': 3, 'tested_pass': 4}
@@ -4579,5 +4605,93 @@ def packaging_findings(brand, ends_on):
         f = _finding('PROD-R49', cid, ends_on, 'medium', ev, sentence, None, 0.8, [], money_reason='the bet is the first run cash, priced on the first-run card')
         f['entity'] = {'type': 'sku', 'id': cid, 'label': r['name'], 'candidate': True, 'stage': r['stage'], 'format': r['format'], 'custom_words': r['custom_words'], 'sample_verdict': r['sample_verdict']}
         f['id'] = f'{SCREEN}.PROD-R49.{cid}'
+        out.append(f)
+    return out
+
+
+# ---------------------------------------------------------------- launch readiness: every hard stop clear before money goes out
+
+READINESS_STAGE_MIN = 3   # shortlisted or later
+READINESS_ITEMS = [
+    ('demand_screen', 'Demand screen run', True), ('angle', 'Angle with a source', True), ('margin', 'Margin gate', True), ('compliance', 'Compliance', True),
+    ('tech_pack', 'Tech pack current', True), ('sample', 'Sample passed', True), ('first_run', 'First run sized', True), ('owner', 'Owner named', True),
+    ('one_sku', 'One SKU', False), ('packaging', 'Stock packaging', False), ('kill_hold', 'Kill hold clear', False), ('ad_cost', 'Ad-cost ceiling', False),
+]
+
+
+def launch_readiness(brand, data, br, rd, ends_on):
+    """Per open candidate at shortlisted or later, or with a first run decided: the launch checklist, each item pass, open or
+    unavailable with its reason, hard stops marked, and the verdict: ready (every hard stop passed), soft_open (hard stops
+    passed, a soft item open), not_ready (a hard stop open). Bank ideas PRD-121 (confirm every hard stop before sample or
+    ad spend) and PRD-112 (the full stack on every candidate, whatever its source)."""
+    gates = {g['candidate_id']: g for g in candidate_gates(brand, data, br, rd, ends_on)}
+    runs = {r['candidate_id']: r['sizing'] for r in first_run_read(brand, ends_on, net_28d(rd))['rows']}   # sizing is read whatever the stage, so a go candidate is judged too
+    lookalike = {la['candidate_id']: k for k in kill_memory(brand, ends_on)['rows'] for la in k['lookalikes']}
+    rows = []
+    for c in pipeline(brand):
+        st = c.get('stage')
+        idx = STAGES.index(st) if st in STAGES else None
+        if st in ('killed', 'kill') or idx is None or (idx < READINESS_STAGE_MIN and not c.get('first_run')):
+            continue
+        cid = c.get('candidate_id')
+        g = gates.get(cid) or {}
+        gg = g.get('gates') or {}
+        v = candidate_view(c, ends_on)
+        items = {}
+        if v['unchecked_checks']:
+            items['demand_screen'] = ('open', 'checks not run: ' + ', '.join(v['unchecked_checks']))
+        elif len(v['failed_checks']) >= 2:
+            items['demand_screen'] = ('open', 'failed ' + ', '.join(v['failed_checks']))
+        else:
+            items['demand_screen'] = ('pass', 'all 3 checks run' + (', ' + v['failed_checks'][0] + ' failed and overridden' if v['failed_checks'] else ''))
+        ang = g.get('angle') or {}
+        items['angle'] = ('pass', 'filled and sourced') if ang.get('sourced') else ('open', 'no angle' if not ang.get('filled') else 'the angle names no source')
+        cm = gg.get('contribution_margin') or {}
+        items['margin'] = (cm.get('status') if cm.get('status') in ('pass',) else 'unavailable' if cm.get('status') == 'unavailable' else 'open', cm.get('why') or 'not run')
+        comp = g.get('compliance')
+        items['compliance'] = ('pass', 'labelling and certification passed') if comp == 'pass' else ('open', 'a check failed' if comp == 'fail' else 'not run')
+        tp = tech_pack_status(c)
+        items['tech_pack'] = ('pass', f'version {tp["version"]} current') if tp['status'] == 'current' else ('open', 'no pack' if tp['status'] == 'none' else 'missing ' + ', '.join(tp['missing']))
+        sv = sample_verdict(c.get('sample'))
+        items['sample'] = ('pass', 'tested through our own chain') if sv == 'tested_pass' else ('open', {'none': 'no sample', 'ordered': 'ordered, not arrived', 'received': 'arrived, not tested', 'tested_fail': 'failed its test'}.get(sv, sv))
+        rv = runs.get(cid, 'no_plan')
+        items['first_run'] = ('pass', 'sized with a lower-MOQ option') if rv == 'sized' else ('open', {'no_plan': 'no first run on file', 'full_moq_risk': 'full MOQ, no lower-MOQ option'}.get(rv, rv))
+        items['owner'] = ('pass', str(c.get('owner'))) if str(c.get('owner') or '').strip() else ('open', 'nobody named')
+        n = c.get('variants')
+        items['one_sku'] = ('pass', 'one variant') if n == 1 else ('open', f'{n} variants planned' if isinstance(n, int) and n > 1 else 'variants not set')
+        words = custom_format((c.get('first_run') or {}).get('format'))
+        items['packaging'] = ('open', 'custom before proof: ' + ', '.join(words)) if words and sv != 'tested_pass' else ('pass', 'custom after a passed sample' if words else 'stock' if c.get('first_run') else 'no first run yet')
+        k = lookalike.get(cid)
+        items['kill_hold'] = ('open', f'reads like {k["name"]}, killed {k["killed_on"]}') if k else ('pass', 'no killed lookalike')
+        ac = gg.get('ad_cost_ceiling') or {}
+        items['ad_cost'] = ('pass' if ac.get('status') == 'pass' else 'unavailable' if ac.get('status') == 'unavailable' else 'open', ac.get('why') or 'not run')
+        checklist = [{'key': key, 'label': label, 'hard': hard, 'status': items[key][0], 'why': items[key][1]} for key, label, hard in READINESS_ITEMS]
+        hard_open = [i for i in checklist if i['hard'] and i['status'] != 'pass']
+        soft_open = [i for i in checklist if not i['hard'] and i['status'] == 'open']
+        verdict = 'not_ready' if hard_open else 'soft_open' if soft_open else 'ready'
+        rows.append({'candidate_id': cid, 'name': c.get('name'), 'stage': st, 'first_run_decided': bool(c.get('first_run')), 'checklist': checklist,
+                     'passed': sum(1 for i in checklist if i['status'] == 'pass'), 'of': len(checklist), 'hard_open': [i['key'] for i in hard_open], 'soft_open': [i['key'] for i in soft_open],
+                     'verdict': verdict, 'finding_id': f'{SCREEN}.PROD-R50.{cid}'})
+    order = {'not_ready': 0, 'soft_open': 1, 'ready': 2}
+    rows.sort(key=lambda r: (order[r['verdict']], 0 if r['stage'] == 'go' else 1, r['name'] or ''))
+    return {'rows': rows, 'items': [{'key': k, 'label': l, 'hard': h} for k, l, h in READINESS_ITEMS],
+            'rule': 'from shortlisted on, or once a first run is decided, every hard stop (demand screen, sourced angle, margin gate, compliance, tech pack, passed sample, sized first run, owner) is clear before sample or ad money goes out; a go with a hard stop open is a finding (bank ideas PRD-121, PRD-112)'}
+
+
+def readiness_findings(brand, data, br, rd, ends_on):
+    """PROD-R50: a candidate at go, or at shortlisted with a first run decided, with a hard stop open on the launch checklist."""
+    out = []
+    for r in launch_readiness(brand, data, br, rd, ends_on)['rows']:
+        if r['verdict'] != 'not_ready' or not (r['stage'] == 'go' or (r['stage'] == 'shortlisted' and r['first_run_decided'])):
+            continue
+        cid = r['candidate_id']
+        labels = {i['key']: i['label'] for i in r['checklist']}
+        ev = [_ev('hard_stops_open', len(r['hard_open']), 'count', ends_on.isoformat(), 'candidate now', 0, 'threshold', source='fixtures.pipeline', simulated=False, freshness_days=0, stage=r['stage'], open=r['hard_open'], passed=r['passed'], of=r['of'])]
+        opens = ', '.join(labels[k].lower() for k in r['hard_open'])
+        sentence = (f'{r["name"]} is at go with {len(r["hard_open"])} hard stop{"s" if len(r["hard_open"]) != 1 else ""} open ({opens}); money is about to go out on a candidate that has not cleared the stack.' if r['stage'] == 'go'
+                    else f'{r["name"]} has a first run decided at shortlisted with {len(r["hard_open"])} hard stop{"s" if len(r["hard_open"]) != 1 else ""} open ({opens}); no sample or ad money until they clear.')
+        f = _finding('PROD-R50', cid, ends_on, 'high' if r['stage'] == 'go' else 'medium', ev, sentence, None, 0.9, [], money_reason='the bet is the first run cash, priced on the first-run card')
+        f['entity'] = {'type': 'sku', 'id': cid, 'label': r['name'], 'candidate': True, 'stage': r['stage'], 'hard_open': r['hard_open'], 'open_labels': [labels[k] for k in r['hard_open']], 'passed': r['passed'], 'of': r['of']}
+        f['id'] = f'{SCREEN}.PROD-R50.{cid}'
         out.append(f)
     return out

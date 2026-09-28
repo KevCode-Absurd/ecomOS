@@ -1448,6 +1448,53 @@ class PipelineTest(ShapeMixin, unittest.TestCase):
             audit.memo_clear()
             audit.PIPELINE_PATH = self.real2
 
+    def test_launch_readiness(self):
+        D = date(2026, 9, 27)
+        self.real2 = audit.PIPELINE_PATH
+        try:
+            audit.PIPELINE_PATH = self.tmp
+            full = {'candidate_id': 'a', 'brand': 'fake', 'name': 'A', 'stage': 'go', 'screen_result': {'demand': 'pass', 'competition': 'pass', 'store_fit': 'pass'}, 'angle_text': 'a warmer cuff', 'angle_source': 'review gap on Amazon',
+                    'compliance': {'labelling': 'pass', 'category_certification': 'pass'}, 'tech_packs': [{'version': 2, 'tolerances': 'x', 'bom': 'y', 'packaging_cost': 1.2, 'status': 'current'}],
+                    'sample': {'ordered_on': '2026-08-01', 'received_on': '2026-08-10', 'through_own_chain': True, 'result': 'pass'}, 'first_run': {'units': 500, 'moq_units': 300, 'format': 'stock sleeve', 'cash_usd': 100, 'lower_moq_option': 'stock blank at 200'},
+                    'owner': 'Sam', 'variants': 1, 'planned_price': 20, 'cogs_estimate': 4}
+            bare = {'candidate_id': 'b', 'brand': 'fake', 'name': 'B', 'stage': 'go'}
+            early = {'candidate_id': 'c', 'brand': 'fake', 'name': 'C', 'stage': 'researched'}
+            short = dict(bare, candidate_id='d', name='D', stage='shortlisted', first_run={'units': 100})
+            short_nr = dict(bare, candidate_id='e', name='E', stage='shortlisted')
+            self.tmp.write_text(json.dumps({'rows': [full, bare, early, short, short_nr]}), encoding='utf-8')
+            data = api.sample_data()
+            D = audit.last_full_day(data, None)
+            rd = audit.Reader(data, None, D)
+            read = audit.launch_readiness('fake', data, None, rd, D)
+            by = {r['candidate_id']: r for r in read['rows']}
+            self.assertNotIn('c', by)                                   # before shortlisted with no first run
+            self.assertEqual(len(read['items']), 12)
+            self.assertEqual(sum(1 for i in read['items'] if i['hard']), 8)
+            self.assertEqual(by['b']['verdict'], 'not_ready')
+            self.assertEqual(len(by['b']['hard_open']), 8)
+            a = by['a']
+            self.assertNotIn('margin', {k for k in a['hard_open']} - {'margin'})   # everything but the margin and ad-cost reads (which need finance inputs) passes
+            self.assertEqual([i['status'] for i in a['checklist'] if i['key'] in ('demand_screen', 'angle', 'compliance', 'tech_pack', 'sample', 'first_run', 'owner', 'one_sku', 'kill_hold')], ['pass'] * 9)
+            self.assertEqual(next(i for i in a['checklist'] if i['key'] == 'packaging')['status'], 'pass')
+            self.assertEqual(read['rows'][0]['stage'], 'go')            # not ready and at go sorts first
+            found = audit.readiness_findings('fake', data, None, rd, D)
+            ids = [f['id'].split('.')[-1] for f in found]
+            self.assertIn('b', ids)
+            self.assertIn('d', ids)                                     # shortlisted with a first run decided
+            self.assertNotIn('e', ids)                                  # shortlisted, no money committed yet
+            fb = next(f for f in found if f['id'].endswith('.b'))
+            self.assertEqual(fb['severity'], 'high')
+            self.assertIn('8 hard stops open', fb['sentence'])
+            self.check_shape(fb)
+            rec = api.recipe(fb)
+            self.assertEqual(rec['owner'], 'person')
+            self.assertIn('hard stop', rec['title'])
+            self.assertIn('PROD-R50', api.CANDIDATE_RULES)
+            rows = {r['candidate_id']: r for r in api.handoff_rows('fake')}
+            self.assertIsNone(rows['a']['readiness'])                  # no data folder for a fake brand: the verdict reads null, never invented
+        finally:
+            audit.PIPELINE_PATH = self.real2
+
     def test_demand_pattern_tags(self):
         even = {'rows': [{'category': 'socks', 'series': [100] * 12}], 'months': [f'2026-{m:02d}' for m in range(1, 13)], 'last': '2026-12'}
         peaked = {'rows': [{'category': 'socks', 'series': [50] * 10 + [300, 400]}], 'months': even['months'], 'last': '2026-12'}

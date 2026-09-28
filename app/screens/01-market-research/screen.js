@@ -756,6 +756,31 @@
         blocked.length ? { label: 'Unblock the first', onClick: () => { const a = actionFor(blocked[0].finding_ids[0]); if (a) openAction(a); } } : null));
   }
 
+  function readinessBlock(rd) {
+    const rows = (rd && rd.rows) || [];
+    if (!rows.length) return UI.emptyState({ screen: SLUG, title: 'No candidate at the checklist yet', text: 'From shortlisted on, or once a first run is decided, the launch checklist runs here.', missing: ['pipeline'] });
+    const items = rd.items || [];
+    const cols = items.map((i) => ({ key: i.key, label: i.label + (i.hard ? '' : ' (soft)') }));
+    const cells = {};
+    rows.forEach((r) => { cells[r.candidate_id] = {}; r.checklist.forEach((i) => { cells[r.candidate_id][i.key] = { us: i.status === 'pass' ? 1 : i.status === 'open' ? 0 : null, unit: 'n', label: i.why }; }); });
+    const matrix = UI.coverageMatrix({ rows: rows.map((r) => ({ key: r.candidate_id, label: r.name, sub: r.stage + ', ' + r.passed + ' of ' + r.of + ' passed' })), cols, cells, single: true, max: 1, unit: 'n', corner: 'candidate x stop',
+      note: '1 is pass, 0 is open, n/a is unavailable. Hover a cell for the reason. ' + (rd.rule || ''),
+      onCell: (cell, row, col) => { const r = rows.find((x) => x.candidate_id === row.key); if (!r) return; const i = r.checklist.find((x) => x.key === col.key); if (!i) return; UI.panel({ title: r.name + ': ' + i.label, body: el('p', null, el('b', { text: i.status + '. ' }), i.why) }); } });
+    const vt = { not_ready: 'Hard stop open', soft_open: 'Soft item open', ready: 'Ready' };
+    const vrows = rows.map((r) => { const a = actionFor(r.finding_id); const lab = {}; r.checklist.forEach((i) => { lab[i.key] = i.label; }); return Object.assign({}, r, {
+      hardText: r.hard_open.length ? r.hard_open.map((k) => lab[k]).join(', ') : 'none', softText: r.soft_open.length ? r.soft_open.map((k) => lab[k]).join(', ') : 'none', passedText: r.passed + ' of ' + r.of,
+      actions: [a ? { label: 'Clear the hard stops', onClick: () => openAction(a) } : { label: r.verdict === 'ready' ? 'Ready' : 'In progress', cls: 'quiet', onClick: () => {} }] }); });
+    const tbl = UI.verdictTable({
+      columns: [{ key: 'name', label: 'Candidate' }, { key: 'stage', label: 'Stage' }, { key: 'passedText', label: 'Passed' }, { key: 'hardText', label: 'Hard stops open' }, { key: 'softText', label: 'Soft items open' }],
+      rows: vrows,
+      verdict: { at: 1, kind: (r) => r.verdict === 'not_ready' ? 'fix' : r.verdict === 'soft_open' ? 'watch' : 'scale', text: (r) => vt[r.verdict], reason: (r) => rd.rule },
+      actions: { label: 'Do', onClick: () => {} }, sort: false });
+    const blocked = rows.filter((r) => actionFor(r.finding_id));
+    return el('div', { class: 'stack' }, el('div', { class: 'card' }, matrix), el('div', { class: 'card scroll' }, tbl),
+      gapLine(blocked.length ? blocked.length + ' candidate' + (blocked.length === 1 ? ' has' : 's have') + ' money about to go out with a hard stop open: ' + blocked.map((r) => r.name).join(', ') + '.' : rows.some((r) => r.verdict !== 'ready') ? 'No candidate is past a hard stop with money committed; the open items are listed per row.' : 'Every candidate on the checklist is ready.',
+        blocked.length ? { label: 'Open the first', onClick: () => openAction(actionFor(blocked[0].finding_id)) } : null));
+  }
+
   function scorecardBlock(sc) {
     const rows = (sc && sc.rows) || [];
     if (!rows.length) return el('p', { class: 'muted', text: 'No candidate to score.' });
@@ -1189,6 +1214,7 @@
     parts.push(section('desk-line-themes', 'Where do the complaints land, line by theme?', 'Mined complaint quotes per line and theme: Amazon issues by ASIN mapped to the line by the listing title, plus the own-site issue phrases; a line where one theme carries 40 percent or more gets a listing and page fix.', lineThemeBlock(d.line_themes)));
     parts.push(section('desk-marketplace', 'Who sells us on Amazon, and at what price?', 'The brain\'s Amazon read: whether a brand store, A+ content or a brand-as-seller offer showed, the resellers seen, and every listing with its price per pair against the site. Public listing data, no order counts.', marketplaceBlock(d.marketplace)));
     parts.push(section('desk-gates', 'Is each candidate ready to fund: an owned angle and the 5 go-live gates?', 'Angle confidence (filled, sourced, not a competitor claim) and the gates per candidate: provable claim, owned difference, brand threshold, contribution margin, ad-cost ceiling, plus the compliance check.', gatesBlock(d.gates)));
+    parts.push(section('desk-readiness', 'Is every hard stop clear before money goes out?', 'The launch checklist per candidate from shortlisted on, or once a first run is decided: 8 hard stops (demand screen, sourced angle, margin gate, compliance, tech pack, passed sample, sized first run, owner) and 4 soft items (one SKU, stock packaging, kill hold, ad-cost ceiling). A go with a hard stop open is a finding (bank ideas PRD-121, PRD-112). The verdict rides on the product_candidates hand-off.', readinessBlock(d.readiness)));
     parts.push(section('desk-scorecard', 'Which candidates does the founder decide on this week?', 'The fixed scorecard with the brand\'s weights: demand, margin, differentiation, compliance and cash timing, each scored in code, ranked, with the go or no-go memo drafted from the numbers and the review date.', scorecardBlock(d.scorecard)));
     parts.push(section('desk-video', 'Is the demand one clip or a real pattern?', 'Independent platforms showing demand per lane: the Instagram hashtag pull, Reddit mentions and upvotes, competitor creator-style ads and our own, with the candidates that rest on each lane.', videoBlock(d.video)));
     parts.push(section('desk-tech-packs', 'Which candidates have a real, versioned spec ready for sourcing?', 'Tech pack versions per candidate: tolerances, the bill of materials and the packaging cost line. A pack saved from the card becomes the current version and supersedes the last.', techPackBlock(d.tech_packs)));

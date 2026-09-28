@@ -1105,6 +1105,19 @@ def recipe(f):
             'size': {'text': f'{ent.get("variants")} variants planned', 'usd': None}, 'stop_rule': 'no MOQ per variant before the core product sells', 'check_on': _check_on(f, 7), 'time_to_ship_hours': 1,
             'win_rule': 'one variant in the first run, the rest queued behind a sell-through read',
         }
+    if rid == 'PROD-R50':
+        ent = f.get('entity') or {}
+        opens = ent.get('open_labels') or []
+        return {
+            'title': f'Clear the {len(opens)} hard stop{"s" if len(opens) != 1 else ""} on {ent.get("label") or "the candidate"} before any money goes out: {", ".join(x.lower() for x in opens)}',
+            'owner': 'person',
+            'artefact': {'kind': 'research_note', 'label': f'the launch checklist for {ent.get("label")} with every hard stop marked pass, and the date each one cleared (bank ideas PRD-121, PRD-112)'},
+            'steps': [{'n': 1, 'who': 'agent', 'text': 'List the open hard stops with the card that clears each one (the gate, the sample, the first run, the owner).'},
+                      {'n': 2, 'who': 'person', 'text': f'Hold sample and ad spend on {ent.get("label")} until the list is empty' + (', or move it back to shortlisted' if ent.get('stage') == 'go' else '') + '.'},
+                      {'n': 3, 'who': 'agent', 'text': 'Re-run the checklist after each write; the product_candidates hand-off carries the verdict, so offers and supply see it.'}],
+            'size': {'text': f'{ent.get("passed")} of {ent.get("of")} items passed', 'usd': None}, 'stop_rule': 'no sample, MOQ or ad spend while a hard stop is open', 'check_on': _check_on(f, 7), 'time_to_ship_hours': 1,
+            'win_rule': 'every hard stop on the checklist reads pass before the first order or ad',
+        }
     if rid == 'PROD-R49':
         ent = f.get('entity') or {}
         words = ', '.join(ent.get('custom_words') or []) or 'custom'
@@ -1270,7 +1283,7 @@ def merge_strength(actions):
     return keep
 
 
-CANDIDATE_RULES = ('PROD-R14', 'PROD-R15', 'PROD-R16', 'PROD-R18', 'PROD-R21', 'PROD-R23', 'PROD-R24', 'PROD-R25', 'PROD-R27', 'PROD-R28', 'PROD-R37', 'PROD-R38', 'PROD-R39', 'PROD-R40', 'PROD-R45', 'PROD-R46', 'PROD-R47', 'PROD-R48', 'PROD-R49')
+CANDIDATE_RULES = ('PROD-R14', 'PROD-R15', 'PROD-R16', 'PROD-R18', 'PROD-R21', 'PROD-R23', 'PROD-R24', 'PROD-R25', 'PROD-R27', 'PROD-R28', 'PROD-R37', 'PROD-R38', 'PROD-R39', 'PROD-R40', 'PROD-R45', 'PROD-R46', 'PROD-R47', 'PROD-R48', 'PROD-R49', 'PROD-R50')
 
 
 def merge_candidates(actions):
@@ -1523,7 +1536,7 @@ def overview(data, brand):
                      'gates': gates_block(brand, data, br, rd, ends_on, findings), 'scorecard': scorecard_block(brand, data, br, rd, ends_on, findings),
                      'video': audit.video_signals(br, brand, ends_on), 'tech_packs': tech_pack_block(brand, findings),
                      'hours': dict(audit.hours_table(brand, br), findings={f['entity']['id']: f['id'] for f in findings if f['rule_id'] == 'PROD-R28'}),
-                     'trend_checks': audit.trend_checks(br, brand, ends_on), 'surfaces': audit.audience_surfaces(br, ends_on), 'marketplace': audit.marketplace_read(br, products(data, brand)), 'cadence': audit.launch_cadence(br, ends_on), 'returns': audit.return_rates(data, brand, ends_on), 'questions': audit.open_questions(br, ends_on), 'pulls': audit.pulls(br, brand, ends_on), 'first_runs': audit.first_run_read(brand, ends_on, audit.net_28d(rd)), 'brain_freshness': audit.brain_freshness(br, ends_on), 'assumptions': audit.assumptions(br), 'strength': audit.read_strength(br, brand, data, rd, ends_on), 'line_themes': audit.line_theme_matrix(br), 'samples': audit.sample_read(brand or 'sample', ends_on), 'kills': audit.kill_memory(brand or 'sample', ends_on), 'packaging': audit.packaging_read(brand or 'sample', ends_on), 'audit_memo': audit.memo_stats()},
+                     'trend_checks': audit.trend_checks(br, brand, ends_on), 'surfaces': audit.audience_surfaces(br, ends_on), 'marketplace': audit.marketplace_read(br, products(data, brand)), 'cadence': audit.launch_cadence(br, ends_on), 'returns': audit.return_rates(data, brand, ends_on), 'questions': audit.open_questions(br, ends_on), 'pulls': audit.pulls(br, brand, ends_on), 'first_runs': audit.first_run_read(brand, ends_on, audit.net_28d(rd)), 'brain_freshness': audit.brain_freshness(br, ends_on), 'assumptions': audit.assumptions(br), 'strength': audit.read_strength(br, brand, data, rd, ends_on), 'line_themes': audit.line_theme_matrix(br), 'samples': audit.sample_read(brand or 'sample', ends_on), 'kills': audit.kill_memory(brand or 'sample', ends_on), 'packaging': audit.packaging_read(brand or 'sample', ends_on), 'readiness': audit.launch_readiness(brand, data, br, rd, ends_on), 'audit_memo': audit.memo_stats()},
             'audit': {'findings': findings, 'rules': audit.RULES}}
 
 
@@ -1849,15 +1862,31 @@ HANDOFF_PATH = HERE / 'fixtures' / 'product_candidates.json'
 TESTS_PATH = HERE / 'fixtures' / 'proposed_tests.json'
 
 
+def readiness_for_handoff(brand):
+    """The launch checklist verdict per candidate for the hand-off, from the brand's data folder and brain; empty when the
+    brand has no data folder (the verdict then reads null on the row and the desk says so)."""
+    try:
+        data = audit.brand_data(brand)
+    except (ValueError, KeyError, FileNotFoundError):
+        return {}
+    ends_on = audit.last_full_day(data, brand)
+    rd = audit.Reader(data, brand, ends_on)
+    br = audit.brain(brand, today=ends_on)
+    return {r['candidate_id']: r for r in audit.launch_readiness(brand, data, br, rd, ends_on)['rows']}
+
+
 def handoff_rows(brand):
     """The product_candidates hand-off (events.md): one row per candidate with what offers and supply need: the stage and the
     decision, planned price, the landed cost estimate, pack units, the first run, the current tech pack, the angle and the
     review date. Numbers are the candidate's own inputs; the gate verdicts live on this desk."""
     rows = []
+    ready = readiness_for_handoff(brand)
     for c in audit.pipeline(brand):
         tp = audit.tech_pack_status(c)
         price, cogs = c.get('planned_price'), c.get('cogs_estimate')
+        rd_row = ready.get(c.get('candidate_id'))
         rows.append({'candidate_id': c.get('candidate_id'), 'brand': c.get('brand'), 'name': c.get('name'), 'category': c.get('category'), 'stage': c.get('stage'),
+                     'readiness': {'verdict': rd_row['verdict'], 'hard_open': rd_row['hard_open'], 'soft_open': rd_row['soft_open'], 'passed': rd_row['passed'], 'of': rd_row['of']} if rd_row else None,
                      'decision': 'go' if c.get('stage') == 'go' else 'no_go' if c.get('stage') == 'killed' else 'open',
                      'planned_price_usd': price, 'landed_cost_estimate_usd': cogs, 'pack_units': c.get('pack_units') or 1,
                      'gross_margin_pct_from_estimates': round((price - cogs) / price * 100, 1) if price and cogs is not None and price > 0 else None,
