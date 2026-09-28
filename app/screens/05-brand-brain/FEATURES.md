@@ -142,7 +142,7 @@ Status: todo | doing | done | parked. One feature per commit. The first round is
 | # | Feature | Status | What a founder can do |
 |---|---|---|---|
 | 4.1 | The bottlenecks, and the unlocks under each (`bottlenecks.py`, `GET bottlenecks`, `POST bottlenecks/pick`): the diagnosis's pressure points with their numbers, mapped to the idea bank's fixed taxonomy; under each, the master-list items that address it (matched by words, with score and decision) and the bank's 5 best unlocks for this store (store tags from the brand's own records, ideas must name the theme, ranked by fit then the bank's score) with effect, effort, cost, risk, the signal to check and the steps; Pick it writes a plans record, rule BRN-R22 turns it into a test brief action on the master list; strengths and the diagnosis test queue | done | See the bottleneck, what is already moving on it, and pick the next unlock from 4,650 ideas without reading them |
-| 4.2 | Plug and play proof on a second brand | todo | |
+| 4.2 | Plug and play (`?brand=<slug>` on the page, carried on every api call): every one of the 31 routes answers for the example brain of 7 records with unavailable where Bombas has data, never a zero or a crash; the audit and rank validate on it; a founder edit writes into any brain folder; the badge names the brand | done | Point the screen at any brain folder and get the same screen, with honest gaps |
 | 4.3 | Ladder proof matrix: rungs by surface | todo | |
 | 4.4 | The brain audits itself | todo | |
 | 4.5 | Peak readiness | todo | |

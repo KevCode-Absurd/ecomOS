@@ -131,6 +131,7 @@ QUESTION_ROUND_AT = 4
 CHART_DAYS = 30
 SIMULATED_NOTE = ("Bombas is the sample brand. Brain records come from public sources. "
                   "Every sales and ad number in ecomOS is simulated.")
+GENERIC_NOTE = "Brain records come from public sources and the founder. Every sales and ad number in ecomOS is simulated until a store connects."
 META_SECTIONS = {"freshness", "open_questions", "changes"}
 
 _spec = importlib.util.spec_from_file_location("brand_brain_audit", HERE / "audit.py")
@@ -590,7 +591,7 @@ def overview(brain: Brain) -> dict:
     conf = conflicts(brain)
     g = keeper.gaps(brain, bank)
     return {"brand": brain.brand, "today": brain.today.isoformat(), "version": brain.version(),
-            "simulated_note": SIMULATED_NOTE, "t0": t0_card(brain, False),
+            "simulated_note": SIMULATED_NOTE if brain.brand == "bombas" else f"{brain.brand} is a brain folder. " + GENERIC_NOTE, "t0": t0_card(brain, False),
             "tiles": tiles(sections, questions, conf, g), "insights": insights(questions, conf),
             "chart": chart(brain), "sections": sections, "ladders": ladders(brain),
             "questions": questions, "review": review_queue(brain), "conflicts": conf}

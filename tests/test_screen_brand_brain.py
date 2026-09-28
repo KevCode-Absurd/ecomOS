@@ -1408,3 +1408,57 @@ class Round4Unlocks(TempBrain):
         self.assertEqual(api.rank_mod.validate_action(a), [])
         self.assertEqual(api.handle(Req(['bottlenecks', 'pick'], 'POST', body={'idea_id': 'nope'}))[0], 400)
         self.assertEqual(api.handle(Req(['bottlenecks', 'pick'], 'POST', body={'idea_id': 'ZZZ-999'}))[0], 404)
+
+
+class Round4SecondBrand(unittest.TestCase):
+    """Round 4 feature 2: plug and play. Every route answers for the example brain (7 records), unavailable never zero."""
+
+    ROUTES = [['overview'], ['master'], ['profile'], ['documents'], ['competitors'], ['coverage'], ['signals'], ['health'], ['conflicts'], ['questions'],
+              ['decisions'], ['flows'], ['claims'], ['site', 'diff'], ['parity'], ['contracts'], ['legal'], ['voice'], ['battlecards'], ['permissions'],
+              ['export'], ['assumptions'], ['facts'], ['summaries'], ['changes'], ['learn'], ['report'], ['digest'], ['review'], ['bottlenecks'], ['audit']]
+
+    def setUp(self):
+        self.tmp = Path(tempfile.mkdtemp())
+        shutil.copytree(BRAIN / 'example', self.tmp / 'example')
+        api.BRAIN_ROOT = self.tmp
+
+    def tearDown(self):
+        api.BRAIN_ROOT = None
+        shutil.rmtree(self.tmp)
+
+    def req(self, path):
+        r = Req(path)
+        r.query['brand'] = ['example']
+        return r
+
+    def test_every_route_answers_for_a_second_brand(self):
+        failed = []
+        for path in self.ROUTES:
+            try:
+                res = api.handle(self.req(path))
+            except Exception as exc:  # noqa: BLE001
+                failed.append((path, type(exc).__name__ + ': ' + str(exc)[:80]))
+                continue
+            if isinstance(res, tuple):
+                failed.append((path, res))
+        self.assertEqual(failed, [])
+        ov = api.handle(self.req(['overview']))
+        self.assertIn('example is a brain folder', ov['simulated_note'])
+        h = api.handle(self.req(['health']))
+        self.assertEqual(h['cells']['claims'], {})     # no records: an empty cell, not 0
+        self.assertIsNone(api.handle(self.req(['competitors']))['us'])
+        self.assertEqual(api.handle(self.req(['parity']))['counts']['listings'], 0)
+        self.assertIsNone(api.handle(self.req(['site', 'diff']))['counts']['changes'])
+        cv = api.handle(self.req(['coverage']))
+        self.assertEqual(cv['gaps'], [])
+        r = api.rank('example', {'ends_on': '2026-09-27', 'days': 28, 'trailing': 4})
+        self.assertTrue(all(api.rank_mod.validate_action(a) == [] for a in r['actions']))
+        # a founder edit works the same way for any brand folder
+        status, res = api.handle(Req(['profile', 'positioning', 'frame'], 'POST', query={'brand': ['example']}, body={'text': 'Socks for people who walk all day.'}))
+        self.assertEqual(status, 201)
+        self.assertTrue((self.tmp / 'example' / 'positioning.json').is_file())
+
+    def test_page_carries_the_brand_on_every_call(self):
+        js = (SCREEN / 'screen.js').read_text(encoding='utf-8')
+        self.assertIn("new URLSearchParams(location.search).get('brand')", js)
+        self.assertIn('const api = (url, opts) => UI.api(withBrand(url), opts)', js)

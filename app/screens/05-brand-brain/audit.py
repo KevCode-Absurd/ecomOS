@@ -287,7 +287,7 @@ def rule_empty(brain: Brain, bank: list[dict], ends_on: str) -> list[dict]:
         rooms = sorted(s["rooms"])
         ev = [_row("empty_fields", len(s["fields"]), "n", ends_on, None, 0, "questions.bank.json"),
               _row("rooms_blocked", len(rooms), "n", ends_on, None, 0, "questions.bank.json")]
-        names = ", ".join(f.split(".", 1)[1].replace("_", " ") for f in s["fields"])
+        names = ", ".join((f.split(".", 1)[1] if "." in f else "the whole section").replace("_", " ") for f in s["fields"])
         sentence = (f"{sec.replace('_', ' ')} has no record for {names}. "
                     f"{len(rooms)} rooms need it: {', '.join(r.replace('_', ' ') for r in rooms)}.")
         out.append(_finding("BRN-R02", "medium", {"type": "brand", "id": f"section_{sec}", "label": sec},

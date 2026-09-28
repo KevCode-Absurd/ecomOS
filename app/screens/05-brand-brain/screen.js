@@ -3,8 +3,12 @@
    document in, a founder answer, accept or ignore on a proposed record, and decisions on the master list. */
 (function () {
   'use strict';
-  const { el, mount, api, fmt } = UI;
+  const { el, mount, fmt } = UI;
   const BASE = '/api/05-brand-brain/';
+  // the brand comes from the url (?brand=<slug>); every call to this screen's api and to the shared api carries it
+  const BRAND = (new URLSearchParams(location.search).get('brand') || '').replace(/[^a-z0-9_-]/g, '');
+  const withBrand = (url) => (BRAND && url.startsWith('/api/') ? url + (url.includes('?') ? '&' : '?') + 'brand=' + encodeURIComponent(BRAND) : url);
+  const api = (url, opts) => UI.api(withBrand(url), opts);
   const SCREEN = '05-brand-brain';
   const NA = 'unavailable';
   const pretty = (s) => String(s || '').replace(/_/g, ' ');
@@ -1338,7 +1342,7 @@
     try { d = await api(BASE + 'overview'); } catch (e) {
       mount('#badge', 'Could not load the brain: ' + e.message); return;
     }
-    mount('#badge', el('span', null, el('b', { text: 'Simulated data. ' }), d.simulated_note + ' Brain version ' + d.version + '.'));
+    mount('#badge', el('span', null, el('b', { text: 'Simulated data. ' }), d.simulated_note + ' Brain version ' + d.version + '.' + (BRAND ? ' Brand: ' + BRAND + '.' : '')));
     const t0 = document.getElementById('t0');
     t0.textContent = d.t0;
     mount('#t0-tools', el('span', { class: 'small muted', text: 'The compact brand card every agent reads first.' }),
