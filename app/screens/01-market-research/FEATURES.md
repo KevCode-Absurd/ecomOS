@@ -2,13 +2,48 @@
 
 Status: todo | doing | done | parked. One feature per commit. The first round is the skeleton; after that, features come in rounds of 10, stack-ranked by revenue impact, usefulness and how easy they are to build on dummy data.
 
-## Round 0: skeleton
+## Round 0: skeleton (done 28 Sep 2026, Bombas simulated data)
 
 | # | Feature | Status |
 |---|---|---|
-| 0.1 | Page shell in the shared UI kit: header, empty-state tiles, insight list, action buttons | todo |
-| 0.2 | `api.py` serving this screen's metrics from `app/data/` with unavailable states | todo |
-| 0.3 | 3 metric tiles, 2 insights, 1 chart from the sample brand | todo |
+| 0.1 | Page shell in the shared UI kit: header, simulated banner, tiles, insight list, decision row | done |
+| 0.2 | `api.py` (`overview`, `findings`) from `app/metrics.py` (`units`, `product_net_sales`, added for this screen) and the brand brain, unavailable states | done |
+| 0.3 | 3 tiles: units last 3 whole months vs a year earlier, lines losing share, lowest rated line | done |
+| 0.4 | Demand by line: units, growth vs last year, points vs the store, net sales, stars, reviews, 1 and 2 star share | done |
+| 0.5 | Price band table: per-pair list price per line against the competitor median band from `brain.competitors` (socks only) | done |
+| 0.6 | Review mining tiles per line: what works, what fails (`products.reviews_*`), ladder rungs built from the same reviews | done |
+| 0.7 | Candidate pipeline, seeded empty, with the margin gate rule and the floor from `finance_inputs.target_contribution_margin` | done |
+| 0.8 | 2 insights as rules: hero line with no next SKU (PROD-C06), sock price position against the band (PROD-C04) | done |
+| 0.9 | 1 chart: units by line, 12 whole months, top 5 lines stacked plus the rest | done |
+| 0.10 | Decision row: screen next-SKU ideas (PROD-C01, agent does) | done |
+| 0.11 | `audit.py`: PROD-R01 declining line (units down, or 1 point or more behind store growth), PROD-R02 review issue (1 and 2 star share 10 percent or more and 1.5x the brand median), money at stake on both | done |
+
+Notes from round 0:
+- On the Bombas simulated set every line grows about 28 percent a year, so no line falls in units. PROD-R01 also reads share: Gift Box grew 1.4 points slower than the store in all 3 months and fires as losing share.
+- List prices are the simulated catalog; review totals and competitor prices are public brain records. The page says which is which.
+- A line is the SKU title without its pack size. Review records map to lines through `audit.REVIEW_LINE`; lines without a record show "no record".
+- Screenshot: `round0.png`.
+
+## Room jobs (agent PROD, room "Products and research")
+
+| Job | Question | Capabilities |
+|---|---|---|
+| kill a bad product idea before spending research time on it | does this idea clear a fast demand and fit check | PROD-C01 |
+| check if a viral video-commerce product has real demand | is this one clip or a real pattern | PROD-C02 |
+| see which competitors run real sustained ad spend on a candidate | who is actually making money on this, not just posting it | PROD-C03 |
+| keep candidate research inside a fixed time budget | has this candidate used up its research hours | PROD-C04 |
+| read trend direction against competitive saturation for a category | is this category growing with room left, or growing and already full | PROD-C05 |
+| plan the next SKU for a proven hero product and its differentiation angle | what do we launch next and why is it different | PROD-C06 |
+| tag a candidate's demand pattern and cash timing | is this evergreen, seasonal or a one-time novelty, and when does cash move | PROD-C07 |
+| check a candidate against the margin and compliance gate | does this candidate actually make money after real costs, and is it legal to sell | PROD-C08 |
+| compare gate-estimated margin against a live SKU's actual margin | is this SKU making what we modelled it would | PROD-C08 |
+| mine reviews on the candidate's category for price ceiling and unmet complaints | what would buyers actually pay, and what do they hate about what exists | PROD-C04, PROD-C31 |
+| run the remaining go-live gates on a candidate | is this candidate ready to fund | PROD-C10 |
+| see the ranked shortlist and go or no-go memo | which candidates does the founder decide on this week | PROD-C11 |
+| hand a validated angle and avatar to the creative team | what does creative build on, and is it grounded in real field research | PROD-C12 |
+| track tech pack and spec versions for every SKU in the pipeline | which candidates have a real, versioned spec ready for sourcing | PROD-C13 |
+
+No JTBD table exists for this room yet (jtbd-writer is a BRAND skill, not a room table).
 
 ## Candidates from the room spec (pick 10 per round)
 
@@ -103,3 +138,4 @@ Status: todo | doing | done | parked. One feature per commit. The first round is
 
 | Round | Features picked | Date | Notes |
 |---|---|---|---|
+| 0 | skeleton, 0.1 to 0.11 | 28 Sep 2026 | S3.6, Bombas simulated set at scale 0.1 |
