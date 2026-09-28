@@ -47,6 +47,16 @@ Round 1 notes: `snapshot.py` plans and runs a page-id Ad Library pull through `a
 | 10.7 | Second brand check for round 10: on the minimal hat brand every hand-off row passes the server's validator, the dated report is `report_acme_<date>.md` with that brand's name, the pull table points at its own run command, and no Bombas word or "sock" appears | done |
 | 10.8 | New-ad bursts (the web pass's new-ad alerts, coded to light up): COMP-R36 fires with the second ad-level snapshot when a direct page launched 10 or more new ads since the last pull; the agent reads them by format, first line kind, offer and angle from the snapshot rows (no ad text stored) and a counter brief follows only where they overlap our top angles; sized by the ads read, with a stop rule and a 7-day check; a test lands 2 snapshots and fires it | done |
 | 10.9 | Browser and phone pass on round 10: "Save as a dated file" in the report view saves and relinks (the week's file is refreshed with the new hand-offs section), the hand-off block and the pull table render in their tabs, no script errors; the page on every tab and the report view are clean at 360 px | done |
+| 10.10 | Round close: 36 rules; decided moves, battlecards and support answers go on the shared hand-offs table and are read back by status; the weekly report is a dated file; 7 pull-dependent blocks and 2 pull rules (new creative count, new-ad bursts) are coded to light up and say what they wait for, proved with synthetic snapshots; depth pass outside the desk; second brand clean; screen tests green; screenshot `round10.png` | done |
+
+### Round 10 status for Kevin (28 Sep 2026)
+
+1. Moves you decide, plus the battlecards and support answers, can now go to the shared hand-off table in one click. Creative, copy, landing pages and support read them from there.
+2. The weekly report is saved as a dated file. The first one, for the week of 28 Sep, is in the folder.
+3. Every block that needs the Ad Library pull says what it shows today and what it becomes. 7 blocks and 2 new alerts light up the moment the pull lands; a test proves it.
+4. New alerts ready for the pull: a count of new rival ads, and a flag when a direct rival launches 10 or more new ads between pulls.
+5. A depth check outside the desk found 2 small gaps (a missing caveat, an incomplete empty state), both fixed. Every zero left on the page is a measured zero.
+6. Next, round 11: run the pull when you are ready (the command is on the freshness block), then counted angles and offers replace the estimates.
 
 ## Round 9: a depth pass on rounds 6 to 8, then what is left of the room
 
@@ -366,7 +376,7 @@ Where each job lives now (round 9). The question column quotes the room spec.
 | Round | Features picked | Date | Notes |
 |---|---|---|---|
 | 0 | 0.1 to 0.8 | 2026-09-28 | Bombas brain and simulated prices |
-| 10 | 10.1 to 10.9 | 2026-09-28 | Shared hand-offs; dated weekly report; pull-ready blocks; depth pass outside the desk; hand-offs read back; new creative count; second brand check; new-ad bursts; browser and phone pass |
+| 10 | 10.1 to 10.10 | 2026-09-28 | Shared hand-offs; dated weekly report; pull-ready blocks; depth pass outside the desk; hand-offs read back; new creative count; second brand check; new-ad bursts; browser and phone pass; round close. Screenshot `round10.png` |
 | 9 | 9.1 to 9.10 | 2026-09-28 | Depth pass; room jobs map; price drift across captures; open corners with demand; traffic connect step; visits count as tracking; team exports; sized new rules; evidence on new rules; round close. Screenshot `round9.png` |
 | 8 | 8.1 to 8.10 | 2026-09-28 | Outcomes; lost moves held; overdue reads; scoreboard; site changes; bring back snoozed; results in the brief and report; learnings for the brain; second brand check; round close. Screenshot `round8.png` |
 | 7 | 7.1 to 7.10 | 2026-09-28 | Interview reasons; coverage by name; prices seen on the band chart; price re-check cadence; logged work in the brief; queue and log in the report; briefs as rows; second brand check; form access; round close. Screenshot `round7.png` |
