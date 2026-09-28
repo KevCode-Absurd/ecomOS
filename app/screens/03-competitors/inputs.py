@@ -12,6 +12,8 @@ Kinds:
               many lines were dropped as no longer true. The card's freshness counts from the latest check.
   frame_test  a positioning poll result: the challenger line (a key the frames block offers), shoppers asked, how many
               preferred it and how many preferred the current line
+  threshold   a rule threshold tuned on the page: name (a tunable the audit lists) and value inside its range; the
+              newest change per name wins over the brain's competitor_thresholds record
 Price rule (the room's "competitor cut price sharply"): per page and product, the latest price per unit against the
 mean of that product's earlier records in the trailing TRAIL_DAYS (30) days; a move of the price move threshold or
 more is a cut or a raise. With no earlier record in the window there is no baseline, and no move.
@@ -163,7 +165,31 @@ def _frame_test(body: dict, known: dict, today: dt.date) -> tuple[dict | None, s
     return {"line": line, "asked": asked, "prefer_new": new, "prefer_current": cur, "date": day}, None
 
 
-VALIDATE = {"interview": _interview, "price_seen": _price_seen, "card_check": _card_check, "frame_test": _frame_test}
+def _threshold(body: dict, known: dict, today: dt.date) -> tuple[dict | None, str | None]:
+    ranges = known.get("tunable") or {}
+    name = str(body.get("name") or "")
+    if name not in ranges:
+        return None, "name must be one of: " + ", ".join(ranges)
+    try:
+        value = float(body.get("value"))
+    except (TypeError, ValueError):
+        return None, "value must be a number"
+    lo, hi = ranges[name]
+    if not lo <= value <= hi:
+        return None, f"{name} must be {lo:g} to {hi:g}"
+    return {"name": name, "value": int(value) if value == int(value) and isinstance(lo, int) else value, "date": today.isoformat()}, None
+
+
+def thresholds(rows: list[dict]) -> dict:
+    """The newest change per threshold name."""
+    out: dict[str, dict] = {}
+    for r in sorted(rows, key=lambda r: (r.get("logged_at", ""), r["id"])):
+        out[r["name"]] = r
+    return out
+
+
+VALIDATE = {"interview": _interview, "price_seen": _price_seen, "card_check": _card_check, "frame_test": _frame_test,
+            "threshold": _threshold}
 
 
 def add(brand: str, kind: str, body, known: dict, today: dt.date) -> tuple[int, dict]:

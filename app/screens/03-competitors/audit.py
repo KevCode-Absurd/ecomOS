@@ -529,10 +529,19 @@ TUNABLE = {"price_band_low": (_self, "PRICE_BAND", 0), "price_band_high": (_self
            "undercut": (mktmod, "UNDERCUT", None)}
 
 
+# the range a threshold may be tuned to on the page (inputs.py kind threshold); outside it the change is refused
+TUNE_RANGE = {"price_band_low": (50, 100), "price_band_high": (100, 200), "stale_days": (3, 90), "angle_share_max": (0.05, 0.6),
+              "threat_points": (2, 6), "watch_points": (1, 5), "coverage_gap_min": (0.01, 0.2), "surge": (0.1, 1.0),
+              "price_move": (0.05, 0.5), "discount_deeper_points": (1, 40), "ladder_min_saving": (0.02, 0.4), "undercut": (0.05, 0.5)}
+
+
 def apply_thresholds(brain: Brain) -> dict:
-    """Reset every tunable to its default, then apply the brand's competitor_thresholds record. Returns what is in force."""
+    """Reset every tunable to its default, apply the brand's competitor_thresholds record, then the latest change made on
+    this screen for each name (newest wins). Returns what is in force and where each value came from."""
     rec = next((r for r in brain.records("plans") if r.get("field") == "competitor_thresholds" and isinstance(r.get("value"), dict)), None)
-    over = rec["value"] if rec else {}
+    over = dict(rec["value"]) if rec else {}
+    screen = inpmod.thresholds(inpmod.read(brain.brand, "threshold"))
+    over.update({k: v["value"] for k, v in screen.items()})
     out = {}
     for name, (mod, attr, idx) in TUNABLE.items():
         if not hasattr(mod, "_default_" + attr):   # the default lives on the module, so every loaded copy shares it
@@ -546,7 +555,9 @@ def apply_thresholds(brain: Brain) -> dict:
             setattr(mod, attr, tuple(cur))
         else:
             setattr(mod, attr, val)
-        out[name] = {"value": val, "default": base, "source": "brain" if name in over and val == over[name] else "default"}
+        src = "screen" if name in screen else "brain" if name in over and val == over[name] else "default"
+        out[name] = {"value": val, "default": base, "source": src, "range": TUNE_RANGE.get(name),
+                     "changed_on": screen[name]["date"] if name in screen else None}
     return {"values": out, "record": rec["id"] if rec else None}
 
 

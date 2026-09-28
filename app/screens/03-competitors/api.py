@@ -193,6 +193,7 @@ def plan(brand: str, today: dt.date) -> dict:
             "connect": [a for a in acts if a.get("status") == "unavailable"],
             "snoozed": len(out["actions"]) - len(acts), "findings": out["findings"], "rules": audit.RULES,
             "groups": [{"key": k, "label": v} for k, v in audit.GROUP_LABEL.items()], "rule_group": audit.RULE_GROUP,
+            "thresholds": m["thresholds"],
             "snapshot_age_days": max(ages) if (ages := [p["age_days"] for p in m["pages"] if p["age_days"] is not None]) else None}
 
 
@@ -519,6 +520,7 @@ def handle(req):
                 m = audit.market_full(brand, today, BRAIN_ROOT)
                 return audit.inpmod.add(brand, str(body.get("kind") or ""), body, {"competitors": m["losses"]["names"],
                                         "pages": [p["name"] for p in m["pages"] if p["role"] != "self"],
+                                        "tunable": audit.TUNE_RANGE,
                                         "lines": [x["key"] for x in m["frames"]["lines"] if x["key"] != "A"],
                                         "direct": [p["name"] for p in m["pages"] if p["role"] != "self" and p["frame"] == "direct" and p["source"] != "none"]}, today)
             return {"records": audit.inpmod.read(brand, req.arg("kind")), "reason_codes": audit.inpmod.REASON_CODES,

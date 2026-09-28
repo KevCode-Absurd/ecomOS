@@ -1557,5 +1557,46 @@ class TestFrameTest(TempInputs):
         self.assertIn('COMP-R32', api.SECTION_RULES['frames'])
 
 
+class TestThresholdTuning(TempInputs):
+    """6.6: thresholds tuned on the page, inside a range, newest wins over the brain record."""
+    def tune(self, name, value):
+        return self.post({'kind': 'threshold', 'name': name, 'value': value})
+
+    def test_every_tunable_has_a_range(self):
+        self.assertEqual(set(api.audit.TUNE_RANGE), set(api.audit.TUNABLE))
+        for name, (lo, hi) in api.audit.TUNE_RANGE.items():
+            mod, attr, idx = api.audit.TUNABLE[name]
+            default = getattr(mod, '_default_' + attr, getattr(mod, attr))
+            default = default[idx] if idx is not None else default
+            self.assertTrue(lo <= default <= hi, name)
+
+    def test_validation(self):
+        self.assertEqual(self.tune('nonsense', 3)[0], 400)
+        self.assertEqual(self.tune('stale_days', 400)[0], 400)
+        self.assertEqual(self.tune('stale_days', 'x')[0], 400)
+        code, out = self.tune('stale_days', 30)
+        self.assertEqual(code, 201)
+        self.assertEqual(out['record']['value'], 30)
+
+    def test_change_applies_and_newest_wins(self):
+        self.tune('threat_points', 3)
+        self.tune('threat_points', 5)
+        th = api.handle(Req(['plan']))['thresholds']['values']['threat_points']
+        self.assertEqual(th['value'], 5)
+        self.assertEqual(th['source'], 'screen')
+        pages = api.handle(Req(['overview']))['pages']['rows']
+        self.assertFalse([r for r in pages if r['role'] != 'self' and r['verdict']['points'] is not None
+                          and r['verdict']['points'] < 5 and r['verdict']['text'] == 'Threat'])
+
+    def test_screen_beats_brain_record(self):
+        (self.tmp / 'bombas' / 'plans.json').exists() or (self.tmp / 'bombas' / 'plans.json').write_text('[]')
+        self.edit('plans', lambda rows: rows + [{'id': 'bombas.plans.competitor_thresholds', 'section': 'plans',
+                                                 'field': 'competitor_thresholds', 'value': {'stale_days': 21}}])
+        self.assertEqual(api.handle(Req(['plan']))['thresholds']['values']['stale_days']['source'], 'brain')
+        self.tune('stale_days', 10)
+        v = api.handle(Req(['plan']))['thresholds']['values']['stale_days']
+        self.assertEqual((v['value'], v['source']), (10, 'screen'))
+
+
 if __name__ == '__main__':
     unittest.main()

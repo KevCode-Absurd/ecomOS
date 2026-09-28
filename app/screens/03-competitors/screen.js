@@ -851,8 +851,12 @@
     const th = p.thresholds || { values: {} };
     mount('#rules', el('h4', { text: 'Rules' }), rulesTable(p.rules), el('h4', { text: 'Thresholds in force' }),
       UI.table({ columns: [{ key: 'k', label: 'Threshold' }, { key: 'v', label: 'Value' }, { key: 'd', label: 'Default' }, { key: 's', label: 'From' }], sort: false,
-        rows: Object.entries(th.values).map(([k, x]) => ({ k: pretty(k), v: String(x.value), d: String(x.default), s: x.source === 'brain' ? 'the brain record' : 'default' })) }),
-      el('p', { class: 'micro faint', text: 'Tune a threshold with a plans record, field competitor_thresholds' + (th.record ? ' (in use: ' + th.record + ')' : '') + '. The founder edits it on the brand brain screen.' }));
+        rows: Object.entries(th.values).map(([k, x]) => ({ k: pretty(k), v: String(x.value), d: String(x.default) + (x.range ? ' (range ' + x.range[0] + ' to ' + x.range[1] + ')' : ''),
+          s: x.source === 'screen' ? 'changed here on ' + fmt.date(x.changed_on) : x.source === 'brain' ? 'the brain record' : 'default' })) }),
+      el('details', { class: 'card flat' }, el('summary', { class: 'small', text: 'Change a threshold' }),
+        inputForm('threshold', [{ key: 'name', label: 'Threshold', options: Object.keys(th.values) }, { key: 'value', label: 'New value', type: 'number', step: 'any' }], 'Save threshold'),
+        el('p', { class: 'micro faint', text: 'Every rule reads the new value on the next load. Set it back to the default to undo. Ranges keep an alert from going silent or firing on noise.' })),
+      el('p', { class: 'micro faint', text: 'A change made here wins over the brand brain record (plans, field competitor_thresholds' + (th.record ? ', in use: ' + th.record : '') + ').' }));
   }
 
   if (new URLSearchParams(location.search).get('view') === 'report') {
