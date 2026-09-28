@@ -2308,3 +2308,35 @@ class NoDeadButtons(unittest.TestCase):
         for label, why in re.findall(r"keep\('([^']+)', '([^']+)'\)", js):
             self.assertNotRegex(why, r'\d', label)
         self.assertGreaterEqual(len(re.findall(r"keep\('", js)), 14)
+
+
+class Deterministic(unittest.TestCase):
+    """Feature 9.8: depth rule 13. rank and the audit give the same actions in the same order across cold processes
+    with different hash seeds, and the screen's code imports nothing that could call a model or the network."""
+
+    SNIPPET = r"""
+import sys, json
+sys.path.insert(0, sys.argv[1])
+import api
+w = {'ends_on': '2026-09-27', 'days': 28, 'trailing': 4}
+acts = api.rank('bombas', w)['actions']
+fs = api.audit.run('bombas', w, api.BRAIN_ROOT)
+print(json.dumps({'rank': [(a['id'], a['rubric']['total'], a['finding_ids'], (a.get('size') or {}).get('text')) for a in acts],
+                  'audit': [(f['id'], f['sentence']) for f in fs]}))
+"""
+
+    def test_same_output_across_hash_seeds(self):
+        import os
+        import subprocess
+        outs = []
+        for seed in ('1', '4242'):
+            env = dict(os.environ, PYTHONHASHSEED=seed)
+            r = subprocess.run([sys.executable, '-c', self.SNIPPET, str(SCREEN)], env=env, capture_output=True, text=True, timeout=120, cwd=str(ROOT))
+            self.assertEqual(r.returncode, 0, r.stderr[-800:])
+            outs.append(json.loads(r.stdout.strip().splitlines()[-1]))
+        self.assertEqual(outs[0], outs[1])
+
+    def test_no_model_or_network_imports(self):
+        for name in ('api.py', 'audit.py', 'builds.py'):
+            src = (SCREEN / name).read_text(encoding='utf-8')
+            self.assertNotRegex(src, r'import (openai|anthropic|requests)|urllib\.request|http\.client', name)
