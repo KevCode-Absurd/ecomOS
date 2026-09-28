@@ -2097,10 +2097,45 @@ class Round5ExportDiff(TempBrain):
         self.assertEqual(api.handle(Req(['export', 'diff'], 'POST', body={'bundle': b2}))['counts']['gone'], 0)
 
 
+class Round5Trail(TempBrain):
+    """Round 5 feature 7: who read what: section reads by reader, facts handed on package builds, private facts to public-facing readers."""
+
+    def test_unavailable_then_filled_by_reads_and_packages(self):
+        t = api.handle(Req(['trail']))
+        self.assertFalse(t['available'])
+        self.assertEqual(t['counts'], {'reads': 0, 'readers': 0, 'facts_handed': 0})
+        api.handle(Req(['profile'], query={'reader': ['05-brand-brain']}))
+        api.handle(Req(['records'], query={'section': ['voice'], 'reader': ['06-creative']}))
+        p = api.handle(Req(['package'], query={'capability': ['CREA-C06']}))
+        self.assertTrue(p['record_ids'])
+        t = api.handle(Req(['trail'], query={'days': ['7']}))
+        self.assertTrue(t['available'])
+        by = {r['reader']: r for r in t['readers']}
+        self.assertEqual(by['06-creative']['kind'], 'screen')
+        self.assertIn('voice', by['06-creative']['sections'])
+        self.assertEqual(by['CREA-C06']['kind'], 'capability')
+        self.assertEqual(by['CREA-C06']['facts'], len(p['record_ids']))
+        self.assertEqual(t['counts']['facts_handed'], len(p['record_ids']))
+        self.assertEqual(t['facts'][0]['times'], 1)
+        self.assertIn('CREA-C06', t['facts'][0]['readers'])
+        self.assertTrue(t['facts'][0]['still_active'])
+        self.assertEqual(t['counts']['private_to_public'], 0)
+        self.assertIn('facts handed to agents', t['text'])
+        self.assertTrue((self.tmp / 'bombas' / 'review' / 'agent-reads.jsonl').is_file())
+
+    def test_private_fact_to_public_reader_is_flagged(self):
+        rec = next(r for r in api.handle(Req(['records'], query={'section': ['diagnosis']}))['records'])
+        api.trail.log_records(api.Brain('bombas', self.tmp, dt.date(2026, 9, 28)), 'SHOP-C99', [rec['id']], public_facing=True)
+        t = api.handle(Req(['trail']))
+        self.assertEqual(t['counts']['private_to_public'], 1)
+        self.assertEqual(t['private_to_public'][0]['reader'], 'SHOP-C99')
+        self.assertIn('Private facts handed to a public-facing reader: 1', t['text'])
+
+
 class Round4SecondBrand(unittest.TestCase):
     """Round 4 feature 2: plug and play. Every route answers for the example brain (7 records), unavailable never zero."""
 
-    ROUTES = [['overview'], ['master'], ['profile'], ['documents'], ['competitors'], ['coverage'], ['signals'], ['health'], ['conflicts'], ['questions'], ['ladders', 'proof'], ['selfaudit'], ['peaks'], ['visual'], ['newbrand'], ['visibility'], ['moves'], ['channels'], ['agentfile', 'endpoints'], ['brainmd'],
+    ROUTES = [['overview'], ['master'], ['profile'], ['documents'], ['competitors'], ['coverage'], ['signals'], ['health'], ['conflicts'], ['questions'], ['ladders', 'proof'], ['selfaudit'], ['peaks'], ['visual'], ['newbrand'], ['visibility'], ['moves'], ['channels'], ['agentfile', 'endpoints'], ['brainmd'], ['trail'],
               ['decisions'], ['flows'], ['claims'], ['site', 'diff'], ['parity'], ['contracts'], ['legal'], ['voice'], ['battlecards'], ['permissions'],
               ['export'], ['assumptions'], ['facts'], ['summaries'], ['changes'], ['learn'], ['report'], ['digest'], ['review'], ['bottlenecks'], ['audit']]
 

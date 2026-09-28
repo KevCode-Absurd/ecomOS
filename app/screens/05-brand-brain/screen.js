@@ -57,6 +57,7 @@
     } else pw.hidden = true;
     loadDecisions(m);
     loadChanges();
+    loadTrail();
     loadReport();
     loadUnlocks();
     loadMoves();
@@ -624,6 +625,21 @@
     ] }));
   }
 
+  // ---------- 1b2. who read what ----------
+  async function loadTrail() {
+    let t;
+    try { t = await api(BASE + 'trail?days=7'); } catch (e) { mount('#trail', el('p', { class: 'muted', text: 'Trail unavailable: ' + e.message })); return; }
+    const c = t.counts;
+    mount('#trail-tools', UI.orientation([{ label: 'section reads', value: t.available ? c.reads : null, unit: 'n' }, { label: 'readers', value: t.available ? c.readers : null, unit: 'n' }, { label: 'facts handed', value: t.available ? c.facts_handed : null, unit: 'n' }, { label: 'private to public readers', value: t.available ? c.private_to_public : null, unit: 'n', tone: c.private_to_public ? 'bad' : null }]));
+    if (!t.available) { mount('#trail', el('p', { class: 'muted small', text: 'Unavailable: ' + t.reason + '.' })); return; }
+    const readers = UI.table({ columns: [{ key: 'reader', label: 'Reader' }, { key: 'kind', label: 'Kind', format: (v) => pretty(v) }, { key: 'reads', label: 'Section reads', num: true }, { key: 'facts', label: 'Facts handed', num: true }, { key: 'sections', label: 'Sections', format: (v) => (v || []).map(pretty).join(', ') }, { key: 'last', label: 'Last', format: (v) => v ? fmt.date(v.slice(0, 10)) : NA }], rows: t.readers, sort: false });
+    const sections = UI.table({ columns: [{ key: 'section', label: 'Section', format: (v) => pretty(v) }, { key: 'reads', label: 'Reads', num: true }, { key: 'readers', label: 'Readers', format: (v) => (v || []).join(', ') }, { key: 'last', label: 'Last', format: (v) => v ? fmt.date(v.slice(0, 10)) : NA }], rows: t.sections, sort: false });
+    const facts = t.facts.length ? UI.table({ columns: [{ key: 'id', label: 'Fact' }, { key: 'times', label: 'Handed', num: true }, { key: 'readers', label: 'To', format: (v) => (v || []).join(', ') }, { key: 'tier', label: 'Tier', format: (v) => pretty(v || 'gone') }, { key: 'text', label: 'Text' }], rows: t.facts, sort: false }) : el('p', { class: 'muted small', text: 'No package built for an agent in the window yet. Show a package or a brain file and its facts land here.' });
+    const leak = t.private_to_public.length ? el('div', { class: 'warn small' }, el('b', { text: 'Private facts handed to a public-facing reader: ' }), t.private_to_public.map((x) => x.id + ' to ' + x.reader).join('; ') + '. Fix the flags in What stays inside.') : null;
+    mount('#trail', el('div', { class: 'row' }, UI.copyButton({ label: 'Copy the weekly trail', text: () => t.text }), el('span', { class: 'micro faint', text: 'Since ' + fmt.date(t.since) + '.' })), leak,
+      UI.tabs({ items: [{ key: 'readers', label: 'By reader', n: t.readers.length, panel: readers }, { key: 'sections', label: 'By section', n: t.sections.length, panel: sections }, { key: 'facts', label: 'Facts handed', n: t.facts.length, panel: facts }] }), el('p', { class: 'micro faint', text: t.note }));
+  }
+
   // ---------- 1c. what changed this week ----------
   const KIND_TONE = { site: 'warn', founder_edit: 'good', answer: 'good', approve: 'good', forbid: 'bad', conflict: 'accent', document: 'info', proposed: 'info', accepted: 'good', ignored: null, snapshot: 'info' };
   async function loadChanges() {
@@ -699,7 +715,7 @@
   }
   async function loadProfile() {
     let p;
-    try { p = await api(BASE + 'profile'); } catch (e) { mount('#profile', el('p', { class: 'muted', text: 'Profile unavailable: ' + e.message })); return null; }
+    try { p = await api(BASE + 'profile?reader=' + SCREEN); } catch (e) { mount('#profile', el('p', { class: 'muted', text: 'Profile unavailable: ' + e.message })); return null; }
     mount('#profile-tools', UI.orientation([
       { label: 'fields', value: p.fields, unit: 'n' }, { label: 'approved by you', value: p.approved, unit: 'n', tone: 'good' },
       { label: 'approved share', value: p.approved_share, unit: '%' }]));
@@ -1155,7 +1171,7 @@
     document.getElementById('browser-title').textContent = 'Records in ' + pretty(name);
     mount('#browser', el('p', { class: 'muted', text: 'Loading.' }));
     try {
-      const d = await api(BASE + 'records?section=' + encodeURIComponent(name));
+      const d = await api(BASE + 'records?section=' + encodeURIComponent(name) + '&reader=' + SCREEN);
       mount('#browser', ...(d.records.length ? d.records.map(recordCard) : [el('p', { class: 'muted', text: 'No records in this section yet.' })]));
     } catch (e) { mount('#browser', el('p', { class: 'muted', text: 'Could not load: ' + e.message })); }
     wrap.scrollIntoView({ behavior: 'smooth', block: 'start' });

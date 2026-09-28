@@ -8,6 +8,7 @@ question, and accept or ignore on a proposed record. Nothing external.
                                 judgement rules, the package, where to check (markdown)
   GET  agentfile/endpoints      this route table as JSON, for an agent or an MCP wrapper
   GET  brainmd                  the router BRAIN.md text
+  GET  trail?days=7             who read what: section reads by reader, facts handed to agents, private facts to public readers
   POST export/diff              {bundle | content_base64}: what changed since that export, record by record
   POST export/diff/start|part|finish  the same export in 24 KB base64 parts (the server takes 32 KB a request)
   POST review/draft             {text, channel, kind}: every check in one call and the route
@@ -187,6 +188,9 @@ _pspec.loader.exec_module(parity)
 _sspec = importlib.util.spec_from_file_location("brand_brain_sitediff", HERE / "sitediff.py")
 sitediff = importlib.util.module_from_spec(_sspec)
 _sspec.loader.exec_module(sitediff)
+_trspec = importlib.util.spec_from_file_location("brand_brain_trail", HERE / "trail.py")
+trail = importlib.util.module_from_spec(_trspec)
+_trspec.loader.exec_module(trail)
 _bdspec = importlib.util.spec_from_file_location("brand_brain_braindiff", HERE / "braindiff.py")
 braindiff = importlib.util.module_from_spec(_bdspec)
 _bdspec.loader.exec_module(braindiff)
@@ -1122,7 +1126,7 @@ def package_view(brain: Brain, cap_id: str):
     return {"capability": cap_id, "name": cat.get("name"), "autonomy": cat.get("autonomy"), "budget": pkg["budget"], "tokens": pkg["tokens"], "public_facing": pkg["public_facing"],
             "share": round(pkg["tokens"] / pkg["budget"], 2) if pkg["budget"] else None,
             "parts": [{"tier": p["tier"], "section": p.get("section"), "tokens": package_mod.tokens(p["text"]), "text": p["text"]} for p in pkg["parts"]],
-            "records": len(pkg["records"]), "version": pkg["version"], "text": pkg["text"]}
+            "records": len(pkg["records"]), "record_ids": [r["id"] for r in pkg["records"]], "version": pkg["version"], "text": pkg["text"]}
 
 
 def fact_approve(brain: Brain, key: str, body: dict):
@@ -1699,6 +1703,8 @@ def handle(req):
         res = package_view(brain, req.arg("capability", "") or "")
         if not isinstance(res, tuple):
             _log_read(brain, [p["section"] for p in res["parts"] if p.get("section")], req.arg("reader") or res["capability"])
+            if res.get("record_ids"):
+                trail.log_records(brain, req.arg("reader") or res["capability"], res["record_ids"], res.get("public_facing"))
         return res
     if req.method == "GET" and parts == ["facts"]:
         fp = facts.pairs(brain)
@@ -1849,6 +1855,14 @@ def handle(req):
         return cd
     if req.method == "POST" and parts == ["claims"]:
         return claim_add(brain, req.body)
+    if req.method == "GET" and parts == ["trail"]:
+        try:
+            days = max(1, min(90, int(req.arg("days", "7") or 7)))
+        except ValueError:
+            days = 7
+        t = trail.weekly(brain, days)
+        t.update(brand=brain.brand, today=brain.today.isoformat(), capability={"id": "LOOP-C29", "autonomy": "founder_gate"})
+        return t
     if req.method == "GET" and parts == ["agentfile", "endpoints"]:
         rows = agentfile.endpoints(__doc__ or "")
         return {"screen": "05-brand-brain", "brand": brain.brand, "endpoints": rows, "counts": {"routes": len(rows), "read_only": sum(1 for r in rows if r["read_only"])},
@@ -1860,6 +1874,8 @@ def handle(req):
             return pv
         res = agentfile.build(brain, cap, pv, {"claims": claims_mod, "voice": voice, "visibility": visibility, "ladderproof": ladderproof, "market": market, "package": package_mod})
         _log_read(brain, [p["section"] for p in pv["parts"] if p.get("section")], req.arg("reader") or cap)
+        if pv.get("record_ids"):
+            trail.log_records(brain, req.arg("reader") or cap, pv["record_ids"], pv.get("public_facing"))
         res["name"] = pv.get("name")
         return res
     if req.method == "GET" and parts == ["brainmd"]:
