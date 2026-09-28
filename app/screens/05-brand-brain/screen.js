@@ -683,6 +683,52 @@
     return card;
   }
 
+  // ---------- 5c1. site diff between crawls ----------
+  function changeCard(c, reload, byAct) {
+    const a = byAct['change_' + c.section + '_' + (c.field || 'x')];
+    const card = el('article', { class: 'card flat rec change' + (c.reviewed ? ' settled' : '') });
+    card.append(el('div', { class: 'meta' }, UI.sevChip(c.severity), el('span', { class: 'chip mono', text: c.section + '.' + (c.field || '') }), el('span', { class: 'chip', text: c.change }),
+      el('span', { text: c.captured_at ? 'seen ' + fmt.date(c.captured_at) : '' }), c.reviewed ? el('span', { class: 'chip good', text: 'reviewed ' + fmt.date(c.reviewed.at) }) : el('span', { class: 'chip warn', text: 'open' })));
+    const vs = el('div', { class: 'vs' }, el('div', null, el('div', { class: 'meta' }, el('span', { class: 'chip', text: 'before' })), el('b', { text: c.old_text == null ? 'not on the site' : c.old_text })),
+      el('div', { class: 'kept' }, el('div', { class: 'meta' }, el('span', { class: 'chip accent', text: 'now' })), el('b', { text: c.new_text == null ? 'gone' : c.new_text })));
+    card.append(vs);
+    if (c.ref) card.append(el('div', { class: 'meta' }, el('a', { href: c.ref, target: '_blank', rel: 'noopener', text: c.ref.replace(/^https?:\/\//, '') })));
+    if (a) card.append(UI.actionCard(a, { screen: SCREEN, compact: true }));
+    else card.append(el('div', { class: 'small' }, el('b', { text: c.action.title + '. ' }), 'Owner: ' + pretty(c.action.owner) + '. ' + c.action.steps.map((st) => st.n + '. ' + st.text).join(' ')));
+    if (!c.reviewed) {
+      const btn = el('button', { class: 'btn sm', type: 'button', text: 'Mark reviewed' });
+      const status = el('span', { class: 'micro muted' });
+      btn.addEventListener('click', async () => { btn.disabled = true; try { await api(BASE + 'site/reviewed', { method: 'POST', body: { ids: [c.id] } }); reload(); } catch (e) { btn.disabled = false; status.textContent = 'Could not save: ' + e.message; } });
+      card.append(el('div', { class: 'row' }, btn, status));
+    }
+    return card;
+  }
+  async function loadSite() {
+    let sd, actions = [];
+    try { sd = await api(BASE + 'site/diff'); } catch (e) { mount('#site', el('p', { class: 'muted', text: 'Site diff unavailable: ' + e.message })); return; }
+    try { const r = await api(BASE + 'rank'); actions = (r.actions || []).filter((a) => a.rule_id === 'BRN-R14'); } catch (e) { actions = []; }
+    const byAct = {}; for (const a of actions) if (a.entity && a.entity.id) byAct[a.entity.id] = a;
+    const last = sd.snapshots.length ? sd.snapshots[sd.snapshots.length - 1] : null;
+    mount('#site-tools', UI.orientation([{ label: 'snapshots', value: sd.snapshots.length, unit: 'n' }, { label: 'last crawl', value: null, unit: 'n', unavailable_label: last ? fmt.date(last.date) : 'none' },
+      { label: 'changes', value: sd.counts.changes, unit: 'n' }, { label: 'open', value: sd.counts.open, unit: 'n', tone: sd.counts.open ? 'bad' : (sd.counts.open === 0 ? 'good' : null) }, { label: 'high', value: sd.counts.high, unit: 'n' }]));
+    const snapBtn = el('button', { class: 'btn sm', type: 'button', text: 'Snapshot the crawl on file' });
+    const status = el('span', { class: 'micro muted' });
+    snapBtn.addEventListener('click', async () => { snapBtn.disabled = true; try { const r = await api(BASE + 'site/snapshot', { method: 'POST', body: {} }); status.textContent = 'Snapshot ' + r.date + ', ' + r.records + ' records.'; loadSite(); } catch (e) { snapBtn.disabled = false; status.textContent = 'Could not snapshot: ' + e.message; } });
+    const crawl = UI.decisionRow({ capability: 'BRN-C01', autonomy: 'agent_does', owner: 'agent', screen: SCREEN, compact: true, stub: 'Runs the site extractor read-only (1 request a second, robots honoured, 20 pages), writes raw/a-site, then a dated snapshot. The diff against the last snapshot appears here.' });
+    const tools = el('div', { class: 'row' }, snapBtn, status, el('span', { class: 'micro faint', text: 'Re-crawl:' }), crawl);
+    const items = [];
+    if (sd.unavailable_reason) items.push(el('p', { class: 'muted', text: NA + ': ' + sd.unavailable_reason }));
+    else {
+      items.push(el('div', { class: 'small muted', text: 'Comparing ' + fmt.date(sd.old) + ' with ' + fmt.date(sd.new) + '. ' + Object.entries(sd.counts.by_section || {}).map(([k, v]) => pretty(k) + ' ' + v).join(', ') + '.' }));
+      const open = sd.changes.filter((c) => !c.reviewed), done = sd.changes.filter((c) => c.reviewed);
+      items.push(el('div', { class: 'grid' }, ...open.map((c) => changeCard(c, loadSite, byAct))));
+      if (!open.length) items.push(el('p', { class: 'muted', text: 'Every change is reviewed.' }));
+      if (done.length) { const list = el('div', { class: 'grid', hidden: true }); const btn = el('button', { class: 'btn sm', type: 'button', text: 'Show ' + done.length + ' reviewed' }); btn.addEventListener('click', () => { list.hidden = !list.hidden; btn.textContent = list.hidden ? 'Show ' + done.length + ' reviewed' : 'Hide reviewed'; if (!list.hidden && !list.children.length) mount(list, ...done.map((c) => changeCard(c, loadSite, byAct))); }); items.push(el('div', { class: 'row' }, btn), list); }
+    }
+    items.push(tools, el('div', { class: 'micro faint', text: sd.note }));
+    mount('#site', ...items);
+  }
+
   // ---------- 5c2. claims desk and the draft scanner ----------
   function claimsTable(cd, reload) {
     const rows = cd.claims.map((c) => Object.assign({}, c, { src: c.source.ref ? c.source.ref.replace(/^https?:\/\//, '').slice(0, 40) : (c.source.type || 'none'), used: c.used_by.length ? c.used_by.map((u) => pretty(u.theme) + ' ' + u.level).join(', ') : 'nothing yet', surf: c.surfaces.map(pretty).join(', ') || '' }));
@@ -845,6 +891,7 @@
     loadConflicts();
     loadQuestions();
     loadClaims();
+    loadSite();
     const [prof] = await Promise.all([loadProfile(), loadDesk()]);
     await loadPlan(prof);
   }

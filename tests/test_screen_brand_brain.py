@@ -90,7 +90,7 @@ class AuditShape(unittest.TestCase):
         self.assertIn('05-brand-brain.BRN-R02.section_economics', ids)
         self.assertIn('05-brand-brain.BRN-R04.mission_trust.rung_1.donation_pledge', ids)
         rules = {r['rule_id'] for r in audit.RULES}
-        self.assertLessEqual({'BRN-R01', 'BRN-R02', 'BRN-R03', 'BRN-R04', 'BRN-R05', 'BRN-R06', 'BRN-R07', 'BRN-R08', 'BRN-R09', 'BRN-R10', 'BRN-R11', 'BRN-R12', 'BRN-R13'}, rules)
+        self.assertLessEqual({'BRN-R01', 'BRN-R02', 'BRN-R03', 'BRN-R04', 'BRN-R05', 'BRN-R06', 'BRN-R07', 'BRN-R08', 'BRN-R09', 'BRN-R10', 'BRN-R11', 'BRN-R12', 'BRN-R13', 'BRN-R14'}, rules)
 
 
 class AuditRules(TempBrain):
@@ -838,3 +838,47 @@ class Round2Claims(TempBrain):
         hard = 'Notwithstanding the aforementioned considerations, our organisation systematically operationalises multidimensional comfort methodologies across heterogeneous consumer populations, thereby facilitating unprecedented satisfaction outcomes.'
         r = api.handle(Req(['scan'], 'POST', body={'text': hard}))
         self.assertTrue(any(h['kind'] == 'reading_level' for h in r['hits']))
+
+
+class Round2SiteDiff(TempBrain):
+    """Round 2 feature 2: the diff between the two newest site snapshots, each change ending in an action."""
+
+    def second_crawl(self, value=80, date='2026-10-05'):
+        p = self.tmp / 'bombas' / 'raw' / 'a-site' / 'offers.json'
+        rows = json.loads(p.read_text(encoding='utf-8'))
+        rows[0]['value'] = value
+        rows[0]['source']['captured_at'] = date
+        p.write_text(json.dumps(rows), encoding='utf-8')
+
+    def test_one_snapshot_is_unavailable_not_a_fake_diff(self):
+        sd = api.handle(Req(['site', 'diff']))
+        self.assertEqual(len(sd['snapshots']), 1)
+        self.assertEqual(sd['snapshots'][0]['date'], DAY)
+        self.assertIsNone(sd['counts']['changes'])
+        self.assertIn('next crawl', sd['unavailable_reason'])
+        self.assertEqual(api.handle(Req(['site', 'reviewed'], 'POST', body={'ids': ['x']}))[0], 400)
+        self.assertFalse([f for f in api.handle(Req(['audit']))['findings'] if f['rule_id'] == 'BRN-R14'])
+
+    def test_second_snapshot_gives_changes_with_actions_and_rule(self):
+        api.handle(Req(['site', 'diff']))
+        self.second_crawl()
+        status, res = api.handle(Req(['site', 'snapshot'], 'POST', body={}))
+        self.assertEqual((status, res['date']), (201, '2026-10-05'))
+        sd = api.handle(Req(['site', 'diff']))
+        self.assertEqual(sd['pair'], DAY + '..2026-10-05')
+        self.assertEqual(sd['counts'], {'changes': 1, 'open': 1, 'high': 1, 'by_section': {'offers': 1}})
+        c = sd['changes'][0]
+        self.assertEqual((c['id'], c['change'], c['old'], c['new'], c['severity']), ('bombas.offers.free_shipping_threshold_usd', 'changed', 75, 80, 'high'))
+        self.assertEqual(c['action']['owner'], 'agent_drafts')
+        f = next(f for f in api.handle(Req(['audit']))['findings'] if f['rule_id'] == 'BRN-R14')
+        self.assertEqual((f['severity'], f['capability']['id']), ('high', 'BRN-C01'))
+        self.assertIn('changed from 75 to 80', f['sentence'])
+        a = next(a for a in api.rank('bombas', {'ends_on': '2026-09-27', 'days': 28, 'trailing': 4})['actions'] if a['rule_id'] == 'BRN-R14')
+        self.assertTrue(a['title'].startswith('Carry the new free shipping threshold'))
+        self.assertEqual(api.rank_mod.validate_action(a), [])
+        status, res = api.handle(Req(['site', 'reviewed'], 'POST', body={'ids': [c['id']]}))
+        self.assertEqual((status, res['reviewed']), (201, 1))
+        sd = api.handle(Req(['site', 'diff']))
+        self.assertEqual(sd['counts']['open'], 0)
+        self.assertTrue(sd['changes'][0]['reviewed'])
+        self.assertFalse([f for f in api.handle(Req(['audit']))['findings'] if f['rule_id'] == 'BRN-R14'])

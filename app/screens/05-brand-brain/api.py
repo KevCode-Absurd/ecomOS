@@ -47,6 +47,10 @@ question, and accept or ignore on a proposed record. Nothing external.
   POST claims                   {text, tier: approved | forbidden}: add a claim or forbid a phrase (founder record)
   POST scan                     {text}: check a draft against the brain: forbidden phrases, unproven absolutes,
                                 stale numbers, unapproved claims, reading grade; hits name the record and the fix
+  GET  site/diff                changes between the two newest site snapshots, each with its action; one snapshot
+                                reads unavailable with the reason
+  POST site/snapshot            store the crawl on file as a snapshot (after each site crawl)
+  POST site/reviewed            {ids}: mark changes reviewed for the current pair
   GET  records?section=<name>   one section's records with tier, date, source and evidence
   GET  audit                    findings from audit.py (app/contracts/audit.md shape)
   POST questions/<field>        {answer}: writes a founder record, marks the question answered
@@ -88,6 +92,9 @@ _spec.loader.exec_module(audit)
 _hspec = importlib.util.spec_from_file_location("brand_brain_health", HERE / "health.py")
 health = importlib.util.module_from_spec(_hspec)
 _hspec.loader.exec_module(health)
+_sspec = importlib.util.spec_from_file_location("brand_brain_sitediff", HERE / "sitediff.py")
+sitediff = importlib.util.module_from_spec(_sspec)
+_sspec.loader.exec_module(sitediff)
 _cspec = importlib.util.spec_from_file_location("brand_brain_claims", HERE / "claims.py")
 claims_mod = importlib.util.module_from_spec(_cspec)
 _cspec.loader.exec_module(claims_mod)
@@ -848,6 +855,21 @@ def handle(req):
         ends = (brain.today - dt.timedelta(days=1)).isoformat()
         findings = audit.run(brain.brand, {"ends_on": ends, "days": 1, "trailing": 0}, BRAIN_ROOT)
         return {"findings": findings, "rules": audit.RULES, "brain_version": brain.version()}
+    if req.method == "GET" and parts == ["site", "diff"]:
+        sd = sitediff.diff(brain)
+        sd.update(brand=brain.brand, today=brain.today.isoformat(), version=brain.version())
+        return sd
+    if req.method == "POST" and parts == ["site", "snapshot"]:
+        res = sitediff.take(brain, (req.body or {}).get("date") or None)
+        return (201, res) if res.get("ok") else (400, res)
+    if req.method == "POST" and parts == ["site", "reviewed"]:
+        ids = [str(i) for i in ((req.body or {}).get("ids") or []) if isinstance(i, str)]
+        sd = sitediff.diff(brain)
+        if not sd.get("pair"):
+            return 400, {"error": "no diff to review", "reason": sd.get("unavailable_reason")}
+        if not ids:
+            return 400, {"error": "ids is empty"}
+        return 201, dict(sitediff.mark_reviewed(brain, sd["pair"], ids), ok=True)
     if req.method == "GET" and parts == ["claims"]:
         cd = claims_mod.desk(brain)
         cd.update(brand=brain.brand, today=brain.today.isoformat(), version=brain.version())

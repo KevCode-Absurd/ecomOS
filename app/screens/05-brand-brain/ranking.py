@@ -139,6 +139,14 @@ def build(f: dict, nr: float | None) -> dict:
         a.update(title=f"Settle {label.replace('_', ' ')}: {_pct(_ev(f, 'weak_share'))} of it is inferred", owner="agent_drafts",
                  artefact={"kind": "brain_record", "label": "approved records in place of inferred ones", "draft": None},
                  steps=f.get("steps") or a["steps"], check_on=_check_on(f, 7), time_to_ship_hours=1)
+    elif rid == "BRN-R14":
+        sc = f.get("site_change") or {}
+        act = sc.get("action") or {}
+        a.update(title=act.get("title") or f"Review the site change: {label}", owner=act.get("owner") or "agent",
+                 artefact={"kind": act.get("artefact") or "brain_record", "label": "the brain and every surface carrying the old value updated", "draft": None},
+                 steps=act.get("steps") or a["steps"], check_on=_check_on(f, 7), time_to_ship_hours=2)
+        if sc.get("section") in ("claims", "policies"):
+            f = dict(f, entity={"type": "brand", "id": ent.get("id"), "label": "policy claim " + label})
     elif rid == "BRN-R13":
         a.update(title=f"Tier the {label} claim: approve it or forbid it", owner="person",
                  artefact={"kind": "brain_record", "label": "the claim tiered approved or forbidden by you", "draft": None},

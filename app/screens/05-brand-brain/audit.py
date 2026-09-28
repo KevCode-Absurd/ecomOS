@@ -68,6 +68,11 @@ BRN-R13 claim untiered too long. A claims record with tier unverified,
     days (room spec: "{claim} has been untiered for {n} days and needs a
     founder call"). Severity medium; high when a ladder rung uses it in copy.
     Capability BRN-C03. Reputation override 5 (a claim). Owner: 05-brand-brain.
+BRN-R14 site changed unnoticed. A record in the site crawl differs between
+    the two newest snapshots (sitediff.py) and no person has marked it
+    reviewed. Severity from the section: offers, policies, claims and product
+    prices high, identity and stack medium, else low. Capability BRN-C01.
+    Reputation override 5 for a claim or policy change. Owner: 05-brand-brain.
 BRN-R07 competitor snapshot stale. A configured Ad Library page was captured
     more than SNAPSHOT_STALE_DAYS (7) ago, or never. Severity low. Capability
     BRN-C11 (competitor snapshot, signals only). Owner: 05-brand-brain.
@@ -126,11 +131,16 @@ RULES = [
      "inputs": ["review/conflicts.json"], "capability": "BRN-C05", "owner_screen": SCREEN},
     {"rule_id": "BRN-R13", "name": "claim untiered too long", "entity_type": "brand",
      "inputs": ["claims", "objection_ladders"], "capability": "BRN-C03", "owner_screen": SCREEN},
+    {"rule_id": "BRN-R14", "name": "site changed unnoticed", "entity_type": "brand",
+     "inputs": ["snapshots/site", "raw/a-site"], "capability": "BRN-C01", "owner_screen": SCREEN},
 ]
 AUTONOMY = {"BRN-C12": "agent_does", "BRN-C07": "founder_gate", "BRN-C03": "agent_does",
             "CREA-C19": "agent_does", "CREA-C04": "agent_does", "BRN-C11": "agent_does", "CREA-C06": "agent_does",
-            "BRAND-C57": "agent_does", "CREA-C03": "agent_does", "BRN-C05": "founder_gate"}
+            "BRAND-C57": "agent_does", "CREA-C03": "agent_does", "BRN-C05": "founder_gate", "BRN-C01": "agent_does"}
 
+_sspec = importlib.util.spec_from_file_location("brand_brain_sitediff", Path(__file__).resolve().parent / "sitediff.py")
+sitediff = importlib.util.module_from_spec(_sspec)
+_sspec.loader.exec_module(sitediff)
 _cspec = importlib.util.spec_from_file_location("brand_brain_claims", Path(__file__).resolve().parent / "claims.py")
 claims_mod = importlib.util.module_from_spec(_cspec)
 _cspec.loader.exec_module(claims_mod)
@@ -409,6 +419,31 @@ def rule_untiered_claims(brain: Brain, ends_on: str) -> list[dict]:
     return out
 
 
+def rule_site_changes(brain: Brain, ends_on: str) -> list[dict]:
+    out = []
+    try:
+        sd = sitediff.diff(brain)
+    except (OSError, ValueError):
+        return out
+    for c in sd.get("changes") or []:
+        if c.get("reviewed"):
+            continue
+        ev = [_row("changed_records", 1, "n", ends_on, None, 0, "snapshots/site"),
+              _row("snapshot_pair", None, "text", ends_on, None, None, sd.get("pair") or "")]
+        what = (c.get("field") or "").replace("_", " ")
+        if c["change"] == "changed":
+            sentence = f"{what} changed from {c['old_text']} to {c['new_text']} on the site ({c.get('captured_at') or sd.get('new')})."
+        elif c["change"] == "added":
+            sentence = f"{what} appeared on the site: {c['new_text']} ({c.get('captured_at') or sd.get('new')})."
+        else:
+            sentence = f"{what} left the site. It was {c['old_text']}."
+        f = _finding("BRN-R14", c["severity"], {"type": "brand", "id": f"change_{c['section']}_{c.get('field') or 'x'}", "label": f"{c['section']} {what}".replace("_", " ")},
+                     ev, sentence, [c["id"]], ends_on, 0.9)
+        f["site_change"] = {"section": c["section"], "field": c.get("field"), "change": c["change"], "action": c["action"]}
+        out.append(f)
+    return out
+
+
 def rule_snapshot_stale(brain: Brain, ends_on: str) -> list[dict]:
     out = []
     d = market.pages(brain)
@@ -436,7 +471,7 @@ def run(brand: str, window: dict | None = None, root: Path | None = None) -> lis
         bank = keeper.load_bank()
     except (OSError, ValueError, KeyError):
         bank = None
-    out = rule_stale(brain, ends_on) + rule_claims(brain, ends_on) + rule_competitor_gaps(brain, ends_on) + rule_angle_gaps(brain, ends_on) + rule_signals(brain, ends_on) + rule_weak_sections(brain, ends_on) + rule_conflicts(brain, ends_on) + rule_untiered_claims(brain, ends_on) + rule_snapshot_stale(brain, ends_on)
+    out = rule_stale(brain, ends_on) + rule_claims(brain, ends_on) + rule_competitor_gaps(brain, ends_on) + rule_angle_gaps(brain, ends_on) + rule_signals(brain, ends_on) + rule_weak_sections(brain, ends_on) + rule_conflicts(brain, ends_on) + rule_untiered_claims(brain, ends_on) + rule_site_changes(brain, ends_on) + rule_snapshot_stale(brain, ends_on)
     if bank is None:
         for rid, sev in (("BRN-R02", "medium"), ("BRN-R03", "medium")):
             f = _finding(rid, sev, {"type": "brand", "id": "question_bank", "label": "question bank"},
