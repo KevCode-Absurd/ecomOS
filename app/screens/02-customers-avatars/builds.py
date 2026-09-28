@@ -1561,3 +1561,55 @@ def lookalikes(competitor_records: list[dict], brand_name: str) -> dict:
     one = len(rows) == 1
     return {"rows": rows, "line": (f"{len(rows)} page{'' if one else 's'} in the Ad Library pull look{'s' if one else ''} like us and send{'s' if one else ''} buyers elsewhere."
                                    if rows else "No lookalike page in the latest Ad Library pull.")}
+
+
+# ---------------------------------------------------------------- which offer answers which avatar
+
+def offer_map(avatars: list[dict], all_rungs: list[dict], offer_records: list[dict], policy_records: list[dict]) -> dict:
+    """Avatars against the offers and policies that answer their doubts, and the offer our ads push most."""
+    levers = {}
+    for r in offer_records + policy_records:
+        v = r.get("value")
+        if isinstance(v, dict) and ("ads" in v or "ads_with_code" in v or "promo" in v):
+            continue   # ad sightings of a promo, read below
+        if re.search(r"(confirmed|cost)$", r.get("field") or r["id"]):
+            continue   # a confirmation or a fee, not a lever
+        levers[r["id"]] = {"key": r["id"], "label": (r.get("field") or r["id"].split(".")[-1]).replace("_", " "), "text": r.get("text")}
+    used = {p for r in all_rungs for p in r["proof_ids"]}
+    cols = [levers[k] for k in sorted(levers) if k in used] + [levers[k] for k in sorted(levers) if k not in used and k.split(".")[1] == "offers"]
+    rows, cells = [], {}
+    for a in avatars:
+        mine = [r for r in all_rungs if a["id"] in r["avatars"]]
+        if not mine:
+            continue
+        rows.append({"key": a["key"], "label": a["name"], "sub": f"{sum(1 for r in mine if not r['proof_ids'])} doubts without an answer"})
+        cells[a["key"]] = {}
+        for c in cols:
+            n = sum(1 for r in mine if c["key"] in r["proof_ids"])
+            cells[a["key"]][c["key"]] = {"us": n if n else None, "unit": "n"}
+    # the offer our ads push: the promo record with the most ads
+    push = None
+    for r in offer_records:
+        v = r.get("value") if isinstance(r.get("value"), dict) else {}
+        n = v.get("ads_with_code") or v.get("ads")
+        if isinstance(n, int) and (push is None or n > push["ads"]):
+            push = {"id": r["id"], "ads": n, "of": v.get("active_ads"), "text": r.get("text")}
+    unused = [c["label"] for c in cols if not any(cells[k][c["key"]]["us"] for k in cells)]
+    open_rungs = [r for r in all_rungs if not r["proof_ids"] and r["avatars"]]
+    action = None
+    if push and push["id"] not in used:
+        action = {"id": f"{SCREEN}.offers.push", "kind": "ad_brief", "owner": "agent_drafts",
+                  "title": "Test an ad that leads with the guarantee, not the discount",
+                  "capability": {"id": "LIFE-C42", "autonomy": "founder_gate"},
+                  "draft": "\n".join(["DRAFT offer test", f"Now: {push['text']}",
+                                      f"The pushed offer answers 0 of {len(all_rungs)} ladder doubts. The top doubts are about wear and fit.",
+                                      "Variant A: the current discount. Variant B: the guarantee as the first line, no code.",
+                                      "Read cost per order and 60-day repeat. A person sets the budget."]),
+                  "steps": [{"n": 1, "who": "agent", "text": "Draft variant B from the guarantee record and a five-star line."},
+                            {"n": 2, "who": "person", "text": "Approve and launch A against B at a capped budget."},
+                            {"n": 3, "who": "agent", "text": "Read cost per order after 14 days and repeat after 60."}]}
+    return {"rows": rows, "cols": [{"key": c["key"], "label": c["label"], "title": c["text"] or ""} for c in cols], "cells": cells,
+            "push": push, "unused": unused, "open_rungs": len(open_rungs), "action": action,
+            "bare": [r["label"] for r in rows if not any(v["us"] for v in cells[r["key"]].values())],
+            "line": ((f"Our ads push one offer in {push['ads']} of {push['of']} live ads; it answers none of the ladder doubts. " if push and push["id"] not in used else "")
+                     + (f"{len(unused)} offers answer no avatar's doubt: {', '.join(unused)}." if unused else "Every offer answers at least one doubt."))}

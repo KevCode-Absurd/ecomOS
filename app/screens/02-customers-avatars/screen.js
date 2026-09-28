@@ -344,6 +344,15 @@
         : [el('p', { class: 'muted small', text: 'No misread found for this brain.' })]));
   }
 
+  // ---------- desk: offer map ----------
+  function renderOffers(x) {
+    document.getElementById('offers-sub').textContent = 'Each cell: how many of the avatar\'s doubts that offer, policy or claim answers, from the ladder proof records. ' + x.line +
+      (x.bare.length ? ' No offer or policy answers any doubt for: ' + x.bare.join(', ') + '.' : '');
+    mount('#offers-tools', x.action ? el('button', { class: 'btn soft sm', type: 'button', text: 'Brief the offer test', onclick: () => briefPanel(x.action) }) : null);
+    mount('#offers', UI.coverageMatrix({ rows: x.rows, cols: x.cols, cells: x.cells, unit: 'n', single: true, max: 3, corner: 'Avatar',
+      note: 'Blank: this lever answers none of the avatar\'s doubts. Columns after the policies are offers no ladder uses yet.' }));
+  }
+
   // ---------- desk: evidence gate ----------
   function renderGate(g) {
     document.getElementById('gate-sub').textContent = 'Each avatar against the checks a researcher runs before a launch. Core checks (bold) must all pass to leave provisional. Every red cell is a task. ' + g.line;
@@ -653,6 +662,7 @@
     renderPlan(d, r);
     renderWrong(a, r);
     renderActions(r);
+    renderOffers(d.offer_map);
     renderGate(d.gate);
     renderForces(d.forces);
     renderSurvey(d.survey);

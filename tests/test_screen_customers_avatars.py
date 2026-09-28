@@ -888,5 +888,21 @@ class Lookalikes(TempBrain):
         self.assertEqual(api.builds.lookalikes([], 'X')['rows'], [])
 
 
+class OfferMap(TempBrain):
+    """Feature 3.4: offers and policies against each avatar's doubts; the pushed offer read against them."""
+
+    def test_offer_map(self):
+        x = api.handle(Req(['overview']))['offer_map']
+        rungs = audit.rungs(api._brain(Req(['overview'])))
+        for r in x['rows']:
+            for c in x['cols']:
+                n = sum(1 for g in rungs if 'bombas.avatars.' + r['key'] in g['avatars'] and c['key'] in g['proof_ids'])
+                self.assertEqual(x['cells'][r['key']][c['key']]['us'], n or None)
+        self.assertEqual(x['push']['ads'], 21)
+        self.assertIsNotNone(x['action'])
+        self.assertIn('Daily Compression Wearer', x['bare'])
+        self.assertNotIn('first order code confirmed', [c['label'] for c in x['cols']])
+
+
 if __name__ == '__main__':
     unittest.main()
