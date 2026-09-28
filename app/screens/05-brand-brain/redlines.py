@@ -73,7 +73,7 @@ def with_reason(brain, rid: str, reason: str) -> dict | tuple[int, dict]:
     if isinstance(v, dict):
         new_v = dict(v, reason=reason)
     elif isinstance(v, str) and raw.get("tier") == "forbidden":
-        new_v = {"phrase": v, "reason": reason}
+        new_v = {"phrase": re.sub(r"^\s*(?:never say|do not say|don't say)[:\s]*", "", v, flags=re.I).strip().strip('"\'').rstrip("."), "reason": reason}
     else:
         new_v = {"value": v, "reason": reason} if not isinstance(v, dict) else dict(v, reason=reason)
     return {"record": dict(raw, value=new_v), "reason": reason}
