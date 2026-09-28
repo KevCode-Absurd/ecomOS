@@ -90,7 +90,7 @@ class AuditShape(unittest.TestCase):
         self.assertIn('05-brand-brain.BRN-R02.section_economics', ids)
         self.assertIn('05-brand-brain.BRN-R04.mission_trust.rung_1.donation_pledge', ids)
         rules = {r['rule_id'] for r in audit.RULES}
-        self.assertLessEqual({'BRN-R01', 'BRN-R02', 'BRN-R03', 'BRN-R04', 'BRN-R05', 'BRN-R06', 'BRN-R07'}, rules)
+        self.assertLessEqual({'BRN-R01', 'BRN-R02', 'BRN-R03', 'BRN-R04', 'BRN-R05', 'BRN-R06', 'BRN-R07', 'BRN-R08'}, rules)
 
 
 class AuditRules(TempBrain):
@@ -334,3 +334,55 @@ class Round1Market(TempBrain):
         html = (SCREEN / 'index.html').read_text(encoding='utf-8')
         self.assertLess(html.index('id="drop"'), html.index('id="market"'))
         self.assertLess(html.index('id="market"'), html.index('id="audit"'))
+
+
+class Round1Coverage(TempBrain):
+    """Round 1 feature 2: the coverage matrix, angles by page, gaps with a drafted brief."""
+
+    def test_matrix_shape_and_gaps(self):
+        c = api.handle(Req(['coverage']))
+        self.assertEqual(c['cols'][0]['key'], 'us')
+        self.assertGreaterEqual(len(c['cols']), 4)
+        keys = {r['key'] for r in c['rows']}
+        for r in c['rows']:
+            self.assertIn('us', c['cells'][r['key']])
+        gap_keys = {g['angle'] for g in c['gaps']}
+        self.assertIn('durability', gap_keys)
+        self.assertTrue(gap_keys <= keys)
+        for g in c['gaps']:
+            self.assertEqual(c['cells'][g['angle']]['us']['us'], 0)
+            self.assertTrue(g['competitors'])
+            self.assertIn('Concept brief', g['brief'])
+            self.assertIn('Never their text, logos, products or faces', g['brief'])
+            self.assertNotIn('—', g['brief'])
+        # a lead is ours alone; a contested angle is both
+        for l in c['leads']:
+            self.assertGreater(c['cells'][l['angle']]['us']['us'], 0)
+            self.assertEqual(len(c['cells'][l['angle']]), 1)
+        self.assertTrue(any(u['angle'] == 'durability' for u in c['unused_own']))
+
+    def test_brief_uses_only_approved_or_site_backed_proof(self):
+        c = api.handle(Req(['coverage']))
+        g = next(g for g in c['gaps'] if g['angle'] == 'durability')
+        usable = [x for x in g['proof']['claims'] if x['tier'] in ('approved', 'site_backed')]
+        self.assertTrue(usable)
+        self.assertIn('Proof we can use', g['brief'])
+        self.assertIn('[site backed]', g['brief'])
+
+    def test_angle_gap_findings_carry_the_draft(self):
+        findings = [f for f in api.handle(Req(['audit']))['findings'] if f['rule_id'] == 'BRN-R08']
+        self.assertTrue(findings)
+        ids = {f['entity']['id'] for f in findings}
+        self.assertIn('angle_durability', ids)
+        for f in findings:
+            self.assertEqual(f['capability']['id'], 'CREA-C06')
+            self.assertIn(f['severity'], ('high', 'medium'))
+            self.assertTrue(f['draft'].startswith('Concept brief'))
+            self.assertLess(len(f['sentence'].split()), 40)
+        three = [f for f in findings if f['evidence'][0]['value'] >= 3]
+        self.assertTrue(all(f['severity'] == 'high' for f in three))
+
+    def test_angles_of_carries_every_angle_in_a_label(self):
+        self.assertEqual(api.market.angles_of('seasonal comfort'), ['comfort', 'seasonal'])
+        self.assertEqual(api.market.angles_of('lifetime guarantee'), ['durability'])
+        self.assertEqual(api.market.angles_of('catalog retargeting'), [])

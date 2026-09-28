@@ -226,6 +226,7 @@
     const wrap = el('div', { class: 'grid' });
     for (const g of d.gaps || []) {
       const a = byKey[g.kind + '_' + g.key];
+      if (a) { a.finding_ids = a.finding_ids || [a.id]; }
       if (a) { wrap.append(UI.actionCard(a, { screen: SCREEN, expanded: false })); continue; }
       wrap.append(el('div', { class: 'card flat' }, el('b', { text: g.label }), el('div', { class: 'small muted', text: 'us ' + pct(g.us) + ', competitor median ' + pct(g.them) + '. Leaders: ' + g.leaders.map((l) => l.name + ' ' + pct(l.share)).join(', ') })));
     }
@@ -244,12 +245,49 @@
     const notPulled = (d.not_pulled || []).length ? el('div', { class: 'small muted', text: 'Not pulled: ' + d.not_pulled.join(', ') + ' (no page id, or no ads in the market).' }) : null;
     return el('div', { class: 'card flat repull' + (stale ? ' stale' : '') }, line, notPulled, el('div', { class: 'micro faint', text: r.note || '' }));
   }
+  // ---------- 4b. coverage matrix: angles by page ----------
+  function briefPanel(g, action) {
+    const body = el('div', { class: 'stack' });
+    body.append(el('div', { class: 'row' }, el('span', { class: 'chip bad', text: 'gap' }), ...g.competitors.map((n) => el('span', { class: 'chip', text: n }))));
+    body.append(el('pre', { class: 'card sunken brief', text: g.brief }));
+    const proof = g.proof || { claims: [], rungs: [] };
+    if (proof.claims.length) body.append(el('div', { class: 'small' }, el('b', { text: 'Claims in the brain for this angle: ' }), proof.claims.map((c) => c.id + ' (' + pretty(c.tier) + ')').join(', ')));
+    if (proof.rungs.length) body.append(el('div', { class: 'small' }, el('b', { text: 'Doubts on the ladder: ' }), proof.rungs.map((r) => r.doubt + (r.has_proof ? '' : ' (no proof)')).join('; ')));
+    body.append(el('div', { class: 'row' }, UI.copyButton({ label: 'Copy brief', text: () => g.brief }),
+      UI.decisionRow({ capability: 'CREA-C06', autonomy: 'agent_does', owner: 'agent', screen: SCREEN, compact: true,
+        finding_id: action ? action.id : ('05-brand-brain.BRN-R08.angle_' + g.angle), current: action ? action.decision : null,
+        stub: 'The creative agent writes 3 concepts on the ' + g.label.toLowerCase() + ' angle from this brief and puts them in the review queue. Nothing runs before you approve.' })));
+    UI.panel({ title: 'Brief it: ' + g.label, body });
+  }
+  async function loadCoverage(actions) {
+    let c;
+    try { c = await api(BASE + 'coverage'); } catch (e) { mount('#coverage', el('p', { class: 'muted', text: 'Coverage unavailable: ' + e.message })); return; }
+    const byGap = {}; for (const g of c.gaps || []) byGap[g.angle] = g;
+    const byAct = {}; for (const a of actions || []) if (a.entity && a.entity.id) byAct[a.entity.id] = a;
+    const maxUs = Math.max(1, ...Object.values(c.cells).map((r) => (r.us && r.us.us) || 0));
+    const matrix = UI.coverageMatrix({
+      rows: c.rows, cols: c.cols, cells: c.cells, unit: 'n', single: true, max: maxUs, corner: 'Angle',
+      gapRule: (cell, row, col) => col.key === 'us' ? (byGap[row.key] ? 'gap' : (c.leads.some((l) => l.angle === row.key) ? 'lead' : '')) : '',
+      action: { label: 'Brief it', onClick: (cell, row) => { const g = byGap[row.key]; if (g) briefPanel(g, byAct['angle_' + g.angle]); } },
+      onCell: (cell, row, col) => { if (col.key === 'us' && byGap[row.key]) briefPanel(byGap[row.key], byAct['angle_' + row.key]); },
+      note: c.note,
+    });
+    const lines = el('div', { class: 'stack cov-lines' });
+    if ((c.gaps || []).length) lines.append(el('div', null, el('b', { text: 'Gaps: ' }), c.gaps.map((g) => g.label.toLowerCase() + ' (' + g.competitors.length + ')').join(', ') + '. Each carries a drafted brief.'));
+    if ((c.unused_own || []).length) lines.append(el('div', null, el('b', { text: 'Own ground unused: ' }), c.unused_own.map((u) => u.label.toLowerCase()).join(', ') + '. The brain names it as who we are and no ad leads with it.'));
+    if ((c.leads || []).length) lines.append(el('div', null, el('b', { text: 'Only us: ' }), c.leads.map((l) => l.label.toLowerCase() + ' (' + l.us_n + ' ads)').join(', ') + '. Keep it, and watch for a competitor entering.'));
+    if ((c.contested || []).length) lines.append(el('div', null, el('b', { text: 'Contested: ' }), c.contested.map((x) => x.label.toLowerCase() + ' (' + x.us_n + ' ads, ' + x.competitors.length + ' competitors)').join(', ') + '. Proof and format decide these, not the angle.'));
+    if ((c.unmapped.us || []).length) lines.append(el('div', { class: 'micro faint', text: 'Our hooks not mapped to an angle: ' + c.unmapped.us.join(', ') + '.' }));
+    mount('#coverage', matrix, lines);
+  }
+
   async function loadMarket() {
     let d, actions = [];
     try { d = await api(BASE + 'competitors'); } catch (e) { mount('#market', el('p', { class: 'muted', text: 'Competitors unavailable: ' + e.message })); return null; }
-    try { const r = await api(BASE + 'rank'); actions = (r.actions || []).filter((a) => a.gap || /BRN-R0[567]/.test(a.rule_id || '')); } catch (e) { actions = []; }
+    try { const r = await api(BASE + 'rank'); actions = (r.actions || []).filter((a) => /BRN-R0[5678]/.test(a.rule_id || '')); } catch (e) { actions = []; }
     mount('#market-tools', UI.orientation(marketOrient(d)));
     const gapsN = (d.gaps || []).length;
+    loadCoverage(actions);
     mount('#market', UI.tabs({ items: [
       { key: 'gaps', label: 'Gaps to brief', n: gapsN, panel: () => gapCards(d, actions) },
       { key: 'pages', label: 'Pages', n: d.pages.length, panel: () => el('div', { class: 'stack' }, pagesTable(d), el('div', { class: 'micro faint', text: d.note + ' Click a row for the page detail.' })) },

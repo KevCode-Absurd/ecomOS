@@ -17,6 +17,8 @@ question, and accept or ignore on a proposed record. Nothing external.
                                 under documents/ and adds a manifest line; never blocked
   GET  competitors              the Ad Library pages against the brand: format and hook mix per page,
                                 competitor medians, the gaps, proposed pages, and the cost of a re-pull
+  GET  coverage                 angles by page: our ad count per angle against each competitor page, gaps with a
+                                drafted concept brief, our own ground, contested angles
   GET  records?section=<name>   one section's records with tier, date, source and evidence
   GET  audit                    findings from audit.py (app/contracts/audit.md shape)
   POST questions/<field>        {answer}: writes a founder record, marks the question answered
@@ -429,6 +431,10 @@ def handle(req):
         return document_add(brain, req.body)
     if req.method == "GET" and parts == ["competitors"]:
         return competitors(brain)
+    if req.method == "GET" and parts == ["coverage"]:
+        c = market.coverage(brain)
+        c.update(brand=brain.brand, today=brain.today.isoformat(), version=brain.version())
+        return c
     if req.method == "GET" and parts == ["records"]:
         sec = req.arg("section", "")
         if sec not in SECTIONS:

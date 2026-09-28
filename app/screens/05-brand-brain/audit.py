@@ -35,6 +35,12 @@ BRN-R06 hook-form gap against competitors. Same test on hook forms
     (question, first person, number, offer), plus a form the brand never uses
     while 3 or more competitor pages run it 5 times or more. Severity medium.
     Capability CREA-C04 (hook bank). Reputation override 3. Owner: 05-brand-brain.
+BRN-R08 angle gap against competitors. In the coverage matrix (market.py),
+    an angle that one or more competitor pages run and none of our ads lead
+    with. Severity high when 3 or more pages run it, else medium. Capability
+    CREA-C06 (concept brief). Reputation override 5 when the angle is one the
+    brain's own positioning names (a competitor position gap), else 3.
+    Owner: 05-brand-brain.
 BRN-R07 competitor snapshot stale. A configured Ad Library page was captured
     more than SNAPSHOT_STALE_DAYS (7) ago, or never. Severity low. Capability
     BRN-C11 (competitor snapshot, signals only). Owner: 05-brand-brain.
@@ -81,9 +87,11 @@ RULES = [
      "inputs": ["competitors (Ad Library pull)", "learnings", "config/apify.json"], "capability": "CREA-C04", "owner_screen": SCREEN},
     {"rule_id": "BRN-R07", "name": "competitor snapshot stale", "entity_type": "brand",
      "inputs": ["competitors (Ad Library pull)", "config/apify.json"], "capability": "BRN-C11", "owner_screen": SCREEN},
+    {"rule_id": "BRN-R08", "name": "angle gap against competitors", "entity_type": "brand",
+     "inputs": ["competitors (Ad Library pull)", "learnings.hook_types", "claims", "objection_ladders"], "capability": "CREA-C06", "owner_screen": SCREEN},
 ]
 AUTONOMY = {"BRN-C12": "agent_does", "BRN-C07": "founder_gate", "BRN-C03": "agent_does",
-            "CREA-C19": "agent_does", "CREA-C04": "agent_does", "BRN-C11": "agent_does"}
+            "CREA-C19": "agent_does", "CREA-C04": "agent_does", "BRN-C11": "agent_does", "CREA-C06": "agent_does"}
 
 _mspec = importlib.util.spec_from_file_location("brand_brain_market", Path(__file__).resolve().parent / "market.py")
 market = importlib.util.module_from_spec(_mspec)
@@ -238,6 +246,25 @@ def rule_competitor_gaps(brain: Brain, ends_on: str) -> list[dict]:
     return out
 
 
+def rule_angle_gaps(brain: Brain, ends_on: str) -> list[dict]:
+    out = []
+    c = market.coverage(brain)
+    own = {u["angle"] for u in c.get("unused_own") or []}
+    for g in c["gaps"]:
+        n = len(g["competitors"])
+        ev = [_row("competitor_pages_running_angle", n, "n", ends_on, None, 1, "competitors (Ad Library pull)"),
+              _row("our_ads_on_angle", 0, "n", ends_on, None, 1, "learnings.hook_types"),
+              _row("our_ads_read", g["us_total"], "n", ends_on, None, None, "learnings.hook_types")]
+        names = ", ".join(g["competitors"][:3])
+        sentence = f"{n} competitor page{'s lead' if n != 1 else ' leads'} with {g['label'].lower()} ({names}). None of our {g['us_total'] or 'read'} ads do."
+        f = _finding("BRN-R08", "high" if n >= 3 else "medium", {"type": "brand", "id": f"angle_{g['angle']}", "label": g["label"]},
+                     ev, sentence, g["record_ids"][:6], ends_on, 0.5)
+        f["draft"] = g["brief"]
+        f["own_positioning"] = g["angle"] in own
+        out.append(f)
+    return out
+
+
 def rule_snapshot_stale(brain: Brain, ends_on: str) -> list[dict]:
     out = []
     d = market.pages(brain)
@@ -265,7 +292,7 @@ def run(brand: str, window: dict | None = None, root: Path | None = None) -> lis
         bank = keeper.load_bank()
     except (OSError, ValueError, KeyError):
         bank = None
-    out = rule_stale(brain, ends_on) + rule_claims(brain, ends_on) + rule_competitor_gaps(brain, ends_on) + rule_snapshot_stale(brain, ends_on)
+    out = rule_stale(brain, ends_on) + rule_claims(brain, ends_on) + rule_competitor_gaps(brain, ends_on) + rule_angle_gaps(brain, ends_on) + rule_snapshot_stale(brain, ends_on)
     if bank is None:
         for rid, sev in (("BRN-R02", "medium"), ("BRN-R03", "medium")):
             f = _finding(rid, sev, {"type": "brand", "id": "question_bank", "label": "question bank"},

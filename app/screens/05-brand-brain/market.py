@@ -257,6 +257,138 @@ def gaps(brain) -> list[dict]:
     return out
 
 
+# Angle vocabulary: category-neutral keys with the words that map a free-text hook label onto them. The words
+# are generic marketing vocabulary, not brand facts; a brand's own angle names come from its brain records.
+ANGLES = [
+    ("comfort", "Comfort and feel", ["comfort", "cozy", "soft", "feel", "cushion", "relief claim"]),
+    ("performance", "Performance and fit", ["performance", "athletic", "run", "hike", "fit", "demo", "sport"]),
+    ("relief", "Problem to relief", ["problem to relief", "relief", "compression", "pain", "swelling", "support"]),
+    ("durability", "Durability and guarantee", ["durab", "guarantee", "lifetime", "buy it for life", "last", "warranty", "wear"]),
+    ("material", "Material and construction", ["merino", "wool", "cotton", "material", "fabric", "construction", "feature list", "feature"]),
+    ("trust", "Proof and authority", ["lab tested", "doctor", "tested", "heritage", "trust", "made in", "number one", "award", "certified"]),
+    ("social_proof", "Social proof and reviews", ["review", "testimonial", "nurse count", "social proof", "5 star", "rating", "creator"]),
+    ("story", "First person story", ["first person", "story", "founder", "listicle", "advertorial", "ugc"]),
+    ("mission", "Mission and giving", ["mission", "giving", "donat", "impact", "purpose", "cause"]),
+    ("style", "Style and new arrivals", ["style", "self expression", "new arrival", "drop", "limited", "design", "colour", "color", "new product"]),
+    ("offer", "Price and offer", ["discount", "bundle", "% off", "percent off", "sale", "offer", "free shipping", "price", "deal"]),
+    ("seasonal", "Seasonal and gifting", ["season", "holiday", "gift", "winter", "summer", "fall", "spring", "back to school"]),
+]
+ANGLE_LABEL = {k: lbl for k, lbl, _ in ANGLES}
+TEST_BUDGET_USD = 300  # default stop budget for a concept test; a brand overrides it with a learnings.test_budget_usd record
+PROOF_TIERS = ("approved", "site_backed")
+
+
+def angles_of(label: str) -> list[str]:
+    """Every angle a free-text hook label carries ("seasonal comfort" is both seasonal and comfort)."""
+    t = (label or "").lower()
+    return [key for key, _, words in ANGLES if any(w in t for w in words)]
+
+
+def coverage(brain) -> dict:
+    """Angles by page: our ad count per angle against every competitor page that runs it. Empty cells are the gaps."""
+    d = pages(brain)
+    us = d["us"]
+    own_hooks = next((r.get("value") for r in brain.records("learnings") if r.get("field") == "hook_types" and isinstance(r.get("value"), dict)), {}) or {}
+    own_total = sum(v for v in own_hooks.values() if isinstance(v, (int, float))) or None
+    us_counts: dict[str, int] = {}
+    unmapped_us: list[str] = []
+    for label, n in own_hooks.items():
+        keys = angles_of(label)
+        if not keys:
+            unmapped_us.append(label)
+            continue
+        for k in keys:
+            us_counts[k] = us_counts.get(k, 0) + (n if isinstance(n, (int, float)) else 1)
+    comp = [p for p in d["pages"] if p["role"] == "competitor" and p.get("angles")]
+    them: dict[str, dict[str, list[str]]] = {}  # angle -> page slug -> raw labels
+    unmapped_them: list[str] = []
+    for p in comp:
+        for label in p["angles"]:
+            keys = angles_of(label)
+            if not keys:
+                unmapped_them.append(f"{p['name']}: {label}")
+                continue
+            for k in keys:
+                them.setdefault(k, {}).setdefault(p["slug"], []).append(label)
+    cols = [{"key": "us", "label": (us["name"] + " (us)") if us else "Us", "sub": f"{own_total or 'n/a'} ads read"}] +            [{"key": p["slug"], "label": p["name"], "sub": f"{p['ads_seen'] or 'n/a'} ads seen"} for p in comp]
+    rows, cells, gaps, leads, contested = [], {}, [], [], []
+    claims = [r for r in brain.records("claims")]
+    ladders = [r for r in brain.records("objection_ladders") if isinstance(r.get("value"), dict)]
+    for key, label, words in ANGLES:
+        u = us_counts.get(key)
+        who = them.get(key, {})
+        if not u and not who:
+            continue
+        rows.append({"key": key, "label": label, "sub": f"{len(who)} of {len(comp)} competitors" if comp else None})
+        cells[key] = {"us": {"us": u if u is not None else 0, "unit": "n", "n": own_total, "share": (u / own_total) if u and own_total else None}}
+        for p in comp:
+            if p["slug"] in who:
+                cells[key][p["slug"]] = {"us": len(who[p["slug"]]), "unit": "n", "label": "; ".join(who[p["slug"]])}
+        names = [p["name"] for p in comp if p["slug"] in who]
+        proof = _proof_for(key, words, claims, ladders)
+        if not u and who:
+            gaps.append({"angle": key, "label": label, "competitors": names, "us_n": 0, "us_total": own_total, "proof": proof,
+                         "brief": _brief(key, label, names, proof, us, d), "record_ids": [c["id"] for c in proof["claims"][:3]] + [l["id"] for l in proof["rungs"][:2]]})
+        elif u and not who:
+            leads.append({"angle": key, "label": label, "us_n": u, "us_total": own_total})
+        elif u and who:
+            contested.append({"angle": key, "label": label, "us_n": u, "us_total": own_total, "competitors": names})
+    gaps.sort(key=lambda g: (-len(g["competitors"]), -(len(g["proof"]["claims"]) + len(g["proof"]["rungs"])), g["angle"]))
+    # own ground unused: an angle the brain's identity or positioning names that no ad of ours leads with
+    own_text = " ".join((r.get("text") or "") for r in brain.records("identity") + brain.records("positioning")).lower()
+    unused_own = []
+    for key, label, words in ANGLES:
+        if key in us_counts or not any(w in own_text for w in words):
+            continue
+        refs = [r["id"] for r in brain.records("identity") + brain.records("positioning") if any(w in (r.get("text") or "").lower() for w in words)][:3]
+        unused_own.append({"angle": key, "label": label, "record_ids": refs, "competitors": [p["name"] for p in comp if p["slug"] in them.get(key, {})]})
+    return {"rows": rows, "cols": cols, "cells": cells, "gaps": gaps, "leads": leads, "contested": contested, "unused_own": unused_own,
+            "us_total": own_total, "competitors": [p["name"] for p in comp], "unmapped": {"us": unmapped_us, "them": unmapped_them[:10]},
+            "note": "Our column counts ads by hook in the last Ad Library read of our page. Competitor cells count the angle labels seen on that page (the first 30 ads read); presence, not share. Layout and mood only; never copy text, logos, products or faces."}
+
+
+def _proof_for(key: str, words: list[str], claims: list[dict], ladders: list[dict]) -> dict:
+    """Claims and ladder rungs in the brain that can back an angle, by word overlap. Approved or site-backed claims first."""
+    def hit(text: str) -> bool:
+        t = (text or "").lower()
+        return any(w in t for w in words) or key in t
+    cl = [{"id": c["id"], "tier": c["tier"], "text": (c.get("text") or "")[:160]} for c in claims if hit(c.get("text") or "") or hit(c.get("field") or "")]
+    cl.sort(key=lambda c: (c["tier"] not in PROOF_TIERS, c["id"]))
+    rungs = []
+    for lad in ladders:
+        v = lad["value"]
+        theme = v.get("theme") or lad.get("field") or ""
+        if not hit(theme):
+            continue
+        for r in v.get("rungs") or []:
+            rungs.append({"id": lad["id"], "theme": theme, "level": r.get("level"), "doubt": r.get("doubt"), "proof": r.get("proof"),
+                          "has_proof": bool(r.get("proof_ids")), "one_star": (r.get("counts") or {}).get("one_star")})
+    return {"claims": cl[:4], "rungs": rungs[:4]}
+
+
+def _brief(key: str, label: str, names: list[str], proof: dict, us: dict | None, d: dict) -> str:
+    fmt_share = (us or {}).get("format_share") or {}
+    made = [(k, fmt_share.get(k)) for k in ("image", "video", "carousel") if fmt_share.get(k)]
+    made.sort(key=lambda x: -x[1])
+    start = f"{FORMAT_LABEL[made[0][0]].lower()} ({round(made[0][1] * 100)} percent of our ads), then {FORMAT_LABEL[made[1][0]].lower()}" if len(made) > 1 else "static image, then video"
+    lines = [f"Concept brief: {label} angle", f"Why: {len(names)} competitor pages run it ({', '.join(names)}) and we run 0 ads on it.",
+             f"Format: start with {start}.", "Rule: layout and mood from the competitor set only. Never their text, logos, products or faces."]
+    if proof["claims"]:
+        ok = [c for c in proof["claims"] if c["tier"] in PROOF_TIERS]
+        if ok:
+            lines.append("Proof we can use: " + " | ".join(f"{c['text']} [{c['tier'].replace('_', ' ')}]" for c in ok[:2]))
+        weak = [c for c in proof["claims"] if c["tier"] not in PROOF_TIERS]
+        if weak:
+            lines.append("Not yet usable (needs approval): " + " | ".join(f"{c['text'][:90]} [{c['tier']}]" for c in weak[:2]))
+    else:
+        lines.append("Proof: none in the claims section for this angle. The brief goes out only with an approved claim or none at all.")
+    for r in proof["rungs"][:2]:
+        lines.append(f"Doubt to answer (ladder {r['theme'].replace('_', ' ')}, rung {r['level']}): {r['doubt']}" + (f" Proof: {r['proof']}" if r.get("has_proof") and r.get("proof") else " No proof on file yet."))
+    lines.append("Deliverable: 3 concepts, each a first line and a first frame, same product and offer as the current flight.")
+    lines.append(f"Win rule: any concept beats the current median cost per order in 7 days at 1,000 impressions or more. Stop: none beats it after ${TEST_BUDGET_USD:,} of spend (default; set learnings.test_budget_usd to change it).")
+    return "\n".join(lines)
+
+
 def repull(brain) -> dict:
     """Cost of a fresh pull of every configured page by id, against the caps. Never runs anything."""
     cfg = config(brain)
