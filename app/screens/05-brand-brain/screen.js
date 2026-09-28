@@ -76,6 +76,7 @@
     loadSelfAudit(m.actions || []);
     loadExpiring(m.actions || []);
     loadTrust();
+    loadSources();
     loadPeaks(m.actions || []);
     loadVisual(m.actions || []);
     loadNewBrand();
@@ -388,6 +389,15 @@
   }
 
   // ---------- 5b2. the brain audits itself ----------
+  async function loadSources() {
+    let sr;
+    try { sr = await api(BASE + 'sources'); } catch (e) { mount('#sources', el('p', { class: 'muted', text: 'Sources unavailable: ' + e.message })); return; }
+    mount('#sources-tools', UI.orientation([{ label: 'source references', value: sr.counts.sources, unit: 'n' }, { label: 'active records', value: sr.counts.active, unit: 'n' }, { label: 'flagged', value: sr.counts.flagged, unit: 'n', tone: sr.counts.flagged ? 'warn' : 'good' }]));
+    const csv = el('button', { class: 'btn sm', type: 'button', text: 'Download every record as CSV' });
+    csv.addEventListener('click', async () => { csv.disabled = true; try { const r = await api(BASE + 'records/csv'); const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([r.csv], { type: 'text/csv' })); a.download = r.filename; a.click(); } catch (e) { alert('Could not build the CSV: ' + e.message); } csv.disabled = false; });
+    const table = UI.table({ columns: [{ key: 'ref', label: 'Source', format: (v) => v.replace(/^https?:\/\//, '').slice(0, 70) }, { key: 'type', label: 'Type', format: pretty }, { key: 'active', label: 'Active', num: true }, { key: 'retired', label: 'Retired', num: true }, { key: 'strong', label: 'Strong', num: true }, { key: 'sections', label: 'Sections', format: (v) => (v || []).slice(0, 4).map(([s, n]) => pretty(s) + ' ' + n).join(', ') }, { key: 'last', label: 'Last capture', format: (v) => v ? fmt.date(v) : NA }, { key: 'flag', label: 'Flag', format: (v) => v || '' }], rows: sr.sources.slice(0, 80), sort: false, onRow: (r) => { if (r.ref.startsWith('http')) window.open(r.ref, '_blank', 'noopener'); } });
+    mount('#sources', el('div', { class: 'row' }, csv, el('span', { class: 'micro faint', text: Object.entries(sr.counts.by_type).map(([k, n]) => pretty(k) + ' ' + n).join(', ') })), table, sr.sources.length > 80 ? el('div', { class: 'micro faint', text: (sr.sources.length - 80) + ' more not shown.' }) : null, el('p', { class: 'micro faint', text: sr.note }));
+  }
   async function loadTrust() {
     let t;
     try { t = await api(BASE + 'trust'); } catch (e) { mount('#trust', el('p', { class: 'muted', text: 'Trust unavailable: ' + e.message })); return; }
@@ -395,7 +405,9 @@
     const table = UI.verdictTable({ columns: [{ key: 'label', label: 'Section' }, { key: 'trust', label: 'Trust', num: true }, { key: 'strong', label: 'Strong', num: true, unit: '%' }, { key: 'fresh', label: 'Fresh', num: true, unit: '%' }, { key: 'reviewed', label: 'Reviewed', format: (v) => v == null ? NA : v === 1 ? 'yes' : v === 0.5 ? 'never' : 'overdue' }, { key: 'owner', label: 'Owner', format: (v) => v || 'unassigned' }, { key: 'records', label: 'Records', num: true }],
       verdict: { at: 1, kind: (r) => r.trust == null ? 'na' : r.trust >= 80 ? 'keep' : r.trust >= 50 ? 'watch' : 'fix', text: (r) => r.trust == null ? 'empty' : r.trust >= 80 ? 'Solid' : r.trust >= 50 ? 'Thin' : 'Weak', reason: (r) => r.reason },
       rows: t.rows.map((r) => ({ label: r.label, trust: r.trust, strong: r.parts ? r.parts.strong : null, fresh: r.parts ? r.parts.fresh : null, reviewed: r.parts ? r.parts.reviewed : null, owner: r.owner, records: r.records, reason: r.reason })), sort: false, empty: 'No section.' });
-    mount('#trust', el('p', { class: 'small', text: 'Formula: ' + t.formula + '.' }), table, el('p', { class: 'micro faint', text: t.note }));
+    let chart = null;
+    try { const h = await api(BASE + 'trust/history'); chart = h.available ? el('div', { class: 'stack' }, Charts.line({ title: 'Trust over time (one point a day)', labels: h.labels, series: h.series, unit: 'n', height: 160, note: h.note + (h.change != null ? ' Change since the first point: ' + (h.change >= 0 ? '+' : '') + h.change + '.' : '') })) : el('p', { class: 'micro faint', text: 'Trust over time: ' + h.reason + '.' }); } catch (e) { chart = null; }
+    mount('#trust', el('p', { class: 'small', text: 'Formula: ' + t.formula + '.' }), table, chart, el('p', { class: 'micro faint', text: t.note }));
   }
   async function loadExpiring(actions) {
     let ex;

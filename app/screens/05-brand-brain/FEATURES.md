@@ -213,11 +213,11 @@ Sources: round 7's candidates (the brand book, the round schedule, the new-hire 
 | 8.2 | The round schedule (`GET schedule`, `POST schedule`): the founder round's weekday and hour as a founder record; the round tab shows the day, whether it is due today and the next date; set it from the tab | done | Know which day the round is, and see it flagged when it is due |
 | 8.3 | Ten questions for a new hire or agent (`quiz.py`, `GET quiz`): the facts anyone on the brand must know (returns window, free shipping threshold, first order code, the guarantee, the giving model, a line we never say, the default audience, the positioning frame, a locked line, the product lines), each only when the brain holds the answer, with the answer key naming the record; copy the questions and the key from the package block | done | Test a new hire or an agent on day one against the records, not against memory |
 | 8.4 | Check an agent's answers (`POST quiz/check`): paste the answers, one per line, from a person or an agent; each is scored in code (numbers as numbers, codes exactly, lines by word overlap, lists by half named) with why and the right answer with its record; a miss can be recorded as a correction (7.5) so every agent reads it | done | See in a minute what an agent got wrong about the brand before it writes for it |
-| 8.5 | Trust over time | todo | |
-| 8.6 | Where every fact came from: the sources register | todo | |
+| 8.5 | Trust over time (`trusthistory.py`, `GET trust/history`): the brain's trust number and each section's kept once a day under the brand folder whenever the trust block runs; a line chart under the trust table with the change since the first point; no backfill, and it says so | done | See whether the brain is getting more trustworthy week by week |
+| 8.6 | Where every fact came from (`sources.py`, `GET sources`): one row per source reference (a url without its query, a file, an actor, a screen block) with the records it fills by section and tier, active, retired and strong counts, the first and last capture, and a flag when its records are all stale or mostly retired; click a url to open it | done | Answer "where did this come from" for the whole brain in one table |
 | 8.7 | A contradiction check before a write | todo | |
 | 8.8 | Approve a whole source after a review | todo | |
-| 8.9 | The records as a CSV | todo | |
+| 8.9 | The records as a CSV (`GET records/csv`): every active record, one row with id, section, field, value, text, tier, status, visibility, confidence, source type and reference, capture date, date and expiry; `?retired=1` includes retired ones; download from the sources block | done | Take the brain into a spreadsheet, filter it your way, and send it to anyone |
 | 8.10 | Undo from the changes list | todo | |
 
 ### Round 7 status for Kevin (28 Sep 2026)

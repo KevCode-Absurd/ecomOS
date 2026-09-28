@@ -2932,10 +2932,44 @@ class Round8QuizAndSchedule(TempBrain):
         self.assertEqual(api.handle(Req(['schedule'], 'POST', body={'weekday': 'x'}))[0], 400)
 
 
+class Round8SourcesTrustHistory(TempBrain):
+    """Round 8 features 5, 6 and 9: trust over time, the sources register, the records CSV."""
+
+    def test_sources_register_and_csv(self):
+        sr = api.handle(Req(['sources']))
+        self.assertGreater(sr['counts']['sources'], 10)
+        self.assertEqual(sr['counts']['active'], sum(g['active'] for g in sr['sources']))
+        top = sr['sources'][0]
+        self.assertEqual(top['active'], max(g['active'] for g in sr['sources']))
+        site = [g for g in sr['sources'] if g['type'] == 'site']
+        self.assertTrue(site and all(g['last'] for g in site))
+        self.assertIn('site', sr['counts']['by_type'])
+        api.handle(Req(['profile', 'offers', 'free_shipping_threshold_usd'], 'POST', body={'text': '80'}))
+        sr = api.handle(Req(['sources']))
+        self.assertTrue(any(g['type'] == 'founder' and '05-brand-brain' in g['ref'] for g in sr['sources']))
+        c = api.handle(Req(['records', 'csv']))
+        self.assertTrue(c['csv'].startswith('id,section,field,value,text,tier'))
+        self.assertEqual(c['rows'], len([ln for ln in c['csv'].splitlines()[1:] if ln]))
+        self.assertIn('bombas.offers.free_shipping_threshold_usd,offers,free_shipping_threshold_usd,80', c['csv'])
+        self.assertGreater(api.handle(Req(['records', 'csv'], query={'retired': ['1']}))['rows'], 0)
+
+    def test_trust_history_points_once_a_day(self):
+        h = api.handle(Req(['trust', 'history']))
+        self.assertFalse(h['available'])
+        t = api.handle(Req(['trust']))
+        self.assertTrue(t['point_written'])
+        self.assertFalse(api.handle(Req(['trust']))['point_written'])  # once a day
+        h = api.handle(Req(['trust', 'history'], query={'sections': ['offers,policies']}))
+        self.assertEqual((h['available'], h['points'], h['labels']), (True, 1, ['2026-09-28']))
+        self.assertEqual([s['name'] for s in h['series']], ['brain', 'offers', 'policies'])
+        self.assertEqual(h['series'][0]['values'][0], t['overall'])
+        self.assertEqual(h['change'], 0)
+
+
 class Round4SecondBrand(unittest.TestCase):
     """Round 4 feature 2: plug and play. Every route answers for the example brain (7 records), unavailable never zero."""
 
-    ROUTES = [['overview'], ['master'], ['profile'], ['documents'], ['competitors'], ['coverage'], ['signals'], ['health'], ['conflicts'], ['questions'], ['ladders', 'proof'], ['selfaudit'], ['peaks'], ['visual'], ['newbrand'], ['visibility'], ['moves'], ['channels'], ['agentfile', 'endpoints'], ['brainmd'], ['trail'], ['assets'], ['ugc'], ['drift'], ['locks'], ['audiences'], ['walkthrough'], ['redlines'], ['owners'], ['onepage'], ['brainmd', 'notes'], ['alerts'], ['glossary'], ['expiring'], ['feedback'], ['numbers'], ['proofs'], ['trust'], ['round'], ['brandbook'], ['quiz'], ['schedule'],
+    ROUTES = [['overview'], ['master'], ['profile'], ['documents'], ['competitors'], ['coverage'], ['signals'], ['health'], ['conflicts'], ['questions'], ['ladders', 'proof'], ['selfaudit'], ['peaks'], ['visual'], ['newbrand'], ['visibility'], ['moves'], ['channels'], ['agentfile', 'endpoints'], ['brainmd'], ['trail'], ['assets'], ['ugc'], ['drift'], ['locks'], ['audiences'], ['walkthrough'], ['redlines'], ['owners'], ['onepage'], ['brainmd', 'notes'], ['alerts'], ['glossary'], ['expiring'], ['feedback'], ['numbers'], ['proofs'], ['trust'], ['round'], ['brandbook'], ['quiz'], ['schedule'], ['sources'], ['records', 'csv'], ['trust', 'history'],
               ['decisions'], ['flows'], ['claims'], ['site', 'diff'], ['parity'], ['contracts'], ['legal'], ['voice'], ['battlecards'], ['permissions'],
               ['export'], ['assumptions'], ['facts'], ['summaries'], ['changes'], ['learn'], ['report'], ['digest'], ['review'], ['bottlenecks'], ['audit']]
 

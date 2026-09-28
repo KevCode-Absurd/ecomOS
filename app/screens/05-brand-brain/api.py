@@ -15,6 +15,9 @@ question, and accept or ignore on a proposed record. Nothing external.
   GET  brandbook                the brand book from the records (markdown): identity, positioning, audiences, voice, glossary, red lines, locks, palette, facts
   GET  round                    the founder round as a checklist: questions, the review queue, moves, reviews due, carried over
   POST round/tick               {key, done}: tick or untick an item; POST round/close closes the round with one dated decision
+  GET  trust/history            the trust number per day since the first run (the chart), optional ?sections=
+  GET  sources                  where every fact came from: one row per source reference with sections, tiers, dates
+  GET  records/csv              every active record as CSV (?retired=1 includes retired)
   GET  trust                    section trust, explained: strong, fresh, reviewed, owned, weighted, with the formula
   GET  proofs                   proof requests for claims below approved, ranked by the doubts they answer, drafted
   POST proofs/<claim>/approve   {evidence, ref}: the evidence written onto the claim and the claim approved
@@ -234,6 +237,12 @@ _pspec.loader.exec_module(parity)
 _sspec = importlib.util.spec_from_file_location("brand_brain_sitediff", HERE / "sitediff.py")
 sitediff = importlib.util.module_from_spec(_sspec)
 _sspec.loader.exec_module(sitediff)
+_srspec = importlib.util.spec_from_file_location("brand_brain_sources", HERE / "sources.py")
+sources_mod = importlib.util.module_from_spec(_srspec)
+_srspec.loader.exec_module(sources_mod)
+_thspec = importlib.util.spec_from_file_location("brand_brain_trusthistory", HERE / "trusthistory.py")
+trusthistory = importlib.util.module_from_spec(_thspec)
+_thspec.loader.exec_module(trusthistory)
 _qzspec = importlib.util.spec_from_file_location("brand_brain_quiz", HERE / "quiz.py")
 quiz = importlib.util.module_from_spec(_qzspec)
 _qzspec.loader.exec_module(quiz)
@@ -2135,7 +2144,23 @@ def handle(req):
     if req.method == "GET" and parts == ["trust"]:
         t = trust.scores(brain, health.heatmap(brain), owners.owners(brain, health.SHELF_DAYS, health.META_SECTIONS, brain.section_stats()), health.META_SECTIONS)
         t.update(brand=brain.brand, today=brain.today.isoformat(), capability={"id": "BRN-C12", "autonomy": "agent_does"})
+        try:
+            t["point_written"] = trusthistory.append(brain, t)
+        except OSError:
+            t["point_written"] = False
         return t
+    if req.method == "GET" and parts == ["trust", "history"]:
+        secs = [x for x in (req.arg("sections", "") or "").split(",") if x in SECTIONS]
+        h = trusthistory.series(brain, secs)
+        h.update(brand=brain.brand, today=brain.today.isoformat())
+        return h
+    if req.method == "GET" and parts == ["sources"]:
+        sr = sources_mod.register(brain)
+        sr.update(brand=brain.brand, today=brain.today.isoformat(), capability={"id": "BRN-C02", "autonomy": "agent_does"})
+        return sr
+    if req.method == "GET" and parts == ["records", "csv"]:
+        text = sources_mod.records_csv(brain, include_retired=bool(req.arg("retired")))
+        return {"csv": text, "rows": text.count("\n") - 1, "filename": f"{brain.brand}-brain-records-{brain.today.isoformat()}.csv", "note": "One row per active record (add ?retired=1 for retired ones too). Values that are lists or objects are JSON in the cell."}
     if req.method == "GET" and parts == ["proofs"]:
         pr = proofs.requests(brain, claims_mod.desk(brain), [r for r in brain.records("objection_ladders") if isinstance(r.get("value"), dict)])
         pr.update(brand=brain.brand, today=brain.today.isoformat(), capability={"id": "BRN-C03", "autonomy": "founder_gate"})
