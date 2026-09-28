@@ -100,7 +100,16 @@ Lead's review: rounds 1 to 4 passed. Focus: returns and tickets by avatar, depth
 | 5.7 | How strong is each read: a fold above the desk tabs lists the sample behind every block (quotes, mentions on rungs, rated, praise and complaint reviews, dated complaints, coded lines, linked reviews, live ads read, first-time buyers) with its tab, thin under 100 reviews or 30 items (60 quotes for avatar cards). Thin blocks get one "widen the thin reads" pull plan; a person approves the spend before any pull. Bombas: avatar cards (38 quotes) and the ad read (23 ads) are thin | done |
 | 5.8 | Avatar cards say what we know and what we do not: each card gains chips for its build rank (from 4.9), ad voice (silent, under, fair, heavy), return risk against the median, where it speaks (Amazon or our site) and the split read, plus a "we do not know yet" line listing every evidence check it fails. Built once in `builds.card_meta` from the same builders | done |
 | 5.9 | Which avatars doubt the price and what answers it: the share of each avatar's one-star mentions on price rungs, price-led at 30 percent or more, with the facts the brain holds as orientation (free shipping point, lowest single pair, shipping as a share of one pair, pairs to free shipping) and a pack picker brief that shows the free shipping line; per-pair price by pack stays unavailable until pack prices are in the brain (Contract asks). Bombas: the In-Store Single Pair Trier, Price and Mission Skeptic and Guarantee Reassured Loyalist are price-led; one pair pays 61 percent on top in shipping | done |
-| 5.10 | Audit rules and `rank` for round 5, screenshot `round5.png` | todo |
+| 5.10 | Five more audit rules (CUST-R26 avatar with high return risk, satisfaction 4 per the docstring; R27 marketplace-led avatar; R28 price-led avatar; R29 records due for a re-check; R30 thin read, one per thin block), each with its drafted work in `rank` and a job. 30 rules, 29 firing on Bombas. Screenshot `round5.png` (avatar cards with the new chips and gaps) | done |
+
+### Round 5 founder note (28 Sep 2026)
+
+1. The screen now checks itself against the depth rules on every test run: no brand facts in page code, plain words, numbers on every finding, unavailable never zero.
+2. The Daily Compression Wearer sends the most back (1.68x the median avatar), driven by compression that is hard to pull on; a fit line and a day 2 email are drafted.
+3. Support has a drafted reply for 16 doubts, 11 ready from proof and 5 to check against a policy, in a pack for the CX screen.
+4. Three avatars speak mostly on Amazon and three are price-led; one pair pays 61 percent on top in shipping, so the pack picker brief leads with the free shipping line.
+5. Every avatar card now says its build rank, ad voice, return risk and what we do not know yet; every coverage cell shows the doubts behind it; thin reads are flagged with a pull plan to approve.
+6. Next, round 6: pack prices, ticket reasons and customer paths as the data layer lands, and a printable monthly customer report for the founder.
 
 ### Round 4 founder note (28 Sep 2026)
 
@@ -273,3 +282,4 @@ The job to be done for each avatar is brand data: it lives in `app/brain/<brand>
 | 2 | 2.1 to 2.10, from the web pass | 28 Sep 2026 | done; screenshot `round2.png` |
 | 3 | 3.1 to 3.10, the brand side of the room | 28 Sep 2026 | done; screenshot `round3.png` |
 | 4 | 4.1 to 4.10, one desk, hand-offs, remaining jobs | 28 Sep 2026 | done; screenshot `round4.png` |
+| 5 | 5.1 to 5.10, returns, support and depth per cell | 28 Sep 2026 | done; screenshot `round5.png` |

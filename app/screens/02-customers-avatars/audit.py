@@ -85,6 +85,17 @@ CUST-R24 avatar may be two buyers. Two product lines each hold 30 percent or mor
 CUST-R25 avatar our ads never speak to. An avatar with 12 percent or more of buyers matches no live
     ad hook (builds.ad_voice). Severity medium. Capability CREA-C06.
 
+CUST-R26 avatar with high return risk. Return risk at 1.25x the median avatar or more (builds.return_risk).
+    Severity medium. Capability LIFE-C07. Satisfaction 4 (returns), per this docstring.
+CUST-R27 marketplace-led avatar. Half or more of its linked reviews come from Amazon and Amazon one and two
+    star reviews name its doubts (builds.marketplace). Severity medium. Capability PROD-C34.
+CUST-R28 price-led avatar. Price rungs hold 30 percent or more of its one-star mentions (builds.price_doubts).
+    Severity medium. Capability LIFE-C39.
+CUST-R29 records due for a re-check. Avatar or ladder records expire within 30 days (builds.rechecks).
+    One finding for the set. Severity low. Capability BRAND-C15.
+CUST-R30 thin read. Avatar quotes under 60 in all, or fewer than 30 live ads read (builds.strength rules).
+    One finding per thin block. Severity low. Capability BRAND-C01.
+
 Money at stake is null for every rule: an evidence or proof gap has no revenue formula
 yet (`money_reason` says so). Confidence: one brain snapshot is one window (0.5), minus
 0.2 when an input record is past `expires_at`.
@@ -165,13 +176,24 @@ RULES = [
      "inputs": ["brain avatars", "brain products review_summary", "brain language_bank"], "capability": "BRAND-C12", "owner_screen": SCREEN},
     {"rule_id": "CUST-R25", "name": "avatar our ads never speak to", "entity_type": "brand",
      "inputs": ["brain avatars", "brain learnings hook_types"], "capability": "CREA-C06", "owner_screen": SCREEN},
+    {"rule_id": "CUST-R26", "name": "avatar with high return risk", "entity_type": "brand",
+     "inputs": ["brain products review_summary", "brain avatars", "brain language_bank"], "capability": "LIFE-C07", "owner_screen": SCREEN},
+    {"rule_id": "CUST-R27", "name": "marketplace-led avatar", "entity_type": "brand",
+     "inputs": ["brain avatars", "brain language_bank"], "capability": "PROD-C34", "owner_screen": SCREEN},
+    {"rule_id": "CUST-R28", "name": "price-led avatar", "entity_type": "brand",
+     "inputs": ["brain avatars", "brain objection_ladders", "brain offers"], "capability": "LIFE-C39", "owner_screen": SCREEN},
+    {"rule_id": "CUST-R29", "name": "records due for a re-check", "entity_type": "brand",
+     "inputs": ["brain avatars", "brain objection_ladders"], "capability": "BRAND-C15", "owner_screen": SCREEN},
+    {"rule_id": "CUST-R30", "name": "thin read", "entity_type": "brand",
+     "inputs": ["brain avatars", "brain learnings hook_types"], "capability": "BRAND-C01", "owner_screen": SCREEN},
 ]
 AUTONOMY = {"BRAND-C11": "founder_gate", "BRAND-C13": "agent_does", "CREA-C03": "agent_does", "SITE-C38": "human_assist",
             "PROD-C73": "human_assist", "CREA-C24": "agent_does", "LIFE-C27": "human_assist", "BRAND-C16": "founder_gate",
             "MEDIA-C12": "human_assist", "LIFE-C20": "agent_does", "LIFE-C08": "founder_gate", "BRAND-C14": "agent_does",
             "LIFE-C50": "founder_gate", "BRAND-C05": "human_assist", "LIFE-C12": "founder_gate", "BRAND-C59": "agent_does",
             "BRN-C03": "founder_gate", "MONEY-C48": "human_assist", "LIFE-C42": "founder_gate", "BRAND-C33": "founder_gate",
-            "BRAND-C12": "agent_does", "CREA-C06": "agent_does"}
+            "BRAND-C12": "agent_does", "CREA-C06": "agent_does", "LIFE-C07": "founder_gate", "PROD-C34": "human_assist",
+            "LIFE-C39": "founder_gate", "BRAND-C15": "agent_does", "BRAND-C01": "agent_does"}
 SILENT_MIN_SHARE = 0.12
 MOMENT_WARN_DAYS = 45
 NO_DATA = "no revenue formula for this rule yet"
@@ -535,6 +557,20 @@ def load_health(brand: str, avatars: list[dict]) -> dict:
     return builds.health(monthly, load_cohorts(brand, avatars).get("rows", []), as_of)
 
 
+def load_returns(brain: Brain, avatars: list[dict], all_rungs: list[dict]) -> dict:
+    mis = builds.misreads(brain.records("avatars"), avatars, all_rungs, brain.records("language_bank"), brain.records("products"))
+    if not mis.get("available"):
+        return {"rows": []}
+    buys = builds.avatar_lines(brain.records("avatars"), all_rungs, brain.records("language_bank"), {l["line"] for l in mis["lines"]})
+    try:
+        from tables import brand_data
+        data = brand_data(brain.brand)
+        monthly, as_of = data.table("monthly"), data.brand.get("as_of")
+    except (ImportError, ValueError, KeyError, FileNotFoundError):
+        monthly, as_of = [], (brain.today - dt.timedelta(days=1)).isoformat()
+    return builds.return_risk(avatars, buys, mis["lines"], monthly, as_of)
+
+
 def split_rows(brain: Brain, avatars: list[dict], all_rungs: list[dict]) -> dict:
     issues = {}
     for r in brain.records("products"):
@@ -579,7 +615,11 @@ def desk(brain: Brain, avatars: list[dict], all_rungs: list[dict]) -> dict:
             "hierarchy_approved": any(r.get("field") == "messaging_hierarchy" for r in brain.raw("positioning")),
             "health": load_health(brain.brand, avatars),
             "split": split_rows(brain, avatars, all_rungs),
-            "ad_voice": builds.ad_voice(avatars, brain.records("learnings"))}
+            "ad_voice": builds.ad_voice(avatars, brain.records("learnings")),
+            "returns": load_returns(brain, avatars, all_rungs),
+            "marketplace": builds.marketplace(avatars, all_rungs, brain.records("language_bank"), source_name),
+            "price": builds.price_doubts(avatars, all_rungs, brain.records("offers"), brain.records("products")),
+            "rechecks": builds.rechecks(avatars, brain.records("objection_ladders"), brain.today.isoformat())}
 
 
 def r04(d, all_rungs, ends_on):
@@ -814,6 +854,46 @@ def r24_r25(d, ends_on):
     return out
 
 
+def r26_r30(d, avatars, ends_on):
+    out = []
+    ref = lambda k: [f"{d['brand']}.avatars.{k}"]
+    for r in d["returns"].get("rows", []):
+        if r["verdict"] != "high":
+            continue
+        ev = [_ev("return_risk_vs_median", r["ratio"], "x", ends_on, "brain.products.review_summary", baseline=builds.RISK_HIGH)]
+        s = f"{r['name']} carries {r['ratio']}x the median return risk, driven by {r['driver'].replace('_', ' ')}: {r['driver_issue']}."
+        out.append(_finding("CUST-R26", "medium", {"type": "brand", "id": "returns_" + r["key"], "label": r["name"]}, ev, s, "LIFE-C07", 0.5, ref(r["key"]), ends_on))
+    for r in d["marketplace"]["rows"]:
+        if r["verdict"] != "marketplace" or not r["amazon_doubts"]:
+            continue
+        ev = [_ev("amazon_share_of_reviews", r["amazon_share"], "%", ends_on, "brain.language_bank", baseline=builds.MARKET_SHARE)]
+        s = f"{round(r['amazon_share'] * 100)} percent of {r['name']}'s reviews are on Amazon, led by \"{r['amazon_doubts'][0]['doubt']}\"."
+        out.append(_finding("CUST-R27", "medium", {"type": "brand", "id": "market_" + r["key"], "label": r["name"]}, ev, s, "PROD-C34", 0.5, ref(r["key"]), ends_on))
+    for r in d["price"]["rows"]:
+        if r["verdict"] != "price_led":
+            continue
+        ev = [_ev("price_share_of_one_star", r["price_share"], "%", ends_on, "brain.objection_ladders", baseline=builds.PRICE_LED)]
+        s = f"{round(r['price_share'] * 100)} percent of {r['name']}'s one-star mentions are about price."
+        out.append(_finding("CUST-R28", "medium", {"type": "brand", "id": "price_" + r["key"], "label": r["name"]}, ev, s, "LIFE-C39", 0.5, ref(r["key"]), ends_on))
+    rc = d["rechecks"]
+    if rc["due"]:
+        first = min(r["expires"] for r in rc["rows"] if r["status"] in ("due", "expired"))
+        ev = [_ev("records_due", rc["due"], "n", ends_on, "brain.avatars", baseline=0)]
+        out.append(_finding("CUST-R29", "low", {"type": "brand", "id": "rechecks", "label": "Records due for a re-check"}, ev,
+                            f"{rc['due']} avatar and ladder records stop being trusted by {first}.", "BRAND-C15", 0.5, [], ends_on))
+    quotes = sum(a["quote_count"] for a in avatars)
+    if quotes < builds.THIN_ITEMS * 2:
+        ev = [_ev("avatar_quotes", quotes, "n", ends_on, "brain.avatars", baseline=builds.THIN_ITEMS * 2)]
+        out.append(_finding("CUST-R30", "low", {"type": "brand", "id": "thin_quotes", "label": "Avatar quotes"}, ev,
+                            f"All avatars together rest on {quotes} quotes, under {builds.THIN_ITEMS * 2}.", "BRAND-C01", 0.5, [], ends_on))
+    ads = d["ad_voice"].get("total_ads")
+    if ads is not None and ads < builds.THIN_ITEMS:
+        ev = [_ev("live_ads_read", ads, "n", ends_on, "brain.learnings", baseline=builds.THIN_ITEMS)]
+        out.append(_finding("CUST-R30", "low", {"type": "brand", "id": "thin_ads", "label": "Live ads read"}, ev,
+                            f"The ad read rests on {ads} live ads, under {builds.THIN_ITEMS}.", "BRAND-C01", 0.5, [], ends_on))
+    return out
+
+
 def run(brand: str, window: dict, brain_root: Path | None = None) -> list[dict]:
     ends_on = window["ends_on"]
     today = dt.date.fromisoformat(ends_on) + dt.timedelta(days=1)
@@ -825,6 +905,6 @@ def run(brand: str, window: dict, brain_root: Path | None = None) -> list[dict]:
     d["brand"] = brand
     findings = (r01(brain, avatars, ends_on) + r02(brain, avatars, all_rungs, ends_on) + r03(brain, all_rungs, angles, ends_on)
                 + r04(d, all_rungs, ends_on) + r05(d, ends_on) + r06(d, ends_on) + r07(d, ends_on) + r08_r09(d, ends_on) + r10(d, ends_on)
-                + r11_r12(d, ends_on) + r13_r14(d, ends_on) + r15_r16(d, ends_on) + r17_r23(d, ends_on) + r24_r25(d, ends_on))
+                + r11_r12(d, ends_on) + r13_r14(d, ends_on) + r15_r16(d, ends_on) + r17_r23(d, ends_on) + r24_r25(d, ends_on) + r26_r30(d, avatars, ends_on))
     findings.sort(key=lambda f: (SEVERITY_ORDER[f["severity"]], f["rule_id"], f["id"]))
     return findings

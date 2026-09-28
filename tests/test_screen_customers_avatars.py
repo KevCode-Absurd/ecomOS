@@ -94,7 +94,7 @@ class AuditShape(unittest.TestCase):
         self.assertEqual(r03['status'], 'unavailable')
         self.assertEqual(r03['evidence'], [])
         self.assertEqual(set(r03['unavailable']), {'inputs', 'connector', 'fix'})
-        self.assertEqual({r['rule_id'] for r in audit.RULES}, {f'CUST-R{n:02d}' for n in range(1, 26)})
+        self.assertEqual({r['rule_id'] for r in audit.RULES}, {f'CUST-R{n:02d}' for n in range(1, 31)})
 
 
 class AuditRules(TempBrain):
@@ -548,7 +548,7 @@ class RankRound1(TempBrain):
 
     def test_every_rule_fires_on_bombas(self):
         rules = {f['rule_id'] for f in audit.run('bombas', RANK_WINDOW, self.tmp)}
-        self.assertEqual(rules, {f'CUST-R{n:02d}' for n in range(1, 26) if n != 23})
+        self.assertEqual(rules, {f'CUST-R{n:02d}' for n in range(1, 31) if n != 23})
 
     def test_open_actions_carry_drafts(self):
         acts = api.rank('bombas', RANK_WINDOW)['actions']
@@ -1354,6 +1354,21 @@ class PriceDoubts(TempBrain):
             if r['action']:
                 self.assertIn('unavailable', r['action']['draft'])
         self.assertEqual(x['rows'][0]['key'], 'in_store_single_pair_trier')
+
+
+class Round5Rules(TempBrain):
+    """Feature 5.10: round 5 rules fire with drafted work."""
+
+    def test_round5(self):
+        acts = {a['id']: a for a in api.rank('bombas', RANK_WINDOW)['actions']}
+        ret = acts['02-customers-avatars.CUST-R26.returns_daily_compression_wearer']
+        self.assertGreaterEqual(ret['rubric']['satisfaction'], 4)
+        self.assertEqual(ret['artefact']['kind'], 'flow')
+        self.assertIn('02-customers-avatars.CUST-R29.rechecks', acts)
+        self.assertEqual(acts['02-customers-avatars.CUST-R30.thin_ads']['steps'][1]['who'], 'person')
+        self.assertEqual(len([a for a in acts.values() if a['rule_id'] == 'CUST-R28']), 3)
+        for a in acts.values():
+            self.assertEqual(rank_engine.validate_action(a), [], a['id'])
 
 
 if __name__ == '__main__':
