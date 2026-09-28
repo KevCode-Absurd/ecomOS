@@ -38,6 +38,19 @@ COMP-R05 coverage gap. A cell of the creative coverage matrix (coverage.py:
     (agent does the brief; a person approves before anything is made).
     Estimated from page-level mixes until an ad-level snapshot exists, so
     confidence 0.3; 0.5 with a snapshot. Owner: 03-competitors.
+COMP-R06 first line gap. A first line kind (mix.py) at FL_SHARE (5 percent)
+    or more of the ads on FL_PAGES (3) or more tracked pages and under FL_OURS
+    (2 percent) of ours. Severity low (a copy test, not a break). Capability
+    CREA-C04 (agent does the hook bank). Owner: 03-competitors.
+COMP-R07 offer we hold and never say. An offer type seen on OFFER_PAGES (3) or
+    more tracked pages, held in our brain (free shipping threshold, guarantee,
+    pack ladder, gifting) and in none of our ads. Severity medium. Capability
+    LIFE-C47 (offer test). Owner: 03-competitors.
+COMP-R08 discount on most ads. OUR_PROMO (50 percent) or more of our active
+    ads push a code while NO_OFFER_PAGES (2) or more direct competitors show no
+    offer. Severity medium (the room's "discounting undercuts a premium
+    position" rule, read from ads because competitor discount depth is not
+    captured). Capability LIFE-C38 (founder gate). Owner: 03-competitors.
 
 Rubric overrides (depth.md section 4 allows reputation and satisfaction per rule):
 COMP-R01 reputation 5: an unclaimed angle is a competitor position gap named in
@@ -84,6 +97,7 @@ def _local(name: str):
 snap = _local("snapshot")
 pagemod = _local("pages")
 covmod = _local("coverage")
+mixmod = _local("mix")
 
 SCREEN = "03-competitors"
 SEVERITY_ORDER = {"critical": 0, "high": 1, "medium": 2, "low": 3}
@@ -125,9 +139,17 @@ RULES = [
     {"rule_id": "COMP-R05", "name": "coverage gap: an angle and format they run and we do not", "entity_type": "ad",
      "inputs": ["brain competitors", "brain learnings", "brain positioning.proof_points", "Ad Library snapshot"],
      "capability": "CREA-C06", "owner_screen": SCREEN},
+    {"rule_id": "COMP-R06", "name": "first line kind they use and we do not", "entity_type": "ad",
+     "inputs": ["brain competitors hook_types", "brain learnings adlib formats"], "capability": "CREA-C04",
+     "owner_screen": SCREEN},
+    {"rule_id": "COMP-R07", "name": "offer we hold and never say while they do", "entity_type": "offer",
+     "inputs": ["brain competitors offers_seen", "brain offers"], "capability": "LIFE-C47", "owner_screen": SCREEN},
+    {"rule_id": "COMP-R08", "name": "discount on most ads while direct peers run none", "entity_type": "offer",
+     "inputs": ["brain offers.promo_share_active_ads", "brain competitors offers_seen"], "capability": "LIFE-C38",
+     "owner_screen": SCREEN},
 ]
 RUBRIC_OVERRIDES = {"COMP-R01": {"reputation": 5}, "COMP-R02": {"reputation": 3}, "COMP-R04": {"reputation": 5, "satisfaction": 4}}
-AUTONOMY = {"CREA-C06": "agent_does", "BRAND-C21": "founder_gate", "BRAND-C24": "founder_gate", "MONEY-C48": "human_assist"}
+AUTONOMY = {"CREA-C06": "agent_does", "CREA-C04": "agent_does", "LIFE-C47": "agent_does", "LIFE-C38": "founder_gate", "BRAND-C21": "founder_gate", "BRAND-C24": "founder_gate", "MONEY-C48": "human_assist"}
 
 
 # ---------------------------------------------------------------- reading
@@ -320,6 +342,7 @@ def market(brand: str, today: dt.date, root: Path | None = None) -> dict:
         if p["role"] != "self":
             p["verdict"] = pagemod.verdict(p, us, top)
     return {"brand": brand, "brain": brain, "competitors": comps, "profile": prof, "packs": packs,
+            "mix": mixmod.build(pages, brain, snap),
             "coverage": covmod.matrix(pages, snap.ANGLES, snapshot, brain),
             "coverage_direct": covmod.matrix(pages, snap.ANGLES, snapshot, brain, direct_only=True),
             "pages": pages, "snapshot": {k: v for k, v in (snapshot or {}).items() if k != "ads"} or None,
@@ -501,6 +524,46 @@ def rule_coverage(m, ends_on):
     return out
 
 
+def rule_mix(m, ends_on):
+    out = []
+    mx = m["mix"]
+    fresh = _fresh(m["competitors"])
+    name = m["brand"].capitalize()
+    for g in mx["gaps"]:
+        if g["kind"] == "first_line":
+            ev = [_row("pages_using_kind", len(g["pages"]), "n", "latest capture", ends_on, fresh, mixmod.FL_PAGES,
+                       "threshold", "ad_library"),
+                  _row("their_median_share", g["their_median"], "%", "latest capture", ends_on, fresh, mixmod.FL_SHARE,
+                       "threshold", "ad_library"),
+                  _row("our_share", g["ours"] or 0, "%", "latest capture", ends_on, fresh, mixmod.FL_OURS, "threshold",
+                       "ad_library")]
+            sentence = (f"{len(g['pages'])} tracked pages open ads with a {g['label'].lower()}, a median "
+                        f"{round(g['their_median'] * 100)} percent of their ads. {name} opens {round((g['ours'] or 0) * 100)} percent that way.")
+            ent = {"type": "ad", "id": f"first_line_{g['key']}", "label": f"{g['label'].lower()} first lines"}
+            out.append(_finding("COMP-R06", "low", ent, ev, sentence, [f"{m['brand']}.learnings.hook_types"], ends_on, 0.5,
+                                "no baseline: a first line kind we never ran has no history"))
+        elif g["kind"] == "offer":
+            ev = [_row("pages_showing_offer", len(g["pages"]), "n", "latest capture", ends_on, fresh, mixmod.OFFER_PAGES,
+                       "threshold", "ad_library"),
+                  _row("our_ads_with_offer", 0, "n", "latest capture", ends_on, fresh, None, "threshold", "ad_library")]
+            sentence = (f"{len(g['pages'])} tracked pages show {g['label'].lower()} in ads. {name} has {g['held']['text']} "
+                        f"and says it in 0 ads.")
+            ent = {"type": "offer", "id": f"offer_{g['key']}", "label": g["label"].lower()}
+            out.append(_finding("COMP-R07", "medium", ent, ev, sentence, [g["held"]["ref"]], ends_on, 0.5,
+                                "no baseline: the offer has never run in ads"))
+        elif g["kind"] == "discount":
+            ev = [_row("our_ads_with_code_share", g["ours"], "%", "latest capture", ends_on, fresh, mixmod.OUR_PROMO,
+                       "threshold", "ad_library"),
+                  _row("direct_pages_without_offer", len(g["pages"]), "n", "latest capture", ends_on, fresh,
+                       mixmod.NO_OFFER_PAGES, "threshold", "ad_library")]
+            sentence = (f"{round(g['ours'] * 100)} percent of {name} ads push a code. {len(g['pages'])} direct competitors "
+                        f"show no offer at all.")
+            ent = {"type": "offer", "id": "discount_share", "label": "code on most ads"}
+            out.append(_finding("COMP-R08", "medium", ent, ev, sentence, [f"{m['brand']}.offers.promo_share_active_ads"],
+                                ends_on, 0.5, "no baseline: margin given up to the code is not in the brain"))
+    return out
+
+
 def _today(window) -> dt.date:
     if window and window.get("ends_on"):
         return dt.date.fromisoformat(str(window["ends_on"])) + dt.timedelta(days=1)
@@ -517,7 +580,7 @@ def run(brand: str, window: dict | None = None, root: Path | None = None) -> lis
                             "Run the Ad Library extractor for the brand's competitor set.", ends_on)
                for rid in ("COMP-R01", "COMP-R03")]
     else:
-        out = rule_angles(m, ends_on) + rule_offer_runs(m, ends_on) + rule_coverage(m, ends_on)
+        out = rule_angles(m, ends_on) + rule_offer_runs(m, ends_on) + rule_coverage(m, ends_on) + rule_mix(m, ends_on)
     out += rule_price(m, ends_on) + rule_lookalike(m, ends_on)
     out.sort(key=lambda f: (SEVERITY_ORDER[f["severity"]], f["id"]))
     return out

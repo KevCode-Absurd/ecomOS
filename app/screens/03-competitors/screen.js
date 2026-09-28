@@ -276,6 +276,32 @@
     draw('all');
   }
 
+  // ---------- 5c. hook and offer mix ----------
+  const ANSWER = { copy: 'Copy brief', offer: 'Offer test' };
+  function mixSection(mx, actionsById) {
+    const rows = mx.rows.map((r) => ({ key: r.name, label: r.name + (r.role === 'self' ? ' (us)' : ''), sub: r.n ? r.n + ' ads read' : 'no ads read' }));
+    const cells = {};
+    for (const r of mx.rows) { cells[r.name] = {}; for (const k of mx.kinds) cells[r.name][k.key] = r.n ? { us: r.shares[k.key], unit: '%', n: r.n } : null; }
+    const kinds = mx.kinds.filter((k) => mx.rows.some((r) => r.shares[k.key]));
+    const heat = UI.coverageMatrix({ rows, cols: kinds, cells, unit: '%', single: true, max: 0.3, corner: 'Page', note: 'Share of each page\'s ads that open with each kind of first line. Darker is more.' });
+    const offers = UI.table({ columns: [
+      { key: 'name', label: 'Page', format: (v, r) => v + (r.role === 'self' ? ' (us)' : '') },
+      { key: 'offers', label: 'Offer types seen', format: (v) => (v || []).map((k) => mx.offer_labels[k] || k).join(', ') || 'no offer seen' },
+      { key: 'offer_share', label: 'Share of ads with an offer', format: (v) => v == null ? NA : Math.round(v * 100) + ' percent' }], rows: mx.rows, sort: false });
+    const held = el('div', { class: 'small muted' }, el('b', { text: 'Held in our brain: ' }), Object.entries(mx.held).map(([k, h]) => (mx.offer_labels[k] || k) + ' (' + h.text + ')').join('; ') + '.');
+    const answers = mx.gaps.map((g) => {
+      const a = Object.values(actionsById).find((x) => x.entity && (x.entity.id === 'first_line_' + g.key || x.entity.id === 'offer_' + g.key || (g.kind === 'discount' && x.entity.id === 'discount_share')));
+      return el('article', { class: 'card flat answer' },
+        el('div', { class: 'row' }, el('span', { class: 'chip ' + (g.kind === 'first_line' ? 'accent' : 'warn'), text: ANSWER[g.answer] }), el('b', { text: g.label }), UI.ownerChip(g.owner), el('span', { class: 'micro faint', text: g.pages.length + ' pages: ' + g.pages.join(', ') })),
+        el('pre', { class: 'card sunken bc', text: g.draft }),
+        el('div', { class: 'row' }, UI.copyButton({ label: 'Copy', text: () => g.draft }),
+          UI.decisionRow({ capability: g.capability, owner: g.owner, screen: SCREEN, compact: true, finding_id: a ? a.id : SCREEN + '.mix.' + g.key })));
+    });
+    mount('#mix', el('h4', { text: 'How their ads open' }), heat, el('h4', { text: 'What they offer' }), offers, held,
+      el('h4', { text: 'The answer for each gap' }), ...(answers.length ? answers : [el('p', { class: 'muted', text: 'No gap passes the rules on this capture.' })]),
+      el('p', { class: 'micro faint', text: mx.rules + ' Kinds and types only. Never their lines.' }));
+  }
+
   // ---------- 6. the audit ----------
   function rulesTable(rules) {
     return UI.table({ columns: [{ key: 'rule_id', label: 'Rule' }, { key: 'name', label: 'What it checks' }, { key: 'inputs', label: 'Reads', format: (v) => (v || []).join(', ') }, { key: 'capability', label: 'Capability' }],
@@ -298,6 +324,7 @@
     mount('#board', ...d.board.map(boardCard));
     pagesSection(d.pages);
     coverageSection(d.coverage);
+    mixSection(d.mix, byId);
     document.getElementById('audit-sub').textContent = p.findings.length + ' findings from ' + p.rules.length + ' rules. Public signals, one capture.';
     mount('#audit', auditTable(p.findings));
     mount('#rules', el('h4', { text: 'Rules' }), rulesTable(p.rules));

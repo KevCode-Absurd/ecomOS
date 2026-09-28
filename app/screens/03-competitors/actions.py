@@ -219,6 +219,67 @@ def act_coverage(f: dict, m: dict) -> dict:
     }
 
 
+def _mix_gap(f: dict, m: dict, kind: str) -> dict | None:
+    key = {"first_line": f["entity"]["id"].removeprefix("first_line_"), "offer": f["entity"]["id"].removeprefix("offer_"),
+           "discount": "discount_heavy"}[kind]
+    return next((g for g in m["mix"]["gaps"] if g["kind"] == kind and g["key"] == key), None)
+
+
+def act_first_line(f: dict, m: dict) -> dict:
+    """COMP-R06: a first line kind they use and we do not. The agent builds and grades a hook bank."""
+    g = _mix_gap(f, m, "first_line") or {"label": f["entity"]["label"], "draft": None, "pages": []}
+    return {
+        "title": f"Write 6 {g['label'].lower()} first lines and test the best 2",
+        "owner": "agent",
+        "artefact": {"kind": "copy", "label": f"a graded hook bank: 6 {g['label'].lower()} first lines", "draft": g["draft"]},
+        "steps": _steps(("agent", "Pull praise phrases from the language bank and our proof points."),
+                        ("agent", "Write 6 first lines in the kind and grade them on the hook bank rubric."),
+                        ("agent", "Hand the best 2 to the creative queue as first line swaps on current ads."),
+                        ("person", f"Read the test on {_plus(f['last_seen'], 14)} and keep or drop.")),
+        "size": {"text": f"6 lines, 2 tested; {len(g['pages'])} pages open this way", "count": 6},
+        "win_rule": "Thumb stop rate or click rate up 10 percent on the swapped ads",
+        "stop_rule": "Click rate 20 percent below control after 3,000 impressions",
+        "check_on": _plus(f["last_seen"], 14), "time_to_ship_hours": 2,
+    }
+
+
+def act_offer_gap(f: dict, m: dict) -> dict:
+    """COMP-R07: an offer we hold and never say while tracked pages say theirs."""
+    g = _mix_gap(f, m, "offer") or {"label": f["entity"]["label"], "draft": None, "pages": []}
+    return {
+        "title": f"Test our {g['label'].lower()} line in 3 ads against the current offer",
+        "owner": "agent_drafts",
+        "artefact": {"kind": "test_brief", "label": f"an offer test: {g['label'].lower()} line against the code", "draft": g["draft"]},
+        "steps": _steps(("agent", "Check the offer terms in the brain match the site today."),
+                        ("agent", "Draft the test: 3 ads with the line in the first frame, 3 control."),
+                        ("person", "Approve the test and the wording."),
+                        ("agent", f"Read click to order rate and net revenue per order on {_plus(f['last_seen'], 14)}.")),
+        "size": {"text": f"3 test ads against 3 control; {len(g['pages'])} pages show it", "count": 3},
+        "win_rule": "Click to order rate up and net revenue per order flat or better",
+        "stop_rule": "Net revenue per order down 10 percent after 7 days",
+        "check_on": _plus(f["last_seen"], 14), "time_to_ship_hours": 4,
+    }
+
+
+def act_discount(f: dict, m: dict) -> dict:
+    """COMP-R08: a code on most of our ads while direct peers run none. The founder gates any policy change."""
+    g = _mix_gap(f, m, "discount") or {"draft": None, "ours": None, "pages": []}
+    share = round((g.get("ours") or 0) * 100)
+    return {
+        "title": f"Run 6 proof-first ads with no code; {share} percent of our ads push one",
+        "owner": "agent_drafts",
+        "artefact": {"kind": "test_brief", "label": "a no-code ad test with proof first", "draft": g["draft"]},
+        "steps": _steps(("agent", "Pick the 6 ads with the most spend that carry the code."),
+                        ("agent", "Draft proof-first versions with no code; keep the code ads as control."),
+                        ("person", "Founder approves the test. The code policy does not change yet."),
+                        ("agent", f"Read net revenue per order and new customer orders on {_plus(f['last_seen'], 14)}.")),
+        "size": {"text": f"6 of the code ads; {share} percent of ads push a code now", "count": 6},
+        "win_rule": "Net revenue per order up with new customer orders down less than 5 percent",
+        "stop_rule": "New customer orders down 15 percent after 7 days",
+        "check_on": _plus(f["last_seen"], 14), "time_to_ship_hours": 4,
+    }
+
+
 def act_connect(f: dict, m: dict) -> dict:
     un = f.get("unavailable") or {}
     con = un.get("connector") or "the missing source"
@@ -232,7 +293,7 @@ def act_connect(f: dict, m: dict) -> dict:
 
 
 BUILDERS = {"COMP-R01": act_angle, "COMP-R02": act_price, "COMP-R03": act_offer_run, "COMP-R04": act_lookalike,
-            "COMP-R05": act_coverage}
+            "COMP-R05": act_coverage, "COMP-R06": act_first_line, "COMP-R07": act_offer_gap, "COMP-R08": act_discount}
 
 
 def action(f: dict, m: dict, net_revenue: float | None) -> dict:

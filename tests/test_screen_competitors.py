@@ -332,6 +332,45 @@ class TestCoverage(TempBrain):
             self.assertTrue(a['artefact']['draft'])
 
 
+class TestMix(TempBrain):
+    """1.4: first line kinds and offer types against ours; each gap has an answer with an owner."""
+    def setUp(self):
+        super().setUp()
+        api.BRAIN_ROOT = self.tmp
+        self.mx = api.handle(Req(['overview']))['mix']
+
+    def test_shares_sum_to_one(self):
+        for r in self.mx['rows']:
+            if r['n']:
+                self.assertAlmostEqual(sum(v for v in r['shares'].values() if v), 1, delta=0.01)
+        self.assertEqual(self.mx['rows'][-1]['role'], 'self')
+
+    def test_gaps(self):
+        by = {(g['kind'], g['key']): g for g in self.mx['gaps']}
+        q = by[('first_line', 'question')]
+        self.assertGreaterEqual(len(q['pages']), audit.mixmod.FL_PAGES)
+        self.assertEqual(q['owner'], 'agent')
+        fs = by[('offer', 'free_shipping')]
+        self.assertIn('75', fs['held']['text'])
+        d = by[('discount', 'discount_heavy')]
+        self.assertAlmostEqual(d['ours'], round(21 / 23, 3))
+        for g in self.mx['gaps']:
+            self.assertIn(g['answer'], ('copy', 'offer'))
+            self.assertTrue(g['draft'])
+
+    def test_rules_r06_to_r08_rank(self):
+        out = audit.run('bombas', WINDOW, self.tmp)
+        ids = {f['rule_id'] for f in out}
+        self.assertTrue({'COMP-R06', 'COMP-R07', 'COMP-R08'} <= ids)
+        acts = api.rank('bombas', {'ends_on': '2026-09-27', 'days': 28, 'trailing': 4})['actions']
+        kinds = {a['rule_id']: a['artefact']['kind'] for a in acts}
+        self.assertEqual(kinds['COMP-R06'], 'copy')
+        self.assertEqual(kinds['COMP-R07'], 'test_brief')
+        self.assertEqual(kinds['COMP-R08'], 'test_brief')
+        r6 = next(a for a in acts if a['rule_id'] == 'COMP-R06')
+        self.assertEqual(r6['title'], 'Write 6 question first lines and test the best 2')
+
+
 class TestRank(TempBrain):
     """Depth contract rules 2, 3 and 13: owner, steps and artefact on every action; every finding ends in one."""
     W = {'ends_on': '2026-09-27', 'days': 28, 'trailing': 4}
