@@ -7,8 +7,9 @@ in audit.py; this file shapes them for the page. No writes, nothing external.
 
   GET  plan       the plan board: ranked actions (actions.py) with decisions
                   applied, connect actions, orientation numbers, findings, rules
-  GET  overview   the desk: competitor cards, positioning map, price ladder,
-                  what they run board, lookalike record, widest price gap
+  GET  overview   the desk: pages side by side, coverage matrix, hook and offer
+                  mix, references, price and pack ladder, positioning map,
+                  changes, freshness and the re-pull plan
   GET  audit      findings from audit.py (app/contracts/audit.md shape)
   rank(brand, window)  the depth contract override app/rank.py calls
 
@@ -144,31 +145,20 @@ def map_kit(m: dict, pts: list[dict], axis: str, q: dict, split_x) -> dict:
             "missing": missing, "plain": spec["plain"]}
 
 
-def board(m: dict) -> list[dict]:
-    out = [{"name": c["name"], "formats": c["formats"], "hooks": c["hooks"], "active_ads": c["active_ads"],
-            "longest_days": c["longest_days"], "brand": False} for c in m["competitors"]]
-    prof = m["profile"]
-    out.append({"name": m["brand"].capitalize(), "brand": True,
-                "formats": [f"{k} {v}" for k, v in prof["formats"].items()],
-                "hooks": [f"{k} {v}" for k, v in sorted(prof["hooks"].items(), key=lambda kv: -kv[1])],
-                "active_ads": prof["active_ads"], "longest_days": None})
-    return out
-
-
 def orientation(m: dict) -> list[dict]:
     """3 to 6 small numbers beside the plan: where the competitive position stands today."""
-    comps = m["competitors"]
-    ads = [c["active_ads"] for c in comps if isinstance(c["active_ads"], int)]
-    ages = [c["age_days"] for c in comps if c["age_days"] is not None]
+    comps = [p for p in m["pages"] if p["role"] != "self"]
+    ads = sorted(p["active_ads"] for p in comps if isinstance(p["active_ads"], int))
+    ages = [p["age_days"] for p in comps if p["age_days"] is not None and p["source"] != "none"]
     lo, hi = audit.PRICE_BAND
     idx = m["price_position_index"]
+    threats = sum(1 for p in comps if (p.get("verdict") or {}).get("text") == "Threat")
     return [
-        {"label": "competitor pages", "value": len(comps), "unit": "n", "title": "competitor pages tracked in the brain"},
+        {"label": "pages tracked", "value": len(comps), "unit": "n", "title": "competitor pages in the brain's competitive frame"},
+        {"label": "threats", "value": threats, "unit": "n", "tone": "bad" if threats else None, "title": "pages with a threat verdict"},
         {"label": "our active ads", "value": m["profile"]["active_ads"], "unit": "n", "title": "latest Ad Library capture"},
-        {"label": "theirs, median a page", "value": sorted(ads)[len(ads) // 2] if ads else None, "unit": "n",
+        {"label": "theirs, median a page", "value": ads[len(ads) // 2] if ads else None, "unit": "n",
          "title": "median active ads across tracked pages, public signal"},
-        {"label": "snapshot age", "value": max(ages) if ages else None, "unit": "n", "suffix": " days",
-         "title": "days since the oldest competitor capture"},
         {"label": "price index", "value": idx, "unit": "n", "tone": None if idx is None else ("bad" if not lo <= idx <= hi else "good"),
          "title": f"our price per pair / tracked median x 100, band {lo} to {hi}, simulated brand price"},
     ]
@@ -190,7 +180,9 @@ def plan(brand: str, today: dt.date) -> dict:
     return {"brand": brand, "window": window, "brain_version": out["brain_version"], "simulated": True,
             "orient": orientation(m), "actions": [a for a in acts if a.get("status") != "unavailable"],
             "connect": [a for a in acts if a.get("status") == "unavailable"],
-            "snoozed": len(out["actions"]) - len(acts), "findings": out["findings"], "rules": audit.RULES}
+            "snoozed": len(out["actions"]) - len(acts), "findings": out["findings"], "rules": audit.RULES,
+            "groups": [{"key": k, "label": v} for k, v in audit.GROUP_LABEL.items()], "rule_group": audit.RULE_GROUP,
+            "snapshot_age_days": max(ages) if (ages := [p["age_days"] for p in m["pages"] if p["age_days"] is not None]) else None}
 
 
 def page_rows(m: dict) -> dict:
@@ -246,7 +238,7 @@ def overview(brand: str, today: dt.date) -> dict:
     return {"brand": brand, "today": today.isoformat(), "version": brain.version(),
             "simulated_note": SIMULATED_NOTE.format(name=name), "signal_note": SIGNAL_NOTE,
             "competitors": [_public(c) for c in m["competitors"]], "angles": m["angles"],
-            "positioning": positioning(m), "board": board(m),
+            "positioning": positioning(m),
             "lookalike": m["lookalike"], "gap": gaps(m), "pages": page_rows(m),
             "coverage": {"all": m["coverage"], "direct": m["coverage_direct"]}, "mix": m["mix"], "references": m["references"], "ladder": m["ladder"], "changes": m["changes"], "freshness": freshness(m, brand),
             "category_median": m["category_median"], "price_position_index": m["price_position_index"]}

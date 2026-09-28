@@ -10,7 +10,6 @@
   const NS = 'http://www.w3.org/2000/svg';
   const pretty = (s) => String(s || '').replace(/_/g, ' ');
   const usd = (v) => v == null ? NA : '$' + Number(v).toFixed(2);
-  const chips = (list, cls) => el('div', { class: 'chips' }, ...(list || []).map((t) => el('span', { class: 'chip ' + (cls || ''), text: t })));
 
   function svg(tag, attrs, text) {
     const n = document.createElementNS(NS, tag);
@@ -100,14 +99,6 @@
       el('ul', { class: 'small muted' }, ...lad.bands.map((x) => el('li', null, x.name + ': ' + x.text + '. ', x.ref ? el('a', { href: x.ref, target: '_blank', rel: 'noopener', text: 'source' }) : null))));
   }
 
-  function boardCard(b) {
-    return el('article', { class: 'card' + (b.brand ? ' brand' : '') },
-      el('div', { class: 'row' }, el('b', { text: b.name }), b.brand ? el('span', { class: 'chip accent', text: 'your brand' }) : null,
-        el('span', { class: 'muted small', text: (b.active_ads == null ? NA : b.active_ads) + ' active ads' })),
-      el('div', { class: 'muted small', text: 'Formats' }), chips(b.formats),
-      el('div', { class: 'muted small', text: 'Hook types' }), chips(b.hooks, 'accent'));
-  }
-
   function auditTable(findings) {
     return UI.table({
       columns: [
@@ -128,7 +119,7 @@
   function planSection(p) {
     const w = p.window || {};
     mount('#plan', UI.planBoard({
-      title: 'The plan: what we make because of them', sub: 'Capture to ' + fmt.date(w.ends_on) + ', ' + p.actions.length + ' actions from ' + p.rules.length + ' rules',
+      title: 'The plan: what we make because of them', sub: 'Capture to ' + fmt.date(w.ends_on) + (p.snapshot_age_days == null ? '' : ', ' + p.snapshot_age_days + ' days old') + ', ' + p.actions.length + ' actions from ' + p.rules.length + ' rules',
       orient: p.orient, actions: p.actions, limit: 10, screen: SCREEN,
       tools: [el('button', { class: 'btn sm', type: 'button', text: 'Export CSV', onclick: () => UI.csv(p.actions.map((a, i) => ({ rank: i + 1, title: a.title, owner: a.owner, artefact: a.artefact.kind, severity: a.severity, total: a.rubric.total, why: a.why, check_on: a.check_on })), null, 'competitor-actions.csv') })],
       foot: el('div', { class: 'row' }, UI.rubricLegend(), el('span', { class: 'micro faint', text: 'Ranking: rubric total, then severity. "Not now" snoozes 14 days.' + (p.snoozed ? ' ' + p.snoozed + ' snoozed.' : '') })),
@@ -148,10 +139,10 @@
     const base = e.baseline == null ? '' : ' against ' + (Array.isArray(e.baseline) ? e.baseline.join(' to ') : one(e.baseline)) + ' (' + pretty(e.baseline_kind) + ')';
     return el('li', null, el('span', { class: 'mono micro', text: e.metric }), ' ', el('b', { class: 'num', text: v }), base, el('span', { class: 'faint', text: ', ' + e.window + (e.simulated ? ', simulated' : '') }));
   }
-  function wrongList(findings, actionsById) {
+  function wrongList(findings, actionsById, p) {
     const open = findings.filter((f) => f.status !== 'resolved').sort((a, b) => (SEV[a.severity] - SEV[b.severity]) || (b.confidence - a.confidence));
     if (!open.length) return [el('p', { class: 'muted', text: 'Nothing open on this capture.' })];
-    return open.map((f) => {
+    const card = (f) => {
       const a = actionsById[f.id];
       const go = a ? el('button', { class: 'btn soft xs', type: 'button', text: 'Go to the action', onclick: () => { const n = document.querySelector('#actions [data-id="' + CSS.escape(a.id) + '"]'); if (n) { n.scrollIntoView({ behavior: 'smooth', block: 'center' }); n.classList.add('flash'); setTimeout(() => n.classList.remove('flash'), 1600); } } }) : null;
       return el('article', { class: 'card flat finding' },
@@ -160,7 +151,12 @@
         el('div', { text: f.sentence }),
         f.evidence.length ? el('ul', { class: 'ev small' }, ...f.evidence.map(evidenceLine)) : el('div', { class: 'na small', text: 'Inputs missing: ' + ((f.unavailable || {}).inputs || []).join(', ') }),
         a ? el('div', { class: 'small muted' }, 'Fix: ', el('b', { text: a.title }), ' ', UI.ownerChip(a)) : null);
-    });
+    };
+    return p.groups.map((g) => {
+      const fs = open.filter((f) => (p.rule_group[f.rule_id] || 'watch') === g.key);
+      if (!fs.length) return null;
+      return el('div', { class: 'stack wrong-group' }, el('h4', { text: g.label + ' (' + fs.length + ')' }), ...fs.map(card));
+    }).filter(Boolean);
   }
 
   // ---------- 5a. who are we up against: pills and the side-by-side table ----------
@@ -372,13 +368,11 @@
     const byId = {};
     for (const a of p.actions.concat(p.connect)) for (const id of a.finding_ids) byId[id] = a;
     document.getElementById('wrong-sub').textContent = p.findings.length + ' findings on the latest capture, severity first. Each links to the action that closes it.';
-    mount('#wrong', ...wrongList(p.findings, byId));
+    mount('#wrong', ...wrongList(p.findings, byId, p));
     mount('#actions', ...(p.actions.length ? p.actions.map((a) => UI.actionCard(a, { screen: SCREEN })) : [el('p', { class: 'muted', text: 'No open action.' })]));
-    document.getElementById('signal-note').textContent = d.signal_note;
     document.getElementById('map-sub').textContent = 'Split at the tracked median price (' + usd(d.positioning.split_x) + ') and the middle of the claim scale. Each corner ends in a move: hold, contest, claim or skip.';
     mount('#map', ...mapCard(d.positioning));
     ladderSection(d.ladder);
-    mount('#board', ...d.board.map(boardCard));
     pagesSection(d.pages);
     coverageSection(d.coverage);
     mixSection(d.mix, byId);

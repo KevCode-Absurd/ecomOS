@@ -88,7 +88,7 @@ def act_angle(f: dict, m: dict) -> dict:
         NEVER_COPY,
     ])
     return {
-        "title": f"Make 3 ads that lead with {angle['label']}, the angle no tracked brand runs",
+        "title": f"Make 3 ads that lead with {angle['label']}, the angle no tracked page runs",
         "owner": "agent_drafts",
         "artefact": {"kind": "ad_brief", "label": f"3 ad briefs that lead with {angle['label']}", "draft": draft},
         "steps": _steps(("agent", f"Pull the proof for {angle['label']} from the brain and the current top 3 ads by spend."),

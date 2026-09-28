@@ -1,5 +1,5 @@
 """Tests for screen 03-competitors on the Bombas brain: audit.py in the contract shape and the api
-(overview tiles, insights, chart, map, price ladder, board, lookalike). Edits go to a temp copy of app/brain."""
+(plan, rank, pages, coverage, mix, references, ladder, map, changes, freshness). Edits go to a temp copy of app/brain."""
 import datetime as dt
 import importlib.util
 import json
@@ -184,6 +184,8 @@ class TestApi(TempBrain):
         self.assertTrue(p['actions'])
         labels = [o['label'] for o in p['orient']]
         self.assertTrue(3 <= len(labels) <= 6)
+        self.assertEqual(next(o for o in p['orient'] if o['label'] == 'pages tracked')['value'], 12)
+        self.assertEqual({g['key'] for g in p['groups']}, set(audit.RULE_GROUP.values()))
         self.assertIn('price index', labels)
         idx = next(o for o in p['orient'] if o['label'] == 'price index')
         self.assertEqual(idx['value'], self.d['price_position_index'])
@@ -199,7 +201,7 @@ class TestApi(TempBrain):
         for c in self.d['competitors']:
             self.assertFalse([k for k in c if k.startswith('_')])
             self.assertIn('giving', c['gap_to_own'])
-        self.assertTrue(self.d['board'][-1]['brand'])
+        self.assertNotIn('board', self.d)
         self.assertEqual(self.d['lookalike']['links_to'], 'sockscool.com')
         self.assertNotIn('lookalike_page', [c['id'].split('.')[-1] for c in self.d['competitors']])
 
@@ -631,6 +633,34 @@ class TestRank(TempBrain):
 
     def test_deterministic(self):
         self.assertEqual(json.dumps(api.rank('bombas', self.W)['actions']), json.dumps(self.out['actions']))
+
+    def test_every_rule_has_a_builder_and_a_group(self):
+        ids = [r['rule_id'] for r in audit.RULES]
+        self.assertEqual(len(ids), len(set(ids)))
+        for rid in ids:
+            self.assertIn(rid, api.actions.BUILDERS)
+            self.assertIn(rid, audit.RULE_GROUP)
+            self.assertIn(audit.RULES[ids.index(rid)]['capability'], audit.AUTONOMY)
+
+    def test_every_open_finding_ranks_at_every_edit(self):
+        """Findings from edited brains (no competitors, stale window) still map to valid actions."""
+        for window in (self.W, {'ends_on': '2026-10-20', 'days': 28, 'trailing': 4}):
+            findings = audit.run('bombas', window, self.tmp)
+            acts = api.rank('bombas', window)['actions']
+            covered = {i for a in acts for i in a['finding_ids']}
+            for f in findings:
+                self.assertIn(f['id'], covered)
+            for a in acts:
+                self.assertEqual(api.actions.ranker.validate_action(a), [])
+
+    def test_not_now_snoozes(self):
+        path = self.tmp / 'decisions.json'
+        a = self.out['actions'][0]
+        path.write_text(json.dumps([{'finding_id': a['id'], 'choice': 'not_now', 'time': '2026-09-27T10:00:00Z'}]))
+        kept = api.actions.ranker.apply_decisions([dict(x) for x in self.out['actions']], dt.date(2026, 9, 28), path)
+        self.assertNotIn(a['id'], [x['id'] for x in kept])
+        later = api.actions.ranker.apply_decisions([dict(x) for x in self.out['actions']], dt.date(2026, 10, 20), path)
+        self.assertIn(a['id'], [x['id'] for x in later])
 
     def test_app_rank_uses_override(self):
         r = api.actions.ranker.rank('03-competitors', 'bombas', self.W)

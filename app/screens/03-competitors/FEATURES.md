@@ -30,9 +30,22 @@ Round 0 notes (28 Sep 2026): brand price per pair is simulated net sales per uni
 | 1.7 | Positioning map on `Charts.positioningMap`: price per pair against durability or comfort claim, us and every placed brand sized by active ads, pages with no price band listed as not placed; each corner ends in a move computed in code (hold, contest with the claim points we miss, claim, skip) with a BRAND-C20 decision row; rule COMP-R11 puts an open strong-claim corner on the plan as a 2-frame positioning test (does not fire on this capture, tested on an edited brain) | done |
 | 1.8 | Launches and changes (`changes.py`): a 28-day timeline, newest first, from snapshot diffs when two ad-level snapshots exist (new ads, formats, offer types, angles) and from the brain now (full account refreshes, the lookalike page, our own launches); each change is follow, watch or ignore with the action and a BRN-C11 decision row; rule COMP-R12 puts a direct competitor's full refresh on the plan as a research note | done |
 | 1.9 | Snapshot freshness and the re-pull: per page the page id, last capture, age and source (fresh, ageing, stale, no capture; never 0); "Re-pull: show the estimate first" reveals the plan from `snapshot.plan` (12 pages by page id, 1,800 ads cap, $2.08 estimate, $4 run and $30 week caps, week spend from the ledger, Allbirds skipped for no page id, whether the key is set), the run command and a person-owned BRN-C11 decision; the screen never spends. Rules COMP-R13 page with no id (person pastes it) and COMP-R14 stale capture (person approves the spend) | done |
-| 1.10 | `rank` for every rule, old and new, with tests that every finding maps to an action | todo |
+| 1.10 | `rank` for all 14 rules (COMP-R01 to R14): each has a builder with a real title, owner, 2 to 5 steps with who, the artefact kind (ad_brief, copy, test_brief, offer, page_section, research_note, ticket, brain_record, connector_setup) and a draft from the brain where it can; findings grouped on the page by bottleneck (ads, offers, price, map corners, watch); orientation on the 12 pages (pages tracked, threats, our ads, theirs, price index); R01 now checks all 11 pages with data; the round 0 "what they run" board removed; phone width fixed; tests: every rule has a builder and a group, every open finding ranks and validates on edited brains and a late window, "Not now" snoozes 14 days | done |
 
 Round 1 notes: `snapshot.py` plans and runs a page-id Ad Library pull through `app/connectors/apify.py` (12 pages with ids, 1,800 items cap, estimate $2.08, inside the $4 run and $30 week caps). The live run was blocked by the session's permission check on 28 Sep, so round 1 builds on the brain's 28 Sep pulls (page-level formats, hook types, offers, run lengths and 3 quoted ads a page) and the page says so.
+
+### Round 1 status for Kevin (28 Sep 2026)
+
+1. A founder can now open Competitors and see 13 ranked moves first: ads to make, offers to test, a pack ladder to fix, a lookalike page to report, each with owner, steps and a drafted brief.
+2. Behind the plan: the 12 tracked pages side by side with threat, watch or ignore; a coverage matrix of angles by format with "Brief it" on every gap; the hook and offer mix with an answer per gap.
+3. Also new: longest running ads as references (borrow layout and mood, never copy), the price and pack ladder against the bands, the positioning map with a move per corner, a 28-day changes timeline, and freshness with the re-pull estimate shown first.
+4. What changed: 14 audit rules (was 4), all ranked through our own `rank`; tiles, insight cards, the ads chart, the lookalike banner and the formats board are gone.
+5. Honest gaps: the live Ad Library pull ($2.08, inside the caps) was blocked by this session's permission check, so the matrix and mixes are estimates from the brain's page summaries and say so; offer share, main CTA and new-in-14-days wait for an ad-level snapshot.
+6. Next, round 2: run the snapshot (Kevin's approval) to make every cell counted, then the room's SERP overlap, marketplace presence, review comparison and pricing moves, and a web pass on what Foreplay, Motion, Atria and Similarweb do, rebuilt as rules.
+
+## Contract asks
+
+- A snapshot run needs a permission for `snapshot.py --live` (Apify, page ids only, inside the Bombas caps) in the session settings; local fallback: the screen reads the brain's page summaries and labels every estimate.
 
 ## Room jobs (JTBD)
 
@@ -128,4 +141,4 @@ Round 1 notes: `snapshot.py` plans and runs a page-id Ad Library pull through `a
 | Round | Features picked | Date | Notes |
 |---|---|---|---|
 | 0 | 0.1 to 0.8 | 2026-09-28 | Bombas brain and simulated prices |
-| 1 | 1.1 to 1.9 | 2026-09-28 | Plan first; rank override; 12 pages side by side; coverage matrix; hook and offer mix; references; price and pack ladder; positioning map with moves; changes timeline; freshness and re-pull |
+| 1 | 1.1 to 1.10 | 2026-09-28 | Plan first; rank override; 12 pages side by side; coverage matrix; hook and offer mix; references; price and pack ladder; positioning map with moves; changes timeline; freshness and re-pull; rank for all 14 rules. Screenshot `round1.png` |

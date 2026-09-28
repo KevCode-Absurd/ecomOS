@@ -189,6 +189,12 @@ RULES = [
      "inputs": ["brain offers.promo_share_active_ads", "brain competitors offers_seen"], "capability": "LIFE-C38",
      "owner_screen": SCREEN},
 ]
+# what a strategist groups the findings by on the page (depth.md section 2: grouped by bottleneck)
+RULE_GROUP = {"COMP-R01": "creative", "COMP-R05": "creative", "COMP-R06": "creative", "COMP-R03": "offer", "COMP-R07": "offer",
+              "COMP-R08": "offer", "COMP-R09": "offer", "COMP-R02": "price", "COMP-R10": "price", "COMP-R11": "position",
+              "COMP-R04": "watch", "COMP-R12": "watch", "COMP-R13": "watch", "COMP-R14": "watch"}
+GROUP_LABEL = {"creative": "Ads they run that we do not", "offer": "Offers they say that we do not",
+               "price": "Price against theirs", "position": "Corners of the map", "watch": "Watch and protect"}
 RUBRIC_OVERRIDES = {"COMP-R01": {"reputation": 5}, "COMP-R02": {"reputation": 3}, "COMP-R04": {"reputation": 5, "satisfaction": 4}}
 AUTONOMY = {"BRN-C11": "agent_does", "BRAND-C20": "agent_does", "LIFE-C39": "founder_gate", "CREA-C31": "agent_does", "CREA-C06": "agent_does", "CREA-C04": "agent_does", "LIFE-C47": "agent_does", "LIFE-C38": "founder_gate", "BRAND-C21": "founder_gate", "BRAND-C24": "founder_gate", "MONEY-C48": "human_assist"}
 
@@ -395,6 +401,13 @@ def market(brand: str, today: dt.date, root: Path | None = None) -> dict:
     for p in pages:
         if p["role"] != "self":
             p["verdict"] = pagemod.verdict(p, us, top)
+    # the brand-held angles (R01) are checked against every tracked page with data, not only the detailed records
+    live = [p for p in pages if p["role"] != "self" and p["source"] != "none"]
+    for a in angles:
+        spec = next(x for x in ANGLES if x["key"] == a["key"])
+        a["competitors_using"] = [p["name"] for p in live if _hits(" ".join(
+            [str(x or "") for x in p["hook_labels"] + p["quotes"] + [p["positioning"], p["push"]]]), spec["keys"])]
+        a["pages_checked"] = len(live)
     cov = covmod.matrix(pages, snap.ANGLES, snapshot, brain)
     points = covmod.proof_points(brain)
     refs = refmod.build(pages, top, snap.FORMAT_LABEL, lambda a: covmod.proof_for(points, a))
@@ -480,6 +493,7 @@ def rule_angles(m, ends_on):
             continue
         if a["brand_ads"] / active >= ANGLE_SHARE_MAX:
             continue
+        n = a.get("pages_checked", len(comps))
         ev = [_row("competitors_using_angle", 0, "n", "latest capture", ends_on, _fresh(comps), 0, "threshold",
                    "ad_library"),
               _row("competitors_tracked", n, "n", "latest capture", ends_on, _fresh(comps), None, "threshold",
@@ -488,7 +502,7 @@ def rule_angles(m, ends_on):
                    round(active * ANGLE_SHARE_MAX, 1), "threshold", "ad_library"),
               _row("brand_active_ads", active, "n", "latest capture", ends_on, _fresh(comps), None, "threshold",
                    "ad_library")]
-        sentence = (f"None of the {n} tracked brands runs a {a['label']} angle. "
+        sentence = (f"None of the {n} tracked pages runs a {a['label']} angle. "
                     f"Bombas runs it in {a['brand_ads']} of {active} active ads.").replace("Bombas", m["brand"].capitalize())
         conf = 0.5 - (0.2 if any(c["expired"] for c in comps) else 0)
         ent = {"type": "offer", "id": f"angle_{a['key']}", "label": f"{a['label']} angle"}
