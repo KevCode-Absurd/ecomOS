@@ -14,6 +14,8 @@ Kinds:
               preferred it and how many preferred the current line
   threshold   a rule threshold tuned on the page: name (a tunable the audit lists) and value inside its range; the
               newest change per name wins over the brain's competitor_thresholds record
+  outcome     what happened to a move once its check date came: the action id (a move on the plan), the result
+              (won, lost, flat, not shipped), an optional short reading (for example "cost per order 31 against 38"), date
 Price rule (the room's "competitor cut price sharply"): per page and product, the latest price per unit against the
 mean of that product's earlier records in the trailing TRAIL_DAYS (30) days; a move of the price move threshold or
 more is a cut or a raise. With no earlier record in the window there is no baseline, and no move.
@@ -199,8 +201,36 @@ def thresholds(rows: list[dict]) -> dict:
     return out
 
 
+RESULTS = ["won", "lost", "flat", "not shipped"]
+SAFE_READING = re.compile(r"^[A-Za-z0-9 .,%$&'()/:+-]{0,80}$")
+
+
+def _outcome(body: dict, known: dict, today: dt.date) -> tuple[dict | None, str | None]:
+    aid = str(body.get("action_id") or "")
+    if aid not in (known.get("actions") or []):
+        return None, "action_id must be a move on this screen's plan"
+    result = str(body.get("result") or "")
+    if result not in RESULTS:
+        return None, "result must be one of: " + ", ".join(RESULTS)
+    reading = str(body.get("reading") or "").strip()
+    if not SAFE_READING.match(reading):
+        return None, "reading must be short: letters, digits and . , % $ : / - (up to 80)"
+    day = _date(body.get("date") or today.isoformat(), today)
+    if not day:
+        return None, "date must be YYYY-MM-DD and not in the future"
+    return {"action_id": aid, "result": result, "reading": reading or None, "date": day}, None
+
+
+def outcomes(rows: list[dict]) -> dict:
+    """The latest outcome per action id."""
+    out: dict[str, dict] = {}
+    for r in sorted(rows, key=lambda r: (r["date"], r.get("logged_at", ""), r["id"])):
+        out[r["action_id"]] = r
+    return out
+
+
 VALIDATE = {"interview": _interview, "price_seen": _price_seen, "card_check": _card_check, "frame_test": _frame_test,
-            "threshold": _threshold}
+            "threshold": _threshold, "outcome": _outcome}
 
 
 def add(brand: str, kind: str, body, known: dict, today: dt.date) -> tuple[int, dict]:
@@ -244,6 +274,8 @@ def summary(r: dict) -> str:
         return f"{r['page']} battlecard checked, {r['dropped']} lines dropped"
     if k == "frame_test":
         return f"line {r['line']}: {r['prefer_new']} to {r['prefer_current']} of {r['asked']} asked"
+    if k == "outcome":
+        return f"{r['action_id'].split('.', 1)[-1]}: {r['result']}" + (f" ({r['reading']})" if r.get("reading") else "")
     if k == "threshold":
         return f"{r['name'].replace('_', ' ')} set to {r['value']:g}"
     return k or "record"

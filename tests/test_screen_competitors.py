@@ -1855,5 +1855,28 @@ class TestFormAccess(unittest.TestCase):
         self.assertIn("'aria-label': 'Remove ' + x.what", js)
 
 
+class TestOutcomes(TempInputs):
+    """8.1: the outcome of a move is logged once its check date comes; it closes the move and fills the registry row."""
+    def test_outcome(self):
+        acts = api.handle(Req(['plan']))['actions']
+        t = next(a for a in acts if a['artefact']['kind'] == 'test_brief')
+        base = {'kind': 'outcome', 'action_id': t['id'], 'result': 'won', 'reading': 'cost per order 31 against 38'}
+        self.assertEqual(self.post(dict(base, action_id='nope'))[0], 400)
+        self.assertEqual(self.post(dict(base, result='great'))[0], 400)
+        self.assertEqual(self.post(dict(base, reading='<b>' * 5))[0], 400)
+        self.assertEqual(self.post(base)[0], 201)
+        a = next(a for a in api.handle(Req(['plan']))['actions'] if a['id'] == t['id'])
+        self.assertEqual((a['outcome']['result'], a['outcome']['reading']), ('won', 'cost per order 31 against 38'))
+        row = next(r for r in api.handle(Req(['experiments']))['rows'] if r['draft_id'] == t['id'])
+        self.assertEqual((row['status'], row['result']['outcome'], row['end']), ('read', 'won', DAY))
+        rec = api.handle(Req(['inputs'], query={'kind': ['outcome']}))['records'][0]
+        self.assertIn(': won (cost per order 31 against 38)', rec['summary'])
+
+    def test_due_lane_skips_read_moves(self):
+        js = (SCREEN / 'screen.js').read_text(encoding='utf-8')
+        self.assertIn('const isDue = (a) => !a.outcome &&', js)
+        self.assertIn("inputForm('outcome'", js)
+
+
 if __name__ == '__main__':
     unittest.main()

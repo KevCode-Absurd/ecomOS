@@ -743,6 +743,9 @@ def build(brand: str, window: dict | None = None, root: Path | None = None) -> d
     nr = ranker.net_revenue_28d(brand, window)
     acts = [action(f, m, nr) for f in findings if f.get("status") in ("open", "unavailable")]
     acts = [a for a in acts if not ranker.validate_action(a)]
+    outs = audit.inpmod.outcomes(audit.inpmod.read(brand, "outcome"))
+    for a in acts:
+        a["outcome"] = outs.get(a["id"])
     acts.sort(key=ranker.sort_key)
     return {"screen": audit.SCREEN, "brand": brand, "window": window, "simulated": True,
             "brain_version": m["brain"].version(), "net_revenue_28d": nr, "findings": findings, "actions": acts}

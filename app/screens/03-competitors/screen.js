@@ -433,6 +433,7 @@
     const status = el('span', { class: 'micro muted', role: 'status', 'aria-live': 'polite' });
     const row = el('div', { class: 'row wrap input-form', role: 'group', 'aria-label': label });
     for (const f of fields) {
+      if (f.hidden) { ctl[f.key] = el('input', { type: 'hidden', value: f.value }); row.append(ctl[f.key]); continue; }
       const c = f.options ? el('select', { class: 'text sm', 'aria-label': f.label }, ...f.options.map((o) => el('option', { value: o, text: o })))
         : el('input', { class: 'text sm', type: f.type || 'text', 'aria-label': f.label, placeholder: f.label, value: f.value || '', step: f.step || null });
       ctl[f.key] = c;
@@ -815,13 +816,18 @@
     const box = el('div', { class: 'stack' });
     const summary = el('div', { class: 'small muted' });
     const today = new Date().toISOString().slice(0, 10);
-    const isDue = (a) => !!(a.decision || dec[a.id]) && ((a.decision || dec[a.id]).choice !== 'not_now') && a.check_on && a.check_on <= today;
+    const isDue = (a) => !a.outcome && !!(a.decision || dec[a.id]) && ((a.decision || dec[a.id]).choice !== 'not_now') && a.check_on && a.check_on <= today;
+    const outcomeForm = (a) => el('div', { class: 'card flat stack' }, el('b', { class: 'small', text: 'What happened? Log it to close the move.' }),
+      inputForm('outcome', [{ key: 'action_id', hidden: true, value: a.id }, { key: 'result', label: 'Result', options: ['won', 'lost', 'flat', 'not shipped'] },
+        { key: 'reading', label: 'Reading (optional, short)' }, { key: 'date', label: 'Date read', type: 'date', value: today }], 'Log the outcome'));
+    const card = (a, due) => { const c = UI.actionCard(Object.assign({}, a, { decision: a.decision || (dec[a.id] ? { choice: dec[a.id].choice, time: dec[a.id].time } : null) }), { screen: SCREEN });
+      return due ? el('div', { class: 'stack' }, c, outcomeForm(a)) : a.outcome ? el('div', { class: 'stack' }, c, el('p', { class: 'small' }, el('b', { text: 'Outcome: ' }), a.outcome.result + (a.outcome.reading ? ', ' + a.outcome.reading : '') + ', read ' + fmt.date(a.outcome.date) + '.')) : c; };
     const draw = (key) => {
       const xs = p.actions.filter((a) => key === 'all' || (key === 'due' ? isDue(a) : a.owner === key));
       const decided = xs.filter((a) => dec[a.id]).length;
       summary.textContent = xs.length + ' actions, about ' + hours(xs) + ' hours of work; ' + decided + ' decided, ' + (xs.length - decided) + ' waiting on you.';
       if (key === 'due' && !xs.length) { box.replaceChildren(el('p', { class: 'muted', text: 'No decided move has reached its check date. Each card shows its date; this lane fills as dates arrive.' })); return; }
-      box.replaceChildren(...(xs.length ? xs.map((a) => UI.actionCard(Object.assign({}, a, { decision: a.decision || (dec[a.id] ? { choice: dec[a.id].choice, time: dec[a.id].time } : null) }), { screen: SCREEN })) : [el('p', { class: 'muted', text: 'Nothing in this lane.' })]));
+      box.replaceChildren(...(xs.length ? xs.map((a) => card(a, key === 'due')) : [el('p', { class: 'muted', text: 'Nothing in this lane.' })]));
     };
     const items = LANES.map((l) => ({ key: l.key, label: l.label, n: l.key === 'all' ? p.actions.length : l.key === 'due' ? p.actions.filter(isDue).length : p.actions.filter((a) => a.owner === l.key).length }));
     mount('#actions', UI.pills({ items, current: 'all', onChange: draw }), summary, box);
@@ -835,7 +841,7 @@
   }
 
   // everything the team logged on this screen, newest first, with a way to take a mistake back
-  const KIND_LABEL = { interview: 'Win-loss interview', price_seen: 'Price seen', card_check: 'Battlecard check', frame_test: 'Positioning poll', threshold: 'Threshold change' };
+  const KIND_LABEL = { interview: 'Win-loss interview', price_seen: 'Price seen', card_check: 'Battlecard check', frame_test: 'Positioning poll', threshold: 'Threshold change', outcome: 'Outcome of a move' };
   async function inputsLog() {
     let r;
     try { r = await api(BASE + 'inputs'); } catch (e) { mount('#inputs', el('h4', { text: 'What the team logged' }), el('p', { class: 'na', text: 'Unavailable: ' + e.message })); return; }

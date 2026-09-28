@@ -63,7 +63,10 @@ def experiment_rows(actions: list[dict], brand: str) -> list[dict]:
         out.append({"id": None, "draft_id": a["id"], "brand": brand, "hypothesis": a["title"],
                     "source": {"type": "finding", "ref": a["finding_ids"][0], "index": None}, "idea_id": None, "owner": a["owner"],
                     "metric": None, "variant": {"control": "current", "treatment": a["artefact"]["label"]}, "audience": [],
-                    "start": None, "read_point": a.get("check_on"), "end": None, "status": "proposed", "result": None, "decision": None,
+                    "start": None, "read_point": a.get("check_on"), "end": (a.get("outcome") or {}).get("date"),
+                    "status": "read" if a.get("outcome") else "proposed",
+                    "result": ({"outcome": a["outcome"]["result"], "reading": a["outcome"].get("reading")} if a.get("outcome") else None),
+                    "decision": None,
                     "learnings_ref": None, "retro": None, "park": None, "brain_refs": a.get("brain_refs") or [],
                     "win_rule": a.get("win_rule"), "stop_rule": a.get("stop_rule")})
     return out

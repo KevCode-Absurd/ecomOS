@@ -587,6 +587,8 @@ def handle(req):
                 return audit.inpmod.add(brand, str(body.get("kind") or ""), body, {"competitors": m["losses"]["names"],
                                         "pages": [p["name"] for p in m["pages"] if p["role"] != "self"],
                                         "tunable": audit.TUNE_RANGE,
+                                        "actions": [a["id"] for a in actions.build(brand, actions.ranker.default_window(28, (today - dt.timedelta(days=1)).isoformat()), BRAIN_ROOT)["actions"]]
+                                        if str(body.get("kind")) == "outcome" else [],
                                         "lines": [x["key"] for x in m["frames"]["lines"] if x["key"] != "A"],
                                         "direct": [p["name"] for p in m["pages"] if p["role"] != "self" and p["frame"] == "direct" and p["source"] != "none"]}, today)
             recs = sorted(audit.inpmod.read(brand, req.arg("kind")), key=lambda r: (r.get("logged_at", ""), r["id"]), reverse=True)
