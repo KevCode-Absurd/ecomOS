@@ -280,6 +280,52 @@ def act_discount(f: dict, m: dict) -> dict:
     }
 
 
+def act_ladder(f: dict, m: dict) -> dict:
+    """COMP-R09: our packs barely reward buying more while a peer sells bundles. Draft a deeper ladder."""
+    lad = m["ladder"]
+    b = lad["bundle"] or {}
+    rows = [l for l in lad["ladders"] if l["saving"] is not None]
+    lines = [f"Offer spec: a pack ladder that saves more per pair as the pack grows.",
+             f"Now: packs save a median {round(lad['median_saving'] * 100)} percent a pair against a single (simulated net prices).",
+             f"Peer signal: {b.get('page')} advertises {b.get('pct')} percent off bundles.",
+             "Proposed steps: 3-pack saves 10 percent a pair, 6-pack 15 percent, 12-pack 20 percent. List price per pair on every card.",
+             "Styles now: " + "; ".join(f"{l['style']} {round(l['saving'] * 100)} percent at {l['biggest_pairs']} pairs" for l in rows) + ".",
+             "Margin check first: finance confirms each step keeps contribution above the floor."]
+    return {
+        "title": f"Deepen the pack ladder to 10, 15 and 20 percent a pair; ours saves {round(lad['median_saving'] * 100)} percent",
+        "owner": "agent_drafts",
+        "artefact": {"kind": "offer", "label": "a pack ladder offer spec with a margin check", "draft": "\n".join(lines)},
+        "steps": _steps(("agent", "Pull net price per pair by style and pack and the contribution floor."),
+                        ("agent", "Draft the ladder and the pack card copy with price per pair."),
+                        ("person", "Founder approves the ladder after the margin check."),
+                        ("agent", f"Test on 2 styles for 14 days; read pairs per order and net revenue per order on {_plus(f['last_seen'], 14)}.")),
+        "size": {"text": f"median saving {round(lad['median_saving'] * 100)} percent now, 10 to 20 percent after"},
+        "win_rule": "Pairs per order up 10 percent with net revenue per order flat or better",
+        "stop_rule": "Contribution per order down 5 percent for 7 days",
+        "check_on": _plus(f["last_seen"], 14), "time_to_ship_hours": 6,
+    }
+
+
+def act_above(f: dict, m: dict) -> dict:
+    """COMP-R10: priced above the direct median with nothing in the brain to justify it."""
+    style = f["entity"]["label"].replace(" single pair", "")
+    draft = "\n".join([f"Page section: why {style} costs more.",
+                       f"Price: {f['sentence'].split('. ')[0]}.",
+                       "Add under the price: the proof (test result, material, guarantee), price per pair on each pack, and the guarantee line.",
+                       "First add the proof record on the brand brain screen. No claim ships without it."])
+    return {
+        "title": f"Add a proof block to the {style} page before the next price review",
+        "owner": "agent_drafts",
+        "artefact": {"kind": "page_section", "label": f"a price proof block for {style}", "draft": draft},
+        "steps": _steps(("person", f"Add the proof for {style} to the brand brain."),
+                        ("agent", "Draft the block and the price per pair lines."),
+                        ("person", "Approve and publish."),
+                        ("agent", f"Check add to cart rate on the page on {_plus(f['last_seen'], 14)}.")),
+        "size": None, "win_rule": "Add to cart rate up 5 percent on the page", "stop_rule": "Add to cart rate down 5 percent for 7 days",
+        "check_on": _plus(f["last_seen"], 14), "time_to_ship_hours": 3,
+    }
+
+
 def act_connect(f: dict, m: dict) -> dict:
     un = f.get("unavailable") or {}
     con = un.get("connector") or "the missing source"
@@ -293,7 +339,8 @@ def act_connect(f: dict, m: dict) -> dict:
 
 
 BUILDERS = {"COMP-R01": act_angle, "COMP-R02": act_price, "COMP-R03": act_offer_run, "COMP-R04": act_lookalike,
-            "COMP-R05": act_coverage, "COMP-R06": act_first_line, "COMP-R07": act_offer_gap, "COMP-R08": act_discount}
+            "COMP-R05": act_coverage, "COMP-R06": act_first_line, "COMP-R07": act_offer_gap, "COMP-R08": act_discount,
+            "COMP-R09": act_ladder, "COMP-R10": act_above}
 
 
 def action(f: dict, m: dict, net_revenue: float | None) -> dict:
@@ -321,7 +368,7 @@ def build(brand: str, window: dict | None = None, root: Path | None = None) -> d
     window = window or ranker.default_window()
     findings = audit.run(brand, window, root)
     today = dt.date.fromisoformat(window["ends_on"]) + dt.timedelta(days=1)
-    m = audit.market(brand, today, root)
+    m = audit.market_full(brand, today, root)
     nr = ranker.net_revenue_28d(brand, window)
     acts = [action(f, m, nr) for f in findings if f.get("status") in ("open", "unavailable")]
     acts = [a for a in acts if not ranker.validate_action(a)]

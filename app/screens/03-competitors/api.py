@@ -99,31 +99,6 @@ def positioning(m: dict) -> dict:
     return {"points": pts, "split_x": split_x, "axes": AXES, "quadrants": quads}
 
 
-def price_table(m: dict) -> dict:
-    comps = [c for c in m["competitors"] if c["price"]["median"] is not None]
-    rows = []
-    for p in m["packs"]["packs"]:
-        row = {"label": p["label"], "per_pack": p["per_pack"], "per_pair": p["per_pair"], "cells": {}}
-        for c in comps:
-            b = c["price"]
-            if b["low"] is not None and p["per_pair"] < b["low"]:
-                pos = "below"
-            elif b["high"] is not None and p["per_pair"] > b["high"]:
-                pos = "above"
-            elif b["low"] is not None and b["high"] is not None:
-                pos = "inside"
-            else:
-                pos = "below median" if p["per_pair"] < b["median"] else "above median"
-            row["cells"][c["name"]] = {"diff": round(p["per_pair"] - b["median"], 2), "position": pos}
-        rows.append(row)
-    return {"month": m["packs"].get("month"), "available": m["packs"]["available"],
-            "reason": m["packs"].get("reason"),
-            "competitors": [{"name": c["name"], "band": c["price"]["text"], "low": c["price"]["low"],
-                             "high": c["price"]["high"], "median": c["price"]["median"],
-                             "rough": c["price"]["rough"], "ref": c["price_ref"]} for c in comps],
-            "rows": rows}
-
-
 def board(m: dict) -> list[dict]:
     out = [{"name": c["name"], "formats": c["formats"], "hooks": c["hooks"], "active_ads": c["active_ads"],
             "longest_days": c["longest_days"], "brand": False} for c in m["competitors"]]
@@ -198,15 +173,15 @@ def page_rows(m: dict) -> dict:
 
 
 def overview(brand: str, today: dt.date) -> dict:
-    m = audit.market(brand, today, BRAIN_ROOT)
+    m = audit.market_full(brand, today, BRAIN_ROOT)
     brain = m.pop("brain")
     name = brand.capitalize()
     return {"brand": brand, "today": today.isoformat(), "version": brain.version(),
             "simulated_note": SIMULATED_NOTE.format(name=name), "signal_note": SIGNAL_NOTE,
             "competitors": [_public(c) for c in m["competitors"]], "angles": m["angles"],
-            "positioning": positioning(m), "prices": price_table(m), "board": board(m),
+            "positioning": positioning(m), "board": board(m),
             "lookalike": m["lookalike"], "gap": gaps(m), "pages": page_rows(m),
-            "coverage": {"all": m["coverage"], "direct": m["coverage_direct"]}, "mix": m["mix"], "references": m["references"],
+            "coverage": {"all": m["coverage"], "direct": m["coverage_direct"]}, "mix": m["mix"], "references": m["references"], "ladder": m["ladder"],
             "category_median": m["category_median"], "price_position_index": m["price_position_index"]}
 
 

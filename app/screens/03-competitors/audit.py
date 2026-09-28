@@ -51,6 +51,15 @@ COMP-R08 discount on most ads. OUR_PROMO (50 percent) or more of our active
     offer. Severity medium (the room's "discounting undercuts a premium
     position" rule, read from ads because competitor discount depth is not
     captured). Capability LIFE-C38 (founder gate). Owner: 03-competitors.
+COMP-R09 shallow pack ladder. The median per-pair saving from a single pair to
+    the biggest pack across our styles (ladder.py, simulated net prices) is under
+    LADDER_MIN (10 percent) while a tracked page advertises a bundle saving of
+    BUNDLE_MIN (15 percent) or more. Severity medium. Capability LIFE-C39
+    (founder gate). Owner: 03-competitors.
+COMP-R10 priced above with no proof. A style's single pair sits above the
+    median of the direct peers' medians and the brain has no proof point for
+    that style. Severity medium. Capability CREA-C31 (price framing on the
+    page). Owner: 03-competitors.
 
 Rubric overrides (depth.md section 4 allows reputation and satisfaction per rule):
 COMP-R01 reputation 5: an unclaimed angle is a competitor position gap named in
@@ -97,6 +106,7 @@ def _local(name: str):
 snap = _local("snapshot")
 pagemod = _local("pages")
 covmod = _local("coverage")
+laddermod = _local("ladder")
 mixmod = _local("mix")
 refmod = _local("references")
 
@@ -122,9 +132,6 @@ OFFER_TYPES = [
     {"key": "discount", "label": "discount", "keys": ["discount", "% off", "bundle save", "code"],
      "brain_ref": "offers.first_order_code", "share_ref": "offers.promo_share_active_ads"},
 ]
-SKU_NAMES = {"ANK": "Ankle", "QTR": "Quarter", "CLF": "Calf", "NOS": "No show", "RUN": "Running",
-             "MER": "Merino", "CMP": "Compression", "GFT": "Gift box"}
-
 RULES = [
     {"rule_id": "COMP-R01", "name": "unclaimed angle", "entity_type": "offer",
      "inputs": ["brain competitors", "brain learnings.hook_types", "brain story_bank"],
@@ -145,12 +152,18 @@ RULES = [
      "owner_screen": SCREEN},
     {"rule_id": "COMP-R07", "name": "offer we hold and never say while they do", "entity_type": "offer",
      "inputs": ["brain competitors offers_seen", "brain offers"], "capability": "LIFE-C47", "owner_screen": SCREEN},
+    {"rule_id": "COMP-R09", "name": "shallow pack ladder while a peer sells bundles", "entity_type": "offer",
+     "inputs": ["products_monthly", "brain competitors offers_seen and hook_types"], "capability": "LIFE-C39",
+     "owner_screen": SCREEN},
+    {"rule_id": "COMP-R10", "name": "priced above the direct median with no proof", "entity_type": "sku",
+     "inputs": ["products_monthly", "brain competitors price_band_usd", "brain positioning.proof_points"],
+     "capability": "CREA-C31", "owner_screen": SCREEN},
     {"rule_id": "COMP-R08", "name": "discount on most ads while direct peers run none", "entity_type": "offer",
      "inputs": ["brain offers.promo_share_active_ads", "brain competitors offers_seen"], "capability": "LIFE-C38",
      "owner_screen": SCREEN},
 ]
 RUBRIC_OVERRIDES = {"COMP-R01": {"reputation": 5}, "COMP-R02": {"reputation": 3}, "COMP-R04": {"reputation": 5, "satisfaction": 4}}
-AUTONOMY = {"CREA-C06": "agent_does", "CREA-C04": "agent_does", "LIFE-C47": "agent_does", "LIFE-C38": "founder_gate", "BRAND-C21": "founder_gate", "BRAND-C24": "founder_gate", "MONEY-C48": "human_assist"}
+AUTONOMY = {"LIFE-C39": "founder_gate", "CREA-C31": "agent_does", "CREA-C06": "agent_does", "CREA-C04": "agent_does", "LIFE-C47": "agent_does", "LIFE-C38": "founder_gate", "BRAND-C21": "founder_gate", "BRAND-C24": "founder_gate", "MONEY-C48": "human_assist"}
 
 
 # ---------------------------------------------------------------- reading
@@ -294,7 +307,8 @@ def brand_packs(brand: str) -> dict:
         except ValueError:
             continue
         per_pack = r["net_sales"] / r["units"]
-        packs.append({"sku": r["sku"], "label": f"{SKU_NAMES.get(parts[1], parts[1])}, "
+        style = laddermod.style_of(r["sku"])
+        packs.append({"sku": r["sku"], "label": f"{(style[0] if style else parts[1]).capitalize()}, "
                       f"{'single' if pairs == 1 else str(pairs) + '-pack'}", "pairs": pairs,
                       "units": r["units"], "per_pack": round(per_pack, 2), "per_pair": round(per_pack / pairs, 2)})
     packs.sort(key=lambda p: (p["per_pair"], p["sku"]))
@@ -346,7 +360,7 @@ def market(brand: str, today: dt.date, root: Path | None = None) -> dict:
     points = covmod.proof_points(brain)
     refs = refmod.build(pages, top, snap.FORMAT_LABEL, lambda a: covmod.proof_for(points, a))
     return {"brand": brand, "brain": brain, "competitors": comps, "profile": prof, "packs": packs,
-            "references": refs, "mix": mixmod.build(pages, brain, snap),
+            "references": refs, "ladder": None, "mix": mixmod.build(pages, brain, snap),
             "coverage": cov,
             "coverage_direct": covmod.matrix(pages, snap.ANGLES, snapshot, brain, direct_only=True),
             "pages": pages, "snapshot": {k: v for k, v in (snapshot or {}).items() if k != "ads"} or None,
@@ -354,6 +368,12 @@ def market(brand: str, today: dt.date, root: Path | None = None) -> dict:
             "category_median": cat_median, "price_position_index": index, "angles": angles,
             "offer_runs": offer_runs(brain, comps, prof), "lookalike": lookalike(brain),
             "competitor_set": _value(brain, "competitors.competitor_set") or []}
+
+
+def market_full(brand: str, today: dt.date, root: Path | None = None) -> dict:
+    m = market(brand, today, root)
+    m["ladder"] = laddermod.build(m, m["brain"])
+    return m
 
 
 def offer_runs(brain: Brain, comps: list[dict], prof: dict) -> list[dict]:
@@ -568,6 +588,44 @@ def rule_mix(m, ends_on):
     return out
 
 
+def rule_ladder(m, ends_on):
+    lad = m["ladder"]
+    out = []
+    if not lad or not lad["available"]:
+        return out
+    fresh = _fresh(m["competitors"])
+    month_end = packs_month_end(m["packs"])
+    age = (dt.date.fromisoformat(ends_on) - month_end).days if month_end else None
+    name = m["brand"].capitalize()
+    if lad["shallow"]:
+        b = lad["bundle"]
+        ev = [_row("median_pack_saving_per_pair", lad["median_saving"], "%", m["packs"]["month"], month_end.isoformat(), age,
+                   laddermod.LADDER_MIN, "threshold", "products_monthly", True),
+              _row("peer_bundle_saving", b["pct"] / 100, "%", "latest capture", ends_on, fresh, laddermod.BUNDLE_MIN,
+                   "threshold", "ad_library")]
+        sentence = (f"{name} packs save a median {round(lad['median_saving'] * 100)} percent a pair against a single. "
+                    f"{b['page']} advertises {b['pct']} percent off bundles.")
+        out.append(_finding("COMP-R09", "medium", {"type": "offer", "id": "pack_ladder", "label": "pack ladder"}, ev, sentence,
+                            [f"{m['brand']}.offers.bundles_pack_ladder"], ends_on, 0.5 - 0.2,
+                            "no baseline: pack mix response to a deeper ladder is not measured"))
+    for l in lad["above_no_proof"]:
+        ev = [_row("single_pair_price", l["single"], "usd", m["packs"]["month"], month_end.isoformat(), age,
+                   lad["direct_median"], "peer_band", "products_monthly", True)]
+        sentence = (f"{l['style'].capitalize()} sells at ${l['single']:.2f} a pair, above the direct median of "
+                    f"${lad['direct_median']:.2f}. The brain has no proof for it.")
+        out.append(_finding("COMP-R10", "medium", {"type": "sku", "id": f"style_{pagemod.slug(l['style'])}",
+                                                   "label": f"{l['style']} single pair"}, ev, sentence,
+                            [f"{m['brand']}.positioning.proof_points"], ends_on, 0.3,
+                            "no baseline: conversion at this price is not split by proof"))
+    return out
+
+
+def packs_month_end(packs):
+    if not packs.get("available"):
+        return None
+    return (dt.date.fromisoformat(packs["month"] + "-01") + dt.timedelta(days=32)).replace(day=1) - dt.timedelta(days=1)
+
+
 def _today(window) -> dt.date:
     if window and window.get("ends_on"):
         return dt.date.fromisoformat(str(window["ends_on"])) + dt.timedelta(days=1)
@@ -577,7 +635,7 @@ def _today(window) -> dt.date:
 def run(brand: str, window: dict | None = None, root: Path | None = None) -> list[dict]:
     today = _today(window)
     ends_on = (today - dt.timedelta(days=1)).isoformat()
-    m = market(brand, today, root)
+    m = market_full(brand, today, root)
     if not m["competitors"]:
         ent = {"type": "brand", "id": "competitor_set", "label": "competitor set"}
         out = [_unavailable(rid, "medium", ent, ["brain competitors"], "Meta Ad Library (read only)",
@@ -585,6 +643,7 @@ def run(brand: str, window: dict | None = None, root: Path | None = None) -> lis
                for rid in ("COMP-R01", "COMP-R03")]
     else:
         out = rule_angles(m, ends_on) + rule_offer_runs(m, ends_on) + rule_coverage(m, ends_on) + rule_mix(m, ends_on)
+        out += rule_ladder(m, ends_on)
     out += rule_price(m, ends_on) + rule_lookalike(m, ends_on)
     out.sort(key=lambda f: (SEVERITY_ORDER[f["severity"]], f["id"]))
     return out

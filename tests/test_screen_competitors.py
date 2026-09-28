@@ -211,13 +211,7 @@ class TestApi(TempBrain):
         for axis in ('durability', 'comfort'):
             placed = sum(len(q['competitors']) for q in pos['quadrants'][axis]['quadrants'])
             self.assertEqual(placed, 5)
-        pr = self.d['prices']
-        self.assertTrue(pr['available'])
-        self.assertEqual(pr['month'], '2026-08')
-        row = pr['rows'][0]
-        self.assertEqual(set(row['cells']), {c['name'] for c in pr['competitors']})
-        stance = row['cells']['Stance']
-        self.assertAlmostEqual(stance['diff'], round(row['per_pair'] - 18.0, 2))
+        self.assertNotIn('prices', self.d)
 
     def test_audit_route_and_errors(self):
         a = api.handle(Req(['audit']))
@@ -404,6 +398,59 @@ class TestReferences(TempBrain):
     def test_ours(self):
         self.assertEqual(self.r['ours'][0]['days'], 193)
         self.assertEqual(self.r['ours'][0]['rights'], 'own_brand')
+
+
+class TestLadder(TempBrain):
+    """1.6: price and pack ladder against the bands; shallow ladder and above-with-no-proof rules."""
+    def setUp(self):
+        super().setUp()
+        api.BRAIN_ROOT = self.tmp
+        self.l = api.handle(Req(['overview']))['ladder']
+
+    def test_ladders(self):
+        l = self.l
+        self.assertTrue(l['available'])
+        self.assertEqual(l['month'], '2026-08')
+        self.assertEqual(l['direct_median'], 25.0)
+        ank = next(x for x in l['ladders'] if x['style'] == "men's ankle")
+        self.assertEqual(ank['single'], 13.11)
+        self.assertEqual(ank['biggest_pairs'], 4)
+        self.assertAlmostEqual(ank['saving'], round(1 - ank['biggest'] / ank['single'], 3))
+        for x in l['ladders']:
+            self.assertEqual([s['pairs'] for s in x['steps']], sorted(s['pairs'] for s in x['steps']))
+        self.assertEqual(l['bundle']['page'], 'Feetures')
+        self.assertTrue(l['shallow'])
+        self.assertEqual(audit.laddermod.pairs_in_title("Men's Originals Ankle Socks White Large (4 Pair)"), 4)
+        self.assertEqual(audit.laddermod.pairs_in_title('Socks, 6-Pack Cushioned'), 6)
+        self.assertIsNone(audit.laddermod.pairs_in_title('Womens Cushioned No Show Socks'))
+
+    def test_rules(self):
+        out = audit.run('bombas', WINDOW, self.tmp)
+        r9 = [f for f in out if f['rule_id'] == 'COMP-R09']
+        self.assertEqual(len(r9), 1)
+        self.assertTrue(r9[0]['evidence'][0]['simulated'])
+        self.assertFalse([f for f in out if f['rule_id'] == 'COMP-R10'])
+
+    def test_above_no_proof_fires(self):
+        def lift(rows):
+            for r in rows:
+                if r['field'] == 'proof_points':
+                    r['value'] = ['B Corp certified']
+            return rows
+        self.edit('positioning', lift)
+        m = audit.market_full('bombas', dt.date(2026, 9, 28), self.tmp)
+        lad = m['ladder']
+        lad['direct_median'] = 20.0
+        for x in lad['ladders']:
+            if x['single'] and x['single'] > 20:
+                x['vs_direct_median'] = 'above'
+        lad['above_no_proof'] = [x for x in lad['ladders'] if x['vs_direct_median'] == 'above' and not x['proof']]
+        out = audit.rule_ladder(m, '2026-09-27')
+        r10 = [f for f in out if f['rule_id'] == 'COMP-R10']
+        self.assertTrue(r10)
+        a = api.actions.action(r10[0], m, None)
+        self.assertEqual(a['artefact']['kind'], 'page_section')
+        self.assertEqual(api.actions.ranker.validate_action(a), [])
 
 
 class TestRank(TempBrain):

@@ -26,7 +26,7 @@ Round 0 notes (28 Sep 2026): brand price per pair is simulated net sales per uni
 | 1.3 | Creative coverage matrix (`coverage.py`): 10 angles by 5 formats, our share of ads against theirs in every cell, all pages or direct only; gap when they put 3 percent or more and we put none; "Brief it" opens the cell's ad brief (format spec, our proof from the brain, signal pages) and logs a CREA-C06 decision; "Next to try" line; new rule COMP-R05 puts the top 3 gaps with proof on the plan. Estimated from page-level mixes until an ad-level snapshot exists, labelled | done |
 | 1.4 | Hook and offer mix (`mix.py`): heatmap of first line kinds per page against ours, offer types seen per page, the offers held in our brain; answers per gap with owner and draft: a hook bank brief (CREA-C04), an offer test for an offer we hold and never say (LIFE-C47), a no-code ad test when most of our ads push a code and direct peers run none (LIFE-C38). New rules COMP-R06, R07, R08 on the plan | done |
 | 1.5 | Longest running ads as signals (`references.py`): one per page with days live, start, share of ads live 30 days or more, study, watch or too new; relevance from 4 rules (our top angle, keeps half its ads 30 days, 3x our median, direct) with the reason shown; "Use as reference" opens a brief that says what to borrow (layout, pacing, mood), maps it to our angle and proof, and what never to copy; rights reference only; logs SCT-C04. Our own long runners on top with SCT-C02 | done |
-| 1.6 | Price ladder and pack ladder against competitors from the brain | todo |
+| 1.6 | Price and pack ladder (`ladder.py`): band chart of each tracked price band per pair against our ladder by style (dots grow with pack size), the direct peers' median range shaded; ladder table with saving a pair from single to biggest pack, proof on file, position against the direct median; Amazon listing prices per pair as a public cross-check; rules COMP-R09 shallow ladder while a peer sells bundles (offer spec, LIFE-C39) and COMP-R10 priced above the peers with no proof (page section, CREA-C31). Pack labels fixed (style from the SKU) | done |
 | 1.7 | Positioning map on the kit chart, sized by active ads, empty quadrants with an action | todo |
 | 1.8 | Launches and changes timeline with follow, watch or ignore | todo |
 | 1.9 | Snapshot freshness and the re-pull button with the Apify estimate first | todo |
@@ -128,4 +128,4 @@ Round 1 notes: `snapshot.py` plans and runs a page-id Ad Library pull through `a
 | Round | Features picked | Date | Notes |
 |---|---|---|---|
 | 0 | 0.1 to 0.8 | 2026-09-28 | Bombas brain and simulated prices |
-| 1 | 1.1 to 1.5 | 2026-09-28 | Plan first; rank override; 12 pages side by side; coverage matrix; hook and offer mix; references |
+| 1 | 1.1 to 1.6 | 2026-09-28 | Plan first; rank override; 12 pages side by side; coverage matrix; hook and offer mix; references; price and pack ladder |

@@ -93,26 +93,64 @@
     return [tabs, box, note];
   }
 
-  function priceTable(pr) {
-    if (!pr.available) return [el('p', { class: 'muted', text: 'Brand prices unavailable: ' + (pr.reason || 'no sales table') + '.' })];
-    const cols = [
-      { key: 'label', label: 'Brand pack' },
-      { key: 'per_pack', label: 'Per pack', align: 'right', format: usd },
-      { key: 'per_pair', label: 'Per pair', align: 'right', format: usd },
-    ];
-    for (const c of pr.competitors) {
-      cols.push({ key: 'c_' + c.name, label: c.name + ' (' + usd(c.median) + ')', align: 'right',
-        format: (v) => v ? (v.diff > 0 ? '+' : '') + usd(v.diff).replace('$-', '-$') + ' ' + v.position.replace(' median', '') : NA });
+  // ---------- 5e. price ladder and pack ladder ----------
+  function bandChart(lad) {
+    const rows = lad.bands.map((b) => ({ label: b.name, band: b, us: false })).concat(lad.ladders.filter((l) => l.steps.length).map((l) => ({ label: 'Us: ' + l.style, ladder: l, us: true })));
+    const W = 720, rowH = 24, pad = { l: 170, r: 24, t: 14, b: 40 };
+    const H = pad.t + rows.length * rowH + pad.b;
+    const vals = lad.bands.flatMap((b) => [b.low, b.high, b.median]).concat(lad.ladders.flatMap((l) => l.steps.map((s) => s.per_pair))).filter((v) => v != null);
+    const xmax = Math.ceil(Math.max(...vals, 10) * 1.1 / 5) * 5;
+    const X = (v) => pad.l + (v / xmax) * (W - pad.l - pad.r);
+    const s = svg('svg', { viewBox: '0 0 ' + W + ' ' + H, role: 'img', 'aria-label': 'Price per pair: tracked bands against our pack ladders' });
+    const meds = lad.bands.filter((b) => b.frame === 'direct').map((b) => b.median);
+    if (meds.length) s.append(svg('rect', { x: X(Math.min(...meds)), y: pad.t, width: X(Math.max(...meds)) - X(Math.min(...meds)), height: rows.length * rowH, class: 'range' }));
+    for (let v = 0; v <= xmax; v += 5) {
+      s.append(svg('line', { x1: X(v), x2: X(v), y1: pad.t, y2: pad.t + rows.length * rowH, class: 'grid-l' }));
+      s.append(svg('text', { x: X(v), y: pad.t + rows.length * rowH + 16, 'text-anchor': 'middle' }, '$' + v));
     }
-    const rows = pr.rows.map((r) => {
-      const o = { label: r.label, per_pack: r.per_pack, per_pair: r.per_pair };
-      for (const c of pr.competitors) o['c_' + c.name] = r.cells[c.name];
-      return o;
+    if (lad.direct_median != null) s.append(svg('line', { x1: X(lad.direct_median), x2: X(lad.direct_median), y1: pad.t, y2: pad.t + rows.length * rowH, class: 'split' }));
+    rows.forEach((r, i) => {
+      const y = pad.t + i * rowH + rowH / 2;
+      s.append(svg('text', { x: pad.l - 8, y: y + 4, 'text-anchor': 'end', class: r.us ? 'pt us' : 'pt' }, r.label));
+      if (r.band) {
+        const b = r.band;
+        if (b.low != null && b.high != null) s.append(svg('line', { x1: X(b.low), x2: X(b.high), y1: y, y2: y, class: 'band' }));
+        else if (b.low != null) s.append(svg('line', { x1: X(b.low), x2: X(xmax), y1: y, y2: y, class: 'band open-end' }));
+        const d = svg('circle', { cx: X(b.median), cy: y, r: 5, class: 'dot' + (b.rough ? ' rough' : '') });
+        d.append(svg('title', null, b.name + ': ' + b.text));
+        s.append(d);
+      } else {
+        const st = r.ladder.steps;
+        if (st.length > 1) s.append(svg('line', { x1: X(Math.min(...st.map((x) => x.per_pair))), x2: X(Math.max(...st.map((x) => x.per_pair))), y1: y, y2: y, class: 'band brand' }));
+        for (const x of st) {
+          const d = svg('circle', { cx: X(x.per_pair), cy: y, r: 4 + Math.min(x.pairs, 12) / 3, class: 'dot brand' });
+          d.append(svg('title', null, (x.pairs === 1 ? 'single' : x.pairs + '-pack') + ': ' + usd(x.per_pair) + ' a pair, ' + usd(x.per_pack) + ' a pack (simulated net)'));
+          s.append(d);
+        }
+      }
     });
-    const bands = el('ul', { class: 'small muted' }, ...pr.competitors.map((c) => el('li', null, c.name + ': ' + c.band + '. ',
-      c.ref ? el('a', { href: c.ref, target: '_blank', rel: 'noopener', text: 'source' }) : null)));
-    return [el('p', { class: 'muted small', text: 'Brand price per pack is simulated net sales per unit sold in ' + pr.month + ', after discounts. Each cell is the brand price per pair minus the competitor median (in brackets), then below, inside or above their public band, or below or above the median when only a median is public.' }),
-      UI.table({ columns: cols, rows, sort: { key: 'per_pair', dir: 'asc' } }), el('b', { class: 'small', text: 'Public price bands' }), bands];
+    s.append(svg('text', { x: pad.l + (W - pad.l - pad.r) / 2, y: H - 6, 'text-anchor': 'middle' }, 'Price per pair, US dollars. Shaded: range of direct peers\' medians. Dashed: their median.'));
+    return el('div', { class: 'map-wrap' }, s);
+  }
+  function ladderSection(lad) {
+    if (!lad.available) { mount('#prices', el('p', { class: 'na', text: 'Our prices are unavailable: ' + (lad.reason || 'no sales table') + '.' })); return; }
+    const table = UI.verdictTable({
+      columns: [
+        { key: 'style', label: 'Style' },
+        { key: 'single', label: 'Single, a pair', format: (v) => v == null ? 'not sold single' : usd(v) },
+        { key: 'biggest', label: 'Biggest pack, a pair', format: (v, r) => usd(v) + ' (' + r.biggest_pairs + ' pairs)' },
+        { key: 'saving', label: 'Saving a pair', format: (v) => v == null ? NA : Math.round(v * 100) + ' percent' },
+        { key: 'proof', label: 'Proof on file', format: (v) => v ? 'yes' : 'none' }],
+      rows: lad.ladders,
+      verdict: { at: 1, kind: (r) => r.saving == null ? 'na' : r.saving < lad.ladder_min ? 'fix' : 'keep', text: (r) => r.saving == null ? 'No single' : r.saving < lad.ladder_min ? 'Shallow' : 'OK', reason: (r) => r.saving == null ? 'no single pair to compare' : Math.round(r.saving * 100) + ' percent saving against a ' + Math.round(lad.ladder_min * 100) + ' percent rule' },
+      reason: { key: 'why', label: 'Against direct peers', text: (r) => (r.vs_direct_median || NA) + ' their median of ' + usd(lad.direct_median) },
+      sort: false });
+    const b = lad.bundle;
+    const amz = lad.amazon.length ? el('div', { class: 'small' }, el('b', { text: 'Cross-check, our Amazon listings (public list prices): ' }),
+      lad.amazon.length + ' listings state a pack size; ' + usd(lad.amazon[0].per_pair) + ' to ' + usd(lad.amazon[lad.amazon.length - 1].per_pair) + ' a pair, median ' + usd(lad.amazon[Math.floor(lad.amazon.length / 2)].per_pair) + '. Site prices above are simulated net, so the gap is a check, not a finding.') : null;
+    mount('#prices', bandChart(lad), el('p', { class: 'micro faint', text: 'Our dots grow with pack size; hover for price per pack. Our prices are simulated net sales per unit for ' + lad.month + '. Hollow dots are rough public reads.' }),
+      table, el('p', { class: 'small' }, el('b', { text: 'Pack ladder: ' }), 'our packs save a median ' + (lad.median_saving == null ? NA : Math.round(lad.median_saving * 100) + ' percent') + ' a pair against a single' + (b ? '. ' + b.page + ' advertises ' + b.pct + ' percent off bundles.' : '.') + (lad.shallow ? ' The ladder offer is on the plan.' : '')), amz,
+      el('ul', { class: 'small muted' }, ...lad.bands.map((x) => el('li', null, x.name + ': ' + x.text + '. ', x.ref ? el('a', { href: x.ref, target: '_blank', rel: 'noopener', text: 'source' }) : null))));
   }
 
   function boardCard(b) {
@@ -347,7 +385,7 @@
     mount('#actions', ...(p.actions.length ? p.actions.map((a) => UI.actionCard(a, { screen: SCREEN })) : [el('p', { class: 'muted', text: 'No open action.' })]));
     document.getElementById('signal-note').textContent = d.signal_note;
     mount('#map', ...mapCard(d.positioning));
-    mount('#prices', ...priceTable(d.prices));
+    ladderSection(d.ladder);
     mount('#board', ...d.board.map(boardCard));
     pagesSection(d.pages);
     coverageSection(d.coverage);
