@@ -259,6 +259,8 @@ class RulesTest(ShapeMixin, unittest.TestCase):
                 self.assertTrue(rules <= set(api.CANDIDATE_RULES), rules)     # one card per candidate
             elif rules == {'PROD-R30'}:
                 self.assertEqual({(f.split('.')[2]).split('-')[0] for f in a['finding_ids']}, {'reddit'})   # one listening post across subreddits
+            elif 'PROD-R32' in rules:
+                self.assertTrue(rules <= {'PROD-R31', 'PROD-R32'}, rules)   # one Amazon stance card
             else:
                 self.assertTrue(rules <= {'PROD-R05', 'PROD-R06', 'PROD-R20'}, rules)   # one brief per lane
         covered = [fid for a in acts for fid in a['finding_ids']]
@@ -836,6 +838,47 @@ class PipelineTest(ShapeMixin, unittest.TestCase):
         self.assertEqual(big['severity'], 'high')
         self.assertIsNone(big['money_at_stake'])
         for f in found:
+            self.check_shape(f)
+
+    def test_marketplace_read(self):
+        D = date(2026, 9, 27)
+        self.assertEqual(audit.pack_units_from_title("Men's Originals Ankle Socks White Large (4 Pair)"), 4)
+        self.assertEqual(audit.pack_units_from_title('Women Ankle 6-Pack Cushioned'), 6)
+        self.assertEqual(audit.pack_units_from_title('No Show (Black, Medium, 2pcs)'), 2)
+        self.assertEqual(audit.pack_units_from_title('Ankle Socks, Grey'), 1)
+        self.assertEqual(audit.marketplace_read(None, None)['rows'], [])
+
+        class FakeBrain:
+            brand = 'fake'
+
+            def records(self, sec):
+                if sec == 'marketplaces':
+                    return [{'id': 'fake.marketplaces.amazon_presence', 'field': 'amazon_presence', 'text': 'resellers only', 'source': {'captured_at': '2026-09-20'},
+                             'value': {'brand_store': False, 'sold_by_brand': False, 'resellers_seen': ['Shop A'], 'aplus_content_seen': False, 'asins_read': ['A1', 'A2'], 'lines_not_found': ['slippers'], 'listings_in_stock': 1}},
+                            {'id': 'l1', 'field': 'amazon_listing', 'value': {'asin': 'A1', 'title': 'Ankle 4 Pack', 'price_usd': 40.0, 'stars': 4.5, 'reviews_count': 300, 'seller': None}},
+                            {'id': 'l2', 'field': 'amazon_listing', 'value': {'asin': 'A2', 'title': 'Ankle single', 'price_usd': 22.0, 'stars': 4.4, 'reviews_count': 100, 'seller': None}},
+                            {'id': 'l3', 'field': 'amazon_listing', 'value': {'asin': 'A3', 'title': 'Calf 8-Pack', 'price_usd': 40.0, 'stars': 5.0, 'reviews_count': 2, 'seller': None}},
+                            {'id': 'l4', 'field': 'amazon_listing', 'value': {'asin': 'A4', 'title': 'Calf 3 Pairs', 'price_usd': 33.0, 'stars': 4.6, 'reviews_count': 50, 'seller': 'Fake Official'}}]
+                return []
+
+            def get(self, rid):
+                return {'value': {'min_usd': 10.0}} if rid.endswith('price_ladder_socks') else None
+
+        m = audit.marketplace_read(FakeBrain(), None)
+        rows = {r['asin']: r for r in m['rows']}
+        self.assertEqual(m['site_per_pair']['value'], 10.0)
+        self.assertEqual((rows['A1']['pack_units'], rows['A1']['per_pair'], rows['A1']['spread'], rows['A1']['verdict']), (4, 10.0, 0.0, 'reseller'))
+        self.assertEqual((rows['A2']['per_pair'], rows['A2']['spread'], rows['A2']['verdict']), (22.0, 1.2, 'price_spread'))
+        self.assertEqual(rows['A3']['verdict'], 'unverified')
+        self.assertEqual((rows['A4']['sold_by_brand'], rows['A4']['verdict']), (True, 'brand_sells'))
+        self.assertEqual((m['summary']['judged'], m['summary']['unverified'], m['summary']['ratings']), (3, 1, 450))
+        found = audit.marketplace_findings(FakeBrain(), None, D)
+        self.assertEqual([f['id'] for f in found], [f'{audit.SCREEN}.PROD-R31.amazon', f'{audit.SCREEN}.PROD-R32.a2'])
+        self.assertEqual(found[0]['severity'], 'high')
+        self.assertIn('Shop A', found[0]['sentence'])
+        self.assertIn('120 percent above', found[1]['sentence'])
+        for f in found:
+            self.assertIsNone(f['money_at_stake'])
             self.check_shape(f)
 
     def test_demand_pattern_tags(self):

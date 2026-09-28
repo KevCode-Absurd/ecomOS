@@ -774,6 +774,34 @@
         gaps.length && actionFor(gaps[0].finding_id) ? { label: 'Open the first', onClick: () => openAction(actionFor(gaps[0].finding_id)) } : null));
   }
 
+  function marketplaceBlock(m) {
+    if (!m || (!m.rows.length && !m.presence)) return UI.emptyState({ screen: SLUG, title: 'No marketplace read on file', text: 'The brain holds no Amazon listing or presence records for this brand yet.', missing: ['marketplaces'] });
+    const p = m.presence, sm = m.summary || {}, site = m.site_per_pair || {};
+    const stance = actionFor(SLUG + '.PROD-R31.amazon');
+    const head = el('div', { class: 'card flat' });
+    if (p) {
+      head.append(el('h4', { text: 'Who sells the brand on Amazon' }),
+        el('div', { class: 'row', style: { gap: '6px' } }, chip(p.brand_store ? 'brand store: yes' : 'brand store: none seen', p.brand_store ? 'good' : 'bad'), chip(p.sold_by_brand ? 'sold by the brand' : 'sold by the brand: no offer read', p.sold_by_brand ? 'good' : 'bad'), chip(p.aplus ? 'A+ content: yes' : 'A+ content: none seen', p.aplus ? 'good' : 'warn'), chip((p.in_stock == null ? NA : p.in_stock) + ' of ' + p.asins_read.length + ' listings read in stock'), chip('resellers seen: ' + (p.resellers.length ? p.resellers.join(', ') : 'none named'))),
+        el('p', { class: 'small', text: p.text }),
+        el('p', { class: 'micro muted', text: 'Read ' + (p.captured_at || 'undated') + '. ' + (p.lines_not_found.length ? 'Not found on Amazon: ' + p.lines_not_found.map((x) => x.replace('_', ' ')).join(', ') + '. ' : '') + sm.judged + ' listings judged, ' + fmt.int(sm.ratings || 0) + ' public ratings; ' + sm.unverified + ' thin rows read but not judged. Site price per pair: ' + (site.value == null ? NA : fmt.money(site.value)) + ' (' + (site.basis || '') + ').' }));
+    } else head.append(el('p', { class: 'muted small', text: 'No presence record: whether the brand is the seller has not been read.' }));
+    const vt = { price_spread: 'Off the site price', reseller: 'Reseller sells it', seller_not_read: 'Seller not read', brand_sells: 'Brand sells it', unverified: 'Thin read' };
+    const vrows = m.rows.map((r) => { const a = actionFor(r.finding_id); return Object.assign({}, r, {
+      pack: r.pack_units + (r.pack_units === 1 ? ' pair' : ' pairs'), priceText: r.price_usd == null ? NA : fmt.money(r.price_usd), ppText: r.per_pair == null ? NA : fmt.money(r.per_pair),
+      spreadText: r.spread == null ? NA : (r.spread > 0 ? '+' : '') + (r.spread * 100).toFixed(0) + ' percent', starsText: r.stars == null ? NA : r.stars + ' (' + fmt.int(r.ratings || 0) + ')', sellerText: r.seller || 'not read',
+      actions: [a ? { label: r.verdict === 'price_spread' ? 'Check the price' : 'Decide the stance', onClick: () => openAction(a) } : { label: r.verdict === 'unverified' ? 'Thin' : 'Watch', cls: 'quiet', onClick: () => {} }] }); });
+    const tbl = UI.verdictTable({
+      columns: [{ key: 'asin', label: 'ASIN' }, { key: 'title', label: 'Listing', format: (v) => (v || '').slice(0, 60) }, { key: 'pack', label: 'Pairs' }, { key: 'priceText', label: 'Price' }, { key: 'ppText', label: 'Per pair' }, { key: 'spreadText', label: 'Against the site' }, { key: 'starsText', label: 'Stars (ratings)' }, { key: 'sellerText', label: 'Seller' }],
+      rows: vrows,
+      verdict: { at: 2, kind: (r) => r.verdict === 'price_spread' ? 'fix' : r.verdict === 'reseller' ? 'watch' : r.verdict === 'brand_sells' ? 'keep' : 'na', text: (r) => vt[r.verdict], reason: (r) => m.rule },
+      actions: { label: 'Do', onClick: () => {} }, sort: false });
+    const spreads = m.rows.filter((r) => r.verdict === 'price_spread');
+    return el('div', { class: 'stack' }, head, el('div', { class: 'card scroll' }, tbl),
+      el('p', { class: 'micro faint', text: 'Rule: ' + m.rule + '. Pairs come from the listing title; a listing far under the site price with few ratings is checked as a possible copy, never assumed one. Listing records come from a public search pull; the seller of record is read by the listing actor, which has not run.' }),
+      gapLine(p && p.sold_by_brand === false ? 'The brand is not the seller on its own Amazon listings' + (spreads.length ? ', and ' + spreads.length + ' listings are priced ' + (spreads.length === 1 ? '' : '25 percent or more ') + 'off the site price' : '') + '. One stance decision covers it.' : spreads.length ? spreads.length + ' listings are priced off the site price.' : 'The brand is the seller of record and the listing prices track the site.',
+        stance ? { label: 'Decide the stance', onClick: () => openAction(stance) } : spreads.length && actionFor(spreads[0].finding_id) ? { label: 'Check the first', onClick: () => openAction(actionFor(spreads[0].finding_id)) } : null));
+  }
+
   function loadDesk(o) {
     const d = o.desk || {};
     const w = (o.window || {}).trend;
@@ -795,6 +823,7 @@
     parts.push(section('desk-spend', 'Who is actually funding which lane, not just posting about it?', 'Competitor pages by the longest run of their active ads per lane. Three or more advertisers at 90 days is a funded test; one at 14 days is a live test; the rest is noise.', spendBlock(d.spend)));
     parts.push(section('desk-price-signal', 'What would buyers actually pay for a pair?', 'Price mentions mined from review quotes across Amazon, the brand site, Trustpilot and retailers, as a median per pair, against the competitor band, our own pair and each candidate\'s planned price.', priceSignalBlock(d.price_signal)));
     parts.push(section('desk-complaints', 'What do buyers hate about what exists, listing by listing?', 'Complaint themes mined from the brand\'s own Amazon listings as a share of reviews mined, against praise, with the listing\'s public stars, ratings and price. One complaint over 15 percent is the angle to build on.', complaintBlock(d.complaints)));
+    parts.push(section('desk-marketplace', 'Who sells us on Amazon, and at what price?', 'The brain\'s Amazon read: whether a brand store, A+ content or a brand-as-seller offer showed, the resellers seen, and every listing with its price per pair against the site. Public listing data, no order counts.', marketplaceBlock(d.marketplace)));
     parts.push(section('desk-gates', 'Is each candidate ready to fund: an owned angle and the 5 go-live gates?', 'Angle confidence (filled, sourced, not a competitor claim) and the gates per candidate: provable claim, owned difference, brand threshold, contribution margin, ad-cost ceiling, plus the compliance check.', gatesBlock(d.gates)));
     parts.push(section('desk-scorecard', 'Which candidates does the founder decide on this week?', 'The fixed scorecard with the brand\'s weights: demand, margin, differentiation, compliance and cash timing, each scored in code, ranked, with the go or no-go memo drafted from the numbers and the review date.', scorecardBlock(d.scorecard)));
     parts.push(section('desk-video', 'Is the demand one clip or a real pattern?', 'Independent platforms showing demand per lane: the Instagram hashtag pull, Reddit mentions and upvotes, competitor creator-style ads and our own, with the candidates that rest on each lane.', videoBlock(d.video)));

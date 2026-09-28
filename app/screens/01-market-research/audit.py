@@ -120,6 +120,12 @@ Rules
             for a forum, 30 quotes for a review source, 50 posts for a social pull) and no channel, identity, site map,
             marketplace, offer or policy record naming the brand there. Severity medium; high at 10,000 upvotes. Money
             null. Capability PROD-C12 (field research discipline, human assist). Owner: 01-market-research.
+  PROD-R31  Brand not the seller on Amazon: the presence record says no offer read was sold by the brand and no brand
+            store showed. Severity high. Money null (reseller sales are not in our orders). Capability PROD-C29 (Brand
+            Registry and brand protection, human assist). Owner: 01-market-research.
+  PROD-R32  Listing price spread: an Amazon listing with 20 or more ratings whose price per pair (listing price over the
+            pairs named in the title) is 25 percent or more off the site per-pair price either way. Severity medium.
+            Money null. Capability PROD-C46 (monitor reseller pricing and MAP, agent does). Owner: 01-market-research.
   PROD-R03  Hero line with no next SKU: a line with 25 percent or more of its category's net sales in
             the last 3 whole months while the candidate pipeline holds no open next-SKU candidate for
             that category. Money: null (an unlaunched SKU has no baseline). Capability PROD-C06
@@ -204,6 +210,10 @@ RULES = [
      'inputs': ['fixtures.market_trends', 'fixtures.pipeline'], 'capability': 'PROD-C05', 'owner_screen': SCREEN},
     {'rule_id': 'PROD-R30', 'name': 'Surface where the category conversation has reach (forum, review source or social) and no record shows the brand present', 'entity_type': 'metric',
      'inputs': ['brain.language_bank', 'brain.objection_ladders', 'brain.channels', 'brain.identity', 'brain.site_map', 'fixtures.social_pull'], 'capability': 'PROD-C12', 'owner_screen': SCREEN},
+    {'rule_id': 'PROD-R31', 'name': 'Brand is not the seller of record and holds no brand store on its own Amazon listings', 'entity_type': 'brand',
+     'inputs': ['brain.marketplaces'], 'capability': 'PROD-C29', 'owner_screen': SCREEN},
+    {'rule_id': 'PROD-R32', 'name': 'Amazon listing with 20 or more ratings priced 25 percent or more off the site per-pair price', 'entity_type': 'sku',
+     'inputs': ['brain.marketplaces', 'brain.products', 'products'], 'capability': 'PROD-C46', 'owner_screen': SCREEN},
 ]
 CAPABILITY = {'PROD-R01': {'id': 'PROD-C05', 'autonomy': 'agent_does'},
               'PROD-R02': {'id': 'PROD-C06', 'autonomy': 'agent_does'},
@@ -234,7 +244,9 @@ CAPABILITY = {'PROD-R01': {'id': 'PROD-C05', 'autonomy': 'agent_does'},
               'PROD-R27': {'id': 'PROD-C13', 'autonomy': 'agent_does'},
               'PROD-R28': {'id': 'PROD-C04', 'autonomy': 'agent_does'},
               'PROD-R29': {'id': 'PROD-C05', 'autonomy': 'agent_does'},
-              'PROD-R30': {'id': 'PROD-C12', 'autonomy': 'human_assist'}}
+              'PROD-R30': {'id': 'PROD-C12', 'autonomy': 'human_assist'},
+              'PROD-R31': {'id': 'PROD-C29', 'autonomy': 'human_assist'},
+              'PROD-R32': {'id': 'PROD-C46', 'autonomy': 'agent_does'}}
 SEVERITY_ORDER = {'critical': 0, 'high': 1, 'medium': 2, 'low': 3}
 
 # Review records name their line in a short key; the store names it by SKU title.
@@ -715,6 +727,7 @@ def run(brand, window=None, data=None):
     out += hours_findings(brand, br, ends_on)
     out += trend_check_findings(br, brand, ends_on)
     out += audience_findings(br, ends_on)
+    out += marketplace_findings(br, prods_for_map, ends_on)
     out.sort(key=lambda f: (SEVERITY_ORDER[f['severity']], -((f['money_at_stake'] or {}).get('usd') or 0), f['id']))
     return out
 
@@ -2789,5 +2802,116 @@ def audience_findings(br, ends_on):
         f['entity'] = {'type': 'metric', 'id': r['key'], 'label': r['label'], 'kind': r['kind'], 'url': r['url'], 'top_theme': r['top_theme_label'],
                        'answered_on_site': r['answered_on_site'], 'quotes': r['quotes'], 'upvotes': r['upvotes'], 'posts': r['posts']}
         f['id'] = f'{SCREEN}.PROD-R30.{r["key"].replace(":", "-")}'
+        out.append(f)
+    return out
+
+
+# ---------------------------------------------------------------- marketplace seller read (round 3.7)
+
+PACK_RE = re.compile(r'(\d+)\s*[- ]?\s*(?:pair|pairs|pack|pcs|pk)\b', re.I)
+PRICE_SPREAD = 0.25          # a listing per-pair price 25 percent off the site per-pair price either way is a spread
+LISTING_MIN_RATINGS = 20     # below this a listing is thin: read, not judged
+UNVERIFIED_MAX_RATINGS = 10  # a listing with fewer ratings than this and no seller read is unverified as the brand's
+
+
+def pack_units_from_title(title):
+    """Pairs in a listing from its title (4 Pair, 6-Pack, 2pcs, 8 Pairs); 1 when the title says nothing."""
+    m = PACK_RE.search(str(title or ''))
+    n = int(m.group(1)) if m else 1
+    return n if 0 < n <= 30 else 1
+
+
+def marketplace_read(br, prods):
+    """Who sells the brand on Amazon and at what price per pair. Rows come from the brain's marketplace listing records
+    (one per ASIN, price, stars, ratings, seller when read); the presence record says whether a brand store, A+ content or
+    a brand-as-seller offer showed and which resellers did. Price per pair is the listing price over the pairs in the
+    title, against the site's per-pair price from our_price_per_pair. Seller null reads not read, never the brand."""
+    if br is None:
+        return {'presence': None, 'rows': [], 'site_per_pair': None, 'summary': None, 'rule': None}
+    presence = None
+    listings = {}
+    for r in br.records('marketplaces'):
+        v = r.get('value') or {}
+        if not isinstance(v, dict):
+            continue
+        if r.get('field') == 'amazon_presence' or 'brand_store' in v:
+            presence = {'record': r['id'], 'brand_store': v.get('brand_store'), 'sold_by_brand': v.get('sold_by_bombas_on_listings_read', v.get('sold_by_brand')),
+                        'resellers': list(v.get('resellers_seen') or []), 'aplus': v.get('aplus_content_seen'), 'asins_read': list(v.get('asins_read') or []),
+                        'lines_not_found': list(v.get('lines_not_found') or []), 'in_stock': v.get('listings_in_stock'), 'text': r.get('text'),
+                        'captured_at': (r.get('source') or {}).get('captured_at'), 'url': (r.get('source') or {}).get('ref') if str((r.get('source') or {}).get('ref', '')).startswith('http') else None}
+            continue
+        if v.get('asin') and v.get('channel', 'amazon') == 'amazon':
+            l = listings.setdefault(v['asin'], {'asin': v['asin'], 'title': None, 'price_usd': None, 'stars': None, 'ratings': None, 'seller': None, 'url': None, 'variants': None})
+            for k, src in (('title', 'title'), ('price_usd', 'price_usd'), ('stars', 'stars'), ('ratings', 'reviews_count'), ('seller', 'seller'), ('url', 'url'), ('variants', 'variants_seen')):
+                if v.get(src) is not None and l.get(k) is None:
+                    l[k] = v[src]
+    site = our_price_per_pair(prods, br)
+    site_pp = site.get('value')
+    rows = []
+    for l in listings.values():
+        l['pack_units'] = pack_units_from_title(l['title'])
+        l['per_pair'] = round(l['price_usd'] / l['pack_units'], 2) if l['price_usd'] else None
+        l['spread'] = round(l['per_pair'] / site_pp - 1, 4) if l['per_pair'] and site_pp else None
+        l['seller_read'] = l['seller'] is not None
+        l['sold_by_brand'] = (str(l['seller']).lower().startswith(br.brand.lower())) if l['seller'] else None
+        l['url'] = l['url'] or f'https://www.amazon.com/dp/{l["asin"]}'
+        if (l['ratings'] or 0) < UNVERIFIED_MAX_RATINGS and not l['seller_read']:
+            l['verdict'] = 'unverified'
+        elif l['sold_by_brand']:
+            l['verdict'] = 'brand_sells'
+        elif l['spread'] is not None and abs(l['spread']) >= PRICE_SPREAD and (l['ratings'] or 0) >= LISTING_MIN_RATINGS:
+            l['verdict'] = 'price_spread'
+        elif l['sold_by_brand'] is False or (presence and presence.get('sold_by_brand') is False and l['asin'] in presence.get('asins_read', [])):
+            l['verdict'] = 'reseller'
+        else:
+            l['verdict'] = 'seller_not_read'
+        l['finding_id'] = f'{SCREEN}.PROD-R32.{l["asin"].lower()}' if l['verdict'] == 'price_spread' else f'{SCREEN}.PROD-R31.amazon'
+        rows.append(l)
+    order = {'price_spread': 0, 'reseller': 1, 'seller_not_read': 2, 'brand_sells': 3, 'unverified': 4}
+    rows.sort(key=lambda l: (order[l['verdict']], -(l['ratings'] or 0)))
+    judged = [l for l in rows if l['verdict'] != 'unverified']
+    ratings = sum(l['ratings'] or 0 for l in judged)
+    pps = [l['per_pair'] for l in judged if l['per_pair'] and (l['ratings'] or 0) >= LISTING_MIN_RATINGS]
+    summary = {'listings': len(rows), 'judged': len(judged), 'unverified': len(rows) - len(judged), 'ratings': ratings,
+               'median_per_pair': round(statistics.median(pps), 2) if pps else None, 'spread_listings': sum(1 for l in rows if l['verdict'] == 'price_spread'),
+               'sellers_read': sum(1 for l in rows if l['seller_read'])}
+    return {'presence': presence, 'rows': rows, 'site_per_pair': site, 'summary': summary,
+            'rule': f'the brand should be the seller of record or hold the brand store on its own listings; a listing per-pair price {int(PRICE_SPREAD * 100)} percent off the site price either way on {LISTING_MIN_RATINGS} or more ratings is a spread; under {UNVERIFIED_MAX_RATINGS} ratings with no seller read is unverified as the brand\'s'}
+
+
+def marketplace_findings(br, prods, ends_on):
+    """PROD-R31: the brand is not the seller of record and holds no brand store on its own Amazon listings (from the presence
+    record). PROD-R32: a listing with 20 or more ratings priced 25 percent or more off the site per-pair price either way."""
+    out = []
+    m = marketplace_read(br, prods)
+    p = m['presence']
+    s = m['summary'] or {}
+    if p and p.get('sold_by_brand') is False and not p.get('brand_store'):
+        ev = [_ev('listings_sold_by_brand', 0, 'count', ends_on.isoformat(), 'listings read', len(p.get('asins_read') or []), 'threshold', source=p['record'], simulated=False, freshness_days=0,
+                  resellers=p.get('resellers'), in_stock=p.get('in_stock'), captured_at=p.get('captured_at')),
+              _ev('brand_store', 0, 'count', ends_on.isoformat(), 'now', 1, 'threshold', source=p['record'], simulated=False, freshness_days=0, aplus_content=p.get('aplus')),
+              _ev('public_ratings_on_listings', s.get('ratings'), 'count', ends_on.isoformat(), 'all time', source='brain.marketplaces', simulated=False, freshness_days=0, listings=s.get('judged'))]
+        missing = ', '.join(x.replace('_', ' ') for x in p.get('lines_not_found') or [])
+        sentence = (f'On Amazon every in-stock offer read ({p.get("in_stock")} of {len(p.get("asins_read") or [])} listings) is a third-party reseller ({", ".join(p.get("resellers") or []) or "names not read"}); '
+                    f'no brand store and no A+ content showed. {s.get("judged")} listings carry {s.get("ratings"):,} public ratings.' + (f' Not found on Amazon: {missing}.' if missing else ''))
+        f = _finding('PROD-R31', 'amazon', ends_on, 'high', ev, sentence, None, 0.8, [p['record']], money_reason='reseller sales on the marketplace are not in our order data')
+        f['entity'] = {'type': 'brand', 'id': 'amazon', 'label': 'Amazon', 'resellers': p.get('resellers'), 'listings': s.get('judged'), 'ratings': s.get('ratings'),
+                       'lines_not_found': p.get('lines_not_found'), 'median_per_pair': s.get('median_per_pair'), 'site_per_pair': (m['site_per_pair'] or {}).get('value')}
+        f['id'] = f'{SCREEN}.PROD-R31.amazon'
+        out.append(f)
+    site_pp = (m['site_per_pair'] or {}).get('value')
+    for l in m['rows']:
+        if l['verdict'] != 'price_spread':
+            continue
+        ev = [_ev('listing_price_per_pair', l['per_pair'], 'usd', ends_on.isoformat(), 'listing now', site_pp, 'threshold', source=l['url'], simulated=False, freshness_days=0,
+                  pack_units=l['pack_units'], price_usd=l['price_usd'], note=(m['site_per_pair'] or {}).get('basis')),
+              _ev('price_spread', l['spread'], 'ratio', ends_on.isoformat(), 'listing now', PRICE_SPREAD, 'threshold', source=l['url'], simulated=False, freshness_days=0),
+              _ev('ratings', l['ratings'], 'count', ends_on.isoformat(), 'all time', LISTING_MIN_RATINGS, 'threshold', source='brain.marketplaces', simulated=False, freshness_days=0)]
+        way = 'above' if l['spread'] > 0 else 'below'
+        sentence = (f'{l["title"]} ({l["asin"]}) lists at ${l["price_usd"]:,.2f} for {l["pack_units"]} pair{"s" if l["pack_units"] != 1 else ""}, ${l["per_pair"]:,.2f} a pair, '
+                    f'{abs(round(l["spread"] * 100))} percent {way} the site per-pair price of ${site_pp:,.2f}, with {l["ratings"]:,} ratings and the seller {("read as " + l["seller"]) if l["seller"] else "not read"}.')
+        f = _finding('PROD-R32', l['asin'].lower(), ends_on, 'medium', ev, sentence, None, 0.6, [], money_reason='units sold on the listing are not visible; a price spread is a brand price integrity risk, not a measured loss')
+        f['entity'] = {'type': 'sku', 'id': l['asin'], 'label': l['title'], 'url': l['url'], 'per_pair': l['per_pair'], 'site_per_pair': site_pp, 'spread': l['spread'], 'way': way, 'ratings': l['ratings'], 'seller': l['seller']}
+        f['id'] = f'{SCREEN}.PROD-R32.{l["asin"].lower()}'
         out.append(f)
     return out

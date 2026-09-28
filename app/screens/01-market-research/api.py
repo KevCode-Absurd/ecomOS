@@ -804,6 +804,37 @@ def recipe(f):
             'stop_rule': 'stop if the surface bars brand accounts', 'check_on': _check_on(f, 14), 'time_to_ship_hours': 3,
             'win_rule': 'a channels record names the surface',
         }
+    if rid == 'PROD-R31':
+        ent = f.get('entity') or {}
+        resellers = ', '.join(ent.get('resellers') or []) or 'the resellers'
+        missing = ', '.join(x.replace('_', ' ') for x in (ent.get('lines_not_found') or []))
+        return {
+            'title': f'Decide the Amazon stance: enrol Brand Registry and take the seller of record from {resellers}',
+            'owner': 'person',
+            'artefact': {'kind': 'policy', 'label': f'an Amazon channel policy: Brand Registry filed, the stance (sell direct, one authorised reseller, or stay off), the listing plan for the {ent.get("listings") or 0} listings and the price floor per pair'},
+            'steps': [
+                {'n': 1, 'who': 'person', 'text': 'File Brand Registry with the registered trademark; it is the door to the brand store, A+ content and listing control.'},
+                {'n': 2, 'who': 'agent', 'text': f'Draft the stance memo: what the {ent.get("ratings") or 0:,} public ratings say about demand, the per-pair price on the listings against the site (${ent.get("median_per_pair") or 0:,.2f} against ${ent.get("site_per_pair") or 0:,.2f}), and the margin gate for selling direct.'},
+                {'n': 3, 'who': 'person', 'text': 'Choose: sell direct, appoint one authorised reseller under a price floor, or stay off and report the rest.'},
+                {'n': 4, 'who': 'agent', 'text': 'Write the marketplaces record with the stance and the date; the listing check re-runs on the next pull.' + (f' Lines not found on Amazon ({missing}) enter the listing plan only if the stance is sell direct.' if missing else '')}],
+            'size': {'text': f'{ent.get("listings") or 0} listings, {ent.get("ratings") or 0:,} ratings, {len(ent.get("resellers") or [])} resellers seen', 'usd': None},
+            'stop_rule': 'no listing work before Brand Registry is filed', 'check_on': _check_on(f, 30), 'time_to_ship_hours': 6,
+            'win_rule': 'Brand Registry active and a marketplaces record naming the stance',
+        }
+    if rid == 'PROD-R32':
+        ent = f.get('entity') or {}
+        return {
+            'title': f'Check the {ent.get("way") or "off"}-price listing {ent.get("id")} against the site price and the seller',
+            'owner': 'agent',
+            'artefact': {'kind': 'report', 'label': f'a price integrity row for {ent.get("id")}: seller of record, price per pair against the site, whether the offer is the brand\'s product, and the step (report, price floor, or leave)'},
+            'steps': [
+                {'n': 1, 'who': 'agent', 'text': 'Read the seller of record and the offer count on the listing (the listing actor, under the Apify caps).'},
+                {'n': 2, 'who': 'agent', 'text': f'Compare the per-pair price (${ent.get("per_pair") or 0:,.2f}) with the site (${ent.get("site_per_pair") or 0:,.2f}); a listing under the site price with few ratings is checked as a possible copy, not assumed one.'},
+                {'n': 3, 'who': 'person', 'text': 'Decide: report the listing, set a reseller price floor, or leave it.'}],
+            'size': {'text': f'{abs(round((ent.get("spread") or 0) * 100))} percent {ent.get("way")} the site, {ent.get("ratings") or 0:,} ratings', 'usd': None},
+            'stop_rule': 'no report without the seller read', 'check_on': _check_on(f, 14), 'time_to_ship_hours': 1,
+            'win_rule': 'seller read and a decision on the row',
+        }
     return None
 
 
@@ -850,6 +881,32 @@ def merge_surfaces(actions):
     others = [(a.get('entity') or {}).get('label') for a in forums[1:]]
     host['title'] = host['title'].replace(' and answer', f' plus {", ".join(o for o in others if o)} and answer', 1)
     host['size'] = {'text': f'{len(forums)} subreddits: ' + (host.get('size') or {}).get('text', ''), 'usd': None}
+    return keep
+
+
+def merge_marketplace(actions):
+    """One card for Amazon: PROD-R32 price-spread listings join the PROD-R31 stance card when it exists, else the
+    highest-scored spread hosts the rest, so the plan shows one marketplace decision, not one card per ASIN."""
+    spreads = [a for a in actions if a.get('rule_id') == 'PROD-R32']
+    if not spreads:
+        return actions
+    host = next((a for a in actions if a.get('rule_id') == 'PROD-R31'), None)
+    spreads.sort(key=lambda a: -((a.get('rubric') or {}).get('total') or 0))
+    if host is None:
+        host = spreads[0]
+    keep = []
+    for a in actions:
+        if a is host or a not in spreads:
+            keep.append(a)
+            continue
+        host['finding_ids'] = sorted(set(host['finding_ids']) | set(a['finding_ids']))
+        host['why'] = host['why'] + ' ' + a['why']
+        host['rubric']['confidence'] = max(host['rubric'].get('confidence') or 0, a['rubric'].get('confidence') or 0)
+    n = len(spreads)
+    if host.get('rule_id') == 'PROD-R31':
+        host['title'] = host['title'] + f'; {n} listing{"s" if n != 1 else ""} priced off the site'
+    elif n > 1:
+        host['title'] = f'Check {n} Amazon listings priced off the site price, starting with {(host.get("entity") or {}).get("id")}'
     return keep
 
 
@@ -928,7 +985,7 @@ def rank(brand, window=None):
         a['screen'] = SCREEN
         if not rank_mod.validate_action(a):
             actions.append(a)
-    actions = merge_surfaces(merge_candidates(merge_lanes(actions)))
+    actions = merge_marketplace(merge_surfaces(merge_candidates(merge_lanes(actions))))
     actions.sort(key=rank_mod.sort_key)
     return {'screen': SCREEN, 'brand': brand, 'window': window, 'actions': actions, 'net_revenue_28d': nr}
 
@@ -1056,7 +1113,7 @@ def overview(data, brand):
                      'gates': gates_block(brand, data, br, rd, ends_on, findings), 'scorecard': scorecard_block(brand, data, br, rd, ends_on, findings),
                      'video': audit.video_signals(br, brand, ends_on), 'tech_packs': tech_pack_block(brand, findings),
                      'hours': dict(audit.hours_table(brand, br), findings={f['entity']['id']: f['id'] for f in findings if f['rule_id'] == 'PROD-R28'}),
-                     'trend_checks': audit.trend_checks(br, brand, ends_on), 'surfaces': audit.audience_surfaces(br, ends_on)},
+                     'trend_checks': audit.trend_checks(br, brand, ends_on), 'surfaces': audit.audience_surfaces(br, ends_on), 'marketplace': audit.marketplace_read(br, products(data, brand))},
             'audit': {'findings': findings, 'rules': audit.RULES}}
 
 
