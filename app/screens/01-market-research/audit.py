@@ -3479,7 +3479,7 @@ def pulls(br, brand, ends_on):
         command=f'python3 app/screens/01-market-research/web_pass.py --brand {br.brand} --check', note='a session task with a url and a date per number; no actor')
     order = {'due': 0, 'never': 1, 'mock': 2, 'unset': 3, 'fresh': 4}
     rows.sort(key=lambda r: (order[r['verdict']], r['label']))
-    return {'rows': rows, 'caps': {'per_run_usd': caps.get('max_usd_per_run'), 'per_week_usd': caps.get('max_usd_per_week')},
+    return {'rows': rows, 'caps': {'per_run_usd': caps.get('max_usd_per_run'), 'per_week_usd': caps.get('max_usd_per_week')}, 'ledger': ledger_week(br.brand),
             'rule': 'a pull is due when its last capture is older than its window (Reddit 30 days, reviews 60, Ad Library 30 or 7 while a candidate is open, listings 30, Instagram 30, the web pass 30); a mock or a never-run pull that a block reads is a gap; every run is a paid call a person approves under the per-run and weekly caps'}
 
 
@@ -3573,3 +3573,37 @@ def first_run_findings(brand, ends_on, net_28d):
         f['id'] = f'{SCREEN}.PROD-R37.{cid}'
         out.append(f)
     return out
+
+
+# ---------------------------------------------------------------- the spend ledger, read only (round 5.6)
+
+LEDGER_PATH = APP.parent / 'data' / 'spend.sqlite'
+
+
+def ledger_week(brand, today=None, path=None):
+    """This ISO week's Apify spend for the brand from the shared spend ledger, read only: settled runs count at their actual
+    cost, open reservations at their bound; runs that settled over their bound are counted. Unavailable when the ledger is
+    absent. Nothing here writes, reserves or clears anything."""
+    import sqlite3
+    today = today or date.today()
+    p = Path(path or LEDGER_PATH)
+    week = f'{today.isocalendar()[0]}-W{today.isocalendar()[1]:02d}'
+    if not p.is_file() or not brand:
+        return {'available': False, 'week': week, 'reason': 'no spend ledger on file' if not p.is_file() else 'no brand'}
+    try:
+        con = sqlite3.connect(f'file:{p}?mode=ro', uri=True)
+        try:
+            rows = con.execute("SELECT request_id, reserved, actual, status FROM spend WHERE request_id LIKE ?", (f'apify:{brand}:%',)).fetchall()
+        finally:
+            con.close()
+    except sqlite3.Error as exc:
+        return {'available': False, 'week': week, 'reason': f'ledger unreadable ({exc})'}
+    def usd(v):
+        return (v or 0) / 1_000_000
+    wk = [r for r in rows if r[0].split(':')[2] == week]
+    return {'available': True, 'week': week, 'runs_week': len(wk),
+            'spent_week_usd': round(sum(usd(r[2] if r[2] is not None else r[1]) for r in wk), 2),
+            'reserved_open_usd': round(sum(usd(r[1]) for r in wk if r[2] is None), 2),
+            'over_bound_week': sum(1 for r in wk if r[3] == 'bound_exceeded'),
+            'spent_all_usd': round(sum(usd(r[2] if r[2] is not None else r[1]) for r in rows), 2), 'runs_all': len(rows),
+            'by_actor_week': sorted(((a, round(sum(usd(r[2] if r[2] is not None else r[1]) for r in wk if r[0].split(':')[3] == a), 2)) for a in {r[0].split(':')[3] for r in wk}), key=lambda kv: -kv[1])}

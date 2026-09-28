@@ -1052,6 +1052,29 @@ class PipelineTest(ShapeMixin, unittest.TestCase):
         finally:
             audit.PIPELINE_PATH = self.real2
 
+    def test_ledger_week_reads_only(self):
+        import sqlite3
+        p = ROOT / 'tests' / '_spend_test.sqlite'
+        try:
+            con = sqlite3.connect(p)
+            con.execute('CREATE TABLE spend (request_id TEXT PRIMARY KEY, provider TEXT NOT NULL, reserved INTEGER NOT NULL, actual INTEGER, status TEXT NOT NULL)')
+            con.executemany('INSERT INTO spend VALUES (?,?,?,?,?)', [
+                ('apify:fake:2026-W40:trudax~reddit-scraper-lite:a1', 'apify', 2_600_000, 1_200_000, 'settled'),
+                ('apify:fake:2026-W40:junglee~amazon-crawler:b2', 'apify', 770_000, 8_640_000, 'bound_exceeded'),
+                ('apify:fake:2026-W40:axesso_data~amazon-reviews-scraper:c3', 'apify', 500_000, None, 'reserved'),
+                ('apify:fake:2026-W39:trudax~reddit-scraper-lite:d4', 'apify', 1_000_000, 900_000, 'settled'),
+                ('apify:other:2026-W40:trudax~reddit-scraper-lite:e5', 'apify', 1_000_000, 900_000, 'settled')])
+            con.commit(); con.close()
+            lw = audit.ledger_week('fake', date(2026, 9, 28), path=p)
+            self.assertEqual((lw['week'], lw['runs_week'], lw['spent_week_usd'], lw['reserved_open_usd'], lw['over_bound_week']), ('2026-W40', 3, 10.34, 0.5, 1))
+            self.assertEqual((lw['spent_all_usd'], lw['runs_all']), (11.24, 4))
+            self.assertEqual(lw['by_actor_week'][0], ('junglee~amazon-crawler', 8.64))
+            self.assertFalse(audit.ledger_week('fake', date(2026, 9, 28), path=ROOT / 'tests' / '_no_ledger.sqlite')['available'])
+            self.assertFalse(audit.ledger_week(None, date(2026, 9, 28), path=p)['available'])
+            self.assertEqual(sqlite3.connect(p).execute('SELECT COUNT(*) FROM spend').fetchone()[0], 5)   # nothing written
+        finally:
+            p.unlink(missing_ok=True)
+
     def test_demand_pattern_tags(self):
         even = {'rows': [{'category': 'socks', 'series': [100] * 12}], 'months': [f'2026-{m:02d}' for m in range(1, 13)], 'last': '2026-12'}
         peaked = {'rows': [{'category': 'socks', 'series': [50] * 10 + [300, 400]}], 'months': even['months'], 'last': '2026-12'}

@@ -961,7 +961,13 @@
       actions: { label: 'Do', onClick: () => {} }, sort: false });
     const open = rows.filter((r) => r.verdict !== 'fresh');
     const caps = p.caps || {};
-    return el('div', { class: 'stack' }, el('div', { class: 'card scroll' }, tbl),
+    const lg = p.ledger || {};
+    const ledgerCard = el('div', { class: 'card flat' }, el('h4', { text: 'The spend ledger, this week (' + (lg.week || NA) + ')' }),
+      lg.available ? el('div', { class: 'row', style: { gap: '6px' } }, chip(fmt.money(lg.spent_week_usd) + ' of ' + (caps.per_week_usd != null ? fmt.money(caps.per_week_usd) : NA) + ' spent this week', caps.per_week_usd != null && lg.spent_week_usd > caps.per_week_usd ? 'bad' : 'good'),
+        chip(lg.runs_week + ' run' + (lg.runs_week === 1 ? '' : 's') + ' this week'), lg.reserved_open_usd ? chip(fmt.money(lg.reserved_open_usd) + ' still reserved', 'warn') : null, lg.over_bound_week ? chip(lg.over_bound_week + ' settled over its bound', 'bad') : null, chip(fmt.money(lg.spent_all_usd) + ' all time, ' + lg.runs_all + ' runs'))
+        : el('p', { class: 'muted small', text: 'Unavailable: ' + (lg.reason || 'no ledger') + '.' }),
+      lg.available && (lg.by_actor_week || []).length ? el('p', { class: 'micro muted', text: 'By actor this week: ' + lg.by_actor_week.map((x) => x[0] + ' ' + fmt.money(x[1])).join(', ') + '. Read only from the shared ledger; a run over its bound halts the connector until a person looks.' }) : null);
+    return el('div', { class: 'stack' }, ledgerCard, el('div', { class: 'card scroll' }, tbl),
       el('p', { class: 'micro faint', text: 'Caps: ' + (caps.per_run_usd != null ? fmt.money(caps.per_run_usd) + ' a run, ' + fmt.money(caps.per_week_usd) + ' a week' : 'none on file') + '. Estimates come from the connector price table at the configured size with its margin. Nothing on this page runs a pull; a person approves each one from the card. Rule: ' + p.rule + '.' }),
       gapLine(open.length ? open.length + ' pull' + (open.length === 1 ? ' is' : 's are') + ' not fresh: ' + open.map((r) => r.label.toLowerCase() + ' (' + vt[r.verdict].toLowerCase() + ')').join(', ') + '.' : 'Every pull is inside its window.',
         open.length && actionFor(open[0].finding_id) ? { label: 'Open the first', onClick: () => openAction(actionFor(open[0].finding_id)) } : null));
