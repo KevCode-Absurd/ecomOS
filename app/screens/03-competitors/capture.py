@@ -143,5 +143,6 @@ if __name__ == "__main__":
     sys.path.insert(0, str(HERE))
     import audit  # noqa: E402
     day = dt.date.fromisoformat(ns.date) if ns.date else dt.date.today()
-    m = audit.market(ns.brand, day)
+    m = audit.market_full(ns.brand, day)
     print(write(ns.brand, m["pages"], day))
+    print(audit.handmod.write_snapshot(m, audit.parse_band))   # the competitor_snapshot hand-off (events.md)

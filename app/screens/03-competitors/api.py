@@ -10,6 +10,8 @@ in audit.py; this file shapes them for the page. No writes, nothing external.
   GET  overview   the desk: pages side by side, coverage matrix, hook and offer
                   mix, references, price and pack ladder, positioning map,
                   changes, freshness and the re-pull plan
+  GET  competitor_snapshot  the events.md hand-off rows (also written to fixtures by capture.py)
+  GET  experiments          registry rows drafted from open test actions, for 25-experiments
   GET  digest     the weekly competitor brief as plain text, built from the plan
   GET  audit      findings from audit.py (app/contracts/audit.md shape)
   rank(brand, window)  the depth contract override app/rank.py calls
@@ -294,13 +296,13 @@ def placements(m: dict) -> dict:
 
 
 # Every desk block ends in a line that names the gap and offers the action (depth.md section 2, row 5).
-SECTION_RULES = {"history": [], "macros": ["COMP-R15"], "pages": ["COMP-R15"], "cards": ["COMP-R27"], "landing": ["COMP-R26"], "losses": ["COMP-R15", "COMP-R29"],
+SECTION_RULES = {"history": [], "handoff": [], "macros": ["COMP-R15"], "pages": ["COMP-R15"], "cards": ["COMP-R27"], "landing": ["COMP-R26"], "losses": ["COMP-R15", "COMP-R29"],
                  "category": ["COMP-R16"], "reviews": ["COMP-R17"], "coverage": ["COMP-R05", "COMP-R01"], "velocity": ["COMP-R19"],
                  "mix": ["COMP-R06", "COMP-R07", "COMP-R08"], "placements": [], "refs": ["COMP-R03"], "changes": ["COMP-R24", "COMP-R12"],
                  "niche": ["COMP-R20"], "map": ["COMP-R11"], "frames": ["COMP-R28"], "premium": ["COMP-R21"],
                  "prices": ["COMP-R25", "COMP-R09", "COMP-R10", "COMP-R02"], "search": ["COMP-R22", "COMP-R23"], "presence": ["COMP-R18"],
                  "fresh": ["COMP-R14", "COMP-R13"]}
-HOLD = {"history": "Threat trend is drawn from the dated captures.", "pages": "No named loss on this capture; keep the battlecards fresh.", "placements": "Our placements are not in the brain; the pull fills them.",
+HOLD = {"handoff": "The snapshot is written with each capture; tests are proposed when you approve them.", "history": "Threat trend is drawn from the dated captures.", "pages": "No named loss on this capture; keep the battlecards fresh.", "placements": "Our placements are not in the brain; the pull fills them.",
         "refs": "No offer they keep live that we hold and do not run.", "map": "No open strong-claim corner; contest the one beside us.",
         "category": "Every rung is mapped.", "cards": "Every battlecard is fresh."}
 
@@ -409,6 +411,15 @@ def handle(req):
     try:
         if req.method == "GET" and req.path == ["overview"]:
             return overview(brand, today)
+        if req.method == "GET" and req.path == ["competitor_snapshot"]:
+            m = audit.market_full(brand, today, BRAIN_ROOT)
+            return {"table": "competitor_snapshot", "brand": brand, "fields": audit.handmod.FIELDS,
+                    "rows": audit.handmod.snapshot_rows(m, audit.parse_band)}
+        if req.method == "GET" and req.path == ["experiments"]:
+            window = actions.ranker.default_window(28, (today - dt.timedelta(days=1)).isoformat())
+            acts = actions.build(brand, window, BRAIN_ROOT)["actions"]
+            return {"brand": brand, "rows": audit.handmod.experiment_rows(acts, brand),
+                    "note": "Drafts in the registry shape; 25-experiments assigns ids and owns results."}
         if req.method == "GET" and req.path == ["digest"]:
             return digest(brand, today)
         if req.method == "GET" and req.path == ["plan"]:

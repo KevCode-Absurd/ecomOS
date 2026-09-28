@@ -34,6 +34,12 @@ Round 0 notes (28 Sep 2026): brand price per pair is simulated net sales per uni
 
 Round 1 notes: `snapshot.py` plans and runs a page-id Ad Library pull through `app/connectors/apify.py` (12 pages with ids, 1,800 items cap, estimate $2.08, inside the $4 run and $30 week caps). The live run was blocked by the session's permission check on 28 Sep, so round 1 builds on the brain's 28 Sep pulls (page-level formats, hook types, offers, run lengths and 3 quoted ads a page) and the page says so.
 
+## Round 5: hand-offs, execution lanes and the season
+
+| # | Feature | Status |
+|---|---|---|
+| 5.1 | Hand-offs by the events contract (`handoff.py`): the `competitor_snapshot` table this screen owes customers and avatars, creative, and offers and pricing (one row per page: verdict, points, active ads, format mix, angles, offers, price band per unit, map quadrants, longest ad, capture date, source), written with each capture to `fixtures/competitor_snapshot_<brand>.json` and served at `GET competitor_snapshot`; experiment registry rows drafted in the contract shape (status proposed) from every open test action at `GET experiments`; a desk block shows both | done |
+
 ## Round 4: the rest of the room, and a depth pass on the screen
 
 | # | Feature | Status |
@@ -125,6 +131,8 @@ Round 2 notes: the lead authorised the $2.08 pull on 28 Sep; the session's permi
 6. Next, round 2: run the snapshot (Kevin's approval) to make every cell counted, then the room's SERP overlap, marketplace presence, review comparison and pricing moves, and a web pass on what Foreplay, Motion, Atria and Similarweb do, rebuilt as rules.
 
 ## Contract asks
+
+- `competitor_snapshot` has no shared table in the data layer yet; it is written to `fixtures/competitor_snapshot_<brand>.json` in this folder and served read-only. A home under `app/data/brands/<brand>/` would let readers find it without knowing this folder.
 
 - `server.py` serves only index.html, screen.js and screen.css (plus fixtures) from a screen folder; a report page or split JS files need an allow-list entry. Local fallback: the report is `?view=report` on the same page.
 
@@ -224,6 +232,7 @@ Round 2 notes: the lead authorised the $2.08 pull on 28 Sep; the session's permi
 | Round | Features picked | Date | Notes |
 |---|---|---|---|
 | 0 | 0.1 to 0.8 | 2026-09-28 | Bombas brain and simulated prices |
+| 5 | 5.1 | 2026-09-28 | Hand-offs: competitor_snapshot and experiment drafts |
 | 4 | 4.1 to 4.10 | 2026-09-28 | Placements and new channel alerts; gap lines; stop rules; unit from the brain; never zero; phone width; threat history; support answers; room metrics. Screenshot `round4.png` |
 | 3 | 3.1 to 3.10 | 2026-09-28 | Page-summary captures and diffs; price moves; landing page tracking; printable report; battlecards; positioning test; win-loss kit; tunable thresholds; second brand. Screenshot `round3.png` |
 | 2 | 2.1 to 2.10 | 2026-09-28 | Lost by name; category ladder; review themes; Amazon against our site; creative velocity; weekly brief; niche sizing; premium signals; search seeds; desk tabs. Screenshot `round2.png` |

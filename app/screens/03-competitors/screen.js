@@ -559,12 +559,25 @@
       el('p', { class: 'micro faint', text: mc.rule }));
   }
 
+  // ---------- 5x. hand-offs to other screens ----------
+  async function handoffSection() {
+    let snap, exp;
+    try { [snap, exp] = await Promise.all([api(BASE + 'competitor_snapshot'), api(BASE + 'experiments')]); }
+    catch (e) { mount('#handoff', el('p', { class: 'na', text: 'Hand-offs unavailable: ' + e.message })); return; }
+    mount('#handoff', UI.table({ columns: [{ key: 't', label: 'Table' }, { key: 'n', label: 'Rows', unit: 'n' }, { key: 'to', label: 'Read by' }, { key: 'where', label: 'Where' }], sort: false,
+      rows: [{ t: 'competitor_snapshot', n: snap.rows.length, to: 'customers and avatars, creative, offers and pricing', where: 'fixtures/competitor_snapshot_' + snap.brand + '.json' },
+        { t: 'experiment registry (proposed)', n: exp.rows.length, to: 'experiments', where: 'drafted here; a row is proposed when you approve the test' }] }),
+      el('div', { class: 'row' }, el('a', { class: 'btn sm', href: 'fixtures/competitor_snapshot_' + snap.brand + '.json', target: '_blank', rel: 'noopener', text: 'Open the snapshot' }),
+        UI.copyButton({ label: 'Copy the proposed tests', text: () => JSON.stringify(exp.rows, null, 1) })),
+      el('p', { class: 'micro faint', text: 'Other screens read these tables, never this screen\'s code. ' + exp.note }));
+  }
+
   // ---------- 5z. desk tabs: each job holds its sections ----------
   const DESK = [
     { key: 'rivals', label: 'Rivals', ids: ['pages', 'history', 'cards', 'macros', 'landing', 'losses', 'category', 'reviews'] },
     { key: 'creative', label: 'Ads', ids: ['coverage', 'velocity', 'mix', 'placements', 'refs', 'changes'] },
     { key: 'price', label: 'Price and position', ids: ['map', 'frames', 'premium', 'prices', 'presence'] },
-    { key: 'market', label: 'Market and data', ids: ['niche', 'search', 'fresh'] },
+    { key: 'market', label: 'Market and data', ids: ['niche', 'search', 'fresh', 'handoff'] },
   ];
   function gapLines(lines) {
     for (const [id, g] of Object.entries(lines || {})) {
@@ -663,6 +676,7 @@
     placementSection(d.placements);
     historySection(d.history);
     macrosSection(d.macros);
+    handoffSection();
     document.getElementById('audit-sub').textContent = p.findings.length + ' findings from ' + p.rules.length + ' rules. Public signals, one capture.';
     mount('#audit', auditTable(p.findings));
     gapLines(d.gap_lines);

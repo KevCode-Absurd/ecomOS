@@ -1063,6 +1063,27 @@ class TestRoomMetrics(TempBrain):
                 self.assertTrue(r['unavailable'], r['key'])
 
 
+class TestHandoff(TempBrain):
+    """5.1: the competitor_snapshot hand-off (events.md) and experiment registry drafts."""
+    def test_snapshot_and_experiments(self):
+        api.BRAIN_ROOT = self.tmp
+        snap = api.handle(Req(['competitor_snapshot']))
+        self.assertEqual(snap['table'], 'competitor_snapshot')
+        self.assertEqual(len(snap['rows']), 11)
+        for r in snap['rows']:
+            self.assertEqual(set(r), set(audit.handmod.FIELDS))
+            self.assertFalse(r['simulated'])
+        on_file = json.loads((SCREEN / 'fixtures' / 'competitor_snapshot_bombas.json').read_text())
+        self.assertEqual(on_file['fields'], audit.handmod.FIELDS)
+        exp = api.handle(Req(['experiments']))['rows']
+        self.assertTrue(exp)
+        for r in exp:
+            self.assertEqual(r['status'], 'proposed')
+            self.assertIsNone(r['id'])
+            for k in ('hypothesis', 'source', 'variant', 'read_point', 'brain_refs'):
+                self.assertIn(k, r)
+
+
 class TestRank(TempBrain):
     """Depth contract rules 2, 3 and 13: owner, steps and artefact on every action; every finding ends in one."""
     W = {'ends_on': '2026-09-27', 'days': 28, 'trailing': 4}
@@ -1177,7 +1198,7 @@ class TestPage(unittest.TestCase):
         html = (SCREEN / 'index.html').read_text(encoding='utf-8')
         desk = html.split('id="desk-src"', 1)[1].split('<!-- 6. The audit -->', 1)[0]
         for sec_id in ('pages', 'history', 'cards', 'macros', 'landing', 'losses', 'category', 'reviews', 'coverage', 'velocity', 'mix', 'placements', 'refs', 'changes',
-                       'map', 'frames', 'premium', 'prices', 'presence', 'niche', 'search', 'fresh'):
+                       'map', 'frames', 'premium', 'prices', 'presence', 'niche', 'search', 'fresh', 'handoff'):
             self.assertIn(f'id="{sec_id}"', desk)
             self.assertIn(f"'{sec_id}'", js)
 
