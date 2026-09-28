@@ -1083,7 +1083,7 @@ class DeskTabs(unittest.TestCase):
         self.assertTrue(body[first:first + 60].startswith('<section class="section" id="plan-wrap">'))
         self.assertLess(body.index('id="actions-wrap"'), body.index('id="desk-wrap"'))
         ids = _re.findall(r'<section class="section" id="([a-z-]+)"', body)
-        above = {'plan-wrap', 'connect-wrap', 'wrong-wrap', 'actions-wrap', 'agenda-wrap', 'tests-wrap', 'decided-wrap', 'handoff-wrap', 'desk-wrap', 'audit-wrap'}
+        above = {'plan-wrap', 'connect-wrap', 'wrong-wrap', 'actions-wrap', 'agenda-wrap', 'tests-wrap', 'decided-wrap', 'handoff-wrap', 'inbox-wrap', 'desk-wrap', 'audit-wrap'}
         desk_block = js[js.index('const DESK = ['):js.index('let deskTabs')]
         grouped = _re.findall(r"'([a-z]+-wrap)'", desk_block)
         self.assertEqual(sorted(set(ids) - above), sorted(grouped))
