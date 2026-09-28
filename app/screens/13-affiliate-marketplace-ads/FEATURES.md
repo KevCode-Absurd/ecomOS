@@ -6,9 +6,32 @@ Status: todo | doing | done | parked. One feature per commit. The first round is
 
 | # | Feature | Status |
 |---|---|---|
-| 0.1 | Page shell in the shared UI kit: header, empty-state tiles, insight list, action buttons | todo |
-| 0.2 | `api.py` serving this screen's metrics from `app/data/` with unavailable states | todo |
-| 0.3 | 3 metric tiles, 2 insights, 1 chart from the sample brand | todo |
+| 0.1 | Page shell in the shared UI kit: badge, founder note, tiles, decision row, insights, connector chips | done |
+| 0.2 | `api.py` serving this screen from `app/data/` and the brain, every missing table unavailable with its connector | done |
+| 0.3 | 3 tiles (affiliate orders, Amazon ACoS, Amazon listings sold by resellers), 12-month chart by partner type (hatched, unavailable) | done |
+| 0.4 | Affiliate partner table with fraud flags by rule (under 10s click to order, orders with 0 clicks, code leak) | done (unavailable on Bombas) |
+| 0.5 | Commission tier grid (partner type x new or returning), Amazon block per ASIN (8 ASINs from the brain, ads columns unavailable), retail media placeholder, billing tile | done |
+| 0.6 | `audit.py`: AFFM-R01 coupon leak, R02 orders with no clicks, R03 fast click to order, R04 Amazon reseller presence, R05 invoice vs tracked | done |
+
+Round 0 notes (28 Sep 2026): the Bombas simulated set has no affiliate, coupon, Amazon Ads or invoice table (`data/brands/bombas/README.md`), so those read unavailable with the connector, never 0. The one open finding is R04 from the brain's public Amazon sample: all 4 in-stock listings are sold by resellers. Tests: `tests/test_screen_affiliate.py` feeds rows to the rules. Screenshot: `round0.png`.
+
+## Jobs to be done (room spec)
+
+| Job | Question | Capability | Round 0 state |
+|---|---|---|---|
+| recruit, vet and approve or reject affiliate applicants | who is asking to join and who should get in | MEDIA-C49 | not built; needs `affiliate_applications` |
+| ship assets and terms, and watch active partners | are our active affiliates doing what they agreed to | MEDIA-C49 | partner table, unavailable |
+| catch affiliate or coupon fraud before it costs margin | is anyone gaming commission without earning it | MEDIA-C50 | AFFM-R01 to R03, unavailable |
+| set commission tiers by partner type, category and customer status | are we paying the right rate to the right partner | MEDIA-C51 | tier grid, unavailable |
+| reconcile what the network says is owed against real sales | does the payout match what sold and stayed sold | MEDIA-C51 | billing tile and AFFM-R05, unavailable |
+| prepare an Amazon, Walmart Connect or Target Roundel brief | what should whoever runs our marketplace ads do this month | MEDIA-C52 | Amazon block, AFFM-R04 open, retail media rows |
+| prepare a rapid-delivery retail media plan | is rapid-delivery retail media worth a budget | MEDIA-C53 | retail media rows, status unavailable |
+| evaluate whether a DSP is worth adding | are retargeting pools saturated enough for a DSP | MEDIA-C54 | not built |
+| reconcile ad platform billing against the ledger | does what platforms billed match reports and budget | MONEY-C15 | not built; needs `platform_invoices` |
+| keep a standing invoice-to-ledger reconciliation | is every invoice matched or unresolved | MONEY-C15 | not built |
+| find organic creators already using the product | who is talking about us for free | ORG-C49 | not built; needs `organic_mentions` |
+
+India-only jobs (Flipkart, quick commerce) stay hidden for a US brand.
 
 ## Candidates from the room spec (pick 10 per round)
 
@@ -103,3 +126,4 @@ Status: todo | doing | done | parked. One feature per commit. The first round is
 
 | Round | Features picked | Date | Notes |
 |---|---|---|---|
+| 0 | skeleton (0.1 to 0.6) | 2026-09-28 | Bombas: affiliate and Amazon Ads unavailable; reseller finding open |
