@@ -2422,28 +2422,30 @@ class Round6PublicFacing(TempBrain):
     """Round 6 feature 5: the public-facing preview per capability and the founder flag the package and brain file honour."""
 
     def test_preview_flag_and_package(self):
-        v = api.handle(Req(['package', 'public'], query={'capability': ['CREA-C06']}))
+        overlay = json.loads((BRAIN / 'capabilities.overlay.json').read_text(encoding='utf-8'))
+        cap = next(k for k, v in overlay.items() if not v.get('public_facing') and 'T2' in (v.get('brain_sections') or {}).values() and any(sec in ('diagnosis', 'economics', 'positioning', 'decisions') for sec in v.get('brain_sections') or {}))
+        pub = next(k for k, v in overlay.items() if v.get('public_facing'))
+        v = api.handle(Req(['package', 'public'], query={'capability': [cap]}))
         self.assertEqual((v['public_facing'], v['flagged_by'], v['leaks']), (False, 'none', []))
         self.assertGreaterEqual(v['tokens']['saved'], 0)
         self.assertEqual(v['records']['normal'] - v['records']['public'], len(v['records']['dropped']))
         self.assertTrue(all(d['visibility'] == 'private' for d in v['records']['dropped']))
-        p = api.handle(Req(['package'], query={'capability': ['CREA-C06']}))
+        self.assertEqual(api.handle(Req(['package', 'public'], query={'capability': [pub]}))['flagged_by'], 'overlay')
+        p = api.handle(Req(['package'], query={'capability': [cap]}))
         self.assertFalse(p['public_facing'])
-        status, res = api.handle(Req(['package', 'public'], 'POST', body={'capability': 'CREA-C06', 'public': True}))
-        self.assertEqual((status, res['flagged']), (201, ['CREA-C06']))
-        p2 = api.handle(Req(['package'], query={'capability': ['CREA-C06']}))
+        status, res = api.handle(Req(['package', 'public'], 'POST', body={'capability': cap, 'public': True}))
+        self.assertEqual((status, res['flagged']), (201, [cap]))
+        p2 = api.handle(Req(['package'], query={'capability': [cap]}))
         self.assertEqual((p2['public_facing'], p2['flagged_by']), (True, 'founder'))
         self.assertLessEqual(p2['tokens'], p['tokens'])
         self.assertEqual(p2['records'], v['records']['public'])
-        f = api.handle(Req(['agentfile'], query={'capability': ['CREA-C06']}))
+        f = api.handle(Req(['agentfile'], query={'capability': [cap]}))
         self.assertTrue(f['public_facing'])
         self.assertIn('You are public facing', f['text'])
-        # a private record handed to this reader is now a trail finding
-        t = api.handle(Req(['trail']))
-        self.assertEqual(t['counts']['private_to_public'], 0)  # the builder drops them, so none is handed
-        status, res = api.handle(Req(['package', 'public'], 'POST', body={'capability': 'CREA-C06', 'public': False}))
+        self.assertEqual(api.handle(Req(['trail']))['counts']['private_to_public'], 0)  # the builder drops private records, so none is handed
+        status, res = api.handle(Req(['package', 'public'], 'POST', body={'capability': cap, 'public': False}))
         self.assertEqual((status, res['flagged']), (201, []))
-        self.assertFalse(api.handle(Req(['package'], query={'capability': ['CREA-C06']}))['public_facing'])
+        self.assertFalse(api.handle(Req(['package'], query={'capability': [cap]}))['public_facing'])
         self.assertEqual(api.handle(Req(['package', 'public'], query={'capability': ['nope']}))[0], 400)
         self.assertEqual(api.handle(Req(['package', 'public'], 'POST', body={'capability': 'ZZZ-C99'}))[0], 404)
 
