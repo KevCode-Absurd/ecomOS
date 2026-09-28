@@ -11,6 +11,7 @@ founder-marked voice example, through Brain.put. Nothing external, no model.
   GET  audit             findings from audit.py (app/contracts/audit.md shape) and RULES
   POST avatars/draft      {segment}: writes the drafted avatar for an unserved situation, tier inferred
   GET  handoff             ready artefacts for 09-creative, 10-copy, 07-landing-pages-cro and 14-email-messaging
+  GET  agenda              every dated move in the next 30 days, and anything overdue
   GET  tests               tests this screen proposes, as experiment registry rows with status proposed
   GET  avatar/<key>/brief  a plain-text one-pager for one avatar, for a creator or agency
   POST voice/check        {text}: pass, warn or fail against the writing rules, voice sheet and claims; no write
@@ -471,6 +472,11 @@ def handle(req):
         d = overview(brain)
         return {"brand": brain.brand, "brain_version": d["version"], "simulated": True, "packs": builds.handoff(d),
                 "note": "Reading screens pick these up from here or from the brain records they come from. Nothing is sent anywhere."}
+    if req.method == "GET" and parts == ["agenda"]:
+        d = overview(brain)
+        w = {"ends_on": d["ends_on"], "days": 28, "trailing": 4}
+        acts = rank(brain.brand, w)["actions"]
+        return builds.agenda(d, acts, builds.proposed_tests(d, brain.brand, d["ends_on"]), brain.today.isoformat())
     if req.method == "GET" and parts == ["tests"]:
         return proposed(brain)
     if req.method == "GET" and len(parts) == 3 and parts[0] == "avatar" and parts[2] == "brief":
@@ -677,6 +683,7 @@ def rank(brand: str, window: dict) -> dict:
             for k in ("stop_rule", "check_on"):
                 if plan.get(k):
                     a[k] = plan[k]
+            a["dated"] = bool(plan.get("check_on"))
             a["plan_capability"] = plan.get("capability")
         _rescore(a, eng)
         a["job"] = RULE_JOB.get(f["rule_id"], "avatars")

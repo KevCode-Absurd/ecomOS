@@ -2369,3 +2369,41 @@ def price_doubts(avatars: list[dict], all_rungs: list[dict], offers: list[dict],
     led = [r["name"] for r in rows if r["verdict"] == "price_led"]
     return {"rows": rows, "facts": facts,
             "line": (f"{len(led)} avatars are price-led: {', '.join(led[:3])}{' and more' if len(led) > 3 else ''}." if led else "No avatar is price-led.")}
+
+
+# ---------------------------------------------------------------- this week and next
+
+AGENDA_DAYS = 30
+
+
+def agenda(d: dict, actions: list[dict], tests_rows: list[dict], today: str) -> dict:
+    """Every dated move on this screen in the next 30 days, and anything overdue, on one list."""
+    import datetime as _dt
+    t = _dt.date.fromisoformat(today)
+    end = t + _dt.timedelta(days=AGENDA_DAYS)
+    items = []
+
+    def add(date, what, kind, ref, owner):
+        if not date:
+            return
+        dd = _dt.date.fromisoformat(str(date)[:10])
+        if dd <= end:
+            items.append({"date": dd.isoformat(), "days": (dd - t).days, "what": what, "kind": kind, "ref": ref, "owner": owner,
+                          "overdue": dd < t})
+    for m in d.get("moments", {}).get("rows", []):
+        add(m["ad_by"], f"{m['label']} ads live for {', '.join(m['avatars'][:2])}", "ads live", m["action"]["id"], "agent_drafts")
+        add(m["email_by"], f"{m['label']} emails scheduled", "email", m["action"]["id"], "agent_drafts")
+    for m in d.get("timing", {}).get("moves", []):
+        add(m["ship_by"], m["title"], "ship by", m["id"], m["owner"])
+    for r in d.get("rechecks", {}).get("rows", []):
+        if r["status"] in ("due", "expired"):
+            add(r["expires"], f"{r['label']} stops being trusted", "re-check", r["id"], "agent")
+    for a in actions:
+        if a.get("status") == "open" and a.get("check_on") and a.get("dated"):
+            add(a["check_on"], f"Check: {a['title']}", "check", a["id"], a["owner"])
+    for r in tests_rows:
+        add(r["start"], f"Test could start: {r['hypothesis']}", "test start", r["proposal_key"], "person")
+    items.sort(key=lambda x: (x["date"], x["kind"], x["what"]))
+    over = sum(1 for x in items if x["overdue"])
+    return {"items": items, "today": today, "overdue": over,
+            "line": f"{len(items)} dated moves in the next {AGENDA_DAYS} days" + (f", {over} overdue." if over else ".")}

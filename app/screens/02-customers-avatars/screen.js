@@ -884,6 +884,20 @@
     });
   }
 
+  // ---------- the next 30 days ----------
+  async function renderAgenda() {
+    let x;
+    try { x = await api(BASE + 'agenda'); } catch (e) { mount('#agenda', el('p', { class: 'muted', text: 'Agenda unavailable: ' + e.message })); return; }
+    document.getElementById('agenda-sub').textContent = 'Ads-live and email dates for avatar moments, seasonal ship-by dates, record re-checks, dated checks and test starts. ' + x.line;
+    mount('#agenda', UI.verdictTable({
+      columns: [{ key: 'date', label: 'Date', format: (v) => fmt.date(v) }, { key: 'days_t', label: 'When' }, { key: 'kind', label: 'Kind' }, { key: 'what', label: 'What' }, { key: 'owner_t', label: 'Who' }],
+      rows: x.items.map((i) => Object.assign({}, i, { days_t: i.overdue ? Math.abs(i.days) + ' days late' : i.days === 0 ? 'today' : 'in ' + i.days + ' days',
+        owner_t: i.owner === 'person' ? 'a person' : i.owner === 'agent' ? 'agent' : 'agent drafts, you approve' })),
+      verdict: { at: 1, kind: (r) => r.overdue ? 'stop' : r.days <= 7 ? 'fix' : 'wait', text: (r) => r.overdue ? 'Overdue' : r.days <= 7 ? 'This week' : 'Coming' },
+      sort: false, empty: 'Nothing dated in the next 30 days.',
+    }));
+  }
+
   // ---------- tests proposed to 25-experiments ----------
   async function renderTests() {
     let t;
@@ -1010,6 +1024,7 @@
     mount('#language', ...d.language.themes.map(themeCard));
     mount('#voice', ...voiceCards(d.voice, load));
     if (!deskTabs) buildDesk(r.actions || []);
+    renderAgenda();
     renderTests();
     renderDecided(r.actions || []);
     renderHandoff();

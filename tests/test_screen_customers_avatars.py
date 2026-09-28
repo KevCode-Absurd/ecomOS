@@ -1035,7 +1035,7 @@ class DeskTabs(unittest.TestCase):
         self.assertTrue(body[first:first + 60].startswith('<section class="section" id="plan-wrap">'))
         self.assertLess(body.index('id="actions-wrap"'), body.index('id="desk-wrap"'))
         ids = _re.findall(r'<section class="section" id="([a-z-]+)"', body)
-        above = {'plan-wrap', 'connect-wrap', 'wrong-wrap', 'actions-wrap', 'tests-wrap', 'decided-wrap', 'handoff-wrap', 'desk-wrap', 'audit-wrap'}
+        above = {'plan-wrap', 'connect-wrap', 'wrong-wrap', 'actions-wrap', 'agenda-wrap', 'tests-wrap', 'decided-wrap', 'handoff-wrap', 'desk-wrap', 'audit-wrap'}
         desk_block = js[js.index('const DESK = ['):js.index('let deskTabs')]
         grouped = _re.findall(r"'([a-z]+-wrap)'", desk_block)
         self.assertEqual(sorted(set(ids) - above), sorted(grouped))
@@ -1423,6 +1423,23 @@ class MergedActions(TempBrain):
         lead = next(a for a in acts if '02-customers-avatars.CUST-R11.theme_durability' in a['finding_ids'])
         self.assertIn('02-customers-avatars.CUST-R02.durability.3', lead['finding_ids'])
         self.assertIn('Also answers 1 more finding.', lead['why'])
+
+
+class Agenda(TempBrain):
+    """Feature 6.3: dated moves in the next 30 days, overdue first, only real dates."""
+
+    def test_agenda(self):
+        x = api.handle(Req(['agenda']))
+        kinds = {i['kind'] for i in x['items']}
+        self.assertIn('ads live', kinds)
+        self.assertIn('re-check', kinds)
+        dates = [i['date'] for i in x['items']]
+        self.assertEqual(dates, sorted(dates))
+        for i in x['items']:
+            self.assertLessEqual(i['days'], 30)
+            self.assertEqual(i['overdue'], i['days'] < 0)
+        self.assertEqual(x['overdue'], sum(1 for i in x['items'] if i['overdue']))
+        self.assertLess(len(x['items']), 25)
 
 
 if __name__ == '__main__':
