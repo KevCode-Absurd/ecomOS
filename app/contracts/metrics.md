@@ -67,9 +67,10 @@ Both take `by=sku`, `by=line`, `by=month` or `by=line_month` and return `groups`
 ## Offers (04)
 | Metric | Formula |
 |---|---|
+| returns_by_reason | returns opened in the window by reason (carrier returns out): count, refunded amount, and returns per paid order placed in the same window. The per-order rate holds at any data scale. |
 | order_value_distribution | paid orders in bins of `step` dollars (default 5) by order value: subtotal minus discounts, before tax and shipping. Each bin: orders, share, value, orders that paid shipping, shipping charged. |
 
-A brand folder reads it from `data.sqlite` with one GROUP BY (orders are too many to load whole); unavailable when data.sqlite is absent. Added 28 Sep 2026 for 04-offers-pricing (free shipping threshold).
+A brand folder reads both from `data.sqlite` with one GROUP BY each (the tables are too big to load whole); unavailable when data.sqlite is absent. Added 28 Sep 2026 for 04-offers-pricing (free shipping threshold, returns behind an objection rung).
 
 ## Speed (08)
 Median of the lab's runs in the window from `speed_runs`, for one page, device and variant (default pdp, mobile, baseline).

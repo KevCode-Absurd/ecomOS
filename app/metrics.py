@@ -506,6 +506,45 @@ def m_return_rate(ctx, name, kw):
                   basis='orders delivered in the window, returns opened any time up to as_of')
 
 
+@metric('returns_by_reason')
+def m_returns_by_reason(ctx, name, kw):
+    """Returns opened in the window by reason: count, refunded amount and returns per paid order placed in the
+    same window (both counts from the same source, so the rate holds at any data scale). Carrier returns excluded."""
+    if getattr(ctx.data, 'sqlite', None) is not None:
+        sql = ctx.data._sql
+        paid = ', '.join(f"'{s}'" for s in PAID_STATES)
+        try:
+            span = sql('SELECT MIN(substr(created_at, 1, 10)) AS first, MAX(substr(created_at, 1, 10)) AS last FROM orders')
+            cover(ctx.win, span[0]['first'], span[0]['last'], 'orders')
+            n = sql(f"SELECT COUNT(*) AS n FROM orders WHERE status IN ({paid}) "
+                    f"AND substr(created_at, 1, 10) BETWEEN '{ctx.win.s}' AND '{ctx.win.e}'")[0]['n']
+            rows = sql("SELECT reason, COUNT(*) AS returns, SUM(COALESCE(amount, 0)) AS amount FROM reversed_orders "
+                       f"WHERE type = 'return' AND substr(opened_at, 1, 10) BETWEEN '{ctx.win.s}' AND '{ctx.win.e}' "
+                       "GROUP BY reason")
+        except KeyError:
+            raise Unavailable('the reversed_orders table is not connected', fix=CONNECTOR['reversed_orders'])
+        for t in ('orders', 'reversed_orders'):
+            if t not in ctx.used:
+                ctx.used.append(t)
+        by = {r['reason']: [r['returns'], r['amount']] for r in rows}
+    else:
+        n = len(paid_in_window(ctx, ctx.win))
+        by = {}
+        for r in reversed_rows(ctx, 'return'):
+            if ctx.win.has(str(r.get('opened_at') or '')[:10]):
+                b = by.setdefault(r.get('reason'), [0, 0.0])
+                b[0] += 1
+                b[1] += r.get('amount') or 0
+    if not n:
+        raise Unavailable('no paid orders in this window, so returns have no base')
+    by.pop('carrier_returned', None)
+    groups = [{'reason': k, 'returns': v[0], 'amount': money(v[1]), 'per_order': round(v[0] / n, 6)}
+              for k, v in sorted(by.items(), key=lambda kv: -kv[1][0])]
+    total = sum(g['returns'] for g in groups)
+    return ctx.ok(total, 'count', {'returns': total, 'paid_orders': n}, groups=groups,
+                  basis='returns opened in the window; per_order is over paid orders placed in the same window')
+
+
 @metric('chargeback_rate')
 def m_chargeback_rate(ctx, name, kw):
     n, _ = order_totals(ctx, ctx.win)
