@@ -112,10 +112,12 @@ class BombasTest(unittest.TestCase):
                     if r['proof']}
         self.assertFalse({f['entity']['id'].split('.')[0] for f in rungs} & answered)
 
-    def test_sku_margin_unavailable(self):
-        f = next(f for f in self.findings if f['rule_id'] == 'OFFER-R03')
-        self.assertEqual(f['status'], 'unavailable')
-        self.assertIsNone(f['money_at_stake'])
+    def test_sku_margin_joins_finance_keys(self):
+        # S2.3c: products use the finance_inputs SKU keys, so every store SKU has a landed cost and R03 stays quiet
+        matched, skus, cogs = audit.sku_join(audit.Reader(None, 'bombas', audit.last_full_day(None, 'bombas')))
+        self.assertTrue(skus)
+        self.assertEqual(matched, skus)
+        self.assertFalse([f for f in self.findings if f['rule_id'] == 'OFFER-R03'])
 
     def test_deterministic(self):
         self.assertEqual(audit.run('bombas'), self.findings)

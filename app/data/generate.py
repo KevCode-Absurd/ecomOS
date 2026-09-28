@@ -34,18 +34,23 @@ Orders are the one truth. The chain, in order:
     flows, campaign_sends   Klaviyo attributed orders: email and SMS orders plus overlap
                             on direct, organic, paid social and paid search orders;
                             matched_order_ids list them
-    sessions (GA4)          transactions = orders GA4 tracked (a fixed 93 percent);
+    sessions (GA4)          transactions = orders GA4 tracked (91 to 95 percent, drawn daily);
                             sessions and funnel events are implied by them
     reversed_orders         returns, carrier returns and chargebacks, each on an order
     payouts                 Shopify Payments charges less fees, refunds, dispute moves
     tickets                 most on an order; reviews on skus people bought
     inventory, products, abandoned_checkouts, customers, fixtures
+    wholesale_sell_in, marketplace_sales, paid_other_spend
+                            monthly or daily fixtures at the brain's channel mix and paid split
 
 Placeholder rates (not Bombas facts; the brain must not be asked for them):
-conversion rate by channel, CPA by channel, CPM, CTR, return rate 6 percent,
-chargeback 0.4 percent, mobile 70 percent, GA4 capture 93 percent, Klaviyo
-overlap shares, Meta view-through share, fees 2.9 percent plus 30 cents.
-They are listed in PLACEHOLDERS and copied into manifest.json.
+conversion rate by channel (shape; scaled to the assumed sessions), CPA by
+channel, CPM, CTR, return rate 6 percent, chargeback 0.15 percent, mobile 70
+percent, GA4 capture 91 to 95 percent, Klaviyo overlap shares, Meta view-through
+share, fees 2.9 percent plus 30 cents. They are listed in PLACEHOLDERS and copied
+into manifest.json. Numbers the founder asked us to assume (sessions per month)
+are in ASSUMED and marked assumed in the manifest. The S2.3c changes follow
+app/data/brands/bombas/REVIEW.md, "Fixes for the generator".
 
 Needs numpy (vectorised so scale 1.0, about 11 million orders, runs in minutes).
 """
@@ -84,22 +89,39 @@ PLACEHOLDERS = {
                        "email": 0.038, "sms": 0.045, "other": 0.016},
     "device_share": {"mobile": 0.70, "desktop": 0.26, "tablet": 0.04},
     "cvr_device_mult": {"mobile": 0.85, "desktop": 1.45, "tablet": 1.0},
-    "meta_cpa_usd": 34.0, "meta_q4_cpa_mult": 1.25, "meta_cpm_usd": 14.0, "meta_ctr": 0.012, "meta_link_ctr": 0.008,
+    "meta_cpa_usd": 34.0, "meta_q4_cpa_mult": 1.08, "meta_cpm_usd": 14.0, "meta_ctr": 0.012, "meta_link_ctr": 0.008,
     "meta_click_credit": 0.80, "meta_view_credit_on_other_orders": 0.07,
     "google_cpa_usd": {"brand_search": 8.0, "nonbrand_search": 45.0, "pmax": 30.0, "demand_gen": 80.0},
     "google_credit": 0.88, "google_brand_overlap": {"organic_search": 0.05, "direct": 0.04},
     "klaviyo_overlap": {"direct": 0.20, "organic_search": 0.08, "paid_social": 0.06, "paid_search": 0.04, "other": 0.05},
-    "ga4_capture": 0.93, "journey_ready": 0.97,
-    "return_rate": 0.06, "carrier_return_rate": 0.004, "chargeback_rate": 0.004, "chargeback_fee_usd": 15.0,
+    "ga4_capture": [0.91, 0.95], "journey_ready": 0.97,
+    "return_rate": 0.06, "carrier_return_rate": 0.004, "chargeback_rate": 0.0015, "chargeback_fee_usd": 15.0,
     "fee_online": [0.029, 0.30], "fee_pos": [0.026, 0.10], "payout_lag_days": 2,
     "payment_mix": {"card": 0.62, "shop_pay": 0.18, "apple_pay": 0.08, "paypal": 0.12},
-    "ticket_rate": 0.035, "ticket_rate_dec": 0.06, "presale_ticket_rate": 0.006, "review_rate_per_line": 0.012,
-    "abandoned_per_web_order": 0.75, "cogs_share_of_price": 0.30, "shipping_fee_usd": 5.99,
+    "ticket_rate": 0.05, "ticket_rate_dec": 0.08, "return_ticket_share": 0.30, "presale_ticket_rate": 0.006,
+    "review_rate_per_line": 0.012,
+    "abandoned_per_web_order": 2.0, "cogs_share_of_price": 0.30, "shipping_fee_usd": 5.99,
     "free_shipping_threshold_usd": 75.0, "first_order_code_pct": 20, "first_order_code_use": 0.55,
     "repeat_code_use": 0.10, "repeat_code_pct": 10,
+    "bfcm_discount_pct": 20, "bfcm_code_use": 0.85, "q4_aov_mult": 1.04,
     "email_consent": 0.60, "sms_consent": 0.25,
     "owned_retail_open": "2025-11-01",
-    "repeat_gap_median_days": [75, 120], "repeat_gap_sigma": 0.9, "repeat_continue": 0.45,
+    "repeat_gap_median_days": [75, 120], "repeat_gap_sigma": 0.9,
+    "repeat_continue_by_order": [0.45, 0.60, 0.70], "holiday_cohort_repeat_mult": 0.85,
+    "returning_seasonality_weight": 0.7, "growth_noise_sigma": 0.04, "daily_noise_cv": 0.09,
+    "wholesale_month_index": {"jan": 0.5, "feb": 0.9, "mar": 0.9, "apr": 0.9, "may": 0.9, "jun": 0.9, "jul": 0.9,
+                              "aug": 1.3, "sep": 1.4, "oct": 1.3, "nov": 0.9, "dec": 0.6},
+    "new_partner_ramp_by_quarter": [0.25, 0.50, 1.0], "new_partner_since_month": 10,
+    "partner_year1_cap": {"DSW": 0.25},
+    "marketplace_split": {"amazon": 0.80, "tiktok_shop": 0.20},
+}
+
+# Numbers the founder asked us to assume where the brain has none (S2.3c, 28 Sep 2026).
+# Each one is marked assumed in manifest.json; the brain's open question stays open.
+ASSUMED = {
+    "site_sessions_monthly": {"value": 15_000_000, "unit": "sessions per month", "status": "assumed",
+                              "note": "assumed from REVIEW.md fix 3 (public estimators put bombas.com in the single digit "
+                                      "to low double digit millions); open question site_sessions_monthly stays in the brain"},
 }
 
 FALLBACK_ACQ_MIX = {"paid_social": 35, "paid_search": 20, "organic_search": 15, "direct": 15, "email_sms": 10, "other": 5}
@@ -118,21 +140,28 @@ STATES = [("CA", 0.14, 0.0725), ("TX", 0.09, 0.0625), ("NY", 0.08, 0.04), ("FL",
           ("NJ", 0.04, 0.06625), ("WA", 0.03, 0.065), ("MA", 0.03, 0.0625), ("CO", 0.03, 0.029), ("OR", 0.02, 0.0),
           ("other", 0.21, 0.055)]
 
-# Catalog: placeholder SKUs by public category names, prices shaped to the AOV band.
-# (sku, category, title, price, pairs per unit, popularity)
+# Catalog: the 25 SKU keys of finance_inputs.json (S2.3c, REVIEW.md fix 1), so cogs_landed joins by sku.
+# Titles follow each finance row's reason; list prices are placeholders shaped to the AOV band and put
+# landed cost near 22 to 30 percent of list. (sku, category, title, price, items per unit, popularity)
 CATALOG = [
-    ("BB-ANK-1", "socks", "Ankle Sock", 14.0, 1, 3), ("BB-ANK-4", "socks", "Ankle Sock 4-Pack", 52.0, 4, 10),
-    ("BB-ANK-6", "socks", "Ankle Sock 6-Pack", 78.0, 6, 4), ("BB-QTR-1", "socks", "Quarter Sock", 14.0, 1, 2),
-    ("BB-QTR-4", "socks", "Quarter Sock 4-Pack", 52.0, 4, 6), ("BB-CLF-1", "socks", "Calf Sock", 16.0, 1, 2),
-    ("BB-CLF-4", "socks", "Calf Sock 4-Pack", 60.0, 4, 6), ("BB-NOS-3", "socks", "No Show Sock 3-Pack", 40.0, 3, 5),
-    ("BB-RUN-1", "socks", "Running Ankle Sock", 17.0, 1, 3), ("BB-RUN-3", "socks", "Running Ankle Sock 3-Pack", 48.0, 3, 4),
-    ("BB-MER-1", "socks", "Merino Wool Calf Sock", 22.0, 1, 3), ("BB-MER-3", "socks", "Merino Wool Calf Sock 3-Pack", 63.0, 3, 3),
-    ("BB-CMP-1", "socks", "Compression Sock", 25.0, 1, 2), ("BB-CMP-3", "socks", "Compression Sock 3-Pack", 72.0, 3, 2),
-    ("BB-GFT-8", "socks", "Gift Box 8-Pack", 104.0, 8, 2), ("BB-SLP-1", "slippers", "Gripper Slipper", 40.0, 1, 2),
-    ("BB-SLP-2", "slippers", "Sherpa Slipper", 60.0, 1, 1),
-    ("BB-BXB-1", "underwear", "Boxer Brief", 24.0, 1, 2), ("BB-BXB-3", "underwear", "Boxer Brief 3-Pack", 66.0, 3, 2),
-    ("BB-BRL-1", "underwear", "Bralette", 38.0, 1, 1), ("BB-TEE-1", "tshirts", "Pima Cotton Tee", 35.0, 1, 1),
+    ("BMB-SK-M-ANK-1", "socks", "Men's Ankle Sock", 14.0, 1, 2), ("BMB-SK-M-ANK-4", "socks", "Men's Ankle Sock 4-Pack", 52.0, 4, 7),
+    ("BMB-SK-M-CRW-1", "socks", "Men's Calf Sock", 15.0, 1, 2), ("BMB-SK-M-CRW-4", "socks", "Men's Calf Sock 4-Pack", 56.0, 4, 5),
+    ("BMB-SK-W-ANK-1", "socks", "Women's Ankle Sock", 13.0, 1, 2), ("BMB-SK-W-ANK-4", "socks", "Women's Ankle Sock 4-Pack", 50.0, 4, 7),
+    ("BMB-SK-W-NSH-3", "socks", "Women's No Show Sock 3-Pack", 36.0, 3, 5),
+    ("BMB-SK-W-CRW-4", "socks", "Women's Calf Sock 4-Pack", 54.0, 4, 4),
+    ("BMB-SK-MER-1", "socks", "Merino Wool Calf Sock", 22.0, 1, 3), ("BMB-SK-MER-3", "socks", "Merino Wool Calf Sock 3-Pack", 63.0, 3, 3),
+    ("BMB-SK-ATH-6", "socks", "Running Ankle Sock 6-Pack", 90.0, 6, 2), ("BMB-SK-GOLF-6", "socks", "Golf Ankle Sock 6-Pack", 84.0, 6, 1),
+    ("BMB-SK-CMP-1", "socks", "Compression Sock", 25.0, 1, 2), ("BMB-SK-CMP-3", "socks", "Compression Sock 3-Pack", 72.0, 3, 2),
+    ("BMB-SK-KID-8", "socks", "Kids Ankle Sock 8-Pack", 72.0, 8, 2), ("BMB-SK-GIFT-12", "socks", "Gift Box 12-Pack", 150.0, 12, 1),
+    ("BMB-UW-M-BRF-1", "underwear", "Men's Boxer Brief", 24.0, 1, 2), ("BMB-UW-M-BRF-3", "underwear", "Men's Boxer Brief 3-Pack", 66.0, 3, 2),
+    ("BMB-UW-W-HIP-1", "underwear", "Women's Hipster", 18.0, 1, 2), ("BMB-UW-W-BRL-1", "underwear", "Women's Bralette", 38.0, 1, 1),
+    ("BMB-TS-M-CRW-1", "tshirts", "Men's Pima Cotton Tee", 35.0, 1, 1),
+    ("BMB-TS-W-VNK-1", "tshirts", "Women's Pima Cotton V-Neck Tee", 35.0, 1, 1),
+    ("BMB-SL-M-MOC-1", "slippers", "Men's Moccasin Slipper", 80.0, 1, 1),
+    ("BMB-SL-W-SCF-1", "slippers", "Women's Sherpa Scuff Slipper", 60.0, 1, 2),
+    ("BMB-FW-CLG-1", "footwear", "Clog", 90.0, 1, 1),
 ]
+SOCK_LIKE = ("socks", "slippers", "footwear")  # the brain's 93 percent bucket; footwear_pct_2025 is not applied
 SKUS = [c[0] for c in CATALOG]
 PRICE = np.array([c[3] for c in CATALOG])
 PAIRS = np.array([c[4] for c in CATALOG])
@@ -242,13 +271,37 @@ def calibrate(fields, scale):
 
     cm = (fields.get("channel_mix") or {}).get("value") or {}
     parts = [cm.get("dtc_site_pct"), cm.get("wholesale_pct"), cm.get("owned_retail_pct")]
-    if all(isinstance(p, (int, float)) for p in parts) and abs(sum(parts) - 100) < 0.5:
-        prof["sales_mix"] = {"dtc": parts[0] / 100, "wholesale": parts[1] / 100, "owned_retail": parts[2] / 100}
-        rec("sales_channel_mix", {k: cm[k] for k in ("dtc_site_pct", "wholesale_pct", "owned_retail_pct", "marketplaces_pct")},
-            "brain", "orders = dtc site plus owned retail (POS); wholesale is a monthly fixture, not orders", fields["channel_mix"])
+    mkt = cm.get("marketplaces_pct")  # null means unavailable: no marketplace fixture is written
+    mkt_n = mkt if isinstance(mkt, (int, float)) else 0.0
+    if all(isinstance(p, (int, float)) for p in parts) and abs(sum(parts) + mkt_n - 100) < 0.5:
+        prof["sales_mix"] = {"dtc": parts[0] / 100, "wholesale": parts[1] / 100, "owned_retail": parts[2] / 100,
+                             "marketplaces": mkt / 100 if isinstance(mkt, (int, float)) else None}
+        rec("sales_channel_mix", {k: cm.get(k) for k in ("dtc_site_pct", "wholesale_pct", "owned_retail_pct", "marketplaces_pct")},
+            "brain", "orders = dtc site plus owned retail (POS); wholesale and marketplaces are monthly fixtures, not orders",
+            fields["channel_mix"])
     else:
-        prof["sales_mix"] = {"dtc": 1.0, "wholesale": 0.0, "owned_retail": 0.0}
+        prof["sales_mix"] = {"dtc": 1.0, "wholesale": 0.0, "owned_retail": 0.0, "marketplaces": None}
         rec("sales_channel_mix", None, "fallback (all dtc)", "partial or missing")
+    pm = (fields.get("paid_media_split") or {}).get("value") or {}
+    keys = ("meta_pct", "google_pct", "youtube_creator_pct", "tiktok_pct", "pinterest_pct", "other_pct")
+    if all(isinstance(pm.get(k), (int, float)) for k in keys) and abs(sum(pm[k] for k in keys) - 100) < 0.5:
+        prof["paid_split"] = {k[:-4]: pm[k] / 100 for k in keys}
+        rec("paid_media_split", {k: pm[k] for k in keys}, "brain",
+            "Meta and Google spend ride on their orders; Google CPA is scaled so Meta to Google lands on the split; "
+            "YouTube creators, TikTok, Pinterest and other are a daily spend fixture at their share", fields["paid_media_split"])
+    else:
+        prof["paid_split"] = None
+        rec("paid_media_split", None, "missing", "only Meta and Google spend are written; other platforms read unavailable")
+    ss = fields.get("site_sessions_monthly")
+    if ss and isinstance(ss.get("value"), (int, float)):
+        prof["sessions_monthly"] = float(ss["value"])
+        rec("site_sessions_monthly", ss["value"], "brain", "cvr_by_channel is scaled so sessions land on this", ss)
+    else:
+        a = ASSUMED["site_sessions_monthly"]
+        prof["sessions_monthly"] = float(a["value"])
+        man["site_sessions_monthly"] = {"value": a["value"], "origin": "assumed", "rule": "cvr_by_channel is scaled so "
+                                        "GA4 sessions over the last 12 months average this per month", "status": "assumed",
+                                        "as_of": "2026-09-28", "source_ids": [], "note": a["note"]}
     # The brain's channel_mix is a sales-channel split. Acquisition mix is not in the brain.
     prof["acq_mix"] = {k: v / 100 for k, v in FALLBACK_ACQ_MIX.items()}
     rec("channel_mix", FALLBACK_ACQ_MIX, "fallback (generic)",
@@ -310,10 +363,19 @@ class Gen:
         return stream(self.seed, name)
 
     # ---- daily targets
+    @staticmethod
+    def thanksgiving(year):
+        return date(year, 11, 1) + timedelta(days=(3 - date(year, 11, 1).weekday()) % 7 + 21)
+
+    def is_bfcm(self, d):
+        """Black Friday to Cyber Monday, both inclusive."""
+        tg = self.thanksgiving(d.year)
+        return tg + timedelta(days=1) <= d <= tg + timedelta(days=4)
+
     def day_shape(self, d):
         """Within-month day weight (mean about 1 inside a month before renormalising)."""
         w = WEEKDAY[d.weekday()]
-        tg = date(d.year, 11, 1) + timedelta(days=(3 - date(d.year, 11, 1).weekday()) % 7 + 21)  # Thanksgiving
+        tg = self.thanksgiving(d.year)
         if tg + timedelta(days=1) <= d <= tg + timedelta(days=4):
             w *= [3.2, 2.0, 1.9, 2.8][(d - tg).days - 1]  # Black Friday .. Cyber Monday
         elif d.month == 12 and 2 <= d.day <= 15:
@@ -322,35 +384,77 @@ class Gen:
             w *= 0.55
         return w
 
-    def targets(self, days):
-        """Expected orders per day (all order channels) for a list of dates."""
+    def growth_path(self):
+        """Monthly level multiplier: a random walk on the monthly growth factor, pinned to 1 in the as_of month.
+
+        Step sd is growth_noise_sigma / sqrt(12), so the 12 month growth factor wobbles with sd growth_noise_sigma
+        around the brain's trend (fix 8). Walked backward from as_of, so the calibrated last months stay near trend."""
+        rng = self.rng("growth_noise")
+        n = (WARMUP + DAYS) // 28 + 4
+        steps = rng.normal(0, PLACEHOLDERS["growth_noise_sigma"] / math.sqrt(12), n)
+        out, level = {}, 0.0
+        y, m = self.as_of.year, self.as_of.month
+        for i in range(n):
+            out[y * 100 + m] = math.exp(level)
+            level -= steps[i]
+            y, m = (y, m - 1) if m > 1 else (y - 1, 12)
+        return out
+
+    def season_shape(self, days):
+        """Season x day shape, renormalised inside each month; no growth, no noise."""
         p = self.p
-        raw = np.array([p["season"][MONTHS[d.month - 1]] * self.day_shape(d) *
-                        (1 + p["growth"]) ** (-(self.as_of - d).days / 365.25) for d in days])
-        # renormalise the day shape inside each month so the month total follows the index
+        raw = np.array([p["season"][MONTHS[d.month - 1]] * self.day_shape(d) for d in days])
         keys = np.array([d.year * 100 + d.month for d in days])
-        base = np.array([p["season"][MONTHS[d.month - 1]] * (1 + p["growth"]) ** (-(self.as_of - d).days / 365.25) for d in days])
+        base = np.array([p["season"][MONTHS[d.month - 1]] for d in days])
         for k in np.unique(keys):
             m = keys == k
             raw[m] *= base[m].sum() / raw[m].sum()
         return raw
 
+    def targets(self, days):
+        """Expected orders per day (all order channels) for a list of dates: season x day shape x growth x growth noise."""
+        p = self.p
+        gp = self.growth_path()
+        trend = np.array([(1 + p["growth"]) ** (-(self.as_of - d).days / 365.25) * gp.get(d.year * 100 + d.month, 1.0)
+                          for d in days])
+        return self.season_shape(days) * trend
+
     # ---- customers: who orders each day
     def schedule_customers(self):
         p, rng = self.p, self.rng("customers")
+        pl = PLACEHOLDERS
         all_days = [self.start - timedelta(days=WARMUP - i) for i in range(WARMUP)] + self.days
         shape = self.targets(all_days)
+        # day to day noise on the expected orders (fix 8), mean one, before the revenue anchor
+        cv = pl["daily_noise_cv"]
+        s2 = math.log(1 + cv * cv)
+        shape = shape * np.exp(rng.normal(-s2 / 2, math.sqrt(s2), len(shape)))
         sm = p["sales_mix"]
         order_rev_share = sm["dtc"] + sm["owned_retail"]
         target_rev = p["revenue_point"] * self.scale * order_rev_share
         k = target_rev / p["aov"] / shape[-365:].sum()
         exp_orders = shape * k
-        g1, g2 = PLACEHOLDERS["repeat_gap_median_days"]
-        sig = PLACEHOLDERS["repeat_gap_sigma"]
+        g1, g2 = pl["repeat_gap_median_days"]
+        sig = pl["repeat_gap_sigma"]
+        # returning orders follow the season with a weight (fix 4): repeat gaps run on a clock that
+        # ticks faster in peak days, intensity = 1 + w x (season x day shape - 1), mean one over a year
+        ext = all_days + [self.as_of + timedelta(days=i + 1) for i in range(1500)]
+        ss = self.season_shape(ext)
+        ss = ss / ss[:365].mean()
+        w = pl["returning_seasonality_weight"]
+        clock = np.cumsum(np.maximum(1 + w * (ss - 1), 0.05))
+        # repeat probability after a first order: holiday cohorts repeat less (fix 5)
+        hol = np.array([d.month in (11, 12) for d in all_days])
+        cmult = np.where(hol, pl["holiday_cohort_repeat_mult"], 1.0)
         from statistics import NormalDist
         p_within = NormalDist().cdf(math.log(365 / g1) / sig)
-        q = min(0.95, p["repeat_12m"] / p_within)
-        cont = PLACEHOLDERS["repeat_continue"]
+        # recalibrate so the new-customer-weighted mean over the first window year stays on the brain's 12 month rate
+        yr1 = slice(WARMUP, WARMUP + 365)
+        mean_mult = float((exp_orders[yr1] * cmult[yr1]).sum() / exp_orders[yr1].sum())
+        q = min(0.95, p["repeat_12m"] / p_within / mean_mult)
+        self.repeat_mean_mult = mean_mult
+        q_day = q * cmult
+        cont_by = np.array(pl["repeat_continue_by_order"])  # after the 2nd order, the 3rd, the 4th and later
         pending = {}
         cap = int(exp_orders.sum() * 1.2) + 1000
         counts = np.zeros(cap, dtype=np.int32)
@@ -368,11 +472,13 @@ class Gen:
                 raise RuntimeError("customer capacity exceeded")
             spent_first[new] = i
             # schedule the next order
-            first_rep = new[rng.random(n_new) < q]
+            first_rep = new[rng.random(n_new) < q_day[i]]
+            cont = cont_by[np.clip(counts[rep] - 1, 0, len(cont_by) - 1)]  # counts[rep] + 1 is this order's number
             again = rep[rng.random(len(rep)) < cont]
             for ids, med in ((first_rep, g1), (again, g2)):
                 if len(ids):
-                    due = i + np.ceil(med * np.exp(rng.normal(0, sig, len(ids)))).astype(np.int64)
+                    gap = np.ceil(med * np.exp(rng.normal(0, sig, len(ids))))
+                    due = np.searchsorted(clock, clock[i] + gap).astype(np.int64)
                     order = np.argsort(due, kind="stable")
                     due, ids = due[order], ids[order]
                     u, starts = np.unique(due, return_index=True)
@@ -432,7 +538,10 @@ class Gen:
                            "returning": dict(zip(CHANNELS[:7], ret_mix.tolist())), "repeat_share_web": round(float(rep_share), 4)}
         o["device"] = np.searchsorted(np.cumsum(list(PLACEHOLDERS["device_share"].values())), rng.random(n) * 0.999999).astype(np.int8)
         o["ready"] = web & (rng.random(n) < PLACEHOLDERS["journey_ready"])
-        o["ga4"] = web & ((np.arange(n) * 2654435761 % 1000) < PLACEHOLDERS["ga4_capture"] * 1000)
+        # GA4 tag capture drifts day to day (fix 14)
+        lo, hi = PLACEHOLDERS["ga4_capture"]
+        self.ga4_capture_day = self.rng("ga4_capture").uniform(lo, hi, DAYS)
+        o["ga4"] = web & ((np.arange(n) * 2654435761 % 1000) < self.ga4_capture_day[day] * 1000)
         o["dtc_days"] = np.where(is_new, np.minimum(rng.geometric(0.35, n) - 1, 60), np.minimum(rng.geometric(0.6, n) - 1, 30)).astype(np.int16)
         o["dtc_days"][pos] = 0
         o["landing"] = np.zeros(n, dtype=np.int8)
@@ -453,9 +562,10 @@ class Gen:
     def build_lines(self, rng):
         o, p = self.o, self.p
         n = len(o["cust"])
+        pl = PLACEHOLDERS
         cats = np.array([c[1] for c in CATALOG])
         pop = np.array([c[5] for c in CATALOG], dtype=float)
-        sock_like = np.isin(cats, ["socks", "slippers"])
+        sock_like = np.isin(cats, SOCK_LIKE)
         # line weights so revenue by category hits the brain split
         w = pop.copy()
         for mask, share in ((sock_like, p["category_mix"]["socks_slippers"]), (~sock_like, p["category_mix"]["underwear_tshirts"])):
@@ -464,24 +574,30 @@ class Gen:
         w /= w.sum()
         qty_p = np.array([0.85, 0.12, 0.03])
         e_line = (w * PRICE).sum() * (qty_p * [1, 2, 3]).sum()
-        new_share = o["new"].mean()
-        e_disc = new_share * PLACEHOLDERS["first_order_code_use"] * PLACEHOLDERS["first_order_code_pct"] / 100 + \
-            (1 - new_share) * PLACEHOLDERS["repeat_code_use"] * PLACEHOLDERS["repeat_code_pct"] / 100
-        lam = max(p["aov"] / (e_line * (1 - e_disc)) - 1, 0.0)
-        self.basket = {"lines_per_order": round(1 + lam, 4), "expected_line_value": round(e_line, 2), "expected_discount": round(e_disc, 4)}
-        nl = 1 + rng.poisson(lam, n)
+        # discount codes, per order, before the basket (the basket is solved against them)
+        code = np.zeros(n, dtype=np.int8)  # 0 none, 1 first order, 2 repeat, 3 BFCM sitewide
+        u = rng.random(n)
+        web = ~o["pos"]
+        code[web & o["new"] & (u < pl["first_order_code_use"])] = 1
+        code[web & ~o["new"] & (u < pl["repeat_code_use"])] = 2
+        bfcm_day = np.array([self.is_bfcm(d) for d in self.days])
+        bf = web & bfcm_day[o["day"]]
+        code[bf] = np.where(u[bf] < pl["bfcm_code_use"], 3, 0)  # fix 7: one sitewide code on those days
+        pct = np.array([0, pl["first_order_code_pct"], pl["repeat_code_pct"], pl["bfcm_discount_pct"]])[code] / 100
+        # basket size: Nov and Dec baskets are bigger (fix 6), then solve lines per order so the
+        # mean net merchandise per order lands on the brain AOV: aov = e_line x (1 + lam) x mean(mult x (1 - pct))
+        q4 = np.array([d.month in (11, 12) for d in self.days])[o["day"]]
+        mult = np.where(q4, pl["q4_aov_mult"], 1.0)
+        lam = max(p["aov"] / (e_line * float((mult * (1 - pct)).mean())) - 1, 0.0)
+        lam_o = np.maximum((1 + lam) * mult - 1, 0.0)
+        self.basket = {"lines_per_order": round(1 + lam, 4), "lines_per_order_q4": round((1 + lam) * pl["q4_aov_mult"], 4),
+                       "expected_line_value": round(e_line, 2), "expected_discount": round(float(pct.mean()), 4)}
+        nl = 1 + rng.poisson(lam_o)
         order_of_line = np.repeat(np.arange(n), nl)
         m = len(order_of_line)
         sku = np.searchsorted(np.cumsum(w), rng.random(m) * 0.999999).astype(np.int16)
         qty = (np.searchsorted(np.cumsum(qty_p), rng.random(m) * 0.999999) + 1).astype(np.int16)
         gross = PRICE[sku] * qty
-        # discount codes
-        code = np.zeros(n, dtype=np.int8)  # 0 none, 1 first order, 2 repeat
-        u = rng.random(n)
-        web = ~o["pos"]
-        code[web & o["new"] & (u < PLACEHOLDERS["first_order_code_use"])] = 1
-        code[web & ~o["new"] & (u < PLACEHOLDERS["repeat_code_use"])] = 2
-        pct = np.array([0, PLACEHOLDERS["first_order_code_pct"], PLACEHOLDERS["repeat_code_pct"]])[code] / 100
         line_disc = r2(gross * pct[order_of_line])
         line_total = r2(gross - line_disc)
         unit_disc = r2(line_total / qty)
@@ -716,7 +832,8 @@ class Gen:
                          ("google_rows", self.t_google_rows), ("flows", self.t_flows), ("campaign_sends", None),
                          ("tickets", self.t_tickets), ("reviews", self.t_reviews), ("speed_runs", self.t_fixtures),
                          ("content_posts", None), ("search_console", None), ("marketplace_listings", None),
-                         ("wholesale_sell_in", self.t_wholesale)]:
+                         ("wholesale_sell_in", self.t_wholesale), ("marketplace_sales", self.t_marketplace),
+                         ("paid_other_spend", self.t_paid_other)]:
             if fn:
                 fn()
                 db.commit()
@@ -838,7 +955,7 @@ class Gen:
         last_visit = np.where(ready, iso_utc(o["ts"] - 600), None)
         dtc = np.where(ready, o["dtc_days"], None)
         idx = np.where(ready | o["pos"], o["oidx"], None)
-        codes = np.array([None, '["FIRSTORDER20"]', '["THANKS10"]'], dtype=object)[o["code"]]
+        codes = np.array([None, '["FIRSTORDER20"]', '["THANKS10"]', '["BFCM20"]'], dtype=object)[o["code"]]
         st = [s[0] for s in STATES]
         tax_json = [None] * n
         tl = o["tax"].tolist()
@@ -1100,6 +1217,13 @@ class Gen:
         chan = chs[first]
         cvr = np.array([PLACEHOLDERS["cvr_by_channel"][CHANNELS[c]] for c in chan]) * \
             np.array(list(PLACEHOLDERS["cvr_device_mult"].values()))[dev] * np.where(nvr == 1, 1.6, 0.8)
+        # Fix 3: scale every channel rate by one factor so GA4 sessions over the last 12 months average
+        # site_sessions_monthly x scale; the channel and device shape stays the placeholder's
+        last = day >= DAYS - 365
+        want = self.p["sessions_monthly"] * 12 * self.scale
+        self.cvr_scale = float((tx[last] / cvr[last]).sum() / want) if want else 1.0
+        cvr = np.minimum(cvr * self.cvr_scale, 0.9)
+        self.cvr_solved = {c: round(v * self.cvr_scale, 4) for c, v in PLACEHOLDERS["cvr_by_channel"].items()}
         sessions = np.maximum(tx, rng.poisson(tx / cvr))
         engaged = np.round(sessions * rng.uniform(0.55, 0.7, len(uk)))
         users = np.round(sessions * 0.82)
@@ -1190,6 +1314,12 @@ class Gen:
         ps = o["ch"] == CH["paid_search"]
         utm_orders = np.bincount(key[ps], minlength=DAYS * ncamp).reshape(DAYS, ncamp)
         cpc = {"brand_search": 0.55, "nonbrand_search": 1.9, "pmax": 0.9, "demand_gen": 0.35}
+        # Google CPAs keep their shape and take one scale so Meta to Google spend over the last 12 months
+        # lands on the brain's paid split (expected value; the daily jitter has mean one)
+        split = self.p.get("paid_split")
+        base = np.maximum(utm_orders[DAYS - 365:], 0.2) @ np.array([pl["google_cpa_usd"][c[3]] for c in GOOGLE_CAMPAIGNS])
+        meta = float(self.meta_spend_by_day[DAYS - 365:].sum())
+        self.google_cpa_scale = float(meta * split["google"] / split["meta"] / base.sum()) if split and base.sum() else 1.0
         spend_total = np.zeros(DAYS)
         # term-level credited orders
         tkey = (o["day"].astype(np.int64) * 2 + np.maximum(o["g_camp"], 0)) * 16 + np.maximum(o["g_term"], 0)
@@ -1198,7 +1328,8 @@ class Gen:
         for di, d in enumerate(self.days):
             ds = d.isoformat()
             for ci, (cid, cname, ctype, ckey, _) in enumerate(GOOGLE_CAMPAIGNS):
-                spend = float(r2(max(utm_orders[di, ci], 0.2) * pl["google_cpa_usd"][ckey] * rng.uniform(0.85, 1.15)))
+                spend = float(r2(max(utm_orders[di, ci], 0.2) * pl["google_cpa_usd"][ckey] * self.google_cpa_scale
+                                 * rng.uniform(0.85, 1.15)))
                 clicks = int(round(spend / cpc[ckey] * rng.uniform(0.9, 1.1)))
                 impr = int(round(clicks / (0.09 if ckey == "brand_search" else 0.035 if ckey == "nonbrand_search" else 0.012)))
                 spend_total[di] += spend
@@ -1292,16 +1423,21 @@ class Gen:
         o, rng = self.o, self.rng("tickets")
         ids = self.order_ids()
         n = len(ids)
-        rate = np.where(self.month_key[o["day"]] % 100 == 12, PLACEHOLDERS["ticket_rate_dec"], PLACEHOLDERS["ticket_rate"])
-        t = np.flatnonzero(rng.random(n) < rate)
+        pl = PLACEHOLDERS
+        # Fix 2: ticket_rate is all tickets per order. Returns (a share opens a ticket, the rest use the
+        # returns portal) and pre-sale questions are part of it, so the order tickets take what is left.
+        rate = np.where(self.month_key[o["day"]] % 100 == 12, pl["ticket_rate_dec"], pl["ticket_rate"])
+        rate = rate - pl["presale_ticket_rate"] - np.where(o["pos"], 0.0, pl["return_rate"] * pl["return_ticket_share"])
+        t = np.flatnonzero(rng.random(n) < np.maximum(rate, 0.0))
         tday = o["day"][t] + rng.integers(1, 15, len(t))
         keep = tday <= DAYS - 1
         t, tday = t[keep], tday[keep]
         reason = np.array(TICKET_REASONS_ORDER)[np.searchsorted(np.cumsum(TICKET_W), rng.random(len(t)) * 0.999999)]
-        # returned orders open a return ticket
-        rt = self.rev["return"]["idx"]
-        rt_day = self.rev["return"]["open"]
-        pres = rng.poisson(np.bincount(o["day"], minlength=DAYS) * PLACEHOLDERS["presale_ticket_rate"])
+        # a share of returned orders open a return ticket
+        pick = rng.random(len(self.rev["return"]["idx"])) < pl["return_ticket_share"]
+        rt = self.rev["return"]["idx"][pick]
+        rt_day = self.rev["return"]["open"][pick]
+        pres = rng.poisson(np.bincount(o["day"], minlength=DAYS) * pl["presale_ticket_rate"])
         p_day = np.repeat(np.arange(DAYS), pres)
         order_id = np.r_[ids[t], ids[rt], np.full(len(p_day), -1)]
         day = np.r_[tday, rt_day, p_day]
@@ -1370,23 +1506,95 @@ class Gen:
     def t_wholesale(self):
         """Fixture: monthly sell-in by retail partner. Wholesale is not in orders; the brain gives its share."""
         rng = self.rng("wholesale")
+        pl = PLACEHOLDERS
         sm = self.p["sales_mix"]
         partners = [pp for pp in self.p["retail_partners"]]
-        rev_d = np.bincount(self.o["day"], weights=self.o["sub"], minlength=DAYS)
         ratio = sm["wholesale"] / (sm["dtc"] + sm["owned_retail"])
+        # Fix 9: sell-in has its own month curve (retailers stock for holiday in Aug to Oct), on the brain's
+        # growth trend; the last 12 months total the brain's wholesale share of orders revenue.
+        wi = pl["wholesale_month_index"]
+        wi_mean = sum(wi.values()) / 12
+        trend = np.array([(1 + self.p["growth"]) ** (-(self.as_of - d).days / 365.25) for d in self.days])
+        daily = trend * np.array([wi[MONTHS[d.month - 1]] / wi_mean for d in self.days])
+        last = np.arange(DAYS) >= DAYS - 365
+        daily *= float(self.o["sub"][self.o["day"] >= DAYS - 365].sum()) * ratio / daily[last].sum()
+        start_m = pl["new_partner_since_month"]
+        ramp = pl["new_partner_ramp_by_quarter"]
         rows = []
         for mk in np.unique(self.month_key):
             y, mo = divmod(int(mk), 100)
-            live = [pp for pp in partners if (pp.get("since") or 2018) < y or ((pp.get("since") or 2018) == y and mo >= 10)]
+            live, months_in = [], []
+            for pp in partners:
+                since = pp.get("since") or 2018
+                if since < y or (since == y and mo >= start_m):
+                    live.append(pp)
+                    months_in.append((y - since) * 12 + mo - start_m)  # 0 in the first month
             if not live:
                 continue
             w = np.array([float(pp.get("stores") or 60) for pp in live])
-            w = w / w.sum() * rng.uniform(0.8, 1.2, len(live))
+            r = np.array([ramp[min(mi // 3, len(ramp) - 1)] for mi in months_in])  # 25, 50, then 100 percent of run rate
+            w = w / w.sum() * r * rng.uniform(0.8, 1.2, len(live))
             w /= w.sum()
-            total = rev_d[self.month_key == mk].sum() * ratio
+            for name, cap in pl["partner_year1_cap"].items():  # a first year rollout stays near its cap
+                i = next((j for j, pp in enumerate(live) if pp["name"] == name), None)
+                if i is not None and months_in[i] < 12 and w[i] > cap:
+                    rest = w.sum() - w[i]
+                    w = np.where(np.arange(len(w)) == i, cap, w * (1 - cap) / rest)
+            total = float(daily[self.month_key == mk].sum())
             for pp, share in zip(live, w):
                 rows.append((f"{y}-{mo:02d}", pp["name"], float(r2(total * share))))
+        self.wholesale_by_day = daily
         self.insert("wholesale_sell_in", ["month", "partner", "net_sales"], rows, {"net_sales": "REAL"})
+
+    def t_marketplace(self):
+        """Fixture: monthly marketplace net sales at the brain's share. No connector, no listing detail (listings stay empty)."""
+        rng = self.rng("marketplace")
+        sm, pl = self.p["sales_mix"], PLACEHOLDERS
+        if sm.get("marketplaces") is None:
+            self.marketplace_by_day = None
+            self.ensure_table("marketplace_sales", ["month", "marketplace", "net_sales"], {"net_sales": "REAL"})
+            return
+        # consumer demand: the site's own day curve, noise and all, at the marketplace share of revenue
+        web = ~self.o["pos"]
+        site = np.bincount(self.o["day"][web], weights=self.o["sub"][web], minlength=DAYS)
+        daily = site * rng.uniform(0.9, 1.1, DAYS)
+        ratio = sm["marketplaces"] / (sm["dtc"] + sm["owned_retail"])
+        want = float(self.o["sub"][self.o["day"] >= DAYS - 365].sum()) * ratio
+        daily *= want / daily[DAYS - 365:].sum()
+        rows = []
+        split = pl["marketplace_split"]
+        for mk in np.unique(self.month_key):
+            total = float(daily[self.month_key == mk].sum())
+            w = np.array(list(split.values())) * rng.uniform(0.9, 1.1, len(split))
+            w /= w.sum()
+            for name, share in zip(split, w):
+                rows.append((f"{mk // 100}-{mk % 100:02d}", name, float(r2(total * share))))
+        self.marketplace_by_day = daily
+        self.insert("marketplace_sales", ["month", "marketplace", "net_sales"], rows, {"net_sales": "REAL"})
+
+    def t_paid_other(self):
+        """Fixture: daily spend on the paid platforms that have no ad rows here, at the brain's paid split."""
+        rng = self.rng("paid_other")
+        split = self.p.get("paid_split")
+        cols = ["date", "platform", "spend"]
+        self.other_spend_by_day = None
+        self.other_spend = {}
+        if not split:
+            self.ensure_table("paid_other_spend", cols, {"spend": "REAL"})
+            return
+        mg = self.meta_spend_by_day + self.google_spend_by_day
+        mg_last = float(mg[DAYS - 365:].sum())
+        rows, tot = [], np.zeros(DAYS)
+        for plat in ("youtube_creator", "tiktok", "pinterest", "other"):
+            d = mg * rng.uniform(0.8, 1.2, DAYS)
+            d *= mg_last * split[plat] / (split["meta"] + split["google"]) / d[DAYS - 365:].sum()
+            d = r2(d)
+            self.other_spend[plat] = d
+            tot += d
+            rows += [(self.days[i].isoformat(), plat, float(d[i])) for i in range(DAYS)]
+        rows.sort(key=lambda r: (r[0], r[1]))
+        self.other_spend_by_day = tot
+        self.insert("paid_other_spend", cols, rows, {"spend": "REAL"})
 
     # ---- aggregates
     def aggregates_build(self):
@@ -1407,15 +1615,23 @@ class Gen:
             "google_spend": self.google_spend_by_day, "google_conversions": n_day(o["g_credit"]),
             "klaviyo_attributed_orders": n_day(o["k_msg"] >= 0), "tickets": self.tickets_by_day,
         }
+        if self.other_spend_by_day is not None:
+            daily["other_paid_spend"] = self.other_spend_by_day
+        # Fix 10: before the first store opened there is no POS to count, so pos_orders reads null, not 0
+        open_day = (date.fromisoformat(PLACEHOLDERS["owned_retail_open"]) - self.start).days
+        open_month = self.month_key[min(max(open_day, 0), DAYS - 1)] if open_day < DAYS else None
+        counts = ("orders", "web_orders", "pos_orders", "new_customer_orders", "returning_customer_orders", "sessions",
+                  "ga4_transactions", "meta_purchases", "google_conversions", "klaviyo_attributed_orders", "tickets",
+                  "units", "giving_units")
         days = [d.isoformat() for d in self.days]
         rows = []
         for i in range(DAYS):
             r = {"date": days[i]}
             for k, v in daily.items():
                 val = v[i]
-                r[k] = int(val) if k in ("orders", "web_orders", "pos_orders", "new_customer_orders", "returning_customer_orders",
-                                         "sessions", "ga4_transactions", "meta_purchases", "google_conversions",
-                                         "klaviyo_attributed_orders", "tickets", "units", "giving_units") else float(r2(val))
+                r[k] = int(val) if k in counts else float(r2(val))
+            if i < open_day:
+                r["pos_orders"] = None
             rows.append(r)
         self.aggregates["daily"] = rows
         # monthly
@@ -1426,13 +1642,17 @@ class Gen:
             for k, v in daily.items():
                 r[k] = float(r2(np.asarray(v)[m].sum()))
             r["aov"] = float(r2(r["net_sales"] / r["orders"])) if r["orders"] else None
+            if open_month is None or mk < open_month:
+                r["pos_orders"] = None
             months.append(r)
         self.aggregates["monthly"] = months
-        # channel x month
+        # channel x month; no pos rows for months before the first store opened
         rows = []
         for mk in np.unique(self.month_key):
             mm = self.month_key[o["day"]] == mk
             for c in CHANNELS:
+                if c == "pos" and (open_month is None or mk < open_month):
+                    continue
                 m = mm & (o["ch"] == CH[c])
                 rows.append({"month": f"{mk // 100}-{mk % 100:02d}", "channel": c, "orders": int(m.sum()),
                              "net_sales": float(r2(o["sub"][m].sum())), "new_customer_orders": int((m & o["new"]).sum())})
@@ -1470,6 +1690,16 @@ class Gen:
         self.aggregates["cohorts"] = rows
         self.aggregates["wholesale_monthly"] = [dict(zip(("month", "partner", "net_sales"), r)) for r in
                                                 self.db_rows("SELECT month, partner, net_sales FROM wholesale_sell_in ORDER BY month, partner")]
+        self.aggregates["marketplace_monthly"] = [dict(zip(("month", "marketplace", "net_sales"), r)) for r in self.db_rows(
+            "SELECT month, marketplace, net_sales FROM marketplace_sales ORDER BY month, marketplace")]
+        # paid spend by platform x month: Meta and Google from their rows, the rest from the fixture
+        rows = []
+        plats = [("meta", self.meta_spend_by_day), ("google", self.google_spend_by_day)] + list(self.other_spend.items())
+        for mk in np.unique(self.month_key):
+            m = self.month_key == mk
+            for plat, arr in plats:
+                rows.append({"month": f"{mk // 100}-{mk % 100:02d}", "platform": plat, "spend": float(r2(arr[m].sum()))})
+        self.aggregates["paid_media_monthly"] = rows
         self.aggregates["calibration"] = self.calibration_check()
 
     def db_rows(self, q):
@@ -1479,13 +1709,161 @@ class Gen:
         finally:
             db.close()
 
+    def review_checks(self):
+        """The numbers REVIEW.md checks 1 to 11 read, from the generated rows (arithmetic here, not in prose)."""
+        o, l, mk = self.o, self.l, self.month_key
+        om = mk[o["day"]]
+        web = ~o["pos"]
+        out = {}
+        # 1. growth by month and day to day noise
+        months = np.unique(mk)
+        net_m = {int(k): float(o["sub"][om == k].sum()) for k in months}
+        full = {int(k) for k in months if (mk == k).sum() >= 28}
+        yoy = {f"{k // 100}-{k % 100:02d}": round(net_m[k] / net_m[k - 100] - 1, 4)
+               for k in sorted(full) if k - 100 in full and k >= mk[DAYS - 365]}
+        out["yoy_growth"] = {"by_month": yoy, "min": min(yoy.values()) if yoy else None, "max": max(yoy.values()) if yoy else None}
+        orders_d = np.bincount(o["day"], minlength=DAYS)
+        cvs = {}
+        for k in (202606, 202603):
+            d = orders_d[mk == k]
+            if len(d) >= 28:
+                cvs[f"{k // 100}-{k % 100:02d}"] = round(float(d.std() / d.mean()), 4)
+        out["daily_orders_cv"] = cvs
+        # 2. AOV by season and BFCM discount depth
+        def aov_of(keys):
+            m = np.isin(om, keys)
+            return round(float(o["sub"][m].sum() / m.sum()), 2) if m.any() else None
+        y0 = self.as_of.year - 1
+        out["aov"] = {"nov_dec": aov_of([y0 * 100 + 11, y0 * 100 + 12]), "jan_feb": aov_of([(y0 + 1) * 100 + 1, (y0 + 1) * 100 + 2]),
+                      "year": round(float(o["sub"][o["day"] >= DAYS - 365].sum() / (o["day"] >= DAYS - 365).sum()), 2)}
+        tg = self.thanksgiving(y0)
+        bf = [(tg + timedelta(days=i) - self.start).days for i in range(0, 5)]
+        out["bfcm"] = []
+        for di in bf:
+            if 0 <= di < DAYS:
+                m = o["day"] == di
+                out["bfcm"].append({"date": self.days[di].isoformat(), "orders": int(m.sum()),
+                                    "discount_pct_of_gross": round(float(o["disc"][m].sum() / o["gross"][m].sum()), 4),
+                                    "aov": round(float(o["sub"][m].mean()), 2), "new_share": round(float(o["new"][m].mean()), 4)})
+        # 3. new versus returning, and the repeat curve
+        last = o["day"] >= DAYS - 365
+        dec = om == y0 * 100 + 12
+        aug = om == y0 * 100 + 8
+        out["new_share"] = {"year": round(float(o["new"][last].mean()), 4), "dec": round(float(o["new"][dec].mean()), 4),
+                            "returning_rise_aug_to_dec": round(float((~o["new"] & dec).sum() / max((~o["new"] & aug).sum(), 1)), 3),
+                            "new_rise_aug_to_dec": round(float((o["new"] & dec).sum() / max((o["new"] & aug).sum(), 1)), 3)}
+        fd = self.cust_first_day
+        cohort = []
+        for ck in [202410, 202412, 202503, 202506]:
+            days = np.flatnonzero(mk == ck)
+            if not len(days):
+                continue
+            inc = (fd >= days[0]) & (fd <= days[-1])
+            size = int(inc.sum())
+            oc = inc[o["cust"]] & ~o["new"]
+            gap = o["day"] - fd[o["cust"]]
+            y1 = int((oc & (gap <= 365)).sum())
+            y2 = int((oc & (gap > 365) & (gap <= 730)).sum())
+            full2 = days[0] + 730 <= DAYS
+            cohort.append({"cohort": f"{ck // 100}-{ck % 100:02d}", "customers": size, "repeat_orders_per_customer_yr1": round(y1 / size, 3),
+                           "repeat_orders_per_customer_yr2": round(y2 / size, 3) if size else None, "yr2_is_full": bool(full2),
+                           "yr2_over_yr1": round(y2 / y1, 3) if y1 else None})
+        out["cohorts"] = cohort
+        # 4. wholesale shape and partners
+        ws = {r[0]: r[1] for r in self.db_rows("SELECT month, sum(net_sales) FROM wholesale_sell_in GROUP BY month")}
+        share = {}
+        for k in sorted(full):
+            key = f"{k // 100}-{k % 100:02d}"
+            if key in ws and net_m[k]:
+                share[key] = round(ws[key] / net_m[k], 4)
+        part = self.db_rows(f"SELECT partner, sum(net_sales) FROM wholesale_sell_in WHERE month >= '{self.days[DAYS - 365].isoformat()[:7]}' "
+                            "GROUP BY partner ORDER BY 2 DESC")
+        pt = sum(v for _, v in part) or 1
+        out["wholesale"] = {"share_of_orders_revenue_by_month": share, "min": min(share.values()) if share else None,
+                            "max": max(share.values()) if share else None,
+                            "partners_last_12m": {n: round(v / pt, 4) for n, v in part}}
+        # 5. funnel
+        last_d = slice(DAYS - 365, DAYS)
+        sess = float(self.sessions_by_day[last_d].sum())
+        web_last = int((last & web).sum())
+        out["funnel"] = {"sessions_per_month": round(sess / 12), "target": self.p["sessions_monthly"] * self.scale,
+                         "cvr_on_web_orders": round(web_last / sess, 4) if sess else None,
+                         "cvr_on_ga4_transactions": round(float((o["ga4"] & last).sum()) / sess, 4) if sess else None,
+                         "cvr_scale": round(self.cvr_scale, 4), "cvr_by_channel_solved": self.cvr_solved}
+        # 6. Meta by month
+        credited = o["meta_touch"] > 0
+        meta = {}
+        for k in (y0 * 100 + 9, y0 * 100 + 10, y0 * 100 + 11, y0 * 100 + 12, (y0 + 1) * 100 + 2):
+            dm = mk == k
+            spend = float(self.meta_spend_by_day[dm].sum())
+            m = credited & (om == k)
+            meta[f"{k // 100}-{k % 100:02d}"] = {"spend": round(spend, 2), "cpa": round(spend / m.sum(), 2) if m.any() else None,
+                                                 "roas": round(float(o["total"][m].sum()) / spend, 3) if spend else None}
+        out["meta"] = meta
+        out["google_cpa_scale"] = round(self.google_cpa_scale, 4)
+        # 7. email
+        out["klaviyo_share_of_orders"] = round(float((o["k_msg"][last] >= 0).mean()), 4)
+        out["email_sms_last_click_share"] = round(float(np.isin(o["ch"][last], [CH["email"], CH["sms"]]).mean()), 4)
+        # 8. tickets, chargebacks, abandonment, refunds
+        t_last = float(self.tickets_by_day[last_d].sum())
+        dec_d = mk == y0 * 100 + 12
+        out["tickets_per_1000_orders"] = {"year": round(t_last / last.sum() * 1000, 1),
+                                          "dec": round(float(self.tickets_by_day[dec_d].sum()) / max(dec.sum(), 1) * 1000, 1)}
+        early = o["day"] < DAYS - 140  # disputes open 20 to 60 days after the order
+        cb = self.rev["chargeback"]["idx"]
+        out["chargebacks_per_web_order"] = round(float(np.isin(np.flatnonzero(early & web), cb).sum()) / max((early & web).sum(), 1), 5)
+        ab = self.counts.get("abandoned_checkouts", 0)
+        out["checkout_abandonment"] = round(ab / (ab + int(web.sum())), 4) if ab else None
+        mature = last & (o["day"] < DAYS - 60)
+        out["refunds_share_of_net_mature"] = round(float(o["refund"][mature].sum() / o["sub"][mature].sum()), 4)
+        # 9. finance keys join the products, and margin by month where cost rows are in force
+        out["finance_join"] = self.finance_join()
+        # 10. zero versus unavailable
+        out["ga4_capture_daily"] = {"min": round(float(self.ga4_capture_day.min()), 4), "max": round(float(self.ga4_capture_day.max()), 4)}
+        return out
+
+    def finance_join(self):
+        """How many products carry a finance cogs_landed key, and gross margin by month from the rows in force."""
+        path = BRANDS / self.brand / "finance_inputs.json"
+        if not path.is_file():
+            return None
+        from importlib.util import module_from_spec, spec_from_file_location
+        spec = spec_from_file_location("ecomos_finance_gen", HERE / "finance.py")
+        fm = module_from_spec(spec)
+        spec.loader.exec_module(fm)
+        fin = fm.Finance(fm.load(path))
+        keys = {r.get("scope_key") for r in fin.by_field.get("cogs_landed", [])}
+        o, l = self.o, self.l
+        lm = self.month_key[o["day"][l["order"]]]
+        by_month = []
+        for k in np.unique(self.month_key):
+            days = np.flatnonzero(self.month_key == k)
+            d0, d1 = self.days[days[0]].isoformat(), self.days[days[-1]].isoformat()
+            cost0 = np.array([fin.value("cogs_landed", d0, s) for s in SKUS], dtype=object)
+            cost1 = np.array([fin.value("cogs_landed", d1, s) for s in SKUS], dtype=object)
+            m = lm == k
+            net = float(l["line_total"][m].sum())
+            units = np.bincount(l["sku"][m], weights=l["qty"][m], minlength=len(SKUS))
+            sold = units > 0
+            if any(c is None for c in cost0[sold]) or any(c is None for c in cost1[sold]) or list(cost0) != list(cost1):
+                gm = None  # no cost rows in force (or a change inside the month): unavailable, never 0
+            else:
+                gm = round((net - float((units * cost0.astype(float)).sum())) / net, 4) if net else None
+            by_month.append({"month": f"{k // 100}-{k % 100:02d}", "gross_margin": gm})
+        return {"skus_with_cogs": sum(1 for s in SKUS if s in keys), "skus": len(SKUS),
+                "finance_skus_without_product": sorted(k for k in keys if k not in SKUS),
+                "gross_margin_by_month": by_month}
+
     def calibration_check(self):
         o, p = self.o, self.p
         last = o["day"] >= DAYS - 365
         net = float(o["sub"][last].sum())
         sm = p["sales_mix"]
-        whole = net * sm["wholesale"] / (sm["dtc"] + sm["owned_retail"])
-        total = net + whole
+        whole = float(self.wholesale_by_day[DAYS - 365:].sum())
+        mkt = float(self.marketplace_by_day[DAYS - 365:].sum()) if self.marketplace_by_day is not None else None
+        total = net + whole + (mkt or 0.0)
+        site = float(o["sub"][last & ~o["pos"]].sum())
+        pos = float(o["sub"][last & o["pos"]].sum())
         aov = float(o["sub"].sum() / len(o["sub"]))
         # repeat within 12 months, customers whose first order is in the first 12 months of the window
         fd = self.cust_first_day
@@ -1512,12 +1890,34 @@ class Gen:
         want = want / want.mean()
         ch = {c: float(round((o["ch"][~o["pos"]] == CH[c]).mean(), 4)) for c in CHANNELS[:7]}
         cats = np.array([CATALOG[s][1] for s in range(len(SKUS))])[self.l["sku"]]
-        sock = np.isin(cats, ["socks", "slippers"])
+        sock = np.isin(cats, SOCK_LIKE)
+        point = p["revenue_point"] * self.scale
+        mix_gen = {"dtc_site": site / total, "wholesale": whole / total, "owned_retail": pos / total,
+                   "marketplaces": None if mkt is None else mkt / total}
+        mix_want = {"dtc_site": sm["dtc"], "wholesale": sm["wholesale"], "owned_retail": sm["owned_retail"],
+                    "marketplaces": sm.get("marketplaces")}
+        paid = {"meta": float(self.meta_spend_by_day[DAYS - 365:].sum()), "google": float(self.google_spend_by_day[DAYS - 365:].sum())}
+        paid.update({k: float(v[DAYS - 365:].sum()) for k, v in self.other_spend.items()})
+        paid_total = sum(paid.values())
+        split = p.get("paid_split") or {}
         return {
             "scale": self.scale, "as_of": self.as_of.isoformat(),
-            "revenue_last_12m": {"orders_net_sales": round(net, 2), "wholesale_fixture": round(whole, 2), "total": round(total, 2),
+            "revenue_last_12m": {"orders_net_sales": round(net, 2), "wholesale_fixture": round(whole, 2),
+                                 "marketplace_fixture": None if mkt is None else round(mkt, 2), "total": round(total, 2),
+                                 "point_scaled": point, "vs_point_pct": round((total / point - 1) * 100, 2),
                                  "band_scaled": [p["revenue_low"] * self.scale, p["revenue_high"] * self.scale],
                                  "in_band": p["revenue_low"] * self.scale <= total <= p["revenue_high"] * self.scale},
+            "sales_channel_mix_last_12m": {
+                "generated": {k: None if v is None else round(v, 4) for k, v in mix_gen.items()}, "target": mix_want,
+                "max_gap_points": round(max(abs(mix_gen[k] - mix_want[k]) * 100 for k in mix_gen
+                                            if mix_gen[k] is not None and mix_want[k] is not None), 2)},
+            "paid_split_last_12m": {
+                "spend": {k: round(v, 2) for k, v in paid.items()}, "total": round(paid_total, 2),
+                "generated": {k: round(v / paid_total, 4) for k, v in paid.items()} if paid_total else None, "target": split or None,
+                "max_gap_points": round(max(abs(paid[k] / paid_total - split[k]) * 100 for k in split), 2)
+                if split and paid_total and set(split) <= set(paid) else None,
+                "mer_on_total_revenue": round(total / paid_total, 3) if paid_total else None},
+            "review_checks": self.review_checks(),
             "aov": {"generated": round(aov, 2), "target": p["aov"], "diff_pct": round((aov / p["aov"] - 1) * 100, 2)},
             "repeat_12m": {"generated": round(repeaters / size, 4) if size else None, "target": p["repeat_12m"], "cohort_customers": size},
             "seasonality_last_12m": {"months": [f"{k // 100}-{k % 100:02d}" for k in full], "generated": np.round(vals, 3).tolist(),
@@ -1527,7 +1927,8 @@ class Gen:
                                        "target": p["category_mix"]["socks_slippers"]},
             "giving_items_last_12m": {"generated_orders_only": int(o["items"][last].sum()), "brain_items_per_year": p.get("giving_rate_brain"),
                                       "note": "orders only; wholesale and retail units also donate, so this is below the brain rate"},
-            "basket": self.basket, "repeat_q": round(self.q_repeat, 4), "mix_solved": self.mix_solved,
+            "basket": self.basket, "repeat_q": round(self.q_repeat, 4), "repeat_cohort_mean_mult": round(self.repeat_mean_mult, 4),
+            "mix_solved": self.mix_solved,
         }
 
     # ---- run
@@ -1569,8 +1970,11 @@ class Gen:
             "brand": self.brand, "simulated": True, "generated_by": "app/data/generate.py", "version": 2, "seed": self.seed,
             "scale": self.scale, "as_of": self.as_of.isoformat(), "start": self.start.isoformat(), "days": DAYS,
             "calibrated_fields": f"{calibrated} of 6", "fields": self.manifest_fields, "placeholders": PLACEHOLDERS,
-            "derived": {"basket": self.basket, "repeat_q": round(self.q_repeat, 4), "mix_solved": self.mix_solved,
-                        "payout_totals": self.payout_totals}}, indent=1, default=str) + "\n", encoding="utf-8")
+            "assumed": ASSUMED,
+            "derived": {"basket": self.basket, "repeat_q": round(self.q_repeat, 4), "repeat_cohort_mean_mult": round(self.repeat_mean_mult, 4),
+                        "mix_solved": self.mix_solved, "cvr_scale": round(self.cvr_scale, 4), "cvr_by_channel_solved": self.cvr_solved,
+                        "google_cpa_scale": round(self.google_cpa_scale, 4), "payout_totals": self.payout_totals}},
+            indent=1, default=str) + "\n", encoding="utf-8")
         tables = [{"table": t, "rows": n, "where": "data.sqlite", "source": SOURCE.get(t, "generator"),
                    "shaped_like": SHAPED_LIKE[t]} for t, n in self.counts.items()]
         tables += [{"table": f"aggregates/{k}", "rows": len(v), "where": f"aggregates/{k}.json", "source": "generator",
@@ -1578,6 +1982,11 @@ class Gen:
         (out / "tables.json").write_text(json.dumps({"brand": self.brand, "simulated": True, "as_of": self.as_of.isoformat(),
                                                      "scale": self.scale, "rows": tables}, indent=1) + "\n", encoding="utf-8")
         cal = self.aggregates["calibration"]
+        rv, mix, paid, rc = cal["revenue_last_12m"], cal["sales_channel_mix_last_12m"], cal["paid_split_last_12m"], cal["review_checks"]
+        pct = lambda v: "unavailable" if v is None else f"{v * 100:.1f}"
+        mix_line = ", ".join(f"{k.replace('_', ' ')} {pct(mix['generated'][k])} vs {pct(mix['target'][k])}" for k in mix["generated"])
+        paid_line = ", ".join(f"{k.replace('_', ' ')} {pct(v)} vs {pct((paid['target'] or {}).get(k))}"
+                              for k, v in (paid["generated"] or {}).items())
         lines = [f"# {self.brand}: simulated data (generator v2)", "",
                  "Simulated data. Every row carries `simulated = 1`. Nothing here is a Bombas result. The shape follows the brain's",
                  f"public profile (`app/brain/{self.brand}/assumptions.json`); performance rates are placeholders listed in `manifest.json`.", "",
@@ -1585,32 +1994,43 @@ class Gen:
                  f"Rebuild: `python3 app/data/generate.py --brand {self.brand} --scale {self.scale} --as-of {self.as_of}`.", "",
                  "`data.sqlite` is git-ignored (rebuilt from the seed). `aggregates/*.json`, `manifest.json`, `assumptions.json`, `tables.json` are committed.", "",
                  "## Calibration hit (last 12 months)", "",
-                 f"- Revenue: orders {cal['revenue_last_12m']['orders_net_sales']:,.0f} plus wholesale fixture {cal['revenue_last_12m']['wholesale_fixture']:,.0f} = {cal['revenue_last_12m']['total']:,.0f} USD; band x scale {cal['revenue_last_12m']['band_scaled'][0]:,.0f} to {cal['revenue_last_12m']['band_scaled'][1]:,.0f}; in band: {cal['revenue_last_12m']['in_band']}",
+                 f"- Revenue: orders {rv['orders_net_sales']:,.0f} plus wholesale fixture {rv['wholesale_fixture']:,.0f} plus marketplace fixture "
+                 f"{rv['marketplace_fixture'] or 0:,.0f} = {rv['total']:,.0f} USD against the point {rv['point_scaled']:,.0f} "
+                 f"({rv['vs_point_pct']:+.2f} percent); band x scale {rv['band_scaled'][0]:,.0f} to {rv['band_scaled'][1]:,.0f}; in band: {rv['in_band']}",
+                 f"- Sales channel mix, percent of revenue (generated vs brain): {mix_line}; largest gap {mix['max_gap_points']} points",
+                 f"- Paid split, percent of paid spend (generated vs brain): {paid_line}; largest gap {paid['max_gap_points']} points",
                  f"- AOV (net merchandise per order): {cal['aov']['generated']} vs {cal['aov']['target']} target",
                  f"- Repeat within 12 months: {cal['repeat_12m']['generated']} vs {cal['repeat_12m']['target']}",
                  f"- Seasonality (detrended month index): max gap {cal['seasonality_last_12m']['max_abs_diff']}",
-                 f"- Socks and slippers share of line revenue: {cal['category_mix_net_sales']['socks_slippers']} vs {cal['category_mix_net_sales']['target']}", "",
+                 f"- Socks, slippers and footwear share of line revenue: {cal['category_mix_net_sales']['socks_slippers']} vs {cal['category_mix_net_sales']['target']}",
+                 f"- GA4 sessions per month: {rc['funnel']['sessions_per_month']:,} vs {rc['funnel']['target']:,.0f} assumed; "
+                 f"conversion on web orders {pct(rc['funnel']['cvr_on_web_orders'])} percent",
+                 f"- Finance join: {rc['finance_join']['skus_with_cogs'] if rc['finance_join'] else 'unavailable'} of {len(SKUS)} products carry a cogs_landed key", "",
                  "## Tables", "", "| Table | Rows | Where | Source | Shaped like |", "|---|---:|---|---|---|"]
         for t in tables:
             lines.append(f"| `{t['table']}` | {t['rows']:,} | {t['where']} | {t['source']} | {t['shaped_like']} |")
         lines += ["", "## How the tables tie together", "",
-                  "- Orders are the one truth. GA4 `sessions.transactions` = orders GA4 tracked (a fixed 93 percent of web orders); sessions are implied from them by placeholder conversion rates.",
+                  "- Orders are the one truth. GA4 `sessions.transactions` = orders GA4 tracked (a daily share between 91 and 95 percent of web orders); sessions are implied from them by the placeholder conversion rates, scaled by one factor so sessions average the assumed `site_sessions_monthly`.",
                   "- Meta `ad_rows.purchases` = paid social orders credited on click (80 percent) plus 1d_view credit on 7 percent of direct, organic, email, SMS and other orders. Those view orders overlap Google and Klaviyo on purpose.",
                   "- Google `google_rows` campaign conversions = 88 percent of paid search orders plus brand search credit on 5 percent of organic and 4 percent of direct orders. Search term rows drop terms under 10 impressions, so they never sum to the campaign row.",
                   "- Klaviyo `flows` and `campaign_sends`: attributed orders = every email and SMS order plus overlap on direct, organic, paid social and paid search orders. `matched_order_ids` lists them and each id is in `orders`.",
                   "- `payouts`: Shopify Payments charges (PayPal excluded) paid 2 days later, less fees, refunds and dispute moves. `net = charges_gross - charges_fee + refunds_gross + adjustments_gross` (refunds and adjustments are signed).",
                   "- `reversed_orders`: each row is on an order. Returns refund one line with its tax; carrier returns refund the whole order and are excluded from return rate; chargebacks are Shopify Payments orders only. `rto` is null for a US brand and not written.",
                   "- `tickets`: most carry an order id; pre-sale tickets carry none. `reviews` are written from order lines, so every sku is in `products` and review counts follow units sold.",
-                  "- `inventory` falls with units sold and rises with `inbound_pos` receipts. `wholesale_sell_in` is a fixture: the brain's wholesale share, split by the retail partners from their start year. It is not in `orders`.",
-                  "- `marketplace_listings` has no rows: the brain's marketplace share is null, so the table reads unavailable. Amazon settlements are not written for the same reason.",
-                  "- `finance_inputs` is not written here; it is S2.4 (`contracts/finance-inputs.md`).",
+                  "- `tickets` per order equal `ticket_rate` (5 percent, 8 percent for December orders): order tickets, the 30 percent of returns that open a ticket, and pre-sale questions together.",
+                  "- `inventory` falls with units sold and rises with `inbound_pos` receipts. `wholesale_sell_in` is a fixture: the brain's wholesale share of revenue on its own month curve (high in Aug to Oct, low in Dec and Jan), split by the retail partners from their start year; new partners ramp 25, 50, then 100 percent by quarter and DSW is capped at 25 percent of wholesale in its first year. It is not in `orders`.",
+                  "- `marketplace_sales` is a fixture: the brain's marketplace share of revenue by month, split Amazon 80 and TikTok Shop 20 (assumed). It is not in `orders`. `marketplace_listings` has no rows: there is no listing detail, so it reads unavailable.",
+                  "- `paid_other_spend` is a fixture: daily spend for YouTube creators, TikTok, Pinterest and other at the brain's paid split. Meta and Google spend come from `ad_rows` and `google_rows`; Google CPAs carry one scale so Meta to Google lands on the split.",
+                  "- `orders` and `channels_monthly` carry no POS before the first store opened (2025-11-01); `monthly.pos_orders` and `daily.pos_orders` read null there, not 0.",
+                  "- `products.sku` and `order_lines.sku` use the finance keys (`BMB-...`), so `finance_inputs.cogs_landed` joins by sku. `finance_inputs` is not written here; it is S2.4 (`contracts/finance-inputs.md`). Its rows start 2025-01-01, so margin before then reads unavailable.",
                   "- `orders.status` and `orders.payment_method` are filled by the generator; a live Shopify pull writes null until the census follow-up (data-sources.md).",
                   "- `orders.acquisition_channel` and `orders.units` are generator conveniences (not census fields); screens should derive channel from utm and units from lines for a real brand."]
         (out / "README.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
 
 
 SOURCE = {"speed_runs": "fixture", "content_posts": "fixture", "search_console": "fixture", "marketplace_listings": "fixture",
-          "inbound_pos": "fixture", "tickets": "fixture", "reviews": "fixture", "wholesale_sell_in": "fixture"}
+          "inbound_pos": "fixture", "tickets": "fixture", "reviews": "fixture", "wholesale_sell_in": "fixture",
+          "marketplace_sales": "fixture", "paid_other_spend": "fixture"}
 SHAPED_LIKE = {
     "orders": "Shopify Order + customerJourneySummary", "order_lines": "Shopify LineItem (nested in orders)",
     "customers": "Shopify Customer", "products": "Shopify ProductVariant + GA4 item report (28 days)",
@@ -1621,6 +2041,8 @@ SHAPED_LIKE = {
     "campaign_sends": "Klaviyo Campaign + Metric Aggregates", "tickets": "fixture (Gorgias shape)", "reviews": "fixture (reviews app shape)",
     "speed_runs": "fixture (speed lab)", "content_posts": "fixture (platform exports)", "search_console": "fixture (Search Console shape)",
     "marketplace_listings": "fixture (Amazon Seller shape)", "wholesale_sell_in": "fixture (no connector; brain wholesale share)",
+    "marketplace_sales": "fixture (no connector; brain marketplace share, Amazon and TikTok Shop)",
+    "paid_other_spend": "fixture (no connector; YouTube creators, TikTok, Pinterest, other at the brain's paid split)",
 }
 
 

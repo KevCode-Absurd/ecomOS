@@ -333,6 +333,26 @@ class MarginMetricsTest(FixtureBrand):
         self.assertEqual(r['missing_skus'], ['B'])
         self.assertEqual({s['sku']: s['margin'] is not None for s in r['by_sku']}, {'A': True, 'B': False})
 
+    def test_month_without_cost_rows_is_unavailable_not_zero(self):
+        self.finance()
+        rows = json.loads((self.dir / 'finance_inputs.json').read_text())['rows']
+        rows = [r for r in rows if r['field'] != 'cogs_landed'] + [
+            fin_row('cogs_landed', 25.0, 'usd_per_unit', 'A', frm='2026-10-01'),
+            fin_row('cogs_landed', 10.0, 'usd_per_unit', 'B', frm='2026-10-01')]
+        self.write('finance_inputs.json', {'rows': rows})
+        for name in ('gross_margin', 'gross_profit_per_order', 'contribution_margin'):
+            r = self.m(name)
+            self.assertTrue(r['unavailable'], name)
+            self.assertIsNone(r['value'], name)
+            self.assertEqual(r['months_without_costs'], ['2026-09'], name)
+            self.assertEqual(r['fix'], 'finance_inputs.cogs_landed', name)
+            self.assertEqual([m['margin'] for m in r['by_month']], [None], name)
+
+    def test_margin_by_month_when_costs_are_in_force(self):
+        self.finance()
+        r = self.m('gross_margin')
+        self.assertEqual([(m['month'], m['margin']) for m in r['by_month']], [('2026-09', round(220 / 300, 6))])
+
     def test_missing_field_names_the_input(self):
         self.finance(drop={'packaging'})
         r = self.m('contribution_margin')

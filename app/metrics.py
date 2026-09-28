@@ -1312,13 +1312,29 @@ def lines(o):
 
 
 def gross(ctx, f, paid):
-    """COGS of units sold, per SKU. Any SKU without a landed cost makes the total unavailable."""
+    """COGS of units sold, per SKU. Any SKU without a landed cost makes the total unavailable.
+
+    A month with no cogs_landed row in force at all (before the brand's cost sheet starts) reads
+    unavailable for that month, never as zero cost; the window total is then unavailable too."""
     by_sku, cogs, missing = {}, 0.0, set()
-    for day, _, _, o in paid:
+    by_month, covered = {}, {}
+    for day, _, net, o in paid:
+        month = str(day)[:7]
+        if day not in covered:
+            covered[day] = bool(f.in_force('cogs_landed', day))
+        bm = by_month.setdefault(month, {'month': month, 'net_revenue': 0.0, 'cogs': 0.0, 'costed': True})
+        bm['net_revenue'] += net
+        if not covered[day]:
+            bm['costed'] = False
         items = lines(o)
         if not items:
             raise Unavailable(f'order {o.get("id")} has no line items, so its cost of goods is unknown', fix='shopify')
         for li in items:
+            unit = f.value('cogs_landed', day, li['sku'])
+            if unit is None or bm['cogs'] is None:
+                bm['cogs'] = None
+            else:
+                bm['cogs'] += unit * li['qty']
             s = by_sku.setdefault(li['sku'], {'sku': li['sku'], 'units': 0, 'revenue': 0.0, 'cogs': 0.0})
             s['units'] += li['qty']
             s['revenue'] += li.get('line_total') if li.get('line_total') is not None else (li.get('price') or 0) * li['qty']
@@ -1334,6 +1350,19 @@ def gross(ctx, f, paid):
         margin = None if s['cogs'] is None or not s['revenue'] else round((s['revenue'] - s['cogs']) / s['revenue'], 6)
         skus.append({'sku': s['sku'], 'units': s['units'], 'revenue': money(s['revenue']),
                      'cogs': None if s['cogs'] is None else money(s['cogs']), 'margin': margin})
+    months = []
+    for m in sorted(by_month.values(), key=lambda m: m['month']):
+        ok = m['costed'] and m['cogs'] is not None and m['net_revenue']
+        months.append({'month': m['month'], 'net_revenue': money(m['net_revenue']),
+                       'cogs': money(m['cogs']) if ok else None,
+                       'margin': round((m['net_revenue'] - m['cogs']) / m['net_revenue'], 6) if ok else None})
+    ctx.margin_by_month = months
+    gaps = [m['month'] for m in sorted(by_month.values(), key=lambda m: m['month']) if not m['costed']]
+    if gaps:
+        span = gaps[0] if len(gaps) == 1 else f'{gaps[0]} to {gaps[-1]}'
+        raise Unavailable(f'no cost rows in force for {span}, so margin for those months is unknown',
+                          fix='finance_inputs.cogs_landed', partial=True, months_without_costs=gaps, by_month=months,
+                          by_sku=skus, waiting_for=['cogs_landed'])
     if missing:
         have = len(by_sku) - len(missing)
         raise Unavailable(f'COGS on {have} of {len(by_sku)} SKUs sold in this window', fix='finance_inputs.cogs_landed',
@@ -1468,7 +1497,7 @@ def m_gross_margin(ctx, name, kw):
     net = sum(n for _, _, n, _ in paid)
     ctx.notes.append('Net revenue is after discounts, before shipping charged and refunds. COGS uses the landed cost in force on each order day.')
     return ctx.ok(ratio(net - cogs, net, 'net revenue'), 'ratio', {'net_revenue': money(net), 'cogs': money(cogs)},
-                  by_sku=skus, target=_target(f, ctx, 'target_gross_margin'))
+                  by_sku=skus, by_month=getattr(ctx, 'margin_by_month', None), target=_target(f, ctx, 'target_gross_margin'))
 
 
 @metric('gross_profit_per_order')

@@ -50,7 +50,9 @@ These are not brain fields. They are computed from the fields above and the cata
 | flow and campaign volumes | email and SMS share of the channel mix and the customer count with consent |
 | finance inputs | a simulated `finance_inputs` set at the revenue band, per `finance-inputs.md`, all rows `confidence: simulated` |
 
-Placeholder rates (conversion by channel, CPA by channel, return rate, chargeback rate) are fixed constants in the generator, listed in its docstring and copied into the manifest. They are shapes, not Bombas facts. Round 0 keeps the Phase A values: return 6 percent, chargeback 0.4 percent, mobile 70 percent, until S2.5 reviews them with Kevin.
+Placeholder rates (conversion by channel, CPA by channel, return rate, chargeback rate) are fixed constants in the generator, listed in its docstring and copied into the manifest. They are shapes, not Bombas facts. S2.3c applied the S2.5 review fixes (`data/brands/bombas/REVIEW.md`): return 6 percent, chargeback 0.15 percent, tickets 5 percent of orders (8 in December), mobile 70 percent. Numbers the founder asked us to assume where the brain has none (for now `site_sessions_monthly`, 15,000,000) sit in the generator's `ASSUMED` block and read `origin: assumed` in the manifest; the brain's open question stays open.
+
+The brain's `channel_mix` now carries a marketplace share, and `paid_media_split` gives the paid spend split. Orders are the DTC site plus owned stores; wholesale and marketplaces are monthly fixtures at their shares; Meta and Google spend come from their rows and the other paid platforms from a daily fixture.
 
 ## What the brain must not be asked for
 
