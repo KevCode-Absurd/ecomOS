@@ -994,6 +994,29 @@ def recipe(f):
             'stop_rule': 'no order after the order-by date without a note that the peak is skipped', 'check_on': ent.get('order_by') or _check_on(f, 7), 'time_to_ship_hours': 2,
             'win_rule': 'a first run decided and a purchase order date in the cash plan',
         }
+    if rid == 'PROD-R41':
+        ent = f.get('entity') or {}
+        sec = ent.get('label') or 'the section'
+        if ent.get('verdict') == 'conflict':
+            return {
+                'title': f'Settle the open conflict in the brain\'s {sec} section before this desk reads it again',
+                'owner': 'person',
+                'artefact': {'kind': 'brain_record', 'label': f'the kept value in {sec}, decided by the founder on the brand brain screen, and the conflict marked resolved'},
+                'steps': [{'n': 1, 'who': 'agent', 'text': 'List the conflicting values with their sources and dates.'}, {'n': 2, 'who': 'person', 'text': 'Pick the kept value on the brand brain screen.'},
+                          {'n': 3, 'who': 'agent', 'text': f'Re-run this desk; the {len(ent.get("readers") or [])} rules that read {sec} pick the kept value up.'}],
+                'size': {'text': f'{len(ent.get("open_conflicts") or [])} conflict{"s" if len(ent.get("open_conflicts") or []) != 1 else ""}', 'usd': None}, 'stop_rule': 'no rule on this desk overrides a founder decision', 'check_on': _check_on(f, 7), 'time_to_ship_hours': 0.5,
+                'win_rule': 'no open conflict on the section',
+            }
+        return {
+            'title': f'Refresh the brain\'s {sec} section: {ent.get("age_days") if ent.get("age_days") is not None else "unknown"} days old against a {ent.get("ttl_days") or "?"}-day TTL',
+            'owner': 'agent',
+            'artefact': {'kind': 'brain_record', 'label': f'the {sec} section re-read from its sources (a pull under the caps where one feeds it, else the site or the founder) and its freshness record updated'},
+            'steps': [{'n': 1, 'who': 'agent', 'text': f'Find what feeds {sec} (the pulls block names the actor where one does) and estimate the run.'},
+                      {'n': 2, 'who': 'person', 'text': 'Approve the paid pull, or answer the founder fields yourself on the brand brain screen.'},
+                      {'n': 3, 'who': 'agent', 'text': f'Merge the new records, retire the stale ones, and re-run the {len(ent.get("readers") or [])} rules here that read {sec}.'}],
+            'size': {'text': f'read by {len(ent.get("readers") or [])} rules', 'usd': None}, 'stop_rule': 'stop at the per-run or weekly cap', 'check_on': _check_on(f, 7), 'time_to_ship_hours': 1,
+            'win_rule': 'the section inside its TTL with no stale records',
+        }
     return None
 
 
@@ -1085,6 +1108,26 @@ def merge_questions(actions):
         host['why'] = host['why'] + ' ' + a['why']
         host['brain_refs'] = sorted(set(host.get('brain_refs') or []) | set(a.get('brain_refs') or []))
         host['steps'] = host['steps'] + [{'n': len(host['steps']) + 1, 'who': 'person', 'text': f'Answer the open question on this theme: {(a.get("entity") or {}).get("question")}'}]
+    return keep
+
+
+def merge_freshness(actions):
+    """One brain refresh card: the highest-scored PROD-R41 section hosts the rest, conflicts first."""
+    rows = [a for a in actions if a.get('rule_id') == 'PROD-R41']
+    if len(rows) < 2:
+        return actions
+    rows.sort(key=lambda a: (0 if (a.get('entity') or {}).get('verdict') == 'conflict' else 1, -((a.get('rubric') or {}).get('total') or 0)))
+    host = rows[0]
+    keep = []
+    for a in actions:
+        if a is host or a not in rows:
+            keep.append(a)
+            continue
+        host['finding_ids'] = sorted(set(host['finding_ids']) | set(a['finding_ids']))
+        host['why'] = host['why'] + ' ' + a['why']
+        host['brain_refs'] = sorted(set(host.get('brain_refs') or []) | set(a.get('brain_refs') or []))
+    others = [(a.get('entity') or {}).get('label') for a in rows[1:]]
+    host['title'] = host['title'] + f'; also {", ".join(o for o in others if o)}'
     return keep
 
 
@@ -1187,7 +1230,7 @@ def rank(brand, window=None):
         a['screen'] = SCREEN
         if not rank_mod.validate_action(a):
             actions.append(a)
-    actions = merge_questions(merge_marketplace(merge_surfaces(merge_candidates(merge_lanes(actions, brand)))))
+    actions = merge_freshness(merge_questions(merge_marketplace(merge_surfaces(merge_candidates(merge_lanes(actions, brand))))))
     for a in actions:   # a merge can lift the host's confidence; the total follows the rubric
         r = a['rubric']
         r['total'] = round(sum(rank_mod.WEIGHTS[k] * (r[k] if r[k] is not None else 2.5) / 5 for k in rank_mod.WEIGHTS), 1)
@@ -1334,7 +1377,7 @@ def overview(data, brand):
                      'gates': gates_block(brand, data, br, rd, ends_on, findings), 'scorecard': scorecard_block(brand, data, br, rd, ends_on, findings),
                      'video': audit.video_signals(br, brand, ends_on), 'tech_packs': tech_pack_block(brand, findings),
                      'hours': dict(audit.hours_table(brand, br), findings={f['entity']['id']: f['id'] for f in findings if f['rule_id'] == 'PROD-R28'}),
-                     'trend_checks': audit.trend_checks(br, brand, ends_on), 'surfaces': audit.audience_surfaces(br, ends_on), 'marketplace': audit.marketplace_read(br, products(data, brand)), 'cadence': audit.launch_cadence(br, ends_on), 'returns': audit.return_rates(data, brand, ends_on), 'questions': audit.open_questions(br, ends_on), 'pulls': audit.pulls(br, brand, ends_on), 'first_runs': audit.first_run_read(brand, ends_on, audit.net_28d(rd))},
+                     'trend_checks': audit.trend_checks(br, brand, ends_on), 'surfaces': audit.audience_surfaces(br, ends_on), 'marketplace': audit.marketplace_read(br, products(data, brand)), 'cadence': audit.launch_cadence(br, ends_on), 'returns': audit.return_rates(data, brand, ends_on), 'questions': audit.open_questions(br, ends_on), 'pulls': audit.pulls(br, brand, ends_on), 'first_runs': audit.first_run_read(brand, ends_on, audit.net_28d(rd)), 'brain_freshness': audit.brain_freshness(br, ends_on)},
             'audit': {'findings': findings, 'rules': audit.RULES}}
 
 

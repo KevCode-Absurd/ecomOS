@@ -1018,6 +1018,27 @@
         open.length && actionFor(open[0].finding_id) ? { label: 'Open the first', onClick: () => openAction(actionFor(open[0].finding_id)) } : null));
   }
 
+  function brainFreshnessBlock(b) {
+    const rows = (b && b.rows) || [];
+    if (!rows.length) return UI.emptyState({ screen: SLUG, title: 'No brain for this brand', text: 'The freshness read needs a brand brain with a freshness section.', missing: ['brain'] });
+    const vt = { conflict: 'Conflict waits', stale: 'Stale', unknown: 'No freshness record', fresh: 'Fresh', no_ttl: 'Never stale' };
+    const vrows = rows.map((r) => { const a = actionFor(r.finding_id); return Object.assign({}, r, {
+      sec: r.section.replace(/_/g, ' '), rec: r.records == null ? NA : String(r.records), last: r.last_updated ? fmt.date(r.last_updated) + (r.age_days != null ? ' (' + r.age_days + ' d)' : '') : NA,
+      ttl: r.ttl_days == null ? 'none' : r.ttl_days + ' d', stale: r.stale_count + (r.conflicts ? ', ' + r.conflicts + ' conflict' + (r.conflicts === 1 ? '' : 's') : ''), conf: r.confidence == null ? NA : (r.confidence * 100).toFixed(0) + ' percent',
+      readersText: r.readers.length ? r.readers.join(', ') : 'blocks only',
+      actions: [a ? { label: r.verdict === 'conflict' ? 'Settle it' : 'Refresh it', onClick: () => openAction(a) } : { label: r.verdict === 'fresh' ? 'Fresh' : 'Unknown', cls: 'quiet', onClick: () => {} }] }); });
+    const tbl = UI.verdictTable({
+      columns: [{ key: 'sec', label: 'Section' }, { key: 'rec', label: 'Records' }, { key: 'last', label: 'Last updated' }, { key: 'ttl', label: 'TTL' }, { key: 'stale', label: 'Stale, conflicts' }, { key: 'conf', label: 'Confidence' }, { key: 'readersText', label: 'Read by' }],
+      rows: vrows,
+      verdict: { at: 1, kind: (r) => r.verdict === 'conflict' ? 'fix' : r.verdict === 'stale' ? 'watch' : r.verdict === 'fresh' ? 'keep' : 'na', text: (r) => vt[r.verdict], reason: (r) => b.rule },
+      actions: { label: 'Do', onClick: () => {} }, sort: false });
+    const open = rows.filter((r) => r.verdict === 'conflict' || r.verdict === 'stale');
+    return el('div', { class: 'stack' }, el('div', { class: 'card scroll' }, tbl),
+      el('p', { class: 'micro faint', text: 'Rule: ' + b.rule + '. TTLs come from the brand brain contract; the keeper writes the freshness section daily.' }),
+      gapLine(open.length ? open.length + ' section' + (open.length === 1 ? '' : 's') + ' this desk reads ' + (open.length === 1 ? 'is' : 'are') + ' stale or in conflict: ' + open.map((r) => r.section.replace(/_/g, ' ')).join(', ') + '.' : 'Every section this desk reads is inside its TTL with no open conflict.',
+        open.length && actionFor(open[0].finding_id) ? { label: 'Open the first', onClick: () => openAction(actionFor(open[0].finding_id)) } : null));
+  }
+
   function loadDesk(o) {
     const d = o.desk || {};
     const w = (o.window || {}).trend;
@@ -1053,6 +1074,7 @@
     parts.push(section('desk-pattern', 'Is each candidate evergreen, seasonal or a trend, and when does cash move?', 'The demand pattern from our own 12-month series by category and the web pass, with the cash timing it implies and the cash plan attached to each candidate.', patternBlock(d.pattern)));
     parts.push(section('desk-pipeline', 'What is in the next-SKU pipeline, and what is past its time box?', 'Candidates screened in from the gaps above or by hand, their stage, fast checks, time box and hours. Advance, log hours or kill from the card; every write lands in the pipeline log.', pipelineBlock(d.pipeline || { rows: [] })));
     parts.push(section('desk-pulls', 'How fresh is what this desk reads, and what would a refresh cost?', 'Every pull the desk depends on: its last capture, age against its window, the blocks it feeds and the estimate for a run under the brand\'s caps. A person approves each paid call; nothing runs from here.', pullsBlock(d.pulls)));
+    parts.push(section('desk-brain', 'How fresh is the brain this desk reads?', 'The brain sections behind the rules here, each with its records, last update, age against the contract TTL, stale and conflict counts and confidence; a conflict waits on the founder, a stale section waits on a pull or the keeper.', brainFreshnessBlock(d.brain_freshness)));
     const jumps = UI.pills({ items: parts.map((p) => ({ key: p.id, label: p.querySelector('h2').textContent.replace(/\?.*$/, '?').split(',')[0].slice(0, 42) })), onChange: (key) => { const t = document.getElementById(key); if (t) t.scrollIntoView({ behavior: 'smooth', block: 'start' }); } });
     mount('#desk', el('section', { class: 'section' }, el('div', { class: 'sec-head' }, el('h2', { text: 'The desk: ' + parts.length + ' blocks' }), el('span', { class: 'sub', text: 'Each block ends in a gap line and an action. Jump to one:' })), jumps), ...parts);
   }

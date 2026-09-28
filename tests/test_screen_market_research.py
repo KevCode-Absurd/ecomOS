@@ -263,6 +263,8 @@ class RulesTest(ShapeMixin, unittest.TestCase):
                 self.assertTrue(rules <= {'PROD-R31', 'PROD-R32'}, rules)   # one Amazon stance card
             elif 'PROD-R35' in rules:
                 self.assertTrue(rules <= {'PROD-R07', 'PROD-R35'}, rules)   # a founder question rides on its theme card
+            elif rules == {'PROD-R41'}:
+                pass                                                          # one brain refresh card across sections
             else:
                 self.assertTrue(rules <= {'PROD-R05', 'PROD-R06', 'PROD-R20', 'PROD-R33'}, rules)   # one brief per lane
         covered = [fid for a in acts for fid in a['finding_ids']]
@@ -1169,6 +1171,40 @@ class PipelineTest(ShapeMixin, unittest.TestCase):
         self.check_shape(found[0])
         r = api.recipe(found[0])
         self.assertIn('lead time', r['title'])
+
+    def test_brain_freshness(self):
+        D = date(2026, 9, 27)
+        self.assertEqual(audit.brain_freshness(None, D)['rows'], [])
+        self.assertIn('objection_ladders', audit.sections_read())
+        self.assertIn('marketplaces', audit.sections_read())
+
+        class FakeBrain:
+            brand = 'fake'
+
+            def records(self, sec):
+                if sec == 'freshness':
+                    return [{'field': 'avatars', 'value': {'last_updated': '2026-09-20', 'record_count': 5, 'stale_count': 0, 'conflict_count': 0, 'confidence': 0.6}},
+                            {'field': 'competitors', 'value': {'last_updated': '2026-08-01', 'record_count': 9, 'stale_count': 0, 'conflict_count': 0, 'confidence': 0.7}},
+                            {'field': 'claims', 'value': {'last_updated': '2026-09-27', 'record_count': 6, 'stale_count': 2, 'conflict_count': 0, 'confidence': 0.8}},
+                            {'field': 'identity', 'value': {'last_updated': '2026-09-27', 'record_count': 6, 'stale_count': 0, 'conflict_count': 1, 'confidence': 0.9}}]
+                return []
+
+        rows = {r['section']: r for r in audit.brain_freshness(FakeBrain(), D)['rows']}
+        self.assertEqual((rows['avatars']['verdict'], rows['avatars']['age_days'], rows['avatars']['ttl_days']), ('fresh', 7, 30))
+        self.assertEqual(rows['competitors']['verdict'], 'stale')          # 57 days against a 14-day TTL
+        self.assertEqual(rows['claims']['verdict'], 'stale')               # stale records inside the TTL
+        self.assertEqual(rows['identity']['verdict'], 'conflict')
+        self.assertEqual(rows['language_bank']['verdict'], 'unknown')      # no freshness record never reads fresh
+        self.assertIn('PROD-R07', rows['objection_ladders']['readers'])
+        found = audit.freshness_findings(FakeBrain(), D)
+        self.assertEqual([f['id'].split('.')[-1] for f in found], ['identity', 'competitors', 'claims'])
+        self.assertEqual(found[0]['severity'], 'medium')
+        for f in found:
+            self.check_shape(f)
+        bombas = audit.brain_freshness(audit.brain('bombas'), D)
+        self.assertTrue(all(r['verdict'] in ('fresh', 'unknown', 'stale', 'conflict', 'no_ttl') for r in bombas['rows']))
+        self.assertNotIn('config', {r['section'] for r in bombas['rows']})
+        self.assertTrue(any(r['verdict'] == 'fresh' for r in bombas['rows']))
 
     def test_demand_pattern_tags(self):
         even = {'rows': [{'category': 'socks', 'series': [100] * 12}], 'months': [f'2026-{m:02d}' for m in range(1, 13)], 'last': '2026-12'}

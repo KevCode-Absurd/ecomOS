@@ -155,6 +155,9 @@ Rules
             the lead time less 14 days of safety) or already passed, with no first run decided; or whose lead time is not
             on file (candidate field, else learnings.lead_time_days, else an operations record). High when the date is
             inside the window, medium when the lead time is missing. Capability PROD-C07. Owner: 01-market-research.
+  PROD-R41  Stale brain section: a section this desk reads that is past its contract TTL (brand-brain.md), holds stale
+            records, or has an open conflict waiting on the founder (medium; else low). Money null. Capability PROD-C04.
+            Owner: 01-market-research.
   PROD-R03  Hero line with no next SKU: a line with 25 percent or more of its category's net sales in
             the last 3 whole months while the candidate pipeline holds no open next-SKU candidate for
             that category. Money: null (an unlaunched SKU has no baseline). Capability PROD-C06
@@ -259,6 +262,8 @@ RULES = [
      'inputs': ['fixtures.pipeline', 'products_monthly', 'fixtures.market_trends'], 'capability': 'PROD-C07', 'owner_screen': SCREEN},
     {'rule_id': 'PROD-R40', 'name': 'Seasonal candidate whose order-by date is inside 30 days or past with no first run, or whose lead time is not on file', 'entity_type': 'sku',
      'inputs': ['fixtures.pipeline', 'products_monthly', 'brain.learnings', 'brain.operations'], 'capability': 'PROD-C07', 'owner_screen': SCREEN},
+    {'rule_id': 'PROD-R41', 'name': 'Brain section this desk reads that is past its TTL, holds stale records, or has an open conflict', 'entity_type': 'brand',
+     'inputs': ['brain.freshness', 'brain.review.conflicts'], 'capability': 'PROD-C04', 'owner_screen': SCREEN},
 ]
 CAPABILITY = {'PROD-R01': {'id': 'PROD-C05', 'autonomy': 'agent_does'},
               'PROD-R02': {'id': 'PROD-C06', 'autonomy': 'agent_does'},
@@ -299,7 +304,8 @@ CAPABILITY = {'PROD-R01': {'id': 'PROD-C05', 'autonomy': 'agent_does'},
               'PROD-R37': {'id': 'PROD-C07', 'autonomy': 'agent_does'},
               'PROD-R38': {'id': 'PROD-C04', 'autonomy': 'agent_does'},
               'PROD-R39': {'id': 'PROD-C07', 'autonomy': 'agent_does'},
-              'PROD-R40': {'id': 'PROD-C07', 'autonomy': 'agent_does'}}
+              'PROD-R40': {'id': 'PROD-C07', 'autonomy': 'agent_does'},
+              'PROD-R41': {'id': 'PROD-C04', 'autonomy': 'agent_does'}}
 SEVERITY_ORDER = {'critical': 0, 'high': 1, 'medium': 2, 'low': 3}
 
 # Review records name their line in a short key; the store names it by SKU title.
@@ -790,6 +796,7 @@ def run(brand, window=None, data=None):
     out += override_findings(brand, ends_on)
     out += companion_findings(brand, data, rd, ends_on)
     out += order_findings(brand, data, br, rd, ends_on)
+    out += freshness_findings(br, ends_on)
     out.sort(key=lambda f: (SEVERITY_ORDER[f['severity']], -((f['money_at_stake'] or {}).get('usd') or 0), f['id']))
     return out
 
@@ -3816,5 +3823,105 @@ def order_findings(brand, data, br, rd, ends_on):
         f = _finding('PROD-R40', cid, ends_on, sev, ev, sentence, None, 0.8, [], money_reason='a missed peak is priced on the first-run card once the run is sized')
         f['entity'] = {'type': 'sku', 'id': cid, 'label': c.get('name'), 'candidate': True, 'stage': st, 'order_by': order_by, 'peak': peak, 'lead_time_days': lead, 'days': days}
         f['id'] = f'{SCREEN}.PROD-R40.{cid}'
+        out.append(f)
+    return out
+
+
+# ---------------------------------------------------------------- the brain's freshness for the sections this desk reads (round 6.2)
+
+# TTL per section from app/contracts/brand-brain.md (how long a record is trusted before the keeper re-checks it)
+SECTION_TTL_DAYS = {'identity': 180, 'diagnosis': 90, 'story_bank': 90, 'voice': 60, 'visual': 90, 'products': 7, 'offers': 1, 'policies': 30, 'claims': 30, 'avatars': 30,
+                    'objections': 30, 'objection_ladders': 30, 'language_bank': 30, 'competitors': 14, 'positioning': 60, 'channels': 30, 'calendar': 30, 'economics': 30,
+                    'operations': 30, 'marketplaces': 14, 'stack': 14, 'site_map': 7, 'content': 30, 'seo_facts': 30, 'team': 90, 'learnings': 90, 'decisions': None,
+                    'open_questions': None, 'changes': None, 'freshness': 1}
+
+
+def sections_read():
+    """The brain sections this desk's rules and blocks read, from the rules' inputs plus the presence and hand-off reads."""
+    out = set(PRESENCE_SECTIONS) | {'avatars', 'language_bank', 'objection_ladders', 'claims', 'competitors', 'positioning', 'learnings', 'products', 'seo_facts', 'content', 'calendar', 'economics', 'open_questions', 'operations'}
+    for r in RULES:
+        for i in r.get('inputs') or []:
+            if i.startswith('brain.'):
+                sec = i.split('.')[1]
+                if sec and sec != '*':
+                    out.add(sec)
+    return sorted(sec for sec in out if sec in SECTION_TTL_DAYS and sec not in ('freshness', 'changes'))   # record sections only, never config or the review folder
+
+
+def open_conflicts(br):
+    """Open conflicts per section from the brain's review folder (needs_founder true, or not resolved)."""
+    if br is None:
+        return {}
+    p = APP / 'brain' / br.brand / 'review' / 'conflicts.json'
+    if not p.is_file():
+        return {}
+    try:
+        rows = json.loads(p.read_text(encoding='utf-8'))
+    except ValueError:
+        return {}
+    out = {}
+    for c in rows if isinstance(rows, list) else []:
+        if c.get('needs_founder') or not str(c.get('status') or '').startswith('resolved'):
+            out.setdefault(c.get('section'), []).append({'id': c.get('id'), 'field': c.get('field'), 'status': c.get('status')})
+    return out
+
+
+def brain_freshness(br, ends_on):
+    """Per section this desk reads: records, last update, age against the contract TTL, stale and conflict counts, confidence,
+    the rules that read it, and the verdict: conflict (a founder decision waits), stale (past TTL or stale records), fresh,
+    unknown (no freshness record)."""
+    if br is None:
+        return {'rows': [], 'rule': None}
+    fresh = {r.get('field'): (r.get('value') or {}) for r in br.records('freshness')}
+    conflicts = open_conflicts(br)
+    readers = {}
+    for r in RULES:
+        for i in r.get('inputs') or []:
+            if i.startswith('brain.'):
+                readers.setdefault(i.split('.')[1], set()).add(r['rule_id'])
+    rows = []
+    for sec in sections_read():
+        v = fresh.get(sec)
+        ttl = SECTION_TTL_DAYS.get(sec)
+        last = str((v or {}).get('last_updated') or '')[:10] or None
+        age = max((ends_on - date.fromisoformat(last)).days, 0) if last else None
+        stale = int((v or {}).get('stale_count') or 0)
+        conf = int((v or {}).get('conflict_count') or 0) + len(conflicts.get(sec, []))
+        if v is None and ttl is None:
+            verdict = 'no_ttl'       # decisions and open questions never go stale by the contract
+        elif v is None:
+            verdict = 'unknown'
+        elif conf:
+            verdict = 'conflict'
+        elif stale or (ttl is not None and age is not None and age > ttl):
+            verdict = 'stale'
+        else:
+            verdict = 'fresh'
+        rows.append({'section': sec, 'records': (v or {}).get('record_count'), 'last_updated': last, 'age_days': age, 'ttl_days': ttl, 'stale_count': stale, 'conflicts': conf,
+                     'open_conflicts': conflicts.get(sec, []), 'confidence': (v or {}).get('confidence'), 'readers': sorted(readers.get(sec, [])), 'verdict': verdict,
+                     'finding_id': f'{SCREEN}.PROD-R41.{sec}'})
+    order = {'conflict': 0, 'stale': 1, 'unknown': 2, 'fresh': 3, 'no_ttl': 4}
+    rows.sort(key=lambda r: (order[r['verdict']], -(r['age_days'] or 0), r['section']))
+    return {'rows': rows, 'rule': 'a section is stale past its contract TTL (brand-brain.md) or with stale records, and in conflict when a founder decision waits on it; a section with no freshness record reads unknown, never fresh'}
+
+
+def freshness_findings(br, ends_on):
+    """PROD-R41: a brain section this desk reads that is stale past its TTL, holds stale records, or has an open conflict."""
+    out = []
+    if br is None:
+        return out
+    for r in brain_freshness(br, ends_on)['rows']:
+        if r['verdict'] not in ('stale', 'conflict'):
+            continue
+        ev = [_ev('section_age_days', r['age_days'], 'days', ends_on.isoformat(), 'brain now', r['ttl_days'], 'threshold', source=f'{br.brand}.freshness.{r["section"]}', simulated=False, freshness_days=0,
+                  stale_count=r['stale_count'], conflicts=r['conflicts'], confidence=r['confidence'])]
+        why = (f'{r["conflicts"]} open conflict{"s" if r["conflicts"] != 1 else ""} wait on the founder' if r['verdict'] == 'conflict'
+               else (f'{r["stale_count"]} stale records' if r['stale_count'] else f'last updated {r["last_updated"]}, {r["age_days"]} days ago against a {r["ttl_days"]}-day TTL'))
+        sentence = f'The {r["section"].replace("_", " ")} section is read by {len(r["readers"])} rule{"s" if len(r["readers"]) != 1 else ""} here and {why}.'
+        f = _finding('PROD-R41', r['section'], ends_on, 'medium' if r['verdict'] == 'conflict' else 'low', ev, sentence, None, 0.9, [f'{br.brand}.freshness.{r["section"]}'],
+                     money_reason='a stale section has no order count; the rules that read it carry the stake')
+        f['entity'] = {'type': 'brand', 'id': r['section'], 'label': r['section'].replace('_', ' '), 'verdict': r['verdict'], 'readers': r['readers'], 'ttl_days': r['ttl_days'], 'age_days': r['age_days'],
+                       'open_conflicts': r['open_conflicts']}
+        f['id'] = r['finding_id']
         out.append(f)
     return out
