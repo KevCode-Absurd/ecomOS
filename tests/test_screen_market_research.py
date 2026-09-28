@@ -35,7 +35,7 @@ metrics = audit.metrics()
 class FakeData:
     """Two lines over 25 months. The store grows 20 percent a year; Tee grows `tee_growth`."""
 
-    def __init__(self, tee_growth=0.2, with_products=True):
+    def __init__(self, tee_growth=0.2, with_products=True, with_ankle=False):
         self.brand = {'brand': 'fake', 'name': 'Fake', 'as_of': '2026-09-27', 'simulated': True}
         rows = []
         for i in range(25):
@@ -47,12 +47,16 @@ class FakeData:
             rows.append({'month': month, 'sku': 'S-1', 'category': 'socks', 'units': sock, 'net_sales': sock * 10.0})
             rows.append({'month': month, 'sku': 'S-3', 'category': 'socks', 'units': sock, 'net_sales': sock * 25.0})
             rows.append({'month': month, 'sku': 'T-1', 'category': 'tshirts', 'units': tee, 'net_sales': tee * 30.0})
+            if with_ankle:
+                rows.append({'month': month, 'sku': 'S-9', 'category': 'socks', 'units': 100, 'net_sales': 100 * 12.0})
         self.tables = {'products_monthly': rows}
         if with_products:
             self.tables['products'] = [
                 {'sku': 'S-1', 'title': 'Crew Sock', 'category': 'socks', 'price': 10.0, 'items_per_unit': 1},
                 {'sku': 'S-3', 'title': 'Crew Sock 3-Pack', 'category': 'socks', 'price': 27.0, 'items_per_unit': 3},
                 {'sku': 'T-1', 'title': 'Tee', 'category': 'tshirts', 'price': 30.0, 'items_per_unit': 1}]
+            if with_ankle:
+                self.tables['products'].append({'sku': 'S-9', 'title': 'Ankle Sock', 'category': 'socks', 'price': 12.0, 'items_per_unit': 1})
 
     def table(self, name):
         if name not in self.tables:
@@ -152,14 +156,65 @@ class RulesTest(unittest.TestCase):
         self.assertEqual(inp['net_sales_last_month'], 240 * 30.0)
         self.assertEqual(f['money_at_stake']['usd'], round(inp['net_sales_last_month'] * (0.2 - 0.055)))
 
+    def test_hero_line_without_next_sku_fires(self):
+        fs = [f for f in audit.run(None, data=FakeData(with_ankle=True)) if f['rule_id'] == 'PROD-R03']
+        self.assertEqual([f['entity']['id'] for f in fs], ['crew-sock'])
+        f = fs[0]
+        self.check_shape(f)
+        self.assertEqual(f['entity']['category'], 'socks')
+        self.assertIn('No next SKU for socks', f['sentence'])
+        self.assertIsNone(f['money_at_stake'])
+        share = next(e for e in f['evidence'] if e['metric'] == 'category_share_net_sales')
+        self.assertGreaterEqual(share['value'], 0.25)
+
+    def test_hero_rule_quiet_with_one_line_per_category(self):
+        self.assertFalse([f for f in audit.run(None, data=FakeData()) if f['rule_id'] == 'PROD-R03'])
+
     def test_deterministic(self):
         d = FakeData(tee_growth=0.05)
         self.assertEqual(json.dumps(audit.run(None, data=d)), json.dumps(audit.run(None, data=d)))
 
     def test_rules_list(self):
-        self.assertEqual({r['rule_id'] for r in audit.RULES}, {'PROD-R01', 'PROD-R02'})
+        self.assertEqual({r['rule_id'] for r in audit.RULES}, {'PROD-R01', 'PROD-R02', 'PROD-R03'})
         for r in audit.RULES:
             self.assertEqual(r['owner_screen'], '01-market-research')
+
+
+class RankTest(unittest.TestCase):
+    """depth.md rules 2, 3 and 13 on this screen's rank(): owner, steps, artefact, every finding mapped, deterministic."""
+
+    def actions(self):
+        return api.rank('bombas', {'ends_on': '2026-09-27', 'days': 28, 'trailing': 4})['actions']
+
+    def test_every_finding_maps_to_a_valid_action(self):
+        findings = [f for f in audit.run('bombas', {'ends_on': '2026-09-27', 'days': 28, 'trailing': 4}) if f['status'] in ('open', 'unavailable')]
+        acts = self.actions()
+        covered = {fid for a in acts for fid in a['finding_ids']}
+        for f in findings:
+            self.assertIn(f['id'], covered, f['id'])
+        for a in acts:
+            self.assertEqual(api.rank_mod.validate_action(a), [], a['id'])
+            self.assertIn(a['owner'], ('agent', 'agent_drafts', 'person'))
+            self.assertTrue(2 <= len(a['steps']) <= 8)
+            self.assertTrue(all(s['who'] in ('agent', 'agent_drafts', 'person') for s in a['steps']))
+            self.assertIn(a['artefact']['kind'], api.rank_mod.ARTEFACT_KINDS)
+            self.assertNotIn('\u2014', a['title'] + a['why'] + ' '.join(s['text'] for s in a['steps']))
+            if a['status'] == 'unavailable':
+                self.assertEqual(a['owner'], 'person')
+                self.assertEqual(a['artefact']['kind'], 'connector_setup')
+
+    def test_recipes_carry_real_steps(self):
+        for a in self.actions():
+            if a['status'] == 'unavailable':
+                continue
+            self.assertNotIn('Read the evidence rows', a['steps'][0]['text'], a['id'])   # not the engine default
+            self.assertTrue(a.get('stop_rule') or a.get('win_rule'), a['id'])
+            self.assertTrue(a['artefact']['label'])
+
+    def test_deterministic_order(self):
+        a = [x['id'] for x in self.actions()]
+        b = [x['id'] for x in self.actions()]
+        self.assertEqual(a, b)
 
 
 class Req:

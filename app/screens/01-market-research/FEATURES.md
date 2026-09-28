@@ -134,8 +134,30 @@ No JTBD table exists for this room yet (jtbd-writer is a BRAND skill, not a room
 - `shortlist_scorecard`: candidate_id, criterion, weight, score, rank, review_date, decision (scorecard script plus founder decision log)
 - `tech_pack_versions`: sku, version, tolerances, bom, packaging_cost, status, updated_at (manual entry plus sourcing agent output)
 
+## Round 1: the execution surface (from 28 Sep 2026, depth contract)
+
+The screen is rebuilt to `app/contracts/depth.md`: the plan first, then what is wrong, the actions with their implementation, the desk, the audit. Every element ends in an action with an owner, steps and an artefact. `rank(brand, window)` in `api.py` maps every audit finding to a real action.
+
+| # | Feature | Status |
+|---|---|---|
+| 1.1 | Plan board first from `rank`, orientation numbers beside it (units, lines losing share, product lines in the brain, public revenue band, open findings, stake, brain freshness); what is wrong grouped by rule with evidence numbers; action cards with owner, steps, artefact, win and stop rules; the desk restyled as verdict tables with a gap line and an action under each block; the audit with findings and rules at the bottom; exports. Round 0 tiles, insight cards and the units chart removed. New rule PROD-R03 (hero line with no next SKU in the pipeline). `rank` v1 with real titles and steps for R01 to R03. | done |
+| 1.2 | Industry and sub-industry trend strips | todo |
+| 1.3 | Emerging sub-categories and new products, verdict table | todo |
+| 1.4 | What people are talking about across Reddit, reviews and a social keyword pull | todo |
+| 1.5 | Shifting preferences: where the brand stands against the category conversation | todo |
+| 1.6 | Positioning map | todo |
+| 1.7 | Personas and markets served and not served, coverage matrix | todo |
+| 1.8 | Search terms for the brand and the industry | todo |
+| 1.9 | Where the brand is falling behind on positioning and avatars | todo |
+| 1.10 | `rank` for every rule, tests that every finding maps to an action | todo |
+
+## Contract asks
+
+None yet.
+
 ## Rounds
 
 | Round | Features picked | Date | Notes |
 |---|---|---|---|
 | 0 | skeleton, 0.1 to 0.11 | 28 Sep 2026 | S3.6, Bombas simulated set at scale 0.1 |
+| 1 | 1.1 | 28 Sep 2026 | plan first, rank v1, PROD-R03; in progress |

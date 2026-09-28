@@ -1,51 +1,46 @@
-"""Products and research API: /api/01-market-research/...
+"""Market and product research API: /api/01-market-research/...
 
-  GET overview?brand=bombas   tiles, demand by line, price bands, review mining, candidate pipeline,
-                              insights, chart, findings
+  GET overview?brand=bombas   head, orientation numbers, what is wrong (findings grouped by rule),
+                              the desk (demand by line, price bands, review mining, candidate pipeline),
+                              the audit (findings and rules)
   GET findings?brand=bombas   the audit findings only (audit.py, contract shape)
+  GET rank?brand=bombas&window=28d
+                              served by app/server.py through app/rank.py, which calls this module's
+                              rank(brand, window): real titles, steps and artefacts per rule (depth.md 5)
 
 Sales numbers come from app/metrics.py through audit.Reader. List prices come from the products table.
 Review totals, ladders and competitor price bands come from the brand brain (app/brain/store.py).
-Insights are rules in `insights()`, each with the sentence it produces and the capability it maps to.
 Missing is unavailable, never 0. Default brand is bombas (simulated sales, public brain). Read-only.
+Screen JS holds no brand fact: every name, price, threshold and sentence comes from here.
 """
+import datetime as dt
 import importlib.util
 import json
 import re
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
+APP = HERE.parents[1]
+SCREEN = '01-market-research'
 
 
-def _audit():
-    spec = importlib.util.spec_from_file_location('market_research_audit', HERE / 'audit.py')
+def _load(name, path):
+    spec = importlib.util.spec_from_file_location(name, path)
     mod = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(mod)
     return mod
 
 
-audit = _audit()
+audit = _load('market_research_audit', HERE / 'audit.py')
+rank_mod = _load('market_research_rank_engine', APP / 'rank.py')
 DEFAULT_BRAND = 'bombas'
-CHART_MONTHS = 12
-CHART_TOP_LINES = 5
-HERO_SHARE = 0.25  # a line with this share of its category's net sales is a hero
-CATEGORY_WORD = {'socks': 'sock', 'slippers': 'slipper', 'tshirts': 't-shirt'}
+CATEGORY_WORD = {'socks': 'sock', 'slippers': 'slipper', 'tshirts': 't-shirt', 'underwear': 'underwear', 'footwear': 'footwear'}
 
 # The candidate pipeline and its margin gate, from the room spec (candidate_pipeline, margin_gate_calc).
 PIPELINE_COLUMNS = ['candidate', 'category', 'stage', 'screen_result', 'time_box_days', 'hours_logged',
                     'angle', 'planned_price', 'contribution_margin_pct_modelled', 'gate']
 MARGIN_GATE = ('contribution margin modelled = (planned price - COGS - shipping - duty - payment fee) / planned price. '
                'Below the brand floor, a candidate cannot move to sourcing spend.')
-
-
-def _tile(name, plain, value, unit, **extra):
-    out = {'name': name, 'plain': plain, 'unit': unit, 'value': value}
-    out.update(extra)
-    return out
-
-
-def _unavail(name, plain, unit, reason, fix):
-    return _tile(name, plain, None, unit, unavailable_reason=reason, fix=fix)
 
 
 def source_of(data, brand):
@@ -76,38 +71,58 @@ def finance_floor(data, brand, ends_on):
     return audit.metrics().finance.Finance(rows).value('target_contribution_margin', ends_on.isoformat())
 
 
-# ---------------------------------------------------------------- tiles
+# ---------------------------------------------------------------- brain reads
 
-def tiles(tr, reviews):
-    plain_units = 'Units sold in the last 3 whole months, against the same 3 months a year earlier.'
-    if tr.get('unavailable'):
-        units = _unavail('Units, last 3 months', plain_units, 'n', tr.get('reason'), tr.get('fix'))
-        losing = _unavail('Lines losing share', 'Lines that sold less, or grew slower than the store.', 'n',
-                          tr.get('reason'), tr.get('fix'))
-    else:
-        g = tr['store_growth']
-        units = _tile('Units, last 3 months', plain_units, tr['store_units'], 'n', delta=g,
-                      delta_label=f'vs {tr["year_ago"][0]} to {tr["year_ago"][1]}',
-                      window=f'{tr["first"]} to {tr["last"]}', freshness=(tr.get('freshness') or {}).get('as_of'),
-                      sources=(tr.get('freshness') or {}).get('sources'))
-        hit = [r['line'] for r in tr['lines'] if audit.declining(r)]
-        losing = _tile('Lines losing share', f'Of {len(tr["lines"])} lines, how many sold less than last year or grew '
-                       f'{audit.SHARE_GAP_POINTS:g} point or more slower than the store. '
-                       + (f'{", ".join(hit)}.' if hit else 'None.'), len(hit), 'n',
-                       window=f'{tr["first"]} to {tr["last"]}', tone='bad' if hit else 'good')
-    rated = [r for r in reviews if r['rating'] is not None]
-    if rated:
-        low = min(rated, key=lambda r: r['rating'])
-        worst = _tile('Lowest rated line', f'{low["line"] or low["key"]}: {low["rating"]} stars from {low["reviews"]:,} '
-                      f'reviews on the brand site. Reviews are public, not simulated.', low['rating'], 'stars',
-                      window='all reviews to capture', freshness=low['captured_at'], tone='bad' if low['rating'] < 4.3 else None)
-    else:
-        worst = _unavail('Lowest rated line', 'Average star rating of the weakest line.', 'stars',
-                         'no review totals on file', 'reviews')
-    return {'units': units, 'losing': losing, 'rating': worst}
+def brain_value(br, rid):
+    if br is None:
+        return None
+    r = br.get(rid)
+    return r.get('value') if r else None
 
 
-# ---------------------------------------------------------------- tables
+def brain_date(br):
+    """Days since the newest dated record in the sections this screen reads, or None."""
+    if br is None:
+        return None
+    newest = None
+    for sec in ('positioning', 'diagnosis', 'competitors', 'avatars', 'products', 'seo_facts', 'learnings', 'economics'):
+        for r in br.records(sec):
+            if r['date'] != 'undated' and (newest is None or r['date'] > newest):
+                newest = r['date']
+    return newest
+
+
+def product_lines(br):
+    v = brain_value(br, f'{br.brand}.products.lines') if br else None
+    return [str(x) for x in v] if isinstance(v, list) else []
+
+
+# ---------------------------------------------------------------- orientation
+
+def orientation(tr, br, ends_on, findings):
+    """3 to 6 small numbers beside the plan. Null renders unavailable; never 0 for unknown."""
+    open_f = [f for f in findings if f['status'] == 'open']
+    stake = [f['money_at_stake']['usd'] for f in open_f if f.get('money_at_stake')]
+    lines = product_lines(br)
+    newest = brain_date(br)
+    fresh = max((ends_on - dt.date.fromisoformat(newest)).days, 0) if newest else None
+    revenue = brain_value(br, f'{br.brand}.economics.revenue_point_usd') if br else None
+    items = [
+        {'label': 'units, last 3 months', 'value': None if tr.get('unavailable') else tr['store_units'], 'unit': 'n',
+         'delta': None if tr.get('unavailable') else tr['store_growth'], 'higher_is_better': True,
+         'title': 'whole months against the same months a year earlier, simulated'},
+        {'label': 'lines losing share', 'value': None if tr.get('unavailable') else sum(1 for r in tr['lines'] if audit.declining(r)),
+         'unit': 'n', 'tone': 'bad' if not tr.get('unavailable') and any(audit.declining(r) for r in tr['lines']) else None},
+        {'label': 'product lines in the brain', 'value': len(lines) or None, 'unit': 'n', 'title': ', '.join(lines)},
+        {'label': 'annual revenue, public band', 'value': revenue, 'unit': '$', 'title': 'economics.revenue_point_usd, the simulation point'},
+        {'label': 'open findings', 'value': len(open_f), 'unit': 'n', 'tone': 'bad' if open_f else 'good'},
+        {'label': 'stake known', 'value': sum(stake) if stake else None, 'unit': '$', 'title': 'sum of money at stake where a formula exists'},
+        {'label': 'brain read', 'value': fresh, 'unit': 'd', 'suffix': ' ago', 'title': 'days since the newest research record'},
+    ]
+    return items
+
+
+# ---------------------------------------------------------------- desk tables (round 0, restyled as verdicts)
 
 def demand(tr, reviews):
     """One row per line: units, growth, gap to the store, net sales, and the line's reviews when on file."""
@@ -147,7 +162,8 @@ def competitor_bands(br):
 def price_bands(prods, comps):
     """Per line: list price per pair across its packs, against the competitor median band (socks only)."""
     if not prods:
-        return {'unavailable': True, 'reason': 'the products table is not connected', 'fix': 'shopify', 'rows': []}
+        return {'unavailable': True, 'reason': 'the products table is not connected', 'fix': 'shopify', 'rows': [],
+                'competitors': comps, 'band': None}
     medians = [c['median'] for c in comps if c['median'] is not None]
     band = (min(medians), max(medians)) if medians else None
     lines = {}
@@ -176,133 +192,185 @@ def price_bands(prods, comps):
 
 
 def review_mining(reviews, lads):
-    """One tile per reviewed line: what works, what fails, and the objection ladders built from its reviews."""
+    """One row per reviewed line: what works, what fails, and the objection ladders built from its reviews."""
     out = []
     for rv in sorted(reviews, key=lambda r: -(r['reviews'] or 0)):
         hits = [l for l in lads if rv['record'] in l['reviews_records']]
         out.append({'line': rv['line'] or rv['key'], 'product': rv['product'], 'pdp': rv['pdp'], 'rating': rv['rating'],
-                     'reviews': rv['reviews'], 'low_star_share': rv['low_star_share'], 'works': rv['praise'],
-                     'fails': rv['issues'], 'record': rv['record'],
-                     'ladders': [{'id': l['id'], 'theme': l['theme'],
-                                  'rungs': [{'level': g['level'], 'doubt': g['doubt'], 'one_star': g['one_star'],
-                                             'proof': g['proof']} for g in l['rungs'] if rv['record'] in g['from_reviews']]}
-                                 for l in hits]})
+                    'reviews': rv['reviews'], 'low_star_share': rv['low_star_share'], 'works': rv['praise'],
+                    'fails': rv['issues'], 'record': rv['record'],
+                    'ladders': [{'id': l['id'], 'theme': l['theme'],
+                                 'rungs': [{'level': g['level'], 'doubt': g['doubt'], 'one_star': g['one_star'],
+                                            'proof': g['proof']} for g in l['rungs'] if rv['record'] in g['from_reviews']]}
+                                for l in hits]})
     return out
 
 
-def ladder_summary(lads):
-    return [{'id': l['id'], 'theme': l['theme'], 'one_star': l['one_star'], 'five_star': l['five_star'],
-             'what_works': l['what_works'], 'what_fails': l['what_fails']} for l in lads]
+# ---------------------------------------------------------------- rank: findings to actions with real steps
+
+def _cat_word(f):
+    return CATEGORY_WORD.get((f.get('entity') or {}).get('category') or '', 'category')
 
 
-# ---------------------------------------------------------------- insights
-
-def insights(tr, bands, pipeline):
-    """The rules behind the insight cards. Each returns the sentence it produces and its capability."""
-    out = []
-    rule = (f'a line with {round(HERO_SHARE * 100)} percent or more of its category\'s net sales in the last 3 whole '
-            f'months, and no next-SKU candidate open in the pipeline')
-    if tr.get('unavailable'):
-        out.append({'id': 'hero_no_extension', 'severity': 'info', 'capability': None, 'autonomy': None,
-                    'sentence': 'Line sales are not connected, so the hero line cannot be named.', 'rule': rule})
-    else:
-        cat = {}
-        for r in tr['lines']:
-            cat.setdefault(audit_category(r, bands), []).append(r)
-        heroes = []
-        for c, rows in cat.items():
-            total = sum(r['net_sales'] for r in rows)
-            for r in rows:
-                if total and r['net_sales'] / total >= HERO_SHARE and len(rows) > 1:
-                    heroes.append((r, c, r['net_sales'] / total))
-        heroes.sort(key=lambda h: -h[0]['net_sales'])
-        open_next = [p for p in pipeline if p.get('stage') not in ('go', 'kill')]
-        if heroes and not open_next:
-            r, c, share = heroes[0]
-            out.append({'id': 'hero_no_extension', 'severity': 'medium', 'capability': 'PROD-C06', 'autonomy': 'agent',
-                        'sentence': f'{r["line"]} brings in {round(share * 100)} percent of {CATEGORY_WORD.get(c, c)} sales with no next SKU '
-                                    f'in the pipeline. The pipeline is empty.', 'rule': rule})
-        else:
-            out.append({'id': 'hero_no_extension', 'severity': 'info', 'capability': None, 'autonomy': None,
-                        'sentence': 'Every hero line has a next SKU open in the pipeline.' if heroes else
-                                    'No line holds a quarter of its category.', 'rule': rule})
-    rule = 'sock lines whose per-pair list price sits below, inside or above the band of competitor median prices'
-    rows = [r for r in bands.get('rows') or [] if r['position']]
-    if not rows or not bands.get('band'):
-        out.append({'id': 'price_band', 'severity': 'info', 'capability': None, 'autonomy': None,
-                    'sentence': 'No competitor price band is on file, so price position cannot be read.', 'rule': rule})
-    else:
-        lo, hi = bands['band']
-        below = [r['line'] for r in rows if r['position'] == 'below']
-        above = [r['line'] for r in rows if r['position'] == 'above']
-        sentence = (f'{len(below)} of {len(rows)} sock lines sell for less per pair than the lowest competitor median '
-                    f'of ${lo:,.0f}.')
-        inside = [r['line'] for r in rows if r['position'] == 'inside']
-        if inside:
-            sentence += f' {", ".join(inside)} {"sits" if len(inside) == 1 else "sit"} inside the ${lo:,.0f} to ${hi:,.0f} band.'
-        if above:
-            sentence += f' {len(above)} {"sits" if len(above) == 1 else "sit"} above it.'
-        out.append({'id': 'price_band', 'severity': 'medium' if below else 'info', 'capability': 'PROD-C04',
-                    'autonomy': 'agent', 'sentence': sentence, 'rule': rule})
-    return out
+def _line(f):
+    return (f.get('entity') or {}).get('label', '').replace(' (product line)', '')
 
 
-def audit_category(row, bands):
-    for b in bands.get('rows') or []:
-        if b['line'] == row['line']:
-            return b['category']
-    return 'store'
+def _ev_value(f, metric):
+    for e in f.get('evidence') or []:
+        if e.get('metric') == metric:
+            return e.get('value')
+    return None
 
 
-# ---------------------------------------------------------------- chart
+def _check_on(f, days):
+    end = f.get('last_seen') or f.get('first_seen')
+    return (dt.date.fromisoformat(str(end)[:10]) + dt.timedelta(days=days)).isoformat() if end else None
 
-def chart(rd):
-    last = rd.last_month
-    first = audit.month_add(last, 1 - CHART_MONTHS)
-    r = rd.m('units', first, last, by='line_month')
-    if r.get('unavailable'):
-        return {'unavailable': True, 'reason': r.get('reason'), 'fix': r.get('fix')}
-    months = r['months']
-    totals = {}
-    for g in r['groups']:
-        totals[g['line']] = totals.get(g['line'], 0) + g['units']
-    top = [l for l, _ in sorted(totals.items(), key=lambda kv: -kv[1])[:CHART_TOP_LINES]]
-    series = {l: {m: None for m in months} for l in top}
-    other = {m: None for m in months}
-    for g in r['groups']:
-        if g['line'] in series:
-            series[g['line']][g['month']] = g['units']
-        else:
-            other[g['month']] = (other[g['month']] or 0) + g['units']
-    out = [{'name': l, 'values': [series[l][m] for m in months]} for l in top]
-    if len(totals) > len(top):
-        out.append({'name': f'Other {len(totals) - len(top)} lines', 'values': [other[m] for m in months]})
-    return {'labels': months, 'series': out, 'window': f'{months[0]} to {months[-1]}', 'notes': r.get('notes')}
+
+def recipe(f):
+    """Per rule: title, why, owner, artefact, steps, size, stop rule, check date. Every step names who does it."""
+    rid = f['rule_id']
+    line = _line(f)
+    if rid == 'PROD-R01':
+        growth = _ev_value(f, 'unit_growth')
+        store = next((e.get('baseline') for e in f['evidence'] if e.get('metric') == 'unit_growth'), None)
+        m = f.get('money_at_stake') or {}
+        return {
+            'title': f'Find why {line} is losing share and brief the fix',
+            'owner': 'agent', 'artefact': {'kind': 'research_note', 'label': f'a 1-page read on {line}: price, reviews, ads, stock, with the fix named'},
+            'steps': [
+                {'n': 1, 'who': 'agent', 'text': f'Split {line} units by SKU and month for the 3 months and the same months a year earlier.'},
+                {'n': 2, 'who': 'agent', 'text': 'Check the 4 usual causes in order: stock-outs, price moves, review score drop, ad spend on the line.'},
+                {'n': 3, 'who': 'agent', 'text': 'Write the read with the cause ranked by evidence and one action per cause: restock, price test, review fix, ad brief.'},
+                {'n': 4, 'who': 'person', 'text': 'Pick the action. It goes to the screen that owns it (offers, creative, supply).'},
+                {'n': 5, 'who': 'agent', 'text': 'Re-read the line after the next whole month. The finding resolves when growth is within 1 point of the store.'}],
+            'size': {'text': f'{rank_mod_money(m)} of net sales the line would have kept at store growth', 'usd': m.get('usd')} if m else None,
+            'stop_rule': 'stop the fix if the line is within 1 point of the store for 2 whole months',
+            'check_on': _check_on(f, 31), 'time_to_ship_hours': 4,
+            'win_rule': f'{line} unit growth within 1 point of the store, 2 months running' + (f' (now {round(growth * 100, 1)} percent against {round(store * 100, 1)})' if growth is not None and store is not None else ''),
+        }
+    if rid == 'PROD-R02':
+        top = next((e.get('top_issues') for e in f['evidence'] if e.get('top_issues')), None) or []
+        rungs = [e for e in f['evidence'] if e.get('rung')]
+        m = f.get('money_at_stake') or {}
+        return {
+            'title': f'Fix the top complaint on {line}: {top[0] if top else "the top issue"}',
+            'owner': 'agent_drafts', 'artefact': {'kind': 'page_section', 'label': f'a PDP proof section for {line} answering "{top[0] if top else "the top issue"}", plus a product ticket when the cause is the product'},
+            'steps': [
+                {'n': 1, 'who': 'agent', 'text': f'Read the 1 and 2 star reviews for {line} and count the issues: ' + ', '.join(top[:3]) + '.'},
+                {'n': 2, 'who': 'agent', 'text': 'Sort each issue as product (needs a spec change), fit (needs a size guide or fit note) or expectation (needs the PDP to say it first).'},
+                {'n': 3, 'who': 'agent', 'text': 'Draft the PDP section that answers the expectation and fit issues with the proof on file' + (f' (ladder rungs: {", ".join(e["rung"] for e in rungs[:3])})' if rungs else '') + '.'},
+                {'n': 4, 'who': 'person', 'text': 'Approve the section. Send product issues to supply as a spec ticket.'},
+                {'n': 5, 'who': 'agent', 'text': 'Track the 1 and 2 star share of new reviews for 60 days.'}],
+            'size': {'text': f'{rank_mod_money(m)} of last month\'s sales went into the extra bad experiences', 'usd': m.get('usd')} if m else None,
+            'stop_rule': 'stop if the 1 and 2 star share of new reviews is under the brand median for 60 days',
+            'check_on': _check_on(f, 60), 'time_to_ship_hours': 6,
+            'win_rule': 'low-star share of new reviews at or under the brand median',
+        }
+    if rid == 'PROD-R03':
+        cat = _cat_word(f)
+        share = _ev_value(f, 'category_share_net_sales')
+        return {
+            'title': f'Plan the next {cat} SKU beside {line}',
+            'owner': 'agent', 'artefact': {'kind': 'research_note', 'label': f'3 next-SKU candidates for {cat} with the angle, the price point and the demand check, added to the pipeline with a time box'},
+            'steps': [
+                {'n': 1, 'who': 'agent', 'text': f'Read {line} reviews for the unmet asks (what buyers wish it did) and the sizes, colours and packs that sell out first.'},
+                {'n': 2, 'who': 'agent', 'text': 'Check the category conversation and competitor launches for the sub-category buyers are moving to.'},
+                {'n': 3, 'who': 'agent', 'text': 'Write 3 candidates, each with an angle that is not a competitor claim, a planned price and a 10-day research time box. Add them to the pipeline.'},
+                {'n': 4, 'who': 'person', 'text': 'Kill or keep each candidate. Kept ones go to the margin gate.'}],
+            'size': {'text': f'{line} is {round(share * 100)} percent of {cat} sales' if share is not None else 'size unavailable', 'usd': None},
+            'stop_rule': 'stop when 1 candidate for the category is open in the pipeline',
+            'check_on': _check_on(f, 14), 'time_to_ship_hours': 8,
+            'win_rule': '1 or more open next-SKU candidates for the category',
+        }
+    return None
+
+
+def rank_mod_money(m):
+    usd = (m or {}).get('usd')
+    return f'${usd:,.0f}' if isinstance(usd, (int, float)) else 'stake unavailable'
+
+
+def rank(brand, window=None):
+    """Depth contract section 5: every audit finding becomes an action with an owner, steps and an artefact."""
+    window = window or rank_mod.default_window()
+    nr = rank_mod.net_revenue_28d(brand, window)
+    findings = audit.run(brand, window)
+    actions = []
+    for f in findings:
+        if f.get('status') not in ('open', 'unavailable', None):
+            continue
+        a = rank_mod.action_from_finding(f, nr)
+        r = recipe(f) if f.get('status') != 'unavailable' else None
+        if r:
+            a.update({k: v for k, v in r.items() if v is not None})
+            a['rubric'] = rank_mod.score(dict(f, capability=f.get('capability')), nr)
+            # the owner the recipe set decides ease, as the rubric table says
+            ease = {'agent': 5, 'agent_drafts': 4, 'person': 3}[a['owner']]
+            a['rubric']['ease'] = ease
+            a['rubric']['total'] = round(sum(rank_mod.WEIGHTS[k] * (a['rubric'][k] if a['rubric'][k] is not None else 2.5) / 5
+                                             for k in rank_mod.WEIGHTS), 1)
+        a['screen'] = SCREEN
+        if not rank_mod.validate_action(a):
+            actions.append(a)
+    actions.sort(key=rank_mod.sort_key)
+    return {'screen': SCREEN, 'brand': brand, 'window': window, 'actions': actions, 'net_revenue_28d': nr}
 
 
 # ---------------------------------------------------------------- overview
 
+def head(data, brand, ends_on, br):
+    b = source_of(data, brand).brand
+    return {'brand': b.get('brand'), 'name': b.get('name'), 'as_of': b.get('as_of'),
+            'simulated': bool(b.get('simulated') or b.get('fictional')), 'market': b.get('market'),
+            'brain_version': br.version() if br else None,
+            'simulated_note': (f'{b.get("name") or "This brand"} is the sample brand. Sales, units and list prices are simulated from a public profile. '
+                               'Review counts, ratings, ads seen and competitor prices are public records in the brand brain.')}
+
+
+def wrong(findings):
+    """Section 2: open and unavailable findings grouped by rule, severity first, each with its evidence numbers."""
+    order = {'critical': 0, 'high': 1, 'medium': 2, 'low': 3}
+    groups = {}
+    for f in findings:
+        if f['status'] not in ('open', 'unavailable'):
+            continue
+        g = groups.setdefault(f['rule_id'], {'rule_id': f['rule_id'], 'name': next((r['name'] for r in audit.RULES if r['rule_id'] == f['rule_id']), f['rule_id']),
+                                              'severity': f['severity'], 'findings': []})
+        if order.get(f['severity'], 9) < order.get(g['severity'], 9):
+            g['severity'] = f['severity']
+        g['findings'].append({'id': f['id'], 'severity': f['severity'], 'status': f['status'], 'sentence': f['sentence'],
+                              'confidence': f['confidence'], 'entity': f['entity'], 'money_at_stake': f.get('money_at_stake'),
+                              'money_reason': f.get('money_reason'), 'unavailable': f.get('unavailable'),
+                              'evidence': [{'metric': e['metric'], 'value': e['value'], 'unit': e['unit'], 'baseline': e.get('baseline'),
+                                            'baseline_kind': e.get('baseline_kind'), 'window': e['window'], 'simulated': e.get('simulated')}
+                                           for e in f['evidence'][:4]]})
+    return sorted(groups.values(), key=lambda g: (order.get(g['severity'], 9), g['rule_id']))
+
+
 def overview(data, brand):
     ends_on = audit.last_full_day(data, brand)
     rd = audit.Reader(data, brand, ends_on)
-    b = source_of(data, brand).brand
-    head = {'brand': b.get('brand'), 'name': b.get('name'), 'as_of': b.get('as_of'),
-            'simulated': bool(b.get('simulated') or b.get('fictional')), 'market': b.get('market')}
     br = audit.brain(brand, today=ends_on) if brand else None
     tr = audit.trend(rd)
     reviews = audit.review_lines(br)
     lads = audit.ladders(br)
     bands = price_bands(products(data, brand), competitor_bands(br))
-    pipeline = []  # seeded empty: no candidate has been screened yet
+    pipe = audit.pipeline(brand)
     floor = finance_floor(data, brand, ends_on)
     findings = audit.run(brand, {'ends_on': ends_on.isoformat()}, data=data)
-    return {'brand': head, 'window': {'ends_on': ends_on.isoformat(), 'trend': None if tr.get('unavailable') else
-                                      {'months': [tr['first'], tr['last']], 'year_ago': tr['year_ago']}},
-            'tiles': tiles(tr, reviews), 'demand': demand(tr, reviews), 'store_growth': tr.get('store_growth'),
-            'price_bands': bands, 'reviews': review_mining(reviews, lads), 'ladders': ladder_summary(lads),
-            'pipeline': {'columns': PIPELINE_COLUMNS, 'rows': pipeline, 'gate_rule': MARGIN_GATE,
-                         'floor_pct': floor, 'floor_source': 'finance_inputs.target_contribution_margin' if floor is not None else None},
-            'insights': insights(tr, bands, pipeline), 'chart': chart(rd), 'findings': findings, 'rules': audit.RULES}
+    return {'brand': head(data, brand, ends_on, br),
+            'window': {'ends_on': ends_on.isoformat(), 'days': 28,
+                       'trend': None if tr.get('unavailable') else {'months': [tr['first'], tr['last']], 'year_ago': tr['year_ago']}},
+            'orientation': orientation(tr, br, ends_on, findings),
+            'wrong': wrong(findings),
+            'desk': {'demand': demand(tr, reviews), 'store_growth': tr.get('store_growth'),
+                     'demand_unavailable': {'reason': tr.get('reason'), 'fix': tr.get('fix')} if tr.get('unavailable') else None,
+                     'price_bands': bands, 'reviews': review_mining(reviews, lads),
+                     'pipeline': {'columns': PIPELINE_COLUMNS, 'rows': pipe, 'gate_rule': MARGIN_GATE, 'floor_pct': floor,
+                                  'floor_source': 'finance_inputs.target_contribution_margin' if floor is not None else None}},
+            'audit': {'findings': findings, 'rules': audit.RULES}}
 
 
 def _brand(req):
@@ -328,4 +396,4 @@ def handle(req):
             return {'findings': audit.run(brand, None, data=data), 'rules': audit.RULES}
     except ValueError as exc:
         return 400, {'error': str(exc)}
-    return 404, {'error': 'not found', 'routes': ['overview', 'findings']}
+    return 404, {'error': 'not found', 'routes': ['overview', 'findings', 'rank']}

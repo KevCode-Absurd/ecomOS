@@ -3,34 +3,45 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Products and research</title>
+<title>Market and product research</title>
 <link rel="stylesheet" href="/web/ui-kit.css">
-<style>
-  .sim { padding: 8px 12px; border-radius: var(--r-md); background: var(--accent-soft); border: 1px solid var(--accent-line); font-size: 13px; }
-  .screen { min-width: 0; overflow-x: hidden; }
-  .section, .card { min-width: 0; }
-  .grid.tiles.three { grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
-  .th { color: var(--muted); font-size: 12.5px; margin: 0 0 10px; }
-  .table-wrap, .card.scroll { overflow-x: auto; }
-  .reviews { display: grid; gap: 12px; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); }
-  .review h4 { margin: 0 0 2px; font-size: 14px; }
-  .review .stat { color: var(--muted); font-size: 12.5px; margin-bottom: 8px; }
-  .review ul { margin: 2px 0 8px; padding-left: 18px; font-size: 13px; }
-  .review .lbl { font-size: 11.5px; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); }
-  .review .lbl.good { color: var(--good, inherit); }
-  .review .lbl.bad { color: var(--bad, inherit); }
-  .review .rung { font-size: 12px; color: var(--muted); }
-  .gate { font-size: 13px; margin: 0 0 10px; }
-  .finding { border-top: 1px solid var(--line); padding: 10px 0; display: grid; gap: 4px; }
-  .finding:first-child { border-top: 0; }
-  .finding .money { font-family: var(--mono); font-size: 12px; color: var(--muted); overflow-wrap: anywhere; }
-</style>
+<link rel="stylesheet" href="screen.css">
 </head>
 <body data-screen="01-market-research">
-<main class="screen" id="app">
-  <header class="screen-head"><h1>Products and research</h1></header>
-  <p>Loading.</p>
-</main>
+<div class="screen">
+  <div class="sample-badge" role="note" id="badge">Loading the research desk.</div>
+  <div class="screen-head"><h1>Market and product research</h1><p>Where the category is going, what buyers are asking for, where the brand sits against its competitors, and what to build next. Ranked, with the owner and the steps for each move.</p></div>
+
+  <!-- 1. The plan -->
+  <section class="section" id="plan-wrap"><div id="plan"></div></section>
+
+  <!-- 2. What is wrong, ranked -->
+  <section class="section" id="wrong-wrap">
+    <div class="sec-head"><h2 id="wrong-title">What is wrong, ranked</h2><span class="sub" id="wrong-sub">The audit's open findings for this desk, severity first. Each one links to the action that fixes it.</span></div>
+    <div id="wrong" class="stack"></div>
+  </section>
+
+  <!-- 3 and 4. Actions with their implementation -->
+  <section class="section" id="actions-wrap">
+    <div class="sec-head"><h2>Actions and how each gets done</h2><span class="sub">One card per ranked action: owner, steps with who does each, the artefact it produces, the win and stop rules.</span></div>
+    <div id="actions" class="stack"></div>
+  </section>
+
+  <!-- 5. The desk -->
+  <div id="desk"></div>
+
+  <!-- 6. The audit -->
+  <section class="section" id="audit-wrap">
+    <div class="sec-head"><h2>The audit</h2><span class="sub" id="audit-sub">Every rule this desk runs, what it reads, and what it found. Resolved findings stay 28 days.</span></div>
+    <div id="audit" class="stack"></div>
+  </section>
+
+  <!-- 7. Notes and exports -->
+  <section class="section" id="notes-wrap">
+    <div class="sec-head"><h2>Exports</h2></div>
+    <div id="exports" class="row"></div>
+  </section>
+</div>
 <script src="/web/ui-kit.js"></script>
 <script src="/web/charts.js"></script>
 <script src="screen.js"></script>

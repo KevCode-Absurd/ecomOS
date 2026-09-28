@@ -23,6 +23,11 @@ Rules
             objection ladder rungs built from the same reviews. Capability PROD-C06 (sharpen the
             line and its angle, agent does). Owner: 01-market-research; 04-offers reads the ladder.
 
+  PROD-R03  Hero line with no next SKU: a line with 25 percent or more of its category's net sales in
+            the last 3 whole months while the candidate pipeline holds no open next-SKU candidate for
+            that category. Money: null (an unlaunched SKU has no baseline). Capability PROD-C06
+            (extend the line and sharpen the angle, agent does). Owner: 01-market-research.
+
 Money uses net sales, not margin. Review counts are public and real; sales are simulated.
 """
 import importlib.util
@@ -38,6 +43,7 @@ TREND_MONTHS = 3
 SHARE_GAP_POINTS = 1.0
 LOW_STAR_FLOOR = 0.10
 LOW_STAR_TIMES_MEDIAN = 1.5
+HERO_SHARE = 0.25  # a line with this share of its category's net sales is a hero
 
 RULES = [
     {'rule_id': 'PROD-R01', 'name': 'Line units down on last year, or growing 1 point or more slower than the store',
@@ -45,9 +51,13 @@ RULES = [
     {'rule_id': 'PROD-R02', 'name': 'Line with 10 percent or more 1 and 2 star reviews, 1.5 times the brand median',
      'entity_type': 'sku', 'inputs': ['brain.products.reviews_*', 'brain.objection_ladders', 'products_monthly'],
      'capability': 'PROD-C06', 'owner_screen': SCREEN},
+    {'rule_id': 'PROD-R03', 'name': 'Hero line with 25 percent or more of its category and no next SKU in the pipeline',
+     'entity_type': 'sku', 'inputs': ['products_monthly', 'products', 'fixtures.pipeline'], 'capability': 'PROD-C06',
+     'owner_screen': SCREEN},
 ]
 CAPABILITY = {'PROD-R01': {'id': 'PROD-C05', 'autonomy': 'agent_does'},
-              'PROD-R02': {'id': 'PROD-C06', 'autonomy': 'agent_does'}}
+              'PROD-R02': {'id': 'PROD-C06', 'autonomy': 'agent_does'},
+              'PROD-R03': {'id': 'PROD-C06', 'autonomy': 'agent_does'}}
 SEVERITY_ORDER = {'critical': 0, 'high': 1, 'medium': 2, 'low': 3}
 
 # Review records name their line in a short key; the store names it by SKU title.
@@ -362,6 +372,62 @@ def review_findings(reviews, lads, rd, tr, ends_on, net_28d):
 
 
 
+# ---------------------------------------------------------------- hero line, pipeline
+
+def pipeline(brand):
+    """Open next-SKU candidates from this screen's fixture (fixtures/pipeline.json, list of rows). Empty when absent."""
+    path = HERE / 'fixtures' / 'pipeline.json'
+    if not path.is_file():
+        return []
+    import json
+    doc = json.loads(path.read_text(encoding='utf-8'))
+    rows = doc.get('rows') if isinstance(doc, dict) else doc
+    return [r for r in rows or [] if not brand or r.get('brand') in (None, brand)]
+
+
+def line_category(line, prods):
+    """The category of a line from the products table, else the line itself when lines are categories."""
+    for p in prods or []:
+        if metrics().product_line(p.get('title')) == line:
+            return p.get('category') or line
+    return line
+
+
+def hero_findings(tr, ends_on, prods, pipe):
+    """PROD-R03: the biggest line of each category with 25 percent or more of it and no open candidate."""
+    out = []
+    cats = {}
+    for r in tr['lines']:
+        cats.setdefault(line_category(r['line'], prods), []).append(r)
+    open_by_cat = {}
+    for p in pipe:
+        if p.get('stage') not in ('go', 'kill', 'killed'):
+            open_by_cat.setdefault(p.get('category'), []).append(p)
+    end = month_end(tr['last']).isoformat()
+    window = f'{TREND_MONTHS} months'
+    for cat, rows in cats.items():
+        total = sum(r['net_sales'] for r in rows)
+        if not total or len(rows) < 2:
+            continue
+        top = max(rows, key=lambda r: r['net_sales'])
+        share = top['net_sales'] / total
+        if share < HERO_SHARE or open_by_cat.get(cat):
+            continue
+        evidence = [
+            _ev('category_share_net_sales', round(share, 4), 'ratio', end, window, HERO_SHARE, 'threshold',
+                note=f'share of {cat} net sales across {len(rows)} lines'),
+            _ev('net_sales', top['net_sales'], 'usd', end, window),
+            _ev('open_candidates', 0, 'count', ends_on.isoformat(), 'pipeline now', 1, 'threshold', source='fixtures.pipeline',
+                simulated=False, freshness_days=0)]
+        sentence = (f'{top["line"]} brings in {round(share * 100)} percent of {cat} net sales over {_span(tr["first"], tr["last"])}. '
+                    f'No next SKU for {cat} is open in the pipeline.')
+        f = _finding('PROD-R03', top['line'], ends_on, 'medium', evidence, sentence, None, 0.7,
+                     money_reason='an unlaunched SKU has no baseline to price the gap')
+        f['entity']['category'] = cat
+        out.append(f)
+    return out
+
+
 def net_28d(rd):
     r = metrics().compute('aov', rd.data, window='28d', end=rd.ends_on.isoformat(),
                           **({'brand': rd.brand} if rd.brand else {}))
@@ -382,6 +448,11 @@ def run(brand, window=None, data=None):
                                 ['products_monthly'], tr.get('fix') or 'shopify', 'Connect the store (read only).'))
     else:
         out += declining_findings(tr, ends_on, net)
+        try:
+            prods = (data if data is not None else brand_data(brand)).table('products')
+        except (KeyError, ValueError):
+            prods = None
+        out += hero_findings(tr, ends_on, prods, pipeline(brand))
     reviews = review_lines(br)
     if not reviews:
         out.append(_unavailable('PROD-R02', ends_on, 'No review totals are on file for any line, so review issues cannot be read.',
