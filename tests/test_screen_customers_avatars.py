@@ -1589,3 +1589,27 @@ class Cache(TempBrain):
 
 if __name__ == '__main__':
     unittest.main()
+
+
+class SizedStop(unittest.TestCase):
+    """Feature 7.1: depth rule 5. Every action that moves money or traffic carries a size, a stop rule with a count, and a check date."""
+
+    def test_every_money_action_is_sized_with_a_stop(self):
+        acts = api.rank('bombas', {'ends_on': '2026-09-27', 'days': 28})['actions']
+        moving = [a for a in acts if a['artefact']['kind'] in api.builds.MOVES_MONEY]
+        self.assertGreater(len(moving), 20)
+        for a in moving:
+            self.assertTrue(a['size'] and a['size']['text'], a['id'])
+            self.assertRegex(a['stop_rule'] or '', r'\d', a['id'])
+            self.assertFalse(a['stop_rule'].startswith('Stop if'), a['id'])
+            self.assertTrue(a['check_on'], a['id'])
+
+    def test_other_kinds_get_no_size(self):
+        ss = api.builds.size_stop('research_note', [{'metric': 'quotes', 'value': 4, 'unit': 'n'}], None, '2026-10-04')
+        self.assertEqual(ss, {'size': None, 'stop_rule': None})
+
+    def test_money_leads_the_size_and_missing_numbers_say_unavailable(self):
+        ss = api.builds.size_stop('offer', [], {'usd': 1200}, None)
+        self.assertEqual(ss['size'], {'text': '$1,200 at stake; size unavailable', 'usd': 1200})
+        ss = api.builds.size_stop('copy', [{'metric': 'one_star_mentions', 'value': None, 'unit': 'n'}], None, None)
+        self.assertEqual(ss['size']['text'], 'size unavailable')

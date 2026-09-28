@@ -117,6 +117,21 @@ Lead's review: rounds 1 to 4 passed. Focus: returns and tickets by avatar, depth
 | 6.9 | Faster loads: the overview and `rank` are built once per brand, day or window, brain version, aggregates timestamp and brain root, and every caller gets a copy, so a brain edit or a data refresh rebuilds them and nothing leaks between callers (tested). Overview 0.215 s cold, 0.013 s warm | done |
 | 6.10 | Money on the audit where the tables allow: CUST-R07 prices paid returning orders against the brand's own 12-month median paid share (share gap x returning orders x paid spend per paid order, cost-side, inputs written so a founder can redo it; `builds.paid_stake`). Bombas: 29.9 percent sits on its median, so the stake is null with that reason, not a number pushed by the 25 percent target. Checked the master list: 59 actions, best 62, none in the top 10 because no finding here has a baseline gap in money yet. Screenshot `round6.png` (the monthly report) | done |
 
+## Round 7: depth rules on this screen, money where history allows, briefs to take away (from 28 Sep 2026)
+
+| # | Feature | Status |
+|---|---|---|
+| 7.1 | Depth rule 5, sized with a stop rule: every action that moves money or traffic (offer, ad brief, page section, listing, copy, flow, email, budget move) carries a size from its finding's first number (money first when known), a stop condition with a count and a check date. Thresholds are named in `builds.size_stop`; the card shows the size where it said "stake unavailable" | done |
+| 7.2 | Depth rule 10, reads in one pass: every desk block has a plain question or imperative heading, one line with the window and the rule in numbers, and one caveat line (tested over every section) | todo |
+| 7.3 | Depth rule 9, gaps not only totals: every desk block shows a never-tried cell, a cross-source check or a competitor position; blocks that only total get one | todo |
+| 7.4 | Depth rule 14, the founder can disagree: "Not now" shows on the item with its date and the day it comes back | todo |
+| 7.5 | Money on retention against own history: cohort cliffs (CUST-R08, R09) priced from the cohort's own median active share, null with the reason when flat | todo |
+| 7.6 | Take an avatar away: a one-page brief per avatar (who, job, doubts with proof, words, what to build, what we do not know) with Copy and Print | todo |
+| 7.7 | Keyboard: j and k move between actions, Enter opens how it gets done, Esc closes any panel | todo |
+| 7.8 | Avatar share from orders: a fixture-backed builder that reads orders by avatar once the data layer tags them, unavailable until then, with the share from reviews labelled as the estimate | todo |
+| 7.9 | Print polish: the report and briefs print on clean pages, with the brand name, the window and the simulated label once | todo |
+| 7.10 | Audit rules and `rank` for round 7, screenshot `round7.png` | todo |
+
 ### Round 6 founder note (28 Sep 2026)
 
 1. The screen now works for any brand: a second, sparse brain renders every route with honest unavailable states and no Bombas facts in code.

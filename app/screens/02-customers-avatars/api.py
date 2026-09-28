@@ -736,6 +736,12 @@ def _build_rank(brand: str, window: dict) -> dict:
                     a[k] = plan[k]
             a["dated"] = bool(plan.get("check_on"))
             a["plan_capability"] = plan.get("capability")
+        ss = builds.size_stop(a["artefact"]["kind"], f.get("evidence") or [], f.get("money_at_stake"), a.get("check_on"))
+        if ss["size"]:
+            a["size"] = ss["size"]
+            a["stop_rule"] = a.get("stop_rule") or ss["stop_rule"]
+        if (a.get("stop_rule") or "").startswith("Stop if "):
+            a["stop_rule"] = a["stop_rule"][len("Stop if "):]
         _rescore(a, eng)
         a["job"] = RULE_JOB.get(f["rule_id"], "avatars")
         a["_artefact_id"] = (plan or {}).get("id") if f["status"] == "open" else None

@@ -2514,3 +2514,60 @@ def report(d: dict, actions: list[dict], agenda_x: dict, name: str) -> dict:
                                                             "Sales and repeat numbers are simulated until the store connects. Customer words are public reviews."]})
     text = "\n\n".join(s["title"].upper() + "\n" + "\n".join(s["lines"]) for s in S)
     return {"title": f"{name}: customers this month", "as_of": d["ends_on"], "sections": S, "text": text}
+
+
+# ---------------------------------------------------------------- size and stop rule (depth.md section 3, rule 5)
+
+MOVES_MONEY = ("offer", "budget_move", "flow", "email", "ad_brief", "page_section", "listing_fix", "copy")
+STOP_CVR_DROP = 0.10        # a page, listing or copy change: conversion down 10 percent against the 28 days before
+STOP_CPO_RISE = 1.3         # an ad: cost per order 1.3x the account 28-day median
+STOP_UNSUB = 0.005          # a flow or email: unsubscribes per send
+STOP_MARGIN_DAYS = 7        # an offer: margin per order under the pre-offer median this many days
+STOP_DAYS = 3
+SIZE_LABEL = {
+    "one_two_star_share": "of reviews are 1 or 2 star", "linked_reviews": "reviews tie to it",
+    "one_two_star_reviews_on_claim_words": "reviews of 1 or 2 stars quote the claim", "one_star_mentions": "one-star mentions",
+    "season_lift": "complaints at the peak against the rest of the year", "theme_share": "of rated reviews",
+    "praise_words_missing": "praise words we never say", "paid_share_of_returning_orders": "of returning orders through paid ads",
+    "buyer_share": "of buyers", "return_risk_vs_median": "the median return risk", "amazon_share_of_reviews": "of reviews on Amazon",
+    "price_share_of_one_star": "of one-star mentions on price", "shared_traits": "trait praised and blamed",
+    "ads_with_pushed_offer": "live ads push the offer", "active_share_drop": "fall in active buyers",
+    "cohorts_falling_together": "of cohorts fell together", "buyer_words_in_positioning": "of the positioning line in buyer words",
+    "lines_over_30_percent": "lines with 30 percent of buyers or more",
+}
+
+
+def _size_text(e: dict) -> str | None:
+    v, unit = e.get("value"), e.get("unit")
+    if not isinstance(v, (int, float)):
+        return None
+    label = SIZE_LABEL.get(e.get("metric"), e.get("metric", "").replace("_", " "))
+    if unit == "%":
+        return f"{round(v * 100, 1)} percent {label}"
+    if unit == "x":
+        return f"{v}x {label}"
+    if unit == "days":
+        return f"{v:,} days {label}"
+    return f"{v:,} {label}"
+
+
+def size_stop(kind: str, evidence: list[dict], money: dict | None, check_on: str | None) -> dict:
+    """Size and stop rule for an action that changes money or traffic. Size is the finding's first number,
+    with the money at stake when known. The stop rule is the condition with a count; the kit prints it after
+    "Stop if:" next to the check date. Other kinds get nothing."""
+    if kind not in MOVES_MONEY:
+        return {"size": None, "stop_rule": None}
+    usd = money.get("usd") if isinstance((money or {}).get("usd"), (int, float)) else None
+    text = next((t for t in (_size_text(e) for e in evidence or []) if t), None)
+    size = {"text": (f"${usd:,.0f} at stake; " if usd else "") + (text or "size unavailable"), "usd": usd}
+    stop = {
+        "page_section": f"Stop if conversion on the page falls {int(STOP_CVR_DROP * 100)} percent against the 28 days before, for {STOP_DAYS} days",
+        "listing_fix": f"Stop if conversion on the listing falls {int(STOP_CVR_DROP * 100)} percent against the 28 days before, for {STOP_DAYS} days",
+        "copy": f"Stop if click-through or conversion falls {int(STOP_CVR_DROP * 100)} percent against the 28 days before, for {STOP_DAYS} days",
+        "ad_brief": f"Stop if cost per order passes {STOP_CPO_RISE}x the account 28-day median for {STOP_DAYS} days",
+        "offer": f"Stop if margin per order sits under the pre-offer median for {STOP_MARGIN_DAYS} days",
+        "flow": f"Stop if unsubscribes pass {STOP_UNSUB * 100} percent of sends on any send",
+        "email": f"Stop if unsubscribes pass {STOP_UNSUB * 100} percent of sends on any send",
+        "budget_move": "Stop if returning orders fall 5 percent for 2 weeks",
+    }[kind]
+    return {"size": size, "stop_rule": stop[len("Stop if "):]}
