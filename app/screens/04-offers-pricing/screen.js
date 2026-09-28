@@ -23,7 +23,7 @@
   }
   /** Rule ids behind each desk block: structure, not brand content. The fallback line opens the move those rules made. */
   const BLOCK_RULES = { 'desk-threshold': ['R01', 'R05', 'R06', 'R30'], 'desk-cart': ['R20', 'R28'], 'desk-discount': ['R18', 'R19', 'R25'],
-    'desk-ladder': ['R07', 'R09', 'R29'], 'desk-first': ['R08', 'R31'], 'desk-welcome': ['R32', 'R38'], 'desk-leaks': ['R40', 'R31'], 'desk-waterfall': ['R10', 'R03'], 'desk-calendar': ['R11'],
+    'desk-ladder': ['R07', 'R09', 'R29'], 'desk-first': ['R08', 'R31'], 'desk-welcome': ['R32', 'R38'], 'desk-leaks': ['R40', 'R31'], 'desk-returners': ['R41', 'R31'], 'desk-waterfall': ['R10', 'R03'], 'desk-calendar': ['R11'],
     'desk-depth': ['R11', 'R03'], 'desk-second': ['R21'], 'desk-cost': ['R22'], 'desk-paid': ['R36', 'R31'], 'desk-attach': ['R37', 'R28', 'R31'], 'desk-gifting': ['R12', 'R13'], 'desk-guarantee': ['R14', 'R35'],
     'desk-position': ['R16'], 'desk-parity': ['R17'], 'desk-moves': ['R34'], 'desk-bundles': ['R26'], 'desk-buyers': ['R23', 'R24'],
     'desk-objections': ['R04', 'R15'], 'desk-tests': ['R27', 'R39'], 'desk-registry': ['R27', 'R33'], 'desk-registry-trust': ['R33'] };
@@ -661,6 +661,19 @@
       actionLine(a && a.status !== 'unavailable' ? a.title + '.' : 'No leak signal. The watch runs again with the next order pull.', a && a.status !== 'unavailable' ? a : null));
   }
 
+  function returnersBlock(rc) {
+    const head = { title: 'Do codes bring buyers back sooner?', sub: 'Returning orders over the last ' + ((rc && rc.days) || 'n') + ' days, with a code against without, and the days since each buyer\'s last order.' };
+    if (!rc || rc.unavailable) return section('desk-returners', head, UI.emptyState({ screen: SLUG, title: 'Returning-buyer codes unavailable', text: (rc || {}).reason, missing: rc && rc.fix ? [rc.fix] : [] }));
+    const a = blockAction('desk-returners');
+    const gap = (g) => g.median_gap == null ? NA : g.median_gap + ' days';
+    const facts = kv([['With a code', fmt.int(rc.code.orders) + ' orders, came back after ' + gap(rc.code)],
+      ['Without a code', fmt.int(rc.none.orders) + ' orders, came back after ' + gap(rc.none)],
+      ['Code dollars on returning orders', fmt.money(rc.code_dollars) + ', ' + fmt.money(rc.code_dollars_28d) + ' per 28 days'],
+      ['Codes used', rc.codes.length ? rc.codes.map((c) => c[0] + ' (' + c[1] + ')').join(', ') : 'none']]);
+    return section('desk-returners', head, el('div', { class: 'card tight' }, facts, el('p', { class: 'micro faint', text: 'Basis: ' + rc.basis + '.' })),
+      actionLine(a && a.status !== 'unavailable' ? a.title + '.' : 'Codes bring returning buyers back sooner, or too few used one. Keep the win-back as it is.', a && a.status !== 'unavailable' ? a : null));
+  }
+
   function buyersBlock(d) {
     const head = { title: 'What do we offer people who already buy?', sub: 'Referral and loyalty, priced in product at landed cost against paid media per new customer and gross margin.' };
     const ro = d.referral, lo = d.loyalty;
@@ -764,8 +777,8 @@
     const TABS = [
       { key: 'launch', label: 'Launch next', rules: ['OFFER-R11', 'OFFER-R12', 'OFFER-R21', 'OFFER-R27', 'OFFER-R33', 'OFFER-R39'],
         blocks: () => [testsBlock(d.tests, d.baseline), registryBlock(d.registry, d.proposed_tests, d.launched, d.trust), calendarBlock(d.calendar), depthBlock(d.depth), giftingBlock(d.gifting), secondOrderBlock(d.cohorts)] },
-      { key: 'offers', label: 'Offers', rules: ['OFFER-R08', 'OFFER-R10', 'OFFER-R19', 'OFFER-R31', 'OFFER-R32', 'OFFER-R38', 'OFFER-R20', 'OFFER-R37', 'OFFER-R23', 'OFFER-R24', 'OFFER-R04', 'OFFER-R14', 'OFFER-R35', 'OFFER-R15'],
-        blocks: () => [firstOrderBlock(d.first_order, d.discount_cohorts), welcomeBlock(d.welcome, d.code_returns), cartBlock(d.cart, d.bunches), attachBlock(d.attach), buyersBlock(d), objectionBlock(d.objections || [], d.returns), guaranteeBlock(d.guarantee, d.returns, d.stress), subscriptionBlock(d.subscription), stackBlock(d.stack || [])] },
+      { key: 'offers', label: 'Offers', rules: ['OFFER-R08', 'OFFER-R10', 'OFFER-R19', 'OFFER-R31', 'OFFER-R32', 'OFFER-R38', 'OFFER-R20', 'OFFER-R37', 'OFFER-R23', 'OFFER-R24', 'OFFER-R41', 'OFFER-R04', 'OFFER-R14', 'OFFER-R35', 'OFFER-R15'],
+        blocks: () => [firstOrderBlock(d.first_order, d.discount_cohorts), welcomeBlock(d.welcome, d.code_returns), cartBlock(d.cart, d.bunches), attachBlock(d.attach), buyersBlock(d), returnersBlock(d.returners), objectionBlock(d.objections || [], d.returns), guaranteeBlock(d.guarantee, d.returns, d.stress), subscriptionBlock(d.subscription), stackBlock(d.stack || [])] },
       { key: 'prices', label: 'Prices and packs', rules: ['OFFER-R22', 'OFFER-R36', 'OFFER-R16', 'OFFER-R17', 'OFFER-R34', 'OFFER-R07', 'OFFER-R09', 'OFFER-R26', 'OFFER-R29'],
         blocks: () => [costBlock(d.costs), paidBlock(d.paid), positionBlock(d.position, d.brand || {}), parityBlock(d.parity), movesBlock(d.price_moves), ladderBlock(d.ladder), bundlesBlock(d.bundles), waterfallBlock(d.waterfalls)] },
       { key: 'shipping', label: 'Shipping and discounts', rules: ['OFFER-R01', 'OFFER-R05', 'OFFER-R06', 'OFFER-R18', 'OFFER-R25', 'OFFER-R30', 'OFFER-R40'],

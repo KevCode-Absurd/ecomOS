@@ -1903,5 +1903,32 @@ class CodeLeakTest(unittest.TestCase):
         self.assertEqual([f for f in audit.run(None, None, server.Data()) if f['rule_id'] == 'OFFER-R40'], [])
 
 
+class ReturnerCodeTest(unittest.TestCase):
+    """Round 7 feature 6: do codes bring returning buyers back sooner. model.returner_codes and OFFER-R41."""
+
+    def test_gaps(self):
+        import datetime as dtm
+        mk = lambda c, day, code=None: {'customer_id': c, 'created_at': day + 'T10:00:00Z',
+                                        'discount': {'code': code, 'amount': 5} if code else None}
+        orders = [mk(1, '2026-06-01'), mk(1, '2026-07-01', 'BACK'), mk(2, '2026-06-01'), mk(2, '2026-08-01'),
+                  mk(3, '2026-01-01'), mk(3, '2026-02-01')]
+        class R:
+            ends_on = dtm.date(2026, 9, 24)
+            def table(self, name):
+                return orders if name == 'orders' else None
+        rc = api.model.returner_codes(R(), 180)
+        self.assertEqual((rc['code']['orders'], rc['code']['median_gap']), (1, 30))
+        self.assertEqual((rc['none']['orders'], rc['none']['median_gap']), (1, 61))   # customer 3 is before the window
+        self.assertEqual(rc['codes'], [('BACK', 1)])
+
+    def test_sample_fires(self):
+        sys.path.insert(0, str(ROOT / 'app'))
+        import server
+        r = api.actions.rank(None, None, server.Data())
+        a = next(x for x in r['actions'] if x['rule_id'] == 'OFFER-R41')
+        self.assertIn('profit per recipient', a['artefact']['draft'])
+        self.assertTrue(a['stop_rule'] and a['check_on'])
+
+
 if __name__ == '__main__':
     unittest.main()

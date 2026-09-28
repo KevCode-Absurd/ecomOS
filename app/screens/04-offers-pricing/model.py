@@ -9,6 +9,7 @@ import calendar
 import json
 from pathlib import Path
 import math
+import statistics
 import re
 from datetime import date, timedelta
 
@@ -1656,3 +1657,38 @@ def code_leaks(rd, days, words, spike, spike_min, first_code=None):
                              'sources': sorted({(o.get('utm') or {}).get('source') or 'referrer' for o in sites})[:6]},
             'spikes': spikes,
             'basis': f'coded orders {start.isoformat()} to {end.isoformat()}; the first-order code is the brain\'s, else the code new customers use most'}
+
+
+# ---------------------------------------------------------------- do codes bring buyers back sooner?
+
+def returner_codes(rd, days):
+    """Returning orders in the last `days`, with a code against without: count, median days since the buyer's last
+    order, code dollars and the codes used. Needs order rows with customer ids."""
+    orders = rd.table('orders')
+    if not isinstance(orders, list) or not orders:
+        return {'unavailable': True, 'reason': 'the orders table is not connected', 'fix': 'shopify'}
+    end = rd.ends_on
+    start = end - timedelta(days=days - 1)
+    last, gaps, dollars, codes = {}, {'code': [], 'none': []}, 0.0, {}
+    for o in sorted(orders, key=lambda r: str(r.get('created_at'))):
+        c = o.get('customer_id')
+        day = str(o.get('created_at'))[:10]
+        if c is None or day > end.isoformat():
+            continue
+        d = date.fromisoformat(day)
+        if c in last and day >= start.isoformat() and not o.get('cancelled_at'):
+            amt = float((o.get('discount') or {}).get('amount') or 0)
+            key = 'code' if amt > 0 else 'none'
+            gaps[key].append((d - last[c]).days)
+            if amt > 0:
+                dollars += amt
+                k = str(o['discount'].get('code') or 'unnamed').upper()
+                codes[k] = codes.get(k, 0) + 1
+        last[c] = d
+    med = lambda v: statistics.median(v) if v else None
+    return {'unavailable': False, 'days': days, 'start': start.isoformat(), 'end': end.isoformat(),
+            'code': {'orders': len(gaps['code']), 'median_gap': med(gaps['code'])},
+            'none': {'orders': len(gaps['none']), 'median_gap': med(gaps['none'])},
+            'code_dollars': round(dollars, 2), 'code_dollars_28d': round(dollars * 28 / days, 2),
+            'codes': sorted(codes.items(), key=lambda kv: -kv[1])[:5],
+            'basis': f'returning orders {start.isoformat()} to {end.isoformat()}; the gap is days since the same buyer\'s last order'}

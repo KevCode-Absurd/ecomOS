@@ -100,6 +100,7 @@ class Ctx:
         self.code_returns = audit.returns_by_code(rd)
         self.baseline = audit.visitor_baseline(rd)
         self.leaks = audit.code_leaks(rd)
+        self.returners = audit.returner_codes(rd)
         self.ship_rate = (model.brain_value(rd, 'offers.standard_shipping_cost')[0] or {}).get('cost_usd') if rd.brand else None
         self.scenarios = (model.threshold_scenarios(rd, self.threshold, self.ship_rate, self.be['value'], (self.po or {}).get('units') or 1)
                           if self.threshold is not None and self.be.get('value') is not None else [])
@@ -554,6 +555,8 @@ def surfaces(a):
         return ['loyalty'], 90
     if r == 'OFFER-R23':
         return ['referral'], 56
+    if r == 'OFFER-R41':
+        return ['win-back flow'], 49
     if r == 'OFFER-R38':
         return ['first order offer', 'pop-up'], 35
     if r == 'OFFER-R37':
@@ -1325,6 +1328,27 @@ def leak_action(f, a, ctx):
     return a
 
 
+def returners_action(f, a, ctx):
+    """OFFER-R41: send the win-back without the code to half, judged on profit per recipient."""
+    rc = ctx.returners
+    names = ', '.join(k for k, _ in rc['codes'][:3])
+    draft = '\n'.join([f'Test brief: win-back with and without {names}', f['sentence'],
+                        'Arms: A gets the win-back email with the code as today. B gets the same email with no code; it leads with what is new.',
+                        '50/50 by customer, 42 days so the slower buyers can come back.',
+                        'Primary metric: profit per recipient over 42 days, after the code.',
+                        'Stop: B orders down 30 percent against A at day 21.'])
+    a.update({'title': f'Send the win-back without {rc["codes"][0][0]} to half of lapsing buyers for 42 days', 'owner': 'agent_drafts',
+              'artefact': {'kind': 'test_brief', 'label': 'Win-back code holdout', 'draft': draft},
+              'steps': steps(('agent', 'Draft the no-code win-back email and the brief.'), ('person', 'Approve the test.'),
+                             ('person', 'Split the win-back flow 50/50 in the email tool.'),
+                             ('agent', f'Read profit per recipient weekly; call it on {ctx.check_on(49)}.')),
+              'size': {'text': f'{money(rc["code_dollars_28d"])} of code a month on returning buyers', 'usd': None},
+              'win_rule': 'B keeps or beats A on profit per recipient over 42 days.',
+              'stop_rule': 'B orders down 30 percent against A at day 21.',
+              'check_on': ctx.check_on(49), 'time_to_ship_hours': 2})
+    return a
+
+
 def bunches(rd):
     """Order-value bunches and the tiers above them, from real order bins only (never from the fixture)."""
     dist = rd.m('order_value_distribution', audit.WINDOW, step=5)
@@ -1501,7 +1525,7 @@ BUILDERS = {'OFFER-R01': threshold_action, 'OFFER-R04': rung_action, 'OFFER-R08'
             'OFFER-R22': cost_action, 'OFFER-R23': referral_action, 'OFFER-R24': loyalty_action,
             'OFFER-R25': discount_action, 'OFFER-R26': bundle_action,
             'OFFER-R27': launched_action, 'OFFER-R29': bnpl_action,
-            'OFFER-R30': match_action, 'OFFER-R31': cohort_action, 'OFFER-R32': welcome_action, 'OFFER-R33': trust_action, 'OFFER-R34': moves_action, 'OFFER-R35': stress_action, 'OFFER-R36': paid_action, 'OFFER-R37': attach_action, 'OFFER-R38': code_returns_action, 'OFFER-R39': power_action, 'OFFER-R40': leak_action}
+            'OFFER-R30': match_action, 'OFFER-R31': cohort_action, 'OFFER-R32': welcome_action, 'OFFER-R33': trust_action, 'OFFER-R34': moves_action, 'OFFER-R35': stress_action, 'OFFER-R36': paid_action, 'OFFER-R37': attach_action, 'OFFER-R38': code_returns_action, 'OFFER-R39': power_action, 'OFFER-R40': leak_action, 'OFFER-R41': returners_action}
 UNAVAILABLE_BUILDERS = {'OFFER-R34': recapture_action}
 
 
@@ -1549,5 +1573,5 @@ def rank(brand='bombas', window=None, data=None):
     return {'screen': SCREEN, 'brand': brand, 'window': w, 'simulated': True, 'net_revenue_28d': nr,
             'actions': actions, 'findings': findings, 'objections': ctx.objections, 'returns': returns_block(rd),
             'ladder': dict(ctx.ladder, moves=ctx.ladder_rows), 'first_order': ctx.first_order, 'waterfalls': ctx.waterfalls, 'calendar': ctx.calendar, 'gifting': ctx.gifting, 'guarantee': ctx.guarantee, 'position': ctx.position, 'parity': ctx.parity,
-            'discipline': dict(ctx.discipline, policy=discount_policy(ctx), windows=ctx.depth_history, window_creep_points=playbook.WINDOW_CREEP_POINTS), 'cart': ctx.cart, 'tests': calendar, 'depth': ctx.depth, 'cohorts': ctx.cohorts, 'costs': ctx.costs, 'registry': ctx.registry, 'referral': ctx.referral, 'loyalty': ctx.loyalty, 'bundles': ctx.bundles, 'proposed_tests': ctx.proposed_rows, 'launched': ctx.launched, 'discount_cohorts': audit.discount_cohorts(rd), 'welcome': ctx.welcome, 'trust': ctx.trust, 'price_moves': ctx.price_moves, 'stress': ctx.stress, 'paid': ctx.paid, 'attach': ctx.attach, 'code_returns': ctx.code_returns, 'baseline': ctx.baseline, 'leaks': ctx.leaks, 'bunches': bunches(rd),
+            'discipline': dict(ctx.discipline, policy=discount_policy(ctx), windows=ctx.depth_history, window_creep_points=playbook.WINDOW_CREEP_POINTS), 'cart': ctx.cart, 'tests': calendar, 'depth': ctx.depth, 'cohorts': ctx.cohorts, 'costs': ctx.costs, 'registry': ctx.registry, 'referral': ctx.referral, 'loyalty': ctx.loyalty, 'bundles': ctx.bundles, 'proposed_tests': ctx.proposed_rows, 'launched': ctx.launched, 'discount_cohorts': audit.discount_cohorts(rd), 'welcome': ctx.welcome, 'trust': ctx.trust, 'price_moves': ctx.price_moves, 'stress': ctx.stress, 'paid': ctx.paid, 'attach': ctx.attach, 'code_returns': ctx.code_returns, 'baseline': ctx.baseline, 'leaks': ctx.leaks, 'returners': ctx.returners, 'bunches': bunches(rd),
             'subscription': model.subscription_note(rd, ctx.cohorts, (ctx.depth or {}).get('rows'), (ctx.depth or {}).get('target'))}

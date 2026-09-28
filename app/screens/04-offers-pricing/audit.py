@@ -168,6 +168,10 @@ Rules
              orders from a coupon site, or a weekly spike in a code's use (model.code_leaks). Fires when leaked code
              dollars reach playbook.LEAK_MIN_USD a 28 days, or on any spike. Money: leaked code dollars per 28 days.
              Medium. Unavailable without order rows (asked for by OFFER-R31). Capability LIFE-C38.
+  OFFER-R41  Codes pay returning buyers who would come anyway: over playbook.RETURNER_DAYS, returning orders with a
+             code do not come back at least RETURNER_SOONER sooner (median days since the buyer's last order) than
+             those without, with RETURNER_MIN coded returning orders (model.returner_codes). Money: code dollars on
+             returning orders per 28 days. Medium. Capability LIFE-C38.
   OFFER-R03  Margin after discount per SKU. Needs cogs_landed keyed by the store's SKUs. Unavailable while no
              finance_inputs SKU key matches a product SKU. Capability MONEY-C05 (founder gate). Owner: 04.
   OFFER-R04  A deal-breaker rung with no proof: the top rung of an objection ladder whose proof is empty or
@@ -290,6 +294,8 @@ RULES = [
      'inputs': ['sessions or daily.sessions', 'orders or daily'], 'capability': 'LIFE-C47', 'owner_screen': SCREEN},
     {'rule_id': 'OFFER-R40', 'name': 'A code is leaking', 'entity_type': 'offer',
      'inputs': ['orders', 'brain.offers.first_order_code'], 'capability': 'LIFE-C38', 'owner_screen': SCREEN},
+    {'rule_id': 'OFFER-R41', 'name': 'Codes pay returning buyers who would come anyway', 'entity_type': 'offer',
+     'inputs': ['orders'], 'capability': 'LIFE-C38', 'owner_screen': SCREEN},
     {'rule_id': 'OFFER-R03', 'name': 'Margin after discount per SKU', 'entity_type': 'sku',
      'inputs': ['finance_inputs.cogs_landed keyed by product SKU', 'products'], 'capability': 'MONEY-C05',
      'owner_screen': SCREEN},
@@ -334,6 +340,7 @@ CAPABILITY = {'OFFER-R01': {'id': 'MONEY-C05', 'autonomy': 'founder_gate'},
               'OFFER-R38': {'id': 'LIFE-C02', 'autonomy': 'founder_gate'},
               'OFFER-R39': {'id': 'LIFE-C47', 'autonomy': 'founder_gate'},
               'OFFER-R40': {'id': 'LIFE-C38', 'autonomy': 'founder_gate'},
+              'OFFER-R41': {'id': 'LIFE-C38', 'autonomy': 'founder_gate'},
               'OFFER-R06': {'id': 'MONEY-C05', 'autonomy': 'founder_gate'},
               'OFFER-R04': {'id': 'LIFE-C36', 'autonomy': 'founder_gate'}}
 SEVERITY_ORDER = {'critical': 0, 'high': 1, 'medium': 2, 'low': 3}
@@ -1536,6 +1543,29 @@ def rule_leaks(rd):
                      '. '.join(parts) + '.', {'usd': usd, 'formula': 'leaked code dollars x 28 / 90', 'window': '28d'}, 0.7, [], end)]
 
 
+def returner_codes(rd):
+    return _model().returner_codes(rd, _playbook().RETURNER_DAYS)
+
+
+def rule_returners(rd):
+    end = rd.ends_on
+    pb = _playbook()
+    rc = returner_codes(rd)
+    if rc['unavailable'] or rc['code']['orders'] < pb.RETURNER_MIN or not rc['none']['median_gap']:
+        return []
+    c, n = rc['code']['median_gap'], rc['none']['median_gap']
+    if c < n * (1 - pb.RETURNER_SOONER):
+        return []
+    win = f'{rc["start"]} to {rc["end"]}'
+    ev = [_ev('median_days_between_orders_with_code', c, 'count', end, baseline=n, baseline_kind='returning_orders_without_code', window=win),
+          _ev('code_dollars_on_returning_orders', rc['code_dollars'], 'usd', end, window=win)]
+    names = ', '.join(k for k, _ in rc['codes'][:3])
+    return [_finding('OFFER-R41', {'type': 'offer', 'id': 'returner_codes', 'label': 'Codes for returning buyers'}, 'medium', ev,
+                     f'Returning buyers with a code ({names}) came back after {c:.0f} days; those without after {n:.0f}. '
+                     f'The code did not bring them sooner and cost ${rc["code_dollars"]:,.0f} in {rc["days"]} days.',
+                     {'usd': rc['code_dollars_28d'], 'formula': 'code dollars on returning orders x 28 / 180', 'window': '28d'}, 0.6, [], end)]
+
+
 def rule_ladder(rd):
     end = rd.ends_on
     pb = _playbook()
@@ -1707,7 +1737,7 @@ def run(brand, window=None, data=None):
     """Findings for one brand, sorted by severity then money at stake. `window` is {ends_on} or None."""
     ends_on = date.fromisoformat(window['ends_on']) if window and window.get('ends_on') else last_full_day(data, brand)
     rd = Reader(data, brand, ends_on)
-    out = (rule_threshold(rd) + rule_stale(rd) + rule_pull(rd) + rule_first_order(rd) + rule_red_line(rd) + rule_promo(rd) + rule_gifting(rd) + rule_guarantee(rd) + rule_position(rd) + rule_parity(rd) + rule_discount(rd) + rule_cart(rd) + rule_second_order(rd) + rule_cost(rd) + rule_referral(rd) + rule_loyalty(rd) + rule_window_creep(rd) + rule_bundles(rd) + rule_launched(rd) + rule_upsell(rd) + rule_bnpl(rd) + rule_threshold_match(rd) + rule_cohorts(rd) + rule_welcome(rd) + rule_test_trust(rd) + rule_price_moves(rd) + rule_claim_stress(rd) + rule_paid(rd) + rule_attach(rd) + rule_code_returns(rd) + rule_power(rd) + rule_leaks(rd) + rule_ladder(rd) + rule_sku_margin(rd) +
+    out = (rule_threshold(rd) + rule_stale(rd) + rule_pull(rd) + rule_first_order(rd) + rule_red_line(rd) + rule_promo(rd) + rule_gifting(rd) + rule_guarantee(rd) + rule_position(rd) + rule_parity(rd) + rule_discount(rd) + rule_cart(rd) + rule_second_order(rd) + rule_cost(rd) + rule_referral(rd) + rule_loyalty(rd) + rule_window_creep(rd) + rule_bundles(rd) + rule_launched(rd) + rule_upsell(rd) + rule_bnpl(rd) + rule_threshold_match(rd) + rule_cohorts(rd) + rule_welcome(rd) + rule_test_trust(rd) + rule_price_moves(rd) + rule_claim_stress(rd) + rule_paid(rd) + rule_attach(rd) + rule_code_returns(rd) + rule_power(rd) + rule_leaks(rd) + rule_returners(rd) + rule_ladder(rd) + rule_sku_margin(rd) +
            rule_unanswered(rd))
     out.sort(key=lambda f: (SEVERITY_ORDER[f['severity']], -((f.get('money_at_stake') or {}).get('usd') or -1), f['id']))
     return out

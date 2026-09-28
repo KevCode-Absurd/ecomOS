@@ -280,3 +280,10 @@ COUPON_SITE_WORDS = ('honey', 'retailmenot', 'coupon', 'dealspotr', 'knoji', 'we
 LEAK_SPIKE = 3.0
 LEAK_SPIKE_MIN = 20
 LEAK_MIN_USD = 100
+
+# Returning-buyer codes (screen 04, OFFER-R41). Over RETURNER_DAYS, returning orders with a code against those without:
+# the median days since the buyer's last order. If coded returners do not come back at least RETURNER_SOONER sooner
+# (relative), the code pays people who would have come anyway. At least RETURNER_MIN coded returning orders.
+RETURNER_DAYS = 180
+RETURNER_SOONER = 0.10
+RETURNER_MIN = 100
