@@ -71,6 +71,7 @@ class Ctx:
         self.ladder, self.ladder_rows = audit.ladder_moves(rd)
         self.first_order = audit.first_order(rd)
         self.waterfalls = audit.offer_waterfalls(rd, self.objections)
+        self.calendar = audit.promo_calendar(rd)
         self.ship_rate = (model.brain_value(rd, 'offers.standard_shipping_cost')[0] or {}).get('cost_usd') if rd.brand else None
         self.scenarios = (model.threshold_scenarios(rd, self.threshold, self.ship_rate, self.be['value'], (self.po or {}).get('units') or 1)
                           if self.threshold is not None and self.be.get('value') is not None else [])
@@ -260,6 +261,53 @@ def first_order_action(f, a, ctx):
     return a
 
 
+def promo_action(f, a, ctx):
+    key = f['entity']['id'][len('window_'):]
+    w = next((x for x in ctx.calendar if x['key'] == key), None)
+    if not w:
+        return a
+    ly = w['last_year'] or {}
+    start = date.fromisoformat(w['start'])
+    approve = date.fromisoformat(w['approve_by'])
+    d = lambda x: x.isoformat()
+    lines = [f'Offer spec: {w["name"]}, {w["start"]} to {w["end"]}',
+             f'Approve by {w["approve_by"]}. Creative and email briefs by {d(approve + timedelta(days=7))}. '
+             f'Site and emails loaded by {d(start - timedelta(days=7))}.',
+             f'Default offer for this window: {w["offer"]}']
+    if ly:
+        lines.append(f'Last year ({ly["start"]} to {ly["end"]}): net sales {ly["lift"] * 100:.0f} percent above the 28 days before, '
+                     f'discounts {ly["depth"] * 100:.1f} percent of gross against {ly["baseline_depth"] * 100:.1f} percent before.')
+        po = ctx.po
+        cr = model.cogs_ratio(ctx.rd)
+        if po and cr.get('ratio') is not None:
+            cogs = cr['ratio'] * po['net']
+            at_last = model.waterfall(ctx.rd, po['gross'], po['gross'] * ly['depth'], cogs, po['units'], ships_free=True, media=0)
+            at_base = model.waterfall(ctx.rd, po['gross'], po['discount'], cogs, po['units'], ships_free=True, media=0)
+            if at_last['before_media'] is not None and at_base['before_media'] is not None:
+                lines.append(f'Margin check: at last year\'s depth the average order keeps {money(at_last["before_media"])} before media, '
+                             f'against {money(at_base["before_media"])} at the last 28 days\' depth. Cap the depth at last year\'s.')
+    lines += ['Win: net sales in the window at or above last year with discount depth at or below last year.',
+              'Stop: pull the offer early if margin per order before media falls under the red line for 2 days.']
+    a.update({
+        'title': f'Build the {w["name"]} offer by {w["approve_by"]}',
+        'owner': 'agent_drafts',
+        'artefact': {'kind': 'offer', 'label': f'{w["name"]} offer spec with dates', 'draft': '\n'.join(lines)},
+        'steps': steps(
+            ('agent', f'Pull last year\'s {w["name"]} numbers and the pack and gift lines in stock.'),
+            ('agent', 'Draft the offer spec, the margin check and the dated prep plan.'),
+            ('person', f'Approve the offer by {w["approve_by"]}. Nothing ships before that.'),
+            ('agent', f'Draft the ad, email and site banner briefs by {d(approve + timedelta(days=7))}.'),
+            ('person', f'Load the site and emails by {d(start - timedelta(days=7))}. Check stock on the offer lines.'),
+            ('agent', f'Read sales and depth daily in the window; report on {d(date.fromisoformat(w["end"]) + timedelta(days=3))}.')),
+        'size': {'text': (f'{money(f["money_at_stake"]["usd_revenue"])} of net sales rode on this window last year'
+                          if f.get('money_at_stake') else 'last year unavailable'), 'usd': (f.get('money_at_stake') or {}).get('usd')},
+        'win_rule': 'Net sales in the window at or above last year, discount depth at or below last year.',
+        'stop_rule': 'Margin per order before media under the red line for 2 days in the window.',
+        'check_on': w['approve_by'], 'time_to_ship_hours': 12,
+    })
+    return a
+
+
 def returns_block(rd):
     """returns_by_reason for the window, or the labelled fixture when the metric is unavailable."""
     m = rd.m('returns_by_reason', audit.WINDOW)
@@ -416,7 +464,7 @@ def rescore(a, dims):
 
 
 BUILDERS = {'OFFER-R01': threshold_action, 'OFFER-R04': rung_action, 'OFFER-R08': first_order_action,
-            'OFFER-R10': red_line_action}
+            'OFFER-R10': red_line_action, 'OFFER-R11': promo_action}
 
 
 def build(f, rd, ctx, nr):
@@ -452,4 +500,4 @@ def rank(brand='bombas', window=None):
     actions.sort(key=RANK.sort_key)
     return {'screen': SCREEN, 'brand': brand, 'window': w, 'simulated': True, 'net_revenue_28d': nr,
             'actions': actions, 'findings': findings, 'objections': ctx.objections, 'returns': returns_block(rd),
-            'ladder': dict(ctx.ladder, moves=ctx.ladder_rows), 'first_order': ctx.first_order, 'waterfalls': ctx.waterfalls}
+            'ladder': dict(ctx.ladder, moves=ctx.ladder_rows), 'first_order': ctx.first_order, 'waterfalls': ctx.waterfalls, 'calendar': ctx.calendar}

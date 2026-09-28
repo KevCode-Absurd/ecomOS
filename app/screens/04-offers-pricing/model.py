@@ -514,3 +514,72 @@ def waterfall(rd, list_price, discount=0.0, cogs=None, units=1.0, extra_item=0.0
             'contribution_share': share, 'red_line': target / 100 if target is not None else None,
             'clears': None if share is None or target is None else share >= target / 100,
             'missing': [s['label'] for s in steps if s['value'] is None]}
+
+
+# ---------------------------------------------------------------- promo calendar
+
+def window_dates(rule, year):
+    """(start, end) of a promo window in `year` from its date rule."""
+    kind = rule[0]
+    if kind == 'fixed':
+        _, month, day, days = rule
+        start = date(year, month, day)
+        return start, start + timedelta(days=days - 1)
+    if kind == 'nth_weekday':
+        _, month, weekday, n, offset = rule
+        days = [date(year, month, d) for d in range(1, calendar.monthrange(year, month)[1] + 1)
+                if date(year, month, d).weekday() == weekday]
+        anchor = days[n - 1] if n > 0 else days[n]
+        start = anchor + timedelta(days=offset) if offset < 0 else anchor
+        return start, anchor
+    if kind == 'bfcm':
+        thu = [date(year, 11, d) for d in range(1, 31) if date(year, 11, d).weekday() == 3][3]
+        return thu + timedelta(days=1), thu + timedelta(days=4)
+    raise ValueError(f'unknown window rule {rule}')
+
+
+def window_perf(rd, start, end):
+    """Revenue per day and discount depth in a window against the 28 days before it, from the daily aggregate."""
+    rows = {r['date']: r for r in (rd.table('daily') or [])}
+    days = [(start + timedelta(days=i)).isoformat() for i in range((end - start).days + 1)]
+    before = [(start - timedelta(days=i)).isoformat() for i in range(1, 29)]
+    if any(d not in rows for d in days + before):
+        return None
+
+    def agg(ds):
+        net = sum(rows[d]['net_sales'] for d in ds)
+        gross = sum(rows[d]['gross_sales'] for d in ds)
+        disc = sum(rows[d]['discounts'] for d in ds)
+        return net / len(ds), (disc / gross if gross else None), sum(rows[d]['orders'] for d in ds)
+
+    n_day, depth, orders = agg(days)
+    b_day, b_depth, _ = agg(before)
+    return {'start': start.isoformat(), 'end': end.isoformat(), 'net_per_day': round(n_day, 2),
+            'baseline_per_day': round(b_day, 2), 'lift': round(n_day / b_day - 1, 4) if b_day else None,
+            'depth': round(depth, 4) if depth is not None else None,
+            'baseline_depth': round(b_depth, 4) if b_depth is not None else None, 'orders': orders}
+
+
+def promo_calendar(rd, windows, alert_days):
+    """Every window's next dates, the approval date, last year's numbers, and whether a plan is in the brain."""
+    end = rd.ends_on
+    plans = {}
+    for rec in rd.records('plans'):
+        v = rec.get('value')
+        if isinstance(v, dict) and v.get('window'):
+            plans[v['window']] = rec['id']
+    out = []
+    for w in windows:
+        start, stop = window_dates(w['rule'], end.year)
+        if stop < end:
+            start, stop = window_dates(w['rule'], end.year + 1)
+        last_s, last_e = window_dates(w['rule'], start.year - 1)
+        approve = start - timedelta(days=w['lead'])
+        days_to = (start - end).days
+        due = (approve - end).days <= alert_days
+        out.append({'key': w['key'], 'name': w['name'], 'start': start.isoformat(), 'end': stop.isoformat(),
+                    'days_to_start': days_to, 'approve_by': approve.isoformat(), 'days_to_approve': (approve - end).days,
+                    'lead': w['lead'], 'offer': w['offer'], 'gifting': w['gifting'], 'plan': plans.get(w['key']),
+                    'due': due and not plans.get(w['key']), 'last_year': window_perf(rd, last_s, last_e)})
+    out.sort(key=lambda r: r['start'])
+    return out

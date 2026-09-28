@@ -43,6 +43,11 @@ Rules
              own media (playbook.RED_LINE_FIRST_ORDER); any other order must keep target_contribution_margin.
              Proposed offers carry the same check on the desk and cannot clear approval under it. Money null: the
              share of orders on the offer needs order rows. Capability MONEY-C05 (founder gate).
+  OFFER-R11  A promo window is due (its approval date, start minus the window's lead days, is within
+             playbook.PROMO_ALERT_DAYS or past) and no brain `plans` record names it. Windows are US retail date
+             rules in playbook.PROMO_WINDOWS. Money: last year's net sales in the window above the 28 days before it
+             (usd_revenue), times the 28-day contribution before media share (usd). Severity high when approval is
+             14 days away or less. Capability LIFE-C38 (founder gate).
   OFFER-R03  Margin after discount per SKU. Needs cogs_landed keyed by the store's SKUs. Unavailable while no
              finance_inputs SKU key matches a product SKU. Capability MONEY-C05 (founder gate). Owner: 04.
   OFFER-R04  A deal-breaker rung with no proof: the top rung of an objection ladder whose proof is empty or
@@ -99,6 +104,8 @@ RULES = [
     {'rule_id': 'OFFER-R10', 'name': 'Live offer under the margin red line', 'entity_type': 'offer',
      'inputs': ['daily', 'finance_inputs', 'brain.offers', 'brain.economics.return_share_model'],
      'capability': 'MONEY-C05', 'owner_screen': SCREEN},
+    {'rule_id': 'OFFER-R11', 'name': 'Promo window due with no offer planned', 'entity_type': 'offer',
+     'inputs': ['daily', 'brain.plans', 'brain.calendar'], 'capability': 'LIFE-C38', 'owner_screen': SCREEN},
     {'rule_id': 'OFFER-R03', 'name': 'Margin after discount per SKU', 'entity_type': 'sku',
      'inputs': ['finance_inputs.cogs_landed keyed by product SKU', 'products'], 'capability': 'MONEY-C05',
      'owner_screen': SCREEN},
@@ -113,6 +120,7 @@ CAPABILITY = {'OFFER-R01': {'id': 'MONEY-C05', 'autonomy': 'founder_gate'},
               'OFFER-R08': {'id': 'LIFE-C02', 'autonomy': 'founder_gate'},
               'OFFER-R09': {'id': 'LIFE-C39', 'autonomy': 'founder_gate'},
               'OFFER-R10': {'id': 'MONEY-C05', 'autonomy': 'founder_gate'},
+              'OFFER-R11': {'id': 'LIFE-C38', 'autonomy': 'founder_gate'},
               'OFFER-R06': {'id': 'MONEY-C05', 'autonomy': 'founder_gate'},
               'OFFER-R04': {'id': 'LIFE-C36', 'autonomy': 'founder_gate'}}
 SEVERITY_ORDER = {'critical': 0, 'high': 1, 'medium': 2, 'low': 3}
@@ -557,6 +565,51 @@ def rule_red_line(rd):
     return out
 
 
+def promo_calendar(rd):
+    pb = _playbook()
+    return _model().promo_calendar(rd, pb.PROMO_WINDOWS, pb.PROMO_ALERT_DAYS)
+
+
+def rule_promo(rd):
+    end = rd.ends_on
+    cm = _model().contribution_28d(rd)
+    share = cm.get('before_media_share')
+    out = []
+    for w in promo_calendar(rd):
+        if not w['due']:
+            continue
+        ly = w['last_year']
+        money, reason = None, 'last year is not in the daily aggregate'
+        if ly and ly['lift'] is not None:
+            days = (date.fromisoformat(ly['end']) - date.fromisoformat(ly['start'])).days + 1
+            extra = round((ly['net_per_day'] - ly['baseline_per_day']) * days, 2)
+            if extra > 0:
+                money = {'usd_revenue': extra, 'usd': round(extra * share, 2) if share else None,
+                         'formula': '(net_per_day_window - net_per_day_28d_before) x days x contribution_before_media_share',
+                         'inputs': {'net_per_day_window': ly['net_per_day'], 'net_per_day_28d_before': ly['baseline_per_day'],
+                                    'days': days, 'contribution_before_media_share': share}, 'window': 'last year'}
+                if money['usd'] is None:
+                    money['usd'] = extra
+            else:
+                reason = 'last year the window sold no more than the 28 days before it'
+        entity = {'type': 'offer', 'id': 'window_' + w['key'], 'label': w['name']}
+        evidence = [_ev('days_to_approval', w['days_to_approve'], 'days', end, baseline=_playbook().PROMO_ALERT_DAYS,
+                        baseline_kind='threshold', window='calendar', source='playbook.PROMO_WINDOWS'),
+                    _ev('plan_in_brain', 0, 'count', end, baseline=1, baseline_kind='threshold', window='brain', source='brain.plans')]
+        if ly:
+            evidence.append(_ev('window_lift_last_year', ly['lift'], 'ratio', end, baseline=0, baseline_kind='28d_before',
+                                window=f'{ly["start"]} to {ly["end"]}', source='daily'))
+            evidence.append(_ev('discount_depth_last_year', ly['depth'], 'ratio', end, baseline=ly['baseline_depth'],
+                                baseline_kind='28d_before', window=f'{ly["start"]} to {ly["end"]}', source='daily'))
+        when = f'{w["days_to_approve"]} days' if w['days_to_approve'] >= 0 else f'{-w["days_to_approve"]} days ago'
+        sentence = f'{w["name"]} starts {w["start"]}. The offer must be approved by {w["approve_by"]} ({when}) and none is planned.'
+        if ly and ly['lift'] is not None:
+            sentence += f' Last year it sold {ly["lift"] * 100:.0f} percent above the 28 days before.'
+        out.append(_finding('OFFER-R11', entity, 'high' if w['days_to_approve'] <= 14 else 'medium', evidence, sentence,
+                            money, 0.7, [], end, money_reason=None if money else reason))
+    return out
+
+
 def rule_ladder(rd):
     end = rd.ends_on
     pb = _playbook()
@@ -728,7 +781,7 @@ def run(brand, window=None, data=None):
     """Findings for one brand, sorted by severity then money at stake. `window` is {ends_on} or None."""
     ends_on = date.fromisoformat(window['ends_on']) if window and window.get('ends_on') else last_full_day(data, brand)
     rd = Reader(data, brand, ends_on)
-    out = (rule_threshold(rd) + rule_stale(rd) + rule_pull(rd) + rule_first_order(rd) + rule_red_line(rd) + rule_ladder(rd) + rule_sku_margin(rd) +
+    out = (rule_threshold(rd) + rule_stale(rd) + rule_pull(rd) + rule_first_order(rd) + rule_red_line(rd) + rule_promo(rd) + rule_ladder(rd) + rule_sku_margin(rd) +
            rule_unanswered(rd))
     out.sort(key=lambda f: (SEVERITY_ORDER[f['severity']], -((f.get('money_at_stake') or {}).get('usd') or -1), f['id']))
     return out

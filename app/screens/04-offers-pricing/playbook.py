@@ -101,3 +101,29 @@ CODE_ADS_SHARE = 0.5      # a percent code in more than half the active ads is t
 # Margin red line (screen 04, OFFER-R10). A first order must at least pay its own paid media (contribution after
 # media per first order >= this many dollars); every other order is held to finance_inputs target_contribution_margin.
 RED_LINE_FIRST_ORDER = 0.0
+
+
+# Promo calendar (screen 04, OFFER-R11). US retail windows by date rule; a brand in another market swaps this list.
+# rule: ('fixed', month, day, days) | ('nth_weekday', month, weekday 0=Mon, n, days) where n=-1 is the last one |
+#       ('bfcm',) Friday after the 4th Thursday of November through Cyber Monday.
+# lead: days before the start the offer must be approved. offer: the strategist's default for the window.
+PROMO_WINDOWS = [
+    {'key': 'valentines', 'name': "Valentine's Day", 'rule': ('fixed', 2, 7, 8), 'lead': 21,
+     'offer': 'A gift pack with a gift note, no sitewide percent.', 'gifting': True},
+    {'key': 'mothers_day', 'name': "Mother's Day", 'rule': ('nth_weekday', 5, 6, 2, -10), 'lead': 30,
+     'offer': 'A gift pack and a gift card push, last ship date on the page.', 'gifting': True},
+    {'key': 'memorial_day', 'name': 'Memorial Day', 'rule': ('nth_weekday', 5, 0, -1, -3), 'lead': 21,
+     'offer': 'A pack offer on the summer lines, not a sitewide code.', 'gifting': False},
+    {'key': 'fathers_day', 'name': "Father's Day", 'rule': ('nth_weekday', 6, 6, 3, -10), 'lead': 30,
+     'offer': 'A gift pack and a gift card push, last ship date on the page.', 'gifting': True},
+    {'key': 'back_to_school', 'name': 'Back to school', 'rule': ('fixed', 8, 1, 31), 'lead': 30,
+     'offer': 'A kids and multi-pack offer at the free shipping line.', 'gifting': False},
+    {'key': 'labor_day', 'name': 'Labor Day', 'rule': ('nth_weekday', 9, 0, 1, -3), 'lead': 21,
+     'offer': 'A pack offer, not a sitewide code.', 'gifting': False},
+    {'key': 'bfcm', 'name': 'Black Friday to Cyber Monday', 'rule': ('bfcm',), 'lead': 45,
+     'offer': 'A tiered offer that lifts the basket (a free item or a better pack price at set order values), '
+              'capped at last year\'s depth.', 'gifting': False},
+    {'key': 'holiday_gifting', 'name': 'Holiday gifting', 'rule': ('fixed', 12, 2, 19), 'lead': 45,
+     'offer': 'Gift boxes, gift cards and bulk gifting, with the last ship date on every page.', 'gifting': True},
+]
+PROMO_ALERT_DAYS = 30     # a window is due when its approval date is within 30 days, or past

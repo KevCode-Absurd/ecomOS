@@ -462,5 +462,51 @@ class WaterfallTest(unittest.TestCase):
                 self.assertNotIn('$-', f['sentence'])
 
 
+class PromoCalendarTest(unittest.TestCase):
+    """Round 1 feature 7: promo windows by date rule, last year's numbers, due windows become dated offers."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.rd = audit.Reader(None, 'bombas', audit.last_full_day(None, 'bombas'))
+        cls.cal = audit.promo_calendar(cls.rd)
+        cls.out = api.actions.rank('bombas')
+
+    def test_date_rules(self):
+        from datetime import date
+        m = api.model
+        self.assertEqual(m.window_dates(('bfcm',), 2025), (date(2025, 11, 28), date(2025, 12, 1)))
+        self.assertEqual(m.window_dates(('bfcm',), 2026), (date(2026, 11, 27), date(2026, 11, 30)))
+        self.assertEqual(m.window_dates(('nth_weekday', 5, 6, 2, -10), 2026)[1], date(2026, 5, 10))   # Mother's Day
+        self.assertEqual(m.window_dates(('nth_weekday', 5, 0, -1, -3), 2026)[1], date(2026, 5, 25))   # Memorial Day
+        self.assertEqual(m.window_dates(('nth_weekday', 9, 0, 1, -3), 2026)[1], date(2026, 9, 7))     # Labor Day
+
+    def test_every_due_window_is_a_dated_offer(self):
+        end = self.rd.ends_on.isoformat()
+        for w in self.cal:
+            self.assertGreaterEqual(w['end'], end)
+            if w['last_year']:
+                ly = w['last_year']
+                self.assertAlmostEqual(ly['lift'], round(ly['net_per_day'] / ly['baseline_per_day'] - 1, 4))
+        due = {'04-offers-pricing.OFFER-R11.window_' + w['key'] for w in self.cal if w['due']}
+        fired = {f['id'] for f in self.out['findings'] if f['rule_id'] == 'OFFER-R11'}
+        self.assertEqual(due, fired)
+        for a in self.out['actions']:
+            if a['rule_id'] == 'OFFER-R11':
+                self.assertEqual(a['artefact']['kind'], 'offer')
+                self.assertIn('Approve by', a['artefact']['draft'])
+                self.assertTrue(a['check_on'])
+                m = a['money_at_stake']
+                if m:
+                    i = m['inputs']
+                    self.assertAlmostEqual(m['usd_revenue'], round((i['net_per_day_window'] - i['net_per_day_28d_before']) * i['days'], 2), places=0)
+
+    def test_bfcm_matches_the_round0_depth(self):
+        b = api.bfcm(self.rd)
+        w = next(w for w in self.cal if w['key'] == 'bfcm')
+        if not b['unavailable'] and w['last_year']:
+            self.assertEqual(b['start'], w['last_year']['start'])
+            self.assertAlmostEqual(b['depth'], w['last_year']['depth'], places=3)
+
+
 if __name__ == '__main__':
     unittest.main()

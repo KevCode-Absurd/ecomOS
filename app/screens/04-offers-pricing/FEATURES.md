@@ -34,6 +34,7 @@ Known gaps from round 0:
 | 1.4 | Pack ladder: per line, singles' share of packs, the pack saving per item, margin per pack from cogs_landed, and the deeper price test's arithmetic (money given to current pack buyers against margin per trade-up, so the share of single buyers who must trade up). Verdicts push (keep price, preselect the pack, show price per item), deepen (a price test pays back under 25 percent trade-up), add (a basics line sold only as a single gets a pack). New rules OFFER-R07 and OFFER-R09, one merged action per verdict with the drafted page spec, test brief or pack offer; thresholds in `playbook.py`. Ladder math moved to `model.py` | done |
 | 1.5 | First-order offer: the code against 4 alternatives (free item, free shipping, dollars off at the line, first-order pack price) at the average list-price order: price paid, cost against full price, contribution before media, payback on paid media per new customer, and how much first-order conversion each can lose against the code. Flags that the code takes the average basket under the free shipping line (the line counts after discount). New rule OFFER-R08 (code in more than half the active ads and a price-keeping offer keeps more), with the test brief and paired ad variants. Money is labelled "at equal conversion" | done |
 | 1.6 | Margin waterfall per offer (`Charts.waterfall`, pills to switch): the average order, the first order with the code, the first order with a free item, an order at the free shipping line, the average order with the wear promise; list price, discount, landed cost, pick pack and box, shipping net, payment fee, returns at the brain model rates, before media, paid media, contribution. Each step names its source; a missing input breaks the step and every total after it. Red line: a first order must pay its own media, other orders keep the target contribution margin; proposed offers under it cannot clear approval. New rule OFFER-R10 (live offer under the red line), merged into the first-order test when it is the code | done |
+| 1.7 | Promo calendar: 8 US retail windows by date rule (`playbook.PROMO_WINDOWS`, a brand in another market swaps the list), next dates, the approval date (start minus the window's lead), last year's net sales per day against the 28 days before and the discount depth, and whether a brain `plans` record covers it. Timeline plus a verdict table. New rule OFFER-R11: a window due in 30 days with no plan becomes a dated offer spec (approve, briefs, site loaded, report dates), a margin check at last year's depth and a depth cap; money is last year's sales above baseline | done |
 
 ## Room jobs
 
@@ -151,7 +152,7 @@ Known gaps from round 0:
 | Round | Features picked | Date | Notes |
 |---|---|---|---|
 | 0 | skeleton, 0.1 to 0.9 | 2026-09-28 | S3.9; screenshot round0.png |
-| 1 | 1.1 plan first, 1.2 objection to offer map, 1.3 free shipping line, 1.4 pack ladder, 1.5 first-order offer, 1.6 margin waterfall | 2026-09-28 | manager session; screenshot round1.png (updated as the round lands) |
+| 1 | 1.1 plan first, 1.2 objection to offer map, 1.3 free shipping line, 1.4 pack ladder, 1.5 first-order offer, 1.6 margin waterfall, 1.7 promo calendar | 2026-09-28 | manager session; screenshot round1.png (updated as the round lands) |
 
 
 ## Round 1 candidates (ranked 28 Sep 2026 by the lead session)

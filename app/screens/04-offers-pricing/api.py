@@ -286,17 +286,17 @@ def overview(data, brand):
         ranked = actions.rank(brand, {'ends_on': ends_on.isoformat()})
         findings, plan = ranked['findings'], ranked['actions']
         objections, returns, lad = ranked['objections'], ranked['returns'], ranked['ladder']
-        first, falls = ranked['first_order'], ranked['waterfalls']
+        first, falls, cal = ranked['first_order'], ranked['waterfalls'], ranked['calendar']
     else:
         findings, plan = audit.run(brand, {'ends_on': ends_on.isoformat()}, data=data), []
         objections, returns = [], {'unavailable': True, 'reason': 'no brand folder', 'groups': []}
         lad = ladder(rd)
-        first, falls = {'unavailable': True, 'reason': 'no brand folder'}, []
+        first, falls, cal = {'unavailable': True, 'reason': 'no brand folder'}, [], []
     months = discount_months(rd)
     th = threshold(rd)
     return {'brand': head, 'window': {'ends_on': ends_on.isoformat(), 'days': audit.WINDOW},
             'orientation': orientation(rd, th), 'plan': plan,
-            'stack': offer_stack(rd), 'threshold': th, 'bfcm': bfcm(rd), 'ladder': lad, 'first_order': first, 'waterfalls': falls,
+            'stack': offer_stack(rd), 'threshold': th, 'bfcm': bfcm(rd), 'ladder': lad, 'first_order': first, 'waterfalls': falls, 'calendar': cal,
             'objections': objections, 'returns': returns, 'creep': creep_rule(months), 'chart': chart(months),
             'findings': findings, 'rules': audit.RULES}
 
@@ -304,7 +304,7 @@ def overview(data, brand):
 def rank(brand='bombas', window=None):
     """Ranked actions for app/rank.py and the master list (depth.md section 5)."""
     out = actions.rank(brand, window)
-    for k in ('findings', 'objections', 'returns', 'ladder', 'first_order', 'waterfalls'):
+    for k in ('findings', 'objections', 'returns', 'ladder', 'first_order', 'waterfalls', 'calendar'):
         out.pop(k, None)
     return out
 

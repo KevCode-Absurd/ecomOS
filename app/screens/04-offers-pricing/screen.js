@@ -269,6 +269,28 @@
       actionLine(under.length ? under.map((w) => w.name).join(', ') + ' is under the red line. A proposed offer under it cannot be approved.' : 'Every live offer clears its red line.', a));
   }
 
+  function calendarBlock(cal) {
+    const head = { title: 'Which promo windows need an offer, and by when?', sub: 'US retail windows by date rule. Each must be approved a set number of days before it starts. Last year is net sales per day in the window against the 28 days before it.' };
+    if (!cal || !cal.length) return section('desk-calendar', head, UI.emptyState({ screen: SLUG, title: 'Calendar unavailable', text: 'No windows for this market.' }));
+    const act = (w) => ACTIONS.find((x) => (x.finding_ids || []).some((id) => id.endsWith('.window_' + w.key)));
+    const tl = UI.timeline(cal.slice(0, 6).map((w) => ({ when: fmt.date(w.start), who: w.due ? 'approve by ' + fmt.date(w.approve_by) : (w.plan ? 'planned' : 'in ' + w.days_to_start + ' days'),
+      title: w.name, text: w.offer, tone: w.due ? 'bad' : w.plan ? 'good' : '' })));
+    const table = UI.verdictTable({
+      columns: [
+        { key: 'name', label: 'Window' }, { key: 'start', label: 'Dates', format: (v, r) => fmt.date(r.start) + ' to ' + fmt.date(r.end) },
+        { key: 'approve_by', label: 'Approve by', format: (v, r) => fmt.date(v) + ' (' + (r.days_to_approve >= 0 ? r.days_to_approve + ' days' : 'overdue') + ')' },
+        { key: 'lift', label: 'Last year lift', format: (v, r) => r.last_year && r.last_year.lift != null ? pct(r.last_year.lift, 0) : NA },
+        { key: 'depth', label: 'Last year depth', format: (v, r) => r.last_year && r.last_year.depth != null ? pct(r.last_year.depth) + ' vs ' + pct(r.last_year.baseline_depth) : NA },
+      ],
+      rows: withActs(cal.map((w) => Object.assign({ lift: '', depth: '' }, w)), (w) => act(w) ? [{ label: 'Open action', onClick: () => openAction(act(w)) }] : []),
+      verdict: { at: 1, kind: (r) => r.plan ? 'keep' : r.due ? 'fix' : 'wait', text: (r) => r.plan ? 'Planned' : r.due ? 'Build now' : 'Later', reason: (r) => r.offer },
+      actions: { label: 'Do' }, sort: false,
+    });
+    const due = cal.filter((w) => w.due);
+    return section('desk-calendar', head, el('div', { class: 'grid side' }, el('div', { class: 'card' }, tl), el('div', { class: 'card tight' }, table)),
+      actionLine(due.length ? due.length + ' windows need an approved offer in the next 30 days: ' + due.map((w) => w.name + ' by ' + fmt.date(w.approve_by)).join(', ') + '.' : 'No window is due in the next 30 days.', due.length ? act(due[0]) : null));
+  }
+
   function returnsChart(r) {
     if (!r || !r.groups || !r.groups.length) return el('p', { class: 'muted small', text: 'Returns by reason ' + NA + '.' });
     const rows = r.groups.slice().sort((a, b) => b.per_1000 - a.per_1000);
@@ -322,7 +344,7 @@
     plan(d);
     wrong(d);
     actionsList(d);
-    mount('#desk', el('div', { class: 'desk-kicker' }, el('h3', { text: 'The desk' })),
+    mount('#desk', el('div', { class: 'desk-kicker' }, el('h3', { text: 'The desk' })), calendarBlock(d.calendar),
       stackBlock(d.stack || []), thresholdBlock(d.threshold), firstOrderBlock(d.first_order), waterfallBlock(d.waterfalls), discountBlock(d), ladderBlock(d.ladder), objectionBlock(d.objections || [], d.returns));
     auditBlock(d);
   }
