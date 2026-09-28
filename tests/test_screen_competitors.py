@@ -606,6 +606,17 @@ class TestLosses(TempBrain):
             self.assertIn('never quoted', r['answer'])
             self.assertIn('never disparage', r['answer'])
 
+    def test_winloss_kit_and_rule(self):
+        self.assertIn('Screener', self.ls['kit'])
+        self.assertIn('Darn Tough', self.ls['kit'])
+        self.assertIn('consent', self.ls['kit'])
+        self.assertIsNone(self.ls['interviews'])
+        out = audit.run('bombas', WINDOW, self.tmp)
+        f = next(f for f in out if f['rule_id'] == 'COMP-R29')
+        acts = api.rank('bombas', {'ends_on': '2026-09-27', 'days': 28, 'trailing': 4})['actions']
+        a = next(a for a in acts if a['rule_id'] == 'COMP-R29')
+        self.assertEqual(a['owner'], 'person')
+
     def test_rule_r15(self):
         out = audit.run('bombas', WINDOW, self.tmp)
         ids = sorted(f['entity']['id'] for f in out if f['rule_id'] == 'COMP-R15')

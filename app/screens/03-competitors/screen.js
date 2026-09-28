@@ -376,7 +376,11 @@
       reason: { key: 'why', label: 'Why the rule says so', text: (r) => r.why + '; ' + (r.where || []).map((x) => 'r/' + x).join(', ') },
       actions: { label: (r) => r.fires ? 'Answer' : 'Open', onClick: lossPanel }, sort: false, onRow: lossPanel });
     const fr = Object.entries(ls.frames || {}).map(([k, v]) => pretty(k) + ' ' + v).join(', ');
+    const kit = el('pre', { class: 'card sunken bc', hidden: true, text: ls.kit });
+    const kb = el('button', { class: 'btn sm', type: 'button', text: 'Show the win-loss kit' });
+    kb.addEventListener('click', () => { kit.hidden = !kit.hidden; kb.textContent = kit.hidden ? 'Show the win-loss kit' : 'Hide the kit'; });
     mount('#losses', t, el('p', { class: 'small' }, el('b', { text: 'Win rate against a named brand: ' }), 'unavailable, ' + ls.win_rate_reason + '.'),
+      el('div', { class: 'row' }, kb, UI.copyButton({ label: 'Copy the kit', text: () => ls.kit }), UI.decisionRow({ capability: 'BRAND-C58', autonomy: 'human_assist', screen: SCREEN, compact: true, finding_id: SCREEN + '.COMP-R29.winloss' })), kit,
       fr ? el('p', { class: 'small muted', text: 'How Reddit frames the category (mentions): ' + fr + '.' }) : null,
       el('p', { class: 'micro faint', text: ls.rule }));
   }

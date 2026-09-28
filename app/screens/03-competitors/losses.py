@@ -63,10 +63,26 @@ def build(m: dict, brain) -> dict:
     rows.sort(key=lambda x: (-x["times"], -(x["upvotes"] or 0), x["name"]))
     for x in rows:
         x["answer"] = answer(x, m["brand"].capitalize())
-    return {"rows": rows, "frames": frames, "win_rate": None,
+    return {"rows": rows, "frames": frames, "win_rate": None, "kit": interview_kit(rows, m["brand"].capitalize()),
+            "reason_codes": REASON_CODES, "interviews": None,
             "win_rate_reason": "no win-loss interviews on file; run 5 against the top name (BRAND-C58)",
             "rule": f"On the plan when recommended instead of us {MIN_TIMES} or more times. The reason is a rule over their "
                     "ad angles and whether they are a tracked, priced page. Reddit counts only; never quoted, no usernames."}
+
+
+REASON_CODES = ["price and value", "durability", "fit and sizing", "comfort and feel", "style", "availability", "trust", "other"]
+
+
+def interview_kit(rows: list[dict], brand: str, n: int = 5) -> str:
+    names = [x["name"] for x in rows if x["fires"]][:3] or [x["name"] for x in rows][:3]
+    return "\n".join([
+        f"Win-loss kit: {n} interviews for each of {', '.join(names) or 'the top named alternatives'}.",
+        f"Screener: bought socks in the last 90 days; looked at {brand} and bought {names[0] if names else 'another brand'} instead "
+        f"(loss) or bought {brand} after looking at them (win). 20 minutes, a gift card for their time.",
+        "Guide: 1. What were you trying to fix? 2. Which brands did you look at, in order? 3. What made you pick the one you bought?",
+        f"4. What almost stopped you buying it? 5. What would have made you pick {brand}? 6. How did price per pair feel?",
+        "Coding sheet: one reason code per interview, from: " + ", ".join(REASON_CODES) + ". Quote only with written consent.",
+        "Readout: win rate against each name, the repeated reason (3 or more interviews), and one change to test."])
 
 
 def answer(x: dict, brand: str) -> str:

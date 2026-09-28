@@ -44,6 +44,7 @@ Round 1 notes: `snapshot.py` plans and runs a page-id Ad Library pull through `a
 | 3.4 | The printable weekly report (`?view=report` on the same page, since the server serves only index.html, screen.js and screen.css from a screen folder): the top 10 moves with who and check dates, what changed, who is a threat, the numbers to watch against their bars, caveats; Print button and print styles; linked from the head | done |
 | 3.5 | Battlecards for support: one per direct competitor from verified brain fields, the date the facts were checked, fresh or stale at 90 days, copy one or all; rule COMP-R27 puts a stale card on the plan for the agent to re-verify (BRAND-C57) | done |
 | 3.6 | Does our line match how shoppers frame the category (`frames.py`, BRAND-C20): the Reddit category frames with mentions, whether we are named and whether our line says them; 3 lines to test by rule (current, the top frame with its proof, the contested map corner); test score unavailable until a test is on file; rule COMP-R28 puts a 5-second poll plus ad-line test on the plan when the top frame (buy it for life, 9 mentions) is not in our line | done |
+| 3.7 | Win-loss interview kit (BRAND-C58, human assist): screener, 6-question guide, reason-code sheet and readout for 5 interviews against each name we lose to, shown and copyable under the losses table; rule COMP-R29 puts the interviews on the plan as a person task while none are on file | done |
 
 ## Round 2: who we lose to, the market around us, and counted signals
 
@@ -187,6 +188,6 @@ Round 2 notes: the lead authorised the $2.08 pull on 28 Sep; the session's permi
 | Round | Features picked | Date | Notes |
 |---|---|---|---|
 | 0 | 0.1 to 0.8 | 2026-09-28 | Bombas brain and simulated prices |
-| 3 | 3.1 to 3.6 | 2026-09-28 | Page-summary captures and diffs; price moves; landing page tracking; printable report; battlecards; positioning test |
+| 3 | 3.1 to 3.7 | 2026-09-28 | Page-summary captures and diffs; price moves; landing page tracking; printable report; battlecards; positioning test; win-loss kit |
 | 2 | 2.1 to 2.10 | 2026-09-28 | Lost by name; category ladder; review themes; Amazon against our site; creative velocity; weekly brief; niche sizing; premium signals; search seeds; desk tabs. Screenshot `round2.png` |
 | 1 | 1.1 to 1.10 | 2026-09-28 | Plan first; rank override; 12 pages side by side; coverage matrix; hook and offer mix; references; price and pack ladder; positioning map with moves; changes timeline; freshness and re-pull; rank for all 14 rules. Screenshot `round1.png` |

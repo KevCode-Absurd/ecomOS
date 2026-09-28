@@ -571,6 +571,18 @@ def act_frames(f: dict, m: dict) -> dict:
             "stop_rule": "No line beats the current one by 5 points", "check_on": _plus(f["last_seen"], 21), "time_to_ship_hours": 6}
 
 
+def act_winloss(f: dict, m: dict) -> dict:
+    """COMP-R29: run win-loss interviews. A person books them; the agent writes the kit and codes the answers."""
+    return {"title": "Run 5 win-loss interviews against each name we lose to", "owner": "person",
+            "artefact": {"kind": "research_note", "label": "a win-loss kit: screener, guide, coding sheet", "draft": m["losses"]["kit"]},
+            "steps": _steps(("agent", "Write the screener, guide and coding sheet from the names and reason codes."),
+                            ("person", "Recruit from past visitors and buyers; book 5 per name."),
+                            ("person", "Run the 20-minute interviews; record with consent."),
+                            ("agent", "Code each interview; report the win rate by name and any reason repeated 3 or more times.")),
+            "size": {"text": f"{5 * min(3, len([x for x in m['losses']['rows'] if x['fires']]))} interviews"},
+            "win_rule": None, "stop_rule": None, "check_on": _plus(f["last_seen"], 21), "time_to_ship_hours": 12}
+
+
 def act_connect(f: dict, m: dict) -> dict:
     un = f.get("unavailable") or {}
     con = un.get("connector") or "the missing source"
@@ -593,7 +605,7 @@ BUILDERS = {"COMP-R01": act_angle, "COMP-R02": act_price, "COMP-R03": act_offer_
             "COMP-R21": act_premium, "COMP-R22": act_search, "COMP-R23": act_connect,
             "COMP-R24": act_new_move, "COMP-R25": act_price_cut,
             "COMP-R26": act_landing, "COMP-R27": act_card,
-            "COMP-R28": act_frames}   # R16 has no data source yet: always a connect action
+            "COMP-R28": act_frames, "COMP-R29": act_winloss}   # R16 has no data source yet: always a connect action
 
 
 def action(f: dict, m: dict, net_revenue: float | None) -> dict:
