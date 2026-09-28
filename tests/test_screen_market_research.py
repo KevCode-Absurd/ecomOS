@@ -175,9 +175,58 @@ class RulesTest(unittest.TestCase):
         self.assertEqual(json.dumps(audit.run(None, data=d)), json.dumps(audit.run(None, data=d)))
 
     def test_rules_list(self):
-        self.assertEqual({r['rule_id'] for r in audit.RULES}, {'PROD-R01', 'PROD-R02', 'PROD-R03'})
+        ids = [r['rule_id'] for r in audit.RULES]
+        self.assertEqual(ids, sorted(set(ids)))
+        self.assertTrue({'PROD-R01', 'PROD-R02', 'PROD-R03', 'PROD-R04', 'PROD-R05'} <= set(ids))
         for r in audit.RULES:
             self.assertEqual(r['owner_screen'], '01-market-research')
+            self.assertIn(r['rule_id'], audit.CAPABILITY)
+
+    def test_trend_rules_from_a_web_pass(self):
+        """R04 fires when our category trails the market; R05 when a growing lane is sold and not advertised."""
+        fx = {'captured_at': '2026-09-28', 'markets': [
+            {'key': 'socks_us', 'label': 'US socks', 'size_usd': 9e9, 'size_year': 2025, 'cagr_pct': 30.0, 'direction': 'up',
+             'sources': [{'url': 'https://example.org/socks', 'publisher': 'Example', 'date': '2026-01'}]},
+            {'key': 'merino_wool_socks', 'label': 'Merino socks', 'size_usd': 4e8, 'cagr_pct': 6.2, 'direction': 'up',
+             'sources': [{'url': 'https://example.org/merino', 'publisher': 'Example', 'date': '2026-03'}]},
+            {'key': 'compression_socks', 'label': 'Compression', 'size_usd': 2e9, 'cagr_pct': 6.1, 'direction': 'up', 'sources': []},
+            {'key': 'slippers_us', 'label': 'Slippers', 'size_usd': None, 'cagr_pct': 1.0, 'direction': 'flat', 'sources': []}]}
+        real = audit.market_trends
+        audit.market_trends = lambda: fx
+        try:
+            class B:
+                brand = 'fake'
+                def records(self, sec):
+                    if sec == 'products':
+                        return [{'text': 'merino wool calf sock, compression sock, slipper', 'value': None, 'source': {}, 'evidence': []}]
+                    if sec == 'learnings':
+                        return [{'text': 'active ads: compression socks', 'value': {'role': 'self'}, 'source': {'type': 'ad_library'}, 'evidence': []}]
+                    return []
+            data = FakeData()
+            rd = audit.Reader(data, None, date(2026, 9, 27))
+            mix = audit.category_mix(data, None, rd)
+            fs = audit.trend_findings(B(), mix, date(2026, 9, 27))
+        finally:
+            audit.market_trends = real
+        by = {f['id']: f for f in fs}
+        r04 = by['01-market-research.PROD-R04.socks']
+        self.assertEqual(r04['money_at_stake']['formula'], '(market_cagr - our_growth) * our_net_sales_12m')
+        self.assertGreater(r04['money_at_stake']['usd'], 0)
+        self.assertIn('01-market-research.PROD-R05.merino_wool_socks', by)      # sold, growing, not advertised
+        self.assertNotIn('01-market-research.PROD-R05.compression_socks', by)   # sold and advertised
+        self.assertNotIn('01-market-research.PROD-R05.slippers_us', by)         # not growing
+        for f in fs:
+            self.check_shape(f)
+
+    def test_web_pass_fixture_cites_every_number(self):
+        fx = audit.market_trends()
+        self.assertIsNotNone(fx)
+        for m in fx['markets']:
+            if m.get('size_usd') is not None or m.get('cagr_pct') is not None:
+                self.assertTrue(m['sources'] and all(s.get('url') and s.get('date') for s in m['sources']), m['key'])
+        for p in fx['preferences'] + fx['launches']:
+            self.assertTrue(p['sources'] and all(s.get('url') for s in p['sources']))
+        self.assertNotIn('\u2014', json.dumps(fx))
 
 
 class RankTest(unittest.TestCase):

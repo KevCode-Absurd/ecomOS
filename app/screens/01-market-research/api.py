@@ -206,6 +206,49 @@ def review_mining(reviews, lads):
     return out
 
 
+# ---------------------------------------------------------------- the trend desk: category mix against the public market
+
+def public_mix(br):
+    """The public category mix records the brain holds, as bands to compare our simulated mix against."""
+    out = []
+    if br is None:
+        return out
+    for r in br.records('economics'):
+        v = r.get('value')
+        if not isinstance(v, dict):
+            continue
+        if 'socks_and_slippers_pct' in v:
+            out.append({'categories': ['socks', 'slippers'], 'share': v['socks_and_slippers_pct'] / 100, 'as_of': v.get('as_of'), 'record': r['id'], 'text': r.get('text')})
+            out.append({'categories': ['underwear', 'tshirts'], 'share': v['underwear_and_tshirts_pct'] / 100, 'as_of': v.get('as_of'), 'record': r['id'], 'text': r.get('text')})
+        if 'footwear_share_pct' in v:
+            out.append({'categories': ['footwear', 'slippers'], 'share': v['footwear_share_pct'] / 100, 'as_of': v.get('as_of'), 'record': r['id'], 'text': r.get('text')})
+    return out
+
+
+def trends(br, mix):
+    """The industry and sub-industry strips: public markets from the web pass, each tied to our category and its coverage."""
+    fx = audit.market_trends()
+    words = audit.brand_words(br)
+    ads = audit.ad_words(br)
+    ours = {r['category']: r for r in (mix.get('rows') or [])}
+    markets = []
+    for m in (fx or {}).get('markets') or []:
+        key = m.get('key')
+        cat = audit.MARKET_CATEGORY.get(key)
+        our = ours.get(cat) if cat else None
+        srcs = m.get('sources') or []
+        markets.append({'key': key, 'label': m.get('label'), 'size_usd': m.get('size_usd'), 'size_year': m.get('size_year'),
+                        'cagr_pct': m.get('cagr_pct'), 'cagr_window': m.get('cagr_window'), 'direction': m.get('direction'),
+                        'series': m.get('series') or [], 'drivers': m.get('drivers') or [], 'sources': srcs,
+                        'our_category': cat, 'covered': audit.market_covered(key, words) if words else None,
+                        'advertised': any(w in ads for w in audit.MARKET_WORDS.get(key, [])) if ads else None,
+                        'finding_id': f'{SCREEN}.PROD-R05.{key}',
+                        'our_growth': our.get('growth') if our else None, 'our_net_share': our.get('net_share') if our else None,
+                        'gap_points': round(our['growth'] * 100 - m['cagr_pct'], 1) if our and our.get('growth') is not None and isinstance(m.get('cagr_pct'), (int, float)) else None})
+    return {'captured_at': (fx or {}).get('captured_at'), 'note': (fx or {}).get('note'), 'markets': markets,
+            'on_file': fx is not None, 'public_mix': public_mix(br)}
+
+
 # ---------------------------------------------------------------- rank: findings to actions with real steps
 
 def _cat_word(f):
@@ -284,6 +327,44 @@ def recipe(f):
             'check_on': _check_on(f, 14), 'time_to_ship_hours': 8,
             'win_rule': '1 or more open next-SKU candidates for the category',
         }
+    if rid == 'PROD-R04':
+        m = f.get('money_at_stake') or {}
+        cat = line
+        return {
+            'title': f'Close the growth gap on {cat} against its market',
+            'owner': 'agent', 'artefact': {'kind': 'research_note', 'label': f'a read on why {cat} trails its market, with the 3 moves ranked (range, price, reach)'},
+            'steps': [
+                {'n': 1, 'who': 'agent', 'text': f'Compare {cat} unit growth by month with the market growth line and name the months that fell behind.'},
+                {'n': 2, 'who': 'agent', 'text': 'Check range breadth, price position and paid reach for the category against the 3 closest competitors.'},
+                {'n': 3, 'who': 'agent', 'text': 'Write the read with the one move most likely to close the gap and the number it must move.'},
+                {'n': 4, 'who': 'person', 'text': 'Approve the move. It goes to offers, creative or supply.'},
+                {'n': 5, 'who': 'agent', 'text': 'Re-read after the next whole month.'}],
+            'size': {'text': f'{rank_mod_money(m)} of sales the category would add at market pace', 'usd': m.get('usd')} if m else None,
+            'stop_rule': 'stop when the category grows at or above its market rate for 2 whole months',
+            'check_on': _check_on(f, 31), 'time_to_ship_hours': 4, 'win_rule': 'category unit growth at or above the market rate',
+        }
+    if rid == 'PROD-R05':
+        key = (f.get('entity') or {}).get('id') or ''
+        label = (f.get('entity') or {}).get('label') or key
+        gift = key == 'gifting_socks'
+        cagr = _ev_value(f, 'market_cagr_pct')
+        return {
+            'title': (f'Brief a gifting flight before the holiday window' if gift else f'Brief the first ad for {label}'),
+            'owner': 'agent_drafts',
+            'artefact': {'kind': 'ad_brief', 'label': (f'a gift-flight brief: 3 hooks, packs and price points, the send dates, the measure'
+                                                     if gift else f'an ad brief for {label}: 3 hooks from the brain, the proof on file, the line and the offer')},
+            'steps': [
+                {'n': 1, 'who': 'agent', 'text': (f'Pull the gift packs, the gift card and last year\'s November and December sales by line.' if gift else
+                                                  f'Pull the lines, claims and review praise that name {label} in the brain.')},
+                {'n': 2, 'who': 'agent', 'text': 'Read what the 3 closest competitors run on it in the Ad Library (format, hook, offer), signals only.'},
+                {'n': 3, 'who': 'agent', 'text': 'Draft the brief: 3 hooks, the proof for each, the product and the offer, one static and one video.'},
+                {'n': 4, 'who': 'person', 'text': 'Approve the brief. Creative makes the ads; paid social sets the test.'},
+                {'n': 5, 'who': 'agent', 'text': 'Read the test at 14 days: cost per order against the account median.'}],
+            'size': {'text': (f'{label}: {cagr} percent a year' if cagr is not None else 'growth rate unavailable') + ', no active ad names it', 'usd': None},
+            'stop_rule': 'stop the flight if cost per order is over 1.3 times the account median for 7 days',
+            'check_on': _check_on(f, 14 if not gift else 7), 'time_to_ship_hours': 6,
+            'win_rule': 'at least 1 active ad names the lane and its cost per order is at or under the account median',
+        }
     return None
 
 
@@ -360,12 +441,14 @@ def overview(data, brand):
     pipe = audit.pipeline(brand)
     floor = finance_floor(data, brand, ends_on)
     findings = audit.run(brand, {'ends_on': ends_on.isoformat()}, data=data)
+    mix = audit.category_mix(data, brand, rd)
     return {'brand': head(data, brand, ends_on, br),
             'window': {'ends_on': ends_on.isoformat(), 'days': 28,
                        'trend': None if tr.get('unavailable') else {'months': [tr['first'], tr['last']], 'year_ago': tr['year_ago']}},
             'orientation': orientation(tr, br, ends_on, findings),
             'wrong': wrong(findings),
-            'desk': {'demand': demand(tr, reviews), 'store_growth': tr.get('store_growth'),
+            'desk': {'trends': trends(br, mix), 'mix': mix,
+                     'demand': demand(tr, reviews), 'store_growth': tr.get('store_growth'),
                      'demand_unavailable': {'reason': tr.get('reason'), 'fix': tr.get('fix')} if tr.get('unavailable') else None,
                      'price_bands': bands, 'reviews': review_mining(reviews, lads),
                      'pipeline': {'columns': PIPELINE_COLUMNS, 'rows': pipe, 'gate_rule': MARGIN_GATE, 'floor_pct': floor,

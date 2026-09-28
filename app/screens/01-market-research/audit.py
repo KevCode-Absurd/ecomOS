@@ -23,6 +23,14 @@ Rules
             objection ladder rungs built from the same reviews. Capability PROD-C06 (sharpen the
             line and its angle, agent does). Owner: 01-market-research; 04-offers reads the ladder.
 
+  PROD-R04  Category behind its market: a category whose 12-month unit growth is below the public growth a
+            year of its market in the web pass fixture (fixtures/market_trends.json, url and date on every
+            number). Money: (market growth - our growth) x our net sales 12 months. Confidence 0.3 (one
+            window, peer baseline). Capability PROD-C05. Owner: 01-market-research.
+  PROD-R05  Growing sub-category the brand sells and does not advertise: a market in the web pass growing 4
+            percent a year or more (or the gift window, 1 Nov, inside 90 days) whose words appear in the
+            brand's product, claim or site records and in none of its active-ad signals. Money: null.
+            Capability PROD-C05 (agent does). Owner: 01-market-research.
   PROD-R03  Hero line with no next SKU: a line with 25 percent or more of its category's net sales in
             the last 3 whole months while the candidate pipeline holds no open next-SKU candidate for
             that category. Money: null (an unlaunched SKU has no baseline). Capability PROD-C06
@@ -31,6 +39,7 @@ Rules
 Money uses net sales, not margin. Review counts are public and real; sales are simulated.
 """
 import importlib.util
+import json
 import statistics
 from datetime import date, timedelta
 from pathlib import Path
@@ -54,10 +63,16 @@ RULES = [
     {'rule_id': 'PROD-R03', 'name': 'Hero line with 25 percent or more of its category and no next SKU in the pipeline',
      'entity_type': 'sku', 'inputs': ['products_monthly', 'products', 'fixtures.pipeline'], 'capability': 'PROD-C06',
      'owner_screen': SCREEN},
+    {'rule_id': 'PROD-R04', 'name': 'Category units growing slower than its public market growth a year (web pass)',
+     'entity_type': 'sku', 'inputs': ['products_monthly', 'fixtures.market_trends'], 'capability': 'PROD-C05', 'owner_screen': SCREEN},
+    {'rule_id': 'PROD-R05', 'name': 'Sub-category growing 4 percent a year or more (or the gift window within 90 days) that the brand sells and no active ad names',
+     'entity_type': 'metric', 'inputs': ['fixtures.market_trends', 'brain.products', 'brain.learnings'], 'capability': 'PROD-C05', 'owner_screen': SCREEN},
 ]
 CAPABILITY = {'PROD-R01': {'id': 'PROD-C05', 'autonomy': 'agent_does'},
               'PROD-R02': {'id': 'PROD-C06', 'autonomy': 'agent_does'},
-              'PROD-R03': {'id': 'PROD-C06', 'autonomy': 'agent_does'}}
+              'PROD-R03': {'id': 'PROD-C06', 'autonomy': 'agent_does'},
+              'PROD-R04': {'id': 'PROD-C05', 'autonomy': 'agent_does'},
+              'PROD-R05': {'id': 'PROD-C05', 'autonomy': 'agent_does'}}
 SEVERITY_ORDER = {'critical': 0, 'high': 1, 'medium': 2, 'low': 3}
 
 # Review records name their line in a short key; the store names it by SKU title.
@@ -459,5 +474,174 @@ def run(brand, window=None, data=None):
                                 ['brain.products.reviews_*'], 'reviews', 'Add the review capture for each line to the brand brain.'))
     else:
         out += review_findings(reviews, ladders(br), rd, tr, ends_on, net)
+    out += trend_findings(br, category_mix(data, brand, rd), ends_on)
     out.sort(key=lambda f: (SEVERITY_ORDER[f['severity']], -((f['money_at_stake'] or {}).get('usd') or 0), f['id']))
+    return out
+
+
+# ---------------------------------------------------------------- category mix, 12 whole months
+
+MIX_MONTHS = 12
+
+
+def category_mix(data, brand, rd):
+    """Our units and net sales by category over the last 12 whole months against the 12 before, from products_monthly."""
+    try:
+        rows = (brand_data(brand) if brand else data).table('products_monthly')
+    except (KeyError, ValueError) as exc:
+        return {'unavailable': True, 'reason': f'products_monthly is not connected ({exc})', 'fix': 'shopify', 'rows': []}
+    last = rd.last_month
+    first = month_add(last, 1 - MIX_MONTHS)
+    p_first, p_last = month_add(first, -12), month_add(last, -12)
+    now, ago, series = {}, {}, {}
+    months = [month_add(first, k) for k in range(MIX_MONTHS)]
+    for r in rows:
+        cat = r.get('category') or 'other'
+        m = r.get('month')
+        if first <= m <= last:
+            g = now.setdefault(cat, {'units': 0, 'net_sales': 0.0})
+            g['units'] += r.get('units') or 0
+            g['net_sales'] += r.get('net_sales') or 0.0
+            series.setdefault(cat, {mm: None for mm in months})[m] = (series.get(cat, {}).get(m) or 0) + (r.get('units') or 0)
+        elif p_first <= m <= p_last:
+            g = ago.setdefault(cat, {'units': 0, 'net_sales': 0.0})
+            g['units'] += r.get('units') or 0
+            g['net_sales'] += r.get('net_sales') or 0.0
+    total_units = sum(g['units'] for g in now.values())
+    total_net = sum(g['net_sales'] for g in now.values())
+    out = []
+    for cat, g in now.items():
+        a = ago.get(cat)
+        out.append({'category': cat, 'units': g['units'], 'net_sales': round(g['net_sales'], 2),
+                    'unit_share': round(g['units'] / total_units, 4) if total_units else None,
+                    'net_share': round(g['net_sales'] / total_net, 4) if total_net else None,
+                    'growth': round(g['units'] / a['units'] - 1, 4) if a and a['units'] else None,
+                    'net_growth': round(g['net_sales'] / a['net_sales'] - 1, 4) if a and a['net_sales'] else None,
+                    'series': [series[cat][m] for m in months]})
+    out.sort(key=lambda r: -r['net_sales'])
+    return {'unavailable': False, 'first': first, 'last': last, 'months': months, 'rows': out,
+            'store_growth': round(sum(g['units'] for g in now.values()) / sum(g['units'] for g in ago.values()) - 1, 4) if ago and sum(g['units'] for g in ago.values()) else None}
+
+
+
+# ---------------------------------------------------------------- the web pass (fixtures/market_trends.json)
+
+def market_trends():
+    """The public web pass this screen keeps as a fixture: markets, preferences, launches, each with url and date.
+    None when the file is absent. Never a number without a source."""
+    path = HERE / 'fixtures' / 'market_trends.json'
+    if not path.is_file():
+        return None
+    import json
+    return json.loads(path.read_text(encoding='utf-8'))
+
+
+# words that tie a public market or sub-category to what the brand sells; the brand side is read from the brain
+MARKET_CATEGORY = {'socks_us': 'socks', 'socks_global': 'socks', 'slippers_us': 'slippers', 'mens_underwear_us': 'underwear',
+                   'womens_underwear_us': 'underwear', 'basics_tshirts': 'tshirts', 'footwear_casual': 'footwear',
+                   'compression_socks': 'socks', 'athletic_socks': 'socks', 'merino_wool_socks': 'socks',
+                   'gifting_socks': 'socks', 'sustainable_apparel': None}
+MARKET_WORDS = {'compression_socks': ['compression'], 'athletic_socks': ['athletic', 'performance', 'running', 'sport'],
+                'merino_wool_socks': ['merino'], 'gifting_socks': ['gift'], 'sustainable_apparel': ['sustainab', 'recycled', 'organic'],
+                'slippers_us': ['slipper'], 'mens_underwear_us': ['underwear', 'boxer', 'brief'], 'womens_underwear_us': ['underwear', 'bralette', 'hipster'],
+                'basics_tshirts': ['t-shirt', 'tshirt', ' tee ', ' tees'], 'footwear_casual': ['clog', 'moccasin', 'sandal', 'footwear'], 'socks_us': ['sock'], 'socks_global': ['sock']}
+
+
+def brand_words(br):
+    """Lower-case text of the brain's product, claim and site records, for keyword coverage checks."""
+    if br is None:
+        return ''
+    parts = []
+    for sec in ('products', 'claims', 'site_map', 'offers'):
+        for r in br.records(sec):
+            parts.append(str(r.get('text') or ''))
+            v = r.get('value')
+            parts.append(v if isinstance(v, str) else __import__('json').dumps(v))
+    return ' '.join(parts).lower()
+
+
+def market_covered(key, words):
+    """True when the brand's own records name the sub-category the market row describes."""
+    return any(w in words for w in MARKET_WORDS.get(key, [key.split('_')[0]]))
+
+
+def ad_words(br):
+    """Lower-case text of the brand's own active-ad signals in the brain (learnings with role self, offers seen in ads)."""
+    if br is None:
+        return ''
+    parts = []
+    for r in br.records('learnings'):
+        v = r.get('value')
+        if isinstance(v, dict) and v.get('role') == 'competitor':
+            continue
+        if (r.get('source') or {}).get('type') != 'ad_library':
+            continue
+        parts.append(str(r.get('text') or ''))
+        parts.append(json.dumps(v))
+        for e in r.get('evidence') or []:
+            parts.append(str(e.get('quote') or ''))
+    for r in br.records('offers'):
+        if (r.get('source') or {}).get('type') == 'ad_library':
+            parts.append(str(r.get('text') or ''))
+    return ' '.join(parts).lower()
+
+
+TREND_MIN_CAGR = 4.0
+GIFT_WINDOW_DAYS = 90
+
+
+def trend_findings(br, mix, ends_on):
+    """PROD-R04 and PROD-R05 from the web pass fixture against our category mix and our active ads."""
+    fx = market_trends()
+    if not fx:
+        return [_unavailable('PROD-R05', ends_on, 'No web pass is on file, so the category trend cannot be read.',
+                             ['fixtures/market_trends.json'], 'web_pass', 'Run the research web pass for this brand.')]
+    words = brand_words(br)
+    ads = ad_words(br)
+    ours = {r['category']: r for r in (mix.get('rows') or [])} if not mix.get('unavailable') else {}
+    out = []
+    for m in fx.get('markets') or []:
+        key = m.get('key')
+        cagr = m.get('cagr_pct')
+        src = (m.get('sources') or [{}])[0]
+        cite = f"{src.get('publisher') or 'public source'}, {src.get('date') or 'undated'}"
+        cat = MARKET_CATEGORY.get(key)
+        our = ours.get(cat) if cat else None
+        # R04: our category grows slower than its public market
+        if our and our.get('growth') is not None and isinstance(cagr, (int, float)) and our['growth'] * 100 < cagr:
+            lost = round((cagr / 100 - our['growth']) * our['net_sales'])
+            stake = {'usd': max(lost, 0), 'formula': '(market_cagr - our_growth) * our_net_sales_12m',
+                     'inputs': {'market_cagr': cagr / 100, 'our_growth': our['growth'], 'our_net_sales_12m': our['net_sales']}, 'window': '12 months'}
+            ev = [_ev('unit_growth_12m', our['growth'], 'ratio', month_end(mix['last']).isoformat(), '12 months', cagr / 100, 'peer_band',
+                      note=f'baseline is the public market growth a year ({cite})'),
+                  _ev('net_sales_12m', our['net_sales'], 'usd', month_end(mix['last']).isoformat(), '12 months')]
+            sentence = (f'{cat} units grew {round(our["growth"] * 100, 1)} percent in 12 months. The {m.get("label")} market grows '
+                        f'{cagr} percent a year ({cite}), so the line is losing share of its market.')
+            out.append(_finding('PROD-R04', cat, ends_on, 'medium', ev, sentence, stake, 0.3, [f'fixtures.market_trends.{key}']))
+        # R05: a growing sub-category the brand sells and does not advertise
+        growing = isinstance(cagr, (int, float)) and cagr >= TREND_MIN_CAGR and m.get('direction') == 'up'
+        gifting = key == 'gifting_socks' and 0 <= (date(ends_on.year, 11, 1) - ends_on).days <= GIFT_WINDOW_DAYS
+        if not (growing or gifting):
+            continue
+        if not words or not market_covered(key, words):
+            continue
+        if any(w in ads for w in MARKET_WORDS.get(key, [])):
+            continue
+        size = m.get('size_usd')
+        ev = [_ev('market_cagr_pct', cagr, 'percent', src.get('date') or ends_on.isoformat(), m.get('cagr_window') or 'forecast', TREND_MIN_CAGR, 'threshold',
+                  source=src.get('url'), simulated=False, freshness_days=0, note=cite),
+              _ev('market_size_usd', size, 'usd', str(m.get('size_year') or ''), 'year', source=src.get('url'), simulated=False, freshness_days=0),
+              _ev('active_ads_naming_it', 0, 'count', ends_on.isoformat(), 'active ads now', 1, 'threshold', source='brain.learnings', simulated=False, freshness_days=0)]
+        if gifting:
+            sentence = (f'Socks are a holiday gift category ({cite}) and the window opens in {(date(ends_on.year, 11, 1) - ends_on).days} days. '
+                        f'No active ad names a gift.')
+        else:
+            sentence = (f'{m.get("label")} grows {cagr} percent a year' + (f' on ${size / 1e9:,.1f} billion' if size else '') +
+                        f' ({cite}). The brand\'s own records carry it and no active ad names it.')
+        f = _finding('PROD-R05', key, ends_on, 'medium', ev, sentence, None, 0.5, [f'fixtures.market_trends.{key}', f'{br.brand}.learnings.hook_types' if br else ''],
+                     money_reason='no share of the sub-category is measurable without search or marketplace data')
+        f['entity'] = {'type': 'metric', 'id': key, 'label': m.get('label') or key, 'category': cat}
+        f['id'] = f'{SCREEN}.PROD-R05.{key}'
+        f['brain_refs'] = [x for x in f['brain_refs'] if x]
+        out.append(f)
     return out

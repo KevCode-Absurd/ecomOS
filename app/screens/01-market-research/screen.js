@@ -158,10 +158,52 @@
       gapLine(p.rows.length ? p.rows.length + ' candidates open.' : (heroes.length ? 'The pipeline is empty while ' + heroes.length + ' hero line' + (heroes.length === 1 ? ' has' : 's have') + ' no next SKU planned.' : 'The pipeline is empty. Every category with a hero line will show a plan-the-next-SKU action here.'),
         heroes.length ? { label: 'Plan the next SKU', onClick: () => openAction(heroes[0]) } : null));
   }
+  function trendsBlock(t, mix) {
+    if (!t.on_file) return UI.emptyState({ screen: SLUG, title: 'No web pass on file', text: 'Run the research web pass for this brand. Every number it keeps carries a url and a date.', missing: ['web_pass'] });
+    const cite = (m) => (m.sources && m.sources[0]) ? (m.sources[0].publisher + ', ' + m.sources[0].date) : 'no source';
+    const rows = t.markets.map((m) => ({
+      label: m.label, sub: (m.size_usd != null ? fmt.money(m.size_usd) + (m.size_year ? ' in ' + m.size_year : '') : 'size unavailable') + (m.cagr_pct != null ? ', ' + m.cagr_pct + ' percent a year, ' + (m.cagr_window || '') : ', growth unavailable') + '. ' + cite(m),
+      values: (m.series && m.series.length) ? m.series.map((p) => p.value_usd) : (m.size_usd != null ? [m.size_usd] : []), unit: '$', higher_is_better: true, delta_label: (m.series && m.series.length > 1) ? m.series[0].year + ' to ' + m.series[m.series.length - 1].year : '' }));
+    const strip = Charts.trendStrip({ title: 'Public markets, ' + t.captured_at, rows, note: (t.note || '') + ' Two-point lines are a forecast from the size and the growth rate, not history.' });
+    const byCat = {};
+    for (const m of t.markets) if (m.our_category && (m.key.indexOf('_us') > 0 || m.key === 'basics_tshirts' || m.key === 'footwear_casual')) byCat[m.our_category] = byCat[m.our_category] || m;
+    const pub = t.public_mix || [];
+    const mixRows = (mix.rows || []).map((r) => {
+      const m = byCat[r.category];
+      const band = pub.find((p) => p.categories.indexOf(r.category) >= 0);
+      const a = actionFor(SLUG + '.PROD-R04.' + r.category);
+      return Object.assign({}, r, { market: m ? m.label : null, cagr: m ? m.cagr_pct : null, gap: (m && m.cagr_pct != null && r.growth != null) ? r.growth * 100 - m.cagr_pct : null,
+        band: band ? fmt.pct(band.share) + ' with ' + band.categories.filter((c) => c !== r.category).join(', ') + ' (public, ' + (band.as_of || 'undated') + ')' : 'no public record',
+        actions: [a ? { label: 'Close the gap', onClick: () => openAction(a) } : { label: 'No action', cls: 'quiet', onClick: () => {} }] });
+    });
+    const mixTable = mix.unavailable ? UI.emptyState({ screen: SLUG, title: 'No product sales by month', text: mix.reason, missing: [mix.fix] }) : UI.verdictTable({
+      columns: [{ key: 'category', label: 'Our category' }, { key: 'net_share', label: 'Share of net sales, 12 mo', unit: '%' }, { key: 'growth', label: 'Unit growth, 12 mo', unit: '%' },
+        { key: 'cagr', label: 'Market growth a year', align: 'right', format: (v) => v == null ? 'no market on file' : v + ' percent' }, { key: 'band', label: 'Public share record' }],
+      rows: mixRows,
+      verdict: { at: 1, kind: (r) => r.gap == null ? 'na' : r.gap < 0 ? 'fix' : r.gap > 10 ? 'scale' : 'keep', text: (r) => r.gap == null ? 'No market' : r.gap < 0 ? 'Behind market' : r.gap > 10 ? 'Outgrowing' : 'In line', reason: (r) => r.gap == null ? 'no public growth rate mapped to this category' : 'our growth minus market growth: ' + (r.gap > 0 ? '+' : '') + r.gap.toFixed(1) + ' points' },
+      actions: { label: 'Do', onClick: () => {} }, sort: false });
+    const subRows = t.markets.map((m) => { const a = actionFor(m.finding_id); return Object.assign({}, m, { size: m.size_usd, cite: cite(m), actions: [a ? { label: 'Brief it', onClick: () => openAction(a) } : { label: m.covered === false ? 'Screen it' : 'Covered', cls: 'quiet', onClick: () => { if (m.covered === false) UI.decisionRow({ capability: 'PROD-C01', screen: SLUG }); } }] }); });
+    const subTable = UI.verdictTable({
+      columns: [{ key: 'label', label: 'Market or lane' }, { key: 'size', label: 'Size', unit: '$' }, { key: 'cagr_pct', label: 'Growth a year', align: 'right', format: (v) => v == null ? NA : v + ' percent' },
+        { key: 'covered', label: 'We sell it', format: (v) => v == null ? NA : v ? 'yes' : 'no' }, { key: 'advertised', label: 'In our active ads', format: (v) => v == null ? NA : v ? 'yes' : 'no' }, { key: 'cite', label: 'Source' }],
+      rows: subRows,
+      verdict: { at: 1, kind: (r) => r.covered === false && r.direction === 'up' ? 'new' : (r.covered && r.advertised === false && (r.cagr_pct >= 4 || r.key === 'gifting_socks')) ? 'fix' : r.covered && r.advertised ? 'keep' : 'watch',
+        text: (r) => r.covered === false && r.direction === 'up' ? 'Not sold' : (r.covered && r.advertised === false && (r.cagr_pct >= 4 || r.key === 'gifting_socks')) ? 'Sold, not advertised' : r.covered && r.advertised ? 'Sold and advertised' : 'Watch',
+        reason: (r) => 'direction ' + (r.direction || NA) + (r.drivers && r.drivers.length ? '; ' + r.drivers.slice(0, 2).join('; ') : '') },
+      actions: { label: 'Do', onClick: () => {} }, sort: false });
+    const gaps = subRows.filter((r) => r.covered && r.advertised === false && (r.cagr_pct >= 4 || r.key === 'gifting_socks'));
+    return el('div', { class: 'stack' },
+      el('div', { class: 'grid two' }, el('div', { class: 'card' }, strip), el('div', { class: 'card scroll' }, el('h4', { text: 'Our mix against the market, 12 whole months to ' + (mix.last || NA) }), mixTable)),
+      el('div', { class: 'card scroll' }, el('h4', { text: 'Lanes: sold, advertised, or neither' }), subTable),
+      gapLine(gaps.length ? gaps.length + ' growing lanes are sold and not named in any active ad: ' + gaps.map((g) => g.label).join(', ') + '. Each carries an ad brief in the plan.' : 'Every growing lane the brand sells has an active ad naming it.',
+        gaps.length ? { label: 'Brief the first', onClick: () => { const a = actionFor(gaps[0].finding_id); if (a) openAction(a); } } : null));
+  }
+
   function loadDesk(o) {
     const d = o.desk || {};
     const w = (o.window || {}).trend;
     const parts = [];
+    parts.push(section('desk-trends', 'Where is the category going, and which lane is under-advertised?', 'Public market sizes and growth from the web pass, a url and a date on every number, against our category mix over 12 whole months. Sales are simulated; markets are public.', trendsBlock(d.trends || { on_file: false }, d.mix || {})));
     parts.push(section('desk-demand', 'Which lines are losing share, and which reviews say why?', 'Last 3 whole months against the same months a year earlier. A line fires when units fall or growth trails the store by 1 point or more.', demandBlock(d, w || { months: [], year_ago: [] })));
     parts.push(section('desk-price', 'Where do our prices sit against the competitor band?', 'Per-pair list price by line against the band of competitor median prices from the brain. Socks only; other categories have no competitor price on file.', priceBlock(d.price_bands || {})));
     parts.push(section('desk-reviews', 'What do reviews praise and fail, line by line?', 'Public site review totals per line, with the objection ladder rungs built from them.', reviewBlock(d.reviews || [])));
