@@ -142,6 +142,10 @@
     const base = e.baseline == null ? '' : ' against ' + (Array.isArray(e.baseline) ? e.baseline.join(' to ') : one(e.baseline)) + ' (' + pretty(e.baseline_kind) + ')';
     return el('li', null, el('span', { class: 'mono micro', text: e.metric }), ' ', el('b', { class: 'num', text: v }), base, el('span', { class: 'faint', text: ', ' + e.window + (e.simulated ? ', simulated' : '') }));
   }
+  // verdictTable prints actions.label as the column header, so per-row labels ride on row.actions
+  function withActs(rows, label, onClick, cls) {
+    return rows.map((r) => Object.assign({}, r, { actions: [{ label: label(r), onClick, cls: cls || 'soft' }] }));
+  }
   function wrongList(findings, actionsById, p) {
     const open = findings.filter((f) => f.status !== 'resolved').sort((a, b) => (SEV[a.severity] - SEV[b.severity]) || (b.confidence - a.confidence));
     if (!open.length) return [el('p', { class: 'muted', text: 'Nothing open on this capture.' })];
@@ -218,10 +222,11 @@
     const draw = (key) => {
       const rows = comps.filter((r) => key === 'all' || (key === 'threat' ? r.verdict.text === 'Threat' : r.frame === key));
       box.replaceChildren(UI.verdictTable({
-        columns: cols, rows: rows.concat([Object.assign({}, us, { verdict: { kind: 'new', text: 'Us', reason: 'our page, for the side by side' } })]),
+        columns: cols, rows: withActs(rows.concat([Object.assign({}, us, { verdict: { kind: 'new', text: 'Us', reason: 'our page, for the side by side' } })]),
+          (r) => r.role === 'self' ? 'Ours' : r.verdict.text === 'Threat' ? 'Battlecard' : 'Open', (r) => { if (r.role !== 'self') pagePanel(r, us, data); }),
         verdict: { at: 1, kind: (r) => r.verdict.kind, text: (r) => r.verdict.text, reason: (r) => r.verdict.reason },
         reason: { key: 'why', label: 'Reason in numbers', text: (r) => r.role === 'self' ? 'the line we compare against' : r.verdict.short },
-        actions: { label: (r) => r.role === 'self' ? 'Ours' : r.verdict.text === 'Threat' ? 'Battlecard' : 'Open', onClick: (r) => { if (r.role !== 'self') pagePanel(r, us, data); } },
+        actions: { label: 'Do', onClick: (r) => { if (r.role !== 'self') pagePanel(r, us, data); } },
         sort: false, onRow: (r) => { if (r.role !== 'self') pagePanel(r, us, data); },
       }));
     };
@@ -307,9 +312,9 @@
         { key: 'start', label: 'Since', format: (v) => v ? fmt.date(v) : NA },
         { key: 'keep_rate', label: 'Ads live 30 days+', format: (v, r) => v == null ? NA : Math.round(v * 100) + '% (' + r.long_runners + ')' },
         { key: 'score', label: 'Relevance', format: (v) => v == null ? NA : v.toFixed(1) }],
-      rows: rf.refs, verdict: { at: 1, kind: (r) => r.verdict.kind, text: (r) => r.verdict.text, reason: (r) => r.reasons.join('; ') },
+      rows: withActs(rf.refs, (r) => r.suggested ? 'Use as reference' : 'Open', refPanel), verdict: { at: 1, kind: (r) => r.verdict.kind, text: (r) => r.verdict.text, reason: (r) => r.reasons.join('; ') },
       reason: { key: 'why', label: 'Why it matters to us', text: (r) => r.reasons.join('; ') || 'no rule fired' },
-      actions: { label: (r) => r.suggested ? 'Use as reference' : 'Open', cls: 'soft', onClick: refPanel }, sort: false, onRow: refPanel });
+      actions: { label: 'Do', onClick: refPanel }, sort: false, onRow: refPanel });
     mount('#refs', ours, table, el('p', { class: 'micro faint', text: rf.rule + ' Run length is a signal, not a result. Versions per ad need an ad-level snapshot.' }));
   }
 
@@ -372,9 +377,9 @@
       columns: [{ key: 'name', label: 'Picked instead', format: (v, r) => v + (r.tracked ? '' : ' (not tracked)') },
         { key: 'times', label: 'Times', unit: 'n' }, { key: 'upvotes', label: 'Upvotes', unit: 'n' },
         { key: 'our_one_star', label: 'Our one-stars on it', format: (v) => v == null ? NA : fmt.num(v) }],
-      rows: ls.rows, verdict: { at: 1, kind: (r) => THEME_KIND[r.theme], text: (r) => 'They ' + r.theme_label, reason: (r) => r.why },
+      rows: withActs(ls.rows, (r) => r.fires ? 'Answer' : 'Open', lossPanel), verdict: { at: 1, kind: (r) => THEME_KIND[r.theme], text: (r) => 'They ' + r.theme_label, reason: (r) => r.why },
       reason: { key: 'why', label: 'Why the rule says so', text: (r) => r.why + '; ' + (r.where || []).map((x) => 'r/' + x).join(', ') },
-      actions: { label: (r) => r.fires ? 'Answer' : 'Open', onClick: lossPanel }, sort: false, onRow: lossPanel });
+      actions: { label: 'Do', onClick: lossPanel }, sort: false, onRow: lossPanel });
     const fr = Object.entries(ls.frames || {}).map(([k, v]) => pretty(k) + ' ' + v).join(', ');
     const kit = el('pre', { class: 'card sunken bc', hidden: true, text: ls.kit });
     const kb = el('button', { class: 'btn sm', type: 'button', text: 'Show the win-loss kit' });
@@ -536,6 +541,18 @@
     { key: 'price', label: 'Price and position', ids: ['map', 'frames', 'premium', 'prices', 'presence'] },
     { key: 'market', label: 'Market and data', ids: ['niche', 'search', 'fresh'] },
   ];
+  function gapLines(lines) {
+    for (const [id, g] of Object.entries(lines || {})) {
+      const node = document.getElementById(id);
+      const sec = node && node.closest('.section');
+      if (!sec) continue;
+      const go = g.action_id ? el('button', { class: 'btn soft xs', type: 'button', text: g.status === 'unavailable' ? 'Go to the connect step' : 'Go to the action', onclick: () => {
+        const n = document.querySelector('#actions [data-id="' + CSS.escape(g.action_id) + '"], #connect [data-id="' + CSS.escape(g.action_id) + '"]');
+        if (n) { n.scrollIntoView({ behavior: 'smooth', block: 'center' }); n.classList.add('flash'); setTimeout(() => n.classList.remove('flash'), 1600); } } }) : null;
+      sec.append(el('div', { class: 'gap-line row' + (g.action_id ? '' : ' held') }, el('b', { text: g.action_id ? 'Gap: ' : 'Holding: ' }), el('span', { text: g.text }),
+        g.action_id ? el('span', { class: 'small muted', text: 'Move: ' + g.title + (g.more ? ' (+' + g.more + ' more)' : '') }) : null, g.owner ? UI.ownerChip(g.owner) : null, go));
+    }
+  }
   function deskTabs() {
     const src = document.getElementById('desk-src');
     const items = DESK.map((t) => {
@@ -619,6 +636,7 @@
     placementSection(d.placements);
     document.getElementById('audit-sub').textContent = p.findings.length + ' findings from ' + p.rules.length + ' rules. Public signals, one capture.';
     mount('#audit', auditTable(p.findings));
+    gapLines(d.gap_lines);
     deskTabs();
     const th = p.thresholds || { values: {} };
     mount('#rules', el('h4', { text: 'Rules' }), rulesTable(p.rules), el('h4', { text: 'Thresholds in force' }),

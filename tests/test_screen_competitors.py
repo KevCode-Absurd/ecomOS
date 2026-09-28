@@ -984,6 +984,26 @@ class TestPlacements(TempBrain):
         self.assertEqual([e['value'] for e in ev], ['threads'])
 
 
+class TestGapLines(TempBrain):
+    """4.2: every desk block ends in a gap line tied to its action, or says what holds."""
+    def test_every_section_has_a_line(self):
+        api.BRAIN_ROOT = self.tmp
+        d = api.handle(Req(['overview']))
+        html = (SCREEN / 'index.html').read_text(encoding='utf-8')
+        desk = html.split('id="desk-src"', 1)[1].split('<!-- 6. The audit -->', 1)[0]
+        import re as _re
+        ids = _re.findall(r'<div (?:class="[^"]*" )?id="([a-z-]+)"', desk)
+        ids = [i for i in ids if not i.endswith('-sub')]
+        acts = {a['id'] for a in api.rank('bombas', {'ends_on': '2026-09-27', 'days': 28, 'trailing': 4})['actions']}
+        for i in ids:
+            self.assertIn(i, d['gap_lines'], i)
+            g = d['gap_lines'][i]
+            self.assertTrue(g['text'])
+            if g['action_id']:
+                self.assertIn(g['action_id'], acts)
+        self.assertEqual(d['gap_lines']['reviews']['action_id'].split('.')[1], 'COMP-R17')
+
+
 class TestRank(TempBrain):
     """Depth contract rules 2, 3 and 13: owner, steps and artefact on every action; every finding ends in one."""
     W = {'ends_on': '2026-09-27', 'days': 28, 'trailing': 4}

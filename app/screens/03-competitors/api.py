@@ -288,18 +288,50 @@ def placements(m: dict) -> dict:
             "rule": "A placement most direct pages run and we do not is a gap. Our placements need the ad-level pull when the brain lacks them."}
 
 
+# Every desk block ends in a line that names the gap and offers the action (depth.md section 2, row 5).
+SECTION_RULES = {"pages": ["COMP-R15"], "cards": ["COMP-R27"], "landing": ["COMP-R26"], "losses": ["COMP-R15", "COMP-R29"],
+                 "category": ["COMP-R16"], "reviews": ["COMP-R17"], "coverage": ["COMP-R05", "COMP-R01"], "velocity": ["COMP-R19"],
+                 "mix": ["COMP-R06", "COMP-R07", "COMP-R08"], "placements": [], "refs": ["COMP-R03"], "changes": ["COMP-R24", "COMP-R12"],
+                 "niche": ["COMP-R20"], "map": ["COMP-R11"], "frames": ["COMP-R28"], "premium": ["COMP-R21"],
+                 "prices": ["COMP-R25", "COMP-R09", "COMP-R10", "COMP-R02"], "search": ["COMP-R22", "COMP-R23"], "presence": ["COMP-R18"],
+                 "fresh": ["COMP-R14", "COMP-R13"]}
+HOLD = {"pages": "No named loss on this capture; keep the battlecards fresh.", "placements": "Our placements are not in the brain; the pull fills them.",
+        "refs": "No offer they keep live that we hold and do not run.", "map": "No open strong-claim corner; contest the one beside us.",
+        "category": "Every rung is mapped.", "cards": "Every battlecard is fresh."}
+
+
+def gap_lines(acts: list[dict]) -> dict:
+    by_rule = {}
+    for a in acts:
+        by_rule.setdefault(a.get("rule_id"), []).append(a)
+    out = {}
+    for sec, rules in SECTION_RULES.items():
+        hit = next((by_rule[r][0] for r in rules if r in by_rule), None)
+        if hit:
+            n = sum(len(by_rule.get(r, [])) for r in rules)
+            text = hit["why"] if hit.get("status") != "unavailable" else f"Unavailable until a source is connected: {hit['title'].split(' so ')[0].removeprefix('Connect ')}."
+            out[sec] = {"text": text, "action_id": hit["id"], "title": hit["title"], "owner": hit["owner"],
+                        "status": hit.get("status"), "more": n - 1}
+        else:
+            out[sec] = {"text": HOLD.get(sec, "No gap passes the rules on this capture."), "action_id": None, "title": None,
+                        "owner": None, "status": None, "more": 0}
+    return out
+
+
 def overview(brand: str, today: dt.date) -> dict:
     m = audit.market_full(brand, today, BRAIN_ROOT)
     brain = m.pop("brain")
     name = brand.capitalize()
     pos = positioning(m)
+    window = actions.ranker.default_window(28, (today - dt.timedelta(days=1)).isoformat())
+    ranked = actions.build(brand, window, BRAIN_ROOT)["actions"]
     moves = pos["kit"]["durability"]["moves"] + pos["kit"]["comfort"]["moves"]
     return {"brand": brand, "today": today.isoformat(), "version": brain.version(),
             "simulated_note": SIMULATED_NOTE.format(name=name), "signal_note": SIGNAL_NOTE,
             "competitors": [_public(c) for c in m["competitors"]], "angles": m["angles"],
             "positioning": pos,
             "lookalike": m["lookalike"], "gap": gaps(m), "pages": (pr := page_rows(m)), "battlecards": battlecards(m, pr),
-            "coverage": {"all": m["coverage"], "direct": m["coverage_direct"]}, "mix": m["mix"], "references": m["references"], "ladder": m["ladder"], "changes": m["changes"], "freshness": freshness(m, brand), "losses": m["losses"], "category": m["category"], "reviews": m["reviews"], "presence": m["presence"], "velocity": m["velocity"], "niche": m["niche"], "premium": m["premium"], "search": m["search"], "price_moves": m["price_moves"], "landing": m["landing"], "placements": placements(m),
+            "coverage": {"all": m["coverage"], "direct": m["coverage_direct"]}, "mix": m["mix"], "references": m["references"], "ladder": m["ladder"], "changes": m["changes"], "freshness": freshness(m, brand), "losses": m["losses"], "category": m["category"], "reviews": m["reviews"], "presence": m["presence"], "velocity": m["velocity"], "niche": m["niche"], "premium": m["premium"], "search": m["search"], "price_moves": m["price_moves"], "landing": m["landing"], "placements": placements(m), "gap_lines": gap_lines(ranked),
             "frames": audit.framemod.build(m, brain, moves),
             "category_median": m["category_median"], "price_position_index": m["price_position_index"]}
 
