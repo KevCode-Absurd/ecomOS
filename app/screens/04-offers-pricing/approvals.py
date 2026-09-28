@@ -185,7 +185,13 @@ def handoff_row(action):
     to = HANDOFF_TO.get(art.get('kind'))
     if not to:
         return None
+    draft = art.get('draft') or ''
+    pf = action.get('price_file')
+    if pf and pf.get('rows'):   # the build file travels with the brief, as CSV text
+        cols = list(pf['rows'][0])
+        csv_text = '\n'.join([','.join(cols)] + [','.join(str(r.get(c, '')).replace(',', ' ') for c in cols) for r in pf['rows']])
+        draft = (draft + f'\n\nFile {pf["name"]} ({pf.get("note", "")}):\n' + csv_text)[:20000]
     return {'from_screen': SCREEN, 'to': to, 'kind': art['kind'], 'title': action['title'], 'why': action.get('why'),
-            'draft': art.get('draft'), 'win_rule': action.get('win_rule'), 'stop_rule': action.get('stop_rule'),
+            'draft': draft or None, 'win_rule': action.get('win_rule'), 'stop_rule': action.get('stop_rule'),
             'check_on': action.get('check_on'), 'capability': (action.get('capability') or {}).get('id'),
             'owner': action.get('owner'), 'finding_id': action['id'], 'status': 'decided'}

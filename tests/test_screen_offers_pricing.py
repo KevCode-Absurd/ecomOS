@@ -2363,5 +2363,18 @@ class BuildFileTest(unittest.TestCase):
                 pb.CODE_DEPENDENT = orig
 
 
+class HandoffFileTest(unittest.TestCase):
+    """Round 10 feature 5: a handed-over price move carries its file as CSV text in the draft."""
+
+    def test_cost_move(self):
+        a = next(x for x in api.actions.rank('bombas')['actions'] if x['rule_id'] == 'OFFER-R22')
+        row = api.approvals.handoff_row(a)
+        self.assertIn('File offer-r22-arm-b-prices.csv', row['draft'])
+        self.assertIn('sku,price_now,price_b,change', row['draft'])
+        for r in a['price_file']['rows']:
+            self.assertIn(r['sku'] + ',', row['draft'])
+        self.assertLessEqual(len(row['draft']), 20000)
+
+
 if __name__ == '__main__':
     unittest.main()

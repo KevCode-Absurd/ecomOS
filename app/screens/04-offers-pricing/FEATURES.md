@@ -223,6 +223,7 @@ Known gaps from round 0:
 | 10.2 | Hand-offs read back: the plan shows "Handed over" with this screen's hand-offs by status (decided, done, dropped) and the latest 6 with the team and id, read from /api/handoffs by from_screen and kept to moves still on this page or planned. Checked in the browser with a stubbed table, so the shared log is never written by a test | done |
 | 10.3 | Price moves ship with a price file: the cost pass-through test and a deeper pack price test now carry an arm B file (SKU, today's price, test price, change), exported from the action card as CSV for the price-test tool or the store's bulk editor. The file holds exactly the packs the move names (one shared selection, 6 for the Bombas cost test). Also measured: the sample brand's first load is mostly the shared data layer parsing CSV cells; this screen's own work is about 0.1 seconds after the tables load (contract ask below) | done |
 | 10.4 | Build files for two more moves: the bundle move exports the bundles to build (both SKUs, their prices, the bundle price and orders together, the same 3 pairs the move names), and a code exclusion test exports the SKUs arm B excludes from every code. Sample brand: 3 bundles, from Tea Towel Set of 3 with Napkin Set of 4 | done |
+| 10.5 | The file travels with the hand-off: a handed-over move with a build file (price file, bundles, exclusions) carries it as CSV text at the end of the hand-off draft, within the table's 20 KB limit, so the receiving team gets the brief and the rows in one place | done |
 
 ## Contract asks
 
