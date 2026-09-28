@@ -166,7 +166,7 @@
     rows = rows.filter((h) => ids.has(h.finding_id));
     if (!rows.length) return;
     const by = {};
-    rows.forEach((h) => { by[h.status] = (by[h.status] || 0) + 1; });
+    rows.forEach((h) => { by[h.status] = (h.status in by ? by[h.status] : 0) + 1; });   // a count, not a missing value
     document.getElementById('plan').append(el('div', { class: 'card flat tight week handed' }, el('span', { class: 'kicker', text: 'Handed over' }),
       el('span', { class: 'small', text: Object.keys(by).sort().map((k) => by[k] + ' ' + k).join(', ') + '.' }),
       el('ul', { class: 'small' }, rows.slice(-6).reverse().map((h) => el('li', { text: h.title + ': ' + h.to + ', ' + h.status + ' (' + h.id + ')' })))));
