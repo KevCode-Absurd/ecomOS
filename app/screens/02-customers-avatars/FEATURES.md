@@ -85,6 +85,23 @@ Web pass: Peel, Triple Whale, Lifetimely, Klaviyo predictive, Daasity RFM, Thema
 | 4.9 | Which avatar we build for next (replaces avatar value by product revenue, which needs a SKU to product-line map; see Contract asks): one score out of 100 per avatar with a share, from fixed weights shown on the page (share of buyers 40, how poorly we serve them 30, how little our ads speak to them 20, share of doubts still open 10), top of the Avatars tab, each row opening its next build. Bombas: build for the Durability Disappointed Repeat Customer next (89), then the Guarantee Reassured Loyalist (85) | done |
 | 4.10 | Two more audit rules (CUST-R24 avatar may be two buyers, CUST-R25 an avatar with 12 percent or more of buyers that no live ad speaks to), with their drafted split and ad briefs in `rank` and a job for the plan filter; the audit's avatars now carry their next build. 25 rules, 24 firing on Bombas (brand health is steady). Screenshot `round4.png` (the desk tabs, focus score, avatar cards) | done |
 
+## Round 5: returns, support and depth per cell (from 28 Sep 2026)
+
+Lead's review: rounds 1 to 4 passed. Focus: returns and tickets by avatar, depth of each existing block, and depth.md section 3 applied to this screen.
+
+| # | Feature | Status |
+|---|---|---|
+| 5.1 | Depth rules as tests on this screen: rule 11 (no brand, competitor, promo or dollar fact in `screen.js` or `index.html`), rule 12 (no em dash, should, consider or leverage in titles, whys, steps or the page; under 45 words), rule 4 (every open finding shows its numbers), rule 8 (rules that read tables carry simulated evidence), rule 7 (unavailable is null or a connect action, never zero). One heading fixed | done |
+| 5.2 | Which avatars return the most: return risk by avatar from the lines they buy and the fit and wear complaints on them, with refunds as orientation and the ticket-reason read waiting on the data layer | todo |
+| 5.3 | Support replies per doubt: a drafted macro for every rung support answers, for 15-customers-cx | todo |
+| 5.4 | Each coverage cell explains itself: click a cell to see the rungs behind the count and the brief | todo |
+| 5.5 | Are marketplace buyers a different avatar: avatars whose voice is mostly Amazon, and the listing work they need | todo |
+| 5.6 | Which avatars need a re-check soon: record expiry dates as a calendar with the re-check task | todo |
+| 5.7 | How strong is each read: the sample behind every desk block, flagged thin under a set size | todo |
+| 5.8 | Avatar cards show what we know and what we do not, and where the avatar ranks | todo |
+| 5.9 | Price doubts by avatar and the pack that answers them | todo |
+| 5.10 | Audit rules and `rank` for round 5, screenshot `round5.png` | todo |
+
 ### Round 4 founder note (28 Sep 2026)
 
 1. You can now read the screen in one pass: the plan, then the actions, tests and hand-offs, then a desk in 5 tabs by job; the plan filters by job too.

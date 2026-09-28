@@ -1182,5 +1182,55 @@ class Round4Rules(TempBrain):
             self.assertEqual(rank_engine.validate_action(a), [])
 
 
+class DepthRules(TempBrain):
+    """Feature 5.1: depth.md section 3 rules checked against this screen."""
+
+    def test_rule11_no_brand_facts_in_page_code(self):
+        brain = api._brain(Req(['overview']))
+        names = [n for n in audit.competitor_names(brain) if len(n) > 3] + [brain.brand, 'COMFORT20', 'sockscool']
+        for f in ('screen.js', 'index.html'):
+            text = (SCREEN / f).read_text(encoding='utf-8').lower()
+            for n in names:
+                self.assertNotIn(n.lower(), text, f'{n} in {f}')
+            self.assertIsNone(__import__('re').search(r'\$\d', text), f'a dollar amount in {f}')
+
+    def test_rule12_plain_words_in_our_writing(self):
+        acts = api.rank('bombas', RANK_WINDOW)['actions']
+        for a in acts:
+            ours = [a['title'], a['why']] + [s['text'] for s in a['steps']]
+            for t in ours:
+                self.assertNotIn('\u2014', t, a['id'])
+                for w in (' should ', ' consider ', ' leverage '):
+                    self.assertNotIn(w, ' ' + t.lower() + ' ', a['id'])
+                self.assertLessEqual(len(t.split()), 45, a['id'])
+        html = (SCREEN / 'index.html').read_text(encoding='utf-8').lower()
+        for w in (' should ', ' consider ', ' leverage ', '\u2014'):
+            self.assertNotIn(w, html)
+
+    def test_rule4_open_findings_show_numbers(self):
+        for f in audit.run('bombas', RANK_WINDOW, self.tmp):
+            if f['status'] == 'open':
+                self.assertTrue(f['evidence'], f['id'])
+                for e in f['evidence']:
+                    self.assertTrue(e['metric'] and e['window'], f['id'])
+
+    def test_rule8_simulated_rows_on_data_rules(self):
+        data_rules = {r['rule_id'] for r in audit.RULES if any(not i.startswith('brain') for i in r['inputs'])}
+        for f in audit.run('bombas', RANK_WINDOW, self.tmp):
+            if f['rule_id'] in data_rules and f['status'] == 'open' and f['rule_id'] != 'CUST-R15':
+                self.assertTrue(any(e['simulated'] for e in f['evidence']), f['id'])
+
+    def test_rule7_unavailable_never_zero(self):
+        d = api.handle(Req(['overview']))
+        for o in d['orientation']:
+            self.assertTrue(o['value'] is None or isinstance(o['value'], (int, float)))
+        self.assertIsNone(api.builds.survey([], [], [], [], None)['days'])
+        self.assertFalse(api._paths('bombas')['available'])
+        for f in audit.run('bombas', RANK_WINDOW, self.tmp):
+            if f['status'] == 'unavailable':
+                self.assertEqual(f['evidence'], [])
+                self.assertTrue(f['unavailable']['fix'])
+
+
 if __name__ == '__main__':
     unittest.main()
