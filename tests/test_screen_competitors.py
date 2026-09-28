@@ -2329,5 +2329,23 @@ class TestDepthRound10(unittest.TestCase):
             self.assertIn(word, empty)
 
 
+class TestHandoffState(TempInputs):
+    """10.5: what was sent is read back from the shared table by status; the report says sent and waiting."""
+    def test_state(self):
+        old = api.HANDOFFS
+        api.HANDOFFS = self.tmp / 'handoffs.json'
+        try:
+            st = api.handoff_state('bombas', dt.date(2026, 9, 28))
+            self.assertEqual((st['sent'], st['by_status'], st['waiting_moves']), (0, {}, 0))
+            first = api.handle(Req(['handoffs']))['support'][0]
+            api.HANDOFFS.write_text(json.dumps([dict(first, id='HO-1', status='done'), {'from_screen': '09-creative', 'to': 'x', 'status': 'done'}]))
+            st2 = api.handoff_state('bombas', dt.date(2026, 9, 28))
+            self.assertEqual((st2['sent'], st2['by_status']), (1, {'done': 1}))
+            self.assertEqual(st2['waiting_support'], st['waiting_support'] - 1)
+            self.assertIn('- Sent: 1 (done 1).', api.report_text('bombas', dt.date(2026, 9, 28)))
+        finally:
+            api.HANDOFFS = old
+
+
 if __name__ == '__main__':
     unittest.main()

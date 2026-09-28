@@ -853,8 +853,8 @@
       const done = new Set((sent.handoffs || []).map(key));
       const rows = mine.moves.concat(mine.support);
       const todo = rows.filter((r) => !done.has(key(r)));
-      const byTo = {};
-      for (const r of sent.handoffs || []) byTo[r.to] = (byTo[r.to] || 0) + 1;
+      const byTo = {}, bySt = {};
+      for (const r of sent.handoffs || []) { byTo[r.to] = (byTo[r.to] || 0) + 1; bySt[r.status || 'proposed'] = (bySt[r.status || 'proposed'] || 0) + 1; }
       const st = el('span', { class: 'micro muted', role: 'status', 'aria-live': 'polite' });
       const b = el('button', { class: 'btn sm primary', type: 'button', text: 'Hand over ' + todo.length, disabled: !todo.length });
       b.addEventListener('click', async () => {
@@ -864,6 +864,7 @@
       });
       box.replaceChildren(el('div', { class: 'row wrap' }, el('b', { text: 'Hand-offs: ' }),
         el('span', { class: 'small', text: (sent.handoffs || []).length + ' sent' + (Object.keys(byTo).length ? ' (' + Object.entries(byTo).map(([t, n]) => t + ' ' + n).join(', ') + ')' : '') + '; ' + todo.length + ' waiting: ' + todo.filter((r) => mine.moves.includes(r)).length + ' decided moves, ' + todo.filter((r) => mine.support.includes(r)).length + ' for support.' }), b, st),
+        (sent.handoffs || []).length ? el('p', { class: 'small', text: 'Sent rows by status: ' + ['proposed', 'decided', 'done', 'dropped'].map((k) => k + ' ' + (bySt[k] || 0)).join(', ') + '. A done move goes to the check due lane on its date for its outcome.' }) : null,
         el('p', { class: 'micro faint', text: mine.rule + ' Receiving screens read their rows by team; nothing is sent until you press the button.' }));
     })();
     return box;

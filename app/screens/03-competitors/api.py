@@ -685,6 +685,25 @@ def handoff_rows(brand: str, today: dt.date) -> dict:
             "rule": "A move is handed over once you decide it (agent or person). Battlecards go to cx while fresh; stale cards wait for a check."}
 
 
+HANDOFFS = HERE.parents[1] / "data" / "handoffs.json"   # the shared table (events.md), read here, written only by the server
+
+
+def handoff_state(brand: str, today: dt.date) -> dict:
+    """What this screen already sent (read from the shared table) against what waits to be handed over."""
+    try:
+        sent = [r for r in json.loads(HANDOFFS.read_text(encoding="utf-8")) if r.get("from_screen") == audit.SCREEN]
+    except (OSError, ValueError):
+        sent = []
+    done = {(r.get("finding_id"), r.get("to")) for r in sent}
+    hs = handoff_rows(brand, today)
+    by: dict[str, int] = {}
+    for r in sent:
+        by[r.get("status") or "proposed"] = by.get(r.get("status") or "proposed", 0) + 1
+    return {"sent": len(sent), "by_status": by,
+            "waiting_moves": sum(1 for r in hs["moves"] if (r["finding_id"], r["to"]) not in done),
+            "waiting_support": sum(1 for r in hs["support"] if (r["finding_id"], r["to"]) not in done)}
+
+
 def brief_pack(brand: str, today: dt.date) -> dict:
     """Every drafted artefact on the plan, grouped by the team that ships it, as one text per team."""
     window = actions.ranker.default_window(28, (today - dt.timedelta(days=1)).isoformat())
@@ -743,6 +762,9 @@ def report_text(brand: str, today: dt.date) -> str:
               f"- Moves read: {r['read']}" + (f", win share {round(r['win_share'] * 100)} percent" if r["win_share"] is not None else "")
               + f"; held {r['held']}; overdue reads {r['overdue']}.",
               f"- Logged this week: {g['logged']['n']}."] + [f"  - {x}" for x in g["logged"]["lines"][:8]]
+    ho = handoff_state(brand, today)
+    lines += ["", "## Hand-offs", "", f"- Sent: {ho['sent']} ({', '.join(f'{k} {v}' for k, v in ho['by_status'].items()) or 'none'}).",
+              f"- Waiting to hand over: {ho['waiting_moves']} decided moves, {ho['waiting_support']} for support."]
     lines += ["", "## Caveats", "", "- Competitor facts are public signals. Run length is a signal, not proof.",
               "- Our prices and sales are simulated until the store connects.",
               "- Ad-level counts wait on the Ad Library pull; shares are estimates until then.",
