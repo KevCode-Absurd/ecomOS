@@ -57,7 +57,7 @@ SAFE_FILE = re.compile(r'^[A-Za-z0-9_.-]{1,80}$')
 SAFE_NAME = re.compile(r'^[a-z0-9_]{1,40}$')
 WEB_FILES = ('index.html', 'shell.js', 'ui-kit.css', 'ui-kit.js', 'charts.js', 'kit.html')
 SCREEN_FILES = ('index.html', 'screen.js', 'screen.css')
-CHOICES = ('agent', 'person', 'not_now')
+CHOICES = ('agent', 'person', 'not_now', 'undo')   # undo: the latest decision on a finding is withdrawn
 MAX_BODY = 32_000
 MAX_DECISIONS = 20_000
 

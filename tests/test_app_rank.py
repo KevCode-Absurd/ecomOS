@@ -136,6 +136,19 @@ class Master(unittest.TestCase):
         self.assertEqual(set(g) >= {'screen', 'open', 'unavailable', 'critical', 'stake_usd', 'score', 'top'}, True)
         self.assertTrue(any(b['stake_usd'] is None for b in m['bottlenecks']))   # unknown stake is null, never 0
 
+    def test_undo_withdraws_the_latest_decision(self):
+        import datetime as dt
+        m = rank.master('bombas', WINDOW, decisions_path=Path('/nonexistent.json'))
+        first = m['top'][0]
+        with tempfile.TemporaryDirectory() as tmp:
+            p = Path(tmp) / 'd.json'
+            p.write_text(json.dumps([
+                {'screen': first['screen'], 'capability': first['capability']['id'], 'choice': 'not_now', 'finding_id': first['id'], 'time': '2026-09-27T10:00:00Z'},
+                {'screen': first['screen'], 'capability': first['capability']['id'], 'choice': 'undo', 'finding_id': first['id'], 'time': '2026-09-27T11:00:00Z'}]))
+            kept = rank.apply_decisions([dict(first)], today=dt.date(2026, 9, 28), path=p)
+            self.assertEqual(len(kept), 1)
+            self.assertIsNone(kept[0]['decision'])
+
     def test_not_now_snoozes_for_14_days(self):
         m = rank.master('bombas', WINDOW, decisions_path=Path('/nonexistent.json'))
         first = m['top'][0]

@@ -424,6 +424,8 @@ def apply_decisions(actions: list[dict], today: dt.date | None = None, path: Pat
     kept = []
     for a in actions:
         d = dec.get(a["id"]) or dec.get((a.get("screen"), (a.get("capability") or {}).get("id")))
+        if d and d.get("choice") == "undo":
+            d = None   # the latest row withdraws the decision; the action is open again
         if d:
             a["decision"] = {"choice": d.get("choice"), "time": d.get("time"), "reason": d.get("reason")}
             if d.get("choice") == "not_now":
