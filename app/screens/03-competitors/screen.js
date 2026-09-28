@@ -621,9 +621,11 @@
       el('div', { class: 'row' }, UI.verdict('stop', 'Threat'), el('b', { text: r.name }), el('span', { class: 'micro faint', text: r.reason })),
       el('div', { class: 'small' }, el('b', { text: 'Watch: ' }), r.urls.length ? r.urls.map((u) => /facebook\.com\/ads\/library/.test(u) ? 'Ad Library page' : u.replace(/^https?:\/\//, '')).join(' | ') : 'no url in the brain'),
       r.ad_domains.length ? el('div', { class: 'small' }, el('b', { text: 'Ad landing domains: ' }), r.ad_domains.join(', ')) : null,
-      el('div', { class: 'small' }, el('b', { text: 'Last capture: ' }), r.last_capture ? fmt.date(r.last_capture) : 'not tracked yet')));
+      el('div', { class: 'small' }, el('b', { text: 'Last capture: ' }), r.last_capture ? fmt.date(r.last_capture) : 'not tracked yet'),
+      el('div', { class: 'small' }, el('b', { text: 'Last visit logged: ' }), r.visited_on ? fmt.date(r.visited_on) + (r.tracked ? '' : ', over a week ago') : 'none')));
     mount('#landing', el('div', { class: 'grid three' }, ...cards), el('p', { class: 'small' }, el('b', { text: 'Diff each week: ' }), ld.watch.join(', ') + '.'),
       UI.decisionRow({ capability: 'BRN-C01', autonomy: 'agent_does', screen: SCREEN, compact: true, finding_id: SCREEN + '.COMP-R26.landing_tracking' }),
+      el('p', { class: 'small muted', text: 'Visited one? Log it under the changes timeline, "checked, no change" included. A visit in the last 7 days counts as tracked.' }),
       el('p', { class: 'micro faint', text: ld.rule }));
   }
 

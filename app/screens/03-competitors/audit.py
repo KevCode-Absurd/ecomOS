@@ -652,7 +652,9 @@ def market_full(brand: str, today: dt.date, root: Path | None = None) -> dict:
     m["changes"] = changemod.build(m, m["brain"], prev, cur, today, capmod.diff(cprev, ccur), len(capmod.captures(brand)))
     ch, frame = m["changes"], {p["name"]: p["frame"] for p in m["pages"]}
     site = [r for r in inpmod.read(brand, "site_change") if r["date"] >= ch["window_start"]]
-    for r in site:   # changes seen on their sites by a person join the timeline
+    for r in site:   # changes seen on their sites by a person join the timeline; a visit with no change does not
+        if r["what"] == "no_change":
+            continue
         direct = frame.get(r["page"]) == "direct"
         v = (("follow", "Follow", "Answer it: brief our counter this week.") if direct and r["what"] in inpmod.SITE_FOLLOW else
              ("watch", "Watch", "Look at it on the next visit; brief an answer if it overlaps our angles.") if direct else
@@ -666,6 +668,14 @@ def market_full(brand: str, today: dt.date, root: Path | None = None) -> dict:
     ch["site_logged"] = len(site)
     ch["site_kinds"] = list(inpmod.SITE_CHANGES)
     m["landing"] = landmod.build(m, cur)
+    visits = {}
+    for r in inpmod.read(brand, "site_change"):
+        visits[r["page"]] = max(visits.get(r["page"], ""), r["date"])
+    for row in m["landing"]["rows"]:   # a person's weekly visit counts as tracking until a crawl exists
+        v = visits.get(row["name"])
+        row["visited_on"] = v
+        if v and (today - dt.date.fromisoformat(v)).days <= inpmod.VISIT_DAYS:
+            row["tracked"] = True
     m["frame_tests"] = inpmod.read(brand, "frame_test")
     m["frames"] = framemod.build(m, m["brain"])
     m["season"] = seasonmod.build(m, m["brain"], today)

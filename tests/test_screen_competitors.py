@@ -2125,5 +2125,21 @@ class TestTrafficConnect(TempBrain):
         self.assertIn('COMP-R35', api.SECTION_RULES['velocity'])
 
 
+class TestVisits(TempInputs):
+    """9.6: a logged visit to a top threat's site counts as tracking for 7 days; "no change" stays off the timeline."""
+    def test_visits_close_landing(self):
+        rows = api.handle(Req(['overview']))['landing']['rows']
+        self.assertTrue(rows)
+        self.assertIn('COMP-R26', [f['rule_id'] for f in api.handle(Req(['plan']))['findings']])
+        for r in rows:
+            self.assertEqual(self.post({'kind': 'site_change', 'page': r['name'], 'what': 'no_change', 'date': '2026-09-25'})[0], 201)
+        d = api.handle(Req(['overview']))
+        self.assertTrue(all(r['tracked'] and r['visited_on'] == '2026-09-25' for r in d['landing']['rows']))
+        self.assertFalse([e for e in d['changes']['events'] if e['source'] == 'logged'])
+        self.assertNotIn('COMP-R26', [f['rule_id'] for f in api.handle(Req(['plan']))['findings']])
+        late = api.handle(Req(['plan'], query={'today': ['2026-10-10']}))
+        self.assertIn('COMP-R26', [f['rule_id'] for f in late['findings']])
+
+
 if __name__ == '__main__':
     unittest.main()

@@ -232,7 +232,8 @@ def outcomes(rows: list[dict]) -> dict:
 
 SITE_CHANGES = {"new_product": "launched a new product", "new_bundle": "added a new bundle or pack", "new_offer": "started a new offer",
                 "price_change": "changed a price", "new_headline": "changed the home page headline", "new_hero": "changed the hero image",
-                "removed_product": "removed a product"}
+                "removed_product": "removed a product", "no_change": "checked, no change"}
+VISIT_DAYS = 7   # a logged visit (any site change, including no change) this recent counts as tracking the page
 SITE_FOLLOW = {"new_product", "new_bundle", "new_offer", "price_change"}   # on a direct page: brief our counter
 SITE_LAUNCH = {"new_product", "new_bundle"}                                # counts toward new_launch_count
 
