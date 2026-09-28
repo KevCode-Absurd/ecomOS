@@ -1,0 +1,25 @@
+/* Today: the pipeline strip. Everything else is the shared kit. */
+.stages { display: grid; gap: 10px; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); }
+.stage { display: grid; gap: 6px; padding: 12px 13px; background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-md); position: relative; }
+.stage.break { border-color: var(--bad); box-shadow: 0 0 0 1px var(--bad) inset; background: var(--bad-soft); }
+.stage .label { font-size: 12px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; display: flex; justify-content: space-between; gap: 6px; }
+.stage .count { font-size: 22px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.stage .rate { font-size: 12.5px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.stage .rate b { color: var(--text); }
+.stage.break .rate b { color: var(--bad); }
+.stage .money { font-size: 13px; font-weight: 700; color: var(--bad); }
+.stage .bars { display: flex; align-items: flex-end; gap: 4px; height: 34px; }
+.stage .bars span { flex: 1; background: var(--s1); border-radius: 2px 2px 0 0; min-height: 2px; opacity: .45; }
+.stage .bars span.now { opacity: 1; }
+.stage.break .bars span { background: var(--bad); }
+.stage .bars-key { font-size: 11px; color: var(--faint); display: flex; justify-content: space-between; }
+.stake { display: grid; gap: 4px; }
+.stake .big { font-size: 30px; font-weight: 800; color: var(--bad); font-variant-numeric: tabular-nums; letter-spacing: -.02em; }
+.cards { display: grid; gap: 10px; grid-template-columns: 1fr; }
+@media (min-width: 760px) { .cards { grid-template-columns: 1fr 1fr; } }
+.card h4 { margin: 0 0 4px; font-size: 15px; }
+.card .why { font-size: 13.5px; color: var(--muted); margin: 0 0 10px; }
+.finding { display: grid; gap: 6px; }
+.finding .ev { font-size: 12.5px; color: var(--muted); font-family: var(--mono); overflow-wrap: anywhere; }
+#tiles .grid.tiles { grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); }
+#findings td { white-space: normal; }

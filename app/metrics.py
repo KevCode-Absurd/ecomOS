@@ -9,7 +9,9 @@ Every answer is one of two shapes:
   {value, unit, unavailable: False, window, freshness, inputs, ...}
   {value: None, unavailable: True, reason, fix, window, freshness}
 A missing table, field, blank cell or a window the data does not cover gives the
-second shape, never 0. Ratios are window totals over window totals. Windows end
+second shape, never 0. `brand=bombas` in the query reads app/data/brands/bombas/
+(data/tables.py BrandData: aggregates first, data.sqlite when a metric needs rows)
+instead of the server's sample brand. Ratios are window totals over window totals. Windows end
 on brand.json `as_of` (the last full day) unless `end` asks for an earlier day.
 
 Words used by more than one metric
@@ -18,9 +20,11 @@ Words used by more than one metric
                charged and refunds (refunds are counted as a returns cost)
   day          the date of `created_at` for orders, `date` for daily tables
 """
+import importlib.util
 import re
 import statistics
 from datetime import date, datetime, timedelta
+from pathlib import Path
 
 # Which connector fills a table for a real brand. Shown as `fix` when it is missing.
 CONNECTOR = {
@@ -256,8 +260,18 @@ def orders(ctx):
 
 
 def order_totals(ctx, win, device=None):
-    """Paid orders and net revenue in the window."""
-    o = orders(ctx)
+    """Paid orders and net revenue in the window. A brand folder answers from its daily aggregate."""
+    if hasattr(ctx.data, 'order_day_totals'):
+        try:
+            o = ctx.data.order_day_totals()
+        except KeyError:
+            raise Unavailable('the orders aggregate is missing', fix=CONNECTOR['orders'])
+        if 'daily' not in ctx.used:
+            ctx.used.append('daily')
+        if device:
+            raise Unavailable('orders by device are not in the daily aggregate', fix=CONNECTOR['orders'])
+    else:
+        o = orders(ctx)
     check_device(device, o['devices'])
     cover(win, o['first'], o['last'], 'orders')
     n, net = 0, 0.0
@@ -1148,7 +1162,25 @@ def m_speed(ctx, name, kw):
 
 # ---------------------------------------------------------------- entry points
 
+_TABLES = None
+
+
+def resolve(data, kw):
+    """`brand=<name>` swaps the server's sample brand for app/data/brands/<name>/."""
+    global _TABLES
+    brand = kw.get('brand')
+    if not brand:
+        return data
+    if _TABLES is None:
+        path = Path(__file__).resolve().parent / 'data' / 'tables.py'
+        spec = importlib.util.spec_from_file_location('ecomos_tables', path)
+        _TABLES = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(_TABLES)
+    return _TABLES.brand_data(str(brand))  # ValueError for an unknown brand
+
+
 def compute(name, data, **kw):
+    data = resolve(data, kw)
     ctx = Ctx(data)
     if name not in METRICS:
         return ctx.unavailable(Unavailable('metrics.py has no function for this metric yet', fix='app/metrics.py'))
@@ -1165,12 +1197,14 @@ def compute(name, data, **kw):
 
 def pipeline(data, names, **kw):
     """Every pipeline metric for 4 trailing windows, oldest first. `data.metric` adds formula and group."""
+    source = resolve(data, kw)
     try:
-        win = parse_window(data, kw.get('window'), kw.get('end'))
+        win = parse_window(source, kw.get('window'), kw.get('end'))
     except Unavailable as exc:
         return {'unavailable': True, 'reason': exc.reason, 'fix': exc.fix, 'metrics': []}
     windows = [win.shift(k) for k in (3, 2, 1, 0)]
     query = {k: v for k, v in kw.items() if k in ('device',) and v}
+    brand = {'brand': kw['brand']} if kw.get('brand') else {}
     out = []
     for name in names:
         results = []
@@ -1178,8 +1212,8 @@ def pipeline(data, names, **kw):
             q = dict(query, window=f'{w.days}d', end=w.e)
             if query.get('device') and 'device' not in METRICS.get(name, (None, set()))[1]:
                 q.pop('device')
-            results.append(data.metric(name, **q))
+            results.append(data.metric(name, **q, **brand))
         out.append({'metric': name, 'unit': next((r.get('unit') for r in results if r.get('unit')), None),
                     'values': [r.get('value') for r in results], 'results': results})
-    return {'as_of': (data.brand or {}).get('as_of'), 'window': f'{win.days}d', 'filters': query,
+    return {'as_of': (source.brand or {}).get('as_of'), 'window': f'{win.days}d', 'filters': query, **brand,
             'windows': [w.dict() for w in windows], 'metrics': out}

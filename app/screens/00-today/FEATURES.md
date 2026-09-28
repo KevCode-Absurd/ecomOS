@@ -6,9 +6,22 @@ Status: todo | doing | done | parked. One feature per commit. The first round is
 
 | # | Feature | Status |
 |---|---|---|
-| 0.1 | Page shell in the shared UI kit: header, empty-state tiles, insight list, action buttons | todo |
-| 0.2 | `api.py` serving this screen's metrics from `app/data/` with unavailable states | todo |
-| 0.3 | 3 metric tiles, 2 insights, 1 chart from the sample brand | todo |
+| 0.1 | Page shell in the shared UI kit: header, empty-state tiles, insight list, action buttons | done |
+| 0.2 | `api.py` serving this screen's metrics from `app/data/` with unavailable states | done |
+| 0.3 | 3 metric tiles, 2 insights, 1 chart from the sample brand | done |
+| 0.4 | Pipeline as 5 stages (sessions, product view, add to cart, checkout, purchase) with 4 trailing 28-day windows and the break marked | done |
+| 0.5 | Money at stake for the break, with the formula written out | done |
+| 0.6 | 3-button decision row on insights and cards, writing to `app/data/brands/bombas/decisions.json` | done |
+| 0.7 | Stub top 10 from the room's jobs (`fixtures/top10_stub.json`) until Propose exists | done |
+| 0.8 | `audit.py`: TODAY-R01 pipeline break with money at stake, TODAY-R02 trend alert, in the `contracts/audit.md` shape | done |
+
+Round 0 notes (28 Sep 2026, Bombas simulated set):
+- Numbers come from `app/metrics.py` with `brand=bombas`, which reads `app/data/brands/bombas/` through `data/tables.py` BrandData: the daily aggregate for orders and net revenue, `data.sqlite` for session sums. Orders have no device split in the aggregate, so a device filter reads unavailable.
+- `data.sqlite` is git-ignored (9 GB at scale 1.0). Without it the pipeline, tiles and money read unavailable and audit returns one `unavailable` finding. Rebuild: `python3 app/data/generate.py --brand bombas --scale 1.0 --as-of 2026-09-27`.
+- The generator's `product_view` counts views, not sessions with a view, so product view runs above 100 percent of sessions and add to cart is measured per view. The page says so. Fix belongs in the generator, not here.
+- Findings are returned by the api, not yet written to a `findings` table. No peer band yet: baseline is the own median of 6 earlier windows.
+- The kit's `decisionRow` posts to the shared `/api/decisions`, so this screen carries its own row that posts to `/api/00-today/decisions`.
+- The chart's last date label overlaps the one before it (a charts.js label spacing issue, left for a kit session).
 
 ## Candidates from the room spec (pick 10 per round)
 
@@ -95,3 +108,4 @@ Status: todo | doing | done | parked. One feature per commit. The first round is
 
 | Round | Features picked | Date | Notes |
 |---|---|---|---|
+| 0 | 0.1 to 0.8 | 28 Sep 2026 | skeleton on Bombas simulated data |
