@@ -189,7 +189,7 @@ Lead's review: rounds 1 to 4 passed. Focus: returns and tickets by avatar, depth
 | 11.6 | Two rules so the new blocks reach the plan: CUST-R33 buyers drift the wrong way (high at 10 or more mentions, low when thin), mapped to the theme's answer; CUST-R34 no mystery shopper run on file (low, a person runs it), mapped to the full run sheet. Bombas: the durability drift joins the durability offer, which now answers 3 findings; the run sheet is a move of its own. 34 rules, 68 actions | done |
 | 11.7 | The inbox: "What have other screens asked of us?" lists hand-off rows sent to this screen (or to the brand or customers team) by any other screen, newest first, with who sent it, the kind, the date and check date, the why, "Open the draft", and the decision row logged against the hand-off's id. Read only: this screen never edits another screen's row. Empty today; browser-tested with a seeded row in a temp folder | done |
 | 11.8 | `HANDOFF.md` brought up to round 11 | todo |
-| 11.9 | The new blocks at phone width and in the report | todo |
+| 11.9 | The new blocks at phone width and in the report: both fit at 360 px on the Brand tab (the browser test covers every tab for both brands); the monthly report now names buyers drifting the wrong way under brand risks ("durability complaints went from 5 to 13 percent in 180 days (thin)") and the missing shopper run and pretest under what we do not know | done |
 | 11.10 | Round 11 close, `round11.png` | todo |
 
 ### Round 10 founder note (28 Sep 2026)

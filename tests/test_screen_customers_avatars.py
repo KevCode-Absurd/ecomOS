@@ -2784,3 +2784,13 @@ class ShopperAndPretests(TempBrain):
     def test_no_facts_is_unavailable(self):
         x = api.builds.shopper_run([], [], {'available': False}, [], {}, {}, {}, '2026-09-27')
         self.assertFalse(x['available'])
+
+
+class ReportNewBlocks(TempBrain):
+    """Feature 11.9: the monthly report carries the round 11 reads: buyers drifting the wrong way, and no shopper run."""
+
+    def test_report_lines(self):
+        rep = api.handle(Req(['report']))
+        sec = {s['title']: s['lines'] for s in rep['sections']}
+        self.assertTrue(any(l.startswith('Buyers drift: durability complaints') for l in sec['Risks to the brand']))
+        self.assertTrue(any('mystery shopper' in l for l in sec['What we do not know yet']))

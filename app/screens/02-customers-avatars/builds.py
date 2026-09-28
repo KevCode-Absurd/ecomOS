@@ -2651,11 +2651,14 @@ def report(d: dict, actions: list[dict], agenda_x: dict, name: str) -> dict:
     risks = [f"A lookalike page sends buyers to {r['links_to']}." for r in d["lookalikes"]["rows"]]
     risks += [f"A claim is under fire: {', '.join(r['words'][:3])} ({r['hits']} reviews of 1 or 2 stars)." for r in d["claims_fire"]["rows"] if r["verdict"] == "under_fire"]
     risks += [f"{m['avatar']} is let down by {m['line'].replace('_', ' ')}: {m['hits'][0]}." for m in d["misreads"].get("rows", [])[:2]]
+    risks += [f"Buyers drift: {r['theme'].replace('_', ' ')} {r['side']}s went from {round(r['then'] * 100)} to {round(r['now'] * 100)} percent in {d['drift']['window_days']} days"
+              + (" (thin)." if r["verdict"] == "watch" else ".") for r in (d.get("drift") or {}).get("rows", []) if r["verdict"] in ("worse", "watch")][:2]
     S.append({"title": "Risks to the brand", "lines": risks or ["None found this month."]})
     S.append({"title": "Due in the next 30 days", "lines": [f"{i['date']}: {i['what']}" + (" (late)" if i["overdue"] else "") for i in agenda_x.get("items", [])[:8]] or ["Nothing dated."]})
     thin = [r["block"] for r in d.get("strength", []) if r["verdict"] in ("thin", "unavailable")]
     S.append({"title": "What we do not know yet", "lines": [("Thin or unavailable reads: " + ", ".join(thin) + ".") if thin else "Every read rests on a fair sample.",
-                                                            "Sales and repeat numbers are simulated until the store connects. Customer words are public reviews."]})
+                                                            "Sales and repeat numbers are simulated until the store connects. Customer words are public reviews."] +
+              (["No mystery shopper run or message pretest is on file; the run sheet is ready."] if (d.get("shopper") or {}).get("available") else [])})
     text = "\n\n".join(s["title"].upper() + "\n" + "\n".join(s["lines"]) for s in S)
     return {"title": f"{name}: customers this month", "as_of": d["ends_on"], "sections": S, "text": text,
             "header": f"{name}. Window to {d['ends_on']}. Simulated sales data; customer words are public reviews."}
