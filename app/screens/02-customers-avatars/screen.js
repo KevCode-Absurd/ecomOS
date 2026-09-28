@@ -618,7 +618,7 @@
         el('span', { class: 'small muted', text: 'Results: unavailable. ' + x.results_reason.replace(/^./, (c) => c.toUpperCase()) + '.' })),
       UI.verdictTable({
         columns: [{ key: 'step', label: 'Checkpoint' }, { key: 'check', label: 'What the shopper checks' }, { key: 'expect_t', label: 'Brain fact to match' }],
-        rows: x.rows.map((r) => Object.assign({}, r, { expect_t: r.expect ? (r.expect.length > 120 ? r.expect.slice(0, 117) + '...' : r.expect) : 'none: note what you see',
+        rows: x.rows.map((r) => Object.assign({}, r, { expect_t: r.expect ? (r.expect.length > 70 ? r.expect.slice(0, 67) + '...' : r.expect) : 'none: note what you see',
           actions: r.expect ? [keep('On the sheet', 'This checkpoint is on the run sheet with its brain fact.')] : [keep('Add the fact', 'The brain holds no fact for this checkpoint. The shopper notes what they see; add the fact on the brand brain screen.')] })),
         verdict: { at: 1, kind: (r) => V[r.verdict][0], text: (r) => V[r.verdict][1] }, actions: { label: 'Do' }, sort: false,
       }),

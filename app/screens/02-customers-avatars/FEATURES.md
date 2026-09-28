@@ -190,7 +190,16 @@ Lead's review: rounds 1 to 4 passed. Focus: returns and tickets by avatar, depth
 | 11.7 | The inbox: "What have other screens asked of us?" lists hand-off rows sent to this screen (or to the brand or customers team) by any other screen, newest first, with who sent it, the kind, the date and check date, the why, "Open the draft", and the decision row logged against the hand-off's id. Read only: this screen never edits another screen's row. Empty today; browser-tested with a seeded row in a temp folder | done |
 | 11.8 | `HANDOFF.md` brought up to round 11: 34 rules; how sending, the inbox, decisions by brand and "Fill this block" work; how drift and the shopper run sheet are made; the 3 new contract asks with the exact change when each lands; the open list narrowed to our own assets' drift and shopper results | done |
 | 11.9 | The new blocks at phone width and in the report: both fit at 360 px on the Brand tab (the browser test covers every tab for both brands); the monthly report now names buyers drifting the wrong way under brand risks ("durability complaints went from 5 to 13 percent in 180 days (thin)") and the missing shopper run and pretest under what we do not know | done |
-| 11.10 | Round 11 close, `round11.png` | todo |
+| 11.10 | Round 11 close: 34 rules, 68 actions; hand-offs on the shared table both ways; every block ends in an action for both brands; the two open room questions now partial. The shopper table's brain-fact column trimmed so it fits the card. Full screen suite: only the known site speed failures. Screenshot `round11.png` (the shopper run sheet and the message pretests) | done |
+
+### Round 11 founder note (28 Sep 2026)
+
+1. Briefs now reach the other teams for real. "Send" puts each brief on the shared hand-off list once, with its stop rule and check date.
+2. What other screens ask of us now shows in one inbox, each with its draft and your choice.
+3. Every block now ends in a move. When a block has no data, it offers the move that gets the data.
+4. Buyers now complain more about durability: 5 to 13 percent of bad reviews in the last half-year. The sample is thin, so it is a watch. It joins the durability offer.
+5. A mystery shopper run sheet checks 8 steps of a real order against what the brain says. 3 message pretests put our line against the buyers' own words.
+6. Next, round 12: the results tables for the shopper run and pretests when they land, and a dated scan of our own site, ads and email.
 
 ### Round 10 founder note (28 Sep 2026)
 
@@ -445,3 +454,4 @@ The job to be done for each avatar is brand data: it lives in `app/brain/<brand>
 | 8 | 8.1 to 8.10, desk moves sized, January against last year, sales in the scores, survey settles, browser smoke test, weak cohorts, any brand on the page, money tile | 28 Sep 2026 | done; screenshot `round8.png` |
 | 9 | 9.1 to 9.10, first screen, writing rules everywhere, decisions per avatar, survey answers back, faster overview, depth rules 4, 6 and 13 as tests, phone width | 28 Sep 2026 | done; screenshot `round9.png` |
 | 10 | 10.1 to 10.10, no thresholds in page code, a brand with nothing, anti-patterns and depth sections under test, tunable thresholds, connect strip, charts that decide, loose ends, hand-off | 28 Sep 2026 | done; screenshot `round10.png` |
+| 11 | 11.1 to 11.10, hand-offs on the shared table, inbox, decisions by brand, every block acts, buyer drift, shopper run and pretests, 2 rules, report | 28 Sep 2026 | done; screenshot `round11.png` |
