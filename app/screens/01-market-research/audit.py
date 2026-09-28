@@ -203,6 +203,9 @@ Rules
   PROD-R55  One sourcing channel: a candidate with a first run decided whose sourcing channel is not on file, or is on file
             with no alternative compared on cost, days and branding (bank idea PRD-099: compare a private sourcing agent
             against marketplace-direct or domestic on real numbers before the order). Money: null. Capability PROD-C13
+  PROD-R56  Re-quote due: a candidate (open or at go) whose units ordered so far crossed 500 or 1,000 while the cost on file
+            is a quote for fewer units, or no quote at all (bank idea PRD-101: re-quote every supplier as volume grows).
+            Money: null (the saving is unknown until the new quote lands). Capability PROD-C13
   PROD-R03  Hero line with no next SKU: a line with 25 percent or more of its category's net sales in
             the last 3 whole months while the candidate pipeline holds no open next-SKU candidate for
             that category. Money: null (an unlaunched SKU has no baseline). Capability PROD-C06
@@ -331,6 +334,7 @@ RULES = [
     {'rule_id': 'PROD-R53', 'name': 'Candidate at gated or later whose landed cost is not the brand\'s own supplier quote', 'entity_type': 'sku', 'inputs': ['fixtures.pipeline', 'finance_inputs'], 'capability': 'PROD-C08', 'owner_screen': SCREEN},
     {'rule_id': 'PROD-R54', 'name': 'Candidate planned as a brand SKU whose identical item has 10 or more sellers in a live listing pull', 'entity_type': 'sku', 'inputs': ['fixtures.pipeline', 'fixtures.amazon_listings'], 'capability': 'PROD-C01', 'owner_screen': SCREEN},
     {'rule_id': 'PROD-R55', 'name': 'Candidate with a first run decided on one sourcing channel with no alternative compared', 'entity_type': 'sku', 'inputs': ['fixtures.pipeline'], 'capability': 'PROD-C13', 'owner_screen': SCREEN},
+    {'rule_id': 'PROD-R56', 'name': 'Candidate whose ordered units crossed 500 or 1,000 since its quote', 'entity_type': 'sku', 'inputs': ['fixtures.pipeline'], 'capability': 'PROD-C13', 'owner_screen': SCREEN},
 ]
 CAPABILITY = {'PROD-R01': {'id': 'PROD-C05', 'autonomy': 'agent_does'},
               'PROD-R02': {'id': 'PROD-C06', 'autonomy': 'agent_does'},
@@ -386,7 +390,8 @@ CAPABILITY = {'PROD-R01': {'id': 'PROD-C05', 'autonomy': 'agent_does'},
               'PROD-R52': {'id': 'PROD-C08', 'autonomy': 'agent_does'},
               'PROD-R53': {'id': 'PROD-C08', 'autonomy': 'agent_does'},
               'PROD-R54': {'id': 'PROD-C01', 'autonomy': 'agent_does'},
-              'PROD-R55': {'id': 'PROD-C13', 'autonomy': 'agent_does'}}
+              'PROD-R55': {'id': 'PROD-C13', 'autonomy': 'agent_does'},
+              'PROD-R56': {'id': 'PROD-C13', 'autonomy': 'agent_does'}}
 SEVERITY_ORDER = {'critical': 0, 'high': 1, 'medium': 2, 'low': 3}
 
 # Review records name their line in a short key; the store names it by SKU title.
@@ -980,6 +985,7 @@ def _run_audit(brand, ends_on, data):
     out += margin_point_findings(brand, data, br, rd, ends_on)
     out += identical_seller_findings(brand, br, ends_on)
     out += sourcing_findings(brand, ends_on)
+    out += requote_findings(brand, ends_on)
     out.sort(key=lambda f: (SEVERITY_ORDER[f['severity']], -((f['money_at_stake'] or {}).get('usd') or 0), f['id']))
     return out
 
@@ -5160,5 +5166,58 @@ def sourcing_findings(brand, ends_on):
         f = _finding('PROD-R55', cid, ends_on, 'medium', ev, sentence, None, 0.8, [], money_reason='the bet is the first run cash, priced on the first-run card')
         f['entity'] = {'type': 'sku', 'id': cid, 'label': r['name'], 'candidate': True, 'stage': r['stage'], 'verdict': r['verdict'], 'channel': (r['chosen'] or {}).get('label')}
         f['id'] = f'{SCREEN}.PROD-R55.{cid}'
+        out.append(f)
+    return out
+
+
+# ---------------------------------------------------------------- re-quote as volume grows
+
+REQUOTE_STEPS = (500, 1000)   # units ordered so far: at each step the supplier is re-quoted (bank idea PRD-101)
+
+
+def requote_read(brand):
+    """Per candidate with any units ordered (open or at go): units ordered so far, the quote on file (date, units it covered),
+    the steps crossed, and the verdict: requote_due (a step crossed that the quote does not cover), covered (the quote covers
+    the volume), no_orders (nothing ordered yet), no_quote (orders but no quote on file: the cost basis rule already asks)."""
+    rows = []
+    for c in pipeline(brand):
+        st = c.get('stage')
+        if st in ('killed', 'kill'):
+            continue
+        units = c.get('units_ordered')
+        units = int(units) if isinstance(units, (int, float)) and units > 0 else 0
+        quoted = c.get('quote_units')
+        quoted = int(quoted) if isinstance(quoted, (int, float)) and quoted > 0 else None
+        has_quote = str(c.get('cogs_source') or '') == 'quote'
+        crossed = [x for x in REQUOTE_STEPS if units >= x]
+        if not units:
+            verdict = 'no_orders'
+        elif not has_quote:
+            verdict = 'no_quote'
+        elif crossed and (quoted is None or quoted < crossed[-1]):
+            verdict = 'requote_due'
+        else:
+            verdict = 'covered'
+        rows.append({'candidate_id': c.get('candidate_id'), 'name': c.get('name'), 'stage': st, 'units_ordered': units, 'quote_on': c.get('quote_on') if has_quote else None, 'quote_units': quoted if has_quote else None,
+                     'crossed': crossed, 'next_step': next((x for x in REQUOTE_STEPS if units < x), None), 'verdict': verdict, 'finding_id': f'{SCREEN}.PROD-R56.{c.get("candidate_id")}'})
+    order = {'requote_due': 0, 'no_quote': 1, 'covered': 2, 'no_orders': 3}
+    rows.sort(key=lambda r: (order[r['verdict']], -r['units_ordered'], r['name'] or ''))
+    return {'rows': rows, 'steps': list(REQUOTE_STEPS),
+            'rule': f'at {REQUOTE_STEPS[0]:,} and {REQUOTE_STEPS[1]:,} units ordered in total, every supplier is re-quoted; a quote covers the volume when the units it was for are at or above the last step crossed (bank idea PRD-101)'}
+
+
+def requote_findings(brand, ends_on):
+    """PROD-R56: units ordered crossed a step the quote on file does not cover."""
+    out = []
+    for r in requote_read(brand)['rows']:
+        if r['verdict'] != 'requote_due':
+            continue
+        cid = r['candidate_id']
+        step = r['crossed'][-1]
+        ev = [_ev('units_ordered_total', r['units_ordered'], 'count', ends_on.isoformat(), 'orders to date', step, 'threshold', source='fixtures.pipeline', simulated=False, freshness_days=0, quote_units=r['quote_units'], quote_on=r['quote_on'])]
+        sentence = f'{r["name"]} has {r["units_ordered"]:,} units ordered in total, past the {step:,} step, on a quote' + (f' for {r["quote_units"]:,} units' if r['quote_units'] else ' with no volume on it') + (f' from {r["quote_on"]}' if r['quote_on'] else '') + '; the margin still prices at first-order cost.'
+        f = _finding('PROD-R56', cid, ends_on, 'medium', ev, sentence, None, 0.8, [], money_reason='the saving is unknown until the new quote lands')
+        f['entity'] = {'type': 'sku', 'id': cid, 'label': r['name'], 'candidate': True, 'stage': r['stage'], 'units_ordered': r['units_ordered'], 'step': step, 'quote_units': r['quote_units'], 'quote_on': r['quote_on']}
+        f['id'] = f'{SCREEN}.PROD-R56.{cid}'
         out.append(f)
     return out

@@ -1105,6 +1105,18 @@ def recipe(f):
             'size': {'text': f'{ent.get("variants")} variants planned', 'usd': None}, 'stop_rule': 'no MOQ per variant before the core product sells', 'check_on': _check_on(f, 7), 'time_to_ship_hours': 1,
             'win_rule': 'one variant in the first run, the rest queued behind a sell-through read',
         }
+    if rid == 'PROD-R56':
+        ent = f.get('entity') or {}
+        return {
+            'title': f'Re-quote {ent.get("label") or "the candidate"} at {(ent.get("units_ordered") or 0):,} units: the cost on file is a quote for {(ent.get("quote_units") or 0):,}',
+            'owner': 'agent_drafts',
+            'artefact': {'kind': 'research_note', 'label': f'the re-quote request for {ent.get("label")} at the volume ordered to date and the next step, sent to the current supplier and one alternative, and the new landed cost written on the candidate with its date and units (bank idea PRD-101)'},
+            'steps': [{'n': 1, 'who': 'agent', 'text': f'Draft the re-quote from the tech pack at {(ent.get("units_ordered") or 0):,} units and at the next step, with the same landed cost terms as the first quote.'},
+                      {'n': 2, 'who': 'person', 'text': 'Send it to the current supplier and one alternative; enter the new cost as source quote with its date and the units it covers.'},
+                      {'n': 3, 'who': 'agent', 'text': 'Re-run the margin at every point on the new cost; a cost that did not move is a note on the sourcing comparison.'}],
+            'size': {'text': f'{(ent.get("units_ordered") or 0):,} units ordered, quote for {(ent.get("quote_units") or 0):,}', 'usd': None}, 'stop_rule': 'no reorder at first-order cost once a step is crossed', 'check_on': _check_on(f, 14), 'time_to_ship_hours': 1,
+            'win_rule': 'a dated quote on the candidate that covers the volume ordered',
+        }
     if rid == 'PROD-R55':
         ent = f.get('entity') or {}
         none = ent.get('verdict') == 'no_channel'
@@ -1350,7 +1362,7 @@ def merge_strength(actions):
 
 
 LANE_RULES = ('PROD-R06', 'PROD-R19', 'PROD-R20', 'PROD-R33', 'PROD-R26', 'PROD-R29')
-CANDIDATE_RULES = ('PROD-R14', 'PROD-R15', 'PROD-R16', 'PROD-R18', 'PROD-R21', 'PROD-R23', 'PROD-R24', 'PROD-R25', 'PROD-R27', 'PROD-R28', 'PROD-R37', 'PROD-R38', 'PROD-R39', 'PROD-R40', 'PROD-R45', 'PROD-R46', 'PROD-R47', 'PROD-R48', 'PROD-R49', 'PROD-R50', 'PROD-R51', 'PROD-R52', 'PROD-R53', 'PROD-R54', 'PROD-R55')
+CANDIDATE_RULES = ('PROD-R14', 'PROD-R15', 'PROD-R16', 'PROD-R18', 'PROD-R21', 'PROD-R23', 'PROD-R24', 'PROD-R25', 'PROD-R27', 'PROD-R28', 'PROD-R37', 'PROD-R38', 'PROD-R39', 'PROD-R40', 'PROD-R45', 'PROD-R46', 'PROD-R47', 'PROD-R48', 'PROD-R49', 'PROD-R50', 'PROD-R51', 'PROD-R52', 'PROD-R53', 'PROD-R54', 'PROD-R55', 'PROD-R56')
 
 
 def merge_candidates(actions):
@@ -1608,7 +1620,7 @@ def overview(data, brand):
                      'gates': gates_block(brand, data, br, rd, ends_on, findings), 'scorecard': scorecard_block(brand, data, br, rd, ends_on, findings),
                      'video': audit.video_signals(br, brand, ends_on), 'tech_packs': tech_pack_block(brand, findings),
                      'hours': dict(audit.hours_table(brand, br), findings={f['entity']['id']: f['id'] for f in findings if f['rule_id'] == 'PROD-R28'}),
-                     'trend_checks': audit.trend_checks(br, brand, ends_on), 'surfaces': audit.audience_surfaces(br, ends_on), 'marketplace': audit.marketplace_read(br, products(data, brand)), 'cadence': audit.launch_cadence(br, ends_on), 'returns': audit.return_rates(data, brand, ends_on), 'questions': audit.open_questions(br, ends_on), 'pulls': audit.pulls(br, brand, ends_on), 'first_runs': audit.first_run_read(brand, ends_on, audit.net_28d(rd)), 'brain_freshness': audit.brain_freshness(br, ends_on), 'assumptions': audit.assumptions(br), 'strength': audit.read_strength(br, brand, data, rd, ends_on), 'line_themes': audit.line_theme_matrix(br), 'samples': audit.sample_read(brand or 'sample', ends_on), 'kills': audit.kill_memory(brand or 'sample', ends_on), 'packaging': audit.packaging_read(brand or 'sample', ends_on), 'readiness': audit.launch_readiness(brand, data, br, rd, ends_on), 'price_bands': audit.price_band_read(brand or 'sample'), 'margin_points': audit.margin_point_read(brand, data, br, rd, ends_on), 'identical_sellers': audit.identical_sellers_read(brand or 'sample', br), 'opportunity': audit.lane_opportunity(br, products(data, brand), ends_on), 'sourcing': audit.sourcing_read(brand or 'sample'), 'floors': audit.floors_read(br), 'audit_memo': audit.memo_stats()},
+                     'trend_checks': audit.trend_checks(br, brand, ends_on), 'surfaces': audit.audience_surfaces(br, ends_on), 'marketplace': audit.marketplace_read(br, products(data, brand)), 'cadence': audit.launch_cadence(br, ends_on), 'returns': audit.return_rates(data, brand, ends_on), 'questions': audit.open_questions(br, ends_on), 'pulls': audit.pulls(br, brand, ends_on), 'first_runs': audit.first_run_read(brand, ends_on, audit.net_28d(rd)), 'brain_freshness': audit.brain_freshness(br, ends_on), 'assumptions': audit.assumptions(br), 'strength': audit.read_strength(br, brand, data, rd, ends_on), 'line_themes': audit.line_theme_matrix(br), 'samples': audit.sample_read(brand or 'sample', ends_on), 'kills': audit.kill_memory(brand or 'sample', ends_on), 'packaging': audit.packaging_read(brand or 'sample', ends_on), 'readiness': audit.launch_readiness(brand, data, br, rd, ends_on), 'price_bands': audit.price_band_read(brand or 'sample'), 'margin_points': audit.margin_point_read(brand, data, br, rd, ends_on), 'identical_sellers': audit.identical_sellers_read(brand or 'sample', br), 'opportunity': audit.lane_opportunity(br, products(data, brand), ends_on), 'sourcing': audit.sourcing_read(brand or 'sample'), 'floors': audit.floors_read(br), 'requotes': audit.requote_read(brand or 'sample'), 'audit_memo': audit.memo_stats()},
             'audit': {'findings': findings, 'rules': audit.RULES}}
 
 
@@ -1731,6 +1743,19 @@ def candidate_update(brand, cid, body, today):
             except ValueError:
                 return 400, {'error': f'{k} must be a date like 2026-09-28'}
             changes.append(k.replace('_', ' ') + (' set' if q else ' cleared'))
+    for k in ('units_ordered', 'quote_units'):
+        if body.get(k) is not None:
+            n = _num(body[k])
+            if n is None or n < 0:
+                return 400, {'error': f'{k} must be a number at or above 0'}
+            row[k] = int(n)
+            changes.append(k.replace('_', ' ') + f' {int(n):,}')
+    if body.get('units_add') is not None:
+        n = _num(body['units_add'])
+        if n is None or n <= 0:
+            return 400, {'error': 'units_add must be a number above 0'}
+        row['units_ordered'] = int((row.get('units_ordered') or 0) + n)
+        changes.append(f'{int(n):,} units ordered, {row["units_ordered"]:,} in total')
     if body.get('quote_on') is not None:
         q = str(body['quote_on']).strip()
         try:

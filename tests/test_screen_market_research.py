@@ -1635,6 +1635,35 @@ class PipelineTest(ShapeMixin, unittest.TestCase):
         finally:
             audit.PIPELINE_PATH = self.real2
 
+    def test_requote_steps(self):
+        D = date(2026, 9, 27)
+        self.real2 = audit.PIPELINE_PATH
+        try:
+            audit.PIPELINE_PATH = self.tmp
+            self.tmp.write_text(json.dumps({'rows': [{'candidate_id': 'a', 'brand': 'fake', 'name': 'A', 'stage': 'go', 'units_ordered': 1200, 'cogs_source': 'quote', 'quote_units': 500, 'quote_on': '2026-03-01'},
+                                                     {'candidate_id': 'b', 'brand': 'fake', 'name': 'B', 'stage': 'go', 'units_ordered': 600, 'cogs_source': 'quote', 'quote_units': 1000},
+                                                     {'candidate_id': 'c', 'brand': 'fake', 'name': 'C', 'stage': 'go', 'units_ordered': 700, 'cogs_source': 'estimate'},
+                                                     {'candidate_id': 'd', 'brand': 'fake', 'name': 'D', 'stage': 'gated', 'cogs_source': 'quote'},
+                                                     {'candidate_id': 'e', 'brand': 'fake', 'name': 'E', 'stage': 'go', 'units_ordered': 400, 'cogs_source': 'quote'}]}), encoding='utf-8')
+            read = audit.requote_read('fake')
+            by = {r['candidate_id']: r for r in read['rows']}
+            self.assertEqual({k: v['verdict'] for k, v in by.items()}, {'a': 'requote_due', 'b': 'covered', 'c': 'no_quote', 'd': 'no_orders', 'e': 'covered'})
+            self.assertEqual((by['a']['crossed'], by['a']['next_step'], by['e']['next_step']), ([500, 1000], None, 500))
+            found = audit.requote_findings('fake', D)
+            self.assertEqual([f['id'].split('.')[-1] for f in found], ['a'])
+            self.assertIn('1,200 units ordered in total, past the 1,000 step, on a quote for 500 units from 2026-03-01', found[0]['sentence'])
+            self.check_shape(found[0])
+            self.assertIn('Re-quote A at 1,200 units', api.recipe(found[0])['title'])
+            self.assertIn('PROD-R56', api.CANDIDATE_RULES)
+            r = api.candidate_update('fake', 'e', {'units_add': '150', 'who': 'person'}, D)
+            self.assertEqual(r['changes'], ['150 units ordered, 550 in total'])
+            self.assertEqual({x['candidate_id']: x['verdict'] for x in audit.requote_read('fake')['rows']}['e'], 'requote_due')    # a quote with no units on it does not cover a crossed step
+            r = api.candidate_update('fake', 'e', {'quote_units': 1000, 'who': 'person'}, D)
+            self.assertEqual({x['candidate_id']: x['verdict'] for x in audit.requote_read('fake')['rows']}['e'], 'covered')
+            self.assertEqual(api.candidate_update('fake', 'e', {'units_add': '-5', 'who': 'person'}, D)[0], 400)
+        finally:
+            audit.PIPELINE_PATH = self.real2
+
     def test_demand_pattern_tags(self):
         even = {'rows': [{'category': 'socks', 'series': [100] * 12}], 'months': [f'2026-{m:02d}' for m in range(1, 13)], 'last': '2026-12'}
         peaked = {'rows': [{'category': 'socks', 'series': [50] * 10 + [300, 400]}], 'months': even['months'], 'last': '2026-12'}

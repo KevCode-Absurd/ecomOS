@@ -948,6 +948,26 @@
       gapLine(fl.brand_set ? fl.brand_set + ' floor' + (fl.brand_set === 1 ? ' is' : 's are') + ' the brand\'s own; the rest read the bank\'s defaults.' : 'Every floor reads the bank\'s default. Set the brand\'s own where the founder knows better (the price band for this category first).', null));
   }
 
+  function requoteBlock(rq) {
+    const rows = ((rq && rq.rows) || []).filter((r) => r.verdict !== 'no_orders' || r.stage === 'go');
+    if (!rows.length) return UI.emptyState({ screen: SLUG, title: 'Nothing ordered yet', text: 'Once units are ordered on a candidate, the volume is checked against its quote here.', missing: ['pipeline'] });
+    const vt = { requote_due: 'Re-quote due', no_quote: 'No quote on file', covered: 'Quote covers it', no_orders: 'Nothing ordered' };
+    const addUnits = (r) => { const v = prompt('Units ordered now for ' + r.name + ' (added to the ' + fmt.int(r.units_ordered) + ' so far)', ''); if (v == null || !v.trim()) return; candidatePost('candidates/' + r.candidate_id, { units_add: v.trim(), who: 'person' }); };
+    const setQuote = (r) => { const u = prompt('Units the quote on file covers for ' + r.name, r.quote_units || ''); if (u == null || !u.trim()) return; candidatePost('candidates/' + r.candidate_id, { quote_units: u.trim(), who: 'person' }); };
+    const vrows = rows.map((r) => { const a = actionFor(r.finding_id); return Object.assign({}, r, {
+      unitsText: fmt.int(r.units_ordered) + (r.next_step ? ' (next step ' + fmt.int(r.next_step) + ')' : ' (past every step)'), quoteText: r.quote_on ? fmt.date(r.quote_on) + (r.quote_units ? ' for ' + fmt.int(r.quote_units) + ' units' : ', units not entered') : 'none',
+      actions: [a ? { label: 'Re-quote', onClick: () => openAction(a) } : null, { label: 'Units ordered', cls: 'quiet', onClick: () => addUnits(r) }, { label: 'Quote units', cls: 'quiet', onClick: () => setQuote(r) }].filter(Boolean) }); });
+    const tbl = UI.verdictTable({
+      columns: [{ key: 'name', label: 'Candidate' }, { key: 'stage', label: 'Stage' }, { key: 'unitsText', label: 'Units ordered' }, { key: 'quoteText', label: 'Quote on file' }],
+      rows: vrows,
+      verdict: { at: 1, kind: (r) => r.verdict === 'requote_due' ? 'fix' : r.verdict === 'no_quote' ? 'watch' : r.verdict === 'covered' ? 'keep' : 'na', text: (r) => vt[r.verdict], reason: () => rq.rule },
+      actions: { label: 'Do', onClick: () => {} }, sort: false });
+    const open = rows.filter((r) => r.verdict === 'requote_due');
+    return el('div', { class: 'stack' }, el('div', { class: 'card scroll' }, tbl), el('p', { class: 'micro faint', text: 'Rule: ' + rq.rule + '.' }),
+      gapLine(open.length ? open.length + ' candidate' + (open.length === 1 ? ' has' : 's have') + ' outgrown the quote: ' + open.map((r) => r.name).join(', ') + '.' : 'No candidate has crossed a re-quote step on an old quote.',
+        open.length && actionFor(open[0].finding_id) ? { label: 'Open the first', onClick: () => openAction(actionFor(open[0].finding_id)) } : null));
+  }
+
   function scorecardBlock(sc) {
     const rows = (sc && sc.rows) || [];
     if (!rows.length) return el('p', { class: 'muted', text: 'No candidate to score.' });
@@ -1391,6 +1411,7 @@
     parts.push(section('desk-tech-packs', 'Which candidates have a real, versioned spec ready for sourcing?', 'Tech pack versions per candidate: tolerances, the bill of materials and the packaging cost line. A pack saved from the card becomes the current version and supersedes the last.', techPackBlock(d.tech_packs)));
     parts.push(section('desk-first-run', 'How big is the first run, and does it have to be that big?', 'From gated on, the first production run per candidate: units wanted, the format and its MOQ, the cash it ties up as a share of 28-day net revenue, the lower-MOQ alternative considered (bank idea BRD-249), and whether the packaging is custom before the product has proven itself (bank idea PRD-100).', firstRunsBlock(d.first_runs, d.packaging)));
     parts.push(section('desk-sourcing', 'Where does the first run come from, and against what was that compared?', 'Once a first run is decided: the sourcing channel on file (agent, marketplace direct, domestic, own factory, private label) with landed cost a unit, days to stock and branding options, and at least one alternative compared on the same three numbers before the order goes in (bank idea PRD-099).', sourcingBlock(d.sourcing)));
+    parts.push(section('desk-requote', 'Has the volume outgrown the quote?', 'Units ordered in total per candidate against the re-quote steps (500 and 1,000) and the units the quote on file covered. Crossing a step on an old quote means the margin still prices at first-order cost (bank idea PRD-101).', requoteBlock(d.requotes)));
     parts.push(section('desk-samples', 'Has a sample run through our own chain?', 'From shortlisted on, or once a first run is decided: the sample ordered, received and tested through the store\'s own fulfilment before any MOQ order (bank idea PRD-098).', samplesBlock(d.samples)));
     parts.push(section('desk-hours', 'Has any candidate used up its research hours?', 'Hours logged per candidate against the hours allowed through its stage, from the brand\'s budget per stage. Research cannot sprawl past the box.', hoursBlock(d.hours)));
     parts.push(section('desk-trend-checks', 'Does each lane\'s trend rest on history, or on a forecast?', 'The 12-month rate against the multi-year rate per lane from the web pass series: a trend is trusted with 3 or more years of history on the exact term; a last year over twice the multi-year rate is a spike.', trendChecksBlock(d.trend_checks)));
