@@ -343,6 +343,29 @@ class RulesTest(unittest.TestCase):
         self.assertIn('A claim it and no record of ours does', fs[0]['sentence'])
         self.check_shape(fs[0])
 
+    def test_proof_share_and_our_price(self):
+        self.assertEqual(audit.proof_share(['lifetime guarantee', 'new arrivals', '5 star review quote', 'gift']), 0.5)
+        self.assertIsNone(audit.proof_share([]))
+        self.assertEqual(audit.proof_share({'statement': 20, 'first_person': 1}), 0.0)
+        prods = FakeData().tables['products']
+        self.assertEqual(audit.our_price_per_pair(prods, None)['value'], 9.5)   # median of 10 and 9 per pair
+
+    def test_positioning_rule_on_bombas_brain(self):
+        """On the public Bombas brain the frame is buy it for life, Darn Tough is recommended instead, and our proof share trails."""
+        br = audit.brain('bombas')
+        if br is None:
+            self.skipTest('no bombas brain')
+        m = audit.positioning_map(br, None)
+        self.assertTrue(m['enough'])
+        self.assertTrue(any(p['us'] for p in m['points']))
+        self.assertTrue(all(p['x'] is not None and p['y'] is not None for p in m['points']))
+        self.assertTrue(all(p['x'] is None or p['y'] is None for p in m['unpriced']))
+        fs = audit.positioning_findings(br, None, date(2026, 9, 27))
+        self.assertEqual([f['id'] for f in fs], ['01-market-research.PROD-R09.brand'])
+        self.assertEqual(fs[0]['severity'], 'high')
+        self.assertIn('recommended instead', fs[0]['sentence'])
+        self.check_shape(fs[0])
+
     def test_web_pass_fixture_cites_every_number(self):
         fx = audit.market_trends()
         self.assertIsNotNone(fx)

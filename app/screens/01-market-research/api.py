@@ -440,6 +440,27 @@ def recipe(f):
             'check_on': _check_on(f, 30), 'time_to_ship_hours': 4,
             'win_rule': 'an approved positioning record on the preference exists in the brain',
         }
+    if rid == 'PROD-R09':
+        ent = f.get('entity') or {}
+        frame = ent.get('frame') or 'the category frame'
+        comp = ent.get('competitor') or 'the competitor'
+        share = ent.get('proof_share')
+        peer = ent.get('peer_proof_share')
+        return {
+            'title': f'Take a position on "{frame}": put our proof next to the price',
+            'owner': 'agent_drafts',
+            'artefact': {'kind': 'page_section', 'label': f'a proof section for the top sock PDPs (guarantee, construction, wear-life numbers) and 2 ad hooks that answer "{frame}" against {comp}'},
+            'steps': [
+                {'n': 1, 'who': 'agent', 'text': f'Read the Reddit threads framed as "{frame}" and list the proof they trust ({comp} is recommended instead). Reddit is never quoted as a testimonial.'},
+                {'n': 2, 'who': 'agent', 'text': 'Pull our proof points from the brain (guarantee, construction, reviews with a wear-life number) and tier each claim.'},
+                {'n': 3, 'who': 'agent', 'text': 'Draft the PDP proof section next to the price and 2 ad hooks that lead with the proof, not the mission.'},
+                {'n': 4, 'who': 'person', 'text': 'Approve the claims and the section. Landing pages and creative ship them.'},
+                {'n': 5, 'who': 'agent', 'text': 'Re-read the map on the next Ad Library pull: the finding resolves when our proof share of hooks reaches the competitor median.'}],
+            'size': {'text': (f'proof in {round(share * 100)} percent of our hook types against a competitor median of {round(peer * 100)}' if share is not None and peer is not None else 'proof share unavailable'), 'usd': None},
+            'stop_rule': 'stop the ad hooks if cost per order is over 1.3 times the account median for 7 days; keep the page section',
+            'check_on': _check_on(f, 30), 'time_to_ship_hours': 10,
+            'win_rule': 'proof share of active hook types at or above the competitor median, and the brand named in the next Reddit pull on the frame',
+        }
     return None
 
 
@@ -546,6 +567,7 @@ def overview(data, brand):
             'wrong': wrong(findings),
             'desk': {'trends': trends(br, mix), 'mix': mix, 'lanes': audit.subcategory_table(br, ends_on),
                      'conversation': audit.conversation(br), 'preferences': audit.preferences(br),
+                     'map': dict(audit.positioning_map(br, products(data, brand)), frames=audit.reddit_frames(br)[0], instead=audit.reddit_frames(br)[1]),
                      'demand': demand(tr, reviews), 'store_growth': tr.get('store_growth'),
                      'demand_unavailable': {'reason': tr.get('reason'), 'fix': tr.get('fix')} if tr.get('unavailable') else None,
                      'price_bands': bands, 'reviews': review_mining(reviews, lads),

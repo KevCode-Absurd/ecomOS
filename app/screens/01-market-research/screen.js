@@ -289,6 +289,37 @@
         gaps.length ? { label: 'Decide the first', onClick: () => { const a = actionFor(gaps[0].finding_id); if (a) openAction(a); } } : null));
   }
 
+  function mapBlock(m) {
+    if (!m || !m.enough) return UI.emptyState({ screen: SLUG, title: 'Not enough priced competitor pages', text: 'The map needs 3 pages with a price band and hook types in the brain.', missing: ['ad_library'] });
+    const a9 = actionFor(SLUG + '.PROD-R09.brand');
+    const pts = m.points.map((p) => ({ label: p.label, x: p.x, y: p.y, us: p.us, size: p.size, note: (p.hooks || []).slice(0, 4).join(', ') + (p.price_basis ? '. Price: ' + p.price_basis : '') }));
+    const q = m.quadrants || {};
+    const chart = Charts.positioningMap({
+      title: 'Price against proof, ' + m.points.length + ' pages sized by active ads',
+      x: { label: (m.x || {}).label || 'price per pair', lo: 'cheaper per pair', hi: 'dearer per pair', unit: '$' },
+      y: { label: (m.y || {}).label || 'proof share', lo: 'sells on feel', hi: 'sells on proof', unit: '%' },
+      points: pts, midX: m.mid_x, midY: m.mid_y, quadrants: [q.tl, q.tr, q.bl, q.br], usLabel: (m.ours || {}).label || 'us', themLabel: 'competitor pages',
+      note: 'Proof share is the share of a page\'s hook types that carry a guarantee, a lab or review claim, a testimonial or made in USA. Price is the median per pair from each brand\'s public catalog; ours is ' + ((m.ours || {}).price_basis || NA) + '. Ad counts are Ad Library signals, not spend.' });
+    const ourQ = Object.entries(m.members || {}).find(([k, v]) => v.indexOf((m.ours || {}).label) >= 0);
+    const empty = (m.empty || []).map((k) => q[k]);
+    const frames = (m.frames || []).map((f) => pretty(f.frame) + ' ' + f.mentions + (f.mentions_brand ? ' (brand named ' + f.mentions_brand + ')' : ' (brand never named)')).join(', ');
+    const instead = (m.instead || []).map((f) => f.competitor + ' ' + f.n + ' (' + f.upvotes + ' upvotes)').join(', ');
+    const unpriced = m.unpriced || [];
+    const utable = unpriced.length ? UI.table({ columns: [{ key: 'label', label: 'Page' }, { key: 'size', label: 'Active ads', unit: 'n' }, { key: 'longest_run_days', label: 'Longest run', unit: 'd' }, { key: 'why', label: 'Not on the map because' }],
+      rows: unpriced.map((p) => ({ label: p.label, size: p.size, longest_run_days: p.longest_run_days, why: p.x == null ? 'no price band in the brain' : 'no hook types read yet' })), sort: false }) : null;
+    return el('div', { class: 'stack' },
+      el('div', { class: 'grid two' }, el('div', { class: 'card' }, chart),
+        el('div', { class: 'card flat stack' },
+          el('h4', { text: 'How the category talks about itself' }),
+          el('div', { class: 'small' }, el('b', { text: 'Reddit frames: ' }), frames || 'none on file'),
+          el('div', { class: 'small' }, el('b', { text: 'Recommended instead: ' }), instead || 'none on file'),
+          el('div', { class: 'small' }, el('b', { text: 'We sit in: ' }), ourQ ? q[ourQ[0]] + ' with ' + (ourQ[1].filter((n) => n !== (m.ours || {}).label).join(', ') || 'nobody else') : NA),
+          el('div', { class: 'small' }, el('b', { text: 'Empty quadrants: ' }), empty.length ? empty.join(', ') : 'none, every quadrant has a page'),
+          utable ? el('div', null, el('h4', { text: 'Pages off the map' }), utable) : null)),
+      gapLine(a9 ? 'The category frames itself on proof and we sell on feel. ' + a9.why : (empty.length ? 'No page sits in ' + empty.join(' or ') + '. That is the open position.' : 'Our proof share is at or above the competitor median.'),
+        a9 ? { label: 'Take the position', onClick: () => openAction(a9) } : null));
+  }
+
   function loadDesk(o) {
     const d = o.desk || {};
     const w = (o.window || {}).trend;
@@ -297,6 +328,7 @@
     parts.push(section('desk-lanes', 'Which lanes are competitors betting on, and what launched?', 'Competitor pages from the Ad Library pull in the brain, by lane: who pushes it, how long their ads have run, what launched in the last 24 months, and whether we sell and advertise it.', lanesBlock(d.lanes)));
     parts.push(section('desk-conversation', 'What are people talking about, and what goes unanswered?', 'Themes across reviews (site, Amazon, Trustpilot, retailers), Reddit and an Instagram hashtag pull: volume, complaint against praise, the top doubt, and whether the site and the active ads answer it.', conversationBlock(d.conversation)));
     parts.push(section('desk-preferences', 'Which preferences are shifting, and where do we stand on each?', 'Public survey numbers from the web pass against our own claims, our active ads, the competitors\' pitches and the category conversation.', preferencesBlock(d.preferences)));
+    parts.push(section('desk-map', 'Where do we sit against the competitors, and which position is open?', 'Price per pair against the share of proof-led hooks, from the brain\'s competitor records and the Ad Library pull. Sized by active ads. The Reddit frames show how the category talks about itself.', mapBlock(d.map)));
     parts.push(section('desk-demand', 'Which lines are losing share, and which reviews say why?', 'Last 3 whole months against the same months a year earlier. A line fires when units fall or growth trails the store by 1 point or more.', demandBlock(d, w || { months: [], year_ago: [] })));
     parts.push(section('desk-price', 'Where do our prices sit against the competitor band?', 'Per-pair list price by line against the band of competitor median prices from the brain. Socks only; other categories have no competitor price on file.', priceBlock(d.price_bands || {})));
     parts.push(section('desk-reviews', 'What do reviews praise and fail, line by line?', 'Public site review totals per line, with the objection ladder rungs built from them.', reviewBlock(d.reviews || [])));

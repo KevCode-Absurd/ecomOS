@@ -46,6 +46,11 @@ Rules
             page claims in its ads and none of the brand's own records (claims, products, site, offers) carries.
             Money: null. Capability PROD-C05. Owner: 01-market-research. The action is a claim plan or a
             counter-position; a claim is never invented.
+  PROD-R09  Positioning frame gap: Reddit frames the category with a proof word (buy it for life, worth the
+            price) in 3 or more posts and never names the brand in it, a competitor is recommended instead,
+            and the brand's active ads carry proof in a smaller share of hook types than the median
+            competitor page with a price band. One finding for the brand, severity high (a competitor
+            position gap named in the brain). Money: null. Capability PROD-C06. Owner: 01-market-research.
   PROD-R03  Hero line with no next SKU: a line with 25 percent or more of its category's net sales in
             the last 3 whole months while the candidate pipeline holds no open next-SKU candidate for
             that category. Money: null (an unlaunched SKU has no baseline). Capability PROD-C06
@@ -55,6 +60,7 @@ Money uses net sales, not margin. Review counts are public and real; sales are s
 """
 import importlib.util
 import json
+import re
 import statistics
 from datetime import date, timedelta
 from pathlib import Path
@@ -89,6 +95,8 @@ RULES = [
      'capability': 'PROD-C12', 'owner_screen': SCREEN},
     {'rule_id': 'PROD-R08', 'name': 'Preference rising or holding in public surveys that competitors claim and no record of ours does',
      'entity_type': 'metric', 'inputs': ['fixtures.market_trends', 'brain.claims', 'brain.competitors', 'brain.learnings'], 'capability': 'PROD-C05', 'owner_screen': SCREEN},
+    {'rule_id': 'PROD-R09', 'name': 'Category framed by a proof word on Reddit (3 or more posts, brand never named), a competitor recommended instead, and our proof share of hooks below the competitor median',
+     'entity_type': 'brand', 'inputs': ['brain.positioning', 'brain.competitors', 'brain.learnings', 'products'], 'capability': 'PROD-C06', 'owner_screen': SCREEN},
 ]
 CAPABILITY = {'PROD-R01': {'id': 'PROD-C05', 'autonomy': 'agent_does'},
               'PROD-R02': {'id': 'PROD-C06', 'autonomy': 'agent_does'},
@@ -97,7 +105,8 @@ CAPABILITY = {'PROD-R01': {'id': 'PROD-C05', 'autonomy': 'agent_does'},
               'PROD-R05': {'id': 'PROD-C05', 'autonomy': 'agent_does'},
               'PROD-R06': {'id': 'PROD-C03', 'autonomy': 'agent_does'},
               'PROD-R07': {'id': 'PROD-C12', 'autonomy': 'human_assist'},
-              'PROD-R08': {'id': 'PROD-C05', 'autonomy': 'agent_does'}}
+              'PROD-R08': {'id': 'PROD-C05', 'autonomy': 'agent_does'},
+              'PROD-R09': {'id': 'PROD-C06', 'autonomy': 'agent_does'}}
 SEVERITY_ORDER = {'critical': 0, 'high': 1, 'medium': 2, 'low': 3}
 
 # Review records name their line in a short key; the store names it by SKU title.
@@ -503,6 +512,11 @@ def run(brand, window=None, data=None):
     out += subcategory_findings(br, ends_on)
     out += conversation_findings(br, ends_on)
     out += preference_findings(br, ends_on)
+    try:
+        prods_for_map = (data if data is not None else brand_data(brand)).table('products')
+    except (KeyError, ValueError):
+        prods_for_map = None
+    out += positioning_findings(br, prods_for_map, ends_on)
     out.sort(key=lambda f: (SEVERITY_ORDER[f['severity']], -((f['money_at_stake'] or {}).get('usd') or 0), f['id']))
     return out
 
@@ -998,3 +1012,136 @@ def preference_findings(br, ends_on):
         f['id'] = f'{SCREEN}.PROD-R08.{r["key"]}'
         out.append(f)
     return out
+
+
+# ---------------------------------------------------------------- the positioning map
+
+PROOF_WORDS = ['guarantee', 'lab tested', 'review quote', 'review', 'testimonial', 'made in usa', 'number one', 'nurse count',
+               'social proof', 'athlete', 'clinically', 'doctor', 'proof', 'demo', 'wear test', 'tested']
+MAP_MIN_POINTS = 3
+
+
+def proof_share(hooks):
+    """Share of hook types that carry proof (guarantee, lab, review, testimonial, made in USA). Hooks: list or dict of type names."""
+    names = list(hooks.keys()) if isinstance(hooks, dict) else list(hooks or [])
+    if not names:
+        return None
+    proof = sum(1 for h in names if any(w in str(h).lower() for w in PROOF_WORDS))
+    return round(proof / len(names), 4)
+
+
+def our_price_per_pair(prods, br):
+    """Median per-pair sock list price from the catalog when connected; else the brain's entry price for a single pair."""
+    if prods:
+        per = [p['price'] / p['items_per_unit'] for p in prods if p.get('category') == 'socks' and p.get('price') and p.get('items_per_unit')]
+        if per:
+            return {'value': round(statistics.median(per), 2), 'basis': 'median list price per pair across sock packs, simulated catalog'}
+    v = br.get(f'{br.brand}.products.price_ladder_socks') if br else None
+    if v and isinstance(v.get('value'), dict) and v['value'].get('min_usd'):
+        return {'value': float(v['value']['min_usd']), 'basis': 'entry price of a single pair in the public catalog (catalog not connected)'}
+    return {'value': None, 'basis': 'no catalog and no price ladder on file'}
+
+
+def positioning_map(br, prods):
+    """Us and the competitor pages as points: x price per pair (median), y proof share of hook types, size active ads.
+    Pages without a price band are listed apart, never guessed."""
+    if br is None:
+        return {'points': [], 'unpriced': [], 'x': None, 'y': None}
+    from_named = {}
+    for rec in br.records('competitors'):
+        v = rec.get('value')
+        if not isinstance(v, dict) or not v.get('name') or 'hook_types' not in v:
+            continue
+        text = v.get('price_band_usd') or ''
+        med = re.search(r'median (?:about )?(\d+(?:\.\d+)?)', text)
+        from_named[v['name'].lower().replace(' socks', '').replace(' vermont', '').strip()] = {
+            'label': v['name'], 'x': float(med.group(1)) if med else None, 'y': proof_share(v.get('hook_types')),
+            'hooks': list(v.get('hook_types') or []), 'record': rec['id'], 'price_ref': v.get('price_ref')}
+    pages = {c['name'].lower().replace(' socks', '').replace(' vermont', '').strip(): c for c in competitor_signals(br)}
+    points, unpriced = [], []
+    for key, c in pages.items():
+        n = from_named.get(key)
+        p = {'label': n['label'] if n else c['name'], 'x': n['x'] if n else None, 'y': n['y'] if n else None, 'size': c['active_ads'],
+             'us': False, 'hooks': n['hooks'] if n else [], 'longest_run_days': c['longest_run_days'], 'records': c['records']}
+        (points if p['x'] is not None and p['y'] is not None else unpriced).append(p)
+    hooks = brain_value_hooks(br)
+    price = our_price_per_pair(prods, br)
+    own = br.get(f'{br.brand}.learnings.active_ads_snapshot')
+    ours = {'label': br.brand.title(), 'x': price['value'], 'y': proof_share(hooks), 'size': (own or {}).get('value', {}).get('active_ads') if own else None,
+            'us': True, 'hooks': list(hooks or []), 'price_basis': price['basis'], 'note': price['basis']}
+    if ours['x'] is not None and ours['y'] is not None:
+        points.append(ours)
+    xs = [p['x'] for p in points if not p['us']]
+    ys = [p['y'] for p in points if not p['us']]
+    mid_x = statistics.median(xs) if xs else None
+    mid_y = statistics.median(ys) if ys else None
+    quads = {'tl': [], 'tr': [], 'bl': [], 'br': []}
+    for p in points:
+        if mid_x is None or mid_y is None:
+            break
+        q = ('t' if p['y'] >= mid_y else 'b') + ('l' if p['x'] < mid_x else 'r')
+        quads[q].append(p['label'])
+    names = {'tl': 'value with proof', 'tr': 'premium with proof', 'bl': 'value on feel', 'br': 'premium on feel'}
+    empty = [q for q, members in quads.items() if not members] if xs else []
+    return {'points': points, 'unpriced': unpriced, 'ours': ours, 'mid_x': mid_x, 'mid_y': mid_y, 'quadrants': names, 'members': quads,
+            'empty': empty, 'x': {'label': 'price per pair, median', 'unit': '$'}, 'y': {'label': 'share of hook types that carry proof', 'unit': '%'},
+            'proof_words': PROOF_WORDS, 'enough': len(points) >= MAP_MIN_POINTS}
+
+
+def brain_value_hooks(br):
+    r = br.get(f'{br.brand}.learnings.hook_types') if br else None
+    return (r or {}).get('value') if r else None
+
+
+def reddit_frames(br):
+    """The category frames Reddit uses and who it recommends instead, from the brain's positioning and competitor records."""
+    frames, instead = [], []
+    if br is None:
+        return frames, instead
+    for r in br.records('positioning'):
+        v = r.get('value')
+        if isinstance(v, dict) and v.get('frame') and 'mentions' in v:
+            frames.append({'frame': v['frame'], 'mentions': v.get('mentions') or 0, 'mentions_brand': v.get('mentions_brand') or 0, 'record': r['id']})
+    for r in br.records('competitors'):
+        v = r.get('value')
+        if isinstance(v, dict) and v.get('recommended_instead'):
+            instead.append({'competitor': v.get('competitor'), 'n': v['recommended_instead'], 'upvotes': v.get('upvotes') or 0, 'record': r['id']})
+    frames.sort(key=lambda f: -f['mentions'])
+    instead.sort(key=lambda f: (-f['n'], -f['upvotes']))
+    return frames, instead
+
+
+def positioning_findings(br, prods, ends_on):
+    """PROD-R09: the category conversation is framed by a proof word (buy it for life, worth the price) the brand
+    is not named in, a competitor is recommended instead, and our ads carry proof in fewer hook types than the
+    competitor median. One finding for the brand."""
+    if br is None:
+        return []
+    frames, instead = reddit_frames(br)
+    m = positioning_map(br, prods)
+    ours = m.get('ours') or {}
+    top = frames[0] if frames else None
+    if not top or top['mentions'] < 3 or top['mentions_brand'] > 0 or not instead:
+        return []
+    if ours.get('y') is None or m.get('mid_y') is None or ours['y'] >= m['mid_y']:
+        return []
+    lead = instead[0]
+    ev = [_ev('frame_mentions', top['mentions'], 'count', ends_on.isoformat(), 'past year', 3, 'threshold', source=top['record'], simulated=False, freshness_days=0,
+              frame=top['frame'], mentions_brand=top['mentions_brand']),
+          _ev('recommended_instead', lead['n'], 'count', ends_on.isoformat(), 'past year', source=lead['record'], simulated=False, freshness_days=0,
+              competitor=lead['competitor'], upvotes=lead['upvotes']),
+          _ev('proof_share_of_hooks', ours['y'], 'ratio', ends_on.isoformat(), 'active ads now', m['mid_y'], 'peer_band', source=f'{br.brand}.learnings.hook_types',
+              simulated=False, freshness_days=0, note='baseline is the median across competitor pages with a price band'),
+          _ev('price_per_pair', ours.get('x'), 'usd', ends_on.isoformat(), 'catalog', m.get('mid_x'), 'peer_band', source='products', simulated=prods is not None, freshness_days=0,
+              note=ours.get('price_basis'))]
+    frame = top['frame'].replace('_', ' ')
+    sentence = (f'Reddit frames the category as "{frame}" in {top["mentions"]} posts and never names the brand in it. {lead["competitor"]} is recommended instead '
+                f'{lead["n"]} times ({lead["upvotes"]} upvotes). Our ads carry proof in {round(ours["y"] * 100)} percent of hook types against a competitor median of {round(m["mid_y"] * 100)}.')
+    empty = [m['quadrants'][q] for q in m.get('empty') or []]
+    f = _finding('PROD-R09', 'brand', ends_on, 'high', ev, sentence, None, 0.7,
+                 [top['record'], lead['record'], f'{br.brand}.positioning.proof_points', f'{br.brand}.learnings.hook_types'],
+                 money_reason='a positioning gap has no order count until the proof runs in an ad')
+    f['entity'] = {'type': 'brand', 'id': 'brand', 'label': 'Positioning', 'frame': frame, 'competitor': lead['competitor'], 'empty_quadrants': empty,
+                   'proof_share': ours['y'], 'peer_proof_share': m['mid_y']}
+    f['id'] = f'{SCREEN}.PROD-R09.brand'
+    return [f]
