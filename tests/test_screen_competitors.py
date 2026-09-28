@@ -2058,5 +2058,51 @@ class TestWords(unittest.TestCase):
                 self.assertIsNone(_re.search(w, text, _re.I), f'{name}: {w}')
 
 
+class TestPriceDrift(TempInputs):
+    """9.3: the room's price drift rule: outside the band for 2 captures in a row confirms it; unknown never counts."""
+    def setUp(self):
+        super().setUp()
+        self._cap = api.audit.capmod.FOLDER
+        api.audit.capmod.FOLDER = self.tmp / 'captures'
+        (self.tmp / 'captures' / 'bombas').mkdir(parents=True)
+
+    def tearDown(self):
+        api.audit.capmod.FOLDER = self._cap
+        super().tearDown()
+
+    def cap(self, day, ours):
+        body = {'brand': 'bombas', 'captured_at': day, 'pages': {}}
+        if ours is not None:
+            body['ours'] = {'price_position_index': ours}
+        (self.tmp / 'captures' / 'bombas' / f'{day}.json').write_text(json.dumps(body))
+
+    def r02(self):
+        return next(f for f in api.handle(Req(['plan']))['findings'] if f['rule_id'] == 'COMP-R02')
+
+    def test_streak(self):
+        f = self.r02()
+        self.assertEqual((f['severity'], [e['value'] for e in f['evidence'] if e['metric'] == 'captures_outside_band']), ('medium', [1]))
+        self.assertIn('a second outside the range confirms it', f['sentence'])
+        self.cap('2026-09-14', 60)
+        self.cap('2026-09-21', None)       # our index unknown that day: breaks the run
+        self.assertEqual(self.r02()['severity'], 'medium')
+        self.cap('2026-09-21', 52)
+        f = self.r02()
+        self.assertEqual(f['severity'], 'high')
+        self.assertIn("price is now 49 percent below the category range, for 3 captures in a row", f['sentence'])
+
+    def test_capture_keeps_our_index(self):
+        r = Req(['capture'], method='POST', query={'today': ['2026-10-05']})
+        r.body = {}
+        self._out = api.audit.handmod.OUT
+        api.audit.handmod.OUT = self.tmp
+        try:
+            api.handle(r)
+        finally:
+            api.audit.handmod.OUT = self._out
+        c = json.loads((self.tmp / 'captures' / 'bombas' / '2026-10-05.json').read_text())
+        self.assertIsNotNone(c['ours']['price_position_index'])
+
+
 if __name__ == '__main__':
     unittest.main()

@@ -611,7 +611,7 @@ def run_capture(brand: str, today: dt.date) -> tuple[int, dict]:
     if (cap.FOLDER / brand / f"{today.isoformat()}.json").exists():
         return 200, {"ok": True, "already": True, "captured_at": today.isoformat(), "captures": len(cap.captures(brand))}
     m = audit.market_full(brand, today, BRAIN_ROOT)
-    cap.write(brand, m["pages"], today)
+    cap.write(brand, m["pages"], today, ours={"price_position_index": m["price_position_index"]})
     audit.handmod.write_snapshot(m, audit.parse_band)
     prev, cur = cap.latest_two(brand)
     return 201, {"ok": True, "already": False, "captured_at": today.isoformat(), "captures": len(cap.captures(brand)),

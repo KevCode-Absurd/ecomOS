@@ -534,6 +534,7 @@ TUNABLE = {"price_band_low": (_self, "PRICE_BAND", 0), "price_band_high": (_self
 
 
 # the range a threshold may be tuned to on the page (inputs.py kind threshold); outside it the change is refused
+PRICE_STREAK = 2   # captures in a row outside the price band before the drift is confirmed (the room's rule)
 TUNE_RANGE = {"price_band_low": (50, 100), "price_band_high": (100, 200), "stale_days": (3, 90), "angle_share_max": (0.05, 0.6),
               "threat_points": (2, 6), "watch_points": (1, 5), "coverage_gap_min": (0.01, 0.2), "surge": (0.1, 1.0),
               "price_move": (0.05, 0.5), "discount_deeper_points": (1, 40), "ladder_min_saving": (0.02, 0.4), "undercut": (0.05, 0.5)}
@@ -616,6 +617,23 @@ def market(brand: str, today: dt.date, root: Path | None = None) -> dict:
             "competitor_set": _value(brain, "competitors.competitor_set") or []}
 
 
+def price_streak(brand: str, today: dt.date, idx) -> int:
+    """How many captures in a row, newest first and today's index as the latest, sit outside the price band.
+    A capture without our index breaks the run: unknown is never counted as outside."""
+    series = []
+    for pth in capmod.captures(brand):
+        c = json.loads(pth.read_text(encoding="utf-8"))
+        if c.get("captured_at", "") < today.isoformat():
+            series.append((c.get("ours") or {}).get("price_position_index"))
+    series.append(idx)
+    n = 0
+    for v in reversed(series):
+        if v is None or PRICE_BAND[0] <= v <= PRICE_BAND[1]:
+            break
+        n += 1
+    return n
+
+
 def market_full(brand: str, today: dt.date, root: Path | None = None) -> dict:
     m = market(brand, today, root)
     checks = inpmod.card_checks(inpmod.read(brand, "card_check"))
@@ -623,6 +641,7 @@ def market_full(brand: str, today: dt.date, root: Path | None = None) -> dict:
         c = checks.get(p["name"])
         p["card_checked_on"] = c["date"] if c else None
         p["card_age_days"] = (today - dt.date.fromisoformat(c["date"])).days if c else p.get("age_days")
+    m["price_streak"] = price_streak(brand, today, m["price_position_index"])
     m["ladder"] = laddermod.build(m, m["brain"])
     cur = snap.load(brand)
     prev = snap.load(brand, before=cur["captured_at"]) if cur else None
@@ -783,11 +802,18 @@ def rule_price(m, ends_on):
                None, "peer_band", "competitors.price_band_usd"),
           _row("price_position_index", idx, "index", "latest capture", ends_on, _fresh(m["competitors"]),
                list(PRICE_BAND), "peer_band", "computed")]
-    sentence = (f"{m['brand'].capitalize()} sells {m['term']['plural']} for ${price:.2f} a {m['term']['unit']} after discounts. "
-                f"The tracked brands' median is ${med:.2f}, so the price sits {diff} percent {side} it.")
+    streak = m.get("price_streak") or 1
+    ev.append(_row("captures_outside_band", streak, "n", "dated captures", ends_on, None, PRICE_STREAK, "threshold", "captures"))
+    if streak >= PRICE_STREAK:   # the room's rule: outside the range for 2 consecutive captures
+        sentence = (f"The brand's price is now {diff} percent {side} the category range, for {streak} captures in a row: "
+                    f"${price:.2f} a {m['term']['unit']} against a tracked median of ${med:.2f}.")
+    else:
+        sentence = (f"{m['brand'].capitalize()} sells {m['term']['plural']} for ${price:.2f} a {m['term']['unit']} after discounts. "
+                    f"The tracked brands' median is ${med:.2f}, so the price sits {diff} percent {side} it. "
+                    "One capture so far; a second outside the range confirms it.")
     refs = [f"{m['brand']}.competitors.competitor_set", f"{m['brand']}.products.price_ladder_{m['term']['plural']}"]
-    return [_finding("COMP-R02", "medium", ent, ev, sentence, refs, ends_on, 0.5 - 0.2,
-                     "no baseline: price response is not measured")]
+    return [_finding("COMP-R02", "high" if streak >= PRICE_STREAK else "medium", ent, ev, sentence, refs, ends_on,
+                     0.5 if streak >= PRICE_STREAK else 0.3, "no baseline: price response is not measured")]
 
 
 def rule_offer_runs(m, ends_on):

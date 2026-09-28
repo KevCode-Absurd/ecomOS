@@ -45,11 +45,14 @@ def summary(pages: list[dict]) -> dict:
     return out
 
 
-def write(brand: str, pages: list[dict], day: dt.date, folder: Path | None = None) -> Path:
+def write(brand: str, pages: list[dict], day: dt.date, folder: Path | None = None, ours: dict | None = None) -> Path:
+    """`ours` keeps our own numbers of the day (the price index), so a drift can be read across captures."""
     path = (folder or FOLDER) / brand / f"{day.isoformat()}.json"
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps({"brand": brand, "captured_at": day.isoformat(), "source": "brain page summaries",
-                                "pages": summary(pages)}, indent=1, sort_keys=True), encoding="utf-8")
+    body = {"brand": brand, "captured_at": day.isoformat(), "source": "brain page summaries", "pages": summary(pages)}
+    if ours:
+        body["ours"] = ours
+    path.write_text(json.dumps(body, indent=1, sort_keys=True), encoding="utf-8")
     return path
 
 
@@ -144,5 +147,5 @@ if __name__ == "__main__":
     import audit  # noqa: E402
     day = dt.date.fromisoformat(ns.date) if ns.date else dt.date.today()
     m = audit.market_full(ns.brand, day)
-    print(write(ns.brand, m["pages"], day))
+    print(write(ns.brand, m["pages"], day, ours={"price_position_index": m["price_position_index"]}))
     print(audit.handmod.write_snapshot(m, audit.parse_band))   # the competitor_snapshot hand-off (events.md)
