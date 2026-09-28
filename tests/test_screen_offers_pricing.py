@@ -1091,5 +1091,26 @@ class PriorsTest(unittest.TestCase):
         self.assertNotIn('priors', out[1])
 
 
+class DecisionsTest(unittest.TestCase):
+    """Round 3 feature 9: depth.md rule 14, not now snoozes a move for 14 days and decisions show on the move."""
+
+    def test_snooze_and_show(self):
+        import json, tempfile
+        from datetime import date
+        acts = api.actions.rank('bombas')['actions'][:3]
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / 'decisions.json'
+            path.write_text(json.dumps([
+                {'finding_id': acts[0]['id'], 'choice': 'not_now', 'time': '2026-09-27T10:00:00Z', 'reason': 'after BFCM'},
+                {'finding_id': acts[1]['id'], 'choice': 'agent', 'time': '2026-09-27T10:00:00Z'}]), encoding='utf-8')
+            plan, snoozed = api.with_decisions(acts, today=date(2026, 9, 28), path=path)
+            self.assertNotIn(acts[0]['id'], [a['id'] for a in plan])
+            self.assertEqual(snoozed[0]['back_on'], '2026-10-11')
+            shown = next(a for a in plan if a['id'] == acts[1]['id'])
+            self.assertEqual(shown['decision']['choice'], 'agent')
+            later, _ = api.with_decisions(acts, today=date(2026, 10, 20), path=path)
+            self.assertIn(acts[0]['id'], [a['id'] for a in later])   # back after 14 days
+
+
 if __name__ == '__main__':
     unittest.main()

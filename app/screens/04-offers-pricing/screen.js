@@ -63,6 +63,7 @@
       foot: el('div', { class: 'row' }, UI.rubricLegend(), el('span', { class: 'micro faint', text: 'Ranking: critical first by stake, then rubric total, severity, stake. "Not now" snoozes 14 days.' })),
       empty: 'No open offer or price move for this window.',
     }));
+    if ((d.snoozed || []).length) document.getElementById('plan').append(el('p', { class: 'micro faint', text: 'Not now: ' + d.snoozed.map((x) => x.title + (x.back_on ? ' (back ' + fmt.date(x.back_on) + ')' : '')).join('; ') + '.' }));
     const cw = document.getElementById('connect-wrap');
     cw.hidden = !con.length;
     if (con.length) mount('#connect', el('div', { class: 'card flat connect' },

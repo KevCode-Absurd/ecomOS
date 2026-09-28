@@ -281,6 +281,27 @@ DESK_KEYS = ('objections', 'returns', 'ladder', 'first_order', 'waterfalls', 'ca
              'subscription')
 
 
+def with_decisions(acts, today=None, path=None):
+    """depth.md rule 14: decisions from the log show on each move; 'not now' hides a move for 14 days.
+    Returns (plan, snoozed) where snoozed lists the hidden moves with the day they come back."""
+    rk = actions.RANK
+    kw = {'path': path} if path else {}
+    kept = rk.apply_decisions([dict(a) for a in acts], today=today, **kw)
+    ids = {a['id'] for a in kept}
+    dec = rk.decisions_by_finding(**kw)
+    snoozed = []
+    for a in acts:
+        if a['id'] not in ids:
+            d = dec.get(a['id']) or {}
+            back = None
+            try:
+                back = (date.fromisoformat(str(d.get('time'))[:10]) + timedelta(days=rk.SNOOZE_DAYS)).isoformat()
+            except ValueError:
+                back = None
+            snoozed.append({'id': a['id'], 'title': a['title'], 'back_on': back, 'reason': d.get('reason')})
+    return kept, snoozed
+
+
 def overview(data, brand):
     ends_on = audit.last_full_day(data, brand)
     rd = audit.Reader(data, brand, ends_on)
@@ -290,10 +311,11 @@ def overview(data, brand):
     # one path for every brand: a brand folder, or a data source with no folder (the sample brand)
     ranked = actions.rank(brand, {'ends_on': ends_on.isoformat()}, data=None if brand else data)
     desk = {k: ranked[k] for k in DESK_KEYS}
+    plan, snoozed = with_decisions(ranked['actions'])
     months = discount_months(rd)
     th = threshold(rd)
     return {'brand': head, 'window': {'ends_on': ends_on.isoformat(), 'days': audit.WINDOW},
-            'orientation': orientation(rd, th), 'plan': ranked['actions'],
+            'orientation': orientation(rd, th), 'plan': plan, 'snoozed': snoozed,
             'stack': offer_stack(rd), 'threshold': th, 'bfcm': bfcm(rd), **desk,
             'creep': creep_rule(months), 'chart': chart(months), 'findings': ranked['findings'], 'rules': audit.RULES}
 
