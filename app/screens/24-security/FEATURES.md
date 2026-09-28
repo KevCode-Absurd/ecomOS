@@ -6,9 +6,31 @@ Status: todo | doing | done | parked. One feature per commit. The first round is
 
 | # | Feature | Status |
 |---|---|---|
-| 0.1 | Page shell in the shared UI kit: header, empty-state tiles, insight list, action buttons | todo |
-| 0.2 | `api.py` serving this screen's metrics from `app/data/` with unavailable states | todo |
-| 0.3 | 3 metric tiles, 2 insights, 1 chart from the sample brand | todo |
+| 0.1 | Page shell in the shared UI kit: header, empty-state tiles, insight list, action buttons | done |
+| 0.2 | `api.py` serving this screen's metrics from `app/data/` with unavailable states | done |
+| 0.3 | 3 metric tiles, 2 insights, 1 chart from the sample brand | done |
+| 0.4 | `audit.py`: 22 rules in the contract shape, one or more per room job | done |
+
+## JTBD table (room "Security", agent MONEY) and the audit rules that answer it
+
+| Job | Question | Capabilities | Rules (audit.py) | Round 0 state on Bombas |
+|---|---|---|---|---|
+| Bot and AI-agent traffic policy | what is hitting our site that is not a person | MONEY-C41 | SEC-R07 bot share, SEC-R08 agent endpoint, SEC-R09 form captcha | R07 unavailable (edge bot analytics); R08 fires (UCP/MCP endpoint to review); R09 passes (hCaptcha) |
+| Fraud and abuse across checkout, cards, returns | card testing, false declines, return abuse | MONEY-C42, MONEY-C76 | SEC-R01 chargeback lines, SEC-R02 win rate, SEC-R03 card testing, SEC-R04 promo abuse, SEC-R05 return abuse | R01 passes (0.08 percent, under 0.15); R02 passes this window; R03 to R05 unavailable |
+| Account takeover, correlated across systems | could someone take over an account | MONEY-C43, MONEY-C81 | SEC-R06 | unavailable (platform admin logs) |
+| Web application defects | exploitable defect in storefront or checkout | MONEY-C44 | SEC-R10 | unavailable (weekly scanner) |
+| Third-party scripts, apps, dependencies | which apps and scripts are risky | SITE-C13 | SEC-R11 script count, SEC-R12 unknown hosts | R11 fires (7 over 5, tag manager); R12 unavailable (speed_runs keeps totals only) |
+| Admin access and least privilege | only the access they need | MONEY-C46 | SEC-R13 | unavailable (Shopify staff list) |
+| Backups and incident runbook | can we recover | MONEY-C47 | SEC-R14 | unavailable (backup export) |
+| Domain, DNS, impersonation | is our domain safe | MONEY-C48 | SEC-R15 | unavailable (DNS audit, domain watch) |
+| Privacy, consent, tracking | GDPR/CCPA and consent exposure | MONEY-C49 | SEC-R16 consent, SEC-R17 policy age | both pass (OneTrust; policy effective 2026-04-09) |
+| Quarterly audit and PCI scope | four pillars, which SAQ | MONEY-C50, MONEY-C74 | SEC-R18 | unavailable (manual assessment) |
+| Email authentication | can someone spoof our domain | MONEY-C72 | SEC-R19 | unavailable (DNS lookup) |
+| Keys and credentials | which keys are overdue | MONEY-C73 | SEC-R20 | unavailable (secrets export) |
+| Staff phishing training | would staff catch a phish | MONEY-C75 | SEC-R21 | unavailable (training platform) |
+| Vendor risk | did the vendor pass a check first | MONEY-C77 | SEC-R22 | unavailable (vendor register) |
+
+Round 1 candidates from this table: return abuse per customer from `orders` joined to `reversed_orders` (a real signal without the receiving log), dispute evidence packets for open disputes, a scripts-on-checkout check once the speed lab keeps request hosts, a MONEY-C81 cross-system login view once any admin log connects.
 
 ## Candidates from the room spec (pick 10 per round)
 
@@ -106,3 +128,13 @@ Status: todo | doing | done | parked. One feature per commit. The first round is
 
 | Round | Features picked | Date | Notes |
 |---|---|---|---|
+| 0 | 0.1 to 0.4 | 2026-09-28 | shell, api, 3 tiles, 2 insight rules, 1 chart, audit |
+
+## Round 0 status
+
+1. Built: index.html, screen.js, api.py (overview, findings), audit.py (22 rules, RULES list), tests/test_screen_security.py (13 tests pass).
+2. Tiles: chargeback rate 0.08 percent (lines 0.15, 0.65, 0.9), dispute win rate 60.6 percent (20 of 33), 7 vendor scripts (line 5).
+3. Insights as rules: chargeback lines with win rate and scaled payout dispute moves; storefront surface (scripts, tag manager, consent, captcha, agent endpoint).
+4. Chart: chargebacks and inquiries per 1,000 paid orders, 12 months, against the 1.5 per 1,000 alert line.
+5. Findings on Bombas: SEC-R08 and SEC-R11 open (medium); 15 unavailable with the connector named; money computed in code for R01 and R02 when they fire.
+6. Gaps: bot, card testing, promo abuse, account takeover, scans, DNS, email auth and payout holds read unavailable; all data simulated, labelled on the page.
