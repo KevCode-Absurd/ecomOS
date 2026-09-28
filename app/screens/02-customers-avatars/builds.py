@@ -2023,34 +2023,58 @@ def proposed_tests(d: dict, brand: str, as_of: str) -> list[dict]:
 
 def handoff(d: dict) -> list[dict]:
     """What each reading screen gets from this one, as ready artefacts. They read it; this screen never calls them."""
-    def item(title, kind, draft):
-        return {"title": title, "kind": kind, "draft": draft or ""}
+    def item(title, kind, draft, move=None):
+        m = move or {}
+        cap = m.get("capability") or {}
+        return {"title": title, "kind": kind, "draft": draft or "", "why": m.get("why"), "stop_rule": m.get("stop_rule"),
+                "check_on": m.get("check_on"), "owner": m.get("owner"), "capability": cap.get("id") if isinstance(cap, dict) else cap,
+                "move_id": m.get("id"), "size": (m.get("size") or {}).get("text")}
     lad = d["ladders"]["rows"]
-    creative = [item(a["next"]["title"], "ad_brief", a["next"]["draft"]) for a in d["avatars"] if a["next"]["kind"] == "ad_brief"]
-    creative += [item(r["action"]["title"], "ad_brief", r["action"]["draft"]) for r in lad if r["verdict"] == "lead" and r["action"]]
-    creative += [item(r["brief"]["title"], "test_brief", r["brief"]["draft"]) for r in d["formats"].get("rows", []) if r.get("brief")]
+    creative = [item(a["next"]["title"], "ad_brief", a["next"]["draft"], a["next"]) for a in d["avatars"] if a["next"]["kind"] == "ad_brief"]
+    creative += [item(r["action"]["title"], "ad_brief", r["action"]["draft"], r["action"]) for r in lad if r["verdict"] == "lead" and r["action"]]
+    creative += [item(r["brief"]["title"], "test_brief", r["brief"]["draft"], r["brief"]) for r in d["formats"].get("rows", []) if r.get("brief")]
     if d["hooks"]["rows"]:
         creative.append(item("Hook bank", "ad_brief", "\n".join(f"- \"{h['hook']}\" ({h['reviews']} reviews)" for h in d["hooks"]["rows"])))
-    copy = [item(r["brief"]["title"], "copy", "\n".join(r["brief"]["head"] + [f"- \"{w['text']}\"" for w in r["win_words"] + r["doubt_words"] if not w["language_only"]]))
-            for r in d["words"]["rows"]]
+    copy = [item(r["brief"]["title"], "copy", "\n".join(r["brief"]["head"] + [f"- \"{w['text']}\"" for w in r["win_words"] + r["doubt_words"] if not w["language_only"]]),
+                 r["brief"]) for r in d["words"]["rows"]]
     if d["copy_gap"].get("action"):
-        copy.append(item(d["copy_gap"]["action"]["title"], "copy", d["copy_gap"]["action"]["draft"]))
+        copy.append(item(d["copy_gap"]["action"]["title"], "copy", d["copy_gap"]["action"]["draft"], d["copy_gap"]["action"]))
     copy.append(item("Messaging hierarchy", "brain_record", d["hierarchy"]["record"]["text"]))
-    pages = [item(r["action"]["title"], r["action"]["kind"], r["action"]["draft"]) for r in d["misreads"].get("rows", []) if r["action"]["kind"] == "page_section"]
-    pages += [item(r["action"]["title"], "page_section", r["action"]["draft"]) for r in lad if r["verdict"] == "not_landing" and r["action"]]
-    pages += [item(m["title"], "page_section", m["draft"]) for m in d["timing"]["moves"]]
-    pages += [item(l["action"]["title"], "copy", l["action"]["draft"]) for l in d["misreads"].get("lines", []) if l.get("action")]
-    pages += [item(r["action"]["title"], "copy", r["action"]["draft"]) for r in d["claims_fire"]["rows"] if r["action"]]
-    email = [item(m["title"], m["artefact"]["kind"], m["artefact"]["draft"]) for m in d["cohorts"].get("moves", [])]
-    email += [item(m["title"], m["artefact"]["kind"], m["artefact"]["draft"]) for m in d["mix"].get("moves", []) if m["artefact"]["kind"] in ("flow", "email")]
-    email += [item(m["action"]["title"], "email", m["action"]["draft"]) for m in d["moments"].get("rows", [])]
-    email.append(item(d["survey"]["action"]["title"], "research_note", d["survey"]["action"]["draft"]))
-    cx = [item(m["action"]["title"], "copy", m["draft"]) for m in (d.get("macros") or {}).get("rows", [])]
-    return [{"screen": "09-creative", "label": "Creative", "items": creative},
-            {"screen": "10-copy", "label": "Copy", "items": copy},
-            {"screen": "07-landing-pages-cro", "label": "Landing pages", "items": pages},
-            {"screen": "14-email-messaging", "label": "Email and messaging", "items": email}] + \
-           ([{"screen": "15-customers-cx", "label": "Support", "items": cx}] if cx else [])
+    pages = [item(r["action"]["title"], r["action"]["kind"], r["action"]["draft"], r["action"]) for r in d["misreads"].get("rows", []) if r["action"]["kind"] == "page_section"]
+    pages += [item(r["action"]["title"], "page_section", r["action"]["draft"], r["action"]) for r in lad if r["verdict"] == "not_landing" and r["action"]]
+    pages += [item(m["title"], "page_section", m["draft"], m) for m in d["timing"]["moves"]]
+    pages += [item(l["action"]["title"], "copy", l["action"]["draft"], l["action"]) for l in d["misreads"].get("lines", []) if l.get("action")]
+    pages += [item(r["action"]["title"], "copy", r["action"]["draft"], r["action"]) for r in d["claims_fire"]["rows"] if r["action"]]
+    email = [item(m["title"], m["artefact"]["kind"], m["artefact"]["draft"], m) for m in d["cohorts"].get("moves", [])]
+    email += [item(m["title"], m["artefact"]["kind"], m["artefact"]["draft"], m) for m in d["mix"].get("moves", []) if m["artefact"]["kind"] in ("flow", "email")]
+    email += [item(m["action"]["title"], "email", m["action"]["draft"],
+                   dict(m["action"], why=m["action"].get("why") or f"{m['label']} starts {m['starts']}. Ads live by {m['ad_by']}, emails by {m['email_by']}.")) for m in d["moments"].get("rows", [])]
+    email.append(item(d["survey"]["action"]["title"], "research_note", d["survey"]["action"]["draft"], dict(d["survey"]["action"], why=d["survey"].get("line"))))
+    cx = [item(m["action"]["title"], "copy", m["draft"], m["action"]) for m in (d.get("macros") or {}).get("rows", [])]
+    return [{"screen": "09-creative", "label": "Creative", "to": "creative", "items": creative},
+            {"screen": "10-copy", "label": "Copy", "to": "copy", "items": copy},
+            {"screen": "07-landing-pages-cro", "label": "Landing pages", "to": "landing pages", "items": pages},
+            {"screen": "14-email-messaging", "label": "Email and messaging", "to": "email", "items": email}] + \
+           ([{"screen": "15-customers-cx", "label": "Support", "to": "cx", "items": cx}] if cx else [])
+
+
+HANDOFF_KINDS = ("ad_brief", "creative", "copy", "page_section", "landing_page", "offer", "price_change", "email", "flow", "test_brief",
+                 "listing_fix", "feed_fix", "budget_move", "bid_change", "connector_setup", "brain_record", "policy", "research_note", "ticket", "report")
+
+
+def handoff_rows(pack: dict) -> list[dict]:
+    """The pack as rows for the shared hand-offs table (events.md): one per item, status proposed. The page posts them
+    when the founder sends the pack; this screen never edits a row once posted."""
+    out = []
+    for i in pack["items"]:
+        row = {"from_screen": SCREEN, "to": pack["to"], "kind": i["kind"] if i["kind"] in HANDOFF_KINDS else "report",
+               "title": i["title"][:200], "why": (i.get("why") or (f"Size: {i['size']}." if i.get("size") else ""))[:600] or None,
+               "draft": (i.get("draft") or "")[:20000],
+               "win_rule": None, "stop_rule": i.get("stop_rule"), "check_on": (i.get("check_on") or "")[:10] or None,
+               "capability": i.get("capability"), "owner": i.get("owner") if i.get("owner") in ("agent", "agent_drafts", "person") else None,
+               "finding_id": i.get("move_id")}
+        out.append({k: v for k, v in row.items() if v is not None})
+    return out
 
 
 # ---------------------------------------------------------------- ad naming convention

@@ -512,7 +512,10 @@ def handle(req):
         return {"findings": findings, "rules": audit.RULES, "brain_version": brain.version()}
     if req.method == "GET" and parts == ["handoff"]:
         d = overview(brain)
-        return {"brand": brain.brand, "brain_version": d["version"], "simulated": True, "packs": builds.handoff(d),
+        packs = builds.handoff(d)
+        for p in packs:
+            p["rows"] = builds.handoff_rows(p)
+        return {"brand": brain.brand, "brain_version": d["version"], "simulated": True, "packs": packs,
                 "note": "Reading screens pick these up from here or from the brain records they come from. Nothing is sent anywhere."}
     if req.method == "GET" and parts == ["report"]:
         d = overview(brain)

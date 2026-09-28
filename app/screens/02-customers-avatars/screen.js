@@ -1046,6 +1046,7 @@
   // ---------- hand-off packs ----------
   async function renderHandoff() {
     let h;
+    await loadSent();
     try { h = await api(BASE + 'handoff'); } catch (e) { mount('#handoff', el('p', { class: 'muted', text: 'Hand-offs unavailable: ' + e.message })); return; }
     document.getElementById('handoff-sub').textContent = 'Ready artefacts for the screens that read avatars, the language bank and the objection map (events.md). ' + h.note;
     mount('#handoff', ...h.packs.map((p) => {
@@ -1054,8 +1055,43 @@
         el('div', { class: 'row between' }, el('b', { text: p.label }), el('span', { class: 'chip mono', text: p.screen })),
         el('div', { class: 'small', text: p.items.length + ' ready: ' + Object.entries(p.items.reduce((o, i) => { o[i.kind] = (o[i.kind] || 0) + 1; return o; }, {})).map(([k, n]) => n + ' ' + pretty(k)).join(', ') }),
         el('ul', { class: 'small' }, ...p.items.slice(0, 4).map((i) => el('li', { text: i.title }))),
-        el('div', { class: 'row' }, UI.copyButton({ label: 'Copy the pack', text }), el('a', { class: 'btn quiet sm', href: '/screens/' + p.screen + '/', target: '_blank', rel: 'noopener', text: 'Open ' + p.label })));
+        el('div', { class: 'row' }, sendButton(p), UI.copyButton({ label: 'Copy the pack', text }), el('a', { class: 'btn quiet sm', href: '/screens/' + p.screen + '/', target: '_blank', rel: 'noopener', text: 'Open ' + p.label })),
+        el('div', { class: 'small muted sent', dataset: { to: p.to }, text: sentLine(p, sent) }));
     }));
+  }
+
+  // ---------- the shared hand-offs table (events.md): send a pack, see what each team already has ----------
+  let sent = [];
+  async function loadSent() {
+    try { const r = await UI.api('/api/handoffs?from_screen=' + SLUG); sent = r.handoffs || []; } catch (e) { sent = null; }
+    return sent;
+  }
+  function sentLine(p, rows) {
+    if (rows === null) return 'The hand-offs table cannot be read right now.';
+    const mine = rows.filter((r) => r.to === p.to);
+    if (!mine.length) return 'Nothing sent to ' + p.to + ' yet.';
+    const by = {}; for (const r of mine) by[r.status] = (by[r.status] || 0) + 1;
+    const last = mine.map((r) => r.time).sort().slice(-1)[0];
+    return mine.length + ' on the ' + p.to + ' list: ' + Object.entries(by).map(([k, n]) => n + ' ' + k).join(', ') + '. Last sent ' + fmt.date(last) + '.';
+  }
+  function sendButton(p) {
+    // hand-off rows carry no brand yet (contract ask), so only the default brand sends; another brand copies instead
+    if (BRAND) return el('span', { class: 'small muted', text: 'Sending waits on a brand field in the hand-offs table. Copy the pack instead.' });
+    const b = el('button', { class: 'btn soft sm', type: 'button', text: 'Send ' + p.rows.length + ' to ' + p.to });
+    b.addEventListener('click', async () => {
+      b.disabled = true;
+      const have = new Set((sent || []).filter((r) => r.to === p.to && r.status !== 'dropped').map((r) => r.title));
+      const todo = p.rows.filter((r) => !have.has(r.title));
+      let ok = 0;
+      for (const row of todo) {
+        try { await UI.api('/api/handoffs', { method: 'POST', body: row }); ok += 1; } catch (e) { break; }
+      }
+      await loadSent();
+      document.querySelectorAll('#handoff .sent').forEach((n) => { const pk = { to: n.dataset.to }; n.textContent = sentLine(pk, sent); });
+      b.textContent = 'Sent ' + ok + (todo.length - ok ? ', ' + (todo.length - ok) + ' failed' : '') + (p.rows.length - todo.length ? ', ' + (p.rows.length - todo.length) + ' already there' : '');
+      b.disabled = false;
+    });
+    return b;
   }
 
   // ---------- the desk, grouped into tabs by job ----------

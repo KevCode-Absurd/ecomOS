@@ -177,6 +177,17 @@ Lead's review: rounds 1 to 4 passed. Focus: returns and tickets by avatar, depth
 | 10.9 | Charts: each of the 5 charts sits beside the moves it drives, so none goes; each now names the decision it changes in its note (the cohort grid: the day of the second-order email, the day win-back starts and the month to plan for; brand health: whether a line needs a move; the returning-share line: whether win-back is due; the channel waterfall: which channel to fix first; the served map: which avatar to fix first and which to park). Tested: every chart has its line | done |
 | 10.10 | Round 10 close: 32 rules, 67 actions, every depth.md rule and anti-pattern tied to a test, about 210 tests on this screen, the browser test for 2 brands at desktop and phone width. No row in this file is left as todo (tested). Screenshot `round10.png` (the price block with its rule line from the api and its gap). The 10 rounds are done; the report to the lead is this session's final message, since no tool here can message the lead session | done |
 
+## Round 11: hand-offs on the shared table, depth again, the open questions (from 28 Sep 2026)
+
+| # | Feature | Status |
+|---|---|---|
+| 11.1 | Hand-offs on the shared table (events.md): each pack (creative, copy, landing pages, email, cx) is also a list of rows in the table's shape, each carrying its move's why, stop rule, check date, owner, capability and id. "Send N to <team>" posts the rows that team does not already have from this screen, then shows how many sit on its list by status. Sending twice adds nothing twice. Another brand copies instead of sending until the table carries a brand (contract ask). Browser-tested against a server whose logs sit in a temp folder, so the real list is never touched | done |
+| 11.2 | Decisions by brand: read and show only this brand's decisions now that decisions carry a brand | todo |
+| 11.3 | Depth second pass: every desk block ends in a gap line and an action; every sized move has a stop rule; nothing reads zero when unavailable, walked block by block | todo |
+| 11.4 | Drift over time, as far as the brain allows: dated records in the brain compared across capture dates | todo |
+| 11.5 | Mystery shopper and pretests, as far as the brain allows: a drafted run plan and pretest briefs from the doubts, sent as hand-offs | todo |
+| 11.6 to 11.10 | Picked after 11.5 from what the pass finds | todo |
+
 ### Round 10 founder note (28 Sep 2026)
 
 1. The 10 rounds are done. This screen tells you who buys, what stops them, and what to build next, and every move says who does it.
@@ -271,6 +282,7 @@ Lead's review: rounds 1 to 4 passed. Focus: returns and tickets by avatar, depth
 
 Each ask has a local fallback, so the screen works today. `HANDOFF.md` says what to change when each lands.
 
+- A `brand` field on hand-off rows (as decisions now have). 11.1 sends only for the default brand until then; another brand copies the pack.
 - A `survey_answers` table in the data layer (the post-purchase survey tool, read-only): per question, answer counts by option and the window. 9.4 reads it by that name, falls back to `fixtures/survey_answers/<brand>.json`, and shows unavailable until either exists.
 - A `last_year` value for `baseline_kind` in `audit.md` (same period a year earlier). 8.2 uses it for the January cliff and writes `threshold` until the contract has it.
 - Pack prices in the brain offers (price per pack size and line), so 5.9 can show the per-pair price at each pack. Fallback: unavailable, with the free shipping facts.

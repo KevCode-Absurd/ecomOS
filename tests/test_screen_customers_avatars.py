@@ -2565,3 +2565,91 @@ class NothingLeftOpen(unittest.TestCase):
         self.assertEqual([l for l in t.splitlines() if l.rstrip().endswith('| todo |') or l.rstrip().endswith('| doing |')], [])
         for n in range(1, 11):
             self.assertIn(f'### Round {n} founder note', t)
+
+
+SEND_JS = r"""
+const { chromium } = require(process.env.PW_MODULE);
+(async () => {
+  const b = await chromium.launch({ executablePath: process.env.PW_CHROME || undefined, args: ['--no-sandbox'] });
+  const p = await b.newPage({ viewport: { width: 1280, height: 900 } });
+  const errs = [];
+  p.on('pageerror', (e) => errs.push(e.message));
+  await p.goto(process.env.BASE + '/screens/02-customers-avatars/', { waitUntil: 'networkidle' });
+  await p.waitForSelector('#handoff .pack button', { timeout: 20000 });
+  const btn = await p.locator('#handoff .pack button', { hasText: 'Send ' }).first().elementHandle();
+  const label = await btn.innerText();
+  await btn.click();
+  await p.waitForFunction(() => /^Sent /.test(document.querySelector('#handoff .pack button').innerText), null, { timeout: 30000 });
+  const after = await btn.innerText();
+  await btn.click();
+  await p.waitForFunction(() => /already there/.test(document.querySelector('#handoff .pack button').innerText), null, { timeout: 30000 });
+  const again = await btn.innerText();
+  const line = await p.$eval('#handoff .pack .sent', (n) => n.innerText);
+  console.log(JSON.stringify({ label, after, again, line, errs }));
+  await b.close();
+})().catch((e) => { console.log(JSON.stringify({ fatal: String(e) })); process.exit(1); });
+"""
+
+
+class SendToTeams(unittest.TestCase):
+    """Feature 11.1: hand-off packs go onto the shared hand-offs table (events.md). The rows carry the move's why,
+    stop rule, check date, owner, capability and id; sending twice adds nothing twice. The browser test runs a server
+    whose logs sit in a temp folder, so the real list is never touched."""
+
+    def test_rows_shape(self):
+        h = api.handle(Req(['handoff']))
+        for p in h['packs']:
+            self.assertTrue(p['rows'])
+            for r in p['rows']:
+                self.assertEqual(r['from_screen'], '02-customers-avatars')
+                self.assertEqual(r['to'], p['to'])
+                self.assertIn(r['kind'], api.builds.HANDOFF_KINDS)
+                self.assertTrue(r['title'] and len(r['title']) <= 200)
+                self.assertLessEqual(len(r.get('draft', '')), 20000)
+                self.assertNotIn('status', r)
+        creative = next(p for p in h['packs'] if p['to'] == 'creative')
+        self.assertGreater(sum(1 for r in creative['rows'] if r.get('stop_rule') and r.get('check_on') and r.get('finding_id')), 10)
+
+    def test_send_in_the_browser_writes_once(self):
+        import os
+        import socket
+        import subprocess
+        import time
+        node = shutil.which('node')
+        mods = [p for p in (os.environ.get('PW_MODULE'), '/opt/node22/lib/node_modules/playwright') if p and Path(p).exists()]
+        if not node or not mods:
+            self.skipTest('no Node or Playwright here')
+        tmp = Path(tempfile.mkdtemp())
+        with socket.socket() as s_:
+            s_.bind(('127.0.0.1', 0))
+            port = s_.getsockname()[1]
+        boot = ("import sys; from pathlib import Path; sys.path.insert(0, 'app'); import server; "
+                f"server.Decisions.__init__.__defaults__ = (Path({str(tmp)!r}) / 'decisions.json',); server.main(['--port', '{port}'])")
+        srv = subprocess.Popen([sys.executable, '-c', boot], cwd=str(ROOT), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        try:
+            for _ in range(50):
+                try:
+                    socket.create_connection(('127.0.0.1', port), timeout=0.2).close()
+                    break
+                except OSError:
+                    time.sleep(0.2)
+            env = dict(os.environ, PW_MODULE=mods[0], BASE=f'http://127.0.0.1:{port}',
+                       PW_CHROME='/opt/pw-browsers/chromium' if Path('/opt/pw-browsers/chromium').exists() else '')
+            r = subprocess.run([node, '-e', SEND_JS], env=env, capture_output=True, text=True, timeout=180)
+            out = json.loads((r.stdout.strip().splitlines() or ['{}'])[-1])
+            rows = json.loads((tmp / 'handoffs.json').read_text(encoding='utf-8'))
+        finally:
+            srv.terminate()
+            srv.wait(timeout=10)
+            shutil.rmtree(tmp, ignore_errors=True)
+        self.assertNotIn('fatal', out, out)
+        self.assertEqual(out['errs'], [])
+        n = int(re.search(r'Send (\d+) to', out['label']).group(1))
+        rows = rows if isinstance(rows, list) else rows.get('rows', [])
+        self.assertEqual(len(rows), n)
+        self.assertTrue(all(x['from_screen'] == '02-customers-avatars' and x['status'] == 'proposed' for x in rows))
+        self.assertIn(f'{n} on the creative list', out['line'])
+        self.assertEqual(out['again'], f'Sent 0, {n} already there')
+        self.assertFalse((ROOT / 'app' / 'data' / 'handoffs.json').exists() and
+                         any(x.get('from_screen') == '02-customers-avatars'
+                             for x in json.loads((ROOT / 'app' / 'data' / 'handoffs.json').read_text(encoding='utf-8'))))
