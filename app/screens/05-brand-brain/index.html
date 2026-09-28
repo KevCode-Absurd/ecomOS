@@ -10,18 +10,45 @@
 <body data-screen="05-brand-brain">
 <div class="screen">
   <div class="sample-badge" role="note" id="badge">Loading the brain.</div>
-  <div class="screen-head"><h1>Brand brain</h1><p>What ecomOS knows about the brand, how fresh it is, and what it still needs from you.</p></div>
-  <section class="section"><h3>Brand card (T0)</h3><pre class="card t0" id="t0"></pre></section>
-  <section class="section"><h3>At a glance</h3><div class="grid tiles" id="tiles"></div></section>
-  <section class="section"><h3>Insights</h3><div class="grid" id="insights"></div></section>
-  <section class="section"><h3>Records added per day</h3><div class="card" id="chart"></div></section>
-  <section class="section"><h3>Sections</h3><p class="muted small">Click a section to browse its records.</p><div id="sections"></div></section>
+  <div class="screen-head"><h1>Brand brain</h1><p>Who the brand is, in one profile every screen reads. The master list of what to build and do next, ranked across all 28 screens, for you to approve.</p></div>
+
+  <!-- 1. The plan: the orchestrator's master list -->
+  <section class="section" id="plan-wrap"><div id="plan"></div></section>
+  <section class="section" id="connect-wrap" hidden><div id="connect"></div></section>
+  <section class="section" id="bottlenecks-wrap">
+    <div class="sec-head"><h2>Bottlenecks, ranked across screens</h2><span class="sub">One row per screen. Score is the sum of rubric totals of its open actions. The top action is what unlocks the most.</span></div>
+    <div id="bottlenecks"></div>
+  </section>
+
+  <!-- 2. The profile, editable -->
+  <section class="section" id="profile-wrap">
+    <div class="sec-head"><h2>Brand profile</h2><div class="tools" id="profile-tools"></div><span class="sub">The winning record per field. Edit any field and it becomes an approved founder record that wins the merge and flows to every screen on its next load.</span></div>
+    <div id="profile" class="card tight"></div>
+  </section>
+
+  <!-- 3. Files in -->
+  <section class="section" id="files-wrap">
+    <div class="sec-head"><h2>Files in</h2><span class="sub">Drop any file or paste a url. It lands in the documents manifest as it is. Records it changes come through the review queue.</span></div>
+    <div class="grid side"><div id="drop"></div><div id="documents"></div></div>
+  </section>
+
+  <!-- 4. What is wrong in the brain, ranked -->
+  <section class="section">
+    <div class="sec-head"><h2>What is wrong in the brain</h2><span class="sub">Rules that fired today. Each ends in an action with an owner.</span></div>
+    <div class="grid" id="insights"></div>
+  </section>
+
+  <!-- 5. The desk -->
+  <section class="section"><h3>Sections: freshness and confidence</h3><p class="muted small">Click a section to browse its records.</p><div id="sections"></div></section>
   <section class="section" id="browser-wrap" hidden><h3 id="browser-title">Records</h3><div id="browser" class="grid"></div></section>
-  <section class="section"><h3>Objection ladders</h3><div id="ladders" class="grid"></div></section>
+  <section class="section"><h3>Objection ladders</h3><div id="ladders" class="grid two"></div></section>
   <section class="section"><h3>Open questions</h3><div id="questions" class="grid"></div></section>
   <section class="section"><h3>Review queue</h3><div id="review" class="grid"></div></section>
   <section class="section"><h3>Conflicts</h3><div id="conflicts" class="grid"></div></section>
+
+  <!-- 6. The audit -->
   <section class="section"><h3>Audit findings</h3><div id="audit"></div></section>
+  <section class="section"><h3>T0 card</h3><div class="row" id="t0-tools"></div><pre class="card t0" id="t0" hidden></pre></section>
 </div>
 <script src="/web/ui-kit.js"></script>
 <script src="/web/charts.js"></script>

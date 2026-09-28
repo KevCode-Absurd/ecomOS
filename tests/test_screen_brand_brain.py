@@ -179,3 +179,99 @@ class Api(TempBrain):
 
 if __name__ == '__main__':
     unittest.main()
+
+
+class Round1TopSection(TempBrain):
+    """Round 1 (depth contract): the master list, the editable profile and files in."""
+
+    def test_master_list(self):
+        d = api.handle(Req(['master']))
+        self.assertEqual(d['brand'], 'bombas')
+        self.assertLessEqual(len(d['top']), 10)
+        self.assertTrue(d['top'])
+        for a in d['top']:
+            self.assertIn(a['owner'], ('agent', 'agent_drafts', 'person'))
+            self.assertTrue(a['steps'] and a['artefact']['kind'])
+            self.assertIn('total', a['rubric'])
+            self.assertNotEqual(a['status'], 'unavailable')
+        self.assertTrue(all(a['status'] == 'unavailable' for a in d['connect']))
+        self.assertEqual(d['counts']['screens'], len([s for s in d['screens']]))
+        self.assertTrue(d['bottlenecks'][0]['screen'])
+        self.assertEqual(d['brain_version'], api.Brain('bombas', self.tmp, dt.date.fromisoformat(DAY)).version())
+
+    def test_profile_winning_record_per_field(self):
+        p = api.handle(Req(['profile']))
+        secs = {s['section']: s for s in p['sections']}
+        self.assertEqual([s['section'] for s in p['sections']], [s for s, _, _ in api.PROFILE_SECTIONS])
+        pos = {f['key']: f for f in secs['positioning']['fields']}
+        # 6 frame records exist; the profile shows one, the best tier, and says how many it stands for
+        self.assertEqual(sum(1 for f in secs['positioning']['fields'] if f['key'] == 'frame'), 1)
+        self.assertGreater(pos['frame']['variants'], 1)
+        ident = {f['key']: f for f in secs['identity']['fields']}
+        self.assertEqual(ident['giving_model']['tier'], 'approved')   # founder record wins over site
+        self.assertEqual(ident['category']['tier'], 'site_backed')
+        self.assertTrue(secs['identity']['flows_to'])
+        self.assertIsInstance(p['approved_share'], float)
+        # a field the list names but the brain lacks shows as unavailable, editable
+        first = [f for f in secs['positioning']['fields'] if f['text'] is None]
+        self.assertTrue(all(f['editable'] for f in first))
+
+    def test_profile_edit_writes_approved_record_that_wins(self):
+        status, res = api.handle(Req(['profile', 'positioning', 'price_frame'], method='POST', body={'text': 'Premium basics, priced per wear not per pair.'}))
+        self.assertEqual(status, 201)
+        self.assertEqual(res['record'], 'bombas.positioning.price_frame')
+        self.assertIn('offers', res['flows_to'])
+        rows = self.section('positioning')
+        rec = next(r for r in rows if r['id'] == 'bombas.positioning.price_frame')
+        self.assertEqual(rec['tier'], 'approved')
+        self.assertEqual(rec['source']['type'], 'founder')
+        self.assertEqual(rec['confidence'], 1.0)
+        self.assertTrue(rec.get('history'))   # the inferred value moved into history
+        p = api.handle(Req(['profile']))
+        pos = {f['key']: f for f in next(s for s in p['sections'] if s['section'] == 'positioning')['fields']}
+        self.assertEqual(pos['price_frame']['tier'], 'approved')
+        self.assertEqual(pos['price_frame']['text'], 'Premium basics, priced per wear not per pair.')
+        # records read through the store see the founder value; the inferred one is retired into history, not deleted
+        recs = api.handle(Req(['records'], query={'section': ['positioning']}))['records']
+        self.assertEqual(next(r for r in recs if r['field'] == 'price_frame')['tier'], 'approved')
+
+    def test_profile_edit_rejects_empty_and_unknown(self):
+        self.assertEqual(api.handle(Req(['profile', 'positioning', 'frame'], method='POST', body={'text': '  '}))[0], 400)
+        self.assertEqual(api.handle(Req(['profile', 'nope', 'frame'], method='POST', body={'text': 'x'}))[0], 404)
+        self.assertEqual(api.handle(Req(['profile', 'positioning', '../x'], method='POST', body={'text': 'x'}))[0], 404)
+
+    def test_documents_in(self):
+        self.assertEqual(api.handle(Req(['documents']))['count'], 0)
+        status, res = api.handle(Req(['documents'], method='POST', body={'name': 'brand book v3.md', 'text': '# Voice\nShort. Warm. Digits.', 'note': 'from the agency'}))
+        self.assertEqual(status, 201)
+        self.assertEqual(res['document']['name'], DAY + '-brand book v3.md')
+        self.assertEqual(res['records_changed_count'], 0)
+        status, res2 = api.handle(Req(['documents'], method='POST', body={'url': 'https://example.com/deck'}))
+        self.assertEqual(status, 201)
+        self.assertEqual(res2['document']['tags'], ['url'])
+        d = api.handle(Req(['documents']))
+        self.assertEqual(d['count'], 2)
+        self.assertEqual({x['added_by'] for x in d['documents']}, {'founder'})
+        self.assertTrue((self.tmp / 'bombas' / 'documents' / res['document']['name']).is_file())
+        manifest = json.loads((self.tmp / 'bombas' / 'documents' / 'manifest.json').read_text())
+        self.assertEqual(len(manifest), 2)
+        self.assertTrue(all(m['file'].startswith('documents/') and not m['extracted'] for m in manifest))
+        # a second file with the same name gets its own name, nothing is overwritten
+        status, res3 = api.handle(Req(['documents'], method='POST', body={'name': 'brand book v3.md', 'text': 'v2'}))
+        self.assertEqual(status, 201)
+        self.assertNotEqual(res3['document']['name'], res['document']['name'])
+
+    def test_documents_reject_bad_input(self):
+        self.assertEqual(api.handle(Req(['documents'], method='POST', body={'name': '../x.md', 'text': 'x'}))[0], 400)
+        self.assertEqual(api.handle(Req(['documents'], method='POST', body={'name': 'x.md'}))[0], 400)
+        self.assertEqual(api.handle(Req(['documents'], method='POST', body={'url': 'ftp://x'}))[0], 400)
+        self.assertEqual(api.handle(Req(['documents'], method='POST', body={'name': 'x.bin', 'content_base64': '***'}))[0], 400)
+
+    def test_page_has_the_plan_first(self):
+        html = (SCREEN / 'index.html').read_text(encoding='utf-8')
+        self.assertLess(html.index('id="plan"'), html.index('id="profile"'))
+        self.assertLess(html.index('id="profile"'), html.index('id="drop"'))
+        self.assertLess(html.index('id="drop"'), html.index('id="audit"'))
+        self.assertNotIn('id="tiles"', html)
+        self.assertNotIn('id="chart"', html)
+        self.assertNotIn('—', html)

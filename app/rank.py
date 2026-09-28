@@ -220,8 +220,8 @@ def _title(f: dict, cap_name: str) -> str:
     if len(label) > 60:
         label = label[:57].rstrip() + "..."
     if label and ent.get("type") not in ("brand", None) and label.lower() not in name.lower():
-        return f"{name}: {label}"
-    return name
+        name = f"{name}: {label}"
+    return name if len(name) <= 96 else name[:93].rstrip() + "..."
 
 
 def _steps(f: dict, owner: str, kind: str) -> list[dict]:

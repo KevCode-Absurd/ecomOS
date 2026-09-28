@@ -6,6 +6,15 @@ question, and accept or ignore on a proposed record. Nothing external.
 
   GET  overview                 T0 card, section table, tiles, insights, chart, ladders,
                                 open questions, review queue, conflicts
+  GET  master?window=28d        the orchestrator's master list: every screen's rank merged
+                                (app/rank.py): top 10 to approve, connect strip, bottlenecks
+  GET  profile                  the editable brand profile: one winning record per field in
+                                identity, positioning, voice, visual, products, offers,
+                                policies, claims, with tier, source, date and where it flows
+  POST profile/<section>/<field> {text}: writes an approved founder record that wins the merge
+  GET  documents                the documents manifest with what each file changed
+  POST documents                {name, text | content_base64 | url, note}: stores the file
+                                under documents/ and adds a manifest line; never blocked
   GET  records?section=<name>   one section's records with tier, date, source and evidence
   GET  audit                    findings from audit.py (app/contracts/audit.md shape)
   POST questions/<field>        {answer}: writes a founder record, marks the question answered
@@ -16,6 +25,7 @@ work on every route. Set BRAIN_ROOT to point at a copy of app/brain (tests do).
 """
 from __future__ import annotations
 
+import base64
 import datetime as dt
 import importlib.util
 import json
@@ -43,6 +53,28 @@ META_SECTIONS = {"freshness", "open_questions", "changes"}
 _spec = importlib.util.spec_from_file_location("brand_brain_audit", HERE / "audit.py")
 audit = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(audit)
+_rspec = importlib.util.spec_from_file_location("ecomos_rank_bb", APP / "rank.py")
+rank_mod = importlib.util.module_from_spec(_rspec)
+_rspec.loader.exec_module(rank_mod)
+
+# the editable profile: sections in reading order, the fields a founder edits first, and where each section flows
+PROFILE_SECTIONS = [
+    ("identity", "Identity", ["category", "one_line_pitch", "giving_model", "founded", "headquarters", "certification_bcorp"]),
+    ("positioning", "Positioning", ["frame", "category_frame", "price_frame", "competitive_frame", "proof_points"]),
+    ("voice", "Voice", []),
+    ("visual", "Visual", []),
+    ("products", "Products", ["lines", "price_ladder_socks", "pack_sizes", "materials"]),
+    ("offers", "Offers", ["free_shipping_threshold_usd", "standard_shipping_cost", "guarantee", "first_order_code", "bundles_pack_ladder"]),
+    ("policies", "Policies", ["returns_window_days", "refund_method", "happiness_guarantee", "exchanges", "shipping_options"]),
+    ("claims", "Claims", []),
+]
+FLOWS_TO = {"identity": "every screen", "positioning": "market research, customers, competitors, offers, creative, copy, landing pages, SEO, answer engines",
+            "voice": "copy, creative, email, organic, CX", "visual": "creative, landing pages, organic",
+            "products": "offers, creative, copy, Google Ads, marketplaces, supply, SEO", "offers": "paid social, Google Ads, email, landing pages, finance",
+            "policies": "CX, store health, landing pages, security", "claims": "copy, creative, landing pages, answer engines, marketplaces"}
+TIER_RANK = {"approved": 0, "site_backed": 1, "reported": 2, "evidence": 3, "inferred": 4, "unverified": 5, "forbidden": 6}
+DOC_MAX_BYTES = 5 * 1024 * 1024
+SAFE_FILE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9 ._()-]{0,120}$")
 
 
 def _brain(req) -> Brain:
@@ -241,6 +273,126 @@ def review(brain: Brain, rid: str, body: dict):
     return {"ok": True, "id": rid, "status": "active"}
 
 
+def _window(req, brain: Brain) -> dict:
+    w = req.arg("window", "28d") or "28d"
+    days = int(w[:-1]) if re.fullmatch(r"\d+d", w) else 28
+    return {"ends_on": (brain.today - dt.timedelta(days=1)).isoformat(), "days": days, "trailing": 4}
+
+
+def master(brain: Brain, window: dict) -> dict:
+    root = (BRAIN_ROOT or (APP / "brain"))
+    out = rank_mod.master(brain.brand, window)
+    out["brain_version"] = brain.version()
+    out["brain_root"] = str(root.name)
+    return out
+
+
+def profile(brain: Brain) -> dict:
+    """One winning record per field: the best tier, then the newest. Founder edits are tier approved and win."""
+    sections = []
+    for sec, label, first in PROFILE_SECTIONS:
+        by_field: dict[str, dict] = {}
+        for r in brain.records(sec):
+            f = r.get("field") or "value"
+            key = (TIER_RANK.get(r["tier"], 9), "" if r["date"] == "undated" else "-" + r["date"])
+            cur = by_field.get(f)
+            if cur is None or key < cur[0]:
+                by_field[f] = (key, r)
+        order = list(first) + sorted(k for k in by_field if k not in first)
+        fields = []
+        for f in order:
+            if f not in by_field:
+                fields.append({"key": f, "text": None, "tier": None, "source": None, "date": None, "confidence": None, "record_id": None, "editable": True})
+                continue
+            r = by_field[f][1]
+            src = _source(r)
+            fields.append({"key": f, "text": r.get("text") or (r["value"] if isinstance(r.get("value"), str) else json.dumps(r.get("value"))[:300]),
+                           "tier": r["tier"], "source": (src["type"] + (": " + re.sub(r"^https?://", "", src["ref"])[:60] if src["ref"] else "")),
+                           "date": None if r["date"] == "undated" else r["date"], "confidence": r["confidence"], "record_id": r["id"],
+                           "variants": sum(1 for x in brain.records(sec) if (x.get("field") or "value") == f), "editable": True})
+        approved = sum(1 for x in fields if x["tier"] == "approved")
+        sections.append({"section": sec, "label": label, "flows_to": FLOWS_TO.get(sec, ""), "fields": fields,
+                         "records": len(brain.records(sec)), "approved": approved})
+    total = sum(len(x["fields"]) for x in sections)
+    appr = sum(x["approved"] for x in sections)
+    return {"brand": brain.brand, "today": brain.today.isoformat(), "version": brain.version(), "sections": sections,
+            "fields": total, "approved": appr, "approved_share": (appr / total) if total else None}
+
+
+def profile_edit(brain: Brain, section: str, field: str, body: dict):
+    text = str((body or {}).get("text") or "").strip()
+    if not text:
+        return 400, {"error": "text is empty"}
+    if section not in {s for s, _, _ in PROFILE_SECTIONS} or not re.fullmatch(r"[a-z0-9_]{1,60}", field):
+        return 404, {"error": "no such profile field", "section": section, "field": field}
+    rid = f"{brain.brand}.{section}.{field}"
+    rec = {"id": rid, "brand": brain.brand, "section": section, "field": field, "value": _coerce(text), "text": text,
+           "tier": "approved", "confidence": 1.0, "visibility": "private",
+           "source": {"type": "founder", "ref": "05-brand-brain profile edit", "captured_at": brain.today.isoformat()}}
+    errs = brain.put(rec)
+    if errs:
+        return 400, {"error": "record not valid", "details": errs}
+    return 201, {"ok": True, "record": rid, "tier": "approved", "flows_to": FLOWS_TO.get(section, ""), "version": brain.version()}
+
+
+def documents(brain: Brain) -> dict:
+    docs = brain.documents()
+    recs = brain.records(include_retired=True)
+    out = []
+    for d in docs:
+        name = Path(d.get("file", "")).name
+        changed = [r["id"] for r in recs if name and name in str((r.get("source") or {}).get("ref") or "")]
+        out.append(dict(d, name=name, records_changed=changed[:20], records_changed_count=len(changed)))
+    out.sort(key=lambda d: d.get("added_at", ""), reverse=True)
+    return {"documents": out, "count": len(out)}
+
+
+def document_add(brain: Brain, body: dict):
+    body = body or {}
+    url = str(body.get("url") or "").strip()
+    name = str(body.get("name") or "").strip()
+    note = str(body.get("note") or "").strip()[:300]
+    if url:
+        if not re.match(r"^https?://[^\s]{4,500}$", url):
+            return 400, {"error": "url must start with http or https"}
+        name = name or re.sub(r"[^A-Za-z0-9._-]+", "-", re.sub(r"^https?://", "", url))[:80].strip("-") + ".url"
+        data = ("[InternetShortcut]\nURL=" + url + "\n").encode("utf-8")
+    else:
+        if not SAFE_FILE.match(name) or ".." in name:
+            return 400, {"error": "name must be a plain file name"}
+        if body.get("content_base64") is not None:
+            try:
+                data = base64.b64decode(str(body["content_base64"]), validate=True)
+            except (ValueError, TypeError):
+                return 400, {"error": "content_base64 is not valid base64"}
+        elif body.get("text") is not None:
+            data = str(body["text"]).encode("utf-8")
+        else:
+            return 400, {"error": "send text, content_base64 or url"}
+    if len(data) > DOC_MAX_BYTES:
+        return 413, {"error": "file is over 5 MB"}
+    ddir = brain.dir / "documents"
+    ddir.mkdir(parents=True, exist_ok=True)
+    stamp = brain.today.isoformat()
+    fname = f"{stamp}-{name}"
+    target = ddir / fname
+    i = 2
+    while target.exists():
+        target = ddir / f"{stamp}-{i}-{name}"
+        i += 1
+    target.write_bytes(data)
+    manifest = brain.documents()
+    line = {"file": f"documents/{target.name}", "added_at": stamp, "added_by": "founder", "extracted": False}
+    if note:
+        line["note"] = note
+    if url:
+        line["tags"] = ["url"]
+    manifest.append(line)
+    (ddir / "manifest.json").write_text(json.dumps(manifest, indent=1), encoding="utf-8")
+    return 201, {"ok": True, "document": dict(line, name=target.name, bytes=len(data)), "records_changed_count": 0,
+                 "next": "Kept as it is. Extraction into records is proposed through the review queue.", "version": brain.version()}
+
+
 def handle(req):
     try:
         brain = _brain(req)
@@ -249,6 +401,16 @@ def handle(req):
     parts = req.path
     if req.method == "GET" and parts == ["overview"]:
         return overview(brain)
+    if req.method == "GET" and parts == ["master"]:
+        return master(brain, _window(req, brain))
+    if req.method == "GET" and parts == ["profile"]:
+        return profile(brain)
+    if req.method == "POST" and len(parts) == 3 and parts[0] == "profile":
+        return profile_edit(brain, parts[1], parts[2], req.body)
+    if req.method == "GET" and parts == ["documents"]:
+        return documents(brain)
+    if req.method == "POST" and parts == ["documents"]:
+        return document_add(brain, req.body)
     if req.method == "GET" and parts == ["records"]:
         sec = req.arg("section", "")
         if sec not in SECTIONS:

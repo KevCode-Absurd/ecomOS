@@ -103,6 +103,7 @@ Status: todo | doing | done | parked. One feature per commit. The first round is
 | Round | Features picked | Date | Notes |
 |---|---|---|---|
 | 0 | skeleton, 0.1 to 0.10 | 2026-09-28 | Bombas brain (public sources); tests in tests/test_screen_brand_brain.py. No decisions, changes or contracts data yet, so those jobs wait for a later round. |
+| 1 (lead sample) | top section to the depth contract: master list (plan board of the top 10 across 28 audits, connect strip, bottlenecks table), editable profile (8 sections, winning record per field, founder edits write approved records), files in (drop or url into the documents manifest); tiles and the records chart removed; screenshot `round1-sample.png` | 2026-09-28 | Built by the lead session as the sample for every manager. Routes: `master`, `profile`, `profile/<section>/<field>`, `documents`. The manager continues round 1 with brief section 5 items 3 and 4 (competitors and market, health) and the rest of the list. |
 
 
 ## Round 1 candidates (ranked 28 Sep 2026 by the lead session)
