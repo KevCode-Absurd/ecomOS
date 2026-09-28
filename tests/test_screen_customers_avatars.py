@@ -1958,3 +1958,14 @@ class SalesInScores(TempBrain):
     def test_no_sales_table_keeps_the_old_score(self):
         f = api.builds.focus([], {'points': []}, {'rows': []}, [], None)
         self.assertEqual(f['rows'], [])
+
+
+class CompareToPage(unittest.TestCase):
+    """Feature 8.4: from the compare view, open either avatar's page or copy where the two differ."""
+
+    def test_compare_links_to_pages(self):
+        js = (ROOT / 'app' / 'screens' / '02-customers-avatars' / 'screen.js').read_text(encoding='utf-8')
+        block = js[js.index('function renderCompare'):js.index('// ---------- desk: focus')]
+        self.assertIn('openAvatarPage(a.value', block)
+        self.assertIn('openAvatarPage(b.value', block)
+        self.assertIn('differences', block)

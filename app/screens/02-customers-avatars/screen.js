@@ -548,8 +548,15 @@
     const show = (v, u) => v == null ? NA : u === '%' ? Math.round(v * 1000) / 10 + ' percent' : u === 'x' ? v + 'x' : String(v);
     const draw = () => {
       const A = c.rows[a.value], B = c.rows[b.value];
-      mount('#compare', UI.table({ columns: [{ key: 'label', label: '' }, { key: 'a', label: A.name }, { key: 'b', label: B.name }],
-        rows: c.fields.map((f) => ({ label: f.label, a: show(A[f.key], f.unit), b: show(B[f.key], f.unit) })), sort: false }));
+      const rows = c.fields.map((f) => ({ label: f.label, a: show(A[f.key], f.unit), b: show(B[f.key], f.unit) }));
+      const diff = rows.filter((r) => r.a !== r.b);
+      const pageA = el('button', { class: 'btn soft sm', type: 'button', text: 'Page for ' + A.name });
+      const pageB = el('button', { class: 'btn soft sm', type: 'button', text: 'Page for ' + B.name });
+      pageA.addEventListener('click', () => openAvatarPage(a.value, pageA));
+      pageB.addEventListener('click', () => openAvatarPage(b.value, pageB));
+      const differences = () => [A.name + ' against ' + B.name + ': where they differ', ''].concat(diff.map((r) => r.label + ': ' + r.a + ' | ' + r.b)).join('\n');
+      mount('#compare', UI.table({ columns: [{ key: 'label', label: '' }, { key: 'a', label: A.name }, { key: 'b', label: B.name }], rows, sort: false }),
+        el('div', { class: 'row compare-do' }, pageA, pageB, UI.copyButton({ label: 'Copy the ' + diff.length + ' differences', text: differences })));
       document.querySelectorAll('#compare tbody tr').forEach((tr) => { if (tr.children[1] && tr.children[1].textContent !== tr.children[2].textContent) tr.classList.add('diff'); });
     };
     a.addEventListener('change', draw); b.addEventListener('change', draw);
