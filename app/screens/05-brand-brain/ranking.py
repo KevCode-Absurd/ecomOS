@@ -21,7 +21,7 @@ rank_mod = importlib.util.module_from_spec(_r)
 sys.modules["ecomos_rank_for_bb"] = rank_mod
 _r.loader.exec_module(rank_mod)
 
-REPUTATION_OVERRIDE = {"BRN-R05": 3, "BRN-R06": 3, "BRN-R08": 3, "BRN-R09": 5, "BRN-R10": 3, "BRN-R04": 5, "BRN-R13": 5, "BRN-R15": 5, "BRN-R16": 5}
+REPUTATION_OVERRIDE = {"BRN-R05": 3, "BRN-R06": 3, "BRN-R08": 3, "BRN-R09": 5, "BRN-R10": 3, "BRN-R04": 5, "BRN-R13": 5, "BRN-R15": 5, "BRN-R16": 5, "BRN-R19": 5}
 CHECK_DAYS = {"BRN-R05": 14, "BRN-R06": 14, "BRN-R08": 14, "BRN-R07": 7, "BRN-R09": 14, "BRN-R10": 14}
 TEST_BUDGET_USD = 300
 
@@ -139,6 +139,29 @@ def build(f: dict, nr: float | None) -> dict:
         a.update(title=f"Settle {label.replace('_', ' ')}: {_pct(_ev(f, 'weak_share'))} of it is inferred", owner="agent_drafts",
                  artefact={"kind": "brain_record", "label": "approved records in place of inferred ones", "draft": None},
                  steps=f.get("steps") or a["steps"], check_on=_check_on(f, 7), time_to_ship_hours=1)
+    elif rid == "BRN-R17":
+        d = _ev(f, "days_to_renewal")
+        a.update(title=f"Renegotiate or renew {label}" + (f": {d} days left" if isinstance(d, (int, float)) and d >= 0 else ": date passed"), owner="person",
+                 artefact={"kind": "ticket", "label": "3 asks (rate, term, exit) and the notice, ready to send", "draft": None},
+                 steps=[{"n": 1, "who": "agent", "text": "Pull the last terms and 12 months of spend with this vendor from finance, if connected."},
+                        {"n": 2, "who": "agent", "text": "Draft 3 asks: rate, term, exit clause. Name 2 alternatives from the sources registry."},
+                        {"n": 3, "who": "person", "text": "Send the notice before the notice deadline, or let it renew on purpose and log the decision."},
+                        {"n": 4, "who": "agent", "text": "Write the new terms into the contract record."}],
+                 check_on=_check_on(f, 7), time_to_ship_hours=2)
+    elif rid == "BRN-R18":
+        many = ent.get("id") == "contracts_missing"
+        a.update(title="Put the vendor contracts on file" if many else f"Add the renewal date for {label}", owner="person",
+                 artefact={"kind": "brain_record", "label": "contract records with renewal dates and rate cards", "draft": None},
+                 steps=[{"n": 1, "who": "person", "text": "Type the vendor, type, renewal date, notice days and rate card in the contracts block, or drop the contract in Files in."},
+                        {"n": 2, "who": "agent", "text": "Set the alert window by vendor type and watch the date."}],
+                 check_on=_check_on(f, 14), time_to_ship_hours=1)
+    elif rid == "BRN-R19":
+        a.update(title=f"Fix before going live: {label}", owner="person",
+                 artefact={"kind": "policy", "label": "the disclosure in place on the page, checked", "draft": None},
+                 steps=[{"n": 1, "who": "agent", "text": "Draft the missing text from the brain's policy records and the rule family named."},
+                        {"n": 2, "who": "person", "text": "Sign it off with counsel where needed and publish it."},
+                        {"n": 3, "who": "agent", "text": "Re-crawl the page and close the check."}],
+                 check_on=_check_on(f, 7), time_to_ship_hours=2)
     elif rid == "BRN-R15":
         a.update(title=f"Send a MAP notice for {label}", owner="agent_drafts",
                  artefact={"kind": "ticket", "label": "a MAP violation notice with the proof (listing, price, date)", "draft": None},

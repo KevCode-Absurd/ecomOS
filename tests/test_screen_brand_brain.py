@@ -90,7 +90,7 @@ class AuditShape(unittest.TestCase):
         self.assertIn('05-brand-brain.BRN-R02.section_economics', ids)
         self.assertIn('05-brand-brain.BRN-R04.mission_trust.rung_1.donation_pledge', ids)
         rules = {r['rule_id'] for r in audit.RULES}
-        self.assertLessEqual({'BRN-R01', 'BRN-R02', 'BRN-R03', 'BRN-R04', 'BRN-R05', 'BRN-R06', 'BRN-R07', 'BRN-R08', 'BRN-R09', 'BRN-R10', 'BRN-R11', 'BRN-R12', 'BRN-R13', 'BRN-R14', 'BRN-R15', 'BRN-R16'}, rules)
+        self.assertLessEqual({'BRN-R01', 'BRN-R02', 'BRN-R03', 'BRN-R04', 'BRN-R05', 'BRN-R06', 'BRN-R07', 'BRN-R08', 'BRN-R09', 'BRN-R10', 'BRN-R11', 'BRN-R12', 'BRN-R13', 'BRN-R14', 'BRN-R15', 'BRN-R16', 'BRN-R17', 'BRN-R18', 'BRN-R19'}, rules)
 
 
 class AuditRules(TempBrain):
@@ -929,3 +929,81 @@ class Round2Parity(TempBrain):
         self.assertIn('SockDealsUSA', f['sentence'])
         self.assertEqual(api.handle(Req(['parity', 'map'], 'POST', body={'usd': 'abc'}))[0], 400)
         self.assertEqual(api.handle(Req(['parity', 'nope'], 'POST', body={}))[0], 404)
+
+
+class Round2Contracts(TempBrain):
+    """Round 2 feature 4: the vendor contract register with alert windows by vendor type."""
+
+    def test_known_vendors_without_contract(self):
+        cr = api.handle(Req(['contracts']))
+        self.assertEqual(cr['counts']['on_file'], 0)
+        self.assertGreaterEqual(cr['counts']['known_without_contract'], 8)
+        names = {c['vendor'] for c in cr['contracts']}
+        self.assertIn('Shopify', names)
+        self.assertIn('Flexport', names)
+        self.assertNotIn('custom React storefront theme', names)
+        self.assertTrue(all(c['verdict']['kind'] == 'wait' and c['action']['owner'] == 'person' for c in cr['contracts']))
+        self.assertIsNone(cr['next'])
+        f = next(f for f in api.handle(Req(['audit']))['findings'] if f['rule_id'] == 'BRN-R18')
+        self.assertEqual(f['entity']['id'], 'contracts_missing')
+        self.assertIn('no contract on file', f['sentence'])
+
+    def test_add_contract_inside_window_fires_and_calendar(self):
+        status, res = api.handle(Req(['contracts'], 'POST', body={'vendor': 'Flexport', 'type': '3pl', 'renewal_date': '2026-11-30', 'notice_days': 60, 'rate_card': '$4.10 per order'}))
+        self.assertEqual((status, res['window_days']), (201, 90))
+        cr = api.handle(Req(['contracts']))
+        c = next(x for x in cr['contracts'] if x['vendor'] == 'Flexport')
+        self.assertEqual((c['on_file'], c['days_left'], c['verdict']['kind']), (True, 63, 'stop'))
+        self.assertEqual(cr['next']['vendor'], 'Flexport')
+        self.assertEqual(cr['calendar'][0]['days_left'], 63)
+        self.assertEqual(cr['counts']['known_without_contract'], sum(1 for x in cr['contracts'] if not x['on_file']))
+        f = next(f for f in api.handle(Req(['audit']))['findings'] if f['rule_id'] == 'BRN-R17')
+        self.assertEqual(f['severity'], 'high')
+        self.assertIn('renews in 63 days; last terms were $4.10 per order', f['sentence'])
+        a = next(a for a in api.rank('bombas', {'ends_on': '2026-09-27', 'days': 28, 'trailing': 4})['actions'] if a['rule_id'] == 'BRN-R17')
+        self.assertTrue(a['title'].startswith('Renegotiate or renew Flexport'))
+        status, res = api.handle(Req(['contracts'], 'POST', body={'vendor': 'Yotpo', 'type': 'app'}))
+        self.assertEqual(status, 201)
+        cr = api.handle(Req(['contracts']))
+        self.assertEqual(next(x for x in cr['contracts'] if x['vendor'] == 'Yotpo')['verdict']['kind'], 'fix')
+        self.assertTrue([f for f in api.handle(Req(['audit']))['findings'] if f['rule_id'] == 'BRN-R18' and f['entity']['id'] == 'contract_yotpo'])
+        self.assertEqual(api.handle(Req(['contracts'], 'POST', body={'vendor': 'X', 'renewal_date': 'soon'}))[0], 400)
+
+
+class Round2Legal(TempBrain):
+    """Round 2 feature 5: the US disclosure checks and the gate for a pasted draft."""
+
+    def test_site_checks_pass_fail_unavailable_na(self):
+        lg = api.handle(Req(['legal']))
+        by = {c['key']: c for c in lg['checks']}
+        self.assertEqual(by['privacy_policy']['status'], 'pass')
+        self.assertEqual(by['cookie_consent']['status'], 'pass')
+        self.assertEqual(by['can_spam']['status'], 'unavailable')
+        self.assertEqual(by['auto_renewal']['status'], 'na')
+        self.assertEqual(lg['counts']['fail'], 0)
+        self.assertFalse([f for f in api.handle(Req(['audit']))['findings'] if f['rule_id'] == 'BRN-R19'])
+        rows = [r for r in self.section('stack') if r.get('field') != 'cookie_consent']
+        self.write('stack', rows)
+        by = {c['key']: c for c in api.handle(Req(['legal']))['checks']}
+        self.assertEqual(by['cookie_consent']['status'], 'fail')
+        self.assertEqual(by['cookie_consent']['action']['owner'], 'person')
+        f = next(f for f in api.handle(Req(['audit']))['findings'] if f['rule_id'] == 'BRN-R19')
+        self.assertEqual((f['severity'], f['capability']['id'], f['entity']['id']), ('high', 'LOOP-C27', 'cookie_consent'))
+        a = next(a for a in api.rank('bombas', {'ends_on': '2026-09-27', 'days': 28, 'trailing': 4})['actions'] if a['rule_id'] == 'BRN-R19')
+        self.assertEqual(a['rubric']['reputation'], 5)
+
+    def test_gate_by_kind(self):
+        r = api.handle(Req(['legal', 'gate'], 'POST', body={'kind': 'email', 'text': 'Big sale this week. Free shipping over $75.'}))
+        self.assertEqual((r['verdict'], {m['key'] for m in r['missing']}), ('fail', {'unsubscribe', 'postal_address'}))
+        r = api.handle(Req(['legal', 'gate'], 'POST', body={'kind': 'email', 'text': 'Big sale. Unsubscribe any time. Bombas, 881 Broadway, New York, NY 10003.'}))
+        self.assertEqual(r['verdict'], 'pass')
+        r = api.handle(Req(['legal', 'gate'], 'POST', body={'kind': 'ad', 'text': 'Our creator partner wears them on every shift.'}))
+        self.assertEqual(r['missing'][0]['key'], 'paid_disclosure')
+        r = api.handle(Req(['legal', 'gate'], 'POST', body={'kind': 'ad', 'text': 'Paid partnership. Our creator wears them on every shift.'}))
+        self.assertEqual(r['verdict'], 'pass')
+        r = api.handle(Req(['legal', 'gate'], 'POST', body={'kind': 'subscription', 'text': 'Socks every month.'}))
+        self.assertEqual({m['key'] for m in r['missing']}, {'auto_renewal_terms', 'cancellation', 'renewal_price'})
+        r = api.handle(Req(['legal', 'gate'], 'POST', body={'kind': 'pdp', 'text': 'Free shipping over $50. Rated 4.8 from 12,000 reviews.'}))
+        self.assertEqual(r['verdict'], 'fail')     # a stale brain number from the claims scanner also blocks
+        self.assertTrue(any(h['kind'] == 'stale_fact' for h in r['claims']['hits']))
+        self.assertEqual(api.handle(Req(['legal', 'gate'], 'POST', body={'kind': 'email', 'text': ' '}))[0], 400)

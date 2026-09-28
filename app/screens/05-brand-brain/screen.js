@@ -683,6 +683,96 @@
     return card;
   }
 
+  // ---------- 5b1. contracts ----------
+  function contractForm(cr, reload, preset) {
+    const vendor = el('input', { class: 'text sm', placeholder: 'Vendor', value: preset ? preset.vendor : '', style: { maxWidth: '160px' } });
+    const type = el('select', { class: 'text sm' }, ...cr.types.map((t) => el('option', { value: t, text: pretty(t), selected: preset && preset.type === t })));
+    const date = el('input', { class: 'text sm', type: 'date', 'aria-label': 'Renewal date' });
+    const notice = el('input', { class: 'text sm', type: 'number', placeholder: 'Notice days', style: { maxWidth: '110px' } });
+    const rate = el('input', { class: 'text sm', placeholder: 'Rate card or last terms', style: { flex: '1 1 200px' } });
+    const go = el('button', { class: 'btn sm primary', type: 'button', text: preset ? 'Save ' + preset.vendor : 'Add contract' });
+    const status = el('span', { class: 'micro muted' });
+    go.addEventListener('click', async () => {
+      go.disabled = true;
+      try { const r = await api(BASE + 'contracts', { method: 'POST', body: { vendor: vendor.value, type: type.value, renewal_date: date.value, notice_days: notice.value, rate_card: rate.value } }); status.textContent = 'Saved ' + r.record + '. Alert window ' + r.window_days + ' days.'; reload(); }
+      catch (e) { go.disabled = false; status.textContent = 'Could not save: ' + e.message; }
+    });
+    return el('div', { class: 'row add-field' }, vendor, type, date, notice, rate, go, status);
+  }
+  function contractsTable(cr, byAct, reload) {
+    const rows = cr.contracts.map((c) => Object.assign({}, c, { type_text: pretty(c.type), known: c.on_file ? 'on file' : 'from ' + (c.how || 'the brain') }));
+    return UI.verdictTable({
+      columns: [
+        { key: 'vendor', label: 'Vendor' }, { key: 'type_text', label: 'Type' }, { key: 'renewal_date', label: 'Renews', format: (v) => v ? fmt.date(v) : NA },
+        { key: 'days_left', label: 'Days left', unit: 'days', align: 'right' }, { key: 'window_days', label: 'Window', unit: 'days', align: 'right' }, { key: 'notice_days', label: 'Notice', unit: 'days', align: 'right' },
+        { key: 'rate_card', label: 'Last terms', format: (v) => v || NA }, { key: 'known', label: 'Known from' },
+      ],
+      verdict: { at: 1, kind: (r) => r.verdict.kind, text: (r) => r.verdict.text, reason: (r) => r.verdict.reason },
+      actions: { label: (r) => r.on_file && r.verdict.kind !== 'fix' ? 'Open' : 'Add', onClick: (r) => {
+        const a = byAct['contract_' + r.slug] || (r.on_file ? null : byAct.contracts_missing);
+        const body = el('div', { class: 'stack' }, el('div', { class: 'small muted', text: r.verdict.reason }), contractForm(cr, () => { reload(); }, r));
+        if (a) body.append(UI.actionCard(a, { screen: SCREEN, expanded: true }));
+        UI.panel({ title: r.vendor, body });
+      } },
+      rows, sort: false, maxRows: 40, empty: 'No vendors known yet. Add a contract below.',
+    });
+  }
+  async function loadContracts() {
+    let cr, actions = [];
+    try { cr = await api(BASE + 'contracts'); } catch (e) { mount('#contracts', el('p', { class: 'muted', text: 'Contracts unavailable: ' + e.message })); return; }
+    try { const r = await api(BASE + 'rank'); actions = (r.actions || []).filter((a) => /BRN-R1[78]/.test(a.rule_id || '')); } catch (e) { actions = []; }
+    const byAct = {}; for (const a of actions) if (a.entity && a.entity.id) byAct[a.entity.id] = a;
+    mount('#contracts-tools', UI.orientation([{ label: 'on file', value: cr.counts.on_file, unit: 'n' }, { label: 'inside the window', value: cr.counts.inside_window, unit: 'n', tone: cr.counts.inside_window ? 'bad' : 'good' }, { label: 'no date', value: cr.counts.no_date, unit: 'n' }, { label: 'known, no contract', value: cr.counts.known_without_contract, unit: 'n', tone: cr.counts.known_without_contract ? 'bad' : null },
+      { label: 'next renewal', value: null, unit: 'n', unavailable_label: cr.next ? cr.next.vendor + ' in ' + cr.next.days_left + ' d' : 'none on file' }]));
+    const cal = cr.calendar.length ? UI.table({ columns: [{ key: 'vendor', label: 'Vendor' }, { key: 'date', label: 'Renews', format: (v) => fmt.date(v) }, { key: 'days_left', label: 'Days left', unit: 'days', align: 'right' }, { key: 'window_days', label: 'Alert window', unit: 'days', align: 'right' }, { key: 'type', label: 'Type', format: pretty }], rows: cr.calendar, sort: false })
+      : el('p', { class: 'muted small', text: 'No renewal within 12 months on file.' });
+    mount('#contracts', UI.tabs({ items: [
+      { key: 'register', label: 'Register', n: cr.contracts.length, panel: () => el('div', { class: 'stack' }, contractsTable(cr, byAct, loadContracts), contractForm(cr, loadContracts), el('div', { class: 'micro faint', text: cr.note })) },
+      { key: 'calendar', label: 'Next 12 months', n: cr.calendar.length, panel: () => cal },
+    ] }));
+  }
+
+  // ---------- 5b2. legal gate ----------
+  function legalTable(lg, byAct) {
+    const S = { pass: 'keep', fail: 'stop', unavailable: 'wait', na: 'na' };
+    const T = { pass: 'Pass', fail: 'Fails', unavailable: 'Unavailable', na: 'Not applicable' };
+    return UI.verdictTable({
+      columns: [{ key: 'label', label: 'Check' }, { key: 'law', label: 'Rule family' }, { key: 'surface', label: 'Surface' }, { key: 'why', label: 'Evidence' }],
+      verdict: { at: 1, kind: (r) => S[r.status], text: (r) => T[r.status], reason: (r) => r.why },
+      rows: lg.checks.map((c) => Object.assign({}, c, { actions: c.status === 'fail' ? [{ label: 'Fix', cls: 'primary', onClick: () => { const a = byAct[c.key]; UI.panel({ title: c.label, body: a ? UI.actionCard(a, { screen: SCREEN, expanded: true }) : el('p', { text: c.action.title }) }); } }] : (c.evidence.length && /^https?:/.test(c.evidence[c.evidence.length - 1]) ? [{ label: 'Open page', onClick: () => window.open(c.evidence[c.evidence.length - 1], '_blank', 'noopener') }] : []) })),
+      actions: { label: 'Do' }, sort: false, maxRows: 20,
+    });
+  }
+  function gateBox(lg) {
+    const kind = el('select', { class: 'text sm' }, ...lg.kinds.map((k) => el('option', { value: k, text: k === 'pdp' ? 'Product page' : pretty(k) })));
+    const ta = el('textarea', { class: 'text', rows: 5, placeholder: 'Paste the email, ad, product page, policy or subscription terms.' });
+    const out = el('div', { class: 'stack' });
+    const btn = el('button', { class: 'btn primary sm', type: 'button', text: 'Run the gate' });
+    btn.addEventListener('click', async () => {
+      if (!ta.value.trim()) { mount(out, el('p', { class: 'muted small', text: 'Paste a draft first.' })); return; }
+      btn.disabled = true;
+      try {
+        const r = await api(BASE + 'legal/gate', { method: 'POST', body: { kind: kind.value, text: ta.value } });
+        const head = el('div', { class: 'row' }, UI.verdict(r.verdict === 'pass' ? 'keep' : r.verdict === 'warn' ? 'watch' : 'stop', r.verdict === 'pass' ? 'Can ship' : r.verdict === 'warn' ? 'Check first' : 'Blocked', r.blocking + ' blocking'));
+        const rows = r.missing.map((m) => ({ level: 'blocks', what: 'missing ' + m.label, fix: m.fix })).concat(((r.claims && r.claims.hits) || []).map((h) => ({ level: h.severity === 'fail' ? 'blocks' : 'warning', what: pretty(h.kind) + ': ' + h.match, fix: h.fix })));
+        mount(out, head, rows.length ? UI.table({ columns: [{ key: 'level', label: 'Level' }, { key: 'what', label: 'What' }, { key: 'fix', label: 'Fix' }], rows, sort: false }) : el('p', { class: 'muted small', text: 'Nothing missing for this kind. ' + r.present.map((p) => p.label).join('; ') + '.' }));
+      } catch (e) { mount(out, el('p', { class: 'muted', text: 'Could not check: ' + e.message })); }
+      btn.disabled = false;
+    });
+    return el('div', { class: 'stack scanner' }, el('div', { class: 'row' }, el('span', { class: 'small muted', text: 'Kind:' }), kind), ta, el('div', { class: 'row' }, btn, el('span', { class: 'micro faint', text: 'Rules only, not legal advice. The claims scanner runs on the same text.' })), out);
+  }
+  async function loadLegal() {
+    let lg, actions = [];
+    try { lg = await api(BASE + 'legal'); } catch (e) { mount('#legal', el('p', { class: 'muted', text: 'Legal checks unavailable: ' + e.message })); return; }
+    try { const r = await api(BASE + 'rank'); actions = (r.actions || []).filter((a) => a.rule_id === 'BRN-R19'); } catch (e) { actions = []; }
+    const byAct = {}; for (const a of actions) if (a.entity && a.entity.id) byAct[a.entity.id] = a;
+    mount('#legal-tools', UI.orientation([{ label: 'pass', value: lg.counts.pass, unit: 'n', tone: 'good' }, { label: 'fail', value: lg.counts.fail, unit: 'n', tone: lg.counts.fail ? 'bad' : null }, { label: 'unavailable', value: lg.counts.unavailable, unit: 'n' }, { label: 'pass rate', value: lg.pass_rate, unit: '%', title: 'of the checks the brain can read' }]));
+    mount('#legal', UI.tabs({ items: [
+      { key: 'checks', label: 'Site checks', n: lg.checked, panel: () => el('div', { class: 'stack' }, legalTable(lg, byAct), el('div', { class: 'micro faint', text: lg.note })) },
+      { key: 'gate', label: 'Gate a draft', panel: () => gateBox(lg) },
+    ] }));
+  }
+
   // ---------- 5c0. marketplace parity ----------
   function parityInputs(pv, reload) {
     const map = el('input', { class: 'text sm', placeholder: pv.map_usd_per_pair != null ? '$' + pv.map_usd_per_pair + ' a pair' : 'MAP per pair, like 12.50', style: { maxWidth: '180px' } });
@@ -926,6 +1016,8 @@
     loadClaims();
     loadSite();
     loadParity();
+    loadContracts();
+    loadLegal();
     const [prof] = await Promise.all([loadProfile(), loadDesk()]);
     await loadPlan(prof);
   }

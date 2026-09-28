@@ -55,6 +55,12 @@ question, and accept or ignore on a proposed record. Nothing external.
                                 flags with actions; MAP and seller names unavailable until the founder sets them
   POST parity/map               {usd}: the minimum advertised price per pair, an approved founder record in offers
   POST parity/sellers           {names}: the seller names that are ours, an approved founder record in offers
+  GET  contracts                the vendor contract register: on file, inside the window, no date, known vendors
+                                without a contract; the renewal calendar
+  POST contracts                {vendor, type, renewal_date, notice_days, rate_card, sla_terms}: a founder record
+                                operations.contract_<vendor>
+  GET  legal                    the US disclosure checks read from the brain: pass, fail, unavailable, n/a
+  POST legal/gate               {kind: email | ad | pdp | policy | subscription, text}: gate a pasted draft
   GET  records?section=<name>   one section's records with tier, date, source and evidence
   GET  audit                    findings from audit.py (app/contracts/audit.md shape)
   POST questions/<field>        {answer}: writes a founder record, marks the question answered
@@ -96,6 +102,12 @@ _spec.loader.exec_module(audit)
 _hspec = importlib.util.spec_from_file_location("brand_brain_health", HERE / "health.py")
 health = importlib.util.module_from_spec(_hspec)
 _hspec.loader.exec_module(health)
+_tspec = importlib.util.spec_from_file_location("brand_brain_contracts", HERE / "contracts.py")
+contracts = importlib.util.module_from_spec(_tspec)
+_tspec.loader.exec_module(contracts)
+_lspec = importlib.util.spec_from_file_location("brand_brain_legal", HERE / "legal.py")
+legal = importlib.util.module_from_spec(_lspec)
+_lspec.loader.exec_module(legal)
 _pspec = importlib.util.spec_from_file_location("brand_brain_parity", HERE / "parity.py")
 parity = importlib.util.module_from_spec(_pspec)
 _pspec.loader.exec_module(parity)
@@ -760,6 +772,37 @@ def claim_add(brain: Brain, body: dict):
     return 201, {"ok": True, "record": rid, "tier": tier, "flows_to": FLOWS_TO.get("claims", ""), "version": brain.version()}
 
 
+def contract_add(brain: Brain, body: dict):
+    body = body or {}
+    vendor = str(body.get("vendor") or "").strip()
+    if not vendor or len(vendor) > 60:
+        return 400, {"error": "vendor is empty"}
+    ctype = body.get("type") if body.get("type") in contracts.WINDOW_DAYS else "other"
+    rd = str(body.get("renewal_date") or "").strip() or None
+    if rd:
+        try:
+            dt.date.fromisoformat(rd)
+        except ValueError:
+            return 400, {"error": "renewal_date must be YYYY-MM-DD"}
+    notice = body.get("notice_days")
+    try:
+        notice = int(notice) if notice not in (None, "") else None
+    except (TypeError, ValueError):
+        return 400, {"error": "notice_days must be a number"}
+    value = {"vendor": vendor, "type": ctype, "renewal_date": rd, "notice_days": notice,
+             "rate_card": str(body.get("rate_card") or "").strip()[:200] or None, "sla_terms": str(body.get("sla_terms") or "").strip()[:200] or None,
+             "source_doc": str(body.get("source_doc") or "").strip()[:120] or None}
+    field = "contract_" + contracts.slug(vendor)
+    rec = {"id": f"{brain.brand}.operations.{field}", "brand": brain.brand, "section": "operations", "field": field, "value": value,
+           "text": f"{vendor} ({ctype}) " + (f"renews on {rd}" if rd else "has no renewal date on file") + (f", {notice} days notice" if notice else "") + ".",
+           "tier": "approved", "confidence": 1.0, "visibility": "private",
+           "source": {"type": "founder", "ref": "05-brand-brain contracts", "captured_at": brain.today.isoformat()}}
+    errs = founder_put(brain, rec)
+    if errs:
+        return 400, {"error": "record not valid", "details": errs}
+    return 201, {"ok": True, "record": rec["id"], "window_days": contracts.WINDOW_DAYS[ctype], "version": brain.version()}
+
+
 def parity_set(brain: Brain, what: str, body: dict):
     body = body or {}
     if what == "map":
@@ -889,6 +932,21 @@ def handle(req):
         ends = (brain.today - dt.timedelta(days=1)).isoformat()
         findings = audit.run(brain.brand, {"ends_on": ends, "days": 1, "trailing": 0}, BRAIN_ROOT)
         return {"findings": findings, "rules": audit.RULES, "brain_version": brain.version()}
+    if req.method == "GET" and parts == ["contracts"]:
+        cr = contracts.register(brain)
+        cr.update(brand=brain.brand, today=brain.today.isoformat(), version=brain.version())
+        return cr
+    if req.method == "POST" and parts == ["contracts"]:
+        return contract_add(brain, req.body)
+    if req.method == "GET" and parts == ["legal"]:
+        lg = legal.checks(brain)
+        lg.update(brand=brain.brand, today=brain.today.isoformat(), version=brain.version(), kinds=legal.KINDS)
+        return lg
+    if req.method == "POST" and parts == ["legal", "gate"]:
+        text = str((req.body or {}).get("text") or "")
+        if not text.strip():
+            return 400, {"error": "text is empty"}
+        return legal.gate(brain, str((req.body or {}).get("kind") or "pdp"), text[:20000], claims_mod)
     if req.method == "GET" and parts == ["parity"]:
         pv = parity.strip(brain)
         pv.update(brand=brain.brand, today=brain.today.isoformat(), version=brain.version())

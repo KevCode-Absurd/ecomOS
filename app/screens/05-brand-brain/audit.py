@@ -84,6 +84,20 @@ BRN-R16 unrecognised marketplace seller. A listing's seller is not in the
     from every listing, one unavailable finding names the connector that
     fills it (Amazon Selling Partner API, or a listing pull with the seller
     field). Severity high. Capability PROD-C46. Owner: 05-brand-brain.
+BRN-R17 contract renewal approaching. A stored contract's renewal date is
+    inside the alert window for its vendor type (contracts.py WINDOW_DAYS:
+    platform and 3PL 90 days, agency and payments 60, apps and SaaS 30), or
+    has passed. Severity high for platform, 3PL and agency, else medium.
+    Capability LOOP-C28. Owner: 05-brand-brain.
+BRN-R18 contract missing renewal date. A stored contract has no renewal
+    date (low, one per contract), or vendors the brain knows from the stack
+    and partner mentions have no contract on file (medium, one finding).
+    Capability LOOP-C28. Owner: 05-brand-brain.
+BRN-R19 disclosure missing. A site-level US disclosure check fails
+    (legal.py checks): privacy policy with an effective date, state privacy
+    notice, terms, returns posted, cookie consent, accessibility statement,
+    creator ads labelled. Severity high; it blocks going live. Capability
+    LOOP-C27. Reputation override 5 (legal disclosure gap). Owner: 05-brand-brain.
 BRN-R07 competitor snapshot stale. A configured Ad Library page was captured
     more than SNAPSHOT_STALE_DAYS (7) ago, or never. Severity low. Capability
     BRN-C11 (competitor snapshot, signals only). Owner: 05-brand-brain.
@@ -148,11 +162,23 @@ RULES = [
      "inputs": ["marketplaces", "offers.map_usd_per_pair"], "capability": "PROD-C46", "owner_screen": SCREEN},
     {"rule_id": "BRN-R16", "name": "unrecognised marketplace seller", "entity_type": "sku",
      "inputs": ["marketplaces", "offers.marketplace_seller_names"], "capability": "PROD-C46", "owner_screen": SCREEN},
+    {"rule_id": "BRN-R17", "name": "contract renewal approaching", "entity_type": "brand",
+     "inputs": ["operations.contract_*"], "capability": "LOOP-C28", "owner_screen": SCREEN},
+    {"rule_id": "BRN-R18", "name": "contract missing renewal date", "entity_type": "brand",
+     "inputs": ["operations.contract_*", "stack", "team"], "capability": "LOOP-C28", "owner_screen": SCREEN},
+    {"rule_id": "BRN-R19", "name": "disclosure missing", "entity_type": "page",
+     "inputs": ["policies", "site_map", "stack", "learnings"], "capability": "LOOP-C27", "owner_screen": SCREEN},
 ]
 AUTONOMY = {"BRN-C12": "agent_does", "BRN-C07": "founder_gate", "BRN-C03": "agent_does",
             "CREA-C19": "agent_does", "CREA-C04": "agent_does", "BRN-C11": "agent_does", "CREA-C06": "agent_does",
-            "BRAND-C57": "agent_does", "CREA-C03": "agent_does", "BRN-C05": "founder_gate", "BRN-C01": "agent_does", "PROD-C46": "agent_does"}
+            "BRAND-C57": "agent_does", "CREA-C03": "agent_does", "BRN-C05": "founder_gate", "BRN-C01": "agent_does", "PROD-C46": "agent_does", "LOOP-C28": "agent_does", "LOOP-C27": "agent_does"}
 
+_tspec = importlib.util.spec_from_file_location("brand_brain_contracts", Path(__file__).resolve().parent / "contracts.py")
+contracts = importlib.util.module_from_spec(_tspec)
+_tspec.loader.exec_module(contracts)
+_lspec = importlib.util.spec_from_file_location("brand_brain_legal", Path(__file__).resolve().parent / "legal.py")
+legal = importlib.util.module_from_spec(_lspec)
+_lspec.loader.exec_module(legal)
 _pspec = importlib.util.spec_from_file_location("brand_brain_parity", Path(__file__).resolve().parent / "parity.py")
 parity = importlib.util.module_from_spec(_pspec)
 _pspec.loader.exec_module(parity)
@@ -506,6 +532,44 @@ def rule_parity(brain: Brain, ends_on: str) -> list[dict]:
     return out
 
 
+def rule_contracts(brain: Brain, ends_on: str) -> list[dict]:
+    out = []
+    reg = contracts.register(brain)
+    for c in reg["contracts"]:
+        k = c["verdict"]["kind"]
+        if c["on_file"] and k == "stop":
+            ev = [_row("days_to_renewal", c["days_left"], "days", ends_on, None, c["window_days"], "operations"),
+                  _row("notice_days", c["notice_days"], "days", ends_on, None, None, "operations")]
+            if c["days_left"] is not None and c["days_left"] >= 0:
+                sentence = f"{c['vendor']} renews in {c['days_left']} days" + (f"; last terms were {c['rate_card']}" if c["rate_card"] else "") + "."
+            else:
+                sentence = f"{c['vendor']}'s renewal date passed {-(c['days_left'] or 0)} days ago. It likely auto-renewed on the old terms."
+            out.append(_finding("BRN-R17", "high" if c["type"] in ("platform", "3pl", "agency") else "medium",
+                                {"type": "brand", "id": f"contract_{c['slug']}", "label": c["vendor"]}, ev, sentence, [c["record"]], ends_on, 0.9))
+        elif c["on_file"] and k == "fix":
+            ev = [_row("renewal_date_on_file", 0, "flag", ends_on, None, 1, "operations")]
+            out.append(_finding("BRN-R18", "low", {"type": "brand", "id": f"contract_{c['slug']}", "label": c["vendor"]}, ev,
+                                f"{c['vendor']}'s contract has no renewal date on file and is marked incomplete.", [c["record"]], ends_on, 0.9))
+    missing = [c for c in reg["contracts"] if not c["on_file"]]
+    if missing:
+        ev = [_row("vendors_without_contract", len(missing), "n", ends_on, None, 0, "stack, operations, team")]
+        names = ", ".join(c["vendor"] for c in missing[:5]) + (" and more" if len(missing) > 5 else "")
+        out.append(_finding("BRN-R18", "medium", {"type": "brand", "id": "contracts_missing", "label": "vendors without a contract on file"}, ev,
+                            f"{len(missing)} vendors the brain knows have no contract on file: {names}.", [c["record"] for c in missing[:6]], ends_on, 0.7))
+    return out
+
+
+def rule_legal(brain: Brain, ends_on: str) -> list[dict]:
+    out = []
+    for c in legal.checks(brain)["checks"]:
+        if c["status"] != "fail":
+            continue
+        ev = [_row("disclosure_present", 0, "flag", ends_on, None, 1, "policies, site_map, stack")]
+        out.append(_finding("BRN-R19", "high", {"type": "page", "id": c["key"], "label": c["label"]}, ev,
+                            f"{c['label']} is missing ({c['law']}). This blocks going live: {c['why']}.", [e for e in c["evidence"] if "." in e][:3], ends_on, 0.9))
+    return out
+
+
 def rule_snapshot_stale(brain: Brain, ends_on: str) -> list[dict]:
     out = []
     d = market.pages(brain)
@@ -533,7 +597,7 @@ def run(brand: str, window: dict | None = None, root: Path | None = None) -> lis
         bank = keeper.load_bank()
     except (OSError, ValueError, KeyError):
         bank = None
-    out = rule_stale(brain, ends_on) + rule_claims(brain, ends_on) + rule_competitor_gaps(brain, ends_on) + rule_angle_gaps(brain, ends_on) + rule_signals(brain, ends_on) + rule_weak_sections(brain, ends_on) + rule_conflicts(brain, ends_on) + rule_untiered_claims(brain, ends_on) + rule_site_changes(brain, ends_on) + rule_parity(brain, ends_on) + rule_snapshot_stale(brain, ends_on)
+    out = rule_stale(brain, ends_on) + rule_claims(brain, ends_on) + rule_competitor_gaps(brain, ends_on) + rule_angle_gaps(brain, ends_on) + rule_signals(brain, ends_on) + rule_weak_sections(brain, ends_on) + rule_conflicts(brain, ends_on) + rule_untiered_claims(brain, ends_on) + rule_site_changes(brain, ends_on) + rule_parity(brain, ends_on) + rule_contracts(brain, ends_on) + rule_legal(brain, ends_on) + rule_snapshot_stale(brain, ends_on)
     if bank is None:
         for rid, sev in (("BRN-R02", "medium"), ("BRN-R03", "medium")):
             f = _finding(rid, sev, {"type": "brand", "id": "question_bank", "label": "question bank"},
