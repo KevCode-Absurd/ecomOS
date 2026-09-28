@@ -41,6 +41,7 @@ Round 1 notes: `snapshot.py` plans and runs a page-id Ad Library pull through `a
 | 7.1 | Win-loss answers from interview codes: once 3 or more losses to a name are logged, the reason is the top coded loss reason (not the ad-angle rule), each reason maps to our objection ladder (fit, comfort, delivery, price, durability), and the compare answer, support macro and COMP-R15 sentence ("Our interviews say why") draw on it, with the count as evidence and higher confidence | done |
 | 7.2 | Interview coverage by name: COMP-R29 now holds until each of the top 3 names we lose to has 5 interviews, as the kit says (it held on 5 in total before); the finding names who is still short with their count, and the action's size counts the interviews left | done |
 | 7.3 | Prices seen on the band chart: the latest logged price for each rival product shows as a square on that page's band (red when outside it); new rule COMP-R33 (low, person): a price seen outside the public band on file means every price finding on that page reads an old band, so a person updates the band in the brain, with a draft listing the prices, dates and links | done |
+| 7.4 | Price watch cadence: a logged product whose latest price is more than 14 days old is due a re-check (else the 30-day baseline lapses and a cut goes unseen); new rule COMP-R34 (low, person) lists them oldest first with the last price date and link; logging a fresh price clears it; the price block shows who is due | done |
 
 ## Round 6: the page writes back (first-party records the rules read)
 
@@ -282,7 +283,7 @@ Round 2 notes: the lead authorised the $2.08 pull on 28 Sep; the session's permi
 | Round | Features picked | Date | Notes |
 |---|---|---|---|
 | 0 | 0.1 to 0.8 | 2026-09-28 | Bombas brain and simulated prices |
-| 7 | 7.1 to 7.3 | 2026-09-28 | Interview reasons; coverage by name; prices seen on the band chart |
+| 7 | 7.1 to 7.4 | 2026-09-28 | Interview reasons; coverage by name; prices seen on the band chart; price re-check cadence |
 | 6 | 6.1 to 6.10 | 2026-09-28 | Win-loss log; repeated loss reason; rival prices seen; battlecard checks; positioning polls; thresholds on the page; capture from the page; the team log; waiting on you; round close (and the hand-off fix). Screenshot `round6.png` |
 | 5 | 5.1 to 5.10 | 2026-09-28 | Hand-offs; action lanes; season plan; quarterly review; exports (and the 5.4 load fix); browser smoke test; team notes; brief pack; check due lane; round close |
 | 4 | 4.1 to 4.10 | 2026-09-28 | Placements and new channel alerts; gap lines; stop rules; unit from the brain; never zero; phone width; threat history; support answers; room metrics. Screenshot `round4.png` |

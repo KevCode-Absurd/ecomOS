@@ -72,6 +72,17 @@ def _interview(body: dict, known: dict, today: dt.date) -> tuple[dict | None, st
 
 SAFE_TEXT = re.compile(r"^[A-Za-z0-9 .,&'()/+-]{1,60}$")
 TRAIL_DAYS = 30
+RECHECK_DAYS = 14   # a product whose latest price is older than this is due a re-check (COMP-R34)
+
+
+def recheck(rows: list[dict], today: dt.date) -> list[dict]:
+    """Products whose latest logged price is more than RECHECK_DAYS old, oldest first."""
+    latest: dict[tuple, dict] = {}
+    for r in sorted(rows, key=lambda r: (r["date"], r["id"])):
+        latest[(r["page"], r["product"].lower())] = r
+    due = [{"page": r["page"], "product": r["product"], "last": r["date"], "age_days": (today - dt.date.fromisoformat(r["date"])).days,
+            "url": r.get("url")} for r in latest.values()]
+    return sorted([x for x in due if x["age_days"] > RECHECK_DAYS], key=lambda x: (-x["age_days"], x["page"], x["product"]))
 
 
 def _price_seen(body: dict, known: dict, today: dt.date) -> tuple[dict | None, str | None]:

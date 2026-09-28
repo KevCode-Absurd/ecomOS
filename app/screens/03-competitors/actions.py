@@ -657,6 +657,22 @@ def act_band(f: dict, m: dict) -> dict:
             "time_to_ship_hours": 1}
 
 
+def act_recheck(f: dict, m: dict) -> dict:
+    """COMP-R34: re-check the logged prices that are going stale, so the 30-day baseline holds."""
+    due = m["price_moves"]["recheck"]
+    draft = "\n".join([f"Price re-checks due: {len(due)}. Visit each page, log today's price for the same product and pack."]
+                       + [f"- {x['page']}, {x['product']}: last seen {x['last']} ({x['age_days']} days)" + (f", {x['url']}" if x["url"] else "")
+                          for x in due])
+    return {"title": f"Re-check {len(due)} rival price{'s' if len(due) != 1 else ''} on their sites", "owner": "person",
+            "artefact": {"kind": "research_note", "label": "the re-check list with links", "draft": draft},
+            "steps": _steps(("agent", "List the products due, oldest first, with the last price and link."),
+                            ("person", "Visit each link; log today's price on this screen (same product, same pack)."),
+                            ("agent", "Run the price rule on the new prices and report any cut.")),
+            "size": {"text": f"{len(due)} prices", "count": len(due)},
+            "win_rule": None, "stop_rule": "A product no longer sold is dropped from the list", "check_on": _plus(f["last_seen"], 7),
+            "time_to_ship_hours": 1}
+
+
 def act_season(f: dict, m: dict) -> dict:
     """COMP-R30: the season is close and we run no gifting ad. Brief 3 gifting ads with our gifting offer."""
     sn = m["season"]
@@ -695,7 +711,7 @@ BUILDERS = {"COMP-R01": act_angle, "COMP-R02": act_price, "COMP-R03": act_offer_
             "COMP-R24": act_new_move, "COMP-R25": act_price_cut,
             "COMP-R26": act_landing, "COMP-R27": act_card,
             "COMP-R28": act_frames, "COMP-R29": act_winloss,
-            "COMP-R30": act_season, "COMP-R31": act_repeat_loss, "COMP-R32": act_frame_win, "COMP-R33": act_band}   # R16 has no data source yet: always a connect action
+            "COMP-R30": act_season, "COMP-R31": act_repeat_loss, "COMP-R32": act_frame_win, "COMP-R33": act_band, "COMP-R34": act_recheck}   # R16 has no data source yet: always a connect action
 
 
 def action(f: dict, m: dict, net_revenue: float | None) -> dict:

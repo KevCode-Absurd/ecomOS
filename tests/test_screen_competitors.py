@@ -1754,5 +1754,22 @@ class TestBandCheck(TempInputs):
         self.assertIn('COMP-R33', api.SECTION_RULES['prices'])
 
 
+class TestPriceRecheck(TempInputs):
+    """7.4: a logged price older than 14 days is due a re-check; logging a fresh one clears it."""
+    def test_recheck(self):
+        body = {'kind': 'price_seen', 'page': 'Stance', 'product': 'Crew', 'price': 16, 'units': 1}
+        self.post(dict(body, date='2026-09-01'))
+        self.post(dict(body, product='Ankle', date='2026-09-20'))
+        pm = api.handle(Req(['overview']))['price_moves']
+        self.assertEqual([(x['product'], x['age_days']) for x in pm['recheck']], [('Crew', 27)])
+        a = next(a for a in api.rank('bombas', {'ends_on': '2026-09-27', 'days': 28, 'trailing': 4})['actions'] if a['rule_id'] == 'COMP-R34')
+        self.assertEqual((a['owner'], a['size']['count']), ('person', 1))
+        self.assertIn('Stance, Crew: last seen 2026-09-01', a['artefact']['draft'])
+        self.assertEqual(api.actions.ranker.validate_action(a), [])
+        self.post(dict(body, date=DAY))
+        self.assertEqual(api.handle(Req(['overview']))['price_moves']['recheck'], [])
+        self.assertNotIn('COMP-R34', [f['rule_id'] for f in api.handle(Req(['plan']))['findings']])
+
+
 if __name__ == '__main__':
     unittest.main()
