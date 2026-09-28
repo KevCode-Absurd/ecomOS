@@ -47,6 +47,16 @@ Round 1 notes: `snapshot.py` plans and runs a page-id Ad Library pull through `a
 | 5.7 | Team notes (depth section 7): a notes block in each competitor page's panel; `GET notes?entity=` and `POST notes {entity, text}` save to a local, git-ignored file (`fixtures/notes/<brand>.json`), never sent anywhere; entity ids validated, notes capped at 500 characters and 2,000 a brand | done |
 | 5.8 | The brief pack: `GET briefs` groups every open move with its draft by the team that ships it (creative, copy, growth, offers, site, marketplaces, support, research), each with why, check date and stop rule; one copy button per team above the action cards; snoozed moves left out | done |
 | 5.9 | "Check due" lane: decided moves (agent or person, not snoozed) whose check date has arrived, so the founder reads each result on time; empty now, with a line saying it fills as dates arrive | done |
+| 5.10 | Round close: 30 rules, 2 hand-off tables by the events contract, action lanes by owner with a check due lane, a season plan, a quarterly review, CSV exports, team notes and a brief pack per team; no script errors on the page or the report, 360 px clean on every tab; all screen tests green apart from the 4 known site speed ones; screenshot `round5.png` | done |
+
+### Round 5 status for Kevin (28 Sep 2026)
+
+1. The screen now hands its work to the rest of the system: a competitor table other screens read, and test drafts in the experiment registry shape.
+2. The moves split by who does them (agent, agent drafts and you approve, a person), with hours per lane, and a lane for results whose check date has come.
+3. New: a holiday plan with dated phases (Black Friday is 27 Nov); it puts 3 gifting ads on the plan, since 2 direct rivals run gifting and we run none.
+4. New: a quarterly positioning review with 3 decisions for you, one brief pack per team to paste, CSV exports and private team notes per rival.
+5. Fixed: one feature broke the page load; a browser test now loads the page and the report on every test run, so that fault cannot ship again.
+6. Next, round 6: tighten what the plan asks of you first, add alert thresholds you can tune on the page, and keep the connect steps ready for the ad-level pull.
 
 ## Round 4: the rest of the room, and a depth pass on the screen
 
@@ -240,7 +250,7 @@ Round 2 notes: the lead authorised the $2.08 pull on 28 Sep; the session's permi
 | Round | Features picked | Date | Notes |
 |---|---|---|---|
 | 0 | 0.1 to 0.8 | 2026-09-28 | Bombas brain and simulated prices |
-| 5 | 5.1 to 5.9 | 2026-09-28 | Hand-offs; action lanes; season plan; quarterly review; exports (and the 5.4 load fix); browser smoke test; team notes; brief pack; check due lane |
+| 5 | 5.1 to 5.10 | 2026-09-28 | Hand-offs; action lanes; season plan; quarterly review; exports (and the 5.4 load fix); browser smoke test; team notes; brief pack; check due lane; round close |
 | 4 | 4.1 to 4.10 | 2026-09-28 | Placements and new channel alerts; gap lines; stop rules; unit from the brain; never zero; phone width; threat history; support answers; room metrics. Screenshot `round4.png` |
 | 3 | 3.1 to 3.10 | 2026-09-28 | Page-summary captures and diffs; price moves; landing page tracking; printable report; battlecards; positioning test; win-loss kit; tunable thresholds; second brand. Screenshot `round3.png` |
 | 2 | 2.1 to 2.10 | 2026-09-28 | Lost by name; category ladder; review themes; Amazon against our site; creative velocity; weekly brief; niche sizing; premium signals; search seeds; desk tabs. Screenshot `round2.png` |
