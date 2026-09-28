@@ -852,6 +852,27 @@
         first ? { label: 'Brief the first', onClick: () => openAction(first) } : null));
   }
 
+  function returnsBlock(rr) {
+    if (!rr || rr.unavailable) return UI.emptyState({ screen: SLUG, title: 'No return rates by line', text: (rr && rr.reason) || 'Orders and returns are not connected.', missing: [(rr && rr.fix) || 'shopify'] });
+    const rows = rr.rows || [];
+    if (!rows.length) return UI.emptyState({ screen: SLUG, title: 'No orders in the last 12 whole months', text: 'The orders table holds nothing in the window.', missing: ['orders'] });
+    const pct = (v) => v == null ? NA : (v * 100).toFixed(1) + ' percent';
+    const vt = { high: 'Returning high', normal: 'Normal', thin: 'Too few to judge' };
+    const vrows = rows.map((r) => { const a = actionFor(r.finding_id); return Object.assign({}, r, {
+      rateText: pct(r.rate) + (r.x_median != null ? ' (' + r.x_median + 'x median)' : ''), n: r.returns + ' of ' + fmt.int(r.units), reasonsText: r.reasons.length ? r.reasons.map((x) => x[0] + ' ' + x[1]).join(', ') : 'none',
+      actions: [a ? { label: 'Cut the returns', onClick: () => openAction(a) } : { label: r.verdict === 'thin' ? 'Thin' : 'Fine', cls: 'quiet', onClick: () => {} }] }); });
+    const tbl = UI.verdictTable({
+      columns: [{ key: 'line', label: 'Line' }, { key: 'category', label: 'Category' }, { key: 'rateText', label: 'Return rate' }, { key: 'n', label: 'Returns of units' }, { key: 'reasonsText', label: 'Top reasons' }],
+      rows: vrows,
+      verdict: { at: 1, kind: (r) => r.verdict === 'high' ? 'fix' : r.verdict === 'thin' ? 'na' : 'keep', text: (r) => vt[r.verdict], reason: (r) => rr.rule },
+      actions: { label: 'Do', onClick: () => {} }, sort: false });
+    const high = rows.filter((r) => r.verdict === 'high');
+    return el('div', { class: 'stack' }, el('div', { class: 'card scroll' }, tbl),
+      el('p', { class: 'micro faint', text: 'Store: ' + pct(rr.store_rate) + ' of ' + fmt.int(rr.units) + ' units returned over ' + rr.first + ' to ' + rr.last + '; median line rate ' + pct(rr.median) + '. Rule: ' + rr.rule + '. Simulated orders.' }),
+      gapLine(high.length ? high.length + ' line' + (high.length === 1 ? ' returns' : 's return') + ' at 1.5 times the store median or more: ' + high.map((r) => r.line).join(', ') + '.' : 'No line returns far above the store median.',
+        high.length && actionFor(high[0].finding_id) ? { label: 'Cut the first', onClick: () => openAction(actionFor(high[0].finding_id)) } : null));
+  }
+
   function loadDesk(o) {
     const d = o.desk || {};
     const w = (o.window || {}).trend;
@@ -869,6 +890,7 @@
     parts.push(section('desk-demand', 'Which lines are losing share, and which reviews say why?', 'Last 3 whole months against the same months a year earlier. A line fires when units fall or growth trails the store by 1 point or more.', demandBlock(d, w || { months: [], year_ago: [] })));
     parts.push(section('desk-price', 'Where do our prices sit against the competitor band?', 'Per-pair list price by line against the band of competitor median prices from the brain. Socks only; other categories have no competitor price on file.', priceBlock(d.price_bands || {})));
     parts.push(section('desk-reviews', 'What do reviews praise and fail, line by line?', 'Public site review totals per line, with the objection ladder rungs built from them.', reviewBlock(d.reviews || [])));
+    parts.push(section('desk-returns', 'Which lines come back, and why?', 'Return rate per line over the last 12 whole months from orders and the return leg of reversed orders, against the store median, with the reasons. Room metric sku_return_rate.', returnsBlock(d.returns)));
     parts.push(section('desk-margin', 'Does each candidate make money after real costs?', 'The margin gate per candidate: planned price stepping down through landed cost, the donated item, fulfilment and payment fees to contribution, every term from the finance inputs or the brain.', marginBlock(d.margin)));
     parts.push(section('desk-lane-map', 'Which lanes are growing with room left, and which are growing and already full?', 'Trend direction against competitive saturation per lane, read together as one go or no-go signal: market growth and launches from the web pass, sellers from the competitor pages in the brain.', laneMapBlock(d.lane_map)));
     parts.push(section('desk-spend', 'Who is actually funding which lane, not just posting about it?', 'Competitor pages by the longest run of their active ads per lane. Three or more advertisers at 90 days is a funded test; one at 14 days is a live test; the rest is noise.', spendBlock(d.spend)));

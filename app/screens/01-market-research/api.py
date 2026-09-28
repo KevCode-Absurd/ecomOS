@@ -853,6 +853,25 @@ def recipe(f):
             'stop_rule': 'no brief if the lane fails the demand screen', 'check_on': _check_on(f, 14), 'time_to_ship_hours': 3,
             'win_rule': 'a screened candidate in the lane, or a founder note that the current line holds it',
         }
+    if rid == 'PROD-R34':
+        ent = f.get('entity') or {}
+        line = ent.get('label') or 'the line'
+        reason = (ent.get('top_reason') or 'the top reason').replace('_', ' ')
+        fix = {'size or fit': 'a size guide and a fit note on the page', 'not as expected': 'photos, dimensions and a plain description that match the product', 'damaged in transit': 'packaging and the carrier',
+               'changed mind': 'the offer and the page promise', 'arrived late': 'the shipping promise and the carrier', 'wrong item': 'the pick and pack step'}.get(reason, 'the product, the page and the packaging')
+        return {
+            'title': f'Cut the returns on {line}: read the {reason} returns and fix {fix.split(" and ")[0]}',
+            'owner': 'agent',
+            'artefact': {'kind': 'research_note', 'label': f'a returns read for {line}: the reasons with counts, 10 customer notes per top reason, the fix ({fix}), and the rate to hold after it'},
+            'steps': [
+                {'n': 1, 'who': 'agent', 'text': f'Pull the {ent.get("returns") or 0} returns on {line} with their reasons and any customer notes; group by reason.'},
+                {'n': 2, 'who': 'agent', 'text': f'For {reason}, draft the fix: {fix}.'},
+                {'n': 3, 'who': 'person', 'text': 'Approve the fix; a product change goes to sourcing, a page change to the landing page desk.'},
+                {'n': 4, 'who': 'agent', 'text': f'Re-read the rate after 60 days against the store median ({round((ent.get("median") or 0) * 100, 1)} percent).'}],
+            'size': {'text': f'{round((ent.get("rate") or 0) * 100, 1)} percent of {ent.get("units") or 0:,} units', 'usd': None},
+            'stop_rule': 'stop if the reasons are spread thin with no top reason over 30 percent', 'check_on': _check_on(f, 60), 'time_to_ship_hours': 3,
+            'win_rule': 'the line\'s return rate within 1.2 times the store median over the next 60 days',
+        }
     return None
 
 
@@ -1162,7 +1181,7 @@ def overview(data, brand):
                      'gates': gates_block(brand, data, br, rd, ends_on, findings), 'scorecard': scorecard_block(brand, data, br, rd, ends_on, findings),
                      'video': audit.video_signals(br, brand, ends_on), 'tech_packs': tech_pack_block(brand, findings),
                      'hours': dict(audit.hours_table(brand, br), findings={f['entity']['id']: f['id'] for f in findings if f['rule_id'] == 'PROD-R28'}),
-                     'trend_checks': audit.trend_checks(br, brand, ends_on), 'surfaces': audit.audience_surfaces(br, ends_on), 'marketplace': audit.marketplace_read(br, products(data, brand)), 'cadence': audit.launch_cadence(br, ends_on)},
+                     'trend_checks': audit.trend_checks(br, brand, ends_on), 'surfaces': audit.audience_surfaces(br, ends_on), 'marketplace': audit.marketplace_read(br, products(data, brand)), 'cadence': audit.launch_cadence(br, ends_on), 'returns': audit.return_rates(data, brand, ends_on)},
             'audit': {'findings': findings, 'rules': audit.RULES}}
 
 

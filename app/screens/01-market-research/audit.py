@@ -130,6 +130,10 @@ Rules
             2 or more brands over 24) and nothing of ours launched there in 24 months, from the web pass launches (a url
             and a date each). Severity medium. Money null. Capability PROD-C06 (extend the line, agent does). Owner:
             01-market-research.
+  PROD-R34  Line returning at 1.5 times the store median rate on 20 or more returns over 12 whole months (units from
+            order line items, returns from the return leg of reversed orders), with the reasons. Room metric
+            sku_return_rate. Severity medium. Money null (refund value is not in the orders table). Capability PROD-C06.
+            Owner: 01-market-research.
   PROD-R03  Hero line with no next SKU: a line with 25 percent or more of its category's net sales in
             the last 3 whole months while the candidate pipeline holds no open next-SKU candidate for
             that category. Money: null (an unlaunched SKU has no baseline). Capability PROD-C06
@@ -220,6 +224,8 @@ RULES = [
      'inputs': ['brain.marketplaces', 'brain.products', 'products'], 'capability': 'PROD-C46', 'owner_screen': SCREEN},
     {'rule_id': 'PROD-R33', 'name': 'Lane we sell where competitors launched 2 or more times in 12 months (or 2 brands in 24) and none of ours in 24 months', 'entity_type': 'metric',
      'inputs': ['fixtures.market_trends', 'brain.products'], 'capability': 'PROD-C06', 'owner_screen': SCREEN},
+    {'rule_id': 'PROD-R34', 'name': 'Line returning at 1.5 times the store median rate on 20 or more returns in 12 months', 'entity_type': 'sku',
+     'inputs': ['orders', 'reversed_orders', 'products'], 'capability': 'PROD-C06', 'owner_screen': SCREEN},
 ]
 CAPABILITY = {'PROD-R01': {'id': 'PROD-C05', 'autonomy': 'agent_does'},
               'PROD-R02': {'id': 'PROD-C06', 'autonomy': 'agent_does'},
@@ -253,7 +259,8 @@ CAPABILITY = {'PROD-R01': {'id': 'PROD-C05', 'autonomy': 'agent_does'},
               'PROD-R30': {'id': 'PROD-C12', 'autonomy': 'human_assist'},
               'PROD-R31': {'id': 'PROD-C29', 'autonomy': 'human_assist'},
               'PROD-R32': {'id': 'PROD-C46', 'autonomy': 'agent_does'},
-              'PROD-R33': {'id': 'PROD-C06', 'autonomy': 'agent_does'}}
+              'PROD-R33': {'id': 'PROD-C06', 'autonomy': 'agent_does'},
+              'PROD-R34': {'id': 'PROD-C06', 'autonomy': 'agent_does'}}
 SEVERITY_ORDER = {'critical': 0, 'high': 1, 'medium': 2, 'low': 3}
 
 # Review records name their line in a short key; the store names it by SKU title.
@@ -737,6 +744,7 @@ def run(brand, window=None, data=None):
     out += audience_findings(br, ends_on)
     out += marketplace_findings(br, prods_for_map, ends_on)
     out += cadence_findings(br, ends_on)
+    out += return_findings(data, brand, ends_on, net)
     out.sort(key=lambda f: (SEVERITY_ORDER[f['severity']], -((f['money_at_stake'] or {}).get('usd') or 0), f['id']))
     return out
 
@@ -3130,5 +3138,103 @@ def cadence_findings(br, ends_on):
         f = _finding('PROD-R33', r['key'], ends_on, 'medium', ev, sentence, None, 0.6, [], money_reason='an unlaunched SKU has no baseline; the lane\'s net sales are in the trend strip')
         f['entity'] = {'type': 'metric', 'id': r['key'], 'label': r['label'], 'brands': r['brands_24m'], 'theirs_12m': r['theirs_12m'], 'theirs_24m': r['theirs_24m'], 'newest': nw, 'months_since_ours': r['months_since_ours']}
         f['id'] = f'{SCREEN}.PROD-R33.{r["key"]}'
+        out.append(f)
+    return out
+
+
+# ---------------------------------------------------------------- return rate by line (round 4.3)
+
+RETURN_MIN_RETURNS = 20      # a line is judged on 20 or more returns
+RETURN_MEDIAN_X = 1.5        # ... returning at 1.5 times the store median or more
+RETURN_MONTHS = 12
+
+
+def return_rates(data, brand, ends_on):
+    """Per line: units sold over the last 12 whole months (order line items), returns opened on those lines in the same span
+    (reversed orders of type return, by SKU), the rate, the top reasons, against the store median. Unavailable, never 0, when
+    orders or reversed orders are not connected. Room metric sku_return_rate."""
+    source = brand_data(brand) if brand else data
+    try:
+        orders = source.table('orders')
+        products = source.table('products')
+    except (KeyError, ValueError) as exc:
+        return {'unavailable': True, 'reason': f'orders are not connected ({exc})', 'fix': 'shopify', 'rows': []}
+    try:
+        reversed_rows = source.table('reversed_orders')
+    except (KeyError, ValueError) as exc:
+        return {'unavailable': True, 'reason': f'returns are not connected ({exc})', 'fix': 'shopify', 'rows': []}
+    last = last_whole_month(ends_on)
+    first = month_add(last, 1 - RETURN_MONTHS)
+    line_of = {p.get('sku'): metrics().product_line(p.get('title')) or p.get('sku') for p in products if p.get('sku')}
+    cat_of = {p.get('sku'): (p.get('type') or p.get('category') or 'other') for p in products if p.get('sku')}
+    sold, ret, reasons, cats = {}, {}, {}, {}
+    for o in orders:
+        if o.get('cancelled_at'):
+            continue
+        m = str(o.get('created_at') or '')[:7]
+        if not (first <= m <= last):
+            continue
+        for l in o.get('line_items') or []:
+            line = line_of.get(l.get('sku'), l.get('title') or l.get('sku'))
+            sold[line] = sold.get(line, 0) + int(l.get('qty') or 0)
+            cats.setdefault(line, cat_of.get(l.get('sku'), 'other'))
+    for r in reversed_rows:
+        if r.get('type') != 'return':
+            continue
+        m = str(r.get('opened_at') or '')[:7]
+        if not (first <= m <= last):
+            continue
+        line = line_of.get(r.get('sku'), r.get('sku'))
+        ret[line] = ret.get(line, 0) + 1
+        rs = reasons.setdefault(line, {})
+        rs[r.get('reason') or 'unstated'] = rs.get(r.get('reason') or 'unstated', 0) + 1
+    rows = []
+    for line, units in sold.items():
+        n = ret.get(line, 0)
+        rate = round(n / units, 4) if units else None
+        top = sorted(reasons.get(line, {}).items(), key=lambda kv: -kv[1])
+        rows.append({'line': line, 'category': cats.get(line), 'units': units, 'returns': n, 'rate': rate, 'reasons': top[:3],
+                     'top_reason': top[0][0] if top else None, 'top_reason_share': round(top[0][1] / n, 4) if top and n else None,
+                     'finding_id': f'{SCREEN}.PROD-R34.{slug(line)}'})
+    rates = [r['rate'] for r in rows if r['rate'] is not None and r['returns'] >= RETURN_MIN_RETURNS]
+    median = round(statistics.median(rates), 4) if rates else None
+    total_units = sum(sold.values())
+    total_ret = sum(ret.values())
+    for r in rows:
+        r['x_median'] = round(r['rate'] / median, 2) if r['rate'] is not None and median else None
+        r['verdict'] = ('high' if r['returns'] >= RETURN_MIN_RETURNS and median and r['rate'] >= RETURN_MEDIAN_X * median
+                        else 'thin' if r['returns'] < RETURN_MIN_RETURNS else 'normal')
+    order = {'high': 0, 'normal': 1, 'thin': 2}
+    rows.sort(key=lambda r: (order[r['verdict']], -(r['rate'] or 0)))
+    return {'unavailable': False, 'first': first, 'last': last, 'rows': rows, 'median': median, 'store_rate': round(total_ret / total_units, 4) if total_units else None,
+            'units': total_units, 'returns': total_ret,
+            'rule': f'a line is judged on {RETURN_MIN_RETURNS} or more returns; high at {RETURN_MEDIAN_X} times the store median rate; units are order line items and returns are the return leg of reversed orders, both over the last 12 whole months'}
+
+
+def return_findings(data, brand, ends_on, net_28d):
+    """PROD-R34: a line returning at 1.5 times the store median rate on 20 or more returns. Money: the returns above the
+    median rate times the line's net sales per unit (the refunds the line would not have given at the store rate)."""
+    out = []
+    rr = return_rates(data, brand, ends_on)
+    if rr.get('unavailable'):
+        if 'returns are not connected' in rr['reason']:   # orders exist, returns do not: say so once; no orders at all is PROD-R17's connect card
+            out.append(_unavailable('PROD-R34', ends_on, rr['reason'], ['orders', 'reversed_orders'], 'shopify', 'connect the store\'s returns (reversed orders) so return rates by line can be read'))
+        return out
+    for r in rr['rows']:
+        if r['verdict'] != 'high':
+            continue
+        excess = r['returns'] - rr['median'] * r['units']
+        ev = [_ev('return_rate', r['rate'], 'ratio', ends_on.isoformat(), f'{rr["first"]} to {rr["last"]}', rr['median'], 'median', source='reversed_orders', simulated=True, freshness_days=0,
+                  returns=r['returns'], units=r['units'], x_median=r['x_median']),
+              _ev('returns', r['returns'], 'count', ends_on.isoformat(), f'{rr["first"]} to {rr["last"]}', RETURN_MIN_RETURNS, 'threshold', source='reversed_orders', simulated=True, freshness_days=0),
+              _ev('top_reason_share', r['top_reason_share'], 'ratio', ends_on.isoformat(), f'{rr["first"]} to {rr["last"]}', source='reversed_orders', simulated=True, freshness_days=0, reason=r['top_reason'])]
+        reasons = ', '.join(f'{k} {v}' for k, v in r['reasons'])
+        sentence = (f'{r["line"]} returns {round(r["rate"] * 100, 1)} percent of units ({r["returns"]} of {r["units"]:,}), {r["x_median"]} times the store median of '
+                    f'{round(rr["median"] * 100, 1)} percent. Reasons: {reasons}.')
+        f = _finding('PROD-R34', slug(r['line']), ends_on, 'medium', ev, sentence, None, 0.7, [],
+                     money_reason=f'{round(excess)} returns above the store rate; refund value per return is not in the orders table')
+        f['entity'] = {'type': 'sku', 'id': r['line'], 'label': r['line'], 'category': r['category'], 'rate': r['rate'], 'median': rr['median'], 'returns': r['returns'],
+                       'units': r['units'], 'top_reason': r['top_reason'], 'reasons': r['reasons']}
+        f['id'] = f'{SCREEN}.PROD-R34.{slug(r["line"])}'
         out.append(f)
     return out

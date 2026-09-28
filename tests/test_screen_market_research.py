@@ -1101,6 +1101,51 @@ class SecondBrandTest(unittest.TestCase):
         self.assertEqual(len(ms['rows']), 5)
         self.assertIsNone(ms['store_growth'])
 
+    def test_return_rates_by_line(self):
+        D = date(2026, 9, 24)
+
+        class Data:
+            brand = {'as_of': '2026-09-24'}
+
+            def __init__(self, returns=True):
+                self.returns = returns
+
+            def table(self, name):
+                if name == 'orders':
+                    rows = []
+                    for i in range(100):
+                        rows.append({'created_at': f'2026-{(i % 12) + 1:02d}-10T10:00:00Z', 'subtotal': 50.0, 'discount': None,
+                                     'line_items': [{'sku': 'A', 'qty': 1, 'line_total': 30.0, 'title': 'Skillet 4-Pack'}, {'sku': 'B', 'qty': 1, 'line_total': 20.0, 'title': 'Apron'}]})
+                    return rows
+                if name == 'products':
+                    return [{'sku': 'A', 'title': 'Skillet 4-Pack', 'type': 'pans'}, {'sku': 'B', 'title': 'Apron', 'type': 'linen'}]
+                if name == 'reversed_orders' and self.returns:
+                    rows = [{'type': 'return', 'sku': 'A', 'reason': 'damaged in transit', 'opened_at': '2026-05-01T00:00:00Z'} for _ in range(20)]
+                    rows += [{'type': 'return', 'sku': 'A', 'reason': 'changed mind', 'opened_at': '2026-05-01T00:00:00Z'} for _ in range(5)]
+                    rows += [{'type': 'return', 'sku': 'B', 'reason': 'changed mind', 'opened_at': '2026-06-01T00:00:00Z'} for _ in range(6)]
+                    rows += [{'type': 'chargeback', 'sku': 'B', 'reason': 'fraud', 'opened_at': '2026-06-01T00:00:00Z'}]
+                    return rows
+                raise KeyError(name)
+
+        rr = audit.return_rates(Data(), None, D)
+        self.assertFalse(rr['unavailable'])
+        rows = {r['line']: r for r in rr['rows']}
+        self.assertEqual((rows['Skillet']['units'], rows['Skillet']['returns'], rows['Skillet']['rate']), (68, 25, 0.3676))   # 12 whole months, Sep 2025 to Aug 2026: 8 of the 12 order months fall inside
+        self.assertEqual(rows['Skillet']['top_reason'], 'damaged in transit')
+        self.assertEqual(rows['Apron']['verdict'], 'thin')            # 6 returns: too few to judge
+        self.assertEqual(rr['median'], 0.3676)                          # only judged lines set the median
+        self.assertEqual(rows['Skillet']['verdict'], 'normal')          # alone, a line is its own median
+        found = audit.return_findings(Data(), None, D, None)
+        self.assertEqual(found, [])
+        miss = audit.return_findings(Data(returns=False), None, D, None)
+        self.assertEqual([(f['rule_id'], f['status']) for f in miss], [('PROD-R34', 'unavailable')])
+        sample = api.sample_data()
+        rs = audit.return_rates(sample, None, D)
+        self.assertGreater(len(rs['rows']), 10)
+        self.assertTrue(all(r['verdict'] in ('high', 'normal', 'thin') for r in rs['rows']))
+        for f in audit.return_findings(sample, None, D, None):
+            self.check_shape(f)
+
     def test_sample_brand_routes(self):
         data = api.sample_data()
         o = api.overview(data, None)
@@ -1113,15 +1158,18 @@ class SecondBrandTest(unittest.TestCase):
         self.assertEqual(d['lane_map']['points'], [])
         self.assertFalse(d['trends']['on_file'])
         self.assertFalse(d['mix']['unavailable'])   # the mix comes from order line items
+        self.assertFalse(d['returns']['unavailable'])
         self.assertEqual({c['category'] for c in d['pattern']['categories']}, {'cast iron', 'gift sets', 'wooden boards', 'linen', 'kitchen tools'})
         self.assertEqual(d['surfaces']['rows'], [])
         self.assertIsNone(d['marketplace']['presence'])
         for f in audit.run(None, None, data=data):
-            self.assertEqual(f['status'], 'unavailable', f['id'])   # no products_monthly, no brain: every read says so
+            self.assertIn(f['status'], ('unavailable', 'open'), f['id'])
+            if f['status'] == 'open':
+                self.assertEqual(f['rule_id'], 'PROD-R34')   # only the return rate reads from orders; the rest say unavailable
         r = api.rank('sample', {'ends_on': '2026-09-24', 'days': 28, 'trailing': 4})
         self.assertTrue(r['actions'])
         for a in r['actions']:
-            self.assertEqual(a['status'], 'unavailable')
+            self.assertIn(a['status'], ('unavailable', 'open'))
             self.assertEqual(api.rank_mod.validate_action(a), [], a['id'])
         self.assertEqual(api.rank(None)['actions'][0]['id'], r['actions'][0]['id'])
 
