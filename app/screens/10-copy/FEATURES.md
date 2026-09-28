@@ -2,13 +2,43 @@
 
 Status: todo | doing | done | parked. One feature per commit. The first round is the skeleton; after that, features come in rounds of 10, stack-ranked by revenue impact, usefulness and how easy they are to build on dummy data.
 
-## Round 0: skeleton
+## Round 0: skeleton (S3.14, 28 Sep 2026, Bombas)
 
 | # | Feature | Status |
 |---|---|---|
-| 0.1 | Page shell in the shared UI kit: header, empty-state tiles, insight list, action buttons | todo |
-| 0.2 | `api.py` serving this screen's metrics from `app/data/` with unavailable states | todo |
-| 0.3 | 3 metric tiles, 2 insights, 1 chart from the sample brand | todo |
+| 0.1 | Page shell in the shared UI kit: header, simulated badge, tiles, insights, chart, decision row (LOOP-C12) | done |
+| 0.2 | `api.py`: overview, language, check (POST), audit. Brain through `app/brain/store.py`; live ads from the ad table through the server's `Data.metric` (spend by ad, Meta, 7 days) | done |
+| 0.3 | 3 tiles (live ads with a flagged claim, message match, voice compliance), 2 insights as rules (unapproved claim in a live ad, LOOP-C12; voice rule broken in live copy, CREA-C26), 1 chart (claims by tier, stacked by section) | done |
+| 0.4 | Claim checker: paste or pick copy; every claim-like sentence matched to claims, offers and policies records with its tier; allowed only at approved or site_backed; risk patterns (superlative, durability, guarantee vs policy, health, competitor); never-testimonial flag when a Reddit quote is used as a testimonial | done |
+| 0.5 | Voice compliance as rules: do and do-not lists (brand rules from the voice records), reading grade, sentence length, em dashes, inflated words | done |
+| 0.6 | Message match table: each ad's claims and offers against the brain records captured from its landing URL | done |
+| 0.7 | Language bank browser by theme and star, copy-ready phrases, source links, Reddit rows marked never testimonial | done |
+| 0.8 | Copy set starter per format (Meta feed, Meta Reels, Google search): headline, primary text, CTA, QA gate applied line by line | done |
+| 0.9 | `audit.py`: COPY-R01 unapproved claim in live copy, COPY-R02 message mismatch, COPY-R03 voice rule broken; unavailable findings when the ad table is missing | done |
+
+Notes for the next round:
+- The ad table's `body` and `title` are generator placeholders, so each simulated ad runs one simulated copy set from `fixtures/ad_copy.json` (ad number modulo set count). A real account fills copy from the ad creative fields.
+- Checker rules live in `fixtures/copy_rules.json`; claim patterns point at brain record ids and the tier is read from the brain on every run.
+- Page lines for message match are brain records captured from that exact URL, not a page scrape. `page_copy_blocks` (room data list) would replace this.
+- Money at stake is null on every finding: no revenue formula for copy risk in `metrics.md` yet. Spend on the live ads is in evidence.
+- Shared logic sits in `copylib.py`, loaded by `audit.py` under a unique module name.
+
+## Room jobs (room "Copy", agent CREA)
+
+| Job | Question it answers | Capabilities |
+|---|---|---|
+| Check every claim, testimonial and guarantee line before it ships | will this line get the ad rejected or make a promise we cannot keep | LOOP-C12 |
+| Catch when a live ad's promise no longer matches the page it sends to | does this ad still say the same thing as the page it lands on | SITE-C39, SITE-C36 |
+| Generate and grade headline and primary-text sets for a format | which text set is actually ready to test | CREA-C05 |
+| Keep every draft inside the account's fixed writing rules automatically | is this draft too long, too fancy, or above the reading level we agreed on | CREA-C26 |
+| Turn an approved offer into copy, and frame its price honestly | does this line describe an offer we can honor, and is the price framed the way we approved | LIFE-C36, CREA-C31 |
+| Write bottom-funnel lines for the objections buyers actually raise, worst one first | are we answering the objection that is costing us sales, before the smaller ones | CREA-C24 |
+| Write SMS and lifecycle email copy inside carrier, platform and cadence rules | is this send inside the rules and does it match the cadence plan | LIFE-C14 |
+| Draft a first-pass ad copy set straight from a live product page | can I get a starting set of ad copy today without a full brief | CREA-C37 |
+| Write payment and delivery reassurance lines (COD lines only for markets: IN) | what do we say to remove payment and delivery hesitation without sounding pushy | CREA-C44 |
+| Prep marketplace listing and brand-store copy on the same claim tiers as ads | is this listing or A+ module making a claim our ads cannot make | PROD-C34, CREA-C45 |
+| Route each ad's copy to the right page and package an approved batch for bulk upload | is this ad's copy written for its page, and is the upload sheet ready | SITE-C35, CREA-C35, CREA-C20 |
+| Name a new product or system so the name does selling work | does this name carry the benefit or story on its own | CREA-C32 |
 
 ## Candidates from the room spec (pick 10 per round)
 
@@ -105,3 +135,4 @@ Status: todo | doing | done | parked. One feature per commit. The first round is
 
 | Round | Features picked | Date | Notes |
 |---|---|---|---|
+| 0 | 0.1 to 0.9 | 28 Sep 2026 | Bombas brain plus simulated ad table; screenshot in round0.png |
