@@ -90,7 +90,7 @@ class AuditShape(unittest.TestCase):
         self.assertIn('05-brand-brain.BRN-R02.section_economics', ids)
         self.assertIn('05-brand-brain.BRN-R04.mission_trust.rung_1.donation_pledge', ids)
         rules = {r['rule_id'] for r in audit.RULES}
-        self.assertLessEqual({'BRN-R01', 'BRN-R02', 'BRN-R03', 'BRN-R04', 'BRN-R05', 'BRN-R06', 'BRN-R07', 'BRN-R08', 'BRN-R09', 'BRN-R10', 'BRN-R11'}, rules)
+        self.assertLessEqual({'BRN-R01', 'BRN-R02', 'BRN-R03', 'BRN-R04', 'BRN-R05', 'BRN-R06', 'BRN-R07', 'BRN-R08', 'BRN-R09', 'BRN-R10', 'BRN-R11', 'BRN-R12'}, rules)
 
 
 class AuditRules(TempBrain):
@@ -533,3 +533,68 @@ class Round1Connectors(TempBrain):
         cn = api.handle(Req(['health']))['connectors']
         up = next(r for r in cn['sources'] if r['id'] == 'upload')
         self.assertEqual((up['status'], up['last_pull']), ('connected', DAY))
+
+
+class Round1Conflicts(TempBrain):
+    """Round 1 feature 6: conflicts with the site-wins default and a founder decision that writes the resolution."""
+
+    def inject(self):
+        rows = self.section('offers')
+        rows.append({'id': 'bombas.offers.returns_window_days', 'brand': 'bombas', 'section': 'offers', 'field': 'returns_window_days',
+                     'value': 30, 'text': 'Returns within 30 days.', 'tier': 'site_backed', 'confidence': 0.9,
+                     'source': {'type': 'site', 'ref': 'https://bombas.com/pages/returns', 'captured_at': DAY}})
+        self.write('offers', rows)
+        conflicts = json.loads((self.tmp / 'bombas' / 'review' / 'conflicts.json').read_text(encoding='utf-8'))
+        conflicts.append({'id': 'bombas.conflict.offers.returns_window_days', 'brand': 'bombas', 'section': 'offers', 'field': 'returns_window_days',
+                          'status': 'open', 'raised_at': DAY, 'kept': 'bombas.offers.returns_window_days', 'needs_founder': False, 'rule': 'site ranks above document',
+                          'values': [{'value': 30, 'text': 'Returns within 30 days.', 'source_type': 'site', 'source_ref': 'https://bombas.com/pages/returns', 'record_id': 'bombas.offers.returns_window_days', 'confidence': 0.9},
+                                     {'value': 60, 'text': 'Returns within 60 days.', 'source_type': 'document', 'source_ref': 'brand-book.pdf', 'record_id': 'bombas.offers.returns_window_days', 'confidence': 0.75}]})
+        (self.tmp / 'bombas' / 'review' / 'conflicts.json').write_text(json.dumps(conflicts), encoding='utf-8')
+
+    def test_open_conflict_shows_default_and_fires_rule(self):
+        self.inject()
+        cv = api.handle(Req(['conflicts']))
+        self.assertEqual(cv['counts'], {'open': 1, 'settled': 1, 'needs_founder': 0})
+        c = cv['open'][0]
+        self.assertEqual((c['default_source'], c['kept_value']['value']), ('site', 30))
+        self.assertIn('paid social', c['reads_by'])
+        ids = {f['id']: f for f in api.handle(Req(['audit']))['findings']}
+        f = ids['05-brand-brain.BRN-R12.conflict_offers_returns_window_days']
+        self.assertEqual((f['severity'], f['capability']['id']), ('medium', 'BRN-C05'))
+        self.assertIn('"30" is kept until you decide', f['sentence'])
+
+    def test_founder_decides_writes_record_and_decision(self):
+        self.inject()
+        status, res = api.handle(Req(['conflicts', 'bombas.conflict.offers.returns_window_days'], 'POST', body={'record_id': 'bombas.offers.returns_window_days', 'index': 1, 'reason': 'the brand book is current'}))
+        self.assertEqual(status, 201)
+        rec = next(r for r in self.section('offers') if r['id'] == 'bombas.offers.returns_window_days')
+        self.assertEqual((rec['value'], rec['tier'], rec['source']['type']), (60, 'approved', 'founder'))
+        self.assertEqual(rec['history'][-1]['value'], 30)
+        lane = json.loads((self.tmp / 'bombas' / 'raw' / 'z-founder' / 'offers.json').read_text(encoding='utf-8'))
+        self.assertIn('bombas.offers.returns_window_days', {r['id'] for r in lane})
+        cv = api.handle(Req(['conflicts']))
+        self.assertEqual(cv['counts']['open'], 0)
+        settled = next(c for c in cv['settled'] if c['id'] == 'bombas.conflict.offers.returns_window_days')
+        self.assertEqual((settled['status'], settled['chosen']['source_type'], settled['resolved_at']), ('resolved_by_founder', 'document', DAY))
+        dec = next(r for r in self.section('decisions') if r['id'] == res['decision'])
+        self.assertIn('kept "Returns within 60 days."', dec['text'])
+        self.assertIn('the brand book is current', dec['text'])
+        self.assertNotIn('05-brand-brain.BRN-R12.conflict_offers_returns_window_days', {f['id'] for f in api.handle(Req(['audit']))['findings']})
+        prof = api.handle(Req(['profile']))
+        f = next(f for s_ in prof['sections'] if s_['section'] == 'offers' for f in s_['fields'] if f['key'] == 'returns_window_days')
+        self.assertEqual(f['tier'], 'approved')
+
+    def test_typed_value_and_bad_input(self):
+        self.inject()
+        status, res = api.handle(Req(['conflicts', 'bombas.conflict.offers.returns_window_days'], 'POST', body={'text': '45'}))
+        self.assertEqual(status, 201)
+        rec = next(r for r in self.section('offers') if r['id'] == 'bombas.offers.returns_window_days')
+        self.assertEqual(rec['value'], 45.0)
+        self.assertEqual(api.handle(Req(['conflicts', 'nope'], 'POST', body={'text': 'x'}))[0], 404)
+        self.assertEqual(api.handle(Req(['conflicts', 'bombas.conflict.identity.giving_model'], 'POST', body={}))[0], 400)
+
+    def test_profile_edit_lands_in_founder_lane(self):
+        api.handle(Req(['profile', 'positioning', 'frame'], 'POST', body={'text': 'Comfort that lasts, and a pair given for every pair bought.'}))
+        lane = json.loads((self.tmp / 'bombas' / 'raw' / 'z-founder' / 'positioning.json').read_text(encoding='utf-8'))
+        self.assertEqual(lane[-1]['id'], 'bombas.positioning.frame')
+        self.assertEqual(lane[-1]['tier'], 'approved')

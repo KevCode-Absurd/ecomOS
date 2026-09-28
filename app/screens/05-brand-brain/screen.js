@@ -599,20 +599,60 @@
     return card;
   }
 
-  function conflictCard(c) {
-    const card = el('article', { class: 'card flat rec' });
+  // ---------- 5d. conflicts: which source wins ----------
+  function conflictCard(c, reload) {
+    const card = el('article', { class: 'card flat rec conflict' + (c.status === 'open' ? '' : ' settled') });
     card.append(el('div', { class: 'meta' }, el('span', { class: 'chip mono', text: c.section + '.' + c.field }),
-      el('span', { text: 'raised ' + fmt.date(c.raised_at) }), c.needs_founder ? el('span', { class: 'chip warn', text: 'needs you' }) : null));
+      el('span', { text: 'raised ' + fmt.date(c.raised_at) }), c.status === 'open' ? (c.needs_founder ? el('span', { class: 'chip bad', text: 'needs you' }) : el('span', { class: 'chip warn', text: 'open' })) : el('span', { class: 'chip good', text: 'settled by you ' + (c.resolved_at ? fmt.date(c.resolved_at) : '') }),
+      c.reads_by && c.reads_by.length ? el('span', { text: 'read by ' + c.reads_by.join(', ') }) : null));
     const vs = el('div', { class: 'vs' });
-    for (const v of c.values || []) {
-      const kept = v.record_id === c.kept && v === (c.values || []).find((x) => x.record_id === c.kept);
-      vs.append(el('div', { class: kept ? 'kept' : '' }, el('div', { class: 'meta' }, kept ? el('span', { class: 'chip accent', text: 'kept for now' }) : null,
-        el('span', { text: 'confidence ' + v.confidence })), el('b', { text: String(v.value) }), el('div', { class: 'muted small', text: v.text }),
-        el('div', { class: 'meta' }, sourceLink({ type: v.source_type, ref: v.source_ref, link: /^https?:/.test(v.source_ref) ? v.source_ref : null }))));
-    }
+    const status = el('span', { class: 'muted small' });
+    (c.values || []).forEach((v, i) => {
+      const kept = v.record_id === c.kept && i === (c.values || []).findIndex((x) => x.record_id === c.kept);
+      const isDefault = c.status === 'open' && v.record_id === c.default_record && i === (c.values || []).findIndex((x) => x.record_id === c.default_record);
+      const box = el('div', { class: kept ? 'kept' : '' },
+        el('div', { class: 'meta' }, kept ? el('span', { class: 'chip accent', text: c.status === 'open' ? 'kept for now' : 'kept' }) : null, isDefault && !kept ? el('span', { class: 'chip', text: 'default' }) : null, el('span', { class: 'chip', text: pretty(v.source_type) }), el('span', { text: 'confidence ' + (v.confidence == null ? NA : v.confidence) })),
+        el('b', { text: String(v.value) }), el('div', { class: 'muted small', text: v.text || '' }),
+        el('div', { class: 'meta' }, sourceLink({ type: v.source_type, ref: v.source_ref, link: /^https?:/.test(v.source_ref || '') ? v.source_ref : null })));
+      if (c.status === 'open') {
+        const btn = el('button', { class: 'btn sm ' + (kept ? '' : 'primary'), type: 'button', text: kept ? 'Keep this' : 'Use this instead' });
+        btn.addEventListener('click', async () => {
+          btn.disabled = true; status.textContent = 'Saving';
+          try { const res = await api(BASE + 'conflicts/' + encodeURIComponent(c.id), { method: 'POST', body: { record_id: v.record_id, index: i } }); status.textContent = 'Saved as ' + res.record + '. Flows to ' + res.flows_to + '. Logged as ' + res.decision + '.'; if (reload) reload(); }
+          catch (e) { btn.disabled = false; status.textContent = 'Could not save: ' + e.message; }
+        });
+        box.append(el('div', { class: 'row' }, btn));
+      }
+      vs.append(box);
+    });
     card.append(vs, el('div', { class: 'muted small', text: 'Rule: ' + (c.rule || NA) }));
-    card.append(UI.decisionRow({ capability: 'BRN-C05', autonomy: 'agent', screen: SCREEN, compact: true }));
+    if (c.status === 'open') {
+      const input = el('input', { type: 'text', placeholder: 'Or type the right value', 'aria-label': 'Right value for ' + c.field });
+      const why = el('input', { type: 'text', placeholder: 'Reason (optional)', 'aria-label': 'Reason' });
+      const go = el('button', { class: 'btn sm', type: 'button', text: 'Save my value' });
+      go.addEventListener('click', async () => {
+        if (!input.value.trim()) { status.textContent = 'Type a value first.'; return; }
+        go.disabled = true;
+        try { const res = await api(BASE + 'conflicts/' + encodeURIComponent(c.id), { method: 'POST', body: { text: input.value.trim(), reason: why.value.trim() } }); status.textContent = 'Saved as ' + res.record + '.'; if (reload) reload(); }
+        catch (e) { go.disabled = false; status.textContent = 'Could not save: ' + e.message; }
+      });
+      card.append(el('div', { class: 'answer' }, input, why, go), status);
+    }
     return card;
+  }
+  async function loadConflicts() {
+    let cv;
+    try { cv = await api(BASE + 'conflicts'); } catch (e) { mount('#conflicts', el('p', { class: 'muted', text: 'Conflicts unavailable: ' + e.message })); return; }
+    mount('#conflicts-tools', UI.orientation([{ label: 'open', value: cv.counts.open, unit: 'n', tone: cv.counts.open ? 'bad' : 'good' }, { label: 'need you', value: cv.counts.needs_founder, unit: 'n' }, { label: 'settled', value: cv.counts.settled, unit: 'n' }]));
+    const items = cv.open.map((c) => conflictCard(c, loadConflicts));
+    if (!cv.open.length) items.push(el('p', { class: 'muted', text: 'No open conflict. ' + cv.rule }));
+    if (cv.settled.length) {
+      const list = el('div', { class: 'grid', hidden: true });
+      const btn = el('button', { class: 'btn sm', type: 'button', text: 'Show ' + cv.settled.length + ' settled' });
+      btn.addEventListener('click', () => { list.hidden = !list.hidden; btn.textContent = list.hidden ? 'Show ' + cv.settled.length + ' settled' : 'Hide settled'; if (!list.hidden && !list.children.length) mount(list, ...cv.settled.map((c) => conflictCard(c))); });
+      items.push(el('div', { class: 'row' }, btn), list);
+    }
+    mount('#conflicts', ...items);
   }
 
   function auditTable(findings) {
@@ -645,7 +685,6 @@
     mount('#ladders', ...d.ladders.map(ladderCard));
     mount('#questions', ...(d.questions.length ? d.questions.map((q) => questionCard(q, loadDesk)) : [el('p', { class: 'muted', text: 'No open questions.' })]));
     mount('#review', ...(d.review.length ? d.review.map((r) => reviewCard(r, loadDesk)) : [el('p', { class: 'muted', text: 'Nothing proposed. Agent updates land here before they reach the brain.' })]));
-    mount('#conflicts', ...(d.conflicts.length ? d.conflicts.map(conflictCard) : [el('p', { class: 'muted', text: 'No open conflicts.' })]));
     try {
       const a = await api(BASE + 'audit');
       mount('#audit', el('p', { class: 'muted small', text: a.findings.length + ' findings from ' + a.rules.length + ' rules.' }), auditTable(a.findings));
@@ -657,6 +696,7 @@
     loadDocs();
     loadMarket();
     loadHealth();
+    loadConflicts();
     const [prof] = await Promise.all([loadProfile(), loadDesk()]);
     await loadPlan(prof);
   }

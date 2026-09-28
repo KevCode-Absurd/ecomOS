@@ -57,6 +57,12 @@ BRN-R11 section a room needs is mostly inferred or unverified. Half or more
     of a section's active records are inferred or unverified and a room reads
     it (health.py, WEAK_SHARE 0.5). Severity medium. Capability BRN-C07
     (founder round, agent drafts). Owner: 05-brand-brain.
+BRN-R12 open conflict. Two sources disagree on one field and no founder
+    decision exists (review/conflicts.json, status open). Severity high when
+    the section is gated (identity, claims, decisions) and needs the founder,
+    else medium. Capability BRN-C05 (conflict detection with the site as
+    default; the decision is the founder's). Reputation override 5 when the
+    field is a claim or policy. Owner: 05-brand-brain.
 BRN-R07 competitor snapshot stale. A configured Ad Library page was captured
     more than SNAPSHOT_STALE_DAYS (7) ago, or never. Severity low. Capability
     BRN-C11 (competitor snapshot, signals only). Owner: 05-brand-brain.
@@ -111,10 +117,12 @@ RULES = [
      "inputs": ["positioning.reddit_frames", "positioning.frame", "identity.giving_model", "story_bank"], "capability": "CREA-C03", "owner_screen": SCREEN},
     {"rule_id": "BRN-R11", "name": "section a room needs is mostly inferred or unverified", "entity_type": "brand",
      "inputs": ["brain sections", "questions.bank.json"], "capability": "BRN-C07", "owner_screen": SCREEN},
+    {"rule_id": "BRN-R12", "name": "open conflict", "entity_type": "brand",
+     "inputs": ["review/conflicts.json"], "capability": "BRN-C05", "owner_screen": SCREEN},
 ]
 AUTONOMY = {"BRN-C12": "agent_does", "BRN-C07": "founder_gate", "BRN-C03": "agent_does",
             "CREA-C19": "agent_does", "CREA-C04": "agent_does", "BRN-C11": "agent_does", "CREA-C06": "agent_does",
-            "BRAND-C57": "agent_does", "CREA-C03": "agent_does"}
+            "BRAND-C57": "agent_does", "CREA-C03": "agent_does", "BRN-C05": "founder_gate"}
 
 _hspec = importlib.util.spec_from_file_location("brand_brain_health", Path(__file__).resolve().parent / "health.py")
 health = importlib.util.module_from_spec(_hspec)
@@ -347,6 +355,36 @@ def rule_weak_sections(brain: Brain, ends_on: str) -> list[dict]:
     return out
 
 
+def rule_conflicts(brain: Brain, ends_on: str) -> list[dict]:
+    out = []
+    path = brain.dir / "review" / "conflicts.json"
+    try:
+        rows = json.loads(path.read_text(encoding="utf-8")) if path.exists() else []
+    except (OSError, ValueError):
+        rows = []
+    for c in rows:
+        if c.get("status", "open") != "open":
+            continue
+        vals = c.get("values") or []
+        age = None
+        try:
+            age = (brain.today - dt.date.fromisoformat(str(c.get("raised_at"))[:10])).days
+        except (TypeError, ValueError):
+            pass
+        ev = [_row("sources_disagreeing", len(vals), "n", ends_on, age, 1, "review/conflicts.json"),
+              _row("days_open", age, "days", ends_on, age, 0, "review/conflicts.json")]
+        a, b = (vals + [{}, {}])[:2]
+        kept = next((v for v in vals if v.get("record_id") == c.get("kept")), a)
+        sentence = (f"{(a.get('source_type') or 'a source').replace('_', ' ')} says \"{str(a.get('value'))[:40]}\" and {(b.get('source_type') or 'another').replace('_', ' ')} says "
+                    f"\"{str(b.get('value'))[:40]}\" for {c.get('field', '').replace('_', ' ')}. \"{str(kept.get('value'))[:40]}\" is kept until you decide.")
+        f = _finding("BRN-R12", "high" if c.get("needs_founder") else "medium",
+                     {"type": "brand", "id": f"conflict_{c.get('section')}_{c.get('field')}", "label": f"{c.get('section')} {c.get('field')}".replace("_", " ")},
+                     ev, sentence, [v.get("record_id") for v in vals if v.get("record_id")][:4], ends_on, 0.7)
+        f["conflict_id"] = c.get("id")
+        out.append(f)
+    return out
+
+
 def rule_snapshot_stale(brain: Brain, ends_on: str) -> list[dict]:
     out = []
     d = market.pages(brain)
@@ -374,7 +412,7 @@ def run(brand: str, window: dict | None = None, root: Path | None = None) -> lis
         bank = keeper.load_bank()
     except (OSError, ValueError, KeyError):
         bank = None
-    out = rule_stale(brain, ends_on) + rule_claims(brain, ends_on) + rule_competitor_gaps(brain, ends_on) + rule_angle_gaps(brain, ends_on) + rule_signals(brain, ends_on) + rule_weak_sections(brain, ends_on) + rule_snapshot_stale(brain, ends_on)
+    out = rule_stale(brain, ends_on) + rule_claims(brain, ends_on) + rule_competitor_gaps(brain, ends_on) + rule_angle_gaps(brain, ends_on) + rule_signals(brain, ends_on) + rule_weak_sections(brain, ends_on) + rule_conflicts(brain, ends_on) + rule_snapshot_stale(brain, ends_on)
     if bank is None:
         for rid, sev in (("BRN-R02", "medium"), ("BRN-R03", "medium")):
             f = _finding(rid, sev, {"type": "brand", "id": "question_bank", "label": "question bank"},

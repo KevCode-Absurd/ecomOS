@@ -29,6 +29,9 @@ question, and accept or ignore on a proposed record. Nothing external.
   GET  health/cell?section=&tier=  the records in one heatmap cell, best first
   POST approve/<record id>      {choice: approve | forbid}: the founder settles a record; it becomes an approved
                                 (or forbidden) founder record with the old tier in history
+  GET  conflicts                open and settled conflicts with the default winner named and who reads the field
+  POST conflicts/<id>           {record_id | index | text, reason}: the founder decides; writes an approved founder
+                                record for the field, marks the conflict resolved, logs a decisions record
   GET  records?section=<name>   one section's records with tier, date, source and evidence
   GET  audit                    findings from audit.py (app/contracts/audit.md shape)
   POST questions/<field>        {answer}: writes a founder record, marks the question answered
@@ -146,10 +149,83 @@ def open_questions(brain: Brain, bank: list[dict]) -> list[dict]:
     return out
 
 
-def conflicts(brain: Brain) -> list[dict]:
+def _conflict_rows(brain: Brain) -> list[dict]:
     path = brain.dir / "review" / "conflicts.json"
-    rows = json.loads(path.read_text(encoding="utf-8")) if path.exists() else []
-    return [c for c in rows if c.get("status", "open") == "open"]
+    try:
+        return json.loads(path.read_text(encoding="utf-8")) if path.exists() else []
+    except (OSError, ValueError):
+        return []
+
+
+def conflicts(brain: Brain) -> list[dict]:
+    return [c for c in _conflict_rows(brain) if c.get("status", "open") == "open"]
+
+
+DEFAULT_WINNER = ("founder", "connector", "site", "document", "ad_library", "interview", "press", "review", "ticket", "agent", "inferred")
+
+
+def conflicts_view(brain: Brain) -> dict:
+    """Open and settled conflicts with the default winner named (site wins over documents and everything below it)."""
+    rows = _conflict_rows(brain)
+    out = {"open": [], "settled": []}
+    for c in rows:
+        vals = c.get("values") or []
+        ranked = sorted(vals, key=lambda v: (DEFAULT_WINNER.index(v.get("source_type")) if v.get("source_type") in DEFAULT_WINNER else 99, -(v.get("confidence") or 0)))
+        default = ranked[0] if ranked else None
+        item = dict(c, default_record=default.get("record_id") if default else None, default_source=default.get("source_type") if default else None,
+                    kept_value=next((v for v in vals if v.get("record_id") == c.get("kept")), default),
+                    reads_by=sorted(FLOWS_TO.get(c.get("section"), "").split(", ")) if FLOWS_TO.get(c.get("section")) else [])
+        (out["open"] if c.get("status", "open") == "open" else out["settled"]).append(item)
+    out["open"].sort(key=lambda c: (not c.get("needs_founder"), c.get("raised_at") or ""))
+    out["settled"].sort(key=lambda c: -(int((c.get("resolved_at") or c.get("raised_at") or "0").replace("-", "")) if (c.get("resolved_at") or c.get("raised_at")) else 0))
+    out["counts"] = {"open": len(out["open"]), "settled": len(out["settled"]), "needs_founder": sum(1 for c in out["open"] if c.get("needs_founder"))}
+    out["rule"] = "Default: founder, then connector, then the live site, then documents, the ad library, interviews, press, reviews, tickets, agents, inferred. The kept value stands until you decide."
+    return out
+
+
+def conflict_resolve(brain: Brain, cid: str, body: dict):
+    body = body or {}
+    rows = _conflict_rows(brain)
+    c = next((x for x in rows if x.get("id") == cid), None)
+    if c is None:
+        return 404, {"error": "no such conflict", "id": cid}
+    vals = c.get("values") or []
+    chosen = None
+    if body.get("record_id"):
+        chosen = next((v for v in vals if v.get("record_id") == body["record_id"] and ("index" not in body or vals.index(v) == body["index"])), None)
+        if chosen is None and isinstance(body.get("index"), int) and 0 <= body["index"] < len(vals):
+            chosen = vals[body["index"]]
+    elif isinstance(body.get("index"), int) and 0 <= body["index"] < len(vals):
+        chosen = vals[body["index"]]
+    text = str(body.get("text") or "").strip()
+    if chosen is None and not text:
+        return 400, {"error": "send record_id, index or text"}
+    section, field = c.get("section"), c.get("field")
+    if section not in SECTIONS or not field:
+        return 400, {"error": "conflict has no section or field"}
+    rid = f"{brain.brand}.{section}.{field}"
+    value = chosen.get("value") if chosen else _coerce(text)
+    rec_text = (chosen.get("text") or str(chosen.get("value"))) if chosen else text
+    reason = str(body.get("reason") or "").strip()[:300]
+    rec = {"id": rid, "brand": brain.brand, "section": section, "field": field, "value": value, "text": rec_text,
+           "tier": "approved", "confidence": 1.0, "visibility": "private",
+           "source": {"type": "founder", "ref": f"05-brand-brain conflict decision on {cid}", "captured_at": brain.today.isoformat()}}
+    errs = founder_put(brain, rec)
+    if errs:
+        return 400, {"error": "record not valid", "details": errs}
+    c.update(status="resolved_by_founder", kept=rid, needs_founder=False, resolved_at=brain.today.isoformat(),
+             rule="founder decided" + (f": {reason}" if reason else ""),
+             chosen={"record_id": chosen.get("record_id") if chosen else None, "source_type": chosen.get("source_type") if chosen else "founder", "value": value})
+    (brain.dir / "review").mkdir(parents=True, exist_ok=True)
+    (brain.dir / "review" / "conflicts.json").write_text(json.dumps(rows, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    losers = [v for v in vals if v is not chosen]
+    drec = {"id": f"{brain.brand}.decisions.conflict_{section}_{field}", "brand": brain.brand, "section": "decisions", "field": f"conflict_{section}_{field}",
+            "value": {"conflict": cid, "kept": rid, "chosen_source": chosen.get("source_type") if chosen else "founder", "over": [v.get("source_type") for v in losers], "reason": reason or None},
+            "text": f"Conflict on {section.replace('_', ' ')} {field.replace('_', ' ')}: kept \"{str(rec_text)[:80]}\" ({chosen.get('source_type') if chosen else 'typed by the founder'}) over " + (", ".join(f"\"{str(v.get('value'))[:40]}\" ({v.get('source_type')})" for v in losers) or "the other values") + (f". Reason: {reason}" if reason else "."),
+            "tier": "approved", "confidence": 1.0, "visibility": "private",
+            "source": {"type": "founder", "ref": f"05-brand-brain conflict decision on {cid}", "captured_at": brain.today.isoformat()}}
+    founder_put(brain, drec)
+    return 201, {"ok": True, "conflict": cid, "record": rid, "decision": drec["id"], "flows_to": FLOWS_TO.get(section, ""), "version": brain.version()}
 
 
 def review_queue(brain: Brain) -> list[dict]:
@@ -242,6 +318,26 @@ def overview(brain: Brain) -> dict:
             "questions": questions, "review": review_queue(brain), "conflicts": conf}
 
 
+FOUNDER_LANE = "z-founder"
+
+
+def founder_put(brain: Brain, rec: dict) -> list[str]:
+    """Write a founder record to its section file and to raw/z-founder/<section>.json, so merge.py keeps it on a re-merge."""
+    errs = brain.put(rec)
+    if errs:
+        return errs
+    lane = brain.dir / "raw" / FOUNDER_LANE
+    try:
+        lane.mkdir(parents=True, exist_ok=True)
+        path = lane / f"{rec['section']}.json"
+        rows = json.loads(path.read_text(encoding="utf-8")) if path.exists() else []
+        rows = [r for r in rows if r.get("id") != rec["id"]] + [rec]
+        path.write_text(json.dumps(rows, indent=1, ensure_ascii=False) + "\n", encoding="utf-8")
+    except (OSError, ValueError):
+        pass  # the section file is the record of truth; the raw lane is a convenience for re-merges
+    return []
+
+
 def _coerce(text: str):
     t = text.strip().replace(",", "")
     try:
@@ -264,7 +360,7 @@ def answer(brain: Brain, field: str, body: dict):
            "text": text, "tier": "approved", "confidence": 1.0, "visibility": "private",
            "source": {"type": "founder", "ref": f"05-brand-brain answer to {oq['id']}",
                       "captured_at": brain.today.isoformat()}}
-    errs = brain.put(rec)
+    errs = founder_put(brain, rec)
     if errs:
         return 400, {"error": "record not valid", "details": errs}
     v.update(answered_on=brain.today.isoformat(), answer_record=rid)
@@ -349,7 +445,7 @@ def profile_edit(brain: Brain, section: str, field: str, body: dict):
     rec = {"id": rid, "brand": brain.brand, "section": section, "field": field, "value": _coerce(text), "text": text,
            "tier": "approved", "confidence": 1.0, "visibility": "private",
            "source": {"type": "founder", "ref": "05-brand-brain profile edit", "captured_at": brain.today.isoformat()}}
-    errs = brain.put(rec)
+    errs = founder_put(brain, rec)
     if errs:
         return 400, {"error": "record not valid", "details": errs}
     return 201, {"ok": True, "record": rid, "tier": "approved", "flows_to": FLOWS_TO.get(section, ""), "version": brain.version()}
@@ -437,7 +533,7 @@ def page_id_add(brain: Brain, body: dict):
            "text": f"{name} Meta page id {pid}, added by the founder for the Ad Library pull.",
            "tier": "approved", "confidence": 1.0, "visibility": "private",
            "source": {"type": "founder", "ref": "05-brand-brain competitors page id", "captured_at": brain.today.isoformat()}}
-    errs = brain.put(rec)
+    errs = founder_put(brain, rec)
     if errs:
         return 400, {"error": "record not valid", "details": errs}
     return 201, {"ok": True, "record": rid, "flows_to": "the page list and the next Ad Library pull estimate", "version": brain.version()}
@@ -459,7 +555,7 @@ def approve(brain: Brain, rid: str, body: dict):
     new = dict(rec, tier="approved" if choice == "approve" else "forbidden", confidence=1.0, status="active", history=hist,
                source={"type": "founder", "ref": f"05-brand-brain {choice} of {rid}", "captured_at": brain.today.isoformat(), "was": was})
     new.pop("expires_at", None)
-    errs = brain.put(new)
+    errs = founder_put(brain, new)
     if errs:
         return 400, {"error": "record not valid", "details": errs}
     return 201, {"ok": True, "record": rid, "tier": new["tier"], "was": rec.get("tier"), "version": brain.version()}
@@ -485,6 +581,12 @@ def handle(req):
         return document_add(brain, req.body)
     if req.method == "GET" and parts == ["competitors"]:
         return competitors(brain)
+    if req.method == "GET" and parts == ["conflicts"]:
+        cv = conflicts_view(brain)
+        cv.update(brand=brain.brand, today=brain.today.isoformat(), version=brain.version())
+        return cv
+    if req.method == "POST" and len(parts) == 2 and parts[0] == "conflicts":
+        return conflict_resolve(brain, parts[1], req.body)
     if req.method == "GET" and parts == ["health"]:
         h = health.heatmap(brain)
         h["connectors"] = health.connectors(brain)
