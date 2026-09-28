@@ -141,6 +141,10 @@ Rules
             the web pass) whose last capture is older than its window, or that never ran, stands on a mock file, or has no
             actor set. Severity medium for due or mock, else low. Money null. Every run is a paid call a person approves
             under the brand's caps. Capability PROD-C04. Owner: 01-market-research.
+  PROD-R37  First run at full MOQ: a candidate at gated or later with no first production run on file, or a first run whose
+            cash is 25 percent or more of 28-day net revenue (or revenue unknown), or whose format MOQ is above the units
+            wanted, with no lower-MOQ alternative noted. Money: the first run cash. Bank idea BRD-249. Severity medium.
+            Capability PROD-C07 (demand pattern and cash timing, agent does). Owner: 01-market-research.
   PROD-R03  Hero line with no next SKU: a line with 25 percent or more of its category's net sales in
             the last 3 whole months while the candidate pipeline holds no open next-SKU candidate for
             that category. Money: null (an unlaunched SKU has no baseline). Capability PROD-C06
@@ -237,6 +241,8 @@ RULES = [
      'inputs': ['brain.open_questions', 'brain.objection_ladders'], 'capability': 'PROD-C12', 'owner_screen': SCREEN},
     {'rule_id': 'PROD-R36', 'name': 'Pull the desk reads that is due, never run, mock, or has no actor set', 'entity_type': 'metric',
      'inputs': ['brain.*.source', 'brain.config.apify', 'fixtures.market_trends', 'fixtures.social_pull'], 'capability': 'PROD-C04', 'owner_screen': SCREEN},
+    {'rule_id': 'PROD-R37', 'name': 'Candidate at gated or later with no first run on file, or a full-MOQ first run with no lower-MOQ alternative noted', 'entity_type': 'sku',
+     'inputs': ['fixtures.pipeline', 'daily'], 'capability': 'PROD-C07', 'owner_screen': SCREEN},
 ]
 CAPABILITY = {'PROD-R01': {'id': 'PROD-C05', 'autonomy': 'agent_does'},
               'PROD-R02': {'id': 'PROD-C06', 'autonomy': 'agent_does'},
@@ -273,7 +279,8 @@ CAPABILITY = {'PROD-R01': {'id': 'PROD-C05', 'autonomy': 'agent_does'},
               'PROD-R33': {'id': 'PROD-C06', 'autonomy': 'agent_does'},
               'PROD-R34': {'id': 'PROD-C06', 'autonomy': 'agent_does'},
               'PROD-R35': {'id': 'PROD-C12', 'autonomy': 'human_assist'},
-              'PROD-R36': {'id': 'PROD-C04', 'autonomy': 'agent_does'}}
+              'PROD-R36': {'id': 'PROD-C04', 'autonomy': 'agent_does'},
+              'PROD-R37': {'id': 'PROD-C07', 'autonomy': 'agent_does'}}
 SEVERITY_ORDER = {'critical': 0, 'high': 1, 'medium': 2, 'low': 3}
 
 # Review records name their line in a short key; the store names it by SKU title.
@@ -760,6 +767,7 @@ def run(brand, window=None, data=None):
     out += return_findings(data, brand, ends_on, net)
     out += question_findings(br, ends_on)
     out += pull_findings(br, brand, ends_on)
+    out += first_run_findings(brand, ends_on, net)
     out.sort(key=lambda f: (SEVERITY_ORDER[f['severity']], -((f['money_at_stake'] or {}).get('usd') or 0), f['id']))
     return out
 
@@ -3497,5 +3505,71 @@ def pull_findings(br, brand, ends_on):
         f['entity'] = {'type': 'metric', 'id': r['key'], 'label': r['label'], 'actor': r['actor'], 'verdict': r['verdict'], 'command': r['command'], 'estimate_usd': r['estimate_usd'],
                        'per_run_cap': (p['caps'] or {}).get('per_run_usd'), 'per_week_cap': (p['caps'] or {}).get('per_week_usd'), 'feeds': r['feeds'], 'note': r['note']}
         f['id'] = r['finding_id']
+        out.append(f)
+    return out
+
+
+# ---------------------------------------------------------------- the first run and its MOQ (round 4.9, bank idea BRD-249)
+
+FIRST_RUN_STAGE_MIN = 2          # gated or later: the first production run is being sized
+FIRST_RUN_CASH_SHARE = 0.25      # first run cash at 25 percent of 28-day net revenue or more is a risk without a lower-MOQ option
+
+
+def first_run_read(brand, ends_on, net_28d):
+    """Per candidate at gated or later: the first production run on file (units, the format's MOQ, the format, cash out, the
+    lower-MOQ alternative considered), the cash as a share of 28-day net revenue, and the verdict: no plan, full-MOQ risk
+    (cash at the share floor or more, or MOQ above the units wanted, with no lower-MOQ option noted), sized, or not yet
+    (before gated). Bank idea BRD-249: a lower-MOQ format on the first run lets demand prove itself before capital goes in."""
+    rows = []
+    for c in pipeline(brand):
+        st = c.get('stage')
+        idx = STAGES.index(st) if st in STAGES else None
+        fr = c.get('first_run') or {}
+        cash = fr.get('cash_usd')
+        share = round(cash / net_28d, 4) if cash is not None and net_28d else None
+        moq_over = (fr.get('moq_units') or 0) > (fr.get('units') or 0) if fr.get('moq_units') is not None and fr.get('units') is not None else None
+        option = bool(str(fr.get('lower_moq_option') or '').strip())
+        if st in CLOSED_STAGES:
+            verdict = 'closed'
+        elif idx is None or idx < FIRST_RUN_STAGE_MIN:
+            verdict = 'not_yet'
+        elif not fr:
+            verdict = 'no_plan'
+        elif not option and ((share is not None and share >= FIRST_RUN_CASH_SHARE) or share is None or moq_over):
+            verdict = 'full_moq_risk'
+        else:
+            verdict = 'sized'
+        rows.append({'candidate_id': c.get('candidate_id'), 'name': c.get('name'), 'stage': st, 'closed': st in CLOSED_STAGES, 'units': fr.get('units'), 'moq_units': fr.get('moq_units'),
+                     'format': fr.get('format'), 'cash_usd': cash, 'cash_share_28d': share, 'moq_over_units': moq_over, 'lower_moq_option': fr.get('lower_moq_option') or None,
+                     'decided_on': fr.get('decided_on'), 'verdict': verdict, 'finding_id': f'{SCREEN}.PROD-R37.{c.get("candidate_id")}'})
+    order = {'full_moq_risk': 0, 'no_plan': 1, 'sized': 2, 'not_yet': 3, 'closed': 4}
+    rows.sort(key=lambda r: (order[r['verdict']], r['name'] or ''))
+    return {'rows': rows, 'net_28d': net_28d, 'share_floor': FIRST_RUN_CASH_SHARE,
+            'rule': f'from {STAGES[FIRST_RUN_STAGE_MIN]} on, a candidate needs a first run on file; the run is a risk when its cash is {int(FIRST_RUN_CASH_SHARE * 100)} percent or more of 28-day net revenue (or revenue is unknown), or the format\'s MOQ is above the units wanted, and no lower-MOQ alternative is noted (bank idea BRD-249)'}
+
+
+def first_run_findings(brand, ends_on, net_28d):
+    """PROD-R37: a candidate at gated or later with no first run on file, or a first run at full MOQ with no lower-MOQ alternative noted."""
+    out = []
+    fr = first_run_read(brand, ends_on, net_28d)
+    for r in fr['rows']:
+        if r['verdict'] not in ('no_plan', 'full_moq_risk'):
+            continue
+        cid = r['candidate_id']
+        ev = [_ev('first_run_cash_share_28d', r['cash_share_28d'], 'ratio', ends_on.isoformat(), 'first run plan', FIRST_RUN_CASH_SHARE, 'threshold', source='fixtures.pipeline', simulated=False, freshness_days=0,
+                  cash_usd=r['cash_usd'], net_28d=net_28d, units=r['units'], moq_units=r['moq_units'], format=r['format']),
+              _ev('lower_moq_option_noted', 1 if r['lower_moq_option'] else 0, 'count', ends_on.isoformat(), 'first run plan', 1, 'threshold', source='fixtures.pipeline', simulated=False, freshness_days=0)]
+        if r['verdict'] == 'no_plan':
+            sentence = f'{r["name"]} is at {r["stage"]} with no first run on file: units, the format and its MOQ, and the cash it ties up are not written down yet.'
+            stake = None
+        else:
+            why = (f'{round(r["cash_share_28d"] * 100)} percent of 28-day net revenue' if r['cash_share_28d'] is not None else 'an unknown share of revenue')
+            if r['moq_over_units']:
+                why += f' and an MOQ of {r["moq_units"]:,} above the {r["units"]:,} units wanted'
+            sentence = f'{r["name"]}: the first run ({r["format"] or "format unstated"}) ties up ${(r["cash_usd"] or 0):,.0f}, {why}, with no lower-MOQ alternative noted.'
+            stake = {'usd': round(r['cash_usd']), 'formula': 'first_run_cash_usd', 'inputs': {'cash_usd': r['cash_usd'], 'net_28d': net_28d}, 'window': 'first run plan'} if r['cash_usd'] else None
+        f = _finding('PROD-R37', cid, ends_on, 'medium', ev, sentence, stake, 0.7, [], money_reason=None if stake else 'no first run cash on file')
+        f['entity'] = {'type': 'sku', 'id': cid, 'label': r['name'], 'candidate': cid, 'stage': r['stage'], 'verdict': r['verdict'], 'cash_usd': r['cash_usd'], 'units': r['units'], 'moq_units': r['moq_units'], 'format': r['format']}
+        f['id'] = f'{SCREEN}.PROD-R37.{cid}'
         out.append(f)
     return out

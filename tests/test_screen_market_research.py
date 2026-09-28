@@ -1012,6 +1012,34 @@ class PipelineTest(ShapeMixin, unittest.TestCase):
         pr = {r['key']: r for r in audit.pulls(br, 'bombas', date(2026, 9, 27))['rows']}['listing_seller']
         self.assertEqual(pr['verdict'], 'mock')
 
+    def test_first_run_moq_gate(self):
+        D = date(2026, 9, 27)
+        self.real2 = audit.PIPELINE_PATH
+        try:
+            audit.PIPELINE_PATH = self.tmp
+            rows = [{'candidate_id': 'a', 'brand': 'fake', 'name': 'A', 'stage': 'gated'},
+                    {'candidate_id': 'b', 'brand': 'fake', 'name': 'B', 'stage': 'shortlisted', 'first_run': {'units': 500, 'moq_units': 2000, 'format': 'custom box', 'cash_usd': 30000, 'lower_moq_option': None}},
+                    {'candidate_id': 'c', 'brand': 'fake', 'name': 'C', 'stage': 'gated', 'first_run': {'units': 500, 'moq_units': 500, 'format': 'stock sleeve', 'cash_usd': 4000, 'lower_moq_option': 'stock blank plus sleeve, MOQ 300'}},
+                    {'candidate_id': 'd', 'brand': 'fake', 'name': 'D', 'stage': 'screened'},
+                    {'candidate_id': 'e', 'brand': 'fake', 'name': 'E', 'stage': 'gated', 'first_run': {'units': 500, 'moq_units': 500, 'format': 'custom', 'cash_usd': 10000, 'lower_moq_option': None}}]
+            self.tmp.write_text(json.dumps({'rows': rows}), encoding='utf-8')
+            fr = audit.first_run_read('fake', D, 100000.0)
+            v = {r['candidate_id']: r['verdict'] for r in fr['rows']}
+            self.assertEqual(v, {'a': 'no_plan', 'b': 'full_moq_risk', 'c': 'sized', 'd': 'not_yet', 'e': 'sized'})   # e: 10 percent of revenue, MOQ not over
+            self.assertEqual(next(r for r in fr['rows'] if r['candidate_id'] == 'b')['cash_share_28d'], 0.3)
+            found = audit.first_run_findings('fake', D, 100000.0)
+            self.assertEqual([f['id'].split('.')[-1] for f in found], ['b', 'a'])
+            b = found[0]
+            self.assertEqual(b['money_at_stake']['usd'], 30000)
+            self.assertIn('2,000 above the 500 units wanted', b['sentence'])
+            for f in found:
+                self.check_shape(f)
+            unknown = {r['candidate_id']: r['verdict'] for r in audit.first_run_read('fake', D, None)['rows']}
+            self.assertEqual(unknown['e'], 'full_moq_risk')   # revenue unknown and no option: a risk
+            self.assertEqual(unknown['c'], 'sized')
+        finally:
+            audit.PIPELINE_PATH = self.real2
+
     def test_demand_pattern_tags(self):
         even = {'rows': [{'category': 'socks', 'series': [100] * 12}], 'months': [f'2026-{m:02d}' for m in range(1, 13)], 'last': '2026-12'}
         peaked = {'rows': [{'category': 'socks', 'series': [50] * 10 + [300, 400]}], 'months': even['months'], 'last': '2026-12'}

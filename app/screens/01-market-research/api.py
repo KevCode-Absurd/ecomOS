@@ -916,6 +916,36 @@ def recipe(f):
             'stop_rule': 'stop at the per-run or weekly cap; never raise a cap from a run', 'check_on': _check_on(f, 7), 'time_to_ship_hours': 1,
             'win_rule': 'a live capture dated inside the window',
         }
+    if rid == 'PROD-R37':
+        ent = f.get('entity') or {}
+        name = ent.get('label') or 'the candidate'
+        if ent.get('verdict') == 'no_plan':
+            return {
+                'title': f'Size the first run for {name}: units, the format and its MOQ, the cash it ties up',
+                'owner': 'agent',
+                'artefact': {'kind': 'research_note', 'label': f'a first-run plan for {name}: units wanted, the fully custom format and its MOQ, a lower-MOQ format and its MOQ, cash out for each, and which one the first run takes (bank idea BRD-249)'},
+                'steps': [
+                    {'n': 1, 'who': 'agent', 'text': 'Set the units the demand case supports for the first 90 days from the demand pattern and the lane signals.'},
+                    {'n': 2, 'who': 'agent', 'text': 'Ask the supplier for the MOQ of the fully custom format and of a lower-MOQ alternative (stock blank plus a sleeve or label, a simpler pack); write both with cash out.'},
+                    {'n': 3, 'who': 'person', 'text': 'Pick the format for the first run; a lower-MOQ format tests real demand before the custom run.'},
+                    {'n': 4, 'who': 'agent', 'text': 'Write it on the candidate (first run: units, MOQ, format, cash, the option) so the cash plan and the scorecard read it.'}],
+                'size': {'text': f'{ent.get("stage")}, no first run on file', 'usd': None},
+                'stop_rule': 'no purchase order before the first run is sized', 'check_on': _check_on(f, 7), 'time_to_ship_hours': 2,
+                'win_rule': 'a first run on the candidate with both formats costed',
+            }
+        return {
+            'title': f'Cut the first-run risk on {name}: cost a lower-MOQ format before committing ${(ent.get("cash_usd") or 0):,.0f}',
+            'owner': 'agent',
+            'artefact': {'kind': 'research_note', 'label': f'a lower-MOQ option for {name}: the alternative format, its MOQ and cash, the sell-through read point, and when the custom format follows (bank idea BRD-249)'},
+            'steps': [
+                {'n': 1, 'who': 'agent', 'text': f'Ask the supplier for the MOQ difference between the {ent.get("format") or "custom"} format and a lower-MOQ alternative (a stock blank with a sleeve or label, a simpler pack).'},
+                {'n': 2, 'who': 'agent', 'text': 'Cost both runs: units, cash out, and cash conversion days against the demand pattern.'},
+                {'n': 3, 'who': 'person', 'text': 'Choose the lower-MOQ format for the first run if the difference is meaningful; move to the custom format once sell-through proves the demand.'},
+                {'n': 4, 'who': 'agent', 'text': 'Write the option on the candidate and track the first run cash against the demand it validated.'}],
+            'size': {'text': f'${(ent.get("cash_usd") or 0):,.0f} at full MOQ' + (f', {ent.get("moq_units"):,} MOQ against {ent.get("units"):,} wanted' if ent.get('moq_units') and ent.get('units') else ''), 'usd': ent.get('cash_usd')},
+            'stop_rule': 'no full-MOQ order until sell-through on the first run is read', 'check_on': _check_on(f, 14), 'time_to_ship_hours': 2,
+            'win_rule': 'a lower-MOQ option noted on the candidate, or a founder note that the full run is the choice',
+        }
     return None
 
 
@@ -1010,7 +1040,7 @@ def merge_questions(actions):
     return keep
 
 
-CANDIDATE_RULES = ('PROD-R14', 'PROD-R15', 'PROD-R16', 'PROD-R18', 'PROD-R21', 'PROD-R23', 'PROD-R24', 'PROD-R25', 'PROD-R27', 'PROD-R28')
+CANDIDATE_RULES = ('PROD-R14', 'PROD-R15', 'PROD-R16', 'PROD-R18', 'PROD-R21', 'PROD-R23', 'PROD-R24', 'PROD-R25', 'PROD-R27', 'PROD-R28', 'PROD-R37')
 
 
 def merge_candidates(actions):
@@ -1249,7 +1279,7 @@ def overview(data, brand):
                      'gates': gates_block(brand, data, br, rd, ends_on, findings), 'scorecard': scorecard_block(brand, data, br, rd, ends_on, findings),
                      'video': audit.video_signals(br, brand, ends_on), 'tech_packs': tech_pack_block(brand, findings),
                      'hours': dict(audit.hours_table(brand, br), findings={f['entity']['id']: f['id'] for f in findings if f['rule_id'] == 'PROD-R28'}),
-                     'trend_checks': audit.trend_checks(br, brand, ends_on), 'surfaces': audit.audience_surfaces(br, ends_on), 'marketplace': audit.marketplace_read(br, products(data, brand)), 'cadence': audit.launch_cadence(br, ends_on), 'returns': audit.return_rates(data, brand, ends_on), 'questions': audit.open_questions(br, ends_on), 'pulls': audit.pulls(br, brand, ends_on)},
+                     'trend_checks': audit.trend_checks(br, brand, ends_on), 'surfaces': audit.audience_surfaces(br, ends_on), 'marketplace': audit.marketplace_read(br, products(data, brand)), 'cadence': audit.launch_cadence(br, ends_on), 'returns': audit.return_rates(data, brand, ends_on), 'questions': audit.open_questions(br, ends_on), 'pulls': audit.pulls(br, brand, ends_on), 'first_runs': audit.first_run_read(brand, ends_on, audit.net_28d(rd))},
             'audit': {'findings': findings, 'rules': audit.RULES}}
 
 
@@ -1337,6 +1367,11 @@ def candidate_update(brand, cid, body, today):
     if body.get('pack_units') is not None:
         row['pack_units'] = int(_num(body['pack_units'], 1) or 1)
         changes.append('pack units set')
+    if isinstance(body.get('first_run'), dict):
+        fr = body['first_run']
+        row['first_run'] = {'units': int(_num(fr.get('units')) or 0) or None, 'moq_units': int(_num(fr.get('moq_units')) or 0) or None, 'format': str(fr.get('format') or '').strip()[:120] or None,
+                            'cash_usd': _num(fr.get('cash_usd')), 'lower_moq_option': str(fr.get('lower_moq_option') or '').strip()[:300] or None, 'decided_on': today.isoformat()}
+        changes.append('first run sized')
     if body.get('time_box_days') is not None:
         row['time_box_days'] = int(_num(body['time_box_days'], 1) or row.get('time_box_days') or 10)
         row['screen_in_date'] = today.isoformat()
@@ -1511,6 +1546,9 @@ def candidate_brief(data, brand, cid):
     if hours:
         lines.append(f'Hours: {hours.get("hours_logged")} logged of {hours.get("hours_allowed")} allowed through {hours.get("stage")}' + (f', over by {hours.get("over_by")}' if hours.get('over_by') else '') + '.')
     lines.append(f'Time box: {pipe.get("time_box_days")} days, {pipe.get("days_left") if pipe.get("days_left") is not None else na} left.')
+    frr = next((r for r in (d.get('first_runs') or {}).get('rows') or [] if r.get('candidate_id') == cid), None)
+    if frr:
+        lines.append('First run: ' + (f'{frr.get("units") or na} units, {frr.get("format") or "format unstated"}, MOQ {frr.get("moq_units") or na}, cash ${(frr.get("cash_usd") or 0):,.0f}, lower-MOQ option: {frr.get("lower_moq_option") or "none noted"}' if frr.get('verdict') not in ('no_plan', 'not_yet') else frr.get('verdict', '').replace('_', ' ')) + '.')
     lines += ['', 'OPEN ACTIONS ON THIS CANDIDATE']
     lines += [f'- {a.get("title")} ({a.get("owner")})' for a in acts] or ['- none']
     lines += ['', 'LOG'] + [f'- {l.get("on")} {l.get("who")}: {l.get("what")}' for l in pipe.get('log') or []]

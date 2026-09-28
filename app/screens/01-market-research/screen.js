@@ -927,6 +927,32 @@
         open.length && actionFor(open[0].finding_id) ? { label: 'Open the first', onClick: () => openAction(actionFor(open[0].finding_id)) } : null));
   }
 
+  function firstRunsBlock(fr) {
+    const rows = ((fr && fr.rows) || []).filter((r) => r.verdict !== 'closed');
+    if (!rows.length) return UI.emptyState({ screen: SLUG, title: 'No candidates', text: 'Screen a candidate in; from gated on, its first run is sized here.', missing: ['pipeline'] });
+    const vt = { full_moq_risk: 'Full MOQ, no option', no_plan: 'No first run on file', sized: 'Sized', not_yet: 'Before gated' };
+    const size = (r) => { const units = prompt('First run for ' + r.name + ': units wanted for the first 90 days', r.units || ''); if (units == null) return;
+      const format = prompt('Format of the first run (fully custom pack, stock blank with a sleeve, ...)', r.format || ''); if (format == null) return;
+      const moq = prompt('MOQ of that format, in units', r.moq_units || ''); if (moq == null) return;
+      const cash = prompt('Cash out for the first run, USD', r.cash_usd || ''); if (cash == null) return;
+      const opt = prompt('Lower-MOQ alternative considered (format, MOQ, cash), or leave empty', r.lower_moq_option || ''); if (opt == null) return;
+      candidatePost('candidates/' + r.candidate_id, { first_run: { units, format, moq_units: moq, cash_usd: cash, lower_moq_option: opt }, who: 'person' }); };
+    const vrows = rows.map((r) => { const a = actionFor(r.finding_id); return Object.assign({}, r, {
+      unitsText: r.units == null ? NA : fmt.int(r.units), moqText: r.moq_units == null ? NA : fmt.int(r.moq_units) + (r.moq_over_units ? ' (over the units wanted)' : ''), fmtText: r.format || NA,
+      cashText: r.cash_usd == null ? NA : fmt.money(r.cash_usd) + (r.cash_share_28d != null ? ' (' + (r.cash_share_28d * 100).toFixed(0) + ' percent of 28-day net)' : ' (revenue unknown)'), optText: r.lower_moq_option || 'none noted',
+      actions: [a ? { label: r.verdict === 'no_plan' ? 'Size the first run' : 'Cost a lower-MOQ format', onClick: () => openAction(a) } : null, r.verdict !== 'not_yet' ? { label: r.verdict === 'no_plan' ? 'Enter it' : 'Edit', cls: 'quiet', onClick: () => size(r) } : { label: 'Before gated', cls: 'quiet', onClick: () => {} }].filter(Boolean) }); });
+    const tbl = UI.verdictTable({
+      columns: [{ key: 'name', label: 'Candidate' }, { key: 'stage', label: 'Stage' }, { key: 'unitsText', label: 'Units wanted' }, { key: 'fmtText', label: 'Format' }, { key: 'moqText', label: 'MOQ' }, { key: 'cashText', label: 'Cash out' }, { key: 'optText', label: 'Lower-MOQ option' }],
+      rows: vrows,
+      verdict: { at: 1, kind: (r) => r.verdict === 'full_moq_risk' ? 'fix' : r.verdict === 'no_plan' ? 'watch' : r.verdict === 'sized' ? 'keep' : 'na', text: (r) => vt[r.verdict], reason: (r) => fr.rule },
+      actions: { label: 'Do', onClick: () => {} }, sort: false });
+    const open = rows.filter((r) => r.verdict === 'full_moq_risk' || r.verdict === 'no_plan');
+    return el('div', { class: 'stack' }, el('div', { class: 'card scroll' }, tbl),
+      el('p', { class: 'micro faint', text: 'Rule: ' + fr.rule + '. 28-day net revenue: ' + (fr.net_28d == null ? NA : fmt.money(fr.net_28d)) + ', simulated. The first run is written on the candidate; the cash plan and the brief read it.' }),
+      gapLine(open.length ? open.length + ' candidate' + (open.length === 1 ? ' has' : 's have') + ' a first run to size or de-risk: ' + open.map((r) => r.name).join(', ') + '.' : 'Every candidate from gated on has a sized first run with a lower-MOQ option.',
+        open.length && actionFor(open[0].finding_id) ? { label: 'Open the first', onClick: () => openAction(actionFor(open[0].finding_id)) } : null));
+  }
+
   function loadDesk(o) {
     const d = o.desk || {};
     const w = (o.window || {}).trend;
@@ -956,6 +982,7 @@
     parts.push(section('desk-scorecard', 'Which candidates does the founder decide on this week?', 'The fixed scorecard with the brand\'s weights: demand, margin, differentiation, compliance and cash timing, each scored in code, ranked, with the go or no-go memo drafted from the numbers and the review date.', scorecardBlock(d.scorecard)));
     parts.push(section('desk-video', 'Is the demand one clip or a real pattern?', 'Independent platforms showing demand per lane: the Instagram hashtag pull, Reddit mentions and upvotes, competitor creator-style ads and our own, with the candidates that rest on each lane.', videoBlock(d.video)));
     parts.push(section('desk-tech-packs', 'Which candidates have a real, versioned spec ready for sourcing?', 'Tech pack versions per candidate: tolerances, the bill of materials and the packaging cost line. A pack saved from the card becomes the current version and supersedes the last.', techPackBlock(d.tech_packs)));
+    parts.push(section('desk-first-run', 'How big is the first run, and does it have to be that big?', 'From gated on, the first production run per candidate: units wanted, the format and its MOQ, the cash it ties up as a share of 28-day net revenue, and the lower-MOQ alternative considered (bank idea BRD-249).', firstRunsBlock(d.first_runs)));
     parts.push(section('desk-hours', 'Has any candidate used up its research hours?', 'Hours logged per candidate against the hours allowed through its stage, from the brand\'s budget per stage. Research cannot sprawl past the box.', hoursBlock(d.hours)));
     parts.push(section('desk-trend-checks', 'Does each lane\'s trend rest on history, or on a forecast?', 'The 12-month rate against the multi-year rate per lane from the web pass series: a trend is trusted with 3 or more years of history on the exact term; a last year over twice the multi-year rate is a spike.', trendChecksBlock(d.trend_checks)));
     parts.push(section('desk-pattern', 'Is each candidate evergreen, seasonal or a trend, and when does cash move?', 'The demand pattern from our own 12-month series by category and the web pass, with the cash timing it implies and the cash plan attached to each candidate.', patternBlock(d.pattern)));
