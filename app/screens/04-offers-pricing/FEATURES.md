@@ -135,6 +135,12 @@ Known gaps from round 0:
 5. Competitor and reseller price moves, the gift tier read after launch and the guarantee stress test are built; Bombas holds its guarantee to 4.7 times the planned claims, and price moves wait on a second capture on 28 Oct.
 6. Phone width is clean at 360 px with larger tap targets. Next (round 7): read the sample brand's orders deeper (price points actually paid), the room job for upsell placements once an app is named, and a web pass on offer tools.
 
+## Round 7: what shoppers pay, placements, web pass (from 28 Sep 2026)
+
+| # | Feature | Status |
+|---|---|---|
+| 7.1 | What shoppers really pay per product: list price against the paid price after codes (each order's code spread over its lines by line value), the share of list kept and the share of units sold with a code, 90 days, from order rows. New rule OFFER-R36 when a product with 50 or more units sells 45 percent or more of them with a code; the move is a 28-day test that excludes those products from the code, judged on profit per visitor. Sample brand: 96 percent of list kept, the highest is Cornbread Pan at 39 percent coded, so quiet. Bombas: unavailable, with the store connect move | done |
+
 ## Contract asks
 
 - Kit: a 32 px minimum tap height for `.toggle` and copy buttons under 560 px, so every screen gets it. Local fallback: 04 sets it in screen.css for its own sections.
@@ -272,6 +278,7 @@ Intelligems (threshold and price tests scored by profit per visitor), Rebuy (tie
 | Round | Features picked | Date | Notes |
 |---|---|---|---|
 | 0 | skeleton, 0.1 to 0.9 | 2026-09-28 | S3.9; screenshot round0.png |
+| 7 | 7.1 onward: paid prices | 2026-09-28 | in progress |
 | 6 | 6.1 to 6.10: settings not text, sized moves, block lines, cannot see yet, 360 px, welcome code, test trust, price moves, tier lift, claims stress | 2026-09-28 | screenshot round6.png |
 | 5 | 5.1 to 5.10: stack read-back, break-even discount, profit per visitor, pack label, installments, loyalty calibration, line match, code-won cohorts, order bunches | 2026-09-28 | screenshot round5.png |
 | 4 | 4.1 to 4.10: save to the brain, offer records, bundle pairs, red line gate, approved first, launched read, upsell connect, brief pack, stale inputs | 2026-09-28 | screenshot round4.png |

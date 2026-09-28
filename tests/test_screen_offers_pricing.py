@@ -1738,5 +1738,57 @@ class ClaimStressTest(unittest.TestCase):
         self.assertTrue(api.model.guarantee_stress(self.rd(), {}, (1, 2))['unavailable'])
 
 
+class PaidPriceTest(unittest.TestCase):
+    """Round 7 feature 1: what shoppers really pay per product, and OFFER-R36 when a product leans on the code."""
+
+    def reader(self, orders, products):
+        import datetime as dtm
+        class R:
+            brand = None
+            ends_on = dtm.date(2026, 9, 24)
+            def table(self, name):
+                return {'orders': orders, 'products': products}.get(name)
+        return R()
+
+    def test_paid_and_code_share(self):
+        products = [{'sku': 'A', 'title': 'Pan', 'price': 100}, {'sku': 'B', 'title': 'Lid', 'price': 50}]
+        orders = [{'created_at': '2026-09-01T10:00:00Z', 'subtotal': 150, 'discount': {'code': 'X', 'amount': 15},
+                   'line_items': [{'sku': 'A', 'qty': 1, 'line_total': 100}, {'sku': 'B', 'qty': 1, 'line_total': 50}]},
+                  {'created_at': '2026-09-02T10:00:00Z', 'subtotal': 100, 'discount': None,
+                   'line_items': [{'sku': 'A', 'qty': 1, 'line_total': 100}]}]
+        pp = api.model.paid_prices(self.reader(orders, products), 90, 1)
+        by = {r['sku']: r for r in pp['rows']}
+        self.assertEqual((by['A']['paid'], by['A']['kept'], by['A']['code_share']), (95.0, 0.95, 0.5))
+        self.assertEqual((by['B']['paid'], by['B']['code_share']), (45.0, 1.0))
+        self.assertEqual(pp['rows'][0]['sku'], 'B')
+
+    def test_unavailable(self):
+        self.assertTrue(api.model.paid_prices(self.reader([], []), 90, 1)['unavailable'])
+
+    def test_sample_quiet_and_bombas_silent(self):
+        sys.path.insert(0, str(ROOT / 'app'))
+        import server
+        rd = audit.Reader(server.Data(), None, audit.last_full_day(server.Data(), None))
+        pp = audit.paid_prices(rd)
+        self.assertFalse(pp['unavailable'])
+        self.assertLess(max(r['code_share'] for r in pp['rows'] if r['judged']), api.actions.playbook.CODE_DEPENDENT)
+        self.assertEqual([f for f in audit.run('bombas') if f['rule_id'] == 'OFFER-R36'], [])
+
+    def test_fires(self):
+        pbs = (api.actions.playbook, audit._playbook())
+        orig = pbs[0].CODE_DEPENDENT
+        for pb in pbs:
+            pb.CODE_DEPENDENT = 0.30
+        try:
+            sys.path.insert(0, str(ROOT / 'app'))
+            import server
+            r = api.actions.rank(None, None, server.Data())
+            a = next(x for x in r['actions'] if x['rule_id'] == 'OFFER-R36')
+            self.assertIn('profit per visitor', a['artefact']['draft'])
+        finally:
+            for pb in pbs:
+                pb.CODE_DEPENDENT = orig
+
+
 if __name__ == '__main__':
     unittest.main()

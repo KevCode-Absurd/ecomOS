@@ -1449,3 +1449,49 @@ def guarantee_stress(rd, planned, multiples):
             'contribution_per_order': c['per_order'], 'replacement_cost': repl['value'], 'refund_cost': round(refund, 2),
             'planned_cost_per_order': round(per_order, 2), 'window': c['window'],
             'basis': 'on top of 28-day contribution after media; a refund is the net order plus returns processing, a replacement is item, label, pick and pack, and packaging'}
+
+
+# ---------------------------------------------------------------- what do shoppers really pay?
+
+def paid_prices(rd, days, min_units):
+    """Per product over the last `days`: list price (products table), paid price per unit after the order's code
+    (the code spread over lines by line value), the share of list kept, and the share of units sold with a code.
+    Products under `min_units` are listed but not judged."""
+    orders, products = rd.table('orders'), rd.table('products')
+    if not isinstance(orders, list) or not orders:
+        return {'unavailable': True, 'reason': 'the orders table is not connected', 'fix': 'shopify'}
+    if not isinstance(products, list) or not products:
+        return {'unavailable': True, 'reason': 'the products table is not connected', 'fix': 'shopify'}
+    lp = {p['sku']: p for p in products if p.get('sku')}
+    start = (rd.ends_on - timedelta(days=days - 1)).isoformat()
+    end = rd.ends_on.isoformat()
+    agg = {}
+    for o in orders:
+        day = str(o.get('created_at'))[:10]
+        if not (start <= day <= end) or o.get('cancelled_at'):
+            continue
+        sub = float(o.get('subtotal') or 0)
+        code = float((o.get('discount') or {}).get('amount') or 0)
+        for li in o.get('line_items') or []:
+            sku, qty = li.get('sku'), li.get('qty') or 0
+            if sku not in lp or not qty:
+                continue
+            line = float(li.get('line_total') or 0)
+            a = agg.setdefault(sku, {'units': 0, 'paid': 0.0, 'coded': 0})
+            a['units'] += qty
+            a['paid'] += line - (code * line / sub if sub else 0)
+            if code > 0:
+                a['coded'] += qty
+    rows = []
+    for sku, a in agg.items():
+        lst = lp[sku].get('price')
+        paid = a['paid'] / a['units']
+        rows.append({'sku': sku, 'title': lp[sku].get('title'), 'list': lst, 'units': a['units'], 'paid': round(paid, 2),
+                     'kept': round(paid / lst, 4) if lst else None, 'code_share': round(a['coded'] / a['units'], 4),
+                     'judged': a['units'] >= min_units})
+    rows.sort(key=lambda r: -r['code_share'])
+    units = sum(r['units'] for r in rows)
+    return {'unavailable': False, 'rows': rows, 'days': days, 'start': start, 'end': end,
+            'kept': round(sum(r['paid'] * r['units'] for r in rows) / sum(r['list'] * r['units'] for r in rows if r['list']), 4) if units else None,
+            'code_share': round(sum(r['code_share'] * r['units'] for r in rows) / units, 4) if units else None,
+            'basis': f'order lines {start} to {end}; each order\'s code spread over its lines by line value; list price from the products table'}

@@ -95,6 +95,7 @@ class Ctx:
         self.trust = audit.test_trust(rd)
         self.price_moves = audit.price_moves(rd)
         self.stress = audit.guarantee_stress(rd)
+        self.paid = audit.paid_prices(rd)
         self.ship_rate = (model.brain_value(rd, 'offers.standard_shipping_cost')[0] or {}).get('cost_usd') if rd.brand else None
         self.scenarios = (model.threshold_scenarios(rd, self.threshold, self.ship_rate, self.be['value'], (self.po or {}).get('units') or 1)
                           if self.threshold is not None and self.be.get('value') is not None else [])
@@ -549,6 +550,8 @@ def surfaces(a):
         return ['loyalty'], 90
     if r == 'OFFER-R23':
         return ['referral'], 56
+    if r == 'OFFER-R36':
+        return ['first order offer'], 35
     if r == 'OFFER-R35':
         return ['guarantee terms'], 56
     if r == 'OFFER-R22':
@@ -1202,6 +1205,28 @@ def stress_action(f, a, ctx):
     return a
 
 
+def paid_action(f, a, ctx):
+    """OFFER-R36: take the code off the products that lean on it for 28 days, judged on profit per visitor."""
+    pb = playbook
+    lean = [r for r in ctx.paid['rows'] if r['judged'] and r['code_share'] >= pb.CODE_DEPENDENT]
+    names = ', '.join(r['title'] for r in lean[:5])
+    draft = '\n'.join([f'Test brief: full price only on {len(lean)} products that lean on the code', f['sentence'],
+                        'Products: ' + '; '.join(f'{r["title"]} (list {money(r["list"])}, paid {money(r["paid"])}, {r["code_share"] * 100:.0f} percent coded)' for r in lean[:8]) + '.',
+                        'Arms: A as today. B excludes these products from every code; the rest of the cart keeps it.',
+                        'Primary metric: profit per visitor on these product pages, per arm, 28 days.',
+                        'Stop: units on these products in B down 30 percent against A for 7 days.'])
+    a.update({'title': f'Exclude {len(lean)} products from the code for 28 days', 'owner': 'agent_drafts',
+              'artefact': {'kind': 'test_brief', 'label': 'Code exclusion test brief', 'draft': draft},
+              'steps': steps(('agent', 'Draft the brief with the product list.'), ('person', 'Approve the test.'),
+                             ('person', f'Set the code to exclude {names} for arm B.'),
+                             ('agent', f'Read profit per visitor weekly; call it on {ctx.check_on(35)}.')),
+              'size': {'text': f'{money(f["money_at_stake"]["usd"])} of code on these products per 28 days', 'usd': None},
+              'win_rule': 'B keeps or beats A on profit per visitor on these pages.',
+              'stop_rule': 'Units on these products in B down 30 percent against A for 7 days.',
+              'check_on': ctx.check_on(35), 'time_to_ship_hours': 2})
+    return a
+
+
 def bunches(rd):
     """Order-value bunches and the tiers above them, from real order bins only (never from the fixture)."""
     dist = rd.m('order_value_distribution', audit.WINDOW, step=5)
@@ -1378,7 +1403,7 @@ BUILDERS = {'OFFER-R01': threshold_action, 'OFFER-R04': rung_action, 'OFFER-R08'
             'OFFER-R22': cost_action, 'OFFER-R23': referral_action, 'OFFER-R24': loyalty_action,
             'OFFER-R25': discount_action, 'OFFER-R26': bundle_action,
             'OFFER-R27': launched_action, 'OFFER-R29': bnpl_action,
-            'OFFER-R30': match_action, 'OFFER-R31': cohort_action, 'OFFER-R32': welcome_action, 'OFFER-R33': trust_action, 'OFFER-R34': moves_action, 'OFFER-R35': stress_action}
+            'OFFER-R30': match_action, 'OFFER-R31': cohort_action, 'OFFER-R32': welcome_action, 'OFFER-R33': trust_action, 'OFFER-R34': moves_action, 'OFFER-R35': stress_action, 'OFFER-R36': paid_action}
 UNAVAILABLE_BUILDERS = {'OFFER-R34': recapture_action}
 
 
@@ -1423,5 +1448,5 @@ def rank(brand='bombas', window=None, data=None):
     return {'screen': SCREEN, 'brand': brand, 'window': w, 'simulated': True, 'net_revenue_28d': nr,
             'actions': actions, 'findings': findings, 'objections': ctx.objections, 'returns': returns_block(rd),
             'ladder': dict(ctx.ladder, moves=ctx.ladder_rows), 'first_order': ctx.first_order, 'waterfalls': ctx.waterfalls, 'calendar': ctx.calendar, 'gifting': ctx.gifting, 'guarantee': ctx.guarantee, 'position': ctx.position, 'parity': ctx.parity,
-            'discipline': dict(ctx.discipline, policy=discount_policy(ctx), windows=ctx.depth_history, window_creep_points=playbook.WINDOW_CREEP_POINTS), 'cart': ctx.cart, 'tests': calendar, 'depth': ctx.depth, 'cohorts': ctx.cohorts, 'costs': ctx.costs, 'registry': ctx.registry, 'referral': ctx.referral, 'loyalty': ctx.loyalty, 'bundles': ctx.bundles, 'proposed_tests': ctx.proposed_rows, 'launched': ctx.launched, 'discount_cohorts': audit.discount_cohorts(rd), 'welcome': ctx.welcome, 'trust': ctx.trust, 'price_moves': ctx.price_moves, 'stress': ctx.stress, 'bunches': bunches(rd),
+            'discipline': dict(ctx.discipline, policy=discount_policy(ctx), windows=ctx.depth_history, window_creep_points=playbook.WINDOW_CREEP_POINTS), 'cart': ctx.cart, 'tests': calendar, 'depth': ctx.depth, 'cohorts': ctx.cohorts, 'costs': ctx.costs, 'registry': ctx.registry, 'referral': ctx.referral, 'loyalty': ctx.loyalty, 'bundles': ctx.bundles, 'proposed_tests': ctx.proposed_rows, 'launched': ctx.launched, 'discount_cohorts': audit.discount_cohorts(rd), 'welcome': ctx.welcome, 'trust': ctx.trust, 'price_moves': ctx.price_moves, 'stress': ctx.stress, 'paid': ctx.paid, 'bunches': bunches(rd),
             'subscription': model.subscription_note(rd, ctx.cohorts, (ctx.depth or {}).get('rows'), (ctx.depth or {}).get('target'))}

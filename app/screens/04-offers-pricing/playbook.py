@@ -240,3 +240,10 @@ RECAPTURE_DAYS = 30            # a single capture older than this is due for a s
 # Fires when claims at CLAIM_STRESS times the plan put contribution under the target. Our own rule, written down.
 CLAIM_MULTIPLES = (1, 2, 3)
 CLAIM_STRESS = 2
+
+# Paid price per product (screen 04, OFFER-R36). What shoppers paid after codes against list price, from order rows.
+# A product with CODE_DEPENDENT or more of its units sold with a code, and at least PAID_MIN_UNITS units, leans on
+# the code. Our own rule, written down.
+PAID_DAYS = 90
+PAID_MIN_UNITS = 50
+CODE_DEPENDENT = 0.45

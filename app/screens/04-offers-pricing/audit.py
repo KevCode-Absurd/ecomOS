@@ -150,6 +150,9 @@ Rules
              times the brain's planned refund and replacement rates put 28-day contribution after media under the
              target (model.guarantee_stress). Money: contribution lost per 28 days at that multiple. Severity high.
              Quiet for Bombas (breaks near 5 times the plan). Capability LIFE-C42.
+  OFFER-R36  A product leans on the code: playbook.CODE_DEPENDENT or more of its units in PAID_DAYS sold with a code,
+             at least PAID_MIN_UNITS units (model.paid_prices). One finding for all such products. Money: code dollars
+             on those products scaled to 28 days. Medium. Unavailable without order rows. Capability MONEY-C05.
   OFFER-R03  Margin after discount per SKU. Needs cogs_landed keyed by the store's SKUs. Unavailable while no
              finance_inputs SKU key matches a product SKU. Capability MONEY-C05 (founder gate). Owner: 04.
   OFFER-R04  A deal-breaker rung with no proof: the top rung of an objection ladder whose proof is empty or
@@ -262,6 +265,8 @@ RULES = [
      'owner_screen': SCREEN},
     {'rule_id': 'OFFER-R35', 'name': 'Guarantee breaks margin if claims run high', 'entity_type': 'offer',
      'inputs': ['brain.economics.return_share_model', 'finance_inputs', 'daily'], 'capability': 'LIFE-C42', 'owner_screen': SCREEN},
+    {'rule_id': 'OFFER-R36', 'name': 'A product leans on the code', 'entity_type': 'sku',
+     'inputs': ['orders', 'products'], 'capability': 'MONEY-C05', 'owner_screen': SCREEN},
     {'rule_id': 'OFFER-R03', 'name': 'Margin after discount per SKU', 'entity_type': 'sku',
      'inputs': ['finance_inputs.cogs_landed keyed by product SKU', 'products'], 'capability': 'MONEY-C05',
      'owner_screen': SCREEN},
@@ -301,6 +306,7 @@ CAPABILITY = {'OFFER-R01': {'id': 'MONEY-C05', 'autonomy': 'founder_gate'},
               'OFFER-R33': {'id': 'LIFE-C47', 'autonomy': 'human_assist'},
               'OFFER-R34': {'id': 'BRN-C11', 'autonomy': 'agent_does'},
               'OFFER-R35': {'id': 'LIFE-C42', 'autonomy': 'founder_gate'},
+              'OFFER-R36': {'id': 'MONEY-C05', 'autonomy': 'founder_gate'},
               'OFFER-R06': {'id': 'MONEY-C05', 'autonomy': 'founder_gate'},
               'OFFER-R04': {'id': 'LIFE-C36', 'autonomy': 'founder_gate'}}
 SEVERITY_ORDER = {'critical': 0, 'high': 1, 'medium': 2, 'low': 3}
@@ -1380,6 +1386,30 @@ def rule_claim_stress(rd):
                      {'usd': lost, 'formula': 'orders_28d x (target x net - contribution at stress)', 'window': '28d'}, 0.6, [], end)]
 
 
+def paid_prices(rd):
+    pb = _playbook()
+    return _model().paid_prices(rd, pb.PAID_DAYS, pb.PAID_MIN_UNITS)
+
+
+def rule_paid(rd):
+    end = rd.ends_on
+    pb = _playbook()
+    pp = paid_prices(rd)
+    entity = {'type': 'sku', 'id': 'code_dependent', 'label': 'Products that lean on the code'}
+    if pp['unavailable']:
+        return []   # OFFER-R31 and R32 already ask for order rows; one connect move is enough
+    lean = [r for r in pp['rows'] if r['judged'] and r['code_share'] >= pb.CODE_DEPENDENT]
+    if not lean:
+        return []
+    usd = round(sum((r['list'] - r['paid']) * r['units'] for r in lean if r['list']) * 28 / pp['days'], 2)
+    ev = [_ev('code_share_of_units', r['code_share'], 'ratio', end, baseline=pp['code_share'], baseline_kind='all_products',
+              window=f'{pp["days"]}d') for r in lean[:4]]
+    return [_finding('OFFER-R36', entity, 'medium', ev,
+                     f'{len(lean)} products sell {pb.CODE_DEPENDENT * 100:.0f} percent or more of units with a code, against '
+                     f'{pp["code_share"] * 100:.0f} percent for all products. {lean[0]["title"]} leads at {lean[0]["code_share"] * 100:.0f} percent.',
+                     {'usd': usd, 'formula': '(list - paid) x units on these products x 28 / 90', 'window': '28d'}, 0.6, [], end)]
+
+
 def rule_ladder(rd):
     end = rd.ends_on
     pb = _playbook()
@@ -1551,7 +1581,7 @@ def run(brand, window=None, data=None):
     """Findings for one brand, sorted by severity then money at stake. `window` is {ends_on} or None."""
     ends_on = date.fromisoformat(window['ends_on']) if window and window.get('ends_on') else last_full_day(data, brand)
     rd = Reader(data, brand, ends_on)
-    out = (rule_threshold(rd) + rule_stale(rd) + rule_pull(rd) + rule_first_order(rd) + rule_red_line(rd) + rule_promo(rd) + rule_gifting(rd) + rule_guarantee(rd) + rule_position(rd) + rule_parity(rd) + rule_discount(rd) + rule_cart(rd) + rule_second_order(rd) + rule_cost(rd) + rule_referral(rd) + rule_loyalty(rd) + rule_window_creep(rd) + rule_bundles(rd) + rule_launched(rd) + rule_upsell(rd) + rule_bnpl(rd) + rule_threshold_match(rd) + rule_cohorts(rd) + rule_welcome(rd) + rule_test_trust(rd) + rule_price_moves(rd) + rule_claim_stress(rd) + rule_ladder(rd) + rule_sku_margin(rd) +
+    out = (rule_threshold(rd) + rule_stale(rd) + rule_pull(rd) + rule_first_order(rd) + rule_red_line(rd) + rule_promo(rd) + rule_gifting(rd) + rule_guarantee(rd) + rule_position(rd) + rule_parity(rd) + rule_discount(rd) + rule_cart(rd) + rule_second_order(rd) + rule_cost(rd) + rule_referral(rd) + rule_loyalty(rd) + rule_window_creep(rd) + rule_bundles(rd) + rule_launched(rd) + rule_upsell(rd) + rule_bnpl(rd) + rule_threshold_match(rd) + rule_cohorts(rd) + rule_welcome(rd) + rule_test_trust(rd) + rule_price_moves(rd) + rule_claim_stress(rd) + rule_paid(rd) + rule_ladder(rd) + rule_sku_margin(rd) +
            rule_unanswered(rd))
     out.sort(key=lambda f: (SEVERITY_ORDER[f['severity']], -((f.get('money_at_stake') or {}).get('usd') or -1), f['id']))
     return out
