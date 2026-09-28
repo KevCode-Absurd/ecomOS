@@ -6,9 +6,37 @@ Status: todo | doing | done | parked. One feature per commit. The first round is
 
 | # | Feature | Status |
 |---|---|---|
-| 0.1 | Page shell in the shared UI kit: header, empty-state tiles, insight list, action buttons | todo |
-| 0.2 | `api.py` serving this screen's metrics from `app/data/` with unavailable states | todo |
-| 0.3 | 3 metric tiles, 2 insights, 1 chart from the sample brand | todo |
+| 0.1 | Page shell in the shared UI kit: simulated banner, founder note, sections, decision row (SITE-C21) | done |
+| 0.2 | `api.py` (`overview`, `findings`) over `audit.build`, speed medians through `app/metrics.py`, unavailable states | done |
+| 0.3 | 3 tiles (slowest mobile LCP, page weight, cost of slowness), 2 insights as rules (page over LCP target on mobile, outside script over 100 KB), 1 chart (LCP by page, to scale, target line) | done |
+| 0.4 | Per-page table (median load, LCP, first paint, weight, requests by device), fix chain with expected ms saved and evidence run, developer brief stub per fix (SITE-C32), filmstrip on the slowest page (kit `UI.filmstrip`, frames drawn from timings), script inventory from brain stack records | done |
+| 0.5 | `audit.py`: SPEED-R01 slow mobile pages, SPEED-R02 heavy outside script (money when blocking), SPEED-R03 image weight (unavailable) | done |
+
+Round 0 notes (28 Sep 2026, S3.12):
+- The bombas `speed_runs` fixture keeps the device in `variant` and has no `measured_at`, so `metrics.py` reads it as unavailable. `audit.SpeedData` reads it as device = variant, variant = baseline, measured_at = the last full day, and the page says so. A contract session should fix the fixture shape in `generate.py`.
+- Script weights are a screen fixture (`fixtures/script_log.json`, simulated, shaped like `speed_request_log`); vendor names come from `bombas.stack.*` brain records.
+- Cost of slowness uses an assumption stated on the page: 7 percent of orders lost per second of LCP over 2.5 s. It is not a Bombas measurement; `brand_economics.measured_conversion_loss_per_second` replaces it.
+- The audit contract has no `script` entity type; SPEED-R02 uses `metric` with id `script_bytes.<field>`. Propose a `script` type in a contract session.
+- Sessions by page are not in the data, so the money uses all mobile sessions and the median page gap.
+
+## Jobs to be done (room "Site and speed")
+
+| Job | Question | Capability |
+|---|---|---|
+| find why a page is slow and what it is costing in dollars | why is my page slow and what is it costing me | SITE-C21 |
+| cut image weight without hurting quality | which images are too big and how do I fix them | SITE-C22 |
+| defer or remove scripts that block the page | which scripts are slowing this page down and can they wait | SITE-C23 |
+| fix font loading | why do fonts delay the page and how much do they weigh | SITE-C24 |
+| stop the page jumping while it loads | what is causing layout shift and on which template | SITE-C25 |
+| fix the largest paint element | what is the LCP element on each template and what fixes it | SITE-C26 |
+| make add-to-cart, filters and search feel instant | which tap or click feels slow and why | SITE-C27 |
+| confirm caching and CDN are actually working | are my pages cached and served from the CDN or not | SITE-C28 |
+| get ready for a sale-day traffic spike | will the site hold up on Black Friday, Cyber Monday or another big sale day | SITE-C29 |
+| cut and reorganize code weight | how much CSS and JS can be removed, split or inlined | SITE-C30 |
+| speed-tune a headless or custom storefront | what is slow in our own framework code, not the platform's | SITE-C31 |
+| hand a developer a brief they can execute without guessing | what exactly should the developer change, and how do we know it worked | SITE-C32 |
+| catch a speed regression before it reaches customers | did the last deploy or app install make the site slower | SITE-C33 |
+| pick a landing-page build method that will not wreck speed | will this new page-builder page load fast enough to run ads to | SITE-C61 |
 
 ## Candidates from the room spec (pick 10 per round)
 
@@ -96,3 +124,4 @@ Status: todo | doing | done | parked. One feature per commit. The first round is
 
 | Round | Features picked | Date | Notes |
 |---|---|---|---|
+| 0 | 0.1 to 0.5 | 2026-09-28 | Bombas simulated data, scale 0.1; screenshot `round0.png` |
