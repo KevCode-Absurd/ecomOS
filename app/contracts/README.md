@@ -9,5 +9,6 @@ Small, shared, read by every screen session. Change them in their own short sess
 | `ui-kit.md` | The components in `web/ui-kit.js` and `charts.js`, with the props each takes. |
 | `events.md` | Cross-screen hand-offs: what one screen writes that another reads, always through the data layer. |
 | `brand.schema.json` | The brand record a screen may read: identity, market, channels, policies, claims tiers, red lines. |
+| `audit.md` | The audit contract: the finding record, severity scale, money at stake, dedupe, the `run(brand, window)` interface every screen's `audit.py` follows, and what Propose ranks on. |
 
 Seed for all of these: `agents/DATA-LAYER.md` (283 tables the rooms asked for, most-shared first) and the room specs in `agents/rooms/rooms.json`. Round 0 lifts the first 30 tables and the metrics the first screens need. The rest come in as screens need them.
