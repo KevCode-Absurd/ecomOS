@@ -63,6 +63,7 @@
       foot: el('div', { class: 'row' }, UI.rubricLegend(), el('span', { class: 'micro faint', text: 'Ranking: critical first by stake, then rubric total, severity, stake. "Not now" snoozes 14 days.' })),
       empty: 'No open offer or price move for this window.',
     }));
+    if ((d.planned || []).length) document.getElementById('plan').append(el('p', { class: 'micro faint', text: 'In the brain as plans: ' + d.planned.map((x) => x.title + ' (' + x.status + ')').join('; ') + '.' }));
     if ((d.snoozed || []).length) document.getElementById('plan').append(el('p', { class: 'micro faint', text: 'Not now: ' + d.snoozed.map((x) => x.title + (x.back_on ? ' (back ' + fmt.date(x.back_on) + ')' : '')).join('; ') + '.' }));
     const cw = document.getElementById('connect-wrap');
     cw.hidden = !con.length;
@@ -95,11 +96,26 @@
       }));
   }
 
+  /** Save a move to the brand brain as a plan record: proposed (review queue) or approved by the founder. */
+  function saveRow(a) {
+    const status = el('span', { class: 'micro muted' });
+    const go = (mode) => async () => {
+      status.textContent = 'Saving.';
+      try {
+        const r = await UI.api('/api/' + SLUG + '/approve?brand=' + encodeURIComponent(brand), { method: 'POST', body: { id: a.id, mode } });
+        status.textContent = 'Saved as ' + r.record + ' (' + r.status + ')' + (r.registry ? ', test proposed as ' + r.registry : '') + '.';
+      } catch (e) { status.textContent = 'Could not save: ' + e.message; }
+    };
+    return el('div', { class: 'row save-row' }, el('span', { class: 'kicker', text: 'Brand brain' }),
+      el('button', { class: 'btn sm', type: 'button', text: 'Propose as a plan', onclick: go('proposed') }),
+      el('button', { class: 'btn soft sm', type: 'button', text: 'I approve: save as a plan', onclick: go('founder') }), status);
+  }
+
   // ---------- 3 and 4. actions ----------
   function actionsList(d) {
     const open = d.plan.filter((a) => a.status !== 'unavailable');
     mount('#actions', UI.sectionHead({ title: 'Actions: how each move gets done', sub: 'Owner, steps with who does each, the artefact it produces, the win and stop rules, the check date.' }),
-      el('div', { class: 'grid' }, open.map((a, i) => UI.actionCard(a, { expanded: i === 0, screen: SLUG }))));
+      el('div', { class: 'grid' }, open.map((a, i) => UI.actionCard(a, { expanded: i === 0, screen: SLUG, extra: saveRow(a) }))));
   }
 
   // ---------- 5. the desk ----------

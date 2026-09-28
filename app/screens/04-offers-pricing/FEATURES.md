@@ -74,7 +74,15 @@ Known gaps from round 0:
 | 3.5 | Subscription as a note, not built (founder: non-subscription first): the month 1 and month 6 repeat shares from the cohort curve, the deepest subscribe discount each top line could fund at the red line (from 2.7), and the 3 questions the data cannot answer yet (wear-out interval, repeat by first pack, cancel save rate). No rule, no action; the desk block says it is parked | done |
 | 3.6 | depth.md section 3 on this screen: every open move now has a size, a stop rule and a check date (rule 5; 4 sizes and 4 stop rules added), no banned words or em dashes in any title, why, step or draft (rule 12), every desk block ends in a next-move line, including unavailable ones through the section helper (rule 9), and every desk heading is a question. Tests enforce all four | done |
 
+## Round 4: from approval to the brain (from 28 Sep 2026)
+
+| # | Feature | Status |
+|---|---|---|
+| 4.1 | Save a move to the brand brain (`approvals.py`, `POST /api/04-offers-pricing/approve {id, mode}`): the move becomes a `plans` record written only through `Brain.put`. Mode proposed: status proposed, tier inferred, source agent with the finding ids as derived_from, so it lands in the brand brain review queue. Mode founder: status active, tier approved, source founder. The record carries the move id, the drafted artefact, steps, win and stop rules and check date, and the window for promo moves (OFFER-R11 then counts the window as planned once approved). A testable move also gets a proposed registry row in the events.md shape in this screen's outbox. Moves with a plan record leave the open plan and are listed under it. Two buttons on each action card | done |
+
 ## Contract asks
+
+- A shared `registry` table in the data layer that screens can append proposed rows to (events.md). Local fallback: 04 writes proposed rows to `app/screens/04-offers-pricing/outbox/registry.<brand>.json` (git-ignored); the experiments screen can read them from there until the table exists.
 
 - Move the experiment registry seed into the data layer as the shared `registry` table (events.md). Local fallback: 04 reads `screens/25-experiments/fixtures/registry.json` as data, read-only, and prefers the table once it exists.
 
@@ -207,6 +215,7 @@ Intelligems (threshold and price tests scored by profit per visitor), Rebuy (tie
 | Round | Features picked | Date | Notes |
 |---|---|---|---|
 | 0 | skeleton, 0.1 to 0.9 | 2026-09-28 | S3.9; screenshot round0.png |
+| 4 | 4.1 save to the brain | 2026-09-28 | in progress |
 | 3 | 3.1 to 3.10: registry, referral, loyalty, window creep, subscription note, depth rules, plug and play, priors, decisions | 2026-09-28 | screenshot round3.png |
 | 2 | 2.1 to 2.10: position, parity, discipline, gift pick, cart ladder, test calendar, depth by line, second order, cost against price, desk tabs | 2026-09-28 | screenshot round2.png |
 | 1 | 1.1 plan first, 1.2 objection to offer map, 1.3 free shipping line, 1.4 pack ladder, 1.5 first-order offer, 1.6 margin waterfall, 1.7 promo calendar, 1.8 gifting and holiday, 1.9 guarantee as an offer, 1.10 rank complete | 2026-09-28 | manager session; screenshot round1.png (updated as the round lands) |

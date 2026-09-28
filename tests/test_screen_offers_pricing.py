@@ -1112,5 +1112,65 @@ class DecisionsTest(unittest.TestCase):
             self.assertIn(acts[0]['id'], [a['id'] for a in later])   # back after 14 days
 
 
+class ApprovalsTest(unittest.TestCase):
+    """Round 4 feature 1: a move saved to the brain through Brain.put, and its proposed registry row."""
+
+    def setUp(self):
+        import shutil, tempfile
+        self.tmp = Path(tempfile.mkdtemp())
+        shutil.copytree(ROOT / 'app' / 'brain' / 'bombas', self.tmp / 'bombas')
+        self.acts = api.actions.rank('bombas')['actions']
+
+    def tearDown(self):
+        import shutil
+        shutil.rmtree(self.tmp, ignore_errors=True)
+
+    def _load(self, rid):
+        sys.path.insert(0, str(ROOT / 'app' / 'brain'))
+        import store
+        from datetime import date
+        b = store.Brain('bombas', self.tmp, date(2026, 9, 28))
+        return next((r for r in b.raw('plans') if r['id'] == rid), None)
+
+    def test_proposed_and_founder_records(self):
+        from datetime import date
+        bf = next(a for a in self.acts if a['entity']['id'] == 'window_bfcm')
+        r = api.approve('bombas', {'id': bf['id'], 'mode': 'founder'}, brain_root=self.tmp, outbox=self.tmp / 'out', today=date(2026, 9, 28))
+        self.assertEqual(r['errors'], [])
+        rec = self._load(r['record'])
+        self.assertEqual((rec['status'], rec['tier'], rec['source']['type']), ('active', 'approved', 'founder'))
+        self.assertEqual(rec['value']['window'], 'bfcm')
+        self.assertEqual(rec['value']['move_id'], bf['id'])
+        other = next(a for a in self.acts if a['status'] == 'open' and a['id'] != bf['id'])
+        r2 = api.approve('bombas', {'id': other['id']}, brain_root=self.tmp, outbox=self.tmp / 'out', today=date(2026, 9, 28))
+        rec2 = self._load(r2['record'])
+        self.assertEqual((rec2['status'], rec2['source']['type']), ('proposed', 'agent'))
+        self.assertTrue(rec2['source']['derived_from'])
+        rows = api.approvals.outbox_rows('bombas', self.tmp / 'out')
+        self.assertTrue(all(x['status'] == 'proposed' and x['proposed_by'] == '04-offers-pricing' for x in rows))
+        # saving again updates the same record, no duplicate
+        api.approve('bombas', {'id': other['id']}, brain_root=self.tmp, outbox=self.tmp / 'out', today=date(2026, 9, 28))
+        sys.path.insert(0, str(ROOT / 'app' / 'brain'))
+        import store
+        ids = [x['id'] for x in store.Brain('bombas', self.tmp).raw('plans')]
+        self.assertEqual(len(ids), len(set(ids)))
+        self.assertEqual(len(api.approvals.outbox_rows('bombas', self.tmp / 'out')), 2)
+
+    def test_rejects(self):
+        with self.assertRaises(ValueError):
+            api.approve('bombas', {'id': 'nope'}, brain_root=self.tmp, outbox=self.tmp / 'out')
+        con = next((a for a in self.acts if a['status'] == 'unavailable'), None)
+        if con:
+            with self.assertRaises(ValueError):
+                api.approve('bombas', {'id': con['id']}, brain_root=self.tmp, outbox=self.tmp / 'out')
+        with self.assertRaises(ValueError):
+            api.approve('bombas', {'id': self.acts[0]['id'], 'mode': 'maybe'}, brain_root=self.tmp, outbox=self.tmp / 'out')
+
+    def test_real_brain_untouched_by_tests(self):
+        sys.path.insert(0, str(ROOT / 'app' / 'brain'))
+        import store
+        self.assertFalse([r for r in store.Brain('bombas').raw('plans') if (r.get('value') or {}).get('screen') == '04-offers-pricing'])
+
+
 if __name__ == '__main__':
     unittest.main()

@@ -34,6 +34,20 @@ def _actions():
 
 
 actions = _actions()
+
+
+def _approvals():
+    name = 'offers_pricing_approvals'
+    if name in sys.modules:
+        return sys.modules[name]
+    spec = importlib.util.spec_from_file_location(name, HERE / 'approvals.py')
+    mod = importlib.util.module_from_spec(spec)
+    sys.modules[name] = mod
+    spec.loader.exec_module(mod)
+    return mod
+
+
+approvals = _approvals()
 audit = actions.audit
 model = actions.model
 DEFAULT_BRAND = 'bombas'
@@ -312,10 +326,17 @@ def overview(data, brand):
     ranked = actions.rank(brand, {'ends_on': ends_on.isoformat()}, data=None if brand else data)
     desk = {k: ranked[k] for k in DESK_KEYS}
     plan, snoozed = with_decisions(ranked['actions'])
+    made = approvals.planned(rd) if brand else {}
+    for a in plan:
+        if a['id'] in made:
+            a['plan_record'] = made[a['id']]
+    planned = [a for a in plan if a.get('plan_record')]
+    plan = [a for a in plan if not a.get('plan_record')]
     months = discount_months(rd)
     th = threshold(rd)
     return {'brand': head, 'window': {'ends_on': ends_on.isoformat(), 'days': audit.WINDOW},
             'orientation': orientation(rd, th), 'plan': plan, 'snoozed': snoozed,
+            'planned': [{'id': a['id'], 'title': a['title'], **a['plan_record']} for a in planned],
             'stack': offer_stack(rd), 'threshold': th, 'bfcm': bfcm(rd), **desk,
             'creep': creep_rule(months), 'chart': chart(months), 'findings': ranked['findings'], 'rules': audit.RULES}
 
@@ -337,7 +358,36 @@ def _brand(req):
     return brand
 
 
+def approve(brand, body, brain_root=None, outbox=None, today=None):
+    """POST approve {id, mode}: save one ranked move to the brain as a plan record (Brain.put) and propose its
+    registry row. mode proposed (review queue) or founder (approved). Nothing else on the store changes."""
+    body = body if isinstance(body, dict) else {}
+    mode = body.get('mode') or 'proposed'
+    if mode not in approvals.MODES:
+        raise ValueError('mode must be proposed or founder')
+    ranked = actions.rank(brand)
+    act = next((a for a in ranked['actions'] if a['id'] == body.get('id')), None)
+    if not act:
+        raise ValueError('no open move with that id')
+    if act.get('status') == 'unavailable':
+        raise ValueError('a connect move is done in Setup, not saved as a plan')
+    sf, _ = actions.surfaces(act)
+    kw = {'brain_root': brain_root, 'today': today}
+    if outbox:
+        kw['outbox'] = outbox
+    return approvals.save(brand, act, mode, sf, **kw)
+
+
 def handle(req):
+    if req.method == 'POST' and req.path == ['approve']:
+        try:
+            brand = _brand(req)
+            if not brand:
+                return 400, {'error': 'approvals need a brand folder'}
+            out = approve(brand, req.body)
+            return (400, out) if out['errors'] else out
+        except ValueError as exc:
+            return 400, {'error': str(exc)}
     if req.method != 'GET':
         return 405, {'error': 'read only'}
     try:
@@ -353,4 +403,4 @@ def handle(req):
             return {'findings': audit.run(brand, None, data=data), 'rules': audit.RULES}
     except ValueError as exc:
         return 400, {'error': str(exc)}
-    return 404, {'error': 'not found', 'routes': ['overview', 'findings', 'rank']}
+    return 404, {'error': 'not found', 'routes': ['overview', 'findings', 'rank', 'POST approve']}
