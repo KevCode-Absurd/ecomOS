@@ -271,6 +271,7 @@ class Round1TopSection(TempBrain):
 
     def test_page_has_the_plan_first(self):
         html = (SCREEN / 'index.html').read_text(encoding='utf-8')
+        self.assertLess(html.index('id="ask"'), html.index('id="plan"'))   # the ask box is a tool line above the plan, not a section
         self.assertLess(html.index('id="plan"'), html.index('id="profile"'))
         self.assertLess(html.index('id="profile"'), html.index('id="drop"'))
         self.assertLess(html.index('id="drop"'), html.index('id="audit"'))
@@ -1053,3 +1054,44 @@ class Round2Voice(TempBrain):
         self.assertEqual(by['free_shipping']['use'], 'Free shipping on orders over $80.')   # the stale lock is not pasted
         self.assertEqual(by['free_shipping']['action']['owner'], 'person')
         self.assertEqual(api.handle(Req(['voice', 'snippet', 'nope'], 'POST', body={'text': 'x y z w'}))[0], 404)
+
+
+class Round2BattlecardsAsk(TempBrain):
+    """Round 2 features 8 and 9: battlecards per competitor, and ask the brain with sources."""
+
+    def test_cards_from_the_brain(self):
+        bc = api.handle(Req(['battlecards']))
+        self.assertEqual(bc['counts']['cards'], 5)
+        by = {c['competitor']: c for c in bc['cards']}
+        dt_ = by['Darn Tough Vermont']
+        self.assertEqual(dt_['verdict']['kind'], 'stop')
+        self.assertEqual(dt_['recommended_instead']['threads'], 4)
+        self.assertIn('Durability and guarantee', [a['label'] for a in dt_['they_win']])
+        self.assertTrue(any(w['line'] for w in dt_['how_we_win']))
+        self.assertIn('Never their text, logos, products or faces', dt_['text'])
+        self.assertNotIn('u/', dt_['text'])
+        self.assertEqual(bc['cards'][0]['verdict']['kind'], 'stop')
+
+    def test_ask_answers_with_tier_and_source(self):
+        r = api.handle(Req(['ask'], query={'q': ['what is the free shipping threshold']}))
+        self.assertEqual(r['answers'][0]['id'], 'bombas.offers.free_shipping_threshold_usd')
+        self.assertEqual(r['answers'][0]['tier'], 'site_backed')
+        self.assertTrue(r['answers'][0]['source']['link'].startswith('https://'))
+        self.assertIsNone(r['can_we_say'])
+        r = api.handle(Req(['ask'], query={'q': ['can we say our socks are the most comfortable']}))
+        self.assertEqual(r['can_we_say']['verdict'], 'needs_proof')
+        r = api.handle(Req(['ask'], query={'q': ['can we say every item purchased donates one item']}))
+        self.assertEqual((r['can_we_say']['verdict'], r['can_we_say']['record']), ('yes', 'bombas.claims.donation_pledge'))
+        api.handle(Req(['claims'], 'POST', body={'text': 'the softest socks in the world', 'tier': 'forbidden'}))
+        r = api.handle(Req(['ask'], query={'q': ['can we say the softest socks in the world']}))
+        self.assertEqual(r['can_we_say']['verdict'], 'never')
+        self.assertEqual(api.handle(Req(['ask'], query={'q': ['']}))['answers'], [])
+
+    def test_unanswered_becomes_an_open_question(self):
+        status, res = api.handle(Req(['ask', 'open'], 'POST', body={'q': 'What is the warranty on slippers?', 'why': 'asked by CX'}))
+        self.assertEqual(status, 201)
+        rec = next(r for r in self.section('open_questions') if r['id'] == res['record'])
+        self.assertEqual(rec['value']['question'], 'What is the warranty on slippers?')
+        qv = api.handle(Req(['questions']))
+        self.assertIn(res['record'], {q['id'] for q in qv['questions']})
+        self.assertEqual(api.handle(Req(['ask', 'open'], 'POST', body={'q': 'x'}))[0], 400)

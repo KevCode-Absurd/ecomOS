@@ -73,6 +73,59 @@
     }));
   }
 
+  // ---------- 0. ask the brain ----------
+  function mountAsk() {
+    const input = el('input', { class: 'text', placeholder: 'Ask the brain: what is our returns window? can we say the socks last a year? who is our 3PL?', 'aria-label': 'Ask the brain', style: { flex: '1 1 420px' } });
+    const btn = el('button', { class: 'btn primary sm', type: 'button', text: 'Ask' });
+    const out = el('div', { class: 'stack ask-out' });
+    const run = async () => {
+      const q = input.value.trim(); if (!q) return;
+      btn.disabled = true;
+      try {
+        const r = await api(BASE + 'ask?q=' + encodeURIComponent(q));
+        const items = [];
+        if (r.can_we_say) items.push(el('div', { class: 'card ' + (r.can_we_say.verdict === 'yes' ? 'flat' : 'sunken') }, UI.verdict(r.can_we_say.verdict === 'yes' ? 'keep' : r.can_we_say.verdict === 'never' ? 'stop' : 'watch', pretty(r.can_we_say.verdict), ''), ' ', r.can_we_say.text, r.can_we_say.record ? el('span', { class: 'chip mono', text: r.can_we_say.record }) : null));
+        if (r.answers.length) items.push(UI.table({ columns: [{ key: 'text', label: 'Answer' }, { key: 'tier', label: 'Tier', format: pretty }, { key: 'date', label: 'Date', format: (v) => v ? fmt.date(v) : 'undated' }, { key: 'src', label: 'Source', format: (v, row) => row.source.link ? row.source.link.replace(/^https?:\/\//, '').slice(0, 50) : (row.source.type || 'none') }, { key: 'id', label: 'Record' }], rows: r.answers, sort: false, onRow: (row) => { if (row.source.link) window.open(row.source.link, '_blank', 'noopener'); } }));
+        else items.push(el('p', { class: 'muted small', text: 'Nothing on file matches.' }));
+        const save = el('button', { class: 'btn sm', type: 'button', text: 'Save as an open question' });
+        const st = el('span', { class: 'micro muted' });
+        save.addEventListener('click', async () => { save.disabled = true; try { const res = await api(BASE + 'ask/open', { method: 'POST', body: { q } }); st.textContent = 'Saved ' + res.record + '. It shows under what the system needs from you.'; loadQuestions(); } catch (e) { save.disabled = false; st.textContent = 'Could not save: ' + e.message; } });
+        items.push(el('div', { class: 'row' }, el('span', { class: 'micro faint', text: r.count + ' records match. ' + (r.note || '') }), save, st));
+        mount(out, ...items);
+      } catch (e) { mount(out, el('p', { class: 'muted', text: 'Could not ask: ' + e.message })); }
+      btn.disabled = false;
+    };
+    btn.addEventListener('click', run);
+    input.addEventListener('keydown', (e) => { if (e.key === 'Enter') run(); });
+    mount('#ask', el('div', { class: 'card flat ask' }, el('div', { class: 'row' }, input, btn), out));
+  }
+
+  // ---------- 5c4. battlecards ----------
+  function cardPanel(c) {
+    const body = el('div', { class: 'stack' });
+    body.append(el('div', { class: 'row' }, UI.verdict(c.verdict.kind, c.verdict.text, c.verdict.reason), c.captured_at ? el('span', { class: 'chip', text: 'read ' + fmt.date(c.captured_at) }) : null, ...c.flags.map((f) => el('span', { class: 'chip warn', text: f.text }))));
+    body.append(el('pre', { class: 'card sunken brief', text: c.text }));
+    const wins = el('div', { class: 'grid' }, ...c.how_we_win.map((w) => el('div', { class: 'card flat rec' }, el('div', { class: 'meta' }, el('span', { class: 'chip ' + (w.line ? 'good' : 'bad'), text: w.label }), w.claim ? el('span', { class: 'chip mono', text: w.claim }) : null), el('div', { text: w.line || w.status }))));
+    body.append(wins);
+    body.append(el('div', { class: 'row' }, UI.copyButton({ label: 'Copy the battlecard', text: () => c.text }), c.ad_library_url ? el('a', { class: 'btn sm', href: c.ad_library_url, target: '_blank', rel: 'noopener', text: 'Their ads (read only)' }) : null,
+      UI.decisionRow({ capability: 'BRAND-C57', autonomy: 'agent_does', owner: 'agent_drafts', screen: SCREEN, compact: true, stub: 'The brand agent turns this card into a CX macro and 3 copy first lines from the approved claims and puts them in the review queue. You approve before anything ships.' })));
+    UI.panel({ title: 'Against ' + c.competitor, body });
+  }
+  function cardsTable(bc) {
+    const rows = bc.cards.map((c) => Object.assign({}, c, { theirs: c.their_angles.map((a) => a.label.toLowerCase()).join(', '), win: c.they_win.map((a) => a.label.toLowerCase()).join(', ') || 'none', gaps: c.proof_gaps.map((g) => g.toLowerCase()).join(', ') || 'none', rec: c.recommended_instead ? c.recommended_instead.threads + ' threads' : '0' }));
+    return UI.verdictTable({
+      columns: [{ key: 'competitor', label: 'Competitor' }, { key: 'price_band', label: 'Their price', format: (v) => v || NA }, { key: 'theirs', label: 'Their angles' }, { key: 'win', label: 'They run, we do not' }, { key: 'gaps', label: 'Our proof gaps' }, { key: 'rec', label: 'Recommended instead' }, { key: 'long_runner_share', label: 'Their 30 d+ ads', unit: '%', align: 'right' }],
+      verdict: { at: 1, kind: (r) => r.verdict.kind, text: (r) => r.verdict.text, reason: (r) => r.verdict.reason },
+      actions: { label: 'Open card', onClick: (r) => cardPanel(r) }, rows, sort: false, maxRows: 20, empty: 'No competitor page with angles read yet.',
+    });
+  }
+  async function loadBattlecards() {
+    let bc;
+    try { bc = await api(BASE + 'battlecards'); } catch (e) { mount('#battlecards', el('p', { class: 'muted', text: 'Battlecards unavailable: ' + e.message })); return; }
+    mount('#battlecards-tools', UI.orientation([{ label: 'cards', value: bc.counts.cards, unit: 'n' }, { label: 'with a proof gap', value: bc.counts.with_gaps, unit: 'n', tone: bc.counts.with_gaps ? 'bad' : 'good' }, { label: 'recommended instead', value: bc.counts.recommended_instead, unit: 'n' }]));
+    mount('#battlecards', cardsTable(bc), el('div', { class: 'micro faint', text: bc.note }));
+  }
+
   // ---------- 1b. decisions log ----------
   const CHOICE_TEXT = { agent: 'Agent does it', person: 'Sent to a person', not_now: 'Not now, snoozed 14 days' };
   async function loadDecisions(m) {
@@ -1057,6 +1110,7 @@
   }
 
   async function load() {
+    mountAsk();
     mountDrop();
     loadDocs();
     loadFlows();
@@ -1070,6 +1124,7 @@
     loadContracts();
     loadLegal();
     loadVoice();
+    loadBattlecards();
     const [prof] = await Promise.all([loadProfile(), loadDesk()]);
     await loadPlan(prof);
   }

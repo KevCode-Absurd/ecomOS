@@ -65,6 +65,10 @@ question, and accept or ignore on a proposed record. Nothing external.
                                 copy-ready sheet text; and the approved snippets with a stale check
   POST voice/example            {kind: liked | disliked, text, why}: a founder example record
   POST voice/snippet/<key>      {text}: lock the exact wording of a snippet as an approved record
+  GET  battlecards              one card per tracked competitor: their angles, where they beat us, the doubt they
+                                exploit, our proof, how we win, CX and copy lines, plain text to copy
+  GET  ask?q=                   answers from records with tier, source and date; "can we say" routes to the claims
+  POST ask/open                 {q, why}: save an unanswered question as an open question
   GET  records?section=<name>   one section's records with tier, date, source and evidence
   GET  audit                    findings from audit.py (app/contracts/audit.md shape)
   POST questions/<field>        {answer}: writes a founder record, marks the question answered
@@ -106,6 +110,12 @@ _spec.loader.exec_module(audit)
 _hspec = importlib.util.spec_from_file_location("brand_brain_health", HERE / "health.py")
 health = importlib.util.module_from_spec(_hspec)
 _hspec.loader.exec_module(health)
+_bspec = importlib.util.spec_from_file_location("brand_brain_battlecards", HERE / "battlecards.py")
+battlecards = importlib.util.module_from_spec(_bspec)
+_bspec.loader.exec_module(battlecards)
+_aspec = importlib.util.spec_from_file_location("brand_brain_ask", HERE / "ask.py")
+ask = importlib.util.module_from_spec(_aspec)
+_aspec.loader.exec_module(ask)
 _vspec = importlib.util.spec_from_file_location("brand_brain_voice", HERE / "voice.py")
 voice = importlib.util.module_from_spec(_vspec)
 _vspec.loader.exec_module(voice)
@@ -976,6 +986,19 @@ def handle(req):
         ends = (brain.today - dt.timedelta(days=1)).isoformat()
         findings = audit.run(brain.brand, {"ends_on": ends, "days": 1, "trailing": 0}, BRAIN_ROOT)
         return {"findings": findings, "rules": audit.RULES, "brain_version": brain.version()}
+    if req.method == "GET" and parts == ["battlecards"]:
+        bc = battlecards.cards(brain)
+        bc.update(brand=brain.brand, today=brain.today.isoformat(), version=brain.version())
+        return bc
+    if req.method == "GET" and parts == ["ask"]:
+        q = (req.arg("q", "") or "")[:300]
+        return ask.search(brain, q)
+    if req.method == "POST" and parts == ["ask", "open"]:
+        q = str((req.body or {}).get("q") or "").strip()
+        if len(q) < 4:
+            return 400, {"error": "q is empty"}
+        res = ask.to_open_question(brain, q[:300], str((req.body or {}).get("why") or ""))
+        return (201, dict(res, version=brain.version())) if res["ok"] else (400, {"error": "record not valid", "details": res["errors"]})
     if req.method == "GET" and parts == ["voice"]:
         vs = voice.sheet(brain)
         vs["snippets"] = voice.snippets(brain)
