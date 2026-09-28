@@ -779,6 +779,16 @@
   function render(d) {
     // one scale: a move with no counted stake says how much of the last 28 days' sales it touches
     (d.plan || []).forEach((a) => { if (a.exposure && a.size && a.size.text.indexOf('touches') < 0) a.size = Object.assign({}, a.size, { text: a.size.text + '; touches ' + fmt.money(a.exposure.usd_28d, 0) + ' of 28-day sales' }); });
+    // when each move can start, from the test calendar: the plan stays in rubric order, the stagger shows on the move
+    const cal = Object.fromEntries((d.tests || []).map((t) => [t.id, t]));
+    (d.plan || []).forEach((a) => {
+      const t = cal[a.id];
+      if (!t || !a.size || a.size.text.indexOf('starts ') >= 0) return;
+      const w0 = t.waits_for[0] || '';
+      const shortW = w0.length > 44 ? w0.slice(0, w0.lastIndexOf(' ', 44)) + '...' : w0;
+      const when = 'starts ' + fmt.date(t.start) + (shortW ? ', after ' + shortW : '');
+      a.size = Object.assign({}, a.size, { text: a.size.text + '; ' + when });
+    });
     ACTIONS = d.plan || [];
     SET = d.settings || {};
     d_market = (d.brand || {}).market || null;

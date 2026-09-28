@@ -2045,5 +2045,20 @@ class UnlocksTest(unittest.TestCase):
         self.assertFalse(any(a.get('unlocks') for a in acts))
 
 
+class PlanStaggerTest(unittest.TestCase):
+    """Round 8 feature 5: the plan keeps rubric order; each testable move shows when it can start and what it waits for."""
+
+    def test_js_and_calendar(self):
+        js = (SCREEN / 'screen.js').read_text(encoding='utf-8')
+        self.assertIn("'starts ' + fmt.date(t.start)", js)
+        r = api.actions.rank('bombas')
+        ids = [a['id'] for a in r['actions']]
+        self.assertEqual(r['actions'], sorted(r['actions'], key=api.actions.RANK.sort_key))   # order untouched
+        for t in r['tests']:
+            self.assertIn(t['id'], ids)
+            if t['waits_for']:
+                self.assertGreater(t['start'], min(x['start'] for x in r['tests']))
+
+
 if __name__ == '__main__':
     unittest.main()
