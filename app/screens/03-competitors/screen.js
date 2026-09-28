@@ -458,7 +458,7 @@
   // ---------- 5o. niche sizing against our bar ----------
   function nicheSection(n) {
     const b = n.bar;
-    const bar = b ? el('div', { class: 'card flat' }, el('b', { text: 'The bar: ' }), fmt.num(b.buyers) + ' buyers a year to add ' + Math.round(b.share * 100) + ' percent of revenue (' + fmt.money(b.revenue) + '), at ' + usd(b.aov) + ' a order and ' + b.orders_per_buyer + ' orders a buyer. Contribution about ' + (b.contribution == null ? NA : fmt.money(b.contribution)) + '.')
+    const bar = b ? el('div', { class: 'card flat' }, el('b', { text: 'The bar: ' }), fmt.num(b.buyers) + ' buyers a year to add ' + Math.round(b.share * 100) + ' percent of revenue (' + fmt.money(b.revenue) + '), at ' + usd(b.aov) + ' an order and ' + b.orders_per_buyer + ' orders a buyer. Contribution about ' + (b.contribution == null ? NA : fmt.money(b.contribution)) + '.')
       : el('div', { class: 'na', text: 'The bar is unavailable: the brain lacks AOV, repeat rate or revenue.' });
     const t = UI.table({ columns: [{ key: 'label', label: 'Candidate niche (angle)' }, { key: 'their_share', label: 'Their share of ads', format: (v) => fmt.pct(v) },
       { key: 'our_share', label: 'Ours', format: (v) => fmt.pct(v) }, { key: 'pages', label: 'Pages serving it', format: (v) => v.length + ': ' + v.slice(0, 3).join(', ') + (v.length > 3 ? ' and more' : '') },

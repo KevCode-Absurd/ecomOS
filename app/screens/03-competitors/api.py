@@ -32,6 +32,11 @@ SIMULATED_NOTE = ("{name} is the sample brand. Its prices per {unit} come from s
 SIGNAL_NOTE = ("Public signals only. Ad counts and run length show what a brand keeps live, not what works. "
                "Formats and hooks are for layout and mood. Never copy their text, logos, products or faces.")
 
+# The server reloads api.py when it changes but not the modules it loads, so drop this folder's cached modules
+# first: a reload then sees every edited file, never a stale mix.
+import sys as _sys  # noqa: E402
+for _stem in (p.stem for p in HERE.glob("*.py")):
+    _sys.modules.pop(f"competitors_{_stem}", None)
 _spec = importlib.util.spec_from_file_location("competitors_actions", HERE / "actions.py")
 actions = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(actions)
