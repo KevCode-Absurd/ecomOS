@@ -582,6 +582,54 @@ def rank(brand, window=None):
 
 # ---------------------------------------------------------------- overview
 
+BEHIND_RULES = {'PROD-R09': 'positioning', 'PROD-R08': 'positioning', 'PROD-R06': 'positioning', 'PROD-R10': 'avatar', 'PROD-R11': 'avatar', 'PROD-R07': 'avatar'}
+
+
+def falling_behind(findings, cov, prefs, mp, net_28d_value):
+    """Section 9: every positioning and avatar gap the audit found, ranked by money at stake, then reach, then severity.
+    Reach is the share of buyers for an avatar, the competitor pages or upvotes for a positioning gap."""
+    rows = []
+    share_by = {r['key']: r for r in (cov or {}).get('rows') or []}
+    for f in findings:
+        kind = BEHIND_RULES.get(f['rule_id'])
+        if not kind or f['status'] != 'open':
+            continue
+        ent = f.get('entity') or {}
+        m = f.get('money_at_stake') or {}
+        usd = m.get('usd') if isinstance(m.get('usd'), (int, float)) else None
+        reach, reach_n = None, None
+        if f['rule_id'] in ('PROD-R10', 'PROD-R11'):
+            av = share_by.get(ent.get('id')) or {}
+            if av.get('share') is not None:
+                reach, reach_n = f'{round(av["share"] * 100)} percent of buyers', av['share']
+            elif av.get('served_by'):
+                reach, reach_n = f'{len(av["served_by"])} competitor pages pitch to them', len(av['served_by']) / 100
+        elif f['rule_id'] == 'PROD-R09':
+            up = next((e.get('upvotes') for e in f['evidence'] if e.get('metric') == 'recommended_instead'), None)
+            n = next((e.get('value') for e in f['evidence'] if e.get('metric') == 'frame_mentions'), None)
+            reach, reach_n = (f'{n} Reddit posts, {up} upvotes on the recommendation instead' if n is not None else None), (up or 0) / 10000
+        elif f['rule_id'] == 'PROD-R06':
+            n = next((e.get('value') for e in f['evidence'] if e.get('metric') == 'competitor_active_ads'), None)
+            k = next((e.get('value') for e in f['evidence'] if e.get('metric') == 'competitors_pushing'), None)
+            reach, reach_n = (f'{k} competitor pages, {n} active ads' if n is not None else None), (n or 0) / 10000
+        elif f['rule_id'] == 'PROD-R08':
+            k = next((e.get('value') for e in f['evidence'] if e.get('metric') == 'competitors_claiming_it'), None)
+            reach, reach_n = (f'{k} competitor pages claim it' if k is not None else None), (k or 0) / 100
+        elif f['rule_id'] == 'PROD-R07':
+            c = next((e.get('value') for e in f['evidence'] if e.get('metric') == 'complaint_quotes'), None)
+            reach, reach_n = (f'{c} complaint quotes' if c is not None else None), (c or 0) / 1000
+        rows.append({'finding_id': f['id'], 'rule_id': f['rule_id'], 'kind': kind, 'label': ent.get('label') or ent.get('id'), 'sentence': f['sentence'],
+                     'severity': f['severity'], 'confidence': f['confidence'], 'usd': usd, 'formula': m.get('formula'), 'money_reason': f.get('money_reason'),
+                     'reach': reach, 'reach_n': reach_n, 'capability': f['capability']['id'], 'autonomy': f['capability']['autonomy']})
+    order = {'critical': 0, 'high': 1, 'medium': 2, 'low': 3}
+    rows.sort(key=lambda r: (0 if r['usd'] is not None else 1, -(r['usd'] or 0), -(r['reach_n'] or 0), order.get(r['severity'], 9), r['finding_id']))
+    stake = [r['usd'] for r in rows if r['usd'] is not None]
+    return {'rows': rows, 'stake_usd': sum(stake) if stake else None, 'stake_share_of_net_28d': (sum(stake) / net_28d_value) if stake and net_28d_value else None,
+            'counts': {'positioning': sum(1 for r in rows if r['kind'] == 'positioning'), 'avatar': sum(1 for r in rows if r['kind'] == 'avatar')},
+            'quadrant': next((q for q, members in ((mp or {}).get('members') or {}).items() if (mp or {}).get('ours', {}).get('label') in members), None),
+            'prove': [p['label'] for p in prefs or [] if p.get('verdict') == 'prove']}
+
+
 def avatar_block(br, findings):
     cov = audit.avatar_coverage(br)
     by_entity = {}
@@ -634,15 +682,18 @@ def overview(data, brand):
     floor = finance_floor(data, brand, ends_on)
     findings = audit.run(brand, {'ends_on': ends_on.isoformat()}, data=data)
     mix = audit.category_mix(data, brand, rd)
+    cov = avatar_block(br, findings)
+    prefs = audit.preferences(br)
+    mp = dict(audit.positioning_map(br, products(data, brand)), frames=audit.reddit_frames(br)[0], instead=audit.reddit_frames(br)[1])
     return {'brand': head(data, brand, ends_on, br),
             'window': {'ends_on': ends_on.isoformat(), 'days': 28,
                        'trend': None if tr.get('unavailable') else {'months': [tr['first'], tr['last']], 'year_ago': tr['year_ago']}},
             'orientation': orientation(tr, br, ends_on, findings),
             'wrong': wrong(findings),
             'desk': {'trends': trends(br, mix), 'mix': mix, 'lanes': audit.subcategory_table(br, ends_on),
-                     'conversation': audit.conversation(br), 'preferences': audit.preferences(br),
-                     'map': dict(audit.positioning_map(br, products(data, brand)), frames=audit.reddit_frames(br)[0], instead=audit.reddit_frames(br)[1]),
-                     'avatars': avatar_block(br, findings), 'search': audit.search_table(br, data, brand, ends_on),
+                     'conversation': audit.conversation(br), 'preferences': prefs, 'map': mp, 'avatars': cov,
+                     'search': audit.search_table(br, data, brand, ends_on),
+                     'behind': falling_behind(findings, cov, prefs, mp, audit.net_28d(rd)),
                      'demand': demand(tr, reviews), 'store_growth': tr.get('store_growth'),
                      'demand_unavailable': {'reason': tr.get('reason'), 'fix': tr.get('fix')} if tr.get('unavailable') else None,
                      'price_bands': bands, 'reviews': review_mining(reviews, lads),

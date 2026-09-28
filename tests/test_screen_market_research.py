@@ -439,6 +439,23 @@ class RulesTest(unittest.TestCase):
         self.assertEqual(a['owner'], 'person')
         self.assertTrue(a['title'].startswith('Connect Search Console'))
 
+    def test_falling_behind_ranks_money_then_reach(self):
+        f1 = {'id': 'x.PROD-R11.a', 'rule_id': 'PROD-R11', 'status': 'open', 'entity': {'id': 'a', 'label': 'A'}, 'sentence': 's', 'severity': 'high', 'confidence': 0.5,
+              'money_at_stake': {'usd': 100, 'formula': 'f'}, 'evidence': [], 'capability': {'id': 'PROD-C12', 'autonomy': 'human_assist'}}
+        f2 = dict(f1, id='x.PROD-R09.brand', rule_id='PROD-R09', entity={'id': 'brand', 'label': 'Positioning'}, money_at_stake=None, money_reason='none',
+                  evidence=[{'metric': 'frame_mentions', 'value': 9}, {'metric': 'recommended_instead', 'value': 4, 'upvotes': 188}])
+        f3 = dict(f1, id='x.PROD-R11.b', rule_id='PROD-R11', entity={'id': 'b', 'label': 'B'}, money_at_stake={'usd': 500, 'formula': 'f'})
+        f4 = dict(f1, id='x.PROD-R01.c', rule_id='PROD-R01', entity={'id': 'c', 'label': 'C'})   # not a positioning or avatar rule
+        cov = {'rows': [{'key': 'a', 'share': 0.1, 'served_by': []}, {'key': 'b', 'share': 0.2, 'served_by': []}]}
+        b = api.falling_behind([f1, f2, f3, f4], cov, [{'label': 'Durability', 'verdict': 'prove'}], {'members': {'bl': ['Bombas']}, 'ours': {'label': 'Bombas'}}, 10000)
+        self.assertEqual([r['finding_id'] for r in b['rows']], ['x.PROD-R11.b', 'x.PROD-R11.a', 'x.PROD-R09.brand'])
+        self.assertEqual(b['stake_usd'], 600)
+        self.assertEqual(b['stake_share_of_net_28d'], 0.06)
+        self.assertEqual(b['rows'][2]['reach'], '9 Reddit posts, 188 upvotes on the recommendation instead')
+        self.assertEqual(b['counts'], {'positioning': 1, 'avatar': 2})
+        self.assertEqual(b['quadrant'], 'bl')
+        self.assertEqual(b['prove'], ['Durability'])
+
     def test_web_pass_fixture_cites_every_number(self):
         fx = audit.market_trends()
         self.assertIsNotNone(fx)
