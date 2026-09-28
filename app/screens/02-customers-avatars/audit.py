@@ -64,6 +64,22 @@ CUST-R16 order-level paths unreadable. No customer_paths aggregate, so gateway p
     second-order paths and order-gap timing cannot run. Status unavailable. Capability LIFE-C12.
     When the aggregate exists, R16 fires once per gateway or path move instead (medium).
 
+CUST-R17 perception gap. Under half of the top 20 praise words appear in our positioning records
+    (builds.perception). Severity medium. Capability BRAND-C59.
+CUST-R18 claim under fire. 3 or more 1 and 2 star reviews use a live claim's own feature words
+    (builds.claims_fire). Severity high. Capability BRN-C03. Reputation 5 (a claim buyers dispute).
+CUST-R19 lookalike page. The Ad Library pull marks a page as a likely impostor. Severity high.
+    Capability MONEY-C48; a person reports it, never the agent. Reputation 5 (someone using our name).
+CUST-R20 pushed offer answers no doubt. The promo our ads carry most is proof for no ladder rung
+    (builds.offer_map). Severity medium. Capability LIFE-C42.
+CUST-R21 doubt season. A ladder theme's share of complaints in a 3-month window is 1.5x its year
+    share (builds.doubt_timing). High when the season has started, else medium. Capability SITE-C38.
+CUST-R22 no approved messaging hierarchy. The brain holds no positioning.messaging_hierarchy
+    record. Severity low. Capability BRAND-C33.
+CUST-R23 brand health line falling. Repeat in months 1 to 3 down 3 points over the last 3 cohorts,
+    or tickets per 1,000 orders up 20 percent over 3 months (builds.health). Severity medium.
+    Capability LIFE-C20.
+
 Money at stake is null for every rule: an evidence or proof gap has no revenue formula
 yet (`money_reason` says so). Confidence: one brain snapshot is one window (0.5), minus
 0.2 when an input record is past `expires_at`.
@@ -126,11 +142,26 @@ RULES = [
      "inputs": ["brain avatars", "monthly"], "capability": "LIFE-C20", "owner_screen": SCREEN},
     {"rule_id": "CUST-R16", "name": "order-level paths", "entity_type": "metric",
      "inputs": ["customer_paths"], "capability": "LIFE-C12", "owner_screen": SCREEN},
+    {"rule_id": "CUST-R17", "name": "perception gap", "entity_type": "brand",
+     "inputs": ["brain positioning", "brain identity", "brain language_bank"], "capability": "BRAND-C59", "owner_screen": SCREEN},
+    {"rule_id": "CUST-R18", "name": "claim under fire", "entity_type": "brand",
+     "inputs": ["brain claims", "brain language_bank"], "capability": "BRN-C03", "owner_screen": SCREEN},
+    {"rule_id": "CUST-R19", "name": "lookalike page", "entity_type": "brand",
+     "inputs": ["brain competitors"], "capability": "MONEY-C48", "owner_screen": SCREEN},
+    {"rule_id": "CUST-R20", "name": "pushed offer answers no doubt", "entity_type": "offer",
+     "inputs": ["brain offers", "brain objection_ladders"], "capability": "LIFE-C42", "owner_screen": SCREEN},
+    {"rule_id": "CUST-R21", "name": "doubt season", "entity_type": "ladder_rung",
+     "inputs": ["brain objection_ladders", "brain language_bank"], "capability": "SITE-C38", "owner_screen": SCREEN},
+    {"rule_id": "CUST-R22", "name": "no approved messaging hierarchy", "entity_type": "brand",
+     "inputs": ["brain positioning"], "capability": "BRAND-C33", "owner_screen": SCREEN},
+    {"rule_id": "CUST-R23", "name": "brand health line falling", "entity_type": "metric",
+     "inputs": ["monthly", "cohorts"], "capability": "LIFE-C20", "owner_screen": SCREEN},
 ]
 AUTONOMY = {"BRAND-C11": "founder_gate", "BRAND-C13": "agent_does", "CREA-C03": "agent_does", "SITE-C38": "human_assist",
             "PROD-C73": "human_assist", "CREA-C24": "agent_does", "LIFE-C27": "human_assist", "BRAND-C16": "founder_gate",
             "MEDIA-C12": "human_assist", "LIFE-C20": "agent_does", "LIFE-C08": "founder_gate", "BRAND-C14": "agent_does",
-            "LIFE-C50": "founder_gate", "BRAND-C05": "human_assist", "LIFE-C12": "founder_gate"}
+            "LIFE-C50": "founder_gate", "BRAND-C05": "human_assist", "LIFE-C12": "founder_gate", "BRAND-C59": "agent_does",
+            "BRN-C03": "founder_gate", "MONEY-C48": "human_assist", "LIFE-C42": "founder_gate", "BRAND-C33": "founder_gate"}
 MOMENT_WARN_DAYS = 45
 NO_DATA = "no revenue formula for this rule yet"
 
@@ -467,6 +498,16 @@ def load_paths(brand: str) -> dict:
     return builds.paths(rows)
 
 
+def load_health(brand: str, avatars: list[dict]) -> dict:
+    try:
+        from tables import brand_data
+        data = brand_data(brand)
+        monthly, as_of = data.table("monthly"), data.brand.get("as_of")
+    except (ImportError, ValueError, KeyError, FileNotFoundError) as exc:
+        return {"available": False, "reason": str(exc), "rows": [], "missing": builds.MISSING_LINES, "moves": []}
+    return builds.health(monthly, load_cohorts(brand, avatars).get("rows", []), as_of)
+
+
 def with_tops(avatars, all_rungs):
     for a in avatars:
         top = top_objection(a["id"], all_rungs)
@@ -488,7 +529,16 @@ def desk(brain: Brain, avatars: list[dict], all_rungs: list[dict]) -> dict:
                                         brand_tokens(brain), source_name),
             "gate": builds.gate(avatars, all_rungs),
             "forces": builds.forces(avatars, all_rungs, brain.records("language_bank"), competitor_names(brain)),
-            "moments": load_moments(brain.brand, avatars), "paths": load_paths(brain.brand)}
+            "moments": load_moments(brain.brand, avatars), "paths": load_paths(brain.brand),
+            "perception": builds.perception(brain.records("positioning") + brain.records("identity"), brain.records("language_bank"),
+                                            brand_tokens(brain), source_name),
+            "claims_fire": builds.claims_fire(brain.records("claims"), brain.records("language_bank"), brand_tokens(brain), source_name,
+                                              product_words(brain)),
+            "lookalikes": builds.lookalikes(brain.records("competitors"), brain.brand.capitalize()),
+            "offer_map": builds.offer_map(avatars, all_rungs, brain.records("offers"), brain.records("policies") + brain.records("claims")),
+            "timing": builds.doubt_timing(all_rungs, brain.records("language_bank"), (brain.today - dt.timedelta(days=1)).isoformat(), source_name),
+            "hierarchy_approved": any(r.get("field") == "messaging_hierarchy" for r in brain.raw("positioning")),
+            "health": load_health(brain.brand, avatars)}
 
 
 def r04(d, all_rungs, ends_on):
@@ -661,6 +711,48 @@ def r15_r16(d, ends_on):
     return out
 
 
+def r17_r23(d, ends_on):
+    out = []
+    p = d["perception"]
+    if p.get("available") and p["score"] is not None and p["score"] < 0.5:
+        ev = [_ev("buyer_words_in_positioning", p["score"], "%", ends_on, "brain.positioning", baseline=0.5)]
+        miss = ", ".join(t["word"] for t in p["theirs"] if not t["in_positioning"])[:60].rsplit(",", 1)[0]
+        s = f"Only {round(p['score'] * 100)} percent of the words buyers praise us with are in our positioning. Missing: {miss}."
+        out.append(_finding("CUST-R17", "medium", {"type": "brand", "id": "perception_gap", "label": "Perception gap"}, ev, s, "BRAND-C59", 0.5, [], ends_on))
+    for r in d["claims_fire"]["rows"]:
+        if r["verdict"] != "under_fire":
+            continue
+        ev = [_ev("one_two_star_reviews_on_claim_words", r["hits"], "n", ends_on, "brain.language_bank", baseline=builds.CLAIM_HITS)]
+        s = f"{r['hits']} 1 and 2 star reviews throw this claim's words back at us: {', '.join(r['words'][:3])}. The claim is under fire."
+        out.append(_finding("CUST-R18", "high", {"type": "brand", "id": "claim_" + r["id"].split(".")[-1], "label": r["id"].split(".")[-1].replace("_", " ")},
+                            ev, s, "BRN-C03", 0.5, [r["id"]], ends_on))
+    for r in d["lookalikes"]["rows"]:
+        ev = [_ev("impostor_ads_seen", r["ads_seen"], "n", ends_on, "brain.competitors", baseline=0)]
+        s = f"A lookalike page ran {r['ads_seen']} ads that send buyers to {r['links_to']}. It uses our name."
+        out.append(_finding("CUST-R19", "high", {"type": "brand", "id": f"lookalike_{r['page_id']}", "label": f"Lookalike page {r['page_id']}"},
+                            ev, s, "MONEY-C48", 0.5, [r["id"]], ends_on))
+    o = d["offer_map"]
+    if o.get("action") and o.get("push"):
+        ev = [_ev("ads_with_pushed_offer", o["push"]["ads"], "n", ends_on, "brain.offers"),
+              _ev("doubts_it_answers", 0, "n", ends_on, "brain.objection_ladders", baseline=1)]
+        s = f"{o['push']['ads']} of {o['push']['of']} live ads push a discount that answers none of our buyers' doubts."
+        out.append(_finding("CUST-R20", "medium", {"type": "offer", "id": "pushed_offer", "label": "The offer our ads push"}, ev, s, "LIFE-C42", 0.5,
+                            [o["push"]["id"]], ends_on))
+    for m in d["timing"]["moves"]:
+        ev = [_ev("season_lift", m["lift"], "x", ends_on, "brain.language_bank", baseline=builds.SEASON_LIFT)]
+        s = f"{m['theme'].replace('_', ' ').capitalize()} complaints peak in {m['season']}: {round(m['share'] * 100)} percent of all complaints then."
+        out.append(_finding("CUST-R21", "high" if m["late"] else "medium", {"type": "ladder_rung", "id": "season_" + m["theme"], "label": f"{m['theme'].replace('_', ' ')}, {m['season']}"},
+                            ev, s, "SITE-C38", 0.5, [], ends_on))
+    if not d["hierarchy_approved"]:
+        ev = [_ev("approved_hierarchy_records", 0, "n", ends_on, "brain.positioning", baseline=1)]
+        out.append(_finding("CUST-R22", "low", {"type": "brand", "id": "messaging_hierarchy", "label": "Messaging hierarchy"}, ev,
+                            "No approved lead line, proof points and first doubt to answer. Every page picks its own.", "BRAND-C33", 0.5, [], ends_on))
+    for m in d["health"].get("moves", []):
+        ev = [_ev("health_line_" + m["key"], 1, "n", ends_on, "monthly", simulated=True)]
+        out.append(_finding("CUST-R23", "medium", {"type": "metric", "id": "health_" + m["key"], "label": m["title"][:60]}, ev, m["why"], "LIFE-C20", 0.5, [], ends_on))
+    return out
+
+
 def run(brand: str, window: dict, brain_root: Path | None = None) -> list[dict]:
     ends_on = window["ends_on"]
     today = dt.date.fromisoformat(ends_on) + dt.timedelta(days=1)
@@ -672,6 +764,6 @@ def run(brand: str, window: dict, brain_root: Path | None = None) -> list[dict]:
     d["brand"] = brand
     findings = (r01(brain, avatars, ends_on) + r02(brain, avatars, all_rungs, ends_on) + r03(brain, all_rungs, angles, ends_on)
                 + r04(d, all_rungs, ends_on) + r05(d, ends_on) + r06(d, ends_on) + r07(d, ends_on) + r08_r09(d, ends_on) + r10(d, ends_on)
-                + r11_r12(d, ends_on) + r13_r14(d, ends_on) + r15_r16(d, ends_on))
+                + r11_r12(d, ends_on) + r13_r14(d, ends_on) + r15_r16(d, ends_on) + r17_r23(d, ends_on))
     findings.sort(key=lambda f: (SEVERITY_ORDER[f["severity"]], f["rule_id"], f["id"]))
     return findings

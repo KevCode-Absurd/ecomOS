@@ -94,7 +94,7 @@ class AuditShape(unittest.TestCase):
         self.assertEqual(r03['status'], 'unavailable')
         self.assertEqual(r03['evidence'], [])
         self.assertEqual(set(r03['unavailable']), {'inputs', 'connector', 'fix'})
-        self.assertEqual({r['rule_id'] for r in audit.RULES}, {f'CUST-R{n:02d}' for n in range(1, 17)})
+        self.assertEqual({r['rule_id'] for r in audit.RULES}, {f'CUST-R{n:02d}' for n in range(1, 24)})
 
 
 class AuditRules(TempBrain):
@@ -548,7 +548,7 @@ class RankRound1(TempBrain):
 
     def test_every_rule_fires_on_bombas(self):
         rules = {f['rule_id'] for f in audit.run('bombas', RANK_WINDOW, self.tmp)}
-        self.assertEqual(rules, {f'CUST-R{n:02d}' for n in range(1, 17)})
+        self.assertEqual(rules, {f'CUST-R{n:02d}' for n in range(1, 24) if n != 23})
 
     def test_open_actions_carry_drafts(self):
         acts = api.rank('bombas', RANK_WINDOW)['actions']
@@ -1003,6 +1003,22 @@ class DoubtTiming(TempBrain):
                 ids.append(rid)
             rungs.append({'theme': t, 'derived_from': ids})
         self.assertEqual(api.builds.doubt_timing(rungs, recs, '2026-09-27', audit.source_name)['moves'], [])
+
+
+class Round3Rules(TempBrain):
+    """Feature 3.10: round 3 rules fire with their drafted work; approval clears R22."""
+
+    def test_round3(self):
+        acts = {a['id']: a for a in api.rank('bombas', RANK_WINDOW)['actions']}
+        look = acts['02-customers-avatars.CUST-R19.lookalike_109559148587404']
+        self.assertEqual(look['owner'], 'person')
+        self.assertEqual(look['rubric']['reputation'], 5)
+        self.assertEqual(acts['02-customers-avatars.CUST-R18.claim_calf_socks_benefit']['rubric']['reputation'], 5)
+        self.assertIn('02-customers-avatars.CUST-R20.pushed_offer', acts)
+        self.assertIn('02-customers-avatars.CUST-R22.messaging_hierarchy', acts)
+        api.handle(Req(['messaging', 'approve'], 'POST', body={}))
+        ids = {f['id'] for f in audit.run('bombas', RANK_WINDOW, self.tmp)}
+        self.assertNotIn('02-customers-avatars.CUST-R22.messaging_hierarchy', ids)
 
 
 if __name__ == '__main__':

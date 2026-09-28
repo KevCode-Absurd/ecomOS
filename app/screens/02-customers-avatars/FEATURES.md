@@ -68,7 +68,16 @@ Web pass: Peel, Triple Whale, Lifetimely, Klaviyo predictive, Daasity RFM, Thema
 | 3.7 | Is the brand getting stronger or weaker with buyers: a 12-month trend strip from our own store data (returning share, repeat in months 1 to 3 by cohort, tickets per 1,000 orders, items given per order), rules for repeat down 3 points over the last 3 cohorts and tickets per 1,000 orders up 20 percent over 3 months (each a cause review the agent runs), and person-owned connect cards for the lines that need a source: branded search, mentions and sentiment, review rating by month. Bombas: nothing moving the wrong way | done |
 | 3.8 | One-pager for a creator: every avatar card opens a plain-text brief from `GET avatar/<key>/brief` with share and evidence status, job, moments, pains, each doubt with its proof or "no proof yet, do not promise it", their words for the win and the doubt (Reddit left out), hooks tied to the avatar, misreads to watch, dates, the next build and what not to say. Copy and print from the panel | done |
 | 3.9 | When in the year each doubt peaks: a heatmap of 1 and 2 star reviews behind each ladder theme by month of year (Reddit left out). A season is a 3-month window where the theme's share of all complaints is 1.5x its share over the year, with 4 or more, so months the pull over-samples do not fake a season. Each season is a page, email and macro answer to ship 21 days before it starts, flagged ship now when it has started. Bombas: price and value doubts peak Oct to Dec (48 percent of complaints against 26) | done |
-| 3.10 | Audit rules and `rank` for round 3, screenshot `round3.png` | todo |
+| 3.10 | Seven more audit rules (CUST-R17 perception gap under 50 percent, R18 claim under fire, R19 lookalike page, R20 pushed offer answers no doubt, R21 doubt season, R22 no approved messaging hierarchy, R23 brand health line falling), each paired in `rank` with its drafted work; reputation raised to 5 for R18 and R19 per the audit docstring. 46 actions; the lookalike report, the comfort season and the calf claim now sit in the top 4. Approving the hierarchy clears R22. Screenshot `round3.png` | done |
+
+### Round 3 founder note (28 Sep 2026)
+
+1. You can now see a lookalike page running 54 ads that send buyers to sockscool.com; the report, support macro and social note are drafted for a person to send.
+2. The calf sock "stay-up" and heel claim meets 12 one and two star reviews about sliding down; a proof-or-narrow fix is ready to approve.
+3. Only 25 percent of the words buyers praise us with are in our positioning; a messaging hierarchy (lead on comfort, 3 proof points, answer holes first) is one click from approved.
+4. 21 of 23 live ads push a discount that answers none of the buyers' doubts; a guarantee-led A/B test is drafted.
+5. Price and value complaints peak Oct to Dec; the seasonal answer is due now. Any line can be checked against our voice before it ships, and each avatar has a one-pager for creators.
+6. Next, round 4: the Contract asks (customer_paths aggregate, ad angle tags, situations record) and deeper cross-screen hand-offs to offers, copy and CX.
 
 ### Round 2 founder note (28 Sep 2026)
 
@@ -215,3 +224,4 @@ The job to be done for each avatar is brand data: it lives in `app/brain/<brand>
 | 0 | skeleton, 0.1 to 0.8 | 28 Sep 2026 | Bombas brain plus simulated cohorts; screenshot `round0.png` |
 | 1 | 1.1 to 1.10, no picks (depth brief) | 28 Sep 2026 | done; screenshot `round1.png` |
 | 2 | 2.1 to 2.10, from the web pass | 28 Sep 2026 | done; screenshot `round2.png` |
+| 3 | 3.1 to 3.10, the brand side of the room | 28 Sep 2026 | done; screenshot `round3.png` |

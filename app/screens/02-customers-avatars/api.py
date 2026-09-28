@@ -500,6 +500,25 @@ def _plans(brand: str, window: dict) -> dict:
             plans[("CUST-R14", "forces_" + r["key"])] = r["action"]
     for r in d["moments"].get("rows", []):
         plans[("CUST-R15", "moment_" + r["label"].lower().replace(" ", "_").replace("'", ""))] = r["action"]
+    if d["perception"].get("action"):
+        plans[("CUST-R17", "perception_gap")] = d["perception"]["action"]
+    for r in d["claims_fire"]["rows"]:
+        if r["action"]:
+            plans[("CUST-R18", "claim_" + r["id"].split(".")[-1])] = r["action"]
+    for r in d["lookalikes"]["rows"]:
+        plans[("CUST-R19", f"lookalike_{r['page_id']}")] = r["action"]
+    if d["offer_map"].get("action"):
+        plans[("CUST-R20", "pushed_offer")] = d["offer_map"]["action"]
+    for m in d["timing"]["moves"]:
+        plans[("CUST-R21", "season_" + m["theme"])] = m
+    h = _hierarchy(brain, avatars, all_rungs, builds.ladders(all_rungs, avatars))
+    plans[("CUST-R22", "messaging_hierarchy")] = {"title": "Approve one messaging hierarchy for every page and email", "kind": "brain_record",
+        "owner": "person", "capability": {"id": "BRAND-C33", "autonomy": "founder_gate"}, "draft": "DRAFT " + h["record"]["text"],
+        "steps": [{"n": 1, "who": "agent", "text": "Build the hierarchy from buyer evidence (done on this screen)."},
+                  {"n": 2, "who": "person", "text": "Read it and press Approve. It becomes a positioning record."},
+                  {"n": 3, "who": "agent", "text": "Check pages and emails against the lead line on the next audit."}]}
+    for m in d["health"].get("moves", []):
+        plans[("CUST-R23", "health_" + m["key"])] = m
     for m in d["mix"].get("moves", []):
         if m["id"].endswith(".paid_returning"):
             plans[("CUST-R07", "returning_via_paid")] = m
@@ -541,6 +560,8 @@ def _rescore(a: dict, eng) -> None:
         r["ease"] = EASE[a["owner"]]
     if a["rule_id"] == "CUST-R05":
         r["reputation"] = max(r["reputation"], 4)   # review theme on the buy path, per the audit docstring
+    if a["rule_id"] in ("CUST-R18", "CUST-R19"):
+        r["reputation"] = 5                          # a disputed claim or an impostor using our name, per the audit docstring
     total = 0.0
     for k, w in eng.WEIGHTS.items():
         total += w * (r[k] if r[k] is not None else 2.5) / 5
