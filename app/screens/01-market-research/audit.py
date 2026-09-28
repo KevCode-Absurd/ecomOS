@@ -60,6 +60,11 @@ Rules
             main doubt goes unanswered, times the 12-month repeat rate (the repeat revenue at risk). Severity by
             the stake ladder, capped at high (a structural gap, not a break in the buy path). Capability PROD-C12. Owner:
             01-market-research. Satisfaction override: 4 (a review theme in a deal-breaker rung).
+  PROD-R12  Search data not connected: one unavailable finding while the search_console table is absent, so the
+            brand and category term groups show demand as unavailable, never 0. Owner: 01-market-research.
+  PROD-R13  Term group without a page: a term group (brand, category, competitor, problem) with impressions in
+            the last 28 days of Search Console and no url in the brain's site map whose path carries the group's
+            page words. Only runs when the data is there. Money: null. Capability PROD-C05. Owner: 01-market-research.
   PROD-R03  Hero line with no next SKU: a line with 25 percent or more of its category's net sales in
             the last 3 whole months while the candidate pipeline holds no open next-SKU candidate for
             that category. Money: null (an unlaunched SKU has no baseline). Capability PROD-C06
@@ -110,6 +115,10 @@ RULES = [
      'entity_type': 'brand', 'inputs': ['brain.avatars', 'brain.products', 'brain.competitors'], 'capability': 'PROD-C01', 'owner_screen': SCREEN},
     {'rule_id': 'PROD-R11', 'name': 'Avatar with 10 percent or more of buyers (or high intensity) whose theme is complaint-led; money = share x 28-day net revenue x complaint share',
      'entity_type': 'brand', 'inputs': ['brain.avatars', 'brain.objection_ladders', 'daily', 'brain.learnings'], 'capability': 'PROD-C12', 'owner_screen': SCREEN},
+    {'rule_id': 'PROD-R12', 'name': 'Search Console not connected: search demand for the brand and the category cannot be read',
+     'entity_type': 'brand', 'inputs': ['search_console'], 'capability': 'PROD-C05', 'owner_screen': SCREEN},
+    {'rule_id': 'PROD-R13', 'name': 'Term group with impressions in 28 days and no answering page in the site map',
+     'entity_type': 'page', 'inputs': ['search_console', 'google_rows', 'brain.site_map', 'brain.objection_ladders'], 'capability': 'PROD-C05', 'owner_screen': SCREEN},
 ]
 CAPABILITY = {'PROD-R01': {'id': 'PROD-C05', 'autonomy': 'agent_does'},
               'PROD-R02': {'id': 'PROD-C06', 'autonomy': 'agent_does'},
@@ -121,7 +130,9 @@ CAPABILITY = {'PROD-R01': {'id': 'PROD-C05', 'autonomy': 'agent_does'},
               'PROD-R08': {'id': 'PROD-C05', 'autonomy': 'agent_does'},
               'PROD-R09': {'id': 'PROD-C06', 'autonomy': 'agent_does'},
               'PROD-R10': {'id': 'PROD-C01', 'autonomy': 'agent_does'},
-              'PROD-R11': {'id': 'PROD-C12', 'autonomy': 'human_assist'}}
+              'PROD-R11': {'id': 'PROD-C12', 'autonomy': 'human_assist'},
+              'PROD-R12': {'id': 'PROD-C05', 'autonomy': 'agent_does'},
+              'PROD-R13': {'id': 'PROD-C05', 'autonomy': 'agent_does'}}
 SEVERITY_ORDER = {'critical': 0, 'high': 1, 'medium': 2, 'low': 3}
 
 # Review records name their line in a short key; the store names it by SKU title.
@@ -533,6 +544,7 @@ def run(brand, window=None, data=None):
         prods_for_map = None
     out += positioning_findings(br, prods_for_map, ends_on)
     out += avatar_findings(br, ends_on, net, prods_for_map)
+    out += search_findings(br, data, brand, ends_on)
     out.sort(key=lambda f: (SEVERITY_ORDER[f['severity']], -((f['money_at_stake'] or {}).get('usd') or 0), f['id']))
     return out
 
@@ -1309,4 +1321,162 @@ def avatar_findings(br, ends_on, net_28d_value, prods=None):
             f['id'] = f'{SCREEN}.PROD-R11.{rid}'
             out.append(f)
             r['finding_id'] = f['id']
+    return out
+
+
+# ---------------------------------------------------------------- search terms for the brand and the industry
+
+SEARCH_GROUPS = [('brand', 'Brand terms'), ('category', 'Category terms'), ('competitor', 'Competitor and versus terms'), ('problem', 'Problem and question terms')]
+SEARCH_WINDOW_DAYS = 28
+PAGE_WORDS = {'problem': ['size-guide', 'sock-tech', 'fit', 'faq', 'guarantee', 'returns', 'shipping', 'care'],
+              'brand': ['about', 'giving', 'b-corp', 'donated', 'sustainability'],
+              'category': ['collections', 'socks', 'underwear', 'slippers'],
+              'competitor': ['compare', 'vs', 'why-bombas', 'difference']}
+
+
+def search_groups(br):
+    """Term groups from the brain: brand (identity), category (lines and materials), competitor (names and versus),
+    problem (the ladder rung doubts, the brand's own Reddit searches, the Reddit questions in seo_facts)."""
+    if br is None:
+        return []
+    brand = br.brand.lower()
+    lines = [str(l).lower() for l in (brain_value_lines(br) or []) if str(l).lower() not in ('giftcard', 'bags')]
+    mats = br.get(f'{brand}.products.materials')
+    mats = [str(m).lower().split('/')[0] for m in ((mats or {}).get('value') or [])] if mats else []
+    comps = [c['name'] for c in competitor_signals(br)]
+    reddit_inst = [i['competitor'] for i in reddit_frames(br)[1]]
+    doubts = []
+    for rec in br.records('objection_ladders'):
+        for g in (rec.get('value') or {}).get('rungs') or []:
+            if g.get('doubt'):
+                doubts.append(g['doubt'])
+    cfg_path = APP / 'brain' / br.brand / 'config' / 'apify.json'
+    searches = []
+    if cfg_path.is_file():
+        searches = list((json.loads(cfg_path.read_text(encoding='utf-8')).get('reddit') or {}).get('searches') or [])
+    questions = [((r.get('value') or {}).get('question'), (r.get('value') or {}).get('upvotes'), (r.get('value') or {}).get('subreddit'))
+                 for r in br.records('seo_facts') if (r.get('value') or {}).get('question')]
+    cat_terms = [f'{l}' for l in lines[:8]] + [f'{m} socks' for m in mats[:4]]
+    groups = [
+        {'key': 'brand', 'terms': [brand, f'{brand} socks', f'{brand} review', f'{brand} sale', f'{brand} promo code'] + [f'{brand} {l}' for l in lines[:4]],
+         'match': [brand]},
+        {'key': 'category', 'terms': cat_terms + ['best socks', 'comfortable socks'], 'match': [l.rstrip('s') for l in lines] + mats + ['sock']},
+        {'key': 'competitor', 'terms': [f'{brand} vs {c.lower()}' for c in (reddit_inst + comps)[:6]] + [c.lower() for c in comps[:6]], 'match': [c.lower().split(' ')[0] for c in comps + reddit_inst] + [' vs ']},
+        {'key': 'problem', 'terms': [s for s in searches if brand not in s.lower()] + doubts[:8], 'match': ['hole', 'slip', 'stay up', 'worth', 'size', 'tight', 'pill', 'shrink', 'itch', 'blister', 'sweat', 'warm', 'how ', 'why ', 'best ', 'do ', 'does ']},
+    ]
+    labels = dict(SEARCH_GROUPS)
+    for g in groups:
+        g['label'] = labels[g['key']]
+        g['terms'] = list(dict.fromkeys(t for t in g['terms'] if t))
+    return groups, questions
+
+
+def site_pages(br):
+    """Every url the brain's site map holds, flat."""
+    urls = []
+    if br is None:
+        return urls
+    for r in br.records('site_map'):
+        v = r.get('value')
+        if isinstance(v, dict) and v.get('url'):
+            urls.append(v['url'])
+        elif isinstance(v, list):
+            urls += [x.get('url') for x in v if isinstance(x, dict) and x.get('url')]
+    return urls
+
+
+def group_of(query, groups):
+    q = ' ' + str(query or '').lower() + ' '
+    for key in ('brand', 'competitor', 'problem', 'category'):
+        g = next(x for x in groups if x['key'] == key)
+        if any(m and m in q for m in g['match']):
+            return key
+    return None
+
+
+def search_demand(data, brand, groups, ends_on):
+    """Search Console and Google search-term rows summed per group over 28 days. Unavailable, never 0, when a table is absent."""
+    source = brand_data(brand) if brand else data
+    out = {g['key']: {'impressions': None, 'clicks': None, 'position': None, 'queries': 0, 'top': [], 'paid_spend': None, 'paid_clicks': None, 'paid_conversions': None} for g in groups}
+    start = (ends_on - timedelta(days=SEARCH_WINDOW_DAYS - 1)).isoformat()
+    organic = paid = None
+    try:
+        rows = source.table('search_console')
+        organic = {k: {'imp': 0, 'clk': 0, 'pos': [], 'q': {}} for k in out}
+        for r in rows:
+            d = str(r.get('date') or '')[:10]
+            if d and not (start <= d <= ends_on.isoformat()):
+                continue
+            k = group_of(r.get('query'), groups)
+            if not k:
+                continue
+            o = organic[k]
+            o['imp'] += r.get('impressions') or 0
+            o['clk'] += r.get('clicks') or 0
+            if r.get('position') is not None:
+                o['pos'].append((r['position'], r.get('impressions') or 0))
+            o['q'][r.get('query')] = o['q'].get(r.get('query'), 0) + (r.get('impressions') or 0)
+        for k, o in organic.items():
+            out[k].update(impressions=o['imp'], clicks=o['clk'], queries=len(o['q']), top=sorted(o['q'].items(), key=lambda kv: -kv[1])[:5],
+                          position=round(sum(p * w for p, w in o['pos']) / sum(w for _, w in o['pos']), 1) if o['pos'] and sum(w for _, w in o['pos']) else None)
+    except (KeyError, ValueError):
+        organic = None
+    try:
+        rows = source.table('google_rows')
+        paid = {k: {'spend': 0.0, 'clk': 0, 'conv': 0.0} for k in out}
+        for r in rows:
+            if not r.get('search_term'):
+                continue
+            d = str(r.get('date') or '')[:10]
+            if d and not (start <= d <= ends_on.isoformat()):
+                continue
+            k = group_of(r.get('search_term'), groups)
+            if not k:
+                continue
+            paid[k]['spend'] += r.get('spend') or 0
+            paid[k]['clk'] += r.get('clicks') or 0
+            paid[k]['conv'] += r.get('conversions') or 0
+        for k, p in paid.items():
+            out[k].update(paid_spend=round(p['spend'], 2), paid_clicks=p['clk'], paid_conversions=round(p['conv'], 1))
+    except (KeyError, ValueError):
+        paid = None
+    return out, {'organic': organic is not None, 'paid': paid is not None, 'window_days': SEARCH_WINDOW_DAYS}
+
+
+def search_table(br, data, brand, ends_on):
+    if br is None:
+        return {'groups': [], 'questions': [], 'available': {'organic': False, 'paid': False}}
+    groups, questions = search_groups(br)
+    demand, avail = search_demand(data, brand, groups, ends_on)
+    pages = site_pages(br)
+    for g in groups:
+        g.update(demand[g['key']])
+        g['pages'] = [u for u in pages if any(w in u.lower() for w in PAGE_WORDS.get(g['key'], []))]
+        g['finding_id'] = f'{SCREEN}.PROD-R13.{g["key"]}'
+    return {'groups': groups, 'questions': [{'question': q, 'upvotes': u, 'subreddit': s} for q, u, s in questions], 'available': avail, 'pages_known': len(pages)}
+
+
+def search_findings(br, data, brand, ends_on):
+    """PROD-R12: no search data connected (one connect finding). PROD-R13: a term group with impressions in the
+    window and no answering page in the brain's site map (only when the data is there)."""
+    if br is None:
+        return []
+    t = search_table(br, data, brand, ends_on)
+    out = []
+    if not t['available']['organic']:
+        out.append(_unavailable('PROD-R12', ends_on, 'Search Console is not connected, so search demand for the brand and the category cannot be read.',
+                                ['search_console'], 'google_search_console', 'Connect Search Console (read only) in Setup.'))
+        out[-1]['entity'] = {'type': 'brand', 'id': 'brand', 'label': 'Search demand'}
+        return out
+    for g in t['groups']:
+        if (g.get('impressions') or 0) > 0 and not g['pages']:
+            ev = [_ev('impressions', g['impressions'], 'count', ends_on.isoformat(), f'{SEARCH_WINDOW_DAYS}d', 1, 'threshold', source='search_console'),
+                  _ev('clicks', g['clicks'], 'count', ends_on.isoformat(), f'{SEARCH_WINDOW_DAYS}d', source='search_console'),
+                  _ev('answering_pages', 0, 'count', ends_on.isoformat(), 'site map now', 1, 'threshold', source='brain.site_map', simulated=False, freshness_days=0)]
+            sentence = (f'{g["label"]} drew {g["impressions"]:,} impressions and {g["clicks"]:,} clicks in {SEARCH_WINDOW_DAYS} days. '
+                        f'No page in the site map answers them.')
+            f = _finding('PROD-R13', g['key'], ends_on, 'medium', ev, sentence, None, 0.5, [f'{br.brand}.site_map.facts_pages'], money_reason='no conversion value per click on file')
+            f['entity'] = {'type': 'page', 'id': g['key'], 'label': g['label'], 'terms': g['terms'][:5]}
+            f['id'] = f'{SCREEN}.PROD-R13.{g["key"]}'
+            out.append(f)
     return out

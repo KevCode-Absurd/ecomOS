@@ -348,6 +348,34 @@
         under.length ? { label: 'Win back the first', onClick: () => { const a = actionFor(under[0].finding_id); if (a) openAction(a); } } : null));
   }
 
+  function searchBlock(t) {
+    if (!t || !t.groups || !t.groups.length) return UI.emptyState({ screen: SLUG, title: 'No term groups', text: 'The brain holds no identity, lines or ladders to build term groups from.', missing: ['brain'] });
+    const av = t.available || {};
+    const connect = actionFor(SLUG + '.PROD-R12.brand');
+    const vrows = t.groups.map((g) => { const a = actionFor(g.finding_id); return Object.assign({}, g, {
+      termsText: g.terms.slice(0, 6).join(', ') + (g.terms.length > 6 ? ' and ' + (g.terms.length - 6) + ' more' : ''),
+      pagesText: g.pages.length ? g.pages.map((u) => u.replace(/^https?:\/\/[^/]+/, '')).join(', ') : 'none in the site map',
+      topText: (g.top || []).length ? g.top.map((x) => x[0] + ' ' + fmt.int(x[1])).join(', ') : (av.organic ? 'no queries matched' : NA),
+      actions: [a ? { label: 'Build the page', onClick: () => openAction(a) } : connect ? { label: 'Connect search', onClick: () => openAction(connect) } : { label: g.pages.length ? 'Answered' : 'No demand read', cls: 'quiet', onClick: () => {} }] }); });
+    const table = UI.verdictTable({
+      columns: [{ key: 'label', label: 'Group' }, { key: 'termsText', label: 'Terms from the brain' }, { key: 'impressions', label: 'Impressions, 28 d', unit: 'n' }, { key: 'clicks', label: 'Clicks', unit: 'n' },
+        { key: 'position', label: 'Position', align: 'right', format: (v) => v == null ? NA : v.toFixed(1) }, { key: 'paid_spend', label: 'Paid spend', unit: '$' }, { key: 'paid_conversions', label: 'Paid conversions', unit: 'n' },
+        { key: 'topText', label: 'Top queries' }, { key: 'pagesText', label: 'Pages that answer them' }],
+      rows: vrows,
+      verdict: { at: 1, kind: (r) => !av.organic ? 'wait' : (r.impressions > 0 && !r.pages.length) ? 'fix' : r.impressions > 0 ? 'keep' : 'watch',
+        text: (r) => !av.organic ? 'Connect' : (r.impressions > 0 && !r.pages.length) ? 'No page' : r.impressions > 0 ? 'Answered' : 'No demand read',
+        reason: (r) => av.organic ? r.queries + ' queries matched in 28 days' : 'Search Console not connected; demand reads unavailable, never 0' },
+      actions: { label: 'Do', onClick: () => {} }, sort: false });
+    const qs = (t.questions || []).map((q) => el('li', null, '"' + q.question + '"', el('span', { class: 'muted', text: ' (r/' + q.subreddit + ', ' + fmt.int(q.upvotes) + ' upvotes)' })));
+    const noPage = t.groups.filter((g) => !g.pages.length);
+    return el('div', { class: 'stack' }, el('div', { class: 'card scroll' }, table),
+      el('div', { class: 'card flat' }, el('h4', { text: 'Questions people ask the category' }), qs.length ? el('ul', { class: 'small', style: { margin: 0, paddingLeft: '18px' } }, qs) : el('p', { class: 'muted small', text: 'No questions on file yet.' }),
+        el('p', { class: 'micro faint', text: 'From the Reddit pull in the brain (seo_facts). A question page answers them in the brand\'s voice; Reddit is never quoted.' })),
+      el('p', { class: 'micro faint', text: 'Organic demand: Search Console, 28 days, queries grouped by the brain\'s words. Paid: Google search-term rows in the same window. ' + (av.organic ? '' : 'Neither is connected for this brand yet, so every volume reads unavailable. ') + 'Pages: urls in the brain\'s site map (' + (t.pages_known || 0) + ' known) whose path carries the group\'s words.' }),
+      gapLine((av.organic ? '' : 'Search demand cannot be read until Search Console connects. ') + (noPage.length ? noPage.map((g) => g.label.toLowerCase()).join(' and ') + ' have no answering page in the site map.' : 'Every group has a page in the site map.'),
+        connect ? { label: 'Connect Search Console', onClick: () => openAction(connect) } : (noPage.length && actionFor(noPage[0].finding_id) ? { label: 'Build the page', onClick: () => openAction(actionFor(noPage[0].finding_id)) } : null)));
+  }
+
   function loadDesk(o) {
     const d = o.desk || {};
     const w = (o.window || {}).trend;
@@ -358,6 +386,7 @@
     parts.push(section('desk-preferences', 'Which preferences are shifting, and where do we stand on each?', 'Public survey numbers from the web pass against our own claims, our active ads, the competitors\' pitches and the category conversation.', preferencesBlock(d.preferences)));
     parts.push(section('desk-map', 'Where do we sit against the competitors, and which position is open?', 'Price per pair against the share of proof-led hooks, from the brain\'s competitor records and the Ad Library pull. Sized by active ads. The Reddit frames show how the category talks about itself.', mapBlock(d.map)));
     parts.push(section('desk-avatars', 'Which buyers do we serve, and which do competitors pitch to that we do not?', 'The brain\'s avatars by the lines we sell: our evidence against competitor pitches in every cell. Big segments on a complaint-led theme carry the repeat revenue at risk.', avatarBlock(d.avatars)));
+    parts.push(section('desk-search', 'What do people search for around the brand and the category, and which searches have no page?', 'Brand, category, competitor and problem terms built from the brain, with Search Console and Google search-term demand where connected, against the pages in the site map.', searchBlock(d.search)));
     parts.push(section('desk-demand', 'Which lines are losing share, and which reviews say why?', 'Last 3 whole months against the same months a year earlier. A line fires when units fall or growth trails the store by 1 point or more.', demandBlock(d, w || { months: [], year_ago: [] })));
     parts.push(section('desk-price', 'Where do our prices sit against the competitor band?', 'Per-pair list price by line against the band of competitor median prices from the brain. Socks only; other categories have no competitor price on file.', priceBlock(d.price_bands || {})));
     parts.push(section('desk-reviews', 'What do reviews praise and fail, line by line?', 'Public site review totals per line, with the objection ladder rungs built from them.', reviewBlock(d.reviews || [])));

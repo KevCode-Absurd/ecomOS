@@ -500,6 +500,25 @@ def recipe(f):
             'check_on': _check_on(f, 60), 'time_to_ship_hours': 12,
             'win_rule': 'repeat rate of the segment up 2 points, or complaint share on the theme under 50 percent in new reviews',
         }
+    if rid == 'PROD-R13':
+        ent = f.get('entity') or {}
+        label = (ent.get('label') or ent.get('id') or '').lower()
+        terms = ', '.join(ent.get('terms') or [])
+        kind = {'competitor': 'page_section', 'brand': 'page_section', 'category': 'landing_page', 'problem': 'page_section'}.get(ent.get('id'), 'page_section')
+        return {
+            'title': f'Build the page that answers {label}',
+            'owner': 'agent_drafts',
+            'artefact': {'kind': kind, 'label': (f'a category lander for {terms}' if kind == 'landing_page' else f'a page section (or FAQ page) that answers {terms}, with the proof on file')},
+            'steps': [
+                {'n': 1, 'who': 'agent', 'text': f'List the queries in the group by impressions and the page each one lands on today.'},
+                {'n': 2, 'who': 'agent', 'text': 'Draft the page from the brain: the answer in the buyer\'s words, the proof, the product it leads to, approved claims only.'},
+                {'n': 3, 'who': 'person', 'text': 'Approve the copy and the claims. Landing pages ship it; SEO sets the internal links.'},
+                {'n': 4, 'who': 'agent', 'text': 'Read at 28 days: impressions, clicks and position for the group against this window.'}],
+            'size': {'text': f'{_ev_value(f, "impressions"):,} impressions, {_ev_value(f, "clicks"):,} clicks in 28 days with no page', 'usd': None},
+            'stop_rule': 'stop if clicks on the group do not rise within 2 windows; keep the page if position improves',
+            'check_on': _check_on(f, 28), 'time_to_ship_hours': 8,
+            'win_rule': 'clicks on the group up 20 percent over the next 28 days, or position under 10',
+        }
     return None
 
 
@@ -540,6 +559,11 @@ def rank(brand, window=None):
             continue
         a = rank_mod.action_from_finding(f, nr)
         r = recipe(f) if f.get('status') != 'unavailable' else None
+        if f.get('status') == 'unavailable' and f.get('rule_id') == 'PROD-R12':
+            a['title'] = 'Connect Search Console so search demand for the brand and the category can be read'
+            a['steps'] = [{'n': 1, 'who': 'person', 'text': 'In Setup, add a read-only Search Console credential for the brand\'s property.'},
+                          {'n': 2, 'who': 'agent', 'text': 'Pull 16 months of query, page, clicks, impressions and position into search_console.'},
+                          {'n': 3, 'who': 'agent', 'text': 'Run PROD-R13 on the brand, category, competitor and problem term groups and report the gaps here.'}]
         if r:
             a.update({k: v for k, v in r.items() if v is not None})
             a['rubric'] = rank_mod.score(dict(f, capability=f.get('capability')), nr)
@@ -618,7 +642,7 @@ def overview(data, brand):
             'desk': {'trends': trends(br, mix), 'mix': mix, 'lanes': audit.subcategory_table(br, ends_on),
                      'conversation': audit.conversation(br), 'preferences': audit.preferences(br),
                      'map': dict(audit.positioning_map(br, products(data, brand)), frames=audit.reddit_frames(br)[0], instead=audit.reddit_frames(br)[1]),
-                     'avatars': avatar_block(br, findings),
+                     'avatars': avatar_block(br, findings), 'search': audit.search_table(br, data, brand, ends_on),
                      'demand': demand(tr, reviews), 'store_growth': tr.get('store_growth'),
                      'demand_unavailable': {'reason': tr.get('reason'), 'fix': tr.get('fix')} if tr.get('unavailable') else None,
                      'price_bands': bands, 'reviews': review_mining(reviews, lads),

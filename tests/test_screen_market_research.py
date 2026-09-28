@@ -396,6 +396,49 @@ class RulesTest(unittest.TestCase):
         no_net = audit.avatar_findings(br, date(2026, 9, 27), None)
         self.assertTrue(all(f['money_at_stake'] is None and f['money_reason'] for f in no_net if f['rule_id'] == 'PROD-R11'))
 
+    def test_search_groups_and_demand(self):
+        """Groups come from the brain; demand sums Search Console rows per group; R13 fires for demand with no page."""
+        br = audit.brain('bombas')
+        if br is None:
+            self.skipTest('no bombas brain')
+        groups, questions = audit.search_groups(br)
+        self.assertEqual([g['key'] for g in groups], ['brand', 'category', 'competitor', 'problem'])
+        self.assertIn('bombas', groups[0]['terms'])
+        self.assertEqual(audit.group_of('bombas vs darn tough', groups), 'brand')
+        self.assertEqual(audit.group_of('darn tough socks', groups), 'competitor')
+        self.assertEqual(audit.group_of('socks holes in heel', groups), 'problem')
+        self.assertEqual(audit.group_of('merino socks', groups), 'category')
+        data = FakeData()
+        data.tables['search_console'] = [
+            {'date': '2026-09-20', 'query': 'bombas socks', 'page': '/', 'clicks': 40, 'impressions': 400, 'position': 1.2},
+            {'date': '2026-09-21', 'query': 'darn tough vs bombas', 'page': '/', 'clicks': 5, 'impressions': 300, 'position': 8.0},
+            {'date': '2026-06-01', 'query': 'old query socks', 'page': '/', 'clicks': 999, 'impressions': 9999, 'position': 1.0}]
+        demand, avail = audit.search_demand(data, None, groups, date(2026, 9, 27))
+        self.assertTrue(avail['organic'] and not avail['paid'])
+        self.assertEqual(demand['brand']['impressions'], 700)     # the versus query names the brand, so it is brand
+        self.assertEqual(demand['brand']['clicks'], 45)
+        self.assertIsNone(demand['category']['impressions'] if demand['category']['queries'] else None)
+        self.assertIsNone(demand['brand']['paid_spend'])
+        real_bd = audit.brand_data
+        audit.brand_data = lambda b: data
+        try:
+            t = audit.search_table(br, data, 'x', date(2026, 9, 27))
+            fs = audit.search_findings(br, data, 'x', date(2026, 9, 27))
+        finally:
+            audit.brand_data = real_bd
+        self.assertEqual([f['rule_id'] for f in fs], [])   # brand group has pages in the site map
+        self.assertTrue(t['groups'][0]['pages'])
+
+    def test_search_unavailable_is_a_connect_finding(self):
+        fs = [f for f in audit.run('bombas') if f['rule_id'] in ('PROD-R12', 'PROD-R13')]
+        if not fs:
+            self.skipTest('search data connected')
+        self.assertEqual(fs[0]['status'], 'unavailable')
+        self.assertEqual(fs[0]['unavailable']['connector'], 'google_search_console')
+        a = next(a for a in api.rank('bombas', {'ends_on': '2026-09-27', 'days': 28, 'trailing': 4})['actions'] if a['rule_id'] == 'PROD-R12')
+        self.assertEqual(a['owner'], 'person')
+        self.assertTrue(a['title'].startswith('Connect Search Console'))
+
     def test_web_pass_fixture_cites_every_number(self):
         fx = audit.market_trends()
         self.assertIsNotNone(fx)
