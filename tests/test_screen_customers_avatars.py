@@ -2467,3 +2467,33 @@ class AntiPatterns(TempBrain):
                 self.assertLessEqual(len(sents), 3, (sid, field))
                 for x in sents:
                     self.assertLess(len(x.split()), 20, (sid, field, x))
+
+
+class DepthSections(TempBrain):
+    """Feature 10.4: depth.md sections 4 and 5, the last parts not yet under test. The rubric: every dimension 1 to 5
+    (or n/a scored neutral), the total the weighted sum, confidence the finding's times 5. The rank route and each
+    action carry the section 5 shape."""
+
+    ACTION_KEYS = {'id', 'finding_ids', 'title', 'why', 'severity', 'status', 'confidence', 'entity', 'capability', 'owner',
+                   'artefact', 'steps', 'size', 'stop_rule', 'check_on', 'time_to_ship_hours', 'rubric', 'money_at_stake',
+                   'brain_refs', 'decision'}
+
+    def test_rubric_arithmetic(self):
+        W = rank_engine.WEIGHTS
+        for a in api.rank('bombas', RANK_WINDOW)['actions']:
+            r = a['rubric']
+            for k in W:
+                self.assertTrue(r[k] is None or 1 <= r[k] <= 5, (a['id'], k, r[k]))
+            total = sum(w * (r[k] if r[k] is not None else 2.5) / 5 for k, w in W.items())
+            self.assertAlmostEqual(r['total'], round(total, 1), places=1, msg=a['id'])
+            self.assertEqual(r['confidence'], max(1, round(a['confidence'] * 5)), a['id'])
+
+    def test_route_and_action_shape(self):
+        out = rank_engine.rank('02-customers-avatars', 'bombas', RANK_WINDOW, use_override=True)
+        for k in ('screen', 'brand', 'window', 'computed_at', 'brain_version', 'simulated', 'actions'):
+            self.assertIn(k, out)
+        self.assertTrue(out['simulated'])
+        for a in out['actions']:
+            self.assertTrue(self.ACTION_KEYS <= set(a), (a['id'], self.ACTION_KEYS - set(a)))
+            self.assertIn(a['owner'], ('agent', 'agent_drafts', 'person'))
+            self.assertIn(a['artefact']['kind'], rank_engine.ARTEFACT_KINDS)
