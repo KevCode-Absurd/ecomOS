@@ -1145,13 +1145,15 @@ def trust_action(f, a, ctx):
         lines.append(f'{r["id"]} ({r["status"]}, {r["surface"] or "surface not matched"}, metric {r["metric"] or "none"}): {r["hypothesis"] or ""}')
         lines += [f'  - {p["text"]} Fix: {p["fix"]}' for p in r['problems']]
     lines.append('Rule: offer and price tests are judged on profit per visitor per arm, with the metric written before the start.')
-    a.update({'title': f'Fix the record for {len(rows)} tests before any of them decides an offer', 'owner': 'person',
+    many = len(rows) != 1
+    a.update({'title': (f'Fix the record for {len(rows)} tests before any of them decides an offer' if many
+                        else f'Fix the record for {rows[0]["id"]} before it decides an offer'), 'owner': 'person',
               'artefact': {'kind': 'report', 'label': 'Test trust notes for the experiments screen', 'draft': '\n'.join(lines)},
               'steps': steps(('agent', 'List each test with its problems and the fix.'),
                              ('person', 'Mark early looks and short runs as hints in the registry.'),
                              ('person', 'Read the overdue tests, or stop them and write why.'),
                              ('person', 'Set profit per visitor on offer tests before the next read.')),
-              'size': {'text': f'{len(rows)} tests, {sum(len(r["problems"]) for r in rows)} problems', 'usd': None},
+              'size': {'text': f'{len(rows)} {"tests" if many else "test"}, {sum(len(r["problems"]) for r in rows)} to fix', 'usd': None},
               'win_rule': 'Every running or done test has a metric set before its start and a clean read.',
               'stop_rule': f'Check the registry again on {ctx.check_on(14)}; stop when no test is flagged.',
               'check_on': ctx.check_on(14), 'time_to_ship_hours': 1})

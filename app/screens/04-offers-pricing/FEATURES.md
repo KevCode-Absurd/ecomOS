@@ -148,6 +148,16 @@ Known gaps from round 0:
 | 7.7 | Repeat by first-order code depth (web pass 3: Lifetimely): the code-won cohorts from 5.8 split into full price, up to 10 percent off, 10 to 20 percent and deeper, each with its 180-day repeat rate, shown in the first-order block; a band under 200 customers reads "too few", never a rate. Sample brand: 40 percent full price, 40 percent up to 10 percent off, 18 customers deeper | done |
 | 7.8 | Apps named in the brain that this screen cannot read yet (web pass 3): an upsell app, a loyalty app or a shipping protection app in the brain's stack section, with no table of its own, adds a line to "What we cannot see yet" with the table it needs and what it will show. Bombas: Rebuy, upsell_events not connected, linked to the upsell take-rate connect move. No loyalty or protection app is named, so no line | done |
 | 7.9 | One read of the order rows per window: the welcome code, paid prices, attach rates, returns by code, code leaks, returning-buyer codes and code cohorts are computed once per order table, window end, brand and settings, and shared by the rule and the desk. The sample brand's overview went from 1.27 to 1.09 seconds on a first load and 0.09 seconds after; Bombas stays near 0.1 seconds | done |
+| 7.10 | Round close: 360 px clean on every tab for both brands with every card open; the rank route returns 25 valid Bombas moves; plurals fixed ("1 test", "1 problem"); the sample brand's badge now says it is a fictional brand, not "public pages"; round7.png taken on the sample brand, where round 7's order-row features show | done |
+
+### Round 7 note for Kevin (28 Sep 2026)
+
+1. Order rows now answer 6 new money questions: what shoppers really pay per product, which top products rarely get a second item, whether code orders return more, whether a code is leaking, whether codes bring returning buyers back sooner, and repeat by code depth.
+2. The biggest new move on the sample brand: the win-back code does not bring buyers back sooner (58 days with it, 57 without) and cost $2,732 in 180 days. The move is a 42-day holdout on half the win-back emails.
+3. Every test now shows the smallest change it can see. The sample brand needs 87 days to see a 10 percent change, so the screen proposes fewer, bigger tests; Bombas has the traffic for 28-day tests.
+4. A "goes with Chainmail Scrubber" block for the 12-inch Skillet is drafted: 513 orders, only 30 percent with a second item against 44 percent for the median product.
+5. Rebuy is named in the Bombas brain, so upsell take rate now shows as data we cannot see yet, next to price sensitivity and gift card balances. Bombas needs order rows before any of round 7 reads real numbers.
+6. Next (round 8): the web pass items that need app data stay listed; next I tighten the plan's top 10 so the sample brand's order-row moves and Bombas's brain moves rank on the same scale, and read the plan against Kevin's review when it comes.
 
 ### Web pass 3 (28 Sep 2026, public pages only; lift figures are vendor claims, not used)
 - Code leak and misuse watch (KeepCart): codes used with no matching source, spikes, codes outside their audience. Partly from order rows (code, UTM, landing page). Round 7 candidate.
@@ -294,7 +304,7 @@ Intelligems (threshold and price tests scored by profit per visitor), Rebuy (tie
 | Round | Features picked | Date | Notes |
 |---|---|---|---|
 | 0 | skeleton, 0.1 to 0.9 | 2026-09-28 | S3.9; screenshot round0.png |
-| 7 | 7.1 onward: paid prices | 2026-09-28 | in progress |
+| 7 | 7.1 to 7.10: paid prices, attach rate, returns by code, test power, code leaks, returning-buyer codes, code depth, app blind spots, one read of orders, close | 2026-09-28 | screenshot round7.png (sample brand) |
 | 6 | 6.1 to 6.10: settings not text, sized moves, block lines, cannot see yet, 360 px, welcome code, test trust, price moves, tier lift, claims stress | 2026-09-28 | screenshot round6.png |
 | 5 | 5.1 to 5.10: stack read-back, break-even discount, profit per visitor, pack label, installments, loyalty calibration, line match, code-won cohorts, order bunches | 2026-09-28 | screenshot round5.png |
 | 4 | 4.1 to 4.10: save to the brain, offer records, bundle pairs, red line gate, approved first, launched read, upsell connect, brief pack, stale inputs | 2026-09-28 | screenshot round4.png |

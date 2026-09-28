@@ -1382,8 +1382,8 @@ def rule_test_trust(rd):
     ev = [_ev('untrustworthy_tests', len(t['rows']), 'count', end, baseline=t['checked'], baseline_kind='running_or_done_tests',
               window='registry to date', source='registry')]
     return [_finding('OFFER-R33', {'type': 'metric', 'id': 'test_trust', 'label': 'Tests on record'}, 'medium' if offer else 'low', ev,
-                     f'{len(t["rows"])} of {t["checked"]} tests on record have a read we cannot trust: {n} problems, '
-                     f'{len(offer)} on an offer or price test.', None, 0.8, [], end, money_reason='a bad read costs the next decision')]
+                     f'{len(t["rows"])} of {t["checked"]} tests on record {"has" if len(t["rows"]) == 1 else "have"} a read we cannot trust: '
+                     f'{n} {"problem" if n == 1 else "problems"}, {len(offer)} on an offer or price test.', None, 0.8, [], end, money_reason='a bad read costs the next decision')]
 
 
 def price_moves(rd):

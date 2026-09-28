@@ -69,7 +69,9 @@
   // ---------- 0. head ----------
   function badge(b) {
     const name = b.name || b.brand || 'This brand';
-    mount('#badge', b.simulated
+    mount('#badge', b.fictional
+      ? el('span', null, el('b', { text: 'Simulated data. ' }), name + ' is a fictional brand. Every product, price and number here is generated.')
+      : b.simulated
       ? el('span', null, el('b', { text: 'Simulated data. ' }), 'Offers, prices and reviews come from ' + name + ' public pages; every sales number is generated. Nothing here is a ' + name + ' result.')
       : el('span', null, el('b', { text: name }), ' live data. Read-only.'));
   }

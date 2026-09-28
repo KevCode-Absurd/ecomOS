@@ -381,7 +381,7 @@ def overview(data, brand):
     rd = audit.Reader(data, brand, ends_on)
     b = rd.source.brand
     head = {'brand': b.get('brand'), 'name': b.get('name'), 'as_of': b.get('as_of'),
-            'simulated': bool(b.get('simulated') or b.get('fictional')), 'market': b.get('market')}
+            'simulated': bool(b.get('simulated') or b.get('fictional')), 'fictional': bool(b.get('fictional')), 'market': b.get('market')}
     # one path for every brand: a brand folder, or a data source with no folder (the sample brand)
     ranked = actions.rank(brand, {'ends_on': ends_on.isoformat()}, data=None if brand else data)
     desk = {k: ranked[k] for k in DESK_KEYS}
