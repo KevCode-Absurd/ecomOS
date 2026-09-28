@@ -94,6 +94,7 @@ class Ctx:
         self.welcome = audit.welcome(rd)
         self.trust = audit.test_trust(rd)
         self.price_moves = audit.price_moves(rd)
+        self.stress = audit.guarantee_stress(rd)
         self.ship_rate = (model.brain_value(rd, 'offers.standard_shipping_cost')[0] or {}).get('cost_usd') if rd.brand else None
         self.scenarios = (model.threshold_scenarios(rd, self.threshold, self.ship_rate, self.be['value'], (self.po or {}).get('units') or 1)
                           if self.threshold is not None and self.be.get('value') is not None else [])
@@ -548,6 +549,8 @@ def surfaces(a):
         return ['loyalty'], 90
     if r == 'OFFER-R23':
         return ['referral'], 56
+    if r == 'OFFER-R35':
+        return ['guarantee terms'], 56
     if r == 'OFFER-R22':
         return ['list price'], 35
     if r == 'OFFER-R21':
@@ -1178,6 +1181,27 @@ def moves_action(f, a, ctx):
     return a
 
 
+def stress_action(f, a, ctx):
+    """OFFER-R35: tighten the guarantee terms before claims can run high: replacement first, refund second."""
+    gs = ctx.stress
+    lines = ['Guarantee terms, drafted to hold margin if claims run high', f['sentence'],
+             f'Today a replacement costs {money(gs["replacement_cost"])} and a refund {money(gs["refund_cost"])}.',
+             'Terms: a replacement pair first. A refund only if the replacement also fails.',
+             'One claim per order line. Claims within the guarantee window only.',
+             'Keep the promise words on the page the same; change only the claim steps.']
+    a.update({'title': 'Make the guarantee replacement first, refund second', 'owner': 'agent_drafts',
+              'artefact': {'kind': 'policy', 'label': 'Guarantee claim terms', 'draft': '\n'.join(lines)},
+              'steps': steps(('agent', 'Draft the claim terms and the support macro.'),
+                             ('person', 'Approve the terms.'),
+                             ('person', 'Update the policy page and the support macro the same day.'),
+                             ('agent', f'Read the claim rate every 14 days; call it on {ctx.check_on(56)}.')),
+              'size': {'text': f'{money(gs["planned_cost_per_order"])} a order in planned claims; breaks at {gs["breaks_at"]} times', 'usd': None},
+              'win_rule': 'Refunds fall and replacements take their place, with one-star mentions not up.',
+              'stop_rule': 'One-star mentions of the guarantee up 2 weeks in a row; go back to the old terms.',
+              'check_on': ctx.check_on(56), 'time_to_ship_hours': 3})
+    return a
+
+
 def bunches(rd):
     """Order-value bunches and the tiers above them, from real order bins only (never from the fixture)."""
     dist = rd.m('order_value_distribution', audit.WINDOW, step=5)
@@ -1354,7 +1378,7 @@ BUILDERS = {'OFFER-R01': threshold_action, 'OFFER-R04': rung_action, 'OFFER-R08'
             'OFFER-R22': cost_action, 'OFFER-R23': referral_action, 'OFFER-R24': loyalty_action,
             'OFFER-R25': discount_action, 'OFFER-R26': bundle_action,
             'OFFER-R27': launched_action, 'OFFER-R29': bnpl_action,
-            'OFFER-R30': match_action, 'OFFER-R31': cohort_action, 'OFFER-R32': welcome_action, 'OFFER-R33': trust_action, 'OFFER-R34': moves_action}
+            'OFFER-R30': match_action, 'OFFER-R31': cohort_action, 'OFFER-R32': welcome_action, 'OFFER-R33': trust_action, 'OFFER-R34': moves_action, 'OFFER-R35': stress_action}
 UNAVAILABLE_BUILDERS = {'OFFER-R34': recapture_action}
 
 
@@ -1399,5 +1423,5 @@ def rank(brand='bombas', window=None, data=None):
     return {'screen': SCREEN, 'brand': brand, 'window': w, 'simulated': True, 'net_revenue_28d': nr,
             'actions': actions, 'findings': findings, 'objections': ctx.objections, 'returns': returns_block(rd),
             'ladder': dict(ctx.ladder, moves=ctx.ladder_rows), 'first_order': ctx.first_order, 'waterfalls': ctx.waterfalls, 'calendar': ctx.calendar, 'gifting': ctx.gifting, 'guarantee': ctx.guarantee, 'position': ctx.position, 'parity': ctx.parity,
-            'discipline': dict(ctx.discipline, policy=discount_policy(ctx), windows=ctx.depth_history, window_creep_points=playbook.WINDOW_CREEP_POINTS), 'cart': ctx.cart, 'tests': calendar, 'depth': ctx.depth, 'cohorts': ctx.cohorts, 'costs': ctx.costs, 'registry': ctx.registry, 'referral': ctx.referral, 'loyalty': ctx.loyalty, 'bundles': ctx.bundles, 'proposed_tests': ctx.proposed_rows, 'launched': ctx.launched, 'discount_cohorts': audit.discount_cohorts(rd), 'welcome': ctx.welcome, 'trust': ctx.trust, 'price_moves': ctx.price_moves, 'bunches': bunches(rd),
+            'discipline': dict(ctx.discipline, policy=discount_policy(ctx), windows=ctx.depth_history, window_creep_points=playbook.WINDOW_CREEP_POINTS), 'cart': ctx.cart, 'tests': calendar, 'depth': ctx.depth, 'cohorts': ctx.cohorts, 'costs': ctx.costs, 'registry': ctx.registry, 'referral': ctx.referral, 'loyalty': ctx.loyalty, 'bundles': ctx.bundles, 'proposed_tests': ctx.proposed_rows, 'launched': ctx.launched, 'discount_cohorts': audit.discount_cohorts(rd), 'welcome': ctx.welcome, 'trust': ctx.trust, 'price_moves': ctx.price_moves, 'stress': ctx.stress, 'bunches': bunches(rd),
             'subscription': model.subscription_note(rd, ctx.cohorts, (ctx.depth or {}).get('rows'), (ctx.depth or {}).get('target'))}

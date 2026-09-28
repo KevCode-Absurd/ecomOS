@@ -146,6 +146,10 @@ Rules
              record's history (model.price_moves). Medium when a competitor cut price or a listing fell, else low.
              Money null: a move is a signal to read, not a loss we can count. Unavailable while every price has one
              capture; the move is a second capture once the first is RECAPTURE_DAYS old. Capability BRN-C11.
+  OFFER-R35  The guarantee breaks margin if claims run high (room job LIFE-C42): claims at playbook.CLAIM_STRESS
+             times the brain's planned refund and replacement rates put 28-day contribution after media under the
+             target (model.guarantee_stress). Money: contribution lost per 28 days at that multiple. Severity high.
+             Quiet for Bombas (breaks near 5 times the plan). Capability LIFE-C42.
   OFFER-R03  Margin after discount per SKU. Needs cogs_landed keyed by the store's SKUs. Unavailable while no
              finance_inputs SKU key matches a product SKU. Capability MONEY-C05 (founder gate). Owner: 04.
   OFFER-R04  A deal-breaker rung with no proof: the top rung of an objection ladder whose proof is empty or
@@ -256,6 +260,8 @@ RULES = [
     {'rule_id': 'OFFER-R34', 'name': 'A competitor or reseller moved price', 'entity_type': 'metric',
      'inputs': ['brain.competitors.price_band_usd history', 'brain.marketplaces.price_usd history'], 'capability': 'BRN-C11',
      'owner_screen': SCREEN},
+    {'rule_id': 'OFFER-R35', 'name': 'Guarantee breaks margin if claims run high', 'entity_type': 'offer',
+     'inputs': ['brain.economics.return_share_model', 'finance_inputs', 'daily'], 'capability': 'LIFE-C42', 'owner_screen': SCREEN},
     {'rule_id': 'OFFER-R03', 'name': 'Margin after discount per SKU', 'entity_type': 'sku',
      'inputs': ['finance_inputs.cogs_landed keyed by product SKU', 'products'], 'capability': 'MONEY-C05',
      'owner_screen': SCREEN},
@@ -294,6 +300,7 @@ CAPABILITY = {'OFFER-R01': {'id': 'MONEY-C05', 'autonomy': 'founder_gate'},
               'OFFER-R32': {'id': 'LIFE-C02', 'autonomy': 'founder_gate'},
               'OFFER-R33': {'id': 'LIFE-C47', 'autonomy': 'human_assist'},
               'OFFER-R34': {'id': 'BRN-C11', 'autonomy': 'agent_does'},
+              'OFFER-R35': {'id': 'LIFE-C42', 'autonomy': 'founder_gate'},
               'OFFER-R06': {'id': 'MONEY-C05', 'autonomy': 'founder_gate'},
               'OFFER-R04': {'id': 'LIFE-C36', 'autonomy': 'founder_gate'}}
 SEVERITY_ORDER = {'critical': 0, 'high': 1, 'medium': 2, 'low': 3}
@@ -1351,6 +1358,28 @@ def rule_price_moves(rd):
                      money_reason='a move is a signal, not a counted loss')]
 
 
+def guarantee_stress(rd):
+    pb = _playbook()
+    return _model().guarantee_stress(rd, guarantee(rd).get('planned'), pb.CLAIM_MULTIPLES)
+
+
+def rule_claim_stress(rd):
+    end = rd.ends_on
+    pb = _playbook()
+    gs = guarantee_stress(rd)
+    if gs['unavailable'] or gs['breaks_at'] is None or gs['breaks_at'] >= pb.CLAIM_STRESS:
+        return []
+    row = next((r for r in gs['rows'] if r['multiple'] == pb.CLAIM_STRESS), gs['rows'][-1])
+    orders = _model().window_totals(rd, end)['orders']
+    lost = round(max(0.0, gs['target'] * gs['net'] - row['contribution_per_order']) * orders, 2)
+    ev = [_ev('contribution_share_at_claim_stress', row['contribution_share'], 'ratio', end, baseline=gs['target'], baseline_kind='target'),
+          _ev('claim_breaks_at_multiple', gs['breaks_at'], 'count', end, baseline=pb.CLAIM_STRESS, baseline_kind='stress_multiple')]
+    return [_finding('OFFER-R35', {'type': 'offer', 'id': 'guarantee_stress', 'label': 'Guarantee under high claims'}, 'high', ev,
+                     f'At {pb.CLAIM_STRESS} times the planned claims, contribution falls to {row["contribution_share"] * 100:.0f} percent, '
+                     f'under the {gs["target"] * 100:.0f} percent target. It breaks at {gs["breaks_at"]} times.',
+                     {'usd': lost, 'formula': 'orders_28d x (target x net - contribution at stress)', 'window': '28d'}, 0.6, [], end)]
+
+
 def rule_ladder(rd):
     end = rd.ends_on
     pb = _playbook()
@@ -1522,7 +1551,7 @@ def run(brand, window=None, data=None):
     """Findings for one brand, sorted by severity then money at stake. `window` is {ends_on} or None."""
     ends_on = date.fromisoformat(window['ends_on']) if window and window.get('ends_on') else last_full_day(data, brand)
     rd = Reader(data, brand, ends_on)
-    out = (rule_threshold(rd) + rule_stale(rd) + rule_pull(rd) + rule_first_order(rd) + rule_red_line(rd) + rule_promo(rd) + rule_gifting(rd) + rule_guarantee(rd) + rule_position(rd) + rule_parity(rd) + rule_discount(rd) + rule_cart(rd) + rule_second_order(rd) + rule_cost(rd) + rule_referral(rd) + rule_loyalty(rd) + rule_window_creep(rd) + rule_bundles(rd) + rule_launched(rd) + rule_upsell(rd) + rule_bnpl(rd) + rule_threshold_match(rd) + rule_cohorts(rd) + rule_welcome(rd) + rule_test_trust(rd) + rule_price_moves(rd) + rule_ladder(rd) + rule_sku_margin(rd) +
+    out = (rule_threshold(rd) + rule_stale(rd) + rule_pull(rd) + rule_first_order(rd) + rule_red_line(rd) + rule_promo(rd) + rule_gifting(rd) + rule_guarantee(rd) + rule_position(rd) + rule_parity(rd) + rule_discount(rd) + rule_cart(rd) + rule_second_order(rd) + rule_cost(rd) + rule_referral(rd) + rule_loyalty(rd) + rule_window_creep(rd) + rule_bundles(rd) + rule_launched(rd) + rule_upsell(rd) + rule_bnpl(rd) + rule_threshold_match(rd) + rule_cohorts(rd) + rule_welcome(rd) + rule_test_trust(rd) + rule_price_moves(rd) + rule_claim_stress(rd) + rule_ladder(rd) + rule_sku_margin(rd) +
            rule_unanswered(rd))
     out.sort(key=lambda f: (SEVERITY_ORDER[f['severity']], -((f.get('money_at_stake') or {}).get('usd') or -1), f['id']))
     return out

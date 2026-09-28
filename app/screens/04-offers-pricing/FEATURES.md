@@ -124,6 +124,16 @@ Known gaps from round 0:
 | 6.7 | Can we trust each test on record (room job LIFE-C47, "is any test untrustworthy"): every running or done registry entry is checked for no metric before the start, a metric set after the start, an early look before the read point, a read point passed with no read, a run shorter than its minimum days, an offer or price test judged on AOV or conversion instead of profit per visitor, and two running tests on one surface. New rule OFFER-R33 with a person-owned repair list for the experiments screen. The registry table marks each flagged test "Cannot trust" with the reasons. Bombas: 4 of 5 tests flagged | done |
 | 6.8 | Did a competitor or reseller move price (room jobs BRN-C11, PROD-C46): each competitor's median price per item and each marketplace listing price, now against the last value in its brain record's history, same item and an earlier day only (near-duplicate listings merged into a record are not a move). New rule OFFER-R34: 5 percent or more either way is a move, read as promo or list price before any answer, and never answered with a matching discount. Bombas: 28 prices, one capture each, so unavailable; the move is a second public capture on 28 Oct, 30 days after the first | done |
 | 6.9 | Is the gift lifting the tier we want (room job LIFE-C40): a live offer this screen launched with a cart tier in its label or terms (a gift tier or a free shipping line) gets the share of orders over the tier and margin per order from order rows, 28 days before launch against up to 28 since, in the launched-offer read (OFFER-R27 evidence and brief) and on the registry block. Unavailable without order rows or before 7 days have passed; Bombas reads unavailable | done |
+| 6.10 | What if guarantee claims run high (room job LIFE-C42): refunds and replacements at 1, 2 and 3 times the brain's planned rates, on top of today's 28-day contribution after media, with the multiple where contribution reaches the target. A refund is the net order plus returns processing; a replacement is item, label, pick and pack, and packaging. New rule OFFER-R35 when 2 times the plan breaks the target; the move is replacement first, refund second, as drafted claim terms. Bombas holds to 4.7 times the plan, so quiet | done |
+
+### Round 6 note for Kevin (28 Sep 2026)
+
+1. Every block on the desk now ends in its own next move or says why it cannot, and every money move has a size, a stop rule and a check date, on Bombas and on the sample brand.
+2. A new "What we cannot see yet" box says plainly that price sensitivity and gift card balances are unavailable, what fills each, and which move starts it; nothing is guessed in their place.
+3. New question answered: does the welcome code pay for itself. On the sample brand WELCOME10 costs $2,590 a month and pays only if 15 percent of code orders are truly new; the move is a 10 percent holdout.
+4. New check: 4 of the 5 Bombas tests on record cannot be trusted as they stand (an early look, a missed read, no metric, an offer judged on AOV); a person-owned repair list goes to the experiments screen.
+5. Competitor and reseller price moves, the gift tier read after launch and the guarantee stress test are built; Bombas holds its guarantee to 4.7 times the planned claims, and price moves wait on a second capture on 28 Oct.
+6. Phone width is clean at 360 px with larger tap targets. Next (round 7): read the sample brand's orders deeper (price points actually paid), the room job for upsell placements once an app is named, and a web pass on offer tools.
 
 ## Contract asks
 
@@ -150,20 +160,20 @@ Intelligems (threshold and price tests scored by profit per visitor), Rebuy (tie
 
 | Job | Question | Capability | Status |
 |---|---|---|---|
-| Design the offer's full value proposition | does this offer beat the buyer's biggest objection, priced and proven | LIFE-C36 | round 0: guarantee table, OFFER-R04 |
-| Model offer and discount economics before launch | what does this discount cost in margin, and does it cross my red line | MONEY-C05 | round 0: threshold break-even, OFFER-R01; margin waits on COGS join |
-| Govern discount policy and price integrity | are we training buyers to wait for a discount | LIFE-C38 | round 0: discount share, BFCM depth, creep rule |
-| Design bundles and quantity-ladder pricing | does every tier have a reason to exist, is the middle one winning | LIFE-C39 | round 0: pack ladder table |
+| Design the offer's full value proposition | does this offer beat the buyer's biggest objection, priced and proven | LIFE-C36 | rounds 0 to 1: objection to offer map, OFFER-R04, OFFER-R15 |
+| Model offer and discount economics before launch | what does this discount cost in margin, and does it cross my red line | MONEY-C05 | rounds 1 to 5: waterfalls, red line gate OFFER-R10, break-even discount, threshold OFFER-R01 |
+| Govern discount policy and price integrity | are we training buyers to wait for a discount | LIFE-C38 | rounds 0 to 3: discount discipline, always-on OFFER-R19, window creep OFFER-R25 |
+| Design bundles and quantity-ladder pricing | does every tier have a reason to exist, is the middle one winning | LIFE-C39 | rounds 1 to 5: pack ladder OFFER-R07/R09, bundle pairs OFFER-R26, pack label |
 | Design gift-with-purchase offers | is the gift lifting the tier we want | LIFE-C40 | rounds 1, 2 and 6: gift pick, cart ladder, tier lift after launch |
-| Place upsell and cross-sell offers | which placements convert, and do they hurt margin | LIFE-C41 | todo |
-| Design the guarantee and risk-reversal offer | does the guarantee remove risk without breaking margin | LIFE-C42 | todo (claims not tagged) |
-| Design the subscription offer and cancel flow | is the reason to subscribe stronger than a flat discount | LIFE-C43 | parked (non-subscription first) |
+| Place upsell and cross-sell offers | which placements convert, and do they hurt margin | LIFE-C41 | round 4: OFFER-R28 waits on the upsell app's events |
+| Design the guarantee and risk-reversal offer | does the guarantee remove risk without breaking margin | LIFE-C42 | rounds 1 and 6: guarantee as an offer OFFER-R14, claims stress OFFER-R35 |
+| Design the subscription offer and cancel flow | is the reason to subscribe stronger than a flat discount | LIFE-C43 | parked (non-subscription first); round 3 note only |
 | Design and model the pop-up first-order offer | does the pop-up offer pay for itself | LIFE-C02 | round 6: welcome code required new share, OFFER-R32 holdout |
-| Design referral and partner offers | is referral cheaper than paid media | LIFE-C45 | todo |
-| Design payment terms, BNPL and trial pricing | is trial-to-full matching the model | LIFE-C46 | todo |
+| Design referral and partner offers | is referral cheaper than paid media | LIFE-C45 | round 3: referral OFFER-R23 against paid media per new customer |
+| Design payment terms, BNPL and trial pricing | is trial-to-full matching the model | LIFE-C46 | round 5: installments OFFER-R29; trial pricing not for this store type |
 | Run the offer testing framework | what to test next, is any test untrustworthy | LIFE-C47 | rounds 3 to 6: registry, test calendar, profit per visitor, OFFER-R33 test trust |
 | Track competitor and MAP pricing | did a competitor or reseller move price | BRN-C11, PROD-C46 | rounds 2 and 6: position map, parity OFFER-R17, price moves OFFER-R34 |
-| Run the gift card program | outstanding gift card liability and redemption | LIFE-C58 | todo |
+| Run the gift card program | outstanding gift card liability and redemption | LIFE-C58 | OFFER-R13 connect move; unavailable until the gift card ledger lands (round 6 says so on the page) |
 
 ## Candidates from the room spec (pick 10 per round)
 
@@ -262,7 +272,7 @@ Intelligems (threshold and price tests scored by profit per visitor), Rebuy (tie
 | Round | Features picked | Date | Notes |
 |---|---|---|---|
 | 0 | skeleton, 0.1 to 0.9 | 2026-09-28 | S3.9; screenshot round0.png |
-| 6 | 6.1 onward: depth pass | 2026-09-28 | in progress |
+| 6 | 6.1 to 6.10: settings not text, sized moves, block lines, cannot see yet, 360 px, welcome code, test trust, price moves, tier lift, claims stress | 2026-09-28 | screenshot round6.png |
 | 5 | 5.1 to 5.10: stack read-back, break-even discount, profit per visitor, pack label, installments, loyalty calibration, line match, code-won cohorts, order bunches | 2026-09-28 | screenshot round5.png |
 | 4 | 4.1 to 4.10: save to the brain, offer records, bundle pairs, red line gate, approved first, launched read, upsell connect, brief pack, stale inputs | 2026-09-28 | screenshot round4.png |
 | 3 | 3.1 to 3.10: registry, referral, loyalty, window creep, subscription note, depth rules, plug and play, priors, decisions | 2026-09-28 | screenshot round3.png |

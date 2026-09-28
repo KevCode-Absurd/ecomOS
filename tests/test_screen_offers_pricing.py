@@ -1706,5 +1706,37 @@ class TierLiftTest(unittest.TestCase):
         self.assertEqual(api.model.tier_lift(o, 90, date(2026, 9, 25), date(2026, 9, 28))['reason'], 'less than 7 days since launch')
 
 
+class ClaimStressTest(unittest.TestCase):
+    """Round 6 feature 10: room job LIFE-C42, does the guarantee break margin if claims run high. OFFER-R35."""
+
+    def rd(self):
+        return audit.Reader(None, 'bombas', audit.last_full_day(None, 'bombas'))
+
+    def test_bombas_holds(self):
+        gs = audit.guarantee_stress(self.rd())
+        self.assertFalse(gs['unavailable'])
+        one, two = gs['rows'][0], gs['rows'][1]
+        self.assertAlmostEqual(two['claims_per_order'], 2 * one['claims_per_order'], delta=0.011)
+        self.assertAlmostEqual(gs['contribution_per_order'] - gs['breaks_at'] * gs['planned_cost_per_order'],
+                               gs['target'] * gs['net'], delta=0.2)
+        self.assertGreater(gs['breaks_at'], api.actions.playbook.CLAIM_STRESS)
+        self.assertEqual([f for f in audit.run('bombas') if f['rule_id'] == 'OFFER-R35'], [])
+
+    def test_fires_when_claims_are_heavy(self):
+        orig = audit.guarantee
+        audit.guarantee = lambda rd: dict(orig(rd), planned={'replacement': 0.05, 'refund': 0.12, 'refund_or_replace': 0.17})
+        try:
+            f = [x for x in audit.run('bombas') if x['rule_id'] == 'OFFER-R35']
+            self.assertEqual(len(f), 1)
+            self.assertEqual(f[0]['severity'], 'high')
+            a = next(x for x in api.actions.rank('bombas')['actions'] if x['rule_id'] == 'OFFER-R35')
+            self.assertEqual(a['artefact']['kind'], 'policy')
+        finally:
+            audit.guarantee = orig
+
+    def test_no_plan_unavailable(self):
+        self.assertTrue(api.model.guarantee_stress(self.rd(), {}, (1, 2))['unavailable'])
+
+
 if __name__ == '__main__':
     unittest.main()

@@ -1419,3 +1419,33 @@ def tier_lift(orders, tier, start, end, days=28):
             'lift_points': round((after['share_over'] - before['share_over']) * 100, 1),
             'margin_change': round(after['margin_per_order'] - before['margin_per_order'], 2)
             if after['margin_per_order'] is not None and before['margin_per_order'] is not None else None}
+
+
+# ---------------------------------------------------------------- guarantee: what if claims run high?
+
+def guarantee_stress(rd, planned, multiples):
+    """Claims on the guarantee at each multiple of the planned rates, on top of today's 28-day contribution per
+    order. A replacement costs the claim_cost replacement parts; a refund costs the net order plus returns
+    processing (the pair is not resold). `breaks_at` is the multiple of the planned rates at which contribution
+    after media reaches the target."""
+    if not planned or planned.get('replacement') is None or planned.get('refund') is None:
+        return {'unavailable': True, 'reason': 'no planned claim rates in the brain'}
+    c = contribution_28d(rd)
+    if c.get('value') is None:
+        return {'unavailable': True, 'reason': c.get('reason'), 'fix': c.get('fix')}
+    repl = claim_cost(rd, 'replacement')
+    proc = fin_value(rd, 'returns_processing', rd.ends_on)
+    if repl.get('value') is None or proc is None:
+        return {'unavailable': True, 'reason': repl.get('reason') or 'missing returns processing', 'fix': 'finance_inputs'}
+    refund = c['net'] + proc
+    per_order = planned['replacement'] * repl['value'] + planned['refund'] * refund
+    target = c.get('target')
+    target = target / 100 if target is not None and target > 1 else target
+    rows = [{'multiple': k, 'claim_rate': round(k * (planned['replacement'] + planned['refund']), 4),
+             'claims_per_order': round(k * per_order, 2), 'contribution_per_order': round(c['per_order'] - k * per_order, 2),
+             'contribution_share': round((c['per_order'] - k * per_order) / c['net'], 4)} for k in multiples]
+    breaks = round((c['per_order'] - target * c['net']) / per_order, 1) if target is not None and per_order else None
+    return {'unavailable': False, 'rows': rows, 'target': target, 'breaks_at': breaks, 'net': c['net'],
+            'contribution_per_order': c['per_order'], 'replacement_cost': repl['value'], 'refund_cost': round(refund, 2),
+            'planned_cost_per_order': round(per_order, 2), 'window': c['window'],
+            'basis': 'on top of 28-day contribution after media; a refund is the net order plus returns processing, a replacement is item, label, pick and pack, and packaging'}

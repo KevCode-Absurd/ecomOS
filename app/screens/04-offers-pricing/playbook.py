@@ -234,3 +234,9 @@ TEST_MIN_DAYS = 28
 # captured price against the last value in the brain record's history. PRICE_MOVE or more either way is a move.
 PRICE_MOVE = 0.05
 RECAPTURE_DAYS = 30            # a single capture older than this is due for a second one
+
+# Guarantee claims stress (screen 04, OFFER-R35; room job LIFE-C42, "does the guarantee remove risk without breaking
+# margin if claims run high"). Claims at 1, 2 and 3 times the brain's planned rates, on top of today's contribution.
+# Fires when claims at CLAIM_STRESS times the plan put contribution under the target. Our own rule, written down.
+CLAIM_MULTIPLES = (1, 2, 3)
+CLAIM_STRESS = 2

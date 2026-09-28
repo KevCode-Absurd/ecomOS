@@ -24,7 +24,7 @@
   /** Rule ids behind each desk block: structure, not brand content. The fallback line opens the move those rules made. */
   const BLOCK_RULES = { 'desk-threshold': ['R01', 'R05', 'R06', 'R30'], 'desk-cart': ['R20', 'R28'], 'desk-discount': ['R18', 'R19', 'R25'],
     'desk-ladder': ['R07', 'R09', 'R29'], 'desk-first': ['R08', 'R31'], 'desk-welcome': ['R32'], 'desk-waterfall': ['R10', 'R03'], 'desk-calendar': ['R11'],
-    'desk-depth': ['R11', 'R03'], 'desk-second': ['R21'], 'desk-cost': ['R22'], 'desk-gifting': ['R12', 'R13'], 'desk-guarantee': ['R14'],
+    'desk-depth': ['R11', 'R03'], 'desk-second': ['R21'], 'desk-cost': ['R22'], 'desk-gifting': ['R12', 'R13'], 'desk-guarantee': ['R14', 'R35'],
     'desk-position': ['R16'], 'desk-parity': ['R17'], 'desk-moves': ['R34'], 'desk-bundles': ['R26'], 'desk-buyers': ['R23', 'R24'],
     'desk-objections': ['R04', 'R15'], 'desk-tests': ['R27'], 'desk-registry': ['R27', 'R33'], 'desk-registry-trust': ['R33'] };
   function blockAction(id) {
@@ -492,7 +492,7 @@
       actionLine(led ? led + ' lines sell as gifts. Put them on the holiday page first.' : 'No line sells as a gift yet. Build the holiday page around the big packs, the gift card and the order-by dates.', a));
   }
 
-  function guaranteeBlock(g, returns) {
+  function guaranteeBlock(g, returns, gs) {
     const head = { title: 'Is the guarantee working as an offer?', sub: 'The guarantee\'s terms from the brain, the page each term was found on, the doubts it answers, and claims against the brain\'s planned rates.' };
     if (!g || !g.terms.length) return section('desk-guarantee', head, UI.emptyState({ screen: SLUG, title: 'No guarantee in the brain', text: 'Add the guarantee to the brain offers section.' }));
     const a = ACTIONS.find((x) => x.rule_id === 'OFFER-R14');
@@ -507,7 +507,7 @@
       ['Actual', returns && !returns.fixture ? 'see returns by reason above' : NA + ': ' + ((returns || {}).reason || 'returns are not connected')],
     ]);
     return section('desk-guarantee', head, el('div', { class: 'grid two' }, el('div', { class: 'card tight' }, terms), el('div', { class: 'card' }, facts)),
-      el('div', { class: 'card tight' }, answers),
+      stressCard(gs), el('div', { class: 'card tight' }, answers),
       actionLine(g.on_selling_page ? 'The guarantee is on a selling page. Keep it next to the price.' : 'The guarantee answers ' + g.one_star_answered + ' one-star doubts but lives on the ' + g.stated_on.join(', ') + '. Put it next to the price and in the cart.', a));
   }
 
@@ -604,6 +604,16 @@
     return section('desk-moves', head, el('div', { class: 'card tight' }, pm.moves.length ? table : el('p', { class: 'small', text: 'No price moved since the last capture.' }),
       el('p', { class: 'micro faint', text: pm.basis + '. ' + pm.paired + ' of ' + pm.prices + ' prices have 2 captures.' })),
       actionLine(pm.moves.length ? (blockAction('desk-moves') || {}).title + '. A move is a signal; we answer with proof or a pack, not a matching discount.' : 'No move to read. The next capture keeps the check going.', blockAction('desk-moves')));
+  }
+
+  /** What the guarantee costs if claims run high: 1, 2 and 3 times the planned rates, against the contribution target. */
+  function stressCard(gs) {
+    if (!gs || gs.unavailable) return el('div', { class: 'card' }, el('h4', { text: 'What if claims run high?' }), el('p', { class: 'muted small', text: NA + ': ' + ((gs || {}).reason || 'no data') }));
+    const t = UI.verdictTable({ columns: [{ key: 'multiple', label: 'Claims', format: (v) => v === 1 ? 'At the plan' : v + ' times the plan' }, { key: 'claim_rate', label: 'Claim rate', format: (v) => pct(v) },
+      { key: 'claims_per_order', label: 'Claims per order', format: (v) => fmt.money(v) }, { key: 'contribution_share', label: 'Contribution after media', format: (v, r) => pct(v, 1) + ' (' + fmt.money(r.contribution_per_order) + ')' }],
+      rows: gs.rows, verdict: { at: 1, kind: (r) => r.contribution_share < gs.target ? 'fix' : 'keep', text: (r) => r.contribution_share < gs.target ? 'Under target' : 'Holds', reason: () => 'target ' + pct(gs.target, 0) }, sort: false });
+    return el('div', { class: 'card tight' }, el('h4', { text: 'What if claims run high? It breaks at ' + (gs.breaks_at == null ? NA : gs.breaks_at + ' times the plan') }), t,
+      el('p', { class: 'micro faint', text: 'A replacement costs ' + fmt.money(gs.replacement_cost) + ' and a refund ' + fmt.money(gs.refund_cost) + '. Basis: ' + gs.basis + '.' }));
   }
 
   function buyersBlock(d) {
@@ -709,8 +719,8 @@
     const TABS = [
       { key: 'launch', label: 'Launch next', rules: ['OFFER-R11', 'OFFER-R12', 'OFFER-R21', 'OFFER-R27', 'OFFER-R33'],
         blocks: () => [testsBlock(d.tests), registryBlock(d.registry, d.proposed_tests, d.launched, d.trust), calendarBlock(d.calendar), depthBlock(d.depth), giftingBlock(d.gifting), secondOrderBlock(d.cohorts)] },
-      { key: 'offers', label: 'Offers', rules: ['OFFER-R08', 'OFFER-R10', 'OFFER-R19', 'OFFER-R31', 'OFFER-R32', 'OFFER-R20', 'OFFER-R23', 'OFFER-R24', 'OFFER-R04', 'OFFER-R14', 'OFFER-R15'],
-        blocks: () => [firstOrderBlock(d.first_order, d.discount_cohorts), welcomeBlock(d.welcome), cartBlock(d.cart, d.bunches), buyersBlock(d), objectionBlock(d.objections || [], d.returns), guaranteeBlock(d.guarantee, d.returns), subscriptionBlock(d.subscription), stackBlock(d.stack || [])] },
+      { key: 'offers', label: 'Offers', rules: ['OFFER-R08', 'OFFER-R10', 'OFFER-R19', 'OFFER-R31', 'OFFER-R32', 'OFFER-R20', 'OFFER-R23', 'OFFER-R24', 'OFFER-R04', 'OFFER-R14', 'OFFER-R35', 'OFFER-R15'],
+        blocks: () => [firstOrderBlock(d.first_order, d.discount_cohorts), welcomeBlock(d.welcome), cartBlock(d.cart, d.bunches), buyersBlock(d), objectionBlock(d.objections || [], d.returns), guaranteeBlock(d.guarantee, d.returns, d.stress), subscriptionBlock(d.subscription), stackBlock(d.stack || [])] },
       { key: 'prices', label: 'Prices and packs', rules: ['OFFER-R22', 'OFFER-R16', 'OFFER-R17', 'OFFER-R34', 'OFFER-R07', 'OFFER-R09', 'OFFER-R26', 'OFFER-R29'],
         blocks: () => [costBlock(d.costs), positionBlock(d.position, d.brand || {}), parityBlock(d.parity), movesBlock(d.price_moves), ladderBlock(d.ladder), bundlesBlock(d.bundles), waterfallBlock(d.waterfalls)] },
       { key: 'shipping', label: 'Shipping and discounts', rules: ['OFFER-R01', 'OFFER-R05', 'OFFER-R06', 'OFFER-R18', 'OFFER-R25', 'OFFER-R30'],
