@@ -2015,5 +2015,19 @@ class ExposureTest(unittest.TestCase):
         self.assertEqual(t['exposure']['usd_28d'], round(api.model.window_totals(rd)['net_sales'], 2))
 
 
+class WeekTest(unittest.TestCase):
+    """Round 8 feature 3: the founder's week from the test calendar; team hours unavailable, never guessed."""
+
+    def test_bombas(self):
+        d = api.handle(Req(['overview']))
+        wk = d['week']
+        ready = [t for t in d['tests'] if t['status'] == 'ready' and t['start'] == wk['start']]
+        self.assertEqual(wk['approvals'], len(ready))
+        ids = {a['id']: a for a in d['plan']}
+        self.assertEqual(wk['hours'], sum(ids[i].get('time_to_ship_hours') or 0 for i in wk['moves']))
+        self.assertIsNone(wk['team_hours'])
+        self.assertTrue(wk['team_reason'])
+
+
 if __name__ == '__main__':
     unittest.main()

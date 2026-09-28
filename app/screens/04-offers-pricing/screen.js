@@ -93,6 +93,13 @@
       foot: el('div', { class: 'row' }, UI.rubricLegend(), el('span', { class: 'micro faint', text: 'Ranking: critical first by stake, then rubric total, severity, stake. "Not now" snoozes ' + SET.snooze_days + ' days.' })),
       empty: 'No open offer or price move for this window.',
     }));
+    const wk = d.week;
+    if (wk && wk.approvals) {
+      const firstA = ACTIONS.find((a) => a.id === wk.moves[0]);
+      document.getElementById('plan').append(el('div', { class: 'card flat tight week' }, el('span', { class: 'kicker', text: 'Your week' }),
+        el('span', { class: 'small', text: 'From ' + fmt.date(wk.start) + ': approve ' + wk.approvals + (wk.approvals === 1 ? ' move' : ' moves') + ', about ' + wk.hours + ' hours to ship, ' + wk.person_steps + ' steps a person does. Team hours: ' + (wk.team_hours == null ? NA + ', ' + wk.team_reason : wk.team_hours + ' a week') + '.' }),
+        firstA ? el('button', { class: 'btn soft sm', type: 'button', text: 'Open the first', onclick: () => openAction(firstA) }) : null));
+    }
     if ((d.planned || []).length) document.getElementById('plan').append(el('div', { class: 'card flat tight planned' }, el('span', { class: 'kicker', text: 'In the brain as plans' }),
       ...d.planned.map((x) => { const st = el('span', { class: 'micro muted' }); return el('div', { class: 'row' }, el('span', { class: 'small', text: x.title + ' (' + x.status + ')' }),
         x.can_launch ? el('button', { class: 'btn xs', type: 'button', text: 'Mark launched', onclick: async () => { try { const r = await UI.api('/api/' + SLUG + '/launched?brand=' + encodeURIComponent(brand), { method: 'POST', body: { id: x.id } }); st.textContent = 'Live from today: ' + r.record; } catch (e) { st.textContent = 'Could not mark: ' + e.message; } } }) : null, st); })));

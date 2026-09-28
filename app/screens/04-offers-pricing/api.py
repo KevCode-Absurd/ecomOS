@@ -376,6 +376,25 @@ def blind_spots(ranked, rd=None):
     return out
 
 
+def week(ranked, rd=None):
+    """The founder's week: moves the test calendar starts first (on the earliest start date), the approvals they need,
+    hours to ship and person-owned steps; team hours from the brain when it holds them, else unavailable."""
+    acts = {a['id']: a for a in ranked['actions']}
+    ready = [t for t in ranked.get('tests') or [] if t.get('status') == 'ready']
+    first = min((t['start'] for t in ready), default=None)
+    now = [acts[t['id']] for t in ready if t['start'] == first and t['id'] in acts]
+    hours = sum(a.get('time_to_ship_hours') or 0 for a in now)
+    person = sum(1 for a in now for st in a.get('steps') or [] if st.get('who') == 'person')
+    team = None
+    if rd is not None and rd.brand:
+        for r in rd.records('team'):
+            v = r.get('value')
+            if isinstance(v, dict) and isinstance(v.get('weekly_hours'), (int, float)):
+                team = (team or 0) + v['weekly_hours']
+    return {'start': first, 'moves': [a['id'] for a in now], 'approvals': len(now), 'hours': hours, 'person_steps': person,
+            'team_hours': team, 'team_reason': None if team is not None else 'the brain holds no weekly hours for the team'}
+
+
 def overview(data, brand):
     ends_on = audit.last_full_day(data, brand)
     rd = audit.Reader(data, brand, ends_on)
@@ -401,7 +420,7 @@ def overview(data, brand):
                          **a['plan_record']} for a in planned],
             'stack': offer_stack(rd), 'threshold': th, 'bfcm': bfcm(rd), **desk,
             'creep': creep_rule(months), 'chart': chart(months), 'findings': ranked['findings'], 'rules': audit.RULES,
-            'settings': page_settings(), 'blind_spots': blind_spots(ranked, rd)}
+            'settings': page_settings(), 'blind_spots': blind_spots(ranked, rd), 'week': week(ranked, rd)}
 
 
 def rank(brand='bombas', window=None):
