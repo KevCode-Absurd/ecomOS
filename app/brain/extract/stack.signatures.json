@@ -1,0 +1,756 @@
+{
+ "version": "2026-09-28",
+ "note": "Signatures for app.brain.extract.stack: script hosts, meta tags, cookie names and JSON keys found in a store's own HTML. Matching is case-insensitive. A signature with 'all' requires every listed pattern to match the same page. multi:true fields collect every distinct vendor matched; other fields take the first signature that matches, in file order, so list a more specific signature before a generic fallback for the same field.",
+ "signatures": [
+  {
+   "id": "platform_shopify_myshopify_host",
+   "category": "platform",
+   "field": "platform",
+   "vendor": "Shopify, store handle {handle}",
+   "match": {
+    "type": "text",
+    "pattern": "(?P<handle>[a-z0-9-]+\\.myshopify\\.com)"
+   },
+   "note": "in a shop= query param, checkout link or theme JSON on any page",
+   "multi": false
+  },
+  {
+   "id": "platform_shopify_cdn_assets",
+   "category": "platform",
+   "field": "platform",
+   "vendor": "Shopify",
+   "match": {
+    "type": "text",
+    "pattern": "cdn\\.shopify\\.com/(s/files|shopifycloud)/"
+   },
+   "note": "asset or app script src on any page",
+   "multi": false
+  },
+  {
+   "id": "platform_woocommerce_body_class",
+   "category": "platform",
+   "field": "platform",
+   "vendor": "WooCommerce, on WordPress",
+   "match": {
+    "type": "text",
+    "pattern": "class=\\\"[^\\\"]*woocommerce[^\\\"]*\\\""
+   },
+   "note": "body or page wrapper class on any page",
+   "multi": false
+  },
+  {
+   "id": "platform_woocommerce_wc_ajax",
+   "category": "platform",
+   "field": "platform",
+   "vendor": "WooCommerce, on WordPress",
+   "match": {
+    "type": "text",
+    "pattern": "wc-ajax="
+   },
+   "note": "add to cart or checkout form action on cart and product pages",
+   "multi": false
+  },
+  {
+   "id": "platform_woocommerce_cart_cookie",
+   "category": "platform",
+   "field": "platform",
+   "vendor": "WooCommerce, on WordPress",
+   "match": {
+    "type": "cookie",
+    "pattern": "woocommerce_cart_hash"
+   },
+   "note": "cart cookie set on the first page view",
+   "multi": false
+  },
+  {
+   "id": "platform_bigcommerce_cdn",
+   "category": "platform",
+   "field": "platform",
+   "vendor": "BigCommerce",
+   "match": {
+    "type": "text",
+    "pattern": "cdn11\\.bigcommerce\\.com"
+   },
+   "note": "product image or asset host on any page",
+   "multi": false
+  },
+  {
+   "id": "platform_magento_static_frontend",
+   "category": "platform",
+   "field": "platform",
+   "vendor": "Adobe Commerce (Magento)",
+   "match": {
+    "type": "text",
+    "pattern": "/static/(version\\d+/)?frontend/"
+   },
+   "note": "static asset path on any page",
+   "multi": false
+  },
+  {
+   "id": "platform_salesforce_commerce_demandware",
+   "category": "platform",
+   "field": "platform",
+   "vendor": "Salesforce Commerce Cloud",
+   "match": {
+    "type": "text",
+    "pattern": "demandware\\.static"
+   },
+   "note": "asset host on any page",
+   "multi": false
+  },
+  {
+   "id": "theme_shopify_custom_react_with_id",
+   "category": "theme",
+   "field": "theme",
+   "vendor": "custom React storefront theme, theme id {theme_id}",
+   "match": {
+    "type": "text",
+    "all": [
+     "react-app\\.js",
+     "\\\"themeId\\\":\\\"?(?P<theme_id>\\d+)\\\"?"
+    ]
+   },
+   "note": "a react-app.js bundle plus the theme id in inline theme JSON, on any Shopify page",
+   "multi": false
+  },
+  {
+   "id": "theme_shopify_custom_vue_with_id",
+   "category": "theme",
+   "field": "theme",
+   "vendor": "custom Vue storefront theme, theme id {theme_id}",
+   "match": {
+    "type": "text",
+    "all": [
+     "vue-app\\.js",
+     "\\\"themeId\\\":\\\"?(?P<theme_id>\\d+)\\\"?"
+    ]
+   },
+   "note": "a vue-app.js bundle plus the theme id in inline theme JSON, on any Shopify page",
+   "multi": false
+  },
+  {
+   "id": "theme_shopify_theme_id_only",
+   "category": "theme",
+   "field": "theme",
+   "vendor": "Shopify theme id {theme_id}",
+   "match": {
+    "type": "text",
+    "pattern": "\\\"themeId\\\":\\\"?(?P<theme_id>\\d+)\\\"?"
+   },
+   "note": "inline theme JSON in the page head on any Shopify page",
+   "multi": false
+  },
+  {
+   "id": "theme_custom_js_bundle_generic",
+   "category": "theme",
+   "field": "theme",
+   "vendor": "custom JavaScript storefront theme",
+   "match": {
+    "type": "text",
+    "pattern": "(react|vue)-app\\.js"
+   },
+   "note": "a framework bundle script src on any page, theme id not found",
+   "multi": false
+  },
+  {
+   "id": "reviews_yotpo",
+   "category": "reviews_app",
+   "field": "reviews_app",
+   "vendor": "Yotpo",
+   "match": {
+    "type": "text",
+    "pattern": "yotpoStoreId|staticw2\\.yotpo\\.com"
+   },
+   "note": "a web pixel config or widget script on any page",
+   "multi": false
+  },
+  {
+   "id": "reviews_judgeme",
+   "category": "reviews_app",
+   "field": "reviews_app",
+   "vendor": "Judge.me",
+   "match": {
+    "type": "text",
+    "pattern": "judge\\.me|cdn\\.judgeme\\.com"
+   },
+   "note": "a review widget script or badge on the product page",
+   "multi": false
+  },
+  {
+   "id": "reviews_okendo",
+   "category": "reviews_app",
+   "field": "reviews_app",
+   "vendor": "Okendo",
+   "match": {
+    "type": "text",
+    "pattern": "okendo\\.io|cdn\\.okendo\\.io"
+   },
+   "note": "a review widget script on the product page",
+   "multi": false
+  },
+  {
+   "id": "reviews_stamped",
+   "category": "reviews_app",
+   "field": "reviews_app",
+   "vendor": "Stamped.io",
+   "match": {
+    "type": "text",
+    "pattern": "stamped\\.io|apps\\.stamped\\.io"
+   },
+   "note": "a review widget script on the product page",
+   "multi": false
+  },
+  {
+   "id": "reviews_loox",
+   "category": "reviews_app",
+   "field": "reviews_app",
+   "vendor": "Loox",
+   "match": {
+    "type": "text",
+    "pattern": "loox\\.(io|com)"
+   },
+   "note": "a review widget script or photo carousel on the product page",
+   "multi": false
+  },
+  {
+   "id": "upsell_rebuy",
+   "category": "upsell_app",
+   "field": "upsell_app",
+   "vendor": "Rebuy",
+   "match": {
+    "type": "text",
+    "pattern": "window\\.Rebuy|rebuyengine\\.com"
+   },
+   "note": "a cart drawer or upsell script, often near checkout or wrapping offers",
+   "multi": false
+  },
+  {
+   "id": "upsell_reconvert",
+   "category": "upsell_app",
+   "field": "upsell_app",
+   "vendor": "ReConvert",
+   "match": {
+    "type": "text",
+    "pattern": "reconvert\\.io|apps\\.reconvertupsell\\.com"
+   },
+   "note": "a post purchase upsell script on the order status page",
+   "multi": false
+  },
+  {
+   "id": "tag_manager_gtm_with_container_id",
+   "category": "tag_manager",
+   "field": "tag_manager",
+   "vendor": "Google Tag Manager, container {gtm_id}",
+   "match": {
+    "type": "text",
+    "pattern": "googletagmanager\\.com/ns\\.html\\?id=(?P<gtm_id>GTM-[A-Za-z0-9]+)"
+   },
+   "note": "a noscript iframe or ns.html call on any page",
+   "multi": false
+  },
+  {
+   "id": "tag_manager_gtm_generic",
+   "category": "tag_manager",
+   "field": "tag_manager",
+   "vendor": "Google Tag Manager",
+   "match": {
+    "type": "text",
+    "pattern": "googletagmanager\\.com/(ns\\.html|gtm\\.js)"
+   },
+   "note": "the gtm.js loader script on any page",
+   "multi": false
+  },
+  {
+   "id": "tag_manager_segment",
+   "category": "tag_manager",
+   "field": "tag_manager",
+   "vendor": "Segment",
+   "match": {
+    "type": "text",
+    "pattern": "cdn\\.segment\\.com/analytics\\.js"
+   },
+   "note": "the analytics.js snippet in the page head",
+   "multi": false
+  },
+  {
+   "id": "consent_onetrust_script",
+   "category": "consent",
+   "field": "cookie_consent",
+   "vendor": "OneTrust",
+   "match": {
+    "type": "text",
+    "pattern": "cookielaw\\.org|otSDKStub\\.js"
+   },
+   "note": "the OneTrust SDK script, usually first in the page head",
+   "multi": false
+  },
+  {
+   "id": "consent_onetrust_cookie",
+   "category": "consent",
+   "field": "cookie_consent",
+   "vendor": "OneTrust",
+   "match": {
+    "type": "cookie",
+    "pattern": "OptanonConsent"
+   },
+   "note": "the OptanonConsent cookie set after the banner loads",
+   "multi": false
+  },
+  {
+   "id": "consent_cookiebot",
+   "category": "consent",
+   "field": "cookie_consent",
+   "vendor": "Cookiebot",
+   "match": {
+    "type": "text",
+    "pattern": "consent\\.cookiebot\\.com"
+   },
+   "note": "the Cookiebot loader script in the page head",
+   "multi": false
+  },
+  {
+   "id": "ab_testing_optimizely",
+   "category": "ab_testing",
+   "field": "ab_testing",
+   "vendor": "Optimizely",
+   "match": {
+    "type": "text",
+    "pattern": "optimizely[^\\\"'\\s]*\\.js|window\\.optimizely"
+   },
+   "note": "an optimizely script src, often proxied through the brand's own domain",
+   "multi": false
+  },
+  {
+   "id": "ab_testing_vwo",
+   "category": "ab_testing",
+   "field": "ab_testing",
+   "vendor": "VWO",
+   "match": {
+    "type": "text",
+    "pattern": "dev\\.visualwebsiteoptimizer\\.com|_vwo_code"
+   },
+   "note": "the VWO async snippet in the page head",
+   "multi": false
+  },
+  {
+   "id": "ab_testing_convert",
+   "category": "ab_testing",
+   "field": "ab_testing",
+   "vendor": "Convert",
+   "match": {
+    "type": "text",
+    "pattern": "cdn-\\d\\.convertexperiments\\.com"
+   },
+   "note": "the Convert loader script in the page head",
+   "multi": false
+  },
+  {
+   "id": "ab_testing_google_optimize",
+   "category": "ab_testing",
+   "field": "ab_testing",
+   "vendor": "Google Optimize",
+   "match": {
+    "type": "text",
+    "pattern": "googleoptimize\\.com/optimize\\.js"
+   },
+   "note": "the Optimize snippet, mostly on older sites since Google retired the product",
+   "multi": false
+  },
+  {
+   "id": "performance_yottaa",
+   "category": "performance_vendor",
+   "field": "performance_vendor",
+   "vendor": "Yottaa",
+   "match": {
+    "type": "text",
+    "pattern": "yottaa\\.com"
+   },
+   "note": "a rapid-cdn.yottaa.com script src on any page",
+   "multi": false
+  },
+  {
+   "id": "performance_cloudflare_header",
+   "category": "performance_vendor",
+   "field": "performance_vendor",
+   "vendor": "Cloudflare",
+   "match": {
+    "type": "header",
+    "pattern": "cf-ray"
+   },
+   "note": "the cf-ray response header on any request",
+   "multi": false
+  },
+  {
+   "id": "performance_cloudflare_cookie",
+   "category": "performance_vendor",
+   "field": "performance_vendor",
+   "vendor": "Cloudflare",
+   "match": {
+    "type": "cookie",
+    "pattern": "__cf_bm|__cflb"
+   },
+   "note": "a Cloudflare bot management cookie",
+   "multi": false
+  },
+  {
+   "id": "support_gorgias_script",
+   "category": "support",
+   "field": "support_app",
+   "vendor": "Gorgias",
+   "match": {
+    "type": "text",
+    "pattern": "gorgias\\.chat|config\\.gorgias\\.io"
+   },
+   "note": "the chat widget loader script, usually sitewide",
+   "multi": false
+  },
+  {
+   "id": "support_gorgias_widget_class",
+   "category": "support",
+   "field": "support_app",
+   "vendor": "Gorgias",
+   "match": {
+    "type": "text",
+    "pattern": "gorgias-chat-widget"
+   },
+   "note": "the chat widget container id in the page body",
+   "multi": false
+  },
+  {
+   "id": "support_zendesk",
+   "category": "support",
+   "field": "support_app",
+   "vendor": "Zendesk",
+   "match": {
+    "type": "text",
+    "pattern": "zdassets\\.com|zEmbed"
+   },
+   "note": "the Zendesk Web Widget loader script, usually sitewide",
+   "multi": false
+  },
+  {
+   "id": "support_intercom",
+   "category": "support",
+   "field": "support_app",
+   "vendor": "Intercom",
+   "match": {
+    "type": "text",
+    "pattern": "widget\\.intercom\\.io|intercomSettings"
+   },
+   "note": "the Intercom messenger loader script, usually sitewide",
+   "multi": false
+  },
+  {
+   "id": "email_sms_klaviyo_script",
+   "category": "email_sms",
+   "field": "email_sms_app",
+   "vendor": "Klaviyo",
+   "match": {
+    "type": "text",
+    "pattern": "static\\.klaviyo\\.com|klaviyo\\.js"
+   },
+   "note": "the Klaviyo onsite script, usually sitewide",
+   "multi": false
+  },
+  {
+   "id": "email_sms_klaviyo_forms",
+   "category": "email_sms",
+   "field": "email_sms_app",
+   "vendor": "Klaviyo",
+   "match": {
+    "type": "text",
+    "pattern": "klaviyo-form"
+   },
+   "note": "a Klaviyo signup form embed on the home or footer",
+   "multi": false
+  },
+  {
+   "id": "email_sms_attentive",
+   "category": "email_sms",
+   "field": "email_sms_app",
+   "vendor": "Attentive",
+   "match": {
+    "type": "text",
+    "pattern": "cdn\\.attn\\.tv"
+   },
+   "note": "the Attentive onsite script, usually sitewide",
+   "multi": false
+  },
+  {
+   "id": "email_sms_postscript",
+   "category": "email_sms",
+   "field": "email_sms_app",
+   "vendor": "Postscript",
+   "match": {
+    "type": "text",
+    "pattern": "postscript\\.io|cdn\\.postscript\\.io"
+   },
+   "note": "the Postscript onsite script, usually sitewide",
+   "multi": false
+  },
+  {
+   "id": "loyalty_yotpo_loyalty",
+   "category": "loyalty",
+   "field": "loyalty_app",
+   "vendor": "Yotpo Loyalty",
+   "match": {
+    "type": "text",
+    "pattern": "loyalty\\.yotpo\\.com"
+   },
+   "note": "the Yotpo Loyalty widget script, on account or a loyalty page",
+   "multi": false
+  },
+  {
+   "id": "loyalty_loyaltylion",
+   "category": "loyalty",
+   "field": "loyalty_app",
+   "vendor": "LoyaltyLion",
+   "match": {
+    "type": "text",
+    "pattern": "loyaltylion\\.com|cdn\\.loyaltylion\\.com"
+   },
+   "note": "the LoyaltyLion widget script, on account or a loyalty page",
+   "multi": false
+  },
+  {
+   "id": "loyalty_smile",
+   "category": "loyalty",
+   "field": "loyalty_app",
+   "vendor": "Smile.io",
+   "match": {
+    "type": "text",
+    "pattern": "cdn\\.smile\\.io"
+   },
+   "note": "the Smile.io widget script, on account or a loyalty page",
+   "multi": false
+  },
+  {
+   "id": "subscription_recharge",
+   "category": "subscriptions",
+   "field": "subscription_app",
+   "vendor": "Recharge",
+   "match": {
+    "type": "text",
+    "pattern": "rechargeapps\\.com|rechargepayments\\.com"
+   },
+   "note": "a subscription widget script on the product page",
+   "multi": false
+  },
+  {
+   "id": "subscription_skio",
+   "category": "subscriptions",
+   "field": "subscription_app",
+   "vendor": "Skio",
+   "match": {
+    "type": "text",
+    "pattern": "skio\\.com"
+   },
+   "note": "a subscription widget script on the product page",
+   "multi": false
+  },
+  {
+   "id": "subscription_loop",
+   "category": "subscriptions",
+   "field": "subscription_app",
+   "vendor": "Loop Subscriptions",
+   "match": {
+    "type": "text",
+    "pattern": "loopsubscriptions\\.com"
+   },
+   "note": "a subscription widget script on the product page",
+   "multi": false
+  },
+  {
+   "id": "payment_shop_pay",
+   "category": "payments",
+   "field": "payment_wallets",
+   "vendor": "Shop Pay",
+   "multi": true,
+   "match": {
+    "type": "text",
+    "pattern": "shop-pay-button|shop_pay"
+   },
+   "note": "an express checkout button on the product or cart page"
+  },
+  {
+   "id": "payment_apple_pay",
+   "category": "payments",
+   "field": "payment_wallets",
+   "vendor": "Apple Pay",
+   "multi": true,
+   "match": {
+    "type": "text",
+    "pattern": "apple-pay-button|ApplePaySession"
+   },
+   "note": "an express checkout button on the product or cart page"
+  },
+  {
+   "id": "payment_afterpay",
+   "category": "payments",
+   "field": "payment_wallets",
+   "vendor": "Afterpay",
+   "multi": true,
+   "match": {
+    "type": "text",
+    "pattern": "afterpay\\.com|data-afterpay"
+   },
+   "note": "a buy now pay later message near the price on the product page"
+  },
+  {
+   "id": "payment_klarna",
+   "category": "payments",
+   "field": "payment_wallets",
+   "vendor": "Klarna",
+   "multi": true,
+   "match": {
+    "type": "text",
+    "pattern": "klarna\\.com|klarna-placement"
+   },
+   "note": "a buy now pay later message near the price on the product page"
+  },
+  {
+   "id": "payment_affirm",
+   "category": "payments",
+   "field": "payment_wallets",
+   "vendor": "Affirm",
+   "multi": true,
+   "match": {
+    "type": "text",
+    "pattern": "affirm\\.com|cdn1\\.affirm\\.com"
+   },
+   "note": "a buy now pay later message near the price on the product page"
+  },
+  {
+   "id": "analytics_ga4",
+   "category": "analytics",
+   "field": "analytics_tags",
+   "vendor": "Google Analytics 4",
+   "multi": true,
+   "match": {
+    "type": "text",
+    "pattern": "googletagmanager\\.com/gtag/js|gtag\\(.config.,\\s*.G-"
+   },
+   "note": "the gtag.js loader or a G- measurement id on any page"
+  },
+  {
+   "id": "analytics_meta_pixel",
+   "category": "analytics",
+   "field": "analytics_tags",
+   "vendor": "Meta Pixel",
+   "multi": true,
+   "match": {
+    "type": "text",
+    "pattern": "connect\\.facebook\\.net/[^\\\"']*/fbevents\\.js|fbq\\("
+   },
+   "note": "the Meta pixel base code on any page"
+  },
+  {
+   "id": "analytics_tiktok_pixel",
+   "category": "analytics",
+   "field": "analytics_tags",
+   "vendor": "TikTok Pixel",
+   "multi": true,
+   "match": {
+    "type": "text",
+    "pattern": "analytics\\.tiktok\\.com|ttq\\.load"
+   },
+   "note": "the TikTok pixel base code on any page"
+  },
+  {
+   "id": "analytics_pinterest_tag",
+   "category": "analytics",
+   "field": "analytics_tags",
+   "vendor": "Pinterest Tag",
+   "multi": true,
+   "match": {
+    "type": "text",
+    "pattern": "s\\.pinimg\\.com/ct/core\\.js|pintrk\\("
+   },
+   "note": "the Pinterest tag base code on any page"
+  },
+  {
+   "id": "search_algolia",
+   "category": "search",
+   "field": "search_app",
+   "vendor": "Algolia",
+   "match": {
+    "type": "text",
+    "pattern": "algolia(net|\\.com)|algoliasearch"
+   },
+   "note": "a search request host or the algoliasearch client script",
+   "multi": false
+  },
+  {
+   "id": "search_searchspring",
+   "category": "search",
+   "field": "search_app",
+   "vendor": "Searchspring",
+   "match": {
+    "type": "text",
+    "pattern": "searchspring\\.(io|net)|snapi\\.searchspring"
+   },
+   "note": "a search or autocomplete request host",
+   "multi": false
+  },
+  {
+   "id": "search_klevu",
+   "category": "search",
+   "field": "search_app",
+   "vendor": "Klevu",
+   "match": {
+    "type": "text",
+    "pattern": "klevu\\.com|js\\.klevu\\.com"
+   },
+   "note": "a search widget script, usually on the search results page",
+   "multi": false
+  },
+  {
+   "id": "form_security_hcaptcha_shopify_storefront",
+   "category": "captcha",
+   "field": "form_security",
+   "vendor": "hCaptcha, via Shopify storefront forms captcha",
+   "match": {
+    "type": "text",
+    "pattern": "storefront-forms-hcaptcha"
+   },
+   "note": "the Shopify storefront forms captcha module script, on contact or login forms",
+   "multi": false
+  },
+  {
+   "id": "form_security_hcaptcha_generic",
+   "category": "captcha",
+   "field": "form_security",
+   "vendor": "hCaptcha",
+   "match": {
+    "type": "text",
+    "pattern": "hcaptcha\\.com|h-captcha"
+   },
+   "note": "an hCaptcha widget on a contact, login or account form",
+   "multi": false
+  },
+  {
+   "id": "form_security_recaptcha",
+   "category": "captcha",
+   "field": "form_security",
+   "vendor": "reCAPTCHA",
+   "match": {
+    "type": "text",
+    "pattern": "recaptcha/api\\.js|grecaptcha"
+   },
+   "note": "a reCAPTCHA widget on a contact, login or account form",
+   "multi": false
+  },
+  {
+   "id": "agent_commerce_ucp_mcp",
+   "category": "agent_commerce",
+   "field": "agent_commerce_endpoint",
+   "vendor": "UCP/MCP endpoint published for agent driven shopping",
+   "match": {
+    "type": "text",
+    "pattern": "UCP/MCP"
+   },
+   "note": "a line in robots.txt naming UCP or MCP for agent catalog, cart and checkout access",
+   "multi": false
+  }
+ ]
+}

@@ -16,6 +16,7 @@ One module per source type, same shape: `run(brand, config) -> list[record]` wri
 | job postings and stack | careers page, job boards | team, stack, channels | tools and agencies named in postings |
 | documents | uploads, Drive, Notion, Slack | any, proposed through the review queue | never required; a document is useful unextracted |
 | connectors | Shopify, Meta, Google, GA4, Klaviyo, Gorgias, GSC, Amazon and the rest of the registry | channels, stack, products (hero flags), marketplaces, learnings with metric pointers | numbers stay in the data layer |
+| stack detector (`stack.py`) | the store's own HTML: saved pages or one polite live fetch, signatures in `stack.signatures.json` | stack | free replacement for BuiltWith and Wappalyzer, both registered in `sources.registry.json` as optional paid enrichers and never called here; `python3 -m app.brain.extract.stack --brand <slug> --url <store> [--pages <dir>] [--out app/brain]` |
 
 ## Default extractors for any new brand
 
