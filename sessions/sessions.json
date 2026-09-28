@@ -1813,6 +1813,168 @@
    ]
   },
   {
+   "id": "S6.0a",
+   "title": "Onboarding extractor: site crawler for any store url",
+   "stage": 6,
+   "model": "opus",
+   "reads": [
+    "app/contracts/brand-brain.md#3,4,6,6.1",
+    "app/brain/schema.json",
+    "app/brain/extract/README.md",
+    "app/brain/extract/defaults.json",
+    "app/brain/bombas/raw/a-site/ (the shape to reproduce)"
+   ],
+   "writes": [
+    "app/brain/extract/site.py",
+    "app/brain/extract/fixtures/site/",
+    "tests/test_extract_site.py"
+   ],
+   "done_when": "python3 -m app.brain.extract.site --brand <slug> --url <store> writes raw/a-site/ for any Shopify, WooCommerce or custom store: sitemap, products feed (products.json, WooCommerce store API, else product pages), about, policies (shipping, returns, privacy), claims from collection and PDP copy, voice from 5 pages, visual from CSS variables and fonts, site_map; every record has url and date; validate.py passes; fixture mode runs offline on a saved Bombas crawl; a second saved fixture for a WooCommerce store proves it is not Shopify-only",
+   "first_line": "Work in app/brain/extract. Session S6.0a per sessions/SESSIONS.md: turn the hand-run Bombas site crawl (S1.3a) into a generic extractor any brand url can run. Public pages only, quotes as evidence, no copying of copy or images.",
+   "budget_tokens": 20000,
+   "parallel_group": "S6.0",
+   "needs": [
+    "S1.6"
+   ]
+  },
+  {
+   "id": "S6.0b",
+   "title": "Onboarding extractor: stack detector from the store's own HTML",
+   "stage": 6,
+   "model": "sonnet",
+   "reads": [
+    "app/contracts/brand-brain.md#3,4,6,6.1",
+    "app/brain/schema.json",
+    "app/brain/extract/README.md",
+    "app/brain/extract/defaults.json",
+    "app/brain/bombas/raw/a-site/stack.json"
+   ],
+   "writes": [
+    "app/brain/extract/stack.py",
+    "app/brain/extract/stack.signatures.json",
+    "tests/test_extract_stack.py"
+   ],
+   "done_when": "signature table (script hosts, meta tags, cookies, CSS classes) for platform, theme, reviews app, upsell app, tag manager, consent, A/B testing, performance vendor, chat, email/SMS, loyalty, subscriptions, payments; writes raw/a-site/stack.json with the matched signature as evidence; Bombas fixture reproduces the 10 records S1.3a found by hand; BuiltWith and Wappalyzer registered as optional paid enrichers in sources.registry.json, not called",
+   "first_line": "Work in app/brain/extract. Session S6.0b per sessions/SESSIONS.md: a free stack detector from the store's own HTML, replacing BuiltWith for onboarding.",
+   "budget_tokens": 15000,
+   "parallel_group": "S6.0",
+   "needs": [
+    "S6.0a"
+   ]
+  },
+  {
+   "id": "S6.0c",
+   "title": "Onboarding extractor: Meta Ad Library by page id for own brand and competitors",
+   "stage": 6,
+   "model": "opus",
+   "reads": [
+    "app/contracts/brand-brain.md#3,4,6,6.1",
+    "app/brain/schema.json",
+    "app/brain/extract/README.md",
+    "app/brain/extract/defaults.json",
+    "app/contracts/connectors/apify.md",
+    "app/brain/extract/apify_adlibrary.py",
+    "app/connectors/apify_adapters.py"
+   ],
+   "writes": [
+    "app/brain/extract/apify_adlibrary.py",
+    "app/brain/extract/adlib_pages.py",
+    "tests/test_extract_adlib_pages.py"
+   ],
+   "done_when": "given a brand name and site, finds the brand's own Facebook page id (link on the site, then the Ad Library page search filtered to the exact name) and proposes a competitor page list from the brain (competitors section, Reddit recommended-instead, category) for the founder to confirm; the pull runs by page id only, never by keyword; fixture mode offline; the 28 Sep Bombas config (12 page ids) is the first fixture",
+   "first_line": "Work in app/brain/extract. Session S6.0c per sessions/SESSIONS.md: page-id discovery and competitor proposal for the Ad Library lane, so a new brand never runs a keyword search.",
+   "budget_tokens": 20000,
+   "parallel_group": "S6.0",
+   "needs": [
+    "S1.6"
+   ]
+  },
+  {
+   "id": "S6.0d",
+   "title": "Onboarding extractor: Amazon listing discovery and review pull for any brand",
+   "stage": 6,
+   "model": "opus",
+   "reads": [
+    "app/contracts/brand-brain.md#3,4,6,6.1",
+    "app/brain/schema.json",
+    "app/brain/extract/README.md",
+    "app/brain/extract/defaults.json",
+    "app/contracts/connectors/apify.md",
+    "app/brain/extract/apify_amazon.py",
+    "app/brain/bombas/config/apify.json"
+   ],
+   "writes": [
+    "app/brain/extract/amazon_discover.py",
+    "app/brain/extract/apify_amazon.py",
+    "tests/test_extract_amazon_discover.py"
+   ],
+   "done_when": "finds a brand's ASINs without the junglee search actor (which cost $8.64 for 160 results on 28 Sep): the brand store page and the site's own Amazon links first, then the axesso product search actor capped at 50 results with a hard $1 cap; writes marketplaces listing records and the config asin list ranked by ratings count; then the existing review pull (5-star and 1-star first, then 2 to 4) at a founder-set cap; fixture mode offline",
+   "first_line": "Work in app/brain/extract. Session S6.0d per sessions/SESSIONS.md: ASIN discovery for any brand on a fixed small budget, then the existing review lane.",
+   "budget_tokens": 20000,
+   "parallel_group": "S6.0",
+   "needs": [
+    "S1.6"
+   ]
+  },
+  {
+   "id": "S6.0e",
+   "title": "Onboarding extractor: Reddit, press and jobs for any brand",
+   "stage": 6,
+   "model": "sonnet",
+   "reads": [
+    "app/contracts/brand-brain.md#3,4,6,6.1",
+    "app/brain/schema.json",
+    "app/brain/extract/README.md",
+    "app/brain/extract/defaults.json",
+    "app/brain/extract/apify_reddit.py",
+    "app/brain/bombas/raw/c-press/sources.json",
+    "app/brain/bombas/raw/e-job/sources.json"
+   ],
+   "writes": [
+    "app/brain/extract/apify_reddit.py",
+    "app/brain/extract/press.py",
+    "app/brain/extract/jobs.py",
+    "tests/test_extract_public.py"
+   ],
+   "done_when": "Reddit queries built from brand name plus category terms from the brain, subreddits proposed from the category (BuyItForLife, the category's own subs) for the founder to confirm; press from a news search on the brand name (founder interviews, funding, revenue bands, tier reported) with url and date; jobs from the site's careers page and one job board, writing team and operations facts; usernames never stored, Reddit never quoted as testimonial; fixture mode offline",
+   "first_line": "Work in app/brain/extract. Session S6.0e per sessions/SESSIONS.md: the public lanes S1.3c, S1.3e and S1.3h did by hand for Bombas, as extractors any brand can run.",
+   "budget_tokens": 15000,
+   "parallel_group": "S6.0",
+   "needs": [
+    "S1.6"
+   ]
+  },
+  {
+   "id": "S6.0f",
+   "title": "Onboarding runner: url in, brain out, 5 questions",
+   "stage": 6,
+   "model": "opus",
+   "reads": [
+    "app/contracts/brand-brain.md#6,7,8",
+    "app/brain/extract/README.md",
+    "app/brain/merge.py (interface only)",
+    "app/brain/ladders.py (interface only)",
+    "app/brain/keeper.py (ask)",
+    "app/screens/setup/api.py"
+   ],
+   "writes": [
+    "app/brain/onboard.py",
+    "app/screens/setup/api.py",
+    "tests/test_brain_onboard.py"
+   ],
+   "done_when": "python3 -m app.brain.onboard --brand <slug> --url <store> runs the extractors in order (site, stack, ad library, amazon, reddit, press, jobs) with each lane's cost shown before any paid call and a total cap, merges, builds ladders, writes BRAIN.md and the calibration, then asks the keeper for the 5 questions no source answered; the setup screen shows progress per lane and the questions; a dry run on the saved Bombas fixtures reproduces today's brain within 5 percent of its record count",
+   "first_line": "Work in app/brain and app/screens/setup. Session S6.0f per sessions/SESSIONS.md: the onboarding runner that chains the generic extractors and ends in the 5 questions.",
+   "budget_tokens": 25000,
+   "parallel_group": "S6.0",
+   "needs": [
+    "S6.0a",
+    "S6.0b",
+    "S6.0c",
+    "S6.0d",
+    "S6.0e"
+   ]
+  },
+  {
    "id": "S6.1",
    "title": "Store: files to a database behind the same API",
    "stage": 6,

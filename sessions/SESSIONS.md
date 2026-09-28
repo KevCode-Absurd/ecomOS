@@ -182,8 +182,16 @@ Round 0 is the same for every screen: shell, api, 3 tiles, 2 insights as rules, 
 
 ## Stage 6: hosted product
 
+Stage 6.0 is onboarding for any brand: the extractors the Bombas sessions ran by hand become code a store url can run, ending in the 5 questions. It needs only the connector and brain modules, not the screens, so it runs in parallel with stage 3 (decided 28 Sep 2026).
+
 | Id | Session | Model | Budget | Needs |
 |---|---|---|---|---|
+| S6.0a | Onboarding extractor: site crawler for any store url (parallel S6.0) | opus | 20,000 | S1.6 |
+| S6.0b | Onboarding extractor: stack detector from the store's own HTML (parallel S6.0) | sonnet | 15,000 | S6.0a |
+| S6.0c | Onboarding extractor: Meta Ad Library by page id for own brand and competitors (parallel S6.0) | opus | 20,000 | S1.6 |
+| S6.0d | Onboarding extractor: Amazon listing discovery and review pull for any brand (parallel S6.0) | opus | 20,000 | S1.6 |
+| S6.0e | Onboarding extractor: Reddit, press and jobs for any brand (parallel S6.0) | sonnet | 15,000 | S1.6 |
+| S6.0f | Onboarding runner: url in, brain out, 5 questions (parallel S6.0) | opus | 25,000 | S6.0a, S6.0b, S6.0c, S6.0d, S6.0e |
 | S6.1 | Store: files to a database behind the same API | opus | 30,000 | S5.5 |
 | S6.2 | Auth and tenancy | opus | 30,000 | S6.1 |
 | S6.3 | Worker, schedules and run log | opus | 25,000 | S6.1 |
