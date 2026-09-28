@@ -19,7 +19,7 @@ FRAME_WORDS = {"buy_it_for_life": ["last", "life", "durab", "guarantee"], "worth
                "mission_giving": ["given", "donat", "giving"], "marketing_brand": ["tested", "proof", "honest"]}
 FRAME_PROOF = {"buy_it_for_life": ["guarantee"], "worth_the_price": ["guarantee", "arch"], "mission_giving": ["donat"],
                "marketing_brand": ["arch", "tested", "b corp"]}
-FRAME_LINE = {"buy_it_for_life": "Socks built to last, and if a pair fails, we make it right.",
+FRAME_LINE = {"buy_it_for_life": "{Plural} built to last, and if one fails, we make it right.",
               "worth_the_price": "Worth more than a multi-pack: comfort you feel every wear.",
               "mission_giving": "Every pair you buy gives a pair to someone who needs it.",
               "marketing_brand": "Not hype: comfort you can test, from arch to toe."}
@@ -39,7 +39,8 @@ def build(m: dict, brain, map_moves: list[dict] | None = None) -> dict:
     lines = [{"key": "A", "line": ours or "unavailable", "answers": "our current frame", "proof": None}]
     if top:
         proof = next((p for p in proofs if any(w in p.lower() for w in FRAME_PROOF.get(top["frame"], []))), None)
-        lines.append({"key": "B", "line": FRAME_LINE.get(top["frame"], f"A line for {top['label']}"),
+        t = m.get("term") or {"plural": "products"}
+        lines.append({"key": "B", "line": FRAME_LINE.get(top["frame"], f"A line for {top['label']}").replace("{Plural}", t["plural"].capitalize()),
                       "answers": f"the top shopper frame: {top['label']} ({top['mentions']} mentions)", "proof": proof})
     contest = next((mv for mv in map_moves or [] if mv["kind"] == "contest"), None)
     if contest:

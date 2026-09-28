@@ -441,7 +441,23 @@ def last_full_month(as_of: str) -> str:
     return (d.replace(day=1) - dt.timedelta(days=1)).strftime("%Y-%m")
 
 
-def brand_packs(brand: str) -> dict:
+def category_term(brain: Brain) -> dict:
+    """The category word for this brand, from the brain, never typed: the pull config's category_term, else the
+    first product line, else "products". Screens say "socks" for a sock brand and "hats" for a hat brand."""
+    term = None
+    try:
+        cfg = json.loads((brain.dir / "config" / "apify.json").read_text(encoding="utf-8"))
+        term = (cfg.get("reddit") or {}).get("category_term")
+    except (OSError, ValueError):
+        term = None
+    if not term:
+        lines = _value(brain, "products.lines")
+        term = str(lines[0]).lower() if isinstance(lines, list) and lines else "products"
+    plural = term.lower().strip()
+    return {"plural": plural, "singular": plural[:-1] if plural.endswith("s") else plural}
+
+
+def brand_packs(brand: str, category: str = "socks") -> dict:
     """Sock packs from the simulated products_monthly table: net price per pack and per pair, last full month.
     Returns {available: False, reason} when the data layer has no table for the brand."""
     try:
@@ -455,7 +471,7 @@ def brand_packs(brand: str) -> dict:
     month = last_full_month(as_of) if as_of else max(r["month"] for r in rows)
     packs = []
     for r in rows:
-        if r.get("month") != month or r.get("category") != "socks" or not r.get("units"):
+        if r.get("month") != month or r.get("category") != category or not r.get("units"):
             continue
         parts = str(r["sku"]).split("-")
         try:
@@ -469,7 +485,7 @@ def brand_packs(brand: str) -> dict:
                       "units": r["units"], "per_pack": round(per_pack, 2), "per_pair": round(per_pack / pairs, 2)})
     packs.sort(key=lambda p: (p["per_pair"], p["sku"]))
     if not packs:
-        return {"available": False, "reason": f"no sock rows in products_monthly for {month}", "packs": []}
+        return {"available": False, "reason": f"no {category} rows in products_monthly for {month}", "packs": []}
     # unit weighted median per pair: each pack sold counts once
     total = sum(p["units"] for p in packs)
     run = 0
@@ -522,7 +538,8 @@ def market(brand: str, today: dt.date, root: Path | None = None) -> dict:
     thresholds = apply_thresholds(brain)
     comps = competitors(brain)
     prof = brand_profile(brain)
-    packs = brand_packs(brand)
+    term = category_term(brain)
+    packs = brand_packs(brand, term["plural"])
     medians = [c["price"]["median"] for c in comps if c["price"]["median"] is not None]
     cat_median = round(statistics.median(medians), 2) if medians else None
     index = (round(packs["median_per_pair"] / cat_median * 100, 1)
@@ -556,7 +573,7 @@ def market(brand: str, today: dt.date, root: Path | None = None) -> dict:
     points = covmod.proof_points(brain)
     refs = refmod.build(pages, top, snap.FORMAT_LABEL, lambda a: covmod.proof_for(points, a))
     return {"brand": brand, "brain": brain, "competitors": comps, "profile": prof, "packs": packs,
-            "references": refs, "ladder": None, "thresholds": thresholds, "mix": mixmod.build(pages, brain, snap),
+            "references": refs, "ladder": None, "thresholds": thresholds, "term": term, "mix": mixmod.build(pages, brain, snap),
             "coverage": cov,
             "coverage_direct": covmod.matrix(pages, snap.ANGLES, snapshot, brain, direct_only=True),
             "pages": pages, "snapshot": {k: v for k, v in (snapshot or {}).items() if k != "ads"} or None,
@@ -693,9 +710,9 @@ def rule_price(m, ends_on):
                None, "peer_band", "competitors.price_band_usd"),
           _row("price_position_index", idx, "index", "latest capture", ends_on, _fresh(m["competitors"]),
                list(PRICE_BAND), "peer_band", "computed")]
-    sentence = (f"{m['brand'].capitalize()} sells socks for ${price:.2f} a pair after discounts. "
+    sentence = (f"{m['brand'].capitalize()} sells {m['term']['plural']} for ${price:.2f} a pair after discounts. "
                 f"The tracked brands' median is ${med:.2f}, so the price sits {diff} percent {side} it.")
-    refs = [f"{m['brand']}.competitors.competitor_set", f"{m['brand']}.products.price_ladder_socks"]
+    refs = [f"{m['brand']}.competitors.competitor_set", f"{m['brand']}.products.price_ladder_{m['term']['plural']}"]
     return [_finding("COMP-R02", "medium", ent, ev, sentence, refs, ends_on, 0.5 - 0.2,
                      "no baseline: price response is not measured")]
 

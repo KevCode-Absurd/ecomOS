@@ -929,6 +929,44 @@ class TestThresholds(TempBrain):
         self.assertTrue([f for f in audit.run('bombas', WINDOW, self.tmp) if f['rule_id'] == 'COMP-R02'])
 
 
+class TestSecondBrand(unittest.TestCase):
+    """3.9: plug and play. A minimal second brand renders every route with honest unavailable states and no Bombas fact."""
+    def setUp(self):
+        self.tmp = Path(tempfile.mkdtemp())
+        d = self.tmp / 'acme'
+        d.mkdir()
+        (d / 'identity.json').write_text(json.dumps([{'id': 'acme.identity.one_line_pitch', 'brand': 'acme', 'section': 'identity',
+                                                      'field': 'one_line_pitch', 'value': 'warm wool hats'}]))
+        (d / 'products.json').write_text(json.dumps([{'id': 'acme.products.lines', 'brand': 'acme', 'section': 'products',
+                                                      'field': 'lines', 'value': ['HATS']}]))
+        (d / 'competitors.json').write_text(json.dumps([{'id': 'acme.competitors.hatco', 'brand': 'acme', 'section': 'competitors',
+            'field': 'hatco', 'value': {'name': 'HatCo', 'positioning': 'merino hats with a lifetime guarantee',
+            'price_band_usd': '20 to 40 per pair, median 30', 'hook_types': ['lifetime guarantee', 'comfort'], 'active_ads_seen': 12},
+            'source': {'type': 'ad_library', 'captured_at': '2026-09-20'}}]))
+        api.BRAIN_ROOT = self.tmp
+
+    def tearDown(self):
+        api.BRAIN_ROOT = None
+        shutil.rmtree(self.tmp)
+
+    def test_every_route(self):
+        q = {'brand': ['acme']}
+        out = {k: api.handle(Req([k], query=q)) for k in ('overview', 'plan', 'digest', 'audit')}
+        for k, v in out.items():
+            self.assertIsInstance(v, dict, k)
+        blob = json.dumps(out)
+        for word in ('Bombas', 'Stance', 'Darn Tough', 'COMFORT20', 'sock'):
+            self.assertNotIn(word, blob)
+        o = out['overview']
+        self.assertEqual(o['pages']['rows'][0]['name'], 'HatCo')
+        self.assertFalse(o['ladder']['available'])
+        self.assertIsNone(o['niche']['bar'])
+        self.assertIn('error', o['freshness']['plan'])
+        self.assertIn('hats', o['category']['rungs'][1]['label'].lower().replace('hat ', 'hats '))
+        for a in api.rank('acme', {'ends_on': '2026-09-27', 'days': 28, 'trailing': 4})['actions']:
+            self.assertEqual(api.actions.ranker.validate_action(a), [])
+
+
 class TestRank(TempBrain):
     """Depth contract rules 2, 3 and 13: owner, steps and artefact on every action; every finding ends in one."""
     W = {'ends_on': '2026-09-27', 'days': 28, 'trailing': 4}

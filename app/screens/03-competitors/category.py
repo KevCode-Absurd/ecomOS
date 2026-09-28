@@ -2,7 +2,7 @@
 direct rival, with our rung marked and the move that wins shoppers on each rung.
 
 Rungs are built by rules from the brain, never typed per brand:
-  do_nothing   keep the socks they have. Signal: Reddit "buy it for life" frame mentions and the most
+  do_nothing   keep what they have. Signal: Reddit "buy it for life" frame mentions and the most
                upvoted "won't pay more" question in seo_facts.
   value        cheap multipacks: alternatives recommended instead of us that are not tracked pages and
                have no price band. Signal: their Reddit upvotes.
@@ -15,15 +15,15 @@ rung (the room's "a lower rung is gaining") needs a search or trends source and 
 from __future__ import annotations
 
 MOVES = {
-    "do_nothing": ("Show the cost of waiting: a worn sock against a new one, price per wear.", "CREA-C31", "copy"),
+    "do_nothing": ("Show the cost of waiting: a worn {singular} against a new one, price per wear.", "CREA-C31", "copy"),
     "value": ("Frame price per wear and the guarantee against a cheap multipack.", "CREA-C31", "copy"),
-    "adjacent": ("Win the basics buyer with a socks-plus-underwear bundle.", "LIFE-C39", "offer"),
+    "adjacent": ("Win the basics buyer with a bundle across our lines.", "LIFE-C39", "offer"),
     "direct": ("Out-prove them on comfort in the first 3 seconds of the ad.", "CREA-C06", "ad_brief"),
     "premium": ("Take their durability shoppers with the guarantee said out loud.", "CREA-C06", "ad_brief"),
 }
 AUTONOMY = {"CREA-C31": "agent_does", "LIFE-C39": "founder_gate", "CREA-C06": "agent_does"}
 LABELS = {"do_nothing": "Do nothing: keep the old pairs", "value": "Cheap multipacks", "adjacent": "Basics and apparel brands",
-          "direct": "Direct sock brands, at or below the median", "premium": "Premium sock brands, above the median"}
+          "direct": "Direct {singular} brands, at or below the median", "premium": "Premium {singular} brands, above the median"}
 
 
 def build(m: dict, brain) -> dict:
@@ -35,7 +35,8 @@ def build(m: dict, brain) -> dict:
     prices = {c["name"]: c["price"]["median"] for c in m["competitors"]}
     def price_of(name):
         return next((v for k, v in prices.items() if k.lower()[:6] == name.lower()[:6]), None)
-    rungs = {k: {"key": k, "label": LABELS[k], "members": [], "signal": None, "signal_text": None} for k in LABELS}
+    t = m.get("term") or {"singular": "product"}
+    rungs = {k: {"key": k, "label": LABELS[k].format(singular=t["singular"]), "members": [], "signal": None, "signal_text": None} for k in LABELS}
     rungs["do_nothing"]["members"] = ["no purchase"]
     bifl = frames.get("buy_it_for_life")
     rungs["do_nothing"]["signal"] = bifl
@@ -67,6 +68,7 @@ def build(m: dict, brain) -> dict:
     for k in order:
         r = rungs[k]
         move, cap, kind = MOVES[k]
+        move = move.format(singular=t["singular"])
         r.update(move=move, capability=cap, autonomy=AUTONOMY[cap], artefact=kind, ours=(k == our_rung), trend=None)
         out.append(r)
     return {"rungs": out, "our_rung": our_rung, "our_price": ours, "split": split,

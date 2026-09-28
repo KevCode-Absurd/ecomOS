@@ -92,7 +92,7 @@ def build(m: dict, brain, prev: dict | None, cur: dict | None, today: dt.date, p
             direct = p["frame"] == "direct"
             shared = [a["label"].lower() for a in p["angles"] if a["tag"] in top]
             v = ("watch", "Watch", "Read the new flight's angles and offers; brief an answer if one overlaps ours.") if direct else \
-                ("ignore", "Ignore", "Basics page; no action unless it starts selling socks.")
+                ("ignore", "Ignore", f"Basics page; no action unless it starts selling {(m.get('term') or {}).get('plural', 'our line')}.")
             events.append({"when": start, "page": p["name"], "kind": "refresh", "n": p.get("active_ads"),
                            "text": f"replaced every ad: the oldest of {p.get('active_ads')} active ads is {p['longest_days']} days old"
                                    + (f"; runs our angle {shared[0]}" if shared else ""),
