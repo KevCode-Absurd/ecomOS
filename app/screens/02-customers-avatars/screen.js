@@ -263,6 +263,20 @@
         : [el('p', { class: 'muted small', text: 'No misread found for this brain.' })]));
   }
 
+  // ---------- desk: copy gap ----------
+  function renderGap(x) {
+    if (!x.available) { mount('#gap', UI.emptyState({ screen: SLUG, title: 'Copy gap unavailable', text: x.reason })); return; }
+    document.getElementById('gap-sub').textContent = 'Words in 3 or more praise reviews (4 and 5 star or praise themes, Reddit left out), checked against ' + x.our_records +
+      ' site and founder records in the brain. Not a live crawl of every page. ' + x.line;
+    mount('#gap-tools', x.action ? el('button', { class: 'btn soft sm', type: 'button', text: 'Brief the top ' + Math.min(5, x.missing), onclick: () => briefPanel(x.action) }) : null);
+    mount('#gap', UI.verdictTable({
+      columns: [{ key: 'word', label: 'Their word' }, { key: 'reviews', label: 'Praise reviews', unit: 'n' }, { key: 'ex', label: 'How they say it' }],
+      rows: x.rows.map((r) => Object.assign({}, r, { ex: r.examples.map((e) => '"' + e + '"').join('  ') })),
+      verdict: { at: 1, kind: (r) => r.verdict === 'missing' ? 'new' : 'keep', text: (r) => r.verdict === 'missing' ? 'We never say it' : 'We say it' },
+      sort: false,
+    }));
+  }
+
   // ---------- desk: theme impact ----------
   function divBar(v, max) {
     const w = Math.round(50 * Math.min(1, Math.abs(v) / (max || 1)));
@@ -479,6 +493,7 @@
     renderActions(r);
     renderCoverage(d.coverage, d.formats);
     renderLadders(d.ladders, d.avatars);
+    renderGap(d.copy_gap);
     renderThemes(d.themes);
     renderWords(d.words, d.avatars);
     renderServed(d.served, d.avatars);

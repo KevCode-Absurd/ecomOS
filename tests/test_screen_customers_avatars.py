@@ -607,5 +607,33 @@ class ThemeImpact(TempBrain):
         self.assertFalse(api.builds.theme_impact([], [], '2026-09-27')['available'])
 
 
+class CopyGap(TempBrain):
+    """Feature 2.2: buyer praise words against our site and founder records."""
+
+    def test_gap_rows(self):
+        x = api.handle(Req(['overview']))['copy_gap']
+        self.assertTrue(x['available'])
+        self.assertLessEqual(len(x['rows']), 20)
+        for r in x['rows']:
+            self.assertGreaterEqual(r['reviews'], 3)
+            self.assertNotIn('Reddit', r['sources'])
+            self.assertFalse(r['word'].startswith('bomba'))
+        words = {r['word']: r for r in x['rows']}
+        self.assertEqual(words['soft']['verdict'], 'missing')
+        self.assertTrue(x['action']['draft'].startswith('DRAFT'))
+
+    def test_a_founder_record_closes_the_gap(self):
+        rows = self.section('voice')
+        rows.append({'id': 'bombas.voice.soft_line', 'brand': 'bombas', 'section': 'voice', 'field': 'soft_line', 'value': 'Soft on day one.',
+                     'text': 'Soft on day one.', 'tier': 'approved', 'confidence': 1.0, 'visibility': 'private',
+                     'source': {'type': 'founder', 'ref': 'test', 'captured_at': '2026-09-28'}})
+        self.write('voice', rows)
+        words = {r['word']: r for r in api.handle(Req(['overview']))['copy_gap']['rows']}
+        self.assertEqual(words['soft']['verdict'], 'used')
+
+    def test_no_own_records_unavailable(self):
+        self.assertFalse(api.builds.copy_gap({}, [], set(), audit.source_name)['available'])
+
+
 if __name__ == '__main__':
     unittest.main()

@@ -45,7 +45,7 @@ Web pass: Peel, Triple Whale, Lifetimely, Klaviyo predictive, Daasity RFM, Thema
 | # | Feature | Status |
 |---|---|---|
 | 2.1 | Which review themes cost us the most stars: impact = share of rated reviews with the theme x (average stars with it minus without it), from the rated reviews in the language bank (8 or more per theme), with a rising flag (last 90 days share 1.5x the earlier share, 5 or more reviews). A diverging bar per theme; a theme that costs stars links to its ladder's open answer or not-landing fix, a theme that earns stars to its lead-with-it ad brief. Bombas: price and value costs the most (12 percent of rated reviews, 0.52 stars below the rest); comfort earns 2 stars | done |
-| 2.2 | Copy gap check: the customers' top win phrases against our own words in the brain | todo |
+| 2.2 | Which words buyers praise us with that we never say: words in 3 or more praise reviews (4 and 5 star or praise themes, Reddit left out, brand name and filler dropped), the top 20 by reviews, each checked against every site and founder record in the brain, with 2 snippets of how buyers say it. "Brief the top 5" drafts page bullets and ad first lines from the missing words. Bombas: soft (16 reviews), slip, wash, worth and durable never appear in our own records. Not a live crawl; a page scan would replace the brain corpus | done |
 | 2.3 | Avatar evidence gate: a checklist per avatar, provisional until it passes, each missing item a task | todo |
 | 2.4 | Hook bank: 2 to 4 word phrases in 3 or more distinct 4 and 5 star reviews, ranked, into an ad brief | todo |
 | 2.5 | Four forces per avatar: push, pull, anxiety and habit lines from their words; under-researched avatars flagged | todo |

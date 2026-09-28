@@ -283,6 +283,8 @@ def overview(brain: Brain) -> dict:
             "misreads": builds.misreads(brain.records("avatars"), avatars, all_rungs, brain.records("language_bank"), brain.records("products")),
             "served": builds.served(avatars, all_rungs, brain.records("competitors"), brain.records("positioning")),
             "coverage": builds.coverage(avatars, all_rungs), "ladders": (lad := builds.ladders(all_rungs, avatars)),
+            "copy_gap": builds.copy_gap({sec: brain.records(sec) for sec in ("voice", "claims", "identity", "offers", "policies", "products", "visual", "story_bank")},
+                                        brain.records("language_bank"), _brand_tokens(brain), audit.source_name),
             "themes": builds.theme_impact(brain.records("language_bank"), lad["rows"], ends_on),
             "words": builds.words(brain.records("language_bank"), all_rungs, avatars, _brand_tokens(brain), audit.source_name), "formats": _formats(brain, avatars)}
 

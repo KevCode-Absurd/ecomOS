@@ -907,3 +907,109 @@ def theme_impact(lang_records: list[dict], ladders_rows: list[dict], as_of: str)
     return {"available": True, "rows": rows, "rated": len(rated), "recent": len(recent),
             "line": (f"{worst[0]['theme'].replace('_', ' ').capitalize()} costs the most: in {round(worst[0]['share'] * 100)} percent of rated reviews, "
                      f"{abs(worst[0]['star_gap'])} stars below the rest." if worst else "No theme pulls stars down.")}
+
+
+# ---------------------------------------------------------------- copy gap: their words against ours
+
+OUR_SOURCES = ("site", "founder")
+GAP_TOP = 20
+
+
+def _norm(text: str) -> str:
+    return " ".join(re.findall(r"[a-z0-9]+", str(text or "").lower()))
+
+
+def _record_text(r: dict) -> str:
+    parts = [r.get("text") or ""]
+    v = r.get("value")
+    if isinstance(v, str):
+        parts.append(v)
+    elif isinstance(v, (list, dict)):
+        parts.append(" ".join(str(x) for x in (v.values() if isinstance(v, dict) else v) if isinstance(x, str)))
+    parts += [e.get("quote") or "" for e in r.get("evidence") or [] if isinstance(e, dict)]
+    return " ".join(parts)
+
+
+GAP_MIN_DOCS = 3           # a word counts once 3 or more distinct praise reviews use it
+GAP_EXTRA_STOP = {"really", "just", "much", "well", "also", "even", "wear", "wore", "worn", "bought", "purchase", "purchased",
+                  "love", "loves", "great", "good", "comfortable", "comfy", "quality", "price", "recommend", "definitely",
+                  "would", "could", "because", "these", "those", "there", "what", "when", "which", "while", "about", "other",
+                  "brand", "brands", "product", "products", "item", "items", "order", "ordered", "time", "times", "feet", "foot",
+                  "were", "your", "down", "made", "show", "long", "very", "best", "many", "still", "since", "first", "every",
+                  "been", "being", "didn", "doesn", "dont", "don", "wasn", "isn", "can", "get", "got", "make", "need", "want"}
+
+
+def _lemma(w: str) -> str:
+    for suf in ("ing", "ed", "es", "s"):
+        if w.endswith(suf) and len(w) - len(suf) >= 4:
+            return w[: -len(suf)]
+    return w
+
+
+def _lemmas(text: str, brand_tokens: set[str]) -> set[str]:
+    out = set()
+    for w in re.findall(r"[a-z]+", str(text or "").lower()):
+        if len(w) < 4 or w in STOP or w in GENERIC or w in GAP_EXTRA_STOP or w in brand_tokens or \
+                any(len(b) >= 5 and w.startswith(b[:5]) for b in brand_tokens):
+            continue
+        out.add(_lemma(w))
+    return out
+
+
+def copy_gap(sections: dict[str, list[dict]], lang_records: list[dict], brand_tokens: set[str], source_name) -> dict:
+    """Words buyers use when they praise us, checked against every site and founder record in the brain."""
+    ours = [r for recs in sections.values() for r in recs if (r.get("source") or {}).get("type") in OUR_SOURCES]
+    if not ours:
+        return {"available": False, "reason": "no site or founder records in the brain to compare with", "rows": []}
+    our_words = _lemmas(" ".join(_record_text(r) for r in ours), brand_tokens)
+    docs: dict[str, list[dict]] = {}
+    n_docs = 0
+    for rec in lang_records:
+        p = phrase_row(rec, source_name)
+        if not p or p["side"] != "win" or p["language_only"]:
+            continue
+        v = rec.get("value") or {}
+        for i, rv in enumerate(v.get("reviews") or [{}]):
+            text = " ".join([v.get("phrase") or "", rv.get("quote") or ""])
+            n_docs += 1
+            toks = re.findall(r"[A-Za-z']+", text)
+            for lm in _lemmas(text, brand_tokens):
+                at = next((i for i, t in enumerate(toks) if _lemma(t.lower().strip("'")) == lm), 0)
+                snip = " ".join(toks[max(0, at - 4): at + 5])
+                docs.setdefault(lm, []).append({"id": rec["id"], "phrase": snip, "source": p["source"]})
+    rows = []
+    for lm, ds in docs.items():
+        ids = {d["id"] for d in ds}
+        if len(ids) < GAP_MIN_DOCS:
+            continue
+        ex = []
+        for d in sorted(ds, key=lambda d: (len(d["phrase"]), d["id"])):
+            if d["phrase"] not in ex:
+                ex.append(d["phrase"])
+            if len(ex) == 2:
+                break
+        rows.append({"word": lm, "reviews": len(ids), "share": round(len(ids) / n_docs, 4) if n_docs else None,
+                     "verdict": "used" if lm in our_words else "missing", "examples": ex,
+                     "sources": sorted({d["source"] for d in ds})})
+    rows.sort(key=lambda r: ({"missing": 0, "used": 1}[r["verdict"]], -r["reviews"], r["word"]))
+    top = sorted(rows, key=lambda r: (-r["reviews"], r["word"]))[:GAP_TOP]
+    top.sort(key=lambda r: ({"missing": 0, "used": 1}[r["verdict"]], -r["reviews"], r["word"]))
+    missing = [r for r in top if r["verdict"] == "missing"]
+    action = None
+    if missing:
+        pick = missing[:5]
+        action = {"id": f"{SCREEN}.copygap", "kind": "page_section", "owner": "agent_drafts",
+                  "title": f"Use {len(pick)} words buyers praise us with and we never say",
+                  "capability": {"id": "BRAND-C14", "autonomy": "agent_does"},
+                  "draft": "\n".join(["DRAFT: buyer words to put on the page",
+                                      *[f"- {r['word']} ({r['reviews']} praise reviews), like \"{r['examples'][0]}\"" for r in pick],
+                                      "Where: product page bullets, the homepage hero sub-line, the first line of 2 ads.",
+                                      "Rule: use their words as written. Keep claims inside what the brain allows."]),
+                  "steps": [{"n": 1, "who": "agent", "text": "Match each word to the product and page where buyers said it."},
+                            {"n": 2, "who": "agent", "text": "Draft the page bullets and 2 ad first lines."},
+                            {"n": 3, "who": "person", "text": "Approve and ship on the page."},
+                            {"n": 4, "who": "agent", "text": "Mark the words as used so reuse can be counted."}]}
+    used = sum(1 for r in top if r["verdict"] == "used")
+    return {"available": True, "rows": top, "our_records": len(ours), "praise_reviews": n_docs, "missing": len(missing), "used": used,
+            "action": action,
+            "line": f"Of the {len(top)} words buyers use most when they praise us, {len(missing)} never appear in our site and founder records."}
