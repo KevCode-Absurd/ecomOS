@@ -283,6 +283,13 @@ def _competitor_names(brain: Brain) -> list[str]:
     return audit.competitor_names(brain)
 
 
+def _brand_name(brain: Brain) -> str:
+    for r in brain.records("identity"):
+        if r.get("field") in ("name", "brand_name") and isinstance(r.get("value"), str):
+            return r["value"]
+    return brain.brand.capitalize()
+
+
 def _brand_tokens(brain: Brain) -> set[str]:
     return audit.brand_tokens(brain)
 
@@ -330,6 +337,7 @@ def overview(brain: Brain) -> dict:
             "copy_gap": builds.copy_gap({sec: brain.records(sec) for sec in ("voice", "claims", "identity", "offers", "policies", "products", "visual", "story_bank")},
                                         brain.records("language_bank"), _brand_tokens(brain), audit.source_name),
             "paths": _paths(brain.brand), "gate": gate,
+            "lookalikes": builds.lookalikes(brain.records("competitors"), _brand_name(brain)),
             "claims_fire": builds.claims_fire(brain.records("claims"), brain.records("language_bank"), _brand_tokens(brain), audit.source_name,
                                               audit.product_words(brain)),
             "perception": builds.perception(brain.records("positioning") + brain.records("identity"), brain.records("language_bank"),

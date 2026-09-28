@@ -1531,3 +1531,33 @@ def claims_fire(claim_records: list[dict], lang_records: list[dict], brand_token
     fire = sum(1 for r in rows if r["verdict"] == "under_fire")
     return {"rows": rows, "complaints": len(comp),
             "line": f"{fire} of {len(rows)} live claims use words that 3 or more 1 and 2 star reviews throw back at us."}
+
+
+# ---------------------------------------------------------------- lookalike pages
+
+def lookalikes(competitor_records: list[dict], brand_name: str) -> dict:
+    """Pages the Ad Library pull flagged as likely impostors of the brand, with the report and warning steps."""
+    rows = []
+    for r in competitor_records:
+        v = r.get("value") if isinstance(r.get("value"), dict) else {}
+        if "impostor" not in str(v.get("verdict") or "").lower():
+            continue
+        ref = (r.get("source") or {}).get("ref")
+        rows.append({"id": r["id"], "page_id": v.get("page_id"), "ads_seen": v.get("ads_seen"), "links_to": v.get("links_to"),
+                     "created": v.get("created"), "ad_library": ref, "note": r.get("text"),
+                     "action": {"id": f"{SCREEN}.lookalike.{v.get('page_id')}", "kind": "ticket", "owner": "person",
+                                "title": f"Report the lookalike page sending buyers to {v.get('links_to') or 'another site'}",
+                                "capability": {"id": "MONEY-C48", "autonomy": "human_assist"},
+                                "draft": "\n".join([f"DRAFT report and warning",
+                                                    f"Page: {v.get('page_id')} ({ref or 'Ad Library link unavailable'})",
+                                                    f"Ads seen: {v.get('ads_seen')}. Links to: {v.get('links_to')}. First seen: {v.get('created')}.",
+                                                    f"Meta report: this page copies {brand_name}'s name and sends buyers to {v.get('links_to')}, which is not ours.",
+                                                    f"Support reply: We only sell on our own site and the stores listed on it. {v.get('links_to')} is not us.",
+                                                    "Social post: a short note naming our real site, pinned for 2 weeks."]),
+                                "steps": [{"n": 1, "who": "person", "text": "Report the page and its ads to Meta as impersonation."},
+                                          {"n": 2, "who": "agent", "text": "Add the support reply to the help desk macros as a draft."},
+                                          {"n": 3, "who": "person", "text": "Approve the macro and the social note."},
+                                          {"n": 4, "who": "agent", "text": "Re-check the page in the next Ad Library pull. Stop when it is gone."}]}})
+    one = len(rows) == 1
+    return {"rows": rows, "line": (f"{len(rows)} page{'' if one else 's'} in the Ad Library pull look{'s' if one else ''} like us and send{'s' if one else ''} buyers elsewhere."
+                                   if rows else "No lookalike page in the latest Ad Library pull.")}

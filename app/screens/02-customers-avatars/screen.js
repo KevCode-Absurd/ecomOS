@@ -294,6 +294,16 @@
     }), el('p', { class: 'micro faint', text: 'Word matches, not a legal review. A person decides whether a claim changes.' }));
   }
 
+  // ---------- desk: lookalike pages ----------
+  function renderLookalikes(x) {
+    document.getElementById('look-sub').textContent = 'Pages the Ad Library pull flags as likely impostors: our name, ads, links to another site. ' + x.line;
+    if (!x.rows.length) { mount('#look', el('p', { class: 'muted small', text: x.line })); return; }
+    mount('#look', ...x.rows.map((r) => UI.actionCard({ id: r.action.id, title: r.action.title, severity: 'high', owner: 'person',
+      why: r.ads_seen + ' ads from page ' + r.page_id + ', first seen ' + r.created + ', linking to ' + r.links_to + '. ' + (r.note || ''),
+      capability: r.action.capability, steps: r.action.steps, artefact: { kind: 'ticket', label: 'a Meta report, a support macro and a social note', draft: r.action.draft } },
+      { compact: true, screen: SLUG, extra: r.ad_library ? el('a', { href: r.ad_library, target: '_blank', rel: 'noopener', class: 'small', text: 'Open in the Ad Library' }) : null })));
+  }
+
   // ---------- desk: moments ----------
   function renderMoments(x) {
     document.getElementById('moments-sub').textContent = 'Moments named in avatar triggers, matched to US dates, 6 months ahead. Ads live 21 days before, emails 14 days before. Index: that month last year against the 12-month average, simulated. ' + x.line;
@@ -657,6 +667,7 @@
     renderDrafts(d.drafts);
     renderMisreads(d.misreads);
     renderClaims(d.claims_fire);
+    renderLookalikes(d.lookalikes);
     renderMoments(d.moments);
     renderPaths(d.paths);
     renderCohorts(d.cohorts);

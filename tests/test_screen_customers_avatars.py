@@ -872,5 +872,21 @@ class ClaimsFire(TempBrain):
         self.assertEqual(x['rows'], [])
 
 
+class Lookalikes(TempBrain):
+    """Feature 3.3: impostor pages from the Ad Library pull become a person-owned report."""
+
+    def test_lookalike(self):
+        x = api.handle(Req(['overview']))['lookalikes']
+        self.assertEqual(len(x['rows']), 1)
+        r = x['rows'][0]
+        self.assertEqual(r['links_to'], 'sockscool.com')
+        self.assertEqual(r['action']['owner'], 'person')
+        self.assertEqual(r['action']['steps'][0]['who'], 'person')
+        self.assertIn('sockscool.com', r['action']['draft'])
+
+    def test_none(self):
+        self.assertEqual(api.builds.lookalikes([], 'X')['rows'], [])
+
+
 if __name__ == '__main__':
     unittest.main()
