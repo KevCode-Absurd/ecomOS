@@ -1281,13 +1281,14 @@ class Round3Learn(TempBrain):
     """Round 3 feature 7: words the founder cuts and adds across edits, proposed to the voice sheet."""
 
     def test_edits_become_proposals_and_apply(self):
-        self.assertEqual(api.handle(Req(['learn']))['counts'], {'edits': 0, 'avoid': 0, 'use': 0})
+        start = api.handle(Req(['learn']))['counts']   # the sample brain already holds a few founder edits with history
+        self.assertNotIn('premium', {p['word'] for p in api.handle(Req(['learn']))['avoid']})
         api.handle(Req(['profile', 'positioning', 'frame'], 'POST', body={'text': 'Premium everyday comfort you can feel on the first wear.'}))
         api.handle(Req(['profile', 'positioning', 'frame'], 'POST', body={'text': 'Everyday comfort you can feel on the first wear, and a pair given for every pair.'}))
         api.handle(Req(['profile', 'identity', 'one_line_pitch'], 'POST', body={'text': 'Premium socks engineered to elevate comfort.'}))
         api.handle(Req(['profile', 'identity', 'one_line_pitch'], 'POST', body={'text': 'Socks made for comfort you feel, and a pair given for every pair.'}))
         lv = api.handle(Req(['learn']))
-        self.assertGreaterEqual(lv['counts']['edits'], 2)
+        self.assertGreaterEqual(lv['counts']['edits'], start['edits'] + 2)
         avoid = {p['word']: p for p in lv['avoid']}
         self.assertIn('premium', avoid)
         self.assertEqual(avoid['premium']['times'], 2)
