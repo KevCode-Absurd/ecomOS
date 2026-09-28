@@ -34,6 +34,12 @@ Round 0 notes (28 Sep 2026): brand price per pair is simulated net sales per uni
 
 Round 1 notes: `snapshot.py` plans and runs a page-id Ad Library pull through `app/connectors/apify.py` (12 pages with ids, 1,800 items cap, estimate $2.08, inside the $4 run and $30 week caps). The live run was blocked by the session's permission check on 28 Sep, so round 1 builds on the brain's 28 Sep pulls (page-level formats, hook types, offers, run lengths and 3 quoted ads a page) and the page says so.
 
+## Round 9: a depth pass on rounds 6 to 8, then what is left of the room
+
+| # | Feature | Status |
+|---|---|---|
+| 9.1 | Depth pass against depth.md section 3 on everything built in rounds 6 to 8. Found and fixed: a held move (lost outcome) left its finding open with no action (rule 3), so a held finding now reads "held", like a snooze; 2 desk blocks (coverage, map) lacked a caveat line (rule 10); one heading used "should" (rule 12). The browser smoke test now fails on any desk block without a sub line, a gap line and a caveat, and a test scans the screen's files for should, consider, leverage, em dashes, GPT and .env | done |
+
 ## Round 8: closing the loop on moves
 
 | # | Feature | Status |
@@ -326,6 +332,7 @@ Round 2 notes: the lead authorised the $2.08 pull on 28 Sep; the session's permi
 | Round | Features picked | Date | Notes |
 |---|---|---|---|
 | 0 | 0.1 to 0.8 | 2026-09-28 | Bombas brain and simulated prices |
+| 9 | 9.1 | 2026-09-28 | Depth pass |
 | 8 | 8.1 to 8.10 | 2026-09-28 | Outcomes; lost moves held; overdue reads; scoreboard; site changes; bring back snoozed; results in the brief and report; learnings for the brain; second brand check; round close. Screenshot `round8.png` |
 | 7 | 7.1 to 7.10 | 2026-09-28 | Interview reasons; coverage by name; prices seen on the band chart; price re-check cadence; logged work in the brief; queue and log in the report; briefs as rows; second brand check; form access; round close. Screenshot `round7.png` |
 | 6 | 6.1 to 6.10 | 2026-09-28 | Win-loss log; repeated loss reason; rival prices seen; battlecard checks; positioning polls; thresholds on the page; capture from the page; the team log; waiting on you; round close (and the hand-off fix). Screenshot `round6.png` |

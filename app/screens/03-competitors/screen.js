@@ -37,7 +37,7 @@
     };
     const tabs = UI.pills({ items: Object.keys(pos.kit).map((key) => ({ key, label: 'Price vs ' + pos.axes[key].label.toLowerCase() })), current: axis, onChange: (key) => { axis = key; render(); } });
     render();
-    return [tabs, box];
+    return [tabs, box, el('p', { class: 'micro faint', text: 'Claim scores are word rules over public lines, not judgement. Our price is simulated net sales per ' + U + '.' })];
   }
 
   // ---------- 5e. price ladder and pack ladder ----------
@@ -319,7 +319,8 @@
     };
     const first = cov.all;
     document.getElementById('cov-sub').textContent = 'Cell: our share of ads | their share. A gap is a cell where they put ' + Math.round(first.gap_min * 100) + ' percent or more of their ads and we put none. Amber: we are ' + first.over_x + 'x ahead, check it is not waste.';
-    mount('#coverage', UI.pills({ items: [{ key: 'all', label: 'All tracked pages', n: cov.all.pages.length }, { key: 'direct', label: 'Direct only', n: cov.direct.pages.length }], current: 'all', onChange: draw }), box, next);
+    mount('#coverage', UI.pills({ items: [{ key: 'all', label: 'All tracked pages', n: cov.all.pages.length }, { key: 'direct', label: 'Direct only', n: cov.direct.pages.length }], current: 'all', onChange: draw }), box, next,
+      el('p', { class: 'micro faint', text: (cov.all.estimated ? 'Shares are estimates from page summaries until an ad-level snapshot lands. ' : 'Shares are counted from an ad-level snapshot. ') + 'What they run is a signal, not proof it works.' }));
     draw('all');
   }
 

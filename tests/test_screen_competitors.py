@@ -1144,12 +1144,20 @@ const {{ chromium }} = require('{PW}');
     const errs = []; p.on('pageerror', (e) => errs.push(String(e)));
     await p.goto(url, {{ waitUntil: 'networkidle' }});
     await p.waitForTimeout(1500);
-    const empty = [];
+    const empty = [], depth = [];
     for (const t of await p.$$('#desk .tab')) {{
       await t.click(); await p.waitForTimeout(200);
       empty.push(...await p.$$eval('#desk .section > [id]:not([id$="-sub"])', (xs) => xs.filter((x) => !x.children.length).map((x) => x.id)));
+      depth.push(...await p.$$eval('#desk .section', (xs) => xs.map((x) => {{
+        const id = (x.querySelector('[id]:not([id$="-sub"])') || {{}}).id, miss = [];
+        const sub = x.querySelector('.sec-head .sub');
+        if (!sub || !sub.textContent.trim()) miss.push('sub');
+        if (!x.querySelector('.gap-line')) miss.push('gap');
+        if (!x.querySelector('.micro.faint')) miss.push('caveat');
+        return miss.length ? id + ':' + miss.join(',') : null;
+      }}).filter(Boolean)));
     }}
-    out[k] = {{ errs, empty, tabs: await p.$$eval('#desk .tab', (t) => t.length), plan: await p.$$eval('.plan-item', (t) => t.length),
+    out[k] = {{ errs, empty, depth, tabs: await p.$$eval('#desk .tab', (t) => t.length), plan: await p.$$eval('.plan-item', (t) => t.length),
                moves: await p.$$eval('#r-moves tbody tr', (t) => t.length), queue: await p.$$eval('#r-queue li', (t) => t.length) }};
   }}
   console.log(JSON.stringify(out)); await b.close();
@@ -1159,6 +1167,7 @@ const {{ chromium }} = require('{PW}');
             self.assertEqual(out['main']['errs'], [])
             self.assertEqual(out['main']['tabs'], 4)
             self.assertEqual(out['main']['empty'], [])   # every desk block renders in its tab, late loaders included
+            self.assertEqual(out['main']['depth'], [])   # depth rule 10: a sub line, a gap line and a caveat in every desk block
             self.assertGreaterEqual(out['main']['plan'], 5)
             self.assertEqual(out['report']['errs'], [])
             self.assertGreaterEqual(out['report']['moves'], 5)
@@ -2022,6 +2031,31 @@ class TestSecondBrandLoop(TestSecondBrandInputs):
         blob = json.dumps([p, o, g])
         for word in ('Bombas', 'bombas', 'Stance', 'Darn Tough', 'COMFORT20', 'sock'):
             self.assertNotIn(word, blob)
+
+
+class TestDepthRound9(TempInputs):
+    """9.1: depth rule 3 holds with a held move: its finding reads held, every open finding still ends in an action."""
+    def test_rule3_with_held(self):
+        w = {'ends_on': '2026-09-27', 'days': 28, 'trailing': 4}
+        a = api.rank('bombas', w)['actions'][0]
+        self.post({'kind': 'outcome', 'action_id': a['id'], 'result': 'lost'})
+        out = api.actions.build('bombas', w, api.BRAIN_ROOT)
+        covered = {i for x in out['actions'] for i in x['finding_ids']}
+        open_ = {f['id'] for f in out['findings'] if f['status'] in ('open', 'unavailable')}
+        self.assertEqual(open_ - covered, set())
+        self.assertEqual(next(f for f in out['findings'] if f['id'] == a['id'])['status'], 'held')
+
+
+class TestWords(unittest.TestCase):
+    """9.1: depth rule 12 on the screen's own words: no should, consider, leverage, em dash, GPT or .env."""
+    def test_banned_words(self):
+        import re as _re
+        for name in ('screen.js', 'index.html', 'api.py', 'audit.py', 'actions.py', 'inputs.py', 'losses.py', 'frames.py', 'season.py',
+                     'premium.py', 'capture.py', 'handoff.py'):
+            text = (SCREEN / name).read_text(encoding='utf-8')
+            text = '\n'.join(ln for ln in text.splitlines() if not ln.strip().startswith(('#', '//', '"""')))
+            for w in (r'\bshould\b', r'\bconsider\b', r'\bleverage\b', '\u2014', r'\bGPT\b', r'\.env\b'):
+                self.assertIsNone(_re.search(w, text, _re.I), f'{name}: {w}')
 
 
 if __name__ == '__main__':

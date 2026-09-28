@@ -752,7 +752,11 @@ def build(brand: str, window: dict | None = None, root: Path | None = None) -> d
         if o and o["result"] == "lost" and (today - dt.date.fromisoformat(o["date"])).days < HOLD_LOST_DAYS:
             held.append({"id": a["id"], "title": a["title"], "lost_on": o["date"], "reading": o.get("reading"),
                          "back_on": (dt.date.fromisoformat(o["date"]) + dt.timedelta(days=HOLD_LOST_DAYS)).isoformat()})
-    acts = [a for a in acts if a["id"] not in {h["id"] for h in held}]
+    held_ids = {h["id"] for h in held}
+    acts = [a for a in acts if a["id"] not in held_ids]
+    for f in findings:   # a held move's finding is acknowledged, like a snooze: it no longer counts as open (depth rule 3)
+        if f["id"] in held_ids:
+            f["status"] = "held"
     acts.sort(key=ranker.sort_key)
     return {"screen": audit.SCREEN, "brand": brand, "window": window, "simulated": True,
             "brain_version": m["brain"].version(), "net_revenue_28d": nr, "findings": findings, "actions": acts, "held": held}
