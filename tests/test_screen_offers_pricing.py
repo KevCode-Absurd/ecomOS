@@ -984,5 +984,19 @@ class LoyaltyTest(unittest.TestCase):
             self.assertIn('never cash', a['artefact']['draft'])
 
 
+class WindowCreepTest(unittest.TestCase):
+    """Round 3 feature 4: promo window depth year on year."""
+
+    def test_history_and_rule(self):
+        rd = audit.Reader(None, 'bombas', audit.last_full_day(None, 'bombas'))
+        hist = audit.depth_history(rd)
+        self.assertTrue(hist)
+        for h in hist:
+            self.assertLess(h['before']['start'], h['last']['start'])
+            self.assertAlmostEqual(h['points'], round((h['last']['depth'] - h['before']['depth']) * 100, 2), places=2)
+        fired = {f['entity']['id'] for f in audit.run('bombas') if f['rule_id'] == 'OFFER-R25'}
+        self.assertEqual(fired, {'window_creep_' + h['key'] for h in hist if h['points'] > audit._playbook().WINDOW_CREEP_POINTS})
+
+
 if __name__ == '__main__':
     unittest.main()

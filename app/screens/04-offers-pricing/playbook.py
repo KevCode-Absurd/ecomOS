@@ -192,3 +192,4 @@ PROGRAM_WORDS = {'referral': ('referral', 'refer_a_friend', 'refer'), 'loyalty':
 REFERRAL_CAC_SHARE = 0.5  # room spec: referral should acquire for under half of paid CAC
 LOYALTY_EARN = 0.05       # earn rate to design around: 5 percent back (the lowest common rate in loyalty tools)
 LOYALTY_MARGIN_CAP = 0.25 # reward cost above 25 percent of gross margin is too rich (our own heuristic, not a benchmark)
+WINDOW_CREEP_POINTS = 2   # a promo window 2 points deeper than the same window last year is creeping

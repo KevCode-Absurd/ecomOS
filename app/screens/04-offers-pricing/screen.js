@@ -195,8 +195,16 @@
       { k: 'Discount dollars on ordinary days', now: pct(ty.always_on_share, 0), before: pct(ly.always_on_share, 0) },
       { k: 'Blended rate, last 90 days', now: pct(dd && dd.blended_90d), before: pct(dd && dd.blended_90d_last_year) },
     ] });
+    const wins = (dd && dd.windows) || [];
+    const winTable = wins.length ? UI.verdictTable({ columns: [{ key: 'name', label: 'Window' },
+        { key: 'b', label: 'Time before', format: (v, r) => pct(r.before.depth) + ' (' + r.before.start.slice(0, 4) + ')' },
+        { key: 'l', label: 'Last time', format: (v, r) => pct(r.last.depth) + ' (' + r.last.start.slice(0, 4) + ')' },
+        { key: 'points', label: 'Change, points', format: (v) => (v > 0.05 ? '+' : '') + (Math.abs(v) < 0.05 ? '0.0' : v.toFixed(1)) },
+        { key: 'excess_points', label: 'Deeper than the 28 days before, points', format: (v) => Math.abs(v) < 0.05 ? '0.0' : v.toFixed(1) }],
+      rows: wins.map((w) => Object.assign({ b: '', l: '' }, w)), verdict: { at: 1, kind: (r) => r.points > dd.window_creep_points ? 'fix' : r.points > 0 ? 'watch' : 'keep', text: (r) => r.points > dd.window_creep_points ? 'Creeping' : r.points > 0 ? 'Deeper' : 'Held or cut' }, sort: false }) : null;
     const policy = dd && dd.policy ? el('div', null, el('h4', { text: 'Discount policy, drafted from the brand\'s history' }), el('pre', { class: 'spec', text: dd.policy }), UI.copyButton({ label: 'Copy policy', text: () => dd.policy })) : null;
     return section('desk-discount', head, el('div', { class: 'grid two' }, el('div', { class: 'card' }, ...parts), el('div', { class: 'card tight' }, score)),
+      winTable ? el('div', { class: 'card tight' }, el('h4', { text: 'Is each promo window getting deeper year on year?' }), winTable) : null,
       el('div', { class: 'card' }, el('p', { class: 'small', text: (d.creep || {}).sentence || '' }), policy),
       actionLine(ty.always_on_share != null ? pct(ty.always_on_share, 0) + ' of discount dollars go out on ordinary days. The code is the discount program; test what replaces it.' : 'Discount history unavailable.', a));
   }
@@ -557,7 +565,7 @@
         blocks: () => [firstOrderBlock(d.first_order), cartBlock(d.cart), buyersBlock(d), objectionBlock(d.objections || [], d.returns), guaranteeBlock(d.guarantee, d.returns), stackBlock(d.stack || [])] },
       { key: 'prices', label: 'Prices and packs', rules: ['OFFER-R22', 'OFFER-R16', 'OFFER-R17', 'OFFER-R07', 'OFFER-R09'],
         blocks: () => [costBlock(d.costs), positionBlock(d.position, d.brand || {}), parityBlock(d.parity), ladderBlock(d.ladder), waterfallBlock(d.waterfalls)] },
-      { key: 'shipping', label: 'Shipping and discounts', rules: ['OFFER-R01', 'OFFER-R05', 'OFFER-R06', 'OFFER-R18'],
+      { key: 'shipping', label: 'Shipping and discounts', rules: ['OFFER-R01', 'OFFER-R05', 'OFFER-R06', 'OFFER-R18', 'OFFER-R25'],
         blocks: () => [thresholdBlock(d.threshold), discountBlock(d)] },
     ];
     const openIn = (t) => ACTIONS.filter((a) => a.status === 'open' && (a.finding_ids || []).some((id) => t.rules.some((r) => id.indexOf('.' + r + '.') >= 0))).length;

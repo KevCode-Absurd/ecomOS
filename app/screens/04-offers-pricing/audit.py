@@ -101,6 +101,9 @@ Rules
              prices playbook.LOYALTY_EARN back paid in cash against paid in product (landed cost), each as a share of
              gross margin, against playbook.LOYALTY_MARGIN_CAP (our heuristic). Evidence adds the cohort curve's month
              1 share. Money null. Satisfaction 3. Capability LIFE-C36 (founder gate).
+  OFFER-R25  Promo window depth creeping: a window's discount depth in its last occurrence is more than
+             playbook.WINDOW_CREEP_POINTS above the occurrence before (model.depth_history). Money: the extra points
+             times the window's gross sales. The action is the discount policy. Capability LIFE-C38.
   OFFER-R03  Margin after discount per SKU. Needs cogs_landed keyed by the store's SKUs. Unavailable while no
              finance_inputs SKU key matches a product SKU. Capability MONEY-C05 (founder gate). Owner: 04.
   OFFER-R04  A deal-breaker rung with no proof: the top rung of an objection ladder whose proof is empty or
@@ -189,6 +192,8 @@ RULES = [
      'capability': 'LIFE-C45', 'owner_screen': SCREEN},
     {'rule_id': 'OFFER-R24', 'name': 'No loyalty offer', 'entity_type': 'offer', 'inputs': ['brain.offers', 'brain.stack',
      'finance_inputs.cogs_landed', 'cohorts'], 'capability': 'LIFE-C36', 'owner_screen': SCREEN},
+    {'rule_id': 'OFFER-R25', 'name': 'Promo window depth creeping year on year', 'entity_type': 'offer',
+     'inputs': ['daily'], 'capability': 'LIFE-C38', 'owner_screen': SCREEN},
     {'rule_id': 'OFFER-R03', 'name': 'Margin after discount per SKU', 'entity_type': 'sku',
      'inputs': ['finance_inputs.cogs_landed keyed by product SKU', 'products'], 'capability': 'MONEY-C05',
      'owner_screen': SCREEN},
@@ -217,6 +222,7 @@ CAPABILITY = {'OFFER-R01': {'id': 'MONEY-C05', 'autonomy': 'founder_gate'},
               'OFFER-R22': {'id': 'MONEY-C05', 'autonomy': 'founder_gate'},
               'OFFER-R23': {'id': 'LIFE-C45', 'autonomy': 'founder_gate'},
               'OFFER-R24': {'id': 'LIFE-C36', 'autonomy': 'founder_gate'},
+              'OFFER-R25': {'id': 'LIFE-C38', 'autonomy': 'founder_gate'},
               'OFFER-R06': {'id': 'MONEY-C05', 'autonomy': 'founder_gate'},
               'OFFER-R04': {'id': 'LIFE-C36', 'autonomy': 'founder_gate'}}
 SEVERITY_ORDER = {'critical': 0, 'high': 1, 'medium': 2, 'low': 3}
@@ -996,6 +1002,29 @@ def rule_loyalty(rd):
                      None, 0.5, [], end, money_reason='repeat lift from points is what the launch finds')]
 
 
+def depth_history(rd):
+    return _model().depth_history(rd, _playbook().PROMO_WINDOWS)
+
+
+def rule_window_creep(rd):
+    end = rd.ends_on
+    out = []
+    for h in depth_history(rd):
+        if h['points'] <= _playbook().WINDOW_CREEP_POINTS:
+            continue
+        last = h['last']
+        days = (date.fromisoformat(last['end']) - date.fromisoformat(last['start'])).days + 1
+        gross = last['net_per_day'] * days / (1 - last['depth']) if last['depth'] < 1 else None
+        money = {'usd': round(h['points'] / 100 * gross, 2), 'formula': 'points_deeper / 100 x window_gross',
+                 'inputs': {'points_deeper': h['points'], 'window_gross': round(gross, 2)}, 'window': f'{last["start"]} to {last["end"]}'} if gross else None
+        ev = [_ev('window_discount_depth', last['depth'], 'ratio', end, baseline=h['before']['depth'], baseline_kind='same_window_before',
+                  window=f'{last["start"]} to {last["end"]}', source='daily')]
+        out.append(_finding('OFFER-R25', {'type': 'offer', 'id': 'window_creep_' + h['key'], 'label': h['name']}, 'medium', ev,
+                            f'{h["name"]} ran {last["depth"] * 100:.1f} percent deep, {h["points"]:.1f} points deeper than the time before.',
+                            money, 0.8, [], end, money_reason=None if money else 'no gross'))
+    return out
+
+
 def rule_ladder(rd):
     end = rd.ends_on
     pb = _playbook()
@@ -1167,7 +1196,7 @@ def run(brand, window=None, data=None):
     """Findings for one brand, sorted by severity then money at stake. `window` is {ends_on} or None."""
     ends_on = date.fromisoformat(window['ends_on']) if window and window.get('ends_on') else last_full_day(data, brand)
     rd = Reader(data, brand, ends_on)
-    out = (rule_threshold(rd) + rule_stale(rd) + rule_pull(rd) + rule_first_order(rd) + rule_red_line(rd) + rule_promo(rd) + rule_gifting(rd) + rule_guarantee(rd) + rule_position(rd) + rule_parity(rd) + rule_discount(rd) + rule_cart(rd) + rule_second_order(rd) + rule_cost(rd) + rule_referral(rd) + rule_loyalty(rd) + rule_ladder(rd) + rule_sku_margin(rd) +
+    out = (rule_threshold(rd) + rule_stale(rd) + rule_pull(rd) + rule_first_order(rd) + rule_red_line(rd) + rule_promo(rd) + rule_gifting(rd) + rule_guarantee(rd) + rule_position(rd) + rule_parity(rd) + rule_discount(rd) + rule_cart(rd) + rule_second_order(rd) + rule_cost(rd) + rule_referral(rd) + rule_loyalty(rd) + rule_window_creep(rd) + rule_ladder(rd) + rule_sku_margin(rd) +
            rule_unanswered(rd))
     out.sort(key=lambda f: (SEVERITY_ORDER[f['severity']], -((f.get('money_at_stake') or {}).get('usd') or -1), f['id']))
     return out

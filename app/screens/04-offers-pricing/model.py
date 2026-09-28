@@ -1058,3 +1058,23 @@ def loyalty_design(rd, earn, cap):
     return {'unavailable': False, 'earn': earn, 'gross_margin': round(gm, 4), 'cash_share_of_margin': round(cash, 4),
             'product_share_of_margin': round(product, 4), 'cap': cap, 'cash_clears': cash <= cap, 'product_clears': product <= cap,
             'basis': 'landed cost over net sales, last 3 full months; a point redeemed as product costs its landed cost'}
+
+
+def depth_history(rd, windows):
+    """Each promo window's discount depth in its last two occurrences before today, and the change in points."""
+    end = rd.ends_on
+    rows = []
+    for w in windows:
+        occ = []
+        for y in range(end.year - 2, end.year + 1):
+            s, e = window_dates(w['rule'], y)
+            if e < end:
+                p = window_perf(rd, s, e)
+                if p:
+                    occ.append(p)
+        if len(occ) >= 2:
+            a, b = occ[-2], occ[-1]
+            rows.append({'key': w['key'], 'name': w['name'], 'before': a, 'last': b,
+                         'points': round((b['depth'] - a['depth']) * 100, 2),
+                         'excess_points': round((b['depth'] - b['baseline_depth']) * 100, 2)})
+    return rows
