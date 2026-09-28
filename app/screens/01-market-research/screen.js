@@ -274,8 +274,9 @@
   async function openBrief(cid) {
     let b;
     try { b = await api(BASE + 'candidates/' + encodeURIComponent(cid) + '/brief' + Q); } catch (e) { alert('Brief unavailable: ' + e.message); return; }
-    UI.panel({ title: 'Brief: ' + b.name, tools: [UI.copyButton({ label: 'Copy brief', text: () => b.text })],
-      body: el('div', { class: 'stack' }, el('p', { class: 'micro muted', text: 'One page from every block of the desk: the angle and proof for creative, the spec, margin and cash timing for sourcing. Numbers come from the blocks; nothing is written here.' }),
+    const sendTo = (team) => el('button', { class: 'btn sm', type: 'button', text: 'Send to ' + team, onclick: async (ev) => { const btn = ev.currentTarget; try { const res = await api(BASE + 'candidates/' + encodeURIComponent(cid) + '/handoff/' + encodeURIComponent(team) + Q, { method: 'POST', body: { who: 'person' } }); btn.textContent = 'Sent to ' + team + ' (' + res.shared.status + ')'; btn.disabled = true; } catch (e) { alert('Not sent: ' + e.message); } } });
+    UI.panel({ title: 'Brief: ' + b.name, tools: [UI.copyButton({ label: 'Copy brief', text: () => b.text }), sendTo('copy'), sendTo('landing pages')],
+      body: el('div', { class: 'stack' }, el('p', { class: 'micro muted', text: 'One page from every block of the desk: the angle and proof for creative, the spec, margin and cash timing for sourcing. Numbers come from the blocks; nothing is written here. From shortlisted on, Send to copy posts the listing copy brief and Send to landing pages the launch page brief to the shared hand-off log; the team sets the status.' }),
         el('pre', { class: 'small', style: { whiteSpace: 'pre-wrap', margin: 0 }, text: b.text })) });
   }
 

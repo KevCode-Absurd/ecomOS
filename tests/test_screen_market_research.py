@@ -1997,6 +1997,41 @@ class HandoffCreativeTest(unittest.TestCase):
         finally:
             api.HANDOFFS_DIR, api.HANDOFFS_PATH, api.SHARED_HANDOFFS_PATH = saved
 
+    def test_go_candidate_handoffs_to_copy_and_landing_pages(self):
+        import tempfile
+        saved = (api.HANDOFFS_DIR, api.HANDOFFS_PATH, api.SHARED_HANDOFFS_PATH, audit.PIPELINE_PATH, api.HANDOFF_PATH, api.TESTS_PATH)
+        tmp = Path(tempfile.mkdtemp())
+        api.HANDOFFS_DIR, api.HANDOFFS_PATH, api.SHARED_HANDOFFS_PATH = tmp / 'handoffs', tmp / 'creative_handoffs.json', tmp / 'shared' / 'handoffs.json'
+        audit.PIPELINE_PATH, api.HANDOFF_PATH, api.TESTS_PATH = tmp / 'pipeline.json', tmp / 'product_candidates.json', tmp / 'proposed_tests.json'
+        try:
+            rows = [{'candidate_id': 'g1', 'brand': 'bombas', 'name': 'Merino calf sock with a wear-life promise', 'category': 'socks', 'stage': 'go', 'planned_price': 24.0, 'pack_units': 1, 'angle_text': 'a wear-life promise on merino', 'angle_source': 'review gap on Amazon', 'owner': 'Sam', 'offer_structure': '3-pack at 60'},
+                    {'candidate_id': 'r1', 'brand': 'bombas', 'name': 'Early idea', 'category': 'socks', 'stage': 'researched'}]
+            audit.PIPELINE_PATH.write_text(json.dumps({'rows': rows}), encoding='utf-8')
+            code, out = api.handle(Req(['candidates', 'g1', 'handoff', 'copy'], method='POST'))
+            self.assertEqual(code, 201)
+            self.assertEqual((out['shared']['to'], out['shared']['kind'], out['shared']['status'], out['shared']['from_screen'], out['shared']['owner']), ('copy', 'copy', 'proposed', '01-market-research', 'agent_drafts'))
+            t = out['shared']['draft']
+            for head in ('LISTING COPY HAND-OFF', 'WHAT TO BUILD', 'THE ANGLE', 'THE PRICE AND THE OFFER', 'FROM THE CANDIDATE BRIEF', 'DO NOT', 'HAND-OFF TERMS'):
+                self.assertIn(head, t)
+            self.assertIn('a wear-life promise on merino (source: review gap on Amazon)', t)
+            self.assertIn('3-pack at 60', t)
+            self.assertNotIn('—', t)
+            self.assertTrue((api.HANDOFFS_DIR / 'bombas' / 'g1-copy.md').is_file())
+            code, out2 = api.handle(Req(['candidates', 'g1', 'handoff', 'landing pages'], method='POST'))
+            self.assertEqual((code, out2['shared']['kind'], out2['shared']['to']), (201, 'page_section', 'landing pages'))
+            self.assertIn('THE LAUNCH PAGE SECTION HAND-OFF', out2['shared']['draft'])
+            self.assertEqual(api.handle(Req(['candidates', 'g1', 'handoff', 'finance'], method='POST'))[0], 400)
+            self.assertEqual(api.handle(Req(['candidates', 'r1', 'handoff', 'copy'], method='POST'))[0], 400)   # before shortlisted
+            self.assertEqual(api.handle(Req(['candidates', 'nope', 'handoff', 'copy'], method='POST'))[0], 400)
+            sent = api.handoffs_sent('bombas')
+            self.assertEqual(sorted(r['to'] for r in sent['rows']), ['copy', 'landing pages'])
+            self.assertEqual(sent['shared']['by_status'], {'proposed': 2})
+            api.handle(Req(['candidates', 'g1', 'handoff', 'copy'], method='POST'))
+            self.assertEqual(len(api.handoffs_sent('bombas')['rows']), 2)     # a resend refreshes the pointer
+            self.assertEqual(len(json.loads(api.SHARED_HANDOFFS_PATH.read_text(encoding='utf-8'))), 3)   # and appends to the shared log
+        finally:
+            api.HANDOFFS_DIR, api.HANDOFFS_PATH, api.SHARED_HANDOFFS_PATH, audit.PIPELINE_PATH, api.HANDOFF_PATH, api.TESTS_PATH = saved
+
     def test_avatar_handoff_names_the_buyer(self):
         fid = next(f['id'] for f in audit.run('bombas', {'ends_on': '2026-09-27'}) if f['rule_id'] == 'PROD-R11')
         h = api.creative_handoff('bombas', fid)

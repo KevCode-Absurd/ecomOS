@@ -1958,6 +1958,70 @@ def candidate_brief(data, brand, cid):
     return {'candidate_id': cid, 'name': pipe.get('name'), 'text': '\n'.join(lines), 'sections': ['angle', 'demand', 'money', 'gates', 'scorecard', 'spec', 'actions', 'log']}
 
 
+
+# ---------------------------------------------------------------- go candidate hand-offs: listing copy to copy, the launch page section to landing pages
+
+GO_HANDOFF_TEAMS = {
+    'copy': {'kind': 'copy', 'label': 'listing copy', 'capability': 'PROD-C12',
+             'ask': 'the product listing copy: title, 5 bullets, the description, the FAQ from the objection ladder, in the words buyers use'},
+    'landing pages': {'kind': 'page_section', 'label': 'the launch page section', 'capability': 'PROD-C12',
+                      'ask': 'the launch section for the product page: the angle as the headline, the proof block, the buyer\'s doubt answered, the offer structure, and the reviews to quote'},
+}
+
+
+def go_handoff_draft(data, brand, cid, team):
+    """The brief for a team from a candidate at shortlisted or go: what to build, the angle and its source, the buyer, the
+    doubt, the proof on file, the words buyers use (reviews only, never Reddit), the price and offer, the do-not list and
+    the win rule. Every line comes from the candidate brief and the creative hand-off text on this desk."""
+    t = GO_HANDOFF_TEAMS.get(team)
+    if t is None:
+        raise ValueError('team must be one of ' + ', '.join(GO_HANDOFF_TEAMS))
+    cand = next((c for c in audit.pipeline(brand or 'sample') if c.get('candidate_id') == cid), None)
+    if cand is None:
+        raise ValueError(f'no candidate {cid}')
+    idx = audit.STAGES.index(cand.get('stage')) if cand.get('stage') in audit.STAGES else None
+    if idx is None or idx < audit.OWNER_STAGE_MIN:
+        raise ValueError(f'{cand.get("name")} is at {cand.get("stage")}; a hand-off to {team} needs shortlisted or go')
+    b = candidate_brief(data, brand, cid)
+    name = cand.get('name')
+    lines = [f'{t["label"].upper()} HAND-OFF: {name}', f'From the research desk ({SCREEN}) to {team}. Stage: {cand.get("stage")}. Owner on the candidate: {cand.get("owner") or "none named"}.', '',
+             'WHAT TO BUILD', t['ask'] + '.', '',
+             'THE ANGLE', f'{cand.get("angle_text") or "no angle on the candidate yet: do not write one"}' + (f' (source: {cand.get("angle_source")})' if cand.get('angle_source') else ' (no source named: treat every claim as unproven)'), '',
+             'THE PRICE AND THE OFFER', f'Planned price ${(cand.get("planned_price") or 0):,.2f} for {cand.get("pack_units") or 1} unit(s).' + (f' Offer structure: {cand.get("offer_structure")}.' if cand.get('offer_structure') else ' No offer structure noted.'), '',
+             'FROM THE CANDIDATE BRIEF', b['text'], '',
+             'DO NOT', '- Invent a claim, a number, a certification or a guarantee that is not in the proof above.', '- Quote Reddit; only review sources are quotable.', '- Name a competitor or copy a competitor\'s claim.', '- Mention the tools or the models behind this desk.', '',
+             'HAND-OFF TERMS', f'Win rule: the {t["label"]} ships with every claim traced to the proof above and the angle unchanged.', 'Stop rule: a claim with no proof on file is cut, not softened.',
+             f'Check on: 7 days after the send; the candidate\'s review date is {cand.get("review_date") or "not set"}.']
+    return {'candidate_id': cid, 'name': name, 'team': team, 'kind': t['kind'], 'title': f'{t["label"].capitalize()} for {name}', 'why': f'{name} is at {cand.get("stage")}; {team} builds {t["label"]} from the angle and proof on this desk',
+            'text': '\n'.join(lines), 'capability': t['capability'], 'win_rule': f'the {t["label"]} ships with every claim traced to the proof on file', 'stop_rule': 'a claim with no proof on file is cut, not softened'}
+
+
+def send_candidate_handoff(data, brand, cid, team, body, today):
+    """POST candidates/<id>/handoff/<team>: draft the brief and post it to the shared hand-off log (one row per send, status
+    proposed, the receiving team sets the rest); the pointer row keeps the shared id and the file."""
+    try:
+        h = go_handoff_draft(data, brand, cid, team)
+    except ValueError as e:
+        return 400, {'error': str(e)}
+    who = str((body or {}).get('who') or 'person').strip()[:40] or 'person'
+    d = HANDOFFS_DIR / (brand or 'sample')
+    d.mkdir(parents=True, exist_ok=True)
+    safe = re.sub(r'[^A-Za-z0-9_.-]+', '_', f'{cid}-{team}')
+    p = d / f'{safe}.md'
+    p.write_text(h['text'] + '\n', encoding='utf-8')
+    terms = {'why': h['why'], 'win_rule': h['win_rule'], 'stop_rule': h['stop_rule'], 'check_on': (today + dt.timedelta(days=7)).isoformat(), 'capability': h['capability']}
+    shared = post_shared_handoff(team, h['kind'], h['title'], h['why'], h['text'], terms, f'{SCREEN}.candidate.{cid}', 'agent_drafts')
+    doc = json.loads(HANDOFFS_PATH.read_text(encoding='utf-8')) if HANDOFFS_PATH.is_file() else {'table': 'creative_handoffs', 'rows': []}
+    rows = [r for r in doc.get('rows') or [] if not (r.get('brand') == (brand or 'sample') and r.get('candidate_id') == cid and r.get('to') == team)]
+    row = {'id': f'HO-{safe}', 'brand': brand or 'sample', 'from': SCREEN, 'to': team, 'candidate_id': cid, 'finding_id': f'{SCREEN}.candidate.{cid}', 'rule_id': None, 'title': h['title'], 'theme': None, 'avatars': [], 'quotes': None,
+           'artefact': str(p.relative_to(HERE)) if str(p).startswith(str(HERE)) else str(Path('fixtures') / 'handoffs' / (brand or 'sample') / p.name),
+           'sent_on': today.isoformat(), 'by': who, 'status': 'sent', 'shared_id': shared['id'], 'shared_status': shared['status'], 'simulated': True}
+    rows.append(row)
+    doc['rows'] = rows
+    HANDOFFS_PATH.write_text(json.dumps(doc, indent=1), encoding='utf-8')
+    return 201, {'ok': True, 'handoff': row, 'shared': shared}
+
+
 # ---------------------------------------------------------------- the hand-off (events contract: product_candidates, and a proposed test on go)
 
 HANDOFF_PATH = HERE / 'fixtures' / 'product_candidates.json'
@@ -2556,11 +2620,13 @@ def handle(req):
                 return answer_question(brand, req.body, today)
             if len(req.path) == 3 and req.path[0] == 'handoff' and req.path[2] == 'send':
                 return send_handoff(brand, req.path[1], req.body, today)
+            if len(req.path) == 4 and req.path[0] == 'candidates' and req.path[2] == 'handoff':
+                return send_candidate_handoff(data, brand, req.path[1], req.path[3], req.body, today)
             if req.path == ['candidates']:
                 return candidate_add(brand or 'sample', req.body, today)
             if len(req.path) == 2 and req.path[0] == 'candidates':
                 return candidate_update(brand or 'sample', req.path[1], req.body, today)
-            return 405, {'error': 'read only, except the candidate pipeline, the seen snapshot, a founder answer and a hand-off send'}
+            return 405, {'error': 'read only, except the candidate pipeline, the seen snapshot, a founder answer, a hand-off send and a go candidate hand-off'}
         if req.path == ['overview']:
             return overview(data, brand)
         if req.path == ['findings']:
@@ -2599,4 +2665,4 @@ def handle(req):
             return {'parked': r['parked'], 'decided': r['decided'], 'snooze_days': rank_mod.SNOOZE_DAYS, 'window': r['window']}
     except ValueError as exc:
         return 400, {'error': str(exc)}
-    return 404, {'error': 'not found', 'routes': ['overview', 'findings', 'rank', 'parked', 'decisions', 'calendar', 'week', 'report', 'reports', 'changes', 'log', 'candidates/<id>/brief', 'handoff/<finding_id>', 'handoffs', 'product_candidates', 'tests']}
+    return 404, {'error': 'not found', 'routes': ['overview', 'findings', 'rank', 'parked', 'decisions', 'calendar', 'week', 'report', 'reports', 'changes', 'log', 'candidates/<id>/brief', 'candidates/<id>/handoff/<team> (POST)', 'handoff/<finding_id>', 'handoffs', 'product_candidates', 'tests']}
