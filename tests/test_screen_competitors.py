@@ -2347,5 +2347,23 @@ class TestHandoffState(TempInputs):
             api.HANDOFFS = old
 
 
+class TestNewCreativeCount(TestPullLightsUp):
+    """10.6: new_creative_count reads unavailable until 2 ad-level snapshots, then counts the new competitor ads between them."""
+    def test_lights_up(self):
+        pass
+
+    def test_count(self):
+        metric = lambda: next(r for r in api.handle(Req(['overview']))['room_metrics'] if r['key'] == 'new_creative_count')
+        self.assertIsNone(metric()['value'])
+        self.land('2026-09-27')
+        self.assertIsNone(metric()['value'])
+        self.land('2026-09-28')     # every ad id differs by day, so every competitor ad is new
+        m = metric()
+        snap = api.audit.snap.load('bombas')
+        want = sum(1 for r in snap['ads'] if r['role'] != 'self')
+        self.assertEqual(m['value'], want)
+        self.assertIsNone(m['unavailable'])
+
+
 if __name__ == '__main__':
     unittest.main()

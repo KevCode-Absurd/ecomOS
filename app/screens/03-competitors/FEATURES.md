@@ -43,6 +43,7 @@ Round 1 notes: `snapshot.py` plans and runs a page-id Ad Library pull through `a
 | 10.3 | Pull-ready blocks: the freshness block lists the 7 blocks that depend on the ad-level pull (angles by format, first lines and offers with CTA, new ads in 14 days, new ads a week, our placements, longest runners, ad-level diffs) with what each shows today, what it becomes with the pull and what it waits for ("the Ad Library pull", or "1 more" for diffs); a test lands a snapshot built from the connector's fixture shape with Bombas page ids (no client, no ledger) and checks the blocks switch to counted, every action still validates, and diffs light with the second snapshot; snapshot paths resolve at call time | done |
 | 10.4 | Depth pass on the blocks outside the desk added since round 6 (waiting on you, held, snoozed, hand-offs, scoreboard, team log, room metrics, pull table), probed in the browser for a caveat line and for zeros. Found and fixed: the room metrics block had no caveat line; the empty team log named 5 of the 7 kinds. Every zero left is measured (nothing sent yet, capture age 0 days, no open corner), not unknown. A test guards the caveats | done |
 | 10.5 | Hand-offs read back: the hand-off block shows the sent rows by status (proposed, decided, done, dropped), read from the shared table; the dated weekly report adds a hand-offs section (sent by status, and what still waits: decided moves and support rows not yet sent). The screen reads the shared table and never writes it except through the server | done |
+| 10.6 | The room's `new_creative_count` is coded to light up: unavailable ("needs 2 ad-level snapshots") until two snapshots exist, then the count of competitor ads first seen between them, from the ad-level diff; a test lands 2 snapshots and checks the count against the ads in the second | done |
 
 ## Round 9: a depth pass on rounds 6 to 8, then what is left of the room
 
@@ -362,7 +363,7 @@ Where each job lives now (round 9). The question column quotes the room spec.
 | Round | Features picked | Date | Notes |
 |---|---|---|---|
 | 0 | 0.1 to 0.8 | 2026-09-28 | Bombas brain and simulated prices |
-| 10 | 10.1 to 10.5 | 2026-09-28 | Shared hand-offs; dated weekly report; pull-ready blocks; depth pass outside the desk; hand-offs read back |
+| 10 | 10.1 to 10.6 | 2026-09-28 | Shared hand-offs; dated weekly report; pull-ready blocks; depth pass outside the desk; hand-offs read back; new creative count |
 | 9 | 9.1 to 9.10 | 2026-09-28 | Depth pass; room jobs map; price drift across captures; open corners with demand; traffic connect step; visits count as tracking; team exports; sized new rules; evidence on new rules; round close. Screenshot `round9.png` |
 | 8 | 8.1 to 8.10 | 2026-09-28 | Outcomes; lost moves held; overdue reads; scoreboard; site changes; bring back snoozed; results in the brief and report; learnings for the brain; second brand check; round close. Screenshot `round8.png` |
 | 7 | 7.1 to 7.10 | 2026-09-28 | Interview reasons; coverage by name; prices seen on the band chart; price re-check cadence; logged work in the brief; queue and log in the report; briefs as rows; second brand check; form access; round close. Screenshot `round7.png` |

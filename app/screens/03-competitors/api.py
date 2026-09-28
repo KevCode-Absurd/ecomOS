@@ -520,7 +520,9 @@ def room_metrics(m: dict, pos: dict, cards: dict) -> list[dict]:
         row("price_change_count", len(pm.get("moves") or []) if (pm.get("captures") or 0) >= 2 or (pm.get("logged") or {}).get("with_baseline") else None, "n",
             "price moves of 15 percent or more: between the latest two captures, and logged prices against their own 30-day average",
             "needs 2 dated captures or 2 logged prices for one product"),
-        row("new_creative_count", None, "n", "ads first seen this period", "needs 2 ad-level snapshots"),
+        row("new_creative_count", sum(e.get("n") or 0 for e in m["changes"]["events"] if e["kind"] == "new_ads" and e.get("source") == "snapshot diff")
+            if (m.get("changes") or {}).get("snapshots", 0) >= 2 else None, "n", "competitor ads first seen between the latest 2 ad-level snapshots",
+            "needs 2 ad-level snapshots"),
         row("new_launch_count", (m.get("changes") or {}).get("launches") if (m.get("changes") or {}).get("site_logged") else None, "n",
             "new products or bundles seen on their sites in the last 28 days (logged)", "needs product feed captures or a site change logged"),
         row("positioning_openness_score", sum(1 for x in q["quadrants"] if not x["competitors"]) / 4 if q.get("openness") else None, "%",
