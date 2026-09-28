@@ -1407,5 +1407,28 @@ class BnplTest(unittest.TestCase):
             self.assertIn('profit per visitor', a['artefact']['draft'])
 
 
+class ThresholdMatchTest(unittest.TestCase):
+    def test_mismatch_fires_on_a_copy_of_the_brain(self):
+        import shutil, tempfile, json
+        tmp = Path(tempfile.mkdtemp())
+        shutil.copytree(ROOT / 'app' / 'brain' / 'bombas', tmp / 'bombas')
+        try:
+            self.assertFalse([f for f in audit.run('bombas') if f['rule_id'] == 'OFFER-R30'])
+            sys.path.insert(0, str(ROOT / 'app' / 'brain'))
+            import store
+            b = store.Brain('bombas', tmp)
+            rec = next(r for r in b.raw('policies') if r['id'] == 'bombas.policies.shipping_options')
+            opts = [dict(o, threshold_usd=60) if o.get('cost_usd') == 0 else o for o in rec['value']]
+            self.assertEqual(b.put(dict(rec, value=opts)), [])
+            audit.BRAIN_ROOT = tmp
+            try:
+                f = next(f for f in audit.run('bombas') if f['rule_id'] == 'OFFER-R30')
+                self.assertEqual(f['severity'], 'high')
+            finally:
+                audit.BRAIN_ROOT = None
+        finally:
+            shutil.rmtree(tmp, ignore_errors=True)
+
+
 if __name__ == '__main__':
     unittest.main()

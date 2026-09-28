@@ -118,6 +118,9 @@ Rules
   OFFER-R29  Packs in the installment band with no installment line (room spec LIFE-C46, BNPL): share of 12-month
              revenue from packs whose paid price is at or over playbook.BNPL_MIN_USD, while no brain stack or offers
              record names an installment provider. Money null: the lift is what the page test finds. Capability LIFE-C46.
+  OFFER-R30  The free shipping line in the offers record differs from the free tier in the shipping policy record
+             (web pass 2: a cart bar must match the real shipping rule). A broken promise: reputation 5 and
+             satisfaction 5 by the rubric's own rule. Severity high. Capability MONEY-C05.
   OFFER-R03  Margin after discount per SKU. Needs cogs_landed keyed by the store's SKUs. Unavailable while no
              finance_inputs SKU key matches a product SKU. Capability MONEY-C05 (founder gate). Owner: 04.
   OFFER-R04  A deal-breaker rung with no proof: the top rung of an objection ladder whose proof is empty or
@@ -216,6 +219,9 @@ RULES = [
      'inputs': ['upsell_events', 'brain.stack.upsell_app'], 'capability': 'LIFE-C41', 'owner_screen': SCREEN},
     {'rule_id': 'OFFER-R29', 'name': 'Packs in the installment band with no installment line', 'entity_type': 'offer',
      'inputs': ['products_monthly', 'brain.stack', 'brain.offers'], 'capability': 'LIFE-C46', 'owner_screen': SCREEN},
+    {'rule_id': 'OFFER-R30', 'name': 'Free shipping line does not match the shipping policy', 'entity_type': 'offer',
+     'inputs': ['brain.offers.free_shipping_threshold_usd', 'brain.policies.shipping_options'], 'capability': 'MONEY-C05',
+     'owner_screen': SCREEN},
     {'rule_id': 'OFFER-R03', 'name': 'Margin after discount per SKU', 'entity_type': 'sku',
      'inputs': ['finance_inputs.cogs_landed keyed by product SKU', 'products'], 'capability': 'MONEY-C05',
      'owner_screen': SCREEN},
@@ -249,6 +255,7 @@ CAPABILITY = {'OFFER-R01': {'id': 'MONEY-C05', 'autonomy': 'founder_gate'},
               'OFFER-R27': {'id': 'LIFE-C47', 'autonomy': 'founder_gate'},
               'OFFER-R28': {'id': 'LIFE-C41', 'autonomy': 'founder_gate'},
               'OFFER-R29': {'id': 'LIFE-C46', 'autonomy': 'founder_gate'},
+              'OFFER-R30': {'id': 'MONEY-C05', 'autonomy': 'founder_gate'},
               'OFFER-R06': {'id': 'MONEY-C05', 'autonomy': 'founder_gate'},
               'OFFER-R04': {'id': 'LIFE-C36', 'autonomy': 'founder_gate'}}
 SEVERITY_ORDER = {'critical': 0, 'high': 1, 'medium': 2, 'low': 3}
@@ -1165,6 +1172,21 @@ def rule_bnpl(rd):
                      None, 0.4, [], end, money_reason='the lift is what the page test finds')]
 
 
+def rule_threshold_match(rd):
+    end = rd.ends_on
+    t, rec = threshold_usd(rd)
+    opts, orec = _model().brain_value(rd, 'policies.shipping_options')
+    free = [o.get('threshold_usd') for o in (opts or []) if isinstance(o, dict) and o.get('cost_usd') == 0 and o.get('threshold_usd') is not None]
+    if t is None or not free or float(free[0]) == t:
+        return []
+    ev = [_ev('free_shipping_threshold', t, 'usd', end, baseline=float(free[0]), baseline_kind='shipping_policy',
+              window='current', source='brain.offers, brain.policies')]
+    return [_finding('OFFER-R30', {'type': 'offer', 'id': 'threshold_mismatch', 'label': 'Free shipping line'}, 'high', ev,
+                     f'The offers say free shipping from ${t:,.0f}; the shipping policy says ${float(free[0]):,.0f}. A broken policy promise.',
+                     None, 0.8, [rec['id'], orec['id']] if rec and orec else [], end,
+                     money_reason='the orders caught between the two lines need order rows')]
+
+
 def rule_ladder(rd):
     end = rd.ends_on
     pb = _playbook()
@@ -1336,7 +1358,7 @@ def run(brand, window=None, data=None):
     """Findings for one brand, sorted by severity then money at stake. `window` is {ends_on} or None."""
     ends_on = date.fromisoformat(window['ends_on']) if window and window.get('ends_on') else last_full_day(data, brand)
     rd = Reader(data, brand, ends_on)
-    out = (rule_threshold(rd) + rule_stale(rd) + rule_pull(rd) + rule_first_order(rd) + rule_red_line(rd) + rule_promo(rd) + rule_gifting(rd) + rule_guarantee(rd) + rule_position(rd) + rule_parity(rd) + rule_discount(rd) + rule_cart(rd) + rule_second_order(rd) + rule_cost(rd) + rule_referral(rd) + rule_loyalty(rd) + rule_window_creep(rd) + rule_bundles(rd) + rule_launched(rd) + rule_upsell(rd) + rule_bnpl(rd) + rule_ladder(rd) + rule_sku_margin(rd) +
+    out = (rule_threshold(rd) + rule_stale(rd) + rule_pull(rd) + rule_first_order(rd) + rule_red_line(rd) + rule_promo(rd) + rule_gifting(rd) + rule_guarantee(rd) + rule_position(rd) + rule_parity(rd) + rule_discount(rd) + rule_cart(rd) + rule_second_order(rd) + rule_cost(rd) + rule_referral(rd) + rule_loyalty(rd) + rule_window_creep(rd) + rule_bundles(rd) + rule_launched(rd) + rule_upsell(rd) + rule_bnpl(rd) + rule_threshold_match(rd) + rule_ladder(rd) + rule_sku_margin(rd) +
            rule_unanswered(rd))
     out.sort(key=lambda f: (SEVERITY_ORDER[f['severity']], -((f.get('money_at_stake') or {}).get('usd') or -1), f['id']))
     return out

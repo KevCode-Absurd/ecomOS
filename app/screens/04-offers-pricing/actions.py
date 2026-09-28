@@ -1041,6 +1041,19 @@ def bnpl_action(f, a, ctx):
     return a
 
 
+def match_action(f, a, ctx):
+    a.update({'title': 'Make the free shipping line the same everywhere', 'owner': 'person',
+              'artefact': {'kind': 'brain_record', 'label': 'One free shipping line in the offers, the policy and the cart bar',
+                           'draft': f['sentence'] + '\nPick one line. Update the brain record, the shipping policy page, the cart bar and the shipping app to it on the same day.'},
+              'steps': steps(('person', 'Pick the line the store actually charges by, in the shipping app.'),
+                             ('person', 'Correct the brain record on the brand brain screen.'),
+                             ('person', 'Update the policy page and the cart bar the same day.')),
+              'size': {'text': 'every order between the two lines sees two different promises', 'usd': None},
+              'win_rule': 'One line in the offers, the policy and the cart.', 'stop_rule': 'None; this is a fix.',
+              'check_on': ctx.check_on(7), 'time_to_ship_hours': 1})
+    return a
+
+
 def returns_block(rd):
     """returns_by_reason for the window, or the labelled fixture when the metric is unavailable."""
     m = rd.m('returns_by_reason', audit.WINDOW)
@@ -1207,7 +1220,8 @@ BUILDERS = {'OFFER-R01': threshold_action, 'OFFER-R04': rung_action, 'OFFER-R08'
             'OFFER-R19': discount_action, 'OFFER-R20': cart_action, 'OFFER-R21': second_order_action,
             'OFFER-R22': cost_action, 'OFFER-R23': referral_action, 'OFFER-R24': loyalty_action,
             'OFFER-R25': discount_action, 'OFFER-R26': bundle_action,
-            'OFFER-R27': launched_action, 'OFFER-R29': bnpl_action}
+            'OFFER-R27': launched_action, 'OFFER-R29': bnpl_action,
+            'OFFER-R30': match_action}
 
 
 def build(f, rd, ctx, nr):
