@@ -1,0 +1,88 @@
+{
+  "note": "Rules the copy checker runs in code. Claim patterns point at brain record ids; the tier is read from the brain at run time, never copied here. Risk patterns and voice rules are the house rules from app/CLAUDE.md plus the Copy room spec.",
+  "allowed_tiers": ["approved", "site_backed"],
+  "claim_sections": ["claims", "offers", "policies"],
+  "claim_patterns": [
+    {"ref": "bombas.claims.donation_pledge", "kind": "mission", "label": "one purchased, one donated",
+     "patterns": ["one purchased\\s*=?\\s*one donated", "for every (item|pair) (you buy|purchased|bought)", "\\bdonat(e|ed|es|ion)\\b"]},
+    {"ref": "bombas.claims.guarantee_promise", "kind": "guarantee", "label": "Happiness Guarantee",
+     "patterns": ["happiness guarantee", "make it right"]},
+    {"ref": "bombas.claims.ankle_socks_benefit", "kind": "benefit", "label": "ankle sock build",
+     "patterns": ["moisture[- ]wicking", "blister tab", "cushioned footbed", "arch support"]},
+    {"ref": "bombas.claims.calf_socks_benefit", "kind": "benefit", "label": "calf sock build",
+     "patterns": ["stay[- ]up", "invisitoe", "y[- ]stitched heel", "extra[- ]long staple cotton"]},
+    {"ref": "bombas.claims.brand_positioning", "kind": "benefit", "label": "athletic performance and comfort",
+     "patterns": ["athletic performance", "extreme comfort"]},
+    {"ref": "bombas.offers.free_shipping_threshold_usd", "kind": "offer", "label": "free shipping over $75",
+     "patterns": ["free (standard )?shipping", "orders? (of |over )?\\$75"]},
+    {"ref": "bombas.offers.first_order_code", "kind": "offer", "label": "20% off first order, code COMFORT20",
+     "patterns": ["comfort20", "20% off"]},
+    {"ref": "bombas.offers.gifting", "kind": "offer", "label": "gift cards",
+     "patterns": ["gift cards?"]},
+    {"ref": "bombas.offers.bundles_pack_ladder", "kind": "price", "label": "pack sizes",
+     "patterns": ["\\b\\d{1,2}-pack\\b"]},
+    {"ref": "bombas.policies.returns_window_days", "kind": "guarantee", "label": "30 day returns",
+     "patterns": ["30[- ]days? (to )?return", "return window"]}
+  ],
+  "risk_patterns": [
+    {"id": "superlative", "reason": "unproven superlative",
+     "pattern": "\\b(most comfortable|softest|best socks?|#1|number one|world'?s (best|softest|most))\\b"},
+    {"id": "durability_promise", "reason": "durability promise with no proof; reviews say socks wear through",
+     "pattern": "\\b(never (wear out|get holes|pill|wear thin)|lasts? forever|indestructible)\\b",
+     "brain_ref": "bombas.objection_ladders.durability"},
+    {"id": "guarantee_mismatch", "reason": "guarantee does not match the policy on file (30 day window)",
+     "pattern": "\\b(lifetime (guarantee|warranty)|replace (them |it )?(free,? )?forever|no questions asked)\\b",
+     "brain_ref": "bombas.policies.returns_window_days"},
+    {"id": "health", "reason": "health claim with no proof; it can get the ad rejected",
+     "pattern": "\\b(podiatrists?|doctors?|clinically|cures?|heals?|relieves?|pain relief|foot pain|circulation)\\b"},
+    {"id": "competitor", "reason": "named competitor comparison",
+     "pattern": "\\b(stance|darn tough|smartwool|feetures|comrad|hanes|costco|kirkland)\\b"}
+  ],
+  "claim_like": "\\d|%|\\$|\\b(best|most|only|ever|never|always|forever|guarantee\\w*|free|donat\\w*|proven|clinically|recommended|softest|softer|better|than|lifetime|warranty|returns?)\\b",
+  "voice": {
+    "max_grade": 10,
+    "max_sentence_words": 20,
+    "grade_min_words": 12,
+    "em_dashes": ["—", "–", " -- "],
+    "inflated_words": ["elevate", "elevated", "revolutionary", "game-changing", "game changer", "seamless", "seamlessly",
+      "unlock", "unparalleled", "leverage", "transform", "transformative", "ultimate", "innovative", "cutting-edge",
+      "world-class", "next-level", "empower", "curated", "synergy", "delve", "unrivaled", "unmatched"],
+    "do_refs": ["bombas.voice.legal_tone_statement", "bombas.voice.bee_origin_phrase", "bombas.voice.donation_tagline"],
+    "do": [
+      {"rule": "Short sentences, 20 words or fewer.", "checked": true},
+      {"rule": "Reads at grade 10 or below.", "checked": true},
+      {"rule": "Digits for numbers. Plain words.", "checked": false},
+      {"rule": "A concrete before-to-after benefit.", "checked": false}
+    ],
+    "do_not": [
+      {"rule": "No em dashes.", "checked": true},
+      {"rule": "No inflated words (elevate, revolutionary, seamless and the rest of the list).", "checked": true},
+      {"rule": "No claim without a record at tier approved or site backed.", "checked": true},
+      {"rule": "No Reddit words as a testimonial.", "checked": true}
+    ]
+  },
+  "formats": [
+    {"id": "meta_feed", "label": "Meta feed", "headline_max": 40, "primary_max": 125, "cta": "SHOP_NOW"},
+    {"id": "meta_reels", "label": "Meta Reels and Stories", "headline_max": 40, "primary_max": 72, "cta": "SHOP_NOW"},
+    {"id": "google_search", "label": "Google search ad", "headline_max": 30, "primary_max": 90, "cta": null}
+  ],
+  "lines": {
+    "headline": [
+      {"text": "One purchased = one donated", "refs": ["bombas.claims.donation_pledge"]},
+      {"text": "Free shipping on orders $75+", "refs": ["bombas.offers.free_shipping_threshold_usd"]},
+      {"text": "Love them or we make it right", "refs": ["bombas.claims.guarantee_promise"]},
+      {"text": "Calf socks that stay up", "refs": ["bombas.claims.calf_socks_benefit"]},
+      {"text": "Ankle socks with real arch support", "refs": ["bombas.claims.ankle_socks_benefit"]},
+      {"text": "20% off your first order", "refs": ["bombas.offers.first_order_code"]}
+    ],
+    "primary": [
+      {"text": "Moisture-wicking cotton. A blister tab. A cushioned footbed with arch support. One purchased = one donated.",
+       "refs": ["bombas.claims.ankle_socks_benefit", "bombas.claims.donation_pledge"]},
+      {"text": "Calf socks that stay up all day. A Y-stitched heel and extra-long staple cotton.",
+       "refs": ["bombas.claims.calf_socks_benefit"]},
+      {"text": "Not happy with a pair? Our Happiness Guarantee means we make it right.",
+       "refs": ["bombas.claims.guarantee_promise"]},
+      {"text": "Use code COMFORT20 for 20% off your first order.", "refs": ["bombas.offers.first_order_code"]}
+    ]
+  }
+}

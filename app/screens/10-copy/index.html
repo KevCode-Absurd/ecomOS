@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Copy</title>
+<link rel="stylesheet" href="/web/ui-kit.css">
+<link rel="stylesheet" href="screen.css">
+</head>
+<body data-screen="10-copy">
+<div class="screen">
+  <div class="sample-badge" role="note" id="badge">Loading copy checks.</div>
+  <div class="screen-head"><h1>Copy</h1><p>Every claim checked against the brain before it ships. Ad promises checked against the page they land on.</p></div>
+  <section class="section"><h3>At a glance</h3><div class="grid tiles" id="tiles"></div></section>
+  <section class="section"><h3>Insights</h3><div class="grid" id="insights"></div></section>
+  <section class="section"><h3>Claims by tier</h3><div class="card" id="chart"></div></section>
+  <section class="section"><h3>Claim checker</h3>
+    <div class="card checker">
+      <div class="row pick"><label for="pick" class="small muted">Pick live copy</label><select id="pick"></select></div>
+      <textarea id="copy-text" class="text" rows="4" placeholder="Paste a headline, primary text or email line"></textarea>
+      <div class="row"><button class="btn primary" type="button" id="check-btn">Check this copy</button><span class="small muted" id="check-status"></span></div>
+      <div id="check-out"></div>
+    </div>
+  </section>
+  <section class="section"><h3>Live ad copy</h3><p class="muted small">Simulated copy on simulated ads. Click a row to check it.</p><div id="live"></div></section>
+  <section class="section"><h3>Message match</h3><p class="muted small">What each ad promises against what the page it sends to says. Page lines are brain records captured from that URL, not a live page scrape.</p><div id="match"></div></section>
+  <section class="section"><h3>Voice rules</h3><div class="grid two" id="voice"></div></section>
+  <section class="section"><h3>Copy set starter, by format</h3><p class="muted small">Lines built from brain records. The QA gate keeps only lines whose claims are approved or site backed, inside the format's limit and the voice rules.</p><div class="grid" id="stub"></div></section>
+  <section class="section"><h3>Language bank</h3>
+    <div class="row filters">
+      <label class="small muted">Theme <select id="theme"><option value="">All</option></select></label>
+      <label class="small muted">Stars <select id="star"><option value="">All</option><option value="5">5</option><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option><option value="none">No star (Reddit, unrated)</option></select></label>
+      <span class="small muted" id="lang-count"></span>
+    </div>
+    <div id="language"></div>
+  </section>
+  <section class="section"><h3>Claims on file</h3><div id="claims"></div></section>
+  <section class="section"><h3>Decide</h3><div class="card" id="decide"></div></section>
+  <section class="section"><h3>Audit findings</h3><div id="audit"></div></section>
+</div>
+<script src="/web/ui-kit.js"></script>
+<script src="/web/charts.js"></script>
+<script src="screen.js"></script>
+</body>
+</html>
