@@ -1,0 +1,79 @@
+[
+ {
+  "lane": "1",
+  "url": "summary://h-reddit/attempt",
+  "accessed": "2026-09-28",
+  "accessible": false,
+  "note": "Reddit extractor could not run. Every endpoint form tried (old.reddit.com HTML and search.json, www.reddit.com search.json and top.json, with a descriptive non-browser User-Agent, no login, no API key, low rate) was blocked at Reddit's own edge: old.reddit.com returned an HTTP 302 to its login wall, www.reddit.com returned an HTTP 403 'blocked by network security' page. Confirmed via two independent network paths (this session's outbound proxy, and Anthropic's separate WebFetch tool) that the block is Reddit's edge rejecting this environment's egress, not a local proxy or allowlist issue. No browser-spoofing User-Agent and no retry hammering were attempted, per the task's own constraints. Zero post or comment text was ever retrieved, so no language_bank, objections, avatars, competitors, positioning, seo_facts, content or learnings records were written for either lane."
+ },
+ {
+  "lane": "1",
+  "url": "https://old.reddit.com/r/BuyItForLife/search.json?q=bombas&restrict_sr=1&sort=top",
+  "accessed": "2026-09-28",
+  "accessible": false,
+  "note": "HTTP 302 redirect to old.reddit.com login wall (reason=lor2)"
+ },
+ {
+  "lane": "1",
+  "url": "https://old.reddit.com/r/BuyItForLife/",
+  "accessed": "2026-09-28",
+  "accessible": false,
+  "note": "HTTP 302 redirect to old.reddit.com login wall"
+ },
+ {
+  "lane": "1",
+  "url": "https://www.reddit.com/r/BuyItForLife/search.json?q=bombas&restrict_sr=1&sort=top",
+  "accessed": "2026-09-28",
+  "accessible": false,
+  "note": "HTTP 403, Reddit edge bot-defense page ('blocked by network security')"
+ },
+ {
+  "lane": "2",
+  "url": "https://www.reddit.com/search.json?q=bombas&sort=top",
+  "accessed": "2026-09-28",
+  "accessible": false,
+  "note": "HTTP 403, same edge block page, repeated on retry"
+ },
+ {
+  "lane": "2",
+  "url": "https://www.reddit.com/r/socks/.json",
+  "accessed": "2026-09-28",
+  "accessible": false,
+  "note": "HTTP 403 edge block page"
+ },
+ {
+  "lane": "2",
+  "url": "https://www.reddit.com/r/socks/top.json?limit=5&t=year",
+  "accessed": "2026-09-28",
+  "accessible": false,
+  "note": "HTTP 403 edge block page"
+ },
+ {
+  "lane": "2",
+  "url": "https://old.reddit.com/r/socks/.json",
+  "accessed": "2026-09-28",
+  "accessible": false,
+  "note": "HTTP 302 redirect to login wall, confirmed via response headers"
+ },
+ {
+  "lane": "2",
+  "url": "https://old.reddit.com/r/socks/top/.json?t=year&limit=10",
+  "accessed": "2026-09-28",
+  "accessible": false,
+  "note": "HTTP 302 redirect to login wall"
+ },
+ {
+  "lane": "2",
+  "url": "https://old.reddit.com/r/BuyItForLife/search.json?q=bombas",
+  "accessed": "2026-09-28",
+  "accessible": false,
+  "note": "retried via Anthropic's separate WebFetch tool (different network path from the sandbox proxy): tool reported it is unable to fetch old.reddit.com at all"
+ },
+ {
+  "lane": "2",
+  "url": "https://www.reddit.com/r/socks/search.json?q=best+socks&restrict_sr=1&sort=top&t=year",
+  "accessed": "2026-09-28",
+  "accessible": false,
+  "note": "retried via Anthropic's separate WebFetch tool: tool reported it is unable to fetch www.reddit.com at all"
+ }
+]
