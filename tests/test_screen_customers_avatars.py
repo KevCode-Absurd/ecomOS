@@ -1877,3 +1877,42 @@ class SalesShareRule(TempBrain):
             self.assertTrue(a['title'].startswith('Settle the share of'))
             self.assertEqual(a['job'], 'avatars')
             self.assertEqual(a['capability']['autonomy'], 'founder_gate')
+
+
+class DeskMovesSized(TempBrain):
+    """Feature 8.1: depth rule 5 inside the desk. Moves in blocks carry the size, stop rule and check date of their ranked action, or their own."""
+
+    def moves(self, d):
+        out = []
+        def walk(x):
+            if isinstance(x, dict):
+                k = (x.get('artefact') or {}).get('kind') if isinstance(x.get('artefact'), dict) else x.get('kind')
+                if x.get('id') and x.get('steps') and k in api.builds.MOVES_MONEY:
+                    out.append(x)
+                for v in x.values():
+                    walk(v)
+            elif isinstance(x, list):
+                for v in x:
+                    walk(v)
+        walk({k: v for k, v in d.items() if k not in ('blocks', 'compare')})
+        return out
+
+    def test_every_desk_move_has_a_stop_and_a_date(self):
+        d = api.handle(Req(['overview']))
+        mv = self.moves(d)
+        self.assertGreater(len(mv), 50)
+        for m in mv:
+            self.assertTrue(m['size']['text'], m['id'])
+            self.assertRegex(m['stop_rule'] or '', r'\d', m['id'])
+            self.assertFalse(m['stop_rule'].startswith('Stop if'))
+            self.assertTrue(m['check_on'], m['id'])
+        c = d['sized_moves']
+        self.assertLess(c['unsized'], (c['from_rank'] + c['own']) / 5)
+
+    def test_moves_match_their_ranked_action(self):
+        d = api.handle(Req(['overview']))
+        acts = {a['plan_id']: a for a in api.rank('bombas', RANK_WINDOW)['actions'] if a.get('plan_id')}
+        hit = [m for m in self.moves(d) if m['id'] in acts and acts[m['id']].get('size')]
+        self.assertTrue(hit)
+        for m in hit:
+            self.assertEqual(m['size'], acts[m['id']]['size'])

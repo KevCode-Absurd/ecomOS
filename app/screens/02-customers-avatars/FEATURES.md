@@ -132,6 +132,21 @@ Lead's review: rounds 1 to 4 passed. Focus: returns and tickets by avatar, depth
 | 7.9 | Print polish: the monthly report and each avatar page open with one line naming the brand, the window and the simulated label, once, in the panel, the copy and the print. Print keeps each section whole, sets page margins and prints black on white. The three moves in the report now carry their money or size ("$5,842,578 at stake, 2026-01"); "12 1 and 2 star reviews" reads "12 reviews of 1 or 2 stars". Checked as a print PDF in a browser | done |
 | 7.10 | CUST-R31 reviews and sales disagree on who buys: one low finding per avatar whose share of sales by line is 1.5x its review share either way, or who has a share from sales only; each maps to its drafted survey check in `rank` (LIFE-C29, founder gate, agent drafts; 7.8's action fixed to match the catalogue). Unavailable with a connect step when product sales cannot be read. 31 rules, 30 firing on Bombas; 67 actions, 32 of them sized with a stop rule. The rule docstring now says which rules carry money. Also: "12 1 and 2 star reviews" reads "12 reviews of 1 or 2 stars" in the claims finding and line. Screenshot `round7.png` (the plan, led by the January stake) | done |
 
+## Round 8: the desk as deep as the plan, sales in the scores, a second check on January (from 28 Sep 2026)
+
+| # | Feature | Status |
+|---|---|---|
+| 8.1 | Depth rule 5 inside the desk: every move in a block that changes money or traffic carries the size, stop rule and check date of the ranked action built from it (32), or a size from its own row (one-star mentions, share of buyers, praise reviews) with its kind's stop rule and a 7-day check (67). 9 say "size unavailable": avatars with no share yet and one cohort move. Brief panels show size, stop and check. The overview reuses the cached `rank`, so the page load stays the same | done |
+| 8.2 | The January cliff against last year: the same month-to-month step in the monthly table a year earlier, so the stake splits into the season and the rest | todo |
+| 8.3 | Sales share in the scores: the focus score and the compare view use the share of sales where reviews give none, labelled as such | todo |
+| 8.4 | The avatar page from the compare view: open either avatar's page from the pair | todo |
+| 8.5 | Settle it lands in the survey: every "Settle it" question is in the survey block, closing its gap | todo |
+| 8.6 | Browser smoke test: load the page, each desk tab, the report and one avatar page in Chromium; fail on any script error; skip without Playwright | todo |
+| 8.7 | Money on weak cohorts: repeat in months 1 to 3 under the median of cohorts, priced by the gap x cohort size x AOV | todo |
+| 8.8 | Depth rule 7: a rubric dimension with no input shows n/a and is scored neutral, written down | todo |
+| 8.9 | Money on the page head: stake priced on this screen, and how many moves carry it | todo |
+| 8.10 | Audit rules and `rank` for round 8, screenshot `round8.png` | todo |
+
 ### Round 7 founder note (28 Sep 2026)
 
 1. Your first priced move from this screen: the January drop cost about $5.8 million against a normal month. The plan to bring past buyers back in January is number 5 on your master top 10.

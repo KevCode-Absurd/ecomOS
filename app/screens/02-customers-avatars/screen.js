@@ -123,12 +123,14 @@
 
   // ---------- desk: avatar by channel ----------
   function briefPanel(b) {
-    const brief = [b.title, '', 'Owner: ' + pretty(b.owner), '', 'Steps:'].concat(b.steps.map((s) => s.n + '. ' + s.text + ' (' + s.who + ')'), ['', b.draft]).join('\n');
+    const sized = [b.size ? 'Size: ' + b.size.text : null, b.stop_rule ? 'Stop if: ' + b.stop_rule : null, b.check_on ? 'Check on: ' + fmt.date(b.check_on) : null].filter(Boolean);
+    const brief = [b.title, '', 'Owner: ' + pretty(b.owner)].concat(sized, ['', 'Steps:'], b.steps.map((s) => s.n + '. ' + s.text + ' (' + s.who + ')'), ['', b.draft]).join('\n');
     UI.panel({
       title: b.title,
       tools: [UI.copyButton({ label: 'Copy brief', text: () => brief })],
       body: el('div', { class: 'stack' },
         el('div', { class: 'row' }, UI.ownerChip(b.owner), el('span', { class: 'chip', text: 'makes ' + (KIND_LABEL[b.kind] || pretty(b.kind)) }), el('span', { class: 'chip mono', text: b.capability.id })),
+        sized.length ? el('p', { class: 'small', text: sized.join('. ') + '.' }) : null,
         el('pre', { class: 'draft', text: b.draft }),
         el('ol', { class: 'a-steps' }, ...b.steps.map((s) => el('li', null, s.text, el('span', { class: 'who', text: ' (' + s.who + ')' })))),
         UI.decisionRow({ capability: b.capability, owner: b.owner, screen: SLUG, finding_id: b.id })),

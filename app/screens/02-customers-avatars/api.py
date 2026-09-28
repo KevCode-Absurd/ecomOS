@@ -484,6 +484,8 @@ def _build_overview(brain: Brain) -> dict:
     builds.card_meta(out)
     out["compare"] = builds.compare_rows(out)
     out["blocks"] = builds.block_notes(out)
+    w = {"ends_on": out["ends_on"], "days": 28, "trailing": 4}
+    builds.size_moves(out, {a["plan_id"]: a for a in rank(brain.brand, w)["actions"] if a.get("plan_id")})
     return out
 
 
@@ -779,6 +781,7 @@ def _build_rank(brand: str, window: dict) -> dict:
         _rescore(a, eng)
         a["job"] = RULE_JOB.get(f["rule_id"], "avatars")
         a["_artefact_id"] = (plan or {}).get("id") if f["status"] == "open" else None
+        a["plan_id"] = a["_artefact_id"]
         actions.append(a)
     return {"actions": merge_same_artefact(actions)}
 

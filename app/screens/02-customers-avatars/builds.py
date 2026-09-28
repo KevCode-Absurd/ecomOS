@@ -2950,3 +2950,55 @@ def sales_share(avatars: list[dict], buys: dict[str, dict[str, int]], ls: dict) 
             f"{only} have a share from sales only. Lines cover {cov} percent of sales, {ls['window']}, simulated.")
     return {"available": True, "rows": rows, "coverage": round(covered / ls["total"], 4), "window": ls["window"], "line": line,
             "unmapped_share": round(1 - ls["coverage"], 4)}
+
+
+MOVE_CHECK_DAYS = 7   # the shared default check for an action with no dated plan
+ROW_SIZE = [("one_star", "n", "one-star mentions"), ("buyer_share", "%", "of buyers"), ("share_estimate", "%", "of buyers, estimated"),
+            ("share", "%", "of buyers"), ("mentions", "n", "mentions"), ("hits", "n", "reviews that hit it"), ("reviews", "n", "reviews"),
+            ("them", "n", "doubts to answer in this channel"), ("praise_reviews", "n", "praise reviews behind the lines")]
+
+
+def size_moves(d: dict, ranked: dict) -> dict:
+    """Depth rule 5 inside the desk: every move in a block that changes money or traffic carries the size, stop rule
+    and check date of the ranked action built from it; a move with no ranked action gets its kind's stop rule and
+    says its size is unavailable. Returns counts for the tests."""
+    import datetime as _dt
+    counts = {"from_rank": 0, "own": 0, "unsized": 0}
+    check = (_dt.date.fromisoformat(d["ends_on"]) + _dt.timedelta(days=MOVE_CHECK_DAYS)).isoformat() if d.get("ends_on") else None
+    rung = {r["id"]: r for r in (d.get("ladders") or {}).get("rows", [])}
+    avatar = {a["key"]: a for a in d.get("avatars") or []}
+    def from_row(row):
+        row = row or {}
+        if row.get("id") in rung and "one_star" not in row:
+            row = dict(row, one_star=rung[row["id"]].get("one_star"))
+        if row.get("key") in avatar and "share_estimate" not in row:
+            row = dict(row, share_estimate=avatar[row["key"]].get("share_estimate"))
+        for key, unit, label in ROW_SIZE:
+            v = (row or {}).get(key)
+            if isinstance(v, (int, float)) and not isinstance(v, bool) and v:
+                return f"{round(v * 100, 1)} percent {label}" if unit == "%" else f"{v:,} {label}"
+        return None
+    def walk(x, parent=None):
+        if isinstance(x, dict):
+            kind = (x.get("artefact") or {}).get("kind") if isinstance(x.get("artefact"), dict) else x.get("kind")
+            if x.get("id") and x.get("steps") and kind in MOVES_MONEY and not x.get("size"):
+                a = ranked.get(x["id"])
+                if a and a.get("size"):
+                    x["size"], x["stop_rule"], x["check_on"] = a["size"], a.get("stop_rule"), a.get("check_on") or x.get("check_on")
+                    counts["from_rank"] += 1
+                else:
+                    ss = size_stop(kind, [], None, None)
+                    text = from_row(parent)
+                    x["size"] = {"text": text or "size unavailable", "usd": None}
+                    own = x.get("stop_rule") or ""
+                    x["stop_rule"] = own[len("Stop if "):] if own.startswith("Stop if ") else (own or ss["stop_rule"])
+                    x["check_on"] = x.get("check_on") or check
+                    counts["own" if text else "unsized"] += 1
+            for v in list(x.values()):
+                walk(v, x)
+        elif isinstance(x, list):
+            for v in x:
+                walk(v, parent)
+    walk({k: v for k, v in d.items() if k not in ("blocks", "compare")})
+    d["sized_moves"] = counts
+    return counts
