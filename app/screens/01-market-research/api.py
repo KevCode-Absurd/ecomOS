@@ -2159,6 +2159,44 @@ def answer_question(brand, body, today, brain=None):
     return 201, {'ok': True, 'question_id': qid, 'answered_on': today.isoformat(), 'written': written, 'kind': kind}
 
 
+# ---------------------------------------------------------------- the week plan (round 6.7)
+
+def week_plan(data, brand):
+    """The next 7 days on this desk in one copyable list: what is due (from the calendar), the hours left in each open
+    candidate's budget, the spend left under the weekly cap (from the ledger), and the pulls a person can approve this week
+    within it. A Monday list; nothing here runs anything."""
+    cal = calendar_items(data, brand, horizon_days=7)
+    r = rank(brand or 'sample', None)
+    ends_on = cal['ends_on']
+    br = audit.brain(brand) if brand else None
+    hours = audit.hours_table(brand or 'sample', br)
+    hrs = [{'name': h.get('name'), 'stage': h.get('stage'), 'left': round((h.get('hours_allowed') or 0) - (h.get('hours_logged') or 0), 1)} for h in hours.get('rows') or [] if not h.get('closed')]
+    pulls = audit.pulls(br, brand, dt.date.fromisoformat(ends_on)) if br is not None else {'rows': [], 'caps': None, 'ledger': None}
+    lg = pulls.get('ledger') or {}
+    cap = (pulls.get('caps') or {}).get('per_week_usd')
+    spent = lg.get('spent_week_usd') if lg.get('available') else None
+    left = round(cap - spent, 2) if cap is not None and spent is not None else None
+    due_pulls = [p for p in pulls.get('rows') or [] if p.get('verdict') != 'fresh' or (p.get('next_due') and p['next_due'] <= (dt.date.fromisoformat(ends_on) + dt.timedelta(days=7)).isoformat())]
+    affordable, budget = [], left if left is not None else (cap if cap is not None else None)
+    for p in sorted(due_pulls, key=lambda x: (x.get('estimate_usd') is None, x.get('estimate_usd') or 0)):
+        est = p.get('estimate_usd')
+        if est is None:
+            affordable.append(dict(p, fits=None))
+        elif budget is not None and est <= budget:
+            affordable.append(dict(p, fits=True))
+            budget = round(budget - est, 2)
+        else:
+            affordable.append(dict(p, fits=False))
+    top = [a for a in r['actions'] if a.get('status') != 'unavailable'][:5]
+    lines = [f'WEEK PLAN, {ends_on} to {(dt.date.fromisoformat(ends_on) + dt.timedelta(days=7)).isoformat()}: {brand or "sample"}', '',
+             f'DUE ({cal["overdue"]} overdue, {cal["this_week"]} this week)'] + [f'- {i["when"]}: {i["title"]}' + (f' ({i["text"]})' if i.get('text') else '') for i in cal['items']] or ['- nothing dated']
+    lines += ['', 'THE TOP 5 THIS WEEK'] + [f'- {a["title"]} ({a.get("owner")}, check {a.get("check_on") or "n/a"})' for a in top]
+    lines += ['', 'HOURS LEFT IN THE RESEARCH BUDGET'] + ([f'- {h["name"]} ({h["stage"]}): {h["left"]} h' + (' (over)' if h['left'] < 0 else '') for h in hrs] or ['- no open candidate'])
+    lines += ['', 'SPEND THIS WEEK'] + [(f'- ${spent:,.2f} of ${cap:,.2f} spent, ${left:,.2f} left' if left is not None else '- ledger or cap unavailable') + (f'; {lg.get("over_bound_week")} run(s) settled over their bound' if lg.get('over_bound_week') else '')]
+    lines += ['', 'PULLS A PERSON CAN APPROVE THIS WEEK'] + ([f'- {p["label"]}: {p["verdict"]}' + (f', about ${p["estimate_usd"]:,.2f}' if p.get('estimate_usd') is not None else ', no price on file') + ({True: ' (fits the cap)', False: ' (does not fit this week)', None: ''}[p['fits']]) + (f'; {p["command"]}' if p.get('command') else '') for p in affordable] or ['- every pull is fresh'])
+    return {'brand': brand or 'sample', 'from': ends_on, 'text': '\n'.join(lines), 'due': cal['items'], 'hours': hrs, 'spend': {'cap': cap, 'spent': spent, 'left': left}, 'pulls': [{k: p.get(k) for k in ('key', 'label', 'verdict', 'estimate_usd', 'fits')} for p in affordable], 'top': [a['title'] for a in top]}
+
+
 def _brand(req):
     brand = req.arg('brand', DEFAULT_BRAND)
     if brand in ('', 'sample'):
@@ -2201,6 +2239,8 @@ def handle(req):
             return changes_since(data, brand)
         if req.path == ['report']:
             return desk_report(data, brand)
+        if req.path == ['week']:
+            return week_plan(data, brand)
         if req.path == ['calendar']:
             return calendar_items(data, brand)
         if req.path == ['parked']:
@@ -2208,4 +2248,4 @@ def handle(req):
             return {'parked': r['parked'], 'decided': r['decided'], 'snooze_days': rank_mod.SNOOZE_DAYS, 'window': r['window']}
     except ValueError as exc:
         return 400, {'error': str(exc)}
-    return 404, {'error': 'not found', 'routes': ['overview', 'findings', 'rank', 'parked', 'calendar', 'report', 'changes', 'candidates/<id>/brief', 'handoff/<finding_id>', 'product_candidates', 'tests']}
+    return 404, {'error': 'not found', 'routes': ['overview', 'findings', 'rank', 'parked', 'calendar', 'week', 'report', 'changes', 'candidates/<id>/brief', 'handoff/<finding_id>', 'product_candidates', 'tests']}

@@ -69,6 +69,8 @@
         el('div', { class: 'card scroll' }, UI.verdictTable({ columns: [{ key: 'when', label: 'When' }, { key: 'title', label: 'What' }, { key: 'text', label: 'Detail' }], rows,
           verdict: { at: 1, kind: (r) => r.it.days < 0 ? 'fix' : r.it.days <= 7 ? 'watch' : 'keep', text: (r) => r.it.days < 0 ? 'Overdue' : r.it.days <= 7 ? 'This week' : r.it.kind.replace('_', ' '), reason: () => 'by date' },
           actions: { label: 'Do', onClick: () => {} }, sort: false }))),
+      el('div', { class: 'row', style: { gap: '8px' } }, el('button', { class: 'btn sm', type: 'button', text: 'The week plan', onclick: async () => { let w; try { w = await api(BASE + 'week' + Q); } catch (e) { alert('Week plan unavailable: ' + e.message); return; }
+        UI.panel({ title: 'The week plan from ' + fmt.date(w.from), tools: [UI.copyButton({ label: 'Copy the week plan', text: () => w.text })], body: el('div', { class: 'stack' }, el('p', { class: 'micro muted', text: 'What is due, the top 5, the hours left per candidate, the spend left under the weekly cap and the pulls that fit inside it. A Monday list; nothing runs from here.' }), el('pre', { class: 'small', style: { whiteSpace: 'pre-wrap', margin: 0 }, text: w.text })) }); } })),
       gapLine((c.overdue ? c.overdue + ' overdue' : 'nothing overdue') + ', ' + (c.this_week || 0) + ' due in the next 7 days, ' + items.length + ' in ' + c.horizon_days + ' days.', items.length && items[0].action_id ? { label: 'Open the first', onClick: () => open(items[0]) } : null)));
   }
 

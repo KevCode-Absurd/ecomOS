@@ -1479,6 +1479,22 @@ class ChangesTest(unittest.TestCase):
             api.SEEN_DIR = saved
 
 
+class WeekPlanTest(unittest.TestCase):
+    def test_week_plan(self):
+        w = api.handle(Req(['week']))
+        t = w['text']
+        for head in ('WEEK PLAN', 'DUE (', 'THE TOP 5 THIS WEEK', 'HOURS LEFT', 'SPEND THIS WEEK', 'PULLS A PERSON CAN APPROVE'):
+            self.assertIn(head, t)
+        self.assertTrue(all(i['days'] <= 7 for i in w['due']))
+        self.assertEqual(len(w['top']), 5)
+        self.assertTrue(w['hours'])
+        self.assertIsNotNone(w['spend']['cap'])
+        fits = [p for p in w['pulls'] if p['fits'] is True]
+        self.assertTrue(all((p['estimate_usd'] or 0) <= (w['spend']['left'] if w['spend']['left'] is not None else w['spend']['cap']) for p in fits))
+        s = api.handle(Req(['week'], brand='sample'))
+        self.assertIn('ledger or cap unavailable', s['text'])
+
+
 class CalendarTest(unittest.TestCase):
     def test_calendar_lists_every_dated_thing(self):
         c = api.handle(Req(['calendar']))
