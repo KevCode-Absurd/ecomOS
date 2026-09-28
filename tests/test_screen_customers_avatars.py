@@ -2596,14 +2596,16 @@ const { chromium } = require(process.env.PW_MODULE);
   await p.waitForFunction(() => /already there/.test(document.querySelector('#handoff .pack button').innerText), null, { timeout: 30000 });
   const again = await btn.innerText();
   const line = await p.$eval('#handoff .pack .sent', (n) => n.innerText);
-  console.log(JSON.stringify({ label, after, again, line, errs }));
+  const inbox = await p.$$eval('#inbox article', (n) => n.map((x) => x.querySelector('b').innerText));
+  console.log(JSON.stringify({ label, after, again, line, inbox, errs }));
   await b.close();
 })().catch((e) => { console.log(JSON.stringify({ fatal: String(e) })); process.exit(1); });
 """
 
 
 class SendToTeams(unittest.TestCase):
-    """Feature 11.1: hand-off packs go onto the shared hand-offs table (events.md). The rows carry the move's why,
+    """Features 11.1 and 11.7: hand-off packs go onto the shared hand-offs table (events.md), and rows other screens
+    hand to this one show in its inbox. The rows carry the move's why,
     stop rule, check date, owner, capability and id; sending twice adds nothing twice. The browser test runs a server
     whose logs sit in a temp folder, so the real list is never touched."""
 
@@ -2631,6 +2633,11 @@ class SendToTeams(unittest.TestCase):
         if not node or not mods:
             self.skipTest('no Node or Playwright here')
         tmp = Path(tempfile.mkdtemp())
+        seed = [{'id': 'HO-seed000001', 'from_screen': '10-copy', 'to': '02-customers-avatars', 'kind': 'research_note', 'status': 'proposed',
+                 'title': 'Which avatar reads this headline best?', 'draft': 'DRAFT question', 'time': '2026-09-27T10:00:00Z'},
+                {'id': 'HO-seed000002', 'from_screen': '10-copy', 'to': 'creative', 'kind': 'copy', 'status': 'proposed',
+                 'title': 'Not for us', 'time': '2026-09-27T10:00:00Z'}]
+        (tmp / 'handoffs.json').write_text(json.dumps(seed), encoding='utf-8')
         with socket.socket() as s_:
             s_.bind(('127.0.0.1', 0))
             port = s_.getsockname()[1]
@@ -2656,8 +2663,9 @@ class SendToTeams(unittest.TestCase):
         self.assertNotIn('fatal', out, out)
         self.assertEqual(out['errs'], [])
         n = int(re.search(r'Send (\d+) to', out['label']).group(1))
-        rows = rows if isinstance(rows, list) else rows.get('rows', [])
+        rows = [x for x in (rows if isinstance(rows, list) else rows.get('rows', [])) if x['from_screen'] == '02-customers-avatars']
         self.assertEqual(len(rows), n)
+        self.assertEqual(out['inbox'], ['Which avatar reads this headline best?'])
         self.assertTrue(all(x['from_screen'] == '02-customers-avatars' and x['status'] == 'proposed' for x in rows))
         self.assertIn(f'{n} on the creative list', out['line'])
         self.assertEqual(out['again'], f'Sent 0, {n} already there')

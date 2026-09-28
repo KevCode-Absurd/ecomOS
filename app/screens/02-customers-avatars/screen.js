@@ -1095,6 +1095,25 @@
     }));
   }
 
+  // ---------- the inbox: rows other screens handed to this one (events.md); read only, never edited here ----------
+  const INBOX_TO = [SLUG, 'brand', 'customers'];
+  async function renderInbox() {
+    let rows;
+    try { const r = await UI.api('/api/handoffs'); rows = (r.handoffs || []).filter((x) => INBOX_TO.includes(x.to) && x.from_screen !== SLUG); }
+    catch (e) { mount('#inbox', el('p', { class: 'muted small', text: 'The hand-offs table cannot be read right now: ' + e.message })); return; }
+    const open = rows.filter((x) => x.status === 'proposed' || x.status === 'decided');
+    document.getElementById('inbox-sub').textContent = rows.length
+      ? rows.length + ' handed to us, ' + open.length + ' still open. Each opens its draft; your choice is logged against the hand-off.'
+      : 'Nothing handed to this screen yet. Other screens post here when they need avatars, doubts or words.';
+    if (!rows.length) { mount('#inbox'); return; }
+    mount('#inbox', ...rows.slice().reverse().slice(0, 12).map((x) => el('article', { class: 'card flat' },
+      el('div', { class: 'row between' }, el('b', { text: x.title }), el('span', { class: 'chip', text: x.status })),
+      el('div', { class: 'small muted', text: 'From ' + x.from_screen + ', ' + pretty(x.kind) + ', ' + fmt.date(x.time) + (x.check_on ? '. Check on ' + fmt.date(x.check_on) : '') + '.' }),
+      x.why ? el('div', { class: 'small', text: x.why }) : null,
+      el('button', { class: 'btn soft xs', type: 'button', text: 'Open the draft', onclick: () => UI.panel({ title: x.title, body: el('pre', { class: 'draft', text: x.draft || 'No draft sent.' }) }) }),
+      UI.decisionRow({ capability: x.capability || 'BRAND-C15', owner: x.owner || 'agent_drafts', screen: SLUG, compact: true, finding_id: x.id }))));
+  }
+
   // ---------- the shared hand-offs table (events.md): send a pack, see what each team already has ----------
   let sent = [];
   async function loadSent() {
@@ -1239,6 +1258,7 @@
     renderTests();
     renderDecided((r.actions || []).concat(r.snoozed || []));
     renderHandoff();
+    renderInbox();
     document.getElementById('audit-sub').textContent = a.findings.length + ' findings from ' + a.rules.length + ' rules. Brain version ' + String(a.brain_version || '').slice(0, 7) + '.';
     mount('#audit', auditTable(a.findings));
     mount('#rules', el('h4', { text: 'Rules' }), rulesTable(a.rules, a.findings));
