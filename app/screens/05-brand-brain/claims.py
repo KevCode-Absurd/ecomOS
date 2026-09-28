@@ -236,6 +236,9 @@ def channel_scan(brain, text: str, channel: str) -> dict:
                 verdict="fail" if fails else ("warn" if warns else "pass"), channels=sorted(CHANNELS))
 
 
+SPELLING_CHECK = None  # set by the api to glossary.check
+
+
 def scan(brain, text: str) -> dict:
     text = text or ""
     hits = []
@@ -283,6 +286,11 @@ def scan(brain, text: str) -> dict:
     if grade is not None and grade > GRADE_MAX:
         hits.append({"kind": "reading_level", "severity": "warn", "match": f"grade {grade}", "record": None, "tier": None,
                      "fix": f"Shorter sentences and plainer words. Target is below grade {GRADE_MAX:g}."})
+    if SPELLING_CHECK is not None:
+        try:
+            hits += SPELLING_CHECK(brain, text)  # the glossary's spelling hits, last
+        except Exception:  # noqa: BLE001
+            pass
     fails = sum(1 for h in hits if h["severity"] == "fail")
     warns = len(hits) - fails
     return {"verdict": "fail" if fails else ("warn" if warns else "pass"), "fails": fails, "warns": warns, "hits": hits,

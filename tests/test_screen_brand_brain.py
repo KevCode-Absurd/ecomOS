@@ -2639,10 +2639,39 @@ class Round7AudienceNotes(TempBrain):
         self.assertEqual(api.handle(Req(['audiences', 'nope', 'note'], 'POST', body={'note': 'x'}))[0], 404)
 
 
+class Round7Glossary(TempBrain):
+    """Round 7 feature 3: the brand's own words from the records, founder terms, and the spelling check in the scanner, the review route and the brain file."""
+
+    def test_terms_and_spelling_check(self):
+        g = api.handle(Req(['glossary']))
+        names = [t['term'] for t in g['terms']]
+        self.assertIn('Bombas', names)
+        self.assertIn('Honeycomb Arch Support System', names)
+        self.assertIn('COMFORT20', names)
+        sc = api.handle(Req(['scan'], 'POST', body={'text': 'Soft socks with the honeycomb arch support system and code comfort20.'}))
+        sp = [h for h in sc['hits'] if h['kind'] == 'spelling']
+        self.assertEqual(sorted(h['match'] for h in sp), ['comfort20', 'honeycomb arch support system'])
+        self.assertTrue(all(h['severity'] == 'warn' for h in sp))
+        self.assertFalse([h for h in api.handle(Req(['scan'], 'POST', body={'text': 'Soft socks with the Honeycomb Arch Support System and code COMFORT20.'}))['hits'] if h['kind'] == 'spelling'])
+        status, res = api.handle(Req(['glossary'], 'POST', body={'term': 'Bombas', 'wrong': 'Bombass, Bombas Socks Inc', 'note': 'one word, capital B'}))
+        self.assertEqual(status, 201)
+        sc = api.handle(Req(['scan'], 'POST', body={'text': 'Bombass socks are soft.'}))
+        self.assertTrue(any(h['kind'] == 'spelling' and h['match'] == 'Bombass' for h in sc['hits']))
+        rv = api.handle(Req(['review', 'draft'], 'POST', body={'text': 'bombas socks are soft.'}))
+        self.assertEqual(next(c['status'] for c in rv['checks'] if c['key'] == 'spelling'), 'warn')
+        f = api.handle(Req(['agentfile'], query={'capability': ['CREA-C06']}))
+        self.assertIn('glossary', [x['key'] for x in f['strict']])
+        self.assertIn('Bombas (never Bombass, Bombas Socks Inc)', f['text'])
+        self.assertEqual(api.handle(Req(['glossary', 'bombas', 'retire'], 'POST'))[0], 201)
+        self.assertEqual(api.handle(Req(['glossary']))['counts']['founder'], 0)
+        self.assertEqual(api.handle(Req(['glossary'], 'POST', body={'term': 'x'}))[0], 400)
+        self.assertEqual(api.handle(Req(['glossary', 'nope', 'retire'], 'POST'))[0], 404)
+
+
 class Round4SecondBrand(unittest.TestCase):
     """Round 4 feature 2: plug and play. Every route answers for the example brain (7 records), unavailable never zero."""
 
-    ROUTES = [['overview'], ['master'], ['profile'], ['documents'], ['competitors'], ['coverage'], ['signals'], ['health'], ['conflicts'], ['questions'], ['ladders', 'proof'], ['selfaudit'], ['peaks'], ['visual'], ['newbrand'], ['visibility'], ['moves'], ['channels'], ['agentfile', 'endpoints'], ['brainmd'], ['trail'], ['assets'], ['ugc'], ['drift'], ['locks'], ['audiences'], ['walkthrough'], ['redlines'], ['owners'], ['onepage'], ['brainmd', 'notes'], ['alerts'],
+    ROUTES = [['overview'], ['master'], ['profile'], ['documents'], ['competitors'], ['coverage'], ['signals'], ['health'], ['conflicts'], ['questions'], ['ladders', 'proof'], ['selfaudit'], ['peaks'], ['visual'], ['newbrand'], ['visibility'], ['moves'], ['channels'], ['agentfile', 'endpoints'], ['brainmd'], ['trail'], ['assets'], ['ugc'], ['drift'], ['locks'], ['audiences'], ['walkthrough'], ['redlines'], ['owners'], ['onepage'], ['brainmd', 'notes'], ['alerts'], ['glossary'],
               ['decisions'], ['flows'], ['claims'], ['site', 'diff'], ['parity'], ['contracts'], ['legal'], ['voice'], ['battlecards'], ['permissions'],
               ['export'], ['assumptions'], ['facts'], ['summaries'], ['changes'], ['learn'], ['report'], ['digest'], ['review'], ['bottlenecks'], ['audit']]
 

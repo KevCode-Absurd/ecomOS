@@ -9,6 +9,8 @@ question, and accept or ignore on a proposed record. Nothing external.
   GET  agentfile/endpoints      this route table as JSON, for an agent or an MCP wrapper
   GET  brainmd                  the router BRAIN.md text
   GET|POST brainmd/notes        the founder notes block in BRAIN.md, read and set; kept across regeneration
+  GET  glossary                 the brand's own words: names, programmes, codes and founder terms with wrong spellings
+  POST glossary                 {term, wrong, note}: a founder term; POST glossary/<key>/retire removes it
   GET  alerts                   the weekly alert digest across every check, with what is new since the last one
   POST alerts/sent              mark the digest sent today; the next one flags what is new since
   GET  onepage                  the brain in one page for a new team member (markdown)
@@ -215,6 +217,9 @@ _pspec.loader.exec_module(parity)
 _sspec = importlib.util.spec_from_file_location("brand_brain_sitediff", HERE / "sitediff.py")
 sitediff = importlib.util.module_from_spec(_sspec)
 _sspec.loader.exec_module(sitediff)
+_glspec = importlib.util.spec_from_file_location("brand_brain_glossary", HERE / "glossary.py")
+glossary = importlib.util.module_from_spec(_glspec)
+_glspec.loader.exec_module(glossary)
 _alspec = importlib.util.spec_from_file_location("brand_brain_alerts", HERE / "alerts.py")
 alerts = importlib.util.module_from_spec(_alspec)
 _alspec.loader.exec_module(alerts)
@@ -293,6 +298,7 @@ _dspec.loader.exec_module(ladderproof)
 _cspec = importlib.util.spec_from_file_location("brand_brain_claims", HERE / "claims.py")
 claims_mod = importlib.util.module_from_spec(_cspec)
 _cspec.loader.exec_module(claims_mod)
+claims_mod.SPELLING_CHECK = glossary.check  # the scanner's spelling check reads the glossary
 _kspec = importlib.util.spec_from_file_location("brand_brain_ranking", HERE / "ranking.py")
 ranking = importlib.util.module_from_spec(_kspec)
 _kspec.loader.exec_module(ranking)
@@ -1936,6 +1942,28 @@ def handle(req):
         return cd
     if req.method == "POST" and parts == ["claims"]:
         return claim_add(brain, req.body)
+    if req.method == "GET" and parts == ["glossary"]:
+        g = glossary.terms(brain)
+        g.update(brand=brain.brand, today=brain.today.isoformat(), capability={"id": "BRN-C03", "autonomy": "agent_does"})
+        return g
+    if req.method == "POST" and parts == ["glossary"]:
+        rec = glossary.term_record(brain, req.body or {})
+        if isinstance(rec, tuple):
+            return rec
+        errs = founder_put(brain, rec, "founder_edit", rec["text"][:160])
+        if errs:
+            return 400, {"error": "; ".join(errs)}
+        return 201, {"ok": True, "record": rec["id"], "version": brain.version(), "next": "The scanner flags other casing or the wrong spellings from now on; the brain file lists it."}
+    if req.method == "POST" and len(parts) == 3 and parts[0] == "glossary" and parts[2] == "retire":
+        key = re.sub(r"[^a-z0-9_]+", "", parts[1])
+        raw = next((r for r in brain.raw("voice") if r.get("field") == f"term_{key}" and r.get("status", "active") != "retired"), None)
+        if raw is None:
+            return 404, {"error": "no founder term with that key", "key": key}
+        before_v = brain.version()
+        brain.retire(raw["id"])
+        changes.log(brain, "retired", "voice", raw["id"], f"glossary term {key} removed (retired)")
+        changes.version_step(brain, before_v, f"term {key} retired")
+        return 201, {"ok": True, "retired": raw["id"], "version": brain.version()}
     if req.method == "GET" and parts == ["alerts"]:
         def safe(fn, default):
             try:
@@ -2191,7 +2219,7 @@ def handle(req):
         pv = package_view(brain, cap)
         if isinstance(pv, tuple):
             return pv
-        res = agentfile.build(brain, cap, pv, {"claims": claims_mod, "voice": voice, "visibility": visibility, "ladderproof": ladderproof, "market": market, "package": package_mod, "audiences": audiences})
+        res = agentfile.build(brain, cap, pv, {"claims": claims_mod, "voice": voice, "visibility": visibility, "ladderproof": ladderproof, "market": market, "package": package_mod, "audiences": audiences, "glossary": glossary})
         _log_read(brain, [p["section"] for p in pv["parts"] if p.get("section")], req.arg("reader") or cap)
         if pv.get("record_ids"):
             trail.log_records(brain, req.arg("reader") or cap, pv["record_ids"], pv.get("public_facing"))
@@ -2246,7 +2274,7 @@ def handle(req):
             return 413, {"error": "text is over 20,000 characters"}
         channel = (req.body or {}).get("channel") or None
         kind = (req.body or {}).get("kind") or None
-        return reviewer.review(brain, text, channel, kind, claims_mod, legal, voice, visual, ugc, locks)
+        return reviewer.review(brain, text, channel, kind, claims_mod, legal, voice, visual, ugc, locks, glossary)
     if req.method == "POST" and parts == ["scan"]:
         text = str((req.body or {}).get("text") or "")
         if not text.strip():

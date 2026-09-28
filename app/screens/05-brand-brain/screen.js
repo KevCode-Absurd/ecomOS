@@ -66,6 +66,7 @@
     loadUgc(m.actions || []);
     loadDrift(m.actions || []);
     loadLocks();
+    loadGlossary();
     loadAudiences(m.actions || []);
     loadRedlines(m.actions || []);
     loadOwners(m.actions || []);
@@ -1525,6 +1526,19 @@
       return card;
     });
     mount('#audiences', el('div', { class: 'row' }, act ? UI.decisionRow({ capability: 'BRN-C10', autonomy: 'agent_does', owner: act.owner, screen: SCREEN, compact: true, finding_id: act.id, current: act.decision, stub: act.title + '. ' + act.artefact.label + '.' }) : null, status), el('div', { class: 'grid two' }, ...cards), el('p', { class: 'micro faint', text: au.note }));
+  }
+  async function loadGlossary() {
+    let g;
+    try { g = await api(BASE + 'glossary'); } catch (e) { mount('#glossary', el('p', { class: 'muted', text: 'Glossary unavailable: ' + e.message })); return; }
+    mount('#glossary-tools', UI.orientation([{ label: 'terms', value: g.counts.terms, unit: 'n' }, { label: 'yours', value: g.counts.founder, unit: 'n' }]));
+    const status = el('span', { class: 'micro muted' });
+    const chips = el('div', { class: 'found' }, ...g.terms.map((t) => { const c = el('span', { class: 'chip' + (t.source === 'founder' ? ' good' : ''), title: (t.note || '') + (t.record ? ' (' + t.record + ')' : ''), text: t.term + (t.wrong && t.wrong.length ? ' (never ' + t.wrong.join(', ') + ')' : '') }); if (t.source === 'founder') { const x = el('button', { class: 'btn xs soft', type: 'button', text: 'x', title: 'remove' }); x.addEventListener('click', async () => { try { await api(BASE + 'glossary/' + t.record.split('.').pop().replace(/^term_/, '') + '/retire', { method: 'POST' }); loadGlossary(); } catch (e) { status.textContent = 'Could not remove: ' + e.message; } }); c.append(' ', x); } return c; }));
+    const term = el('input', { class: 'text sm', placeholder: 'term, spelt exactly so', style: { flex: '1 1 200px' } });
+    const wrong = el('input', { class: 'text sm', placeholder: 'wrong spellings, comma separated', style: { flex: '1 1 240px' } });
+    const note = el('input', { class: 'text sm', placeholder: 'note (optional)', style: { flex: '1 1 200px' } });
+    const add = el('button', { class: 'btn primary sm', type: 'button', text: 'Add the term' });
+    add.addEventListener('click', async () => { if (!term.value.trim()) return; add.disabled = true; try { const r = await api(BASE + 'glossary', { method: 'POST', body: { term: term.value.trim(), wrong: wrong.value, note: note.value.trim() } }); status.textContent = r.next; loadGlossary(); } catch (e) { add.disabled = false; status.textContent = 'Could not add: ' + e.message; } });
+    mount('#glossary', chips, el('div', { class: 'row', style: { marginTop: '8px' } }, term, wrong, note, add, status), el('p', { class: 'micro faint', text: g.note }));
   }
   async function loadLocks() {
     let z;

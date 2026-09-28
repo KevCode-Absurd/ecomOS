@@ -33,7 +33,7 @@ def _val(r) -> str:
     return str(v)[:160]
 
 
-def strict_rules(brain, claims_mod, voice_mod, visibility_mod, public: bool) -> list[dict]:
+def strict_rules(brain, claims_mod, voice_mod, visibility_mod, public: bool, mods_glossary=None) -> list[dict]:
     rules = []
     forb = claims_mod.forbidden_phrases(brain)
     if forb:
@@ -76,6 +76,13 @@ def strict_rules(brain, claims_mod, voice_mod, visibility_mod, public: bool) -> 
             rules.append({"key": "channel_rules", "label": "Channel rules (name the channel when you review)", "lines": ch_lines, "check": "the channel scan applies them"})
     except Exception:  # noqa: BLE001
         pass
+    if mods_glossary is not None:
+        try:
+            gl = mods_glossary.terms(brain)
+            if gl["terms"]:
+                rules.append({"key": "glossary", "label": "The brand's own words, spelt exactly so", "lines": [f"{t['term']}" + (f" (never {', '.join(t['wrong'])})" if t.get("wrong") else "") + (f": {t['note']}" if t.get("note") else "") for t in gl["terms"][:30]], "check": "the scanner flags other casing or a wrong spelling"})
+        except Exception:  # noqa: BLE001
+            pass
     if public:
         try:
             v = visibility_mod.audit(brain)
@@ -120,7 +127,7 @@ def judgement_rules(brain, voice_mod, market_mod, ladderproof_mod) -> list[dict]
 
 def build(brain, capability: str, package_view: dict, mods: dict) -> dict:
     public = bool(package_view.get("public_facing"))
-    strict = strict_rules(brain, mods["claims"], mods["voice"], mods["visibility"], public)
+    strict = strict_rules(brain, mods["claims"], mods["voice"], mods["visibility"], public, mods.get("glossary"))
     judge = judgement_rules(brain, mods["voice"], mods.get("market"), mods["ladderproof"])
     if mods.get("audiences") is not None:
         try:

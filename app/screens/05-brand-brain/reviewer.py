@@ -60,7 +60,7 @@ def quotes_check(text: str, brain=None, ugc_mod=None) -> list[dict]:
     return hits
 
 
-def review(brain, text: str, channel: str | None, kind: str | None, claims_mod, legal_mod, voice_mod, visual_mod, ugc_mod=None, locks_mod=None) -> dict:
+def review(brain, text: str, channel: str | None, kind: str | None, claims_mod, legal_mod, voice_mod, visual_mod, ugc_mod=None, locks_mod=None, glossary_mod=None) -> dict:
     text = text or ""
     checks = []
     hits: list[dict] = []
@@ -101,6 +101,10 @@ def review(brain, text: str, channel: str | None, kind: str | None, claims_mod, 
         hits += v_hits
     else:
         checks.append({"key": "visual", "label": "Colours and fonts", "status": "skipped", "hits": 0, "reason": "no colour code in the draft"})
+    if glossary_mod is not None:
+        g_hits = glossary_mod.check(brain, text)
+        checks.append({"key": "spelling", "label": "The brand's own words", "status": "warn" if g_hits else "pass", "hits": len(g_hits)})
+        hits += g_hits
     q_hits = quotes_check(text, brain, ugc_mod)
     consented = sum(1 for h in q_hits if h["severity"] == "info")
     checks.append({"key": "quotes", "label": "Quotes and testimonials", "status": "fail" if any(h["severity"] == "fail" for h in q_hits) else ("warn" if any(h["severity"] == "warn" for h in q_hits) else "pass"), "hits": len(q_hits) - consented, "consented": consented})
