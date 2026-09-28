@@ -159,6 +159,14 @@ def build(f: dict, nr: float | None) -> dict:
                         {"n": 3, "who": "person", "text": "Pick the record as proof, or approve the drafted fact as an approved record."},
                         {"n": 4, "who": "agent", "text": f"Attach it to the rung. The surfaces that use the rung ({surfaces or 'copy, page, listing, macro'}) read the proof on their next brief."}],
                  check_on=_check_on(f, 7), time_to_ship_hours=1)
+    elif rid == "BRN-R36":
+        ex = f.get("expiring") or {}
+        conf = ex.get("confirmable")
+        a.update(title=(f"Confirm {ex.get('records')} {str(ex.get('source')).replace('_', ' ')} records before they go stale" if conf else f"Re-pull {str(ex.get('source')).replace('_', ' ')}: {ex.get('records')} records expire by {ex.get('earliest')}"), owner="person" if conf else "agent",
+                 artefact={"kind": "brain_record", "label": "the records refreshed or confirmed, expiry moved on", "draft": None},
+                 steps=([{"n": 1, "who": "agent", "text": "List the records with what each says and when it expires."}, {"n": 2, "who": "person", "text": "Confirm each still-true one in a click; retire what is no longer true."}, {"n": 3, "who": "agent", "text": "The expiry moves on by the section's shelf life."}] if conf else
+                        [{"n": 1, "who": "agent", "text": f"Estimate first if it is paid, then {ex.get('refresh')}."}, {"n": 2, "who": "agent", "text": "Diff the new records against the current ones; changes go to the review queue."}, {"n": 3, "who": "person", "text": "Accept the changes; the old records retire to history."}]),
+                 check_on=_check_on(f, 7), time_to_ship_hours=1)
     elif rid == "BRN-R35":
         ow = f.get("owner_row") or {}
         who = ow.get("owner") or "the founder"

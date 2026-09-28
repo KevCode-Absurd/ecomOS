@@ -197,7 +197,7 @@ Sources: round 6's candidates (the alert digest, notes on audience profiles, res
 | 7.3 | The brand's own words (`glossary.py`, `GET glossary`, `POST glossary`, `POST glossary/<key>/retire`): the names and spellings from the records (the brand, the product lines, the named programmes and parts in approved or site-backed claims, the codes) plus your own terms with their wrong spellings; the scanner, the review route and every channel scan flag other casing or a wrong spelling with the right form; the brain file lists the glossary under strict rules | done | Never see honeycomb arch support system in lower case or a misspelt brand name in an agent's draft again |
 | 7.4 | Proof requests for claims that are not yet approved | todo | |
 | 7.5 | What agents got wrong | todo | |
-| 7.6 | Records expiring this week | todo | |
+| 7.6 | What goes stale this week (`expiring.py`, `GET expiring`, `POST expiring/confirm`): every record whose expiry falls inside 7 days or is past, by the source that refreshes it, with the re-pull for public sources (read-only, inside the caps) and a one-click confirm for founder and document records that moves the expiry on by the section's shelf life; rule BRN-R36 puts one action per source on the plan (the agent re-pulls, the founder confirms), medium when any is already past | done | See what the brain is about to forget and refresh or confirm it before an agent reads a stale fact |
 | 7.7 | The founder round as a checklist | todo | |
 | 7.8 | Section trust, explained | todo | |
 | 7.9 | Restore from an export | todo | |

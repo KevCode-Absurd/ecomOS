@@ -2668,10 +2668,46 @@ class Round7Glossary(TempBrain):
         self.assertEqual(api.handle(Req(['glossary', 'nope', 'retire'], 'POST'))[0], 404)
 
 
+class Round7Expiring(TempBrain):
+    """Round 7 feature 6: records expiring this week by source, the confirm for founder records, rule BRN-R36."""
+
+    def test_expiring_groups_confirm_and_rule(self):
+        ex = api.handle(Req(['expiring']))
+        self.assertGreater(ex['counts']['records'], 0)  # Bombas has records expiring on 2026-09-29
+        self.assertTrue(all(r['days'] <= 7 for r in ex['rows']))
+        self.assertEqual(ex['rows'][0]['days'], min(r['days'] for r in ex['rows']))
+        srcs = {g['source'] for g in ex['groups']}
+        self.assertTrue(srcs)
+        fs = {f['entity']['id']: f for f in api.handle(Req(['audit']))['findings'] if f['rule_id'] == 'BRN-R36'}
+        self.assertEqual(set(fs), {'expiring_' + s for s in srcs})
+        acts = [a for a in api.rank('bombas', {'ends_on': '2026-09-27', 'days': 28, 'trailing': 4})['actions'] if a['rule_id'] == 'BRN-R36']
+        self.assertEqual(len(acts), len(srcs))
+        for a in acts:
+            self.assertEqual(api.rank_mod.validate_action(a), [])
+        # a founder record expiring tomorrow: confirm moves it on by the shelf life
+        api.handle(Req(['profile', 'offers', 'guarantee'], 'POST', body={'text': 'Happiness Guarantee, any reason, 30 days.'}))
+        rows = self.section('offers')
+        rec = next(r for r in rows if r['id'] == 'bombas.offers.guarantee')
+        rec['expires_at'] = '2026-09-29'
+        self.write('offers', rows)
+        ex = api.handle(Req(['expiring']))
+        mine = next(r for r in ex['rows'] if r['id'] == 'bombas.offers.guarantee')
+        self.assertEqual((mine['source'], mine['confirmable'], mine['days']), ('founder', True, 1))
+        status, res = api.handle(Req(['expiring', 'confirm'], 'POST', body={'ids': ['bombas.offers.guarantee']}))
+        self.assertEqual((status, res['done'][0]['expires_at']), (201, '2026-09-29'))  # offers shelf life is 1 day
+        rec = next(r for r in self.section('offers') if r['id'] == 'bombas.offers.guarantee')
+        self.assertEqual(rec['source']['confirmed_on'], '2026-09-28')
+        site_id = next(r['id'] for r in ex['rows'] if r['source'] == 'site') if any(r['source'] == 'site' for r in ex['rows']) else None
+        if site_id:
+            self.assertEqual(api.handle(Req(['expiring', 'confirm'], 'POST', body={'ids': [site_id]}))[1]['failed'][0]['id'], site_id)
+        self.assertEqual(api.handle(Req(['expiring', 'confirm'], 'POST', body={}))[0], 400)
+        self.assertIn('confirm', [c['kind'] for c in api.handle(Req(['changes']))['changes']])
+
+
 class Round4SecondBrand(unittest.TestCase):
     """Round 4 feature 2: plug and play. Every route answers for the example brain (7 records), unavailable never zero."""
 
-    ROUTES = [['overview'], ['master'], ['profile'], ['documents'], ['competitors'], ['coverage'], ['signals'], ['health'], ['conflicts'], ['questions'], ['ladders', 'proof'], ['selfaudit'], ['peaks'], ['visual'], ['newbrand'], ['visibility'], ['moves'], ['channels'], ['agentfile', 'endpoints'], ['brainmd'], ['trail'], ['assets'], ['ugc'], ['drift'], ['locks'], ['audiences'], ['walkthrough'], ['redlines'], ['owners'], ['onepage'], ['brainmd', 'notes'], ['alerts'], ['glossary'],
+    ROUTES = [['overview'], ['master'], ['profile'], ['documents'], ['competitors'], ['coverage'], ['signals'], ['health'], ['conflicts'], ['questions'], ['ladders', 'proof'], ['selfaudit'], ['peaks'], ['visual'], ['newbrand'], ['visibility'], ['moves'], ['channels'], ['agentfile', 'endpoints'], ['brainmd'], ['trail'], ['assets'], ['ugc'], ['drift'], ['locks'], ['audiences'], ['walkthrough'], ['redlines'], ['owners'], ['onepage'], ['brainmd', 'notes'], ['alerts'], ['glossary'], ['expiring'],
               ['decisions'], ['flows'], ['claims'], ['site', 'diff'], ['parity'], ['contracts'], ['legal'], ['voice'], ['battlecards'], ['permissions'],
               ['export'], ['assumptions'], ['facts'], ['summaries'], ['changes'], ['learn'], ['report'], ['digest'], ['review'], ['bottlenecks'], ['audit']]
 

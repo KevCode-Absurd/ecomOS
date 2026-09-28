@@ -9,6 +9,8 @@ question, and accept or ignore on a proposed record. Nothing external.
   GET  agentfile/endpoints      this route table as JSON, for an agent or an MCP wrapper
   GET  brainmd                  the router BRAIN.md text
   GET|POST brainmd/notes        the founder notes block in BRAIN.md, read and set; kept across regeneration
+  GET  expiring                 records expiring within 7 days, by the source that refreshes them
+  POST expiring/confirm         {ids}: confirm founder or document records still true; expiry moves on by the shelf life
   GET  glossary                 the brand's own words: names, programmes, codes and founder terms with wrong spellings
   POST glossary                 {term, wrong, note}: a founder term; POST glossary/<key>/retire removes it
   GET  alerts                   the weekly alert digest across every check, with what is new since the last one
@@ -217,6 +219,9 @@ _pspec.loader.exec_module(parity)
 _sspec = importlib.util.spec_from_file_location("brand_brain_sitediff", HERE / "sitediff.py")
 sitediff = importlib.util.module_from_spec(_sspec)
 _sspec.loader.exec_module(sitediff)
+_exspec = importlib.util.spec_from_file_location("brand_brain_expiring", HERE / "expiring.py")
+expiring = importlib.util.module_from_spec(_exspec)
+_exspec.loader.exec_module(expiring)
 _glspec = importlib.util.spec_from_file_location("brand_brain_glossary", HERE / "glossary.py")
 glossary = importlib.util.module_from_spec(_glspec)
 _glspec.loader.exec_module(glossary)
@@ -1942,6 +1947,27 @@ def handle(req):
         return cd
     if req.method == "POST" and parts == ["claims"]:
         return claim_add(brain, req.body)
+    if req.method == "GET" and parts == ["expiring"]:
+        ex = expiring.expiring(brain, health.SHELF_DAYS)
+        ex.update(brand=brain.brand, today=brain.today.isoformat(), capability={"id": "BRN-C02", "autonomy": "agent_does"})
+        return ex
+    if req.method == "POST" and parts == ["expiring", "confirm"]:
+        body = req.body or {}
+        ids = body.get("ids") if isinstance(body.get("ids"), list) else ([body.get("id")] if body.get("id") else [])
+        if not ids:
+            return 400, {"error": "send id or ids"}
+        done, failed = [], []
+        for rid in [str(x) for x in ids][:200]:
+            res = expiring.confirmed(brain, rid, health.SHELF_DAYS)
+            if isinstance(res, tuple):
+                failed.append({"id": rid, "error": res[1].get("error")})
+                continue
+            errs = founder_put(brain, res["record"], "confirm", f"{rid} confirmed still true; expires {res['expires_at']}")
+            if errs:
+                failed.append({"id": rid, "error": "; ".join(errs)})
+            else:
+                done.append({"id": rid, "expires_at": res["expires_at"]})
+        return 201, {"ok": not failed, "done": done, "failed": failed, "version": brain.version()}
     if req.method == "GET" and parts == ["glossary"]:
         g = glossary.terms(brain)
         g.update(brand=brain.brand, today=brain.today.isoformat(), capability={"id": "BRN-C03", "autonomy": "agent_does"})

@@ -71,6 +71,7 @@
     loadRedlines(m.actions || []);
     loadOwners(m.actions || []);
     loadSelfAudit(m.actions || []);
+    loadExpiring(m.actions || []);
     loadPeaks(m.actions || []);
     loadVisual(m.actions || []);
     loadNewBrand();
@@ -370,6 +371,19 @@
   }
 
   // ---------- 5b2. the brain audits itself ----------
+  async function loadExpiring(actions) {
+    let ex;
+    try { ex = await api(BASE + 'expiring'); } catch (e) { mount('#expiring', el('p', { class: 'muted', text: 'Expiring unavailable: ' + e.message })); return; }
+    const byAct = {}; for (const a of actions || []) if (a.rule_id === 'BRN-R36' && a.entity) byAct[a.entity.id] = a;
+    mount('#expiring-tools', UI.orientation([{ label: 'expiring in 7 days', value: ex.counts.records, unit: 'n', tone: ex.counts.records ? 'warn' : 'good' }, { label: 'already past', value: ex.counts.expired, unit: 'n', tone: ex.counts.expired ? 'bad' : null }, { label: 'sources', value: ex.counts.sources, unit: 'n' }, { label: 'you can confirm', value: ex.counts.confirmable, unit: 'n' }]));
+    const status = el('span', { class: 'micro muted' });
+    const groups = ex.groups.map((g) => { const act = byAct['expiring_' + g.source]; return el('div', { class: 'row card flat small' }, el('span', { class: 'chip ' + (g.expired ? 'bad' : 'warn'), text: g.records + (g.expired ? ' (' + g.expired + ' past)' : '') }), el('b', { text: pretty(g.source) }), el('span', { text: g.sections.map(pretty).join(', ') + '. Earliest ' + fmt.date(g.earliest) + '. Fix: ' + g.refresh + '.' }), act ? UI.decisionRow({ capability: 'BRN-C02', autonomy: 'agent_does', owner: act.owner, screen: SCREEN, compact: true, finding_id: act.id, current: act.decision, stub: act.title + '. ' + act.artefact.label + '.' }) : null); });
+    const conf = ex.rows.filter((r) => r.confirmable);
+    const confirmAll = el('button', { class: 'btn sm', type: 'button', text: 'Confirm all ' + conf.length + ' of yours still true', disabled: !conf.length });
+    confirmAll.addEventListener('click', async () => { confirmAll.disabled = true; try { const r = await api(BASE + 'expiring/confirm', { method: 'POST', body: { ids: conf.map((x) => x.id) } }); status.textContent = r.done.length + ' confirmed.' + (r.failed.length ? ' ' + r.failed.length + ' not: ' + r.failed[0].error : ''); loadExpiring(actions); loadPlan(); } catch (e) { confirmAll.disabled = false; status.textContent = 'Could not confirm: ' + e.message; } });
+    const table = UI.table({ columns: [{ key: 'id', label: 'Record' }, { key: 'days', label: 'Days', num: true }, { key: 'source', label: 'Source', format: pretty }, { key: 'tier', label: 'Tier', format: pretty }, { key: 'text', label: 'Text' }], rows: ex.rows.slice(0, 60), sort: false });
+    mount('#expiring', groups.length ? el('div', { class: 'stack' }, ...groups) : el('p', { class: 'muted small', text: 'Nothing expires in the next 7 days.' }), el('div', { class: 'row', style: { marginTop: '8px' } }, confirmAll, status), ex.rows.length ? table : null, ex.rows.length > 60 ? el('div', { class: 'micro faint', text: (ex.rows.length - 60) + ' more not shown.' }) : null, el('p', { class: 'micro faint', text: ex.note }));
+  }
   async function loadSelfAudit(actions) {
     let sa;
     try { sa = await api(BASE + 'selfaudit'); } catch (e) { mount('#selfaudit', el('p', { class: 'muted', text: 'Self audit unavailable: ' + e.message })); return; }

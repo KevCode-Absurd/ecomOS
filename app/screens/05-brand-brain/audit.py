@@ -175,6 +175,11 @@ BRN-R35 section review overdue. A section with records whose last review
     (or, before any, its last update) is older than its cadence (owners.py:
     the founder's cadence, else the shelf life). Severity medium past twice
     the cadence, else low. Capability BRN-C12. Owner: the section's owner.
+BRN-R36 records expiring this week. Records whose expiry falls inside 7
+    days, or is past, grouped by source type (expiring.py). One finding per
+    source: the agent re-pulls a public source read-only inside its caps, the
+    founder confirms a founder or document record. Severity medium when any is
+    past, else low. Capability BRN-C02. Owner: 05-brand-brain.
 BRN-R07 competitor snapshot stale. A configured Ad Library page was captured
     more than SNAPSHOT_STALE_DAYS (7) ago, or never. Severity low. Capability
     BRN-C11 (competitor snapshot, signals only). Owner: 05-brand-brain.
@@ -277,10 +282,12 @@ RULES = [
      "inputs": ["claims", "content", "learnings", "decisions", "visual"], "capability": "BRN-C08", "owner_screen": SCREEN},
     {"rule_id": "BRN-R35", "name": "section review overdue", "entity_type": "brand",
      "inputs": ["team.owner_*", "every section"], "capability": "BRN-C12", "owner_screen": SCREEN},
+    {"rule_id": "BRN-R36", "name": "records expiring this week", "entity_type": "brand",
+     "inputs": ["every section (expires_at)"], "capability": "BRN-C02", "owner_screen": SCREEN},
 ]
 AUTONOMY = {"BRN-C12": "agent_does", "BRN-C07": "founder_gate", "BRN-C03": "agent_does",
             "CREA-C19": "agent_does", "CREA-C04": "agent_does", "BRN-C11": "agent_does", "CREA-C06": "agent_does",
-            "BRAND-C57": "agent_does", "CREA-C03": "agent_does", "BRN-C05": "founder_gate", "BRN-C01": "agent_does", "PROD-C46": "agent_does", "LOOP-C28": "agent_does", "LOOP-C27": "agent_does", "LOOP-C29": "agent_does", "PROP-C06": "agent_does", "CREA-C12": "agent_does", "LOOP-C22": "founder_gate", "BRN-C10": "agent_does", "BRN-C08": "founder_gate"}
+            "BRAND-C57": "agent_does", "CREA-C03": "agent_does", "BRN-C05": "founder_gate", "BRN-C01": "agent_does", "PROD-C46": "agent_does", "LOOP-C28": "agent_does", "LOOP-C27": "agent_does", "LOOP-C29": "agent_does", "PROP-C06": "agent_does", "CREA-C12": "agent_does", "LOOP-C22": "founder_gate", "BRN-C10": "agent_does", "BRN-C08": "founder_gate", "BRN-C02": "agent_does"}
 
 _uspec = importlib.util.spec_from_file_location("brand_brain_assumptions", Path(__file__).resolve().parent / "assumptions.py")
 assumptions = importlib.util.module_from_spec(_uspec)
@@ -294,6 +301,9 @@ _lspec.loader.exec_module(legal)
 _pspec = importlib.util.spec_from_file_location("brand_brain_parity", Path(__file__).resolve().parent / "parity.py")
 parity = importlib.util.module_from_spec(_pspec)
 _pspec.loader.exec_module(parity)
+_exspec = importlib.util.spec_from_file_location("brand_brain_expiring", Path(__file__).resolve().parent / "expiring.py")
+expiring = importlib.util.module_from_spec(_exspec)
+_exspec.loader.exec_module(expiring)
 _owspec = importlib.util.spec_from_file_location("brand_brain_owners", Path(__file__).resolve().parent / "owners.py")
 owners = importlib.util.module_from_spec(_owspec)
 _owspec.loader.exec_module(owners)
@@ -847,6 +857,18 @@ def rule_self_audit(brain: Brain, ends_on: str) -> list[dict]:
     return out
 
 
+def rule_expiring(brain: Brain, ends_on: str) -> list[dict]:
+    out = []
+    ex = expiring.expiring(brain, health.SHELF_DAYS)
+    for g in ex["groups"]:
+        ev = [_row("records_expiring", g["records"], "n", ends_on, None, 0, g["source"]), _row("records_expired", g["expired"], "n", ends_on, None, 0, g["source"])]
+        f = _finding("BRN-R36", "medium" if g["expired"] else "low", {"type": "brand", "id": f"expiring_{g['source']}", "label": f"{g['source'].replace('_', ' ')} records"}, ev,
+                     f"{g['records']} {g['source'].replace('_', ' ')} record{'s' if g['records'] != 1 else ''} in {', '.join(s.replace('_', ' ') for s in g['sections'][:4])}{' and more' if len(g['sections']) > 4 else ''} expire by {ex['window_days']} days from now" + (f", {g['expired']} already past" if g["expired"] else "") + f"; the fix is to {g['refresh']}.", [], ends_on, 0.9)
+        f["expiring"] = dict(g, earliest=g["earliest"])
+        out.append(f)
+    return out
+
+
 def rule_owners(brain: Brain, ends_on: str) -> list[dict]:
     out = []
     ow = owners.owners(brain, health.SHELF_DAYS, health.META_SECTIONS, brain.section_stats())
@@ -986,7 +1008,7 @@ def run(brand: str, window: dict | None = None, root: Path | None = None) -> lis
         bank = keeper.load_bank()
     except (OSError, ValueError, KeyError):
         bank = None
-    out = rule_stale(brain, ends_on) + rule_claims(brain, ends_on) + rule_competitor_gaps(brain, ends_on) + rule_angle_gaps(brain, ends_on) + rule_signals(brain, ends_on) + rule_weak_sections(brain, ends_on) + rule_conflicts(brain, ends_on) + rule_untiered_claims(brain, ends_on) + rule_site_changes(brain, ends_on) + rule_parity(brain, ends_on) + rule_contracts(brain, ends_on) + rule_legal(brain, ends_on) + rule_picked_ideas(brain, ends_on) + rule_ladder_proof(brain, ends_on) + rule_self_audit(brain, ends_on) + rule_peaks(brain, ends_on) + rule_visual(brain, ends_on) + rule_visibility(brain, ends_on) + rule_rejected_due(brain, ends_on) + rule_assets(brain, ends_on) + rule_consents(brain, ends_on) + rule_drift(brain, ends_on) + rule_audiences(brain, ends_on) + rule_redlines(brain, ends_on) + rule_owners(brain, ends_on) + rule_permissions(brain, ends_on) + rule_snapshot_stale(brain, ends_on)
+    out = rule_stale(brain, ends_on) + rule_claims(brain, ends_on) + rule_competitor_gaps(brain, ends_on) + rule_angle_gaps(brain, ends_on) + rule_signals(brain, ends_on) + rule_weak_sections(brain, ends_on) + rule_conflicts(brain, ends_on) + rule_untiered_claims(brain, ends_on) + rule_site_changes(brain, ends_on) + rule_parity(brain, ends_on) + rule_contracts(brain, ends_on) + rule_legal(brain, ends_on) + rule_picked_ideas(brain, ends_on) + rule_ladder_proof(brain, ends_on) + rule_self_audit(brain, ends_on) + rule_peaks(brain, ends_on) + rule_visual(brain, ends_on) + rule_visibility(brain, ends_on) + rule_rejected_due(brain, ends_on) + rule_assets(brain, ends_on) + rule_consents(brain, ends_on) + rule_drift(brain, ends_on) + rule_audiences(brain, ends_on) + rule_redlines(brain, ends_on) + rule_owners(brain, ends_on) + rule_expiring(brain, ends_on) + rule_permissions(brain, ends_on) + rule_snapshot_stale(brain, ends_on)
     if bank is None:
         for rid, sev in (("BRN-R02", "medium"), ("BRN-R03", "medium")):
             f = _finding(rid, sev, {"type": "brand", "id": "question_bank", "label": "question bank"},
