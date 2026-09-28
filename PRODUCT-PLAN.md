@@ -60,6 +60,8 @@ A structured store of facts about one brand, with a source and a date on every f
 
 ### 3.2 Schema (sections, each a JSON file under `app/brain/<brand>/`)
 
+Update 28 Sep 2026, session S1.1: the full design is `app/contracts/brand-brain.md` (28 sections, record shape, context packaging tiers, ingestion, the freshness mechanism, cloud deployment steps). The record schema is `app/brain/schema.json` with `app/brain/validate.py`. The table below is the first cut and the contract file wins where they differ.
+
 | Section | Holds | Filled from | Read by |
 |---|---|---|---|
 | `identity` | name, founded, founders, HQ, mission, story, legal claims (B Corp etc), red lines | site, interviews, press | every agent, first 300 tokens |
@@ -288,7 +290,7 @@ One session per numbered item. Each session starts fresh, reads only what its li
 
 | # | Session | Model | Reads | Writes | Done when |
 |---|---|---|---|---|---|
-| S1.1 | Brain schema | Fable | Kevin's brain skill file, `agents/loop/BRAIN-KEEPER.md`, `app/screens/05-brand-brain/`, section 3 here | `app/contracts/brand-brain.md`, `app/brain/schema.json`, `brain_sections` on each capability | a validator passes an example brain and rejects a record without source or date |
+| S1.1 | Brain schema | Fable | Kevin's brain skill file, `agents/loop/BRAIN-KEEPER.md`, `app/screens/05-brand-brain/`, section 3 here | `app/contracts/brand-brain.md`, `app/brain/schema.json`, `brain_sections` on each capability | done 28 Sep 2026 except `brain_sections` on capabilities, which moves to S1.2. A validator passes an example brain and rejects a record without source or date |
 | S1.2 | Bombas public ingestion | Opus, with web, one sub-agent per source | section 3.4, the schema | `app/brain/bombas/*.json`, `sources.json`, `assumptions.json` | every record has a source url and a date; the merge report lists conflicts |
 | S1.3 | Brain review | Fable, then Kevin | the brain | `open_questions.json`, corrections | Kevin signs off the identity, products, offers, avatars and claims sections |
 
