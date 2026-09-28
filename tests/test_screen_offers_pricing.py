@@ -1483,5 +1483,29 @@ class NoThresholdInJsTest(unittest.TestCase):
             self.assertIsNotNone(d['settings'][k])
 
 
+class SizedStopTest(unittest.TestCase):
+    """Round 6 feature 2: depth.md rules 5 and 12 on both brands. Every move that changes money or traffic
+    carries a size, a stop rule and a check date; titles and steps stay under 20 words; no banned words."""
+
+    def check(self, acts):
+        import re
+        for a in acts:
+            if a['artefact']['kind'] != 'connector_setup':
+                self.assertTrue((a.get('size') or {}).get('text'), a['id'])
+                self.assertTrue(a.get('stop_rule'), a['id'])
+                self.assertTrue(a.get('check_on'), a['id'])
+            for t in [a['title']] + [s['text'] for s in a['steps']]:
+                self.assertLess(len(t.split()), 20, t)
+            self.assertNotRegex(a['title'] + a.get('why', ''), r'(?i)\b(should|consider|leverage)\b')
+
+    def test_bombas(self):
+        self.check(api.actions.rank('bombas')['actions'])
+
+    def test_sample(self):
+        sys.path.insert(0, str(ROOT / 'app'))
+        import server
+        self.check(api.actions.rank(None, None, server.Data())['actions'])
+
+
 if __name__ == '__main__':
     unittest.main()

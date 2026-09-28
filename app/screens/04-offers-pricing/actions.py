@@ -244,21 +244,24 @@ def rung_action(f, a, ctx):
                  'page_section': 'Add the section to the product page price block.',
                  'listing_fix': 'Update the marketplace title, first image and first bullet.'}[kind]
     size = (f'{money(row["cost_per_1000_orders"])} per 1,000 orders at the planned claim rate' if row['cost_per_1000_orders'] is not None
-            else f'{money(row["cost_per_claim"])} per claim' if row['cost_per_claim'] else 'no cost per order')
+            else f'{money(row["cost_per_claim"])} per claim' if row['cost_per_claim']
+            else f'{row["one_star"]} one-star mentions to answer; no claim cost, only the listing work')
     a.update({
         'title': f'Launch "{row["offer"].split(":")[0]}" to answer "{doubt}"',
         'why': f['sentence'] + (' The policy already covers it but the page does not say so.' if row['covered_by'] and kind == 'offer' else ''),
         'owner': 'agent_drafts',
         'artefact': {'kind': kind, 'label': row['offer'], 'draft': row['spec']},
         'steps': steps(
-            ('agent', f'Pull the {row["one_star"]} one-star quotes and the returns behind "{doubt}".'),
+            ('agent', f'Pull the {row["one_star"]} one-star quotes and returns for "{doubt}".'),
             ('agent', 'Draft the spec and the one-line promise, priced from finance inputs.'),
             ('person', 'Approve the terms and the cost per claim. Nothing ships before that.'),
             ('agent', who_ships),
             ('agent', f'Read claims and add to cart rate every 7 days; call it on {ctx.check_on(42)}.')),
         'size': {'text': size, 'usd': None},
         'win_rule': 'Add to cart rate on the product page up, and returns for this doubt not up more than 10 percent.',
-        'stop_rule': 'Claims above 2 times the planned rate for 2 weeks, or margin per order under the red line.',
+        'stop_rule': ('Marketplace sessions to orders down for 2 weeks against the 4 weeks before; put the old listing back.'
+                      if kind == 'listing_fix' else
+                      'Claims above 2 times the planned rate for 2 weeks, or margin per order under the red line.'),
         'check_on': ctx.check_on(42), 'time_to_ship_hours': 6 if kind == 'offer' else 3,
     })
     return a

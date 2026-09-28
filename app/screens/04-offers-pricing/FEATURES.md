@@ -116,6 +116,7 @@ Known gaps from round 0:
 | # | Feature | Status |
 |---|---|---|
 | 6.1 | Depth pass, brand content only from the brain and tables: thresholds (single-pack share, minimum saving, depth cut, parity gap, approval days, snooze days) and the market name come from `settings` in the overview, not from text in screen.js. The positioning map leaves our point off when discount in ads is unavailable instead of drawing it at 0. A test fails if screen.js carries a percent, a market or a `|| 0` | done |
+| 6.2 | Depth pass, sized with a stop rule (depth.md rules 5 and 12) on both brands: the marketplace listing move is sized by its one-star count instead of "no cost per order" and gets a listing stop rule (put the old listing back if marketplace conversion falls 2 weeks); step lines kept under 20 words. A test checks size, stop rule, check date, sentence length and banned words for every move on Bombas and the sample brand | done |
 
 ## Contract asks
 
