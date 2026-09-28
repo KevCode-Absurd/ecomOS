@@ -1,6 +1,6 @@
 # Competitor report, Bombas, week of 2026-09-28
 
-Simulated sales and public signals. 26 open moves from 35 rules. Brain version ed50c1933d5e.
+Simulated sales and public signals. 26 open moves from 36 rules. Brain version ed50c1933d5e.
 
 ## The moves to approve this week
 
@@ -40,6 +40,11 @@ Simulated sales and public signals. 26 open moves from 35 rules. Brain version e
 
 - Moves read: 0; held 0; overdue reads 0.
 - Logged this week: 0.
+
+## Hand-offs
+
+- Sent: 0 (none).
+- Waiting to hand over: 0 decided moves, 6 for support.
 
 ## Caveats
 
