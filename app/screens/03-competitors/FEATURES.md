@@ -17,6 +17,23 @@ Status: todo | doing | done | parked. One feature per commit. The first round is
 
 Round 0 notes (28 Sep 2026): brand price per pair is simulated net sales per unit (after discounts) for the last full month, so it reads lower than list. Competitor bands are one public capture, so price and angle findings are medium with confidence 0.5 or lower; the "2 consecutive captures" part of the price drift rule waits for a second capture. Claim scores are keyword rules, not judgement. Screenshot: `round0.png`.
 
+## Round 1: the execution surface (depth contract)
+
+| # | Feature | Status |
+|---|---|---|
+| 1.1 | Round 0 anti-patterns out: plan board first with ranked actions from `rank` (`actions.py`: real titles, steps, artefacts and drafts for COMP-R01 to R04), orientation beside it, what is wrong with evidence rows, action cards, desk, audit and rule list at the bottom; tiles, insight cards, the active-ads chart and the lookalike banner removed | done |
+| 1.2 | Competitor pills and the side-by-side table over the 12 tracked pages with verdicts | todo |
+| 1.3 | Creative coverage matrix: angles by format, us against them, gap cells brief an ad | todo |
+| 1.4 | Hook and offer mix per competitor against ours, with the answer for each gap | todo |
+| 1.5 | Longest running competitor ads as signals, "use as reference" brief | todo |
+| 1.6 | Price ladder and pack ladder against competitors from the brain | todo |
+| 1.7 | Positioning map on the kit chart, sized by active ads, empty quadrants with an action | todo |
+| 1.8 | Launches and changes timeline with follow, watch or ignore | todo |
+| 1.9 | Snapshot freshness and the re-pull button with the Apify estimate first | todo |
+| 1.10 | `rank` for every rule, old and new, with tests that every finding maps to an action | todo |
+
+Round 1 notes: `snapshot.py` plans and runs a page-id Ad Library pull through `app/connectors/apify.py` (12 pages with ids, 1,800 items cap, estimate $2.08, inside the $4 run and $30 week caps). The live run was blocked by the session's permission check on 28 Sep, so round 1 builds on the brain's 28 Sep pulls (page-level formats, hook types, offers, run lengths and 3 quoted ads a page) and the page says so.
+
 ## Room jobs (JTBD)
 
 | Job | Question | Capability | Round 0 |
@@ -111,3 +128,4 @@ Round 0 notes (28 Sep 2026): brand price per pair is simulated net sales per uni
 | Round | Features picked | Date | Notes |
 |---|---|---|---|
 | 0 | 0.1 to 0.8 | 2026-09-28 | Bombas brain and simulated prices |
+| 1 | 1.1 | 2026-09-28 | Plan first; rank override in actions.py |

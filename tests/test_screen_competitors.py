@@ -174,17 +174,20 @@ class TestApi(TempBrain):
         api.BRAIN_ROOT = self.tmp
         self.d = api.handle(Req(['overview']))
 
-    def test_tiles_insights_chart(self):
-        d = self.d
-        self.assertEqual(len(d['tiles']), 3)
-        self.assertEqual(d['tiles'][0]['value'], 5)
-        self.assertEqual(d['tiles'][2]['value'], 67 + 29 + 331 + 699 + 608)
-        self.assertEqual(len(d['insights']), 2)
-        for i in d['insights']:
-            self.assertTrue(i['rule'] and i['sentence'] and i['capability'])
-        self.assertEqual(d['chart']['labels'][-1], 'Bombas')
-        self.assertEqual(d['chart']['values'][-1], 23)
-        self.assertEqual(len(d['chart']['labels']), len(d['chart']['values']))
+    def test_overview_has_no_tiles_or_chart(self):
+        for k in ('tiles', 'insights', 'chart', 'actions'):
+            self.assertNotIn(k, self.d)
+
+    def test_plan_route(self):
+        p = api.handle(Req(['plan']))
+        self.assertEqual(p['window']['ends_on'], '2026-09-27')
+        self.assertTrue(p['actions'])
+        labels = [o['label'] for o in p['orient']]
+        self.assertTrue(3 <= len(labels) <= 6)
+        self.assertIn('price index', labels)
+        idx = next(o for o in p['orient'] if o['label'] == 'price index')
+        self.assertEqual(idx['value'], self.d['price_position_index'])
+        self.assertEqual(p['rules'], audit.RULES)
 
     def test_notes_say_simulated_and_public(self):
         self.assertIn('simulated', self.d['simulated_note'])
@@ -222,6 +225,74 @@ class TestApi(TempBrain):
         self.assertEqual(api.handle(Req(['nope']))[0], 404)
         self.assertEqual(api.handle(Req(['overview'], query={'brand': ['../x']}))[0], 400)
         self.assertEqual(api.handle(Req(['overview'], query={'brand': ['nobrand']}))[0], 404)
+
+
+class TestRank(TempBrain):
+    """Depth contract rules 2, 3 and 13: owner, steps and artefact on every action; every finding ends in one."""
+    W = {'ends_on': '2026-09-27', 'days': 28, 'trailing': 4}
+
+    def setUp(self):
+        super().setUp()
+        api.BRAIN_ROOT = self.tmp
+        self.out = api.rank('bombas', self.W)
+
+    def test_every_action_valid(self):
+        acts = self.out['actions']
+        self.assertTrue(acts)
+        for a in acts:
+            self.assertEqual(api.actions.ranker.validate_action(a), [], a['id'])
+            self.assertIn(a['owner'], ('agent', 'agent_drafts', 'person'))
+            self.assertIn(a['artefact']['kind'], api.actions.ranker.ARTEFACT_KINDS)
+            for s in a['steps']:
+                self.assertIn(s['who'], ('agent', 'person'))
+            self.assertTrue(a['check_on'])
+            self.assertNotIn('\u2014', json.dumps(a))
+            self.assertNotIn('should', a['title'].lower())
+
+    def test_every_finding_maps_to_an_action(self):
+        findings = audit.run('bombas', self.W, self.tmp)
+        covered = {i for a in self.out['actions'] for i in a['finding_ids']}
+        for f in findings:
+            if f['status'] in ('open', 'unavailable'):
+                self.assertIn(f['id'], covered)
+
+    def test_unavailable_maps_to_connect(self):
+        self.edit('competitors', lambda rows: [r for r in rows if r['field'] in ('competitor_set',)])
+        shutil.rmtree(self.tmp / 'bombas' / 'raw')
+        out = api.rank('bombas', self.W)
+        con = [a for a in out['actions'] if a['status'] == 'unavailable']
+        self.assertTrue(con)
+        for a in con:
+            self.assertEqual(a['owner'], 'person')
+            self.assertEqual(a['artefact']['kind'], 'connector_setup')
+
+    def test_drafts_never_copy(self):
+        for a in self.out['actions']:
+            if a['artefact']['kind'] == 'ad_brief':
+                self.assertIn('Never copy', a['artefact']['draft'])
+
+    def test_deterministic(self):
+        self.assertEqual(json.dumps(api.rank('bombas', self.W)['actions']), json.dumps(self.out['actions']))
+
+    def test_app_rank_uses_override(self):
+        r = api.actions.ranker.rank('03-competitors', 'bombas', self.W)
+        self.assertEqual(r['source'], 'screen')
+
+
+class TestPage(unittest.TestCase):
+    """Depth rules 1 and 11: the plan comes first; no brand fact is written in the page."""
+    def test_plan_first(self):
+        html = (SCREEN / 'index.html').read_text(encoding='utf-8')
+        body = html.split('screen-head', 1)[1]
+        self.assertLess(body.index('id="plan"'), body.index('id="wrong"'))
+        for gone in ('id="tiles"', 'id="insights"', 'id="chart"', 'id="lookalike"'):
+            self.assertNotIn(gone, html)
+
+    def test_no_brand_facts_in_js(self):
+        js = (SCREEN / 'screen.js').read_text(encoding='utf-8')
+        for word in ('Bombas', 'Stance', 'Darn Tough', 'Smartwool', 'Feetures', 'Comrad', 'COMFORT20'):
+            self.assertNotIn(word, js)
+        self.assertNotIn('GPT', js)
 
 
 if __name__ == '__main__':

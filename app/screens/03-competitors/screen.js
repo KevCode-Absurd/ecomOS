@@ -1,5 +1,6 @@
-/* Competitors and market, round 0. Reads /api/03-competitors/overview and audit. No writes except
-   decisions through the kit's decision row. Competitor facts are public signals; brand prices are simulated. */
+/* Competitors and market, round 1. Reads /api/03-competitors/plan (ranked actions, findings, rules) and
+   overview (the desk). No writes except decisions through the kit's decision row. Competitor facts are
+   public signals; brand prices are simulated. Sections follow app/contracts/depth.md section 2. */
 (function () {
   'use strict';
   const { el, mount, api, fmt } = UI;
@@ -146,15 +147,6 @@
       el('div', { class: 'muted small', text: 'Hook types' }), chips(b.hooks, 'accent'));
   }
 
-  function lookalikeBox(lk) {
-    if (!lk) return [];
-    return [el('div', { class: 'warnbox', role: 'alert' },
-      el('b', { text: 'Lookalike page warning' }),
-      el('div', { text: 'A ' + pretty(lk.verdict) + ' page (id ' + lk.page_id + ') ran ' + lk.ads_seen + ' ads on ' + fmt.date(lk.created) + ' that link to ' + lk.links_to + '. It is not the brand. Its ads are left out of every count on this page.' }),
-      lk.ref ? el('a', { href: lk.ref, target: '_blank', rel: 'noopener', class: 'small', text: 'See it in the Ad Library' }) : null,
-      UI.decisionRow({ capability: 'MONEY-C48', autonomy: 'human_assist', screen: SCREEN }))];
-  }
-
   function auditTable(findings) {
     return UI.table({
       columns: [
@@ -171,29 +163,68 @@
     });
   }
 
+  // ---------- 1. the plan ----------
+  function planSection(p) {
+    const w = p.window || {};
+    mount('#plan', UI.planBoard({
+      title: 'The plan: what we make because of them', sub: 'Capture to ' + fmt.date(w.ends_on) + ', ' + p.actions.length + ' actions from ' + p.rules.length + ' rules',
+      orient: p.orient, actions: p.actions, limit: 10, screen: SCREEN,
+      tools: [el('button', { class: 'btn sm', type: 'button', text: 'Export CSV', onclick: () => UI.csv(p.actions.map((a, i) => ({ rank: i + 1, title: a.title, owner: a.owner, artefact: a.artefact.kind, severity: a.severity, total: a.rubric.total, why: a.why, check_on: a.check_on })), null, 'competitor-actions.csv') })],
+      foot: el('div', { class: 'row' }, UI.rubricLegend(), el('span', { class: 'micro faint', text: 'Ranking: rubric total, then severity. "Not now" snoozes 14 days.' + (p.snoozed ? ' ' + p.snoozed + ' snoozed.' : '') })),
+      empty: 'No open action on this capture. Every tracked angle, offer and price sits inside its rule.',
+    }));
+    const cw = document.getElementById('connect-wrap');
+    cw.hidden = !p.connect.length;
+    if (p.connect.length) mount('#connect', el('div', { class: 'card flat' }, UI.sectionHead({ title: 'Connect first: ' + p.connect.length + ' rules wait on a source', sub: 'Person tasks in Setup, read-only. They never crowd out work that can start today.' }),
+      ...p.connect.map((a) => UI.actionCard(a, { compact: true, screen: SCREEN }))));
+  }
+
+  // ---------- 2. what is wrong, ranked ----------
+  const SEV = { critical: 0, high: 1, medium: 2, low: 3 };
+  function evidenceLine(e) {
+    const v = e.value == null ? NA : (e.unit === 'usd' ? usd(e.value) : fmt.num(e.value));
+    const base = e.baseline == null ? '' : ' against ' + (Array.isArray(e.baseline) ? e.baseline.join(' to ') : (e.unit === 'usd' ? usd(e.baseline) : fmt.num(e.baseline))) + ' (' + pretty(e.baseline_kind) + ')';
+    return el('li', null, el('span', { class: 'mono micro', text: e.metric }), ' ', el('b', { class: 'num', text: v }), base, el('span', { class: 'faint', text: ', ' + e.window + (e.simulated ? ', simulated' : '') }));
+  }
+  function wrongList(findings, actionsById) {
+    const open = findings.filter((f) => f.status !== 'resolved').sort((a, b) => (SEV[a.severity] - SEV[b.severity]) || (b.confidence - a.confidence));
+    if (!open.length) return [el('p', { class: 'muted', text: 'Nothing open on this capture.' })];
+    return open.map((f) => {
+      const a = actionsById[f.id];
+      const go = a ? el('button', { class: 'btn soft xs', type: 'button', text: 'Go to the action', onclick: () => { const n = document.querySelector('#actions [data-id="' + CSS.escape(a.id) + '"]'); if (n) { n.scrollIntoView({ behavior: 'smooth', block: 'center' }); n.classList.add('flash'); setTimeout(() => n.classList.remove('flash'), 1600); } } }) : null;
+      return el('article', { class: 'card flat finding' },
+        el('div', { class: 'row' }, UI.sevChip(f.severity), el('span', { class: 'chip mono', text: f.rule_id }), el('b', { text: pretty(f.entity.label) }),
+          el('span', { class: 'micro faint', text: 'confidence ' + f.confidence + (f.confidence < 0.3 ? ', weak evidence' : '') }), go),
+        el('div', { text: f.sentence }),
+        f.evidence.length ? el('ul', { class: 'ev small' }, ...f.evidence.map(evidenceLine)) : el('div', { class: 'na small', text: 'Inputs missing: ' + ((f.unavailable || {}).inputs || []).join(', ') }),
+        a ? el('div', { class: 'small muted' }, 'Fix: ', el('b', { text: a.title }), ' ', UI.ownerChip(a)) : null);
+    });
+  }
+
+  // ---------- 6. the audit ----------
+  function rulesTable(rules) {
+    return UI.table({ columns: [{ key: 'rule_id', label: 'Rule' }, { key: 'name', label: 'What it checks' }, { key: 'inputs', label: 'Reads', format: (v) => (v || []).join(', ') }, { key: 'capability', label: 'Capability' }],
+      rows: rules, sort: false });
+  }
+
   async function load() {
-    let d;
-    try { d = await api(BASE + 'overview'); } catch (e) { mount('#badge', 'Could not load: ' + e.message); return; }
+    let d, p;
+    try { [d, p] = await Promise.all([api(BASE + 'overview'), api(BASE + 'plan')]); } catch (e) { mount('#badge', 'Could not load: ' + e.message); return; }
     mount('#badge', el('span', null, el('b', { text: 'Simulated data and public signals. ' }), d.simulated_note + ' Brain version ' + d.version + '.'));
+    planSection(p);
+    const byId = {};
+    for (const a of p.actions.concat(p.connect)) for (const id of a.finding_ids) byId[id] = a;
+    document.getElementById('wrong-sub').textContent = p.findings.length + ' findings on the latest capture, severity first. Each links to the action that closes it.';
+    mount('#wrong', ...wrongList(p.findings, byId));
+    mount('#actions', ...(p.actions.length ? p.actions.map((a) => UI.actionCard(a, { screen: SCREEN })) : [el('p', { class: 'muted', text: 'No open action.' })]));
     document.getElementById('signal-note').textContent = d.signal_note;
-    mount('#lookalike', ...lookalikeBox(d.lookalike));
-    mount('#tiles', ...d.tiles.map((t) => UI.tile(Object.assign({}, t, { freshness: d.today }))));
-    mount('#insights', ...(d.insights.length ? d.insights.map((i) => UI.insight(Object.assign({ screen: SCREEN }, i)))
-      : [el('p', { class: 'muted', text: 'No rule fired on this capture.' })]));
-    mount('#cards', ...d.competitors.map(compCard));
     mount('#map', ...mapCard(d.positioning));
     mount('#prices', ...priceTable(d.prices));
     mount('#board', ...d.board.map(boardCard));
-    const ch = d.chart;
-    mount('#chart', Charts.bar({ labels: ch.labels, series: [{ name: 'active ads', values: ch.values }], unit: 'n', values: true,
-      title: 'Active Meta ads seen per brand, latest capture',
-      note: 'Public signal from the Ad Library. The last bar is the brand. More ads means more testing, not better results.' }));
-    mount('#actions', ...d.actions.map((a) => el('article', { class: 'card' }, el('b', { text: a.label }),
-      UI.decisionRow({ capability: a.capability, autonomy: a.autonomy, screen: SCREEN }))));
-    try {
-      const a = await api(BASE + 'audit');
-      mount('#audit', el('p', { class: 'muted small', text: a.findings.length + ' findings from ' + a.rules.length + ' rules. Public signals, one capture.' }), auditTable(a.findings));
-    } catch (e) { mount('#audit', el('p', { class: 'muted', text: 'Audit unavailable: ' + e.message })); }
+    mount('#cards', ...d.competitors.map(compCard));
+    document.getElementById('audit-sub').textContent = p.findings.length + ' findings from ' + p.rules.length + ' rules. Public signals, one capture.';
+    mount('#audit', auditTable(p.findings));
+    mount('#rules', el('h4', { text: 'Rules' }), rulesTable(p.rules));
   }
 
   load();

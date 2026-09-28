@@ -5,9 +5,12 @@ the raw Ad Library records as fallback) and the simulated products_monthly
 table through app/data/tables.py. The market model and the audit rules live
 in audit.py; this file shapes them for the page. No writes, nothing external.
 
-  GET  overview   tiles, 2 insights, chart, competitor cards, positioning map,
-                  price ladder, what they run board, lookalike warning, actions
+  GET  plan       the plan board: ranked actions (actions.py) with decisions
+                  applied, connect actions, orientation numbers, findings, rules
+  GET  overview   the desk: competitor cards, positioning map, price ladder,
+                  what they run board, lookalike record, widest price gap
   GET  audit      findings from audit.py (app/contracts/audit.md shape)
+  rank(brand, window)  the depth contract override app/rank.py calls
 
 Query `brand` (default bombas) and `today` (YYYY-MM-DD, default the real date)
 work on every route. Set BRAIN_ROOT to point at a copy of app/brain (tests do).
@@ -27,16 +30,10 @@ SIMULATED_NOTE = ("{name} is the sample brand. Its prices per pair come from sim
 SIGNAL_NOTE = ("Public signals only. Ad counts and run length show what a brand keeps live, not what works. "
                "Formats and hooks are for layout and mood. Never copy their text, logos, products or faces.")
 
-_spec = importlib.util.spec_from_file_location("competitors_audit", HERE / "audit.py")
-audit = importlib.util.module_from_spec(_spec)
-_spec.loader.exec_module(audit)
-
-ACTIONS = [
-    {"label": "Rebuild the positioning map", "capability": "BRAND-C19", "autonomy": "agent_does"},
-    {"label": "Search for an unclaimed angle", "capability": "BRAND-C21", "autonomy": "founder_gate"},
-    {"label": "Audit pricing position now", "capability": "BRAND-C24", "autonomy": "founder_gate"},
-    {"label": "Refresh competitor watch now", "capability": "BRN-C11", "autonomy": "agent_does"},
-]
+_spec = importlib.util.spec_from_file_location("competitors_actions", HERE / "actions.py")
+actions = importlib.util.module_from_spec(_spec)
+_spec.loader.exec_module(actions)
+audit = actions.audit
 AXES = {
     "durability": {"label": "Durability claim", "max": audit.DURABILITY_MAX,
                    "plain": "1 point each: a guarantee, a lifetime guarantee, durability named in the positioning"},
@@ -61,59 +58,6 @@ def _public(c: dict) -> dict:
     return {k: v for k, v in c.items() if not k.startswith("_")}
 
 
-def tiles(m: dict) -> list[dict]:
-    comps = m["competitors"]
-    idx = m["price_position_index"]
-    lo, hi = audit.PRICE_BAND
-    ads = [c["active_ads"] for c in comps if isinstance(c["active_ads"], int)]
-    return [
-        {"name": "Competitors tracked", "plain": "Named brands on watch from the Ad Library", "value": len(comps),
-         "unit": "n", "window": "latest capture"},
-        {"name": "Price position", "plain": f"Price per pair vs the tracked median, x 100. Range {lo} to {hi}.",
-         "value": idx, "unit": "index", "window": "latest capture, simulated brand price",
-         "tone": None if idx is None else ("bad" if not lo <= idx <= hi else "good"),
-         "unavailable_reason": m["packs"].get("reason") if idx is None else None},
-        {"name": "Competitor active ads", "plain": f"Sum across tracked brands. {m['brand'].capitalize()} runs "
-         f"{m['profile']['active_ads'] if m['profile']['active_ads'] is not None else 'an unknown number of'}.",
-         "value": sum(ads) if ads else None, "unit": "n", "window": "latest capture, public signal"},
-    ]
-
-
-def insights(m: dict) -> list[dict]:
-    """Two rules: a competitor runs the same offer type longer, and the price per pair sits outside the band."""
-    out = []
-    name = m["brand"].capitalize()
-    for o in m["offer_runs"]:
-        longer = [c for c in o["competitors"] if c["days"] > o["brand_days"]]
-        if not longer:
-            continue
-        top = longer[0]
-        tail = (f"{name} has run its {o['label']} in ads for {o['brand_days']} days." if o["brand_ads"]
-                else f"{name} has a {o['label']} but runs it in 0 of {o['brand_active_ads']} active ads.")
-        out.append({"rule": "competitor longest ad days > brand days running the same offer type",
-                     "severity": "medium", "capability": "BRAND-C24", "autonomy": "founder_gate",
-                     "sentence": f"{top['name']} runs a {o['label']} hook and keeps its longest ad live "
-                                 f"{top['days']} days. {tail}",
-                     "evidence": f"{len(o['competitors'])} tracked brands show a {o['label']} hook: " +
-                                 ", ".join(f"{c['name']} {c['days']} days" for c in o["competitors"]) +
-                                 ". Run length is a signal, not a result."})
-        break
-    idx = m["price_position_index"]
-    lo, hi = audit.PRICE_BAND
-    if idx is not None and not lo <= idx <= hi:
-        p, med = m["packs"]["median_per_pair"], m["category_median"]
-        gap = gaps(m)
-        out.append({"rule": f"price_position_index outside {lo} to {hi}, one capture", "severity": "medium",
-                    "capability": "BRAND-C24", "autonomy": "founder_gate",
-                    "sentence": f"{name} sells socks for ${p:.2f} a pair after discounts. The tracked median is "
-                                f"${med:.2f}, so {name} sits {round(abs(100 - idx))} percent "
-                                f"{'below' if idx < lo else 'above'} the category.",
-                    "evidence": (f"Widest empty price band: ${gap['from']:.2f} to ${gap['to']:.2f} a pair, "
-                                 f"between {gap['below']} and {gap['above']}. " if gap else "") +
-                                f"Brand price is simulated ({m['packs']['month']}). One capture."})
-    return out
-
-
 def gaps(m: dict) -> dict | None:
     """The widest gap between neighbouring median prices per pair, brand included."""
     pts = [(c["price"]["median"], c["name"]) for c in m["competitors"] if c["price"]["median"] is not None]
@@ -125,13 +69,6 @@ def gaps(m: dict) -> dict | None:
         if best is None or b - a > best["to"] - best["from"]:
             best = {"from": a, "to": b, "below": an, "above": bn}
     return best
-
-
-def chart(m: dict) -> dict:
-    comps = sorted(m["competitors"], key=lambda c: (-(c["active_ads"] or 0), c["name"]))
-    return {"labels": [c["name"] for c in comps] + [m["brand"].capitalize()],
-            "values": [c["active_ads"] for c in comps] + [m["profile"]["active_ads"]],
-            "brand_index": len(comps)}
 
 
 def positioning(m: dict) -> dict:
@@ -198,16 +135,53 @@ def board(m: dict) -> list[dict]:
     return out
 
 
+def orientation(m: dict) -> list[dict]:
+    """3 to 6 small numbers beside the plan: where the competitive position stands today."""
+    comps = m["competitors"]
+    ads = [c["active_ads"] for c in comps if isinstance(c["active_ads"], int)]
+    ages = [c["age_days"] for c in comps if c["age_days"] is not None]
+    lo, hi = audit.PRICE_BAND
+    idx = m["price_position_index"]
+    return [
+        {"label": "competitor pages", "value": len(comps), "unit": "n", "title": "competitor pages tracked in the brain"},
+        {"label": "our active ads", "value": m["profile"]["active_ads"], "unit": "n", "title": "latest Ad Library capture"},
+        {"label": "theirs, median a page", "value": sorted(ads)[len(ads) // 2] if ads else None, "unit": "n",
+         "title": "median active ads across tracked pages, public signal"},
+        {"label": "snapshot age", "value": max(ages) if ages else None, "unit": "n", "suffix": " days",
+         "title": "days since the oldest competitor capture"},
+        {"label": "price index", "value": idx, "unit": "n", "tone": None if idx is None else ("bad" if not lo <= idx <= hi else "good"),
+         "title": f"our price per pair / tracked median x 100, band {lo} to {hi}, simulated brand price"},
+    ]
+
+
+def rank(brand: str = "bombas", window: dict | None = None) -> dict:
+    """The screen's ranked actions (depth.md section 5). app/rank.py and the server call this."""
+    out = actions.build(brand, window, BRAIN_ROOT)
+    out.pop("findings", None)
+    return out
+
+
+def plan(brand: str, today: dt.date) -> dict:
+    """The plan board: ranked actions with decisions applied, the findings they close, and the orientation."""
+    window = actions.ranker.default_window(28, (today - dt.timedelta(days=1)).isoformat())
+    out = actions.build(brand, window, BRAIN_ROOT)
+    acts = actions.ranker.apply_decisions(out["actions"], today)
+    m = audit.market(brand, today, BRAIN_ROOT)
+    return {"brand": brand, "window": window, "brain_version": out["brain_version"], "simulated": True,
+            "orient": orientation(m), "actions": [a for a in acts if a.get("status") != "unavailable"],
+            "connect": [a for a in acts if a.get("status") == "unavailable"],
+            "snoozed": len(out["actions"]) - len(acts), "findings": out["findings"], "rules": audit.RULES}
+
+
 def overview(brand: str, today: dt.date) -> dict:
     m = audit.market(brand, today, BRAIN_ROOT)
     brain = m.pop("brain")
     name = brand.capitalize()
     return {"brand": brand, "today": today.isoformat(), "version": brain.version(),
             "simulated_note": SIMULATED_NOTE.format(name=name), "signal_note": SIGNAL_NOTE,
-            "tiles": tiles(m), "insights": insights(m), "chart": chart(m),
             "competitors": [_public(c) for c in m["competitors"]], "angles": m["angles"],
             "positioning": positioning(m), "prices": price_table(m), "board": board(m),
-            "lookalike": m["lookalike"], "actions": ACTIONS,
+            "lookalike": m["lookalike"], "gap": gaps(m),
             "category_median": m["category_median"], "price_position_index": m["price_position_index"]}
 
 
@@ -219,6 +193,8 @@ def handle(req):
     try:
         if req.method == "GET" and req.path == ["overview"]:
             return overview(brand, today)
+        if req.method == "GET" and req.path == ["plan"]:
+            return plan(brand, today)
         if req.method == "GET" and req.path == ["audit"]:
             ends = (today - dt.timedelta(days=1)).isoformat()
             findings = audit.run(brand, {"ends_on": ends, "days": 1, "trailing": 0}, BRAIN_ROOT)

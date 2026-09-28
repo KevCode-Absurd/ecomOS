@@ -32,6 +32,12 @@ COMP-R04 lookalike page. The brain has a competitors record whose verdict is
     an impostor or lookalike page. Severity medium (known downstream cost, no
     money formula). Capability MONEY-C48 (human assist). Owner: 03-competitors.
 
+Rubric overrides (depth.md section 4 allows reputation and satisfaction per rule):
+COMP-R01 reputation 5: an unclaimed angle is a competitor position gap named in
+    the brain. COMP-R02 reputation 3: price sits inside the positioning.
+    COMP-R04 reputation 5 and satisfaction 4: a page that impersonates
+    the brand is a trust break, and shoppers who buy from it open tickets.
+
 Money at stake is null for every rule: none of these gaps has a baseline in
 the brand's own history yet. Confidence: one capture is one window (0.5),
 minus 0.2 when the baseline is a peer band, minus 0.2 when the input record
@@ -91,6 +97,7 @@ RULES = [
     {"rule_id": "COMP-R04", "name": "lookalike page", "entity_type": "page",
      "inputs": ["brain competitors.lookalike_page"], "capability": "MONEY-C48", "owner_screen": SCREEN},
 ]
+RUBRIC_OVERRIDES = {"COMP-R01": {"reputation": 5}, "COMP-R02": {"reputation": 3}, "COMP-R04": {"reputation": 5, "satisfaction": 4}}
 AUTONOMY = {"BRAND-C21": "founder_gate", "BRAND-C24": "founder_gate", "MONEY-C48": "human_assist"}
 
 

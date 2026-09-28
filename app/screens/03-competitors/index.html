@@ -10,17 +10,48 @@
 <body data-screen="03-competitors">
 <div class="screen">
   <div class="sample-badge" role="note" id="badge">Loading the competitor set.</div>
-  <div class="screen-head"><h1>Competitors and market</h1><p>Who the brand is up against, where they sit on price and claims, and what corner is still open.</p></div>
-  <div id="lookalike"></div>
-  <section class="section"><h3>At a glance</h3><div class="grid tiles" id="tiles"></div></section>
-  <section class="section"><h3>Insights</h3><div class="grid" id="insights"></div></section>
-  <section class="section"><h3>Competitor set</h3><p class="muted small" id="signal-note"></p><div class="grid comp-cards" id="cards"></div></section>
-  <section class="section"><h3>Positioning map</h3><div class="card" id="map"></div></section>
-  <section class="section"><h3>Price ladder: brand packs versus each competitor's band</h3><div class="card" id="prices"></div></section>
-  <section class="section"><h3>What they run</h3><p class="muted small">Formats and hook types as signals for layout and mood. No ad text is kept or shown.</p><div class="grid board" id="board"></div></section>
-  <section class="section"><h3>Active ads per brand</h3><div class="card" id="chart"></div></section>
-  <section class="section"><h3>Decisions</h3><div class="grid" id="actions"></div></section>
-  <section class="section"><h3>Audit findings</h3><div id="audit"></div></section>
+  <div class="screen-head"><h1>Competitors and market</h1><p>What the tracked pages run, where they beat us, where no one plays, and the ads, pages and offers we make because of it.</p></div>
+
+  <!-- 1. The plan -->
+  <section class="section" id="plan-wrap"><div id="plan"></div></section>
+  <section class="section" id="connect-wrap" hidden><div id="connect"></div></section>
+
+  <!-- 2. What is wrong, ranked -->
+  <section class="section">
+    <div class="sec-head"><h2>Where are they beating us?</h2><span class="sub" id="wrong-sub">Open findings, severity first. Each links to the action that closes it.</span></div>
+    <div id="wrong" class="stack"></div>
+  </section>
+
+  <!-- 3 and 4. Actions with implementation -->
+  <section class="section">
+    <div class="sec-head"><h2>What we make because of it</h2><span class="sub">One card per action: owner, steps, the artefact and its draft, win and stop rules.</span></div>
+    <div id="actions" class="stack"></div>
+  </section>
+
+  <!-- 5. The desk -->
+  <section class="section">
+    <div class="sec-head"><h2>Where do we sit on price and claims?</h2><span class="sub" id="map-sub"></span></div>
+    <div class="card" id="map"></div>
+  </section>
+  <section class="section">
+    <div class="sec-head"><h2>Which packs are priced outside their bands?</h2><span class="sub">Our net price per pair against each tracked brand's public band.</span></div>
+    <div class="card" id="prices"></div>
+  </section>
+  <section class="section">
+    <div class="sec-head"><h2>What do they run that we do not?</h2><span class="sub" id="signal-note"></span></div>
+    <div class="grid board" id="board"></div>
+  </section>
+  <section class="section">
+    <div class="sec-head"><h2>Who are we up against?</h2><span class="sub">One card per tracked brand: positioning, price band, what they push and the gap we can own.</span></div>
+    <div class="grid comp-cards" id="cards"></div>
+  </section>
+
+  <!-- 6. The audit -->
+  <section class="section">
+    <div class="sec-head"><h2>Audit</h2><span class="sub" id="audit-sub"></span></div>
+    <div id="audit"></div>
+    <div id="rules"></div>
+  </section>
 </div>
 <script src="/web/ui-kit.js"></script>
 <script src="/web/charts.js"></script>
