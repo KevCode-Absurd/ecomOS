@@ -1190,3 +1190,43 @@ def forces(avatars: list[dict], all_rungs: list[dict], lang_records: list[dict],
     n_under = sum(1 for r in rows if r["under"])
     return {"rows": rows, "under": n_under,
             "line": f"{n_under} of {len(rows)} avatars lack lines on at least one force, or know why buyers like us but not what holds them back."}
+
+
+# ---------------------------------------------------------------- draft a new avatar from a gap
+
+DRAFT_QUOTES = 5
+
+
+def draft_avatar(brand: str, segment: str, lang_records: list[dict], competitors: list[str], today: str, source_name) -> dict | None:
+    """An avatar record drafted from the brain for an unserved situation. Tier inferred: a hypothesis, never a fact."""
+    pat = SITUATIONS.get(segment)
+    if not pat:
+        return None
+    quotes, by_source, ids = [], {}, []
+    for rec in lang_records:
+        v = rec.get("value") if isinstance(rec.get("value"), dict) else {}
+        for rv in v.get("reviews") or [{}]:
+            text = " ".join([v.get("phrase") or "", rv.get("quote") or ""])
+            if not _hits(text, pat):
+                continue
+            src = source_name(rv.get("source") or ("reddit" if v.get("subreddit") else ""))
+            by_source[src] = by_source.get(src, 0) + 1
+            ids.append(rec["id"])
+            if src != "Reddit" and rv.get("quote") and len(quotes) < DRAFT_QUOTES:
+                quotes.append({"quote": _clip(rv["quote"]) if len(rv["quote"].split()) > MAX_WORDS * 2 else rv["quote"], "ref": rv.get("url") or ""})
+    key = "situation_" + segment.replace(" ", "_")
+    name = segment.capitalize() + " buyer"
+    words = sorted({m.group(0) for rec in lang_records for m in [re.search(pat + r"[a-z]*", _record_text(rec).lower())] if m})
+    rec = {"id": f"{brand}.avatars.{key}", "brand": brand, "section": "avatars", "field": "avatar",
+           "value": {"name": name, "share_estimate": None, "intensity": None, "job": None,
+                     "triggers": [f"a {segment} moment named in reviews: {', '.join(words[:4])}"] if words else [],
+                     "pains": [], "emotional_driver": None, "inferred": True, "count_in_sample": sum(by_source.values()),
+                     "count_by_source": {k.lower().replace(" ", "_"): n for k, n in sorted(by_source.items())},
+                     "competitors_serving": competitors},
+           "text": f"{name}: drafted from {sum(by_source.values())} mentions in the language bank; job unknown until buyers are asked.",
+           "source": {"type": "agent", "ref": "02-customers-avatars avatar draft", "captured_at": today,
+                      "derived_from": sorted(set(ids))[:40] or [f"{brand}.competitors"]},
+           "confidence": 0.3, "tier": "inferred", "status": "active", "visibility": "private",
+           "evidence": [q for q in quotes if q["ref"].startswith("http")],
+           "notes": "Drafted by the Customers and avatars screen from a category gap. A hypothesis until 5 quotes from 2 sources and a survey share exist."}
+    return {"segment": segment, "record": rec, "mentions": sum(by_source.values()), "by_source": by_source, "quotes": len(rec["evidence"])}

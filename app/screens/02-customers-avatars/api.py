@@ -9,6 +9,7 @@ founder-marked voice example, through Brain.put. Nothing external, no model.
                          voice sheet
   GET  rank              served by app/rank.py, which calls `rank(brand, window)` below when present
   GET  audit             findings from audit.py (app/contracts/audit.md shape) and RULES
+  POST avatars/draft      {segment}: writes the drafted avatar for an unserved situation, tier inferred
   POST voice/examples    {kind: liked | disliked, text, note?}: writes a founder voice record
 
 Query `brand` (default bombas) and `today` (YYYY-MM-DD, default the real date) work on
@@ -175,6 +176,35 @@ def add_example(brain: Brain, body: dict):
     return 201, {"ok": True, "record": rid}
 
 
+# ---------------------------------------------------------------- avatar drafts from gaps
+
+def avatar_drafts(brain: Brain, served: dict) -> list[dict]:
+    out = []
+    for sg in served["segments"]:
+        if sg["verdict"] not in ("gap", "watch"):
+            continue
+        d = builds.draft_avatar(brain.brand, sg["segment"], brain.records("language_bank"), sg["theirs"], brain.today.isoformat(), audit.source_name)
+        if d:
+            d["exists"] = any(r.get("id") == d["record"]["id"] for r in brain.raw("avatars"))
+            out.append(d)
+    return out
+
+
+def add_avatar_draft(brain: Brain, body: dict):
+    """Founder approves a drafted avatar: it is written to the brain as an inferred record, never as a fact."""
+    seg = str((body or {}).get("segment") or "")
+    served = builds.served(audit.avatar_rows(brain), audit.rungs(brain), brain.records("competitors"), brain.records("positioning"))
+    match = next((d for d in avatar_drafts(brain, served) if d["segment"] == seg), None)
+    if match is None:
+        return 400, {"error": "no draft for that segment"}
+    if match["exists"]:
+        return 409, {"error": "already in the brain", "record": match["record"]["id"]}
+    errs = brain.put(match["record"])
+    if errs:
+        return 400, {"error": "record not valid", "details": errs}
+    return 201, {"ok": True, "record": match["record"]["id"]}
+
+
 # ---------------------------------------------------------------- orientation
 
 def daily_window(brand: str, ends_on: str, days: int = 28) -> dict:
@@ -296,7 +326,8 @@ def overview(brain: Brain) -> dict:
             "language": audit.language_rows(brain), "voice": voice_sheet(brain),
             "cohorts": _cohorts(brain.brand, avatars), "mix": _mix(brain.brand),
             "misreads": builds.misreads(brain.records("avatars"), avatars, all_rungs, brain.records("language_bank"), brain.records("products")),
-            "served": builds.served(avatars, all_rungs, brain.records("competitors"), brain.records("positioning")),
+            "served": (srv := builds.served(avatars, all_rungs, brain.records("competitors"), brain.records("positioning"))),
+            "drafts": avatar_drafts(brain, srv),
             "coverage": builds.coverage(avatars, all_rungs), "ladders": (lad := builds.ladders(all_rungs, avatars)),
             "copy_gap": builds.copy_gap({sec: brain.records(sec) for sec in ("voice", "claims", "identity", "offers", "policies", "products", "visual", "story_bank")},
                                         brain.records("language_bank"), _brand_tokens(brain), audit.source_name),
@@ -319,6 +350,8 @@ def handle(req):
         ends = (brain.today - dt.timedelta(days=1)).isoformat()
         findings = audit.run(brain.brand, {"ends_on": ends, "days": 1, "trailing": 0}, BRAIN_ROOT)
         return {"findings": findings, "rules": audit.RULES, "brain_version": brain.version()}
+    if req.method == "POST" and parts == ["avatars", "draft"]:
+        return add_avatar_draft(brain, req.body)
     if req.method == "POST" and parts == ["voice", "examples"]:
         return add_example(brain, req.body)
     return 404, {"error": "not found", "path": parts}

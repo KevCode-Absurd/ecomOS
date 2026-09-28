@@ -705,5 +705,29 @@ class Forces(TempBrain):
         self.assertEqual(x['rows'][0]['forces']['habit']['n'], 1)
 
 
+class AvatarDraft(TempBrain):
+    """Feature 2.6: draft an avatar for an unserved situation and write it, inferred, on approval."""
+
+    def test_draft_shape_and_valid(self):
+        sys.path.insert(0, str(ROOT / 'app' / 'brain'))
+        import validate
+        drafts = {d['segment']: d for d in api.handle(Req(['overview']))['drafts']}
+        self.assertIn('hiking and outdoor', drafts)
+        rec = drafts['hiking and outdoor']['record']
+        self.assertEqual(validate.check_record(rec, 'avatars'), [])
+        self.assertEqual(rec['tier'], 'inferred')
+        self.assertIsNone(rec['value']['job'])
+        for e in rec['evidence']:
+            self.assertNotIn('reddit', e['ref'])
+
+    def test_post_writes_once(self):
+        code, res = api.handle(Req(['avatars', 'draft'], 'POST', body={'segment': 'hiking and outdoor'}))
+        self.assertEqual(code, 201)
+        ids = [r['id'] for r in self.section('avatars')]
+        self.assertIn('bombas.avatars.situation_hiking_and_outdoor', ids)
+        self.assertEqual(api.handle(Req(['avatars', 'draft'], 'POST', body={'segment': 'hiking and outdoor'}))[0], 409)
+        self.assertEqual(api.handle(Req(['avatars', 'draft'], 'POST', body={'segment': 'nope'}))[0], 400)
+
+
 if __name__ == '__main__':
     unittest.main()

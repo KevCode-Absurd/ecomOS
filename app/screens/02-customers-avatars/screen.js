@@ -241,6 +241,24 @@
       el('p', { class: 'micro faint', text: 'Gap: 2 or more competitors push it and we hold no avatar with quotes for it. Watch: 1 competitor or Reddit only. Competitor positioning is a signal, not proof the segment pays.' }));
   }
 
+  function renderDrafts(drafts) {
+    mount('#drafts', ...drafts.map((d) => {
+      const status = el('span', { class: 'micro muted', 'aria-live': 'polite' });
+      const add = el('button', { class: 'btn soft sm', type: 'button', text: d.exists ? 'In the brain' : 'Add as provisional avatar', disabled: d.exists });
+      add.addEventListener('click', async () => {
+        status.textContent = 'Saving';
+        try { const r = await api(BASE + 'avatars/draft', { method: 'POST', body: { segment: d.segment } }); status.textContent = 'Added ' + r.record + '. Reload to see it.'; add.disabled = true; }
+        catch (e) { status.textContent = 'Could not add: ' + e.message; }
+      });
+      const src = Object.entries(d.by_source).map(([k, n]) => k + ' ' + n).join(', ') || 'none';
+      return el('article', { class: 'card flat draftav' },
+        el('div', { class: 'row between' }, el('b', { text: 'Draft avatar: ' + d.record.value.name }), el('span', { class: 'chip warn', text: 'inferred' })),
+        el('div', { class: 'small', text: d.mentions + ' mentions in the language bank (' + src + '). ' + d.quotes + ' quotes we may show. Served by ' + (d.record.value.competitors_serving.join(', ') || 'no competitor') + '.' }),
+        el('div', { class: 'micro muted', text: 'Job, share and pains stay unavailable until buyers are asked. Adding it makes it a provisional avatar every screen can brief against.' }),
+        el('div', { class: 'row' }, add, status));
+    }));
+  }
+
   // ---------- desk: misreads ----------
   const LINE_V = { problem: ['cut', 'Problem'], split: ['watch', 'Split'], fine: ['keep', 'Fine'] };
   function renderMisreads(x) {
@@ -554,6 +572,7 @@
     renderThemes(d.themes);
     renderWords(d.words, d.avatars);
     renderServed(d.served, d.avatars);
+    renderDrafts(d.drafts);
     renderMisreads(d.misreads);
     renderCohorts(d.cohorts);
     renderMix(d.mix);
