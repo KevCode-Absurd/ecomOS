@@ -250,7 +250,7 @@ def overview(brain: Brain) -> dict:
             "avatars": avatars,
             "objections": objections, "angles": {k: angles[k] for k in ("available", "reason", "ads")},
             "language": audit.language_rows(brain), "voice": voice_sheet(brain),
-            "coverage": builds.coverage(avatars, all_rungs), "formats": _formats(brain, avatars)}
+            "coverage": builds.coverage(avatars, all_rungs), "ladders": builds.ladders(all_rungs, avatars), "formats": _formats(brain, avatars)}
 
 
 def handle(req):

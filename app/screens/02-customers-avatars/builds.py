@@ -245,3 +245,86 @@ def format_brief(row: dict, avatars: list[dict]) -> dict:
                       {"n": 2, "who": "person", "text": "Approve the brief. Creative builds the variants."},
                       {"n": 3, "who": "person", "text": "Launch at a capped test budget in the ad account."},
                       {"n": 4, "who": "agent", "text": "Read cost per order after 7 days against the account median."}]}
+
+
+# ---------------------------------------------------------------- ladders per avatar
+
+NOT_LANDING_RATIO = 2.0   # proof on file, yet one-star mentions are 2x or more the five-star ones
+NOT_LANDING_MIN = 10      # and at least 10 one-star mentions
+LEAD_RATIO = 1.0          # five-star mentions above one-star: a strength to lead with
+
+
+def rung_verdict(r: dict) -> str:
+    one, five = r["one_star"], r["five_star"]
+    if not r["proof_ids"]:
+        return "answer"
+    if isinstance(one, int) and isinstance(five, int) and one >= NOT_LANDING_MIN and one >= NOT_LANDING_RATIO * max(five, 1):
+        return "not_landing"
+    if isinstance(one, int) and isinstance(five, int) and five > one * LEAD_RATIO:
+        return "lead"
+    return "keep"
+
+
+def _rung_action(r: dict, verdict: str, names: list[str]) -> dict | None:
+    one = next((q for q in r["one_star_quotes"] if q), None)
+    five = next((q for q in r["five_star_quotes"] if q), None)
+    who = ", ".join(names[:3]) + (f" and {len(names) - 3} more" if len(names) > 3 else "") if names else "no avatar named"
+    counts = f"{r['one_star'] if r['one_star'] is not None else 'unknown'} one-star, {r['five_star'] if r['five_star'] is not None else 'unknown'} five-star"
+    base = f"{SCREEN}.rung.{r['id']}"
+    if verdict == "answer":
+        offer = "offer" in (r.get("uses") or [])
+        kind, cap = ("offer", ("LIFE-C42", "founder_gate")) if offer else ("copy", ("CREA-C24", "agent_does"))
+        title = f"{'Offer' if offer else 'Copy'} that answers \"{r['doubt']}\""
+        draft = [f"DRAFT: {'offer spec' if offer else 'objection copy'} for \"{r['doubt']}\"", f"For: {who}", f"Counts: {counts}",
+                 f"Their words: \"{one}\"" if one else "Their words: unavailable",
+                 "Proof: none on file. " + ("A person sets the promise, the limit and the cost cap." if offer
+                                             else "A person adds the fact that answers it."),
+                 "Ships in: " + ", ".join(u.replace("_", " ") for u in r.get("uses") or []) + "."]
+        steps = [{"n": 1, "who": "agent", "text": "Pull every one-star line on this doubt."},
+                 {"n": 2, "who": "agent", "text": f"Draft the {'offer spec' if offer else 'answer copy'} in their words."},
+                 {"n": 3, "who": "person", "text": "Add the proof and approve."},
+                 {"n": 4, "who": "agent", "text": "Link the proof record to the rung. It turns green here."}]
+    elif verdict == "not_landing":
+        kind, cap = "page_section", ("SITE-C38", "human_assist")
+        title = f"Move the proof for \"{r['doubt']}\" to the first screen"
+        draft = [f"DRAFT: page and ad change for \"{r['doubt']}\"", f"For: {who}", f"Counts: {counts}. Proof is on file, but doubters still win.",
+                 f"Proof: {r['proof']}", f"Their words: \"{one}\"" if one else "Their words: unavailable",
+                 "Change: put the proof in the product page first screen and the first line of ads for these avatars."]
+        steps = [{"n": 1, "who": "agent", "text": "Find where the proof shows today on the product page and ads."},
+                 {"n": 2, "who": "agent", "text": "Draft the first-screen block and 2 ad first lines."},
+                 {"n": 3, "who": "person", "text": "Approve and ship the page block."},
+                 {"n": 4, "who": "agent", "text": "Recount one-star mentions on the next review pull."}]
+    elif verdict == "lead":
+        kind, cap = "ad_brief", ("CREA-C06", "agent_does")
+        title = f"Lead ads with the answer to \"{r['doubt']}\""
+        draft = [f"DRAFT: ad brief on a strength", f"For: {who}", f"Counts: {counts}. Buyers praise this more than they doubt it.",
+                 f"Proof: {r['proof']}", f"Five-star line to echo: \"{five}\"" if five else "Five-star line: unavailable",
+                 "Formats: 1 static, 1 short video."]
+        steps = [{"n": 1, "who": "agent", "text": "Draft the brief from the proof and the five-star lines."},
+                 {"n": 2, "who": "person", "text": "Approve the brief. Creative makes 2 variants."},
+                 {"n": 3, "who": "agent", "text": "Read cost per order after 7 days against the account median."}]
+    else:
+        return None
+    return {"id": base, "kind": kind, "title": title, "owner": "agent_drafts",
+            "capability": {"id": cap[0], "autonomy": cap[1]}, "draft": "\n".join(draft), "steps": steps}
+
+
+def ladders(all_rungs: list[dict], avatars: list[dict]) -> dict:
+    """Every rung with its counts, proof, verdict and action, and the avatars it names."""
+    names = {a["id"]: a["name"] for a in avatars}
+    keys = {a["id"]: a["key"] for a in avatars}
+    rows = []
+    for r in all_rungs:
+        v = rung_verdict(r)
+        av = [names[x] for x in r["avatars"] if x in names]
+        one, five = r["one_star"], r["five_star"]
+        rows.append({"id": r["id"], "theme": r["theme"], "level": r["level"], "doubt": r["doubt"], "one_star": one, "five_star": five,
+                     "proof": r["proof"] if r["proof_ids"] else None, "proof_ids": r["proof_ids"], "verdict": v,
+                     "avatars": [keys[x] for x in r["avatars"] if x in keys], "avatar_names": av,
+                     "uses": r.get("uses") or [], "action": _rung_action(r, v, av)})
+    order = {"answer": 0, "not_landing": 1, "lead": 2, "keep": 3}
+    rows.sort(key=lambda x: (order[x["verdict"]], -(x["one_star"] or 0), x["id"]))
+    counts = {k: sum(1 for x in rows if x["verdict"] == k) for k in order}
+    return {"rows": rows, "counts": counts,
+            "line": f"{counts['answer']} rungs have no proof. {counts['not_landing']} have proof that is not landing. "
+                    f"{counts['lead']} are strengths to lead with."}

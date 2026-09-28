@@ -101,6 +101,39 @@
       el('p', { class: 'small', text: f.line }));
   }
 
+  // ---------- desk: ladders per avatar ----------
+  const VERDICT = { answer: ['fix', 'No proof'], not_landing: ['watch', 'Not landing'], lead: ['scale', 'Lead with it'], keep: ['keep', 'Keep'] };
+  function splitBar(one, five) {
+    if (one == null || five == null) return el('span', { class: 'na', text: NA });
+    const tot = one + five || 1;
+    return el('span', { class: 'split', title: one + ' one-star, ' + five + ' five-star' },
+      el('span', { class: 'sbar' }, el('i', { class: 'one', style: 'width:' + Math.round(100 * one / tot) + '%' }), el('i', { class: 'five', style: 'width:' + Math.round(100 * five / tot) + '%' })),
+      el('span', { class: 'num small', text: one + ' | ' + five }));
+  }
+  function renderLadders(L, avatars) {
+    document.getElementById('ladder-sub').textContent = 'Each rung: one-star against five-star mentions, proof on file, and the move. ' + L.line +
+      ' Not landing means proof is on file and one-star is 2x five-star or more, with 10 or more.';
+    const table = el('div');
+    const show = (key) => {
+      const rows = L.rows.filter((r) => key === 'all' || r.avatars.includes(key));
+      mount(table, UI.verdictTable({
+        columns: [{ key: 'rung', label: 'Rung' }, { key: 'doubt', label: 'Doubt' }, { key: 'counts', label: 'One-star | five-star' },
+          { key: 'proof', label: 'Proof' }, { key: 'who', label: 'Avatars' }],
+        rows: rows.map((r) => Object.assign({}, r, { rung: pretty(r.theme) + ', ' + r.level, counts: '', proof: r.proof || 'none on file', who: r.avatar_names.join(', ') || 'none named',
+          actions: r.action ? [{ label: 'Brief it', onClick: () => briefPanel(r.action) }] : [{ label: 'Nothing to do', cls: 'quiet', onClick: () => {} }] })),
+        verdict: { at: 1, kind: (r) => VERDICT[r.verdict][0], text: (r) => VERDICT[r.verdict][1] },
+        actions: { label: 'Do' }, sort: false, maxRows: 40, empty: 'No rung names this avatar yet.',
+      }));
+      // the split bar is an element, so place it after render
+      table.querySelectorAll('tbody tr').forEach((tr, i) => { const r = rows[i]; if (r && tr.children[3]) tr.children[3].replaceChildren(splitBar(r.one_star, r.five_star)); });
+    };
+    const open = (key) => L.rows.filter((r) => r.avatars.includes(key) && r.verdict === 'answer').length;
+    mount('#ladder-pills', UI.pills({ items: [{ key: 'all', label: 'All avatars', n: L.counts.answer }].concat(avatars.filter((a) => L.rows.some((r) => r.avatars.includes(a.key))).map((a) => ({ key: a.key, label: a.name, n: open(a.key) }))),
+      current: 'all', onChange: (k) => show(Array.isArray(k) ? k[0] : k) }));
+    mount('#ladders', table);
+    show('all');
+  }
+
   function objectionTable(rows) {
     return UI.table({
       columns: [
@@ -294,6 +327,7 @@
     renderWrong(a, r);
     renderActions(r);
     renderCoverage(d.coverage, d.formats);
+    renderLadders(d.ladders, d.avatars);
     mount('#avatars', ...(d.avatars.length ? d.avatars.map(avatarCard) : [el('p', { class: 'muted', text: 'No avatar records yet.' })]));
     document.getElementById('obj-note').textContent = 'Avatars come from the objection ladders. Ad coverage: ' +
       (d.angles.available ? 'counted from the ad table.' : d.angles.reason + '.') + ' Page coverage needs a live page scan.';

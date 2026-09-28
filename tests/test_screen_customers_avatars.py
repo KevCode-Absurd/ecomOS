@@ -315,5 +315,46 @@ class Coverage(TempBrain):
         self.assertTrue(f['reason'])
 
 
+class Ladders(TempBrain):
+    """Feature 1.4: every rung gets a verdict; every rung without proof gets a copy or offer action."""
+
+    def ladders(self):
+        return api.handle(Req(['overview']))['ladders']
+
+    def test_verdict_rules(self):
+        for r in self.ladders()['rows']:
+            one, five = r['one_star'], r['five_star']
+            if not r['proof_ids']:
+                self.assertEqual(r['verdict'], 'answer')
+                self.assertIn(r['action']['kind'], ('offer', 'copy'))
+                self.assertEqual(r['action']['kind'] == 'offer', 'offer' in r['uses'])
+            elif one >= 10 and one >= 2 * max(five, 1):
+                self.assertEqual(r['verdict'], 'not_landing')
+                self.assertEqual(r['action']['kind'], 'page_section')
+            elif five > one:
+                self.assertEqual(r['verdict'], 'lead')
+                self.assertEqual(r['action']['kind'], 'ad_brief')
+            else:
+                self.assertEqual(r['verdict'], 'keep')
+                self.assertIsNone(r['action'])
+
+    def test_bombas_counts_and_order(self):
+        L = self.ladders()
+        self.assertEqual(L['counts']['answer'], 5)
+        self.assertEqual(L['rows'][0]['id'], 'durability.3')
+        order = [r['verdict'] for r in L['rows']]
+        rank = {'answer': 0, 'not_landing': 1, 'lead': 2, 'keep': 3}
+        self.assertEqual(order, sorted(order, key=rank.get))
+
+    def test_actions_have_owner_steps_draft(self):
+        for r in self.ladders()['rows']:
+            a = r['action']
+            if a:
+                self.assertEqual(a['owner'], 'agent_drafts')
+                self.assertTrue(2 <= len(a['steps']) <= 8)
+                self.assertTrue(a['draft'].startswith('DRAFT'))
+                self.assertNotIn('—', a['draft'])
+
+
 if __name__ == '__main__':
     unittest.main()
