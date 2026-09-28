@@ -1389,5 +1389,19 @@ class BreakEvenDiscountTest(unittest.TestCase):
             self.assertIn('Volume check', bf['artefact']['draft'])
 
 
+class BnplTest(unittest.TestCase):
+    def test_band_and_rule(self):
+        rd = audit.Reader(None, 'bombas', audit.last_full_day(None, 'bombas'))
+        b = audit.bnpl_band(rd)
+        self.assertTrue(0 <= b['revenue_share'] <= 1)
+        out = api.actions.rank('bombas')
+        f = next((f for f in out['findings'] if f['rule_id'] == 'OFFER-R29'), None)
+        self.assertEqual(bool(f), not b['named'] and bool(b['packs']))
+        if f:
+            a = next(a for a in out['actions'] if a['rule_id'] == 'OFFER-R29')
+            self.assertEqual(a['steps'][0]['who'], 'person')   # first confirm what checkout already offers
+            self.assertIn('profit per visitor', a['artefact']['draft'])
+
+
 if __name__ == '__main__':
     unittest.main()

@@ -530,6 +530,8 @@ def surfaces(a):
         return (['product page pack selector'] if ent == 'push' else ['pack price']), 35
     if r == 'OFFER-R09':
         return ['new packs'], 56
+    if r == 'OFFER-R29':
+        return ['product page price block'], 35
     if r == 'OFFER-R26':
         return ['bundles'], 35
     if r == 'OFFER-R24':
@@ -1014,6 +1016,28 @@ def launched_action(f, a, ctx):
     return a
 
 
+def bnpl_action(f, a, ctx):
+    b = audit.bnpl_band(ctx.rd)
+    a.update({
+        'title': f'Test a pay-in-installments line on packs from ${b["min_usd"]}',
+        'owner': 'agent_drafts',
+        'artefact': {'kind': 'test_brief', 'label': 'Installments line test brief', 'draft': '\n'.join([
+            'Test brief: a pay-in-installments line under the price',
+            'First check: does the checkout already offer installments? The brain does not say. If yes, this is only the page line.',
+            f'Where: the product pages of {len(b["packs"])} packs priced at ${b["min_usd"]} or more ({b["revenue_share"] * 100:.0f} percent of revenue).',
+            f'Arms: A as today. B adds one line under the price. 50/50 in {tool(ctx, "ab_testing", "the test tool")}, 28 days.',
+            'Primary metric: profit per visitor on those pages, after the provider fee.',
+            'Win: profit per visitor up in B. Stop: return rate on installment orders above the store rate for 4 weeks.'])},
+        'steps': steps(('person', 'Confirm whether the checkout offers installments and at what fee.'),
+                       ('agent', 'Draft the line and the test brief.'),
+                       ('person', 'Approve. The site team adds the line to arm B.'),
+                       ('agent', f'Read profit per visitor weekly; call it on {ctx.check_on(35)}.')),
+        'size': {'text': f'{b["revenue_share"] * 100:.0f} percent of revenue sells at ${b["min_usd"]} or more', 'usd': None},
+        'win_rule': 'Profit per visitor up in B.', 'stop_rule': 'Return rate on installment orders above the store rate for 4 weeks.',
+        'check_on': ctx.check_on(35), 'time_to_ship_hours': 4})
+    return a
+
+
 def returns_block(rd):
     """returns_by_reason for the window, or the labelled fixture when the metric is unavailable."""
     m = rd.m('returns_by_reason', audit.WINDOW)
@@ -1180,7 +1204,7 @@ BUILDERS = {'OFFER-R01': threshold_action, 'OFFER-R04': rung_action, 'OFFER-R08'
             'OFFER-R19': discount_action, 'OFFER-R20': cart_action, 'OFFER-R21': second_order_action,
             'OFFER-R22': cost_action, 'OFFER-R23': referral_action, 'OFFER-R24': loyalty_action,
             'OFFER-R25': discount_action, 'OFFER-R26': bundle_action,
-            'OFFER-R27': launched_action}
+            'OFFER-R27': launched_action, 'OFFER-R29': bnpl_action}
 
 
 def build(f, rd, ctx, nr):

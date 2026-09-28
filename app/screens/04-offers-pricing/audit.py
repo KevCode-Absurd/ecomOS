@@ -115,6 +115,9 @@ Rules
   OFFER-R28  Upsell take rate by placement (room spec upsell_take_rate): orders that took an upsell over orders shown
              it, by placement (cart, checkout, post-purchase). Needs an upsell_events table from the upsell app the
              brain names (stack.upsell_app); unavailable until it connects, and silent when no app is named.
+  OFFER-R29  Packs in the installment band with no installment line (room spec LIFE-C46, BNPL): share of 12-month
+             revenue from packs whose paid price is at or over playbook.BNPL_MIN_USD, while no brain stack or offers
+             record names an installment provider. Money null: the lift is what the page test finds. Capability LIFE-C46.
   OFFER-R03  Margin after discount per SKU. Needs cogs_landed keyed by the store's SKUs. Unavailable while no
              finance_inputs SKU key matches a product SKU. Capability MONEY-C05 (founder gate). Owner: 04.
   OFFER-R04  A deal-breaker rung with no proof: the top rung of an objection ladder whose proof is empty or
@@ -211,6 +214,8 @@ RULES = [
      'inputs': ['brain.offers', 'brain.plans', 'daily'], 'capability': 'LIFE-C47', 'owner_screen': SCREEN},
     {'rule_id': 'OFFER-R28', 'name': 'Upsell take rate by placement', 'entity_type': 'metric',
      'inputs': ['upsell_events', 'brain.stack.upsell_app'], 'capability': 'LIFE-C41', 'owner_screen': SCREEN},
+    {'rule_id': 'OFFER-R29', 'name': 'Packs in the installment band with no installment line', 'entity_type': 'offer',
+     'inputs': ['products_monthly', 'brain.stack', 'brain.offers'], 'capability': 'LIFE-C46', 'owner_screen': SCREEN},
     {'rule_id': 'OFFER-R03', 'name': 'Margin after discount per SKU', 'entity_type': 'sku',
      'inputs': ['finance_inputs.cogs_landed keyed by product SKU', 'products'], 'capability': 'MONEY-C05',
      'owner_screen': SCREEN},
@@ -243,6 +248,7 @@ CAPABILITY = {'OFFER-R01': {'id': 'MONEY-C05', 'autonomy': 'founder_gate'},
               'OFFER-R26': {'id': 'LIFE-C39', 'autonomy': 'founder_gate'},
               'OFFER-R27': {'id': 'LIFE-C47', 'autonomy': 'founder_gate'},
               'OFFER-R28': {'id': 'LIFE-C41', 'autonomy': 'founder_gate'},
+              'OFFER-R29': {'id': 'LIFE-C46', 'autonomy': 'founder_gate'},
               'OFFER-R06': {'id': 'MONEY-C05', 'autonomy': 'founder_gate'},
               'OFFER-R04': {'id': 'LIFE-C36', 'autonomy': 'founder_gate'}}
 SEVERITY_ORDER = {'critical': 0, 'high': 1, 'medium': 2, 'low': 3}
@@ -1135,6 +1141,30 @@ def rule_upsell(rd):
                                   'fix': f'Connect {app} read-only: offers shown and taken, by placement, per day.'})]
 
 
+def bnpl_band(rd):
+    lad = _model().ladder(rd)
+    if lad.get('unavailable'):
+        return None
+    pb = _playbook()
+    total = sum(r['revenue'] for r in lad['rows'])
+    over = [r for r in lad['rows'] if (r['price_per_pack'] or 0) >= pb.BNPL_MIN_USD]
+    return {'min_usd': pb.BNPL_MIN_USD, 'packs': [r['sku'] for r in over],
+            'revenue_share': round(sum(r['revenue'] for r in over) / total, 4) if total else None,
+            'named': _model().has_program(rd, pb.BNPL_WORDS)}
+
+
+def rule_bnpl(rd):
+    end = rd.ends_on
+    b = bnpl_band(rd)
+    if not b or b['named'] or not b['packs'] or b['revenue_share'] is None:
+        return []
+    ev = [_ev('revenue_share_in_installment_band', b['revenue_share'], 'ratio', end, window='12 full months', source='products_monthly')]
+    sentence = (f'{len(b["packs"])} packs sell at ${b["min_usd"]} or more, {b["revenue_share"] * 100:.0f} percent of revenue, '
+                f'and the brain names no pay-in-installments option.')
+    return [_finding('OFFER-R29', {'type': 'offer', 'id': 'installments', 'label': 'Pay in installments'}, 'low', ev, sentence,
+                     None, 0.4, [], end, money_reason='the lift is what the page test finds')]
+
+
 def rule_ladder(rd):
     end = rd.ends_on
     pb = _playbook()
@@ -1306,7 +1336,7 @@ def run(brand, window=None, data=None):
     """Findings for one brand, sorted by severity then money at stake. `window` is {ends_on} or None."""
     ends_on = date.fromisoformat(window['ends_on']) if window and window.get('ends_on') else last_full_day(data, brand)
     rd = Reader(data, brand, ends_on)
-    out = (rule_threshold(rd) + rule_stale(rd) + rule_pull(rd) + rule_first_order(rd) + rule_red_line(rd) + rule_promo(rd) + rule_gifting(rd) + rule_guarantee(rd) + rule_position(rd) + rule_parity(rd) + rule_discount(rd) + rule_cart(rd) + rule_second_order(rd) + rule_cost(rd) + rule_referral(rd) + rule_loyalty(rd) + rule_window_creep(rd) + rule_bundles(rd) + rule_launched(rd) + rule_upsell(rd) + rule_ladder(rd) + rule_sku_margin(rd) +
+    out = (rule_threshold(rd) + rule_stale(rd) + rule_pull(rd) + rule_first_order(rd) + rule_red_line(rd) + rule_promo(rd) + rule_gifting(rd) + rule_guarantee(rd) + rule_position(rd) + rule_parity(rd) + rule_discount(rd) + rule_cart(rd) + rule_second_order(rd) + rule_cost(rd) + rule_referral(rd) + rule_loyalty(rd) + rule_window_creep(rd) + rule_bundles(rd) + rule_launched(rd) + rule_upsell(rd) + rule_bnpl(rd) + rule_ladder(rd) + rule_sku_margin(rd) +
            rule_unanswered(rd))
     out.sort(key=lambda f: (SEVERITY_ORDER[f['severity']], -((f.get('money_at_stake') or {}).get('usd') or -1), f['id']))
     return out

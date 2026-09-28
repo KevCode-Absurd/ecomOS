@@ -200,3 +200,8 @@ PAIR_MIN_LIFT = 1.5       # bought together 1.5 times as often as chance
 BUNDLE_SAVING = 0.10      # the bundle starts at 10 percent off the two paid prices
 PAIR_DAYS = 90
 STALE_DAYS = 90           # a move built on a brain record older than this says so and refreshes it first
+
+# Pay in installments (screen 04, OFFER-R29). The lower bound is the US range on Shopify's Shop Pay Installments help
+# page (read in web pass 2); lift claims were not read in full, so the move is a test, not a promise.
+BNPL_MIN_USD = 35
+BNPL_WORDS = ('installment', 'afterpay', 'klarna', 'affirm', 'sezzle', 'pay in 4', 'shop pay installments')
