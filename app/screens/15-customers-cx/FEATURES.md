@@ -6,9 +6,35 @@ Status: todo | doing | done | parked. One feature per commit. The first round is
 
 | # | Feature | Status |
 |---|---|---|
-| 0.1 | Page shell in the shared UI kit: header, empty-state tiles, insight list, action buttons | todo |
-| 0.2 | `api.py` serving this screen's metrics from `app/data/` with unavailable states | todo |
-| 0.3 | 3 metric tiles, 2 insights, 1 chart from the sample brand | todo |
+| 0.1 | Page shell in the shared UI kit: header, empty-state tiles, insight list, action buttons | done |
+| 0.2 | `api.py` serving this screen's metrics from `app/data/` with unavailable states | done |
+| 0.3 | 3 metric tiles, 2 insights, 1 chart from the sample brand | done (4 tiles on Bombas) |
+| 0.4 | `audit.py` findings in the contract shape, every room rule accounted for | done |
+
+## Jobs and rules (JTBD table)
+
+Each room job, the question it answers, its capability, and the audit rules in `audit.py` that serve it. Round 0 status: `fires` = computed on Bombas and fired, `reads` = computed, did not fire, `unavailable` = inputs not connected (one unavailable finding), `null` = market-only.
+
+| Job | Question | Capability | Rules | Round 0 |
+|---|---|---|---|---|
+| Map the post-purchase journey | which touchpoints make a customer feel cared for | LIFE-C23 | none yet | |
+| Cut delivery-status tickets | are shipping updates good enough that people stop asking | LIFE-C24 | CX-R15 WISMO surge in one lane; CX-R16 WISMO over 5 percent | R15 unavailable, R16 reads |
+| Run unboxing and packaging | is packaging spend earning attention or reviews | LIFE-C25 | none yet | |
+| Returns, chargebacks, RTO | is our reversed-order rate normal and is it costing margin | LIFE-C26 | CX-R10 RTO in one zone (IN); CX-R11 return to sender in one zone or carrier | R10 null (US), R11 unavailable |
+| Support replies and tagging | what are people contacting us about, is it getting worse | LIFE-C27 | CX-R09 ticket reason drift; CX-R18 first reply over target | R09 reads, R18 fires (chat) |
+| Reviews: collect, reply, push | are we replying to bad reviews and using good ones | LIFE-C28, LIFE-C52 | CX-R04 unanswered negative review; CX-R12 marketplace rating gap | both unavailable |
+| NPS, CSAT, voice of customer | is satisfaction moving, and why | LIFE-C29 | CX-R17 CSAT under 90 percent | fires |
+| Retention and cohort economics | which customers are worth acquiring, on profit | MONEY-C09 | CX-R19 repeat within 90 days under own median | reads |
+| Existing-customer spend policy | how much budget goes after past buyers | LIFE-C32 | none yet | |
+| Churn risk and save routing | who is about to leave | LIFE-C33 | CX-R01 silent churn risk | unavailable |
+| One profile per person | are we treating 1 customer as 3 | LIFE-C48 | CX-R08 identity fragmentation | unavailable |
+| Govern the AI support agent | what can the AI agent do without a human | LIFE-C49 | CX-R13 AI agent overreach | unavailable |
+| True profit per customer | is this VIP profitable after costs | LIFE-C62 | CX-R03 unprofitable VIP | unavailable |
+| Privacy requests and delivery exceptions | can we prove we handled them on time | LIFE-C66, PROD-C56, LIFE-C55 | CX-R07 privacy deadline; CX-R05 failed-delivery loop; CX-R02 refund missing tax reversal | all unavailable |
+| (spec rule, no job row) | public complaint spike | BRAND-C54 | CX-R06 crisis signal | unavailable |
+| (spec rule, no job row) | marketplace buyer messages late | LIFE-C67 | CX-R14 marketplace queue backlog | unavailable |
+
+Contract proposal (for an `app/` session): lift `ticket_volume_by_reason`, `wismo_ticket_rate`, `support_csat`, `first_response_time` (from `tickets`) and `repeat_purchase_rate` for brand folders (orders `order_index` join in data.sqlite) into `metrics.md` and `metrics.py`. Today `repeat_rate_90d` reads unavailable for a brand folder, so `audit.py` counts these in data.sqlite itself. Also: a `support_cost_per_ticket` field in finance_inputs would give CX-R09, R16 a money formula.
 
 ## Candidates from the room spec (pick 10 per round)
 
@@ -108,3 +134,12 @@ Status: todo | doing | done | parked. One feature per commit. The first round is
 
 | Round | Features picked | Date | Notes |
 |---|---|---|---|
+
+## Round 0 status
+
+- 28 Sep 2026 (S3.17): shell, api.py, 4 tiles (WISMO rate, CSAT, first reply, repeat 90d), 2 rule insights (reason drift, WISMO line), 1 stacked chart (tickets per 100 orders by reason, 12 months), reasons and channels tables, repeat by cohort, reviews and objection ladders.
+- audit.py: 19 rules. CX-R01 to R15 are the room spec rules; R16 to R19 come from the room's metric benchmarks. All on Bombas simulated data at scale 0.1.
+- Fires on Bombas: CX-R17 CSAT 84 percent under the 90 percent line (high, 0.9), CX-R18 chat first reply 91 minutes over 60 (high, 0.9). 13 rules emit unavailable findings naming the connector; R10 is India only.
+- Money at stake: CX-R19 computes (median - rate) x first-time buyers x AOV x scale when it fires; support rules stay null until finance_inputs has a cost per ticket. Never a partial sum.
+- CX numbers are counted in data.sqlite by audit.py because metrics.py has no ticket metrics and repeat_rate_90d is unavailable for brand folders (proposal above).
+- Tests: tests/test_screen_customers_cx.py (9 pass). Screen suite: 205 run, 1 known failure in test_screen_today. Screenshot: round0.png at 1280 wide.
