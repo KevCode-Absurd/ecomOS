@@ -179,6 +179,9 @@ _pspec.loader.exec_module(parity)
 _sspec = importlib.util.spec_from_file_location("brand_brain_sitediff", HERE / "sitediff.py")
 sitediff = importlib.util.module_from_spec(_sspec)
 _sspec.loader.exec_module(sitediff)
+_nbspec = importlib.util.spec_from_file_location("brand_brain_newbrand", HERE / "newbrand.py")
+newbrand = importlib.util.module_from_spec(_nbspec)
+_nbspec.loader.exec_module(newbrand)
 _vispec = importlib.util.spec_from_file_location("brand_brain_visual", HERE / "visual.py")
 visual = importlib.util.module_from_spec(_vispec)
 _vispec.loader.exec_module(visual)
@@ -1381,6 +1384,23 @@ def handle(req):
         ends = (brain.today - dt.timedelta(days=1)).isoformat()
         findings = audit.run(brain.brand, {"ends_on": ends, "days": 1, "trailing": 0}, BRAIN_ROOT)
         return {"findings": findings, "rules": audit.RULES, "brain_version": brain.version()}
+    if req.method == "GET" and parts == ["newbrand"]:
+        root = BRAIN_ROOT or BRAIN_DIR
+        return {"brains": newbrand.brains(root), "lanes": newbrand.lanes(), "markets": list(newbrand.MARKETS), "capability": {"id": "BRN-C13", "autonomy": "founder_gate"},
+                "note": "The intake writes a brain folder from your words only: name, store url, category, market, the Apify config with nothing confirmed, an empty documents manifest, the 5 opening questions and BRAIN.md. Nothing is crawled or paid. The dry run replays saved fixtures offline."}
+    if req.method == "POST" and parts == ["newbrand"]:
+        root = BRAIN_ROOT or BRAIN_DIR
+        res = newbrand.skeleton(Path(root), req.body or {}, brain.today)
+        if isinstance(res, tuple):
+            return res
+        changes.log(brain, "brand", None, None, f"new brain started: {res['slug']} ({res['name']}, {res['url']})")
+        return 201, res
+    if req.method == "POST" and parts == ["newbrand", "dryrun"]:
+        out_root = (Path(BRAIN_ROOT) / ".mock-onboard") if BRAIN_ROOT else newbrand.onboard.MOCK_ROOT
+        res = newbrand.dryrun(req.body or {}, out_root, brain.today)
+        if isinstance(res, tuple):
+            return res
+        return 201, res
     if req.method == "GET" and parts == ["visual"]:
         pal = visual.palette(brain)
         pal["capability"] = {"id": "CREA-C12", "autonomy": "agent_does"}

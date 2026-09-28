@@ -1794,10 +1794,54 @@ class Round4Decisions(TempBrain):
         self.assertIn('items', d)
 
 
+class Round4NewBrand(TempBrain):
+    """Round 4 feature 9: the intake writes a brain folder from the founder's words; the screen opens on it; the dry run replays fixtures offline."""
+
+    def test_skeleton_then_every_route_answers(self):
+        nb = api.handle(Req(['newbrand']))
+        self.assertEqual([b['slug'] for b in nb['brains']], ['bombas'])
+        self.assertEqual(len(nb['lanes']), 15)
+        status, res = api.handle(Req(['newbrand'], 'POST', body={'slug': 'demo-sock-co', 'name': 'Demo Sock Co', 'url': 'demosock.co', 'category': 'merino socks', 'market': 'us'}))
+        self.assertEqual((status, res['slug'], res['url'], res['market']), (201, 'demo-sock-co', 'https://demosock.co', 'US'))
+        self.assertEqual(res['sections'], {'identity': 4, 'open_questions': 5})
+        self.assertEqual(len(res['questions']), 5)
+        d = self.tmp / 'demo-sock-co'
+        self.assertTrue((d / 'BRAIN.md').exists() and (d / 'documents' / 'manifest.json').exists() and (d / 'config' / 'apify.json').exists())
+        cfg = json.loads((d / 'config' / 'apify.json').read_text(encoding='utf-8'))
+        self.assertEqual((cfg['meta_ad_library']['pages'], cfg['reddit']['subreddits']), ([], []))  # nothing confirmed, nothing runs
+        ident = json.loads((d / 'identity.json').read_text(encoding='utf-8'))
+        self.assertEqual(next(r['value'] for r in ident if r['field'] == 'name'), 'Demo Sock Co')
+        self.assertTrue(all(r['source']['type'] == 'founder' and r['tier'] == 'approved' for r in ident))
+        ov = api.handle(Req(['overview'], query={'brand': ['demo-sock-co']}))
+        self.assertIn('Demo Sock Co sells merino socks', ov['t0'])
+        q = api.handle(Req(['questions'], query={'brand': ['demo-sock-co']}))
+        self.assertGreaterEqual(len(q['questions']), 5)
+        for route in (['master'], ['health'], ['peaks'], ['visual'], ['selfaudit'], ['ladders', 'proof'], ['bottlenecks'], ['report'], ['digest']):
+            r = api.handle(Req(route, query={'brand': ['demo-sock-co']}))
+            self.assertNotIsInstance(r, tuple, route)
+        self.assertEqual([b['slug'] for b in api.handle(Req(['newbrand']))['brains']], ['bombas', 'demo-sock-co'])
+        self.assertEqual(api.handle(Req(['newbrand'], 'POST', body={'slug': 'demo-sock-co', 'name': 'x', 'url': 'y.com'}))[0], 409)
+        self.assertEqual(api.handle(Req(['newbrand'], 'POST', body={'slug': 'Bad Slug', 'name': 'x', 'url': 'y.com'}))[0], 400)
+        self.assertEqual(api.handle(Req(['newbrand'], 'POST', body={'slug': 'ok-slug', 'name': 'x', 'url': 'not a url'}))[0], 400)
+        self.assertEqual(api.handle(Req(['newbrand'], 'POST', body={'slug': 'ok-slug', 'name': 'x', 'url': 'y.com', 'market': 'MOON'}))[0], 400)
+        self.assertIn('brand', [c['kind'] for c in api.handle(Req(['changes']))['changes']])
+
+    def test_dry_run_is_offline_and_never_a_real_brain(self):
+        status, res = api.handle(Req(['newbrand', 'dryrun'], 'POST', body={'slug': 'demo-sock-co', 'name': 'Demo Sock Co', 'url': 'https://demosock.co'}))
+        self.assertEqual((status, res['progress']['total'], res['cost_usd']), (201, 15, 0.0))
+        self.assertIn('no network call', res['mode'])
+        self.assertTrue((self.tmp / '.mock-onboard' / 'demo-sock-co' / 'onboard.log.jsonl').exists())
+        self.assertFalse((self.tmp / 'demo-sock-co').exists())
+        self.assertEqual(next(l['status'] for l in res['lanes'] if l['step'] == 'adlibrary'), 'waiting')  # no page confirmed, nothing pulled
+        self.assertIsInstance(res['estimate_usd'], float)
+        self.assertEqual(len(res['questions']), 5)
+        self.assertEqual(api.handle(Req(['newbrand', 'dryrun'], 'POST', body={'slug': 'x y'}))[0], 400)
+
+
 class Round4SecondBrand(unittest.TestCase):
     """Round 4 feature 2: plug and play. Every route answers for the example brain (7 records), unavailable never zero."""
 
-    ROUTES = [['overview'], ['master'], ['profile'], ['documents'], ['competitors'], ['coverage'], ['signals'], ['health'], ['conflicts'], ['questions'], ['ladders', 'proof'], ['selfaudit'], ['peaks'], ['visual'],
+    ROUTES = [['overview'], ['master'], ['profile'], ['documents'], ['competitors'], ['coverage'], ['signals'], ['health'], ['conflicts'], ['questions'], ['ladders', 'proof'], ['selfaudit'], ['peaks'], ['visual'], ['newbrand'],
               ['decisions'], ['flows'], ['claims'], ['site', 'diff'], ['parity'], ['contracts'], ['legal'], ['voice'], ['battlecards'], ['permissions'],
               ['export'], ['assumptions'], ['facts'], ['summaries'], ['changes'], ['learn'], ['report'], ['digest'], ['review'], ['bottlenecks'], ['audit']]
 

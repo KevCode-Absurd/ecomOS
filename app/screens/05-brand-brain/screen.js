@@ -63,6 +63,7 @@
     loadSelfAudit(m.actions || []);
     loadPeaks(m.actions || []);
     loadVisual(m.actions || []);
+    loadNewBrand();
     const con = m.connect || [];
     const cw = document.getElementById('connect-wrap');
     if (con.length) {
@@ -167,6 +168,51 @@
     const st = el('span', { class: 'micro muted' });
     exp.addEventListener('click', async () => { exp.disabled = true; try { const b = await api(BASE + 'export'); const blob = new Blob([JSON.stringify(b, null, 1)], { type: 'application/json' }); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = b.brand + '-brain-' + b.exported_at + '.json'; a.click(); st.textContent = b.counts.records + ' records, ' + b.counts.documents + ' documents, ' + b.counts.conflicts + ' conflicts. ' + b.note; } catch (e) { st.textContent = 'Could not export: ' + e.message; } exp.disabled = false; });
     mount('#perm', matrix, el('div', { class: 'row', style: { marginTop: '10px' } }, exp, UI.decisionRow({ capability: 'LOOP-C22', autonomy: 'founder_gate', owner: 'agent_drafts', screen: SCREEN, compact: true, stub: 'Offboarding: export the brain and the registry as a handoff package, list every connector to revoke in Setup, and confirm no external write access stays open. You approve each revoke.' }), st));
+  }
+
+  // ---------- 9. start a new brain ----------
+  async function loadNewBrand() {
+    let nb;
+    try { nb = await api(BASE + 'newbrand'); } catch (e) { mount('#newbrand', el('p', { class: 'muted', text: 'New brain unavailable: ' + e.message })); return; }
+    mount('#newbrand-tools', UI.orientation([{ label: 'brains on file', value: nb.brains.length, unit: 'n' }, { label: 'onboarding lanes', value: nb.lanes.length, unit: 'n' }]));
+    const status = el('span', { class: 'micro muted' });
+    const out = el('div', { class: 'stack' });
+    const slug = el('input', { class: 'text sm', placeholder: 'slug, like demo-sock-co', style: { maxWidth: '200px' } });
+    const name = el('input', { class: 'text sm', placeholder: 'brand name as customers write it', style: { flex: '1 1 220px' } });
+    const url = el('input', { class: 'text sm', placeholder: 'store url, like demosock.co', style: { flex: '1 1 220px' } });
+    const cat = el('input', { class: 'text sm', placeholder: 'category, like merino socks', style: { flex: '1 1 200px' } });
+    const market = el('select', { class: 'text sm' }, ...nb.markets.map((m) => el('option', { value: m, text: m })));
+    name.addEventListener('input', () => { if (!slug.dataset.touched) slug.value = name.value.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 40); });
+    slug.addEventListener('input', () => { slug.dataset.touched = '1'; });
+    const go = el('button', { class: 'btn primary sm', type: 'button', text: 'Write the brain folder' });
+    go.addEventListener('click', async () => {
+      go.disabled = true;
+      try {
+        const r = await api(BASE + 'newbrand', { method: 'POST', body: { slug: slug.value.trim(), name: name.value.trim(), url: url.value.trim(), category: cat.value.trim(), market: market.value } });
+        status.textContent = r.next;
+        mount(out, el('div', { class: 'card flat' }, el('div', { class: 'row' }, el('b', { text: r.name + ' started: ' + r.records + ' records in ' + Object.keys(r.sections).length + ' sections' }), el('a', { class: 'btn sm primary', href: withBrand(location.pathname, r.slug), text: 'Open the brain screen for ' + r.slug })),
+          el('div', { class: 'small' }, el('b', { text: 'Files: ' }), r.files.join(', ')),
+          el('div', { class: 'small' }, el('b', { text: 'The 5 opening questions: ' })), el('ol', { class: 'a-steps' }, ...r.questions.map((q) => el('li', { text: q.question })))));
+        loadNewBrand();
+      } catch (e) { go.disabled = false; status.textContent = 'Could not write it: ' + e.message; }
+    });
+    const dry = el('button', { class: 'btn sm', type: 'button', text: 'Dry run the onboarding (offline)' });
+    dry.addEventListener('click', async () => {
+      dry.disabled = true;
+      try {
+        const r = await api(BASE + 'newbrand/dryrun', { method: 'POST', body: { slug: slug.value.trim(), name: name.value.trim(), url: url.value.trim() } });
+        status.textContent = r.mode + '. Estimate for a live run: ' + fmt.unit(r.estimate_usd, '$') + ' of paid lanes, cap ' + fmt.unit(r.max_usd, '$') + '.';
+        mount(out, UI.verdictTable({ columns: [{ key: 'step', label: 'Lane' }, { key: 'kind', label: 'Cost' }, { key: 'records', label: 'Records', num: true }, { key: 'estimate', label: 'Live estimate', num: true, unit: '$' }, { key: 'note', label: 'Note' }],
+          verdict: { at: 1, kind: (x) => ({ ok: 'keep', skipped: 'wait', waiting: 'watch', refused: 'stop', failed: 'stop' })[x.status] || 'na', text: (x) => x.status, reason: (x) => x.note || '' },
+          rows: r.lanes.map((l) => ({ step: l.step, kind: l.kind, records: l.records, estimate: l.estimate_usd, note: l.note || '', status: l.status })), sort: false, empty: 'No lane ran.' }),
+          el('div', { class: 'micro faint', text: r.note }));
+      } catch (e) { status.textContent = 'Could not dry run: ' + e.message; }
+      dry.disabled = false;
+    });
+    const lanes = UI.table({ columns: [{ key: 'step', label: 'Lane' }, { key: 'kind', label: 'Cost' }, { key: 'what', label: 'What it does' }], rows: nb.lanes, sort: false });
+    const existing = el('div', { class: 'row' }, el('span', { class: 'micro faint', text: 'On file: ' }), ...nb.brains.map((b) => el('a', { class: 'chip', href: withBrand(location.pathname, b.slug), text: b.slug + ' (' + (b.records == null ? NA : b.records) + ' records)' })));
+    mount('#newbrand', existing, el('div', { class: 'row' }, name, slug, url), el('div', { class: 'row' }, cat, market, go, dry, status), out,
+      UI.tabs({ items: [{ key: 'lanes', label: 'What a live onboarding runs', n: nb.lanes.length, panel: lanes }] }), el('p', { class: 'micro faint', text: nb.note }));
   }
 
   // ---------- 5b0. does it look like us ----------
