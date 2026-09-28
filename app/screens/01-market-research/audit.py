@@ -41,6 +41,11 @@ Rules
             active-ad signal of ours that carries its answer words. Money: null (a test prices it).
             Capability PROD-C12 (hand the validated angle to creative, human assist; the desk drafts and a
             person approves). Owner: 01-market-research. Reputation override: 4 (a deal-breaker rung).
+  PROD-R08  Preference gap: a shopper preference the web pass shows rising or holding (sustainability, natural
+            fibres, durability, giving, made in USA, resale, compression, gifting) that at least one competitor
+            page claims in its ads and none of the brand's own records (claims, products, site, offers) carries.
+            Money: null. Capability PROD-C05. Owner: 01-market-research. The action is a claim plan or a
+            counter-position; a claim is never invented.
   PROD-R03  Hero line with no next SKU: a line with 25 percent or more of its category's net sales in
             the last 3 whole months while the candidate pipeline holds no open next-SKU candidate for
             that category. Money: null (an unlaunched SKU has no baseline). Capability PROD-C06
@@ -82,6 +87,8 @@ RULES = [
     {'rule_id': 'PROD-R07', 'name': 'Conversation theme with 10 or more review quotes, more complaints than praise, and no active ad answering it',
      'entity_type': 'ladder_rung', 'inputs': ['brain.objection_ladders', 'brain.language_bank', 'brain.claims', 'brain.learnings', 'fixtures.social_pull'],
      'capability': 'PROD-C12', 'owner_screen': SCREEN},
+    {'rule_id': 'PROD-R08', 'name': 'Preference rising or holding in public surveys that competitors claim and no record of ours does',
+     'entity_type': 'metric', 'inputs': ['fixtures.market_trends', 'brain.claims', 'brain.competitors', 'brain.learnings'], 'capability': 'PROD-C05', 'owner_screen': SCREEN},
 ]
 CAPABILITY = {'PROD-R01': {'id': 'PROD-C05', 'autonomy': 'agent_does'},
               'PROD-R02': {'id': 'PROD-C06', 'autonomy': 'agent_does'},
@@ -89,7 +96,8 @@ CAPABILITY = {'PROD-R01': {'id': 'PROD-C05', 'autonomy': 'agent_does'},
               'PROD-R04': {'id': 'PROD-C05', 'autonomy': 'agent_does'},
               'PROD-R05': {'id': 'PROD-C05', 'autonomy': 'agent_does'},
               'PROD-R06': {'id': 'PROD-C03', 'autonomy': 'agent_does'},
-              'PROD-R07': {'id': 'PROD-C12', 'autonomy': 'human_assist'}}
+              'PROD-R07': {'id': 'PROD-C12', 'autonomy': 'human_assist'},
+              'PROD-R08': {'id': 'PROD-C05', 'autonomy': 'agent_does'}}
 SEVERITY_ORDER = {'critical': 0, 'high': 1, 'medium': 2, 'low': 3}
 
 # Review records name their line in a short key; the store names it by SKU title.
@@ -494,6 +502,7 @@ def run(brand, window=None, data=None):
     out += trend_findings(br, category_mix(data, brand, rd), ends_on)
     out += subcategory_findings(br, ends_on)
     out += conversation_findings(br, ends_on)
+    out += preference_findings(br, ends_on)
     out.sort(key=lambda f: (SEVERITY_ORDER[f['severity']], -((f['money_at_stake'] or {}).get('usd') or 0), f['id']))
     return out
 
@@ -916,5 +925,76 @@ def conversation_findings(br, ends_on):
                      money_reason='lost orders from an unanswered doubt are not measurable without a test')
         f['entity'] = {'type': 'ladder_rung', 'id': r['theme'], 'label': r['label'], 'answered_on_site': r['answered_on_site'], 'doubt': rung.get('doubt')}
         f['id'] = f'{SCREEN}.PROD-R07.{r["theme"]}'
+        out.append(f)
+    return out
+
+
+# ---------------------------------------------------------------- shifting preferences
+
+# what each preference sounds like in a claim, an ad or a competitor's pitch
+PREFERENCE_WORDS = {'sustainability': ['sustainab', 'recycled', 'b corp', 'organic', 'carbon', 'planet'],
+                    'natural_fibres': ['cotton', 'merino', 'wool', 'natural fib', 'natural material'],
+                    'durability': ['guarantee', 'durab', 'lasts', 'lifetime', 'wear life', 'buy it for life'],
+                    'giving': ['donate', 'donated', 'one purchased', 'give back', 'giving', 'mission'],
+                    'made_in_usa': ['made in usa', 'made in the usa', 'made in vermont', 'american made', 'made in america'],
+                    'secondhand_resale': ['resale', 'secondhand', 'second hand', 'pre-owned', 'take back', 'recycl'],
+                    'compression_wellness': ['compression', 'circulation', 'relief', 'mmhg'],
+                    'gifting': ['gift']}
+PREFERENCE_THEME = {'durability': 'durability', 'giving': 'mission', 'compression_wellness': 'comfort'}
+
+
+def preferences(br, conv=None):
+    """Each rising preference from the web pass against the brand's own claims (site), its active ads, the
+    competitors' pitches and the category conversation. Verdict by rule: lead, prove, gap, watch."""
+    fx = market_trends() or {}
+    site = brand_words(br)
+    ads = ad_words(br)
+    comps = competitor_signals(br)
+    themes = {r['theme']: r for r in (conv or conversation(br))['rows']} if br else {}
+    out = []
+    for p in fx.get('preferences') or []:
+        key = p.get('key')
+        words = PREFERENCE_WORDS.get(key, [key or ''])
+        on_site = any(w in site for w in words) if site else None
+        in_ads = any(w in ads for w in words) if ads else None
+        rivals = [c['name'] for c in comps if any(w in c['text'] for w in words)]
+        th = themes.get(PREFERENCE_THEME.get(key, ''))
+        rising = p.get('direction') in ('up', 'flat')
+        if on_site and in_ads:
+            verdict = 'lead'
+        elif on_site and rising:
+            verdict = 'prove'
+        elif not on_site and rising and rivals:
+            verdict = 'gap'
+        else:
+            verdict = 'watch'
+        src = (p.get('sources') or [{}])[0]
+        out.append({'key': key, 'label': p.get('label'), 'direction': p.get('direction'), 'evidence': p.get('evidence'),
+                    'cite': f"{src.get('publisher') or 'public source'}, {src.get('date') or 'undated'}", 'url': src.get('url'), 'sources': p.get('sources') or [],
+                    'on_site': on_site, 'in_ads': in_ads, 'competitors': rivals,
+                    'conversation': {'complaints': th['review_complaints'], 'praise': th['review_praise'], 'reddit': th['reddit_mentions']} if th else None,
+                    'verdict': verdict, 'finding_id': f'{SCREEN}.PROD-R08.{key}'})
+    order = {'gap': 0, 'prove': 1, 'lead': 2, 'watch': 3}
+    out.sort(key=lambda r: (order[r['verdict']], r['label'] or ''))
+    return out
+
+
+def preference_findings(br, ends_on):
+    """PROD-R08: a preference rising or holding in public surveys that competitors claim and the brand's own
+    records do not. The fix is a claim plan or a counter-position, never an invented claim."""
+    out = []
+    for r in preferences(br):
+        if r['verdict'] != 'gap':
+            continue
+        ev = [_ev('preference_direction', 1 if r['direction'] == 'up' else 0, 'flag', ends_on.isoformat(), 'public surveys', source=r['url'], simulated=False,
+                  freshness_days=0, note=r['evidence'], cite=r['cite']),
+              _ev('competitors_claiming_it', len(r['competitors']), 'count', ends_on.isoformat(), 'active ads now', 1, 'threshold', source='brain.competitors',
+                  simulated=False, freshness_days=0, names=r['competitors']),
+              _ev('own_records_claiming_it', 0, 'count', ends_on.isoformat(), 'brain now', 1, 'threshold', source='brain.claims', simulated=False, freshness_days=0)]
+        sentence = (f'{r["label"]}: {r["evidence"]} ({r["cite"]}). {", ".join(r["competitors"][:3])} claim it and no record of ours does.')
+        f = _finding('PROD-R08', r['key'], ends_on, 'medium', ev, sentence, None, 0.5, [f'{br.brand}.claims.brand_positioning', f'{br.brand}.positioning.proof_points'],
+                     money_reason='a preference gap has no order count until a test runs')
+        f['entity'] = {'type': 'metric', 'id': r['key'], 'label': r['label'], 'names': ', '.join(r['competitors'][:3])}
+        f['id'] = f'{SCREEN}.PROD-R08.{r["key"]}'
         out.append(f)
     return out

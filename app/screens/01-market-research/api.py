@@ -421,6 +421,25 @@ def recipe(f):
             'check_on': _check_on(f, 30), 'time_to_ship_hours': 8,
             'win_rule': 'complaint quotes on the theme fall below praise quotes in new reviews over 60 days',
         }
+    if rid == 'PROD-R08':
+        ent = f.get('entity') or {}
+        label = ent.get('label') or ent.get('id') or ''
+        names = ent.get('names') or 'competitors'
+        return {
+            'title': f'Decide our position on {label.lower()}: claim it, counter it, or leave it',
+            'owner': 'agent',
+            'artefact': {'kind': 'research_note', 'label': f'a 1-page position on {label.lower()}: what we can claim with proof, what {names} claim, the counter-position, and the brain record to write'},
+            'steps': [
+                {'n': 1, 'who': 'agent', 'text': f'List what {names} claim on {label.lower()} in their ads (signals only) and where their proof sits.'},
+                {'n': 2, 'who': 'agent', 'text': 'Check our own facts: materials, factories, policies, certifications. Name what we can claim today with a source.'},
+                {'n': 3, 'who': 'agent', 'text': 'Write the position: claim it (with the proof), counter it (what we offer instead, in the buyer\'s words), or leave it (why it does not move our buyer).'},
+                {'n': 4, 'who': 'person', 'text': 'Pick one. The choice is written to the brain as an approved positioning record.'},
+                {'n': 5, 'who': 'agent', 'text': 'If claimed or countered, hand the line to copy and creative as a brief.'}],
+            'size': {'text': f'{_ev_value(f, "competitors_claiming_it")} competitor pages claim it', 'usd': None},
+            'stop_rule': 'stop if the survey trend turns down in the next web pass',
+            'check_on': _check_on(f, 30), 'time_to_ship_hours': 4,
+            'win_rule': 'an approved positioning record on the preference exists in the brain',
+        }
     return None
 
 
@@ -526,7 +545,7 @@ def overview(data, brand):
             'orientation': orientation(tr, br, ends_on, findings),
             'wrong': wrong(findings),
             'desk': {'trends': trends(br, mix), 'mix': mix, 'lanes': audit.subcategory_table(br, ends_on),
-                     'conversation': audit.conversation(br),
+                     'conversation': audit.conversation(br), 'preferences': audit.preferences(br),
                      'demand': demand(tr, reviews), 'store_growth': tr.get('store_growth'),
                      'demand_unavailable': {'reason': tr.get('reason'), 'fix': tr.get('fix')} if tr.get('unavailable') else None,
                      'price_bands': bands, 'reviews': review_mining(reviews, lads),

@@ -260,6 +260,35 @@
         gaps.length ? { label: 'Answer the first', onClick: () => { const a = actionFor(gaps[0].finding_id); if (a) openAction(a); } } : null));
   }
 
+  function preferencesBlock(rows) {
+    if (!rows || !rows.length) return UI.emptyState({ screen: SLUG, title: 'No preference survey on file', text: 'The web pass keeps public survey numbers on shifting preferences. Run it for this brand.', missing: ['web_pass'] });
+    const vrows = rows.map((r) => {
+      const a = actionFor(r.finding_id);
+      const ads5 = actionFor(SLUG + '.PROD-R05.' + { sustainability: 'sustainable_apparel', gifting: 'gifting_socks' }[r.key]) || null;
+      const ads6 = actionFor(SLUG + '.PROD-R06.' + { durability: 'guarantee', natural_fibres: 'merino', gifting: 'gifting' }[r.key]) || null;
+      const ads7 = actionFor(SLUG + '.PROD-R07.' + { durability: 'durability' }[r.key]) || null;
+      const prove = ads6 || ads7 || ads5;
+      return Object.assign({}, r, { dir: r.direction === 'up' ? 'rising' : r.direction === 'down' ? 'falling' : r.direction === 'flat' ? 'holding' : NA,
+        site: r.on_site == null ? NA : r.on_site ? 'yes' : 'no', ads: r.in_ads == null ? NA : r.in_ads ? 'yes' : 'no',
+        rivals: r.competitors.length ? r.competitors.join(', ') : 'none seen',
+        talk: r.conversation ? r.conversation.complaints + ' complaints, ' + r.conversation.praise + ' praise, ' + r.conversation.reddit + ' Reddit' : 'no theme mapped',
+        actions: [a ? { label: 'Decide our position', onClick: () => openAction(a) } : prove ? { label: 'Prove it in an ad', onClick: () => openAction(prove) } : { label: r.verdict === 'lead' ? 'Leading' : 'Watch', cls: 'quiet', onClick: () => {} }] });
+    });
+    const t = UI.verdictTable({
+      columns: [{ key: 'label', label: 'Preference' }, { key: 'dir', label: 'Direction' }, { key: 'evidence', label: 'What the public numbers say' }, { key: 'cite', label: 'Source' },
+        { key: 'site', label: 'Our records claim it' }, { key: 'ads', label: 'Our active ads say it' }, { key: 'rivals', label: 'Competitors claiming it' }, { key: 'talk', label: 'Category conversation' }],
+      rows: vrows,
+      verdict: { at: 1, kind: (r) => r.verdict === 'gap' ? 'fix' : r.verdict === 'prove' ? 'watch' : r.verdict === 'lead' ? 'keep' : 'na',
+        text: (r) => r.verdict === 'gap' ? 'Gap' : r.verdict === 'prove' ? 'Prove it' : r.verdict === 'lead' ? 'Leading' : 'Watch',
+        reason: (r) => r.verdict === 'gap' ? 'competitors claim it, we hold no record' : r.verdict === 'prove' ? 'we hold the proof and no ad says it' : r.verdict === 'lead' ? 'claimed on site and in ads' : 'not rising, or nobody claims it' },
+      actions: { label: 'Do', onClick: () => {} }, sort: false });
+    const gaps = rows.filter((r) => r.verdict === 'gap'), prove = rows.filter((r) => r.verdict === 'prove');
+    return el('div', null, el('div', { class: 'card scroll' }, t),
+      el('p', { class: 'micro faint', text: 'Rule: leading when our records and our active ads carry it; prove it when we hold the proof and no ad says it; gap when a competitor claims it and we hold no record; else watch. A claim is never invented: the gap action decides claim, counter or leave.' }),
+      gapLine((gaps.length ? gaps.length + ' preference' + (gaps.length === 1 ? '' : 's') + ' competitors claim and we do not: ' + gaps.map((g) => g.label.toLowerCase()).join(', ') + '. ' : '') + (prove.length ? prove.length + ' we hold the proof for and never say in an ad: ' + prove.map((g) => g.label.toLowerCase()).join(', ') + '.' : ''),
+        gaps.length ? { label: 'Decide the first', onClick: () => { const a = actionFor(gaps[0].finding_id); if (a) openAction(a); } } : null));
+  }
+
   function loadDesk(o) {
     const d = o.desk || {};
     const w = (o.window || {}).trend;
@@ -267,6 +296,7 @@
     parts.push(section('desk-trends', 'Where is the category going, and which lane is under-advertised?', 'Public market sizes and growth from the web pass, a url and a date on every number, against our category mix over 12 whole months. Sales are simulated; markets are public.', trendsBlock(d.trends || { on_file: false }, d.mix || {})));
     parts.push(section('desk-lanes', 'Which lanes are competitors betting on, and what launched?', 'Competitor pages from the Ad Library pull in the brain, by lane: who pushes it, how long their ads have run, what launched in the last 24 months, and whether we sell and advertise it.', lanesBlock(d.lanes)));
     parts.push(section('desk-conversation', 'What are people talking about, and what goes unanswered?', 'Themes across reviews (site, Amazon, Trustpilot, retailers), Reddit and an Instagram hashtag pull: volume, complaint against praise, the top doubt, and whether the site and the active ads answer it.', conversationBlock(d.conversation)));
+    parts.push(section('desk-preferences', 'Which preferences are shifting, and where do we stand on each?', 'Public survey numbers from the web pass against our own claims, our active ads, the competitors\' pitches and the category conversation.', preferencesBlock(d.preferences)));
     parts.push(section('desk-demand', 'Which lines are losing share, and which reviews say why?', 'Last 3 whole months against the same months a year earlier. A line fires when units fall or growth trails the store by 1 point or more.', demandBlock(d, w || { months: [], year_ago: [] })));
     parts.push(section('desk-price', 'Where do our prices sit against the competitor band?', 'Per-pair list price by line against the band of competitor median prices from the brain. Socks only; other categories have no competitor price on file.', priceBlock(d.price_bands || {})));
     parts.push(section('desk-reviews', 'What do reviews praise and fail, line by line?', 'Public site review totals per line, with the objection ladder rungs built from them.', reviewBlock(d.reviews || [])));

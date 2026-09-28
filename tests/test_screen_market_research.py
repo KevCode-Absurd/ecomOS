@@ -313,6 +313,36 @@ class RulesTest(unittest.TestCase):
         self.assertFalse([k for k in keys(fx) if 'owner' in k or 'user' in k])
         self.assertIn(fx['mode'], ('mock', 'live'))
 
+    def test_preference_rule_needs_a_rival_claim_and_no_record(self):
+        fx = {'preferences': [
+            {'key': 'made_in_usa', 'label': 'Made in USA', 'direction': 'flat', 'evidence': '75 pct prefer US made', 'sources': [{'url': 'https://example.org/u', 'publisher': 'Example', 'date': '2025-06'}]},
+            {'key': 'durability', 'label': 'Durability', 'direction': 'up', 'evidence': '47 pct define quality by durability', 'sources': [{'url': 'https://example.org/d', 'publisher': 'Example', 'date': '2026-03'}]},
+            {'key': 'secondhand_resale', 'label': 'Resale', 'direction': 'up', 'evidence': 'resale grew 14 pct', 'sources': [{'url': 'https://example.org/r', 'publisher': 'Example', 'date': '2025-03'}]}]}
+        real = audit.market_trends
+        audit.market_trends = lambda: fx
+        try:
+            class B:
+                brand = 'fake'
+                def records(self, sec):
+                    if sec == 'competitors':
+                        return [{'id': 'fake.competitors.a', 'value': {'name': 'A', 'active_ads_seen': 10, 'positioning': 'made in usa merino with a lifetime guarantee',
+                                                                       'longest_running_ad': {'days_running': 50}}, 'evidence': []}]
+                    if sec == 'claims':
+                        return [{'text': 'a guarantee that replaces a pair that fails', 'value': None, 'source': {}, 'evidence': []}]
+                    if sec == 'learnings':
+                        return [{'text': 'active ads: comfort', 'value': {'role': 'self'}, 'source': {'type': 'ad_library'}, 'evidence': []}]
+                    return []
+            rows = {r['key']: r for r in audit.preferences(B())}
+            fs = audit.preference_findings(B(), date(2026, 9, 27))
+        finally:
+            audit.market_trends = real
+        self.assertEqual(rows['made_in_usa']['verdict'], 'gap')
+        self.assertEqual(rows['durability']['verdict'], 'prove')
+        self.assertEqual(rows['secondhand_resale']['verdict'], 'watch')
+        self.assertEqual([f['id'] for f in fs], ['01-market-research.PROD-R08.made_in_usa'])
+        self.assertIn('A claim it and no record of ours does', fs[0]['sentence'])
+        self.check_shape(fs[0])
+
     def test_web_pass_fixture_cites_every_number(self):
         fx = audit.market_trends()
         self.assertIsNotNone(fx)
