@@ -199,3 +199,4 @@ PAIR_MIN_ORDERS = 30      # orders that hold both products in the window
 PAIR_MIN_LIFT = 1.5       # bought together 1.5 times as often as chance
 BUNDLE_SAVING = 0.10      # the bundle starts at 10 percent off the two paid prices
 PAIR_DAYS = 90
+STALE_DAYS = 90           # a move built on a brain record older than this says so and refreshes it first

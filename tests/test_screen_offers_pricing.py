@@ -1328,5 +1328,24 @@ class BriefPackTest(unittest.TestCase):
         self.assertNotIn('\u2014', d['text'])
 
 
+class StaleInputsTest(unittest.TestCase):
+    def test_old_record_adds_a_refresh_step(self):
+        from datetime import date
+
+        class Rd:
+            def record(self, rid):
+                return {'date': '2026-01-02'} if rid == 'bombas.offers.old' else {'date': '2026-09-20'}
+
+        class Ctx:
+            rd, end = Rd(), date(2026, 9, 27)
+        a = {'status': 'open', 'why': 'Base.', 'brain_refs': ['bombas.offers.old', 'bombas.offers.new'],
+             'steps': [{'n': 1, 'who': 'agent', 'text': 'Draft.'}, {'n': 2, 'who': 'person', 'text': 'Approve.'}]}
+        out = api.actions.flag_stale_inputs([a], Ctx())[0]
+        self.assertEqual([x['id'] for x in out['stale_inputs']], ['bombas.offers.old'])
+        self.assertEqual(out['steps'][0]['who'], 'person')
+        self.assertIn('Refresh bombas.offers.old', out['steps'][0]['text'])
+        self.assertEqual([x['n'] for x in out['steps']], [1, 2, 3])
+
+
 if __name__ == '__main__':
     unittest.main()

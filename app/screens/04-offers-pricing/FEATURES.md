@@ -86,6 +86,7 @@ Known gaps from round 0:
 | 4.6 | Read launched offers: new rule OFFER-R27 fires when a live offer this screen launched passes its plan's check date, with net sales per day, AOV and discount share since launch against the 28 days before (store-wide, labelled a signal; the result lives in the registry) and a drafted read that ends in keep, change or end. The registry block lists the live offers. Tested end to end on a copy of the brain (approve, launch, read) | done |
 | 4.7 | Upsell take rate (room spec): new rule OFFER-R28, unavailable until the upsell app the brain names (Rebuy for Bombas) connects, so it shows as its own connect move ("Connect Rebuy, read-only") with what to pull; silent for a brand whose brain names no upsell app | done |
 | 4.8 | Export all briefs (depth.md section 7): `GET /api/04-offers-pricing/briefs` builds one plain-text file of every open move (why, owner, score, stake, steps with who, the drafted artefact, win and stop rules, check date); an "Export all briefs" button beside the plan downloads it. Works for a brand with no folder too | done |
+| 4.9 | Stale inputs: a move that rests on a brain record older than 90 days names it in its why and gets a first step for a person to refresh it on the brand brain screen. Quiet for Bombas today (every record is current) | done |
 
 ## Contract asks
 
@@ -222,7 +223,7 @@ Intelligems (threshold and price tests scored by profit per visitor), Rebuy (tie
 | Round | Features picked | Date | Notes |
 |---|---|---|---|
 | 0 | skeleton, 0.1 to 0.9 | 2026-09-28 | S3.9; screenshot round0.png |
-| 4 | 4.1 save to the brain, 4.2 offer records, 4.3 bundle pairs, 4.4 red line gate, 4.5 approved first, 4.6 launched read, 4.7 upsell connect, 4.8 brief pack | 2026-09-28 | in progress |
+| 4 | 4.1 save to the brain, 4.2 offer records, 4.3 bundle pairs, 4.4 red line gate, 4.5 approved first, 4.6 launched read, 4.7 upsell connect, 4.8 brief pack, 4.9 stale inputs | 2026-09-28 | in progress |
 | 3 | 3.1 to 3.10: registry, referral, loyalty, window creep, subscription note, depth rules, plug and play, priors, decisions | 2026-09-28 | screenshot round3.png |
 | 2 | 2.1 to 2.10: position, parity, discipline, gift pick, cart ladder, test calendar, depth by line, second order, cost against price, desk tabs | 2026-09-28 | screenshot round2.png |
 | 1 | 1.1 plan first, 1.2 objection to offer map, 1.3 free shipping line, 1.4 pack ladder, 1.5 first-order offer, 1.6 margin waterfall, 1.7 promo calendar, 1.8 gifting and holiday, 1.9 guarantee as an offer, 1.10 rank complete | 2026-09-28 | manager session; screenshot round1.png (updated as the round lands) |

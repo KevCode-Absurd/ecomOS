@@ -662,6 +662,31 @@ def attach_margin_checks(actions, ctx):
     return actions
 
 
+def flag_stale_inputs(actions, ctx):
+    """A move that rests on a brain record older than playbook.STALE_DAYS says which one and refreshes it first."""
+    for a in actions:
+        if a.get('status') != 'open':
+            continue
+        old = []
+        for rid in a.get('brain_refs') or []:
+            rec = ctx.rd.record(rid) if isinstance(rid, str) and rid.count('.') >= 2 else None
+            d = (rec or {}).get('date')
+            try:
+                age = (ctx.end - date.fromisoformat(str(d)[:10])).days
+            except ValueError:
+                continue
+            if age > playbook.STALE_DAYS:
+                old.append((rid, age))
+        if not old:
+            continue
+        a['stale_inputs'] = [{'id': r, 'days': n} for r, n in old]
+        a['why'] = a['why'] + ' ' + '; '.join(f'{r} is {n} days old' for r, n in old) + '.'
+        if len(a['steps']) < 8:
+            a['steps'] = steps(('person', 'Refresh ' + ', '.join(r for r, _ in old) + ' on the brand brain screen.'),
+                               *[(x['who'], x['text']) for x in a['steps']])
+    return actions
+
+
 def merge_into(actions, child, parent):
     """A child rule's finding rides on the parent rule's action when both fire (one move fixes both)."""
     host = next((a for a in actions if a.get('rule_id') == parent and a.get('status') == 'open'), None)
@@ -1185,7 +1210,7 @@ def rank(brand='bombas', window=None, data=None):
     actions = merge_connect(merge_gifting(merge_red_line(merge_ladder(actions, ctx)), ctx))
     actions = merge_into(merge_into(actions, 'OFFER-R05', 'OFFER-R01'), 'OFFER-R06', 'OFFER-R01')
     actions = merge_into(actions, 'OFFER-R19', 'OFFER-R08')
-    actions = attach_margin_checks(add_priors(covered_by_registry(actions, ctx), ctx), ctx)
+    actions = flag_stale_inputs(attach_margin_checks(add_priors(covered_by_registry(actions, ctx), ctx), ctx), ctx)
     actions = [a for a in actions if not RANK.validate_action(a)]
     actions.sort(key=RANK.sort_key)
     calendar = test_calendar(actions, ctx)
