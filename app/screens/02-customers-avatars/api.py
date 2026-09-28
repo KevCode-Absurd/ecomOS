@@ -448,6 +448,7 @@ def overview(brain: Brain) -> dict:
             "themes": builds.theme_impact(brain.records("language_bank"), lad["rows"], ends_on),
             "words": builds.words(brain.records("language_bank"), all_rungs, avatars, _brand_tokens(brain), audit.source_name), "formats": _formats(brain, avatars)}
     out["strength"] = builds.strength(out)
+    builds.card_meta(out)
     return out
 
 

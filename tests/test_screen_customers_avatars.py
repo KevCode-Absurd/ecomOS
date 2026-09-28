@@ -1325,5 +1325,21 @@ class Strength(TempBrain):
         self.assertEqual(by['Theme costs']['n'], 300)
 
 
+class CardMeta(TempBrain):
+    """Feature 5.8: each avatar card knows its rank, ad voice, returns, where it speaks and what we do not know."""
+
+    def test_meta(self):
+        d = api.handle(Req(['overview']))
+        cards = {a['key']: a for a in d['avatars']}
+        dur = cards['durability_disappointed_repeat_customer']['meta']
+        self.assertEqual(dur['focus_rank'], 1)
+        self.assertEqual(dur['ads'], 'silent')
+        self.assertIn('5+ quotes', dur['unknown'])
+        run = cards['reddit_runner']['meta']
+        self.assertIsNone(run['focus_rank'])
+        for a in d['avatars']:
+            self.assertIn('unknown', a['meta'])
+
+
 if __name__ == '__main__':
     unittest.main()

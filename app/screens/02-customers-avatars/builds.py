@@ -2292,3 +2292,24 @@ def strength(d: dict) -> list[dict]:
             "first-time buyers, simulated", 1000),
     ]
     return out
+
+
+# ---------------------------------------------------------------- what each avatar card knows, and does not
+
+def card_meta(d: dict) -> None:
+    """Adds `meta` to each avatar: its focus rank, ad voice, return risk, where it speaks, the split read, and the gaps."""
+    idx = lambda rows: {r["key"]: r for r in rows}
+    focus = {r["key"]: i + 1 for i, r in enumerate(d["focus"]["rows"])}
+    ads, ret, mkt, spl, gate = (idx(d["ad_voice"].get("rows", [])), idx(d["returns"].get("rows", [])), idx(d["marketplace"]["rows"]),
+                                idx(d["split"]["rows"]), idx(d["gate"]["rows"]))
+    labels = {k: l for k, l, _, _ in GATE}
+    for a in d["avatars"]:
+        k = a["key"]
+        g = gate.get(k)
+        unknown = [labels[c] for c, ok in (g["checks"].items() if g else []) if not ok]
+        a["meta"] = {"focus_rank": focus.get(k), "focus_of": len(focus),
+                     "ads": ads[k]["verdict"] if k in ads else None,
+                     "returns": ret[k]["ratio"] if k in ret else None,
+                     "speaks": mkt[k]["verdict"] if k in mkt else None,
+                     "split": spl[k]["verdict"] if k in spl else None,
+                     "status": g["status"] if g else None, "unknown": unknown}

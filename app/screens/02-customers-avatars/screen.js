@@ -60,6 +60,16 @@
       ['Where', a.channels.length ? el('span', { class: 'chans' }, ...a.channels.map((c) => el('span', { class: 'chip', text: c.channel + ' ' + c.n }))) : NA],
     ];
     card.append(el('dl', { class: 'facts' }, ...rows.flatMap(([k, v]) => [el('dt', { text: k }), el('dd', null, v)])));
+    const m = a.meta || {};
+    const chips = [];
+    if (m.focus_rank) chips.push(el('span', { class: 'chip ' + (m.focus_rank === 1 ? 'accent' : ''), text: 'build rank ' + m.focus_rank + ' of ' + m.focus_of }));
+    if (m.ads) chips.push(el('span', { class: 'chip ' + (m.ads === 'silent' || m.ads === 'under' ? 'bad' : ''), text: 'ads: ' + m.ads }));
+    if (m.returns != null) chips.push(el('span', { class: 'chip ' + (m.returns >= 1.25 ? 'bad' : ''), text: 'returns ' + m.returns + 'x median' }));
+    if (m.speaks) chips.push(el('span', { class: 'chip', text: m.speaks === 'marketplace' ? 'speaks on Amazon' : 'speaks on our site' }));
+    if (m.split && m.split !== 'focused') chips.push(el('span', { class: 'chip warn', text: m.split === 'split' ? 'may be two buyers' : 'broad' }));
+    card.append(el('div', { class: 'chans' }, ...chips));
+    card.append(el('div', { class: 'small ' + (m.unknown && m.unknown.length ? 'unknown' : 'muted') },
+      m.unknown && m.unknown.length ? el('span', null, el('b', { text: 'We do not know yet: ' }), m.unknown.join(', ').toLowerCase() + '.') : 'Every evidence check passes.'));
     const quotes = a.quotes.filter((q) => q.source !== 'Reddit').slice(0, 2);
     for (const q of quotes) card.append(el('blockquote', null, '"' + q.quote + '" ', link(q.ref, q.source || undefined)));
     if (!a.quotes.length) card.append(el('p', { class: 'muted small', text: 'No customer quotes. This avatar is a guess until customers say it.' }));
