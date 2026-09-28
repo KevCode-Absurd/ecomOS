@@ -253,10 +253,10 @@ function alertsTile() {
     <div class="tile-head"><h2>Alerts</h2><div style="display:flex;gap:10px;align-items:center"><span class="count">${ENGINE.anomalies(VIEW).length}</span><button class="go" type="button" data-goto="insights" aria-label="Open insights">${ARROW}</button></div></div>
     ${list.length ? list.map((x) => {
       const up = x.flags.every((f) => f.change > 0), down = x.flags.every((f) => f.change < 0);
-      const f = x.flags[0];
+      const f = x.big_order ? (x.flags.find((q) => q.kind === 'roas') || x.flags[0]) : x.flags[0];
       const txt = f.kind === 'spend' ? `Spend ${f.change > 0 ? '+' : ''}${(f.change * 100).toFixed(0)}% vs usual` : `ROAS ${f.change > 0 ? '+' : ''}${(f.change * 100).toFixed(0)}% vs usual`;
       const d = new Date(x.date + 'T00:00:00Z');
-      return `<div class="dl-row"><span class="dl-ic">${d.getUTCDate()}<br>${d.toLocaleDateString('en-IN', { month: 'short', timeZone: 'UTC' })}</span><span style="min-width:0"><div class="t">${esc(txt)}${x.flags.length > 1 ? ' · ROAS too' : ''}</div><div class="s">${x.drivers[0] ? esc(x.drivers[0].name) : ''}</div></span><span class="dot ${up ? 'up' : down ? 'down' : 'mix'}" title="${up ? 'Up' : down ? 'Down' : 'Mixed'}"></span></div>`;
+      return `<div class="dl-row"><span class="dl-ic">${d.getUTCDate()}<br>${d.toLocaleDateString('en-IN', { month: 'short', timeZone: 'UTC' })}</span><span style="min-width:0"><div class="t">${esc(txt)}${x.big_order ? ' \u00b7 1 big order' : x.flags.length > 1 ? ' \u00b7 ROAS too' : ''}</div><div class="s">${x.big_order && x.sales && x.sales.top ? esc(x.sales.top.name) : x.drivers[0] ? esc(x.drivers[0].name) : ''}</div></span><span class="dot ${x.big_order ? 'mix' : up ? 'up' : down ? 'down' : 'mix'}" title="${x.big_order ? '1 big order' : up ? 'Up' : down ? 'Down' : 'Mixed'}"></span></div>`;
     }).join('') : '<p class="small" class="muted">No sharp moves in these dates.</p>'}
   </section>`;
 }

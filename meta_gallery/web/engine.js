@@ -506,17 +506,29 @@
         if (ms && ms > 0) { const ch = (sp - ms) / ms; if (Math.abs(ch) >= 0.5) flags.push({ kind: 'spend', change: ch, now: sp, usual: ms }); }
         if (mr && ro !== null && sp >= (ms || 0) * 0.3) { const ch = (ro - mr) / mr; if (Math.abs(ch) >= 0.5) flags.push({ kind: 'roas', change: ch, now: ro, usual: mr }); }
         if (!flags.length) continue;
-        const drivers = [];
+        const drivers = [], sellers = [];
+        let orders = 0, value = 0;
         for (const id of inc) {
           const rows = this.c.daily[id];
           if (!rows) continue;
           let today = 0, base = 0;
-          for (const r of rows) { if (r[0] === d) today = r[1]; else if (r[0] >= d - 14 && r[0] < d) base += r[1]; }
+          for (const r of rows) {
+            if (r[0] === d) {
+              today = r[1];
+              if (r[2]) { orders += r[2]; value += r[3] || 0; sellers.push({ id, name: this.c.ads[id].name, campaign: this.c.ads[id].campaign_name || '', orders: r[2], value: r[3] || 0 }); }
+            } else if (r[0] >= d - 14 && r[0] < d) base += r[1];
+          }
           const diff = today - base / 14;
-          if (Math.abs(diff) > 0) drivers.push({ id, name: this.c.ads[id].name, today, usual: base / 14, diff });
+          if (Math.abs(diff) > 0) drivers.push({ id, name: this.c.ads[id].name, campaign: this.c.ads[id].campaign_name || '', today, usual: base / 14, diff });
         }
         drivers.sort((p, q) => Math.abs(q.diff) - Math.abs(p.diff));
-        out.push({ date: this.iso(d), flags, drivers: drivers.slice(0, 3), size: Math.max(...flags.map((f) => Math.abs(f.change))) });
+        sellers.sort((p, q) => q.value - p.value);
+        const top = sellers[0] || null;
+        // A ROAS jump that comes from 1 or 2 large orders on 1 ad is luck, not a trend.
+        const roasUp = flags.some((f) => f.kind === 'roas' && f.change > 0);
+        const bigOrder = !!(roasUp && top && top.orders <= 2 && value > 0 && top.value >= 0.5 * value);
+        out.push({ date: this.iso(d), flags, drivers: drivers.slice(0, 3), sales: { orders, value, top, sellers: sellers.slice(0, 3) },
+          big_order: bigOrder, spend: sp, roas: ro, size: Math.max(...flags.map((f) => Math.abs(f.change))) });
       }
       return out.sort((p, q) => q.size - p.size).slice(0, 12).sort((p, q) => (p.date < q.date ? 1 : -1));
     }

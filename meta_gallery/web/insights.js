@@ -74,18 +74,83 @@ function weeklyRoasChart(weeks, a, b) {
   return `<figure class="wk"><svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Weekly purchase ROAS">${band}${grid}<path d="${d}" style="fill:none;stroke:var(--roas)" stroke-width="2"/>${dots}${ticks}</svg></figure>`;
 }
 
+// Rupees in lakh for big order values, plain rupees below 1 lakh.
+function moneyL(v) { return v >= 1e5 ? `\u20b9${(v / 1e5).toFixed(v >= 1e6 ? 1 : 2).replace(/\.?0+$/, '')} lakh` : money(v); }
+function adRef(d) {
+  // Ad names like "1" or "Video ad" say little on their own, so the campaign goes next to them.
+  // "BL - TOF - Earrings Ads - Combo Audiences - 25/06" becomes "Earrings Ads".
+  const parts = (d.campaign || '').split(' - ').map((x) => x.trim()).filter((x) => x && !/^[A-Z]{2,4}$/.test(x));
+  const short = parts[0] || '';
+  const camp = short && short !== d.name ? ` <span class="muted">(${esc(short.length > 30 ? short.slice(0, 29) + '\u2026' : short)})</span>` : '';
+  return `${openLink(d.id, d.name)}${camp}`;
+}
+function anomalyKind(x) {
+  const f = x.flags.find((q) => q.kind === 'roas') || x.flags[0];
+  if (x.big_order) return { cls: 'luck', label: 'Big order', f };
+  const up = f.change > 0;
+  return { cls: up ? 'up' : 'down', label: `${f.kind === 'roas' ? 'ROAS' : 'Spend'} ${up ? 'up' : 'down'}`, f };
+}
+function anomalyCause(x) {
+  const k = anomalyKind(x), sl = x.sales || {}, top = sl.top;
+  if (x.big_order) {
+    return `${top.orders === 1 ? '1 order' : `${top.orders} orders`} worth ${moneyL(top.value)} on ${adRef(top)}. That is ${Math.round(top.value / sl.value * 100)}% of the day's sales, so treat it as luck, not a trend.`;
+  }
+  if (k.f.kind === 'roas' && k.f.change > 0 && top) return `${sl.orders} orders worth ${moneyL(sl.value)}. Most from ${adRef(top)}: ${top.orders === 1 ? '1 order' : `${top.orders} orders`}, ${moneyL(top.value)}.`;
+  if (k.f.kind === 'roas') return `Only ${sl.orders || 0} orders worth ${moneyL(sl.value || 0)} on ${money(x.spend)} spend.${x.drivers[0] ? ` Biggest spend move: ${adRef(x.drivers[0])} ${money(x.drivers[0].today)} vs ${money(x.drivers[0].usual)} a day.` : ''}`;
+  const d = x.drivers[0];
+  return d ? `Biggest move: ${adRef(d)} ${money(d.today)} vs ${money(d.usual)} a day.${x.drivers.length > 1 ? ` <span class="muted">+${x.drivers.length - 1} more</span>` : ''}` : '';
+}
+function anomalyChart(list) {
+  const [a, b] = ENGINE.resolveRange(VIEW.range.since, VIEW.range.until);
+  const start = Math.max(Math.min(a, b - 29), 14), n = b - start + 1;
+  if (n < 2) return '';
+  const sr = ENGINE.dailySeries(VIEW.exclusions.keywords, VIEW.exclusions.campaign_ids);
+  const roasAt = (d) => (sr.reported[d] && sr.spend[d] > 0 ? sr.value[d] / sr.spend[d] : null);
+  const med = (xs) => { const t = xs.filter((v) => v !== null).sort((p, q) => p - q); if (!t.length) return null; const m = Math.floor(t.length / 2); return t.length % 2 ? t[m] : (t[m - 1] + t[m]) / 2; };
+  const days = [];
+  for (let d = start; d <= b; d++) { const prev = []; for (let k = d - 14; k < d; k++) prev.push(roasAt(k)); days.push({ d, r: roasAt(d), u: med(prev) }); }
+  const vals = days.map((x) => x.r).filter((v) => v !== null).sort((p, q) => p - q);
+  if (!vals.length) return '';
+  // Cap the scale near the 90th percentile so 1 huge day does not flatten the rest. Taller days get a marker at the top.
+  const cap = Math.max(vals[Math.floor(vals.length * 0.9)] * 1.25, ...days.map((x) => x.u || 0), 1);
+  const W = 1000, H = 150, L = 44, R = 8, T = 14, B = 22, bw = (W - L - R) / n;
+  const X = (i) => L + i * bw + bw / 2, Y = (v) => T + (H - T - B) * (1 - Math.min(v, cap) / cap);
+  const path = (key) => { let p = '', on = false; days.forEach((x, i) => { const v = x[key]; if (v === null) { on = false; return; } p += `${on ? 'L' : 'M'}${X(i).toFixed(1)},${Y(v).toFixed(1)}`; on = true; }); return p; };
+  const byDate = new Map(list.map((x) => [x.date, x]));
+  const dots = days.map((x, i) => {
+    const al = byDate.get(ENGINE.iso(x.d));
+    if (!al || x.r === null) return '';
+    const k = anomalyKind(al), over = x.r > cap;
+    return `<g class="an-dot ${k.cls}"><title>${esc(dateLabel(al.date))}: ${x.r.toFixed(2)}x, usual ${x.u !== null ? x.u.toFixed(2) + 'x' : 'unavailable'}${al.big_order ? ' (1 big order)' : ''}</title><circle cx="${X(i).toFixed(1)}" cy="${Y(x.r).toFixed(1)}" r="5"/>${over ? `<text x="${X(i).toFixed(1)}" y="${(T - 3).toFixed(1)}" text-anchor="middle">${x.r.toFixed(0)}x</text>` : ''}</g>`;
+  }).join('');
+  const grid = [0, 0.5, 1].map((f) => `<line x1="${L}" x2="${W - R}" y1="${Y(cap * f).toFixed(1)}" y2="${Y(cap * f).toFixed(1)}" class="gl"/><text x="${L - 5}" y="${(Y(cap * f) + 3).toFixed(1)}" text-anchor="end" class="tl">${(cap * f).toFixed(1)}x</text>`).join('');
+  const step = Math.max(1, Math.ceil(n / 8));
+  const ticks = days.map((x, i) => (i % step === 0 ? `<text x="${X(i).toFixed(1)}" y="${H - 5}" text-anchor="middle" class="tl">${esc(shortDate(ENGINE.iso(x.d)))}</text>` : '')).join('');
+  return `<figure class="an-chart"><svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Daily ROAS with alert days marked">${grid}
+    <path d="${path('u')}" class="an-usual"/><path d="${path('r')}" class="an-line"/>${dots}${ticks}</svg>
+    <figcaption class="small muted"><span><i class="an-key line"></i>Daily ROAS</span><span><i class="an-key usual"></i>Usual (median of the 14 days before)</span><span><i class="an-key up"></i>Up</span><span><i class="an-key down"></i>Down</span><span><i class="an-key luck"></i>1 big order</span></figcaption></figure>`;
+}
 function anomalySection() {
   const list = ENGINE.anomalies(VIEW);
-  const card = (x) => {
-    const up = x.flags.every((f) => f.change > 0), down = x.flags.every((f) => f.change < 0);
-    const txt = x.flags.map((f) => f.kind === 'spend' ? `Spend ${money(f.now)}, ${signed(f.change)} vs the usual ${money(f.usual)}` : `ROAS ${f.now.toFixed(2)}x, ${signed(f.change)} vs the usual ${f.usual.toFixed(2)}x`).join('. ');
-    const drv = x.drivers.map((d) => `${openLink(d.id, d.name)} <span class="muted">${money(d.today)} vs ${money(d.usual)} a day</span>`).join('<br>');
-    return `<div class="alert ${up ? 'up' : down ? 'down' : ''}"><strong>${esc(dateLabel(x.date))}</strong><span>${esc(txt)}.</span>${drv ? `<span class="small">Biggest spend moves:<br>${drv}</span>` : ''}</div>`;
+  const kinds = list.map(anomalyKind);
+  const count = (c) => kinds.filter((k) => k.cls === c).length;
+  const sum = [[count('up'), 'up'], [count('down'), 'down'], [count('luck'), 'from 1 big order']].filter((z) => z[0]).map((z) => `${z[0]} ${z[1]}`).join(' \u00b7 ');
+  const row = (x, i) => {
+    const k = kinds[i], f = k.f, dt = new Date(x.date + 'T00:00:00Z');
+    const now = f.kind === 'roas' ? `${f.now.toFixed(2)}x` : money(f.now), usual = f.kind === 'roas' ? `${f.usual.toFixed(2)}x` : money(f.usual);
+    const other = x.flags.filter((q) => q !== f).map((q) => `${q.kind === 'roas' ? 'ROAS' : 'Spend'} ${signed(q.change)}`).join(', ');
+    const ids = [...x.drivers, ...((x.sales && x.sales.sellers) || [])].map((d) => d.id);
+    const sale = ids.some((id) => typeof isSaleAd === 'function' && isSaleAd(ENGINE.c.ads[id]));
+    return `<li class="an-row ${k.cls}${i >= 6 ? ' more' : ''}">
+      <div class="an-date"><b>${dt.getUTCDate()} ${dt.toLocaleDateString('en-IN', { month: 'short', timeZone: 'UTC' })}</b><span>${dt.toLocaleDateString('en-IN', { weekday: 'short', timeZone: 'UTC' })}</span></div>
+      <div class="an-what"><span class="an-chip ${k.cls}">${esc(k.label)}</span>${sale ? ' <span class="chip sale">Sale</span>' : ''}
+        <div class="an-num"><b>${esc(now)}</b> <span class="muted">vs ${esc(usual)} usual</span></div>${other ? `<div class="small muted">${esc(other)}</div>` : ''}</div>
+      <div class="an-why">${anomalyCause(x)}</div></li>`;
   };
-  return `<section class="panel-box" id="ins-alerts"><h2>Anomaly alerts</h2>
-    <p class="lead">Days in the selected dates where account spend or ROAS moved 50% or more against the median of the 14 days before. Largest 12 shown, newest first.</p>
-    ${list.length ? `<div class="alerts">${list.map(card).join('')}</div>` : '<p class="small muted">No sharp moves in these dates.</p>'}
-    <p class="small muted">A spike can be a sale day or a new launch. Check it before acting. ROAS alerts are skipped on days with very low spend.</p></section>`;
+  return `<section class="panel-box" id="ins-alerts"><div class="row" style="justify-content: space-between; align-items: baseline"><h2>Anomaly alerts</h2>${sum ? `<span class="small muted">${esc(sum)}</span>` : ''}</div>
+    <p class="lead">Days where account spend or ROAS moved 50% or more against the 14 days before. Newest first.</p>
+    ${list.length ? `${anomalyChart(list)}<ol class="an-list">${list.map(row).join('')}</ol>${list.length > 6 ? `<button class="btn ghost" type="button" data-act="an-more">Show all ${list.length}</button>` : ''}` : '<p class="small muted">No sharp moves in these dates.</p>'}
+    <p class="small muted">Jewellery sales are lumpy: 1 large order can lift a day's ROAS 5 to 10 times. Those days are marked Big order. Judge ads on 7 days or more.</p></section>`;
 }
 function weeklySection() {
   const weeks = ENGINE.weekly(state.kw, state.camp);
@@ -348,6 +413,7 @@ window.initInsights = function initInsights() {
     if (a) { e.preventDefault(); openSide(a.dataset.open); return; }
     const act = e.target.closest('[data-act]');
     if (act && act.dataset.act === 'csv-video') exportVideoCsv();
+    if (act && act.dataset.act === 'an-more') { const l = act.parentNode.querySelector('.an-list'); const all = l.classList.toggle('all'); act.textContent = all ? 'Show fewer' : `Show all ${l.children.length}`; }
     const nav = e.target.closest('.ins-nav a');
     if (nav) { e.preventDefault(); const t = document.querySelector(nav.getAttribute('href')); if (t) t.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
   });
