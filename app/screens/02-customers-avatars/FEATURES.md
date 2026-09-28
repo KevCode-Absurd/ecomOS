@@ -152,7 +152,7 @@ Lead's review: rounds 1 to 4 passed. Focus: returns and tickets by avatar, depth
 | # | Feature | Status |
 |---|---|---|
 | 9.1 | The first screen: at 1280 by 800 the orientation numbers and at least 3 whole plan items sit above the fold (depth.md section 2), checked by the browser smoke test for both brands. Bombas: orientation ends at 262 px, 4 whole plan items fit | done |
-| 9.2 | Writing rules on every string the screen makes: overview, rank, audit, report, avatar pages. No em dash, no "should", "consider" or "leverage", sentences under 20 words; fix what fails | todo |
+| 9.2 | Writing rules on every sentence the screen writes, across overview, rank, audit, report and an avatar page (678 distinct strings): no em dash, no "should", "consider" or "leverage", sentences under 20 words, customer quotes masked, brain record text copied word for word exempt. 12 of ours failed and were rewritten: the misread why no longer pastes the whole job, the macros, forces, hierarchy, claims, survey and sales-share lines split, the silent-avatar sentence splits, the R25 title reads "Give X an ad of their own", the January reason splits, a test hypothesis shortened. Now a test | done |
 | 9.3 | Decisions on the avatar page: what was decided on this avatar's moves, with dates | todo |
 | 9.4 | Survey answers back into shares: a fixture path for answers by avatar; when present, the share from answers replaces the estimate with its count and source; unavailable until a survey table exists | todo |
 | 9.5 | A faster cold overview: find and trim the slow builders | todo |

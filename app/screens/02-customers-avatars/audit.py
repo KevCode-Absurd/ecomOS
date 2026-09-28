@@ -956,7 +956,7 @@ def r24_r25(d, ends_on):
             continue
         ev = [_ev("buyer_share", r["buyer_share"], "%", ends_on, "brain.avatars"),
               _ev("live_ads_matched", 0, "n", ends_on, "brain.learnings", baseline=1)]
-        s = f"{r['name']} is about {round(r['buyer_share'] * 100)} percent of buyers, and none of our live ads speaks to them."
+        s = f"{r['name']} is about {round(r['buyer_share'] * 100)} percent of buyers. None of our live ads speaks to them."
         out.append(_finding("CUST-R25", "medium", {"type": "brand", "id": "silent_" + r["key"], "label": r["name"]}, ev, s, "CREA-C06", 0.5,
                             [f"{d['brand']}.avatars.{r['key']}"], ends_on))
     return out

@@ -528,8 +528,8 @@ def _season_check(st: dict, monthly: list[dict], cal: str, aov: dict) -> dict:
     season = st.get("usd")
     base = {"season_usd": season, "fall": fall, "fall_last_year": fall_ly}
     if fall <= fall_ly:
-        return dict(base, usd=None, reason=(f"no gap against last year: returning orders fell {round(fall * 100, 1)} percent into {cal}, "
-                                            f"against {round(fall_ly * 100, 1)} percent a year before, so the drop is the season"))
+        return dict(base, usd=None, reason=(f"no gap against last year. Returning orders fell {round(fall * 100, 1)} percent into {cal}, "
+                                            f"against {round(fall_ly * 100, 1)} percent a year before. The drop is the season"))
     prev = ret[_add(cal, -1)]
     usd = round((fall - fall_ly) * prev * aov[cal]) if aov.get(cal) else None
     if not usd:
@@ -964,7 +964,7 @@ def misreads(avatar_records: list[dict], avatars: list[dict], all_rungs: list[di
             kind = _issue_kind(hit[0])
             art, cap, label = KIND_ACTION[kind]
             owner = "person" if art == "ticket" else "agent_drafts"
-            why = (f"{a['name']} buys {ln.replace('_', ' ')} to get {a.get('job') or 'its job done'}. "
+            why = (f"{a['name']} buys {ln.replace('_', ' ')} for its job. "
                    f"{round(L['neg_share'] * 100, 1)} percent of its {L['reviews']:,} reviews are 1 or 2 star against a {round(med * 100, 1)} percent median. "
                    f"Top complaint: {hit[0]}.")
             rows.append({"avatar": a["name"], "avatar_key": a["key"], "line": ln, "links": n, "neg_share": L["neg_share"], "median": med,
@@ -1182,7 +1182,7 @@ def copy_gap(sections: dict[str, list[dict]], lang_records: list[dict], brand_to
                 "praise_reviews": 0, "missing": 0, "used": 0, "action": None}
     return {"available": True, "rows": top, "our_records": len(ours), "praise_reviews": n_docs, "missing": len(missing), "used": used,
             "action": action,
-            "line": f"Of the {len(top)} words buyers use most when they praise us, {len(missing)} never appear in our site and founder records."}
+            "line": f"{len(missing)} of the {len(top)} words buyers praise us with never appear on our site or in founder records."}
 
 
 # ---------------------------------------------------------------- avatar evidence gate
@@ -1359,7 +1359,7 @@ def forces(avatars: list[dict], all_rungs: list[dict], lang_records: list[dict],
     rows.sort(key=lambda r: (not r["under"], -(r["lines"]), r["name"]))
     n_under = sum(1 for r in rows if r["under"])
     return {"rows": rows, "under": n_under,
-            "line": f"{n_under} of {len(rows)} avatars lack lines on at least one force, or know why buyers like us but not what holds them back."}
+            "line": f"{n_under} of {len(rows)} avatars have a gap on the four forces. They lack lines on one force, or we know why they like us but not what holds them back."}
 
 
 # ---------------------------------------------------------------- draft a new avatar from a gap
@@ -1478,8 +1478,8 @@ def survey(gate_rows: list[dict], ladders_rows: list[dict], forces_rows: list[di
     no_share = [r["name"] for r in gate_rows if not r["checks"]["share"] and "(Reddit)" not in r["name"]]
     settle = [r for r in sales_rows or [] if r.get("action")]
     qs.append({"q": "Which of these sounds most like you?", "type": "single choice", "options": options + ["None of these"],
-               "closes": f"share for {len(no_share)} avatars with no share, and sizes the unserved situations" +
-                         (f"; settles {len(settle)} avatars where reviews and sales disagree" if settle else ""),
+               "closes": f"share for {len(no_share)} avatars with none, and the unserved situations" +
+                         (f". It also settles {len(settle)} avatars where reviews and sales disagree" if settle else ""),
                "gap_ids": [f"{SCREEN}.gate.{r['key']}.share" for r in gate_rows if not r["checks"]["share"]] + [r["action"]["id"] for r in settle]})
     open_r = [r for r in ladders_rows if r["verdict"] == "answer"][:MAX_OPEN_RUNGS]
     if open_r:
@@ -1695,7 +1695,7 @@ def claims_fire(claim_records: list[dict], lang_records: list[dict], brand_token
     rows.sort(key=lambda r: (-r["hits"], r["id"]))
     fire = sum(1 for r in rows if r["verdict"] == "under_fire")
     return {"rows": rows, "complaints": len(comp),
-            "line": f"{fire} of {len(rows)} live claims use words that 3 or more reviews of 1 or 2 stars throw back at us."}
+            "line": f"{fire} of {len(rows)} live claims use words that 3 or more bad reviews throw back at us."}
 
 
 # ---------------------------------------------------------------- lookalike pages
@@ -1805,7 +1805,7 @@ def hierarchy(themes: dict, perception_x: dict, ladders_rows: list[dict], all_ru
     return {"available": bool(lead_theme), "lead": lead, "lead_theme": lead_theme, "words": words, "frame": frame, "proofs": proofs,
             "doubt": {"id": doubt["id"], "doubt": doubt["doubt"], "one_star": doubt["one_star"], "verdict": doubt["verdict"]} if doubt else None,
             "record": record,
-            "line": "Built from buyer evidence: the theme that earns the most stars, the proof points behind the most five-star lines, the doubt that most needs an answer."}
+            "line": "Built from buyer evidence. It leads with the theme that earns the most stars. Then come the proof behind the most five-star lines and the doubt that most needs an answer."}
 
 
 # ---------------------------------------------------------------- voice check: does a line sound like us
@@ -2003,7 +2003,7 @@ def proposed_tests(d: dict, brand: str, as_of: str) -> list[dict]:
         add("buyer_hooks", f"Ads that open on a buyer hook (\"{h['rows'][0]['hook']}\") beat our current openers on cost per order.",
             f"{SCREEN}.hooks", "cpa", "down", 14, "current openers", "one buyer hook per variant", ["meta", "prospecting"], [])
     for m in (d.get("timing") or {}).get("moves", [])[:1]:
-        add("season_" + m["theme"], f"Answering {m['theme'].replace('_', ' ')} doubts on the product page before {m['season']} lifts add to cart in that season.",
+        add("season_" + m["theme"], f"Answering {m['theme'].replace('_', ' ')} doubts on the product page before {m['season']} lifts add to cart then.",
             f"{SCREEN}.CUST-R21.season_{m['theme']}", "add_to_cart_rate", "up", 30, "product page as today", "seasonal answer in the first screen",
             ["dtc_site"], [])
     for r in (d.get("misreads") or {}).get("rows", [])[:1]:
@@ -2315,7 +2315,7 @@ def macros(ladders_rows: list[dict], all_rungs: list[dict], policy_texts: dict[s
     rows.sort(key=lambda x: ({"person": 0, "check": 1, "ready": 2}[x["status"]], -(x["one_star"] or 0)))
     c = {k: sum(1 for x in rows if x["status"] == k) for k in ("ready", "check", "person")}
     return {"rows": rows, "counts": c,
-            "line": f"{len(rows)} doubts support answers: {c['ready']} ready from proof, {c['check']} lean on a policy a person checks, {c['person']} need a person to write."}
+            "line": f"{len(rows)} doubts reach support. {c['ready']} replies are ready from proof, {c['check']} lean on a policy a person checks, {c['person']} need writing."}
 
 
 # ---------------------------------------------------------------- marketplace voice by avatar
@@ -2539,7 +2539,7 @@ def agenda(d: dict, actions: list[dict], tests_rows: list[dict], today: str) -> 
         if a.get("status") == "open" and a.get("check_on") and a.get("dated"):
             add(a["check_on"], f"Check: {a['title']}", "check", a["id"], a["owner"])
     for r in tests_rows:
-        add(r["start"], f"Test could start: {r['hypothesis']}", "test start", r["proposal_key"], "person")
+        add(r["start"], f"Test could start. {r['hypothesis']}", "test start", r["proposal_key"], "person")
     items.sort(key=lambda x: (x["date"], x["kind"], x["what"]))
     over = sum(1 for x in items if x["overdue"])
     return {"items": items, "today": today, "overdue": over,
@@ -3013,8 +3013,8 @@ def sales_share(avatars: list[dict], buys: dict[str, dict[str, int]], ls: dict) 
     off = [r for r in rows if r["verdict"] in ("sales_higher", "reviews_higher")]
     cov = round(covered / ls["total"] * 100)
     only = sum(1 for r in rows if r["verdict"] == "sales_only")
-    line = (f"{len(off)} of {sum(1 for r in rows if r['ratio'] is not None)} avatars differ by 1.5x or more between sales and reviews; "
-            f"{only} have a share from sales only. Lines cover {cov} percent of sales, {ls['window']}, simulated.")
+    line = (f"{len(off)} of {sum(1 for r in rows if r['ratio'] is not None)} avatars differ by 1.5x or more between sales and reviews. "
+            f"{only} more have a share from sales only. Lines cover {cov} percent of sales, {ls['window']}, simulated.")
     return {"available": True, "rows": rows, "coverage": round(covered / ls["total"], 4), "window": ls["window"], "line": line,
             "unmapped_share": round(1 - ls["coverage"], 4)}
 

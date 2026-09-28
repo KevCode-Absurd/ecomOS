@@ -2136,3 +2136,68 @@ class StakeTile(TempBrain):
         t = next(o for o in d['orientation'] if o['label'] == 'money at stake')
         self.assertIsNone(t['value'])
         self.assertTrue(t['reason'])
+
+
+class WritingRulesEverywhere(TempBrain):
+    """Feature 9.2: every sentence the screen writes (titles, whys, lines, steps, gaps, caveats, reasons, stop rules,
+    report and avatar page lines) passes the writing rules: no em dash, no "should", "consider" or "leverage", and
+    sentences under 20 words. Customer quotes are masked; text copied word for word from a brain record is exempt."""
+
+    KEYS = {'sentence', 'why', 'title', 'line', 'closes', 'caveat', 'reason', 'stop_rule', 'note'}
+
+    def strings(self):
+        out = []
+        def walk(x):
+            if isinstance(x, dict):
+                for k, v in x.items():
+                    if k in self.KEYS and isinstance(v, str):
+                        out.append(v)
+                    elif k == 'steps' and isinstance(v, list):
+                        out.extend(s['text'] for s in v if isinstance(s, dict) and isinstance(s.get('text'), str))
+                    elif k == 'gap' and isinstance(v, dict):
+                        out.append(v.get('text', ''))
+                    elif k == 'lines' and isinstance(v, list) and all(isinstance(z, str) for z in v):
+                        out.extend(v)
+                    else:
+                        walk(v)
+            elif isinstance(x, list):
+                for v in x:
+                    walk(v)
+        walk(api.handle(Req(['overview'])))
+        walk(api.rank('bombas', RANK_WINDOW)['actions'])
+        walk(api.handle(Req(['audit'])))
+        walk(api.handle(Req(['report'])))
+        walk(api.handle(Req(['avatar', 'daily_compression_wearer', 'brief'])))
+        return set(out)
+
+    def brain_text(self):
+        brain = api.Brain('bombas', api.BRAIN_ROOT)
+        found = set()
+        def walk(x):
+            if isinstance(x, str):
+                found.add(x.strip().rstrip('.'))
+            elif isinstance(x, dict):
+                for v in x.values():
+                    walk(v)
+            elif isinstance(x, list):
+                for v in x:
+                    walk(v)
+        import store
+        for sec in store.SECTIONS:
+            walk(brain.raw(sec))
+        return found
+
+    def test_every_written_sentence_passes(self):
+        brain = self.brain_text()
+        bad = []
+        for t in self.strings():
+            core = t.split(': ', 1)[-1].strip().rstrip('.')
+            if t.strip().rstrip('.') in brain or core in brain:
+                continue
+            masked = re.sub(r'"[^"]*"', 'Q', t)
+            if '—' in t or re.search(r'\b(should|consider|leverage)\b', masked, re.I):
+                bad.append(t)
+            for sent in re.split(r'(?<=[.!?])\s+', masked):
+                if len(sent.split()) >= 20:
+                    bad.append(t)
+        self.assertEqual(sorted(set(bad)), [])

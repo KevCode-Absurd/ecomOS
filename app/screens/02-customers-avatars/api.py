@@ -655,7 +655,7 @@ def _plans(brand: str, window: dict) -> dict:
                                            draft="DRAFT pull plan\nAd Library by our page id, all active ads with hooks and formats\nTarget: every live ad")
     for r in d["ad_voice"].get("rows", []):
         if r["action"]:
-            plans[("CUST-R25", "silent_" + r["key"])] = dict(r["action"], title=f"Give {r['name']} an ad: {r['action']['title'][0].lower()}{r['action']['title'][1:]}")
+            plans[("CUST-R25", "silent_" + r["key"])] = dict(r["action"], title=f"Give {r['name']} an ad of their own")
     for m in d["mix"].get("moves", []):
         if m["id"].endswith(".paid_returning"):
             plans[("CUST-R07", "returning_via_paid")] = m
