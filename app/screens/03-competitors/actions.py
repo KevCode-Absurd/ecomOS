@@ -589,6 +589,21 @@ def act_winloss(f: dict, m: dict) -> dict:
             "win_rule": None, "stop_rule": None, "check_on": _plus(f["last_seen"], 21), "time_to_ship_hours": 12}
 
 
+def act_season(f: dict, m: dict) -> dict:
+    """COMP-R30: the season is close and we run no gifting ad. Brief 3 gifting ads with our gifting offer."""
+    sn = m["season"]
+    return {"title": f"Brief 3 gifting ads before {sn['black_friday']}; rivals run gifting and we run none", "owner": "agent_drafts",
+            "artefact": {"kind": "ad_brief", "label": "3 gifting ad briefs and a gift guide block", "draft": audit.seasonmod.draft(sn, m["brand"].capitalize())},
+            "steps": _steps(("agent", "Pull our gifting offer, the gift box pack and the proof."),
+                            ("agent", "Write 3 gifting briefs and the gift guide block with the last order date."),
+                            ("person", "Approve; creative makes them by the build phase end."),
+                            ("agent", f"Launch at the defend phase; read cost per order daily to {sn['cyber_monday']}.")),
+            "size": {"text": "3 ads and 1 page block", "count": 3},
+            "win_rule": "Gifting ads at or below control cost per order across the season",
+            "stop_rule": "Gifting ads 30 percent above control cost per order for 3 days in the season",
+            "check_on": sn["black_friday"], "time_to_ship_hours": 8}
+
+
 def act_connect(f: dict, m: dict) -> dict:
     un = f.get("unavailable") or {}
     con = un.get("connector") or "the missing source"
@@ -611,7 +626,8 @@ BUILDERS = {"COMP-R01": act_angle, "COMP-R02": act_price, "COMP-R03": act_offer_
             "COMP-R21": act_premium, "COMP-R22": act_search, "COMP-R23": act_connect,
             "COMP-R24": act_new_move, "COMP-R25": act_price_cut,
             "COMP-R26": act_landing, "COMP-R27": act_card,
-            "COMP-R28": act_frames, "COMP-R29": act_winloss}   # R16 has no data source yet: always a connect action
+            "COMP-R28": act_frames, "COMP-R29": act_winloss,
+            "COMP-R30": act_season}   # R16 has no data source yet: always a connect action
 
 
 def action(f: dict, m: dict, net_revenue: float | None) -> dict:

@@ -1084,6 +1084,24 @@ class TestHandoff(TempBrain):
                 self.assertIn(k, r)
 
 
+class TestSeason(TempBrain):
+    """5.3: dated season phases from US holidays; gifting gap when the season is close."""
+    def test_dates_and_rule(self):
+        self.assertEqual(audit.seasonmod.black_friday(2026), dt.date(2026, 11, 27))
+        self.assertEqual(audit.seasonmod.black_friday(2025), dt.date(2025, 11, 28))
+        api.BRAIN_ROOT = self.tmp
+        sn = api.handle(Req(['overview']))['season']
+        self.assertEqual(sn['cyber_monday'], '2026-11-30')
+        self.assertEqual(sn['ship_cutoff'], '2026-12-17')
+        self.assertEqual([p['phase'] for p in sn['phases']], ['Watch', 'Build', 'Defend', 'Gift window', 'Read'])
+        self.assertEqual(sn['season_share_pct'], 26)
+        self.assertTrue(sn['fires'])
+        out = audit.run('bombas', WINDOW, self.tmp)
+        self.assertTrue([f for f in out if f['rule_id'] == 'COMP-R30'])
+        summer = audit.run('bombas', {'ends_on': '2026-06-01', 'days': 1, 'trailing': 0}, self.tmp)
+        self.assertFalse([f for f in summer if f['rule_id'] == 'COMP-R30'])
+
+
 class TestRank(TempBrain):
     """Depth contract rules 2, 3 and 13: owner, steps and artefact on every action; every finding ends in one."""
     W = {'ends_on': '2026-09-27', 'days': 28, 'trailing': 4}

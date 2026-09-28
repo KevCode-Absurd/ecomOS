@@ -572,10 +572,21 @@
       el('p', { class: 'micro faint', text: 'Other screens read these tables, never this screen\'s code. ' + exp.note }));
   }
 
+  // ---------- 5y. the holiday season plan ----------
+  const OWNER_TXT = { agent: 'Agent does it', agent_drafts: 'Agent drafts, you approve', person: 'A person does it' };
+  function seasonSection(sn) {
+    mount('#season', UI.orientation([{ label: 'days to Black Friday', value: sn.days_to_black_friday, unit: 'n' }, { label: 'Nov and Dec share of the year', value: sn.season_share_pct == null ? null : sn.season_share_pct / 100, unit: '%' },
+      { label: 'our gifting ads', value: sn.our_gifting_ads, unit: 'n', unavailable_label: 'none seen' }]),
+      UI.table({ columns: [{ key: 'phase', label: 'Phase' }, { key: 'from', label: 'From', format: (v) => fmt.date(v) }, { key: 'to', label: 'To', format: (v) => fmt.date(v) },
+        { key: 'owner', label: 'Who', format: (v) => OWNER_TXT[v] || v }, { key: 'moves', label: 'Moves' }], rows: sn.phases, sort: false }),
+      el('p', { class: 'small' }, el('b', { text: 'Dates: ' }), 'Black Friday ' + fmt.date(sn.black_friday) + ', Cyber Monday ' + fmt.date(sn.cyber_monday) + ', last day to order for gifts ' + fmt.date(sn.ship_cutoff) + '. Rivals with a gifting angle: ' + (sn.direct_gifting.join(', ') || 'none') + '.'),
+      el('p', { class: 'micro faint', text: sn.rule }));
+  }
+
   // ---------- 5z. desk tabs: each job holds its sections ----------
   const DESK = [
     { key: 'rivals', label: 'Rivals', ids: ['pages', 'history', 'cards', 'macros', 'landing', 'losses', 'category', 'reviews'] },
-    { key: 'creative', label: 'Ads', ids: ['coverage', 'velocity', 'mix', 'placements', 'refs', 'changes'] },
+    { key: 'creative', label: 'Ads', ids: ['season', 'coverage', 'velocity', 'mix', 'placements', 'refs', 'changes'] },
     { key: 'price', label: 'Price and position', ids: ['map', 'frames', 'premium', 'prices', 'presence'] },
     { key: 'market', label: 'Market and data', ids: ['niche', 'search', 'fresh', 'handoff'] },
   ];
@@ -694,6 +705,7 @@
     framesSection(d.frames);
     placementSection(d.placements);
     historySection(d.history);
+    seasonSection(d.season);
     macrosSection(d.macros);
     handoffSection();
     document.getElementById('audit-sub').textContent = p.findings.length + ' findings from ' + p.rules.length + ' rules. Public signals, one capture.';

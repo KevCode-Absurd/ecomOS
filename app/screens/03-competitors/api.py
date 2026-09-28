@@ -296,7 +296,7 @@ def placements(m: dict) -> dict:
 
 
 # Every desk block ends in a line that names the gap and offers the action (depth.md section 2, row 5).
-SECTION_RULES = {"history": [], "handoff": [], "macros": ["COMP-R15"], "pages": ["COMP-R15"], "cards": ["COMP-R27"], "landing": ["COMP-R26"], "losses": ["COMP-R15", "COMP-R29"],
+SECTION_RULES = {"season": ["COMP-R30"], "history": [], "handoff": [], "macros": ["COMP-R15"], "pages": ["COMP-R15"], "cards": ["COMP-R27"], "landing": ["COMP-R26"], "losses": ["COMP-R15", "COMP-R29"],
                  "category": ["COMP-R16"], "reviews": ["COMP-R17"], "coverage": ["COMP-R05", "COMP-R01"], "velocity": ["COMP-R19"],
                  "mix": ["COMP-R06", "COMP-R07", "COMP-R08"], "placements": [], "refs": ["COMP-R03"], "changes": ["COMP-R24", "COMP-R12"],
                  "niche": ["COMP-R20"], "map": ["COMP-R11"], "frames": ["COMP-R28"], "premium": ["COMP-R21"],
@@ -398,7 +398,7 @@ def overview(brand: str, today: dt.date) -> dict:
             "positioning": pos,
             "lookalike": m["lookalike"], "gap": gaps(m), "pages": (pr := page_rows(m)), "battlecards": (bc := battlecards(m, pr)),
             "room_metrics": room_metrics(m, pos, bc),
-            "coverage": {"all": m["coverage"], "direct": m["coverage_direct"]}, "mix": m["mix"], "references": m["references"], "ladder": m["ladder"], "changes": m["changes"], "freshness": freshness(m, brand), "losses": m["losses"], "category": m["category"], "reviews": m["reviews"], "presence": m["presence"], "velocity": m["velocity"], "niche": m["niche"], "premium": m["premium"], "search": m["search"], "price_moves": m["price_moves"], "landing": m["landing"], "placements": placements(m), "macros": macros(m), "history": audit.capmod.history(brand), "gap_lines": gap_lines(ranked),
+            "coverage": {"all": m["coverage"], "direct": m["coverage_direct"]}, "mix": m["mix"], "references": m["references"], "ladder": m["ladder"], "changes": m["changes"], "freshness": freshness(m, brand), "losses": m["losses"], "category": m["category"], "reviews": m["reviews"], "presence": m["presence"], "velocity": m["velocity"], "niche": m["niche"], "premium": m["premium"], "search": m["search"], "price_moves": m["price_moves"], "landing": m["landing"], "placements": placements(m), "season": m["season"], "macros": macros(m), "history": audit.capmod.history(brand), "gap_lines": gap_lines(ranked),
             "frames": audit.framemod.build(m, brain, moves),
             "category_median": m["category_median"], "price_position_index": m["price_position_index"]}
 
