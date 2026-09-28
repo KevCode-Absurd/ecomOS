@@ -198,6 +198,21 @@ The candidate side of the desk: the pipeline with its gates, boxes and scorecard
 | 4.9 | The first run and its MOQ (bank idea BRD-249): from gated on, each candidate's first production run on file (units wanted, format, its MOQ, cash out, the lower-MOQ alternative considered), the cash as a share of 28-day net revenue; rule PROD-R37 no first run on file, or a full-MOQ run at 25 percent of revenue or more (or revenue unknown, or MOQ over the units wanted) with no lower-MOQ option noted, money = the first run cash; recipes to size the run or cost a lower-MOQ format; entered from the block, written on the candidate, read by the brief; merged into the candidate card | done |
 | 4.10 | Recipes for PROD-R34 to R37 (every rule has a recipe or a connect action), tests for each feature (88 in the file), `round4.png`, `round4b.png`, `round4c.png` (the Bombas page, 37,719 px tall, each part under 1 MB) and `round4s.png` (the sample brand with the mix, the demand pattern and the return rates now filled from orders), the round 4 founder note | done |
 
+## Round 5: hand-offs, memory and the calendar (from 28 Sep 2026)
+
+| # | Feature | Status |
+|---|---|---|
+| 5.1 | The hand-off (events contract): `fixtures/product_candidates.json` rewritten on every candidate write (stage and decision, planned price, landed cost estimate, pack units, first run, tech pack version, angle, review date; a gross margin from the estimates, labelled as such), served at `product_candidates`; a go writes a proposed test in the registry shape to `fixtures/proposed_tests.json` (hypothesis from the angle, metric contribution margin, read point the review date), served at `tests`; the pipeline block shows both | done |
+| 5.2 | Merged cards show what they cover: every finding behind a card as a checklist with its rule and sentence, in the card panel and under the top cards | todo |
+| 5.3 | The research calendar: every due date on the desk (review dates, time boxes, check dates, pull windows, the gift window) on one timeline for the next 45 days, each opening its action | todo |
+| 5.4 | Creative hand-off per buyer or theme card: the angle brief for creative (the doubt, the avatar, the proof on file, review quotes never from Reddit, the words buyers use, the do-not list), copyable from the card panel | todo |
+| 5.5 | The desk report: one markdown page with every block's gap line, the top 10, the connect list and the parked list, copy or download from Exports | todo |
+| 5.6 | Ledger week-to-date in the pulls block: this ISO week's Apify spend and reservations for the brand from the spend ledger, read only, against the weekly cap | todo |
+| 5.7 | Our launches from the brain calendar join the web pass launches in the cadence read, so our last launch per lane is not only what the press covered | todo |
+| 5.8 | Idea bank pass: PRD-113 (a stage advanced while a check or gate failed and the log names no reason) and PRD-047 (a trending candidate at gated or later with no evergreen companion named) as rules | todo |
+| 5.9 | Since you last looked: a snapshot of the findings taken on demand, and a strip of what is new, gone or changed since it | todo |
+| 5.10 | Recipes, tests, round5.png, founder note | todo |
+
 ## Round 4 note for the founder (28 Sep 2026)
 
 1. The plan now remembers you. A "not now" parks an action for 14 days and it leaves the plan; a strip under the plan lists what is parked with your note and the date it comes back, and its card so you can decide again; agent and person choices stay on their cards. The founder's 5 open questions from the brain (each a doubt with the complaint quotes behind it and no proof that covers it) sit on their theme cards as the step only you can take.
@@ -236,6 +251,7 @@ The candidate side of the desk: the pipeline with its gates, boxes and scorecard
 
 ## Contract asks
 
+- `product_candidates` (events.md names it, data-sources.md does not define it): the table shape this screen writes is in `fixtures/product_candidates.json` (candidate_id, brand, name, category, stage, decision, planned_price_usd, landed_cost_estimate_usd, pack_units, gross_margin_pct_from_estimates, first_run, tech_pack_version, tech_pack_status, angle_text, angle_source, review_date, source_finding, updated_at, simulated). Ask: define it in `data-sources.md` and give it a home in the data layer so 04-offers-pricing and 19-supply-inventory read one path. Likewise the proposed tests in `fixtures/proposed_tests.json` want a route on the shared registry (25-experiments) that accepts a `proposed` row.
 - A returns aggregate per brand (`returns_monthly`: month, line or SKU, returns, reasons) next to `products_monthly`, so the return rate by line reads on a brand whose orders are too big to scan; and `orders_monthly` (category mix from order line items) and `return_rates` in `app/metrics.py` so every screen shares them. Until then this screen computes both from the sample brand's order rows and says so.
 - `app/connectors/apify.py` PRICES_PER_1000: add `apify~instagram-hashtag-scraper` at about $2.30 per 1,000 results (Apify Store, 28 Sep 2026). Until then `social_pull.py` sets the price at run time for its own estimate and stays under the brand's caps through the connector.
 - The live Instagram pull (estimate $0.56 for 125 posts) was refused by the build session's permission classifier as a real-world transaction. Kevin or the lead can run `python3 app/screens/01-market-research/social_pull.py --brand bombas --mode live --per-tag 25` from a session that allows it; the page then reads the live file.

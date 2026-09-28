@@ -1331,6 +1331,7 @@ def candidate_add(brand, body, today):
            'log': [{'on': today.isoformat(), 'who': str(body.get('who') or 'person')[:20], 'what': 'screened in from the research desk'}]}
     doc['rows'].append(row)
     _write_pipeline(doc)
+    write_handoff(brand, today)
     return 201, {'ok': True, 'candidate': row}
 
 
@@ -1398,7 +1399,9 @@ def candidate_update(brand, cid, body, today):
         return 400, {'error': 'nothing to change'}
     row.setdefault('log', []).append({'on': today.isoformat(), 'who': str(body.get('who') or 'person')[:20], 'what': '; '.join(changes)})
     _write_pipeline(doc)
-    return {'ok': True, 'candidate': row, 'changes': changes}
+    write_handoff(brand, today)
+    test = propose_test(brand, row, today) if row.get('stage') == 'go' and body.get('stage') == 'go' else None
+    return {'ok': True, 'candidate': row, 'changes': changes, 'proposed_test': test}
 
 
 def margin_block(brand, data, br, rd, ends_on, findings):
@@ -1489,7 +1492,10 @@ def pipeline_block(brand, ends_on, findings, floor):
     for r in rows:
         r['finding_ids'] = by_entity.get(r.get('candidate_id'), [])
     open_rows = [r for r in rows if not r['closed']]
+    tests = proposed_tests(brand or 'sample')
     return {'rows': rows, 'funnel': audit.pipeline_funnel(rows), 'stages': audit.STAGES, 'checks': list(audit.SCREEN_CHECKS),
+            'handoff': {'rows': len(rows), 'go': sum(1 for r in rows if r.get('stage') == 'go'), 'with_cost': sum(1 for r in rows if r.get('cogs_estimate') is not None), 'file': 'fixtures/product_candidates.json', 'read_by': ['04-offers-pricing', '19-supply-inventory']},
+            'proposed_tests': [{'id': x['id'], 'name': x['name'], 'read_point': x['read_point'], 'status': x['status']} for x in tests],
             'open': len(open_rows), 'over_box': sum(1 for r in open_rows if r['over_box']), 'hours': round(sum(r.get('hours_logged') or 0 for r in rows), 1),
             'gate_rule': MARGIN_GATE, 'floor_pct': floor, 'floor_source': 'finance_inputs.target_contribution_margin' if floor is not None else None,
             'rule': f'a candidate fires when it passes its time box, or fails {audit.SCREEN_FAIL_AT} of the {len(audit.SCREEN_CHECKS)} fast checks'}
@@ -1555,6 +1561,64 @@ def candidate_brief(data, brand, cid):
     return {'candidate_id': cid, 'name': pipe.get('name'), 'text': '\n'.join(lines), 'sections': ['angle', 'demand', 'money', 'gates', 'scorecard', 'spec', 'actions', 'log']}
 
 
+# ---------------------------------------------------------------- the hand-off (events contract: product_candidates, and a proposed test on go)
+
+HANDOFF_PATH = HERE / 'fixtures' / 'product_candidates.json'
+TESTS_PATH = HERE / 'fixtures' / 'proposed_tests.json'
+
+
+def handoff_rows(brand):
+    """The product_candidates hand-off (events.md): one row per candidate with what offers and supply need: the stage and the
+    decision, planned price, the landed cost estimate, pack units, the first run, the current tech pack, the angle and the
+    review date. Numbers are the candidate's own inputs; the gate verdicts live on this desk."""
+    rows = []
+    for c in audit.pipeline(brand):
+        tp = audit.tech_pack_status(c)
+        price, cogs = c.get('planned_price'), c.get('cogs_estimate')
+        rows.append({'candidate_id': c.get('candidate_id'), 'brand': c.get('brand'), 'name': c.get('name'), 'category': c.get('category'), 'stage': c.get('stage'),
+                     'decision': 'go' if c.get('stage') == 'go' else 'no_go' if c.get('stage') == 'killed' else 'open',
+                     'planned_price_usd': price, 'landed_cost_estimate_usd': cogs, 'pack_units': c.get('pack_units') or 1,
+                     'gross_margin_pct_from_estimates': round((price - cogs) / price * 100, 1) if price and cogs is not None and price > 0 else None,
+                     'first_run': c.get('first_run'), 'tech_pack_version': tp.get('version'), 'tech_pack_status': tp.get('status'),
+                     'angle_text': c.get('angle_text'), 'angle_source': c.get('angle_source'), 'review_date': c.get('review_date'), 'source_finding': c.get('source_finding'),
+                     'updated_at': (c.get('log') or [{}])[-1].get('on'), 'simulated': bool(c.get('simulated', True))})
+    return rows
+
+
+def write_handoff(brand, today):
+    """Rewrite fixtures/product_candidates.json after every candidate write, so offers and supply read one file."""
+    doc = {'table': 'product_candidates', 'brand': brand, 'written_by': SCREEN, 'written_on': today.isoformat(),
+           'note': 'The events contract hand-off from 01-market-research: candidates with landed cost and go or no-go. Read by 04-offers-pricing and 19-supply-inventory. Simulated until a real store connects.',
+           'rows': handoff_rows(brand)}
+    HANDOFF_PATH.write_text(json.dumps(doc, indent=1), encoding='utf-8')
+    return doc
+
+
+def propose_test(brand, cand, today):
+    """On a go, a proposed experiment in the registry shape (events.md, 25-experiments): the angle is the hypothesis, the
+    metric is contribution margin, the read point is the review date. Appended to fixtures/proposed_tests.json; only
+    25-experiments sets results. One row per candidate; a second go refreshes it."""
+    doc = json.loads(TESTS_PATH.read_text(encoding='utf-8')) if TESTS_PATH.is_file() else {'table': 'registry_proposed', 'rows': []}
+    rows = [r for r in doc.get('rows') or [] if not (r.get('brand') == brand and r.get('candidate_id') == cand.get('candidate_id'))]
+    read_point = cand.get('review_date') or (today + dt.timedelta(days=audit.REVIEW_DAYS)).isoformat()
+    rows.append({'id': f'EXP-P-{cand.get("candidate_id")}', 'brand': brand, 'candidate_id': cand.get('candidate_id'), 'name': f'Launch test: {cand.get("name")}', 'screen': SCREEN, 'capability_id': 'PROD-C11',
+                 'hypothesis': cand.get('angle_text') or f'{cand.get("name")} sells at its planned price with contribution margin at or above the gate',
+                 'source': {'type': 'finding', 'ref': cand.get('source_finding'), 'index': None}, 'idea_id': None, 'owner': 'person',
+                 'metric': {'name': 'contribution_margin', 'direction': 'up', 'min_days': 28, 'registered_on': today.isoformat()},
+                 'variant': {'control': 'the current line', 'treatment': cand.get('name')}, 'audience': [cand.get('category') or 'all'],
+                 'start': None, 'read_point': read_point, 'end': None, 'status': 'proposed', 'result': None, 'decision': None, 'learnings_ref': None, 'retro': None, 'park': None,
+                 'brain_refs': [], 'proposed_on': today.isoformat(), 'simulated': True})
+    doc['rows'] = rows
+    doc['note'] = 'Proposed by 01-market-research on a go decision; the shared registry (25-experiments) takes these rows once it exists.'
+    TESTS_PATH.write_text(json.dumps(doc, indent=1), encoding='utf-8')
+    return rows[-1]
+
+
+def proposed_tests(brand):
+    doc = json.loads(TESTS_PATH.read_text(encoding='utf-8')) if TESTS_PATH.is_file() else {'rows': []}
+    return [r for r in doc.get('rows') or [] if r.get('brand') == brand]
+
+
 def _brand(req):
     brand = req.arg('brand', DEFAULT_BRAND)
     if brand in ('', 'sample'):
@@ -1583,9 +1647,13 @@ def handle(req):
             return {'findings': audit.run(brand, None, data=data), 'rules': audit.RULES}
         if len(req.path) == 3 and req.path[0] == 'candidates' and req.path[2] == 'brief':
             return candidate_brief(data, brand, req.path[1])
+        if req.path == ['product_candidates']:
+            return {'table': 'product_candidates', 'brand': brand or 'sample', 'rows': handoff_rows(brand or 'sample'), 'file': str(HANDOFF_PATH.relative_to(APP.parent))}
+        if req.path == ['tests']:
+            return {'rows': proposed_tests(brand or 'sample'), 'file': str(TESTS_PATH.relative_to(APP.parent))}
         if req.path == ['parked']:
             r = rank(brand or 'sample', None)
             return {'parked': r['parked'], 'decided': r['decided'], 'snooze_days': rank_mod.SNOOZE_DAYS, 'window': r['window']}
     except ValueError as exc:
         return 400, {'error': str(exc)}
-    return 404, {'error': 'not found', 'routes': ['overview', 'findings', 'rank', 'parked', 'candidates/<id>/brief']}
+    return 404, {'error': 'not found', 'routes': ['overview', 'findings', 'rank', 'parked', 'candidates/<id>/brief', 'product_candidates', 'tests']}

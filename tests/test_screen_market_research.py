@@ -1170,6 +1170,44 @@ class DecisionMemoryTest(unittest.TestCase):
             api.DECISIONS_PATH = saved
 
 
+class HandoffTest(unittest.TestCase):
+    """The events contract hand-off: product_candidates rewritten on every candidate write, a proposed test on a go."""
+
+    def test_handoff_and_proposed_test(self):
+        tmp = ROOT / 'tests' / '_pipeline_handoff.json'
+        ho = ROOT / 'tests' / '_handoff.json'
+        te = ROOT / 'tests' / '_tests.json'
+        saved = (audit.PIPELINE_PATH, api.HANDOFF_PATH, api.TESTS_PATH)
+        try:
+            audit.PIPELINE_PATH, api.HANDOFF_PATH, api.TESTS_PATH = tmp, ho, te
+            tmp.write_text(json.dumps({'rows': []}), encoding='utf-8')
+            code, out = api.candidate_add('sample', {'name': 'Carbon steel pan', 'category': 'pans', 'planned_price': 90, 'who': 'person'}, date(2026, 9, 27))
+            self.assertEqual(code, 201)
+            cid = out['candidate']['candidate_id']
+            doc = json.loads(ho.read_text(encoding='utf-8'))
+            self.assertEqual((doc['table'], doc['brand'], len(doc['rows'])), ('product_candidates', 'sample', 1))
+            self.assertEqual(doc['rows'][0]['decision'], 'open')
+            self.assertIsNone(doc['rows'][0]['gross_margin_pct_from_estimates'])
+            api.candidate_update('sample', cid, {'cogs_estimate': 27, 'angle_text': 'A pan that seasons in one use', 'who': 'person'}, date(2026, 9, 27))
+            self.assertEqual(json.loads(ho.read_text(encoding='utf-8'))['rows'][0]['gross_margin_pct_from_estimates'], 70.0)
+            self.assertFalse(te.is_file())
+            r = api.candidate_update('sample', cid, {'stage': 'go', 'who': 'person'}, date(2026, 9, 27))
+            self.assertEqual(r['proposed_test']['status'], 'proposed')
+            self.assertEqual(r['proposed_test']['hypothesis'], 'A pan that seasons in one use')
+            self.assertEqual(r['proposed_test']['read_point'], '2026-10-11')
+            self.assertEqual(r['proposed_test']['metric']['name'], 'contribution_margin')
+            self.assertEqual(json.loads(ho.read_text(encoding='utf-8'))['rows'][0]['decision'], 'go')
+            self.assertEqual(len(api.proposed_tests('sample')), 1)
+            api.candidate_update('sample', cid, {'stage': 'go', 'who': 'person'}, date(2026, 9, 28))   # a second go refreshes, never duplicates
+            self.assertEqual(len(api.proposed_tests('sample')), 1)
+            self.assertEqual(api.handle(Req(['product_candidates'], brand='sample'))['rows'][0]['candidate_id'], cid)
+            self.assertEqual(api.handle(Req(['tests'], brand='sample'))['rows'][0]['id'], f'EXP-P-{cid}')
+        finally:
+            audit.PIPELINE_PATH, api.HANDOFF_PATH, api.TESTS_PATH = saved
+            for p in (tmp, ho, te):
+                p.unlink(missing_ok=True)
+
+
 class BriefTest(unittest.TestCase):
     def test_candidate_brief_reads_every_block(self):
         b = api.handle(Req(['candidates', 'cand-003', 'brief']))

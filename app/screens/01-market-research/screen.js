@@ -211,6 +211,8 @@
   function pipelineBlock(p) {
     const floor = p.floor_pct != null ? 'The brand floor is ' + p.floor_pct + ' percent, from ' + p.floor_source + '.' : 'No floor on file: enter a target contribution margin on the setup screen.';
     const rows = p.rows || [];
+    const ho = p.handoff || {};
+    const handoffLine = el('p', { class: 'micro muted', text: 'Hand-off (events contract): ' + (ho.rows || 0) + ' candidates in ' + (ho.file || 'product_candidates') + ', ' + (ho.go || 0) + ' at go, ' + (ho.with_cost || 0) + ' with a landed cost estimate; read by ' + ((ho.read_by || []).join(' and ') || 'offers and supply') + '. ' + ((p.proposed_tests || []).length ? (p.proposed_tests || []).length + ' proposed test' + ((p.proposed_tests || []).length === 1 ? '' : 's') + ' for the experiment registry: ' + (p.proposed_tests || []).map((x) => x.name + ' (read ' + fmt.date(x.read_point) + ')').join(', ') + '.' : 'A go writes a proposed test for the experiment registry.') });
     const funnel = rows.length ? Charts.funnel({ title: 'Candidates by stage reached', stages: (p.funnel || []).map((f) => ({ label: f.stage, value: f.n })), unit: 'n',
       note: 'A candidate at a later stage counts at every stage before it. ' + (p.rule || '') + '.' })
       : el('div', null, el('h4', { text: 'Candidates by stage reached' }), el('p', { class: 'muted small', text: 'No candidate on file for this brand yet. Screen one in on the right; the funnel fills from there.' }));
@@ -238,7 +240,7 @@
     const angle = el('input', { class: 'text sm', placeholder: 'angle in one line (optional)', style: { flex: '1 1 260px' } });
     const add = el('button', { class: 'btn primary sm', type: 'button', text: 'Screen it in', onclick: () => { if (!name.value.trim()) { alert('Give the candidate a name.'); return; } candidatePost('candidates', { name: name.value, category: cat.value || 'socks', planned_price: price.value || null, time_box_days: box.value || 10, angle_text: angle.value || null, who: 'person' }); } });
     const orient = UI.orientation([{ label: 'open', value: p.open, unit: 'n' }, { label: 'over the box', value: p.over_box, unit: 'n', tone: p.over_box ? 'bad' : 'good' }, { label: 'hours logged', value: p.hours, unit: 'n' }, { label: 'margin floor', value: p.floor_pct == null ? null : p.floor_pct / 100, unit: '%' }]);
-    return el('div', { class: 'stack' }, orient,
+    return el('div', { class: 'stack' }, orient, handoffLine,
       el('div', { class: 'grid two' }, el('div', { class: 'card' }, funnel), el('div', { class: 'card flat' }, el('h4', { text: 'Screen a candidate in' }), el('div', { class: 'row', style: { gap: '6px', flexWrap: 'wrap' } }, name, cat, price, box), el('div', { class: 'row', style: { gap: '6px', marginTop: '6px' } }, angle, add),
         el('p', { class: 'micro faint', text: 'It lands at screened with a time box. The 3 fast checks run when the agent screens it; you can set them from the card. Margin gate: ' + p.gate_rule + ' ' + floor }))),
       el('div', { class: 'card scroll' }, t),
