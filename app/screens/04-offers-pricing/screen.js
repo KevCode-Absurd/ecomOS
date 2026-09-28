@@ -342,6 +342,7 @@
       ['Full price keeps', fmt.money(fo.full_price.contribution) + ' before media, ' + fo.full_price.payback.toFixed(2) + 'x payback'],
       ['Paid media per new customer', fmt.money(fo.new_cac) + (fo.target_cac != null ? ' against a ' + fmt.money(fo.target_cac) + ' target' : '')],
       ['Code-won customers come back', dcoh && !dcoh.unavailable && dcoh.discounted.repeat != null ? pct(dcoh.discounted.repeat, 0) + ' within ' + dcoh.days + ' days, against ' + pct(dcoh.full_price.repeat, 0) + ' for full-price first orders' : NA + ': ' + ((dcoh || {}).reason || 'too few customers')],
+      ['By code depth', dcoh && !dcoh.unavailable && dcoh.by_depth ? dcoh.by_depth.map((b) => (b.to === 0 ? 'full price' : (b.from == null || b.from === 0 ? 'up to ' : pct(b.from, 0) + ' to ') + pct(b.to, 0) + ' off') + ': ' + (b.repeat == null ? 'too few (' + b.customers + ')' : pct(b.repeat, 0) + ' of ' + fmt.int(b.customers))).join('; ') : NA],
       ['Discounts on new orders, 28 days', fmt.money(fo.new_discounts_28d) + ' (all discounts times the ' + pct(fo.new_share, 0) + ' new-customer share; orders do not carry the code yet)'],
     ]);
     const gifts = (fo.gifts || []).slice(0, 6);

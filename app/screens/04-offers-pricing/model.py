@@ -1187,7 +1187,7 @@ def bundle_pairs(rd, min_orders, min_lift, saving, days):
 
 # ---------------------------------------------------------------- discount-acquired cohorts
 
-def discount_cohorts(rd, days, min_n):
+def discount_cohorts(rd, days, min_n, band_edges=(0.0, 1.0)):
     """Customers whose first order is at least `days` old, split by whether that first order used a discount:
     the share who ordered again within `days`, and the average value of their first order. Needs order rows."""
     orders = rd.table('orders')
@@ -1207,16 +1207,26 @@ def discount_cohorts(rd, days, min_n):
             if (date.fromisoformat(day) - f).days <= days:
                 later[c] = True
     groups = {'discounted': [], 'full_price': []}
+    bands = {}
     for c, o in first.items():
         if str(o.get('created_at'))[:10] > cutoff:
             continue
-        key = 'discounted' if ((o.get('discount') or {}).get('amount') or 0) > 0 else 'full_price'
+        amt = float((o.get('discount') or {}).get('amount') or 0)
+        key = 'discounted' if amt > 0 else 'full_price'
         groups[key].append((c, float(o.get('subtotal') or 0)))
+        sub = float(o.get('subtotal') or 0)
+        depth = amt / sub if sub else 0.0
+        edge = next((e for e in band_edges if depth <= e + 1e-9), band_edges[-1])
+        bands.setdefault(edge, []).append(c)
     out = {}
     for k, rows in groups.items():
         n = len(rows)
         out[k] = {'customers': n, 'repeat': round(sum(1 for c, _ in rows if later.get(c)) / n, 4) if n >= min_n else None,
                   'first_order_value': round(sum(v for _, v in rows) / n, 2) if n else None}
+    prev = {e: (band_edges[i - 1] if i else None) for i, e in enumerate(band_edges)}
+    out['by_depth'] = [{'from': prev[e], 'to': e, 'customers': len(cs),
+                        'repeat': round(sum(1 for c in cs if later.get(c)) / len(cs), 4) if len(cs) >= min_n else None}
+                       for e, cs in sorted(bands.items())]
     return {'unavailable': False, 'days': days, 'first_orders_before': cutoff, **out,
             'basis': f'customers whose first order is on or before {cutoff}; a repeat is any order within {days} days of the first'}
 

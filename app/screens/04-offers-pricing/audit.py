@@ -1285,7 +1285,7 @@ def rule_threshold_match(rd):
 
 def discount_cohorts(rd):
     pb = _playbook()
-    return _model().discount_cohorts(rd, pb.COHORT_DAYS, pb.COHORT_MIN)
+    return _model().discount_cohorts(rd, pb.COHORT_DAYS, pb.COHORT_MIN, pb.DEPTH_BANDS)
 
 
 def rule_cohorts(rd):

@@ -287,3 +287,7 @@ LEAK_MIN_USD = 100
 RETURNER_DAYS = 180
 RETURNER_SOONER = 0.10
 RETURNER_MIN = 100
+
+# Depth bands for first-order codes (screen 04, 7.7; web pass 3: Lifetimely). Upper edges of each band, as a share
+# of the first order's subtotal; 0 is full price.
+DEPTH_BANDS = (0.0, 0.10, 0.20, 1.0)

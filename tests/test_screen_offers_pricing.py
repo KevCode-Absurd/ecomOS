@@ -1930,5 +1930,22 @@ class ReturnerCodeTest(unittest.TestCase):
         self.assertTrue(a['stop_rule'] and a['check_on'])
 
 
+class DepthBandTest(unittest.TestCase):
+    """Round 7 feature 7 (web pass 3: Lifetimely): repeat by first-order code depth band."""
+
+    def test_bands(self):
+        sys.path.insert(0, str(ROOT / 'app'))
+        import server
+        rd = audit.Reader(server.Data(), None, audit.last_full_day(server.Data(), None))
+        dc = audit.discount_cohorts(rd)
+        bands = dc['by_depth']
+        self.assertEqual(bands[0]['to'], 0.0)
+        self.assertEqual(bands[0]['customers'], dc['full_price']['customers'])
+        self.assertEqual(sum(b['customers'] for b in bands[1:]), dc['discounted']['customers'])
+        for b in bands:
+            if b['customers'] < api.actions.playbook.COHORT_MIN:
+                self.assertIsNone(b['repeat'])      # too few is unavailable, never a rate
+
+
 if __name__ == '__main__':
     unittest.main()
