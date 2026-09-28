@@ -104,6 +104,10 @@ COMP-R20 a niche to size. The biggest candidate niche (niche.py: an angle with 5
     percent or more of their ads where our share is under a third of theirs),
     with the bar in buyers from our own economics. Severity low. Capability
     BRAND-C23 (agent writes the sizing note). Owner: 03-competitors.
+COMP-R21 discounting undercuts a premium position. Our premium signal score
+    (premium.py) is at or above the direct median while our discount runs 10
+    points or more deeper than theirs. Severity medium. Capability LIFE-C38
+    (discount policy, founder gate). Reputation 3. Owner: 03-competitors.
 
 Rubric overrides (depth.md section 4 allows reputation and satisfaction per rule):
 COMP-R01 reputation 5: an unclaimed angle is a competitor position gap named in
@@ -160,6 +164,7 @@ revmod = _local("reviews")
 mktmod = _local("market_presence")
 velmod = _local("velocity")
 nichemod = _local("niche")
+premmod = _local("premium")
 
 SCREEN = "03-competitors"
 SEVERITY_ORDER = {"critical": 0, "high": 1, "medium": 2, "low": 3}
@@ -232,6 +237,9 @@ RULES = [
      "inputs": ["brain learnings adlib formats (median days live)", "active ads"], "capability": "CREA-C06", "owner_screen": SCREEN},
     {"rule_id": "COMP-R20", "name": "a niche they serve that we barely do, to size against our bar", "entity_type": "brand",
      "inputs": ["coverage matrix", "brain economics", "calibration revenue"], "capability": "BRAND-C23", "owner_screen": SCREEN},
+    {"rule_id": "COMP-R21", "name": "discount deeper than the category while showing premium signals", "entity_type": "offer",
+     "inputs": ["brain competitors offers and hooks", "brain offers", "brain positioning.proof_points"], "capability": "LIFE-C38",
+     "owner_screen": SCREEN},
     {"rule_id": "COMP-R08", "name": "discount on most ads while direct peers run none", "entity_type": "offer",
      "inputs": ["brain offers.promo_share_active_ads", "brain competitors offers_seen"], "capability": "LIFE-C38",
      "owner_screen": SCREEN},
@@ -239,11 +247,12 @@ RULES = [
 # what a strategist groups the findings by on the page (depth.md section 2: grouped by bottleneck)
 RULE_GROUP = {"COMP-R01": "creative", "COMP-R05": "creative", "COMP-R06": "creative", "COMP-R03": "offer", "COMP-R07": "offer",
               "COMP-R08": "offer", "COMP-R09": "offer", "COMP-R02": "price", "COMP-R10": "price", "COMP-R11": "position",
-              "COMP-R04": "watch", "COMP-R12": "watch", "COMP-R13": "watch", "COMP-R14": "watch", "COMP-R15": "lost", "COMP-R16": "lost", "COMP-R17": "lost", "COMP-R18": "price", "COMP-R19": "creative", "COMP-R20": "position"}
+              "COMP-R04": "watch", "COMP-R12": "watch", "COMP-R13": "watch", "COMP-R14": "watch", "COMP-R15": "lost", "COMP-R16": "lost", "COMP-R17": "lost", "COMP-R18": "price", "COMP-R19": "creative", "COMP-R20": "position", "COMP-R21": "offer"}
 GROUP_LABEL = {"lost": "Shoppers we lose, by name", "creative": "Ads they run that we do not", "offer": "Offers they say that we do not",
                "price": "Price against theirs", "position": "Corners of the map", "watch": "Watch and protect"}
 RUBRIC_OVERRIDES = {"COMP-R01": {"reputation": 5}, "COMP-R02": {"reputation": 3}, "COMP-R04": {"reputation": 5, "satisfaction": 4},
-                    "COMP-R15": {"reputation": 4}, "COMP-R17": {"reputation": 4, "satisfaction": 4}}
+                    "COMP-R15": {"reputation": 4}, "COMP-R17": {"reputation": 4, "satisfaction": 4},
+                    "COMP-R21": {"reputation": 3}}
 AUTONOMY = {"BRAND-C23": "agent_does", "PROD-C46": "agent_does", "LIFE-C42": "founder_gate", "BRAND-C18": "agent_does", "BRAND-C57": "agent_does", "BRN-C11": "agent_does", "BRAND-C20": "agent_does", "LIFE-C39": "founder_gate", "CREA-C31": "agent_does", "CREA-C06": "agent_does", "CREA-C04": "agent_does", "LIFE-C47": "agent_does", "LIFE-C38": "founder_gate", "BRAND-C21": "founder_gate", "BRAND-C24": "founder_gate", "MONEY-C48": "human_assist"}
 
 
@@ -480,6 +489,7 @@ def market_full(brand: str, today: dt.date, root: Path | None = None) -> dict:
     m["category"] = catmod.build(m, m["brain"])
     m["velocity"] = velmod.build(m, m["brain"])
     m["niche"] = nichemod.build(m, m["brain"])
+    m["premium"] = premmod.build(m, m["brain"], lambda texts: mixmod.offer_types(texts, snap.OFFERS))
     m["presence"] = mktmod.build(m, m["brain"], laddermod.pairs_in_title)
     m["reviews"] = revmod.build(m, m["brain"], lambda texts: mixmod.offer_types(texts, snap.OFFERS))
     return m
@@ -882,6 +892,20 @@ def rule_niche(m, ends_on):
                      ends_on, 0.3, "no baseline: demand for the niche is not measured")]
 
 
+def rule_premium(m, ends_on):
+    pr = m.get("premium") or {}
+    if not pr.get("fires"):
+        return []
+    ev = [_row("our_premium_score", pr["our_score"], "%", "latest capture", ends_on, None, pr["direct_median_score"], "peer_band", "computed"),
+          _row("our_discount_depth_pct", pr["our_depth"], "n", "latest capture", ends_on, None, pr["direct_median_depth"], "peer_band",
+               "ad_library"),
+          _row("depth_gap_points", pr["depth_gap"], "n", "latest capture", ends_on, None, premmod.DEEPER, "threshold", "computed")]
+    sentence = (f"We show more premium signals than the direct median and discount {pr['our_depth']} percent. "
+                f"Their median discount is {pr['direct_median_depth']:g} percent.")
+    return [_finding("COMP-R21", "medium", {"type": "offer", "id": "discount_depth", "label": "discount depth"}, ev, sentence,
+                     [f"{m['brand']}.offers.first_order_code"], ends_on, 0.5, "no baseline: margin given to the code is not in the brain")]
+
+
 def packs_month_end(packs):
     if not packs.get("available"):
         return None
@@ -908,7 +932,7 @@ def run(brand: str, window: dict | None = None, root: Path | None = None) -> lis
         out += [_unavailable("COMP-R16", "low", {"type": "ladder_rung", "id": "lower_rungs", "label": "lower rungs of the ladder"},
                              ["search trends by rung"], "a search trends source (read only)",
                              "Connect a search trends source for the category and each lower rung.", ends_on)]
-        out += rule_ladder(m, ends_on) + rule_corners(m, ends_on) + rule_refresh(m, ends_on) + rule_freshness(m, ends_on) + rule_losses(m, ends_on) + rule_attack(m, ends_on) + rule_presence(m, ends_on) + rule_velocity(m, ends_on) + rule_niche(m, ends_on)
+        out += rule_ladder(m, ends_on) + rule_corners(m, ends_on) + rule_refresh(m, ends_on) + rule_freshness(m, ends_on) + rule_losses(m, ends_on) + rule_attack(m, ends_on) + rule_presence(m, ends_on) + rule_velocity(m, ends_on) + rule_niche(m, ends_on) + rule_premium(m, ends_on)
     out += rule_price(m, ends_on) + rule_lookalike(m, ends_on)
     out.sort(key=lambda f: (SEVERITY_ORDER[f["severity"]], f["id"]))
     return out

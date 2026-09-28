@@ -453,6 +453,17 @@
     mount('#niche', bar, t, el('p', { class: 'micro faint', text: n.rule + ' Search demand: unavailable, ' + n.demand_reason + '.' + (n.candidates.length ? ' The top candidate has a sizing note on the plan.' : '') }));
   }
 
+  // ---------- 5p. premium signals and discount depth ----------
+  function premiumSection(pr) {
+    const rows = pr.rows.map((r) => ({ key: r.name, label: r.name + (r.role === 'self' ? ' (us)' : ''), sub: 'score ' + Math.round(r.score * 100) + '%, discount ' + (r.depth == null ? NA : r.depth + '%') }));
+    const cells = {};
+    for (const r of pr.rows) { cells[r.name] = {}; for (const s of pr.signals) cells[r.name][s.key] = { us: r.signals[s.key] ? 1 : 0, unit: 'n' }; }
+    const heat = UI.coverageMatrix({ rows, cols: pr.signals, cells, single: true, max: 1, unit: 'n', corner: 'Page', note: '1 = the signal is present, 0 = not seen.' });
+    mount('#premium', heat, el('p', { class: 'small' }, el('b', { text: 'Against the direct median: ' }),
+      'our score ' + Math.round(pr.our_score * 100) + ' percent against ' + Math.round(pr.direct_median_score * 100) + '; our discount ' + pr.our_depth + ' percent against ' + pr.direct_median_depth + '.' + (pr.fires ? ' The code cap policy is on the plan.' : '')),
+      el('p', { class: 'micro faint', text: pr.rule }));
+  }
+
   // ---------- 6. the audit ----------
   function rulesTable(rules) {
     return UI.table({ columns: [{ key: 'rule_id', label: 'Rule' }, { key: 'name', label: 'What it checks' }, { key: 'inputs', label: 'Reads', format: (v) => (v || []).join(', ') }, { key: 'capability', label: 'Capability' }],
@@ -484,6 +495,7 @@
     presenceSection(d.presence);
     velocitySection(d.velocity);
     nicheSection(d.niche);
+    premiumSection(d.premium);
     digestSection();
     document.getElementById('audit-sub').textContent = p.findings.length + ' findings from ' + p.rules.length + ' rules. Public signals, one capture.';
     mount('#audit', auditTable(p.findings));

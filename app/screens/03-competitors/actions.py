@@ -468,6 +468,22 @@ def act_niche(f: dict, m: dict) -> dict:
             "win_rule": None, "stop_rule": None, "check_on": _plus(f["last_seen"], 14), "time_to_ship_hours": 2}
 
 
+def act_premium(f: dict, m: dict) -> dict:
+    """COMP-R21: premium signals with a deep code. Cap the code, swap depth for a gift or pack step."""
+    pr = m["premium"]
+    return {"title": f"Cap the code at 10 percent; we show premium signals and discount {pr['our_depth']} percent",
+            "owner": "agent_drafts",
+            "artefact": {"kind": "offer", "label": "an offer policy: code cap and a gift instead of depth",
+                         "draft": audit.premmod.draft(pr, m["brand"].capitalize())},
+            "steps": _steps(("agent", "Pull code use, net price per pair and the premium signals on file."),
+                            ("agent", "Draft the policy and the 14-day test on half of new visitors."),
+                            ("person", "Founder approves the test."),
+                            ("agent", f"Read net revenue per order and new customer orders on {_plus(f['last_seen'], 14)}.")),
+            "size": {"text": f"{pr['our_depth']} percent now, 10 percent after"},
+            "win_rule": "Net revenue per new order up with new orders down less than 5 percent",
+            "stop_rule": "New customer orders down 10 percent for 5 days", "check_on": _plus(f["last_seen"], 14), "time_to_ship_hours": 4}
+
+
 def act_connect(f: dict, m: dict) -> dict:
     un = f.get("unavailable") or {}
     con = un.get("connector") or "the missing source"
@@ -486,7 +502,8 @@ BUILDERS = {"COMP-R01": act_angle, "COMP-R02": act_price, "COMP-R03": act_offer_
             "COMP-R12": act_refresh, "COMP-R13": act_no_id, "COMP-R14": act_stale,
             "COMP-R15": act_lost, "COMP-R16": act_connect,
             "COMP-R17": act_attack, "COMP-R18": act_undercut,
-            "COMP-R19": act_velocity, "COMP-R20": act_niche}   # R16 has no data source yet: always a connect action
+            "COMP-R19": act_velocity, "COMP-R20": act_niche,
+            "COMP-R21": act_premium}   # R16 has no data source yet: always a connect action
 
 
 def action(f: dict, m: dict, net_revenue: float | None) -> dict:

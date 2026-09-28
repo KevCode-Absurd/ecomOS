@@ -742,6 +742,31 @@ class TestNiche(TempBrain):
         self.assertIsNone(n['bar'])
 
 
+class TestPremium(TempBrain):
+    """2.8: premium signal scorecard and discount depth; undercut rule."""
+    def setUp(self):
+        super().setUp()
+        api.BRAIN_ROOT = self.tmp
+        self.pr = api.handle(Req(['overview']))['premium']
+
+    def test_scores(self):
+        by = {r['name']: r for r in self.pr['rows']}
+        self.assertEqual(by['Feetures']['depth'], 15)
+        self.assertEqual(by['Stance']['depth'], 0)
+        self.assertEqual(by['Bombas']['depth'], 20)
+        self.assertTrue(by['Darn Tough Vermont']['signals']['lifetime'])
+        n = len(self.pr['signals'])
+        for r in self.pr['rows']:
+            self.assertAlmostEqual(r['score'], round(sum(r['signals'].values()) / n, 3))
+        self.assertTrue(self.pr['fires'])
+        self.assertEqual(audit.premmod.depth(['30% off', '50% off']), 50)
+        self.assertEqual(audit.premmod.depth([]), 0)
+
+    def test_rule_r21(self):
+        out = audit.run('bombas', WINDOW, self.tmp)
+        self.assertTrue([f for f in out if f['rule_id'] == 'COMP-R21'])
+
+
 class TestRank(TempBrain):
     """Depth contract rules 2, 3 and 13: owner, steps and artefact on every action; every finding ends in one."""
     W = {'ends_on': '2026-09-27', 'days': 28, 'trailing': 4}
