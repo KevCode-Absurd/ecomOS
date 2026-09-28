@@ -98,6 +98,10 @@ Rules
   PROD-R24  Compliance gate incomplete: a candidate that passed 2 or more of the 5 go-live gates (provable claim, owned
             difference, brand threshold, contribution margin, ad-cost ceiling: contribution an order against
             target_cac) while labelling and category certification have not run. Capability PROD-C10.
+  PROD-R25  Shortlist review due: an open candidate whose review date (set on the memo, or 14 days after the window
+            end by default) is on or before the window end. The scorecard scores demand, margin, differentiation,
+            compliance and cash timing 0 to 5 in code with the brand's weights (learnings.shortlist_weights, else
+            30, 30, 20, 10, 10). Capability PROD-C11 (go or no-go memo, founder gate). Owner: 01-market-research.
   PROD-R03  Hero line with no next SKU: a line with 25 percent or more of its category's net sales in
             the last 3 whole months while the candidate pipeline holds no open next-SKU candidate for
             that category. Money: null (an unlaunched SKU has no baseline). Capability PROD-C06
@@ -171,6 +175,7 @@ RULES = [
     {'rule_id': 'PROD-R23', 'name': 'Candidate past screening with no stated point of difference', 'entity_type': 'sku', 'inputs': ['fixtures.pipeline', 'brain.competitors'], 'capability': 'PROD-C06', 'owner_screen': SCREEN},
     {'rule_id': 'PROD-R24', 'name': 'Candidate with 2 or more go-live gates passed and the compliance check not run', 'entity_type': 'sku',
      'inputs': ['fixtures.pipeline', 'finance_inputs', 'brain.products'], 'capability': 'PROD-C10', 'owner_screen': SCREEN},
+    {'rule_id': 'PROD-R25', 'name': 'Open candidate whose scheduled review date has arrived', 'entity_type': 'sku', 'inputs': ['fixtures.pipeline'], 'capability': 'PROD-C11', 'owner_screen': SCREEN},
 ]
 CAPABILITY = {'PROD-R01': {'id': 'PROD-C05', 'autonomy': 'agent_does'},
               'PROD-R02': {'id': 'PROD-C06', 'autonomy': 'agent_does'},
@@ -195,7 +200,8 @@ CAPABILITY = {'PROD-R01': {'id': 'PROD-C05', 'autonomy': 'agent_does'},
               'PROD-R21': {'id': 'PROD-C04', 'autonomy': 'agent_does'},
               'PROD-R22': {'id': 'PROD-C31', 'autonomy': 'agent_does'},
               'PROD-R23': {'id': 'PROD-C06', 'autonomy': 'agent_does'},
-              'PROD-R24': {'id': 'PROD-C10', 'autonomy': 'agent_does'}}
+              'PROD-R24': {'id': 'PROD-C10', 'autonomy': 'agent_does'},
+              'PROD-R25': {'id': 'PROD-C11', 'autonomy': 'founder_gate'}}
 SEVERITY_ORDER = {'critical': 0, 'high': 1, 'medium': 2, 'low': 3}
 
 # Review records name their line in a short key; the store names it by SKU title.
@@ -670,6 +676,7 @@ def run(brand, window=None, data=None):
     out += review_price_findings(br, brand, ends_on)
     out += complaint_findings(br, ends_on)
     out += gate_findings(brand, data, br, rd, ends_on)
+    out += shortlist_findings(brand, data, br, rd, ends_on)
     out.sort(key=lambda f: (SEVERITY_ORDER[f['severity']], -((f['money_at_stake'] or {}).get('usd') or 0), f['id']))
     return out
 
@@ -2200,4 +2207,113 @@ def gate_findings(brand, data, br, rd, ends_on):
             f['entity'] = {'type': 'sku', 'id': cid, 'label': r['name'], 'candidate': True, 'passed': r['passed'], 'of': r['of']}
             f['id'] = f'{SCREEN}.PROD-R24.{cid}'
             out.append(f)
+    return out
+
+
+# ---------------------------------------------------------------- the shortlist scorecard and the go or no-go memo
+
+CRITERIA = ['demand', 'margin', 'differentiation', 'compliance', 'cash_timing']
+CRITERIA_LABEL = {'demand': 'Demand', 'margin': 'Margin', 'differentiation': 'Differentiation', 'compliance': 'Compliance', 'cash_timing': 'Cash timing'}
+DEFAULT_WEIGHTS = {'demand': 30, 'margin': 30, 'differentiation': 20, 'compliance': 10, 'cash_timing': 10}
+GO_TOTAL, KILL_TOTAL = 70, 40
+REVIEW_DAYS = 14
+
+
+def shortlist_weights(br):
+    """The brand's scorecard weights from a learnings record (learnings.shortlist_weights), else the defaults. Set once per brand."""
+    r = br.get(f'{br.brand}.learnings.shortlist_weights') if br else None
+    v = (r or {}).get('value') if r else None
+    if isinstance(v, dict) and all(k in v and isinstance(v[k], (int, float)) for k in CRITERIA) and sum(v[k] for k in CRITERIA) > 0:
+        w = {k: float(v[k]) for k in CRITERIA}
+        return {k: round(x * 100 / sum(w.values()), 2) for k, x in w.items()}, r['id']
+    return dict(DEFAULT_WEIGHTS), 'defaults (no learnings.shortlist_weights record)'
+
+
+def score_candidate(cand, gates_row, gate, pattern, spend_rows):
+    """Each criterion 0 to 5 from fields that already exist, None when its input is missing (scored at the neutral 2.5, written down)."""
+    checks = cand.get('screen_result') or {}
+    passed = sum(1 for k in SCREEN_CHECKS if checks.get(k) == 'pass')
+    ran = sum(1 for k in SCREEN_CHECKS if checks.get(k) in ('pass', 'fail'))
+    lanes = [r for r in spend_rows if cand.get('name') in r.get('candidates', [])]
+    funded = any(r['verdict'] == 'funded' for r in lanes)
+    demand = None if ran == 0 else min(5, {0: 0, 1: 1, 2: 3, 3: 4}[passed] + (1 if funded else 0))
+    if gate.get('unavailable') or gate.get('floor_pct') is None:
+        margin = None
+    else:
+        gap = gate['margin_pct'] - gate['floor_pct']
+        margin = 5 if gap >= 10 else 4 if gap >= 0 else 2 if gap >= -5 else 1
+    differentiation = {0: 0, 1: 2, 2: 3, 3: 5}[gates_row['angle']['score']]
+    compliance = {'pass': 5, 'fail': 0, 'unavailable': None}[gates_row['compliance']]
+    tag = pattern.get('tag')
+    cash = None if not tag else (5 if tag == 'seasonal' and cand.get('cash_plan') else 1 if tag == 'seasonal' else 4 if tag == 'evergreen' else 3)
+    return {'demand': demand, 'margin': margin, 'differentiation': differentiation, 'compliance': compliance, 'cash_timing': cash}
+
+
+def scorecard(brand, data, br, rd, ends_on):
+    weights, source = shortlist_weights(br)
+    fin_rows = finance_rows(data, brand)
+    fin = metrics().finance.Finance(fin_rows) if fin_rows else None
+    floor = fin.value('target_contribution_margin', ends_on.isoformat()) if fin else None
+    upo = units_per_order(data, brand, rd)
+    mix = category_mix(data, brand, rd)
+    fx = market_trends()
+    spend_rows = spend_signal(br, brand, ends_on)['rows'] if br else []
+    gates_rows = {g['candidate_id']: g for g in candidate_gates(brand, data, br, rd, ends_on)}
+    rows = []
+    for cand in pipeline(brand):
+        cid = cand.get('candidate_id')
+        g = margin_gate(cand, fin, br, ends_on.isoformat(), upo, floor)
+        gr = gates_rows.get(cid) or {'angle': angle_confidence(cand, []), 'compliance': compliance_status(cand), 'passed': 0, 'of': len(GATES)}
+        p = demand_pattern(cand.get('category'), mix, fx, cand.get('name'))
+        sc = score_candidate(cand, gr, g, p, spend_rows)
+        total = round(sum(weights[k] * ((sc[k] if sc[k] is not None else 2.5) / 5) for k in CRITERIA), 1)
+        closed = cand.get('stage') in CLOSED_STAGES
+        failed_screen = sum(1 for k in SCREEN_CHECKS if (cand.get('screen_result') or {}).get(k) == 'fail') >= SCREEN_FAIL_AT
+        if closed:
+            verdict = cand.get('stage')
+        elif failed_screen or total < KILL_TOTAL:
+            verdict = 'no_go'
+        elif total >= GO_TOTAL and gr['passed'] == gr['of'] and gr['compliance'] == 'pass':
+            verdict = 'go'
+        else:
+            verdict = 'hold'
+        review = cand.get('review_date') or (ends_on + timedelta(days=REVIEW_DAYS)).isoformat()
+        rows.append({'candidate_id': cid, 'name': cand.get('name'), 'stage': cand.get('stage'), 'closed': closed, 'scores': sc, 'total': total, 'verdict': verdict,
+                     'gates_passed': gr['passed'], 'gates_of': gr['of'], 'compliance': gr['compliance'], 'angle': gr['angle']['label'], 'margin_pct': g.get('margin_pct'),
+                     'pattern': p.get('tag'), 'review_date': review, 'review_due': (not closed) and review <= ends_on.isoformat(), 'planned_price': cand.get('planned_price'),
+                     'hours_logged': cand.get('hours_logged'), 'unavailable': [k for k in CRITERIA if sc[k] is None]})
+    rows.sort(key=lambda r: (r['closed'], -r['total'], r['name'] or ''))
+    for i, r in enumerate(rows):
+        r['rank'] = i + 1
+    return {'rows': rows, 'weights': weights, 'weights_source': source, 'criteria': CRITERIA, 'labels': CRITERIA_LABEL, 'go_total': GO_TOTAL, 'kill_total': KILL_TOTAL,
+            'rule': f'go at {GO_TOTAL} or more with all gates and compliance passed; no-go under {KILL_TOTAL} or a failed screen; else hold. A criterion with no input scores the neutral 2.5, written down.'}
+
+
+def memo_text(row, weights):
+    """The go or no-go memo in plain words, from the numbers only."""
+    lines = [f'{row["name"]}: {row["verdict"].replace("_", " ")} at {row["total"]:g} of 100', '']
+    for k in CRITERIA:
+        v = row['scores'][k]
+        lines.append(f'{CRITERIA_LABEL[k]} ({weights[k]:g} percent): ' + ('n/a, scored at the neutral 2.5' if v is None else f'{v} of 5'))
+    lines += ['', f'Gates: {row["gates_passed"]} of {row["gates_of"]} passed. Compliance: {row["compliance"]}. Angle: {row["angle"]}.',
+              f'Modelled margin: ' + (f'{row["margin_pct"]:g} percent' if row['margin_pct'] is not None else 'unavailable') + f'. Demand pattern: {row["pattern"] or "unavailable"}.',
+              f'Review date: {row["review_date"]}.', '', 'Decision: go (fund and move to sourcing), hold (name the open question and the new box), or kill (log the reason).']
+    return '\n'.join(lines)
+
+
+def shortlist_findings(brand, data, br, rd, ends_on):
+    """PROD-R25: a candidate whose review date has arrived and who is still open."""
+    out = []
+    sc = scorecard(brand, data, br, rd, ends_on)
+    for r in sc['rows']:
+        if not r['review_due']:
+            continue
+        cid = r['candidate_id'] or slug(r['name'])
+        ev = [_ev('shortlist_review_date_status', 1, 'flag', ends_on.isoformat(), 'candidate now', source='fixtures.pipeline', simulated=False, freshness_days=0, review_date=r['review_date']),
+              _ev('shortlist_score', r['total'], 'score', ends_on.isoformat(), 'scorecard now', GO_TOTAL, 'threshold', source='fixtures.pipeline', simulated=False, freshness_days=0, verdict=r['verdict'])]
+        sentence = f'{r["name"]}\'s review date ({r["review_date"]}) has arrived. It scores {r["total"]:g} of 100 ({r["verdict"].replace("_", " ")}). Bring it back to the founder for a fresh decision.'
+        f = _finding('PROD-R25', cid, ends_on, 'medium', ev, sentence, None, 0.9, [], money_reason='a decision, not a revenue gap')
+        f['entity'] = {'type': 'sku', 'id': cid, 'label': r['name'], 'candidate': True, 'total': r['total'], 'verdict': r['verdict'], 'memo': memo_text(r, sc['weights'])}
+        f['id'] = f'{SCREEN}.PROD-R25.{cid}'
+        out.append(f)
     return out

@@ -725,6 +725,36 @@ class PipelineTest(ShapeMixin, unittest.TestCase):
         self.assertEqual(audit.compliance_status({'compliance': {'labelling': 'pass'}}), 'unavailable')
         self.assertEqual(audit.compliance_status({'compliance': {'labelling': 'fail'}}), 'fail')
 
+    def test_scorecard_scores_weights_and_review_due(self):
+        sc = audit.score_candidate({'name': 'X', 'screen_result': {'demand': 'pass', 'competition': 'pass', 'store_fit': 'pass'}, 'cash_plan': None},
+                                   {'angle': {'score': 3}, 'compliance': 'pass'}, {'unavailable': False, 'margin_pct': 40.0, 'floor_pct': 22.0}, {'tag': 'seasonal'},
+                                   [{'verdict': 'funded', 'candidates': ['X']}])
+        self.assertEqual(sc, {'demand': 5, 'margin': 5, 'differentiation': 5, 'compliance': 5, 'cash_timing': 1})
+        sc2 = audit.score_candidate({'name': 'Y', 'screen_result': {}}, {'angle': {'score': 0}, 'compliance': 'unavailable'}, {'unavailable': True}, {'tag': None}, [])
+        self.assertEqual(sc2, {'demand': None, 'margin': None, 'differentiation': 0, 'compliance': None, 'cash_timing': None})
+        class B:
+            brand = 'fake'
+            def get(self, rid):
+                return {'id': rid, 'value': {'demand': 1, 'margin': 1, 'differentiation': 1, 'compliance': 1, 'cash_timing': 1}} if rid.endswith('shortlist_weights') else None
+            def records(self, sec):
+                return []
+        w, src = audit.shortlist_weights(B())
+        self.assertEqual(w, {k: 20.0 for k in audit.CRITERIA})
+        self.assertTrue(src.endswith('shortlist_weights'))
+        self.assertEqual(audit.shortlist_weights(None)[0], audit.DEFAULT_WEIGHTS)
+        self.real4 = audit.PIPELINE_PATH
+        try:
+            audit.PIPELINE_PATH = self.tmp
+            self.tmp.write_text(json.dumps({'rows': [{'candidate_id': 'a', 'brand': None, 'name': 'Due one', 'stage': 'shortlisted', 'category': 'socks', 'planned_price': 20.0, 'review_date': '2026-09-20', 'screen_result': {}},
+                                                     {'candidate_id': 'b', 'brand': None, 'name': 'Later', 'stage': 'screened', 'category': 'socks', 'planned_price': 20.0, 'review_date': '2026-10-20', 'screen_result': {}}]}), encoding='utf-8')
+            fs = audit.shortlist_findings(None, FakeData(), None, audit.Reader(FakeData(), None, date(2026, 9, 27)), date(2026, 9, 27))
+        finally:
+            audit.PIPELINE_PATH = self.real4
+        self.assertEqual([f['entity']['id'] for f in fs], ['a'])
+        self.assertIn('review date (2026-09-20) has arrived', fs[0]['sentence'])
+        self.assertIn('Decision: go', fs[0]['entity']['memo'])
+        self.check_shape(fs[0])
+
     def test_demand_pattern_tags(self):
         even = {'rows': [{'category': 'socks', 'series': [100] * 12}], 'months': [f'2026-{m:02d}' for m in range(1, 13)], 'last': '2026-12'}
         peaked = {'rows': [{'category': 'socks', 'series': [50] * 10 + [300, 400]}], 'months': even['months'], 'last': '2026-12'}

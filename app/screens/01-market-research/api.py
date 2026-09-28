@@ -682,6 +682,21 @@ def recipe(f):
             'stop_rule': 'not fundable until both compliance lines pass', 'check_on': _check_on(f, 7), 'time_to_ship_hours': 2,
             'win_rule': 'labelling and category certification both pass',
         }
+    if rid == 'PROD-R25':
+        ent = f.get('entity') or {}
+        return {
+            'title': (f'Decide on {ent.get("label")}: the review date has arrived, it scores {ent.get("total"):g} ({str(ent.get("verdict") or "").replace("_", " ")})'
+                      if ent.get('total') is not None else f'Decide on {ent.get("label")}: the review date has arrived'),
+            'owner': 'agent_drafts',
+            'artefact': {'kind': 'research_note', 'label': f'the go or no-go memo for {ent.get("label")} with the scorecard, the gates and the decision line', 'draft': ent.get('memo')},
+            'steps': [
+                {'n': 1, 'who': 'agent', 'text': 'Refresh the scorecard and the gates for the candidate; the memo above is the draft.'},
+                {'n': 2, 'who': 'person', 'text': 'Decide go, hold or kill. Go moves it to sourcing; hold sets a new review date and names the open question; kill logs the reason.'},
+                {'n': 3, 'who': 'agent', 'text': 'Write the decision to the pipeline and the decisions log so it is not re-argued.'}],
+            'size': {'text': (f'{ent.get("total"):g} of 100 on the scorecard' if ent.get('total') is not None else 'score unavailable'), 'usd': None},
+            'stop_rule': 'a hold without a new review date is a kill', 'check_on': _check_on(f, 1), 'time_to_ship_hours': 1,
+            'win_rule': 'a logged go, hold with a new date, or kill',
+        }
     return None
 
 
@@ -881,7 +896,7 @@ def overview(data, brand):
                      'pipeline': pipeline_block(brand, ends_on, findings, floor), 'margin': margin_block(brand, data, br, rd, ends_on, findings),
                      'pattern': pattern_block(brand, data, rd, findings), 'lane_map': audit.lane_map(br, ends_on), 'spend': audit.spend_signal(br, brand, ends_on),
                      'price_signal': price_signal_block(br, brand, data, findings), 'complaints': audit.listing_complaints(br),
-                     'gates': gates_block(brand, data, br, rd, ends_on, findings)},
+                     'gates': gates_block(brand, data, br, rd, ends_on, findings), 'scorecard': scorecard_block(brand, data, br, rd, ends_on, findings)},
             'audit': {'findings': findings, 'rules': audit.RULES}}
 
 
@@ -1046,6 +1061,15 @@ def gates_block(brand, data, br, rd, ends_on, findings):
         r['finding_ids'] = by_entity.get(r['candidate_id'], [])
     return {'rows': rows, 'gates': audit.GATES, 'labels': audit.GATE_LABEL,
             'rule': 'angle confidence: filled, names a source, not a competitor claim (3 shared words); gates: provable claim, owned difference, brand threshold (category in the lines and store fit), contribution margin (the gate above), ad-cost ceiling (contribution an order against target CAC)'}
+
+
+def scorecard_block(brand, data, br, rd, ends_on, findings):
+    sc = audit.scorecard(brand, data, br, rd, ends_on)
+    by_entity = {f['entity']['id']: f['id'] for f in findings if f['rule_id'] == 'PROD-R25'}
+    for r in sc['rows']:
+        r['finding_id'] = by_entity.get(r['candidate_id'])
+        r['memo'] = audit.memo_text(r, sc['weights'])
+    return sc
 
 
 def pipeline_block(brand, ends_on, findings, floor):

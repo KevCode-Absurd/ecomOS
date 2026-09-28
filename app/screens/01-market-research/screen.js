@@ -611,6 +611,31 @@
         blocked.length ? { label: 'Unblock the first', onClick: () => { const a = actionFor(blocked[0].finding_ids[0]); if (a) openAction(a); } } : null));
   }
 
+  function scorecardBlock(sc) {
+    const rows = (sc && sc.rows) || [];
+    if (!rows.length) return el('p', { class: 'muted', text: 'No candidate to score.' });
+    const cols = (sc.criteria || []).map((k) => ({ key: k, label: sc.labels[k] + ' ' + sc.weights[k] + '%' }));
+    const cells = {};
+    rows.forEach((r) => { cells[r.candidate_id] = {}; (sc.criteria || []).forEach((k) => { cells[r.candidate_id][k] = { us: r.scores[k], unit: 'n' }; }); });
+    const heat = UI.coverageMatrix({ rows: rows.map((r) => ({ key: r.candidate_id, label: '#' + r.rank + ' ' + r.name, sub: r.total + ' of 100, ' + r.verdict.replace(/_/g, ' ') })), cols, cells, single: true, max: 5, unit: 'n', corner: 'candidate x criterion',
+      note: 'Each criterion 0 to 5 from the fast checks and the spend signal (demand), the margin gate (margin), the angle (differentiation), the compliance check, and the demand pattern with its cash plan (cash timing). n/a scores the neutral 2.5. Weights: ' + sc.weights_source + '.' });
+    const openMemo = (r) => { const a = actionFor(r.finding_id); UI.panel({ title: r.name + ': go or no-go memo', body: el('div', { class: 'stack' }, el('pre', { class: 'card', style: { whiteSpace: 'pre-wrap', fontFamily: 'var(--mono)', fontSize: 'var(--fs-small)', margin: 0 }, text: r.memo }),
+      el('div', { class: 'row' }, UI.copyButton({ label: 'Copy memo', text: () => r.memo }), el('button', { class: 'btn soft sm', type: 'button', text: 'Shortlist it', onclick: () => candidatePost('candidates/' + r.candidate_id, { stage: 'shortlisted', who: 'person' }) }), el('button', { class: 'btn soft sm', type: 'button', text: 'Go', onclick: () => candidatePost('candidates/' + r.candidate_id, { stage: 'go', who: 'person' }) }), el('button', { class: 'btn quiet sm', type: 'button', text: 'Kill', onclick: () => { if (confirm('Kill ' + r.name + '?')) candidatePost('candidates/' + r.candidate_id, { stage: 'killed', who: 'person' }); } })),
+      a ? UI.actionCard(a, { expanded: true, screen: SLUG }) : UI.decisionRow({ capability: 'PROD-C11', screen: SLUG, finding_id: SLUG + '.scorecard.' + r.candidate_id, compact: true })) }); };
+    const vrows = rows.map((r) => Object.assign({}, r, { na: r.unavailable.length ? r.unavailable.map(pretty).join(', ') : 'none',
+      actions: [{ label: r.review_due ? 'Decide now' : 'Open the memo', onClick: () => openMemo(r) }] }));
+    const t = UI.verdictTable({
+      columns: [{ key: 'rank', label: '#', unit: 'n' }, { key: 'name', label: 'Candidate' }, { key: 'total', label: 'Score', align: 'right', format: (v) => v == null ? NA : v.toFixed(0) + ' /100' }, { key: 'stage', label: 'Stage' },
+        { key: 'gates_passed', label: 'Gates', align: 'right', format: (v, r) => v + ' of ' + r.gates_of }, { key: 'compliance', label: 'Compliance' }, { key: 'review_date', label: 'Review date', format: (v) => v ? fmt.date(v) : NA }, { key: 'na', label: 'Criteria with no input' }],
+      rows: vrows,
+      verdict: { at: 2, kind: (r) => r.verdict === 'go' ? 'scale' : r.verdict === 'no_go' ? 'stop' : r.closed ? 'na' : r.review_due ? 'fix' : 'watch', text: (r) => r.verdict === 'go' ? 'Go' : r.verdict === 'no_go' ? 'No go' : r.closed ? r.stage : r.review_due ? 'Review due' : 'Hold', reason: (r) => sc.rule },
+      actions: { label: 'Do', onClick: () => {} }, sort: false });
+    const due = rows.filter((r) => r.review_due);
+    return el('div', { class: 'stack' }, el('div', { class: 'card' }, heat), el('div', { class: 'card scroll' }, t), el('p', { class: 'micro faint', text: sc.rule + ' Weights are set once per brand in the brain (learnings.shortlist_weights); today: ' + sc.weights_source + '.' }),
+      gapLine(due.length ? due.length + ' candidate' + (due.length === 1 ? ' is' : 's are') + ' due for a decision this week: ' + due.map((r) => r.name).join(', ') + '.' : 'No candidate is due for a decision this week. The top of the table is the one to fund next.',
+        due.length ? { label: 'Decide the first', onClick: () => openMemo(due[0]) } : rows.length ? { label: 'Open the top memo', onClick: () => openMemo(rows[0]) } : null));
+  }
+
   function loadDesk(o) {
     const d = o.desk || {};
     const w = (o.window || {}).trend;
@@ -632,6 +657,7 @@
     parts.push(section('desk-price-signal', 'What would buyers actually pay for a pair?', 'Price mentions mined from review quotes across Amazon, the brand site, Trustpilot and retailers, as a median per pair, against the competitor band, our own pair and each candidate\'s planned price.', priceSignalBlock(d.price_signal)));
     parts.push(section('desk-complaints', 'What do buyers hate about what exists, listing by listing?', 'Complaint themes mined from the brand\'s own Amazon listings as a share of reviews mined, against praise, with the listing\'s public stars, ratings and price. One complaint over 15 percent is the angle to build on.', complaintBlock(d.complaints)));
     parts.push(section('desk-gates', 'Is each candidate ready to fund: an owned angle and the 5 go-live gates?', 'Angle confidence (filled, sourced, not a competitor claim) and the gates per candidate: provable claim, owned difference, brand threshold, contribution margin, ad-cost ceiling, plus the compliance check.', gatesBlock(d.gates)));
+    parts.push(section('desk-scorecard', 'Which candidates does the founder decide on this week?', 'The fixed scorecard with the brand\'s weights: demand, margin, differentiation, compliance and cash timing, each scored in code, ranked, with the go or no-go memo drafted from the numbers and the review date.', scorecardBlock(d.scorecard)));
     parts.push(section('desk-pattern', 'Is each candidate evergreen, seasonal or a trend, and when does cash move?', 'The demand pattern from our own 12-month series by category and the web pass, with the cash timing it implies and the cash plan attached to each candidate.', patternBlock(d.pattern)));
     parts.push(section('desk-pipeline', 'What is in the next-SKU pipeline, and what is past its time box?', 'Candidates screened in from the gaps above or by hand, their stage, fast checks, time box and hours. Advance, log hours or kill from the card; every write lands in the pipeline log.', pipelineBlock(d.pipeline || { rows: [] })));
     mount('#desk', ...parts);
