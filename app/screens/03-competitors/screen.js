@@ -605,7 +605,14 @@
     const lines = el('div', { class: 'stack' }, ...fr.lines.map((x) => el('div', { class: 'card flat' }, el('b', { text: x.key + '. ' }), x.line,
       el('div', { class: 'micro faint', text: 'Answers ' + x.answers + (x.proof ? '. Proof: ' + x.proof : x.key === 'B' ? '. No proof on file.' : '') }))));
     mount('#frames', el('p', { class: 'small' }, el('b', { text: 'Our line now: ' }), fr.our_frame || NA), t, el('h4', { text: 'Lines to test' }), lines,
-      el('p', { class: 'small' }, el('b', { text: 'Test score: ' }), fr.score == null ? 'unavailable, no test on file.' : fr.score),
+      el('p', { class: 'small' }, el('b', { text: 'Test score: ' }), fr.score == null ? 'unavailable, no test on file.' : fr.score + ' points for line ' + fr.latest.line + ', ' + fr.latest.verdict + ' (' + fr.latest.why + ').'),
+      (fr.tests || []).length ? UI.table({ columns: [{ key: 'date', label: 'Date', format: (v) => fmt.date(v) }, { key: 'line', label: 'Line' }, { key: 'asked', label: 'Asked', unit: 'n' },
+        { key: 'prefer_new', label: 'Prefer it', unit: 'n' }, { key: 'prefer_current', label: 'Prefer ours', unit: 'n' }, { key: 'score', label: 'Points' }, { key: 'verdict', label: 'Verdict' }], rows: fr.tests, sort: false }) : null,
+      fr.lines.length > 1 ? el('details', { class: 'card flat' }, el('summary', { class: 'small', text: 'Log a poll result' }),
+        inputForm('frame_test', [{ key: 'line', label: 'Line tested against ours', options: fr.lines.filter((x) => x.key !== 'A').map((x) => x.key) },
+          { key: 'asked', label: 'Shoppers asked', type: 'number' }, { key: 'prefer_new', label: 'Preferred the new line', type: 'number' },
+          { key: 'prefer_current', label: 'Preferred ours', type: 'number' }, { key: 'date', label: 'Date', type: 'date', value: new Date().toISOString().slice(0, 10) }], 'Log the result'),
+        el('p', { class: 'micro faint', text: 'Win at ' + fr.win_points + ' points or more with ' + fr.min_n + ' or more asked; under ' + fr.lose_points + ' points keeps our line.' })) : null,
       UI.decisionRow({ capability: 'BRAND-C20', autonomy: 'agent_does', owner: 'agent_drafts', screen: SCREEN, compact: true, finding_id: SCREEN + '.COMP-R28.positioning_test' }),
       el('p', { class: 'micro faint', text: fr.rule + ' Reddit is a signal; never quoted.' }));
   }

@@ -300,10 +300,10 @@ def placements(m: dict) -> dict:
 
 
 # Every desk block ends in a line that names the gap and offers the action (depth.md section 2, row 5).
-SECTION_RULES = {"review": ["COMP-R28", "COMP-R11"], "season": ["COMP-R30"], "history": [], "handoff": [], "macros": ["COMP-R15"], "pages": ["COMP-R15"], "cards": ["COMP-R27"], "landing": ["COMP-R26"], "losses": ["COMP-R31", "COMP-R15", "COMP-R29"],
+SECTION_RULES = {"review": ["COMP-R32", "COMP-R28", "COMP-R11"], "season": ["COMP-R30"], "history": [], "handoff": [], "macros": ["COMP-R15"], "pages": ["COMP-R15"], "cards": ["COMP-R27"], "landing": ["COMP-R26"], "losses": ["COMP-R31", "COMP-R15", "COMP-R29"],
                  "category": ["COMP-R16"], "reviews": ["COMP-R17"], "coverage": ["COMP-R05", "COMP-R01"], "velocity": ["COMP-R19"],
                  "mix": ["COMP-R06", "COMP-R07", "COMP-R08"], "placements": [], "refs": ["COMP-R03"], "changes": ["COMP-R24", "COMP-R12"],
-                 "niche": ["COMP-R20"], "map": ["COMP-R11"], "frames": ["COMP-R28"], "premium": ["COMP-R21"],
+                 "niche": ["COMP-R20"], "map": ["COMP-R11"], "frames": ["COMP-R32", "COMP-R28"], "premium": ["COMP-R21"],
                  "prices": ["COMP-R25", "COMP-R09", "COMP-R10", "COMP-R02"], "search": ["COMP-R22", "COMP-R23"], "presence": ["COMP-R18"],
                  "fresh": ["COMP-R14", "COMP-R13"]}
 HOLD = {"handoff": "The snapshot is written with each capture; tests are proposed when you approve them.", "history": "Threat trend is drawn from the dated captures.", "pages": "No named loss on this capture; keep the battlecards fresh.", "placements": "Our placements are not in the brain; the pull fills them.",
@@ -519,6 +519,7 @@ def handle(req):
                 m = audit.market_full(brand, today, BRAIN_ROOT)
                 return audit.inpmod.add(brand, str(body.get("kind") or ""), body, {"competitors": m["losses"]["names"],
                                         "pages": [p["name"] for p in m["pages"] if p["role"] != "self"],
+                                        "lines": [x["key"] for x in m["frames"]["lines"] if x["key"] != "A"],
                                         "direct": [p["name"] for p in m["pages"] if p["role"] != "self" and p["frame"] == "direct" and p["source"] != "none"]}, today)
             return {"records": audit.inpmod.read(brand, req.arg("kind")), "reason_codes": audit.inpmod.REASON_CODES,
                     "note": "Logged by the team on this screen. Local file, never sent anywhere. No names or quotes kept."}

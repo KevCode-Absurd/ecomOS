@@ -1517,5 +1517,45 @@ class TestCardCheck(TempInputs):
         self.assertEqual(other['checked_by'], 'the capture')
 
 
+class TestFrameTest(TempInputs):
+    """6.5: positioning poll results logged on the page; a win puts the ad test on the plan."""
+    def poll(self, asked, new, cur, line='B'):
+        return self.post({'kind': 'frame_test', 'line': line, 'asked': asked, 'prefer_new': new, 'prefer_current': cur})
+
+    def test_validation(self):
+        self.assertEqual(self.poll(200, 150, 100)[0], 400)   # more preferences than asked
+        self.assertEqual(self.poll(10, 5, 5)[0], 400)
+        self.assertEqual(self.poll(200, 100, 80, line='A')[0], 400)
+        self.assertEqual(self.poll(200, 100, 80, line='b')[0], 201)
+
+    def test_verdicts(self):
+        v = api.audit.framemod.verdict
+        base = {'line': 'B', 'date': DAY, 'id': 'x'}
+        self.assertEqual(v(dict(base, asked=80, prefer_new=60, prefer_current=20))['verdict'], 'keep testing')
+        self.assertEqual(v(dict(base, asked=200, prefer_new=110, prefer_current=90))['verdict'], 'win')
+        self.assertEqual(v(dict(base, asked=200, prefer_new=100, prefer_current=95))['verdict'], 'keep current')
+        self.assertEqual(v(dict(base, asked=200, prefer_new=104, prefer_current=90))['verdict'], 'keep testing')
+
+    def test_win_goes_on_the_plan(self):
+        rank = lambda: api.rank('bombas', {'ends_on': '2026-09-27', 'days': 28, 'trailing': 4})['actions']
+        ids = [a['rule_id'] for a in rank()]
+        self.assertIn('COMP-R28', ids)
+        self.assertNotIn('COMP-R32', ids)
+        self.poll(200, 100, 95)
+        ids = [a['rule_id'] for a in rank()]
+        self.assertNotIn('COMP-R28', ids)          # tested now
+        self.assertNotIn('COMP-R32', ids)
+        self.poll(200, 120, 70)
+        a = next(a for a in rank() if a['rule_id'] == 'COMP-R32')
+        self.assertIn('by 25 points with 200 shoppers', a['why'])
+        self.assertEqual(api.actions.ranker.validate_action(a), [])
+        self.assertIn('Ad B first line:', a['artefact']['draft'])
+        d = api.handle(Req(['overview']))
+        self.assertEqual(d['frames']['score'], 25.0)
+        m = next(r for r in d['room_metrics'] if r['key'] == 'positioning_test_score')
+        self.assertEqual(m['value'], 25.0)
+        self.assertIn('COMP-R32', api.SECTION_RULES['frames'])
+
+
 if __name__ == '__main__':
     unittest.main()

@@ -10,6 +10,8 @@ Kinds:
               label, price in dollars, units in the pack, date, and an optional https source link
   card_check  a person checked every line of one direct page's battlecard against their site today: page, date, and how
               many lines were dropped as no longer true. The card's freshness counts from the latest check.
+  frame_test  a positioning poll result: the challenger line (a key the frames block offers), shoppers asked, how many
+              preferred it and how many preferred the current line
 Price rule (the room's "competitor cut price sharply"): per page and product, the latest price per unit against the
 mean of that product's earlier records in the trailing TRAIL_DAYS (30) days; a move of the price move threshold or
 more is a cut or a raise. With no earlier record in the window there is no baseline, and no move.
@@ -144,7 +146,24 @@ def card_checks(rows: list[dict]) -> dict:
     return out
 
 
-VALIDATE = {"interview": _interview, "price_seen": _price_seen, "card_check": _card_check}
+def _frame_test(body: dict, known: dict, today: dt.date) -> tuple[dict | None, str | None]:
+    keys = known.get("lines") or []
+    line = str(body.get("line") or "").strip().upper()
+    if line not in keys:
+        return None, "line must be one of: " + (", ".join(keys) or "no challenger line on file")
+    try:
+        asked, new, cur = (int(body.get(k)) for k in ("asked", "prefer_new", "prefer_current"))
+    except (TypeError, ValueError):
+        return None, "asked, prefer_new and prefer_current must be whole numbers"
+    if not (20 <= asked <= 100000) or new < 0 or cur < 0 or new + cur > asked:
+        return None, "asked must be 20 to 100,000, and the two preferences must add up to no more than asked"
+    day = _date(body.get("date") or today.isoformat(), today)
+    if not day:
+        return None, "date must be YYYY-MM-DD and not in the future"
+    return {"line": line, "asked": asked, "prefer_new": new, "prefer_current": cur, "date": day}, None
+
+
+VALIDATE = {"interview": _interview, "price_seen": _price_seen, "card_check": _card_check, "frame_test": _frame_test}
 
 
 def add(brand: str, kind: str, body, known: dict, today: dt.date) -> tuple[int, dict]:
