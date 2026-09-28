@@ -169,7 +169,30 @@
     const exp = el('button', { class: 'btn sm', type: 'button', text: 'Export the whole brain (JSON)' });
     const st = el('span', { class: 'micro muted' });
     exp.addEventListener('click', async () => { exp.disabled = true; try { const b = await api(BASE + 'export'); const blob = new Blob([JSON.stringify(b, null, 1)], { type: 'application/json' }); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = b.brand + '-brain-' + b.exported_at + '.json'; a.click(); st.textContent = b.counts.records + ' records, ' + b.counts.documents + ' documents, ' + b.counts.conflicts + ' conflicts. ' + b.note; } catch (e) { st.textContent = 'Could not export: ' + e.message; } exp.disabled = false; });
-    mount('#perm', matrix, el('div', { class: 'row', style: { marginTop: '10px' } }, exp, UI.decisionRow({ capability: 'LOOP-C22', autonomy: 'founder_gate', owner: 'agent_drafts', screen: SCREEN, compact: true, stub: 'Offboarding: export the brain and the registry as a handoff package, list every connector to revoke in Setup, and confirm no external write access stays open. You approve each revoke.' }), st));
+    const diffOut = el('div', { class: 'stack' });
+    const diffZone = UI.dropZone({ accept: 'application/json,.json', hint: 'Drop an earlier export (the JSON this button wrote) and see what changed since: records added, retired, and values, tiers or flags that moved. Nothing is written.',
+      onFiles: async (files) => {
+        for (const f of files) {
+          mount(diffOut, el('p', { class: 'muted small', text: 'Reading ' + f.name }));
+          try {
+            const raw = JSON.parse(await f.text());
+            // a slimmer copy: the diff reads ids, values, tiers, statuses and flags, not the histories or evidence
+            const slim = { format: raw.format, brand: raw.brand, exported_at: raw.exported_at, version: raw.version, router_md: raw.router_md, documents_manifest: raw.documents_manifest, sections: {} };
+            for (const [sec, rows] of Object.entries(raw.sections || {})) slim.sections[sec] = (rows || []).map((r) => ({ id: r.id, field: r.field, value: r.value, text: r.text, tier: r.tier, status: r.status, visibility: r.visibility }));
+            const b64 = btoa(unescape(encodeURIComponent(JSON.stringify(slim))));
+            const start = await api(BASE + 'export/diff/start', { method: 'POST', body: {} });
+            const size = start.part_max_bytes || 24000;
+            for (let i = 0; i < b64.length; i += size) { await api(BASE + 'export/diff/part', { method: 'POST', body: { token: start.token, data: b64.slice(i, i + size) } }); mount(diffOut, el('p', { class: 'muted small', text: 'Sending ' + Math.min(100, Math.round(((i + size) / b64.length) * 100)) + ' percent' })); }
+            const d = await api(BASE + 'export/diff/finish', { method: 'POST', body: { token: start.token } });
+            const c = d.counts;
+            mount(diffOut, el('div', { class: 'row' }, UI.verdict(d.same ? 'keep' : (c.gone ? 'watch' : 'new'), d.same ? 'Unchanged' : c.added + ' added, ' + c.gone + ' gone, ' + c.changed + ' changed'), el('span', { class: 'chip', text: 'export ' + (d.exported_at ? fmt.date(d.exported_at) : NA) + (d.since_days != null ? ', ' + d.since_days + ' days ago' : '') }), el('span', { class: 'chip', text: 'router ' + (d.router_changed == null ? NA : d.router_changed ? 'changed' : 'unchanged') }), UI.copyButton({ label: 'Copy the summary', text: () => d.text })),
+              d.sections.filter((x) => x.added || x.gone || x.changed).length ? UI.table({ columns: [{ key: 'section', label: 'Section', format: (v) => pretty(v) }, { key: 'then', label: 'Then', num: true }, { key: 'now', label: 'Now', num: true }, { key: 'added', label: 'Added', num: true }, { key: 'gone', label: 'Gone', num: true }, { key: 'changed', label: 'Changed', num: true }], rows: d.sections.filter((x) => x.added || x.gone || x.changed), sort: false }) : el('p', { class: 'muted small', text: 'Nothing changed since that export.' }),
+              d.changed.length ? UI.table({ columns: [{ key: 'id', label: 'Record' }, { key: 'what', label: 'What' }, { key: 'before', label: 'Before' }, { key: 'after', label: 'After' }], rows: d.changed.slice(0, 40).map((x) => ({ id: x.id, what: x.moves.map((m) => m.what).join(', '), before: x.moves.map((m) => String(m.before)).join(' | '), after: x.moves.map((m) => String(m.after)).join(' | ') })), sort: false }) : null,
+              el('div', { class: 'micro faint', text: d.note }));
+          } catch (e) { mount(diffOut, el('p', { class: 'muted', text: 'Could not diff ' + f.name + ': ' + e.message })); }
+        }
+      } });
+    mount('#perm', matrix, el('div', { class: 'row', style: { marginTop: '10px' } }, exp, UI.decisionRow({ capability: 'LOOP-C22', autonomy: 'founder_gate', owner: 'agent_drafts', screen: SCREEN, compact: true, stub: 'Offboarding: export the brain and the registry as a handoff package, list every connector to revoke in Setup, and confirm no external write access stays open. You approve each revoke.' }), st), el('h4', { text: 'What changed since an export?' }), diffZone, diffOut);
   }
 
   // ---------- 8b. what stays inside ----------
@@ -466,7 +489,7 @@
     try { d = await api(BASE + 'decisions'); } catch (e) { mount('#decisions', el('p', { class: 'muted', text: 'Decisions unavailable: ' + e.message })); return; }
     const byId = {}; for (const a of (m && m.actions) || []) byId[a.id] = a;
     const status = el('span', { class: 'micro muted' });
-    const undo = (it) => { const b = el('button', { class: 'btn xs soft', type: 'button', text: it.choice === 'not_now' ? 'Undo the snooze' : 'Undo' }); b.addEventListener('click', async () => { b.disabled = true; try { const r = await api(BASE + 'decisions/undo', { method: 'POST', body: { finding_id: it.finding_id } }); status.textContent = r.next; loadPlan(); } catch (e) { b.disabled = false; status.textContent = 'Could not undo: ' + e.message; } }); return b; };
+    const undo = (it) => { const b = el('button', { class: 'btn xs soft', type: 'button', text: it.choice === 'not_now' ? 'Undo the snooze' : 'Undo' }); b.addEventListener('click', async () => { b.disabled = true; try { await api('/api/decisions', { method: 'POST', body: { screen: it.screen || SCREEN, capability: it.capability, choice: 'undo', finding_id: it.finding_id, reason: 'undone from the brain screen' } }); status.textContent = 'Undone. The action is back on the list with no decision; the log keeps both rows.'; loadPlan(); } catch (e) { b.disabled = false; status.textContent = 'Could not undo: ' + e.message; } }); return b; };
     const pick = (it) => {
       if (decisionsFilter === 'all') return true;
       if (it.kind === 'brain') return decisionsFilter === 'brain';

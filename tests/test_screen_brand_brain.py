@@ -1783,7 +1783,7 @@ class Round4Decisions(TempBrain):
         # rank's latest-row-wins reading: the action is not snoozed and not counted as decided
         acts = api.rank_mod.apply_decisions([{'id': '05-brand-brain.BRN-R08.angle_story', 'screen': '05-brand-brain', 'capability': {'id': 'CREA-C06'}}], today=dt.date(2026, 9, 28), path=Path(path))
         self.assertEqual(len(acts), 1)
-        self.assertEqual(acts[0]['decision']['choice'], 'undo')
+        self.assertIsNone(acts[0].get('decision'))  # since commit e4d9599 an undo row withdraws the decision
         self.assertEqual(api.handle(Req(['decisions', 'undo'], 'POST', query={'decisions': [path]}, body={'finding_id': '05-brand-brain.BRN-R08.angle_story'}))[0], 400)
         self.assertEqual(api.handle(Req(['decisions', 'undo'], 'POST', query={'decisions': [path]}, body={'finding_id': 'nope.x'}))[0], 404)
         self.assertEqual(api.handle(Req(['decisions', 'undo'], 'POST', query={'decisions': [path]}, body={}))[0], 400)
@@ -2053,6 +2053,48 @@ class Round5AgentFile(TempBrain):
         self.assertLessEqual(b['tokens'], 1500)
         (self.tmp / 'bombas' / 'BRAIN.md').unlink()
         self.assertEqual(api.handle(Req(['brainmd']))[0], 404)
+
+
+class Round5ExportDiff(TempBrain):
+    """Round 5 feature 6: what changed since an export, record by record, whole or in parts."""
+
+    def test_diff_whole_and_in_parts(self):
+        b = api.handle(Req(['export']))
+        self.assertEqual(api.handle(Req(['export', 'diff'], 'POST', body={'bundle': b}))['same'], True)
+        api.handle(Req(['profile', 'offers', 'free_shipping_threshold_usd'], 'POST', body={'text': '80'}))
+        api.handle(Req(['claims'], 'POST', body={'text': 'the softest socks in the world', 'tier': 'forbidden'}))
+        api.handle(Req(['approve', 'bombas.claims.donation_pledge'], 'POST', body={'choice': 'approve'}))
+        d = api.handle(Req(['export', 'diff'], 'POST', body={'bundle': b}))
+        self.assertFalse(d['same'])
+        self.assertEqual((d['counts']['changed'], d['counts']['gone']), (2, 0))
+        self.assertGreaterEqual(d['counts']['added'], 2)
+        ch = {x['id']: x for x in d['changed']}
+        self.assertEqual(ch['bombas.offers.free_shipping_threshold_usd']['moves'][0], {'what': 'value', 'before': '75', 'after': '80.0'})
+        self.assertEqual(ch['bombas.claims.donation_pledge']['moves'][0]['what'], 'tier')
+        self.assertIn('bombas.offers.free_shipping_threshold_usd: value 75 to 80.0', d['text'])
+        self.assertEqual(d['since_days'], 0)
+        # in parts, as the page sends it: a slim copy, base64, 24 KB at a time
+        slim = {'format': b['format'], 'brand': b['brand'], 'exported_at': b['exported_at'], 'version': b['version'], 'router_md': b['router_md'], 'documents_manifest': b['documents_manifest'],
+                'sections': {sec: [{k: r.get(k) for k in ('id', 'field', 'value', 'text', 'tier', 'status', 'visibility')} for r in rows] for sec, rows in b['sections'].items()}}
+        b64 = base64.b64encode(json.dumps(slim).encode('utf-8')).decode()
+        status, st = api.handle(Req(['export', 'diff', 'start'], 'POST', body={}))
+        self.assertEqual(status, 201)
+        n = 0
+        for i in range(0, len(b64), st['part_max_bytes']):
+            self.assertEqual(api.handle(Req(['export', 'diff', 'part'], 'POST', body={'token': st['token'], 'data': b64[i:i + st['part_max_bytes']]}))[0], 201)
+            n += 1
+        self.assertGreater(n, 1)
+        d2 = api.handle(Req(['export', 'diff', 'finish'], 'POST', body={'token': st['token']}))
+        self.assertEqual((d2['counts']['changed'], d2['same']), (2, False))
+        self.assertFalse(list((self.tmp / 'bombas' / 'review' / 'uploads').glob('*.b64')))  # the part file is gone
+        self.assertEqual(api.handle(Req(['export', 'diff', 'finish'], 'POST', body={'token': st['token']}))[0], 404)
+        self.assertEqual(api.handle(Req(['export', 'diff'], 'POST', body={'bundle': {'x': 1}}))[0], 400)
+        self.assertEqual(api.handle(Req(['export', 'diff'], 'POST', body={'bundle': dict(b, brand='other')}))[0], 400)
+        # a retired record shows as gone
+        api.handle(Req(['bottlenecks', 'reject'], 'POST', body={'idea_id': 'AMZ-007', 'reason': 'x'}))
+        api.handle(Req(['bottlenecks', 'unreject'], 'POST', body={'idea_id': 'AMZ-007'}))
+        b2 = api.handle(Req(['export']))
+        self.assertEqual(api.handle(Req(['export', 'diff'], 'POST', body={'bundle': b2}))['counts']['gone'], 0)
 
 
 class Round4SecondBrand(unittest.TestCase):
