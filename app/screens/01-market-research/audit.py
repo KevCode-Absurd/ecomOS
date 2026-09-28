@@ -687,7 +687,8 @@ def net_28d(rd):
 def run(brand, window=None, data=None):
     """Findings for one brand and window ({ends_on, days, trailing}), sorted by severity then stake."""
     data = data if data is not None else (brand_data(brand) if brand else None)
-    ends_on = date.fromisoformat(window['ends_on']) if window and window.get('ends_on') else last_full_day(data, brand)
+    last = last_full_day(data, brand)
+    ends_on = min(date.fromisoformat(window['ends_on']), last) if window and window.get('ends_on') else last   # never past the data
     rd = Reader(data, brand, ends_on)
     tr = trend(rd)
     net = net_28d(rd)
@@ -798,6 +799,42 @@ def market_trends():
 
 
 # words that tie a public market or sub-category to what the brand sells; the brand side is read from the brain
+def brand_of(x):
+    """The brand name behind a Brain, a brand string or None."""
+    return getattr(x, 'brand', x) if x is not None else None
+
+
+def web_pass(x):
+    """The web pass fixture for this brand: the file when its brand field matches (or it names no brand); None for any
+    other brand, so a kitchen brand never reads a sock brand's markets, lanes or launches."""
+    fx = market_trends()
+    if not fx:
+        return None
+    b = brand_of(x)
+    return fx if not fx.get('brand') or (b and fx.get('brand') == b) else None
+
+
+def lanes_for(x):
+    """The lanes (key, label, terms) this desk follows for the brand: the web pass fixture's lanes, else the module default
+    when the fixture matches the brand and names none, else nothing."""
+    fx = web_pass(x)
+    if fx is None:
+        return []
+    lanes = fx.get('lanes')
+    if lanes:
+        return [(l['key'], l['label'], list(l.get('terms') or [])) for l in lanes]
+    return list(SUBCATS)
+
+
+def social_pull_for(x):
+    """The social pull fixture for this brand: the file when its brand field matches (or it names no brand); else None."""
+    sp = social_pull()
+    if not sp:
+        return None
+    b = brand_of(x)
+    return sp if not sp.get('brand') or (b and sp.get('brand') == b) else None
+
+
 MARKET_CATEGORY = {'socks_us': 'socks', 'socks_global': 'socks', 'slippers_us': 'slippers', 'mens_underwear_us': 'underwear',
                    'womens_underwear_us': 'underwear', 'basics_tshirts': 'tshirts', 'footwear_casual': 'footwear',
                    'compression_socks': 'socks', 'athletic_socks': 'socks', 'merino_wool_socks': 'socks',
@@ -856,7 +893,7 @@ GIFT_WINDOW_DAYS = 90
 
 def trend_findings(br, mix, ends_on):
     """PROD-R04 and PROD-R05 from the web pass fixture against our category mix and our active ads."""
-    fx = market_trends()
+    fx = web_pass(br)
     if not fx:
         return [_unavailable('PROD-R05', ends_on, 'No web pass is on file, so the category trend cannot be read.',
                              ['fixtures/market_trends.json'], 'web_pass', 'Run the research web pass for this brand.')]
@@ -972,13 +1009,13 @@ def subcategory_table(br, ends_on):
     """Each lane: which competitors push it (ads and run length), what launched in it (web pass), whether the brand
     sells it and advertises it, and the verdict: follow, watch or ignore, by the rule constants above."""
     comps = competitor_signals(br)
-    fx = market_trends() or {}
+    fx = web_pass(br) or {}
     launches = fx.get('launches') or []
     words = brand_words(br)
     ads = ad_words(br)
     brand_name = (br.brand if br else '').lower()
     out = []
-    for key, label, terms in SUBCATS:
+    for key, label, terms in lanes_for(br):
         pushing = [c for c in comps if any(t in c['text'] for t in terms)]
         long_run = [c for c in pushing if (c.get('longest_run_days') or 0) >= FOLLOW_MIN_RUN_DAYS]
         lane_launches = [l for l in launches if l.get('sub_category') == key or any(t in (l.get('what') or '').lower() for t in terms)]
@@ -1104,7 +1141,7 @@ def conversation(br):
                 r['reddit_praise'] += 1
             elif v.get('theme') == 'complaint':
                 r['reddit_complaint'] += 1
-    social = social_pull()
+    social = social_pull_for(br)
     for th, g in ((social or {}).get('themes') or {}).items():
         r = rows.get(th)
         if r is None:
@@ -1179,7 +1216,7 @@ PREFERENCE_THEME = {'durability': 'durability', 'giving': 'mission', 'compressio
 def preferences(br, conv=None):
     """Each rising preference from the web pass against the brand's own claims (site), its active ads, the
     competitors' pitches and the category conversation. Verdict by rule: lead, prove, gap, watch."""
-    fx = market_trends() or {}
+    fx = web_pass(br) or {}
     site = brand_words(br)
     ads = ad_words(br)
     comps = competitor_signals(br)
@@ -1876,7 +1913,7 @@ def demand_pattern(category, mix, fx, name='', lane_key=None):
 def pattern_findings(brand, data, rd, ends_on):
     """PROD-R18: a seasonal candidate with no cash plan attached cannot reach the shortlist."""
     mix = category_mix(data, brand, rd)
-    fx = market_trends()
+    fx = web_pass(brand)
     out = []
     for cand in pipeline(brand):
         if cand.get('stage') in CLOSED_STAGES:
@@ -1918,7 +1955,7 @@ def saturation_grade(n):
 def lane_map(br, ends_on):
     """Each lane as a point: x sellers (competitor pages pushing it plus launches by others), y trend score from the
     web pass growth plus launches. Named quadrants; the rule constants above are the grid lines."""
-    fx = market_trends() or {}
+    fx = web_pass(br) or {}
     markets = {m.get('key'): m for m in fx.get('markets') or []}
     pts = []
     for row in subcategory_table(br, ends_on):
@@ -1978,7 +2015,7 @@ def candidate_lanes(brand):
         if c.get('stage') in CLOSED_STAGES:
             continue
         text = f'{c.get("name") or ""} {c.get("angle_text") or ""} {c.get("category") or ""}'.lower()
-        for key, _, terms in SUBCATS:
+        for key, _, terms in lanes_for(brand):
             if any(t in text for t in terms):
                 out.setdefault(key, []).append(c.get('name'))
     return out
@@ -2315,7 +2352,7 @@ def scorecard(brand, data, br, rd, ends_on):
     floor = fin.value('target_contribution_margin', ends_on.isoformat()) if fin else None
     upo = units_per_order(data, brand, rd)
     mix = category_mix(data, brand, rd)
-    fx = market_trends()
+    fx = web_pass(brand)
     spend_rows = spend_signal(br, brand, ends_on)['rows'] if br else []
     gates_rows = {g['candidate_id']: g for g in candidate_gates(brand, data, br, rd, ends_on)}
     rows = []
@@ -2389,7 +2426,8 @@ PATTERN_MIN_PLATFORMS = 2
 
 def reddit_lane_mentions(br):
     """Reddit language bank records whose text carries a lane's terms: mentions and upvotes per lane."""
-    out = {k: {'mentions': 0, 'upvotes': 0} for k, _, _ in SUBCATS}
+    lanes = lanes_for(br)
+    out = {k: {'mentions': 0, 'upvotes': 0} for k, _, _ in lanes}
     if br is None:
         return out
     for rec in br.records('language_bank'):
@@ -2397,7 +2435,7 @@ def reddit_lane_mentions(br):
         if not v.get('subreddit'):
             continue
         text = (str(v.get('phrase') or '') + ' ' + ' '.join(str(q.get('quote') or '') for q in v.get('reviews') or [])).lower()
-        for key, _, terms in SUBCATS:
+        for key, _, terms in lanes:
             if any(t in text for t in terms):
                 out[key]['mentions'] += 1
                 out[key]['upvotes'] += int(v.get('weight') or 0)
@@ -2407,7 +2445,7 @@ def reddit_lane_mentions(br):
 def video_signals(br, brand, ends_on):
     """Per lane: the independent platforms that show demand (Instagram pull by hashtag, Reddit mentions, competitor creator-style
     ads, our own creator ads) and the verdict: pattern (2 or more platforms above the floor), single source (exactly 1), none."""
-    social = social_pull() or {}
+    social = social_pull_for(br) or {}
     by_tag = {k.lower(): v for k, v in (social.get('posts_by_tag') or {}).items()}
     themes = social.get('themes') or {}
     reddit = reddit_lane_mentions(br)
@@ -2589,11 +2627,11 @@ def trend_history(market, as_of_year):
 
 
 def trend_checks(br, brand, ends_on):
-    fx = market_trends() or {}
+    fx = web_pass(br) or {}
     markets = {m.get('key'): m for m in fx.get('markets') or []}
     cands = candidate_lanes(brand)
     rows = []
-    for key, label, _ in SUBCATS:
+    for key, label, _ in lanes_for(br):
         keys = LANE_MARKET.get(key, [])
         best = None
         for k in keys:
@@ -2722,7 +2760,7 @@ def audience_surfaces(br, ends_on):
             if th:
                 r['themes'][th] = r['themes'].get(th, 0) + int(n)
     # social surfaces named in the brand's own records; the Instagram pull gives posts
-    social = social_pull() or {}
+    social = social_pull_for(br) or {}
     for key, label, words in SOCIAL_SURFACES:
         if not any(w in present for w in words) and key != 'instagram':
             continue
@@ -2956,8 +2994,9 @@ def launch_cadence(br, ends_on):
     in the last 12 and 24 months, months since the last, the lanes and channels, median price. Per lane: competitor launches
     in 12 months and the brands behind them, ours in 24 months, whether we sell the lane, and the verdict: in play (competitors
     launching, none of ours), matched (both), quiet (nobody), not sold."""
-    fx = market_trends() or {}
+    fx = web_pass(br) or {}
     launches = fx.get('launches') or []
+    lane_defs = lanes_for(br)
     brand_name = (br.brand if br else '').lower()
     words = brand_words(br)
     rows = []
@@ -2965,7 +3004,7 @@ def launch_cadence(br, ends_on):
         d = launch_date(l.get('date'))
         if d is None or d > ends_on:
             continue
-        lanes = [k for k, _, terms in SUBCATS if l.get('sub_category') == k or any(t in (l.get('what') or '').lower() for t in terms)]
+        lanes = [k for k, _, terms in lane_defs if l.get('sub_category') == k or any(t in (l.get('what') or '').lower() for t in terms)]
         rows.append({'brand': l.get('brand'), 'self': (l.get('brand') or '').lower() == brand_name, 'what': l.get('what'), 'date': d, 'date_text': l.get('date'),
                      'months_ago': months_between(d, ends_on), 'lanes': lanes or [l.get('sub_category') or 'other'], 'price_usd': l.get('price_usd'),
                      'channel': l.get('channel'), 'url': (l.get('sources') or [{}])[0].get('url')})
@@ -2993,7 +3032,7 @@ def launch_cadence(br, ends_on):
     comp_n12 = [b['n_12m'] for b in brand_rows if not b['self']]
     ours = next((b for b in brand_rows if b['self']), None)
     lane_rows = []
-    for key, label, terms in SUBCATS:
+    for key, label, terms in lane_defs:
         theirs_12 = [r for r in rows if not r['self'] and key in r['lanes'] and r['months_ago'] <= 12]
         theirs_24 = [r for r in rows if not r['self'] and key in r['lanes'] and r['months_ago'] <= 24]
         ours_24 = [r for r in rows if r['self'] and key in r['lanes'] and r['months_ago'] <= CADENCE_QUIET_MONTHS]

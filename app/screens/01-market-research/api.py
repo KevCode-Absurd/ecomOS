@@ -227,7 +227,7 @@ def public_mix(br):
 
 def trends(br, mix):
     """The industry and sub-industry strips: public markets from the web pass, each tied to our category and its coverage."""
-    fx = audit.market_trends()
+    fx = audit.web_pass(br)
     words = audit.brand_words(br)
     ads = audit.ad_words(br)
     ours = {r['category']: r for r in (mix.get('rows') or [])}
@@ -855,7 +855,7 @@ def recipe(f):
     return None
 
 
-def merge_lanes(actions):
+def merge_lanes(actions, brand=None):
     """One action per lane: a PROD-R05 market finding and a PROD-R06 competitor finding on the same lane share the brief."""
     r06 = [a for a in actions if a.get('rule_id') == 'PROD-R06']
     keep = []
@@ -868,7 +868,7 @@ def merge_lanes(actions):
             host = next((b for b in r06 if (b.get('entity') or {}).get('id') == key), None)
         else:
             words = set(audit.MARKET_WORDS.get(key, []))
-            host = next((b for b in r06 if words & set(next((t for k, _, t in audit.SUBCATS if k == (b.get('entity') or {}).get('id')), []))), None)
+            host = next((b for b in r06 if words & set(next((t for k, _, t in audit.lanes_for(brand) if k == (b.get('entity') or {}).get('id')), []))), None)
         if host is None:
             keep.append(a)
             continue
@@ -975,11 +975,30 @@ def rescore(a, f, nr):
     return r
 
 
+_SAMPLE = {}
+
+
+def sample_data():
+    """The server's reader for the sample brand (app/data/sample-brand), for the rank route, which gets no request object."""
+    if 'data' not in _SAMPLE:
+        spec = importlib.util.spec_from_file_location('ecomos_server_research', APP / 'server.py')
+        mod = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(mod)
+        _SAMPLE['data'] = mod.Data()
+    return _SAMPLE['data']
+
+
 def rank(brand, window=None):
     """Depth contract section 5: every audit finding becomes an action with an owner, steps and an artefact."""
     window = window or rank_mod.default_window()
-    nr = rank_mod.net_revenue_28d(brand, window)
-    findings = audit.run(brand, window)
+    data = None
+    if brand in (None, '', 'sample'):
+        brand, data = None, sample_data()
+    last = audit.last_full_day(data, brand).isoformat()
+    if str(window.get('ends_on') or '') > last:
+        window = dict(window, ends_on=last)   # the window never runs past the last full day in the data
+    nr = rank_mod.net_revenue_28d(brand, window) if brand else None
+    findings = audit.run(brand, window, data=data)
     actions = []
     for f in findings:
         if f.get('status') not in ('open', 'unavailable', None):
@@ -1002,7 +1021,7 @@ def rank(brand, window=None):
         a['screen'] = SCREEN
         if not rank_mod.validate_action(a):
             actions.append(a)
-    actions = merge_marketplace(merge_surfaces(merge_candidates(merge_lanes(actions))))
+    actions = merge_marketplace(merge_surfaces(merge_candidates(merge_lanes(actions, brand))))
     for a in actions:   # a merge can lift the host's confidence; the total follows the rubric
         r = a['rubric']
         r['total'] = round(sum(rank_mod.WEIGHTS[k] * (r[k] if r[k] is not None else 2.5) / 5 for k in rank_mod.WEIGHTS), 1)
@@ -1270,7 +1289,7 @@ def margin_block(brand, data, br, rd, ends_on, findings):
 
 def pattern_block(brand, data, rd, findings):
     mix = audit.category_mix(data, brand, rd)
-    fx = audit.market_trends()
+    fx = audit.web_pass(brand)
     by_entity = {f['entity']['id']: f['id'] for f in findings if f['rule_id'] == 'PROD-R18'}
     cats = [dict(audit.demand_pattern(r['category'], mix, fx), kind='category') for r in (mix.get('rows') or [])] if not mix.get('unavailable') else []
     cands = []

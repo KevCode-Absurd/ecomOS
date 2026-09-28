@@ -186,8 +186,9 @@
   function pipelineBlock(p) {
     const floor = p.floor_pct != null ? 'The brand floor is ' + p.floor_pct + ' percent, from ' + p.floor_source + '.' : 'No floor on file: enter a target contribution margin on the setup screen.';
     const rows = p.rows || [];
-    const funnel = Charts.funnel({ title: 'Candidates by stage reached', stages: (p.funnel || []).map((f) => ({ label: f.stage, value: f.n })), unit: 'n',
-      note: 'A candidate at a later stage counts at every stage before it. ' + (p.rule || '') + '.' });
+    const funnel = rows.length ? Charts.funnel({ title: 'Candidates by stage reached', stages: (p.funnel || []).map((f) => ({ label: f.stage, value: f.n })), unit: 'n',
+      note: 'A candidate at a later stage counts at every stage before it. ' + (p.rule || '') + '.' })
+      : el('div', null, el('h4', { text: 'Candidates by stage reached' }), el('p', { class: 'muted small', text: 'No candidate on file for this brand yet. Screen one in on the right; the funnel fills from there.' }));
     const stageNext = (r) => { const i = (p.stages || []).indexOf(r.stage); return i >= 0 && i < p.stages.length - 1 ? p.stages[i + 1] : null; };
     const vrows = rows.map((r) => { const acts = (r.finding_ids || []).map(actionFor).filter(Boolean); const nx = stageNext(r); return Object.assign({}, r, {
       stageText: r.stage + (r.closed ? '' : r.days_left != null ? (r.days_left < 0 ? ', ' + Math.abs(r.days_left) + ' d over the box' : ', ' + r.days_left + ' d left') : ''),

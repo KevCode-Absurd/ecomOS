@@ -657,13 +657,19 @@ class PipelineTest(ShapeMixin, unittest.TestCase):
 
     def test_candidate_lanes_from_name_and_angle(self):
         self.real2 = audit.PIPELINE_PATH
+        real_fx = audit.market_trends
         try:
             audit.PIPELINE_PATH = self.tmp
+            audit.market_trends = lambda: {'launches': []}   # a web pass with no brand field applies to any brand; no lanes key means the default lanes
             self.tmp.write_text(json.dumps({'rows': [{'candidate_id': 'a', 'brand': 'fake', 'name': 'Merino hiking sock', 'stage': 'screened', 'angle_text': ''},
                                                      {'candidate_id': 'b', 'brand': 'fake', 'name': 'x', 'stage': 'killed', 'angle_text': 'compression'}]}), encoding='utf-8')
             lanes = audit.candidate_lanes('fake')
+            self.assertEqual(audit.candidate_lanes(None), {})
         finally:
             audit.PIPELINE_PATH = self.real2
+            audit.market_trends = real_fx
+        self.assertEqual(audit.lanes_for('fake'), [])   # the real fixture names bombas: any other brand reads no lanes
+        self.assertEqual(audit.lanes_for(None), [])
         self.assertEqual(lanes.get('merino'), ['Merino hiking sock'])
         self.assertEqual(lanes.get('performance'), ['Merino hiking sock'])
         self.assertNotIn('compression', lanes)   # killed candidates do not count
@@ -791,7 +797,7 @@ class PipelineTest(ShapeMixin, unittest.TestCase):
             row = next(r for r in v['rows'] if r['key'] == f['entity']['id'])
             self.assertEqual(row['verdict'], 'single')
             self.assertTrue(row['candidates'])
-        self.assertEqual(audit.reddit_lane_mentions(None)['merino'], {'mentions': 0, 'upvotes': 0})
+        self.assertEqual(audit.reddit_lane_mentions(None), {})   # no brand, no web pass, no lanes
 
     def test_trend_history_verdicts(self):
         steady = {'series': [{'year': 2021, 'value_usd': 100}, {'year': 2023, 'value_usd': 110}, {'year': 2025, 'value_usd': 121}, {'year': 2030, 'value_usd': 160}]}
@@ -1009,6 +1015,42 @@ class ApiTest(unittest.TestCase):
         rows = {r['line']: r for r in api.price_bands(FakeData().tables['products'], comps)['rows']}
         self.assertEqual(rows['Crew Sock']['position'], 'below')
         self.assertIsNone(rows['Tee']['position'])  # no competitor for tees
+
+
+class SecondBrandTest(unittest.TestCase):
+    """The desk is not Bombas-shaped: the sample brand (Tallgrass Goods, kitchen goods, no brain, no web pass) reads
+    nothing of Bombas and every route still answers."""
+
+    def test_fixtures_are_brand_bound(self):
+        self.assertEqual(audit.market_trends().get('brand'), 'bombas')
+        self.assertIsNone(audit.web_pass(None))
+        self.assertIsNone(audit.web_pass('tallgrass'))
+        self.assertEqual(len(audit.lanes_for('bombas')), 10)
+        self.assertEqual(audit.lanes_for(None), [])
+        self.assertIsNone(audit.social_pull_for(None))
+        self.assertEqual(audit.social_pull_for('bombas')['brand'], 'bombas')
+
+    def test_sample_brand_routes(self):
+        data = api.sample_data()
+        o = api.overview(data, None)
+        self.assertEqual(o['brand']['brand'], 'Tallgrass Goods')
+        d = o['desk']
+        self.assertEqual(d['lanes'], [])
+        self.assertEqual(d['cadence']['brands'], [])
+        self.assertEqual(d['trend_checks']['rows'], [])
+        self.assertEqual(d['video']['rows'], [])
+        self.assertEqual(d['lane_map']['points'], [])
+        self.assertFalse(d['trends']['on_file'])
+        self.assertEqual(d['surfaces']['rows'], [])
+        self.assertIsNone(d['marketplace']['presence'])
+        for f in audit.run(None, None, data=data):
+            self.assertEqual(f['status'], 'unavailable', f['id'])   # no products_monthly, no brain: every read says so
+        r = api.rank('sample', {'ends_on': '2026-09-24', 'days': 28, 'trailing': 4})
+        self.assertTrue(r['actions'])
+        for a in r['actions']:
+            self.assertEqual(a['status'], 'unavailable')
+            self.assertEqual(api.rank_mod.validate_action(a), [], a['id'])
+        self.assertEqual(api.rank(None)['actions'][0]['id'], r['actions'][0]['id'])
 
 
 @unittest.skipUnless(BOMBAS_DB.is_file(), 'bombas data.sqlite not built')

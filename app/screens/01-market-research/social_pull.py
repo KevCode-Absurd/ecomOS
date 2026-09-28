@@ -105,7 +105,7 @@ def run(brand: str, mode: str, per_tag: int, lanes: list[str] | None = None, tod
     est = client.check_caps(ACTOR, max_items)
     items = client.run(ACTOR, {"hashtags": tags, "resultsLimit": per_tag, "resultsType": "posts"}, max_items, lane="social_keywords")
     last = client.last_run or {}
-    out = summarise(items, tags, {"captured_at": (today or dt.date.today()).isoformat(), "mode": mode, "actor": ACTOR,
+    out = summarise(items, tags, {"brand": brand, "captured_at": (today or dt.date.today()).isoformat(), "mode": mode, "actor": ACTOR,
                                   "run_id": last.get("run_id"), "usd": last.get("usd"), "estimate_usd": est, "per_tag": per_tag})
     (HERE / "fixtures" / "social_pull.json").write_text(json.dumps(out, indent=1), encoding="utf-8")
     return out
