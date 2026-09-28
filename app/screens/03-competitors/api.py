@@ -182,6 +182,29 @@ def rank(brand: str = "bombas", window: dict | None = None) -> dict:
     return out
 
 
+QUEUE_MAX = 5
+
+
+def founder_queue(acts: list[dict]) -> dict:
+    """The calls only the founder can make, top QUEUE_MAX by plan rank: undecided moves that are founder gated, or that
+    an agent drafts and a person approves. Each says what yes sets going next and when it is checked."""
+    out = []
+    for rank, a in enumerate(acts, 1):
+        if a.get("status") == "unavailable" or a.get("decision"):
+            continue
+        gate = a["capability"]["autonomy"] == "founder_gate"
+        if not (gate or a["owner"] == "agent_drafts"):
+            continue
+        approve = next((st for st in a["steps"] if st["who"] == "person"), None)
+        after = next((st["text"] for st in a["steps"] if approve and st["n"] > approve["n"]), None)
+        out.append({"id": a["id"], "rank": rank, "title": a["title"], "why": a["why"], "gate": gate,
+                    "question": ("Decide: " if gate else "Approve: ") + a["artefact"]["label"],
+                    "yes": after or "The agent ships it and reports on the check date.", "check_on": a.get("check_on"),
+                    "capability": a["capability"]["id"], "autonomy": a["capability"]["autonomy"], "owner": a["owner"]})
+    return {"items": out[:QUEUE_MAX], "total": len(out),
+            "rule": f"Undecided moves that are founder gated or drafted for approval, top {QUEUE_MAX} by plan rank."}
+
+
 def plan(brand: str, today: dt.date) -> dict:
     """The plan board: ranked actions with decisions applied, the findings they close, and the orientation."""
     window = actions.ranker.default_window(28, (today - dt.timedelta(days=1)).isoformat())
@@ -193,7 +216,7 @@ def plan(brand: str, today: dt.date) -> dict:
             "connect": [a for a in acts if a.get("status") == "unavailable"],
             "snoozed": len(out["actions"]) - len(acts), "findings": out["findings"], "rules": audit.RULES,
             "groups": [{"key": k, "label": v} for k, v in audit.GROUP_LABEL.items()], "rule_group": audit.RULE_GROUP,
-            "thresholds": m["thresholds"],
+            "thresholds": m["thresholds"], "queue": founder_queue(acts),
             "snapshot_age_days": max(ages) if (ages := [p["age_days"] for p in m["pages"] if p["age_days"] is not None]) else None}
 
 

@@ -46,6 +46,7 @@ Round 1 notes: `snapshot.py` plans and runs a page-id Ad Library pull through `a
 | 6.6 | Thresholds tuned on the page: each of the 12 tunables has a range in code (so an alert can neither go silent nor fire on noise); a change inside it is logged and wins over the brain's competitor_thresholds record, newest first; the table says default, brain record or "changed here on" a date. Fixes a fault from 3.8: the plan never sent the thresholds, so the table on the page was empty | done |
 | 6.7 | The weekly capture runs from the page (agent does it, free): `POST capture` writes today's page-summary capture from the brain and the competitor_snapshot hand-off, once a day, and says how many changes it found since the last one; the freshness block shows the dated captures and the button; the threat trend, diffs and price moves start from the second capture. Capture paths now resolve at call time, so tests write to a temp folder | done |
 | 6.8 | What the team logged: every record entered on this screen (interviews, prices seen, card checks, polls, threshold changes) in one list in the audit, newest first, with a plain summary, who and when; "Remove" takes a mistake back (`POST inputs/remove`) and every rule reads the file again, so a mistyped price never leaves a false cut on the plan | done |
+| 6.9 | Waiting on you: under the plan, the calls only the founder makes (undecided moves that are founder gated, or drafted by an agent for approval), top 5 by plan rank, each as one question ("Decide:" or "Approve:" and the artefact), what yes sets going next and its check date, with the decision row; decided moves leave the queue; says so when nothing waits | done |
 
 ## Round 5: hand-offs, execution lanes and the season
 
@@ -263,7 +264,7 @@ Round 2 notes: the lead authorised the $2.08 pull on 28 Sep; the session's permi
 | Round | Features picked | Date | Notes |
 |---|---|---|---|
 | 0 | 0.1 to 0.8 | 2026-09-28 | Bombas brain and simulated prices |
-| 6 | 6.1 to 6.4 | 2026-09-28 | Win-loss log; repeated loss reason; rival prices seen; battlecard checks; positioning polls; thresholds on the page; capture from the page; the team log |
+| 6 | 6.1 to 6.4 | 2026-09-28 | Win-loss log; repeated loss reason; rival prices seen; battlecard checks; positioning polls; thresholds on the page; capture from the page; the team log; waiting on you |
 | 5 | 5.1 to 5.10 | 2026-09-28 | Hand-offs; action lanes; season plan; quarterly review; exports (and the 5.4 load fix); browser smoke test; team notes; brief pack; check due lane; round close |
 | 4 | 4.1 to 4.10 | 2026-09-28 | Placements and new channel alerts; gap lines; stop rules; unit from the brain; never zero; phone width; threat history; support answers; room metrics. Screenshot `round4.png` |
 | 3 | 3.1 to 3.10 | 2026-09-28 | Page-summary captures and diffs; price moves; landing page tracking; printable report; battlecards; positioning test; win-loss kit; tunable thresholds; second brand. Screenshot `round3.png` |

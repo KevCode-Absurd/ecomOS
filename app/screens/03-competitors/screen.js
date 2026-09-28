@@ -139,6 +139,14 @@
       foot: el('div', { class: 'row' }, UI.rubricLegend(), el('span', { class: 'micro faint', text: 'Ranking: rubric total, then severity. "Not now" snoozes 14 days.' + (p.snoozed ? ' ' + p.snoozed + ' snoozed.' : '') })),
       empty: 'No open action on this capture. Every tracked angle, offer and price sits inside its rule.',
     }));
+    const q = p.queue || { items: [], total: 0 };
+    mount('#queue', q.items.length ? el('div', { class: 'card flat stack queue' },
+      UI.sectionHead({ title: 'Waiting on you: ' + q.total + ' call' + (q.total === 1 ? '' : 's'), sub: 'The top ' + q.items.length + ' by plan rank. Everything else the agent does or a person owns.' }),
+      ...q.items.map((x) => el('div', { class: 'queue-item stack' },
+        el('div', null, el('span', { class: 'chip', text: '#' + x.rank }), ' ', el('b', { text: x.question }), el('span', { class: 'muted', text: ' for "' + x.title + '"' })),
+        el('div', { class: 'small' }, el('b', { text: 'Yes means: ' }), x.yes + (x.check_on ? ' Checked on ' + fmt.date(x.check_on) + '.' : '')),
+        UI.decisionRow({ capability: x.capability, autonomy: x.autonomy, owner: x.owner, screen: SCREEN, compact: true, finding_id: x.id }))),
+      el('p', { class: 'micro faint', text: q.rule })) : el('p', { class: 'small muted', text: 'Nothing waits on you. Every open move is the agent\'s or a named person\'s.' }));
     const cw = document.getElementById('connect-wrap');
     cw.hidden = !p.connect.length;
     if (p.connect.length) mount('#connect', el('div', { class: 'card flat' }, UI.sectionHead({ title: 'Connect first: ' + p.connect.length + ' rules wait on a source', sub: 'Person tasks in Setup, read-only. They never crowd out work that can start today.' }),

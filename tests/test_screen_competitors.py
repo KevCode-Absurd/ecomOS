@@ -1659,5 +1659,30 @@ class TestInputsLog(TempInputs):
         self.assertIn('id="inputs"', (SCREEN / 'index.html').read_text(encoding='utf-8'))
 
 
+class TestFounderQueue(TempBrain):
+    """6.9: the calls only the founder makes, top 5 by plan rank, each with what yes sets going."""
+    def test_queue(self):
+        api.BRAIN_ROOT = self.tmp
+        p = api.handle(Req(['plan']))
+        q = p['queue']
+        self.assertTrue(1 <= len(q['items']) <= api.QUEUE_MAX)
+        self.assertGreaterEqual(q['total'], len(q['items']))
+        ranks = [x['rank'] for x in q['items']]
+        self.assertEqual(ranks, sorted(ranks))
+        for x in q['items']:
+            a = p['actions'][x['rank'] - 1]
+            self.assertEqual(a['id'], x['id'])
+            self.assertTrue(x['gate'] or a['owner'] == 'agent_drafts')
+            self.assertTrue(x['question'].startswith('Decide: ' if x['gate'] else 'Approve: '))
+            self.assertTrue(x['yes'])
+
+    def test_decided_moves_leave_the_queue(self):
+        acts = [{'id': 'a', 'status': 'open', 'decision': {'choice': 'agent'}, 'capability': {'id': 'X', 'autonomy': 'founder_gate'},
+                 'owner': 'agent_drafts', 'steps': [], 'title': 't', 'why': 'w', 'artefact': {'label': 'l'}},
+                {'id': 'b', 'status': 'open', 'decision': None, 'capability': {'id': 'X', 'autonomy': 'agent_does'},
+                 'owner': 'agent', 'steps': [], 'title': 't', 'why': 'w', 'artefact': {'label': 'l'}}]
+        self.assertEqual(api.founder_queue(acts)['items'], [])
+
+
 if __name__ == '__main__':
     unittest.main()
