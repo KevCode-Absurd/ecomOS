@@ -98,6 +98,10 @@ BRN-R19 disclosure missing. A site-level US disclosure check fails
     notice, terms, returns posted, cookie consent, accessibility statement,
     creator ads labelled. Severity high; it blocks going live. Capability
     LOOP-C27. Reputation override 5 (legal disclosure gap). Owner: 05-brand-brain.
+BRN-R20 permission gap. A section with records and no explicit permission
+    entry defaults to restricted (health.permissions). One low finding naming
+    the count, so the founder sets the map once. Capability LOOP-C29.
+    Owner: 05-brand-brain.
 BRN-R07 competitor snapshot stale. A configured Ad Library page was captured
     more than SNAPSHOT_STALE_DAYS (7) ago, or never. Severity low. Capability
     BRN-C11 (competitor snapshot, signals only). Owner: 05-brand-brain.
@@ -168,10 +172,12 @@ RULES = [
      "inputs": ["operations.contract_*", "stack", "team"], "capability": "LOOP-C28", "owner_screen": SCREEN},
     {"rule_id": "BRN-R19", "name": "disclosure missing", "entity_type": "page",
      "inputs": ["policies", "site_map", "stack", "learnings"], "capability": "LOOP-C27", "owner_screen": SCREEN},
+    {"rule_id": "BRN-R20", "name": "permission gap", "entity_type": "brand",
+     "inputs": ["team.permission_*"], "capability": "LOOP-C29", "owner_screen": SCREEN},
 ]
 AUTONOMY = {"BRN-C12": "agent_does", "BRN-C07": "founder_gate", "BRN-C03": "agent_does",
             "CREA-C19": "agent_does", "CREA-C04": "agent_does", "BRN-C11": "agent_does", "CREA-C06": "agent_does",
-            "BRAND-C57": "agent_does", "CREA-C03": "agent_does", "BRN-C05": "founder_gate", "BRN-C01": "agent_does", "PROD-C46": "agent_does", "LOOP-C28": "agent_does", "LOOP-C27": "agent_does"}
+            "BRAND-C57": "agent_does", "CREA-C03": "agent_does", "BRN-C05": "founder_gate", "BRN-C01": "agent_does", "PROD-C46": "agent_does", "LOOP-C28": "agent_does", "LOOP-C27": "agent_does", "LOOP-C29": "agent_does"}
 
 _tspec = importlib.util.spec_from_file_location("brand_brain_contracts", Path(__file__).resolve().parent / "contracts.py")
 contracts = importlib.util.module_from_spec(_tspec)
@@ -570,6 +576,18 @@ def rule_legal(brain: Brain, ends_on: str) -> list[dict]:
     return out
 
 
+def rule_permissions(brain: Brain, ends_on: str) -> list[dict]:
+    pm = health.permissions(brain)
+    unset = [s for s in pm["sections"] if not s["explicit"] and s["records"]]
+    if not unset:
+        return []
+    ev = [_row("sections_without_permission_entry", len(unset), "n", ends_on, None, 0, "team"),
+          _row("permission_coverage_pct", pm["counts"]["coverage_pct"], "share", ends_on, None, 1, "team")]
+    names = ", ".join(s["label"] for s in unset[:4]) + (" and more" if len(unset) > 4 else "")
+    return [_finding("BRN-R20", "low", {"type": "brand", "id": "permissions_unset", "label": "permission map"}, ev,
+                     f"{len(unset)} sections have no permission entry and default to restricted: {names}.", [], ends_on, 0.9)]
+
+
 def rule_snapshot_stale(brain: Brain, ends_on: str) -> list[dict]:
     out = []
     d = market.pages(brain)
@@ -597,7 +615,7 @@ def run(brand: str, window: dict | None = None, root: Path | None = None) -> lis
         bank = keeper.load_bank()
     except (OSError, ValueError, KeyError):
         bank = None
-    out = rule_stale(brain, ends_on) + rule_claims(brain, ends_on) + rule_competitor_gaps(brain, ends_on) + rule_angle_gaps(brain, ends_on) + rule_signals(brain, ends_on) + rule_weak_sections(brain, ends_on) + rule_conflicts(brain, ends_on) + rule_untiered_claims(brain, ends_on) + rule_site_changes(brain, ends_on) + rule_parity(brain, ends_on) + rule_contracts(brain, ends_on) + rule_legal(brain, ends_on) + rule_snapshot_stale(brain, ends_on)
+    out = rule_stale(brain, ends_on) + rule_claims(brain, ends_on) + rule_competitor_gaps(brain, ends_on) + rule_angle_gaps(brain, ends_on) + rule_signals(brain, ends_on) + rule_weak_sections(brain, ends_on) + rule_conflicts(brain, ends_on) + rule_untiered_claims(brain, ends_on) + rule_site_changes(brain, ends_on) + rule_parity(brain, ends_on) + rule_contracts(brain, ends_on) + rule_legal(brain, ends_on) + rule_permissions(brain, ends_on) + rule_snapshot_stale(brain, ends_on)
     if bank is None:
         for rid, sev in (("BRN-R02", "medium"), ("BRN-R03", "medium")):
             f = _finding(rid, sev, {"type": "brand", "id": "question_bank", "label": "question bank"},

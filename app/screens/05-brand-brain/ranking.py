@@ -139,6 +139,12 @@ def build(f: dict, nr: float | None) -> dict:
         a.update(title=f"Settle {label.replace('_', ' ')}: {_pct(_ev(f, 'weak_share'))} of it is inferred", owner="agent_drafts",
                  artefact={"kind": "brain_record", "label": "approved records in place of inferred ones", "draft": None},
                  steps=f.get("steps") or a["steps"], check_on=_check_on(f, 7), time_to_ship_hours=1)
+    elif rid == "BRN-R20":
+        a.update(title="Set who sees which part of the brain", owner="person",
+                 artefact={"kind": "policy", "label": "the permission map: sections by role", "draft": None},
+                 steps=[{"n": 1, "who": "person", "text": "In the permissions block, set agency and specialist access per section. Restricted stays the default."},
+                        {"n": 2, "who": "agent", "text": "Apply the map to every brain answer and every screen once hosting and auth are live."}],
+                 check_on=_check_on(f, 30), time_to_ship_hours=1)
     elif rid == "BRN-R17":
         d = _ev(f, "days_to_renewal")
         a.update(title=f"Renegotiate or renew {label}" + (f": {d} days left" if isinstance(d, (int, float)) and d >= 0 else ": date passed"), owner="person",

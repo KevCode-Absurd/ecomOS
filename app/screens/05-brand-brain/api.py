@@ -69,6 +69,9 @@ question, and accept or ignore on a proposed record. Nothing external.
                                 exploit, our proof, how we win, CX and copy lines, plain text to copy
   GET  ask?q=                   answers from records with tier, source and date; "can we say" routes to the claims
   POST ask/open                 {q, why}: save an unanswered question as an open question
+  GET  permissions              sections by role (founder, in-house, agency, specialist), restricted by default
+  POST permissions/<section>    {roles: {role: full | read | none}}: a founder record team.permission_<section>
+  GET  export                   the whole brain as one portable JSON (records, manifest, router, conflicts)
   GET  records?section=<name>   one section's records with tier, date, source and evidence
   GET  audit                    findings from audit.py (app/contracts/audit.md shape)
   POST questions/<field>        {answer}: writes a founder record, marks the question answered
@@ -789,6 +792,29 @@ def claim_add(brain: Brain, body: dict):
     return 201, {"ok": True, "record": rid, "tier": tier, "flows_to": FLOWS_TO.get("claims", ""), "version": brain.version()}
 
 
+def permission_set(brain: Brain, section: str, body: dict):
+    if section not in SECTIONS or section in health.META_SECTIONS:
+        return 404, {"error": "no such section", "section": section}
+    roles = (body or {}).get("roles") or {}
+    if not isinstance(roles, dict) or not roles:
+        return 400, {"error": "roles must map role to full, read or none"}
+    clean = {}
+    for role, lv in roles.items():
+        if role not in health.ROLES or lv not in health.LEVELS:
+            return 400, {"error": f"bad role or level: {role}={lv}"}
+        clean[role] = lv
+    clean["founder"] = "full"
+    field = f"permission_{section}"
+    rec = {"id": f"{brain.brand}.team.{field}", "brand": brain.brand, "section": "team", "field": field, "value": {"section": section, "roles": clean},
+           "text": f"{section.replace('_', ' ')}: " + ", ".join(f"{health.ROLE_LABEL[r].lower()} {lv}" for r, lv in clean.items()) + ".",
+           "tier": "approved", "confidence": 1.0, "visibility": "private",
+           "source": {"type": "founder", "ref": "05-brand-brain permissions", "captured_at": brain.today.isoformat()}}
+    errs = founder_put(brain, rec)
+    if errs:
+        return 400, {"error": "record not valid", "details": errs}
+    return 201, {"ok": True, "record": rec["id"], "roles": clean, "version": brain.version()}
+
+
 def voice_example(brain: Brain, body: dict):
     body = body or {}
     kind = body.get("kind")
@@ -986,6 +1012,14 @@ def handle(req):
         ends = (brain.today - dt.timedelta(days=1)).isoformat()
         findings = audit.run(brain.brand, {"ends_on": ends, "days": 1, "trailing": 0}, BRAIN_ROOT)
         return {"findings": findings, "rules": audit.RULES, "brain_version": brain.version()}
+    if req.method == "GET" and parts == ["permissions"]:
+        pm = health.permissions(brain)
+        pm.update(brand=brain.brand, today=brain.today.isoformat(), version=brain.version())
+        return pm
+    if req.method == "POST" and len(parts) == 2 and parts[0] == "permissions":
+        return permission_set(brain, parts[1], req.body)
+    if req.method == "GET" and parts == ["export"]:
+        return health.export_bundle(brain)
     if req.method == "GET" and parts == ["battlecards"]:
         bc = battlecards.cards(brain)
         bc.update(brand=brain.brand, today=brain.today.isoformat(), version=brain.version())

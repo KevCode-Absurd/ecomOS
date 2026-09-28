@@ -100,6 +100,34 @@
     mount('#ask', el('div', { class: 'card flat ask' }, el('div', { class: 'row' }, input, btn), out));
   }
 
+  // ---------- 5f. permissions and export ----------
+  function permPanel(sec, pm, reload) {
+    const selects = {};
+    const body = el('div', { class: 'stack' }, el('div', { class: 'small muted', text: sec.records + ' records, ' + (sec.private_share == null ? 'no records' : Math.round(sec.private_share * 100) + ' percent private') + '. The founder always has full access.' }));
+    for (const role of pm.roles) {
+      if (role === 'founder') continue;
+      const sel = el('select', { class: 'text sm' }, ...pm.levels.map((lv) => el('option', { value: lv, text: lv, selected: sec.levels[role] === lv })));
+      selects[role] = sel;
+      body.append(el('div', { class: 'row' }, el('span', { style: { minWidth: '160px' }, text: pretty(role) }), sel));
+    }
+    const status = el('span', { class: 'micro muted' });
+    const go = el('button', { class: 'btn primary sm', type: 'button', text: 'Save for ' + pretty(sec.key) });
+    const panel = UI.panel({ title: 'Who sees ' + pretty(sec.key), body: [body, el('div', { class: 'row' }, go, status)] });
+    go.addEventListener('click', async () => { go.disabled = true; const roles = {}; for (const [r, s] of Object.entries(selects)) roles[r] = s.value; try { await api(BASE + 'permissions/' + sec.key, { method: 'POST', body: { roles } }); panel.close(); reload(); } catch (e) { go.disabled = false; status.textContent = 'Could not save: ' + e.message; } });
+  }
+  async function loadPermissions() {
+    let pm;
+    try { pm = await api(BASE + 'permissions'); } catch (e) { mount('#perm', el('p', { class: 'muted', text: 'Permissions unavailable: ' + e.message })); return; }
+    const bySec = {}; for (const s of pm.sections) bySec[s.key] = s;
+    mount('#perm-tools', UI.orientation([{ label: 'sections set', value: pm.counts.explicit, unit: 'n', title: 'of ' + pm.counts.sections }, { label: 'default, restricted', value: pm.counts.unset, unit: 'n' }, { label: 'coverage', value: pm.counts.coverage_pct, unit: '%' }]));
+    const matrix = UI.coverageMatrix({ rows: pm.rows, cols: pm.cols, cells: pm.cells, unit: 'n', single: true, max: 2, corner: 'Section by role',
+      gapRule: (cell, row, col) => (cell && cell.label === 'none' && col.key !== 'founder' && !bySec[row.key].explicit ? '' : ''), onCell: (cell, row) => permPanel(bySec[row.key], pm, loadPermissions), note: pm.note + ' Click a row to set it. 2 = full, 1 = read, 0 = none.' });
+    const exp = el('button', { class: 'btn sm', type: 'button', text: 'Export the whole brain (JSON)' });
+    const st = el('span', { class: 'micro muted' });
+    exp.addEventListener('click', async () => { exp.disabled = true; try { const b = await api(BASE + 'export'); const blob = new Blob([JSON.stringify(b, null, 1)], { type: 'application/json' }); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = b.brand + '-brain-' + b.exported_at + '.json'; a.click(); st.textContent = b.counts.records + ' records, ' + b.counts.documents + ' documents, ' + b.counts.conflicts + ' conflicts. ' + b.note; } catch (e) { st.textContent = 'Could not export: ' + e.message; } exp.disabled = false; });
+    mount('#perm', matrix, el('div', { class: 'row', style: { marginTop: '10px' } }, exp, UI.decisionRow({ capability: 'LOOP-C22', autonomy: 'founder_gate', owner: 'agent_drafts', screen: SCREEN, compact: true, stub: 'Offboarding: export the brain and the registry as a handoff package, list every connector to revoke in Setup, and confirm no external write access stays open. You approve each revoke.' }), st));
+  }
+
   // ---------- 5c4. battlecards ----------
   function cardPanel(c) {
     const body = el('div', { class: 'stack' });
@@ -1125,6 +1153,7 @@
     loadLegal();
     loadVoice();
     loadBattlecards();
+    loadPermissions();
     const [prof] = await Promise.all([loadProfile(), loadDesk()]);
     await loadPlan(prof);
   }

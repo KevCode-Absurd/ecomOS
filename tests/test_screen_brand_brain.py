@@ -90,7 +90,7 @@ class AuditShape(unittest.TestCase):
         self.assertIn('05-brand-brain.BRN-R02.section_economics', ids)
         self.assertIn('05-brand-brain.BRN-R04.mission_trust.rung_1.donation_pledge', ids)
         rules = {r['rule_id'] for r in audit.RULES}
-        self.assertLessEqual({'BRN-R01', 'BRN-R02', 'BRN-R03', 'BRN-R04', 'BRN-R05', 'BRN-R06', 'BRN-R07', 'BRN-R08', 'BRN-R09', 'BRN-R10', 'BRN-R11', 'BRN-R12', 'BRN-R13', 'BRN-R14', 'BRN-R15', 'BRN-R16', 'BRN-R17', 'BRN-R18', 'BRN-R19'}, rules)
+        self.assertLessEqual({'BRN-R01', 'BRN-R02', 'BRN-R03', 'BRN-R04', 'BRN-R05', 'BRN-R06', 'BRN-R07', 'BRN-R08', 'BRN-R09', 'BRN-R10', 'BRN-R11', 'BRN-R12', 'BRN-R13', 'BRN-R14', 'BRN-R15', 'BRN-R16', 'BRN-R17', 'BRN-R18', 'BRN-R19', 'BRN-R20'}, rules)
 
 
 class AuditRules(TempBrain):
@@ -1095,3 +1095,38 @@ class Round2BattlecardsAsk(TempBrain):
         qv = api.handle(Req(['questions']))
         self.assertIn(res['record'], {q['id'] for q in qv['questions']})
         self.assertEqual(api.handle(Req(['ask', 'open'], 'POST', body={'q': 'x'}))[0], 400)
+
+
+class Round2PermissionsExport(TempBrain):
+    """Round 2 feature 10: the permission map, restricted by default, and the brain export."""
+
+    def test_defaults_and_set(self):
+        pm = api.handle(Req(['permissions']))
+        self.assertEqual([c['key'] for c in pm['cols']], ['founder', 'in_house', 'agency', 'specialist'])
+        by = {s['key']: s for s in pm['sections']}
+        self.assertEqual(by['claims']['levels'], {'founder': 'full', 'in_house': 'read', 'agency': 'none', 'specialist': 'none'})
+        self.assertEqual(by['economics']['levels']['in_house'], 'read')
+        self.assertEqual(pm['counts']['explicit'], 0)
+        f = next(f for f in api.handle(Req(['audit']))['findings'] if f['rule_id'] == 'BRN-R20')
+        self.assertEqual((f['severity'], f['capability']['id']), ('low', 'LOOP-C29'))
+        status, res = api.handle(Req(['permissions', 'claims'], 'POST', body={'roles': {'agency': 'read', 'specialist': 'read', 'in_house': 'full'}}))
+        self.assertEqual((status, res['roles']['founder'], res['roles']['agency']), (201, 'full', 'read'))
+        pm = api.handle(Req(['permissions']))
+        by = {s['key']: s for s in pm['sections']}
+        self.assertTrue(by['claims']['explicit'])
+        self.assertEqual(by['claims']['levels']['agency'], 'read')
+        self.assertEqual(pm['cells']['claims']['agency']['us'], 1)
+        self.assertEqual(api.handle(Req(['permissions', 'claims'], 'POST', body={'roles': {'agency': 'owner'}}))[0], 400)
+        self.assertEqual(api.handle(Req(['permissions', 'freshness'], 'POST', body={'roles': {'agency': 'read'}}))[0], 404)
+
+    def test_export_carries_everything(self):
+        api.handle(Req(['documents'], 'POST', body={'name': 'notes.md', 'text': '# Offers\nFree shipping threshold: $75'}))
+        b = api.handle(Req(['export']))
+        self.assertEqual(b['brand'], 'bombas')
+        self.assertGreaterEqual(b['counts']['records'], 600)
+        self.assertIn('claims', b['sections'])
+        self.assertEqual(b['counts']['documents'], 1)
+        self.assertEqual(len(b['document_files']), 1)
+        self.assertTrue(b['router_md'].startswith('#') or b['router_md'] == '')
+        self.assertEqual(b['version'], api.Brain('bombas', self.tmp, dt.date.fromisoformat(DAY)).version())
+        self.assertIn('revoke', b['note'])

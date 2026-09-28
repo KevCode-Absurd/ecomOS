@@ -286,3 +286,70 @@ def _connector_verdict(status: str, age: int | None, shelf: int | None, failed: 
     if rooms_n:
         return {"kind": "stop" if rooms_n >= 4 else "wait", "text": "Connect", "reason": f"unblocks {rooms_n} rooms"}
     return {"kind": "na", "text": "Optional", "reason": "no room waits on it"}
+
+
+# ---------------------------------------------------------------- permissions (LOOP-C29) and export (LOOP-C22)
+
+ROLES = ["founder", "in_house", "agency", "specialist"]
+ROLE_LABEL = {"founder": "Founder", "in_house": "In-house staff", "agency": "Agency staff", "specialist": "Named specialist"}
+LEVELS = ["full", "read", "none"]
+# default by role until the founder sets a section: the founder sees everything, staff read, outsiders nothing (restricted by default)
+DEFAULT_LEVEL = {"founder": "full", "in_house": "read", "agency": "none", "specialist": "none"}
+PRIVATE_SECTIONS = {"economics", "decisions", "team", "operations", "learnings", "channels", "plans"}
+
+
+def permissions(brain) -> dict:
+    """Sections by role. An explicit entry is a founder record team.permission_<section> {section, roles: {role: level}}."""
+    explicit = {}
+    for r in brain.records("team"):
+        f = r.get("field") or ""
+        if f.startswith("permission_") and isinstance(r.get("value"), dict):
+            explicit[f[len("permission_"):]] = {"roles": r["value"].get("roles") or {}, "record": r["id"], "date": None if r["date"] == "undated" else r["date"]}
+    rows, cells = [], {}
+    for sec in SECTIONS:
+        if sec in META_SECTIONS:
+            continue
+        recs = brain.records(sec)
+        private_share = (sum(1 for r in recs if r["visibility"] == "private") / len(recs)) if recs else None
+        e = explicit.get(sec)
+        levels = {}
+        for role in ROLES:
+            lv = (e["roles"].get(role) if e else None) or DEFAULT_LEVEL[role]
+            if not e and sec in PRIVATE_SECTIONS and role != "founder":
+                lv = "none" if role != "in_house" else "read"
+            levels[role] = lv if lv in LEVELS else "none"
+        rows.append({"key": sec, "label": sec.replace("_", " "), "sub": ("set by you" if e else "default, restricted") + (f", {round(private_share * 100)} percent private" if private_share is not None else ", no records")})
+        cells[sec] = {role: {"us": {"full": 2, "read": 1, "none": 0}[levels[role]], "unit": "n", "label": levels[role]} for role in ROLES}
+        rows[-1].update(levels=levels, explicit=bool(e), record=e["record"] if e else None, private_share=private_share, records=len(recs))
+    out_rows = rows
+    unset = [r["key"] for r in out_rows if not r["explicit"]]
+    return {"rows": [{"key": r["key"], "label": r["label"], "sub": r["sub"]} for r in out_rows], "cols": [{"key": ro, "label": ROLE_LABEL[ro]} for ro in ROLES], "cells": cells,
+            "sections": out_rows, "roles": ROLES, "levels": LEVELS, "counts": {"sections": len(out_rows), "explicit": len(out_rows) - len(unset), "unset": len(unset),
+                                                                                "coverage_pct": round((len(out_rows) - len(unset)) / len(out_rows), 2) if out_rows else None},
+            "note": "Restricted by default: the founder sees everything, in-house staff read, agency and specialists nothing until you set a section. The same map applies when the brain answers a chat question and when a person opens it. Enforcement lands with hosting and auth; this is the map."}
+
+
+def export_bundle(brain) -> dict:
+    """The whole brain as one portable JSON: every section's records, the documents manifest, the router text, sources and conflicts."""
+    sections = {sec: brain.raw(sec) for sec in SECTIONS if (brain.dir / f"{sec}.json").is_file()}
+    docs = brain.documents()
+    router = ""
+    p = brain.dir / "BRAIN.md"
+    if p.is_file():
+        try:
+            router = p.read_text(encoding="utf-8")
+        except OSError:
+            router = ""
+    conflicts = []
+    cp = brain.dir / "review" / "conflicts.json"
+    if cp.is_file():
+        try:
+            conflicts = json.loads(cp.read_text(encoding="utf-8"))
+        except (OSError, ValueError):
+            conflicts = []
+    files = sorted(str(x.relative_to(brain.dir)) for x in (brain.dir / "documents").glob("*") if x.is_file() and x.name != "manifest.json") if (brain.dir / "documents").is_dir() else []
+    total = sum(len(v) for v in sections.values())
+    return {"brand": brain.brand, "exported_at": brain.today.isoformat(), "version": brain.version(), "format": "ecomOS brain export v1",
+            "counts": {"sections": len(sections), "records": total, "documents": len(docs), "document_files": len(files), "conflicts": len(conflicts)},
+            "sections": sections, "documents_manifest": docs, "document_files": files, "router_md": router, "conflicts": conflicts,
+            "note": "Everything about the brand in one file: records with sources, tiers and history, the documents manifest and the router. Document files themselves are listed and travel as the documents folder. Connectors hold no brand data; revoke their keys in Setup on offboarding."}
