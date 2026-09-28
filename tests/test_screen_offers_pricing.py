@@ -2252,5 +2252,26 @@ class SnoozedFindingTest(unittest.TestCase):
         self.assertTrue(all(f['snoozed_until'] == '2026-10-11' for f in marked))
 
 
+class RuleRegistryTest(unittest.TestCase):
+    """Round 9 feature 8: audit.md section 8. Every rule a finding can carry is in RULES, the capability map and the
+    docstring, once; every capability id is in the catalogue."""
+
+    def test_rules(self):
+        import re
+        src = (SCREEN / 'audit.py').read_text(encoding='utf-8')
+        ids = [r['rule_id'] for r in audit.RULES]
+        self.assertEqual(len(ids), len(set(ids)))
+        used = set(re.findall(r"_finding\('(OFFER-R\d+)'", src))
+        self.assertLessEqual(used, set(ids))
+        self.assertEqual(set(ids) - set(audit.CAPABILITY), set())
+        doc = set(re.findall(r'^  (OFFER-R\d+)  ', audit.__doc__ or '', re.M))
+        self.assertLessEqual(used | set(ids), doc)
+        for r in audit.RULES:
+            self.assertEqual(set(r), {'rule_id', 'name', 'entity_type', 'inputs', 'capability', 'owner_screen'})
+        cat = (ROOT / 'agents' / 'catalogue.json').read_text(encoding='utf-8')
+        for c in {c['id'] for c in audit.CAPABILITY.values()}:
+            self.assertIn('"' + c + '"', cat)
+
+
 if __name__ == '__main__':
     unittest.main()

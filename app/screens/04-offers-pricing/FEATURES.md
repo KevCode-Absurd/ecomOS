@@ -202,6 +202,7 @@ Known gaps from round 0:
 | 9.5 | Findings keep their history (audit.md section 4): with no shared findings table yet, the overview keeps a git-ignored history per brand in this screen's outbox. A finding keeps its first_seen across runs and shows "open since" in the ranked list; one that stops firing while its rule can read flips to resolved and is listed for 28 days; one whose rule lost its inputs is not resolved. audit.run and the rank route stay pure and deterministic | done |
 | 9.6 | Every draft is ready to hand over: a check on both brands that each test brief carries arms, the profit per visitor metric, a length in days and a stop line, and that every other draft ends in a stop or check line. Two drafts on the sample brand lacked one (the thin-traffic test policy and the test repair notes); a post-pass now adds the move's own check date and stop rule to any draft without them | done |
 | 9.7 | Snoozed findings (audit.md section 4): when the founder presses "Not now" on a move, its findings read snoozed with the day they come back, sit at the end of the ranked list as "Not now, back 11 Oct", and are kept, not resolved, in the finding history | done |
+| 9.8 | The rule register holds (audit.md section 8): a test that every rule a finding can carry is listed once in RULES with its inputs, capability and owner, is in the capability map and the audit.py docstring, and that all 14 capability ids exist in the catalogue. 40 rules today, all consistent | done |
 
 ## Contract asks
 
