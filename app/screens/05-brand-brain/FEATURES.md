@@ -138,6 +138,23 @@ Contract asks (for the lead):
 
 Web pass for round 2 ideas: `WEB-PASS.md` in this folder (25 features from the best brand-ops tools, 5 that none of them do).
 
+## Round 2 (manager, 28 Sep 2026): 10 features, one commit each
+
+Sources: the room spec (claims tier bar, site diff, marketplace parity, contract renewals, permission matrix, legal gate, export) and `WEB-PASS.md` (word scanner on drafts, voice sheet, approved snippets, battlecards, ask the brain, audit trail).
+
+| # | Feature | Status | What a founder can do |
+|---|---|---|---|
+| 2.1 | Claims desk and draft scanner (`claims.py`, `GET claims`, `POST claims`, `POST scan`): every claim by tier, kind, source, age and the ladder rungs and surfaces that use it, with Approve, Forbid and Allow again; add a claim or forbid a phrase; tier bar; a scanner that checks any pasted draft against the brain (forbidden phrases block, numbers the brain contradicts block, unproven absolutes, unapproved claims and a reading grade above 10 warn), every hit naming the record and the fix; rule BRN-R13 claim untiered over 7 days | done | Decide what we can say in one click, and check any ad, email or page before it ships |
+| 2.2 | Site diff between crawls: products, prices, offers, policies and claims changed since the last snapshot, each change ending in an action | todo | |
+| 2.3 | Marketplace parity: Amazon price per pair against the site, MAP as a founder record, seller check | todo | |
+| 2.4 | Contract renewals: vendors from the stack and operations with renewal dates, alert windows by vendor type | todo | |
+| 2.5 | Legal disclosure gate: US checks across the brain and on a pasted page or email | todo | |
+| 2.6 | Voice sheet: liked and disliked examples, do and do not lists, a copy-ready sheet for agents | todo | |
+| 2.7 | Approved snippets: fixed lines agents paste word for word, with a stale check | todo | |
+| 2.8 | Battlecards per competitor from the coverage matrix and the ladders | todo | |
+| 2.9 | Ask the brain: keyword search with tier and source links, unanswered becomes an open question | todo | |
+| 2.10 | Permission matrix stub and brain export | todo | |
+
 ## Round 1 candidates (ranked 28 Sep 2026 by the lead session)
 
 Ranked by revenue impact, usefulness to a founder deciding alone, and buildable on the simulated data. Kevin picked the 5 screens; the top 5 here are recommended for round 1. One feature per commit, this table updated in the same commit.

@@ -90,7 +90,7 @@ class AuditShape(unittest.TestCase):
         self.assertIn('05-brand-brain.BRN-R02.section_economics', ids)
         self.assertIn('05-brand-brain.BRN-R04.mission_trust.rung_1.donation_pledge', ids)
         rules = {r['rule_id'] for r in audit.RULES}
-        self.assertLessEqual({'BRN-R01', 'BRN-R02', 'BRN-R03', 'BRN-R04', 'BRN-R05', 'BRN-R06', 'BRN-R07', 'BRN-R08', 'BRN-R09', 'BRN-R10', 'BRN-R11', 'BRN-R12'}, rules)
+        self.assertLessEqual({'BRN-R01', 'BRN-R02', 'BRN-R03', 'BRN-R04', 'BRN-R05', 'BRN-R06', 'BRN-R07', 'BRN-R08', 'BRN-R09', 'BRN-R10', 'BRN-R11', 'BRN-R12', 'BRN-R13'}, rules)
 
 
 class AuditRules(TempBrain):
@@ -772,3 +772,69 @@ class Round1RankAndFlows(TempBrain):
         api.handle(Req(['profile', 'positioning', 'frame'], 'POST', body={'text': 'Comfort that lasts.'}))
         by = {s['section']: s for s in api.handle(Req(['flows']))['sections']}
         self.assertEqual((by['positioning']['approved'], by['positioning']['last_founder_edit']), (1, DAY))
+
+
+class Round2Claims(TempBrain):
+    """Round 2 feature 1: the claims desk and the draft scanner."""
+
+    def test_desk_lists_claims_with_use_and_verdict(self):
+        cd = api.handle(Req(['claims']))
+        self.assertEqual(cd['total'], 6)
+        self.assertEqual(cd['usable'], 6)
+        by = {c['field']: c for c in cd['claims']}
+        self.assertEqual(by['calf_socks_benefit']['verdict']['kind'], 'keep')
+        self.assertIn('copy', by['calf_socks_benefit']['surfaces'])
+        self.assertEqual(len(by['calf_socks_benefit']['used_by']), 2)
+        self.assertEqual(cd['forbidden_phrases'], [])
+
+    def test_add_forbid_and_untiered_rule(self):
+        status, res = api.handle(Req(['claims'], 'POST', body={'text': 'the softest socks in the world', 'tier': 'forbidden'}))
+        self.assertEqual((status, res['tier']), (201, 'forbidden'))
+        cd = api.handle(Req(['claims']))
+        self.assertEqual(cd['forbidden'], 1)
+        self.assertEqual(cd['forbidden_phrases'][0]['phrase'], 'the softest socks in the world')
+        status, res = api.handle(Req(['claims'], 'POST', body={'text': 'Every pair is knit in a family-owned mill.', 'tier': 'approved'}))
+        self.assertEqual((status, res['tier']), (201, 'approved'))
+        self.assertEqual(api.handle(Req(['claims'], 'POST', body={'text': 'x', 'tier': 'approved'}))[0], 400)
+        # an untiered claim older than 7 days needs a call and fires BRN-R13
+        rows = self.section('claims')
+        rows.append({'id': 'bombas.claims.arch_relief', 'brand': 'bombas', 'section': 'claims', 'field': 'arch_relief', 'value': 'benefit claim', 'text': 'Arch support relieves foot pain on long shifts.',
+                     'tier': 'unverified', 'source': {'type': 'agent', 'ref': 'draft', 'captured_at': '2026-09-10'}})
+        self.write('claims', rows)
+        cd = api.handle(Req(['claims']))
+        self.assertEqual(next(c for c in cd['claims'] if c['field'] == 'arch_relief')['verdict']['kind'], 'fix')
+        f = next(f for f in api.handle(Req(['audit']))['findings'] if f['id'] == '05-brand-brain.BRN-R13.claim_arch_relief')
+        self.assertEqual((f['severity'], f['capability']['id']), ('medium', 'BRN-C03'))
+        self.assertIn('18 days', f['sentence'])
+        a = next(a for a in api.rank('bombas', {'ends_on': '2026-09-27', 'days': 28, 'trailing': 4})['actions'] if a['rule_id'] == 'BRN-R13')
+        self.assertEqual((a['owner'], a['rubric']['reputation']), ('person', 5))
+
+    def test_scanner_blocks_stale_numbers_and_forbidden_phrases(self):
+        api.handle(Req(['claims'], 'POST', body={'text': 'the softest socks in the world', 'tier': 'forbidden'}))
+        r = api.handle(Req(['scan'], 'POST', body={'text': 'The softest socks in the world. Free shipping on orders over $50. Returns within 60 days. Clinically proven comfort.'}))
+        self.assertEqual(r['verdict'], 'fail')
+        kinds = [h['kind'] for h in r['hits']]
+        self.assertIn('forbidden', kinds)
+        self.assertEqual(kinds.count('stale_fact'), 2)
+        self.assertIn('needs_proof', kinds)
+        stale = next(h for h in r['hits'] if h['kind'] == 'stale_fact' and 'shipping' in h['match'].lower())
+        self.assertEqual(stale['record'], 'bombas.offers.free_shipping_threshold_usd')
+        self.assertIn('75', stale['fix'])
+        ok = api.handle(Req(['scan'], 'POST', body={'text': 'Free shipping on orders over $75. Returns within 30 days. Every pair gives a pair.'}))
+        self.assertEqual((ok['verdict'], ok['hits']), ('pass', []))
+        self.assertLess(ok['reading_grade'], 10)
+        self.assertEqual(api.handle(Req(['scan'], 'POST', body={'text': '  '}))[0], 400)
+
+    def test_scanner_flags_unapproved_claim_and_reading_grade(self):
+        rows = self.section('claims')
+        for r in rows:
+            if r['id'] == 'bombas.claims.ankle_socks_benefit':
+                r['tier'] = 'inferred'
+        self.write('claims', rows)
+        r = api.handle(Req(['scan'], 'POST', body={'text': 'Our ankle socks are moisture-wicking with a blister tab, a cushioned footbed and Honeycomb arch support.'}))
+        self.assertEqual(r['verdict'], 'warn')
+        self.assertEqual(r['hits'][0]['kind'], 'unapproved')
+        self.assertEqual(r['hits'][0]['record'], 'bombas.claims.ankle_socks_benefit')
+        hard = 'Notwithstanding the aforementioned considerations, our organisation systematically operationalises multidimensional comfort methodologies across heterogeneous consumer populations, thereby facilitating unprecedented satisfaction outcomes.'
+        r = api.handle(Req(['scan'], 'POST', body={'text': hard}))
+        self.assertTrue(any(h['kind'] == 'reading_level' for h in r['hits']))

@@ -42,6 +42,11 @@ question, and accept or ignore on a proposed record. Nothing external.
                                 served by app/rank.py through the `rank(brand, window)` export below
   GET  flows                    which screens read each profile section, from a scan of their code, and when a
                                 founder last edited it; last read is unavailable until reads are logged
+  GET  claims                   the claims desk: every claim with tier, category, source, where the ladders use it,
+                                the verdict, tier counts and the forbidden phrases
+  POST claims                   {text, tier: approved | forbidden}: add a claim or forbid a phrase (founder record)
+  POST scan                     {text}: check a draft against the brain: forbidden phrases, unproven absolutes,
+                                stale numbers, unapproved claims, reading grade; hits name the record and the fix
   GET  records?section=<name>   one section's records with tier, date, source and evidence
   GET  audit                    findings from audit.py (app/contracts/audit.md shape)
   POST questions/<field>        {answer}: writes a founder record, marks the question answered
@@ -83,6 +88,9 @@ _spec.loader.exec_module(audit)
 _hspec = importlib.util.spec_from_file_location("brand_brain_health", HERE / "health.py")
 health = importlib.util.module_from_spec(_hspec)
 _hspec.loader.exec_module(health)
+_cspec = importlib.util.spec_from_file_location("brand_brain_claims", HERE / "claims.py")
+claims_mod = importlib.util.module_from_spec(_cspec)
+_cspec.loader.exec_module(claims_mod)
 _kspec = importlib.util.spec_from_file_location("brand_brain_ranking", HERE / "ranking.py")
 ranking = importlib.util.module_from_spec(_kspec)
 _kspec.loader.exec_module(ranking)
@@ -718,6 +726,26 @@ def approve(brain: Brain, rid: str, body: dict):
     return 201, {"ok": True, "record": rid, "tier": new["tier"], "was": rec.get("tier"), "version": brain.version()}
 
 
+def claim_add(brain: Brain, body: dict):
+    """The founder adds a claim (approved) or forbids a phrase (forbidden)."""
+    text = str((body or {}).get("text") or "").strip()
+    tier = (body or {}).get("tier") or "approved"
+    if not text or len(text) < 4:
+        return 400, {"error": "text is empty"}
+    if tier not in ("approved", "forbidden"):
+        return 400, {"error": "tier must be approved or forbidden"}
+    key = re.sub(r"[^a-z0-9]+", "_", text.lower()).strip("_")[:40]
+    field = ("never_" if tier == "forbidden" else "founder_") + key
+    rid = f"{brain.brand}.claims.{field}"
+    rec = {"id": rid, "brand": brain.brand, "section": "claims", "field": field, "value": ("never say: " if tier == "forbidden" else "founder claim: ") + text,
+           "text": ("Never say " + text.rstrip(".") + ".") if tier == "forbidden" else text, "tier": tier, "confidence": 1.0, "visibility": "private",
+           "source": {"type": "founder", "ref": "05-brand-brain claims desk", "captured_at": brain.today.isoformat()}}
+    errs = founder_put(brain, rec)
+    if errs:
+        return 400, {"error": "record not valid", "details": errs}
+    return 201, {"ok": True, "record": rid, "tier": tier, "flows_to": FLOWS_TO.get("claims", ""), "version": brain.version()}
+
+
 def rank(brand: str = "bombas", window: dict | None = None) -> dict:
     """The screen's own ranked actions (depth.md section 5): real titles, steps, artefacts and drafts for BRN-R01 to R12.
     app/rank.py picks this up for GET /api/05-brand-brain/rank and for the master list."""
@@ -820,6 +848,19 @@ def handle(req):
         ends = (brain.today - dt.timedelta(days=1)).isoformat()
         findings = audit.run(brain.brand, {"ends_on": ends, "days": 1, "trailing": 0}, BRAIN_ROOT)
         return {"findings": findings, "rules": audit.RULES, "brain_version": brain.version()}
+    if req.method == "GET" and parts == ["claims"]:
+        cd = claims_mod.desk(brain)
+        cd.update(brand=brain.brand, today=brain.today.isoformat(), version=brain.version())
+        return cd
+    if req.method == "POST" and parts == ["claims"]:
+        return claim_add(brain, req.body)
+    if req.method == "POST" and parts == ["scan"]:
+        text = str((req.body or {}).get("text") or "")
+        if not text.strip():
+            return 400, {"error": "text is empty"}
+        if len(text) > 20000:
+            return 413, {"error": "text is over 20,000 characters"}
+        return claims_mod.scan(brain, text)
     if req.method == "GET" and parts == ["flows"]:
         fl = flows(brain)
         fl.update(brand=brain.brand, today=brain.today.isoformat(), version=brain.version())

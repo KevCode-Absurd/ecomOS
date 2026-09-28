@@ -683,6 +683,68 @@
     return card;
   }
 
+  // ---------- 5c2. claims desk and the draft scanner ----------
+  function claimsTable(cd, reload) {
+    const rows = cd.claims.map((c) => Object.assign({}, c, { src: c.source.ref ? c.source.ref.replace(/^https?:\/\//, '').slice(0, 40) : (c.source.type || 'none'), used: c.used_by.length ? c.used_by.map((u) => pretty(u.theme) + ' ' + u.level).join(', ') : 'nothing yet', surf: c.surfaces.map(pretty).join(', ') || '' }));
+    const act = (r, choice) => async () => {
+      try { await api(BASE + 'approve/' + encodeURIComponent(r.id), { method: 'POST', body: { choice } }); reload(); } catch (e) { alert('Could not save: ' + e.message); }
+    };
+    return UI.verdictTable({
+      columns: [
+        { key: 'text', label: 'Claim' }, { key: 'tier', label: 'Tier', format: pretty }, { key: 'category', label: 'Kind', format: (v) => v || '' },
+        { key: 'used', label: 'Used by ladder rungs' }, { key: 'surf', label: 'Surfaces' }, { key: 'age_days', label: 'Age', unit: 'days', align: 'right' }, { key: 'src', label: 'Source' },
+      ],
+      verdict: { at: 1, kind: (r) => r.verdict.kind, text: (r) => r.verdict.text, reason: (r) => r.verdict.reason },
+      rows: rows.map((r) => Object.assign(r, { actions: r.tier === 'forbidden' ? [{ label: 'Allow again', onClick: act(r, 'approve') }] : r.tier === 'approved' ? [{ label: 'Forbid', cls: 'danger', onClick: act(r, 'forbid') }] : [{ label: 'Approve', cls: 'primary', onClick: act(r, 'approve') }, { label: 'Forbid', cls: 'danger', onClick: act(r, 'forbid') }] })),
+      actions: { label: 'Do' }, sort: false, maxRows: 60, empty: 'No claims yet. Add the first one below.',
+    });
+  }
+  function claimsAdd(reload) {
+    const input = el('input', { class: 'text sm', placeholder: 'A claim we can back, or a phrase we must never say', style: { flex: '1 1 320px' } });
+    const status = el('span', { class: 'micro muted' });
+    const go = (tier) => async () => {
+      if (!input.value.trim()) { status.textContent = 'Type it first.'; return; }
+      try { const res = await api(BASE + 'claims', { method: 'POST', body: { text: input.value.trim(), tier } }); status.textContent = 'Saved ' + res.record + ' as ' + tier + '. Flows to ' + res.flows_to + '.'; input.value = ''; reload(); }
+      catch (e) { status.textContent = 'Could not save: ' + e.message; }
+    };
+    return el('div', { class: 'row add-field' }, input, el('button', { class: 'btn sm primary', type: 'button', text: 'Add as approved', onclick: go('approved') }), el('button', { class: 'btn sm danger', type: 'button', text: 'Forbid this phrase', onclick: go('forbidden') }), status);
+  }
+  function tierBar(cd) {
+    const keys = Object.keys(cd.counts);
+    return Charts.bar({ title: 'Claims by tier', labels: keys.map(pretty), series: [{ name: 'claims', values: keys.map((k) => cd.counts[k]) }], unit: 'n', height: 170, values: true,
+      note: 'Usable in copy: approved and site backed. Untiered claims should reach 0 within ' + cd.untiered_days + ' days of appearing.' });
+  }
+  function scanner() {
+    const ta = el('textarea', { class: 'text', rows: 6, placeholder: 'Paste an ad, an email, a page section. The scanner checks it against the brain: forbidden phrases, unproven absolutes, stale numbers, unapproved claims, reading grade.' });
+    const out = el('div', { class: 'stack' });
+    const btn = el('button', { class: 'btn primary sm', type: 'button', text: 'Check the draft' });
+    btn.addEventListener('click', async () => {
+      if (!ta.value.trim()) { mount(out, el('p', { class: 'muted small', text: 'Paste a draft first.' })); return; }
+      btn.disabled = true;
+      try {
+        const r = await api(BASE + 'scan', { method: 'POST', body: { text: ta.value } });
+        const head = el('div', { class: 'row' }, UI.verdict(r.verdict === 'pass' ? 'keep' : r.verdict === 'warn' ? 'watch' : 'stop', r.verdict === 'pass' ? 'Ships' : r.verdict === 'warn' ? 'Check first' : 'Blocked', r.fails + ' blocking, ' + r.warns + ' warnings'),
+          el('span', { class: 'chip', text: r.words + ' words, ' + r.sentences + ' sentences' }), el('span', { class: 'chip ' + (r.reading_grade != null && r.reading_grade > 10 ? 'warn' : ''), text: 'reading grade ' + (r.reading_grade == null ? NA : r.reading_grade) }),
+          el('span', { class: 'micro faint', text: 'Checked ' + r.checked.forbidden_phrases + ' forbidden phrases, ' + r.checked.facts + ' brain numbers, ' + r.checked.weak_claims + ' unapproved claims.' }));
+        const list = r.hits.length ? UI.table({ columns: [{ key: 'severity', label: 'Level', format: (v) => v === 'fail' ? 'blocks' : 'warning' }, { key: 'kind', label: 'Rule', format: pretty }, { key: 'match', label: 'In the draft' }, { key: 'fix', label: 'Fix' }, { key: 'record', label: 'Record', format: (v) => v || '' }], rows: r.hits, sort: false })
+          : el('p', { class: 'muted small', text: 'No hit. Every number matches the brain and no forbidden phrase appears.' });
+        mount(out, head, list);
+      } catch (e) { mount(out, el('p', { class: 'muted', text: 'Could not check: ' + e.message })); }
+      btn.disabled = false;
+    });
+    return el('div', { class: 'stack scanner' }, ta, el('div', { class: 'row' }, btn, el('span', { class: 'micro faint', text: 'Rules only, no model. A blocking hit is a forbidden phrase or a number the brain contradicts.' })), out);
+  }
+  async function loadClaims() {
+    let cd;
+    try { cd = await api(BASE + 'claims'); } catch (e) { mount('#claims', el('p', { class: 'muted', text: 'Claims unavailable: ' + e.message })); return; }
+    mount('#claims-tools', UI.orientation([{ label: 'claims', value: cd.total, unit: 'n' }, { label: 'usable', value: cd.usable, unit: 'n', tone: 'good' }, { label: 'need your call', value: cd.needs_call, unit: 'n', tone: cd.needs_call ? 'bad' : null }, { label: 'forbidden', value: cd.forbidden, unit: 'n' }]));
+    mount('#claims', UI.tabs({ items: [
+      { key: 'claims', label: 'Claims', n: cd.total, panel: () => el('div', { class: 'stack' }, claimsTable(cd, loadClaims), claimsAdd(loadClaims), el('div', { class: 'micro faint', text: cd.note })) },
+      { key: 'tiers', label: 'By tier', panel: () => tierBar(cd) },
+      { key: 'scan', label: 'Check a draft', panel: scanner },
+    ], current: cd.needs_call ? 'claims' : 'claims' }));
+  }
+
   // ---------- 5d. conflicts: which source wins ----------
   function conflictCard(c, reload) {
     const card = el('article', { class: 'card flat rec conflict' + (c.status === 'open' ? '' : ' settled') });
@@ -782,6 +844,7 @@
     loadHealth();
     loadConflicts();
     loadQuestions();
+    loadClaims();
     const [prof] = await Promise.all([loadProfile(), loadDesk()]);
     await loadPlan(prof);
   }

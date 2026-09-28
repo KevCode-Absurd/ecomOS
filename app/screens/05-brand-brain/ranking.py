@@ -21,7 +21,7 @@ rank_mod = importlib.util.module_from_spec(_r)
 sys.modules["ecomos_rank_for_bb"] = rank_mod
 _r.loader.exec_module(rank_mod)
 
-REPUTATION_OVERRIDE = {"BRN-R05": 3, "BRN-R06": 3, "BRN-R08": 3, "BRN-R09": 5, "BRN-R10": 3, "BRN-R04": 5}
+REPUTATION_OVERRIDE = {"BRN-R05": 3, "BRN-R06": 3, "BRN-R08": 3, "BRN-R09": 5, "BRN-R10": 3, "BRN-R04": 5, "BRN-R13": 5}
 CHECK_DAYS = {"BRN-R05": 14, "BRN-R06": 14, "BRN-R08": 14, "BRN-R07": 7, "BRN-R09": 14, "BRN-R10": 14}
 TEST_BUDGET_USD = 300
 
@@ -139,6 +139,13 @@ def build(f: dict, nr: float | None) -> dict:
         a.update(title=f"Settle {label.replace('_', ' ')}: {_pct(_ev(f, 'weak_share'))} of it is inferred", owner="agent_drafts",
                  artefact={"kind": "brain_record", "label": "approved records in place of inferred ones", "draft": None},
                  steps=f.get("steps") or a["steps"], check_on=_check_on(f, 7), time_to_ship_hours=1)
+    elif rid == "BRN-R13":
+        a.update(title=f"Tier the {label} claim: approve it or forbid it", owner="person",
+                 artefact={"kind": "brain_record", "label": "the claim tiered approved or forbidden by you", "draft": None},
+                 steps=[{"n": 1, "who": "agent", "text": "Show the claim, its source and every rung and surface that uses it, in the claims desk."},
+                        {"n": 2, "who": "person", "text": "Approve as is, or forbid it. One click."},
+                        {"n": 3, "who": "agent", "text": "If forbidden, the scanner blocks the phrase in every draft and the rungs re-point at an approved claim."}],
+                 check_on=_check_on(f, 7), time_to_ship_hours=1)
     elif rid == "BRN-R12":
         a.update(title=f"Decide {label}: two sources disagree", owner="person",
                  artefact={"kind": "brain_record", "label": "an approved founder record for the field, decision logged", "draft": None},

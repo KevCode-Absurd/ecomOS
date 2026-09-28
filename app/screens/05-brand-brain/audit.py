@@ -63,6 +63,11 @@ BRN-R12 open conflict. Two sources disagree on one field and no founder
     else medium. Capability BRN-C05 (conflict detection with the site as
     default; the decision is the founder's). Reputation override 5 when the
     field is a claim or policy. Owner: 05-brand-brain.
+BRN-R13 claim untiered too long. A claims record with tier unverified,
+    inferred, evidence or reported for more than claims.UNTIERED_DAYS (7)
+    days (room spec: "{claim} has been untiered for {n} days and needs a
+    founder call"). Severity medium; high when a ladder rung uses it in copy.
+    Capability BRN-C03. Reputation override 5 (a claim). Owner: 05-brand-brain.
 BRN-R07 competitor snapshot stale. A configured Ad Library page was captured
     more than SNAPSHOT_STALE_DAYS (7) ago, or never. Severity low. Capability
     BRN-C11 (competitor snapshot, signals only). Owner: 05-brand-brain.
@@ -119,11 +124,16 @@ RULES = [
      "inputs": ["brain sections", "questions.bank.json"], "capability": "BRN-C07", "owner_screen": SCREEN},
     {"rule_id": "BRN-R12", "name": "open conflict", "entity_type": "brand",
      "inputs": ["review/conflicts.json"], "capability": "BRN-C05", "owner_screen": SCREEN},
+    {"rule_id": "BRN-R13", "name": "claim untiered too long", "entity_type": "brand",
+     "inputs": ["claims", "objection_ladders"], "capability": "BRN-C03", "owner_screen": SCREEN},
 ]
 AUTONOMY = {"BRN-C12": "agent_does", "BRN-C07": "founder_gate", "BRN-C03": "agent_does",
             "CREA-C19": "agent_does", "CREA-C04": "agent_does", "BRN-C11": "agent_does", "CREA-C06": "agent_does",
             "BRAND-C57": "agent_does", "CREA-C03": "agent_does", "BRN-C05": "founder_gate"}
 
+_cspec = importlib.util.spec_from_file_location("brand_brain_claims", Path(__file__).resolve().parent / "claims.py")
+claims_mod = importlib.util.module_from_spec(_cspec)
+_cspec.loader.exec_module(claims_mod)
 _hspec = importlib.util.spec_from_file_location("brand_brain_health", Path(__file__).resolve().parent / "health.py")
 health = importlib.util.module_from_spec(_hspec)
 _hspec.loader.exec_module(health)
@@ -385,6 +395,20 @@ def rule_conflicts(brain: Brain, ends_on: str) -> list[dict]:
     return out
 
 
+def rule_untiered_claims(brain: Brain, ends_on: str) -> list[dict]:
+    out = []
+    for c in claims_mod.desk(brain)["claims"]:
+        if c["verdict"]["kind"] != "fix":
+            continue
+        in_copy = any("copy" in u["uses"] for u in c["used_by"])
+        ev = [_row("days_untiered", c["age_days"], "days", ends_on, c["age_days"], claims_mod.UNTIERED_DAYS, "claims"),
+              _row("rungs_using_it", len(c["used_by"]), "n", ends_on, None, None, "objection_ladders")]
+        sentence = f"The {(c['field'] or '').replace('_', ' ')} claim has been {c['tier']} for {c['age_days']} days and needs your call." + (" Copy uses it." if in_copy else "")
+        out.append(_finding("BRN-R13", "high" if in_copy else "medium", {"type": "brand", "id": f"claim_{c['field']}", "label": (c["field"] or "").replace("_", " ")},
+                            ev, sentence, [c["id"]], ends_on, 0.7))
+    return out
+
+
 def rule_snapshot_stale(brain: Brain, ends_on: str) -> list[dict]:
     out = []
     d = market.pages(brain)
@@ -412,7 +436,7 @@ def run(brand: str, window: dict | None = None, root: Path | None = None) -> lis
         bank = keeper.load_bank()
     except (OSError, ValueError, KeyError):
         bank = None
-    out = rule_stale(brain, ends_on) + rule_claims(brain, ends_on) + rule_competitor_gaps(brain, ends_on) + rule_angle_gaps(brain, ends_on) + rule_signals(brain, ends_on) + rule_weak_sections(brain, ends_on) + rule_conflicts(brain, ends_on) + rule_snapshot_stale(brain, ends_on)
+    out = rule_stale(brain, ends_on) + rule_claims(brain, ends_on) + rule_competitor_gaps(brain, ends_on) + rule_angle_gaps(brain, ends_on) + rule_signals(brain, ends_on) + rule_weak_sections(brain, ends_on) + rule_conflicts(brain, ends_on) + rule_untiered_claims(brain, ends_on) + rule_snapshot_stale(brain, ends_on)
     if bank is None:
         for rid, sev in (("BRN-R02", "medium"), ("BRN-R03", "medium")):
             f = _finding(rid, sev, {"type": "brand", "id": "question_bank", "label": "question bank"},
