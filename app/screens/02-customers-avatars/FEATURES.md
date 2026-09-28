@@ -173,7 +173,7 @@ Lead's review: rounds 1 to 4 passed. Focus: returns and tickets by avatar, depth
 | 10.5 | Hand-off note `HANDOFF.md` in this folder: what the screen does, how each number is made, the contract asks and their fallbacks, what to do when each table lands | todo |
 | 10.6 | Loose ends in this file: every parked or open item closed, moved to the hand-off, or marked | todo |
 | 10.7 | Thresholds a brand can tune read from the brain when a record sets them (depth.md section 8) | todo |
-| 10.8 | The plan's connect strip: unavailable findings shown as their own connect list, never crowding the plan (depth.md section 5) | todo |
+| 10.8 | The plan's connect strip (depth.md section 5): already built, now under the browser test. Unavailable actions never enter the plan; they sit in their own "Connect first" strip, one card each. Bombas: 2 (the store's channel orders for paid returning, and the customer paths table), 0 connect items in the plan | done |
 | 10.9 | Charts: each of the 5 charts sits beside the moves it drives, so none goes; each now names the decision it changes in its note (the cohort grid: the day of the second-order email, the day win-back starts and the month to plan for; brand health: whether a line needs a move; the returning-share line: whether win-back is due; the channel waterfall: which channel to fix first; the served map: which avatar to fix first and which to park). Tested: every chart has its line | done |
 | 10.10 | Round 10 close, `round10.png`, report to the lead | todo |
 

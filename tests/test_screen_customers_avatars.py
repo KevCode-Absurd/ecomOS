@@ -2005,6 +2005,8 @@ const { chromium } = require(process.env.PW_MODULE);
   await p.goto(base, { waitUntil: 'networkidle' });
   await p.waitForSelector('#plan .plan-item', { timeout: 20000 });
   const out = { plan: await p.$$eval('#plan .plan-item', (n) => n.length), tabs: {} };
+  out.connect = await p.$$eval('#connect article.action', (n) => n.length);
+  out.planConnect = await p.$$eval('#plan .plan-item', (n) => n.filter((x) => /connect first/.test(x.innerText)).length);
   out.fold = await p.evaluate(() => ({ orient: document.querySelector('#plan .orient').getBoundingClientRect().bottom,
     whole: Array.from(document.querySelectorAll('#plan .plan-item')).filter((n) => n.getBoundingClientRect().bottom <= innerHeight).length,
     height: innerHeight }));
@@ -2089,6 +2091,9 @@ class BrowserSmoke(unittest.TestCase):
             for tab, w in out['phone'].items():
                 self.assertLessEqual(w, 360, (brand, tab))
         self.assertIn('Example is the sample brand', outs['example']['badge'])
+        unavailable = [a for a in api.rank('bombas', RANK_WINDOW)['actions'] if a['status'] == 'unavailable']
+        self.assertEqual(outs['bombas']['connect'], len(unavailable))
+        self.assertEqual(outs['bombas']['planConnect'], 0)
         self.assertNotIn('Bombas', outs['example']['badge'])
 
 
