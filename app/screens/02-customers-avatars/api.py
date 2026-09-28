@@ -403,7 +403,8 @@ def overview(brain: Brain) -> dict:
     srv = builds.served(avatars, all_rungs, brain.records("competitors"), brain.records("positioning"))
     win = daily_window(brain.brand, ends_on)
     opd = sum(r.get("orders") or 0 for r in win["rows"]) / len(win["rows"]) if not win["unavailable"] else None
-    return {"brand": brain.brand, "today": brain.today.isoformat(), "ends_on": ends_on, "version": brain.version(),
+    focus = builds.focus(avatars, srv, builds.ad_voice(avatars, brain.records("learnings")), lad["rows"])
+    return {"brand": brain.brand, "today": brain.today.isoformat(), "ends_on": ends_on, "version": brain.version(), "focus": focus,
             "simulated_note": SIMULATED_NOTE, "orientation": orientation(brain, avatars, all_rungs, chart, ends_on),
             "avatars": avatars,
             "objections": objections, "angles": {k: angles[k] for k in ("available", "reason", "ads")},

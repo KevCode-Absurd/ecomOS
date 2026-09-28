@@ -1153,5 +1153,19 @@ class Decided(unittest.TestCase):
         self.assertIn('id="decided"', (SCREEN / 'index.html').read_text(encoding='utf-8'))
 
 
+class Focus(TempBrain):
+    """Feature 4.9: which avatar we build for next, from fixed weights."""
+
+    def test_focus(self):
+        x = api.handle(Req(['overview']))['focus']
+        self.assertAlmostEqual(sum(x['weights'].values()), 1.0)
+        for r in x['rows']:
+            self.assertAlmostEqual(r['score'], round(100 * sum(x['weights'][k] * v for k, v in r['parts'].items()), 1), places=0)
+            for v in r['parts'].values():
+                self.assertTrue(0 <= v <= 1)
+        self.assertEqual(x['rows'][0]['key'], 'durability_disappointed_repeat_customer')
+        self.assertEqual([r['score'] for r in x['rows']], sorted((r['score'] for r in x['rows']), reverse=True))
+
+
 if __name__ == '__main__':
     unittest.main()

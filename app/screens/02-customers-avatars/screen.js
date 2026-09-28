@@ -385,6 +385,20 @@
       note: 'Blank: this lever answers none of the avatar\'s doubts. Columns after the policies are offers no ladder uses yet.' }));
   }
 
+  // ---------- desk: focus ----------
+  function renderFocus(x) {
+    const w = x.weights;
+    document.getElementById('focus-sub').textContent = 'Score out of 100: share of buyers ' + Math.round(w.share * 100) + ', how poorly we serve them ' + Math.round(w.unserved * 100) +
+      ', how little our ads speak to them ' + Math.round(w.ad_gap * 100) + ', share of their doubts still open ' + Math.round(w.open_doubts * 100) + '. Avatars with no share are left out. ' + x.line;
+    mount('#focus', UI.verdictTable({
+      columns: [{ key: 'name', label: 'Avatar' }, { key: 'score', label: 'Score', unit: 'n' }, { key: 'share', label: 'Buyers', unit: '%' },
+        { key: 'served', label: 'Served', unit: '%' }, { key: 'open_doubts', label: 'Open doubts', unit: 'n' }, { key: 'next_t', label: 'Next build' }],
+      rows: x.rows.map((r, i) => Object.assign({}, r, { rank: i, next_t: r.next.title, actions: [{ label: 'Brief it', onClick: () => briefPanel(r.next) }] })),
+      verdict: { at: 1, kind: (r) => r.rank === 0 ? 'scale' : r.score >= 60 ? 'fix' : 'keep', text: (r) => r.rank === 0 ? 'Next' : r.score >= 60 ? 'Soon' : 'Later' },
+      actions: { label: 'Do' }, sort: false,
+    }));
+  }
+
   // ---------- desk: who our ads speak to ----------
   function renderAdVoice(x) {
     if (!x.available) { mount('#voiceads', UI.emptyState({ screen: SLUG, title: 'Ad read unavailable', text: x.reason })); return; }
@@ -817,7 +831,7 @@
 
   // ---------- the desk, grouped into tabs by job ----------
   const DESK = [
-    { key: 'avatars', label: 'Avatars', ids: ['avatars-wrap', 'voiceads-wrap', 'split-wrap', 'gate-wrap', 'forces-wrap', 'survey-wrap', 'served-wrap', 'misread-wrap'] },
+    { key: 'avatars', label: 'Avatars', ids: ['focus-wrap', 'avatars-wrap', 'voiceads-wrap', 'split-wrap', 'gate-wrap', 'forces-wrap', 'survey-wrap', 'served-wrap', 'misread-wrap'] },
     { key: 'doubts', label: 'Doubts and words', ids: ['ladders-wrap', 'cover-wrap', 'themes-wrap', 'words-wrap', 'hooks-wrap', 'gap-wrap'] },
     { key: 'offers', label: 'Offers and claims', ids: ['offers-wrap', 'claims-wrap', 'timing-wrap'] },
     { key: 'retention', label: 'Retention', ids: ['paths-wrap', 'cohort-wrap', 'mix-wrap', 'moments-wrap', 'health-wrap'] },
@@ -852,6 +866,7 @@
     renderWrong(a, r);
     renderActions(r);
     renderOffers(d.offer_map);
+    renderFocus(d.focus);
     renderAdVoice(d.ad_voice);
     renderSplit(d.split);
     renderGate(d.gate);

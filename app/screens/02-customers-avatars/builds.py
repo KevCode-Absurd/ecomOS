@@ -2051,3 +2051,32 @@ def ad_voice(avatars: list[dict], learnings: list[dict]) -> dict:
     return {"available": True, "rows": rows, "unmatched": unmatched, "total_ads": total, "none_share": round(none_share, 4) if none_share is not None else None,
             "line": f"{sum(u['ads'] for u in unmatched)} of {total} live ads speak to no avatar by name. "
                     + (f"No ad speaks to {len(silent)} avatars, {round(sum(r['buyer_share'] for r in rows if r['verdict'] == 'silent') * 100)} percent of buyers." if silent else "")}
+
+
+# ---------------------------------------------------------------- which avatar we build for next
+
+FOCUS_W = {"share": 0.4, "unserved": 0.3, "ad_gap": 0.2, "open_doubts": 0.1}
+
+
+def focus(avatars: list[dict], served_x: dict, ad_voice_x: dict, ladders_rows: list[dict]) -> dict:
+    """One score per avatar: share of buyers, how poorly we serve them, how little our ads speak to them, open doubts.
+    Weights are fixed and shown; inputs come from the page's own builders. Avatars with no share are not scored."""
+    served = {p["key"]: p["y"] for p in served_x.get("points", [])}
+    ads = {r["key"]: r for r in ad_voice_x.get("rows", [])}
+    max_share = max((a["share_estimate"] or 0 for a in avatars), default=0) or 1
+    rows = []
+    for a in avatars:
+        if a["share_estimate"] is None or a["key"] not in served:
+            continue
+        open_d = sum(1 for r in ladders_rows if a["key"] in r["avatars"] and r["verdict"] in ("answer", "not_landing"))
+        all_d = sum(1 for r in ladders_rows if a["key"] in r["avatars"]) or 1
+        ad = ads.get(a["key"])
+        ad_gap = 1.0 if not ad or ad["ratio"] is None else max(0.0, 1 - min(ad["ratio"], 1.0))
+        parts = {"share": a["share_estimate"] / max_share, "unserved": 1 - served[a["key"]], "ad_gap": ad_gap, "open_doubts": open_d / all_d}
+        score = round(100 * sum(FOCUS_W[k] * v for k, v in parts.items()), 1)
+        rows.append({"key": a["key"], "name": a["name"], "score": score, "parts": {k: round(v, 3) for k, v in parts.items()},
+                     "share": a["share_estimate"], "served": served[a["key"]], "open_doubts": open_d, "next": a["next"]})
+    rows.sort(key=lambda r: (-r["score"], r["name"]))
+    top = rows[0] if rows else None
+    return {"rows": rows, "weights": FOCUS_W,
+            "line": (f"Build for {top['name']} next: score {top['score']} of 100. Next build: {top['next']['title']}." if top else "No avatar has a share to score.")}

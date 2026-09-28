@@ -82,7 +82,7 @@ Web pass: Peel, Triple Whale, Lifetimely, Klaviyo predictive, Daasity RFM, Thema
 | 4.6 | Is each avatar one buyer or two (BRAND-C12): product lines behind each avatar (its own reviews count 3 times a review linked through a doubt) and its doubt themes. Two buyers when 2 lines each hold 30 percent or more and their top complaints share no words: a drafted split into 2 avatar records a person approves. Broad when 3 or more doubt themes and none at half: a research note. Bombas: Parent Buying For Kids splits into calf sock and slipper buyers; Price and Mission Skeptic is broad | done |
 | 4.7 | Who our live ads speak to (replaces the brain drift timeline, parked: the brain holds one capture date, so there is no drift to show yet): our live ads by hook from the Ad Library read in the brain, matched to the avatar whose name the hook names, against each avatar's share of buyers. Silent (no ad), under (less than half its share), fair, heavy (over 2x). Silent and under avatars get an ad brief. Bombas: 10 of 23 ads speak to the Everyday Comfort Seeker (13 percent of buyers); none speak to 6 avatars holding 80 percent of buyers; 13 ads name no avatar | done |
 | 4.8 | What we decided here: a timeline from the shared `GET /api/decisions?screen=` route, newest first, with the action title (matched by finding id), who owns it, and the check date, or the date a "Not now" comes back on the plan (14 days). Counts by choice in the line. Empty until the founder decides something; nothing is written by this feature | done |
-| 4.9 | Avatar value: which avatars sit on the lines with the most revenue, from products_monthly | todo |
+| 4.9 | Which avatar we build for next (replaces avatar value by product revenue, which needs a SKU to product-line map; see Contract asks): one score out of 100 per avatar with a share, from fixed weights shown on the page (share of buyers 40, how poorly we serve them 30, how little our ads speak to them 20, share of doubts still open 10), top of the Avatars tab, each row opening its next build. Bombas: build for the Durability Disappointed Repeat Customer next (89), then the Guarantee Reassured Loyalist (85) | done |
 | 4.10 | Audit rules and `rank` for round 4, screenshot `round4.png` | todo |
 
 ### Round 3 founder note (28 Sep 2026)
@@ -113,6 +113,8 @@ Web pass: Peel, Triple Whale, Lifetimely, Klaviyo predictive, Daasity RFM, Thema
 6. Next, round 2: rules from the web pass (gateway product, second-order path, win-back timing by gap, RFM cells, theme impact, copy gap check) and hiking as a sized avatar.
 
 ## Contract asks
+
+- A SKU to product-line map in the brain's products section (for example BMB-SK-CMP-3 to compression), so avatar value can read revenue by line from `products_monthly`. Fallback: 4.9 scores avatars without revenue.
 
 - A `customer_paths` aggregate from `generate.py` (first product repeat and next product, order gaps, RFM cells; shape in `builds.PATHS_SHAPE`). Fallback: 2.9 shows the rules and unavailable.
 
