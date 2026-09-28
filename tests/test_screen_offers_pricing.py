@@ -503,7 +503,7 @@ class PromoCalendarTest(unittest.TestCase):
                 m = a['money_at_stake']
                 if m:
                     i = m['inputs']
-                    self.assertAlmostEqual(m['usd_revenue'], round((i['net_per_day_window'] - i['net_per_day_28d_before']) * i['days'], 2), places=0)
+                    self.assertAlmostEqual(m['usd_revenue'], round((i['net_per_day_window'] - i['net_per_day_28d_before']) * i['days'] * i['growth'], 2), places=0)
 
     def test_bfcm_matches_the_round0_depth(self):
         b = api.bfcm(self.rd)
@@ -2122,6 +2122,20 @@ class ConfidenceRuleTest(unittest.TestCase):
         f = next(x for x in audit.run('bombas') if x['rule_id'] == 'OFFER-R16')
         self.assertEqual(f['confidence'], 0.3)
         self.assertIn("'Weak evidence. '", (SCREEN / 'screen.js').read_text(encoding='utf-8'))
+
+
+class PromoStakeTest(unittest.TestCase):
+    """Round 9 feature 1: a promo window's stake is last year's lift at this year's scale."""
+
+    def test_growth(self):
+        rd = audit.Reader(None, 'bombas', audit.last_full_day(None, 'bombas'))
+        g = audit._growth(rd)
+        now = api.model.window_totals(rd, rd.ends_on)['net_sales']
+        then = api.model.window_totals(rd, rd.ends_on.replace(year=rd.ends_on.year - 1))['net_sales']
+        self.assertAlmostEqual(g, now / then, 3)
+        f = next(x for x in audit.run('bombas') if x['rule_id'] == 'OFFER-R11')
+        self.assertEqual(f['money_at_stake']['inputs']['growth'], g)
+        self.assertIn('this year', f['money_at_stake']['window'])
 
 
 if __name__ == '__main__':

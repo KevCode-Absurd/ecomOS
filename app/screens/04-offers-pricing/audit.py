@@ -818,6 +818,19 @@ def promo_calendar(rd):
     return _model().promo_calendar(rd, pb.PROMO_WINDOWS, pb.PROMO_ALERT_DAYS)
 
 
+def _growth(rd):
+    """This year's scale against last year's: net sales in the 28 days to the window end over the same 28 days a year
+    before. Brings a promo window's stake from last year's lift to this year's window."""
+    now = _model().window_totals(rd, rd.ends_on)
+    try:
+        then = _model().window_totals(rd, rd.ends_on.replace(year=rd.ends_on.year - 1))
+    except ValueError:
+        then = None
+    if not now or not then or not then['net_sales']:
+        return None
+    return round(now['net_sales'] / then['net_sales'], 4)
+
+
 def rule_promo(rd):
     end = rd.ends_on
     cm = _model().contribution_28d(rd)
@@ -831,13 +844,18 @@ def rule_promo(rd):
         if ly and ly['lift'] is not None:
             days = (date.fromisoformat(ly['end']) - date.fromisoformat(ly['start'])).days + 1
             extra = round((ly['net_per_day'] - ly['baseline_per_day']) * days, 2)
-            if extra > 0:
+            growth = _growth(rd)
+            if extra > 0 and growth:
+                extra = round(extra * growth, 2)
                 money = {'usd_revenue': extra, 'usd': round(extra * share, 2) if share else None,
-                         'formula': '(net_per_day_window - net_per_day_28d_before) x days x contribution_before_media_share',
+                         'formula': '(net_per_day_window - net_per_day_28d_before) x days x growth x contribution_before_media_share',
                          'inputs': {'net_per_day_window': ly['net_per_day'], 'net_per_day_28d_before': ly['baseline_per_day'],
-                                    'days': days, 'contribution_before_media_share': share}, 'window': 'last year'}
+                                    'days': days, 'growth': growth, 'contribution_before_media_share': share},
+                         'window': 'this year\'s window, from last year\'s lift'}
                 if money['usd'] is None:
                     money['usd'] = extra
+            elif extra > 0:
+                reason = 'this year against last year needs 28 days a year back in the daily aggregate'
             else:
                 reason = 'last year the window sold no more than the 28 days before it'
         entity = {'type': 'offer', 'id': 'window_' + w['key'], 'label': w['name']}

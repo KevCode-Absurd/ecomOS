@@ -191,6 +191,12 @@ Known gaps from round 0:
 5. Findings now follow the audit contract: severity rises with money share (the two Bombas promo windows are critical), every stake carries its inputs, sentences stay under 40 words, and peer-band evidence scores lower.
 6. Next (round 9): the window-agreement part of confidence, rule by rule, and the promo windows' stake read against the current window rather than last year's.
 
+## Round 9: confidence by window, stakes in this year's terms (from 28 Sep 2026)
+
+| # | Feature | Status |
+|---|---|---|
+| 9.1 | Promo window stakes in this year's terms: last year's lift over the 28 days before each window, times this year's scale (net sales in the 28 days to today over the same 28 days a year before), times contribution before media. Bombas: 1.31 times last year, so holiday gifting reads $8.9 million and Black Friday to Cyber Monday $6.8 million, labelled "this year's window, from last year's lift". Without a year of history the stake is null with its reason | done |
+
 ## Contract asks
 
 - audit.md baseline kinds: add `own_segment` (another group of the same brand's rows in the same window, like code orders against full-price orders) and `own_before` (the same metric before a date, like 28 days before a launch). Local fallback: 04 maps both to `own_median` and names the comparison in the window text.
@@ -329,6 +335,7 @@ Intelligems (threshold and price tests scored by profit per visitor), Rebuy (tie
 | Round | Features picked | Date | Notes |
 |---|---|---|---|
 | 0 | skeleton, 0.1 to 0.9 | 2026-09-28 | S3.9; screenshot round0.png |
+| 9 | 9.1 onward: promo stakes this year | 2026-09-28 | in progress |
 | 8 | 8.1 to 8.10: one money scale, exposure, your week, unlocks, start dates, baseline kinds, stake inputs, severity and wording, confidence, close | 2026-09-28 | screenshot round8.png |
 | 7 | 7.1 to 7.10: paid prices, attach rate, returns by code, test power, code leaks, returning-buyer codes, code depth, app blind spots, one read of orders, close | 2026-09-28 | screenshot round7.png (sample brand) |
 | 6 | 6.1 to 6.10: settings not text, sized moves, block lines, cannot see yet, 360 px, welcome code, test trust, price moves, tier lift, claims stress | 2026-09-28 | screenshot round6.png |
